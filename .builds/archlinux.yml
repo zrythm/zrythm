@@ -42,9 +42,10 @@ secrets:
 tasks:
   - setup: |
       sudo pip3 install sphinx-intl
+      pip3 install --user 'meson' --force-reinstall
       sudo npm install -g sass
       cd zrythm
-      ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
+      meson build -Dtests=true -Dmanpage=true -Db_coverage=true
   - build: |
       cd zrythm
       ninja -C build
@@ -55,15 +56,15 @@ tasks:
       cat build/meson-logs/coverage.txt
   - test-multiple-options: |
       cd zrythm
-      ../meson/meson.py build --reconfigure -Dffmpeg=disabled -Dgraphviz=enabled -Djack=disabled
+      meson build --reconfigure -Dgraphviz=enabled -Djack=disabled
       ninja -C build test
-      ../meson/meson.py build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled
+      meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled
       ninja -C build test
-      ../meson/meson.py build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
+      meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
       ninja -C build test
-      ../meson/meson.py build --reconfigure -Dstrict_flags=true -Duser_manual=true -Dguile=disabled
+      meson build --reconfigure -Dstrict_flags=true -Duser_manual=true -Dguile=disabled
       ninja -C build test
-      ../meson/meson.py build --reconfigure -Drtaudio=auto -Drtmidi=disabled
+      meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled
       ninja -C build test
   - install: |
       cd zrythm
