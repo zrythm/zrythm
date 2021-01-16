@@ -813,10 +813,22 @@ track_verify_identifiers (
           AutomationTrack * at =
             automation_track_find_from_port (
               port, self, true);
-          g_return_val_if_fail (at, false);
+          if (!at)
+            {
+              char full_str[600];
+              port_get_full_designation (
+                port, full_str);
+              g_critical (
+                "Could not find automation track "
+                "for port %s",
+                full_str);
+              return false;
+            }
           g_return_val_if_fail (
             automation_track_find_from_port (
               port, self, false), false);
+          g_return_val_if_fail (
+            port->at == at, false);
         }
 
       port_verify_src_and_dests (port);
@@ -1494,6 +1506,70 @@ track_freeze (
 
   self->frozen = freeze;
   EVENTS_PUSH (ET_TRACK_FREEZE_CHANGED, self);
+}
+
+/**
+ * Wrapper over channel_add_plugin() and
+ * modulator_track_insert_modulator().
+ */
+void
+track_insert_plugin (
+  Track *        self,
+  Plugin *       pl,
+  PluginSlotType slot_type,
+  int            slot,
+  bool           replacing_plugin,
+  bool           moving_plugin,
+  bool           confirm,
+  bool           gen_automatables,
+  bool           recalc_graph,
+  bool           fire_events)
+{
+  if (slot_type == PLUGIN_SLOT_MODULATOR)
+    {
+      modulator_track_insert_modulator (
+        self, slot, pl, replacing_plugin,
+        confirm, gen_automatables,
+        recalc_graph, fire_events);
+    }
+  else
+    {
+      channel_add_plugin (
+        self->channel, slot_type, slot, pl,
+        confirm, moving_plugin, gen_automatables,
+        recalc_graph, fire_events);
+    }
+}
+
+/**
+ * Wrapper over channel_remove_plugin() and
+ * modulator_track_remove_modulator().
+ */
+void
+track_remove_plugin (
+  Track *        self,
+  PluginSlotType slot_type,
+  int            slot,
+  bool           replacing_plugin,
+  bool           moving_plugin,
+  bool           deleting_plugin,
+  bool           deleting_track,
+  bool           recalc_graph)
+{
+  if (slot_type == PLUGIN_SLOT_MODULATOR)
+    {
+      modulator_track_remove_modulator (
+        self, slot, replacing_plugin,
+        deleting_plugin, deleting_track,
+        recalc_graph);
+    }
+  else
+    {
+      channel_remove_plugin (
+        self->channel, slot_type, slot,
+        moving_plugin, deleting_plugin,
+        deleting_track, recalc_graph);
+    }
 }
 
 /**

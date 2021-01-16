@@ -140,7 +140,7 @@ if get_option ('tests')
     ['audio/region', true],
     ['audio/track', true],
     ['audio/tracklist', true],
-    ['integration/recording', true],
+    ['integration/recording', false],
     ['plugins/plugin', true],
     ['plugins/plugin_manager', true],
     ['project', true],
@@ -149,17 +149,15 @@ if get_option ('tests')
     ['utils/io', true],
     ['utils/string', true],
     ['utils/ui', true],
+    ['zrythm', true],
     ]
 
   if os_gnu or os_darwin
     tests += [
-      ['actions/copy_plugins', true],
       ['actions/copy_tracks', true],
-      ['actions/create_plugins', true],
       ['actions/edit_tracks', false],
-      ['actions/move_plugins', true],
+      ['actions/mixer_selections_action', false],
       ['actions/move_tracks', false],
-      ['actions/delete_plugins', true],
       ['actions/delete_tracks', true],
       ['actions/port_connection', true],
       ['benchmarks/dsp', true],
@@ -168,14 +166,9 @@ if get_option ('tests')
       # threads
       ['integration/run_graph_with_latencies', false],
       ['integration/undo_redo_helm_track_creation',
-        true],
+        false],
       ['utils/system', false],
       ]
-    if get_option ('plugin_tests')
-      tests += [
-        ['actions/mixer_selections', false],
-        ]
-    endif
   endif
 
   if get_option ('gui_tests')
@@ -211,7 +204,8 @@ if get_option ('tests')
     suite = _test[0].split('/')[0]
     source = _test[0] + '.c'
     timeout = 180
-    if suite.contains ('benchmark')
+    if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
+      parallel = false
       timeout = 240
     endif
 

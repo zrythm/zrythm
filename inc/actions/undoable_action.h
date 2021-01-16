@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -50,32 +50,8 @@ typedef enum UndoableActionType
 
   /* ---- end ---- */
 
-  /* ---- Plugin ---- */
-
-  UA_CREATE_PLUGINS,
-  UA_MOVE_PLUGINS,
-  UA_EDIT_PLUGINS,
-  UA_COPY_PLUGINS,
-  UA_DELETE_PLUGINS,
-
-  /* ---- end ---- */
-
-  /* ---- ARRANGER SELECTIONS ---- */
-
-  UA_CREATE_ARRANGER_SELECTIONS,
-  UA_MOVE_ARRANGER_SELECTIONS,
-  UA_LINK_ARRANGER_SELECTIONS,
-  UA_RECORD_ARRANGER_SELECTIONS,
-  UA_RESIZE_ARRANGER_SELECTIONS,
-  UA_SPLIT_ARRANGER_SELECTIONS,
-  UA_MERGE_ARRANGER_SELECTIONS,
-  UA_EDIT_ARRANGER_SELECTIONS,
-  UA_DUPLICATE_ARRANGER_SELECTIONS,
-  UA_DELETE_ARRANGER_SELECTIONS,
-  UA_QUANTIZE_ARRANGER_SELECTIONS,
-  UA_AUTOMATION_FILL,
-
-  /* ---- end ---- */
+  UA_MIXER_SELECTIONS,
+  UA_ARRANGER_SELECTIONS,
 
   /* ---- connections ---- */
 
@@ -98,52 +74,14 @@ typedef enum UndoableActionType
 static const cyaml_strval_t
 undoable_action_type_strings[] =
 {
-  { "Create tracks",
-    UA_CREATE_TRACKS },
-  { "Move tracks",
-    UA_MOVE_TRACKS },
-  { "Edit tracks",
-    UA_EDIT_TRACKS },
-  { "Copy tracks",
-    UA_COPY_TRACKS },
-  { "Delete tracks",
-    UA_DELETE_TRACKS },
-  { "Channel send",
-    UA_CHANNEL_SEND },
-  { "Create plugins",
-    UA_CREATE_PLUGINS },
-  { "Move plugins",
-    UA_MOVE_PLUGINS },
-  { "Edit plugins",
-    UA_EDIT_PLUGINS },
-  { "Copy plugins",
-    UA_COPY_PLUGINS },
-  { "Delete plugins",
-    UA_DELETE_PLUGINS },
-  { "Create arranger selections",
-    UA_CREATE_ARRANGER_SELECTIONS },
-  { "Move arranger selections",
-    UA_MOVE_ARRANGER_SELECTIONS },
-  { "Link arranger selections",
-    UA_LINK_ARRANGER_SELECTIONS },
-  { "Record arranger selections",
-    UA_RECORD_ARRANGER_SELECTIONS },
-  { "Resize arranger selections",
-    UA_RESIZE_ARRANGER_SELECTIONS },
-  { "Split arranger selections",
-    UA_SPLIT_ARRANGER_SELECTIONS },
-  { "Merge arranger selections",
-    UA_MERGE_ARRANGER_SELECTIONS },
-  { "Edit arranger selections",
-    UA_EDIT_ARRANGER_SELECTIONS },
-  { "Duplicate arranger selections",
-    UA_DUPLICATE_ARRANGER_SELECTIONS },
-  { "Delete arranger selections",
-    UA_DELETE_ARRANGER_SELECTIONS },
-  { "Quantize arranger selections",
-    UA_QUANTIZE_ARRANGER_SELECTIONS },
-  { "Automation autofill",
-    UA_AUTOMATION_FILL },
+  { "Create tracks", UA_CREATE_TRACKS },
+  { "Move tracks", UA_MOVE_TRACKS },
+  { "Edit tracks", UA_EDIT_TRACKS },
+  { "Copy tracks", UA_COPY_TRACKS },
+  { "Delete tracks", UA_DELETE_TRACKS },
+  { "Channel send", UA_CHANNEL_SEND },
+  { "Mixer selections", UA_MIXER_SELECTIONS },
+  { "Arranger selections", UA_ARRANGER_SELECTIONS },
   { "MIDI mapping", UA_MIDI_MAPPING },
   { "Port connection", UA_PORT_CONNECTION },
   { "Port", UA_PORT },

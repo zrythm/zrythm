@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/delete_plugins_action.h"
+#include "actions/mixer_selections_action.h"
 #include "actions/undo_manager.h"
 #include "audio/modulator_track.h"
 #include "audio/tracklist.h"
@@ -101,9 +101,9 @@ on_delete_clicked (
   Plugin * modulator = get_modulator (self);
   mixer_selections_add_slot (
     sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR,
-    modulator->id.slot);
+    modulator->id.slot, F_NO_CLONE);
   UndoableAction * ua =
-    delete_plugins_action_new (sel);
+    mixer_selections_action_new_delete (sel);
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 

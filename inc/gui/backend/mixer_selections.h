@@ -79,9 +79,11 @@ static const cyaml_schema_field_t
     MixerSelections, slots,
     num_slots,
     &int_schema, 0, CYAML_UNLIMITED),
-  YAML_FIELD_SEQUENCE_FIXED (
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "plugins", CYAML_FLAG_DEFAULT,
     MixerSelections, plugins,
-    plugin_schema, MIXER_SELECTIONS_MAX_SLOTS),
+    num_slots,
+    &plugin_schema, 0, CYAML_UNLIMITED),
   YAML_FIELD_INT (
     MixerSelections, track_pos),
   YAML_FIELD_INT (
@@ -180,13 +182,17 @@ mixer_selections_contains_plugin (
  *
  * @param track The track.
  * @param slot The slot to add to the selections.
+ * @param clone_pl Whether to clone the plugin
+ *   when storing it in \ref
+ *   MixerSelections.plugins. Used in some actions.
  */
 void
 mixer_selections_add_slot (
   MixerSelections * ms,
   Track *           track,
-  PluginSlotType   type,
-  int               slot);
+  PluginSlotType    type,
+  int               slot,
+  bool              clone_pl);
 
 /**
  * Removes a slot from the selections.

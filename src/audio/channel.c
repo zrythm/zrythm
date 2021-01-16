@@ -1645,7 +1645,8 @@ channel_remove_plugin (
        * already updated to point to the next
        * slot and the plugin is not found there
        * yet */
-      deleting_plugin)
+      deleting_plugin &&
+      !moving_plugin)
     {
       track_verify_identifiers (channel->track);
     }
@@ -1714,7 +1715,15 @@ channel_add_plugin (
     {
       /* confirm if another plugin exists */
       existing_pl = plugins[slot];
-      if (confirm && existing_pl)
+      if (existing_pl)
+        {
+          g_message (
+            "existing plugin exists at %s:%d",
+            track->name, slot);
+        }
+      /* TODO move confirmation to widget */
+#if 0
+      if (confirm && existing_pl && ZRYTHM_HAVE_UI)
         {
           GtkDialog * dialog =
             dialogs_get_overwrite_plugin_dialog (
@@ -1727,6 +1736,7 @@ channel_add_plugin (
           if (result != GTK_RESPONSE_ACCEPT)
             return 0;
         }
+#endif
     }
 
   /* free current plugin */
@@ -1734,7 +1744,7 @@ channel_add_plugin (
     {
       channel_remove_plugin (
         self, slot_type, slot,
-        F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
+        moving_plugin, F_DELETING_PLUGIN,
         F_NOT_DELETING_CHANNEL,
         F_NO_RECALC_GRAPH);
     }

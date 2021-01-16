@@ -269,6 +269,9 @@ _create_action (
   set_selections (self, sel, true, false);
   self->first_run = true;
 
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_ARRANGER_SELECTIONS;
+
   return self;
 }
 
@@ -333,10 +336,12 @@ arranger_selections_action_new_move_or_duplicate (
     _create_action (sel);
   UndoableAction * ua = (UndoableAction *) self;
   if (move)
-    ua->type = UA_MOVE_ARRANGER_SELECTIONS;
+    {
+      self->type = AS_ACTION_MOVE;
+    }
   else
     {
-      ua->type = UA_DUPLICATE_ARRANGER_SELECTIONS;
+      self->type = AS_ACTION_DUPLICATE;
       set_selections (self, sel, true, true);
     }
 
@@ -376,8 +381,7 @@ arranger_selections_action_new_link (
 
   ArrangerSelectionsAction * self =
     _create_action (sel_before);
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_LINK_ARRANGER_SELECTIONS;
+  self->type = AS_ACTION_LINK;
 
   set_selections (
     self, sel_after, F_CLONE, F_IS_AFTER);
@@ -389,6 +393,7 @@ arranger_selections_action_new_link (
   self->delta_tracks = delta_tracks;
   self->delta_lanes = delta_lanes;
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -417,16 +422,16 @@ arranger_selections_action_new_create_or_delete (
 
   ArrangerSelectionsAction * self =
     _create_action (sel);
-  UndoableAction * ua = (UndoableAction *) self;
   if (create)
     {
-      ua->type = UA_CREATE_ARRANGER_SELECTIONS;
+      self->type = AS_ACTION_CREATE;
     }
   else
     {
-      ua->type = UA_DELETE_ARRANGER_SELECTIONS;
+      self->type = AS_ACTION_DELETE;
     }
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -438,14 +443,14 @@ arranger_selections_action_new_record (
 {
   ArrangerSelectionsAction * self =
     _create_action (sel_before);
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_RECORD_ARRANGER_SELECTIONS;
+  self->type = AS_ACTION_RECORD;
 
   set_selections (self, sel_after, 1, 1);
 
   if (!already_recorded)
     self->first_run = 0;
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -468,8 +473,7 @@ arranger_selections_action_new_edit (
 {
   ArrangerSelectionsAction * self =
     _create_action (sel_before);
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_EDIT_ARRANGER_SELECTIONS;
+  self->type = AS_ACTION_EDIT;
 
   self->edit_type = type;
 
@@ -500,6 +504,7 @@ arranger_selections_action_new_edit (
       self->first_run = 0;
     }
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -620,8 +625,7 @@ arranger_selections_action_new_automation_fill (
     calloc (1, sizeof (ArrangerSelectionsAction));
   self->first_run = true;
 
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_AUTOMATION_FILL;
+  self->type = AS_ACTION_AUTOMATION_FILL;
 
   self->region_before =
     (ZRegion *)
@@ -639,6 +643,7 @@ arranger_selections_action_new_automation_fill (
       self->first_run = 0;
     }
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -655,8 +660,7 @@ arranger_selections_action_new_split (
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_SPLIT_ARRANGER_SELECTIONS;
+  self->type = AS_ACTION_SPLIT;
 
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
@@ -665,6 +669,7 @@ arranger_selections_action_new_split (
   self->pos = *pos;
   position_update_ticks_and_frames (&self->pos);
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -678,9 +683,9 @@ arranger_selections_action_new_merge (
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_MERGE_ARRANGER_SELECTIONS;
+  self->type = AS_ACTION_MERGE;
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -699,12 +704,12 @@ arranger_selections_action_new_resize (
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_RESIZE_ARRANGER_SELECTIONS;
+  self->type = AS_ACTION_RESIZE;
 
   self->resize_type = type;
   self->ticks = ticks;
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -721,12 +726,12 @@ arranger_selections_action_new_quantize (
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_QUANTIZE_ARRANGER_SELECTIONS;
+  self->type = AS_ACTION_QUANTIZE;
 
   set_selections (self, sel, 1, 1);
   self->opts = quantize_options_clone (opts);
 
+  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
@@ -2394,113 +2399,123 @@ do_or_undo_quantize (
   return 0;
 }
 
+static int
+do_or_undo (
+  ArrangerSelectionsAction * self,
+  bool                       _do)
+{
+  switch (self->type)
+    {
+    case AS_ACTION_CREATE:
+      return
+        do_or_undo_create_or_delete (
+          self, _do, true);
+      break;
+    case AS_ACTION_DELETE:
+      return
+        do_or_undo_create_or_delete (
+          self, _do, false);
+      break;
+    case AS_ACTION_DUPLICATE:
+      return
+        do_or_undo_duplicate_or_link (
+          self, false, _do);
+    case AS_ACTION_MOVE:
+      return do_or_undo_move (self, _do);
+    case AS_ACTION_LINK:
+      return
+        do_or_undo_duplicate_or_link (
+          self, true, _do);
+    case AS_ACTION_RECORD:
+      return do_or_undo_record (self, _do);
+      break;
+    case AS_ACTION_EDIT:
+      return do_or_undo_edit (self, _do);
+      break;
+    case AS_ACTION_AUTOMATION_FILL:
+      return do_or_undo_automation_fill (
+        self, _do);
+    case AS_ACTION_SPLIT:
+      return do_or_undo_split (self, _do);
+      break;
+    case AS_ACTION_MERGE:
+      return do_or_undo_merge (self, _do);
+      break;
+    case AS_ACTION_RESIZE:
+      return do_or_undo_resize (self, _do);
+      break;
+    case AS_ACTION_QUANTIZE:
+      return do_or_undo_quantize (self, _do);
+      break;
+    default:
+      break;
+    }
+  g_return_val_if_reached (-1);
+}
+
 int
 arranger_selections_action_do (
   ArrangerSelectionsAction * self)
 {
-  UndoableAction * ua =
-    (UndoableAction *) self;
-
-  switch (ua->type)
-    {
-    case UA_CREATE_ARRANGER_SELECTIONS:
-      return do_or_undo_create_or_delete (self, true, true);
-      break;
-    case UA_DELETE_ARRANGER_SELECTIONS:
-      return do_or_undo_create_or_delete (self, true, 0);
-      break;
-    case UA_DUPLICATE_ARRANGER_SELECTIONS:
-      return
-        do_or_undo_duplicate_or_link (
-          self, false, true);
-    case UA_MOVE_ARRANGER_SELECTIONS:
-      return do_or_undo_move (self, true);
-    case UA_LINK_ARRANGER_SELECTIONS:
-      return
-        do_or_undo_duplicate_or_link (
-          self, true, true);
-    case UA_RECORD_ARRANGER_SELECTIONS:
-      return do_or_undo_record (self, true);
-      break;
-    case UA_EDIT_ARRANGER_SELECTIONS:
-      return do_or_undo_edit (self, true);
-      break;
-    case UA_AUTOMATION_FILL:
-      return do_or_undo_automation_fill (
-        self, true);
-    case UA_SPLIT_ARRANGER_SELECTIONS:
-      return do_or_undo_split (self, true);
-      break;
-    case UA_MERGE_ARRANGER_SELECTIONS:
-      return do_or_undo_merge (self, true);
-      break;
-    case UA_RESIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_resize (self, true);
-      break;
-    case UA_QUANTIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_quantize (self, true);
-      break;
-    default:
-      g_return_val_if_reached (-1);
-      break;
-    }
-
-  g_return_val_if_reached (-1);
+  return do_or_undo (self, true);
 }
 
 int
 arranger_selections_action_undo (
   ArrangerSelectionsAction * self)
 {
-  UndoableAction * ua =
-    (UndoableAction *) self;
-
-  switch (ua->type)
-    {
-    case UA_CREATE_ARRANGER_SELECTIONS:
-      return
-        do_or_undo_create_or_delete (self, 0, 1);
-    case UA_DELETE_ARRANGER_SELECTIONS:
-      return
-        do_or_undo_create_or_delete (self, 0, 0);
-    case UA_DUPLICATE_ARRANGER_SELECTIONS:
-      return
-        do_or_undo_duplicate_or_link (
-          self, false, false);
-    case UA_RECORD_ARRANGER_SELECTIONS:
-      return do_or_undo_record (self, false);
-    case UA_MOVE_ARRANGER_SELECTIONS:
-      return do_or_undo_move (self, false);
-    case UA_LINK_ARRANGER_SELECTIONS:
-      return
-        do_or_undo_duplicate_or_link (
-          self, true, false);
-    case UA_EDIT_ARRANGER_SELECTIONS:
-      return do_or_undo_edit (self, false);
-    case UA_AUTOMATION_FILL:
-      return do_or_undo_automation_fill (
-        self, false);
-    case UA_SPLIT_ARRANGER_SELECTIONS:
-      return do_or_undo_split (self, false);
-    case UA_MERGE_ARRANGER_SELECTIONS:
-      return do_or_undo_merge (self, false);
-    case UA_RESIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_resize (self, false);
-    case UA_QUANTIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_quantize (self, false);
-    default:
-      g_return_val_if_reached (-1);
-      break;
-    }
-
-  g_return_val_if_reached (-1);
+  return do_or_undo (self, false);
 }
 
 char *
 arranger_selections_action_stringize (
   ArrangerSelectionsAction * self)
 {
-  return g_strdup (_("Edit arranger object(s)"));
+  switch (self->type)
+    {
+    case AS_ACTION_CREATE:
+      return
+        g_strdup (_("Create arranger selections"));
+    case AS_ACTION_DELETE:
+      return
+        g_strdup (_("Delete arranger selections"));
+    case AS_ACTION_DUPLICATE:
+      return
+        g_strdup (
+          _("Duplicate arranger selections"));
+    case AS_ACTION_MOVE:
+      return
+        g_strdup (_("Move arranger selections"));
+    case AS_ACTION_LINK:
+      return
+        g_strdup (_("Link arranger selections"));
+    case AS_ACTION_RECORD:
+      return
+        g_strdup (_("Record arranger selections"));
+    case AS_ACTION_EDIT:
+      return
+        g_strdup (_("Edit arranger selections"));
+    case AS_ACTION_AUTOMATION_FILL:
+      return
+        g_strdup (_("Automation fill"));
+    case AS_ACTION_SPLIT:
+      return
+        g_strdup (_("Split arranger selections"));
+    case AS_ACTION_MERGE:
+      return
+        g_strdup (_("Merge arranger selections"));
+    case AS_ACTION_RESIZE:
+      return
+        g_strdup (_("Resize arranger selections"));
+    case AS_ACTION_QUANTIZE:
+      return
+        g_strdup (
+          _("Quantize arranger selections"));
+    default:
+      break;
+    }
+
+  g_return_val_if_reached (g_strdup (""));
 }
 
 void

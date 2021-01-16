@@ -28,16 +28,12 @@
 
 #include "actions/arranger_selections.h"
 #include "actions/channel_send_action.h"
-#include "actions/copy_plugins_action.h"
 #include "actions/copy_tracks_action.h"
-#include "actions/create_plugins_action.h"
 #include "actions/create_tracks_action.h"
-#include "actions/delete_plugins_action.h"
 #include "actions/delete_tracks_action.h"
-#include "actions/edit_plugins_action.h"
 #include "actions/edit_tracks_action.h"
 #include "actions/midi_mapping_action.h"
-#include "actions/move_plugins_action.h"
+#include "actions/mixer_selections_action.h"
 #include "actions/move_tracks_action.h"
 #include "actions/port_action.h"
 #include "actions/port_connection_action.h"
@@ -71,25 +67,17 @@ typedef struct UndoStack
   size_t        num_as_actions;
   size_t        as_actions_size;
 
-  CopyPluginsAction ** copy_plugins_actions;
-  size_t        num_copy_plugins_actions;
-  size_t        copy_plugins_actions_size;
+  MixerSelectionsAction ** mixer_selections_actions;
+  size_t        num_mixer_selections_actions;
+  size_t        mixer_selections_actions_size;
 
   CopyTracksAction ** copy_tracks_actions;
   size_t        num_copy_tracks_actions;
   size_t        copy_tracks_actions_size;
 
-  CreatePluginsAction ** create_plugins_actions;
-  size_t        num_create_plugins_actions;
-  size_t        create_plugins_actions_size;
-
   CreateTracksAction ** create_tracks_actions;
   size_t        num_create_tracks_actions;
   size_t        create_tracks_actions_size;
-
-  DeletePluginsAction ** delete_plugins_actions;
-  size_t        num_delete_plugins_actions;
-  size_t        delete_plugins_actions_size;
 
   DeleteTracksAction ** delete_tracks_actions;
   size_t        num_delete_tracks_actions;
@@ -99,17 +87,9 @@ typedef struct UndoStack
   size_t        num_channel_send_actions;
   size_t        channel_send_actions_size;
 
-  EditPluginsAction ** edit_plugins_actions;
-  size_t        num_edit_plugins_actions;
-  size_t        edit_plugins_actions_size;
-
   EditTracksAction ** edit_tracks_actions;
   size_t        num_edit_tracks_actions;
   size_t        edit_tracks_actions_size;
-
-  MovePluginsAction ** move_plugins_actions;
-  size_t        num_move_plugins_actions;
-  size_t        move_plugins_actions_size;
 
   MoveTracksAction ** move_tracks_actions;
   size_t        num_move_tracks_actions;
@@ -144,20 +124,14 @@ static const cyaml_schema_field_t
     UndoStack, as_actions,
     arranger_selections_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, copy_plugins_actions,
-    copy_plugins_action_schema),
+    UndoStack, mixer_selections_actions,
+    mixer_selections_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, copy_tracks_actions,
     copy_tracks_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, create_plugins_actions,
-    create_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, create_tracks_actions,
     create_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, delete_plugins_actions,
-    delete_plugins_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, delete_tracks_actions,
     delete_tracks_action_schema),
@@ -165,14 +139,8 @@ static const cyaml_schema_field_t
     UndoStack, channel_send_actions,
     channel_send_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, edit_plugins_actions,
-    edit_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, edit_tracks_actions,
     edit_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, move_plugins_actions,
-    move_plugins_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, move_tracks_actions,
     move_tracks_action_schema),

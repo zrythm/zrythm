@@ -92,9 +92,9 @@ _test_port_connection (
           TRACKLIST->num_tracks, NULL, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
       ua =
-        create_plugins_action_new (
-          descr, PLUGIN_SLOT_INSERT,
-          TRACKLIST->num_tracks - 1, 0, 1);
+        mixer_selections_action_new_create (
+          PLUGIN_SLOT_INSERT,
+          TRACKLIST->num_tracks - 1, 0, descr, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
 

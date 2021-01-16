@@ -257,7 +257,7 @@ create_tracks_action_new (
   if (pl_descr)
     {
       plugin_descriptor_copy (
-        pl_descr, &self->pl_descr);
+        &self->pl_descr, pl_descr);
     }
   else if (file)
     {

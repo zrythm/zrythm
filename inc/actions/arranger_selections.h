@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,6 +51,39 @@ typedef struct QuantizeOptions QuantizeOptions;
  *
  * @{
  */
+
+typedef enum ArrangerSelectionsActionType
+{
+  AS_ACTION_AUTOMATION_FILL,
+  AS_ACTION_CREATE,
+  AS_ACTION_DELETE,
+  AS_ACTION_DUPLICATE,
+  AS_ACTION_EDIT,
+  AS_ACTION_LINK,
+  AS_ACTION_MERGE,
+  AS_ACTION_MOVE,
+  AS_ACTION_QUANTIZE,
+  AS_ACTION_RECORD,
+  AS_ACTION_RESIZE,
+  AS_ACTION_SPLIT,
+} ArrangerSelectionsActionType;
+
+static const cyaml_strval_t
+arranger_selections_action_type_strings[] =
+{
+  { "Automation fill", AS_ACTION_AUTOMATION_FILL },
+  { "Create",          AS_ACTION_CREATE },
+  { "Delete",          AS_ACTION_DELETE },
+  { "Duplicate",       AS_ACTION_DUPLICATE },
+  { "Edit",            AS_ACTION_EDIT },
+  { "Link",            AS_ACTION_LINK },
+  { "Merge",           AS_ACTION_MERGE },
+  { "Move",            AS_ACTION_MOVE },
+  { "Quantize",        AS_ACTION_QUANTIZE },
+  { "Record",          AS_ACTION_RECORD },
+  { "Resize",          AS_ACTION_RESIZE },
+  { "Split",           AS_ACTION_SPLIT },
+};
 
 /**
  * Type used when the action is a RESIZE action.
@@ -160,9 +193,11 @@ typedef struct ArrangerSelectionsAction
 {
   UndoableAction       parent_instance;
 
-  /**
-   * A clone of the ArrangerSelections.
-   */
+  /** Action type. */
+  ArrangerSelectionsActionType type;
+
+  /** A clone of the ArrangerSelections before the
+   * change. */
   ArrangerSelections * sel;
 
   /**
@@ -256,23 +291,17 @@ typedef struct ArrangerSelectionsAction
   ZRegion *            region_before;
   ZRegion *            region_after;
 
-  /* single objects */
-#if 0
-  ZRegion *            region;
-  MidiNote *           midi_note;
-  ScaleObject *        scale;
-  Marker *             marker;
-#endif
-
 } ArrangerSelectionsAction;
 
 static const cyaml_schema_field_t
   arranger_selections_action_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "parent_instance", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerSelectionsAction, parent_instance,
     undoable_action_fields_schema),
+  YAML_FIELD_ENUM (
+    ArrangerSelectionsAction, type,
+    arranger_selections_action_type_strings),
   YAML_FIELD_ENUM (
     ArrangerSelectionsAction, edit_type,
     arranger_selections_action_edit_type_strings),
@@ -362,27 +391,6 @@ static const cyaml_schema_field_t
     ArrangerSelectionsAction, mn_r2,
     num_split_objs,
     &midi_note_schema, 0, CYAML_UNLIMITED),
-#if 0
-  CYAML_FIELD_MAPPING_PTR (
-    "region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ArrangerSelectionsAction, region,
-    region_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_note",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ArrangerSelectionsAction, midi_note,
-    midi_note_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "scale",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ArrangerSelectionsAction, scale,
-    scale_object_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "marker",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ArrangerSelectionsAction, marker,
-    marker_fields_schema),
-#endif
 
   CYAML_FIELD_END
 };

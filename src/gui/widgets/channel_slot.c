@@ -17,10 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/copy_plugins_action.h"
-#include "actions/create_plugins_action.h"
-#include "actions/delete_plugins_action.h"
-#include "actions/move_plugins_action.h"
+#include "actions/mixer_selections_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/channel.h"
@@ -277,19 +274,19 @@ on_drag_data_received (
               if (action == GDK_ACTION_COPY)
                 {
                   ua =
-                    copy_plugins_action_new (
+                    mixer_selections_action_new_copy (
                       MIXER_SELECTIONS,
                       self->type,
-                      self->track,
+                      self->track->pos,
                       self->slot_index);
                 }
               else if (action == GDK_ACTION_MOVE)
                 {
                   ua =
-                    move_plugins_action_new (
+                    mixer_selections_action_new_move (
                       MIXER_SELECTIONS,
                       self->type,
-                      self->track,
+                      self->track->pos,
                       self->slot_index);
                 }
               g_warn_if_fail (ua);
@@ -319,10 +316,9 @@ on_drag_data_received (
             self->track->type))
         {
           UndoableAction * ua =
-            create_plugins_action_new (
-              descr, self->type,
-              self->track->pos,
-              self->slot_index, 1);
+            mixer_selections_action_new_create (
+              self->type, self->track->pos,
+              self->slot_index, descr, 1);
 
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -385,7 +381,7 @@ select_no_ctrl_pl_no_ch (
 
   mixer_selections_add_slot (
     MIXER_SELECTIONS, self->track, self->type,
-    self->slot_index);
+    self->slot_index, F_NO_CLONE);
 }
 
 /**
@@ -408,7 +404,7 @@ select_no_ctrl_pl_ch (
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS, self->track, self->type,
-        self->slot_index);
+        self->slot_index, F_NO_CLONE);
     }
 }
 
@@ -449,7 +445,7 @@ select_ctrl_pl_no_ch (
     F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
     MIXER_SELECTIONS, self->track, self->type,
-    self->slot_index);
+    self->slot_index, F_NO_CLONE);
 }
 
 /**
@@ -477,7 +473,7 @@ select_ctrl_pl_ch (
       mixer_selections_add_slot (
         MIXER_SELECTIONS, self->track,
         self->type,
-        self->slot_index);
+        self->slot_index, F_NO_CLONE);
     }
 }
 
@@ -620,7 +616,8 @@ on_plugin_delete (
   ChannelSlotWidget * self)
 {
   UndoableAction * ua =
-    delete_plugins_action_new (MIXER_SELECTIONS);
+    mixer_selections_action_new_delete (
+      MIXER_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
   EVENTS_PUSH (ET_PLUGINS_REMOVED, self->track);
 }

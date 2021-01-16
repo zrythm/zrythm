@@ -20,6 +20,7 @@
 #include "zrythm-test-config.h"
 
 #include "actions/delete_tracks_action.h"
+#include "actions/mixer_selections_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/audio_region.h"
@@ -675,8 +676,8 @@ test_ins_track_deletion_w_automation (void)
     test_plugin_manager_get_plugin_descriptor (
       TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
   UndoableAction * ua =
-    create_plugins_action_new (
-      descr, PLUGIN_SLOT_INSERT, track->pos, 0, 1);
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_INSERT, track->pos, 0, descr, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   engine_activate (AUDIO_ENGINE, true);

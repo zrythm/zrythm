@@ -1145,6 +1145,38 @@ track_freeze (
   bool    freeze);
 
 /**
+ * Wrapper over channel_add_plugin() and
+ * modulator_track_insert_modulator().
+ */
+void
+track_insert_plugin (
+  Track *        self,
+  Plugin *       pl,
+  PluginSlotType slot_type,
+  int            slot,
+  bool           replacing_plugin,
+  bool           moving_plugin,
+  bool           confirm,
+  bool           gen_automatables,
+  bool           recalc_graph,
+  bool           fire_events);
+
+/**
+ * Wrapper over channel_remove_plugin() and
+ * modulator_track_remove_modulator().
+ */
+void
+track_remove_plugin (
+  Track *        self,
+  PluginSlotType slot_type,
+  int            slot,
+  bool           replacing_plugin,
+  bool           moving_plugin,
+  bool           deleting_plugin,
+  bool           deleting_track,
+  bool           recalc_graph);
+
+/**
  * Disconnects the track from the processing
  * chain.
  *

@@ -292,20 +292,29 @@ automation_track_find_from_port (
                   if (!plugin_identifier_is_equal (
                         &dest->plugin_id,
                         &src->plugin_id))
-                    continue;
+                    {
+                      continue;
+                    }
 
                   Plugin * pl =
                     port_get_plugin (port, true);
                   g_warn_if_fail (pl);
 
-                  /* if lv2, make sure the symbol
-                   * matches (some plugins have
-                   * multiple ports with the same
-                   * label but different symbol) */
                   if (pl->descr->protocol ==
                         PROT_LV2)
                     {
-                      if (!string_is_equal (
+                      /* if lv2 plugin port (not
+                       * standard zrythm-provided
+                       * port), make sure the symbol
+                       * matches (some plugins have
+                       * multiple ports with the same
+                       * label but different
+                       * symbol) */
+                      if (src->flags ^
+                            PORT_FLAG_PLUGIN_ENABLED &&
+                          src->flags ^
+                            PORT_FLAG_PLUGIN_GAIN &&
+                          !string_is_equal (
                             dest->sym, src->sym))
                         {
                           continue;

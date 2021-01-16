@@ -252,6 +252,8 @@
     camelcase * x) \
   { \
     cyaml_err_t err; \
+    cyaml_config_t cyaml_config; \
+    yaml_get_cyaml_config (&cyaml_config); \
  \
     char * output; \
     size_t output_len; \
@@ -288,6 +290,8 @@
   lowercase##_deserialize (const char * e) \
   { \
     camelcase * self; \
+    cyaml_config_t cyaml_config; \
+    yaml_get_cyaml_config (&cyaml_config); \
  \
     cyaml_err_t err = \
       cyaml_load_data ((const unsigned char *) e, \
@@ -330,15 +334,9 @@ void yaml_cyaml_log_func (
   const char * format,
   va_list      args);
 
-static const cyaml_config_t cyaml_config = {
-  /** log level: DEBUG, WARNING, INFO... */
-  .log_level = CYAML_LOG_WARNING,
-  /* use the default loggin function */
-  //.log_fn = cyaml_log,
-  .log_fn = yaml_cyaml_log_func,
-  /* use the default memory allocator */
-  .mem_fn = cyaml_mem,
-};
+void
+yaml_get_cyaml_config (
+  cyaml_config_t * cyaml_config);
 
 static const cyaml_schema_value_t
 int_schema = {

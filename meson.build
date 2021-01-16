@@ -1112,7 +1112,6 @@ endif
 
 tests_summary = {
   'Build tests': get_option('tests'),
-  'Plugin tests': get_option('plugin_tests'),
   'GUI tests': get_option('gui_tests'),
   'Coverage reports': get_option('b_coverage'),
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -54,16 +54,12 @@ undo_stack_init_loaded (
     }
 
   size_t as_actions_idx = 0;
-  size_t copy_plugins_actions_idx = 0;
+  size_t mixer_selections_actions_idx = 0;
   size_t copy_tracks_actions_idx = 0;
-  size_t create_plugins_actions_idx = 0;
   size_t create_tracks_actions_idx = 0;
-  size_t delete_plugins_actions_idx = 0;
   size_t delete_tracks_actions_idx = 0;
   size_t channel_send_actions_idx = 0;
-  size_t edit_plugins_actions_idx = 0;
   size_t edit_tracks_actions_idx = 0;
-  size_t move_plugins_actions_idx = 0;
   size_t move_tracks_actions_idx = 0;
   size_t port_actions_idx = 0;
   size_t port_connection_actions_idx = 0;
@@ -73,16 +69,12 @@ undo_stack_init_loaded (
 
   size_t total_actions =
     self->num_as_actions +
-    self->num_copy_plugins_actions +
+    self->num_mixer_selections_actions +
     self->num_copy_tracks_actions +
-    self->num_create_plugins_actions +
     self->num_create_tracks_actions +
-    self->num_delete_plugins_actions +
     self->num_delete_tracks_actions +
     self->num_channel_send_actions +
-    self->num_edit_plugins_actions +
     self->num_edit_tracks_actions +
-    self->num_move_plugins_actions +
     self->num_move_tracks_actions +
     self->num_midi_mapping_actions +
     self->num_port_actions +
@@ -94,16 +86,12 @@ undo_stack_init_loaded (
   while (i < total_actions)
     {
       DO_SIMPLE (ArrangerSelections, as)
-      DO_SIMPLE (CopyPlugins, copy_plugins)
       DO_SIMPLE (CopyTracks, copy_tracks)
-      DO_SIMPLE (CreatePlugins, create_plugins)
       DO_SIMPLE (CreateTracks, create_tracks)
-      DO_SIMPLE (DeletePlugins, delete_plugins)
       DO_SIMPLE (DeleteTracks, delete_tracks)
       DO_SIMPLE (ChannelSend, channel_send)
-      DO_SIMPLE (EditPlugins, edit_plugins)
       DO_SIMPLE (EditTracks, edit_tracks)
-      DO_SIMPLE (MovePlugins, move_plugins)
+      DO_SIMPLE (MixerSelections, mixer_selections)
       DO_SIMPLE (MoveTracks, move_tracks)
       DO_SIMPLE (PortConnection, port_connection)
       DO_SIMPLE (Port, port)
@@ -199,15 +187,8 @@ undo_stack_push (
     APPEND_ELEMENT (
       CHANNEL_SEND, ChannelSend, channel_send);
     APPEND_ELEMENT (
-      CREATE_PLUGINS, CreatePlugins, create_plugins);
-    APPEND_ELEMENT (
-      MOVE_PLUGINS, MovePlugins, move_plugins);
-    APPEND_ELEMENT (
-      EDIT_PLUGINS, EditPlugins, edit_plugins);
-    APPEND_ELEMENT (
-      COPY_PLUGINS, CopyPlugins, copy_plugins);
-    APPEND_ELEMENT (
-      DELETE_PLUGINS, DeletePlugins, delete_plugins);
+      MIXER_SELECTIONS, MixerSelections,
+      mixer_selections);
     APPEND_ELEMENT (
       PORT_CONNECTION, PortConnection,
       port_connection);
@@ -219,18 +200,7 @@ undo_stack_push (
       RANGE, Range, range);
     APPEND_ELEMENT (
       TRANSPORT, Transport, transport);
-    case UA_CREATE_ARRANGER_SELECTIONS:
-    case UA_MOVE_ARRANGER_SELECTIONS:
-    case UA_LINK_ARRANGER_SELECTIONS:
-    case UA_RECORD_ARRANGER_SELECTIONS:
-    case UA_RESIZE_ARRANGER_SELECTIONS:
-    case UA_SPLIT_ARRANGER_SELECTIONS:
-    case UA_MERGE_ARRANGER_SELECTIONS:
-    case UA_EDIT_ARRANGER_SELECTIONS:
-    case UA_DUPLICATE_ARRANGER_SELECTIONS:
-    case UA_DELETE_ARRANGER_SELECTIONS:
-    case UA_QUANTIZE_ARRANGER_SELECTIONS:
-    case UA_AUTOMATION_FILL:
+    case UA_ARRANGER_SELECTIONS:
       array_double_size_if_full (
         self->as_actions,
         self->num_as_actions,
@@ -275,15 +245,8 @@ remove_action (
     REMOVE_ELEMENT (
       CHANNEL_SEND, ChannelSend, channel_send);
     REMOVE_ELEMENT (
-      CREATE_PLUGINS, CreatePlugins, create_plugins);
-    REMOVE_ELEMENT (
-      MOVE_PLUGINS, MovePlugins, move_plugins);
-    REMOVE_ELEMENT (
-      EDIT_PLUGINS, EditPlugins, edit_plugins);
-    REMOVE_ELEMENT (
-      COPY_PLUGINS, CopyPlugins, copy_plugins);
-    REMOVE_ELEMENT (
-      DELETE_PLUGINS, DeletePlugins, delete_plugins);
+      MIXER_SELECTIONS, MixerSelections,
+      mixer_selections);
     REMOVE_ELEMENT (
       PORT_CONNECTION, PortConnection,
       port_connection);
@@ -295,18 +258,7 @@ remove_action (
       RANGE, Range, range);
     REMOVE_ELEMENT (
       TRANSPORT, Transport, transport);
-    case UA_CREATE_ARRANGER_SELECTIONS:
-    case UA_MOVE_ARRANGER_SELECTIONS:
-    case UA_LINK_ARRANGER_SELECTIONS:
-    case UA_RECORD_ARRANGER_SELECTIONS:
-    case UA_RESIZE_ARRANGER_SELECTIONS:
-    case UA_SPLIT_ARRANGER_SELECTIONS:
-    case UA_MERGE_ARRANGER_SELECTIONS:
-    case UA_EDIT_ARRANGER_SELECTIONS:
-    case UA_DUPLICATE_ARRANGER_SELECTIONS:
-    case UA_DELETE_ARRANGER_SELECTIONS:
-    case UA_QUANTIZE_ARRANGER_SELECTIONS:
-    case UA_AUTOMATION_FILL:
+    case UA_ARRANGER_SELECTIONS:
       array_delete (
         self->as_actions,
         self->num_as_actions,

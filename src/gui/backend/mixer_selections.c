@@ -201,13 +201,17 @@ mixer_selections_get_track (
  *
  * @param track The track.
  * @param slot The slot to add to the selections.
+ * @param clone_pl Whether to clone the plugin
+ *   when storing it in \ref
+ *   MixerSelections.plugins. Used in some actions.
  */
 void
 mixer_selections_add_slot (
   MixerSelections * ms,
   Track *           track,
   PluginSlotType    type,
-  int               slot)
+  int               slot,
+  bool              clone_pl)
 {
   if (!ms->has_any ||
       track->pos != ms->track_pos ||
@@ -216,7 +220,6 @@ mixer_selections_add_slot (
       mixer_selections_clear (
         ms, F_NO_PUBLISH_EVENTS);
     }
-  g_message ("added slot");
   ms->track_pos = track->pos;
   ms->type = type;
   ms->has_any = true;
@@ -242,7 +245,9 @@ mixer_selections_add_slot (
         }
       array_double_append (
         ms->slots, ms->plugins, ms->num_slots,
-        slot, pl);
+        slot,
+        clone_pl ?
+          plugin_clone (pl, F_PROJECT) : pl);
     }
 
   if (pl && pl->is_project)
@@ -430,29 +435,21 @@ mixer_selections_clone (
   for (i = 0; i < src->num_slots; i++)
     {
       Plugin * pl = NULL;
-      switch (src->type)
+      if (src_is_project)
         {
-        case PLUGIN_SLOT_MIDI_FX:
           pl =
-            TRACKLIST->tracks[src->track_pos]->
-              channel->midi_fx[src->slots[i]];
-          break;
-        case PLUGIN_SLOT_INSERT:
-          pl =
-            TRACKLIST->tracks[src->track_pos]->
-              channel->inserts[src->slots[i]];
-          break;
-        case PLUGIN_SLOT_MODULATOR:
-          pl =
-            TRACKLIST->tracks[src->track_pos]->
-              modulators[src->slots[i]];
-          break;
-        default:
-          break;
+            track_get_plugin_at_slot (
+              TRACKLIST->tracks[src->track_pos],
+              src->type, src->slots[i]);
+          g_return_val_if_fail (
+            IS_PLUGIN (pl), NULL);
         }
-      g_return_val_if_fail (pl, NULL);
+      else
+        {
+          ms->plugins[i] = src->plugins[i];
+        }
       ms->plugins[i] =
-        plugin_clone (pl, src_is_project);
+        plugin_clone (pl, true);
       ms->slots[i] = src->slots[i];
     }
 

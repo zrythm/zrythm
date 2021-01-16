@@ -486,6 +486,11 @@ create_plugin (
   carla_set_engine_callback (
     self->host_handle, engine_callback, self);
 
+  if (ZRYTHM_TESTING)
+    {
+      return self;
+    }
+
   /* cache the new bridge mode if it changed */
   const PluginDescriptor * known_descr =
     cached_plugin_descriptors_find (

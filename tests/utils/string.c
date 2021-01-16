@@ -77,6 +77,23 @@ test_contains_substr ()
       strs[1], "abd"));
 }
 
+static void
+test_is_equal ()
+{
+  g_assert_true (
+    string_is_equal ("", ""));
+  g_assert_true (
+    string_is_equal (NULL, NULL));
+  g_assert_true (
+    string_is_equal ("abc", "abc"));
+  g_assert_false (
+    string_is_equal ("abc", "aabc"));
+  g_assert_false (
+    string_is_equal ("", "aabc"));
+  g_assert_false (
+    string_is_equal (NULL, ""));
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -90,6 +107,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test contains substr",
     (GTestFunc) test_contains_substr);
+  g_test_add_func (
+    TEST_PREFIX "test is equal",
+    (GTestFunc) test_is_equal);
 
   return g_test_run ();
 }

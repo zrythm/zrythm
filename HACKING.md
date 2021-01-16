@@ -257,6 +257,9 @@ error Invalid value
 ```
 Problem: region name was NULL.
 
+Can get more info by setting the cyaml log level
+in `yaml_get_cyaml_config()`.
+
 ----
 
 Copyright (C) 2018-2020 Alexandros Theodotou

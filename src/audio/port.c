@@ -198,8 +198,7 @@ port_find_from_identifier (
         }
       break;
     case PORT_OWNER_TYPE_PLUGIN:
-      tr =
-        TRACKLIST->tracks[id->track_pos];
+      tr = TRACKLIST->tracks[id->track_pos];
       g_warn_if_fail (IS_TRACK (tr));
       switch (id->plugin_id.slot_type)
         {

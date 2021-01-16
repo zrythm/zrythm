@@ -116,6 +116,17 @@ plugin_identifier_copy (
   dest->slot = src->slot;
 }
 
+static inline void
+plugin_identifier_print (
+  PluginIdentifier * self,
+  char *             str)
+{
+  sprintf (
+    str,
+    "slot_type: %d, track_pos: %d, slot: %d",
+    self->slot_type, self->track_pos, self->slot);
+}
+
 /**
  * @}
  */

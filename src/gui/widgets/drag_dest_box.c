@@ -20,10 +20,9 @@
 /** \file
  */
 
-#include "actions/copy_plugins_action.h"
 #include "actions/copy_tracks_action.h"
 #include "actions/create_tracks_action.h"
-#include "actions/move_plugins_action.h"
+#include "actions/mixer_selections_action.h"
 #include "actions/move_tracks_action.h"
 #include "audio/channel.h"
 #include "audio/modulator_track.h"
@@ -239,10 +238,11 @@ on_drag_data_received (
       else
         {
           UndoableAction * ua =
-            create_plugins_action_new (
-              pd, PLUGIN_SLOT_MODULATOR,
+            mixer_selections_action_new_create (
+              PLUGIN_SLOT_MODULATOR,
               P_MODULATOR_TRACK->pos,
-              P_MODULATOR_TRACK->num_modulators, 1);
+              P_MODULATOR_TRACK->num_modulators,
+              pd, 1);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
@@ -269,18 +269,16 @@ on_drag_data_received (
       if (action == GDK_ACTION_COPY)
         {
           ua =
-            copy_plugins_action_new (
-              MIXER_SELECTIONS,
-              PLUGIN_SLOT_INSERT,
-              NULL, 0);
+            mixer_selections_action_new_copy (
+              MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+              -1, 0);
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ua =
-            move_plugins_action_new (
-              MIXER_SELECTIONS,
-              PLUGIN_SLOT_INSERT,
-              NULL, 0);
+            mixer_selections_action_new_move (
+              MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+              -1, 0);
         }
       g_warn_if_fail (ua);
 

@@ -69,9 +69,11 @@
 
 /**
  * Gets directory part of filename. MUST be freed.
+ *
+ * @param filename Filename containing directory.
  */
 char *
-io_get_dir (const char * filename) ///< filename containing directory
+io_get_dir (const char * filename)
 {
   return g_path_get_dirname (filename);
 }
@@ -82,6 +84,7 @@ io_get_dir (const char * filename) ///< filename containing directory
 void
 io_mkdir (const char * dir)
 {
+  g_message ("Creating directory: %s", dir);
   struct stat st = {0};
   if (stat(dir, &st) == -1)
     {

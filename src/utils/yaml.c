@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm.org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,19 @@
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
+
+void
+yaml_get_cyaml_config (
+  cyaml_config_t * config)
+{
+  /** log level: DEBUG, WARNING, INFO... */
+  config->log_level = CYAML_LOG_WARNING;
+  /* use the default loggin function */
+  //.log_fn = cyaml_log,
+  config->log_fn = yaml_cyaml_log_func;
+  /* use the default memory allocator */
+  config->mem_fn = cyaml_mem;
+}
 
 /**
  * Custom logging function for libcyaml.

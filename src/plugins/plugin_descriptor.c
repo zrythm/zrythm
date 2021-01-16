@@ -51,8 +51,8 @@ plugin_protocol_to_str (
  */
 void
 plugin_descriptor_copy (
-  const PluginDescriptor * src,
-  PluginDescriptor * dest)
+  PluginDescriptor *       dest,
+  const PluginDescriptor * src)
 {
   dest->author = g_strdup (src->author);
   dest->name = g_strdup (src->name);
@@ -86,7 +86,7 @@ plugin_descriptor_clone (
   PluginDescriptor * self =
     calloc (1, sizeof (PluginDescriptor));
 
-  plugin_descriptor_copy (src, self);
+  plugin_descriptor_copy (self, src);
 
   return self;
 }

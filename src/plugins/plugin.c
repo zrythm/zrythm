@@ -680,22 +680,11 @@ plugin_move (
   g_return_if_fail (pl && track);
 
   /* confirm if another plugin exists */
-  Plugin * existing_pl = NULL;
-  switch (slot_type)
-    {
-    case PLUGIN_SLOT_MIDI_FX:
-      existing_pl = track->channel->midi_fx[slot];
-      break;
-    case PLUGIN_SLOT_INSTRUMENT:
-      existing_pl = track->channel->instrument;
-      break;
-    case PLUGIN_SLOT_INSERT:
-      existing_pl = track->channel->inserts[slot];
-      break;
-    case PLUGIN_SLOT_MODULATOR:
-      existing_pl = track->modulators[slot];
-      break;
-    }
+  Plugin * existing_pl =
+    track_get_plugin_at_slot (
+      track, slot_type, slot);
+  /* TODO move confirmation to widget */
+#if 0
   if (existing_pl && ZRYTHM_HAVE_UI)
     {
       GtkDialog * dialog =
@@ -711,6 +700,7 @@ plugin_move (
           return;
         }
     }
+#endif
 
   int prev_slot = pl->id.slot;
   PluginSlotType prev_slot_type =
@@ -718,7 +708,17 @@ plugin_move (
   Track * prev_track = plugin_get_track (pl);
   Channel * prev_ch = plugin_get_channel (pl);
 
-  /* move plugin's automation from src to dest */
+  /* if existing plugin exists, delete it */
+  if (existing_pl)
+    {
+      channel_remove_plugin (
+        track->channel, slot_type, slot,
+        F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
+        F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
+    }
+
+  /* move plugin's automation from src to
+   * dest */
   plugin_move_automation (
     pl, prev_track, track, slot_type, slot);
 
@@ -730,7 +730,8 @@ plugin_move (
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    track->channel, slot_type, slot, pl, 0,
+    track->channel, slot_type, slot, pl,
+    F_NO_CONFIRM,
     F_MOVING_PLUGIN, F_NO_GEN_AUTOMATABLES,
     F_RECALC_GRAPH, F_PUBLISH_EVENTS);
 
@@ -1100,8 +1101,7 @@ plugin_move_automation (
   for (int i = prev_atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = prev_atl->ats[i];
-      Port * port =
-        automation_track_get_port (at);
+      Port * port = automation_track_get_port (at);
       g_return_if_fail (IS_PORT (port));
       if (!port)
         continue;
@@ -1115,6 +1115,8 @@ plugin_move_automation (
         }
       else
         continue;
+
+      g_return_if_fail (port->at == at);
 
       /* delete from prev channel */
       int num_regions_before = at->num_regions;
@@ -1134,6 +1136,10 @@ plugin_move_automation (
       at->port_id.plugin_id.slot_type =
         new_slot_type;
       at->port_id.plugin_id.track_pos = track->pos;
+
+      g_warn_if_fail (
+        at->port_id.port_index ==
+        port->id.port_index);
     }
 }
 
@@ -1624,7 +1630,7 @@ plugin_select (
     {
       mixer_selections_add_slot (
         MIXER_SELECTIONS, track, pl->id.slot_type,
-        pl->id.slot);
+        pl->id.slot, F_NO_CLONE);
     }
   else
     {
@@ -1842,7 +1848,9 @@ plugin_clone (
            * instantiate it */
           if (!pl->instantiated)
             {
-              g_message ("source plugin not instantiated, instantiating it...");
+              g_message (
+                "source plugin not instantiated, "
+                "instantiating it...");
               int ret =
                 plugin_instantiate (
                   pl, src_is_project, NULL);

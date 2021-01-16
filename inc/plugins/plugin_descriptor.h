@@ -343,8 +343,8 @@ plugin_protocol_to_str (
  */
 void
 plugin_descriptor_copy (
-  const PluginDescriptor * src,
-  PluginDescriptor * dest);
+  PluginDescriptor *       dest,
+  const PluginDescriptor * src);
 
 /**
  * Clones the plugin descriptor.

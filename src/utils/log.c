@@ -36,6 +36,9 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/* for dprintf */
+#define _GNU_SOURCE
+
 #include "zrythm-config.h"
 
 #include <stdio.h>
@@ -620,6 +623,8 @@ write_str (
     }
   else if (self->logfd > -1)
     {
+      dprintf (
+        self->logfd, "%s\n", str);
 #ifdef _WOE32
       FlushFileBuffers (
         (HANDLE) self->logfd);
