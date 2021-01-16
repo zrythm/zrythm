@@ -44,6 +44,7 @@ sources:
   - https://github.com/mesonbuild/meson
 tasks:
   - setup: |
+      sudo pkg install -y py37-pip
       cd zrythm
       CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ../meson/meson.py build -Dtests=true -Dmanpage=true
   - build: |
