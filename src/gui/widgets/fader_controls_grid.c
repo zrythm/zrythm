@@ -48,6 +48,9 @@ update_meter_reading (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
+  g_return_val_if_fail (
+    GTK_IS_WIDGET (widget), G_SOURCE_REMOVE);
+
   if (!MAIN_WINDOW ||
       !gtk_widget_get_mapped (
         GTK_WIDGET (widget)) ||
@@ -63,6 +66,7 @@ update_meter_reading (
 
   double prev = widget->meter_reading_val;
   Track * track = widget->track;
+  g_warn_if_fail (IS_TRACK (track));
   Channel * channel =
     track_get_channel (widget->track);
   g_warn_if_fail (channel);

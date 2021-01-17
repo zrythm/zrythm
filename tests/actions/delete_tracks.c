@@ -804,6 +804,43 @@ test_ins_track_deletion_w_automation (void)
 #endif
 }
 
+static void
+test_no_visible_tracks_after_track_deletion (void)
+{
+  test_helper_zrythm_init ();
+
+  /* hide all tracks */
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      track->visible = false;
+    }
+
+  UndoableAction * ua =
+    create_tracks_action_new_audio_fx (
+      NULL, TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* assert a track is selected */
+  g_assert_cmpint (
+    TRACKLIST_SELECTIONS->num_tracks, >, 0);
+
+  track_select (
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1],
+    F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+
+  /* delete the track */
+  ua =
+    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* assert a track is selected */
+  g_assert_cmpint (
+    TRACKLIST_SELECTIONS->num_tracks, >, 0);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -836,6 +873,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test track deletion with lv2 worker",
     (GTestFunc) test_track_deletion_with_lv2_worker);
+  g_test_add_func (
+    TEST_PREFIX "test no visible tracks after track deletion",
+    (GTestFunc) test_no_visible_tracks_after_track_deletion);
 
   return g_test_run ();
 }

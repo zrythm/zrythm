@@ -1,6 +1,7 @@
 image: archlinux
 packages:
   - alsa-lib
+  - binutils
   - cmake
   - chromaprint
   - fftw

@@ -651,12 +651,21 @@ tracklist_remove_track (
 
   /* if it was the only track selected, select
    * the next one */
-  if (TRACKLIST_SELECTIONS->num_tracks == 0 &&
-      (prev_visible || next_visible))
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
     {
+      Track * track_to_select = NULL;
+      if (prev_visible || next_visible)
+        {
+          track_to_select =
+            next_visible ?
+              next_visible : prev_visible;
+        }
+      else
+        {
+          track_to_select = TRACKLIST->tracks[0];
+        }
       tracklist_selections_add_track (
-        TRACKLIST_SELECTIONS,
-        next_visible ? next_visible : prev_visible,
+        TRACKLIST_SELECTIONS, track_to_select,
         publish_events);
     }
 
