@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,9 +28,7 @@
 #include "actions/actions.h"
 #include "actions/arranger_selections.h"
 #include "actions/undo_manager.h"
-#include "actions/copy_tracks_action.h"
-#include "actions/create_tracks_action.h"
-#include "actions/delete_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/range_action.h"
 #include "audio/audio_function.h"
 #include "audio/automation_function.h"
@@ -1395,7 +1393,7 @@ activate_create_audio_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
 
@@ -1408,7 +1406,7 @@ activate_create_ins_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_INSTRUMENT, NULL, NULL,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
 
@@ -1422,7 +1420,7 @@ activate_create_midi_track (
   gpointer       user_data)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, NULL,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
 
@@ -1435,7 +1433,7 @@ activate_create_audio_bus_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, NULL, NULL,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
 
@@ -1449,7 +1447,7 @@ activate_create_midi_bus_track (
   gpointer       user_data)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI_BUS, NULL, NULL,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
 
@@ -1463,7 +1461,7 @@ activate_create_audio_group_track (
   gpointer       user_data)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_GROUP, NULL, NULL,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
 
@@ -1477,7 +1475,7 @@ activate_create_midi_group_track (
   gpointer       user_data)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI_GROUP, NULL, NULL,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
 
@@ -1491,7 +1489,7 @@ activate_duplicate_selected_tracks (
   gpointer       user_data)
 {
   UndoableAction * ua =
-    copy_tracks_action_new (
+    tracklist_selections_action_new_copy (
       TRACKLIST_SELECTIONS,
       TRACKLIST_SELECTIONS->tracks[0]->pos + 1);
 
@@ -1544,7 +1542,7 @@ activate_delete_selected_tracks (
   g_message ("deleting selected tracks");
 
   UndoableAction * ua =
-    delete_tracks_action_new (
+    tracklist_selections_action_new_delete (
       TRACKLIST_SELECTIONS);
   undo_manager_perform (
     UNDO_MANAGER, ua);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +19,7 @@
 
 #include "zrythm-config.h"
 
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "audio/supported_file.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -46,9 +46,9 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
-G_DEFINE_TYPE (FileBrowserWidget,
-               file_browser_widget,
-               GTK_TYPE_PANED)
+G_DEFINE_TYPE (
+  FileBrowserWidget, file_browser_widget,
+  GTK_TYPE_PANED)
 
 enum
 {
@@ -97,14 +97,14 @@ on_file_chooser_file_activated (
     case FILE_TYPE_FLAC:
     case FILE_TYPE_MP3:
       ua =
-        create_tracks_action_new (
+        tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO, NULL, file,
           TRACKLIST->num_tracks, PLAYHEAD, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
       break;
     case FILE_TYPE_MIDI:
       ua =
-        create_tracks_action_new (
+        tracklist_selections_action_new_create (
           TRACK_TYPE_MIDI, NULL, file,
           TRACKLIST->num_tracks,
           PLAYHEAD,

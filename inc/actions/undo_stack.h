@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,13 +28,9 @@
 
 #include "actions/arranger_selections.h"
 #include "actions/channel_send_action.h"
-#include "actions/copy_tracks_action.h"
-#include "actions/create_tracks_action.h"
-#include "actions/delete_tracks_action.h"
-#include "actions/edit_tracks_action.h"
 #include "actions/midi_mapping_action.h"
 #include "actions/mixer_selections_action.h"
-#include "actions/move_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/port_action.h"
 #include "actions/port_connection_action.h"
 #include "actions/range_action.h"
@@ -71,29 +67,13 @@ typedef struct UndoStack
   size_t        num_mixer_selections_actions;
   size_t        mixer_selections_actions_size;
 
-  CopyTracksAction ** copy_tracks_actions;
-  size_t        num_copy_tracks_actions;
-  size_t        copy_tracks_actions_size;
-
-  CreateTracksAction ** create_tracks_actions;
-  size_t        num_create_tracks_actions;
-  size_t        create_tracks_actions_size;
-
-  DeleteTracksAction ** delete_tracks_actions;
-  size_t        num_delete_tracks_actions;
-  size_t        delete_tracks_actions_size;
+  TracklistSelectionsAction ** tracklist_selections_actions;
+  size_t        num_tracklist_selections_actions;
+  size_t        tracklist_selections_actions_size;
 
   ChannelSendAction ** channel_send_actions;
   size_t        num_channel_send_actions;
   size_t        channel_send_actions_size;
-
-  EditTracksAction ** edit_tracks_actions;
-  size_t        num_edit_tracks_actions;
-  size_t        edit_tracks_actions_size;
-
-  MoveTracksAction ** move_tracks_actions;
-  size_t        num_move_tracks_actions;
-  size_t        move_tracks_actions_size;
 
   PortConnectionAction ** port_connection_actions;
   size_t        num_port_connection_actions;
@@ -127,23 +107,11 @@ static const cyaml_schema_field_t
     UndoStack, mixer_selections_actions,
     mixer_selections_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, copy_tracks_actions,
-    copy_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, create_tracks_actions,
-    create_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, delete_tracks_actions,
-    delete_tracks_action_schema),
+    UndoStack, tracklist_selections_actions,
+    tracklist_selections_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, channel_send_actions,
     channel_send_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, edit_tracks_actions,
-    edit_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack, move_tracks_actions,
-    move_tracks_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, port_connection_actions,
     port_connection_action_schema),

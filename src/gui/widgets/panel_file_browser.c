@@ -23,7 +23,7 @@
  * File browser.
  */
 
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "audio/encoder.h"
 #include "gui/backend/file_manager.h"
 #include "gui/widgets/arranger.h"
@@ -410,7 +410,7 @@ on_row_activated (GtkTreeView       *tree_view,
            descr->type == FILE_TYPE_MP3)
     {
       UndoableAction * action =
-        create_tracks_action_new (
+        tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO, NULL, descr,
           TRACKLIST->num_tracks, PLAYHEAD, 1);
       undo_manager_perform (UNDO_MANAGER, action);

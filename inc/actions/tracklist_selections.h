@@ -1,0 +1,445 @@
+/*
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
+#define __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
+
+#include "actions/undoable_action.h"
+#include "audio/supported_file.h"
+#include "audio/track.h"
+#include "gui/backend/tracklist_selections.h"
+
+/**
+ * @addtogroup actions
+ *
+ * @{
+ */
+
+typedef enum TracklistSelectionsActionType
+{
+  TRACKLIST_SELECTIONS_ACTION_COPY,
+  TRACKLIST_SELECTIONS_ACTION_CREATE,
+  TRACKLIST_SELECTIONS_ACTION_DELETE,
+  TRACKLIST_SELECTIONS_ACTION_EDIT,
+  TRACKLIST_SELECTIONS_ACTION_MOVE,
+} TracklistSelectionsActionType;
+
+static const cyaml_strval_t
+tracklist_selections_action_type_strings[] =
+{
+  { "Copy", TRACKLIST_SELECTIONS_ACTION_COPY },
+  { "Create", TRACKLIST_SELECTIONS_ACTION_CREATE },
+  { "Delete", TRACKLIST_SELECTIONS_ACTION_DELETE },
+  { "Edit", TRACKLIST_SELECTIONS_ACTION_EDIT },
+  { "Move", TRACKLIST_SELECTIONS_ACTION_MOVE },
+};
+
+/**
+ * Action type.
+ */
+typedef enum EditTracksActionType
+{
+  EDIT_TRACK_ACTION_TYPE_SOLO,
+  EDIT_TRACK_ACTION_TYPE_MUTE,
+  EDIT_TRACK_ACTION_TYPE_VOLUME,
+  EDIT_TRACK_ACTION_TYPE_PAN,
+
+  /** Direct out change. */
+  EDIT_TRACK_ACTION_TYPE_DIRECT_OUT,
+
+  /** Rename track. */
+  EDIT_TRACK_ACTION_TYPE_RENAME,
+
+  EDIT_TRACK_ACTION_TYPE_COLOR,
+  EDIT_TRACK_ACTION_TYPE_ICON,
+} EditTracksActionType;
+
+static const cyaml_strval_t
+  edit_tracks_action_type_strings[] =
+{
+  { "solo", EDIT_TRACK_ACTION_TYPE_SOLO },
+  { "mute", EDIT_TRACK_ACTION_TYPE_MUTE },
+  { "volume", EDIT_TRACK_ACTION_TYPE_VOLUME },
+  { "pan", EDIT_TRACK_ACTION_TYPE_PAN },
+  { "direct out", EDIT_TRACK_ACTION_TYPE_DIRECT_OUT },
+  { "Rename", EDIT_TRACK_ACTION_TYPE_RENAME },
+  { "Color", EDIT_TRACK_ACTION_TYPE_COLOR },
+  { "Icon", EDIT_TRACK_ACTION_TYPE_ICON },
+};
+
+/**
+ * Tracklist selections (tracks) action.
+ */
+typedef struct TracklistSelectionsAction
+{
+  UndoableAction       parent_instance;
+
+  /** Type of action. */
+  TracklistSelectionsActionType type;
+
+  /** Position to make the tracks at.
+   *
+   * Used when undoing too. */
+  int                   track_pos;
+
+  /** Position to add the audio region to, if
+   * applicable. */
+  Position              pos;
+
+  bool                  have_pos;
+
+  /** Number of tracks to make. */
+  int                   num_tracks;
+
+  /** Track type. */
+  TrackType             track_type;
+
+  /** Flag to know if we are making an empty
+   * track. */
+  int                   is_empty;
+
+  /** PluginDescriptor, if making an instrument or
+   * bus track from a plugin.
+   *
+   * If this is empty and the track type is
+   * instrument, it is assumed that it's an empty
+   * track. */
+  PluginDescriptor      pl_descr;
+
+  /** Filename, if we are making an audio track from
+   * a file. */
+  SupportedFile *       file_descr;
+
+  /**
+   * When this action is created, it will create
+   * the audio file and add it to the pool.
+   *
+   * New audio regions should use this ID to avoid
+   * duplication.
+   */
+  int                   pool_id;
+
+  /** Source sends that need to be deleted/
+   * recreated on do/undo. */
+  ChannelSend *         src_sends;
+  int                   num_src_sends;
+  int                   src_sends_size;
+
+  EditTracksActionType  edit_type;
+
+  /** Clone of the TracklistSelections, if
+   * applicable. */
+  TracklistSelections * tls_before;
+
+  /** Clone of the TracklistSelections, if
+   * applicable. */
+  TracklistSelections * tls_after;
+
+  /* TODO remove the following and use
+   * before/after */
+
+  /* --------------- DELTAS ---------------- */
+
+  /** New solo value 1 or 0. */
+  int                   solo_new;
+  /** New mute value 1 or 0. */
+  int                   mute_new;
+
+  /* -------------- end DELTAS ------------- */
+
+  /** Track position to direct output to. */
+  int                   new_direct_out_pos;
+
+  GdkRGBA               new_color;
+
+  char *                new_icon;
+
+  /** Skip do if true. */
+  bool                  already_edited;
+
+} TracklistSelectionsAction;
+
+static const cyaml_schema_field_t
+  tracklist_selections_action_fields_schema[] =
+{
+  YAML_FIELD_MAPPING_EMBEDDED (
+    TracklistSelectionsAction, parent_instance,
+    undoable_action_fields_schema),
+  YAML_FIELD_ENUM (
+    TracklistSelectionsAction, type,
+    tracklist_selections_action_type_strings),
+  YAML_FIELD_ENUM (
+    TracklistSelectionsAction, track_type,
+    track_type_strings),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    TracklistSelectionsAction, pl_descr,
+    plugin_descriptor_fields_schema),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, is_empty),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, track_pos),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, have_pos),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    TracklistSelectionsAction, pos, position_fields_schema),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, num_tracks),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TracklistSelectionsAction, file_descr,
+    supported_file_fields_schema),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, pool_id),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TracklistSelectionsAction, tls_before,
+    tracklist_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TracklistSelectionsAction, tls_after,
+    tracklist_selections_fields_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    TracklistSelectionsAction, src_sends,
+    channel_send_schema),
+  YAML_FIELD_ENUM (
+    TracklistSelectionsAction, edit_type,
+    edit_tracks_action_type_strings),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, solo_new),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, mute_new),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, new_direct_out_pos),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    TracklistSelectionsAction, new_color,
+    gdk_rgba_fields_schema),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    TracklistSelectionsAction, new_icon),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  tracklist_selections_action_schema =
+{
+  YAML_VALUE_PTR (
+    TracklistSelectionsAction,
+    tracklist_selections_action_fields_schema),
+};
+
+void
+tracklist_selections_action_init_loaded (
+  TracklistSelectionsAction * self);
+
+/**
+ * Creates a new TracklistSelectionsAction.
+ *
+ * @param tls_before Tracklist selections to act
+ *   upon.
+ * @param pos Position to make the tracks at.
+ * @param pl_descr Plugin descriptor, if any.
+ * @param track Track, if single-track action. Used
+ *   if \ref tls_before and \ref tls_after are NULL.
+ */
+UndoableAction *
+tracklist_selections_action_new (
+  TracklistSelectionsActionType type,
+  TracklistSelections *         tls_before,
+  TracklistSelections *         tls_after,
+  Track *                       track,
+  TrackType                     track_type,
+  PluginDescriptor *            pl_descr,
+  SupportedFile *               file_descr,
+  int                           track_pos,
+  const Position *              pos,
+  int                           num_tracks,
+  EditTracksActionType          edit_type,
+  Track *                       direct_out,
+  bool                          solo_new,
+  bool                          mute_new,
+  const GdkRGBA *               color_new,
+  float                         val_before,
+  float                         val_after,
+  const char *                  new_icon,
+  bool                          already_edited);
+
+#define tracklist_selections_action_new_create( \
+  track_type,pl_descr,file_descr,track_pos, \
+  pos,num_tracks) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_CREATE, \
+    NULL, NULL, NULL, track_type, pl_descr, \
+    file_descr, \
+    track_pos, pos, num_tracks, 0, NULL, \
+    false, false, NULL, 0.f, 0.f, NULL, false)
+
+/**
+ * Creates a new TracklistSelectionsAction for an
+ * audio FX track.
+ */
+#define tracklist_selections_action_new_create_audio_fx( \
+  pl_descr,track_pos,num_tracks) \
+  tracklist_selections_action_new_create ( \
+    TRACK_TYPE_AUDIO_BUS, pl_descr, NULL, track_pos, \
+    NULL, num_tracks)
+
+/**
+ * Creates a new TracklistSelectionsAction for an
+ * instrument track.
+ */
+#define tracklist_selections_action_new_create_instrument( \
+  pl_descr,track_pos,num_tracks) \
+  tracklist_selections_action_new_create ( \
+    TRACK_TYPE_INSTRUMENT, pl_descr, NULL, track_pos, \
+    NULL, num_tracks)
+
+/**
+ * Creates a new TracklistSelectionsAction for an
+ * audio group track.
+ */
+#define tracklist_selections_action_new_create_audio_group( \
+  track_pos,num_tracks) \
+  tracklist_selections_action_new_create ( \
+    TRACK_TYPE_AUDIO_GROUP, NULL, NULL, track_pos, \
+    NULL, num_tracks)
+
+/**
+ * Creates a new TracklistSelectionsAction for a MIDI
+ * track.
+ */
+#define tracklist_selections_action_new_create_midi( \
+  track_pos,num_tracks) \
+  tracklist_selections_action_new_create ( \
+    TRACK_TYPE_MIDI, NULL, NULL, track_pos, \
+    NULL, num_tracks)
+
+/**
+ * Generic edit action.
+ */
+#define tracklist_selections_action_new_edit_generic( \
+  type,tls_before,tls_after,already_edited) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, tls_after, NULL, 0, NULL, NULL, \
+    -1, NULL, \
+    -1, type, NULL, false, false, NULL, \
+    0.f, 0.f, NULL, already_edited)
+
+
+/**
+ * Convenience wrapper over
+ * tracklist_selections_action_new() for single-track
+ * float edit changes.
+ */
+#define tracklist_selections_action_new_edit_single_float( \
+  type,track,val_before,val_after,already_edited) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
+    -1, type, NULL, false, false, NULL, \
+    val_before, val_after, NULL, already_edited)
+
+#define tracklist_selections_action_new_edit_mute( \
+  tls_before,mute_new) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_MUTE, NULL, \
+    false, mute_new, NULL, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_edit_solo( \
+  tls_before,solo_new) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_SOLO, NULL, \
+    solo_new, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_edit_direct_out( \
+  tls,direct_out) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_DIRECT_OUT, \
+    direct_out, \
+    false, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_edit_color( \
+  tls,color) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_COLOR, NULL, \
+    false, false, color, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_edit_icon( \
+  tls,icon) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_ICON, NULL, \
+    false, false, NULL, \
+    0.f, 0.f, icon, false)
+
+#define tracklist_selections_action_new_move( \
+  tls,track_pos) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_MOVE, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, NULL, false, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_copy( \
+  tls,track_pos) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_COPY, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, NULL, false, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_delete( \
+  tls) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_DELETE, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, 0, NULL, false, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+int
+tracklist_selections_action_do (
+  TracklistSelectionsAction * self);
+
+int
+tracklist_selections_action_undo (
+  TracklistSelectionsAction * self);
+
+char *
+tracklist_selections_action_stringize (
+  TracklistSelectionsAction * self);
+
+void
+tracklist_selections_action_free (
+  TracklistSelectionsAction * self);
+
+/**
+ * @}
+ */
+
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "actions/tracklist_selections.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -136,7 +137,7 @@ test_plugin_manager_create_tracks_from_plugin (
 
   /* create a track from the plugin */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       track_type, descr, NULL,
       TRACKLIST->num_tracks, NULL, num_tracks);
   undo_manager_perform (UNDO_MANAGER, ua);

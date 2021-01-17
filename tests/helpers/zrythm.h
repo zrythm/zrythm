@@ -37,6 +37,7 @@
 #include <project.h>
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
+#include "utils/datetime.h"
 #include "utils/objects.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -149,14 +150,17 @@ _test_helper_zrythm_init (
     g_build_filename (
       g_get_tmp_dir (), "zrythm_test_logs", NULL);
   io_mkdir (tmp_log_dir);
-  char * tmp_log_file_template =
-    g_build_filename (
-      tmp_log_dir, "XXXXXX.log", NULL);
+  char * str_datetime =
+    datetime_get_for_filename ();
+  char * log_filepath =
+    g_strdup_printf (
+      "%s%slog_%s.log",
+      tmp_log_dir,
+      G_DIR_SEPARATOR_S,
+      str_datetime);
+  g_free (str_datetime);
   g_free (tmp_log_dir);
-  int tmp_log_file =
-    g_mkstemp (tmp_log_file_template);
-  g_free (tmp_log_file_template);
-  log_init_with_file (LOG, true, tmp_log_file);
+  log_init_with_file (LOG, log_filepath);
   log_init_writer_idle (LOG, 1);
 
   ZRYTHM->create_project_path =

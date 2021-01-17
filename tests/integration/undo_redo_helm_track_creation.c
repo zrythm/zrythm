@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +19,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
 #include "audio/engine_dummy.h"
 #include "plugins/plugin_manager.h"
@@ -57,7 +57,7 @@ _test (
 
   /* 1. add helm */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_INSTRUMENT, descr, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -72,7 +72,8 @@ _test (
 
   /* 2. delete track */
   ua =
-    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+    tracklist_selections_action_new_delete (
+      TRACKLIST_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* 3. undo track deletion */

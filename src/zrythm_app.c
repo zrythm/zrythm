@@ -315,7 +315,7 @@ init_thread (
   /* init log */
   zrythm_app_set_progress_status (
     self, _("Initializing logging system"), 0.02);
-  log_init_with_file (LOG, false, -1);
+  log_init_with_file (LOG, NULL);
 
 #if defined (_WOE32) || defined (__APPLE__)
   g_warning (

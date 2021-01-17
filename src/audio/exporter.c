@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 
+#include "actions/tracklist_selections.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
 #ifdef HAVE_JACK
@@ -661,7 +662,7 @@ exporter_create_audio_track_after_bounce (
     }
 
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL,
       descr, track->pos + 1, pos, 1);
   Position tmp;

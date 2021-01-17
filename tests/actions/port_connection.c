@@ -67,7 +67,7 @@ _test_port_connection (
 
   /* create an extra track */
   ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, NULL, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -78,7 +78,7 @@ _test_port_connection (
     {
       /* create an instrument track from helm */
       ua =
-        create_tracks_action_new (
+        tracklist_selections_action_new_create (
           TRACK_TYPE_INSTRUMENT, descr, NULL,
           TRACKLIST->num_tracks, NULL, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
@@ -87,7 +87,7 @@ _test_port_connection (
     {
       /* create an audio fx track and add the plugin */
       ua =
-        create_tracks_action_new (
+        tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO_BUS, NULL, NULL,
           TRACKLIST->num_tracks, NULL, 1);
       undo_manager_perform (UNDO_MANAGER, ua);

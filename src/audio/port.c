@@ -74,9 +74,11 @@ port_init_loaded (
   Port * self,
   bool   is_project)
 {
+#if 0
   g_debug (
     "%s, is project: %d",
     self->id.label, is_project);
+#endif
 
   self->magic = PORT_MAGIC;
 

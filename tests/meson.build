@@ -35,6 +35,8 @@ if get_option ('tests')
   test_env.set ('MALLOC_CHECK', '2')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
   test_env.set ('VST3_PATH', '/tmp/zrythm_vst3')
+  test_env.set ('LADSPA_PATH', '/tmp/zrythm_ladspa')
+  test_env.set ('DSSI_PATH', '/tmp/zrythm_dssi')
 
   test_config = configuration_data ()
   test_config.set_quoted (
@@ -124,7 +126,6 @@ if get_option ('tests')
   # 1: is parallel
   tests = [
     ['actions/arranger_selections', false],
-    ['actions/create_tracks', true],
     ['actions/range', true],
     ['audio/audio_track', true],
     ['audio/automation_track', true],
@@ -154,12 +155,9 @@ if get_option ('tests')
 
   if os_gnu or os_darwin
     tests += [
-      ['actions/copy_tracks', true],
-      ['actions/edit_tracks', false],
       ['actions/mixer_selections_action', false],
-      ['actions/move_tracks', false],
-      ['actions/delete_tracks', true],
       ['actions/port_connection', true],
+      ['actions/tracklist_selections', false],
       ['benchmarks/dsp', true],
       ['integration/midi_file', false],
       # cannot be parallel because it needs multiple
@@ -206,7 +204,7 @@ if get_option ('tests')
     timeout = 180
     if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
       parallel = false
-      timeout = 240
+      timeout = 360
     endif
 
     if fs.is_file (source)

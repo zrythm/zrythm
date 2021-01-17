@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -17,8 +17,8 @@
 
 _guile_snarfable_srcs = [
   'channel_send_action.c',
-  'create_tracks_action.c',
   'port_connection_action.c',
+  'tracklist_selections_action.c',
   'undo_manager.c',
   ]
 

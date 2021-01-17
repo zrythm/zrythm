@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/tracklist_selections.h"
 #include "audio/audio_region.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
@@ -1052,7 +1053,7 @@ tracklist_handle_file_drop (
       else
         {
           UndoableAction * ua =
-            create_tracks_action_new (
+            tracklist_selections_action_new_create (
               track_type, NULL, file,
               TRACKLIST->num_tracks,
               pos, 1);

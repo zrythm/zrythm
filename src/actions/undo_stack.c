@@ -55,12 +55,8 @@ undo_stack_init_loaded (
 
   size_t as_actions_idx = 0;
   size_t mixer_selections_actions_idx = 0;
-  size_t copy_tracks_actions_idx = 0;
-  size_t create_tracks_actions_idx = 0;
-  size_t delete_tracks_actions_idx = 0;
+  size_t tracklist_selections_actions_idx = 0;
   size_t channel_send_actions_idx = 0;
-  size_t edit_tracks_actions_idx = 0;
-  size_t move_tracks_actions_idx = 0;
   size_t port_actions_idx = 0;
   size_t port_connection_actions_idx = 0;
   size_t midi_mapping_actions_idx = 0;
@@ -70,12 +66,8 @@ undo_stack_init_loaded (
   size_t total_actions =
     self->num_as_actions +
     self->num_mixer_selections_actions +
-    self->num_copy_tracks_actions +
-    self->num_create_tracks_actions +
-    self->num_delete_tracks_actions +
+    self->num_tracklist_selections_actions +
     self->num_channel_send_actions +
-    self->num_edit_tracks_actions +
-    self->num_move_tracks_actions +
     self->num_midi_mapping_actions +
     self->num_port_actions +
     self->num_port_connection_actions +
@@ -86,13 +78,9 @@ undo_stack_init_loaded (
   while (i < total_actions)
     {
       DO_SIMPLE (ArrangerSelections, as)
-      DO_SIMPLE (CopyTracks, copy_tracks)
-      DO_SIMPLE (CreateTracks, create_tracks)
-      DO_SIMPLE (DeleteTracks, delete_tracks)
+      DO_SIMPLE (TracklistSelections, tracklist_selections)
       DO_SIMPLE (ChannelSend, channel_send)
-      DO_SIMPLE (EditTracks, edit_tracks)
       DO_SIMPLE (MixerSelections, mixer_selections)
-      DO_SIMPLE (MoveTracks, move_tracks)
       DO_SIMPLE (PortConnection, port_connection)
       DO_SIMPLE (Port, port)
       DO_SIMPLE (MidiMapping, midi_mapping)
@@ -175,15 +163,8 @@ undo_stack_push (
   switch (action->type)
     {
     APPEND_ELEMENT (
-      CREATE_TRACKS, CreateTracks, create_tracks);
-    APPEND_ELEMENT (
-      MOVE_TRACKS, MoveTracks, move_tracks);
-    APPEND_ELEMENT (
-      EDIT_TRACKS, EditTracks, edit_tracks);
-    APPEND_ELEMENT (
-      COPY_TRACKS, CopyTracks, copy_tracks);
-    APPEND_ELEMENT (
-      DELETE_TRACKS, DeleteTracks, delete_tracks);
+      TRACKLIST_SELECTIONS, TracklistSelections,
+      tracklist_selections);
     APPEND_ELEMENT (
       CHANNEL_SEND, ChannelSend, channel_send);
     APPEND_ELEMENT (
@@ -233,15 +214,8 @@ remove_action (
   switch (action->type)
     {
     REMOVE_ELEMENT (
-      CREATE_TRACKS, CreateTracks, create_tracks);
-    REMOVE_ELEMENT (
-      MOVE_TRACKS, MoveTracks, move_tracks);
-    REMOVE_ELEMENT (
-      EDIT_TRACKS, EditTracks, edit_tracks);
-    REMOVE_ELEMENT (
-      COPY_TRACKS, CopyTracks, copy_tracks);
-    REMOVE_ELEMENT (
-      DELETE_TRACKS, DeleteTracks, delete_tracks);
+      TRACKLIST_SELECTIONS, TracklistSelections,
+      tracklist_selections);
     REMOVE_ELEMENT (
       CHANNEL_SEND, ChannelSend, channel_send);
     REMOVE_ELEMENT (

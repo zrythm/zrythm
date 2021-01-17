@@ -2527,6 +2527,8 @@ lv2_plugin_populate_banks (
   plugin_add_preset_to_bank (
     self->plugin, pl_def_bank, pl_def_preset);
 
+  GString * presets_str = g_string_new (NULL);
+
   LilvNodes * presets =
     lilv_plugin_get_related (
       self->lilv_plugin,
@@ -2581,17 +2583,23 @@ lv2_plugin_populate_banks (
             self->plugin, pl_bank, pl_preset);
           lilv_nodes_free (labels);
 
-          g_message (
-            "found preset %s (<%s>)",
+          g_string_append_printf (
+            presets_str,
+            "found preset %s (<%s>)\n",
             pl_preset->name, pl_preset->uri);
         }
       else
         {
-          g_message (
+          g_string_append_printf (
+            presets_str,
             "Skipping preset <%s> because it has "
-            "no rdfs:label",
+            "no rdfs:label\n",
             lilv_node_as_string (preset));
         }
     }
   lilv_nodes_free (presets);
+
+  char * str = g_string_free (presets_str, false);
+  g_message ("%s", str);
+  g_free (str);
 }

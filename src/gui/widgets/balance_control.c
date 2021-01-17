@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,7 +20,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "actions/edit_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
 #include "audio/midi_mapping.h"
 #include "gui/widgets/balance_control.h"
@@ -301,7 +301,7 @@ drag_end (
         channel_get_track ((Channel *) self->object);
         {
           UndoableAction * ua =
-            edit_tracks_action_new_track_float (
+            tracklist_selections_action_new_edit_single_float (
               EDIT_TRACK_ACTION_TYPE_PAN,
               track, self->balance_at_start,
               GET_VAL, true);

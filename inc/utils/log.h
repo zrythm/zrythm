@@ -40,9 +40,6 @@ typedef struct Log
 {
   FILE * logfile;
 
-  /** File descriptor if not using FILE. */
-  int    logfd;
-
 #if 0
   /* Buffers to fill in */
   GtkTextBuffer * messages_buf;
@@ -133,14 +130,14 @@ log_get_last_n_lines (
  *
  * This can be called from any thread.
  *
- * @param use_file Whether to use the given
- *   file or not.
+ * @param filepath If non-NULL, the given file
+ *   will be used, otherwise the default file
+ *   will be created.
  */
 void
 log_init_with_file (
-  Log * self,
-  bool  use_file,
-  int   file);
+  Log *        self,
+  const char * filepath);
 
 /**
  * Creates the logger and sets the writer func.

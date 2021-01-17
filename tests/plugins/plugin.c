@@ -43,7 +43,7 @@ _test_loading_non_existing_plugin (
 
   /* create instrument track */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_INSTRUMENT,
       descr, NULL, TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);

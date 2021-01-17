@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,7 +24,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
 #include "audio/control_port.h"
 #include "audio/engine_dummy.h"
@@ -75,7 +75,7 @@ _test (
 
   /* 1. create instrument track */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       is_instrument ?
         TRACK_TYPE_INSTRUMENT : TRACK_TYPE_AUDIO_BUS,
       descr, NULL, TRACKLIST->num_tracks, NULL, 1);
@@ -140,7 +140,7 @@ _test (
       NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
       with_carla);
   ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS,
       descr, NULL, TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);

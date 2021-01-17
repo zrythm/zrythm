@@ -19,6 +19,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "actions/tracklist_selections.h"
 #include "audio/engine_dummy.h"
 #include "audio/master_track.h"
 #include "audio/midi_event.h"
@@ -748,7 +749,7 @@ test_recording ()
 
   /* create an instrument track from helm */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_INSTRUMENT, descr, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -757,7 +758,7 @@ test_recording ()
 
   /* create an audio track */
   ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -786,7 +787,7 @@ test_mono_recording (void)
 
   /* create an audio track */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);

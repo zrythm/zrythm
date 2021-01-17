@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +19,7 @@
 
 #include "zrythm-config.h"
 
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "audio/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -178,7 +178,7 @@ activate_plugin_descr (
     track_get_type_from_plugin_descriptor (descr);
 
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       tt, descr, NULL, TRACKLIST->num_tracks,
       PLAYHEAD, 1);
 

@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-#include "actions/edit_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
 #include "audio/audio_group_track.h"
 #include "audio/audio_region.h"
@@ -2101,7 +2101,7 @@ track_set_name_with_action (
     F_NO_PUBLISH_EVENTS);
 
   UndoableAction * ua =
-    edit_tracks_action_new_generic (
+    tracklist_selections_action_new_edit_generic (
       EDIT_TRACK_ACTION_TYPE_RENAME,
       sel_before, sel_after, false);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -2362,7 +2362,7 @@ track_set_color (
         self, F_SELECT, F_EXCLUSIVE,
         F_NO_PUBLISH_EVENTS);
       UndoableAction * ua =
-        edit_tracks_action_new_color (
+        tracklist_selections_action_new_edit_color (
           TRACKLIST_SELECTIONS, color);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
@@ -2394,7 +2394,7 @@ track_set_icon (
         self, F_SELECT, F_EXCLUSIVE,
         F_NO_PUBLISH_EVENTS);
       UndoableAction * ua =
-        edit_tracks_action_new_icon (
+        tracklist_selections_action_new_edit_icon (
           TRACKLIST_SELECTIONS, icon_name);
       undo_manager_perform (UNDO_MANAGER, ua);
     }

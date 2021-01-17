@@ -40,12 +40,8 @@
 typedef enum UndoableActionType
 {
   /* ---- Track/Channel ---- */
-  UA_CREATE_TRACKS,
-  UA_MOVE_TRACKS,
-  /** Edit track/channel parameters. */
-  UA_EDIT_TRACKS,
-  UA_COPY_TRACKS,
-  UA_DELETE_TRACKS,
+  UA_TRACKLIST_SELECTIONS,
+
   UA_CHANNEL_SEND,
 
   /* ---- end ---- */
@@ -74,11 +70,8 @@ typedef enum UndoableActionType
 static const cyaml_strval_t
 undoable_action_type_strings[] =
 {
-  { "Create tracks", UA_CREATE_TRACKS },
-  { "Move tracks", UA_MOVE_TRACKS },
-  { "Edit tracks", UA_EDIT_TRACKS },
-  { "Copy tracks", UA_COPY_TRACKS },
-  { "Delete tracks", UA_DELETE_TRACKS },
+  { "Tracklist selections",
+    UA_TRACKLIST_SELECTIONS },
   { "Channel send", UA_CHANNEL_SEND },
   { "Mixer selections", UA_MIXER_SELECTIONS },
   { "Arranger selections", UA_ARRANGER_SELECTIONS },

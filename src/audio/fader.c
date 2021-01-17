@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/tracklist_selections.h"
 #include "audio/balance_control.h"
 #include "audio/channel.h"
 #include "audio/control_port.h"
@@ -302,7 +303,7 @@ fader_set_muted (
         TRACKLIST_SELECTIONS->num_tracks == 1 &&
         TRACKLIST_SELECTIONS->tracks[0] == track);
       UndoableAction * action =
-        edit_tracks_action_new_mute (
+        tracklist_selections_action_new_edit_mute (
           TRACKLIST_SELECTIONS, mute);
       undo_manager_perform (
         UNDO_MANAGER, action);
@@ -406,7 +407,7 @@ fader_set_soloed (
         TRACKLIST_SELECTIONS->num_tracks == 1 &&
         TRACKLIST_SELECTIONS->tracks[0] == track);
       UndoableAction * action =
-        edit_tracks_action_new_solo (
+        tracklist_selections_action_new_edit_solo (
           TRACKLIST_SELECTIONS, solo);
       undo_manager_perform (
         UNDO_MANAGER, action);

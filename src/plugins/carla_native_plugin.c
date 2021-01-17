@@ -558,6 +558,8 @@ carla_native_plugin_populate_banks (
   plugin_add_preset_to_bank (
     self->plugin, pl_def_bank, pl_def_preset);
 
+  GString * presets_gstr = g_string_new (NULL);
+
   uint32_t count =
     carla_get_program_count (
       self->host_handle, 0);
@@ -573,10 +575,15 @@ carla_native_plugin_populate_banks (
       plugin_add_preset_to_bank (
         self->plugin, pl_def_bank, pl_preset);
 
-      g_message (
-        "found preset %s (%d)",
+      g_string_append_printf (
+        presets_gstr,
+        "found preset %s (%d)\n",
         pl_preset->name, pl_preset->carla_program);
     }
+
+  char * str = g_string_free (presets_gstr, false);
+  g_message ("%s", str);
+  g_free (str);
 }
 
 /**

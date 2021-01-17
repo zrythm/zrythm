@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,13 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Box used as destination for DnD.
  */
 
-#include "actions/copy_tracks_action.h"
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/mixer_selections_action.h"
-#include "actions/move_tracks_action.h"
 #include "audio/channel.h"
 #include "audio/modulator_track.h"
 #include "audio/track.h"
@@ -228,7 +229,7 @@ on_drag_data_received (
               pd);
 
           UndoableAction * ua =
-            create_tracks_action_new (
+            tracklist_selections_action_new_create (
               tt, pd, NULL,
               TRACKLIST->num_tracks,
               PLAYHEAD, 1);
@@ -302,13 +303,13 @@ on_drag_data_received (
       if (action == GDK_ACTION_COPY)
         {
           ua =
-            copy_tracks_action_new (
+            tracklist_selections_action_new_copy (
               TRACKLIST_SELECTIONS, pos);
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ua =
-            move_tracks_action_new (
+            tracklist_selections_action_new_move (
               TRACKLIST_SELECTIONS, pos);
         }
 

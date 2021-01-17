@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,9 +20,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "actions/copy_tracks_action.h"
-#include "actions/edit_tracks_action.h"
-#include "actions/move_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/master_track.h"
@@ -198,13 +196,13 @@ on_drag_data_received (
   if (action == GDK_ACTION_COPY)
     {
       ua =
-        copy_tracks_action_new (
+        tracklist_selections_action_new_copy (
           TRACKLIST_SELECTIONS, pos);
     }
   else if (action == GDK_ACTION_MOVE)
     {
       ua =
-        move_tracks_action_new (
+        tracklist_selections_action_new_move (
           TRACKLIST_SELECTIONS, pos);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 
+#include "actions/tracklist_selections.h"
 #include "actions/midi_mapping_action.h"
 #include "audio/channel.h"
 #include "audio/fader.h"
@@ -310,7 +311,7 @@ drag_end (
         0.0001f))
     {
       UndoableAction * ua =
-        edit_tracks_action_new_track_float (
+        tracklist_selections_action_new_edit_single_float (
           EDIT_TRACK_ACTION_TYPE_VOLUME,
           track, self->amp_at_start, cur_amp, true);
       undo_manager_perform (UNDO_MANAGER, ua);

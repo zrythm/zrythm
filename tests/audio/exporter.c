@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,7 +22,7 @@
 #include "helpers/plugin_manager.h"
 #include "helpers/zrythm.h"
 
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "audio/encoder.h"
 #include "audio/exporter.h"
 #include "audio/supported_file.h"
@@ -185,7 +185,7 @@ test_export_wav ()
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   UndoableAction * action =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
       TRACKLIST->num_tracks, PLAYHEAD, 1);
   undo_manager_perform (UNDO_MANAGER, action);
@@ -223,10 +223,10 @@ test_export_wav ()
   test_helper_zrythm_cleanup ();
 }
 
-#ifdef HAVE_HELM
 static void
 test_bounce_region ()
 {
+#ifdef HAVE_HELM
   test_helper_zrythm_init ();
 
   /* create the plugin track */
@@ -281,8 +281,8 @@ test_bounce_region ()
   g_thread_join (thread);
 
   test_helper_zrythm_cleanup ();
-}
 #endif
+}
 
 int
 main (int argc, char *argv[])
@@ -300,4 +300,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

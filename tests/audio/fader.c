@@ -19,6 +19,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "actions/tracklist_selections.h"
 #include "audio/fader.h"
 #include "audio/midi_event.h"
 #include "audio/router.h"
@@ -39,7 +40,7 @@ test_fader_process_with_instrument (
 
   /* create instrument track */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_INSTRUMENT,
       descr, NULL, TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);

@@ -79,7 +79,7 @@ _test_copy_plugins (
     F_NO_PUBLISH_EVENTS);
 
   UndoableAction * ua =
-    copy_tracks_action_new (
+    tracklist_selections_action_new_copy (
       TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
   undo_manager_perform (UNDO_MANAGER, ua);
   num_master_children++;
@@ -177,7 +177,7 @@ test_midi_fx_slot_deletion (void)
 
   /* create MIDI track */
   UndoableAction * ua =
-    create_tracks_action_new_midi (
+    tracklist_selections_action_new_create_midi (
       TRACKLIST->num_tracks, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
@@ -262,7 +262,7 @@ _test_create_plugins (
     {
       /* create an instrument track from helm */
       ua =
-        create_tracks_action_new (
+        tracklist_selections_action_new_create (
           TRACK_TYPE_INSTRUMENT, descr, NULL,
           TRACKLIST->num_tracks, NULL, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
@@ -272,7 +272,7 @@ _test_create_plugins (
       /* create an audio fx track and add the
        * plugin */
       ua =
-        create_tracks_action_new (
+        tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO_BUS, NULL, NULL,
           TRACKLIST->num_tracks, NULL, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
@@ -307,7 +307,7 @@ _test_create_plugins (
   track_select (
     src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
   ua =
-    copy_tracks_action_new (
+    tracklist_selections_action_new_copy (
       TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
   g_assert_true (
     track_verify_identifiers (src_track));
@@ -395,7 +395,7 @@ _test_port_and_plugin_track_pos_after_move (
 
   /* create an instrument track from helm */
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, descr, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -456,7 +456,7 @@ _test_port_and_plugin_track_pos_after_move (
 
   /* duplicate it */
   ua =
-    copy_tracks_action_new (
+    tracklist_selections_action_new_copy (
       TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
 
   g_assert_true (
@@ -599,7 +599,7 @@ test_move_two_plugins_one_slot_up (void)
       LSP_COMPRESSOR_BUNDLE,
       LSP_COMPRESSOR_URI, false);
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, descr, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);

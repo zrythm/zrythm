@@ -621,6 +621,7 @@ write_str (
         self->logfile, "%s\n", str);
       fflush (self->logfile);
     }
+#if 0
   else if (self->logfd > -1)
     {
 #ifdef __linux__
@@ -635,6 +636,7 @@ write_str (
       fsync (self->logfd);
 #endif
     }
+#endif
 
 #if 0
   /* write to each buffer */
@@ -1042,20 +1044,22 @@ log_get_last_n_lines (
  *
  * This can be called from any thread.
  *
- * @param use_file Whether to use the given
- *   file or not.
+ * @param filepath If non-NULL, the given file
+ *   will be used, otherwise the default file
+ *   will be created.
  */
 void
 log_init_with_file (
-  Log * self,
-  bool  use_file,
-  int   file)
+  Log *        self,
+  const char * filepath)
 {
   /* open file to write to */
-  if (use_file)
+  if (filepath)
     {
-      self->logfd = file;
-      g_return_if_fail (self->logfd > -1);
+      self->log_filepath = g_strdup (filepath);
+      self->logfile =
+        fopen (self->log_filepath, "a");
+      g_return_if_fail (self->logfile);
     }
   else
     {
@@ -1145,7 +1149,6 @@ log_new (void)
 
   log_always_fatal |= flags & G_LOG_LEVEL_MASK;
 
-  self->logfd = -1;
   self->use_structured_for_console = true;
   self->min_log_level_for_test_console =
     G_LOG_LEVEL_MESSAGE;
@@ -1191,11 +1194,6 @@ log_free (
     {
       fclose (self->logfile);
       self->logfile = NULL;
-    }
-
-  if (self->logfd > -1)
-    {
-      close (self->logfd);
     }
 
   /* free children */

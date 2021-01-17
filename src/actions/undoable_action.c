@@ -20,12 +20,8 @@
 #include "audio/engine.h"
 #include "actions/arranger_selections.h"
 #include "actions/mixer_selections_action.h"
-#include "actions/copy_tracks_action.h"
-#include "actions/create_tracks_action.h"
-#include "actions/delete_tracks_action.h"
-#include "actions/edit_tracks_action.h"
-#include "actions/move_tracks_action.h"
 #include "actions/range_action.h"
+#include "actions/tracklist_selections.h"
 #include "actions/transport_action.h"
 #include "actions/undoable_action.h"
 #include "project.h"
@@ -46,21 +42,10 @@ undoable_action_init_loaded (
 
   switch (self->type)
     {
-    /*INIT_LOADED (CREATE_TRACKS,*/
-               /*create_tracks,*/
-               /*CreateTracks);*/
-    INIT_LOADED (MOVE_TRACKS,
-               move_tracks,
-               MoveTracks);
-    INIT_LOADED (EDIT_TRACKS,
-               edit_tracks,
-               EditTracks);
-    INIT_LOADED (COPY_TRACKS,
-               copy_tracks,
-               CopyTracks);
-    INIT_LOADED (DELETE_TRACKS,
-               delete_tracks,
-               DeleteTracks);
+    INIT_LOADED (
+      TRACKLIST_SELECTIONS,
+      tracklist_selections,
+      TracklistSelections);
     INIT_LOADED (CHANNEL_SEND,
                channel_send,
                ChannelSend);
@@ -130,21 +115,10 @@ undoable_action_do (UndoableAction * self)
 
   switch (self->type)
     {
-    DO_ACTION (CREATE_TRACKS,
-               create_tracks,
-               CreateTracks);
-    DO_ACTION (MOVE_TRACKS,
-               move_tracks,
-               MoveTracks);
-    DO_ACTION (EDIT_TRACKS,
-               edit_tracks,
-               EditTracks);
-    DO_ACTION (COPY_TRACKS,
-               copy_tracks,
-               CopyTracks);
-    DO_ACTION (DELETE_TRACKS,
-               delete_tracks,
-               DeleteTracks);
+    DO_ACTION (
+      TRACKLIST_SELECTIONS,
+      tracklist_selections,
+      TracklistSelections);
     DO_ACTION (CHANNEL_SEND,
                channel_send,
                ChannelSend);
@@ -223,21 +197,10 @@ undoable_action_undo (UndoableAction * self)
 
   switch (self->type)
     {
-    UNDO_ACTION (CREATE_TRACKS,
-               create_tracks,
-               CreateTracks);
-    UNDO_ACTION (MOVE_TRACKS,
-               move_tracks,
-               MoveTracks);
-    UNDO_ACTION (EDIT_TRACKS,
-               edit_tracks,
-               EditTracks);
-    UNDO_ACTION (COPY_TRACKS,
-               copy_tracks,
-               CopyTracks);
-    UNDO_ACTION (DELETE_TRACKS,
-               delete_tracks,
-               DeleteTracks);
+    UNDO_ACTION (
+      TRACKLIST_SELECTIONS,
+      tracklist_selections,
+      TracklistSelections);
     UNDO_ACTION (CHANNEL_SEND,
                channel_send,
                ChannelSend);
@@ -282,21 +245,10 @@ undoable_action_free (UndoableAction * self)
 
   switch (self->type)
     {
-    FREE_ACTION (CREATE_TRACKS,
-               create_tracks,
-               CreateTracks);
-    FREE_ACTION (MOVE_TRACKS,
-               move_tracks,
-               MoveTracks);
-    FREE_ACTION (EDIT_TRACKS,
-               edit_tracks,
-               EditTracks);
-    FREE_ACTION (COPY_TRACKS,
-               copy_tracks,
-               CopyTracks);
-    FREE_ACTION (DELETE_TRACKS,
-               delete_tracks,
-               DeleteTracks);
+    FREE_ACTION (
+      TRACKLIST_SELECTIONS,
+      tracklist_selections,
+      TracklistSelections);
     FREE_ACTION (CHANNEL_SEND,
                channel_send,
                ChannelSend);
@@ -339,21 +291,10 @@ undoable_action_stringize (
 
   switch (ua->type)
     {
-    STRINGIZE_UA (CREATE_TRACKS,
-                  CreateTracks,
-                  create_tracks);
-    STRINGIZE_UA (MOVE_TRACKS,
-                  MoveTracks,
-                  move_tracks);
-    STRINGIZE_UA (EDIT_TRACKS,
-                  EditTracks,
-                  edit_tracks);
-    STRINGIZE_UA (COPY_TRACKS,
-                  CopyTracks,
-                  copy_tracks);
-    STRINGIZE_UA (DELETE_TRACKS,
-                  DeleteTracks,
-                  delete_tracks);
+    STRINGIZE_UA (
+      TRACKLIST_SELECTIONS,
+      TracklistSelections,
+      tracklist_selections);
     STRINGIZE_UA (CHANNEL_SEND,
                ChannelSend,
                channel_send);

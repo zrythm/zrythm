@@ -67,7 +67,7 @@ test_fill_when_region_starts_on_loop_end ()
   int num_tracks_before = TRACKLIST->num_tracks;
 
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
       num_tracks_before, &TRANSPORT->loop_end_pos, 1);
   undo_manager_perform (UNDO_MANAGER, ua);

@@ -50,7 +50,7 @@ extern SCM tracklist_type;
 void
 guile_actions_channel_send_action_define_module (void);
 void
-guile_actions_create_tracks_action_define_module (void);
+guile_actions_tracklist_selections_action_define_module (void);
 void
 guile_actions_port_connection_action_define_module (void);
 void

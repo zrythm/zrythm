@@ -19,7 +19,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/create_tracks_action.h"
+#include "actions/tracklist_selections.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
 #include "audio/transport.h"
@@ -216,7 +216,7 @@ static void
 test_timeline_frames_to_local (void)
 {
   UndoableAction * ua =
-    create_tracks_action_new (
+    tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);

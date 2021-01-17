@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -333,7 +333,7 @@ on_closed (
       if (self->new_track != prev_output_track)
         {
           UndoableAction * ua =
-            edit_tracks_action_new_direct_out (
+            tracklist_selections_action_new_edit_direct_out (
               TRACKLIST_SELECTIONS, self->new_track);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
@@ -342,7 +342,7 @@ on_closed (
            prev_output_track != NULL)
     {
       UndoableAction * ua =
-        edit_tracks_action_new_direct_out (
+        tracklist_selections_action_new_edit_direct_out (
           TRACKLIST_SELECTIONS, NULL);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
