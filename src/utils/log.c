@@ -624,7 +624,7 @@ write_str (
   else if (self->logfd > -1)
     {
 #ifdef __linux__
-      dprintf-posix (
+      dprintf (
         self->logfd, "%s\n", str);
 #endif
 
