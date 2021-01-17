@@ -141,9 +141,19 @@ draw_arranger_object (
        * hit by the drawable region (for regions,
        * the logic is handled inside region_draw()
        * so the check is skipped) */
-      if (ui_rectangle_overlap (
-            &obj->full_rect, rect) ||
-          obj->type == ARRANGER_OBJECT_TYPE_REGION)
+      bool rect_hit_or_region =
+        ui_rectangle_overlap (
+          &obj->full_rect, rect) ||
+        obj->type == ARRANGER_OBJECT_TYPE_REGION;
+
+      Track * track =
+        arranger_object_get_track (obj);
+      bool should_be_visible =
+        track->visible ||
+        self->type !=
+          ARRANGER_WIDGET_TYPE_TIMELINE;
+
+      if (rect_hit_or_region && should_be_visible)
         {
           arranger_object_draw (
             obj, self, cr, rect);
