@@ -563,8 +563,10 @@ export_settings_set_bounce_defaults (
     }
   position_add_ms (
     &self->custom_end,
-    g_settings_get_int (
-      S_UI, "bounce-tail"));
+    ZRYTHM_TESTING ?
+      100 :
+      g_settings_get_int (
+        S_UI, "bounce-tail"));
 
   if (filepath)
     {

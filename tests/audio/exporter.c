@@ -19,11 +19,13 @@
 
 #include "zrythm-test-config.h"
 
+#include "helpers/plugin_manager.h"
+#include "helpers/zrythm.h"
+
 #include "actions/create_tracks_action.h"
 #include "audio/encoder.h"
 #include "audio/exporter.h"
 #include "audio/supported_file.h"
-#include "helpers/zrythm.h"
 #include "project.h"
 #include "utils/math.h"
 #include "zrythm.h"
@@ -173,6 +175,8 @@ check_fingerprint_similarity (
 static void
 test_export_wav ()
 {
+  test_helper_zrythm_init ();
+
   int ret;
 
   char * filepath =
@@ -215,20 +219,84 @@ test_export_wav ()
     filepath, settings.file_uri, 100);
 
   g_free (filepath);
+
+  test_helper_zrythm_cleanup ();
 }
+
+#ifdef HAVE_HELM
+static void
+test_bounce_region ()
+{
+  test_helper_zrythm_init ();
+
+  /* create the plugin track */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* create a region and select it */
+  Position pos, end_pos;
+  position_set_to_bar (&pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * r =
+    midi_region_new (
+      &pos, &end_pos, track->pos, 0, 0);
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  track_add_region (
+    track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    r_obj, F_SELECT, F_NO_APPEND);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* bounce it */
+  ExportSettings settings;
+  timeline_selections_mark_for_bounce (
+    TL_SELECTIONS);
+  settings.mode = EXPORT_MODE_REGIONS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, r->name);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  while (settings.progress < 1.0)
+    {
+      g_message (
+        "progress: %f.1", settings.progress * 100.0);
+      g_usleep (1000);
+    }
+
+  g_thread_join (thread);
+
+  test_helper_zrythm_cleanup ();
+}
+#endif
 
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
 #define TEST_PREFIX "/audio/exporter/"
 
   g_test_add_func (
     TEST_PREFIX "test export wav",
     (GTestFunc) test_export_wav);
+  g_test_add_func (
+    TEST_PREFIX "test bounce region",
+    (GTestFunc) test_bounce_region);
 
   return g_test_run ();
 }
