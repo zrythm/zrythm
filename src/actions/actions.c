@@ -1140,9 +1140,10 @@ activate_delete (
 }
 
 void
-activate_duplicate (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_duplicate (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
   ArrangerSelections * sel =
     main_window_get_last_focused_arranger_selections (

@@ -108,6 +108,27 @@
  * Deletes element from array and rearranges other
  * elements accordingly.
  */
+#define array_delete_confirm( \
+  array,size,element,confirm) \
+  confirm = false; \
+  for (size_t ii = 0; ii < (size_t) size; ii++) \
+    { \
+      if ((void *) array[ii] == (void *) element) \
+        { \
+          confirm = true; \
+          --size; \
+          for (size_t jj = ii; jj < (size_t) size; jj++) \
+            { \
+              array[jj] = array[jj + 1]; \
+            } \
+          break; \
+        } \
+    }
+
+/**
+ * Deletes element from array and rearranges other
+ * elements accordingly.
+ */
 #define array_delete_primitive(array,size,element) \
   for (int ii = 0; ii < size; ii++) \
     { \

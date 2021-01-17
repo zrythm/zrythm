@@ -195,7 +195,7 @@ undo_stack_push (
     }
 }
 
-static int
+static bool
 remove_action (
   UndoStack *      self,
   UndoableAction * action)
@@ -203,14 +203,15 @@ remove_action (
   /* CAPS, CamelCase, snake_case */
 #define REMOVE_ELEMENT(caps,cc,sc) \
   case UA_##caps: \
-    array_delete ( \
+    array_delete_confirm ( \
       self->sc##_actions, \
       self->num_##sc##_actions, \
-      (cc##Action *) action); \
-    removed = 1; \
+      (cc##Action *) action, \
+      removed); \
+    g_warn_if_fail (removed); \
     break
 
-  int removed = 0;
+  bool removed = false;
   switch (action->type)
     {
     REMOVE_ELEMENT (
@@ -233,14 +234,15 @@ remove_action (
     REMOVE_ELEMENT (
       TRANSPORT, Transport, transport);
     case UA_ARRANGER_SELECTIONS:
-      array_delete (
+      array_delete_confirm (
         self->as_actions,
         self->num_as_actions,
-        (ArrangerSelectionsAction *) action);
-      removed = 1;
+        (ArrangerSelectionsAction *) action,
+        removed);
+      g_warn_if_fail (removed);
       g_warn_if_fail (
         (int) self->num_as_actions <=
-          self->stack->top + 1);
+          g_atomic_int_get (&self->stack->top) + 1);
       break;
     }
 
@@ -270,12 +272,16 @@ UndoableAction *
 undo_stack_pop_last (
   UndoStack * self)
 {
+  g_message (
+    "<undo stack> popping last (top = %d)",
+    g_atomic_int_get (&self->stack->top));
+
   /* pop from stack */
   UndoableAction * action =
     (UndoableAction *) stack_pop_last (self->stack);
 
   /* remove the action */
-  int removed = remove_action (self, action);
+  bool removed = remove_action (self, action);
   g_warn_if_fail (removed);
 
   /* return it */

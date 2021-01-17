@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <limits.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -775,6 +776,7 @@ add_region_ticks (
 {
   ArrangerObject * obj =
     arranger_selections_get_first_object (self);
+  g_return_if_fail (obj);
   ArrangerObject * region =
     (ArrangerObject *)
     arranger_object_get_region (obj);
@@ -803,8 +805,8 @@ arranger_selections_get_start_pos (
   MidiArrangerSelections * mas;
   AutomationSelections * as;
 
-  position_set_to_bar (
-    pos, TRANSPORT->total_bars);
+  position_set_to_bar (pos, INT_MAX);
+    /*&pos, TRANSPORT->total_bars);*/
 
 #define GET_START_POS(sel,cc,sc) \
   for (i = 0; i < (sel)->num_##sc##s; i++) \
@@ -1034,7 +1036,8 @@ arranger_selections_get_first_object (
 
   Position pos;
   position_set_to_bar (
-    &pos, TRANSPORT->total_bars);
+    /*&pos, TRANSPORT->total_bars);*/
+    &pos, INT_MAX);
   ArrangerObject * ret_obj = NULL;
 
 #define GET_FIRST_OBJ(sel,cc,sc) \

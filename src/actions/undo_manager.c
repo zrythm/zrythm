@@ -90,7 +90,7 @@ undo_manager_undo (UndoManager * self)
         undo_stack_pop_last (
           self->redo_stack);
 
-      /* TODO create functions to delet eunnecessary
+      /* TODO create functions to delete unnecessary
        * files held by the action (eg, something
        * that calls plugin_delete_state_files()) */
       undoable_action_free (action_to_delete);
