@@ -623,8 +623,11 @@ write_str (
     }
   else if (self->logfd > -1)
     {
+#ifdef __linux__
       dprintf (
         self->logfd, "%s\n", str);
+#endif
+
 #ifdef _WOE32
       FlushFileBuffers (
         (HANDLE) self->logfd);
