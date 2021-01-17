@@ -158,6 +158,7 @@ if get_option ('tests')
       ['actions/mixer_selections_action', false],
       ['actions/port_connection', true],
       ['actions/tracklist_selections', false],
+      ['actions/tracklist_selections_edit', false],
       ['benchmarks/dsp', true],
       ['integration/midi_file', false],
       # cannot be parallel because it needs multiple
