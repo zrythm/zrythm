@@ -1528,6 +1528,36 @@ plugin_open_ui (
       return;
     }
 
+  /* show error if LV2 UI type is deprecated */
+  if (self->descr->protocol == PROT_LV2 &&
+      (!self->descr->open_with_carla ||
+       self->descr->bridge_mode !=
+         CARLA_BRIDGE_FULL))
+    {
+      char * deprecated_uri =
+        lv2_plugin_has_deprecated_ui (
+          self->descr->uri);
+      if (deprecated_uri)
+        {
+          char msg[1200];
+          sprintf (
+            msg,
+            _("%s <%s> has a deprecated UI "
+            "type:\n  %s\n"
+            "If the UI does not load, please try "
+            "instantiating the plugin in full-"
+            "bridged mode, and report this to the "
+            "author:\n  %s <%s>"),
+            self->descr->name,
+            self->descr->uri,
+            deprecated_uri, self->descr->author,
+            self->descr->website);
+          ui_show_error_message (
+            MAIN_WINDOW, msg);
+          g_free (deprecated_uri);
+        }
+    }
+
   if (self->descr->open_with_carla)
     {
 #ifdef HAVE_CARLA

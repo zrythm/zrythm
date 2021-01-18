@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1164,6 +1164,11 @@ lv2_plugin_create_descriptor_from_lilv (
   str = lilv_node_as_string (author);
   pd->author = g_strdup (str);
   lilv_node_free (author);
+  LilvNode * website =
+    lilv_plugin_get_author_homepage (lp);
+  str = lilv_node_as_string (website);
+  pd->website = g_strdup (str);
+  lilv_node_free (website);
   const LilvPluginClass* pclass =
     lilv_plugin_get_class(lp);
   const LilvNode * label =
@@ -1409,6 +1414,70 @@ lv2_plugin_ui_type_is_external (
       ui_type, PM_LILV_NODES.ui_externalkx) ||
     lilv_node_equals (
       ui_type, PM_LILV_NODES.ui_external);
+}
+
+/**
+ * Returns whether the plugin has a custom UI that
+ * is deprecated (GtkUI, QtUI, etc.).
+ *
+ * @return If the plugin has a deprecated UI,
+ *   returns the UI URI, otherwise NULL.
+ */
+char *
+lv2_plugin_has_deprecated_ui (
+  const char * uri)
+{
+  LilvNode * lv2_uri =
+    lilv_new_uri (LILV_WORLD, uri);
+  const LilvPlugin * lilv_plugin =
+    lilv_plugins_get_by_uri (
+      PM_LILV_NODES.lilv_plugins,
+      lv2_uri);
+  lilv_node_free (lv2_uri);
+  const LilvUI * ui;
+  const LilvNode * ui_type;
+  LilvUIs * uis =
+    lilv_plugin_get_uis (lilv_plugin);
+  bool ui_picked =
+    lv2_plugin_pick_ui (
+      uis, LV2_PLUGIN_UI_WRAPPABLE,
+      &ui, &ui_type);
+  if (!ui_picked)
+    {
+      ui_picked =
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_EXTERNAL,
+          &ui, &ui_type);
+    }
+  if (!ui_picked)
+    {
+      ui_picked =
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
+          &ui, &ui_type);
+    }
+  if (!ui_picked)
+    {
+      return false;
+    }
+
+  const char * ui_type_str =
+    lilv_node_as_string (ui_type);
+  char * ret = NULL;
+  if (lilv_node_equals (
+        ui_type, PM_LILV_NODES.ui_GtkUI) ||
+      lilv_node_equals (
+        ui_type, PM_LILV_NODES.ui_Gtk3UI) ||
+      lilv_node_equals (
+        ui_type, PM_LILV_NODES.ui_Qt5UI) ||
+      lilv_node_equals (
+        ui_type, PM_LILV_NODES.ui_Qt4UI))
+    {
+      ret = g_strdup (ui_type_str);
+    }
+  lilv_uis_free (uis);
+
+  return ret;
 }
 
 /**

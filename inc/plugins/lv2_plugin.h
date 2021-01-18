@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -363,6 +363,17 @@ typedef enum Lv2PluginPickUiFlag
   /** Gtk2. */
   LV2_PLUGIN_UI_FOR_BRIDGING,
 } Lv2PluginPickUiFlag;
+
+/**
+ * Returns whether the plugin has a custom UI that
+ * is deprecated (GtkUI, QtUI, etc.).
+ *
+ * @return If the plugin has a deprecated UI,
+ *   returns the UI URI, otherwise NULL.
+ */
+char *
+lv2_plugin_has_deprecated_ui (
+  const char * uri);
 
 /**
  * Pick the most preferable UI.
