@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.8.0.1] - 2021-01-18
+### Added
+- Moving region markers is now undoable
+
+### Changed
+- Do not attempt to draw regions if visible width is 0
+- Refactor each plugin action into a single mixer selections action
+- Refactor each track action into a single tracklist selections action
+- Add Arch Linux to exceptions in trademark policy
+
+### Fixed
+- Fix automation region mute
+- Fix crash when cloning from insert into new track
+- Fix crash when moving two effects in the mixer and the new position overlaps one of them
+- Fix start/end markers being deletable
+- Fix right channel having lower volume after recording audio in mono
+- Fix crash when reaching transport loop end and metronome enabled
+- Fix crash when moving a plugin to a slot that has another plugin
+- Fix crash when deleting all visible tracks
+- Fix regions of hidden tracks being shown in the timeline
+- Fix crash when holding down ctrl-d for a long time
+
 ## [1.0.0-alpha.7.1.1] - 2021-01-03
 ### Added
 - Add `--gen-project` option to generate projects from Guile scripts
