@@ -1,6 +1,6 @@
-==================================
+========================================
 audio channel
-==================================
+========================================
 
 Scheme Procedure: **channel-get-insert** | *channel insert_slot*
    Returns the plugin at the given insert slot

@@ -1,6 +1,6 @@
-==================================
+========================================
 actions undo-manager
-==================================
+========================================
 
 Scheme Procedure: **undo-manager-perform** | *undo_manager action*
    Performs the given action and adds it to the undo stack.

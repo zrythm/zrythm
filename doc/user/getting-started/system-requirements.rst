@@ -37,5 +37,5 @@ be set up
 and configured before running Zrythm. You will find
 lots of information online about how to configure
 JACK, such as
-`Demystifying JACK - A Beginners Guide to Getting Started with JACK <https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_,
+`Demystifying JACK - A Beginners Guide to Getting Started with JACK <https://linuxaudio.github.io/libremusicproduction/html/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_,
 so we will skip this part.

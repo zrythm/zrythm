@@ -36,17 +36,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 16:31+0000\n"
+"POT-Creation-Date: 2021-01-18 23:56+0000\n"
 "PO-Revision-Date: 2021-01-03 23:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
-"zrythm/user-manual/en_GB/>\n"
 "Language: en_GB\n"
+"Language-Team: English (United Kingdom) "
+"<https://hosted.weblate.org/projects/zrythm/user-manual/en_GB/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -64,8 +63,8 @@ msgstr ""
 "Zrythm understands the following environment variables. They can be "
 "configured in :file:`.bashrc` or a similar shell configuration file, the "
 "operating system's settings, or they can be passed directly when running "
-":program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
-"path zrythm_launch``"
+":program:`zrythm` or :program:`zrythm_launch`, like: "
+"``LV2_PATH=/my/custom/path zrythm_launch``"
 
 #: ../../appendix/environment.rst:22
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
@@ -3096,8 +3095,9 @@ msgid ""
 "configured before running Zrythm. You will find lots of information "
 "online about how to configure JACK, such as `Demystifying JACK - A "
 "Beginners Guide to Getting Started with JACK "
-"<https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
-"-beginners-guide-getting-started-jack.html>`_, so we will skip this part."
+"<https://linuxaudio.github.io/libremusicproduction/html/articles"
+"/demystifying-jack-%E2%80%93-beginners-guide-getting-started-"
+"jack.html>`_, so we will skip this part."
 msgstr ""
 
 #: ../../glossary/intro.rst:8
@@ -4949,6 +4949,15 @@ msgstr ""
 msgid "Creates an action for connecting 2 ports."
 msgstr ""
 
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
 #: ../../scripting/api/actions undo_manager.rst:3
 msgid "actions undo-manager"
 msgstr ""
@@ -7156,5 +7165,20 @@ msgstr ""
 msgid ":ref:`right-panel` (6)"
 msgstr ""
 
+#~ msgid ""
+#~ "When using the :term:`JACK` backend, "
+#~ "JACK needs to be set up and "
+#~ "configured before running Zrythm. You "
+#~ "will find lots of information online "
+#~ "about how to configure JACK, such "
+#~ "as `Demystifying JACK - A Beginners "
+#~ "Guide to Getting Started with JACK "
+#~ "<https://libremusicproduction.com/articles/demystifying-"
+#~ "jack-%E2%80%93-beginners-guide-getting-started-"
+#~ "jack.html>`_, so we will skip this "
+#~ "part."
+#~ msgstr ""
+
 #~ msgid "Controls"
 #~ msgstr "Controls"
+

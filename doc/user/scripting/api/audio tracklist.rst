@@ -1,6 +1,6 @@
-==================================
+========================================
 audio tracklist
-==================================
+========================================
 
 Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*
    Inserts track track at index idx in the tracklist.

@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 16:31+0000\n"
+"POT-Creation-Date: 2021-01-18 23:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3839,16 +3839,10 @@ msgid ""
 "configured before running Zrythm. You will find lots of information "
 "online about how to configure JACK, such as `Demystifying JACK - A "
 "Beginners Guide to Getting Started with JACK "
-"<https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
-"-beginners-guide-getting-started-jack.html>`_, so we will skip this part."
+"<https://linuxaudio.github.io/libremusicproduction/html/articles"
+"/demystifying-jack-%E2%80%93-beginners-guide-getting-started-"
+"jack.html>`_, so we will skip this part."
 msgstr ""
-"Κατά τη χρήση παρασκηνίου :term:`JACK`, το JACK πρέπει να στηθεί και να "
-"ρυθμιστεί σωστά πριν την εκτέλεση του Zrythm. Θα βρείτε πολλές "
-"πληροφορίες στο διαδίκτυο για το πώς να ρυθμίσετε το JACK, όπως για "
-"παράδειγμα το `Demystifying JACK - A Beginners Guide to Getting Started "
-"with JACK <https://libremusicproduction.com/articles/demystifying-"
-"jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_, οπότε δεν θα"
-" αναλυθεί περαιτέρω."
 
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
@@ -6177,6 +6171,15 @@ msgstr ""
 msgid "Creates an action for connecting 2 ports."
 msgstr ""
 
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
 #: ../../scripting/api/actions undo_manager.rst:3
 msgid "actions undo-manager"
 msgstr ""
@@ -9031,6 +9034,32 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid ""
+#~ "When using the :term:`JACK` backend, "
+#~ "JACK needs to be set up and "
+#~ "configured before running Zrythm. You "
+#~ "will find lots of information online "
+#~ "about how to configure JACK, such "
+#~ "as `Demystifying JACK - A Beginners "
+#~ "Guide to Getting Started with JACK "
+#~ "<https://libremusicproduction.com/articles/demystifying-"
+#~ "jack-%E2%80%93-beginners-guide-getting-started-"
+#~ "jack.html>`_, so we will skip this "
+#~ "part."
+#~ msgstr ""
+#~ "Κατά τη χρήση παρασκηνίου :term:`JACK`, "
+#~ "το JACK πρέπει να στηθεί και να"
+#~ " ρυθμιστεί σωστά πριν την εκτέλεση "
+#~ "του Zrythm. Θα βρείτε πολλές πληροφορίες"
+#~ " στο διαδίκτυο για το πώς να "
+#~ "ρυθμίσετε το JACK, όπως για παράδειγμα"
+#~ " το `Demystifying JACK - A Beginners"
+#~ " Guide to Getting Started with JACK"
+#~ " <https://libremusicproduction.com/articles/demystifying-"
+#~ "jack-%E2%80%93-beginners-guide-getting-started-"
+#~ "jack.html>`_, οπότε δεν θα αναλυθεί "
+#~ "περαιτέρω."
 
 #~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
 #~ msgstr ""
