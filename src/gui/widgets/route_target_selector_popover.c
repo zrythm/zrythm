@@ -24,6 +24,7 @@
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/route_target_selector_popover.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -323,9 +324,16 @@ on_closed (
 {
   gtk_widget_destroy (GTK_WIDGET (self));
 
+  Channel * ch = self->owner->channel;
+  g_return_if_fail (ch);
   Track * prev_output_track =
-    channel_get_output_track (
-      self->owner->channel);
+    channel_get_output_track (ch);
+
+  Track * own_track = channel_get_track (ch);
+  TracklistSelections * sel =
+    tracklist_selections_new (false);
+  tracklist_selections_add_track (
+    sel, own_track, F_PUBLISH_EVENTS);
 
   /* if new track selected, update routing */
   if (self->new_track)
@@ -334,7 +342,7 @@ on_closed (
         {
           UndoableAction * ua =
             tracklist_selections_action_new_edit_direct_out (
-              TRACKLIST_SELECTIONS, self->new_track);
+              sel, self->new_track);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
@@ -343,7 +351,7 @@ on_closed (
     {
       UndoableAction * ua =
         tracklist_selections_action_new_edit_direct_out (
-          TRACKLIST_SELECTIONS, NULL);
+          sel, NULL);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
 
@@ -351,6 +359,8 @@ on_closed (
     self->owner, self->owner->channel);
   g_object_set (
     self->owner, "active", 0, NULL);
+
+  tracklist_selections_free (sel);
 }
 
 static int

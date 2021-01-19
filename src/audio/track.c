@@ -835,6 +835,15 @@ track_verify_identifiers (
     }
   free (ports);
 
+  /* verify output is not itself */
+  if (self->channel)
+    {
+      Track * out_track =
+        channel_get_output_track (self->channel);
+      g_return_val_if_fail (
+        out_track != self, false);
+    }
+
   /* verify tracklist identifiers */
   if (atl)
     {

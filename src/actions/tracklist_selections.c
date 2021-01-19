@@ -1057,12 +1057,15 @@ do_or_undo_edit (
                (own_track_after->channel->
                   has_output)))
             {
+              int target_pos =
+                _do ?
+                  self->new_direct_out_pos :
+                  own_track_after->channel->
+                    output_pos;
+              g_return_val_if_fail (
+                target_pos != ch->track->pos, -1);
               group_target_track_add_child (
-                TRACKLIST->tracks[
-                  _do ?
-                    self->new_direct_out_pos :
-                    own_track_after->channel->
-                      output_pos],
+                TRACKLIST->tracks[target_pos],
                 ch->track->pos, F_CONNECT,
                 F_RECALC_GRAPH, F_PUBLISH_EVENTS);
             }

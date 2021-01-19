@@ -1069,11 +1069,13 @@ channel_get_output_track (
     (TRACKLIST->swapping_tracks ||
      self->output_pos < TRACKLIST->num_tracks),
     NULL);
-  Track * track =
+  Track * track = channel_get_track (self);
+  Track * output_track =
     TRACKLIST->tracks[self->output_pos];
-  g_return_val_if_fail (track, NULL);
+  g_return_val_if_fail (
+    output_track && track != output_track, NULL);
 
-  return track;
+  return output_track;
 }
 
 /**
