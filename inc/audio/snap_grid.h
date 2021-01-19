@@ -48,6 +48,7 @@
 /* FIXME rename to snap grid editor */
 #define SNAP_GRID_MIDI \
   (&PROJECT->snap_grid_midi)
+#define SNAP_GRID_DEFAULT_MAX_BAR 10000
 
 typedef enum NoteLength
 {
@@ -261,7 +262,12 @@ snap_grid_get_ticks_from_length_and_type (
  */
 void
 snap_grid_update_snap_points (
-  SnapGrid * self);
+  SnapGrid * self,
+  int        max_bars);
+
+#define snap_grid_update_snap_points_default(sg) \
+  snap_grid_update_snap_points ( \
+    sg, SNAP_GRID_DEFAULT_MAX_BAR)
 
 /**
  * Gets a snap point's length in ticks.

@@ -70,8 +70,10 @@ do_or_undo (
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate);
 
-  snap_grid_update_snap_points (SNAP_GRID_TIMELINE);
-  snap_grid_update_snap_points (SNAP_GRID_MIDI);
+  snap_grid_update_snap_points_default (
+    SNAP_GRID_TIMELINE);
+  snap_grid_update_snap_points_default (
+    SNAP_GRID_MIDI);
 
   /* get time ratio */
   double time_ratio = 0;

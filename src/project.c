@@ -769,9 +769,9 @@ project_create_default (
     NOTE_LENGTH_1_8);
   clip_editor_init (self->clip_editor);
   timeline_init (self->timeline);
-  snap_grid_update_snap_points (
+  snap_grid_update_snap_points_default (
     &self->snap_grid_timeline);
-  snap_grid_update_snap_points (
+  snap_grid_update_snap_points_default (
     &self->snap_grid_midi);
   quantize_options_update_quantize_points (
     &self->quantize_opts_timeline);
@@ -1078,9 +1078,9 @@ load (
   tracklist_selections_init_loaded (
     self->tracklist_selections);
 
-  snap_grid_update_snap_points (
+  snap_grid_update_snap_points_default (
     &self->snap_grid_timeline);
-  snap_grid_update_snap_points (
+  snap_grid_update_snap_points_default (
     &self->snap_grid_midi);
   quantize_options_update_quantize_points (
     &self->quantize_opts_timeline);

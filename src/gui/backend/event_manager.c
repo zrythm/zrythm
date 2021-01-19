@@ -1328,7 +1328,7 @@ process_events (void * data)
             (Plugin *) ev->arg);
           break;
         case ET_TRANSPORT_TOTAL_BARS_CHANGED:
-          snap_grid_update_snap_points (
+          snap_grid_update_snap_points_default (
             SNAP_GRID_TIMELINE);
 
           ruler_widget_refresh (
@@ -1613,9 +1613,9 @@ process_events (void * data)
 
           /* these are only used in the UI so
            * no need to update them during DSP */
-          snap_grid_update_snap_points (
+          snap_grid_update_snap_points_default (
             &PROJECT->snap_grid_timeline);
-          snap_grid_update_snap_points (
+          snap_grid_update_snap_points_default (
             &PROJECT->snap_grid_midi);
           quantize_options_update_quantize_points (
             &PROJECT->quantize_opts_timeline);

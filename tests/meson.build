@@ -140,6 +140,7 @@ if get_option ('tests')
     ['audio/midi_track', true],
     ['audio/position', true],
     ['audio/region', true],
+    ['audio/snap_grid', true],
     ['audio/track', true],
     ['audio/tracklist', true],
     ['gui/backend/arranger_selections', true],

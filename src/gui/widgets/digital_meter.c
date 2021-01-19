@@ -629,9 +629,9 @@ on_change_finished (
   if (self->update_note_length ||
       self->update_note_type)
     {
-      snap_grid_update_snap_points (
+      snap_grid_update_snap_points_default (
         &PROJECT->snap_grid_timeline);
-      snap_grid_update_snap_points (
+      snap_grid_update_snap_points_default (
         &PROJECT->snap_grid_midi);
       quantize_options_update_quantize_points (
         QUANTIZE_OPTIONS_TIMELINE);
