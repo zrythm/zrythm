@@ -973,6 +973,32 @@ test_move_two_plugins_one_slot_up (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_create_modulator (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef HAVE_AMS_LFO
+  /* create a track with an insert */
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      AMS_LFO_BUNDLE, AMS_LFO_URI, false);
+  UndoableAction * ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_MODULATOR,
+      P_MODULATOR_TRACK->pos,
+      P_MODULATOR_TRACK->num_modulators, descr, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  plugin_descriptor_free (descr);
+
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1006,6 +1032,9 @@ main (int argc, char *argv[])
     "test move two plugins one slot up",
     (GTestFunc)
     test_move_two_plugins_one_slot_up);
+  g_test_add_func (
+    TEST_PREFIX "test create modulator",
+    (GTestFunc) test_create_modulator);
 
   return g_test_run ();
 }

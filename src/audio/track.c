@@ -2504,20 +2504,25 @@ track_type_get_from_string (
  */
 Plugin *
 track_get_plugin_at_slot (
-  Track *           track,
+  Track *           self,
   PluginSlotType    slot_type,
   int               slot)
 {
   switch (slot_type)
     {
     case PLUGIN_SLOT_MIDI_FX:
-      return track->channel->midi_fx[slot];
+      return self->channel->midi_fx[slot];
     case PLUGIN_SLOT_INSTRUMENT:
-      return track->channel->instrument;
+      return self->channel->instrument;
     case PLUGIN_SLOT_INSERT:
-      return track->channel->inserts[slot];
+      return self->channel->inserts[slot];
     case PLUGIN_SLOT_MODULATOR:
-      return track->modulators[slot];
+      if (self->modulators &&
+          slot < self->num_modulators)
+        {
+          return self->modulators[slot];
+        }
+      break;
     }
 
   return NULL;
