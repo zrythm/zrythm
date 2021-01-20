@@ -1046,6 +1046,34 @@ set_features (Lv2Plugin * plugin)
 }
 
 /**
+ * Returns whether the plugin contains a port
+ * that reports latency.
+ */
+static bool
+reports_latency (
+  Lv2Plugin * self)
+{
+  if (self->plugin->instantiation_failed)
+    {
+      /* ignore */
+      return false;
+    }
+
+  for (int i = 0; i < self->num_ports; i++)
+    {
+      Lv2Port * port = &self->ports[i];
+      if (lilv_port_has_property (
+            self->lilv_plugin, port->lilv_port,
+            PM_LILV_NODES.core_reportsLatency))
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
+/**
  * Returns the plugin's latency in samples.
  *
  * Searches for a port marked as reportsLatency
@@ -1054,13 +1082,16 @@ set_features (Lv2Plugin * plugin)
  */
 nframes_t
 lv2_plugin_get_latency (
-  Lv2Plugin * pl)
+  Lv2Plugin * self)
 {
-  lv2_plugin_process (
-    pl, PLAYHEAD->frames, 0);
-    /*AUDIO_ENGINE->block_length);*/
+  if (reports_latency (self))
+    {
+      lv2_plugin_process (
+        self, PLAYHEAD->frames, 0);
+        /*AUDIO_ENGINE->block_length);*/
+    }
 
-  return pl->plugin->latency;
+  return self->plugin->latency;
 }
 
 /**
@@ -2197,7 +2228,7 @@ lv2_plugin_instantiate (
             self->controls.controls[i];
           if (control->type == PORT)
             {
-              Lv2Port* port =
+              Lv2Port * port =
                 &self->ports[control->index];
               g_return_val_if_fail (port->port, -1);
               g_message (

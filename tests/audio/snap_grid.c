@@ -53,8 +53,10 @@ test_update_snap_points ()
 
   TEST_WITH_MAX_BARS (100);
   TEST_WITH_MAX_BARS (1000);
+#if 0
   TEST_WITH_MAX_BARS (10000);
   TEST_WITH_MAX_BARS (100000);
+#endif
 
   test_helper_zrythm_cleanup ();
 }

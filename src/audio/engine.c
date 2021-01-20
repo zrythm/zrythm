@@ -1009,6 +1009,9 @@ engine_process (
   AudioEngine * self,
   nframes_t     total_frames_to_process)
 {
+  g_return_val_if_fail (
+    total_frames_to_process > 0, -1);
+
   /*g_message ("processing...");*/
   g_atomic_int_set (&self->cycle_running, 1);
 

@@ -171,7 +171,7 @@ typedef struct Lv2Plugin
   char *             temp_dir;
 
   /** Port array of size num_ports. */
-  Lv2Port*          ports;
+  Lv2Port *          ports;
   int                num_ports;
 
   /** Available Lv2Plugin controls. */
