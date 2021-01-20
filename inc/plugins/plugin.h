@@ -195,6 +195,8 @@ typedef struct Plugin
 
   int               magic;
 
+  /** Whether this plugin is currently used in the
+   * project. */
   bool              is_project;
 
   /** Cache: whether the plugin has a custom UI. */

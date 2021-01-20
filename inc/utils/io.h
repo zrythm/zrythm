@@ -70,6 +70,9 @@ io_file_strip_ext (const char * filename);
 const char *
 io_file_get_ext (const char * file);
 
+#define io_path_get_basename(filename) \
+  g_path_get_basename (filename)
+
 /**
  * Strips path from given filename.
  *

@@ -1529,7 +1529,8 @@ plugin_open_ui (
     }
 
   /* show error if LV2 UI type is deprecated */
-  if (self->descr->protocol == PROT_LV2 &&
+  if (self->is_project &&
+      self->descr->protocol == PROT_LV2 &&
       (!self->descr->open_with_carla ||
        self->descr->bridge_mode !=
          CARLA_BRIDGE_FULL))

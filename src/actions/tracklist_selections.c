@@ -351,9 +351,11 @@ create_track (
                   pl->descr->name);
 
               if (MAIN_WINDOW)
-                ui_show_error_message (
-                  GTK_WINDOW (MAIN_WINDOW),
-                  message);
+                {
+                  ui_show_error_message (
+                    GTK_WINDOW (MAIN_WINDOW),
+                    message);
+                }
               g_free (message);
               plugin_free (pl);
               g_return_val_if_fail (

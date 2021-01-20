@@ -415,6 +415,10 @@ lv2_plugin_get_port_value (
   uint32_t   * type);
 
 char *
+lv2_plugin_get_library_path (
+  Lv2Plugin * self);
+
+char *
 lv2_plugin_get_abs_state_file_path (
   Lv2Plugin * self,
   bool        is_backup);

@@ -36,8 +36,10 @@
 
 #include "zrythm-config.h"
 
-#define _POSIX_C_SOURCE 200809L /* for mkdtemp */
-#define _DARWIN_C_SOURCE        /* for mkdtemp on OSX */
+/* for dlinfo */
+#define _GNU_SOURCE
+#include <link.h>
+#include <dlfcn.h>
 
 #include <assert.h>
 #include <inttypes.h>
@@ -1618,6 +1620,24 @@ lv2_plugin_pick_ui (
   return false;
 }
 
+/**
+ * Returns the library path.
+ *
+ * Must be free'd with free().
+ */
+char *
+lv2_plugin_get_library_path (
+  Lv2Plugin * self)
+{
+  const LilvNode * library_uri =
+    lilv_plugin_get_library_uri (self->lilv_plugin);
+  char * library_path =
+    lilv_node_get_path (library_uri, NULL);
+  g_warn_if_fail (library_path);
+
+  return library_path;
+}
+
 char *
 lv2_plugin_get_abs_state_file_path (
   Lv2Plugin * self,
@@ -1668,6 +1688,9 @@ lv2_plugin_instantiate (
     "state: %p",
     self->plugin->descr->uri, project,
     preset_uri, use_state_file, state);
+
+  const PluginDescriptor * descr =
+    self->plugin->descr;
 
   set_features (self);
 
@@ -1836,6 +1859,53 @@ lv2_plugin_instantiate (
         } /* end if use state file */
     }
   g_warn_if_fail (self->lilv_plugin);
+
+#if !defined (_WOE32) && !defined (__APPLE__)
+  /* check that plugin .so doesn't contain illegal
+   * dynamic dependencies */
+  char * library_path =
+    lv2_plugin_get_library_path (self);
+  void * handle = dlopen (library_path, RTLD_LAZY);
+  struct link_map * lm;
+  const int ret =
+    dlinfo (handle, RTLD_DI_LINKMAP, &lm);
+  g_return_val_if_fail (
+    lm && ret == 0, -1);
+  while (lm)
+    {
+      g_message (
+        " - %s (0x%016" PRIX64 ")",
+        lm->l_name, lm->l_addr);
+      if (string_contains_substr (
+            lm->l_name, "Qt5Widgets.so") ||
+          string_contains_substr (
+            lm->l_name, "libgtk-3.so") ||
+          string_contains_substr (
+            lm->l_name, "libgtk"))
+        {
+          char * basename =
+            io_path_get_basename (lm->l_name);
+          char msg[1200];
+          sprintf (
+            msg,
+            _("%s <%s> contains a reference to "
+            "%s, which may cause issues.\n"
+            "If the plugin does not load, please "
+            "try instantiating the plugin in full-"
+            "bridged mode, and report this to the "
+            "plugin distributor and/or author:\n"
+            "%s <%s>"),
+            descr->name, descr->uri,
+            basename, descr->author,
+            descr->website);
+          ui_show_error_message (
+            MAIN_WINDOW, msg);
+          g_free (basename);
+        }
+
+      lm = lm->l_next;
+    }
+#endif
 
   self->control_in = -1;
 
