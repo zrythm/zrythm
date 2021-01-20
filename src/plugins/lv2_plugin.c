@@ -38,8 +38,10 @@
 
 /* for dlinfo */
 #define _GNU_SOURCE
+#if !defined (_WOE32) && !defined (__APPLE__)
 #include <link.h>
 #include <dlfcn.h>
+#endif
 
 #include <assert.h>
 #include <inttypes.h>
