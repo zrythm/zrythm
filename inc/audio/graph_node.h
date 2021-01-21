@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -60,6 +60,8 @@ typedef struct Track Track;
 typedef struct SampleProcessor SampleProcessor;
 typedef struct Plugin Plugin;
 typedef struct HardwareProcessor HardwareProcessor;
+typedef struct ModulatorMacroProcessor
+  ModulatorMacroProcessor;
 
 /**
  * @addtogroup audio
@@ -99,6 +101,8 @@ typedef enum GraphNodeType
 
   /** Hardware processor. */
   ROUTE_NODE_TYPE_HW_PROCESSOR,
+
+  ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR,
 } GraphNodeType;
 
 /**
@@ -147,6 +151,8 @@ typedef struct GraphNode
 
   /** Hardware processor, if hardware processor. */
   HardwareProcessor * hw_processor;
+
+  ModulatorMacroProcessor * modulator_macro_processor;
 
   /** For debugging. */
   bool          terminal;

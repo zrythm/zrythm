@@ -58,10 +58,14 @@ typedef struct _ModulatorMacroWidget
   GtkDrawingArea *     output;
 
   /** Button to show an unused modulator macro. */
-  GtkMenuButton *      add_input;
+  GtkButton *          add_input;
+
+  GtkButton *          outputs;
 
   /** Index of the modulator macro in the track. */
   int                  modulator_macro_idx;
+
+  PangoLayout *        layout;
 } ModulatorMacroWidget;
 
 void

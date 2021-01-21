@@ -9,6 +9,8 @@
       <object class="GtkDrawingArea" id="output">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin-start">4</property>
+        <property name="margin-end">4</property>
       </object>
       <packing>
         <property name="left_attach">2</property>
@@ -19,6 +21,8 @@
       <object class="GtkDrawingArea" id="inputs">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin-top">2</property>
+        <property name="margin-bottom">2</property>
       </object>
       <packing>
         <property name="left_attach">0</property>
@@ -28,10 +32,20 @@
     </child>
     <child>
       <object class="GtkButton" id="outputs">
-        <property name="label" translatable="yes">button</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
+        <property name="focus_on_click">False</property>
         <property name="receives_default">True</property>
+        <property name="valign">start</property>
+        <style>
+          <class name="small-button"/>
+        </style>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">True</property>
+            <property name="icon-name">automate</property>
+          </object>
+        </child>
       </object>
       <packing>
         <property name="left_attach">2</property>
@@ -39,13 +53,20 @@
       </packing>
     </child>
     <child>
-      <object class="GtkMenuButton" id="add_input">
+      <object class="GtkButton" id="add_input">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="focus_on_click">False</property>
         <property name="receives_default">True</property>
+        <property name="valign">end</property>
+        <style>
+          <class name="small-button"/>
+        </style>
         <child>
-          <placeholder/>
+          <object class="GtkImage">
+            <property name="visible">True</property>
+            <property name="icon-name">add</property>
+          </object>
         </child>
       </object>
       <packing>

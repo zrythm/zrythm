@@ -524,6 +524,11 @@ textview {
   padding: 0px;
 }
 
+.small-button
+{
+  padding: 3px;
+}
+
 .left-of-ruler-box button
 {
   min-width: 24px;

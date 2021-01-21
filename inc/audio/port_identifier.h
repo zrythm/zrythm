@@ -255,7 +255,12 @@ typedef enum PortFlags
   /** Port is a hardware port. */
   PORT_FLAG_HW = 1 << 28,
 
-  /** Port is a modulator macro. */
+  /**
+   * Port is part of a modulator macro processor.
+   *
+   * Which of the ports it is can be determined
+   * by checking flow/type.
+   */
   PORT_FLAG_MODULATOR_MACRO = 1 << 29,
 } PortFlags;
 

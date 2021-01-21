@@ -29,6 +29,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/chord_object.h"
+#include "audio/modulator_macro_processor.h"
 #include "audio/marker.h"
 #include "audio/region.h"
 #include "audio/scale.h"
@@ -374,7 +375,7 @@ typedef struct Track
   int               modulators_size;
 
   /** Modulator macros. */
-  Port *            modulator_macros[128];
+  ModulatorMacroProcessor * modulator_macros[128];
   int               num_modulator_macros;
   int               num_visible_modulator_macros;
 
@@ -488,7 +489,8 @@ track_fields_schema[] =
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     Track, modulators, plugin_schema),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Track, modulator_macros, port_schema),
+    Track, modulator_macros,
+    modulator_macro_processor_schema),
   YAML_FIELD_INT (
     Track, num_visible_modulator_macros),
   YAML_FIELD_MAPPING_PTR (
@@ -516,8 +518,7 @@ track_fields_schema[] =
 
 static const cyaml_schema_value_t
 track_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     Track, track_fields_schema),
 };
 

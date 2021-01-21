@@ -90,6 +90,17 @@ graph_node_get_name (
           g_strdup_printf (
             "%s Fader", track->name);
       }
+    case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
+      {
+        ModulatorMacroProcessor * mmp =
+          node->modulator_macro_processor;
+        Track * track =
+          port_get_track (mmp->cv_in, true);
+        return
+          g_strdup_printf (
+            "%s Modulator Macro Processor",
+            track->name);
+      }
     case ROUTE_NODE_TYPE_TRACK:
       return
         g_strdup (
@@ -147,6 +158,8 @@ graph_node_get_pointer (
       return NULL;
     case ROUTE_NODE_TYPE_HW_PROCESSOR:
       return node->hw_processor;
+    case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
+      return node->modulator_macro_processor;
     }
   g_return_val_if_reached (NULL);
 }
@@ -229,87 +242,91 @@ process_node (
   const nframes_t local_offset,
   const nframes_t nframes)
 {
-  if (node->type == ROUTE_NODE_TYPE_PLUGIN)
+  switch (node->type)
     {
+    case ROUTE_NODE_TYPE_PLUGIN:
       plugin_process (
         node->pl, g_start_frames, local_offset,
         nframes);
-    }
-  else if (node->type == ROUTE_NODE_TYPE_FADER)
-    {
+      break;
+    case ROUTE_NODE_TYPE_FADER:
       fader_process (
         node->fader, g_start_frames,
         local_offset, nframes);
-    }
-  else if (node->type ==
-             ROUTE_NODE_TYPE_MONITOR_FADER)
-    {
+      break;
+    case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
+      modulator_macro_processor_process (
+        node->modulator_macro_processor,
+        g_start_frames, local_offset, nframes);
+      break;
+    case ROUTE_NODE_TYPE_MONITOR_FADER:
       fader_process (
         node->fader, g_start_frames,
         local_offset, nframes);
-    }
-  else if (node->type == ROUTE_NODE_TYPE_PREFADER)
-    {
+      break;
+    case ROUTE_NODE_TYPE_PREFADER:
       fader_process (
         node->prefader, g_start_frames,
         local_offset, nframes);
-    }
-  else if (node->type ==
-           ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)
-    {
+      break;
+    case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       sample_processor_process (
         node->sample_processor, local_offset,
         nframes);
-    }
-  else if (node->type ==
-           ROUTE_NODE_TYPE_TRACK)
-    {
-      Track * track = node->track;
-      if (!IS_TRACK (track))
-        {
-          g_warn_if_reached ();
-          return;
-        }
-      if (track->type != TRACK_TYPE_TEMPO &&
-          track->type != TRACK_TYPE_MARKER)
-        {
-          track_processor_process (
-            track->processor,
-            g_start_frames, local_offset,
-            nframes);
-        }
-    }
-  else if (node->type == ROUTE_NODE_TYPE_PORT)
-    {
-      /* decide what to do based on what port it
-       * is */
-      Port * port = node->port;
-      /*PortIdentifier * id = &port->id;*/
+      break;
+    case ROUTE_NODE_TYPE_TRACK:
+      {
+        Track * track = node->track;
+        if (!IS_TRACK (track))
+          {
+            g_warn_if_reached ();
+            return;
+          }
+        if (track->type != TRACK_TYPE_TEMPO &&
+            track->type != TRACK_TYPE_MARKER)
+          {
+            track_processor_process (
+              track->processor,
+              g_start_frames, local_offset,
+              nframes);
+          }
+      }
+      break;
+    case ROUTE_NODE_TYPE_PORT:
+      {
+        /* decide what to do based on what port it
+         * is */
+        Port * port = node->port;
+        /*PortIdentifier * id = &port->id;*/
 
-      /* if midi editor manual press */
-      if (port == AUDIO_ENGINE->
-            midi_editor_manual_press)
-        {
-          midi_events_dequeue (
-            AUDIO_ENGINE->
-              midi_editor_manual_press->
-                midi_events);
-        }
+        /* if midi editor manual press */
+        if (port == AUDIO_ENGINE->
+              midi_editor_manual_press)
+          {
+            midi_events_dequeue (
+              AUDIO_ENGINE->
+                midi_editor_manual_press->
+                  midi_events);
+          }
 
-      /* if exporting and the port is not a
-       * project port, ignore it */
-      else if (
-        engine_is_port_own (AUDIO_ENGINE, port) &&
-        AUDIO_ENGINE->exporting)
-        {
-        }
+        /* if exporting and the port is not a
+         * project port, ignore it */
+        else if (
+          engine_is_port_own (AUDIO_ENGINE, port) &&
+          AUDIO_ENGINE->exporting)
+          {
+          }
 
-      else
-        {
-          port_process (
-            port, g_start_frames, local_offset,
-            nframes, false);
-        }
+        else
+          {
+            port_process (
+              port, g_start_frames, local_offset,
+              nframes, false);
+          }
+      }
+      break;
+    default:
+      break;
     }
 }
 
@@ -623,6 +640,10 @@ graph_node_new (
     case ROUTE_NODE_TYPE_HW_PROCESSOR:
       node->hw_processor =
         (HardwareProcessor *) data;
+      break;
+    case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
+      node->modulator_macro_processor =
+        (ModulatorMacroProcessor *) data;
       break;
     }
 

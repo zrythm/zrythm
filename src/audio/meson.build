@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -75,6 +75,7 @@ audio_srcs = [
   'midi_note.c',
   'midi_region.c',
   'midi_track.c',
+  'modulator_macro_processor.c',
   'modulator_track.c',
   'peak_dsp.c',
   'pool.c',

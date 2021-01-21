@@ -62,6 +62,8 @@ typedef struct Plugin Plugin;
 typedef struct Position Position;
 typedef struct GraphThread GraphThread;
 typedef struct Router Router;
+typedef struct ModulatorMacroProcessor
+  ModulatorMacroProcessor;
 
 /**
  * @addtogroup audio
@@ -195,6 +197,11 @@ GraphNode *
 graph_find_node_from_monitor_fader (
   Graph * graph,
   Fader * fader);
+
+GraphNode *
+graph_find_node_from_modulator_macro_processor (
+  Graph * graph,
+  ModulatorMacroProcessor * processor);
 
 GraphNode *
 graph_find_initial_processor_node (

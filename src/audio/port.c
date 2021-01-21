@@ -311,8 +311,23 @@ port_find_from_identifier (
       else if (
         flags & PORT_FLAG_MODULATOR_MACRO)
         {
-          return
+          ModulatorMacroProcessor * processor =
             tr->modulator_macros[id->port_index];
+          if (id->flow == FLOW_INPUT)
+            {
+              if (id->type == TYPE_CV)
+                {
+                  return processor->cv_in;
+                }
+              else if (id->type == TYPE_CONTROL)
+                {
+                  return processor->macro;
+                }
+            }
+          else if (id->flow == FLOW_OUTPUT)
+            {
+              return processor->cv_out;
+            }
         }
       ch = tr->channel;
       g_warn_if_fail (ch);

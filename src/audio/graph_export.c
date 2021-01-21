@@ -71,6 +71,7 @@ get_parent_graph (
     case ROUTE_NODE_TYPE_PLUGIN:
     case ROUTE_NODE_TYPE_FADER:
     case ROUTE_NODE_TYPE_PREFADER:
+    case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
       parent_node = node;
       break;
     case ROUTE_NODE_TYPE_PORT:
@@ -90,9 +91,21 @@ get_parent_graph (
             {
               Track * tr =
                 port_get_track (node->port, true);
-              parent_node =
-                graph_find_node_from_track (
-                  node->graph, tr, true);
+              if (node->port->id.flags &
+                    PORT_FLAG_MODULATOR_MACRO)
+                {
+                  parent_node =
+                    graph_find_node_from_modulator_macro_processor (
+                      node->graph,
+                      tr->modulator_macros[
+                        node->port->id.port_index]);
+                }
+              else
+                {
+                  parent_node =
+                    graph_find_node_from_track (
+                      node->graph, tr, true);
+                }
             }
             break;
           case PORT_OWNER_TYPE_PREFADER:
@@ -238,8 +251,11 @@ fill_anodes (
       if (node->type != ROUTE_NODE_TYPE_TRACK &&
           node->type !=
             ROUTE_NODE_TYPE_SAMPLE_PROCESSOR &&
-          node->type != ROUTE_NODE_TYPE_MONITOR_FADER)
-        continue;
+          node->type !=
+            ROUTE_NODE_TYPE_MONITOR_FADER)
+        {
+          continue;
+        }
 
       char * node_name = graph_node_get_name (node);
       sprintf (
@@ -259,7 +275,9 @@ fill_anodes (
 
       if (node->type != ROUTE_NODE_TYPE_PLUGIN &&
           node->type != ROUTE_NODE_TYPE_FADER &&
-          node->type != ROUTE_NODE_TYPE_PREFADER)
+          node->type != ROUTE_NODE_TYPE_PREFADER &&
+          node->type !=
+            ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR)
         continue;
 
       GraphNode * parent_node;
@@ -288,6 +306,18 @@ fill_anodes (
             Fader * prefader = node->prefader;
             Track * tr =
               fader_get_track (prefader);
+            parent_node =
+              graph_find_node_from_track (
+                node->graph, tr, true);
+          }
+          break;
+        case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
+          {
+            ModulatorMacroProcessor * mmp =
+              node->modulator_macro_processor;
+            Track * tr =
+              modulator_macro_processor_get_track (
+                mmp);
             parent_node =
               graph_find_node_from_track (
                 node->graph, tr, true);

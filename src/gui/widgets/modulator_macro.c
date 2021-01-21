@@ -29,6 +29,7 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/string.h"
@@ -41,10 +42,137 @@ G_DEFINE_TYPE (
   ModulatorMacroWidget, modulator_macro_widget,
   GTK_TYPE_GRID)
 
+static bool
+on_inputs_draw (
+  GtkWidget *            widget,
+  cairo_t *              cr,
+  ModulatorMacroWidget * self)
+{
+  GtkStyleContext *context =
+    gtk_widget_get_style_context (widget);
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
+
+  Port * port =
+    P_MODULATOR_TRACK->modulator_macros[
+      self->modulator_macro_idx]->cv_in;
+
+  if (port->num_srcs == 0)
+    {
+      const char * str = _("No inputs");
+      int w, h;
+      z_cairo_get_text_extents_for_widget (
+        widget, self->layout, str, &w, &h);
+      cairo_set_source_rgba (cr, 1, 1, 1, 1);
+      cairo_move_to (
+        cr, width / 2.0 - w / 2.0,
+        height / 2.0 - h / 2.0);
+      z_cairo_draw_text (
+        cr, widget, self->layout, str);
+    }
+  else
+    {
+      double val_w =
+        ((double) width / (double) port->num_srcs);
+      for (int i = 0; i < port->num_srcs; i++)
+        {
+          double val_h =
+            (double)
+            ((port->srcs[i]->buf[0] - port->minf) /
+             (port->maxf - port->minf)) *
+            (double) height;
+          cairo_set_source_rgba (cr, 1, 1, 0, 1);
+          cairo_rectangle (
+            cr, val_w * (double) i,
+            (double) height - val_h,
+            val_w, 1);
+          cairo_fill (cr);
+
+          if (i != 0)
+            {
+              cairo_set_source_rgba (
+                cr, 0.4, 0.4, 0.4, 1);
+              z_cairo_draw_vertical_line (
+                cr, val_w * i, 0, height, 1);
+            }
+        }
+    }
+
+  return false;
+}
+
+static bool
+on_output_draw (
+  GtkWidget *            widget,
+  cairo_t *              cr,
+  ModulatorMacroWidget * self)
+{
+  GtkStyleContext *context =
+    gtk_widget_get_style_context (widget);
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
+
+  Port * port =
+    P_MODULATOR_TRACK->modulator_macros[
+      self->modulator_macro_idx]->cv_out;
+
+  cairo_set_source_rgba (cr, 1, 1, 0, 1);
+  double val_h =
+    (double)
+    ((port->buf[0] - port->minf) /
+     (port->maxf - port->minf)) *
+    (double) height;
+  cairo_rectangle (
+    cr, 0, (double) height - val_h, width, 1);
+  cairo_fill (cr);
+
+  return false;
+}
+
 void
 modulator_macro_widget_refresh (
   ModulatorMacroWidget * self)
 {
+}
+
+static void
+on_automate_clicked (
+  GtkButton *            btn,
+  Port *                 port)
+{
+  g_return_if_fail (port);
+
+  PortConnectionsPopoverWidget * popover =
+    port_connections_popover_widget_new (
+      GTK_WIDGET (btn), port);
+  gtk_widget_show_all (GTK_WIDGET (popover));
+
+#if 0
+  g_signal_connect (
+    G_OBJECT (popover), "closed",
+    G_CALLBACK (on_popover_closed), self);
+#endif
+}
+
+static bool
+redraw_cb (
+  GtkWidget *             widget,
+  GdkFrameClock *        frame_clock,
+  ModulatorMacroWidget * self)
+{
+  gtk_widget_queue_draw (widget);
+
+  return G_SOURCE_CONTINUE;
 }
 
 static void
@@ -69,7 +197,7 @@ modulator_macro_widget_new (
 
   Port * port =
     P_MODULATOR_TRACK->modulator_macros[
-      modulator_macro_idx];
+      modulator_macro_idx]->macro;
 
   KnobWidget * knob =
     knob_widget_new_simple (
@@ -82,6 +210,33 @@ modulator_macro_widget_new (
   gtk_grid_attach (
     GTK_GRID (self),
     GTK_WIDGET (self->knob_with_name), 1, 0, 1, 2);
+
+  g_signal_connect (
+    G_OBJECT (self->outputs), "clicked",
+    G_CALLBACK (on_automate_clicked),
+    P_MODULATOR_TRACK->modulator_macros[
+      modulator_macro_idx]->cv_out);
+  g_signal_connect (
+    G_OBJECT (self->add_input), "clicked",
+    G_CALLBACK (on_automate_clicked),
+    P_MODULATOR_TRACK->modulator_macros[
+      modulator_macro_idx]->cv_in);
+
+  g_signal_connect (
+    G_OBJECT (self->inputs), "draw",
+    G_CALLBACK (on_inputs_draw), self);
+  g_signal_connect (
+    G_OBJECT (self->output), "draw",
+    G_CALLBACK (on_output_draw), self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self->inputs),
+    (GtkTickCallback) redraw_cb,
+    self, NULL);
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self->output),
+    (GtkTickCallback) redraw_cb,
+    self, NULL);
 
   return self;
 }
@@ -115,6 +270,7 @@ modulator_macro_widget_class_init (
   BIND_CHILD (inputs);
   BIND_CHILD (output);
   BIND_CHILD (add_input);
+  BIND_CHILD (outputs);
 
   GObjectClass * goklass = G_OBJECT_CLASS (_klass);
   goklass->finalize = (GObjectFinalizeFunc) finalize;
@@ -125,4 +281,14 @@ modulator_macro_widget_init (
   ModulatorMacroWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->inputs), -1, 12);
+  /*gtk_widget_set_size_request (*/
+    /*GTK_WIDGET (self->inputs), 24, -1);*/
+
+  self->layout =
+    z_cairo_create_pango_layout_from_string (
+      GTK_WIDGET (self->inputs), "Sans 7",
+      PANGO_ELLIPSIZE_NONE, -1);
 }

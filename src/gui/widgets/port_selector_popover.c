@@ -114,10 +114,9 @@ create_model_for_ports (
 
   /* icon, name, pointer to port */
   list_store =
-    gtk_list_store_new (3,
-                        G_TYPE_STRING,
-                        G_TYPE_STRING,
-                        G_TYPE_POINTER);
+    gtk_list_store_new (
+      3, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_POINTER);
 
   PortType type = self->port->id.type;
   PortFlow flow = self->port->id.flow;
@@ -143,7 +142,7 @@ create_model_for_ports (
     }
 
   Port * port;
-  if (track && track->channel)
+  if (track)
     {
       Channel * ch = track->channel;
       if (flow == FLOW_INPUT)
@@ -173,7 +172,7 @@ create_model_for_ports (
       else if (flow == FLOW_OUTPUT)
         {
           if (type == TYPE_AUDIO ||
-               type == TYPE_CV)
+                type == TYPE_CV)
             {
               if (track->in_signal_type ==
                     TYPE_AUDIO)
@@ -194,6 +193,21 @@ create_model_for_ports (
                   port =
                     track->channel->fader->balance;
                   ADD_ROW;
+                }
+
+              if (track->type ==
+                    TRACK_TYPE_MODULATOR)
+                {
+                  for (int j = 0;
+                       j <
+                         track->num_modulator_macros;
+                       j++)
+                    {
+                      port =
+                        track->modulator_macros[j]->
+                          cv_in;
+                      ADD_ROW;
+                    }
                 }
             }
           else if (type == TYPE_EVENT &&

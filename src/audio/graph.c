@@ -540,6 +540,19 @@ graph_setup (
           plugin_update_latency (pl);
         }
 
+      /* add the modulator macro processors */
+      if (tr->type == TRACK_TYPE_MODULATOR)
+        {
+          for (int j = 0;
+               j < tr->num_modulator_macros; j++)
+            {
+              graph_create_node (
+                self,
+                ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR,
+                tr->modulator_macros[j]);
+            }
+        }
+
       if (!tr->channel)
         continue;
 
@@ -776,6 +789,37 @@ graph_setup (
 
               if (pl && !pl->deleting)
                 connect_plugin (self, pl);
+            }
+
+          /* connect the modulator macro
+           * processors */
+          for (int j = 0;
+               j < tr->num_modulator_macros; j++)
+            {
+              ModulatorMacroProcessor * mmp =
+                  tr->modulator_macros[j];
+              GraphNode * mmp_node =
+                graph_find_node_from_modulator_macro_processor (
+                  self, mmp);
+
+              port = mmp->cv_in;
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              graph_node_connect (
+                node2, mmp_node);
+              port = mmp->macro;
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              graph_node_connect (
+                node2, mmp_node);
+              port = mmp->cv_out;
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              graph_node_connect (
+                mmp_node, node2);
             }
         }
 
@@ -1309,6 +1353,27 @@ graph_find_hw_processor_node (
       if (node->type ==
             ROUTE_NODE_TYPE_HW_PROCESSOR)
         return node;
+    }
+  return NULL;
+}
+
+GraphNode *
+graph_find_node_from_modulator_macro_processor (
+  Graph * graph,
+  ModulatorMacroProcessor * processor)
+{
+  GraphNode * node;
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
+    {
+      node = graph->setup_graph_nodes[i];
+      if (node->type ==
+            ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR &&
+          node->modulator_macro_processor ==
+            processor)
+        {
+          return node;
+        }
     }
   return NULL;
 }

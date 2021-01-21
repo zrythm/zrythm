@@ -1113,7 +1113,7 @@ track_generate_automation_tracks (
         {
           at =
             automation_track_new (
-              track->modulator_macros[i]);
+              track->modulator_macros[i]->macro);
           if (i == 0)
             {
               at->created = true;
@@ -2676,7 +2676,9 @@ track_append_all_ports (
       for (int j = 0;
            j < self->num_modulator_macros; j++)
         {
-          _ADD (self->modulator_macros[j]);
+          _ADD (self->modulator_macros[j]->macro);
+          _ADD (self->modulator_macros[j]->cv_in);
+          _ADD (self->modulator_macros[j]->cv_out);
         }
     }
 
@@ -2717,7 +2719,7 @@ remove_ats_from_automation_tracklist (
 void
 track_free (Track * self)
 {
-  g_message ("freeing %s (%d)...",
+  g_debug ("freeing %s (%d)...",
     self->name, self->pos);
 
   /* remove regions */
@@ -2774,7 +2776,14 @@ track_free (Track * self)
   g_free_and_null (self->comment);
   g_free_and_null (self->icon_name);
 
+  for (int i = 0; i < self->num_modulator_macros;
+       i++)
+    {
+      modulator_macro_processor_free (
+        self->modulator_macros[i]);
+    }
+
   object_zero_and_free (self);
 
-  g_message ("done");
+  g_debug ("done");
 }

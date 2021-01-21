@@ -47,7 +47,7 @@ on_add_clicked (
   gtk_popover_set_relative_to (
     GTK_POPOVER (psp), GTK_WIDGET (btn));
   gtk_popover_set_position (
-    GTK_POPOVER (psp), GTK_POS_BOTTOM);
+    GTK_POPOVER (psp), GTK_POS_RIGHT);
   gtk_widget_show_all (GTK_WIDGET (psp));
 }
 
