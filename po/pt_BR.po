@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Tércio Martins <tecnotercio@yahoo.com.br>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-11-09 17:26+0000\n"
-"Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
+"PO-Revision-Date: 2021-01-11 14:32+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -16,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -1236,7 +1237,7 @@ msgstr "Marcador Personalizado"
 
 #: src/gui/widgets/timeline_arranger.c:1263
 msgid "Fade preset"
-msgstr ""
+msgstr "Predefinição de fade"
 
 #: src/gui/widgets/timeline_arranger.c:1290
 msgid "Exponential"
