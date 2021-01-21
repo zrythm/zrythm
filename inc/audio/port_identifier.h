@@ -254,6 +254,9 @@ typedef enum PortFlags
 
   /** Port is a hardware port. */
   PORT_FLAG_HW = 1 << 28,
+
+  /** Port is a modulator macro. */
+  PORT_FLAG_MODULATOR_MACRO = 1 << 29,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -288,6 +291,7 @@ port_flags_bitvals[] =
   { .name = "tp_mono", .offset = 26, .bits = 1 },
   { .name = "tp_input_gain", .offset = 27, .bits = 1 },
   { .name = "hw", .offset = 28, .bits = 1 },
+  { .name = "modulator_macro", .offset = 29, .bits = 1 },
 };
 
 /**

@@ -63,6 +63,30 @@ modulator_track_init (
   gdk_rgba_parse (&self->color, "#222222");
   self->icon_name = g_strdup ("modulator");
 
+  const int max_macros = 8;
+  self->num_visible_modulator_macros = max_macros;
+  for (int i = 0; i < max_macros; i++)
+    {
+      char str[600];
+      sprintf (str, _("Macro %d"), i + 1);
+      self->modulator_macros[i] =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT, str);
+      Port * port = self->modulator_macros[i];
+      port->minf = 0.f;
+      port->maxf = 1.f;
+      port->deff = 0.f;
+      port_set_control_value (
+        port, 0.75f, false, false);
+      port->id.flags |=
+        PORT_FLAG_AUTOMATABLE;
+      port->id.flags |=
+        PORT_FLAG_MODULATOR_MACRO;
+      port->id.port_index = i;
+      port_set_owner_track (port, self);
+    }
+  self->num_modulator_macros = max_macros;
+
   /* set invisible */
   self->visible = false;
 }

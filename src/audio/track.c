@@ -1093,10 +1093,11 @@ track_generate_automation_tracks (
         }
     }
 
-  /* create special BPM and time sig automation
-   * tracks for tempo track */
-  if (track->type == TRACK_TYPE_TEMPO)
+  switch (track->type)
     {
+    case TRACK_TYPE_TEMPO:
+    /* create special BPM and time sig automation
+     * tracks for tempo track */
       at = automation_track_new (track->bpm_port);
       at->created = true;
       at->visible = true;
@@ -1105,6 +1106,24 @@ track_generate_automation_tracks (
         automation_track_new (
           track->time_sig_port);
       automation_tracklist_add_at (atl, at);
+      break;
+    case TRACK_TYPE_MODULATOR:
+      for (int i = 0;
+           i < track->num_modulator_macros; i++)
+        {
+          at =
+            automation_track_new (
+              track->modulator_macros[i]);
+          if (i == 0)
+            {
+              at->created = true;
+              at->visible = true;
+            }
+          automation_tracklist_add_at (atl, at);
+        }
+      break;
+    default:
+      break;
     }
 
   g_message ("done");
@@ -2653,6 +2672,11 @@ track_append_all_ports (
           plugin_append_ports (
             pl, ports, max_size, is_dynamic,
             size);
+        }
+      for (int j = 0;
+           j < self->num_modulator_macros; j++)
+        {
+          _ADD (self->modulator_macros[j]);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/drag_dest_box.h"
 #include "gui/widgets/modulator.h"
+#include "gui/widgets/modulator_macro.h"
 #include "gui/widgets/modulator_view.h"
 #include "plugins/plugin.h"
 #include "project.h"
@@ -92,13 +93,25 @@ modulator_view_widget_init (
     GTK_BOX (self->modulators_box),
     GTK_WIDGET (drag_dest),
     1, 1, 0);
+
+  for (int i = 0; i < 8; i++)
+    {
+      self->macros[i] =
+        modulator_macro_widget_new (i);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->macros[i]), true);
+      gtk_container_add (
+        GTK_CONTAINER (self->macros_box),
+        GTK_WIDGET (self->macros[i]));
+    }
 }
 
 static void
 modulator_view_widget_class_init (
   ModulatorViewWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "modulator_view.ui");
 
@@ -114,4 +127,5 @@ modulator_view_widget_class_init (
   BIND_CHILD (color);
   BIND_CHILD (track_name);
   BIND_CHILD (modulators_box);
+  BIND_CHILD (macros_box);
 }

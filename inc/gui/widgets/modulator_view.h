@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,6 +47,8 @@ G_DECLARE_FINAL_TYPE (
     MW_MODULATOR_VIEW->bot_notebook, 2)
 
 typedef struct _ModulatorWidget ModulatorWidget;
+typedef struct _ModulatorMacroWidget
+  ModulatorMacroWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track Track;
 
@@ -58,10 +60,12 @@ typedef struct _ModulatorViewWidget
 {
   GtkBox            parent_instance;
   GtkBox *          modulators_box;
+  GtkBox *          macros_box;
   ColorAreaWidget * color;
   GtkLabel *        track_name;
   Track *           track;
   ModulatorWidget * modulators[14];
+  ModulatorMacroWidget * macros[8];
 } ModulatorViewWidget;
 
 void

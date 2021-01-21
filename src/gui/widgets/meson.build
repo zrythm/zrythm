@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -99,6 +99,7 @@ widget_srcs = files([
   'mixer.c',
   'modulator.c',
   'modulator_inner.c',
+  'modulator_macro.c',
   'modulator_view.c',
   'panel_file_browser.c',
   'piano_keyboard.c',

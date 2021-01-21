@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,11 +47,19 @@ typedef struct _KnobWithNameWidget
   KnobWidget *   knob;
 } KnobWithNameWidget;
 
+
+/**
+ * Returns a new instance.
+ *
+ * @param label_before Whether to show the label
+ *   before the knob.
+ */
 KnobWithNameWidget *
 knob_with_name_widget_new (
   const char *   name,
   KnobWidget *   knob,
   GtkOrientation orientation,
+  bool           label_before,
   int            spacing);
 
 #endif

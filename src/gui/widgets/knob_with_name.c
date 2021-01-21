@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,28 +26,45 @@ G_DEFINE_TYPE (KnobWithNameWidget,
                knob_with_name_widget,
                GTK_TYPE_BOX)
 
+/**
+ * Returns a new instance.
+ *
+ * @param label_before Whether to show the label
+ *   before the knob.
+ */
 KnobWithNameWidget *
 knob_with_name_widget_new (
   const char *   name,
   KnobWidget *   knob,
   GtkOrientation orientation,
+  bool           label_before,
   int            spacing)
 {
   KnobWithNameWidget * self =
     g_object_new (
       KNOB_WITH_NAME_WIDGET_TYPE,
       "orientation", orientation,
-      "spacing", 2,
-      NULL);
-
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (knob));
+      "spacing", 2, NULL);
 
   GtkWidget * label = gtk_label_new (name);
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    label);
+
+  if (label_before)
+    {
+      gtk_container_add (
+        GTK_CONTAINER (self), label);
+      gtk_container_add (
+        GTK_CONTAINER (self),
+        GTK_WIDGET (knob));
+    }
+  else
+    {
+      gtk_container_add (
+        GTK_CONTAINER (self),
+        GTK_WIDGET (knob));
+      gtk_container_add (
+        GTK_CONTAINER (self), label);
+    }
+
 
   gtk_widget_show_all (GTK_WIDGET (self));
 

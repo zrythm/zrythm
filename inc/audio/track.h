@@ -373,6 +373,11 @@ typedef struct Track
   int               num_modulators;
   int               modulators_size;
 
+  /** Modulator macros. */
+  Port *            modulator_macros[128];
+  int               num_modulator_macros;
+  int               num_visible_modulator_macros;
+
   /* ==== MODULATOR TRACK END ==== */
 
   /* ==== CHANNEL TRACK ==== */
@@ -482,6 +487,10 @@ track_fields_schema[] =
     Track, time_sig_port, port_fields_schema),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     Track, modulators, plugin_schema),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Track, modulator_macros, port_schema),
+  YAML_FIELD_INT (
+    Track, num_visible_modulator_macros),
   YAML_FIELD_MAPPING_PTR (
     Track, processor,
     track_processor_fields_schema),
