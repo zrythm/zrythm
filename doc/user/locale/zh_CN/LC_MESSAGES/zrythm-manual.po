@@ -34,15 +34,17 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-18 23:56+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2021-01-21 18:18+0000\n"
+"PO-Revision-Date: 2021-01-10 07:32+0000\n"
+"Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language: zh_CN\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -255,13 +257,8 @@ msgid "Appendix"
 msgstr "附录"
 
 #: ../../appendix/menu-actions.rst:6
-#, fuzzy
 msgid "Menu Actions"
-msgstr ""
-"#-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#\n"
-"操作菜单\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "菜单选项"
 
 #: ../../appendix/shortcut-keys.rst:6
 msgid "Shortcut Keys"
@@ -565,7 +562,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Audio inputs"
-msgstr ""
+msgstr "音频输入"
 
 #: ../../configuration/preferences/intro.rst:53
 msgid "A list of audio inputs to auto-connect to."
@@ -580,13 +577,8 @@ msgid "Global paths."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:61
-#, fuzzy
 msgid "Zrythm path"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"zrythm"
+msgstr "Zrythm 路径"
 
 #: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
@@ -676,26 +668,16 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:118
-#, fuzzy
 msgid "SFZ instruments"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"乐器"
+msgstr "SFZ 乐器"
 
 #: ../../configuration/preferences/intro.rst:119
 msgid "The search paths to scan for :term:`SFZ` instruments in."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:123
-#, fuzzy
 msgid "SF2 instruments"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"乐器"
+msgstr "SF2 乐器"
 
 #: ../../configuration/preferences/intro.rst:124
 msgid "The search paths to scan for :term:`SF2` instruments in."
@@ -746,16 +728,8 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:164
 #: ../../editing/intro.rst:8
-#, fuzzy
 msgid "Editing"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"录制\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "编辑中"
 
 #: ../../configuration/preferences/intro.rst:166
 msgid "Editing options."
@@ -768,19 +742,8 @@ msgstr ""
 #: ../../tracks/track-types.rst:16
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
-#, fuzzy
 msgid "Audio"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"声音\n"
-"#-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#\n"
-"音讯\n"
-"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
-"音讯\n"
-"#-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#\n"
-"音讯\n"
-"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
-"声音"
+msgstr "音频"
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
@@ -919,15 +882,8 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/intro.rst:18
-#, fuzzy
 msgid "Coding"
-msgstr ""
-"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"录制\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "编码"
 
 #: ../../contributing/intro.rst:19
 msgid ""
@@ -1298,13 +1254,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
-#, fuzzy
 msgid "Chords"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"和弦"
+msgstr "和弦"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -1750,14 +1701,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/common-operations.rst:58
-#, fuzzy
 msgid "Paste"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"控制"
+msgstr "粘帖"
 
 #: ../../editing/common-operations.rst:59
 msgid ""
@@ -2727,15 +2672,8 @@ msgid "Exported files"
 msgstr ""
 
 #: ../../exporting/intro.rst:6
-#, fuzzy
 msgid "Exporting"
-msgstr ""
-"#-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"录制\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "导出"
 
 #: ../../exporting/routing-graph.rst:8
 #: ../../routing/making-connections.rst:34
@@ -2863,13 +2801,8 @@ msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:77
-#, fuzzy
 msgid "SFZ/SF2 Instruments"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"乐器"
+msgstr "SFZ/SF2 乐器"
 
 #: ../../getting-started/getting-plugins.rst:79
 msgid ""
@@ -2989,13 +2922,8 @@ msgid "Getting Started"
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:8
-#, fuzzy
 msgid "Running Zrythm"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"zrythm"
+msgstr "运行 Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
@@ -3231,15 +3159,8 @@ msgstr ""
 
 #: ../../glossary/intro.rst:35
 #: ../../routing/ports.rst:48
-#, fuzzy
 msgid "Control"
-msgstr ""
-"#-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#\n"
-"#-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
-"#-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"控制室"
+msgstr "控制室"
 
 #: ../../glossary/intro.rst:37
 msgid ""
@@ -3418,13 +3339,8 @@ msgid "SF2 is the successor of :term:`SFZ`."
 msgstr ""
 
 #: ../../glossary/intro.rst:135
-#, fuzzy
 msgid "Stereo"
-msgstr ""
-"#-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"控制"
+msgstr "立体声"
 
 #: ../../glossary/intro.rst:137
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
@@ -3890,16 +3806,8 @@ msgid "Each sixteenth note is fixed to have 240 ticks."
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:6
-#, fuzzy
 msgid "Recording"
-msgstr ""
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"录制\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"录制\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "录音"
 
 #: ../../playback-and-recording/recording.rst:9
 msgid "Arming Tracks"
@@ -4980,40 +4888,6 @@ msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:6
 msgid "Returns a new action for creating a send connection."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:3
-msgid "actions create-tracks-action"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:7
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-with-plugin** | *type "
-"pl_descr track_pos num_tracks*"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:6
-msgid "Returns a new Create Tracks action for a plugin."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:12
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-audio-fx** | *track_pos "
-"num_tracks*"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:10
-msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:16
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-midi** | *track_pos "
-"num_tracks*"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:15
-msgid "Returns a new Create Tracks action for one or more empty MIDI tracks."
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:3
@@ -7245,20 +7119,6 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
-
-#~ msgid ""
-#~ "When using the :term:`JACK` backend, "
-#~ "JACK needs to be set up and "
-#~ "configured before running Zrythm. You "
-#~ "will find lots of information online "
-#~ "about how to configure JACK, such "
-#~ "as `Demystifying JACK - A Beginners "
-#~ "Guide to Getting Started with JACK "
-#~ "<https://libremusicproduction.com/articles/demystifying-"
-#~ "jack-%E2%80%93-beginners-guide-getting-started-"
-#~ "jack.html>`_, so we will skip this "
-#~ "part."
-#~ msgstr ""
 
 #~ msgid "/bin/zrythm"
 #~ msgstr "/bin/zrythm"

@@ -6,13 +6,14 @@
 # Gary Wang <wzc782970009@gmail.com>, 2020.
 # yu zhang <zhangyu201510@gmail.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
+# Eric <spice2wolf@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-12-30 23:03+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2021-01-10 07:32+0000\n"
+"Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -57,9 +58,8 @@ msgid "Chord Object"
 msgstr "chord工程"
 
 #: inc/gui/backend/arranger_object.h:98
-#, fuzzy
 msgid "Scale Object"
-msgstr "保存项目"
+msgstr "缩放对象"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
 #: src/gui/widgets/event_viewer.c:109
@@ -134,7 +134,7 @@ msgstr "乐器"
 #: src/gui/widgets/preferences.c:94 src/audio/region.c:397
 #: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Audio"
-msgstr "音讯"
+msgstr "音频"
 
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
@@ -151,9 +151,8 @@ msgid "Tempo"
 msgstr "节奏"
 
 #: inc/audio/track.h:168
-#, fuzzy
 msgid "Modulator"
-msgstr "调制器"
+msgstr "调幅器"
 
 #: inc/audio/track.h:169
 msgid "Audio FX"
@@ -241,14 +240,12 @@ msgid "Dummy (libsoundio)"
 msgstr ""
 
 #: inc/audio/engine.h:281
-#, fuzzy
 msgid "ALSA Sequencer (not working)"
-msgstr "ALSA Sequencer"
+msgstr "ALSA 音序器（失灵）"
 
 #: inc/audio/engine.h:282
-#, fuzzy
 msgid "ALSA Sequencer (rtmidi)"
-msgstr "ALSA Sequencer"
+msgstr "ALSA 音序器（rtmidi）"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:127
 msgid "Crescendo"
@@ -271,9 +268,8 @@ msgid "Legato"
 msgstr ""
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:160
-#, fuzzy
 msgid "Portato"
-msgstr "端口"
+msgstr "次断音"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:166
 msgid "Staccato"
@@ -331,9 +327,8 @@ msgid "Failed to open file: %s"
 msgstr "无法打开文件:%s"
 
 #: src/project.c:186
-#, fuzzy
 msgid "Project not compressed by zstd"
-msgstr "项目未被ZSTD压缩！"
+msgstr "项目未被 zstd 压缩"
 
 #: src/project.c:199
 #, c-format
@@ -637,9 +632,8 @@ msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "插件 '%s' 实例化失败。禁用中..."
 
 #: src/plugins/plugin.c:184
-#, fuzzy
 msgid "[Zrythm] Enabled"
-msgstr "已启用"
+msgstr "[Zrythm] 已启用"
 
 #: src/plugins/plugin.c:207
 msgid "[Zrythm] Gain"
@@ -1147,9 +1141,8 @@ msgid "Disable"
 msgstr "禁用"
 
 #: src/gui/widgets/bot_bar.c:534 src/gui/widgets/dialogs/export_dialog.c:1290
-#, fuzzy
 msgid "Enable"
-msgstr "已启用"
+msgstr "启用"
 
 #: src/gui/widgets/bot_bar.c:565
 msgid "Metronome"
@@ -1197,9 +1190,8 @@ msgid "position"
 msgstr "位置"
 
 #: src/gui/widgets/transport_controls.c:196
-#, fuzzy
 msgid "Punch in/out"
-msgstr "音乐模式"
+msgstr ""
 
 #: src/gui/widgets/transport_controls.c:199
 msgid "Start on MIDI input"
@@ -1218,9 +1210,8 @@ msgid "Merge events"
 msgstr ""
 
 #: src/gui/widgets/transport_controls.c:213
-#, fuzzy
 msgid "Create takes"
-msgstr "创建%s"
+msgstr "创建场景"
 
 #: src/gui/widgets/transport_controls.c:216
 msgid "Create takes (mute previous)"
@@ -1327,9 +1318,8 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_tree.c:295
 #: src/gui/widgets/cc_bindings_tree.c:293
-#, fuzzy
 msgid "Destination"
-msgstr "完全指定"
+msgstr "目的地"
 
 #: src/gui/widgets/port_connections_tree.c:313
 msgid "Multiplier"
@@ -1356,7 +1346,7 @@ msgstr "复制"
 
 #: src/gui/widgets/home_toolbar.c:131
 msgid "Paste"
-msgstr "粘贴"
+msgstr "粘帖"
 
 #: src/gui/widgets/home_toolbar.c:137
 msgid "Clear Selection"
@@ -1447,9 +1437,9 @@ msgid "[Insert %d] %s"
 msgstr "[插入%d]%s"
 
 #: src/gui/widgets/automatable_selector_popover.c:389
-#, fuzzy, c-format
+#, c-format
 msgid "[Modulator %d] %s"
-msgstr "调制器"
+msgstr "[调制器 %d] %s"
 
 #: src/gui/widgets/snap_grid.c:113
 msgid "Snap/Grid options"
@@ -1467,7 +1457,6 @@ msgid "General"
 msgstr "常规"
 
 #: src/gui/widgets/preferences.c:84
-#, fuzzy
 msgctxt "guilabel"
 msgid "General"
 msgstr "常规"
@@ -1479,7 +1468,6 @@ msgid "Plugins"
 msgstr "插件"
 
 #: src/gui/widgets/preferences.c:88
-#, fuzzy
 msgctxt "guilabel"
 msgid "Plugins"
 msgstr "插件"
@@ -1489,10 +1477,9 @@ msgstr "插件"
 #: build/data/org.zrythm.Zrythm.gschema.xml:652
 #: build/data/org.zrythm.Zrythm.gschema.xml:666
 msgid "Editing"
-msgstr "编辑"
+msgstr "编辑中"
 
 #: src/gui/widgets/preferences.c:92
-#, fuzzy
 msgctxt "guilabel"
 msgid "Editing"
 msgstr "编辑"
@@ -1508,13 +1495,11 @@ msgid "Automation"
 msgstr "自动化"
 
 #: src/gui/widgets/preferences.c:100
-#, fuzzy
 msgctxt "guilabel"
 msgid "Automation"
 msgstr "自动化"
 
 #: src/gui/widgets/preferences.c:104
-#, fuzzy
 msgctxt "guilabel"
 msgid "Undo"
 msgstr "撤消"
@@ -1525,7 +1510,6 @@ msgid "Projects"
 msgstr "项目"
 
 #: src/gui/widgets/preferences.c:108
-#, fuzzy
 msgctxt "guilabel"
 msgid "Projects"
 msgstr "项目"
@@ -1536,10 +1520,9 @@ msgid "UI"
 msgstr "UI"
 
 #: src/gui/widgets/preferences.c:112
-#, fuzzy
 msgctxt "guilabel"
 msgid "UI"
-msgstr "UI"
+msgstr "用户界面"
 
 #: src/gui/widgets/preferences.c:114
 #: build/data/org.zrythm.Zrythm.gschema.xml:576
@@ -1547,10 +1530,9 @@ msgid "UIs"
 msgstr "UI"
 
 #: src/gui/widgets/preferences.c:116
-#, fuzzy
 msgctxt "guilabel"
 msgid "UIs"
-msgstr "UI"
+msgstr "多个用户界面"
 
 #: src/gui/widgets/preferences.c:118
 #: build/data/org.zrythm.Zrythm.gschema.xml:715
@@ -1558,10 +1540,9 @@ msgid "DSP"
 msgstr "DSP"
 
 #: src/gui/widgets/preferences.c:120
-#, fuzzy
 msgctxt "guilabel"
 msgid "DSP"
-msgstr "DSP"
+msgstr "数字信号处理器 （DSP）"
 
 #: src/gui/widgets/preferences.c:122
 #: build/data/org.zrythm.Zrythm.gschema.xml:716
@@ -1569,10 +1550,9 @@ msgid "Pan"
 msgstr "Pan"
 
 #: src/gui/widgets/preferences.c:124
-#, fuzzy
 msgctxt "guilabel"
 msgid "Pan"
-msgstr "Pan"
+msgstr ""
 
 #: src/gui/widgets/preferences.c:126 resources/ui/preferences.ui:109
 #: build/data/org.zrythm.Zrythm.gschema.xml:513
@@ -1580,7 +1560,6 @@ msgid "Engine"
 msgstr "引擎"
 
 #: src/gui/widgets/preferences.c:128
-#, fuzzy
 msgctxt "guilabel"
 msgid "Engine"
 msgstr "引擎"
@@ -1592,7 +1571,6 @@ msgid "Paths"
 msgstr "路径"
 
 #: src/gui/widgets/preferences.c:132
-#, fuzzy
 msgctxt "guilabel"
 msgid "Paths"
 msgstr "路径"
@@ -1640,7 +1618,6 @@ msgid "Select..."
 msgstr "选择..."
 
 #: src/gui/widgets/active_hardware_mb.c:144
-#, fuzzy
 msgid "Click to enable inputs"
 msgstr "点击以启用输入"
 
@@ -1728,9 +1705,8 @@ msgid "Device"
 msgstr "设备"
 
 #: src/gui/widgets/cc_bindings_tree.c:277
-#, fuzzy
 msgid "Note/Control"
-msgstr "控件"
+msgstr "音符/控件"
 
 #: src/gui/widgets/ports_expander.c:172 src/gui/widgets/ports_expander.c:374
 msgid "Controls"
@@ -1865,9 +1841,8 @@ msgid "Apply %s with previous settings"
 msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:169
-#, fuzzy
 msgid "No Highlight"
-msgstr "突出显示"
+msgstr "无高亮"
 
 #: src/gui/widgets/editor_toolbar.c:176
 msgid "Highlight Chord"
@@ -1878,23 +1853,20 @@ msgid "Highlight Scale"
 msgstr "高亮音阶"
 
 #: src/gui/widgets/editor_toolbar.c:190
-#, fuzzy
 msgid "Highlight Both"
 msgstr "同时高亮两者"
 
 #: src/gui/widgets/editor_toolbar.c:258
-#, fuzzy
 msgid "Select function"
-msgstr "选择"
+msgstr "选择功能"
 
 #: src/gui/widgets/inspector_track.c:158
 msgid "Comment"
 msgstr "注释"
 
 #: src/gui/widgets/track_visibility_tree.c:143
-#, fuzzy
 msgid "Visible"
-msgstr "可见性"
+msgstr "可见的"
 
 #: src/gui/widgets/track.c:599 src/audio/track_lane.c:72
 #, c-format
@@ -1906,12 +1878,10 @@ msgid "Solo"
 msgstr "独奏"
 
 #: src/gui/widgets/track.c:1175
-#, fuzzy
 msgid "Hide instrument UI"
 msgstr "隐藏乐器界面"
 
 #: src/gui/widgets/track.c:1179
-#, fuzzy
 msgid "Show instrument UI"
 msgstr "显示乐器界面"
 
@@ -1926,7 +1896,7 @@ msgstr ""
 #: src/gui/widgets/track.c:1205
 #, fuzzy
 msgid "Arm for recording"
-msgstr "用于录制的MIDI输入"
+msgstr "用于录制的Arm"
 
 #: src/gui/widgets/track.c:1212
 #, fuzzy
@@ -1936,17 +1906,15 @@ msgstr "隐藏音轨"
 #: src/gui/widgets/track.c:1216
 #, fuzzy
 msgid "Show lanes"
-msgstr "显示音轨车道"
+msgstr "显示音轨"
 
 #: src/gui/widgets/track.c:1223
-#, fuzzy
 msgid "Hide automation"
 msgstr "隐藏自动控制"
 
 #: src/gui/widgets/track.c:1227
-#, fuzzy
 msgid "Show automation"
-msgstr "显示自动化通道"
+msgstr "显示自动化"
 
 #: src/gui/widgets/track.c:1236 resources/ui/project_assistant.ui:102
 msgid "Remove"
@@ -2087,7 +2055,6 @@ msgid "%s color"
 msgstr "%s 颜色"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:138
-#, fuzzy
 msgid "Region color"
 msgstr "区域颜色"
 
@@ -2113,12 +2080,10 @@ msgid "The following files will be created:"
 msgstr "以下文件将被创建:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
-#, fuzzy
 msgid "in the directory:"
 msgstr "在此目录中:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:653
-#, fuzzy
 msgid "<name>.<format>"
 msgstr "<名称>.<格式>"
 
@@ -2127,12 +2092,11 @@ msgid "<date>_<name>.<format>"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:903
-#, fuzzy
 msgid "No tracks to export"
-msgstr "没有轨道可供导出"
+msgstr "没有音轨可供导出"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
-#, fuzzy, c-format
+#, c-format
 msgid "%s icon"
 msgstr "%s 图标"
 
@@ -2378,34 +2342,32 @@ msgid "Unimplemented"
 msgstr "未实现"
 
 #: src/audio/fader.c:123
-#, fuzzy
 msgid "Prefader Volume"
-msgstr "前推子发送"
+msgstr ""
 
 #: src/audio/fader.c:123
-#, fuzzy
 msgid "Fader Volume"
-msgstr "音量"
+msgstr "音量控制器音量"
 
 #: src/audio/fader.c:150
 #, fuzzy
 msgid "Prefader Balance"
-msgstr "前推子发送"
+msgstr "前推子平衡"
 
 #: src/audio/fader.c:150
 #, fuzzy
 msgid "Fader Balance"
-msgstr "余额"
+msgstr "音量调节器平衡"
 
 #: src/audio/fader.c:169
 #, fuzzy
 msgid "Prefader Mute"
-msgstr "前推子发送"
+msgstr "前推子静音"
 
 #: src/audio/fader.c:169
 #, fuzzy
 msgid "Fader Mute"
-msgstr "Ch推子输出"
+msgstr "音量调节器静音"
 
 #: src/audio/fader.c:193
 msgid "Ch Pre-Fader in"
@@ -2505,9 +2467,8 @@ msgid "Client zombie"
 msgstr "客户端瘫痪"
 
 #: src/actions/port_action.c:123
-#, fuzzy
 msgid "Set control value"
-msgstr "未选择控件"
+msgstr "设置控件值"
 
 #: src/actions/arranger_selections.c:2311
 msgid "Edit arranger object(s)"
@@ -2621,18 +2582,16 @@ msgid "Can't paste selections"
 msgstr "无法粘贴所选内容"
 
 #: src/actions/actions.c:1917
-#, fuzzy
 msgid "No regions selected"
-msgstr "未选择端口"
+msgstr "未选择区域"
 
 #: src/actions/actions.c:1925
 msgid "Selections must be on the same lane"
 msgstr ""
 
 #: src/actions/actions.c:2242
-#, fuzzy
 msgid "Region name"
-msgstr "region_name"
+msgstr "区域名"
 
 #: src/actions/copy_plugins_action.c:288
 #, c-format
@@ -2653,17 +2612,14 @@ msgid "Disconnect ports"
 msgstr "断开端口连接"
 
 #: src/actions/port_connection_action.c:146
-#, fuzzy
 msgid "Enable port connection"
 msgstr "启用端口连接"
 
 #: src/actions/port_connection_action.c:149
-#, fuzzy
 msgid "Disable port connection"
 msgstr "禁用端口连接"
 
 #: src/actions/port_connection_action.c:152
-#, fuzzy
 msgid "Change port connection"
 msgstr "改变端口连接"
 
@@ -2687,12 +2643,10 @@ msgid "Move %d Plugins"
 msgstr "移动%d个插件"
 
 #: src/actions/range_action.c:611 resources/ui/range_action_buttons.ui:36
-#, fuzzy
 msgid "Insert silence"
-msgstr "插入"
+msgstr "插入静默"
 
 #: src/actions/range_action.c:614
-#, fuzzy
 msgid "Delete range"
 msgstr "删除区间"
 
@@ -2721,14 +2675,12 @@ msgid "Change Pan"
 msgstr "更改Pan"
 
 #: src/actions/edit_tracks_action.c:479
-#, fuzzy
 msgid "Change direct out"
 msgstr "更改直接输出"
 
 #: src/actions/edit_tracks_action.c:482
-#, fuzzy
 msgid "Rename track"
-msgstr "重命名轨道"
+msgstr "重命名音轨"
 
 #: src/actions/edit_tracks_action.c:485
 msgid "Change color"
@@ -2778,7 +2730,7 @@ msgstr "删除%d个插件"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
-msgstr "全局快捷方式"
+msgstr ""
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
@@ -3291,7 +3243,6 @@ msgid "Select parent directory to save the project in"
 msgstr "选择保存项目的上级目录"
 
 #: resources/ui/active_hardware_popover.ui:37
-#, fuzzy
 msgid "Ports found"
 msgstr "端口信息"
 
@@ -3504,7 +3455,6 @@ msgid "Listen"
 msgstr ""
 
 #: resources/ui/fader_buttons.ui:141
-#, fuzzy
 msgid "Channel settings"
 msgstr "通道设定"
 
@@ -3645,9 +3595,8 @@ msgid "Export"
 msgstr "导出"
 
 #: resources/ui/export_dialog.ui:80
-#, fuzzy
 msgid "Details"
-msgstr "绘制详细信息"
+msgstr "详细信息"
 
 #: resources/ui/export_dialog.ui:103
 msgid ""
@@ -3761,14 +3710,12 @@ msgid "Dotted"
 msgstr "附点"
 
 #: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
-#, fuzzy
 msgid "Adaptive"
-msgstr "Adaptive Grid"
+msgstr "适应性"
 
 #: resources/ui/snap_grid_popover.ui:192 resources/ui/snap_grid_popover.ui:314
-#, fuzzy
 msgid "Adaptive length"
-msgstr "note长度"
+msgstr "适应性长度"
 
 #: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
@@ -3779,9 +3726,8 @@ msgid "Link"
 msgstr ""
 
 #: resources/ui/range_action_buttons.ui:58
-#, fuzzy
 msgid "Remove range"
-msgstr "时间范围"
+msgstr "移除范围"
 
 #: resources/ui/editor_toolbar.ui:139 resources/ui/editor_toolbar.ui:182
 msgid "Flip"
@@ -3825,7 +3771,7 @@ msgstr "PAN算法使用"
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:566
 msgid "Zrythm path"
-msgstr "Zrythm路径"
+msgstr "Zrythm 路径"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
@@ -3961,9 +3907,8 @@ msgstr "时间线对象长度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:240
 #: build/data/org.zrythm.Zrythm.gschema.xml:250
-#, fuzzy
 msgid "Default length to use when creating timeline objects, eg in edit mode."
-msgstr "创建时间轴对象时使用的默认长度，例如在编辑模式下。"
+msgstr "创建时间线对象时使用的默认长度，如在编辑模式下。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:244
 msgid "Timeline object length type"
@@ -3971,10 +3916,9 @@ msgstr "时间线对象长度类型"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:245
 #: build/data/org.zrythm.Zrythm.gschema.xml:255
-#, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects, eg in edit mode."
-msgstr "创建时间轴对象时使用的默认长度类型（如在编辑模式下）。"
+msgstr "创建时间线对象时使用的默认长度类型，如在编辑模式下。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid "Editor object length"
@@ -4050,9 +3994,8 @@ msgid "Left panel tab index"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:295
-#, fuzzy
 msgid "Index of the currently opened left panel tab."
-msgstr "左面板调整大小手柄的位置。"
+msgstr "当前打开的左面板标签的目录。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:299
 msgid "Right panel divider position"
@@ -4063,14 +4006,12 @@ msgid "Position of the resize handle of the right panel."
 msgstr "右面板调整大小手柄的位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:304
-#, fuzzy
 msgid "Right panel tab index"
-msgstr "右面板分隔器位置"
+msgstr "右面板标签目录"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:305
-#, fuzzy
 msgid "Index of the currently opened right panel tab."
-msgstr "右面板调整大小手柄的位置。"
+msgstr "当前打开的右面板标签的目录。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:309
 msgid "Bot panel divider position"
@@ -4148,14 +4089,12 @@ msgid "Selected transport display type (BBT/time)."
 msgstr "选定的传输显示类型（BBT/时间）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:355
-#, fuzzy
 msgid "Ruler display type"
-msgstr "传输显示类型"
+msgstr "标尺展示类型"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:356
-#, fuzzy
 msgid "Selected ruler display type (BBT/time)."
-msgstr "选定的传输显示类型（BBT/时间）。"
+msgstr "选定的标尺显示类型（BBT/时间）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:360
 msgid "Selected editing tool"
@@ -4176,9 +4115,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:370
-#, fuzzy
 msgid "Last used automation function"
-msgstr "静音自动化音轨"
+msgstr "上次使用的自动化功能"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:371
 msgid ""
@@ -4207,7 +4145,6 @@ msgid "Format to export to."
 msgstr "要导出的格式。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:399
-#, fuzzy
 msgid "Filename pattern"
 msgstr "文件名模式"
 
@@ -4220,9 +4157,8 @@ msgid "Add dither while exporting, if applicable."
 msgstr "在导出时添加抖动（如果适用）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:409
-#, fuzzy
 msgid "Export stems"
-msgstr "导出为"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:410
 msgid "Whether to export stems instead of the mixdown."
@@ -4329,24 +4265,21 @@ msgid "Whether the metronome is enabled."
 msgstr "是否启用节拍器。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:488
-#, fuzzy
 msgid "Metronome volume"
-msgstr "节拍器已启用"
+msgstr "节拍器音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:489
-#, fuzzy
 msgid "The metronome volume in amplitude (0 to 2)."
-msgstr "监视器输出音量的幅度（0到2）。"
+msgstr "节拍器振幅（0到2）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
-#, fuzzy
 msgid "Punch mode enabled"
-msgstr "节拍器已启用"
+msgstr "已启用 Punch 模式"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:494
 #, fuzzy
 msgid "Whether punch in/out is enabled for recording."
-msgstr "是否启用循环。"
+msgstr "录音是否启用了 punch in/out。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid "Start playback on MIDI input"
@@ -4405,9 +4338,8 @@ msgid "The MIDI backend to use."
 msgstr "要使用的MIDI后端。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
-#, fuzzy
 msgid "Audio inputs"
-msgstr "音频输出"
+msgstr "音频输入"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
 msgid "A list of audio inputs to enable."
@@ -4418,9 +4350,8 @@ msgid "MIDI controllers"
 msgstr "MIDI控制器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:553
-#, fuzzy
 msgid "A list of controllers to enable."
-msgstr "要自动连接到的控制器列表。"
+msgstr "要启用的控制器列表。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
 msgid "The directory used to save user data in."
@@ -4482,7 +4413,7 @@ msgstr "要在其中扫描VST插件的搜索路径。重复路径将是重复数
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "SFZ instruments"
-msgstr "SFZ乐器"
+msgstr "SFZ 乐器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:625
 msgid ""
@@ -4492,7 +4423,7 @@ msgstr "要在其中扫描SFZ乐器的搜索路径。重复路径将是重复数
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:629
 msgid "SF2 instruments"
-msgstr "SF2乐器"
+msgstr "SF2 乐器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:630
 msgid ""

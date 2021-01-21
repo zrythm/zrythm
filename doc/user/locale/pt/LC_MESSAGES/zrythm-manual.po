@@ -33,15 +33,17 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-18 23:56+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2021-01-21 18:18+0000\n"
+"PO-Revision-Date: 2021-01-05 14:29+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/user-manual/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2148,7 +2150,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:102
 msgid "Edit Tool"
-msgstr "Ferramenta de Edição"
+msgstr "Ferramenta de edição"
 
 #: ../../editing/edit-tools.rst:103
 msgid ""
@@ -2168,7 +2170,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
-msgstr ""
+msgstr "Ferramenta de corte"
 
 #: ../../editing/edit-tools.rst:116
 msgid ""
@@ -2199,13 +2201,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:129
-#, fuzzy
 msgid "Ramp Tool"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"conjunto"
+msgstr "Ferramenta de rampa"
 
 #: ../../editing/edit-tools.rst:130
 msgid ""
@@ -5809,64 +5806,6 @@ msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:6
 msgid "Returns a new action for creating a send connection."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:3
-msgid "actions create-tracks-action"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:7
-#, fuzzy
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-with-plugin** | *type "
-"pl_descr track_pos num_tracks*"
-msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../scripting/api/actions create_tracks_action.rst:6
-msgid "Returns a new Create Tracks action for a plugin."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:12
-#, fuzzy
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-audio-fx** | *track_pos "
-"num_tracks*"
-msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../scripting/api/actions create_tracks_action.rst:10
-msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:16
-#, fuzzy
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-midi** | *track_pos "
-"num_tracks*"
-msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../scripting/api/actions create_tracks_action.rst:15
-msgid "Returns a new Create Tracks action for one or more empty MIDI tracks."
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:3

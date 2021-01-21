@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-18 23:56+0000\n"
+"POT-Creation-Date: 2021-01-21 18:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5180,40 +5180,6 @@ msgstr ""
 msgid "Returns a new action for creating a send connection."
 msgstr ""
 
-#: ../../scripting/api/actions create_tracks_action.rst:3
-msgid "actions create-tracks-action"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:7
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-with-plugin** | *type "
-"pl_descr track_pos num_tracks*"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:6
-msgid "Returns a new Create Tracks action for a plugin."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:12
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-audio-fx** | *track_pos "
-"num_tracks*"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:10
-msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:16
-msgid ""
-"Scheme Procedure: **create-tracks-action-new-midi** | *track_pos "
-"num_tracks*"
-msgstr ""
-
-#: ../../scripting/api/actions create_tracks_action.rst:15
-msgid "Returns a new Create Tracks action for one or more empty MIDI tracks."
-msgstr ""
-
 #: ../../scripting/api/actions port_connection_action.rst:3
 msgid "actions port-connection-action"
 msgstr ""
@@ -7495,20 +7461,6 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
-
-#~ msgid ""
-#~ "When using the :term:`JACK` backend, "
-#~ "JACK needs to be set up and "
-#~ "configured before running Zrythm. You "
-#~ "will find lots of information online "
-#~ "about how to configure JACK, such "
-#~ "as `Demystifying JACK - A Beginners "
-#~ "Guide to Getting Started with JACK "
-#~ "<https://libremusicproduction.com/articles/demystifying-"
-#~ "jack-%E2%80%93-beginners-guide-getting-started-"
-#~ "jack.html>`_, so we will skip this "
-#~ "part."
-#~ msgstr ""
 
 #~ msgid "Zrythm executable"
 #~ msgstr "Kjørbar Zrythm-fil"
