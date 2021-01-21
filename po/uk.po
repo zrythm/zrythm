@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# webweblate <webweblate@riseup.net>, 2020.
+# webweblate <webweblate@riseup.net>, 2020, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-12-15 14:29+0000\n"
+"PO-Revision-Date: 2021-01-21 18:12+0000\n"
 "Last-Translator: webweblate <webweblate@riseup.net>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -51,75 +51,75 @@ msgstr "Midi нота"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "Акордний об'єкт"
 
 #: inc/gui/backend/arranger_object.h:98
 msgid "Scale Object"
-msgstr ""
+msgstr "Масштабний об'єкт"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
 #: src/gui/widgets/event_viewer.c:109
 msgid "Marker"
-msgstr ""
+msgstr "Позначка"
 
 #: inc/gui/backend/arranger_object.h:102
 msgid "Automation Point"
-msgstr ""
+msgstr "Точка автоматизації"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
-msgstr ""
+msgstr "Швидкість"
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "Висока"
 
 #: inc/utils/ui.h:76
 msgid "Normal"
-msgstr ""
+msgstr "Нормальна"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "Низька"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "_Вирізати"
 
 #: inc/utils/gtk.h:56
 msgid "_Copy"
-msgstr ""
+msgstr "_Копіювати"
 
 #: inc/utils/gtk.h:62
 msgid "_Paste"
-msgstr ""
+msgstr "_Вставити"
 
 #: inc/utils/gtk.h:68
 msgid "_Delete"
-msgstr ""
+msgstr "_Видалити"
 
 #: inc/utils/gtk.h:74
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "Очистити вибір"
 
 #: inc/utils/gtk.h:80
 msgid "Select A_ll"
-msgstr ""
+msgstr "Вибрати все"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
-msgstr ""
+msgstr "Дублювати"
 
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1190
 #: resources/ui/fader_buttons.ui:99
 msgid "Mute"
-msgstr ""
+msgstr "Вимкнути звук"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1186
 msgid "Unmute"
-msgstr ""
+msgstr "Увімкнути звук"
 
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
@@ -135,117 +135,117 @@ msgstr "Аудіо"
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
-msgstr ""
+msgstr "Магістр"
 
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:403
 msgid "Chord"
-msgstr ""
+msgstr "Акорд"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:91
 msgid "Tempo"
-msgstr ""
+msgstr "Темп"
 
 #: inc/audio/track.h:168
 msgid "Modulator"
-msgstr ""
+msgstr "Модулятор"
 
 #: inc/audio/track.h:169
 msgid "Audio FX"
-msgstr ""
+msgstr "Audio FX"
 
 #: inc/audio/track.h:170
 msgid "Audio Group"
-msgstr ""
+msgstr "Група аудіо"
 
 #: inc/audio/track.h:171 src/audio/region.c:394
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:172
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI FX"
 
 #: inc/audio/track.h:173
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI Група"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
 #, c-format
 msgid "Exponent"
-msgstr ""
+msgstr "Експонента"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
 #, c-format
 msgid "Superellipse"
-msgstr ""
+msgstr "Супереліпс"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1292
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr ""
+msgstr "Життєво важливий"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "Пульс"
 
 #: inc/audio/engine.h:125
 msgid "1,024"
-msgstr ""
+msgstr "1024"
 
 #: inc/audio/engine.h:126
 msgid "2,048"
-msgstr ""
+msgstr "2048"
 
 #: inc/audio/engine.h:127
 msgid "4,096"
-msgstr ""
+msgstr "4096"
 
 #: inc/audio/engine.h:154
 msgid "22,050"
-msgstr ""
+msgstr "22 050"
 
 #: inc/audio/engine.h:155
 msgid "32,000"
-msgstr ""
+msgstr "32 000"
 
 #: inc/audio/engine.h:156
 msgid "44,100"
-msgstr ""
+msgstr "44,100"
 
 #: inc/audio/engine.h:157
 msgid "48,000"
-msgstr ""
+msgstr "48,000"
 
 #: inc/audio/engine.h:158
 msgid "88,200"
-msgstr ""
+msgstr "88,200"
 
 #: inc/audio/engine.h:159
 msgid "96,000"
-msgstr ""
+msgstr "96,000"
 
 #: inc/audio/engine.h:160
 msgid "192,000"
-msgstr ""
+msgstr "192,000"
 
 #: inc/audio/engine.h:215
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Манекен (libsoundio)"
 
 #: inc/audio/engine.h:281
 msgid "ALSA Sequencer (not working)"
-msgstr ""
+msgstr "Секвенсор ALSA (не працює)"
 
 #: inc/audio/engine.h:282
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "Секвенсор ALSA (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:127
 msgid "Crescendo"
-msgstr ""
+msgstr "Крещендо"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:133
 msgid "Flam"
@@ -253,15 +253,15 @@ msgstr ""
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
-msgstr ""
+msgstr "Переверніть H"
 
 #: inc/audio/midi_function.h:59 inc/audio/automation_function.h:51
 msgid "Flip V"
-msgstr ""
+msgstr "Перевернути V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:154
 msgid "Legato"
-msgstr ""
+msgstr "Легато"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:160
 msgid "Portato"
@@ -269,72 +269,72 @@ msgstr ""
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:166
 msgid "Staccato"
-msgstr ""
+msgstr "Стакато"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:172
 msgid "Strum"
-msgstr ""
+msgstr "Струм"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1868
 msgid "Inherit"
-msgstr ""
+msgstr "Успадковувати"
 
 #: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:517
 #: src/audio/automation_track.c:101
 msgid "Off"
-msgstr ""
+msgstr "ВИМК."
 
 #: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:517
 #: src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:252 src/audio/automation_track.c:95
 msgid "On"
-msgstr ""
+msgstr "Увімкнено"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0 дБ"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3 дБ"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6 дБ"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1289
 #: src/utils/ui.c:834
 msgid "Linear"
-msgstr ""
+msgstr "Лінійний"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:835
 msgid "Square Root"
-msgstr ""
+msgstr "Квадратний корінь"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Синус"
 
 #: src/project.c:142
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "Не вдалося відкрити файл: %s"
 
 #: src/project.c:186
 msgid "Project not compressed by zstd"
-msgstr ""
+msgstr "Проєкт не стиснений zstd"
 
 #: src/project.c:199
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "Не вдалося розпакувати файл проєкту: %s"
 
 #: src/project.c:240
 #, c-format
 msgid "Failed to write file: %s"
-msgstr ""
+msgstr "Не вдалося записати файл: %s"
 
 #: src/project.c:809
 #, c-format
@@ -343,52 +343,57 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Знайдено новішу резервну копію:\n"
+"  %s.\n"
+"Використовувати новішу резервну копію?"
 
 #: src/project.c:814
 msgid "Backup found"
-msgstr ""
+msgstr "Знайдено резервну копію"
 
 #: src/project.c:872
 #, c-format
 msgid "Unable to read file: %s"
-msgstr ""
+msgstr "Не вдається прочитати файл: %s"
 
 #: src/project.c:924
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
-msgstr ""
+msgstr "Проєкт створено з іншою версією %s (%s). Він може працювати некоректно."
 
 #: src/project.c:939
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Не вдалося завантажити проєкт. Будь ласка, перевірте журнали для отримання "
+"додаткової інформації."
 
 #: src/project.c:1122
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
+msgstr "Не вдалося завантажити проєкт. Натомість створіть новий."
 
 #: src/project.c:1467
 msgid "Backup saved."
-msgstr ""
+msgstr "Резервну копію збережено."
 
 #: src/project.c:1477
 msgid "Project saved."
-msgstr ""
+msgstr "Проєкт збережено."
 
 #: src/main.c:78
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Помилка - зворотне відстеження:\n"
 
 #: src/main.c:82
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Помилка: %s - зворотне відстеження:\n"
 
 #: src/main.c:96
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s аварійно завершив роботу. "
 
 #: src/main.c:129
 #, c-format
@@ -423,43 +428,73 @@ msgid ""
 "\n"
 "Report bugs to %s\n"
 msgstr ""
+"Використання: %s [ВАРІАНТИ] [ПРОЄКТ-ФАЙЛ-ШЛЯХ]\n"
+"\n"
+"Варіанти:\n"
+"  -h, --help відобразити це довідкове повідомлення та вийти\n"
+"  --convert-yaml-to-zpj перетворення проекту yaml у формат .zpj\n"
+"  --convert-zpj-to-yaml перетворення проекту zpj у формат YAML\n"
+"  -o, --output вказує вихідний файл\n"
+"  -p, --print-settings друкує поточні налаштування\n"
+"  --досить друкований вивід зручним для користувача способом\n"
+"  - скинути заводські налаштування до заводських налаштувань\n"
+"  --gdb запустити %s через GDB (налагоджувач)\n"
+"  --callgrind запуск %s через callgrind (профайлер)\n"
+"  --audio-backend замінює аудіо-сервер для використання\n"
+"  --midi-backend перевизначає використання MIDI-сервера\n"
+"  --dummy перевизначає як аудіо, так і MIDI-файли для фіктивних\n"
+"  --buf-size перевизначає розмір буфера для використання для аудіо-серверної "
+"бази, якщо застосовно\n"
+"  - інтерактивний інтерактивний режим, де це можливо\n"
+"  -v, --version виведення інформації про версію та вихід\n"
+"\n"
+"Приклади:\n"
+"  %s -v версія для друку\n"
+"  %s --callgrind --dummy --buf-size = 8192 профіль %s з використанням "
+"фіктивного серверного сервера та розміром буфера 8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml перетворити "
+"стислий проект zpj у YAML\n"
+"  %s -p - досить гарні друковані поточні налаштування\n"
+"\n"
+"Повідомити про помилки %s\n"
 
 #: src/main.c:172
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "Файл %s не знайдено."
 
 #: src/main.c:193
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
+"Вихідний файл не вказано. Будь ласка, передайте один з `--output [FILE]`."
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:337
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "Невідомий варіант\n"
 
 #: src/main.c:394
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "Не вдалося стиснути проєкт: %s\n"
 
 #: src/main.c:403
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "Проєкт успішно стиснуто\n"
 
 #: src/main.c:421
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "Не вдалося розпакувати проект: %s\n"
 
 #: src/main.c:430
 #, c-format
 msgid "Project successfully decompressed.\n"
-msgstr ""
+msgstr "Проект успішно розпакований.\n"
 
 #: src/main.c:439
 #, c-format
@@ -475,85 +510,95 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"%s - %s Авторське право (C) 2018-2020 Співавтори Zrythm\n"
+"\n"
+"%s поставляється АБСОЛЮТНО БЕЗ ГАРАНТІЙ!\n"
+"\n"
+"Це безкоштовне програмне забезпечення, і ви можете його розповсюдити\n"
+"за певних умов. Детальніше див. У файлі „КОПІЮВАННЯ“.\n"
+"\n"
+"Пишіть коментарі та помилки на адресу %s\n"
+"Підтримайте цей проєкт на https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/zrythm_app.c:218
 msgid "Setting up main window"
-msgstr ""
+msgstr "Налаштування головного вікна"
 
 #: src/zrythm_app.c:263
 msgid "Loading project"
-msgstr ""
+msgstr "Завантаження проєкту"
 
 #: src/zrythm_app.c:276
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr ""
+msgstr "Жоден проєкт не вибрано. %s тепер закриється."
 
 #: src/zrythm_app.c:299
 msgid "Initializing settings"
-msgstr ""
+msgstr "Ініціалізація налаштувань"
 
 #: src/zrythm_app.c:307
 #, c-format
 msgid "Initializing %s directories"
-msgstr ""
+msgstr "Ініціалізація %s каталогів"
 
 #: src/zrythm_app.c:317
 msgid "Initializing logging system"
-msgstr ""
+msgstr "Ініціалізація системи реєстрації"
 
 #: src/zrythm_app.c:327
 msgid "Initializing caches"
-msgstr ""
+msgstr "Ініціалізація кеш-пам’яті"
 
 #: src/zrythm_app.c:331
 msgid "Initializing file manager"
-msgstr ""
+msgstr "Ініціалізація файлового менеджера"
 
 #: src/zrythm_app.c:338
 msgid "Scanning plugins"
-msgstr ""
+msgstr "Сканування плагінів"
 
 #: src/zrythm_app.c:499
 msgid "License Information"
-msgstr ""
+msgstr "Інформація про ліцензію"
 
 #: src/zrythm_app.c:527
 msgid "Waiting for project"
-msgstr ""
+msgstr "Чекаю на проєкт"
 
 #: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 msgid "Default bank"
-msgstr ""
+msgstr "Банк за замовчуванням"
 
 #: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
-msgstr ""
+msgstr "Init"
 
 #: src/plugins/carla_native_plugin.c:993
 msgid "Audio in"
-msgstr ""
+msgstr "Аудіовхід"
 
 #: src/plugins/carla_native_plugin.c:1003
 msgid "Audio out"
-msgstr ""
+msgstr "Аудіовихід"
 
 #: src/plugins/carla_native_plugin.c:1013
 msgid "MIDI in"
-msgstr ""
+msgstr "MIDI в"
 
 #: src/plugins/carla_native_plugin.c:1023
 msgid "MIDI out"
-msgstr ""
+msgstr "Вихід MIDI"
 
 #: src/plugins/plugin_manager.c:520
 msgid "Error loading LV2 bundle dir: "
-msgstr ""
+msgstr "Помилка завантаження каталогу LV2: "
 
 #: src/plugins/plugin_manager.c:1111
 #, c-format
 msgid "Scanned %s plugin: %s"
-msgstr ""
+msgstr "Відсканований %s плагін: %s"
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
@@ -561,34 +606,34 @@ msgstr ""
 #: src/plugins/plugin_manager.c:1125
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr ""
+msgstr "Пропущений %1$s плагін у %2$s"
 
 #: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
-msgstr ""
+msgstr "Відсканований плагін LV2"
 
 #: src/plugins/plugin_manager.c:1264
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "Пропущений плагін LV2 о %s"
 
 #: src/plugins/plugin_manager.c:1339
 msgid "Scanned AU plugin"
-msgstr ""
+msgstr "Відсканований плагін AU"
 
 #: src/plugins/plugin_manager.c:1346
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "Пропущений плагін AU на %u"
 
 #: src/plugins/plugin.c:138
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
-msgstr ""
+msgstr "Помилка інстанціації для плагіна '%s'. Вимкнення..."
 
 #: src/plugins/plugin.c:184
 msgid "[Zrythm] Enabled"
-msgstr ""
+msgstr "[Zrythm] Увімкнено"
 
 #: src/plugins/plugin.c:207
 msgid "[Zrythm] Gain"
@@ -4410,3 +4455,5 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr ""
+"Закон про панорамування, який застосовується при застосуванні панорамування "
+"на моносигнали (наразі не використовується)."
