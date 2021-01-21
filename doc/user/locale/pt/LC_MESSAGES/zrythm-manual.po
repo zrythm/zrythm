@@ -33,18 +33,21 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-01-02 16:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-01-05 14:29+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -2148,7 +2151,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:102
 msgid "Edit Tool"
-msgstr "Ferramenta de Edição"
+msgstr "Ferramenta de edição"
 
 #: ../../editing/edit-tools.rst:103
 msgid ""
@@ -2168,7 +2171,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
-msgstr ""
+msgstr "Ferramenta de corte"
 
 #: ../../editing/edit-tools.rst:116
 msgid ""
@@ -2199,13 +2202,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:129
-#, fuzzy
 msgid "Ramp Tool"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"conjunto"
+msgstr "Ferramenta de rampa"
 
 #: ../../editing/edit-tools.rst:130
 msgid ""
@@ -11428,4 +11426,3 @@ msgstr ":ref:`right-panel` (6)"
 
 #~ msgid "Displays the log, which gets updated real-time."
 #~ msgstr "Exibe o log, que é atualizado em tempo real."
-
