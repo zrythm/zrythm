@@ -348,9 +348,8 @@ timeline_ruler_on_drag_update (
                    timeline_end;
           position_init (&timeline_start);
           position_init (&timeline_end);
-          position_add_bars (
-            &timeline_end,
-            TRANSPORT->total_bars);
+          position_set_to_bar (
+            &timeline_end, INT_MAX);
 
           /* convert px to position */
           ui_px_to_pos_timeline (

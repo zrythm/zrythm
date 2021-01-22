@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <limits.h>
+
 #include "audio/engine.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -167,10 +169,8 @@ editor_ruler_on_drag_update (
           Position timeline_start,
                    timeline_end;
           position_init (&timeline_start);
-          position_init (&timeline_end);
-          position_add_bars (
-            &timeline_end,
-            TRANSPORT->total_bars);
+          position_set_to_bar (
+            &timeline_end, INT_MAX);
 
           /* if position is acceptable */
           if (position_is_after_or_equal (
