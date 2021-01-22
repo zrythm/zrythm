@@ -69,11 +69,23 @@ on_inputs_draw (
       z_cairo_get_text_extents_for_widget (
         widget, self->layout, str, &w, &h);
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
+
+#if 0
+      cairo_save (cr);
+      cairo_translate (cr, width / 2, height / 2);
+      cairo_rotate (cr, - 1.570796);
+      cairo_move_to (
+        cr, - w / 2.0, - h / 2.0);
+#endif
       cairo_move_to (
         cr, width / 2.0 - w / 2.0,
         height / 2.0 - h / 2.0);
       z_cairo_draw_text (
         cr, widget, self->layout, str);
+
+#if 0
+      cairo_restore (cr);
+#endif
     }
   else
     {
