@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -131,6 +131,11 @@ automation_tracklist_init (
  * it with the AutomationTrack at that index or
  * pushes the other AutomationTrack's down.
  *
+ * A special case is when \ref index == \ref
+ * AutomationTracklist.num_ats. In this case, the
+ * given automation track is set last and all the
+ * other automation tracks are pushed upwards.
+ *
  * @param push_down False to swap positions with the
  *   current AutomationTrack, or true to push down
  *   all the tracks below.
@@ -142,6 +147,19 @@ automation_tracklist_set_at_index (
   int                   index,
   bool                  push_down)
 {
+  /* special case */
+  if (index == self->num_ats && push_down)
+    {
+      /* move AT to before last */
+      automation_tracklist_set_at_index (
+        self, at, index - 1, push_down);
+      /* move last AT to before last */
+      automation_tracklist_set_at_index (
+        self, self->ats[self->num_ats - 1],
+        index - 1, push_down);
+      return;
+    }
+
   g_return_if_fail (
     index < self->num_ats && self->ats[index]);
 

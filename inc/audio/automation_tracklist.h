@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -220,6 +220,11 @@ automation_tracklist_clear (
  * Sets the index of the AutomationTrack and swaps
  * it with the AutomationTrack at that index or
  * pushes the other AutomationTrack's down.
+ *
+ * A special case is when \ref index == \ref
+ * AutomationTracklist.num_ats. In this case, the
+ * given automation track is set last and all the
+ * other automation tracks are pushed upwards.
  *
  * @param push_down False to swap positions with the
  *   current AutomationTrack, or true to push down
