@@ -313,8 +313,10 @@ typedef struct PortIdentifier
 {
   /** Human readable label. */
   char *              label;
-  /** Symbol, if LV2 TODO. */
+
+  /** Symbol, if LV2. */
   char *              sym;
+
   /** Owner type. */
   PortOwnerType       owner_type;
   /** Data type (e.g. AUDIO). */
@@ -404,6 +406,12 @@ port_identifier_schema_default = {
     PortIdentifier, port_identifier_fields_schema),
 };
 
+/**
+ * Copy the identifier content from \ref src to
+ * \ref dest.
+ *
+ * @note This frees/allocates memory on \ref dest.
+ */
 void
 port_identifier_copy (
   PortIdentifier * dest,

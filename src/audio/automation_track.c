@@ -339,10 +339,14 @@ automation_track_find_from_port (
                 }
             }
         }
-      else if (port_identifier_is_equal (
-            &port->id, &at->port_id))
+      /* not basic search */
+      else
         {
-          return at;
+          if (port_identifier_is_equal (
+                &port->id, &at->port_id))
+            {
+              return at;
+            }
         }
     }
 

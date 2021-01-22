@@ -21,14 +21,19 @@
 #include "utils/objects.h"
 #include "utils/string.h"
 
+/**
+ * Copy the identifier content from \ref src to
+ * \ref dest.
+ *
+ * @note This frees/allocates memory on \ref dest.
+ */
 void
 port_identifier_copy (
   PortIdentifier * dest,
   PortIdentifier * src)
 {
-  g_return_if_fail (dest && src);
-  if (dest->label)
-    g_free (dest->label);
+  g_return_if_fail (dest && src && dest != src);
+  g_free_and_null (dest->label);
   dest->label = g_strdup (src->label);
   dest->sym = g_strdup (src->sym);
   dest->owner_type = src->owner_type;

@@ -387,7 +387,8 @@ recording_manager_handle_recording (
           re->g_start_frames = g_start_frames;
           re->local_offset = local_offset;
           re->nframes = nframes;
-          re->port_id = at->port_id;
+          port_identifier_copy (
+            &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -1265,7 +1266,8 @@ handle_automation_event (
   if (at->record_mode ==
         AUTOMATION_RECORD_MODE_TOUCH &&
       !automation_track_should_be_recording (
-        at, cur_time, true))
+        at, cur_time, true) &&
+      at->recording_region)
     {
       at->recording_region->last_recorded_ap = NULL;
     }
