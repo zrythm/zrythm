@@ -955,8 +955,9 @@ do_or_undo_move_or_copy (
         }
       else if (copy)
         {
-          for (int i = 0;
-               i < self->tls_before->num_tracks; i++)
+          for (int i =
+                 self->tls_before->num_tracks - 1;
+               i >= 0; i--)
             {
               /* get the track from the inserted
                * pos */

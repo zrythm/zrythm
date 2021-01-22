@@ -1356,6 +1356,126 @@ static void test_move_tracks ()
 #endif
 }
 
+static void
+test_multi_track_duplicate (void)
+{
+  test_helper_zrythm_init ();
+
+  int start_pos = TRACKLIST->num_tracks;
+
+  /* create midi track, audio fx track and audio
+   * track */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_MIDI, NULL, NULL,
+      start_pos, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO_BUS, NULL, NULL,
+      start_pos + 1, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO, NULL, NULL,
+      start_pos + 2, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_true (
+    TRACKLIST->tracks[start_pos]->type ==
+      TRACK_TYPE_MIDI);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 1]->type ==
+      TRACK_TYPE_AUDIO_BUS);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 2]->type ==
+      TRACK_TYPE_AUDIO);
+
+  /* select and duplicate */
+  track_select (
+    TRACKLIST->tracks[start_pos], F_SELECT,
+    F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (
+    TRACKLIST->tracks[start_pos + 1], F_SELECT,
+    F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (
+    TRACKLIST->tracks[start_pos + 2], F_SELECT,
+    F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_copy (
+      TRACKLIST_SELECTIONS, start_pos + 3);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* check order correct */
+  g_assert_true (
+    TRACKLIST->tracks[start_pos]->type ==
+      TRACK_TYPE_MIDI);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 1]->type ==
+      TRACK_TYPE_AUDIO_BUS);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 2]->type ==
+      TRACK_TYPE_AUDIO);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 3]->type ==
+      TRACK_TYPE_MIDI);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 4]->type ==
+      TRACK_TYPE_AUDIO_BUS);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 5]->type ==
+      TRACK_TYPE_AUDIO);
+
+  /* undo and check */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos]->type ==
+      TRACK_TYPE_MIDI);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 1]->type ==
+      TRACK_TYPE_AUDIO_BUS);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 2]->type ==
+      TRACK_TYPE_AUDIO);
+
+  /* select and duplicate after first */
+  track_select (
+    TRACKLIST->tracks[start_pos], F_SELECT,
+    F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (
+    TRACKLIST->tracks[start_pos + 1], F_SELECT,
+    F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (
+    TRACKLIST->tracks[start_pos + 2], F_SELECT,
+    F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_copy (
+      TRACKLIST_SELECTIONS, start_pos + 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* check order correct */
+  g_assert_true (
+    TRACKLIST->tracks[start_pos]->type ==
+      TRACK_TYPE_MIDI);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 1]->type ==
+      TRACK_TYPE_MIDI);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 2]->type ==
+      TRACK_TYPE_AUDIO_BUS);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 3]->type ==
+      TRACK_TYPE_AUDIO);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 4]->type ==
+      TRACK_TYPE_AUDIO_BUS);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 5]->type ==
+      TRACK_TYPE_AUDIO);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1415,6 +1535,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test_move_tracks",
     (GTestFunc) test_move_tracks);
+  g_test_add_func (
+    TEST_PREFIX "test multi track duplicate",
+    (GTestFunc) test_multi_track_duplicate);
 
   return g_test_run ();
 }
