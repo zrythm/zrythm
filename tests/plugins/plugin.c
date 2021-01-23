@@ -86,6 +86,64 @@ test_loading_non_existing_plugin ()
   test_helper_zrythm_cleanup ();
 }
 
+static Port *
+get_skew_duty_port (void)
+{
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Plugin * pl = track->channel->instrument;
+  Port * port = NULL;
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * cur_port =  pl->in_ports[i];
+      if (string_is_equal (
+            cur_port->id.label, "OscA Skew/Duty"))
+        {
+          port = cur_port;
+          break;
+        }
+    }
+  return port;
+}
+
+static void
+test_loading_fully_bridged_plugin (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef HAVE_CARLA
+#ifdef HAVE_CHIPWAVE
+  for (int i = 0; i < 2; i++)
+    {
+      test_plugin_manager_create_tracks_from_plugin (
+        CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, true,
+        1);
+
+      Port * port = get_skew_duty_port ();
+      g_assert_nonnull (port);
+      float val_before = port->control;
+      float val_after = 1.f;
+      g_assert_cmpfloat_with_epsilon (
+        val_before, 0.5f, 0.0001f);
+      port_set_control_value (
+        port, val_after, F_NORMALIZED,
+        i);
+
+      /* save project and reload and check the
+       * value is correct */
+      test_project_save_and_reload ();
+
+      port = get_skew_duty_port ();
+      g_assert_nonnull (port);
+      g_assert_cmpfloat_with_epsilon (
+        port->control, val_after, 0.0001f);
+    }
+#endif
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -96,6 +154,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test loading non-existing plugin",
     (GTestFunc) test_loading_non_existing_plugin);
+  g_test_add_func (
+    TEST_PREFIX "test loading fully bridged plugin",
+    (GTestFunc) test_loading_fully_bridged_plugin);
 
   return g_test_run ();
 }

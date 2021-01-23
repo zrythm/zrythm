@@ -261,6 +261,9 @@ ext_lv2_plugins = {
   'geonkick': [
     'Geonkick',
     'http://geontime.com/geonkick'],
+  'chipwave': [
+    'ChipWave',
+    'https://github.com/linuxmao-org/shiru-plugins/chipwave'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}

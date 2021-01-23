@@ -1062,11 +1062,6 @@ create_ports (
           port =
             carla_native_plugin_get_port_from_param_id (
               self, i);
-          port_set_control_value (
-            port,
-            carla_get_current_parameter_value (
-              self->host_handle, 0, i), false,
-            false);
         }
       else
         {
@@ -1084,8 +1079,17 @@ create_ports (
           port->carla_param_id = (int) i;
           plugin_add_in_port (
             self->plugin, port);
-          g_message ("%d: %s", i, param_info->name);
         }
+      float cur_val =
+        carla_native_plugin_get_param_value (
+          self, 0, i);
+      g_message (
+        "%d: %s=%f%s", i, port->id.label,
+        (double) cur_val,
+        loading ? " (loading)" : "");
+      port_set_control_value (
+        port, cur_val, F_NOT_NORMALIZED,
+        F_NO_PUBLISH_EVENTS);
     }
 
   self->ports_created = true;
@@ -1329,6 +1333,21 @@ carla_native_plugin_save_state (
   CarlaNativePlugin * self,
   bool                is_backup)
 {
+  /* update all controls (may not be necessary but
+   * might prevent issues) */
+  Plugin * pl = self->plugin;
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * port = pl->in_ports[i];
+      if (port->carla_param_id >= 0)
+        {
+          carla_native_plugin_set_param_value (
+            self,
+            (uint32_t) port->carla_param_id,
+            port->control);
+        }
+    }
+
   char * abs_state_dir =
     plugin_get_abs_state_dir (
       self->plugin, is_backup);
