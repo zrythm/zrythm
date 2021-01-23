@@ -187,10 +187,8 @@ bar_slider_draw_cb (
     }
   int we;
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
-  char * str_escaped =
-    g_markup_escape_text (str, -1);
   z_cairo_get_text_extents_for_widget (
-    widget, self->layout, str_escaped, &we, NULL);
+    widget, self->layout, str, &we, NULL);
   if (width < we)
     {
       gtk_widget_set_size_request (
@@ -199,10 +197,9 @@ bar_slider_draw_cb (
         height);
     }
   z_cairo_draw_text_full (
-    cr, widget, self->layout, str_escaped,
+    cr, widget, self->layout, str,
     width / 2 - we / 2,
     Z_CAIRO_TEXT_PADDING);
-  g_free (str_escaped);
 
   if (self->hover)
     {

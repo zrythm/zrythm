@@ -149,6 +149,10 @@ RecordingEvent *
 recording_event_new (void);
 
 void
+recording_event_print (
+  RecordingEvent * self);
+
+void
 recording_event_free (
   RecordingEvent * self);
 

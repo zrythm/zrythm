@@ -39,10 +39,14 @@
  * Updates the channel caches.
  *
  * See @ref AudioClip.ch_frames.
+ *
+ * @param start_from Frames to start from (per
+ *   channel. The previous frames will be kept.
  */
 void
 audio_clip_update_channel_caches (
-  AudioClip * self)
+  AudioClip * self,
+  size_t      start_from)
 {
   g_return_if_fail (
     self->channels > 0 && self->num_frames > 0);
@@ -55,7 +59,7 @@ audio_clip_update_channel_caches (
           self->ch_frames[i],
           sizeof (float) *
             (size_t) self->num_frames);
-      for (size_t j = 0;
+      for (size_t j = start_from;
            j < (size_t) self->num_frames; j++)
         {
           self->ch_frames[i][j] =
@@ -98,7 +102,7 @@ audio_clip_init_from_file (
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
   /*g_message (*/
     /*"\n\n num frames %ld \n\n", self->num_frames);*/
-  audio_clip_update_channel_caches (self);
+  audio_clip_update_channel_caches (self, 0);
 
   audio_encoder_free (enc);
 }
@@ -181,7 +185,7 @@ audio_clip_new_from_float_array (
     (size_t) nframes * (size_t) channels);
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  audio_clip_update_channel_caches (self);
+  audio_clip_update_channel_caches (self, 0);
 
   return self;
 }
@@ -220,7 +224,7 @@ audio_clip_new_recording (
   dsp_fill (
     self->frames, DENORMAL_PREVENTION_VAL,
     (size_t) nframes * (size_t) channels);
-  audio_clip_update_channel_caches (self);
+  audio_clip_update_channel_caches (self, 0);
 
   return self;
 }
@@ -276,6 +280,8 @@ audio_clip_write_to_pool (
       audio_pool_get_clip (
         AUDIO_POOL, self->pool_id));
 
+  g_debug ("writing clip %s to pool", self->name);
+
   /* generate a copy of the given filename in the
    * project dir */
   char * new_path =
@@ -300,13 +306,18 @@ audio_clip_write_to_file (
   bool         parts)
 {
   g_return_val_if_fail (self->samplerate > 0, -1);
+  size_t before_frames =
+    (size_t) self->frames_written;
   int ret =
     audio_write_raw_file (
       self->frames, parts ? self->frames_written : 0,
-      self->num_frames,
+      parts ?
+        (self->num_frames - self->frames_written) :
+        self->num_frames,
       (uint32_t) self->samplerate,
       self->channels, filepath);
-  audio_clip_update_channel_caches (self);
+  audio_clip_update_channel_caches (
+    self, before_frames);
 
   if (parts && ret == 0)
     {

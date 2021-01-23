@@ -59,6 +59,13 @@ audio_write_raw_file (
     channels > 0 &&
     samplerate < 10000000, -1);
 
+  g_debug (
+    "writing raw file: already written %ld, "
+    "nframes %ld, samplerate %u, channels %u, "
+    "filename %s",
+    frames_already_written, nframes, samplerate,
+    channels, filename);
+
   SF_INFO info;
 
   memset (&info, 0, sizeof (info));
@@ -74,12 +81,20 @@ audio_write_raw_file (
     g_file_test (filename, G_FILE_TEST_IS_REGULAR);
 
   SNDFILE * sndfile =
-    sf_open (filename, SFM_WRITE, &info);
+    sf_open (filename, SFM_RDWR, &info);
 
   if (write_chunk)
     {
-      sf_seek (
-        sndfile, frames_already_written, SEEK_SET);
+      g_debug (
+        "seeking to %ld", frames_already_written);
+      int ret =
+        sf_seek (
+          sndfile, frames_already_written,
+          SEEK_SET | SFM_WRITE);
+      if (ret < 0)
+        {
+          g_warning ("seek error %d", ret);
+        }
     }
 
   sf_count_t count =
@@ -89,8 +104,6 @@ audio_write_raw_file (
   sf_close (sndfile);
 
   g_message ("wrote %s", filename);
-
-  /* TODO error handling */
 
   return 0;
 }

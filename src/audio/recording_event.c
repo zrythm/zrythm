@@ -19,10 +19,34 @@
 
 #include "audio/recording_event.h"
 
+static const char *
+recording_event_type_strings[] =
+{
+  "start track recording",
+  "start automation recording",
+  "MIDI",
+  "audio",
+  "automation",
+  "pause track recording",
+  "pause automation recording",
+  "stop track recording",
+  "stop automation recording",
+};
+
 RecordingEvent *
 recording_event_new (void)
 {
   return calloc (1, sizeof (RecordingEvent));
+}
+
+void
+recording_event_print (
+  RecordingEvent * self)
+{
+  g_message (
+    "%p: type %s track %s", self,
+    recording_event_type_strings[self->type],
+    self->track_name);
 }
 
 void

@@ -168,10 +168,14 @@ audio_clip_new_recording (
  * Updates the channel caches.
  *
  * See @ref AudioClip.ch_frames.
+ *
+ * @param start_from Frames to start from (per
+ *   channel. The previous frames will be kept.
  */
 void
 audio_clip_update_channel_caches (
-  AudioClip * self);
+  AudioClip * self,
+  size_t      start_from);
 
 /**
  * Writes the given audio clip data to a file.

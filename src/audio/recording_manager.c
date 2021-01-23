@@ -40,6 +40,21 @@
 
 #include <gtk/gtk.h>
 
+#if 0
+static int received = 0;
+static int returned = 0;
+
+#define UP_RECEIVED(x) \
+  received++; \
+  /*g_message ("RECEIVED"); \*/
+  /*recording_event_print (x)*/
+
+#define UP_RETURNED(x) \
+  returned++; \
+  /*g_message ("RETURNED"); \*/
+  /*recording_event_print (x)*/
+#endif
+
 /**
  * Adds the region's identifier to the recorded
  * identifiers (to be used for creating the undoable
@@ -279,6 +294,7 @@ recording_manager_handle_recording (
           re->local_offset = local_offset;
           re->nframes = nframes;
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
         }
@@ -303,6 +319,7 @@ recording_manager_handle_recording (
           re->local_offset = local_offset;
           re->nframes = nframes;
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
 
@@ -331,6 +348,7 @@ recording_manager_handle_recording (
           re->local_offset = local_offset;
           re->nframes = nframes;
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
         }
@@ -364,6 +382,7 @@ recording_manager_handle_recording (
           port_identifier_copy (
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
 
@@ -390,6 +409,7 @@ recording_manager_handle_recording (
           port_identifier_copy (
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
 
@@ -421,6 +441,7 @@ recording_manager_handle_recording (
               port_identifier_copy (
                 &re->port_id, &at->port_id);
               strcpy (re->track_name, tr->name);
+              /*UP_RECEIVED (re);*/
               recording_event_queue_push_back_event (
                 self->event_queue, re);
             }
@@ -460,6 +481,7 @@ recording_manager_handle_recording (
           re->has_midi_event = 1;
           midi_event_copy (me, &re->midi_event);
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
         }
@@ -477,6 +499,7 @@ recording_manager_handle_recording (
           re->nframes = nframes;
           re->has_midi_event = 0;
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
         }
@@ -502,6 +525,7 @@ recording_manager_handle_recording (
           local_offset],
         nframes);
       strcpy (re->track_name, tr->name);
+      /*UP_RECEIVED (re);*/
       recording_event_queue_push_back_event (
         self->event_queue, re);
     }
@@ -536,6 +560,7 @@ add_automation_events:
           port_identifier_copy (
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
+          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
         }
@@ -992,7 +1017,8 @@ handle_audio_event (
       cur_local_offset++;
     }
 
-  audio_clip_update_channel_caches (clip);
+  audio_clip_update_channel_caches (
+    clip, (size_t) clip->frames_written);
 
   /* write to pool if 2 seconds passed since last
    * write */
@@ -1543,6 +1569,7 @@ recording_manager_process_events (
           break;
         }
 
+      /*UP_RETURNED (ev);*/
       object_pool_return (
         self->event_obj_pool, ev);
     }
@@ -1562,7 +1589,7 @@ recording_manager_new (void)
   RecordingManager * self =
     object_new (RecordingManager);
 
-  const size_t max_events = 20000;
+  const size_t max_events = 10000;
   self->event_obj_pool =
     object_pool_new (
       (ObjectCreatorFunc) recording_event_new,

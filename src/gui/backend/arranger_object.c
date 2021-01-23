@@ -513,10 +513,12 @@ arranger_object_is_position_valid (
       break;
     }
 
+#if 0
   g_debug (
     "%s position with ticks %f",
     is_valid ? "Valid" : "Invalid",
     pos->total_ticks);
+#endif
 
   return is_valid;
 }
