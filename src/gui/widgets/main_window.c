@@ -491,6 +491,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "goto-next-marker",
       activate_goto_next_marker },
     { "play-pause", activate_play_pause },
+    { "go-to-start", activate_go_to_start },
 
     /* transport - jack */
     { "set-timebase-master",

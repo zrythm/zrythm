@@ -1027,6 +1027,9 @@ zrythm_app_startup (
     "<Shift>M", "win.mute-selection::global");
   INSTALL_ACCEL (
     "<Control>J", "win.merge-selection");
+  INSTALL_ACCEL (
+    gdk_keyval_name (GDK_KEY_Home),
+    "win.go-to-start");
 
 #undef INSTALL_ACCEL
 

@@ -37,8 +37,14 @@ Specify the id of the menu, like:
 Set `propagate-natural-height` to true and set
 max height with `max-content-height`.
 
+# GDK key defines and accel strings
+
+- `include/gtk-3.0/gdk/gdkkeysyms.h`
+- `gdk_keyval_name()`
+- `gdk_keyval_from_name()`
+
  ----
 
-Copyright (C) 2019-2020 Alexandros Theodotou
+Copyright (C) 2019-2021 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification, are permitted in any medium without royalty provided the copyright notice and this notice are preserved. This file is offered as-is, without any warranty.

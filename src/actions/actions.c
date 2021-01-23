@@ -2214,6 +2214,14 @@ DEFINE_SIMPLE (activate_add_region)
   /* TODO add region with default size */
 }
 
+DEFINE_SIMPLE (activate_go_to_start)
+{
+  Position pos;
+  position_init (&pos);
+  transport_set_playhead_pos (
+    TRANSPORT, &pos);
+}
+
 void
 change_state_show_automation_values (
   GSimpleAction * action,
