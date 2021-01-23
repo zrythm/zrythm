@@ -1082,7 +1082,7 @@ create_ports (
         }
       float cur_val =
         carla_native_plugin_get_param_value (
-          self, 0, i);
+          self, i);
       g_message (
         "%d: %s=%f%s", i, port->id.label,
         (double) cur_val,

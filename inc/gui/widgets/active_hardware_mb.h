@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Active hardware menu button.
+ */
+
 #ifndef __GUI_WIDGETS_ACTIVE_HARDWARE_MB_H__
 #define __GUI_WIDGETS_ACTIVE_HARDWARE_MB_H__
 
@@ -31,6 +37,12 @@ G_DECLARE_FINAL_TYPE (
   active_hardware_mb_widget,
   Z, ACTIVE_HARDWARE_MB_WIDGET,
   GtkMenuButton)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef struct _ActiveHardwarePopoverWidget
   ActiveHardwarePopoverWidget;
@@ -73,5 +85,9 @@ active_hardware_mb_widget_save_settings (
 void
 active_hardware_mb_widget_refresh (
   ActiveHardwareMbWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

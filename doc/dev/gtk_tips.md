@@ -15,6 +15,15 @@ The "destroy" signal is for
 other code, using your widget, to release
 references they might have.
 
+# Popovers
+Thanks to ebassi from GTK:
+always make sure that the popover opens inside
+the window; make the window request a minimum
+size that allows the popover to be fully
+contained; or make the contents of the popover
+be small enough to fit into a small top level
+parent window
+
 # Specify menu for GtkMenuButton in XML
 
 Specify the id of the menu, like:
@@ -22,6 +31,11 @@ Specify the id of the menu, like:
 ```xml
 <property name="menu">my_menu_id</property>
 ```
+
+# Set max height on GtkScrolledWindow
+
+Set `propagate-natural-height` to true and set
+max height with `max-content-height`.
 
  ----
 

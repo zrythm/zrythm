@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.36.0 -->
 <!--
 
-  Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -51,6 +51,8 @@
             <property name="can_focus">True</property>
             <property name="hscrollbar_policy">never</property>
             <property name="shadow_type">in</property>
+            <property name="max-content-height">86</property>
+            <property name="propagate-natural-height">True</property>
             <child>
               <object class="GtkViewport">
                 <property name="visible">True</property>
