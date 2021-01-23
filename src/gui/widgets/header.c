@@ -46,6 +46,8 @@ header_widget_setup (
 {
   header_widget_set_subtitle (
     self, title);
+
+  home_toolbar_widget_setup (self->home_toolbar);
 }
 
 void

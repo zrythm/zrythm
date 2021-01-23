@@ -128,25 +128,34 @@ toolbox_widget_refresh (
       GTK_ICON_SIZE_BUTTON);
 
   /* set toggled states */
-  if (P_TOOL == TOOL_SELECT_NORMAL ||
-      P_TOOL == TOOL_SELECT_STRETCH)
-    gtk_toggle_button_set_active (
-      self->select_mode, 1);
-  else if (P_TOOL == TOOL_EDIT)
-    gtk_toggle_button_set_active (
-      self->edit_mode, 1);
-  else if (P_TOOL == TOOL_CUT)
-    gtk_toggle_button_set_active (
-      self->cut_mode, 1);
-  else if (P_TOOL == TOOL_ERASER)
-    gtk_toggle_button_set_active (
-      self->erase_mode, 1);
-  else if (P_TOOL == TOOL_RAMP)
-    gtk_toggle_button_set_active (
-      self->ramp_mode, 1);
-  else if (P_TOOL == TOOL_AUDITION)
-    gtk_toggle_button_set_active (
-      self->audition_mode, 1);
+  switch (P_TOOL)
+    {
+    case TOOL_SELECT_NORMAL:
+    case TOOL_SELECT_STRETCH:
+      gtk_toggle_button_set_active (
+        self->select_mode, true);
+      break;
+    case TOOL_EDIT:
+      gtk_toggle_button_set_active (
+        self->edit_mode, 1);
+      break;
+    case TOOL_CUT:
+      gtk_toggle_button_set_active (
+        self->cut_mode, 1);
+      break;
+    case TOOL_ERASER:
+      gtk_toggle_button_set_active (
+        self->erase_mode, 1);
+      break;
+    case TOOL_RAMP:
+      gtk_toggle_button_set_active (
+        self->ramp_mode, 1);
+      break;
+    case TOOL_AUDITION:
+      gtk_toggle_button_set_active (
+        self->audition_mode, 1);
+      break;
+    }
 
 #define UNBLOCK_SIGNAL_HANDLER(lowercase) \
   g_signal_handler_unblock ( \

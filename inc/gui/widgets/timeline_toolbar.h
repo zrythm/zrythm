@@ -36,7 +36,6 @@ G_DECLARE_FINAL_TYPE (
   Z, TIMELINE_TOOLBAR_WIDGET,
   GtkToolbar)
 
-typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapBoxWidget SnapBoxWidget;
