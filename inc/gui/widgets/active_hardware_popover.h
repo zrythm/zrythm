@@ -40,8 +40,6 @@ typedef struct _ActiveHardwarePopoverWidget
   ActiveHardwareMbWidget * owner; ///< the owner
   GtkBox *                controllers_box;
   GtkButton *             rescan;
-  //GtkCheckButton *        controllers[50];
-  //int                     num_controllers;
 } ActiveHardwarePopoverWidget;
 
 /**

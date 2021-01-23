@@ -818,6 +818,7 @@ INPUT                  = \
   @MESON_SOURCE_ROOT@/doc/dev/release_checklist.h \
   @MESON_SOURCE_ROOT@/doc/dev/weblate.h \
   @MESON_SOURCE_ROOT@/doc/dev/windows-build.md \
+  @MESON_SOURCE_ROOT@/doc/dev/windows-build-msvc.md \
   @MESON_SOURCE_ROOT@/CONTRIBUTING.md \
   @MESON_SOURCE_ROOT@/HACKING.md \
   @MESON_SOURCE_ROOT@/doc/dev/group_defs.dox \

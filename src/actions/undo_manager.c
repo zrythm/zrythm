@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +20,7 @@
 #include "actions/undoable_action.h"
 #include "actions/undo_stack.h"
 #include "actions/undo_manager.h"
+#include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/home_toolbar.h"
@@ -101,6 +102,8 @@ undo_manager_undo (UndoManager * self)
 
   if (ZRYTHM_HAVE_UI)
     {
+      EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
+
       /* process UI events now */
       event_manager_process_now (EVENT_MANAGER);
     }
@@ -145,6 +148,8 @@ undo_manager_redo (UndoManager * self)
 
   if (ZRYTHM_HAVE_UI)
     {
+      EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
+
       /* process UI events now */
       event_manager_process_now (EVENT_MANAGER);
     }
@@ -187,15 +192,10 @@ undo_manager_perform (
 
   undo_stack_clear (self->redo_stack, true);
 
-  if (ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_HEADER &&
-      MW_HOME_TOOLBAR)
-    {
-      home_toolbar_widget_refresh_undo_redo_buttons (
-        MW_HOME_TOOLBAR);
-    }
-
   if (ZRYTHM_HAVE_UI)
     {
+      EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
+
       /* process UI events now */
       event_manager_process_now (EVENT_MANAGER);
     }

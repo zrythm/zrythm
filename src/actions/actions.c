@@ -944,9 +944,6 @@ activate_undo (GSimpleAction *action,
         UNDO_MANAGER->undo_stack))
     return;
   undo_manager_undo (UNDO_MANAGER);
-
-  EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE,
-               NULL);
 }
 
 void

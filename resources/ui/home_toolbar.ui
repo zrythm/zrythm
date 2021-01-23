@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -27,12 +27,14 @@
     <property name="can_focus">False</property>
     <property name="icon-size">small-toolbar</property>
     <child>
-      <object class="GtkToolButton" id="undo">
+      <object class="GtkToolItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="action-name">win.undo</property>
-        <property name="icon-name">edit-undo</property>
-        <property name="label" translatable="yes">Undo</property>
+        <child>
+          <object class="ButtonWithMenuWidget" id="undo">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+        </child>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -40,12 +42,14 @@
       </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="redo">
+      <object class="GtkToolItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="action-name">win.redo</property>
-        <property name="icon-name">edit-redo</property>
-        <property name="label" translatable="yes">Redo</property>
+        <child>
+          <object class="ButtonWithMenuWidget" id="redo">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+        </child>
       </object>
       <packing>
         <property name="expand">False</property>

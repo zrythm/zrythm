@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,8 +35,8 @@ G_DECLARE_FINAL_TYPE (
   Z, HOME_TOOLBAR_WIDGET, GtkToolbar)
 
 typedef struct _ToolboxWidget ToolboxWidget;
-typedef struct _QuantizeMbWidget QuantizeMbWidget;
-typedef struct _SnapBoxWidget SnapBoxWidget;
+typedef struct _ButtonWithMenuWidget
+  ButtonWithMenuWidget;
 
 /**
  * @addtogroup widgets
@@ -53,8 +53,10 @@ typedef struct _SnapBoxWidget SnapBoxWidget;
 typedef struct _HomeToolbarWidget
 {
   GtkToolbar         parent_instance;
-  GtkToolButton *    undo;
-  GtkToolButton *    redo;
+  GtkButton *        undo_btn;
+  ButtonWithMenuWidget * undo;
+  GtkButton *        redo_btn;
+  ButtonWithMenuWidget * redo;
   GtkToolButton *    cut;
   GtkToolButton *    copy;
   GtkToolButton *    paste;
@@ -64,8 +66,6 @@ typedef struct _HomeToolbarWidget
   GtkToolButton *    select_all;
   GtkToolButton *    loop_selection;
   ToolboxWidget *    toolbox;
-  //SnapBoxWidget *    snap_box;
-  //QuantizeMbWidget * quantize_mb;
 } HomeToolbarWidget;
 
 HomeToolbarWidget *
