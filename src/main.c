@@ -119,7 +119,7 @@ print_version ()
     stdout,
     "%s\n%s\n%s\n%s\n",
     ver_with_caps,
-    "Copyright © 2018-2020 The Zrythm contributors",
+    "Copyright © 2018-2021 The Zrythm contributors",
     "This is free software; see the source for copying conditions.",
     "There is NO "
     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
@@ -491,7 +491,7 @@ main (int    argc,
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _("%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n\n"
+    _("%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n\n"
     "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. See the file `COPYING' for details.\n\n"

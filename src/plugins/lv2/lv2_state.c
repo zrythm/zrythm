@@ -274,6 +274,7 @@ lv2_state_apply_state (
         state, plugin->instance,
         set_port_value, plugin, 0,
         plugin->state_features);
+      g_message ("state applied");
 
       if (must_pause)
         {
