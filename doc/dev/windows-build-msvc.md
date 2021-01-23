@@ -5,12 +5,14 @@
 > Port them all to meson and build them as subproject
 
 > chocolatey also has packages for all those things: https://gitlab.gnome.org/creiter/gitlab-ci-win32-runner-v2/-/blob/master/ansible/setup.yml#L57
+> nice! does meson in the vs command prompt see the chocolatey packages by default?
+> If you have a pkgconfig from chocolatey, yes.
 
 # TODO
 
 # Thanks
 
-Thanks to xclaesse and lazka for explanations.
+Thanks to xclaesse, dcbaker and lazka for explanations.
 
 ----
 
