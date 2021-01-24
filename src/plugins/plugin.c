@@ -1814,6 +1814,8 @@ plugin_clone (
   Plugin * pl,
   bool     src_is_project)
 {
+  g_return_val_if_fail (IS_PLUGIN (pl), NULL);
+
   Plugin * clone = NULL;
 #ifdef HAVE_CARLA
   if (pl->descr->open_with_carla)

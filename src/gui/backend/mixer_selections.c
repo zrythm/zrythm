@@ -446,7 +446,7 @@ mixer_selections_clone (
         }
       else
         {
-          ms->plugins[i] = src->plugins[i];
+          pl = src->plugins[i];
         }
       ms->plugins[i] =
         plugin_clone (pl, true);

@@ -992,7 +992,19 @@ test_create_modulator (void)
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
   plugin_descriptor_free (descr);
+
+  MixerSelections * sel = mixer_selections_new ();
+  mixer_selections_add_slot (
+    sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR,
+    P_MODULATOR_TRACK->num_modulators - 1,
+    F_NO_CLONE);
+  ua = mixer_selections_action_new_delete (sel);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  mixer_selections_free (sel);
 
 #endif
 
