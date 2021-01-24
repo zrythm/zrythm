@@ -1052,11 +1052,22 @@ track_activate_all_plugins (
 
 /**
  * Comment setter.
+ *
+ * @note This creates an undoable action.
+ */
+void
+track_comment_setter (
+  void *        track,
+  const char *  comment);
+
+/**
+ * @param undoable Create an undable action.
  */
 void
 track_set_comment (
-  void *        track,
-  const char *  comment);
+  Track *       self,
+  const char *  comment,
+  bool          undoable);
 
 /**
  * Comment getter.

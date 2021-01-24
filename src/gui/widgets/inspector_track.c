@@ -152,7 +152,7 @@ inspector_track_widget_show_tracks (
 
       text_expander_widget_setup (
         self->comment, track_get_comment,
-        track_set_comment, track);
+        track_comment_setter, track);
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self->comment),
         _("Comment"));

@@ -2353,17 +2353,44 @@ track_activate_all_plugins (
 
 /**
  * Comment setter.
+ *
+ * @note This creates an undoable action.
  */
 void
-track_set_comment (
+track_comment_setter (
   void *        track,
   const char *  comment)
 {
   Track * self = (Track *) track;
   g_return_if_fail (IS_TRACK (self));
 
-  g_free (self->comment);
-  self->comment = g_strdup (comment);
+  track_set_comment (self, comment, F_UNDOABLE);
+}
+
+/**
+ * @param undoable Create an undable action.
+ */
+void
+track_set_comment (
+  Track *       self,
+  const char *  comment,
+  bool          undoable)
+{
+  if (undoable)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE,
+        F_NO_PUBLISH_EVENTS);
+      UndoableAction * ua =
+        tracklist_selections_action_new_edit_comment (
+          TRACKLIST_SELECTIONS, comment);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_free_and_null (self->comment);
+      self->comment = g_strdup (comment);
+    }
 }
 
 /**

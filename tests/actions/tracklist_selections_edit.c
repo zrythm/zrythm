@@ -413,6 +413,37 @@ _test_edit_tracks (
         g_free (icon_before);
       }
       break;
+    case EDIT_TRACK_ACTION_TYPE_COMMENT:
+      {
+        const char * new_icon = "icon2";
+        char * icon_before =
+          g_strdup (ins_track->comment);
+        track_set_comment (
+          ins_track, new_icon, F_UNDOABLE);
+        g_assert_true (
+          string_is_equal (
+            ins_track->comment, new_icon));
+
+        test_project_save_and_reload ();
+
+        ins_track = get_ins_track ();
+
+        /* undo/redo and re-verify */
+        undo_manager_undo (UNDO_MANAGER);
+        g_assert_true (
+          string_is_equal (
+            ins_track->comment, icon_before));
+        undo_manager_redo (UNDO_MANAGER);
+        g_assert_true (
+          string_is_equal (
+            ins_track->comment, new_icon));
+
+        /* undo to go back to original state */
+        undo_manager_undo (UNDO_MANAGER);
+
+        g_free (icon_before);
+      }
+      break;
     default:
       break;
     }

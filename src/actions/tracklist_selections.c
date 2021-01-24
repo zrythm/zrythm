@@ -84,7 +84,7 @@ tracklist_selections_action_new (
   const GdkRGBA *               color_new,
   float                         val_before,
   float                         val_after,
-  const char *                  new_icon,
+  const char *                  new_txt,
   bool                          already_edited)
 {
   TracklistSelectionsAction * self =
@@ -257,9 +257,9 @@ tracklist_selections_action_new (
     {
       self->new_color = *color_new;
     }
-  if (new_icon)
+  if (new_txt)
     {
-      self->new_icon = g_strdup (new_icon);
+      self->new_txt = g_strdup (new_txt);
     }
 
   return ua;
@@ -1101,9 +1101,17 @@ do_or_undo_edit (
           track_set_icon (
             track,
             _do ?
-              self->new_icon :
+              self->new_txt :
               own_track_before->icon_name,
             F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+          break;
+        case EDIT_TRACK_ACTION_TYPE_COMMENT:
+          track_set_comment (
+            track,
+            _do ?
+              self->new_txt :
+              own_track_before->comment,
+            F_NOT_UNDOABLE);
           break;
         }
 
@@ -1241,6 +1249,9 @@ tracklist_selections_action_stringize (
             case EDIT_TRACK_ACTION_TYPE_ICON:
               return g_strdup (
                 _("Change icon"));
+            case EDIT_TRACK_ACTION_TYPE_COMMENT:
+              return g_strdup (
+                _("Change comment"));
             default:
               g_return_val_if_reached (
                 g_strdup (""));

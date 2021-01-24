@@ -67,6 +67,7 @@ typedef enum EditTracksActionType
   EDIT_TRACK_ACTION_TYPE_RENAME,
 
   EDIT_TRACK_ACTION_TYPE_COLOR,
+  EDIT_TRACK_ACTION_TYPE_COMMENT,
   EDIT_TRACK_ACTION_TYPE_ICON,
 } EditTracksActionType;
 
@@ -80,6 +81,7 @@ static const cyaml_strval_t
   { "direct out", EDIT_TRACK_ACTION_TYPE_DIRECT_OUT },
   { "Rename", EDIT_TRACK_ACTION_TYPE_RENAME },
   { "Color", EDIT_TRACK_ACTION_TYPE_COLOR },
+  { "comment", EDIT_TRACK_ACTION_TYPE_COMMENT },
   { "Icon", EDIT_TRACK_ACTION_TYPE_ICON },
 };
 
@@ -168,7 +170,7 @@ typedef struct TracklistSelectionsAction
 
   GdkRGBA               new_color;
 
-  char *                new_icon;
+  char *                new_txt;
 
   /** Skip do if true. */
   bool                  already_edited;
@@ -227,7 +229,7 @@ static const cyaml_schema_field_t
     TracklistSelectionsAction, new_color,
     gdk_rgba_fields_schema),
   YAML_FIELD_STRING_PTR_OPTIONAL (
-    TracklistSelectionsAction, new_icon),
+    TracklistSelectionsAction, new_txt),
 
   CYAML_FIELD_END
 };
@@ -273,7 +275,7 @@ tracklist_selections_action_new (
   const GdkRGBA *               color_new,
   float                         val_before,
   float                         val_after,
-  const char *                  new_icon,
+  const char *                  new_txt,
   bool                          already_edited);
 
 #define tracklist_selections_action_new_create( \
@@ -397,6 +399,15 @@ tracklist_selections_action_new (
     -1, EDIT_TRACK_ACTION_TYPE_ICON, NULL, \
     false, false, NULL, \
     0.f, 0.f, icon, false)
+
+#define tracklist_selections_action_new_edit_comment( \
+  tls,comment) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_COMMENT, NULL, \
+    false, false, NULL, \
+    0.f, 0.f, comment, false)
 
 #define tracklist_selections_action_new_move( \
   tls,track_pos) \

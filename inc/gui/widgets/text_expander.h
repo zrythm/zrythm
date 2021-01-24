@@ -77,6 +77,12 @@ typedef struct _TextExpanderWidget
   /** Editor buffer. */
   GtkSourceBuffer *   buffer;
 
+  GtkLabel *          label;
+
+  GtkMenuButton *     edit_btn;
+
+  GtkPopover *        popover;
+
   bool                has_focus;
 } TextExpanderWidget;
 
