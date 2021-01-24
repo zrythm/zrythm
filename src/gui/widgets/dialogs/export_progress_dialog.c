@@ -45,6 +45,14 @@ G_DEFINE_TYPE (
   GTK_TYPE_DIALOG)
 
 static void
+on_closed (
+  GtkDialog *                  dialog,
+  ExportProgressDialogWidget * self)
+{
+  self->info->cancelled = true;
+}
+
+static void
 on_open_directory_clicked (
   GtkButton * btn,
   ExportProgressDialogWidget * self)
@@ -144,6 +152,10 @@ export_progress_dialog_widget_new (
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self->progress_bar),
     (GtkTickCallback) tick_cb, self, NULL);
+
+  g_signal_connect (
+    G_OBJECT (self), "close",
+    G_CALLBACK (on_closed), self);
 
   return self;
 }
