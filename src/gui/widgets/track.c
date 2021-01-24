@@ -1008,6 +1008,8 @@ track_draw_cb (
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr, &rect);
 
+  Track * track = self->track;
+
   /*g_message (*/
     /*"track %s rect x %d %d redraw %d",*/
     /*self->track->name, rect.x, rect.y,*/
@@ -1042,7 +1044,7 @@ track_draw_cb (
             self->cached_cr, 0, 0, width, height);
           cairo_fill (self->cached_cr);
         }
-      else if (track_is_selected (self->track))
+      else if (track_is_selected (track))
         {
           cairo_set_source_rgba (
             self->cached_cr, 1, 1, 1, 0.07);
@@ -1061,7 +1063,7 @@ track_draw_cb (
 
       /* only show bot buttons if enough space */
       if (BOT_BUTTONS_SHOULD_BE_VISIBLE (
-            self->track->main_height))
+            track->main_height))
         {
           draw_buttons (
             self, self->cached_cr, 0, width);

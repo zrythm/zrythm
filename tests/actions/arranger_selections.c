@@ -130,9 +130,9 @@ check_has_single_redo ()
  */
 static void
 check_timeline_objects_vs_original_state (
-  int check_selections,
-  int _check_has_single_undo,
-  int _check_has_single_redo)
+  bool check_selections,
+  bool _check_has_single_undo,
+  bool _check_has_single_redo)
 {
   test_project_check_vs_original_state (
     &p1, &p2, check_selections);
@@ -215,8 +215,7 @@ check_timeline_objects_deleted (
 static void
 test_create_timeline ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
+  rebootstrap_timeline ();
 
   /* do create */
   UndoableAction * ua =
@@ -248,13 +247,14 @@ test_create_timeline ()
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
   check_timeline_objects_vs_original_state (1, 1, 0);
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_delete_timeline ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
+  rebootstrap_timeline ();
 
   /* do delete */
   UndoableAction * ua =
@@ -309,6 +309,8 @@ test_delete_timeline ()
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
   check_timeline_objects_vs_original_state (1, 0, 1);
+
+  test_helper_zrythm_cleanup ();
 }
 
 /**
@@ -506,8 +508,7 @@ check_after_move_timeline (
 static void
 test_move_timeline ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
+  rebootstrap_timeline ();
 
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
@@ -566,17 +567,10 @@ test_move_timeline ()
               (ArrangerSelections *)
               /* 2 regions */
               TL_SELECTIONS), ==, 2);
-
-          /* rebootstrap */
-          rebootstrap_timeline ();
         }
-      g_assert_cmpint (
-        arranger_selections_get_num_objects (
-          (ArrangerSelections *) TL_SELECTIONS), ==,
-        TOTAL_TL_SELECTIONS);
-      check_timeline_objects_vs_original_state (
-        1, 0, 1);
     }
+
+  test_helper_zrythm_cleanup ();
 }
 
 /**
@@ -892,13 +886,11 @@ check_after_duplicate_timeline (
 static void
 test_duplicate_timeline ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
+  rebootstrap_timeline ();
 
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
-      rebootstrap_timeline ();
       int track_diff =  i ? 2 : 0;
       if (track_diff)
         {
@@ -955,19 +947,18 @@ test_duplicate_timeline ()
       check_timeline_objects_vs_original_state (
         0, 0, 1);
     }
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_link_timeline ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
+  rebootstrap_timeline ();
 
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
-      rebootstrap_timeline ();
-
       ArrangerSelections * sel_before = NULL;
 
       int track_diff =  i ? 2 : 0;
@@ -1039,14 +1030,13 @@ test_link_timeline ()
       check_timeline_objects_vs_original_state (
         0, 0, 1);
     }
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_edit_marker ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
-
   rebootstrap_timeline ();
 
   /* create marker with name "aa" */
@@ -1096,14 +1086,13 @@ test_edit_marker ()
   /* return to original state */
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_mute ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
-
   rebootstrap_timeline ();
 
   Track * midi_track = TRACKLIST->tracks[5];
@@ -1139,14 +1128,13 @@ test_mute ()
   undo_manager_undo (UNDO_MANAGER);
   g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_false (obj->muted);
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_split ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
-
   rebootstrap_timeline ();
 
   g_assert_cmpint (
@@ -1226,109 +1214,13 @@ test_split ()
     first_frame, clip->frames[0], 0.000001f);
 
   undo_manager_undo (UNDO_MANAGER);
-}
 
-static void
-test_audio_functions ()
-{
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
-
-  rebootstrap_timeline ();
-
-  Track * track =
-    tracklist_find_track_by_name (
-      TRACKLIST, AUDIO_TRACK_NAME);
-  TrackLane * lane = track->lanes[3];
-  g_assert_cmpint (
-    lane->num_regions, ==, 1);
-
-  ZRegion * region = lane->regions[0];
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
-  arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND);
-  AUDIO_SELECTIONS->region_id = region->id;
-  AUDIO_SELECTIONS->has_selection = true;
-  AUDIO_SELECTIONS->sel_start = r_obj->pos;
-  AUDIO_SELECTIONS->sel_end = r_obj->end_pos;
-
-  AudioClip * orig_clip =
-    audio_region_get_clip (region);
-  size_t channels = orig_clip->channels;
-  float frames[
-    (size_t) orig_clip->num_frames * channels];
-  dsp_copy (
-    frames, orig_clip->frames,
-    (size_t) orig_clip->num_frames * channels);
-
-  /* invert */
-  UndoableAction * ua =
-    arranger_selections_action_new_edit_audio_function (
-      (ArrangerSelections *) AUDIO_SELECTIONS,
-      AUDIO_FUNCTION_INVERT);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
-  AudioClip * clip = audio_region_get_clip (region);
-  for (size_t i = 0;
-       i < (size_t) clip->num_frames; i++)
-    {
-      for (size_t j = 0; j < channels; j++)
-        {
-          g_assert_cmpfloat_with_epsilon (
-            - frames[channels * i + j],
-            clip->frames[channels * i + j],
-            0.0001f);
-        }
-    }
-
-  test_project_save_and_reload ();
-
-  undo_manager_undo (UNDO_MANAGER);
-
-  /* verify that frames are returned to normal */
-  track =
-    tracklist_find_track_by_name (
-      TRACKLIST, AUDIO_TRACK_NAME);
-  lane = track->lanes[3];
-  region = lane->regions[0];
-  clip = audio_region_get_clip (region);
-  for (size_t i = 0;
-       i < (size_t) clip->num_frames; i++)
-    {
-      for (size_t j = 0; j < channels; j++)
-        {
-          g_assert_cmpfloat_with_epsilon (
-            frames[channels * i + j],
-            clip->frames[channels * i + j],
-            0.0001f);
-        }
-    }
-
-  undo_manager_redo (UNDO_MANAGER);
-
-  /* verify that frames are edited again */
-  for (size_t i = 0;
-       i < (size_t) clip->num_frames; i++)
-    {
-      for (size_t j = 0; j < channels; j++)
-        {
-          g_assert_cmpfloat_with_epsilon (
-            - frames[channels * i + j],
-            clip->frames[channels * i + j],
-            0.0001f);
-        }
-    }
-
-  undo_manager_undo (UNDO_MANAGER);
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_quantize ()
 {
-  /* clear undo/redo stacks */
-  undo_manager_clear_stacks (UNDO_MANAGER, true);
-
   rebootstrap_timeline ();
 
   Track * audio_track =
@@ -1351,6 +1243,105 @@ test_quantize ()
 
   /* return to original state */
   undo_manager_undo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+verify_audio_function (
+  float * frames,
+  size_t  max_frames)
+{
+  Track * track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  TrackLane * lane = track->lanes[3];
+  ZRegion * region = lane->regions[0];
+  AudioClip * clip = audio_region_get_clip (region);
+  size_t num_frames =
+    MIN (max_frames, (size_t) clip->num_frames);
+  for (size_t i = 0; i < num_frames; i++)
+    {
+      for (size_t j = 0;
+           j < clip->channels; j++)
+        {
+          g_assert_cmpfloat_with_epsilon (
+            frames[clip->channels * i + j],
+            clip->frames[clip->channels * i + j],
+            0.0001f);
+        }
+    }
+}
+
+static void
+test_audio_functions ()
+{
+  rebootstrap_timeline ();
+
+  Track * track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  TrackLane * lane = track->lanes[3];
+  g_assert_cmpint (
+    lane->num_regions, ==, 1);
+
+  ZRegion * region = lane->regions[0];
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+  arranger_object_select (
+    r_obj, F_SELECT, F_NO_APPEND);
+  AUDIO_SELECTIONS->region_id = region->id;
+  AUDIO_SELECTIONS->has_selection = true;
+  AUDIO_SELECTIONS->sel_start = r_obj->pos;
+  AUDIO_SELECTIONS->sel_end = r_obj->end_pos;
+
+  AudioClip * orig_clip =
+    audio_region_get_clip (region);
+  size_t channels = orig_clip->channels;
+  size_t frames_per_channel =
+    (size_t) orig_clip->num_frames;
+  size_t total_frames =
+    (size_t) orig_clip->num_frames * channels;
+  float orig_frames[total_frames];
+  float inverted_frames[total_frames];
+  dsp_copy (
+    orig_frames, orig_clip->frames,
+    total_frames);
+  dsp_copy (
+    inverted_frames, orig_clip->frames,
+    total_frames);
+  dsp_mul_k2 (
+    inverted_frames, -1.f, total_frames);
+
+  verify_audio_function (
+    orig_frames, frames_per_channel);
+
+  /* invert */
+  UndoableAction * ua =
+    arranger_selections_action_new_edit_audio_function (
+      (ArrangerSelections *) AUDIO_SELECTIONS,
+      AUDIO_FUNCTION_INVERT);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  verify_audio_function (
+    inverted_frames, frames_per_channel);
+
+  test_project_save_and_reload ();
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  verify_audio_function (
+    orig_frames, frames_per_channel);
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  /* verify that frames are edited again */
+  verify_audio_function (
+    inverted_frames, frames_per_channel);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
@@ -1358,11 +1349,8 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
 #define TEST_PREFIX "/actions/arranger_selections/"
 
-  rebootstrap_timeline ();
   g_test_add_func (
     TEST_PREFIX "test create timeline",
     (GTestFunc) test_create_timeline);
@@ -1385,14 +1373,14 @@ main (int argc, char *argv[])
     TEST_PREFIX "test mute",
     (GTestFunc) test_mute);
   g_test_add_func (
-    TEST_PREFIX "test audio functions",
-    (GTestFunc) test_audio_functions);
-  g_test_add_func (
     TEST_PREFIX "test split",
     (GTestFunc) test_split);
   g_test_add_func (
     TEST_PREFIX "test quantize",
     (GTestFunc) test_quantize);
+  g_test_add_func (
+    TEST_PREFIX "test audio functions",
+    (GTestFunc) test_audio_functions);
 
   return g_test_run ();
 }

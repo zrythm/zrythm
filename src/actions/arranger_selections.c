@@ -1791,6 +1791,9 @@ do_or_undo_edit (
             &end, - r->base.pos.frames);
           size_t num_frames =
             (size_t) (end.frames - start.frames);
+          g_return_val_if_fail (
+            (long) num_frames ==
+              src_clip->num_frames, -1);
 
           /* replace the frames in the region */
           audio_region_replace_frames (

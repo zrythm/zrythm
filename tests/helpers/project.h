@@ -261,6 +261,8 @@ test_project_rebootstrap_timeline (
   Position * p1,
   Position * p2)
 {
+  test_helper_zrythm_init ();
+
   bool was_active = AUDIO_ENGINE->activated;
   engine_activate (AUDIO_ENGINE, false);
 
