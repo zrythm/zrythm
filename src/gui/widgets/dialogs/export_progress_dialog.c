@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,10 +28,13 @@
 #include "audio/engine.h"
 #include "audio/exporter.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -71,7 +74,8 @@ tick_cb (
     self->info->progress);
 
   if (math_doubles_equal (
-        self->info->progress, 1.0))
+        self->info->progress, 1.0) ||
+      self->info->has_error)
     {
       if (self->autoclose)
         {
@@ -87,6 +91,12 @@ tick_cb (
             self->show_open_dir_btn);
           gtk_label_set_text (
             self->label, _("Exported"));
+        }
+
+      if (self->info->has_error)
+        {
+          ui_show_error_message (
+            MAIN_WINDOW, self->info->error_str);
         }
       return G_SOURCE_REMOVE;
     }

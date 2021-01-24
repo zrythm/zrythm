@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,8 @@
 typedef enum AudioFormat
 {
   AUDIO_FORMAT_FLAC,
-  AUDIO_FORMAT_OGG,
+  AUDIO_FORMAT_OGG_VORBIS,
+  AUDIO_FORMAT_OGG_OPUS,
   AUDIO_FORMAT_WAV,
   AUDIO_FORMAT_MP3,
   AUDIO_FORMAT_MIDI,
@@ -133,6 +134,12 @@ typedef struct ExportSettings
   /** Number of files being simultaneously exported,
    * for progress calculation. */
   int               num_files;
+
+  /** Error occured. */
+  bool              has_error;
+
+  /** Error string. */
+  char              error_str[1800];
 } ExportSettings;
 
 /**
@@ -194,11 +201,13 @@ exporter_create_audio_track_after_bounce (
 /**
  * Returns the audio format as string.
  *
- * Must be g_free()'d by caller.
+ * @param extension Whether to return the extension
+ *   for this format, or a human friendly label.
  */
-char *
+const char *
 exporter_stringize_audio_format (
-  AudioFormat format);
+  AudioFormat format,
+  bool        extension);
 
 /**
  * Exports an audio file based on the given

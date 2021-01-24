@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,6 +46,8 @@
 
 #include "midilib/src/midifile.h"
 
+#include <glib/gi18n.h>
+
 #include <sndfile.h>
 
 #define  AMPLITUDE  (1.0 * 0x7F000000)
@@ -53,32 +55,44 @@
 /**
  * Returns the audio format as string.
  *
- * Must be g_free()'d by caller.
+ * @param extension Whether to return the extension
+ *   for this format, or a human friendly label.
  */
-char *
+const char *
 exporter_stringize_audio_format (
-  AudioFormat format)
+  AudioFormat format,
+  bool        extension)
 {
   switch (format)
     {
     case AUDIO_FORMAT_FLAC:
-      return g_strdup ("FLAC");
-      break;
-    case AUDIO_FORMAT_OGG:
-      return g_strdup ("ogg");
-      break;
+      return "FLAC";
+    case AUDIO_FORMAT_OGG_VORBIS:
+      if (extension)
+        {
+          return "ogg";
+        }
+      else
+        {
+          return "ogg (Vorbis)";
+        }
+    case AUDIO_FORMAT_OGG_OPUS:
+      if (extension)
+        {
+          return "ogg";
+        }
+      else
+        {
+          return "ogg (OPUS)";
+        }
     case AUDIO_FORMAT_WAV:
-      return g_strdup ("wav");
-      break;
+      return "wav";
     case AUDIO_FORMAT_MP3:
-      return g_strdup ("mp3");
-      break;
+      return "mp3";
     case AUDIO_FORMAT_MIDI:
-      return g_strdup ("mid");
-      break;
+      return "mid";
     case AUDIO_FORMAT_RAW:
-      return g_strdup ("raw");
-      break;
+      return "raw";
     case NUM_AUDIO_FORMATS:
       break;
     }
@@ -95,43 +109,50 @@ export_audio (
 
 #define EXPORT_CHANNELS 2
 
-  if (info->format == AUDIO_FORMAT_FLAC)
+  switch (info->format)
     {
+    case AUDIO_FORMAT_FLAC:
       sfinfo.format = SF_FORMAT_FLAC;
-    }
-  else if (info->format == AUDIO_FORMAT_RAW)
-    {
+      break;
+    case AUDIO_FORMAT_RAW:
       sfinfo.format = SF_FORMAT_RAW;
-    }
-  else if (info->format == AUDIO_FORMAT_WAV)
-    {
+      break;
+    case AUDIO_FORMAT_WAV:
       sfinfo.format = SF_FORMAT_WAV;
-    }
-  else if (info->format == AUDIO_FORMAT_OGG)
-    {
+      break;
+    case AUDIO_FORMAT_OGG_VORBIS:
+#ifdef HAVE_OPUS
+    case AUDIO_FORMAT_OGG_OPUS:
+#endif
       sfinfo.format = SF_FORMAT_OGG;
-    }
-  else
-    {
-      char * format =
-        exporter_stringize_audio_format (
-          info->format);
-      char str[600];
-      sprintf (
-        str, "Format %s not supported yet",
-        format);
-      /* FIXME this is not the GTK thread */
-      ui_show_error_message (
-        MAIN_WINDOW, str);
-      g_free (format);
+      break;
+    default:
+      {
+        const char * format =
+          exporter_stringize_audio_format (
+            info->format, false);
 
-      return -1;
+        info->has_error = true;
+        sprintf (
+          info->error_str,
+          _("Format %s not supported yet"),
+          format);
+        g_warning ("%s", info->error_str);
+
+        return -1;
+      }
+      break;
     }
 
-  if (info->format == AUDIO_FORMAT_OGG)
+  if (info->format == AUDIO_FORMAT_OGG_VORBIS)
     {
       sfinfo.format =
         sfinfo.format | SF_FORMAT_VORBIS;
+    }
+  else if (info->format == AUDIO_FORMAT_OGG_OPUS)
+    {
+      sfinfo.format =
+        sfinfo.format | SF_FORMAT_OPUS;
     }
   else if (info->depth == BIT_DEPTH_16)
     {
@@ -187,14 +208,29 @@ export_audio (
       break;
     }
 
-  sfinfo.samplerate =
-    (int) AUDIO_ENGINE->sample_rate;
+  /* set samplerate */
+  if (info->format == AUDIO_FORMAT_OGG_OPUS)
+    {
+      /* Opus only supports sample rates of 8000,
+       * 12000, 16000, 24000 and 48000 */
+      /* TODO add option */
+      sfinfo.samplerate = 48000;
+    }
+  else
+    {
+      sfinfo.samplerate =
+        (int) AUDIO_ENGINE->sample_rate;
+    }
+
   sfinfo.channels = EXPORT_CHANNELS;
 
   if (!sf_format_check (&sfinfo))
     {
-      ui_show_error_message (
-        MAIN_WINDOW, "SF INFO invalid");
+      info->has_error = true;
+      strcpy (
+        info->error_str, _("SF INFO invalid"));
+      g_warning ("%s", info->error_str);
+
       return - 1;
     }
 
@@ -207,29 +243,15 @@ export_audio (
   if (!sndfile)
     {
       int error = sf_error (NULL);
-      char error_str[600];
-      switch (error)
-        {
-        case 1:
-          strcpy (error_str, "Unrecognized format");
-          break;
-        case 2:
-          strcpy (error_str, "System error");
-          break;
-        case 3:
-          strcpy (error_str, "Malformed file");
-          break;
-        case 4:
-          strcpy (error_str, "Unsupported encoding");
-          break;
-        default:
-          g_warn_if_reached ();
-          return - 1;
-        }
+      const char * error_str =
+        sf_error_number (error);
 
-      g_warning (
-        "Couldn't open SNDFILE %s:\n%s",
-        info->file_uri, error_str);
+      info->has_error = true;
+      sprintf (
+        info->error_str,
+        _("Couldn't open SNDFILE %s:\n%d: %s"),
+        info->file_uri, error, error_str);
+      g_warning ("%s", info->error_str);
 
       return - 1;
     }
@@ -379,7 +401,7 @@ export_audio (
               SEEK_SET | SFM_WRITE);
 
           /* wav is weird for some reason */
-          if ((sfinfo.format & SF_FORMAT_WAV) == 0)
+          if (info->format == AUDIO_FORMAT_WAV)
             {
               if (seek_cnt < 0)
                 {

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+;;; Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
 ;;;
 ;;; This file is part of Zrythm.
 ;;;
@@ -271,7 +271,8 @@ Args:
            '("loop" "song" "custom"))
          (print-enum
            "export-format"
-           '("flac" "ogg" "wav" "mp3" "mid" "raw"))
+           '("flac" "ogg-vorbis" "ogg-opus" "wav"
+             "mp3" "mid" "raw"))
          (print-enum
            "export-bit-depth"
            '("16" "24" "32"))

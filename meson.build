@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -680,8 +680,13 @@ gtk_dep = dependency (
   'gtk+-3.0', version: '>=3.22',
   fallback: ['gtk3', 'libgtk_dep'],
   static: all_static)
+min_version = '>=1.0.25'
+if get_option ('opus')
+  cdata.set('HAVE_OPUS', 1)
+  min_version = '>=1.0.29'
+endif
 sndfile_dep = dependency (
-  'sndfile', version: '>=1.0.25', required: false)
+  'sndfile', version: min_version, required: false)
 if not sndfile_dep.found ()
   sndfile_subproject = cmake.subproject (
     'sndfile', options: cmake_opts)

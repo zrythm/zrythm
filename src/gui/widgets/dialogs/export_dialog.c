@@ -233,9 +233,10 @@ get_mixdown_export_filename (
   ExportDialogWidget * self)
 {
   const char * mixdown_str = "mixdown";
-  char * format =
+  const char * format =
     exporter_stringize_audio_format (
-      gtk_combo_box_get_active (self->format));
+      gtk_combo_box_get_active (self->format),
+      true);
   char * datetime_str =
     datetime_get_for_filename ();
   char * base = NULL;
@@ -268,7 +269,6 @@ get_mixdown_export_filename (
     io_get_next_available_filepath (tmp);
   g_free (base);
   g_free (tmp);
-  g_free (format);
   g_free (exports_dir);
   g_free (datetime_str);
 
@@ -303,9 +303,10 @@ get_stem_export_filenames (
       return g_strdup (_("none"));
     }
 
-  char * format =
+  const char * format =
     exporter_stringize_audio_format (
-      gtk_combo_box_get_active (self->format));
+      gtk_combo_box_get_active (self->format),
+      true);
   char * datetime_str =
     datetime_get_for_filename ();
 
@@ -390,7 +391,6 @@ get_stem_export_filenames (
     }
 return_result:
   g_free (datetime_str);
-  g_free (format);
 
   return g_string_free (gstr, false);
 }
@@ -720,14 +720,13 @@ create_formats_store ()
   for (int i = 0; i < NUM_AUDIO_FORMATS; i++)
     {
       gtk_tree_store_append (store, &iter, NULL);
-      char * str =
-        exporter_stringize_audio_format (i);
+      const char * str =
+        exporter_stringize_audio_format (i, false);
       gtk_tree_store_set (
         store, &iter,
         COLUMN_AUDIO_FORMAT_LABEL, str,
         COLUMN_AUDIO_FORMAT, i,
         -1);
-      g_free (str);
     }
 
   return GTK_TREE_MODEL (store);
@@ -762,7 +761,8 @@ on_format_changed (
     {
     case AUDIO_FORMAT_MIDI:
       break;
-    case AUDIO_FORMAT_OGG:
+    case AUDIO_FORMAT_OGG_VORBIS:
+    case AUDIO_FORMAT_OGG_OPUS:
       SET_SENSITIVE (export_genre);
       SET_SENSITIVE (export_artist);
       SET_SENSITIVE (dither);
@@ -883,6 +883,8 @@ info->time_range = TIME_RANGE_##x
     get_export_filename (self, true, track);
 
   info->mode = EXPORT_MODE_TRACKS;
+  info->has_error = false;
+  strcpy (info->error_str, "");
 }
 
 static void
@@ -1513,13 +1515,13 @@ export_dialog_widget_init (
     self->time_range_custom, false);
   switch (g_settings_get_enum (S_EXPORT, "time-range"))
     {
-    case 0: // song
-      gtk_toggle_button_set_active (
-        self->time_range_song, true);
-      break;
-    case 1: // loop
+    case 0: // loop
       gtk_toggle_button_set_active (
         self->time_range_loop, true);
+      break;
+    case 1: // song
+      gtk_toggle_button_set_active (
+        self->time_range_song, true);
       break;
     case 2: // custom
       gtk_toggle_button_set_active (
