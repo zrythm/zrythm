@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.9.0.1] - 2021-01-24
+### Added
+- Show warning when attempting to open deprecated LV2 UIs
+- Warn if lv2 plugin contains dynamic link to illegal libraries (such as qt)
+- Modulator macro buttons
+- Dropdowns to select from undo/redo history
+- Home key shortcut to move playhead to start of session
+
+### Changed
+- Only attempt to get latency on LV2 plugins that have a reportsLatency port
+- Update Portuguese, French, Chinese (Simplified), Portuguese (Brazil), Ukrainian translations
+- Update all carla plugin params before saving state
+- Automatable selector: start insert/modulator/midi fx counts from 1 instead of 0
+
+### Fixed
+- Fix objects not being resizable beyond bar 128
+- Fix infinte loop when attempting to set direct out of track to a selected track
+- Fix crash when adding a modulator
+- Fix not being able to move playhead past 128 bars
+- Fix wrong tracks being deleted when undoing track duplication
+- Fix crash after transport loops back when recording automation in touch mode
+- Fix error when adding automation lanes
+- Fix crash when recording audio for a long time
+- Fix current edit mode not selected on startup
+
 ## [1.0.0-alpha.8.0.1] - 2021-01-18
 ### Added
 - Moving region markers is now undoable
