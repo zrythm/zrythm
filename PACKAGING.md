@@ -97,13 +97,14 @@ options, after replacing all files inside
 
 # Issues
 Any issues should be reported to
-[our issue tracker](https://redmine.zrythm.org/projects/zrythm).
+[our issue trackers](https://todo.sr.ht/~alextee/).
 If you have patches, please attach them to a new
-issue.
+issue. You can also use git-send-email to email
+patches to the trackers.
 
 ----
 
-Copyright (C) 2019-2020 Alexandros Theodotou
+Copyright (C) 2019-2021 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
