@@ -66,6 +66,34 @@ typedef enum ExportTimeRange
   TIME_RANGE_CUSTOM,
 } ExportTimeRange;
 
+typedef enum ExportSampleRate
+{
+  EXPORT_SAMPLE_RATE_8000,
+  EXPORT_SAMPLE_RATE_11025,
+  EXPORT_SAMPLE_RATE_12000,
+  EXPORT_SAMPLE_RATE_16000,
+  EXPORT_SAMPLE_RATE_22050,
+  EXPORT_SAMPLE_RATE_24000,
+  EXPORT_SAMPLE_RATE_32000,
+  EXPORT_SAMPLE_RATE_37800,
+  EXPORT_SAMPLE_RATE_44056,
+  EXPORT_SAMPLE_RATE_44100,
+  EXPORT_SAMPLE_RATE_47250,
+  EXPORT_SAMPLE_RATE_48000,
+  EXPORT_SAMPLE_RATE_50000,
+  EXPORT_SAMPLE_RATE_50400,
+  EXPORT_SAMPLE_RATE_64000,
+  EXPORT_SAMPLE_RATE_88200,
+  EXPORT_SAMPLE_RATE_96000,
+  EXPORT_SAMPLE_RATE_176400,
+  EXPORT_SAMPLE_RATE_192000,
+  EXPORT_SAMPLE_RATE_352800,
+  EXPORT_SAMPLE_RATE_2822400,
+  EXPORT_SAMPLE_RATE_5644800,
+  EXPORT_SAMPLE_RATE_11289600,
+  EXPORT_SAMPLE_RATE_22579200,
+} ExportSampleRate;
+
 /**
  * Export mode.
  *
@@ -99,6 +127,9 @@ typedef struct ExportSettings
 
   /** Bit depth (16/24/64). */
   BitDepth          depth;
+
+  int               sample_rate;
+
   ExportTimeRange   time_range;
 
   /** Export mode. */
@@ -200,6 +231,18 @@ void
 exporter_create_audio_track_after_bounce (
   ExportSettings * settings,
   const Position * pos);
+
+const char *
+exporter_stringize_bit_depth (
+  BitDepth depth);
+
+const char *
+exporter_stringize_sample_rate (
+  ExportSampleRate sample_rate);
+
+int
+exporter_sample_rate_to_int (
+  ExportSampleRate sample_rate);
 
 /**
  * Returns the audio format as string.

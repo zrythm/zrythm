@@ -586,25 +586,16 @@ create_bit_depth_store ()
   GtkTreeIter iter;
   GtkTreeStore *store;
 
-  store =
-    gtk_tree_store_new (1,
-                        G_TYPE_STRING);
+  store = gtk_tree_store_new (1, G_TYPE_STRING);
 
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    0, "16 bit",
-    -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    0, "24 bit",
-    -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    0, "32 bit",
-    -1);
+  for (BitDepth i = BIT_DEPTH_16;
+       i <= BIT_DEPTH_32; i++)
+    {
+      gtk_tree_store_append (store, &iter, NULL);
+      gtk_tree_store_set (
+        store, &iter, 0,
+        _(exporter_stringize_bit_depth (i)), -1);
+    }
 
   return GTK_TREE_MODEL (store);
 }
@@ -635,6 +626,53 @@ setup_bit_depth_combo_box (
   gtk_combo_box_set_active (
     self->bit_depth,
     0);
+}
+
+/**
+ * Creates the combo box model for bit depth.
+ */
+static GtkTreeModel *
+create_sample_rate_store ()
+{
+  GtkTreeIter iter;
+  GtkTreeStore *store;
+
+  store = gtk_tree_store_new (1, G_TYPE_STRING);
+
+  for (ExportSampleRate i =
+         EXPORT_SAMPLE_RATE_8000;
+       i <= EXPORT_SAMPLE_RATE_22579200; i++)
+    {
+      gtk_tree_store_append (store, &iter, NULL);
+      gtk_tree_store_set (
+        store, &iter, 0,
+        _(exporter_stringize_sample_rate (i)), -1);
+    }
+
+  return GTK_TREE_MODEL (store);
+}
+
+static void
+setup_sample_rate_combo_box (
+  ExportDialogWidget * self)
+{
+  GtkTreeModel * model =
+    create_sample_rate_store ();
+  gtk_combo_box_set_model (
+    self->sample_rate, model);
+  gtk_cell_layout_clear (
+    GTK_CELL_LAYOUT (self->sample_rate));
+  GtkCellRenderer* renderer =
+    gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (
+    GTK_CELL_LAYOUT (self->sample_rate),
+    renderer, true);
+  gtk_cell_layout_set_attributes (
+    GTK_CELL_LAYOUT (self->sample_rate),
+    renderer, "text", 0, NULL);
+
+  gtk_combo_box_set_active (
+    self->sample_rate, false);
 }
 
 /**
@@ -756,6 +794,7 @@ on_format_changed (
   SET_UNSENSITIVE (export_genre);
   SET_UNSENSITIVE (export_artist);
   SET_UNSENSITIVE (bit_depth);
+  SET_UNSENSITIVE (sample_rate);
   SET_UNSENSITIVE (dither);
 
   switch (format)
@@ -767,12 +806,14 @@ on_format_changed (
       SET_SENSITIVE (export_genre);
       SET_SENSITIVE (export_artist);
       SET_SENSITIVE (dither);
+      SET_SENSITIVE (sample_rate);
       break;
     default:
       SET_SENSITIVE (export_genre);
       SET_SENSITIVE (export_artist);
       SET_SENSITIVE (bit_depth);
       SET_SENSITIVE (dither);
+      SET_SENSITIVE (sample_rate);
       break;
     }
 
@@ -843,6 +884,14 @@ init_export_info (
     gtk_combo_box_get_active (self->bit_depth);
   g_settings_set_enum (
     S_EXPORT, "bit-depth", info->depth);
+
+  ExportSampleRate sample_rate =
+    gtk_combo_box_get_active (self->sample_rate);
+  g_settings_set_enum (
+    S_EXPORT, "sample-rate", sample_rate);
+  info->sample_rate =
+    exporter_sample_rate_to_int (sample_rate);
+
   info->dither =
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (self->dither));
@@ -1480,6 +1529,7 @@ export_dialog_widget_class_init (
   BIND_CHILD (export_genre);
   BIND_CHILD (filename_pattern);
   BIND_CHILD (bit_depth);
+  BIND_CHILD (sample_rate);
   BIND_CHILD (time_range_song);
   BIND_CHILD (time_range_loop);
   BIND_CHILD (time_range_custom);
@@ -1546,6 +1596,7 @@ export_dialog_widget_init (
   setup_bit_depth_combo_box (self);
   setup_formats_combo_box (self);
   setup_filename_pattern_combo_box (self);
+  setup_sample_rate_combo_box (self);
 
   setup_treeview (self);
 

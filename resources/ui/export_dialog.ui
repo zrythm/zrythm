@@ -401,6 +401,37 @@ in the directory:
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkLabel" id="label6">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_left">2</property>
+                    <property name="margin_right">2</property>
+                    <property name="margin_start">2</property>
+                    <property name="margin_end">2</property>
+                    <property name="label" translatable="yes">Sample rate</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBox" id="sample_rate">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="top_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
                   <placeholder/>
                 </child>
                 <child>

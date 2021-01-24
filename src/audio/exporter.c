@@ -52,6 +52,113 @@
 
 #define  AMPLITUDE  (1.0 * 0x7F000000)
 
+static const char * bit_depth_strings[] =
+{
+  __("16 bit"),
+  __("24 bit"),
+  __("32 bit"),
+};
+
+const char *
+exporter_stringize_bit_depth (
+  BitDepth depth)
+{
+  return bit_depth_strings[depth];
+}
+
+static const char * sample_rate_strings[] =
+{
+  "8,000",
+  "11,025",
+  "12,000",
+  "16,000",
+  "22,050",
+  "24,000",
+  "32,000",
+  "37,800",
+  "44,056",
+  "44,100",
+  "47,250",
+  "48,000",
+  "50,000",
+  "50,400",
+  "64,000",
+  "88,200",
+  "96,000",
+  "176,400",
+  "192,000",
+  "352,800",
+  "2,822,400",
+  "5,644,800",
+  "11,289,600",
+  "22,579,200",
+};
+
+const char *
+exporter_stringize_sample_rate (
+  ExportSampleRate sample_rate)
+{
+  return sample_rate_strings[sample_rate];
+}
+
+int
+exporter_sample_rate_to_int (
+  ExportSampleRate sample_rate)
+{
+  switch (sample_rate)
+    {
+    case EXPORT_SAMPLE_RATE_8000:
+      return 8000;
+    case EXPORT_SAMPLE_RATE_11025:
+      return 11025;
+    case EXPORT_SAMPLE_RATE_12000:
+      return 12000;
+    case EXPORT_SAMPLE_RATE_16000:
+      return 16000;
+    case EXPORT_SAMPLE_RATE_22050:
+      return 22050;
+    case EXPORT_SAMPLE_RATE_24000:
+      return 24000;
+    case EXPORT_SAMPLE_RATE_32000:
+      return 32000;
+    case EXPORT_SAMPLE_RATE_37800:
+      return 37800;
+    case EXPORT_SAMPLE_RATE_44056:
+      return 44056;
+    case EXPORT_SAMPLE_RATE_44100:
+      return 44100;
+    case EXPORT_SAMPLE_RATE_47250:
+      return 47250;
+    case EXPORT_SAMPLE_RATE_48000:
+      return 48000;
+    case EXPORT_SAMPLE_RATE_50000:
+      return 50000;
+    case EXPORT_SAMPLE_RATE_50400:
+      return 50400;
+    case EXPORT_SAMPLE_RATE_64000:
+      return 64000;
+    case EXPORT_SAMPLE_RATE_88200:
+      return 88200;
+    case EXPORT_SAMPLE_RATE_96000:
+      return 96000;
+    case EXPORT_SAMPLE_RATE_176400:
+      return 176400;
+    case EXPORT_SAMPLE_RATE_192000:
+      return 192000;
+    case EXPORT_SAMPLE_RATE_352800:
+      return 352800;
+    case EXPORT_SAMPLE_RATE_2822400:
+      return 2822400;
+    case EXPORT_SAMPLE_RATE_5644800:
+      return 5644800;
+    case EXPORT_SAMPLE_RATE_11289600:
+      return 11289600;
+    case EXPORT_SAMPLE_RATE_22579200:
+      return 22579200;
+    }
+  g_return_val_if_reached (-1);
+}
+
 /**
  * Returns the audio format as string.
  *
@@ -211,18 +318,9 @@ export_audio (
     }
 
   /* set samplerate */
-  if (info->format == AUDIO_FORMAT_OGG_OPUS)
-    {
-      /* Opus only supports sample rates of 8000,
-       * 12000, 16000, 24000 and 48000 */
-      /* TODO add option */
-      sfinfo.samplerate = 48000;
-    }
-  else
-    {
-      sfinfo.samplerate =
-        (int) AUDIO_ENGINE->sample_rate;
-    }
+  sfinfo.samplerate = info->sample_rate;
+  g_message (
+    "using sample rate %d", info->sample_rate);
 
   sfinfo.channels = EXPORT_CHANNELS;
 
@@ -581,6 +679,8 @@ export_settings_set_bounce_defaults (
   self->time_range = TIME_RANGE_CUSTOM;
   self->cancelled = false;
   self->has_error = false;
+  self->sample_rate =
+    (int) AUDIO_ENGINE->sample_rate;
   switch (self->mode)
     {
     case EXPORT_MODE_REGIONS:

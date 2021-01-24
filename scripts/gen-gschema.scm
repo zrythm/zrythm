@@ -277,6 +277,14 @@ Args:
            "export-bit-depth"
            '("16" "24" "32"))
          (print-enum
+           "export-sample-rate"
+           '("8000" "11025" "12000" "16000" "22050"
+             "24000" "32000" "37800" "44056" "44100"
+             "47250" "48000" "50000" "50400" "64000"
+             "88200" "96000" "176400" "192000"
+             "352800" "2822400" "5644800" "11289600"
+             "22579200"))
+         (print-enum
            "export-filename-pattern"
            '("append-format"
              "prepend-date-append-format"))
@@ -572,6 +580,11 @@ Args:
                  "export-bit-depth" "24"
                  "Bit depth"
                  "Bit depth to use when exporting")
+               (make-schema-key-with-enum
+                 "sample-rate"
+                 "export-sample-rate" "44100"
+                 "Sample rate"
+                 "Sample rate to use when exporting.")
              ))) ;; export
 
          (schema-print
