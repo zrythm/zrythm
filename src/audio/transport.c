@@ -77,14 +77,18 @@ init_common (
       S_TRANSPORT, "recording-mode");
 
   zix_sem_init (&self->paused, 0);
+
+  /* update time sig */
+  transport_set_time_sig (
+    self, &self->time_sig);
 }
 
 void
 transport_init_loaded (
   Transport * self)
 {
-  transport_set_beat_unit (
-    self, self->beat_unit);
+  time_signature_set_beat_unit (
+    &self->time_sig, self->time_sig.beat_unit);
 
   init_common (self);
 }
@@ -111,9 +115,14 @@ transport_new (
     TRANSPORT_DEFAULT_TOTAL_BARS;
 
   /* set BPM related defaults */
-  self->beats_per_bar =
+  self->time_sig.beats_per_bar =
     TRANSPORT_DEFAULT_BEATS_PER_BAR;
-  transport_set_beat_unit (self, 4);
+  time_signature_set_beat_unit (
+    &self->time_sig, 4);
+
+  /* update time sig */
+  transport_set_time_sig (
+    self, &self->time_sig);
 
   /* set positions */
   position_set_to_bar (&self->playhead_pos, 1);
@@ -358,12 +367,13 @@ get_ebeat_unit (
  * Updates beat unit and anything depending on it.
  */
 void
-transport_set_beat_unit (
-  Transport * self,
-  int         beat_unit)
+transport_set_time_sig (
+  Transport *     self,
+  TimeSignature * time_sig)
 {
-  self->beat_unit = beat_unit;
-  self->ebeat_unit = get_ebeat_unit (beat_unit);
+  self->time_sig = *time_sig;
+  self->time_sig.ebeat_unit =
+    get_ebeat_unit (time_sig->beat_unit);
 
   /**
    * Regarding calculation:
@@ -374,40 +384,52 @@ transport_set_beat_unit (
    * with the ticks per note
    */
   self->ticks_per_beat =
-    3840.0 / (double) self->beat_unit;
+    3840.0 / (double) self->time_sig.beat_unit;
   self->ticks_per_bar =
-    (self->ticks_per_beat * self->beats_per_bar);
-  self->sixteenths_per_beat = 16 / self->beat_unit;
+    (self->ticks_per_beat *
+     self->time_sig.beats_per_bar);
+  self->sixteenths_per_beat =
+    16 / self->time_sig.beat_unit;
   self->sixteenths_per_bar =
     (self->sixteenths_per_beat *
-     self->beats_per_bar);
+     self->time_sig.beats_per_bar);
   g_warn_if_fail (self->ticks_per_bar > 0.0);
   g_warn_if_fail (self->ticks_per_beat > 0.0);
 }
 
 void
-transport_set_ebeat_unit (
-  Transport * self,
-  BeatUnit bu)
+time_signature_set_ebeat_unit (
+  TimeSignature * self,
+  BeatUnit        ebeat_unit)
 {
-  switch (bu)
+  self->ebeat_unit = ebeat_unit;
+  switch (ebeat_unit)
     {
     case BEAT_UNIT_2:
-      transport_set_beat_unit (self, 2);
+      self->beat_unit = 2;
       break;
     case BEAT_UNIT_4:
-      transport_set_beat_unit (self, 4);
+      self->beat_unit = 4;
       break;
     case BEAT_UNIT_8:
-      transport_set_beat_unit (self, 8);
+      self->beat_unit = 8;
       break;
     case BEAT_UNIT_16:
-      transport_set_beat_unit (self, 16);
+      self->beat_unit = 16;
       break;
     default:
       g_warn_if_reached ();
       break;
     }
+}
+
+void
+time_signature_set_beat_unit (
+  TimeSignature * self,
+  int             beat_unit)
+{
+  self->beat_unit = beat_unit;
+  self->ebeat_unit = get_ebeat_unit (beat_unit);
 }
 
 void
@@ -583,7 +605,7 @@ transport_get_ppqn (
 {
   double res =
     self->ticks_per_beat *
-    ((double) self->beat_unit / 4.0);
+    ((double) self->time_sig.beat_unit / 4.0);
   return res;
 }
 

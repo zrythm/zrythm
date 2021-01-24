@@ -29,6 +29,7 @@
 
 #include <stdbool.h>
 
+#include "audio/transport.h"
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
@@ -139,10 +140,11 @@ typedef struct _DigitalMeterWidget
 
   /* for time sig */
   int                      update_timesig_top;
-  int                      start_timesig_top;
+  /* ebeat unit */
   int                      update_timesig_bot;
-  int                      start_timesig_bot;
 
+  /** Used when changing the time signature. */
+  TimeSignature            prev_time_sig;
 
   /* ---------- FOR POSITION ---------------- */
   void *     obj;

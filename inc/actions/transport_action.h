@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,7 @@
 
 #include <stdbool.h>
 
+#include "audio/transport.h"
 #include "actions/undoable_action.h"
 #include "utils/types.h"
 #include "utils/yaml.h"
@@ -41,14 +42,28 @@
 typedef enum TransportActionType
 {
   TRANSPORT_ACTION_BPM_CHANGE,
+  TRANSPORT_ACTION_TIME_SIG_CHANGE,
 } TransportActionType;
+
+static const cyaml_strval_t
+transport_action_type_strings[] =
+{
+  { "BPM change", TRANSPORT_ACTION_BPM_CHANGE },
+  { "time sig change",
+    TRANSPORT_ACTION_TIME_SIG_CHANGE },
+};
 
 typedef struct TransportAction
 {
   UndoableAction   parent_instance;
 
+  TransportActionType type;
+
   bpm_t            bpm_before;
   bpm_t            bpm_after;
+
+  TimeSignature    time_sig_before;
+  TimeSignature    time_sig_after;
 
   /** Flag whether the action was already performed
    * the first time. */
@@ -65,10 +80,19 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     TransportAction, parent_instance,
     undoable_action_fields_schema),
+  YAML_FIELD_ENUM (
+    TransportAction, type,
+    transport_action_type_strings),
   YAML_FIELD_FLOAT (
     TransportAction, bpm_before),
   YAML_FIELD_FLOAT (
     TransportAction, bpm_after),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    TransportAction, time_sig_before,
+    time_signature_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    TransportAction, time_sig_after,
+    time_signature_fields_schema),
   YAML_FIELD_INT (
     TransportAction, musical_mode),
 
@@ -83,10 +107,20 @@ static const cyaml_schema_value_t
     transport_action_fields_schema),
 };
 
+void
+transport_action_init_loaded (
+  TransportAction * self);
+
 UndoableAction *
 transport_action_new_bpm_change (
   bpm_t           bpm_before,
   bpm_t           bpm_after,
+  bool            already_done);
+
+UndoableAction *
+transport_action_new_time_sig_change (
+  TimeSignature * time_sig_before,
+  TimeSignature * time_sig_after,
   bool            already_done);
 
 int

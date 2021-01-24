@@ -57,6 +57,10 @@ typedef struct AudioEngine AudioEngine;
   (TRANSPORT->play_state == PLAYSTATE_PAUSED)
 #define TRANSPORT_IS_LOOPING \
   (TRANSPORT->loop)
+#define TRANSPORT_BEATS_PER_BAR \
+  (TRANSPORT->time_sig.beats_per_bar)
+#define TRANSPORT_BEAT_UNIT_INT \
+  (TRANSPORT->time_sig.beat_unit)
 
 typedef enum BeatUnit
 {
@@ -129,6 +133,45 @@ typedef enum TransportRecordingMode
   RECORDING_MODE_TAKES_MUTED,
 } TransportRecordingMode;
 
+typedef struct TimeSignature
+{
+  /**
+   * The top part (beats_per_par) is the number of
+   * beat units
+   * (the bottom part) there will be per bar.
+   *
+   * Example: 4/4 = 4 (top) 1/4th (bot) notes per bar.
+   * 2/8 = 2 (top) 1/8th (bot) notes per bar.
+   */
+  int           beats_per_bar;
+
+  /**
+   * Bottom part of the time signature.
+   *
+   * Power of 2.
+   */
+  int           beat_unit;
+  BeatUnit      ebeat_unit;
+} TimeSignature;
+
+static const cyaml_schema_field_t
+time_signature_fields_schema[] =
+{
+  YAML_FIELD_INT (
+    TimeSignature, beats_per_bar),
+  YAML_FIELD_INT (
+    TimeSignature, beat_unit),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+time_signature_schema =
+{
+  YAML_VALUE_PTR (
+    TimeSignature, time_signature_fields_schema),
+};
+
 /**
  * The transport.
  */
@@ -171,39 +214,7 @@ typedef struct Transport
   /** Whether range should be displayed or not. */
   int           has_range;
 
-  /**
-   * Start marker position.
-   *
-   * This is where the song starts. Used when
-   * exporting, etc.
-   */
-  //Position      start_marker_pos;
-
-  /**
-   * End marker position.
-   *
-   * This is where the song ends. Used when
-   * exporting, etc.
-   */
-  //Position      end_marker_pos;
-
-  /**
-   * The top part (beats_per_par) is the number of
-   * beat units
-   * (the bottom part) there will be per bar.
-   *
-   * Example: 4/4 = 4 (top) 1/4th (bot) notes per bar.
-   * 2/8 = 2 (top) 1/8th (bot) notes per bar.
-   */
-  int           beats_per_bar;
-
-  /**
-   * Bottom part of the time signature.
-   *
-   * Power of 2.
-   */
-  int           beat_unit;
-  BeatUnit      ebeat_unit;
+  TimeSignature time_sig;
 
   /* ---------- CACHE -------------- */
   double        ticks_per_beat;
@@ -291,10 +302,9 @@ transport_fields_schema[] =
     Transport, range_2, position_fields_schema),
   YAML_FIELD_INT (
     Transport, has_range),
-  YAML_FIELD_INT (
-    Transport, beats_per_bar),
-  YAML_FIELD_INT (
-    Transport, beat_unit),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Transport, time_sig,
+    time_signature_fields_schema),
   YAML_FIELD_INT (
     Transport, position),
 
@@ -304,8 +314,7 @@ transport_fields_schema[] =
 static const cyaml_schema_value_t
 transport_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     Transport, transport_fields_schema),
 };
 
@@ -373,13 +382,23 @@ transport_set_recording_mode (
   Transport * self,
   TransportRecordingMode mode);
 
+void
+time_signature_set_ebeat_unit (
+  TimeSignature * self,
+  BeatUnit        ebeat_unit);
+
+void
+time_signature_set_beat_unit (
+  TimeSignature * self,
+  int             beat_unit);
+
 /**
  * Updates beat unit and anything depending on it.
  */
 void
-transport_set_beat_unit (
-  Transport * self,
-  int beat_unit);
+transport_set_time_sig (
+  Transport *     self,
+  TimeSignature * time_sig);
 
 /**
  * Sets whether metronome is enabled or not.
@@ -496,11 +515,6 @@ transport_position_add_frames (
   const Transport * self,
   Position *        pos,
   const nframes_t   frames);
-
-void
-transport_set_ebeat_unit (
-  Transport * self,
-  BeatUnit bu);
 
 /**
  * Returns the PPQN (Parts/Ticks Per Quarter Note).

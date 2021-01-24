@@ -38,7 +38,7 @@ process_cb (gpointer data)
     (gulong) (secs_per_block * 1000.0 * 1000);
 
   engine_update_frames_per_tick (
-    self, TRANSPORT->beats_per_bar,
+    self, TRANSPORT->time_sig.beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     self->sample_rate);
 
@@ -89,7 +89,8 @@ engine_dummy_setup (
     }
 
   g_warn_if_fail (
-    TRANSPORT && TRANSPORT->beats_per_bar > 1);
+    TRANSPORT &&
+    TRANSPORT->time_sig.beats_per_bar >= 1);
 
   g_message (
     "Dummy Engine set up [samplerate: %u]",

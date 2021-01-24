@@ -30,6 +30,18 @@
 
 #include <glib/gi18n.h>
 
+void
+transport_action_init_loaded (
+  TransportAction * self)
+{
+  time_signature_set_beat_unit (
+    &self->time_sig_before,
+    self->time_sig_before.beat_unit);
+  time_signature_set_beat_unit (
+    &self->time_sig_after,
+    self->time_sig_after.beat_unit);
+}
+
 /**
  * FIXME make a general port change action.
  */
@@ -44,8 +56,32 @@ transport_action_new_bpm_change (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_TRANSPORT;
 
+  self->type = TRANSPORT_ACTION_BPM_CHANGE;
+
   self->bpm_before = bpm_before;
   self->bpm_after = bpm_after;
+  self->already_done = already_done;
+  self->musical_mode =
+    g_settings_get_boolean (S_UI, "musical-mode");
+
+  return ua;
+}
+
+UndoableAction *
+transport_action_new_time_sig_change (
+  TimeSignature * time_sig_before,
+  TimeSignature * time_sig_after,
+  bool            already_done)
+{
+  TransportAction * self =
+    calloc (1, sizeof (TransportAction));
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_TRANSPORT;
+
+  self->type = TRANSPORT_ACTION_TIME_SIG_CHANGE;
+
+  self->time_sig_before = *time_sig_before;
+  self->time_sig_after = *time_sig_after;
   self->already_done = already_done;
   self->musical_mode =
     g_settings_get_boolean (S_UI, "musical-mode");
@@ -58,15 +94,28 @@ do_or_undo (
   TransportAction * self,
   bool              _do)
 {
-  port_set_control_value (
-    P_TEMPO_TRACK->bpm_port,
-    _do ? self->bpm_after : self->bpm_before,
-    false, false);
-  g_message ("set BPM to %f",
-    (double)
-    tempo_track_get_current_bpm (P_TEMPO_TRACK));
+  switch (self->type)
+    {
+    case TRANSPORT_ACTION_BPM_CHANGE:
+      port_set_control_value (
+        P_TEMPO_TRACK->bpm_port,
+        _do ? self->bpm_after : self->bpm_before,
+        false, false);
+      g_message ("set BPM to %f",
+        (double)
+        tempo_track_get_current_bpm (P_TEMPO_TRACK));
+      break;
+    case TRANSPORT_ACTION_TIME_SIG_CHANGE:
+      transport_set_time_sig (
+        TRANSPORT,
+        _do ?
+          &self->time_sig_after :
+          &self->time_sig_before);
+      break;
+    }
+
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, TRANSPORT->beats_per_bar,
+    AUDIO_ENGINE, TRANSPORT->time_sig.beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate);
 
@@ -75,23 +124,26 @@ do_or_undo (
   snap_grid_update_snap_points_default (
     SNAP_GRID_MIDI);
 
-  /* get time ratio */
-  double time_ratio = 0;
-  if (_do)
+  if (self->type == TRANSPORT_ACTION_BPM_CHANGE)
     {
-      time_ratio =
-        self->bpm_after / self->bpm_before;
-    }
-  else
-    {
-      time_ratio =
-        self->bpm_before / self->bpm_after;
-    }
+      /* get time ratio */
+      double time_ratio = 0;
+      if (_do)
+        {
+          time_ratio =
+            self->bpm_after / self->bpm_before;
+        }
+      else
+        {
+          time_ratio =
+            self->bpm_before / self->bpm_after;
+        }
 
-  if (self->musical_mode)
-    {
-      transport_stretch_audio_regions (
-        TRANSPORT, NULL, true, time_ratio);
+      if (self->musical_mode)
+        {
+          transport_stretch_audio_regions (
+            TRANSPORT, NULL, true, time_ratio);
+        }
     }
 
   return 0;
@@ -104,6 +156,20 @@ transport_action_do (
   if (self->already_done)
     {
       self->already_done = false;
+
+      transport_set_time_sig (
+        TRANSPORT, &TRANSPORT->time_sig);
+
+      engine_update_frames_per_tick (
+        AUDIO_ENGINE,
+        TRANSPORT->time_sig.beats_per_bar,
+        tempo_track_get_current_bpm (P_TEMPO_TRACK),
+        AUDIO_ENGINE->sample_rate);
+
+      snap_grid_update_snap_points_default (
+        SNAP_GRID_TIMELINE);
+      snap_grid_update_snap_points_default (
+        SNAP_GRID_MIDI);
     }
   else
     {
@@ -111,6 +177,7 @@ transport_action_do (
     }
 
   EVENTS_PUSH (ET_BPM_CHANGED, NULL);
+  EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
 
   return 0;
 }
@@ -122,6 +189,7 @@ transport_action_undo (
   do_or_undo (self, false);
 
   EVENTS_PUSH (ET_BPM_CHANGED, NULL);
+  EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
 
   return 0;
 }
@@ -130,7 +198,15 @@ char *
 transport_action_stringize (
   TransportAction * self)
 {
-  return g_strdup (_("Change BPM"));
+  switch (self->type)
+    {
+    case TRANSPORT_ACTION_BPM_CHANGE:
+      return g_strdup (_("Change BPM"));
+    case TRANSPORT_ACTION_TIME_SIG_CHANGE:
+      return g_strdup (_("Change Time Signature"));
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 void

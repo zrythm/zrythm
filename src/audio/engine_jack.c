@@ -158,7 +158,7 @@ sample_rate_cb (
     {
       engine_update_frames_per_tick (
         self,
-        TRANSPORT->beats_per_bar,
+        TRANSPORT->time_sig.beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         AUDIO_ENGINE->sample_rate);
     }
@@ -228,15 +228,16 @@ engine_jack_prepare_process (
       /* BBT */
       if (pos.valid & JackPositionBBT)
         {
-          TRANSPORT->beats_per_bar =
+          TRANSPORT->time_sig.beats_per_bar =
             (int) pos.beats_per_bar;
           tempo_track_set_bpm (
             P_TEMPO_TRACK,
             (float) pos.beats_per_minute,
             (float) pos.beats_per_minute,
             true, true);
-          transport_set_beat_unit (
-            TRANSPORT, (int) pos.beat_type);
+          time_signature_set_beat_unit (
+            &TRANSPORT->time_sig,
+            (int) pos.beat_type);
         }
     }
 
@@ -317,9 +318,9 @@ timebase_cb (
     (PLAYHEAD->total_ticks -
      bar_start.total_ticks);
   pos->beats_per_bar =
-    (float) TRANSPORT->beats_per_bar;
+    (float) TRANSPORT->time_sig.beats_per_bar;
   pos->beat_type =
-    (float) TRANSPORT->beat_unit;
+    (float) TRANSPORT->time_sig.beat_unit;
   pos->ticks_per_beat =
     TRANSPORT->ticks_per_beat;
   pos->beats_per_minute =

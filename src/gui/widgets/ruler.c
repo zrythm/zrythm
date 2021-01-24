@@ -109,7 +109,8 @@ ruler_widget_get_beat_interval (
 
   /* gather divisors of the number of beats per
    * bar */
-#define beats_per_bar TRANSPORT->beats_per_bar
+#define beats_per_bar \
+  TRANSPORT->time_sig.beats_per_bar
   int beat_divisors[16];
   int num_beat_divisors = 0;
   for (i = 1; i <= beats_per_bar; i++)
@@ -1958,7 +1959,8 @@ ruler_widget_refresh (RulerWidget * self)
   self->px_per_beat =
     self->px_per_tick * TRANSPORT->ticks_per_beat;
   self->px_per_bar =
-    self->px_per_beat * TRANSPORT->beats_per_bar;
+    self->px_per_beat *
+    TRANSPORT->time_sig.beats_per_bar;
 
   Position pos;
   position_from_seconds (&pos, 1.0);

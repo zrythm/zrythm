@@ -207,10 +207,10 @@ find_and_queue_metronome (
       Position beat_pos;
       position_set_to_bar (
         &beat_pos,
-        i / TRANSPORT->beats_per_bar);
+        i / TRANSPORT->time_sig.beats_per_bar);
       position_set_beat (
         &beat_pos,
-        i % TRANSPORT->beats_per_bar + 1);
+        i % TRANSPORT->time_sig.beats_per_bar + 1);
       if (beat_pos.beats != 1)
         {
           /* adjust position because even though

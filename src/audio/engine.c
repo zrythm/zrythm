@@ -111,6 +111,11 @@ engine_update_frames_per_tick (
   const bpm_t         bpm,
   const sample_rate_t sample_rate)
 {
+  g_message (
+    "updating frames per tick: beats per bar %d, "
+    "bpm %f, sample rate %u",
+    beats_per_bar, (double) bpm, sample_rate);
+
   self->frames_per_tick =
     (((double) sample_rate * 60.0 *
        (double) beats_per_bar) /

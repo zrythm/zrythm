@@ -2379,11 +2379,11 @@ lv2_plugin_process (
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatUnit);
       lv2_atom_forge_int (
-        forge, TRANSPORT->beat_unit);
+        forge, TRANSPORT_BEAT_UNIT_INT);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatsPerBar);
       lv2_atom_forge_float (
-        forge, (float) TRANSPORT->beats_per_bar);
+        forge, (float) TRANSPORT_BEATS_PER_BAR);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatsPerMinute);
       lv2_atom_forge_float (

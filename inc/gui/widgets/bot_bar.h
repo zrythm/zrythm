@@ -54,6 +54,8 @@ G_DECLARE_FINAL_TYPE (
   MW_BOT_BAR->digital_transport
 #define MW_DIGITAL_BPM \
   MW_BOT_BAR->digital_bpm
+#define MW_DIGITAL_TIME_SIG \
+  MW_BOT_BAR->digital_timesig
 
 /**
  * Bot bar.

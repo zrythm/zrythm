@@ -436,22 +436,25 @@ digital_meter_draw_cb (
 
       const char * beat_unit =
         beat_unit_strings[
-          TRANSPORT->ebeat_unit].str;
-      if (TRANSPORT->beats_per_bar < 10)
+          TRANSPORT->time_sig.ebeat_unit].str;
+      if (TRANSPORT->time_sig.beats_per_bar < 10)
         {
           text[0] = ' ';
           text[1] =
             (char)
-            (TRANSPORT->beats_per_bar + '0');
+            (TRANSPORT->
+               time_sig.beats_per_bar + '0');
         }
       else
         {
           text[0] =
             (char)
-            ((TRANSPORT->beats_per_bar / 10) + '0');
+            ((TRANSPORT->time_sig.beats_per_bar /
+                10) + '0');
           text[1] =
             (char)
-            ((TRANSPORT->beats_per_bar % 10) + '0');
+            ((TRANSPORT->time_sig.beats_per_bar %
+                10) + '0');
         }
       text[2] = '\0';
       heap_text =
@@ -586,10 +589,7 @@ on_change_started (
         *self->note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
-      self->start_timesig_top =
-        TRANSPORT->beats_per_bar;
-      self->start_timesig_bot =
-        TRANSPORT->ebeat_unit;
+      self->prev_time_sig = TRANSPORT->time_sig;
       break;
     case DIGITAL_METER_TYPE_POSITION:
       if (self->on_drag_begin)
@@ -655,6 +655,21 @@ on_change_finished (
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->prev_bpm, false, F_PUBLISH_EVENTS);
       break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      {
+        /* no update if rolling */
+        if (TRANSPORT_IS_ROLLING)
+          {
+            break;
+          }
+        UndoableAction * ua =
+          transport_action_new_time_sig_change (
+            &self->prev_time_sig,
+            &TRANSPORT->time_sig,
+            F_ALREADY_EDITED);
+        undo_manager_perform (UNDO_MANAGER, ua);
+      }
+    break;
     default:
       break;
     }
@@ -777,32 +792,38 @@ on_scroll (
         }
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
+      /* no update if rolling */
+      if (TRANSPORT_IS_ROLLING)
+        {
+          break;
+        }
       if (self->update_timesig_top)
         {
-          num += self->start_timesig_top;
+          num += self->prev_time_sig.beats_per_bar;
           if (num < 1)
             {
-              TRANSPORT->beats_per_bar = 1;
+              TRANSPORT->time_sig.beats_per_bar = 1;
             }
           else
             {
-              TRANSPORT->beats_per_bar =
+              TRANSPORT->time_sig.beats_per_bar =
                 num > 16 ?
                 16 : num;
             }
         }
       else if (self->update_timesig_bot)
         {
-          num += self->start_timesig_bot;
+          num +=
+            (int) self->prev_time_sig.ebeat_unit;
           if (num < 0)
             {
-              transport_set_ebeat_unit (
-                TRANSPORT, BEAT_UNIT_2);
+              time_signature_set_ebeat_unit (
+                &TRANSPORT->time_sig, BEAT_UNIT_2);
             }
           else
             {
-              transport_set_ebeat_unit (
-                TRANSPORT,
+              time_signature_set_ebeat_unit (
+                &TRANSPORT->time_sig,
                 num > BEAT_UNIT_16 ?
                 BEAT_UNIT_16 : num);
             }
@@ -814,6 +835,7 @@ on_scroll (
             ET_TIME_SIGNATURE_CHANGED,
             NULL);
         }
+      break;
     }
   on_change_finished (self);
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -1004,32 +1026,41 @@ drag_update (
         }
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
+      /* no update if rolling */
+      if (TRANSPORT_IS_ROLLING)
+        {
+          break;
+        }
       if (self->update_timesig_top)
         {
-          num = self->start_timesig_top + (int) diff / 24;
+          num =
+            self->prev_time_sig.beats_per_bar +
+            (int) diff / 24;
           if (num < 1)
             {
-              TRANSPORT->beats_per_bar = 1;
+              TRANSPORT->time_sig.beats_per_bar = 1;
             }
           else
             {
-              TRANSPORT->beats_per_bar =
+              TRANSPORT->time_sig.beats_per_bar =
                 num > 16 ?
                 16 : num;
             }
         }
       else if (self->update_timesig_bot)
         {
-          num = self->start_timesig_bot + (int) diff / 24;
+          num =
+            (int) self->prev_time_sig.ebeat_unit +
+            (int) diff / 24;
           if (num < 0)
             {
-              transport_set_ebeat_unit (
-                TRANSPORT, BEAT_UNIT_2);
+              time_signature_set_ebeat_unit (
+                &TRANSPORT->time_sig, BEAT_UNIT_2);
             }
           else
             {
-              transport_set_ebeat_unit (
-                TRANSPORT,
+              time_signature_set_ebeat_unit (
+                &TRANSPORT->time_sig,
                 num > BEAT_UNIT_16 ?
                 BEAT_UNIT_16 : num);
             }
@@ -1041,6 +1072,7 @@ drag_update (
             ET_TIME_SIGNATURE_CHANGED,
             NULL);
         }
+      break;
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }

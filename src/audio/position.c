@@ -53,7 +53,7 @@ position_to_frames (
       (position->bars > 0 ?
        (double) (position->bars - 1) :
        (double) (position->bars + 1)) *
-      (double) TRANSPORT->beats_per_bar *
+      (double) TRANSPORT_BEATS_PER_BAR *
       (double) TRANSPORT->ticks_per_beat;
   if (position->beats)
     frames +=
@@ -61,7 +61,7 @@ position_to_frames (
         (position->beats > 0 ?
          (double) (position->beats - 1) :
          (double) (position->beats + 1)) *
-        (double) TRANSPORT->ticks_per_beat);
+        (double) TRANSPORT_BEATS_PER_BAR);
   if (position->sixteenths)
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
@@ -150,7 +150,7 @@ position_set_beat (
   Position * position,
   int        beat)
 {
-  while (beat < 1 || beat > TRANSPORT->beats_per_bar)
+  while (beat < 1 || beat > TRANSPORT_BEATS_PER_BAR)
     {
       if (beat < 1)
         {
@@ -159,13 +159,13 @@ position_set_beat (
               beat = 1;
               break;
             }
-          beat += TRANSPORT->beats_per_bar;
+          beat += TRANSPORT_BEATS_PER_BAR;
           position_set_bar (position,
                             position->bars - 1);
         }
-      else if (beat > TRANSPORT->beats_per_bar)
+      else if (beat > TRANSPORT_BEATS_PER_BAR)
         {
-          beat -= TRANSPORT->beats_per_bar;
+          beat -= TRANSPORT_BEATS_PER_BAR;
           position_set_bar (position,
                             position->bars + 1);
         }
@@ -958,7 +958,7 @@ position_get_total_beats (
 {
   return
     pos->beats +
-    pos->bars * TRANSPORT->beats_per_bar - 1;
+    pos->bars * TRANSPORT_BEATS_PER_BAR - 1;
 }
 
 /**

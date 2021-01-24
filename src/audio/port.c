@@ -2499,7 +2499,8 @@ port_set_control_value (
       if (id->flags & PORT_FLAG_BPM)
         {
           engine_update_frames_per_tick (
-            AUDIO_ENGINE, TRANSPORT->beats_per_bar,
+            AUDIO_ENGINE,
+            TRANSPORT_BEATS_PER_BAR,
             self->control,
             AUDIO_ENGINE->sample_rate);
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);

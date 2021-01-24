@@ -616,11 +616,9 @@ carla_native_plugin_proces (
     (PLAYHEAD->total_ticks -
      bar_start.total_ticks);
   self->time_info.bbt.beatsPerBar =
-    (float)
-    TRANSPORT->beats_per_bar;
+    (float) TRANSPORT_BEATS_PER_BAR;
   self->time_info.bbt.beatType =
-    (float)
-    TRANSPORT->beat_unit;
+    (float) TRANSPORT_BEAT_UNIT_INT;
   self->time_info.bbt.ticksPerBeat =
     TRANSPORT->ticks_per_beat;
   self->time_info.bbt.beatsPerMinute =
@@ -1333,21 +1331,6 @@ carla_native_plugin_save_state (
   CarlaNativePlugin * self,
   bool                is_backup)
 {
-  /* update all controls (may not be necessary but
-   * might prevent issues) */
-  Plugin * pl = self->plugin;
-  for (int i = 0; i < pl->num_in_ports; i++)
-    {
-      Port * port = pl->in_ports[i];
-      if (port->carla_param_id >= 0)
-        {
-          carla_native_plugin_set_param_value (
-            self,
-            (uint32_t) port->carla_param_id,
-            port->control);
-        }
-    }
-
   char * abs_state_dir =
     plugin_get_abs_state_dir (
       self->plugin, is_backup);

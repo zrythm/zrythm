@@ -514,7 +514,7 @@ export_midi (
 
       /* common time: 4 crochet beats, per bar */
       midiSongAddSimpleTimeSig (
-        mf, 1, TRANSPORT->beats_per_bar,
+        mf, 1, TRANSPORT->time_sig.beats_per_bar,
         math_round_double_to_int (
           TRANSPORT->ticks_per_beat));
 

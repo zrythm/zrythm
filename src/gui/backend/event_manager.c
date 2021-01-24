@@ -1366,6 +1366,8 @@ process_events (void * data)
             Z_RULER_WIDGET (MW_RULER));
           ruler_widget_refresh (
             Z_RULER_WIDGET (EDITOR_RULER));
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MW_DIGITAL_TIME_SIG));
           break;
         case ET_PLAYHEAD_POS_CHANGED:
           on_playhead_changed (false);

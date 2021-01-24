@@ -61,13 +61,59 @@ undoable_action_init_loaded (
       PORT_CONNECTION, port_connection,
       PortConnection);
     INIT_LOADED (PORT, port, Port);
-    /*INIT_LOADED (TRANSPORT, transport, Transport);*/
+    INIT_LOADED (TRANSPORT, transport, Transport);
     INIT_LOADED (RANGE, range, Range);
     default:
       break;
     }
 
 #undef INIT_LOADED
+}
+
+typedef struct EngineState
+{
+  /** Engine running. */
+  int running;
+  /** Playback. */
+  bool playing;
+} EngineState;
+
+/**
+ * Returns whether the engine was running before
+ * pausing.
+ */
+static void
+pause_engine (
+  EngineState * state)
+{
+  state->running =
+    g_atomic_int_get (&AUDIO_ENGINE->run);
+  state->playing = TRANSPORT_IS_ROLLING;
+
+  if (state->playing)
+    {
+      transport_request_pause (TRANSPORT);
+    }
+
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  while (g_atomic_int_get (
+           &AUDIO_ENGINE->cycle_running))
+    {
+      g_usleep (100);
+    }
+}
+
+static void
+resume_engine (
+  const EngineState * state)
+{
+  g_atomic_int_set (
+    &AUDIO_ENGINE->run, (guint) state->running);
+
+  if (state->playing)
+    {
+      transport_request_roll (TRANSPORT);
+    }
 }
 
 /**
@@ -88,14 +134,8 @@ undoable_action_do (UndoableAction * self)
 
   /* stop engine and give it some time to stop
    * running */
-  int run_before =
-    g_atomic_int_get (&AUDIO_ENGINE->run);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  while (g_atomic_int_get (
-           &AUDIO_ENGINE->cycle_running))
-    {
-      g_usleep (100);
-    }
+  EngineState state;
+  pause_engine (&state);
 
   int ret = 0;
 
@@ -150,8 +190,7 @@ undoable_action_do (UndoableAction * self)
 #endif
 
   /* restart engine */
-  g_atomic_int_set (
-    &AUDIO_ENGINE->run, (guint) run_before);
+  resume_engine (&state);
 
   return ret;
 }
@@ -168,14 +207,8 @@ undoable_action_undo (UndoableAction * self)
 
   /* stop engine and give it some time to stop
    * running */
-  int run_before =
-    g_atomic_int_get (&AUDIO_ENGINE->run);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  while (g_atomic_int_get (
-           &AUDIO_ENGINE->cycle_running))
-    {
-      g_usleep (100);
-    }
+  EngineState state;
+  pause_engine (&state);
 
   int ret = 0;
 
@@ -228,8 +261,7 @@ undoable_action_undo (UndoableAction * self)
   /*zix_sem_post (&AUDIO_ENGINE->port_operation_lock);*/
 
   /* restart engine */
-  g_atomic_int_set (
-    &AUDIO_ENGINE->run, (guint) run_before);
+  resume_engine (&state);
 
   return ret;
 }
