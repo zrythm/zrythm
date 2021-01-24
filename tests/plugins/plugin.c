@@ -149,6 +149,8 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
+  (void) get_skew_duty_port;
+
 #define TEST_PREFIX "/plugins/plugin/"
 
   g_test_add_func (

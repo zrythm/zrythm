@@ -403,7 +403,8 @@ export_audio (
               SEEK_SET | SFM_WRITE);
 
           /* wav is weird for some reason */
-          if (info->format == AUDIO_FORMAT_WAV)
+          if (info->format == AUDIO_FORMAT_WAV ||
+              info->format == AUDIO_FORMAT_RAW)
             {
               if (seek_cnt < 0)
                 {
