@@ -23,6 +23,8 @@
 #include "audio/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/live_waveform.h"
@@ -35,6 +37,7 @@
 #include "utils/gtk.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
@@ -105,6 +108,7 @@ on_delete_clicked (
   UndoableAction * ua =
     mixer_selections_action_new_delete (sel);
   undo_manager_perform (UNDO_MANAGER, ua);
+  mixer_selections_free (sel);
 }
 
 static void
@@ -150,6 +154,93 @@ modulator_inner_widget_refresh (
   g_signal_handlers_unblock_by_func (
     self->show_hide_ui_btn, on_show_hide_ui_toggled,
     self);
+}
+
+static void
+on_view_info_activate (
+  GtkMenuItem * menuitem,
+  Port *        port)
+{
+  PortInfoDialogWidget * dialog =
+    port_info_dialog_widget_new (port);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+on_bind_midi_cc (
+  GtkMenuItem * menuitem,
+  Port *        port)
+{
+  BindCcDialogWidget * dialog =
+    bind_cc_dialog_widget_new ();
+
+  int ret = gtk_dialog_run (GTK_DIALOG (dialog));
+
+  if (ret == GTK_RESPONSE_ACCEPT)
+    {
+      if (dialog->cc[0])
+        {
+          UndoableAction * ua =
+            midi_mapping_action_new_bind (
+            dialog->cc, NULL, port);
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+    }
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+on_reset_control (
+  GtkMenuItem * menuitem,
+  Port *        port)
+{
+  UndoableAction * ua =
+    port_action_new_reset_control (&port->id);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+static void
+on_knob_right_click (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  Port *                port)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget *menu, *menuitem;
+  menu = gtk_menu_new();
+
+  menuitem =
+    gtk_menu_item_new_with_label (_("Reset"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_reset_control), port);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  menuitem =
+    gtk_menu_item_new_with_label (_("Bind MIDI CC"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_bind_midi_cc), port);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  menuitem =
+    gtk_menu_item_new_with_label (_("View info"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_view_info_activate), port);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  gtk_widget_show_all (menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
 /**
@@ -198,6 +289,18 @@ modulator_inner_widget_new (
       gtk_container_add (
         GTK_CONTAINER (self->controls_box),
         GTK_WIDGET (knob_with_name));
+
+      /* add context menu */
+      GtkGestureMultiPress * mp =
+        GTK_GESTURE_MULTI_PRESS (
+          gtk_gesture_multi_press_new (
+            GTK_WIDGET (knob_with_name)));
+      gtk_gesture_single_set_button (
+        GTK_GESTURE_SINGLE (mp),
+        GDK_BUTTON_SECONDARY);
+      g_signal_connect (
+        G_OBJECT (mp), "pressed",
+        G_CALLBACK (on_knob_right_click), port);
     }
 
   for (int i = 0; i < modulator->num_out_ports; i++)

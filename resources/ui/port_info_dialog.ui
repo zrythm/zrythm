@@ -139,15 +139,7 @@
                       <object class="GtkBox" id="flags_box">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
+                        <property name="spacing">4</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>

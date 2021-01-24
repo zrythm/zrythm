@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -969,31 +969,6 @@ receive_midi_events (
 #endif
     default:
       break;
-    }
-
-  MidiEvents * events =
-    self->midi_in->midi_events;
-  if (events->num_events > 0)
-    {
-      self->trigger_midi_activity = 1;
-
-      /* capture cc if capturing */
-      if (self->capture_cc)
-        {
-          memcpy (
-            self->last_cc,
-            events->events[
-              events->num_events - 1].raw_buffer,
-            sizeof (midi_byte_t) * 3);
-        }
-
-      /* send cc to mapped ports */
-      for (int i = 0; i < events->num_events; i++)
-        {
-          MidiEvent * ev = &events->events[i];
-          midi_mappings_apply (
-            MIDI_MAPPINGS, ev->raw_buffer);
-        }
     }
 }
 

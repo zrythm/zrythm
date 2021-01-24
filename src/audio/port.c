@@ -2729,6 +2729,36 @@ port_process (
             }
         }
 
+      /* set midi capture if hardware */
+      if (port->id.owner_type == PORT_OWNER_TYPE_HW)
+        {
+          MidiEvents * events = port->midi_events;
+          if (events->num_events > 0)
+            {
+              AUDIO_ENGINE->trigger_midi_activity =
+                1;
+
+              /* capture cc if capturing */
+              if (AUDIO_ENGINE->capture_cc)
+                {
+                  memcpy (
+                    AUDIO_ENGINE->last_cc,
+                    events->events[
+                      events->num_events - 1].
+                        raw_buffer,
+                    sizeof (midi_byte_t) * 3);
+                }
+
+              /* send cc to mapped ports */
+              for (int i = 0; i < events->num_events; i++)
+                {
+                  MidiEvent * ev = &events->events[i];
+                  midi_mappings_apply (
+                    MIDI_MAPPINGS, ev->raw_buffer);
+                }
+            }
+        }
+
       for (k = 0; k < port->num_srcs; k++)
         {
           src_port = port->srcs[k];
