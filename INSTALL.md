@@ -9,9 +9,13 @@ the steps are
     meson build
     ninja -C build
 
+To pass options, use the following syntax
+
+    meson build -Doption_name=value
+
 To see all available options, type the following
 after the build directory is initialized, or look
-inside `meson_options.txt`.
+inside [meson_options.txt](meson_options.txt).
 
     meson configure build
 
@@ -80,7 +84,7 @@ other resources in the installed prefix.
 
 ----
 
-Copyright (C) 2019-2020 Alexandros Theodotou
+Copyright (C) 2019-2021 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
