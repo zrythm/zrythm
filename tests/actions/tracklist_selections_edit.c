@@ -454,12 +454,12 @@ _test_edit_tracks (
 
 static void __test_edit_tracks (bool with_carla)
 {
-  test_helper_zrythm_init ();
-
   for (EditTracksActionType i =
          EDIT_TRACK_ACTION_TYPE_SOLO;
        i <= EDIT_TRACK_ACTION_TYPE_ICON; i++)
     {
+      test_helper_zrythm_init ();
+
 #ifdef HAVE_HELM
       _test_edit_tracks (
         i, HELM_BUNDLE, HELM_URI, true, with_carla);
@@ -469,9 +469,9 @@ static void __test_edit_tracks (bool with_carla)
         i, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
         false, with_carla);
 #endif
-    }
 
-  test_helper_zrythm_cleanup ();
+      test_helper_zrythm_cleanup ();
+    }
 }
 
 static void test_edit_tracks ()
