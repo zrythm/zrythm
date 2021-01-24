@@ -199,6 +199,8 @@ test_export_wav ()
   g_assert_cmpint (ret, ==, 0);
 
   ExportSettings settings;
+  settings.has_error = false;
+  settings.cancelled = false;
   settings.format = AUDIO_FORMAT_WAV;
   settings.artist = g_strdup ("Test Artist");
   settings.genre = g_strdup ("Test Genre");

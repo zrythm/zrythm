@@ -252,7 +252,7 @@ timeline_arranger_on_quick_bounce_clicked (
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      &settings, 1, 0);
+      &settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog),
     GTK_WINDOW (MAIN_WINDOW));
@@ -261,13 +261,16 @@ timeline_arranger_on_quick_bounce_clicked (
 
   g_thread_join (thread);
 
-  /* create audio track with bounced material */
-  Position first_pos;
-  arranger_selections_get_start_pos (
-    (ArrangerSelections *) TL_SELECTIONS,
-    &first_pos, F_GLOBAL);
-  exporter_create_audio_track_after_bounce (
-    &settings, &first_pos);
+  if (!settings.has_error && !settings.cancelled)
+    {
+      /* create audio track with bounced material */
+      Position first_pos;
+      arranger_selections_get_start_pos (
+        (ArrangerSelections *) TL_SELECTIONS,
+        &first_pos, F_GLOBAL);
+      exporter_create_audio_track_after_bounce (
+        &settings, &first_pos);
+    }
 
   export_settings_free_members (&settings);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -91,7 +91,7 @@ on_bounce_clicked (
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      &settings, 1, 0);
+      &settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog),
     GTK_WINDOW (self));
@@ -100,7 +100,8 @@ on_bounce_clicked (
 
   g_thread_join (thread);
 
-  if (!self->bounce_to_file)
+  if (!self->bounce_to_file &&
+      !settings.has_error && !settings.cancelled)
     {
       /* create audio track with bounced material */
       exporter_create_audio_track_after_bounce (

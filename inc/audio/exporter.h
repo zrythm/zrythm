@@ -135,6 +135,9 @@ typedef struct ExportSettings
    * for progress calculation. */
   int               num_files;
 
+  /** Export cancelled. */
+  bool              cancelled;
+
   /** Error occured. */
   bool              has_error;
 

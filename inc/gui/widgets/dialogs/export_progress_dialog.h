@@ -55,14 +55,17 @@ typedef struct _ExportProgressDialogWidget
   GtkProgressBar *     progress_bar;
   GtkButton *          ok;
   GtkButton *          open_directory;
+  GtkButton *          cancel;
+
+  GtkButtonBox *       action_btn_box;
 
   /** Automatically close the progress dialog when
    * finished. */
-  int                  autoclose;
+  bool                 autoclose;
 
   /** Whether to show the open directory button or
    * not. */
-  int                  show_open_dir_btn;
+  bool                 show_open_dir_btn;
 
   ExportSettings *     info;
 } ExportProgressDialogWidget;
@@ -73,8 +76,9 @@ typedef struct _ExportProgressDialogWidget
 ExportProgressDialogWidget *
 export_progress_dialog_widget_new (
   ExportSettings * info,
-  int              autoclose,
-  int              show_open_dir_btn);
+  bool             autoclose,
+  bool             show_open_dir_btn,
+  bool             cancelable);
 
 /**
  * @}

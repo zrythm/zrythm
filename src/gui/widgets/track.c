@@ -1619,20 +1619,25 @@ on_quick_bounce_clicked (
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      &settings, 1, 0);
+      &settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog),
     GTK_WINDOW (MAIN_WINDOW));
   gtk_dialog_run (GTK_DIALOG (progress_dialog));
-  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+  gtk_widget_destroy (
+    GTK_WIDGET (progress_dialog));
 
   g_thread_join (thread);
 
-  /* create audio track with bounced material */
-  Position init_pos;
-  position_init (&init_pos);
-  exporter_create_audio_track_after_bounce (
-    &settings, &init_pos);
+  if (!settings.has_error && !settings.cancelled)
+    {
+      /* create audio track with bounced
+       * material */
+      Position init_pos;
+      position_init (&init_pos);
+      exporter_create_audio_track_after_bounce (
+        &settings, &init_pos);
+    }
 
   export_settings_free_members (&settings);
 }

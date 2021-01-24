@@ -149,11 +149,13 @@ export_audio (
       sfinfo.format =
         sfinfo.format | SF_FORMAT_VORBIS;
     }
+#ifdef HAVE_OPUS
   else if (info->format == AUDIO_FORMAT_OGG_OPUS)
     {
       sfinfo.format =
         sfinfo.format | SF_FORMAT_OPUS;
     }
+#endif
   else if (info->depth == BIT_DEPTH_16)
     {
       sfinfo.format =
@@ -435,10 +437,13 @@ export_audio (
         (double) total_frames;
     } while (
       TRANSPORT->playhead_pos.frames <
-      stop_pos.frames - 1);
+      stop_pos.frames - 1 && !info->cancelled);
 
-  g_warn_if_fail (
-    covered == (sf_count_t) total_frames);
+  if (!info->cancelled)
+    {
+      g_warn_if_fail (
+        covered == (sf_count_t) total_frames);
+    }
 
   info->progress = 1.0;
 
@@ -460,12 +465,29 @@ export_audio (
 
   sf_close (sndfile);
 
+  /* if cancelled, delete */
+  if (info->cancelled)
+    {
+      io_remove (info->file_uri);
+    }
+
   /* restart engine */
   g_atomic_int_set (
     &AUDIO_ENGINE->run, (guint) run_before);
 
-  g_message (
-    "successfully exported to %s", info->file_uri);
+  /* if cancelled, delete */
+  if (info->cancelled)
+    {
+      g_message (
+        "cancelled export to %s",
+        info->file_uri);
+    }
+  else
+    {
+      g_message (
+        "successfully exported to %s",
+        info->file_uri);
+    }
 
   return 0;
 }
@@ -556,6 +578,8 @@ export_settings_set_bounce_defaults (
   self->genre = g_strdup ("");
   self->depth = BIT_DEPTH_16;
   self->time_range = TIME_RANGE_CUSTOM;
+  self->cancelled = false;
+  self->has_error = false;
   switch (self->mode)
     {
     case EXPORT_MODE_REGIONS:

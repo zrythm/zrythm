@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,6 +27,7 @@
 #include "utils/arrays.h"
 #include "utils/color.h"
 #include "utils/datetime.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
@@ -884,6 +885,7 @@ info->time_range = TIME_RANGE_##x
 
   info->mode = EXPORT_MODE_TRACKS;
   info->has_error = false;
+  info->cancelled = false;
   strcpy (info->error_str, "");
 }
 
@@ -940,7 +942,7 @@ on_export_clicked (
           /* create a progress dialog and block */
           ExportProgressDialogWidget * progress_dialog =
             export_progress_dialog_widget_new (
-              &info, true, true);
+              &info, true, true, F_CANCELABLE);
           gtk_window_set_transient_for (
             GTK_WINDOW (progress_dialog),
             GTK_WINDOW (self));
@@ -994,7 +996,7 @@ on_export_clicked (
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
         export_progress_dialog_widget_new (
-          &info, true, true);
+          &info, true, true, F_CANCELABLE);
       gtk_window_set_transient_for (
         GTK_WINDOW (progress_dialog),
         GTK_WINDOW (self));

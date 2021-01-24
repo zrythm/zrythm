@@ -1496,7 +1496,7 @@ track_freeze (
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
         export_progress_dialog_widget_new (
-          &settings, 1, 0);
+          &settings, true, false, F_CANCELABLE);
       gtk_window_set_transient_for (
         GTK_WINDOW (progress_dialog),
         GTK_WINDOW (MAIN_WINDOW));
@@ -1509,13 +1509,18 @@ track_freeze (
       /* assert exporting is finished */
       g_return_if_fail (!AUDIO_ENGINE->exporting);
 
-      /* move the temporary file to the pool */
-      AudioClip * clip =
-        audio_clip_new_from_file (
-          settings.file_uri);
-      audio_pool_add_clip (AUDIO_POOL, clip);
-      audio_clip_write_to_pool (clip, F_NO_PARTS);
-      self->pool_id = clip->pool_id;
+      if (!settings.has_error &&
+          !settings.cancelled)
+        {
+          /* move the temporary file to the pool */
+          AudioClip * clip =
+            audio_clip_new_from_file (
+              settings.file_uri);
+          audio_pool_add_clip (AUDIO_POOL, clip);
+          audio_clip_write_to_pool (
+            clip, F_NO_PARTS);
+          self->pool_id = clip->pool_id;
+        }
 
       if (g_file_test (
             settings.file_uri,

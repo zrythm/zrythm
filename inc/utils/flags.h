@@ -235,4 +235,7 @@
 #define F_MOVING_PLUGIN 1
 #define F_NOT_MOVING_PLUGIN 0
 
+#define F_CANCELABLE 1
+#define F_NOT_CANCELABLE 0
+
 #endif
