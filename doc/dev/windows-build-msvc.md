@@ -8,6 +8,17 @@
 > nice! does meson in the vs command prompt see the chocolatey packages by default?
 > If you have a pkgconfig from chocolatey, yes.
 
+1. Install as admin https://chocolatey.org/install
+2. choco install sed pkgconfiglite gnuwin32-coreutils.install grep
+3. https://sourceforge.net/projects/ezwinports/files/guile-2.0.11-2-w32-bin.zip/download (doesn't work)
+
+# Other programs
+- https://sourceforge.net/projects/gnuwin32/files/
+- gettext: https://sourceforge.net/projects/gnuwin32/files/gettext/0.14.4/gettext-0.14.4.exe/download?use_mirror=kumisystems&download=
+
+# Running a command
+` & 'C:\Program Files (x86)\GnuWin32\bin\cat.exe' .\README.md`
+
 # TODO
 
 # Thanks
