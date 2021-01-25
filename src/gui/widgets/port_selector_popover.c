@@ -54,6 +54,7 @@ on_ok_clicked (
       ui_show_error_message (
         MAIN_WINDOW,
         _("No port selected"));
+      return;
     }
 
   Port * src = NULL, * dest = NULL;
