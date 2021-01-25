@@ -731,7 +731,7 @@ project_create_default (
     }
 
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, TRANSPORT->time_sig.beats_per_bar,
+    AUDIO_ENGINE, TRANSPORT_BEATS_PER_BAR,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate);
 
@@ -1038,7 +1038,7 @@ load (
   tracklist_init_loaded (self->tracklist);
 
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, TRANSPORT->time_sig.beats_per_bar,
+    AUDIO_ENGINE, TRANSPORT_BEATS_PER_BAR,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate);
 

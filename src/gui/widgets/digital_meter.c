@@ -434,27 +434,26 @@ digital_meter_draw_cb (
       self->height_end_pos =
         self->height_start_pos + texth;
 
+      BeatUnit bu =
+        time_signature_get_beat_unit_enum (
+          TRANSPORT->time_sig.beat_unit);
       const char * beat_unit =
-        beat_unit_strings[
-          TRANSPORT->time_sig.ebeat_unit].str;
-      if (TRANSPORT->time_sig.beats_per_bar < 10)
+        beat_unit_strings[bu].str;
+      if (TRANSPORT_BEATS_PER_BAR < 10)
         {
           text[0] = ' ';
           text[1] =
             (char)
-            (TRANSPORT->
-               time_sig.beats_per_bar + '0');
+            (TRANSPORT_BEATS_PER_BAR + '0');
         }
       else
         {
           text[0] =
             (char)
-            ((TRANSPORT->time_sig.beats_per_bar /
-                10) + '0');
+            ((TRANSPORT_BEATS_PER_BAR / 10) + '0');
           text[1] =
             (char)
-            ((TRANSPORT->time_sig.beats_per_bar %
-                10) + '0');
+            ((TRANSPORT_BEATS_PER_BAR % 10) + '0');
         }
       text[2] = '\0';
       heap_text =
@@ -802,27 +801,28 @@ on_scroll (
           num += self->prev_time_sig.beats_per_bar;
           if (num < 1)
             {
-              TRANSPORT->time_sig.beats_per_bar = 1;
+              TRANSPORT_BEATS_PER_BAR = 1;
             }
           else
             {
-              TRANSPORT->time_sig.beats_per_bar =
-                num > 16 ?
-                16 : num;
+              TRANSPORT_BEATS_PER_BAR =
+                num > 16 ? 16 : num;
             }
         }
       else if (self->update_timesig_bot)
         {
           num +=
-            (int) self->prev_time_sig.ebeat_unit;
+            (int)
+            time_signature_get_beat_unit_enum (
+              self->prev_time_sig.beat_unit);
           if (num < 0)
             {
-              time_signature_set_ebeat_unit (
+              time_signature_set_beat_unit_from_enum (
                 &TRANSPORT->time_sig, BEAT_UNIT_2);
             }
           else
             {
-              time_signature_set_ebeat_unit (
+              time_signature_set_beat_unit_from_enum (
                 &TRANSPORT->time_sig,
                 num > BEAT_UNIT_16 ?
                 BEAT_UNIT_16 : num);
@@ -1038,28 +1038,29 @@ drag_update (
             (int) diff / 24;
           if (num < 1)
             {
-              TRANSPORT->time_sig.beats_per_bar = 1;
+              TRANSPORT_BEATS_PER_BAR = 1;
             }
           else
             {
-              TRANSPORT->time_sig.beats_per_bar =
-                num > 16 ?
-                16 : num;
+              TRANSPORT_BEATS_PER_BAR =
+                num > 16 ? 16 : num;
             }
         }
       else if (self->update_timesig_bot)
         {
           num =
-            (int) self->prev_time_sig.ebeat_unit +
+            (int)
+            time_signature_get_beat_unit_enum (
+              self->prev_time_sig.beat_unit) +
             (int) diff / 24;
           if (num < 0)
             {
-              time_signature_set_ebeat_unit (
+              time_signature_set_beat_unit_from_enum (
                 &TRANSPORT->time_sig, BEAT_UNIT_2);
             }
           else
             {
-              time_signature_set_ebeat_unit (
+              time_signature_set_beat_unit_from_enum (
                 &TRANSPORT->time_sig,
                 num > BEAT_UNIT_16 ?
                 BEAT_UNIT_16 : num);

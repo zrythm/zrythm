@@ -87,8 +87,7 @@ void
 transport_init_loaded (
   Transport * self)
 {
-  time_signature_set_beat_unit (
-    &self->time_sig, self->time_sig.beat_unit);
+  transport_set_time_sig (self, &self->time_sig);
 
   init_common (self);
 }
@@ -117,8 +116,7 @@ transport_new (
   /* set BPM related defaults */
   self->time_sig.beats_per_bar =
     TRANSPORT_DEFAULT_BEATS_PER_BAR;
-  time_signature_set_beat_unit (
-    &self->time_sig, 4);
+  self->time_sig.beat_unit = 4;
 
   /* update time sig */
   transport_set_time_sig (
@@ -341,29 +339,6 @@ transport_set_recording_mode (
 }
 
 /**
- * Gets beat unit as int.
- */
-static inline BeatUnit
-get_ebeat_unit (
-  int beat_unit)
-{
-  switch (beat_unit)
-    {
-    case 2:
-      return BEAT_UNIT_2;
-    case 4:
-      return BEAT_UNIT_4;
-    case 8:
-      return BEAT_UNIT_8;
-    case 16:
-      return BEAT_UNIT_16;;
-    default:
-      g_warn_if_reached ();
-      return 0;
-    }
-}
-
-/**
  * Updates beat unit and anything depending on it.
  */
 void
@@ -372,8 +347,6 @@ transport_set_time_sig (
   TimeSignature * time_sig)
 {
   self->time_sig = *time_sig;
-  self->time_sig.ebeat_unit =
-    get_ebeat_unit (time_sig->beat_unit);
 
   /**
    * Regarding calculation:
@@ -398,11 +371,10 @@ transport_set_time_sig (
 }
 
 void
-time_signature_set_ebeat_unit (
+time_signature_set_beat_unit_from_enum (
   TimeSignature * self,
   BeatUnit        ebeat_unit)
 {
-  self->ebeat_unit = ebeat_unit;
   switch (ebeat_unit)
     {
     case BEAT_UNIT_2:
@@ -423,13 +395,32 @@ time_signature_set_ebeat_unit (
     }
 }
 
+BeatUnit
+time_signature_get_beat_unit_enum (
+  int beat_unit)
+{
+  switch (beat_unit)
+    {
+    case 2:
+      return BEAT_UNIT_2;
+    case 4:
+      return BEAT_UNIT_4;
+    case 8:
+      return BEAT_UNIT_8;
+    case 16:
+      return BEAT_UNIT_16;;
+    default:
+      break;
+    }
+  g_return_val_if_reached (0);
+}
+
 void
 time_signature_set_beat_unit (
   TimeSignature * self,
   int             beat_unit)
 {
   self->beat_unit = beat_unit;
-  self->ebeat_unit = get_ebeat_unit (beat_unit);
 }
 
 void
@@ -438,7 +429,8 @@ transport_request_pause (
 {
   self->play_state = PLAYSTATE_PAUSE_REQUESTED;
 
-  if (g_settings_get_boolean (
+  if (!ZRYTHM_TESTING &&
+      g_settings_get_boolean (
         S_TRANSPORT, "return-to-cue"))
     {
       transport_move_playhead (

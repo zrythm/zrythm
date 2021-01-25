@@ -29,6 +29,8 @@
 static void
 test_find_and_queue_metronome ()
 {
+  test_helper_zrythm_init ();
+
   /* this catches a bug where if the ticks were 0
    * but sub_tick was not, invalid offsets would
    * be generated */
@@ -96,15 +98,16 @@ test_find_and_queue_metronome ()
     /* assert metronome is queued for 1.1.1.0 */
     g_assert_cmpint (
       SAMPLE_PROCESSOR->num_current_samples, ==, 1);
+
   }
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
-
-  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/audio/metronome/"
 

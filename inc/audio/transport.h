@@ -151,7 +151,6 @@ typedef struct TimeSignature
    * Power of 2.
    */
   int           beat_unit;
-  BeatUnit      ebeat_unit;
 } TimeSignature;
 
 static const cyaml_schema_field_t
@@ -383,9 +382,13 @@ transport_set_recording_mode (
   TransportRecordingMode mode);
 
 void
-time_signature_set_ebeat_unit (
+time_signature_set_beat_unit_from_enum (
   TimeSignature * self,
   BeatUnit        ebeat_unit);
+
+BeatUnit
+time_signature_get_beat_unit_enum (
+  int beat_unit);
 
 void
 time_signature_set_beat_unit (

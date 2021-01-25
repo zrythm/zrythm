@@ -34,12 +34,6 @@ void
 transport_action_init_loaded (
   TransportAction * self)
 {
-  time_signature_set_beat_unit (
-    &self->time_sig_before,
-    self->time_sig_before.beat_unit);
-  time_signature_set_beat_unit (
-    &self->time_sig_after,
-    self->time_sig_after.beat_unit);
 }
 
 /**

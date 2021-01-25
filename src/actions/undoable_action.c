@@ -93,6 +93,12 @@ pause_engine (
   if (state->playing)
     {
       transport_request_pause (TRANSPORT);
+
+      while (TRANSPORT->play_state ==
+               PLAYSTATE_PAUSE_REQUESTED)
+        {
+          g_usleep (100);
+        }
     }
 
   g_atomic_int_set (&AUDIO_ENGINE->run, 0);

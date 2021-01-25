@@ -61,7 +61,7 @@ position_to_frames (
         (position->beats > 0 ?
          (double) (position->beats - 1) :
          (double) (position->beats + 1)) *
-        (double) TRANSPORT_BEATS_PER_BAR);
+        (double) TRANSPORT->ticks_per_beat);
   if (position->sixteenths)
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
