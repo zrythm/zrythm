@@ -2258,6 +2258,11 @@ lv2_plugin_activate (
     activate ? "Activating" :"Deactivating");
   if (activate && !self->plugin->activated)
     {
+      if (!self->plugin->instantiated)
+        {
+          g_critical ("plugin not instantiated");
+          return -1;
+        }
       lilv_instance_activate (self->instance);
     }
   else if (!activate && self->plugin->activated)

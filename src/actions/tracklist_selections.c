@@ -358,8 +358,8 @@ create_track (
                 }
               g_free (message);
               plugin_free (pl);
-              g_return_val_if_fail (
-                pl, ERR_PLUGIN_INSTANTIATION_FAILED);
+              return
+                ERR_PLUGIN_INSTANTIATION_FAILED;
             }
 
           /* activate */
