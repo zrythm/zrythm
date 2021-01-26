@@ -170,9 +170,12 @@ midi_panic_all (
       track = TRACKLIST->tracks[i];
 
       if (track_has_piano_roll (track))
-        midi_events_panic (
-          track->processor->piano_roll->midi_events,
-          queued);
+        {
+          midi_events_panic (
+            track->processor->piano_roll->
+              midi_events,
+            queued);
+        }
     }
 }
 

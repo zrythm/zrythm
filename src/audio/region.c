@@ -1254,18 +1254,17 @@ region_add_arranger_object (
  */
 long
 region_timeline_frames_to_local (
-  ZRegion * region,
-  const long     timeline_frames,
-  const int      normalize)
+  ZRegion *  self,
+  const long timeline_frames,
+  const bool normalize)
 {
   long diff_frames;
 
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
+  ArrangerObject * r_obj = (ArrangerObject *) self;
 
   if (normalize)
     {
-      if (region)
+      if (self)
         {
           diff_frames =
             timeline_frames -
@@ -1296,7 +1295,7 @@ region_timeline_frames_to_local (
     }
   else
     {
-      if (region)
+      if (self)
         {
           diff_frames =
             timeline_frames -
@@ -1309,6 +1308,55 @@ region_timeline_frames_to_local (
 
       return diff_frames;
     }
+}
+
+/**
+ * Returns the number of frames until the next
+ * loop end point or the end of the region.
+ *
+ * @param[in] timeline_frames Global frames at
+ *   start.
+ * @param[out] ret_frames Return frames.
+ * @param[out] is_loop Whether the return frames
+ *   are for a loop (if false, the return frames
+ *   are for the region's end).
+ */
+void
+region_get_frames_till_next_loop_or_end (
+  ZRegion * self,
+  long      timeline_frames,
+  long *    ret_frames,
+  bool *    is_loop)
+{
+  g_return_if_fail (IS_REGION (self));
+
+  ArrangerObject * r_obj = (ArrangerObject *) self;
+
+  long local_frames =
+    timeline_frames - r_obj->pos.frames;
+  long loop_size =
+    arranger_object_get_loop_length_in_frames (
+      r_obj);
+  g_return_if_fail (loop_size > 0);
+
+  local_frames += r_obj->clip_start_pos.frames;
+
+  while (local_frames >=
+           r_obj->loop_end_pos.frames)
+    {
+      local_frames -= loop_size;
+    }
+
+  long frames_till_next_loop =
+    r_obj->loop_end_pos.frames - local_frames;
+
+  long frames_till_end =
+    r_obj->end_pos.frames - timeline_frames;
+
+  *is_loop =
+    frames_till_next_loop < frames_till_end;
+  *ret_frames =
+    MIN (frames_till_end, frames_till_next_loop);
 }
 
 /**

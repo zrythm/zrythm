@@ -593,6 +593,7 @@ void
 carla_native_plugin_proces (
   CarlaNativePlugin * self,
   const long          g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t     nframes)
 {
 
@@ -726,6 +727,14 @@ carla_native_plugin_proces (
         {
           MidiEvent * ev =
             &port->midi_events->events[i];
+          if (ev->time < local_offset ||
+              ev->time >= local_offset + nframes)
+            {
+              /* skip events scheduled
+               * for another split within
+               * the processing cycle */
+              continue;
+            }
           events[i].time = ev->time;
           events[i].size = 3;
           events[i].data[0] = ev->raw_buffer[0];

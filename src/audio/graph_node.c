@@ -339,7 +339,8 @@ graph_node_process (
   nframes_t   nframes)
 {
   g_return_if_fail (
-    node && node->graph && node->graph->router);
+    node && node->graph && node->graph->router &&
+    nframes == node->graph->router->nsamples);
 
   /*g_message (*/
     /*"processing %s", graph_node_get_name (node));*/

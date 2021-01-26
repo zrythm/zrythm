@@ -1089,7 +1089,7 @@ lv2_plugin_get_latency (
   if (reports_latency (self))
     {
       lv2_plugin_process (
-        self, PLAYHEAD->frames, 0);
+        self, PLAYHEAD->frames, 0, 0);
         /*AUDIO_ENGINE->block_length);*/
     }
 
@@ -2297,6 +2297,7 @@ void
 lv2_plugin_process (
   Lv2Plugin * self,
   const long  g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t   nframes)
 {
   if (self->plugin->instantiation_failed)
@@ -2473,24 +2474,31 @@ lv2_plugin_process (
             {
               /* Write MIDI input */
               for (i = 0;
-                   i < port->midi_events->num_events;
-                   ++i)
+                   i <
+                     port->midi_events->num_events;
+                   i++)
                 {
                   MidiEvent * ev =
                     &port->midi_events->events[i];
+                  if (ev->time < local_offset ||
+                      ev->time >=
+                        local_offset + nframes)
+                    {
+                      /* skip events scheduled
+                       * for another split within
+                       * the processing cycle */
+                      continue;
+                    }
                   g_message (
                     "writing plugin input event %d",
                     i);
                   midi_event_print (ev);
                   lv2_evbuf_write (
-                    &iter,
-                    ev->time, 0,
+                    &iter, ev->time, 0,
                     PM_URIDS.midi_MidiEvent,
                     3, ev->raw_buffer);
                 }
             }
-          midi_events_clear (
-            port->midi_events, 0);
         }
       else if (id->type == TYPE_CONTROL &&
                id->flow == FLOW_INPUT)

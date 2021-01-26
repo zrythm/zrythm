@@ -1443,7 +1443,8 @@ plugin_process (
   if (plugin->descr->open_with_carla)
     {
       carla_native_plugin_proces (
-        plugin->carla, g_start_frames, nframes);
+        plugin->carla, g_start_frames,
+        local_offset, nframes);
     }
   else
     {
@@ -1452,7 +1453,8 @@ plugin_process (
         {
         case PROT_LV2:
           lv2_plugin_process (
-            plugin->lv2, g_start_frames, nframes);
+            plugin->lv2, g_start_frames,
+            local_offset, nframes);
           break;
         default:
           break;

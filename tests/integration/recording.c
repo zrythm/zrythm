@@ -333,6 +333,7 @@ do_takes_no_loop_no_punch (
 
   /* run engine 1 more cycle to finalize recording */
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  transport_request_pause (TRANSPORT);
   recording_manager_process_events (
     RECORDING_MANAGER);
 
@@ -734,30 +735,13 @@ test_recording ()
   g_usleep (1000000);
 
   /* create an instrument track for testing */
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
-      HELM_BUNDLE, HELM_URI, false);
-
-  /* fix the descriptor (for some reason lilv
-   * reports it as Plugin instead of Instrument if
-   * you don't do lilv_world_load_all) */
-  descr->category = PC_INSTRUMENT;
-  g_free (descr->category_str);
-  descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
-
-  /* create an instrument track from helm */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT, descr, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
   /* create an audio track */
-  ua =
+  UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
       TRACKLIST->num_tracks, NULL, 1);
@@ -1018,6 +1002,7 @@ test_mono_recording (void)
 
   /* run engine 1 more cycle to finalize recording */
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  transport_request_pause (TRANSPORT);
   recording_manager_process_events (
     RECORDING_MANAGER);
 

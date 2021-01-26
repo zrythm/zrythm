@@ -26,6 +26,7 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm.h"
 
 #include <glib.h>
@@ -99,6 +100,8 @@ prepare_region_with_note_at_start_to_end (
 static void
 test_fill_midi_events ()
 {
+  test_helper_zrythm_init ();
+
   TrackFixture _fixture;
   TrackFixture * fixture =&_fixture;
   fixture_set_up (fixture);
@@ -139,12 +142,9 @@ test_fill_midi_events ()
   ev = &events->queued_events[0];
   g_assert_nonnull (ev);
   g_assert_cmpuint (
-    ev->channel, ==,
-    midi_region_get_midi_ch (r));
-  g_assert_cmpuint (
-    ev->note_pitch, ==, pitch1);
-  g_assert_cmpuint (
-    ev->velocity, ==, vel1);
+    ev->channel, ==, midi_region_get_midi_ch (r));
+  g_assert_cmpuint (ev->note_pitch, ==, pitch1);
+  g_assert_cmpuint (ev->velocity, ==, vel1);
   g_assert_cmpint (
     (long) ev->time, ==, pos.frames);
   midi_events_clear (events, 1);
@@ -403,9 +403,8 @@ test_fill_midi_events ()
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_cmpuint (
-    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
-  g_assert_cmpuint (
-    ev->time, ==, 364);
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (ev->time, ==, 364);
   ev = &events->queued_events[1];
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
@@ -569,6 +568,7 @@ test_fill_midi_events ()
    * MIDI note off at 1 sample before the loop point.
    * MIDI note on at the loop point.
    */
+  g_message ("---------");
   position_set_to_pos (
     &pos, &r_obj->loop_end_pos);
   position_add_frames (&pos, r_obj->pos.frames);
@@ -577,13 +577,18 @@ test_fill_midi_events ()
     track, pos.frames, 0, BUFFER_SIZE,
     events);
   g_assert_cmpint (
-    events->num_queued_events, ==, 2);
+    events->num_queued_events, ==, 3);
   ev = &events->queued_events[0];
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
   g_assert_cmpuint (
     ev->time, ==, 9);
   ev = &events->queued_events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (
+    ev->time, ==, 9);
+  ev = &events->queued_events[2];
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
   g_assert_cmpuint (
@@ -664,6 +669,57 @@ test_fill_midi_events ()
   midi_events_clear (events, 1);
 
   /**
+   * Premise: note starts at 1.1.1.0 and ends right
+   * before transport loop end.
+   *
+   * Expected result:
+   * Note off before loop end and note on at
+   * 1.1.1.0.
+   */
+  position_set_to_bar (
+    &r_obj->pos, 1);
+  position_set_to_pos (
+    &r_obj->end_pos, &TRANSPORT->loop_end_pos);
+  position_set_to_bar (
+    &r_obj->loop_start_pos, 1);
+  position_set_to_pos (
+    &r_obj->loop_end_pos, &TRANSPORT->loop_end_pos);
+  position_set_to_bar (
+    &mn_obj->pos, 1);
+  position_set_to_pos (
+    &pos, &TRANSPORT->loop_end_pos);
+  position_add_frames (&pos, - 20);
+  position_set_to_pos (
+    &mn_obj->end_pos, &pos);
+  position_set_to_pos (
+    &pos, &TRANSPORT->loop_end_pos);
+  position_add_frames (&pos, - 30);
+  midi_track_fill_midi_events (
+    track, pos.frames, 0, 30, events);
+  midi_events_print (events, 1);
+  g_assert_cmpint (
+    events->num_queued_events, ==, 2);
+  ev = &events->queued_events[0];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_cmpuint (ev->time, ==, 9);
+  ev = &events->queued_events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (ev->time, ==, 29);
+  midi_events_clear (events, 1);
+
+  position_set_to_pos (
+    &pos, &TRANSPORT->loop_start_pos);
+  midi_track_fill_midi_events (
+    track, pos.frames, 0, 10, events);
+  ev = &events->queued_events[0];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_cmpuint (ev->time, ==, 0);
+  midi_events_clear (events, 1);
+
+  /**
    * TODO
    * Premise: note starts on transport loop end.
    * Start: on transport loop end
@@ -672,20 +728,102 @@ test_fill_midi_events ()
    * Expected result:
    * No note on.
    */
+
+  test_helper_zrythm_cleanup ();
 }
+
+#ifdef HAVE_HELM
+static void
+test_fill_midi_events_from_engine ()
+{
+  test_helper_zrythm_init ();
+
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (1000000);
+
+  /* create an instrument track for testing */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  ZRegion * r =
+    prepare_region_with_note_at_start_to_end (
+      ins_track, 35, 60);
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  track_add_region (
+    ins_track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+
+#if 0
+  MidiNote * mn =
+    r->midi_notes[0];
+  ArrangerObject * mn_obj =
+    (ArrangerObject *) mn;
+#endif
+
+  transport_set_loop (TRANSPORT, true);
+  position_set_to_pos (
+    &TRANSPORT->loop_end_pos, &r_obj->end_pos);
+  Position pos;
+  position_set_to_pos (&pos, &r_obj->end_pos);
+  position_add_frames (&pos, - 20);
+  transport_set_playhead_pos (TRANSPORT, &pos);
+  transport_request_roll (TRANSPORT);
+
+  /* run the engine for 1 cycle */
+  g_message ("--- processing engine...");
+  engine_process (AUDIO_ENGINE, 40);
+  g_message ("--- processing recording events...");
+  Plugin * pl = ins_track->channel->instrument;
+  Port * event_in = pl->in_ports[2];
+  MidiEvents * midi_events = event_in->midi_events;
+  g_assert_cmpint (
+    midi_events->num_events, ==, 3);
+  MidiEvent * ev = &midi_events->events[0];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_cmpuint (ev->time, ==, 19);
+  g_assert_cmpuint (ev->note_pitch, ==, 35);
+  ev = &midi_events->events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (ev->time, ==, 19);
+  ev = &midi_events->events[2];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_cmpuint (ev->time, ==, 20);
+  g_assert_cmpuint (ev->note_pitch, ==, 35);
+  g_assert_cmpuint (ev->velocity, ==, 60);
+
+  /* process again and check events are 0 */
+  g_message ("--- processing engine...");
+  engine_process (AUDIO_ENGINE, 40);
+  g_message ("--- processing recording events...");
+  g_assert_cmpint (
+    midi_events->num_events, ==, 0);
+
+  test_helper_zrythm_cleanup ();
+}
+#endif
 
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
 #define TEST_PREFIX "/audio/midi_track/"
 
   g_test_add_func (
     TEST_PREFIX "test fill midi events",
     (GTestFunc) test_fill_midi_events);
+#ifdef HAVE_HELM
+  g_test_add_func (
+    TEST_PREFIX "test fill midi events from engine",
+    (GTestFunc) test_fill_midi_events_from_engine);
+#endif
 
   return g_test_run ();
 }

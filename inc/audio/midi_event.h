@@ -173,8 +173,8 @@ midi_events_new (
  */
 static inline void
 midi_event_copy (
-  MidiEvent * src,
-  MidiEvent * dest)
+  MidiEvent * dest,
+  MidiEvent * src)
 {
   memcpy (dest, src, sizeof (MidiEvent));
 }
@@ -351,9 +351,16 @@ midi_events_add_pitchbend (
  * Queues MIDI note off to event queue.
  */
 void
-midi_events_panic (
+midi_events_add_all_notes_off (
   MidiEvents * self,
-  int          queued);
+  midi_byte_t  channel,
+  midi_time_t  time,
+  bool         queued);
+
+#define midi_events_panic(self,queued) \
+  zix_sem_wait (&(self)->access_sem); \
+  g_message ("sending PANIC"); \
+  zix_sem_post (&(self)->access_sem);
 
 /**
  * Clears midi events.
@@ -419,7 +426,7 @@ midi_events_copy_to_jack (
 void
 midi_events_sort (
   MidiEvents * self,
-  const int    queued);
+  const bool   queued);
 
 /**
  * Sets the given MIDI channel on all applicable
@@ -430,6 +437,12 @@ midi_events_set_channel (
   MidiEvents *      self,
   const int         queued,
   const midi_byte_t channel);
+
+void
+midi_events_delete_event (
+  MidiEvents *      events,
+  const MidiEvent * ev,
+  const bool        queued);
 
 /**
  * Frees the MIDI events.

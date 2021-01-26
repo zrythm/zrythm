@@ -337,6 +337,7 @@ void
 lv2_plugin_process (
   Lv2Plugin * lv2_plugin,
   const long  g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t   nframes);
 
 /**

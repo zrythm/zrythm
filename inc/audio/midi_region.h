@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "utils/types.h"
 
 typedef struct Track Track;
 typedef struct Position Position;
@@ -142,6 +144,38 @@ MidiNote *
 midi_region_pop_unended_note (
   ZRegion * self,
   int       pitch);
+
+/**
+ * Fills MIDI event queue from the region.
+ *
+ * The events are dequeued right after the call to
+ * this function.
+ *
+ * @note The caller already splits calls to this
+ *   function at each sub-loop inside the region,
+ *   so region loop related logic is not needed.
+ *
+ * @param g_start_frames Global start frame.
+ * @param local_start_frame The start frame offset
+ *   from 0 in this cycle.
+ * @param nframes Number of frames at start
+ *   Position.
+ * @param note_off_at_end Whether a note off should
+ *   be added at the end frame (eg, when the caller
+ *   knows there is a region loop or the region
+ *   ends).
+ * @param midi_events MidiEvents to fill (from
+ *   Piano Roll Port for example).
+ */
+REALTIME
+void
+midi_region_fill_midi_events (
+  ZRegion *    self,
+  long         g_start_frames,
+  nframes_t    local_start_frame,
+  nframes_t    nframes,
+  bool         note_off_at_end,
+  MidiEvents * midi_events);
 
 /**
  * Prints the MidiNotes in the Region.

@@ -176,6 +176,7 @@ void
 carla_native_plugin_proces (
   CarlaNativePlugin * self,
   const long          g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t     nframes);
 
 /**

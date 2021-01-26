@@ -403,9 +403,27 @@ region_find_midi_note (
  */
 long
 region_timeline_frames_to_local (
-  ZRegion * region,
-  const long     timeline_frames,
-  const int      normalize);
+  ZRegion *  self,
+  const long timeline_frames,
+  const bool normalize);
+
+/**
+ * Returns the number of frames until the next
+ * loop end point or the end of the region.
+ *
+ * @param[in] timeline_frames Global frames at
+ *   start.
+ * @param[out] ret_frames Return frames.
+ * @param[out] is_loop Whether the return frames
+ *   are for a loop (if false, the return frames
+ *   are for the region's end).
+ */
+void
+region_get_frames_till_next_loop_or_end (
+  ZRegion * self,
+  long      timeline_frames,
+  long *    ret_frames,
+  bool *    is_loop);
 
 /**
  * Sets the track lane.

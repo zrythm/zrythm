@@ -1002,6 +1002,192 @@ midi_region_get_as_events (
 }
 
 /**
+ * Sends all MIDI notes off at the given local
+ * point.
+ */
+static inline void
+send_notes_off_at (
+  ZRegion *          self,
+  MidiEvents *       midi_events,
+  midi_time_t        time)
+{
+  midi_byte_t channel = 1;
+  if (self->id.type == REGION_TYPE_MIDI)
+    {
+      channel = midi_region_get_midi_ch (self);
+    }
+  else if (self->id.type == REGION_TYPE_CHORD)
+    {
+      /* FIXME set channel */
+    }
+
+  g_message ("all notes off at %d", time);
+  midi_events_add_all_notes_off (
+    midi_events, channel, time, F_QUEUED);
+
+}
+
+/**
+ * Fills MIDI event queue from the region.
+ *
+ * The events are dequeued right after the call to
+ * this function.
+ *
+ * @note The caller already splits calls to this
+ *   function at each sub-loop inside the region,
+ *   so region loop related logic is not needed.
+ *
+ * @param g_start_frames Global start frame.
+ * @param local_start_frame The start frame offset
+ *   from 0 in this cycle.
+ * @param nframes Number of frames at start
+ *   Position.
+ * @param note_off_at_end Whether a note off should
+ *   be added at the end frame (eg, when the caller
+ *   knows there is a region loop or the region
+ *   ends).
+ * @param midi_events MidiEvents to fill (from
+ *   Piano Roll Port for example).
+ */
+REALTIME
+void
+midi_region_fill_midi_events (
+  ZRegion *    self,
+  long         g_start_frames,
+  nframes_t    local_start_frame,
+  nframes_t    nframes,
+  bool         note_off_at_end,
+  MidiEvents * midi_events)
+{
+  ArrangerObject * r_obj =
+    (ArrangerObject *) self;
+  Track * track = arranger_object_get_track (r_obj);
+
+  /* send all MIDI notes off if needed */
+  if (note_off_at_end)
+    {
+      send_notes_off_at (
+        self, midi_events,
+        (midi_time_t)
+          /* -1 to send event 1 sample
+           * before the end point */
+          ((local_start_frame + nframes) - 1));
+    }
+
+  long r_local_pos =
+    region_timeline_frames_to_local (
+      self, g_start_frames, F_NORMALIZE);
+
+  /* go through each note */
+  int num_objs =
+    track->type == TRACK_TYPE_CHORD ?
+      self->num_chord_objects :
+      self->num_midi_notes;
+  for (int i = 0; i < num_objs; i++)
+    {
+      ArrangerObject * mn_obj = NULL;
+      MidiNote * mn = NULL;
+      ChordObject * co = NULL;
+      ChordDescriptor * descr = NULL;
+      if (track->type == TRACK_TYPE_CHORD)
+        {
+          co = self->chord_objects[i];
+          descr =
+            chord_object_get_chord_descriptor (co);
+          mn_obj = (ArrangerObject *) co;
+        }
+      else
+        {
+          mn = self->midi_notes[i];
+          mn_obj = (ArrangerObject *) mn;
+        }
+      if (arranger_object_get_muted (mn_obj))
+        {
+          continue;
+        }
+
+      /* if object starts inside the current
+       * range */
+      if (mn_obj->pos.frames >= 0 &&
+          mn_obj->pos.frames >= r_local_pos &&
+          mn_obj->pos.frames <
+            r_local_pos + (long) nframes)
+        {
+          midi_time_t time =
+            (midi_time_t)
+            (local_start_frame +
+              (mn_obj->pos.frames - r_local_pos));
+          g_message ("normal note on at %u", time);
+          if (mn)
+            {
+              midi_events_add_note_on (
+                midi_events,
+                midi_region_get_midi_ch (self),
+                mn->val, mn->vel->vel,
+                time, F_QUEUED);
+            }
+          else if (co)
+            {
+              midi_events_add_note_ons_from_chord_descr (
+                midi_events, descr, 1,
+                VELOCITY_DEFAULT, time,
+                F_QUEUED);
+            }
+        }
+
+      long mn_obj_end_frames =
+        (track->type == TRACK_TYPE_CHORD ?
+          math_round_double_to_type (
+            mn_obj->pos.frames +
+              TRANSPORT->ticks_per_beat *
+              AUDIO_ENGINE->frames_per_tick,
+              long) :
+          mn_obj->end_pos.frames);
+
+      /* if note ends within the cycle */
+      if (mn_obj_end_frames >= r_local_pos &&
+          (mn_obj_end_frames <=
+            (r_local_pos + nframes)))
+        {
+          midi_time_t time =
+            (midi_time_t)
+            (local_start_frame +
+              (mn_obj_end_frames - r_local_pos));
+
+          /* note actually ends 1 frame before
+           * the end point, not at the end
+           * point */
+          if (time > 0)
+            {
+              time--;
+            }
+
+          if (mn)
+            {
+              midi_events_add_note_off (
+                midi_events,
+                midi_region_get_midi_ch (self),
+                mn->val, time, F_QUEUED);
+            }
+          else if (co)
+            {
+              for (int l = 0;
+                   l < CHORD_DESCRIPTOR_MAX_NOTES;
+                   l++)
+                {
+                  if (descr->notes[l])
+                    {
+                      midi_events_add_note_off (
+                        midi_events, 1, l + 36,
+                        time, F_QUEUED);
+                    }
+                }
+            }
+        }
+    } /* foreach midi note */
+}
+
+/**
  * Frees members only but not the MidiRegion
  * itself.
  *

@@ -238,4 +238,10 @@
 #define F_CANCELABLE 1
 #define F_NOT_CANCELABLE 0
 
+#define F_INCLUSIVE 1
+#define F_NOT_INCLUSIVE 0
+
+#define F_NORMALIZE 1
+#define F_NO_NORMALIZE 0
+
 #endif

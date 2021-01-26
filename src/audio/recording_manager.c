@@ -479,7 +479,7 @@ recording_manager_handle_recording (
           re->local_offset = local_offset;
           re->nframes = nframes;
           re->has_midi_event = 1;
-          midi_event_copy (me, &re->midi_event);
+          midi_event_copy (&re->midi_event, me);
           strcpy (re->track_name, tr->name);
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (

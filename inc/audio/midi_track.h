@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,6 +51,9 @@ midi_track_setup (Track * self);
  *
  * The events are dequeued right after the call to
  * this function.
+ *
+ * @note The engine splits the cycle so transport
+ *   loop related logic is not needed.
  *
  * Caveats:
  * - This will not work properly if the loop sizes

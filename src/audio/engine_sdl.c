@@ -180,7 +180,7 @@ engine_sdl_setup (
     "%d", self->sample_rate, self->block_length);
 
   g_warn_if_fail (
-    TRANSPORT && TRANSPORT->beats_per_bar > 1);
+    TRANSPORT && TRANSPORT_BEATS_PER_BAR > 1);
 
   g_message ("SDL set up");
 
