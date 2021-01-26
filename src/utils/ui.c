@@ -90,9 +90,11 @@ ui_set_cursor_from_icon_name (
       return;
     }
   offset_x =
-    MIN (offset_x, gdk_pixbuf_get_width (pixbuf));
+    MIN (
+      offset_x, gdk_pixbuf_get_width (pixbuf) - 1);
   offset_y =
-    MIN (offset_y, gdk_pixbuf_get_height (pixbuf));
+    MIN (
+      offset_y, gdk_pixbuf_get_height (pixbuf) - 1);
   GdkCursor * gdk_cursor =
     gdk_cursor_new_from_pixbuf (
       gdk_display_get_default (), pixbuf,
