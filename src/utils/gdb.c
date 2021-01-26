@@ -75,7 +75,7 @@ gdb_exec (
   if (interactive)
     {
       const char * _gdb_args[] = {
-        "gdb", "-q",
+        gdb_prg, "-q",
         "-ex", "run",
         "-ex", "set logging overwrite on",
         "-ex", gdb_out_file_arg,
@@ -90,7 +90,7 @@ gdb_exec (
   else
     {
       const char * _gdb_args[] = {
-        "gdb", "-q", "--batch",
+        gdb_prg, "-q", "--batch",
         "-ex", "run",
         "-ex", "set logging overwrite on",
         "-ex", gdb_out_file_arg,
@@ -160,7 +160,7 @@ gdb_exec (
 
   /* run gdb */
   execvpe (
-    "gdb", (char * const *) gdb_args,
+    gdb_prg, (char * const *) gdb_args,
     (char * const *) gdb_env);
 }
 
