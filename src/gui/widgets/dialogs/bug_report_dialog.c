@@ -67,6 +67,8 @@ bug_report_dialog_new (
       "# Log\n```\n%s```",
       ver_with_caps, backtrace, log);
   char * report_template_escaped =
+    g_markup_escape_text (report_template, -1);
+  char * report_template_escaped_for_uri =
     g_uri_escape_string (
       report_template, NULL, FALSE);
   char * atag =
@@ -77,7 +79,7 @@ bug_report_dialog_new (
     g_strdup_printf (
       "<a href=\"mailto:%s?body=%s\">",
       NEW_ISSUE_EMAIL,
-      report_template_escaped);
+      report_template_escaped_for_uri);
   char * markup =
     g_strdup_printf (
       _("%sPlease help us fix "
@@ -93,7 +95,7 @@ bug_report_dialog_new (
     markup);
   gtk_message_dialog_format_secondary_markup (
     GTK_MESSAGE_DIALOG (dialog),
-    "%s", report_template);
+    "%s", report_template_escaped);
   GtkLabel * label =
     z_gtk_message_dialog_get_label (
       GTK_MESSAGE_DIALOG (dialog), 1);
@@ -125,6 +127,7 @@ bug_report_dialog_new (
   g_free (atag);
   g_free (markup);
   g_free (report_template_escaped);
+  g_free (report_template_escaped_for_uri);
 
   return dialog;
 }
