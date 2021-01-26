@@ -147,7 +147,7 @@ test_fill_midi_events ()
   g_assert_cmpuint (ev->velocity, ==, vel1);
   g_assert_cmpint (
     (long) ev->time, ==, pos.frames);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /*
    * Start: region start + 1
@@ -176,7 +176,7 @@ test_fill_midi_events ()
     events);
   g_assert_cmpint (
     events->num_queued_events, ==, 1);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /*
    * Start: region start + BUFFER_SIZE
@@ -224,11 +224,18 @@ test_fill_midi_events ()
     track, pos.frames, 0, BUFFER_SIZE,
     events);
   g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+    events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 1);
-  midi_events_clear (events, 1);
+  ev = &events->queued_events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (
+    ev->time, ==, BUFFER_SIZE - 1);
+  midi_events_clear (events, F_QUEUED);
 
   /*
    * Start: midi end - BUFFER_SIZE
@@ -256,7 +263,7 @@ test_fill_midi_events ()
     ev->time, ==, BUFFER_SIZE - 1);
   position_set_to_pos (
     &mn_obj->end_pos, &r_obj->end_pos);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /*
    * Start: (midi end - BUFFER_SIZE) + 1
@@ -283,7 +290,7 @@ test_fill_midi_events ()
     ev->time, ==, BUFFER_SIZE - 2);
   position_set_to_pos (
     &mn_obj->end_pos, &r_obj->end_pos);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /*
    * Start: region end - (BUFFER_SIZE - 1)
@@ -300,13 +307,18 @@ test_fill_midi_events ()
     track, pos.frames, 0, BUFFER_SIZE,
     events);
   g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+    events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
   g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 2);
-  midi_events_clear (events, 1);
+  ev = &events->queued_events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (
+    ev->time, ==, BUFFER_SIZE - 2);
+  midi_events_clear (events, F_QUEUED);
 
   /*
    * Initialization
@@ -410,7 +422,7 @@ test_fill_midi_events ()
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
   g_assert_cmpuint (
     ev->time, ==, 365);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /* -- REGION LOOP TESTS -- */
 
@@ -511,7 +523,7 @@ test_fill_midi_events ()
   ev = &events->queued_events[0];
   g_assert_cmpuint (
     ev->time, ==, 10);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /**
    * Start: before region start
@@ -531,7 +543,7 @@ test_fill_midi_events ()
   ev = &events->queued_events[0];
   g_assert_cmpuint (
     ev->time, ==, 10);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /*
    * Initialization
@@ -593,7 +605,7 @@ test_fill_midi_events ()
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
   g_assert_cmpuint (
     ev->time, ==, 10);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /**
    * Premise: note ends on region end (no loops).
@@ -619,15 +631,20 @@ test_fill_midi_events ()
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
     events);
-  midi_events_print (events, 1);
+  midi_events_print (events, F_QUEUED);
   g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+    events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
   g_assert_cmpuint (
     ev->time, ==, 9);
-  midi_events_clear (events, 1);
+  ev = &events->queued_events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (
+    ev->time, ==, 9);
+  midi_events_clear (events, F_QUEUED);
 
   /**
    * Premise:
@@ -659,14 +676,14 @@ test_fill_midi_events ()
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
     events);
-  midi_events_print (events, 1);
+  midi_events_print (events, F_QUEUED);
   g_assert_cmpint (
     events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
   g_assert_cmpuint (ev->time, ==, 0);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /**
    * Premise: note starts at 1.1.1.0 and ends right
@@ -696,7 +713,7 @@ test_fill_midi_events ()
   position_add_frames (&pos, - 30);
   midi_track_fill_midi_events (
     track, pos.frames, 0, 30, events);
-  midi_events_print (events, 1);
+  midi_events_print (events, F_QUEUED);
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
@@ -707,7 +724,7 @@ test_fill_midi_events ()
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
   g_assert_cmpuint (ev->time, ==, 29);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   position_set_to_pos (
     &pos, &TRANSPORT->loop_start_pos);
@@ -717,17 +734,49 @@ test_fill_midi_events ()
   g_assert_cmpuint (
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
   g_assert_cmpuint (ev->time, ==, 0);
-  midi_events_clear (events, 1);
+  midi_events_clear (events, F_QUEUED);
 
   /**
-   * TODO
-   * Premise: note starts on transport loop end.
-   * Start: on transport loop end
-   * End: much later
+   *
+   * Premise: note starts inside region and ends
+   *   outside it.
    *
    * Expected result:
-   * No note on.
+   * Note on inside region and note off at reigon
+   * end.
    */
+  g_message ("-------------------");
+  position_set_to_bar (
+    &r_obj->pos, 1);
+  position_set_to_bar (
+    &r_obj->end_pos, 2);
+  position_set_to_bar (
+    &r_obj->loop_start_pos, 1);
+  position_set_to_bar (
+    &r_obj->loop_end_pos, 2);
+  position_set_to_bar (
+    &mn_obj->pos, 2);
+  position_add_frames (
+    &mn_obj->pos, - 30);
+  position_set_to_bar (
+    &mn_obj->end_pos, 3);
+  position_set_to_pos (
+    &pos, &mn_obj->pos);
+  position_add_frames (&pos, - 10);
+  midi_track_fill_midi_events (
+    track, pos.frames, 0, 50, events);
+  midi_events_print (events, F_QUEUED);
+  g_assert_cmpint (
+    events->num_queued_events, ==, 2);
+  ev = &events->queued_events[0];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_cmpuint (ev->time, ==, 10);
+  ev = &events->queued_events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (ev->time, ==, 39);
+  midi_events_clear (events, F_QUEUED);
 
   test_helper_zrythm_cleanup ();
 }

@@ -1200,6 +1200,7 @@ carla_native_plugin_open_ui (
         char * title =
           plugin_generate_window_title (
             self->plugin);
+        g_debug ("plugin window title '%s'", title);
         carla_set_custom_ui_title (
           self->host_handle, 0, title);
         g_free (title);

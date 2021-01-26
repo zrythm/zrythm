@@ -61,182 +61,6 @@ midi_track_setup (Track * self)
   channel_track_setup (self);
 }
 
-#if 0
-/**
- * Add a note on event if note on exists before a
- * ZRegion loop end point during a region loop.
- */
-static inline void
-note_ons_during_region_loop (
-  MidiEvents *     midi_events,
-  MidiNote *       mn,
-  ChordObject *    co,
-  const long       r_local_pos,
-  const long       r_local_end_pos,
-  const long       g_frames_start,
-  const nframes_t  local_start_frame,
-  const nframes_t  nframes)
-{
-  g_message ("note on during loop");
-
-  /* return if not looping */
-  if (r_local_end_pos > r_local_pos)
-    return;
-
-  ArrangerObject * mn_obj =
-    mn ?
-    (ArrangerObject *) mn : (ArrangerObject *) co;
-  ZRegion * region =
-    arranger_object_get_region (mn_obj);
-  ArrangerObject * r_obj = (ArrangerObject *) region;
-
-  /* get frames till r loop end */
-  long frames_till_r_loop_end =
-    r_obj->loop_end_pos.frames -
-      r_local_pos;
-
-  /* get global frames at loop end */
-  long g_r_loop_end =
-    g_frames_start + frames_till_r_loop_end;
-  /*long r_loop_length =*/
-    /*region_get_loop_length_in_frames (mn->region);*/
-  /*while (g_r_loop_end <= g_r_end)*/
-    /*{*/
-      /*g_r_loop_end += r_loop_length;*/
-    /*}*/
-  /*g_r_loop_end -= r_loop_length;*/
-
-  if (
-    /* mn starts before the loop point */
-    mn_obj->pos.frames >= r_local_pos &&
-    mn_obj->pos.frames <
-      r_obj->loop_end_pos.frames - 1)
-    {
-      g_message (
-        "midi note on during region loop (before "
-        "loop point)");
-      midi_time_t time =
-        (midi_time_t)
-        (mn_obj->pos.frames - r_local_pos);
-      if (mn)
-        {
-          midi_events_add_note_on (
-            midi_events,
-            midi_region_get_midi_ch (region),
-            mn->val, mn->vel->vel, time, 1);
-        }
-      else if (co)
-        {
-          ChordDescriptor * descr =
-            chord_object_get_chord_descriptor (co);
-          midi_events_add_note_ons_from_chord_descr (
-            midi_events, descr, 1,
-            VELOCITY_DEFAULT, time, F_QUEUED);
-        }
-      g_warn_if_fail (
-        time < local_start_frame + nframes);
-      return;
-    }
-  /* mn starts after the loop point */
-  else if (
-    mn_obj->pos.frames >=
-      r_obj->loop_start_pos.frames &&
-    mn_obj->pos.frames <
-      r_obj->loop_start_pos.frames +
-        r_local_end_pos &&
-    /* we are still inside the region */
-    r_local_end_pos + g_r_loop_end +
-      (mn_obj->pos.frames -
-         r_obj->loop_start_pos.frames) <
-       r_obj->end_pos.frames)
-    {
-      g_message (
-        "midi note on during region loop (after "
-        "loop point)");
-      midi_time_t time =
-        (midi_time_t)
-        (r_obj->loop_end_pos.frames -
-           r_local_pos);
-      if (mn)
-        {
-          midi_events_add_note_on (
-            midi_events,
-            midi_region_get_midi_ch (region),
-            mn->val, mn->vel->vel, time, 1);
-        }
-      else if (co)
-        {
-          ChordDescriptor * descr =
-            chord_object_get_chord_descriptor (co);
-          midi_events_add_note_ons_from_chord_descr (
-            midi_events, descr, 1,
-            VELOCITY_DEFAULT, time, F_QUEUED);
-        }
-      g_warn_if_fail (
-        time < local_start_frame + nframes);
-
-      return;
-    }
-}
-
-/**
- * Returns if the ZRegion is hit in the range.
- *
- * @param transport_loop_met Whether the transport
- *   loop point is met.
- * @param first_half If the transport loop point is
- *   met, this indicates if we are in the first half
- *   or second half.
- * @param g_start_frames Global start frames.
- * @param g_end_frames_excl Global end frames (the
- *   last frame is not part of the cycle).
- * @param inclusive Check if the ZRegion is hit
- *   with counting its end point or not.
- */
-static int
-region_hit (
-  const ZRegion * r,
-  const int      transport_loop_met,
-  const int      first_half,
-  const long     g_start_frames,
-  const long     g_end_frames_excl,
-  const int      inclusive)
-{
-  if (transport_loop_met)
-    {
-      /* check first half */
-      if (first_half)
-        {
-          /* check also if region is
-           * hit without counting its
-           * end point */
-          return
-            region_is_hit_by_range (
-              r, g_start_frames,
-              TRANSPORT->loop_end_pos.frames,
-              inclusive);
-        }
-      /* check second half */
-      else
-        {
-          /* skip regions not hit */
-          return
-            region_is_hit_by_range (
-              r,
-              TRANSPORT->loop_start_pos.frames,
-              g_end_frames_excl, inclusive);
-        }
-    }
-  else
-    {
-      return
-        region_is_hit_by_range (
-          r, g_start_frames,
-          g_end_frames_excl, inclusive);
-    }
-}
-#endif
-
 /**
  * Fills MIDI event queue from track.
  *
@@ -355,12 +179,15 @@ midi_track_fill_midi_events (
                 cur_local_start_frame);
 #endif
 
-              /* whether we need a note off (ie,
-               * the cur_num_frames are for region
-               * end and not a random place) */
+              /* whether we need a note off */
               bool need_note_off =
                 (cur_num_frames <
                    num_frames_to_process) ||
+                /* region end */
+                (g_start_frames +
+                   num_frames_to_process ==
+                     r_obj->end_pos.frames) ||
+                /* transport end */
                 (TRANSPORT_IS_LOOPING &&
                  g_start_frames +
                    num_frames_to_process ==
