@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2021-01-21 18:12+0000\n"
+"PO-Revision-Date: 2021-01-23 15:32+0000\n"
 "Last-Translator: webweblate <webweblate@riseup.net>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
@@ -651,12 +651,12 @@ msgstr ""
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
-msgstr ""
+msgstr "_Скасувати"
 
 #: src/plugins/plugin_gtk.c:85 src/plugins/lv2/lv2_gtk.c:109
 #: src/actions/actions.c:783
 msgid "_Save"
-msgstr ""
+msgstr "_Зберегти"
 
 #: src/plugins/lv2_plugin.c:1746
 #, c-format
