@@ -39,15 +39,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-01-21 18:18+0000\n"
-"PO-Revision-Date: 2021-01-10 07:32+0000\n"
+"PO-Revision-Date: 2021-01-30 03:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.5-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -517,7 +518,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General"
-msgstr ""
+msgstr "一般设置"
 
 #: ../../configuration/preferences/intro.rst:22
 msgid "General settings."
@@ -588,7 +589,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "插件"
 
 #: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
@@ -973,7 +974,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:77
 msgid "User Manual"
-msgstr ""
+msgstr "用户手册"
 
 #: ../../contributing/intro.rst:78
 msgid ""
@@ -2861,11 +2862,11 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:36
 msgid "GNU/Linux"
-msgstr ""
+msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:39
 msgid "Installer"
-msgstr ""
+msgstr "安装程序"
 
 #: ../../getting-started/installation.rst:40
 msgid "The installer supports the following distributions (and derivatives):"
@@ -3241,7 +3242,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:82
 msgid "MIDI note"
-msgstr "MIDI note"
+msgstr "MIDI 音符"
 
 #: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
@@ -3391,7 +3392,7 @@ msgstr ""
 
 #: ../../index.rst:8
 msgid "Zrythm"
-msgstr "自旋律"
+msgstr "Zrythm"
 
 #: ../../index.rst:10
 msgid "Welcome to the Zrythm manual."
@@ -7152,4 +7153,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-
