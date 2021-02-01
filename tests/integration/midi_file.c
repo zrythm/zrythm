@@ -22,6 +22,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/midi_event.h"
 #include "audio/midi_track.h"
+#include "audio/track.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -132,9 +133,9 @@ test_midi_file_playback ()
           /* try all possible offsets */
           for (int j = 0; j < BUFFER_SIZE; j++)
             {
-              midi_track_fill_midi_events (
+              track_fill_events (
                 track, i, (nframes_t) j,
-                BUFFER_SIZE, events);
+                BUFFER_SIZE, events, NULL);
               midi_events_clear (events, true);
             }
         }

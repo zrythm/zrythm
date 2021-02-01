@@ -732,9 +732,9 @@ track_processor_process (
   /* set the audio clip contents to stereo out */
   if (tr->type == TRACK_TYPE_AUDIO)
     {
-      audio_track_fill_stereo_ports_from_clip (
-        tr, self->stereo_out,
-        g_start_frames, nframes);
+      track_fill_events (
+        tr, g_start_frames, local_offset, nframes,
+        NULL, self->stereo_out);
     }
 
   /* set the piano roll contents to midi out */
@@ -761,10 +761,9 @@ track_processor_process (
             "filling midi events for %s from %ld",
             tr->name, g_start_frames);
 #endif
-          midi_track_fill_midi_events (
-            tr, g_start_frames,
-            local_offset, nframes,
-            pr->midi_events);
+          track_fill_events (
+            tr, g_start_frames, local_offset,
+            nframes, pr->midi_events, NULL);
         }
       midi_events_dequeue (
         pr->midi_events);

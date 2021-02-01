@@ -751,6 +751,32 @@ track_remove_region (
   bool      free);
 
 /**
+ * Wrapper for audio and MIDI/instrument tracks
+ * to fill in MidiEvents or StereoPorts from the
+ * timeline data.
+ *
+ * @note The engine splits the cycle so transport
+ *   loop related logic is not needed.
+ *
+ * @param g_start_frame Global start frame.
+ * @param local_start_frame The start frame offset
+ *   from 0 in this cycle.
+ * @param nframes Number of frames at start
+ *   Position.
+ * @param stereo_ports StereoPorts to fill.
+ * @param midi_events MidiEvents to fill (from
+ *   Piano Roll Port for example).
+ */
+void
+track_fill_events (
+  Track *         track,
+  const long      g_start_frames,
+  const nframes_t local_start_frame,
+  nframes_t       nframes,
+  MidiEvents *    midi_events,
+  StereoPorts *   stereo_ports);
+
+/**
  * Verifies the identifiers on a live Track
  * (in the project, not a clone).
  *

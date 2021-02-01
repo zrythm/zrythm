@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,7 @@ typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct ZRegion AudioRegion;
 typedef struct AudioClip AudioClip;
+typedef struct StereoPorts StereoPorts;
 
 /**
  * @addtogroup audio
@@ -124,6 +125,29 @@ audio_region_replace_frames (
   size_t    start_frame,
   size_t    num_frames,
   bool      duplicate_clip);
+
+/**
+ * Fills audio data from the region.
+ *
+ * @note The caller already splits calls to this
+ *   function at each sub-loop inside the region,
+ *   so region loop related logic is not needed.
+ *
+ * @param g_start_frames Global start frame.
+ * @param local_start_frame The start frame offset
+ *   from 0 in this cycle.
+ * @param nframes Number of frames at start
+ *   Position.
+ * @param stereo_ports StereoPorts to fill.
+ */
+REALTIME
+void
+audio_region_fill_stereo_ports (
+  ZRegion *     self,
+  long          g_start_frames,
+  nframes_t     local_start_frame,
+  nframes_t     nframes,
+  StereoPorts * stereo_ports);
 
 /**
  * Frees members only but not the audio region itself.

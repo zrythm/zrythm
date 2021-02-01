@@ -72,9 +72,11 @@ test_fill_when_region_starts_on_loop_end ()
       num_tracks_before, &TRANSPORT->loop_end_pos, 1);
   transport_request_pause (TRANSPORT);
   undo_manager_perform (UNDO_MANAGER, ua);
-  transport_request_roll (TRANSPORT);
+  /*transport_request_roll (TRANSPORT);*/
+  TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
-  Track * track = TRACKLIST->tracks[num_tracks_before];
+  Track * track =
+    TRACKLIST->tracks[num_tracks_before];
   StereoPorts * ports =
     stereo_ports_new_generic (
       false, "ports", PORT_OWNER_TYPE_TRACK, track);
@@ -85,8 +87,9 @@ test_fill_when_region_starts_on_loop_end ()
   Position pos;
   position_set_to_bar (&pos, LOOP_BAR);
   position_add_frames (&pos, - nframes);
-  audio_track_fill_stereo_ports_from_clip (
-    track, ports, pos.frames, (nframes_t) nframes);
+  track_fill_events (
+    track, pos.frames, 0, (nframes_t) nframes,
+    NULL, ports);
   for (int j = 0; j < nframes; j++)
     {
       g_assert_cmpfloat_with_epsilon (
@@ -98,8 +101,9 @@ test_fill_when_region_starts_on_loop_end ()
   /* run after loop end and make sure sample is
    * played */
   position_set_to_bar (&pos, LOOP_BAR);
-  audio_track_fill_stereo_ports_from_clip (
-    track, ports, pos.frames, (nframes_t) nframes);
+  track_fill_events (
+    track, pos.frames, 0, (nframes_t) nframes,
+    NULL, ports);
   for (int j = 0; j < nframes; j++)
     {
       g_assert_true (
