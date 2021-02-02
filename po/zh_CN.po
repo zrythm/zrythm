@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2021-01-10 07:32+0000\n"
+"PO-Revision-Date: 2021-01-30 03:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -377,11 +377,11 @@ msgstr "无法加载项目。将创建一个新项目。"
 
 #: src/project.c:1467
 msgid "Backup saved."
-msgstr "备份已保存"
+msgstr "备份已保存。"
 
 #: src/project.c:1477
 msgid "Project saved."
-msgstr "项目已保存"
+msgstr "项目已保存。"
 
 #: src/main.c:78
 msgid "Error - Backtrace:\n"
@@ -395,7 +395,7 @@ msgstr "错误:%s-回溯:\n"
 #: src/main.c:96
 #, c-format
 msgid "%s has crashed. "
-msgstr "%s已崩溃。"
+msgstr "%s 已崩溃。 "
 
 #: src/main.c:129
 #, c-format
@@ -593,7 +593,7 @@ msgstr "MIDI Out"
 
 #: src/plugins/plugin_manager.c:520
 msgid "Error loading LV2 bundle dir: "
-msgstr "加载LV2包目录时出错:"
+msgstr "加载 LV2 包目录时出错: "
 
 #: src/plugins/plugin_manager.c:1111
 #, c-format
@@ -1158,7 +1158,7 @@ msgstr "BPM"
 
 #: src/gui/widgets/bot_bar.c:653
 msgid "time sig."
-msgstr "时间符号"
+msgstr "时间符号。"
 
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:65
 #: resources/ui/quantize_dialog.ui:143
@@ -1454,7 +1454,7 @@ msgstr "对齐/网格选项"
 #: build/data/org.zrythm.Zrythm.gschema.xml:682
 #: build/data/org.zrythm.Zrythm.gschema.xml:697
 msgid "General"
-msgstr "常规"
+msgstr "一般设置"
 
 #: src/gui/widgets/preferences.c:84
 msgctxt "guilabel"
@@ -1654,7 +1654,7 @@ msgstr "音阶"
 
 #: src/gui/widgets/event_viewer.c:115
 msgid "MIDI note"
-msgstr "MIDI note"
+msgstr "MIDI 音符"
 
 #: src/gui/widgets/event_viewer.c:121
 msgid "Automation point"
@@ -1896,7 +1896,7 @@ msgstr ""
 #: src/gui/widgets/track.c:1205
 #, fuzzy
 msgid "Arm for recording"
-msgstr "用于录制的Arm"
+msgstr "用于录制的 Arm"
 
 #: src/gui/widgets/track.c:1212
 #, fuzzy
@@ -1904,7 +1904,6 @@ msgid "Hide lanes"
 msgstr "隐藏音轨"
 
 #: src/gui/widgets/track.c:1216
-#, fuzzy
 msgid "Show lanes"
 msgstr "显示音轨"
 
@@ -2030,7 +2029,7 @@ msgstr "端口信息"
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr "一个高度自动化和直观的数字音频工作站"
+msgstr "一个高度自动化且直观的数字的音频工作站"
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
@@ -2102,7 +2101,7 @@ msgstr "%s 图标"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:165
 msgid "_Select"
-msgstr "选择(_S)..."
+msgstr "_Select"
 
 #: src/gui/backend/arranger_object.c:2601
 #, c-format
@@ -2131,7 +2130,7 @@ msgstr "未知错误"
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
 "will be undefined. "
-msgstr "%s遇到非致命错误。它可能继续运行，但行为将无法确定。"
+msgstr "%s 遇到非致命错误。它可以继续运行，但行为将不明确。 "
 
 #: src/utils/dialogs.c:44
 msgid "_Open"
@@ -2216,7 +2215,7 @@ msgstr "无法重置架构%s"
 msgid ""
 "This will reset %s to factory settings. You will lose all your preferences. "
 "Type 'y' to continue: "
-msgstr "这会将%s重置为出厂设置。您将丢失所有您的首选项。键”y“继续:"
+msgstr "这会将 %s 重置为出厂设置。你将丢失所有首选项。输入 'y' 继续： "
 
 #: src/settings/settings.c:283
 #, c-format
@@ -4102,7 +4101,7 @@ msgstr "选定编辑工具"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:361
 msgid "Selected editing tool."
-msgstr "选定编辑工具"
+msgstr "选定的编辑工具。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:365
 msgid "Last used MIDI function"
@@ -4319,7 +4318,7 @@ msgstr "要使用的SDL设备的名称。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
 msgid "Samplerate to pass to the backend."
-msgstr "要传递到后端的采样"
+msgstr "要传递到后端的采样率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:537
 msgid "Buffer size"
