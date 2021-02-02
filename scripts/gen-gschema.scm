@@ -859,6 +859,11 @@ Args:
                      "graphic-detail" "high"
                      "Draw detail"
                      "Level of detail to use when drawing graphics.")
+                   (make-schema-key-with-range
+                     "font-scale" "d"
+                     "0.2" "2.0" "1.0"
+                     "Font scale"
+                     "Font scale.")
                    (make-schema-key-with-enum
                      "language" "language"
                      "en"

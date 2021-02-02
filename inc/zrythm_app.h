@@ -160,6 +160,11 @@ zrythm_app_set_progress_status (
   const char * text,
   const double perc);
 
+void
+zrythm_app_set_font_scale (
+  ZrythmApp * self,
+  double      font_scale);
+
 /**
  * @}
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -57,84 +57,6 @@ typedef struct CallbackData
   (string_is_equal (group, _(a)) && \
   string_is_equal (subgroup, _(b)) && \
   string_is_equal (key, c))
-
-/**
- * Because the gschema API returns localized strings
- * without context, we have to check if the _()
- * string matches, and then get the localized
- * string with context.
- *
- * @param str The already localized string without
- *   context.
- *
- * @return the localized string with context.
- */
-static const char *
-get_gschema_str_with_ctx (
-  const char * str)
-{
-  return str;
-
-#if 0
-  /* note that the repetition is necessary -
-   * the strings must be clearly visible to get
-   * extracted. */
-  if (string_is_equal (_("General"), str))
-    {
-      return C_("guilabel", "General");
-    }
-  if (string_is_equal (_("Plugins"), str))
-    {
-      return C_("guilabel", "Plugins");
-    }
-  if (string_is_equal (_("Editing"), str))
-    {
-      return C_("guilabel", "Editing");
-    }
-  if (string_is_equal (_("Audio"), str))
-    {
-      return C_("guilabel", "Audio");
-    }
-  if (string_is_equal (_("Automation"), str))
-    {
-      return C_("guilabel", "Automation");
-    }
-  if (string_is_equal (_("Undo"), str))
-    {
-      return C_("guilabel", "Undo");
-    }
-  if (string_is_equal (_("Projects"), str))
-    {
-      return C_("guilabel", "Projects");
-    }
-  if (string_is_equal (_("UI"), str))
-    {
-      return C_("guilabel", "UI");
-    }
-  if (string_is_equal (_("UIs"), str))
-    {
-      return C_("guilabel", "UIs");
-    }
-  if (string_is_equal (_("DSP"), str))
-    {
-      return C_("guilabel", "DSP");
-    }
-  if (string_is_equal (_("Pan"), str))
-    {
-      return C_("guilabel", "Pan");
-    }
-  if (string_is_equal (_("Engine"), str))
-    {
-      return C_("guilabel", "Engine");
-    }
-  if (string_is_equal (_("Paths"), str))
-    {
-      return C_("guilabel", "Paths");
-    }
-
-  g_return_val_if_reached (NULL);
-#endif
-}
 
 static void
 on_path_entry_changed (
@@ -197,6 +119,16 @@ on_file_set (
     data->info->settings, data->key, str);
   g_free (str);
   g_object_unref (file);
+}
+
+static void
+font_scale_adjustment_changed (
+  GtkAdjustment * adjustment,
+  void *          data)
+{
+  double factor =
+    gtk_adjustment_get_value (adjustment);
+  zrythm_app_set_font_scale (zrythm_app, factor);
 }
 
 static void
@@ -287,6 +219,65 @@ should_be_hidden (
        AUDIO_BACKEND_JACK &&
      KEY_IS (
        "General", "Engine", "buffer-size"));
+}
+
+static void
+get_range_vals (
+  GVariant * range,
+  GVariant * current_var,
+  const GVariantType * type,
+  double *   lower,
+  double *   upper,
+  double *   current)
+{
+  GVariant * range_vals =
+    g_variant_get_child_value (range, 1);
+  range_vals =
+    g_variant_get_child_value (range_vals, 0);
+  GVariant * lower_var =
+    g_variant_get_child_value (range_vals, 0);
+  GVariant * upper_var =
+    g_variant_get_child_value (range_vals, 1);
+
+#define TYPE_EQUALS(type2) \
+  string_is_equal ( \
+    (const char *) type,  \
+    (const char *) G_VARIANT_TYPE_##type2)
+
+  if (TYPE_EQUALS (INT32))
+    {
+      *lower =
+        (double) g_variant_get_int32 (lower_var);
+      *upper =
+        (double) g_variant_get_int32 (upper_var);
+      *current =
+        (double)
+        g_variant_get_int32 (current_var);
+    }
+  else if (TYPE_EQUALS (UINT32))
+    {
+      *lower =
+        (double)
+        g_variant_get_uint32 (lower_var);
+      *upper =
+        (double)
+        g_variant_get_uint32 (upper_var);
+      *current =
+        (double)
+        g_variant_get_uint32 (current_var);
+    }
+  else if (TYPE_EQUALS (DOUBLE))
+    {
+      *lower =
+        g_variant_get_double (lower_var);
+      *upper =
+        (double)
+        g_variant_get_double (upper_var);
+      *current =
+        (double)
+        g_variant_get_double (current_var);
+    }
+#undef TYPE_EQUALS
 }
 
 static GtkWidget *
@@ -407,6 +398,37 @@ make_control (
       active_hardware_mb_widget_setup (
         Z_ACTIVE_HARDWARE_MB_WIDGET (widget), true);
     }
+  else if (KEY_IS ("UI", "General", "font-scale"))
+    {
+      double lower = 0.f, upper = 1.f, current = 0.f;
+      get_range_vals (
+        range, current_var, type, &lower, &upper, &current);
+      widget =
+        gtk_box_new (
+          GTK_ORIENTATION_HORIZONTAL, 2);
+      gtk_widget_set_visible (widget, true);
+      GtkWidget * scale =
+        gtk_scale_new_with_range (
+          GTK_ORIENTATION_HORIZONTAL, lower, upper,
+          0.1);
+      gtk_widget_set_visible (scale, true);
+      gtk_widget_set_hexpand (scale, true);
+      gtk_scale_add_mark (
+        GTK_SCALE (scale), 1.0, GTK_POS_TOP, NULL);
+      gtk_container_add (
+        GTK_CONTAINER (widget), scale);
+      GtkAdjustment * adj =
+        gtk_range_get_adjustment (
+          GTK_RANGE (scale));
+      gtk_adjustment_set_value (adj, current);
+      g_settings_bind (
+        info->settings, key, adj, "value",
+        G_SETTINGS_BIND_DEFAULT);
+      g_signal_connect (
+        adj, "value-changed",
+        G_CALLBACK (font_scale_adjustment_changed),
+        NULL);
+    }
   else if (TYPE_EQUALS (BOOLEAN))
     {
       widget = gtk_switch_new ();
@@ -418,52 +440,9 @@ make_control (
            TYPE_EQUALS (UINT32) ||
            TYPE_EQUALS (DOUBLE))
     {
-      GVariant * range_vals =
-        g_variant_get_child_value (
-          range, 1);
-      range_vals =
-        g_variant_get_child_value (
-          range_vals, 0);
-      GVariant * lower_var =
-        g_variant_get_child_value (
-          range_vals, 0);
-      GVariant * upper_var =
-        g_variant_get_child_value (
-          range_vals, 1);
       double lower = 0.f, upper = 1.f, current = 0.f;
-      if (TYPE_EQUALS (INT32))
-        {
-          lower =
-            (double) g_variant_get_int32 (lower_var);
-          upper =
-            (double) g_variant_get_int32 (upper_var);
-          current =
-            (double)
-            g_variant_get_int32 (current_var);
-        }
-      else if (TYPE_EQUALS (UINT32))
-        {
-          lower =
-            (double)
-            g_variant_get_uint32 (lower_var);
-          upper =
-            (double)
-            g_variant_get_uint32 (upper_var);
-          current =
-            (double)
-            g_variant_get_uint32 (current_var);
-        }
-      else if (TYPE_EQUALS (DOUBLE))
-        {
-          lower =
-            g_variant_get_double (lower_var);
-          upper =
-            (double)
-            g_variant_get_double (upper_var);
-          current =
-            (double)
-            g_variant_get_double (current_var);
-        }
+      get_range_vals (
+        range, current_var, type, &lower, &upper, &current);
       GtkAdjustment * adj =
         gtk_adjustment_new (
           current, lower, upper, 1.0, 1.0, 1.0);
@@ -671,7 +650,7 @@ add_subgroup (
     &self->subgroup_infos[group_idx][subgroup_idx];
 
   const char * localized_subgroup_name =
-    get_gschema_str_with_ctx (info->name);
+    info->name;
   g_message (
     "adding subgroup %s (%s)",
     info->name, localized_subgroup_name);
@@ -843,7 +822,7 @@ add_group (
     }
 
   const char * localized_group_name =
-    get_gschema_str_with_ctx (group_name);
+    group_name;
   g_message (
     "adding group %s (%s)",
     group_name, localized_group_name);

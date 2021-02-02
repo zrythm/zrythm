@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -563,6 +563,20 @@ zrythm_app_set_progress_status (
   zix_sem_post (&self->progress_status_lock);
 }
 
+void
+zrythm_app_set_font_scale (
+  ZrythmApp * self,
+  double      font_scale)
+{
+  /* this was taken from the GtkInspector
+   * visual.c code */
+  g_object_set (
+    self->default_settings,
+    "gtk-xft-dpi",
+    (int) (font_scale * 96 * 1024),
+    NULL);
+}
+
 /*
  * Called after startup if no filename is passed on
  * command line.
@@ -776,19 +790,18 @@ zrythm_app_startup (
   g_object_set (
     self->default_settings,
     "gtk-font-name", "Regular 10", NULL);
-  /* explicitly set font scaling to 1.00 (for some
-   * reason, a different value is used by default).
-   * this was taken from the GtkInspector visual.c
-   * code */
-  /* TODO add an option to change the font scaling */
-  g_object_set (
-    self->default_settings,
-    "gtk-xft-dpi", (int) (1.00 * 96 * 1024), NULL);
 #else
   g_object_set (
     self->default_settings,
     "gtk-font-name", "Cantarell Regular 10", NULL);
 #endif
+
+  /* explicitly set font scaling */
+  double font_scale =
+    g_settings_get_double (
+      S_P_UI_GENERAL, "font-scale");
+  zrythm_app_set_font_scale (self, font_scale);
+
   g_message ("Theme set");
 
   GtkIconTheme * icon_theme =
