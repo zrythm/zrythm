@@ -883,10 +883,14 @@ arranger_object_set_full_rectangle (
           self->textw + MARKER_WIDGET_TRIANGLE_W +
           Z_CAIRO_TEXT_PADDING * 2;
 
+        int global_y_start =
+          wy + track->main_height;
         int obj_height =
-          self->texth + Z_CAIRO_TEXT_PADDING * 2;
+          MIN (
+            track->main_height,
+            self->texth + Z_CAIRO_TEXT_PADDING * 2);
         self->full_rect.y =
-          (wy + track->main_height) - obj_height;
+          global_y_start - obj_height;
         self->full_rect.height = obj_height;
 
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;
