@@ -1,6 +1,44 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.10.0.1] - 2021-02-02
+### Added
+- Font scale option in preferences
+- Ability to rename macro buttons
+- Ability to edit track comments (undoable)
+- Ability to cancel export/bounce
+- Add reset/bind CC/view info context options to modulator controls and macro knobs
+- OPUS export support
+
+### Changed
+- Update Catalan, Japanese, Chinese (Simplified), Ukrainian translations
+- Remember port connections when undoing plugin removal
+- Refactor filling of audio/MIDI events from regions during playback
+- Pause transport before performing actions
+- Changing time signature is now undoable
+- User manual: clarify control behavior with respect to automation events
+
+### Fixed
+- Fix error when region contents start before global 1.1.1.0
+- Fix error when attempting to select automatable in modulator track
+- Fix error when instantiating LV2 plugin that has multiple params with same name through carla
+- Fix marker having negative y coordinate when font scaling is high
+- Fix metronome calculation for beats
+- Fix crash when routing instrument track to audio group
+- Fix crash when removing modulator that has a routed output
+- Fix stuck note when note ends after region end
+- Fix bug report dialog not showing text when text contains URIs
+- Fix error when selecting pencil tool on Windows
+- Fix wrong binaries path passed to carla on installer versions
+- Fix crash when loading plugins that fail to instantiate
+- Fix silent note after transport has looped
+- Fix plugins receiving events at invalid times when cycle splitting occurs
+- Fix non-fatal error when not selecting a port in the port selector window and pressing OK
+- Fix 1/4 time signature skipping every 3 beats
+
+### Removed
+- Remove beat unit enum from transport
+
 ## [1.0.0-alpha.9.0.1] - 2021-01-24
 ### Added
 - Show warning when attempting to open deprecated LV2 UIs
