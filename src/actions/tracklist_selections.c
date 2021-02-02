@@ -1034,6 +1034,8 @@ do_or_undo_edit (
           break;
         }
 
+      track_verify_identifiers (track);
+
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
     }
 

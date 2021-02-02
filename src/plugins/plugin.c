@@ -667,6 +667,20 @@ plugin_remove_ats_from_automation_tracklist (
 }
 
 /**
+ * Verifies that the plugin identifiers are valid.
+ */
+bool
+plugin_verify_identifiers (
+  Plugin * self)
+{
+  g_return_val_if_fail (IS_PLUGIN (self), false);
+
+  g_return_val_if_fail (self->instantiated, false);
+
+  return true;
+}
+
+/**
  * Moves the plugin to the given slot in
  * the given channel.
  *
@@ -1434,6 +1448,9 @@ plugin_process (
         nframes);
       return;
     }
+
+  g_return_if_fail (plugin->instantiated);
+  g_return_if_fail (plugin->activated);
 
   /* if has MIDI input port */
   if (plugin->descr->num_midi_ins > 0)

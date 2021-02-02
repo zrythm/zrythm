@@ -839,10 +839,19 @@ track_verify_identifiers (
   /* verify output is not itself */
   if (self->channel)
     {
+      Channel * ch = self->channel;
       Track * out_track =
-        channel_get_output_track (self->channel);
+        channel_get_output_track (ch);
       g_return_val_if_fail (
         out_track != self, false);
+
+      /* verify plugins */
+      if (ch->instrument)
+        {
+          g_return_val_if_fail (
+            plugin_verify_identifiers (
+              ch->instrument), false);
+        }
     }
 
   /* verify tracklist identifiers */

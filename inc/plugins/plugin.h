@@ -322,6 +322,13 @@ plugin_get_enabled_port (
   Plugin * self);
 
 /**
+ * Verifies that the plugin identifiers are valid.
+ */
+bool
+plugin_verify_identifiers (
+  Plugin * self);
+
+/**
  * Removes the automation tracks associated with
  * this plugin from the automation tracklist in the
  * corresponding track.

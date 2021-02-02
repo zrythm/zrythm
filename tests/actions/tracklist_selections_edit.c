@@ -173,6 +173,30 @@ _test_edit_tracks (
             TRACKLIST_SELECTIONS, 1);
         undo_manager_perform (UNDO_MANAGER, ua);
         undo_manager_undo (UNDO_MANAGER);
+
+        /* create an audio group track and test
+         * routing instrument track to audio
+         * group */
+        ua =
+          tracklist_selections_action_new_create_audio_group (
+            TRACKLIST->num_tracks, 1);
+        undo_manager_perform (UNDO_MANAGER, ua);
+        undo_manager_undo (UNDO_MANAGER);
+        undo_manager_redo (UNDO_MANAGER);
+        Track * audio_group =
+          TRACKLIST->tracks[
+            TRACKLIST->num_tracks - 1];
+        track_select (
+          ins_track, F_SELECT, F_EXCLUSIVE,
+          F_NO_PUBLISH_EVENTS);
+        ua =
+          tracklist_selections_action_new_edit_direct_out (
+            TRACKLIST_SELECTIONS, audio_group);
+        undo_manager_perform (UNDO_MANAGER, ua);
+        undo_manager_undo (UNDO_MANAGER);
+        undo_manager_redo (UNDO_MANAGER);
+        undo_manager_undo (UNDO_MANAGER);
+        undo_manager_undo (UNDO_MANAGER);
       }
       break;
     case EDIT_TRACK_ACTION_TYPE_SOLO:
