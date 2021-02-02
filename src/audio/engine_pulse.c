@@ -17,11 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/transport.h"
 #include "zrythm-config.h"
-#include <pulse/def.h>
-#include <pulse/sample.h>
-#include <pulse/stream.h>
 
 #ifdef HAVE_PULSEAUDIO
 
@@ -32,6 +28,7 @@
 #include "audio/router.h"
 #include "audio/port.h"
 #include "audio/tempo_track.h"
+#include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -41,6 +38,10 @@
 #include <gtk/gtk.h>
 
 #include <glib/gi18n.h>
+
+#include <pulse/def.h>
+#include <pulse/sample.h>
+#include <pulse/stream.h>
 
 #define ZRYTHM_PULSE_CLIENT "Zrythm"
 
@@ -413,9 +414,8 @@ engine_pulse_setup (
     {
       engine_update_frames_per_tick (
         self,
-        TRANSPORT->beats_per_bar,
-        tempo_track_get_current_bpm (
-          P_TEMPO_TRACK),
+        self->transport->time_sig.beats_per_bar,
+        tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->sample_rate);
     }
 
@@ -539,7 +539,7 @@ engine_pulse_test (
         mainloop);
     }
 
-  return 0;
+  return result;
 }
 
 /**
