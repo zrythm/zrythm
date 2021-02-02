@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,7 +47,7 @@
 #define ZRYTHM_PULSE_CLIENT "Zrythm"
 
 #define FRAMES_TO_BYTES(frames) \
-  ((frames) * sizeof (float) * 2)
+  (((size_t) frames) * sizeof (float) * 2)
 
 #define BYTES_TO_FRAMES(bytes) \
   ((bytes) / sizeof (float) / 2)
@@ -316,6 +317,7 @@ engine_pulse_setup (
   requested_spec.channels = 2;
   requested_spec.format = PA_SAMPLE_FLOAT32;
   requested_spec.rate =
+    (uint32_t)
     engine_samplerate_enum_to_int (
       (AudioEngineSamplerate)
       g_settings_get_enum (
