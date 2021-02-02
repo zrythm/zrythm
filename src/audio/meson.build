@@ -1,4 +1,5 @@
 # Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 #
 # This file is part of Zrythm
 #
@@ -44,6 +45,7 @@ audio_srcs = [
   'engine_dummy.c',
   'engine_jack.c',
   'engine_pa.c',
+  'engine_pulse.c',
   'engine_rtaudio.c',
   'engine_rtmidi.c',
   'engine_sdl.c',

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
  *
@@ -40,6 +41,10 @@
 
 #ifdef HAVE_JACK
 #include "weak_libjack.h"
+#endif
+
+#ifdef HAVE_PULSEAUDIO
+#include <pulse/pulseaudio.h>
 #endif
 
 #ifdef HAVE_PORT_AUDIO
@@ -183,6 +188,7 @@ typedef enum AudioBackend
   AUDIO_BACKEND_JACK,
   AUDIO_BACKEND_JACK_LIBSOUNDIO,
   AUDIO_BACKEND_JACK_RTAUDIO,
+  AUDIO_BACKEND_PULSEAUDIO,
   AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO,
   AUDIO_BACKEND_PULSEAUDIO_RTAUDIO,
   AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO,
@@ -219,6 +225,7 @@ static const char * audio_backend_str[] =
   "JACK",
   "JACK (libsoundio)",
   "JACK (rtaudio)",
+  "PulseAudio",
   "PulseAudio (libsoundio)",
   "PulseAudio (rtaudio)",
   "CoreAudio (libsoundio)",
@@ -519,6 +526,14 @@ typedef struct AudioEngine
 
 #ifdef HAVE_RTAUDIO
   rtaudio_t         rtaudio;
+#endif
+
+#ifdef HAVE_PULSEAUDIO
+  pa_threaded_mainloop * pulse_mainloop;
+  pa_context *           pulse_context;
+  pa_stream *            pulse_stream;
+
+  gboolean               pulse_notified_underflow;
 #endif
 
   /**

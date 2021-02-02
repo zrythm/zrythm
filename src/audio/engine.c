@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
  *
@@ -53,6 +54,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
+#include "audio/engine_pulse.h"
 #include "audio/engine_rtaudio.h"
 #include "audio/engine_rtmidi.h"
 #include "audio/engine_sdl.h"
@@ -169,6 +171,12 @@ engine_pre_setup (
     case AUDIO_BACKEND_JACK:
       ret =
         engine_jack_setup (self);
+      break;
+#endif
+#ifdef HAVE_PULSEAUDIO
+    case AUDIO_BACKEND_PULSEAUDIO:
+      ret =
+        engine_pulse_setup (self);
       break;
 #endif
 #ifdef HAVE_PORT_AUDIO
@@ -396,6 +404,12 @@ init_common (
       self->audio_backend = AUDIO_BACKEND_ALSA;
 #endif
       break;
+#endif
+#ifdef HAVE_PULSEAUDIO
+    case AUDIO_BACKEND_PULSEAUDIO:
+      self->audio_backend =
+        AUDIO_BACKEND_PULSEAUDIO;
+    break;
 #endif
 #ifdef HAVE_PORT_AUDIO
     case AUDIO_BACKEND_PORT_AUDIO:
@@ -683,6 +697,11 @@ engine_activate (
   if (self->audio_backend == AUDIO_BACKEND_JACK &&
       self->midi_backend == MIDI_BACKEND_JACK)
     engine_jack_activate (self, activate);
+#endif
+#ifdef HAVE_PULSEAUDIO
+  if (self->audio_backend
+        == AUDIO_BACKEND_PULSEAUDIO)
+    engine_pulse_activate (self, activate);
 #endif
   if (self->audio_backend == AUDIO_BACKEND_DUMMY)
     {
@@ -1457,6 +1476,11 @@ engine_free (
     case AUDIO_BACKEND_WASAPI_RTAUDIO:
     case AUDIO_BACKEND_ASIO_RTAUDIO:
       engine_rtaudio_tear_down (self);
+      break;
+#endif
+#ifdef HAVE_PULSEAUDIO
+    case AUDIO_BACKEND_PULSEAUDIO:
+      engine_pulse_tear_down (self);
       break;
 #endif
     case AUDIO_BACKEND_DUMMY:

@@ -1,5 +1,6 @@
 ;;;
 ;;; Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+;;; Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 ;;;
 ;;; This file is part of Zrythm.
 ;;;
@@ -249,6 +250,7 @@ Args:
            '("none" "none-libsoundio" "alsa"
              "alsa-libsoundio" "alsa-rtaudio" "jack"
              "jack-libsoundio" "jack-rtaudio"
+             "pulseaudio"
              "pulseaudio-libsoundio"
              "pulseaudio-rtaudio"
              "coreaudio-libsoundio" "coreaudio-rtaudio"

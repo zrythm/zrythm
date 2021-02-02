@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
  *
@@ -684,6 +685,7 @@ ui_create_audio_backends_model (void)
   #endif
 #endif /* HAVE_JACK */
 #ifdef HAVE_PULSEAUDIO
+    AUDIO_BACKEND_PULSEAUDIO,
   #ifdef HAVE_LIBSOUNDIO
     AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO,
   #endif
@@ -736,6 +738,7 @@ ui_create_audio_backends_model (void)
   #endif
 #endif /* HAVE_JACK */
 #ifdef HAVE_PULSEAUDIO
+    _(audio_backend_str[AUDIO_BACKEND_PULSEAUDIO]),
   #ifdef HAVE_LIBSOUNDIO
     _(audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO]),
   #endif

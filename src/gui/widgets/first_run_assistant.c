@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +27,7 @@
 #include "audio/engine_alsa.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
+#include "audio/engine_pulse.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "settings/settings.h"
@@ -90,6 +92,12 @@ audio_midi_backend_selection_validate (
       if (engine_alsa_test (GTK_WINDOW (self)))
         return;
 #endif
+      break;
+#endif
+#ifdef HAVE_PULSEAUDIO
+    case AUDIO_BACKEND_PULSEAUDIO:
+      if (engine_pulse_test (GTK_WINDOW (self)))
+        return;
       break;
 #endif
 #ifdef HAVE_PORT_AUDIO
