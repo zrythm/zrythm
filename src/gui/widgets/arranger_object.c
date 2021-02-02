@@ -530,6 +530,16 @@ arranger_object_set_full_rectangle (
     IS_ARRANGER_OBJECT (self));
 
 #define WARN_IF_HAS_NEGATIVE_DIMENSIONS \
+  if (self->full_rect.x < 0) \
+    { \
+      int diff = - self->full_rect.x; \
+      self->full_rect.x = 0; \
+      self->full_rect.width -= diff; \
+      if (self->full_rect.width < 1) \
+        { \
+          self->full_rect.width = 1; \
+        } \
+    } \
   g_warn_if_fail ( \
     self->full_rect.x >= 0 && \
     self->full_rect.y >= 0 && \
@@ -607,7 +617,6 @@ arranger_object_set_full_rectangle (
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1) -
             AP_WIDGET_POINT_SIZE / 2;
-        g_warn_if_fail (self->full_rect.x >= 0);
 
         AutomationPoint * next_ap =
           automation_region_get_next_ap (
