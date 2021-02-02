@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-21 18:18+0000\n"
+"POT-Creation-Date: 2021-02-02 15:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7062,6 +7062,27 @@ msgstr ""
 "Редактирование автоматизации состоит из создания регионов автоматизации "
 "на таймлайне, а затем создания событий автоматизации внутри редактора "
 "автоматизации. Читайте подробнее в :ref:`editing`."
+
+#: ../../tracks/automation.rst:30
+msgid "Behavior"
+msgstr ""
+
+#: ../../tracks/automation.rst:31
+msgid ""
+"The control corresponding to each automation lane will use the value from"
+" the automation lane if there are automation events present at the "
+"current playhead position."
+msgstr ""
+
+#: ../../tracks/automation.rst:36
+msgid ""
+"If there is no automation at the playhead, the control will use the last "
+"known value, either from the automation lane or from a manual change."
+msgstr ""
+
+#: ../../tracks/automation.rst:40
+msgid "This behavior also applies when rendering (exporting) the project."
+msgstr ""
 
 #: ../../tracks/bus-track-audio.rst:8
 msgid "Audio FX Track"

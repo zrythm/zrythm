@@ -38,17 +38,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-21 18:18+0000\n"
+"POT-Creation-Date: 2021-02-02 15:02+0000\n"
 "PO-Revision-Date: 2021-01-23 17:11+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -7911,6 +7910,27 @@ msgstr ""
 "オートメーションの編集は、オートメーションリージョンを作成し、オートメーション エディター内にオートメーション "
 "イベントを作成することで行われます。詳細については、 :ref:`editing` の章を参照してください。"
 
+#: ../../tracks/automation.rst:30
+msgid "Behavior"
+msgstr ""
+
+#: ../../tracks/automation.rst:31
+msgid ""
+"The control corresponding to each automation lane will use the value from"
+" the automation lane if there are automation events present at the "
+"current playhead position."
+msgstr ""
+
+#: ../../tracks/automation.rst:36
+msgid ""
+"If there is no automation at the playhead, the control will use the last "
+"known value, either from the automation lane or from a manual change."
+msgstr ""
+
+#: ../../tracks/automation.rst:40
+msgid "This behavior also applies when rendering (exporting) the project."
+msgstr ""
+
 #: ../../tracks/bus-track-audio.rst:8
 msgid "Audio FX Track"
 msgstr "オーディオFXトラック"
@@ -11377,3 +11397,4 @@ msgstr ":ref:`right-panel` (6)"
 
 #~ msgid "Displays the log, which gets updated real-time."
 #~ msgstr "リアルタイムで更新されるログを表示します。"
+
