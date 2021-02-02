@@ -155,9 +155,10 @@ plugin_init_loaded (
 
 static void
 plugin_init (
-  Plugin * plugin,
-  int      track_pos,
-  int      slot)
+  Plugin *       plugin,
+  int            track_pos,
+  PluginSlotType slot_type,
+  int            slot)
 {
   g_message (
     "%s: %s (%s) track pos %d slot %d",
@@ -169,6 +170,7 @@ plugin_init (
   plugin->in_ports_size = 1;
   plugin->out_ports_size = 1;
   plugin->id.track_pos = track_pos;
+  plugin->id.slot_type = slot_type;
   plugin->id.slot = slot;
   plugin->magic = PLUGIN_MAGIC;
 
@@ -404,6 +406,7 @@ Plugin *
 plugin_new_from_descr (
   PluginDescriptor * descr,
   int                track_pos,
+  PluginSlotType     slot_type,
   int                slot)
 {
   g_message (
@@ -416,7 +419,7 @@ plugin_new_from_descr (
 
   plugin->descr =
     plugin_descriptor_clone (descr);
-  plugin_init (plugin, track_pos, slot);
+  plugin_init (plugin, track_pos, slot_type, slot);
   g_return_val_if_fail (
     plugin->gain && plugin->enabled, NULL);
 
@@ -560,7 +563,8 @@ plugin_new_dummy (
   descr->category_str =
     g_strdup ("Dummy Plugin Category");
 
-  plugin_init (self, track_pos, slot);
+  plugin_init (
+    self, track_pos, PLUGIN_SLOT_INSERT, slot);
 
   return self;
 }
@@ -834,6 +838,9 @@ plugin_find (
       break;
     case PLUGIN_SLOT_MODULATOR:
       ret = track->modulators[id->slot];
+      break;
+    default:
+      g_return_val_if_reached (NULL);
       break;
     }
   g_return_val_if_fail (ret, NULL);
@@ -1826,7 +1833,7 @@ plugin_clone (
       clone =
         plugin_new_from_descr (
           pl->descr, pl->id.track_pos,
-          pl->id.slot);
+          pl->id.slot_type, pl->id.slot);
       g_return_val_if_fail (
         clone && clone->carla, NULL);
 
@@ -1906,7 +1913,7 @@ plugin_clone (
           clone =
             plugin_new_from_descr (
               pl->descr, pl->id.track_pos,
-              pl->id.slot);
+              pl->id.slot_type, pl->id.slot);
 
           /* instantiate using the state */
           int ret =
@@ -1965,6 +1972,8 @@ plugin_clone (
   g_return_val_if_fail (
     pl->num_out_ports == clone->num_out_ports,
     NULL);
+
+  /* copy plugin id to each port */
 
   return clone;
 }

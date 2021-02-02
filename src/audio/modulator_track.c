@@ -260,8 +260,6 @@ modulator_track_remove_modulator (
   plugin_expose_ports (
     plugin, F_NOT_EXPOSE, true, true);
 
-  plugin_set_is_project (plugin, false);
-
   /* if deleting plugin disconnect the plugin
    * entirely */
   if (deleting_modulator)
@@ -280,6 +278,8 @@ modulator_track_remove_modulator (
 
       free_later (plugin, plugin_free);
     }
+
+  /*plugin_set_is_project (plugin, false);*/
 
   if (!replacing)
     {

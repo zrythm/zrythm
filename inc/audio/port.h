@@ -1169,6 +1169,33 @@ ports_remove (
   int *   num_ports);
 
 /**
+ * Copies the metadata from a project port to
+ * the given port.
+ *
+ * Used when doing delete actions so that ports
+ * can be restored on undo.
+ */
+void
+port_copy_metadata_from_project (
+  Port * self,
+  Port * project_port);
+
+/**
+ * Reverts the data on the corresponding project
+ * port for the given non-project port.
+ *
+ * This restores src/dest connections and the
+ * control value.
+ *
+ * @param self Project port.
+ * @param non_project Non-project port.
+ */
+void
+port_restore_from_non_project (
+  Port * self,
+  Port * non_project);
+
+/**
  * Prints all connections.
  */
 void

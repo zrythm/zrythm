@@ -624,6 +624,9 @@ automatable_selector_popover_widget_new (
           self->selected_type = AS_TYPE_MODULATOR;
           self->selected_slot = pl_id->slot;
           break;
+        default:
+          g_return_val_if_reached (NULL);
+          break;
         }
     }
 

@@ -382,6 +382,9 @@ mixer_selections_get_first_plugin (
         case PLUGIN_SLOT_MODULATOR:
           return
             track->modulators[self->slots[0]];
+        default:
+          g_return_val_if_reached (NULL);
+          break;
         }
     }
 

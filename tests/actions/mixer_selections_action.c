@@ -993,19 +993,60 @@ test_create_modulator (void)
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
-  plugin_descriptor_free (descr);
+
+  /* create another one */
+  ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_MODULATOR,
+      P_MODULATOR_TRACK->pos,
+      P_MODULATOR_TRACK->num_modulators, descr, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* connect a cv output from the first modulator
+   * to a control of the 2nd */
+  Plugin * p1 =
+    P_MODULATOR_TRACK->modulators[
+      P_MODULATOR_TRACK->num_modulators - 2];
+  Plugin * p2 =
+    P_MODULATOR_TRACK->modulators[
+      P_MODULATOR_TRACK->num_modulators - 1];
+  Port * cv_out =
+    plugin_get_port_by_symbol (
+      p1, "outSine");
+  Port * ctrl_in =
+    plugin_get_port_by_symbol (
+      p2, "freq");
+  g_assert_nonnull (cv_out);
+  g_assert_nonnull (ctrl_in);
+  PortIdentifier cv_out_id = cv_out->id;
+  PortIdentifier ctrl_in_id = ctrl_in->id;
+
+  /* connect the ports */
+  ua =
+    port_connection_action_new_connect (
+      &cv_out->id, &ctrl_in->id, F_CONNECT);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
 
   MixerSelections * sel = mixer_selections_new ();
   mixer_selections_add_slot (
     sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR,
-    P_MODULATOR_TRACK->num_modulators - 1,
+    P_MODULATOR_TRACK->num_modulators - 2,
     F_NO_CLONE);
   ua = mixer_selections_action_new_delete (sel);
   undo_manager_perform (UNDO_MANAGER, ua);
   undo_manager_undo (UNDO_MANAGER);
+
+  /* verify port connection is back */
+  cv_out = port_find_from_identifier (&cv_out_id);
+  ctrl_in = port_find_from_identifier (&ctrl_in_id);
+  g_assert_true (ports_connected (cv_out, ctrl_in));
+
   undo_manager_redo (UNDO_MANAGER);
   mixer_selections_free (sel);
 
+  plugin_descriptor_free (descr);
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -1018,6 +1059,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
+  g_test_add_func (
+    TEST_PREFIX "test create modulator",
+    (GTestFunc) test_create_modulator);
   g_test_add_func (
     TEST_PREFIX "test MIDI fx slot deletion",
     (GTestFunc) test_midi_fx_slot_deletion);
@@ -1044,9 +1088,6 @@ main (int argc, char *argv[])
     "test move two plugins one slot up",
     (GTestFunc)
     test_move_two_plugins_one_slot_up);
-  g_test_add_func (
-    TEST_PREFIX "test create modulator",
-    (GTestFunc) test_create_modulator);
 
   return g_test_run ();
 }

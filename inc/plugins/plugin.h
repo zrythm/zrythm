@@ -295,6 +295,7 @@ Plugin *
 plugin_new_from_descr (
   PluginDescriptor * descr,
   int                track_pos,
+  PluginSlotType     slot_type,
   int                slot);
 
 /**

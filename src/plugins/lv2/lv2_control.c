@@ -408,6 +408,9 @@ lv2_control_get_from_port (
               port->port->id.track_pos]->
                 modulators[pl_id->slot];
           break;
+        default:
+          g_return_val_if_reached (NULL);
+          break;
         }
     }
 

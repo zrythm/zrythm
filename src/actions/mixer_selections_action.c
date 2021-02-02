@@ -284,6 +284,13 @@ revert_deleted_plugin (
       return;
     }
 
+  if (self->deleted_ms->type ==
+        PLUGIN_SLOT_MODULATOR)
+    {
+      /* modulators are never replaced */
+      return;
+    }
+
   for (int j = 0;
        j < self->deleted_ms->num_slots; j++)
     {
@@ -307,10 +314,10 @@ revert_deleted_plugin (
           F_NOT_PROJECT);
 
       /* add to channel */
-      channel_add_plugin (
-        to_tr->channel, self->deleted_ms->type,
+      track_add_plugin (
+        to_tr, self->deleted_ms->type,
         slot_to_revert, new_pl,
-        F_NO_CONFIRM, F_NOT_MOVING_PLUGIN,
+        F_REPLACING, F_NOT_MOVING_PLUGIN,
         F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH,
         F_NO_PUBLISH_EVENTS);
@@ -387,7 +394,7 @@ do_or_undo_create_or_delete (
               pl =
                 plugin_new_from_descr (
                   &self->descr, self->to_track_pos,
-                  slot);
+                  slot_type, slot);
 
               /* instantiate so that ports are
                * created */
@@ -469,9 +476,40 @@ do_or_undo_create_or_delete (
           g_return_val_if_fail (!ret, -1);
         }
 
-      track_verify_identifiers (track);
+      /* restore port connections */
+      if (delete)
+        {
+          for (int i = 0; i < loop_times; i++)
+            {
+              Plugin * pl = own_ms->plugins[i];
+              g_message (
+                "restoring custom connections "
+                "for plugin '%s'",
+                pl->descr->name);
+              int max_size = 20;
+              int num_ports = 0;
+              Port ** ports =
+                calloc (
+                  (size_t) max_size,
+                  sizeof (Port *));
+              plugin_append_ports (
+                pl, &ports, &max_size, F_DYNAMIC,
+                &num_ports);
+              for (int j = 0; j < num_ports; j++)
+                {
+                  /*g_warn_if_reached ();*/
+                  Port * port = ports[j];
+                  Port * prj_port =
+                    port_find_from_identifier (
+                      &port->id);
+                  port_restore_from_non_project (
+                    prj_port, port);
+                }
+              free (ports);
+            }
+        }
 
-      /* FIXME revert port connections */
+      track_verify_identifiers (track);
 
       EVENTS_PUSH (ET_PLUGINS_ADDED, track);
     }
@@ -485,6 +523,67 @@ do_or_undo_create_or_delete (
             create ?
               (self->to_slot + i) :
               own_ms->plugins[i]->id.slot;
+
+          /* if doing deletion, rememnber port
+           * metadata */
+          if (_do)
+            {
+              Plugin * own_pl = own_ms->plugins[i];
+              Plugin * prj_pl =
+                track_get_plugin_at_slot (
+                  track, slot_type, slot);
+
+              /* remember any custom connections */
+              g_message (
+                "remembering custom connections "
+                "for plugin '%s'",
+                own_pl->descr->name);
+              int max_size = 20;
+              int num_ports = 0;
+              Port ** ports =
+                calloc (
+                  (size_t) max_size,
+                  sizeof (Port *));
+              plugin_append_ports (
+                prj_pl, &ports, &max_size,
+                F_DYNAMIC, &num_ports);
+              max_size = 20;
+              int num_own_ports = 0;
+              Port ** own_ports =
+                calloc (
+                  (size_t) max_size,
+                  sizeof (Port *));
+              plugin_append_ports (
+                own_pl, &own_ports, &max_size,
+                F_DYNAMIC, &num_own_ports);
+              for (int j = 0; j < num_ports; j++)
+                {
+                  Port * prj_port = ports[j];
+
+                  Port * own_port = NULL;
+                  for (int k = 0;
+                       k < num_own_ports; k++)
+                    {
+                      Port * cur_own_port =
+                        own_ports[k];
+                      if (port_identifier_is_equal (
+                            &cur_own_port->id,
+                            &prj_port->id))
+                        {
+                          own_port =
+                            cur_own_port;
+                          break;
+                        }
+                    }
+                  g_return_val_if_fail (
+                    own_port, -1);
+
+                  port_copy_metadata_from_project (
+                    own_port, prj_port);
+                }
+              free (ports);
+              free (own_ports);
+            }
 
           /* remove the plugin at given slot */
           track_remove_plugin (
@@ -746,7 +845,8 @@ do_or_undo_move_or_copy (
           if (copy)
             {
               g_return_val_if_fail (
-                plugin_activate (pl, F_ACTIVATE),
+                plugin_activate (pl, F_ACTIVATE)
+                  == 0,
                 -1);
 
               /* show if was visible before */

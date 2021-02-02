@@ -36,6 +36,7 @@
 
 typedef enum PluginSlotType
 {
+  PLUGIN_SLOT_INVALID,
   PLUGIN_SLOT_INSERT,
   PLUGIN_SLOT_MIDI_FX,
   PLUGIN_SLOT_INSTRUMENT,
@@ -47,6 +48,7 @@ typedef enum PluginSlotType
 static const cyaml_strval_t
 plugin_slot_type_strings[] =
 {
+  { "Invalid",    PLUGIN_SLOT_INVALID    },
   { "Insert",     PLUGIN_SLOT_INSERT     },
   { "MIDI FX",    PLUGIN_SLOT_MIDI_FX    },
   { "Instrument", PLUGIN_SLOT_INSTRUMENT },

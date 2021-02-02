@@ -80,6 +80,9 @@ get_plugin (
         self->track->modulators[
           self->slot_index];
       break;
+    default:
+      g_return_val_if_reached (NULL);
+      break;
     }
 
   return plugin;

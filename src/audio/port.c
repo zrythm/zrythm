@@ -222,6 +222,9 @@ port_find_from_identifier (
           pl =
             tr->modulators[id->plugin_id.slot];
           break;
+        default:
+          g_return_val_if_reached (NULL);
+          break;
         }
       g_warn_if_fail (IS_PLUGIN (pl));
       switch (id->flow)
@@ -2582,6 +2585,122 @@ ports_remove (
 }
 
 /**
+ * Copies the metadata from a project port to
+ * the given port.
+ *
+ * Used when doing delete actions so that ports
+ * can be restored on undo.
+ */
+void
+port_copy_metadata_from_project (
+  Port * clone_port,
+  Port * prj_port)
+{
+  clone_port->control = prj_port->control;
+  clone_port->num_srcs = prj_port->num_srcs;
+  clone_port->num_dests = prj_port->num_dests;
+  for (int k = 0; k < prj_port->num_srcs; k++)
+    {
+      Port * src_port = prj_port->srcs[k];
+      port_identifier_copy (
+        &clone_port->src_ids[k], &src_port->id);
+      clone_port->src_multipliers[k] =
+        prj_port->src_multipliers[k];
+      clone_port->src_enabled[k] =
+        prj_port->src_enabled[k];
+      clone_port->src_locked[k] =
+        prj_port->src_locked[k];
+    }
+  for (int k = 0; k < prj_port->num_dests; k++)
+    {
+      Port * dest_port = prj_port->dests[k];
+      port_identifier_copy (
+        &clone_port->dest_ids[k], &dest_port->id);
+      clone_port->multipliers[k] =
+        prj_port->multipliers[k];
+      clone_port->dest_enabled[k] =
+        prj_port->dest_enabled[k];
+      clone_port->dest_locked[k] =
+        prj_port->dest_locked[k];
+    }
+}
+
+/**
+ * Reverts the data on the corresponding project
+ * port for the given non-project port.
+ *
+ * This restores src/dest connections and the
+ * control value.
+ *
+ * @param self Project port.
+ * @param non_project Non-project port.
+ */
+void
+port_restore_from_non_project (
+  Port * self,
+  Port * non_project)
+{
+  Port * prj_port = self;
+
+  /* set value */
+  prj_port->control = non_project->control;
+
+  /* re-connect previously connected ports */
+  for (int k = 0; k < non_project->num_srcs; k++)
+    {
+      Port * src_port =
+        port_find_from_identifier (
+          &non_project->src_ids[k]);
+      g_debug (
+        "restoring source '%s' for port '%s'",
+        non_project->id.label, src_port->id.label);
+      port_connect (
+        src_port, prj_port,
+        non_project->src_locked[k]);
+      int src_idx =
+        port_get_src_index (
+          prj_port, src_port);
+      prj_port->src_multipliers[src_idx] =
+        non_project->src_multipliers[k];
+      prj_port->src_enabled[src_idx] =
+        non_project->src_enabled[k];
+      int dest_idx =
+        port_get_dest_index (
+          src_port, prj_port);
+      src_port->multipliers[dest_idx] =
+        non_project->src_multipliers[k];
+      src_port->dest_enabled[dest_idx] =
+        non_project->src_enabled[k];
+    }
+  for (int k = 0; k < non_project->num_dests; k++)
+    {
+      Port * dest_port =
+        port_find_from_identifier (
+          &non_project->dest_ids[k]);
+      g_debug (
+        "restoring dest '%s' for port '%s'",
+        non_project->id.label, dest_port->id.label);
+      port_connect (
+        prj_port, dest_port,
+        non_project->dest_locked[k]);
+      int dest_idx =
+        port_get_dest_index (
+          prj_port, dest_port);
+      prj_port->multipliers[dest_idx] =
+        non_project->multipliers[k];
+      prj_port->dest_enabled[dest_idx] =
+        non_project->dest_enabled[k];
+      int src_idx =
+        port_get_src_index (
+          dest_port, prj_port);
+      dest_port->src_multipliers[src_idx] =
+        non_project->multipliers[k];
+      dest_port->src_enabled[src_idx] =
+        non_project->dest_enabled[k];
+    }
+}
+
+/**
  * Creates stereo ports for generic use.
  *
  * @param in 1 for in, 0 for out.
@@ -3502,6 +3621,9 @@ port_get_plugin (
       break;
     case PLUGIN_SLOT_MODULATOR:
       pl = track->modulators[pl_id->slot];
+      break;
+    default:
+      g_return_val_if_reached (NULL);
       break;
     }
   if (!pl && self->tmp_plugin)

@@ -1576,6 +1576,40 @@ track_insert_plugin (
 }
 
 /**
+ * Wrapper over channel_add_plugin() and
+ * modulator_track_insert_modulator().
+ */
+void
+track_add_plugin (
+  Track *        self,
+  PluginSlotType slot_type,
+  int            slot,
+  Plugin *       pl,
+  bool           replacing_plugin,
+  bool           moving_plugin,
+  bool           gen_automatables,
+  bool           recalc_graph,
+  bool           fire_events)
+{
+  if (slot_type == PLUGIN_SLOT_MODULATOR)
+    {
+      modulator_track_insert_modulator (
+        self, slot, pl, replacing_plugin,
+        F_NO_CONFIRM,
+        gen_automatables, recalc_graph,
+        fire_events);
+    }
+  else
+    {
+      channel_add_plugin (
+        self->channel, slot_type, slot, pl,
+        F_NO_CONFIRM,
+        moving_plugin, gen_automatables,
+        recalc_graph, fire_events);
+    }
+}
+
+/**
  * Wrapper over channel_remove_plugin() and
  * modulator_track_remove_modulator().
  */
@@ -2763,6 +2797,9 @@ track_get_plugin_at_slot (
         {
           return self->modulators[slot];
         }
+      break;
+    default:
+      g_return_val_if_reached (NULL);
       break;
     }
 

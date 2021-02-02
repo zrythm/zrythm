@@ -244,4 +244,7 @@
 #define F_NORMALIZE 1
 #define F_NO_NORMALIZE 0
 
+#define F_DYNAMIC 1
+#define F_NOT_DYNAMIC 0
+
 #endif

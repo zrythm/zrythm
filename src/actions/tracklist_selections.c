@@ -334,7 +334,8 @@ create_track (
 
           pl=
             plugin_new_from_descr (
-              &self->pl_descr, track->pos, 0);
+              &self->pl_descr, track->pos,
+              PLUGIN_SLOT_INSERT, 0);
           if (!pl)
             {
               g_warning (
@@ -591,7 +592,9 @@ do_or_undo_create_or_delete (
               int max_size = 20;
               int num_ports = 0;
               Port ** ports =
-                calloc ((size_t) max_size, sizeof (Port *));
+                calloc (
+                  (size_t) max_size,
+                  sizeof (Port *));
               track_append_all_ports (
                 own_track,
                 &ports, &num_ports, true, &max_size,
@@ -600,64 +603,10 @@ do_or_undo_create_or_delete (
                 {
                   Port * port = ports[j];
                   Port * prj_port =
-                    port_find_from_identifier (&port->id);
-
-                  /* set value */
-                  prj_port->control = port->control;
-
-                  /*char port_label[600];*/
-                  /*port_get_full_designation (*/
-                    /*port, port_label);*/
-                  /*g_message (*/
-                    /*"port: %s %d %d", port_label,*/
-                    /*port->num_srcs, port->num_dests);*/
-
-                  for (int k = 0; k < port->num_srcs; k++)
-                    {
-                      Port * src_port =
-                        port_find_from_identifier (
-                          &port->src_ids[k]);
-                      port_connect (
-                        src_port, prj_port,
-                        port->src_locked[k]);
-                      int src_idx =
-                        port_get_src_index (
-                          prj_port, src_port);
-                      prj_port->src_multipliers[src_idx] =
-                        port->src_multipliers[k];
-                      prj_port->src_enabled[src_idx] =
-                        port->src_enabled[k];
-                      int dest_idx =
-                        port_get_dest_index (
-                          src_port, prj_port);
-                      src_port->multipliers[dest_idx] =
-                        port->src_multipliers[k];
-                      src_port->dest_enabled[dest_idx] =
-                        port->src_enabled[k];
-                    }
-                  for (int k = 0; k < port->num_dests; k++)
-                    {
-                      Port * dest_port =
-                        port_find_from_identifier (
-                          &port->dest_ids[k]);
-                      port_connect (
-                        prj_port, dest_port,
-                        port->dest_locked[k]);
-                      int dest_idx =
-                        port_get_dest_index (
-                          prj_port, dest_port);
-                      prj_port->multipliers[dest_idx] =
-                        port->multipliers[k];
-                      prj_port->dest_enabled[dest_idx] =
-                        port->dest_enabled[k];
-                      int src_idx =
-                        port_get_src_index (
-                          dest_port, prj_port);
-                      dest_port->src_multipliers[src_idx] =
-                        port->multipliers[k];
-                      dest_port->src_enabled[src_idx] =
-                        port->dest_enabled[k];
-                    }
+                    port_find_from_identifier (
+                      &port->id);
+                  port_restore_from_non_project (
+                    prj_port, port);
                 }
               free (ports);
             }
@@ -745,7 +694,8 @@ do_or_undo_create_or_delete (
               int num_clone_ports = 0;
               Port ** clone_ports =
                 calloc (
-                  (size_t) max_size, sizeof (Port *));
+                  (size_t) max_size,
+                  sizeof (Port *));
               track_append_all_ports (
                 own_track, &clone_ports,
                 &num_clone_ports,
@@ -755,56 +705,25 @@ do_or_undo_create_or_delete (
                   Port * prj_port = ports[j];
 
                   Port * clone_port = NULL;
-                  for (int k = 0; k < num_clone_ports; k++)
+                  for (int k = 0;
+                       k < num_clone_ports; k++)
                     {
-                      Port * cur_clone_port = clone_ports[k];
+                      Port * cur_clone_port =
+                        clone_ports[k];
                       if (port_identifier_is_equal (
                             &cur_clone_port->id,
                             &prj_port->id))
                         {
-                          clone_port = cur_clone_port;
+                          clone_port =
+                            cur_clone_port;
                           break;
                         }
                     }
                   g_return_val_if_fail (
                     clone_port, -1);
 
-                  clone_port->num_srcs =
-                    prj_port->num_srcs;
-                  clone_port->num_dests =
-                    prj_port->num_dests;
-                  for (int k = 0;
-                       k < prj_port->num_srcs;
-                       k++)
-                    {
-                      Port * src_port =
-                        prj_port->srcs[k];
-                      port_identifier_copy (
-                        &clone_port->src_ids[k],
-                        &src_port->id);
-                      clone_port->src_multipliers[k] =
-                        prj_port->src_multipliers[k];
-                      clone_port->src_enabled[k] =
-                        prj_port->src_enabled[k];
-                      clone_port->src_locked[k] =
-                        prj_port->src_locked[k];
-                    }
-                  for (int k = 0;
-                       k < prj_port->num_dests;
-                       k++)
-                    {
-                      Port * dest_port =
-                        prj_port->dests[k];
-                      port_identifier_copy (
-                        &clone_port->dest_ids[k],
-                        &dest_port->id);
-                      clone_port->multipliers[k] =
-                        prj_port->multipliers[k];
-                      clone_port->dest_enabled[k] =
-                        prj_port->dest_enabled[k];
-                      clone_port->dest_locked[k] =
-                        prj_port->dest_locked[k];
-                    }
+                  port_copy_metadata_from_project (
+                    clone_port, prj_port);
                 }
               free (ports);
               free (clone_ports);
