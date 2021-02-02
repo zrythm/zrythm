@@ -1,4 +1,5 @@
 # Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020 Ryan Gonzalez <rymg19 at github dot com>
 #
 # This file is part of Zrythm
 #
@@ -655,7 +656,7 @@ if (have_alsa)
   cdata.set('HAVE_ALSA', 1)
 endif
 pulseaudio_dep = dependency (
-  'pulseaudio', required: false, static: all_static)
+  'libpulse', required: false, static: all_static)
 have_pulseaudio = pulseaudio_dep.found ()
 if (have_pulseaudio)
   cdata.set('HAVE_PULSEAUDIO', 1)
