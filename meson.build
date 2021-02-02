@@ -264,6 +264,9 @@ ext_lv2_plugins = {
   'chipwave': [
     'ChipWave',
     'https://github.com/linuxmao-org/shiru-plugins/chipwave'],
+  'calf_compressor': [
+    'Calf Compressor',
+    'http://calf.sourceforge.net/plugins/Compressor'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}

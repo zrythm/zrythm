@@ -1086,6 +1086,12 @@ create_ports (
             port_new_with_type (
               TYPE_CONTROL, FLOW_INPUT,
               param_info->name);
+          if (param_info->symbol &&
+              strlen (param_info->symbol) > 0)
+            {
+              port->id.sym =
+                g_strdup (param_info->symbol);
+            }
           port->id.flags |=
             PORT_FLAG_PLUGIN_CONTROL;
           port->id.flags |=
