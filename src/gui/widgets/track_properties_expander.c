@@ -56,9 +56,9 @@ track_properties_expander_widget_refresh (
 
       editable_label_widget_setup (
         self->name, track,
-        (EditableLabelWidgetTextGetter)
+        (GenericStringGetter)
         track_get_name,
-        (EditableLabelWidgetTextSetter)
+        (GenericStringSetter)
         track_set_name_with_action);
 
       bool is_instrument =

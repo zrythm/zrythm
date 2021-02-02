@@ -296,9 +296,10 @@ modulator_macro_widget_new (
 
   self->modulator_macro_idx = modulator_macro_idx;
 
-  Port * port =
+  ModulatorMacroProcessor * macro =
     P_MODULATOR_TRACK->modulator_macros[
-      modulator_macro_idx]->macro;
+      modulator_macro_idx];
+  Port * port = macro->macro;
 
   KnobWidget * knob =
     knob_widget_new_simple (
@@ -306,7 +307,12 @@ modulator_macro_widget_new (
       port, port->minf, port->maxf, 48, port->zerof);
   self->knob_with_name =
     knob_with_name_widget_new (
-      port->id.label, knob,
+      macro,
+      (GenericStringGetter)
+        modulator_macro_processor_get_name,
+      (GenericStringSetter)
+        modulator_macro_processor_set_name,
+      knob,
       GTK_ORIENTATION_VERTICAL, true, 2);
   gtk_grid_attach (
     GTK_GRID (self),

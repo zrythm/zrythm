@@ -406,6 +406,13 @@ port_identifier_schema_default = {
     PortIdentifier, port_identifier_fields_schema),
 };
 
+static inline const char *
+port_identifier_get_label (
+  PortIdentifier * self)
+{
+  return self->label;
+}
+
 /**
  * Copy the identifier content from \ref src to
  * \ref dest.

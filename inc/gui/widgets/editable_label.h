@@ -24,28 +24,15 @@
 #ifndef __GUI_WIDGETS_EDITABLE_LABEL_H__
 #define __GUI_WIDGETS_EDITABLE_LABEL_H__
 
+#include "utils/types.h"
+
 #include <gtk/gtk.h>
 
 #define EDITABLE_LABEL_WIDGET_TYPE \
   (editable_label_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  EditableLabelWidget,
-  editable_label_widget,
-  Z, EDITABLE_LABEL_WIDGET,
-  GtkEventBox)
-
-/**
- * Getter prototype.
- */
-typedef const char * (*EditableLabelWidgetTextGetter) (
-  void * object);
-
-/**
- * Setter prototype.
- */
-typedef void (*EditableLabelWidgetTextSetter) (
-  void *       object,
-  const char * text);
+  EditableLabelWidget, editable_label_widget,
+  Z, EDITABLE_LABEL_WIDGET, GtkEventBox)
 
 /**
  * A label that shows a popover when clicked.
@@ -61,10 +48,10 @@ typedef struct _EditableLabelWidget
   GtkEntry *        entry;
 
   /** Getter. */
-  EditableLabelWidgetTextGetter getter;
+  GenericStringGetter getter;
 
   /** Setter. */
-  EditableLabelWidgetTextSetter setter;
+  GenericStringSetter setter;
 
   /** Object to call get/set with. */
   void *            object;
@@ -92,36 +79,36 @@ void
 editable_label_widget_show_popover_for_widget (
   GtkWidget * parent,
   void *      object,
-  EditableLabelWidgetTextGetter getter,
-  EditableLabelWidgetTextSetter setter);
+  GenericStringGetter getter,
+  GenericStringSetter setter);
 
 /**
  * Sets up an existing EditableLabelWidget.
  *
- * @param get_val Getter function.
- * @param set_val Setter function.
+ * @param getter Getter function.
+ * @param setter Setter function.
  * @param object Object to call get/set with.
  */
 void
 editable_label_widget_setup (
   EditableLabelWidget * self,
   void *                object,
-  EditableLabelWidgetTextGetter getter,
-  EditableLabelWidgetTextSetter setter);
+  GenericStringGetter   getter,
+  GenericStringSetter   setter);
 
 /**
  * Returns a new instance of EditableLabelWidget.
  *
- * @param get_val Getter function.
- * @param set_val Setter function.
+ * @param getter Getter function.
+ * @param setter Setter function.
  * @param object Object to call get/set with.
  * @param width Label width in chars.
  */
 EditableLabelWidget *
 editable_label_widget_new (
-  void *                object,
-  EditableLabelWidgetTextGetter getter,
-  EditableLabelWidgetTextSetter setter,
-  int                    width);
+  void *              object,
+  GenericStringGetter getter,
+  GenericStringSetter setter,
+  int                 width);
 
 #endif

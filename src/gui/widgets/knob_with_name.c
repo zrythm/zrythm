@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/editable_label.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
 
@@ -34,7 +35,9 @@ G_DEFINE_TYPE (KnobWithNameWidget,
  */
 KnobWithNameWidget *
 knob_with_name_widget_new (
-  const char *   name,
+  void *         obj,
+  GenericStringGetter name_getter,
+  GenericStringSetter name_setter,
   KnobWidget *   knob,
   GtkOrientation orientation,
   bool           label_before,
@@ -46,12 +49,15 @@ knob_with_name_widget_new (
       "orientation", orientation,
       "spacing", 2, NULL);
 
-  GtkWidget * label = gtk_label_new (name);
+  EditableLabelWidget * label =
+    editable_label_widget_new (
+      obj, name_getter, name_setter, -1);
 
   if (label_before)
     {
       gtk_container_add (
-        GTK_CONTAINER (self), label);
+        GTK_CONTAINER (self),
+        GTK_WIDGET (label));
       gtk_container_add (
         GTK_CONTAINER (self),
         GTK_WIDGET (knob));
@@ -62,9 +68,9 @@ knob_with_name_widget_new (
         GTK_CONTAINER (self),
         GTK_WIDGET (knob));
       gtk_container_add (
-        GTK_CONTAINER (self), label);
+        GTK_CONTAINER (self),
+        GTK_WIDGET (label));
     }
-
 
   gtk_widget_show_all (GTK_WIDGET (self));
 

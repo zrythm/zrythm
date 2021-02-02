@@ -145,7 +145,7 @@ if get_option ('tests')
     ['audio/tracklist', true],
     ['gui/backend/arranger_selections', true],
     ['integration/recording', false],
-    ['plugins/plugin', true],
+    ['plugins/plugin', false],
     ['plugins/plugin_manager', true],
     ['project', true],
     ['utils/arrays', true],

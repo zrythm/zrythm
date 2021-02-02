@@ -20,6 +20,8 @@
 #ifndef __GUI_WIDGETS_KNOB_WITH_NAME_H__
 #define __GUI_WIDGETS_KNOB_WITH_NAME_H__
 
+#include "utils/types.h"
+
 #include <gtk/gtk.h>
 
 #define KNOB_WITH_NAME_WIDGET_TYPE \
@@ -31,6 +33,8 @@ G_DECLARE_FINAL_TYPE (
   GtkBox)
 
 typedef struct _KnobWidget KnobWidget;
+typedef struct _EditableLabelWidget
+  EditableLabelWidget;
 
 /**
 * A vertical box with a knob at the top and a name
@@ -41,7 +45,8 @@ typedef struct _KnobWithNameWidget
   GtkBox         parent_instance;
 
   /** The label to show below the knob. */
-  GtkLabel *     label;
+  //GtkLabel *     label;
+  EditableLabelWidget * label;
 
   /** The knob. */
   KnobWidget *   knob;
@@ -56,7 +61,9 @@ typedef struct _KnobWithNameWidget
  */
 KnobWithNameWidget *
 knob_with_name_widget_new (
-  const char *   name,
+  void *         obj,
+  GenericStringGetter name_getter,
+  GenericStringSetter name_setter,
   KnobWidget *   knob,
   GtkOrientation orientation,
   bool           label_before,

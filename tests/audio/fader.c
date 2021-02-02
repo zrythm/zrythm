@@ -52,6 +52,11 @@ test_fader_process_with_instrument (
     track->processor->midi_in->midi_events,
     1, 82, 74, 2, true);
 
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (1000000);
+
   /* run engine twice (running one is not enough to
    * make the note make sound) */
   engine_process (

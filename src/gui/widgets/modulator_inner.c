@@ -276,8 +276,11 @@ modulator_inner_widget_new (
         get_snapped_control_value;
       KnobWithNameWidget * knob_with_name =
         knob_with_name_widget_new (
-          port->id.label,
-          knob, GTK_ORIENTATION_HORIZONTAL, false, 3);
+          &port->id,
+          (GenericStringGetter)
+            port_identifier_get_label,
+          NULL, knob, GTK_ORIENTATION_HORIZONTAL,
+          false, 3);
 
       array_double_size_if_full (
         self->knobs, self->num_knobs,

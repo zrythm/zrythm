@@ -31,6 +31,14 @@ modulator_macro_processor_get_track (
   return port_get_track (self->cv_in, true);
 }
 
+void
+modulator_macro_processor_set_name (
+  ModulatorMacroProcessor * self,
+  const char *              name)
+{
+  self->name = g_strdup (name);
+}
+
 /**
  * Process.
  *
@@ -79,6 +87,7 @@ modulator_macro_processor_new (
 
   char str[600];
   sprintf (str, _("Macro %d"), idx + 1);
+  self->name = g_strdup (str);
   self->macro =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT, str);

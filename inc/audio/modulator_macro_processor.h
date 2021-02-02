@@ -48,6 +48,14 @@ typedef struct Track Track;
  */
 typedef struct ModulatorMacroProcessor
 {
+  /**
+   * Name to be shown in the modulators tab.
+   *
+   * @note This is only cosmetic and should not be
+   * used anywhere during processing.
+   */
+  char *            name;
+
   /** CV input port for connecting CV signals to. */
   Port  *           cv_in;
 
@@ -67,6 +75,8 @@ typedef struct ModulatorMacroProcessor
 static const cyaml_schema_field_t
 modulator_macro_processor_fields_schema[] =
 {
+  YAML_FIELD_STRING_PTR (
+    ModulatorMacroProcessor, name),
   YAML_FIELD_MAPPING_PTR (
     ModulatorMacroProcessor, cv_in,
     port_fields_schema),
@@ -86,6 +96,18 @@ modulator_macro_processor_schema = {
     ModulatorMacroProcessor,
     modulator_macro_processor_fields_schema),
 };
+
+static inline const char *
+modulator_macro_processor_get_name (
+  ModulatorMacroProcessor * self)
+{
+  return self->name;
+}
+
+void
+modulator_macro_processor_set_name (
+  ModulatorMacroProcessor * self,
+  const char *              name);
 
 Track *
 modulator_macro_processor_get_track (

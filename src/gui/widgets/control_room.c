@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,9 +30,16 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ControlRoomWidget,
-               control_room_widget,
-               GTK_TYPE_GRID)
+G_DEFINE_TYPE (
+  ControlRoomWidget, control_room_widget,
+  GTK_TYPE_GRID)
+
+static const char *
+monitor_out_name_getter (
+  void * obj)
+{
+  return _("Monitor out");
+}
 
 void
 control_room_widget_setup (
@@ -68,7 +75,7 @@ control_room_widget_setup (
       0.f, 1.f, 78, 0.f);
   self->volume =
     knob_with_name_widget_new (
-      _("Monitor out"),
+      NULL, monitor_out_name_getter, NULL,
       knob, GTK_ORIENTATION_VERTICAL, false, 2);
   gtk_container_add (
     GTK_CONTAINER (self->main_knob_placeholder),

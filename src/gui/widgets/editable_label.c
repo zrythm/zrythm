@@ -40,6 +40,9 @@ on_entry_activated (
     gtk_entry_get_text (entry));
   gtk_widget_set_visible (
     GTK_WIDGET (self->popover), 0);
+
+  gtk_label_set_text (
+    self->label, (*self->getter) (self->object));
 }
 
 static void
@@ -99,8 +102,8 @@ void
 editable_label_widget_show_popover_for_widget (
   GtkWidget * parent,
   void *      object,
-  EditableLabelWidgetTextGetter getter,
-  EditableLabelWidgetTextSetter setter)
+  GenericStringGetter getter,
+  GenericStringSetter setter)
 {
   EditableLabelWidget * self =
     g_object_new (
@@ -151,7 +154,7 @@ editable_label_widget_on_mp_press (
   gdouble               y,
   EditableLabelWidget * self)
 {
-  if (n_press == 2)
+  if (n_press == 2 && self->setter)
     {
       editable_label_widget_show_popover (self);
     }
@@ -160,20 +163,20 @@ editable_label_widget_on_mp_press (
 /**
  * Sets up an existing EditableLabelWidget.
  *
- * @param get_val Getter function.
- * @param set_val Setter function.
+ * @param getter Getter function.
+ * @param setter Setter function.
  * @param object Object to call get/set with.
  */
 void
 editable_label_widget_setup (
   EditableLabelWidget * self,
   void *                object,
-  const char * (*get_val)(void *),
-  void (*set_val)(void *, const char *))
+  GenericStringGetter   getter,
+  GenericStringSetter   setter)
 {
   self->object = object;
-  self->getter = get_val;
-  self->setter = set_val;
+  self->getter = getter;
+  self->setter = setter;
 
   if (object)
     {
@@ -186,24 +189,24 @@ editable_label_widget_setup (
 /**
  * Returns a new instance of EditableLabelWidget.
  *
- * @param get_val Getter function.
- * @param set_val Setter function.
+ * @param getter Getter function.
+ * @param setter Setter function.
  * @param object Object to call get/set with.
  * @param width Label width in chars.
  */
 EditableLabelWidget *
 editable_label_widget_new (
-  void *                object,
-  const char * (*get_val)(void *),
-  void (*set_val)(void *, const char *),
-  int                    width)
+  void *              object,
+  GenericStringGetter getter,
+  GenericStringSetter setter,
+  int                 width)
 {
   EditableLabelWidget * self =
     g_object_new (EDITABLE_LABEL_WIDGET_TYPE,
                   NULL);
 
   editable_label_widget_setup (
-    self, object, get_val, set_val);
+    self, object, getter, setter);
 
   gtk_label_set_width_chars (
     self->label, 11);
