@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,7 @@
 
 #include "audio/port.h"
 #include "gui/widgets/knob.h"
+#include "utils/math.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -147,9 +148,9 @@ knob_draw_cb (
     ((360.f + ARC_CUT_ANGLE) * (float) G_PI) /
       180.f;
 
+  self->last_real_val = get_real_val (self, true);
   const float value =
-    KNOB_VAL_FROM_REAL (
-      get_real_val (self, true));
+    KNOB_VAL_FROM_REAL (self->last_real_val);
   const float value_angle = start_angle
     + value * (end_angle - start_angle);
   float zero_angle =
@@ -469,6 +470,21 @@ drag_end (
   self->last_y = 0;
 }
 
+static bool
+tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  KnobWidget *    self)
+{
+  float real_val = get_real_val (self, true);
+  if (!math_floats_equal (
+        real_val, self->last_real_val))
+    {
+      gtk_widget_queue_draw (widget);
+    }
+
+  return G_SOURCE_CONTINUE;
+}
 
 /**
  * Creates a knob widget with the given options and
@@ -545,6 +561,11 @@ _knob_widget_new (
   g_signal_connect (
     G_OBJECT(self->drag), "drag-end",
     G_CALLBACK (drag_end),  self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
+    self, NULL);
+
   return self;
 }
 

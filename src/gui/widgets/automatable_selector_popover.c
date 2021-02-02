@@ -229,6 +229,15 @@ create_model_for_ports (
 
           strcpy (icon_name,"audio-midi");
           break;
+        case AS_TYPE_MACRO:
+          /* skip non-channel automation tracks */
+          port = automation_track_get_port (at);
+          if (!(port->id.flags &
+                  PORT_FLAG_MODULATOR_MACRO))
+            continue;
+
+          strcpy (icon_name, "code-function");
+          break;
         case AS_TYPE_CHANNEL:
           /* skip non-channel automation tracks */
           port = automation_track_get_port (at);
@@ -336,8 +345,19 @@ create_model_for_types (
       gtk_list_store_set (
         list_store, &iter,
         0, "filename-bpm-amarok",
-        1, "Tempo",
+        1, _("Tempo"),
         2, AS_TYPE_TEMPO,
+        3, 0,
+        -1);
+    }
+  else if (track->type == TRACK_TYPE_MODULATOR)
+    {
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, "code-function",
+        1, _("Macros"),
+        2, AS_TYPE_MACRO,
         3, 0,
         -1);
     }
@@ -360,7 +380,7 @@ create_model_for_types (
       gtk_list_store_set (
         list_store, &iter,
         0, "text-x-csrc",
-        1, "Channel",
+        1, _("Channel"),
         2, AS_TYPE_CHANNEL,
         3, 0,
         -1);
@@ -602,6 +622,10 @@ automatable_selector_popover_widget_new (
   else if (id->flags & PORT_FLAG_MIDI_AUTOMATABLE)
     {
       self->selected_type = AS_TYPE_MIDI;
+    }
+  else if (id->flags & PORT_FLAG_MODULATOR_MACRO)
+    {
+      self->selected_type = AS_TYPE_MACRO;
     }
   else if (id->flags & PORT_FLAG_PLUGIN_CONTROL ||
            id->flags & PORT_FLAG_GENERIC_PLUGIN_PORT)

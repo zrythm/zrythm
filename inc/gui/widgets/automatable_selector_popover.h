@@ -67,6 +67,9 @@ typedef enum AutomatableSelectorType
 
   /** Tempo track ports. */
   AS_TYPE_TEMPO,
+
+  /** Modulator macros. */
+  AS_TYPE_MACRO,
 } AutomatableSelectorType;
 
 /**

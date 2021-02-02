@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -112,10 +112,13 @@ typedef struct _KnobWidget
   /* ----- FOR PORTS ONLY ------- */
   /** Destination index for the destination
    * multipliers of the port. */
-  int                   dest_index;
+  int                 dest_index;
 
   /** Source index on the destination port. */
-  int             src_index;
+  int                  src_index;
+
+  /** Last drawn real val. */
+  float                last_real_val;
 } KnobWidget;
 
 /**
