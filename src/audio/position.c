@@ -956,9 +956,21 @@ int
 position_get_total_beats (
   const Position * pos)
 {
-  return
-    pos->beats +
-    pos->bars * TRANSPORT_BEATS_PER_BAR - 1;
+  int beats = pos->beats - 1;
+  int bars = pos->bars - 1;
+
+  int ret =
+    beats + bars * TRANSPORT_BEATS_PER_BAR;
+
+  Position tmp;
+  position_from_ticks (
+    &tmp, (double) ret * TRANSPORT->ticks_per_beat);
+  if (tmp.frames == pos->frames)
+    {
+      ret--;
+    }
+
+  return ret;
 }
 
 /**

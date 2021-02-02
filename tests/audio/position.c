@@ -42,6 +42,47 @@ test_position_from_ticks ()
     pos.bars, >, 0);
 }
 
+static void
+test_get_total_beats ()
+{
+  Position start_pos = {
+    .bars = 2,
+    .beats = 1,
+    .sixteenths = 4,
+    .ticks = 222,
+    .sub_tick = 0.38185941043198568,
+    .total_ticks = 4782.3818594104323,
+    .frames = 69376
+  };
+  Position end_pos = {
+    .bars = 2,
+    .beats = 2,
+    .sixteenths = 1,
+    .ticks = 0,
+    .sub_tick = 0.029024943311810603,
+    .total_ticks = 4800.0290249433119,
+    .frames = 69632
+  };
+  position_from_ticks (
+    &start_pos, 4782.3818594104323);
+  position_from_ticks (
+    &end_pos, 4800);
+
+  int beats = 0;
+  beats =
+    position_get_total_beats (&start_pos);
+  g_assert_cmpint (beats, ==, 4);
+  beats =
+    position_get_total_beats (&end_pos);
+  g_assert_cmpint (beats, ==, 4);
+
+  position_from_ticks (
+    &end_pos, 4800.0290249433119);
+  beats =
+    position_get_total_beats (&end_pos);
+  g_assert_cmpint (beats, ==, 5);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -54,6 +95,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test position from ticks",
     (GTestFunc) test_position_from_ticks);
+  g_test_add_func (
+    TEST_PREFIX "test get total beats",
+    (GTestFunc) test_get_total_beats);
 
   return g_test_run ();
 }
