@@ -870,6 +870,13 @@ zrythm_app_startup (
       exit (-1);
     }
 
+  char * modules = NULL;
+  g_object_get (
+    self->default_settings,
+    "gtk-modules", &modules,
+    NULL);
+  g_message ("GTK modules: %s", modules);
+
   /* try to load some icons */
   /* zrythm */
   load_icon (icon_theme, "solo");
