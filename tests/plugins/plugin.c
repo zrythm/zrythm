@@ -113,31 +113,29 @@ test_loading_fully_bridged_plugin (void)
 
 #ifdef HAVE_CARLA
 #ifdef HAVE_CHIPWAVE
-  for (int i = 0; i < 2; i++)
-    {
-      test_plugin_manager_create_tracks_from_plugin (
-        CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, true,
-        1);
+  test_plugin_manager_create_tracks_from_plugin (
+    CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, true,
+    1);
 
-      Port * port = get_skew_duty_port ();
-      g_assert_nonnull (port);
-      float val_before = port->control;
-      float val_after = 1.f;
-      g_assert_cmpfloat_with_epsilon (
-        val_before, 0.5f, 0.0001f);
-      port_set_control_value (
-        port, val_after, F_NORMALIZED,
-        i);
+  Port * port = get_skew_duty_port ();
+  g_assert_nonnull (port);
+  float val_before = port->control;
+  float val_after = 1.f;
+  g_assert_cmpfloat_with_epsilon (
+    val_before, 0.5f, 0.0001f);
+  port_set_control_value (
+    port, val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
+  g_assert_cmpfloat_with_epsilon (
+    port->control, val_after, 0.0001f);
 
-      /* save project and reload and check the
-       * value is correct */
-      test_project_save_and_reload ();
+  /* save project and reload and check the
+   * value is correct */
+  test_project_save_and_reload ();
 
-      port = get_skew_duty_port ();
-      g_assert_nonnull (port);
-      g_assert_cmpfloat_with_epsilon (
-        port->control, val_after, 0.0001f);
-    }
+  port = get_skew_duty_port ();
+  g_assert_nonnull (port);
+  g_assert_cmpfloat_with_epsilon (
+    port->control, val_after, 0.0001f);
 #endif
 #endif
 

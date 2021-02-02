@@ -2461,6 +2461,9 @@ port_forward_control_change_event (
  * @param forward_event Whether to forward a port
  *   control change event to the plugin UI. Only
  *   applicable for plugin control ports.
+ *   If the control is being changed manually or
+ *   from within Zrythm, this should be true to
+ *   notify the plugin of the change.
  */
 void
 port_set_control_value (

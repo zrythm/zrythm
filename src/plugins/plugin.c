@@ -934,6 +934,14 @@ plugin_activate (
       return 0;
     }
 
+  if (activate && !pl->instantiated)
+    {
+      g_critical (
+        "plugin %s not instantiated",
+        pl->descr->name);
+      return -1;
+    }
+
   if (pl->descr->open_with_carla)
     {
 #ifdef HAVE_CARLA
@@ -1449,8 +1457,10 @@ plugin_process (
       return;
     }
 
-  g_return_if_fail (plugin->instantiated);
-  g_return_if_fail (plugin->activated);
+  if (!plugin->instantiated || !plugin->activated)
+    {
+      return;
+    }
 
   /* if has MIDI input port */
   if (plugin->descr->num_midi_ins > 0)

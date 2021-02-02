@@ -343,7 +343,7 @@ create_track (
               return ERR_PLUGIN_INSTANTIATION_FAILED;
             }
 
-          if (plugin_instantiate (pl, true, NULL) < 0)
+          if (plugin_instantiate (pl, true, NULL) != 0)
             {
               char * message =
                 g_strdup_printf (
@@ -446,6 +446,12 @@ create_track (
                 "file %s",
                 self->file_descr->abs_path);
             }
+        }
+
+      if (pl)
+        {
+          g_return_val_if_fail (
+            pl->instantiated, -1);
         }
 
       if (pl && ZRYTHM_HAVE_UI &&
