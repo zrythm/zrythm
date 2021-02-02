@@ -394,23 +394,27 @@ plugin_descriptor_has_custom_ui (
         lv2_plugin_pick_ui (
           uis, LV2_PLUGIN_UI_WRAPPABLE,
           &wrappable_ui, NULL);
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-          &bridged_ui, NULL);
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_EXTERNAL,
-          &external_ui, NULL);
-        lilv_uis_free (uis);
-        lilv_node_free (uri);
-        if (wrappable_ui || bridged_ui ||
-            external_ui)
+        if (wrappable_ui)
           {
             return true;
           }
-        else
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
+          &bridged_ui, NULL);
+        if (bridged_ui)
           {
-            return false;
+            return true;
           }
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_EXTERNAL,
+          &external_ui, NULL);
+        if (external_ui)
+          {
+            return true;
+          }
+        lilv_uis_free (uis);
+        lilv_node_free (uri);
+        return false;
       }
       break;
     case PROT_VST:

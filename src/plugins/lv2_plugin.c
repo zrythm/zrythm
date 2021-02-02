@@ -1321,6 +1321,15 @@ lv2_plugin_create_descriptor_from_lilv (
 
   pd->uri = g_strdup (uri_str);
 
+#if defined (_WOE32) && defined (HAVE_CARLA)
+  /* open all LV2 plugins with custom UIs using
+   * carla */
+  if (plugin_descriptor_has_custom_ui (pd))
+    {
+      pd->open_with_carla = true;
+    }
+#endif
+
   return pd;
 }
 
