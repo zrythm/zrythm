@@ -41,6 +41,8 @@ typedef struct Position Position;
  * @{
  */
 
+#define UI_MAX_CURSORS 400
+
 #define UI_CACHES (zrythm_app->ui_caches)
 #define UI_COLORS (&UI_CACHES->colors)
 
@@ -127,7 +129,7 @@ typedef struct UiCursor
 typedef struct UiCaches
 {
   UiColors      colors;
-  UiCursor      cursors[400];
+  UiCursor      cursors[UI_MAX_CURSORS];
   int           num_cursors;
 } UiCaches;
 

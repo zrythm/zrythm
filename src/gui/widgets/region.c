@@ -33,6 +33,7 @@
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"

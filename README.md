@@ -33,15 +33,14 @@ towards a stable release.
 ![screenshot](https://www.zrythm.org/static/images/jun-26-2020.png)
 
 ### Supported plugins/instruments
-- Full support: LV2, VST2, AU, SFZ, SF2
-- Experimental: VST3
+- LV2, VST2, VST3, AU, SFZ, SF2, DSSI, LADSPA
 
 Support for all formats besides LV2 is
 possible thanks to
 [Carla](https://github.com/falkTX/Carla/).
 
 ### Supported backends
-- Audio: JACK, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
+- Audio: JACK, PulseAudio, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
 - MIDI: JACK, WindowsMME, RtMidi (ALSA sequencer/Windows MME/CoreMIDI)
 
 ### Supported platforms
@@ -117,7 +116,7 @@ enable us to spend more time working on the project.
 
 ----
 
-Copyright (C) 2018-2020 Alexandros Theodotou
+Copyright (C) 2018-2021 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright

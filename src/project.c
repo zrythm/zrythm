@@ -59,6 +59,7 @@
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/region.h"
@@ -558,6 +559,7 @@ recreate_main_window (void)
   g_message ("recreating main window...");
   MAIN_WINDOW =
     main_window_widget_new (zrythm_app);
+  g_warn_if_fail (MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
 }
 
 /**
@@ -784,6 +786,7 @@ project_create_default (
   if (have_ui)
     {
       g_message ("setting up main window...");
+  g_warn_if_fail (MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
       setup_main_window (self);
     }
 

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.36.0 -->
+<interface>
+  <requires lib="gtk+" version="3.22"/>
+  <template class="MainNotebookWidget"
+            parent="GtkNotebook">
+    <style>
+      <class name="main-notebook" />
+    </style>
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="tab_pos">bottom</property>
+    <child>
+      <object class="GtkPaned"
+        id="timeline_plus_event_viewer_paned">
+        <property name="visible">1</property>
+        <child>
+          <object class="TimelinePanelWidget"
+            id="timeline_panel">
+            <property name="visible">1</property>
+            <property name="hexpand">1</property>
+          </object>
+          <packing>
+            <property name="shrink">0</property>
+            <property name="resize">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="EventViewerWidget"
+            id="event_viewer">
+            <property name="visible">1</property>
+          </object>
+          <packing>
+            <property name="shrink">0</property>
+            <property name="resize">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Timeline</property>
+      </object>
+      <packing>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Connections</property>
+      </object>
+      <packing>
+        <property name="position">1</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Live View</property>
+      </object>
+      <packing>
+        <property name="position">2</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child type="action-end">
+      <object class="GtkStack" id="end_stack">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+  </template>
+</interface>

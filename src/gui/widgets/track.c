@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -44,6 +44,7 @@
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/mixer.h"
@@ -1340,6 +1341,7 @@ on_motion (
   if (event->type == GDK_ENTER_NOTIFY)
     {
       self->bg_hovered = true;
+      self->color_area_hovered = false;
       self->resize = 0;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)

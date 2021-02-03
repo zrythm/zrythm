@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,6 +27,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/editor_ruler.h"
@@ -43,9 +44,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TimelineMinimapWidget,
-               timeline_minimap_widget,
-               GTK_TYPE_OVERLAY)
+G_DEFINE_TYPE (
+  TimelineMinimapWidget, timeline_minimap_widget,
+  GTK_TYPE_OVERLAY)
 
 /**
  * Taken from arranger.c

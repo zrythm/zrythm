@@ -66,6 +66,7 @@
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/log_viewer.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/editor_ruler.h"
@@ -1239,11 +1240,11 @@ activate_toggle_top_panel (
 {
   g_return_if_fail (
     MW_CENTER_DOCK &&
-    MW_CENTER_DOCK->
+    MW_MAIN_NOTEBOOK->
       timeline_plus_event_viewer_paned);
   GtkWidget * widget =
     (GtkWidget *)
-    MW_CENTER_DOCK->
+    MW_MAIN_NOTEBOOK->
       timeline_plus_event_viewer_paned;
   gtk_widget_set_visible (
     widget, !gtk_widget_get_visible (widget));

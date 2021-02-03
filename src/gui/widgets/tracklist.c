@@ -33,6 +33,7 @@
 #include "gui/widgets/chord_track.h"
 #include "gui/widgets/drag_dest_box.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/tracklist.h"

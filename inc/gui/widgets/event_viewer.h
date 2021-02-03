@@ -45,7 +45,7 @@ typedef struct _ArrangerWidget ArrangerWidget;
  */
 
 #define MW_TIMELINE_EVENT_VIEWER \
-  MW_CENTER_DOCK->event_viewer
+  MW_MAIN_NOTEBOOK->event_viewer
 #define MW_EDITOR_EVENT_VIEWER \
   MW_BOT_DOCK_EDGE->event_viewer
 

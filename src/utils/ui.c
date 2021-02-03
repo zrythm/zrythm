@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
@@ -31,6 +31,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
@@ -68,6 +69,8 @@ ui_set_cursor_from_icon_name (
   /* check the cache first */
   for (int i = 0; i < UI_CACHES->num_cursors; i++)
     {
+      g_return_if_fail (i < UI_MAX_CURSORS);
+
       UiCursor * cursor =
         &UI_CACHES->cursors[i];
       if (string_is_equal (name, cursor->name) &&
@@ -90,16 +93,16 @@ ui_set_cursor_from_icon_name (
         "no pixbuf for %s", name);
       return;
     }
-  offset_x =
+  int adjusted_offset_x =
     MIN (
       offset_x, gdk_pixbuf_get_width (pixbuf) - 1);
-  offset_y =
+  int adjusted_offset_y =
     MIN (
       offset_y, gdk_pixbuf_get_height (pixbuf) - 1);
   GdkCursor * gdk_cursor =
     gdk_cursor_new_from_pixbuf (
       gdk_display_get_default (), pixbuf,
-      offset_x, offset_y);
+      adjusted_offset_x, adjusted_offset_y);
 
   /* add the cursor to the caches */
   UiCursor * cursor =

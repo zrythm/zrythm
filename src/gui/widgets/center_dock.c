@@ -20,6 +20,7 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/event_viewer.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/pinned_tracklist.h"
@@ -89,27 +90,14 @@ void
 center_dock_widget_setup (
   CenterDockWidget * self)
 {
-  /*gtk_paned_set_position (*/
-    /*self->center_paned, 2000);*/
-
-  timeline_panel_widget_setup (
-    self->timeline_panel);
-  event_viewer_widget_setup (
-    self->event_viewer,
-    EVENT_VIEWER_TYPE_TIMELINE);
-
-  /* set event viewer visibility */
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->event_viewer),
-    g_settings_get_boolean (
-      S_UI, "timeline-event-viewer-visible"));
-
   bot_dock_edge_widget_setup (
     self->bot_dock_edge);
   left_dock_edge_widget_setup (
     self->left_dock_edge);
   right_dock_edge_widget_setup (
     self->right_dock_edge);
+  main_notebook_widget_setup (
+    self->main_notebook);
 
   g_signal_connect (
     G_OBJECT (self), "draw",
@@ -128,10 +116,10 @@ center_dock_widget_tear_down (
       left_dock_edge_widget_tear_down (
         self->left_dock_edge);
     }
-  if (self->timeline_panel)
+  if (self->main_notebook)
     {
-      timeline_panel_widget_tear_down (
-        self->timeline_panel);
+      main_notebook_widget_tear_down (
+        self->main_notebook);
     }
 }
 
@@ -144,8 +132,7 @@ center_dock_widget_init (
   g_type_ensure (BOT_DOCK_EDGE_WIDGET_TYPE);
   g_type_ensure (RIGHT_DOCK_EDGE_WIDGET_TYPE);
   g_type_ensure (LEFT_DOCK_EDGE_WIDGET_TYPE);
-  g_type_ensure (TIMELINE_PANEL_WIDGET_TYPE);
-  g_type_ensure (EVENT_VIEWER_WIDGET_TYPE);
+  g_type_ensure (MAIN_NOTEBOOK_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -187,10 +174,8 @@ center_dock_widget_class_init (
   BIND_CHILD (center_paned);
   BIND_CHILD (left_rest_paned);
   BIND_CHILD (center_right_paned);
-  BIND_CHILD (event_viewer);
-  BIND_CHILD (timeline_panel);
+  BIND_CHILD (main_notebook);
   BIND_CHILD (left_dock_edge);
   BIND_CHILD (bot_dock_edge);
   BIND_CHILD (right_dock_edge);
-  BIND_CHILD (timeline_plus_event_viewer_paned);
 }

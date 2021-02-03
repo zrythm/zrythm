@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 #include "audio/tracklist.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap_bg.h"
 #include "gui/widgets/timeline_panel.h"

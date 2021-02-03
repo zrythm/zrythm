@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,6 +32,7 @@
 #include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"

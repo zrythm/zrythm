@@ -85,6 +85,7 @@ widget_srcs = files([
   'left_dock_edge.c',
   'live_waveform.c',
   'log_viewer.c',
+  'main_notebook.c',
   'main_window.c',
   'marker.c',
   'meter.c',

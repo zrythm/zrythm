@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -61,10 +62,11 @@ void
 timeline_panel_widget_setup (
   TimelinePanelWidget * self)
 {
+  g_return_if_fail (
+    Z_IS_TIMELINE_PANEL_WIDGET (self));
 
   tracklist_widget_setup (
-    self->tracklist,
-    TRACKLIST);
+    self->tracklist, TRACKLIST);
   /*pinned_tracklist_widget_setup (*/
     /*self->pinned_tracklist,*/
     /*TRACKLIST);*/
@@ -128,6 +130,9 @@ timeline_panel_widget_setup (
   g_signal_connect (
     G_OBJECT (adj), "value-changed",
     G_CALLBACK (on_hadj_value_changed), self);
+
+  timeline_toolbar_widget_setup (
+    self->timeline_toolbar);
 }
 
 /**

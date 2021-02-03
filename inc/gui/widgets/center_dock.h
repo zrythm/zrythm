@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,19 +33,16 @@
 #define CENTER_DOCK_WIDGET_TYPE \
   (center_dock_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  CenterDockWidget,
-  center_dock_widget,
-  Z, CENTER_DOCK_WIDGET,
-  GtkBox)
+  CenterDockWidget, center_dock_widget,
+  Z, CENTER_DOCK_WIDGET, GtkBox)
 
 typedef struct _LeftDockEdgeWidget
   LeftDockEdgeWidget;
 typedef struct _RightDockEdgeWidget
   RightDockEdgeWidget;
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
-typedef struct _TimelinePanelWidget
-  TimelinePanelWidget;
-typedef struct _EventViewerWidget EventViewerWidget;
+typedef struct _MainNotebookWidget
+  MainNotebookWidget;
 
 /**
  * @addtogroup widgets
@@ -62,15 +59,7 @@ typedef struct _CenterDockWidget
 {
   GtkBox               parent_instance;
 
-  /** Event viewr + timeline panel. */
-  GtkPaned *
-    timeline_plus_event_viewer_paned;
-
-  /** Event viewer. */
-  EventViewerWidget *   event_viewer;
-
-  /** Timeline panel. */
-  TimelinePanelWidget * timeline_panel;
+  MainNotebookWidget *  main_notebook;
 
   GtkPaned *            left_rest_paned;
   GtkPaned *            center_right_paned;

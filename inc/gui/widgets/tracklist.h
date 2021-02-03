@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,10 +27,8 @@
 #define TRACKLIST_WIDGET_TYPE \
   (tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TracklistWidget,
-  tracklist_widget,
-  Z, TRACKLIST_WIDGET,
-  GtkBox)
+  TracklistWidget, tracklist_widget,
+  Z, TRACKLIST_WIDGET, GtkBox)
 
 /**
  * @addtogroup widgets

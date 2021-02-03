@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,6 +48,7 @@
 #include "gui/widgets/header.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/inspector_track.h"
+#include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
@@ -247,15 +248,13 @@ main_window_widget_setup (
       return;
     }
 
-  header_widget_setup (MW_HEADER, PROJECT->title);
+  header_widget_setup (self->header, PROJECT->title);
 
   /* setup center dock */
-  center_dock_widget_setup (MW_CENTER_DOCK);
+  center_dock_widget_setup (self->center_dock);
 
   editor_toolbar_widget_setup (
     MW_EDITOR_TOOLBAR);
-  timeline_toolbar_widget_setup (
-    MW_TIMELINE_TOOLBAR);
 
   /* setup piano roll */
   if (MW_BOT_DOCK_EDGE && MW_CLIP_EDITOR)
@@ -331,7 +330,7 @@ static void
 main_window_finalize (
   MainWindowWidget * self)
 {
-  g_message ("finalizing...");
+  g_message ("finalizing main_window...");
 
   G_OBJECT_CLASS (
     main_window_widget_parent_class)->
@@ -383,6 +382,8 @@ main_window_widget_class_init (
 static void
 main_window_widget_init (MainWindowWidget * self)
 {
+  g_message ("Initing main window widget...");
+
   GActionEntry actions[] = {
 
     /* file menu */
@@ -576,4 +577,6 @@ main_window_widget_init (MainWindowWidget * self)
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (on_key_release), self);
+
+  g_message ("done");
 }
