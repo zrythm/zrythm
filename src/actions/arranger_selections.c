@@ -622,7 +622,11 @@ arranger_selections_action_new_automation_fill (
   bool      already_changed)
 {
   ArrangerSelectionsAction * self =
-    calloc (1, sizeof (ArrangerSelectionsAction));
+    object_new (ArrangerSelectionsAction);
+
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_ARRANGER_SELECTIONS;
+
   self->first_run = true;
 
   self->type = AS_ACTION_AUTOMATION_FILL;
@@ -643,7 +647,6 @@ arranger_selections_action_new_automation_fill (
       self->first_run = 0;
     }
 
-  UndoableAction * ua = (UndoableAction *) self;
   return ua;
 }
 
