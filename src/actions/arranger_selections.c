@@ -264,7 +264,7 @@ _create_action (
   ArrangerSelections * sel)
 {
   ArrangerSelectionsAction * self =
-    calloc (1, sizeof (ArrangerSelectionsAction));
+    object_new (ArrangerSelectionsAction);
 
   set_selections (self, sel, true, false);
   self->first_run = true;

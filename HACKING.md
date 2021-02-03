@@ -223,7 +223,7 @@ email/website) at the top.
 We prefer code contributions in the form of patches. Use `git format-patch` to generate patch files and
 post them in a new issue on
 [Redmine](https://redmine.zrythm.org/projects/zrythm/issues) or
-send them to the dev mailing list at dev@zrythm.org.
+send them to the dev mailing list at <~alextee/zrythm-devel@lists.sr.ht>.
 You may also use `git-send-email` for this.
 If you are having difficulties creating patches
 please contact us and we will guide you.
@@ -262,7 +262,7 @@ in `yaml_get_cyaml_config()`.
 
 ----
 
-Copyright (C) 2018-2020 Alexandros Theodotou
+Copyright (C) 2018-2021 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
