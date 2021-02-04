@@ -25,6 +25,7 @@
 #include "actions/transport_action.h"
 #include "actions/undoable_action.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "zrythm_app.h"
 
 #include <glib.h>
@@ -73,9 +74,9 @@ undoable_action_init_loaded (
 typedef struct EngineState
 {
   /** Engine running. */
-  int running;
+  int      running;
   /** Playback. */
-  bool playing;
+  bool     playing;
 } EngineState;
 
 /**
@@ -118,6 +119,9 @@ resume_engine (
 
   if (state->playing)
     {
+      transport_move_playhead (
+        TRANSPORT, &TRANSPORT->playhead_before_pause,
+        F_NO_PANIC, F_NO_SET_CUE_POINT);
       transport_request_roll (TRANSPORT);
     }
 }

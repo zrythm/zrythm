@@ -259,6 +259,13 @@ typedef struct Transport
   /** Paused signal from process thread. */
   ZixSem        paused;
 
+  /**
+   * Position of the playhead before pausing.
+   *
+   * Used by UndoableAction.
+   */
+  Position      playhead_before_pause;
+
   /** Play state. */
   Play_State    play_state;
 } Transport;

@@ -429,12 +429,14 @@ transport_request_pause (
 {
   self->play_state = PLAYSTATE_PAUSE_REQUESTED;
 
+  TRANSPORT->playhead_before_pause =
+    self->playhead_pos;
   if (!ZRYTHM_TESTING &&
       g_settings_get_boolean (
         S_TRANSPORT, "return-to-cue"))
     {
       transport_move_playhead (
-        self, &self->cue_pos, F_NO_PANIC,
+        self, &self->cue_pos, F_PANIC,
         F_NO_SET_CUE_POINT);
     }
 }

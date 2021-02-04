@@ -93,12 +93,50 @@ test_find_and_queue_metronome ()
     transport_add_to_playhead (
       TRANSPORT, AUDIO_ENGINE->block_length);
     metronome_queue_events (
-    AUDIO_ENGINE, 0, 1);
+      AUDIO_ENGINE, 0, 1);
 
     /* assert metronome is queued for 1.1.1.0 */
     g_assert_cmpint (
       SAMPLE_PROCESSOR->num_current_samples, ==, 1);
 
+  }
+
+  {
+    Position play_pos;
+    position_set_to_bar (&play_pos, 16);
+    position_add_frames (&play_pos, -4);
+    transport_set_playhead_pos (
+      TRANSPORT, &play_pos);
+
+    for (nframes_t i = 0; i < 200; i++)
+      {
+        g_message ("%u", i);
+        SAMPLE_PROCESSOR->num_current_samples = 0;
+        metronome_queue_events (
+          AUDIO_ENGINE, 0, 1);
+        g_assert_cmpint (
+          SAMPLE_PROCESSOR->num_current_samples, ==,
+          i == 4);
+        transport_add_to_playhead (
+          TRANSPORT, 1);
+      }
+
+    position_set_to_bar (&play_pos, 16);
+    position_add_frames (&play_pos, -4);
+    transport_set_playhead_pos (
+      TRANSPORT, &play_pos);
+    for (nframes_t i = 0; i < 200; i++)
+      {
+        g_message ("%u", i);
+        SAMPLE_PROCESSOR->num_current_samples = 0;
+        metronome_queue_events (
+          AUDIO_ENGINE, 0, 2);
+        g_assert_cmpint (
+          SAMPLE_PROCESSOR->num_current_samples, ==,
+          (i >= 3 && i <= 4));
+        transport_add_to_playhead (
+          TRANSPORT, 1);
+      }
   }
 
   test_helper_zrythm_cleanup ();

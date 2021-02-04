@@ -895,8 +895,10 @@ engine_process_prepare (
       /*zix_sem_post (&TRANSPORT->paused);*/
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
-        jack_transport_stop (
-          self->client);
+        {
+          jack_transport_stop (
+            self->client);
+        }
 #endif
     }
   else if (self->transport->play_state ==

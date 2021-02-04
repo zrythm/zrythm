@@ -174,10 +174,19 @@ find_and_queue_metronome (
         &bar_pos, i + 1);
       long bar_offset_long =
         bar_pos.frames - start_pos->frames;
-      g_return_if_fail (bar_offset_long >= 0);
+      if (bar_offset_long < 0)
+        {
+          g_critical (
+            "bar offset long (%ld) is < 0",
+            bar_offset_long);
+          g_message ("bar pos:");
+          position_print (&bar_pos);
+          g_message ("start pos:");
+          position_print (start_pos);
+        }
       long metronome_offset_long =
         bar_offset_long + loffset;
-      g_return_if_fail (bar_offset_long >= 0);
+      g_return_if_fail (metronome_offset_long >= 0);
       nframes_t metronome_offset =
         (nframes_t) metronome_offset_long;
       g_return_if_fail (
