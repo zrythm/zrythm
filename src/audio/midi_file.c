@@ -28,13 +28,15 @@
  */
 int
 midi_file_get_num_tracks (
-  const char * abs_path)
+  const char * abs_path,
+  bool         non_empty_only)
 {
   MIDI_FILE * mf =
     midiFileOpen (abs_path);
   g_return_val_if_fail (mf, -1);
 
   int num = midiReadGetNumTracks (mf);
+  g_debug ("%s: num tracks = %d", abs_path, num);
   midiFileClose (mf);
 
   return num;

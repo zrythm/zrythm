@@ -129,6 +129,10 @@ typedef struct ZRegion
    * from MIDI files.
    *
    * FIXME allocate.
+   *
+   * @note These are present in
+   *   \ref ZRegion.midi_notes and must not be
+   *   free'd separately.
    */
   MidiNote *      unended_notes[12000];
   int             num_unended_notes;

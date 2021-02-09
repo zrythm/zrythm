@@ -21,6 +21,7 @@
 #include "audio/audio_region.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
+#include "audio/midi_file.h"
 #include "audio/router.h"
 #include "audio/tracklist.h"
 #include "audio/track.h"
@@ -1006,14 +1007,35 @@ tracklist_handle_file_drop (
         {
           if (track_type == TRACK_TYPE_MIDI)
             {
-              ui_show_error_message (
-                MAIN_WINDOW,
-                _("Cannot drop MIDI files into "
-                "existing tracks"));
-              goto free_file_and_return;
-            }
+              if (track->type != TRACK_TYPE_MIDI &&
+                  track->type !=
+                    TRACK_TYPE_INSTRUMENT)
+                {
+                  ui_show_error_message (
+                    MAIN_WINDOW,
+                    _("Can only drop MIDI files on "
+                    "MIDI/instrument tracks"));
+                  goto free_file_and_return;
+                }
 
-          if (track_type == TRACK_TYPE_AUDIO &&
+              int num_nonempty_tracks =
+                midi_file_get_num_tracks (
+                  file->abs_path, true);
+              if (num_nonempty_tracks > 1)
+                {
+                  char msg[600];
+                  sprintf (
+                    msg,
+                    _("This MIDI file contains %d "
+                    "tracks. It cannot be dropped "
+                    "into an existing track"),
+                    num_nonempty_tracks);
+                  ui_show_error_message (
+                    MAIN_WINDOW, msg);
+                  goto free_file_and_return;
+                }
+            }
+          else if (track_type == TRACK_TYPE_AUDIO &&
               track->type != TRACK_TYPE_AUDIO)
             {
               ui_show_error_message (
@@ -1023,30 +1045,53 @@ tracklist_handle_file_drop (
               goto free_file_and_return;
             }
 
-          /* create audio region in audio track */
           int lane_pos =
             lane ? lane->pos :
             (track->num_lanes == 1 ?
              0 : track->num_lanes - 2);
           int idx_in_lane =
             track->lanes[lane_pos]->num_regions;
-          ZRegion * region =
-            audio_region_new (
-              -1, file->abs_path, NULL, -1, NULL,
-              0, pos, track->pos, lane_pos,
-              idx_in_lane);
-          track_add_region (
-            track, region, NULL, lane_pos,
-            F_GEN_NAME, F_PUBLISH_EVENTS);
-          arranger_object_select (
-            (ArrangerObject *) region, F_SELECT,
-            F_NO_APPEND);
+          ZRegion * region = NULL;
+          switch (track_type)
+            {
+            case TRACK_TYPE_AUDIO:
+              /* create audio region in audio
+               * track */
+              region =
+                audio_region_new (
+                  -1, file->abs_path, NULL, -1, NULL,
+                  0, pos, track->pos, lane_pos,
+                  idx_in_lane);
+              break;
+            case TRACK_TYPE_MIDI:
+              region =
+                midi_region_new_from_midi_file (
+                  pos, file->abs_path, track->pos,
+                  lane_pos, idx_in_lane, 0);
+              break;
+            default:
+              break;
+            }
 
-          UndoableAction * ua =
-            arranger_selections_action_new_create (
-              TL_SELECTIONS);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+          if (region)
+            {
+              track_add_region (
+                track, region, NULL, lane_pos,
+                F_GEN_NAME, F_PUBLISH_EVENTS);
+              arranger_object_select (
+                (ArrangerObject *) region,
+                F_SELECT,
+                F_NO_APPEND);
+              UndoableAction * ua =
+                arranger_selections_action_new_create (
+                  TL_SELECTIONS);
+              undo_manager_perform (
+                UNDO_MANAGER, ua);
+            }
+          else
+            {
+              g_warn_if_reached ();
+            }
 
           goto free_file_and_return;
         }

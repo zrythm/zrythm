@@ -121,7 +121,7 @@ tracklist_selections_action_new (
     {
       self->num_tracks =
         midi_file_get_num_tracks (
-          self->file_descr->abs_path);
+          self->file_descr->abs_path, true);
     }
   else
     {
@@ -389,17 +389,17 @@ create_track (
             pl->id.track_pos == track->pos);
         }
 
+      Position start_pos;
+      position_init (&start_pos);
+      if (self->have_pos)
+        {
+          position_set_to_pos (
+            &start_pos, &self->pos);
+        }
       if (self->track_type == TRACK_TYPE_AUDIO)
         {
           /* create an audio region & add to
            * track */
-          Position start_pos;
-          position_init (&start_pos);
-          if (self->have_pos)
-            {
-              position_set_to_pos (
-                &start_pos, &self->pos);
-            }
           ZRegion * ar =
             audio_region_new (
               self->pool_id,
@@ -419,9 +419,6 @@ create_track (
         {
           /* create a MIDI region from the MIDI
            * file & add to track */
-          Position start_pos;
-          position_set_to_pos (
-            &start_pos, PLAYHEAD);
           ZRegion * mr =
             midi_region_new_from_midi_file (
               &start_pos,

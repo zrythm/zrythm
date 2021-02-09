@@ -403,6 +403,8 @@ midi_region_new_from_midi_file (
     "%s: reading from %s...", __func__, abs_path);
 
   ZRegion * self = object_new (ZRegion);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) self;
 
   self->id.type = REGION_TYPE_MIDI;
 
@@ -410,14 +412,12 @@ midi_region_new_from_midi_file (
     midiFileOpen (abs_path);
   g_return_val_if_fail (mf, NULL);
 
-  bool print_details = false;
-
   char str[128];
   int ev;
   MIDI_MSG msg;
   int i, iNum;
   unsigned int j;
-  Position pos;
+  Position pos, global_pos;
   MidiNote * mn;
   double ticks;
 
@@ -448,12 +448,11 @@ midi_region_new_from_midi_file (
             ((double) msg.dwAbsPos * transport_ppqn) /
             ppqn;
           position_from_ticks (&pos, ticks);
-          if (print_details)
-            {
-              g_message (
-                "dwAbsPos: %d ", msg.dwAbsPos);
-            }
-          position_print (&pos);
+          position_from_ticks (
+            &global_pos,
+            r_obj->pos.total_ticks + ticks);
+          g_debug (
+            "dwAbsPos: %d ", msg.dwAbsPos);
 
           if (ZRYTHM_HAVE_UI &&
               pos.bars > TRANSPORT->total_bars -8)
@@ -472,23 +471,20 @@ midi_region_new_from_midi_file (
               ev = msg.iType;
             }
 
-          if (muGetMIDIMsgName (str, ev) &&
-              print_details)
+          if (muGetMIDIMsgName (str, ev))
             {
-              g_message("MIDI msg name: %s", str);
+              g_debug ("MIDI msg name: %s", str);
             }
           switch(ev)
             {
             case msgNoteOff:
-              if (print_details)
-                {
-                  g_message (
-                    "Note off at %d "
-                    "[ch %d pitch %d]",
-                    msg.dwAbsPos,
-                    msg.MsgData.NoteOff.iChannel,
-                    msg.MsgData.NoteOff.iNote);
-                }
+handle_note_off:
+              g_debug (
+                "Note off at %d "
+                "[ch %d pitch %d]",
+                msg.dwAbsPos,
+                msg.MsgData.NoteOff.iChannel,
+                msg.MsgData.NoteOff.iNote);
               mn =
                 midi_region_pop_unended_note (
                   self, msg.MsgData.NoteOff.iNote);
@@ -506,16 +502,23 @@ midi_region_new_from_midi_file (
                 }
               break;
             case msgNoteOn:
-              if (print_details)
+              /* 0 velocity is a note off */
+              if (msg.MsgData.NoteOn.iVolume == 0)
                 {
-                  g_message (
-                    "Note on at %d "
-                    "[ch %d pitch %d vel %d]",
-                    msg.dwAbsPos,
-                    msg.MsgData.NoteOn.iChannel,
-                    msg.MsgData.NoteOn.iNote,
-                    msg.MsgData.NoteOn.iVolume);
+                  msg.MsgData.NoteOff.iChannel =
+                    msg.MsgData.NoteOn.iChannel;
+                  msg.MsgData.NoteOff.iNote =
+                    msg.MsgData.NoteOn.iNote;
+                  goto handle_note_off;
                 }
+
+              g_debug (
+                "Note on at %d "
+                "[ch %d pitch %d vel %d]",
+                msg.dwAbsPos,
+                msg.MsgData.NoteOn.iChannel,
+                msg.MsgData.NoteOn.iNote,
+                msg.MsgData.NoteOn.iVolume);
               midi_region_start_unended_note (
                 self, &pos, NULL,
                 msg.MsgData.NoteOn.iNote,
@@ -525,106 +528,76 @@ midi_region_new_from_midi_file (
               muGetNameFromNote (
                 str,
                 msg.MsgData.NoteKeyPressure.iNote);
-              if (print_details)
-                {
-                  g_message (
-                    "(%.2d) %s %d",
-                    msg.MsgData.NoteKeyPressure.
-                      iChannel,
-                    str,
-                    msg.MsgData.NoteKeyPressure.
-                      iPressure);
-                }
+              g_debug (
+                "(%.2d) %s %d",
+                msg.MsgData.NoteKeyPressure.
+                  iChannel,
+                str,
+                msg.MsgData.NoteKeyPressure.
+                  iPressure);
               break;
             case  msgSetParameter:
               muGetControlName (
                 str,
                 msg.MsgData.NoteParameter.iControl);
-              if (print_details)
-                {
-                  g_message (
-                    "(%.2d) %s -> %d",
-                    msg.MsgData.NoteParameter.iChannel,
-                    str,
-                    msg.MsgData.NoteParameter.iParam);
-                }
+              g_debug (
+                "(%.2d) %s -> %d",
+                msg.MsgData.NoteParameter.iChannel,
+                str,
+                msg.MsgData.NoteParameter.iParam);
               break;
             case  msgSetProgram:
               muGetInstrumentName (
                 str,
                 msg.MsgData.ChangeProgram.iProgram);
-              if (print_details)
-                {
-                  g_message (
-                    "(%.2d) %s",
-                    msg.MsgData.ChangeProgram.iChannel,
-                    str);
-                }
+              g_debug (
+                "(%.2d) %s",
+                msg.MsgData.ChangeProgram.iChannel,
+                str);
               break;
             case msgChangePressure:
               muGetControlName (
                 str,
                 msg.MsgData.ChangePressure.
                   iPressure);
-              if (print_details)
-                {
-                  g_message (
-                    "(%.2d) %s",
-                    msg.MsgData.ChangePressure.iChannel,
-                    str);
-                }
+              g_debug (
+                "(%.2d) %s",
+                msg.MsgData.ChangePressure.iChannel,
+                str);
               break;
             case msgSetPitchWheel:
-              if (print_details)
-                {
-                  g_message (
-                    "(%.2d) %d",
-                    msg.MsgData.PitchWheel.iChannel,
-                    msg.MsgData.PitchWheel.iPitch);
-                }
+              g_debug (
+                "(%.2d) %d",
+                msg.MsgData.PitchWheel.iChannel,
+                msg.MsgData.PitchWheel.iPitch);
               break;
             case msgMetaEvent:
-              if (print_details)
-                {
-                  g_message ("---- meta events");
-                }
+              g_debug ("---- meta events");
               switch(msg.MsgData.MetaEvent.iType)
                 {
                 case metaMIDIPort:
-                  if (print_details)
-                    {
-                      g_message (
-                        "MIDI Port = %d",
-                        msg.MsgData.MetaEvent.Data.
-                          iMIDIPort);
-                    }
+                  g_debug (
+                    "MIDI Port = %d",
+                    msg.MsgData.MetaEvent.Data.
+                      iMIDIPort);
                   break;
                 case metaSequenceNumber:
-                  if (print_details)
-                    {
-                      g_message (
-                        "Sequence Number = %d",
-                        msg.MsgData.MetaEvent.Data.
-                          iSequenceNumber);
-                    }
+                  g_debug (
+                    "Sequence Number = %d",
+                    msg.MsgData.MetaEvent.Data.
+                      iSequenceNumber);
                   break;
                 case  metaTextEvent:
-                  if (print_details)
-                    {
-                      g_message (
-                        "Text = '%s'",
-                        msg.MsgData.MetaEvent.Data.Text.
-                          pData);
-                    }
+                  g_debug (
+                    "Text = '%s'",
+                    msg.MsgData.MetaEvent.Data.Text.
+                      pData);
                   break;
                 case  metaCopyright:
-                  if (print_details)
-                    {
-                      g_message (
-                        "Copyright = '%s'",
-                        msg.MsgData.MetaEvent.Data.Text.
-                          pData);
-                    }
+                  g_debug (
+                    "Copyright = '%s'",
+                    msg.MsgData.MetaEvent.Data.Text.
+                      pData);
                   break;
                 case  metaTrackName:
                   {
@@ -678,9 +651,9 @@ midi_region_new_from_midi_file (
                       return NULL;
                     }
                   arranger_object_end_pos_setter (
-                    (ArrangerObject *) self,  &pos);
+                    r_obj, &global_pos);
                   arranger_object_loop_end_pos_setter (
-                    (ArrangerObject *) self,  &pos);
+                    r_obj, &global_pos);
                   break;
                 case  metaSetTempo:
                   g_message (
@@ -740,7 +713,7 @@ midi_region_new_from_midi_file (
             {
             /* Already done a hex dump */
             }
-          else if (print_details)
+          else
             {
               char txt[600];
               char tmp[100];
@@ -758,13 +731,37 @@ midi_region_new_from_midi_file (
                   strcat (txt, tmp);
                 }
               strcat (txt, "]");
-              g_message ("%s", txt);
+              g_debug ("%s", txt);
             }
         }
     }
 
   midiReadFreeMessage (&msg);
   midiFileClose (mf);
+
+  if (self->num_unended_notes != 0)
+    {
+      g_warning (
+        "unended notes found: %d",
+        self->num_unended_notes);
+
+      double length =
+        arranger_object_get_length_in_ticks (
+          (ArrangerObject *) self);
+      position_from_ticks (&end_pos, length);
+
+      while (self->num_unended_notes > 0)
+        {
+          mn =
+            midi_region_pop_unended_note (self, -1);
+          arranger_object_end_pos_setter (
+            (ArrangerObject *) mn,  &end_pos);
+        }
+    }
+
+  g_return_val_if_fail (
+    position_is_before (
+      &self->base.pos, &self->base.end_pos), NULL);
 
   g_message ("%s: done", __func__);
 
@@ -1202,10 +1199,5 @@ midi_region_free_members (ZRegion * self)
     {
       arranger_object_free (
         (ArrangerObject *) self->midi_notes[i]);
-    }
-  for (int i = 0; i < self->num_unended_notes; i++)
-    {
-      arranger_object_free (
-        (ArrangerObject *) self->unended_notes[i]);
     }
 }

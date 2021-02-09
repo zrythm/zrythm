@@ -57,6 +57,17 @@ test_num_tracks_with_file (
   undo_manager_perform (
     UNDO_MANAGER, ua);
 
+  Track * first_track =
+    TRACKLIST->tracks[num_tracks_before];
+  track_select (
+    first_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_delete (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+
   g_assert_cmpint (
     TRACKLIST->num_tracks, ==,
     num_tracks_before + num_tracks);
@@ -1476,6 +1487,29 @@ test_multi_track_duplicate (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_delete_track_w_midi_file (void)
+{
+  test_helper_zrythm_init ();
+
+  char * midi_file =
+    g_build_filename (
+      TESTS_SRCDIR,
+      "format_1_two_tracks_with_data.mid",
+      NULL);
+  test_num_tracks_with_file (midi_file, 2);
+  g_free (midi_file);
+
+  g_assert_cmpint (
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 2]->
+      lanes[0]->regions[0]->num_midi_notes, ==, 7);
+  g_assert_cmpint (
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
+      lanes[0]->regions[0]->num_midi_notes, ==, 6);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1538,6 +1572,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test multi track duplicate",
     (GTestFunc) test_multi_track_duplicate);
+  g_test_add_func (
+    TEST_PREFIX "test delete track w midi file",
+    (GTestFunc) test_delete_track_w_midi_file);
 
   return g_test_run ();
 }

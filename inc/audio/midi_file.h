@@ -26,6 +26,8 @@
 #ifndef __AUDIO_MIDI_FILE_H__
 #define __AUDIO_MIDI_FILE_H__
 
+#include <stdbool.h>
+
 /**
  * @addtogroup audio
  *
@@ -37,7 +39,8 @@
  */
 int
 midi_file_get_num_tracks (
-  const char * abs_path);
+  const char * abs_path,
+  bool         non_empty_only);
 
 /**
  * @}
