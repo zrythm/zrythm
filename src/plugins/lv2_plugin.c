@@ -1179,12 +1179,12 @@ lv2_plugin_create_descriptor_from_lilv (
         "Ignoring LV2 Plugin %s because "
         "its buffer-size requirements "
         "cannot be satisfied.",
-        lilv_node_as_string(name));
+        lilv_node_as_string (name));
       lilv_nodes_free (required_features);
       lilv_node_free (name);
       return NULL;
   }
-  lilv_nodes_free(required_features);
+  lilv_nodes_free (required_features);
 
   /* set descriptor info */
   PluginDescriptor * pd =

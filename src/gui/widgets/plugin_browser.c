@@ -439,33 +439,28 @@ show_plugin_context_menu (
   CONNECT_SIGNAL;
 
 #ifdef HAVE_CARLA
-  /* carla doesn't work with cv ports */
-  if (descr->num_cv_ins == 0 &&
-      descr->num_cv_outs == 0)
+  CREATE_WITH_LBL (
+    _("Add to project (carla)"));
+  new_descr->open_with_carla = true;
+  new_descr->bridge_mode = CARLA_BRIDGE_NONE;
+  CONNECT_SIGNAL;
+
+  if (plugin_descriptor_has_custom_ui (descr) &&
+      z_carla_discovery_get_bridge_mode (descr) ==
+        CARLA_BRIDGE_NONE)
     {
       CREATE_WITH_LBL (
-        _("Add to project (carla)"));
+        _("Add to project (bridged UI)"));
       new_descr->open_with_carla = true;
-      new_descr->bridge_mode = CARLA_BRIDGE_NONE;
-      CONNECT_SIGNAL;
-
-      if (plugin_descriptor_has_custom_ui (descr) &&
-          z_carla_discovery_get_bridge_mode (descr) ==
-            CARLA_BRIDGE_NONE)
-        {
-          CREATE_WITH_LBL (
-            _("Add to project (bridged UI)"));
-          new_descr->open_with_carla = true;
-          new_descr->bridge_mode = CARLA_BRIDGE_UI;
-          CONNECT_SIGNAL;
-        }
-
-      CREATE_WITH_LBL (
-        _("Add to project (bridged full)"));
-      new_descr->open_with_carla = true;
-      new_descr->bridge_mode = CARLA_BRIDGE_FULL;
+      new_descr->bridge_mode = CARLA_BRIDGE_UI;
       CONNECT_SIGNAL;
     }
+
+  CREATE_WITH_LBL (
+    _("Add to project (bridged full)"));
+  new_descr->open_with_carla = true;
+  new_descr->bridge_mode = CARLA_BRIDGE_FULL;
+  CONNECT_SIGNAL;
 #endif
 
   /* add to collection */
