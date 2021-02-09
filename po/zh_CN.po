@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-02 14:58+0000\n"
-"PO-Revision-Date: 2021-01-30 03:32+0000\n"
+"PO-Revision-Date: 2021-02-08 10:50+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -129,9 +129,8 @@ msgid "Invert"
 msgstr ""
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
-#, fuzzy
 msgid "Normalize"
-msgstr "正常"
+msgstr "正常化"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
@@ -193,7 +192,7 @@ msgstr "MIDI组"
 #: inc/audio/curve.h:91 src/audio/curve.c:39
 #, c-format
 msgid "Exponent"
-msgstr "典型"
+msgstr "指数"
 
 #: inc/audio/curve.h:93 src/audio/curve.c:42
 #, c-format
@@ -414,7 +413,7 @@ msgid "%s has crashed. "
 msgstr "%s 已崩溃。 "
 
 #: src/main.c:133
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
@@ -451,34 +450,38 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
-"用法:%s[选项][项目-名称]\n"
+"用法: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
-"选项:\n"
-"  -h，--help    显示此帮助消息并退出\n"
-"  --convert-yaml-to-zpj  将yaml项目转换为 .zpj格式\n"
-"  --convert-zpj-to-yaml  将zpj项目转换为YAML格式\n"
-"  -o，--output  指定输出文件\n"
-"  -p，--print-settings  打印当前设置\n"
-"  --漂亮     以用户友好的方式打印输出\n"
-"  --恢复出厂设置    重置到出厂设置\n"
-"  --gdb    通过GDB（调试器）运行%s\n"
-"  --callgrind    通过callgrind（探查器）运行%s\n"
-"  --audio-backend    重写要使用的音频后端\n"
-"  --MIDI-Backend    重写要使用的MIDI后端\n"
-"  --dummy    将音频和MIDI后端重写到dummy\n"
-"  --buf-size重写用于音频后端的缓冲区大小，如果适用\n"
-"  --interactive    交互模式（如果适用）\n"
-"  -v，--version    输出版本信息并退出\n"
+"Options:\n"
+"  -h, --help      显示帮助信息并退出\n"
+"  --convert-yaml-to-zpj  将 yaml 项目转换为 .zpj 格式\n"
+"  --convert-zpj-to-yaml  将 zpj 项目转换为 YAML 格式\n"
+"  -o, --output    指定输出文件\n"
+"  -p, --print-settings  打印当前设置\n"
+"  --pretty        以用户友好的方式打印输出\n"
+"  --reset-to-factory  重置为出厂设置\n"
+"  --gdb           通过 GDB (调试器)运行 %s\n"
+"  --callgrind     通过 callgrind (profiler) 运行%s\n"
+"  --gen-project   从一枚脚本生成一个项目\n"
+"  --audio-backend  覆盖要用的音频后端\n"
+"  --midi-backend  覆盖要用的 MIDI 后端\n"
+"  --dummy         将音频和 MIDI 后端均覆盖到 dummy\n"
+"  --buf-size      覆盖音频后端使用的缓冲大小，如果适用的话\n"
+"  --samplerate    覆盖音频后端使用的采样率，如果适用的话\n"
+"  --interactive   交互模式，如果适用的话\n"
+"  -v, --version   输出版本信息并退出\n"
 "\n"
-"示例:\n"
-"  %s -v       print version\n"
-"  %s --callgrind --dummy --buf-size=8192    使用dummy配置%s后端和缓冲区大小为"
-"8192\n"
-"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml将压缩的zpj项"
-"目转换为YAML\n"
-"  %s -p --pretty pretty-打印当前设置\n"
+"样例:\n"
+"  %s -v      打印版本\n"
+"  %s --callgrind --dummy --buf-size=8192  使用 dummy 后端且缓冲大小为 8192的 profile %s "
 "\n"
-"向%s报告错误\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  将压缩的 zpj "
+"项目转换为 YAML\n"
+"  %s --gen-project --input myscript.scm --output myproject  使用 myscript.scm "
+"生成一个项目\n"
+"  %s -p --pretty  美观打印当前字符串\n"
+"\n"
+"请报告问题到  %s\n"
 
 #: src/main.c:180
 #, c-format
@@ -523,7 +526,7 @@ msgid "libguile is required for this option\n"
 msgstr ""
 
 #: src/main.c:494
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
 "\n"
@@ -536,15 +539,15 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 Zrythm贡献者\n"
+"%s-%s Copyright (C) 2018-2021 Zrythm 贡献者\n"
 "\n"
 "%s 绝对没有担保！\n"
 "\n"
-"这是自由软件，欢迎您重新发布它\n"
-"在某些条件下。有关详细信息，请参阅文件`COPYING'。\n"
+"这是自由软件，欢迎您在特定条件下\n"
+"对其进行再分发。有关详细信息，请参阅文件`COPYING'。\n"
 "\n"
-"将批注和错误写入%s\n"
-"在https://liberapay.com/Zrythm支持此项目\n"
+"写评论和程序错误到 %s\n"
+"在 https://liberapay.com/Zrythm 支持此项目\n"
 "\n"
 
 #: src/zrythm_app.c:218
@@ -1117,18 +1120,16 @@ msgid "Add to project (bridged full)"
 msgstr "添加到项目（桥接完整）"
 
 #: src/gui/widgets/plugin_browser.c:474
-#, fuzzy
 msgid "Add to collection"
-msgstr "添加到项目"
+msgstr "添加到集锦"
 
 #: src/gui/widgets/plugin_browser.c:523
 msgid "Remove from collection"
 msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:640 src/gui/widgets/plugin_browser.c:677
-#, fuzzy
 msgid "Collection name"
-msgstr "集合"
+msgstr "集锦名称"
 
 #: src/gui/widgets/plugin_browser.c:711
 #, c-format
@@ -1137,9 +1138,8 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:752
-#, fuzzy
 msgid "Rename"
-msgstr "区域名"
+msgstr "重命名"
 
 #: src/gui/widgets/plugin_browser.c:763
 #: src/gui/widgets/port_connections_tree.c:183
@@ -1324,7 +1324,7 @@ msgstr "淡入淡出预设"
 
 #: src/gui/widgets/timeline_arranger.c:1229
 msgid "Exponential"
-msgstr "指数"
+msgstr "指数的"
 
 #: src/gui/widgets/timeline_arranger.c:1230
 msgid "Elliptic"
@@ -1349,7 +1349,7 @@ msgstr "导出..."
 #: src/gui/widgets/automation_arranger.c:261
 #: build/data/org.zrythm.Zrythm.gschema.xml:685
 msgid "Curve algorithm"
-msgstr "曲线算法"
+msgstr "Curve 算法"
 
 #: src/gui/widgets/header.c:101
 #, c-format
@@ -1414,7 +1414,7 @@ msgstr "重做"
 #: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:239
 #: build/data/org.zrythm.Zrythm.gschema.xml:695
 msgid "Undo"
-msgstr "撤消"
+msgstr "撤销"
 
 #: src/gui/widgets/home_toolbar.c:206
 msgid "Cut"
@@ -1441,14 +1441,12 @@ msgid "Loop Selection"
 msgstr "循环选择"
 
 #: src/gui/widgets/home_toolbar.c:240
-#, fuzzy
 msgid "Undo..."
-msgstr "撤消"
+msgstr "撤消..."
 
 #: src/gui/widgets/home_toolbar.c:244
-#, fuzzy
 msgid "Redo..."
-msgstr "重做"
+msgstr "重做..."
 
 #: src/gui/widgets/right_dock_edge.c:98
 msgid "Plugin Browser"
@@ -1481,7 +1479,7 @@ msgstr "类型"
 
 #: src/gui/widgets/plugin_properties_expander.c:166
 msgid "Banks"
-msgstr "Banks"
+msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:182
 msgid "Presets"
@@ -1516,9 +1514,8 @@ msgid "Macros"
 msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:383
-#, fuzzy
 msgid "Channel"
-msgstr "通道%s"
+msgstr "通道"
 
 #: src/gui/widgets/automatable_selector_popover.c:394
 #, c-format
@@ -1862,7 +1859,6 @@ msgid "Arm for recording"
 msgstr "用于录制的 Arm"
 
 #: src/gui/widgets/track.c:1221
-#, fuzzy
 msgid "Hide lanes"
 msgstr "隐藏音轨"
 
@@ -2007,11 +2003,11 @@ msgid "Export Progress"
 msgstr "导出进度"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:85
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%sPlease help us fix this by %ssubmitting a bug report%s using the template "
 "below or by %ssending an email%s."
-msgstr "%s请通过%s提交错误报告%s来帮助我们解决此问题。"
+msgstr "%s请帮助修复这个问题%s，方法是使用下方的模板或%s发送一封电子邮件%s提交一份错误报告%s。"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:112
 #, c-format
@@ -2066,7 +2062,7 @@ msgstr "%s 图标"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:165
 msgid "_Select"
-msgstr "_Select"
+msgstr "_选择"
 
 #: src/gui/backend/arranger_object.c:2691
 #, c-format
@@ -2263,9 +2259,9 @@ msgid "Modulators"
 msgstr "调制器"
 
 #: src/audio/exporter.c:138
-#, fuzzy, c-format
+#, c-format
 msgid "Format %s not supported yet"
-msgstr "要导出的格式。"
+msgstr "格式 %s 尚不被支持"
 
 #: src/audio/exporter.c:233
 msgid "SF INFO invalid"
@@ -2356,9 +2352,8 @@ msgid "Prefader Balance"
 msgstr "前推子平衡"
 
 #: src/audio/fader.c:151
-#, fuzzy
 msgid "Fader Balance"
-msgstr "音量调节器平衡"
+msgstr "音量控制器平衡"
 
 #: src/audio/fader.c:170
 #, fuzzy
@@ -2366,9 +2361,8 @@ msgid "Prefader Mute"
 msgstr "前推子静音"
 
 #: src/audio/fader.c:170
-#, fuzzy
 msgid "Fader Mute"
-msgstr "音量调节器静音"
+msgstr "音量控制器静音"
 
 #: src/audio/fader.c:194
 msgid "Ch Pre-Fader in"
@@ -2472,64 +2466,52 @@ msgid "Set control value"
 msgstr "设置控件值"
 
 #: src/actions/arranger_selections.c:2481
-#, fuzzy
 msgid "Create arranger selections"
-msgstr "合并选定内容"
+msgstr "创建编曲者选集"
 
 #: src/actions/arranger_selections.c:2484
-#, fuzzy
 msgid "Delete arranger selections"
-msgstr "合并选定内容"
+msgstr "删除编曲者选集"
 
 #: src/actions/arranger_selections.c:2488
-#, fuzzy
 msgid "Duplicate arranger selections"
-msgstr "合并选定内容"
+msgstr "复制编曲者选集"
 
 #: src/actions/arranger_selections.c:2491
-#, fuzzy
 msgid "Move arranger selections"
-msgstr "合并选定内容"
+msgstr "移动编曲者选集"
 
 #: src/actions/arranger_selections.c:2494
-#, fuzzy
 msgid "Link arranger selections"
-msgstr "合并选定内容"
+msgstr "连接编曲者选集"
 
 #: src/actions/arranger_selections.c:2497
-#, fuzzy
 msgid "Record arranger selections"
-msgstr "合并选定内容"
+msgstr "记录编曲者选集"
 
 #: src/actions/arranger_selections.c:2500
-#, fuzzy
 msgid "Edit arranger selections"
-msgstr "编辑排列器对象"
+msgstr "编辑编曲者选集"
 
 #: src/actions/arranger_selections.c:2503
-#, fuzzy
 msgid "Automation fill"
-msgstr "自动化"
+msgstr "自动填充"
 
 #: src/actions/arranger_selections.c:2506
-#, fuzzy
 msgid "Split arranger selections"
-msgstr "合并选定内容"
+msgstr "分割编曲者选集"
 
 #: src/actions/arranger_selections.c:2509
-#, fuzzy
 msgid "Merge arranger selections"
-msgstr "合并选定内容"
+msgstr "合并编曲者选集"
 
 #: src/actions/arranger_selections.c:2512
-#, fuzzy
 msgid "Resize arranger selections"
-msgstr "合并选定内容"
+msgstr "调整编曲者选集尺寸"
 
 #: src/actions/arranger_selections.c:2516
-#, fuzzy
 msgid "Quantize arranger selections"
-msgstr "合并选定内容"
+msgstr "量化编曲者选集"
 
 #: src/actions/midi_mapping_action.c:211
 msgid "MIDI mapping enable"
@@ -2655,12 +2637,10 @@ msgid "Change BPM"
 msgstr "更改BPM"
 
 #: src/actions/transport_action.c:200
-#, fuzzy
 msgid "Change Time Signature"
-msgstr "时间符号"
+msgstr "更改拍子记号"
 
 #: src/actions/channel_send_action.c:194
-#, fuzzy
 msgid "Channel send connection"
 msgstr "通道发送连接"
 
@@ -2722,9 +2702,8 @@ msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "实例化插件%s时出错。有关详细信息，请参阅日志。"
 
 #: src/actions/tracklist_selections.c:1105
-#, fuzzy
 msgid "Copy Track"
-msgstr "独奏曲目"
+msgstr "复制曲目"
 
 #: src/actions/tracklist_selections.c:1110
 #: src/actions/tracklist_selections.c:1200
@@ -2792,9 +2771,8 @@ msgid "Change icon"
 msgstr "修改图标"
 
 #: src/actions/tracklist_selections.c:1181
-#, fuzzy
 msgid "Change comment"
-msgstr "修改图标"
+msgstr "修改注解"
 
 #: src/actions/tracklist_selections.c:1195
 msgid "Move Track"
@@ -3165,7 +3143,6 @@ msgid "Mixer"
 msgstr "混音器"
 
 #: resources/ui/bot_dock_edge.ui:183
-#, fuzzy
 msgid "Chord pad"
 msgstr "和弦垫"
 
@@ -3236,7 +3213,7 @@ msgstr "aug"
 
 #: resources/ui/chord_selector_window.ui:347
 msgid "Accent"
-msgstr "Accent"
+msgstr "重音符号"
 
 #: resources/ui/chord_selector_window.ui:375
 msgid "7"
@@ -3823,19 +3800,16 @@ msgid "Link"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:326
-#, fuzzy
 msgid "Link length to snap setting"
-msgstr "要对齐的note长度"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:339
-#, fuzzy
 msgid "Last object"
-msgstr "加载项目"
+msgstr "上个项目"
 
 #: resources/ui/snap_grid_popover.ui:340
-#, fuzzy
 msgid "Use last created object's length"
-msgstr "时间线对象长度"
+msgstr "使用上次创建对象的长度"
 
 #: resources/ui/range_action_buttons.ui:58
 msgid "Remove range"
@@ -4039,55 +4013,48 @@ msgid "Timeline object length"
 msgstr "时间线对象长度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:236
-#, fuzzy
 msgid "Default length to use when creating timeline objects."
-msgstr "创建时间线对象时使用的默认长度，如在编辑模式下。"
+msgstr "创建时间线对象时使用的默认长度。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:240
 msgid "Timeline object length type"
 msgstr "时间线对象长度类型"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:241
-#, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
 "triplet)."
-msgstr "创建时间线对象时使用的默认长度类型，如在编辑模式下。"
+msgstr "创建时间线对象时使用的默认长度类型(普通长度、虚线长度、三元组长度)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:246
-#, fuzzy
 msgid "Last timeline object's length"
-msgstr "时间线对象长度"
+msgstr "上一个时间轴对象的长度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:247
-#, fuzzy
 msgid "The length of the last created timeline object (in ticks)."
-msgstr "创建时间线对象时使用的默认长度，如在编辑模式下。"
+msgstr "上个创建的时间轴对象的长度(以刻度为单位)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:251
 msgid "Editor object length"
 msgstr "编辑器对象长度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:252
-#, fuzzy
 msgid "Default length to use when creating editor objects."
-msgstr "创建时间线对象时使用的默认长度，如在编辑模式下。"
+msgstr "创建编辑器对象时使用的默认长度。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:256
 msgid "Editor object length type"
 msgstr "编辑器对象长度类型"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:257
-#, fuzzy
 msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
 "triplet)."
-msgstr "创建时间线对象时使用的默认长度类型，如在编辑模式下。"
+msgstr "创建编辑器对象时使用的默认长度类型(普通、带点、三元组)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:262
-#, fuzzy
 msgid "Last editor object's length"
-msgstr "编辑器对象长度"
+msgstr "上个编辑器对象长度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid "The length of the last created editor object (in ticks)."
@@ -4139,9 +4106,8 @@ msgid ""
 msgstr "在MIDI编辑器中显示的MIDI修饰符（只有速度在以下时刻有效）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:292
-#, fuzzy
 msgid "Show automation values"
-msgstr "显示自动化通道"
+msgstr "显示自动值"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:293
 msgid "Whether to show automation values in the automation editor."
@@ -4220,34 +4186,28 @@ msgid "Selected plugin browser filter"
 msgstr "选定的插件浏览器筛选器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:342
-#, fuzzy
 msgid "Plugin browser collections"
-msgstr "插件浏览器选项卡"
+msgstr "插件浏览器集锦"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:343
-#, fuzzy
 msgid "Tree paths of the selected collections in the plugin browser."
-msgstr "插件/文件浏览器顶部的高度。"
+msgstr "插件浏览器中所选集锦的树路径。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:347
-#, fuzzy
 msgid "Plugin browser categories"
-msgstr "插件浏览器筛选器"
+msgstr "插件浏览器类别"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:348
-#, fuzzy
 msgid "Tree paths of the selected categories in the plugin browser."
-msgstr "插件/文件浏览器顶部的高度。"
+msgstr "插件浏览器中所选类别的树路径。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:352
-#, fuzzy
 msgid "Plugin browser protocols"
-msgstr "插件浏览器选项卡"
+msgstr "插件浏览器协议"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:353
-#, fuzzy
 msgid "Tree paths of the selected protocols in the plugin browser."
-msgstr "插件/文件浏览器顶部的高度。"
+msgstr "插件浏览器中所选协议的树路径。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:357
 msgid "Timeline event viewer visibility"
@@ -4318,9 +4278,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:398
-#, fuzzy
 msgid "Last used audio function"
-msgstr "上次使用的自动化功能"
+msgstr "上次使用的音频功能"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:399
 msgid ""
@@ -4481,9 +4440,8 @@ msgid "Punch mode enabled"
 msgstr "已启用 Punch 模式"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:522
-#, fuzzy
 msgid "Whether punch in/out is enabled for recording."
-msgstr "录音是否启用了 punch in/out。"
+msgstr "录制是否启用了 punch in/out。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:526
 msgid "Start playback on MIDI input"
@@ -4535,7 +4493,7 @@ msgstr "要传递到后端的缓冲区大小。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:570
 msgid "MIDI backend"
-msgstr "MIDI后端"
+msgstr "MIDI 后端"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:571
 msgid "The MIDI backend to use."
@@ -4551,7 +4509,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:580
 msgid "MIDI controllers"
-msgstr "MIDI控制器"
+msgstr "MIDI 控制器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:581
 msgid "A list of controllers to enable."
@@ -4568,15 +4526,15 @@ msgstr "用于保存用户数据的目录。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:604
 msgid "UIs"
-msgstr "UI"
+msgstr "用户界面"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:608
 msgid "Open UI on instantiation"
-msgstr "在实例化时打开UI"
+msgstr "实例化时打开用户界面"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:609
 msgid "Open plugin UIs when they are instantiated."
-msgstr "当插件UI被实例化时打开它们。"
+msgstr "当插件用户界面实例化时打开它们。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:613
 msgid "Keep window on top"
@@ -4584,19 +4542,19 @@ msgstr "将窗口保持在顶部"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:614
 msgid "Always show plugin UIs on top of the main window."
-msgstr "总是在主窗口的顶部显示插件UI."
+msgstr "总是在主窗口的顶部显示插件用户界面。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:618
 msgid "Generic UIs"
-msgstr "通用UI"
+msgstr "通用用户界面"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:619
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
-msgstr "显示由Zrythm生成的通用插件UI，而不是自定义的。"
+msgstr "显示 Zrythm 生成的通用插件用户界面，而不是自定义的用户界面。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:623
 msgid "Bridge unsupported UIs"
-msgstr "桥接不支持的UI"
+msgstr "将不受支持的用户界面结合在一起"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid ""
@@ -4612,11 +4570,11 @@ msgstr "刷新率"
 #: build/data/org.zrythm.Zrythm.gschema.xml:630
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
-msgstr "刷新率（以赫兹为单位）。如果设置为0，将使用屏幕的刷新率。"
+msgstr "赫兹为单位的刷新率，如设为 0 将使用屏幕刷新率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:647
 msgid "VST plugins"
-msgstr "VST插件"
+msgstr "VST 插件"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:648
 msgid ""
@@ -4646,35 +4604,34 @@ msgstr "要在其中扫描SF2乐器的搜索路径。重复路径将是重复数
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:671
 msgid "Fade algorithm"
-msgstr "衰落算法"
+msgstr "Fade 算法"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:672
 msgid "Default fade algorithm to use for fade in/outs."
-msgstr "用于淡入/淡出的默认淡入算法。"
+msgstr "用于淡入/淡出的默认 fade 算法。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:686
 msgid "Default algorithm to use for automation curves."
 msgstr "用于自动化曲线的默认算法。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:700
+#, fuzzy
 msgid "Undo stack length"
-msgstr "撤消堆栈长度"
+msgstr "撤销堆栈长度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:701
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
-msgstr "最大撤消历史堆栈长度。设置为-1表示无限制。"
+msgstr "最大撤消历史堆栈长度。设置为 -1 表示无限制。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:716
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
-msgstr ""
-"自动保存项目的间隔，以分钟为单位。如果出现以下情况，将禁用自动保存。：设置为0"
-"时."
+msgstr "自动保存项目的间隔，以分钟为单位。若设置为 0 将禁用自动保存。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:724
 msgid "UI"
-msgstr "UI"
+msgstr "用户界面"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:729
 msgid "Draw detail"
@@ -4685,14 +4642,12 @@ msgid "Level of detail to use when drawing graphics."
 msgstr "绘制图形时使用的详细级别。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:735
-#, fuzzy
 msgid "Font scale"
-msgstr "音阶内"
+msgstr "字体缩放"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:736
-#, fuzzy
 msgid "Font scale."
-msgstr "音阶内"
+msgstr "字体缩放。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:740
 msgid "User interface language"
@@ -4712,7 +4667,7 @@ msgstr "Pan"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:754
 msgid "Pan algorithm"
-msgstr "Pan算法"
+msgstr "Pan 算法"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:755
 msgid ""
