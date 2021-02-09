@@ -9,11 +9,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-02-02 14:58+0000\n"
+"POT-Creation-Date: 2021-02-09 04:57+0000\n"
 "PO-Revision-Date: 2021-02-09 04:52+0000\n"
 "Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
-"\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
+">\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,8 +22,8 @@ msgstr ""
 "X-Generator: Weblate 4.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
-#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
-#: inc/audio/engine.h:280
+#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:220
+#: inc/audio/engine.h:287
 msgid "Dummy"
 msgstr "Εικονικό"
 
@@ -31,7 +31,7 @@ msgstr "Εικονικό"
 #: src/gui/widgets/channel_send_selector.c:189
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
-#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector.c:56
 #: src/gui/widgets/route_target_selector_popover.c:153
 msgid "None"
 msgstr "Κανένα"
@@ -41,7 +41,7 @@ msgstr "Κανένα"
 msgid "All"
 msgstr "Όλα"
 
-#: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:106
+#: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:107
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
@@ -60,7 +60,7 @@ msgid "Scale Object"
 msgstr "Αντικείμενο κλίμακας"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:167
-#: src/gui/widgets/event_viewer.c:109
+#: src/gui/widgets/event_viewer.c:110
 msgid "Marker"
 msgstr "Δείκτης"
 
@@ -68,20 +68,20 @@ msgstr "Δείκτης"
 msgid "Automation Point"
 msgstr "Σημείο αυτοματισμού"
 
-#: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
+#: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:549
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 msgid "Velocity"
 msgstr "Ταχύτητα"
 
-#: inc/utils/ui.h:75
+#: inc/utils/ui.h:77
 msgid "High"
 msgstr "Ψηλά"
 
-#: inc/utils/ui.h:76
+#: inc/utils/ui.h:78
 msgid "Normal"
 msgstr "Κανονικά"
 
-#: inc/utils/ui.h:77
+#: inc/utils/ui.h:79
 msgid "Low"
 msgstr "Χαμηλά"
 
@@ -113,12 +113,12 @@ msgstr "Επιλογή _όλων"
 msgid "Duplicate"
 msgstr "Δημιουργία διπλότυπου"
 
-#: inc/utils/gtk.h:80 src/gui/widgets/track.c:1199
+#: inc/utils/gtk.h:80 src/gui/widgets/track.c:1200
 #: resources/ui/fader_buttons.ui:99
 msgid "Mute"
 msgstr "Σίγαση"
 
-#: inc/utils/gtk.h:84 src/gui/widgets/track.c:1195
+#: inc/utils/gtk.h:84 src/gui/widgets/track.c:1196
 msgid "Unmute"
 msgstr "Κατάργηση σίγασης"
 
@@ -145,17 +145,17 @@ msgid "Instrument"
 msgstr "Όργανο"
 
 #: inc/audio/track.h:164 src/gui/widgets/bot_bar.c:502 src/audio/region.c:427
-#: build/data/org.zrythm.Zrythm.gschema.xml:667
+#: build/data/org.zrythm.Zrythm.gschema.xml:668
 msgid "Audio"
 msgstr "Ήχος"
 
-#: inc/audio/track.h:165 src/project.c:700
+#: inc/audio/track.h:165 src/project.c:702
 #: src/gui/widgets/route_target_selector_popover.c:164
 msgid "Master"
 msgstr "Master"
 
-#: inc/audio/track.h:166 src/gui/widgets/event_viewer.c:118
-#: src/gui/widgets/event_viewer.c:589 src/audio/region.c:433
+#: inc/audio/track.h:166 src/gui/widgets/event_viewer.c:119
+#: src/gui/widgets/event_viewer.c:590 src/audio/region.c:433
 msgid "Chord"
 msgstr "Συγχορδία"
 
@@ -198,7 +198,7 @@ msgstr "Εκθέτης"
 msgid "Superellipse"
 msgstr "Superellipse"
 
-#: inc/audio/curve.h:95 src/gui/widgets/timeline_arranger.c:1231
+#: inc/audio/curve.h:95 src/gui/widgets/timeline_arranger.c:1232
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
@@ -209,55 +209,55 @@ msgstr "Vital"
 msgid "Pulse"
 msgstr "Παλμός"
 
-#: inc/audio/engine.h:125
+#: inc/audio/engine.h:130
 msgid "1,024"
 msgstr "1.024"
 
-#: inc/audio/engine.h:126
+#: inc/audio/engine.h:131
 msgid "2,048"
 msgstr "2.048"
 
-#: inc/audio/engine.h:127
+#: inc/audio/engine.h:132
 msgid "4,096"
 msgstr "4.096"
 
-#: inc/audio/engine.h:154
+#: inc/audio/engine.h:159
 msgid "22,050"
 msgstr "22.050"
 
-#: inc/audio/engine.h:155
+#: inc/audio/engine.h:160
 msgid "32,000"
 msgstr "32.000"
 
-#: inc/audio/engine.h:156
+#: inc/audio/engine.h:161
 msgid "44,100"
 msgstr "44.100"
 
-#: inc/audio/engine.h:157
+#: inc/audio/engine.h:162
 msgid "48,000"
 msgstr "48.000"
 
-#: inc/audio/engine.h:158
+#: inc/audio/engine.h:163
 msgid "88,200"
 msgstr "88.200"
 
-#: inc/audio/engine.h:159
+#: inc/audio/engine.h:164
 msgid "96,000"
 msgstr "96.000"
 
-#: inc/audio/engine.h:160
+#: inc/audio/engine.h:165
 msgid "192,000"
 msgstr "192.000"
 
-#: inc/audio/engine.h:215
+#: inc/audio/engine.h:221
 msgid "Dummy (libsoundio)"
 msgstr "Εικονικό (libsoundio)"
 
-#: inc/audio/engine.h:281
+#: inc/audio/engine.h:288
 msgid "ALSA Sequencer (not working)"
 msgstr "Αναπαραγωγέας ακολουθιών ALSA (δεν δουλεύει)"
 
-#: inc/audio/engine.h:282
+#: inc/audio/engine.h:289
 msgid "ALSA Sequencer (rtmidi)"
 msgstr "Αναπαραγωγέας ακολουθιών ALSA (rtmidi)"
 
@@ -293,7 +293,7 @@ msgstr "Στακάτο"
 msgid "Strum"
 msgstr "Παίξιμο"
 
-#: inc/audio/region.h:83 src/gui/widgets/track.c:1874
+#: inc/audio/region.h:83 src/gui/widgets/track.c:1876
 msgid "Inherit"
 msgstr "Ενσωμάτωση"
 
@@ -322,12 +322,12 @@ msgid "-6dB"
 msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1228
-#: src/utils/ui.c:840
+#: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1229
+#: src/utils/ui.c:846
 msgid "Linear"
 msgstr "Γραμμικό"
 
-#: inc/audio/pan.h:77 src/utils/ui.c:841
+#: inc/audio/pan.h:77 src/utils/ui.c:847
 msgid "Square Root"
 msgstr "Τετραγωνική ρίζα"
 
@@ -335,26 +335,26 @@ msgstr "Τετραγωνική ρίζα"
 msgid "Sine"
 msgstr "Ημιτονοειδές"
 
-#: src/project.c:142
+#: src/project.c:143
 #, c-format
 msgid "Failed to open file: %s"
 msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
-#: src/project.c:186
+#: src/project.c:187
 msgid "Project not compressed by zstd"
 msgstr "Το έργο δεν συμπιέστηκε από zstd"
 
-#: src/project.c:199
+#: src/project.c:200
 #, c-format
 msgid "Failed to decompress project file: %s"
 msgstr "Αποτυχία συμπίεσης του αρχείου έργου: %s"
 
-#: src/project.c:240
+#: src/project.c:241
 #, c-format
 msgid "Failed to write file: %s"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/project.c:847
+#: src/project.c:850
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -365,16 +365,16 @@ msgstr ""
 "  %s.\n"
 "Χρήση του νεότερου αντίγραφου αρχείου;"
 
-#: src/project.c:852
+#: src/project.c:855
 msgid "Backup found"
 msgstr "Βρέθηκε αντίγραφο αρχείου"
 
-#: src/project.c:910
+#: src/project.c:913
 #, c-format
 msgid "Unable to read file: %s"
 msgstr "Αδυναμία ανάγνωσης αρχείου: %s"
 
-#: src/project.c:962
+#: src/project.c:965
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
@@ -383,21 +383,21 @@ msgstr ""
 "Αυτό το έργο δημιουργήθηκε με διαφορετική έκδοση %s (%s). Ενδέχεται να μην "
 "δουλεύει σωστά."
 
-#: src/project.c:977
+#: src/project.c:980
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Αποτυχία φόρτωσης έργου. Ελέγξτε τα αρχεία καταγραφής (logs) για "
 "περισσότερες πληροφορίες."
 
-#: src/project.c:1164
+#: src/project.c:1167
 msgid "Failed to load project. Will create a new one instead."
 msgstr "Αποτυχία φόρτωσης έργου. Θα δημιουργηθεί καινούριο αντί αυτού."
 
-#: src/project.c:1511
+#: src/project.c:1514
 msgid "Backup saved."
 msgstr "Το αντίγραφο αρχείου αποθηκεύτηκε."
 
-#: src/project.c:1521
+#: src/project.c:1524
 msgid "Project saved."
 msgstr "Το έργο αποθηκεύτηκε."
 
@@ -567,11 +567,11 @@ msgstr "Πληροφορίες άδειας"
 msgid "Waiting for project"
 msgstr "Φόρτωση έργου"
 
-#: src/plugins/carla_native_plugin.c:557 src/plugins/lv2_plugin.c:2704
+#: src/plugins/carla_native_plugin.c:557 src/plugins/lv2_plugin.c:2713
 msgid "Default bank"
 msgstr "Προεπιλεγμένη τράπεζα"
 
-#: src/plugins/carla_native_plugin.c:564 src/plugins/lv2_plugin.c:2711
+#: src/plugins/carla_native_plugin.c:564 src/plugins/lv2_plugin.c:2720
 msgid "Init"
 msgstr "Αρχική κατάσταση"
 
@@ -656,7 +656,7 @@ msgstr "Αποθήκευση κατάστασης"
 #: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
 #: src/plugins/lv2/lv2_gtk.c:357
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:163
-#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/actions/actions.c:781
+#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/actions/actions.c:782
 #: resources/ui/string_entry_dialog.ui:47
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
@@ -664,16 +664,16 @@ msgid "_Cancel"
 msgstr "_Άκυρο"
 
 #: src/plugins/plugin_gtk.c:85 src/plugins/lv2/lv2_gtk.c:109
-#: src/actions/actions.c:783
+#: src/actions/actions.c:784
 msgid "_Save"
 msgstr "_Αποθήκευση"
 
-#: src/plugins/lv2_plugin.c:1877
+#: src/plugins/lv2_plugin.c:1886
 #, c-format
 msgid "Failed to find plugin with URI: %s"
 msgstr "Αποτυχία εύρεσης προσθέτου με URI: %s"
 
-#: src/plugins/lv2_plugin.c:1924
+#: src/plugins/lv2_plugin.c:1933
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -682,7 +682,7 @@ msgid ""
 "%s <%s>"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:2745
+#: src/plugins/lv2_plugin.c:2754
 msgid "Unnamed bank"
 msgstr "Ανώνυμη τράπεζα δεδομένων"
 
@@ -716,7 +716,7 @@ msgstr "Άγνωστος τύπος widget για την τιμή\n"
 msgid "Close"
 msgstr "Κλείσιμο"
 
-#: src/gui/widgets/fader_controls_grid.c:96
+#: src/gui/widgets/fader_controls_grid.c:97
 msgid "Peak"
 msgstr "Κορυφή"
 
@@ -729,12 +729,12 @@ msgid "OUTPUTS"
 msgstr "ΕΞΑΓΟΜΕΝΑ"
 
 #: src/gui/widgets/port_connections_popover.c:202
-#: src/gui/widgets/plugin_browser.c:778 src/gui/widgets/track.c:1241
+#: src/gui/widgets/plugin_browser.c:773 src/gui/widgets/track.c:1242
 msgid "Add"
 msgstr "Προσθήκη"
 
 #: src/gui/widgets/inspector_port.c:195 src/gui/widgets/modulator_inner.c:218
-#: src/gui/widgets/plugin_browser.c:876 src/gui/widgets/balance_control.c:357
+#: src/gui/widgets/plugin_browser.c:871 src/gui/widgets/balance_control.c:357
 #: src/gui/widgets/modulator_macro.c:215 src/gui/widgets/fader.c:372
 #: resources/ui/first_run_assistant.ui:134
 msgid "Reset"
@@ -861,21 +861,21 @@ msgstr "Απολαβή (gain)"
 msgid "Inputs"
 msgstr "Εισαγόμενα"
 
-#: src/gui/widgets/first_run_assistant.c:131
+#: src/gui/widgets/first_run_assistant.c:139
 msgid "Backend combination not supported"
 msgstr "Ο συνδυασμός παρασκηνίου δεν υποστηρίζεται"
 
-#: src/gui/widgets/first_run_assistant.c:137
+#: src/gui/widgets/first_run_assistant.c:145
 msgid "The selected backends are operational"
 msgstr "Τα επιλεγόμενα παρασκήνια είναι λειτουργικά"
 
-#: src/gui/widgets/first_run_assistant.c:177
+#: src/gui/widgets/first_run_assistant.c:185
 msgid "JACK MIDI can only be used with JACK audio"
 msgstr "To JACK MIDI μπορεί να χρησιμοποιηθεί μόνο με ήχο JACK"
 
 #: src/gui/widgets/project_assistant.c:266
 #: src/gui/widgets/plugin_properties_expander.c:134
-#: src/gui/widgets/event_viewer.c:441 resources/ui/create_project_dialog.ui:96
+#: src/gui/widgets/event_viewer.c:442 resources/ui/create_project_dialog.ui:96
 #: resources/ui/arranger_object_info_dialog.ui:72
 #: resources/ui/port_info_dialog.ui:72
 msgid "Name"
@@ -898,26 +898,18 @@ msgstr "Κενό έργο"
 msgid "Project Assistant"
 msgstr "Βοηθός έργου"
 
-#: src/gui/widgets/left_dock_edge.c:183
+#: src/gui/widgets/left_dock_edge.c:179
 msgid "Track inspector"
 msgstr "Επιθεωρητής κομματιού"
 
-#: src/gui/widgets/left_dock_edge.c:210
+#: src/gui/widgets/left_dock_edge.c:206
 msgid "Plugin inspector"
 msgstr "Επιθεωρητής προσθέτων"
 
-#: src/gui/widgets/left_dock_edge.c:232
+#: src/gui/widgets/left_dock_edge.c:228
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
 msgstr "Ορατότητα"
-
-#: src/gui/widgets/left_dock_edge.c:258
-msgid "CC Bindings"
-msgstr "Δεσμεύσεις CC"
-
-#: src/gui/widgets/left_dock_edge.c:285
-msgid "Port connections"
-msgstr "Σύνδεσμοι θυρών"
 
 #: src/gui/widgets/plugin_strip_expander.c:152
 msgid "Inserts"
@@ -966,8 +958,8 @@ msgstr "τρίηχο"
 msgid "Tempo/BPM"
 msgstr "Τέμπο/BPM"
 
-#: src/gui/widgets/digital_meter.c:1177 src/gui/widgets/event_viewer.c:600
-#: src/gui/widgets/event_viewer.c:630 resources/ui/inspector_master.ui:79
+#: src/gui/widgets/digital_meter.c:1177 src/gui/widgets/event_viewer.c:601
+#: src/gui/widgets/event_viewer.c:631 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "Θέση"
@@ -1055,11 +1047,11 @@ msgstr "Επιθεώρηση"
 msgid "empty slot"
 msgstr "άδεια θέση"
 
-#: src/gui/widgets/arranger.c:2238 resources/ui/string_entry_dialog.ui:94
+#: src/gui/widgets/arranger.c:2239 resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
 msgstr "Όνομα δείκτη"
 
-#: src/gui/widgets/arranger.c:4065
+#: src/gui/widgets/arranger.c:4066
 #, c-format
 msgid "%s name"
 msgstr "όνομα %s"
@@ -1080,60 +1072,60 @@ msgstr "συγχορδία"
 msgid "Add to project"
 msgstr "Προσθήκη στο έργο"
 
-#: src/gui/widgets/plugin_browser.c:447
+#: src/gui/widgets/plugin_browser.c:443
 msgid "Add to project (carla)"
 msgstr "Προσθήκη στο έργο (carla)"
 
-#: src/gui/widgets/plugin_browser.c:457
+#: src/gui/widgets/plugin_browser.c:453
 msgid "Add to project (bridged UI)"
 msgstr "Προσθήκη στο έργο (γεφυρωμένη διεπαφή χρήστη)"
 
-#: src/gui/widgets/plugin_browser.c:464
+#: src/gui/widgets/plugin_browser.c:460
 msgid "Add to project (bridged full)"
 msgstr "Προσθήκη στο έργο (πλήρως γεφυρωμένο)"
 
-#: src/gui/widgets/plugin_browser.c:474
+#: src/gui/widgets/plugin_browser.c:469
 #, fuzzy
 msgid "Add to collection"
 msgstr "Προσθήκη στο έργο"
 
-#: src/gui/widgets/plugin_browser.c:523
+#: src/gui/widgets/plugin_browser.c:518
 msgid "Remove from collection"
 msgstr ""
 
-#: src/gui/widgets/plugin_browser.c:640 src/gui/widgets/plugin_browser.c:677
+#: src/gui/widgets/plugin_browser.c:635 src/gui/widgets/plugin_browser.c:672
 #, fuzzy
 msgid "Collection name"
 msgstr "Συλλογή"
 
-#: src/gui/widgets/plugin_browser.c:711
+#: src/gui/widgets/plugin_browser.c:706
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/gui/widgets/plugin_browser.c:752
+#: src/gui/widgets/plugin_browser.c:747
 #, fuzzy
 msgid "Rename"
 msgstr "όνομα_περιοχής"
 
-#: src/gui/widgets/plugin_browser.c:763
+#: src/gui/widgets/plugin_browser.c:758
 #: src/gui/widgets/port_connections_tree.c:183
 #: src/gui/widgets/home_toolbar.c:214 src/gui/widgets/cc_bindings_tree.c:175
 #: resources/ui/modulator_inner.ui:45
 msgid "Delete"
 msgstr "Διαγραφή"
 
-#: src/gui/widgets/plugin_browser.c:1966 resources/ui/panel_file_browser.ui:63
+#: src/gui/widgets/plugin_browser.c:1965 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
 msgid "Collection"
 msgstr "Συλλογή"
 
-#: src/gui/widgets/plugin_browser.c:1976
+#: src/gui/widgets/plugin_browser.c:1975
 msgid "Category"
 msgstr "Κατηγορία"
 
-#: src/gui/widgets/plugin_browser.c:1986
+#: src/gui/widgets/plugin_browser.c:1985
 msgid "Protocol"
 msgstr "Πρωτόκολλο"
 
@@ -1149,11 +1141,11 @@ msgstr "Κεφαλή αναπαραγωγής [Jack TImebase Master]"
 msgid "Playhead [Jack Client]"
 msgstr "Κεφαλή αναπαραγωγής [Πελάτης Jack]"
 
-#: src/gui/widgets/bot_bar.c:159 src/gui/widgets/ruler.c:1555
+#: src/gui/widgets/bot_bar.c:159 src/gui/widgets/ruler.c:1556
 msgid "BBT display"
 msgstr "προβολή BBT"
 
-#: src/gui/widgets/bot_bar.c:179 src/gui/widgets/ruler.c:1574
+#: src/gui/widgets/bot_bar.c:179 src/gui/widgets/ruler.c:1575
 msgid "Time display"
 msgstr "Προβολή χρόνου"
 
@@ -1282,7 +1274,7 @@ msgid "Create takes (mute previous)"
 msgstr "Δημιουργία λήψεων (mute προηγούμενων)"
 
 #: src/gui/widgets/transport_controls.c:220
-#: build/data/org.zrythm.Zrythm.gschema.xml:531
+#: build/data/org.zrythm.Zrythm.gschema.xml:532
 msgid "Recording mode"
 msgstr "Λειτουργία ηχογράφησης"
 
@@ -1290,41 +1282,41 @@ msgstr "Λειτουργία ηχογράφησης"
 msgid "Record options"
 msgstr "Ρυθμίσεις ηχογράφησης"
 
-#: src/gui/widgets/timeline_arranger.c:510
+#: src/gui/widgets/timeline_arranger.c:511
 msgid "Custom Marker"
 msgstr "Προσαρμοσμένος δείκτης"
 
-#: src/gui/widgets/timeline_arranger.c:1202
+#: src/gui/widgets/timeline_arranger.c:1203
 #, fuzzy
 msgid "Fade preset"
 msgstr "Fade προρύθμισης"
 
-#: src/gui/widgets/timeline_arranger.c:1229
+#: src/gui/widgets/timeline_arranger.c:1230
 msgid "Exponential"
 msgstr "Εκθετικό"
 
-#: src/gui/widgets/timeline_arranger.c:1230
+#: src/gui/widgets/timeline_arranger.c:1231
 msgid "Elliptic"
 msgstr "Ελλειπτικό"
 
-#: src/gui/widgets/timeline_arranger.c:1295
+#: src/gui/widgets/timeline_arranger.c:1296
 msgid "Musical Mode"
 msgstr "Μουσική λειτουργία"
 
-#: src/gui/widgets/timeline_arranger.c:1427
+#: src/gui/widgets/timeline_arranger.c:1428
 msgid "Export as MIDI file"
 msgstr "Εξαγωγή ως αρχείου MIDI"
 
-#: src/gui/widgets/timeline_arranger.c:1462 src/gui/widgets/track.c:1749
+#: src/gui/widgets/timeline_arranger.c:1463 src/gui/widgets/track.c:1751
 msgid "Quick bounce"
 msgstr "Γρήγορη μετατροπή σε ήχο"
 
-#: src/gui/widgets/timeline_arranger.c:1473 src/gui/widgets/track.c:1761
+#: src/gui/widgets/timeline_arranger.c:1474 src/gui/widgets/track.c:1763
 msgid "Bounce..."
 msgstr "Μετατροπή σε ήχο..."
 
 #: src/gui/widgets/automation_arranger.c:261
-#: build/data/org.zrythm.Zrythm.gschema.xml:685
+#: build/data/org.zrythm.Zrythm.gschema.xml:686
 msgid "Curve algorithm"
 msgstr "Αλγόριθμος καμπύλης"
 
@@ -1389,7 +1381,7 @@ msgid "Redo"
 msgstr "Επαναφορά"
 
 #: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:239
-#: build/data/org.zrythm.Zrythm.gschema.xml:695
+#: build/data/org.zrythm.Zrythm.gschema.xml:696
 msgid "Undo"
 msgstr "Αναίρεση"
 
@@ -1436,11 +1428,11 @@ msgstr "Περιηγητής προσθέτων"
 msgid "File Browser"
 msgstr "Περιηγητής αρχείων"
 
-#: src/gui/widgets/right_dock_edge.c:145
+#: src/gui/widgets/right_dock_edge.c:153
 msgid "Control Room"
 msgstr "Αίθουσα ελέγχου"
 
-#: src/gui/widgets/right_dock_edge.c:172
+#: src/gui/widgets/right_dock_edge.c:180
 msgid "Show file browser"
 msgstr "Προβολή περιηγητή αρχείων"
 
@@ -1449,7 +1441,7 @@ msgid "Plugin Properties"
 msgstr "Ιδιότητες προσθέτου"
 
 #: src/gui/widgets/plugin_properties_expander.c:150
-#: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
+#: src/gui/widgets/event_viewer.c:453 resources/ui/chord_selector_window.ui:239
 #: resources/ui/arranger_object_info_dialog.ui:114
 #: resources/ui/port_info_dialog.ui:153 resources/ui/panel_file_browser.ui:84
 #: resources/ui/file_browser.ui:84
@@ -1464,19 +1456,19 @@ msgstr "Τράπεζες"
 msgid "Presets"
 msgstr "Προρυθμίσεις"
 
-#: src/gui/widgets/route_target_selector.c:86
+#: src/gui/widgets/route_target_selector.c:87
 msgid "Cannot be routed"
 msgstr "Δεν μπορεί να δρομολογηθεί"
 
-#: src/gui/widgets/route_target_selector.c:93
+#: src/gui/widgets/route_target_selector.c:94
 msgid "Routed to engine"
 msgstr "Δρομολογημένο στον κινητήρα"
 
-#: src/gui/widgets/route_target_selector.c:100
+#: src/gui/widgets/route_target_selector.c:101
 msgid "Select channel to route signal to"
 msgstr "Επιλογή καναλιού για τη δρομολόγηση σήματος"
 
-#: src/gui/widgets/route_target_selector.c:178
+#: src/gui/widgets/route_target_selector.c:179
 msgid "Stereo Out"
 msgstr "Στέρεο έξω"
 
@@ -1517,12 +1509,12 @@ msgstr "[Εισαγωγή %d] %s"
 msgid "[Modulator %d] %s"
 msgstr "[Διαμορφωτής %d] %s"
 
-#: src/gui/widgets/snap_grid.c:59
+#: src/gui/widgets/snap_grid.c:60
 #, c-format
 msgid "%s - Last object"
 msgstr ""
 
-#: src/gui/widgets/snap_grid.c:119
+#: src/gui/widgets/snap_grid.c:120
 msgid "Snap/Grid options"
 msgstr "Ρυθμίσεις σναπαρίσματος/πλέγματος"
 
@@ -1555,12 +1547,12 @@ msgstr ""
 msgid "    ;; loop through all tracks and print them\n"
 msgstr ""
 
-#: src/gui/widgets/active_hardware_mb.c:49
-#: src/gui/widgets/active_hardware_mb.c:141
+#: src/gui/widgets/active_hardware_mb.c:50
+#: src/gui/widgets/active_hardware_mb.c:142
 msgid "Select..."
 msgstr "Επιλογή..."
 
-#: src/gui/widgets/active_hardware_mb.c:144
+#: src/gui/widgets/active_hardware_mb.c:145
 msgid "Click to enable inputs"
 msgstr "Κλικ για ενεργοποίηση εισαγωγών"
 
@@ -1585,56 +1577,56 @@ msgstr "Επιλογή περιοχής..."
 msgid "Sends"
 msgstr "Αποστολές"
 
-#: src/gui/widgets/event_viewer.c:112 resources/ui/scale_selector_window.ui:240
+#: src/gui/widgets/event_viewer.c:113 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43
 msgid "Scale"
 msgstr "Κλίμακα"
 
-#: src/gui/widgets/event_viewer.c:115
+#: src/gui/widgets/event_viewer.c:116
 msgid "MIDI note"
 msgstr "Νότα MIDI"
 
-#: src/gui/widgets/event_viewer.c:121
+#: src/gui/widgets/event_viewer.c:122
 msgid "Automation point"
 msgstr "Σημείο αυτοματισμού"
 
-#: src/gui/widgets/event_viewer.c:463 src/gui/widgets/event_viewer.c:559
+#: src/gui/widgets/event_viewer.c:464 src/gui/widgets/event_viewer.c:560
 msgid "Start"
 msgstr "Έναρξη"
 
-#: src/gui/widgets/event_viewer.c:474
+#: src/gui/widgets/event_viewer.c:475
 msgid "Clip start"
 msgstr "Έναρξη κλιπ"
 
-#: src/gui/widgets/event_viewer.c:485
+#: src/gui/widgets/event_viewer.c:486
 msgid "Loop start"
 msgstr "Έναρξη λούπας"
 
-#: src/gui/widgets/event_viewer.c:496
+#: src/gui/widgets/event_viewer.c:497
 msgid "Loop end"
 msgstr "Τέλος λούπας"
 
-#: src/gui/widgets/event_viewer.c:507 src/gui/widgets/event_viewer.c:570
+#: src/gui/widgets/event_viewer.c:508 src/gui/widgets/event_viewer.c:571
 msgid "End"
 msgstr "Τέλος"
 
-#: src/gui/widgets/event_viewer.c:526
+#: src/gui/widgets/event_viewer.c:527
 msgid "Note"
 msgstr "Νότα"
 
-#: src/gui/widgets/event_viewer.c:537
+#: src/gui/widgets/event_viewer.c:538
 msgid "Pitch"
 msgstr "Τόνος"
 
-#: src/gui/widgets/event_viewer.c:619
+#: src/gui/widgets/event_viewer.c:620
 msgid "Index"
 msgstr "Ευρετήριο"
 
-#: src/gui/widgets/event_viewer.c:641
+#: src/gui/widgets/event_viewer.c:642
 msgid "Value"
 msgstr "Τιμή"
 
-#: src/gui/widgets/event_viewer.c:652
+#: src/gui/widgets/event_viewer.c:653
 msgid "Curviness"
 msgstr "Καμπυλότητα"
 
@@ -1808,113 +1800,113 @@ msgstr "Σχολιασμός"
 msgid "Visible"
 msgstr "Ορατό"
 
-#: src/gui/widgets/track.c:606 src/audio/track_lane.c:72
+#: src/gui/widgets/track.c:607 src/audio/track_lane.c:72
 #, c-format
 msgid "Lane %d"
 msgstr "Λωρίδα %d"
 
-#: src/gui/widgets/track.c:1177 resources/ui/fader_buttons.ui:78
+#: src/gui/widgets/track.c:1178 resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr "Σόλο"
 
-#: src/gui/widgets/track.c:1184
+#: src/gui/widgets/track.c:1185
 msgid "Hide instrument UI"
 msgstr "Απόκρυψη διεπαφής χρήστη του οργάνου"
 
-#: src/gui/widgets/track.c:1188
+#: src/gui/widgets/track.c:1189
 msgid "Show instrument UI"
 msgstr "Προβολή διεπαφής χρήστη του οργάνου"
 
-#: src/gui/widgets/track.c:1204 resources/ui/fader_buttons.ui:36
+#: src/gui/widgets/track.c:1205 resources/ui/fader_buttons.ui:36
 msgid "Mono compatibility"
 msgstr "Συμβατότητα μόνο"
 
-#: src/gui/widgets/track.c:1210
+#: src/gui/widgets/track.c:1211
 msgid "Disarm"
 msgstr "Αφοπλισμός"
 
-#: src/gui/widgets/track.c:1214
+#: src/gui/widgets/track.c:1215
 msgid "Arm for recording"
 msgstr "Οπλισμός για ηχογράφηση"
 
-#: src/gui/widgets/track.c:1221
+#: src/gui/widgets/track.c:1222
 msgid "Hide lanes"
 msgstr "Απόκρυψη λωρίδων"
 
-#: src/gui/widgets/track.c:1225
+#: src/gui/widgets/track.c:1226
 msgid "Show lanes"
 msgstr "Προβολή λωρίδων"
 
-#: src/gui/widgets/track.c:1232
+#: src/gui/widgets/track.c:1233
 msgid "Hide automation"
 msgstr "Απόκρυψη αυτοματισμού"
 
-#: src/gui/widgets/track.c:1236
+#: src/gui/widgets/track.c:1237
 msgid "Show automation"
 msgstr "Προβολή αυτοματισμού"
 
-#: src/gui/widgets/track.c:1245 resources/ui/project_assistant.ui:102
+#: src/gui/widgets/track.c:1246 resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr "Αφαίρεση"
 
-#: src/gui/widgets/track.c:1249
+#: src/gui/widgets/track.c:1250
 msgid "Freeze/unfreeze"
 msgstr "Πάγωμα/ξεπάγωμα"
 
-#: src/gui/widgets/track.c:1253
+#: src/gui/widgets/track.c:1254
 msgid "Lock/unlock"
 msgstr "Κλείδωμα/ξεκλείδωμα"
 
-#: src/gui/widgets/track.c:1689
+#: src/gui/widgets/track.c:1691
 msgid "_Delete Track"
 msgstr "_Διαγραφή κομματιού"
 
-#: src/gui/widgets/track.c:1692
+#: src/gui/widgets/track.c:1694
 msgid "_Delete Tracks"
 msgstr "_Διαγραφή κομματιών"
 
-#: src/gui/widgets/track.c:1703
+#: src/gui/widgets/track.c:1705
 msgid "_Duplicate Track"
 msgstr "_Δημιουργία διπλότυπου του κομματιού"
 
-#: src/gui/widgets/track.c:1706
+#: src/gui/widgets/track.c:1708
 msgid "_Duplicate Tracks"
 msgstr "_Δημιουργία διπλότυπου των κομματιών"
 
-#: src/gui/widgets/track.c:1720
+#: src/gui/widgets/track.c:1722
 msgid "Add Region"
 msgstr "Προσθήκη περιοχής"
 
-#: src/gui/widgets/track.c:1728
+#: src/gui/widgets/track.c:1730
 msgid "Hide Track"
 msgstr "Απόκρυψη κομματιού"
 
-#: src/gui/widgets/track.c:1729
+#: src/gui/widgets/track.c:1731
 msgid "Hide Tracks"
 msgstr "Απόκρυψη κομματιών"
 
-#: src/gui/widgets/track.c:1737
+#: src/gui/widgets/track.c:1739
 msgid "Pin/Unpin Track"
 msgstr "Καρφίτσωμα/Ξεκαρφίτσωμα κομματιού"
 
-#: src/gui/widgets/track.c:1738
+#: src/gui/widgets/track.c:1740
 msgid "Pin/Unpin Tracks"
 msgstr "Καρφίτσωμα/ξεκαρφίτσωμα κομματιών"
 
-#: src/gui/widgets/track.c:1777
+#: src/gui/widgets/track.c:1779
 msgid "Track MIDI Ch"
 msgstr "Κομμάτι MIDI Κα"
 
-#: src/gui/widgets/track.c:1789
+#: src/gui/widgets/track.c:1791
 msgid "Passthrough input"
 msgstr "Είσοδος διέλευσης"
 
-#: src/gui/widgets/track.c:1818 src/gui/widgets/track.c:1878
+#: src/gui/widgets/track.c:1820 src/gui/widgets/track.c:1880
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "Κανάλι MIDI %d"
 
-#: src/gui/widgets/track.c:1858
+#: src/gui/widgets/track.c:1860
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "Λωρίδα %d MIDI Κα"
@@ -2051,12 +2043,12 @@ msgstr "εικονίδιο %s"
 msgid "_Select"
 msgstr "_Επιλογή"
 
-#: src/gui/backend/arranger_object.c:2691
+#: src/gui/backend/arranger_object.c:2692
 #, c-format
 msgid "Invalid object name %s"
 msgstr "Άκυρο όνομα αντικειμένου %s"
 
-#: src/gui/backend/event_manager.c:1720
+#: src/gui/backend/event_manager.c:1723
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr "Η δοκιμαστική περίοδος έληξε. Το %s θα γίνει τώρα σιωπηλό"
@@ -2101,11 +2093,11 @@ msgstr ""
 "Σφάλμα κατά την ενσάρκωση προσθέτου. Βλέπε αρχείο καταγραφής για "
 "λεπτομέρειες."
 
-#: src/utils/ui.c:842
+#: src/utils/ui.c:848
 msgid "Sine (Equal Power)"
 msgstr "Ημίτονο (ίση ισχύς)"
 
-#: src/utils/ui.c:1012
+#: src/utils/ui.c:1018
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -2114,7 +2106,7 @@ msgstr ""
 "Δεν υπάρχει locale για τη γλώσσα που επιλέξατε (%s). Εγκαταστήστε πρώτα ένα "
 "και επανεκκινήστε %s"
 
-#: src/utils/ui.c:1017
+#: src/utils/ui.c:1023
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2277,7 +2269,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr "Σφάλμα PortAudio: %s"
 
-#: src/audio/region.c:430 build/data/org.zrythm.Zrythm.gschema.xml:681
+#: src/audio/region.c:430 build/data/org.zrythm.Zrythm.gschema.xml:682
 msgid "Automation"
 msgstr "Αυτοματισμός"
 
@@ -2289,7 +2281,7 @@ msgstr "BPM"
 msgid "Time Signature"
 msgstr "Μέτρο"
 
-#: src/audio/engine.c:208
+#: src/audio/engine.c:216
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
@@ -2299,7 +2291,7 @@ msgstr ""
 "παρασκήνιο αντί αυτού. Ελέγξτε τις επιλογές του παρασκηνίου σας στις "
 "ρυθμίσεις."
 
-#: src/audio/engine.c:273
+#: src/audio/engine.c:281
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
@@ -2309,7 +2301,7 @@ msgstr ""
 "παρασκήνιο αντί αυτού. Ελέγξτε τις επιλογές του παρασκηνίου σας στις "
 "ρυθμίσεις."
 
-#: src/audio/engine.c:314
+#: src/audio/engine.c:322
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
@@ -2318,7 +2310,7 @@ msgstr ""
 "θέλετε να χρησιμοποιήσετε JACK, επιλέξτε το JACK ως παρασκήνιο του ήχου και "
 "του MIDI σας."
 
-#: src/audio/engine.c:501
+#: src/audio/engine.c:515
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2328,6 +2320,26 @@ msgstr ""
 "Το επιλεγμένο παρασκήνιο MIDI/ήχου δεν βρέθηκε στην έκδοση του %s που έχετε "
 "εγκαταστήσει. Τα παρασκήνια ήχου και MIDI ορίστηκαν σε «Εικονικό». Ορίστε το "
 "παρασκήνιο της επιλογής σας από τις ρυθμίσεις."
+
+#: src/audio/engine_pulse.c:120
+msgid ""
+"A buffer underflow has occurred. Try increasing the buffer size in the "
+"settings to avoid audio glitches."
+msgstr ""
+
+#: src/audio/engine_pulse.c:242
+msgid "PulseAudio error: Failed to create main loop"
+msgstr ""
+
+#: src/audio/engine_pulse.c:263
+#, fuzzy, c-format
+msgid "PulseAudio Error: %s"
+msgstr "Σφάλμα PortAudio: %s"
+
+#: src/audio/engine_pulse.c:282
+#, fuzzy
+msgid "PulseAudio Error: Failed to connect"
+msgstr "Το παρασκήνιο ήχου στο οποίο θα συνδεθεί"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
@@ -2468,62 +2480,62 @@ msgstr "Πελάτης ζόμπι"
 msgid "Set control value"
 msgstr "Ορισμός τιμής χειριστή"
 
-#: src/actions/arranger_selections.c:2481
+#: src/actions/arranger_selections.c:2484
 #, fuzzy
 msgid "Create arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2484
+#: src/actions/arranger_selections.c:2487
 #, fuzzy
 msgid "Delete arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2488
+#: src/actions/arranger_selections.c:2491
 #, fuzzy
 msgid "Duplicate arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2491
+#: src/actions/arranger_selections.c:2494
 #, fuzzy
 msgid "Move arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2494
+#: src/actions/arranger_selections.c:2497
 #, fuzzy
 msgid "Link arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2497
+#: src/actions/arranger_selections.c:2500
 #, fuzzy
 msgid "Record arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2500
+#: src/actions/arranger_selections.c:2503
 #, fuzzy
 msgid "Edit arranger selections"
 msgstr "Επεξεργασία αντικειμένου/νων ταξινόμου"
 
-#: src/actions/arranger_selections.c:2503
+#: src/actions/arranger_selections.c:2506
 #, fuzzy
 msgid "Automation fill"
 msgstr "Αυτοματισμός"
 
-#: src/actions/arranger_selections.c:2506
+#: src/actions/arranger_selections.c:2509
 #, fuzzy
 msgid "Split arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2509
+#: src/actions/arranger_selections.c:2512
 #, fuzzy
 msgid "Merge arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2512
+#: src/actions/arranger_selections.c:2515
 #, fuzzy
 msgid "Resize arranger selections"
 msgstr "Συγχώνευση επιλογών"
 
-#: src/actions/arranger_selections.c:2516
+#: src/actions/arranger_selections.c:2519
 #, fuzzy
 msgid "Quantize arranger selections"
 msgstr "Συγχώνευση επιλογών"
@@ -2544,7 +2556,7 @@ msgstr "Δέσμευση χαρτογράφησης MIDI"
 msgid "MIDI mapping unbind"
 msgstr "Αποδέσμευση χαρτογράφησης MIDI"
 
-#: src/actions/actions.c:366
+#: src/actions/actions.c:367
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -2553,7 +2565,7 @@ msgstr ""
 "Επεκτασιμότητα scripting με <a href=\"%s\">Το GNU GUILE</a> δεν είναι "
 "ενεργοποιημένο στην εγκατάστασή σας %s."
 
-#: src/actions/actions.c:636
+#: src/actions/actions.c:637
 #, c-format
 msgid ""
 "Creating new projects is disabled. Please restart %s to start a new project"
@@ -2561,48 +2573,48 @@ msgstr ""
 "Η δημιουργία καινούριων έργων είναι απενεργοποιημένη. Επανεκκινήστε το %s "
 "για να αρχίσετε καινούριο έργο"
 
-#: src/actions/actions.c:650 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:651 resources/gtk/help-overlay.ui:103
 #: resources/ui/project_assistant.ui:86
 msgid "Create new project"
 msgstr "Δημιουργία καινούριου έργου"
 
-#: src/actions/actions.c:653
+#: src/actions/actions.c:654
 msgid "Yes"
 msgstr "Ναι"
 
-#: src/actions/actions.c:655
+#: src/actions/actions.c:656
 msgid "No"
 msgstr "Όχι"
 
-#: src/actions/actions.c:660
+#: src/actions/actions.c:661
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "Όλες οι μη αποθηκευμένες αλλαγές στο παρόν έργο θα χαθούν. Συνέχεια;"
 
-#: src/actions/actions.c:712
+#: src/actions/actions.c:713
 msgid "Loading is disabled in the trial version"
 msgstr "Η φόρτωση είναι απενεργοποιημένη στη δοκιμαστική έκδοση"
 
-#: src/actions/actions.c:740 src/actions/actions.c:766
+#: src/actions/actions.c:741 src/actions/actions.c:767
 msgid "Saving is disabled in the trial version"
 msgstr "Η αποθήκευση είναι απενεργοποιημένη στη δοκιμαστική έκδοση"
 
-#: src/actions/actions.c:778
+#: src/actions/actions.c:779
 msgid "Save Project"
 msgstr "Αποθήκευση έργου"
 
-#: src/actions/actions.c:863
+#: src/actions/actions.c:864
 msgid "Export routing graph"
 msgstr "Εξαγωγή γραφήματος δρομολόγησης"
 
-#: src/actions/actions.c:865
+#: src/actions/actions.c:866
 msgid "Image (PNG)"
 msgstr "Εικόνα (PNG)"
 
-#: src/actions/actions.c:866
+#: src/actions/actions.c:867
 msgid "Dot graph"
 msgstr "Γράφημα σημαδιών"
 
-#: src/actions/actions.c:874
+#: src/actions/actions.c:875
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -2611,23 +2623,23 @@ msgstr ""
 "Το γράφημα θα εξαχθεί στο <a href=\"%s\">%s</a>\n"
 "Επιλέξτε φορμάτ με το οποίο θα γίνει εξαγωγή"
 
-#: src/actions/actions.c:924
+#: src/actions/actions.c:925
 msgid "Graph exported"
 msgstr "Το γράφημα εξήχθη"
 
-#: src/actions/actions.c:1095
+#: src/actions/actions.c:1096
 msgid "Can't paste incompatible data"
 msgstr ""
 
-#: src/actions/actions.c:1807
+#: src/actions/actions.c:1804
 msgid "No regions selected"
 msgstr "Δεν έχει επιλεγεί περιοχή"
 
-#: src/actions/actions.c:1815
+#: src/actions/actions.c:1812
 msgid "Selections must be on the same lane"
 msgstr "Οι επιλογές πρέπει να βρίσκονται στην ίδια λωρίδα"
 
-#: src/actions/actions.c:2190
+#: src/actions/actions.c:2187
 msgid "Region name"
 msgstr "όνομα_περιοχής"
 
@@ -2814,10 +2826,10 @@ msgid "Global Shortcuts"
 msgstr "Γενικές συντομεύσεις"
 
 #: resources/gtk/help-overlay.ui:35 resources/ui/preferences.ui:365
-#: build/data/org.zrythm.Zrythm.gschema.xml:540
-#: build/data/org.zrythm.Zrythm.gschema.xml:589
-#: build/data/org.zrythm.Zrythm.gschema.xml:710
-#: build/data/org.zrythm.Zrythm.gschema.xml:725
+#: build/data/org.zrythm.Zrythm.gschema.xml:541
+#: build/data/org.zrythm.Zrythm.gschema.xml:590
+#: build/data/org.zrythm.Zrythm.gschema.xml:711
+#: build/data/org.zrythm.Zrythm.gschema.xml:726
 msgid "General"
 msgstr "Γενικά"
 
@@ -3182,7 +3194,7 @@ msgid "Fishbowl"
 msgstr "Μικροσκόπιο"
 
 #: resources/ui/timeline_toolbar.ui:69
-#: build/data/org.zrythm.Zrythm.gschema.xml:272
+#: build/data/org.zrythm.Zrythm.gschema.xml:273
 msgid "Musical mode"
 msgstr "Μουσικός τρόπος"
 
@@ -3345,6 +3357,38 @@ msgstr "Σκανάρισμα ξανά"
 #: resources/ui/active_hardware_popover.ui:102
 msgid "Scan again for MIDI controllers"
 msgstr "Σκανάρισμα ξανά για χειριστές MIDI"
+
+#: resources/ui/main_notebook.ui:43 resources/ui/main_notebook.ui:59
+#, fuzzy
+msgid "Timeline"
+msgstr "Χρονικό εύρος"
+
+#: resources/ui/main_notebook.ui:80
+msgid "Port connections"
+msgstr "Σύνδεσμοι θυρών"
+
+#: resources/ui/main_notebook.ui:96
+#, fuzzy
+msgid "Connections"
+msgstr "Συλλογή"
+
+#: resources/ui/main_notebook.ui:118
+#, fuzzy
+msgid "MIDI CC bindings"
+msgstr "Δεσμεύσεις CC"
+
+#: resources/ui/main_notebook.ui:134
+#, fuzzy
+msgid "Bindings"
+msgstr "Δεσμεύσεις CC"
+
+#: resources/ui/main_notebook.ui:156
+msgid "Scenes (Live view)"
+msgstr ""
+
+#: resources/ui/main_notebook.ui:172
+msgid "Scenes"
+msgstr ""
 
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 msgid "Pitch Wheel"
@@ -3743,7 +3787,7 @@ msgid "Song"
 msgstr "Τραγούδι"
 
 #: resources/ui/export_dialog.ui:280
-#: build/data/org.zrythm.Zrythm.gschema.xml:412
+#: build/data/org.zrythm.Zrythm.gschema.xml:413
 msgid "Artist"
 msgstr "Καλλιτέχνης"
 
@@ -3752,12 +3796,12 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:303
-#: build/data/org.zrythm.Zrythm.gschema.xml:422
+#: build/data/org.zrythm.Zrythm.gschema.xml:423
 msgid "Format"
 msgstr "Φορμάτ"
 
 #: resources/ui/export_dialog.ui:325
-#: build/data/org.zrythm.Zrythm.gschema.xml:407
+#: build/data/org.zrythm.Zrythm.gschema.xml:408
 msgid "Genre"
 msgstr "Είδος"
 
@@ -3766,12 +3810,12 @@ msgid "Electronic"
 msgstr "Ηλεκτρονική"
 
 #: resources/ui/export_dialog.ui:345
-#: build/data/org.zrythm.Zrythm.gschema.xml:432
+#: build/data/org.zrythm.Zrythm.gschema.xml:433
 msgid "Dither"
 msgstr "Θόρυβος διασποράς"
 
 #: resources/ui/export_dialog.ui:363
-#: build/data/org.zrythm.Zrythm.gschema.xml:442
+#: build/data/org.zrythm.Zrythm.gschema.xml:443
 msgid "Bit depth"
 msgstr "Βάθος bit"
 
@@ -3859,7 +3903,7 @@ msgstr "Οριζόντια"
 msgid "Vertical"
 msgstr "Κάθετα"
 
-#: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:541
+#: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:542
 msgid "Engine"
 msgstr "Κινητήρας"
 
@@ -3891,7 +3935,7 @@ msgstr "Ο αλγόριθμος παναρίσματος προς χρήση"
 msgid "The pan law to use"
 msgstr "Ο νόμος παναρίσματος προς χρήση"
 
-#: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:594
+#: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:595
 msgid "Zrythm path"
 msgstr "Μονοπάτι Zrythm"
 
@@ -3908,13 +3952,13 @@ msgstr "Όνομα συσκευής"
 msgid "Buffer Size"
 msgstr "Μέγεθος ενδιάμεσης μνήμης"
 
-#: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:560
+#: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:561
 msgid "Samplerate"
 msgstr "Ρυθμός δείγματος"
 
 #: resources/ui/preferences.ui:380 resources/ui/preferences.ui:449
-#: build/data/org.zrythm.Zrythm.gschema.xml:603
-#: build/data/org.zrythm.Zrythm.gschema.xml:638
+#: build/data/org.zrythm.Zrythm.gschema.xml:604
+#: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Plugins"
 msgstr "Πρόσθετα"
 
@@ -3946,9 +3990,9 @@ msgstr "Μονοπάτια VST2"
 msgid "Main Window"
 msgstr "Κεντρικό παράθυρο"
 
-#: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:666
-#: build/data/org.zrythm.Zrythm.gschema.xml:680
-#: build/data/org.zrythm.Zrythm.gschema.xml:694
+#: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:667
+#: build/data/org.zrythm.Zrythm.gschema.xml:681
+#: build/data/org.zrythm.Zrythm.gschema.xml:695
 msgid "Editing"
 msgstr "Επεξεργασία"
 
@@ -3965,11 +4009,11 @@ msgid "GUI"
 msgstr "GUI"
 
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
-#: build/data/org.zrythm.Zrythm.gschema.xml:709
+#: build/data/org.zrythm.Zrythm.gschema.xml:710
 msgid "Projects"
 msgstr "Έργα"
 
-#: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:715
+#: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:716
 msgid "Autosave interval"
 msgstr "Μεσοδιάστημα αυτόματης αποθήκευσης"
 
@@ -3995,57 +4039,57 @@ msgstr ""
 msgid "zrythm"
 msgstr "zrythm"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:201
+#: build/data/org.zrythm.Zrythm.gschema.xml:202
 msgid "Recent project list"
 msgstr "Λίστα πρόσφατων έργων"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:202
+#: build/data/org.zrythm.Zrythm.gschema.xml:203
 msgid "A list of recent projects to be referenced on startup."
 msgstr "Μια λίστα των πρόσφατων έργων προς αναφορά κατά την εκκίνηση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:206
+#: build/data/org.zrythm.Zrythm.gschema.xml:207
 msgid "First run"
 msgstr "Πρώτη εκτέλεση"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:207
+#: build/data/org.zrythm.Zrythm.gschema.xml:208
 msgid "Whether this is the first run or not."
 msgstr "Αν αυτή είναι η πρώτη εκτέλεση ή όχι."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:211
+#: build/data/org.zrythm.Zrythm.gschema.xml:212
 msgid "Installation directory"
 msgstr "Κατάλογος εγκατάστασης"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:212
+#: build/data/org.zrythm.Zrythm.gschema.xml:213
 msgid ""
 "This is the directory Zrythm is installed in. Currently only used on Windows."
 msgstr ""
 "Αυτός είναι ο κατάλογος στον οποίο θα εγκατασταθεί το Zrythm. Προς το παρόν "
 "χρησιμοποιείται μόνο στα Windows."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:216
+#: build/data/org.zrythm.Zrythm.gschema.xml:217
 msgid "Last project directory"
 msgstr "Κατάλογος του τελευταίου έργου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:217
+#: build/data/org.zrythm.Zrythm.gschema.xml:218
 msgid "Last directory a project was created in."
 msgstr "Τελευταίος κατάλογος στον οποίο δημιουργήθηκε έργο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:225
+#: build/data/org.zrythm.Zrythm.gschema.xml:226
 msgid "Bounce with effects"
 msgstr "Μετατροπή σε ήχο με εφέ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:226
+#: build/data/org.zrythm.Zrythm.gschema.xml:227
 msgid ""
 "If set to true, the effects chain will be included in the bounced material."
 msgstr ""
 "Αν οριστεί σε «σωστό», η αλυσίδα εφέ θα περιληφθεί στο μετατρεπόμενο σε ήχο "
 "υλικό."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:230
+#: build/data/org.zrythm.Zrythm.gschema.xml:231
 msgid "Bounce tail"
 msgstr "Ουρά μετατροπής σε ήχο"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:231
+#: build/data/org.zrythm.Zrythm.gschema.xml:232
 msgid ""
 "Tail to allow when bouncing (for example to catch reverb tails), in "
 "milliseconds."
@@ -4053,22 +4097,22 @@ msgstr ""
 "Πόση ουρά θα επιτραπεί κατά τη μετατροπή ήχου (για παράδειγμα για να "
 "πιαστούν οι ουρές αντήχησης), σε χιλιοστά του δευτερολέπτου."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:235
+#: build/data/org.zrythm.Zrythm.gschema.xml:236
 msgid "Timeline object length"
 msgstr "Διάρκεια αντικειμένου χρονολογίου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:236
+#: build/data/org.zrythm.Zrythm.gschema.xml:237
 #, fuzzy
 msgid "Default length to use when creating timeline objects."
 msgstr ""
 "Προεπιλεγμένο μήκος προς χρήση κατά τη δημιουργία αντικειμένων χρονολογίου, "
 "π.χ. σε λειτουργία επεξεργασίας."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:240
+#: build/data/org.zrythm.Zrythm.gschema.xml:241
 msgid "Timeline object length type"
 msgstr "Τύπος διάρκειας αντικειμένου χρονολογίου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:241
+#: build/data/org.zrythm.Zrythm.gschema.xml:242
 #, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
@@ -4077,34 +4121,34 @@ msgstr ""
 "Προεπιλεγμένος τύπος μήκους προς χρήση κατά τη δημιουργία αντικειμένων "
 "χρονολογίου, π.χ. σε λειτουργία επεξεργασίας."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:246
+#: build/data/org.zrythm.Zrythm.gschema.xml:247
 #, fuzzy
 msgid "Last timeline object's length"
 msgstr "Διάρκεια αντικειμένου χρονολογίου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:247
+#: build/data/org.zrythm.Zrythm.gschema.xml:248
 #, fuzzy
 msgid "The length of the last created timeline object (in ticks)."
 msgstr ""
 "Προεπιλεγμένο μήκος προς χρήση κατά τη δημιουργία αντικειμένων χρονολογίου, "
 "π.χ. σε λειτουργία επεξεργασίας."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:251
+#: build/data/org.zrythm.Zrythm.gschema.xml:252
 msgid "Editor object length"
 msgstr "Διάρκεια αντικειμένου επεξεργαστή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:252
+#: build/data/org.zrythm.Zrythm.gschema.xml:253
 #, fuzzy
 msgid "Default length to use when creating editor objects."
 msgstr ""
 "Προεπιλεγμένο μήκος προς χρήση κατά τη δημιουργία αντικειμένων χρονολογίου, "
 "π.χ. σε λειτουργία επεξεργασίας."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:256
+#: build/data/org.zrythm.Zrythm.gschema.xml:257
 msgid "Editor object length type"
 msgstr "Τύπος διάρκειας αντικειμένου επεξεργαστή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:257
+#: build/data/org.zrythm.Zrythm.gschema.xml:258
 #, fuzzy
 msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
@@ -4113,20 +4157,20 @@ msgstr ""
 "Προεπιλεγμένος τύπος μήκους προς χρήση κατά τη δημιουργία αντικειμένων "
 "χρονολογίου, π.χ. σε λειτουργία επεξεργασίας."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:262
+#: build/data/org.zrythm.Zrythm.gschema.xml:263
 #, fuzzy
 msgid "Last editor object's length"
 msgstr "Διάρκεια αντικειμένου επεξεργαστή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:263
+#: build/data/org.zrythm.Zrythm.gschema.xml:264
 msgid "The length of the last created editor object (in ticks)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:267
+#: build/data/org.zrythm.Zrythm.gschema.xml:268
 msgid "Note notation"
 msgstr "Σημειογραφία νοτών"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:268
+#: build/data/org.zrythm.Zrythm.gschema.xml:269
 msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
@@ -4134,7 +4178,7 @@ msgstr ""
 "Η σημειογραφία νοτών που θα χρησιμοποιηθεί στο ρολό πιάνου - δείκτης τόνου "
 "MIDI ή νότες (Ντο, Ντο#, κλπ.)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:273
+#: build/data/org.zrythm.Zrythm.gschema.xml:274
 msgid ""
 "Whether to use musical mode. If this is on, time-stretching will be applied "
 "to events so that they match the project BPM. This mostly applies to audio "
@@ -4144,29 +4188,29 @@ msgstr ""
 "τέντωμα στα γεγονότα ώστε να ταιριάζουν με το τέμπο του έργου. Εφαρμόζεται "
 "κυρίως στις περιοχές ήχου."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:277
+#: build/data/org.zrythm.Zrythm.gschema.xml:278
 msgid "Listen to notes while they are moved"
 msgstr "Ακρόαση των νοτών ενώ μετακινούνται"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:278
+#: build/data/org.zrythm.Zrythm.gschema.xml:279
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
 msgstr "Αν θα ακούγονται οι νότες MIDI ενώ τραβιούνται στο ρολό πιάνου."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:282
+#: build/data/org.zrythm.Zrythm.gschema.xml:283
 msgid "Piano roll highlight"
 msgstr "Επισήμανση του ρολού πιάνου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:283
+#: build/data/org.zrythm.Zrythm.gschema.xml:284
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr ""
 "Αν θα επισημαίνονται συγχορδίες, κλίμακες, και τα δύο ή κανένα στο ρολό "
 "πιάνου."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:287
+#: build/data/org.zrythm.Zrythm.gschema.xml:288
 msgid "Piano roll MIDI modifier"
 msgstr "Διαμορφωτής MIDI του ρολού πιάνου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:288
+#: build/data/org.zrythm.Zrythm.gschema.xml:289
 msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
@@ -4174,170 +4218,170 @@ msgstr ""
 "Ο διαμορφωτής MIDI που θα προβάλλεται στον επεξεργαστή MIDI (μόνο η ταχύτητα "
 "είναι έγκυρη προς το παρόν)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:292
+#: build/data/org.zrythm.Zrythm.gschema.xml:293
 #, fuzzy
 msgid "Show automation values"
 msgstr "Προβολή λωρίδων αυτοματισμού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:293
+#: build/data/org.zrythm.Zrythm.gschema.xml:294
 msgid "Whether to show automation values in the automation editor."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:297
+#: build/data/org.zrythm.Zrythm.gschema.xml:298
 msgid "Browser divider position"
 msgstr "Θέση διαχωριστή του περιηγητή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:298
+#: build/data/org.zrythm.Zrythm.gschema.xml:299
 msgid "Height of the top part of the plugin/file browser."
 msgstr "Ύψος του κορυφαίου μέρους του προσθέτου/περιηγητή αρχείων."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:302
+#: build/data/org.zrythm.Zrythm.gschema.xml:303
 msgid "Left panel divider position"
 msgstr "Θέση διαχωριστή του αριστερού πάνελ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:303
+#: build/data/org.zrythm.Zrythm.gschema.xml:304
 msgid "Position of the resize handle of the left panel."
 msgstr "Θέση της λαβής του αριστερού πάνελ για μεταβολή μεγέθους."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:307
+#: build/data/org.zrythm.Zrythm.gschema.xml:308
 msgid "Left panel tab index"
 msgstr "Ευρετήριο καρτελών αριστερού πάνελ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:308
+#: build/data/org.zrythm.Zrythm.gschema.xml:309
 msgid "Index of the currently opened left panel tab."
 msgstr "Ευρετήριο της τρέχουσας ανοιχτής καρτέλας του αριστερού πάνελ."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:312
+#: build/data/org.zrythm.Zrythm.gschema.xml:313
 msgid "Right panel divider position"
 msgstr "Θέση διαχωριστή του δεξιού πάνελ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:313
+#: build/data/org.zrythm.Zrythm.gschema.xml:314
 msgid "Position of the resize handle of the right panel."
 msgstr "Θέση της λαβής του δεξιού πάνελ για μεταβολή μεγέθους."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:317
+#: build/data/org.zrythm.Zrythm.gschema.xml:318
 msgid "Right panel tab index"
 msgstr "Ευρετήριο καρτελών δεξιού πάνελ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:318
+#: build/data/org.zrythm.Zrythm.gschema.xml:319
 msgid "Index of the currently opened right panel tab."
 msgstr "Ευρετήριο της τρέχουσας ανοιχτής καρτέλας του δεξιού πάνελ."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:322
+#: build/data/org.zrythm.Zrythm.gschema.xml:323
 msgid "Bot panel divider position"
 msgstr "Θέση διαχωριστή του κάτω πάνελ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:323
+#: build/data/org.zrythm.Zrythm.gschema.xml:324
 msgid "Position of the resize handle of the bot panel."
 msgstr "Θέση της λαβής του κάτω πάνελ για μεταβολή μεγέθους."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:327
+#: build/data/org.zrythm.Zrythm.gschema.xml:328
 msgid "Bot panel tab index"
 msgstr "Ευρετήριο καρτελών του κάτω πάνελ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:328
+#: build/data/org.zrythm.Zrythm.gschema.xml:329
 msgid "Index of the currently opened bottom panel tab."
 msgstr "Ευρετήριο της τρέχουσας ανοιχτής καρτέλας του κάτω πάνελ."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:332
+#: build/data/org.zrythm.Zrythm.gschema.xml:333
 msgid "Plugin browser tab"
 msgstr "Καρτέλα περιηγητή προσθέτων"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:333
+#: build/data/org.zrythm.Zrythm.gschema.xml:334
 msgid "Selected plugin browser tab."
 msgstr "Επιλεγμένη καρτέλα περιηγητή προσθέτων."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:337
+#: build/data/org.zrythm.Zrythm.gschema.xml:338
 msgid "Plugin browser filter"
 msgstr "Φίλτρο περιηγητή προσθέτων"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:338
+#: build/data/org.zrythm.Zrythm.gschema.xml:339
 msgid "Selected plugin browser filter"
 msgstr "Επιλεγμένο φίλτρο περιηγητή προσθέτων"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:342
+#: build/data/org.zrythm.Zrythm.gschema.xml:343
 #, fuzzy
 msgid "Plugin browser collections"
 msgstr "Καρτέλα περιηγητή προσθέτων"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:343
+#: build/data/org.zrythm.Zrythm.gschema.xml:344
 #, fuzzy
 msgid "Tree paths of the selected collections in the plugin browser."
 msgstr "Ύψος του κορυφαίου μέρους του προσθέτου/περιηγητή αρχείων."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:347
+#: build/data/org.zrythm.Zrythm.gschema.xml:348
 #, fuzzy
 msgid "Plugin browser categories"
 msgstr "Φίλτρο περιηγητή προσθέτων"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:348
+#: build/data/org.zrythm.Zrythm.gschema.xml:349
 #, fuzzy
 msgid "Tree paths of the selected categories in the plugin browser."
 msgstr "Ύψος του κορυφαίου μέρους του προσθέτου/περιηγητή αρχείων."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:352
+#: build/data/org.zrythm.Zrythm.gschema.xml:353
 #, fuzzy
 msgid "Plugin browser protocols"
 msgstr "Καρτέλα περιηγητή προσθέτων"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:353
+#: build/data/org.zrythm.Zrythm.gschema.xml:354
 #, fuzzy
 msgid "Tree paths of the selected protocols in the plugin browser."
 msgstr "Ύψος του κορυφαίου μέρους του προσθέτου/περιηγητή αρχείων."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:357
+#: build/data/org.zrythm.Zrythm.gschema.xml:358
 msgid "Timeline event viewer visibility"
 msgstr "Ορατότητα προβολέα γεγονότων χρονολογίου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:358
+#: build/data/org.zrythm.Zrythm.gschema.xml:359
 msgid "Whether the timeline event viewer is visible or not."
 msgstr "Αν ο προβολέας γεγονότων χρονολογίου είναι ορατός ή όχι."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:362
+#: build/data/org.zrythm.Zrythm.gschema.xml:363
 msgid "Editor event viewer visibility"
 msgstr "Ορατότητα προβολέα γεγονότων επεξεργαστή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:363
+#: build/data/org.zrythm.Zrythm.gschema.xml:364
 msgid "Whether the editor event viewer is visible or not."
 msgstr "Αν ο προβολέας γεγονότων επεξεργαστή είναι ορατός ή όχι."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:368
+#: build/data/org.zrythm.Zrythm.gschema.xml:369
 msgid "Monitor out volume"
 msgstr "Ένταση εξόδου μόνιτορ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:369
+#: build/data/org.zrythm.Zrythm.gschema.xml:370
 msgid "The monitor out volume in amplitude (0 to 2)."
 msgstr "Η ένταση της εξόδου μόνιτορ σε εύρος (0 σε 2)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:373
+#: build/data/org.zrythm.Zrythm.gschema.xml:374
 msgid "Transport display type"
 msgstr "Τύπος προβολής μεταφοράς"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:374
+#: build/data/org.zrythm.Zrythm.gschema.xml:375
 msgid "Selected transport display type (BBT/time)."
 msgstr "Επιλεγμένος τύπος προβολής μεταφοράς (BBT/χρόνος)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:378
+#: build/data/org.zrythm.Zrythm.gschema.xml:379
 msgid "Ruler display type"
 msgstr "Τύπος προβολής χάρακα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:379
+#: build/data/org.zrythm.Zrythm.gschema.xml:380
 msgid "Selected ruler display type (BBT/time)."
 msgstr "Επιλεγμένος τύπος προβολής χάρακα (BBT/χρόνος)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:383
+#: build/data/org.zrythm.Zrythm.gschema.xml:384
 msgid "Selected editing tool"
 msgstr "Επιλεγμένο εργαλείο επεξεργασίας"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:384
+#: build/data/org.zrythm.Zrythm.gschema.xml:385
 msgid "Selected editing tool."
 msgstr "Επιλεγμένο εργαλείο επεξεργασίας."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:388
+#: build/data/org.zrythm.Zrythm.gschema.xml:389
 msgid "Last used MIDI function"
 msgstr "Τελευταία χρήση λειτουργίας MIDI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:389
+#: build/data/org.zrythm.Zrythm.gschema.xml:390
 msgid ""
 "Last used MIDI function (index corresponding to enum in midi function "
 "action)."
@@ -4345,11 +4389,11 @@ msgstr ""
 "Τελευταία χρήση λειτουργίας MIDI (δείκτης που αντιστοιχεί σε enum στην "
 "ενέργεια λειτουργίας MIDI)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:393
+#: build/data/org.zrythm.Zrythm.gschema.xml:394
 msgid "Last used automation function"
 msgstr "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:394
+#: build/data/org.zrythm.Zrythm.gschema.xml:395
 msgid ""
 "Last used automation function (index corresponding to enum in automation "
 "function action)."
@@ -4357,12 +4401,12 @@ msgstr ""
 "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού (ευρετήριο που αντιστοιχεί "
 "σε απαρίθμηση των ενεργειών της λειτουργίας αυτοματισμού)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:398
+#: build/data/org.zrythm.Zrythm.gschema.xml:399
 #, fuzzy
 msgid "Last used audio function"
 msgstr "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:399
+#: build/data/org.zrythm.Zrythm.gschema.xml:400
 #, fuzzy
 msgid ""
 "Last used audio function (index corresponding to enum in audio function "
@@ -4371,281 +4415,281 @@ msgstr ""
 "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού (ευρετήριο που αντιστοιχεί "
 "σε απαρίθμηση των ενεργειών της λειτουργίας αυτοματισμού)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:408
+#: build/data/org.zrythm.Zrythm.gschema.xml:409
 msgid "Genre to use when exporting, if the file type supports it."
 msgstr "Είδος προς χρήση κατά την εξαγωγή, αν ο τύπος αρχείου το υποστηρίζει."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:413
+#: build/data/org.zrythm.Zrythm.gschema.xml:414
 msgid "Artist to use when exporting, if the file type supports it."
 msgstr ""
 "Καλλιτέχνης προς χρήση κατά την εξαγωγή, αν ο τύπος αρχείου το υποστηρίζει."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:417
+#: build/data/org.zrythm.Zrythm.gschema.xml:418
 msgid "Time range"
 msgstr "Χρονικό εύρος"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:418
+#: build/data/org.zrythm.Zrythm.gschema.xml:419
 msgid "Time range to export."
 msgstr "Χρονικό εύρος που θα εξαχθεί."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:423
+#: build/data/org.zrythm.Zrythm.gschema.xml:424
 msgid "Format to export to."
 msgstr "Φορμάτ στο οποίο θα εξαχθεί."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:427
+#: build/data/org.zrythm.Zrythm.gschema.xml:428
 msgid "Filename pattern"
 msgstr "Μοτίβο ονόματος αρχείου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:428
+#: build/data/org.zrythm.Zrythm.gschema.xml:429
 msgid "Filename pattern for exported files."
 msgstr "Μοτίβο αρχείου ονόματος για εξαγόμενα αρχεία."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:433
+#: build/data/org.zrythm.Zrythm.gschema.xml:434
 msgid "Add dither while exporting, if applicable."
 msgstr "Προσθήκη θορύβου κατά την εξαγωγή, αν εφαρμόζεται."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:437
+#: build/data/org.zrythm.Zrythm.gschema.xml:438
 msgid "Export stems"
 msgstr "Εξαγωγή στελεχών"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:438
+#: build/data/org.zrythm.Zrythm.gschema.xml:439
 msgid "Whether to export stems instead of the mixdown."
 msgstr "Αν θα εξαχθούν στελέχη αντί για τη μίξη."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:443
+#: build/data/org.zrythm.Zrythm.gschema.xml:444
 msgid "Bit depth to use when exporting"
 msgstr "Βάθος bit προς χρήση κατά την εξαγωγή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:451
+#: build/data/org.zrythm.Zrythm.gschema.xml:452
 msgid "Track properties expanded"
 msgstr "Επεκταμένες ιδιότητες κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:452
+#: build/data/org.zrythm.Zrythm.gschema.xml:453
 msgid "Whether track properties is expanded."
 msgstr "Αν οι ιδιότητες κομματιού είναι επεκταμένες."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:456
+#: build/data/org.zrythm.Zrythm.gschema.xml:457
 msgid "Track outputs expanded"
 msgstr "Επεκταμένες εξαγωγές κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:457
+#: build/data/org.zrythm.Zrythm.gschema.xml:458
 msgid "Whether track outputs is expanded."
 msgstr "Αν οι εξαγωγές κομματιού είναι επεκταμένες."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:461
+#: build/data/org.zrythm.Zrythm.gschema.xml:462
 msgid "Track sends expanded"
 msgstr "Επεκταμένες αποστολές κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:462
+#: build/data/org.zrythm.Zrythm.gschema.xml:463
 msgid "Whether track sends is expanded."
 msgstr "Αν οι αποστολές κομματιού είναι επεκταμένες."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:466
+#: build/data/org.zrythm.Zrythm.gschema.xml:467
 msgid "Track inputs expanded"
 msgstr "Επεκταμένες εισαγωγές κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:467
+#: build/data/org.zrythm.Zrythm.gschema.xml:468
 msgid "Whether track inputs is expanded."
 msgstr "Αν οι εισαγωγές κομματιού είναι επεκταμένες."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:471
+#: build/data/org.zrythm.Zrythm.gschema.xml:472
 msgid "Track controls expanded"
 msgstr "Επεκταμένοι χειρισμοί κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:472
+#: build/data/org.zrythm.Zrythm.gschema.xml:473
 msgid "Whether track controls is expanded."
 msgstr "Αν οι χειρισμοί κομματιού είναι επεκταμένοι."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:476
+#: build/data/org.zrythm.Zrythm.gschema.xml:477
 msgid "Track inserts expanded"
 msgstr "Επεκταμένες είσοδοι κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:477
+#: build/data/org.zrythm.Zrythm.gschema.xml:478
 msgid "Whether track inserts is expanded."
 msgstr "Αν οι είσοδοι κομματιού είναι επεκταμένες."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:481
+#: build/data/org.zrythm.Zrythm.gschema.xml:482
 msgid "Track midi-fx expanded"
 msgstr "Επεκταμένα εφέ MIDI κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:482
+#: build/data/org.zrythm.Zrythm.gschema.xml:483
 msgid "Whether track midi-fx is expanded."
 msgstr "Αν τα εφέ MIDI κομματιού είναι επεκταμένα."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:486
+#: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Track fader expanded"
 msgstr "Επεκταμένο fader κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:487
+#: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid "Whether track fader is expanded."
 msgstr "Αν το fader κομματιού είναι επεκταμένο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:491
+#: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "Track comment expanded"
 msgstr "Επεκταμένο σχόλιο κομματιού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:492
+#: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid "Whether track comment is expanded."
 msgstr "Αν το σχόλιο κομματιού είναι επεκταμένο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:500
+#: build/data/org.zrythm.Zrythm.gschema.xml:501
 msgid "Transport loop"
 msgstr "Λούπα μεταφοράς"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:501
+#: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid "Whether looping is enabled."
 msgstr "Αν το λουπάρισμα είναι ενεργοποιημένο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:505
+#: build/data/org.zrythm.Zrythm.gschema.xml:506
 msgid "Return to cue"
 msgstr "Επιστροφή στο cue"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:506
+#: build/data/org.zrythm.Zrythm.gschema.xml:507
 msgid "Whether return to cue on stop is enabled."
 msgstr "Αν η επιστροφή στο cue κατά την παύση είναι ενεργοποιημένη."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:510
+#: build/data/org.zrythm.Zrythm.gschema.xml:511
 msgid "Metronome enabled"
 msgstr "Ενεργοποιημένος μετρονόμος"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:511
+#: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "Whether the metronome is enabled."
 msgstr "Αν ο μετρονόμος είναι ενεργοποιημένος."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:516
+#: build/data/org.zrythm.Zrythm.gschema.xml:517
 msgid "Metronome volume"
 msgstr "Ένταση μετρονόμου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:517
+#: build/data/org.zrythm.Zrythm.gschema.xml:518
 msgid "The metronome volume in amplitude (0 to 2)."
 msgstr "Η ένταση του μετρονόμου σε εύρος (0 σε 2)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:521
+#: build/data/org.zrythm.Zrythm.gschema.xml:522
 msgid "Punch mode enabled"
 msgstr "Ενεργοποιημένη λειτουργία punch"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:522
+#: build/data/org.zrythm.Zrythm.gschema.xml:523
 msgid "Whether punch in/out is enabled for recording."
 msgstr "Αν η λειτουργία punch in/out είναι ενεργοποιημένη στην ηχογράφηση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:526
+#: build/data/org.zrythm.Zrythm.gschema.xml:527
 msgid "Start playback on MIDI input"
 msgstr "Έναρξη αναπαραγωγής σε είσοδο MIDI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:527
+#: build/data/org.zrythm.Zrythm.gschema.xml:528
 msgid "Whether to start playback on MIDI input."
 msgstr "Αν θα αρχίσει αναπαραγωγή κατά την εισαγωγή MIDI."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:532
+#: build/data/org.zrythm.Zrythm.gschema.xml:533
 msgid "Recording mode."
 msgstr "Λειτουργία ηχογράφησης."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:545
+#: build/data/org.zrythm.Zrythm.gschema.xml:546
 msgid "Audio backend"
 msgstr "Παρασκήνιο ήχου"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:546
+#: build/data/org.zrythm.Zrythm.gschema.xml:547
 msgid "The audio backend to use."
 msgstr "Το παρασκήνιο ήχου προς χρήση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:550
+#: build/data/org.zrythm.Zrythm.gschema.xml:551
 msgid "RtAudio device"
 msgstr "Συσκευή RtAudio"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:551
+#: build/data/org.zrythm.Zrythm.gschema.xml:552
 msgid "The name of the RtAudio device to use."
 msgstr "Το όνομα της συσκευής RtAudio προς χρήση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:555
+#: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "SDL device"
 msgstr "Συσκευή SDL"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:556
+#: build/data/org.zrythm.Zrythm.gschema.xml:557
 msgid "The name of the SDL device to use."
 msgstr "Το όνομα της συσκευής SDL προς χρήση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:561
+#: build/data/org.zrythm.Zrythm.gschema.xml:562
 msgid "Samplerate to pass to the backend."
 msgstr "Ρυθμός δείγματος που θα περαστεί στο παρασκήνιο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:565
+#: build/data/org.zrythm.Zrythm.gschema.xml:566
 msgid "Buffer size"
 msgstr "Μέγεθος ενδιάμεσης μνήμης"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:566
+#: build/data/org.zrythm.Zrythm.gschema.xml:567
 msgid "Buffer size to pass to the backend."
 msgstr "Μέγεθος μνήμης που θα περαστεί στο παρασκήνιο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:570
+#: build/data/org.zrythm.Zrythm.gschema.xml:571
 msgid "MIDI backend"
 msgstr "Παρασκήνιο MIDI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:571
+#: build/data/org.zrythm.Zrythm.gschema.xml:572
 msgid "The MIDI backend to use."
 msgstr "Το παρασκήνιο MIDI προς χρήση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:575
+#: build/data/org.zrythm.Zrythm.gschema.xml:576
 msgid "Audio inputs"
 msgstr "Εισαγόμενοι ήχοι"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:576
+#: build/data/org.zrythm.Zrythm.gschema.xml:577
 msgid "A list of audio inputs to enable."
 msgstr "Μια λίστα των εισαγόμενων ήχων προς ενεργοποίηση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:580
+#: build/data/org.zrythm.Zrythm.gschema.xml:581
 msgid "MIDI controllers"
 msgstr "Χειριστές MIDI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:581
+#: build/data/org.zrythm.Zrythm.gschema.xml:582
 msgid "A list of controllers to enable."
 msgstr "Μια λίστα χειριστών προς ενεργοποίηση."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:590
-#: build/data/org.zrythm.Zrythm.gschema.xml:639
+#: build/data/org.zrythm.Zrythm.gschema.xml:591
+#: build/data/org.zrythm.Zrythm.gschema.xml:640
 msgid "Paths"
 msgstr "Μονοπάτια"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:595
+#: build/data/org.zrythm.Zrythm.gschema.xml:596
 msgid "The directory used to save user data in."
 msgstr "Ο κατάλογος προς χρήση για αποθήκευση δεδομένων του χρήστη."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:604
+#: build/data/org.zrythm.Zrythm.gschema.xml:605
 msgid "UIs"
 msgstr "Διεπαφές χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:608
+#: build/data/org.zrythm.Zrythm.gschema.xml:609
 msgid "Open UI on instantiation"
 msgstr "Άνοιγμα διεπαφής χρήστη κατά την ενσάρκωση"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:609
+#: build/data/org.zrythm.Zrythm.gschema.xml:610
 msgid "Open plugin UIs when they are instantiated."
 msgstr "Άνοιγμα διεπαφών χρήστη προσθέτων κατά την ενσάρκωσή τους."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:613
+#: build/data/org.zrythm.Zrythm.gschema.xml:614
 msgid "Keep window on top"
 msgstr "Διατήρηση παραθύρου στην κορυφή"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:614
+#: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Always show plugin UIs on top of the main window."
 msgstr ""
 "Να προβάλλονται πάντα οι διεπαφές χρήστη προσθέτων στην κορυφή του κεντρικού "
 "παραθύρου."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:618
+#: build/data/org.zrythm.Zrythm.gschema.xml:619
 msgid "Generic UIs"
 msgstr "Κοινές διεπαφές χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:619
+#: build/data/org.zrythm.Zrythm.gschema.xml:620
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
 "Προβολή γενικών (κοινών) διεπαφών χρήστη προσθέτων που παράγονται από το "
 "Zrythm αντί των προσαρμοσμένων."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:623
+#: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "Bridge unsupported UIs"
 msgstr "Γεφύρωση μη υποστηριζόμενων διεπαφών χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:624
+#: build/data/org.zrythm.Zrythm.gschema.xml:625
 msgid ""
 "Bridge unsupported UIs in another process instead of creating generic ones. "
 "This will lead to some performance loss."
@@ -4653,22 +4697,22 @@ msgstr ""
 "Γεφύρωση μη υποστηριζόμενων διεπαφών χρήστη σε άλλη διαδικασία αντί για "
 "δημιουργία γενικών (κοινών). Αυτό θα οδηγήσει σε μερική απώλεια απόδοσης."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:629
+#: build/data/org.zrythm.Zrythm.gschema.xml:630
 msgid "Refresh rate"
 msgstr "Ανανέωση ρυθμού"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:630
+#: build/data/org.zrythm.Zrythm.gschema.xml:631
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 "Ανανέωση ρυθμού σε Hz. Αν οριστεί σε 0, θα χρησιμοποιηθεί η ανανέωση ρυθμού "
 "της οθόνης."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:647
+#: build/data/org.zrythm.Zrythm.gschema.xml:648
 msgid "VST plugins"
 msgstr "Πρόσθετα VST"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:648
+#: build/data/org.zrythm.Zrythm.gschema.xml:649
 msgid ""
 "The search paths to scan for VST plugins in. Duplicate paths will be "
 "deduplicated."
@@ -4676,11 +4720,11 @@ msgstr ""
 "Τα μονοπάτια αναζήτησης προς σκανάρισμα για πρόσθετα VST. Όμοια μονοπάτια θα "
 "αφαιρεθούν."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:652
+#: build/data/org.zrythm.Zrythm.gschema.xml:653
 msgid "SFZ instruments"
 msgstr "Όργανα SFZ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:653
+#: build/data/org.zrythm.Zrythm.gschema.xml:654
 msgid ""
 "The search paths to scan for SFZ instruments in. Duplicate paths will be "
 "deduplicated."
@@ -4688,11 +4732,11 @@ msgstr ""
 "Τα μονοπάτια αναζήτησης προς σκανάρισμα για όργανα SFZ. Όμοια μονοπάτια θα "
 "αφαιρεθούν."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:657
+#: build/data/org.zrythm.Zrythm.gschema.xml:658
 msgid "SF2 instruments"
 msgstr "Όργανα SF2"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:658
+#: build/data/org.zrythm.Zrythm.gschema.xml:659
 msgid ""
 "The search paths to scan for SF2 instruments in. Duplicate paths will be "
 "deduplicated."
@@ -4700,29 +4744,29 @@ msgstr ""
 "Τα μονοπάτια αναζήτησης προς σκανάρισμα για όργανα SF2. Όμοια μονοπάτια θα "
 "αφαιρεθούν."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:671
+#: build/data/org.zrythm.Zrythm.gschema.xml:672
 msgid "Fade algorithm"
 msgstr "Αλγόριθμος fade"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:672
+#: build/data/org.zrythm.Zrythm.gschema.xml:673
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr "Προεπιλεγμένος αλγόριθμος fade προς χρήση για fade in/outs."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:686
+#: build/data/org.zrythm.Zrythm.gschema.xml:687
 msgid "Default algorithm to use for automation curves."
 msgstr "Προεπιλεγμένος αλγόριθμος προς χρήση για καμπύλες αυτοματισμού."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:700
+#: build/data/org.zrythm.Zrythm.gschema.xml:701
 msgid "Undo stack length"
 msgstr "Αριθμός δυνατών αναιρέσεων ενεργειών"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:701
+#: build/data/org.zrythm.Zrythm.gschema.xml:702
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 "Μέγιστος αριθμός ενεργειών που μπορούν να αναιρεθούν. Ορίστε σε -1 για "
 "απεριόριστο."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:716
+#: build/data/org.zrythm.Zrythm.gschema.xml:717
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
@@ -4730,49 +4774,49 @@ msgstr ""
 "Μεσοδιάστημα για αυτόματη αποθήκευση έργων, σε λεπτά. Η αυτόματη αποθήκευση "
 "θα απενεργοποιηθεί αν οριστεί σε 0."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:724
+#: build/data/org.zrythm.Zrythm.gschema.xml:725
 msgid "UI"
 msgstr "Διεπαφή χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:729
+#: build/data/org.zrythm.Zrythm.gschema.xml:730
 msgid "Draw detail"
 msgstr "Λεπτομέρεια γραφικών"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:730
+#: build/data/org.zrythm.Zrythm.gschema.xml:731
 msgid "Level of detail to use when drawing graphics."
 msgstr "Επίπεδο λεπτομέρειας προς χρήση κατά την παράσταση γραφικών."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:735
+#: build/data/org.zrythm.Zrythm.gschema.xml:736
 #, fuzzy
 msgid "Font scale"
 msgstr "Σε κλίμακα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:736
+#: build/data/org.zrythm.Zrythm.gschema.xml:737
 #, fuzzy
 msgid "Font scale."
 msgstr "Σε κλίμακα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:740
+#: build/data/org.zrythm.Zrythm.gschema.xml:741
 msgid "User interface language"
 msgstr "Γλώσσα διεπαφής χρήστη"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:741
+#: build/data/org.zrythm.Zrythm.gschema.xml:742
 msgid "The language to use for the user interface."
 msgstr "Η γλώσσα προς χρήση για τη διεπαφή χρήστη."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:749
+#: build/data/org.zrythm.Zrythm.gschema.xml:750
 msgid "DSP"
 msgstr "DSP"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:750
+#: build/data/org.zrythm.Zrythm.gschema.xml:751
 msgid "Pan"
 msgstr "Πανάρισμα"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:754
+#: build/data/org.zrythm.Zrythm.gschema.xml:755
 msgid "Pan algorithm"
 msgstr "Αλγόριθμος παναρίσματος"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:755
+#: build/data/org.zrythm.Zrythm.gschema.xml:756
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
 "the moment)."
@@ -4780,11 +4824,11 @@ msgstr ""
 "Ο αλγόριθμος παναρίσματος προς χρήση κατά την εφαρμογή παναρίσματος σε "
 "σήματα μόνο (δεν χρησιμοποιείται προς το παρόν)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:759
+#: build/data/org.zrythm.Zrythm.gschema.xml:760
 msgid "Pan law"
 msgstr "Νόμος παναρίσματος"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:760
+#: build/data/org.zrythm.Zrythm.gschema.xml:761
 msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."

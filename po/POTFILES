@@ -122,6 +122,7 @@ inc/gui/widgets/audio_editor_space.h
 inc/gui/widgets/mixer.h
 inc/gui/widgets/left_dock_edge.h
 inc/gui/widgets/ruler.h
+inc/gui/widgets/main_notebook.h
 inc/gui/widgets/selection_info.h
 inc/gui/widgets/active_hardware_popover.h
 inc/gui/widgets/live_waveform.h
@@ -361,6 +362,7 @@ inc/audio/region.h
 inc/audio/control_room.h
 inc/audio/metronome.h
 inc/audio/channel.h
+inc/audio/engine_pulse.h
 inc/audio/router.h
 inc/audio/engine_rtaudio.h
 inc/audio/recording_event.h
@@ -565,6 +567,7 @@ src/gui/widgets/midi_activity_bar.c
 src/gui/widgets/track.c
 src/gui/widgets/midi_track.c
 src/gui/widgets/color_area.c
+src/gui/widgets/main_notebook.c
 src/gui/widgets/chord.c
 src/gui/widgets/modulator_macro.c
 src/gui/widgets/timeline_bot_box.c
@@ -694,6 +697,7 @@ src/audio/tempo_track.c
 src/audio/engine.c
 src/audio/audio_bus_track.c
 src/audio/true_peak_dsp.c
+src/audio/engine_pulse.c
 src/audio/curve.c
 src/audio/track_lane.c
 src/audio/marker.c
@@ -793,6 +797,7 @@ resources/ui/create_project_dialog.ui
 resources/ui/active_hardware_popover.ui
 resources/ui/chord_pad.ui
 resources/ui/channel.ui
+resources/ui/main_notebook.ui
 resources/ui/midi_editor_space.ui
 resources/ui/automatable_selector.ui
 resources/ui/help_toolbar.ui
