@@ -31,18 +31,21 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-02-02 15:02+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-02-08 10:50+0000\n"
+"Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/user-manual/"
+"el/>\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.5-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -1215,7 +1218,7 @@ msgstr ""
 
 #: ../../credits/intro.rst:6
 msgid "Credits"
-msgstr "Ευχαριστίες"
+msgstr "Μνείες"
 
 #: ../../credits/intro.rst:9
 msgid "Authors"
@@ -2125,7 +2128,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:20
 msgid "Select/Stretch Tool"
-msgstr "Λειτουργία επιλογής/τεντώματος"
+msgstr "Εργαλείο επιλογής/επέκτασης"
 
 #: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
@@ -2309,7 +2312,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:102
 msgid "Edit Tool"
-msgstr "Λειτουργία επεξεργασίας"
+msgstr "Εργαλείο επεξεργασίας"
 
 #: ../../editing/edit-tools.rst:103
 msgid ""
@@ -2338,7 +2341,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
-msgstr "Λειτουργία κοψίματος"
+msgstr "Εργαλείο αποκοπής"
 
 #: ../../editing/edit-tools.rst:116
 msgid ""
@@ -2365,7 +2368,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:129
 msgid "Ramp Tool"
-msgstr "Λειτουργία ράμπας"
+msgstr "Εργαλείο ράμπας"
 
 #: ../../editing/edit-tools.rst:130
 msgid ""
@@ -6000,7 +6003,7 @@ msgstr "Κατευθύνσεις θυρών"
 #: ../../routing/ports.rst:27
 #: ../../tracks/track-types.rst:12
 msgid "Input"
-msgstr "Εισαγόμενο"
+msgstr "Είσοδος"
 
 #: ../../routing/ports.rst:28
 msgid "The port receives signals."
@@ -6009,7 +6012,7 @@ msgstr "Η θύρα δέχεται σήματα."
 #: ../../routing/ports.rst:31
 #: ../../tracks/track-types.rst:12
 msgid "Output"
-msgstr "Εξαγόμενο"
+msgstr "Έξοδος"
 
 #: ../../routing/ports.rst:32
 msgid "The port sends signals."
@@ -9304,4 +9307,3 @@ msgstr ""
 #~ "<https://bittube.video/videos/watch/playlist/69bc340a-d0b7"
 #~ "-403d-"
 #~ "83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-aae7-02713b7c1460>`_."
-

@@ -4,21 +4,22 @@
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
+# Michalis <michalisntovas@yahoo.gr>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-02 14:58+0000\n"
-"PO-Revision-Date: 2020-12-12 01:29+0000\n"
-"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
-">\n"
+"PO-Revision-Date: 2021-02-09 04:52+0000\n"
+"Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
+"\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -98,15 +99,15 @@ msgstr "Επικόλληση"
 
 #: inc/utils/gtk.h:62
 msgid "_Delete"
-msgstr "Διαγραφή"
+msgstr "_Διαγραφή"
 
 #: inc/utils/gtk.h:66
 msgid "Cle_ar Selection"
-msgstr "Αποεπιλογή"
+msgstr "_Καθαρισμός επιλογής"
 
 #: inc/utils/gtk.h:71
 msgid "Select A_ll"
-msgstr "Επιλογή όλων"
+msgstr "Επιλογή _όλων"
 
 #: inc/utils/gtk.h:76 src/gui/widgets/home_toolbar.c:212
 msgid "Duplicate"
@@ -119,11 +120,11 @@ msgstr "Σίγαση"
 
 #: inc/utils/gtk.h:84 src/gui/widgets/track.c:1195
 msgid "Unmute"
-msgstr "Ξεσίγαση"
+msgstr "Κατάργηση σίγασης"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:202
 msgid "Invert"
-msgstr ""
+msgstr "Αντιστροφή"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
 #, fuzzy
@@ -1972,7 +1973,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
-msgstr "Ιστοσελίδα"
+msgstr "Ιστότοπος"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:112
 msgid "Exported"
@@ -3026,12 +3027,12 @@ msgstr "Παρασκήνια"
 #: resources/ui/export_progress_dialog.ui:52 resources/ui/bounce_dialog.ui:51
 #: resources/ui/export_dialog.ui:43 resources/ui/preferences.ui:58
 msgid "Cancel"
-msgstr "Ακύρωση"
+msgstr "Άκυρο"
 
 #: resources/ui/bind_cc_dialog.ui:81
 msgid "Press a key or move a knob on your MIDI device"
 msgstr ""
-"Πατήστε πλήκτρο ή μετακινήστε περιστροφικό επιλογέα στη MIDI συσκευή σας"
+"Πατήστε πλήκτρο ή μετακινήστε ένα περιστροφικό επιλογέα στη MIDI συσκευή σας"
 
 #: resources/ui/bind_cc_dialog.ui:94
 msgid "Waiting for input..."
@@ -3150,7 +3151,7 @@ msgstr "ΝΑΓΙΝΕΙ πληκτρολόγιο"
 #: resources/ui/scale_selector_window.ui:368
 #: resources/ui/chord_selector_window.ui:887 resources/ui/export_dialog.ui:250
 msgid "Custom"
-msgstr "Προσαρμογή"
+msgstr "Προσαρμοσμένο"
 
 #: resources/ui/bot_dock_edge.ui:66
 msgid "Editor view"
@@ -3501,7 +3502,7 @@ msgstr "Όνομα κομματιού"
 
 #: resources/ui/panel_file_browser.ui:107 resources/ui/file_browser.ui:107
 msgid "Location"
-msgstr "Τόπος"
+msgstr "Τοποθεσία"
 
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
