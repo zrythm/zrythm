@@ -18,18 +18,13 @@
 if sphinx_build.found () and sphinx_intl.found () and sass.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
-sphinx_build_opts = []
+sphinx_build_opts = ''
 if get_option ('strict_sphinx_opts')
-  sphinx_build_opts = [
-    # Force-rebuild every time.
-    '-E',
     # Fail on warnings.
-    '-W',
     # Keep going when getting warnings.
     #'--keep-going',
     # Show full traceback on exception.
-    '-T',
-    ]
+  sphinx_build_opts = '-E -W -T'
 endif
 
 # used to only create guile docs when possible,
@@ -140,6 +135,13 @@ rtd_theme_files = files ([
   'sphinx_zrythm_theme/search.html',
   ])
 
+run_sphinx_build = configure_file (
+  output: 'run_sphinx_build.sh',
+  input: 'run_sphinx_build.sh',
+  configuration: {
+    'BASH': bash.full_path (),
+    })
+
 # create run targets for each lang/format combination
 # and custom targets for each language for html
 html_manuals = []
@@ -154,12 +156,12 @@ foreach lang, lang_str : locales
 
     name = format + '-manual-' + lang
     output_dir =  sphinx_builddir / lang / format
-    #output_dir =  meson.current_build_dir () / lang / format
     command = [
-      sphinx_build, sphinx_build_opts,
-      '-D', 'language=' + lang,
-      '-b', format, meson.current_source_dir (),
-      output_dir, '&&', 'touch', '@OUTPUT@',
+      run_sphinx_build,
+      sphinx_build.full_path(),
+      sphinx_build_opts,
+      lang, format, meson.current_source_dir (),
+      output_dir, '@OUTPUT@',
       ]
 
     deps = [ custom_css_target ]
