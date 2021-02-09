@@ -95,25 +95,10 @@
 
 typedef enum IconType IconType;
 
-/**
- * For readability, instead of using 0s and 1s.
- */
-enum ZGtkFill
-{
-  Z_GTK_NO_FILL,
-  Z_GTK_FILL
-};
-
 enum ZGtkResize
 {
   Z_GTK_NO_RESIZE,
   Z_GTK_RESIZE
-};
-
-enum ZGtkExpand
-{
-  Z_GTK_NO_EXPAND,
-  Z_GTK_EXPAND
 };
 
 enum ZGtkShrink

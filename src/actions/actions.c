@@ -1239,13 +1239,9 @@ activate_toggle_top_panel (
   gpointer       user_data)
 {
   g_return_if_fail (
-    MW_CENTER_DOCK &&
-    MW_MAIN_NOTEBOOK->
-      timeline_plus_event_viewer_paned);
+    MW_CENTER_DOCK && MW_MAIN_NOTEBOOK);
   GtkWidget * widget =
-    (GtkWidget *)
-    MW_MAIN_NOTEBOOK->
-      timeline_plus_event_viewer_paned;
+    (GtkWidget *) MW_MAIN_NOTEBOOK;
   gtk_widget_set_visible (
     widget, !gtk_widget_get_visible (widget));
 }

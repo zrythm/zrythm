@@ -92,7 +92,7 @@ right_dock_edge_widget_init (
     plugin_browser_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "plugins",
+      "plugin-solid",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Plugin Browser"));
@@ -117,7 +117,7 @@ right_dock_edge_widget_init (
        * 24, but if we pass 24 and 1 a different
        * icon is loaded, so load the 12 icon and
        * scale it 2 times */
-      "media-optical-audio",
+      "folder-music-line",
       12, 2,
       GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
   img =
@@ -137,10 +137,18 @@ right_dock_edge_widget_init (
 
   /* add control room */
   self->control_room = control_room_widget_new ();
+  pixbuf =
+    gtk_icon_theme_load_icon_for_scale (
+      gtk_icon_theme_get_default (),
+      /* the scale only accepts integers and we want
+       * 24, but if we pass 24 and 1 a different
+       * icon is loaded, so load the 12 icon and
+       * scale it 2 times */
+      "speaker",
+      12, 2,
+      GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
   img =
-    gtk_image_new_from_icon_name (
-      "audio-headphones",
-      GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_image_new_from_pixbuf (pixbuf);
   gtk_widget_set_tooltip_text (
     img, _("Control Room"));
   box =
@@ -157,7 +165,7 @@ right_dock_edge_widget_init (
   /* add file browser button */
   img =
     gtk_image_new_from_icon_name (
-      "media-optical-audio",
+      "hdd",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_image_set_pixel_size (
     (GtkImage *) img, 32);

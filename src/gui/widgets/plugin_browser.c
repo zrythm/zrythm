@@ -1199,6 +1199,10 @@ create_model_for_protocols ()
         case PROT_VST3:
           icon = "logo-vst";
           break;
+        case PROT_SFZ:
+        case PROT_SF2:
+          icon = "file-music-line";
+          break;
         default:
           icon = "plug";
           break;

@@ -81,10 +81,6 @@ left_dock_edge_widget_refresh (
     self->plugin_inspector, MIXER_SELECTIONS,
     false);
 
-  cc_bindings_widget_refresh (self->cc_bindings);
-  port_connections_widget_refresh (
-    self->port_connections);
-
   int page_num =
     g_settings_get_int (S_UI, "left-panel-tab");
   gtk_notebook_set_current_page (
@@ -247,60 +243,6 @@ left_dock_edge_widget_init (
     img);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->visibility),
-    min_width, -1);
-
-  /* setup CC bindings */
-  img =
-    gtk_image_new_from_icon_name (
-      "labplot-matrix",
-      GTK_ICON_SIZE_LARGE_TOOLBAR);
-  gtk_widget_set_tooltip_text (
-    img, _("CC Bindings"));
-  self->cc_bindings = cc_bindings_widget_new ();
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->cc_bindings), 1);
-  GtkBox * cc_bindings_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (cc_bindings_box),
-    GTK_WIDGET (self->cc_bindings));
-  gtk_widget_set_visible (
-    GTK_WIDGET (cc_bindings_box), 1);
-  gtk_notebook_append_page (
-    GTK_NOTEBOOK (self->inspector_notebook),
-    GTK_WIDGET (cc_bindings_box),
-    img);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->cc_bindings),
-    min_width, -1);
-
-  /* setup port connections */
-  img =
-    gtk_image_new_from_icon_name (
-      /*"network-connect",*/
-      "standard-connector",
-      GTK_ICON_SIZE_LARGE_TOOLBAR);
-  gtk_widget_set_tooltip_text (
-    img, _("Port connections"));
-  self->port_connections =
-    port_connections_widget_new ();
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->port_connections), 1);
-  GtkBox * port_connections_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (port_connections_box),
-    GTK_WIDGET (self->port_connections));
-  gtk_widget_set_visible (
-    GTK_WIDGET (port_connections_box), 1);
-  gtk_notebook_append_page (
-    GTK_NOTEBOOK (self->inspector_notebook),
-    GTK_WIDGET (port_connections_box),
-    img);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->port_connections),
     min_width, -1);
 }
 

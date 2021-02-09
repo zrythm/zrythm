@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/meter.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
@@ -145,7 +146,7 @@ setup_balance_control (
       gtk_box_pack_start (
         self->balance_box,
         GTK_WIDGET (self->balance_control),
-        Z_GTK_NO_EXPAND, Z_GTK_FILL, 0);
+        F_NO_EXPAND, F_FILL, 0);
       gtk_widget_set_hexpand (
         GTK_WIDGET (self->balance_control), true);
       z_gtk_widget_set_margin (

@@ -578,7 +578,7 @@ setup_balance_control (ChannelWidget * self)
   gtk_box_pack_start (
     self->balance_control_box,
     GTK_WIDGET (self->balance_control),
-    Z_GTK_NO_EXPAND, Z_GTK_FILL, 0);
+    F_NO_EXPAND, F_FILL, 0);
 }
 
 static void

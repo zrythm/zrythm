@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +20,7 @@
 #include "audio/snap_grid.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/snap_grid_popover.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -27,9 +28,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (SnapGridWidget,
-               snap_grid_widget,
-               GTK_TYPE_MENU_BUTTON)
+G_DEFINE_TYPE (
+  SnapGridWidget, snap_grid_widget,
+  GTK_TYPE_MENU_BUTTON)
 
 static void
 on_clicked (GtkButton * button,
@@ -119,10 +120,10 @@ snap_grid_widget_init (SnapGridWidget * self)
     _("Snap/Grid options"));
   gtk_box_pack_start (
     self->box, GTK_WIDGET (self->img),
-    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+    F_NO_EXPAND, F_NO_FILL, 1);
   gtk_box_pack_end (
     self->box, GTK_WIDGET (self->label),
-    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+    F_NO_EXPAND, F_NO_FILL, 1);
   gtk_container_add (
     GTK_CONTAINER (self), GTK_WIDGET (self->box));
   g_signal_connect (

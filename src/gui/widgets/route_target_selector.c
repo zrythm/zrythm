@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/route_target_selector_popover.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -186,10 +187,10 @@ route_target_selector_widget_init (
 
   gtk_box_pack_start (
     self->box, GTK_WIDGET (self->img),
-    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+    F_NO_EXPAND, F_NO_FILL, 1);
   gtk_box_pack_start (
     self->box, GTK_WIDGET (self->label),
-    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+    F_NO_EXPAND, F_NO_FILL, 1);
   gtk_container_add (
     GTK_CONTAINER (self), GTK_WIDGET (self->box));
 

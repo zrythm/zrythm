@@ -19,18 +19,21 @@
 
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/cc_bindings.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/main_notebook.h"
+#include "gui/widgets/port_connections.h"
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   MainNotebookWidget, main_notebook_widget,
-  GTK_TYPE_NOTEBOOK)
+  FOLDABLE_NOTEBOOK_WIDGET_TYPE)
 
 void
 main_notebook_widget_setup (
@@ -47,6 +50,15 @@ main_notebook_widget_setup (
     GTK_WIDGET (self->event_viewer),
     g_settings_get_boolean (
       S_UI, "timeline-event-viewer-visible"));
+}
+
+void
+main_notebook_widget_refresh (
+  MainNotebookWidget * self)
+{
+  cc_bindings_widget_refresh (self->cc_bindings);
+  port_connections_widget_refresh (
+    self->port_connections);
 }
 
 /**
@@ -72,6 +84,25 @@ main_notebook_widget_init (
   g_type_ensure (EVENT_VIEWER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  /* setup CC bindings */
+  self->cc_bindings = cc_bindings_widget_new ();
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->cc_bindings), true);
+  gtk_box_pack_start (
+    self->cc_bindings_box,
+    GTK_WIDGET (self->cc_bindings),
+    F_EXPAND, F_FILL, 0);
+
+  /* setup port connections */
+  self->port_connections =
+    port_connections_widget_new ();
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->port_connections), true);
+  gtk_box_pack_start (
+    self->port_connections_box,
+    GTK_WIDGET (self->port_connections),
+    F_EXPAND, F_FILL, 0);
 }
 
 static void
@@ -90,5 +121,7 @@ main_notebook_widget_class_init (
   BIND_CHILD (timeline_panel);
   BIND_CHILD (event_viewer);
   BIND_CHILD (end_stack);
+  BIND_CHILD (cc_bindings_box);
+  BIND_CHILD (port_connections_box);
   BIND_CHILD (timeline_plus_event_viewer_paned);
 }

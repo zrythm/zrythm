@@ -3,7 +3,7 @@
 <interface>
   <requires lib="gtk+" version="3.22"/>
   <template class="MainNotebookWidget"
-            parent="GtkNotebook">
+            parent="FoldableNotebookWidget">
     <style>
       <class name="main-notebook" />
     </style>
@@ -38,25 +38,69 @@
       </object>
     </child>
     <child type="tab">
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Timeline</property>
+      <object class="GtkBox">
+        <property name="visible">1</property>
+        <property name="tooltip-text" translatable="yes">Timeline</property>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">1</property>
+            <property name="icon-name">roadmap</property>
+            <property name="margin-end">3</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">Timeline</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
       </object>
       <packing>
         <property name="tab_fill">False</property>
       </packing>
     </child>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="port_connections_box">
         <property name="visible">True</property>
       </object>
     </child>
     <child type="tab">
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Connections</property>
+      <object class="GtkBox">
+        <property name="visible">1</property>
+        <property name="tooltip-text" translatable="yes">Port connections</property>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">1</property>
+            <property name="icon-name">connector</property>
+            <property name="margin-end">3</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">Connections</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
       </object>
       <packing>
         <property name="position">1</property>
@@ -64,18 +108,78 @@
       </packing>
     </child>
     <child>
+      <object class="GtkBox" id="cc_bindings_box">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child type="tab">
+      <object class="GtkBox">
+        <property name="visible">1</property>
+        <property name="tooltip-text" translatable="yes">MIDI CC bindings</property>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">1</property>
+            <property name="icon-name">midi-logo</property>
+            <property name="margin-end">3</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">Bindings</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="position">2</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkBox">
         <property name="visible">True</property>
       </object>
     </child>
     <child type="tab">
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Live View</property>
+      <object class="GtkBox">
+        <property name="visible">1</property>
+        <property name="tooltip-text" translatable="yes">Scenes (Live view)</property>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">1</property>
+            <property name="icon-name">carousel-horizontal</property>
+            <property name="margin-end">3</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">Scenes</property>
+          </object>
+          <packing>
+            <property name="expand">0</property>
+            <property name="fill">0</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
       </object>
       <packing>
-        <property name="position">2</property>
+        <property name="position">3</property>
         <property name="tab_fill">False</property>
       </packing>
     </child>

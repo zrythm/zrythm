@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,6 +30,7 @@
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -94,9 +95,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
           gtk_box_pack_start (
             self->channels_box,
             GTK_WIDGET (ch->widget),
-            Z_GTK_NO_EXPAND,
-            Z_GTK_NO_FILL,
-            0);
+            F_NO_EXPAND, F_NO_FILL, 0);
         }
     }
 
@@ -104,9 +103,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
   gtk_box_pack_start (
     self->channels_box,
     GTK_WIDGET (self->channels_add),
-    Z_GTK_NO_EXPAND,
-    Z_GTK_NO_FILL,
-    0);
+    F_NO_EXPAND, F_NO_FILL, 0);
 
   /* re-add dummy box for dnd */
   if (!GTK_IS_WIDGET (self->ddbox))

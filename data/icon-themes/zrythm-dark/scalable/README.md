@@ -202,3 +202,63 @@ on Visualhunt.com and modified.
 They are licensed under [Creative Commons Attribution 2.0 Generic](https://creativecommons.org/licenses/by/2.0/).
 
 - drum-flam.svg
+
+----
+
+The following icons are released as
+[carbon](https://github.com/carbon-design-system/carbon) licensed under
+[Apache 2.0](https://github.com/carbon-design-system/carbon/blob/master/LICENSE).
+Their color was modified.
+
+- carousel-horizontal.svg
+- roadmap.svg
+
+---
+
+The following icons are released as
+[simple-icons](https://github.com/simple-icons/simple-icons) licensed under
+[Creative Commons Zero v1.0 Universal (CC0)](https://choosealicense.com/licenses/cc0-1.0/).
+
+- midi-logo.svg
+
+---
+
+The following icons are released as
+[Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) licensed under
+[MIT License](https://choosealicense.com/licenses/mit/).
+
+- connector.svg
+
+---
+
+The following icons are released as
+[Remix icons](https://remixicon.com/) licensed under
+[Apache License 2.0](https://github.com/Remix-Design/RemixIcon/blob/master/License).
+
+- file-music-line.svg
+- folder-music-line.svg
+
+---
+
+The following icons are released as
+[Unicons](https://iconscout.com/unicons) licensed under
+[Apache License 2.0](https://github.com/Iconscout/unicons/blob/master/LICENSE).
+
+- hdd.svg
+
+---
+
+The following icons are released as
+[Mono icons](https://icons.mono.company/) licensed under
+[MIT License](https://github.com/mono-company/mono-icons/blob/master/LICENSE.md).
+
+- speaker.svg
+
+---
+
+The following icons are released as
+[Clarity icons](https://clarity.design/icons) licensed under
+[MIT License](https://github.com/vmware/clarity-assets/blob/master/LICENSE).
+
+- plugin-line.svg
+- plugin-solid.svg

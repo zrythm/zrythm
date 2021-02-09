@@ -26,18 +26,23 @@
 #ifndef __GUI_WIDGETS_MAIN_NOTEBOOK_H__
 #define __GUI_WIDGETS_MAIN_NOTEBOOK_H__
 
+#include "gui/widgets/foldable_notebook.h"
+
 #include <gtk/gtk.h>
 
 #define MAIN_NOTEBOOK_WIDGET_TYPE \
   (main_notebook_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MainNotebookWidget, main_notebook_widget,
-  Z, MAIN_NOTEBOOK_WIDGET, GtkNotebook)
+  Z, MAIN_NOTEBOOK_WIDGET, FoldableNotebookWidget)
 
 typedef struct _TimelinePanelWidget
   TimelinePanelWidget;
 typedef struct _EventViewerWidget
   EventViewerWidget;
+typedef struct _CcBindingsWidget CcBindingsWidget;
+typedef struct _PortConnectionsWidget
+  PortConnectionsWidget;
 
 /**
  * @addtogroup widgets
@@ -50,7 +55,7 @@ typedef struct _EventViewerWidget
 
 typedef struct _MainNotebookWidget
 {
-  GtkNotebook           parent_instance;
+  FoldableNotebookWidget parent_instance;
 
   /** Event viewr + timeline panel. */
   GtkPaned *
@@ -59,10 +64,20 @@ typedef struct _MainNotebookWidget
   TimelinePanelWidget * timeline_panel;
   EventViewerWidget *   event_viewer;
   GtkStack *            end_stack;
+
+  GtkBox *              cc_bindings_box;
+  CcBindingsWidget *    cc_bindings;
+
+  GtkBox *              port_connections_box;
+  PortConnectionsWidget * port_connections;
 } MainNotebookWidget;
 
 void
 main_notebook_widget_setup (
+  MainNotebookWidget * self);
+
+void
+main_notebook_widget_refresh (
   MainNotebookWidget * self);
 
 /**

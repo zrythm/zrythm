@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +20,7 @@
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/active_hardware_popover.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm.h"
@@ -144,7 +145,7 @@ active_hardware_mb_widget_init (
     _("Click to enable inputs"));
   gtk_box_pack_start (
     self->box, GTK_WIDGET (self->label),
-    Z_GTK_EXPAND, Z_GTK_NO_FILL, 1);
+    F_EXPAND, F_NO_FILL, 1);
   gtk_container_add (
     GTK_CONTAINER (self), GTK_WIDGET (self->box));
   g_signal_connect (

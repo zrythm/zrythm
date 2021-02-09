@@ -1687,6 +1687,8 @@ process_events (void * data)
           left_dock_edge_widget_refresh (
             MW_LEFT_DOCK_EDGE);
           on_project_selection_type_changed ();
+          main_notebook_widget_refresh (
+            MW_MAIN_NOTEBOOK);
           break;
         case ET_SPLASH_CLOSED:
           break;
@@ -1765,12 +1767,12 @@ process_events (void * data)
           ruler_widget_redraw_whole (MW_RULER);
           break;
         case ET_MIDI_BINDINGS_CHANGED:
-          left_dock_edge_widget_refresh (
-            MW_LEFT_DOCK_EDGE);
+          main_notebook_widget_refresh (
+            MW_MAIN_NOTEBOOK);
           break;
         case ET_PORT_CONNECTION_CHANGED:
-          left_dock_edge_widget_refresh (
-            MW_LEFT_DOCK_EDGE);
+          main_notebook_widget_refresh (
+            MW_MAIN_NOTEBOOK);
           break;
         case ET_EDITOR_FUNCTION_APPLIED:
           editor_toolbar_widget_refresh (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -246,5 +246,11 @@
 
 #define F_DYNAMIC 1
 #define F_NOT_DYNAMIC 0
+
+#define F_EXPAND 1
+#define F_NO_EXPAND 0
+
+#define F_FILL 1
+#define F_NO_FILL 0
 
 #endif
