@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -814,9 +814,6 @@ carla_category_to_zrythm_category_str (
 {
   switch (category)
     {
-    case PLUGIN_CATEGORY_NONE:
-      return g_strdup ("Plugin");
-      break;
     case PLUGIN_CATEGORY_SYNTH:
       return g_strdup ("Instrument");
       break;
@@ -842,6 +839,8 @@ carla_category_to_zrythm_category_str (
       return g_strdup ("Utility");
       break;
     case PLUGIN_CATEGORY_OTHER:
+    case PLUGIN_CATEGORY_NONE:
+    default:
       return g_strdup ("Plugin");
       break;
     }

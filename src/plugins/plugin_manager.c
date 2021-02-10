@@ -82,6 +82,7 @@ add_category (
   PluginManager * self,
   char *          category)
 {
+  g_return_if_fail (category);
   if (!string_is_ascii (category))
     {
       g_warning (
