@@ -32,6 +32,8 @@
 #include "utils/system.h"
 #include "zrythm.h"
 
+#include <lv2/instance-access/instance-access.h>
+
 #include <CarlaBackend.h>
 
 static ZPluginCategory
@@ -453,8 +455,7 @@ z_carla_discovery_get_bridge_mode (
         lilv_new_uri (LILV_WORLD, descr->uri);
       const LilvPlugin * lilv_plugin =
         lilv_plugins_get_by_uri (
-          PM_LILV_NODES.lilv_plugins,
-          lv2_uri);
+          LILV_PLUGINS, lv2_uri);
       lilv_node_free (lv2_uri);
       LilvUIs * uis =
         lilv_plugin_get_uis (lilv_plugin);
@@ -471,27 +472,28 @@ z_carla_discovery_get_bridge_mode (
           LilvNodes * ui_required_features =
             lilv_world_find_nodes (
               LILV_WORLD, ui_uri,
-              PM_LILV_NODES.core_requiredFeature,
+              PM_GET_NODE (
+                LV2_CORE__requiredFeature),
               NULL);
           if (lilv_nodes_contains (
                 ui_required_features,
-                PM_LILV_NODES.data_access) ||
+                PM_GET_NODE (LV2_DATA_ACCESS_URI)) ||
               lilv_nodes_contains (
                 ui_required_features,
-                PM_LILV_NODES.instance_access) ||
+                PM_GET_NODE (
+                  LV2_INSTANCE_ACCESS_URI)) ||
               lilv_node_equals (
                 picked_ui_type,
-                PM_LILV_NODES.ui_Qt4UI) ||
+                PM_GET_NODE (LV2_UI__Qt4UI)) ||
               lilv_node_equals (
                 picked_ui_type,
-                PM_LILV_NODES.ui_Qt5UI) ||
+                PM_GET_NODE (LV2_UI__Qt5UI)) ||
               lilv_node_equals (
                 picked_ui_type,
-                PM_LILV_NODES.ui_GtkUI) ||
+                PM_GET_NODE (LV2_UI__GtkUI)) ||
               lilv_node_equals (
                 picked_ui_type,
-                PM_LILV_NODES.ui_Gtk3UI)
-              )
+                PM_GET_NODE (LV2_UI__Gtk3UI)))
             {
               return CARLA_BRIDGE_FULL;
             }

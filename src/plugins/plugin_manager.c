@@ -154,202 +154,39 @@ static int sort_plugin_func (
     /*}*/
 /*}*/
 
-static void
-cache_lv2_uris (
-  PluginManager * self)
+/**
+ * Returns a cached LilvNode for the given URI.
+ *
+ * If a node doesn't exist for the given URI, a
+ * node is created and cached.
+ */
+const LilvNode *
+plugin_manager_get_node (
+  PluginManager * self,
+  const char *    uri)
 {
-  g_message ("%s: Caching...", __func__);
+  for (int i = 0; i < self->num_nodes; i++)
+    {
+      LilvNode * node = self->nodes[i];
+      g_return_val_if_fail (
+        lilv_node_is_uri (node), NULL);
+      const char * node_uri =
+        lilv_node_as_uri (node);
+      if (string_is_equal (node_uri, uri))
+        {
+          return node;
+        }
+    }
 
-  /* Cache URIs */
-  Lv2Nodes * nodes = &self->lv2_nodes;
-#define ADD_LV2_NODE(key,val) \
-  nodes->key = \
-    lilv_new_uri (self->lv2_nodes.lilv_world, val)
+  array_double_size_if_full (
+    self->nodes, self->num_nodes, self->nodes_size,
+    LilvNode *);
+  LilvNode * new_node =
+    lilv_new_uri (LILV_WORLD, uri);
+  array_append (
+    self->nodes, self->num_nodes, new_node);
 
-  /* in alphabetical order */
-  ADD_LV2_NODE (atom_AtomPort, LV2_ATOM__AtomPort);
-  ADD_LV2_NODE (
-    atom_bufferType, LV2_ATOM__bufferType);
-  ADD_LV2_NODE (atom_Chunk, LV2_ATOM__Chunk);
-  ADD_LV2_NODE (
-    atom_eventTransfer, LV2_ATOM__eventTransfer);
-  ADD_LV2_NODE (atom_Float, LV2_ATOM__Float);
-  ADD_LV2_NODE (atom_Path, LV2_ATOM__Path);
-  ADD_LV2_NODE (
-    atom_Sequence, LV2_ATOM__Sequence);
-  ADD_LV2_NODE (
-    atom_supports, LV2_ATOM__supports);
-  ADD_LV2_NODE (
-    bufz_coarseBlockLength,
-    "http://lv2plug.in/ns/ext/buf-size#coarseBlockLength");
-  ADD_LV2_NODE (
-    bufz_fixedBlockLength,
-    LV2_BUF_SIZE__fixedBlockLength);
-  ADD_LV2_NODE (
-    bufz_powerOf2BlockLength,
-    LV2_BUF_SIZE__powerOf2BlockLength);
-  ADD_LV2_NODE (
-    bufz_nominalBlockLength,
-    "http://lv2plug.in/ns/ext/buf-size#nominalBlockLength");
-  ADD_LV2_NODE (
-    core_AudioPort, LV2_CORE__AudioPort);
-  ADD_LV2_NODE (
-    core_connectionOptional,
-    LV2_CORE__connectionOptional);
-  ADD_LV2_NODE (
-    core_control, LV2_CORE__control);
-  ADD_LV2_NODE (
-    core_ControlPort, LV2_CORE__ControlPort);
-  ADD_LV2_NODE (
-    core_CVPort, LV2_CORE__CVPort);
-  ADD_LV2_NODE (
-    core_default, LV2_CORE__default);
-  ADD_LV2_NODE (
-    core_designation, LV2_CORE__designation);
-  ADD_LV2_NODE (
-    core_enumeration, LV2_CORE__enumeration);
-  ADD_LV2_NODE (
-    core_freeWheeling, LV2_CORE__freeWheeling);
-  ADD_LV2_NODE (
-    core_index, LV2_CORE__index);
-  ADD_LV2_NODE (
-    core_inPlaceBroken, LV2_CORE__inPlaceBroken);
-  ADD_LV2_NODE (
-    core_InputPort, LV2_CORE__InputPort);
-  ADD_LV2_NODE (
-    core_integer, LV2_CORE__integer);
-  ADD_LV2_NODE (
-    core_isSideChain,
-    LV2_CORE_PREFIX "isSideChain");
-  ADD_LV2_NODE (
-    core_maximum, LV2_CORE__maximum);
-  ADD_LV2_NODE (
-    core_minimum, LV2_CORE__minimum);
-  ADD_LV2_NODE (
-    core_name, LV2_CORE__name);
-  ADD_LV2_NODE (
-    core_OutputPort, LV2_CORE__OutputPort);
-  ADD_LV2_NODE (
-    core_reportsLatency, LV2_CORE__reportsLatency);
-  ADD_LV2_NODE (
-    core_requiredFeature,
-    LV2_CORE__requiredFeature);
-  ADD_LV2_NODE (
-    core_sampleRate, LV2_CORE__sampleRate);
-  ADD_LV2_NODE (
-    core_symbol, LV2_CORE__symbol);
-  ADD_LV2_NODE (
-    core_toggled, LV2_CORE__toggled);
-  ADD_LV2_NODE (
-    data_access,
-    "http://lv2plug.in/ns/ext/data-access");
-  ADD_LV2_NODE (
-    instance_access,
-    "http://lv2plug.in/ns/ext/instance-access");
-  ADD_LV2_NODE (
-    ev_EventPort,
-    LV2_EVENT__EventPort);
-  ADD_LV2_NODE (
-    patch_Message,
-    LV2_PATCH__Message);
-  ADD_LV2_NODE (
-    patch_readable,
-    LV2_PATCH__readable);
-  ADD_LV2_NODE (
-    patch_writable,
-    LV2_PATCH__writable);
-  ADD_LV2_NODE (
-    midi_MidiEvent,
-    LV2_MIDI__MidiEvent);
-  ADD_LV2_NODE (
-    pg_element,
-    LV2_PORT_GROUPS__element);
-  ADD_LV2_NODE (
-    pg_group,
-    LV2_PORT_GROUPS__group);
-  ADD_LV2_NODE (
-    pprops_causesArtifacts,
-    LV2_PORT_PROPS__causesArtifacts);
-  ADD_LV2_NODE (
-    pprops_expensive,
-    LV2_PORT_PROPS__expensive);
-  ADD_LV2_NODE (
-    pprops_logarithmic,
-    LV2_PORT_PROPS__logarithmic);
-  ADD_LV2_NODE (
-    pprops_notAutomatic,
-    LV2_PORT_PROPS__notAutomatic);
-  ADD_LV2_NODE (
-    pprops_notOnGUI,
-    LV2_PORT_PROPS__notOnGUI);
-  ADD_LV2_NODE (
-    pprops_rangeSteps,
-    LV2_PORT_PROPS__rangeSteps);
-  ADD_LV2_NODE (
-    pprops_trigger, LV2_PORT_PROPS__trigger);
-  ADD_LV2_NODE (
-    pset_bank, LV2_PRESETS__bank);
-  ADD_LV2_NODE (
-    pset_Bank, LV2_PRESETS__Bank);
-  ADD_LV2_NODE (
-    pset_Preset, LV2_PRESETS__Preset);
-  ADD_LV2_NODE (
-    rdfs_comment, LILV_NS_RDFS "comment");
-  ADD_LV2_NODE (
-    rdfs_label, LILV_NS_RDFS "label");
-  ADD_LV2_NODE (
-    rdfs_range, LILV_NS_RDFS "range");
-  ADD_LV2_NODE (
-    rsz_minimumSize,
-    LV2_RESIZE_PORT__minimumSize);
-  ADD_LV2_NODE (
-    state_threadSafeRestore,
-    LV2_STATE__threadSafeRestore);
-  ADD_LV2_NODE (
-    time_Position, LV2_TIME__Position);
-  ADD_LV2_NODE (
-    ui_external,
-    "http://lv2plug.in/ns/extensions/ui#external");
-  ADD_LV2_NODE (
-    ui_externalkx,
-    "http://kxstudio.sf.net/ns/lv2ext/"
-    "external-ui#Widget");
-  ADD_LV2_NODE (ui_Gtk3UI, LV2_UI__Gtk3UI);
-  ADD_LV2_NODE (ui_GtkUI, LV2_UI__GtkUI);
-  ADD_LV2_NODE (ui_Qt4UI, LV2_UI__Qt4UI);
-  ADD_LV2_NODE (ui_Qt5UI, LV2_UI__Qt5UI);
-  ADD_LV2_NODE (units_db, LV2_UNITS__db);
-  ADD_LV2_NODE (units_degree, LV2_UNITS__degree);
-  ADD_LV2_NODE (units_hz, LV2_UNITS__hz);
-  ADD_LV2_NODE (units_midiNote, LV2_UNITS__midiNote);
-  ADD_LV2_NODE (units_mhz, LV2_UNITS__mhz);
-  ADD_LV2_NODE (units_ms, LV2_UNITS__ms);
-  ADD_LV2_NODE (units_render, LV2_UNITS__render);
-  ADD_LV2_NODE (units_s, LV2_UNITS__s);
-  ADD_LV2_NODE (units_unit, LV2_UNITS__unit);
-  ADD_LV2_NODE (
-    work_interface, LV2_WORKER__interface);
-  ADD_LV2_NODE (
-    work_schedule, LV2_WORKER__schedule);
-#ifdef LV2_EXTENDED
-  /*nodes->auto_can_write_automation = lilv_new_uri(world,LV2_AUTOMATE_URI__can_write);*/
-  /*nodes->auto_automation_control     = lilv_new_uri(world,LV2_AUTOMATE_URI__control);*/
-  /*nodes->auto_automation_controlled  = lilv_new_uri(world,LV2_AUTOMATE_URI__controlled);*/
-  /*nodes->auto_automation_controller  = lilv_new_uri(world,LV2_AUTOMATE_URI__controller);*/
-  /*nodes->inline_display_in_gui       = lilv_new_uri(world,LV2_INLINEDISPLAY__in_gui);*/
-#endif
-
-  ADD_LV2_NODE (
-    zrythm_default_bank,
-    "https://lv2.zrythm.org#default-bank");
-  ADD_LV2_NODE (
-    zrythm_default_preset,
-    "https://lv2.zrythm.org#init-preset");
-
-  nodes->end = NULL;
-#undef ADD_LV2_NODE
-
-  g_message ("%s: done", __func__);
+  return new_node;
 }
 
 static void
@@ -358,7 +195,7 @@ create_and_load_lilv_word (
 {
   g_message ("Creating Lilv World...");
   LilvWorld * world = lilv_world_new ();
-  self->lv2_nodes.lilv_world = world;
+  self->lilv_world = world;
 
   /* load all installed plugins on system */
 #if !defined (_WOE32) && !defined (__APPLE__)
@@ -506,11 +343,12 @@ load_bundled_lv2_plugins (
                   G_DIR_SEPARATOR_S);
               LilvNode * uri =
                 lilv_new_uri (
-                  self->lv2_nodes.lilv_world, str);
+                  self->lilv_world, str);
               lilv_world_load_bundle (
-                self->lv2_nodes.lilv_world, uri);
-              g_message ("Loaded bundled plugin at %s",
-                         str);
+                self->lilv_world, uri);
+              g_message (
+                "Loaded bundled plugin at %s",
+                str);
               g_free (str);
               lilv_node_free (uri);
             }
@@ -539,11 +377,14 @@ plugin_manager_new (void)
   PluginManager * self = object_new (PluginManager);
 
   self->symap = symap_new();
-  zix_sem_init(&self->symap_lock, 1);
+  zix_sem_init (&self->symap_lock, 1);
+
+  self->nodes_size = 1;
+  self->nodes =
+    malloc (self->nodes_size * sizeof (LilvNode *));
 
   /* init lv2 */
   create_and_load_lilv_word (self);
-  cache_lv2_uris (self);
   init_symap (self);
   load_bundled_lv2_plugins (self);
 
@@ -1266,10 +1107,10 @@ plugin_manager_scan_plugins (
     progress ? *progress : 0;
 
   /* load all plugins with lilv */
-  LilvWorld * world = LILV_WORLD;
+  LilvWorld * world = self->lilv_world;
   const LilvPlugins * lilv_plugins =
     lilv_world_get_all_plugins (world);
-  LV2_NODES.lilv_plugins = lilv_plugins;
+  self->lilv_plugins = lilv_plugins;
 
   if (getenv ("NO_SCAN_PLUGINS"))
     return;
@@ -1424,7 +1265,7 @@ plugin_manager_scan_plugins (
     {
       PluginDescriptor * descriptor =
         z_carla_discovery_create_au_descriptor_from_string (
-          all_plugins, i);
+          &all_plugins, i);
 
       if (descriptor)
         {
@@ -1462,7 +1303,6 @@ plugin_manager_scan_plugins (
             zrythm_app, prog_str, *progress);
         }
     }
-  g_free (all_plugins);
 #endif // __APPLE__
 #endif // HAVE_CARLA
 
@@ -1567,7 +1407,14 @@ plugin_manager_free (
 
   symap_free (self->symap);
   zix_sem_destroy (&self->symap_lock);
-  lilv_world_free (self->lv2_nodes.lilv_world);
+
+  for (int i = 0; i < self->num_nodes; i++)
+    {
+      LilvNode * node = self->nodes[i];
+      g_message ("freeing %s", lilv_node_as_string (node));
+      lilv_node_free (node);
+    }
+  lilv_world_free (self->lilv_world);
 
   plugin_manager_clear_plugins (self);
 

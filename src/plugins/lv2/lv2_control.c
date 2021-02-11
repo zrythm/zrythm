@@ -44,6 +44,9 @@
 
 #include <lilv/lilv.h>
 
+#include <lv2/port-props/port-props.h>
+#include <lv2/port-groups/port-groups.h>
+
 #include <gtk/gtk.h>
 
 /* TODO all this should be merged with Port, or
@@ -70,7 +73,6 @@ lv2_new_port_control (
   Lv2Port * port  = &plugin->ports[index];
   const LilvPort * lport = port->lilv_port;
   const LilvPlugin * plug  = plugin->lilv_plugin;
-  const Lv2Nodes * nodes = &PM_LILV_NODES;
 
   Lv2Control * id =
     calloc(1, sizeof (Lv2Control));
@@ -87,26 +89,33 @@ lv2_new_port_control (
   id->port = port;
   id->group =
     lilv_port_get (
-      plug, lport, nodes->pg_group);
+      plug, lport,
+      PM_GET_NODE (LV2_PORT_GROUPS__group));
   id->value_type = plugin->forge.Float;
   id->is_writable =
     lilv_port_is_a (
-      plug, lport, nodes->core_InputPort);
+      plug, lport,
+      PM_GET_NODE (LV2_CORE__InputPort));
   id->is_readable =
     lilv_port_is_a (
-      plug, lport, nodes->core_OutputPort);
+      plug, lport,
+      PM_GET_NODE (LV2_CORE__OutputPort));
   id->is_toggle =
     lilv_port_has_property (
-      plug, lport, nodes->core_toggled);
+      plug, lport,
+      PM_GET_NODE (LV2_CORE__toggled));
   id->is_integer =
     lilv_port_has_property (
-      plug, lport, nodes->core_integer);
+      plug, lport,
+      PM_GET_NODE (LV2_CORE__integer));
   id->is_enumeration =
     lilv_port_has_property (
-      plug, lport, nodes->core_enumeration);
+      plug, lport,
+      PM_GET_NODE (LV2_CORE__enumeration));
   id->is_logarithmic =
     lilv_port_has_property (
-      plug, lport, nodes->pprops_logarithmic);
+      plug, lport,
+      PM_GET_NODE (LV2_PORT_PROPS__logarithmic));
 
   lilv_port_get_range (
     plug, lport, &id->def, &id->min, &id->max);
@@ -114,7 +123,8 @@ lv2_new_port_control (
   id->minf = lilv_node_as_float(id->min);
   id->deff = lilv_node_as_float(id->def);
   if (lilv_port_has_property (
-        plug, lport, nodes->core_sampleRate))
+        plug, lport,
+        PM_GET_NODE (LV2_CORE__sampleRate)))
     {
       /* Adjust range for lv2:sampleRate
        * controls */
@@ -192,7 +202,8 @@ has_range(Lv2Plugin* plugin, const LilvNode* subject, const char* range_uri)
   const bool result =
     lilv_world_ask (
       LILV_WORLD, subject,
-      PM_LILV_NODES.rdfs_range, range);
+      PM_GET_NODE (LILV_NS_RDFS "range"),
+      range);
   lilv_node_free(range);
   return result;
 }
@@ -209,25 +220,25 @@ lv2_new_property_control (
   id->symbol =
     lilv_world_get_symbol (LILV_WORLD, property);
   id->label =
-    lilv_world_get (LILV_WORLD,
-                    property,
-                    PM_LILV_NODES.rdfs_label, NULL);
+    lilv_world_get (
+      LILV_WORLD, property,
+      PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
   id->property =
     plugin->map.map (
-      plugin, lilv_node_as_uri(property));
+      plugin, lilv_node_as_uri (property));
 
   id->min =
     lilv_world_get (
       LILV_WORLD, property,
-      PM_LILV_NODES.core_minimum, NULL);
+      PM_GET_NODE (LV2_CORE__minimum), NULL);
   id->max =
     lilv_world_get (
       LILV_WORLD, property,
-      PM_LILV_NODES.core_maximum, NULL);
+      PM_GET_NODE (LV2_CORE__maximum), NULL);
   id->def =
     lilv_world_get (
       LILV_WORLD, property,
-      PM_LILV_NODES.core_default, NULL);
+      PM_GET_NODE (LV2_CORE__default), NULL);
 
   const char* const types[] = {
     LV2_ATOM__Int,

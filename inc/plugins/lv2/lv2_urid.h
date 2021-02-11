@@ -29,7 +29,8 @@
  */
 
 /**
- * Standard URIDs to be used by every plugin.
+ * Cached URIDs for quick access (instead of having
+ * to use symap).
  */
 typedef struct Lv2URIDs
 {

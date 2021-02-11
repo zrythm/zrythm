@@ -59,6 +59,7 @@
 #include <glib/gi18n.h>
 #include <lv2/patch/patch.h>
 #include <lv2/port-props/port-props.h>
+#include <lv2/presets/presets.h>
 #include <suil/suil.h>
 
 #define MIN_SCALE_WIDTH 120
@@ -149,7 +150,7 @@ lv2_gtk_get_bank_menu (
   LilvNode* label =
     lilv_world_get (
       LILV_WORLD, bank,
-      PM_LILV_NODES.rdfs_label, NULL);
+      PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
 
   const char* uri = lilv_node_as_string(bank);
   const char* str =
@@ -198,7 +199,7 @@ lv2_gtk_add_preset_to_menu (
   LilvNode* bank =
     lilv_world_get (
       LILV_WORLD, node,
-      PM_LILV_NODES.pset_bank, NULL);
+      PM_GET_NODE (LV2_PRESETS__bank), NULL);
 
   if (bank)
     {
@@ -1212,7 +1213,7 @@ lv2_gtk_build_control_widget (
           LilvNode* group_name =
             lilv_world_get (
               LILV_WORLD, group,
-              PM_LILV_NODES.core_name, NULL);
+              PM_GET_NODE (LV2_CORE__name), NULL);
           GtkWidget* group_label =
             plugin_gtk_new_label (
               lilv_node_as_string (group_name),
@@ -1263,7 +1264,8 @@ lv2_gtk_build_control_widget (
           LilvNode* comment =
             lilv_world_get (
               LILV_WORLD, record->node,
-              PM_LILV_NODES.rdfs_comment, NULL);
+              PM_GET_NODE (
+                LILV_NS_RDFS "comment"), NULL);
           if (comment)
             {
               gtk_widget_set_tooltip_text (

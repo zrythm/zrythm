@@ -45,117 +45,17 @@ typedef struct PluginCollections PluginCollections;
  */
 
 #define PLUGIN_MANAGER (ZRYTHM->plugin_manager)
-#define LV2_NODES (PLUGIN_MANAGER->lv2_nodes)
-#define LILV_WORLD LV2_NODES.lilv_world
+#define LILV_WORLD (PLUGIN_MANAGER->lilv_world)
+#define LILV_PLUGINS (PLUGIN_MANAGER->lilv_plugins)
 #define LV2_GENERATOR_PLUGIN "Generator"
 #define LV2_CONSTANT_PLUGIN "Constant"
 #define LV2_INSTRUMENT_PLUGIN "Instrument"
 #define LV2_OSCILLATOR_PLUGIN "Oscillator"
-#define PM_LILV_NODES (PLUGIN_MANAGER->lv2_nodes)
 #define PM_URIDS (PLUGIN_MANAGER->urids)
 #define PM_SYMAP (PLUGIN_MANAGER->symap)
 #define PM_SYMAP_LOCK (PLUGIN_MANAGER->symap_lock)
-
-/**
- * Cached LV2 nodes.
- */
-typedef struct Lv2Nodes
-{
-  LilvWorld *         lilv_world;
-  const LilvPlugins * lilv_plugins;
-  LilvNode *          atom_AtomPort;
-  LilvNode *          atom_bufferType;
-  LilvNode *          atom_Chunk;
-  LilvNode *          atom_eventTransfer;
-  LilvNode *          atom_Float;
-  LilvNode *          atom_Path;
-  LilvNode *          atom_Sequence;
-  LilvNode *          atom_supports;
-  LilvNode *          bufz_coarseBlockLength;
-  LilvNode *          bufz_fixedBlockLength;
-  LilvNode *          bufz_powerOf2BlockLength;
-  LilvNode *          bufz_nominalBlockLength;
-  LilvNode *          core_AudioPort;
-  LilvNode *          core_connectionOptional;
-  LilvNode *          core_control;
-  LilvNode *          core_ControlPort;
-  LilvNode *          core_CVPort;
-  LilvNode *          core_default;
-  LilvNode *          core_designation;
-  LilvNode *          core_enumeration;
-  LilvNode *          core_freeWheeling;
-  LilvNode *          core_index;
-  LilvNode *          core_inPlaceBroken;
-  LilvNode *          core_InputPort;
-  LilvNode *          core_integer;
-  LilvNode *          core_isSideChain;
-  LilvNode *          core_minimum;
-  LilvNode *          core_maximum;
-  LilvNode *          core_name;
-  LilvNode *          core_OutputPort;
-  LilvNode *          core_reportsLatency;
-  LilvNode *          core_requiredFeature;
-  LilvNode *          core_sampleRate;
-  LilvNode *          core_symbol;
-  LilvNode *          core_toggled;
-  LilvNode *          data_access;
-  LilvNode *          instance_access;
-  LilvNode *          ev_EventPort;
-  LilvNode *          patch_Message;
-  LilvNode *          patch_readable;
-  LilvNode *          patch_writable;
-  LilvNode *          midi_MidiEvent;
-  LilvNode *          pg_element;
-  LilvNode *          pg_group;
-  LilvNode *          pprops_causesArtifacts;
-  LilvNode *          pprops_expensive;
-  LilvNode *          pprops_logarithmic;
-  LilvNode *          pprops_notAutomatic;
-  LilvNode *          pprops_notOnGUI;
-  LilvNode *          pprops_rangeSteps;
-  LilvNode *          pprops_trigger;
-  LilvNode *          pset_bank;
-  LilvNode *          pset_Bank;
-  LilvNode *          pset_Preset;
-  LilvNode *          rdfs_comment;
-  LilvNode *          rdfs_label;
-  LilvNode *          rdfs_range;
-  LilvNode *          rsz_minimumSize;
-  LilvNode *          state_threadSafeRestore;
-  LilvNode *          time_Position;
-  LilvNode *          ui_external;
-  LilvNode *          ui_externalkx;
-  LilvNode *          ui_Gtk3UI;
-  LilvNode *          ui_GtkUI;
-  LilvNode *          ui_Qt4UI;
-  LilvNode *          ui_Qt5UI;
-  LilvNode *          units_db;
-  LilvNode *          units_degree;
-  LilvNode *          units_hz;
-  LilvNode *          units_midiNote;
-  LilvNode *          units_mhz;
-  LilvNode *          units_ms;
-  LilvNode *          units_render;
-  LilvNode *          units_s;
-  LilvNode *          units_unit;
-  LilvNode *          work_interface;
-  LilvNode *          work_schedule;
-#ifdef LV2_EXTENDED
-  LilvNode *          auto_can_write_automatation;
-  LilvNode *          auto_automation_control;
-  LilvNode *          auto_automation_controlled;
-  LilvNode *          auto_automation_controller;
-  LilvNode *          inline_display_in_gui;
-#endif
-
-  /** Default bank to use for presets that don't
-   * belong to a bank. */
-  LilvNode *          zrythm_default_bank;
-  /** Init preset. */
-  LilvNode *          zrythm_default_preset;
-
-  LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
-} Lv2Nodes;
+#define PM_GET_NODE(uri) \
+  plugin_manager_get_node (PLUGIN_MANAGER, uri)
 
 typedef struct PluginDescriptor PluginDescriptor;
 
@@ -177,7 +77,12 @@ typedef struct PluginManager
   char *                 plugin_categories[500];
   int                    num_plugin_categories;
 
-  Lv2Nodes               lv2_nodes;
+  LilvWorld *         lilv_world;
+  const LilvPlugins * lilv_plugins;
+
+  LilvNode **         nodes;
+  int                 num_nodes;
+  size_t              nodes_size;
 
   /** Cached VST descriptors */
   CachedPluginDescriptors * cached_plugin_descriptors;
@@ -199,6 +104,17 @@ typedef struct PluginManager
 
 PluginManager *
 plugin_manager_new (void);
+
+/**
+ * Returns a cached LilvNode for the given URI.
+ *
+ * If a node doesn't exist for the given URI, a
+ * node is created and cached.
+ */
+const LilvNode *
+plugin_manager_get_node (
+  PluginManager * self,
+  const char *    uri);
 
 /**
  * Scans for plugins, optionally updating the

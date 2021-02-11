@@ -552,15 +552,12 @@ carla_native_plugin_populate_banks (
   PluginBank * pl_def_bank =
     plugin_add_bank_if_not_exists (
       self->plugin,
-      lilv_node_as_string (
-        PM_LILV_NODES.zrythm_default_bank),
+      LV2_ZRYTHM__defaultBank,
       _("Default bank"));
   PluginPreset * pl_def_preset =
     calloc (1, sizeof (PluginPreset));
   pl_def_preset->uri =
-    g_strdup (
-      lilv_node_as_string (
-        PM_LILV_NODES.zrythm_default_preset));
+    g_strdup (LV2_ZRYTHM__initPreset);
   pl_def_preset->name = g_strdup (_("Init"));
   plugin_add_preset_to_bank (
     self->plugin, pl_def_bank, pl_def_preset);

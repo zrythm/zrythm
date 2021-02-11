@@ -712,6 +712,9 @@ if not lv2_dep.found()
   lilv_proj = subproject('lilv')
   lv2_dep = lilv_proj.get_variable('lv2_dep')
 endif
+if lv2_dep.version().version_compare('>=1.18.0')
+  cdata.set('HAVE_LV2_1_18', 1)
+endif
 lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
   fallback: ['lilv', 'lilv_dep'],

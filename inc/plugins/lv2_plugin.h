@@ -92,6 +92,14 @@ typedef struct PluginDescriptor PluginDescriptor;
 #define IS_LV2_PLUGIN(tr) \
   (tr && tr->magic == LV2_PLUGIN_MAGIC)
 
+#define LV2_ZRYTHM__defaultBank \
+  "https://lv2.zrythm.org#default-bank"
+#define LV2_ZRYTHM__initPreset \
+  "https://lv2.zrythm.org#init-preset"
+#define LV2_KX__externalUi \
+  "http://kxstudio.sf.net/ns/lv2ext/" \
+  "external-ui#Widget"
+
 /**
  * LV2 plugin.
  */

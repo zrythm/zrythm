@@ -385,7 +385,7 @@ plugin_descriptor_has_custom_ui (
           lilv_new_uri (LILV_WORLD, self->uri);
         const LilvPlugin * lilv_pl =
           lilv_plugins_get_by_uri (
-            PM_LILV_NODES.lilv_plugins, uri);
+            LILV_PLUGINS, uri);
         LilvUIs * uis =
           lilv_plugin_get_uis (lilv_pl);
         const LilvUI * wrappable_ui;

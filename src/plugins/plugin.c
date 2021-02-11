@@ -454,8 +454,7 @@ new_carla_plugin:
                 LILV_WORLD, descr->uri);
             const LilvPlugin * lilv_plugin =
               lilv_plugins_get_by_uri (
-                PM_LILV_NODES.lilv_plugins,
-                lv2_uri);
+                LILV_PLUGINS, lv2_uri);
             lilv_node_free (lv2_uri);
 
             /* try to bridge bridgable plugins */
