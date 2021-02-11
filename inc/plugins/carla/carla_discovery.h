@@ -30,6 +30,8 @@
 
 #ifdef HAVE_CARLA
 
+#include "plugins/plugin_descriptor.h"
+
 #include <CarlaUtils.h>
 
 typedef struct PluginDescriptor PluginDescriptor;
@@ -75,7 +77,6 @@ z_carla_discovery_create_descriptors_from_file (
   PluginArchitecture arch,
   PluginProtocol     protocol);
 
-#ifdef __APPLE__
 /**
  * Create a descriptor for the given AU plugin.
  */
@@ -88,9 +89,8 @@ z_carla_discovery_create_au_descriptor_from_info (
  */
 PluginDescriptor *
 z_carla_discovery_create_au_descriptor_from_string (
-  char ** all_plugins,
-  int     idx);
-#endif
+  const char * all_plugins,
+  int          idx);
 
 /**
  * Parses plugin info into a new NULL-terminated

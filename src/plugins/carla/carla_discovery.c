@@ -63,7 +63,6 @@ get_category_from_carla_category (
 #undef EQUALS
 }
 
-#ifdef __APPLE__
 static ZPluginCategory
 carla_category_to_zrythm_category (
   PluginCategory carla_cat)
@@ -93,7 +92,6 @@ carla_category_to_zrythm_category (
     }
   return ZPLUGIN_CATEGORY_NONE;
 }
-#endif
 
 /**
  * Returns the absolute path to carla-discovery-*
@@ -521,7 +519,6 @@ z_carla_discovery_get_bridge_mode (
   g_return_val_if_reached (CARLA_BRIDGE_NONE);
 }
 
-#ifdef __APPLE__
 /**
  * Create a descriptor for the given AU plugin.
  */
@@ -537,14 +534,14 @@ z_carla_discovery_create_au_descriptor_from_info (
   descr->name = g_strdup (info->name);
   g_return_val_if_fail (descr->name,  NULL);
   descr->author = g_strdup (info->maker);
-  descr->num_audio_ins = info->audioIns;
-  descr->num_audio_outs = info->audioOuts;
-  descr->num_cv_ins = info->cvIns;
-  descr->num_cv_outs = info->cvOuts;
-  descr->num_ctrl_ins = info->parameterIns;
-  descr->num_ctrl_outs = info->parameterOuts;
-  descr->num_midi_ins = info->midiIns;
-  descr->num_midi_outs = info->midiOuts;
+  descr->num_audio_ins = (int) info->audioIns;
+  descr->num_audio_outs = (int) info->audioOuts;
+  descr->num_cv_ins = (int) info->cvIns;
+  descr->num_cv_outs = (int) info->cvOuts;
+  descr->num_ctrl_ins = (int) info->parameterIns;
+  descr->num_ctrl_outs = (int) info->parameterOuts;
+  descr->num_midi_ins = (int) info->midiIns;
+  descr->num_midi_outs = (int) info->midiOuts;
 
   /* get category */
   if (info->hints & PLUGIN_IS_SYNTH)
@@ -576,33 +573,40 @@ z_carla_discovery_create_au_descriptor_from_info (
  */
 PluginDescriptor *
 z_carla_discovery_create_au_descriptor_from_string (
-  char ** all_plugins,
-  int     idx)
+  const char * all_plugins,
+  int          idx)
 {
   const char * discovery_end_txt =
     "carla-discovery::end::------------";
 
-  /* get info for this plugin */
+  char * cur_str = g_strdup (all_plugins);
+
+  /* replace cur_str with the following parts */
+  for (int i = 0; i < idx; i++)
+    {
+      char * next_val =
+        string_remove_until_after_first_match (
+          cur_str, discovery_end_txt);
+      g_free (cur_str);
+      cur_str = next_val;
+    }
+
   char * plugin_info =
     string_get_substr_before_suffix (
-      *all_plugins, discovery_end_txt);
-
-  /* replace *all_plugins with the following parts */
-  char * next_val =
-    string_remove_until_after_first_match (
-      *all_plugins, discovery_end_txt);
-  g_free (*all_plugins);
-  *all_plugins = next_val;
+      cur_str, discovery_end_txt);
+  g_free (cur_str);
 
   char id[50];
   sprintf (id, "%d", idx);
-  PluginDescriptor * descr =
+  PluginDescriptor ** descriptors =
     z_carla_discovery_parse_plugin_info (
       id, plugin_info);
   g_free (plugin_info);
-  if (!descr)
+  if (!descriptors || !descriptors[0])
     return NULL;
 
+  PluginDescriptor * descr = descriptors[0];
+  free (descriptors);
   descr->protocol = PROT_AU;
   descr->arch = ARCH_64;
 
@@ -611,6 +615,5 @@ z_carla_discovery_create_au_descriptor_from_string (
 
   return descr;
 }
-#endif
 
 #endif

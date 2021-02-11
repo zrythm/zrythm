@@ -1424,7 +1424,7 @@ plugin_manager_scan_plugins (
     {
       PluginDescriptor * descriptor =
         z_carla_discovery_create_au_descriptor_from_string (
-          &all_plugins, i);
+          all_plugins, i);
 
       if (descriptor)
         {
@@ -1462,6 +1462,7 @@ plugin_manager_scan_plugins (
             zrythm_app, prog_str, *progress);
         }
     }
+  g_free (all_plugins);
 #endif // __APPLE__
 #endif // HAVE_CARLA
 

@@ -147,6 +147,7 @@ if get_option ('tests')
     ['audio/tracklist', true],
     ['gui/backend/arranger_selections', true],
     ['integration/recording', false],
+    ['plugins/carla_discovery', false],
     ['plugins/plugin', false],
     ['plugins/plugin_manager', true],
     ['project', true],

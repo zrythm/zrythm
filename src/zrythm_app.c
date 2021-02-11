@@ -1129,8 +1129,8 @@ raise_open_file_limit ()
             {
               g_warning (
                 "Could not set system open files "
-                "limit to %lu",
-                rl.rlim_cur);
+                "limit to %ju",
+                (uintmax_t) rl.rlim_cur);
             }
 
         }
@@ -1140,8 +1140,8 @@ raise_open_file_limit ()
             {
               g_message (
                 "Your system is configured to "
-                "limit %s to %lu open files",
-                PROGRAM_NAME, rl.rlim_cur);
+                "limit %s to %ju open files",
+                PROGRAM_NAME, (uintmax_t) rl.rlim_cur);
             }
         }
     }
