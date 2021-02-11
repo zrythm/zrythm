@@ -2350,30 +2350,12 @@ track_set_name_with_action (
   Track *      track,
   const char * name)
 {
-  TracklistSelections * sel_before =
-    tracklist_selections_new (false);
-  TracklistSelections * sel_after =
-    tracklist_selections_new (false);
-  Track * clone =
-    track_clone (track, true);
-  Track * clone_with_change =
-    track_clone (track, true);
-  clone_with_change->name = g_strdup (name);
-
-  tracklist_selections_add_track (
-    sel_before, clone, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_add_track (
-    sel_after, clone_with_change,
-    F_NO_PUBLISH_EVENTS);
+  g_return_if_fail (IS_TRACK (track) && name);
 
   UndoableAction * ua =
-    tracklist_selections_action_new_edit_generic (
-      EDIT_TRACK_ACTION_TYPE_RENAME,
-      sel_before, sel_after, false);
+    tracklist_selections_action_new_edit_rename (
+      track, name);
   undo_manager_perform (UNDO_MANAGER, ua);
-
-  tracklist_selections_free (sel_before);
-  tracklist_selections_free (sel_after);
 }
 
 static void

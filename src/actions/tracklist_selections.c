@@ -31,6 +31,7 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/algorithms.h"
 #include "utils/arrays.h"
 #include "utils/err_codes.h"
 #include "utils/flags.h"
@@ -56,6 +57,22 @@ tracklist_selections_action_init_loaded (
     }
 
   self->src_sends_size = self->num_src_sends;
+}
+
+static void
+copy_track_positions (
+  TracklistSelections * sel,
+  int *                 tracks,
+  int *                 num_tracks)
+{
+  *num_tracks = sel->num_tracks;
+  for (int i = 0; i < sel->num_tracks; i++)
+    {
+      tracks[i] = sel->tracks[i]->pos;
+    }
+  qsort (
+    tracks, (size_t) *num_tracks, sizeof (int),
+    algorithm_sort_int_cmpfunc);
 }
 
 /**
@@ -128,20 +145,46 @@ tracklist_selections_action_new (
       self->num_tracks = num_tracks;
     }
 
-  if (tls_before)
+  bool need_full_selections = true;
+  if (type == TRACKLIST_SELECTIONS_ACTION_EDIT)
     {
-      self->tls_before =
-        tracklist_selections_clone (tls_before);
-      tracklist_selections_sort (self->tls_before);
-    }
-  if (tls_after)
-    {
-      self->tls_after =
-        tracklist_selections_clone (tls_after);
-      tracklist_selections_sort (self->tls_after);
+      need_full_selections = false;
     }
 
   if (tls_before)
+    {
+      if (need_full_selections)
+        {
+          self->tls_before =
+            tracklist_selections_clone (tls_before);
+          tracklist_selections_sort (
+            self->tls_before);
+        }
+      else
+        {
+          copy_track_positions (
+            tls_before, self->tracks_before,
+            &self->num_tracks);
+        }
+    }
+  if (tls_after)
+    {
+      if (need_full_selections)
+        {
+          self->tls_after =
+            tracklist_selections_clone (tls_after);
+          tracklist_selections_sort (
+            self->tls_after);
+        }
+      else
+        {
+          copy_track_positions (
+            tls_after, self->tracks_after,
+            &self->num_tracks);
+        }
+    }
+
+  if (tls_before && need_full_selections)
     {
       /* save the incoming sends */
       for (int k = 0;
@@ -196,61 +239,17 @@ tracklist_selections_action_new (
   self->mute_new = mute_new;
   self->new_direct_out_pos =
     direct_out ? direct_out->pos : -1;
+  self->val_before = val_before;
+  self->val_after = val_after;
   self->already_edited = already_edited;
 
   if (self->type ==
         TRACKLIST_SELECTIONS_ACTION_EDIT &&
-      !self->tls_before && !self->tls_after)
+      track)
     {
-      TracklistSelections * sel_before =
-        tracklist_selections_new (false);
-      TracklistSelections * sel_after =
-        tracklist_selections_new (false);
-      Track * clone =
-        track_clone (track, true);
-      Track * clone_with_change =
-        track_clone (track, true);
-
-      switch (edit_type)
-        {
-        case EDIT_TRACK_ACTION_TYPE_VOLUME:
-          fader_set_amp (
-            clone->channel->fader, val_before);
-          fader_set_amp (
-            clone_with_change->channel->fader,
-            val_after);
-          break;
-        case EDIT_TRACK_ACTION_TYPE_PAN:
-          channel_set_balance_control (
-            clone->channel, val_before);
-          channel_set_balance_control (
-            clone_with_change->channel, val_after);
-          break;
-        default:
-          break;
-        }
-
-      tracklist_selections_add_track (
-        sel_before, clone, F_NO_PUBLISH_EVENTS);
-      tracklist_selections_add_track (
-        sel_after, clone_with_change,
-        F_NO_PUBLISH_EVENTS);
-      self->tls_before =
-        tracklist_selections_clone (sel_before);
-      self->tls_after =
-        tracklist_selections_clone (sel_after);
-      tracklist_selections_free (sel_before);
-      tracklist_selections_free (sel_after);
-    }
-
-  /* FIXME this is a hack to make direct out work */
-  if (self->type ==
-        TRACKLIST_SELECTIONS_ACTION_EDIT &&
-      self->tls_before && !self->tls_after)
-    {
-      self->tls_after =
-        tracklist_selections_clone (
-          self->tls_before);
+      self->num_tracks = 1;
+      self->tracks_before[0] = track->pos;
+      self->tracks_after[0] = track->pos;
     }
 
   if (color_new)
@@ -916,18 +915,13 @@ do_or_undo_edit (
       return 0;
     }
 
-  TracklistSelections * sel =
-    _do ? self->tls_before : self->tls_after;
+  int * tracks = self->tracks_before;
+  int num_tracks = self->num_tracks;
 
-  for (int i = 0; i < sel->num_tracks; i++)
+  for (int i = 0; i < num_tracks; i++)
     {
-      Track * own_track_before =
-        self->tls_before->tracks[i];
-      Track * own_track_after =
-        self->tls_after->tracks[i];
-
       Track * track =
-        TRACKLIST->tracks[sel->tracks[i]->pos];
+        TRACKLIST->tracks[tracks[i]];
       g_return_val_if_fail (track, -1);
       Channel * ch = track->channel;
 
@@ -948,92 +942,98 @@ do_or_undo_edit (
           g_return_val_if_fail (ch, -1);
           fader_set_amp (
             ch->fader,
-            fader_get_amp (
-              _do ?
-                own_track_after->channel->fader :
-                own_track_before->channel->fader));
+            _do ?
+              self->val_after : self->val_before);
           break;
         case EDIT_TRACK_ACTION_TYPE_PAN:
           g_return_val_if_fail (ch, -1);
           channel_set_balance_control (
             ch,
-            channel_get_balance_control (
-              _do ?
-                own_track_after->channel :
-                own_track_before->channel));
+            _do ?
+              self->val_after : self->val_before);
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
-          g_return_val_if_fail (ch, -1);
+          {
+            g_return_val_if_fail (ch, -1);
 
-          /* disconnect from the current track */
-          if (ch->has_output)
-            {
-              group_target_track_remove_child (
-                TRACKLIST->tracks[ch->output_pos],
-                ch->track->pos, F_DISCONNECT,
-                F_RECALC_GRAPH,
-                F_PUBLISH_EVENTS);
-            }
+            int cur_direct_out =
+              ch->has_output ? ch->output_pos : -1;
 
-          /* reconnect to the new track */
-          if ((_do &&
-               (self->new_direct_out_pos != -1)) ||
-              (!_do &&
-               (own_track_after->channel->
-                  has_output)))
-            {
-              int target_pos =
-                _do ?
-                  self->new_direct_out_pos :
-                  own_track_after->channel->
-                    output_pos;
-              g_return_val_if_fail (
-                target_pos != ch->track->pos, -1);
-              group_target_track_add_child (
-                TRACKLIST->tracks[target_pos],
-                ch->track->pos, F_CONNECT,
-                F_RECALC_GRAPH, F_PUBLISH_EVENTS);
-            }
+            /* disconnect from the current track */
+            if (ch->has_output)
+              {
+                group_target_track_remove_child (
+                  TRACKLIST->tracks[ch->output_pos],
+                  ch->track->pos, F_DISCONNECT,
+                  F_RECALC_GRAPH,
+                  F_PUBLISH_EVENTS);
+              }
+
+            /* reconnect to the new track */
+            if (self->new_direct_out_pos != -1)
+              {
+                int target_pos =
+                  self->new_direct_out_pos;
+                g_return_val_if_fail (
+                  target_pos != ch->track->pos, -1);
+                group_target_track_add_child (
+                  TRACKLIST->tracks[target_pos],
+                  ch->track->pos, F_CONNECT,
+                  F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+              }
+
+            /* remember previous pos */
+            self->new_direct_out_pos =
+              cur_direct_out;
+          }
           break;
         case EDIT_TRACK_ACTION_TYPE_RENAME:
-          track_set_name (
-            track,
-            _do ?
-              own_track_after->name :
-              own_track_before->name,
-            F_NO_PUBLISH_EVENTS);
+          {
+            char * cur_name =
+              g_strdup (track->name);
+            track_set_name (
+              track, self->new_txt,
+              F_NO_PUBLISH_EVENTS);
 
-          if (_do)
-            {
-              /* remember the new name */
-              g_free (own_track_after->name);
-              own_track_after->name =
-                g_strdup (track->name);
-            }
+            /* remember the new name */
+            g_free (self->new_txt);
+            self->new_txt = cur_name;
+          }
           break;
         case EDIT_TRACK_ACTION_TYPE_COLOR:
-          track_set_color (
-            track,
-            _do ?
-              &self->new_color :
-              &own_track_before->color,
-            F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+          {
+            GdkRGBA cur_color = track->color;
+            track_set_color (
+              track, &self->new_color,
+              F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+
+            /* remember color */
+            self->new_color = cur_color;
+          }
           break;
         case EDIT_TRACK_ACTION_TYPE_ICON:
-          track_set_icon (
-            track,
-            _do ?
-              self->new_txt :
-              own_track_before->icon_name,
-            F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+          {
+            char * cur_icon =
+              g_strdup (track->icon_name);
+            track_set_icon (
+              track, self->new_txt,
+              F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+
+            g_free (self->new_txt);
+            self->new_txt = cur_icon;
+          }
           break;
         case EDIT_TRACK_ACTION_TYPE_COMMENT:
-          track_set_comment (
-            track,
-            _do ?
-              self->new_txt :
-              own_track_before->comment,
-            F_NOT_UNDOABLE);
+          {
+            char * cur_comment =
+              g_strdup (track->comment);
+            track_set_comment (
+              track, self->new_txt,
+              F_NOT_UNDOABLE);
+
+            g_free (self->new_txt);
+            self->new_txt = cur_comment;
+          }
           break;
         }
 
@@ -1137,7 +1137,9 @@ tracklist_selections_action_stringize (
             self->tls_before->num_tracks);
         }
     case TRACKLIST_SELECTIONS_ACTION_EDIT:
-      if (self->tls_before->num_tracks == 1)
+      if ((self->tls_before &&
+           self->tls_before->num_tracks == 1) ||
+          (self->num_tracks == 1))
         {
           switch (self->edit_type)
             {

@@ -106,9 +106,6 @@ typedef struct TracklistSelectionsAction
 
   bool                  have_pos;
 
-  /** Number of tracks to make. */
-  int                   num_tracks;
-
   /** Track type. */
   TrackType             track_type;
 
@@ -145,6 +142,16 @@ typedef struct TracklistSelectionsAction
 
   EditTracksActionType  edit_type;
 
+  /**
+   * Track positions.
+   *
+   * Used for actions where full selection clones
+   * are not needed.
+   */
+  int                   tracks_before[600];
+  int                   tracks_after[600];
+  int                   num_tracks;
+
   /** Clone of the TracklistSelections, if
    * applicable. */
   TracklistSelections * tls_before;
@@ -175,6 +182,10 @@ typedef struct TracklistSelectionsAction
   /** Skip do if true. */
   bool                  already_edited;
 
+  /** Float values. */
+  float                 val_before;
+  float                 val_after;
+
 } TracklistSelectionsAction;
 
 static const cyaml_schema_field_t
@@ -200,6 +211,14 @@ static const cyaml_schema_field_t
     TracklistSelectionsAction, have_pos),
   YAML_FIELD_MAPPING_EMBEDDED (
     TracklistSelectionsAction, pos, position_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "tracks_before", CYAML_FLAG_DEFAULT,
+    TracklistSelectionsAction, tracks_before,
+    num_tracks, &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "tracks_after", CYAML_FLAG_DEFAULT,
+    TracklistSelectionsAction, tracks_after,
+    num_tracks, &int_schema, 0, CYAML_UNLIMITED),
   YAML_FIELD_INT (
     TracklistSelectionsAction, num_tracks),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -230,6 +249,10 @@ static const cyaml_schema_field_t
     gdk_rgba_fields_schema),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     TracklistSelectionsAction, new_txt),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, val_before),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction, val_after),
 
   CYAML_FIELD_END
 };
@@ -408,6 +431,15 @@ tracklist_selections_action_new (
     -1, EDIT_TRACK_ACTION_TYPE_COMMENT, NULL, \
     false, false, NULL, \
     0.f, 0.f, comment, false)
+
+#define tracklist_selections_action_new_edit_rename( \
+  track,name) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_RENAME, NULL, \
+    false, false, NULL, \
+    0.f, 0.f, name, false)
 
 #define tracklist_selections_action_new_move( \
   tls,track_pos) \

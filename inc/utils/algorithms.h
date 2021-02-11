@@ -26,6 +26,14 @@
 #ifndef __UTILS_ALGORITHMS_H__
 #define __UTILS_ALGORITHMS_H__
 
+static inline int
+algorithm_sort_int_cmpfunc (
+  const void * a,
+  const void * b)
+{
+  return ( *(int*)a - *(int*)b );
+}
+
 /**
  * Conducts binary search on the object's member
  * array to find the previous or next member closest

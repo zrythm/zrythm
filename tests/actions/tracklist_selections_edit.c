@@ -390,6 +390,9 @@ _test_edit_tracks (
         test_project_save_and_reload ();
 
         ins_track = get_ins_track ();
+        g_assert_true (
+          color_is_same (
+            &ins_track->color, &new_color));
 
         /* undo/redo and re-verify */
         undo_manager_undo (UNDO_MANAGER);
