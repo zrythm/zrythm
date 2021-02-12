@@ -191,6 +191,10 @@ typedef struct _RulerWidget
    */
   GtkCheckMenuItem * bbt_display_check;
   GtkCheckMenuItem * time_display_check;
+
+  /* layout for drawing text */
+  PangoLayout *     layout_normal;
+  PangoLayout *     layout_small;
 } RulerWidget;
 
 /**

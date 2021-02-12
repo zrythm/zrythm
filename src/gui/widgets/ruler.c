@@ -59,8 +59,6 @@ G_DEFINE_TYPE (
   GTK_TYPE_DRAWING_AREA)
 
 #define Y_SPACING 5
-#define FONT "Monospace"
-#define FONT_SIZE 14
 
      /* FIXME delete these, see ruler_marker.h */
 #define START_MARKER_TRIANGLE_HEIGHT 8
@@ -783,15 +781,6 @@ draw_lines_and_labels (
   char text[40];
   int textw, texth;
 
-  PangoLayout * layout =
-    pango_cairo_create_layout (cr);
-  PangoFontDescription *desc =
-    pango_font_description_from_string (
-      "Monospace 11");
-  pango_layout_set_font_description (
-    layout, desc);
-  pango_font_description_free (desc);
-
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
@@ -835,22 +824,18 @@ draw_lines_and_labels (
           cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
           sprintf (text, "%d", i);
           pango_layout_set_markup (
-            layout, text, -1);
+            self->layout_normal, text, -1);
           pango_layout_get_pixel_size (
-            layout, &textw, &texth);
+            self->layout_normal, &textw, &texth);
           cairo_move_to (
             cr,
             x - textw / 2, height / 3 + 2);
-          pango_cairo_update_layout (cr, layout);
-          pango_cairo_show_layout (cr, layout);
+          pango_cairo_update_layout (
+            cr, self->layout_normal);
+          pango_cairo_show_layout (
+            cr, self->layout_normal);
         }
       /* draw 10secs */
-      desc =
-        pango_font_description_from_string (
-          "Monospace 6");
-      pango_layout_set_font_description (
-        layout, desc);
-      pango_font_description_free (desc);
       i = 0;
       if (ten_sec_interval > 0)
         {
@@ -885,16 +870,16 @@ draw_lines_and_labels (
                     i / ten_secs_per_min,
                     (i % ten_secs_per_min) * 10);
                   pango_layout_set_markup (
-                    layout, text, -1);
+                    self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    layout, &textw, &texth);
+                    self->layout_small, &textw, &texth);
                   cairo_move_to (
                     cr, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                   pango_cairo_show_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                 }
             }
         }
@@ -936,16 +921,16 @@ draw_lines_and_labels (
                       ten_secs_per_min) * 10 +
                     i % secs_per_10_sec);
                   pango_layout_set_markup (
-                    layout, text, -1);
+                    self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    layout, &textw, &texth);
+                    self->layout_small, &textw, &texth);
                   cairo_move_to (
                     cr, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                   pango_cairo_show_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                 }
             }
         }
@@ -986,22 +971,18 @@ draw_lines_and_labels (
           cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
           sprintf (text, "%d", i + 1);
           pango_layout_set_markup (
-            layout, text, -1);
+            self->layout_normal, text, -1);
           pango_layout_get_pixel_size (
-            layout, &textw, &texth);
+            self->layout_normal, &textw, &texth);
           cairo_move_to (
             cr,
             x - textw / 2, height / 3 + 2);
-          pango_cairo_update_layout (cr, layout);
-          pango_cairo_show_layout (cr, layout);
+          pango_cairo_update_layout (
+            cr, self->layout_normal);
+          pango_cairo_show_layout (
+            cr, self->layout_normal);
         }
       /* draw beats */
-      desc =
-        pango_font_description_from_string (
-          "Monospace 6");
-      pango_layout_set_font_description (
-        layout, desc);
-      pango_font_description_free (desc);
       i = 0;
       if (beat_interval > 0)
         {
@@ -1036,16 +1017,16 @@ draw_lines_and_labels (
                     i / beats_per_bar + 1,
                     i % beats_per_bar + 1);
                   pango_layout_set_markup (
-                    layout, text, -1);
+                    self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    layout, &textw, &texth);
+                    self->layout_small, &textw, &texth);
                   cairo_move_to (
                     cr, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                   pango_cairo_show_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                 }
             }
         }
@@ -1087,21 +1068,20 @@ draw_lines_and_labels (
                       beats_per_bar) + 1,
                     i % sixteenths_per_beat + 1);
                   pango_layout_set_markup (
-                    layout, text, -1);
+                    self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    layout, &textw, &texth);
+                    self->layout_small, &textw, &texth);
                   cairo_move_to (
                     cr, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                   pango_cairo_show_layout (
-                    cr, layout);
+                    cr, self->layout_small);
                 }
             }
         }
     }
-  g_object_unref (layout);
 }
 
 static gboolean
@@ -2080,6 +2060,25 @@ ruler_widget_init (RulerWidget * self)
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mp),
     GDK_BUTTON_SECONDARY);
+
+  self->layout_normal =
+    gtk_widget_create_pango_layout (
+      GTK_WIDGET (self), NULL);
+  PangoFontDescription *desc =
+    pango_font_description_from_string (
+      "Monospace 11");
+  pango_layout_set_font_description (
+    self->layout_normal, desc);
+  pango_font_description_free (desc);
+  self->layout_small =
+    gtk_widget_create_pango_layout (
+      GTK_WIDGET (self), NULL);
+  desc =
+    pango_font_description_from_string (
+      "Monospace 6");
+  pango_layout_set_font_description (
+    self->layout_small, desc);
+  pango_font_description_free (desc);
 
   g_signal_connect (
     G_OBJECT (self), "draw",
