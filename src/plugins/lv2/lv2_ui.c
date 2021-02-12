@@ -244,6 +244,9 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
         "its UI",
         descr->name, descr->uri);
     }
+
+  lv2_port->last_sent_control =
+    lv2_port->port->control;
 }
 
 /**

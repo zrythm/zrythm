@@ -2628,13 +2628,15 @@ lv2_plugin_process (
               /* if UI is instantiated */
               if (send_ui_updates &&
                   self->plugin->visible &&
-                  !lv2_port->received_ui_event)
+                  !lv2_port->received_ui_event &&
+                  !math_floats_equal (
+                    port->control,
+                    lv2_port->last_sent_control))
                 {
                   /* forward event to UI */
                   lv2_ui_send_control_val_event_from_plugin_to_ui (
                     self, lv2_port);
                 }
-              /* NEWWW END */
             }
           if (send_ui_updates)
             {

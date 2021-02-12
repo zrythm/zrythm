@@ -2036,6 +2036,8 @@ clone_region (
                 src_ap->fvalue,
                 src_ap->normalized_val,
                 &src_ap_obj->pos);
+            dest_ap->curve_opts =
+              src_ap->curve_opts;
             automation_region_add_ap (
               ar, dest_ap, F_NO_PUBLISH_EVENTS);
           }

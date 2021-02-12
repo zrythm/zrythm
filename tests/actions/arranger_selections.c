@@ -952,6 +952,113 @@ test_duplicate_timeline ()
 }
 
 static void
+test_duplicate_automation_region ()
+{
+  rebootstrap_timeline ();
+
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (P_MASTER_TRACK);
+  g_assert_nonnull (atl);
+  AutomationTrack * at =
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->num_regions, ==, 1);
+
+  Position start_pos, end_pos;
+  position_init (&start_pos);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * r1 = at->regions[0];
+
+  AutomationPoint * ap =
+    automation_point_new_float (
+      0.5f, 0.5f, &start_pos);
+  automation_region_add_ap (
+    r1, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, F_SELECT,
+    F_NO_APPEND);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  position_add_frames (&start_pos, 14);
+  ap =
+    automation_point_new_float (
+      0.6f, 0.6f, &start_pos);
+  automation_region_add_ap (
+    r1, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, F_SELECT,
+    F_NO_APPEND);
+  ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  float curviness_after = 0.8f;
+  ap = r1->aps[0];
+  arranger_object_select (
+    (ArrangerObject *) ap, F_SELECT,
+    F_NO_APPEND);
+  ArrangerSelections * before =
+    arranger_selections_clone (
+      (ArrangerSelections *) AUTOMATION_SELECTIONS);
+  ap->curve_opts.curviness = curviness_after;
+  ua =
+    arranger_selections_action_new_edit (
+      before,
+      (ArrangerSelections *) AUTOMATION_SELECTIONS,
+      ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+      F_ALREADY_EDITED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  ap = r1->aps[0];
+  g_assert_cmpfloat_with_epsilon (
+    ap->curve_opts.curviness, curviness_after,
+    0.00001f);
+
+  undo_manager_undo (UNDO_MANAGER);
+  ap = r1->aps[0];
+  g_assert_cmpfloat_with_epsilon (
+    ap->curve_opts.curviness, 0.f, 0.00001f);
+
+  undo_manager_redo (UNDO_MANAGER);
+  ap = r1->aps[0];
+  g_assert_cmpfloat_with_epsilon (
+    ap->curve_opts.curviness, curviness_after,
+    0.00001f);
+
+  arranger_object_select (
+    (ArrangerObject *) r1, F_SELECT,
+    F_NO_APPEND);
+
+  ua =
+    arranger_selections_action_new_duplicate_timeline (
+      TL_SELECTIONS, MOVE_TICKS, 0, 0,
+      F_NOT_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  r1 = at->regions[1];
+  ap = r1->aps[0];
+  g_assert_cmpfloat_with_epsilon (
+    ap->curve_opts.curviness, curviness_after,
+    0.00001f);
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+
+  r1 = at->regions[1];
+  ap = r1->aps[0];
+  g_assert_cmpfloat_with_epsilon (
+    ap->curve_opts.curviness, curviness_after,
+    0.00001f);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
 test_link_timeline ()
 {
   rebootstrap_timeline ();
@@ -1439,6 +1546,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test automation fill",
     (GTestFunc) test_automation_fill);
+  g_test_add_func (
+    TEST_PREFIX "test duplicate automation region",
+    (GTestFunc) test_duplicate_automation_region);
 
   return g_test_run ();
 }

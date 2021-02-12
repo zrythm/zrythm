@@ -83,7 +83,7 @@ typedef struct Lv2Port
    *
    * @note for control ports only.
    */
-  int             received_ui_event;
+  bool            received_ui_event;
 
   /**
    * Whether the port should send an event that
@@ -101,14 +101,19 @@ typedef struct Lv2Port
    */
   //int             pending_send_event;
 
-  /** The value in the previous cycle. */
-  //float           prev_control;
+  /**
+   * The last known control value sent to the UI
+   * (if control).
+   *
+   * @seealso lv2_ui_send_control_val_event_from_plugin_to_ui().
+   */
+  float           last_sent_control;
 
   /** 1 if this value was set via automation. */
-  int             automating;
+  bool            automating;
 
   /** True for event, false for atom. */
-  int             old_api;
+  bool            old_api;
 } Lv2Port;
 
 static const cyaml_schema_field_t
