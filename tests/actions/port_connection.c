@@ -41,6 +41,109 @@
 
 #ifdef HAVE_AMS_LFO
 static void
+test_modulator_connection (
+  const char * pl_bundle,
+  const char * pl_uri,
+  bool         is_instrument,
+  bool         with_carla)
+{
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      pl_bundle, pl_uri, with_carla);
+
+  /* fix the descriptor (for some reason lilv
+   * reports it as Plugin instead of Instrument if
+   * you don't do lilv_world_load_all) */
+  if (is_instrument)
+    {
+      descr->category = PC_INSTRUMENT;
+    }
+  g_free (descr->category_str);
+  descr->category_str =
+    plugin_descriptor_category_to_string (
+      descr->category);
+
+  UndoableAction * ua = NULL;
+
+  /* create a modulator */
+  ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_MODULATOR, P_MODULATOR_TRACK->pos,
+      0, descr, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  plugin_descriptor_free (descr);
+
+  ModulatorMacroProcessor * macro =
+    P_MODULATOR_TRACK->modulator_macros[0];
+  Plugin * pl = P_MODULATOR_TRACK->modulators[0];
+  Port * pl_cv_port = NULL;
+  Port * pl_control_port = NULL;
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  plugin_append_ports (
+    pl, &ports, &max_size, true, &num_ports);
+  for (int i = 0; i < num_ports; i++)
+    {
+      Port * port = ports[i];
+      if (port->id.type == TYPE_CV &&
+          port->id.flow == FLOW_OUTPUT)
+        {
+          pl_cv_port = port;
+          if (pl_control_port)
+            {
+              break;
+            }
+        }
+      else if (port->id.type == TYPE_CONTROL &&
+               port->id.flow == FLOW_INPUT)
+        {
+          pl_control_port = port;
+          if (pl_cv_port)
+            {
+              break;
+            }
+        }
+    }
+  free (ports);
+
+  /* connect the plugin's CV out to the macro
+   * button */
+  ua =
+    port_connection_action_new_connect (
+      &pl_cv_port->id, &macro->cv_in->id, true);
+  int ret = undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (ret, ==, 0);
+
+  /* expect messages */
+  LOG->use_structured_for_console = false;
+  LOG->min_log_level_for_test_console =
+    G_LOG_LEVEL_WARNING;
+  g_test_expect_message (
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+    "*ports cannot be connected*");
+  g_test_expect_message (
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+    "*action not performed*");
+
+  /* connect the macro button to the plugin's
+   * control input */
+  ua =
+    port_connection_action_new_connect (
+      &macro->cv_out->id, &pl_control_port->id,
+      true);
+  ret = undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (ret, !=, 0);
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  /* assert expected messages */
+  g_test_assert_expected_messages ();
+}
+
+static void
 _test_port_connection (
   const char * pl_bundle,
   const char * pl_uri,
@@ -226,6 +329,8 @@ test_port_connection (void)
 
 #ifdef HAVE_AMS_LFO
   _test_port_connection (
+    AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
+  test_modulator_connection (
     AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
 #endif
 

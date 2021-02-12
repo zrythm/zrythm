@@ -783,12 +783,30 @@ graph_setup (
           graph_node_connect (
             initial_processor_node, node);
 
-          for (int j = 0; j < tr->num_modulators; j++)
+          for (int j = 0; j < tr->num_modulators;
+               j++)
             {
               pl = tr->modulators[j];
 
               if (pl && !pl->deleting)
-                connect_plugin (self, pl);
+                {
+                  connect_plugin (self, pl);
+                  for (int k = 0;
+                       k < pl->num_in_ports; k++)
+                    {
+                      Port * pl_port =
+                        pl->in_ports[k];
+                      g_return_if_fail (
+                        port_get_plugin (
+                          pl_port, 1) != NULL);
+                      GraphNode * port_node =
+                        graph_find_node_from_port (
+                          self, pl_port);
+                      g_return_if_fail (port_node);
+                      graph_node_connect (
+                        node, port_node);
+                    }
+                }
             }
 
           /* connect the modulator macro
@@ -1034,6 +1052,10 @@ graph_validate_with_connection (
 {
   g_return_val_if_fail (src && dest, 0);
 
+  g_message (
+    "validating for %s to %s",
+    src->id.label, dest->id.label);
+
   graph_setup (self, 0, 0);
 
   /* connect the src/dest if not NULL */
@@ -1047,6 +1069,8 @@ graph_validate_with_connection (
   graph_node_connect (node, node2);
 
   bool valid = is_valid (self);
+
+  g_message ("valid %d", valid);
 
   return valid;
 }

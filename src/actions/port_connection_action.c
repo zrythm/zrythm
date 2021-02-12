@@ -78,9 +78,12 @@ port_connection_action_do_or_undo (
           (self->type ==
              PORT_CONNECTION_DISCONNECT && !_do))
         {
-          g_return_val_if_fail (
-            ports_can_be_connected (
-              src, dest), -1);
+          if (!ports_can_be_connected (src, dest))
+            {
+              g_warning (
+                "ports cannot be connected");
+              return -1;
+            }
           port_connect (src, dest, false);
         }
       else
