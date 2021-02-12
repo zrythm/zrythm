@@ -803,8 +803,11 @@ on_mixer_selections_changed ()
         continue;
 
       Channel * ch = track->channel;
-      plugin_strip_expander_widget_refresh (
-        ch->widget->inserts);
+      if (ch->widget)
+        {
+          plugin_strip_expander_widget_refresh (
+            ch->widget->inserts);
+        }
     }
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);

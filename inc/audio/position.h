@@ -248,6 +248,9 @@ position_set_sixteenth (
  * negative Positions. Negative positions start at
  * -1.-1.-1.-1 (one tick before zero) and positive
  * Positions start at zero (1.1.1.0).
+ *
+ * FIXME optimize, this is very inefficient. Use use
+ * position_from_ticks() for now.
  */
 void
 position_set_tick (

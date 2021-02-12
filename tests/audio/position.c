@@ -83,6 +83,37 @@ test_get_total_beats ()
   g_assert_cmpint (beats, ==, 5);
 }
 
+static void
+test_position_benchmarks ()
+{
+  double ticks = 50000.0;
+  Position pos;
+  position_from_ticks (&pos, ticks);
+
+  for (int j = 0; j < 5; j++)
+    {
+      gint64 before = g_get_monotonic_time ();
+      for (int i = 0; i < 100000; i++)
+        {
+          position_to_frames (&pos);
+        }
+      gint64 after = g_get_monotonic_time ();
+      g_message ("time: %ld", after - before);
+    }
+
+  g_message ("add frames");
+  for (int j = 0; j < 5; j++)
+    {
+      gint64 before = g_get_monotonic_time ();
+      for (int i = 0; i < 100000; i++)
+        {
+          position_add_frames (&pos, 1000);
+        }
+      gint64 after = g_get_monotonic_time ();
+      g_message ("time: %ld", after - before);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -98,6 +129,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test get total beats",
     (GTestFunc) test_get_total_beats);
+  g_test_add_func (
+    TEST_PREFIX "test position benchmarks",
+    (GTestFunc) test_position_benchmarks);
 
   return g_test_run ();
 }

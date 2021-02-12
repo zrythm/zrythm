@@ -211,6 +211,18 @@ position_set_sixteenth (
 
 /**
  * Sets the tick of the Position.
+ *
+ * If the tick exceeds the max ticks allowed on
+ * the positive or negative axis, it calls
+ * position_set_sixteenth until it is within range./
+ *
+ * This function can handle both positive and
+ * negative Positions. Negative positions start at
+ * -1.-1.-1.-1 (one tick before zero) and positive
+ * Positions start at zero (1.1.1.0).
+ *
+ * FIXME optimize, this is very inefficient. Use use
+ * position_from_ticks() for now.
  */
 void
 position_set_tick (
@@ -218,8 +230,7 @@ position_set_tick (
   double      tick)
 {
   while (tick < 0.0 ||
-         tick >=
-           (TICKS_PER_SIXTEENTH_NOTE_DBL))
+         tick >= TICKS_PER_SIXTEENTH_NOTE_DBL)
     {
       if (tick < 0.0)
         {
