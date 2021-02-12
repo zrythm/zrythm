@@ -1,6 +1,40 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.11.0.1] - 2021-02-12
+### Added
+- Print available GTK modules on startup
+- Native PulseAudio backend
+- New icons
+- Pass UI scale factor to plugin UIs
+
+### Changed
+- Open LV2 plugin UIs with carla by default on Windows
+- Don't jump to cue point when temporarily pausing to perform actions
+- Send MIDI panic when pausing to perform actions
+- Move port connections and MIDI CC bindings from left panel to main notebook (new)
+- Allow opening LV2 plugins with CV ports with carla
+- Update Portuguese (Brazil), Greek, Chinese (Simplified) translations
+- Allow dropping MIDI files into existing tracks
+- Optimize track edit actions: do not clone tracks for simple actions
+- Propagate changes from/to LV2 ports designated as lv2:enabled to/from the zrythm-provided enabled port
+- Delegate process bypassing to plugin if lv2:enabled-designated port is present
+- Only send LV2 control val change event to UI if the value changed
+
+### Fixed
+- Fix crash after a while when using pencil tool
+- Fix double clicking on non-selected track opening up color chooser
+- Fix crash when filling automation with pencil tool
+- Fix MIDI import not adding note offs when velocity is 0
+- Fix crash when importing MIDI file that uses note ons with velocity 0 as note offs
+- Fix AU plugin scan on MacOS
+- Fix incorrectly freeing plugin manager's lilv nodes when freeing an lv2 plugin
+- Fix icons drawn with cairo not taking scale factor into account
+- Fix ruler font not taking scale factor into account
+- Fix curviness being lost when duplicating automation regions
+- Fix crash when moving plugin from mixer slot to empty space in tracklist or mixer
+- Fix modulator macros not being properly connected to graph
+
 ## [1.0.0-alpha.10.0.1] - 2021-02-02
 ### Added
 - Font scale option in preferences
