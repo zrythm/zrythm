@@ -231,17 +231,17 @@ void
 fader_controls_grid_widget_tear_down (
   FaderControlsGridWidget * self)
 {
-  g_message ("tearing down %p...", self);
+  g_debug ("tearing down %p...", self);
 
   if (self->tick_cb)
     {
-      g_message ("removing tick callback...");
+      g_debug ("removing tick callback...");
       gtk_widget_remove_tick_callback (
         GTK_WIDGET (self), self->tick_cb);
       self->tick_cb = 0;
     }
 
-  g_message ("done");
+  g_debug ("done");
 }
 
 FaderControlsGridWidget *

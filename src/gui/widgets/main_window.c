@@ -82,12 +82,13 @@ static void
 on_main_window_destroy (MainWindowWidget * self,
                         gpointer user_data)
 {
-  /* stop engine and wait to finish the cycle */
-  AUDIO_ENGINE->run = 0;
-  g_usleep (80);
+  g_message ("main window destroy");
 
   if (PROJECT->loaded)
     {
+      /* stop engine */
+      engine_activate (AUDIO_ENGINE, false);
+
       /* stop events from getting fired. this
        * prevents some segfaults on shutdown */
       event_manager_stop_events (EVENT_MANAGER);

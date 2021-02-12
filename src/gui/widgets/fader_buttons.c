@@ -220,13 +220,13 @@ static void
 fader_buttons_finalize (
   FaderButtonsWidget * self)
 {
-  g_message ("finalizing...");
+  g_debug ("finalizing...");
 
   G_OBJECT_CLASS (
     fader_buttons_widget_parent_class)->
       finalize (G_OBJECT (self));
 
-  g_message ("done");
+  g_debug ("done");
 }
 
 static void

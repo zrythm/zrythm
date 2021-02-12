@@ -681,8 +681,12 @@ engine_activate (
         }
 
       /* wait to finish */
-      g_atomic_int_set (&self->run, false);
-      g_usleep (100000);
+      g_atomic_int_set (&self->run, 0);
+      while (g_atomic_int_get (
+               &self->cycle_running))
+        {
+          g_usleep (100);
+        }
 
       self->activated = false;
     }
@@ -694,14 +698,17 @@ engine_activate (
     }
 
 #ifdef HAVE_JACK
-  if (self->audio_backend == AUDIO_BACKEND_JACK &&
-      self->midi_backend == MIDI_BACKEND_JACK)
-    engine_jack_activate (self, activate);
+  if (self->audio_backend == AUDIO_BACKEND_JACK)
+    {
+      engine_jack_activate (self, activate);
+    }
 #endif
 #ifdef HAVE_PULSEAUDIO
   if (self->audio_backend
         == AUDIO_BACKEND_PULSEAUDIO)
-    engine_pulse_activate (self, activate);
+    {
+      engine_pulse_activate (self, activate);
+    }
 #endif
   if (self->audio_backend == AUDIO_BACKEND_DUMMY)
     {

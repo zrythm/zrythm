@@ -1414,7 +1414,9 @@ plugin_manager_free (
   for (int i = 0; i < self->num_nodes; i++)
     {
       LilvNode * node = self->nodes[i];
-      g_message ("freeing %s", lilv_node_as_string (node));
+      g_debug (
+        "freeing lilv node: %s",
+        lilv_node_as_string (node));
       lilv_node_free (node);
     }
   lilv_world_free (self->lilv_world);
