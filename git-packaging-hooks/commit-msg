@@ -41,10 +41,10 @@ then (($IS_EMPTY_COMMIT_MSG)) && TraceError "empty commit message - aborting com
      TraceStep "upgrading version to '$VERSION_STRING'"
      #ac_init_params="[$UPSTREAM_NAME], [$VERSION], [${BUG_URL//\//\\\/}]"
      #sed --in-place "s/^AC_INIT(.*$/AC_INIT($ac_init_params)/" $VERSION_FILE
-     sed --in-place "20s/  version: '.*$/  version: '$VERSION',/" $VERSION_FILE
+     sed --in-place "21s/  version: '.*$/  version: '$VERSION',/" $VERSION_FILE
      sed --in-place "4s/\[\([^]]*\)\]/\[$VERSION\]/" CHANGELOG.md
      # FIXME use version from meson
-     sed --in-place "s/release = '.*$/release = '$VERSION'/" doc/user/conf.py
+     sed --in-place "s/release = '.*$/release = '$VERSION'/" $USER_MANUAL_CONF_FILE
 
      TraceStage "completed staging-specific pre-commit hooks"
 elif (($IS_PACKAGING_BRANCH))

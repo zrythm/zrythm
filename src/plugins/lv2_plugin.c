@@ -2173,11 +2173,13 @@ lv2_plugin_instantiate (
         sizeof (float),
         PM_URIDS.atom_Float,
         &self->plugin->ui_update_hz },
+#ifdef HAVE_LV2_1_18
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.ui_scaleFactor,
         sizeof (float),
         PM_URIDS.atom_Float,
         &self->plugin->ui_scale_factor },
+#endif
       { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
     };
   memcpy (

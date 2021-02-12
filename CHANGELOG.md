@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.11.0.1] - 2021-02-12
+## [1.0.0-alpha.11.0.2] - 2021-02-12
 ### Added
 - Print available GTK modules on startup
 - Native PulseAudio backend

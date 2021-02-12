@@ -311,7 +311,9 @@ init_symap (
   SYMAP_MAP (time_frame, LV2_TIME__frame);
   SYMAP_MAP (time_speed, LV2_TIME__speed);
   SYMAP_MAP (ui_updateRate, LV2_UI__updateRate);
+#ifdef HAVE_LV2_1_18
   SYMAP_MAP (ui_scaleFactor, LV2_UI__scaleFactor);
+#endif
 #undef SYMAP_MAP
 }
 

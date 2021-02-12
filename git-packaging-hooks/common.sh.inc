@@ -41,6 +41,7 @@ function init()
   # files to modify
   readonly VERSION_FILE=meson.build
   readonly CHANGELOG_FILE=CHANGELOG.md
+  readonly USER_MANUAL_CONF_FILE=doc/user/conf.py
 
   # detect commit to staging or packaging branch
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
