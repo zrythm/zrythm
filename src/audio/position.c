@@ -596,6 +596,8 @@ position_snap (
   ZRegion *        region,
   const SnapGrid * sg)
 {
+  g_return_if_fail (sg);
+
   /* this should only be called if snap is on.
    * the check should be done before calling */
   g_warn_if_fail (SNAP_GRID_ANY_SNAP (sg));

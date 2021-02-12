@@ -142,9 +142,11 @@ timeline_ruler_on_drag_begin_no_marker_hit (
       ui_px_to_pos_timeline (
         start_x, &pos, 1);
       if (!self->shift_held)
-        position_snap_simple (
-          &pos,
-          SNAP_GRID_TIMELINE);
+        {
+          position_snap_simple (
+            &pos,
+            SNAP_GRID_TIMELINE);
+        }
       transport_move_playhead (
         TRANSPORT, &pos, F_PANIC,
         F_NO_SET_CUE_POINT);

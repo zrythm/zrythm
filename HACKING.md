@@ -7,7 +7,6 @@ Hacking Zrythm
     ├── AUTHORS                      # Author information
     ├── build                        # temporary build dir
     ├── CHANGELOG.md                 # Changelog
-    ├── CODE_OF_CONDUCT.md           # Code of conduct
     ├── CONTRIBUTING.md              # Contributing guidelines
     ├── COPYING                      # Main license
     ├── COPYING.*                    # Other licenses

@@ -7,14 +7,6 @@ us on our mailing lists or in the #zrythm channel in
 IRC Freenode. Tell us how would you like to help,
 and we will do our best to guide you.
 
-We want to provide a friendly and
-harassment-free environment so that anyone can
-contribute to the best of their abilities. To this
-end our project uses a “Contributor Covenant”, which
-was adapted from https://contributor-covenant.org/.
-You can find the full pledge in the
-[CODE OF CONDUCT](CODE_OF_CONDUCT.md) file.
-
 # Project Management
 We use [Sourcehut](https://sr.ht/~alextee/zrythm/)
 as the central point for development, maintenance and
