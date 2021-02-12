@@ -61,6 +61,12 @@ typedef struct _ModulatorWidget ModulatorWidget;
 #define PLUGIN_MAX_REFRESH_RATE 121.f
 
 /**
+ * Plugin UI scale factor limits.
+ */
+#define PLUGIN_MIN_SCALE_FACTOR 0.5f
+#define PLUGIN_MAX_SCALE_FACTOR 4.f
+
+/**
  * The base plugin
  * Inheriting plugins must have this as a child
  */
@@ -95,6 +101,15 @@ typedef struct Plugin
    * This port is already in \ref Plugin.in_ports.
    */
   Port *            enabled;
+
+  /**
+   * Whether the plugin has a custom "enabled" port
+   * (LV2).
+   *
+   * If true, bypass logic will be delegated to
+   * the plugin.
+   */
+  Port *            own_enabled_port;
 
   /**
    * Control for plugin gain, for convenience.
@@ -146,6 +161,10 @@ typedef struct Plugin
   /** Update frequency of the UI, in Hz (times
    * per second). */
   float             ui_update_hz;
+
+  /** Scale factor for drawing UIs in scale of the
+   * monitor. */
+  float             ui_scale_factor;
 
   /**
    * State directory (only basename).

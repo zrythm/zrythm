@@ -76,6 +76,7 @@
 #include "settings/settings.h"
 #include "utils/err_codes.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -350,6 +351,16 @@ create_port (
               LV2_CORE__freeWheeling)))
         {
           pi->flags |= PORT_FLAG_FREEWHEEL;
+        }
+      if (lv2_plugin->enabled_in ==
+            (int)
+            lilv_port_get_index (
+              lv2_plugin->lilv_plugin,
+              lv2_port->lilv_port))
+        {
+          pi->flags |= PORT_FLAG_PLUGIN_ENABLED;
+          lv2_plugin->plugin->own_enabled_port =
+            port;
         }
       if (lilv_port_has_property (
             lv2_plugin->lilv_plugin,
@@ -649,18 +660,7 @@ lv2_create_or_init_ports (
     self->lilv_plugin,
     NULL, NULL, default_values);
 
-  int i;
-  for (i = 0; i < self->num_ports; ++i)
-    {
-      g_return_val_if_fail (
-        create_port (
-          self, (uint32_t) i,
-          default_values[i], ports_exist,
-          project) == 0,
-        -1);
-    }
-
-  /* set control input */
+  /* set control input index */
   const LilvPort* control_input =
     lilv_plugin_get_port_by_designation (
       self->lilv_plugin,
@@ -671,8 +671,31 @@ lv2_create_or_init_ports (
       self->control_in =
         (int)
         lilv_port_get_index (
-          self->lilv_plugin,
-          control_input);
+          self->lilv_plugin, control_input);
+    }
+
+  /* set enabled port index */
+  const LilvPort * enabled_port =
+    lilv_plugin_get_port_by_designation (
+      self->lilv_plugin,
+      PM_GET_NODE (LV2_CORE__InputPort),
+      PM_GET_NODE (LV2_CORE__enabled));
+  if (enabled_port)
+    {
+      self->enabled_in =
+        (int)
+        lilv_port_get_index (
+          self->lilv_plugin, enabled_port);
+    }
+
+  for (int i = 0; i < self->num_ports; ++i)
+    {
+      g_return_val_if_fail (
+        create_port (
+          self, (uint32_t) i,
+          default_values[i], ports_exist,
+          project) == 0,
+        -1);
     }
 
   free (default_values);
@@ -680,7 +703,7 @@ lv2_create_or_init_ports (
   if (!ports_exist)
     {
       /* Set the zrythm plugin ports */
-      for (i = 0; i < self->num_ports; ++i)
+      for (int i = 0; i < self->num_ports; ++i)
         {
           Lv2Port * lv2_port = &self->ports[i];
           Port * port = lv2_port->port;
@@ -1448,9 +1471,9 @@ lv2_plugin_free (
   lilv_instance_free(lv2_plugin->instance);
 
   /* Clean up */
-  free(lv2_plugin->ports);
-  zix_ring_free(lv2_plugin->ui_to_plugin_events);
-  zix_ring_free(lv2_plugin->plugin_to_ui_events);
+  free (lv2_plugin->ports);
+  zix_ring_free (lv2_plugin->ui_to_plugin_events);
+  zix_ring_free (lv2_plugin->plugin_to_ui_events);
   suil_host_free (lv2_plugin->ui_host);
   sratom_free (lv2_plugin->sratom);
   sratom_free (lv2_plugin->ui_sratom);
@@ -1951,6 +1974,7 @@ lv2_plugin_instantiate (
 #endif
 
   self->control_in = -1;
+  self->enabled_in = -1;
 
   /* Set default values for all ports */
   g_return_val_if_fail (
@@ -2104,10 +2128,15 @@ lv2_plugin_instantiate (
   /* The UI can only go so fast, clamp to reasonable limits */
   self->comm_buffer_size =
     MAX (4096, self->comm_buffer_size);
-  g_message ("Comm buffers: %d bytes",
-             self->comm_buffer_size);
-  g_message ("Update rate:  %.01f Hz",
-             (double) self->plugin->ui_update_hz);
+  g_message (
+    "Comm buffers: %d bytes",
+    self->comm_buffer_size);
+  g_message (
+    "Update rate:  %.01f Hz",
+    (double) self->plugin->ui_update_hz);
+  g_message (
+    "Scale factor:  %.01f",
+    (double) self->plugin->ui_scale_factor);
 
   static float samplerate = 0.f;
   static int blocklength = 0;
@@ -2125,29 +2154,30 @@ lv2_plugin_instantiate (
     {
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.param_sampleRate,
-        sizeof(float),
-        PM_URIDS.atom_Float,
-        &samplerate },
+        sizeof (float),
+        PM_URIDS.atom_Float, &samplerate },
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.bufsz_minBlockLength,
-        sizeof(int32_t),
-        PM_URIDS.atom_Int,
-        &blocklength },
+        sizeof (int32_t),
+        PM_URIDS.atom_Int, &blocklength },
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.bufsz_maxBlockLength,
-        sizeof(int32_t),
-        PM_URIDS.atom_Int,
-        &blocklength },
+        sizeof (int32_t),
+        PM_URIDS.atom_Int, &blocklength },
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.bufsz_sequenceSize,
-        sizeof(int32_t),
-        PM_URIDS.atom_Int,
-        &midi_buf_size },
+        sizeof (int32_t),
+        PM_URIDS.atom_Int, &midi_buf_size },
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.ui_updateRate,
-        sizeof(float),
+        sizeof (float),
         PM_URIDS.atom_Float,
         &self->plugin->ui_update_hz },
+      { LV2_OPTIONS_INSTANCE, 0,
+        PM_URIDS.ui_scaleFactor,
+        sizeof (float),
+        PM_URIDS.atom_Float,
+        &self->plugin->ui_scale_factor },
       { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
     };
   memcpy (

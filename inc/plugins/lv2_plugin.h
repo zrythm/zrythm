@@ -100,6 +100,11 @@ typedef struct PluginDescriptor PluginDescriptor;
   "http://kxstudio.sf.net/ns/lv2ext/" \
   "external-ui#Widget"
 
+/* currently missing from the spec */
+#ifndef LV2_CORE__enabled
+#define LV2_CORE__enabled LV2_CORE_PREFIX "enabled"
+#endif
+
 /**
  * LV2 plugin.
  */
@@ -195,7 +200,23 @@ typedef struct Lv2Plugin
 
   /** Whether plugin restore() is thread-safe. */
   bool               safe_restore;
-  int                control_in;     ///< Index of control input port
+
+  /**
+   * Index of control input port, or -1 if no port
+   * with "control" designation found.
+   *
+   * @seealso http://lv2plug.in/ns/lv2core#control.
+   */
+  int                control_in;
+
+  /**
+   * Index of enabled port, or -1 if no port with
+   * "enabled" designation found.
+   *
+   * @seealso http://lv2plug.in/ns/lv2core#enabled.
+   */
+  int                enabled_in;
+
   ZixSem exit_sem;  /**< Exit semaphore */
 
   /** Whether the plugin has at least 1 atom port

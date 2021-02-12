@@ -311,9 +311,7 @@ automation_track_find_from_port (
                        * label but different
                        * symbol) */
                       if (src->flags ^
-                            PORT_FLAG_PLUGIN_ENABLED &&
-                          src->flags ^
-                            PORT_FLAG_PLUGIN_GAIN &&
+                            PORT_FLAG_GENERIC_PLUGIN_PORT &&
                           !string_is_equal (
                             dest->sym, src->sym))
                         {

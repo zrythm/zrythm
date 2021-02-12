@@ -55,6 +55,7 @@
 #include "utils/dialogs.h"
 #include "utils/dsp.h"
 #include "utils/err_codes.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -228,6 +229,8 @@ plugin_init (
   plugin->selected_bank.idx = -1;
   plugin->selected_preset.bank_idx = -1;
   plugin->selected_preset.idx = -1;
+
+  plugin_set_ui_refresh_rate (plugin);
 }
 
 PluginBank *
@@ -1183,13 +1186,22 @@ plugin_set_ui_refresh_rate (
   if (ZRYTHM_TESTING || ZRYTHM_GENERATING_PROJECT)
     {
       self->ui_update_hz = 30.f;
+      self->ui_scale_factor = 1.f;
       return;
     }
 
   /* if no preferred refresh rate is set,
    * use the monitor's refresh rate */
-  if (!g_settings_get_int (
-         S_P_PLUGINS_UIS, "refresh-rate"))
+  if (g_settings_get_int (
+        S_P_PLUGINS_UIS, "refresh-rate"))
+    {
+      /* Use user-specified UI update rate. */
+      self->ui_update_hz =
+        (float)
+        g_settings_get_int (
+          S_P_PLUGINS_UIS, "refresh-rate");
+    }
+  else
     {
       GdkDisplay * display =
         gdk_display_get_default ();
@@ -1210,13 +1222,27 @@ plugin_set_ui_refresh_rate (
         "refresh rate returned by GDK: %.01f",
         (double) self->ui_update_hz);
     }
+
+  /* if no preferred scale factor is set,
+   * use the monitor's scale factor */
+  float scale_factor_setting =
+    (float)
+    g_settings_get_double (
+      S_P_PLUGINS_UIS, "scale-factor");
+  if (scale_factor_setting >= 0.5f)
+    {
+      /* use user-specified scale factor */
+      self->ui_scale_factor = scale_factor_setting;
+    }
   else
     {
-      /* Use user-specified UI update rate. */
-      self->ui_update_hz =
-        (float)
-        g_settings_get_int (
-          S_P_PLUGINS_UIS, "refresh-rate");
+      /* set the scale factor */
+      self->ui_scale_factor =
+         (float)
+         z_gtk_get_primary_monitor_scale_factor ();
+      g_message (
+        "scale factor returned by GDK: %.01f",
+        (double) self->ui_scale_factor);
     }
 
   /* clamp the refresh rate to sensible limits */
@@ -1234,8 +1260,27 @@ plugin_set_ui_refresh_rate (
           PLUGIN_MAX_REFRESH_RATE);
     }
 
+  /* clamp the scale factor to sensible limits */
+  if (self->ui_scale_factor <
+        PLUGIN_MIN_SCALE_FACTOR ||
+      self->ui_scale_factor >
+        PLUGIN_MAX_SCALE_FACTOR)
+    {
+      g_warning (
+        "Invalid scale factor of %.01f received, "
+        "clamping to reasonable bounds",
+        (double) self->ui_scale_factor);
+      self->ui_scale_factor =
+        CLAMP (
+          self->ui_scale_factor,
+          PLUGIN_MIN_SCALE_FACTOR,
+          PLUGIN_MAX_SCALE_FACTOR);
+    }
+
   g_message ("refresh rate set to %f",
     (double) self->ui_update_hz);
+  g_message ("scale factor set to %f",
+    (double) self->ui_scale_factor);
 }
 
 /**
@@ -1295,8 +1340,13 @@ plugin_get_enabled_port (
   for (int i = 0; i < self->num_in_ports; i++)
     {
       Port * port = self->in_ports[i];
-      if (port->id.flags & PORT_FLAG_PLUGIN_ENABLED)
-        return port;
+      if (port->id.flags &
+            PORT_FLAG_PLUGIN_ENABLED &&
+          port->id.flags &
+            PORT_FLAG_GENERIC_PLUGIN_PORT)
+        {
+          return port;
+        }
     }
   g_return_val_if_reached (NULL);
 }
@@ -1448,7 +1498,8 @@ plugin_process (
   const nframes_t  local_offset,
   const nframes_t nframes)
 {
-  if (!plugin_is_enabled (plugin))
+  if (!plugin_is_enabled (plugin) &&
+      !plugin->own_enabled_port)
     {
       plugin_process_passthrough (
         plugin, g_start_frames, local_offset,

@@ -287,10 +287,13 @@ engine_callback (
 
 
 static CarlaNativePlugin *
-_create ()
+_create (
+  Plugin * plugin)
 {
   CarlaNativePlugin * self =
     calloc (1, sizeof (CarlaNativePlugin));
+
+  self->plugin = plugin;
 
   self->native_host_descriptor.handle = self;
   self->native_host_descriptor.uiName =
@@ -346,10 +349,11 @@ _create ()
  */
 static CarlaNativePlugin *
 create_plugin (
-  const PluginDescriptor * descr,
+  Plugin *     plugin,
   PluginType   type)
 {
-  CarlaNativePlugin * self = _create ();
+  PluginDescriptor * descr = plugin->descr;
+  CarlaNativePlugin * self = _create (plugin);
 
   /* instantiate the plugin to get its info */
   self->native_plugin_descriptor =
@@ -381,6 +385,34 @@ create_plugin (
     self->host_handle,
     ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
     PLUGIN_MANAGER->lv2_path);
+
+  /* set UI scale factor */
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_FRONTEND_UI_SCALE,
+    (int)
+    ((float) self->plugin->ui_scale_factor *
+       1000.f),
+    NULL);
+
+  /* set whether UI should stay on top */
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_FRONTEND_UI_SCALE,
+    (int)
+    ((float) self->plugin->ui_scale_factor *
+       1000.f),
+    NULL);
+
+  if (!ZRYTHM_TESTING &&
+      g_settings_get_boolean (
+        S_P_PLUGINS_UIS, "stay-on-top"))
+    {
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_UIS_ALWAYS_ON_TOP, true,
+        NULL);
+    }
 
   /* if no bridge mode specified, calculate the
    * bridge mode here */
@@ -914,7 +946,7 @@ carla_native_plugin_get_descriptor_from_cached (
 
 static CarlaNativePlugin *
 create_from_descr (
-  PluginDescriptor * descr)
+  Plugin * plugin)
 {
 #if 0
   g_return_val_if_fail (
@@ -924,42 +956,42 @@ create_from_descr (
     NULL);
 #endif
   g_return_val_if_fail (
-    descr->open_with_carla, NULL);
+    plugin->descr->open_with_carla, NULL);
 
   CarlaNativePlugin * self = NULL;
-  switch (descr->protocol)
+  switch (plugin->descr->protocol)
     {
     case PROT_LV2:
       self =
-        create_plugin (descr, PLUGIN_LV2);
+        create_plugin (plugin, PLUGIN_LV2);
       break;
     case PROT_AU:
       self =
-        create_plugin (descr, PLUGIN_AU);
+        create_plugin (plugin, PLUGIN_AU);
       break;
     case PROT_VST:
       self =
-        create_plugin (descr, PLUGIN_VST2);
+        create_plugin (plugin, PLUGIN_VST2);
       break;
     case PROT_VST3:
       self =
-        create_plugin (descr, PLUGIN_VST3);
+        create_plugin (plugin, PLUGIN_VST3);
       break;
     case PROT_SFZ:
       self =
-        create_plugin (descr, PLUGIN_SFZ);
+        create_plugin (plugin, PLUGIN_SFZ);
       break;
     case PROT_SF2:
       self =
-        create_plugin (descr, PLUGIN_SF2);
+        create_plugin (plugin, PLUGIN_SF2);
       break;
     case PROT_DSSI:
       self =
-        create_plugin (descr, PLUGIN_DSSI);
+        create_plugin (plugin, PLUGIN_DSSI);
       break;
     case PROT_LADSPA:
       self =
-        create_plugin (descr, PLUGIN_LADSPA);
+        create_plugin (plugin, PLUGIN_LADSPA);
       break;
 #if 0
     case PROT_CARLA_INTERNAL:
@@ -987,7 +1019,7 @@ carla_native_plugin_new_from_descriptor (
   Plugin * plugin)
 {
   CarlaNativePlugin * self =
-    create_from_descr (plugin->descr);
+    create_from_descr (plugin);
   if (!self)
     {
       g_warning ("failed to create plugin");

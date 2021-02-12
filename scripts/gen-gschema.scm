@@ -759,6 +759,10 @@ Args:
                      "refresh-rate" "i" "0" "180"
                      "0" "Refresh rate"
                      "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used.")
+                   (make-schema-key-with-range
+                     "scale-factor" "d" "0.0" "4.0"
+                     "0.0" "Scale factor"
+                     "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor will be used.")
                  )) ;; plugins/uis
                (make-schema
                  "paths"

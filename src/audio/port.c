@@ -2511,6 +2511,50 @@ port_set_control_value (
             AUDIO_ENGINE->sample_rate);
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);
         }
+
+      /* if plugin enabled port, also set
+       * plugin's own enabled port value and
+       * vice versa */
+      if (self->is_project &&
+          self->id.flags & PORT_FLAG_PLUGIN_ENABLED)
+        {
+          Plugin * pl = port_get_plugin (self, 1);
+          g_return_if_fail (pl);
+
+          if (self->id.flags &
+                PORT_FLAG_GENERIC_PLUGIN_PORT)
+            {
+              if (
+                pl->own_enabled_port &&
+                !math_floats_equal (
+                  pl->own_enabled_port->
+                    control,
+                  self->control))
+                {
+                  g_debug (
+                    "generic enabled "
+                    "changed - changing "
+                    "plugin's own enabled");
+                  port_set_control_value (
+                    pl->own_enabled_port,
+                    self->control, false,
+                    F_PUBLISH_EVENTS);
+                }
+            }
+          else if (!math_floats_equal (
+                     pl->enabled->control,
+                     self->control))
+            {
+              g_debug (
+                "plugin's own enabled "
+                "changed - changing "
+                "generic enabled");
+              port_set_control_value (
+                pl->enabled,
+                self->control, false,
+                F_PUBLISH_EVENTS);
+            }
+        }
     }
 
   if (forward_event)

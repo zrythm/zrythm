@@ -109,6 +109,11 @@ tracklist_selections_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_TRACKLIST_SELECTIONS;
 
+  if (num_tracks < 0)
+    {
+      num_tracks = 0;
+    }
+
   self->type = type;
   if (pl_descr)
     {

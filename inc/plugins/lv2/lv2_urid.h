@@ -63,6 +63,7 @@ typedef struct Lv2URIDs
   LV2_URID time_frame;
   LV2_URID time_speed;
   LV2_URID ui_updateRate;
+  LV2_URID ui_scaleFactor;
 } Lv2URIDs;
 
 /**
