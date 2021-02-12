@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -335,71 +335,4 @@ snap_grid_get_nearby_snap_point (
     position_compare, &, ret_pos, NULL);
 
   return ret_pos;
-
-  // init values
-  /*int first = 0;*/
-  /*int last = self->num_snap_points;*/
-  /*int middle = (first + last) / 2;*/
-  /*int pivot_is_before_pos, pivot_succ_is_before_pos;*/
-  /*Position *pivot, *pivot_succ;*/
-
-  /*// return if SnapGrid has no entries*/
-  /*if (first == last)*/
-  /*{*/
-    /*return NULL;*/
-  /*}*/
-
-  /*// search loops, exit if pos is not in array*/
-  /*while (first <= last)*/
-  /*{*/
-    /*pivot = &self->snap_points[middle];*/
-    /*pivot_succ = NULL;*/
-    /*pivot_succ_is_before_pos = 0;*/
-
-    /*if (middle == 0 && return_prev) {*/
-      /*return &self->snap_points[0];*/
-    /*}*/
-
-    /*// Return next/previous item if pivot is the searched position*/
-    /*if (position_compare(pivot, pos) == 0) {*/
-      /*if (return_prev)*/
-        /*return &self->snap_points[middle - 1];*/
-      /*else*/
-        /*return &self->snap_points[middle + 1];*/
-    /*}*/
-
-    /*// Select pivot successor if possible*/
-    /*if (middle < last)*/
-    /*{*/
-      /*pivot_succ = &self->snap_points[middle + 1];*/
-      /*pivot_succ_is_before_pos =*/
-          /*position_compare(*/
-              /*pivot_succ, pos) <= 0;*/
-    /*}*/
-    /*pivot_is_before_pos =*/
-        /*position_compare(*/
-            /*pivot, pos) <= 0;*/
-
-    /*// if pivot and pivot_succ are before pos, search in the second half on next iteration*/
-    /*if (pivot_is_before_pos && pivot_succ_is_before_pos)*/
-    /*{*/
-      /*first = middle + 1;*/
-    /*}*/
-    /*else if (pivot_is_before_pos) // pos is between pivot and pivot_succ*/
-    /*{*/
-      /*if (return_prev) {*/
-        /*return pivot;*/
-      /*} else {*/
-        /*return pivot_succ;*/
-      /*}*/
-    /*}*/
-    /*else { // if pivot_succ and pivot are behind pos, search in the first half on next iteration*/
-      /*last = middle;*/
-    /*}*/
-
-    /*// recalculate middle position*/
-    /*middle = (first + last) / 2;*/
-  /*}*/
-
-  /*return NULL;*/
 }

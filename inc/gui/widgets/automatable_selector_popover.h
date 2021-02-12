@@ -20,6 +20,8 @@
 #ifndef __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 #define __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 
+/* FIXME should be merged with port selector popover */
+
 
 #include <gtk/gtk.h>
 

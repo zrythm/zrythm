@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,6 +31,22 @@ z_gtk_widget_destroy_idle (
   gtk_widget_destroy (widget);
 
   return G_SOURCE_REMOVE;
+}
+
+int
+z_gtk_get_primary_monitor_scale_factor (void)
+{
+  GdkDisplay * display =
+    gdk_display_get_default ();
+  g_warn_if_fail (display);
+  GdkMonitor * monitor =
+    gdk_display_get_primary_monitor (display);
+  g_warn_if_fail (monitor);
+  int scale_factor =
+    gdk_monitor_get_scale_factor (monitor);
+  g_warn_if_fail (scale_factor >= 1);
+
+  return scale_factor;
 }
 
 /**

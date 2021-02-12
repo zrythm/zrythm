@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -127,6 +127,9 @@ z_gtk_notebook_get_current_tab_label_widget (
       z_gtk_notebook_get_current_page_widget (
         notebook));
 }
+
+int
+z_gtk_get_primary_monitor_scale_factor (void);
 
 void
 z_gtk_tree_view_remove_all_columns (

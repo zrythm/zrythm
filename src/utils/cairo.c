@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,7 @@
 
 #include "utils/cairo.h"
 #include "utils/dictionary.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -235,9 +236,11 @@ z_cairo_get_surface_from_icon_name (
   if (!surface)
     {
       GdkPixbuf * pixbuf =
-        gtk_icon_theme_load_icon (
+        gtk_icon_theme_load_icon_for_scale (
           gtk_icon_theme_get_default (),
-          icon_name, size, 0,
+          icon_name, size,
+          z_gtk_get_primary_monitor_scale_factor (),
+          0,
           NULL);
       if (!pixbuf)
         {

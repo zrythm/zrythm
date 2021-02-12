@@ -766,14 +766,8 @@ zrythm_app_startup (
   g_object_set (
     self->default_settings,
     "gtk-application-prefer-dark-theme", 1, NULL);
-  GdkDisplay * display =
-    gdk_display_get_default ();
-  g_warn_if_fail (display);
-  GdkMonitor * monitor =
-    gdk_display_get_primary_monitor (display);
-  g_warn_if_fail (monitor);
   int scale_factor =
-    gdk_monitor_get_scale_factor (monitor);
+    z_gtk_get_primary_monitor_scale_factor ();
   g_message (
     "Monitor scale factor: %d", scale_factor);
 #if defined(_WOE32)
