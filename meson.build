@@ -709,18 +709,14 @@ if not samplerate_dep.found ()
     'samplerate')
 endif
 lv2_dep = dependency(
-  'lv2', version: '>=1.16.0', required: false,
+  'lv2', version: '>=1.16.0',
+  fallback: ['lilv', 'lv2_dep'],
   static: all_static)
-if not lv2_dep.found()
-  lilv_proj = subproject('lilv')
-  lv2_dep = lilv_proj.get_variable('lv2_dep')
-endif
 if lv2_dep.version().version_compare('>=1.18.0')
   cdata.set('HAVE_LV2_1_18', 1)
 endif
 lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
-  fallback: ['lilv', 'lilv_dep'],
   static: all_static)
 
 # fftw
@@ -963,18 +959,9 @@ zrythm_deps = [
   reproc_dep,
   dependency ('threads'),
   lilv_dep,
-  dependency (
-    'sratom-0',
-    fallback: ['lilv', 'sratom_dep'],
-    static: all_static),
-  dependency (
-    'serd-0',
-    fallback: ['lilv', 'serd_dep'],
-    static: all_static),
-  dependency (
-    'sord-0',
-    fallback: ['lilv', 'sord_dep'],
-    static: all_static),
+  dependency ('sratom-0'),
+  dependency ('serd-0'),
+  dependency ('sord-0'),
   dependency (
     'rubberband'),
   dependency ('libpcre'),
