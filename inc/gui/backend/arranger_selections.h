@@ -286,6 +286,14 @@ arranger_selections_all_on_same_lane (
   ArrangerSelections * self);
 
 /**
+ * Selects all possible objects from the project.
+ */
+void
+arranger_selections_select_all (
+  ArrangerSelections * self,
+  bool                 fire_events);
+
+/**
  * Clears selections.
  */
 void

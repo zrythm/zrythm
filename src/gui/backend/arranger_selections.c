@@ -1229,6 +1229,176 @@ arranger_selections_add_ticks (
 }
 
 /**
+ * Selects all possible objects from the project.
+ */
+void
+arranger_selections_select_all (
+  ArrangerSelections * self,
+  bool                 fire_events)
+{
+  arranger_selections_clear (
+    self, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
+
+  ArrangerObject * obj = NULL;
+  switch (self->type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      /* midi/audio regions */
+      for (int i = 0;
+           i < TRACKLIST->num_tracks;
+           i++)
+        {
+          Track * track = TRACKLIST->tracks[i];
+          for (int j = 0;
+               j < track->num_lanes; j++)
+            {
+              TrackLane * lane =
+                track->lanes[j];
+              for (int k = 0;
+                   k < lane->num_regions;
+                   k++)
+                {
+                  obj =
+                    (ArrangerObject *)
+                    lane->regions[k];
+                  arranger_object_select (
+                    obj, F_SELECT, F_APPEND);
+                }
+            }
+
+          /* automation regions */
+          AutomationTracklist * atl =
+            track_get_automation_tracklist (
+              track);
+          if (atl &&
+              track->automation_visible)
+            {
+              for (int j = 0;
+                   j < atl->num_ats;
+                   j++)
+                {
+                  AutomationTrack * at =
+                    atl->ats[j];
+
+                  if (!at->visible)
+                    continue;
+
+                  for (int k = 0;
+                       k < at->num_regions;
+                       k++)
+                    {
+                      obj =
+                        (ArrangerObject *)
+                        at->regions[k];
+                      arranger_object_select (
+                        obj, F_SELECT, F_APPEND);
+                    }
+                }
+            }
+        }
+
+      /* chord regions */
+      for (int j = 0;
+           j < P_CHORD_TRACK->num_chord_regions;
+           j++)
+        {
+          ZRegion * cr =
+            P_CHORD_TRACK->chord_regions[j];
+          obj = (ArrangerObject *) cr;
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND);
+        }
+
+      /* scales */
+      for (int i = 0;
+           i < P_CHORD_TRACK->num_scales; i++)
+        {
+          obj =
+            (ArrangerObject *)
+            P_CHORD_TRACK->scales[i];
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND);
+        }
+
+      /* markers */
+      for (int j = 0;
+           j < P_MARKER_TRACK->num_markers;
+           j++)
+        {
+          Marker * marker =
+            P_MARKER_TRACK->markers[j];
+          obj =
+            (ArrangerObject *) marker;
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND);
+        }
+      break;
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      if (!r || r->id.type != REGION_TYPE_CHORD)
+        break;
+
+      for (int i = 0; i < r->num_chord_objects;
+           i++)
+        {
+          ChordObject * co =
+            r->chord_objects[i];
+          obj =
+            (ArrangerObject *) co;
+          g_return_if_fail (
+            co->chord_index <
+            CHORD_EDITOR->num_chords);
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND);
+        }
+      break;
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      if (!r || r->id.type != REGION_TYPE_MIDI)
+        break;
+
+      for (int i = 0; i < r->num_midi_notes;
+           i++)
+        {
+          MidiNote * mn = r->midi_notes[i];
+          obj =
+            (ArrangerObject *)
+            mn;
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND);
+        }
+      break;
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUDIO:
+      /* no objects in audio arranger yet */
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      if (!r ||
+          r->id.type != REGION_TYPE_AUTOMATION)
+        break;
+
+      for (int i = 0; i < r->num_aps; i++)
+        {
+          AutomationPoint * ap =  r->aps[i];
+          obj = (ArrangerObject *) ap;
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND);
+        }
+      break;
+    default:
+      g_return_if_reached ();
+      break;
+    }
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_SELECTIONS_CHANGED, self);
+    }
+}
+
+/**
  * Clears selections.
  */
 void

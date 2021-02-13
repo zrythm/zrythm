@@ -133,6 +133,7 @@ on_close_notification_clicked (
     0);
 }
 
+#if 0
 /**
  * Returns the selections for the last focused
  * arranger.
@@ -174,6 +175,7 @@ main_window_get_last_focused_arranger_selections (
 
   return sel;
 }
+#endif
 
 static gboolean
 on_key_release (
@@ -200,6 +202,7 @@ on_key_action (
       return FALSE;
     }
 
+#if 0
   if (Z_IS_ARRANGER_WIDGET (
         MAIN_WINDOW->last_focused))
     {
@@ -211,6 +214,7 @@ on_key_action (
       /* stop other handlers */
       return TRUE;
     }
+#endif
 
   return FALSE;
 }
@@ -466,8 +470,6 @@ main_window_widget_init (MainWindowWidget * self)
       activate_create_audio_group_track },
     { "create-midi-group-track",
       activate_create_midi_group_track },
-    { "delete-selected-tracks",
-      activate_delete_selected_tracks },
     { "add-region", activate_add_region },
 
     /* modes */

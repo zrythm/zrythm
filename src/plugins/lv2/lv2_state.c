@@ -137,6 +137,7 @@ lv2_state_save_to_file (
       lv2_plugin_get_port_value, pl,
       LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
       pl->state_features);
+  g_return_val_if_fail (state, NULL);
 
   int rc =
     lilv_state_save (

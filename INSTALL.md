@@ -4,7 +4,7 @@ Installation Instructions
 # Building
 
 The project uses [meson](https://mesonbuild.com), so
-the steps are
+the steps to configure and build are
 
     meson build
     ninja -C build
@@ -19,8 +19,12 @@ inside [meson_options.txt](meson_options.txt).
 
     meson configure build
 
+To change an option after configuration, use
+
+    meson build --reconfigure -Doption_name=value
+
 To clean the build directory while keeping the
-current configuration
+current configuration, use
 
     meson compile --clean -C build
 

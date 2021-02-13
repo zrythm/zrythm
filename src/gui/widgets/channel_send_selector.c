@@ -35,6 +35,8 @@ G_DEFINE_TYPE (
   channel_send_selector_widget,
   GTK_TYPE_POPOVER)
 
+/* FIXME lots of memory leaks */
+
 /**
  * Target type.
  */

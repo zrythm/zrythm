@@ -368,6 +368,10 @@ static const cyaml_schema_value_t
 void
 project_sanity_check (Project * self);
 
+ArrangerSelections *
+project_get_arranger_selections_for_last_selection (
+  Project * self);
+
 /**
  * Creates a default project.
  *

@@ -510,8 +510,8 @@ activate_loop_selection (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (MAIN_WINDOW->last_focused ==
-      GTK_WIDGET (MW_TIMELINE))
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_TIMELINE)
     {
       if (!arranger_selections_has_any (
             (ArrangerSelections *) TL_SELECTIONS))
@@ -971,8 +971,8 @@ activate_cut (
   activate_copy (action, variant, user_data);
 
   ArrangerSelections * sel =
-    main_window_get_last_focused_arranger_selections (
-      MAIN_WINDOW);
+    project_get_arranger_selections_for_last_selection (
+      PROJECT);
 
   if (sel && arranger_selections_has_any (sel))
     {
@@ -991,39 +991,9 @@ activate_copy (
   GVariant      *variant,
   gpointer       user_data)
 {
-  ArrangerSelections * sel = NULL;
-
-  if (MAIN_WINDOW_LAST_FOCUSED_IS (
-        MW_TIMELINE) ||
-      MAIN_WINDOW_LAST_FOCUSED_IS (
-        MW_PINNED_TIMELINE))
-    {
-      sel = (ArrangerSelections *) TL_SELECTIONS;
-      g_message ("copying timeline selections");
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_MIDI_ARRANGER) ||
-           MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_MIDI_MODIFIER_ARRANGER))
-    {
-      sel = (ArrangerSelections *) MA_SELECTIONS;
-      g_message ("copying midi selections");
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_CHORD_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *) CHORD_SELECTIONS;
-      g_message ("copying chord selections");
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_AUTOMATION_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *)
-        AUTOMATION_SELECTIONS;
-      g_message ("copying automation selections");
-    }
+  ArrangerSelections * sel =
+    project_get_arranger_selections_for_last_selection (
+      PROJECT);
 
   if (sel)
     {
@@ -1118,9 +1088,11 @@ activate_delete (
   GVariant      * variant,
   gpointer        user_data)
 {
+  g_message ("activaging delete");
+
   ArrangerSelections * sel =
-    main_window_get_last_focused_arranger_selections (
-      MAIN_WINDOW);
+    project_get_arranger_selections_for_last_selection (
+      PROJECT);
 
   if (sel &&
       !arranger_selections_contains_undeletable_object (
@@ -1135,6 +1107,16 @@ activate_delete (
             UNDO_MANAGER, action);
         }
     }
+
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_TRACKLIST)
+    {
+      g_message (
+        "activating delete selected tracks");
+      g_action_group_activate_action (
+        G_ACTION_GROUP (MAIN_WINDOW),
+        "delete-selected-tracks", NULL);
+    }
 }
 
 void
@@ -1144,8 +1126,8 @@ activate_duplicate (
   gpointer       user_data)
 {
   ArrangerSelections * sel =
-    main_window_get_last_focused_arranger_selections (
-      MAIN_WINDOW);
+    project_get_arranger_selections_for_last_selection (
+      PROJECT);
 
   if (sel && arranger_selections_has_any (sel))
     {
@@ -1167,12 +1149,13 @@ activate_clear_selection (
   GVariant      *variant,
   gpointer       user_data)
 {
-  if (Z_IS_ARRANGER_WIDGET (
-        MAIN_WINDOW->last_focused))
+  ArrangerSelections * sel =
+    project_get_arranger_selections_for_last_selection (
+      PROJECT);
+  if (sel)
     {
-      arranger_widget_select_all (
-        Z_ARRANGER_WIDGET (
-          MAIN_WINDOW->last_focused), F_NO_SELECT);
+      arranger_selections_clear (
+        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
     }
   else
     {
@@ -1187,12 +1170,13 @@ activate_select_all (
   GVariant *variant,
   gpointer user_data)
 {
-  if (Z_IS_ARRANGER_WIDGET (
-        MAIN_WINDOW->last_focused))
+  ArrangerSelections * sel =
+    project_get_arranger_selections_for_last_selection (
+      PROJECT);
+  if (sel)
     {
-      arranger_widget_select_all (
-        Z_ARRANGER_WIDGET (
-          MAIN_WINDOW->last_focused), F_SELECT);
+      arranger_selections_select_all (
+        sel, F_PUBLISH_EVENTS);
     }
   else
     {
@@ -1721,8 +1705,8 @@ activate_quantize_options (
     }
   else if (string_is_equal (variant, "global"))
     {
-      if (MAIN_WINDOW->last_focused ==
-          GTK_WIDGET (MW_TIMELINE))
+      if (PROJECT->last_selection ==
+            SELECTION_TYPE_TIMELINE)
         {
           QuantizeDialogWidget * quant =
             quantize_dialog_widget_new (
@@ -1763,18 +1747,20 @@ activate_mute_selection (
     }
   else if (string_is_equal (variant, "global"))
     {
-      if (MAIN_WINDOW->last_focused ==
-          GTK_WIDGET (MW_TIMELINE))
+#if 0
+      if (PROJECT->last_selection ==
+            SELECTION_TYPE_TIMELINE)
         {
           sel =
             (ArrangerSelections *) TL_SELECTIONS;
         }
-      else if (MAIN_WINDOW->last_focused ==
-                 GTK_WIDGET (MW_MIDI_ARRANGER))
+      if (PROJECT->last_selection ==
+            SELECTION_TYPE_EDITOR)
         {
           sel =
             (ArrangerSelections *) MA_SELECTIONS;
         }
+#endif
     }
   else
     {

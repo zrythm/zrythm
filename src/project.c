@@ -507,6 +507,84 @@ project_sanity_check (Project * self)
   g_message ("%s: done", __func__);
 }
 
+#if 0
+ArrangerWidget *
+project_get_arranger_for_last_selection (
+  Project * self)
+{
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
+  switch (self->last_selection)
+    {
+    case SELECTION_TYPE_TIMELINE:
+      return TL_SELECTIONS;
+      break;
+    case SELECTION_TYPE_EDITOR:
+      if (r)
+        {
+          switch (r->id.type)
+            {
+            case REGION_TYPE_AUDIO:
+              return AUDIO_SELECTIONS;
+            case REGION_TYPE_AUTOMATION:
+              return AUTOMATION_SELECTIONS;
+            case REGION_TYPE_MIDI:
+              return MA_SELECTIONS;
+            case REGION_TYPE_CHORD:
+              return CHORD_SELECTIONS;
+            }
+        }
+      break;
+    default:
+      return NULL;
+    }
+
+  return NULL;
+}
+#endif
+
+ArrangerSelections *
+project_get_arranger_selections_for_last_selection (
+  Project * self)
+{
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
+  switch (self->last_selection)
+    {
+    case SELECTION_TYPE_TIMELINE:
+      return (ArrangerSelections *) TL_SELECTIONS;
+      break;
+    case SELECTION_TYPE_EDITOR:
+      if (r)
+        {
+          switch (r->id.type)
+            {
+            case REGION_TYPE_AUDIO:
+              return
+                (ArrangerSelections *)
+                AUDIO_SELECTIONS;
+            case REGION_TYPE_AUTOMATION:
+              return
+                (ArrangerSelections *)
+                AUTOMATION_SELECTIONS;
+            case REGION_TYPE_MIDI:
+              return
+                (ArrangerSelections *)
+                MA_SELECTIONS;
+            case REGION_TYPE_CHORD:
+              return
+                (ArrangerSelections *)
+                CHORD_SELECTIONS;
+            }
+        }
+      break;
+    default:
+      return NULL;
+    }
+
+  return NULL;
+}
+
 static MainWindowWidget *
 hide_prev_main_window (void)
 {

@@ -4838,9 +4838,7 @@ on_focus (
   GtkWidget * widget,
   gpointer    user_data)
 {
-  MAIN_WINDOW->last_focused = widget;
-
-  g_message ("FOCUSED");
+  g_debug ("arranger focused");
 
   return FALSE;
 }
