@@ -58,6 +58,10 @@ with meaningful stack traces and bug reports.
 - rtmidi (Expat): <https://www.music.mcgill.ca/~gary/rtmidi/>
 - SDL2 (zlib): <https://www.libsdl.org/>
 
+*Tip: dependency package names for various distros
+can be found [here](https://git.sr.ht/~alextee/zrythm-builds/tree/master/item/.builds)
+and [here](https://git.sr.ht/~alextee/zrythm-builds2/tree/master/item/.builds)*
+
 ## Installation
 Once the program is built, it will need to be
 installed the first time before it can run (to
