@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-09 04:57+0000\n"
-"PO-Revision-Date: 2021-02-08 10:50+0000\n"
+"PO-Revision-Date: 2021-02-13 03:50+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -3334,9 +3334,8 @@ msgid "Scan again for MIDI controllers"
 msgstr "再次扫描MIDI控制器"
 
 #: resources/ui/main_notebook.ui:43 resources/ui/main_notebook.ui:59
-#, fuzzy
 msgid "Timeline"
-msgstr "时间范围"
+msgstr "时间线"
 
 #: resources/ui/main_notebook.ui:80
 msgid "Port connections"
