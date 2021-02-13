@@ -110,11 +110,15 @@ port_connection_action_new (
   float                    new_val);
 
 #define port_connection_action_new_connect( \
-  src_id,dest_id,connect) \
+  src_id,dest_id) \
   port_connection_action_new ( \
-    connect ? \
-      PORT_CONNECTION_CONNECT : \
-      PORT_CONNECTION_DISCONNECT, \
+    PORT_CONNECTION_CONNECT, \
+    src_id, dest_id, 0.f)
+
+#define port_connection_action_new_disconnect( \
+  src_id,dest_id) \
+  port_connection_action_new ( \
+    PORT_CONNECTION_DISCONNECT, \
     src_id, dest_id, 0.f)
 
 #define port_connection_action_new_enable( \

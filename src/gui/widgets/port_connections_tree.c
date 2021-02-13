@@ -166,9 +166,8 @@ on_delete_activate (
   PortConnectionsTreeWidget * self)
 {
   UndoableAction * ua =
-    port_connection_action_new_connect (
-      &self->src_port->id, &self->dest_port->id,
-      false);
+    port_connection_action_new_disconnect (
+      &self->src_port->id, &self->dest_port->id);
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 

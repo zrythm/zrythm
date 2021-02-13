@@ -821,7 +821,7 @@ track_verify_identifiers (
                 port, full_str);
               g_critical (
                 "Could not find automation track "
-                "for port %s",
+                "for port '%s'",
                 full_str);
               return false;
             }

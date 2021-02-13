@@ -118,10 +118,23 @@ void
 automation_tracklist_init_loaded (
   AutomationTracklist * self);
 
+Track *
+automation_tracklist_get_track (
+  AutomationTracklist * self);
+
 void
 automation_tracklist_add_at (
   AutomationTracklist * self,
   AutomationTrack *     at);
+
+/**
+ * Prints info about all the automation tracks.
+ *
+ * Used for debugging.
+ */
+void
+automation_tracklist_print_ats (
+  AutomationTracklist * self);
 
 /**
  * Updates the frames of each position in each child

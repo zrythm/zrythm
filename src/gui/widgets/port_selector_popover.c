@@ -78,7 +78,7 @@ on_ok_clicked (
 
       UndoableAction * ua =
         port_connection_action_new_connect (
-          &src->id, &dest->id, true);
+          &src->id, &dest->id);
       undo_manager_perform (UNDO_MANAGER, ua);
 
       /*port_connections_popover_widget_refresh (*/

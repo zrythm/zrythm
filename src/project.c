@@ -496,7 +496,8 @@ project_sanity_check (Project * self)
   for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
-      port_update_identifier (port, NULL);
+      port_update_identifier (
+        port, NULL, F_UPDATE_AUTOMATION_TRACK);
     }
   free (ports);
 

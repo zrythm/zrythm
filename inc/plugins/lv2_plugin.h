@@ -104,6 +104,9 @@ typedef struct PluginDescriptor PluginDescriptor;
 #ifndef LV2_CORE__enabled
 #define LV2_CORE__enabled LV2_CORE_PREFIX "enabled"
 #endif
+#ifndef LV2_CORE__isSideChain
+#define LV2_CORE__isSideChain LV2_CORE_PREFIX "isSideChain"
+#endif
 
 /**
  * LV2 plugin.

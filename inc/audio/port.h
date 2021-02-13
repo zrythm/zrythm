@@ -733,11 +733,16 @@ port_get_plugin (
  * to update corresponding identifiers.
  *
  * @param track The track that owns this port.
+ * @param update_automation_track Whether to update
+ *   the identifier in the corresponding automation
+ *   track as well. This should be false when
+ *   moving a plugin.
  */
 void
 port_update_identifier (
   Port *  self,
-  Track * track);
+  Track * track,
+  bool    update_automation_track);
 
 /**
  * Returns the index of the destination in the dest

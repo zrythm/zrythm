@@ -731,7 +731,7 @@ test_track_deletion_with_sends (
     }
   ua =
     port_connection_action_new_connect (
-      &out_port->id, &in_port->id, true);
+      &out_port->id, &in_port->id);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* assert they are connected */

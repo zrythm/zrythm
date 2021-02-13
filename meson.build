@@ -238,6 +238,9 @@ ext_lv2_plugins = {
   'lsp_compressor': [
     'LSP Compressor',
     'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
+  'lsp_sidechain_compressor': [
+    'LSP Sidechain Compressor',
+    'http://lsp-plug.in/plugins/lv2/sc_compressor_stereo'],
   'lsp_multisampler_24_do': [
     'LSP MultiSampler x24 Direct Out',
     'http://lsp-plug.in/plugins/lv2/multisampler_x24_do'],

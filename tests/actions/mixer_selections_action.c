@@ -1030,7 +1030,7 @@ test_create_modulator (void)
   /* connect the ports */
   ua =
     port_connection_action_new_connect (
-      &cv_out->id, &ctrl_in->id, F_CONNECT);
+      &cv_out->id, &ctrl_in->id);
   undo_manager_perform (UNDO_MANAGER, ua);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
@@ -1058,6 +1058,74 @@ test_create_modulator (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_move_pl_after_duplicating_track (void)
+{
+  test_helper_zrythm_init ();
+
+#if defined (HAVE_LSP_SIDECHAIN_COMPRESSOR) && \
+  defined (HAVE_HELM)
+
+  test_plugin_manager_create_tracks_from_plugin (
+      LSP_SIDECHAIN_COMPRESSOR_BUNDLE,
+      LSP_SIDECHAIN_COMPRESSOR_URI, false, false,
+      1);
+  test_plugin_manager_create_tracks_from_plugin (
+      HELM_BUNDLE, HELM_URI, true, false, 1);
+
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * lsp_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  Plugin * lsp =
+    lsp_track->channel->inserts[0];
+
+  Port * sidechain_port = NULL;
+  for (int i = 0; i < lsp->num_in_ports; i++)
+    {
+      Port * port = lsp->in_ports[i];
+      if (port->id.flags & PORT_FLAG_SIDECHAIN)
+        {
+          sidechain_port = port;
+          break;
+        }
+    }
+  g_assert_nonnull (sidechain_port);
+
+  UndoableAction * ua =
+    port_connection_action_new_connect (
+      &ins_track->channel->fader->stereo_out->
+        l->id,
+      &sidechain_port->id);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_copy (
+      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  Track * dest_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, lsp_track,
+    PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
+  ua =
+    mixer_selections_action_new_move (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      dest_track->pos, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1065,6 +1133,11 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
+  g_test_add_func (
+    TEST_PREFIX
+    "test move pl after duplicating track",
+    (GTestFunc)
+    test_move_pl_after_duplicating_track);
   g_test_add_func (
     TEST_PREFIX "test create modulator",
     (GTestFunc) test_create_modulator);

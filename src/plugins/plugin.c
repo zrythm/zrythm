@@ -779,17 +779,23 @@ plugin_set_track_and_slot (
   pl->id.slot = slot;
   pl->id.slot_type = slot_type;
 
+  Track * track = plugin_get_track (pl);
+
   int i;
   Port * port;
   for (i = 0; i < pl->num_in_ports; i++)
     {
       port = pl->in_ports[i];
       port_set_owner_plugin (port, pl);
+      port_update_identifier (
+        port, track, F_NO_UPDATE_AUTOMATION_TRACK);
     }
   for (i = 0; i < pl->num_out_ports; i++)
     {
       port = pl->out_ports[i];
       port_set_owner_plugin (port, pl);
+      port_update_identifier (
+        port, track, F_NO_UPDATE_AUTOMATION_TRACK);
     }
 
   if (

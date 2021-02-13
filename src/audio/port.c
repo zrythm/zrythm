@@ -1669,11 +1669,16 @@ port_verify_src_and_dests (
  * to update corresponding identifiers.
  *
  * @param track The track that owns this port.
+ * @param update_automation_track Whether to update
+ *   the identifier in the corresponding automation
+ *   track as well. This should be false when
+ *   moving a plugin.
  */
 void
 port_update_identifier (
   Port *  self,
-  Track * track)
+  Track * track,
+  bool    update_automation_track)
 {
   /*g_message (*/
     /*"updating identifier for %p %s (track pos %d)", */
@@ -1705,7 +1710,8 @@ port_update_identifier (
             dest->srcs[src_idx] == self);
         }
 
-      if (self->id.track_pos > -1 &&
+      if (update_automation_track &&
+          self->id.track_pos > -1 &&
           self->id.flags & PORT_FLAG_AUTOMATABLE)
         {
           /* update automation track's port id */
@@ -1806,7 +1812,8 @@ port_update_track_pos (
     {
       self->id.plugin_id.track_pos = pos;
     }
-  port_update_identifier (self, track);
+  port_update_identifier (
+    self, track, F_UPDATE_AUTOMATION_TRACK);
 }
 
 #ifdef HAVE_ALSA

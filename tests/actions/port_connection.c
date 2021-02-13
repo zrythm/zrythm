@@ -112,7 +112,7 @@ test_modulator_connection (
    * button */
   ua =
     port_connection_action_new_connect (
-      &pl_cv_port->id, &macro->cv_in->id, true);
+      &pl_cv_port->id, &macro->cv_in->id);
   int ret = undo_manager_perform (UNDO_MANAGER, ua);
   g_assert_cmpint (ret, ==, 0);
 
@@ -131,8 +131,7 @@ test_modulator_connection (
    * control input */
   ua =
     port_connection_action_new_connect (
-      &macro->cv_out->id, &pl_control_port->id,
-      true);
+      &macro->cv_out->id, &pl_control_port->id);
   ret = undo_manager_perform (UNDO_MANAGER, ua);
   g_assert_cmpint (ret, !=, 0);
 
@@ -269,7 +268,7 @@ _test_port_connection (
 
   ua =
     port_connection_action_new_connect (
-      &src_port1->id, &dest_port->id, true);
+      &src_port1->id, &dest_port->id);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 1);
@@ -287,7 +286,7 @@ _test_port_connection (
 
   ua =
     port_connection_action_new_connect (
-      &src_port2->id, &dest_port->id, true);
+      &src_port2->id, &dest_port->id);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 2);

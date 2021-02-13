@@ -253,4 +253,7 @@
 #define F_FILL 1
 #define F_NO_FILL 0
 
+#define F_UPDATE_AUTOMATION_TRACK 1
+#define F_NO_UPDATE_AUTOMATION_TRACK 0
+
 #endif

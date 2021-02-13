@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  *
  * This file incorporates work covered by the following copyright and
- * permission notice:
+ * permission notices:
  *
   Copyright 2007-2016 David Robillard <http://drobilla.net>
 
@@ -32,6 +32,30 @@
   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+ * Copyright (C) 2008-2012 Carl Hetherington <carl@carlh.net>
+ * Copyright (C) 2008-2017 Paul Davis <paul@linuxaudiosystems.com>
+ * Copyright (C) 2008-2019 David Robillard <d@drobilla.net>
+ * Copyright (C) 2012-2019 Robin Gareus <robin@gareus.org>
+ * Copyright (C) 2013-2018 John Emmas <john@creativepost.co.uk>
+ * Copyright (C) 2013 Michael R. Fisher <mfisher@bketech.com>
+ * Copyright (C) 2014-2016 Tim Mayberry <mojofunk@gmail.com>
+ * Copyright (C) 2016-2017 Damien Zammit <damien@zamaudio.com>
+ * Copyright (C) 2016 Nick Mainsbridge <mainsbridge@gmail.com>
+ * Copyright (C) 2017 Johannes Mueller <github@johannes-mueller.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "zrythm-config.h"
@@ -92,6 +116,7 @@
 #include <lv2/instance-access/instance-access.h>
 #include <lv2/midi/midi.h>
 #include <lv2/patch/patch.h>
+#include <lv2/port-groups/port-groups.h>
 #include <lv2/port-props/port-props.h>
 #include <lv2/presets/presets.h>
 #include <lv2/resize-port/resize-port.h>
@@ -138,6 +163,27 @@ feature_is_supported (
   return false;
 }
 
+static char *
+get_port_group_label (
+  const LilvNode * group)
+{
+  LilvNode * group_label =
+    lilv_world_get (
+      LILV_WORLD, group,
+      PM_GET_NODE (LILV_NS_RDFS "label"),
+      NULL);
+  char * ret = NULL;
+  if (group_label)
+    {
+      const char * group_name_str =
+        lilv_node_as_string (group_label);
+      ret = g_strdup (group_name_str);
+      lilv_node_free (group_label);
+    }
+
+  return ret;
+}
+
 /**
  * Create a port structure from data description.
  *
@@ -167,10 +213,33 @@ create_port (
   lv2_port->lilv_port =
     lilv_plugin_get_port_by_index (
       lv2_plugin->lilv_plugin, lv2_port_index);
+
+  const LilvPlugin * lilv_plugin =
+    lv2_plugin->lilv_plugin;
+  const LilvPort * lilv_port =
+    lv2_port->lilv_port;
+
+#define PORT_IS_A(x) \
+  lilv_port_is_a ( \
+    lilv_plugin, lilv_port, PM_GET_NODE (x))
+
+  bool is_atom = PORT_IS_A (LV2_ATOM__AtomPort);
+  bool is_control =
+    PORT_IS_A (LV2_CORE__ControlPort);
+  bool is_input = PORT_IS_A (LV2_CORE__InputPort);
+  bool is_output =
+    PORT_IS_A (LV2_CORE__OutputPort);
+  bool is_audio = PORT_IS_A (LV2_CORE__AudioPort);
+  bool is_cv = PORT_IS_A (LV2_CORE__CVPort);
+  bool is_event = PORT_IS_A (LV2_EVENT__EventPort);
+
+#undef PORT_IS_A
+
+  const LilvNode * port_node =
+    lilv_port_get_node (lilv_plugin, lilv_port);
+
   LilvNode * name_node =
-    lilv_port_get_name (
-      lv2_plugin->lilv_plugin,
-      lv2_port->lilv_port);
+    lilv_port_get_name (lilv_plugin, lilv_port);
   const char * name_str =
     lilv_node_as_string (name_node);
   if (port_exists && is_project)
@@ -190,60 +259,29 @@ create_port (
       PortFlow flow = 0;
 
       /* Set the lv2_port flow (input or output) */
-      if (lilv_port_is_a (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (LV2_CORE__InputPort)))
+      if (is_input)
         {
           flow = FLOW_INPUT;
         }
-      else if (lilv_port_is_a (
-                 lv2_plugin->lilv_plugin,
-                 lv2_port->lilv_port,
-                  PM_GET_NODE (
-                    LV2_CORE__OutputPort)))
+      else if (is_output)
         {
           flow = FLOW_OUTPUT;
         }
 
       /* Set type */
-      if (lilv_port_is_a (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (
-              LV2_CORE__ControlPort)))
+      if (is_control)
         {
           type = TYPE_CONTROL;
         }
-      else if (lilv_port_is_a (
-                 lv2_plugin->lilv_plugin,
-                 lv2_port->lilv_port,
-                 PM_GET_NODE (
-                   LV2_CORE__AudioPort)))
+      else if (is_audio)
         {
           type = TYPE_AUDIO;
         }
-      else if (lilv_port_is_a (
-                 lv2_plugin->lilv_plugin,
-                 lv2_port->lilv_port,
-                 PM_GET_NODE (
-                   LV2_CORE__CVPort)))
+      else if (is_cv)
         {
           type = TYPE_CV;
         }
-      else if (lilv_port_is_a (
-                lv2_plugin->lilv_plugin,
-                lv2_port->lilv_port,
-                 PM_GET_NODE (
-                   LV2_EVENT__EventPort)))
-        {
-          type = TYPE_EVENT;
-        }
-      else if (lilv_port_is_a (
-                lv2_plugin->lilv_plugin,
-                lv2_port->lilv_port,
-                 PM_GET_NODE (
-                   LV2_ATOM__AtomPort)))
+      else if (is_event || is_atom)
         {
           type = TYPE_EVENT;
         }
@@ -264,12 +302,12 @@ create_port (
   port->control = 0.0f;
   port->unsnapped_control = 0.0f;
 
+#define HAS_PROPERTY(x) \
+  lilv_port_has_property ( \
+    lilv_plugin, lilv_port, PM_GET_NODE (x))
+
   const bool optional =
-    lilv_port_has_property (
-      lv2_plugin->lilv_plugin,
-      lv2_port->lilv_port,
-      PM_GET_NODE (
-        LV2_CORE__connectionOptional));
+    HAS_PROPERTY (LV2_CORE__connectionOptional);
 
   PortIdentifier * pi =
     &lv2_port->port->id;
@@ -281,17 +319,11 @@ create_port (
         lv2_plugin, lv2_port));
 
   /* Set the lv2_port flow (input or output) */
-  if (lilv_port_is_a (
-        lv2_plugin->lilv_plugin,
-        lv2_port->lilv_port,
-        PM_GET_NODE (LV2_CORE__InputPort)))
+  if (is_input)
     {
       pi->flow = FLOW_INPUT;
     }
-  else if (lilv_port_is_a (
-             lv2_plugin->lilv_plugin,
-             lv2_port->lilv_port,
-             PM_GET_NODE (LV2_CORE__OutputPort)))
+  else if (is_output)
     {
       pi->flow = FLOW_OUTPUT;
       lv2_port->port_id.flow = FLOW_OUTPUT;
@@ -306,10 +338,7 @@ create_port (
     }
 
   /* Set control values */
-  if (lilv_port_is_a (
-        lv2_plugin->lilv_plugin,
-        lv2_port->lilv_port,
-        PM_GET_NODE (LV2_CORE__ControlPort)))
+  if (is_control)
     {
       pi->type = TYPE_CONTROL;
       lv2_port->port->control =
@@ -318,11 +347,7 @@ create_port (
       lv2_port->port->unsnapped_control =
         lv2_port->port->control;
       if (show_hidden ||
-          !lilv_port_has_property (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (
-              LV2_PORT_PROPS__notOnGUI)))
+          !HAS_PROPERTY (LV2_PORT_PROPS__notOnGUI))
         {
           Lv2Control * port_control =
             lv2_new_port_control (
@@ -336,51 +361,32 @@ create_port (
         }
 
       /* set port flags */
-      if (lilv_port_has_property (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (
-              LV2_PORT_PROPS__trigger)))
+      if (HAS_PROPERTY (LV2_PORT_PROPS__trigger))
         {
           pi->flags |= PORT_FLAG_TRIGGER;
         }
-      if (lilv_port_has_property (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (
-              LV2_CORE__freeWheeling)))
+      if (HAS_PROPERTY (LV2_CORE__freeWheeling))
         {
           pi->flags |= PORT_FLAG_FREEWHEEL;
         }
       if (lv2_plugin->enabled_in ==
             (int)
             lilv_port_get_index (
-              lv2_plugin->lilv_plugin,
-              lv2_port->lilv_port))
+              lilv_plugin, lilv_port))
         {
           pi->flags |= PORT_FLAG_PLUGIN_ENABLED;
           lv2_plugin->plugin->own_enabled_port =
             port;
         }
-      if (lilv_port_has_property (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (
-              LV2_CORE__reportsLatency)))
+      if (HAS_PROPERTY (LV2_CORE__reportsLatency))
         {
           pi->flags |= PORT_FLAG_REPORTS_LATENCY;
         }
-      if (lilv_port_has_property (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (LV2_CORE__toggled)))
+      if (HAS_PROPERTY (LV2_CORE__toggled))
         {
           pi->flags |= PORT_FLAG_TOGGLE;
         }
-      else if (lilv_port_has_property (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (LV2_CORE__integer)))
+      else if (HAS_PROPERTY (LV2_CORE__integer))
         {
           pi->flags |= PORT_FLAG_INTEGER;
         }
@@ -396,12 +402,10 @@ create_port (
       LilvNode * min;
       LilvNode * max;
       lilv_port_get_range (
-        lv2_plugin->lilv_plugin,
-        lv2_port->lilv_port, &def, &min, &max);
+        lilv_plugin, lilv_port, &def, &min, &max);
       if (max)
         {
-          port->maxf =
-            lilv_node_as_float (max);
+          port->maxf = lilv_node_as_float (max);
           lilv_node_free (max);
         }
       else
@@ -410,8 +414,7 @@ create_port (
         }
       if (min)
         {
-          port->minf =
-            lilv_node_as_float (min);
+          port->minf = lilv_node_as_float (min);
           lilv_node_free (min);
         }
       else
@@ -420,8 +423,7 @@ create_port (
         }
       if (def)
         {
-          port->deff =
-            lilv_node_as_float (def);
+          port->deff = lilv_node_as_float (def);
           lilv_node_free (def);
         }
       else
@@ -430,15 +432,13 @@ create_port (
         }
       port->zerof = port->minf;
 
+#define FIND_OBJECTS(x) \
+  lilv_world_find_nodes ( \
+    LILV_WORLD, port_node, PM_GET_NODE (x), NULL)
+
       /* set unit */
-      const LilvNode * port_node =
-        lilv_port_get_node (
-          lv2_plugin->lilv_plugin,
-          lv2_port->lilv_port);
       LilvNodes * units =
-        lilv_world_find_nodes (
-          LILV_WORLD, port_node,
-          PM_GET_NODE (LV2_UNITS__unit), NULL);
+        FIND_OBJECTS (LV2_UNITS__unit);
 
 #define SET_UNIT(caps,sc) \
   if (lilv_nodes_contains ( \
@@ -455,19 +455,15 @@ create_port (
       SET_UNIT (MS, ms);
       SET_UNIT (SECONDS, s);
 
+#undef SET_UNIT
+
       lilv_nodes_free (units);
     }
-  else if (lilv_port_is_a (
-             lv2_plugin->lilv_plugin,
-             lv2_port->lilv_port,
-             PM_GET_NODE (LV2_CORE__AudioPort)))
+  else if (is_audio)
     {
       pi->type = TYPE_AUDIO;
     }
-  else if (lilv_port_is_a (
-             lv2_plugin->lilv_plugin,
-             lv2_port->lilv_port,
-             PM_GET_NODE (LV2_CORE__CVPort)))
+  else if (is_cv)
     {
       LilvNode * def;
       LilvNode * min;
@@ -508,11 +504,7 @@ create_port (
       port->zerof = 0.f;
       pi->type = TYPE_CV;
     }
-  else if (lilv_port_is_a (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (
-              LV2_EVENT__EventPort)))
+  else if (is_event)
     {
       pi->type = TYPE_EVENT;
       if (!lv2_port->port->midi_events)
@@ -522,11 +514,7 @@ create_port (
         }
       lv2_port->old_api = true;
     }
-  else if (lilv_port_is_a (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_GET_NODE (
-              LV2_ATOM__AtomPort)))
+  else if (is_atom)
     {
       pi->type = TYPE_EVENT;
       if (!lv2_port->port->midi_events)
@@ -557,13 +545,131 @@ create_port (
     }
   pi->flags |= PORT_FLAG_PLUGIN_CONTROL;
 
-  if (lilv_port_has_property (
-        lv2_plugin->lilv_plugin,
-        lv2_port->lilv_port,
-        PM_GET_NODE (
-          LV2_PORT_PROPS__notOnGUI)))
+  if (HAS_PROPERTY (LV2_PORT_PROPS__notOnGUI))
     {
       pi->flags |= PORT_FLAG_NOT_ON_GUI;
+    }
+
+  if (HAS_PROPERTY (LV2_CORE__isSideChain))
+    {
+      g_debug ("%s is sidechain", pi->label);
+      pi->flags |= PORT_FLAG_SIDECHAIN;
+    }
+  LilvNodes * groups =
+    lilv_port_get_value (
+      lv2_plugin->lilv_plugin,
+      lv2_port->lilv_port,
+      PM_GET_NODE (
+        LV2_PORT_GROUPS__group));
+  if (lilv_nodes_size (groups) > 0)
+    {
+      const LilvNode * group =
+        lilv_nodes_get_first (groups);
+
+      /* get the name of the port group */
+      char * port_group_label =
+        get_port_group_label (group);
+      g_debug (
+        "'%s' has port group '%s'",
+        pi->label, port_group_label);
+      g_free (port_group_label);
+
+      /* get sideChainOf */
+      LilvNode * side_chain_of =
+        lilv_world_get (
+          LILV_WORLD, group,
+          PM_GET_NODE (
+            LV2_PORT_GROUPS__sideChainOf),
+          NULL);
+      if (side_chain_of)
+        {
+          g_debug (
+            "'%s' is sidechain", pi->label);
+          lilv_node_free (side_chain_of);
+          pi->flags |= PORT_FLAG_SIDECHAIN;
+        }
+
+      /* TODO */
+#if 0
+      /* get all designations we are interested
+       * in (e.g., "right") */
+      LilvNodes * designations =
+        lilv_port_get_value (
+          lilv_plugin, lilv_port,
+          PM_GET_NODE (LV2_CORE__designation));
+      if (lilv_nodes_size (designations) > 0)
+        {
+          /* get all pg:elements of the pg:group */
+          LilvNodes * group_childs =
+            lilv_world_find_nodes (
+              LILV_WORLD, group,
+              PM_GET_NODE (
+                LV2_PORT_GROUPS__element), NULL);
+          if (lilv_nodes_size (group_childs) > 0)
+            {
+              /* iterate over all port
+               * designations */
+              LILV_FOREACH (nodes, i, designations)
+                {
+                  const LilvNode * designation =
+                    lilv_nodes_get (
+                      designations, i);
+                  const char * designation_str =
+                    lilv_node_as_uri (
+                      designation);
+                  g_debug (
+                    "'%s' designation: <%s>",
+                    pi->label, designation_str);
+
+                  /* match the lv2:designation's
+                   * element against the
+                   * port-group's element */
+                  LILV_FOREACH (
+                    nodes, j, group_childs)
+                    {
+                      const LilvNode * group_el =
+                        lilv_nodes_get (
+                          group_childs, j);
+                      LilvNodes * elem =
+                        lilv_world_find_nodes (
+                          LILV_WORLD, group_el,
+                          PM_GET_NODE (
+                            LV2_CORE__designation),
+                          designation);
+
+                      /*if found, look up the
+                       * index (channel number of
+                       * the pg:Element */
+                      if (lilv_nodes_size (elem) >
+                            0)
+                        {
+                          LilvNodes * idx =
+                            lilv_world_find_nodes (
+                              LILV_WORLD,
+                              lilv_nodes_get_first (
+                                elem),
+                              PM_GET_NODE (
+                                LV2_CORE__index),
+                              NULL);
+                          if (lilv_node_is_int (
+                                lilv_nodes_get_first (idx)))
+                            {
+                              int group_channel =
+                                lilv_node_as_int (
+                                  lilv_nodes_get_first (idx));
+                              g_debug (
+                                "group chan %d",
+                                group_channel);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+      lilv_nodes_free (designations);
+#endif
+      lilv_nodes_free (groups);
     }
 
   LilvNode * min_size =
@@ -581,6 +687,8 @@ create_port (
         }
       lilv_node_free (min_size);
     }
+
+#undef HAS_PROPERTY
 
   return 0;
 }

@@ -51,11 +51,24 @@ automation_tracklist_init_loaded (
     }
 }
 
+Track *
+automation_tracklist_get_track (
+  AutomationTracklist * self)
+{
+  return TRACKLIST->tracks[self->track_pos];
+}
+
 void
 automation_tracklist_add_at (
   AutomationTracklist * self,
   AutomationTrack *     at)
 {
+  g_debug (
+    "[track %d atl] adding automation track at: "
+    "%d '%s'",
+    self->track_pos, self->num_ats,
+    at->port_id.label);
+
   array_double_size_if_full (
     self->ats, self->num_ats, self->ats_size,
     AutomationTrack *);
@@ -495,8 +508,9 @@ automation_tracklist_remove_at (
   array_delete_return_pos (
     self->ats, self->num_ats, at, deleted_idx);
   g_debug (
-    "%s: removing automation track at: %d (%s)",
-    __func__, deleted_idx, at->port_id.label);
+    "[track %d atl] removing automation track at: "
+    "%d '%s'",
+    self->track_pos, deleted_idx, at->port_id.label);
 
   /* move automation track regions for automation
    * tracks after the deleted one*/
@@ -548,6 +562,38 @@ automation_tracklist_remove_at (
       EVENTS_PUSH (
         ET_AUTOMATION_TRACKLIST_AT_REMOVED, self);
     }
+}
+
+/**
+ * Prints info about all the automation tracks.
+ *
+ * Used for debugging.
+ */
+void
+automation_tracklist_print_ats (
+  AutomationTracklist * self)
+{
+  GString * g_str =  g_string_new (NULL);
+
+  g_string_append_printf (
+    g_str,
+    "Automation tracklist (track %d)\n",
+    self->track_pos);
+
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      AutomationTrack * at = self->ats[i];
+
+      g_string_append_printf (
+        g_str, "[%d] '%s' (sym '%s')\n",
+        i, at->port_id.label, at->port_id.sym);
+    }
+  g_string_erase (
+    g_str, (gssize) (g_str->len - 1), -1);
+
+  char * str = g_string_free (g_str, false);
+  g_message ("%s", str);
+  g_free (str);
 }
 
 /**
