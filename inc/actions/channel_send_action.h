@@ -33,6 +33,7 @@ typedef enum ChannelSendActionType
 {
   CHANNEL_SEND_ACTION_CONNECT_STEREO,
   CHANNEL_SEND_ACTION_CONNECT_MIDI,
+  CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
   CHANNEL_SEND_ACTION_CHANGE_AMOUNT,
   CHANNEL_SEND_ACTION_CHANGE_PORTS,
   CHANNEL_SEND_ACTION_DISCONNECT,
@@ -45,8 +46,10 @@ static const cyaml_strval_t
     CHANNEL_SEND_ACTION_CONNECT_STEREO },
   { "Connect MIDI",
     CHANNEL_SEND_ACTION_CONNECT_MIDI },
+  { "Connect sidechain",
+    CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN },
   { "Change amount",
-    CHANNEL_SEND_ACTION_CHANGE_PORTS },
+    CHANNEL_SEND_ACTION_CHANGE_AMOUNT },
   { "Change ports",
     CHANNEL_SEND_ACTION_CHANGE_PORTS },
   { "Disconnect",
@@ -102,14 +105,14 @@ channel_send_action_init_loaded (
 /**
  * Creates a new action.
  *
- * @param midi MIDI port, if connecting MIDI.
+ * @param port MIDI port, if connecting MIDI.
  * @param stereo Stereo ports, if connecting audio.
  */
 UndoableAction *
 channel_send_action_new (
   ChannelSend *         send,
   ChannelSendActionType type,
-  Port *                midi,
+  Port *                port,
   StereoPorts *         stereo,
   float                 amount);
 
@@ -129,6 +132,12 @@ channel_send_action_new (
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CONNECT_STEREO, NULL, \
     stereo, 0.f)
+
+#define channel_send_action_new_connect_sidechain( \
+  send,stereo) \
+  channel_send_action_new ( \
+    send, CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN, \
+    NULL, stereo, 0.f)
 
 #define channel_send_action_new_change_amount( \
   send,amt) \

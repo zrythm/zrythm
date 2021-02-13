@@ -373,6 +373,28 @@ plugin_clone (
   Plugin * pl,
   bool     src_is_project);
 
+void
+plugin_get_full_port_group_designation (
+  Plugin *     self,
+  const char * port_group,
+  char *       buf);
+
+Port *
+plugin_get_port_in_group (
+  Plugin *     self,
+  const char * port_group,
+  bool         left);
+
+/**
+ * Find corresponding port in the same port group
+ * (eg, if this is left, find right and vice
+ * versa).
+ */
+Port *
+plugin_get_port_in_same_group (
+  Plugin * self,
+  Port *   port);
+
 /**
  * Activates or deactivates the plugin.
  *

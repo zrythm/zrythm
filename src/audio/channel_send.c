@@ -70,6 +70,17 @@ channel_send_get_track (
 }
 
 /**
+ * Returns whether the channel send target is a
+ * sidechain port (rather than a target track).
+ */
+bool
+channel_send_is_target_sidechain (
+  ChannelSend * self)
+{
+  return !self->is_empty && self->is_sidechain;
+}
+
+/**
  * Gets the target track.
  */
 Track *
@@ -100,6 +111,30 @@ channel_send_get_target_track (
     }
 
   g_return_val_if_reached (NULL);
+}
+
+/**
+ * Gets the target sidechain port.
+ *
+ * Returned StereoPorts instance must be free'd.
+ */
+StereoPorts *
+channel_send_get_target_sidechain (
+  ChannelSend * self)
+{
+  g_return_val_if_fail (self->is_sidechain, NULL);
+
+  Port * l =
+    port_find_from_identifier (
+      &self->dest_l_id);
+  Port * r =
+    port_find_from_identifier (
+      &self->dest_r_id);
+
+  StereoPorts * sp =
+    stereo_ports_new_from_existing (l, r);
+
+  return sp;
 }
 
 static void
@@ -214,7 +249,8 @@ channel_send_connect_stereo (
   ChannelSend * self,
   StereoPorts * stereo,
   Port *        l,
-  Port *        r)
+  Port *        r,
+  bool          sidechain)
 {
   channel_send_disconnect (self);
 
@@ -252,6 +288,7 @@ channel_send_connect_stereo (
     }
 
   self->is_empty = false;
+  self->is_sidechain = sidechain;
 
   /* set multipliers */
   update_connections (self);
@@ -330,19 +367,27 @@ channel_send_disconnect (
   g_message ("disconnecting send %p", self);
 
   Track * track = channel_send_get_track (self);
-  switch (track->out_signal_type)
+  if (self->is_sidechain)
     {
-    case TYPE_AUDIO:
       disconnect_audio (self);
-      break;
-    case TYPE_EVENT:
-      disconnect_midi (self);
-      break;
-    default:
-      break;
+    }
+  else
+    {
+      switch (track->out_signal_type)
+        {
+        case TYPE_AUDIO:
+          disconnect_audio (self);
+          break;
+        case TYPE_EVENT:
+          disconnect_midi (self);
+          break;
+        default:
+          break;
+        }
     }
 
   self->is_empty = true;
+  self->is_sidechain = false;
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
@@ -393,17 +438,27 @@ channel_send_get_dest_name (
 
       Port * port =
         port_find_from_identifier (dest);
-      Track * track;
-      switch (dest->owner_type)
+      if (self->is_sidechain)
         {
-        case PORT_OWNER_TYPE_TRACK_PROCESSOR:
-          track = port_get_track (port, true);
-          sprintf (
-            buf, _("%s input"),
-            track->name);
-          break;
-        default:
-          break;
+          Plugin * pl =
+            port_get_plugin (port, true);
+          plugin_get_full_port_group_designation (
+            pl, port->id.port_group, buf);
+        }
+      else
+        {
+          Track * track;
+          switch (dest->owner_type)
+            {
+            case PORT_OWNER_TYPE_TRACK_PROCESSOR:
+              track = port_get_track (port, true);
+              sprintf (
+                buf, _("%s input"),
+                track->name);
+              break;
+            default:
+              break;
+            }
         }
     }
 }

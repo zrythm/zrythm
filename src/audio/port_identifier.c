@@ -43,6 +43,7 @@ port_identifier_copy (
   plugin_identifier_copy (
     &dest->plugin_id, &src->plugin_id);
   dest->ext_port_id = g_strdup (src->ext_port_id);
+  dest->port_group = g_strdup (src->port_group);
   dest->track_pos = src->track_pos;
   dest->port_index = src->port_index;
 }
@@ -62,6 +63,8 @@ port_identifier_is_equal (
     dest->flow == src->flow &&
     dest->flags == src->flags &&
     dest->track_pos == src->track_pos &&
+    string_is_equal (
+      dest->port_group, src->port_group) &&
     string_is_equal (
       dest->ext_port_id, src->ext_port_id);
   if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)

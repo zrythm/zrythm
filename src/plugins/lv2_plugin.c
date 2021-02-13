@@ -567,12 +567,11 @@ create_port (
         lilv_nodes_get_first (groups);
 
       /* get the name of the port group */
-      char * port_group_label =
+      pi->port_group =
         get_port_group_label (group);
       g_debug (
         "'%s' has port group '%s'",
-        pi->label, port_group_label);
-      g_free (port_group_label);
+        pi->label, pi->port_group);
 
       /* get sideChainOf */
       LilvNode * side_chain_of =
@@ -589,38 +588,55 @@ create_port (
           pi->flags |= PORT_FLAG_SIDECHAIN;
         }
 
-      /* TODO */
-#if 0
       /* get all designations we are interested
        * in (e.g., "right") */
       LilvNodes * designations =
         lilv_port_get_value (
           lilv_plugin, lilv_port,
           PM_GET_NODE (LV2_CORE__designation));
+      /* get all pg:elements of the pg:group */
+      LilvNodes * group_childs =
+        lilv_world_find_nodes (
+          LILV_WORLD, group,
+          PM_GET_NODE (
+            LV2_PORT_GROUPS__element), NULL);
       if (lilv_nodes_size (designations) > 0)
         {
-          /* get all pg:elements of the pg:group */
-          LilvNodes * group_childs =
-            lilv_world_find_nodes (
-              LILV_WORLD, group,
-              PM_GET_NODE (
-                LV2_PORT_GROUPS__element), NULL);
-          if (lilv_nodes_size (group_childs) > 0)
+          /* iterate over all port
+           * designations */
+          LILV_FOREACH (nodes, i, designations)
             {
-              /* iterate over all port
-               * designations */
-              LILV_FOREACH (nodes, i, designations)
+              const LilvNode * designation =
+                lilv_nodes_get (
+                  designations, i);
+              const char * designation_str =
+                lilv_node_as_uri (
+                  designation);
+              g_debug (
+                "'%s' designation: <%s>",
+                pi->label, designation_str);
+              if (lilv_node_equals (
+                    designation,
+                    PM_GET_NODE (
+                      LV2_PORT_GROUPS__left)))
                 {
-                  const LilvNode * designation =
-                    lilv_nodes_get (
-                      designations, i);
-                  const char * designation_str =
-                    lilv_node_as_uri (
-                      designation);
-                  g_debug (
-                    "'%s' designation: <%s>",
-                    pi->label, designation_str);
+                  pi->flags |=
+                    PORT_FLAG_STEREO_L;
+                  g_debug ("left port");
+                }
+              if (lilv_node_equals (
+                    designation,
+                    PM_GET_NODE (
+                      LV2_PORT_GROUPS__right)))
+                {
+                  pi->flags |=
+                    PORT_FLAG_STEREO_R;
+                  g_debug ("right port");
+                }
 
+              if (lilv_nodes_size (group_childs) >
+                    0)
+                {
                   /* match the lv2:designation's
                    * element against the
                    * port-group's element */
@@ -663,12 +679,10 @@ create_port (
                             }
                         }
                     }
-
                 }
             }
         }
       lilv_nodes_free (designations);
-#endif
       lilv_nodes_free (groups);
     }
 

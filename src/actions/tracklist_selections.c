@@ -490,7 +490,7 @@ reconnect_send (
         port_find_from_identifier (
           &send->dest_r_id);
       channel_send_connect_stereo (
-        send, NULL, l, r);
+        send, NULL, l, r, send->is_sidechain);
     }
   else if (src->out_signal_type == TYPE_EVENT)
     {

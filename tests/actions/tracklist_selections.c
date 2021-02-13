@@ -1185,7 +1185,7 @@ _test_move_tracks (
     fx_track->processor->stereo_in;
   channel_send_connect_stereo (
     send, fx_track->processor->stereo_in, NULL,
-    NULL);
+    NULL, false);
 
   /* check that the sends are correct */
   g_assert_true (!send->is_empty);

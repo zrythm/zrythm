@@ -332,6 +332,10 @@ typedef struct PortIdentifier
   /** Identifier of plugin. */
   PluginIdentifier    plugin_id;
 
+  /** Port group this port is part of (only
+   * applicable for LV2 plugin ports). */
+  char *              port_group;
+
   /** ExtPort ID (type + full name), if hw port. */
   char *              ext_port_id;
 
@@ -384,6 +388,8 @@ port_identifier_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     PortIdentifier, plugin_id,
     plugin_identifier_fields_schema),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier, port_group),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PortIdentifier, ext_port_id),
   YAML_FIELD_INT (

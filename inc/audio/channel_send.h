@@ -71,6 +71,9 @@ typedef struct ChannelSend
   /** If the send is currently empty. */
   bool           is_empty;
 
+  /** If the send is a sidechain. */
+  bool           is_sidechain;
+
   /** Destination L port. */
   PortIdentifier dest_l_id;
 
@@ -85,16 +88,12 @@ typedef struct ChannelSend
 static const cyaml_schema_field_t
 channel_send_fields_schema[] =
 {
-  YAML_FIELD_INT (
-    ChannelSend, track_pos),
-  YAML_FIELD_INT (
-    ChannelSend, slot),
-  YAML_FIELD_FLOAT (
-    ChannelSend, amount),
-  YAML_FIELD_INT (
-    ChannelSend, on),
-  YAML_FIELD_INT (
-    ChannelSend, is_empty),
+  YAML_FIELD_INT (ChannelSend, track_pos),
+  YAML_FIELD_INT (ChannelSend, slot),
+  YAML_FIELD_FLOAT (ChannelSend, amount),
+  YAML_FIELD_INT (ChannelSend, on),
+  YAML_FIELD_INT (ChannelSend, is_empty),
+  YAML_FIELD_INT (ChannelSend, is_sidechain),
   YAML_FIELD_MAPPING_EMBEDDED (
     ChannelSend, dest_l_id,
     port_identifier_fields_schema),
@@ -134,10 +133,27 @@ channel_send_get_track (
   ChannelSend * self);
 
 /**
+ * Returns whether the channel send target is a
+ * sidechain port (rather than a target track).
+ */
+bool
+channel_send_is_target_sidechain (
+  ChannelSend * self);
+
+/**
  * Gets the target track.
  */
 Track *
 channel_send_get_target_track (
+  ChannelSend * self);
+
+/**
+ * Gets the target sidechain port.
+ *
+ * Returned StereoPorts instance must be free'd.
+ */
+StereoPorts *
+channel_send_get_target_sidechain (
   ChannelSend * self);
 
 /**
@@ -166,7 +182,8 @@ channel_send_connect_stereo (
   ChannelSend * self,
   StereoPorts * stereo,
   Port *        l,
-  Port *        r);
+  Port *        r,
+  bool          sidechain);
 
 /**
  * Connects a send to a midi port.

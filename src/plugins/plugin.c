@@ -878,6 +878,112 @@ plugin_find (
   return ret;
 }
 
+void
+plugin_get_full_port_group_designation (
+  Plugin *     self,
+  const char * port_group,
+  char *       buf)
+{
+  Track * track = plugin_get_track (self);
+  g_return_if_fail (track);
+  sprintf (
+    buf, "%s/%s/%s",
+    track->name, self->descr->name, port_group);
+}
+
+Port *
+plugin_get_port_in_group (
+  Plugin *     self,
+  const char * port_group,
+  bool         left)
+{
+  for (int i = 0; i < self->num_in_ports; i++)
+    {
+      Port * port = self->in_ports[i];
+      if (string_is_equal (
+            port->id.port_group, port_group) &&
+          port->id.flags &
+            (left ?
+               PORT_FLAG_STEREO_L :
+               PORT_FLAG_STEREO_R))
+        {
+          return port;
+        }
+    }
+  for (int i = 0; i < self->num_out_ports; i++)
+    {
+      Port * port = self->out_ports[i];
+      if (string_is_equal (
+            port->id.port_group, port_group) &&
+          port->id.flags &
+            (left ?
+               PORT_FLAG_STEREO_L :
+               PORT_FLAG_STEREO_R))
+        {
+          return port;
+        }
+    }
+
+  return NULL;
+}
+
+/**
+ * Find corresponding port in the same port group
+ * (eg, if this is left, find right and vice
+ * versa).
+ */
+Port *
+plugin_get_port_in_same_group (
+  Plugin * self,
+  Port *   port)
+{
+  if (!port->id.port_group)
+    {
+      g_message (
+        "port %s has no port group",
+        port->id.label);
+      return NULL;
+    }
+
+  int num_ports = 0;
+  Port ** ports = NULL;
+  if (port->id.flow == FLOW_INPUT)
+    {
+      num_ports = self->num_in_ports;
+      ports = self->in_ports;
+    }
+  else
+    {
+      num_ports = self->num_out_ports;
+      ports = self->out_ports;
+    }
+
+  for (int i = 0; i < num_ports; i++)
+    {
+      Port * cur_port = ports[i];
+
+      if (port == cur_port)
+        {
+          continue;
+        }
+
+      if (string_is_equal (
+            port->id.port_group,
+            cur_port->id.port_group) &&
+          ((cur_port->id.flags &
+              PORT_FLAG_STEREO_L &&
+            port->id.flags & PORT_FLAG_STEREO_R) ||
+           (cur_port->id.flags &
+              PORT_FLAG_STEREO_R &&
+            port->id.flags & PORT_FLAG_STEREO_L)))
+        {
+          return cur_port;
+        }
+    }
+
+  return NULL;
+}
+
 char *
 plugin_generate_window_title (
   Plugin * plugin)

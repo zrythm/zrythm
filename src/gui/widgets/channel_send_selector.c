@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -54,7 +55,10 @@ typedef struct ChannelSendTarget
   ChannelSendTargetType type;
 
   int                   track_pos;
+
   PluginIdentifier      pl_id;
+
+  char *                port_group;
 } ChannelSendTarget;
 
 static Track *
@@ -65,6 +69,27 @@ get_track_from_target (
     return NULL;
 
   return TRACKLIST->tracks[target->track_pos];
+}
+
+static StereoPorts *
+get_sidechain_from_target (
+  ChannelSendTarget * target)
+{
+  if (target->type != TARGET_TYPE_PLUGIN_SIDECHAIN)
+    {
+      return NULL;
+    }
+
+  Plugin * pl = plugin_find (&target->pl_id);
+  g_return_val_if_fail (pl, NULL);
+  Port * l =
+    plugin_get_port_in_group (
+      pl, target->port_group, true);
+  Port * r =
+    plugin_get_port_in_group (
+      pl, target->port_group, false);
+  return
+    stereo_ports_new_from_existing (l, r);
 }
 
 #if 0
@@ -104,8 +129,8 @@ on_selection_changed (
 
   Track * src_track =
     channel_send_get_track (send);
-  Track * dest_track =
-    get_track_from_target (target);
+  Track * dest_track = NULL;
+  StereoPorts * dest_sidechain = NULL;
   UndoableAction * ua = NULL;
   switch (target->type)
     {
@@ -119,6 +144,8 @@ on_selection_changed (
         }
       break;
     case TARGET_TYPE_TRACK:
+      dest_track =
+        get_track_from_target (target);
       switch (src_track->out_signal_type)
         {
         case TYPE_EVENT:
@@ -157,6 +184,24 @@ on_selection_changed (
         }
       break;
     case TARGET_TYPE_PLUGIN_SIDECHAIN:
+      {
+        dest_sidechain =
+          get_sidechain_from_target (target);
+        if (dest_sidechain &&
+            (send->is_empty ||
+             !send->is_sidechain ||
+             !port_identifier_is_equal (
+               &self->send_widget->send->dest_l_id,
+               &dest_sidechain->l->id)))
+          {
+            ua =
+              channel_send_action_new_connect_sidechain (
+                self->send_widget->send,
+                dest_sidechain);
+            undo_manager_perform (UNDO_MANAGER, ua);
+          }
+        object_zero_and_free (dest_sidechain);
+      }
       break;
     }
 
@@ -192,13 +237,14 @@ setup_treeview (
   int select_idx = 0;
   int count = 1;
 
+  /* setup tracks */
   Track * track =
     channel_send_get_track (self->send_widget->send);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * target_track = TRACKLIST->tracks[i];
 
-      g_message ("target %s", target_track->name);
+      g_debug ("target %s", target_track->name);
 
       /* skip tracks with non-matching signal types */
       if (target_track == track ||
@@ -233,7 +279,116 @@ setup_treeview (
       count++;
     }
 
-  /* TODO plugin sidechain inputs */
+  /* setup plugin sidechain inputs */
+  g_debug ("setting up sidechains");
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * target_track = TRACKLIST->tracks[i];
+
+      if (target_track == track ||
+          !track_type_has_channel (
+            target_track->type))
+        {
+          continue;
+        }
+
+      Channel * ch = target_track->channel;
+
+      Plugin * plugins[300];
+      int num_plugins =
+        channel_get_plugins (ch, plugins);
+
+      for (int j = 0; j < num_plugins; j++)
+        {
+          Plugin * pl = plugins[j];
+          g_debug ("plugin %s", pl->descr->name);
+
+          for (int k = 0; k < pl->num_in_ports; k++)
+            {
+              Port * port = pl->in_ports[k];
+              g_debug ("port %s", port->id.label);
+
+              if (!(port->id.flags &
+                     PORT_FLAG_SIDECHAIN) ||
+                  port->id.type != TYPE_AUDIO ||
+                  !port->id.port_group ||
+                  !(port->id.flags &
+                      PORT_FLAG_STEREO_L))
+                {
+                  continue;
+                }
+
+              /* find corresponding port in the same
+               * port group (e.g., if
+               * this is left, find right and vice
+               * versa) */
+              Port * other_channel =
+                plugin_get_port_in_same_group (
+                  pl, port);
+              if (!other_channel)
+                {
+                  continue;
+                }
+              g_debug (
+                "other channel %s",
+                other_channel->id.label);
+
+              Port * l = NULL, * r = NULL;
+              if (port->id.flags &
+                    PORT_FLAG_STEREO_L &&
+                  other_channel->id.flags &
+                    PORT_FLAG_STEREO_R)
+                {
+                  l = port;
+                  r = other_channel;
+                }
+              if (!l || !r)
+                {
+                  continue;
+                }
+
+              /* create target */
+              target =
+                object_new (ChannelSendTarget);
+              target->type =
+                TARGET_TYPE_PLUGIN_SIDECHAIN;
+              target->track_pos = target_track->pos;
+              target->pl_id = pl->id;
+              target->port_group =
+                g_strdup (l->id.port_group);
+
+              char designation[1200];
+              plugin_get_full_port_group_designation (
+                pl, port->id.port_group,
+                designation);
+
+              /* add it to list */
+              gtk_list_store_append (
+                list_store, &iter);
+              gtk_list_store_set (
+                list_store, &iter,
+                0, "media-album-track",
+                1, designation,
+                2, target,
+                -1);
+
+              if (channel_send_is_target_sidechain (
+                    self->send_widget->send))
+                {
+                  StereoPorts * sp =
+                    channel_send_get_target_sidechain (
+                      self->send_widget->send);
+                  if (sp->l == l &&
+                      sp->r == r)
+                    {
+                      select_idx = count;
+                    }
+                  object_zero_and_free (sp);
+                }
+              count++;
+            }
+        }
+    }
 
   self->model = GTK_TREE_MODEL (list_store);
   gtk_tree_view_set_model (

@@ -39,14 +39,14 @@ channel_send_action_init_loaded (
 /**
  * Creates a new action.
  *
- * @param midi MIDI port, if connecting MIDI.
+ * @param port MIDI port, if connecting MIDI.
  * @param stereo Stereo ports, if connecting audio.
  */
 UndoableAction *
 channel_send_action_new (
   ChannelSend *         send,
   ChannelSendActionType type,
-  Port *                midi,
+  Port *                port,
   StereoPorts *         stereo,
   float                 amount)
 {
@@ -60,9 +60,10 @@ channel_send_action_new (
   self->send_after = channel_send_clone (send);
   self->send_after->amount = amount;
 
-  if (midi)
+  if (port &&
+      type == CHANNEL_SEND_ACTION_CONNECT_MIDI)
     {
-      self->send_after->dest_midi_id = midi->id;
+      self->send_after->dest_midi_id = port->id;
     }
   if (stereo)
     {
@@ -113,7 +114,9 @@ connect_or_disconnect (
                   &self->send_after->dest_r_id :
                   &self->send_before->dest_r_id);
             channel_send_connect_stereo (
-              send, NULL, l, r);
+              send, NULL, l, r,
+              self->type ==
+                CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN);
           }
           break;
         default:
@@ -135,6 +138,7 @@ channel_send_action_do (
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
+    case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
       connect_or_disconnect (self, true, true);
       break;
     case CHANNEL_SEND_ACTION_DISCONNECT:
@@ -168,6 +172,7 @@ channel_send_action_undo (
     {
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
+    case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
       connect_or_disconnect (self, false, true);
       break;
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
@@ -191,7 +196,23 @@ char *
 channel_send_action_stringize (
   ChannelSendAction * self)
 {
-  return g_strdup (_("Channel send connection"));
+  switch (self->type)
+    {
+    case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
+      return g_strdup (_("Connect sidechain"));
+    case CHANNEL_SEND_ACTION_CONNECT_STEREO:
+      return g_strdup (_("Connect stereo"));
+    case CHANNEL_SEND_ACTION_CONNECT_MIDI:
+      return g_strdup (_("Connect MIDI"));
+    case CHANNEL_SEND_ACTION_DISCONNECT:
+      return g_strdup (_("Disconnect"));
+    case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
+      return g_strdup (_("Change amount"));
+    case CHANNEL_SEND_ACTION_CHANGE_PORTS:
+      return g_strdup (_("Change ports"));
+    }
+  g_return_val_if_reached (
+    g_strdup (_("Channel send connection")));
 }
 
 void
