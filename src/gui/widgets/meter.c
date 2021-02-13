@@ -145,6 +145,9 @@ meter_draw_cb (
     height - peak_px);
   cairo_stroke (cr);
 
+  self->last_meter_val = self->meter_val;
+  self->last_meter_peak = self->meter_peak;
+
   return FALSE;
 }
 
@@ -172,7 +175,13 @@ tick_cb (
   GdkFrameClock * frame_clock,
   MeterWidget * self)
 {
-  gtk_widget_queue_draw (widget);
+  if (!math_floats_equal (
+        self->meter_val, self->last_meter_val) ||
+      !math_floats_equal (
+        self->meter_peak, self->last_meter_peak))
+    {
+      gtk_widget_queue_draw (widget);
+    }
 
   return G_SOURCE_CONTINUE;
 }

@@ -52,6 +52,11 @@ typedef struct _MeterWidget
   float                  meter_val;
   float                  meter_peak;
 
+  /** Caches of last drawn values so that meters
+   * are redrawn only when there are changes. */
+  float                  last_meter_val;
+  float                  last_meter_peak;
+
   /** ID of the source function. */
   guint                  source_id;
 } MeterWidget;
