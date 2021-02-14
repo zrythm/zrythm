@@ -40,6 +40,7 @@
 #include "audio/channel.h"
 #include "audio/exporter.h"
 #include "audio/midi_event.h"
+#include "audio/midi_file.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
@@ -413,9 +414,9 @@ midi_region_new_from_midi_file (
   g_return_val_if_fail (mf, NULL);
 
   char str[128];
+  char txt[60000];
   int ev;
   MIDI_MSG msg;
-  int i, iNum;
   unsigned int j;
   Position pos, global_pos;
   MidiNote * mn;
@@ -429,19 +430,30 @@ midi_region_new_from_midi_file (
     lane_pos, idx_inside_lane);
 
   midiReadInitMessage (&msg);
-  iNum = midiReadGetNumTracks(mf);
+  int num_tracks = midiReadGetNumTracks (mf);
   double ppqn = (double) midiFileGetPPQN (mf);
   double transport_ppqn =
     transport_get_ppqn (TRANSPORT);
 
-  for(i = 0; i < iNum; i++)
+  int actual_iter = 0;
+
+  for (int i = 0; i < num_tracks; i++)
     {
-      if (i != idx)
-        continue;
+      if (!midi_file_track_has_data (abs_path, i))
+        {
+          continue;
+        }
+
+      if (actual_iter != idx)
+        {
+          actual_iter++;
+          continue;
+        }
 
       g_message (
         "%s: reading MIDI Track %d", __func__, i);
-      while(midiReadGetNextMessage (mf, i, &msg))
+      g_return_val_if_fail (i < 1000, NULL);
+      while (midiReadGetNextMessage (mf, i, &msg))
         {
           /* convert time to zrythm time */
           ticks =
@@ -715,7 +727,6 @@ handle_note_off:
             }
           else
             {
-              char txt[600];
               char tmp[100];
               strcpy (txt, "[");
               if (msg.bImpliedMsg)
@@ -733,6 +744,11 @@ handle_note_off:
               strcat (txt, "]");
               g_debug ("%s", txt);
             }
+        }
+
+      if (actual_iter == idx)
+        {
+          break;
         }
     }
 
@@ -763,7 +779,9 @@ handle_note_off:
     position_is_before (
       &self->base.pos, &self->base.end_pos), NULL);
 
-  g_message ("%s: done", __func__);
+  g_message (
+    "%s: done ~ %d MIDI notes read", __func__,
+    self->num_midi_notes);
 
   return self;
 }

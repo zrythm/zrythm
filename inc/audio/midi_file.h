@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,8 @@
 #ifndef __AUDIO_MIDI_FILE_H__
 #define __AUDIO_MIDI_FILE_H__
 
+#include "ext/midilib/src/midifile.h"
+
 #include <stdbool.h>
 
 /**
@@ -33,6 +35,15 @@
  *
  * @{
  */
+
+/**
+ * Returns whether the given track in the midi file
+ * has data.
+ */
+bool
+midi_file_track_has_data (
+  const char * abs_path,
+  int          track_idx);
 
 /**
  * Returns the number of tracks in the MIDI file.

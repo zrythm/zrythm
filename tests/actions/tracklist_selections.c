@@ -80,16 +80,13 @@ test_create_from_midi_file (void)
 
   char * midi_file;
 
-  /* TODO this should pass in the future */
-#if 0
   midi_file =
     g_build_filename (
       TESTS_SRCDIR,
       "1_empty_track_1_track_with_data.mid",
       NULL);
-  test_num_tracks_with_file (midi_file, 2);
+  test_num_tracks_with_file (midi_file, 1);
   g_free (midi_file);
-#endif
 
   midi_file =
     g_build_filename (
@@ -102,6 +99,13 @@ test_create_from_midi_file (void)
   g_assert_cmpint (
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
       lanes[0]->regions[0]->num_midi_notes, ==, 3);
+
+  midi_file =
+    g_build_filename (
+      TESTS_SRCDIR, "those_who_remain.mid",
+      NULL);
+  test_num_tracks_with_file (midi_file, 1);
+  g_free (midi_file);
 
   test_helper_zrythm_cleanup ();
 }
