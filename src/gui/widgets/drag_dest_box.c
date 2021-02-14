@@ -521,19 +521,17 @@ drag_dest_box_widget_new (
 
   self->type = type;
 
-  if (type == DRAG_DEST_BOX_TYPE_MIXER)
+  switch (type)
     {
+    case DRAG_DEST_BOX_TYPE_MIXER:
+    case DRAG_DEST_BOX_TYPE_MODULATORS:
       gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        20,
-        -1);
-    }
-  else if (type == DRAG_DEST_BOX_TYPE_TRACKLIST)
-    {
+        GTK_WIDGET (self), 160, -1);
+      break;
+    case DRAG_DEST_BOX_TYPE_TRACKLIST:
       gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        -1,
-        160);
+        GTK_WIDGET (self), -1, 160);
+      break;
     }
 
   /* make expandable */
