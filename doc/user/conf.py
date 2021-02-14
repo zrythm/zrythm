@@ -168,6 +168,7 @@ html_context = {
                  ('en', 'English'),
                  ('en_GB', 'English UK'),
                  ('es', 'Español'),
+                 ('fa', 'فارسی'),
                  ('fr', 'Français'),
                  ('gl', 'Galego'),
                  ('it', 'Italiano'),

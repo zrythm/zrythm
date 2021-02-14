@@ -265,7 +265,7 @@ Args:
            "language"
            '("af_ZA" "ar" "de" "en"
              "en_GB" "el"
-             "es" "fr" "gl" "hi" "it"
+             "es" "fa" "fr" "gl" "hi" "it"
              "ja" "ko" "nb_NO" "nl" "pl" "pt" "pt_BR"
              "ru" "sv" "zh_CN" "zh_TW"))
          (print-enum

@@ -66,6 +66,7 @@ language_mappings = {
   'el': 'Ελληνικά',
   'es': 'Español',
   'et': 'Eeti',
+  'fa': 'فارسی',
   'fi': 'Suomi',
   'fr': 'Français',
   'gd': 'Gaelic',
