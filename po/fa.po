@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-02-14 03:59+0000\n"
+"POT-Creation-Date: 2021-02-14 08:34+0000\n"
 "PO-Revision-Date: 2021-02-13 03:50+0000\n"
 "Last-Translator: ilya rahimi <mr.i.rah1385imi@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/zrythm/zrythm/fa/"
@@ -147,7 +147,7 @@ msgstr "ابزار"
 msgid "Audio"
 msgstr "صدا"
 
-#: inc/audio/track.h:165 src/project.c:781
+#: inc/audio/track.h:165 src/project.c:770
 #: src/gui/widgets/route_target_selector_popover.c:164
 msgid "Master"
 msgstr "استاد"
@@ -348,12 +348,7 @@ msgstr "فشرده سازی پروژه ناموفق بود: %s\n"
 msgid "Failed to decompress project file: %s"
 msgstr "فشرده سازی پرونده پروژه انجام نشد: %s"
 
-#: src/project.c:241
-#, c-format
-msgid "Failed to write file: %s"
-msgstr "نوشتن پرونده ناموفق بود: %s"
-
-#: src/project.c:929
+#: src/project.c:918
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -364,16 +359,16 @@ msgstr ""
 "  %s\n"
 "از نسخه پشتیبان جدیدتر استفاده می کنید؟"
 
-#: src/project.c:934
+#: src/project.c:923
 msgid "Backup found"
 msgstr "نسخه پشتیبان پیدا شد"
 
-#: src/project.c:992
+#: src/project.c:981
 #, c-format
 msgid "Unable to read file: %s"
 msgstr "خواندن پرونده امکان پذیر نیست: %s"
 
-#: src/project.c:1044
+#: src/project.c:1033
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
@@ -381,119 +376,121 @@ msgid ""
 msgstr ""
 "این پروژه با نسخه دیگری از %s (%s) ایجاد شده است. ممکن است درست کار نکند."
 
-#: src/project.c:1059
+#: src/project.c:1048
 msgid "Failed to load project. Please check the logs for more information."
 msgstr "پروژه بارگیری نشد. لطفا برای اطلاعات بیشتر گزارش ها را بررسی کنید."
 
-#: src/project.c:1246
+#: src/project.c:1235
 msgid "Failed to load project. Will create a new one instead."
 msgstr "پروژه بارگیری نشد. به جای آن یک مورد جدید ایجاد خواهد شد."
 
-#: src/project.c:1593
+#: src/project.c:1582
 msgid "Backup saved."
 msgstr "پشتیبان ذخیره شد."
 
-#: src/project.c:1603
+#: src/project.c:1592
 msgid "Project saved."
 msgstr "پروژه ذخیره شد"
 
-#: src/main.c:82
+#: src/main.c:96
 msgid "Error - Backtrace:\n"
 msgstr "خطا - Backtrace:\n"
 
-#: src/main.c:86
+#: src/main.c:100
 #, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "خطا: %s - Backtrace:\n"
 
-#: src/main.c:100
+#: src/main.c:114
 #, c-format
 msgid "%s has crashed. "
 msgstr "%s خراب شد. "
 
-#: src/main.c:133
-#, c-format
-msgid ""
-"Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
-"\n"
-"Options:\n"
-"  -h, --help      display this help message and exit\n"
-"  --convert-yaml-to-zpj  convert a yaml project to the .zpj format\n"
-"  --convert-zpj-to-yaml  convert a zpj project to the YAML format\n"
-"  -o, --output    specify an output file\n"
-"  -p, --print-settings  print current settings\n"
-"  --pretty        print output in user-friendly way\n"
-"  --reset-to-factory  reset to factory settings\n"
-"  --gdb           run %s through GDB (debugger)\n"
-"  --callgrind     run %s through callgrind (profiler)\n"
-"  --gen-project   generate a project from a script\n"
-"  --audio-backend  override the audio backend to use\n"
-"  --midi-backend  override the MIDI backend to use\n"
-"  --dummy         overrides both the audio and MIDI backends to dummy\n"
-"  --buf-size      overrides the buffer size to use for the audio backend, if "
-"applicable\n"
-"  --samplerate    overrides the samplerate to use for the audio backend, if "
-"applicable\n"
-"  --interactive   interactive mode, where applicable\n"
-"  -v, --version   output version information and exit\n"
-"\n"
-"Examples:\n"
-"  %s -v       print version\n"
-"  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend "
-"and a buffer size of 8192\n"
-"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a "
-"compressed zpj project to YAML\n"
-"  %s --gen-project --input myscript.scm --output myproject  generate a "
-"project using myscript.scm\n"
-"  %s -p --pretty  pretty-print current settings\n"
-"\n"
-"Please report issues to %s\n"
-msgstr ""
-
-#: src/main.c:180
+#: src/main.c:161
 #, c-format
 msgid "File %s not found."
 msgstr "پرونده %s یافت نشد."
 
-#: src/main.c:201
-msgid ""
-"An output file was not specified. Please pass one with `--output [FILE]`."
+#: src/main.c:181
+#, fuzzy
+msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "پرونده خروجی مشخص نشده است. لطفاً یکی را با `- خروجی [FILE]\" عبور دهید."
 
-#. getopt_long already printed an error
-#. * message
-#: src/main.c:365
-#, c-format
-msgid "Unknown option\n"
-msgstr "گزینه ناشناخته\n"
-
-#: src/main.c:422
-#, c-format
-msgid "Project failed to compress: %s\n"
-msgstr "فشرده سازی پروژه ناموفق بود: %s\n"
-
-#: src/main.c:431
-#, c-format
-msgid "Project successfully compressed.\n"
-msgstr "پروژه با موفقیت فشرده شد\n"
-
-#: src/main.c:449
+#: src/main.c:240
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "پروژه از حالت فشرده خارج نشد: %s\n"
 
-#: src/main.c:458
-#, c-format
-msgid "Project successfully decompressed.\n"
-msgstr "پروژه با موفقیت از حالت فشرده خارج شد.\n"
+#: src/main.c:259
+#, fuzzy
+msgid "Unknown operation"
+msgstr "گزینه ناشناخته\n"
 
-#: src/main.c:485
+#: src/main.c:309
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr ""
 
-#: src/main.c:494
+#: src/main.c:329
+#, fuzzy
+msgid "Print version information"
+msgstr "اطلاعات مجوز"
+
+#: src/main.c:334
+msgid "Convert ZPJ-FILE to YAML"
+msgstr ""
+
+#: src/main.c:339
+msgid "Convert YAML-PROJECT-FILE to the .zpj format"
+msgstr ""
+
+#: src/main.c:344
+msgid "Generate a project from SCRIPT-FILE"
+msgstr ""
+
+#: src/main.c:348
+msgid "Print output in user-friendly way"
+msgstr ""
+
+#: src/main.c:352
+msgid "Print current settings"
+msgstr ""
+
+#: src/main.c:356
+msgid "Reset to factory settings"
+msgstr ""
+
+#: src/main.c:359
+msgid "Override the audio backend to use"
+msgstr ""
+
+#: src/main.c:363
+msgid "Override the MIDI backend to use"
+msgstr ""
+
+#: src/main.c:367
+msgid "Shorthand for --midi-backend=none --audio-backend=none"
+msgstr ""
+
+#: src/main.c:390
+#, c-format
+msgid "[PROJECT-FILE] - Run %s"
+msgstr ""
+
+#: src/main.c:400
+#, c-format
+msgid ""
+"Examples:\n"
+"  --zpj-to-yaml a.zpj > b.yaml        Convert a a.zpj to YAML and save to b."
+"yaml\n"
+"  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
+"  -p --pretty                         Pretty-print current settings\n"
+"\n"
+"Please report issues to %s\n"
+msgstr ""
+
+#: src/main.c:442
 #, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
@@ -2022,6 +2019,11 @@ msgstr ""
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
+
+#: src/utils/io.c:451
+#, c-format
+msgid "Failed to write file: %s"
+msgstr "نوشتن پرونده ناموفق بود: %s"
 
 #: src/utils/err_codes.c:32
 msgid "Plugin instantiation failed. See the logs for details"
@@ -4699,3 +4701,15 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr ""
+
+#, c-format
+#~ msgid "Project failed to compress: %s\n"
+#~ msgstr "فشرده سازی پروژه ناموفق بود: %s\n"
+
+#, c-format
+#~ msgid "Project successfully compressed.\n"
+#~ msgstr "پروژه با موفقیت فشرده شد\n"
+
+#, c-format
+#~ msgid "Project successfully decompressed.\n"
+#~ msgstr "پروژه با موفقیت از حالت فشرده خارج شد.\n"

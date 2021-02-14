@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,7 @@
 #include "utils/log.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "utils/valgrind.h"
 #include "project.h"
@@ -71,6 +72,19 @@
 #ifdef HAVE_X11
 #include <X11/Xlib.h>
 #endif
+
+static bool pretty_print = false;
+static bool dummy = false;
+static bool compress = false;
+static bool print_settings_flag = false;
+static char * arg0 = NULL;
+static char * audio_backend = NULL;
+static char * midi_backend = NULL;
+static char * buf_size = NULL;
+static char * samplerate = NULL;
+static char * output_file = NULL;
+static char * project_file = NULL;
+static char * convert_file = NULL;
 
 /** SIGSEGV handler. */
 static void
@@ -106,11 +120,15 @@ segv_handler (int sig)
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 
-  exit(1);
+  exit (EXIT_FAILURE);
 }
 
-static void
-print_version ()
+static bool
+print_version (
+  const gchar * option_name,
+  const gchar * value,
+  gpointer      data,
+  GError **     error)
 {
   char ver_with_caps[2000];
   zrythm_get_version_with_capabilities (
@@ -123,54 +141,17 @@ print_version ()
     "This is free software; see the source for copying conditions.",
     "There is NO "
     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
-}
 
-static void
-print_help ()
-{
-  fprintf (
-    stdout,
-    _("Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n\n"
-    "Options:\n"
-    "  -h, --help      display this help message and exit\n"
-    "  --convert-yaml-to-zpj  convert a yaml project to the .zpj format\n"
-    "  --convert-zpj-to-yaml  convert a zpj project to the YAML format\n"
-    "  -o, --output    specify an output file\n"
-    "  -p, --print-settings  print current settings\n"
-    "  --pretty        print output in user-friendly way\n"
-    "  --reset-to-factory  reset to factory settings\n"
-    "  --gdb           run %s through GDB (debugger)\n"
-    "  --callgrind     run %s through callgrind (profiler)\n"
-    "  --gen-project   generate a project from a script\n"
-    "  --audio-backend  override the audio backend to use\n"
-    "  --midi-backend  override the MIDI backend to use\n"
-    "  --dummy         overrides both the audio and MIDI backends to dummy\n"
-    "  --buf-size      overrides the buffer size to use for the audio backend, if applicable\n"
-    "  --samplerate    overrides the samplerate to use for the audio backend, if applicable\n"
-    "  --interactive   interactive mode, where applicable\n"
-    "  -v, --version   output version information and exit\n\n"
-    "Examples:\n"
-    "  %s -v       print version\n"
-    "  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend and a buffer size of 8192\n"
-    "  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a compressed zpj project to YAML\n"
-    "  %s --gen-project --input myscript.scm --output myproject  generate a project using myscript.scm\n"
-    "  %s -p --pretty  pretty-print current settings\n\n"
-    "Please report issues to %s\n"),
-    PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
-    PROGRAM_NAME, PROGRAM_NAME_LOWERCASE,
-    PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
-    PROGRAM_NAME_LOWERCASE, PROGRAM_NAME_LOWERCASE,
-    PROGRAM_NAME_LOWERCASE,
-    ISSUE_TRACKER_URL);
+  exit (EXIT_SUCCESS);
 }
 
 /**
  * Checks that the file exists and exits if it
  * doesn't.
  */
-void
+static void
 verify_file_exists (
-  char * file)
+  const char * file)
 {
   if (!file ||
       !g_file_test (file, G_FILE_TEST_EXISTS))
@@ -188,21 +169,146 @@ verify_file_exists (
  * Checks that the output is not NULL and exits if it
  * is.
  */
-void
-verify_output_exists (
-  char * output)
+static void
+verify_output_exists (void)
 {
-  if (!output)
+  if (!output_file)
     {
       char str[600];
       sprintf (
         str,
         "%s\n",
         _("An output file was not specified. Please "
-        "pass one with `--output [FILE]`."));
+        "pass one with `--output=FILE`."));
       fprintf (stderr, "%s", str);
-      exit (-1);
+      exit (EXIT_FAILURE);
     }
+}
+
+static bool
+reset_to_factory (
+  const gchar * option_name,
+  const gchar * value,
+  gpointer      data,
+  GError **     error)
+{
+  settings_reset_to_factory (1, 1);
+
+  exit (EXIT_SUCCESS);
+}
+
+static bool
+print_settings (void)
+{
+  localization_init (false, false);
+  settings_print (pretty_print);
+
+  exit (EXIT_SUCCESS);
+}
+
+static void
+convert_project (void)
+{
+  char * output;
+  size_t output_size;
+  char * err_msg = NULL;
+  if (compress)
+    {
+      verify_output_exists ();
+
+      err_msg =
+        project_compress (
+          &output_file, NULL,
+          PROJECT_COMPRESS_FILE,
+          convert_file, -1,
+          PROJECT_COMPRESS_FILE);
+    }
+  else
+    {
+      err_msg =
+        project_decompress (
+          &output, &output_size,
+          PROJECT_DECOMPRESS_DATA,
+          convert_file, -1,
+          PROJECT_DECOMPRESS_FILE);
+    }
+
+  if (err_msg)
+    {
+      fprintf (
+        stderr,
+        _("Project failed to decompress: %s\n"),
+        err_msg);
+      g_free (err_msg);
+      exit (EXIT_FAILURE);
+    }
+  else
+    {
+      if (!compress)
+        {
+          output =
+            realloc (
+              output,
+              output_size + sizeof (char));
+          output[output_size] = '\0';
+          fprintf (stdout, "%s\n", output);
+        }
+      exit (EXIT_SUCCESS);
+    }
+
+  fprintf (stdout, "%s\n", _("Unknown operation"));
+  exit (EXIT_FAILURE);
+}
+
+static bool
+parse_convert (
+  const gchar * option_name,
+  const gchar * value,
+  gpointer      data,
+  GError **     error)
+{
+  if (string_is_equal (
+        option_name, "--yaml-to-zpj"))
+    {
+      compress = true;
+    }
+
+  verify_file_exists (value);
+  convert_file = g_strdup (value);
+
+  return true;
+}
+
+static bool
+gen_project (
+  const gchar * option_name,
+  const gchar * value,
+  gpointer      data,
+  GError **     error)
+{
+  verify_output_exists ();
+  verify_file_exists (value);
+#ifdef HAVE_GUILE
+  zrythm_app =
+    g_object_new (
+      ZRYTHM_APP_TYPE,
+      "resource-base-path", "/org/zrythm/Zrythm",
+      "flags", G_APPLICATION_HANDLES_OPEN,
+      NULL);
+  ZRYTHM =
+    zrythm_new (
+      arg0, false, false, F_NOT_OPTIMIZED);
+  ZRYTHM->generating_project = true;
+  int script_res =
+    guile_project_generator_generate_project_from_file (
+      value, output_file);
+  exit (script_res);
+#else
+  fprintf (
+    stderr,
+    _("libguile is required for this option\n"));
+  exit (EXIT_FAILURE);
+#endif
 }
 
 /**
@@ -212,280 +318,122 @@ int
 main (int    argc,
       char **argv)
 {
+  arg0 = argv[0];
+
   LOG = log_new ();
 
-#define OPT_VERSION 'v'
-#define OPT_HELP 'h'
-#define OPT_PRINT_SETTINGS 'p'
-#define OPT_INPUT 'i'
-#define OPT_OUTPUT 'o'
-#define OPT_RESET_TO_FACTORY 6492
-#define OPT_PRETTY_PRINT 5914
-#define OPT_CONVERT_ZPJ_TO_YAML 4198
-#define OPT_CONVERT_YAML_TO_ZPJ 35173
-#define OPT_GDB 4124
-#define OPT_CALLGRIND 6843
-#define OPT_AUDIO_BACKEND 4811
-#define OPT_MIDI_BACKEND 9197
-#define OPT_DUMMY 2311
-#define OPT_BUF_SIZE 39145
-#define OPT_SAMPLERATE 185130
-#define OPT_INTERACTIVE 34966
-#define OPT_GEN_PROJECT 985134
-
-  int c, option_index;
-  static struct option long_options[] =
+  GOptionEntry entries[] =
     {
-      { "version", no_argument, 0, OPT_VERSION},
-      { "help", no_argument, 0, OPT_HELP },
-      { "convert-zpj-to-yaml", required_argument, 0,
-        OPT_CONVERT_ZPJ_TO_YAML },
-      { "convert-yaml-to-zpj", required_argument, 0,
-        OPT_CONVERT_YAML_TO_ZPJ },
-      { "input", required_argument, 0, OPT_INPUT },
-      { "output", required_argument, 0,
-        OPT_OUTPUT },
-      { "print-settings", no_argument, 0,
-        OPT_PRINT_SETTINGS },
-      { "reset-to-factory", no_argument,
-        0, OPT_RESET_TO_FACTORY },
-      { "pretty", no_argument, 0,
-        OPT_PRETTY_PRINT },
-      { "gdb", no_argument, 0, OPT_GDB },
-      { "callgrind", no_argument, 0,
-        OPT_CALLGRIND },
-      { "audio-backend", required_argument, 0,
-        OPT_AUDIO_BACKEND },
-      { "midi-backend", required_argument, 0,
-        OPT_MIDI_BACKEND },
-      { "dummy", no_argument, 0, OPT_DUMMY },
-      { "buf-size", required_argument, 0,
-        OPT_BUF_SIZE },
-      { "samplerate", required_argument, 0,
-        OPT_SAMPLERATE },
-      { "interactive", no_argument, 0,
-        OPT_INTERACTIVE },
-      { "gen-project", no_argument, 0,
-        OPT_GEN_PROJECT },
-      { 0, 0, 0, 0 }
+      { "version", 'v',  G_OPTION_FLAG_NO_ARG,
+        G_OPTION_ARG_CALLBACK, print_version,
+        __("Print version information"),
+        NULL },
+      { "zpj-to-yaml", 0,
+        G_OPTION_FLAG_FILENAME,
+        G_OPTION_ARG_CALLBACK, parse_convert,
+        __("Convert ZPJ-FILE to YAML"),
+        "ZPJ-FILE" },
+      { "yaml-to-zpj", 0,
+        G_OPTION_FLAG_FILENAME,
+        G_OPTION_ARG_CALLBACK, parse_convert,
+        __("Convert YAML-PROJECT-FILE to the .zpj format"),
+        "YAML-PROJECT-FILE" },
+      { "gen-project", 0,
+        G_OPTION_FLAG_FILENAME,
+        G_OPTION_ARG_CALLBACK, gen_project,
+        __("Generate a project from SCRIPT-FILE"),
+        "SCRIPT-FILE" },
+      { "pretty", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_NONE, &pretty_print,
+        __("Print output in user-friendly way"),
+        NULL },
+      { "print-settings", 'p', G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_NONE, &print_settings_flag,
+        __("Print current settings"), NULL },
+      { "reset-to-factory", 0,
+        G_OPTION_FLAG_NO_ARG,
+        G_OPTION_ARG_CALLBACK, reset_to_factory,
+        __("Reset to factory settings"), NULL },
+      { "audio-backend", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &audio_backend,
+        __("Override the audio backend to use"),
+        "BACKEND" },
+      { "midi-backend", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &midi_backend,
+        __("Override the MIDI backend to use"),
+        "BACKEND" },
+      { "dummy", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_NONE, &dummy,
+        __("Shorthand for --midi-backend=none "
+        "--audio-backend=none"),
+        NULL },
+      { "buf-size", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &buf_size,
+        "Override the buffer size to use for the "
+        "audio backend, if applicable",
+        "BUF_SIZE" },
+      { "samplerate", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &samplerate,
+        "Override the samplerate to use for the "
+        "audio backend, if applicable",
+        "SAMPLERATE" },
+      { "output", 'o', G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &output_file,
+        "File or directory to output to", "FILE" },
+      { NULL },
     };
-  opterr = 0;
 
-  bool pretty_print = false;
-  bool print_settings = false;
-  bool convert_yaml_to_zpj = false;
-  bool convert_zpj_to_yaml = false;
-  bool run_gdb = false;
-  bool run_callgrind = false;
-  bool interactive = false;
-  bool gen_project = false;
-  char * from_file = NULL;
-  char * input = NULL;
-  char * output = NULL;
-  char * audio_backend = NULL;
-  char * midi_backend = NULL;
-  char * buf_size = NULL;
-  char * samplerate = NULL;
-  char * project_file = NULL;
-  while (true)
+  /* parse options */
+  GError *error = NULL;
+  char context_str[500];
+  sprintf (
+    context_str, __("[PROJECT-FILE] - Run %s"), PROGRAM_NAME);
+  GOptionContext * context =
+    g_option_context_new (context_str);
+  g_option_context_add_main_entries (
+    context, entries, GETTEXT_PACKAGE);
+  g_option_context_add_group (
+    context, gtk_get_option_group (false));
+  char examples[8000];
+  sprintf (
+    examples,
+    __("Examples:\n"
+    "  --zpj-to-yaml a.zpj > b.yaml        Convert a a.zpj to YAML and save to b.yaml\n"
+    "  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
+    "  -p --pretty                         Pretty-print current settings\n\n"
+    "Please report issues to %s\n"),
+    ISSUE_TRACKER_URL);
+  g_option_context_set_description (
+    context, examples);
+  char * null_terminated_args[argc + 1];
+  for (int i = 0; i < argc; i++)
     {
-      c =
-        getopt_long (
-          argc, argv, "vhpo",
-          long_options, &option_index);
-
-      /* Detect the end of the options. */
-      if (c == -1)
-        break;
-
-      switch (c)
-        {
-        case OPT_VERSION:
-          print_version ();
-          return EXIT_SUCCESS;
-        case OPT_HELP:
-          print_help ();
-          return EXIT_SUCCESS;
-          break;
-        case OPT_CONVERT_ZPJ_TO_YAML:
-          convert_zpj_to_yaml = true;
-          from_file = optarg;
-          break;
-        case OPT_CONVERT_YAML_TO_ZPJ:
-          convert_yaml_to_zpj = true;
-          from_file = optarg;
-          break;
-        case OPT_INPUT:
-          input = optarg;
-          break;
-        case OPT_OUTPUT:
-          output = optarg;
-          break;
-        case OPT_PRINT_SETTINGS:
-          print_settings = true;
-          break;
-        case OPT_RESET_TO_FACTORY:
-          settings_reset_to_factory (1, 1);
-          return EXIT_SUCCESS;
-          break;
-        case OPT_GEN_PROJECT:
-          gen_project = true;
-          break;
-        case OPT_PRETTY_PRINT:
-          pretty_print = true;
-          break;
-        case OPT_GDB:
-          run_gdb = true;
-          break;
-        case OPT_CALLGRIND:
-          run_callgrind = true;
-          break;
-        case OPT_INTERACTIVE:
-          interactive = true;
-          break;
-        case OPT_AUDIO_BACKEND:
-          audio_backend = optarg;
-          break;
-        case OPT_MIDI_BACKEND:
-          midi_backend = optarg;
-          break;
-        case OPT_DUMMY:
-          audio_backend = "none";
-          midi_backend = "none";
-          break;
-        case OPT_BUF_SIZE:
-          buf_size = optarg;
-          break;
-        case OPT_SAMPLERATE:
-          samplerate = optarg;
-          break;
-        case '?':
-          /* getopt_long already printed an error
-           * message */
-          fprintf (stderr, _("Unknown option\n"));
-          return 1;
-        default:
-          abort ();
-        }
+      null_terminated_args[i] = argv[i];
     }
-
-  /* get last non-option argument as project file */
-  for (int index = optind; index < argc; index++)
+  null_terminated_args[argc] = NULL;
+  char ** allocated_args =
+    g_strdupv (null_terminated_args);
+  if (!g_option_context_parse_strv (
+         context, &allocated_args, &error))
     {
-      project_file = argv[index];
-    }
-
-  if (print_settings)
-    {
-      localization_init (false, false);
-      settings_print (pretty_print);
-      return EXIT_SUCCESS;
-    }
-  else if (run_gdb)
-    {
-#ifdef __linux__
-      ZRYTHM =
-        zrythm_new (argv[0], true, false, true);
-      gdb_exec (argv, true, interactive);
-#else
       g_error (
-        "This option is not available on your "
-        "platform");
-#endif
+        "option parsing failed: %s",
+        error->message);
     }
-  else if (run_callgrind)
+
+  if (dummy)
     {
-#ifdef __linux__
-      ZRYTHM =
-        zrythm_new (argv[0], true, false, true);
-      valgrind_exec_callgrind (argv);
-#else
-      g_error (
-        "This option is not available on your "
-        "platform");
-#endif
+      audio_backend = "none";
+      midi_backend = "none";
     }
-  else if (convert_yaml_to_zpj)
+
+  if (convert_file)
     {
-      verify_output_exists (output);
-      verify_file_exists (from_file);
-      char * err_msg =
-        project_compress (
-          &output, NULL,
-          PROJECT_COMPRESS_FILE,
-          from_file, -1,
-          PROJECT_COMPRESS_FILE);
-      if (err_msg)
-        {
-          fprintf (
-            stderr,
-            _("Project failed to compress: %s\n"),
-            err_msg);
-          g_free (err_msg);
-          return -1;
-        }
-      else
-        {
-          fprintf (
-            stdout,
-            _("Project successfully compressed.\n"));
-          return EXIT_SUCCESS;
-        }
+      convert_project ();
     }
-  else if (convert_zpj_to_yaml)
+  else if (print_settings_flag)
     {
-      verify_output_exists (output);
-      verify_file_exists (from_file);
-      char * err_msg =
-        project_decompress (
-          &output, NULL,
-          PROJECT_DECOMPRESS_FILE,
-          from_file, -1,
-          PROJECT_DECOMPRESS_FILE);
-      if (err_msg)
-        {
-          fprintf (
-            stderr,
-            _("Project failed to decompress: %s\n"),
-            err_msg);
-          g_free (err_msg);
-          return -1;
-        }
-      else
-        {
-          fprintf (
-            stdout,
-            _("Project successfully "
-            "decompressed.\n"));
-          return EXIT_SUCCESS;
-        }
-    }
-  else if (gen_project)
-    {
-      verify_output_exists (output);
-      verify_file_exists (input);
-#ifdef HAVE_GUILE
-      zrythm_app =
-        g_object_new (
-          ZRYTHM_APP_TYPE,
-          "resource-base-path", "/org/zrythm/Zrythm",
-          "flags", G_APPLICATION_HANDLES_OPEN,
-          NULL);
-      ZRYTHM =
-        zrythm_new (
-          argv[0], false, false, F_NOT_OPTIMIZED);
-      ZRYTHM->generating_project = true;
-      int script_res =
-        guile_project_generator_generate_project_from_file (
-          input, output);
-      return script_res;
-#else
-      fprintf (
-        stderr,
-        _("libguile is required for this "
-          "option\n"));
-      return EXIT_FAILURE;
-#endif
+      print_settings ();
     }
 
   char * ver = zrythm_get_version (0);

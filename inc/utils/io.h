@@ -163,6 +163,18 @@ io_escape_dir_name (
   char *       dest,
   const char * dir);
 
+/**
+ * Writes \ref content to \ref file.
+ *
+ * If an error occurred, a string containing the
+ * error info is returned.
+ */
+char *
+io_write_file (
+  const char * file,
+  const char * content,
+  size_t       content_size);
+
 #ifdef _WOE32
 char *
 io_get_registry_string_val (

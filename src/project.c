@@ -219,7 +219,7 @@ _project_compress (
     (unsigned) src_size,
     (unsigned) dest_size);
 
-  switch (src_type)
+  switch (dest_type)
     {
     case PROJECT_COMPRESS_DATA:
       *_dest = dest;
@@ -227,20 +227,9 @@ _project_compress (
       break;
     case PROJECT_COMPRESS_FILE:
       {
-        GError *err = NULL;
-        g_file_set_contents (
-          *_dest, dest,
-          (gssize) dest_size, &err);
-        if (err)
-          {
-            char err_msg[800];
-            strcpy (err_msg, err->message);
-            g_error_free (err);
-            return
-              g_strdup_printf (
-                _("Failed to write file: %s"),
-                err_msg);
-          }
+        char * err_msg =
+          io_write_file (*_dest, dest, dest_size);
+        return err_msg;
       }
       break;
     }
