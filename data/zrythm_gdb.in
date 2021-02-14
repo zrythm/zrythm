@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+set -xe
+
+export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
+export G_MESSAGES_DEBUG=zrythm
+export GDK_SYNCHRONIZE=1
+
+user_dir="`gsettings get org.zrythm.Zrythm.preferences.general.paths zrythm-dir | sed s/\'//g`"
+user_gdb_dir="$user_dir/gdb"
+date_str=`date +%Y-%m-%d_%H-%M-%S`
+gdb_out_file="$user_gdb_dir/gdb_$date_str.bt"
+
+gdb -q --batch \
+  -ex "run" \
+  -ex "set logging overwrite on" \
+  -ex "set logging file $gdb_out_file" \
+  -ex "set logging on" \
+  -ex "set pagination off" \
+  -ex "handle SIG32 pass nostop noprint" \
+  -ex "echo backtrace:\\n" \
+  -ex "backtrace full" \
+  -ex "echo \\n\\nregisters:\\n" \
+  -ex "info registers" \
+  -ex "echo \\n\\ncurrent instructions:\\n" \
+  -ex "x/16i $pc" \
+  -ex "echo \\n\\nthreads backtrace:\\n" \
+  -ex "thread apply all backtrace" \
+  -ex "set logging off" \
+  -ex "quit" \
+  --args @BIN_DIR@/@PROGRAM_NAME_LOWERCASE@ "$@"

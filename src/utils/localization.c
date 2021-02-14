@@ -226,7 +226,7 @@ localization_locale_exists (
     IS_MATCH (EL, "el_");
     IS_MATCH (ES, "es_");
     /*IS_MATCH (ET, "et_");*/
-    IS_MATCH (FI, "fa_");
+    IS_MATCH (FA, "fa_");
     /*IS_MATCH (FI, "fi_");*/
     IS_MATCH (FR, "fr_");
     /*IS_MATCH (GD, "gd_");*/

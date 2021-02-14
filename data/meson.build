@@ -49,9 +49,26 @@ if os_gnu or os_freebsd
     'BIN_DIR', bindir)
   zrythm_launcher_config.set (
     'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
+
   zrythm_launcher = configure_file (
     input: 'zrythm_launch.in',
     output: prog_name_lowercase + '_launch',
+    configuration: zrythm_launcher_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: 'r-xr-xr-x')
+
+  zrythm_gdb = configure_file (
+    input: 'zrythm_gdb.in',
+    output: prog_name_lowercase + '_gdb',
+    configuration: zrythm_launcher_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: 'r-xr-xr-x')
+
+  zrythm_gdb = configure_file (
+    input: 'zrythm_valgrind.in',
+    output: prog_name_lowercase + '_valgrind',
     configuration: zrythm_launcher_config,
     install: true,
     install_dir: bindir,

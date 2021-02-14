@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+set -xe
+
+export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
+export G_MESSAGES_DEBUG=zrythm
+
+user_dir="`gsettings get org.zrythm.Zrythm.preferences.general.paths zrythm-dir | sed s/\'//g`"
+user_valgrind_dir="$user_dir/valgrind"
+mkdir -p "$user_valgrind_dir"
+date_str=`date +%Y-%m-%d_%H-%M-%S`
+valgrind_out_file="$user_valgrind_dir/valgrind_$date_str"
+
+# TODO install suppressions
+#--suppressions=tools/vg.sup
+
+valgrind --log-file="$valgrind_out_file" \
+  --num-callers=30 \
+  @BIN_DIR@/@PROGRAM_NAME_LOWERCASE@ "$@"

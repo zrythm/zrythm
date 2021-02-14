@@ -710,9 +710,12 @@ if not samplerate_dep.found ()
     'samplerate')
 endif
 lv2_dep = dependency(
-  'lv2', version: '>=1.16.0',
-  fallback: ['lilv', 'lv2_dep'],
+  'lv2', version: '>=1.16.0', required: false,
   static: all_static)
+if not lv2_dep.found ()
+  lilv_proj = subproject('lilv')
+  lv2_dep = lilv_proj.get_variable('lv2_dep')
+endif
 if lv2_dep.version().version_compare('>=1.18.0')
   cdata.set('HAVE_LV2_1_18', 1)
 endif
