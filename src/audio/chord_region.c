@@ -110,7 +110,8 @@ chord_region_remove_chord_object (
     {
       arranger_object_select (
         (ArrangerObject *) chord, F_NO_SELECT,
-        F_APPEND);
+        F_APPEND,
+        F_NO_PUBLISH_EVENTS);
     }
 
   array_delete (

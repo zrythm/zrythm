@@ -473,7 +473,8 @@ automation_track_unselect_all (
     {
       ZRegion * region = self->regions[i];
       arranger_object_select (
-        (ArrangerObject *) region, false, false);
+        (ArrangerObject *) region, false, false,
+        F_NO_PUBLISH_EVENTS);
     }
 }
 

@@ -408,7 +408,8 @@ timeline_arranger_widget_create_region (
     F_NO_VALIDATE);
   arranger_object_select (
     r_obj, F_SELECT,
-    autofilling ? F_APPEND : F_NO_APPEND);
+    autofilling ? F_APPEND : F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -485,7 +486,8 @@ timeline_arranger_widget_create_scale (
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, scale);
   arranger_object_select (
-    scale_obj, F_SELECT, F_NO_APPEND);
+    scale_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -527,7 +529,8 @@ timeline_arranger_widget_create_marker (
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, marker);
   arranger_object_select (
-    marker_obj, F_SELECT, F_NO_APPEND);
+    marker_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -1672,7 +1675,8 @@ on_dnd_data_received (
         F_GEN_NAME, F_PUBLISH_EVENTS);
       arranger_object_select (
         (ArrangerObject *) region, F_SELECT,
-        F_NO_APPEND);
+        F_NO_APPEND,
+        F_NO_PUBLISH_EVENTS);
 
       UndoableAction * ua =
         arranger_selections_action_new_create (

@@ -139,7 +139,8 @@ midi_arranger_widget_create_note (
   /* select it */
   arranger_object_select (
     midi_note_obj, F_SELECT,
-    autofilling ? F_APPEND : F_NO_APPEND);
+    autofilling ? F_APPEND : F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -491,7 +492,8 @@ midi_arranger_show_context_menu (
         {
           arranger_object_select (
             mn_obj,
-            F_SELECT, F_NO_APPEND);
+            F_SELECT, F_NO_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
 
       menu_item =

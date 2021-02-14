@@ -1265,7 +1265,8 @@ arranger_selections_select_all (
                     (ArrangerObject *)
                     lane->regions[k];
                   arranger_object_select (
-                    obj, F_SELECT, F_APPEND);
+                    obj, F_SELECT, F_APPEND,
+                    F_NO_PUBLISH_EVENTS);
                 }
             }
 
@@ -1294,7 +1295,8 @@ arranger_selections_select_all (
                         (ArrangerObject *)
                         at->regions[k];
                       arranger_object_select (
-                        obj, F_SELECT, F_APPEND);
+                        obj, F_SELECT, F_APPEND,
+                        F_NO_PUBLISH_EVENTS);
                     }
                 }
             }
@@ -1309,7 +1311,8 @@ arranger_selections_select_all (
             P_CHORD_TRACK->chord_regions[j];
           obj = (ArrangerObject *) cr;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
 
       /* scales */
@@ -1320,7 +1323,8 @@ arranger_selections_select_all (
             (ArrangerObject *)
             P_CHORD_TRACK->scales[i];
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
 
       /* markers */
@@ -1333,7 +1337,8 @@ arranger_selections_select_all (
           obj =
             (ArrangerObject *) marker;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
@@ -1351,7 +1356,8 @@ arranger_selections_select_all (
             co->chord_index <
             CHORD_EDITOR->num_chords);
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
@@ -1366,7 +1372,8 @@ arranger_selections_select_all (
             (ArrangerObject *)
             mn;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
       break;
       break;
@@ -1383,7 +1390,8 @@ arranger_selections_select_all (
           AutomationPoint * ap =  r->aps[i];
           obj = (ArrangerObject *) ap;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
       break;
     default:
@@ -1432,6 +1440,11 @@ arranger_selections_clear (
           { \
             arranger_object_free (sc); \
           } \
+        else if (fire_events) \
+          { \
+            EVENTS_PUSH ( \
+              ET_ARRANGER_OBJECT_CHANGED, sc); \
+          } \
       } \
   }
 
@@ -1463,12 +1476,6 @@ arranger_selections_clear (
       break;
     default:
       g_return_if_reached ();
-    }
-
-  if (fire_events)
-    {
-      EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_CHANGED, self);
     }
 
 #undef REMOVE_OBJS

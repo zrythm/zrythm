@@ -199,7 +199,7 @@ region_move_to_track (
   /* reselect if necessary */
   arranger_object_select (
     (ArrangerObject *) region, selected,
-    F_APPEND);
+    F_APPEND, F_NO_PUBLISH_EVENTS);
 
   /* remove empty lanes if the region was the
    * last on its track lane */
@@ -355,7 +355,7 @@ region_move_to_lane (
 
   arranger_object_select (
     (ArrangerObject *) region, selected,
-    F_APPEND);
+    F_APPEND, F_NO_PUBLISH_EVENTS);
   region_set_lane (region, lane);
   g_warn_if_fail (
     lane->pos == region->id.lane_pos);
@@ -393,7 +393,7 @@ region_set_automation_track (
       was_selected = true;
       arranger_object_select (
         (ArrangerObject *) self, F_NO_SELECT,
-        F_NO_APPEND);
+        F_NO_APPEND, F_NO_PUBLISH_EVENTS);
     }
   self->id.at_idx = at->index;
   Track * track =
@@ -407,7 +407,7 @@ region_set_automation_track (
     {
       arranger_object_select (
         (ArrangerObject *) self, F_SELECT,
-        F_APPEND);
+        F_APPEND, F_NO_PUBLISH_EVENTS);
     }
 }
 

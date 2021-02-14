@@ -50,7 +50,7 @@ test_region_length_in_ticks (
     F_NO_PUBLISH_EVENTS);
 
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   double length =
     arranger_selections_get_length_in_ticks (

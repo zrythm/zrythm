@@ -772,9 +772,11 @@ update_region_link_groups (
 static int
 do_or_undo_move (
   ArrangerSelectionsAction * self,
-  const int                  _do)
+  const bool                 _do)
 {
   int size = 0;
+  arranger_selections_sort_by_indices (
+    self->sel, !_do);
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
       self->sel, &size);
@@ -1387,7 +1389,8 @@ do_or_undo_duplicate_or_link (
         {
           /* select it */
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
 
           /* remember the identifier */
           arranger_object_copy_identifier (
@@ -1507,7 +1510,8 @@ do_or_undo_create_or_delete (
 
               /* select it */
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
 
               /* remember new info */
               arranger_object_copy_identifier (
@@ -1656,7 +1660,8 @@ do_or_undo_record (
 
               /* select it */
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
 
               /* remember new info */
               arranger_object_copy_identifier (
@@ -1719,7 +1724,8 @@ do_or_undo_record (
 
               /* select it */
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
 
               /* remember new info */
               arranger_object_copy_identifier (
@@ -2053,7 +2059,8 @@ do_or_undo_automation_fill (
 
       /* select it */
       arranger_object_select (
-        obj, F_SELECT, F_APPEND);
+        obj, F_SELECT, F_APPEND,
+        F_NO_PUBLISH_EVENTS);
 
       /* remember new info */
       arranger_object_copy_identifier (

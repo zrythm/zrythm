@@ -436,7 +436,7 @@ _test_port_and_plugin_track_pos_after_move (
     src_track, region, at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, true, false);
+    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
@@ -454,7 +454,7 @@ _test_port_and_plugin_track_pos_after_move (
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, true, false);
+    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
@@ -647,7 +647,7 @@ test_move_two_plugins_one_slot_up (void)
     track, region, at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, true, false);
+    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
@@ -678,7 +678,7 @@ test_move_two_plugins_one_slot_up (void)
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, true, false);
+    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);

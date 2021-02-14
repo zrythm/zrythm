@@ -1151,7 +1151,8 @@ arranger_widget_select_all (
       for (int i = 0; i < num_objs; i++)
         {
           arranger_object_select (
-            objs[i], F_SELECT, F_APPEND);
+            objs[i], F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
 
       EVENTS_PUSH (
@@ -1293,7 +1294,8 @@ on_right_click (
       if (!arranger_object_is_selected (obj))
         {
           arranger_object_select (
-            obj, F_SELECT, F_NO_APPEND);
+            obj, F_SELECT, F_NO_APPEND,
+            F_NO_PUBLISH_EVENTS);
         }
     }
 
@@ -2177,31 +2179,30 @@ on_drag_begin_handle_hit_object (
     case TOOL_SELECT_NORMAL:
     case TOOL_SELECT_STRETCH:
     case TOOL_EDIT:
-      /* if ctrl held & not selected, add to
-       * selections */
-      if (self->ctrl_held && !is_selected)
+      if (!is_selected)
         {
-          arranger_object_select (
-            obj, F_SELECT, F_APPEND);
-          EVENTS_PUSH (
-            ET_ARRANGER_SELECTIONS_CHANGED,
-            arranger_widget_get_selections (self));
-        }
-      /* if ctrl not held & not selected, make it
-       * the only selection */
-      else if (!self->ctrl_held && !is_selected)
-        {
-          arranger_object_select (
-            obj, F_SELECT, F_NO_APPEND);
-          EVENTS_PUSH (
-            ET_ARRANGER_SELECTIONS_CHANGED,
-            arranger_widget_get_selections (self));
+          if (self->ctrl_held)
+            {
+              /* append to selections */
+              arranger_object_select (
+                obj, F_SELECT, F_APPEND,
+                F_PUBLISH_EVENTS);
+            }
+          else
+            {
+              /* make it the only selection */
+              arranger_object_select (
+                obj, F_SELECT, F_NO_APPEND,
+                F_PUBLISH_EVENTS);
+              g_message ("making only selection");
+            }
         }
       break;
     case TOOL_CUT:
       /* only select this object */
       arranger_object_select (
-        obj, F_SELECT, F_NO_APPEND);
+        obj, F_SELECT, F_NO_APPEND,
+        F_PUBLISH_EVENTS);
       break;
     default:
       break;
@@ -2494,9 +2495,12 @@ drag_begin (
                   self->action =
                     UI_OVERLAY_ACTION_STARTING_SELECTION;
 
-                  /* deselect all */
-                  arranger_widget_select_all (
-                    self, false);
+                  if (!self->ctrl_held)
+                    {
+                      /* deselect all */
+                      arranger_widget_select_all (
+                        self, false);
+                    }
 
                   /* set whether selecting
                    * objects or selecting range */
@@ -2633,8 +2637,11 @@ select_in_range (
     }
   else if (!delete)
     {
-      /* deselect all */
-      arranger_widget_select_all (self, 0);
+      if (!self->ctrl_held)
+        {
+          /* deselect all */
+          arranger_widget_select_all (self, 0);
+        }
     }
 
   ArrangerObject * objs[800];
@@ -2687,7 +2694,8 @@ select_in_range (
           else
             {
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
       break;
@@ -2712,7 +2720,8 @@ select_in_range (
           else
             {
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
       break;
@@ -2738,7 +2747,8 @@ select_in_range (
             {
               /* select the enclosed region */
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
       arranger_widget_get_hit_objects_in_rect (
@@ -2761,7 +2771,8 @@ select_in_range (
           else
             {
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
       arranger_widget_get_hit_objects_in_rect (
@@ -2788,7 +2799,8 @@ select_in_range (
           else
             {
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
       break;
@@ -2813,7 +2825,8 @@ select_in_range (
           else
             {
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
       midi_arranger_selections_unlisten_note_diff (
@@ -2849,7 +2862,8 @@ select_in_range (
           else
             {
               arranger_object_select (
-                mn_obj, F_SELECT, F_APPEND);
+                mn_obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
       break;
@@ -3540,7 +3554,8 @@ on_drag_end_midi (
               /* deselect it */
               arranger_object_select (
                 self->start_object,
-                F_NO_SELECT, F_APPEND);
+                F_NO_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
     }
@@ -3663,7 +3678,8 @@ on_drag_end_chord (
                 /*[> deselect it <]*/
                 arranger_object_select (
                   self->start_object,
-                  F_NO_SELECT, F_APPEND);
+                  F_NO_SELECT, F_APPEND,
+                  F_NO_PUBLISH_EVENTS);
               }
           }
       }
@@ -3932,10 +3948,9 @@ on_drag_end_timeline (
               /* deselect it */
               arranger_object_select (
                 self->start_object,
-                F_NO_SELECT, F_APPEND);
-              EVENTS_PUSH (
-                ET_ARRANGER_SELECTIONS_CHANGED,
-                TL_SELECTIONS);
+                F_NO_SELECT, F_APPEND,
+                F_PUBLISH_EVENTS);
+              g_message ("DESELECTING");
             }
         }
       else if (self->n_press == 2)
@@ -4104,6 +4119,32 @@ drag_end (
 
 #undef ON_DRAG_END
 
+  /* if something was clicked with ctrl without
+   * moving */
+  if (ACTION_IS (STARTING_MOVING) &&
+      self->start_object && self->ctrl_held)
+    {
+      /* if was selected, deselect it */
+      if (self->start_object_was_selected)
+        {
+          arranger_object_select (
+            self->start_object,
+            F_NO_SELECT, F_APPEND,
+            F_PUBLISH_EVENTS);
+          g_debug ("ctrl-deselecting object");
+        }
+      /* if was deselected, select it */
+      else
+        {
+          /* select it */
+          arranger_object_select (
+            self->start_object,
+            F_SELECT, F_APPEND,
+            F_PUBLISH_EVENTS);
+          g_debug ("ctrl-selecting object");
+        }
+    }
+
   /* handle click without drag for
    * delete-selecting */
   if ((self->action ==
@@ -4147,29 +4188,6 @@ drag_end (
       break;
     default:
       break;
-    }
-
-  /* if object clicked and object is unselected,
-   * select it */
-  int width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_ALL,
-      CLAMP (self->start_x + offset_x, 0, width),
-      CLAMP (self->start_y + offset_y, 0, height));
-  if (obj)
-    {
-      if (!arranger_object_is_selected (obj))
-        {
-          arranger_object_select (
-            obj, F_SELECT, F_NO_APPEND);
-        }
     }
 
   /* if right click, show context */

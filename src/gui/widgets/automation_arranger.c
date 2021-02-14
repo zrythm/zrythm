@@ -163,7 +163,8 @@ automation_arranger_widget_create_ap (
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CREATED, ap);
   arranger_object_select (
-    ap_obj, F_SELECT, F_NO_APPEND);
+    ap_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -355,7 +356,8 @@ automation_arranger_move_hit_aps (
       if (automation_point_is_point_hit (ap, x, -1))
         {
           arranger_object_select (
-            obj, F_SELECT, F_APPEND);
+            obj, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
 
           Port * port =
             automation_point_get_port (ap);

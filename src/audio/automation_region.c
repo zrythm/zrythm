@@ -271,7 +271,8 @@ automation_region_remove_ap (
   /* deselect */
   arranger_object_select (
     (ArrangerObject *) ap, F_NO_SELECT,
-    F_APPEND);
+    F_APPEND,
+    F_NO_PUBLISH_EVENTS);
 
   if (self->last_recorded_ap == ap)
     {

@@ -199,7 +199,7 @@ _test_port_and_plugin_track_pos_after_duplication (
     src_track, region, at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, true, false);
+    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
@@ -217,7 +217,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, true, false);
+    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
@@ -245,7 +245,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   atl = track_get_automation_tracklist (dest_track);
   ap = atl->ats[atl->num_ats - 1]->regions[0]->aps[0];
   arranger_object_select (
-    (ArrangerObject *) ap, true, false);
+    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   float prev_norm_val = ap->normalized_val;
   automation_point_set_fvalue (
     ap, prev_norm_val - 0.1f, F_NORMALIZED,
@@ -366,7 +366,7 @@ _test_undo_track_deletion (
     helm_track, region, at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, true, false);
+    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
@@ -384,7 +384,7 @@ _test_undo_track_deletion (
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, true, false);
+    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
@@ -972,7 +972,7 @@ test_ins_track_deletion_w_automation (void)
     track, region, at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, true, false);
+    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
@@ -990,7 +990,7 @@ test_ins_track_deletion_w_automation (void)
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, true, false);
+    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
@@ -1015,7 +1015,7 @@ test_ins_track_deletion_w_automation (void)
     track, region, at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, true, false);
+    (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
@@ -1033,7 +1033,7 @@ test_ins_track_deletion_w_automation (void)
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, true, false);
+    (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
@@ -1208,7 +1208,7 @@ _test_move_tracks (
     fx_track->automation_tracklist.ats[0],
     -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ar, F_SELECT, F_NO_APPEND);
+    (ArrangerObject *) ar, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   action =
     arranger_selections_action_new_create (
       TL_SELECTIONS);

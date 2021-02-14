@@ -138,7 +138,7 @@ test_prepare_common (void)
   g_assert_cmpint (midi_region->id.idx, >=, 0); \
   arranger_object_select ( \
     (ArrangerObject *) midi_region, F_SELECT, \
-    F_NO_APPEND); \
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS); \
   ua = \
     arranger_selections_action_new_create ( \
       (ArrangerSelections *) TL_SELECTIONS); \
@@ -187,7 +187,7 @@ test_prepare_common (void)
   /* resize audio region */
   arranger_object_select (
     (ArrangerObject *) audio_region, F_SELECT,
-    F_NO_APPEND);
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   double audio_region_size_ticks =
     arranger_object_get_length_in_ticks (
       (ArrangerObject *) audio_region);

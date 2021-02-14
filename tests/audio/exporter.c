@@ -252,7 +252,7 @@ test_bounce_region ()
     track, r, NULL, 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   UndoableAction * ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);

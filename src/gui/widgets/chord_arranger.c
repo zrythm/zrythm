@@ -120,7 +120,8 @@ chord_arranger_widget_create_chord (
     F_NO_VALIDATE);
 
   arranger_object_select (
-    chord_obj, F_SELECT, F_NO_APPEND);
+    chord_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
 }
 
 /**

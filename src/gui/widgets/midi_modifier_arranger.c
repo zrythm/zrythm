@@ -128,7 +128,8 @@ midi_modifier_arranger_widget_select_vels_in_range (
       MidiNote * mn = velocity_get_midi_note (vel);
 
       arranger_object_select (
-        (ArrangerObject *) mn, F_SELECT, F_APPEND);
+        (ArrangerObject *) mn, F_SELECT, F_APPEND,
+        F_NO_PUBLISH_EVENTS);
     }
 
   free (velocities);
@@ -362,7 +363,8 @@ midi_modifier_arranger_set_hit_velocity_vals (
           if (append_to_selections)
             {
               arranger_object_select (
-                obj, F_SELECT, F_APPEND);
+                obj, F_SELECT, F_APPEND,
+                F_NO_PUBLISH_EVENTS);
             }
         }
 

@@ -518,7 +518,8 @@ void
 arranger_object_select (
   ArrangerObject * self,
   const bool       select,
-  const bool       append);
+  const bool       append,
+  bool             fire_events);
 
 /**
  * Returns whether the given object is hit by the

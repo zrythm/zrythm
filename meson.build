@@ -721,6 +721,7 @@ if lv2_dep.version().version_compare('>=1.18.0')
 endif
 lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
+  fallback: ['lilv', 'lilv_dep'],
   static: all_static)
 
 # fftw

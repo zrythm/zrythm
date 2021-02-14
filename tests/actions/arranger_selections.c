@@ -978,7 +978,7 @@ test_duplicate_automation_region ()
     r1, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
-    F_NO_APPEND);
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   UndoableAction * ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
@@ -991,7 +991,7 @@ test_duplicate_automation_region ()
     r1, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
-    F_NO_APPEND);
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
@@ -1001,7 +1001,7 @@ test_duplicate_automation_region ()
   ap = r1->aps[0];
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
-    F_NO_APPEND);
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   ArrangerSelections * before =
     arranger_selections_clone (
       (ArrangerSelections *) AUTOMATION_SELECTIONS);
@@ -1032,7 +1032,7 @@ test_duplicate_automation_region ()
 
   arranger_object_select (
     (ArrangerObject *) r1, F_SELECT,
-    F_NO_APPEND);
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   ua =
     arranger_selections_action_new_duplicate_timeline (
@@ -1151,7 +1151,7 @@ test_edit_marker ()
   ArrangerObject * marker_obj =
     (ArrangerObject *) marker;
   arranger_object_select (
-    marker_obj, F_SELECT, F_NO_APPEND);
+    marker_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_object_add_to_project (
     marker_obj, F_NO_PUBLISH_EVENTS);
   UndoableAction * ua =
@@ -1257,7 +1257,7 @@ test_split ()
     P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   UndoableAction * ua =
     arranger_selections_action_new_create (
@@ -1294,7 +1294,7 @@ test_split ()
   r_obj =
     (ArrangerObject *) region;
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   AudioClip * clip =
     audio_region_get_clip (region);
   float first_frame = clip->frames[0];
@@ -1396,7 +1396,7 @@ test_audio_functions ()
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   AUDIO_SELECTIONS->region_id = region->id;
   AUDIO_SELECTIONS->has_selection = true;
   AUDIO_SELECTIONS->sel_start = r_obj->pos;
@@ -1485,7 +1485,7 @@ test_automation_fill ()
     r1, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
-    F_NO_APPEND);
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   position_add_frames (&start_pos, 14);
   ap =
     automation_point_new_float (
@@ -1494,7 +1494,7 @@ test_automation_fill ()
     r1, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
-    F_APPEND);
+    F_APPEND, F_NO_PUBLISH_EVENTS);
   UndoableAction * ua =
     arranger_selections_action_new_automation_fill (
       r1_clone, r1, F_ALREADY_EDITED);

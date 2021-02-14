@@ -131,7 +131,8 @@ void
 arranger_object_select (
   ArrangerObject * self,
   const bool       select,
-  const bool       append)
+  const bool       append,
+  bool             fire_events)
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (self));
 
@@ -147,13 +148,21 @@ arranger_object_select (
     arranger_object_get_selections_for_type (
       self->type);
 
+  /* if nothing to do, return */
+  bool is_selected =
+    arranger_object_is_selected (self);
+  if ((is_selected && select && append) ||
+      (!is_selected && !select))
+    {
+      return;
+    }
+
   if (select)
     {
       if (!append)
         {
           arranger_selections_clear (
-            selections, F_NO_FREE,
-            F_NO_PUBLISH_EVENTS);
+            selections, F_NO_FREE, fire_events);
         }
       arranger_selections_add_object (
         selections, self);
@@ -162,6 +171,12 @@ arranger_object_select (
     {
       arranger_selections_remove_object (
         selections, self);
+    }
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CHANGED, self);
     }
 }
 
@@ -1779,17 +1794,64 @@ find_region (
   ZRegion * self)
 {
   g_return_val_if_fail (IS_REGION (self), NULL);
+
+  g_debug (
+    "looking for project region '%s'",
+    self->name);
+
   ArrangerObject * obj =
     (ArrangerObject *)
     region_find (&self->id);
-  g_return_val_if_fail (IS_REGION (obj), NULL);
+
+  if (!IS_REGION (obj))
+    {
+      g_critical ("region not found");
+      return NULL;
+    }
+
+  g_debug ("found");
+
+  bool has_warning = false;
+  g_debug (
+    "verifying positions are the same...");
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
-  g_warn_if_fail (
-    position_is_equal_ticks (
-      &self_obj->pos, &obj->pos) &&
-    position_is_equal_ticks (
-      &self_obj->end_pos, &obj->end_pos));
+  if (!position_is_equal_ticks (
+        &self_obj->pos, &obj->pos))
+    {
+      char tmp[100];
+      position_stringize (&self_obj->pos, tmp);
+      char tmp2[100];
+      position_stringize (&obj->pos, tmp2);
+      g_warning (
+        "start positions are not equal: "
+        "%s (own) vs %s (project)",
+        tmp, tmp2);
+      has_warning = true;
+    }
+  if (!position_is_equal_ticks (
+         &self_obj->end_pos, &obj->end_pos))
+    {
+      char tmp[100];
+      position_stringize (&self_obj->end_pos, tmp);
+      char tmp2[100];
+      position_stringize (&obj->end_pos, tmp2);
+      g_warning (
+        "end positions are not equal: "
+        "%s (own) vs %s (project)",
+        tmp, tmp2);
+      has_warning = true;
+    }
+
+  if (has_warning)
+    {
+      g_debug ("own region:");
+      region_print (self);
+      g_debug ("found region:");
+      region_print ((ZRegion *) obj);
+    }
+
+  g_debug ("checked positions");
 
   return obj;
 }

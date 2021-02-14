@@ -51,7 +51,7 @@ create_automation_region (
     track, region, atl->ats[0], 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   UndoableAction * ua =
     arranger_selections_action_new_create (
       (ArrangerSelections *) TL_SELECTIONS);
@@ -63,7 +63,7 @@ create_automation_region (
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND);
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_create (
       (ArrangerSelections *) AUTOMATION_SELECTIONS);

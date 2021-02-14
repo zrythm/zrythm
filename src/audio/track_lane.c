@@ -24,10 +24,11 @@
 #include "audio/track_lane.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/arranger.h"
-#include "utils/arrays.h"
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
 #include "project.h"
+#include "utils/arrays.h"
+#include "utils/flags.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -247,7 +248,8 @@ track_lane_unselect_all (
     {
       ZRegion * region = self->regions[i];
       arranger_object_select (
-        (ArrangerObject *) region, false, false);
+        (ArrangerObject *) region, false, false,
+        F_NO_PUBLISH_EVENTS);
     }
 }
 

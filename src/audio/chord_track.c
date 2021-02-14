@@ -205,7 +205,8 @@ chord_track_remove_scale (
   /* deselect */
   arranger_object_select (
     (ArrangerObject *) scale, F_NO_SELECT,
-    F_APPEND);
+    F_APPEND,
+    F_NO_PUBLISH_EVENTS);
 
   array_delete (
     self->scales, self->num_scales, scale);

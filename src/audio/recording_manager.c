@@ -189,7 +189,8 @@ handle_stop_recording (
         arranger_object_find (objs[i]);
       g_return_if_fail (obj);
       arranger_object_select (
-        obj, F_SELECT, F_APPEND);
+        obj, F_SELECT, F_APPEND,
+        F_NO_PUBLISH_EVENTS);
     }
 
   /* free the temporary selections */
