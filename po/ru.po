@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-09 04:57+0000\n"
-"PO-Revision-Date: 2020-12-18 19:29+0000\n"
-"Last-Translator: Artem <blinow99@mail.ru>\n"
+"PO-Revision-Date: 2021-02-10 05:50+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:220
@@ -171,7 +171,7 @@ msgstr "Трек темпа (Tempo)"
 
 #: inc/audio/track.h:169
 msgid "Modulator"
-msgstr ""
+msgstr "Модулятор"
 
 #: inc/audio/track.h:170
 msgid "Audio FX"
@@ -728,7 +728,7 @@ msgstr ""
 #: src/gui/widgets/modulator_macro.c:215 src/gui/widgets/fader.c:372
 #: resources/ui/first_run_assistant.ui:134
 msgid "Reset"
-msgstr ""
+msgstr "Сброс"
 
 #: src/gui/widgets/inspector_port.c:204 src/gui/widgets/modulator_inner.c:226
 #: src/gui/widgets/balance_control.c:366 src/gui/widgets/modulator_macro.c:223
@@ -899,7 +899,7 @@ msgstr ""
 #: src/gui/widgets/left_dock_edge.c:228
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
-msgstr ""
+msgstr "Видимость"
 
 #: src/gui/widgets/plugin_strip_expander.c:152
 msgid "Inserts"
@@ -1194,7 +1194,7 @@ msgstr "Метроном (Metronome)"
 
 #: src/gui/widgets/bot_bar.c:565
 msgid "Volume"
-msgstr ""
+msgstr "Громкость"
 
 #: src/gui/widgets/bot_bar.c:649
 msgid "bpm"
@@ -1366,7 +1366,7 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:243
 msgid "Redo"
-msgstr ""
+msgstr "Повторить"
 
 #: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:239
 #: build/data/org.zrythm.Zrythm.gschema.xml:696
@@ -1473,7 +1473,7 @@ msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:383
 msgid "Channel"
-msgstr ""
+msgstr "Канал"
 
 #: src/gui/widgets/automatable_selector_popover.c:394
 #, c-format
@@ -1566,7 +1566,7 @@ msgstr "Посылы (Sends)"
 #: src/gui/widgets/event_viewer.c:113 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43
 msgid "Scale"
-msgstr ""
+msgstr "Гамма"
 
 #: src/gui/widgets/event_viewer.c:116
 msgid "MIDI note"
@@ -1618,7 +1618,7 @@ msgstr ""
 
 #: src/gui/widgets/cc_bindings_tree.c:266
 msgid "Device"
-msgstr ""
+msgstr "Устройство"
 
 #: src/gui/widgets/cc_bindings_tree.c:277
 msgid "Note/Control"
@@ -3480,7 +3480,7 @@ msgstr ""
 
 #: resources/ui/port_selector_popover.ui:61
 msgid "Track"
-msgstr ""
+msgstr "Трек"
 
 #: resources/ui/port_selector_popover.ui:123
 msgid "Plugin"

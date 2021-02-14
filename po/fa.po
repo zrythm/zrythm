@@ -2,24 +2,28 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
+# ilya rahimi <mr.i.rah1385imi@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 19:10+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2021-02-13 03:50+0000\n"
+"Last-Translator: ilya rahimi <mr.i.rah1385imi@gmail.com>\n"
+"Language-Team: Persian <https://hosted.weblate.org/projects/zrythm/zrythm/fa/"
+">\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:212
 #: inc/audio/engine.h:278
 msgid "Dummy"
-msgstr ""
+msgstr "ساختگی"
 
 #: inc/gui/backend/arranger_object.h:88
 #: src/gui/widgets/channel_send_selector.c:185
@@ -28,289 +32,289 @@ msgstr ""
 #: src/gui/widgets/route_target_selector.c:55
 #: src/gui/widgets/route_target_selector_popover.c:152
 msgid "None"
-msgstr ""
+msgstr "هیچکدام"
 
 #: inc/gui/backend/arranger_object.h:90
 #: resources/ui/chord_selector_window.ui:701
 msgid "All"
-msgstr ""
+msgstr "همه"
 
 #: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:106
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr ""
+msgstr "منطقه"
 
 #: inc/gui/backend/arranger_object.h:94
 msgid "Midi Note"
-msgstr ""
+msgstr "میدی نوت"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "آکورد شی"
 
 #: inc/gui/backend/arranger_object.h:98
 msgid "Scale Object"
-msgstr ""
+msgstr "مقیاس شی"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
 #: src/gui/widgets/event_viewer.c:109
 msgid "Marker"
-msgstr ""
+msgstr "نشانه"
 
 #: inc/gui/backend/arranger_object.h:102
 msgid "Automation Point"
-msgstr ""
+msgstr "نقطه اتوماسیون"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
-msgstr ""
+msgstr "سرعت"
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "زیاد‌"
 
 #: inc/utils/ui.h:76
 msgid "Normal"
-msgstr ""
+msgstr "عادی"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "کم"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "قطع کردن"
 
 #: inc/utils/gtk.h:56
 msgid "_Copy"
-msgstr ""
+msgstr "_کپی"
 
 #: inc/utils/gtk.h:62
 msgid "_Paste"
-msgstr ""
+msgstr "_چسباندن"
 
 #: inc/utils/gtk.h:68
 msgid "_Delete"
-msgstr ""
+msgstr "_حذف"
 
 #: inc/utils/gtk.h:74
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "انتخاب Clear"
 
 #: inc/utils/gtk.h:80
 msgid "Select A_ll"
-msgstr ""
+msgstr "انتخاب همه"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
-msgstr ""
+msgstr "تکثیر کردن"
 
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1190
 #: resources/ui/fader_buttons.ui:99
 msgid "Mute"
-msgstr ""
+msgstr "بی‌صدا"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1186
 msgid "Unmute"
-msgstr ""
+msgstr "صدادار"
 
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
-msgstr ""
+msgstr "ابزار"
 
 #: inc/audio/track.h:163 src/gui/widgets/bot_bar.c:502 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:597
 msgid "Audio"
-msgstr ""
+msgstr "صدا"
 
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
-msgstr ""
+msgstr "استاد"
 
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
 msgid "Chord"
-msgstr ""
+msgstr "آکورد"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:91
 msgid "Tempo"
-msgstr ""
+msgstr "تندا"
 
 #: inc/audio/track.h:168
 msgid "Modulator"
-msgstr ""
+msgstr "تعدیل کننده"
 
 #: inc/audio/track.h:169
 msgid "Audio FX"
-msgstr ""
+msgstr "صوتی FX"
 
 #: inc/audio/track.h:170
 msgid "Audio Group"
-msgstr ""
+msgstr "گروه صوتی"
 
 #: inc/audio/track.h:171 src/audio/region.c:393
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:172
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI FX"
 
 #: inc/audio/track.h:173
 msgid "MIDI Group"
-msgstr ""
+msgstr "گروه MIDI"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
 #, c-format
 msgid "Exponent"
-msgstr ""
+msgstr "نماینده"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
 #, c-format
 msgid "Superellipse"
-msgstr ""
+msgstr "سوپرلیپس"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1292
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr ""
+msgstr "حیاتی"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "نبض"
 
 #: inc/audio/engine.h:123
 msgid "1,024"
-msgstr ""
+msgstr "1024"
 
 #: inc/audio/engine.h:124
 msgid "2,048"
-msgstr ""
+msgstr "2،048"
 
 #: inc/audio/engine.h:125
 msgid "4,096"
-msgstr ""
+msgstr "4،096"
 
 #: inc/audio/engine.h:152
 msgid "22,050"
-msgstr ""
+msgstr "22،050"
 
 #: inc/audio/engine.h:153
 msgid "32,000"
-msgstr ""
+msgstr "32000"
 
 #: inc/audio/engine.h:154
 msgid "44,100"
-msgstr ""
+msgstr "44100"
 
 #: inc/audio/engine.h:155
 msgid "48,000"
-msgstr ""
+msgstr "48000"
 
 #: inc/audio/engine.h:156
 msgid "88,200"
-msgstr ""
+msgstr "88200"
 
 #: inc/audio/engine.h:157
 msgid "96,000"
-msgstr ""
+msgstr "96000"
 
 #: inc/audio/engine.h:158
 msgid "192,000"
-msgstr ""
+msgstr "192،000"
 
 #: inc/audio/engine.h:213
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "ساختگی (libsoundio)"
 
 #: inc/audio/engine.h:279
 msgid "ALSA Sequencer (not working)"
-msgstr ""
+msgstr "دنبال کننده ALSA (کار نمی کند)"
 
 #: inc/audio/engine.h:280
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "دنبال کننده ALSA (ارتمیدی)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
-msgstr ""
+msgstr "کرسندو"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
 msgid "Flam"
-msgstr ""
+msgstr "شعله ور"
 
 #: inc/audio/midi_function.h:58
 msgid "Flip H"
-msgstr ""
+msgstr "تلنگر H"
 
 #: inc/audio/midi_function.h:59
 msgid "Flip V"
-msgstr ""
+msgstr "Flip V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
 msgid "Legato"
-msgstr ""
+msgstr "لگاتو"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
 msgid "Portato"
-msgstr ""
+msgstr "سیب زمینی"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
 msgid "Staccato"
-msgstr ""
+msgstr "استاکاتو"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
 msgid "Strum"
-msgstr ""
+msgstr "استروم"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1868
 msgid "Inherit"
-msgstr ""
+msgstr "به ارث می برند"
 
 #: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:517
 #: src/audio/automation_track.c:101
 msgid "Off"
-msgstr ""
+msgstr "خاموش"
 
 #: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:517
 #: src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:252 src/audio/automation_track.c:95
 msgid "On"
-msgstr ""
+msgstr "روشن"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1289
 #: src/utils/ui.c:858
 msgid "Linear"
-msgstr ""
+msgstr "خطی"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:859
 msgid "Square Root"
-msgstr ""
+msgstr "ریشه دوم"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "سینوس"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
@@ -321,7 +325,7 @@ msgstr ""
 #: src/project.c:142
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "پرونده باز نشد: %s"
 
 #: src/project.c:186
 msgid "Project not compressed by zstd!"
@@ -330,7 +334,7 @@ msgstr ""
 #: src/project.c:199
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "فشرده سازی پرونده پروژه انجام نشد: %s"
 
 #: src/project.c:208
 msgid ""
@@ -341,7 +345,7 @@ msgstr ""
 #: src/project.c:240
 #, c-format
 msgid "Failed to write file: %s"
-msgstr ""
+msgstr "نوشتن پرونده ناموفق بود: %s"
 
 #: src/project.c:809
 #, c-format
@@ -350,15 +354,18 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"نسخه پشتیبان جدیدتری پیدا شد:\n"
+"  %s\n"
+"از نسخه پشتیبان جدیدتر استفاده می کنید؟"
 
 #: src/project.c:814
 msgid "Backup found"
-msgstr ""
+msgstr "نسخه پشتیبان پیدا شد"
 
 #: src/project.c:872
 #, c-format
 msgid "Unable to read file: %s"
-msgstr ""
+msgstr "خواندن پرونده امکان پذیر نیست: %s"
 
 #: src/project.c:924
 #, c-format
@@ -366,36 +373,37 @@ msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
+"این پروژه با نسخه دیگری از %s (%s) ایجاد شده است. ممکن است درست کار نکند."
 
 #: src/project.c:939
 msgid "Failed to load project. Please check the logs for more information."
-msgstr ""
+msgstr "پروژه بارگیری نشد. لطفا برای اطلاعات بیشتر گزارش ها را بررسی کنید."
 
 #: src/project.c:1122
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
+msgstr "پروژه بارگیری نشد. به جای آن یک مورد جدید ایجاد خواهد شد."
 
 #: src/project.c:1462
 msgid "Backup saved."
-msgstr ""
+msgstr "پشتیبان ذخیره شد."
 
 #: src/project.c:1472
 msgid "Project saved."
-msgstr ""
+msgstr "پروژه ذخیره شد"
 
 #: src/main.c:78
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "خطا - Backtrace:\n"
 
 #: src/main.c:82
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "خطا: %s - Backtrace:\n"
 
 #: src/main.c:96
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s خراب شد. "
 
 #: src/main.c:129
 #, c-format
@@ -434,39 +442,40 @@ msgstr ""
 #: src/main.c:172
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "پرونده %s یافت نشد."
 
 #: src/main.c:193
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
+"پرونده خروجی مشخص نشده است. لطفاً یکی را با `- خروجی [FILE]\" عبور دهید."
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:335
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "گزینه ناشناخته\n"
 
 #: src/main.c:392
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "فشرده سازی پروژه ناموفق بود: %s\n"
 
 #: src/main.c:401
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "پروژه با موفقیت فشرده شد\n"
 
 #: src/main.c:419
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "پروژه از حالت فشرده خارج نشد: %s\n"
 
 #: src/main.c:428
 #, c-format
 msgid "Project successfully decompressed.\n"
-msgstr ""
+msgstr "پروژه با موفقیت از حالت فشرده خارج شد.\n"
 
 #: src/main.c:437
 #, c-format
@@ -485,69 +494,69 @@ msgstr ""
 
 #: src/zrythm_app.c:218
 msgid "Setting up main window"
-msgstr ""
+msgstr "تنظیم پنجره اصلی"
 
 #: src/zrythm_app.c:263
 msgid "Loading project"
-msgstr ""
+msgstr "بارگیری پروژه"
 
 #: src/zrythm_app.c:276
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr ""
+msgstr "هیچ پروژه ای انتخاب نشده است. %s اکنون بسته خواهد شد."
 
 #: src/zrythm_app.c:299
 msgid "Initializing settings"
-msgstr ""
+msgstr "تنظیمات اولیه"
 
 #: src/zrythm_app.c:307
 #, c-format
 msgid "Initializing %s directories"
-msgstr ""
+msgstr "در حال راه اندازی %s فهرست ها"
 
 #: src/zrythm_app.c:317
 msgid "Initializing logging system"
-msgstr ""
+msgstr "شروع سیستم ورود به سیستم"
 
 #: src/zrythm_app.c:327
 msgid "Initializing caches"
-msgstr ""
+msgstr "در حال ذخیره سازی حافظه پنهان"
 
 #: src/zrythm_app.c:331
 msgid "Initializing file manager"
-msgstr ""
+msgstr "در حال راه اندازی مدیر پرونده"
 
 #: src/zrythm_app.c:338
 msgid "Scanning plugins"
-msgstr ""
+msgstr "افزونه های اسکن"
 
 #: src/zrythm_app.c:499
 msgid "License Information"
-msgstr ""
+msgstr "اطلاعات مجوز"
 
 #: src/zrythm_app.c:527
 msgid "Waiting for project"
-msgstr ""
+msgstr "منتظر پروژه"
 
 #: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 msgid "Default bank"
-msgstr ""
+msgstr "بانک پیش فرض"
 
 #: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
-msgstr ""
+msgstr "آغاز"
 
 #: src/plugins/carla_native_plugin.c:993
 msgid "Audio in"
-msgstr ""
+msgstr "ورودی صدا"
 
 #: src/plugins/carla_native_plugin.c:1003
 msgid "Audio out"
-msgstr ""
+msgstr "خروجی صدا"
 
 #: src/plugins/carla_native_plugin.c:1013
 msgid "MIDI in"
-msgstr ""
+msgstr "MIDI در"
 
 #: src/plugins/carla_native_plugin.c:1023
 msgid "MIDI out"
