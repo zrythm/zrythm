@@ -1258,9 +1258,8 @@ zrythm_app_init (
 {
   g_message ("initing zrythm app");
 
-  /* prefer x11 backend because plugin UIs need
-   * it to load */
-  gdk_set_allowed_backends ("quartz,win32,x11,*");
+  gdk_set_allowed_backends (
+    "quartz,win32,wayland,x11,*");
 
   const GActionEntry entries[] = {
     { "prompt_for_project", on_prompt_for_project },
