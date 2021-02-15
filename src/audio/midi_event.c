@@ -431,6 +431,21 @@ midi_events_add_all_notes_off (
     self->num_events++;
 }
 
+void
+midi_events_panic (
+  MidiEvents * self,
+  bool         queued)
+{
+  zix_sem_wait (&self->access_sem);
+  g_message ("sending PANIC");
+  for (midi_byte_t i = 0; i < 16; i++)
+    {
+      midi_events_add_all_notes_off (
+        self, i, 0, queued);
+    }
+  zix_sem_post (&self->access_sem);
+}
+
 static int
 sort_events_func (
   const void * _a, const void * _b)

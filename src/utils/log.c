@@ -866,6 +866,11 @@ log_writer (
             backtrace_get_with_lines ("", 100);
         }
 
+      if (self->obj_pool->num_obj_available < 200)
+        {
+          log_idle_cb (self);
+        }
+
       mpmc_queue_push_back (
         self->mqueue, (void *) ev);
     }

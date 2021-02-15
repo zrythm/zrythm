@@ -249,9 +249,9 @@ static const cyaml_schema_field_t
     gdk_rgba_fields_schema),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     TracklistSelectionsAction, new_txt),
-  YAML_FIELD_INT (
+  YAML_FIELD_FLOAT (
     TracklistSelectionsAction, val_before),
-  YAML_FIELD_INT (
+  YAML_FIELD_FLOAT (
     TracklistSelectionsAction, val_after),
 
   CYAML_FIELD_END

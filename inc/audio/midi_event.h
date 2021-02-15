@@ -357,10 +357,10 @@ midi_events_add_all_notes_off (
   midi_time_t  time,
   bool         queued);
 
-#define midi_events_panic(self,queued) \
-  zix_sem_wait (&(self)->access_sem); \
-  g_message ("sending PANIC"); \
-  zix_sem_post (&(self)->access_sem);
+void
+midi_events_panic (
+  MidiEvents * self,
+  bool         queued);
 
 /**
  * Clears midi events.

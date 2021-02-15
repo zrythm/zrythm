@@ -91,6 +91,9 @@ pause_engine (
     g_atomic_int_get (&AUDIO_ENGINE->run);
   state->playing = TRANSPORT_IS_ROLLING;
 
+  /* send panic */
+  midi_panic_all (F_QUEUED);
+
   if (state->playing)
     {
       transport_request_pause (TRANSPORT);
