@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 03:59+0000\n"
-"PO-Revision-Date: 2021-02-13 03:50+0000\n"
+"PO-Revision-Date: 2021-02-15 05:50+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -2192,9 +2192,8 @@ msgid "Unsupported file type %s"
 msgstr "不支持的文件类型%s"
 
 #: src/audio/tracklist.c:1016
-#, fuzzy
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr "无法拖放 MIDI 文件到已存在的轨道中"
+msgstr "只能在 MIDI/乐器轨道上放下 MIDI 文件"
 
 #: src/audio/tracklist.c:1029
 #, c-format
@@ -2337,14 +2336,13 @@ msgid "PulseAudio error: Failed to create main loop"
 msgstr ""
 
 #: src/audio/engine_pulse.c:263
-#, fuzzy, c-format
+#, c-format
 msgid "PulseAudio Error: %s"
-msgstr "Portaudio错误:%s"
+msgstr "PulseAudio 错误：%s"
 
 #: src/audio/engine_pulse.c:282
-#, fuzzy
 msgid "PulseAudio Error: Failed to connect"
-msgstr "要连接到的音频后端"
+msgstr "PulseAudio 错误：连接失败"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
@@ -2665,32 +2663,27 @@ msgstr "更改拍子记号"
 #: src/actions/channel_send_action.c:202
 #, fuzzy
 msgid "Connect sidechain"
-msgstr "集合"
+msgstr "连接侧链"
 
 #: src/actions/channel_send_action.c:204
-#, fuzzy
 msgid "Connect stereo"
-msgstr "连接端口"
+msgstr "连接立体声"
 
 #: src/actions/channel_send_action.c:206
-#, fuzzy
 msgid "Connect MIDI"
-msgstr "连接端口"
+msgstr "连接 MIDI"
 
 #: src/actions/channel_send_action.c:208
-#, fuzzy
 msgid "Disconnect"
-msgstr "断开端口连接"
+msgstr "断开连接"
 
 #: src/actions/channel_send_action.c:210
-#, fuzzy
 msgid "Change amount"
-msgstr "更改Pan"
+msgstr "更改数量"
 
 #: src/actions/channel_send_action.c:212
-#, fuzzy
 msgid "Change ports"
-msgstr "修改颜色"
+msgstr "更改端口"
 
 #: src/actions/channel_send_action.c:215
 msgid "Channel send connection"
@@ -3380,14 +3373,12 @@ msgid "Port connections"
 msgstr "端口连接"
 
 #: resources/ui/main_notebook.ui:96
-#, fuzzy
 msgid "Connections"
-msgstr "集合"
+msgstr "连接"
 
 #: resources/ui/main_notebook.ui:118
-#, fuzzy
 msgid "MIDI CC bindings"
-msgstr "MIDI In"
+msgstr "MIDI CC 绑定"
 
 #: resources/ui/main_notebook.ui:134
 msgid "Bindings"
@@ -4655,16 +4646,14 @@ msgid ""
 msgstr "赫兹为单位的刷新率，如设为 0 将使用屏幕刷新率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:637
-#, fuzzy
 msgid "Scale factor"
-msgstr "缩放对象"
+msgstr "缩放因子"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:638
-#, fuzzy
 msgid ""
 "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
 "will be used."
-msgstr "赫兹为单位的刷新率，如设为 0 将使用屏幕刷新率。"
+msgstr "传递到插件用户界面的缩放因子，如设为 0，将使用监视器的缩放因子。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:655
 msgid "VST plugins"
