@@ -40,16 +40,16 @@ install_data (
   'samples/klick/square_normal.wav',
   install_dir: samplesdir)
 
-# install desktop file and launcher script
-if os_gnu or os_freebsd
-  zrythm_launcher_config = configuration_data ()
-  zrythm_launcher_config.set (
-    'SCHEMAS_DIR', schemasdir)
-  zrythm_launcher_config.set (
-    'BIN_DIR', bindir)
-  zrythm_launcher_config.set (
-    'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
+zrythm_launcher_config = configuration_data ()
+zrythm_launcher_config.set (
+  'SCHEMAS_DIR', schemasdir)
+zrythm_launcher_config.set (
+  'BIN_DIR', bindir)
+zrythm_launcher_config.set (
+  'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
 
+# install desktop file and launcher scripts
+if os_gnu or os_freebsd
   zrythm_launcher = configure_file (
     input: 'zrythm_launch.in',
     output: prog_name_lowercase + '_launch',
@@ -93,6 +93,14 @@ if os_gnu or os_freebsd
       args: [localized_desktop_file]
     )
   endif
+elif os_darwin
+  zrythm_gdb = configure_file (
+    input: 'zrythm_lldb.in',
+    output: prog_name_lowercase + '_lldb',
+    configuration: zrythm_launcher_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: 'r-xr-xr-x')
 endif
 
 subdir ('icon-themes')
