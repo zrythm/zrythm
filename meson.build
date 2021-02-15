@@ -1089,10 +1089,10 @@ subdir ('tests')
 subdir ('doc')
 
 meson.add_install_script (
-  meson.build_root() / 'scripts' / 'meson_post_install_wrap.sh')
+  'scripts/meson-post-install.sh')
 
 meson.add_dist_script (
-  'scripts' / 'meson_dist.sh')
+  'scripts/meson_dist.sh')
 
 summary ({
   'Program name': get_option ('program_name'),

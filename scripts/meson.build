@@ -47,7 +47,7 @@ endif
 src_scripts = run_command ('ls').stdout().strip().split('\n')
 foreach script : src_scripts
   if script.endswith ('.scm')
-    meson_post_install = configure_file (
+    res = configure_file (
       output: script,
       input: script,
       configuration: scripts_conf,
@@ -58,14 +58,6 @@ endforeach
 # ---- create wraps needed on windows mingw ----
 
 generic_guile_wrap_name = 'generic_guile_wrap.sh'
-
-# create the post install wrap
-meson_post_install_wrap = configure_file (
-  output: 'meson_post_install_wrap.sh',
-  input: generic_guile_wrap_name,
-  configuration: scripts_conf + {
-    'SCRIPT_NAME': 'meson-post-install.scm'},
-  )
 
 # create the gschema generator wrap
 gen_gschema_wrap = configure_file (
