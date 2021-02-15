@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -64,6 +64,10 @@ typedef struct _TimelineToolbarWidget
   RangeActionButtonsWidget * range_action_buttons;
   GtkToolButton *  merge_btn;
 } TimelineToolbarWidget;
+
+void
+timeline_toolbar_widget_refresh (
+  TimelineToolbarWidget * self);
 
 void
 timeline_toolbar_widget_setup (

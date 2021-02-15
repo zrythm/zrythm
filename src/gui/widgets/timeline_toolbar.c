@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,9 +33,25 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (TimelineToolbarWidget,
-               timeline_toolbar_widget,
-               GTK_TYPE_TOOLBAR)
+G_DEFINE_TYPE (
+  TimelineToolbarWidget,
+  timeline_toolbar_widget, GTK_TYPE_TOOLBAR)
+
+void
+timeline_toolbar_widget_refresh (
+  TimelineToolbarWidget * self)
+{
+  /* enable/disable merge button */
+  bool sensitive =
+    TL_SELECTIONS->num_regions > 1 &&
+    arranger_selections_all_on_same_lane (
+      (ArrangerSelections *) TL_SELECTIONS);
+  g_debug (
+    "settings merge button sensitivity %d",
+    sensitive);
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self->merge_btn), sensitive);
+}
 
 void
 timeline_toolbar_widget_setup (

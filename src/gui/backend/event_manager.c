@@ -650,12 +650,8 @@ on_arranger_selections_changed (
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);
 
-  /* enable/disable merge button */
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (MW_TIMELINE_TOOLBAR->merge_btn),
-    TL_SELECTIONS->num_regions > 1 &&
-    arranger_selections_all_on_same_lane (
-      (ArrangerSelections *) TL_SELECTIONS));
+  timeline_toolbar_widget_refresh (
+    MW_TIMELINE_TOOLBAR);
 }
 
 static void
@@ -791,6 +787,8 @@ on_arranger_selections_removed (
       g_return_if_reached ();
     }
 #endif
+  timeline_toolbar_widget_refresh (
+    MW_TIMELINE_TOOLBAR);
 }
 
 static void
@@ -899,6 +897,8 @@ on_arranger_object_changed (
        * positions were changed */
       ruler_widget_redraw_whole (
         EDITOR_RULER);
+      timeline_toolbar_widget_refresh (
+        MW_TIMELINE_TOOLBAR);
       break;
     case ARRANGER_OBJECT_TYPE_MARKER:
       {
@@ -1348,6 +1348,8 @@ process_events (void * data)
           break;
         case ET_RANGE_SELECTION_CHANGED:
           on_range_selection_changed ();
+          timeline_toolbar_widget_refresh (
+            MW_TIMELINE_TOOLBAR);
           break;
         case ET_TOOL_CHANGED:
           toolbox_widget_refresh (MW_TOOLBOX);
@@ -1592,6 +1594,8 @@ process_events (void * data)
         case ET_SELECTING_IN_ARRANGER:
           arranger_widget_redraw_whole (
             Z_ARRANGER_WIDGET (ev->arg));
+          timeline_toolbar_widget_refresh (
+            MW_TIMELINE_TOOLBAR);
           break;
         case ET_TRACKS_RESIZED:
           g_warn_if_fail (ev->arg);

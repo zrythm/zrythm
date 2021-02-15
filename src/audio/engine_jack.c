@@ -280,6 +280,7 @@ xrun_cb (
     {
       /* FIXME make a notification message queue */
       g_warning (
+        "%s",
         _("XRUN occurred - check your JACK "
         "configuration"));
       self->last_xrun_notification = cur_time;
