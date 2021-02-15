@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 03:59+0000\n"
-"PO-Revision-Date: 2021-01-03 23:56+0000\n"
+"PO-Revision-Date: 2021-02-15 05:50+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:220
@@ -125,7 +125,7 @@ msgstr "ミュートを解除"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:202
 msgid "Invert"
-msgstr ""
+msgstr "転化"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
 #, fuzzy
@@ -134,11 +134,11 @@ msgstr "普通"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
-msgstr ""
+msgstr "反転"
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
-msgstr ""
+msgstr "不正"
 
 #: inc/audio/track.h:163 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -531,7 +531,7 @@ msgstr "プロジェクトが正常に解凍されました。\n"
 #: src/main.c:485
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "このオプションには libguile が必要です。\n"
 
 #: src/main.c:494
 #, fuzzy, c-format
@@ -684,6 +684,10 @@ msgid ""
 "mode, and report this to the author:\n"
 "  %s <%s>"
 msgstr ""
+"%s <%s>には、非推奨のUIタイプがあります。\n"
+"  %s\n"
+"UIが読み込まれない場合は、プラグインをフルブリッジモードでインスタンス化してみて、作者に報告してください。\n"
+"  %s <%s>"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:106
 msgid "Save State"
@@ -717,6 +721,9 @@ msgid ""
 "bridged mode, and report this to the plugin distributor and/or author:\n"
 "%s <%s>"
 msgstr ""
+"%s <%s> には %s への参照が含まれており、問題が発生する可能性があります。\n"
+"プラグインがロードされない場合は、プラグインをフルブリッジモードでインスタンス化してみて、プラグインの配布元および/または作者に報告してください。\n"
+"%s <%s>"
 
 #: src/plugins/lv2_plugin.c:2912
 msgid "Unnamed bank"
@@ -1126,7 +1133,7 @@ msgstr "プロジェクトに追加"
 
 #: src/gui/widgets/plugin_browser.c:518
 msgid "Remove from collection"
-msgstr ""
+msgstr "コレクションから削除"
 
 #: src/gui/widgets/plugin_browser.c:635 src/gui/widgets/plugin_browser.c:672
 #, fuzzy
@@ -1137,7 +1144,7 @@ msgstr "コレクション"
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
-msgstr ""
+msgstr "このコレクションには%dプラグインが含まれています。本当に削除しますか？"
 
 #: src/gui/widgets/plugin_browser.c:747
 #, fuzzy
@@ -1516,7 +1523,7 @@ msgstr "コントロールが選択されていません"
 
 #: src/gui/widgets/automatable_selector_popover.c:359
 msgid "Macros"
-msgstr ""
+msgstr "マクロ"
 
 #: src/gui/widgets/automatable_selector_popover.c:383
 #, fuzzy
@@ -1546,7 +1553,7 @@ msgstr "[モジュレータ%d]%s"
 #: src/gui/widgets/snap_grid.c:60
 #, c-format
 msgid "%s - Last object"
-msgstr ""
+msgstr "%s - 最後のオブジェクト"
 
 #: src/gui/widgets/snap_grid.c:120
 msgid "Snap/Grid options"
@@ -2272,17 +2279,17 @@ msgstr "マーカー"
 #: src/audio/modulator_macro_processor.c:89
 #, c-format
 msgid "Macro %d"
-msgstr ""
+msgstr "マクロ %d"
 
 #: src/audio/modulator_macro_processor.c:107
 #, c-format
 msgid "Macro CV In %d"
-msgstr ""
+msgstr "マクロ CV In %d"
 
 #: src/audio/modulator_macro_processor.c:117
 #, c-format
 msgid "Macro CV Out %d"
-msgstr ""
+msgstr "マクロ CV 出力 %d"
 
 #: src/audio/modulator_track.c:90 resources/ui/bot_dock_edge.ui:144
 #: resources/ui/bot_dock_edge.ui:160
@@ -2296,7 +2303,7 @@ msgstr "エクスポートするフォーマット。"
 
 #: src/audio/exporter.c:233
 msgid "SF INFO invalid"
-msgstr ""
+msgstr "SF INFO 無効"
 
 #: src/audio/exporter.c:254
 #, c-format
@@ -2304,6 +2311,8 @@ msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
+"SNDFILE %s を開けませんでした。\n"
+"%d:%s"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -2365,11 +2374,11 @@ msgstr ""
 msgid ""
 "A buffer underflow has occurred. Try increasing the buffer size in the "
 "settings to avoid audio glitches."
-msgstr ""
+msgstr "バッファアンダーフローが発生しました。オーディオのグリッチを避けるために、設定でバッファサイズを大きくしてみてください。"
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
-msgstr ""
+msgstr "PulseAudio エラー。メインループの作成に失敗"
 
 #: src/audio/engine_pulse.c:263
 #, fuzzy, c-format
@@ -2669,7 +2678,7 @@ msgstr "エクスポートしました"
 
 #: src/actions/actions.c:1066
 msgid "Can't paste incompatible data"
-msgstr ""
+msgstr "互換性のないデータを貼り付けられません"
 
 #: src/actions/actions.c:1790
 msgid "No regions selected"
@@ -3452,11 +3461,11 @@ msgstr "CCバインディング"
 
 #: resources/ui/main_notebook.ui:156
 msgid "Scenes (Live view)"
-msgstr ""
+msgstr "シーン（ライブビュー）"
 
 #: resources/ui/main_notebook.ui:172
 msgid "Scenes"
-msgstr ""
+msgstr "シーン"
 
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 msgid "Pitch Wheel"
@@ -3762,11 +3771,11 @@ msgstr "ms"
 
 #: resources/ui/snap_box.ui:38
 msgid "Snap to grid"
-msgstr ""
+msgstr "グリッドにあわせる"
 
 #: resources/ui/snap_box.ui:60
 msgid "Keep offset"
-msgstr ""
+msgstr "オフセットを維持する"
 
 #: resources/ui/snap_box.ui:82
 #, fuzzy
@@ -4220,7 +4229,7 @@ msgstr "エディター オブジェクトの長さ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:265
 msgid "The length of the last created editor object (in ticks)."
-msgstr ""
+msgstr "最後に作成されたエディタオブジェクトの長さ（ティック数）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:269
 msgid "Note notation"
@@ -4278,7 +4287,7 @@ msgstr "オートメーションレーンを表示"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:295
 msgid "Whether to show automation values in the automation editor."
-msgstr ""
+msgstr "オートメーションエディタでオートメーションの値を表示するかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:299
 msgid "Browser divider position"
