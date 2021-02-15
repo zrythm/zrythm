@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.11.1.1] - 2021-02-15
+### Added
+- Allow sending to plugin sidechain inputs (pg:sideChainOf)
+- Add horizontal scrollbar to modulators tab
+- Install `zrythm_lldb` on MacOS
+
+### Changed
+- Deactivate engine before closing main window
+- Update Portuguese (Brazil), Russian, Chinese (Simplified), Persian translations
+- Only redraw meters if values changed
+- `--gdb` and `--valgrind` options moved to shell scripts `zrythm_gdb` and `zrythm_valgrind`
+- Use GOptionEntry to parse command line args
+- Remove empty tracks when importing a MIDI file
+- Update lv2/lilv/sratom/serd/sord wraps
+- Convert meson post-install script to shell script
+
+### Fixed
+- Fix error when moving plugin to duplicated track after connecting ports
+- Fix error when pressing delete in the tracklist
+- Fix making a selection with Ctrl held down not appending to the selection
+- Fix recorded audio not being saved properly
+- Fix merge button state not updated when selecting objects with the select tool
+- Fix invalid serialization of track edit actions
+- Fix MIDI panic not sent when performing actions
+
 ## [1.0.0-alpha.11.0.2] - 2021-02-12
 ### Added
 - Print available GTK modules on startup
