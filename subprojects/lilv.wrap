@@ -1,4 +1,4 @@
 [wrap-git]
-url = https://git.sr.ht/~alextee/zrythm-lilv
-revision = 341df73ff01bc7b615e26a6fcf72947239f87055
+url=https://gitlab.com/lv2/lilv.git
+revision=meson
 

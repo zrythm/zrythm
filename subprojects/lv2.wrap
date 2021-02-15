@@ -1,0 +1,3 @@
+[wrap-git]
+url=https://gitlab.com/lv2/lv2.git
+revision=meson

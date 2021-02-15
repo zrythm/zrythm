@@ -711,16 +711,25 @@ if not samplerate_dep.found ()
   samplerate_dep = samplerate_subproject.dependency (
     'samplerate')
 endif
-lv2_dep = dependency(
-  'lv2', version: '>=1.16.0', required: false,
+lv2_dep = dependency (
+  'lv2', version: '>=1.16.0',
+  fallback: ['lv2', 'lv2_dep'],
   static: all_static)
-if not lv2_dep.found ()
-  lilv_proj = subproject('lilv')
-  lv2_dep = lilv_proj.get_variable('lv2_dep')
-endif
 if lv2_dep.version().version_compare('>=1.18.0')
   cdata.set('HAVE_LV2_1_18', 1)
 endif
+serd_dep = dependency (
+  'serd-0', version: '>=0.30.0',
+  fallback: ['serd', 'serd_dep'],
+  static: all_static)
+sord_dep = dependency (
+  'sord-0', version: '>=0.14.0',
+  fallback: ['sord', 'sord_dep'],
+  static: all_static)
+sratom_dep = dependency (
+  'sratom-0', version: '>=0.4.0',
+  fallback: ['sratom', 'sratom_dep'],
+  static: all_static)
 lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
   fallback: ['lilv', 'lilv_dep'],
@@ -965,15 +974,14 @@ zrythm_deps = [
   zstd_dep,
   reproc_dep,
   dependency ('threads'),
+  lv2_dep,
+  serd_dep,
+  sord_dep,
+  sratom_dep,
   lilv_dep,
-  dependency ('sratom-0'),
-  dependency ('serd-0'),
-  dependency ('sord-0'),
-  dependency (
-    'rubberband'),
+  dependency ('rubberband'),
   dependency ('libpcre'),
   cc.find_library ('dl', static: all_static),
-  lv2_dep,
   chromaprint_dep,
   fftw3_deps,
   gtksource_dep,

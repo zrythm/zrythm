@@ -1,0 +1,3 @@
+[wrap-git]
+url=https://gitlab.com/drobilla/serd.git
+revision=meson
