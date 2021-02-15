@@ -1014,6 +1014,180 @@ test_mono_recording (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_long_audio_recording (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef TEST_WAV2
+
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (1000000);
+
+  /* create an audio track */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO, NULL, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * audio_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  prepare ();
+  TRANSPORT->recording = true;
+  transport_request_roll (TRANSPORT);
+
+  /* disable loop & punch */
+  transport_set_loop (TRANSPORT, false);
+  transport_set_punch_mode_enabled (
+    TRANSPORT, false);
+
+  /* move playhead to 2.1.1.0 */
+  Position pos, init_pos;
+  position_set_to_bar (&pos, PLAYHEAD_START_BAR);
+  transport_set_playhead_pos (TRANSPORT, &pos);
+  position_set_to_pos (&init_pos, &pos);
+
+  /* enable recording for audio track */
+  track_set_recording (audio_track, true, false);
+
+  AudioClip * clip =
+    audio_clip_new_from_file (TEST_WAV2);
+  long processed_ch_frames = 0;
+
+  double total_secs_to_process =
+    (double) clip->num_frames /
+    (double)AUDIO_ENGINE->sample_rate;
+
+  /* process almost whole clip */
+  long total_samples_to_process =
+    ((long) total_secs_to_process - 1) *
+    AUDIO_ENGINE->sample_rate;
+
+  long total_loops =
+    total_samples_to_process / CYCLE_SIZE;
+
+  ZRegion * audio_r;
+  ArrangerObject * audio_r_obj;
+
+  /* run the engine for a few cycles */
+  for (long j = 0; j < total_loops; j++)
+    {
+      for (nframes_t i = 0; i < CYCLE_SIZE; i++)
+        {
+          AUDIO_ENGINE->dummy_input->l->buf[i] =
+            clip->ch_frames[0][processed_ch_frames];
+          AUDIO_ENGINE->dummy_input->r->buf[i] =
+            clip->ch_frames[1][processed_ch_frames];
+          processed_ch_frames++;
+        }
+
+      engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+      recording_manager_process_events (
+        RECORDING_MANAGER);
+
+      /* assert that audio events are created */
+      g_assert_cmpint (
+        audio_track->lanes[0]->num_regions, ==, 1);
+      audio_r = audio_track->lanes[0]->regions[0];
+      audio_r_obj = (ArrangerObject *) audio_r;
+      position_set_to_pos (
+        &pos, &TRANSPORT->playhead_pos);
+      g_assert_cmppos (&pos, &audio_r_obj->end_pos);
+      position_add_frames (&pos, - CYCLE_SIZE);
+      g_assert_cmppos (&init_pos, &audio_r_obj->pos);
+
+      /* assert that audio is correct */
+      AudioClip * r_clip =
+        audio_region_get_clip (audio_r);
+      g_assert_cmpint (
+        r_clip->num_frames, ==,
+        processed_ch_frames);
+      for (nframes_t i = 0;
+           i < processed_ch_frames; i++)
+        {
+          g_assert_cmpfloat_with_epsilon (
+            r_clip->ch_frames[0][i],
+            clip->ch_frames[0][i],
+            0.000001f);
+          g_assert_cmpfloat_with_epsilon (
+            r_clip->ch_frames[1][i],
+            clip->ch_frames[1][i],
+            0.000001f);
+        }
+
+      /* load the region file and check that
+       * frames are correct */
+      AudioClip * new_clip =
+        audio_clip_new_from_file (
+          audio_clip_get_path_in_pool (r_clip));
+      if (r_clip->num_frames <
+            new_clip->num_frames)
+        {
+          g_warning (
+            "%zu < %zu",
+            r_clip->num_frames,
+            new_clip->num_frames);
+        }
+      g_warn_if_fail (
+        audio_frames_equal (
+         r_clip->ch_frames[0],
+         new_clip->ch_frames[0],
+         (size_t) MIN (
+           new_clip->num_frames,
+           r_clip->num_frames)));
+      g_warn_if_fail (
+        audio_frames_equal (
+         r_clip->frames, new_clip->frames,
+         (size_t) MIN (
+           new_clip->num_frames * 2,
+           r_clip->num_frames * 2)));
+      audio_clip_free (new_clip);
+    }
+
+  /* stop recording */
+  track_set_recording (audio_track, false, false);
+
+  /* run engine 1 more cycle to finalize recording */
+  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  transport_request_pause (TRANSPORT);
+  recording_manager_process_events (
+    RECORDING_MANAGER);
+
+  /* save and undo/redo */
+  test_project_save_and_reload ();
+
+  /* load the region file and check that
+   * frames are correct */
+  audio_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 1);
+  audio_r = audio_track->lanes[0]->regions[0];
+  audio_r_obj = (ArrangerObject *) audio_r;
+  AudioClip * r_clip =
+    audio_region_get_clip (audio_r);
+  AudioClip * new_clip =
+    audio_clip_new_from_file (
+      audio_clip_get_path_in_pool (r_clip));
+  g_warn_if_fail (
+    audio_frames_equal (
+     r_clip->frames, new_clip->frames,
+     (size_t) MIN (
+       new_clip->num_frames,
+       r_clip->num_frames)));
+  audio_clip_free (new_clip);
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1021,6 +1195,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/integration/recording/"
 
+  g_test_add_func (
+    TEST_PREFIX "test long audio recording",
+    (GTestFunc) test_long_audio_recording);
 #ifdef HAVE_HELM
   g_test_add_func (
     TEST_PREFIX "test_recording",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 
 #include "audio/engine.h"
 #include "project.h"
+#include "utils/math.h"
 #include "utils/audio.h"
 
 #include <sndfile.h>
@@ -39,9 +40,10 @@ static int num_cores = 0;
  *
  * @param size The number of frames per channel.
  * @param samplerate The samplerate of \ref buff.
- * @param frames_already_written Frames already
- *   written. If this is non-zero and the file
- *   exists, it will append to the existing file.
+ * @param frames_already_written Frames (per
+ *   channel)already written. If this is non-zero
+ *   and the file exists, it will append to the
+ *   existing file.
  *
  * @return Non-zero if fail.
  */
@@ -77,35 +79,54 @@ audio_write_raw_file (
   info.sections = 1;
 
   bool write_chunk =
-    frames_already_written > 0 &&
+    (frames_already_written > 0) &&
     g_file_test (filename, G_FILE_TEST_IS_REGULAR);
 
   SNDFILE * sndfile =
     sf_open (filename, SFM_RDWR, &info);
 
-  if (write_chunk)
+  long seek_to =
+    write_chunk ? frames_already_written : 0;
+  g_debug ("seeking to %ld", seek_to);
+  int ret =
+    sf_seek (
+      sndfile, seek_to, SEEK_SET | SFM_WRITE);
+  if (ret == -1 || ret != seek_to)
     {
-      g_debug (
-        "seeking to %ld", frames_already_written);
-      int ret =
-        sf_seek (
-          sndfile, frames_already_written,
-          SEEK_SET | SFM_WRITE);
-      if (ret < 0)
-        {
-          g_warning ("seek error %d", ret);
-        }
+      g_warning ("seek error %d", ret);
     }
 
   sf_count_t count =
     sf_writef_float (sndfile, buff, nframes);
   g_warn_if_fail (count == nframes);
 
+  sf_write_sync (sndfile);
+
   sf_close (sndfile);
 
-  g_message ("wrote %s", filename);
+  g_message (
+    "wrote %zu frames to '%s'", count, filename);
 
   return 0;
+}
+
+bool
+audio_frames_equal (
+  float * src1,
+  float * src2,
+  size_t  num_frames)
+{
+  for (size_t i = 0; i < num_frames; i++)
+    {
+      if (!math_floats_equal (src1[i], src2[i]))
+        {
+          g_debug (
+            "[%zu] %f != %f",
+            i, (double) src1[i], (double) src2[i]);
+          return false;
+        }
+    }
+  return true;
 }
 
 /**

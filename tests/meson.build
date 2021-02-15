@@ -54,6 +54,20 @@ if get_option ('tests')
   test_config_guile = configuration_data()
   test_config_guile.merge_from (test_config)
 
+  if rubberband.found()
+    # timestretched test file x 2
+    test_wav2 = configure_file (
+      input: 'test.wav',
+      output: 'test2.wav',
+      command: [
+        rubberband, '--time', '2',
+        '@INPUT@', '@OUTPUT@',
+        ])
+    test_config.set_quoted (
+      'TEST_WAV2',
+      meson.current_build_dir () / 'test2.wav')
+  endif
+
   # LV2
   foreach name, info : ext_lv2_plugins
     uri = info[1]

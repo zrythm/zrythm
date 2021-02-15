@@ -1024,7 +1024,13 @@ handle_audio_event (
   /* write to pool if 2 seconds passed since last
    * write */
   gint64 cur_time = g_get_monotonic_time ();
-  if ((cur_time - clip->last_write) > 2000000)
+  gint64 nano_sec_to_wait = 2 * 1000 * 1000;
+  if (ZRYTHM_TESTING)
+    {
+      nano_sec_to_wait = 20 * 1000;
+    }
+  if ((cur_time - clip->last_write) >
+        nano_sec_to_wait)
     {
       audio_clip_write_to_pool (clip, true);
     }

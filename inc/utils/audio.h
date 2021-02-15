@@ -49,9 +49,10 @@
  *
  * @param size The number of frames per channel.
  * @param samplerate The samplerate of \ref buff.
- * @param frames_already_written Frames already
- *   written. If this is non-zero and the file
- *   exists, it will append to the existing file.
+ * @param frames_already_written Frames (per
+ *   channel)already written. If this is non-zero
+ *   and the file exists, it will append to the
+ *   existing file.
  *
  * @return Non-zero if fail.
  */
@@ -63,6 +64,12 @@ audio_write_raw_file (
   uint32_t     samplerate,
   unsigned int channels,
   const char * filename);
+
+bool
+audio_frames_equal (
+  float * src1,
+  float * src2,
+  size_t  num_frames);
 
 /**
  * Returns the number of CPU cores.

@@ -280,7 +280,9 @@ audio_clip_write_to_pool (
       audio_pool_get_clip (
         AUDIO_POOL, self->pool_id));
 
-  g_debug ("writing clip %s to pool", self->name);
+  g_debug (
+    "writing clip %s to pool (parts %d)",
+    self->name, parts);
 
   /* generate a copy of the given filename in the
    * project dir */
@@ -308,9 +310,12 @@ audio_clip_write_to_file (
   g_return_val_if_fail (self->samplerate > 0, -1);
   size_t before_frames =
     (size_t) self->frames_written;
+  long ch_offset =
+    parts ? self->frames_written : 0;
+  long offset = ch_offset * self->channels;
   int ret =
     audio_write_raw_file (
-      self->frames, parts ? self->frames_written : 0,
+      &self->frames[offset], ch_offset,
       parts ?
         (self->num_frames - self->frames_written) :
         self->num_frames,
@@ -325,7 +330,29 @@ audio_clip_write_to_file (
       self->last_write = g_get_monotonic_time ();
     }
 
-  /* TODO error handling */
+  /* TODO move this to a unit test for this
+   * function */
+  if (ZRYTHM_TESTING)
+    {
+      AudioClip * new_clip =
+        audio_clip_new_from_file (filepath);
+      if (self->num_frames != new_clip->num_frames)
+        {
+          g_warning (
+            "%zu != %zu",
+            self->num_frames, new_clip->num_frames);
+        }
+      g_warn_if_fail (
+        audio_frames_equal (
+         self->ch_frames[0], new_clip->ch_frames[0],
+         (size_t) new_clip->num_frames));
+      g_warn_if_fail (
+        audio_frames_equal (
+         self->frames, new_clip->frames,
+         (size_t)
+         new_clip->num_frames * new_clip->channels));
+      audio_clip_free (new_clip);
+    }
 
   return ret;
 }

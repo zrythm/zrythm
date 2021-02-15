@@ -78,7 +78,7 @@ typedef struct AudioClip
   int           pool_id;
 
   /**
-   * Frames already written to the file.
+   * Frames already written to the file, per channel.
    *
    * Used when writing in chunks/parts.
    */

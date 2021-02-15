@@ -225,6 +225,8 @@ bash = find_program ('bash')
 grep = find_program ('grep')
 msgfmt = find_program ('msgfmt', required: false)
 dot_bin = find_program ('dot', required: false)
+rubberband = find_program (
+  'rubberband', required: false)
 
 # find plugins for testing
 ext_lv2_plugins = {
