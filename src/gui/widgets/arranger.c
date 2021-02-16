@@ -1160,6 +1160,7 @@ arranger_widget_select_all (
     }
   else
     {
+      g_debug ("deselecting all");
       arranger_selections_clear (
         sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
@@ -1792,6 +1793,10 @@ multipress_pressed (
   gdouble                y,
   ArrangerWidget *       self)
 {
+  g_debug (
+    "arranger multipress pressed - npress %d",
+    n_press);
+
   /* set number of presses */
   self->n_press = n_press;
 
@@ -2210,7 +2215,8 @@ on_drag_begin_handle_hit_object (
 
   /* set editor region and show editor if double
    * click */
-  if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
+  if (obj->type == ARRANGER_OBJECT_TYPE_REGION &&
+      self->drag_start_btn == GDK_BUTTON_PRIMARY)
     {
       clip_editor_set_region (
         CLIP_EDITOR, (ZRegion *) obj, true);
@@ -2219,6 +2225,9 @@ on_drag_begin_handle_hit_object (
       if (self->n_press == 2 &&
           !self->ctrl_held)
         {
+          g_debug (
+            "double clicked on region - "
+            "showing piano roll");
           /* set the bot panel visible */
           gtk_widget_set_visible (
             GTK_WIDGET (
@@ -2416,6 +2425,8 @@ drag_begin (
   gdouble            start_y,
   ArrangerWidget *   self)
 {
+  g_debug ("arranger drag begin starting...");
+
   self->start_x = start_x;
   arranger_widget_px_to_pos (
     self, start_x, &self->start_pos, 1);
@@ -2463,123 +2474,119 @@ drag_begin (
     position_get_ticks_diff (
       &self->curr_pos, &self->start_pos, NULL);
 
-  if (P_TOOL != TOOL_SELECT_NORMAL ||
-      self->drag_start_btn != GDK_BUTTON_SECONDARY)
+  /* handle hit object */
+  int objects_hit =
+    on_drag_begin_handle_hit_object (
+      self, start_x, start_y);
+  g_message ("objects hit %d", objects_hit);
+
+  if (objects_hit)
     {
-      /* handle hit object */
-      int objects_hit =
-        on_drag_begin_handle_hit_object (
-          self, start_x, start_y);
-      g_message ("objects hit %d", objects_hit);
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+      self->sel_at_start =
+        arranger_selections_clone (sel);
+    }
+  /* if nothing hit */
+  else
+    {
+      self->sel_at_start = NULL;
 
-      if (objects_hit)
+      /* single click */
+      if (self->n_press == 1)
         {
-          ArrangerSelections * sel =
-            arranger_widget_get_selections (self);
-          self->sel_at_start =
-            arranger_selections_clone (sel);
-        }
-      /* if nothing hit */
-      else
-        {
-          self->sel_at_start = NULL;
-
-          /* single click */
-          if (self->n_press == 1)
+          switch (P_TOOL)
             {
-              switch (P_TOOL)
+            case TOOL_SELECT_NORMAL:
+            case TOOL_SELECT_STRETCH:
+              /* selection */
+              self->action =
+                UI_OVERLAY_ACTION_STARTING_SELECTION;
+
+              if (!self->ctrl_held)
                 {
-                case TOOL_SELECT_NORMAL:
-                case TOOL_SELECT_STRETCH:
-                  /* selection */
-                  self->action =
-                    UI_OVERLAY_ACTION_STARTING_SELECTION;
-
-                  if (!self->ctrl_held)
-                    {
-                      /* deselect all */
-                      arranger_widget_select_all (
-                        self, false);
-                    }
-
-                  /* set whether selecting
-                   * objects or selecting range */
-                  set_select_type (self, start_y);
-
-                  /* hide range selection */
-                  transport_set_has_range (
-                    TRANSPORT, false);
-
-                  /* hide range selection if audio
-                   * arranger */
-                  if (self->type == TYPE (AUDIO))
-                    {
-                      AUDIO_SELECTIONS->
-                        has_selection = false;
-                    }
-                  break;
-                case TOOL_EDIT:
-                  if (self->type == TYPE (TIMELINE) ||
-                      self->type == TYPE (MIDI) ||
-                      self->type == TYPE (CHORD))
-                    {
-                      if (self->ctrl_held)
-                        {
-                          /* autofill */
-                          autofill (
-                            self, start_x, start_y);
-                        }
-                      else
-                        {
-                          /* something is created */
-                          create_item (
-                            self, start_x, start_y,
-                            false);
-                        }
-                    }
-                  else if (self->type ==
-                             TYPE (MIDI_MODIFIER) ||
-                           self->type ==
-                             TYPE (AUTOMATION))
-                    {
-                      /* autofill (also works for
-                       * manual edit for velocity and
-                       * automation */
-                      autofill (self, start_x, start_y);
-                    }
-                  break;
-                case TOOL_ERASER:
-                  /* delete selection */
-                  self->action =
-                    UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
-                  break;
-                case TOOL_RAMP:
-                  self->action =
-                    UI_OVERLAY_ACTION_STARTING_RAMP;
-                  break;
-                default:
-                  break;
+                  /* deselect all */
+                  arranger_widget_select_all (
+                    self, false);
                 }
+
+              /* set whether selecting
+               * objects or selecting range */
+              set_select_type (self, start_y);
+
+              /* hide range selection */
+              transport_set_has_range (
+                TRANSPORT, false);
+
+              /* hide range selection if audio
+               * arranger */
+              if (self->type == TYPE (AUDIO))
+                {
+                  AUDIO_SELECTIONS->
+                    has_selection = false;
+                }
+              break;
+            case TOOL_EDIT:
+              if (self->type == TYPE (TIMELINE) ||
+                  self->type == TYPE (MIDI) ||
+                  self->type == TYPE (CHORD))
+                {
+                  if (self->ctrl_held)
+                    {
+                      /* autofill */
+                      autofill (
+                        self, start_x, start_y);
+                    }
+                  else
+                    {
+                      /* something is created */
+                      create_item (
+                        self, start_x, start_y,
+                        false);
+                    }
+                }
+              else if (self->type ==
+                         TYPE (MIDI_MODIFIER) ||
+                       self->type ==
+                         TYPE (AUTOMATION))
+                {
+                  /* autofill (also works for
+                   * manual edit for velocity and
+                   * automation */
+                  autofill (self, start_x, start_y);
+                }
+              break;
+            case TOOL_ERASER:
+              /* delete selection */
+              self->action =
+                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+              break;
+            case TOOL_RAMP:
+              self->action =
+                UI_OVERLAY_ACTION_STARTING_RAMP;
+              break;
+            default:
+              break;
             }
-          /* double click */
-          else if (self->n_press == 2)
+        }
+      /* double click */
+      else if (self->n_press == 2)
+        {
+          switch (P_TOOL)
             {
-              switch (P_TOOL)
-                {
-                case TOOL_SELECT_NORMAL:
-                case TOOL_SELECT_STRETCH:
-                case TOOL_EDIT:
-                  create_item (
-                    self, start_x, start_y, false);
-                  break;
-                case TOOL_ERASER:
-                  /* delete selection */
-                  self->action =
-                    UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
-                  break;
-                default:
-                  break;
-                }
+            case TOOL_SELECT_NORMAL:
+            case TOOL_SELECT_STRETCH:
+            case TOOL_EDIT:
+              create_item (
+                self, start_x, start_y, false);
+              break;
+            case TOOL_ERASER:
+              /* delete selection */
+              self->action =
+                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+              break;
+            default:
+              break;
             }
         }
     }
@@ -2589,6 +2596,8 @@ drag_begin (
   set_earliest_obj (self);
 
   arranger_widget_refresh_cursor (self);
+
+  g_debug ("arranger drag begin done");
 }
 
 /**
@@ -3786,6 +3795,8 @@ static void
 on_drag_end_timeline (
   ArrangerWidget * self)
 {
+  g_debug ("drag end timeline starting...");
+
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
 
@@ -4099,6 +4110,8 @@ on_drag_end_timeline (
   self->resizing_range_start = 0;
   self->visible_track_diff = 0;
   self->lane_diff = 0;
+
+  g_debug ("drag end timeline done");
 }
 
 static void
@@ -4108,7 +4121,7 @@ drag_end (
   gdouble         offset_y,
   ArrangerWidget * self)
 {
-  g_message ("arranger drag end");
+  g_debug ("arranger drag end starting...");
 
   if (ACTION_IS (SELECTING) ||
       ACTION_IS (DELETE_SELECTING))
@@ -4245,6 +4258,8 @@ drag_end (
 
   arranger_widget_redraw_whole (self);
   arranger_widget_refresh_cursor (self);
+
+  g_debug ("arranger drag end done");
 }
 
 #if 0

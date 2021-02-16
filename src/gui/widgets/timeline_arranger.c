@@ -236,6 +236,14 @@ timeline_arranger_on_quick_bounce_clicked (
   GtkMenuItem * menuitem,
   ZRegion *     r)
 {
+  ArrangerSelections * sel =
+    (ArrangerSelections *) TL_SELECTIONS;
+  if (!arranger_selections_has_any (sel))
+    {
+      g_warning ("no selections to bounce");
+      return;
+    }
+
   ExportSettings settings;
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS);
@@ -281,6 +289,14 @@ timeline_arranger_on_bounce_clicked (
   GtkMenuItem * menuitem,
   ZRegion *      r)
 {
+  ArrangerSelections * sel =
+    (ArrangerSelections *) TL_SELECTIONS;
+  if (!arranger_selections_has_any (sel))
+    {
+      g_warning ("no selections to bounce");
+      return;
+    }
+
   BounceDialogWidget * dialog =
     bounce_dialog_widget_new (
       BOUNCE_DIALOG_REGIONS, r->name);

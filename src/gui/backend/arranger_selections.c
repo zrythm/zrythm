@@ -1424,6 +1424,8 @@ arranger_selections_clear (
 /* use caches because ts->* will be operated on. */
 #define REMOVE_OBJS(sel,sc) \
   { \
+    g_message ( \
+      "%s", "clearing " #sc " selections"); \
     int num_##sc##s = sel->num_##sc##s; \
     ArrangerObject * sc##s[num_##sc##s]; \
     for (i = 0; i < num_##sc##s; i++) \
