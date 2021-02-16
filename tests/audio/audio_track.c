@@ -27,6 +27,7 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
 #include <glib.h>
@@ -42,10 +43,8 @@ test_fill_when_region_starts_on_loop_end ()
 {
   test_helper_zrythm_init ();
 
-  /* stop dummy audio engine processing so we can
-   * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
+
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
   /* prepare loop */

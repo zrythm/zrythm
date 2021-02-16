@@ -378,17 +378,33 @@ audio_region_fill_stereo_ports (
   dsp_fill (lbuf_after_ts, 0, nframes);
   dsp_fill (rbuf_after_ts, 0, nframes);
 
+  long r_local_pos_at_start =
+    region_timeline_frames_to_local (
+      r, g_start_frames, F_NORMALIZE);
+
   size_t buff_index_start =
     (size_t) clip->num_frames + 16;
   size_t buff_size = 0;
   unsigned int prev_offset = local_start_frame;
-  for (nframes_t j = 0; j < nframes; j++)
+  for (nframes_t j =
+         (r_local_pos_at_start < 0) ?
+           - r_local_pos_at_start : 0;
+       j < nframes; j++)
     {
       long current_local_frame =
         local_start_frame + j;
       long r_local_pos =
         region_timeline_frames_to_local (
           r, g_start_frames + j, F_NORMALIZE);
+      if (r_local_pos < 0 ||
+          j > AUDIO_ENGINE->block_length)
+        {
+          g_critical (
+            "invalid r_local_pos %ld, j %u, "
+            "g_start_frames %ld, nframes %u",
+            r_local_pos, j, g_start_frames, nframes);
+          return;
+        }
 
       ssize_t buff_index =
         (ssize_t) r_local_pos;

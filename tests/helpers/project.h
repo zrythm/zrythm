@@ -97,6 +97,14 @@
 
 void
 test_project_save_and_reload (void);
+
+/**
+ * Stop dummy audio engine processing so we can
+ * process manually.
+ */
+void
+test_project_stop_dummy_engine (void);
+
 void
 test_project_check_vs_original_state (
   Position * p1,
@@ -465,6 +473,17 @@ test_project_rebootstrap_timeline (
     F_NO_RECALC_GRAPH);
 
   engine_activate (AUDIO_ENGINE, was_active);
+}
+
+/**
+ * Stop dummy audio engine processing so we can
+ * process manually.
+ */
+void
+test_project_stop_dummy_engine (void)
+{
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (100000);
 }
 
 /**

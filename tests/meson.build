@@ -144,6 +144,7 @@ if get_option ('tests')
     ['actions/arranger_selections', false],
     ['actions/range', true],
     ['actions/undo_manager', true],
+    ['audio/audio_region', true],
     ['audio/audio_track', true],
     ['audio/automation_track', true],
     ['audio/curve', true],

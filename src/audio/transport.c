@@ -458,7 +458,7 @@ transport_request_roll (
 void
 transport_add_to_playhead (
   Transport *     self,
-  const nframes_t frames)
+  const long      frames)
 {
   transport_position_add_frames (
     self, &TRANSPORT->playhead_pos, frames);
@@ -772,7 +772,7 @@ void
 transport_position_add_frames (
   const Transport * self,
   Position *        pos,
-  const nframes_t   frames)
+  const long        frames)
 {
   Position pos_before_adding = *pos;
   position_add_frames (pos, frames);

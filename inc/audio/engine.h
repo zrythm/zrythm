@@ -341,7 +341,8 @@ typedef struct AudioEngine
   /** Current MIDI backend. */
   MidiBackend       midi_backend;
 
-  /** Audio buffer size (block length). */
+  /** Audio buffer size (block length), per
+   * channel. */
   nframes_t         block_length;
 
   /** Size of MIDI port buffers. */
@@ -446,8 +447,12 @@ typedef struct AudioEngine
    */
   Port *            midi_in;
 
-  /** Number of frames/samples in the current
-   * cycle. */
+  /**
+   * Number of frames/samples in the current
+   * cycle, per channel.
+   *
+   * @note This is used by the engine internally.
+   */
   nframes_t         nframes;
 
   /** Semaphore for blocking DSP while a plugin and

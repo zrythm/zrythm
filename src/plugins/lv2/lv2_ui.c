@@ -326,12 +326,18 @@ lv2_ui_send_event_from_ui_to_plugin (
     }
 
   Lv2Port * lv2_port = &plugin->ports[port_index];
+  if (lv2_port->lv2_control)
+    {
+      g_debug (
+        "port %d (%s)", port_index,
+        lilv_node_as_string (
+          lv2_port->lv2_control->symbol));
+    }
+  else
+    {
+      g_debug ("port %d", port_index);
+    }
 
-  g_debug ("%s: port %d (%s)",
-    __func__, port_index,
-    lv2_port->lv2_control ?
-    lilv_node_as_string (
-      lv2_port->lv2_control->symbol) : "");
   if (protocol != 0 &&
       protocol != PM_URIDS.atom_eventTransfer)
     {
@@ -342,11 +348,17 @@ lv2_ui_send_event_from_ui_to_plugin (
       return;
     }
 
+  /* also see https://git.open-music-kontrollers.ch/lv2/sherlock.lv2/tree/atom_inspector_nk.c#n39 */
   if (dump &&
       protocol == PM_URIDS.atom_eventTransfer)
     {
       const LV2_Atom* atom =
         (const LV2_Atom*)buffer;
+      g_debug (
+        "[atom] type <%s>, %d bytes",
+        plugin->unmap.unmap (
+          plugin->unmap.handle, atom->type),
+        atom->size);
       char * str  =
         sratom_to_turtle (
           plugin->sratom,
@@ -355,7 +367,7 @@ lv2_ui_send_event_from_ui_to_plugin (
           NULL, NULL,
           atom->type,
           atom->size,
-          LV2_ATOM_BODY_CONST(atom));
+          LV2_ATOM_BODY_CONST (atom));
       g_message (
         "## UI => Plugin (%u bytes) ##\n%s",
         atom->size, str);

@@ -426,7 +426,7 @@ transport_set_metronome_enabled (
 void
 transport_add_to_playhead (
   Transport *     self,
-  const nframes_t nframes);
+  const long      nframes);
 
 void
 transport_request_pause (
@@ -524,7 +524,7 @@ void
 transport_position_add_frames (
   const Transport * self,
   Position *        pos,
-  const nframes_t   frames);
+  const long        frames);
 
 /**
  * Returns the PPQN (Parts/Ticks Per Quarter Note).
