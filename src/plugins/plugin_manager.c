@@ -850,11 +850,11 @@ scan_carla_descriptors_from_paths (
       suffix = LIB_SUFFIX;
       break;
     case PROT_SFZ:
-      paths = get_sf_paths (self, 0);
+      paths = get_sf_paths (self, false);
       suffix = ".sfz";
       break;
     case PROT_SF2:
-      paths = get_sf_paths (self, 0);
+      paths = get_sf_paths (self, true);
       suffix = ".sf2";
       break;
     default:
