@@ -58,18 +58,12 @@ test_fill_stereo_ports (void)
   Track * track =
     TRACKLIST->tracks[num_tracks_before];
   ZRegion * r = track->lanes[0]->regions[0];
-  ArrangerObject * r_obj = (ArrangerObject *) r;
-  AudioClip * r_clip =
-    audio_region_get_clip (r);
+  AudioClip * r_clip = audio_region_get_clip (r);
 
-  AudioClip * test_clip =
-    audio_clip_new_from_file (filepath);
   StereoPorts * ports =
     stereo_ports_new_generic (
-      false, "ports", PORT_OWNER_TYPE_BACKEND, NULL);
-  (void) test_clip;
-  (void) r_clip;
-  (void) r_obj;
+      false, "ports", PORT_OWNER_TYPE_BACKEND,
+      NULL);
 
   transport_move_playhead (
     TRANSPORT, &pos, F_NO_PANIC, false);
@@ -78,6 +72,21 @@ test_fill_stereo_ports (void)
   audio_region_fill_stereo_ports (
     r, PLAYHEAD->frames, 0, 100, ports);
 
+  g_assert_true (
+    audio_frames_empty (
+      &ports->l->buf[0], 20));
+  g_assert_true (
+    audio_frames_empty (
+      &ports->r->buf[0], 20));
+  g_assert_true (
+    audio_frames_equal (
+      &r_clip->ch_frames[0][0],
+      &ports->l->buf[20], 80));
+  g_assert_true (
+    audio_frames_equal (
+      &r_clip->ch_frames[1][0],
+      &ports->r->buf[20], 80));
+
   test_helper_zrythm_cleanup ();
 }
 
@@ -85,8 +94,6 @@ int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
-
-  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/audio/midi_region/"
 

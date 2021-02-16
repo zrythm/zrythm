@@ -65,10 +65,21 @@ audio_write_raw_file (
   unsigned int channels,
   const char * filename);
 
+/**
+ * Returns whether the frame buffers are equal.
+ */
 bool
 audio_frames_equal (
   float * src1,
   float * src2,
+  size_t  num_frames);
+
+/**
+ * Returns whether the frame buffer is empty (zero).
+ */
+bool
+audio_frames_empty (
+  float * src,
   size_t  num_frames);
 
 /**

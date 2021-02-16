@@ -110,6 +110,9 @@ audio_write_raw_file (
   return 0;
 }
 
+/**
+ * Returns whether the frame buffers are equal.
+ */
 bool
 audio_frames_equal (
   float * src1,
@@ -123,6 +126,26 @@ audio_frames_equal (
           g_debug (
             "[%zu] %f != %f",
             i, (double) src1[i], (double) src2[i]);
+          return false;
+        }
+    }
+  return true;
+}
+
+/**
+ * Returns whether the frame buffer is empty (zero).
+ */
+bool
+audio_frames_empty (
+  float * src,
+  size_t  num_frames)
+{
+  for (size_t i = 0; i < num_frames; i++)
+    {
+      if (!math_floats_equal (src[i], 0.f))
+        {
+          g_debug (
+            "[%zu] %f != 0", i, (double) src[i]);
           return false;
         }
     }
