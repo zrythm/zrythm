@@ -1595,7 +1595,7 @@ lv2_plugin_free (
     {
       if (lv2_plugin->ports[i].evbuf)
         lv2_evbuf_free (lv2_plugin->ports[i].evbuf);
-  }
+    }
 
   /* Deactivate lv2_plugin->*/
   suil_instance_free(lv2_plugin->ui_instance);

@@ -433,13 +433,6 @@ plugin_set_track_and_slot (
   int            slot);
 
 /**
- * Returns if the Plugin is an instrument or not.
- */
-int
-plugin_descriptor_is_instrument (
-  const PluginDescriptor * descr);
-
-/**
  * Moves the Plugin's automation from one Channel
  * to another.
  */

@@ -221,12 +221,8 @@ typedef struct Lv2Plugin
    */
   int                enabled_in;
 
-  /**
-   * Exit semaphore.
-   *
-   * FIXME is this used?
-   */
-  ZixSem exit_sem;
+  /** Exit semaphore. */
+  ZixSem             exit_sem;
 
   /** Whether the plugin has at least 1 atom port
    * that supports position. */
@@ -282,10 +278,8 @@ typedef struct Lv2Plugin
 static const cyaml_schema_field_t
   lv2_plugin_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "ports", CYAML_FLAG_POINTER,
-    Lv2Plugin, ports, num_ports,
-    &lv2_port_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    Lv2Plugin, ports, lv2_port_schema),
 
   CYAML_FIELD_END
 };
@@ -293,8 +287,8 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
   lv2_plugin_schema =
 {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
-  Lv2Plugin, lv2_plugin_fields_schema),
+  YAML_VALUE_PTR (
+    Lv2Plugin, lv2_plugin_fields_schema),
 };
 
 void

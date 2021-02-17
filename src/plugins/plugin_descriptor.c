@@ -97,24 +97,38 @@ plugin_descriptor_clone (
 /**
  * Returns if the Plugin is an instrument or not.
  */
-int
+bool
 plugin_descriptor_is_instrument (
   const PluginDescriptor * descr)
 {
-  return
-    (descr->category == PC_INSTRUMENT) ||
-    /* if VSTs are instruments their category must
-     * be INSTRUMENT, otherwise they are not */
-    (descr->protocol != PROT_VST &&
-     descr->category == ZPLUGIN_CATEGORY_NONE &&
-     descr->num_midi_ins > 0 &&
-     descr->num_audio_outs > 0);
+  if (descr->num_midi_ins == 0 ||
+      descr->num_audio_outs == 0)
+    {
+      return false;
+    }
+
+  if (descr->category == PC_INSTRUMENT ||
+      descr->category == PC_GENERATOR)
+    {
+      return true;
+    }
+  else
+    {
+      return
+        /* if VSTs are instruments their category
+         * must be INSTRUMENT, otherwise they are
+         * not */
+        descr->protocol != PROT_VST &&
+        descr->category == ZPLUGIN_CATEGORY_NONE &&
+        descr->num_midi_ins > 0 &&
+        descr->num_audio_outs > 0;
+    }
 }
 
 /**
  * Returns if the Plugin is an effect or not.
  */
-int
+bool
 plugin_descriptor_is_effect (
   PluginDescriptor * descr)
 {

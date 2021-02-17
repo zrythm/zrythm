@@ -356,14 +356,14 @@ plugin_descriptor_clone (
 /**
  * Returns if the Plugin is an instrument or not.
  */
-int
+bool
 plugin_descriptor_is_instrument (
   const PluginDescriptor * descr);
 
 /**
  * Returns if the Plugin is an effect or not.
  */
-int
+bool
 plugin_descriptor_is_effect (
   PluginDescriptor * descr);
 
