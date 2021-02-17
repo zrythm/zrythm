@@ -314,6 +314,11 @@ init_symap (
 #ifdef HAVE_LV2_1_18
   SYMAP_MAP (ui_scaleFactor, LV2_UI__scaleFactor);
 #endif
+
+  SYMAP_MAP (
+    z_hostInfo_name, Z_LV2_HOST_INFO__name);
+  SYMAP_MAP (
+    z_hostInfo_version, Z_LV2_HOST_INFO__version);
 #undef SYMAP_MAP
 }
 

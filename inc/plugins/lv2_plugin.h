@@ -55,6 +55,7 @@
 
 #include "audio/position.h"
 #include "audio/port.h"
+#include "plugins/lv2/ext/host_info.h"
 #include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/lv2_worker.h"
@@ -136,7 +137,7 @@ typedef struct Lv2Plugin
    * the state. */
   const LV2_Feature* state_features[8];
 
-  LV2_Options_Option options[6];
+  LV2_Options_Option options[9];
 
   /** Plugin <=> UI communication buffer size. */
   uint32_t           comm_buffer_size;
@@ -220,7 +221,12 @@ typedef struct Lv2Plugin
    */
   int                enabled_in;
 
-  ZixSem exit_sem;  /**< Exit semaphore */
+  /**
+   * Exit semaphore.
+   *
+   * FIXME is this used?
+   */
+  ZixSem exit_sem;
 
   /** Whether the plugin has at least 1 atom port
    * that supports position. */

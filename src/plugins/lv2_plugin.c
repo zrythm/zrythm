@@ -158,7 +158,9 @@ feature_is_supported (
          plugin->features; *f; ++f)
     {
       if (string_is_equal (uri, (*f)->URI))
-        return true;
+        {
+          return true;
+        }
     }
   return false;
 }
@@ -1137,79 +1139,87 @@ connect_port(
  * This is called on instantiation.
  */
 static void
-set_features (Lv2Plugin * plugin)
+set_features (
+  Lv2Plugin * self)
 {
-#define INIT_FEATURE(x,uri) \
-  plugin->x.URI = uri; \
-  plugin->x.data = NULL
-  plugin->ext_data.data_access = NULL;
+#define INIT_FEATURE(x,uri,_data) \
+  self->x.URI = uri; \
+  self->x.data = _data
+
+  self->ext_data.data_access = NULL;
 
   INIT_FEATURE (
-    map_feature, LV2_URID__map);
+    map_feature, LV2_URID__map, &self->map);
   INIT_FEATURE (
-    unmap_feature, LV2_URID__unmap);
+    unmap_feature, LV2_URID__unmap, &self->unmap);
   INIT_FEATURE (
-    make_path_feature_save, LV2_STATE__makePath);
+    make_path_feature_save, LV2_STATE__makePath,
+    &self->make_path_save);
   INIT_FEATURE (
-    make_path_feature_temp, LV2_STATE__makePath);
+    make_path_feature_temp, LV2_STATE__makePath,
+    &self->make_path_temp);
   INIT_FEATURE (
-    sched_feature, LV2_WORKER__schedule);
+    sched_feature, LV2_WORKER__schedule,
+    &self->sched);
   INIT_FEATURE (
-    state_sched_feature, LV2_WORKER__schedule);
+    state_sched_feature, LV2_WORKER__schedule,
+    &self->ssched);
   INIT_FEATURE (
     safe_restore_feature,
-    LV2_STATE__threadSafeRestore);
+    LV2_STATE__threadSafeRestore, NULL);
   INIT_FEATURE (
-    log_feature, LV2_LOG__log);
+    log_feature, LV2_LOG__log, &self->llog);
   INIT_FEATURE (
-    options_feature, LV2_OPTIONS__options);
+    options_feature, LV2_OPTIONS__options,
+    self->options);
   INIT_FEATURE (
-    def_state_feature, LV2_STATE__loadDefaultState);
+    def_state_feature, LV2_STATE__loadDefaultState,
+    NULL);
 
 #undef INIT_FEATURE
 
   /** These features have no data */
-  plugin->buf_size_features[0].URI =
+  self->buf_size_features[0].URI =
     LV2_BUF_SIZE__powerOf2BlockLength;
-  plugin->buf_size_features[0].data = NULL;
-  plugin->buf_size_features[1].URI =
+  self->buf_size_features[0].data = NULL;
+  self->buf_size_features[1].URI =
     LV2_BUF_SIZE__fixedBlockLength;
-  plugin->buf_size_features[1].data = NULL;;
-  plugin->buf_size_features[2].URI =
+  self->buf_size_features[1].data = NULL;;
+  self->buf_size_features[2].URI =
     LV2_BUF_SIZE__boundedBlockLength;
-  plugin->buf_size_features[2].data = NULL;;
+  self->buf_size_features[2].data = NULL;;
 
-  plugin->features[0] = &plugin->map_feature;
-  plugin->features[1] = &plugin->unmap_feature;
-  plugin->features[2] = &plugin->sched_feature;
-  plugin->features[3] = &plugin->log_feature;
-  plugin->features[4] = &plugin->options_feature;
-  plugin->features[5] = &plugin->def_state_feature;
-  plugin->features[6] =
-    &plugin->safe_restore_feature;
-  plugin->features[7] =
-    &plugin->buf_size_features[0];
-  plugin->features[8] =
-    &plugin->buf_size_features[1];
-  plugin->features[9] =
-    &plugin->buf_size_features[2];
-  plugin->features[10] = NULL;
+  self->features[0] = &self->map_feature;
+  self->features[1] = &self->unmap_feature;
+  self->features[2] = &self->sched_feature;
+  self->features[3] = &self->log_feature;
+  self->features[4] = &self->options_feature;
+  self->features[5] = &self->def_state_feature;
+  self->features[6] =
+    &self->safe_restore_feature;
+  self->features[7] =
+    &self->buf_size_features[0];
+  self->features[8] =
+    &self->buf_size_features[1];
+  self->features[9] =
+    &self->buf_size_features[2];
+  self->features[10] = NULL;
 
-  plugin->state_features[0] =
-    &plugin->map_feature;
-  plugin->state_features[1] =
-    &plugin->unmap_feature;
-  plugin->state_features[2] =
-    &plugin->make_path_feature_save;
-  plugin->state_features[3] =
-    &plugin->state_sched_feature;
-  plugin->state_features[4] =
-    &plugin->safe_restore_feature;
-  plugin->state_features[5] =
-    &plugin->log_feature;
-  plugin->state_features[6] =
-    &plugin->options_feature;
-  plugin->state_features[7] = NULL;
+  self->state_features[0] =
+    &self->map_feature;
+  self->state_features[1] =
+    &self->unmap_feature;
+  self->state_features[2] =
+    &self->make_path_feature_save;
+  self->state_features[3] =
+    &self->state_sched_feature;
+  self->state_features[4] =
+    &self->safe_restore_feature;
+  self->state_features[5] =
+    &self->log_feature;
+  self->state_features[6] =
+    &self->options_feature;
+  self->state_features[7] = NULL;
 }
 
 /**
@@ -1887,14 +1897,12 @@ lv2_plugin_instantiate (
 
   self->map.handle = self;
   self->map.map = lv2_urid_map_uri;
-  self->map_feature.data = &self->map;
 
   self->worker.plugin = self;
   self->state_worker.plugin = self;
 
   self->unmap.handle = self;
   self->unmap.unmap = lv2_urid_unmap_uri;
-  self->unmap_feature.data = &self->unmap;
 
   lv2_atom_forge_init (&self->forge, &self->map);
 
@@ -1932,26 +1940,19 @@ lv2_plugin_instantiate (
   self->make_path_save.handle = self;
   self->make_path_save.path =
     lv2_state_make_path_save;
-  self->make_path_feature_save.data =
-    &self->make_path_save;
 
   self->make_path_temp.handle = self;
   self->make_path_temp.path =
     lv2_state_make_path_temp;
-  self->make_path_feature_temp.data =
-    &self->make_path_temp;
 
   self->sched.handle = &self->worker;
   self->sched.schedule_work = lv2_worker_schedule;
-  self->sched_feature.data = &self->sched;
 
   self->ssched.handle = &self->state_worker;
   self->ssched.schedule_work = lv2_worker_schedule;
-  self->state_sched_feature.data = &self->ssched;
 
   self->llog.handle = self;
   lv2_log_set_printf_funcs (&self->llog);
-  self->log_feature.data = &self->llog;
 
   zix_sem_init (&self->exit_sem, 0);
   self->done = &self->exit_sem;
@@ -2270,6 +2271,7 @@ lv2_plugin_instantiate (
     (int) AUDIO_ENGINE->block_length;
   midi_buf_size =
     (int) AUDIO_ENGINE->midi_buf_size;
+  const char * prog_name = PROGRAM_NAME;
 
   /* Build options array to pass to plugin */
   const LV2_Options_Option options[] =
@@ -2302,15 +2304,25 @@ lv2_plugin_instantiate (
         PM_URIDS.atom_Float,
         &self->plugin->ui_scale_factor },
 #endif
-      { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
+      { LV2_OPTIONS_INSTANCE, 0,
+        PM_URIDS.z_hostInfo_name,
+        sizeof (const char *),
+        PM_URIDS.atom_String,
+        &prog_name },
+      { LV2_OPTIONS_INSTANCE, 0,
+        PM_URIDS.z_hostInfo_version,
+        sizeof (const char *),
+        PM_URIDS.atom_String,
+        &ZRYTHM->version },
+      { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL },
     };
+  g_warn_if_fail (
+    (sizeof (options) / sizeof (options[0])) ==
+    (sizeof (self->options) /
+       sizeof (self->options[0])));
   memcpy (
     self->options, options,
     sizeof (self->options));
-
-  self->options_feature.URI = LV2_OPTIONS__options;
-  self->options_feature.data =
-    (void *) self->options;
 
   /* Create Plugin <=> UI communication
    * buffers */

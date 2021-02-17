@@ -64,6 +64,10 @@ typedef struct Lv2URIDs
   LV2_URID time_speed;
   LV2_URID ui_updateRate;
   LV2_URID ui_scaleFactor;
+
+  /* Non-standard URIs */
+  LV2_URID z_hostInfo_name;
+  LV2_URID z_hostInfo_version;
 } Lv2URIDs;
 
 /**

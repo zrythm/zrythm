@@ -244,6 +244,9 @@ typedef struct Zrythm
 
   /** Zrythm directory used during unit tests. */
   char *              testing_dir;
+
+  /** Cached version (without 'v'). */
+  char *              version;
 } Zrythm;
 
 /**

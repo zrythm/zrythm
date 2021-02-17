@@ -506,6 +506,7 @@ zrythm_new (
 
   self->exe_path = g_strdup (exe_path);
 
+  self->version = zrythm_get_version (false);
   self->have_ui = have_ui;
   self->testing = testing;
   self->use_optimized_dsp = optimized_dsp;
