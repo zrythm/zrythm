@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-19 22:05+0000\n"
+"POT-Creation-Date: 2021-02-19 22:43+0000\n"
 "PO-Revision-Date: 2021-01-23 17:11+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -4104,7 +4104,8 @@ msgid "Welcome to the Zrythm manual."
 msgstr "Zrythmのマニュアルへようこそ。"
 
 #: ../../index.rst:16 ../../../../../doc/user/index.rst:60
-msgid "Copyright © 2019-2020 The Zrythm contributors"
+#, fuzzy
+msgid "Copyright © 2019-2021 The Zrythm contributors"
 msgstr "Copyright © 2019-2020 The Zrythm contributors"
 
 #: ../../index.rst:18 ../../../../../doc/user/index.rst:62
@@ -4957,22 +4958,22 @@ msgstr "トラックインスペクター"
 
 #: ../../playback-and-recording/transport-controls.rst:51
 msgid ""
-"Zrythm can sync to :term:`JACK` transport or become the JACK transport "
-"master. These options are available by right-clicking the playhead "
-"position display when using the JACK audio backend and will be remembered"
-" across projects."
+"Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
+"design.html>`_ or become the JACK transport master. These options are "
+"available by right-clicking the playhead position display when using the "
+"JACK audio backend and will be remembered across projects."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:62
+#: ../../playback-and-recording/transport-controls.rst:63
 msgid "Metronome"
 msgstr "メトロノーム"
 
-#: ../../playback-and-recording/transport-controls.rst:63
+#: ../../playback-and-recording/transport-controls.rst:64
 #, fuzzy
 msgid "Clicking the metronome button will enable/disable the metronome."
 msgstr "メトロノームボタンをクリックするとメトロノームのオン/オフが設定されます。"
 
-#: ../../playback-and-recording/transport-controls.rst:69
+#: ../../playback-and-recording/transport-controls.rst:70
 #, fuzzy
 msgid ""
 "When the metronome is enabled, you will hear metronome ticks during "
@@ -4994,7 +4995,7 @@ msgstr ""
 "\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../playback-and-recording/transport-controls.rst:76
+#: ../../playback-and-recording/transport-controls.rst:77
 #, fuzzy
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
@@ -9851,16 +9852,6 @@ msgstr ":ref:`transport-bar` (5)"
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ":ref:`right-panel` (6)"
-
-#~ msgid ""
-#~ "Zrythm can sync to :term:`JACK` "
-#~ "transport or become the JACK timebase"
-#~ " master that controls it. These "
-#~ "options are available by right-clicking"
-#~ " the playhead position display when "
-#~ "using the JACK audio backend and "
-#~ "will be remembered across projects."
-#~ msgstr ""
 
 #~ msgid "Returns a new Create Tracks action for a plugin."
 #~ msgstr ""

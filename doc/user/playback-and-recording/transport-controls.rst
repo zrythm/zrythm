@@ -48,7 +48,8 @@ right-clicking on the playhead position display.
 
 JACK Transport
 --------------
-Zrythm can sync to :term:`JACK` transport
+Zrythm can sync to
+`JACK transport <https://jackaudio.org/api/transport-design.html>`_
 or become the JACK transport master.
 These options are available by right-clicking the
 playhead position display when using the JACK
