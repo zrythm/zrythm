@@ -2837,11 +2837,13 @@ track_mark_for_bounce (
   bool    mark_regions,
   bool    mark_children)
 {
-  if (self->out_signal_type != TYPE_AUDIO)
-    return;
+  if (!track_type_has_channel (self->type))
+    {
+      return;
+    }
 
   g_debug (
-    "marking %s for bounce %d, regions %d",
+    "marking %s for bounce %d, mark regions %d",
     self->name, bounce, mark_regions);
 
   self->bounce = bounce;

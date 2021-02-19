@@ -967,7 +967,7 @@ on_export_clicked (
           track->bounce = false;
         }
     }
-  else
+  else /* if exporting mixdown */
     {
       ExportSettings info;
       init_export_info (self, &info, NULL);
@@ -1054,6 +1054,9 @@ add_group_track_children (
     TRACK_COLUMN_TRACK, track,
     -1);
 
+  g_debug (
+    "%s: track '%s'", __func__, track->name);
+
   /* add the children */
   for (int i = 0; i < track->num_children; i++)
     {
@@ -1061,7 +1064,9 @@ add_group_track_children (
         TRACKLIST->tracks[track->children[i]];
       g_return_if_fail (IS_TRACK (child));
 
-      if (track_type_is_audio_group (child->type))
+      g_debug ("child: '%s'", child->name);
+
+      if (child->num_children > 0)
         {
           add_group_track_children (
             self, tree_store, &group_iter, child);

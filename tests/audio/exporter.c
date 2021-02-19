@@ -139,7 +139,8 @@ static void
 check_fingerprint_similarity (
   const char * file1,
   const char * file2,
-  int          perc)
+  int          perc,
+  int          expected_size)
 {
   const long max_frames =
     MIN (
@@ -147,7 +148,7 @@ check_fingerprint_similarity (
       get_num_frames (file2));
   ChromaprintFingerprint * fp1 =
     get_fingerprint (file1, max_frames);
-  g_assert_cmpint (fp1->size, ==, 6);
+  g_assert_cmpint (fp1->size, ==, expected_size);
   ChromaprintFingerprint * fp2 =
     get_fingerprint (file2, max_frames);
 
@@ -218,7 +219,7 @@ test_export_wav ()
   g_assert_cmpint (ret, ==, 0);
 
   check_fingerprint_similarity (
-    filepath, settings.file_uri, 100);
+    filepath, settings.file_uri, 100, 6);
 
   g_free (filepath);
 
@@ -286,6 +287,89 @@ test_bounce_region ()
 #endif
 }
 
+/**
+ * Export the audio mixdown when a MIDI track with
+ * data is routed to an instrument track.
+ */
+static void
+test_export_midi_routed_to_instrument_track ()
+{
+#ifdef HAVE_HELM
+  test_helper_zrythm_init ();
+
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  char ** midi_files =
+    io_get_files_in_dir_ending_in (
+      MIDILIB_TEST_MIDI_FILES_PATH,
+      F_RECURSIVE, ".MID");
+
+  /* create the MIDI track from a MIDI file */
+  SupportedFile * file =
+    supported_file_new_from_path (midi_files[0]);
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_MIDI, NULL, file,
+      TRACKLIST->num_tracks, PLAYHEAD, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * midi_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    midi_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  g_strfreev (midi_files);
+
+  /* route the MIDI track to the instrument track */
+  ua =
+    tracklist_selections_action_new_edit_direct_out (
+      TRACKLIST_SELECTIONS, ins_track);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* bounce it */
+  ExportSettings settings;
+  settings.mode = EXPORT_MODE_FULL;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, __func__);
+  settings.time_range = TIME_RANGE_LOOP;
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  while (settings.progress < 1.0)
+    {
+      g_message (
+        "progress: %f.1", settings.progress * 100.0);
+      g_usleep (1000);
+    }
+
+  g_thread_join (thread);
+
+  char * filepath =
+    g_build_filename (
+      TESTS_SRCDIR,
+      "test_export_midi_routed_to_instrument_track.ogg",
+      NULL);
+  check_fingerprint_similarity (
+    filepath, settings.file_uri, 97, 34);
+  g_free (filepath);
+
+  g_warn_if_reached();
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -293,6 +377,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test export midi routed to instrument track",
+    (GTestFunc) test_export_midi_routed_to_instrument_track);
   g_test_add_func (
     TEST_PREFIX "test export wav",
     (GTestFunc) test_export_wav);
