@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-14 03:50+0000\n"
+"POT-Creation-Date: 2021-02-19 22:05+0000\n"
 "PO-Revision-Date: 2021-01-23 17:11+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -4854,7 +4854,11 @@ msgstr "トランスポート コントロール"
 msgid "Playback is controlled by the following transport controls."
 msgstr "再生は以下のトランスポートコントロールで制御されます。"
 
-#: ../../playback-and-recording/transport-controls.rst:16
+#: ../../playback-and-recording/transport-controls.rst:17
+msgid "Controls"
+msgstr "コントロール"
+
+#: ../../playback-and-recording/transport-controls.rst:19
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/inspector-page.rst:121
@@ -4865,15 +4869,15 @@ msgstr "再生は以下のトランスポートコントロールで制御され
 msgid "Record"
 msgstr "録音"
 
-#: ../../playback-and-recording/transport-controls.rst:17
+#: ../../playback-and-recording/transport-controls.rst:20
 msgid "Arms the project for recording."
 msgstr "録音のためにプロジェクトをアームする。"
 
-#: ../../playback-and-recording/transport-controls.rst:20
+#: ../../playback-and-recording/transport-controls.rst:23
 msgid "Play"
 msgstr "再生"
 
-#: ../../playback-and-recording/transport-controls.rst:19
+#: ../../playback-and-recording/transport-controls.rst:22
 #, fuzzy
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
@@ -4890,35 +4894,35 @@ msgstr ""
 "停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:26
 msgid "Stop"
 msgstr "停止"
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:26
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr "再生を一時停止します。2回クリックするとキューポイントに戻ります。"
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid "Backward"
 msgstr "後戻り"
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr "プレイヘッドを 1 スナップポイントの大きさで後方に移動します。"
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:32
 msgid "Forward"
 msgstr "前方"
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:32
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr "プレイヘッドを 1 スナップポイントの大きさで前方に移動します。"
 
-#: ../../playback-and-recording/transport-controls.rst:34
+#: ../../playback-and-recording/transport-controls.rst:37
 msgid "Loop"
 msgstr "ループ"
 
-#: ../../playback-and-recording/transport-controls.rst:32
+#: ../../playback-and-recording/transport-controls.rst:35
 #, fuzzy
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
@@ -4935,20 +4939,46 @@ msgstr ""
 "有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../playback-and-recording/transport-controls.rst:37
+#: ../../playback-and-recording/transport-controls.rst:40
+msgid "Playhead Display"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:41
+msgid ""
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:50
+#, fuzzy
+msgid "JACK Transport"
+msgstr "トラックインスペクター"
+
+#: ../../playback-and-recording/transport-controls.rst:51
+msgid ""
+"Zrythm can sync to :term:`JACK` transport or become the JACK transport "
+"master. These options are available by right-clicking the playhead "
+"position display when using the JACK audio backend and will be remembered"
+" across projects."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:62
 msgid "Metronome"
 msgstr "メトロノーム"
 
-#: ../../playback-and-recording/transport-controls.rst:38
-msgid "Clicking the metronome button will set metronome on/off."
+#: ../../playback-and-recording/transport-controls.rst:63
+#, fuzzy
+msgid "Clicking the metronome button will enable/disable the metronome."
 msgstr "メトロノームボタンをクリックするとメトロノームのオン/オフが設定されます。"
 
-#: ../../playback-and-recording/transport-controls.rst:44
+#: ../../playback-and-recording/transport-controls.rst:69
 #, fuzzy
 msgid ""
-"When metronome is enabled, you will hear metronome ticks during playback "
-"at each bar and each tick. The tick at each bar will be more emphasized. "
-"This is useful for making sure your song stays on beat."
+"When the metronome is enabled, you will hear metronome ticks during "
+"playback at each bar and each beat. The tick at each bar will be more "
+"emphasized. This feature is useful for making sure the song stays on "
+"beat."
 msgstr ""
 "#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
 "メトロノームが有効になっていると、各バーと各ティックで再生中にメトロノームティックが聞こえます。各バーのティックがより強調されます。これは、曲がビートのままであることを確認するのに便利です。"
@@ -4964,7 +4994,7 @@ msgstr ""
 "\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../playback-and-recording/transport-controls.rst:50
+#: ../../playback-and-recording/transport-controls.rst:76
 #, fuzzy
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
@@ -9822,6 +9852,16 @@ msgstr ":ref:`transport-bar` (5)"
 msgid ":ref:`right-panel` (6)"
 msgstr ":ref:`right-panel` (6)"
 
+#~ msgid ""
+#~ "Zrythm can sync to :term:`JACK` "
+#~ "transport or become the JACK timebase"
+#~ " master that controls it. These "
+#~ "options are available by right-clicking"
+#~ " the playhead position display when "
+#~ "using the JACK audio backend and "
+#~ "will be remembered across projects."
+#~ msgstr ""
+
 #~ msgid "Returns a new Create Tracks action for a plugin."
 #~ msgstr ""
 #~ "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -10984,9 +11024,6 @@ msgstr ":ref:`right-panel` (6)"
 
 #~ msgid "Channel Overview"
 #~ msgstr "チャンネルの概要"
-
-#~ msgid "Controls"
-#~ msgstr "コントロール"
 
 #~ msgid "Meters"
 #~ msgstr "メーター"

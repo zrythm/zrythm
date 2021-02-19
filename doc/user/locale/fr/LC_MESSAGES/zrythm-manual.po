@@ -43,7 +43,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-14 03:50+0000\n"
+"POT-Creation-Date: 2021-02-19 22:05+0000\n"
 "PO-Revision-Date: 2021-01-06 20:29+0000\n"
 "Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
 "Language: fr\n"
@@ -4955,7 +4955,11 @@ msgstr ""
 "suivantes, qui se trouvent dans la barre d'outils principale.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../playback-and-recording/transport-controls.rst:16
+#: ../../playback-and-recording/transport-controls.rst:17
+msgid "Controls"
+msgstr "Contrôles"
+
+#: ../../playback-and-recording/transport-controls.rst:19
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/inspector-page.rst:121
@@ -4966,15 +4970,15 @@ msgstr ""
 msgid "Record"
 msgstr "Enregistrer"
 
-#: ../../playback-and-recording/transport-controls.rst:17
+#: ../../playback-and-recording/transport-controls.rst:20
 msgid "Arms the project for recording."
 msgstr "Arme le projet pour l'enregistrement."
 
-#: ../../playback-and-recording/transport-controls.rst:20
+#: ../../playback-and-recording/transport-controls.rst:23
 msgid "Play"
 msgstr "Lecture"
 
-#: ../../playback-and-recording/transport-controls.rst:19
+#: ../../playback-and-recording/transport-controls.rst:22
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
@@ -4982,41 +4986,41 @@ msgstr ""
 "S'il est arrêté, le morceau commence à jouer. Si vous jouez déjà, la tête"
 " de lecture se déplacera jusqu'au point de repère."
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:26
 msgid "Stop"
 msgstr "Stop"
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:26
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr ""
 "Suspend la lecture. Si vous cliquez deux fois, retourne au point de "
 "repère."
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid "Backward"
 msgstr "En arrière"
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr ""
 "Déplace la tête de lecture vers l'arrière de la taille d'un point de "
 "magnétisme."
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:32
 msgid "Forward"
 msgstr "En avant"
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:32
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr ""
 "Déplace la tête de lecture vers l'avant de la taille d'un point "
 "d'enclenchement."
 
-#: ../../playback-and-recording/transport-controls.rst:34
+#: ../../playback-and-recording/transport-controls.rst:37
 msgid "Loop"
 msgstr "Boucle"
 
-#: ../../playback-and-recording/transport-controls.rst:32
+#: ../../playback-and-recording/transport-controls.rst:35
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
@@ -5024,22 +5028,47 @@ msgstr ""
 "Si activé, la tête de lecture revient au point de départ de la boucle "
 "lorsqu'elle atteint le point de fin de boucle."
 
-#: ../../playback-and-recording/transport-controls.rst:37
-msgid "Metronome"
-msgstr "Métronome"
-
-#: ../../playback-and-recording/transport-controls.rst:38
-msgid "Clicking the metronome button will set metronome on/off."
+#: ../../playback-and-recording/transport-controls.rst:40
+msgid "Playhead Display"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:44
+#: ../../playback-and-recording/transport-controls.rst:41
 msgid ""
-"When metronome is enabled, you will hear metronome ticks during playback "
-"at each bar and each tick. The tick at each bar will be more emphasized. "
-"This is useful for making sure your song stays on beat."
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:50
+#, fuzzy
+msgid "JACK Transport"
+msgstr "Inspecteur de piste"
+
+#: ../../playback-and-recording/transport-controls.rst:51
+msgid ""
+"Zrythm can sync to :term:`JACK` transport or become the JACK transport "
+"master. These options are available by right-clicking the playhead "
+"position display when using the JACK audio backend and will be remembered"
+" across projects."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:62
+msgid "Metronome"
+msgstr "Métronome"
+
+#: ../../playback-and-recording/transport-controls.rst:63
+msgid "Clicking the metronome button will enable/disable the metronome."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:69
+msgid ""
+"When the metronome is enabled, you will hear metronome ticks during "
+"playback at each bar and each beat. The tick at each bar will be more "
+"emphasized. This feature is useful for making sure the song stays on "
+"beat."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:76
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
 "your Zrythm directory. This is a TODO feature."
@@ -9162,6 +9191,28 @@ msgstr ""
 msgid ":ref:`right-panel` (6)"
 msgstr ""
 
+#~ msgid ""
+#~ "Zrythm can sync to :term:`JACK` "
+#~ "transport or become the JACK timebase"
+#~ " master that controls it. These "
+#~ "options are available by right-clicking"
+#~ " the playhead position display when "
+#~ "using the JACK audio backend and "
+#~ "will be remembered across projects."
+#~ msgstr ""
+
+#~ msgid "Clicking the metronome button will set metronome on/off."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When metronome is enabled, you will "
+#~ "hear metronome ticks during playback at"
+#~ " each bar and each tick. The "
+#~ "tick at each bar will be more "
+#~ "emphasized. This is useful for making"
+#~ " sure your song stays on beat."
+#~ msgstr ""
+
 #~ msgid "Connections"
 #~ msgstr "Connexions"
 
@@ -11325,9 +11376,6 @@ msgstr ""
 #~ "Vue d'ensemble des canaux\n"
 #~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
 #~ "Aperçu du canal"
-
-#~ msgid "Controls"
-#~ msgstr "Contrôles"
 
 #~ msgid "Meters"
 #~ msgstr ""

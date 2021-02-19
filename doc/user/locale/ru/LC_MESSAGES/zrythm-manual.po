@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-14 03:50+0000\n"
+"POT-Creation-Date: 2021-02-19 22:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4938,7 +4938,12 @@ msgstr ""
 "Воспроизведение контролируется следующими элементами управления "
 "транспортом."
 
-#: ../../playback-and-recording/transport-controls.rst:16
+#: ../../playback-and-recording/transport-controls.rst:17
+#, fuzzy
+msgid "Controls"
+msgstr "Порт управления (Control)"
+
+#: ../../playback-and-recording/transport-controls.rst:19
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/inspector-page.rst:121
@@ -4949,15 +4954,15 @@ msgstr ""
 msgid "Record"
 msgstr "Запись (Record)"
 
-#: ../../playback-and-recording/transport-controls.rst:17
+#: ../../playback-and-recording/transport-controls.rst:20
 msgid "Arms the project for recording."
 msgstr "Активирует проект для записи."
 
-#: ../../playback-and-recording/transport-controls.rst:20
+#: ../../playback-and-recording/transport-controls.rst:23
 msgid "Play"
 msgstr "Воспроизвести (Play)"
 
-#: ../../playback-and-recording/transport-controls.rst:19
+#: ../../playback-and-recording/transport-controls.rst:22
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
@@ -4967,37 +4972,37 @@ msgstr ""
 " точка воспроизведения переместится к точке отсчета (Cue Point), "
 "воспроизведение не будет остановлено."
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:26
 msgid "Stop"
 msgstr "Остановить (Stop)"
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:26
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr ""
 "Остановить воспроизведение. Нажав два раза можно вернуться к точке "
 "отсчета (Cue point)."
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid "Backward"
 msgstr "Переместиться назад (Backward)"
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr "Перемещает курсор (Playhead) назад на 1 единицу привязки (Snap point)."
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:32
 msgid "Forward"
 msgstr "Переместиться вперед (Forward)"
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:32
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr "Перемещает курсор (Playhead) вперед на 1 единицу привязки (Snap point)."
 
-#: ../../playback-and-recording/transport-controls.rst:34
+#: ../../playback-and-recording/transport-controls.rst:37
 msgid "Loop"
 msgstr "Цикл (Loop)"
 
-#: ../../playback-and-recording/transport-controls.rst:32
+#: ../../playback-and-recording/transport-controls.rst:35
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
@@ -5006,26 +5011,53 @@ msgstr ""
 "точку начала цикла (Loop Start Point), когда достигнет точки окончания "
 "цикла (Loop End Point)."
 
-#: ../../playback-and-recording/transport-controls.rst:37
+#: ../../playback-and-recording/transport-controls.rst:40
+msgid "Playhead Display"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:41
+msgid ""
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:50
+#, fuzzy
+msgid "JACK Transport"
+msgstr "Инспектор Треков (Track Inspector)"
+
+#: ../../playback-and-recording/transport-controls.rst:51
+msgid ""
+"Zrythm can sync to :term:`JACK` transport or become the JACK transport "
+"master. These options are available by right-clicking the playhead "
+"position display when using the JACK audio backend and will be remembered"
+" across projects."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:62
 msgid "Metronome"
 msgstr "Метроном (Metronome)"
 
-#: ../../playback-and-recording/transport-controls.rst:38
-msgid "Clicking the metronome button will set metronome on/off."
+#: ../../playback-and-recording/transport-controls.rst:63
+#, fuzzy
+msgid "Clicking the metronome button will enable/disable the metronome."
 msgstr "Нажатие на кнопку `Метроном` включает/выключает метроном."
 
-#: ../../playback-and-recording/transport-controls.rst:44
+#: ../../playback-and-recording/transport-controls.rst:69
+#, fuzzy
 msgid ""
-"When metronome is enabled, you will hear metronome ticks during playback "
-"at each bar and each tick. The tick at each bar will be more emphasized. "
-"This is useful for making sure your song stays on beat."
+"When the metronome is enabled, you will hear metronome ticks during "
+"playback at each bar and each beat. The tick at each bar will be more "
+"emphasized. This feature is useful for making sure the song stays on "
+"beat."
 msgstr ""
 "Когда метроном включен, вы будете слышать тиканье метронома во время "
 "воспроизведения на каждом такте (Bar) и на каждом тике (Tick). Тиканье на"
 " каждом такте будет более выраженным. Это полезно для того, чтобы ваша "
 "песня оставалась в ритме."
 
-#: ../../playback-and-recording/transport-controls.rst:50
+#: ../../playback-and-recording/transport-controls.rst:76
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
 "your Zrythm directory. This is a TODO feature."
@@ -8766,6 +8798,16 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid ""
+#~ "Zrythm can sync to :term:`JACK` "
+#~ "transport or become the JACK timebase"
+#~ " master that controls it. These "
+#~ "options are available by right-clicking"
+#~ " the playhead position display when "
+#~ "using the JACK audio backend and "
+#~ "will be remembered across projects."
+#~ msgstr ""
 
 #~ msgid ""
 #~ "When using the :term:`JACK` backend, "

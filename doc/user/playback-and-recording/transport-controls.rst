@@ -13,6 +13,9 @@ transport controls.
 .. image:: /_static/img/transport-controls.png
    :align: center
 
+Controls
+--------
+
 Record
   Arms the project for recording.
 Play
@@ -33,19 +36,42 @@ Loop
   the Loop Start point when it reaches the
   Loop End point.
 
+Playhead Display
+----------------
+The playhead position can be displayed in either
+BBT notation (`bars.beats.sixteenths.ticks`)
+or actual time (`mm:ss.ms`). This can be toggled by
+right-clicking on the playhead position display.
+
+.. image:: /_static/img/playhead-display-settings.png
+   :align: center
+
+JACK Transport
+--------------
+Zrythm can sync to :term:`JACK` transport
+or become the JACK transport master.
+These options are available by right-clicking the
+playhead position display when using the JACK
+audio backend and will be remembered across
+projects.
+
+.. image:: /_static/img/jack-transport-settings.png
+   :align: center
+
 Metronome
 ---------
-Clicking the metronome button will set metronome
-on/off.
+Clicking the metronome button will enable/disable
+the metronome.
 
 .. image:: /_static/img/metronome-button.png
    :align: center
 
-When metronome is enabled, you will hear metronome
-ticks during playback at each bar and each tick.
+When the metronome is enabled, you will hear
+metronome
+ticks during playback at each bar and each beat.
 The tick at each bar will be more emphasized.
-This is useful for making sure your song stays
-on beat.
+This feature is useful for making sure the song
+stays on beat.
 
 .. tip:: The metronome samples can be overridden by
   placing your own samples in your Zrythm directory.
