@@ -1585,6 +1585,9 @@ arranger_object_get_track (
     case TYPE (REGION):
       {
         ZRegion * r = (ZRegion *) self;
+        g_return_val_if_fail (
+          r->id.track_pos < TRACKLIST->num_tracks,
+          NULL);
         track =
           TRACKLIST->tracks[r->id.track_pos];
       }
@@ -1597,6 +1600,9 @@ arranger_object_get_track (
     case TYPE (MARKER):
       {
         Marker * marker = (Marker *) self;
+        g_return_val_if_fail (
+          marker->track_pos <
+            TRACKLIST->num_tracks, NULL);
         track =
           TRACKLIST->tracks[marker->track_pos];
       }
@@ -1610,12 +1616,14 @@ arranger_object_get_track (
             ap);
         track =
           automation_track_get_track (at);
-        g_return_val_if_fail (
-         track, NULL);
       }
       break;
     case TYPE (CHORD_OBJECT):
     case TYPE (MIDI_NOTE):
+      g_return_val_if_fail (
+        self->region_id.track_pos <
+          TRACKLIST->num_tracks,
+        NULL);
       track =
         TRACKLIST->tracks[
           self->region_id.track_pos];
@@ -1627,6 +1635,10 @@ arranger_object_get_track (
           velocity_get_midi_note (vel);
         ArrangerObject * mn_obj =
           (ArrangerObject *) mn;
+        g_return_val_if_fail (
+          mn_obj->region_id.track_pos <
+            TRACKLIST->num_tracks,
+        NULL);
         track =
           TRACKLIST->tracks[
             mn_obj->region_id.track_pos];
@@ -1637,7 +1649,7 @@ arranger_object_get_track (
       break;
     }
 
-  g_return_val_if_fail (track, NULL);
+  g_return_val_if_fail (IS_TRACK (track), NULL);
 
   return track;
 }
@@ -1809,7 +1821,8 @@ find_region (
       return NULL;
     }
 
-  g_debug ("found");
+  g_debug ("found:");
+  region_print ((ZRegion *) obj);
 
   bool has_warning = false;
   g_debug (
@@ -2348,6 +2361,8 @@ arranger_object_clone (
     }
 
   new_obj->magic = ARRANGER_OBJECT_MAGIC;
+  new_obj->index_in_prev_lane =
+    self->index_in_prev_lane;
 
   return new_obj;
 }

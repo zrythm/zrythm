@@ -436,6 +436,8 @@ position_stringize_allocate (
 /**
  * Creates a string in the form of "0.0.0.0" from
  * the given position.
+ *
+ * TODO rename to position_to_string().
  */
 void
 position_stringize (

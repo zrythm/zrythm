@@ -257,6 +257,19 @@ typedef struct ArrangerObject
   RegionIdentifier   region_id;
 
   /**
+   * Object's index in the previous lane (before
+   * being moved to a new lane/track).
+   *
+   * Used at runtime when duplicating objects
+   * in new lanes/tracks so we can put the
+   * object back to its place before creating
+   * new copies.
+   *
+   * @seealso arranger_selections_action_do().
+   */
+  int                index_in_prev_lane;
+
+  /**
    * Whether deleted with delete tool.
    *
    * This is used to simply hide these objects

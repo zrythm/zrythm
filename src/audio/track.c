@@ -1189,7 +1189,6 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
-  g_message ("adding region to %s...", track->name);
   track_insert_region (
     track, region, at, lane_pos, -1, gen_name,
     fire_events);
@@ -1227,7 +1226,7 @@ track_insert_region (
     {
       track = automation_track_get_track (at);
     }
-  g_warn_if_fail (track);
+  g_return_if_fail (IS_TRACK (track));
 
   if (gen_name)
     {
@@ -1236,8 +1235,8 @@ track_insert_region (
 
   g_return_if_fail (region->name);
   g_message (
-    "inserting region %s to track %s at lane %d "
-    "(idx %d)",
+    "inserting region '%s' to track '%s' "
+    "at lane %d (idx %d)",
     region->name, track->name, lane_pos, idx);
 
   int add_lane = 0, add_at = 0, add_chord = 0;
@@ -1314,6 +1313,9 @@ track_insert_region (
       audio_clip_write_to_pool (clip, false);
     }
 
+  g_message ("inserted:");
+  region_print (region);
+
   if (fire_events)
     {
       EVENTS_PUSH (
@@ -1355,8 +1357,6 @@ track_remove_empty_last_lanes (
   int removed = 0;
   for (int i = track->num_lanes - 1; i >= 1; i--)
     {
-      g_message ("lane %d has %d regions",
-                 i, track->lanes[i]->num_regions);
       if (track->lanes[i]->num_regions > 0)
         break;
 
@@ -1806,7 +1806,7 @@ track_clear (
   g_return_if_fail (IS_TRACK (self));
 
   /* remove lane regions */
-  for (int i = 0; i < self->num_lanes; i++)
+  for (int i = self->num_lanes - 1; i >= 0; i--)
     {
       TrackLane * lane = self->lanes[i];
       track_lane_clear (lane);
@@ -1833,6 +1833,9 @@ track_remove_region (
   bool      fire_events,
   bool      free)
 {
+  g_return_if_fail (
+    IS_TRACK (self) && IS_REGION (region));
+
   region_disconnect (region);
 
   g_warn_if_fail (region->id.lane_pos >= 0);

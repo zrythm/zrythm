@@ -577,6 +577,177 @@ timeline_selections_mark_for_bounce (
     }
 }
 
+/**
+ * Move the selected Regions to new Lanes.
+ *
+ * @param diff The delta to move the
+ *   Tracks.
+ *
+ * @return True if moved.
+ */
+bool
+timeline_selections_move_regions_to_new_lanes (
+  TimelineSelections * self,
+  const int            diff)
+{
+  arranger_selections_sort_by_indices (
+    (ArrangerSelections *) self, false);
+
+  /* store selected regions because they will be
+   * deselected during moving */
+  ZRegion * regions[600];
+  int num_regions = 0;
+  ZRegion * region;
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      regions[num_regions++] =
+        self->regions[i];
+    }
+
+  /* check that:
+   * - all regions are in the same track
+   * - only lane regions are selected
+   * - the lane bounds are not exceeded */
+  bool compatible = true;
+  for (int i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      if (region->id.lane_pos + diff < 0)
+        {
+          compatible = false;
+          break;
+        }
+    }
+  if (self->num_scale_objects > 0 ||
+      self->num_markers > 0)
+    {
+      compatible = false;
+    }
+  if (!compatible)
+    return false;
+
+  /* new positions are all compatible, move the
+   * regions */
+  for (int i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      TrackLane * lane = region_get_lane (region);
+      g_return_val_if_fail (region && lane, -1);
+
+      TrackLane * lane_to_move_to = NULL;
+      int new_lane_pos =
+        lane->pos +  diff;
+      g_return_val_if_fail (
+        new_lane_pos >= 0, -1);
+      Track * track = track_lane_get_track (lane);
+      track_create_missing_lanes (
+        track, new_lane_pos);
+      lane_to_move_to =
+        track->lanes[new_lane_pos];
+      g_warn_if_fail (lane_to_move_to);
+
+      region_move_to_lane (
+        region, lane_to_move_to, -1);
+    }
+  return true;
+}
+
+/**
+ * Move the selected Regions to the new Track.
+ *
+ * @param new_track_is_before 1 if the Region's
+ *   should move to their previous tracks, 0 for
+ *   their next tracks.
+ *
+ * @return True if moved.
+ */
+bool
+timeline_selections_move_regions_to_new_tracks (
+  TimelineSelections * self,
+  const int            vis_track_diff)
+{
+  arranger_selections_sort_by_indices (
+    (ArrangerSelections *) self, false);
+
+  /* store selected regions because they will be
+   * deselected during moving */
+  ZRegion * regions[600];
+  int num_regions = 0;
+  ZRegion * region;
+  ArrangerObject * r_obj;
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      regions[num_regions++] =
+        self->regions[i];
+    }
+
+  /* check that all regions can be moved to a
+   * compatible track */
+  bool compatible = true;
+  for (int i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      r_obj = (ArrangerObject *) region;
+      Track * region_track =
+        arranger_object_get_track (r_obj);
+      Track * visible =
+        tracklist_get_visible_track_after_delta (
+          TRACKLIST,
+          region_track,
+          vis_track_diff);
+      if (
+        !visible ||
+        !track_type_is_compatible_for_moving (
+           region_track->type,
+           visible->type) ||
+        /* do not allow moving automation tracks
+         * to other tracks for now */
+        region->id.type == REGION_TYPE_AUTOMATION)
+        {
+          compatible = false;
+          break;
+        }
+    }
+  if (!compatible)
+    {
+      return false;
+    }
+
+  /* new positions are all compatible, move the
+   * regions */
+  for (int i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      r_obj = (ArrangerObject *) region;
+      Track * region_track =
+        arranger_object_get_track (r_obj);
+      g_warn_if_fail (region && region_track);
+      Track * track_to_move_to =
+        tracklist_get_visible_track_after_delta (
+          TRACKLIST,
+          region_track,
+          vis_track_diff);
+      g_warn_if_fail (track_to_move_to);
+
+      region_move_to_track (
+        region, track_to_move_to, -1);
+    }
+
+  return true;
+}
+
+void
+timeline_selections_set_index_in_prev_lane (
+  TimelineSelections * self)
+{
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      ZRegion * r = self->regions[i];
+      ArrangerObject * r_obj = (ArrangerObject *) r;
+      r_obj->index_in_prev_lane = r->id.idx;
+    }
+}
+
 SERIALIZE_SRC (
   TimelineSelections, timeline_selections)
 DESERIALIZE_SRC (

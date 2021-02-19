@@ -910,11 +910,11 @@ test_duplicate_timeline ()
           region_move_to_track (
             midi_track->lanes[MIDI_REGION_LANE]->
               regions[0],
-            new_midi_track);
+            new_midi_track, -1);
           region_move_to_track (
             audio_track->lanes[AUDIO_REGION_LANE]->
               regions[0],
-            new_audio_track);
+            new_audio_track, -1);
         }
       /* do move ticks */
       arranger_selections_add_ticks (
@@ -1091,11 +1091,11 @@ test_link_timeline ()
           region_move_to_track (
             midi_track->lanes[MIDI_REGION_LANE]->
               regions[0],
-            new_midi_track);
+            new_midi_track, -1);
           region_move_to_track (
             audio_track->lanes[AUDIO_REGION_LANE]->
               regions[0],
-            new_audio_track);
+            new_audio_track, -1);
         }
       else
         {
@@ -1506,6 +1506,112 @@ test_automation_fill ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_duplicate_midi_regions_to_track_below ()
+{
+  rebootstrap_timeline ();
+
+  Track * midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, MIDI_TRACK_NAME);
+  TrackLane * lane =
+    midi_track->lanes[0];
+  g_assert_cmpint (lane->num_regions, ==, 0);
+
+  Position pos, end_pos;
+  position_set_to_bar (&pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * r1 =
+    midi_region_new (
+      &pos, &end_pos, midi_track->pos, 0,
+      lane->num_regions);
+  track_add_region (
+    midi_track, r1, NULL, lane->pos,
+    F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
+    F_PUBLISH_EVENTS);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (lane->num_regions, ==, 1);
+
+  position_set_to_bar (&pos, 5);
+  position_set_to_bar (&end_pos, 7);
+  ZRegion * r2 =
+    midi_region_new (
+      &pos, &end_pos, midi_track->pos, 0,
+      lane->num_regions);
+  track_add_region (
+    midi_track, r2, NULL, lane->pos,
+    F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r2, F_SELECT, F_NO_APPEND,
+    F_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (lane->num_regions, ==, 2);
+
+  /* select the regions */
+  arranger_object_select (
+    (ArrangerObject *) r2, F_SELECT, F_NO_APPEND,
+    F_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r1, F_SELECT, F_APPEND,
+    F_PUBLISH_EVENTS);
+
+  Track * new_midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, TARGET_MIDI_TRACK_NAME);
+  TrackLane * target_lane =
+    new_midi_track->lanes[0];
+  g_assert_cmpint (target_lane->num_regions, ==, 0);
+
+  double ticks = 100.0;
+
+  /* replicate the logic from the arranger */
+  timeline_selections_set_index_in_prev_lane (
+    TL_SELECTIONS);
+  timeline_selections_move_regions_to_new_tracks (
+    TL_SELECTIONS,
+    new_midi_track->pos - midi_track->pos);
+  arranger_selections_add_ticks (
+    (ArrangerSelections *) TL_SELECTIONS,
+    ticks);
+  g_assert_cmpint (target_lane->num_regions, ==, 2);
+  g_assert_cmpint (
+    TL_SELECTIONS->num_regions, ==, 2);
+
+  g_debug ("selections:");
+  region_print (TL_SELECTIONS->regions[0]);
+  region_print (TL_SELECTIONS->regions[1]);
+
+  ua =
+    arranger_selections_action_new_duplicate (
+      TL_SELECTIONS, ticks, 0, 0,
+      new_midi_track->pos - midi_track->pos, 0, 0,
+      F_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* check that new regions are created */
+  g_assert_cmpint (target_lane->num_regions, ==, 2);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* check that new regions are deleted */
+  g_assert_cmpint (target_lane->num_regions, ==, 0);
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  /* check that new regions are created */
+  g_assert_cmpint (target_lane->num_regions, ==, 2);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1513,6 +1619,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test duplicate midi regions to track below",
+    (GTestFunc) test_duplicate_midi_regions_to_track_below);
   g_test_add_func (
     TEST_PREFIX "test create timeline",
     (GTestFunc) test_create_timeline);

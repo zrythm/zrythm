@@ -1051,9 +1051,9 @@ move_items_y (
               lane->pos - last_lane->pos;
             if (delta != 0)
               {
-                int moved =
-                  timeline_arranger_move_regions_to_new_lanes (
-                    self, delta);
+                bool moved =
+                  timeline_selections_move_regions_to_new_lanes (
+                    TL_SELECTIONS, delta);
                 if (moved)
                   {
                     self->lane_diff =
@@ -1073,9 +1073,9 @@ move_items_y (
                 TRACKLIST, last_track, track);
             if (delta != 0)
               {
-                int moved =
-                  timeline_arranger_move_regions_to_new_tracks (
-                    self, delta);
+                bool moved =
+                  timeline_selections_move_regions_to_new_tracks (
+                    TL_SELECTIONS, delta);
                 if (moved)
                   {
                     self->visible_track_diff =
@@ -2397,9 +2397,18 @@ on_drag_begin_handle_hit_object (
 
 #undef SET_ACTION
 
-  /* clone the arranger selections at this point */
   ArrangerSelections * orig_selections =
     arranger_widget_get_selections (self);
+
+  /* set index in prev lane for selected objects
+   * if timeline */
+  if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
+    {
+      timeline_selections_set_index_in_prev_lane (
+        TL_SELECTIONS);
+    }
+
+  /* clone the arranger selections at this point */
   self->sel_at_start =
     arranger_selections_clone (orig_selections);
 

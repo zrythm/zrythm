@@ -170,6 +170,37 @@ void
 timeline_selections_mark_for_bounce (
   TimelineSelections * ts);
 
+/**
+ * Move the selected Regions to new Lanes.
+ *
+ * @param diff The delta to move the
+ *   Tracks.
+ *
+ * @return True if moved.
+ */
+bool
+timeline_selections_move_regions_to_new_lanes (
+  TimelineSelections * self,
+  const int            diff);
+
+/**
+ * Move the selected Regions to the new Track.
+ *
+ * @param new_track_is_before 1 if the Region's
+ *   should move to their previous tracks, 0 for
+ *   their next tracks.
+ *
+ * @return True if moved.
+ */
+bool
+timeline_selections_move_regions_to_new_tracks (
+  TimelineSelections * self,
+  const int            vis_track_diff);
+
+void
+timeline_selections_set_index_in_prev_lane (
+  TimelineSelections * self);
+
 SERIALIZE_INC (
   TimelineSelections, timeline_selections)
 DESERIALIZE_INC (

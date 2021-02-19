@@ -73,6 +73,9 @@ clip_editor_set_region (
   int recalc_graph = 0;
   if (self->has_region)
     {
+      g_message (
+        "unsetting clip editor region at track %d",
+        self->region_id.track_pos);
       if (self->region_id.type == REGION_TYPE_MIDI)
         {
           Track * track =
@@ -86,6 +89,9 @@ clip_editor_set_region (
     }
   if (region) /* new region exists */
     {
+      g_message (
+        "setting new clip editor region to '%s'...",
+        region->name);
       if (region->id.type == REGION_TYPE_MIDI)
         {
           Track * track =

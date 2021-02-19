@@ -153,11 +153,16 @@ region_set_lane (
  *
  * Assumes that the ZRegion is already in a
  * TrackLane.
+ *
+ * @param index_in_lane Index in lane in the
+ *   new track to insert the region to, or -1 to
+ *   append.
  */
 void
 region_move_to_track (
   ZRegion *  region,
-  Track *    track)
+  Track *    track,
+  int        index_in_lane)
 {
   g_return_if_fail (IS_REGION (region) && track);
 
@@ -185,9 +190,19 @@ region_move_to_track (
     region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
 
   /* add the region to its new track */
-  track_add_region (
-    track, region, NULL, lane_pos, F_NO_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+  if (index_in_lane >= 0)
+    {
+      track_insert_region (
+        track, region, NULL, lane_pos,
+        index_in_lane,
+        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+    }
+  else
+    {
+      track_add_region (
+        track, region, NULL, lane_pos,
+        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+    }
   g_warn_if_fail (region->id.lane_pos == lane_pos);
   g_warn_if_fail (
     track->lanes[lane_pos]->num_regions > 0 &&
@@ -319,11 +334,16 @@ region_stretch (
  *
  * Assumes that the ZRegion is already in a
  * TrackLane.
+ *
+ * @param index_in_lane Index in lane in the
+ *   new track to insert the region to, or -1 to
+ *   append.
  */
 void
 region_move_to_lane (
   ZRegion *    region,
-  TrackLane * lane)
+  TrackLane * lane,
+  int          index_in_lane)
 {
   g_return_if_fail (IS_REGION (region) && lane);
 
@@ -341,9 +361,19 @@ region_move_to_lane (
   track_remove_region (
     region_track, region,
     F_NO_PUBLISH_EVENTS, F_NO_FREE);
-  track_add_region (
-    lane_track, region, NULL, lane->pos,
-    F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  if (index_in_lane >= 0)
+    {
+      track_insert_region (
+        lane_track, region, NULL, lane->pos,
+        index_in_lane,
+        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+    }
+  else
+    {
+      track_add_region (
+        lane_track, region, NULL, lane->pos,
+        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+    }
 
   /* reset the clip editor region because
    * track_remove_region clears it */
@@ -482,7 +512,7 @@ region_get_lane (
   Track * track =
     arranger_object_get_track (
       (ArrangerObject *) self);
-  g_return_val_if_fail (track, NULL);
+  g_return_val_if_fail (IS_TRACK (track), NULL);
   if (self->id.lane_pos < track->num_lanes)
     {
       TrackLane * lane =
@@ -956,15 +986,22 @@ void
 region_print (
   const ZRegion * self)
 {
+  char from_pos_str[100], to_pos_str[100];
+  position_stringize (
+    &self->base.pos, from_pos_str);
+  position_stringize (
+    &self->base.end_pos, to_pos_str);
   char * str =
     g_strdup_printf (
       "%s [%s] - track pos %d - lane pos %d - "
-      "idx %d",
+      "idx %d - address %p - <%s> to <%s>",
       self->name,
-      region_type_bitvals[self->id.type].name,
+      region_identifier_get_region_type_name (
+        self->id.type),
       self->id.track_pos,
       self->id.lane_pos,
-      self->id.idx);
+      self->id.idx, self,
+      from_pos_str, to_pos_str);
   g_message ("%s", str);
   g_free (str);
 }

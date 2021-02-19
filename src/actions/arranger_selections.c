@@ -41,6 +41,14 @@
 
 #include <glib/gi18n.h>
 
+static void
+move_obj_by_tracks_and_lanes (
+  ArrangerObject * obj,
+  const int        tracks_diff,
+  const int        lanes_diff,
+  bool             use_index_in_prev_lane,
+  int              index_in_prev_lane);
+
 void
 arranger_selections_action_init_loaded (
   ArrangerSelectionsAction * self)
@@ -346,7 +354,9 @@ arranger_selections_action_new_move_or_duplicate (
     }
 
   if (!already_moved)
-    self->first_run = 0;
+    {
+      self->first_run = 0;
+    }
 
   self->ticks = ticks;
   self->delta_chords = delta_chords;
@@ -849,7 +859,7 @@ do_or_undo_move (
               /* shift the actual object by
                * tracks */
               region_move_to_track (
-                r, track_to_move_to);
+                r, track_to_move_to, -1);
 
               /* remember info in identifier */
               ZRegion * r_clone =
@@ -897,9 +907,10 @@ do_or_undo_move (
               TrackLane * lane_to_move_to =
                 region_track->lanes[new_lane_pos];
 
-              /* shift the actual object by lanes */
+              /* shift the actual object by
+               * lanes */
               region_move_to_lane (
-                r, lane_to_move_to);
+                r, lane_to_move_to, -1);
             }
 
           if (delta_chords != 0)
@@ -993,7 +1004,9 @@ static void
 move_obj_by_tracks_and_lanes (
   ArrangerObject * obj,
   const int        tracks_diff,
-  const int        lanes_diff)
+  const int        lanes_diff,
+  bool             use_index_in_prev_lane,
+  int              index_in_prev_lane)
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (obj));
   if (tracks_diff)
@@ -1019,7 +1032,9 @@ move_obj_by_tracks_and_lanes (
       else
         {
           region_move_to_track (
-            r, track_to_move_to);
+            r, track_to_move_to,
+            use_index_in_prev_lane ?
+              index_in_prev_lane : -1);
         }
     }
   if (lanes_diff)
@@ -1046,7 +1061,9 @@ move_obj_by_tracks_and_lanes (
           TrackLane * lane_to_move_to =
             region_track->lanes[new_lane_pos];
           region_move_to_lane (
-            r, lane_to_move_to);
+            r, lane_to_move_to,
+            use_index_in_prev_lane ?
+              index_in_prev_lane : -1);
         }
     }
 }
@@ -1103,8 +1120,7 @@ do_or_undo_duplicate_or_link (
    * keep track of which automation point in the
    * project matches which automation point in
    * the cached selections */
-  GHashTable * ht =
-    g_hash_table_new (NULL, NULL);
+  GHashTable * ht = g_hash_table_new (NULL, NULL);
 
   for (int i = 0; i < size; i++)
     {
@@ -1112,79 +1128,127 @@ do_or_undo_duplicate_or_link (
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
       orig_objs[i]->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
-      g_warn_if_fail (IS_ARRANGER_OBJECT (objs[i]));
+      g_warn_if_fail (
+        IS_ARRANGER_OBJECT (objs[i]));
 
-      ArrangerObject * obj;
-      if (_do)
+      /* on first run, we need to first move
+       * the original object backwards (the
+       * project object too) */
+      if (_do && self->first_run)
         {
-          /* on first run, we need to first move
-           * the original object backwards (the
-           * project object too) */
-          if (self->first_run)
+          g_debug (
+            "[%d] moving original object "
+            "backwards", i);
+          if (objs[i]->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
             {
-              obj =
-                arranger_object_find (objs[i]);
-              g_return_val_if_fail (
-                IS_ARRANGER_OBJECT (obj), -1);
+              g_debug ("our:");
+              region_print (
+                (ZRegion *) objs[i]);
+            }
+          ZRegion * r_orig =
+            (ZRegion *) orig_objs[i];
+          ZRegion * r_our =
+            (ZRegion *) objs[i];
+          (void) r_orig;
+          (void) r_our;
+          ArrangerObject * obj =
+            arranger_object_find (objs[i]);
+          g_return_val_if_fail (
+            IS_ARRANGER_OBJECT (obj), -1);
 
-              /* ticks */
-              if (!math_doubles_equal (
-                    self->ticks, 0.0))
+          /* ticks */
+          if (!math_doubles_equal (
+                self->ticks, 0.0))
+            {
+              arranger_object_move (
+                obj, - self->ticks);
+              arranger_object_move (
+                objs[i], - self->ticks);
+            }
+
+          /* tracks & lanes */
+          if (delta_tracks || delta_lanes)
+            {
+              g_message ("moving prj obj");
+              move_obj_by_tracks_and_lanes (
+                obj, - delta_tracks,
+                - delta_lanes, true,
+                objs[i]->index_in_prev_lane);
+              g_message ("moving own obj");
+              RegionIdentifier own_id_before_move =
+                r_our->id;
+              move_obj_by_tracks_and_lanes (
+                objs[i], - delta_tracks,
+                - delta_lanes, true,
+                objs[i]->index_in_prev_lane);
+
+              /* since the object moved outside
+               * of its lane, decrement the index
+               * inside the lane for all of our
+               * cached objects in the same lane */
+              for (int j = i + 1; j < size; j++)
                 {
-                  arranger_object_move (
-                    obj, - self->ticks);
-                  arranger_object_move (
-                    objs[i], - self->ticks);
-                }
-
-              /* tracks & lanes */
-              if (delta_tracks || delta_lanes)
-                {
-                  move_obj_by_tracks_and_lanes (
-                    obj, - delta_tracks,
-                    - delta_lanes);
-                  move_obj_by_tracks_and_lanes (
-                    objs[i], - delta_tracks,
-                    - delta_lanes);
-                }
-
-              /* chords */
-              /* TODO */
-
-              /* pitch */
-              if (delta_pitch)
-                {
-                  midi_note_shift_pitch (
-                    (MidiNote *) obj,
-                    - delta_pitch);
-                  midi_note_shift_pitch (
-                    (MidiNote *) objs[i],
-                    - delta_pitch);
-                }
-
-              /* automation value */
-              if (!math_floats_equal (
-                    delta_normalized_amount, 0.f))
-                {
-                  AutomationPoint * ap =
-                    (AutomationPoint *) obj;
-                  AutomationPoint * cached_ap =
-                    (AutomationPoint *) objs[i];
-                  automation_point_set_fvalue (
-                    ap,
-                    ap->normalized_val -
-                      delta_normalized_amount,
-                    F_NORMALIZED,
-                    F_NO_PUBLISH_EVENTS);
-                  automation_point_set_fvalue (
-                    cached_ap,
-                    cached_ap->normalized_val -
-                      delta_normalized_amount,
-                    F_NORMALIZED,
-                    F_NO_PUBLISH_EVENTS);
+                  ZRegion * own_r =
+                    (ZRegion *) objs[j];
+                  if (own_id_before_move.
+                        track_pos ==
+                        own_r->id.track_pos &&
+                      own_id_before_move.
+                        lane_pos ==
+                        own_r->id.lane_pos &&
+                      own_id_before_move.
+                        at_idx ==
+                        own_r->id.at_idx)
+                    {
+                      own_r->id.idx--;
+                    }
                 }
             }
 
+          /* chords */
+          /* TODO */
+
+          /* pitch */
+          if (delta_pitch)
+            {
+              midi_note_shift_pitch (
+                (MidiNote *) obj,
+                - delta_pitch);
+              midi_note_shift_pitch (
+                (MidiNote *) objs[i],
+                - delta_pitch);
+            }
+
+          /* automation value */
+          if (!math_floats_equal (
+                delta_normalized_amount, 0.f))
+            {
+              AutomationPoint * ap =
+                (AutomationPoint *) obj;
+              AutomationPoint * cached_ap =
+                (AutomationPoint *) objs[i];
+              automation_point_set_fvalue (
+                ap,
+                ap->normalized_val -
+                  delta_normalized_amount,
+                F_NORMALIZED,
+                F_NO_PUBLISH_EVENTS);
+              automation_point_set_fvalue (
+                cached_ap,
+                cached_ap->normalized_val -
+                  delta_normalized_amount,
+                F_NORMALIZED,
+                F_NO_PUBLISH_EVENTS);
+            }
+        }
+    }
+
+  for (int i = 0; i < size; i++)
+    {
+      ArrangerObject * obj;
+      if (_do)
+        {
           /* clone the clone */
           obj =
             arranger_object_clone (
@@ -1314,12 +1378,12 @@ do_or_undo_duplicate_or_link (
           if (_do)
             {
               move_obj_by_tracks_and_lanes (
-                obj, delta_tracks, 0);
+                obj, delta_tracks, 0, false, -1);
             }
 
           /* also shift the copy */
           move_obj_by_tracks_and_lanes (
-            objs[i], delta_tracks, 0);
+            objs[i], delta_tracks, false, -1, 0);
         }
 
       if (delta_pitch != 0)
@@ -1345,12 +1409,12 @@ do_or_undo_duplicate_or_link (
           if (_do)
             {
               move_obj_by_tracks_and_lanes (
-                obj, 0, delta_lanes);
+                obj, 0, delta_lanes, false, -1);
             }
 
           /* also shift the copy */
           move_obj_by_tracks_and_lanes (
-            objs[i], 0, delta_lanes);
+            objs[i], 0, delta_lanes, false, -1);
         }
 
       if (delta_chords != 0)

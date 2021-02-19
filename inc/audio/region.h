@@ -484,15 +484,20 @@ region_update_link_group (
  * Works with TrackLane's of other Track's as well.
  *
  * Maintains the selection status of the
- * ZRegion.
+ * Region.
  *
  * Assumes that the ZRegion is already in a
  * TrackLane.
+ *
+ * @param index_in_lane Index in lane in the
+ *   new track to insert the region to, or -1 to
+ *   append.
  */
 void
 region_move_to_lane (
   ZRegion *    region,
-  TrackLane * lane);
+  TrackLane * lane,
+  int          index_in_lane);
 
 /**
  * Moves the ZRegion to the given Track, maintaining
@@ -501,11 +506,16 @@ region_move_to_lane (
  *
  * Assumes that the ZRegion is already in a
  * TrackLane.
+ *
+ * @param index_in_lane Index in lane in the
+ *   new track to insert the region to, or -1 to
+ *   append.
  */
 void
 region_move_to_track (
   ZRegion *  region,
-  Track *   track);
+  Track *    track,
+  int        index_in_lane);
 
 /**
  * Returns if the given ZRegion type can exist
