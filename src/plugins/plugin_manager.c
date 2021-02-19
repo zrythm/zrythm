@@ -920,6 +920,9 @@ scan_carla_descriptors_from_paths (
           /* if no cached descriptors found */
           else
             {
+              g_debug (
+                "No cached descriptors found for "
+                "%s", plugin_path);
               if (
                 cached_plugin_descriptors_is_blacklisted (
                   self->cached_plugin_descriptors,
@@ -1025,7 +1028,7 @@ scan_carla_descriptors_from_paths (
                               descriptor);
                           cached_plugin_descriptors_add (
                             self->cached_plugin_descriptors,
-                            clone, 0);
+                            clone, F_NO_SERIALIZE);
                         }
                       g_debug (
                         "%d descriptors cached for "

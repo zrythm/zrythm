@@ -72,6 +72,29 @@ cached_plugin_descriptors_serialize_to_file (
   g_free (yaml);
 }
 
+static bool
+is_yaml_our_version (
+  const char * yaml)
+{
+  bool same_version = false;
+  char version_str[120];
+  sprintf (
+    version_str, "version: %d\n",
+    CACHED_PLUGIN_DESCRIPTORS_VERSION);
+  same_version =
+    g_str_has_prefix (yaml, version_str);
+  if (!same_version)
+    {
+      sprintf (
+        version_str, "---\nversion: %d\n",
+        CACHED_PLUGIN_DESCRIPTORS_VERSION);
+      same_version =
+        g_str_has_prefix (yaml, version_str);
+    }
+
+  return same_version;
+}
+
 /**
  * Reads the file and fills up the object.
  */
@@ -87,6 +110,7 @@ cached_plugin_descriptors_new (void)
         "Cached plugin descriptors file at %s does "
         "not exist", path);
 return_new_instance:
+      g_free (path);
       return
         calloc (1, sizeof (CachedPluginDescriptors));
     }
@@ -105,11 +129,7 @@ return_new_instance:
 
   /* if not same version, purge file and return
    * a new instance */
-  char version_str[120];
-  sprintf (
-    version_str, "version: %d",
-    CACHED_PLUGIN_DESCRIPTORS_VERSION);
-  if (!g_str_has_prefix (yaml, version_str))
+  if (!is_yaml_our_version (yaml))
     {
       g_message (
         "Found old plugin descriptor file version. "
@@ -118,6 +138,7 @@ return_new_instance:
         g_file_new_for_path (path);
       g_file_delete (file, NULL, NULL);
       g_object_unref (file);
+      g_free (yaml);
       goto return_new_instance;
     }
 
@@ -256,8 +277,8 @@ cached_plugin_descriptors_get (
     calloc (1, sizeof (PluginDescriptor *));
   int num_descriptors = 0;
 
-  g_debug ("Getting cached descriptors for %s",
-    abs_path);
+  g_debug (
+    "Getting cached descriptors for %s", abs_path);
 
   for (int i = 0; i < self->num_descriptors; i++)
     {
@@ -270,16 +291,24 @@ cached_plugin_descriptors_get (
 
       GFile * file =
         g_file_new_for_path (descr->path);
-      if (string_is_equal (descr->path, abs_path) &&
-          descr->ghash == g_file_hash (file))
+      if (string_is_equal (descr->path, abs_path))
         {
-          num_descriptors++;
-          descriptors =
-            realloc (
-              descriptors,
-              (size_t) (num_descriptors + 1) *
-                sizeof (PluginDescriptor *));
-          descriptors[num_descriptors - 1] = descr;
+          if (descr->ghash == g_file_hash (file))
+            {
+              num_descriptors++;
+              descriptors =
+                realloc (
+                  descriptors,
+                  (size_t) (num_descriptors + 1) *
+                    sizeof (PluginDescriptor *));
+              descriptors[num_descriptors - 1] =
+                descr;
+            }
+          else
+            {
+              g_debug ("hash differs %u != %u",
+                descr->ghash, g_file_hash (file));
+            }
         }
       g_object_unref (file);
     }
