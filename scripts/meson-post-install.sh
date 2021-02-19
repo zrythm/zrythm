@@ -17,14 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-suffix="$MESON_INSTALL_PREFIX"
-if [ ! "$suffix" ]; then
-  suffix="/usr/local"
-fi
-prefix="$suffix"
-if [ "$MESON_INSTALL_DESTDIR_PREFIX" ]; then
-  prefix="$MESON_INSTALL_DESTDIR_PREFIX/$prefix"
-fi
+prefix="$MESON_INSTALL_DESTDIR_PREFIX"
 datadir="$prefix/share"
 schemadir="$datadir/glib-2.0/schemas"
 fontsdir="$datadir/fonts/zrythm"
@@ -32,7 +25,7 @@ desktop_db_dir="$datadir/applications"
 mime_dir="$datadir/mime"
 doc_dir="$datadir/doc/zrythm"
 
-if [ ! "$MESON_INSTALL_DESTDIR_PREFIX" ]; then
+if [ ! "$DESTDIR" ]; then
   echo "Compiling gsettings schemas..."
   glib-compile-schemas $schemadir
 
