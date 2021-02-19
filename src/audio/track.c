@@ -1397,14 +1397,6 @@ void
 track_update_children (
   Track * self)
 {
-  if (TRACKLIST->swapping_tracks)
-    {
-      g_warning (
-        "This function should not be called while "
-        "swapping track positions");
-      return;
-    }
-
   for (int i = 0; i < self->num_children; i++)
     {
       Track * child =
@@ -1468,10 +1460,7 @@ track_set_pos (
     }
 
   /* update children */
-  if (!TRACKLIST->swapping_tracks)
-    {
-      track_update_children (self);
-    }
+  track_update_children (self);
 
   if (self->is_project)
     {

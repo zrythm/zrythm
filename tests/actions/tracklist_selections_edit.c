@@ -574,6 +574,8 @@ test_edit_midi_direct_out_to_ins (void)
 
   undo_manager_undo (UNDO_MANAGER);
 
+  ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
   direct_out =
     channel_get_output_track (ch);
   g_assert_true (IS_TRACK (direct_out));

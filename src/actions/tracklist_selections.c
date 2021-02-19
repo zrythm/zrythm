@@ -541,6 +541,7 @@ do_or_undo_create_or_delete (
 
               /* insert it to the tracklist at its
                * original pos */
+              track->num_children = 0;
               tracklist_insert_track (
                 TRACKLIST, track, track->pos,
                 F_NO_PUBLISH_EVENTS,
@@ -549,7 +550,6 @@ do_or_undo_create_or_delete (
               /* if group track, readd all children */
               if (TRACK_CAN_BE_GROUP_TARGET (track))
                 {
-                  track->num_children = 0;
                   group_target_track_add_children (
                     track, own_track->children,
                     own_track->num_children,

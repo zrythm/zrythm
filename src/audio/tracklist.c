@@ -201,10 +201,6 @@ swap_tracks (
   track_set_pos (src_track, dest);
 
   self->swapping_tracks = false;
-
-  /* update track children */
-  track_update_children (src_track);
-  track_update_children (dest_track);
 }
 
 /**
