@@ -51,6 +51,18 @@ void
 engine_jack_rescan_ports (
   AudioEngine * self);
 
+void
+engine_jack_handle_position_change (
+  AudioEngine * self);
+
+void
+engine_jack_handle_start (
+  AudioEngine * self);
+
+void
+engine_jack_handle_stop (
+  AudioEngine * self);
+
 /**
  * Prepares for processing.
  *

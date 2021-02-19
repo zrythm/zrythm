@@ -336,7 +336,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
         img, GTK_ALIGN_END);
       gtk_widget_set_valign (
         img, GTK_ALIGN_START);
-      gtk_widget_set_visible (img, 1);
+      gtk_widget_set_visible (img, true);
       gtk_widget_set_tooltip_text (
         img,
         _("JACK Transport client"));
@@ -356,7 +356,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
         img, GTK_ALIGN_START);
       gtk_widget_set_margin_end (
         img, size + 2);
-      gtk_widget_set_visible (img, 1);
+      gtk_widget_set_visible (img, true);
       gtk_widget_set_tooltip_text (
         img,
         _("JACK Timebase master"));

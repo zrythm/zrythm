@@ -189,6 +189,41 @@ buffer_size_cb (uint32_t nframes,
   return 0;
 }
 
+void
+engine_jack_handle_position_change (
+  AudioEngine * self)
+{
+  if (self->transport_type ==
+        AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+    {
+      jack_transport_locate (
+        self->client,
+        (jack_nframes_t) PLAYHEAD->frames);
+    }
+}
+
+void
+engine_jack_handle_start (
+  AudioEngine * self)
+{
+  if (self->transport_type ==
+        AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+    {
+      jack_transport_start (self->client);
+    }
+}
+
+void
+engine_jack_handle_stop (
+  AudioEngine * self)
+{
+  if (self->transport_type ==
+        AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+    {
+      jack_transport_stop (self->client);
+    }
+}
+
 /**
  * Prepares for processing.
  *
@@ -378,12 +413,16 @@ engine_jack_set_transport_type (
   AudioEngine * self,
   AudioEngineJackTransportType type)
 {
+  g_settings_set_enum (
+    S_UI, "jack-transport-type", type);
+
   /* release timebase master if held */
   if (self->transport_type ==
         AUDIO_ENGINE_JACK_TIMEBASE_MASTER &&
       type !=
         AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
     {
+      g_message ("releasing JACK timebase");
       jack_release_timebase (self->client);
     }
   /* acquire timebase master */
@@ -392,11 +431,14 @@ engine_jack_set_transport_type (
            type ==
              AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
     {
+      g_message ("becoming JACK timebase master");
       jack_set_timebase_callback (
         self->client, 0, timebase_cb, self);
     }
 
-  g_message ("set to %d", type);
+  g_message (
+    "set JACK transport type to %s",
+    jack_transport_type_strings[type].str);
   self->transport_type = type;
 }
 
@@ -479,8 +521,6 @@ engine_jack_setup (
     jack_get_sample_rate (self->client);
   self->block_length =
     jack_get_buffer_size (self->client);
-  self->transport_type =
-    AUDIO_ENGINE_JACK_TIMEBASE_MASTER;
 
   /* set jack callbacks */
   jack_set_process_callback (
@@ -495,14 +535,15 @@ engine_jack_setup (
     self->client, (JackXRunCallback) xrun_cb, self);
   jack_on_shutdown (
     self->client, shutdown_cb, self);
-  jack_set_timebase_callback (
-    self->client, 0, timebase_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #ifdef JALV_JACK_SESSION
   /*jack_set_session_callback(client, &jack_session_cb, arg);*/
 #endif
 
-  /*engine_jack_rescan_ports (self);*/
+  engine_jack_set_transport_type (
+    self,
+    g_settings_get_enum (
+      S_UI, "jack-transport-type"));
 
   /* obsolete: now using hw processors */
 #if 0

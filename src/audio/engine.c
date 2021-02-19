@@ -903,8 +903,7 @@ engine_process_prepare (
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
         {
-          jack_transport_stop (
-            self->client);
+          engine_jack_handle_stop (self);
         }
 #endif
     }
@@ -921,8 +920,9 @@ engine_process_prepare (
         self->remaining_latency_preroll);
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
-        jack_transport_start (
-          self->client);
+        {
+          engine_jack_handle_start (self);
+        }
 #endif
     }
 
@@ -1248,14 +1248,9 @@ engine_post_process (
       transport_add_to_playhead (
         self->transport, nframes);
 #ifdef HAVE_JACK
-      if (self->audio_backend ==
-            AUDIO_BACKEND_JACK &&
-          self->transport_type ==
-            AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+      if (self->audio_backend == AUDIO_BACKEND_JACK)
         {
-          jack_transport_locate (
-            self->client,
-            (jack_nframes_t) PLAYHEAD->frames);
+          engine_jack_handle_position_change (self);
         }
 #endif
     }

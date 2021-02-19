@@ -327,6 +327,9 @@ Args:
            "transport-display"
            '("bbt" "time"))
          (print-enum
+           "jack-transport-type"
+           '("master" "client" "none"))
+         (print-enum
            "tool"
            '("select-normal" "select-stretch"
              "edit" "cut" "erase" "ramp"
@@ -510,6 +513,11 @@ Args:
                  "transport-display" "bbt"
                  "Transport display type"
                  "Selected transport display type (BBT/time).")
+               (make-schema-key-with-enum
+                 "jack-transport-type"
+                 "jack-transport-type" "none"
+                 "JACK transport type"
+                 "Selected JACK transport behavior (master/client/none)")
                (make-schema-key-with-enum
                  "ruler-display"
                  "transport-display" "bbt"
