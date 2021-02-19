@@ -306,14 +306,14 @@ test_export_midi_routed_to_instrument_track ()
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  char ** midi_files =
-    io_get_files_in_dir_ending_in (
+  char * midi_file =
+    g_build_filename (
       MIDILIB_TEST_MIDI_FILES_PATH,
-      F_RECURSIVE, ".MID");
+      "M71.MID", NULL);
 
   /* create the MIDI track from a MIDI file */
   SupportedFile * file =
-    supported_file_new_from_path (midi_files[0]);
+    supported_file_new_from_path (midi_file);
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, file,
@@ -324,7 +324,6 @@ test_export_midi_routed_to_instrument_track ()
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  g_strfreev (midi_files);
 
   /* route the MIDI track to the instrument track */
   ua =
@@ -363,8 +362,6 @@ test_export_midi_routed_to_instrument_track ()
   check_fingerprint_similarity (
     filepath, settings.file_uri, 97, 34);
   g_free (filepath);
-
-  g_warn_if_reached();
 
   test_helper_zrythm_cleanup ();
 #endif
