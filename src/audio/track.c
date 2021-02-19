@@ -1389,6 +1389,35 @@ track_has_piano_roll (
 }
 
 /**
+ * Updates the track's children.
+ *
+ * Used when changing track positions.
+ */
+void
+track_update_children (
+  Track * self)
+{
+  if (TRACKLIST->swapping_tracks)
+    {
+      g_warning (
+        "This function should not be called while "
+        "swapping track positions");
+      return;
+    }
+
+  for (int i = 0; i < self->num_children; i++)
+    {
+      Track * child =
+        TRACKLIST->tracks[self->children[i]];
+      g_warn_if_fail (
+        IS_TRACK (child) &&
+        child->out_signal_type ==
+          self->in_signal_type);
+      child->channel->output_pos = self->pos;
+    }
+}
+
+/**
  * Updates position in the tracklist and also
  * updates the information in the lanes.
  */
@@ -1439,15 +1468,9 @@ track_set_pos (
     }
 
   /* update children */
-  for (int i = 0; i < self->num_children; i++)
+  if (!TRACKLIST->swapping_tracks)
     {
-      Track * child =
-        TRACKLIST->tracks[self->children[i]];
-      g_warn_if_fail (
-        IS_TRACK (child) &&
-        child->out_signal_type ==
-          self->in_signal_type);
-      child->channel->output_pos = pos;
+      track_update_children (self);
     }
 
   if (self->is_project)

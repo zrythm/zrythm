@@ -509,6 +509,80 @@ static void test_edit_tracks ()
 #endif
 }
 
+static void
+test_edit_midi_direct_out_to_ins (void)
+{
+#ifdef HAVE_HELM
+  test_helper_zrythm_init ();
+
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  char ** midi_files =
+    io_get_files_in_dir_ending_in (
+      MIDILIB_TEST_MIDI_FILES_PATH,
+      F_RECURSIVE, ".MID");
+
+  /* create the MIDI track from a MIDI file */
+  SupportedFile * file =
+    supported_file_new_from_path (midi_files[0]);
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_MIDI, NULL, file,
+      TRACKLIST->num_tracks, PLAYHEAD, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * midi_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    midi_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  g_strfreev (midi_files);
+
+  /* route the MIDI track to the instrument track */
+  ua =
+    tracklist_selections_action_new_edit_direct_out (
+      TRACKLIST_SELECTIONS, ins_track);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  Channel * ch = midi_track->channel;
+  Track * direct_out =
+    channel_get_output_track (ch);
+  g_assert_true (IS_TRACK (direct_out));
+  g_assert_true (direct_out == ins_track);
+  g_assert_cmpint (ins_track->num_children, ==, 1);
+
+  /* delete the instrument, undo and verify that
+   * the MIDI track's output is the instrument */
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  ua =
+    tracklist_selections_action_new_delete (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  direct_out =
+    channel_get_output_track (ch);
+  g_assert_null (direct_out);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  direct_out =
+    channel_get_output_track (ch);
+  g_assert_true (IS_TRACK (direct_out));
+  g_assert_true (direct_out == ins_track);
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -516,6 +590,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections_edit/"
 
+  g_test_add_func (
+    TEST_PREFIX "test edit midi direct out to ins",
+    (GTestFunc) test_edit_midi_direct_out_to_ins);
   g_test_add_func (
     TEST_PREFIX "test_edit_tracks",
     (GTestFunc) test_edit_tracks);

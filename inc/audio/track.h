@@ -895,6 +895,15 @@ Channel *
 track_get_channel (Track * track);
 
 /**
+ * Updates the track's children.
+ *
+ * Used when changing track positions.
+ */
+void
+track_update_children (
+  Track * self);
+
+/**
  * Updates position in the tracklist and also
  * updates the information in the lanes.
  */
