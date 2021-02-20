@@ -42,10 +42,35 @@ Inputs
 ------
 
 If the track takes input, there will be an input
-selection section.
+selection section. This is mainly used for
+:ref:`playback-and-recording/recording:Recording`.
+
+MIDI Inputs
+~~~~~~~~~~~
 
 .. image:: /_static/img/track-inputs.png
    :align: center
+
+Input Device
+  Device to read MIDI input from
+MIDI Channels
+  MIDI channels to listen to (other channels will be
+  ignored)
+
+Audio Inputs
+~~~~~~~~~~~~
+
+.. image:: /_static/img/audio-track-inputs.png
+   :align: center
+
+Left Input
+  Left audio input port to listen to
+Right Input
+  Right audio input port to listen to
+Mono toggle
+  Duplicate the left signal on both channels
+Gain knob
+  Adjust input gain
 
 MIDI FX/Inserts
 ---------------
@@ -142,18 +167,20 @@ tracks instead of muting them. The dim amount can
 be controlled in the control room described in
 :ref:`control-room`.
 
-.. note:: Not operational at the moment.
+.. todo:: Implement.
 
 Channel Settings
 ~~~~~~~~~~~~~~~~
 
-.. note:: Not operational at the moment.
+.. todo:: Implement.
 
 Comments
 --------
-User comments.
+User comments. This feature is useful for keeping
+notes about tracks.
 
-.. image:: /_static/img/track-comments.png
+.. image:: /_static/img/track-comment.png
    :align: center
 
-.. note:: This is not implemented yet.
+Clicking the pencil button will bring up a popup to
+edit the comment.

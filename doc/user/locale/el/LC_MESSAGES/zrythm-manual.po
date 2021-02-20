@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 09:46+0000\n"
+"POT-Creation-Date: 2021-02-20 11:20+0000\n"
 "PO-Revision-Date: 2021-02-08 10:50+0000\n"
 "Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
 "Language: el\n"
@@ -313,13 +313,13 @@ msgstr "Επίλυση προβλημάτων"
 #: ../../exporting/audio-and-midi.rst:39
 #: ../../exporting/audio-and-midi.rst:44
 #: ../../mixing/overview.rst:62
-#: ../../playback-and-recording/recording.rst:19
-#: ../../playback-and-recording/recording.rst:32
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
 #: ../../scripting/examples.rst:12
 #: ../../scripting/scripting-interface.rst:8
-#: ../../tracks/inspector-page.rst:70
+#: ../../tracks/inspector-page.rst:95
+#: ../../tracks/inspector-page.rst:170
+#: ../../tracks/inspector-page.rst:175
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8
@@ -521,7 +521,7 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:23
 #: ../../getting-started/system-requirements.rst:34
-#: ../../glossary/intro.rst:62
+#: ../../glossary/intro.rst:66
 msgid "JACK"
 msgstr "JACK"
 
@@ -758,7 +758,7 @@ msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Τα μονοπάτια αναζήτησης προς σκανάρισμα προσθέτων :term:`SF2`."
 
 #: ../../configuration/preferences/intro.rst:128
-#: ../../glossary/intro.rst:52
+#: ../../glossary/intro.rst:56
 msgid "DSP"
 msgstr "DSP"
 
@@ -802,7 +802,7 @@ msgstr ""
 ":green:`γραμμικό`)."
 
 #: ../../configuration/preferences/intro.rst:159
-#: ../../glossary/intro.rst:93
+#: ../../glossary/intro.rst:97
 msgid "Pan law"
 msgstr "Νόμος παναρίσματος"
 
@@ -3235,6 +3235,8 @@ msgid "Dither"
 msgstr "Θόρυβος διασποράς"
 
 #: ../../exporting/audio-and-midi.rst:44
+#: ../../tracks/inspector-page.rst:170
+#: ../../tracks/inspector-page.rst:175
 msgid "Implement."
 msgstr "Ενσωμάτωση."
 
@@ -3894,10 +3896,19 @@ msgid "Bouncing means exporting to audio."
 msgstr "Ο όρος bouncing σημαίνει την εξαγωγή σε ήχο."
 
 #: ../../glossary/intro.rst:26
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:9
+msgid "BPM"
+msgstr "BPM"
+
+#: ../../glossary/intro.rst:28
+msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
+msgstr ""
+
+#: ../../glossary/intro.rst:30
 msgid "CLI"
 msgstr "CLI"
 
-#: ../../glossary/intro.rst:28
+#: ../../glossary/intro.rst:32
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
@@ -3905,20 +3916,20 @@ msgstr ""
 ":abbr:`CLI (Command Line Interface)` είναι η διεπαφή με την οποία "
 "αλληλεπιδρούν οι χρήστες όταν πληκτρολογούν εντολές σε ένα τερματικό."
 
-#: ../../glossary/intro.rst:31
+#: ../../glossary/intro.rst:35
 msgid "Clip"
 msgstr "Κλιπ"
 
-#: ../../glossary/intro.rst:33
+#: ../../glossary/intro.rst:37
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr "Είναι ισοδύναμος όρος με την :ref:`region <regions>`."
 
-#: ../../glossary/intro.rst:35
+#: ../../glossary/intro.rst:39
 #: ../../routing/ports.rst:48
 msgid "Control"
 msgstr "Χειριστής"
 
-#: ../../glossary/intro.rst:37
+#: ../../glossary/intro.rst:41
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable "
 "control value that affects a processor, such as a plugin. For example, a "
@@ -3929,12 +3940,12 @@ msgstr ""
 "πρόσθετο. Για παράδειγμα, ο χειριστής απολαβής. Είναι ισοδύναμος όρος με "
 "την :term:`Parameter`."
 
-#: ../../glossary/intro.rst:42
+#: ../../glossary/intro.rst:46
 #: ../../routing/ports.rst:53
 msgid "CV"
 msgstr "CV"
 
-#: ../../glossary/intro.rst:44
+#: ../../glossary/intro.rst:48
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
@@ -3942,11 +3953,11 @@ msgstr ""
 "Σε περιβάλλον λογισμικού, το :abbr:`CV (Control Voltage)` αντιπροσωπεύει "
 "δεδομένα ελέγχου του ρυθμού ήχου."
 
-#: ../../glossary/intro.rst:47
+#: ../../glossary/intro.rst:51
 msgid "DAW"
 msgstr "DAW"
 
-#: ../../glossary/intro.rst:49
+#: ../../glossary/intro.rst:53
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
@@ -3955,7 +3966,7 @@ msgstr ""
 "χρησιμοποιείται για τη σύνθεση, ηχογράφηση, επεξεργασία, διάταξη, μίξη "
 "και μάστερινγκ μουσικής."
 
-#: ../../glossary/intro.rst:54
+#: ../../glossary/intro.rst:58
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
@@ -3963,11 +3974,11 @@ msgstr ""
 "Στο πλαίσιο του :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "σημαίνει επεξεργασία του ηχητικού σήματος."
 
-#: ../../glossary/intro.rst:57
+#: ../../glossary/intro.rst:61
 msgid "Free software"
 msgstr "Ελεύθερο λογισμικό"
 
-#: ../../glossary/intro.rst:59
+#: ../../glossary/intro.rst:63
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
@@ -3976,7 +3987,7 @@ msgstr ""
 "αντίθεση με το ιδιωτικό λογισμικό, όπου το πρόγραμμα ελέγχει τους "
 "χρήστες."
 
-#: ../../glossary/intro.rst:64
+#: ../../glossary/intro.rst:68
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers "
 "low latency for users and provides a simple API for developers. It is the"
@@ -3988,11 +3999,11 @@ msgstr ""
 "Είναι ο de facto πρότυπος διακομιστής ήχου για επαγγελματικό ήχο σε "
 "GNU/Linux."
 
-#: ../../glossary/intro.rst:70
+#: ../../glossary/intro.rst:74
 msgid "LV2"
 msgstr "LV2"
 
-#: ../../glossary/intro.rst:72
+#: ../../glossary/intro.rst:76
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
@@ -4003,7 +4014,7 @@ msgstr ""
 "του, η οποία συνοδεύεται από πρόσθετα που προσθέτουν πιο προχωρημένη "
 "λειτουργικότητα."
 
-#: ../../glossary/intro.rst:77
+#: ../../glossary/intro.rst:81
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
@@ -4012,7 +4023,7 @@ msgstr ""
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../../glossary/intro.rst:79
+#: ../../glossary/intro.rst:83
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical "
 "standard for communication between musical instruments and computers."
@@ -4020,25 +4031,25 @@ msgstr ""
 "Το :abbr:`MIDI (Musical Instrument Digital Interface)` είναι το "
 "τεχνολογικό πρότυπο για τη διασύνδεση μουσικών οργάνων και υπολογιστών."
 
-#: ../../glossary/intro.rst:82
+#: ../../glossary/intro.rst:86
 msgid "MIDI note"
 msgstr "Νότα MIDI"
 
-#: ../../glossary/intro.rst:84
+#: ../../glossary/intro.rst:88
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 "Οι νότες :term:`MIDI` χρησιμοποιούνται για να πυροδοτήσουν ψηφιακά (ή "
 "υλικά) όργανα."
 
-#: ../../glossary/intro.rst:89
+#: ../../glossary/intro.rst:93
 msgid "Mono"
 msgstr "Μόνο"
 
-#: ../../glossary/intro.rst:91
+#: ../../glossary/intro.rst:95
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
 msgstr "Το ηχητικό σήμα μονού καναλιού (βλέπε επίσης :term:`Stereo`)."
 
-#: ../../glossary/intro.rst:95
+#: ../../glossary/intro.rst:99
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 #: ../../plugins-files/audio-midi-files/file-browser.rst:24
 #: ../../tracks/audio-track.rst:55
@@ -4062,11 +4073,11 @@ msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "ΝΑΓΙΝΕΙ"
 
-#: ../../glossary/intro.rst:96
+#: ../../glossary/intro.rst:100
 msgid "Panning"
 msgstr "Πανάρισμα"
 
-#: ../../glossary/intro.rst:98
+#: ../../glossary/intro.rst:102
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
@@ -4074,19 +4085,19 @@ msgstr ""
 "Το πανάρισμα είναι η διανομή ενός σήματος :term:`Mono` σε στέρεο ή σε "
 "πολυκαναλικό ηχητικό πεδίο."
 
-#: ../../glossary/intro.rst:101
+#: ../../glossary/intro.rst:105
 msgid "Parameter"
 msgstr "Παράμετρος"
 
-#: ../../glossary/intro.rst:103
+#: ../../glossary/intro.rst:107
 msgid "Used interchangeably with :term:`Control`."
 msgstr "Είναι ισοδύναμος όρος με το :term:`Control`."
 
-#: ../../glossary/intro.rst:104
+#: ../../glossary/intro.rst:108
 msgid "Plugin"
 msgstr "Πρόσθετο"
 
-#: ../../glossary/intro.rst:106
+#: ../../glossary/intro.rst:110
 msgid ""
 "A plugin is an external module that provides audio processing "
 "capabilities to Zrythm, such as an :term:`SFZ` instrument or an "
@@ -4096,11 +4107,11 @@ msgstr ""
 "επεξεργασίας ήχου στο Zrythm, όπως ένα :term:`SFZ` όργανο ή ένα "
 ":term:`LV2` πρόσθετο αντήχησης."
 
-#: ../../glossary/intro.rst:110
+#: ../../glossary/intro.rst:114
 msgid "Project"
 msgstr "Έργο"
 
-#: ../../glossary/intro.rst:112
+#: ../../glossary/intro.rst:116
 msgid ""
 "A project refers to a work session. It is saved as a directory containing"
 " a project file along with other auxiliary files. See :ref:`Projects` for"
@@ -4110,19 +4121,19 @@ msgstr ""
 "που περιέχει το αρχείο έργου μαζί με άλλα επικουρικά αρχεία. Βλέπε "
 ":ref:`Projects` για περισσότερες λεπτομέρειες."
 
-#: ../../glossary/intro.rst:116
+#: ../../glossary/intro.rst:120
 msgid "Range"
 msgstr "Εύρος"
 
-#: ../../glossary/intro.rst:118
+#: ../../glossary/intro.rst:122
 msgid "A Range is a selection of time between two positions."
 msgstr "Το εύρος είναι η επιλογή χρόνου μεταξύ δύο θέσεων."
 
-#: ../../glossary/intro.rst:123
+#: ../../glossary/intro.rst:127
 msgid "Region"
 msgstr "Περιοχή"
 
-#: ../../glossary/intro.rst:125
+#: ../../glossary/intro.rst:129
 msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
@@ -4130,39 +4141,39 @@ msgstr ""
 "Η περιοχή (ή :term:`Clip`) είναι ένα κοντείνερ για νότες MIDI, ήχο ή άλλα"
 " γεγονότα. Βλέπε :ref:`regions`."
 
-#: ../../glossary/intro.rst:128
+#: ../../glossary/intro.rst:132
 msgid "SFZ"
 msgstr "SFZ"
 
-#: ../../glossary/intro.rst:130
+#: ../../glossary/intro.rst:134
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr ""
 "Το SFZ είναι ένα φορμάτ αρχείου για ψηφιακά όργανα που βασίζονται στη "
 "χρήση δειγμάτων."
 
-#: ../../glossary/intro.rst:132
+#: ../../glossary/intro.rst:136
 msgid "SF2"
 msgstr "SF2"
 
-#: ../../glossary/intro.rst:134
+#: ../../glossary/intro.rst:138
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr "Το SF2 είναι ο απόγονος του :term:`SFZ`."
 
-#: ../../glossary/intro.rst:135
+#: ../../glossary/intro.rst:139
 msgid "Stereo"
 msgstr "Στέρεο"
 
-#: ../../glossary/intro.rst:137
+#: ../../glossary/intro.rst:141
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
 "Είναι το δικαναλικό ηχητικό σήμα (αριστερά και δεξιά) (βλέπε επίσης "
 ":term:`Mono`)."
 
-#: ../../glossary/intro.rst:139
+#: ../../glossary/intro.rst:143
 msgid "VST2"
 msgstr "VST2"
 
-#: ../../glossary/intro.rst:141
+#: ../../glossary/intro.rst:145
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
@@ -4170,11 +4181,11 @@ msgstr ""
 "Το ιδιωτικό πρότυπο προσθέτων και ο πρόγονος του VST3. Δεν συνιστούμε τη "
 "χρήση αυτού του προτύπου."
 
-#: ../../glossary/intro.rst:143
+#: ../../glossary/intro.rst:147
 msgid "VST3"
 msgstr "VST3"
 
-#: ../../glossary/intro.rst:145
+#: ../../glossary/intro.rst:149
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to "
 "use VST3 than VST2, because it is released as :term:`Free software`. "
@@ -4185,11 +4196,11 @@ msgstr ""
 ":term:`Free software`. Ωστόσο, αντί αυτού συνιστούμε τη χρήση του "
 "προτύπου :term:`LV2`."
 
-#: ../../glossary/intro.rst:150
+#: ../../glossary/intro.rst:154
 msgid "Zrythm user path"
 msgstr "Μονοπάτι χρήστη Zrythm"
 
-#: ../../glossary/intro.rst:152
+#: ../../glossary/intro.rst:156
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -4198,7 +4209,7 @@ msgstr ""
 "έργα, προσωρινά αρχεία, προρυθμίσεις και εξαγόμενους ήχους. Η προεπιλογή "
 "είναι :file:`zrythm` στο"
 
-#: ../../glossary/intro.rst:157
+#: ../../glossary/intro.rst:161
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification "
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
@@ -4210,7 +4221,7 @@ msgstr ""
 "latest.html>`_) σε συστήματα συμβατά με το freedesktop (ή αν έχει οριστεί"
 " το :envvar:`XDG_DATA_HOME`), ή"
 
-#: ../../glossary/intro.rst:162
+#: ../../glossary/intro.rst:166
 msgid "the directory for local application data on Windows"
 msgstr "ο κατάλογος για τα τοπικά δεδομένα της εφαρμογής στα Windows"
 
@@ -4572,14 +4583,11 @@ msgstr ""
 msgid "BPM and Time Signatures"
 msgstr "Χτύποι ανά λεπτό (BPM) και μέτρα"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:9
-msgid "BPM"
-msgstr "BPM"
-
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:11
+#, fuzzy
 msgid ""
-"The BPM can be set to between 40 and 360 by clicking and dragging the BPM"
-" widget."
+"The :term:`BPM` can be set to between 40 and 360 by clicking and dragging"
+" the BPM widget."
 msgstr ""
 "Οι χτύποι ανά λεπτό (BPM) μπορούν να οριστούν μεταξύ 40 και 360 κάνοντας "
 "κλικ και σύροντας το γραφικό στοιχείο BPM."
@@ -4757,12 +4765,11 @@ msgid "Arming Tracks"
 msgstr "Οπλισμός κομματιών"
 
 #: ../../playback-and-recording/recording.rst:10
+#, fuzzy
 msgid ""
 "Tracks can be armed for recording by clicking the record button, either "
 "inside the track or inside its fader section in the channel or "
-":ref:`track inspector <track-inspector>`. When tracks are armed for "
-"recording, they start listening for signals in their :ref:`track-inputs` "
-"and these signals will be passed along in the processing chain."
+":ref:`track inspector <track-inspector>`."
 msgstr ""
 "Τα κομμάτια μπορούν να οπλιστούν για ηχογράφηση κάνοντας κλικ στο κουμπί "
 "ηχογράφησης είτε μέσα στο κομμάτι είτε στην ενότητα fader του κομματιού "
@@ -4771,11 +4778,21 @@ msgstr ""
 "στις :ref:`track-inputs` τους και αυτά τα σήματα θα περαστούν στην "
 "αλυσίδα διεργασίας."
 
-#: ../../playback-and-recording/recording.rst:19
-msgid "Add illustration."
-msgstr "Προσθήκη εικόνας."
+#: ../../playback-and-recording/recording.rst:18
+#, fuzzy
+msgid ""
+"When tracks are armed for recording, they start listening for signals in "
+"their :ref:`track-inputs` and these signals will be passed along in the "
+"processing chain."
+msgstr ""
+"Τα κομμάτια μπορούν να οπλιστούν για ηχογράφηση κάνοντας κλικ στο κουμπί "
+"ηχογράφησης είτε μέσα στο κομμάτι είτε στην ενότητα fader του κομματιού "
+"στο κανάλι είτε στον :ref:`επιθεωρητή κομματιών <track-inspector>`. Όταν "
+"τα κομμάτια οπλιστούν για ηχογράφηση, θα αρχίσουν να ακούνε για σήματα "
+"στις :ref:`track-inputs` τους και αυτά τα σήματα θα περαστούν στην "
+"αλυσίδα διεργασίας."
 
-#: ../../playback-and-recording/recording.rst:21
+#: ../../playback-and-recording/recording.rst:23
 msgid ""
 "For example, if an instrument track is armed for recording and it has a "
 "MIDI keyboard connected in its inputs, you will hear sound when you press"
@@ -4785,34 +4802,134 @@ msgstr ""
 "πληκτρολόγιο MIDI συνδεδεμένο στα εισαγόμενά του, θα ακούσετε ήχο όταν "
 "πατήσετε κάποιο πλήκτρο στο πληκτρολόγιο MIDI σας."
 
-#: ../../playback-and-recording/recording.rst:27
+#: ../../playback-and-recording/recording.rst:29
 msgid "Recording Audio & MIDI"
 msgstr "Ηχογράφηση ήχου & MIDI"
 
-#: ../../playback-and-recording/recording.rst:28
+#: ../../playback-and-recording/recording.rst:30
+#, fuzzy
 msgid ""
 "After arming the tracks you want to record events into, enable recording "
-"in :ref:`transport-controls` and press play."
+"in :ref:`transport-controls` and press play. Any signals received will be"
+" recorded inside new regions in the timeline."
 msgstr ""
 "Αφού οπλίσετε τα κομμάτια στα οποία θέλετε να καταγράψετε γεγονότα, "
 "ενεργοποιήστε την ηχογράφηση στους :ref:`transport-controls` και πατήστε "
 "έναρξη."
 
-#: ../../playback-and-recording/recording.rst:32
-msgid "Expand, add illustrations, etc."
-msgstr "Επέκταση, προσθήκη εικόνων, κλπ."
-
-#: ../../playback-and-recording/recording.rst:34
-msgid "Any signals received will be recorded inside new regions in the timeline."
-msgstr ""
-"Οποιαδήποτε σήματα ληφθούν θα καταγραφούν μέσα σε καινούριες περιοχές στο"
-" χρονολόγιο."
-
 #: ../../playback-and-recording/recording.rst:38
+#, fuzzy
+msgid "Recording audio"
+msgstr "Ηχογράφηση ήχου & MIDI"
+
+#: ../../playback-and-recording/recording.rst:41
+#: ../../tracks/audio-track.rst:47
+#: ../../tracks/inspector-page.rst:42
+#: ../../tracks/instrument-track.rst:59
+#: ../../tracks/midi-track.rst:61
+msgid "Inputs"
+msgstr "Εισαγόμενα"
+
+#: ../../playback-and-recording/recording.rst:42
+msgid ""
+"Audio and MIDI/Instrument tracks have an :ref:`tracks/inspector-"
+"page:Inputs` section in their :ref:`Inspector Page <tracks/inspector-"
+"page:Track Inspector>` to adjust inputs for recording."
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:51
+#, fuzzy
+msgid "Track inputs"
+msgstr "Τύποι κομματιών"
+
+#: ../../playback-and-recording/recording.rst:54
+#, fuzzy
+msgid "Recording Settings"
+msgstr "Ρυθμίσεις έργου."
+
+#: ../../playback-and-recording/recording.rst:55
+msgid ""
+"Clicking the arrow next to the record button will bring up the recording "
+"settings where various options and recording modes can be selected."
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:62
+#, fuzzy
+msgid "Recording settings"
+msgstr "Ρυθμίσεις έργου."
+
+#: ../../playback-and-recording/recording.rst:65
+#, fuzzy
+msgid "Options"
+msgstr "Δωρεές"
+
+#: ../../playback-and-recording/recording.rst:75
+msgid "Punch in/out"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:67
+msgid ""
+"Whether to use punch in/out markers. When this is enabled, recording will"
+" start when the playhead reaches the punch in marker and stop when the "
+"playhead reaches the punch out marker."
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:75
+msgid "Punch in/out range, indicated by red markers"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:79
+msgid "Start on MIDI input"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:78
+msgid "Automatically start recording when an event is received from a MIDI device"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:82
+#, fuzzy
+msgid "Recording Modes"
+msgstr "Ηχογράφηση"
+
+#: ../../playback-and-recording/recording.rst:84
+msgid "Overwrite events"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:84
+msgid "Overwrite any existing events in the track during recording"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:87
+msgid "Merge events"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:87
+msgid "Merge the newly recorded events with the existing events in the track"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:89
+msgid "Create takes"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:90
+msgid "Create a new lane (`take`) for each new recording"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:98
+msgid "Create takes (mute previous)"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:92
+msgid ""
+"Similar to `Create takes` but mutes the last recorded take before "
+"creating a new one"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:101
 msgid "Recording Automation"
 msgstr "Αυτοματισμός ηχογράφησης"
 
-#: ../../playback-and-recording/recording.rst:39
+#: ../../playback-and-recording/recording.rst:102
 msgid ""
 "Automation can be recorded in `latch` mode or `touch` mode. The mode can "
 "be selected and toggled by clicking on it inside automation tracks."
@@ -4821,11 +4938,11 @@ msgstr ""
 "`touch`. Αυτή η λειτουργία μπορεί να επιλεγεί και να εναλλαγεί κάνοντας "
 "κλικ πάνω της μέσα στα κομμάτια αυτοματισμού."
 
-#: ../../playback-and-recording/recording.rst:44
+#: ../../playback-and-recording/recording.rst:107
 msgid "Latch"
 msgstr "Κλείδωμα"
 
-#: ../../playback-and-recording/recording.rst:49
+#: ../../playback-and-recording/recording.rst:112
 msgid ""
 "In latch mode, automation will be written constantly and overwrite "
 "previous automation."
@@ -4833,11 +4950,11 @@ msgstr ""
 "Σε λειτουργία κλειδώματος, ο αυτοματισμός θα γράφεται συνεχώς και θα "
 "επεγγράψει προηγούμενους αυτοματισμούς."
 
-#: ../../playback-and-recording/recording.rst:53
+#: ../../playback-and-recording/recording.rst:116
 msgid "Touch"
 msgstr "Άγγιγμα"
 
-#: ../../playback-and-recording/recording.rst:58
+#: ../../playback-and-recording/recording.rst:121
 msgid ""
 "In touch mode, automation will be written only when there are changes. "
 "When changes stop being received (after a short amount of time) "
@@ -4850,7 +4967,7 @@ msgstr ""
 "κάποια αλλαγή ξανά. Αυτό είναι χρήσιμο για μικρές αλλαγές στον υπάρχοντα "
 "αυτοματισμό."
 
-#: ../../playback-and-recording/recording.rst:65
+#: ../../playback-and-recording/recording.rst:128
 msgid ""
 "Unlike MIDI/audio recording, automation recording does not require "
 "`Record` to be enabled in the :ref:`transport-controls`."
@@ -4911,20 +5028,23 @@ msgstr "Ρυθμίσεις μετρονόμου"
 msgid "Sets the volume of the metronome"
 msgstr "Ορίζει την ένταση του μετρονόμου."
 
-#: ../../playback-and-recording/transport-controls.rst:36
+#: ../../playback-and-recording/transport-controls.rst:37
 msgid "Return to cue point on stop"
 msgstr "Επιστροφή στο σημείο cue κατά την παύση"
 
 #: ../../playback-and-recording/transport-controls.rst:36
-msgid "Toggles whether to return to the cue point when playback stops."
+#, fuzzy
+msgid ""
+"Toggles whether to return to the :ref:`playback-and-recording/loop-"
+"points-and-markers:Cue Point` when playback stops."
 msgstr ""
 "Εναλλάσσει σχετικά με την επιστροφή στο σημείο cue όταν σταματάει η "
 "αναπαραγωγή."
 
-#: ../../playback-and-recording/transport-controls.rst:38
+#: ../../playback-and-recording/transport-controls.rst:39
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
-#: ../../tracks/inspector-page.rst:121
+#: ../../tracks/inspector-page.rst:146
 #: ../../tracks/instrument-track.rst:25
 #: ../../tracks/midi-track.rst:26
 #: ../../tracks/modulator-track.rst:25
@@ -4932,27 +5052,27 @@ msgstr ""
 msgid "Record"
 msgstr "Ηχογράφηση"
 
-#: ../../playback-and-recording/transport-controls.rst:39
+#: ../../playback-and-recording/transport-controls.rst:40
 msgid "Arms the project for recording."
 msgstr "Οπλίζει το έργο για ηχογράφηση."
 
-#: ../../playback-and-recording/transport-controls.rst:40
+#: ../../playback-and-recording/transport-controls.rst:41
 #, fuzzy
 msgid "Record options"
 msgstr "Αναίρεση ρυθμίσεων."
 
-#: ../../playback-and-recording/transport-controls.rst:41
+#: ../../playback-and-recording/transport-controls.rst:42
 #, fuzzy
 msgid "Sets the settings to use when recording."
 msgstr ""
 "Πηγές εισόδου ήχου αριστερά και δεξιά που χρησιμοποιούνται κατά την "
 "ηχογράφηση."
 
-#: ../../playback-and-recording/transport-controls.rst:44
+#: ../../playback-and-recording/transport-controls.rst:45
 msgid "Play"
 msgstr "Έναρξη"
 
-#: ../../playback-and-recording/transport-controls.rst:43
+#: ../../playback-and-recording/transport-controls.rst:44
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
@@ -4960,39 +5080,39 @@ msgstr ""
 "Αν σταματήσει, το τραγούδι θα αρχίσει να παίζει. Αν παίζει ήδη, η κεφαλή "
 "αναπαραγωγής θα μετακινηθεί στο σημείο cue."
 
-#: ../../playback-and-recording/transport-controls.rst:47
+#: ../../playback-and-recording/transport-controls.rst:48
 msgid "Stop"
 msgstr "Παύση"
 
-#: ../../playback-and-recording/transport-controls.rst:47
+#: ../../playback-and-recording/transport-controls.rst:48
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr "Παύει την αναπαραγωγή. Αν πατηθεί δύο φορές, επιστρέφει στο σημείο cue."
 
-#: ../../playback-and-recording/transport-controls.rst:50
+#: ../../playback-and-recording/transport-controls.rst:51
 msgid "Backward"
 msgstr "Πίσω"
 
-#: ../../playback-and-recording/transport-controls.rst:50
+#: ../../playback-and-recording/transport-controls.rst:51
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr ""
 "Μετακινεί την κεφαλή αναπαραγωγής προς τα πίσω με μέγεθος 1 σημείου "
 "σναπαρίσματος."
 
-#: ../../playback-and-recording/transport-controls.rst:53
+#: ../../playback-and-recording/transport-controls.rst:54
 msgid "Forward"
 msgstr "Μπροστά"
 
-#: ../../playback-and-recording/transport-controls.rst:53
+#: ../../playback-and-recording/transport-controls.rst:54
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr ""
 "Μετακινεί την κεφαλή αναπραγωγής προς τα μπροστά με μέγεθος 1 σημείου "
 "σναπαρίσματος."
 
-#: ../../playback-and-recording/transport-controls.rst:58
+#: ../../playback-and-recording/transport-controls.rst:59
 msgid "Loop"
 msgstr "Λούπα"
 
-#: ../../playback-and-recording/transport-controls.rst:56
+#: ../../playback-and-recording/transport-controls.rst:57
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
@@ -5000,23 +5120,23 @@ msgstr ""
 "Αν ενεργοποιηθεί, η κεφαλή αναπαραγωγής θα τοποθετηθεί πίσω στο σημείο "
 "αρχής λούπας όταν φτάσει το σημείο τέλους λούπας."
 
-#: ../../playback-and-recording/transport-controls.rst:61
+#: ../../playback-and-recording/transport-controls.rst:62
 msgid "Playhead Display"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:62
+#: ../../playback-and-recording/transport-controls.rst:63
 msgid ""
 "The playhead position can be displayed in either BBT notation "
 "(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
 "toggled by right-clicking on the playhead position display."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:71
+#: ../../playback-and-recording/transport-controls.rst:72
 #, fuzzy
 msgid "JACK Transport"
 msgstr "Επιθεωρητής κομματιών"
 
-#: ../../playback-and-recording/transport-controls.rst:72
+#: ../../playback-and-recording/transport-controls.rst:73
 msgid ""
 "Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
 "design.html>`_ or become the JACK transport master. These options are "
@@ -7130,7 +7250,7 @@ msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
 #: ../../tracks/bus-track-midi.rst:19
 #: ../../tracks/chord-track.rst:27
 #: ../../tracks/group-track-audio.rst:23
-#: ../../tracks/inspector-page.rst:134
+#: ../../tracks/inspector-page.rst:159
 #: ../../tracks/instrument-track.rst:27
 #: ../../tracks/master-track.rst:20
 #: ../../tracks/midi-track.rst:28
@@ -7154,7 +7274,7 @@ msgstr "Βάζει το κομμάτι σε σόλο."
 #: ../../tracks/bus-track-midi.rst:22
 #: ../../tracks/chord-track.rst:31
 #: ../../tracks/group-track-audio.rst:26
-#: ../../tracks/inspector-page.rst:125
+#: ../../tracks/inspector-page.rst:150
 #: ../../tracks/instrument-track.rst:29
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:31
@@ -7263,13 +7383,6 @@ msgstr "Απευθείας έξω"
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
 msgstr "Το κομμάτι προς δρομολόγηση του εξαγόμενου ενός κομματιού ήχου."
-
-#: ../../tracks/audio-track.rst:47
-#: ../../tracks/inspector-page.rst:42
-#: ../../tracks/instrument-track.rst:59
-#: ../../tracks/midi-track.rst:61
-msgid "Inputs"
-msgstr "Εισαγόμενα"
 
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
@@ -7629,16 +7742,82 @@ msgstr ""
 " αυτό το κομμάτι."
 
 #: ../../tracks/inspector-page.rst:44
-msgid "If the track takes input, there will be an input selection section."
+#, fuzzy
+msgid ""
+"If the track takes input, there will be an input selection section. This "
+"is mainly used for :ref:`playback-and-recording/recording:Recording`."
 msgstr ""
 "Αν το κομμάτι παίρνει εισαγόμενα, τότε θα υπάρξει ένα τμήμα επιλογής "
 "εισαγόμενων."
 
-#: ../../tracks/inspector-page.rst:51
+#: ../../tracks/inspector-page.rst:49
+#, fuzzy
+msgid "MIDI Inputs"
+msgstr "Εισαγόμενοι ήχοι"
+
+#: ../../tracks/inspector-page.rst:54
+#: ../../tracks/midi-track.rst:65
+msgid "Input Device"
+msgstr "Συσκευή εισόδου"
+
+#: ../../tracks/inspector-page.rst:55
+msgid "Device to read MIDI input from"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:58
+#, fuzzy
+msgid "MIDI Channels"
+msgstr "Κανάλια"
+
+#: ../../tracks/inspector-page.rst:57
+msgid "MIDI channels to listen to (other channels will be ignored)"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:61
+#, fuzzy
+msgid "Audio Inputs"
+msgstr "Εισαγόμενοι ήχοι"
+
+#: ../../tracks/inspector-page.rst:66
+msgid "Left Input"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:67
+#, fuzzy
+msgid "Left audio input port to listen to"
+msgstr "Μια λίστα εισαγόμενων ήχων προς σύνδεση."
+
+#: ../../tracks/inspector-page.rst:68
+#, fuzzy
+msgid "Right Input"
+msgstr "Εισαγόμενοι ήχοι"
+
+#: ../../tracks/inspector-page.rst:69
+msgid "Right audio input port to listen to"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:70
+#, fuzzy
+msgid "Mono toggle"
+msgstr "Εναλλαγή μετρονόμου"
+
+#: ../../tracks/inspector-page.rst:71
+msgid "Duplicate the left signal on both channels"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:73
+msgid "Gain knob"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:73
+msgid "Adjust input gain"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:76
 msgid "MIDI FX/Inserts"
 msgstr "Εφέ/εισαγόμενα MIDI"
 
-#: ../../tracks/inspector-page.rst:53
+#: ../../tracks/inspector-page.rst:78
 msgid ""
 "These are slots for dropping audio or MIDI effects that will be applied "
 "to the signal as it passes through the track."
@@ -7646,7 +7825,7 @@ msgstr ""
 "Αυτά είναι θέσεις για ρίψη εφέ ήχου ή MIDI που θα εφαρμοστούν στο σήμα "
 "καθώς περνάει μέσα από το κομμάτι."
 
-#: ../../tracks/inspector-page.rst:59
+#: ../../tracks/inspector-page.rst:84
 msgid ""
 "MIDI FX are processed after the input and piano roll events and before "
 "the instruments in instrument tracks, or before the inserts in MIDI "
@@ -7656,11 +7835,11 @@ msgstr ""
 "και πριν τα όργανα στα κομμάτια οργάνων ή πριν τα εισαγόμενα στα κομμάτια"
 " MIDI."
 
-#: ../../tracks/inspector-page.rst:63
+#: ../../tracks/inspector-page.rst:88
 msgid "Only MIDI and Instrument tracks support MIDI FX."
 msgstr "Μόνο τα κομμάτια MIDI και οργάνων υποστηρίζουν εφέ MIDI."
 
-#: ../../tracks/inspector-page.rst:65
+#: ../../tracks/inspector-page.rst:90
 msgid ""
 "Inserts are processed in order. For instrument tracks, the inserts will "
 "be added onto the signal coming from the instrument, and for other tracks"
@@ -7670,15 +7849,15 @@ msgstr ""
 "εισαγόμενα θα προστεθούν στο σήμα που έρχεται από το όργανο, και για τα "
 "άλλα κομμάτια θα προστεθούν στο εισερχόμενο σήμα."
 
-#: ../../tracks/inspector-page.rst:70
+#: ../../tracks/inspector-page.rst:95
 msgid "Separate MIDI FX/inserts and expand more."
 msgstr "Να διαχωριστούν τα εισαγόμενα/εφέ MIDI και να επεκταθεί περισσότερο."
 
-#: ../../tracks/inspector-page.rst:75
+#: ../../tracks/inspector-page.rst:100
 msgid "Aux Sends"
 msgstr "Αποστολές aux"
 
-#: ../../tracks/inspector-page.rst:77
+#: ../../tracks/inspector-page.rst:102
 msgid ""
 "These are `aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ to other "
 "tracks or plugin side-chain inputs. These are generally useful for side-"
@@ -7688,7 +7867,7 @@ msgstr ""
 "προσθέτων. Αυτές είναι γενικά χρήσιμες στην πλευρική αλυσίδωση ή στην "
 "εφαρμογή επιπρόσθετων εφέ στα κανάλια, όπως αντήχηση (reverb)."
 
-#: ../../tracks/inspector-page.rst:87
+#: ../../tracks/inspector-page.rst:112
 msgid ""
 "The first 6 slots are for pre-fader sends and the last 3 slots are for "
 "post-fader sends. The pre-fader slots will send the signal before the "
@@ -7700,15 +7879,15 @@ msgstr ""
 "στείλουν το σήμα πριν επεξεργαστεί ο fader, και οι θέσεις μετά τον fader "
 "θα στείλουν το σήμα αφού εφαρμοστεί ο fader."
 
-#: ../../tracks/inspector-page.rst:94
+#: ../../tracks/inspector-page.rst:119
 msgid "Fader"
 msgstr "Fader"
 
-#: ../../tracks/inspector-page.rst:95
+#: ../../tracks/inspector-page.rst:120
 msgid "Fader section to control the volume and stereo balance."
 msgstr "Το τμήμα fader για τον έλεγχο της έντασης και της ισορροπίας στέρεο."
 
-#: ../../tracks/inspector-page.rst:100
+#: ../../tracks/inspector-page.rst:125
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
 "respective widgets. You can reset them to their default positions with "
@@ -7719,7 +7898,7 @@ msgstr ""
 "επαναφέρετε στις προεπιλεγμένες θέσεις τους με :menuselection:`Right "
 "click --> Reset`."
 
-#: ../../tracks/inspector-page.rst:105
+#: ../../tracks/inspector-page.rst:130
 msgid ""
 "The meter displays the amplitude of the signal in dBFS as it is processed"
 " live. The following values are displayed next to the meter for "
@@ -7729,39 +7908,39 @@ msgstr ""
 "επεξεργασία ζωντανά. Οι ακόλουθες τιμές προβάλλονται δίπλα στον μετρητή "
 "για περαιτέρω αναφορά."
 
-#: ../../tracks/inspector-page.rst:110
+#: ../../tracks/inspector-page.rst:135
 msgid "Peak"
 msgstr "Κορυφή"
 
-#: ../../tracks/inspector-page.rst:111
+#: ../../tracks/inspector-page.rst:136
 msgid "Peak signal value."
 msgstr "Τιμή κορυφής σήματος."
 
-#: ../../tracks/inspector-page.rst:114
+#: ../../tracks/inspector-page.rst:139
 msgid "RMS"
 msgstr "RMS"
 
-#: ../../tracks/inspector-page.rst:115
+#: ../../tracks/inspector-page.rst:140
 msgid "Root Mean Square of the signal value."
 msgstr "Μέση τετραγωνική ρίζα (Root Mean Square) της τιμής του σήματος."
 
-#: ../../tracks/inspector-page.rst:117
+#: ../../tracks/inspector-page.rst:142
 msgid "The following controls are available for controlling the signal flow."
 msgstr ""
 "Οι ακόλουθοι χειριστές είναι διαθέσιμοι για τον έλεγχο της ροής του "
 "σήματος."
 
-#: ../../tracks/inspector-page.rst:122
+#: ../../tracks/inspector-page.rst:147
 msgid "Arm the track for recording."
 msgstr "Οπλισμός του κομματιού για ηχογράφηση."
 
-#: ../../tracks/inspector-page.rst:126
+#: ../../tracks/inspector-page.rst:151
 msgid "Mutes the track, meaning no sound will be sent to its direct out."
 msgstr ""
 "Βάζει το κομμάτι σε σίγαση, που σημαίνει ότι δεν θα στέλνεται κανένας "
 "ήχος απευθείας έξω."
 
-#: ../../tracks/inspector-page.rst:129
+#: ../../tracks/inspector-page.rst:154
 msgid ""
 "The track will still be processed, so if you are looking to decrease "
 ":term:`DSP` usage, try disabling plugins instead."
@@ -7770,7 +7949,7 @@ msgstr ""
 " να μειώσετε τη :term:`DSP`, τότε προσπαθήστε να απενεργοποιήσετε κάποια "
 "πρόσθετα αντί αυτού."
 
-#: ../../tracks/inspector-page.rst:135
+#: ../../tracks/inspector-page.rst:160
 msgid ""
 "Soloes the track. If any track is soloed, only the soloed tracks will "
 "produce sounds."
@@ -7778,11 +7957,11 @@ msgstr ""
 "Βάζει το κομμάτι σε σίγαση. Αν οποιοδήποτε κομμάτι είναι σε σίγαση, μόνο "
 "τα κομμάτια που βρίσκονται σε σίγαση θα παράγουν ήχους."
 
-#: ../../tracks/inspector-page.rst:139
+#: ../../tracks/inspector-page.rst:164
 msgid "Listen"
 msgstr "Ακρόαση"
 
-#: ../../tracks/inspector-page.rst:140
+#: ../../tracks/inspector-page.rst:165
 msgid ""
 "Similar to solo, except it dims the volume of other tracks instead of "
 "muting them. The dim amount can be controlled in the control room "
@@ -7793,26 +7972,21 @@ msgstr ""
 "μπορεί να ελεγχθεί στο δωμάτιο ελέγχου που εξηγείται στο :ref:`control-"
 "room`."
 
-#: ../../tracks/inspector-page.rst:145
-#: ../../tracks/inspector-page.rst:150
-msgid "Not operational at the moment."
-msgstr "Δεν είναι λειτουργικό προς το παρόν."
-
-#: ../../tracks/inspector-page.rst:148
+#: ../../tracks/inspector-page.rst:173
 msgid "Channel Settings"
 msgstr "Ρυθμίσεις καναλιού"
 
-#: ../../tracks/inspector-page.rst:153
+#: ../../tracks/inspector-page.rst:178
 msgid "Comments"
 msgstr "Σχόλια"
 
-#: ../../tracks/inspector-page.rst:154
-msgid "User comments."
-msgstr "Σχόλια χρήστη."
+#: ../../tracks/inspector-page.rst:179
+msgid "User comments. This feature is useful for keeping notes about tracks."
+msgstr ""
 
-#: ../../tracks/inspector-page.rst:159
-msgid "This is not implemented yet."
-msgstr "Αυτό δεν έχει ενσωματωθεί ακόμα."
+#: ../../tracks/inspector-page.rst:185
+msgid "Clicking the pencil button will bring up a popup to edit the comment."
+msgstr ""
 
 #: ../../tracks/instrument-track.rst:8
 msgid "Instrument Track"
@@ -7990,10 +8164,6 @@ msgstr "Το όνομα του κομματιού. Μπορείτε να κάν�
 #: ../../tracks/midi-track.rst:56
 msgid "The track to route the output of the MIDI track to."
 msgstr "Το κομμάτι στο οποίο θα δρομολογηθεί το εξαγόμενο του κομματιού MIDI."
-
-#: ../../tracks/midi-track.rst:65
-msgid "Input Device"
-msgstr "Συσκευή εισόδου"
 
 #: ../../tracks/midi-track.rst:64
 msgid "The input device(s) to receive MIDI signals from during recording."
@@ -8961,14 +9131,14 @@ msgstr "Χτύποι ανά λεπτό (BPM) και μέτρα"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
-"BPM and Time Signature are covered in :ref:`playback-and-recording:BPM "
-"and Time Signatures`."
+"BPM and Time Signature are covered in :ref:`playback-and-recording/bpm-"
+"and-time-signatures:BPM and Time Signatures`."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
-"Transport controls are covered in :ref:`playback-and-recording:Transport "
-"Controls`."
+"Transport controls are covered in :ref:`playback-and-recording/transport-"
+"controls:Transport Controls`."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:27
@@ -9018,6 +9188,40 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "Add illustration."
+#~ msgstr "Προσθήκη εικόνας."
+
+#~ msgid "Expand, add illustrations, etc."
+#~ msgstr "Επέκταση, προσθήκη εικόνων, κλπ."
+
+#~ msgid ""
+#~ "Any signals received will be recorded"
+#~ " inside new regions in the timeline."
+#~ msgstr ""
+#~ "Οποιαδήποτε σήματα ληφθούν θα καταγραφούν "
+#~ "μέσα σε καινούριες περιοχές στο "
+#~ "χρονολόγιο."
+
+#~ msgid "Not operational at the moment."
+#~ msgstr "Δεν είναι λειτουργικό προς το παρόν."
+
+#~ msgid "User comments."
+#~ msgstr "Σχόλια χρήστη."
+
+#~ msgid "This is not implemented yet."
+#~ msgstr "Αυτό δεν έχει ενσωματωθεί ακόμα."
+
+#~ msgid ""
+#~ "BPM and Time Signature are covered "
+#~ "in :ref:`playback-and-recording:BPM and "
+#~ "Time Signatures`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Transport controls are covered in :ref"
+#~ ":`playback-and-recording:Transport Controls`."
+#~ msgstr ""
 
 #~ msgid "Sets the volume of the metronome."
 #~ msgstr "Ορίζει την ένταση του μετρονόμου."
