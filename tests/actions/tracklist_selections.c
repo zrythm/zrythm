@@ -1514,6 +1514,57 @@ test_delete_track_w_midi_file (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_marker_track_unpin (void)
+{
+  test_helper_zrythm_init ();
+
+  for (int i = 0; i < P_MARKER_TRACK->num_markers;
+       i++)
+    {
+      Marker * m = P_MARKER_TRACK->markers[i];
+      Track * m_track =
+        arranger_object_get_track (
+          (ArrangerObject *) m);
+      g_assert_true (m_track == P_MARKER_TRACK);
+      g_assert_true (track_is_pinned (m_track));
+    }
+
+  track_select (
+    P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  UndoableAction * ua =
+    tracklist_selections_action_new_unpin (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  for (int i = 0; i < P_MARKER_TRACK->num_markers;
+       i++)
+    {
+      Marker * m = P_MARKER_TRACK->markers[i];
+      Track * m_track =
+        arranger_object_get_track (
+          (ArrangerObject *) m);
+      g_assert_true (m_track == P_MARKER_TRACK);
+      g_assert_false (track_is_pinned (m_track));
+    }
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  for (int i = 0; i < P_MARKER_TRACK->num_markers;
+       i++)
+    {
+      Marker * m = P_MARKER_TRACK->markers[i];
+      Track * m_track =
+        arranger_object_get_track (
+          (ArrangerObject *) m);
+      g_assert_true (m_track == P_MARKER_TRACK);
+      g_assert_true (track_is_pinned (m_track));
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1521,6 +1572,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test marker track unpin",
+    (GTestFunc) test_marker_track_unpin);
   g_test_add_func (
     TEST_PREFIX "test create from midi file",
     (GTestFunc) test_create_from_midi_file);

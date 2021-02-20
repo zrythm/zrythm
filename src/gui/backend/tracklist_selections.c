@@ -456,6 +456,7 @@ tracklist_selections_toggle_visibility (
   EVENTS_PUSH (ET_TRACK_VISIBILITY_CHANGED, NULL);
 }
 
+#if 0
 /**
  * Toggle pin/unpin of the selected tracks.
  */
@@ -472,6 +473,7 @@ tracklist_selections_toggle_pinned (
         F_PUBLISH_EVENTS, F_RECALC_GRAPH);
     }
 }
+#endif
 
 /**
  * Clone the struct for copying, undoing, etc.

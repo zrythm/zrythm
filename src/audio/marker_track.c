@@ -141,7 +141,7 @@ marker_track_add_marker (
   g_warn_if_fail (
     track->type == TRACK_TYPE_MARKER && marker);
 
-  marker_set_track (marker, track);
+  marker_set_track_pos (marker, track->pos);
   array_double_size_if_full (
     track->markers, track->num_markers,
     track->markers_size, Marker *);

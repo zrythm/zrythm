@@ -1547,8 +1547,26 @@ activate_pin_selected_tracks (
 {
   g_message ("pin/unpinning selected tracks");
 
-  tracklist_selections_toggle_pinned (
-    TRACKLIST_SELECTIONS);
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  Track * track = TRACKLIST_SELECTIONS->tracks[0];
+  UndoableAction * ua = NULL;
+  if (track_is_pinned (track))
+    {
+      ua =
+        tracklist_selections_action_new_unpin (
+          TRACKLIST_SELECTIONS);
+    }
+  else
+    {
+      ua =
+        tracklist_selections_action_new_pin (
+          TRACKLIST_SELECTIONS);
+    }
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 void

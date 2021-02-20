@@ -150,7 +150,9 @@ draw_arranger_object (
       Track * track =
         arranger_object_get_track (obj);
       bool should_be_visible =
-        track->visible ||
+        (track->visible &&
+         self->is_pinned ==
+           track_is_pinned (track)) ||
         self->type !=
           ARRANGER_WIDGET_TYPE_TIMELINE;
 
@@ -216,9 +218,9 @@ draw_timeline_bg (
        * non-pinned) */
       if (!track->visible ||
           (!self->is_pinned &&
-           track->pinned) ||
+           track_is_pinned (track)) ||
           (self->is_pinned &&
-           !track->pinned))
+           !track_is_pinned (track)))
         continue;
 
       /* draw line below track */

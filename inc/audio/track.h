@@ -198,7 +198,7 @@ typedef struct Track
    * Used to remember the position before pinned,
    * so it can be moved back there when unpinned.
    */
-  int                 pos_before_pinned;
+  //int                 pos_before_pinned;
 
   /** The type of track this is. */
   TrackType           type;
@@ -223,7 +223,7 @@ typedef struct Track
    * through unpinned tracks, can just check this
    * variable.
    */
-  bool                pinned;
+  //bool                pinned;
 
   /** Flag to set automations visible or not. */
   bool                automation_visible;
@@ -462,14 +462,14 @@ track_fields_schema[] =
   YAML_FIELD_ENUM (
     Track, type, track_type_strings),
   YAML_FIELD_INT (Track, pos),
-  YAML_FIELD_INT (Track, pos_before_pinned),
+  //YAML_FIELD_INT (Track, pos_before_pinned),
   YAML_FIELD_INT (Track, lanes_visible),
   YAML_FIELD_INT (Track, automation_visible),
   YAML_FIELD_INT (Track, visible),
   YAML_FIELD_INT (Track, main_height),
   YAML_FIELD_INT (Track, passthrough_midi_input),
   YAML_FIELD_INT (Track, recording),
-  YAML_FIELD_INT (Track, pinned),
+  //YAML_FIELD_INT (Track, pinned),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track, color, gdk_rgba_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
@@ -649,6 +649,13 @@ track_set_soloed (
  */
 int
 track_is_selected (Track * self);
+
+/**
+ * Returns whether the track is pinned.
+ */
+bool
+track_is_pinned (
+  Track * self);
 
 /**
  * Adds a ZRegion to the given lane or

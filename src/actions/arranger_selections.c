@@ -1580,8 +1580,16 @@ do_or_undo_create_or_delete (
                   ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
               /* add it to the project */
-              arranger_object_add_to_project (
-                obj, F_NO_PUBLISH_EVENTS);
+              if (create)
+                {
+                  arranger_object_add_to_project (
+                    obj, F_NO_PUBLISH_EVENTS);
+                }
+              else
+                {
+                  arranger_object_insert_to_project (
+                    obj);
+                }
 
               /* select it */
               arranger_object_select (
@@ -2217,8 +2225,8 @@ do_or_undo_split (
             arranger_object_clone (
               objs[i],
               ARRANGER_OBJECT_CLONE_COPY_MAIN);
-          arranger_object_add_to_project (
-            obj, F_NO_PUBLISH_EVENTS);
+          arranger_object_insert_to_project (
+            obj);
 
           /* free the copies created in _do */
           free_split_objects (self, i);

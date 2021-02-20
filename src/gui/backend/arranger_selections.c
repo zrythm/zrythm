@@ -1415,6 +1415,11 @@ arranger_selections_clear (
   bool                 _free,
   bool                 fire_events)
 {
+  if (!arranger_selections_has_any (self))
+    {
+      return;
+    }
+
   int i;
   TimelineSelections * ts;
   ChordSelections * cs;

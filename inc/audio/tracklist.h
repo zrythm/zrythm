@@ -111,6 +111,15 @@ typedef struct Tracklist
   /** PinnedTracklistWidget. */
   PinnedTracklistWidget * pinned_widget;
 
+  /**
+   * Index starting from which tracks are
+   * unpinned.
+   *
+   * Tracks before this position will be considered
+   * as pinned.
+   */
+  int                 pinned_tracks_cutoff;
+
   /** When this is true, some tracks may temporarily
    * be moved beyond num_tracks. */
   bool                swapping_tracks;
@@ -119,10 +128,10 @@ typedef struct Tracklist
 static const cyaml_schema_field_t
   tracklist_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "tracks", CYAML_FLAG_DEFAULT,
-    Tracklist, tracks, num_tracks,
-    &track_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Tracklist, tracks, track_schema),
+  YAML_FIELD_INT (
+    Tracklist, pinned_tracks_cutoff),
 
   CYAML_FIELD_END
 };

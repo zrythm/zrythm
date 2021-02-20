@@ -145,9 +145,9 @@ marker_is_equal (
  * Sets the Track of the Marker.
  */
 void
-marker_set_track (
+marker_set_track_pos (
   Marker * marker,
-  Track *  track);
+  int      track_pos);
 
 Marker *
 marker_find_by_name (

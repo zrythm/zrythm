@@ -729,7 +729,6 @@ project_create_default (
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
-  track->pinned = 1;
   self->tracklist->chord_track = track;
 
   /* tempo */
@@ -739,7 +738,6 @@ project_create_default (
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
-  track->pinned = 1;
   self->tracklist->tempo_track = track;
 
   /* modulator */
@@ -749,7 +747,6 @@ project_create_default (
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
-  track->pinned = 1;
   self->tracklist->modulator_track = track;
 
   /* marker */
@@ -759,8 +756,10 @@ project_create_default (
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
-  track->pinned = 1;
   self->tracklist->marker_track = track;
+
+  self->tracklist->pinned_tracks_cutoff =
+    track->pos + 1;
 
   /* add master channel to mixer and tracklist */
   g_message ("adding master track...");

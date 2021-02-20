@@ -1161,11 +1161,14 @@ arranger_widget_select_all (
   else
     {
       g_debug ("deselecting all");
-      arranger_selections_clear (
-        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      if (arranger_selections_has_any (sel))
+        {
+          arranger_selections_clear (
+            sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-      EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_REMOVED, sel);
+          EVENTS_PUSH (
+            ET_ARRANGER_SELECTIONS_REMOVED, sel);
+        }
     }
 }
 

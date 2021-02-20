@@ -253,7 +253,7 @@ tracklist_widget_get_hit_track (
       i < self->tracklist->num_tracks; i++)
     {
       Track * track = self->tracklist->tracks[i];
-      if (!track->visible || track->pinned)
+      if (!track->visible || track_is_pinned (track))
         continue;
 
       TrackWidget * tw = track->widget;
@@ -314,7 +314,7 @@ tracklist_widget_hard_refresh (
     {
       Track * track = self->tracklist->tracks[i];
 
-      if (!track->pinned)
+      if (!track_is_pinned (track))
         continue;
 
       /* create widget */
@@ -341,7 +341,7 @@ tracklist_widget_hard_refresh (
     {
       Track * track = self->tracklist->tracks[i];
 
-      if (track->pinned)
+      if (track_is_pinned (track))
         continue;
 
       /* create widget */

@@ -131,6 +131,17 @@ tracklist_selections_action_new (
     }
   self->track_type = track_type;
   self->track_pos = track_pos;
+  if (type == TRACKLIST_SELECTIONS_ACTION_PIN)
+    {
+      self->track_pos =
+        TRACKLIST->pinned_tracks_cutoff;
+    }
+  else if (type ==
+             TRACKLIST_SELECTIONS_ACTION_UNPIN)
+    {
+      self->track_pos = TRACKLIST->num_tracks - 1;
+    }
+
   self->pool_id = -1;
   if (pos)
     {
@@ -769,6 +780,10 @@ do_or_undo_move_or_copy (
   bool                        copy)
 {
   bool move = !copy;
+  bool pin =
+    self->type == TRACKLIST_SELECTIONS_ACTION_PIN;
+  bool unpin =
+    self->type == TRACKLIST_SELECTIONS_ACTION_UNPIN;
 
   if (_do)
     {
@@ -877,6 +892,7 @@ do_or_undo_move_or_copy (
                     prj_track, 0);
                 }
             }
+
           EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
         }
       else if (copy)
@@ -902,6 +918,19 @@ do_or_undo_move_or_copy (
             ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
           EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
         }
+    }
+
+  if ((pin && _do) ||
+       (unpin && !_do))
+    {
+      TRACKLIST->pinned_tracks_cutoff +=
+         self->tls_before->num_tracks;
+    }
+  else if ((unpin && _do) ||
+            (pin && !_do))
+    {
+      TRACKLIST->pinned_tracks_cutoff -=
+         self->tls_before->num_tracks;
     }
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -1072,6 +1101,8 @@ do_or_undo (
     case TRACKLIST_SELECTIONS_ACTION_EDIT:
       return do_or_undo_edit (self, _do);
     case TRACKLIST_SELECTIONS_ACTION_MOVE:
+    case TRACKLIST_SELECTIONS_ACTION_PIN:
+    case TRACKLIST_SELECTIONS_ACTION_UNPIN:
       return
         do_or_undo_move_or_copy (
           self, _do, false);
@@ -1202,6 +1233,31 @@ tracklist_selections_action_stringize (
         {
           return g_strdup_printf (
             _("Move %d Tracks"),
+            self->tls_before->num_tracks);
+        }
+      break;
+    case TRACKLIST_SELECTIONS_ACTION_PIN:
+      if (self->tls_before->num_tracks == 1)
+        {
+          return g_strdup (
+            _("Pin Track"));
+        }
+      else
+        {
+          return g_strdup_printf (
+            _("Pin %d Tracks"),
+            self->tls_before->num_tracks);
+        }
+    case TRACKLIST_SELECTIONS_ACTION_UNPIN:
+      if (self->tls_before->num_tracks == 1)
+        {
+          return g_strdup (
+            _("Unpin Track"));
+        }
+      else
+        {
+          return g_strdup_printf (
+            _("Unpin %d Tracks"),
             self->tls_before->num_tracks);
         }
       break;

@@ -666,6 +666,11 @@ timeline_selections_move_regions_to_new_tracks (
   TimelineSelections * self,
   const int            vis_track_diff)
 {
+  g_debug (
+    "moving %d regions to new tracks "
+    "(visible track diff %d)...",
+    self->num_regions, vis_track_diff);
+
   arranger_selections_sort_by_indices (
     (ArrangerSelections *) self, false);
 
@@ -733,9 +738,15 @@ timeline_selections_move_regions_to_new_tracks (
         region, track_to_move_to, -1);
     }
 
+  g_debug ("moved");
+
   return true;
 }
 
+/**
+ * Sets the regions'
+ * \ref ZRegion.index_in_prev_lane.
+ */
 void
 timeline_selections_set_index_in_prev_lane (
   TimelineSelections * self)

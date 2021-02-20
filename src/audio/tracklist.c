@@ -382,13 +382,13 @@ tracklist_get_last_pos (
 
       if (pin_opt ==
             TRACKLIST_PIN_OPTION_PINNED_ONLY &&
-          !tr->pinned)
+          !track_is_pinned (tr))
         {
           continue;
         }
       if (pin_opt ==
             TRACKLIST_PIN_OPTION_UNPINNED_ONLY &&
-          tr->pinned)
+          track_is_pinned (tr))
         {
           continue;
         }
@@ -494,7 +494,8 @@ tracklist_get_first_visible_track (
   for (int i = 0; i < self->num_tracks; i++)
     {
       tr = self->tracks[i];
-      if (tr->visible && tr->pinned == pinned)
+      if (tr->visible &&
+          track_is_pinned (tr) == pinned)
         {
           return self->tracks[i];
         }
@@ -526,6 +527,7 @@ tracklist_get_prev_visible_track (
   return NULL;
 }
 
+#if 0
 /**
  * Pins or unpins the Track.
  */
@@ -573,6 +575,7 @@ tracklist_set_track_pinned (
       track->pos_before_pinned = -1;
     }
 }
+#endif
 
 /**
  * Returns the next visible Track in the same

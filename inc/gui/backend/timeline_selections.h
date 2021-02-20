@@ -197,6 +197,10 @@ timeline_selections_move_regions_to_new_tracks (
   TimelineSelections * self,
   const int            vis_track_diff);
 
+/**
+ * Sets the regions'
+ * \ref ZRegion.index_in_prev_lane.
+ */
 void
 timeline_selections_set_index_in_prev_lane (
   TimelineSelections * self);

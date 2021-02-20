@@ -392,7 +392,7 @@ track_clone (
   COPY_MEMBER (visible);
   COPY_MEMBER (main_height);
   COPY_MEMBER (recording);
-  COPY_MEMBER (pinned);
+  /*COPY_MEMBER (pinned);*/
   COPY_MEMBER (active);
   COPY_MEMBER (color);
   COPY_MEMBER (pos);
@@ -987,6 +987,17 @@ track_is_selected (Track * self)
 }
 
 /**
+ * Returns whether the track is pinned.
+ */
+bool
+track_is_pinned (
+  Track * self)
+{
+  return
+    self->pos < TRACKLIST->pinned_tracks_cutoff;
+}
+
+/**
  * Returns the last region in the track, or NULL.
  *
  * FIXME cache.
@@ -1432,6 +1443,12 @@ track_set_pos (
     }
   automation_tracklist_update_track_pos (
     &self->automation_tracklist, self);
+
+  for (int i = 0; i < self->num_markers; i++)
+    {
+      marker_set_track_pos (
+        self->markers[i], pos);
+    }
 
   track_processor_set_track_pos (
     self->processor, pos);

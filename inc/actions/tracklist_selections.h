@@ -38,6 +38,8 @@ typedef enum TracklistSelectionsActionType
   TRACKLIST_SELECTIONS_ACTION_DELETE,
   TRACKLIST_SELECTIONS_ACTION_EDIT,
   TRACKLIST_SELECTIONS_ACTION_MOVE,
+  TRACKLIST_SELECTIONS_ACTION_PIN,
+  TRACKLIST_SELECTIONS_ACTION_UNPIN,
 } TracklistSelectionsActionType;
 
 static const cyaml_strval_t
@@ -48,6 +50,8 @@ tracklist_selections_action_type_strings[] =
   { "Delete", TRACKLIST_SELECTIONS_ACTION_DELETE },
   { "Edit", TRACKLIST_SELECTIONS_ACTION_EDIT },
   { "Move", TRACKLIST_SELECTIONS_ACTION_MOVE },
+  { "Pin", TRACKLIST_SELECTIONS_ACTION_PIN },
+  { "Unpin", TRACKLIST_SELECTIONS_ACTION_UNPIN },
 };
 
 /**
@@ -461,6 +465,28 @@ tracklist_selections_action_new (
   tls) \
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_DELETE, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, 0, NULL, false, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+/**
+ * Toggle the current pin status of the track.
+ */
+#define tracklist_selections_action_new_pin( \
+  tls) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_PIN, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, 0, NULL, false, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+/**
+ * Toggle the current pin status of the track.
+ */
+#define tracklist_selections_action_new_unpin( \
+  tls) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_UNPIN, \
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, 0, NULL, false, false, NULL, \
     0.f, 0.f, NULL, false)

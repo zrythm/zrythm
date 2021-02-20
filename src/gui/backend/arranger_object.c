@@ -1673,7 +1673,7 @@ arranger_object_get_arranger (
     {
     case TYPE (REGION):
       {
-        if (track->pinned)
+        if (track_is_pinned (track))
           {
             arranger =
               (ArrangerWidget *) (MW_PINNED_TIMELINE);
@@ -1691,7 +1691,7 @@ arranger_object_get_arranger (
       break;
     case TYPE (SCALE_OBJECT):
       {
-        if (track->pinned)
+        if (track_is_pinned (track))
           {
             arranger =
               (ArrangerWidget *) (MW_PINNED_TIMELINE);
@@ -1705,7 +1705,7 @@ arranger_object_get_arranger (
       break;
     case TYPE (MARKER):
       {
-        if (track->pinned)
+        if (track_is_pinned (track))
           {
             arranger =
               (ArrangerWidget *) (MW_PINNED_TIMELINE);
@@ -2866,10 +2866,10 @@ arranger_object_set_end_pos_full_size (
 }
 
 /**
- * Adds the ArrangerObject where it belongs in the
- * project (eg, a Track).
- *
- * This is mostly used when undoing deletions.
+ * Appends the ArrangerObject to where it belongs
+ * in the project (eg, a Track), without taking
+ * into account its previous index (eg, before
+ * deletion if undoing).
  */
 void
 arranger_object_add_to_project (
@@ -2951,22 +2951,22 @@ arranger_object_add_to_project (
                 track->
                   automation_tracklist.
                     ats[r->id.at_idx];
-              track_insert_region (
-                track, r, at, -1, r->id.idx,
+              track_add_region (
+                track, r, at, -1,
                 F_GEN_NAME,
                 fire_events);
             }
             break;
           case REGION_TYPE_CHORD:
-            track_insert_region (
+            track_add_region (
               P_CHORD_TRACK, r, NULL,
-              -1, r->id.idx, F_GEN_NAME,
+              -1, F_GEN_NAME,
               fire_events);
             break;
           default:
-            track_insert_region (
+            track_add_region (
               track, r, NULL, r->id.lane_pos,
-              r->id.idx, F_GEN_NAME,
+              F_GEN_NAME,
               fire_events);
             break;
           }

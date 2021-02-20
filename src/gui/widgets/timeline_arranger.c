@@ -146,7 +146,7 @@ timeline_arranger_widget_get_track_at_y (
         /* ignore invisible tracks */
         !track->visible ||
         /* ignore tracks in the other timeline */
-        self->is_pinned != track->pinned)
+        self->is_pinned != track_is_pinned (track))
         continue;
 
       g_return_val_if_fail (track->widget, NULL);
@@ -1449,7 +1449,8 @@ highlight_timeline (
         {
           Track * t = TRACKLIST->tracks[i];
           if (t->visible &&
-              t->pinned == self->is_pinned)
+              track_is_pinned (t) ==
+                self->is_pinned)
             {
               y_after_last_track +=
                 track_get_full_visible_height (t);

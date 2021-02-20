@@ -50,11 +50,11 @@ marker_new (
  * Sets the Track of the Marker.
  */
 void
-marker_set_track (
+marker_set_track_pos (
   Marker * marker,
-  Track *  track)
+  int      track_pos)
 {
-  marker->track_pos = track->pos;
+  marker->track_pos = track_pos;
 }
 
 Marker *
