@@ -112,14 +112,18 @@ scripting_window_widget_init (
 ;;; See https://manual.zrythm.org/en/scripting/intro.html for a list of\n\
 ;;; modules provided by Zrythm\n"),
 "(use-modules (audio track)\n\
-             (audio tracklist))\n\
+             (audio tracklist)\n\
+             (project)\n\
+             (zrythm))\n\
 (define zrythm-script\n\
   (lambda ()\n",
 _("    ;; loop through all tracks and print them\n"),
-"    (let ((num-tracks (tracklist-get-num-tracks)))\n\
+"    (let* ((prj (zrythm-get-project))\n\
+           (tracklist (project-get-tracklist prj))\n\
+           (num-tracks (tracklist-get-num-tracks tracklist)))\n\
       (let loop ((i 0))\n\
         (when (< i num-tracks)\n\
-          (let ((track (tracklist-get-track-at-pos i)))\n\
+          (let ((track (tracklist-get-track-at-pos tracklist i)))\n\
             (display (track-get-name track))\n\
             (newline))\n\
           (loop (+ i 1)))))))");
