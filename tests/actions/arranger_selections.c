@@ -1684,8 +1684,8 @@ test_midi_region_split ()
   g_assert_cmpint (
     pos.frames, ==, r->base.end_pos.frames);
 
-  /* split at bar 3 */
-  position_set_to_bar (&pos, 3);
+  /* split at bar 4 */
+  position_set_to_bar (&pos, 4);
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -1696,7 +1696,63 @@ test_midi_region_split ()
   g_assert_cmpint (
     lane->num_regions, ==, 3);
 
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
   r = lane->regions[1];
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 4);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[2];
+  position_set_to_bar (&pos, 4);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* split at bar 3 */
+  r = lane->regions[1];
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  position_set_to_bar (&pos, 3);
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_split (
+      (ArrangerSelections *) TL_SELECTIONS, &pos);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (
+    lane->num_regions, ==, 4);
+
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 4);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[2];
   position_set_to_bar (&pos, 2);
   g_assert_cmpint (
     pos.frames, ==, r->base.pos.frames);
@@ -1704,8 +1760,37 @@ test_midi_region_split ()
   g_assert_cmpint (
     pos.frames, ==, r->base.end_pos.frames);
 
-  r = lane->regions[2];
+  r = lane->regions[3];
   position_set_to_bar (&pos, 3);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 4);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* undo and verify */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    lane->num_regions, ==, 3);
+
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 4);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[2];
+  position_set_to_bar (&pos, 4);
   g_assert_cmpint (
     pos.frames, ==, r->base.pos.frames);
   position_set_to_bar (&pos, 5);
@@ -1748,16 +1833,55 @@ test_midi_region_split ()
 
   /* redo to bring 3 regions back */
   undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  g_assert_cmpint (
+    lane->num_regions, ==, 2);
 
-  /* delete middle cut */
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
   r = lane->regions[1];
   position_set_to_bar (&pos, 2);
   g_assert_cmpint (
     pos.frames, ==, r->base.pos.frames);
-  position_set_to_bar (&pos, 3);
+  position_set_to_bar (&pos, 5);
   g_assert_cmpint (
     pos.frames, ==, r->base.end_pos.frames);
+
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_cmpint (
+    lane->num_regions, ==, 3);
+
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 4);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[2];
+  position_set_to_bar (&pos, 4);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* delete middle cut */
+  r = lane->regions[1];
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -1778,7 +1902,7 @@ test_midi_region_split ()
     pos.frames, ==, r->base.end_pos.frames);
 
   r = lane->regions[1];
-  position_set_to_bar (&pos, 3);
+  position_set_to_bar (&pos, 4);
   g_assert_cmpint (
     pos.frames, ==, r->base.pos.frames);
   position_set_to_bar (&pos, 5);
@@ -1802,12 +1926,12 @@ test_midi_region_split ()
   position_set_to_bar (&pos, 2);
   g_assert_cmpint (
     pos.frames, ==, r->base.pos.frames);
-  position_set_to_bar (&pos, 3);
+  position_set_to_bar (&pos, 4);
   g_assert_cmpint (
     pos.frames, ==, r->base.end_pos.frames);
 
   r = lane->regions[2];
-  position_set_to_bar (&pos, 3);
+  position_set_to_bar (&pos, 4);
   g_assert_cmpint (
     pos.frames, ==, r->base.pos.frames);
   position_set_to_bar (&pos, 5);

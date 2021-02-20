@@ -2200,7 +2200,7 @@ do_or_undo_split (
 
           /* unsplit */
           arranger_object_unsplit (
-            r1, r2, &obj);
+            r1, r2, &obj, F_NO_PUBLISH_EVENTS);
           if (obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
@@ -2208,6 +2208,17 @@ do_or_undo_split (
                 (ZRegion *) obj,
                 ((ZRegion *) objs[i])->name, 0);
             }
+
+          /* re-insert object at its original
+           * position */
+          arranger_object_remove_from_project (
+            obj);
+          obj =
+            arranger_object_clone (
+              objs[i],
+              ARRANGER_OBJECT_CLONE_COPY_MAIN);
+          arranger_object_add_to_project (
+            obj, F_NO_PUBLISH_EVENTS);
 
           /* free the copies created in _do */
           free_split_objects (self, i);

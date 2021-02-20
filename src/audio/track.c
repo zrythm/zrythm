@@ -1848,6 +1848,11 @@ track_remove_region (
   g_return_if_fail (
     IS_TRACK (self) && IS_REGION (region));
 
+  g_message (
+    "removing region from track '%s':",
+    self->name);
+  region_print (region);
+
   region_disconnect (region);
 
   g_warn_if_fail (region->id.lane_pos >= 0);

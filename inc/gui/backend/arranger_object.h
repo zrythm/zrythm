@@ -939,14 +939,16 @@ arranger_object_split (
   ArrangerObject ** r2,
   bool              is_project);
 
+
 /**
  * Undoes what arranger_object_split() did.
  */
 void
 arranger_object_unsplit (
-  ArrangerObject *         r1,
-  ArrangerObject *         r2,
-  ArrangerObject **        region);
+  ArrangerObject *  r1,
+  ArrangerObject *  r2,
+  ArrangerObject ** obj,
+  bool              fire_events);
 
 /**
  * Sets the name of the object, if the object can

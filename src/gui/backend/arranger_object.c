@@ -2408,6 +2408,8 @@ arranger_object_split (
     arranger_object_clone (
       self, ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
+  g_debug ("splitting objects...");
+
   bool set_clip_editor_region = false;
   if (is_project)
     {
@@ -2588,10 +2590,13 @@ arranger_object_split (
  */
 void
 arranger_object_unsplit (
-  ArrangerObject *         r1,
-  ArrangerObject *         r2,
-  ArrangerObject **        obj)
+  ArrangerObject *  r1,
+  ArrangerObject *  r2,
+  ArrangerObject ** obj,
+  bool              fire_events)
 {
+  g_debug ("unsplitting objects...");
+
   /* change to the original region if the clip
    * editor region is r1 or r2 */
   ZRegion * clip_editor_region =
@@ -2642,7 +2647,7 @@ arranger_object_unsplit (
           arranger_object_get_track (r1),
           (ZRegion *) *obj, at,
           ((ZRegion *) r1)->id.lane_pos,
-          F_GEN_NAME, F_PUBLISH_EVENTS);
+          F_GEN_NAME, fire_events);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -2680,11 +2685,11 @@ arranger_object_unsplit (
       {
         track_remove_region (
           arranger_object_get_track (r1),
-          (ZRegion *) r1, F_PUBLISH_EVENTS,
+          (ZRegion *) r1, fire_events,
           F_FREE);
         track_remove_region (
           arranger_object_get_track (r2),
-          (ZRegion *) r2, F_PUBLISH_EVENTS,
+          (ZRegion *) r2, fire_events,
           F_FREE);
       }
       break;
@@ -2698,10 +2703,10 @@ arranger_object_unsplit (
           midi_note_get_region (mn2);
         midi_region_remove_midi_note (
           region1, mn1,
-          F_PUBLISH_EVENTS, F_FREE);
+          fire_events, F_FREE);
         midi_region_remove_midi_note (
           region2, mn2,
-          F_PUBLISH_EVENTS, F_FREE);
+          fire_events, F_FREE);
       }
       break;
     default:
@@ -2714,7 +2719,11 @@ arranger_object_unsplit (
         CLIP_EDITOR, (ZRegion *) *obj, true);
     }
 
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *obj);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CREATED, *obj);
+    }
 }
 
 /**
