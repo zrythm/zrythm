@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.12.0.1] - 2021-02-20
+### Added
+- Add LV2 extension to pass host info to plugin
+- User manual: add JACK transport sync section
+- User manual: add info about MIDI/audio recording
+- User manual: add more details about port connections
+
+### Changed
+- Change track pin/unpin logic
+
+### Fixed
+- Fix crash when audio region's start position is within the current cycle
+- Fix right click in timeline not selecting the object
+- Fix SF2s not being scanned
+- Fix error when duplicating regions to other lanes/tracks
+- Fix crash when undoing deletion of an instrument track after routing a MIDI track to it
+- Fix regions on MIDI tracks routed to instrument track marked for export not being played during export
+- Fix post-install script not running when it should
+- Fix JACK transport behavior
+- Fix plugin descriptor cache being ignored sometimes
+- Fix regions not being inserted at their original index when undoing deletion
+- Fix error when undoing region splitting
+- Fix example script
+
 ## [1.0.0-alpha.11.1.1] - 2021-02-15
 ### Added
 - Allow sending to plugin sidechain inputs (pg:sideChainOf)
