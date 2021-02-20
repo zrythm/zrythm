@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 11:20+0000\n"
+"POT-Creation-Date: 2021-02-20 13:25+0000\n"
 "PO-Revision-Date: 2021-02-08 10:50+0000\n"
 "Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
 "Language: el\n"
@@ -822,7 +822,7 @@ msgid "Editing options."
 msgstr "Ρυθμίσεις επεξεργασίας."
 
 #: ../../configuration/preferences/intro.rst:172
-#: ../../routing/ports.rst:38
+#: ../../routing/ports.rst:41
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3925,7 +3925,7 @@ msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr "Είναι ισοδύναμος όρος με την :ref:`region <regions>`."
 
 #: ../../glossary/intro.rst:39
-#: ../../routing/ports.rst:48
+#: ../../routing/ports.rst:47
 msgid "Control"
 msgstr "Χειριστής"
 
@@ -3941,7 +3941,7 @@ msgstr ""
 "την :term:`Parameter`."
 
 #: ../../glossary/intro.rst:46
-#: ../../routing/ports.rst:53
+#: ../../routing/ports.rst:51
 msgid "CV"
 msgstr "CV"
 
@@ -6173,7 +6173,13 @@ msgstr ""
 " και συνήθως αποτελεί μέρος ενός `processor`, όπως ενός προσθέτου ή ενός "
 "κομματιού."
 
-#: ../../routing/ports.rst:19
+#: ../../routing/ports.rst:22
+msgid ""
+"2 input ports connected to a processor, which produces output to 2 output"
+" ports"
+msgstr ""
+
+#: ../../routing/ports.rst:25
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
@@ -6183,65 +6189,71 @@ msgstr ""
 "χρησιμοποιεί για να διαβάζει δεδομένα MIDI και 2 θύρες `Audio output` "
 "όπου αντιγράφει το σήμα στέρεο αφού επεξεργαστεί."
 
-#: ../../routing/ports.rst:25
+#: ../../routing/ports.rst:31
 msgid "Port Directions"
 msgstr "Κατευθύνσεις θυρών"
 
-#: ../../routing/ports.rst:27
+#: ../../routing/ports.rst:32
 #: ../../tracks/track-types.rst:12
 msgid "Input"
 msgstr "Είσοδος"
 
-#: ../../routing/ports.rst:28
-msgid "The port receives signals."
+#: ../../routing/ports.rst:33
+#, fuzzy
+msgid "The port receives signals"
 msgstr "Η θύρα δέχεται σήματα."
 
-#: ../../routing/ports.rst:31
+#: ../../routing/ports.rst:35
 #: ../../tracks/track-types.rst:12
 msgid "Output"
 msgstr "Έξοδος"
 
-#: ../../routing/ports.rst:32
-msgid "The port sends signals."
+#: ../../routing/ports.rst:35
+#, fuzzy
+msgid "The port sends signals"
 msgstr "Η θύρα στέλνει σήματα."
 
-#: ../../routing/ports.rst:35
+#: ../../routing/ports.rst:38
 msgid "Port Types"
 msgstr "Τύποι θυρών"
 
-#: ../../routing/ports.rst:39
-msgid "Ports of this type receive or send raw audio signals."
+#: ../../routing/ports.rst:41
+#, fuzzy
+msgid "Ports of this type receive or send raw audio signals"
 msgstr "Οι θύρες αυτού του τύπου δέχονται και στέλνουν ωμά σήματα ήχου."
 
-#: ../../routing/ports.rst:43
+#: ../../routing/ports.rst:44
 msgid "Event"
 msgstr "Γεγονός"
 
 #: ../../routing/ports.rst:44
-msgid "Event ports are mainly used for routing MIDI signals."
+#, fuzzy
+msgid "Event ports are mainly used for routing MIDI signals"
 msgstr "Οι θύρες γεγονότων χρησιμοποιούνται κυρίως για δρομολόγηση σημάτων MIDI."
 
-#: ../../routing/ports.rst:49
+#: ../../routing/ports.rst:47
+#, fuzzy
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
-"automation lanes."
+"automation lanes"
 msgstr ""
 "Οι θύρες χειριστών είναι επεξεργάσιμες από τον χρήστη παράμετροι που "
 "μπορούν επίσης να αυτοματοποιηθούν σε λωρίδες αυτοματισμού."
 
-#: ../../routing/ports.rst:54
+#: ../../routing/ports.rst:50
+#, fuzzy
 msgid ""
 ":term:`CV` ports handle continuous signals and can be used to modulate "
-"control ports."
+"control ports"
 msgstr ""
 "Οι θύρες :term:`CV` χειρίζονται συνεχή σήματα και μπορούν να "
 "χρησιμοποιηθούν για την τροποποίηση θυρών χειριστών."
 
-#: ../../routing/ports.rst:58
+#: ../../routing/ports.rst:54
 msgid "Port Connections"
 msgstr "Συνδέσεις θυρών"
 
-#: ../../routing/ports.rst:59
+#: ../../routing/ports.rst:55
 msgid ""
 "Ports can be connected with each other, as long as they are of the same "
 "type and opposite direction, with the exception of CV ports which may be "
@@ -6251,13 +6263,24 @@ msgstr ""
 "αντίθετης κατεύθυνσης, με εξαίρεση τις θύρες CV, οι οποίες μπορούν να "
 "δρομολογηθούν και σε θύρες CV και σε θύρες χειριστών."
 
-#: ../../routing/ports.rst:65
+#: ../../routing/ports.rst:61
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
 msgstr ""
 "Όταν οι θύρες είναι συνδεμένες, το σήμα από την πηγαία θύρα προστίθεται "
 "στη θύρα προορισμού κατά την επεξεργασία."
+
+#: ../../routing/ports.rst:68
+msgid "Port connection graph for an audio track"
+msgstr ""
+
+#: ../../routing/ports.rst:70
+msgid ""
+"In the above example, the output audio port ``TP Stereo out L`` is "
+"connected to the input audio port ``Ch Pre-Fader in L``. This connection "
+"is created automatically by Zrythm internally."
+msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:3
 msgid "actions channel-send-action"
@@ -9211,17 +9234,6 @@ msgstr ""
 
 #~ msgid "This is not implemented yet."
 #~ msgstr "Αυτό δεν έχει ενσωματωθεί ακόμα."
-
-#~ msgid ""
-#~ "BPM and Time Signature are covered "
-#~ "in :ref:`playback-and-recording:BPM and "
-#~ "Time Signatures`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Transport controls are covered in :ref"
-#~ ":`playback-and-recording:Transport Controls`."
-#~ msgstr ""
 
 #~ msgid "Sets the volume of the metronome."
 #~ msgstr "Ορίζει την ένταση του μετρονόμου."

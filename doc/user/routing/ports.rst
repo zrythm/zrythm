@@ -16,6 +16,12 @@ does not process anything on its own, and is
 usually part of a `processor`, like a plugin
 or track.
 
+.. figure:: /_static/img/ports-and-processor.png
+   :align: center
+
+   2 input ports connected to a processor, which
+   produces output to 2 output ports
+
 For example, an instrument track has a `MIDI input`
 port it uses to read MIDI data and 2
 `Audio output` ports where it copies the
@@ -24,35 +30,25 @@ stereo signal after being processed.
 Port Directions
 ---------------
 Input
-~~~~~
-The port receives signals.
-
+  The port receives signals
 Output
-~~~~~~
-The port sends signals.
+  The port sends signals
 
 Port Types
 ----------
 
 Audio
-~~~~~
-Ports of this type receive or send raw
-audio signals.
-
+  Ports of this type receive or send raw
+  audio signals
 Event
-~~~~~
-Event ports are mainly used for routing MIDI
-signals.
-
+  Event ports are mainly used for routing MIDI
+  signals
 Control
-~~~~~~~
-Control ports are user-editable parameters that
-can also be automated in automation lanes.
-
+  Control ports are user-editable parameters that
+  can also be automated in automation lanes
 CV
-~~
-:term:`CV` ports handle continuous signals and can be
-used to modulate control ports.
+  :term:`CV` ports handle continuous signals and
+  can be used to modulate control ports
 
 Port Connections
 ----------------
@@ -65,3 +61,13 @@ ports and control ports.
 When ports are connected, the signal from the
 source port is added to the destination port
 during processing.
+
+.. figure:: /_static/img/audio-track-graph-emphasized.png
+   :align: center
+
+   Port connection graph for an audio track
+
+In the above example, the output audio port
+``TP Stereo out L`` is connected to the input audio
+port ``Ch Pre-Fader in L``. This connection is
+created automatically by Zrythm internally.

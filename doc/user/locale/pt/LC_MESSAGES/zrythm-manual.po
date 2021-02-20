@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 11:20+0000\n"
+"POT-Creation-Date: 2021-02-20 13:25+0000\n"
 "PO-Revision-Date: 2021-01-05 14:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -807,7 +807,7 @@ msgid "Editing options."
 msgstr "Opções de edição."
 
 #: ../../configuration/preferences/intro.rst:172
-#: ../../routing/ports.rst:38
+#: ../../routing/ports.rst:41
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3719,7 +3719,7 @@ msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ""
 
 #: ../../glossary/intro.rst:39
-#: ../../routing/ports.rst:48
+#: ../../routing/ports.rst:47
 msgid "Control"
 msgstr "Controle"
 
@@ -3735,7 +3735,7 @@ msgstr ""
 "com :term:`Parameter`."
 
 #: ../../glossary/intro.rst:46
-#: ../../routing/ports.rst:53
+#: ../../routing/ports.rst:51
 msgid "CV"
 msgstr "CV"
 
@@ -5888,7 +5888,13 @@ msgstr ""
 " da Zrythm. Uma porta não processa nada por si só e normalmente faz parte"
 " de um `processador`, como um suplemento ou uma faixa."
 
-#: ../../routing/ports.rst:19
+#: ../../routing/ports.rst:22
+msgid ""
+"2 input ports connected to a processor, which produces output to 2 output"
+" ports"
+msgstr ""
+
+#: ../../routing/ports.rst:25
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
@@ -5898,67 +5904,73 @@ msgstr ""
 "utiliza para ler dados MIDI e 2 portas \"saída de áudio\" onde copia o "
 "sinal estéreo após ser processado."
 
-#: ../../routing/ports.rst:25
+#: ../../routing/ports.rst:31
 msgid "Port Directions"
 msgstr "Direções de portas"
 
-#: ../../routing/ports.rst:27
+#: ../../routing/ports.rst:32
 #: ../../tracks/track-types.rst:12
 msgid "Input"
 msgstr "Entrada"
 
-#: ../../routing/ports.rst:28
-msgid "The port receives signals."
+#: ../../routing/ports.rst:33
+#, fuzzy
+msgid "The port receives signals"
 msgstr "A porta recebe sinais."
 
-#: ../../routing/ports.rst:31
+#: ../../routing/ports.rst:35
 #: ../../tracks/track-types.rst:12
 msgid "Output"
 msgstr "Saída"
 
-#: ../../routing/ports.rst:32
-msgid "The port sends signals."
+#: ../../routing/ports.rst:35
+#, fuzzy
+msgid "The port sends signals"
 msgstr "A porta envia sinais."
 
-#: ../../routing/ports.rst:35
+#: ../../routing/ports.rst:38
 msgid "Port Types"
 msgstr "Tipos de portas"
 
-#: ../../routing/ports.rst:39
-msgid "Ports of this type receive or send raw audio signals."
+#: ../../routing/ports.rst:41
+#, fuzzy
+msgid "Ports of this type receive or send raw audio signals"
 msgstr "Portas deste tipo recebem ou enviam sinais de áudio brutos."
 
-#: ../../routing/ports.rst:43
+#: ../../routing/ports.rst:44
 msgid "Event"
 msgstr "Evento"
 
 #: ../../routing/ports.rst:44
-msgid "Event ports are mainly used for routing MIDI signals."
+#, fuzzy
+msgid "Event ports are mainly used for routing MIDI signals"
 msgstr ""
 "As portas de eventos são utilizadas principalmente para o roteamento de "
 "sinais MIDI."
 
-#: ../../routing/ports.rst:49
+#: ../../routing/ports.rst:47
+#, fuzzy
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
-"automation lanes."
+"automation lanes"
 msgstr ""
 "Portas de controle são parâmetros editáveis pelo utilizador que também "
 "podem ser automatizadas em pistas de automação."
 
-#: ../../routing/ports.rst:54
+#: ../../routing/ports.rst:50
+#, fuzzy
 msgid ""
 ":term:`CV` ports handle continuous signals and can be used to modulate "
-"control ports."
+"control ports"
 msgstr ""
 "Portas de :term:`CV` lidam com sinais contínuos e podem ser utilizadas "
 "para modular as portas de controle."
 
-#: ../../routing/ports.rst:58
+#: ../../routing/ports.rst:54
 msgid "Port Connections"
 msgstr "Conexões de portas"
 
-#: ../../routing/ports.rst:59
+#: ../../routing/ports.rst:55
 msgid ""
 "Ports can be connected with each other, as long as they are of the same "
 "type and opposite direction, with the exception of CV ports which may be "
@@ -5968,13 +5980,24 @@ msgstr ""
 "direção oposta, com exceção dos portos CV que podem ser roteados tanto a "
 "portas CV como a portas de controle."
 
-#: ../../routing/ports.rst:65
+#: ../../routing/ports.rst:61
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
 msgstr ""
 "Quando portas estão conectadas, o sinal da porta de origem é adicionado à"
 " porta de destino durante o processamento."
+
+#: ../../routing/ports.rst:68
+msgid "Port connection graph for an audio track"
+msgstr ""
+
+#: ../../routing/ports.rst:70
+msgid ""
+"In the above example, the output audio port ``TP Stereo out L`` is "
+"connected to the input audio port ``Ch Pre-Fader in L``. This connection "
+"is created automatically by Zrythm internally."
+msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:3
 msgid "actions channel-send-action"
@@ -8943,17 +8966,6 @@ msgstr ":ref:`right-panel` (6)"
 
 #~ msgid "This is not implemented yet."
 #~ msgstr "Isto ainda não está implementado."
-
-#~ msgid ""
-#~ "BPM and Time Signature are covered "
-#~ "in :ref:`playback-and-recording:BPM and "
-#~ "Time Signatures`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Transport controls are covered in :ref"
-#~ ":`playback-and-recording:Transport Controls`."
-#~ msgstr ""
 
 #~ msgid "Sets the volume of the metronome."
 #~ msgstr "Define o volume do metrónomo."

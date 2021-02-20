@@ -136,7 +136,7 @@ create_model_for_ports (
         list_store, &iter); \
       gtk_list_store_set ( \
         list_store, &iter, \
-        0, "plugins", \
+        0, "node-type-cusp", \
         1, port->id.label, \
         2, port, \
         -1); \
@@ -287,7 +287,7 @@ create_model_for_tracks (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, "text-x-csrc",
+        0, "track-inspector",
         1, track->name,
         2, track,
         -1);
