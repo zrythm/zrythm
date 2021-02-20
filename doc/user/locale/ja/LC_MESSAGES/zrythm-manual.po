@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 11:20+0000\n"
+"POT-Creation-Date: 2021-02-20 13:25+0000\n"
 "PO-Revision-Date: 2021-01-23 17:11+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -815,7 +815,7 @@ msgid "Editing options."
 msgstr "編集オプション。"
 
 #: ../../configuration/preferences/intro.rst:172
-#: ../../routing/ports.rst:38
+#: ../../routing/ports.rst:41
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3812,7 +3812,7 @@ msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ":ref:`リージョン <regions>` と互換的に使用されます。"
 
 #: ../../glossary/intro.rst:39
-#: ../../routing/ports.rst:48
+#: ../../routing/ports.rst:47
 msgid "Control"
 msgstr "コントロール"
 
@@ -3831,7 +3831,7 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../glossary/intro.rst:46
-#: ../../routing/ports.rst:53
+#: ../../routing/ports.rst:51
 msgid "CV"
 msgstr "CV"
 
@@ -6452,7 +6452,13 @@ msgstr ""
 " `プロセッサ`の一部です。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../routing/ports.rst:19
+#: ../../routing/ports.rst:22
+msgid ""
+"2 input ports connected to a processor, which produces output to 2 output"
+" ports"
+msgstr ""
+
+#: ../../routing/ports.rst:25
 #, fuzzy
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
@@ -6466,61 +6472,67 @@ msgstr ""
 "例えば、インストゥルメントトラックには MIDI データを読み込むための `MIDI input` "
 "ポートと、処理後のステレオ信号をコピーするための 2 つの `Audio output` ポートがあります。"
 
-#: ../../routing/ports.rst:25
+#: ../../routing/ports.rst:31
 msgid "Port Directions"
 msgstr "ポートの方向"
 
-#: ../../routing/ports.rst:27
+#: ../../routing/ports.rst:32
 #: ../../tracks/track-types.rst:12
 msgid "Input"
 msgstr "入力"
 
-#: ../../routing/ports.rst:28
-msgid "The port receives signals."
+#: ../../routing/ports.rst:33
+#, fuzzy
+msgid "The port receives signals"
 msgstr "ポートは信号を受信します。"
 
-#: ../../routing/ports.rst:31
+#: ../../routing/ports.rst:35
 #: ../../tracks/track-types.rst:12
 msgid "Output"
 msgstr "出力"
 
-#: ../../routing/ports.rst:32
-msgid "The port sends signals."
+#: ../../routing/ports.rst:35
+#, fuzzy
+msgid "The port sends signals"
 msgstr "ポートは信号を送信します。"
 
-#: ../../routing/ports.rst:35
+#: ../../routing/ports.rst:38
 msgid "Port Types"
 msgstr "ポートの種類"
 
-#: ../../routing/ports.rst:39
-msgid "Ports of this type receive or send raw audio signals."
+#: ../../routing/ports.rst:41
+#, fuzzy
+msgid "Ports of this type receive or send raw audio signals"
 msgstr "この種類のポートは、未加工のオーディオ信号を受信または送信します。"
 
-#: ../../routing/ports.rst:43
+#: ../../routing/ports.rst:44
 msgid "Event"
 msgstr "イベント"
 
 #: ../../routing/ports.rst:44
-msgid "Event ports are mainly used for routing MIDI signals."
+#, fuzzy
+msgid "Event ports are mainly used for routing MIDI signals"
 msgstr "イベントポートは主にMIDI信号のルーティングに使用されます。"
 
-#: ../../routing/ports.rst:49
+#: ../../routing/ports.rst:47
+#, fuzzy
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
-"automation lanes."
+"automation lanes"
 msgstr "コントロールポートは、ユーザーが編集可能なパラメータであり、オートメーションレーンでも自動化が可能です。"
 
-#: ../../routing/ports.rst:54
+#: ../../routing/ports.rst:50
+#, fuzzy
 msgid ""
 ":term:`CV` ports handle continuous signals and can be used to modulate "
-"control ports."
+"control ports"
 msgstr ":term:`CV` ポートは連続した信号を扱い、コントロールポートのモジュレーションに使用できます。"
 
-#: ../../routing/ports.rst:58
+#: ../../routing/ports.rst:54
 msgid "Port Connections"
 msgstr "ポート接続"
 
-#: ../../routing/ports.rst:59
+#: ../../routing/ports.rst:55
 #, fuzzy
 msgid ""
 "Ports can be connected with each other, as long as they are of the same "
@@ -6550,7 +6562,7 @@ msgstr ""
 "\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../routing/ports.rst:65
+#: ../../routing/ports.rst:61
 #, fuzzy
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
@@ -6572,6 +6584,17 @@ msgstr ""
 "#-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#\n"
 "ポートが接続されると、送信元ポートからの信号が処理中に宛先ポートに追加されます。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+
+#: ../../routing/ports.rst:68
+msgid "Port connection graph for an audio track"
+msgstr ""
+
+#: ../../routing/ports.rst:70
+msgid ""
+"In the above example, the output audio port ``TP Stereo out L`` is "
+"connected to the input audio port ``Ch Pre-Fader in L``. This connection "
+"is created automatically by Zrythm internally."
+msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:3
 msgid "actions channel-send-action"
@@ -9984,19 +10007,6 @@ msgstr ":ref:`transport-bar` (5)"
 msgid ":ref:`right-panel` (6)"
 msgstr ":ref:`right-panel` (6)"
 
-#~ msgid ""
-#~ "Tracks can be armed for recording "
-#~ "by clicking the record button, either"
-#~ " inside the track or inside its "
-#~ "fader section in the channel or "
-#~ ":ref:`track inspector <track-inspector>`. When"
-#~ " tracks are armed for recording, they"
-#~ " start listening for signals in their"
-#~ " :ref:`track-inputs` and these signals "
-#~ "will be passed along in the "
-#~ "processing chain."
-#~ msgstr ""
-
 #~ msgid "Add illustration."
 #~ msgstr "イラストを追加すること。"
 
@@ -10016,17 +10026,6 @@ msgstr ":ref:`right-panel` (6)"
 
 #~ msgid "This is not implemented yet."
 #~ msgstr "これはまだ実装されていません。"
-
-#~ msgid ""
-#~ "BPM and Time Signature are covered "
-#~ "in :ref:`playback-and-recording:BPM and "
-#~ "Time Signatures`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Transport controls are covered in :ref"
-#~ ":`playback-and-recording:Transport Controls`."
-#~ msgstr ""
 
 #~ msgid "Sets the volume of the metronome."
 #~ msgstr "メトロノームのボリュームを設定します。"

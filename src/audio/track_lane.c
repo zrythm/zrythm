@@ -123,7 +123,7 @@ track_lane_insert_region (
   int         idx)
 {
   g_return_if_fail (
-    idx >= 0 &&
+    self && IS_REGION (region) && idx >= 0 &&
     (region->id.type == REGION_TYPE_AUDIO ||
      region->id.type == REGION_TYPE_MIDI));
 

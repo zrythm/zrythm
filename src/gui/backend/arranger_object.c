@@ -2942,22 +2942,22 @@ arranger_object_add_to_project (
                 track->
                   automation_tracklist.
                     ats[r->id.at_idx];
-              track_add_region (
-                track, r, at, -1,
+              track_insert_region (
+                track, r, at, -1, r->id.idx,
                 F_GEN_NAME,
                 fire_events);
             }
             break;
           case REGION_TYPE_CHORD:
-            track_add_region (
+            track_insert_region (
               P_CHORD_TRACK, r, NULL,
-              -1, F_GEN_NAME,
+              -1, r->id.idx, F_GEN_NAME,
               fire_events);
             break;
           default:
-            track_add_region (
+            track_insert_region (
               track, r, NULL, r->id.lane_pos,
-              F_GEN_NAME,
+              r->id.idx, F_GEN_NAME,
               fire_events);
             break;
           }

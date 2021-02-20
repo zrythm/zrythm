@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 11:20+0000\n"
+"POT-Creation-Date: 2021-02-20 13:25+0000\n"
 "PO-Revision-Date: 2021-02-13 03:50+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language: zh_CN\n"
@@ -736,7 +736,7 @@ msgid "Editing options."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:172
-#: ../../routing/ports.rst:38
+#: ../../routing/ports.rst:41
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3169,7 +3169,7 @@ msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ""
 
 #: ../../glossary/intro.rst:39
-#: ../../routing/ports.rst:48
+#: ../../routing/ports.rst:47
 msgid "Control"
 msgstr "控制室"
 
@@ -3181,7 +3181,7 @@ msgid ""
 msgstr ""
 
 #: ../../glossary/intro.rst:46
-#: ../../routing/ports.rst:53
+#: ../../routing/ports.rst:51
 msgid "CV"
 msgstr ""
 
@@ -4972,78 +4972,95 @@ msgid ""
 "of a `processor`, like a plugin or track."
 msgstr ""
 
-#: ../../routing/ports.rst:19
+#: ../../routing/ports.rst:22
+msgid ""
+"2 input ports connected to a processor, which produces output to 2 output"
+" ports"
+msgstr ""
+
+#: ../../routing/ports.rst:25
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
 
-#: ../../routing/ports.rst:25
+#: ../../routing/ports.rst:31
 msgid "Port Directions"
 msgstr ""
 
-#: ../../routing/ports.rst:27
+#: ../../routing/ports.rst:32
 #: ../../tracks/track-types.rst:12
 msgid "Input"
 msgstr ""
 
-#: ../../routing/ports.rst:28
-msgid "The port receives signals."
+#: ../../routing/ports.rst:33
+msgid "The port receives signals"
 msgstr ""
 
-#: ../../routing/ports.rst:31
+#: ../../routing/ports.rst:35
 #: ../../tracks/track-types.rst:12
 msgid "Output"
 msgstr ""
 
-#: ../../routing/ports.rst:32
-msgid "The port sends signals."
+#: ../../routing/ports.rst:35
+msgid "The port sends signals"
 msgstr ""
 
-#: ../../routing/ports.rst:35
+#: ../../routing/ports.rst:38
 msgid "Port Types"
 msgstr ""
 
-#: ../../routing/ports.rst:39
-msgid "Ports of this type receive or send raw audio signals."
+#: ../../routing/ports.rst:41
+msgid "Ports of this type receive or send raw audio signals"
 msgstr ""
 
-#: ../../routing/ports.rst:43
+#: ../../routing/ports.rst:44
 msgid "Event"
 msgstr ""
 
 #: ../../routing/ports.rst:44
-msgid "Event ports are mainly used for routing MIDI signals."
+msgid "Event ports are mainly used for routing MIDI signals"
 msgstr ""
 
-#: ../../routing/ports.rst:49
+#: ../../routing/ports.rst:47
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
-"automation lanes."
+"automation lanes"
+msgstr ""
+
+#: ../../routing/ports.rst:50
+msgid ""
+":term:`CV` ports handle continuous signals and can be used to modulate "
+"control ports"
 msgstr ""
 
 #: ../../routing/ports.rst:54
-msgid ""
-":term:`CV` ports handle continuous signals and can be used to modulate "
-"control ports."
-msgstr ""
-
-#: ../../routing/ports.rst:58
 msgid "Port Connections"
 msgstr ""
 
-#: ../../routing/ports.rst:59
+#: ../../routing/ports.rst:55
 msgid ""
 "Ports can be connected with each other, as long as they are of the same "
 "type and opposite direction, with the exception of CV ports which may be "
 "routed to both CV ports and control ports."
 msgstr ""
 
-#: ../../routing/ports.rst:65
+#: ../../routing/ports.rst:61
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
+msgstr ""
+
+#: ../../routing/ports.rst:68
+msgid "Port connection graph for an audio track"
+msgstr ""
+
+#: ../../routing/ports.rst:70
+msgid ""
+"In the above example, the output audio port ``TP Stereo out L`` is "
+"connected to the input audio port ``Ch Pre-Fader in L``. This connection "
+"is created automatically by Zrythm internally."
 msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:3
@@ -7316,61 +7333,28 @@ msgstr ""
 msgid ":ref:`right-panel` (6)"
 msgstr ""
 
-#~ msgid ""
-#~ "Tracks can be armed for recording "
-#~ "by clicking the record button, either"
-#~ " inside the track or inside its "
-#~ "fader section in the channel or "
-#~ ":ref:`track inspector <track-inspector>`. When"
-#~ " tracks are armed for recording, they"
-#~ " start listening for signals in their"
-#~ " :ref:`track-inputs` and these signals "
-#~ "will be passed along in the "
-#~ "processing chain."
+#~ msgid "The port receives signals."
 #~ msgstr ""
 
-#~ msgid "Add illustration."
+#~ msgid "The port sends signals."
+#~ msgstr ""
+
+#~ msgid "Ports of this type receive or send raw audio signals."
+#~ msgstr ""
+
+#~ msgid "Event ports are mainly used for routing MIDI signals."
 #~ msgstr ""
 
 #~ msgid ""
-#~ "After arming the tracks you want "
-#~ "to record events into, enable recording"
-#~ " in :ref:`transport-controls` and press "
-#~ "play."
-#~ msgstr ""
-
-#~ msgid "Expand, add illustrations, etc."
+#~ "Control ports are user-editable "
+#~ "parameters that can also be automated"
+#~ " in automation lanes."
 #~ msgstr ""
 
 #~ msgid ""
-#~ "Any signals received will be recorded"
-#~ " inside new regions in the timeline."
-#~ msgstr ""
-
-#~ msgid "Toggles whether to return to the cue point when playback stops."
-#~ msgstr ""
-
-#~ msgid "If the track takes input, there will be an input selection section."
-#~ msgstr ""
-
-#~ msgid "Not operational at the moment."
-#~ msgstr ""
-
-#~ msgid "User comments."
-#~ msgstr ""
-
-#~ msgid "This is not implemented yet."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "BPM and Time Signature are covered "
-#~ "in :ref:`playback-and-recording:BPM and "
-#~ "Time Signatures`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Transport controls are covered in :ref"
-#~ ":`playback-and-recording:Transport Controls`."
+#~ ":term:`CV` ports handle continuous signals "
+#~ "and can be used to modulate "
+#~ "control ports."
 #~ msgstr ""
 
 #~ msgid "Metronome"
