@@ -7,51 +7,21 @@
 Transport Bar
 =============
 
-The transport bar contains information about the audio engine
-and transport controls.
+The transport bar contains information about the
+audio engine and transport controls.
 
 .. image:: /_static/img/transport-bar.png
    :align: center
 
+BPM and Time Signature
+----------------------
+BPM and Time Signature are covered in
+:ref:`playback-and-recording/bpm-and-time-signatures:BPM and Time Signatures`.
+
 Transport Controls
 ------------------
-Transport controls change the behavior of playback.
-They include the following items.
-
-.. image:: /_static/img/transport-controls.png
-   :align: center
-
-Metronome toggle
-++++++++++++++++
-Toggles the metronome on/off.
-
-Metronome options
-+++++++++++++++++
-Sets the volume of the metronome.
-
-Return to cue point on stop
-+++++++++++++++++++++++++++
-Toggles whether to return to the cue point when
-playback stops.
-
-BPM
-+++
-Song tempo (beats per minute).
-
-Playhead
-++++++++
-Current playhead position, in bars.beats.sixteenths.ticks.
-
-Transport buttons
-+++++++++++++++++
-Controls for stopping, playback, recording, etc.
-
-.. tip:: Widgets like the BPM meter can be changed
-  by clicking and dragging, or by hovering over them with the cursor
-  and scrolling
-
-More information about working with the transport
-bar is covered in :ref:`transport-controls`.
+Transport controls are covered in
+:ref:`playback-and-recording/transport-controls:Transport Controls`.
 
 Backend Information
 -------------------

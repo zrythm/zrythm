@@ -8,7 +8,7 @@ BPM and Time Signatures
 BPM
 ---
 
-The BPM can be set to between 40 and 360 by
+The :term:`BPM` can be set to between 40 and 360 by
 clicking and dragging the BPM widget.
 
 .. image:: /_static/img/bpm-widget.png
@@ -37,3 +37,8 @@ Beat Unit
   This is the bottom number that indicates
   the beat unit to be used. It can be set to
   2, 4, 8 or 16.
+
+.. tip:: Widgets like the BPM and Time Signature
+   can be changed by clicking and dragging, or by
+   hovering over them with the cursor and
+   scrolling.

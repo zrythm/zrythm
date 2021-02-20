@@ -142,6 +142,11 @@ run_sphinx_build = configure_file (
     'BASH': bash.full_path (),
     })
 
+c = run_command ([
+  'find', '.', '-name', '*.rst',
+  ])
+rst_files = c.stdout().strip().split('\n')
+
 # create run targets for each lang/format combination
 # and custom targets for each language for html
 html_manuals = []
@@ -161,7 +166,7 @@ foreach lang, lang_str : locales
       sphinx_build.full_path(),
       sphinx_build_opts,
       lang, format, meson.current_source_dir (),
-      output_dir, '@OUTPUT@',
+      output_dir,
       ]
 
     deps = [ custom_css_target ]
@@ -180,9 +185,10 @@ foreach lang, lang_str : locales
         depend_files: [
           'conf.py', src_rst_files,
           rtd_theme_files,
+          rst_files,
           ],
         output: name,
-        command: command,
+        command: [ command, '@OUTPUT@', ],
         install: get_option ('user_manual'),
         install_dir: docdir,
         build_by_default: get_option ('user_manual'),

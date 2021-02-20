@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 .. _transport-controls:
@@ -16,8 +16,30 @@ transport controls.
 Controls
 --------
 
+Metronome toggle
+  Toggles the metronome on/off.
+
+  When the metronome is enabled, you will hear
+  metronome
+  ticks during playback at each bar and each beat.
+  The tick at each bar will be more emphasized.
+  This feature is useful for making sure the song
+  stays on beat.
+
+  .. tip:: The metronome samples can be overridden by
+    placing your own samples in your Zrythm directory.
+    This is a TODO feature.
+
+Metronome options
+  Sets the volume of the metronome
+Return to cue point on stop
+  Toggles whether to return to the
+  :ref:`playback-and-recording/loop-points-and-markers:Cue Point`
+  when playback stops.
 Record
   Arms the project for recording.
+Record options
+  Sets the settings to use when recording.
 Play
   If stopped, the song will start playing. If
   already playing, the Playhead will move to
@@ -58,22 +80,3 @@ projects.
 
 .. image:: /_static/img/jack-transport-settings.png
    :align: center
-
-Metronome
----------
-Clicking the metronome button will enable/disable
-the metronome.
-
-.. image:: /_static/img/metronome-button.png
-   :align: center
-
-When the metronome is enabled, you will hear
-metronome
-ticks during playback at each bar and each beat.
-The tick at each bar will be more emphasized.
-This feature is useful for making sure the song
-stays on beat.
-
-.. tip:: The metronome samples can be overridden by
-  placing your own samples in your Zrythm directory.
-  This is a TODO feature.

@@ -24,6 +24,10 @@ Glossary
   Bounce
     Bouncing means exporting to audio.
 
+  BPM
+    The :abbr:`BPM (Beats Per Minute)` is the
+    tempo of the song.
+
   CLI
     :abbr:`CLI (Command Line Interface)` is the
     interface users interact with when typing

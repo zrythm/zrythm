@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-19 22:43+0000\n"
+"POT-Creation-Date: 2021-02-20 09:46+0000\n"
 "PO-Revision-Date: 2021-01-05 14:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -1722,7 +1722,6 @@ msgstr "Adicionar foto"
 
 #: ../../editing/clip-editors/ruler.rst:32
 #: ../../playback-and-recording/overview.rst:12
-#: ../../zrythm-interface/transport-bar.rst:42
 msgid "Playhead"
 msgstr "Cabeça de reprodução"
 
@@ -4315,7 +4314,6 @@ msgid "BPM and Time Signatures"
 msgstr "BPM e Assinaturas de Tempo"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
-#: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
 msgstr "BPM"
 
@@ -4366,7 +4364,7 @@ msgstr ""
 "Este é o número superior que indica o número de Batidas que devem estar "
 "numa Barra. Pode ser configurado de 1 a 16."
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:38
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:39
 msgid "Beat Unit"
 msgstr "Unidade de Batida"
 
@@ -4377,6 +4375,15 @@ msgid ""
 msgstr ""
 "Este é o número inferior que indica a unidade de batida em uso. Pode ser "
 "configurado a 2, 4, 8 ou 16."
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:41
+#, fuzzy
+msgid ""
+"Widgets like the BPM and Time Signature can be changed by clicking and "
+"dragging, or by hovering over them with the cursor and scrolling."
+msgstr ""
+"Widgets como o medidor de BPM podem ser alterados clicando e arrastando, "
+"ou pairando sobre eles com o cursor e rolando"
 
 #: ../../playback-and-recording/intro.rst:6
 msgid "Playback and Recording"
@@ -4597,7 +4604,7 @@ msgstr ""
 "`Gravação` para ser ativada no :ref:`transport-controls`."
 
 #: ../../playback-and-recording/transport-controls.rst:8
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:22
 msgid "Transport Controls"
 msgstr "Controles de transporte"
 
@@ -4609,107 +4616,15 @@ msgstr "A reprodução é controlada pelos seguintes controles de transporte."
 msgid "Controls"
 msgstr "Controles"
 
-#: ../../playback-and-recording/transport-controls.rst:19
-#: ../../tracks/audio-track.rst:17
-#: ../../tracks/chord-track.rst:25
-#: ../../tracks/inspector-page.rst:121
-#: ../../tracks/instrument-track.rst:25
-#: ../../tracks/midi-track.rst:26
-#: ../../tracks/modulator-track.rst:25
-#: ../../tracks/tempo-track.rst:25
-msgid "Record"
-msgstr "Registo"
+#: ../../playback-and-recording/transport-controls.rst:31
+msgid "Metronome toggle"
+msgstr "Alternância metrônomo"
 
 #: ../../playback-and-recording/transport-controls.rst:20
-msgid "Arms the project for recording."
-msgstr "Prepara o projeto para a gravação."
-
-#: ../../playback-and-recording/transport-controls.rst:23
-msgid "Play"
-msgstr "Reproduzir"
+msgid "Toggles the metronome on/off."
+msgstr "Liga/desliga o metrónomo alternamente."
 
 #: ../../playback-and-recording/transport-controls.rst:22
-msgid ""
-"If stopped, the song will start playing. If already playing, the Playhead"
-" will move to the Cue point."
-msgstr ""
-"Quando parar, a música começará a reproduzir. Se já estiver a reproduzir,"
-" a Cabeça de Reprodução moverá-se para o Ponto de Sinalização."
-
-#: ../../playback-and-recording/transport-controls.rst:26
-msgid "Stop"
-msgstr "Parar"
-
-#: ../../playback-and-recording/transport-controls.rst:26
-msgid "Pauses playback. If clicked twice, goes back to the Cue point."
-msgstr "Pausa a reprodução. Clicado duas vezes, volta ao Ponto de Sinalização."
-
-#: ../../playback-and-recording/transport-controls.rst:29
-msgid "Backward"
-msgstr "Para trás"
-
-#: ../../playback-and-recording/transport-controls.rst:29
-msgid "Moves the Playhead backward by the size of 1 snap point."
-msgstr "Move a Cabeça de Reprodução para trás por 1 ponto de snap."
-
-#: ../../playback-and-recording/transport-controls.rst:32
-msgid "Forward"
-msgstr "Para a frente"
-
-#: ../../playback-and-recording/transport-controls.rst:32
-msgid "Moves the Playhead forward by the size of 1 snap point."
-msgstr "Move a Cabeça de Reprodução para a frente por 1 ponto de snap."
-
-#: ../../playback-and-recording/transport-controls.rst:37
-msgid "Loop"
-msgstr "Loop"
-
-#: ../../playback-and-recording/transport-controls.rst:35
-msgid ""
-"If enabled, the Playhead will move back to the Loop Start point when it "
-"reaches the Loop End point."
-msgstr ""
-"Se ativado, a Cabeça de Reprodução voltará para o Inicio do Loop quando "
-"atingir o ponto Final do Loop."
-
-#: ../../playback-and-recording/transport-controls.rst:40
-msgid "Playhead Display"
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:41
-msgid ""
-"The playhead position can be displayed in either BBT notation "
-"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
-"toggled by right-clicking on the playhead position display."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:50
-#, fuzzy
-msgid "JACK Transport"
-msgstr ""
-"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Inspetor de Faixa\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Inspetor de faixas"
-
-#: ../../playback-and-recording/transport-controls.rst:51
-msgid ""
-"Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
-"design.html>`_ or become the JACK transport master. These options are "
-"available by right-clicking the playhead position display when using the "
-"JACK audio backend and will be remembered across projects."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:63
-msgid "Metronome"
-msgstr "Metrónomo"
-
-#: ../../playback-and-recording/transport-controls.rst:64
-#, fuzzy
-msgid "Clicking the metronome button will enable/disable the metronome."
-msgstr "Clicando no botão do metrónomo, o metrónomo será ligado/desligado."
-
-#: ../../playback-and-recording/transport-controls.rst:70
 #, fuzzy
 msgid ""
 "When the metronome is enabled, you will hear metronome ticks during "
@@ -4722,13 +4637,133 @@ msgstr ""
 "será mais enfatizado. Isto é útil para garantir que a sua música "
 "permaneça na batida."
 
-#: ../../playback-and-recording/transport-controls.rst:77
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
 "your Zrythm directory. This is a TODO feature."
 msgstr ""
 "As amostras do metrónomo podem ser anuladas pelas suas próprias amostras "
 "no diretório Zrythm. Esta é uma funcionalidade A FAZER."
+
+#: ../../playback-and-recording/transport-controls.rst:33
+msgid "Metronome options"
+msgstr "Opções do metrónomo"
+
+#: ../../playback-and-recording/transport-controls.rst:34
+#, fuzzy
+msgid "Sets the volume of the metronome"
+msgstr "Define o volume do metrónomo."
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Return to cue point on stop"
+msgstr "Retornar ao ponto de sinalização na parada"
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Toggles whether to return to the cue point when playback stops."
+msgstr ""
+"Alterna se deve ou não voltar ao ponto de sinalização quando a reprodução"
+" parar."
+
+#: ../../playback-and-recording/transport-controls.rst:38
+#: ../../tracks/audio-track.rst:17
+#: ../../tracks/chord-track.rst:25
+#: ../../tracks/inspector-page.rst:121
+#: ../../tracks/instrument-track.rst:25
+#: ../../tracks/midi-track.rst:26
+#: ../../tracks/modulator-track.rst:25
+#: ../../tracks/tempo-track.rst:25
+msgid "Record"
+msgstr "Registo"
+
+#: ../../playback-and-recording/transport-controls.rst:39
+msgid "Arms the project for recording."
+msgstr "Prepara o projeto para a gravação."
+
+#: ../../playback-and-recording/transport-controls.rst:40
+#, fuzzy
+msgid "Record options"
+msgstr "Opções de desfazer."
+
+#: ../../playback-and-recording/transport-controls.rst:41
+#, fuzzy
+msgid "Sets the settings to use when recording."
+msgstr "Fontes de entrada de áudio à esquerda e à direita utilizadas na gravação."
+
+#: ../../playback-and-recording/transport-controls.rst:44
+msgid "Play"
+msgstr "Reproduzir"
+
+#: ../../playback-and-recording/transport-controls.rst:43
+msgid ""
+"If stopped, the song will start playing. If already playing, the Playhead"
+" will move to the Cue point."
+msgstr ""
+"Quando parar, a música começará a reproduzir. Se já estiver a reproduzir,"
+" a Cabeça de Reprodução moverá-se para o Ponto de Sinalização."
+
+#: ../../playback-and-recording/transport-controls.rst:47
+msgid "Stop"
+msgstr "Parar"
+
+#: ../../playback-and-recording/transport-controls.rst:47
+msgid "Pauses playback. If clicked twice, goes back to the Cue point."
+msgstr "Pausa a reprodução. Clicado duas vezes, volta ao Ponto de Sinalização."
+
+#: ../../playback-and-recording/transport-controls.rst:50
+msgid "Backward"
+msgstr "Para trás"
+
+#: ../../playback-and-recording/transport-controls.rst:50
+msgid "Moves the Playhead backward by the size of 1 snap point."
+msgstr "Move a Cabeça de Reprodução para trás por 1 ponto de snap."
+
+#: ../../playback-and-recording/transport-controls.rst:53
+msgid "Forward"
+msgstr "Para a frente"
+
+#: ../../playback-and-recording/transport-controls.rst:53
+msgid "Moves the Playhead forward by the size of 1 snap point."
+msgstr "Move a Cabeça de Reprodução para a frente por 1 ponto de snap."
+
+#: ../../playback-and-recording/transport-controls.rst:58
+msgid "Loop"
+msgstr "Loop"
+
+#: ../../playback-and-recording/transport-controls.rst:56
+msgid ""
+"If enabled, the Playhead will move back to the Loop Start point when it "
+"reaches the Loop End point."
+msgstr ""
+"Se ativado, a Cabeça de Reprodução voltará para o Inicio do Loop quando "
+"atingir o ponto Final do Loop."
+
+#: ../../playback-and-recording/transport-controls.rst:61
+msgid "Playhead Display"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:62
+msgid ""
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:71
+#, fuzzy
+msgid "JACK Transport"
+msgstr ""
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Inspetor de Faixa\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Inspetor de faixas"
+
+#: ../../playback-and-recording/transport-controls.rst:72
+msgid ""
+"Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
+"design.html>`_ or become the JACK transport master. These options are "
+"available by right-clicking the playhead position display when using the "
+"JACK audio backend and will be remembered across projects."
+msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
@@ -8652,79 +8687,28 @@ msgstr ""
 "A barra de transporte contém informações sobre o motor de áudio e "
 "controles de transporte."
 
+#: ../../zrythm-interface/transport-bar.rst:17
+#, fuzzy
+msgid "BPM and Time Signature"
+msgstr "BPM e Assinaturas de Tempo"
+
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
-"Transport controls change the behavior of playback. They include the "
-"following items."
+"BPM and Time Signature are covered in :ref:`playback-and-recording:BPM "
+"and Time Signatures`."
 msgstr ""
-"Os controlos de transporte alteram o comportamento da reprodução. Eles "
-"incluem os itens a seguir."
 
-#: ../../zrythm-interface/transport-bar.rst:25
-msgid "Metronome toggle"
-msgstr "Alternância metrônomo"
-
-#: ../../zrythm-interface/transport-bar.rst:26
-msgid "Toggles the metronome on/off."
-msgstr "Liga/desliga o metrónomo alternamente."
-
-#: ../../zrythm-interface/transport-bar.rst:29
-msgid "Metronome options"
-msgstr "Opções do metrónomo"
-
-#: ../../zrythm-interface/transport-bar.rst:30
-msgid "Sets the volume of the metronome."
-msgstr "Define o volume do metrónomo."
-
-#: ../../zrythm-interface/transport-bar.rst:33
-msgid "Return to cue point on stop"
-msgstr "Retornar ao ponto de sinalização na parada"
-
-#: ../../zrythm-interface/transport-bar.rst:34
-msgid "Toggles whether to return to the cue point when playback stops."
-msgstr ""
-"Alterna se deve ou não voltar ao ponto de sinalização quando a reprodução"
-" parar."
-
-#: ../../zrythm-interface/transport-bar.rst:39
-msgid "Song tempo (beats per minute)."
-msgstr "Ritmo da canção (batidas por minuto)."
-
-#: ../../zrythm-interface/transport-bar.rst:43
-msgid "Current playhead position, in bars.beats.sixteenths.ticks."
-msgstr ""
-"Posição atual da cabeça de reprodução, em barras.batidas.decimos-"
-"sextos.ticks."
-
-#: ../../zrythm-interface/transport-bar.rst:46
-msgid "Transport buttons"
-msgstr "Botões de transporte"
-
-#: ../../zrythm-interface/transport-bar.rst:47
-msgid "Controls for stopping, playback, recording, etc."
-msgstr "Controlos para parar, reproduzir, gravar, etc."
-
-#: ../../zrythm-interface/transport-bar.rst:49
+#: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
-"Widgets like the BPM meter can be changed by clicking and dragging, or by"
-" hovering over them with the cursor and scrolling"
+"Transport controls are covered in :ref:`playback-and-recording:Transport "
+"Controls`."
 msgstr ""
-"Widgets como o medidor de BPM podem ser alterados clicando e arrastando, "
-"ou pairando sobre eles com o cursor e rolando"
 
-#: ../../zrythm-interface/transport-bar.rst:53
-msgid ""
-"More information about working with the transport bar is covered in :ref"
-":`transport-controls`."
-msgstr ""
-"Mais informações sobre como trabalhar com a barra de transporte são "
-"abordadas em :ref:`transport-controls`."
-
-#: ../../zrythm-interface/transport-bar.rst:57
+#: ../../zrythm-interface/transport-bar.rst:27
 msgid "Backend Information"
 msgstr "Informações de backend"
 
-#: ../../zrythm-interface/transport-bar.rst:58
+#: ../../zrythm-interface/transport-bar.rst:28
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -8767,6 +8751,47 @@ msgstr ":ref:`transport-bar` (5)"
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ":ref:`right-panel` (6)"
+
+#~ msgid "Sets the volume of the metronome."
+#~ msgstr "Define o volume do metrónomo."
+
+#~ msgid "Song tempo (beats per minute)."
+#~ msgstr "Ritmo da canção (batidas por minuto)."
+
+#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+#~ msgstr ""
+#~ "Posição atual da cabeça de reprodução,"
+#~ " em barras.batidas.decimos-sextos.ticks."
+
+#~ msgid "Transport buttons"
+#~ msgstr "Botões de transporte"
+
+#~ msgid "Controls for stopping, playback, recording, etc."
+#~ msgstr "Controlos para parar, reproduzir, gravar, etc."
+
+#~ msgid ""
+#~ "More information about working with the"
+#~ " transport bar is covered in :ref"
+#~ ":`transport-controls`."
+#~ msgstr ""
+#~ "Mais informações sobre como trabalhar "
+#~ "com a barra de transporte são "
+#~ "abordadas em :ref:`transport-controls`."
+
+#~ msgid "Metronome"
+#~ msgstr "Metrónomo"
+
+#~ msgid "Clicking the metronome button will enable/disable the metronome."
+#~ msgstr "Clicando no botão do metrónomo, o metrónomo será ligado/desligado."
+
+#~ msgid ""
+#~ "Transport controls change the behavior "
+#~ "of playback. They include the following"
+#~ " items."
+#~ msgstr ""
+#~ "Os controlos de transporte alteram o "
+#~ "comportamento da reprodução. Eles incluem "
+#~ "os itens a seguir."
 
 #~ msgid ""
 #~ "When using the :term:`JACK` backend, "

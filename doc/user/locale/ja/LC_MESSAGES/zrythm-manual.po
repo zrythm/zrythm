@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-19 22:43+0000\n"
+"POT-Creation-Date: 2021-02-20 09:46+0000\n"
 "PO-Revision-Date: 2021-01-23 17:11+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -1757,7 +1757,6 @@ msgstr "スクショを追加。"
 
 #: ../../editing/clip-editors/ruler.rst:32
 #: ../../playback-and-recording/overview.rst:12
-#: ../../zrythm-interface/transport-bar.rst:42
 msgid "Playhead"
 msgstr "再生ヘッド"
 
@@ -4478,7 +4477,6 @@ msgid "BPM and Time Signatures"
 msgstr "BPM と拍子"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
-#: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
 msgstr "BPM"
 
@@ -4538,7 +4536,7 @@ msgstr ""
 "これは、バーにあるべきビートの数を示すトップ番号です。1から16まで設定できます。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:38
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:39
 msgid "Beat Unit"
 msgstr "ビートユニット"
 
@@ -4558,6 +4556,13 @@ msgstr ""
 "#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
 "使用するビート単位を示す一番下の数字です。2、4、8、16のいずれかに設定できます。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:41
+#, fuzzy
+msgid ""
+"Widgets like the BPM and Time Signature can be changed by clicking and "
+"dragging, or by hovering over them with the cursor and scrolling."
+msgstr "BPMメーターなどのウィジェットは、クリックしてドラッグするか、カーソルをその上に置いてスクロールすることで変更できます"
 
 #: ../../playback-and-recording/intro.rst:6
 #, fuzzy
@@ -4847,7 +4852,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:8
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:22
 msgid "Transport Controls"
 msgstr "トランスポート コントロール"
 
@@ -4859,121 +4864,15 @@ msgstr "再生は以下のトランスポートコントロールで制御され
 msgid "Controls"
 msgstr "コントロール"
 
-#: ../../playback-and-recording/transport-controls.rst:19
-#: ../../tracks/audio-track.rst:17
-#: ../../tracks/chord-track.rst:25
-#: ../../tracks/inspector-page.rst:121
-#: ../../tracks/instrument-track.rst:25
-#: ../../tracks/midi-track.rst:26
-#: ../../tracks/modulator-track.rst:25
-#: ../../tracks/tempo-track.rst:25
-msgid "Record"
-msgstr "録音"
+#: ../../playback-and-recording/transport-controls.rst:31
+msgid "Metronome toggle"
+msgstr "メトロノームのON/OFFの切り替え"
 
 #: ../../playback-and-recording/transport-controls.rst:20
-msgid "Arms the project for recording."
-msgstr "録音のためにプロジェクトをアームする。"
-
-#: ../../playback-and-recording/transport-controls.rst:23
-msgid "Play"
-msgstr "再生"
+msgid "Toggles the metronome on/off."
+msgstr "メトロノームのオン/オフの切り替え。"
 
 #: ../../playback-and-recording/transport-controls.rst:22
-#, fuzzy
-msgid ""
-"If stopped, the song will start playing. If already playing, the Playhead"
-" will move to the Cue point."
-msgstr ""
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
-
-#: ../../playback-and-recording/transport-controls.rst:26
-msgid "Stop"
-msgstr "停止"
-
-#: ../../playback-and-recording/transport-controls.rst:26
-msgid "Pauses playback. If clicked twice, goes back to the Cue point."
-msgstr "再生を一時停止します。2回クリックするとキューポイントに戻ります。"
-
-#: ../../playback-and-recording/transport-controls.rst:29
-msgid "Backward"
-msgstr "後戻り"
-
-#: ../../playback-and-recording/transport-controls.rst:29
-msgid "Moves the Playhead backward by the size of 1 snap point."
-msgstr "プレイヘッドを 1 スナップポイントの大きさで後方に移動します。"
-
-#: ../../playback-and-recording/transport-controls.rst:32
-msgid "Forward"
-msgstr "前方"
-
-#: ../../playback-and-recording/transport-controls.rst:32
-msgid "Moves the Playhead forward by the size of 1 snap point."
-msgstr "プレイヘッドを 1 スナップポイントの大きさで前方に移動します。"
-
-#: ../../playback-and-recording/transport-controls.rst:37
-msgid "Loop"
-msgstr "ループ"
-
-#: ../../playback-and-recording/transport-controls.rst:35
-#, fuzzy
-msgid ""
-"If enabled, the Playhead will move back to the Loop Start point when it "
-"reaches the Loop End point."
-msgstr ""
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
-
-#: ../../playback-and-recording/transport-controls.rst:40
-msgid "Playhead Display"
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:41
-msgid ""
-"The playhead position can be displayed in either BBT notation "
-"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
-"toggled by right-clicking on the playhead position display."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:50
-#, fuzzy
-msgid "JACK Transport"
-msgstr "トラックインスペクター"
-
-#: ../../playback-and-recording/transport-controls.rst:51
-msgid ""
-"Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
-"design.html>`_ or become the JACK transport master. These options are "
-"available by right-clicking the playhead position display when using the "
-"JACK audio backend and will be remembered across projects."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:63
-msgid "Metronome"
-msgstr "メトロノーム"
-
-#: ../../playback-and-recording/transport-controls.rst:64
-#, fuzzy
-msgid "Clicking the metronome button will enable/disable the metronome."
-msgstr "メトロノームボタンをクリックするとメトロノームのオン/オフが設定されます。"
-
-#: ../../playback-and-recording/transport-controls.rst:70
 #, fuzzy
 msgid ""
 "When the metronome is enabled, you will hear metronome ticks during "
@@ -4995,7 +4894,7 @@ msgstr ""
 "\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../playback-and-recording/transport-controls.rst:77
+#: ../../playback-and-recording/transport-controls.rst:29
 #, fuzzy
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
@@ -5011,6 +4910,138 @@ msgstr ""
 "#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
 "メトロノームサンプルは、Zrythmディレクトリに独自のサンプルを配置することでオーバーライドできます。これは TODO 機能です。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+
+#: ../../playback-and-recording/transport-controls.rst:33
+msgid "Metronome options"
+msgstr "メトロノームの設定"
+
+#: ../../playback-and-recording/transport-controls.rst:34
+#, fuzzy
+msgid "Sets the volume of the metronome"
+msgstr "メトロノームのボリュームを設定します。"
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Return to cue point on stop"
+msgstr "停止時にキューポイントに戻る"
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Toggles whether to return to the cue point when playback stops."
+msgstr "再生が停止したときにキューポイントに戻るかどうかを切り替えます。"
+
+#: ../../playback-and-recording/transport-controls.rst:38
+#: ../../tracks/audio-track.rst:17
+#: ../../tracks/chord-track.rst:25
+#: ../../tracks/inspector-page.rst:121
+#: ../../tracks/instrument-track.rst:25
+#: ../../tracks/midi-track.rst:26
+#: ../../tracks/modulator-track.rst:25
+#: ../../tracks/tempo-track.rst:25
+msgid "Record"
+msgstr "録音"
+
+#: ../../playback-and-recording/transport-controls.rst:39
+msgid "Arms the project for recording."
+msgstr "録音のためにプロジェクトをアームする。"
+
+#: ../../playback-and-recording/transport-controls.rst:40
+#, fuzzy
+msgid "Record options"
+msgstr "元に戻すオプション。"
+
+#: ../../playback-and-recording/transport-controls.rst:41
+#, fuzzy
+msgid "Sets the settings to use when recording."
+msgstr "録音時に使用される左右のオーディオ入力ソース。"
+
+#: ../../playback-and-recording/transport-controls.rst:44
+msgid "Play"
+msgstr "再生"
+
+#: ../../playback-and-recording/transport-controls.rst:43
+#, fuzzy
+msgid ""
+"If stopped, the song will start playing. If already playing, the Playhead"
+" will move to the Cue point."
+msgstr ""
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+
+#: ../../playback-and-recording/transport-controls.rst:47
+msgid "Stop"
+msgstr "停止"
+
+#: ../../playback-and-recording/transport-controls.rst:47
+msgid "Pauses playback. If clicked twice, goes back to the Cue point."
+msgstr "再生を一時停止します。2回クリックするとキューポイントに戻ります。"
+
+#: ../../playback-and-recording/transport-controls.rst:50
+msgid "Backward"
+msgstr "後戻り"
+
+#: ../../playback-and-recording/transport-controls.rst:50
+msgid "Moves the Playhead backward by the size of 1 snap point."
+msgstr "プレイヘッドを 1 スナップポイントの大きさで後方に移動します。"
+
+#: ../../playback-and-recording/transport-controls.rst:53
+msgid "Forward"
+msgstr "前方"
+
+#: ../../playback-and-recording/transport-controls.rst:53
+msgid "Moves the Playhead forward by the size of 1 snap point."
+msgstr "プレイヘッドを 1 スナップポイントの大きさで前方に移動します。"
+
+#: ../../playback-and-recording/transport-controls.rst:58
+msgid "Loop"
+msgstr "ループ"
+
+#: ../../playback-and-recording/transport-controls.rst:56
+#, fuzzy
+msgid ""
+"If enabled, the Playhead will move back to the Loop Start point when it "
+"reaches the Loop End point."
+msgstr ""
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+
+#: ../../playback-and-recording/transport-controls.rst:61
+msgid "Playhead Display"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:62
+msgid ""
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:71
+#, fuzzy
+msgid "JACK Transport"
+msgstr "トラックインスペクター"
+
+#: ../../playback-and-recording/transport-controls.rst:72
+msgid ""
+"Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
+"design.html>`_ or become the JACK transport master. These options are "
+"available by right-clicking the playhead position display when using the "
+"JACK audio backend and will be remembered across projects."
+msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
@@ -9727,91 +9758,28 @@ msgstr ""
 "ステータス バーには、現在アクティブなオーディオ バックエンドに関する情報が表示されます。\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
+#: ../../zrythm-interface/transport-bar.rst:17
+#, fuzzy
+msgid "BPM and Time Signature"
+msgstr "BPM と拍子"
+
 #: ../../zrythm-interface/transport-bar.rst:18
-#, fuzzy
 msgid ""
-"Transport controls change the behavior of playback. They include the "
-"following items."
+"BPM and Time Signature are covered in :ref:`playback-and-recording:BPM "
+"and Time Signatures`."
 msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../zrythm-interface/transport-bar.rst:25
-msgid "Metronome toggle"
-msgstr "メトロノームのON/OFFの切り替え"
-
-#: ../../zrythm-interface/transport-bar.rst:26
-msgid "Toggles the metronome on/off."
-msgstr "メトロノームのオン/オフの切り替え。"
-
-#: ../../zrythm-interface/transport-bar.rst:29
-msgid "Metronome options"
-msgstr "メトロノームの設定"
-
-#: ../../zrythm-interface/transport-bar.rst:30
-msgid "Sets the volume of the metronome."
-msgstr "メトロノームのボリュームを設定します。"
-
-#: ../../zrythm-interface/transport-bar.rst:33
-msgid "Return to cue point on stop"
-msgstr "停止時にキューポイントに戻る"
-
-#: ../../zrythm-interface/transport-bar.rst:34
-msgid "Toggles whether to return to the cue point when playback stops."
-msgstr "再生が停止したときにキューポイントに戻るかどうかを切り替えます。"
-
-#: ../../zrythm-interface/transport-bar.rst:39
-msgid "Song tempo (beats per minute)."
-msgstr "曲のテンポ（一分あたりのビート数）"
-
-#: ../../zrythm-interface/transport-bar.rst:43
-#, fuzzy
-msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+#: ../../zrythm-interface/transport-bar.rst:23
+msgid ""
+"Transport controls are covered in :ref:`playback-and-recording:Transport "
+"Controls`."
 msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
-#: ../../zrythm-interface/transport-bar.rst:46
-msgid "Transport buttons"
-msgstr "トランスポートのボタン"
-
-#: ../../zrythm-interface/transport-bar.rst:47
-msgid "Controls for stopping, playback, recording, etc."
-msgstr "停止、再生、録音などのコントロール"
-
-#: ../../zrythm-interface/transport-bar.rst:49
-msgid ""
-"Widgets like the BPM meter can be changed by clicking and dragging, or by"
-" hovering over them with the cursor and scrolling"
-msgstr "BPMメーターなどのウィジェットは、クリックしてドラッグするか、カーソルをその上に置いてスクロールすることで変更できます"
-
-#: ../../zrythm-interface/transport-bar.rst:53
-msgid ""
-"More information about working with the transport bar is covered in :ref"
-":`transport-controls`."
-msgstr "トランスポート バーの操作の詳細については、 :ref:`transport-controls` で説明しています。"
-
-#: ../../zrythm-interface/transport-bar.rst:57
+#: ../../zrythm-interface/transport-bar.rst:27
 msgid "Backend Information"
 msgstr "バックエンド情報"
 
-#: ../../zrythm-interface/transport-bar.rst:58
+#: ../../zrythm-interface/transport-bar.rst:28
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -9852,6 +9820,59 @@ msgstr ":ref:`transport-bar` (5)"
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ":ref:`right-panel` (6)"
+
+#~ msgid "Sets the volume of the metronome."
+#~ msgstr "メトロノームのボリュームを設定します。"
+
+#~ msgid "Song tempo (beats per minute)."
+#~ msgstr "曲のテンポ（一分あたりのビート数）"
+
+#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+#~ msgstr ""
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+
+#~ msgid "Transport buttons"
+#~ msgstr "トランスポートのボタン"
+
+#~ msgid "Controls for stopping, playback, recording, etc."
+#~ msgstr "停止、再生、録音などのコントロール"
+
+#~ msgid ""
+#~ "More information about working with the"
+#~ " transport bar is covered in :ref"
+#~ ":`transport-controls`."
+#~ msgstr "トランスポート バーの操作の詳細については、 :ref:`transport-controls` で説明しています。"
+
+#~ msgid "Metronome"
+#~ msgstr "メトロノーム"
+
+#~ msgid "Clicking the metronome button will enable/disable the metronome."
+#~ msgstr "メトロノームボタンをクリックするとメトロノームのオン/オフが設定されます。"
+
+#~ msgid ""
+#~ "Transport controls change the behavior "
+#~ "of playback. They include the following"
+#~ " items."
+#~ msgstr ""
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 0.4)  #-#-#-#-#\n"
 
 #~ msgid "Returns a new Create Tracks action for a plugin."
 #~ msgstr ""

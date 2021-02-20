@@ -43,7 +43,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-19 22:43+0000\n"
+"POT-Creation-Date: 2021-02-20 09:46+0000\n"
 "PO-Revision-Date: 2021-01-06 20:29+0000\n"
 "Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
 "Language: fr\n"
@@ -1777,7 +1777,6 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:32
 #: ../../playback-and-recording/overview.rst:12
-#: ../../zrythm-interface/transport-bar.rst:42
 msgid "Playhead"
 msgstr "Tête de lecture"
 
@@ -4618,7 +4617,6 @@ msgid "BPM and Time Signatures"
 msgstr "BPM et signatures temporelles"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
-#: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
 msgstr "BPM"
 
@@ -4671,7 +4669,7 @@ msgstr ""
 "C'est le nombre supérieur qui indique le nombre de battements qui "
 "devraient être dans une mesure. Il peut être réglé de 1 à 16."
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:38
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:39
 msgid "Beat Unit"
 msgstr "Unité de battement"
 
@@ -4682,6 +4680,16 @@ msgid ""
 msgstr ""
 "C'est le nombre inférieur qui indique l'unité de battement à utiliser. Il"
 " peut être réglé sur 2, 4, 8 ou 16."
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:41
+#, fuzzy
+msgid ""
+"Widgets like the BPM and Time Signature can be changed by clicking and "
+"dragging, or by hovering over them with the cursor and scrolling."
+msgstr ""
+"Les widgets tels que l'indicateur de BPM peuvent être changés en cliquant"
+" et en faisant glisser, ou en les survolant avec le curseur et en faisant"
+" défiler l'écran"
 
 #: ../../playback-and-recording/intro.rst:6
 msgid "Playback and Recording"
@@ -4938,7 +4946,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:8
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:22
 msgid "Transport Controls"
 msgstr "Contrôles de transport"
 
@@ -4960,7 +4968,61 @@ msgstr ""
 msgid "Controls"
 msgstr "Contrôles"
 
-#: ../../playback-and-recording/transport-controls.rst:19
+#: ../../playback-and-recording/transport-controls.rst:31
+msgid "Metronome toggle"
+msgstr "Basculement du métronome"
+
+#: ../../playback-and-recording/transport-controls.rst:20
+#, fuzzy
+msgid "Toggles the metronome on/off."
+msgstr ""
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Bascule le métronome actif/inactif\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Bascule le métronome actif/inactif\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../playback-and-recording/transport-controls.rst:22
+msgid ""
+"When the metronome is enabled, you will hear metronome ticks during "
+"playback at each bar and each beat. The tick at each bar will be more "
+"emphasized. This feature is useful for making sure the song stays on "
+"beat."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:29
+msgid ""
+"The metronome samples can be overridden by placing your own samples in "
+"your Zrythm directory. This is a TODO feature."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:33
+#, fuzzy
+msgid "Metronome options"
+msgstr ""
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Basculement du métronome\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Basculement du métronome\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../playback-and-recording/transport-controls.rst:34
+msgid "Sets the volume of the metronome"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Return to cue point on stop"
+msgstr "Retourner au point de repère à l'arrêt"
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Toggles whether to return to the cue point when playback stops."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:38
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/inspector-page.rst:121
@@ -4971,15 +5033,27 @@ msgstr "Contrôles"
 msgid "Record"
 msgstr "Enregistrer"
 
-#: ../../playback-and-recording/transport-controls.rst:20
+#: ../../playback-and-recording/transport-controls.rst:39
 msgid "Arms the project for recording."
 msgstr "Arme le projet pour l'enregistrement."
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:40
+#, fuzzy
+msgid "Record options"
+msgstr "Options d'annulation."
+
+#: ../../playback-and-recording/transport-controls.rst:41
+#, fuzzy
+msgid "Sets the settings to use when recording."
+msgstr ""
+"Sources d'entrée audio gauche et droite utilisées lors de "
+"l'enregistrement."
+
+#: ../../playback-and-recording/transport-controls.rst:44
 msgid "Play"
 msgstr "Lecture"
 
-#: ../../playback-and-recording/transport-controls.rst:22
+#: ../../playback-and-recording/transport-controls.rst:43
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
@@ -4987,41 +5061,41 @@ msgstr ""
 "S'il est arrêté, le morceau commence à jouer. Si vous jouez déjà, la tête"
 " de lecture se déplacera jusqu'au point de repère."
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:47
 msgid "Stop"
 msgstr "Stop"
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:47
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr ""
 "Suspend la lecture. Si vous cliquez deux fois, retourne au point de "
 "repère."
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:50
 msgid "Backward"
 msgstr "En arrière"
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:50
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr ""
 "Déplace la tête de lecture vers l'arrière de la taille d'un point de "
 "magnétisme."
 
-#: ../../playback-and-recording/transport-controls.rst:32
+#: ../../playback-and-recording/transport-controls.rst:53
 msgid "Forward"
 msgstr "En avant"
 
-#: ../../playback-and-recording/transport-controls.rst:32
+#: ../../playback-and-recording/transport-controls.rst:53
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr ""
 "Déplace la tête de lecture vers l'avant de la taille d'un point "
 "d'enclenchement."
 
-#: ../../playback-and-recording/transport-controls.rst:37
+#: ../../playback-and-recording/transport-controls.rst:58
 msgid "Loop"
 msgstr "Boucle"
 
-#: ../../playback-and-recording/transport-controls.rst:35
+#: ../../playback-and-recording/transport-controls.rst:56
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
@@ -5029,50 +5103,28 @@ msgstr ""
 "Si activé, la tête de lecture revient au point de départ de la boucle "
 "lorsqu'elle atteint le point de fin de boucle."
 
-#: ../../playback-and-recording/transport-controls.rst:40
+#: ../../playback-and-recording/transport-controls.rst:61
 msgid "Playhead Display"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:41
+#: ../../playback-and-recording/transport-controls.rst:62
 msgid ""
 "The playhead position can be displayed in either BBT notation "
 "(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
 "toggled by right-clicking on the playhead position display."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:50
+#: ../../playback-and-recording/transport-controls.rst:71
 #, fuzzy
 msgid "JACK Transport"
 msgstr "Inspecteur de piste"
 
-#: ../../playback-and-recording/transport-controls.rst:51
+#: ../../playback-and-recording/transport-controls.rst:72
 msgid ""
 "Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
 "design.html>`_ or become the JACK transport master. These options are "
 "available by right-clicking the playhead position display when using the "
 "JACK audio backend and will be remembered across projects."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:63
-msgid "Metronome"
-msgstr "Métronome"
-
-#: ../../playback-and-recording/transport-controls.rst:64
-msgid "Clicking the metronome button will enable/disable the metronome."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:70
-msgid ""
-"When the metronome is enabled, you will hear metronome ticks during "
-"playback at each bar and each beat. The tick at each bar will be more "
-"emphasized. This feature is useful for making sure the song stays on "
-"beat."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:77
-msgid ""
-"The metronome samples can be overridden by placing your own samples in "
-"your Zrythm directory. This is a TODO feature."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -9033,116 +9085,28 @@ msgstr ""
 "actuellement actif.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
+#: ../../zrythm-interface/transport-bar.rst:17
+#, fuzzy
+msgid "BPM and Time Signature"
+msgstr "BPM et signatures temporelles"
+
 #: ../../zrythm-interface/transport-bar.rst:18
-#, fuzzy
 msgid ""
-"Transport controls change the behavior of playback. They include the "
-"following items."
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"La barre de transport contient des contrôles permettant de modifier le "
-"comportement de la lecture. Elle comprend les éléments suivants.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"La barre de transport contient des contrôles permettant de modifier le "
-"comportement de la lecture. Elle comprend les éléments suivants.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../zrythm-interface/transport-bar.rst:25
-msgid "Metronome toggle"
-msgstr "Basculement du métronome"
-
-#: ../../zrythm-interface/transport-bar.rst:26
-#, fuzzy
-msgid "Toggles the metronome on/off."
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Bascule le métronome actif/inactif\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Bascule le métronome actif/inactif\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../zrythm-interface/transport-bar.rst:29
-#, fuzzy
-msgid "Metronome options"
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Basculement du métronome\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Basculement du métronome\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../zrythm-interface/transport-bar.rst:30
-msgid "Sets the volume of the metronome."
+"BPM and Time Signature are covered in :ref:`playback-and-recording:BPM "
+"and Time Signatures`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:33
-msgid "Return to cue point on stop"
-msgstr "Retourner au point de repère à l'arrêt"
-
-#: ../../zrythm-interface/transport-bar.rst:34
-msgid "Toggles whether to return to the cue point when playback stops."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:39
-#, fuzzy
-msgid "Song tempo (beats per minute)."
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Tempo du morceau (battements par minute)\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Tempo du morceau (battements par minute)\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../zrythm-interface/transport-bar.rst:43
-#, fuzzy
-msgid "Current playhead position, in bars.beats.sixteenths.ticks."
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Position actuelle de la tête de lecture, en mesures.battements.double-"
-"croches.tics\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Position actuelle de la tête de lecture, en mesures.battements.double-"
-"croches.tics\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../zrythm-interface/transport-bar.rst:46
-msgid "Transport buttons"
-msgstr "Boutons de transport"
-
-#: ../../zrythm-interface/transport-bar.rst:47
-msgid "Controls for stopping, playback, recording, etc."
-msgstr "Contrôles d'arrêt, de lecture, d'enregistrement, etc."
-
-#: ../../zrythm-interface/transport-bar.rst:49
+#: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
-"Widgets like the BPM meter can be changed by clicking and dragging, or by"
-" hovering over them with the cursor and scrolling"
-msgstr ""
-"Les widgets tels que l'indicateur de BPM peuvent être changés en cliquant"
-" et en faisant glisser, ou en les survolant avec le curseur et en faisant"
-" défiler l'écran"
-
-#: ../../zrythm-interface/transport-bar.rst:53
-msgid ""
-"More information about working with the transport bar is covered in :ref"
-":`transport-controls`."
+"Transport controls are covered in :ref:`playback-and-recording:Transport "
+"Controls`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:57
+#: ../../zrythm-interface/transport-bar.rst:27
 msgid "Backend Information"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:58
+#: ../../zrythm-interface/transport-bar.rst:28
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -9191,6 +9155,67 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "Sets the volume of the metronome."
+#~ msgstr ""
+
+#~ msgid "Song tempo (beats per minute)."
+#~ msgstr ""
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Tempo du morceau (battements par minute)\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Tempo du morceau (battements par minute)\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+#~ msgstr ""
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Position actuelle de la tête de "
+#~ "lecture, en mesures.battements.double-croches.tics"
+#~ "\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Position actuelle de la tête de "
+#~ "lecture, en mesures.battements.double-croches.tics"
+#~ "\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#~ msgid "Transport buttons"
+#~ msgstr "Boutons de transport"
+
+#~ msgid "Controls for stopping, playback, recording, etc."
+#~ msgstr "Contrôles d'arrêt, de lecture, d'enregistrement, etc."
+
+#~ msgid ""
+#~ "More information about working with the"
+#~ " transport bar is covered in :ref"
+#~ ":`transport-controls`."
+#~ msgstr ""
+
+#~ msgid "Metronome"
+#~ msgstr "Métronome"
+
+#~ msgid ""
+#~ "Transport controls change the behavior "
+#~ "of playback. They include the following"
+#~ " items."
+#~ msgstr ""
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "La barre de transport contient des "
+#~ "contrôles permettant de modifier le "
+#~ "comportement de la lecture. Elle "
+#~ "comprend les éléments suivants.\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "La barre de transport contient des "
+#~ "contrôles permettant de modifier le "
+#~ "comportement de la lecture. Elle "
+#~ "comprend les éléments suivants.\n"
+#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #~ msgid "Connections"
 #~ msgstr "Connexions"

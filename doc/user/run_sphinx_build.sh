@@ -14,4 +14,7 @@ $sphinx_bin $sphinx_build_opts \
   -D language=$lang \
   -b $format $meson_cur_src_dir \
   $out_dir
-touch $out_file
+
+if [ "$out_file" ]; then
+  touch $out_file
+fi

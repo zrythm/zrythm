@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-19 22:43+0000\n"
+"POT-Creation-Date: 2021-02-20 09:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1718,7 +1718,6 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:32
 #: ../../playback-and-recording/overview.rst:12
-#: ../../zrythm-interface/transport-bar.rst:42
 msgid "Playhead"
 msgstr ""
 
@@ -4014,7 +4013,6 @@ msgid "BPM and Time Signatures"
 msgstr "BPM e Indicazione di Tempo"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
-#: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
 msgstr ""
 
@@ -4049,7 +4047,7 @@ msgid ""
 "in a Bar. It can be set from 1 to 16."
 msgstr ""
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:38
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:39
 msgid "Beat Unit"
 msgstr ""
 
@@ -4057,6 +4055,12 @@ msgstr ""
 msgid ""
 "This is the bottom number that indicates the beat unit to be used. It can"
 " be set to 2, 4, 8 or 16."
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:41
+msgid ""
+"Widgets like the BPM and Time Signature can be changed by clicking and "
+"dragging, or by hovering over them with the cursor and scrolling."
 msgstr ""
 
 #: ../../playback-and-recording/intro.rst:6
@@ -4234,7 +4238,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:8
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:22
 msgid "Transport Controls"
 msgstr ""
 
@@ -4247,7 +4251,45 @@ msgstr ""
 msgid "Controls"
 msgstr "Controller MIDI"
 
-#: ../../playback-and-recording/transport-controls.rst:19
+#: ../../playback-and-recording/transport-controls.rst:31
+msgid "Metronome toggle"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:20
+msgid "Toggles the metronome on/off."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:22
+msgid ""
+"When the metronome is enabled, you will hear metronome ticks during "
+"playback at each bar and each beat. The tick at each bar will be more "
+"emphasized. This feature is useful for making sure the song stays on "
+"beat."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:29
+msgid ""
+"The metronome samples can be overridden by placing your own samples in "
+"your Zrythm directory. This is a TODO feature."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:33
+msgid "Metronome options"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:34
+msgid "Sets the volume of the metronome"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Return to cue point on stop"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Toggles whether to return to the cue point when playback stops."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:38
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/inspector-page.rst:121
@@ -4258,98 +4300,84 @@ msgstr "Controller MIDI"
 msgid "Record"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:20
+#: ../../playback-and-recording/transport-controls.rst:39
 msgid "Arms the project for recording."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:23
+#: ../../playback-and-recording/transport-controls.rst:40
+#, fuzzy
+msgid "Record options"
+msgstr "Annulla opzioni."
+
+#: ../../playback-and-recording/transport-controls.rst:41
+msgid "Sets the settings to use when recording."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:44
 msgid "Play"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:22
+#: ../../playback-and-recording/transport-controls.rst:43
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:47
 msgid "Stop"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:26
+#: ../../playback-and-recording/transport-controls.rst:47
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:50
 msgid "Backward"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:29
+#: ../../playback-and-recording/transport-controls.rst:50
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:32
+#: ../../playback-and-recording/transport-controls.rst:53
 msgid "Forward"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:32
+#: ../../playback-and-recording/transport-controls.rst:53
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:37
+#: ../../playback-and-recording/transport-controls.rst:58
 msgid "Loop"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:35
+#: ../../playback-and-recording/transport-controls.rst:56
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:40
+#: ../../playback-and-recording/transport-controls.rst:61
 msgid "Playhead Display"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:41
+#: ../../playback-and-recording/transport-controls.rst:62
 msgid ""
 "The playhead position can be displayed in either BBT notation "
 "(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
 "toggled by right-clicking on the playhead position display."
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:50
+#: ../../playback-and-recording/transport-controls.rst:71
 msgid "JACK Transport"
 msgstr ""
 
-#: ../../playback-and-recording/transport-controls.rst:51
+#: ../../playback-and-recording/transport-controls.rst:72
 msgid ""
 "Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
 "design.html>`_ or become the JACK transport master. These options are "
 "available by right-clicking the playhead position display when using the "
 "JACK audio backend and will be remembered across projects."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:63
-msgid "Metronome"
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:64
-#, fuzzy
-msgid "Clicking the metronome button will enable/disable the metronome."
-msgstr "Facendo clic sul pulsante del metronomo questo verrà attivato/disattivato."
-
-#: ../../playback-and-recording/transport-controls.rst:70
-msgid ""
-"When the metronome is enabled, you will hear metronome ticks during "
-"playback at each bar and each beat. The tick at each bar will be more "
-"emphasized. This feature is useful for making sure the song stays on "
-"beat."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:77
-msgid ""
-"The metronome samples can be overridden by placing your own samples in "
-"your Zrythm directory. This is a TODO feature."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -7497,69 +7525,28 @@ msgid ""
 "transport controls."
 msgstr ""
 
+#: ../../zrythm-interface/transport-bar.rst:17
+#, fuzzy
+msgid "BPM and Time Signature"
+msgstr "BPM e Indicazione di Tempo"
+
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
-"Transport controls change the behavior of playback. They include the "
-"following items."
+"BPM and Time Signature are covered in :ref:`playback-and-recording:BPM "
+"and Time Signatures`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:25
-msgid "Metronome toggle"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:26
-msgid "Toggles the metronome on/off."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:29
-msgid "Metronome options"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:30
-msgid "Sets the volume of the metronome."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:33
-msgid "Return to cue point on stop"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:34
-msgid "Toggles whether to return to the cue point when playback stops."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:39
-msgid "Song tempo (beats per minute)."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:43
-msgid "Current playhead position, in bars.beats.sixteenths.ticks."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:46
-msgid "Transport buttons"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:47
-msgid "Controls for stopping, playback, recording, etc."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:49
+#: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
-"Widgets like the BPM meter can be changed by clicking and dragging, or by"
-" hovering over them with the cursor and scrolling"
+"Transport controls are covered in :ref:`playback-and-recording:Transport "
+"Controls`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:53
-msgid ""
-"More information about working with the transport bar is covered in :ref"
-":`transport-controls`."
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:57
+#: ../../zrythm-interface/transport-bar.rst:27
 msgid "Backend Information"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:58
+#: ../../zrythm-interface/transport-bar.rst:28
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -7601,8 +7588,38 @@ msgstr ""
 msgid ":ref:`right-panel` (6)"
 msgstr ""
 
-#~ msgid "Copyright © 2019-2020 The Zrythm contributors"
+#~ msgid "Sets the volume of the metronome."
 #~ msgstr ""
+
+#~ msgid "Song tempo (beats per minute)."
+#~ msgstr ""
+
+#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+#~ msgstr ""
+
+#~ msgid "Transport buttons"
+#~ msgstr ""
+
+#~ msgid "Controls for stopping, playback, recording, etc."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Widgets like the BPM meter can be"
+#~ " changed by clicking and dragging, or"
+#~ " by hovering over them with the "
+#~ "cursor and scrolling"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "More information about working with the"
+#~ " transport bar is covered in :ref"
+#~ ":`transport-controls`."
+#~ msgstr ""
+
+#~ msgid "Clicking the metronome button will enable/disable the metronome."
+#~ msgstr ""
+#~ "Facendo clic sul pulsante del metronomo"
+#~ " questo verrà attivato/disattivato."
 
 #~ msgid "Connections"
 #~ msgstr "Connessioni"

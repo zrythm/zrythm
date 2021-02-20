@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-19 22:43+0000\n"
+"POT-Creation-Date: 2021-02-20 09:46+0000\n"
 "PO-Revision-Date: 2021-02-08 10:50+0000\n"
 "Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
 "Language: el\n"
@@ -1827,7 +1827,6 @@ msgstr "Προσθήκη εικόνας."
 
 #: ../../editing/clip-editors/ruler.rst:32
 #: ../../playback-and-recording/overview.rst:12
-#: ../../zrythm-interface/transport-bar.rst:42
 msgid "Playhead"
 msgstr "Κεφαλή αναπαραγωγής"
 
@@ -4574,7 +4573,6 @@ msgid "BPM and Time Signatures"
 msgstr "Χτύποι ανά λεπτό (BPM) και μέτρα"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
-#: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
 msgstr "BPM"
 
@@ -4616,7 +4614,7 @@ msgstr ""
 "Αυτός είναι ο πάνω αριθμός που υποδεικνύει τον αριθμό χτύπων που πρέπει "
 "να υπάρχουν σε μία μπάρα. Μπορεί να οριστεί από 1 έως 16."
 
-#: ../../playback-and-recording/bpm-and-time-signatures.rst:38
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:39
 msgid "Beat Unit"
 msgstr "Μονάδα χτύπου"
 
@@ -4627,6 +4625,15 @@ msgid ""
 msgstr ""
 "Αυτός είναι ο κάτω αριθμός που υποδεικνύει τη μονάδα χτύπου προς χρήση. "
 "Μπορεί να οριστεί σε 2, 4, 8 ή 16."
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:41
+#, fuzzy
+msgid ""
+"Widgets like the BPM and Time Signature can be changed by clicking and "
+"dragging, or by hovering over them with the cursor and scrolling."
+msgstr ""
+"Τα γραφικά στοιχεία όπως ο μετρητής BPM μπορούν να αλλάξουν κάνοντας κλικ"
+" και σύρσιμο ή τοποθετώντας τον κέρσορα πάνω τους και σκρολάροντας"
 
 #: ../../playback-and-recording/intro.rst:6
 msgid "Playback and Recording"
@@ -4853,7 +4860,7 @@ msgstr ""
 "controls`."
 
 #: ../../playback-and-recording/transport-controls.rst:8
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:22
 msgid "Transport Controls"
 msgstr "Χειριστές μεταφοράς"
 
@@ -4866,109 +4873,15 @@ msgstr "Η αναπαραγωγή ελέγχεται από τους εξής χ
 msgid "Controls"
 msgstr "Χειριστής"
 
-#: ../../playback-and-recording/transport-controls.rst:19
-#: ../../tracks/audio-track.rst:17
-#: ../../tracks/chord-track.rst:25
-#: ../../tracks/inspector-page.rst:121
-#: ../../tracks/instrument-track.rst:25
-#: ../../tracks/midi-track.rst:26
-#: ../../tracks/modulator-track.rst:25
-#: ../../tracks/tempo-track.rst:25
-msgid "Record"
-msgstr "Ηχογράφηση"
+#: ../../playback-and-recording/transport-controls.rst:31
+msgid "Metronome toggle"
+msgstr "Εναλλαγή μετρονόμου"
 
 #: ../../playback-and-recording/transport-controls.rst:20
-msgid "Arms the project for recording."
-msgstr "Οπλίζει το έργο για ηχογράφηση."
-
-#: ../../playback-and-recording/transport-controls.rst:23
-msgid "Play"
-msgstr "Έναρξη"
+msgid "Toggles the metronome on/off."
+msgstr "Εναλλάσσει την ενεργοποίηση/απενεργοποίηση του μετρονόμου."
 
 #: ../../playback-and-recording/transport-controls.rst:22
-msgid ""
-"If stopped, the song will start playing. If already playing, the Playhead"
-" will move to the Cue point."
-msgstr ""
-"Αν σταματήσει, το τραγούδι θα αρχίσει να παίζει. Αν παίζει ήδη, η κεφαλή "
-"αναπαραγωγής θα μετακινηθεί στο σημείο cue."
-
-#: ../../playback-and-recording/transport-controls.rst:26
-msgid "Stop"
-msgstr "Παύση"
-
-#: ../../playback-and-recording/transport-controls.rst:26
-msgid "Pauses playback. If clicked twice, goes back to the Cue point."
-msgstr "Παύει την αναπαραγωγή. Αν πατηθεί δύο φορές, επιστρέφει στο σημείο cue."
-
-#: ../../playback-and-recording/transport-controls.rst:29
-msgid "Backward"
-msgstr "Πίσω"
-
-#: ../../playback-and-recording/transport-controls.rst:29
-msgid "Moves the Playhead backward by the size of 1 snap point."
-msgstr ""
-"Μετακινεί την κεφαλή αναπαραγωγής προς τα πίσω με μέγεθος 1 σημείου "
-"σναπαρίσματος."
-
-#: ../../playback-and-recording/transport-controls.rst:32
-msgid "Forward"
-msgstr "Μπροστά"
-
-#: ../../playback-and-recording/transport-controls.rst:32
-msgid "Moves the Playhead forward by the size of 1 snap point."
-msgstr ""
-"Μετακινεί την κεφαλή αναπραγωγής προς τα μπροστά με μέγεθος 1 σημείου "
-"σναπαρίσματος."
-
-#: ../../playback-and-recording/transport-controls.rst:37
-msgid "Loop"
-msgstr "Λούπα"
-
-#: ../../playback-and-recording/transport-controls.rst:35
-msgid ""
-"If enabled, the Playhead will move back to the Loop Start point when it "
-"reaches the Loop End point."
-msgstr ""
-"Αν ενεργοποιηθεί, η κεφαλή αναπαραγωγής θα τοποθετηθεί πίσω στο σημείο "
-"αρχής λούπας όταν φτάσει το σημείο τέλους λούπας."
-
-#: ../../playback-and-recording/transport-controls.rst:40
-msgid "Playhead Display"
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:41
-msgid ""
-"The playhead position can be displayed in either BBT notation "
-"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
-"toggled by right-clicking on the playhead position display."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:50
-#, fuzzy
-msgid "JACK Transport"
-msgstr "Επιθεωρητής κομματιών"
-
-#: ../../playback-and-recording/transport-controls.rst:51
-msgid ""
-"Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
-"design.html>`_ or become the JACK transport master. These options are "
-"available by right-clicking the playhead position display when using the "
-"JACK audio backend and will be remembered across projects."
-msgstr ""
-
-#: ../../playback-and-recording/transport-controls.rst:63
-msgid "Metronome"
-msgstr "Μετρονόμος"
-
-#: ../../playback-and-recording/transport-controls.rst:64
-#, fuzzy
-msgid "Clicking the metronome button will enable/disable the metronome."
-msgstr ""
-"Κάνοντας κλικ στο κουμπί μετρονόμου θα ενεργοποιήσει/απενεργοποιήσει τον "
-"μετρονόμο."
-
-#: ../../playback-and-recording/transport-controls.rst:70
 #, fuzzy
 msgid ""
 "When the metronome is enabled, you will hear metronome ticks during "
@@ -4981,13 +4894,135 @@ msgstr ""
 "είναι πιο έντονο. Αυτό είναι χρήσιμο για να σιγουρευτείτε ότι το τραγούδι"
 " σας παραμένει εντός ρυθμού."
 
-#: ../../playback-and-recording/transport-controls.rst:77
+#: ../../playback-and-recording/transport-controls.rst:29
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
 "your Zrythm directory. This is a TODO feature."
 msgstr ""
 "Τα δείγματα μετρονόμου μπορούν να παρακαμφθούν με τοποθέτηση δικών σας "
 "δειγμάτων στον κατάλογο Zrythm σας. Αυτό είναι χαρακτηριστικό ΓΙΑΝΑΓΙΝΕΙ."
+
+#: ../../playback-and-recording/transport-controls.rst:33
+msgid "Metronome options"
+msgstr "Ρυθμίσεις μετρονόμου"
+
+#: ../../playback-and-recording/transport-controls.rst:34
+#, fuzzy
+msgid "Sets the volume of the metronome"
+msgstr "Ορίζει την ένταση του μετρονόμου."
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Return to cue point on stop"
+msgstr "Επιστροφή στο σημείο cue κατά την παύση"
+
+#: ../../playback-and-recording/transport-controls.rst:36
+msgid "Toggles whether to return to the cue point when playback stops."
+msgstr ""
+"Εναλλάσσει σχετικά με την επιστροφή στο σημείο cue όταν σταματάει η "
+"αναπαραγωγή."
+
+#: ../../playback-and-recording/transport-controls.rst:38
+#: ../../tracks/audio-track.rst:17
+#: ../../tracks/chord-track.rst:25
+#: ../../tracks/inspector-page.rst:121
+#: ../../tracks/instrument-track.rst:25
+#: ../../tracks/midi-track.rst:26
+#: ../../tracks/modulator-track.rst:25
+#: ../../tracks/tempo-track.rst:25
+msgid "Record"
+msgstr "Ηχογράφηση"
+
+#: ../../playback-and-recording/transport-controls.rst:39
+msgid "Arms the project for recording."
+msgstr "Οπλίζει το έργο για ηχογράφηση."
+
+#: ../../playback-and-recording/transport-controls.rst:40
+#, fuzzy
+msgid "Record options"
+msgstr "Αναίρεση ρυθμίσεων."
+
+#: ../../playback-and-recording/transport-controls.rst:41
+#, fuzzy
+msgid "Sets the settings to use when recording."
+msgstr ""
+"Πηγές εισόδου ήχου αριστερά και δεξιά που χρησιμοποιούνται κατά την "
+"ηχογράφηση."
+
+#: ../../playback-and-recording/transport-controls.rst:44
+msgid "Play"
+msgstr "Έναρξη"
+
+#: ../../playback-and-recording/transport-controls.rst:43
+msgid ""
+"If stopped, the song will start playing. If already playing, the Playhead"
+" will move to the Cue point."
+msgstr ""
+"Αν σταματήσει, το τραγούδι θα αρχίσει να παίζει. Αν παίζει ήδη, η κεφαλή "
+"αναπαραγωγής θα μετακινηθεί στο σημείο cue."
+
+#: ../../playback-and-recording/transport-controls.rst:47
+msgid "Stop"
+msgstr "Παύση"
+
+#: ../../playback-and-recording/transport-controls.rst:47
+msgid "Pauses playback. If clicked twice, goes back to the Cue point."
+msgstr "Παύει την αναπαραγωγή. Αν πατηθεί δύο φορές, επιστρέφει στο σημείο cue."
+
+#: ../../playback-and-recording/transport-controls.rst:50
+msgid "Backward"
+msgstr "Πίσω"
+
+#: ../../playback-and-recording/transport-controls.rst:50
+msgid "Moves the Playhead backward by the size of 1 snap point."
+msgstr ""
+"Μετακινεί την κεφαλή αναπαραγωγής προς τα πίσω με μέγεθος 1 σημείου "
+"σναπαρίσματος."
+
+#: ../../playback-and-recording/transport-controls.rst:53
+msgid "Forward"
+msgstr "Μπροστά"
+
+#: ../../playback-and-recording/transport-controls.rst:53
+msgid "Moves the Playhead forward by the size of 1 snap point."
+msgstr ""
+"Μετακινεί την κεφαλή αναπραγωγής προς τα μπροστά με μέγεθος 1 σημείου "
+"σναπαρίσματος."
+
+#: ../../playback-and-recording/transport-controls.rst:58
+msgid "Loop"
+msgstr "Λούπα"
+
+#: ../../playback-and-recording/transport-controls.rst:56
+msgid ""
+"If enabled, the Playhead will move back to the Loop Start point when it "
+"reaches the Loop End point."
+msgstr ""
+"Αν ενεργοποιηθεί, η κεφαλή αναπαραγωγής θα τοποθετηθεί πίσω στο σημείο "
+"αρχής λούπας όταν φτάσει το σημείο τέλους λούπας."
+
+#: ../../playback-and-recording/transport-controls.rst:61
+msgid "Playhead Display"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:62
+msgid ""
+"The playhead position can be displayed in either BBT notation "
+"(`bars.beats.sixteenths.ticks`) or actual time (`mm:ss.ms`). This can be "
+"toggled by right-clicking on the playhead position display."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:71
+#, fuzzy
+msgid "JACK Transport"
+msgstr "Επιθεωρητής κομματιών"
+
+#: ../../playback-and-recording/transport-controls.rst:72
+msgid ""
+"Zrythm can sync to `JACK transport <https://jackaudio.org/api/transport-"
+"design.html>`_ or become the JACK transport master. These options are "
+"available by right-clicking the playhead position display when using the "
+"JACK audio backend and will be remembered across projects."
+msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
@@ -8919,77 +8954,28 @@ msgstr ""
 "Η μπάρα μεταφοράς περιέχει πληροφορέις σχετικά με τον κινητήρα ήχου και "
 "τους χειριστές μεταφοράς."
 
+#: ../../zrythm-interface/transport-bar.rst:17
+#, fuzzy
+msgid "BPM and Time Signature"
+msgstr "Χτύποι ανά λεπτό (BPM) και μέτρα"
+
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
-"Transport controls change the behavior of playback. They include the "
-"following items."
+"BPM and Time Signature are covered in :ref:`playback-and-recording:BPM "
+"and Time Signatures`."
 msgstr ""
-"Οι χειριστές μεταφοράς αλλάζουν τη συμπεριφορά της αναπαραγωγής. "
-"Περιλαμβάνουν τα εξής αντικείμενα."
 
-#: ../../zrythm-interface/transport-bar.rst:25
-msgid "Metronome toggle"
-msgstr "Εναλλαγή μετρονόμου"
-
-#: ../../zrythm-interface/transport-bar.rst:26
-msgid "Toggles the metronome on/off."
-msgstr "Εναλλάσσει την ενεργοποίηση/απενεργοποίηση του μετρονόμου."
-
-#: ../../zrythm-interface/transport-bar.rst:29
-msgid "Metronome options"
-msgstr "Ρυθμίσεις μετρονόμου"
-
-#: ../../zrythm-interface/transport-bar.rst:30
-msgid "Sets the volume of the metronome."
-msgstr "Ορίζει την ένταση του μετρονόμου."
-
-#: ../../zrythm-interface/transport-bar.rst:33
-msgid "Return to cue point on stop"
-msgstr "Επιστροφή στο σημείο cue κατά την παύση"
-
-#: ../../zrythm-interface/transport-bar.rst:34
-msgid "Toggles whether to return to the cue point when playback stops."
-msgstr ""
-"Εναλλάσσει σχετικά με την επιστροφή στο σημείο cue όταν σταματάει η "
-"αναπαραγωγή."
-
-#: ../../zrythm-interface/transport-bar.rst:39
-msgid "Song tempo (beats per minute)."
-msgstr "Τέμπο τραγουδιού (χτύποι ανά λεπτό)."
-
-#: ../../zrythm-interface/transport-bar.rst:43
-msgid "Current playhead position, in bars.beats.sixteenths.ticks."
-msgstr "Η τρέχουσα θέση κεφαλής αναπαραγωγής σε bars.beats.sixteenths.ticks."
-
-#: ../../zrythm-interface/transport-bar.rst:46
-msgid "Transport buttons"
-msgstr "Κουμπιά μεταφοράς"
-
-#: ../../zrythm-interface/transport-bar.rst:47
-msgid "Controls for stopping, playback, recording, etc."
-msgstr "Χειριστές για παύση, αναπαραγωγή, ηχογράφηση, κλπ."
-
-#: ../../zrythm-interface/transport-bar.rst:49
+#: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
-"Widgets like the BPM meter can be changed by clicking and dragging, or by"
-" hovering over them with the cursor and scrolling"
+"Transport controls are covered in :ref:`playback-and-recording:Transport "
+"Controls`."
 msgstr ""
-"Τα γραφικά στοιχεία όπως ο μετρητής BPM μπορούν να αλλάξουν κάνοντας κλικ"
-" και σύρσιμο ή τοποθετώντας τον κέρσορα πάνω τους και σκρολάροντας"
 
-#: ../../zrythm-interface/transport-bar.rst:53
-msgid ""
-"More information about working with the transport bar is covered in :ref"
-":`transport-controls`."
-msgstr ""
-"Περισσότερες πληροφορίες όσον αφορά τη δουλειά με την μπάρα μεταφοράς "
-"καλύπτεται στους :ref:`transport-controls`."
-
-#: ../../zrythm-interface/transport-bar.rst:57
+#: ../../zrythm-interface/transport-bar.rst:27
 msgid "Backend Information"
 msgstr "Πληροφορίες παρασκηνίου"
 
-#: ../../zrythm-interface/transport-bar.rst:58
+#: ../../zrythm-interface/transport-bar.rst:28
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -9032,6 +9018,47 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "Sets the volume of the metronome."
+#~ msgstr "Ορίζει την ένταση του μετρονόμου."
+
+#~ msgid "Song tempo (beats per minute)."
+#~ msgstr "Τέμπο τραγουδιού (χτύποι ανά λεπτό)."
+
+#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+#~ msgstr "Η τρέχουσα θέση κεφαλής αναπαραγωγής σε bars.beats.sixteenths.ticks."
+
+#~ msgid "Transport buttons"
+#~ msgstr "Κουμπιά μεταφοράς"
+
+#~ msgid "Controls for stopping, playback, recording, etc."
+#~ msgstr "Χειριστές για παύση, αναπαραγωγή, ηχογράφηση, κλπ."
+
+#~ msgid ""
+#~ "More information about working with the"
+#~ " transport bar is covered in :ref"
+#~ ":`transport-controls`."
+#~ msgstr ""
+#~ "Περισσότερες πληροφορίες όσον αφορά τη "
+#~ "δουλειά με την μπάρα μεταφοράς "
+#~ "καλύπτεται στους :ref:`transport-controls`."
+
+#~ msgid "Metronome"
+#~ msgstr "Μετρονόμος"
+
+#~ msgid "Clicking the metronome button will enable/disable the metronome."
+#~ msgstr ""
+#~ "Κάνοντας κλικ στο κουμπί μετρονόμου θα"
+#~ " ενεργοποιήσει/απενεργοποιήσει τον μετρονόμο."
+
+#~ msgid ""
+#~ "Transport controls change the behavior "
+#~ "of playback. They include the following"
+#~ " items."
+#~ msgstr ""
+#~ "Οι χειριστές μεταφοράς αλλάζουν τη "
+#~ "συμπεριφορά της αναπαραγωγής. Περιλαμβάνουν τα"
+#~ " εξής αντικείμενα."
 
 #~ msgid ""
 #~ "When using the :term:`JACK` backend, "
