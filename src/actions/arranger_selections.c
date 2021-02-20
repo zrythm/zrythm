@@ -1257,7 +1257,18 @@ do_or_undo_duplicate_or_link (
                 ARRANGER_OBJECT_CLONE_COPY_LINK :
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
-          /* add to track */
+          /* if region, clear the remembered index
+           * so that the region gets appended
+           * instead of inserted */
+          if (obj->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
+            {
+              ZRegion * r =
+                (ZRegion *) obj;
+              r->id.idx = -1;
+            }
+
+          /* add to track. */
           arranger_object_add_to_project (
             obj, F_NO_PUBLISH_EVENTS);
 

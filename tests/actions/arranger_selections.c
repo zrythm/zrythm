@@ -1612,6 +1612,211 @@ test_duplicate_midi_regions_to_track_below ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_midi_region_split ()
+{
+  rebootstrap_timeline ();
+
+  Track * midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, MIDI_TRACK_NAME);
+  TrackLane * lane =
+    midi_track->lanes[0];
+  g_assert_cmpint (lane->num_regions, ==, 0);
+
+  Position pos, end_pos;
+  position_set_to_bar (&pos, 1);
+  position_set_to_bar (&end_pos, 5);
+  ZRegion * r =
+    midi_region_new (
+      &pos, &end_pos, midi_track->pos, 0,
+      lane->num_regions);
+  track_add_region (
+    midi_track, r, NULL, lane->pos,
+    F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_PUBLISH_EVENTS);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (lane->num_regions, ==, 1);
+
+  /* create some MIDI notes */
+  for (int i = 0; i < 4; i++)
+    {
+      position_set_to_bar (&pos, i + 1);
+      position_set_to_bar (&end_pos, i + 2);
+      MidiNote * mn =
+        midi_note_new (
+          &r->id, &pos, &end_pos, 34 + i, 70);
+      midi_region_add_midi_note (
+        r, mn, F_NO_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) mn, F_SELECT,
+        F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      ua =
+        arranger_selections_action_new_create (
+          MA_SELECTIONS);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      g_assert_cmpint (
+        r->num_midi_notes, ==, i + 1);
+    }
+
+  /* select the region */
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+
+  /* split at bar 2 */
+  position_set_to_bar (&pos, 2);
+  ua =
+    arranger_selections_action_new_split (
+      (ArrangerSelections *) TL_SELECTIONS, &pos);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (
+    lane->num_regions, ==, 2);
+  r = lane->regions[1];
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* split at bar 3 */
+  position_set_to_bar (&pos, 3);
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_split (
+      (ArrangerSelections *) TL_SELECTIONS, &pos);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (
+    lane->num_regions, ==, 3);
+
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 3);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[2];
+  position_set_to_bar (&pos, 3);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* undo and verify */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    lane->num_regions, ==, 2);
+
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* undo and verify */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    lane->num_regions, ==, 1);
+
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* redo to bring 3 regions back */
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+
+  /* delete middle cut */
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 3);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      (ArrangerSelections *) TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_cmpint (
+    lane->num_regions, ==, 2);
+
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 3);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  /* undo to bring it back */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    lane->num_regions, ==, 3);
+
+  r = lane->regions[0];
+  position_set_to_bar (&pos, 1);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[1];
+  position_set_to_bar (&pos, 2);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 3);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  r = lane->regions[2];
+  position_set_to_bar (&pos, 3);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.pos.frames);
+  position_set_to_bar (&pos, 5);
+  g_assert_cmpint (
+    pos.frames, ==, r->base.end_pos.frames);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1619,6 +1824,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test midi region split",
+    (GTestFunc) test_midi_region_split);
   g_test_add_func (
     TEST_PREFIX "test duplicate midi regions to track below",
     (GTestFunc) test_duplicate_midi_regions_to_track_below);
