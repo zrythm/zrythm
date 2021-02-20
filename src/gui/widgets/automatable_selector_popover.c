@@ -227,7 +227,7 @@ create_model_for_ports (
             "port %s is a midi automatable",
             port->id.label);
 
-          strcpy (icon_name,"audio-midi");
+          strcpy (icon_name, "signal-midi");
           break;
         case AS_TYPE_MACRO:
           /* skip non-channel automation tracks */
@@ -249,9 +249,7 @@ create_model_for_ports (
                   PORT_FLAG_STEREO_BALANCE))
             continue;
 
-          strcpy (
-            icon_name,
-            "text-x-csrc");
+          strcpy (icon_name, "node-type-cusp");
           break;
         case AS_TYPE_MIDI_FX:
           plugin =
@@ -367,7 +365,7 @@ create_model_for_types (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, "text-x-csrc",
+        0, "signal-midi",
         1, "MIDI",
         2, AS_TYPE_MIDI,
         3, 0,
@@ -379,7 +377,7 @@ create_model_for_types (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, "text-x-csrc",
+        0, "track-inspector",
         1, _("Channel"),
         2, AS_TYPE_CHANNEL,
         3, 0,
@@ -396,7 +394,7 @@ create_model_for_types (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, "plugins",
+            0, "instrument",
             1, label,
             2, AS_TYPE_INSTRUMENT,
             3, 0,
