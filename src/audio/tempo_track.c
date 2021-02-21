@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -141,9 +142,13 @@ tempo_track_set_bpm (
   bool    temporary,
   bool    fire_events)
 {
-  g_message (
-    "%s: bpm <%f>, temporary <%d>",
-    __func__, (double) bpm, temporary);
+  if (AUDIO_ENGINE->transport_type !=
+        AUDIO_ENGINE_NO_JACK_TRANSPORT)
+    {
+      g_debug (
+        "%s: bpm <%f>, temporary <%d>",
+        __func__, (double) bpm, temporary);
+    }
 
   if (bpm < TRANSPORT_MIN_BPM)
     {
