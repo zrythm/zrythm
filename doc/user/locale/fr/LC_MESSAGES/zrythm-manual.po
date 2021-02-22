@@ -44,8 +44,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-02-14 03:50+0000\n"
-"PO-Revision-Date: 2021-02-21 09:34+0000\n"
-"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"PO-Revision-Date: 2021-02-22 09:50+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
 "Language: fr\n"
@@ -2131,7 +2131,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:20
 msgid "Select/Stretch Tool"
-msgstr "Outil édition/étirement"
+msgstr "Outil de sélection/étirement"
 
 #: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
@@ -2372,7 +2372,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:129
 msgid "Ramp Tool"
-msgstr "Outil Rampe"
+msgstr "Outil de rampe"
 
 #: ../../editing/edit-tools.rst:130
 #, fuzzy

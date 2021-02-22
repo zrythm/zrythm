@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 08:34+0000\n"
-"PO-Revision-Date: 2021-02-21 09:37+0000\n"
-"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"PO-Revision-Date: 2021-02-22 09:50+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -2212,7 +2212,7 @@ msgstr "Type de fichier non-supporté %s"
 #: src/audio/tracklist.c:1016
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr ""
-"Les fichiers MIDI ne peuvent être déposés que dans des pistes d'instruments "
+"Les fichiers MIDI ne peuvent être déposés que dans des pistes d'instrument/"
 "MIDI"
 
 #: src/audio/tracklist.c:1029
@@ -2221,7 +2221,7 @@ msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
-"Ce fichier MIDI contient %d pistes. Il ne peut pas être désposé sur une "
+"Ce fichier MIDI contient %d pistes. Il ne peut pas être déposé dans une "
 "piste existante"
 
 #: src/audio/tracklist.c:1043
@@ -2269,12 +2269,12 @@ msgstr "Macro %d"
 #: src/audio/modulator_macro_processor.c:107
 #, c-format
 msgid "Macro CV In %d"
-msgstr "Entrée de la Macro de CV  %d"
+msgstr "Macro d'entrée CV %d"
 
 #: src/audio/modulator_macro_processor.c:117
 #, c-format
 msgid "Macro CV Out %d"
-msgstr ""
+msgstr "Macro de sortie CV %d"
 
 #: src/audio/modulator_track.c:90 resources/ui/bot_dock_edge.ui:144
 #: resources/ui/bot_dock_edge.ui:160
@@ -2296,14 +2296,14 @@ msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
-"SNDFILE %s n'a pu être ouvert :\n"
-"%d:%s"
+"Impossible d'ouvrir SNDFILE %s :\n"
+"%d : %s"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr "Erreur de PortAudio : %s"
+msgstr "Erreur PortAudio : %s"
 
 #: src/audio/region.c:430 build/data/org.zrythm.Zrythm.gschema.xml:689
 msgid "Automation"
@@ -2362,8 +2362,9 @@ msgid ""
 "A buffer underflow has occurred. Try increasing the buffer size in the "
 "settings to avoid audio glitches."
 msgstr ""
-"Un débordement de tampon est arrivé. Essayez d'accroitre la taille du tampon "
-"dans les paramètres afin d'éviter les défaillances audio."
+"Il y a eu un sous-dépassement de la mémoire tampon. Essayez d'augmenter la "
+"taille de la mémoire tampon dans les paramètres pour éviter les problèmes "
+"audio."
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
@@ -2372,11 +2373,11 @@ msgstr "Erreur PulseAudio: échec de création de la boucle principale"
 #: src/audio/engine_pulse.c:263
 #, c-format
 msgid "PulseAudio Error: %s"
-msgstr "Erreur de PulseAudio : %s"
+msgstr "Erreur PulseAudio : %s"
 
 #: src/audio/engine_pulse.c:282
 msgid "PulseAudio Error: Failed to connect"
-msgstr "Erreur PulseAudio : échec de connection"
+msgstr "Erreur PulseAudio : échec de connexion"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
@@ -2599,8 +2600,8 @@ msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
-"L'extension des scripts avec <a href=\"%s\">GNU Guile</a> n'est pas activée "
-"dans votre installation %s."
+"L'extensibilité des scripts avec <a href=\"%s\">GNU Guile</a> n'est pas "
+"activée dans votre installation %s."
 
 #: src/actions/actions.c:637
 #, c-format
