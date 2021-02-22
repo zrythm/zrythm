@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 08:34+0000\n"
-"PO-Revision-Date: 2021-02-20 21:48+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2021-02-21 09:37+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -1560,7 +1560,7 @@ msgstr ""
 
 #: src/gui/widgets/scripting_window.c:118
 msgid "    ;; loop through all tracks and print them\n"
-msgstr ""
+msgstr "    ;; boucle à travers toutes les pistes et les afficher\n"
 
 #: src/gui/widgets/active_hardware_mb.c:50
 #: src/gui/widgets/active_hardware_mb.c:142
@@ -2210,9 +2210,10 @@ msgid "Unsupported file type %s"
 msgstr "Type de fichier non-supporté %s"
 
 #: src/audio/tracklist.c:1016
-#, fuzzy
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr "Impossible de déposer des fichiers MIDI dans des pistes existantes"
+msgstr ""
+"Les fichiers MIDI ne peuvent être déposés que dans des pistes d'instruments "
+"MIDI"
 
 #: src/audio/tracklist.c:1029
 #, c-format
@@ -2220,6 +2221,8 @@ msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
+"Ce fichier MIDI contient %d pistes. Il ne peut pas être désposé sur une "
+"piste existante"
 
 #: src/audio/tracklist.c:1043
 msgid "Can only drop audio files on audio tracks"
@@ -2261,12 +2264,12 @@ msgstr "Marqueurs"
 #: src/audio/modulator_macro_processor.c:89
 #, c-format
 msgid "Macro %d"
-msgstr ""
+msgstr "Macro %d"
 
 #: src/audio/modulator_macro_processor.c:107
 #, c-format
 msgid "Macro CV In %d"
-msgstr ""
+msgstr "Entrée de la Macro de CV  %d"
 
 #: src/audio/modulator_macro_processor.c:117
 #, c-format
@@ -2279,13 +2282,13 @@ msgid "Modulators"
 msgstr "Modulateurs"
 
 #: src/audio/exporter.c:138
-#, fuzzy, c-format
+#, c-format
 msgid "Format %s not supported yet"
-msgstr "Format vers lequel exporter."
+msgstr "Le format %s n'est pas encore supporté"
 
 #: src/audio/exporter.c:233
 msgid "SF INFO invalid"
-msgstr ""
+msgstr "SF INFO invalide"
 
 #: src/audio/exporter.c:254
 #, c-format
@@ -2293,6 +2296,8 @@ msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
+"SNDFILE %s n'a pu être ouvert :\n"
+"%d:%s"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -2357,20 +2362,21 @@ msgid ""
 "A buffer underflow has occurred. Try increasing the buffer size in the "
 "settings to avoid audio glitches."
 msgstr ""
+"Un débordement de tampon est arrivé. Essayez d'accroitre la taille du tampon "
+"dans les paramètres afin d'éviter les défaillances audio."
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
-msgstr ""
+msgstr "Erreur PulseAudio: échec de création de la boucle principale"
 
 #: src/audio/engine_pulse.c:263
-#, fuzzy, c-format
+#, c-format
 msgid "PulseAudio Error: %s"
-msgstr "Erreur de PortAudio : %s"
+msgstr "Erreur de PulseAudio : %s"
 
 #: src/audio/engine_pulse.c:282
-#, fuzzy
 msgid "PulseAudio Error: Failed to connect"
-msgstr "Le dorsal audio auquel se connecter"
+msgstr "Erreur PulseAudio : échec de connection"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
@@ -2593,8 +2599,8 @@ msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
-"L'extensibilité des scripts avec <a href=\"%s\">GNU Guile</a> n'est pas "
-"activée dans votre installation %s."
+"L'extension des scripts avec <a href=\"%s\">GNU Guile</a> n'est pas activée "
+"dans votre installation %s."
 
 #: src/actions/actions.c:637
 #, c-format

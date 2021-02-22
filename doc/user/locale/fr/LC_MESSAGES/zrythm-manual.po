@@ -44,8 +44,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-02-14 03:50+0000\n"
-"PO-Revision-Date: 2021-02-20 00:50+0000\n"
-"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
+"PO-Revision-Date: 2021-02-21 09:34+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
 "Language: fr\n"
@@ -2130,13 +2130,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:20
-#, fuzzy
 msgid "Select/Stretch Tool"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Mode de sélection/étirement\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Outil édition/étirement"
 
 #: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
@@ -2376,13 +2371,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:129
-#, fuzzy
 msgid "Ramp Tool"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"ensemble"
+msgstr "Outil Rampe"
 
 #: ../../editing/edit-tools.rst:130
 #, fuzzy
