@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 08:34+0000\n"
-"PO-Revision-Date: 2021-02-15 05:50+0000\n"
+"PO-Revision-Date: 2021-02-17 03:50+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:220
@@ -413,9 +413,8 @@ msgid "File %s not found."
 msgstr "文件%s未找到。"
 
 #: src/main.c:181
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
-msgstr "未指定输出文件。请传递带有`--output[file]`的输出文件。"
+msgstr "未指定输出文件。请通过`--output=FILE`传递一个。"
 
 #: src/main.c:240
 #, c-format
@@ -423,9 +422,8 @@ msgid "Project failed to decompress: %s\n"
 msgstr "项目解压缩失败:%s\n"
 
 #: src/main.c:259
-#, fuzzy
 msgid "Unknown operation"
-msgstr "未知选项\n"
+msgstr "未知操作"
 
 #: src/main.c:309
 #, c-format
@@ -433,9 +431,8 @@ msgid "libguile is required for this option\n"
 msgstr ""
 
 #: src/main.c:329
-#, fuzzy
 msgid "Print version information"
-msgstr "许可证信息"
+msgstr "打印版本信息"
 
 #: src/main.c:334
 msgid "Convert ZPJ-FILE to YAML"
@@ -458,19 +455,16 @@ msgid "Print current settings"
 msgstr ""
 
 #: src/main.c:356
-#, fuzzy
 msgid "Reset to factory settings"
-msgstr "重置到出厂设置成功\n"
+msgstr "重置到出厂设置"
 
 #: src/main.c:359
-#, fuzzy
 msgid "Override the audio backend to use"
-msgstr "要使用的音频后端。"
+msgstr "覆盖要使用的音频后端"
 
 #: src/main.c:363
-#, fuzzy
 msgid "Override the MIDI backend to use"
-msgstr "要使用的MIDI后端。"
+msgstr "覆盖要使用的MIDI后端"
 
 #: src/main.c:367
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
