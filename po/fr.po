@@ -5,7 +5,7 @@
 # Nicolas Faure <sub26nico@laposte.net>, 2019.
 # Nicolas FAURE <sub26nico@laposte.net>, 2020.
 # JEHANNIN <sahaa.thyva@laposte.net>, 2020.
-# Sahaathyva <sahaa.thyva@laposte.net>, 2020.
+# Sahaathyva <sahaa.thyva@laposte.net>, 2020, 2021.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Olivier Humbert <trebmuh@tuxfamily.org>, 2020.
 # Romain Alb <romain.alb@lilo.org>, 2021.
@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 08:34+0000\n"
-"PO-Revision-Date: 2021-02-20 00:50+0000\n"
-"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
+"PO-Revision-Date: 2021-02-20 21:38+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -134,9 +134,8 @@ msgid "Invert"
 msgstr "Inverser"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
-#, fuzzy
 msgid "Normalize"
-msgstr "Normal"
+msgstr "Normaliser"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
@@ -423,10 +422,9 @@ msgid "File %s not found."
 msgstr "Fichier %s non trouvé."
 
 #: src/main.c:181
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
-"Aucun fichier se sortie spécifié. Veuillez SVP en spécifier un avec `--"
+"Aucun fichier de sortie de spécifié. Veuillez SVP en spécifier un avec `--"
 "output [FILE]`."
 
 #: src/main.c:240
@@ -435,9 +433,8 @@ msgid "Project failed to decompress: %s\n"
 msgstr "Échec de la décompression du projet : %s\n"
 
 #: src/main.c:259
-#, fuzzy
 msgid "Unknown operation"
-msgstr "Option inconnue\n"
+msgstr "Option inconnue"
 
 #: src/main.c:309
 #, c-format
@@ -445,13 +442,12 @@ msgid "libguile is required for this option\n"
 msgstr ""
 
 #: src/main.c:329
-#, fuzzy
 msgid "Print version information"
-msgstr "Informations de licence"
+msgstr "Afficher les infos de version"
 
 #: src/main.c:334
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "Convertir ZPJ-FILE en YAML"
 
 #: src/main.c:339
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
@@ -463,26 +459,23 @@ msgstr ""
 
 #: src/main.c:348
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Afficher d'une manière plus conviviale"
 
 #: src/main.c:352
 msgid "Print current settings"
-msgstr ""
+msgstr "Afficher les paramètres courants"
 
 #: src/main.c:356
-#, fuzzy
 msgid "Reset to factory settings"
-msgstr "Réinitialisation des paramètres d'usine réussi\n"
+msgstr "Réinitialisation des paramètres d'usine"
 
 #: src/main.c:359
-#, fuzzy
 msgid "Override the audio backend to use"
-msgstr "Le serveur audio auquel se connecter."
+msgstr "Passer outre le serveur audio a utiliser"
 
 #: src/main.c:363
-#, fuzzy
 msgid "Override the MIDI backend to use"
-msgstr "Le serveur MIDI auquel se connecter."
+msgstr "Passer outre le serveur MIDI à utiliser"
 
 #: src/main.c:367
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
@@ -491,7 +484,7 @@ msgstr ""
 #: src/main.c:390
 #, c-format
 msgid "[PROJECT-FILE] - Run %s"
-msgstr ""
+msgstr "[PROJECT-FILE] - Run %s"
 
 #: src/main.c:400
 #, c-format
@@ -504,9 +497,16 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
+"exemples :\n"
+"  --zpj-to-yaml a.zpj > b.yaml Convertir un a.zpj en YAML et enregistrer en b"
+".yaml\n"
+"  --gen-projet a.scm -o myprojet Générer un myprojet à partir de a.scm\n"
+"  -p --pretty affichage agréable des paramètres actuels\n"
+"\n"
+"Veuillez signaler les problèmes à %s\n"
 
 #: src/main.c:442
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
 "\n"
@@ -523,9 +523,9 @@ msgstr ""
 "\n"
 "%s est fourni SANS AUCUNE GARANTIE !\n"
 "\n"
-"Ceci est un logiciel libre, et vous pouvez le redistribuer sous\n"
-"certaines conditions. Consultez le fichier `COPYING' pour\n"
-"plus de détails.\n"
+"Ceci est un logiciel libre, et vous pouvez le redistribuer\n"
+"sous certaines conditions. Consultez le fichier `COPYING' pour plus de "
+"détails.\n"
 "\n"
 "Écrivez des commentaires et reportez des bogues à %s\n"
 "Supporter ce projet à https://liberapay.com/Zrythm\n"
@@ -691,6 +691,11 @@ msgid ""
 "bridged mode, and report this to the plugin distributor and/or author:\n"
 "%s <%s>"
 msgstr ""
+"%s<%s> contient une reference à %s,ce qui pourrait causer des soucis.\n"
+"Si le greffon ne se charge pas, essayez alors SVP d'instancier le greffon en "
+"mode pontage total, et reportez ce souci au distributeur/auteur/mainteneur "
+"de ce greffon :\n"
+"%s<%s>"
 
 #: src/plugins/lv2_plugin.c:2912
 msgid "Unnamed bank"
@@ -1095,29 +1100,27 @@ msgid "Add to project (bridged full)"
 msgstr "Ajouter au projet(complètement ponté)"
 
 #: src/gui/widgets/plugin_browser.c:469
-#, fuzzy
 msgid "Add to collection"
-msgstr "Ajouter au projet"
+msgstr "Ajouter à la collection"
 
 #: src/gui/widgets/plugin_browser.c:518
 msgid "Remove from collection"
-msgstr ""
+msgstr "Retirer de la collection"
 
 #: src/gui/widgets/plugin_browser.c:635 src/gui/widgets/plugin_browser.c:672
-#, fuzzy
 msgid "Collection name"
-msgstr "Collection"
+msgstr "nom de la collection"
 
 #: src/gui/widgets/plugin_browser.c:706
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
+"Cette collection contien %d greffons. Etes vous sur de vouloir la retirer ?"
 
 #: src/gui/widgets/plugin_browser.c:747
-#, fuzzy
 msgid "Rename"
-msgstr "Nom de région"
+msgstr "Renommer"
 
 #: src/gui/widgets/plugin_browser.c:758
 #: src/gui/widgets/port_connections_tree.c:182
@@ -1419,14 +1422,12 @@ msgid "Loop Selection"
 msgstr "Sélection de la boucle"
 
 #: src/gui/widgets/home_toolbar.c:240
-#, fuzzy
 msgid "Undo..."
-msgstr "Défaire"
+msgstr "Défaire..."
 
 #: src/gui/widgets/home_toolbar.c:244
-#, fuzzy
 msgid "Redo..."
-msgstr "Refaire"
+msgstr "Refaire..."
 
 #: src/gui/widgets/right_dock_edge.c:98
 msgid "Plugin Browser"
@@ -1491,12 +1492,11 @@ msgstr "Aucun contrôle sélectionné"
 
 #: src/gui/widgets/automatable_selector_popover.c:359
 msgid "Macros"
-msgstr ""
+msgstr "Macros"
 
 #: src/gui/widgets/automatable_selector_popover.c:383
-#, fuzzy
 msgid "Channel"
-msgstr "Canal %s"
+msgstr "Canal"
 
 #: src/gui/widgets/automatable_selector_popover.c:394
 #, c-format
@@ -1521,7 +1521,7 @@ msgstr "[Modulator %d] %s"
 #: src/gui/widgets/snap_grid.c:60
 #, c-format
 msgid "%s - Last object"
-msgstr ""
+msgstr "%s - Dernier Objet"
 
 #: src/gui/widgets/snap_grid.c:120
 msgid "Snap/Grid options"
