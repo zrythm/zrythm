@@ -9,21 +9,22 @@
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Olivier Humbert <trebmuh@tuxfamily.org>, 2020.
 # Romain Alb <romain.alb@lilo.org>, 2021.
+# J. Lavoie <j.lavoie@net-c.ca>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 08:34+0000\n"
-"PO-Revision-Date: 2021-01-06 20:29+0000\n"
-"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2021-02-20 00:50+0000\n"
+"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -130,7 +131,7 @@ msgstr "Désilencer"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:202
 msgid "Invert"
-msgstr ""
+msgstr "Inverser"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
 #, fuzzy
@@ -139,11 +140,11 @@ msgstr "Normal"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
-msgstr ""
+msgstr "Inverser"
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
-msgstr ""
+msgstr "Invalide"
 
 #: inc/audio/track.h:163 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -1984,11 +1985,13 @@ msgid "Export Progress"
 msgstr "Progression de l'exportation"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:85
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%sPlease help us fix this by %ssubmitting a bug report%s using the template "
 "below or by %ssending an email%s."
-msgstr "%sSVP aidez nous à réparer ceci en %s soumettant un rapport de bug%s."
+msgstr ""
+"%sAidez-nous à résoudre ce problème en %ssoumettant un rapport d'erreur%s en "
+"utilisant le modèle ci-dessous ou en %senvoyant un courriel%s."
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:112
 #, c-format
