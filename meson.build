@@ -184,6 +184,9 @@ cdata.set_quoted (
 if (get_option ('user_manual'))
   cdata.set_quoted ('MANUAL_PATH', docdir)
 endif
+cdata.set (
+  'PROJECT_LOGO',
+  meson.source_root () / 'data/icon-themes/zrythm-dark/scalable/apps/zrythm.svg')
 
 if os_darwin
   add_languages(['objc', 'objcpp'])

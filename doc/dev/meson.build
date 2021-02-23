@@ -15,16 +15,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+doc_cdata = configuration_data ()
+doc_cdata.merge_from (cdata)
+doc_cdata.set (
+  'DOX_OUTPUT_DIR',
+  meson.current_build_dir ())
+doc_cdata.set (
+  'DOC_RELEASE',
+  meson.project_version ())
+
 doxyfile = configure_file (
   output: 'Doxyfile.cfg',
   input: 'Doxyfile.cfg.in',
-  configuration: cdata,
+  configuration: doc_cdata,
   )
 
 doxyfile_mcss = configure_file (
   output: 'Doxyfile-mcss',
   input: 'Doxyfile-mcss.in',
-  configuration: cdata,
+  configuration: doc_cdata,
   )
 
 extra_dev_docs = files([
@@ -36,6 +45,49 @@ extra_dev_docs = files([
   'release_checklist.h',
   'weblate.h',
   ])
+
+c_rst_files = files(
+  'index.rst',
+  #'overview.rst',
+  )
+foreach f : c_rst_files
+  configure_file (copy: true, input: f, output: '@PLAINNAME@')
+endforeach
+
+subdir ('xml')
+
+conf_py = configure_file(configuration: doc_cdata,
+                         input: 'conf.py.in',
+                         output: 'conf.py')
+
+c_rst = custom_target(
+  'c-api-rest',
+  command: [
+    dox_to_sphinx, '-f', '@INPUT0@',
+    meson.current_build_dir()
+    ],
+  input: [c_index_xml],
+  output: 'zrythm.rst')
+
+sphinx_docs_target = custom_target(
+  'html-documentation2',
+  command: [
+    sphinx_build, '-M', 'html',
+    meson.current_build_dir(),
+    meson.current_build_dir(),
+    '-E', '-q', '-t', 'html'],
+  input: [c_rst_files, c_rst, c_index_xml],
+  output: 'html',
+  install: false)
+
+run_target (
+  'gen-sphinx-docs',
+  command: [
+    'echo',
+    'Developer Docs generated (sphinx)',
+    ],
+  depends: sphinx_docs_target,
+  )
 
 if dot_bin.found()
   mcss_docs_target = custom_target (

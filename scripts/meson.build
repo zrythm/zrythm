@@ -83,3 +83,5 @@ gen_gtk_resources_xml_wrap = configure_file (
   configuration: scripts_conf + {
     'SCRIPT_NAME': 'gen-gtk-resources-xml.scm'},
   )
+
+dox_to_sphinx = find_program ('dox_to_sphinx.py')
