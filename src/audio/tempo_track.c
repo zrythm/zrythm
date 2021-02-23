@@ -142,7 +142,7 @@ tempo_track_set_bpm (
   bool    temporary,
   bool    fire_events)
 {
-  if (AUDIO_ENGINE->transport_type !=
+  if (AUDIO_ENGINE->transport_type ==
         AUDIO_ENGINE_NO_JACK_TRANSPORT)
     {
       g_debug (
