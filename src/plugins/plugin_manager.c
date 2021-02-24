@@ -1272,47 +1272,54 @@ plugin_manager_scan_plugins (
       ARCH_64, "au", ":all");
   g_message ("all plugins %s", all_plugins);
   g_message ("%u plugins found", au_count);
-  for (unsigned int i = 0; i < au_count; i++)
+  if (all_plugins)
     {
-      PluginDescriptor * descriptor =
-        z_carla_discovery_create_au_descriptor_from_string (
-          &all_plugins, i);
-
-      if (descriptor)
+      for (unsigned int i = 0; i < au_count; i++)
         {
-          self->plugin_descriptors[
-            self->num_plugins++] =
-              descriptor;
-          add_category (
-            self, descriptor->category_str);
-        }
+          PluginDescriptor * descriptor =
+            z_carla_discovery_create_au_descriptor_from_string (
+              &all_plugins, i);
 
-      count++;
-
-      if (progress)
-        {
-          *progress =
-            start_progress +
-            ((double) count / size) *
-              (max_progress - start_progress);
-          char prog_str[800];
           if (descriptor)
             {
-              sprintf (
-                prog_str, "%s: %s",
-                _("Scanned AU plugin"),
-                descriptor->name);
+              self->plugin_descriptors[
+                self->num_plugins++] =
+                  descriptor;
+              add_category (
+                self, descriptor->category_str);
             }
-          else
+
+          count++;
+
+          if (progress)
             {
-              sprintf (
-                prog_str,
-                _("Skipped AU plugin at %u"),
-                i);
+              *progress =
+                start_progress +
+                ((double) count / size) *
+                  (max_progress - start_progress);
+              char prog_str[800];
+              if (descriptor)
+                {
+                  sprintf (
+                    prog_str, "%s: %s",
+                    _("Scanned AU plugin"),
+                    descriptor->name);
+                }
+              else
+                {
+                  sprintf (
+                    prog_str,
+                    _("Skipped AU plugin at %u"),
+                    i);
+                }
+              zrythm_app_set_progress_status (
+                zrythm_app, prog_str, *progress);
             }
-          zrythm_app_set_progress_status (
-            zrythm_app, prog_str, *progress);
         }
+    }
+  else
+    {
+      g_warning ("failed to get AU plugins");
     }
 #endif // __APPLE__
 #endif // HAVE_CARLA
