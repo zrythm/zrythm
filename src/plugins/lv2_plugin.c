@@ -2671,10 +2671,12 @@ lv2_plugin_process (
                        * the processing cycle */
                       continue;
                     }
+#if 0
                   g_message (
                     "writing plugin input event %d",
                     i);
                   midi_event_print (ev);
+#endif
                   lv2_evbuf_write (
                     &iter, ev->time, 0,
                     PM_URIDS.midi_MidiEvent,
