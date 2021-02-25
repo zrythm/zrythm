@@ -107,6 +107,8 @@ get_port_str (
             color_prefix,
             num_unlocked_srcs, star,
             color_suffix);
+          self->last_num_connections =
+            num_unlocked_srcs;
           return 1;
         }
       else if (port->id.flow == FLOW_OUTPUT)
@@ -121,6 +123,8 @@ get_port_str (
             color_prefix,
             num_unlocked_dests, star,
             color_suffix);
+          self->last_num_connections =
+            num_unlocked_dests;
           return 1;
         }
       g_free (port_label);
@@ -378,10 +382,26 @@ bar_slider_tick_cb (
   GdkFrameClock *   frame_clock,
   InspectorPortWidget * self)
 {
-  /* set bar slider label */
-  /*get_port_str (*/
-    /*self->port,*/
-    /*self->bar_slider->prefix);*/
+  /* update bar slider label if num connections
+   * changed */
+  Port * port = self->port;
+  int num_connections = 0;
+  if (port->id.flow == FLOW_INPUT)
+    {
+      num_connections =
+        port_get_num_unlocked_srcs (port);
+    }
+  else if (port->id.flow == FLOW_OUTPUT)
+    {
+      num_connections =
+        port_get_num_unlocked_dests (port);
+    }
+  if (num_connections != self->last_num_connections)
+    {
+      get_port_str (
+        self, self->port,
+        self->bar_slider->prefix);
+    }
 
   /* if enough time passed, try to update the
    * tooltip */

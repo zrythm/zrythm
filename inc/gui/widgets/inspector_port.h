@@ -97,6 +97,10 @@ typedef struct _InspectorPortWidget
   GtkGestureMultiPress * right_click_gesture;
 
   char                   hex_color[40];
+
+  /** Cache of port's last drawn number of
+   * connetions (srcs or dests). */
+  int               last_num_connections;
 } InspectorPortWidget;
 
 void
