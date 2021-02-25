@@ -30,6 +30,58 @@
 #include <glib.h>
 
 static void
+test_mock_au_plugin_scan (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef HAVE_CARLA
+  g_message ("Scanning AU plugins...");
+  unsigned int au_count = 45;
+  GError * err = NULL;
+  char * contents = NULL;
+  char * filename =
+    g_build_filename (
+      TESTS_SRCDIR, "au_plugins.txt", NULL);
+  bool success =
+    g_file_get_contents (
+      filename, &contents, NULL, &err);
+  g_assert_true (success);
+  char * all_plugins = contents;
+  g_message ("all plugins %s", all_plugins);
+  g_message ("%u plugins found", au_count);
+  for (unsigned int i = 0; i < au_count; i++)
+    {
+      PluginDescriptor * descriptor =
+        z_carla_discovery_create_au_descriptor_from_string (
+          all_plugins, (int) i);
+
+      if (descriptor)
+        {
+          g_assert_cmpuint (
+            strlen (descriptor->category_str),
+            >, 1);
+          g_assert_cmpuint (
+            strlen (descriptor->category_str),
+            <, 40);
+
+          g_message (
+            "Scanned AU plugin %s",
+            descriptor->name);
+        }
+      else
+        {
+          g_message (
+            "Skipped AU plugin at %u", i);
+        }
+
+      plugin_descriptor_free (descriptor);
+    }
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
 test_parse_plugin_info (void)
 {
   test_helper_zrythm_init ();
@@ -155,6 +207,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/plugins/carla_discovery/"
 
+  g_test_add_func (
+    TEST_PREFIX "test mock AU plugin scan",
+    (GTestFunc) test_mock_au_plugin_scan);
   g_test_add_func (
     TEST_PREFIX "test parse plugin info",
     (GTestFunc) test_parse_plugin_info);

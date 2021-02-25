@@ -155,6 +155,9 @@ z_carla_discovery_parse_plugin_info (
   const char * plugin_path,
   char *       results)
 {
+  g_return_val_if_fail (
+    plugin_path && results, NULL);
+
   PluginDescriptor ** descriptors =
     calloc (1, sizeof (PluginDescriptor *));
   int num_descriptors = 0;
@@ -583,6 +586,8 @@ z_carla_discovery_create_au_descriptor_from_string (
 
   char * cur_str = g_strdup (all_plugins);
 
+  g_debug ("creating AU descriptor for %d", idx);
+
   /* replace cur_str with the following parts */
   for (int i = 0; i < idx; i++)
     {
@@ -597,6 +602,7 @@ z_carla_discovery_create_au_descriptor_from_string (
     string_get_substr_before_suffix (
       cur_str, discovery_end_txt);
   g_free (cur_str);
+  g_return_val_if_fail (plugin_info, NULL);
 
   char id[50];
   sprintf (id, "%d", idx);
