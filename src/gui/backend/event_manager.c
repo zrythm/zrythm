@@ -1567,6 +1567,8 @@ process_events (void * data)
             (RulerWidget *) EDITOR_RULER);
           ruler_widget_redraw_whole (
             (RulerWidget *) MW_RULER);
+          transport_controls_widget_refresh (
+            MW_TRANSPORT_CONTROLS);
           break;
         case ET_ARRANGER_SELECTIONS_IN_TRANSIT:
           on_arranger_selections_in_transit (

@@ -164,6 +164,7 @@ port_find_from_identifier (
   Channel * ch = NULL;
   Plugin * pl = NULL;
   PortFlags flags = id->flags;
+  PortFlags2 flags2 = id->flags2;
   switch (id->owner_type)
     {
     case PORT_OWNER_TYPE_BACKEND:
@@ -526,6 +527,36 @@ port_find_from_identifier (
         g_warn_if_fail (port);
         return port;
       }
+      break;
+    case PORT_OWNER_TYPE_TRANSPORT:
+      switch (id->type)
+        {
+        case TYPE_EVENT:
+          if (id->flow == FLOW_INPUT)
+            {
+              if (flags2 &
+                    PORT_FLAG_TRANSPORT_ROLL)
+                return TRANSPORT->roll;
+              if (flags2 &
+                    PORT_FLAG_TRANSPORT_STOP)
+                return TRANSPORT->stop;
+              if (flags2 &
+                    PORT_FLAG_TRANSPORT_BACKWARD)
+                return TRANSPORT->backward;
+              if (flags2 &
+                    PORT_FLAG_TRANSPORT_FORWARD)
+                return TRANSPORT->forward;
+              if (flags2 &
+                    PORT_FLAG_TRANSPORT_LOOP_TOGGLE)
+                return TRANSPORT->loop_toggle;
+              if (flags2 &
+                    PORT_FLAG_TRANSPORT_REC_TOGGLE)
+                return TRANSPORT->rec_toggle;
+            }
+          break;
+        default:
+          break;
+        }
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -1181,6 +1212,13 @@ port_get_all (
   _ADD (AUDIO_ENGINE->midi_in);
   _ADD (SAMPLE_PROCESSOR->stereo_out->l);
   _ADD (SAMPLE_PROCESSOR->stereo_out->r);
+
+  _ADD (TRANSPORT->roll);
+  _ADD (TRANSPORT->stop);
+  _ADD (TRANSPORT->backward);
+  _ADD (TRANSPORT->forward);
+  _ADD (TRANSPORT->loop_toggle);
+  _ADD (TRANSPORT->rec_toggle);
 
   for (int i = 0;
        i < HW_IN_PROCESSOR->num_audio_ports; i++)
@@ -3534,6 +3572,9 @@ port_get_full_designation (
       return;
     case PORT_OWNER_TYPE_HW:
       sprintf (buf, "HW/%s", id->label);
+      return;
+    case PORT_OWNER_TYPE_TRANSPORT:
+      sprintf (buf, "Transport/%s", id->label);
       return;
     default:
       g_return_if_reached ();

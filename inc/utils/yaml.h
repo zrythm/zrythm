@@ -208,6 +208,12 @@
     owner, member, strings, \
     CYAML_ARRAY_LEN (strings))
 
+#define YAML_FIELD_BITFIELD(owner,member,bitvals) \
+  CYAML_FIELD_BITFIELD ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member, bitvals, \
+    CYAML_ARRAY_LEN (bitvals))
+
 /**
  * Schema to be used as a pointer.
  */

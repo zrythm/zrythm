@@ -30,6 +30,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -324,23 +325,10 @@ on_bind_midi_cc (
   BalanceControlWidget * self)
 {
   BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new ();
-
-  int ret =
-    gtk_dialog_run (GTK_DIALOG (dialog));
-
-  if (ret == GTK_RESPONSE_ACCEPT)
-    {
-      if (dialog->cc[0])
-        {
-          /* TODO */
-#if 0
-          midi_mappings_bind (
-            MIDI_MAPPINGS, dialog->cc,
-            NULL, self->fader->amp);
-#endif
-        }
-    }
+    bind_cc_dialog_widget_new (
+      /* TODO */
+      NULL, false);
+  gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
@@ -362,8 +350,7 @@ show_context_menu (
     GTK_MENU_SHELL (menu), menuitem);
 
   menuitem =
-    gtk_menu_item_new_with_label (
-      _("Bind MIDI CC"));
+    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
   g_signal_connect (
     menuitem, "activate",
     G_CALLBACK (on_bind_midi_cc), self);

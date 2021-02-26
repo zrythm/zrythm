@@ -45,6 +45,10 @@
   gtk_clipboard_get_default ( \
     gdk_display_get_default ())
 
+#define CREATE_MIDI_LEARN_MENU_ITEM \
+  z_gtk_create_menu_item ( \
+    _("MIDI learn"), "midi-logo", false, NULL)
+
 #define CREATE_CUT_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     _("Cu_t"), "edit-cut", false, action)

@@ -86,6 +86,20 @@ set_values (
       gtk_container_add (
         GTK_CONTAINER (self->flags_box), lbl);
     }
+  for (int i = 0;
+       i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals);
+       i++)
+    {
+      if (!(id->flags2 & (unsigned int) (1 << i)))
+        continue;
+
+      GtkWidget * lbl =
+        gtk_label_new (port_flags2_bitvals[i].name);
+      gtk_widget_set_visible (lbl, 1);
+      gtk_widget_set_hexpand (lbl, 1);
+      gtk_container_add (
+        GTK_CONTAINER (self->flags_box), lbl);
+    }
 }
 
 /**

@@ -119,6 +119,9 @@ typedef enum PortOwnerType
 
   /** Port is part of a HardwareProcessor. */
   PORT_OWNER_TYPE_HW,
+
+  /** Port is owned by engine transport. */
+  PORT_OWNER_TYPE_TRANSPORT,
 } PortOwnerType;
 
 static const cyaml_strval_t
@@ -136,6 +139,7 @@ port_owner_type_strings[] =
   { "sample processor",
     PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
   { "hw",        PORT_OWNER_TYPE_HW },
+  { "transport", PORT_OWNER_TYPE_TRANSPORT },
 };
 
 /**
@@ -264,6 +268,17 @@ typedef enum PortFlags
   PORT_FLAG_MODULATOR_MACRO = 1 << 29,
 } PortFlags;
 
+typedef enum PortFlags2
+{
+  /** Transport ports. */
+  PORT_FLAG_TRANSPORT_ROLL = 1 << 0,
+  PORT_FLAG_TRANSPORT_STOP = 1 << 1,
+  PORT_FLAG_TRANSPORT_BACKWARD = 1 << 2,
+  PORT_FLAG_TRANSPORT_FORWARD = 1 << 3,
+  PORT_FLAG_TRANSPORT_LOOP_TOGGLE = 1 << 4,
+  PORT_FLAG_TRANSPORT_REC_TOGGLE = 1 << 5,
+} PortFlags2;
+
 static const cyaml_bitdef_t
 port_flags_bitvals[] =
 {
@@ -299,6 +314,17 @@ port_flags_bitvals[] =
   { .name = "modulator_macro", .offset = 29, .bits = 1 },
 };
 
+static const cyaml_bitdef_t
+port_flags2_bitvals[] =
+{
+  { .name = "transport_roll", .offset = 0, .bits = 1 },
+  { .name = "transport_stop", .offset = 1, .bits = 1 },
+  { .name = "transport_backward", .offset = 2, .bits = 1 },
+  { .name = "transport_forward", .offset = 3, .bits = 1 },
+  { .name = "transport_loop_toggle", .offset = 4, .bits = 1 },
+  { .name = "transport_rec_toggle", .offset = 5, .bits = 1 },
+};
+
 /**
  * Struct used to identify Ports in the project.
  *
@@ -325,6 +351,7 @@ typedef struct PortIdentifier
   PortFlow            flow;
   /** Flags (e.g. is side chain). */
   PortFlags           flags;
+  PortFlags2          flags2;
 
   /** Port unit. */
   PortUnit            unit;
@@ -379,10 +406,10 @@ port_identifier_fields_schema[] =
     PortIdentifier, flow, port_flow_strings),
   YAML_FIELD_ENUM (
     PortIdentifier, unit, port_unit_strings),
-  CYAML_FIELD_BITFIELD (
-    "flags", CYAML_FLAG_DEFAULT,
-    PortIdentifier, flags, port_flags_bitvals,
-    CYAML_ARRAY_LEN (port_flags_bitvals)),
+  YAML_FIELD_BITFIELD (
+    PortIdentifier, flags, port_flags_bitvals),
+  YAML_FIELD_BITFIELD (
+    PortIdentifier, flags2, port_flags2_bitvals),
   YAML_FIELD_INT (
     PortIdentifier, track_pos),
   YAML_FIELD_MAPPING_EMBEDDED (

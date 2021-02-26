@@ -1,5 +1,4 @@
 # Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
-# Copyright (C) 2020 Ryan Gonzalez <rymg19 at github dot com>
 #
 # This file is part of Zrythm
 #
@@ -600,6 +599,7 @@ test_strict_cflags = [
   '-Werror=parentheses',
   '-Werror=comment',
   '-Werror=sizeof-pointer-div',
+  '-Werror=shift-count-overflow',
   ]
 
 if cc.get_id() == 'gcc'

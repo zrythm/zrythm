@@ -173,20 +173,8 @@ on_bind_midi_cc (
   Port *        port)
 {
   BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new ();
-
-  int ret = gtk_dialog_run (GTK_DIALOG (dialog));
-
-  if (ret == GTK_RESPONSE_ACCEPT)
-    {
-      if (dialog->cc[0])
-        {
-          UndoableAction * ua =
-            midi_mapping_action_new_bind (
-            dialog->cc, NULL, port);
-          undo_manager_perform (UNDO_MANAGER, ua);
-        }
-    }
+    bind_cc_dialog_widget_new (port, true);
+  gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
@@ -223,7 +211,7 @@ on_knob_right_click (
     GTK_MENU_SHELL (menu), menuitem);
 
   menuitem =
-    gtk_menu_item_new_with_label (_("Bind MIDI CC"));
+    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
   g_signal_connect (
     menuitem, "activate",
     G_CALLBACK (on_bind_midi_cc), port);

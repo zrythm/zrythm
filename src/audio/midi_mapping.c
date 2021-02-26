@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -186,13 +187,57 @@ midi_mappings_apply (
           mapping->key[1] == buf[1])
         {
           g_return_if_fail (mapping->dest);
-          float normalized_val =
-            (float) buf[2] / 127.f;
-          port_set_control_value (
-            mapping->dest,
-            control_port_normalized_val_to_real (
-              mapping->dest, normalized_val),
-            false, true);
+
+          Port * dest = mapping->dest;
+          if (dest->id.type == TYPE_CONTROL)
+            {
+              float normalized_val =
+                (float) buf[2] / 127.f;
+              port_set_control_value (
+                mapping->dest,
+                control_port_normalized_val_to_real (
+                  mapping->dest, normalized_val),
+                false, true);
+            }
+          else if (dest->id.type == TYPE_EVENT)
+            {
+              if (dest->id.flags2 &
+                    PORT_FLAG_TRANSPORT_ROLL)
+                {
+                  transport_request_roll (TRANSPORT);
+                }
+              else if (dest->id.flags2 &
+                    PORT_FLAG_TRANSPORT_STOP)
+                {
+                  transport_request_pause (
+                    TRANSPORT);
+                }
+              else if (dest->id.flags2 &
+                    PORT_FLAG_TRANSPORT_BACKWARD)
+                {
+                  transport_move_backward (
+                    TRANSPORT);
+                }
+              else if (dest->id.flags2 &
+                    PORT_FLAG_TRANSPORT_FORWARD)
+                {
+                  transport_move_forward (TRANSPORT);
+                }
+              else if (dest->id.flags2 &
+                    PORT_FLAG_TRANSPORT_LOOP_TOGGLE)
+                {
+                  transport_set_loop (
+                    TRANSPORT, !TRANSPORT->loop);
+                }
+              else if (dest->id.flags2 &
+                    PORT_FLAG_TRANSPORT_REC_TOGGLE)
+                {
+                  transport_set_recording (
+                    TRANSPORT,
+                    !TRANSPORT->recording,
+                    F_PUBLISH_EVENTS);
+                }
+            }
         }
     }
 }

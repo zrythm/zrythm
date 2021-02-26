@@ -65,7 +65,13 @@ typedef struct _TransportControlsWidget
   ButtonWithMenuWidget * trans_record;
   GtkToggleButton *  loop;
   GtkToggleButton *  return_to_cue_toggle;
+
+  gulong             rec_toggled_handler_id;
 } TransportControlsWidget;
+
+void
+transport_controls_widget_refresh (
+  TransportControlsWidget * self);
 
 /**
  * @}

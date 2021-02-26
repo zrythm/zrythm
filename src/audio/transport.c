@@ -133,6 +133,61 @@ transport_new (
   position_set_to_bar (&self->range_1, 1);
   position_set_to_bar (&self->range_2, 1);
 
+  /* create ports */
+  self->roll =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT, "Roll");
+  self->roll->id.owner_type =
+    PORT_OWNER_TYPE_TRANSPORT;
+  self->roll->id.flags |= PORT_FLAG_TOGGLE;
+  self->roll->id.flags2 |=
+    PORT_FLAG_TRANSPORT_ROLL;
+
+  self->stop =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT, "Stop");
+  self->stop->id.owner_type =
+    PORT_OWNER_TYPE_TRANSPORT;
+  self->stop->id.flags |= PORT_FLAG_TOGGLE;
+  self->stop->id.flags2 |=
+    PORT_FLAG_TRANSPORT_STOP;
+
+  self->backward =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT, "Backward");
+  self->backward->id.owner_type =
+    PORT_OWNER_TYPE_TRANSPORT;
+  self->backward->id.flags |= PORT_FLAG_TOGGLE;
+  self->backward->id.flags2 |=
+    PORT_FLAG_TRANSPORT_BACKWARD;
+
+  self->forward =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT, "Forward");
+  self->forward->id.owner_type =
+    PORT_OWNER_TYPE_TRANSPORT;
+  self->forward->id.flags |= PORT_FLAG_TOGGLE;
+  self->forward->id.flags2 |=
+    PORT_FLAG_TRANSPORT_FORWARD;
+
+  self->loop_toggle =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT, "Loop toggle");
+  self->loop_toggle->id.owner_type =
+    PORT_OWNER_TYPE_TRANSPORT;
+  self->loop_toggle->id.flags |= PORT_FLAG_TOGGLE;
+  self->loop_toggle->id.flags2 |=
+    PORT_FLAG_TRANSPORT_LOOP_TOGGLE;
+
+  self->rec_toggle =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT, "Rec toggle");
+  self->rec_toggle->id.owner_type =
+    PORT_OWNER_TYPE_TRANSPORT;
+  self->rec_toggle->id.flags |= PORT_FLAG_TOGGLE;
+  self->rec_toggle->id.flags2 |=
+    PORT_FLAG_TRANSPORT_REC_TOGGLE;
+
   init_common (self);
 
   return self;
@@ -979,6 +1034,36 @@ transport_update_total_bars (
       EVENTS_PUSH (
         ET_TRANSPORT_TOTAL_BARS_CHANGED, NULL);
     }
+}
+
+/**
+ * Move to the previous snap point on the timeline.
+ */
+void
+transport_move_backward (
+  Transport * self)
+{
+  Position * pos =
+    snap_grid_get_nearby_snap_point (
+      &PROJECT->snap_grid_timeline,
+      &self->playhead_pos, true);
+  transport_move_playhead (
+    self, pos, F_PANIC, F_SET_CUE_POINT);
+}
+
+/**
+ * Move to the next snap point on the timeline.
+ */
+void
+transport_move_forward (
+  Transport * self)
+{
+  Position * pos =
+    snap_grid_get_nearby_snap_point (
+      &PROJECT->snap_grid_timeline,
+      &self->playhead_pos, false);
+  transport_move_playhead (
+    self, pos, F_PANIC, F_SET_CUE_POINT);
 }
 
 /**

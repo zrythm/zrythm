@@ -28,6 +28,7 @@
 
 #include <stdint.h>
 
+#include "audio/port.h"
 #include "audio/region.h"
 #include "utils/types.h"
 
@@ -266,6 +267,34 @@ typedef struct Transport
    */
   Position      playhead_before_pause;
 
+  /**
+   * Roll/play MIDI port.
+   *
+   * Any event received on this port will request
+   * a roll.
+   */
+  Port *        roll;
+
+  /**
+   * Stop MIDI port.
+   *
+   * Any event received on this port will request
+   * a stop/pause.
+   */
+  Port *        stop;
+
+  /** Backward MIDI port. */
+  Port *        backward;
+
+  /** Forward MIDI port. */
+  Port *        forward;
+
+  /** Loop toggle MIDI port. */
+  Port *        loop_toggle;
+
+  /** Rec toggle MIDI port. */
+  Port *        rec_toggle;
+
   /** Play state. */
   Play_State    play_state;
 } Transport;
@@ -313,6 +342,18 @@ transport_fields_schema[] =
     time_signature_fields_schema),
   YAML_FIELD_INT (
     Transport, position),
+  YAML_FIELD_MAPPING_PTR (
+    Transport, roll, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Transport, stop, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Transport, backward, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Transport, forward, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Transport, loop_toggle, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Transport, rec_toggle, port_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -451,6 +492,20 @@ void
 transport_get_playhead_pos (
   Transport * self,
   Position *  pos);
+
+/**
+ * Move to the previous snap point on the timeline.
+ */
+void
+transport_move_backward (
+  Transport * self);
+
+/**
+ * Move to the next snap point on the timeline.
+ */
+void
+transport_move_forward (
+  Transport * self);
 
 /**
  * Moves playhead to given pos.

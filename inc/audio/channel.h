@@ -533,7 +533,7 @@ channel_reattach_midi_editor_manual_press_port (
 AutomationTrack *
 channel_get_automation_track (
   Channel *       channel,
-  PortFlags       type);
+  uint64_t        port_flags);
 
 
 /**

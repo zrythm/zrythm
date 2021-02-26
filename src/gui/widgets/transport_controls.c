@@ -22,6 +22,7 @@
 #include "audio/midi.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/transport_controls.h"
 #include "settings/settings.h"
@@ -54,6 +55,211 @@ play_clicked_cb (
     {
       transport_request_roll (TRANSPORT);
     }
+}
+
+static void
+on_midi_learn (
+  GtkMenuItem * menuitem,
+  Port *        port)
+{
+  BindCcDialogWidget * dialog =
+    bind_cc_dialog_widget_new (port, true);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+add_menuitem_for_midi_learn (
+  GtkMenu * menu,
+  Port *    port)
+{
+  GtkWidget * menu_item =
+    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
+  g_signal_connect (
+    menu_item, "activate",
+    G_CALLBACK (on_midi_learn), port);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menu_item);
+}
+
+static void
+play_rb_released (
+  GtkGestureMultiPress *    gesture,
+  int                       n_press,
+  double                    x,
+  double                    y,
+  GtkButton *               self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget * menu = gtk_menu_new ();
+  /*GtkWidget * menu_item;*/
+
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), menu_item)
+
+  add_menuitem_for_midi_learn (
+    GTK_MENU (menu), TRANSPORT->roll);
+
+#undef APPEND_TO_MENU
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
+}
+
+static void
+stop_rb_released (
+  GtkGestureMultiPress *    gesture,
+  int                       n_press,
+  double                    x,
+  double                    y,
+  GtkButton *               self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget * menu = gtk_menu_new ();
+  /*GtkWidget * menu_item;*/
+
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), menu_item)
+
+  add_menuitem_for_midi_learn (
+    GTK_MENU (menu), TRANSPORT->stop);
+
+#undef APPEND_TO_MENU
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
+}
+
+static void
+backward_rb_released (
+  GtkGestureMultiPress *    gesture,
+  int                       n_press,
+  double                    x,
+  double                    y,
+  GtkButton *               self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget * menu = gtk_menu_new ();
+  /*GtkWidget * menu_item;*/
+
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), menu_item)
+
+  add_menuitem_for_midi_learn (
+    GTK_MENU (menu), TRANSPORT->backward);
+
+#undef APPEND_TO_MENU
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
+}
+
+static void
+forward_rb_released (
+  GtkGestureMultiPress *    gesture,
+  int                       n_press,
+  double                    x,
+  double                    y,
+  GtkButton *               self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget * menu = gtk_menu_new ();
+  /*GtkWidget * menu_item;*/
+
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), menu_item)
+
+  add_menuitem_for_midi_learn (
+    GTK_MENU (menu), TRANSPORT->forward);
+
+#undef APPEND_TO_MENU
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
+}
+
+static void
+loop_rb_released (
+  GtkGestureMultiPress *    gesture,
+  int                       n_press,
+  double                    x,
+  double                    y,
+  GtkButton *               self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget * menu = gtk_menu_new ();
+  /*GtkWidget * menu_item;*/
+
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), menu_item)
+
+  add_menuitem_for_midi_learn (
+    GTK_MENU (menu), TRANSPORT->loop_toggle);
+
+#undef APPEND_TO_MENU
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
+}
+
+static void
+rec_rb_released (
+  GtkGestureMultiPress *    gesture,
+  int                       n_press,
+  double                    x,
+  double                    y,
+  GtkButton *               self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget * menu = gtk_menu_new ();
+  /*GtkWidget * menu_item;*/
+
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), menu_item)
+
+  add_menuitem_for_midi_learn (
+    GTK_MENU (menu), TRANSPORT->rec_toggle);
+
+#undef APPEND_TO_MENU
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
 }
 
 static void
@@ -91,24 +297,14 @@ static void
 forward_clicked_cb (GtkButton * forward,
                     gpointer          user_data)
 {
-  Position *pos =
-    snap_grid_get_nearby_snap_point (
-      &PROJECT->snap_grid_timeline,
-      &TRANSPORT->playhead_pos, 0);
-  transport_move_playhead (
-    TRANSPORT, pos, F_PANIC, F_SET_CUE_POINT);
+  transport_move_forward (TRANSPORT);
 }
 
 static void
 backward_clicked_cb (GtkButton * backward,
                      gpointer    user_data)
 {
-  Position * pos =
-    snap_grid_get_nearby_snap_point (
-      &PROJECT->snap_grid_timeline,
-      &TRANSPORT->playhead_pos, 1);
-  transport_move_playhead (
-    TRANSPORT, pos, F_PANIC, F_SET_CUE_POINT);
+  transport_move_backward (TRANSPORT);
 }
 
 static void
@@ -174,6 +370,34 @@ activate_recording_mode (
         TRANSPORT, RECORDING_MODE_TAKES_MUTED);
     }
   g_message ("recording mode changed");
+}
+
+void
+transport_controls_widget_refresh (
+  TransportControlsWidget * self)
+{
+  g_signal_handler_block (
+    self->trans_record_btn,
+    self->rec_toggled_handler_id);
+  char * loop_action_name =
+    g_strdup (
+      gtk_actionable_get_action_name (
+        GTK_ACTIONABLE (self->loop)));
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->loop), "");
+
+  gtk_toggle_button_set_active (
+    self->trans_record_btn, TRANSPORT->recording);
+  gtk_toggle_button_set_active (
+    self->loop, TRANSPORT->loop);
+  g_debug ("action name %s", loop_action_name);
+
+  g_signal_handler_unblock (
+    self->trans_record_btn,
+    self->rec_toggled_handler_id);
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->loop), loop_action_name);
+  g_free (loop_action_name);
 }
 
 static void
@@ -309,13 +533,71 @@ transport_controls_widget_init (
   g_signal_connect (
     GTK_WIDGET (self->stop), "clicked",
     G_CALLBACK (stop_clicked_cb), NULL);
-  g_signal_connect (
-    GTK_WIDGET (self->trans_record_btn), "toggled",
-    G_CALLBACK (record_toggled_cb), NULL);
+  self->rec_toggled_handler_id =
+    g_signal_connect (
+      GTK_WIDGET (self->trans_record_btn), "toggled",
+      G_CALLBACK (record_toggled_cb), NULL);
   g_signal_connect (
     GTK_WIDGET(self->forward), "clicked",
     G_CALLBACK(forward_clicked_cb), NULL);
   g_signal_connect (
     GTK_WIDGET(self->backward), "clicked",
     G_CALLBACK(backward_clicked_cb), NULL);
+
+  /* add context menus */
+  GtkGesture * mp =
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self->play));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    mp, "released",
+    G_CALLBACK (play_rb_released), self->play);
+  mp =
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self->stop));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    mp, "released",
+    G_CALLBACK (stop_rb_released), self->stop);
+  mp =
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self->backward));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    mp, "released",
+    G_CALLBACK (backward_rb_released), self->backward);
+  mp =
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self->forward));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    mp, "released",
+    G_CALLBACK (forward_rb_released), self->forward);
+  mp =
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self->loop));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    mp, "released",
+    G_CALLBACK (loop_rb_released), self->loop);
+  mp =
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self->trans_record_btn));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    mp, "released",
+    G_CALLBACK (rec_rb_released),
+    self->trans_record_btn);
 }

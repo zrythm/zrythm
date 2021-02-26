@@ -353,7 +353,8 @@ add_port (
     owner != PORT_OWNER_TYPE_TRACK &&
     owner != PORT_OWNER_TYPE_BACKEND &&
     owner != PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
-    owner != PORT_OWNER_TYPE_HW)
+    owner != PORT_OWNER_TYPE_HW &&
+    owner != PORT_OWNER_TYPE_TRANSPORT)
     {
       return NULL;
     }
@@ -612,7 +613,12 @@ graph_setup (
       GraphNode * port_node =
         add_port (
           self, port, drop_unnecessary_ports);
-      if (!port_node)
+      if (port_node)
+        {
+          /*g_debug (*/
+            /*"added port %s", port->id.label);*/
+        }
+      else
         {
           g_message (
             "%s: skipped port %s",
@@ -682,6 +688,39 @@ graph_setup (
       graph_node_connect (hw_processor_node, node2);
     }
 
+  /* connect the transport ports */
+  node2 =
+    graph_find_node_from_port (
+      self, TRANSPORT->roll);
+  graph_node_connect (
+    node2, initial_processor_node);
+  node2 =
+    graph_find_node_from_port (
+      self, TRANSPORT->stop);
+  graph_node_connect (
+    node2, initial_processor_node);
+  node2 =
+    graph_find_node_from_port (
+      self, TRANSPORT->backward);
+  graph_node_connect (
+    node2, initial_processor_node);
+  node2 =
+    graph_find_node_from_port (
+      self, TRANSPORT->forward);
+  graph_node_connect (
+    node2, initial_processor_node);
+  node2 =
+    graph_find_node_from_port (
+      self, TRANSPORT->loop_toggle);
+  graph_node_connect (
+    node2, initial_processor_node);
+  node2 =
+    graph_find_node_from_port (
+      self, TRANSPORT->rec_toggle);
+  graph_node_connect (
+    node2, initial_processor_node);
+
+  /* connect tracks */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
@@ -966,8 +1005,7 @@ graph_setup (
             continue;
         }
 
-      connect_port (
-        self, port);
+      connect_port (self, port);
     }
 
   /* ========================

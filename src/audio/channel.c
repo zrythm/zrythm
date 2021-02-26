@@ -2000,7 +2000,7 @@ channel_reattach_midi_editor_manual_press_port (
 AutomationTrack *
 channel_get_automation_track (
   Channel *       channel,
-  PortFlags       flags)
+  uint64_t        port_flags)
 {
   Track * track = channel_get_track (channel);
   AutomationTracklist * atl =
@@ -2009,7 +2009,7 @@ channel_get_automation_track (
     {
       AutomationTrack * at = atl->ats[i];
 
-      if (at->port_id.flags & flags)
+      if (at->port_id.flags & port_flags)
         return at;
     }
   return NULL;

@@ -57,13 +57,21 @@ typedef struct _BindCcDialogWidget
   /** A MIDI event for the CC selected, or all 0's if
    * none selected. */
   midi_byte_t          cc[3];
+
+  Port *               port;
+
+  /** Whether to perform an undoable action for
+   * binding on close. */
+  bool                 perform_action;
 } BindCcDialogWidget;
 
 /**
  * Creates an bind_cc dialog widget and displays it.
  */
 BindCcDialogWidget *
-bind_cc_dialog_widget_new (void);
+bind_cc_dialog_widget_new (
+  Port * port,
+  bool   perform_action);
 
 /**
  * @}

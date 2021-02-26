@@ -47,6 +47,17 @@ on_ok_clicked (
 {
   gtk_dialog_response (
     GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
+
+  if (self->perform_action)
+    {
+      if (self->cc[0])
+        {
+          UndoableAction * ua =
+            midi_mapping_action_new_bind (
+            self->cc, NULL, self->port);
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+    }
 }
 
 static void
@@ -70,19 +81,33 @@ tick_cb (
         self->cc, AUDIO_ENGINE->last_cc,
         sizeof (midi_byte_t) * 3);
       char ctrl_change[60];
-      int ch =
+      int ctrl_change_ch =
         midi_ctrl_change_get_ch_and_description (
           AUDIO_ENGINE->last_cc, ctrl_change);
 
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->ok_btn), ch > 0);
+      bool port_is_toggle =
+        self->port &&
+        self->port->id.flags & PORT_FLAG_TOGGLE;
 
-      if (ch > 0)
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->ok_btn), true);
+
+      if (ctrl_change_ch > 0)
         {
           char str[100];
           sprintf (
             str, "<b>Ch%d - %s</b>",
-            ch, ctrl_change);
+            ctrl_change_ch, ctrl_change);
+          gtk_label_set_markup (
+            self->lbl, str);
+        }
+      else if (port_is_toggle)
+        {
+          char str[100];
+          sprintf (
+            str,
+            "<b>%02X %02X %02X</b>",
+            self->cc[0], self->cc[1], self->cc[2]);
           gtk_label_set_markup (
             self->lbl, str);
         }
@@ -95,6 +120,9 @@ tick_cb (
             _("Not a control change event"));
           gtk_label_set_markup (
             self->lbl, str);
+
+          gtk_widget_set_sensitive (
+            GTK_WIDGET (self->ok_btn), false);
         }
     }
 
@@ -105,10 +133,15 @@ tick_cb (
  * Creates a new bind_cc dialog.
  */
 BindCcDialogWidget *
-bind_cc_dialog_widget_new ()
+bind_cc_dialog_widget_new (
+  Port * port,
+  bool   perform_action)
 {
   BindCcDialogWidget * self =
     g_object_new (BIND_CC_DIALOG_WIDGET_TYPE, NULL);
+
+  self->port = port;
+  self->perform_action = perform_action;
 
   return self;
 }

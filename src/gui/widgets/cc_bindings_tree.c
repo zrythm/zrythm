@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -115,13 +115,23 @@ create_model ()
       MidiMapping * mm = &MIDI_MAPPINGS->mappings[i];
 
       /* get control */
-      char ctrl[60];
-      midi_ctrl_change_get_ch_and_description (
-        mm->key, ctrl);
       char ctrl_str[80];
-      sprintf (
-        ctrl_str, "%02X-%02X (%s)",
-        mm->key[0], mm->key[1], ctrl);
+      char ctrl[60];
+      int ctrl_change_ch =
+        midi_ctrl_change_get_ch_and_description (
+          mm->key, ctrl);
+      if (ctrl_change_ch > 0)
+        {
+          sprintf (
+            ctrl_str, "%02X-%02X (%s)",
+            mm->key[0], mm->key[1], ctrl);
+        }
+      else
+        {
+          sprintf (
+            ctrl_str, "%02X-%02X",
+            mm->key[0], mm->key[1]);
+        }
 
       /* get destination */
       char path[600];
