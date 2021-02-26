@@ -167,6 +167,9 @@ coverage.html
 # valgrind log
 valog*
 
+# massif
+massif*
+
 # callgrind
 callgrind*
 

@@ -81,7 +81,6 @@ typedef enum PanLaw PanLaw;
   ((_p) && \
    ((Port *) (_p))->magic == PORT_MAGIC)
 
-#define MAX_DESTINATIONS 600
 #define FOREACH_SRCS(port) \
   for (int i = 0; i < port->num_srcs; i++)
 #define FOREACH_DESTS(port) \
@@ -149,20 +148,20 @@ typedef struct Port
    * and replace the pointer (also freeing the
    * current one).
    */
-  struct Port *       srcs[MAX_DESTINATIONS];
-  struct Port *       dests[MAX_DESTINATIONS];
-  PortIdentifier      src_ids[MAX_DESTINATIONS];
-  PortIdentifier      dest_ids[MAX_DESTINATIONS];
+  struct Port **      srcs;
+  struct Port **      dests;
+  PortIdentifier *    src_ids;
+  PortIdentifier *    dest_ids;
 
   /** These are the multipliers for port connections.
    *
    * They range from 0.f to 1.f and the default is
    * 1.f. They correspond to each destination.
    */
-  float               multipliers[MAX_DESTINATIONS];
+  float *             multipliers;
 
   /** Same as above for sources. */
-  float               src_multipliers[MAX_DESTINATIONS];
+  float *             src_multipliers;
 
   /**
    * These indicate whether the destination Port
@@ -175,10 +174,10 @@ typedef struct Port
    *
    * 0 == unlocked, 1 == locked.
    */
-  int                 dest_locked[MAX_DESTINATIONS];
+  int *               dest_locked;
 
   /** Same as above for sources. */
-  int                 src_locked[MAX_DESTINATIONS];
+  int *               src_locked;
 
   /**
    * These indicate whether the connection is
@@ -190,14 +189,18 @@ typedef struct Port
    * 0 == disabled (disconnected),
    * 1 == enabled (connected).
    */
-  int                 dest_enabled[MAX_DESTINATIONS];
+  int *               dest_enabled;
 
   /** Same as above for sources. */
-  int                 src_enabled[MAX_DESTINATIONS];
+  int *               src_enabled;
 
   /** Counters. */
   int                 num_srcs;
   int                 num_dests;
+
+  /** Allocated sizes. */
+  size_t              srcs_size;
+  size_t              dests_size;
 
   /**
    * Indicates whether data or lv2_port should be
@@ -481,37 +484,45 @@ port_fields_schema[] =
   YAML_FIELD_INT (
     Port, exposed_to_backend),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "src_ids", CYAML_FLAG_DEFAULT,
-    Port, src_ids, num_srcs,
-    &port_identifier_schema_default,
-    0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "dest_ids", CYAML_FLAG_DEFAULT,
+    "dest_ids",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, dest_ids, num_dests,
     &port_identifier_schema_default,
     0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "multipliers", CYAML_FLAG_DEFAULT,
+    "src_ids",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Port, src_ids, num_srcs,
+    &port_identifier_schema_default,
+    0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "multipliers",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, multipliers, num_dests,
     &float_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "src_multipliers", CYAML_FLAG_DEFAULT,
+    "src_multipliers",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, src_multipliers, num_srcs,
     &float_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "dest_locked", CYAML_FLAG_DEFAULT,
+    "dest_locked",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, dest_locked, num_dests,
     &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "src_locked", CYAML_FLAG_DEFAULT,
+    "src_locked",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, src_locked, num_srcs,
     &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "dest_enabled", CYAML_FLAG_DEFAULT,
+    "dest_enabled",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, dest_enabled, num_dests,
     &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "src_enabled", CYAML_FLAG_DEFAULT,
+    "src_enabled",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, src_enabled, num_srcs,
     &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
@@ -647,6 +658,8 @@ stereo_ports_new_generic (
  * port_connect().
  *
  * @param locked Lock the connection.
+ *
+ * @return Non-zero if error.
  */
 void
 stereo_ports_connect (

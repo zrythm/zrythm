@@ -36,6 +36,7 @@ util_srcs = [
   'localization.c',
   'log.c',
   'math.c',
+  'mem.c',
   'mpmc_queue.c',
   'object_utils.c',
   'object_pool.c',

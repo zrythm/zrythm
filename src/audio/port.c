@@ -50,6 +50,7 @@
 #include "utils/err_codes.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -61,6 +62,118 @@
 #define SLEEPTIME_USEC 60
 
 #define AUDIO_RING_SIZE 65536
+
+static void
+allocate_buf (
+  Port * self)
+{
+  if (self->id.type == TYPE_CV ||
+      self->id.type == TYPE_AUDIO)
+    {
+      if (!self->buf)
+        {
+          self->buf =
+            calloc (
+              AUDIO_ENGINE->block_length > 0 ?
+                AUDIO_ENGINE->block_length :
+                1,
+              sizeof (float));
+        }
+    }
+}
+
+static void
+alloc_srcs (
+  Port * self)
+{
+  self->srcs = calloc (1, sizeof (Port *));
+  self->src_ids =
+    calloc (1, sizeof (PortIdentifier));
+  self->src_multipliers =
+    calloc (1, sizeof (float));
+  self->src_locked = calloc (1, sizeof (int));
+  self->src_enabled = calloc (1, sizeof (int));
+  self->srcs_size = 1;
+}
+
+static void
+alloc_dests (
+  Port * self)
+{
+  self->dests = calloc (1, sizeof (Port *));
+  self->dest_ids =
+    calloc (1, sizeof (PortIdentifier));
+  self->multipliers = calloc (1, sizeof (float));
+  self->dest_locked = calloc (1, sizeof (int));
+  self->dest_enabled = calloc (1, sizeof (int));
+  self->dests_size = 1;
+}
+
+static void
+realloc_dests (
+  Port * src,
+  size_t prev_size,
+  size_t new_size)
+{
+  src->dests =
+    realloc (
+      src->dests,
+      new_size * sizeof (Port *));
+  src->dest_ids =
+    realloc_zero (
+      src->dest_ids,
+      prev_size *
+        sizeof (PortIdentifier),
+      new_size *
+        sizeof (PortIdentifier));
+  src->multipliers =
+    realloc (
+      src->multipliers,
+      new_size * sizeof (float));
+  src->dest_locked =
+    realloc (
+      src->dest_locked,
+      new_size * sizeof (int));
+  src->dest_enabled =
+    realloc (
+      src->dest_enabled,
+      new_size * sizeof (int));
+
+  src->dests_size = new_size;
+}
+
+static void
+realloc_srcs (
+  Port * dest,
+  size_t prev_size,
+  size_t new_size)
+{
+  dest->srcs =
+    realloc (
+      dest->srcs,
+      new_size * sizeof (Port *));
+  dest->src_ids =
+    realloc_zero (
+      dest->src_ids,
+      prev_size *
+        sizeof (PortIdentifier),
+      new_size *
+        sizeof (PortIdentifier));
+  dest->src_multipliers =
+    realloc (
+      dest->src_multipliers,
+      new_size * sizeof (float));
+  dest->src_locked =
+    realloc (
+      dest->src_locked,
+      new_size * sizeof (int));
+  dest->src_enabled =
+    realloc (
+      dest->src_enabled,
+      new_size * sizeof (int));
+
+  dest->srcs_size = new_size;
+}
 
 /**
  * This function finds the Ports corresponding to
@@ -85,6 +198,30 @@ port_init_loaded (
   self->is_project = is_project;
   self->unsnapped_control = self->control;
 
+  if (self->num_dests == 0)
+    {
+      alloc_dests (self);
+    }
+  else
+    {
+      g_warn_if_fail (self->num_dests > 0);
+      self->dests_size = (size_t) self->num_dests;
+    }
+  self->dests =
+    calloc (self->dests_size, sizeof (Port *));
+
+  if (self->num_srcs == 0)
+    {
+      alloc_srcs (self);
+    }
+  else
+    {
+      g_warn_if_fail (self->num_srcs > 0);
+      self->srcs_size = (size_t) self->num_srcs;
+    }
+  self->srcs =
+    calloc (self->srcs_size, sizeof (Port *));
+
   if (!is_project)
     return;
 
@@ -92,23 +229,25 @@ port_init_loaded (
   for (int i = 0; i < self->num_srcs; i++)
     {
       id = &self->src_ids[i];
-      self->srcs[i] =
-        port_find_from_identifier (id);
+      if (!self->srcs[i])
+        {
+          self->srcs[i] =
+            port_find_from_identifier (id);
+        }
       g_warn_if_fail (self->srcs[i]);
     }
   for (int i = 0; i < self->num_dests; i++)
     {
       id = &self->dest_ids[i];
-      self->dests[i] =
-        port_find_from_identifier (id);
+      if (!self->dests[i])
+        {
+          self->dests[i] =
+            port_find_from_identifier (id);
+        }
       g_warn_if_fail (self->dests[i]);
     }
 
-  if (AUDIO_ENGINE->block_length > 0)
-    {
-      self->buf =
-        calloc (80000, sizeof (float));
-    }
+  allocate_buf (self);
 
   switch (self->id.type)
     {
@@ -118,9 +257,12 @@ port_init_loaded (
           self->midi_events =
             midi_events_new (self);
         }
-      self->midi_ring =
-        zix_ring_new (
-          sizeof (MidiEvent) * (size_t) 11);
+      if (!self->midi_ring)
+        {
+          self->midi_ring =
+            zix_ring_new (
+              sizeof (MidiEvent) * (size_t) 11);
+        }
 #ifdef _WOE32
       if (AUDIO_ENGINE->midi_backend ==
             MIDI_BACKEND_WINDOWS_MME)
@@ -133,18 +275,24 @@ port_init_loaded (
     case TYPE_AUDIO:
       /* fall through */
     case TYPE_CV:
-      self->audio_ring =
-        zix_ring_new (
-          sizeof (float) * AUDIO_RING_SIZE);
+      if (!self->audio_ring)
+        {
+          self->audio_ring =
+            zix_ring_new (
+              sizeof (float) * AUDIO_RING_SIZE);
+        }
     default:
       break;
     }
 
   if (self->id.flags & PORT_FLAG_AUTOMATABLE)
     {
-      self->at =
-        automation_track_find_from_port (
-          self, NULL, false);
+      if (!self->at)
+        {
+          self->at =
+            automation_track_find_from_port (
+              self, NULL, false);
+        }
       g_return_if_fail (self->at);
     }
 }
@@ -593,15 +741,11 @@ _port_new (
   self->magic = PORT_MAGIC;
 
   self->num_dests = 0;
-  if (AUDIO_ENGINE->block_length != 0)
-    {
-      self->buf =
-        calloc (
-          AUDIO_ENGINE->block_length,
-          sizeof (float));
-    }
   self->id.flow = FLOW_UNKNOWN;
   self->id.label = g_strdup (label);
+
+  alloc_srcs (self);
+  alloc_dests (self);
 
   /*g_message ("%s: done (%p)", __func__, self);*/
 
@@ -665,6 +809,8 @@ port_new_with_type (
     default:
       break;
     }
+
+  allocate_buf (self);
 
   g_return_val_if_fail (IS_PORT (self), NULL);
 
@@ -1477,6 +1623,8 @@ port_set_is_project (
  * Connets src to dest.
  *
  * @param locked Lock the connection or not.
+ *
+ * @return Non-zero if error.
  */
 int
 port_connect (
@@ -1491,9 +1639,44 @@ port_connect (
       !(src->id.type == TYPE_CV &&
         dest->id.type == TYPE_CONTROL))
     {
-      g_warning ("Cannot connect ports, incompatible types");
+      g_warning (
+        "Cannot connect ports, incompatible types");
       return -1;
     }
+
+  g_return_val_if_fail (
+    (int) src->dests_size >= src->num_dests, -1);
+  g_return_val_if_fail (
+    (int) dest->srcs_size >= dest->num_srcs, -1);
+
+#if 0
+  g_debug (
+    "before: dest srcs size %zu, num srcs %d",
+    dest->srcs_size, dest->num_srcs);
+#endif
+
+  /* resize src arrays */
+  if (src->num_dests == (int) src->dests_size)
+    {
+      realloc_dests (
+        src, src->dests_size,
+        (size_t) src->num_dests + 1);
+    }
+
+  /* resize dest arrays */
+  if (dest->num_srcs == (int) dest->srcs_size)
+    {
+      realloc_srcs (
+        dest, dest->srcs_size,
+        (size_t) dest->num_srcs + 1);
+    }
+
+#if 0
+  g_debug (
+    "after realloc: dest srcs size %zu, num srcs %d",
+    dest->srcs_size, dest->num_srcs);
+#endif
+
   src->dests[src->num_dests] = dest;
   port_identifier_copy (
     &src->dest_ids[src->num_dests],
@@ -1526,6 +1709,16 @@ port_connect (
     }
 
 #if 0
+  g_debug ("after: dest srcs size %zu, num srcs %d",
+    dest->srcs_size, dest->num_srcs);
+#endif
+
+  g_return_val_if_fail (
+    (int) src->dests_size >= src->num_dests, -1);
+  g_return_val_if_fail (
+    (int) dest->srcs_size >= dest->num_srcs, -1);
+
+#if 0
   char sd[600], dd[600];
   port_get_full_designation (src, sd);
   port_get_full_designation (dest, dd);
@@ -1533,8 +1726,12 @@ port_connect (
     "Connected port \"%s\" to \"%s\"", sd, dd);
 #endif
   g_message (
-    "Connected port \"%s\" to \"%s\"",
-    src->id.label, dest->id.label);
+    "connected port <%s> to <%s> | "
+    "dests for <%s> (%p): %d | "
+    "sources for <%s> (%p): %d",
+    src->id.label, dest->id.label,
+    src->id.label, src, src->num_dests,
+    dest->id.label, dest, dest->num_srcs);
   return 0;
 }
 
@@ -1587,8 +1784,12 @@ port_disconnect (Port * src, Port * dest)
     sd, dd);
 #endif
   g_message (
-    "Disconnected port \"%s\" from \"%s\"",
-    src->id.label, dest->id.label);
+    "disconnected port <%s> from <%s> | "
+    "dests for <%s> (%p): %d | "
+    "sources for <%s> (%p): %d",
+    src->id.label, dest->id.label,
+    src->id.label, src, src->num_dests,
+    dest->id.label, dest, dest->num_srcs);
   return 0;
 }
 
@@ -1664,6 +1865,11 @@ void
 port_verify_src_and_dests (
   Port * self)
 {
+  g_return_if_fail (
+    self->num_srcs <= (int) self->srcs_size);
+  g_return_if_fail (
+    self->num_dests <= (int) self->dests_size);
+
   if (self->is_project)
     {
       /* verify all sources */
@@ -2691,6 +2897,23 @@ port_copy_metadata_from_project (
   clone_port->control = prj_port->control;
   clone_port->num_srcs = prj_port->num_srcs;
   clone_port->num_dests = prj_port->num_dests;
+
+  /* realloc arrays */
+  if ((int) clone_port->dests_size <
+        clone_port->num_dests)
+    {
+      realloc_dests (
+        clone_port, clone_port->dests_size,
+        (size_t) clone_port->num_dests);
+    }
+  if ((int) clone_port->srcs_size <
+        clone_port->num_srcs)
+    {
+      realloc_srcs (
+        clone_port, clone_port->srcs_size,
+        (size_t) clone_port->num_srcs);
+    }
+
   for (int k = 0; k < prj_port->num_srcs; k++)
     {
       Port * src_port = prj_port->srcs[k];
@@ -2736,6 +2959,13 @@ port_restore_from_non_project (
 
   /* set value */
   prj_port->control = non_project->control;
+
+  g_return_if_fail (
+    non_project->num_srcs <=
+      (int) non_project->srcs_size);
+  g_return_if_fail (
+    non_project->num_dests <=
+      (int) non_project->dests_size);
 
   /* re-connect previously connected ports */
   for (int k = 0; k < non_project->num_srcs; k++)
@@ -3877,9 +4107,11 @@ port_free (Port * self)
    * instead */
   g_warn_if_fail (
     self->num_srcs == 0 ||
+    !self->srcs ||
     self->srcs[0] == 0);
   g_warn_if_fail (
     self->num_dests == 0 ||
+    !self->dests ||
     self->dests[0] == 0);
 
   object_zero_and_free (self->buf);
@@ -3904,6 +4136,15 @@ port_free (Port * self)
         self->rtmidi_ins[i], 1);
     }
 #endif
+
+  object_zero_and_free (self->srcs);
+  object_zero_and_free (self->dests);
+  object_zero_and_free (self->multipliers);
+  object_zero_and_free (self->src_multipliers);
+  object_zero_and_free (self->dest_locked);
+  object_zero_and_free (self->src_locked);
+  object_zero_and_free (self->dest_enabled);
+  object_zero_and_free (self->src_enabled);
 
   port_identifier_free_members (&self->id);
 

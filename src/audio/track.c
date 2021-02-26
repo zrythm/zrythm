@@ -156,6 +156,7 @@ track_init_loaded (
     {
       port = ports[i];
       port->magic = PORT_MAGIC;
+      port_init_loaded (port, port->is_project);
     }
   free (ports);
 

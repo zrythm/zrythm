@@ -554,7 +554,7 @@ automation_tracklist_remove_at (
   if (free_at)
     {
       automation_track_clear (at);
-      free_later (at, automation_track_free);
+      automation_track_free (at);
     }
 
   if (fire_events)

@@ -33,17 +33,20 @@ port_identifier_copy (
   PortIdentifier * src)
 {
   g_return_if_fail (dest && src && dest != src);
-  g_free_and_null (dest->label);
-  dest->label = g_strdup (src->label);
-  dest->sym = g_strdup (src->sym);
+  string_copy_w_realloc (
+    &dest->label, src->label);
+  string_copy_w_realloc (
+    &dest->sym, src->sym);
   dest->owner_type = src->owner_type;
   dest->type = src->type;
   dest->flow = src->flow;
   dest->flags = src->flags;
   plugin_identifier_copy (
     &dest->plugin_id, &src->plugin_id);
-  dest->ext_port_id = g_strdup (src->ext_port_id);
-  dest->port_group = g_strdup (src->port_group);
+  string_copy_w_realloc (
+    &dest->ext_port_id, src->ext_port_id);
+  string_copy_w_realloc (
+    &dest->port_group, src->port_group);
   dest->track_pos = src->track_pos;
   dest->port_index = src->port_index;
 }
@@ -108,4 +111,7 @@ port_identifier_free_members (
 {
   g_free_and_null (self->label);
   g_free_and_null (self->sym);
+  g_free_and_null (self->port_group);
+  g_free_and_null (self->ext_port_id);
+  object_set_to_zero (self);
 }
