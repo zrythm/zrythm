@@ -759,6 +759,7 @@ carla_native_plugin_proces (
       int num_events =
         port ? port->midi_events->num_events : 0;
       NativeMidiEvent events[4000];
+      int num_events_written = 0;
       for (i = 0; i < num_events; i++)
         {
           MidiEvent * ev =
@@ -771,25 +772,48 @@ carla_native_plugin_proces (
                * the processing cycle */
               continue;
             }
-          events[i].time = ev->time;
-          events[i].size = 3;
-          events[i].data[0] = ev->raw_buffer[0];
-          events[i].data[1] = ev->raw_buffer[1];
-          events[i].data[2] = ev->raw_buffer[2];
-          /*midi_event_print (ev);*/
+
+#if 0
+          g_message (
+            "writing plugin input event %d "
+            "at time %u - "
+            "local frames %u nframes %u",
+            num_events_written,
+            ev->time - local_offset,
+            local_offset, nframes);
+          midi_event_print (ev);
+#endif
+
+          /* event time is relative to the current
+           * zrythm full cycle (not split). it
+           * needs to be made relative to the
+           * current split */
+          events[num_events_written].time =
+            ev->time - local_offset;
+          events[num_events_written].size = 3;
+          events[num_events_written].data[0] =
+            ev->raw_buffer[0];
+          events[num_events_written].data[1] =
+            ev->raw_buffer[1];
+          events[num_events_written].data[2] =
+            ev->raw_buffer[2];
+          num_events_written++;
         }
-      if (num_events > 0)
+      if (num_events_written > 0)
         {
+#if 0
           g_message (
             "Carla plugin %s has %d MIDI events",
             self->plugin->descr->name,
-            num_events);
+            num_events_written);
+#endif
         }
 
       /*g_warn_if_reached ();*/
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
-        nframes, events, (uint32_t) num_events);
+        nframes, events,
+        (uint32_t) num_events_written);
       }
       break;
     default:

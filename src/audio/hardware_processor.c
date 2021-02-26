@@ -114,6 +114,10 @@ hardware_processor_find_port (
       char * ext_port_id =
         ext_port_get_id (ext_port);
       Port * port = self->audio_ports[i];
+      if (!PROJECT || !PROJECT->loaded)
+        {
+          port->magic = PORT_MAGIC;
+        }
       g_return_val_if_fail (
         ext_port && IS_PORT (port), NULL);
       if (string_is_equal (ext_port_id, id))
@@ -129,6 +133,10 @@ hardware_processor_find_port (
       char * ext_port_id =
         ext_port_get_id (ext_port);
       Port * port = self->midi_ports[i];
+      if (!PROJECT || !PROJECT->loaded)
+        {
+          port->magic = PORT_MAGIC;
+        }
       g_return_val_if_fail (
         ext_port && IS_PORT (port), NULL);
       if (string_is_equal (ext_port_id, id))

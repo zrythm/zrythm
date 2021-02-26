@@ -96,6 +96,7 @@ track_lane_update_frames (
     {
       ArrangerObject * r_obj =
         (ArrangerObject *) self->regions[i];
+      g_return_if_fail (IS_REGION (r_obj));
       arranger_object_update_frames (r_obj);
     }
 }

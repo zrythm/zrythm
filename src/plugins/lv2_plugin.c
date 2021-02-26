@@ -2654,6 +2654,8 @@ lv2_plugin_process (
 
           if (port->midi_events->num_events > 0)
             {
+              int num_events_written = 0;
+
               /* Write MIDI input */
               for (i = 0;
                    i <
@@ -2671,16 +2673,30 @@ lv2_plugin_process (
                        * the processing cycle */
                       continue;
                     }
+
 #if 0
                   g_message (
-                    "writing plugin input event %d",
-                    i);
+                    "writing plugin input event %d "
+                    "at time %u - "
+                    "local frames %u nframes %u",
+                    num_events_written,
+                    ev->time - local_offset,
+                    local_offset, nframes);
                   midi_event_print (ev);
 #endif
+
                   lv2_evbuf_write (
-                    &iter, ev->time, 0,
+                    &iter,
+                    /* event time is relative to
+                     * the current zrythm full
+                     * cycle (not split). it
+                     * needs to be made relative
+                     * to the current split */
+                    ev->time - local_offset, 0,
                     PM_URIDS.midi_MidiEvent,
                     3, ev->raw_buffer);
+
+                  num_events_written++;
                 }
             }
         }
