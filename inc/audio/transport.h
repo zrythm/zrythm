@@ -342,17 +342,17 @@ transport_fields_schema[] =
     time_signature_fields_schema),
   YAML_FIELD_INT (
     Transport, position),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, roll, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, stop, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, backward, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, forward, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, loop_toggle, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, rec_toggle, port_fields_schema),
 
   CYAML_FIELD_END
@@ -378,6 +378,10 @@ transport_init_loaded (
 
 /**
  * Clones the transport values.
+ *
+ * @note This is a partial clone and does not
+ * include MIDI ports. Should only be used for
+ * position info.
  */
 Transport *
 transport_clone (

@@ -48,9 +48,10 @@ long
 position_to_frames (
   const Position * position)
 {
+  bool is_positive = position->bars > 0;
   double frames =
     AUDIO_ENGINE->frames_per_tick *
-      (position->bars > 0 ?
+      (is_positive ?
        (double) (position->bars - 1) :
        (double) (position->bars + 1)) *
       (double) TRANSPORT_BEATS_PER_BAR *
@@ -58,14 +59,14 @@ position_to_frames (
   if (position->beats)
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
-        (position->beats > 0 ?
+        (is_positive ?
          (double) (position->beats - 1) :
          (double) (position->beats + 1)) *
         (double) TRANSPORT->ticks_per_beat);
   if (position->sixteenths)
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
-        (position->sixteenths > 0 ?
+        (is_positive ?
          (double) (position->sixteenths - 1) :
          (double) (position->sixteenths + 1)) *
         (double) TICKS_PER_SIXTEENTH_NOTE);
@@ -280,8 +281,8 @@ position_add_frames (
   position_set_tick (
     pos,
     (double) pos->ticks + pos->sub_tick +
-      ((double) frames /
-        AUDIO_ENGINE->frames_per_tick));
+      ((double) frames *
+        AUDIO_ENGINE->ticks_per_frame));
   pos->frames = new_frames;
   g_warn_if_fail (
     pos->sub_tick >= 0.0 &&

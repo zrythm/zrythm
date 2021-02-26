@@ -195,6 +195,10 @@ transport_new (
 
 /**
  * Clones the transport values.
+ *
+ * @note This is a partial clone and does not
+ * include MIDI ports. Should only be used for
+ * position info.
  */
 Transport *
 transport_clone (

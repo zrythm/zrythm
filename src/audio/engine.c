@@ -123,6 +123,8 @@ engine_update_frames_per_tick (
        (double) beats_per_bar) /
     ((double) bpm *
        (double) self->transport->ticks_per_bar));
+  self->ticks_per_frame =
+    1.0 / self->frames_per_tick;
 
   /* update positions */
   transport_update_position_frames (

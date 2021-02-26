@@ -90,6 +90,7 @@ test_position_benchmarks ()
   Position pos;
   position_from_ticks (&pos, ticks);
 
+  g_message ("position to frames:");
   for (int j = 0; j < 5; j++)
     {
       gint64 before = g_get_monotonic_time ();

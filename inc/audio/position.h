@@ -139,8 +139,13 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct Position
 {
-  /* This is the size of the number of beats per
-   * bar (top part of time sig) */
+  /*
+   * This is the size of the number of beats per
+   * bar (top part of time sig).
+   *
+   * A negative number indicates a negative
+   * position.
+   */
   int       bars;
 
   /**
