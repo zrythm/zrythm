@@ -321,12 +321,15 @@ piano_roll_set_midi_modifier (
 {
   self->midi_modifier = modifier;
 
+#if 0
   g_settings_set_enum (
     S_UI, "piano-roll-midi-modifier",
     modifier);
+#endif
 
-  EVENTS_PUSH (ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED,
+    NULL);
 }
 
 void
