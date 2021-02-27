@@ -135,6 +135,12 @@ z_gtk_notebook_get_current_tab_label_widget (
 int
 z_gtk_get_primary_monitor_scale_factor (void);
 
+int
+z_gtk_get_primary_monitor_refresh_rate (void);
+
+bool
+z_gtk_is_wayland (void);
+
 void
 z_gtk_tree_view_remove_all_columns (
   GtkTreeView * treeview);

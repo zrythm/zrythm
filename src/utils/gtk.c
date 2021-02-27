@@ -24,6 +24,10 @@
 #include "utils/string.h"
 #include "utils/ui.h"
 
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#endif
+
 int
 z_gtk_widget_destroy_idle (
   GtkWidget * widget)
@@ -36,17 +40,106 @@ z_gtk_widget_destroy_idle (
 int
 z_gtk_get_primary_monitor_scale_factor (void)
 {
-  GdkDisplay * display =
+  GdkDisplay * display;
+  GdkMonitor * monitor;
+  int scale_factor;
+
+  display =
     gdk_display_get_default ();
-  g_warn_if_fail (display);
-  GdkMonitor * monitor =
+  if (!display)
+    {
+      g_warning ("no display");
+      goto return_default_scale_factor;
+    }
+  monitor =
     gdk_display_get_primary_monitor (display);
-  g_warn_if_fail (monitor);
-  int scale_factor =
+  if (!monitor)
+    {
+      g_warning ("no primary monitor");
+      goto return_default_scale_factor;
+    }
+  scale_factor =
     gdk_monitor_get_scale_factor (monitor);
-  g_warn_if_fail (scale_factor >= 1);
+  if (scale_factor < 1)
+    {
+      g_warning (
+        "invalid scale factor: %d", scale_factor);
+      goto return_default_scale_factor;
+    }
 
   return scale_factor;
+
+return_default_scale_factor:
+  g_warning (
+    "failed to get refresh rate from device, "
+    "returning default");
+  return 1;
+}
+
+/**
+ * Returns the refresh rate in Hz.
+ */
+int
+z_gtk_get_primary_monitor_refresh_rate (void)
+{
+  GdkDisplay * display;
+  GdkMonitor * monitor;
+  int refresh_rate;
+
+  display =
+    gdk_display_get_default ();
+  if (!display)
+    {
+      g_warning ("no display");
+      goto return_default_refresh_rate;
+    }
+  monitor =
+    gdk_display_get_primary_monitor (display);
+  if (!monitor)
+    {
+      g_warning ("no primary monitor");
+      goto return_default_refresh_rate;
+    }
+  refresh_rate =
+    /* divide by 1000 because gdk returns the
+     * value in milli-Hz */
+    gdk_monitor_get_refresh_rate (monitor) / 1000;
+  if (refresh_rate == 0)
+    {
+      g_warning (
+        "invalid refresh rate: %d", refresh_rate);
+      goto return_default_refresh_rate;
+    }
+
+  return refresh_rate;
+
+return_default_refresh_rate:
+  g_warning (
+    "failed to get refresh rate from device, "
+    "returning default");
+  return 30;
+}
+
+bool
+z_gtk_is_wayland (void)
+{
+  GdkDisplay * display =
+    gdk_display_get_default ();
+  g_return_val_if_fail (display, false);
+
+#ifdef GDK_WINDOWING_WAYLAND
+  if (GDK_IS_WAYLAND_DISPLAY (display))
+    {
+      /*g_debug ("wayland");*/
+      return true;
+    }
+  else
+    {
+      /*g_debug ("not wayland");*/
+    }
+#endif
+
+  return false;
 }
 
 /**

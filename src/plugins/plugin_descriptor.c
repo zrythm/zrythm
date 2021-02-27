@@ -107,8 +107,7 @@ plugin_descriptor_is_instrument (
       return false;
     }
 
-  if (descr->category == PC_INSTRUMENT ||
-      descr->category == PC_GENERATOR)
+  if (descr->category == PC_INSTRUMENT)
     {
       return true;
     }

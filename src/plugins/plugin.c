@@ -1323,21 +1323,9 @@ plugin_set_ui_refresh_rate (
     }
   else
     {
-      GdkDisplay * display =
-        gdk_display_get_default ();
-      g_warn_if_fail (display);
-      GdkMonitor * monitor =
-        gdk_display_get_primary_monitor (display);
-      g_warn_if_fail (monitor);
       self->ui_update_hz =
         (float)
-        /* divide by 1000 because gdk returns the
-         * value in milli-Hz */
-          gdk_monitor_get_refresh_rate (monitor) /
-        1000.f;
-      g_warn_if_fail (
-        !math_floats_equal (
-          self->ui_update_hz, 0.f));
+        z_gtk_get_primary_monitor_refresh_rate ();
       g_message (
         "refresh rate returned by GDK: %.01f",
         (double) self->ui_update_hz);

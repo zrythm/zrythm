@@ -1507,6 +1507,17 @@ lv2_plugin_create_descriptor_from_lilv (
     }
 #endif
 
+#if defined (GDK_WINDOWING_WAYLAND) && \
+  defined (HAVE_CARLA)
+  /* open all LV2 plugins with custom UIs using
+   * carla */
+  if (z_gtk_is_wayland () &&
+      plugin_descriptor_has_custom_ui (pd))
+    {
+      pd->open_with_carla = true;
+    }
+#endif
+
   return pd;
 }
 
