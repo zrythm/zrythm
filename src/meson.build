@@ -32,7 +32,7 @@ translators_c_h = configure_file (
   output: 'translators.h',
   command: [
     '@INPUT0@', '@OUTPUT@', 'about',
-    meson.source_root () / 'TRANSLATORS',
+    meson_src_root / 'TRANSLATORS',
     ],
   )
 zrythm_srcs += translators_c_h
@@ -107,7 +107,7 @@ if (stoat.found() and
   meson.get_compiler('cpp').get_id() == 'clang')
   run_target (
     'run_stoat',
-    command: [ meson.source_root () / 'scripts' / 'run_stoat.sh', ],
+    command: [ meson_src_root / 'scripts/run_stoat.sh', ],
     depends: [ zrythm_lib, ],
     )
 endif

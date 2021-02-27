@@ -909,6 +909,23 @@ Args:
                  )) ;; dsp/pan
              ))) ;; dsp
 
+         (preferences-category-print
+           (make-preferences-category
+             "scripting"
+             (list
+               (make-schema
+                 "general"
+                 (list
+                   (make-schema-key
+                     "info" "ai" "[6,0]"
+                     "Scripting" "General")
+                   (make-schema-key
+                     "default-script" "s" "print-all-tracks.scm"
+                     "Default script"
+                     "The default script to use in the scripting window.")
+                 )) ;; scripting/general
+             ))) ;; scripting
+
          (display "</schemalist>"))))))
 
 (apply main (program-arguments))

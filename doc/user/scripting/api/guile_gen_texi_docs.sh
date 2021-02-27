@@ -33,15 +33,22 @@ OTHER_INCLUDES=$7
 input_file_base=$(basename $INPUT_FILE)
 input_file_base_noext=$(echo "$input_file_base" | cut -f 1 -d '.')
 
-cd $(dirname $GUILE_SNARF_DOCS_BIN)
-mkdir -p "$PRIVATE_DIR"
+# change to abs paths
+output_file="`pwd`/$OUTPUT_FILE"
+private_dir="`pwd`/$PRIVATE_DIR"
+
+pushd $(dirname $GUILE_SNARF_DOCS_BIN)
+mkdir -p "$private_dir"
 # snarf docs out of the C file into a doc file
+echo "Snarfing docs out of <$INPUT_FILE> to <$private_dir/$input_file_base_noext.doc>"
 $GUILE_SNARF_DOCS_BIN -o \
-  "$PRIVATE_DIR/$input_file_base_noext.doc" \
+  "$private_dir/$input_file_base_noext.doc" \
   $INPUT_FILE -- \
   "$OTHER_INCLUDES" \
   $(pkg-config --cflags-only-I $GUILE_PKGCONF_NAME)
 # convert to texi
-cat "$PRIVATE_DIR/$input_file_base_noext.doc" | \
+echo "Converting <$private_dir/$input_file_base_noext.doc> to <$output_file>"
+cat "$private_dir/$input_file_base_noext.doc" | \
   $GUILD_BIN snarf-check-and-output-texi > \
-  "$OUTPUT_FILE"
+  "$output_file"
+popd

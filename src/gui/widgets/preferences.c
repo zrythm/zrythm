@@ -59,6 +59,19 @@ typedef struct CallbackData
   string_is_equal (key, c))
 
 static void
+on_simple_string_entry_changed (
+  GtkEditable *  editable,
+  CallbackData * data)
+{
+  char * str =
+    gtk_editable_get_chars (editable, 0, -1);
+  g_return_if_fail (str);
+  g_settings_set_string (
+    data->info->settings, data->key, str);
+  g_free (str);
+}
+
+static void
 on_path_entry_changed (
   GtkEditable *  editable,
   CallbackData * data)
@@ -592,6 +605,31 @@ make_control (
                   on_closure_notify_delete_data,
                 G_CONNECT_AFTER);
             }
+          /* else if not a string array */
+          else
+            {
+              /* create basic string entry control */
+              widget = gtk_entry_new ();
+              char * current_val =
+                g_settings_get_string (
+                  info->settings, key);
+              gtk_entry_set_text (
+                GTK_ENTRY (widget), current_val);
+              g_free (current_val);
+              CallbackData * data =
+                calloc (1, sizeof (CallbackData));
+              data->info = info;
+              data->preferences_widget = self;
+              data->key = g_strdup (key);
+              g_signal_connect_data (
+                G_OBJECT (widget), "changed",
+                G_CALLBACK (
+                  on_simple_string_entry_changed),
+                data,
+                (GClosureNotify)
+                  on_closure_notify_delete_data,
+                G_CONNECT_AFTER);
+            }
         }
     }
   else if (TYPE_EQUALS (STRING_ARRAY))
@@ -821,8 +859,7 @@ add_group (
         max_subgroup_idx = subgroup_idx;
     }
 
-  const char * localized_group_name =
-    group_name;
+  const char * localized_group_name = group_name;
   g_message (
     "adding group %s (%s)",
     group_name, localized_group_name);
@@ -885,7 +922,7 @@ preferences_widget_new ()
       "title", _("Preferences"),
       NULL);
 
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i <= 6; i++)
     {
       add_group (self, i);
     }

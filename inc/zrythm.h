@@ -95,6 +95,9 @@ typedef enum ZrythmDirType
   /** Samples. */
   ZRYTHM_DIR_SYSTEM_SAMPLESDIR,
 
+  /** Scripts. */
+  ZRYTHM_DIR_SYSTEM_SCRIPTSDIR,
+
   /** Themes. */
   ZRYTHM_DIR_SYSTEM_THEMESDIR,
 
@@ -114,6 +117,9 @@ typedef enum ZrythmDirType
   ZRYTHM_DIR_USER_PROJECTS,
   ZRYTHM_DIR_USER_TEMPLATES,
   ZRYTHM_DIR_USER_THEMES,
+
+  /** User scripts. */
+  ZRYTHM_DIR_USER_SCRIPTS,
 
   /** Log files. */
   ZRYTHM_DIR_USER_LOG,

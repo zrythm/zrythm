@@ -27,109 +27,6 @@ if get_option ('strict_sphinx_opts')
   sphinx_build_opts = '-E -W -T'
 endif
 
-# used to only create guile docs when possible,
-# otherwise reuse what is already there
-can_make_guile_docs = guile_dep.found () and get_option ('guile_snarf_docs_path') != ''
-
-# Create custom targets (each API .rst file) and save
-# them in guile_docs
-guile_docs = []
-if can_make_guile_docs
-  foreach snarfable_src : guile_snarfable_srcs
-    split_by_dot = snarfable_src.split('.')
-    without_ext = ''
-    foreach sp : split_by_dot
-      if sp == split_by_dot[split_by_dot.length() - 2]
-        without_ext += sp
-      elif sp != split_by_dot[split_by_dot.length() - 1]
-        without_ext += sp + '.'
-      endif
-    endforeach
-    base_file = ' '.join(without_ext.split (
-      meson.source_root ())[1].split('/'))
-    base_file = base_file.split('src guile ')[1]
-    rst_file = base_file + '.rst'
-    texi_file = '-'.join (base_file.split ('_')) + '.texi'
-    texi_doc = custom_target (
-      texi_file,
-      output: texi_file,
-      input: [
-        snarfable_src,
-        meson.source_root () / 'scripts' / 'guile_gen_texi_docs.sh',
-        ],
-      command: [
-        '@INPUT1@',
-        get_option ('guile_snarf_docs_path'),
-        guile_dep.name(), '@INPUT0@',
-        meson.build_root () / '@OUTPUT@',
-        meson.build_root () / '@PRIVATE_DIR@',
-        guild.full_path (),
-        '-I' + meson.source_root () / 'inc',
-        ],
-      )
-    rst_doc = custom_target (
-      rst_file,
-      output: rst_file,
-      input: [
-        texi_doc,
-        meson.build_root () / 'scripts' / 'guile-gen-docs.scm',
-        ],
-      command: [
-        '@INPUT1@',
-        guile_dep.name(),
-        meson.build_root () / '@INPUT0@',
-        meson.build_root () / '@OUTPUT@',
-        meson.build_root () / '@PRIVATE_DIR@',
-        ],
-      )
-    guile_docs += rst_doc
-  endforeach
-endif
-
-# copy the Guile API docs to scripting/api in the
-# source code (note: this edits rst source code)
-copy_guile_docs_sh = configure_file (
-  output: 'copy_guile_docs.sh',
-  input: 'copy_guile_docs.sh',
-  configuration: {
-    'BASH': bash.full_path (),
-    'GUILE_DOCS_SRCDIR': meson.current_build_dir (),
-    'GUILE_DOCS_DESTDIR': meson.current_source_dir () / 'scripting' / 'api',
-    })
-copy_guile_docs_target = custom_target (
-  'guile_localized_docs',
-  output: 'guile_localized_docs',
-  input: copy_guile_docs_sh,
-  command: '@INPUT@',
-  depends: [
-    guile_docs,
-    ])
-
-custom_css_target = custom_target (
-  'custom-css',
-  input: [
-    'custom_css.scss',
-    ],
-  output: 'custom_css_created',
-  command: [
-    'mkdir', '-p',
-    meson.current_source_dir () / '_static/css',
-    '&&',
-    sass, '@INPUT@',
-    meson.current_source_dir () / '_static/css/custom.css',
-    '&&', 'touch', '@OUTPUT@' ]
-  )
-run_target (
-  'manual_compile_css',
-  command : [
-    'echo', 'Compiled custom CSS',
-    ],
-  depends: custom_css_target)
-
-src_rst_files = files ([
-  'index.rst',
-  ])
-
 rtd_theme_files = files ([
   'sphinx_zrythm_theme/layout.html',
   'sphinx_zrythm_theme/search.html',
@@ -142,10 +39,48 @@ run_sphinx_build = configure_file (
     'BASH': bash.full_path (),
     })
 
-c = run_command ([
-  'find', '.', '-name', '*.rst',
-  ])
-rst_files = c.stdout().strip().split('\n')
+subdir ('locale')
+
+index_rst = configure_file (
+  copy: true,
+  input: 'index.rst',
+  output: '@PLAINNAME@')
+rst_files = [ index_rst ]
+
+subdir ('_static')
+subdir ('appendix')
+subdir ('chords-and-scales')
+subdir ('configuration')
+subdir ('contributing')
+subdir ('credits')
+subdir ('editing')
+subdir ('exporting')
+subdir ('getting-started')
+subdir ('glossary')
+subdir ('invoking-from-command-line')
+subdir ('mixing')
+subdir ('modulators')
+subdir ('playback-and-recording')
+subdir ('plugins-files')
+subdir ('projects')
+subdir ('routing')
+subdir ('scripting')
+subdir ('theming')
+subdir ('tracks')
+subdir ('user-media')
+subdir ('zrythm-interface')
+
+conf_py = configure_file (
+  output: 'conf.py',
+  input: 'conf.py.in',
+  configuration: {
+    'VERSION': meson.project_version (),
+    'HTML_THEME_PATH': meson.current_source_dir (),
+    })
+
+generated_rst_files = [
+  scripting_examples_rst,
+  ]
 
 # create run targets for each lang/format combination
 # and custom targets for each language for html
@@ -165,11 +100,14 @@ foreach lang, lang_str : locales
       run_sphinx_build,
       sphinx_build.full_path(),
       sphinx_build_opts,
-      lang, format, meson.current_source_dir (),
+      lang, format, meson.current_build_dir (),
       output_dir,
       ]
 
-    deps = [ custom_css_target ]
+    deps = [
+      custom_css_target,
+      copy_locales_targets,
+      ]
     if can_make_guile_docs
       deps += copy_guile_docs_target
     endif
@@ -183,9 +121,9 @@ foreach lang, lang_str : locales
       html_manual = custom_target (
         name,
         depend_files: [
-          'conf.py', src_rst_files,
+          conf_py, rst_files,
           rtd_theme_files,
-          rst_files,
+          generated_rst_files,
           ],
         output: name,
         command: [ command, '@OUTPUT@', ],
@@ -214,10 +152,11 @@ manual_gettext_gen_pot = custom_target (
   command: [
     sphinx_build,
     '-M', 'gettext',
-    meson.current_source_dir (),
+    meson.current_build_dir (),
     sphinx_builddir,
     ],
   depends: can_make_guile_docs ? copy_guile_docs_target : [],
+  depend_files: rst_files,
   )
 
 sphinx_intl_update_targets = []
@@ -298,7 +237,7 @@ bundle_manual_target = custom_target (
     bundle_manual_sh,
     ],
   command: [
-    '@INPUT0@', locales_str,
+    bundle_manual_sh, locales_str,
     meson.current_build_dir () / '_rendered',
     sphinx_builddir, '@OUTPUT@',
     '@PRIVATE_DIR@',
@@ -333,5 +272,3 @@ run_target (
   )
 
 endif
-
-subdir ('locale')

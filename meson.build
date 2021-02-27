@@ -19,13 +19,16 @@ project (
   'zrythm', ['c', 'cpp'],
   version: '1.0.0-alpha.12.0.1',
   license: 'AGPL-3-or-later',
-  meson_version: '>= 0.55.0',
+  meson_version: '>= 0.57.0',
   default_options: [
     'warning_level=2',
     'buildtype=debugoptimized',
     'c_std=gnu11',
     ],
   )
+
+meson_src_root = meson.current_source_dir ()
+meson_build_root = meson.current_build_dir ()
 
 prog_name = get_option ('program_name')
 prog_name_lowercase = prog_name.to_lower()
@@ -49,6 +52,7 @@ fontsdir = datadir / 'fonts' / prog_name_lowercase
 zrythmdatadir = datadir / prog_name_lowercase
 themesdir = zrythmdatadir / 'themes'
 samplesdir = zrythmdatadir / 'samples'
+scriptsdir = zrythmdatadir / 'scripts'
 docdir = datadir / 'doc' / prog_name_lowercase
 sourceviewstylesdir = zrythmdatadir / 'sourceview-styles'
 
@@ -166,11 +170,9 @@ if get_option ('installer_ver')
   cdata.set ('INSTALLER_VER', 1)
 endif
 cdata.set (
-  'MESON_SOURCE_ROOT',
-  meson.source_root ())
+  'MESON_SOURCE_ROOT', meson_src_root)
 cdata.set (
-  'MESON_BUILD_ROOT',
-  meson.build_root ())
+  'MESON_BUILD_ROOT', meson_build_root)
 cdata.set_quoted (
   'ISSUE_TRACKER_URL',
   'https://sr.ht/~alextee/zrythm/trackers')
@@ -209,8 +211,8 @@ all_inc = [
   suil_inc,
   ]
 
-resources_dir = meson.source_root () / 'resources'
-data_dir = meson.source_root () / 'data'
+resources_dir = meson_src_root / 'resources'
+data_dir = meson_src_root / 'data'
 
 cc = meson.get_compiler ('c')
 
@@ -1032,6 +1034,21 @@ if (os_darwin)
 else
   zrythm_deps += x11_dep
 endif
+
+# copy doc files to build dir
+root_doc_files = [
+  'HACKING.md',
+  'AUTHORS',
+  'TRANSLATORS',
+  'THANKS',
+  'INSTALL.md',
+  ]
+foreach f : root_doc_files
+  configure_file (
+    copy: true,
+    input: f,
+    output: '@PLAINNAME@')
+endforeach
 
 # create config.h
 tmp_h = configure_file (

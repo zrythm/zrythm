@@ -68,6 +68,8 @@
   SETTINGS->preferences_projects_general
 #define S_P_UI_GENERAL \
   SETTINGS->preferences_ui_general
+#define S_P_SCRIPTING_GENERAL \
+  SETTINGS->preferences_scripting_general
 
 /* ---- end preferences ---- */
 
@@ -101,6 +103,7 @@ typedef struct Settings
   GSettings * preferences_plugins_paths;
   GSettings * preferences_projects_general;
   GSettings * preferences_ui_general;
+  GSettings * preferences_scripting_general;
 
   /**
    * UI memory.

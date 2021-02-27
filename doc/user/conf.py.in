@@ -30,7 +30,7 @@ author = 'The Zrythm contributors'
 from subprocess import check_output
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0-alpha.12.0.1'
+release = '@VERSION@'
 # The short X.Y version
 version = release[:-4]
 
@@ -94,7 +94,7 @@ html_static_path = ['_static']
 # a list of builtin themes.
 #
 # html_theme_path = ['./_themes']
-html_theme_path = ['.']
+html_theme_path = ['@HTML_THEME_PATH@']
 html_theme = 'sphinx_zrythm_theme'
 html_last_updated_fmt = ''
 

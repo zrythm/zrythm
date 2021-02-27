@@ -25,7 +25,7 @@ add_project_arguments (
 i18n.gettext (
   meson.project_name(),
   args: [
-    '--directory=' + meson.source_root(),
+    '--directory=' + meson_src_root,
     '--msgid-bugs-address=https://redmine.zrythm.org/projects/zrythm/issues/new',
     '--add-comments',
     '--keyword=__',
@@ -36,7 +36,7 @@ i18n.gettext (
 collect_translatables = run_target (
   'collect-translatables',
   command: [
-    meson.source_root () / 'scripts' / 'collect_translatables.sh',
+    meson_src_root / 'scripts/collect_translatables.sh',
     ],
   )
 

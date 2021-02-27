@@ -130,4 +130,5 @@ install_data (
   install_dir: themesdir,
   rename: prog_name_lowercase + '-theme.css')
 
-subdir('windows')
+subdir ('scripts')
+subdir ('windows')

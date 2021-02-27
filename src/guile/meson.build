@@ -53,7 +53,7 @@ if have_guile
         input: snarfable_src,
         command: [
           guile, '-s',
-          meson.build_root () / 'scripts' / 'guile-snarf-wrap.scm',
+          meson_build_root / 'scripts/guile-snarf-wrap.scm',
           guile_dep.name(),
           '@OUTPUT@', '@INPUT@', ],
         )

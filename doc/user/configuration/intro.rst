@@ -10,6 +10,6 @@ Configuration
 .. toctree::
    :maxdepth: 4
 
-   preferences/intro
-   device-setup/intro
+   preferences
+   device-setup
    additional-settings

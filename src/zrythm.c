@@ -379,6 +379,12 @@ zrythm_get_dir (
               prefix, "share", "zrythm",
               "samples", NULL);
           break;
+        case ZRYTHM_DIR_SYSTEM_SCRIPTSDIR:
+          res =
+            g_build_filename (
+              prefix, "share", "zrythm",
+              "scripts", NULL);
+          break;
         case ZRYTHM_DIR_SYSTEM_THEMESDIR:
           res =
             g_build_filename (
@@ -415,6 +421,11 @@ zrythm_get_dir (
           res =
             g_build_filename (
               user_dir, "log", NULL);
+          break;
+        case ZRYTHM_DIR_USER_SCRIPTS:
+          res =
+            g_build_filename (
+              user_dir, "scripts", NULL);
           break;
         case ZRYTHM_DIR_USER_THEMES:
           res =

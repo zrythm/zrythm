@@ -85,6 +85,7 @@ settings_new (void)
   NEW_PREFERENCES_SETTINGS (plugins, paths);
   NEW_PREFERENCES_SETTINGS (projects, general);
   NEW_PREFERENCES_SETTINGS (ui, general);
+  NEW_PREFERENCES_SETTINGS (scripting, general);
 
 #undef PREFERENCES_PREFIX
 

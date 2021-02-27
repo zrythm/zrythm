@@ -28,7 +28,7 @@ doxyfile_mcss = configure_file (
   )
 
 extra_dev_docs = files([
-  meson.source_root() / 'CONTRIBUTING.md',
+  meson_src_root / 'CONTRIBUTING.md',
   'mainpage.h',
   'cyaml_schemas.h',
   'gtk_tips.md',

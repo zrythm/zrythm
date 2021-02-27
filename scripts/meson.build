@@ -17,8 +17,8 @@
 
 scripts_conf = {
   'SCRIPTS_DIR': meson.current_build_dir (),
-  'MESON_BUILD_ROOT': meson.build_root (),
-  'MESON_SOURCE_ROOT': meson.source_root (),
+  'MESON_BUILD_ROOT': meson_build_root,
+  'MESON_SOURCE_ROOT': meson_src_root,
   }
 if os_windows
   scripts_conf += { 'GUILE': 'guile' }
@@ -52,6 +52,9 @@ foreach script : src_scripts
       input: script,
       configuration: scripts_conf,
       )
+  endif
+  if script.endswith ('guile-gen-docs.scm')
+    guile_gen_docs_scm = res
   endif
 endforeach
 

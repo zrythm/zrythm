@@ -24,6 +24,7 @@
 #include "gui/widgets/scripting_window.h"
 #include "guile/guile.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -104,29 +105,58 @@ scripting_window_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  char * example_script =
-    g_strdup_printf (
-      "%s%s%s%s",
-      _(";;; This is an example GNU Guile script using modules provided by Zrythm\n\
-;;; See https://www.gnu.org/software/guile/ for more info about GNU Guile\n\
-;;; See https://manual.zrythm.org/en/scripting/intro.html for a list of\n\
-;;; modules provided by Zrythm\n"),
-"(use-modules (audio track)\n\
-             (audio tracklist)\n\
-             (project)\n\
-             (zrythm))\n\
-(define zrythm-script\n\
-  (lambda ()\n",
-_("    ;; loop through all tracks and print them\n"),
-"    (let* ((prj (zrythm-get-project))\n\
-           (tracklist (project-get-tracklist prj))\n\
-           (num-tracks (tracklist-get-num-tracks tracklist)))\n\
-      (let loop ((i 0))\n\
-        (when (< i num-tracks)\n\
-          (let ((track (tracklist-get-track-at-pos tracklist i)))\n\
-            (display (track-get-name track))\n\
-            (newline))\n\
-          (loop (+ i 1)))))))");
+  char * filename =
+    g_settings_get_string (
+      S_P_SCRIPTING_GENERAL, "default-script");
+  char * dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_SCRIPTS);
+  char * full_path =
+    g_build_filename (dir, filename, NULL);
+  if (!g_file_test (full_path, G_FILE_TEST_EXISTS))
+    {
+      g_free (dir);
+      g_free (full_path);
+      dir =
+        zrythm_get_dir (
+          ZRYTHM_DIR_SYSTEM_SCRIPTSDIR);
+      full_path =
+        g_build_filename (
+          dir, filename, NULL);
+
+      if (!g_file_test (
+            full_path, G_FILE_TEST_EXISTS))
+        {
+          g_free (full_path);
+          full_path =
+            g_build_filename (
+              dir, "print-all-tracks", NULL);
+
+          if (!g_file_test (
+                full_path, G_FILE_TEST_EXISTS))
+            {
+              g_critical (
+                "File not found: %s", full_path);
+              return;
+            }
+        }
+    }
+
+  char * script_contents = NULL;
+  GError * err = NULL;
+  bool ret =
+    g_file_get_contents (
+      full_path, &script_contents, NULL, &err);
+  if (!ret)
+    {
+      g_critical (
+        "error reading <%s> contents: %s",
+        full_path, err->message);
+      return;
+    }
+
+  g_free (full_path);
+  g_free (dir);
+  g_free (filename);
 
   GtkSourceLanguageManager * manager =
     gtk_source_language_manager_get_default ();
@@ -146,7 +176,7 @@ _("    ;; loop through all tracks and print them\n"),
     GTK_WIDGET (self->editor), true);
   gtk_text_buffer_set_text (
     GTK_TEXT_BUFFER (self->buffer),
-    example_script, -1);
+    script_contents, -1);
   gtk_source_view_set_show_line_numbers (
     self->editor, true);
   gtk_source_view_set_auto_indent (
@@ -162,7 +192,7 @@ _("    ;; loop through all tracks and print them\n"),
   gtk_source_view_set_smart_backspace (
     self->editor, true);
 
-  g_free (example_script);
+  g_free (script_contents);
 
   /* set style */
   GtkSourceStyleSchemeManager * style_mgr =
