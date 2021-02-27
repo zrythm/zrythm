@@ -23,6 +23,7 @@
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 
 #ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
@@ -43,6 +44,11 @@ z_gtk_get_primary_monitor_scale_factor (void)
   GdkDisplay * display;
   GdkMonitor * monitor;
   int scale_factor;
+
+  if (ZRYTHM_TESTING || !ZRYTHM_HAVE_UI)
+    {
+      return 1;
+    }
 
   display =
     gdk_display_get_default ();
@@ -86,6 +92,11 @@ z_gtk_get_primary_monitor_refresh_rate (void)
   GdkMonitor * monitor;
   int refresh_rate;
 
+  if (ZRYTHM_TESTING || !ZRYTHM_HAVE_UI)
+    {
+      return 30;
+    }
+
   display =
     gdk_display_get_default ();
   if (!display)
@@ -123,6 +134,11 @@ return_default_refresh_rate:
 bool
 z_gtk_is_wayland (void)
 {
+  if (ZRYTHM_TESTING || !ZRYTHM_HAVE_UI)
+    {
+      return false;
+    }
+
   GdkDisplay * display =
     gdk_display_get_default ();
   g_return_val_if_fail (display, false);

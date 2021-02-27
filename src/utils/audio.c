@@ -55,7 +55,14 @@ audio_audec_log_func (
   /*strcpy (format, fmt);*/
   /*format[strlen (format) - 1] = '\0';*/
 
-  g_logv ("audec", g_level, fmt, args);
+  if (ZRYTHM_TESTING)
+    {
+      g_message (fmt, args);
+    }
+  else
+    {
+      g_logv ("audec", g_level, fmt, args);
+    }
 }
 
 /**
