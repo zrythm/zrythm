@@ -30,7 +30,7 @@ Zrythm is currently in alpha. Most essential
 DAW features are implemented and we are working
 towards a stable release.
 
-![screenshot](https://www.zrythm.org/static/images/jun-26-2020.png)
+![screenshot](https://www.zrythm.org/static/images/feb-20-2021.png)
 
 ### Supported plugins/instruments
 - LV2, VST2, VST3, AU, SFZ, SF2, DSSI, LADSPA

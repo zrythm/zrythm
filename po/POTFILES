@@ -26,6 +26,7 @@ inc/plugins/lv2/lv2_port.h
 inc/plugins/lv2/lv2_worker.h
 inc/plugins/lv2/lv2_urid.h
 inc/plugins/lv2/lv2_state.h
+inc/plugins/lv2/ext/host_info.h
 inc/plugins/lv2/suil/suil.h
 inc/gui/dir.h
 inc/gui/accel.h
@@ -264,6 +265,7 @@ inc/utils/backtrace.h
 inc/utils/valgrind.h
 inc/utils/mpmc_queue.h
 inc/utils/object_pool.h
+inc/utils/mem.h
 inc/utils/symap.h
 inc/utils/env.h
 inc/utils/cairo.h
@@ -617,6 +619,7 @@ src/utils/windows_errors.c
 src/utils/io.c
 src/utils/object_utils.c
 src/utils/cairo.c
+src/utils/mem.c
 src/utils/datetime.c
 src/utils/color.c
 src/utils/smf.c

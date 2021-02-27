@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 13:25+0000\n"
+"POT-Creation-Date: 2021-02-27 03:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
 msgid "Environment Variables"
@@ -7286,28 +7286,4 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
-
-#~ msgid "The port receives signals."
-#~ msgstr ""
-
-#~ msgid "The port sends signals."
-#~ msgstr ""
-
-#~ msgid "Ports of this type receive or send raw audio signals."
-#~ msgstr ""
-
-#~ msgid "Event ports are mainly used for routing MIDI signals."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Control ports are user-editable "
-#~ "parameters that can also be automated"
-#~ " in automation lanes."
-#~ msgstr ""
-
-#~ msgid ""
-#~ ":term:`CV` ports handle continuous signals "
-#~ "and can be used to modulate "
-#~ "control ports."
-#~ msgstr ""
 
