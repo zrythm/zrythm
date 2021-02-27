@@ -44,15 +44,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-02-20 13:25+0000\n"
-"PO-Revision-Date: 2021-01-06 20:29+0000\n"
-"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
+"PO-Revision-Date: 2021-02-22 09:50+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.5\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -1298,14 +1299,8 @@ msgstr ""
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39
 #: ../../zrythm-interface/bottom-panel.rst:57
-#, fuzzy
 msgid "Audio Editor"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Éditeur d'automatisation\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Éditeur audio"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
 msgid "The audio editor is displayed when an audio region is selected."
@@ -2134,13 +2129,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:20
-#, fuzzy
 msgid "Select/Stretch Tool"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Mode de sélection/étirement\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Outil de sélection/étirement"
 
 #: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
@@ -2341,7 +2331,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
-msgstr ""
+msgstr "Outil de découpage"
 
 #: ../../editing/edit-tools.rst:116
 #, fuzzy
@@ -2380,13 +2370,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:129
-#, fuzzy
 msgid "Ramp Tool"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"ensemble"
+msgstr "Outil de rampe"
 
 #: ../../editing/edit-tools.rst:130
 #, fuzzy
@@ -12527,4 +12512,3 @@ msgstr ""
 #~ "du projet et est utilisé pour "
 #~ "mixer les signaux audio de chaque "
 #~ "canal."
-

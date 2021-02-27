@@ -5,25 +5,26 @@
 # Nicolas Faure <sub26nico@laposte.net>, 2019.
 # Nicolas FAURE <sub26nico@laposte.net>, 2020.
 # JEHANNIN <sahaa.thyva@laposte.net>, 2020.
-# Sahaathyva <sahaa.thyva@laposte.net>, 2020.
+# Sahaathyva <sahaa.thyva@laposte.net>, 2020, 2021.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
-# Olivier Humbert <trebmuh@tuxfamily.org>, 2020.
+# Olivier Humbert <trebmuh@tuxfamily.org>, 2020, 2021.
 # Romain Alb <romain.alb@lilo.org>, 2021.
+# J. Lavoie <j.lavoie@net-c.ca>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-14 08:34+0000\n"
-"PO-Revision-Date: 2021-01-06 20:29+0000\n"
-"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2021-02-22 09:50+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -130,20 +131,19 @@ msgstr "Désilencer"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:202
 msgid "Invert"
-msgstr ""
+msgstr "Inverser"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
-#, fuzzy
 msgid "Normalize"
-msgstr "Normal"
+msgstr "Normaliser"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
-msgstr ""
+msgstr "Inverser"
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
-msgstr ""
+msgstr "Invalide"
 
 #: inc/audio/track.h:163 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -422,11 +422,10 @@ msgid "File %s not found."
 msgstr "Fichier %s non trouvé."
 
 #: src/main.c:181
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
-"Aucun fichier se sortie spécifié. Veuillez SVP en spécifier un avec `--"
-"output [FILE]`."
+"Aucun fichier de sortie n'a été spécifié. Veuillez en spécifier un avec "
+"`--output=FICHIER`."
 
 #: src/main.c:240
 #, c-format
@@ -434,9 +433,8 @@ msgid "Project failed to decompress: %s\n"
 msgstr "Échec de la décompression du projet : %s\n"
 
 #: src/main.c:259
-#, fuzzy
 msgid "Unknown operation"
-msgstr "Option inconnue\n"
+msgstr "Option inconnue"
 
 #: src/main.c:309
 #, c-format
@@ -444,13 +442,12 @@ msgid "libguile is required for this option\n"
 msgstr ""
 
 #: src/main.c:329
-#, fuzzy
 msgid "Print version information"
-msgstr "Informations de licence"
+msgstr "Afficher les infos de version"
 
 #: src/main.c:334
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "Convertir FICHIER-ZPJ en YAML"
 
 #: src/main.c:339
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
@@ -462,26 +459,23 @@ msgstr ""
 
 #: src/main.c:348
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Afficher la sortie d'une manière plus conviviale"
 
 #: src/main.c:352
 msgid "Print current settings"
-msgstr ""
+msgstr "Afficher les paramètres courants"
 
 #: src/main.c:356
-#, fuzzy
 msgid "Reset to factory settings"
-msgstr "Réinitialisation des paramètres d'usine réussi\n"
+msgstr "Réinitialisation aux paramètres d'usine"
 
 #: src/main.c:359
-#, fuzzy
 msgid "Override the audio backend to use"
-msgstr "Le serveur audio auquel se connecter."
+msgstr "Forcer le dorsal audio à utiliser"
 
 #: src/main.c:363
-#, fuzzy
 msgid "Override the MIDI backend to use"
-msgstr "Le serveur MIDI auquel se connecter."
+msgstr "Forcer le dorsal MIDI à utiliser"
 
 #: src/main.c:367
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
@@ -490,7 +484,7 @@ msgstr ""
 #: src/main.c:390
 #, c-format
 msgid "[PROJECT-FILE] - Run %s"
-msgstr ""
+msgstr "[FICHIER-PROJET] - Exécutez  %s"
 
 #: src/main.c:400
 #, c-format
@@ -503,9 +497,16 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
+"Exemples :\n"
+"  --zpj-to-yaml a.zpj > b.yaml Convertir un a.zpj en YAML et sauvegarder "
+"sous b.yaml\n"
+"  --gen-projet a.scm -o monprojet Générer monprojet à partir de a.scm\n"
+"  -p --pretty affichage agréable des paramètres actuels\n"
+"\n"
+"Veuillez signaler les problèmes à %s\n"
 
 #: src/main.c:442
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
 "\n"
@@ -518,13 +519,12 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 Les contributeurs à Zrythm\n"
+"%s-%s Copyright (C) 2018-2021 Les contributeurs à Zrythm\n"
 "\n"
 "%s est fourni SANS AUCUNE GARANTIE !\n"
 "\n"
 "Ceci est un logiciel libre, et vous pouvez le redistribuer sous\n"
-"certaines conditions. Consultez le fichier `COPYING' pour\n"
-"plus de détails.\n"
+"certaines conditions. Consultez le fichier `COPYING' pour les détails.\n"
 "\n"
 "Écrivez des commentaires et reportez des bogues à %s\n"
 "Supporter ce projet à https://liberapay.com/Zrythm\n"
@@ -690,6 +690,11 @@ msgid ""
 "bridged mode, and report this to the plugin distributor and/or author:\n"
 "%s <%s>"
 msgstr ""
+"%s<%s> contient une référence à %s, ce qui pourrait causer des soucis.\n"
+"Si le greffon ne se charge pas, veuillez essayer alors d'instancier le "
+"greffon en mode pontage total, et reportez ce souci au distributeur/auteur "
+"de ce greffon :\n"
+"%s<%s>"
 
 #: src/plugins/lv2_plugin.c:2912
 msgid "Unnamed bank"
@@ -1094,29 +1099,27 @@ msgid "Add to project (bridged full)"
 msgstr "Ajouter au projet(complètement ponté)"
 
 #: src/gui/widgets/plugin_browser.c:469
-#, fuzzy
 msgid "Add to collection"
-msgstr "Ajouter au projet"
+msgstr "Ajouter à la collection"
 
 #: src/gui/widgets/plugin_browser.c:518
 msgid "Remove from collection"
-msgstr ""
+msgstr "Retirer de la collection"
 
 #: src/gui/widgets/plugin_browser.c:635 src/gui/widgets/plugin_browser.c:672
-#, fuzzy
 msgid "Collection name"
-msgstr "Collection"
+msgstr "nom de la collection"
 
 #: src/gui/widgets/plugin_browser.c:706
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
+"Cette collection contient %d greffons. Êtes-vous sur de vouloir la retirer ?"
 
 #: src/gui/widgets/plugin_browser.c:747
-#, fuzzy
 msgid "Rename"
-msgstr "Nom de région"
+msgstr "Renommer"
 
 #: src/gui/widgets/plugin_browser.c:758
 #: src/gui/widgets/port_connections_tree.c:182
@@ -1418,14 +1421,12 @@ msgid "Loop Selection"
 msgstr "Sélection de la boucle"
 
 #: src/gui/widgets/home_toolbar.c:240
-#, fuzzy
 msgid "Undo..."
-msgstr "Défaire"
+msgstr "Défaire..."
 
 #: src/gui/widgets/home_toolbar.c:244
-#, fuzzy
 msgid "Redo..."
-msgstr "Refaire"
+msgstr "Refaire..."
 
 #: src/gui/widgets/right_dock_edge.c:98
 msgid "Plugin Browser"
@@ -1490,12 +1491,11 @@ msgstr "Aucun contrôle sélectionné"
 
 #: src/gui/widgets/automatable_selector_popover.c:359
 msgid "Macros"
-msgstr ""
+msgstr "Macros"
 
 #: src/gui/widgets/automatable_selector_popover.c:383
-#, fuzzy
 msgid "Channel"
-msgstr "Canal %s"
+msgstr "Canal"
 
 #: src/gui/widgets/automatable_selector_popover.c:394
 #, c-format
@@ -1520,7 +1520,7 @@ msgstr "[Modulator %d] %s"
 #: src/gui/widgets/snap_grid.c:60
 #, c-format
 msgid "%s - Last object"
-msgstr ""
+msgstr "%s - Dernier objet"
 
 #: src/gui/widgets/snap_grid.c:120
 msgid "Snap/Grid options"
@@ -1550,10 +1550,17 @@ msgid ""
 ";;; See https://manual.zrythm.org/en/scripting/intro.html for a list of\n"
 ";;; modules provided by Zrythm\n"
 msgstr ""
+";;; Ceci est un script de démonstration en GNU Guile utilisant des modules "
+"fournis par Zrythm\n"
+";;; Voir https://www.gnu.org/software/guile/ pour plus d'informations "
+"concernant GNU Guile\n"
+";;; Voir https://manual.zrythm.org/fr/scripting/intro.html pour une liste "
+"de\n"
+";;; modules fournis par Zrythm\n"
 
 #: src/gui/widgets/scripting_window.c:118
 msgid "    ;; loop through all tracks and print them\n"
-msgstr ""
+msgstr "    ;; boucle à travers toutes les pistes et les afficher\n"
 
 #: src/gui/widgets/active_hardware_mb.c:50
 #: src/gui/widgets/active_hardware_mb.c:142
@@ -1984,11 +1991,13 @@ msgid "Export Progress"
 msgstr "Progression de l'exportation"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:85
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%sPlease help us fix this by %ssubmitting a bug report%s using the template "
 "below or by %ssending an email%s."
-msgstr "%sSVP aidez nous à réparer ceci en %s soumettant un rapport de bug%s."
+msgstr ""
+"%sAidez-nous à résoudre ce problème en %ssoumettant un rapport d'erreur%s en "
+"utilisant le modèle ci-dessous ou en %senvoyant un courriel%s."
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:112
 #, c-format
@@ -2201,9 +2210,10 @@ msgid "Unsupported file type %s"
 msgstr "Type de fichier non-supporté %s"
 
 #: src/audio/tracklist.c:1016
-#, fuzzy
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr "Impossible de déposer des fichiers MIDI dans des pistes existantes"
+msgstr ""
+"Les fichiers MIDI ne peuvent être déposés que dans des pistes d'instrument/"
+"MIDI"
 
 #: src/audio/tracklist.c:1029
 #, c-format
@@ -2211,6 +2221,8 @@ msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
+"Ce fichier MIDI contient %d pistes. Il ne peut pas être déposé dans une "
+"piste existante"
 
 #: src/audio/tracklist.c:1043
 msgid "Can only drop audio files on audio tracks"
@@ -2252,17 +2264,17 @@ msgstr "Marqueurs"
 #: src/audio/modulator_macro_processor.c:89
 #, c-format
 msgid "Macro %d"
-msgstr ""
+msgstr "Macro %d"
 
 #: src/audio/modulator_macro_processor.c:107
 #, c-format
 msgid "Macro CV In %d"
-msgstr ""
+msgstr "Macro d'entrée CV %d"
 
 #: src/audio/modulator_macro_processor.c:117
 #, c-format
 msgid "Macro CV Out %d"
-msgstr ""
+msgstr "Macro de sortie CV %d"
 
 #: src/audio/modulator_track.c:90 resources/ui/bot_dock_edge.ui:144
 #: resources/ui/bot_dock_edge.ui:160
@@ -2270,13 +2282,13 @@ msgid "Modulators"
 msgstr "Modulateurs"
 
 #: src/audio/exporter.c:138
-#, fuzzy, c-format
+#, c-format
 msgid "Format %s not supported yet"
-msgstr "Format vers lequel exporter."
+msgstr "Le format %s n'est pas encore supporté"
 
 #: src/audio/exporter.c:233
 msgid "SF INFO invalid"
-msgstr ""
+msgstr "SF INFO invalide"
 
 #: src/audio/exporter.c:254
 #, c-format
@@ -2284,12 +2296,14 @@ msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
+"Impossible d'ouvrir SNDFILE %s :\n"
+"%d : %s"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr "Erreur de PortAudio : %s"
+msgstr "Erreur PortAudio : %s"
 
 #: src/audio/region.c:430 build/data/org.zrythm.Zrythm.gschema.xml:689
 msgid "Automation"
@@ -2348,20 +2362,22 @@ msgid ""
 "A buffer underflow has occurred. Try increasing the buffer size in the "
 "settings to avoid audio glitches."
 msgstr ""
+"Il y a eu un sous-dépassement de la mémoire tampon. Essayez d'augmenter la "
+"taille de la mémoire tampon dans les paramètres pour éviter les problèmes "
+"audio."
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
-msgstr ""
+msgstr "Erreur PulseAudio: échec de création de la boucle principale"
 
 #: src/audio/engine_pulse.c:263
-#, fuzzy, c-format
+#, c-format
 msgid "PulseAudio Error: %s"
-msgstr "Erreur de PortAudio : %s"
+msgstr "Erreur PulseAudio : %s"
 
 #: src/audio/engine_pulse.c:282
-#, fuzzy
 msgid "PulseAudio Error: Failed to connect"
-msgstr "Le dorsal audio auquel se connecter"
+msgstr "Erreur PulseAudio : échec de connexion"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
