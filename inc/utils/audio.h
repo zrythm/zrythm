@@ -26,11 +26,12 @@
 #ifndef __UTILS_AUDIO_H__
 #define __UTILS_AUDIO_H__
 
+#include <stdarg.h>
 #include <stdbool.h>
 
 #include "utils/types.h"
 
-#include <samplerate.h>
+#include <audec/audec.h>
 
 /**
  * @addtogroup utils
@@ -42,6 +43,12 @@
  * Number of plugin slots per channel.
  */
 #define STRIP_SIZE 9
+
+void
+audio_audec_log_func (
+  AudecLogLevel level,
+  const char *  fmt,
+  va_list       args);
 
 /**
  * Writes the buffer as a raw file to the given

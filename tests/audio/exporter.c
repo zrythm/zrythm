@@ -64,6 +64,12 @@ get_num_frames (
     sfinfo.format | SF_FORMAT_PCM_16;
   SNDFILE * sndfile =
     sf_open (file, SFM_READ, &sfinfo);
+  if (!sndfile)
+    {
+      const char * err_str =
+        sf_strerror (sndfile);
+      g_critical ("sndfile null: %s", err_str);
+    }
   g_assert_nonnull (sndfile);
   g_assert_cmpint (sfinfo.frames, >, 0);
   long frames = sfinfo.frames;

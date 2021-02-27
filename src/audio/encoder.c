@@ -30,8 +30,6 @@
 
 #include <samplerate.h>
 
-typedef struct adinfo adinfo;
-
 /**
  * Creates a new instance of an AudioEncoder from
  * the given file, that can be used for encoding.
@@ -47,7 +45,8 @@ audio_encoder_new_from_file (
   AudioEncoder * self =
     calloc (1, sizeof (AudioEncoder));
 
-  audec_set_debug_level (AUDEC_DEBUG_LEVEL_INFO);
+  audec_set_log_level (AUDEC_LOG_LEVEL_DEBUG);
+  audec_set_log_func (audio_audec_log_func);
 
   /* read info */
   self->audec_handle =

@@ -25,6 +25,7 @@
 #include "utils/math.h"
 #include "utils/audio.h"
 
+#include <audec/audec.h>
 #include <sndfile.h>
 #include <samplerate.h>
 
@@ -33,6 +34,29 @@
 #endif
 
 static int num_cores = 0;
+
+void
+audio_audec_log_func (
+  AudecLogLevel level,
+  const char *  fmt,
+  va_list       args)
+{
+  GLogLevelFlags g_level = G_LOG_LEVEL_MESSAGE;
+  switch (level)
+    {
+    case AUDEC_LOG_LEVEL_ERROR:
+      g_level = G_LOG_LEVEL_CRITICAL;
+      break;
+    default:
+      break;
+    }
+
+  /*char format[9000];*/
+  /*strcpy (format, fmt);*/
+  /*format[strlen (format) - 1] = '\0';*/
+
+  g_logv ("audec", g_level, fmt, args);
+}
 
 /**
  * Writes the buffer as a raw file to the given

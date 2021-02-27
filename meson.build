@@ -682,7 +682,7 @@ if not cyaml_dep.found()
     'zrythm_cyaml_dep')
 endif
 audec_dep = dependency(
-  'audec', version: '>=0.2.3',
+  'audec', version: '>=0.3.2',
   fallback: ['libaudec', 'libaudec_dep'],
   required: true, static: all_static)
 
