@@ -65,17 +65,23 @@ typedef struct _BalanceControlWidget
 
   /** Balance at start of drag. */
   float              balance_at_start;
+
+  Port *             port;
 } BalanceControlWidget;
 
 /**
- * Creates a new BalanceControl widget and binds it to the
- * given value.
+ * Creates a new BalanceControl widget and binds it
+ * to the given value.
+ *
+ * @param port Optional port to use in MIDI CC
+ *   binding dialog.
  */
 BalanceControlWidget *
 balance_control_widget_new (
   GenericFloatGetter getter,
   GenericFloatSetter setter,
   void *             object,
+  Port *             port,
   int                height);
 
 #endif

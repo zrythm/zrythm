@@ -142,7 +142,7 @@ setup_balance_control (
         balance_control_widget_new (
           channel_get_balance_control,
           channel_set_balance_control,
-          ch, 12);
+          ch, ch->fader->balance, 12);
       gtk_box_pack_start (
         self->balance_box,
         GTK_WIDGET (self->balance_control),

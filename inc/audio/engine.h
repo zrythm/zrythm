@@ -641,6 +641,9 @@ typedef struct AudioEngine
   /** Whether the cycle is currently running. */
   volatile gint     cycle_running;
 
+  /** Whether the engine is already pre-set up. */
+  bool              pre_setup;
+
   /** Whether the engine is already set up. */
   bool              setup;
 

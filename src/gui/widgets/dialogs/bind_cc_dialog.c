@@ -45,9 +45,6 @@ on_ok_clicked (
   GtkButton * btn,
   BindCcDialogWidget * self)
 {
-  gtk_dialog_response (
-    GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
-
   if (self->perform_action)
     {
       if (self->cc[0])
@@ -58,6 +55,9 @@ on_ok_clicked (
           undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
+
+  gtk_dialog_response (
+    GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
 }
 
 static void

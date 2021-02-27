@@ -121,7 +121,9 @@ ext_port_activate (
   Port *    port,
   bool      activate)
 {
-  g_message ("ext port activate: %d", activate);
+  g_message (
+    "attempting to %sactivate ext port %s",
+    activate ? "" : "de", self->full_name);
 
   /*char str[600];*/
   int ret;
@@ -146,8 +148,6 @@ ext_port_activate (
 
               /* expose the port and connect to
                * JACK port */
-              port_set_expose_to_backend (
-                self->port, true);
               if (!self->jport)
                 {
                   self->jport =
@@ -155,7 +155,16 @@ ext_port_activate (
                       AUDIO_ENGINE->client,
                       self->full_name);
                 }
-              g_return_if_fail (self->jport);
+              if (!self->jport)
+                {
+                  g_warning (
+                    "Could not find external JACK "
+                    "port '%s', skipping...",
+                    self->full_name);
+                  return;
+                }
+              port_set_expose_to_backend (
+                self->port, true);
 
               g_message (
                 "connecting jack port %s to "
@@ -234,8 +243,6 @@ ext_port_activate (
 
               /* expose the port and connect to
                * JACK port */
-              port_set_expose_to_backend (
-                self->port, true);
               if (!self->jport)
                 {
                   self->jport =
@@ -243,7 +250,16 @@ ext_port_activate (
                       AUDIO_ENGINE->client,
                       self->full_name);
                 }
-              g_return_if_fail (self->jport);
+              if (!self->jport)
+                {
+                  g_warning (
+                    "Could not find external JACK "
+                    "port '%s', skipping...",
+                    self->full_name);
+                  return;
+                }
+              port_set_expose_to_backend (
+                self->port, true);
 
               g_message (
                 "connecting jack port %s to "

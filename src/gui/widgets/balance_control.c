@@ -326,8 +326,7 @@ on_bind_midi_cc (
 {
   BindCcDialogWidget * dialog =
     bind_cc_dialog_widget_new (
-      /* TODO */
-      NULL, false);
+      self->port, true);
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -349,13 +348,16 @@ show_context_menu (
   gtk_menu_shell_append (
     GTK_MENU_SHELL (menu), menuitem);
 
-  menuitem =
-    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_bind_midi_cc), self);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+  if (self->port)
+    {
+      menuitem =
+        GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
+      g_signal_connect (
+        menuitem, "activate",
+        G_CALLBACK (on_bind_midi_cc), self);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu), menuitem);
+    }
 
   gtk_widget_show_all(menu);
 
@@ -378,14 +380,18 @@ on_right_click (
 }
 
 /**
- * Creates a new BalanceControl widget and binds it to the
- * given value.
+ * Creates a new BalanceControl widget and binds it
+ * to the given value.
+ *
+ * @param port Optional port to use in MIDI CC
+ *   binding dialog.
  */
 BalanceControlWidget *
 balance_control_widget_new (
   GenericFloatGetter getter,
   GenericFloatSetter setter,
   void *             object,
+  Port *             port,
   int                height)
 {
   BalanceControlWidget * self =
@@ -397,6 +403,7 @@ balance_control_widget_new (
   self->getter = getter;
   self->setter = setter;
   self->object = object;
+  self->port = port;
 
   /* add right mouse multipress */
   GtkGestureMultiPress * right_mouse_mp =

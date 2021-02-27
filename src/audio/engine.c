@@ -147,7 +147,8 @@ engine_pre_setup (
   /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
 
-  g_return_if_fail (self && !self->setup);
+  g_return_if_fail (
+    self && !self->setup && !self->pre_setup);
 
 #ifdef TRIAL_VER
   self->zrythm_start_time =
@@ -295,6 +296,8 @@ engine_pre_setup (
       self->midi_backend = MIDI_BACKEND_DUMMY;
       engine_dummy_midi_setup (self);
     }
+
+  self->pre_setup = true;
 }
 
 /**
