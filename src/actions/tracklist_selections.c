@@ -1071,7 +1071,12 @@ do_or_undo_edit (
           break;
         }
 
-      track_verify_identifiers (track);
+      if (ZRYTHM_TESTING ||
+          self->edit_type ==
+            EDIT_TRACK_ACTION_TYPE_DIRECT_OUT)
+        {
+          track_verify_identifiers (track);
+        }
 
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
     }
