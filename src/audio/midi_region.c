@@ -1036,7 +1036,7 @@ send_notes_off_at (
       /* FIXME set channel */
     }
 
-  g_message ("all notes off at %d", time);
+  /*g_message ("all notes off at %d", time);*/
   midi_events_add_all_notes_off (
     midi_events, channel, time, F_QUEUED);
 
@@ -1132,7 +1132,7 @@ midi_region_fill_midi_events (
             (midi_time_t)
             (local_start_frame +
               (mn_obj->pos.frames - r_local_pos));
-          g_message ("normal note on at %u", time);
+          /*g_message ("normal note on at %u", time);*/
           if (mn)
             {
               midi_events_add_note_on (

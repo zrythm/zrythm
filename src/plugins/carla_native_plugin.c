@@ -125,7 +125,8 @@ host_write_midi_event (
   NativeHostHandle        handle,
   const NativeMidiEvent * event)
 {
-  g_message ("write midi event");
+  /*g_message ("write midi event");*/
+
   CarlaNativePlugin * self =
     (CarlaNativePlugin *) handle;
 

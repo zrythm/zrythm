@@ -3298,13 +3298,13 @@ port_process (
       /* send UI notification */
       if (port->midi_events->num_events > 0)
         {
-          g_message ("port %s has %d events",
-                     port->id.label,
-                     port->midi_events->num_events);
-          /*if (port == AUDIO_ENGINE->midi_in)*/
-            /*{*/
-              /*AUDIO_ENGINE->trigger_midi_activity = 1;*/
-            /*}*/
+#if 0
+          g_message (
+            "port %s has %d events",
+            port->id.label,
+            port->midi_events->num_events);
+#endif
+
           if (port->id.owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {

@@ -2273,30 +2273,40 @@ plugin_process_passthrough (
  * hides plugin ui
  */
 void
-plugin_close_ui (Plugin *plugin)
+plugin_close_ui (
+  Plugin * self)
 {
+  if (self->instantiation_failed)
+    {
+      g_message (
+        "plugin %s instantiation failed, "
+        "no UI to close",
+        self->descr->name);
+      return;
+    }
+
 #ifdef HAVE_CARLA
-  if (plugin->descr->open_with_carla)
+  if (self->descr->open_with_carla)
     {
       carla_native_plugin_open_ui (
-        plugin->carla, false);
+        self->carla, false);
       g_message ("closing carla plugin UI");
     }
   else
     {
       g_message ("closing non-carla plugin UI");
 #endif
-      if (GTK_IS_WINDOW (plugin->window))
+      if (GTK_IS_WINDOW (self->window))
         {
           g_signal_handler_disconnect (
-            plugin->window,
-            plugin->delete_event_id);
+            self->window,
+            self->delete_event_id);
         }
 
-      switch (plugin->descr->protocol)
+      switch (self->descr->protocol)
         {
         case PROT_LV2:
-          lv2_gtk_close_ui (plugin->lv2);
+          lv2_gtk_close_ui (self->lv2);
           break;
         default:
           g_return_if_reached ();

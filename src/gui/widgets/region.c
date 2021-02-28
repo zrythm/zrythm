@@ -1325,9 +1325,11 @@ draw_audio_region (
           int new_vis_width =
             vis_width -
             (new_vis_offset_x - prev_vis_offset_x);
+#if 0
           g_debug (
             "drawing right part after cached part | ->, from %d (width %d)",
             new_vis_offset_x, new_vis_width);
+#endif
 
           draw_audio_part (
             self, cr, new_vis_offset_x,
