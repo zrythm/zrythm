@@ -630,6 +630,8 @@ engine_new (
     PORT_OWNER_TYPE_BACKEND;
   monitor_out_r->id.owner_type =
     PORT_OWNER_TYPE_BACKEND;
+  monitor_out_l->is_project = true;
+  monitor_out_r->is_project = true;
   self->monitor_out =
     stereo_ports_new_from_existing (
       monitor_out_l, monitor_out_r);

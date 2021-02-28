@@ -1682,16 +1682,16 @@ port_connect (
     &src->dest_ids[src->num_dests],
     &dest->id);
   src->multipliers[src->num_dests] = 1.f;
-  dest->src_multipliers[src->num_srcs] = 1.f;
+  dest->src_multipliers[dest->num_srcs] = 1.f;
   src->dest_locked[src->num_dests] = locked;
-  dest->src_locked[src->num_srcs] = locked;
+  dest->src_locked[dest->num_srcs] = locked;
   src->dest_enabled[src->num_dests] = 1;
-  dest->src_enabled[src->num_srcs] = 1;
-  src->num_dests++;
+  dest->src_enabled[dest->num_srcs] = 1;
   dest->srcs[dest->num_srcs] = src;
   port_identifier_copy (
     &dest->src_ids[dest->num_srcs],
     &src->id);
+  src->num_dests++;
   dest->num_srcs++;
 
   /* set base value if cv -> control */
@@ -1717,6 +1717,9 @@ port_connect (
     (int) src->dests_size >= src->num_dests, -1);
   g_return_val_if_fail (
     (int) dest->srcs_size >= dest->num_srcs, -1);
+
+  port_verify_src_and_dests (src);
+  port_verify_src_and_dests (dest);
 
 #if 0
   char sd[600], dd[600];
@@ -1887,6 +1890,12 @@ port_verify_src_and_dests (
               &self->id) &&
             port_identifier_is_equal (
               &src->id, &self->src_ids[i]));
+          g_warn_if_fail (
+            src->dest_enabled[dest_idx] ==
+              self->src_enabled[i]);
+          g_warn_if_fail (
+            src->dest_enabled[dest_idx] >= 0 &&
+            src->dest_enabled[dest_idx] <= 1);
         }
 
       /* verify all dests */
@@ -1904,6 +1913,12 @@ port_verify_src_and_dests (
               &self->id) &&
             port_identifier_is_equal (
               &dest->id, &self->dest_ids[i]));
+          g_warn_if_fail (
+            self->dest_enabled[i] ==
+              dest->src_enabled[src_idx]);
+          g_warn_if_fail (
+            dest->src_enabled[src_idx] >= 0 &&
+            dest->src_enabled[src_idx] <= 1);
         }
     }
 }

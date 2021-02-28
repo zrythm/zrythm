@@ -46,6 +46,8 @@ sample_processor_new (void)
     stereo_ports_new_generic (
       0, _("Sample Processor"),
       PORT_OWNER_TYPE_SAMPLE_PROCESSOR, self);
+  self->stereo_out->l->is_project = true;
+  self->stereo_out->r->is_project = true;
   g_warn_if_fail (
     IS_PORT (self->stereo_out->l) &&
     IS_PORT (self->stereo_out->r));
