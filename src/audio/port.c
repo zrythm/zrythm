@@ -116,27 +116,29 @@ realloc_dests (
   size_t new_size)
 {
   src->dests =
-    realloc (
+    realloc_zero (
       src->dests,
+      prev_size * sizeof (Port *),
       new_size * sizeof (Port *));
   src->dest_ids =
     realloc_zero (
       src->dest_ids,
-      prev_size *
-        sizeof (PortIdentifier),
-      new_size *
-        sizeof (PortIdentifier));
+      prev_size * sizeof (PortIdentifier),
+      new_size * sizeof (PortIdentifier));
   src->multipliers =
-    realloc (
+    realloc_zero (
       src->multipliers,
+      prev_size * sizeof (float),
       new_size * sizeof (float));
   src->dest_locked =
-    realloc (
+    realloc_zero (
       src->dest_locked,
+      prev_size * sizeof (int),
       new_size * sizeof (int));
   src->dest_enabled =
-    realloc (
+    realloc_zero (
       src->dest_enabled,
+      prev_size * sizeof (int),
       new_size * sizeof (int));
 
   src->dests_size = new_size;
@@ -149,27 +151,29 @@ realloc_srcs (
   size_t new_size)
 {
   dest->srcs =
-    realloc (
+    realloc_zero (
       dest->srcs,
+      prev_size * sizeof (Port *),
       new_size * sizeof (Port *));
   dest->src_ids =
     realloc_zero (
       dest->src_ids,
-      prev_size *
-        sizeof (PortIdentifier),
-      new_size *
-        sizeof (PortIdentifier));
+      prev_size * sizeof (PortIdentifier),
+      new_size * sizeof (PortIdentifier));
   dest->src_multipliers =
-    realloc (
+    realloc_zero (
       dest->src_multipliers,
+      prev_size * sizeof (float),
       new_size * sizeof (float));
   dest->src_locked =
-    realloc (
+    realloc_zero (
       dest->src_locked,
+      prev_size * sizeof (int),
       new_size * sizeof (int));
   dest->src_enabled =
-    realloc (
+    realloc_zero (
       dest->src_enabled,
+      prev_size * sizeof (int),
       new_size * sizeof (int));
 
   dest->srcs_size = new_size;
@@ -420,10 +424,11 @@ port_find_from_identifier (
             }
           else if (id->flow == FLOW_INPUT)
             {
+              g_return_val_if_fail (
+                tr->processor->stereo_in, NULL);
               if (flags & PORT_FLAG_STEREO_L)
                 return tr->processor->stereo_in->l;
-              else if (flags &
-                         PORT_FLAG_STEREO_R)
+              else if (flags & PORT_FLAG_STEREO_R)
                 return tr->processor->stereo_in->r;
             }
           break;

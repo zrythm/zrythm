@@ -686,7 +686,7 @@ log_idle_cb (
 
       if (ev->backtrace)
         {
-          if (ZRYTHM_TESTING)
+          if (!ZRYTHM || ZRYTHM_TESTING)
             {
               g_message (
                 "Backtrace: %s", ev->backtrace);
