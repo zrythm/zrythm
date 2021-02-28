@@ -93,7 +93,7 @@ zrythm_exe = executable (
     zrythm_lib.get_static_lib (),
     ],
   export_dynamic: true,
-  gui_app: true,
+  win_subsystem: 'windows',
   include_directories: all_inc,
   c_args: [ common_cflags ],
   link_args: common_ldflags,

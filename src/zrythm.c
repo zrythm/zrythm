@@ -169,34 +169,6 @@ void
 zrythm_get_version_with_capabilities (
   char * str)
 {
-  /* get compiled capabilities */
-  char caps[1000] = "";
-#ifdef HAVE_CARLA
-  strcat (caps, "+carla ");
-#endif
-#ifdef HAVE_FFMPEG
-  strcat (caps, "+ffmpeg ");
-#endif
-#ifdef HAVE_JACK
-  strcat (caps, "+jack ");
-#endif
-#ifdef MANUAL_PATH
-  strcat (caps, "+manual ");
-#endif
-#ifdef HAVE_RTMIDI
-  strcat (caps, "+rtmidi ");
-#endif
-#ifdef HAVE_RTAUDIO
-  strcat (caps, "+rtaudio ");
-#endif
-#ifdef HAVE_SDL
-  strcat (caps, "+sdl2 ");
-#endif
-  if (strlen (caps) > 0)
-    {
-      caps[strlen (caps) - 1] = '\0';
-    }
-
   char * ver = zrythm_get_version (0);
 
   sprintf (
@@ -214,6 +186,9 @@ zrythm_get_version_with_capabilities (
 #endif
 #ifdef MANUAL_PATH
     "    +manual\n"
+#endif
+#ifdef HAVE_PULSEAUDIO
+    "    +pulse\n"
 #endif
 #ifdef HAVE_RTMIDI
     "    +rtmidi\n"
@@ -508,10 +483,6 @@ zrythm_new (
   bool         testing,
   bool         optimized_dsp)
 {
-  g_message (
-    "%s: allocating Zrythm instance...",
-    __func__);
-
   Zrythm * self = object_new (Zrythm);
   ZRYTHM = self;
 

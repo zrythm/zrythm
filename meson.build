@@ -844,7 +844,7 @@ have_carla = carla_host_plugin_dep.found ()
 if have_carla
   carla_bins_dir = get_option ('carla_binaries_dir')
   if carla_bins_dir == ''
-    carla_bins_dir = carla_host_plugin_dep.get_pkgconfig_variable('libdir')
+    carla_bins_dir = carla_host_plugin_dep.get_variable (pkgconfig: 'libdir')
   endif
   install_data (
     find_program (

@@ -60,9 +60,14 @@
 #include "audio/quantize_options.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#ifdef HAVE_GUILE
+#include "guile/guile.h"
+#include "guile/project_generator.h"
+#endif
 #include "gui/accel.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/dialogs/bug_report_dialog.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/project_assistant.h"
@@ -74,16 +79,21 @@
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
 #include "utils/env.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/log.h"
+#include "utils/math.h"
 #include "utils/object_pool.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
+
+#include "ext/whereami/whereami.h"
 
 #include "Wrapper.h"
 
@@ -98,12 +108,61 @@
 #pragma GCC diagnostic pop
 #endif
 
+#include <audec/audec.h>
+#include <fftw3.h>
+#ifdef HAVE_LSP_DSP
+#include <lsp-plug.in/dsp/dsp.h>
+#endif
+#include <suil/suil.h>
+#ifdef HAVE_X11
+#include <X11/Xlib.h>
+#endif
+
 /** This is declared extern in zrythm_app.h. */
 ZrythmApp * zrythm_app = NULL;
 
 G_DEFINE_TYPE (
   ZrythmApp, zrythm_app,
   GTK_TYPE_APPLICATION);
+
+/** SIGSEGV handler. */
+static void
+segv_handler (int sig)
+{
+  char prefix[200];
+#ifdef _WOE32
+  strcpy (
+    prefix, _("Error - Backtrace:\n"));
+#else
+  sprintf (
+    prefix,
+    _("Error: %s - Backtrace:\n"), strsignal (sig));
+#endif
+  char * bt =
+    backtrace_get_with_lines (prefix, 100);
+
+  /* call the callback to write queued messages
+   * and get last few lines of the log, before
+   * logging the backtrace */
+  log_idle_cb (LOG);
+  g_message ("%s", bt);
+  log_idle_cb (LOG);
+
+  char str[500];
+  sprintf (
+    str, _("%s has crashed. "), PROGRAM_NAME);
+  GtkWidget * dialog =
+    bug_report_dialog_new (
+      GTK_WINDOW (MAIN_WINDOW), str, bt);
+
+  /* run the dialog */
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
+
+  exit (EXIT_FAILURE);
+}
+
+/*static char * project_file = NULL;*/
 
 /**
  * Initializes/creates the default dirs/files.
@@ -718,6 +777,104 @@ load_icon (
   g_message ("Icon loaded.");
 }
 
+static void
+lock_memory (void)
+{
+#ifdef _WOE32
+  /* TODO */
+#else
+  /* lock down memory */
+  g_message ("Locking down memory...");
+  if (mlockall (MCL_CURRENT))
+    {
+      g_warning ("Cannot lock down memory: %s",
+                 strerror (errno));
+    }
+#endif
+}
+
+/**
+ * lotsa_files_please() from ardour
+ * (libs/ardour/globals.cc).
+ */
+static void
+raise_open_file_limit ()
+{
+#ifdef _WOE32
+  /* this only affects stdio. 2048 is the maxium possible (512 the default).
+   *
+   * If we want more, we'll have to replaces the POSIX I/O interfaces with
+   * Win32 API calls (CreateFile, WriteFile, etc) which allows for 16K.
+   *
+   * see http://stackoverflow.com/questions/870173/is-there-a-limit-on-number-of-open-files-in-windows
+   * and http://bugs.mysql.com/bug.php?id=24509
+   */
+  int newmax = _setmaxstdio (2048);
+  if (newmax > 0)
+    {
+      g_message (
+        "Your system is configured to limit %s to "
+        "%d open files",
+        PROGRAM_NAME, newmax);
+    }
+  else
+    {
+      g_warning (
+        "Could not set system open files limit. "
+        "Current limit is %d open files",
+        _getmaxstdio ());
+    }
+#else /* else if not _WOE32 */
+  struct rlimit rl;
+
+  if (getrlimit (RLIMIT_NOFILE, &rl) == 0)
+    {
+#ifdef __APPLE__
+      /* See the COMPATIBILITY note on the Apple setrlimit() man page */
+      rl.rlim_cur =
+        MIN ((rlim_t) OPEN_MAX, rl.rlim_max);
+#else
+      rl.rlim_cur = rl.rlim_max;
+#endif
+
+      if (setrlimit (RLIMIT_NOFILE, &rl) != 0)
+        {
+          if (rl.rlim_cur == RLIM_INFINITY)
+            {
+
+              g_warning (
+                "Could not set system open files "
+                "limit to \"unlimited\"");
+            }
+          else
+            {
+              g_warning (
+                "Could not set system open files "
+                "limit to %ju",
+                (uintmax_t) rl.rlim_cur);
+            }
+
+        }
+      else
+        {
+          if (rl.rlim_cur != RLIM_INFINITY)
+            {
+              g_message (
+                "Your system is configured to "
+                "limit %s to %ju open files",
+                PROGRAM_NAME, (uintmax_t) rl.rlim_cur);
+            }
+        }
+    }
+  else
+    {
+      g_warning (
+        "Could not get system open files limit (%s)",
+        strerror (errno));
+    }
+#endif
+}
+
 /**
  * First function that gets called.
  */
@@ -728,8 +885,123 @@ zrythm_app_startup (
   g_message ("Starting up...");
 
   ZrythmApp * self = ZRYTHM_APP (app);
+
+  char * exe_path = NULL;
+  int dirname_length, length;
+  length =
+    wai_getExecutablePath (
+      NULL, 0, &dirname_length);
+  if (length > 0)
+  {
+    exe_path =
+      (char *) malloc ((size_t) length + 1);
+    wai_getExecutablePath (
+      exe_path, length, &dirname_length);
+    exe_path[length] = '\0';
+  }
+
+  ZRYTHM =
+    zrythm_new (
+      exe_path ? exe_path : self->argv[0], true,
+      false, true);
+
+  /* allow maximum number of open files (taken from
+   * ardour) */
+  raise_open_file_limit ();
+
+  lock_memory ();
+
+  char * ver = zrythm_get_version (0);
+  fprintf (
+    stdout,
+    _("%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n\n"
+    "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
+    "This is free software, and you are welcome to redistribute it\n"
+    "under certain conditions. See the file `COPYING' for details.\n\n"
+    "Write comments and bugs to %s\n"
+    "Support this project at https://liberapay.com/Zrythm\n\n"),
+    PROGRAM_NAME, ver, PROGRAM_NAME,
+    ISSUE_TRACKER_URL);
+  g_free (ver);
+
+  char * cur_dir = g_get_current_dir ();
+  g_message (
+    "Running Zrythm in %s", cur_dir);
+  g_free (cur_dir);
+
+#ifdef HAVE_GUILE
+  guile_init (self->argc, self->argv);
+#endif
+
+  g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
+
+  /* install segfault handler */
+  g_message ("Installing signal handler...");
+  signal (SIGSEGV, segv_handler);
+  signal (SIGABRT, segv_handler);
+
+#ifdef HAVE_X11
+  /* init xlib threads */
+  g_message ("Initing X threads...");
+  XInitThreads ();
+#endif
+
+  /* init suil */
+  g_message ("Initing suil...");
+  suil_init(
+    &self->argc, &self->argv, SUIL_ARG_NONE);
+
+  /* init fftw */
+  g_message ("Making fftw planner thread safe...");
+  fftw_make_planner_thread_safe ();
+  fftwf_make_planner_thread_safe ();
+
+  /* init audio decoder */
+  g_message ("Initing audio decoder...");
+  audec_init ();
+
+#ifdef HAVE_LSP_DSP
+  /* init lsp dsp */
+  g_message ("Initing LSP DSP...");
+  lsp_dsp_init();
+
+  /* output information about the system */
+  lsp_dsp_info_t * info = lsp_dsp_info();
+  if (info)
+    {
+      printf("Architecture:   %s\n", info->arch);
+      printf("Processor:      %s\n", info->cpu);
+      printf("Model:          %s\n", info->model);
+      printf("Features:       %s\n", info->features);
+      free(info);
+    }
+  else
+    {
+      g_warning ("Failed to get system info");
+    }
+
+#endif
+
+  /* init random */
+  g_message ("Initing random...");
+#ifdef _WOE32
+  srand ((unsigned int) time (NULL));
+#else
+  srandom ((unsigned int) time (NULL));
+#endif
+
+  /* init gtksourceview */
+#ifdef HAVE_GTK_SOURCE_VIEW_4
+  gtk_source_init ();
+#endif
+
+  /* init math coefficients */
+  g_message ("Initing math coefficients...");
+  math_init ();
+
   G_APPLICATION_CLASS (zrythm_app_parent_class)->
     startup (G_APPLICATION (self));
+
   g_message (
     "called startup on G_APPLICATION_CLASS");
 
@@ -1050,104 +1322,6 @@ zrythm_app_startup (
   g_message ("done");
 }
 
-static void
-lock_memory (void)
-{
-#ifdef _WOE32
-  /* TODO */
-#else
-  /* lock down memory */
-  g_message ("Locking down memory...");
-  if (mlockall (MCL_CURRENT))
-    {
-      g_warning ("Cannot lock down memory: %s",
-                 strerror (errno));
-    }
-#endif
-}
-
-/**
- * lotsa_files_please() from ardour
- * (libs/ardour/globals.cc).
- */
-static void
-raise_open_file_limit ()
-{
-#ifdef _WOE32
-  /* this only affects stdio. 2048 is the maxium possible (512 the default).
-   *
-   * If we want more, we'll have to replaces the POSIX I/O interfaces with
-   * Win32 API calls (CreateFile, WriteFile, etc) which allows for 16K.
-   *
-   * see http://stackoverflow.com/questions/870173/is-there-a-limit-on-number-of-open-files-in-windows
-   * and http://bugs.mysql.com/bug.php?id=24509
-   */
-  int newmax = _setmaxstdio (2048);
-  if (newmax > 0)
-    {
-      g_message (
-        "Your system is configured to limit %s to "
-        "%d open files",
-        PROGRAM_NAME, newmax);
-    }
-  else
-    {
-      g_warning (
-        "Could not set system open files limit. "
-        "Current limit is %d open files",
-        _getmaxstdio ());
-    }
-#else /* else if not _WOE32 */
-  struct rlimit rl;
-
-  if (getrlimit (RLIMIT_NOFILE, &rl) == 0)
-    {
-#ifdef __APPLE__
-      /* See the COMPATIBILITY note on the Apple setrlimit() man page */
-      rl.rlim_cur =
-        MIN ((rlim_t) OPEN_MAX, rl.rlim_max);
-#else
-      rl.rlim_cur = rl.rlim_max;
-#endif
-
-      if (setrlimit (RLIMIT_NOFILE, &rl) != 0)
-        {
-          if (rl.rlim_cur == RLIM_INFINITY)
-            {
-
-              g_warning (
-                "Could not set system open files "
-                "limit to \"unlimited\"");
-            }
-          else
-            {
-              g_warning (
-                "Could not set system open files "
-                "limit to %ju",
-                (uintmax_t) rl.rlim_cur);
-            }
-
-        }
-      else
-        {
-          if (rl.rlim_cur != RLIM_INFINITY)
-            {
-              g_message (
-                "Your system is configured to "
-                "limit %s to %ju open files",
-                PROGRAM_NAME, (uintmax_t) rl.rlim_cur);
-            }
-        }
-    }
-  else
-    {
-      g_warning (
-        "Could not get system open files limit (%s)",
-        strerror (errno));
-    }
-#endif
-}
-
 /**
  * Called immediately after the main GTK loop
  * terminates.
@@ -1174,17 +1348,346 @@ zrythm_app_on_shutdown (
 }
 
 /**
+ * Checks that the file exists and exits if it
+ * doesn't.
+ */
+static void
+verify_file_exists (
+  const char * file)
+{
+  if (!file ||
+      !g_file_test (file, G_FILE_TEST_EXISTS))
+    {
+      char str[600];
+      sprintf (
+        str, _("File %s not found."), file);
+      strcat (str, "\n");
+      fprintf (stderr, "%s", str);
+      exit (-1);
+    }
+}
+
+/**
+ * Checks that the output is not NULL and exits if it
+ * is.
+ */
+static void
+verify_output_exists (
+  ZrythmApp * self)
+{
+  if (!self->output_file)
+    {
+      char str[600];
+      sprintf (
+        str,
+        "%s\n",
+        _("An output file was not specified. Please "
+        "pass one with `--output=FILE`."));
+      fprintf (stderr, "%s", str);
+      exit (EXIT_FAILURE);
+    }
+}
+
+static bool
+print_settings (
+  ZrythmApp * self)
+{
+  localization_init (false, false);
+  settings_print (self->pretty_print);
+
+  exit (EXIT_SUCCESS);
+}
+
+static void
+convert_project (
+  ZrythmApp *  self,
+  bool         compress,
+  const char * file_to_convert)
+{
+  verify_file_exists (file_to_convert);
+
+  char * output;
+  size_t output_size;
+  char * err_msg = NULL;
+  if (compress)
+    {
+      verify_output_exists (self);
+
+      err_msg =
+        project_compress (
+          &self->output_file, NULL,
+          PROJECT_COMPRESS_FILE,
+          file_to_convert, 0,
+          PROJECT_COMPRESS_FILE);
+    }
+  else
+    {
+      err_msg =
+        project_decompress (
+          &output, &output_size,
+          PROJECT_DECOMPRESS_DATA,
+          file_to_convert, 0,
+          PROJECT_DECOMPRESS_FILE);
+    }
+
+  if (err_msg)
+    {
+      fprintf (
+        stderr,
+        _("Project failed to decompress: %s\n"),
+        err_msg);
+      g_free (err_msg);
+      exit (EXIT_FAILURE);
+    }
+  else
+    {
+      if (!compress)
+        {
+          output =
+            realloc (
+              output,
+              output_size + sizeof (char));
+          output[output_size] = '\0';
+          fprintf (stdout, "%s\n", output);
+        }
+      exit (EXIT_SUCCESS);
+    }
+
+  fprintf (stdout, "%s\n", _("Unknown operation"));
+  exit (EXIT_FAILURE);
+}
+
+static bool
+gen_project (
+  ZrythmApp *  self,
+  const char * filepath)
+{
+  verify_output_exists (self);
+#ifdef HAVE_GUILE
+  ZRYTHM->generating_project = true;
+  ZRYTHM->have_ui = false;
+  int script_res =
+    guile_project_generator_generate_project_from_file (
+      filepath, self->output_file);
+  exit (script_res);
+#else
+  fprintf (
+    stderr,
+    _("libguile is required for this option\n"));
+  exit (EXIT_FAILURE);
+#endif
+}
+
+static bool
+reset_to_factory (void)
+{
+  settings_reset_to_factory (1, 1);
+
+  exit (EXIT_SUCCESS);
+}
+
+/**
+ * Called on the local instance to handle options.
+ */
+static int
+on_handle_local_options (
+  GApplication * app,
+  GVariantDict * opts,
+  ZrythmApp *    self)
+{
+  g_message ("handling options");
+
+#if 0
+  /* print the contents */
+  GVariant * variant = g_variant_dict_end (opts);
+  char * str = g_variant_print (variant, true);
+  g_warning ("%s", str);
+#endif
+
+  if (g_variant_dict_contains (
+        opts, "print-settings"))
+    {
+      print_settings (self);
+    }
+  else if (g_variant_dict_contains (
+             opts, "yaml-to-zpj"))
+    {
+      char * filepath = NULL;
+      g_variant_dict_lookup (
+        opts, "yaml-to-zpj", "^ay", &filepath);
+      convert_project (self, false, filepath);
+    }
+  else if (g_variant_dict_contains (
+             opts, "zpj-to-yaml"))
+    {
+      char * filepath = NULL;
+      g_variant_dict_lookup (
+        opts, "zpj-to-yaml", "^ay", &filepath);
+      convert_project (self, false, filepath);
+    }
+  else if (g_variant_dict_contains (
+             opts, "gen-project"))
+    {
+      char * filepath = NULL;
+      g_variant_dict_lookup (
+        opts, "gen-project", "^ay", &filepath);
+      gen_project (self, filepath);
+    }
+  else if (g_variant_dict_contains (
+             opts, "reset-to-factory"))
+    {
+      reset_to_factory ();
+    }
+
+  return -1;
+}
+
+static bool
+print_version (
+  const gchar * option_name,
+  const gchar * value,
+  gpointer      data,
+  GError **     error)
+{
+  char ver_with_caps[2000];
+  zrythm_get_version_with_capabilities (
+    ver_with_caps);
+  fprintf (
+    stdout,
+    "%s\n%s\n%s\n%s\n",
+    ver_with_caps,
+    "Copyright © 2018-2021 The Zrythm contributors",
+    "This is free software; see the source for copying conditions.",
+    "There is NO "
+    "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
+
+  exit (EXIT_SUCCESS);
+}
+
+static bool
+set_dummy (
+  const gchar * option_name,
+  const gchar * value,
+  gpointer      data,
+  GError **     error)
+{
+  zrythm_app->midi_backend = g_strdup ("none");
+  zrythm_app->audio_backend = g_strdup ("none");
+
+  return true;
+}
+
+/**
+ * Add the option entries.
+ *
+ * Things that can be processed immediately should
+ * be set as callbacks here (like --version).
+ *
+ * Things that require to know other options before
+ * running should be set as NULL and processed
+ * in the handle-local-options handler.
+ */
+static void
+add_option_entries (
+  ZrythmApp * self)
+{
+  GOptionEntry entries[] =
+    {
+      { "version", 'v',  G_OPTION_FLAG_NO_ARG,
+        G_OPTION_ARG_CALLBACK, print_version,
+        __("Print version information"),
+        NULL },
+      { "zpj-to-yaml", 0,
+        G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_FILENAME, NULL,
+        __("Convert ZPJ-FILE to YAML"),
+        "ZPJ-FILE" },
+      { "yaml-to-zpj", 0,
+        G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_FILENAME, NULL,
+        __("Convert YAML-PROJECT-FILE to the .zpj format"),
+        "YAML-PROJECT-FILE" },
+      { "gen-project", 0,
+        G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_FILENAME, NULL,
+        __("Generate a project from SCRIPT-FILE"),
+        "SCRIPT-FILE" },
+      { "pretty", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_NONE, &self->pretty_print,
+        __("Print output in user-friendly way"),
+        NULL },
+      { "print-settings", 'p', G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_NONE, NULL,
+        __("Print current settings"), NULL },
+      { "reset-to-factory", 0,
+        G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_NONE, NULL,
+        __("Reset to factory settings"), NULL },
+      { "audio-backend", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &self->audio_backend,
+        __("Override the audio backend to use"),
+        "BACKEND" },
+      { "midi-backend", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &self->midi_backend,
+        __("Override the MIDI backend to use"),
+        "BACKEND" },
+      { "dummy", 0, G_OPTION_FLAG_NO_ARG,
+        G_OPTION_ARG_CALLBACK, set_dummy,
+        __("Shorthand for --midi-backend=none "
+        "--audio-backend=none"),
+        NULL },
+      { "buf-size", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_INT, &self->buf_size,
+        "Override the buffer size to use for the "
+        "audio backend, if applicable",
+        "BUF_SIZE" },
+      { "samplerate", 0, G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_INT, &self->samplerate,
+        "Override the samplerate to use for the "
+        "audio backend, if applicable",
+        "SAMPLERATE" },
+      { "output", 'o', G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, &self->output_file,
+        "File or directory to output to", "FILE" },
+      { NULL },
+    };
+
+  g_application_add_main_option_entries (
+    G_APPLICATION (self), entries);
+  g_application_set_option_context_parameter_string (
+    G_APPLICATION (self), __("[PROJECT-FILE]"));
+
+  char examples[8000];
+  sprintf (
+    examples,
+    __("Examples:\n"
+    "  --zpj-to-yaml a.zpj > b.yaml        Convert a a.zpj to YAML and save to b.yaml\n"
+    "  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
+    "  -p --pretty                         Pretty-print current settings\n\n"
+    "Please report issues to %s\n"),
+    ISSUE_TRACKER_URL);
+  g_application_set_option_context_description (
+    G_APPLICATION (self), examples);
+
+  char summary[8000];
+  sprintf (
+    summary,
+    __("Run %s, optionally passing a project "
+    "file."),
+    PROGRAM_NAME);
+  g_application_set_option_context_summary (
+    G_APPLICATION (self), summary);
+}
+
+/**
  * Creates the Zrythm GApplication.
  *
  * This also initializes the Zrythm struct.
  */
 ZrythmApp *
 zrythm_app_new (
-  const char * exe_path,
-  char *       audio_backend,
-  char *       midi_backend,
-  char *       buf_size,
-  char *       samplerate)
+  int     argc,
+  char ** argv)
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
@@ -1192,29 +1695,24 @@ zrythm_app_new (
      * becomes unique (only one instance allowed) */
     /*"application-id", "org.zrythm.Zrythm",*/
     "resource-base-path", "/org/zrythm/Zrythm",
-    "flags", G_APPLICATION_HANDLES_OPEN,
+    "flags",
+    G_APPLICATION_HANDLES_OPEN,
     NULL);
 
   zrythm_app = self;
 
   self->gtk_thread = g_thread_self ();
 
-  self->audio_backend = audio_backend;
-  self->midi_backend = midi_backend;
-  self->buf_size = buf_size;
-  self->samplerate = samplerate;
+  /* add option entries */
+  add_option_entries (self);
 
-  /* allow maximum number of open files (taken from
-   * ardour) */
-  raise_open_file_limit ();
-
-  lock_memory ();
-  ZRYTHM = zrythm_new (exe_path, true, false, true);
-
-  /* add shutdown handler */
+  /* add handlers */
   g_signal_connect (
     G_OBJECT (self), "shutdown",
     G_CALLBACK (zrythm_app_on_shutdown), self);
+  g_signal_connect (
+    G_OBJECT (self), "handle-local-options",
+    G_CALLBACK (on_handle_local_options), self);
 
   return self;
 }
@@ -1227,7 +1725,10 @@ finalize (
     "%s (%s): finalizing ZrythmApp...",
     __func__, __FILE__);
 
-  g_object_unref (self->default_settings);
+  if (self->default_settings)
+    {
+      g_object_unref (self->default_settings);
+    }
 
   object_free_w_func_and_null (
     ui_caches_free, self->ui_caches);
@@ -1256,8 +1757,6 @@ static void
 zrythm_app_init (
   ZrythmApp * self)
 {
-  g_message ("initing zrythm app");
-
   gdk_set_allowed_backends (
     "quartz,win32,wayland,x11,*");
 
@@ -1284,6 +1783,4 @@ zrythm_app_init (
   g_action_map_add_action_entries (
     G_ACTION_MAP (self), entries,
     G_N_ELEMENTS (entries), self);
-
-  g_message ("added action entries");
 }

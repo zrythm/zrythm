@@ -26,6 +26,8 @@
 #ifndef __ZRYTHM_APP_H__
 #define __ZRYTHM_APP_H__
 
+#include "zix/sem.h"
+
 #include <gtk/gtk.h>
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
@@ -117,16 +119,26 @@ struct _ZrythmApp
   char *             midi_backend;
 
   /** Buffer size passed with --buf-size=, if any. */
-  char *             buf_size;
+  int                buf_size;
 
   /** Samplerate passed with --samplerate=, if
    * any. */
-  char *             samplerate;
+  int                samplerate;
 
   /** Messages to show when the main window is
    * shown. */
   char *             startup_errors[24];
   int                num_startup_errors;
+
+  /** Output file passed with --output. */
+  char *             output_file;
+
+  /** Whether to pretty-print. */
+  bool               pretty_print;
+
+  /** CLI args. */
+  int                argc;
+  char **            argv;
 };
 
 /**
@@ -141,11 +153,8 @@ extern ZrythmApp * zrythm_app;
  */
 ZrythmApp *
 zrythm_app_new (
-  const char * exe_path,
-  char *       audio_backend,
-  char *       midi_backend,
-  char *       buf_size,
-  char *       samplerate);
+  int     argc,
+  char ** argv);
 
 /**
  * Sets the current status and progress percentage

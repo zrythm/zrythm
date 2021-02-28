@@ -100,6 +100,10 @@ typedef struct PluginManager
 
   char *                 lv2_path;
 
+  /** Whether the plugin manager has been set up
+   * already. */
+  bool                   setup;
+
 } PluginManager;
 
 PluginManager *

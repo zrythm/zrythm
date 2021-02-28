@@ -64,24 +64,20 @@ engine_dummy_setup (
   /* Set audio engine properties */
   self->midi_buf_size = 4096;
 
-  if (ZRYTHM_HAVE_UI && zrythm_app->buf_size)
+  if (ZRYTHM_HAVE_UI && zrythm_app->buf_size > 0)
     {
       self->block_length =
-        (nframes_t)
-        strtol (
-          zrythm_app->buf_size, (char **)NULL, 10);
+        (nframes_t) zrythm_app->buf_size;
     }
   else
     {
       self->block_length = 256;
     }
 
-  if (ZRYTHM_HAVE_UI && zrythm_app->samplerate)
+  if (ZRYTHM_HAVE_UI && zrythm_app->samplerate > 0)
     {
       self->sample_rate =
-        (nframes_t)
-        strtol (
-          zrythm_app->samplerate, (char **)NULL, 10);
+        (nframes_t) zrythm_app->samplerate;
     }
   else
     {
