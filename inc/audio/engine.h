@@ -719,6 +719,24 @@ AudioEngine *
 engine_new (
   Project * project);
 
+typedef struct EngineState
+{
+  /** Engine running. */
+  int      running;
+  /** Playback. */
+  bool     playing;
+} EngineState;
+
+void
+engine_wait_for_pause (
+  AudioEngine * self,
+  EngineState * state);
+
+void
+engine_resume (
+  AudioEngine * self,
+  EngineState * state);
+
 /**
  * Sets up the audio engine before the project is
  * initialized/loaded.

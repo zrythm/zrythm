@@ -19,7 +19,9 @@
 
 #include <stdio.h>
 
+#include "audio/engine.h"
 #include "guile/modules.h"
+#include "project.h"
 #include "utils/string.h"
 #include "utils/io.h"
 
@@ -214,9 +216,16 @@ char *
 guile_run_script (
   const char * script)
 {
+  /* pause engine */
+  EngineState state;
+  engine_wait_for_pause (AUDIO_ENGINE, &state);
+
   return
     scm_with_guile (
       &guile_mode_func, (void *) script);
+
+  /* restart engine */
+  engine_resume (AUDIO_ENGINE, &state);
 }
 
 /**

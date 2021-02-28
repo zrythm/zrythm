@@ -79,6 +79,7 @@
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -646,6 +647,54 @@ engine_new (
   init_common (self);
 
   return self;
+}
+
+void
+engine_wait_for_pause (
+  AudioEngine * self,
+  EngineState * state)
+{
+  state->running =
+    g_atomic_int_get (&self->run);
+  state->playing = TRANSPORT_IS_ROLLING;
+
+  /* send panic */
+  midi_panic_all (F_QUEUED);
+
+  if (state->playing)
+    {
+      transport_request_pause (TRANSPORT);
+
+      while (TRANSPORT->play_state ==
+               PLAYSTATE_PAUSE_REQUESTED)
+        {
+          g_usleep (100);
+        }
+    }
+
+  g_atomic_int_set (&self->run, 0);
+  while (g_atomic_int_get (
+           &self->cycle_running))
+    {
+      g_usleep (100);
+    }
+}
+
+void
+engine_resume (
+  AudioEngine * self,
+  EngineState * state)
+{
+  g_atomic_int_set (
+    &self->run, (guint) state->running);
+
+  if (state->playing)
+    {
+      transport_move_playhead (
+        TRANSPORT, &TRANSPORT->playhead_before_pause,
+        F_NO_PANIC, F_NO_SET_CUE_POINT);
+      transport_request_roll (TRANSPORT);
+    }
 }
 
 /**

@@ -321,10 +321,6 @@ export_audio (
         &info->custom_end);
       break;
     }
-  Play_State prev_play_state =
-    TRANSPORT->play_state;
-  TRANSPORT->play_state =
-    PLAYSTATE_ROLLING;
   AUDIO_ENGINE->bounce_mode =
     info->mode == EXPORT_MODE_FULL ?
       BOUNCE_OFF : BOUNCE_ON;
@@ -339,16 +335,12 @@ export_audio (
     }
 #endif
 
-  /* stop engine and give it some time to stop
-   * running */
-  int run_before =
-    g_atomic_int_get (&AUDIO_ENGINE->run);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  while (g_atomic_int_get (
-           &AUDIO_ENGINE->cycle_running))
-    {
-      g_usleep (100);
-    }
+  /* pause engine */
+  EngineState state;
+  engine_wait_for_pause (AUDIO_ENGINE, &state);
+
+  TRANSPORT->play_state =
+    PLAYSTATE_ROLLING;
 
   nframes_t nframes;
   g_return_val_if_fail (
@@ -458,7 +450,6 @@ export_audio (
     }
 #endif
 
-  TRANSPORT->play_state = prev_play_state;
   AUDIO_ENGINE->bounce_mode = BOUNCE_OFF;
   transport_move_playhead (
     TRANSPORT, &prev_playhead_pos, F_PANIC,
@@ -473,8 +464,7 @@ export_audio (
     }
 
   /* restart engine */
-  g_atomic_int_set (
-    &AUDIO_ENGINE->run, (guint) run_before);
+  engine_resume (AUDIO_ENGINE, &state);
 
   /* if cancelled, delete */
   if (info->cancelled)

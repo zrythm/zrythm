@@ -767,25 +767,25 @@ print_unknown_event_message (
 {
   if (buf_size == 3)
     {
-      g_warning (
+      g_message (
         "Unknown MIDI event %#x %#x %#x"
         " received", buf[0], buf[1], buf[2]);
     }
   else if (buf_size == 2)
     {
-      g_warning (
+      g_message (
         "Unknown MIDI event %#x %#x"
         " received", buf[0], buf[1]);
     }
   else if (buf_size == 1)
     {
-      g_warning (
+      g_message (
         "Unknown MIDI event %#x"
         " received", buf[0]);
     }
   else
     {
-      g_warning (
+      g_message (
         "Unknown MIDI event of size %d"
         " received", buf_size);
     }

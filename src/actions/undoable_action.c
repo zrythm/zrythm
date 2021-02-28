@@ -71,64 +71,6 @@ undoable_action_init_loaded (
 #undef INIT_LOADED
 }
 
-typedef struct EngineState
-{
-  /** Engine running. */
-  int      running;
-  /** Playback. */
-  bool     playing;
-} EngineState;
-
-/**
- * Returns whether the engine was running before
- * pausing.
- */
-static void
-pause_engine (
-  EngineState * state)
-{
-  state->running =
-    g_atomic_int_get (&AUDIO_ENGINE->run);
-  state->playing = TRANSPORT_IS_ROLLING;
-
-  /* send panic */
-  midi_panic_all (F_QUEUED);
-
-  if (state->playing)
-    {
-      transport_request_pause (TRANSPORT);
-
-      while (TRANSPORT->play_state ==
-               PLAYSTATE_PAUSE_REQUESTED)
-        {
-          g_usleep (100);
-        }
-    }
-
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  while (g_atomic_int_get (
-           &AUDIO_ENGINE->cycle_running))
-    {
-      g_usleep (100);
-    }
-}
-
-static void
-resume_engine (
-  const EngineState * state)
-{
-  g_atomic_int_set (
-    &AUDIO_ENGINE->run, (guint) state->running);
-
-  if (state->playing)
-    {
-      transport_move_playhead (
-        TRANSPORT, &TRANSPORT->playhead_before_pause,
-        F_NO_PANIC, F_NO_SET_CUE_POINT);
-      transport_request_roll (TRANSPORT);
-    }
-}
-
 /**
  * Performs the action.
  *
@@ -148,7 +90,7 @@ undoable_action_do (UndoableAction * self)
   /* stop engine and give it some time to stop
    * running */
   EngineState state;
-  pause_engine (&state);
+  engine_wait_for_pause (AUDIO_ENGINE, &state);
 
   int ret = 0;
 
@@ -203,7 +145,7 @@ undoable_action_do (UndoableAction * self)
 #endif
 
   /* restart engine */
-  resume_engine (&state);
+  engine_resume (AUDIO_ENGINE, &state);
 
   return ret;
 }
@@ -221,7 +163,7 @@ undoable_action_undo (UndoableAction * self)
   /* stop engine and give it some time to stop
    * running */
   EngineState state;
-  pause_engine (&state);
+  engine_wait_for_pause (AUDIO_ENGINE, &state);
 
   int ret = 0;
 
@@ -274,7 +216,7 @@ undoable_action_undo (UndoableAction * self)
   /*zix_sem_post (&AUDIO_ENGINE->port_operation_lock);*/
 
   /* restart engine */
-  resume_engine (&state);
+  engine_resume (AUDIO_ENGINE, &state);
 
   return ret;
 }
