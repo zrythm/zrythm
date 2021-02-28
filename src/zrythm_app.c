@@ -1539,6 +1539,31 @@ on_handle_local_options (
       reset_to_factory ();
     }
 
+  if (g_variant_dict_contains (
+             opts, "cyaml-log-level"))
+    {
+      char * log_level = NULL;
+      g_variant_dict_lookup (
+        opts, "cyaml-log-level", "&s", &log_level);
+      if (string_is_equal (log_level, "debug"))
+        {
+          yaml_set_log_level (CYAML_LOG_DEBUG);
+        }
+      else if (string_is_equal (log_level, "info"))
+        {
+          yaml_set_log_level (CYAML_LOG_INFO);
+        }
+      else if (string_is_equal (
+                 log_level, "warning"))
+        {
+          yaml_set_log_level (CYAML_LOG_WARNING);
+        }
+      else if (string_is_equal (log_level, "error"))
+        {
+          yaml_set_log_level (CYAML_LOG_ERROR);
+        }
+    }
+
   return -1;
 }
 
@@ -1649,6 +1674,10 @@ add_option_entries (
       { "output", 'o', G_OPTION_FLAG_NONE,
         G_OPTION_ARG_STRING, &self->output_file,
         "File or directory to output to", "FILE" },
+      { "cyaml-log-level", 'o', G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, NULL,
+        "Cyaml log level",
+        "LOG-LEVEL" },
       { NULL },
     };
 

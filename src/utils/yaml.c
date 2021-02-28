@@ -23,17 +23,27 @@
 
 #include <gtk/gtk.h>
 
+cyaml_log_t _cyaml_log_level = CYAML_LOG_WARNING;
+
+void
+yaml_set_log_level (
+  cyaml_log_t level)
+{
+  _cyaml_log_level = level;
+}
+
 void
 yaml_get_cyaml_config (
   cyaml_config_t * config)
 {
   /** log level: DEBUG, WARNING, INFO... */
-  config->log_level = CYAML_LOG_WARNING;
+  config->log_level = _cyaml_log_level;
   /* use the default loggin function */
   //.log_fn = cyaml_log,
   config->log_fn = yaml_cyaml_log_func;
   /* use the default memory allocator */
   config->mem_fn = cyaml_mem;
+  config->flags = CYAML_CFG_DOCUMENT_DELIM;
 }
 
 /**

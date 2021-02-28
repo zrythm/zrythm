@@ -341,6 +341,10 @@ void yaml_cyaml_log_func (
   va_list      args);
 
 void
+yaml_set_log_level (
+  cyaml_log_t level);
+
+void
 yaml_get_cyaml_config (
   cyaml_config_t * cyaml_config);
 
