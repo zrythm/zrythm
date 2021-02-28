@@ -58,6 +58,15 @@ foreach script : src_scripts
   endif
 endforeach
 
+# configure gen-schema.scm
+locales_for_gen_schema_scm = '"' + '" "'.join(locales_str.split(' ')) + '"'
+configure_file (
+  output: 'gen-schema.scm',
+  input: 'gen-schema.scm.in',
+  configuration: scripts_conf + {
+    'LINGUAS': locales_for_gen_schema_scm },
+  )
+
 # ---- create wraps needed on windows mingw ----
 
 generic_guile_wrap_name = 'generic_guile_wrap.sh'
@@ -67,7 +76,7 @@ gen_gschema_wrap = configure_file (
   output: 'gen_gschema_wrap.sh',
   input: generic_guile_wrap_name,
   configuration: scripts_conf + {
-    'SCRIPT_NAME': 'gen-gschema.scm'},
+    'SCRIPT_NAME': meson.current_build_dir () / 'gen-gschema.scm'},
   )
 
 # create the translators C-string header generator
