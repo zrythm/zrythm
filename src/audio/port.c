@@ -1638,7 +1638,11 @@ port_connect (
   const int locked)
 {
   g_warn_if_fail (src && dest && src != dest);
-  port_disconnect (src, dest);
+  if (ports_connected (src, dest))
+    {
+      port_disconnect (src, dest);
+    }
+
   if ((src->id.type !=
        dest->id.type) &&
       !(src->id.type == TYPE_CV &&
@@ -1683,19 +1687,19 @@ port_connect (
 #endif
 
   src->dests[src->num_dests] = dest;
+  dest->srcs[dest->num_srcs] = src;
   port_identifier_copy (
     &src->dest_ids[src->num_dests],
     &dest->id);
+  port_identifier_copy (
+    &dest->src_ids[dest->num_srcs],
+    &src->id);
   src->multipliers[src->num_dests] = 1.f;
   dest->src_multipliers[dest->num_srcs] = 1.f;
   src->dest_locked[src->num_dests] = locked;
   dest->src_locked[dest->num_srcs] = locked;
   src->dest_enabled[src->num_dests] = 1;
   dest->src_enabled[dest->num_srcs] = 1;
-  dest->srcs[dest->num_srcs] = src;
-  port_identifier_copy (
-    &dest->src_ids[dest->num_srcs],
-    &src->id);
   src->num_dests++;
   dest->num_srcs++;
 
@@ -1764,6 +1768,12 @@ port_disconnect (Port * src, Port * dest)
           port_identifier_copy (
             &src->dest_ids[i],
             &src->dest_ids[i + 1]);
+          src->multipliers[i] =
+            src->multipliers[i + 1];
+          src->dest_locked[i] =
+            src->dest_locked[i + 1];
+          src->dest_enabled[i] =
+            src->dest_enabled[i + 1];
         }
     }
 
@@ -1780,6 +1790,12 @@ port_disconnect (Port * src, Port * dest)
           port_identifier_copy (
             &dest->src_ids[i],
             &dest->src_ids[i + 1]);
+          dest->src_multipliers[i] =
+            dest->src_multipliers[i + 1];
+          dest->src_locked[i] =
+            dest->src_locked[i + 1];
+          dest->src_enabled[i] =
+            dest->src_enabled[i + 1];
         }
     }
 
@@ -4170,3 +4186,7 @@ port_free (Port * self)
 
   object_zero_and_free (self);
 }
+
+SERIALIZE_SRC (Port, port)
+DESERIALIZE_SRC (Port, port)
+PRINT_YAML_SRC (Port, port)

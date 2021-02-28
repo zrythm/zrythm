@@ -1268,6 +1268,10 @@ port_apply_pan (
   nframes_t start_frame,
   const nframes_t nframes);
 
+SERIALIZE_INC (Port, port)
+DESERIALIZE_INC (Port, port)
+PRINT_YAML_INC (Port, port)
+
 /**
  * @}
  */

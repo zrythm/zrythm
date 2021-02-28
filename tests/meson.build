@@ -145,66 +145,38 @@ if get_option ('tests')
   tests = {
     'actions/arranger_selections': {
       parallel: false },
-    'actions/range': {
-      parallel: true },
-    'actions/undo_manager': {
-      parallel: true },
-    'audio/audio_region': {
-      parallel: true },
-    'audio/audio_track': {
-      parallel: true },
-    'audio/automation_track': {
-      parallel: true },
-    'audio/curve': {
-      parallel: true },
-    'audio/fader': {
-      parallel: true },
-    'audio/metronome': {
-      parallel: true },
-    'audio/midi': {
-      parallel: true },
-    'audio/midi_mapping': {
-      parallel: true },
-    'audio/midi_note': {
-      parallel: true },
-    'audio/midi_region': {
-      parallel: true },
-    'audio/midi_track': {
-      parallel: true },
-    'audio/position': {
-      parallel: true },
-    'audio/region': {
-      parallel: true },
-    'audio/snap_grid': {
-      parallel: true },
-    'audio/track': {
-      parallel: true },
-    'audio/tracklist': {
-      parallel: true },
+    'actions/range': { parallel: true },
+    'actions/undo_manager': { parallel: true },
+    'audio/audio_region': { parallel: true },
+    'audio/audio_track': { parallel: true },
+    'audio/automation_track': { parallel: true },
+    'audio/curve': { parallel: true },
+    'audio/fader': { parallel: true },
+    'audio/metronome': { parallel: true },
+    'audio/midi': { parallel: true },
+    'audio/midi_mapping': { parallel: true },
+    'audio/midi_note': { parallel: true },
+    'audio/midi_region': { parallel: true },
+    'audio/midi_track': { parallel: true },
+    'audio/position': { parallel: true },
+    'audio/port': { parallel: true },
+    'audio/region': { parallel: true },
+    'audio/snap_grid': { parallel: true },
+    'audio/track': { parallel: true },
+    'audio/tracklist': { parallel: true },
     'gui/backend/arranger_selections': {
       parallel: true },
-    'integration/recording': {
-      parallel: false },
-    'plugins/carla_discovery': {
-      parallel: false },
-    'plugins/plugin': {
-      parallel: false },
-    'plugins/plugin_manager': {
-      parallel: true },
-    'project': {
-      parallel: true },
-    'utils/arrays': {
-      parallel: true },
-    'utils/general': {
-      parallel: true },
-    'utils/io': {
-      parallel: true },
-    'utils/string': {
-      parallel: true },
-    'utils/ui': {
-      parallel: true },
-    'zrythm': {
-      parallel: true },
+    'integration/recording': { parallel: false },
+    'plugins/carla_discovery': { parallel: false },
+    'plugins/plugin': { parallel: false },
+    'plugins/plugin_manager': { parallel: true },
+    'project': { parallel: true },
+    'utils/arrays': { parallel: true },
+    'utils/general': { parallel: true },
+    'utils/io': { parallel: true },
+    'utils/string': { parallel: true },
+    'utils/ui': { parallel: true },
+    'zrythm': { parallel: true },
     }
 
   if os_gnu or os_darwin

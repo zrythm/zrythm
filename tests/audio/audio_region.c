@@ -95,7 +95,7 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-#define TEST_PREFIX "/audio/midi_region/"
+#define TEST_PREFIX "/audio/audio_region/"
 
   g_test_add_func (
     TEST_PREFIX "test fill stereo ports",
