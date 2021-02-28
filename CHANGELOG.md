@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.13.0.1] - 2021-02-28
+## [1.0.0-alpha.13.0.4] - 2021-02-28
 ### Added
 - Allow MIDI learn on transport controls
 - Add dir for user scripts
