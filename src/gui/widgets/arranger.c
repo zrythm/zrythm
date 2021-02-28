@@ -3280,6 +3280,33 @@ drag_update (
   arranger_widget_refresh_cursor (self);
 }
 
+/**
+ * To be called on drag_end() to handle erase
+ * actions.
+ */
+static void
+handle_erase_action (
+  ArrangerWidget * self)
+{
+  if (self->sel_to_delete)
+    {
+      if (arranger_selections_has_any (
+            self->sel_to_delete) &&
+          !arranger_selections_contains_undeletable_object (
+            self->sel_to_delete))
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_delete (
+            self->sel_to_delete);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      object_free_w_func_and_null (
+        arranger_selections_free,
+        self->sel_to_delete);
+    }
+}
+
 static void
 on_drag_end_automation (
   ArrangerWidget * self)
@@ -3395,15 +3422,7 @@ on_drag_end_automation (
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
-      {
-        UndoableAction * ua =
-          arranger_selections_action_new_delete (
-            self->sel_to_delete);
-        undo_manager_perform (UNDO_MANAGER, ua);
-        object_free_w_func_and_null (
-          arranger_selections_free,
-          self->sel_to_delete);
-      }
+      handle_erase_action (self);
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       {
@@ -3493,15 +3512,7 @@ on_drag_end_midi_modifier (
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
-      {
-        UndoableAction * ua =
-          arranger_selections_action_new_delete (
-            self->sel_to_delete);
-        undo_manager_perform (UNDO_MANAGER, ua);
-        object_free_w_func_and_null (
-          arranger_selections_free,
-          self->sel_to_delete);
-      }
+      handle_erase_action (self);
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       if (arranger_selections_has_any (
@@ -3645,23 +3656,7 @@ on_drag_end_midi (
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
-      {
-        if (self->sel_to_delete)
-          {
-            if (arranger_selections_has_any (
-                  self->sel_to_delete))
-              {
-                UndoableAction * ua =
-                  arranger_selections_action_new_delete (
-                    self->sel_to_delete);
-                undo_manager_perform (
-                  UNDO_MANAGER, ua);
-              }
-            object_free_w_func_and_null (
-              arranger_selections_free,
-              self->sel_to_delete);
-          }
-      }
+      handle_erase_action (self);
       break;
     /* if didn't click on something */
     default:
@@ -3758,15 +3753,7 @@ on_drag_end_chord (
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
-      {
-        UndoableAction * ua =
-          arranger_selections_action_new_delete (
-            self->sel_to_delete);
-        undo_manager_perform (UNDO_MANAGER, ua);
-        object_free_w_func_and_null (
-          arranger_selections_free,
-          self->sel_to_delete);
-      }
+      handle_erase_action (self);
       break;
     /* if didn't click on something */
     default:
@@ -4055,22 +4042,7 @@ on_drag_end_timeline (
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
-      {
-        if (self->sel_to_delete &&
-            arranger_selections_has_any (
-              self->sel_to_delete) &&
-            !arranger_selections_contains_undeletable_object (
-              self->sel_to_delete))
-          {
-            UndoableAction * ua =
-              arranger_selections_action_new_delete (
-                self->sel_to_delete);
-            undo_manager_perform (UNDO_MANAGER, ua);
-          }
-        object_free_w_func_and_null (
-          arranger_selections_free,
-          self->sel_to_delete);
-      }
+      handle_erase_action (self);
       break;
     case UI_OVERLAY_ACTION_CUTTING:
       {
