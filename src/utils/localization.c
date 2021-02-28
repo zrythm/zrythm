@@ -301,8 +301,10 @@ localization_init (
 
       if (print_debug_messages)
         {
-          g_message ("preferred lang: \"%s\"",
-            language_strings[lang]);
+          g_message (
+            "preferred lang: '%s' (%s)",
+            language_strings[lang],
+            language_codes[lang]);
         }
 
       if (lang == LL_EN)

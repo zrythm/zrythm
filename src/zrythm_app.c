@@ -647,16 +647,6 @@ zrythm_app_activate (
   g_message ("Activating...");
   /*g_message ("activate %d", *task_id);*/
 
-  /* init localization, using system locale if
-   * first run */
-  GSettings * prefs =
-    g_settings_new (
-      GSETTINGS_ZRYTHM_PREFIX ".general");
-  localization_init (
-    g_settings_get_boolean (
-      prefs, "first-run"), true);
-  g_object_unref (G_OBJECT (prefs));
-
   g_message ("done");
 }
 
@@ -876,7 +866,10 @@ raise_open_file_limit ()
 }
 
 /**
- * First function that gets called.
+ * First function that gets called afted CLI args
+ * are parsed and processed.
+ *
+ * This gets called before open or activate.
  */
 static void
 zrythm_app_startup (
@@ -885,6 +878,16 @@ zrythm_app_startup (
   g_message ("Starting up...");
 
   ZrythmApp * self = ZRYTHM_APP (app);
+
+  /* init localization, using system locale if
+   * first run */
+  GSettings * prefs =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".general");
+  localization_init (
+    g_settings_get_boolean (
+      prefs, "first-run"), true);
+  g_object_unref (G_OBJECT (prefs));
 
   char * exe_path = NULL;
   int dirname_length, length;
@@ -1620,45 +1623,45 @@ add_option_entries (
     {
       { "version", 'v',  G_OPTION_FLAG_NO_ARG,
         G_OPTION_ARG_CALLBACK, print_version,
-        __("Print version information"),
+        _("Print version information"),
         NULL },
       { "zpj-to-yaml", 0,
         G_OPTION_FLAG_NONE,
         G_OPTION_ARG_FILENAME, NULL,
-        __("Convert ZPJ-FILE to YAML"),
+        _("Convert ZPJ-FILE to YAML"),
         "ZPJ-FILE" },
       { "yaml-to-zpj", 0,
         G_OPTION_FLAG_NONE,
         G_OPTION_ARG_FILENAME, NULL,
-        __("Convert YAML-PROJECT-FILE to the .zpj format"),
+        _("Convert YAML-PROJECT-FILE to the .zpj format"),
         "YAML-PROJECT-FILE" },
       { "gen-project", 0,
         G_OPTION_FLAG_NONE,
         G_OPTION_ARG_FILENAME, NULL,
-        __("Generate a project from SCRIPT-FILE"),
+        _("Generate a project from SCRIPT-FILE"),
         "SCRIPT-FILE" },
       { "pretty", 0, G_OPTION_FLAG_NONE,
         G_OPTION_ARG_NONE, &self->pretty_print,
-        __("Print output in user-friendly way"),
+        _("Print output in user-friendly way"),
         NULL },
       { "print-settings", 'p', G_OPTION_FLAG_NONE,
         G_OPTION_ARG_NONE, NULL,
-        __("Print current settings"), NULL },
+        _("Print current settings"), NULL },
       { "reset-to-factory", 0,
         G_OPTION_FLAG_NONE,
         G_OPTION_ARG_NONE, NULL,
-        __("Reset to factory settings"), NULL },
+        _("Reset to factory settings"), NULL },
       { "audio-backend", 0, G_OPTION_FLAG_NONE,
         G_OPTION_ARG_STRING, &self->audio_backend,
-        __("Override the audio backend to use"),
+        _("Override the audio backend to use"),
         "BACKEND" },
       { "midi-backend", 0, G_OPTION_FLAG_NONE,
         G_OPTION_ARG_STRING, &self->midi_backend,
-        __("Override the MIDI backend to use"),
+        _("Override the MIDI backend to use"),
         "BACKEND" },
       { "dummy", 0, G_OPTION_FLAG_NO_ARG,
         G_OPTION_ARG_CALLBACK, set_dummy,
-        __("Shorthand for --midi-backend=none "
+        _("Shorthand for --midi-backend=none "
         "--audio-backend=none"),
         NULL },
       { "buf-size", 0, G_OPTION_FLAG_NONE,
@@ -1684,12 +1687,12 @@ add_option_entries (
   g_application_add_main_option_entries (
     G_APPLICATION (self), entries);
   g_application_set_option_context_parameter_string (
-    G_APPLICATION (self), __("[PROJECT-FILE]"));
+    G_APPLICATION (self), _("[PROJECT-FILE]"));
 
   char examples[8000];
   sprintf (
     examples,
-    __("Examples:\n"
+    _("Examples:\n"
     "  --zpj-to-yaml a.zpj > b.yaml        Convert a a.zpj to YAML and save to b.yaml\n"
     "  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
     "  -p --pretty                         Pretty-print current settings\n\n"
@@ -1701,7 +1704,7 @@ add_option_entries (
   char summary[8000];
   sprintf (
     summary,
-    __("Run %s, optionally passing a project "
+    _("Run %s, optionally passing a project "
     "file."),
     PROGRAM_NAME);
   g_application_set_option_context_summary (

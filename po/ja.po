@@ -446,9 +446,8 @@ msgid "libguile is required for this option\n"
 msgstr "このオプションには libguile が必要です。\n"
 
 #: src/main.c:329
-#, fuzzy
 msgid "Print version information"
-msgstr "ライセンス情報"
+msgstr "バージョン情報を出力"
 
 #: src/main.c:334
 msgid "Convert ZPJ-FILE to YAML"
