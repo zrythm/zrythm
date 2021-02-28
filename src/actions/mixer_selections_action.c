@@ -153,6 +153,12 @@ mixer_selections_action_new (
       self->ms_before =
         mixer_selections_clone (
           ms, ms == MIXER_SELECTIONS);
+      if (!self->ms_before)
+        {
+          g_warning (
+            "failed to clone mixer selections");
+          return NULL;
+        }
       g_warn_if_fail (
         ms->slots[0] == self->ms_before->slots[0]);
 

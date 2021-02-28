@@ -453,6 +453,13 @@ mixer_selections_clone (
         }
       ms->plugins[i] =
         plugin_clone (pl, true);
+      if (!ms->plugins[i])
+        {
+          g_warning (
+            "failed to clone plugin: %s",
+            pl->descr->name);
+          return NULL;
+        }
       ms->slots[i] = src->slots[i];
     }
 

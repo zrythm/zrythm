@@ -1526,9 +1526,17 @@ plugin_instantiate (
   if (pl->descr->open_with_carla)
     {
 #ifdef HAVE_CARLA
-      carla_native_plugin_instantiate (
-        pl->carla, !PROJECT->loaded,
-        pl->state_dir ? true : false);
+      int ret =
+        carla_native_plugin_instantiate (
+          pl->carla, !PROJECT->loaded,
+          pl->state_dir ? true : false);
+      if (ret != 0)
+        {
+          g_warning (
+            "carla plugin instantiation failed");
+          return -1;
+        }
+
       /* save the state */
       carla_native_plugin_save_state (
         pl->carla, false);

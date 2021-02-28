@@ -1036,9 +1036,12 @@ create_from_descr (
  * Creates an instance of a CarlaNativePlugin inside
  * the given Plugin.
  *
- * The given Plugin must have its descriptor filled in.
+ * The given Plugin must have its descriptor
+ * filled in.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 carla_native_plugin_new_from_descriptor (
   Plugin * plugin)
 {
@@ -1047,11 +1050,13 @@ carla_native_plugin_new_from_descriptor (
   if (!self)
     {
       g_warning ("failed to create plugin");
-      return;
+      return -1;
     }
 
   plugin->carla = self;
   self->plugin = plugin;
+
+  return 0;
 }
 
 static void
@@ -1194,8 +1199,15 @@ carla_native_plugin_instantiate (
     {
       /* recreate the plugin to create the native
        * plugin descriptor */
-      carla_native_plugin_new_from_descriptor (
-        self->plugin);
+      int ret =
+        carla_native_plugin_new_from_descriptor (
+          self->plugin);
+      if (ret != 0)
+        {
+          self->plugin->instantiation_failed =
+            true;
+          return -1;
+        }
 
       /* load the state */
       carla_native_plugin_load_state (
@@ -1339,6 +1351,11 @@ carla_native_plugin_set_param_value (
   const uint32_t      id,
   float               val)
 {
+  if (self->plugin->instantiation_failed)
+    {
+      return;
+    }
+
   carla_set_parameter_value (
     self->host_handle, 0, id, val);
 }

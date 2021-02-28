@@ -209,7 +209,8 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
   Lv2Plugin *  lv2_plugin,
   Lv2Port *    lv2_port)
 {
-  if (!lv2_plugin->plugin->visible)
+  if (!lv2_plugin->plugin->visible ||
+      lv2_plugin->plugin->instantiation_failed)
     return;
 
   g_debug ("%s: %s: %s (%d)",

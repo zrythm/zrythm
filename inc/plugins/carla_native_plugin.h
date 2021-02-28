@@ -111,10 +111,12 @@ carla_native_plugin_init_loaded (
  * Creates an instance of a CarlaNativePlugin inside
  * the given Plugin.
  *
- * The given Plugin must have its descriptor filled
- * in.
+ * The given Plugin must have its descriptor
+ * filled in.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 carla_native_plugin_new_from_descriptor (
   Plugin * plugin);
 

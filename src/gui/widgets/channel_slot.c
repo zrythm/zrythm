@@ -621,6 +621,7 @@ on_plugin_delete (
   UndoableAction * ua =
     mixer_selections_action_new_delete (
       MIXER_SELECTIONS);
+  g_return_if_fail (ua);
   undo_manager_perform (UNDO_MANAGER, ua);
   EVENTS_PUSH (ET_PLUGINS_REMOVED, self->track);
 }

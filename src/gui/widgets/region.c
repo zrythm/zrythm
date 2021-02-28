@@ -1688,7 +1688,7 @@ region_draw (
         }
       else
         {
-          g_debug ("ignoring cache");
+          /*g_debug ("ignoring cache");*/
         }
 
       /* draw any remaining parts */

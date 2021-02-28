@@ -1216,6 +1216,7 @@ handle_automation_event (
   ZRegion * region =
     automation_track_get_region_before_pos (
       at, &start_pos);
+#if 0
   position_print (&start_pos);
   position_print (&end_pos);
   if (region)
@@ -1227,6 +1228,7 @@ handle_automation_event (
     {
       g_message ("no region");
     }
+#endif
 
   ZRegion * region_at_end =
     automation_track_get_region_before_pos (
@@ -1494,7 +1496,7 @@ recording_manager_process_events (
           handle_audio_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_AUTOMATION:
-          g_message ("-------- RECORD AUTOMATION");
+          /*g_message ("-------- RECORD AUTOMATION");*/
           handle_automation_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING:

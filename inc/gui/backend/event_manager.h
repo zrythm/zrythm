@@ -101,9 +101,14 @@ typedef struct EventManager
         { \
           _ev->backtrace = backtrace_get ("", 40); \
         } \
-      g_debug ( \
-        "pushing UI event " #et \
-        " (%s:%d)", __func__, __LINE__); \
+      /* don't print events that are called \
+       * continuously */ \
+      if (et != ET_PLAYHEAD_POS_CHANGED) \
+        { \
+          g_debug ( \
+            "pushing UI event " #et \
+            " (%s:%d)", __func__, __LINE__); \
+        } \
       event_queue_push_back_event ( \
         EVENT_QUEUE, _ev); \
     }
