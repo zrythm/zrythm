@@ -1,6 +1,40 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.13.0.1] - 2021-02-28
+### Added
+- Allow MIDI learn on transport controls
+- Add dir for user scripts
+- Add `--cyaml-log-level` option
+
+### Changed
+- Silence many unnecessary logs
+- Update Chinese (Simplified), French translations
+- Optimize some DSP functions
+- Optimize RAM usage for ports (only allocate what is needed)
+- Use new libaudec v0.3
+- Read example scripts from disk and test them
+- Switch to `g_application_add_main_option_entries()` for parsing CLI args
+- Use common procedure for pausing/restarting engine
+- Handle plugin clone failures more gracefully
+- Only attempt to disconnect ports if already connected
+
+### Fixed
+- Re-fix AU plugin scan on MacOS
+- Fix number of port connections not being updated in inspector when connecting ports
+- Fix MIDI note being skipped after transport loop
+- Fix errors when loading projects after disconnecting a MIDI device
+- Fix errors on wayland when instantiating LV2 plugins
+- Fix error when changing piano roll MIDI modifier
+- Fix lag when muting/soloing tracks
+- Fix unnecessary logs being printed when using CLI commands
+- Fix writing to invalid memory when connecting ports
+- Fix error when selecting nothing with erase tool in automation editor
+- Fix crash when opening project with non-found carla plugin
+- Fix crash when closing a project containing plugins that failed to initialize
+- Fix locales mismatch between GSettings schema and Zrythm UI
+- Fix data not being moved properly when disconnecting ports
+
 ## [1.0.0-alpha.12.0.1] - 2021-02-20
 ### Added
 - Add LV2 extension to pass host info to plugin
