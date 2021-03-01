@@ -1141,6 +1141,10 @@ expose_to_jack (
         flags = JackPortIsOutput;
       else if (self->id.flow == FLOW_OUTPUT)
         flags = JackPortIsInput;
+      else
+        {
+          g_return_if_reached ();
+        }
     }
   else
     {
@@ -1148,6 +1152,10 @@ expose_to_jack (
         flags = JackPortIsInput;
       else if (self->id.flow == FLOW_OUTPUT)
         flags = JackPortIsOutput;
+      else
+        {
+          g_return_if_reached ();
+        }
     }
 
   const char * type =

@@ -2327,13 +2327,13 @@ lv2_plugin_instantiate (
         &ZRYTHM->version },
       { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL },
     };
-  g_warn_if_fail (
-    (sizeof (options) / sizeof (options[0])) ==
+  g_return_val_if_fail (
+    (sizeof (options) / sizeof (options[0])) <=
     (sizeof (self->options) /
-       sizeof (self->options[0])));
+       sizeof (self->options[0])),
+    -1);
   memcpy (
-    self->options, options,
-    sizeof (self->options));
+    self->options, options, sizeof (options));
 
   /* Create Plugin <=> UI communication
    * buffers */

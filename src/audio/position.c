@@ -677,6 +677,7 @@ position_snap (
 
       /* get previous snap point from start pos */
       Position prev_sp_from_start_pos;
+      position_init (&prev_sp_from_start_pos);
       get_prev_snap_point (
         start_pos, track, region, sg,
         &prev_sp_from_start_pos);

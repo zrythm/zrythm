@@ -283,6 +283,7 @@ position_sort_array (
  * the rest of the fields, and makes sure the
  * frames are still accurate.
  */
+__attribute__ ((access (read_write, 1)))
 void
 position_add_frames (
   Position * pos,
@@ -291,6 +292,7 @@ position_add_frames (
 /**
  * Converts position bars/beats/quarter beats/ticks to frames
  */
+__attribute__ ((access (read_only, 1)))
 long
 position_to_frames (
   const Position * position);
@@ -320,6 +322,7 @@ long
 position_to_ms (
   const Position * pos);
 
+__attribute__ ((const))
 long
 position_ms_to_frames (
   long ms);

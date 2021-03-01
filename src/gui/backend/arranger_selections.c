@@ -1950,6 +1950,8 @@ arranger_selections_all_on_same_lane (
   /* return if not all regions on the same lane or
    * automation track */
   RegionIdentifier id;
+  memset (&id, 0, sizeof (RegionIdentifier));
+  id.type = -1;
   for (int i = 0; i < size; i++)
     {
       ArrangerObject * obj = objs[i];

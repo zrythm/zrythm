@@ -137,7 +137,7 @@ typedef struct Lv2Plugin
    * the state. */
   const LV2_Feature* state_features[8];
 
-  LV2_Options_Option options[9];
+  LV2_Options_Option options[10];
 
   /** Plugin <=> UI communication buffer size. */
   uint32_t           comm_buffer_size;
