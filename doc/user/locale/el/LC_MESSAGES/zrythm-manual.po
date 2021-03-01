@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-27 20:40+0000\n"
+"POT-Creation-Date: 2021-03-01 02:00+0000\n"
 "PO-Revision-Date: 2021-02-08 10:50+0000\n"
 "Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
 "Language: el\n"
@@ -495,16 +495,11 @@ msgstr "Σύνδεση συσκευών MIDI και ήχου"
 #: ../../configuration/device-setup.rst:11
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
-":ref:`configuration/preferences/intro:Audio inputs` and "
-":ref:`configuration/preferences/intro:MIDI controllers` and make these "
-"devices available in the :ref:`track inputs <tracks/inspector-"
-"page:Inputs>` (as below) and other places."
+":ref:`configuration/preferences:Audio inputs` and "
+":ref:`configuration/preferences:MIDI controllers` and make these devices "
+"available in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as "
+"below) and other places."
 msgstr ""
-"Το Zrythm θα συνδεθεί αυτόματα στις συσκευές που προσδιορίζονται στο "
-":ref:`configuration/preferences/intro:Audio inputs` και "
-":ref:`configuration/preferences/intro:MIDI controllers` και θα καταστήσει"
-" αυτές τις συσκεύες διαθέσιμες στο :ref:`track inputs <tracks/inspector-"
-"page:Inputs>` (όπως παρακάτω) και σε άλλα μέρη."
 
 #: ../../configuration/device-setup.rst:23
 #: ../../getting-started/system-requirements.rst:34 ../../glossary/intro.rst:66
@@ -538,7 +533,15 @@ msgstr "Το Zrythm δεν θα θυμάται συνδέσεις που έγι�
 msgid "Configuration"
 msgstr "Ρύθμιση"
 
+#: ../../configuration/intro.rst:18
+msgid ""
+"This section goes through the :doc:`Preferences dialog <preferences>`, "
+":doc:`setting up devices <device-setup>` and :doc:`additional settings "
+"<additional-settings>`."
+msgstr ""
+
 #: ../../configuration/preferences.rst:10
+#: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Preferences"
 msgstr "Επιλογές"
 
@@ -574,11 +577,11 @@ msgstr "Κινητήρας"
 msgid "Audio engine settings."
 msgstr "Ρυθμίσεις κινητήρα ήχου."
 
-#: ../../configuration/preferences.rst:35
+#: ../../configuration/preferences.rst:36
 msgid "Audio backend"
 msgstr "Παρασκήνιο ήχου"
 
-#: ../../configuration/preferences.rst:36
+#: ../../configuration/preferences.rst:35
 msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using :term:`JACK` when possible, otherwise RtAudio."
@@ -591,7 +594,7 @@ msgstr ""
 msgid "MIDI backend"
 msgstr "Παρασκήνιο MIDI"
 
-#: ../../configuration/preferences.rst:42
+#: ../../configuration/preferences.rst:39
 msgid ""
 "The MIDI backend to use. The available backends are JACK MIDI, RtMidi and"
 " WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
@@ -601,90 +604,90 @@ msgstr ""
 "RtMidi και WindowsMME (μόνο στα Windows). Συνιστούμε τη χρήση JACK MIDI "
 "όπου είναι δυνατόν, αλλιώς RtMidi."
 
-#: ../../configuration/preferences.rst:48
+#: ../../configuration/preferences.rst:43
 msgid "MIDI controllers"
 msgstr "Χειριστές MIDI"
 
-#: ../../configuration/preferences.rst:49
+#: ../../configuration/preferences.rst:44
 msgid "A list of controllers to auto-connect to."
 msgstr "Μια λίστα χειριστών προς σύνδεση."
 
-#: ../../configuration/preferences.rst:52
+#: ../../configuration/preferences.rst:46
 msgid "Audio inputs"
 msgstr "Εισαγόμενοι ήχοι"
 
-#: ../../configuration/preferences.rst:53
+#: ../../configuration/preferences.rst:46
 msgid "A list of audio inputs to auto-connect to."
 msgstr "Μια λίστα εισαγόμενων ήχων προς σύνδεση."
 
-#: ../../configuration/preferences.rst:56
+#: ../../configuration/preferences.rst:49
 msgid "Paths (Global)"
 msgstr "Μονοπάτια (Καθολικά)"
 
-#: ../../configuration/preferences.rst:58
+#: ../../configuration/preferences.rst:51
 msgid "Global paths."
 msgstr "Καθολικά μονοπάτια."
 
-#: ../../configuration/preferences.rst:61
+#: ../../configuration/preferences.rst:54
 msgid "Zrythm path"
 msgstr "Μονοπάτι Zrythm"
 
-#: ../../configuration/preferences.rst:62
+#: ../../configuration/preferences.rst:54
 msgid "The :term:`Zrythm user path`."
 msgstr "Το :term:`μονοπάτι χρήστη Zrythm <Zrythm user path>`."
 
-#: ../../configuration/preferences.rst:65
+#: ../../configuration/preferences.rst:57
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
 msgstr "Πρόσθετα"
 
-#: ../../configuration/preferences.rst:67
+#: ../../configuration/preferences.rst:59
 msgid ":term:`Plugin` settings."
 msgstr "Ρυθμίσεις :term:`προσθέτων <Plugin>`."
 
-#: ../../configuration/preferences.rst:73
+#: ../../configuration/preferences.rst:65
 msgid "UIs"
 msgstr "Διεπαφές χρήστη"
 
-#: ../../configuration/preferences.rst:75
+#: ../../configuration/preferences.rst:67
 msgid "Plugin UIs."
 msgstr "Διεπαφές χρήστη προσθέτων."
 
-#: ../../configuration/preferences.rst:78
+#: ../../configuration/preferences.rst:70
 #: ../../plugins-files/plugins/plugin-window.rst:24
 msgid "Generic UIs"
 msgstr "Κοινές διεπαφές χρήστη"
 
-#: ../../configuration/preferences.rst:79
+#: ../../configuration/preferences.rst:70
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
 "Προβολή γενικών (κοινών) διεπαφών χρήστη προσθέτων που παράγονται από το "
 "Zrythm αντί των προσαρμοσμένων."
 
-#: ../../configuration/preferences.rst:83
+#: ../../configuration/preferences.rst:72
 msgid "Open UI on instantiation"
 msgstr "Άνοιγμα διεπαφής χρήστη κατά την ενσάρκωση"
 
-#: ../../configuration/preferences.rst:84
+#: ../../configuration/preferences.rst:73
 msgid "Open plugin UIs when they are instantiated."
 msgstr "Άνοιγμα διεπαφών χρήστη προσθέτων κατά την ενσάρκωσή τους."
 
-#: ../../configuration/preferences.rst:87
+#: ../../configuration/preferences.rst:74
 msgid "Keep window on top"
 msgstr "Διατήρηση παραθύρου στην κορυφή"
 
-#: ../../configuration/preferences.rst:88
+#: ../../configuration/preferences.rst:75
 msgid "Always show plugin UIs on top of the main window."
 msgstr ""
 "Να προβάλλονται πάντα οι διεπαφές χρήστη προσθέτων στην κορυφή του "
 "κεντρικού παραθύρου."
 
-#: ../../configuration/preferences.rst:91
+#: ../../configuration/preferences.rst:80
 msgid "Bridge unsupported UIs"
 msgstr "Γεφύρωση μη υποστηριζόμενων διεπαφών χρήστη"
 
-#: ../../configuration/preferences.rst:92
+#: ../../configuration/preferences.rst:77
 msgid ""
 "Bridge unsupported UIs in another process instead of creating generic "
 "ones."
@@ -692,33 +695,33 @@ msgstr ""
 "Γεφύρωση μη υποστηριζόμενων διεπαφών χρήστη σε άλλη διεργασία αντί για "
 "δημιουργία γενικών (κοινών) διεπαφών."
 
-#: ../../configuration/preferences.rst:95
+#: ../../configuration/preferences.rst:80
 msgid "This may lead to performance loss for some plugins."
 msgstr "Αυτό μπορεί να οδηγήσει σε απώλεια απόδοσης σε μερικά πρόσθετα."
 
-#: ../../configuration/preferences.rst:99
+#: ../../configuration/preferences.rst:84
 msgid "Refresh rate"
 msgstr "Ανανέωση ρυθμού"
 
-#: ../../configuration/preferences.rst:100
+#: ../../configuration/preferences.rst:83
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 "Ανανέωση ρυθμού σε Hz. Αν οριστεί σε 0, θα χρησιμοποιηθεί η ανανέωση "
 "ρυθμού της οθόνης."
 
-#: ../../configuration/preferences.rst:106
+#: ../../configuration/preferences.rst:89
 msgid "Paths"
 msgstr "Μονοπάτια"
 
-#: ../../configuration/preferences.rst:109
+#: ../../configuration/preferences.rst:97
 msgid "VST plugins"
 msgstr "Πρόσθετα VST"
 
-#: ../../configuration/preferences.rst:110
+#: ../../configuration/preferences.rst:92
 msgid "The search paths to scan for :term:`VST2` plugins in."
 msgstr "Τα μονοπάτια αναζήτησης προς σκανάρισμα προσθέτων :term:`VST2`."
 
-#: ../../configuration/preferences.rst:113
+#: ../../configuration/preferences.rst:95
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
 "paths are fixed. See :ref:`scanning-plugins` for details."
@@ -727,45 +730,45 @@ msgstr ""
 "MacOS τα μονοπάτια είναι σταθερά. Βλέπε :ref:`scanning-plugins` για "
 "λεπτομέρειες."
 
-#: ../../configuration/preferences.rst:118
+#: ../../configuration/preferences.rst:100
 msgid "SFZ instruments"
 msgstr "Όργανα SFZ"
 
-#: ../../configuration/preferences.rst:119
+#: ../../configuration/preferences.rst:100
 msgid "The search paths to scan for :term:`SFZ` instruments in."
 msgstr "Τα μονοπάτια αναζήτησης προς σκανάρισμα προσθέτων :term:`SFZ`."
 
-#: ../../configuration/preferences.rst:123
+#: ../../configuration/preferences.rst:104
 msgid "SF2 instruments"
 msgstr "Όργανα SF2"
 
-#: ../../configuration/preferences.rst:124
+#: ../../configuration/preferences.rst:103
 msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Τα μονοπάτια αναζήτησης προς σκανάρισμα προσθέτων :term:`SF2`."
 
-#: ../../configuration/preferences.rst:128 ../../glossary/intro.rst:56
+#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:56
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../configuration/preferences.rst:130
+#: ../../configuration/preferences.rst:109
 msgid ":term:`DSP` settings."
 msgstr "Ρυθμίσεις :term:`DSP`."
 
-#: ../../configuration/preferences.rst:136
+#: ../../configuration/preferences.rst:115
 msgid "Pan"
 msgstr "Πανάρισμα"
 
-#: ../../configuration/preferences.rst:138
+#: ../../configuration/preferences.rst:117
 msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
 msgstr ""
 "Ρυθμίσεις :term:`παναρίσματος <Panning>` για σήματα :term:`Μόνο <Mono>` "
 "(δεν χρησιμοποιείται αυτή τη στιγμή)."
 
-#: ../../configuration/preferences.rst:141
+#: ../../configuration/preferences.rst:134
 msgid "Pan algorithm"
 msgstr "Αλγόριθμος παναρίσματος"
 
-#: ../../configuration/preferences.rst:142
+#: ../../configuration/preferences.rst:120
 msgid ""
 "The panning algorithm to use when applying pan on mono signals. See the "
 "graph below for the different curves as you move the pan from left to "
@@ -780,108 +783,108 @@ msgstr ""
 "https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html για "
 "περισσότερες πληροφορίες."
 
-#: ../../configuration/preferences.rst:155
+#: ../../configuration/preferences.rst:133
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 "Αλγόριθμοι παναρίσματος (:blue:`ημιτονοειδές`, :red:`τετραγωνική ρίζα`, "
 ":green:`γραμμικό`)."
 
-#: ../../configuration/preferences.rst:159 ../../glossary/intro.rst:97
+#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:97
 msgid "Pan law"
 msgstr "Νόμος παναρίσματος"
 
-#: ../../configuration/preferences.rst:160
+#: ../../configuration/preferences.rst:137
 msgid "The :term:`Pan law` to use when applying pan on mono signals."
 msgstr ""
 "Ο :term:`νόμος παναρίσματος <Pan law>` προς χρήση κατά την εφαρμογή "
 "παναρίσματος σε σήματα μόνο."
 
-#: ../../configuration/preferences.rst:164 ../../editing/intro.rst:8
+#: ../../configuration/preferences.rst:141 ../../editing/intro.rst:8
 msgid "Editing"
 msgstr "Επεξεργασία"
 
-#: ../../configuration/preferences.rst:166
+#: ../../configuration/preferences.rst:143
 msgid "Editing options."
 msgstr "Ρυθμίσεις επεξεργασίας."
 
-#: ../../configuration/preferences.rst:172 ../../routing/ports.rst:41
+#: ../../configuration/preferences.rst:149 ../../routing/ports.rst:41
 #: ../../tracks/track-types.rst:14 ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16 ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
 msgstr "Ήχος"
 
-#: ../../configuration/preferences.rst:174
+#: ../../configuration/preferences.rst:151
 msgid "Audio editing."
 msgstr "Επεξεργασία ήχου."
 
-#: ../../configuration/preferences.rst:177
+#: ../../configuration/preferences.rst:154
 msgid "Fade algorithm"
 msgstr "Αλγόριθμος fade"
 
-#: ../../configuration/preferences.rst:178
+#: ../../configuration/preferences.rst:154
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr "Προεπιλεγμένος αλγόριθμος fade προς χρήση για fade in/outs."
 
-#: ../../configuration/preferences.rst:181 ../../tracks/automation.rst:8
+#: ../../configuration/preferences.rst:157 ../../tracks/automation.rst:8
 msgid "Automation"
 msgstr "Αυτοματισμός"
 
-#: ../../configuration/preferences.rst:183
+#: ../../configuration/preferences.rst:159
 msgid "Automation editing."
 msgstr "Επεξεργασία αυτοματισμού."
 
-#: ../../configuration/preferences.rst:186
+#: ../../configuration/preferences.rst:163
 msgid "Curve algorithm"
 msgstr "Αλγόριθμος καμπύλης"
 
-#: ../../configuration/preferences.rst:187
+#: ../../configuration/preferences.rst:162
 msgid "Default curve algorithm to use for automation curves."
 msgstr "Προεπιλεγμένος αλγόριθμος καμπύλης προς χρήση για καμπύλες αυτοματισμού."
 
-#: ../../configuration/preferences.rst:191
+#: ../../configuration/preferences.rst:166
 msgid "Undo"
 msgstr "Αναίρεση"
 
-#: ../../configuration/preferences.rst:193
+#: ../../configuration/preferences.rst:168
 msgid "Undo options."
 msgstr "Αναίρεση ρυθμίσεων."
 
-#: ../../configuration/preferences.rst:196
+#: ../../configuration/preferences.rst:175
 msgid "Undo stack length"
 msgstr "Αριθμός δυνατών αναιρέσεων ενεργειών"
 
-#: ../../configuration/preferences.rst:197
+#: ../../configuration/preferences.rst:171
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 "Μέγιστος αριθμός ενεργειών που μπορούν να αναιρεθούν. Ορίστε σε -1 για "
 "απεριόριστο."
 
-#: ../../configuration/preferences.rst:200
+#: ../../configuration/preferences.rst:174
 msgid "We recommend leaving it at 128."
 msgstr "Συνιστούμε να το αφήσετε στα 128."
 
-#: ../../configuration/preferences.rst:204 ../../projects/intro.rst:8
+#: ../../configuration/preferences.rst:178 ../../projects/intro.rst:8
 msgid "Projects"
 msgstr "Έργα"
 
-#: ../../configuration/preferences.rst:206
+#: ../../configuration/preferences.rst:180
 msgid "Project settings."
 msgstr "Ρυθμίσεις έργου."
 
-#: ../../configuration/preferences.rst:212
+#: ../../configuration/preferences.rst:186
 msgid "General (Project)"
 msgstr "Γενικά (Έργο)"
 
-#: ../../configuration/preferences.rst:214
+#: ../../configuration/preferences.rst:188
 msgid "General project settings."
 msgstr "Γενικές ρυθμίσεις έργου."
 
-#: ../../configuration/preferences.rst:217
+#: ../../configuration/preferences.rst:195
 msgid "Autosave interval"
 msgstr "Μεσοδιάστημα αυτόματης αποθήκευσης"
 
-#: ../../configuration/preferences.rst:218
+#: ../../configuration/preferences.rst:191
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
@@ -889,7 +892,7 @@ msgstr ""
 "Μεσοδιάστημα για αυτόματη αποθήκευση έργων, σε λεπτά. Η αυτόματη "
 "αποθήκευση θα απενεργοποιηθεί αν οριστεί σε 0."
 
-#: ../../configuration/preferences.rst:221
+#: ../../configuration/preferences.rst:194
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
@@ -897,31 +900,31 @@ msgstr ""
 "Αυτό αναφέρεται στα αυτόματα αντίγραφα ασφαλείας. Το κύριο έργο δεν θα "
 "επεγγραφεί εκτός αν το αποθηκεύσετε ρητά."
 
-#: ../../configuration/preferences.rst:225
+#: ../../configuration/preferences.rst:198
 msgid "UI"
 msgstr "Διεπαφή χρήστη"
 
-#: ../../configuration/preferences.rst:227
+#: ../../configuration/preferences.rst:200
 msgid "User interface options."
 msgstr "Ρυθμίσεις διεπαφής χρήστη."
 
-#: ../../configuration/preferences.rst:233
+#: ../../configuration/preferences.rst:206
 msgid "General (UI)"
 msgstr "Γενικά (διεπαφή χρήστη)"
 
-#: ../../configuration/preferences.rst:235
+#: ../../configuration/preferences.rst:208
 msgid "General user interface options."
 msgstr "Γενικές ρυθμίσεις διεπαφής χρήστη."
 
-#: ../../configuration/preferences.rst:238
+#: ../../configuration/preferences.rst:216
 msgid "User interface language"
 msgstr "Γλώσσα διεπαφής χρήστη"
 
-#: ../../configuration/preferences.rst:239
+#: ../../configuration/preferences.rst:211
 msgid "The language to use for the user interface."
 msgstr "Η γλώσσα προς χρήση για τη διεπαφή χρήστη."
 
-#: ../../configuration/preferences.rst:241
+#: ../../configuration/preferences.rst:213
 msgid ""
 "For a list of supported languages and their translation status, or to "
 "translate Zrythm into your language, see `Weblate "
@@ -931,7 +934,7 @@ msgstr ""
 "τους, ή για τη μετάφραση του Zrythm στη γλώσσα σας, βλέπε `Weblate "
 "<https://hosted.weblate.org/projects/zrythm/>`_."
 
-#: ../../configuration/preferences.rst:246
+#: ../../configuration/preferences.rst:218
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
 "Κάποιες από αυτές τις ρυθμίσεις απαιτούν επανεκκίνηση του Zrythm για να "
@@ -949,26 +952,11 @@ msgstr ""
 "Εκτιμούμε συνεισφορές οποιουδήποτε τύπου και μεγέθους. Πείτε μας πώς θα "
 "θέλατε να βοηθήσετε και θα βάλουμε τα δυνατά μας να σας καθοδηγήσουμε."
 
-#: ../../contributing/intro.rst:11
-msgid ""
-"We want to provide a friendly and harassment-free environment so that "
-"everyone can contribute to the best of their abilities. To this end our "
-"project uses a `Contributor Covenant` which was adapted from https"
-"://contributor-covenant.org/. You can find the full pledge in our `Code "
-"of Conduct <https://forum.zrythm.org/t/code-of-conduct>`_."
-msgstr ""
-"Θέλουμε να προσφέρουμε ένα φιλικό περιβάλλον, ώστε να μπορούν όλοι να "
-"συνεισφέρουν στο μέγιστο των δυνατοτήτων τους. Προς επίτευξη αυτού του "
-"σκοπού, το εγχείρημά μας χρησιμοποιεί ένα `Contributor Covenant` που "
-"υιοθετήθηκε από το https://contributor-covenant.org/. Μπορείτε να βρείτε "
-"την πλήρη δέσμευση στον `Δεοντολογικό Κώδικά <https://forum.zrythm.org/t"
-"/code-of-conduct>` _ μας."
-
-#: ../../contributing/intro.rst:18
+#: ../../contributing/intro.rst:12
 msgid "Coding"
 msgstr "Προγραμματισμός"
 
-#: ../../contributing/intro.rst:19
+#: ../../contributing/intro.rst:13
 msgid ""
 "Please see the :download:`HACKING <../../../HACKING.md>` file in the "
 "source distribution."
@@ -976,24 +964,25 @@ msgstr ""
 "Παρακαλούμε βλέπετε το αρχείο :download:`HACKING <../../../HACKING.md>` "
 "στην πηγαία διανομή."
 
-#: ../../contributing/intro.rst:24
+#: ../../contributing/intro.rst:18
 msgid "Web Design"
 msgstr "Σχεδιασμός ιστοσελίδας"
 
-#: ../../contributing/intro.rst:25
+#: ../../contributing/intro.rst:19
+#, fuzzy
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
-"website. Please join our chatrooms and talk to us."
+"website. Please get in touch with us to discuss."
 msgstr ""
 "Είστε ευπρόσδεκτοι να μας βοηθήσετε να βελτιώσουμε την εμφάνιση και τη "
 "χρηστικότητα της ιστοσελίδας του Zrythm. Σας παρακαλούμε ελάτε στα "
 "δωμάτια συνομιλιών μας και μιλήστε μας."
 
-#: ../../contributing/intro.rst:30
+#: ../../contributing/intro.rst:24
 msgid "Artwork and Themes"
 msgstr "Καλλιτεχνική επιμέλεια και θέματα"
 
-#: ../../contributing/intro.rst:31
+#: ../../contributing/intro.rst:25
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized "
 "and some borrowed from other themes. If you would like to contribute "
@@ -1007,11 +996,11 @@ msgstr ""
 "αρχίσετε με τη δημιουργία δικών σας θεμάτων και εικονιδίων "
 "συμβουλευόμενοι τους συνδέσμους :ref:`icon-themes` και :ref:`css`."
 
-#: ../../contributing/intro.rst:39
+#: ../../contributing/intro.rst:33
 msgid "Testing"
 msgstr "Δοκιμή και έλεγχος"
 
-#: ../../contributing/intro.rst:40
+#: ../../contributing/intro.rst:34
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
 "reporting bugs and feedback on `Sourcehut "
@@ -1022,7 +1011,7 @@ msgstr ""
 "γενικότερη εποικοδομητική κριτική στο `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 
-#: ../../contributing/intro.rst:45
+#: ../../contributing/intro.rst:39
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
@@ -1031,11 +1020,11 @@ msgstr ""
 "``development`` στην `αποθήκη git <https://git.zrythm.org/cgit/zrythm>` _"
 " μας."
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:44
 msgid "Editing this Manual"
 msgstr "Επεξεργασία αυτού του εγχειριδίου"
 
-#: ../../contributing/intro.rst:51
+#: ../../contributing/intro.rst:45
 msgid ""
 "Click on the :guilabel:`View Source` button at the top of the page to "
 "find which file the page exists in, find the file in the source "
@@ -1045,7 +1034,7 @@ msgstr ""
 "σελίδας για να βρείτε σε ποιο αρχείο βρίσκεται η σελίδα, να βρείτε πού "
 "βρίσκεται το αρχείο στην πηγαία διανομή και να το επεξεργαστείτε."
 
-#: ../../contributing/intro.rst:56
+#: ../../contributing/intro.rst:50
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -1053,11 +1042,11 @@ msgstr ""
 "Θα πρέπει να έχετε το `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "εγκατεστημένο για να μεταγλωττίσετε αυτό το εγχειρίδιο."
 
-#: ../../contributing/intro.rst:61
+#: ../../contributing/intro.rst:55
 msgid "Translation"
 msgstr "Μετάφραση"
 
-#: ../../contributing/intro.rst:62
+#: ../../contributing/intro.rst:56
 msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
@@ -1065,7 +1054,7 @@ msgstr ""
 "Το Zrythm είναι διαθέσιμο για μετάφραση στο `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 
-#: ../../contributing/intro.rst:65
+#: ../../contributing/intro.rst:59
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
@@ -1074,7 +1063,7 @@ msgstr ""
 "πρόγραμμα Zrythm, την ιστοσελίδα, καθώς και τις ενότητες αυτού του "
 "εγχειριδίου."
 
-#: ../../contributing/intro.rst:69
+#: ../../contributing/intro.rst:63
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
@@ -1087,11 +1076,11 @@ msgstr ""
 "τα `επίσημα εγχειρίδια "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_ του Weblate."
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:71
 msgid "User Manual"
 msgstr "Εγχειρίδιο χρήστη"
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:72
 msgid ""
 "When translating the user manual, please make sure you follow the "
 "following Sphinx/RST syntax, to avoid errors when applying your "
@@ -1101,11 +1090,11 @@ msgstr ""
 "ότι ακολουθείτε τη σύνταξη Sphinx/RST, ώστε να αποφευχθούν σφάλματα κατά "
 "την εφαρμογή των μεταφράσεών σας."
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:77
 msgid "General Syntax"
 msgstr "Γενική σύνταξη"
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:78
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be "
 "left untranslated. The part following should be left untranslated as "
@@ -1115,11 +1104,11 @@ msgstr ""
 "μείνει αμετάφραστο. Το μέρος που ακολουθεί πρέπει να μείνει επίσης "
 "αμετάφραστο. Για παράδειγμα:"
 
-#: ../../contributing/intro.rst:93 ../../contributing/intro.rst:108
+#: ../../contributing/intro.rst:87 ../../contributing/intro.rst:102
 msgid "should be translated in French as"
 msgstr "πρέπει να μεταφραστεί στα Γαλλικά ως"
 
-#: ../../contributing/intro.rst:99
+#: ../../contributing/intro.rst:93
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the"
 " translation for ``Parameter``. The only exception to this rule is when "
@@ -1130,7 +1119,7 @@ msgstr ""
 "εξαίρεση σε αυτόν τον κανόνα είναι όταν βλέπετε τους χαρακτήρες ``<>``. "
 "Για παράδειγμα:"
 
-#: ../../contributing/intro.rst:115
+#: ../../contributing/intro.rst:109
 msgid ""
 "Please make sure you do not insert or remove spaces. The following "
 "examples will cause errors."
@@ -1138,7 +1127,7 @@ msgstr ""
 "Παρακαλούμε βεβαιωθείτε ότι δεν εισάγετε ή δεν αφαιρείτε κενά. Τα "
 "ακόλουθα παραδείγματα θα προκαλέσουν σφάλματα."
 
-#: ../../contributing/intro.rst:127
+#: ../../contributing/intro.rst:121
 msgid ""
 "Also, there should be space, comma or period after such syntax, like "
 "below."
@@ -1146,11 +1135,11 @@ msgstr ""
 "Επίσης, πρέπει να υπάρχει κενό, κόμμα ή περίοδος μετά από αντίστοιχη "
 "σύνταξη, όπως παρακάτω."
 
-#: ../../contributing/intro.rst:136
+#: ../../contributing/intro.rst:130
 msgid "The following examples will cause errors."
 msgstr "Τα ακόλουθα παραδείγματα θα προκαλέσουν σφάλματα."
 
-#: ../../contributing/intro.rst:143
+#: ../../contributing/intro.rst:137
 msgid ""
 "The following syntax usually refers to a path, so please keep it "
 "unchanged, otherwise the file it refers to will not be found."
@@ -1159,11 +1148,11 @@ msgstr ""
 "αφήστε το χωρίς αλλαγή, αλλιώς το αρχείο στο οποίο αναφέρεται δεν θα "
 "βρεθεί."
 
-#: ../../contributing/intro.rst:152
+#: ../../contributing/intro.rst:146
 msgid "Donations"
 msgstr "Δωρεές"
 
-#: ../../contributing/intro.rst:153
+#: ../../contributing/intro.rst:147
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
@@ -1172,19 +1161,19 @@ msgstr ""
 "Οποιοδήποτε ποσό, μικρό ή μεγάλο, είναι καλοδεχούμενο και βοηθάει στην "
 "αδιάκοπη ανάπτυξη του Zrythm:"
 
-#: ../../contributing/intro.rst:157
+#: ../../contributing/intro.rst:151
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:158
+#: ../../contributing/intro.rst:152
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:159
+#: ../../contributing/intro.rst:153
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:161
+#: ../../contributing/intro.rst:155
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -1573,7 +1562,7 @@ msgstr ""
 " τον επεξεργαστή ταχύτητας στο κάτω μέρος."
 
 #: ../../editing/clip-editors/piano-roll.rst:22
-#: ../../zrythm-interface/main-toolbar.rst:133
+#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Additional Controls"
 msgstr "Επιπρόσθετοι χειριστές"
 
@@ -3605,6 +3594,14 @@ msgstr "Μπορείτε να εγκαταστήσετε το Zrythm port από
 msgid "Getting Started"
 msgstr "Ξεκινώντας"
 
+#: ../../getting-started/intro.rst:19
+msgid ""
+"This section discusses :doc:`system requirements <system-requirements>` "
+"for running Zrythm, :doc:`installation methods <installation>`, "
+":doc:`initial configuration steps <running-zrythm>` and :doc:`how to "
+"obtain plugins, instruments and samples <getting-plugins>`."
+msgstr ""
+
 #: ../../getting-started/running-zrythm.rst:8
 msgid "Running Zrythm"
 msgstr "Εκτέλεση του Zrythm"
@@ -4249,16 +4246,19 @@ msgid "Zrythm executable."
 msgstr "Εκτελέσιμο αρχείο Zrythm."
 
 #: ../../invoking-from-command-line/intro.rst:23
-msgid "Prints a list of available options."
+#, fuzzy
+msgid "Print a list of available options."
 msgstr "Εκτυπώνει μια λίστα διαθέσιμων επιλογών."
 
 #: ../../invoking-from-command-line/intro.rst:27
-msgid "Pretty-prints the output (where applicable)."
+#, fuzzy
+msgid "Pretty-print the output (where applicable)."
 msgstr "Προβάλλει φορμαρισμένο το εξαγόμενο (όπου είναι δυνατό)."
 
 #: ../../invoking-from-command-line/intro.rst:31
+#, fuzzy
 msgid ""
-"Prints all the user settings. Can be combined with :option:`--pretty` to "
+"Print all the user settings. Can be combined with :option:`--pretty` to "
 "get pretty-printed output, like below."
 msgstr ""
 "Εκτυπώνει όλες τις ρυθμίσεις του χρήστη. Μπορεί να συνδυαστεί με το "
@@ -4266,7 +4266,8 @@ msgstr ""
 "παρακάτω."
 
 #: ../../invoking-from-command-line/intro.rst:40
-msgid "Resets user settings to their default values."
+#, fuzzy
+msgid "Reset user settings to their default values."
 msgstr "Επαναφέρει τις ρυθμίσεις του χρήστη στις προεπιλεγμένες τιμές τους."
 
 #: ../../invoking-from-command-line/intro.rst:42
@@ -4281,15 +4282,23 @@ msgstr ""
 msgid "This will clear ALL your user settings."
 msgstr "Αυτό θα καθαρίσει ΟΛΕΣ τις ρυθμίσεις του χρήστη σας."
 
-#: ../../invoking-from-command-line/intro.rst:52
+#: ../../invoking-from-command-line/intro.rst:54
+msgid "Convert a .zpj project file to YAML."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:58
+msgid "Convert a YAML file to the .zpj format."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:60
 msgid "Prints the Zrythm version."
 msgstr "Εκτυπώνει την έκδοση του Zrythm."
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:63
 msgid "zrythm_launch"
 msgstr "zrythm_launch"
 
-#: ../../invoking-from-command-line/intro.rst:56
+#: ../../invoking-from-command-line/intro.rst:64
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before "
 "launching Zrythm. All of the options for :program:`zrythm` can also be "
@@ -5761,76 +5770,13 @@ msgstr ""
 "καταλόγους και τους υποκαταλόγους που προσδιορίζονται στα :ref:`vst-"
 "paths`."
 
-#: ../../projects/project-info.rst:6
-msgid "Project Info"
-msgstr "Πληροφορίες έργου"
-
-#: ../../projects/project-info.rst:8
+#: ../../projects/intro.rst:18
 msgid ""
-"In Zrythm, your work is saved inside a Project. Projects consist of a "
-"folder with a YAML file describing the Project and additional files used "
-"such as MIDI and audio files."
+"This section goes through the :doc:`project structure <project-"
+"structure>`, :doc:`saving and loading projects <saving-loading>` and "
+":doc:`project management and compatibility <project-management-and-"
+"compatibility>`."
 msgstr ""
-"Στο Zrythm, η δουλειά σας αποθηκεύεται μέσα σε ένα έργο. Τα έργα "
-"αποτελούνται από έναν φάκελο με ένα αρχείο YAML που περιγράφει το έργο "
-"και τα επιπρόσθετα αρχεία που χρησιμοποιούνται, όπως τα αρχεία MIDI και "
-"ήχου."
-
-#: ../../projects/project-info.rst:14
-msgid "Project Structure"
-msgstr "Δομή έργου"
-
-#: ../../projects/project-info.rst:38
-msgid "backups"
-msgstr "αντίγραφα ασφαλείας"
-
-#: ../../projects/project-info.rst:39
-msgid "Regular backups taken automatically by Zrythm"
-msgstr "Τακτικά αντίγραφα ασφαλείας δημιουργούνται αυτόματα από το Zrythm"
-
-#: ../../projects/project-info.rst:40
-msgid "myproject.bak"
-msgstr "τοέργομου.bak"
-
-#: ../../projects/project-info.rst:41
-msgid "An example backup project"
-msgstr "Ένα παράδειγμα αντιγράφου ασφαλείας έργου"
-
-#: ../../projects/project-info.rst:43
-msgid "states"
-msgstr "καταστάσεις"
-
-#: ../../projects/project-info.rst:43
-msgid "Contains plugin states at the time of save (for LV2)"
-msgstr "Περιέχει καταστάσεις προσθέτων κατά τον χρόνο της αποθήκευσης (για LV2)"
-
-#: ../../projects/project-info.rst:46
-msgid "exports"
-msgstr "εξαγωγές"
-
-#: ../../projects/project-info.rst:46
-msgid "Default directory for exporting files related to the project"
-msgstr "Ο προεπιλεγμένος κατάλογος για την εξαγωγή αρχείων σχετικών με το έργο"
-
-#: ../../projects/project-info.rst:49
-msgid "pool"
-msgstr "σύνολο"
-
-#: ../../projects/project-info.rst:49
-msgid ""
-"Used by Zrythm to store and load files used by the Project, such as audio"
-" files"
-msgstr ""
-"Χρησιμοποιείται από το Zrythm για την αποθήκευση και φόρτωση αρχείων που "
-"χρησιμοποιούνται από το έργο, όπως αρχεία ήχου"
-
-#: ../../projects/project-info.rst:51
-msgid "project.yml"
-msgstr "έργο.yml"
-
-#: ../../projects/project-info.rst:52
-msgid "The Project file"
-msgstr "Το αρχείο έργου"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
@@ -5869,6 +5815,57 @@ msgid ""
 msgstr ""
 "Κάθε αρχείο έργου θα αναφέρει την έκδοση του Zrythm με την οποία "
 "δημιουργήθηκε και την ημερομηνία που αποθηκεύτηκε"
+
+#: ../../projects/project-structure.rst:6
+msgid "Project Structure"
+msgstr "Δομή έργου"
+
+#: ../../projects/project-structure.rst:8
+msgid ""
+"In Zrythm, work is saved inside :term:`projects <Project>`. Projects "
+"consist of a directory with a project file describing the project along "
+"with additional files and directories used by the project, such as audio "
+"files and plugin states."
+msgstr ""
+
+#: ../../projects/project-structure.rst:16
+#, fuzzy
+msgid "Backups"
+msgstr "αντίγραφα ασφαλείας"
+
+#: ../../projects/project-structure.rst:17
+msgid ""
+"Backups are also kept in the project directory, and each backup is a "
+"standalone project on its own - ie, it contains all the files it needs to"
+" load as a separate project. Projects inside the :file:`backups` dir of a"
+" parent project are considered backups of the parent project."
+msgstr ""
+
+#: ../../projects/project-structure.rst:26
+msgid ""
+"Zrythm will keep backups automatically by default during autosave. You "
+"can change the autosave interval or turn it off in the :ref:`preferences "
+"<configuration/preferences:General (Project)>`."
+msgstr ""
+
+#: ../../projects/project-structure.rst:33
+#, fuzzy
+msgid "Project Directory"
+msgstr "Επιλογή έργου"
+
+#: ../../projects/project-structure.rst:106
+#, fuzzy
+msgid "Project File Format"
+msgstr "Το αρχείο έργου"
+
+#: ../../projects/project-structure.rst:107
+msgid ""
+"Zrythm uses a custom MIME type ``x-zrythm-project`` (which is an alias of"
+" ``application/zstd``) for its project files (``project.zpj``). This is a"
+" `zstd <https://facebook.github.io/zstd/>`_-compressed YAML file that can"
+" be decompressed (converted to YAML) using :option:`zrythm --zpj-to-"
+"yaml`."
+msgstr ""
 
 #: ../../projects/saving-loading.rst:8
 msgid "Saving & Loading"
@@ -5970,19 +5967,11 @@ msgstr ""
 " ασφαλείας εκείνου του έργου και θα σας ρωτήσει αν θέλετε να φορτώσετε "
 "εκείνα αντί αυτού."
 
-#: ../../projects/saving-loading.rst:70
+#: ../../projects/saving-loading.rst:71
 msgid ""
-"The auto-save interval can be changed (or disabled) in the preferences "
-"window."
+"See :ref:`projects/project-structure:Backups` for more information about "
+"backups."
 msgstr ""
-"Η χρονική απόσταση μεταξύ των αυτόματων αποθηκεύσεων μπορεί να αλλάξει (ή"
-" να απενεργοποιηθεί) στο παράθυρο ρυθμίσεων."
-
-#: ../../projects/saving-loading.rst:73
-msgid "The backups are saved in the project's directory, under :file:`backups`."
-msgstr ""
-"Τα αντίγραφα ασφαλείας αποθηκεύονται στον κατάλογο του έργου, στα "
-":file:`backups`."
 
 #: ../../routing/control-room.rst:8 ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
@@ -7002,19 +6991,15 @@ msgstr ""
 "τροποποιήστε ελεύθερα."
 
 #: ../../scripting/examples.rst:13
-msgid "Create Geonkick with FX track"
-msgstr ""
-
-#: ../../scripting/examples.rst:74
 msgid "Create MIDI track with notes"
 msgstr "Δημιουργία κομματιού MIDI με νότες"
 
-#: ../../scripting/examples.rst:104
+#: ../../scripting/examples.rst:48
 #, fuzzy
 msgid "Hello world"
 msgstr "Γεια σου κόσμε"
 
-#: ../../scripting/examples.rst:115
+#: ../../scripting/examples.rst:59
 #, fuzzy
 msgid "Print all tracks"
 msgstr "Εκτύπωση ονομάτων κομματιών"
@@ -7056,7 +7041,7 @@ msgid "The Guile API is not available on Windows."
 msgstr "Η API της Guile δεν είναι διαθέσιμη στα Windows."
 
 #: ../../scripting/scripting-interface.rst:6
-#: ../../zrythm-interface/main-toolbar.rst:143
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Scripting Interface"
 msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
@@ -8650,6 +8635,38 @@ msgstr "Η μίξη καλύπτεται στη :ref:`mixing`."
 msgid "Interface"
 msgstr "Διεπαφή"
 
+#: ../../zrythm-interface/intro.rst:19
+msgid "The Zrythm interface is split into various sub-modules."
+msgstr "Η διεπαφή του Zrythm διαχωρίζεται σε διάφορες υπομονάδες."
+
+#: ../../zrythm-interface/intro.rst:24
+msgid "Each sub-module is explained in its own section."
+msgstr "Κάθε υπομονάδα εξηγείται στη δική της ενότητα."
+
+#: ../../zrythm-interface/intro.rst:26
+msgid ":ref:`timeline` (1)"
+msgstr ":ref:`timeline` (1)"
+
+#: ../../zrythm-interface/intro.rst:27
+msgid ":ref:`main-toolbar` (2)"
+msgstr ""
+
+#: ../../zrythm-interface/intro.rst:28
+msgid ":ref:`left-panel` (3)"
+msgstr ""
+
+#: ../../zrythm-interface/intro.rst:29
+msgid ":ref:`bottom-panel` (4)"
+msgstr ":ref:`bottom-panel` (4)"
+
+#: ../../zrythm-interface/intro.rst:30
+msgid ":ref:`transport-bar` (5)"
+msgstr ""
+
+#: ../../zrythm-interface/intro.rst:31
+msgid ":ref:`right-panel` (6)"
+msgstr ""
+
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr "Αριστερό πάνελ"
@@ -8787,42 +8804,52 @@ msgstr ""
 "αποθήκευση, τη φόρτωση και την εξαγωγή MIDI ή ήχου."
 
 #: ../../zrythm-interface/main-toolbar.rst:45
+#, fuzzy
+msgid "Project Management"
+msgstr "Μενού έργου"
+
+#: ../../zrythm-interface/main-toolbar.rst:46
 msgid "New Project"
 msgstr "Άνοιγμα έργου"
 
-#: ../../zrythm-interface/main-toolbar.rst:46
+#: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Create a new project."
 msgstr "Δημιουργία καινούριου έργου."
 
-#: ../../zrythm-interface/main-toolbar.rst:49
+#: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Save"
 msgstr "Αποθήκευση"
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save the current project at its current location."
 msgstr "Αποθήκευση του τρέχοντος έργου στον τρέχοντα προορισμό."
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
 msgstr "Αποθήκευση ως"
 
-#: ../../zrythm-interface/main-toolbar.rst:54
+#: ../../zrythm-interface/main-toolbar.rst:51
 msgid "Save the current project at a new location."
 msgstr "Αποθήκευση του τρέχοντος έργου σε έναν καινούριο προορισμό."
 
-#: ../../zrythm-interface/main-toolbar.rst:57
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
 msgstr "Φόρτωση"
 
-#: ../../zrythm-interface/main-toolbar.rst:58
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
 msgstr "Φόρτωση ενός έργου."
 
-#: ../../zrythm-interface/main-toolbar.rst:61
+#: ../../zrythm-interface/main-toolbar.rst:56
+#, fuzzy
+msgid "Export"
+msgstr "εξαγωγές"
+
+#: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Export As"
 msgstr "Εξαγωγή ως"
 
-#: ../../zrythm-interface/main-toolbar.rst:62
+#: ../../zrythm-interface/main-toolbar.rst:58
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
@@ -8830,11 +8857,11 @@ msgstr ""
 "Εξαγωγή του έργου ως ήχου ή MIDI. Βλέπε :ref:`export-audio-and-midi` για "
 "περισσότερες πληροφορίες."
 
-#: ../../zrythm-interface/main-toolbar.rst:66
+#: ../../zrythm-interface/main-toolbar.rst:62
 msgid "Export Graph"
 msgstr "Εξαγωγή γραφήματος"
 
-#: ../../zrythm-interface/main-toolbar.rst:67
+#: ../../zrythm-interface/main-toolbar.rst:61
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-"
 "routing-graph` for more details."
@@ -8842,17 +8869,17 @@ msgstr ""
 "Εξαγωγή του γραφήματος δρομολόγησης ως εικόνας ή γραφήματος .dot. Βλέπε "
 ":ref:`export-routing-graph` για περισσότερες λεπτομέρειες."
 
-#: ../../zrythm-interface/main-toolbar.rst:70
+#: ../../zrythm-interface/main-toolbar.rst:64
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
 "Για περισσότερες πληροφορίες σχετικά με τα έργα, βλέπε την ενότητα "
 ":ref:`projects`."
 
-#: ../../zrythm-interface/main-toolbar.rst:74
+#: ../../zrythm-interface/main-toolbar.rst:68
 msgid "View Menu"
 msgstr "Μενού προβολής"
 
-#: ../../zrythm-interface/main-toolbar.rst:75
+#: ../../zrythm-interface/main-toolbar.rst:69
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and "
 "its various areas, such as zooming."
@@ -8860,35 +8887,39 @@ msgstr ""
 "Το μενού προβολής περιέχει χειριστές για την αλλαγή της εμφάνισης του "
 "Zrythm και των διαφόρων περιοχών του, όπως το ζουμάρισμα."
 
-#: ../../zrythm-interface/main-toolbar.rst:79
+#: ../../zrythm-interface/main-toolbar.rst:73
+msgid "Zoom"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:74
 msgid "Zoom In"
 msgstr "Ζουμάρισμα μέσα"
 
-#: ../../zrythm-interface/main-toolbar.rst:80
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms in."
 msgstr "Ζουμάρει προς τα μέσα."
 
-#: ../../zrythm-interface/main-toolbar.rst:83
+#: ../../zrythm-interface/main-toolbar.rst:76
 msgid "Zoom Out"
 msgstr "Ζουμάρισμα έξω"
 
-#: ../../zrythm-interface/main-toolbar.rst:84
+#: ../../zrythm-interface/main-toolbar.rst:77
 msgid "Zooms out."
 msgstr "Ζουμάρει προς τα έξω."
 
-#: ../../zrythm-interface/main-toolbar.rst:87
+#: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
 msgstr "Πρωτότυπο μέγεθος"
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zooms back to the default zoom level."
 msgstr "Ζουμπάρει πίσω στο προεπιλεγόμενο επίπεδο ζουμ."
 
-#: ../../zrythm-interface/main-toolbar.rst:91
+#: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
 msgstr "Καλύτερη δυνατή εφαρμογή"
 
-#: ../../zrythm-interface/main-toolbar.rst:92
+#: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
@@ -8896,27 +8927,32 @@ msgstr ""
 "Ζουμάρει μέσα ή έξω όσο απαιτείται για την προβολή όλων των γεγονότων του"
 " χρονολογίου."
 
-#: ../../zrythm-interface/main-toolbar.rst:96
+#: ../../zrythm-interface/main-toolbar.rst:85
+#, fuzzy
+msgid "Visibility Toggles"
+msgstr "Εναλλάσσει την ορατότητα των λωρίδων."
+
+#: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Toggle Left/Right/Bottom Panels"
 msgstr "Εναλλαγή αριστερού/δεξιού/κάτω πάνελς"
 
-#: ../../zrythm-interface/main-toolbar.rst:97
+#: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Toggles the panel's visibility."
 msgstr "Εναλλάσσει την ορατότητα του πάνελ."
 
-#: ../../zrythm-interface/main-toolbar.rst:100
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Toggle Timeline Visibility"
 msgstr "Εναλλαγή ορατότητας χρονολογίου"
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Toggles the timeline's visibility."
 msgstr "Εναλλάσσει την ορατότητα του χρονολογίου."
 
-#: ../../zrythm-interface/main-toolbar.rst:104
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Help Menu"
 msgstr "Μενού βοήθειας"
 
-#: ../../zrythm-interface/main-toolbar.rst:105
+#: ../../zrythm-interface/main-toolbar.rst:93
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
@@ -8924,82 +8960,98 @@ msgstr ""
 "Το μενού βοήθειας περιέχει συνδέσμους για αναφορά σφαλμάτων, δωρεά, "
 "συνομιλία και άλλους χρήσιμους συνδέσμους."
 
-#: ../../zrythm-interface/main-toolbar.rst:109
+#: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Chat"
 msgstr "Συνομιλία"
 
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr "Εγγραφείτε στη συνομιλία του Zrythm στο Matrix."
 
-#: ../../zrythm-interface/main-toolbar.rst:113
+#: ../../zrythm-interface/main-toolbar.rst:98
 msgid "Manual"
 msgstr "Εγχειρίδιο"
 
-#: ../../zrythm-interface/main-toolbar.rst:114
+#: ../../zrythm-interface/main-toolbar.rst:99
 msgid "View the user manual."
 msgstr "Προβολή του εγχειριδίου χρήστη."
 
-#: ../../zrythm-interface/main-toolbar.rst:117
+#: ../../zrythm-interface/main-toolbar.rst:100
 msgid "News"
 msgstr "Νέα"
 
-#: ../../zrythm-interface/main-toolbar.rst:118
+#: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Show the latest changelog."
 msgstr "Προβολή του αρχείου αλλαγών."
 
-#: ../../zrythm-interface/main-toolbar.rst:121
+#: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Keyboard Shortcuts"
 msgstr "Συντομεύσεις πληκτρολογίου"
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Show all the available keyboard shortcuts."
 msgstr "Προβολή όλων των διαθέσιμων συντομεύσεων πληκτρολογίου."
 
-#: ../../zrythm-interface/main-toolbar.rst:125
+#: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate"
 msgstr "Δωρεά"
 
-#: ../../zrythm-interface/main-toolbar.rst:126
+#: ../../zrythm-interface/main-toolbar.rst:105
 msgid "Donate to Zrythm through LiberaPay."
 msgstr "Δωρεά στο Zrythm με το LiberaPay."
 
-#: ../../zrythm-interface/main-toolbar.rst:129
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Report a Bug"
 msgstr "Αναφορά σφάλματος"
 
-#: ../../zrythm-interface/main-toolbar.rst:130
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Opens the page to report a new bug."
 msgstr "Ανοίγει τη σελίδα για αναφορά ενός καινούριου σφάλματος."
 
-#: ../../zrythm-interface/main-toolbar.rst:134
+#: ../../zrythm-interface/main-toolbar.rst:111
 msgid "The main toolbar also contains the following widgets."
 msgstr "Η κύρια γραμμή εργαλείων περιέχει επίσης τα εξής γραφικά στοιχεία."
 
-#: ../../zrythm-interface/main-toolbar.rst:139
+#: ../../zrythm-interface/main-toolbar.rst:116
 msgid "There are the following buttons next to the name of the current project."
 msgstr "Υπάρχουν επίσης τα ακόλουθα κουμπιά δίπλα στο όνομα του τρέχοντος έργου."
 
-#: ../../zrythm-interface/main-toolbar.rst:144
-msgid "Shows the scripting interface. See :ref:`scripting` for more information."
+#: ../../zrythm-interface/main-toolbar.rst:120
+#, fuzzy
+msgid "Shows the scripting interface."
+msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
+
+#: ../../zrythm-interface/main-toolbar.rst:122
+#, fuzzy
+msgid "See the :ref:`scripting` section for more information."
 msgstr ""
 "Προβάλλει τη διεπαφή δέσμης ενεργειών (scripting). Βλέπε :ref:`scripting`"
 " για περισσότερες πληροφορίες."
 
-#: ../../zrythm-interface/main-toolbar.rst:148
+#: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Log Viewer"
 msgstr "Προβολέας αρχείου καταγραφής"
 
-#: ../../zrythm-interface/main-toolbar.rst:149
-msgid ""
-"Displays the log, which gets updated real-time. Preferences Shows the "
-"preferences dialog. See :ref:`preferences` for more information."
+#: ../../zrythm-interface/main-toolbar.rst:125
+msgid "Displays the log, which gets updated real-time."
 msgstr ""
-"Προβάλλει το αρχείο καταγραφής, το οποίο ενημερώνεται σε αληθινό χρόνο. "
-"Οι ρυθμίσεις δείχνουν το παράθυρο ρυθμίσεων. Βλέπε :ref:`preferences` για"
-" περισσότερες πληροφορίες."
 
-#: ../../zrythm-interface/main-toolbar.rst:154
+#: ../../zrythm-interface/main-toolbar.rst:127
+msgid "Shows the preferences dialog."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:129
+#, fuzzy
+msgid "See the :ref:`preferences` section for more information."
+msgstr ""
+"Προβάλλει τη διεπαφή δέσμης ενεργειών (scripting). Βλέπε :ref:`scripting`"
+" για περισσότερες πληροφορίες."
+
+#: ../../zrythm-interface/main-toolbar.rst:134
+msgid "MIDI In"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:132
 msgid ""
 "The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"
 " devices and the live waveform display shows the audio waveform from the "
@@ -9096,41 +9148,134 @@ msgstr ""
 "Οι πληροφορίες σχετικά με το τρέχον επιλεγόμενο παρασκήνιο και τις "
 "ρυθμίσεις είναι ορατές στην κατώ αριστερή γωνία."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:6
-msgid "Interface Overview"
-msgstr "Επισκόπηση διεπαφής"
+#~ msgid ""
+#~ "Zrythm will auto-connect to the "
+#~ "devices specified in "
+#~ ":ref:`configuration/preferences/intro:Audio inputs` and"
+#~ " :ref:`configuration/preferences/intro:MIDI controllers` "
+#~ "and make these devices available in "
+#~ "the :ref:`track inputs <tracks/inspector-"
+#~ "page:Inputs>` (as below) and other "
+#~ "places."
+#~ msgstr ""
+#~ "Το Zrythm θα συνδεθεί αυτόματα στις "
+#~ "συσκευές που προσδιορίζονται στο "
+#~ ":ref:`configuration/preferences/intro:Audio inputs` και"
+#~ " :ref:`configuration/preferences/intro:MIDI controllers` "
+#~ "και θα καταστήσει αυτές τις συσκεύες "
+#~ "διαθέσιμες στο :ref:`track inputs <tracks"
+#~ "/inspector-page:Inputs>` (όπως παρακάτω) και "
+#~ "σε άλλα μέρη."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:8
-msgid "The Zrythm interface is split into various sub-modules."
-msgstr "Η διεπαφή του Zrythm διαχωρίζεται σε διάφορες υπομονάδες."
+#~ msgid ""
+#~ "We want to provide a friendly and"
+#~ " harassment-free environment so that "
+#~ "everyone can contribute to the best "
+#~ "of their abilities. To this end "
+#~ "our project uses a `Contributor "
+#~ "Covenant` which was adapted from https"
+#~ "://contributor-covenant.org/. You can find "
+#~ "the full pledge in our `Code of"
+#~ " Conduct <https://forum.zrythm.org/t/code-of-"
+#~ "conduct>`_."
+#~ msgstr ""
+#~ "Θέλουμε να προσφέρουμε ένα φιλικό "
+#~ "περιβάλλον, ώστε να μπορούν όλοι να "
+#~ "συνεισφέρουν στο μέγιστο των δυνατοτήτων "
+#~ "τους. Προς επίτευξη αυτού του σκοπού,"
+#~ " το εγχείρημά μας χρησιμοποιεί ένα "
+#~ "`Contributor Covenant` που υιοθετήθηκε από "
+#~ "το https://contributor-covenant.org/. Μπορείτε "
+#~ "να βρείτε την πλήρη δέσμευση στον "
+#~ "`Δεοντολογικό Κώδικά <https://forum.zrythm.org/t/code-"
+#~ "of-conduct>` _ μας."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:12
-msgid "Each sub-module is explained in its own section."
-msgstr "Κάθε υπομονάδα εξηγείται στη δική της ενότητα."
+#~ msgid "Project Info"
+#~ msgstr "Πληροφορίες έργου"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:14
-msgid ":ref:`timeline` (1)"
-msgstr ":ref:`timeline` (1)"
+#~ msgid ""
+#~ "In Zrythm, your work is saved "
+#~ "inside a Project. Projects consist of"
+#~ " a folder with a YAML file "
+#~ "describing the Project and additional "
+#~ "files used such as MIDI and audio"
+#~ " files."
+#~ msgstr ""
+#~ "Στο Zrythm, η δουλειά σας αποθηκεύεται"
+#~ " μέσα σε ένα έργο. Τα έργα "
+#~ "αποτελούνται από έναν φάκελο με ένα "
+#~ "αρχείο YAML που περιγράφει το έργο "
+#~ "και τα επιπρόσθετα αρχεία που "
+#~ "χρησιμοποιούνται, όπως τα αρχεία MIDI "
+#~ "και ήχου."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:15
-msgid ":ref:`main-toolbar` (2)"
-msgstr ""
+#~ msgid "Regular backups taken automatically by Zrythm"
+#~ msgstr "Τακτικά αντίγραφα ασφαλείας δημιουργούνται αυτόματα από το Zrythm"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:16
-msgid ":ref:`left-panel` (3)"
-msgstr ""
+#~ msgid "myproject.bak"
+#~ msgstr "τοέργομου.bak"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:17
-msgid ":ref:`bottom-panel` (4)"
-msgstr ":ref:`bottom-panel` (4)"
+#~ msgid "An example backup project"
+#~ msgstr "Ένα παράδειγμα αντιγράφου ασφαλείας έργου"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:18
-msgid ":ref:`transport-bar` (5)"
-msgstr ""
+#~ msgid "states"
+#~ msgstr "καταστάσεις"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:19
-msgid ":ref:`right-panel` (6)"
-msgstr ""
+#~ msgid "Contains plugin states at the time of save (for LV2)"
+#~ msgstr "Περιέχει καταστάσεις προσθέτων κατά τον χρόνο της αποθήκευσης (για LV2)"
+
+#~ msgid "Default directory for exporting files related to the project"
+#~ msgstr "Ο προεπιλεγμένος κατάλογος για την εξαγωγή αρχείων σχετικών με το έργο"
+
+#~ msgid "pool"
+#~ msgstr "σύνολο"
+
+#~ msgid ""
+#~ "Used by Zrythm to store and load"
+#~ " files used by the Project, such "
+#~ "as audio files"
+#~ msgstr ""
+#~ "Χρησιμοποιείται από το Zrythm για την"
+#~ " αποθήκευση και φόρτωση αρχείων που "
+#~ "χρησιμοποιούνται από το έργο, όπως "
+#~ "αρχεία ήχου"
+
+#~ msgid "project.yml"
+#~ msgstr "έργο.yml"
+
+#~ msgid ""
+#~ "The auto-save interval can be "
+#~ "changed (or disabled) in the preferences"
+#~ " window."
+#~ msgstr ""
+#~ "Η χρονική απόσταση μεταξύ των αυτόματων"
+#~ " αποθηκεύσεων μπορεί να αλλάξει (ή να"
+#~ " απενεργοποιηθεί) στο παράθυρο ρυθμίσεων."
+
+#~ msgid ""
+#~ "The backups are saved in the "
+#~ "project's directory, under :file:`backups`."
+#~ msgstr ""
+#~ "Τα αντίγραφα ασφαλείας αποθηκεύονται στον "
+#~ "κατάλογο του έργου, στα :file:`backups`."
+
+#~ msgid "Create Geonkick with FX track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Displays the log, which gets updated "
+#~ "real-time. Preferences Shows the "
+#~ "preferences dialog. See :ref:`preferences` for"
+#~ " more information."
+#~ msgstr ""
+#~ "Προβάλλει το αρχείο καταγραφής, το οποίο"
+#~ " ενημερώνεται σε αληθινό χρόνο. Οι "
+#~ "ρυθμίσεις δείχνουν το παράθυρο ρυθμίσεων. "
+#~ "Βλέπε :ref:`preferences` για περισσότερες "
+#~ "πληροφορίες."
+
+#~ msgid "Interface Overview"
+#~ msgstr "Επισκόπηση διεπαφής"
 
 #~ msgid "Title"
 #~ msgstr "Vital"

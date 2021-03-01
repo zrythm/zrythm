@@ -73,7 +73,7 @@ Project Directory
     │   │   └── l,sn4.wav
     │   └── states
     │       ├── LSP Multi-Sampler x12 DirectOut_0NVNZ0
-    │       │   ├── f,lo-fi-cow.wav
+    │       │   ├── l,lo-fi-cow.wav
     │       │   ├── f,manifest.ttl
     │       │   ├── l,sn1.wav
     │       │   ├── l,sn2.wav

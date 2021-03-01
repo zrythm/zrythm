@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-27 20:40+0000\n"
+"POT-Creation-Date: 2021-03-01 02:00+0000\n"
 "PO-Revision-Date: 2021-01-05 14:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -489,16 +489,11 @@ msgstr "Conectando Aparelhos de MIDI e Áudio"
 #: ../../configuration/device-setup.rst:11
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
-":ref:`configuration/preferences/intro:Audio inputs` and "
-":ref:`configuration/preferences/intro:MIDI controllers` and make these "
-"devices available in the :ref:`track inputs <tracks/inspector-"
-"page:Inputs>` (as below) and other places."
+":ref:`configuration/preferences:Audio inputs` and "
+":ref:`configuration/preferences:MIDI controllers` and make these devices "
+"available in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as "
+"below) and other places."
 msgstr ""
-"O Zrythm conectará automaticamente com aparelhos especificados em "
-":ref:`configuration/preferences/intro:Audio inputs` e "
-":ref:`configuration/preferences/intro:MIDI controllers` e disponibilizará"
-" esses aparelhos em :ref:`track inputs <tracks/inspector-page:Inputs>` "
-"(como abaixo) e outros lugares."
 
 #: ../../configuration/device-setup.rst:23
 #: ../../getting-started/system-requirements.rst:34 ../../glossary/intro.rst:66
@@ -531,7 +526,15 @@ msgstr "A Zrythm não se vai lembrar das ligações feitas externamente."
 msgid "Configuration"
 msgstr "Configuração"
 
+#: ../../configuration/intro.rst:18
+msgid ""
+"This section goes through the :doc:`Preferences dialog <preferences>`, "
+":doc:`setting up devices <device-setup>` and :doc:`additional settings "
+"<additional-settings>`."
+msgstr ""
+
 #: ../../configuration/preferences.rst:10
+#: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Preferences"
 msgstr "Preferências"
 
@@ -569,11 +572,11 @@ msgstr "Motor"
 msgid "Audio engine settings."
 msgstr "Configurações do mecanismo de áudio."
 
-#: ../../configuration/preferences.rst:35
+#: ../../configuration/preferences.rst:36
 msgid "Audio backend"
 msgstr "Backend áudio"
 
-#: ../../configuration/preferences.rst:36
+#: ../../configuration/preferences.rst:35
 msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using :term:`JACK` when possible, otherwise RtAudio."
@@ -586,7 +589,7 @@ msgstr ""
 msgid "MIDI backend"
 msgstr "Backend MIDI"
 
-#: ../../configuration/preferences.rst:42
+#: ../../configuration/preferences.rst:39
 msgid ""
 "The MIDI backend to use. The available backends are JACK MIDI, RtMidi and"
 " WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
@@ -596,120 +599,120 @@ msgstr ""
 " WindowsMME (somente Windows). Recomendamos usar o JACK MIDI quando "
 "possível, caso contrário use o RtMidi."
 
-#: ../../configuration/preferences.rst:48
+#: ../../configuration/preferences.rst:43
 msgid "MIDI controllers"
 msgstr "Controladores MIDI"
 
-#: ../../configuration/preferences.rst:49
+#: ../../configuration/preferences.rst:44
 msgid "A list of controllers to auto-connect to."
 msgstr "Uma lista de controladores para conectar-los automaticamente."
 
-#: ../../configuration/preferences.rst:52
+#: ../../configuration/preferences.rst:46
 msgid "Audio inputs"
 msgstr "Entradas de áudio"
 
-#: ../../configuration/preferences.rst:53
+#: ../../configuration/preferences.rst:46
 msgid "A list of audio inputs to auto-connect to."
 msgstr "Uma lista de entradas de áudio às quais se ligar automaticamente."
 
-#: ../../configuration/preferences.rst:56
+#: ../../configuration/preferences.rst:49
 msgid "Paths (Global)"
 msgstr "Caminhos (Global)"
 
-#: ../../configuration/preferences.rst:58
+#: ../../configuration/preferences.rst:51
 msgid "Global paths."
 msgstr "Caminhos globais."
 
-#: ../../configuration/preferences.rst:61
+#: ../../configuration/preferences.rst:54
 msgid "Zrythm path"
 msgstr "Caminho do Zrythm"
 
-#: ../../configuration/preferences.rst:62
+#: ../../configuration/preferences.rst:54
 msgid "The :term:`Zrythm user path`."
 msgstr "O :term:`Zrythm user path`."
 
-#: ../../configuration/preferences.rst:65
+#: ../../configuration/preferences.rst:57
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
 msgstr "Suplementos"
 
-#: ../../configuration/preferences.rst:67
+#: ../../configuration/preferences.rst:59
 msgid ":term:`Plugin` settings."
 msgstr "Configurações de :term:`Plugin`."
 
-#: ../../configuration/preferences.rst:73
+#: ../../configuration/preferences.rst:65
 msgid "UIs"
 msgstr "IUs"
 
-#: ../../configuration/preferences.rst:75
+#: ../../configuration/preferences.rst:67
 msgid "Plugin UIs."
 msgstr "IUs de suplementos."
 
-#: ../../configuration/preferences.rst:78
+#: ../../configuration/preferences.rst:70
 #: ../../plugins-files/plugins/plugin-window.rst:24
 msgid "Generic UIs"
 msgstr "IUs genéricas"
 
-#: ../../configuration/preferences.rst:79
+#: ../../configuration/preferences.rst:70
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
 "Mostrar IUs de suplementos genéricos gerados pela Zrythm em vez de IUs "
 "personalizadas."
 
-#: ../../configuration/preferences.rst:83
+#: ../../configuration/preferences.rst:72
 msgid "Open UI on instantiation"
 msgstr "Abrir a IU na instanciação"
 
-#: ../../configuration/preferences.rst:84
+#: ../../configuration/preferences.rst:73
 msgid "Open plugin UIs when they are instantiated."
 msgstr "Abrir IUs de suplementos quando são instanciados."
 
-#: ../../configuration/preferences.rst:87
+#: ../../configuration/preferences.rst:74
 msgid "Keep window on top"
 msgstr "Manter a janela no topo"
 
-#: ../../configuration/preferences.rst:88
+#: ../../configuration/preferences.rst:75
 msgid "Always show plugin UIs on top of the main window."
 msgstr "Manter janelas das IUs dos suplementos por cima da janela principal."
 
-#: ../../configuration/preferences.rst:91
+#: ../../configuration/preferences.rst:80
 msgid "Bridge unsupported UIs"
 msgstr "Transpor IUs não suportadas"
 
-#: ../../configuration/preferences.rst:92
+#: ../../configuration/preferences.rst:77
 msgid ""
 "Bridge unsupported UIs in another process instead of creating generic "
 "ones."
 msgstr "Transpor IUs sem suporte noutro processo, em vez de criar IUs genéricas."
 
-#: ../../configuration/preferences.rst:95
+#: ../../configuration/preferences.rst:80
 msgid "This may lead to performance loss for some plugins."
 msgstr "Isso pode levar à redução de desempenho de alguns suplementos."
 
-#: ../../configuration/preferences.rst:99
+#: ../../configuration/preferences.rst:84
 msgid "Refresh rate"
 msgstr "Taxa de atualização"
 
-#: ../../configuration/preferences.rst:100
+#: ../../configuration/preferences.rst:83
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 "Taxa de atualização em Hz. Se for definido como 0, a taxa de atualização "
 "do ecrã será usada."
 
-#: ../../configuration/preferences.rst:106
+#: ../../configuration/preferences.rst:89
 msgid "Paths"
 msgstr "Caminhos"
 
-#: ../../configuration/preferences.rst:109
+#: ../../configuration/preferences.rst:97
 msgid "VST plugins"
 msgstr "Suplementos VST"
 
-#: ../../configuration/preferences.rst:110
+#: ../../configuration/preferences.rst:92
 msgid "The search paths to scan for :term:`VST2` plugins in."
 msgstr "Os caminhos de pesquisa para procurar por suplementos de :term:`VST2`."
 
-#: ../../configuration/preferences.rst:113
+#: ../../configuration/preferences.rst:95
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
 "paths are fixed. See :ref:`scanning-plugins` for details."
@@ -717,45 +720,45 @@ msgstr ""
 "Esta opção só está disponível no Windows. Em GNU/Linux e MacOS os "
 "caminhos são fixos. Veja :ref:`scanning-plugins` para detalhes."
 
-#: ../../configuration/preferences.rst:118
+#: ../../configuration/preferences.rst:100
 msgid "SFZ instruments"
 msgstr "Instrumentos SFZ"
 
-#: ../../configuration/preferences.rst:119
+#: ../../configuration/preferences.rst:100
 msgid "The search paths to scan for :term:`SFZ` instruments in."
 msgstr "Os caminhos de pesquisa para a procura de instrumentos :term:`SFZ`."
 
-#: ../../configuration/preferences.rst:123
+#: ../../configuration/preferences.rst:104
 msgid "SF2 instruments"
 msgstr "Instrumentos SFZ"
 
-#: ../../configuration/preferences.rst:124
+#: ../../configuration/preferences.rst:103
 msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Os caminhos de pesquisa para procurar por instrumentos :term:`SF2`."
 
-#: ../../configuration/preferences.rst:128 ../../glossary/intro.rst:56
+#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:56
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../configuration/preferences.rst:130
+#: ../../configuration/preferences.rst:109
 msgid ":term:`DSP` settings."
 msgstr "Configurações de :term:`DSP`."
 
-#: ../../configuration/preferences.rst:136
+#: ../../configuration/preferences.rst:115
 msgid "Pan"
 msgstr "Pan"
 
-#: ../../configuration/preferences.rst:138
+#: ../../configuration/preferences.rst:117
 msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
 msgstr ""
 "Opções de :term:`Panning` para sinais :term:`Mono` (não usados no "
 "momento)."
 
-#: ../../configuration/preferences.rst:141
+#: ../../configuration/preferences.rst:134
 msgid "Pan algorithm"
 msgstr "Algoritmo de pan"
 
-#: ../../configuration/preferences.rst:142
+#: ../../configuration/preferences.rst:120
 msgid ""
 "The panning algorithm to use when applying pan on mono signals. See the "
 "graph below for the different curves as you move the pan from left to "
@@ -769,104 +772,104 @@ msgstr ""
 "online/readings/panlaws/index.html para mais informações. Isto não é "
 "usado no momento."
 
-#: ../../configuration/preferences.rst:155
+#: ../../configuration/preferences.rst:133
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr "Algoritmos de pan (:blue:`sine`, :red:`square root`, :green:`linear`)."
 
-#: ../../configuration/preferences.rst:159 ../../glossary/intro.rst:97
+#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:97
 msgid "Pan law"
 msgstr "Lei pan"
 
-#: ../../configuration/preferences.rst:160
+#: ../../configuration/preferences.rst:137
 msgid "The :term:`Pan law` to use when applying pan on mono signals."
 msgstr "A :term:`Pan law` a ser usada ao aplicar pan em sinais mono."
 
-#: ../../configuration/preferences.rst:164 ../../editing/intro.rst:8
+#: ../../configuration/preferences.rst:141 ../../editing/intro.rst:8
 msgid "Editing"
 msgstr "Edição"
 
-#: ../../configuration/preferences.rst:166
+#: ../../configuration/preferences.rst:143
 msgid "Editing options."
 msgstr "Opções de edição."
 
-#: ../../configuration/preferences.rst:172 ../../routing/ports.rst:41
+#: ../../configuration/preferences.rst:149 ../../routing/ports.rst:41
 #: ../../tracks/track-types.rst:14 ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16 ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
 msgstr "Áudio"
 
-#: ../../configuration/preferences.rst:174
+#: ../../configuration/preferences.rst:151
 msgid "Audio editing."
 msgstr "Edição de áudio."
 
-#: ../../configuration/preferences.rst:177
+#: ../../configuration/preferences.rst:154
 msgid "Fade algorithm"
 msgstr "Algoritmo de fade"
 
-#: ../../configuration/preferences.rst:178
+#: ../../configuration/preferences.rst:154
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr "Algoritmo predefinido de fade para usar para fade in/out."
 
-#: ../../configuration/preferences.rst:181 ../../tracks/automation.rst:8
+#: ../../configuration/preferences.rst:157 ../../tracks/automation.rst:8
 msgid "Automation"
 msgstr "Automação"
 
-#: ../../configuration/preferences.rst:183
+#: ../../configuration/preferences.rst:159
 msgid "Automation editing."
 msgstr "Edição de automação."
 
-#: ../../configuration/preferences.rst:186
+#: ../../configuration/preferences.rst:163
 msgid "Curve algorithm"
 msgstr "Algoritmo de curvas"
 
-#: ../../configuration/preferences.rst:187
+#: ../../configuration/preferences.rst:162
 msgid "Default curve algorithm to use for automation curves."
 msgstr "Algoritmo de curva predefinido a ser usado para curvas de automação."
 
-#: ../../configuration/preferences.rst:191
+#: ../../configuration/preferences.rst:166
 msgid "Undo"
 msgstr "Desfazer"
 
-#: ../../configuration/preferences.rst:193
+#: ../../configuration/preferences.rst:168
 msgid "Undo options."
 msgstr "Opções de desfazer."
 
-#: ../../configuration/preferences.rst:196
+#: ../../configuration/preferences.rst:175
 msgid "Undo stack length"
 msgstr "Comprimento da pilha de desfazer"
 
-#: ../../configuration/preferences.rst:197
+#: ../../configuration/preferences.rst:171
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 "Comprimento máximo da pilha do histórico de desfazer. Definido como -1 "
 "para ilimitado."
 
-#: ../../configuration/preferences.rst:200
+#: ../../configuration/preferences.rst:174
 msgid "We recommend leaving it at 128."
 msgstr "Recomendamos deixá-lo em 128."
 
-#: ../../configuration/preferences.rst:204 ../../projects/intro.rst:8
+#: ../../configuration/preferences.rst:178 ../../projects/intro.rst:8
 msgid "Projects"
 msgstr "Projetos"
 
-#: ../../configuration/preferences.rst:206
+#: ../../configuration/preferences.rst:180
 msgid "Project settings."
 msgstr "Configurações do projeto."
 
-#: ../../configuration/preferences.rst:212
+#: ../../configuration/preferences.rst:186
 msgid "General (Project)"
 msgstr "Geral (projeto)"
 
-#: ../../configuration/preferences.rst:214
+#: ../../configuration/preferences.rst:188
 msgid "General project settings."
 msgstr "Configurações gerais do projeto."
 
-#: ../../configuration/preferences.rst:217
+#: ../../configuration/preferences.rst:195
 msgid "Autosave interval"
 msgstr "Intervalo de gravação automática"
 
-#: ../../configuration/preferences.rst:218
+#: ../../configuration/preferences.rst:191
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
@@ -874,7 +877,7 @@ msgstr ""
 "Intervalo para projetos de autogravação, em minutos. A autogravação será "
 "desativada se estiver configurada como 0."
 
-#: ../../configuration/preferences.rst:221
+#: ../../configuration/preferences.rst:194
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
@@ -882,31 +885,31 @@ msgstr ""
 "Isto refere-se a backups automáticos. O projeto principal não será "
 "sobregravado, a menos que o grave explicitamente."
 
-#: ../../configuration/preferences.rst:225
+#: ../../configuration/preferences.rst:198
 msgid "UI"
 msgstr "IU"
 
-#: ../../configuration/preferences.rst:227
+#: ../../configuration/preferences.rst:200
 msgid "User interface options."
 msgstr "Opções de interface do utilizador."
 
-#: ../../configuration/preferences.rst:233
+#: ../../configuration/preferences.rst:206
 msgid "General (UI)"
 msgstr "Geral (IU)"
 
-#: ../../configuration/preferences.rst:235
+#: ../../configuration/preferences.rst:208
 msgid "General user interface options."
 msgstr "Opções gerais de interface do utilizador."
 
-#: ../../configuration/preferences.rst:238
+#: ../../configuration/preferences.rst:216
 msgid "User interface language"
 msgstr "Idioma da interface do utilizador"
 
-#: ../../configuration/preferences.rst:239
+#: ../../configuration/preferences.rst:211
 msgid "The language to use for the user interface."
 msgstr "O idioma a utilizar para a interface do utilizador."
 
-#: ../../configuration/preferences.rst:241
+#: ../../configuration/preferences.rst:213
 msgid ""
 "For a list of supported languages and their translation status, or to "
 "translate Zrythm into your language, see `Weblate "
@@ -916,7 +919,7 @@ msgstr ""
 "para traduzir o Zrythm ao seu idioma, veja `Weblate "
 "<https://hosted.weblate.org/projects/zrythm/>`_."
 
-#: ../../configuration/preferences.rst:246
+#: ../../configuration/preferences.rst:218
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
 "Algumas destas configurações requerem um reinício do Zrythm para terem "
@@ -934,26 +937,11 @@ msgstr ""
 "Apreciamos contribuições de qualquer tipo e tamanho. Diga-nos como "
 "gostaria de ajudar, e faremos o nosso melhor para guiá-lo."
 
-#: ../../contributing/intro.rst:11
-msgid ""
-"We want to provide a friendly and harassment-free environment so that "
-"everyone can contribute to the best of their abilities. To this end our "
-"project uses a `Contributor Covenant` which was adapted from https"
-"://contributor-covenant.org/. You can find the full pledge in our `Code "
-"of Conduct <https://forum.zrythm.org/t/code-of-conduct>`_."
-msgstr ""
-"Queremos proporcionar um ambiente amigável e livre de assédio para que "
-"todos possam contribuir com o melhor das suas habilidades. Para isso, o "
-"nosso projeto utiliza um \"Convénio do Contribuinte\" que foi adaptado de"
-" https://contributor-covenant.org/. Pode encontrar o compromisso completo"
-" no nosso `Código de Conduta <https://forum.zrythm.org/t/code-of-"
-"conduct>`_."
-
-#: ../../contributing/intro.rst:18
+#: ../../contributing/intro.rst:12
 msgid "Coding"
 msgstr "Codificação"
 
-#: ../../contributing/intro.rst:19
+#: ../../contributing/intro.rst:13
 msgid ""
 "Please see the :download:`HACKING <../../../HACKING.md>` file in the "
 "source distribution."
@@ -961,23 +949,24 @@ msgstr ""
 "Por favor veja o ficheiro :download:`HACKING <../../../HACKING.md>` na "
 "distribuição da fonte."
 
-#: ../../contributing/intro.rst:24
+#: ../../contributing/intro.rst:18
 msgid "Web Design"
 msgstr "Desenho de Web"
 
-#: ../../contributing/intro.rst:25
+#: ../../contributing/intro.rst:19
+#, fuzzy
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
-"website. Please join our chatrooms and talk to us."
+"website. Please get in touch with us to discuss."
 msgstr ""
 "Pode ajudar-nos a melhorar a aparência e a usabilidade do site da Zrythm."
 " Por favor, junte-se às nossas salas de chat e fale connosco."
 
-#: ../../contributing/intro.rst:30
+#: ../../contributing/intro.rst:24
 msgid "Artwork and Themes"
 msgstr "Obras de Arte e Temas"
 
-#: ../../contributing/intro.rst:31
+#: ../../contributing/intro.rst:25
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized "
 "and some borrowed from other themes. If you would like to contribute "
@@ -989,11 +978,11 @@ msgstr ""
 " com ilustrações, como ícones, pode começar a criar os seus próprios "
 "temas e ícones, conforme discutido em :ref:`icon-themes` e :ref:`css`."
 
-#: ../../contributing/intro.rst:39
+#: ../../contributing/intro.rst:33
 msgid "Testing"
 msgstr "Testar"
 
-#: ../../contributing/intro.rst:40
+#: ../../contributing/intro.rst:34
 #, fuzzy
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
@@ -1007,7 +996,7 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../contributing/intro.rst:45
+#: ../../contributing/intro.rst:39
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
@@ -1016,11 +1005,11 @@ msgstr ""
 "``desenvolvimento`` no nosso repositório \"git\" "
 "<https://git.zrythm.org/cgit/zrythm>`_."
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:44
 msgid "Editing this Manual"
 msgstr "Edição deste Manual"
 
-#: ../../contributing/intro.rst:51
+#: ../../contributing/intro.rst:45
 msgid ""
 "Click on the :guilabel:`View Source` button at the top of the page to "
 "find which file the page exists in, find the file in the source "
@@ -1030,7 +1019,7 @@ msgstr ""
 " qual ficheiro a página existe, encontrar o ficheiro na distribuição da "
 "fonte e editá-lo."
 
-#: ../../contributing/intro.rst:56
+#: ../../contributing/intro.rst:50
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -1038,11 +1027,11 @@ msgstr ""
 "Precisará ter `Sphinx <https://www.sphinx-doc.org/en/master/>`_ instalado"
 " para compilar este manual."
 
-#: ../../contributing/intro.rst:61
+#: ../../contributing/intro.rst:55
 msgid "Translation"
 msgstr "Tradução"
 
-#: ../../contributing/intro.rst:62
+#: ../../contributing/intro.rst:56
 msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
@@ -1052,7 +1041,7 @@ msgstr ""
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ para "
 "começar."
 
-#: ../../contributing/intro.rst:65
+#: ../../contributing/intro.rst:59
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
@@ -1060,7 +1049,7 @@ msgstr ""
 "O projeto de tradução Zrythm contém as traduções para o programa Zrythm, "
 "o website, assim como secções deste manual."
 
-#: ../../contributing/intro.rst:69
+#: ../../contributing/intro.rst:63
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
@@ -1072,11 +1061,11 @@ msgstr ""
 "`documentação oficial "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:71
 msgid "User Manual"
 msgstr "Manual do Utilizador"
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:72
 msgid ""
 "When translating the user manual, please make sure you follow the "
 "following Sphinx/RST syntax, to avoid errors when applying your "
@@ -1085,11 +1074,11 @@ msgstr ""
 "Ao traduzir o manual do utilizador, certifique-se de seguir a sintaxe "
 "Sphinx/RST a seguir, para evitar erros ao aplicar as suas traduções."
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:77
 msgid "General Syntax"
 msgstr "Sintaxe Geral"
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:78
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be "
 "left untranslated. The part following should be left untranslated as "
@@ -1098,11 +1087,11 @@ msgstr ""
 "Quando vê algo dentro de ``:``, como ``:termo:``, deve não ser traduzido."
 " A parte seguinte também não deve ser traduzida. Por exemplo::"
 
-#: ../../contributing/intro.rst:93 ../../contributing/intro.rst:108
+#: ../../contributing/intro.rst:87 ../../contributing/intro.rst:102
 msgid "should be translated in French as"
 msgstr "deve ser traduzido em francês como"
 
-#: ../../contributing/intro.rst:99
+#: ../../contributing/intro.rst:93
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the"
 " translation for ``Parameter``. The only exception to this rule is when "
@@ -1112,7 +1101,7 @@ msgstr ""
 "tradução para ``Parameter``. A única exceção a esta regra é quando vê os "
 "caracteres ``<>``. Por exemplo:"
 
-#: ../../contributing/intro.rst:115
+#: ../../contributing/intro.rst:109
 msgid ""
 "Please make sure you do not insert or remove spaces. The following "
 "examples will cause errors."
@@ -1120,7 +1109,7 @@ msgstr ""
 "Por favor, certifique-se de não inserir ou remover espaços. Os exemplos "
 "seguintes irão causar erros."
 
-#: ../../contributing/intro.rst:127
+#: ../../contributing/intro.rst:121
 msgid ""
 "Also, there should be space, comma or period after such syntax, like "
 "below."
@@ -1128,11 +1117,11 @@ msgstr ""
 "Além disso, deve haver espaço, vírgula ou período após tal sintaxe, como "
 "abaixo."
 
-#: ../../contributing/intro.rst:136
+#: ../../contributing/intro.rst:130
 msgid "The following examples will cause errors."
 msgstr "Os exemplos seguintes causarão erros."
 
-#: ../../contributing/intro.rst:143
+#: ../../contributing/intro.rst:137
 msgid ""
 "The following syntax usually refers to a path, so please keep it "
 "unchanged, otherwise the file it refers to will not be found."
@@ -1141,11 +1130,11 @@ msgstr ""
 " mantenha-o inalterado, caso contrário o ficheiro a que se refere não "
 "será encontrado."
 
-#: ../../contributing/intro.rst:152
+#: ../../contributing/intro.rst:146
 msgid "Donations"
 msgstr "Doações"
 
-#: ../../contributing/intro.rst:153
+#: ../../contributing/intro.rst:147
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
@@ -1154,19 +1143,19 @@ msgstr ""
 "pequena ou grande, é apreciada e ajuda a sustentar o desenvolvimento "
 "contínuo:"
 
-#: ../../contributing/intro.rst:157
+#: ../../contributing/intro.rst:151
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:158
+#: ../../contributing/intro.rst:152
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:159
+#: ../../contributing/intro.rst:153
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:161
+#: ../../contributing/intro.rst:155
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -1505,7 +1494,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:22
-#: ../../zrythm-interface/main-toolbar.rst:133
+#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Additional Controls"
 msgstr "Controles adicionais"
 
@@ -3377,6 +3366,14 @@ msgstr "Pode instalar a porta de Zrythm dos repositórios oficiais."
 msgid "Getting Started"
 msgstr "Primeiros Passos"
 
+#: ../../getting-started/intro.rst:19
+msgid ""
+"This section discusses :doc:`system requirements <system-requirements>` "
+"for running Zrythm, :doc:`installation methods <installation>`, "
+":doc:`initial configuration steps <running-zrythm>` and :doc:`how to "
+"obtain plugins, instruments and samples <getting-plugins>`."
+msgstr ""
+
 #: ../../getting-started/running-zrythm.rst:8
 msgid "Running Zrythm"
 msgstr "Executar o Zrythm"
@@ -3996,23 +3993,27 @@ msgid "Zrythm executable."
 msgstr "Executável Zrythm."
 
 #: ../../invoking-from-command-line/intro.rst:23
-msgid "Prints a list of available options."
+#, fuzzy
+msgid "Print a list of available options."
 msgstr "Imprime uma lista de opções disponíveis."
 
 #: ../../invoking-from-command-line/intro.rst:27
-msgid "Pretty-prints the output (where applicable)."
+#, fuzzy
+msgid "Pretty-print the output (where applicable)."
 msgstr "Imprima bem a saída (quando aplicável)."
 
 #: ../../invoking-from-command-line/intro.rst:31
+#, fuzzy
 msgid ""
-"Prints all the user settings. Can be combined with :option:`--pretty` to "
+"Print all the user settings. Can be combined with :option:`--pretty` to "
 "get pretty-printed output, like below."
 msgstr ""
 "Imprime todas as configurações do utilizador. Pode ser combinado com "
 ":option:`--pretty` para obter uma saída bem impressa, como a seguir."
 
 #: ../../invoking-from-command-line/intro.rst:40
-msgid "Resets user settings to their default values."
+#, fuzzy
+msgid "Reset user settings to their default values."
 msgstr ""
 "Redefine as configurações do utilizador para os valores predefinidos "
 "deles."
@@ -4029,15 +4030,23 @@ msgstr ""
 msgid "This will clear ALL your user settings."
 msgstr "Isto limpará TODAS as suas configurações de utilizador."
 
-#: ../../invoking-from-command-line/intro.rst:52
+#: ../../invoking-from-command-line/intro.rst:54
+msgid "Convert a .zpj project file to YAML."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:58
+msgid "Convert a YAML file to the .zpj format."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:60
 msgid "Prints the Zrythm version."
 msgstr "Imprime a versão do Zrythm."
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:63
 msgid "zrythm_launch"
 msgstr "zrythm_launch"
 
-#: ../../invoking-from-command-line/intro.rst:56
+#: ../../invoking-from-command-line/intro.rst:64
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before "
 "launching Zrythm. All of the options for :program:`zrythm` can also be "
@@ -5486,75 +5495,13 @@ msgstr ""
 "Instrumentos :term:`SFZ` e :term:`SF2` serão procurados em todos os "
 "diretórios e subdiretórios especificados em :ref:`vst-paths`."
 
-#: ../../projects/project-info.rst:6
-msgid "Project Info"
-msgstr "Informações sobre o projeto"
-
-#: ../../projects/project-info.rst:8
+#: ../../projects/intro.rst:18
 msgid ""
-"In Zrythm, your work is saved inside a Project. Projects consist of a "
-"folder with a YAML file describing the Project and additional files used "
-"such as MIDI and audio files."
+"This section goes through the :doc:`project structure <project-"
+"structure>`, :doc:`saving and loading projects <saving-loading>` and "
+":doc:`project management and compatibility <project-management-and-"
+"compatibility>`."
 msgstr ""
-"Em Zrythm, seu trabalho é gravado dentro de um Projeto. Projetos "
-"consistem em uma pasta com um ficheiro YAML descrevendo o Projeto e "
-"ficheiros adicionais usados como MIDI e ficheiros de áudio."
-
-#: ../../projects/project-info.rst:14
-msgid "Project Structure"
-msgstr "Estrutura do projeto"
-
-#: ../../projects/project-info.rst:38
-msgid "backups"
-msgstr "backups"
-
-#: ../../projects/project-info.rst:39
-msgid "Regular backups taken automatically by Zrythm"
-msgstr "Backups regulares feitos automaticamente pelo Zrythm"
-
-#: ../../projects/project-info.rst:40
-msgid "myproject.bak"
-msgstr "myproject.bak"
-
-#: ../../projects/project-info.rst:41
-msgid "An example backup project"
-msgstr "Um exemplo de projeto de backup"
-
-#: ../../projects/project-info.rst:43
-msgid "states"
-msgstr "estados"
-
-#: ../../projects/project-info.rst:43
-msgid "Contains plugin states at the time of save (for LV2)"
-msgstr "Contém estados de suplementos no momento da gravação (para LV2)"
-
-#: ../../projects/project-info.rst:46
-msgid "exports"
-msgstr "exportações"
-
-#: ../../projects/project-info.rst:46
-msgid "Default directory for exporting files related to the project"
-msgstr "Diretório padrão para exportar ficheiros relacionados ao projeto"
-
-#: ../../projects/project-info.rst:49
-msgid "pool"
-msgstr "conjunto"
-
-#: ../../projects/project-info.rst:49
-msgid ""
-"Used by Zrythm to store and load files used by the Project, such as audio"
-" files"
-msgstr ""
-"Usado pelo Zrythm para armazenar e carregar ficheiros usados pelo "
-"Projeto, como ficheiros de áudio"
-
-#: ../../projects/project-info.rst:51
-msgid "project.yml"
-msgstr "project.yml"
-
-#: ../../projects/project-info.rst:52
-msgid "The Project file"
-msgstr "O ficheiro do Projecto"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
@@ -5592,6 +5539,57 @@ msgid ""
 msgstr ""
 "Cada ficheiro de projeto mencionará a versão do Zrythm com a qual foi "
 "feito e a data em que foi gravado"
+
+#: ../../projects/project-structure.rst:6
+msgid "Project Structure"
+msgstr "Estrutura do projeto"
+
+#: ../../projects/project-structure.rst:8
+msgid ""
+"In Zrythm, work is saved inside :term:`projects <Project>`. Projects "
+"consist of a directory with a project file describing the project along "
+"with additional files and directories used by the project, such as audio "
+"files and plugin states."
+msgstr ""
+
+#: ../../projects/project-structure.rst:16
+#, fuzzy
+msgid "Backups"
+msgstr "backups"
+
+#: ../../projects/project-structure.rst:17
+msgid ""
+"Backups are also kept in the project directory, and each backup is a "
+"standalone project on its own - ie, it contains all the files it needs to"
+" load as a separate project. Projects inside the :file:`backups` dir of a"
+" parent project are considered backups of the parent project."
+msgstr ""
+
+#: ../../projects/project-structure.rst:26
+msgid ""
+"Zrythm will keep backups automatically by default during autosave. You "
+"can change the autosave interval or turn it off in the :ref:`preferences "
+"<configuration/preferences:General (Project)>`."
+msgstr ""
+
+#: ../../projects/project-structure.rst:33
+#, fuzzy
+msgid "Project Directory"
+msgstr "Seleção de projeto"
+
+#: ../../projects/project-structure.rst:106
+#, fuzzy
+msgid "Project File Format"
+msgstr "O ficheiro do Projecto"
+
+#: ../../projects/project-structure.rst:107
+msgid ""
+"Zrythm uses a custom MIME type ``x-zrythm-project`` (which is an alias of"
+" ``application/zstd``) for its project files (``project.zpj``). This is a"
+" `zstd <https://facebook.github.io/zstd/>`_-compressed YAML file that can"
+" be decompressed (converted to YAML) using :option:`zrythm --zpj-to-"
+"yaml`."
+msgstr ""
 
 #: ../../projects/saving-loading.rst:8
 msgid "Saving & Loading"
@@ -5691,17 +5689,11 @@ msgstr ""
 " Zrythm irá informá-lo se há novos back-ups desse projeto e perguntar se "
 "quer carregá-los."
 
-#: ../../projects/saving-loading.rst:70
+#: ../../projects/saving-loading.rst:71
 msgid ""
-"The auto-save interval can be changed (or disabled) in the preferences "
-"window."
+"See :ref:`projects/project-structure:Backups` for more information about "
+"backups."
 msgstr ""
-"O intervalo de gravação automático pode ser alterado (ou desativado) na "
-"janela de preferências."
-
-#: ../../projects/saving-loading.rst:73
-msgid "The backups are saved in the project's directory, under :file:`backups`."
-msgstr "Os backups são gravados no diretório do projeto, em :file`backups`."
 
 #: ../../routing/control-room.rst:8 ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
@@ -6767,19 +6759,15 @@ msgstr ""
 "vontade a copiá-los e modificá-los."
 
 #: ../../scripting/examples.rst:13
-msgid "Create Geonkick with FX track"
-msgstr ""
-
-#: ../../scripting/examples.rst:74
 msgid "Create MIDI track with notes"
 msgstr "Criar faixa de MIDI com notas"
 
-#: ../../scripting/examples.rst:104
+#: ../../scripting/examples.rst:48
 #, fuzzy
 msgid "Hello world"
 msgstr "Olá mundo"
 
-#: ../../scripting/examples.rst:115
+#: ../../scripting/examples.rst:59
 #, fuzzy
 msgid "Print all tracks"
 msgstr "Imprimir nomes de faixas"
@@ -6819,7 +6807,7 @@ msgid "The Guile API is not available on Windows."
 msgstr "A API de Guile não está disponível no Windows."
 
 #: ../../scripting/scripting-interface.rst:6
-#: ../../zrythm-interface/main-toolbar.rst:143
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Scripting Interface"
 msgstr "Interface de script"
 
@@ -8386,6 +8374,38 @@ msgstr "Misturar é abordado em :ref:`mixing`."
 msgid "Interface"
 msgstr "Interface"
 
+#: ../../zrythm-interface/intro.rst:19
+msgid "The Zrythm interface is split into various sub-modules."
+msgstr "A interface do Zrythm está dividida em vários submódulos."
+
+#: ../../zrythm-interface/intro.rst:24
+msgid "Each sub-module is explained in its own section."
+msgstr "Cada sub-módulo é explicado na própria secção dele."
+
+#: ../../zrythm-interface/intro.rst:26
+msgid ":ref:`timeline` (1)"
+msgstr ":ref:`timeline` (1)"
+
+#: ../../zrythm-interface/intro.rst:27
+msgid ":ref:`main-toolbar` (2)"
+msgstr ":ref:`main-toolbar` (2)"
+
+#: ../../zrythm-interface/intro.rst:28
+msgid ":ref:`left-panel` (3)"
+msgstr ":ref:`left-panel` (3)"
+
+#: ../../zrythm-interface/intro.rst:29
+msgid ":ref:`bottom-panel` (4)"
+msgstr ":ref:`bottom-panel` (4)"
+
+#: ../../zrythm-interface/intro.rst:30
+msgid ":ref:`transport-bar` (5)"
+msgstr ":ref:`transport-bar` (5)"
+
+#: ../../zrythm-interface/intro.rst:31
+msgid ":ref:`right-panel` (6)"
+msgstr ":ref:`right-panel` (6)"
+
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr "Painel esquerdo"
@@ -8522,42 +8542,52 @@ msgstr ""
 "carregar e exportar MIDI ou áudio."
 
 #: ../../zrythm-interface/main-toolbar.rst:45
+#, fuzzy
+msgid "Project Management"
+msgstr "Menu Projeto"
+
+#: ../../zrythm-interface/main-toolbar.rst:46
 msgid "New Project"
 msgstr "Novo projeto"
 
-#: ../../zrythm-interface/main-toolbar.rst:46
+#: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Create a new project."
 msgstr "Criar um projeto."
 
-#: ../../zrythm-interface/main-toolbar.rst:49
+#: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Save"
 msgstr "Gravar"
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save the current project at its current location."
 msgstr "Grave o projeto atual na localização atual dele."
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
 msgstr "Gravar como"
 
-#: ../../zrythm-interface/main-toolbar.rst:54
+#: ../../zrythm-interface/main-toolbar.rst:51
 msgid "Save the current project at a new location."
 msgstr "Grave o projeto atual numa localização nova."
 
-#: ../../zrythm-interface/main-toolbar.rst:57
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
 msgstr "Carregar"
 
-#: ../../zrythm-interface/main-toolbar.rst:58
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
 msgstr "Carregar um projeto."
 
-#: ../../zrythm-interface/main-toolbar.rst:61
+#: ../../zrythm-interface/main-toolbar.rst:56
+#, fuzzy
+msgid "Export"
+msgstr "exportações"
+
+#: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Export As"
 msgstr "Exportar como"
 
-#: ../../zrythm-interface/main-toolbar.rst:62
+#: ../../zrythm-interface/main-toolbar.rst:58
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
@@ -8565,11 +8595,11 @@ msgstr ""
 "Exportar o projeto como áudio ou MIDI. Veja :ref:`export-audio-and-midi` "
 "para mais detalhes."
 
-#: ../../zrythm-interface/main-toolbar.rst:66
+#: ../../zrythm-interface/main-toolbar.rst:62
 msgid "Export Graph"
 msgstr "Exportar gráfico"
 
-#: ../../zrythm-interface/main-toolbar.rst:67
+#: ../../zrythm-interface/main-toolbar.rst:61
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-"
 "routing-graph` for more details."
@@ -8577,15 +8607,15 @@ msgstr ""
 "Exportar o gráfico de roteamento como uma imagem ou gráfico .dot. Veja "
 ":ref:`export-routing-graph` para mais detalhes."
 
-#: ../../zrythm-interface/main-toolbar.rst:70
+#: ../../zrythm-interface/main-toolbar.rst:64
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr "Para mais informações sobre projetos, veja o capítulo :ref:`projects`."
 
-#: ../../zrythm-interface/main-toolbar.rst:74
+#: ../../zrythm-interface/main-toolbar.rst:68
 msgid "View Menu"
 msgstr "Menu vista"
 
-#: ../../zrythm-interface/main-toolbar.rst:75
+#: ../../zrythm-interface/main-toolbar.rst:69
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and "
 "its various areas, such as zooming."
@@ -8593,35 +8623,39 @@ msgstr ""
 "O menu Vista contém controles para alterar a aparência do Zrythm e as "
 "diversas áreas dele, como a ampliação."
 
-#: ../../zrythm-interface/main-toolbar.rst:79
+#: ../../zrythm-interface/main-toolbar.rst:73
+msgid "Zoom"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:74
 msgid "Zoom In"
 msgstr "Aumentar"
 
-#: ../../zrythm-interface/main-toolbar.rst:80
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms in."
 msgstr "Amplia."
 
-#: ../../zrythm-interface/main-toolbar.rst:83
+#: ../../zrythm-interface/main-toolbar.rst:76
 msgid "Zoom Out"
 msgstr "Reduzir"
 
-#: ../../zrythm-interface/main-toolbar.rst:84
+#: ../../zrythm-interface/main-toolbar.rst:77
 msgid "Zooms out."
 msgstr "Diminui."
 
-#: ../../zrythm-interface/main-toolbar.rst:87
+#: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
 msgstr "Tamanho original"
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zooms back to the default zoom level."
 msgstr "Amplia para o nível de ampliação predefinido."
 
-#: ../../zrythm-interface/main-toolbar.rst:91
+#: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
 msgstr "Melhor ajuste"
 
-#: ../../zrythm-interface/main-toolbar.rst:92
+#: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
@@ -8629,27 +8663,32 @@ msgstr ""
 "Aumente ou diminua conforme necessário para mostrar todos os eventos na "
 "cronologia."
 
-#: ../../zrythm-interface/main-toolbar.rst:96
+#: ../../zrythm-interface/main-toolbar.rst:85
+#, fuzzy
+msgid "Visibility Toggles"
+msgstr "Alterna a visibilidade das pistas."
+
+#: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Toggle Left/Right/Bottom Panels"
 msgstr "Alternar painéis esquerdo/direito/inferior"
 
-#: ../../zrythm-interface/main-toolbar.rst:97
+#: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Toggles the panel's visibility."
 msgstr "Alterna a visibilidade do painel."
 
-#: ../../zrythm-interface/main-toolbar.rst:100
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Toggle Timeline Visibility"
 msgstr "Alternar a visibilidade da cronologia"
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Toggles the timeline's visibility."
 msgstr "Alterna a visibilidade da cronologia."
 
-#: ../../zrythm-interface/main-toolbar.rst:104
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Help Menu"
 msgstr "Menu Ajuda"
 
-#: ../../zrythm-interface/main-toolbar.rst:105
+#: ../../zrythm-interface/main-toolbar.rst:93
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
@@ -8657,81 +8696,96 @@ msgstr ""
 "O menu Ajuda contém ligações para reportar bugs, doar, conversar e outras"
 " ligações úteis."
 
-#: ../../zrythm-interface/main-toolbar.rst:109
+#: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Chat"
 msgstr "Conversação"
 
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr "Junte-se à sala de chat Zrythm na Matrix."
 
-#: ../../zrythm-interface/main-toolbar.rst:113
+#: ../../zrythm-interface/main-toolbar.rst:98
 msgid "Manual"
 msgstr "Manual"
 
-#: ../../zrythm-interface/main-toolbar.rst:114
+#: ../../zrythm-interface/main-toolbar.rst:99
 msgid "View the user manual."
 msgstr "Veja o manual do utilizador."
 
-#: ../../zrythm-interface/main-toolbar.rst:117
+#: ../../zrythm-interface/main-toolbar.rst:100
 msgid "News"
 msgstr "Novidades"
 
-#: ../../zrythm-interface/main-toolbar.rst:118
+#: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Show the latest changelog."
 msgstr "Mostrar o último changelog."
 
-#: ../../zrythm-interface/main-toolbar.rst:121
+#: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Keyboard Shortcuts"
 msgstr "Atalhos de teclado"
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Show all the available keyboard shortcuts."
 msgstr "Mostrar todos os atalhos de teclado disponíveis."
 
-#: ../../zrythm-interface/main-toolbar.rst:125
+#: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate"
 msgstr "Doar"
 
-#: ../../zrythm-interface/main-toolbar.rst:126
+#: ../../zrythm-interface/main-toolbar.rst:105
 msgid "Donate to Zrythm through LiberaPay."
 msgstr "Faça uma doação para Zrythm por meio do LiberaPay."
 
-#: ../../zrythm-interface/main-toolbar.rst:129
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Report a Bug"
 msgstr "Reportar um erro"
 
-#: ../../zrythm-interface/main-toolbar.rst:130
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Opens the page to report a new bug."
 msgstr "Abre a página para reportar um novo bug."
 
-#: ../../zrythm-interface/main-toolbar.rst:134
+#: ../../zrythm-interface/main-toolbar.rst:111
 msgid "The main toolbar also contains the following widgets."
 msgstr "A barra de ferramentas principal também contém os widgets seguintes."
 
-#: ../../zrythm-interface/main-toolbar.rst:139
+#: ../../zrythm-interface/main-toolbar.rst:116
 msgid "There are the following buttons next to the name of the current project."
 msgstr "Existem os seguintes botões ao lado do nome do projeto atual."
 
-#: ../../zrythm-interface/main-toolbar.rst:144
-msgid "Shows the scripting interface. See :ref:`scripting` for more information."
+#: ../../zrythm-interface/main-toolbar.rst:120
+#, fuzzy
+msgid "Shows the scripting interface."
+msgstr "Interface de script"
+
+#: ../../zrythm-interface/main-toolbar.rst:122
+#, fuzzy
+msgid "See the :ref:`scripting` section for more information."
 msgstr ""
 "Mostra a interface de scripts. Veja :ref:`scripting` para mais "
 "informações."
 
-#: ../../zrythm-interface/main-toolbar.rst:148
+#: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Log Viewer"
 msgstr "Visualizador de registos"
 
-#: ../../zrythm-interface/main-toolbar.rst:149
-msgid ""
-"Displays the log, which gets updated real-time. Preferences Shows the "
-"preferences dialog. See :ref:`preferences` for more information."
-msgstr ""
-"Exibe o log, que é atualizado em tempo real. Preferências mostra o "
-"diálogo de preferências. Veja :ref:`preferences` para mais informações."
+#: ../../zrythm-interface/main-toolbar.rst:125
+msgid "Displays the log, which gets updated real-time."
+msgstr "Exibe o log, que é atualizado em tempo real."
 
-#: ../../zrythm-interface/main-toolbar.rst:154
+#: ../../zrythm-interface/main-toolbar.rst:127
+msgid "Shows the preferences dialog."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:129
+#, fuzzy
+msgid "See the :ref:`preferences` section for more information."
+msgstr "Veja o ficheiro ``INSTALL.md`` para mais informações."
+
+#: ../../zrythm-interface/main-toolbar.rst:134
+msgid "MIDI In"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:132
 msgid ""
 "The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"
 " devices and the live waveform display shows the audio waveform from the "
@@ -8828,41 +8882,128 @@ msgstr ""
 "As informações sobre o backend e as opções atualmente selecionadas são "
 "visíveis no canto inferior esquerdo."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:6
-msgid "Interface Overview"
-msgstr "Visão Geral Da Interface"
+#~ msgid ""
+#~ "Zrythm will auto-connect to the "
+#~ "devices specified in "
+#~ ":ref:`configuration/preferences/intro:Audio inputs` and"
+#~ " :ref:`configuration/preferences/intro:MIDI controllers` "
+#~ "and make these devices available in "
+#~ "the :ref:`track inputs <tracks/inspector-"
+#~ "page:Inputs>` (as below) and other "
+#~ "places."
+#~ msgstr ""
+#~ "O Zrythm conectará automaticamente com "
+#~ "aparelhos especificados em "
+#~ ":ref:`configuration/preferences/intro:Audio inputs` e "
+#~ ":ref:`configuration/preferences/intro:MIDI controllers` e"
+#~ " disponibilizará esses aparelhos em "
+#~ ":ref:`track inputs <tracks/inspector-page:Inputs>`"
+#~ " (como abaixo) e outros lugares."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:8
-msgid "The Zrythm interface is split into various sub-modules."
-msgstr "A interface do Zrythm está dividida em vários submódulos."
+#~ msgid ""
+#~ "We want to provide a friendly and"
+#~ " harassment-free environment so that "
+#~ "everyone can contribute to the best "
+#~ "of their abilities. To this end "
+#~ "our project uses a `Contributor "
+#~ "Covenant` which was adapted from https"
+#~ "://contributor-covenant.org/. You can find "
+#~ "the full pledge in our `Code of"
+#~ " Conduct <https://forum.zrythm.org/t/code-of-"
+#~ "conduct>`_."
+#~ msgstr ""
+#~ "Queremos proporcionar um ambiente amigável "
+#~ "e livre de assédio para que todos"
+#~ " possam contribuir com o melhor das"
+#~ " suas habilidades. Para isso, o nosso"
+#~ " projeto utiliza um \"Convénio do "
+#~ "Contribuinte\" que foi adaptado de https"
+#~ "://contributor-covenant.org/. Pode encontrar o"
+#~ " compromisso completo no nosso `Código "
+#~ "de Conduta <https://forum.zrythm.org/t/code-of-"
+#~ "conduct>`_."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:12
-msgid "Each sub-module is explained in its own section."
-msgstr "Cada sub-módulo é explicado na própria secção dele."
+#~ msgid "Project Info"
+#~ msgstr "Informações sobre o projeto"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:14
-msgid ":ref:`timeline` (1)"
-msgstr ":ref:`timeline` (1)"
+#~ msgid ""
+#~ "In Zrythm, your work is saved "
+#~ "inside a Project. Projects consist of"
+#~ " a folder with a YAML file "
+#~ "describing the Project and additional "
+#~ "files used such as MIDI and audio"
+#~ " files."
+#~ msgstr ""
+#~ "Em Zrythm, seu trabalho é gravado "
+#~ "dentro de um Projeto. Projetos consistem"
+#~ " em uma pasta com um ficheiro "
+#~ "YAML descrevendo o Projeto e ficheiros"
+#~ " adicionais usados como MIDI e "
+#~ "ficheiros de áudio."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:15
-msgid ":ref:`main-toolbar` (2)"
-msgstr ":ref:`main-toolbar` (2)"
+#~ msgid "Regular backups taken automatically by Zrythm"
+#~ msgstr "Backups regulares feitos automaticamente pelo Zrythm"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:16
-msgid ":ref:`left-panel` (3)"
-msgstr ":ref:`left-panel` (3)"
+#~ msgid "myproject.bak"
+#~ msgstr "myproject.bak"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:17
-msgid ":ref:`bottom-panel` (4)"
-msgstr ":ref:`bottom-panel` (4)"
+#~ msgid "An example backup project"
+#~ msgstr "Um exemplo de projeto de backup"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:18
-msgid ":ref:`transport-bar` (5)"
-msgstr ":ref:`transport-bar` (5)"
+#~ msgid "states"
+#~ msgstr "estados"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:19
-msgid ":ref:`right-panel` (6)"
-msgstr ":ref:`right-panel` (6)"
+#~ msgid "Contains plugin states at the time of save (for LV2)"
+#~ msgstr "Contém estados de suplementos no momento da gravação (para LV2)"
+
+#~ msgid "Default directory for exporting files related to the project"
+#~ msgstr "Diretório padrão para exportar ficheiros relacionados ao projeto"
+
+#~ msgid "pool"
+#~ msgstr "conjunto"
+
+#~ msgid ""
+#~ "Used by Zrythm to store and load"
+#~ " files used by the Project, such "
+#~ "as audio files"
+#~ msgstr ""
+#~ "Usado pelo Zrythm para armazenar e "
+#~ "carregar ficheiros usados pelo Projeto, "
+#~ "como ficheiros de áudio"
+
+#~ msgid "project.yml"
+#~ msgstr "project.yml"
+
+#~ msgid ""
+#~ "The auto-save interval can be "
+#~ "changed (or disabled) in the preferences"
+#~ " window."
+#~ msgstr ""
+#~ "O intervalo de gravação automático pode"
+#~ " ser alterado (ou desativado) na "
+#~ "janela de preferências."
+
+#~ msgid ""
+#~ "The backups are saved in the "
+#~ "project's directory, under :file:`backups`."
+#~ msgstr "Os backups são gravados no diretório do projeto, em :file`backups`."
+
+#~ msgid "Create Geonkick with FX track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Displays the log, which gets updated "
+#~ "real-time. Preferences Shows the "
+#~ "preferences dialog. See :ref:`preferences` for"
+#~ " more information."
+#~ msgstr ""
+#~ "Exibe o log, que é atualizado em"
+#~ " tempo real. Preferências mostra o "
+#~ "diálogo de preferências. Veja "
+#~ ":ref:`preferences` para mais informações."
+
+#~ msgid "Interface Overview"
+#~ msgstr "Visão Geral Da Interface"
 
 #~ msgid "Title"
 #~ msgstr "Ficheiro"
@@ -10449,9 +10590,6 @@ msgstr ":ref:`right-panel` (6)"
 #~ "ou recursos ausentes incluídos no "
 #~ "instalador."
 
-#~ msgid "See the ``INSTALL.md`` file for more information."
-#~ msgstr "Veja o ficheiro ``INSTALL.md`` para mais informações."
-
 #~ msgid ""
 #~ "Install from source manually as "
 #~ "mentioned in :ref:`gnu-with-linux-"
@@ -11609,7 +11747,4 @@ msgstr ":ref:`right-panel` (6)"
 #~ "que é usado para ajustar o volume,"
 #~ " a pan e outras definições da "
 #~ "Faixa."
-
-#~ msgid "Displays the log, which gets updated real-time."
-#~ msgstr "Exibe o log, que é atualizado em tempo real."
 
