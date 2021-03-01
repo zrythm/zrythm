@@ -67,8 +67,6 @@ if you want to load them instead.
 .. image:: /_static/img/use_backup.png
    :align: center
 
-The auto-save interval can be changed (or disabled) in the preferences
-window.
-
-.. tip:: The backups are saved in the project's
-  directory, under :file:`backups`.
+.. seealso::
+   See :ref:`projects/project-structure:Backups` for
+   more information about backups.

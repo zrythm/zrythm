@@ -4,15 +4,9 @@
 
 Contributing
 ============
-We appreciate contributions of any type and size. Tell us
-how you would like to help, and we will do our best to
-guide you.
-
-We want to provide a friendly and harassment-free environment
-so that everyone can contribute to the best of their
-abilities. To this end our project uses a `Contributor
-Covenant` which was adapted from https://contributor-covenant.org/. You can find the full pledge in our
-`Code of Conduct <https://forum.zrythm.org/t/code-of-conduct>`_.
+We appreciate contributions of any type and size.
+Tell us how you would like to help, and we will do
+our best to guide you.
 
 Coding
 ------
@@ -23,8 +17,8 @@ in the source distribution.
 Web Design
 ----------
 You are welcome to help us improve the looks and
-usability of the Zrythm website. Please join our chatrooms
-and talk to us.
+usability of the Zrythm website. Please get in touch
+with us to discuss.
 
 Artwork and Themes
 ------------------

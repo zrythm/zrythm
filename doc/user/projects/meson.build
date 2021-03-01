@@ -1,7 +1,7 @@
 copy_files = [
   'intro.rst',
-  'project-info.rst',
   'project-management-and-compatibility.rst',
+  'project-structure.rst',
   'saving-loading.rst',
   ]
 

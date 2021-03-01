@@ -275,3 +275,37 @@ gettext_compact = 'zrythm-manual'
 
 
 # -- Extension configuration -------------------------------------------------
+
+# Custom lexer for `tree` command output
+# Files should be preceded by 'f,' and links should
+# be preceded by 'l,'
+from pygments.lexer import RegexLexer, bygroups
+from pygments.token import *
+from sphinx.highlighting import lexers
+
+class TreeLexer(RegexLexer):
+    name = 'Tree'
+    aliases = 'tree'
+
+    tokens = {
+        'root': [
+            (r'#.*?$', Comment.Singleline),
+            (r'[│]\s+', Text),
+            (r'[│|├|└|├]', Text),
+            (r'(─+\s)f,([^#\n]+)(#*.*)$',
+                bygroups(Text, Generic.Strong,
+                    Comment.Singleline)),
+            (r'(─+\s)l,([^#\n]+)(#*.*)$',
+                bygroups(Text, Generic.Prompt,
+                    Comment.Singleline)),
+            (r'(─+\s)([^#\n]+)(#*.*)$',
+                bygroups(Text, Generic.Subheading,
+                    Comment.Singleline)),
+            (r'\s+', Text),
+            (r'^([^#\n]+)(#*.*)$',
+                bygroups(Generic.Heading,
+                    Comment.Singleline)),
+        ]
+    }
+
+lexers['tree'] = TreeLexer(startinline=True)

@@ -20,15 +20,15 @@ Zrythm executable.
 
 .. option:: -h, --help
 
-  Prints a list of available options.
+  Print a list of available options.
 
 .. option:: --pretty
 
-  Pretty-prints the output (where applicable).
+  Pretty-print the output (where applicable).
 
 .. option:: -p, --print-settings
 
-  Prints all the user settings. Can be combined with
+  Print all the user settings. Can be combined with
   :option:`--pretty` to get pretty-printed output,
   like below.
 
@@ -37,7 +37,7 @@ Zrythm executable.
 
 .. option:: --reset-to-factory
 
-  Resets user settings to their default values.
+  Reset user settings to their default values.
 
   .. note:: Only affects the
     settings printed with :option:`-p`. This will
@@ -48,6 +48,14 @@ Zrythm executable.
     settings.
 
 .. option:: -v, --version
+
+.. option:: --zpj-to-yaml
+
+  Convert a .zpj project file to YAML.
+
+.. option:: --yaml-to-zpj
+
+  Convert a YAML file to the .zpj format.
 
   Prints the Zrythm version.
 

@@ -41,93 +41,70 @@ The Project menu contains various project-related
 actions such as saving, loading and exporting MIDI
 or audio.
 
+Project Management
+++++++++++++++++++
 New Project
-+++++++++++
-Create a new project.
-
+  Create a new project.
 Save
-++++
-Save the current project at its current location.
-
+  Save the current project at its current location.
 Save As
-+++++++
-Save the current project at a new location.
-
+  Save the current project at a new location.
 Load
-++++
-Load a project.
+  Load a project.
 
+Export
+++++++
 Export As
-+++++++++
-Export the project as audio or MIDI. See
-:ref:`export-audio-and-midi` for more details.
-
+  Export the project as audio or MIDI. See
+  :ref:`export-audio-and-midi` for more details.
 Export Graph
-++++++++++++
-Export the routing graph as an image or .dot graph.
-See :ref:`export-routing-graph` for more details.
+  Export the routing graph as an image or .dot graph.
+  See :ref:`export-routing-graph` for more details.
 
-For more information about projects, see the
-:ref:`projects` chapter.
+.. seealso:: For more information about projects, see
+   the :ref:`projects` chapter.
 
 View Menu
 ~~~~~~~~~
 The View menu contains controls to change the appearance of
 Zrythm and its various areas, such as zooming.
 
+Zoom
+++++
 Zoom In
-+++++++
-Zooms in.
-
+  Zooms in.
 Zoom Out
-++++++++
-Zooms out.
-
+  Zooms out.
 Original Size
-+++++++++++++
-Zooms back to the default zoom level.
-
+  Zooms back to the default zoom level.
 Best Fit
-++++++++
-Zooms in or out as much as required to show all of the
-events in the timeline.
+  Zooms in or out as much as required to show all of
+  the events in the timeline.
 
+Visibility Toggles
+++++++++++++++++++
 Toggle Left/Right/Bottom Panels
-+++++++++++++++++++++++++++++++
-Toggles the panel's visibility.
-
+  Toggles the panel's visibility.
 Toggle Timeline Visibility
-++++++++++++++++++++++++++
-Toggles the timeline's visibility.
+  Toggles the timeline's visibility.
 
 Help Menu
 ~~~~~~~~~
-The Help menu contains links for reporting bugs, donating,
-chatting and other useful links.
+The Help menu contains links for reporting bugs,
+donating, chatting and other useful links.
 
 Chat
-++++
-Join the Zrythm chatroom on Matrix.
-
+  Join the Zrythm chatroom on Matrix.
 Manual
-++++++
-View the user manual.
-
+  View the user manual.
 News
-++++
-Show the latest changelog.
-
+  Show the latest changelog.
 Keyboard Shortcuts
-++++++++++++++++++
-Show all the available keyboard shortcuts.
-
+  Show all the available keyboard shortcuts.
 Donate
-++++++
-Donate to Zrythm through LiberaPay.
-
+  Donate to Zrythm through LiberaPay.
 Report a Bug
-++++++++++++
-Opens the page to report a new bug.
+  Opens the page to report a new bug.
 
 Additional Controls
 -------------------
@@ -136,22 +113,23 @@ The main toolbar also contains the following widgets.
 .. image:: /_static/img/main-toolbar-right-side.png
    :align: center
 
-There are the following buttons next to the name of the
-current project.
+There are the following buttons next to the name of
+the current project.
 
 Scripting Interface
-~~~~~~~~~~~~~~~~~~~
-Shows the scripting interface. See :ref:`scripting` for more
-information.
+  Shows the scripting interface.
 
+  .. seealso:: See the :ref:`scripting` section for
+     more information.
 Log Viewer
-~~~~~~~~~~
-Displays the log, which gets updated real-time.
+  Displays the log, which gets updated real-time.
 Preferences
-Shows the preferences dialog. See :ref:`preferences` for more
-information.
+  Shows the preferences dialog.
 
-The MIDI In widget shows the :term:`MIDI` activity
-of auto-connected MIDI devices and the live waveform
-display shows the audio waveform from the master
-output.
+  .. seealso:: See the :ref:`preferences` section for
+     more information.
+MIDI In
+  The MIDI In widget shows the :term:`MIDI` activity
+  of auto-connected MIDI devices and the live
+  waveform display shows the audio waveform from the
+  master output.

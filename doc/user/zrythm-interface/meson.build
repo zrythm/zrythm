@@ -6,7 +6,6 @@ copy_files = [
   'right-panel.rst',
   'timeline.rst',
   'transport-bar.rst',
-  'zrythm-interface-overview.rst',
   ]
 
 foreach f : copy_files
