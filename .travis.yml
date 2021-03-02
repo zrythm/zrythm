@@ -55,6 +55,8 @@ jobs:
           # use || true because it returns 1
           brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3 guile gtksourceview4 graphviz zstd mda-lv2 cmake || true
           brew link --overwrite python
+          pip3 install scikit-build
+          pip3 install cmake
           # move mda to official path
           sudo mkdir -p /Library/Audio/Plug-Ins/LV2/mda.lv2
           for file in $(brew ls mda-lv2 | grep "mda\.lv2" | cut -d " " -f1); do sudo cp "$file" /Library/Audio/Plug-Ins/LV2/mda.lv2/ ; done
