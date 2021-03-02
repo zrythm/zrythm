@@ -398,7 +398,7 @@ static inline SuilVoidFunc
 suil_dlfunc(void* handle, const char* symbol)
 {
 #ifdef _WOE32
-	 return (SuilVoidFunc)GetProcAddress((HMODULE)handle, symbol);
+	 return (SuilVoidFunc)GetProcAddress((HMODULE)handle, (LPCSTR) symbol);
 #else
 	typedef SuilVoidFunc (*VoidFuncGetter)(void*, const char*);
 	VoidFuncGetter dlfunc = (VoidFuncGetter)dlsym;
