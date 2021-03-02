@@ -24,6 +24,7 @@
 #include "audio/encoder.h"
 #include "audio/engine.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -42,8 +43,7 @@ AudioEncoder *
 audio_encoder_new_from_file (
   const char *    filepath)
 {
-  AudioEncoder * self =
-    calloc (1, sizeof (AudioEncoder));
+  AudioEncoder * self = object_new (AudioEncoder);
 
   audec_set_log_level (AUDEC_LOG_LEVEL_DEBUG);
   audec_set_log_func (audio_audec_log_func);
@@ -56,6 +56,7 @@ audio_encoder_new_from_file (
       g_critical (
         "An error has occurred opening the file %s",
         filepath);
+      free (self);
       return NULL;
     }
   self->file = g_strdup (filepath);

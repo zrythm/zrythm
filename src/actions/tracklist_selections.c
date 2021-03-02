@@ -35,6 +35,7 @@
 #include "utils/arrays.h"
 #include "utils/err_codes.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -56,7 +57,8 @@ tracklist_selections_action_init_loaded (
         self->tls_after);
     }
 
-  self->src_sends_size = self->num_src_sends;
+  self->src_sends_size =
+    (size_t) self->num_src_sends;
 }
 
 static void
@@ -607,12 +609,10 @@ do_or_undo_create_or_delete (
                 }
 
               /* reconnect any custom connections */
-              int max_size = 20;
+              size_t max_size = 20;
               int num_ports = 0;
               Port ** ports =
-                calloc (
-                  (size_t) max_size,
-                  sizeof (Port *));
+                object_new_n (max_size, Port *);
               track_append_all_ports (
                 own_track,
                 &ports, &num_ports, true, &max_size,
@@ -700,20 +700,17 @@ do_or_undo_create_or_delete (
               g_return_val_if_fail (track, -1);
 
               /* remember any custom connections */
-              int max_size = 20;
+              size_t max_size = 20;
               int num_ports = 0;
               Port ** ports =
-                calloc (
-                  (size_t) max_size, sizeof (Port *));
+                object_new_n (max_size, Port *);
               track_append_all_ports (
                 track, &ports, &num_ports, true,
                 &max_size, true);
               max_size = 20;
               int num_clone_ports = 0;
               Port ** clone_ports =
-                calloc (
-                  (size_t) max_size,
-                  sizeof (Port *));
+                object_new_n (max_size, Port *);
               track_append_all_ports (
                 own_track, &clone_ports,
                 &num_clone_ports,

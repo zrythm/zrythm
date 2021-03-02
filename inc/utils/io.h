@@ -40,33 +40,39 @@
  *
  * @param filename Filename containing directory.
  */
+NONNULL
 char *
 io_get_dir (const char * filename);
 
 /**
  * Makes directory if doesn't exist.
  */
+NONNULL
 void
 io_mkdir (const char * dir);
 
 /**
  * Creates the file if doesn't exist
  */
+NONNULL
 FILE *
 io_touch_file (const char * filename);
 
+NONNULL
 char *
 io_path_get_parent_dir (const char * path);
 
 /**
  * Strips extensions from given filename.
  */
+NONNULL
 char *
 io_file_strip_ext (const char * filename);
 
 /**
  * Returns file extension or NULL.
  */
+NONNULL
 const char *
 io_file_get_ext (const char * file);
 
@@ -78,14 +84,17 @@ io_file_get_ext (const char * file);
  *
  * MUST be freed.
  */
+NONNULL
 char *
 io_path_get_basename_without_ext (
   const char * filename);
 
+NONNULL
 char *
 io_file_get_creation_datetime (
   const char * filename);
 
+NONNULL
 char *
 io_file_get_last_modified_datetime (
   const char * filename);
@@ -93,6 +102,7 @@ io_file_get_last_modified_datetime (
 /**
  * Removes the given file.
  */
+NONNULL
 int
 io_remove (
   const char * path);
@@ -104,6 +114,7 @@ io_remove (
  * absolute path with length greater than 20 if
  * forced.
  */
+NONNULL
 int
 io_rmdir (
   const char * path,
@@ -114,7 +125,8 @@ io_rmdir (
  * directory.
  *
  * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev().
+ *   must be free'd with g_strfreev(), or NULL if
+ *   no files were found.
  */
 #define io_get_files_in_dir(dir) \
   io_get_files_in_dir_ending_in (dir, 0, NULL)
@@ -126,7 +138,8 @@ io_rmdir (
  * @param dir The directory to look for.
  *
  * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev().
+ *   must be free'd with g_strfreev(), or NULL if
+ *   no files were found.
  */
 char **
 io_get_files_in_dir_ending_in (
@@ -142,6 +155,7 @@ io_get_files_in_dir_ending_in (
  *
  * Example: "myfile" -> "myfile (1)"
  */
+NONNULL
 char *
 io_get_next_available_filepath (
   const char * filepath);
@@ -150,6 +164,7 @@ io_get_next_available_filepath (
  * Opens the given directory using the default
  * program.
  */
+NONNULL
 void
 io_open_directory (
   const char * path);
@@ -158,6 +173,7 @@ io_open_directory (
  * Returns a clone of the given string after
  * removing forbidden characters.
  */
+NONNULL
 void
 io_escape_dir_name (
   char *       dest,
@@ -169,6 +185,7 @@ io_escape_dir_name (
  * If an error occurred, a string containing the
  * error info is returned.
  */
+NONNULL
 char *
 io_write_file (
   const char * file,
@@ -187,6 +204,7 @@ io_get_registry_string_val (
  *
  * @return Non-zero on fail.
  */
+NONNULL
 int
 io_get_bundle_path (
   char * bundle_path);

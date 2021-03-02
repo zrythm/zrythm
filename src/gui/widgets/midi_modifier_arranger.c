@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,7 @@
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 #include "utils/flags.h"
 #include "zrythm_app.h"
 
@@ -85,19 +86,18 @@ get_enclosed_velocities (
       &selection_start_pos,
     F_PADDING);
 
-  /* find enclosed velocities */
-  int velocities_size = 1;
-  Velocity ** velocities =
-    (Velocity **)
-    malloc (
-      (size_t) velocities_size *
-      sizeof (Velocity *));
-  *num_vels = 0;
   ZRegion * region =
     clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (
     region && region->id.type == REGION_TYPE_MIDI,
     NULL);
+
+  /* find enclosed velocities */
+  size_t velocities_size = 1;
+  Velocity ** velocities =
+    object_new_n (
+      velocities_size, Velocity *);
+  *num_vels = 0;
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
   track_get_velocities_in_range (

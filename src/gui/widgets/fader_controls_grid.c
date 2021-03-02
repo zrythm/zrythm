@@ -164,7 +164,11 @@ setup_meter (
 
   Channel * ch = NULL;
   if (track_type_has_channel (track->type))
-    ch = track_get_channel (track);
+    {
+      ch = track_get_channel (track);
+    }
+  g_return_if_fail (ch);
+
   switch (track->out_signal_type)
     {
     case TYPE_EVENT:

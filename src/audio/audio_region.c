@@ -33,6 +33,7 @@
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 /**
@@ -65,8 +66,7 @@ audio_region_new (
   int              lane_pos,
   int              idx_inside_lane)
 {
-  ZRegion * self =
-    calloc (1, sizeof (AudioRegion));
+  ZRegion * self = object_new (ZRegion);
   ArrangerObject * obj =
     (ArrangerObject *) self;
 
@@ -122,15 +122,15 @@ audio_region_new (
   /* init split points */
   self->split_points_size = 1;
   self->split_points =
-    calloc (
-      self->split_points_size, sizeof (Position));
+    object_new_n (
+      self->split_points_size, Position);
   self->num_split_points = 0;
 
   /* init APs */
   self->aps_size = 2;
   self->aps =
-    malloc (
-      self->aps_size * sizeof (AutomationPoint *));
+    object_new_n (
+      self->aps_size, AutomationPoint *);
 
   /* init */
   region_init (
@@ -144,59 +144,6 @@ audio_region_new (
 
   return self;
 }
-
-#if 0
-/**
- * Allocates the frame caches from the frames in
- * the clip.
- */
-void
-audio_region_init_frame_caches (
-  AudioRegion * self,
-  AudioClip *   clip)
-{
-#if 0
-  /* copy the clip frames to the cache. */
-  self->frames =
-    realloc (
-      self->frames,
-      sizeof (float) *
-        (size_t) clip->num_frames * clip->channels);
-  self->num_frames = (size_t) clip->num_frames;
-  dsp_copy (
-    &self->frames[0], &clip->frames[0],
-    (size_t) clip->num_frames * clip->channels);
-#endif
-
-  audio_region_update_channel_caches (self, clip);
-}
-
-/**
- * Updates the region's channel caches from the
- * region's frames.
- */
-void
-audio_region_update_channel_caches (
-  ZRegion *   self,
-  AudioClip * clip)
-{
-  /* copy the frames to the channel caches */
-  for (unsigned int i = 0; i < clip->channels; i++)
-    {
-      self->ch_frames[i] =
-        realloc (
-          self->ch_frames[i],
-          sizeof (float) *
-            (size_t) clip->num_frames);
-      for (size_t j = 0;
-           j < (size_t) clip->num_frames; j++)
-        {
-          self->ch_frames[i][j] =
-            clip->frames[j * clip->channels + i];
-        }
-    }
-}
-#endif
 
 /**
  * Returns the audio clip associated with the
@@ -252,6 +199,7 @@ audio_region_replace_frames (
   bool      duplicate_clip)
 {
   AudioClip * clip = audio_region_get_clip (self);
+  g_return_if_fail (clip);
 
   if (duplicate_clip)
     {

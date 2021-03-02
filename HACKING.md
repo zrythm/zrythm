@@ -101,6 +101,9 @@ essentially adds `-g3` to the CFLAGS. This allows
 use of C macros in gdb so you can do `p TRACKLIST`
 instead of `p zrythm->project->tracklist`.
 
+Use `MALLOC_CHECK_=3` to enforce additional checks
+when allocating memory. See `man malloc` for details.
+
 ## Environment Variables
 In addition to GTK/GLib variables, Zrythm
 understands the following environment variables.

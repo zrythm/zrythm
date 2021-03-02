@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,3 +17,20 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+#include <string.h>
+
+#include "utils/objects.h"
+
+void
+_object_zero_and_free (
+  void ** ptr,
+  size_t  sz)
+{
+  if (!*ptr)
+    return;
+
+  memset (*ptr, 0, sz);
+  free (*ptr);
+  *ptr = NULL;
+}

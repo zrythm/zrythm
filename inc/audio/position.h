@@ -322,7 +322,7 @@ long
 position_to_ms (
   const Position * pos);
 
-__attribute__ ((const))
+PURE
 long
 position_ms_to_frames (
   long ms);

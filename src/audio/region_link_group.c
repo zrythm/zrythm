@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,8 @@
 #include "audio/region_link_group_manager.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 
 void
 region_link_group_init (

@@ -23,6 +23,7 @@
 #include "audio/region.h"
 #include "audio/velocity.h"
 #include "gui/widgets/velocity.h"
+#include "utils/objects.h"
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
@@ -35,8 +36,7 @@ velocity_new (
   MidiNote *    midi_note,
   const uint8_t vel)
 {
-  Velocity * self =
-    calloc (1, sizeof (Velocity));
+  Velocity * self = object_new (Velocity);
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -100,6 +100,7 @@ velocity_set_val (
   /* re-set the midi note value to set a note off
    * event */
   MidiNote * note = velocity_get_midi_note (self);
+  g_return_if_fail (IS_MIDI_NOTE (note));
   midi_note_set_val (note, note->val);
 }
 

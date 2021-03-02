@@ -177,7 +177,7 @@ copy_at_regions (
   dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
   dest->regions =
-    realloc (
+    g_realloc (
       dest->regions,
       dest->regions_size * sizeof (ZRegion *));
 
@@ -492,12 +492,11 @@ do_or_undo_create_or_delete (
                 "restoring custom connections "
                 "for plugin '%s'",
                 pl->descr->name);
-              int max_size = 20;
+              size_t max_size = 20;
               int num_ports = 0;
               Port ** ports =
-                calloc (
-                  (size_t) max_size,
-                  sizeof (Port *));
+                object_new_n (
+                  max_size, Port *);
               plugin_append_ports (
                 pl, &ports, &max_size, F_DYNAMIC,
                 &num_ports);
@@ -544,21 +543,17 @@ do_or_undo_create_or_delete (
                 "remembering custom connections "
                 "for plugin '%s'",
                 own_pl->descr->name);
-              int max_size = 20;
+              size_t max_size = 20;
               int num_ports = 0;
               Port ** ports =
-                calloc (
-                  (size_t) max_size,
-                  sizeof (Port *));
+                object_new_n (max_size, Port *);
               plugin_append_ports (
                 prj_pl, &ports, &max_size,
                 F_DYNAMIC, &num_ports);
               max_size = 20;
               int num_own_ports = 0;
               Port ** own_ports =
-                calloc (
-                  (size_t) max_size,
-                  sizeof (Port *));
+                object_new_n (max_size, Port *);
               plugin_append_ports (
                 own_pl, &own_ports, &max_size,
                 F_DYNAMIC, &num_own_ports);

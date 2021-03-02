@@ -142,7 +142,7 @@ typedef struct TracklistSelectionsAction
    * recreated on do/undo. */
   ChannelSend *         src_sends;
   int                   num_src_sends;
-  int                   src_sends_size;
+  size_t                src_sends_size;
 
   EditTracksActionType  edit_type;
 

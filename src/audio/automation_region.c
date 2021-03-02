@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -72,15 +73,13 @@ automation_region_new (
   int              at_idx,
   int              idx_inside_at)
 {
-  ZRegion * self =
-    calloc (1, sizeof (ZRegion));
+  ZRegion * self = object_new (ZRegion);
 
   self->id.type = REGION_TYPE_AUTOMATION;
 
   self->aps_size = 2;
   self->aps =
-    malloc (self->aps_size *
-            sizeof (AutomationPoint *));
+    object_new_n (self->aps_size, AutomationPoint);
 
   region_init (
     self, start_pos, end_pos, track_pos, at_idx,

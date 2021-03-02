@@ -41,10 +41,10 @@
  */
 
 #define CHORD_OBJECT_MAGIC 4181694
-#define IS_CHORD_OBJECT(tr) \
-  ((ChordObject *) tr && \
-   ((ChordObject *) tr)->magic == \
-     CHORD_OBJECT_MAGIC)
+#define IS_CHORD_OBJECT(x) \
+  (((ChordObject *) x)->magic == CHORD_OBJECT_MAGIC)
+#define IS_CHORD_OBJECT_AND_NONNULL(x) \
+  (x && IS_CHORD_OBJECT (x))
 
 #define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 

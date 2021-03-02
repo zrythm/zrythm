@@ -19,6 +19,7 @@
 
 #include "plugins/collection.h"
 #include "utils/arrays.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 
 void
@@ -33,9 +34,9 @@ plugin_collection_init_loaded (
     {
       self->descriptors_size = 1;
       self->descriptors =
-        calloc (
+        object_new_n (
           self->descriptors_size,
-          sizeof (PluginDescriptor *));
+          PluginDescriptor *);
     }
   for (int i = 0; i < self->num_descriptors; i++)
     {
@@ -57,9 +58,9 @@ plugin_collection_new (void)
   self->name = g_strdup ("");
   self->descriptors_size = 1;
   self->descriptors =
-    calloc (
+    object_new_n (
       self->descriptors_size,
-      sizeof (PluginDescriptor *));
+      PluginDescriptor *);
 
   return self;
 }
@@ -217,6 +218,7 @@ plugin_collection_free (
         plugin_descriptor_free,
         self->descriptors[i]);
     }
+  object_zero_and_free (self->descriptors);
 
   g_free_and_null (self->name);
   g_free_and_null (self->description);

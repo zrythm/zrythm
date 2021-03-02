@@ -20,6 +20,8 @@
 #ifndef __UTILS_OBJECTS_H__
 #define __UTILS_OBJECTS_H__
 
+#include <stddef.h>
+
 /**
  * @addtogroup utils
  *
@@ -30,7 +32,32 @@
  * Allocates memory for an object of type \ref type.
  */
 #define object_new(type) \
-  calloc (1, sizeof (type))
+  g_malloc0 (sizeof (type))
+
+/**
+ * Calloc equivalent.
+ */
+#define object_new_n_sizeof(n,sz) \
+  g_malloc0_n (n, sz)
+
+/**
+ * Calloc \ref n blocks for type \ref type.
+ */
+#define object_new_n(n,type) \
+  object_new_n_sizeof (n, sizeof (type))
+
+#define object_realloc_n_sizeof(obj,prev_sz,sz) \
+  realloc_zero (obj, prev_sz, sz)
+
+/**
+ * Reallocate memory for \ref obj.
+ *
+ * @param prev_n Previous number of blocks.
+ * @param n New number of blocks.
+ */
+#define object_realloc_n(obj,prev_n,n,type) \
+  object_realloc_n_sizeof ( \
+    obj, prev_n * sizeof (type), n * sizeof (type))
 
 /**
  * Zero's out the struct pointed to by \ref ptr.
@@ -40,15 +67,22 @@
 #define object_set_to_zero(ptr) \
  memset (ptr, 0, sizeof (*(ptr)))
 
+NONNULL
+void
+_object_zero_and_free (
+  void ** ptr,
+  size_t  sz);
+
 /**
  * Zero's out a struct pointed to by \ref ptr and
  * frees the object.
  */
 #define object_zero_and_free(ptr) \
-  if (ptr) { \
-    object_set_to_zero (ptr); \
-    free (ptr); \
-    ptr = NULL; };
+  _object_zero_and_free ( \
+    (void **) &(ptr), sizeof (*(ptr)))
+
+#define object_zero_and_free_if_nonnull(ptr) \
+  if (ptr) { object_zero_and_free (ptr); }
 
 /**
  * Frees memory, sets the pointer to NULL and

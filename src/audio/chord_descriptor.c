@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "audio/chord_descriptor.h"
+#include "utils/objects.h"
 
 /* see chord_desriptor.h */
 NOTE_LABELS;
@@ -148,7 +149,7 @@ chord_descriptor_new (
   int                    inversion)
 {
   ChordDescriptor * self =
-    calloc (1, sizeof (ChordDescriptor));
+    object_new (ChordDescriptor);
 
   self->root_note = root;
   self->has_bass = has_bass;

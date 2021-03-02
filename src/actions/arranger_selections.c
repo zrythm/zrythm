@@ -1097,6 +1097,7 @@ do_or_undo_duplicate_or_link (
       self->sel, &size);
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
+  g_return_val_if_fail (sel, -1);
 
   double ticks =
     _do ? self->ticks : - self->ticks;
@@ -1556,6 +1557,7 @@ do_or_undo_create_or_delete (
       self->sel, &size);
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
+  g_return_val_if_fail (sel, -1);
 
   if (!self->first_run || !create)
     {
@@ -1715,6 +1717,7 @@ do_or_undo_record (
       self->sel_after, &size_after);
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
+  g_return_val_if_fail (sel, -1);
 
   if (!self->first_run)
     {

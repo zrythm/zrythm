@@ -284,7 +284,7 @@ automation_arranger_widget_show_context_menu (
             }
 
           CurveAlgorithmInfo * info =
-            calloc (1, sizeof (CurveAlgorithmInfo));
+            object_new (CurveAlgorithmInfo);
           info->algo = (CurveAlgorithm) i;
           info->ap = ap;
           g_signal_connect (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "audio/port.h"
 #include "audio/rtaudio_device.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -89,8 +90,7 @@ rtaudio_device_new (
   unsigned int channel_idx,
   Port *       port)
 {
-  RtAudioDevice * self =
-    calloc (1, sizeof (RtAudioDevice));
+  RtAudioDevice * self = object_new (RtAudioDevice);
 
   self->is_input = is_input;
   self->id = device_id;
@@ -101,6 +101,7 @@ rtaudio_device_new (
   if (!self->handle)
     {
       g_warning ("Failed to create RtAudio handle");
+      free (self);
       return NULL;
     }
 

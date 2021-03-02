@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,8 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -68,7 +70,7 @@ track_lane_new (
   Track * track,
   int     pos)
 {
-  TrackLane * self = calloc (1, sizeof (TrackLane));
+  TrackLane * self = object_new (TrackLane);
 
   self->name = g_strdup_printf (_("Lane %d"), pos);
   self->pos = pos;
@@ -76,8 +78,7 @@ track_lane_new (
 
   self->regions_size = 1;
   self->regions =
-    malloc (self->regions_size *
-            sizeof (ZRegion *));
+    object_new_n (self->regions_size, ZRegion *);
 
   self->height = TRACK_DEF_HEIGHT;
 
@@ -195,16 +196,14 @@ TrackLane *
 track_lane_clone (
   TrackLane * lane)
 {
-  TrackLane * new_lane =
-    calloc (1, sizeof (TrackLane));
+  TrackLane * new_lane = object_new (TrackLane);
 
   new_lane->name =
     g_strdup (lane->name);
   new_lane->regions_size =
     (size_t) lane->num_regions;
   new_lane->regions =
-    malloc (new_lane->regions_size *
-            sizeof (ZRegion *));
+    object_new_n (new_lane->regions_size, ZRegion *);
   new_lane->height =
     lane->height;
   new_lane->pos = lane->pos;
@@ -215,7 +214,7 @@ track_lane_clone (
   ZRegion * region, * new_region;
   new_lane->num_regions = lane->num_regions;
   new_lane->regions =
-    realloc (
+    g_realloc (
       new_lane->regions,
       sizeof (ZRegion *) *
         (size_t) lane->num_regions);
@@ -268,7 +267,7 @@ track_lane_clear (
   TrackLane * self)
 {
   Track * track = track_lane_get_track (self);
-  g_return_if_fail (IS_TRACK (track));
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   for (int i = self->num_regions - 1; i >= 0; i--)
     {
@@ -338,6 +337,7 @@ track_lane_write_to_midi_file (
     mf, self->track_pos, MIDI_CHANNEL_1);
 
   Track * track = track_lane_get_track (self);
+  g_return_if_fail (track);
 
   /* add track name */
   midiTrackAddText (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,6 +27,7 @@
 #include "audio/true_peak_dsp.h"
 #include "project.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 /**
@@ -223,7 +224,7 @@ Meter *
 meter_new_for_port (
   Port * port)
 {
-  Meter * self = calloc (1, sizeof (Meter));
+  Meter * self = object_new (Meter);
 
   self->port = port;
 

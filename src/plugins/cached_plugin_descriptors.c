@@ -111,8 +111,7 @@ cached_plugin_descriptors_new (void)
         "not exist", path);
 return_new_instance:
       g_free (path);
-      return
-        calloc (1, sizeof (CachedPluginDescriptors));
+      return object_new (CachedPluginDescriptors);
     }
   char * yaml = NULL;
   g_file_get_contents (path, &yaml, NULL, &err);
@@ -274,7 +273,7 @@ cached_plugin_descriptors_get (
   const char *              abs_path)
 {
   PluginDescriptor ** descriptors =
-    calloc (1, sizeof (PluginDescriptor *));
+    object_new_n (1, PluginDescriptor *);
   int num_descriptors = 0;
 
   g_debug (
@@ -297,7 +296,7 @@ cached_plugin_descriptors_get (
             {
               num_descriptors++;
               descriptors =
-                realloc (
+                g_realloc (
                   descriptors,
                   (size_t) (num_descriptors + 1) *
                     sizeof (PluginDescriptor *));
@@ -340,7 +339,7 @@ cached_plugin_descriptors_blacklist (
   g_return_if_fail (abs_path && self);
 
   PluginDescriptor * new_descr =
-    calloc (1, sizeof (PluginDescriptor));
+    object_new (PluginDescriptor);
   new_descr->path = g_strdup (abs_path);
   GFile * file = g_file_new_for_path (abs_path);
   new_descr->ghash = g_file_hash (file);

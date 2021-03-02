@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -68,6 +68,35 @@
  * Doubles the size of the array, for dynamically
  * allocated arrays.
  *
+ * If \ref max_sz is zero, this will reallocate the
+ * current array to \ref count * 2.
+ *
+ * If \ref max_sz is equal to \ref count, this
+ * will reallocate the current array to \ref
+ * count * 2 and also memset the new memory to 0.
+ *
+ * Calling this function with other values is
+ * invalid.
+ *
+ * @param arr The array.
+ * @param count The current number of elements.
+ * @param max_sz The current max array size. The
+ *   new size will be written to it.
+ * @param el_sz The size of one element in the
+ *   array.
+ */
+NONNULL
+void
+_array_double_size_if_full (
+  void **  arr_ptr,
+  size_t   count,
+  size_t * max_sz,
+  size_t   el_size);
+
+/**
+ * Doubles the size of the array, for dynamically
+ * allocated arrays.
+ *
  * @param array The array.
  * @param count The current number of elements.
  * @param size The current max array size.
@@ -75,16 +104,9 @@
  */
 #define array_double_size_if_full( \
   array,count,size,type) \
-  if ((size_t) (count) >= (size_t) (size)) \
-    { \
-      (size) = \
-        (size_t) (count) == 0 ? \
-          1 : (size_t) (count) * 2; \
-      (array) = \
-        realloc ( \
-          (array), \
-          sizeof (type) * (size_t) (size)); \
-    }
+  _array_double_size_if_full ( \
+    (void **) &array, (size_t) (count), \
+    &size, sizeof (type))
 
 /**
  * Deletes element from array and rearranges other

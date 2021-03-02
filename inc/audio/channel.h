@@ -56,8 +56,10 @@ typedef struct ExtPort ExtPort;
 
 /** Magic number to identify channels. */
 #define CHANNEL_MAGIC 8431676
-#define IS_CHANNEL(tr) \
-  ((tr) && (tr)->magic == CHANNEL_MAGIC)
+#define IS_CHANNEL(x) \
+  (((Channel *) x)->magic == CHANNEL_MAGIC)
+#define IS_CHANNEL_AND_NONNULL(x) \
+  (x && IS_CHANNEL (x))
 
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
@@ -296,6 +298,7 @@ channel_schema =
     Channel, channel_fields_schema),
 };
 
+NONNULL
 void
 channel_init_loaded (
   Channel * channel,
@@ -311,6 +314,7 @@ channel_init_loaded (
  * @param g_frames_start Global start frames.
  * @param nframes Number of frames to process.
  */
+NONNULL
 void
 channel_handle_recording (
   Channel *       self,
@@ -332,12 +336,18 @@ channel_append_all_ports (
   Port ***  ports,
   int *     size,
   bool      is_dynamic,
-  int *     max_size,
+  size_t *  max_size,
   bool      include_plugins);
+
+NONNULL
+void
+channel_set_magic (
+  Channel * self);
 
 /**
  * Exposes the channel's ports to the backend.
  */
+NONNULL
 void
 channel_expose_ports_to_backend (
   Channel * ch);
@@ -347,17 +357,21 @@ channel_expose_ports_to_backend (
  *
  * This should only be called on new tracks.
  */
+NONNULL
 void
 channel_connect (
   Channel * ch);
 
+NONNULL
 void
 channel_set_phase (void * channel, float phase);
 
+NONNULL
 float
 channel_get_phase (void * channel);
 
 
+NONNULL
 void
 channel_set_balance_control (
   void * _channel, float pan);
@@ -365,10 +379,12 @@ channel_set_balance_control (
 /**
  * Adds to (or subtracts from) the pan.
  */
+NONNULL
 void
 channel_add_balance_control (
   void * _channel, float pan);
 
+NONNULL
 float
 channel_get_balance_control (void * _channel);
 
@@ -435,6 +451,7 @@ channel_set_current_r_db (
 /**
  * Sets fader to 0.0.
  */
+NONNULL
 void
 channel_reset_fader (Channel * channel);
 
@@ -444,6 +461,7 @@ channel_reset_fader (Channel * channel);
  * To be called before the main cycle each time on
  * all channels.
  */
+NONNULL
 void
 channel_prepare_process (Channel * channel);
 
@@ -451,6 +469,7 @@ channel_prepare_process (Channel * channel);
  * Creates a channel of the given type with the
  * given label.
  */
+NONNULL
 Channel *
 channel_new (
   Track * track);
@@ -463,6 +482,7 @@ channel_new (
  * Normally, the channel will call the process func on each of its plugins
  * in order.
  */
+NONNULL
 void
 channel_process (Channel * channel);
 
@@ -488,6 +508,7 @@ channel_process (Channel * channel);
  *
  * @return 1 if plugin added, 0 if not.
  */
+NONNULL
 int
 channel_add_plugin (
   Channel * channel,
@@ -500,10 +521,12 @@ channel_add_plugin (
   bool      recalc_graph,
   bool      pub_events);
 
+NONNULL
 Track *
 channel_get_track (
   Channel * self);
 
+NONNULL
 Track *
 channel_get_output_track (
   Channel * self);
@@ -512,6 +535,7 @@ channel_get_output_track (
  * Called when the input has changed for Midi,
  * Instrument or Audio tracks.
  */
+NONNULL
 void
 channel_reconnect_ext_input_ports (
   Channel * ch);
@@ -520,6 +544,7 @@ channel_reconnect_ext_input_ports (
  * Connects or disconnects the MIDI editor key press port to the channel's
  * first plugin
  */
+NONNULL
 void
 channel_reattach_midi_editor_manual_press_port (
   Channel * channel,
@@ -530,6 +555,7 @@ channel_reattach_midi_editor_manual_press_port (
  * Convenience function to get the automation track
  * of the given type for the channel.
  */
+NONNULL
 AutomationTrack *
 channel_get_automation_track (
   Channel *       channel,
@@ -548,6 +574,7 @@ channel_get_automation_track (
  *   deleted at this time.
  * @param recalc_graph Recalculate mixer graph.
  */
+NONNULL
 void
 channel_remove_plugin (
   Channel *      channel,
@@ -562,11 +589,13 @@ channel_remove_plugin (
  * Updates the track position in the channel and
  * all related ports and identifiers.
  */
+NONNULL
 void
 channel_update_track_pos (
   Channel * self,
   int       pos);
 
+NONNULL
 int
 channel_get_plugins (
   Channel * self,
@@ -575,6 +604,7 @@ channel_get_plugins (
 /**
  * Gets whether mono compatibility is enabled.
  */
+NONNULL
 bool
 channel_get_mono_compat_enabled (
   Channel * self);
@@ -582,6 +612,7 @@ channel_get_mono_compat_enabled (
 /**
  * Sets whether mono compatibility is enabled.
  */
+NONNULL
 void
 channel_set_mono_compat_enabled (
   Channel * self,
@@ -598,6 +629,7 @@ channel_set_mono_compat_enabled (
  * @bool src_is_project Whether \ref ch is a project
  *   channel.
  */
+NONNULL
 Channel *
 channel_clone (
   Channel * ch,
@@ -617,6 +649,7 @@ channel_clone (
  *   Channel. Useful when deleting the channel.
  * @param recalc_graph Recalculate mixer graph.
  */
+NONNULL
 void
 channel_disconnect (
   Channel * channel,
@@ -629,6 +662,7 @@ channel_disconnect (
  * themselves in normal circumstances. Use
  * track_free() to free them.
  */
+NONNULL
 void
 channel_free (Channel * channel);
 

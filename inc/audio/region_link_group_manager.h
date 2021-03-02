@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,7 +46,7 @@ typedef struct RegionLinkGroupManager
   /** Region link groups. */
   RegionLinkGroup *  groups;
   int                num_groups;
-  int                groups_size;
+  size_t             groups_size;
 } RegionLinkGroupManager;
 
 static const cyaml_schema_field_t

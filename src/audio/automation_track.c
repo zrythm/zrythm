@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
@@ -63,12 +64,12 @@ automation_track_new (
   Port * port)
 {
   AutomationTrack * self =
-    calloc (1, sizeof (AutomationTrack));
+    object_new (AutomationTrack);
 
   self->regions_size = 1;
   self->regions =
-    malloc (self->regions_size *
-            sizeof (ZRegion *));
+    object_new_n (
+      self->regions_size, ZRegion *);
   self->automation_mode = AUTOMATION_MODE_READ;
 
   self->height = TRACK_DEF_HEIGHT;
@@ -154,7 +155,7 @@ automation_track_insert_region (
   ZRegion *         region,
   int               idx)
 {
-  g_return_if_fail (self && idx >= 0);
+  g_return_if_fail (idx >= 0);
   g_return_if_fail (
     region->name &&
     region->id.type == REGION_TYPE_AUTOMATION);
@@ -388,7 +389,6 @@ automation_track_should_read_automation (
   AutomationTrack * at,
   gint64            cur_time)
 {
-  g_return_val_if_fail (at, false);
   if (at->automation_mode == AUTOMATION_MODE_OFF)
     return false;
 
@@ -501,7 +501,8 @@ automation_track_remove_region (
 }
 
 /**
- * Removes all arranger objects recursively.
+ * Removes and frees all arranger objects
+ * recursively.
  */
 void
 automation_track_clear (
@@ -513,15 +514,15 @@ automation_track_clear (
       Track * track =
         automation_track_get_track (self);
       track_remove_region (
-        track, region, 0, 1);
+        track, region, F_NO_PUBLISH_EVENTS, F_FREE);
     }
+  self->num_regions = 0;
 }
 
 Track *
 automation_track_get_track (
   AutomationTrack * self)
 {
-  g_return_val_if_fail (self, NULL);
   if (!TRACKLIST->swapping_tracks)
     {
       g_return_val_if_fail (
@@ -584,7 +585,6 @@ automation_track_get_val_at_pos (
   Position *        pos,
   bool              normalized)
 {
-  g_return_val_if_fail (self, 0.f);
   AutomationPoint * ap =
     automation_track_get_ap_before_pos (
       self, pos);
@@ -733,13 +733,12 @@ automation_track_clone (
   AutomationTrack * src)
 {
   AutomationTrack * dest =
-    calloc (1, sizeof (AutomationTrack));
+    object_new (AutomationTrack);
 
   dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
   dest->regions =
-    malloc (
-      dest->regions_size * sizeof (ZRegion *));
+    object_new_n (dest->regions_size, ZRegion *);
   dest->visible = src->visible;
   dest->created = src->created;
   dest->index = src->index;
@@ -769,5 +768,13 @@ automation_track_clone (
 void
 automation_track_free (AutomationTrack * self)
 {
-  free (self);
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->regions[i]);
+    }
+  object_zero_and_free (self->regions);
+
+  object_zero_and_free (self);
 }

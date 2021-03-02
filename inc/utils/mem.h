@@ -28,6 +28,9 @@
 
 #include <stddef.h>
 
+/**
+ * Reallocate and zero out newly added memory.
+ */
 void *
 realloc_zero (
   void * pBuffer,

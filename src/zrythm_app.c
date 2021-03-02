@@ -125,6 +125,8 @@ G_DEFINE_TYPE (
   ZrythmApp, zrythm_app,
   GTK_TYPE_APPLICATION);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wanalyzer-unsafe-call-within-signal-handler"
 /** SIGSEGV handler. */
 static void
 segv_handler (int sig)
@@ -161,6 +163,7 @@ segv_handler (int sig)
 
   exit (EXIT_FAILURE);
 }
+#pragma GCC diagnostic pop
 
 /*static char * project_file = NULL;*/
 

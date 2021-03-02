@@ -1,24 +1,45 @@
 /*
-  Copyright 2011-2014 David Robillard <http://drobilla.net>
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted, provided that the above
-  copyright notice and this permission notice appear in all copies.
-
-  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright 2011-2014 David Robillard <http://drobilla.net>
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "utils/objects.h"
 #include "utils/symap.h"
 
 #include <gtk/gtk.h>
@@ -50,22 +71,24 @@ symap_new(void)
 void
 symap_free(Symap* map)
 {
-	for (uint32_t i = 0; i < map->size; ++i) {
-		free(map->symbols[i]);
-	}
+  for (uint32_t i = 0; i < map->size; ++i)
+    {
+      object_zero_and_free_if_nonnull (
+        map->symbols[i]);
+    }
 
-	free(map->symbols);
-	free(map->index);
-	free(map);
+  free(map->symbols);
+  free(map->index);
+  free(map);
 }
 
 static char*
 symap_strdup(const char* str)
 {
-	const size_t len  = strlen(str);
-	char*        copy = (char*)malloc(len + 1);
-	memcpy(copy, str, len + 1);
-	return copy;
+  const size_t len  = strlen(str);
+  char*        copy = (char*)g_malloc(len + 1);
+  memcpy(copy, str, len + 1);
+  return copy;
 }
 
 /**

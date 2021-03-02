@@ -115,7 +115,11 @@ test_get_files_in_dir (void)
 
   files =
     io_get_files_in_dir_ending_in (
-      "/tmp", F_NO_RECURSIVE, ".wav");
+      TESTS_SRCDIR, F_NO_RECURSIVE, ".wav");
+  g_assert_nonnull (files);
+  g_strfreev (files);
+
+  files = NULL;
 
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
@@ -124,8 +128,7 @@ test_get_files_in_dir (void)
     io_get_files_in_dir_ending_in (
       "/non-existent", F_RECURSIVE, ".wav");
   g_test_assert_expected_messages ();
-  g_assert_cmpuint (
-    array_get_count (files, sizeof (char *)), ==, 0);
+  g_assert_null (files);
 #endif
 
   test_helper_zrythm_cleanup ();

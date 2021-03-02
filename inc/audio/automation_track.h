@@ -195,6 +195,7 @@ static const cyaml_schema_value_t
     automation_track_fields_schema),
 };
 
+NONNULL
 void
 automation_track_init_loaded (
   AutomationTrack * self);
@@ -203,6 +204,7 @@ automation_track_init_loaded (
  * Creates an automation track for the given
  * Port.
  */
+NONNULL
 AutomationTrack *
 automation_track_new (
   Port * port);
@@ -231,6 +233,7 @@ automation_record_mode_get_localized (
  * @param basic_search If true, only basic port
  *   identifier members are checked.
  */
+NONNULL
 AutomationTrack *
 automation_track_find_from_port_id (
   PortIdentifier * id,
@@ -249,6 +252,7 @@ automation_track_find_from_port (
   Track * track,
   bool    basic_search);
 
+NONNULL
 static inline void
 automation_track_swap_record_mode (
   AutomationTrack * self)
@@ -258,6 +262,7 @@ automation_track_swap_record_mode (
       NUM_AUTOMATION_RECORD_MODES;
 }
 
+NONNULL
 AutomationTracklist *
 automation_track_get_automation_tracklist (
   AutomationTrack * self);
@@ -270,6 +275,7 @@ automation_track_get_automation_tracklist (
  *   g_get_monotonic_time() passed here to ensure
  *   the same timestamp is used in sequential calls.
  */
+NONNULL
 bool
 automation_track_should_read_automation (
   AutomationTrack * at,
@@ -297,6 +303,7 @@ automation_track_should_read_automation (
  *   recording inside a region regardless of whether
  *   we should create/edit automation points or not.
  */
+NONNULL
 bool
 automation_track_should_be_recording (
   AutomationTrack * at,
@@ -309,6 +316,7 @@ automation_track_should_be_recording (
  * @note This must not be used directly. Use
  *   track_add_region() instead.
  */
+NONNULL
 void
 automation_track_add_region (
   AutomationTrack * self,
@@ -321,6 +329,7 @@ automation_track_add_region (
  * @note This must not be used directly. Use
  *   track_insert_region() instead.
  */
+NONNULL
 void
 automation_track_insert_region (
   AutomationTrack * self,
@@ -339,6 +348,7 @@ automation_track_insert_region (
  * Updates the frames of each position in each child
  * of the automation track recursively.
  */
+NONNULL
 void
 automation_track_update_frames (
   AutomationTrack * self);
@@ -347,6 +357,7 @@ automation_track_update_frames (
  * Sets the index of the AutomationTrack in the
  * AutomationTracklist.
  */
+NONNULL
 void
 automation_track_set_index (
   AutomationTrack * self,
@@ -355,23 +366,20 @@ automation_track_set_index (
 /**
  * Clones the AutomationTrack.
  */
+NONNULL
 AutomationTrack *
 automation_track_clone (
   AutomationTrack * src);
 
+NONNULL
 Track *
 automation_track_get_track (
   AutomationTrack * self);
 
 /**
- * Frees the automation track.
- */
-void
-automation_track_free (AutomationTrack * at);
-
-/**
  * Returns the automation point before the pos.
  */
+NONNULL
 AutomationPoint *
 automation_track_get_ap_before_pos (
   const AutomationTrack * self,
@@ -381,6 +389,7 @@ automation_track_get_ap_before_pos (
  * Returns the ZRegion that surrounds the
  * given Position, if any.
  */
+NONNULL
 ZRegion *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
@@ -389,6 +398,7 @@ automation_track_get_region_before_pos (
 /**
  * Unselects all arranger objects.
  */
+NONNULL
 void
 automation_track_unselect_all (
   AutomationTrack * self);
@@ -396,14 +406,17 @@ automation_track_unselect_all (
 /**
  * Removes a region from the automation track.
  */
+NONNULL
 void
 automation_track_remove_region (
   AutomationTrack * self,
   ZRegion *         region);
 
 /**
- * Removes all objects recursively.
+ * Removes and frees all arranger objects
+ * recursively.
  */
+NONNULL
 void
 automation_track_clear (
   AutomationTrack * self);
@@ -419,6 +432,7 @@ automation_track_clear (
  * @param normalized Whether to return the value
  *   normalized.
  */
+NONNULL
 float
 automation_track_get_val_at_pos (
   AutomationTrack * at,
@@ -429,11 +443,13 @@ automation_track_get_val_at_pos (
  * Returns the y pixels from the value based on the
  * allocation of the automation track.
  */
+NONNULL
 int
 automation_track_get_y_px_from_normalized_val (
   AutomationTrack * self,
   float             normalized_val);
 
+NONNULL
 Port *
 automation_track_get_port (
   AutomationTrack * self);
@@ -447,8 +463,16 @@ automation_track_get_port (
 /**
  * Gets the last ZRegion in the AutomationTrack.
  */
+NONNULL
 ZRegion *
 automation_track_get_last_region (
   AutomationTrack * self);
+
+/**
+ * Frees the automation track.
+ */
+NONNULL
+void
+automation_track_free (AutomationTrack * at);
 
 #endif // __AUDIO_AUTOMATION_TRACK_H__

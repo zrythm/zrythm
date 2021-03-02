@@ -32,7 +32,7 @@ if get_option ('tests')
   test_env.set (
     'GUILE_LOAD_PATH', '$GUILE_LOAD_PATH:' + meson.current_build_dir ())
   test_env.set ('G_DEBUG', 'gc-friendly')
-  test_env.set ('MALLOC_CHECK', '2')
+  test_env.set ('MALLOC_CHECK_', '3')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
   test_env.set ('VST3_PATH', '/tmp/zrythm_vst3')
   test_env.set ('LADSPA_PATH', '/tmp/zrythm_ladspa')
@@ -152,6 +152,7 @@ if get_option ('tests')
     'audio/automation_track': { parallel: true },
     'audio/curve': { parallel: true },
     'audio/fader': { parallel: true },
+    'audio/marker_track': { parallel: true },
     'audio/metronome': { parallel: true },
     'audio/midi': { parallel: true },
     'audio/midi_mapping': { parallel: true },

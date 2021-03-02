@@ -58,6 +58,7 @@
 #include "utils/dialogs.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
@@ -69,6 +70,7 @@
 /**
  * Connect ports in the case of !prev && !next.
  */
+NONNULL
 static void
 connect_no_prev_no_next (
   Channel * ch,
@@ -103,6 +105,7 @@ connect_no_prev_no_next (
 /**
  * Connect ports in the case of !prev && next.
  */
+NONNULL
 static void
 connect_no_prev_next (
   Channel * ch,
@@ -139,6 +142,7 @@ connect_no_prev_next (
 /**
  * Connect ports in the case of prev && !next.
  */
+NONNULL
 static void
 connect_prev_no_next (
   Channel * ch,
@@ -174,6 +178,7 @@ connect_prev_no_next (
 /**
  * Connect ports in the case of prev && next.
  */
+NONNULL
 static void
 connect_prev_next (
   Channel * ch,
@@ -211,6 +216,7 @@ connect_prev_next (
 /**
  * Disconnect ports in the case of !prev && !next.
  */
+NONNULL
 static void
 disconnect_no_prev_no_next (
   Channel * ch,
@@ -246,6 +252,7 @@ disconnect_no_prev_no_next (
 /**
  * Disconnect ports in the case of !prev && next.
  */
+NONNULL
 static void
 disconnect_no_prev_next (
   Channel * ch,
@@ -283,6 +290,7 @@ disconnect_no_prev_next (
 /**
  * Connect ports in the case of prev && !next.
  */
+NONNULL
 static void
 disconnect_prev_no_next (
   Channel * ch,
@@ -319,6 +327,7 @@ disconnect_prev_no_next (
 /**
  * Connect ports in the case of prev && next.
  */
+NONNULL
 static void
 disconnect_prev_next (
   Channel * ch,
@@ -488,6 +497,21 @@ channel_init_loaded (
       pl->id.slot = 0;
       pl->id.slot_type = PLUGIN_SLOT_INSTRUMENT;
       plugin_init_loaded (pl, project);
+    }
+}
+
+void
+channel_set_magic (
+  Channel * self)
+{
+  Plugin * plugins[120];
+  int num_plugins =
+    channel_get_plugins (self, plugins);
+
+  for (int i = 0; i < num_plugins; i++)
+    {
+      Plugin * pl = plugins[i];
+      pl->magic = PLUGIN_MAGIC;
     }
 }
 
@@ -1045,8 +1069,7 @@ channel_get_track (
   else
     {
       g_return_val_if_fail (
-        self &&
-          self->track_pos < TRACKLIST->num_tracks,
+        self->track_pos < TRACKLIST->num_tracks,
         NULL);
       Track * track =
         TRACKLIST->tracks[self->track_pos];
@@ -1065,7 +1088,6 @@ channel_get_output_track (
     return NULL;
 
   g_return_val_if_fail (
-    self &&
     (TRACKLIST->swapping_tracks ||
      self->output_pos < TRACKLIST->num_tracks),
     NULL);
@@ -1093,7 +1115,7 @@ channel_append_all_ports (
   Port ***  ports,
   int *     size,
   bool      is_dynamic,
-  int *     max_size,
+  size_t *  max_size,
   bool      include_plugins)
 {
   g_return_if_fail (ch->track);
@@ -1104,7 +1126,7 @@ channel_append_all_ports (
       array_double_size_if_full ( \
         *ports, (*size), (*max_size), Port *); \
     } \
-  else if (*size == *max_size) \
+  else if ((size_t) *size == *max_size) \
     { \
       g_return_if_reached (); \
     } \
@@ -1273,8 +1295,6 @@ Channel *
 channel_new (
   Track *     track)
 {
-  g_return_val_if_fail (track, NULL);
-
   Channel * self = object_new (Channel);
 
   self->magic = CHANNEL_MAGIC;
@@ -1855,17 +1875,25 @@ channel_add_plugin (
    * ------------------------------------------ */
 
   if (!prev_pl && !next_pl)
-    connect_no_prev_no_next (
-      self, plugin);
+    {
+      connect_no_prev_no_next (
+        self, plugin);
+    }
   else if (!prev_pl && next_pl)
-    connect_no_prev_next (
-      self, plugin, next_pl);
+    {
+      connect_no_prev_next (
+        self, plugin, next_pl);
+    }
   else if (prev_pl && !next_pl)
-    connect_prev_no_next (
-      self, prev_pl, plugin);
+    {
+      connect_prev_no_next (
+        self, prev_pl, plugin);
+    }
   else if (prev_pl && next_pl)
-    connect_prev_next (
-      self, prev_pl, plugin, next_pl);
+    {
+      connect_prev_next (
+        self, prev_pl, plugin, next_pl);
+    }
 
   track->active = prev_active;
 
@@ -2031,8 +2059,6 @@ channel_clone (
   Track *   track,
   bool      src_is_project)
 {
-  g_return_val_if_fail (track, NULL);
-
   Channel * clone = channel_new (track);
 
   /* copy plugins */
@@ -2199,8 +2225,6 @@ channel_disconnect (
 void
 channel_free (Channel * self)
 {
-  g_return_if_fail (self);
-
   object_free_w_func_and_null (
     fader_free, self->prefader);
   object_free_w_func_and_null (

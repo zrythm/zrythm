@@ -226,7 +226,7 @@ setup_treeview (
       GTK_TREE_VIEW (self->treeview));
 
   ChannelSendTarget * target =
-    calloc (1, sizeof (ChannelSendTarget));
+    object_new (ChannelSendTarget);
   target->type = TARGET_TYPE_NONE;
   GtkTreeIter iter;
   gtk_list_store_append (list_store, &iter);
@@ -257,8 +257,7 @@ setup_treeview (
       g_message ("adding %s", target_track->name);
 
       /* create target */
-      target =
-        calloc (1, sizeof (ChannelSendTarget));
+      target = object_new (ChannelSendTarget);
       target->type = TARGET_TYPE_TRACK;
       target->track_pos = i;
 

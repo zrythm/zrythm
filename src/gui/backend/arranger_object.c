@@ -1649,7 +1649,8 @@ arranger_object_get_track (
       break;
     }
 
-  g_return_val_if_fail (IS_TRACK (track), NULL);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), NULL);
 
   return track;
 }
@@ -2400,6 +2401,8 @@ arranger_object_split (
   ArrangerObject ** r2,
   bool              is_project)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (self));
+
   /* create the new objects */
   *r1 =
     arranger_object_clone (
@@ -2785,12 +2788,16 @@ arranger_object_set_name_with_action (
   ArrangerObject * clone_obj =
     arranger_object_clone (
       self, ARRANGER_OBJECT_CLONE_COPY_MAIN);
+  g_return_if_fail (
+    IS_ARRANGER_OBJECT_AND_NONNULL (clone_obj));
 
   /* prepare the before/after selections to
    * create the undoable action */
   ArrangerSelections * before =
     arranger_selections_clone (
       (ArrangerSelections *) TL_SELECTIONS);
+  g_return_if_fail (
+    IS_ARRANGER_SELECTIONS_AND_NONNULL (before));
   arranger_selections_clear (
     before, F_FREE, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
@@ -2892,6 +2899,7 @@ arranger_object_add_to_project (
           (AutomationPoint *) obj;
 
         /* add it to the region */
+        g_return_if_fail (region);
         automation_region_add_ap (
           region, ap, fire_events);
       }
@@ -2902,6 +2910,7 @@ arranger_object_add_to_project (
           (ChordObject *) obj;
 
         /* add it to the region */
+        g_return_if_fail (region);
         chord_region_add_chord_object (
           region, chord, fire_events);
       }
@@ -2912,6 +2921,7 @@ arranger_object_add_to_project (
           (MidiNote *) obj;
 
         /* add it to the region */
+        g_return_if_fail (region);
         midi_region_add_midi_note (
           region, mn, fire_events);
       }
@@ -3002,7 +3012,8 @@ arranger_object_insert_to_project (
   if (arranger_object_owned_by_region (obj))
     {
       region = region_find (&obj->region_id);
-      g_return_if_fail (region);
+      g_return_if_fail (
+        IS_REGION_AND_NONNULL (region));
     }
 
   switch (obj->type)
@@ -3013,6 +3024,8 @@ arranger_object_insert_to_project (
           (AutomationPoint *) obj;
 
         /* add it to the region */
+        g_return_if_fail (
+          IS_REGION_AND_NONNULL (region));
         automation_region_add_ap (
           region, ap, F_NO_PUBLISH_EVENTS);
       }
@@ -3023,6 +3036,8 @@ arranger_object_insert_to_project (
           (ChordObject *) obj;
 
         /* add it to the region */
+        g_return_if_fail (
+          IS_REGION_AND_NONNULL (region));
         chord_region_add_chord_object (
           region, chord, F_NO_PUBLISH_EVENTS);
       }
@@ -3033,6 +3048,8 @@ arranger_object_insert_to_project (
           (MidiNote *) obj;
 
         /* add it to the region */
+        g_return_if_fail (
+          IS_REGION_AND_NONNULL (region));
         midi_region_insert_midi_note (
           region, mn, mn->pos, F_PUBLISH_EVENTS);
       }
@@ -3124,6 +3141,8 @@ arranger_object_remove_from_project (
           (AutomationPoint *) obj;
         ZRegion * region =
           arranger_object_get_region (obj);
+        g_return_if_fail (
+          IS_REGION_AND_NONNULL (region));
         automation_region_remove_ap (
           region, ap, F_FREE);
       }
@@ -3134,6 +3153,8 @@ arranger_object_remove_from_project (
           (ChordObject *) obj;
         ZRegion * region =
           arranger_object_get_region (obj);
+        g_return_if_fail (
+          IS_REGION_AND_NONNULL (region));
         chord_region_remove_chord_object (
           region, chord, F_FREE,
           F_NO_PUBLISH_EVENTS);
@@ -3143,9 +3164,12 @@ arranger_object_remove_from_project (
       {
         ZRegion * r =
           (ZRegion *) obj;
+        Track * track =
+          arranger_object_get_track (obj);
+        g_return_if_fail (
+          IS_TRACK_AND_NONNULL (track));
         track_remove_region (
-          arranger_object_get_track (obj),
-          r, F_PUBLISH_EVENTS, F_FREE);
+          track, r, F_PUBLISH_EVENTS, F_FREE);
       }
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:

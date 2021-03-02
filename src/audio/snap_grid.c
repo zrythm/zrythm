@@ -24,6 +24,8 @@
 #include "settings/settings.h"
 #include "utils/algorithms.h"
 #include "utils/arrays.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
@@ -276,8 +278,7 @@ snap_grid_init (
   self->snap_to_grid = true;
   self->length_type = NOTE_LENGTH_LINK;
 
-  self->snap_points =
-    calloc (1, sizeof (Position));
+  self->snap_points = object_new_n (1, Position);
   self->snap_points_size = 1;
 }
 

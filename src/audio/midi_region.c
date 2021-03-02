@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -63,6 +63,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
@@ -180,7 +181,7 @@ midi_region_insert_midi_note (
 {
   array_double_size_if_full (
     self->midi_notes, self->num_midi_notes,
-    self->midi_notes_size, MidiNote *)
+    self->midi_notes_size, MidiNote *);
   for (int i = self->num_midi_notes;
        i > idx; i--)
     {

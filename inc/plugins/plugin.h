@@ -51,8 +51,10 @@ typedef struct _ModulatorWidget ModulatorWidget;
  */
 
 #define PLUGIN_MAGIC 43198683
-#define IS_PLUGIN(tr) \
-  (tr && tr->magic == PLUGIN_MAGIC)
+#define IS_PLUGIN(x) \
+  (((Plugin *) x)->magic == PLUGIN_MAGIC)
+#define IS_PLUGIN_AND_NONNULL(x) \
+  (x && IS_PLUGIN (x))
 
 /**
  * Plugin UI refresh rate limits.
@@ -271,6 +273,7 @@ static const cyaml_schema_value_t
     Plugin, plugin_fields_schema),
 };
 
+NONNULL
 void
 plugin_init_loaded (
   Plugin * self,
@@ -279,6 +282,7 @@ plugin_init_loaded (
 /**
  * Adds an AutomationTrack to the Plugin.
  */
+NONNULL
 void
 plugin_add_automation_track (
   Plugin * self,
@@ -287,6 +291,7 @@ plugin_add_automation_track (
 /**
  * Adds an in port to the plugin's list.
  */
+NONNULL
 void
 plugin_add_in_port (
   Plugin * pl,
@@ -295,6 +300,7 @@ plugin_add_in_port (
 /**
  * Adds an out port to the plugin's list.
  */
+NONNULL
 void
 plugin_add_out_port (
   Plugin * pl,
@@ -310,6 +316,7 @@ plugin_add_out_port (
  * @param slot The expected slot the plugin will
  *   be in.
  */
+NONNULL
 Plugin *
 plugin_new_from_descr (
   PluginDescriptor * descr,
@@ -329,6 +336,7 @@ plugin_new_dummy (
 /**
  * Sets the UI refresh rate on the Plugin.
  */
+NONNULL
 void
 plugin_set_ui_refresh_rate (
   Plugin * self);
@@ -336,6 +344,7 @@ plugin_set_ui_refresh_rate (
 /**
  * Gets the enable/disable port for this plugin.
  */
+NONNULL
 Port *
 plugin_get_enabled_port (
   Plugin * self);
@@ -343,6 +352,7 @@ plugin_get_enabled_port (
 /**
  * Verifies that the plugin identifiers are valid.
  */
+NONNULL
 bool
 plugin_verify_identifiers (
   Plugin * self);
@@ -356,6 +366,7 @@ plugin_verify_identifiers (
  *
  * @param free_ats Also free the ats.
  */
+NONNULL
 void
 plugin_remove_ats_from_automation_tracklist (
   Plugin * pl,
@@ -368,6 +379,7 @@ plugin_remove_ats_from_automation_tracklist (
  * @bool src_is_project Whether \ref pl is a project
  *   plugin.
  */
+NONNULL
 Plugin *
 plugin_clone (
   Plugin * pl,
@@ -379,6 +391,7 @@ plugin_get_full_port_group_designation (
   const char * port_group,
   char *       buf);
 
+NONNULL
 Port *
 plugin_get_port_in_group (
   Plugin *     self,
@@ -390,6 +403,7 @@ plugin_get_port_in_group (
  * (eg, if this is left, find right and vice
  * versa).
  */
+NONNULL
 Port *
 plugin_get_port_in_same_group (
   Plugin * self,
@@ -401,6 +415,7 @@ plugin_get_port_in_same_group (
  * @param activate True to activate, false to
  *   deactivate.
  */
+NONNULL
 int
 plugin_activate (
   Plugin * pl,
@@ -413,6 +428,7 @@ plugin_activate (
  * If a plugin already exists, it deletes it and
  * replaces it.
  */
+NONNULL
 void
 plugin_move (
   Plugin *       pl,
@@ -425,6 +441,7 @@ plugin_move (
  * Sets the channel and slot on the plugin and
  * its ports.
  */
+NONNULL
 void
 plugin_set_track_and_slot (
   Plugin *       pl,
@@ -436,6 +453,7 @@ plugin_set_track_and_slot (
  * Moves the Plugin's automation from one Channel
  * to another.
  */
+NONNULL
 void
 plugin_move_automation (
   Plugin *       pl,
@@ -444,6 +462,7 @@ plugin_move_automation (
   PluginSlotType new_slot_type,
   int            new_slot);
 
+NONNULL
 void
 plugin_set_is_project (
   Plugin * self,
@@ -453,7 +472,7 @@ void
 plugin_append_ports (
   Plugin *  pl,
   Port ***  ports,
-  int *     max_size,
+  size_t *  max_size,
   bool      is_dynamic,
   int *     size);
 
@@ -464,6 +483,7 @@ plugin_append_ports (
  * @param inputs Expose/unexpose inputs.
  * @param outputs Expose/unexpose outputs.
  */
+NONNULL
 void
 plugin_expose_ports (
   Plugin * pl,
@@ -476,6 +496,7 @@ plugin_expose_ports (
  *
  * Only works for LV2 plugins.
  */
+NONNULL
 Port *
 plugin_get_port_by_symbol (
   Plugin *     pl,
@@ -484,6 +505,7 @@ plugin_get_port_by_symbol (
 /**
  * Returns the escaped name of the plugin.
  */
+NONNULL
 char *
 plugin_get_escaped_name (
   Plugin * pl);
@@ -491,6 +513,7 @@ plugin_get_escaped_name (
 /**
  * Returns the state dir as an absolute path.
  */
+NONNULL
 char *
 plugin_get_abs_state_dir (
   Plugin * self,
@@ -499,19 +522,23 @@ plugin_get_abs_state_dir (
 /**
  * Ensures the state dir exists or creates it.
  */
+NONNULL
 void
 plugin_ensure_state_dir (
   Plugin * self,
   bool     is_backup);
 
+NONNULL
 Channel *
 plugin_get_channel (
   Plugin * self);
 
+NONNULL
 Track *
 plugin_get_track (
   Plugin * self);
 
+NONNULL
 Plugin *
 plugin_find (
   PluginIdentifier * id);
@@ -521,6 +548,7 @@ plugin_find (
  * identifier were made, so we can update all
  * children recursively.
  */
+NONNULL
 void
 plugin_update_identifier (
   Plugin * self);
@@ -528,6 +556,7 @@ plugin_update_identifier (
 /**
  * Updates the plugin's latency.
  */
+NONNULL
 void
 plugin_update_latency (
   Plugin * pl);
@@ -542,6 +571,7 @@ plugin_update_latency (
  *   in the project yet so we can't fetch it
  *   through indices.
  */
+NONNULL
 void
 plugin_generate_automation_tracks (
   Plugin * plugin,
@@ -550,6 +580,7 @@ plugin_generate_automation_tracks (
 /**
  * Prepare plugin for processing.
  */
+NONNULL
 void
 plugin_prepare_process (
   Plugin * self);
@@ -567,6 +598,7 @@ plugin_prepare_process (
  * @param project Whether this is a project plugin
  *   (as opposed to a clone used in actions).
  */
+__attribute__ ((nonnull (1)))
 int
 plugin_instantiate (
   Plugin *    self,
@@ -576,6 +608,7 @@ plugin_instantiate (
 /**
  * Sets the track and track_pos on the plugin.
  */
+NONNULL
 void
 plugin_set_track_pos (
   Plugin * pl,
@@ -587,6 +620,7 @@ plugin_set_track_pos (
  * @param g_start_frames The global start frames.
  * @param nframes The number of frames to process.
  */
+NONNULL
 void
 plugin_process (
   Plugin *    plugin,
@@ -594,6 +628,7 @@ plugin_process (
   const nframes_t  local_offset,
   const nframes_t   nframes);
 
+NONNULL
 char *
 plugin_generate_window_title (
   Plugin * plugin);
@@ -601,6 +636,7 @@ plugin_generate_window_title (
 /**
  * Process show ui
  */
+NONNULL
 void
 plugin_open_ui (
   Plugin *plugin);
@@ -608,6 +644,7 @@ plugin_open_ui (
 /**
  * Returns if Plugin exists in MixerSelections.
  */
+NONNULL
 bool
 plugin_is_selected (
   Plugin * pl);
@@ -615,6 +652,7 @@ plugin_is_selected (
 /**
  * Returns whether the plugin has a custom UI.
  */
+NONNULL
 bool
 plugin_has_custom_ui (
   Plugin * pl);
@@ -626,6 +664,7 @@ plugin_has_custom_ui (
  * @param exclusive Whether to make this the only
  *   selected plugin or add it to the selections.
  */
+NONNULL
 void
 plugin_select (
   Plugin * pl,
@@ -635,10 +674,12 @@ plugin_select (
 /**
  * Returns whether the plugin is enabled.
  */
+NONNULL
 bool
 plugin_is_enabled (
   Plugin * self);
 
+NONNULL
 void
 plugin_set_enabled (
   Plugin * self,
@@ -651,6 +692,7 @@ plugin_set_enabled (
  *
  * This is called when the plugin is bypassed.
  */
+NONNULL
 void
 plugin_process_passthrough (
   Plugin * self,
@@ -666,6 +708,7 @@ plugin_process_passthrough (
  *
  * @return The number of ports in the array.
  */
+NONNULL
 int
 plugin_get_event_ports (
   Plugin * pl,
@@ -675,12 +718,14 @@ plugin_get_event_ports (
 /**
  * Process hide ui
  */
+NONNULL
 void
 plugin_close_ui (Plugin *plugin);
 
 /**
  * (re)Generates automatables for the plugin.
  */
+NONNULL
 void
 plugin_update_automatables (Plugin * plugin);
 
@@ -690,17 +735,20 @@ plugin_add_bank_if_not_exists (
   const char * uri,
   const char * name);
 
+NONNULL
 void
 plugin_add_preset_to_bank (
   Plugin *       self,
   PluginBank *   bank,
   PluginPreset * preset);
 
+NONNULL
 void
 plugin_set_selected_bank_from_index (
   Plugin * self,
   int      idx);
 
+NONNULL
 void
 plugin_set_selected_preset_from_index (
   Plugin * self,
@@ -714,6 +762,7 @@ plugin_set_selected_preset_from_index (
  * Used when automatically connecting a Plugin
  * in the Channel strip to the next Plugin.
  */
+NONNULL
 void
 plugin_connect_to_plugin (
   Plugin * src,
@@ -724,6 +773,7 @@ plugin_connect_to_plugin (
  * given source Plugin to the given destination
  * Plugin.
  */
+NONNULL
 void
 plugin_disconnect_from_plugin (
   Plugin * src,
@@ -735,6 +785,7 @@ plugin_disconnect_from_plugin (
  *
  * Used when doing automatic connections.
  */
+NONNULL
 void
 plugin_connect_to_prefader (
   Plugin *  pl,
@@ -745,6 +796,7 @@ plugin_connect_to_prefader (
  * Plugin to the Channel's prefader (if last
  * Plugin).
  */
+NONNULL
 void
 plugin_disconnect_from_prefader (
   Plugin *  pl,
@@ -757,6 +809,7 @@ plugin_disconnect_from_prefader (
  * A call to plugin_free can be made at any point
  * later just to free the resources.
  */
+NONNULL
 void
 plugin_disconnect (Plugin * plugin);
 
@@ -768,6 +821,7 @@ plugin_disconnect (Plugin * plugin);
  * removed from the project (including undo stacks)
  * to remove any files not needed anymore.
  */
+NONNULL
 void
 plugin_delete_state_files (
   Plugin * self);
@@ -776,6 +830,7 @@ plugin_delete_state_files (
  * Cleans up an instantiated but not activated
  * plugin.
  */
+NONNULL
 int
 plugin_cleanup (
   Plugin * self);
@@ -784,6 +839,7 @@ plugin_cleanup (
  * Frees given plugin, breaks all its port connections, and frees its ports
  * and other internal pointers
  */
+NONNULL
 void
 plugin_free (Plugin *plugin);
 

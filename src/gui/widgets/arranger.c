@@ -1138,6 +1138,7 @@ arranger_widget_select_all (
   ArrangerSelections * sel =
     arranger_widget_get_selections (
       (ArrangerWidget *) self);
+  g_return_if_fail (sel);
 
   if (select)
     {

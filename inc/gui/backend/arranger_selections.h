@@ -35,8 +35,11 @@ typedef struct ArrangerObject ArrangerObject;
 typedef struct Position Position;
 
 #define ARRANGER_SELECTIONS_MAGIC 35867752
-#define IS_ARRANGER_SELECTIONS(tr) \
-  ((tr) && (tr)->magic == ARRANGER_SELECTIONS_MAGIC)
+#define IS_ARRANGER_SELECTIONS(x) \
+  (((ArrangerSelections *) x)->magic == \
+   ARRANGER_SELECTIONS_MAGIC)
+#define IS_ARRANGER_SELECTIONS_AND_NONNULL(x) \
+  (x && IS_ARRANGER_SELECTIONS (x))
 #define ARRANGER_SELECTIONS(x) \
   arranger_selections_cast (x)
 
@@ -116,6 +119,7 @@ arranger_selections_cast (void * sel)
  * @param project Whether these are project
  *   selections (as opposed to clones).
  */
+NONNULL
 void
 arranger_selections_init_loaded (
   ArrangerSelections * self,
@@ -124,6 +128,7 @@ arranger_selections_init_loaded (
 /**
  * Initializes the selections.
  */
+NONNULL
 void
 arranger_selections_init (
   ArrangerSelections *   self,
@@ -132,6 +137,7 @@ arranger_selections_init (
 /**
  * Verify that the objects are not invalid.
  */
+NONNULL
 bool
 arranger_selections_verify (
   ArrangerSelections * self);
@@ -139,6 +145,7 @@ arranger_selections_verify (
 /**
  * Appends the given object to the selections.
  */
+NONNULL
 void
 arranger_selections_add_object (
   ArrangerSelections * self,
@@ -148,6 +155,7 @@ arranger_selections_add_object (
  * Sets the values of each object in the dest
  * selections to the values in the src selections.
  */
+NONNULL
 void
 arranger_selections_set_from_selections (
   ArrangerSelections * dest,
@@ -160,6 +168,7 @@ arranger_selections_set_from_selections (
  *
  * @param desc Descending or not.
  */
+NONNULL
 void
 arranger_selections_sort_by_indices (
   ArrangerSelections * sel,
@@ -168,6 +177,7 @@ arranger_selections_sort_by_indices (
 /**
  * Clone the struct for copying, undoing, etc.
  */
+NONNULL
 ArrangerSelections *
 arranger_selections_clone (
   ArrangerSelections * self);
@@ -175,7 +185,8 @@ arranger_selections_clone (
 /**
  * Returns if there are any selections.
  */
-int
+NONNULL
+bool
 arranger_selections_has_any (
   ArrangerSelections * self);
 
@@ -188,6 +199,7 @@ arranger_selections_has_any (
  *   otherwise returns the local (from the start
  *   of the Region) Position.
  */
+NONNULL
 void
 arranger_selections_get_start_pos (
   ArrangerSelections * self,
@@ -202,6 +214,7 @@ arranger_selections_get_start_pos (
  *   otherwise returns the local (from the start
  *   of the Region) Position.
  */
+NONNULL
 void
 arranger_selections_get_end_pos (
   ArrangerSelections * self,
@@ -211,6 +224,7 @@ arranger_selections_get_end_pos (
 /**
  * Returns the number of selected objects.
  */
+NONNULL
 int
 arranger_selections_get_num_objects (
   ArrangerSelections * self);
@@ -218,6 +232,7 @@ arranger_selections_get_num_objects (
 /**
  * Gets first object.
  */
+NONNULL
 ArrangerObject *
 arranger_selections_get_first_object (
   ArrangerSelections * self);
@@ -225,6 +240,7 @@ arranger_selections_get_first_object (
 /**
  * Gets last object.
  */
+NONNULL
 ArrangerObject *
 arranger_selections_get_last_object (
   ArrangerSelections * self);
@@ -233,6 +249,7 @@ arranger_selections_get_last_object (
  * Pastes the given selections to the given
  * Position.
  */
+NONNULL
 void
 arranger_selections_paste_to_pos (
   ArrangerSelections * self,
@@ -245,6 +262,7 @@ arranger_selections_paste_to_pos (
  *
  * @param size A pointer to save the size into.
  */
+NONNULL
 ArrangerObject **
 arranger_selections_get_all_objects (
   ArrangerSelections * self,
@@ -253,6 +271,7 @@ arranger_selections_get_all_objects (
 /**
  * Redraws each object in the arranger selections.
  */
+NONNULL
 void
 arranger_selections_redraw (
   ArrangerSelections * self);
@@ -261,6 +280,7 @@ arranger_selections_redraw (
  * Adds each object in the selection to the given
  * region (if applicable).
  */
+NONNULL
 void
 arranger_selections_add_to_region (
   ArrangerSelections * self,
@@ -272,6 +292,7 @@ arranger_selections_add_to_region (
  *
  * @param ticks Ticks to add.
  */
+NONNULL
 void
 arranger_selections_add_ticks (
   ArrangerSelections *     self,
@@ -281,6 +302,7 @@ arranger_selections_add_ticks (
  * Returns whether all the selections are on the
  * same lane (track lane or automation lane).
  */
+NONNULL
 bool
 arranger_selections_all_on_same_lane (
   ArrangerSelections * self);
@@ -288,6 +310,7 @@ arranger_selections_all_on_same_lane (
 /**
  * Selects all possible objects from the project.
  */
+NONNULL
 void
 arranger_selections_select_all (
   ArrangerSelections * self,
@@ -296,6 +319,7 @@ arranger_selections_select_all (
 /**
  * Clears selections.
  */
+NONNULL
 void
 arranger_selections_clear (
   ArrangerSelections * self,
@@ -305,6 +329,7 @@ arranger_selections_clear (
 /**
  * Code to run after deserializing.
  */
+NONNULL
 void
 arranger_selections_post_deserialize (
   ArrangerSelections * self);
@@ -312,6 +337,7 @@ arranger_selections_post_deserialize (
 /**
  * Frees the selections but not the objects.
  */
+NONNULL
 void
 arranger_selections_free (
   ArrangerSelections * self);
@@ -322,6 +348,7 @@ arranger_selections_free (
  * To be used in actions where the selections are
  * all clones.
  */
+NONNULL
 void
 arranger_selections_free_full (
   ArrangerSelections * self);
@@ -333,6 +360,7 @@ arranger_selections_free_full (
  * The object must be the main object (see
  * ArrangerObjectInfo).
  */
+NONNULL
 int
 arranger_selections_contains_object (
   ArrangerSelections * self,
@@ -342,6 +370,7 @@ arranger_selections_contains_object (
  * Returns if the selections contain an undeletable
  * object (such as the start marker).
  */
+NONNULL
 bool
 arranger_selections_contains_undeletable_object (
   ArrangerSelections * self);
@@ -349,6 +378,7 @@ arranger_selections_contains_undeletable_object (
 /**
  * Removes the arranger object from the selections.
  */
+NONNULL
 void
 arranger_selections_remove_object (
   ArrangerSelections * self,
@@ -359,6 +389,7 @@ arranger_selections_remove_object (
  *
  * @note All selections must be on the same lane.
  */
+NONNULL
 void
 arranger_selections_merge (
   ArrangerSelections * self);
@@ -366,14 +397,17 @@ arranger_selections_merge (
 /**
  * Returns if the selections can be pasted.
  */
+NONNULL
 bool
 arranger_selections_can_be_pasted (
   ArrangerSelections * self);
 
+NONNULL
 double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self);
 
+NONNULL
 ArrangerSelections *
 arranger_selections_get_for_type (
   ArrangerSelectionsType type);

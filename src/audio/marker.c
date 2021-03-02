@@ -22,6 +22,7 @@
 #include "gui/widgets/marker.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 /**
@@ -31,7 +32,7 @@ Marker *
 marker_new (
   const char * name)
 {
-  Marker * self = calloc (1, sizeof (Marker));
+  Marker * self = object_new (Marker);
 
   ArrangerObject * obj =
     (ArrangerObject *) self;

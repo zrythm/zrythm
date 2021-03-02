@@ -30,6 +30,8 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "settings/settings.h"
@@ -136,8 +138,7 @@ get_enabled_tracks (
 {
   size_t size = 1;
   int count = 0;
-  Track ** tracks =
-    calloc (size, sizeof (Track *));
+  Track ** tracks = object_new_n (size, Track *);
 
   GtkTreeModel * model =
     GTK_TREE_MODEL (self->tracks_store);

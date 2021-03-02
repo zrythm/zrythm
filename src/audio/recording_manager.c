@@ -1514,7 +1514,8 @@ recording_manager_process_events (
           {
             Track * track =
               track_get_from_name (ev->track_name);
-            g_warn_if_fail (track);
+            g_return_val_if_fail (
+              track, G_SOURCE_REMOVE);
             handle_stop_recording (self, false);
             track->recording_region = NULL;
             track->recording_start_sent = false;
@@ -1530,7 +1531,8 @@ recording_manager_process_events (
             AutomationTrack * at =
               automation_track_find_from_port_id (
                 &ev->port_id, false);
-            g_warn_if_fail (at);
+            g_return_val_if_fail (
+              at, G_SOURCE_REMOVE);
             if (at->recording_started)
               {
                 handle_stop_recording (self, true);
@@ -1559,7 +1561,8 @@ recording_manager_process_events (
             AutomationTrack * at =
               automation_track_find_from_port_id (
                 &ev->port_id, false);
-            g_warn_if_fail (at);
+            g_return_val_if_fail (
+              at, G_SOURCE_REMOVE);
             if (!at->recording_started)
               {
                 handle_start_recording (

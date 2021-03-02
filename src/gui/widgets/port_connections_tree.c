@@ -21,6 +21,7 @@
 #include "gui/widgets/port_connections_tree.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -107,9 +108,9 @@ create_model ()
       G_TYPE_POINTER);
 
   /* add data to the list store */
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   Port * port;
   port_get_all (

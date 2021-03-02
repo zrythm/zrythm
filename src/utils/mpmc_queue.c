@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "utils/objects.h"
 #include "utils/mpmc_queue.h"
 
 static size_t
@@ -67,7 +68,7 @@ mpmc_queue_reserve (
     free (self->buffer);
 
   self->buffer =
-    calloc (buffer_size, sizeof (cell_t));
+    object_new_n (buffer_size, cell_t);
   self->buffer_mask = buffer_size - 1;
 
   mpmc_queue_clear (self);
@@ -76,8 +77,7 @@ mpmc_queue_reserve (
 MPMCQueue *
 mpmc_queue_new (void)
 {
-  MPMCQueue * self =
-    calloc (1, sizeof (MPMCQueue));
+  MPMCQueue * self = object_new (MPMCQueue);
 
   mpmc_queue_reserve (self, 8);
 

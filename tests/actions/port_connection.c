@@ -78,9 +78,8 @@ test_modulator_connection (
   Plugin * pl = P_MODULATOR_TRACK->modulators[0];
   Port * pl_cv_port = NULL;
   Port * pl_control_port = NULL;
-  int max_size = 20;
-  Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+  size_t max_size = 0;
+  Port ** ports = NULL;
   int num_ports = 0;
   plugin_append_ports (
     pl, &ports, &max_size, true, &num_ports);
@@ -106,7 +105,7 @@ test_modulator_connection (
             }
         }
     }
-  free (ports);
+  object_zero_and_free_if_nonnull (ports);
 
   /* connect the plugin's CV out to the macro
    * button */
@@ -209,9 +208,8 @@ _test_port_connection (
    * balance */
   Port * src_port1 = NULL;
   Port * src_port2 = NULL;
-  int max_size = 20;
-  Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+  size_t max_size = 0;
+  Port ** ports = NULL;
   int num_ports = 0;
   track_append_all_ports (
     src_track, &ports, &num_ports, true, &max_size,
@@ -236,16 +234,16 @@ _test_port_connection (
             }
         }
     }
-  free (ports);
+  object_zero_and_free_if_nonnull (ports);
 
   Port * dest_port = NULL;
-  max_size = 20;
-  ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+  max_size = 0;
+  ports = NULL;
   num_ports = 0;
   track_append_all_ports (
     target_track, &ports, &num_ports, true, &max_size,
     true);
+  g_assert_nonnull (ports);
   for (int i = 0; i < num_ports; i++)
     {
       Port * port = ports[i];
@@ -257,7 +255,7 @@ _test_port_connection (
           break;
         }
     }
-  free (ports);
+  object_zero_and_free_if_nonnull (ports);
 
   g_assert_nonnull (src_port1);
   g_assert_nonnull (src_port2);

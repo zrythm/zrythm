@@ -42,6 +42,7 @@
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 static AutomationPoint *
@@ -49,7 +50,7 @@ _create_new (
   const Position *        pos)
 {
   AutomationPoint * self =
-    calloc (1, sizeof (AutomationPoint));
+    object_new (AutomationPoint);
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -177,8 +178,12 @@ automation_point_set_fvalue (
   bool              is_normalized,
   bool              pub_events)
 {
+  g_return_if_fail (self);
+
   Port * port =
     automation_point_get_port (self);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
   if (is_normalized)
     {
       g_message ("received normalized val %f",
@@ -284,27 +289,6 @@ automation_point_get_port (
   g_return_val_if_fail (port, NULL);
 
   return port;
-}
-
-/**
- * Returns Y in pixels from the value based on
- * the given height of the parent.
- */
-int
-automation_point_get_y (
-  AutomationPoint * self,
-  int               height)
-{
-  /* ratio of current value in the range */
-  float ap_ratio = self->normalized_val;
-
-  int allocated_h =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
-  int point =
-    allocated_h -
-    (int) (ap_ratio * (float) allocated_h);
-  return point;
 }
 
 /**

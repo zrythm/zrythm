@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "audio/router.h"
 #include "audio/track.h"
 #include "plugins/plugin.h"
+#include "utils/objects.h"
 
 #ifdef HAVE_CGRAPH
 #include <graphviz/cgraph.h>
@@ -358,9 +359,9 @@ export_as_graphviz_type (
 
   /* fill anodes with subgraphs */
   ANode * anodes =
-    calloc (
+    object_new_n (
       (size_t) graph->num_setup_graph_nodes,
-      sizeof (ANode));
+      ANode);
   fill_anodes (graph, agraph, anodes);
 
   /* create graph */
@@ -408,6 +409,7 @@ export_as_graphviz_type (
   gvFreeLayout(gvc, agraph);
   agclose (agraph);
   gvFreeContext(gvc);
+  object_zero_and_free (anodes);
 }
 #endif
 

@@ -28,6 +28,8 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -35,7 +37,7 @@ void
 group_target_track_init_loaded (
   Track * self)
 {
-  self->children_size = self->num_children;
+  self->children_size = (size_t) self->num_children;
   if (self->num_children == 0)
     {
       self->children_size = 1;

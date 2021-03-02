@@ -56,6 +56,7 @@ math_calculate_rms_amp (
  * Gets the digital peak of the given signal as
  * amplitude (0-2).
  */
+DEPRECATED_MSG ("use abs max")
 sample_t
 math_calculate_max_amp (
   sample_t *      buf,

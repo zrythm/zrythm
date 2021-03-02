@@ -109,9 +109,6 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  ZRYTHM = calloc (1, sizeof (Zrythm));
-  PROJECT = calloc (1, sizeof (Project));
-
 #define TEST_PREFIX "/audio/midi_note/"
 
   /*g_test_add_func (*/

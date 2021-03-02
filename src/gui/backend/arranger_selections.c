@@ -43,6 +43,7 @@
 #include "utils/arrays.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -155,7 +156,7 @@ arranger_selections_init (
 #define SET_OBJ(sel,cc,sc) \
   sel->sc##s_size = 1; \
   sel->sc##s = \
-    calloc (1, sizeof (cc *))
+    object_new_n (1, cc *)
 
   switch (self->type)
     {
@@ -388,7 +389,8 @@ ArrangerSelections *
 arranger_selections_clone (
   ArrangerSelections * self)
 {
-  g_return_val_if_fail (self, NULL);
+  g_return_val_if_fail (
+    IS_ARRANGER_SELECTIONS (self), NULL);
 
   TimelineSelections * src_ts, * new_ts;
   ChordSelections * src_cs, * new_cs;
@@ -435,7 +437,7 @@ arranger_selections_clone (
     case TYPE (MIDI):
       src_mas = (MidiArrangerSelections *) self;
       new_mas =
-        calloc (1, sizeof (MidiArrangerSelections));
+        object_new (MidiArrangerSelections);
       arranger_selections_init (
         (ArrangerSelections *) new_mas,
         ARRANGER_SELECTIONS_TYPE_MIDI);
@@ -446,7 +448,7 @@ arranger_selections_clone (
     case TYPE (AUTOMATION):
       src_as = (AutomationSelections *) self;
       new_as =
-        calloc (1, sizeof (AutomationSelections));
+        object_new (AutomationSelections);
       arranger_selections_init (
         (ArrangerSelections *) new_as,
         ARRANGER_SELECTIONS_TYPE_AUTOMATION);
@@ -458,7 +460,7 @@ arranger_selections_clone (
     case TYPE (CHORD):
       src_cs = (ChordSelections *) self;
       new_cs =
-        calloc (1, sizeof (ChordSelections));
+        object_new (ChordSelections);
       arranger_selections_init (
         (ArrangerSelections *) new_cs,
         ARRANGER_SELECTIONS_TYPE_CHORD);
@@ -469,7 +471,7 @@ arranger_selections_clone (
     case TYPE (AUDIO):
       src_aus = (AudioSelections *) self;
       new_aus =
-        calloc (1, sizeof (AudioSelections));
+        object_new (AudioSelections);
       arranger_selections_init (
         (ArrangerSelections *) new_aus,
         ARRANGER_SELECTIONS_TYPE_CHORD);
@@ -724,7 +726,7 @@ arranger_selections_sort_by_indices (
 /**
  * Returns if there are any selections.
  */
-int
+bool
 arranger_selections_has_any (
   ArrangerSelections * self)
 {
@@ -1727,7 +1729,8 @@ arranger_selections_contains_object (
   MidiArrangerSelections * mas;
   AutomationSelections * as;
 
-  g_return_val_if_fail (self && obj, 0);
+  g_return_val_if_fail (
+    IS_ARRANGER_SELECTIONS (self), 0);
 
   switch (self->type)
     {
@@ -1922,7 +1925,8 @@ double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self)
 {
-  g_return_val_if_fail (self, 0);
+  g_return_val_if_fail (
+    IS_ARRANGER_SELECTIONS (self), 0);
 
   Position p1, p2;
   arranger_selections_get_start_pos (
@@ -2047,6 +2051,7 @@ arranger_selections_merge (
   ArrangerObject * first_obj =
     arranger_selections_get_first_object (self);
   g_return_if_fail (
+    IS_ARRANGER_OBJECT_AND_NONNULL (first_obj) &&
     first_obj->type == ARRANGER_OBJECT_TYPE_REGION);
   ZRegion * first_r = (ZRegion *) first_obj;
 
@@ -2261,7 +2266,7 @@ arranger_selections_paste_to_pos (
   Position *           pos,
   bool                 undoable)
 {
-  g_return_if_fail (self && pos);
+  g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
 
   ArrangerSelections * clone_sel =
     arranger_selections_clone (self);
@@ -2372,19 +2377,17 @@ arranger_selections_get_all_objects (
   AutomationSelections * as;
 
   ArrangerObject ** objs =
-    calloc (1, sizeof (ArrangerObject *));
+    object_new_n (1, ArrangerObject *);
   *size = 0;
 
 #define ADD_OBJ(sel,sc) \
   for (int i = 0; i < sel->num_##sc##s; i++) \
     { \
       ArrangerObject ** new_objs = \
-        (ArrangerObject **) \
-        realloc ( \
+        g_realloc ( \
           objs, \
           (size_t) (*size + 1) * \
             sizeof (ArrangerObject *)); \
-      g_return_val_if_fail (new_objs, NULL); \
       objs = new_objs; \
       objs[*size] = \
         (ArrangerObject *) sel->sc##s[i]; \

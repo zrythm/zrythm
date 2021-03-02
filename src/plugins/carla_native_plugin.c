@@ -41,6 +41,7 @@
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -292,7 +293,7 @@ _create (
   Plugin * plugin)
 {
   CarlaNativePlugin * self =
-    calloc (1, sizeof (CarlaNativePlugin));
+    object_new (CarlaNativePlugin);
 
   self->plugin = plugin;
 
@@ -588,7 +589,7 @@ carla_native_plugin_populate_banks (
       LV2_ZRYTHM__defaultBank,
       _("Default bank"));
   PluginPreset * pl_def_preset =
-    calloc (1, sizeof (PluginPreset));
+    object_new (PluginPreset);
   pl_def_preset->uri =
     g_strdup (LV2_ZRYTHM__initPreset);
   pl_def_preset->name = g_strdup (_("Init"));
@@ -603,7 +604,7 @@ carla_native_plugin_populate_banks (
   for (uint32_t i = 0; i < count; i++)
     {
       PluginPreset * pl_preset =
-        calloc (1, sizeof (PluginPreset));
+        object_new (PluginPreset);
       pl_preset->carla_program = (int) i;
       pl_preset->name =
         g_strdup (
@@ -911,7 +912,7 @@ carla_native_plugin_get_descriptor_from_cached (
   PluginType              type)
 {
   PluginDescriptor * descr =
-    calloc (1, sizeof (PluginDescriptor));
+    object_new (PluginDescriptor);
 
   descr->open_with_carla = 1;
   switch (type)
@@ -1067,7 +1068,6 @@ create_ports (
 {
   g_debug ("%s: loading: %d", __func__, loading);
 
-  Port * port;
   char tmp[500];
   char name[4000];
 
@@ -1078,7 +1078,7 @@ create_ports (
         {
           strcpy (tmp, _("Audio in"));
           sprintf (name, "%s %d", tmp, i);
-          port =
+          Port * port =
             port_new_with_type (
               TYPE_AUDIO, FLOW_INPUT, name);
           plugin_add_in_port (
@@ -1088,7 +1088,7 @@ create_ports (
         {
           strcpy (tmp, _("Audio out"));
           sprintf (name, "%s %d", tmp, i);
-          port =
+          Port * port =
             port_new_with_type (
               TYPE_AUDIO, FLOW_OUTPUT, name);
           plugin_add_out_port (
@@ -1098,7 +1098,7 @@ create_ports (
         {
           strcpy (tmp, _("MIDI in"));
           sprintf (name, "%s %d", tmp, i);
-          port =
+          Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_INPUT, name);
           plugin_add_in_port (
@@ -1108,7 +1108,7 @@ create_ports (
         {
           strcpy (tmp, _("MIDI out"));
           sprintf (name, "%s %d", tmp, i);
-          port =
+          Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_OUTPUT, name);
           plugin_add_out_port (
@@ -1129,11 +1129,14 @@ create_ports (
     descr->num_ctrl_ins, (int) param_counts->outs);
   for (uint32_t i = 0; i < param_counts->ins; i++)
     {
+      Port * port = NULL;
       if (loading)
         {
           port =
             carla_native_plugin_get_port_from_param_id (
               self, i);
+          g_return_if_fail (
+            IS_PORT_AND_NONNULL (port));
         }
       else
         {
@@ -1144,6 +1147,8 @@ create_ports (
             port_new_with_type (
               TYPE_CONTROL, FLOW_INPUT,
               param_info->name);
+          g_return_if_fail (
+            IS_PORT_AND_NONNULL (port));
           if (param_info->symbol &&
               strlen (param_info->symbol) > 0)
             {

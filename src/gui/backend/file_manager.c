@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -85,7 +85,7 @@ load_files_from_location (
     }
 
   /* create special parent dir entry */
-  fd = calloc (1, sizeof (SupportedFile));
+  fd = object_new (SupportedFile);
   /*g_message ("pre path %s",*/
              /*location->path);*/
   fd->abs_path =
@@ -102,11 +102,12 @@ load_files_from_location (
   else
     {
       supported_file_free (fd);
+      fd = NULL;
     }
 
   while ((file = g_dir_read_name (dir)))
     {
-      fd = calloc (1, sizeof (SupportedFile));
+      fd = object_new (SupportedFile);
       /*fd->dnd_type = UI_DND_TYPE_FILE_DESCRIPTOR;*/
 
       /* set absolute path & label */
@@ -194,7 +195,11 @@ void
 file_manager_free (
   FileManager * self)
 {
-  /* TODO */
+  for (int i = 0; i < self->num_files; i++)
+    {
+      object_free_w_func_and_null (
+        supported_file_free, self->files[i]);
+    }
 
   object_zero_and_free (self);
 }

@@ -82,20 +82,26 @@ metronome_new (void)
         "Failed to load samples for metronome "
         "from %s",
         self->emphasis_path);
+      metronome_free (self);
       return NULL;
     }
   audio_encoder_decode (
     enc, (int) AUDIO_ENGINE->sample_rate,
     F_NO_SHOW_PROGRESS);
   self->emphasis =
-    calloc (
-      (size_t)
-        (enc->num_out_frames * enc->channels),
-      sizeof (float));
+    object_new_n (
+      (size_t) (enc->num_out_frames * enc->channels),
+      float);
   self->emphasis_size = enc->num_out_frames;
   self->emphasis_channels = enc->channels;
-  g_return_val_if_fail (
-    enc->channels > 0, NULL);
+  if (enc->channels <= 0)
+    {
+      g_critical ("channels: %d", enc->channels);
+      audio_encoder_free (enc);
+      metronome_free (self);
+      return NULL;
+    }
+
   dsp_copy (
     self->emphasis, enc->out_frames,
     (size_t) enc->num_out_frames *
@@ -109,13 +115,18 @@ metronome_new (void)
     enc, (int) AUDIO_ENGINE->sample_rate,
     F_NO_SHOW_PROGRESS);
   self->normal =
-    calloc (
-      (size_t)
-        (enc->num_out_frames * enc->channels),
-      sizeof (float));
+    object_new_n (
+      (size_t) (enc->num_out_frames * enc->channels),
+      float);
   self->normal_size = enc->num_out_frames;
   self->normal_channels = enc->channels;
-  g_return_val_if_fail (enc->channels > 0, NULL);
+  if (enc->channels <= 0)
+    {
+      g_critical ("channels: %d", enc->channels);
+      audio_encoder_free (enc);
+      metronome_free (self);
+      return NULL;
+    }
   dsp_copy (
     self->normal, enc->out_frames,
     (size_t) enc->num_out_frames *

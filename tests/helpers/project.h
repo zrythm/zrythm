@@ -145,6 +145,10 @@ test_project_check_vs_original_state (
   Position * p2,
   int check_selections)
 {
+  bool after_reload = false;
+
+check_vs_orig_state:
+
   if (check_selections)
     {
       g_assert_cmpint (
@@ -154,11 +158,6 @@ test_project_check_vs_original_state (
       g_assert_cmpint (
         TL_SELECTIONS->num_scale_objects, ==, 1);
     }
-
-  /* save the project and reopen it. some callers
-   * undo after this step so this checks if the undo
-   * history works after reopening the project */
-  test_project_save_and_reload ();
 
   Track * midi_track =
     tracklist_find_track_by_name (
@@ -239,11 +238,17 @@ test_project_check_vs_original_state (
     ap->fvalue, AP_VAL2, 0.000001f);
 
   /* check marker */
+  Marker * m;
   g_assert_cmpint (
     P_MARKER_TRACK->num_markers, ==, 3);
   obj =
+    (ArrangerObject *) P_MARKER_TRACK->markers[0];
+  m = (Marker *) obj;
+  g_assert_true (m);
+  g_assert_cmpstr (m->name, ==, "start");
+  obj =
     (ArrangerObject *) P_MARKER_TRACK->markers[2];
-  Marker * m = (Marker *) obj;
+  m = (Marker *) obj;
   g_assert_cmppos (&obj->pos, p1);
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
@@ -259,6 +264,16 @@ test_project_check_vs_original_state (
     s->scale->type, ==, MUSICAL_SCALE_TYPE);
   g_assert_cmpint (
     s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+
+  /* save the project and reopen it. some callers
+   * undo after this step so this checks if the undo
+   * history works after reopening the project */
+  if (!after_reload)
+    {
+      test_project_save_and_reload ();
+      after_reload = true;
+      goto check_vs_orig_state;
+    }
 }
 
 /**

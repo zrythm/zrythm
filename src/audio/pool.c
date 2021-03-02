@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "audio/track.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 
@@ -50,13 +51,11 @@ audio_pool_init_loaded (
 AudioPool *
 audio_pool_new ()
 {
-  AudioPool * self =
-    calloc (1, sizeof (AudioPool));
+  AudioPool * self = object_new (AudioPool);
 
   self->clips_size = 2;
   self->clips =
-    calloc (
-      self->clips_size, sizeof (AudioClip *));
+    object_new_n (self->clips_size, AudioClip *);
 
   return self;
 }
@@ -265,6 +264,8 @@ audio_pool_remove_clip (
 
   AudioClip * clip =
     audio_pool_get_clip (self, clip_id);
+  g_return_if_fail (clip);
+
   audio_clip_remove_and_free (clip);
 
   for (int i = clip_id; i < self->num_clips - 1;

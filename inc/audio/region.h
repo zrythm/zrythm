@@ -52,9 +52,10 @@ typedef struct Stretcher Stretcher;
  */
 
 #define REGION_MAGIC 93075327
-#define IS_REGION(tr) \
-  ((ZRegion *) tr && \
-   ((ZRegion *) tr)->magic == REGION_MAGIC)
+#define IS_REGION(x) \
+  (((ZRegion *) x)->magic == REGION_MAGIC)
+#define IS_REGION_AND_NONNULL(x) \
+  (x && IS_REGION (x))
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 

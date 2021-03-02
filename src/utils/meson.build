@@ -28,7 +28,6 @@ util_srcs = [
   'dsp.c',
   'env.c',
   'err_codes.c',
-  'gdb.c',
   'general.c',
   'gtk.c',
   'io.c',
@@ -48,7 +47,6 @@ util_srcs = [
   'symap.c',
   'system.c',
   'ui.c',
-  'valgrind.c',
   'yaml.c',
   'windows_errors.c',
   ]

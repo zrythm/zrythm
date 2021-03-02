@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "audio/port.h"
 #include "audio/rtmidi_device.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -156,8 +157,7 @@ rtmidi_device_new (
   unsigned int device_id,
   Port *       port)
 {
-  RtMidiDevice * self =
-    calloc (1, sizeof (RtMidiDevice));
+  RtMidiDevice * self = object_new (RtMidiDevice);
 
   enum RtMidiApi apis[20];
   int num_apis =
@@ -167,6 +167,7 @@ rtmidi_device_new (
       g_warning (
         "RtMidi: an error occurred fetching "
         "compiled APIs");
+      object_zero_and_free (self);
       return NULL;
     }
   if (rtmidi_device_first_run)
@@ -189,6 +190,7 @@ rtmidi_device_new (
         "RtMidi API for %s not enabled",
         midi_backend_str[
           AUDIO_ENGINE->midi_backend]);
+      object_zero_and_free (self);
       return NULL;
     }
 
@@ -202,6 +204,7 @@ rtmidi_device_new (
           g_warning (
             "Could not find RtMidi Device '%s'",
             name);
+          object_zero_and_free (self);
           return NULL;
         }
       self->id = (unsigned int) id_from_name;
@@ -223,6 +226,7 @@ rtmidi_device_new (
           g_warning (
             "An error occurred creating an RtMidi "
             "in handle: %s", self->in_handle->msg);
+          object_zero_and_free (self);
           return NULL;
         }
     }

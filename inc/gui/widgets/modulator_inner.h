@@ -48,7 +48,7 @@ typedef struct _ModulatorInnerWidget
 
   KnobWithNameWidget ** knobs;
   int               num_knobs;
-  int               knobs_size;
+  size_t            knobs_size;
 
   /** The graphs on the right. */
   GtkOverlay *      waveform_overlays[16];

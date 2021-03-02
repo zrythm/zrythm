@@ -28,6 +28,7 @@
 #include "plugins/plugin_manager.h"
 #include "plugins/carla/carla_discovery.h"
 #include "utils/file.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/system.h"
 #include "zrythm.h"
@@ -159,7 +160,7 @@ z_carla_discovery_parse_plugin_info (
     plugin_path && results, NULL);
 
   PluginDescriptor ** descriptors =
-    calloc (1, sizeof (PluginDescriptor *));
+    object_new (PluginDescriptor *);
   int num_descriptors = 0;
 
   const char * discovery_init_txt =
@@ -203,7 +204,7 @@ z_carla_discovery_parse_plugin_info (
           offset_str, discovery_end_txt);
 
       PluginDescriptor * descr =
-        calloc (1, sizeof (PluginDescriptor));
+        object_new (PluginDescriptor);
       descr->name =
         string_get_regex_group (
           plugin_info,
@@ -292,7 +293,7 @@ z_carla_discovery_parse_plugin_info (
 
       num_descriptors++;
       descriptors =
-        realloc (
+        g_realloc (
           descriptors,
           (size_t) (num_descriptors + 1) *
             sizeof (PluginDescriptor *));
@@ -535,7 +536,7 @@ z_carla_discovery_create_au_descriptor_from_info (
     return NULL;
 
   PluginDescriptor * descr =
-    calloc (1, sizeof (PluginDescriptor));
+    object_new (PluginDescriptor);
   descr->name = g_strdup (info->name);
   g_return_val_if_fail (descr->name,  NULL);
   descr->author = g_strdup (info->maker);

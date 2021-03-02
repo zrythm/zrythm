@@ -121,6 +121,7 @@ audio_clip_schema = {
 /**
  * Inits after loading a Project.
  */
+NONNULL
 void
 audio_clip_init_loaded (
   AudioClip * self);
@@ -130,6 +131,7 @@ audio_clip_init_loaded (
  *
  * The name used is the basename of the file.
  */
+NONNULL
 AudioClip *
 audio_clip_new_from_file (
   const char * full_path);
@@ -172,6 +174,7 @@ audio_clip_new_recording (
  * @param start_from Frames to start from (per
  *   channel. The previous frames will be kept.
  */
+NONNULL
 void
 audio_clip_update_channel_caches (
   AudioClip * self,
@@ -185,6 +188,7 @@ audio_clip_update_channel_caches (
  *
  * @return Non-zero if fail.
  */
+NONNULL
 int
 audio_clip_write_to_file (
   AudioClip *  self,
@@ -197,15 +201,18 @@ audio_clip_write_to_file (
  * @param parts If true, only write new data. @see
  *   AudioClip.frames_written.
  */
+NONNULL
 void
 audio_clip_write_to_pool (
   AudioClip * self,
   bool        parts);
 
+NONNULL
 char *
 audio_clip_get_path_in_pool_from_name (
   const char * name);
 
+NONNULL
 char *
 audio_clip_get_path_in_pool (
   AudioClip * self);
@@ -215,6 +222,7 @@ audio_clip_get_path_in_pool (
  * project (in actual project regions only, not
  * in undo stack).
  */
+NONNULL
 bool
 audio_clip_is_in_use (
   AudioClip * self);
@@ -225,6 +233,7 @@ audio_clip_is_in_use (
  * Removes the file associated with the clip and
  * frees the instance.
  */
+NONNULL
 void
 audio_clip_remove_and_free (
   AudioClip * self);
@@ -232,6 +241,7 @@ audio_clip_remove_and_free (
 /**
  * Frees the audio clip.
  */
+NONNULL
 void
 audio_clip_free (
   AudioClip * self);

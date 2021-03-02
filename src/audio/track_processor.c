@@ -36,6 +36,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "zrythm.h"
 
@@ -51,9 +52,9 @@ track_processor_init_loaded (
 {
   self->magic = TRACK_PROCESSOR_MAGIC;
 
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   track_processor_append_ports (
     self, &ports, &num_ports, true, &max_size);
@@ -288,7 +289,7 @@ track_processor_append_ports (
   Port ***         ports,
   int *            size,
   bool             is_dynamic,
-  int *            max_size)
+  size_t *         max_size)
 {
 #define _ADD(port) \
   if (is_dynamic) \
@@ -296,7 +297,7 @@ track_processor_append_ports (
       array_double_size_if_full ( \
         *ports, (*size), (*max_size), Port *); \
     } \
-  else if (*size == *max_size) \
+  else if ((size_t) *size == *max_size) \
     { \
       g_return_if_reached (); \
     } \
@@ -351,9 +352,9 @@ track_processor_set_is_project (
 {
   self->is_project = is_project;
 
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   track_processor_append_ports (
     self, &ports, &num_ports, true, &max_size);
@@ -409,6 +410,8 @@ track_processor_disconnect_all (
 {
   Track * track =
     track_processor_get_track (self);
+  g_return_if_fail (track);
+
   switch (track->in_signal_type)
     {
     case TYPE_AUDIO:
@@ -921,6 +924,8 @@ track_processor_disconnect_from_prefader (
   TrackProcessor * self)
 {
   Track * tr = track_processor_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+
   Fader * prefader = tr->channel->prefader;
   switch (tr->in_signal_type)
     {
@@ -958,6 +963,8 @@ track_processor_connect_to_prefader (
   TrackProcessor * self)
 {
   Track * tr = track_processor_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+
   Fader * prefader = tr->channel->prefader;
 
   /* connect only if signals match */
@@ -990,6 +997,7 @@ track_processor_disconnect_from_plugin (
   Plugin         * pl)
 {
   Track * tr = track_processor_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
 
   int i;
   Port * in_port;
@@ -1041,6 +1049,8 @@ track_processor_connect_to_plugin (
   Plugin         * pl)
 {
   Track * tr = track_processor_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+
   int last_index, num_ports_to_connect, i;
   Port * in_port;
 
@@ -1159,13 +1169,13 @@ void
 track_processor_free (
   TrackProcessor * self)
 {
-  if (IS_PORT (self->mono))
+  if (IS_PORT_AND_NONNULL (self->mono))
     {
       port_disconnect_all (self->mono);
       object_free_w_func_and_null (
         port_free, self->mono);
     }
-  if (IS_PORT (self->input_gain))
+  if (IS_PORT_AND_NONNULL (self->input_gain))
     {
       port_disconnect_all (self->input_gain);
       object_free_w_func_and_null (
@@ -1177,13 +1187,13 @@ track_processor_free (
       object_free_w_func_and_null (
         stereo_ports_free, self->stereo_in);
     }
-  if (IS_PORT (self->midi_in))
+  if (IS_PORT_AND_NONNULL (self->midi_in))
     {
       port_disconnect_all (self->midi_in);
       object_free_w_func_and_null (
         port_free, self->midi_in);
     }
-  if (IS_PORT (self->piano_roll))
+  if (IS_PORT_AND_NONNULL (self->piano_roll))
     {
       port_disconnect_all (self->piano_roll);
       object_free_w_func_and_null (
@@ -1193,7 +1203,7 @@ track_processor_free (
        i++)
     {
       Port * port = self->midi_automatables[i];
-      if (IS_PORT (port))
+      if (IS_PORT_AND_NONNULL (port))
         {
           port_disconnect_all (port);
           object_free_w_func_and_null (
@@ -1207,7 +1217,7 @@ track_processor_free (
       object_free_w_func_and_null (
         stereo_ports_free, self->stereo_out);
     }
-  if (IS_PORT (self->midi_out))
+  if (IS_PORT_AND_NONNULL (self->midi_out))
     {
       port_disconnect_all (self->midi_out);
       object_free_w_func_and_null (

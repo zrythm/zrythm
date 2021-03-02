@@ -259,29 +259,17 @@ typedef struct PluginDescriptor
 static const cyaml_schema_field_t
 plugin_descriptor_fields_schema[] =
 {
-  CYAML_FIELD_STRING_PTR (
-    "author",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, author,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "name",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, name,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "website",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, website,
-     0, CYAML_UNLIMITED),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PluginDescriptor, author),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PluginDescriptor, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PluginDescriptor, website),
   YAML_FIELD_ENUM (
     PluginDescriptor, category,
     plugin_descriptor_category_strings),
-  CYAML_FIELD_STRING_PTR (
-    "category_str",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, category_str,
-     0, CYAML_UNLIMITED),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PluginDescriptor, category_str),
   YAML_FIELD_INT (
     PluginDescriptor, num_audio_ins),
   YAML_FIELD_INT (
@@ -296,8 +284,7 @@ plugin_descriptor_fields_schema[] =
     PluginDescriptor, num_ctrl_outs),
   YAML_FIELD_INT (
     PluginDescriptor, num_cv_ins),
-  CYAML_FIELD_UINT (
-    "unique_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_UINT (
     PluginDescriptor, unique_id),
   YAML_FIELD_INT (
     PluginDescriptor, num_cv_outs),
@@ -318,8 +305,7 @@ plugin_descriptor_fields_schema[] =
     PluginDescriptor, path),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginDescriptor, uri),
-  CYAML_FIELD_UINT (
-    "ghash", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_UINT (
     PluginDescriptor, ghash),
 
   CYAML_FIELD_END
@@ -341,6 +327,7 @@ plugin_protocol_to_str (
 /**
  * Clones the plugin descriptor.
  */
+NONNULL
 void
 plugin_descriptor_copy (
   PluginDescriptor *       dest,
@@ -349,6 +336,7 @@ plugin_descriptor_copy (
 /**
  * Clones the plugin descriptor.
  */
+NONNULL
 PluginDescriptor *
 plugin_descriptor_clone (
   const PluginDescriptor * src);
@@ -356,6 +344,7 @@ plugin_descriptor_clone (
 /**
  * Returns if the Plugin is an instrument or not.
  */
+NONNULL
 bool
 plugin_descriptor_is_instrument (
   const PluginDescriptor * descr);
@@ -363,6 +352,7 @@ plugin_descriptor_is_instrument (
 /**
  * Returns if the Plugin is an effect or not.
  */
+NONNULL
 bool
 plugin_descriptor_is_effect (
   PluginDescriptor * descr);
@@ -370,6 +360,7 @@ plugin_descriptor_is_effect (
 /**
  * Returns if the Plugin is a modulator or not.
  */
+NONNULL
 int
 plugin_descriptor_is_modulator (
   PluginDescriptor * descr);
@@ -377,6 +368,7 @@ plugin_descriptor_is_modulator (
 /**
  * Returns if the Plugin is a midi modifier or not.
  */
+NONNULL
 int
 plugin_descriptor_is_midi_modifier (
   PluginDescriptor * descr);
@@ -385,6 +377,7 @@ plugin_descriptor_is_midi_modifier (
  * Returns the ZPluginCategory matching the given
  * string.
  */
+NONNULL
 ZPluginCategory
 plugin_descriptor_string_to_category (
   const char * str);
@@ -407,6 +400,7 @@ plugin_descriptor_is_valid_for_slot_type (
  * Returns whether the two descriptors describe
  * the same plugin, ignoring irrelevant fields.
  */
+NONNULL
 bool
 plugin_descriptor_is_same_plugin (
   const PluginDescriptor * a,
@@ -416,10 +410,12 @@ plugin_descriptor_is_same_plugin (
  * Returns if the Plugin has a supported custom
  * UI.
  */
+NONNULL
 bool
 plugin_descriptor_has_custom_ui (
   PluginDescriptor * self);
 
+NONNULL
 void
 plugin_descriptor_free (
   PluginDescriptor * self);

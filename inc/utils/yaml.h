@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -248,6 +248,7 @@
  * MUST be free'd.
  */
 #define SERIALIZE_INC(camelcase, lowercase) \
+  NONNULL \
   char * \
   lowercase##_serialize ( \
     camelcase * x);
@@ -279,7 +280,7 @@
       } \
  \
     char * new_str = \
-      calloc (output_len + 1, sizeof (char));\
+      object_new_n (output_len + 1, char);\
     memcpy (new_str, output, output_len);\
     new_str[output_len] = '\0'; \
     cyaml_config.mem_fn(cyaml_config.mem_ctx, output, 0); \
@@ -288,6 +289,7 @@
   }
 
 #define DESERIALIZE_INC(camelcase, lowercase) \
+  NONNULL \
   camelcase * \
   lowercase##_deserialize (const char * e);
 

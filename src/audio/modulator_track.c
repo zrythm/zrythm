@@ -32,6 +32,7 @@
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/object_utils.h"
 #include "zrythm_app.h"

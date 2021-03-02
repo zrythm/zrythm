@@ -26,6 +26,7 @@
 #include "gui/backend/event_manager.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -128,6 +129,17 @@ marker_track_get_end_marker (
   return NULL;
 }
 
+NONNULL
+static void
+sanity_check (
+  MarkerTrack * self)
+{
+  for (int i = 0; i < self->num_markers; i++)
+    {
+      g_return_if_fail (self->markers[i]);
+    }
+}
+
 /**
  * Adds a Marker to the Track.\
  *
@@ -135,20 +147,21 @@ marker_track_get_end_marker (
  */
 void
 marker_track_add_marker (
-  MarkerTrack * track,
+  MarkerTrack * self,
   Marker *      marker)
 {
-  g_warn_if_fail (
-    track->type == TRACK_TYPE_MARKER && marker);
+  g_return_if_fail (
+    self->type == TRACK_TYPE_MARKER && marker);
 
-  marker_set_track_pos (marker, track->pos);
+  marker_set_track_pos (marker, self->pos);
   array_double_size_if_full (
-    track->markers, track->num_markers,
-    track->markers_size, Marker *);
-  array_append (track->markers,
-                track->num_markers,
-                marker);
-  marker->index = track->num_markers - 1;
+    self->markers, self->num_markers,
+    self->markers_size, Marker *);
+  array_append (
+    self->markers, self->num_markers, marker);
+  marker->index = self->num_markers - 1;
+
+  sanity_check (self);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CREATED, marker);

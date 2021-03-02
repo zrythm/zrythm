@@ -243,6 +243,7 @@ mixer_selections_add_slot (
         default:
           break;
         }
+      g_return_if_fail (pl);
       array_double_append (
         ms->slots, ms->plugins, ms->num_slots,
         slot,

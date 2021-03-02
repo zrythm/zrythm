@@ -73,11 +73,11 @@ allocate_buf (
       if (!self->buf)
         {
           self->buf =
-            calloc (
+            object_new_n (
               AUDIO_ENGINE->block_length > 0 ?
                 AUDIO_ENGINE->block_length :
                 1,
-              sizeof (float));
+              float);
         }
     }
 }
@@ -86,13 +86,12 @@ static void
 alloc_srcs (
   Port * self)
 {
-  self->srcs = calloc (1, sizeof (Port *));
+  self->srcs = object_new_n (1, Port *);
   self->src_ids =
-    calloc (1, sizeof (PortIdentifier));
-  self->src_multipliers =
-    calloc (1, sizeof (float));
-  self->src_locked = calloc (1, sizeof (int));
-  self->src_enabled = calloc (1, sizeof (int));
+    object_new_n (1, PortIdentifier);
+  self->src_multipliers = object_new_n (1, float);
+  self->src_locked = object_new_n (1, int);
+  self->src_enabled = object_new_n (1, int);
   self->srcs_size = 1;
 }
 
@@ -100,83 +99,66 @@ static void
 alloc_dests (
   Port * self)
 {
-  self->dests = calloc (1, sizeof (Port *));
+  self->dests = object_new_n (1, Port *);
   self->dest_ids =
-    calloc (1, sizeof (PortIdentifier));
-  self->multipliers = calloc (1, sizeof (float));
-  self->dest_locked = calloc (1, sizeof (int));
-  self->dest_enabled = calloc (1, sizeof (int));
+    object_new_n (1, PortIdentifier);
+  self->multipliers = object_new_n (1, float);
+  self->dest_locked = object_new_n (1, int);
+  self->dest_enabled = object_new_n (1, int);
   self->dests_size = 1;
 }
 
 static void
 realloc_dests (
   Port * src,
-  size_t prev_size,
-  size_t new_size)
+  size_t prev_sz,
+  size_t new_sz)
 {
   src->dests =
-    realloc_zero (
-      src->dests,
-      prev_size * sizeof (Port *),
-      new_size * sizeof (Port *));
+    object_realloc_n (
+      src->dests, prev_sz, new_sz, Port *);
   src->dest_ids =
-    realloc_zero (
-      src->dest_ids,
-      prev_size * sizeof (PortIdentifier),
-      new_size * sizeof (PortIdentifier));
+    object_realloc_n (
+      src->dest_ids, prev_sz, new_sz,
+      PortIdentifier);
   src->multipliers =
-    realloc_zero (
-      src->multipliers,
-      prev_size * sizeof (float),
-      new_size * sizeof (float));
+    object_realloc_n (
+      src->multipliers, prev_sz, new_sz, float);
   src->dest_locked =
-    realloc_zero (
-      src->dest_locked,
-      prev_size * sizeof (int),
-      new_size * sizeof (int));
+    object_realloc_n (
+      src->dest_locked, prev_sz, new_sz, int);
   src->dest_enabled =
-    realloc_zero (
-      src->dest_enabled,
-      prev_size * sizeof (int),
-      new_size * sizeof (int));
+    object_realloc_n (
+      src->dest_enabled, prev_sz, new_sz, int);
 
-  src->dests_size = new_size;
+  src->dests_size = new_sz;
 }
 
 static void
 realloc_srcs (
   Port * dest,
-  size_t prev_size,
-  size_t new_size)
+  size_t prev_sz,
+  size_t new_sz)
 {
   dest->srcs =
-    realloc_zero (
-      dest->srcs,
-      prev_size * sizeof (Port *),
-      new_size * sizeof (Port *));
+    object_realloc_n (
+      dest->srcs, prev_sz, new_sz, Port *);
   dest->src_ids =
-    realloc_zero (
-      dest->src_ids,
-      prev_size * sizeof (PortIdentifier),
-      new_size * sizeof (PortIdentifier));
+    object_realloc_n (
+      dest->src_ids, prev_sz, new_sz,
+      PortIdentifier);
   dest->src_multipliers =
-    realloc_zero (
-      dest->src_multipliers,
-      prev_size * sizeof (float),
-      new_size * sizeof (float));
+    object_realloc_n (
+      dest->src_multipliers, prev_sz, new_sz,
+      float);
   dest->src_locked =
-    realloc_zero (
-      dest->src_locked,
-      prev_size * sizeof (int),
-      new_size * sizeof (int));
+    object_realloc_n (
+      dest->src_locked, prev_sz, new_sz, int);
   dest->src_enabled =
-    realloc_zero (
-      dest->src_enabled,
-      prev_size * sizeof (int),
-      new_size * sizeof (int));
+    object_realloc_n (
+      dest->src_enabled, prev_sz, new_sz, int);
 
-  dest->srcs_size = new_size;
+  dest->srcs_size = new_sz;
 }
 
 /**
@@ -212,7 +194,7 @@ port_init_loaded (
       self->dests_size = (size_t) self->num_dests;
     }
   self->dests =
-    calloc (self->dests_size, sizeof (Port *));
+    object_new_n (self->dests_size, Port *);
 
   if (self->num_srcs == 0)
     {
@@ -224,7 +206,7 @@ port_init_loaded (
       self->srcs_size = (size_t) self->num_srcs;
     }
   self->srcs =
-    calloc (self->srcs_size, sizeof (Port *));
+    object_new_n (self->srcs_size, Port *);
 
   if (!is_project)
     return;
@@ -311,7 +293,6 @@ Port *
 port_find_from_identifier (
   PortIdentifier * id)
 {
-  g_return_val_if_fail (id, NULL);
   Track * tr = NULL;
   Channel * ch = NULL;
   Plugin * pl = NULL;
@@ -355,7 +336,7 @@ port_find_from_identifier (
       break;
     case PORT_OWNER_TYPE_PLUGIN:
       tr = TRACKLIST->tracks[id->track_pos];
-      g_warn_if_fail (IS_TRACK (tr));
+      g_warn_if_fail (IS_TRACK_AND_NONNULL (tr));
       switch (id->plugin_id.slot_type)
         {
         case PLUGIN_SLOT_MIDI_FX:
@@ -732,6 +713,7 @@ stereo_ports_init_loaded (
  *
  * Sets id and updates appropriate counters.
  */
+RETURNS_NONNULL
 static Port *
 _port_new (
   const char * label)
@@ -832,8 +814,7 @@ StereoPorts *
 stereo_ports_new_from_existing (
   Port * l, Port * r)
 {
-  StereoPorts * sp =
-    calloc (1, sizeof (StereoPorts));
+  StereoPorts * sp = object_new (StereoPorts);
   sp->l = l;
   l->id.flags |= PORT_FLAG_STEREO_L;
   r->id.flags |= PORT_FLAG_STEREO_R;
@@ -884,8 +865,6 @@ void
 stereo_ports_disconnect (
   StereoPorts * self)
 {
-  g_return_if_fail (self);
-
   port_disconnect_all (self->l);
   port_disconnect_all (self->r);
 }
@@ -934,6 +913,13 @@ port_receive_midi_events_from_jack (
             jack_ev.buffer[0] & 0xf;
           Track * track =
             port_get_track (self, 0);
+          if (self->id.owner_type ==
+                PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+              !track)
+            {
+              g_return_if_reached ();
+            }
+
           if (self->id.owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR &&
               (track->type ==
@@ -1279,14 +1265,10 @@ stereo_ports_connect (
   StereoPorts * dest,
   int           locked)
 {
-  g_return_if_fail (src && dest);
-
   port_connect (
-    src->l,
-    dest->l, locked);
+    src->l, dest->l, locked);
   port_connect (
-    src->r,
-    dest->r, locked);
+    src->r, dest->r, locked);
 }
 
 /**
@@ -1335,7 +1317,7 @@ port_get_num_unlocked_srcs (Port * port)
 void
 port_get_all (
   Port *** ports,
-  int *    max_size,
+  size_t * max_size,
   bool     is_dynamic,
   int *    size)
 {
@@ -1348,7 +1330,7 @@ port_get_all (
       array_double_size_if_full ( \
         *ports, (*size), (*max_size), Port *); \
     } \
-  else if (*size == *max_size) \
+  else if ((size_t) *size == *max_size) \
     { \
       g_return_if_reached (); \
     } \
@@ -1432,8 +1414,6 @@ port_set_owner_plugin (
   Port *   port,
   Plugin * pl)
 {
-  g_warn_if_fail (port && pl);
-
   plugin_identifier_copy (
     &port->id.plugin_id, &pl->id);
   port->id.track_pos = pl->id.track_pos;
@@ -1467,8 +1447,6 @@ port_set_owner_track (
   Port *    port,
   Track *   track)
 {
-  g_warn_if_fail (port && track);
-
   port->id.track_pos = track->pos;
   port->id.owner_type =
     PORT_OWNER_TYPE_TRACK;
@@ -1482,8 +1460,6 @@ port_set_owner_track_from_channel (
   Port *    port,
   Channel * ch)
 {
-  g_warn_if_fail (port && ch);
-
   port->id.track_pos = ch->track_pos;
   port->id.owner_type = PORT_OWNER_TYPE_TRACK;
 }
@@ -1509,8 +1485,6 @@ port_set_owner_fader (
   Port *    port,
   Fader *   fader)
 {
-  g_warn_if_fail (port && fader);
-
   PortIdentifier * id = &port->id;
 
   if (fader->type == FADER_TYPE_AUDIO_CHANNEL ||
@@ -1645,7 +1619,10 @@ port_connect (
   Port * dest,
   const int locked)
 {
-  g_warn_if_fail (src && dest && src != dest);
+  g_return_val_if_fail (
+    IS_PORT (src) && IS_PORT (dest) &&
+    src != dest, -1);
+
   if (ports_connected (src, dest))
     {
       port_disconnect (src, dest);
@@ -1831,6 +1808,9 @@ port_disconnect (Port * src, Port * dest)
 bool
 ports_connected (Port * src, Port * dest)
 {
+  g_return_val_if_fail (
+    IS_PORT (src) && IS_PORT (dest), false);
+
   return
     array_contains (
       src->dests, src->num_dests, dest);
@@ -2273,6 +2253,13 @@ port_sum_data_from_rtmidi (
                 ev->raw_buffer[0] & 0xf;
               Track * track =
                 port_get_track (self, 0);
+              if (self->id.owner_type ==
+                    PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+                  !track)
+                {
+                  g_return_if_reached ();
+                }
+
               if (self->id.owner_type ==
                     PORT_OWNER_TYPE_TRACK_PROCESSOR &&
                   (track->type ==
@@ -3017,6 +3004,9 @@ port_restore_from_non_project (
       Port * src_port =
         port_find_from_identifier (
           &non_project->src_ids[k]);
+      g_return_if_fail (
+        IS_PORT_AND_NONNULL (src_port));
+
       g_debug (
         "restoring source '%s' for port '%s'",
         non_project->id.label, src_port->id.label);
@@ -3043,6 +3033,9 @@ port_restore_from_non_project (
       Port * dest_port =
         port_find_from_identifier (
           &non_project->dest_ids[k]);
+      g_return_if_fail (
+        IS_PORT_AND_NONNULL (dest_port));
+
       g_debug (
         "restoring dest '%s' for port '%s'",
         non_project->id.label, dest_port->id.label);
@@ -3170,11 +3163,29 @@ port_process (
       AUDIO_ENGINE->nframes);
   g_return_if_fail (IS_PORT (port));
 
+  Track * track = NULL;
+  if (port->id.owner_type ==
+        PORT_OWNER_TYPE_TRACK_PROCESSOR ||
+      port->id.owner_type ==
+        PORT_OWNER_TYPE_TRACK)
+    {
+      track = port_get_track (port, true);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (track));
+    }
+
   switch (port->id.type)
     {
     case TYPE_EVENT:
       if (noroll)
         break;
+
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+          !track)
+        {
+          g_return_if_reached ();
+        }
 
       /* only consider incoming external data if
        * armed for recording (if the port is owner
@@ -3184,7 +3195,7 @@ port_process (
              PORT_OWNER_TYPE_TRACK_PROCESSOR ||
            (port->id.owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-            port_get_track (port, 1)->recording)) &&
+            track && track->recording)) &&
            port->id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
@@ -3265,8 +3276,7 @@ port_process (
                   port->id.owner_type ==
                     PORT_OWNER_TYPE_TRACK_PROCESSOR)
                 {
-                  Track * track =
-                    port_get_track (port, true);
+                  g_return_if_fail (track);
 
                   /* skip if not armed */
                   if (!track->recording)
@@ -3337,8 +3347,9 @@ port_process (
           if (port->id.owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
-              Track * tr = port_get_track (port, 1);
-              tr->trigger_midi_activity = 1;
+              g_return_if_fail (IS_TRACK (track));
+
+              track->trigger_midi_activity = 1;
             }
         }
 
@@ -3391,6 +3402,13 @@ port_process (
           break;
         }
 
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+          !track)
+        {
+          g_return_if_reached ();
+        }
+
       /* only consider incoming external data if
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
@@ -3399,7 +3417,7 @@ port_process (
              PORT_OWNER_TYPE_TRACK_PROCESSOR ||
            (port->id.owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-            port_get_track (port, 1)->recording)) &&
+            track && track->recording)) &&
            port->id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
@@ -3514,8 +3532,9 @@ port_process (
            port->id.flags & PORT_FLAG_STEREO_R) &&
           port->id.flow == FLOW_OUTPUT)
         {
-          Track * tr = port_get_track (port, 1);
-          Channel * ch = tr->channel;
+          g_return_if_fail (
+            IS_TRACK_AND_NONNULL (track));
+          Channel * ch = track->channel;
           g_return_if_fail (ch);
 
           /* calculate meter values */
@@ -3808,7 +3827,6 @@ port_get_full_designation (
   Port * self,
   char * buf)
 {
-  g_return_if_fail (self && buf);
   const PortIdentifier * id = &self->id;
 
   switch (id->owner_type)
@@ -3836,7 +3854,8 @@ port_get_full_designation (
     case PORT_OWNER_TYPE_FADER:
       {
         Track * tr = port_get_track (self, 1);
-        g_return_if_fail (IS_TRACK (tr));
+        g_return_if_fail (
+          IS_TRACK_AND_NONNULL (tr));
         sprintf (
           buf, "%s/%s", tr->name, id->label);
       }
@@ -3937,7 +3956,7 @@ port_get_track (
   if (self->id.track_pos != -1)
     {
       g_return_val_if_fail (
-        self && TRACKLIST, NULL);
+        ZRYTHM && TRACKLIST, NULL);
 
       track =
         TRACKLIST->tracks[self->id.track_pos];
@@ -3956,7 +3975,7 @@ port_get_plugin (
   Port * self,
   bool   warn_if_fail)
 {
-  g_return_val_if_fail (self, NULL);
+  g_return_val_if_fail (IS_PORT (self), NULL);
 
   Track * track = port_get_track (self, 0);
   if (!track && self->tmp_plugin)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/algorithms.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
@@ -155,7 +156,7 @@ quantize_options_clone (
   const QuantizeOptions * src)
 {
   QuantizeOptions * opts =
-    calloc (1, sizeof (QuantizeOptions));
+    object_new (QuantizeOptions);
 
   opts->note_length = src->note_length;
   opts->note_type = src->note_type;

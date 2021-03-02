@@ -59,6 +59,7 @@
 #include "utils/io.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -74,6 +75,17 @@ plugin_init_loaded (
 {
   self->magic = PLUGIN_MAGIC;
   self->is_project = project;
+
+  size_t max_size = 0;
+  Port ** ports = NULL;
+  int num_ports = 0;
+  plugin_append_ports (
+    self, &ports, &max_size, true, &num_ports);
+  for (int i = 0; i < num_ports; i++)
+    {
+      ports[i]->magic = PORT_MAGIC;
+      ports[i]->is_project = project;
+    }
 
   /* set enabled/gain ports */
   for (int i = 0; i < self->num_in_ports; i++)
@@ -175,10 +187,8 @@ plugin_init (
   plugin->id.slot = slot;
   plugin->magic = PLUGIN_MAGIC;
 
-  plugin->in_ports =
-    calloc (1, sizeof (Port *));
-  plugin->out_ports =
-    calloc (1, sizeof (Port *));
+  plugin->in_ports = object_new_n (1, Port *);
+  plugin->out_ports = object_new_n (1, Port *);
 
   /* add enabled port */
   Port * port =
@@ -258,8 +268,7 @@ plugin_add_bank_if_not_exists (
         }
     }
 
-  PluginBank * bank =
-    calloc (1, sizeof (PluginBank));
+  PluginBank * bank = object_new (PluginBank);
 
   bank->id.idx = -1;
   bank->id.bank_idx = self->num_banks;
@@ -554,10 +563,9 @@ plugin_new_dummy (
   int            track_pos,
   int            slot)
 {
-  Plugin * self = calloc (1, sizeof (Plugin));
+  Plugin * self = object_new (Plugin);
 
-  self->descr =
-    calloc (1, sizeof (PluginDescriptor));
+  self->descr = object_new (PluginDescriptor);
   PluginDescriptor * descr = self->descr;
   descr->author = g_strdup ("Hoge");
   descr->name = g_strdup ("Dummy Plugin");
@@ -575,7 +583,7 @@ void
 plugin_append_ports (
   Plugin *  pl,
   Port ***  ports,
-  int *     max_size,
+  size_t *  max_size,
   bool      is_dynamic,
   int *     size)
 {
@@ -585,7 +593,7 @@ plugin_append_ports (
       array_double_size_if_full ( \
         *ports, (*size), (*max_size), Port *); \
     } \
-  else if (*size == *max_size) \
+  else if ((size_t) *size == *max_size) \
     { \
       g_return_if_reached (); \
     } \
@@ -615,9 +623,9 @@ plugin_set_is_project (
 {
   self->is_project = is_project;
 
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   Port * port;
   plugin_append_ports (
@@ -677,7 +685,7 @@ plugin_verify_identifiers (
 {
   g_return_val_if_fail (IS_PLUGIN (self), false);
 
-  g_return_val_if_fail (self->instantiated, false);
+  /*g_return_val_if_fail (self->instantiated, false);*/
 
   return true;
 }
@@ -697,8 +705,6 @@ plugin_move (
   int            slot,
   bool           fire_events)
 {
-  g_return_if_fail (pl && track);
-
   /* confirm if another plugin exists */
   Plugin * existing_pl =
     track_get_plugin_at_slot (
@@ -726,7 +732,11 @@ plugin_move (
   PluginSlotType prev_slot_type =
     pl->id.slot_type;
   Track * prev_track = plugin_get_track (pl);
+  g_return_if_fail (
+    IS_TRACK_AND_NONNULL (prev_track));
   Channel * prev_ch = plugin_get_channel (pl);
+  g_return_if_fail (
+    IS_CHANNEL_AND_NONNULL (prev_ch));
 
   /* if existing plugin exists, delete it */
   if (existing_pl)
@@ -819,8 +829,7 @@ plugin_get_track (
   Plugin * self)
 {
   g_return_val_if_fail (
-    self &&
-      self->id.track_pos < TRACKLIST->num_tracks,
+    self->id.track_pos < TRACKLIST->num_tracks,
     NULL);
   Track * track =
     TRACKLIST->tracks[self->id.track_pos];
@@ -849,24 +858,39 @@ plugin_find (
   plugin_identifier_copy (
     &plugin.id, id);
   Track * track = plugin_get_track (&plugin);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), NULL);
+
   Channel * ch = NULL;
-  if (track->type != TRACK_TYPE_MODULATOR)
+  if (track->type != TRACK_TYPE_MODULATOR ||
+      id->slot_type == PLUGIN_SLOT_MIDI_FX ||
+      id->slot_type == PLUGIN_SLOT_INSTRUMENT ||
+      id->slot_type == PLUGIN_SLOT_INSERT)
     {
       ch = plugin_get_channel (&plugin);
+      g_return_val_if_fail (ch, NULL);
     }
   Plugin * ret = NULL;
   switch (id->slot_type)
     {
     case PLUGIN_SLOT_MIDI_FX:
+      g_return_val_if_fail (
+        IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->midi_fx[id->slot];
       break;
     case PLUGIN_SLOT_INSTRUMENT:
+      g_return_val_if_fail (
+        IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->instrument;
       break;
     case PLUGIN_SLOT_INSERT:
+      g_return_val_if_fail (
+        IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->inserts[id->slot];
       break;
     case PLUGIN_SLOT_MODULATOR:
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), NULL);
       ret = track->modulators[id->slot];
       break;
     default:
@@ -988,10 +1012,12 @@ char *
 plugin_generate_window_title (
   Plugin * plugin)
 {
+  g_return_val_if_fail (plugin->descr, NULL);
+
+  Track * track = plugin_get_track (plugin);
   g_return_val_if_fail (
-    plugin && plugin->descr, NULL);
-  Track * track =
-    plugin_get_track (plugin);
+    IS_TRACK_AND_NONNULL (track), NULL);
+
   const char* track_name = track->name;
   const char* plugin_name = plugin->descr->name;
   g_return_val_if_fail (
@@ -1182,7 +1208,7 @@ plugin_update_latency (
       else \
         pl->type##_ports_size *= 2; \
       pl->type##_ports = \
-        realloc ( \
+        g_realloc ( \
           pl->type##_ports, \
           sizeof (Port *) * \
             pl->type##_ports_size); \
@@ -1857,7 +1883,7 @@ plugin_select (
     }
 
   Track * track = plugin_get_track (pl);
-  g_return_if_fail (IS_TRACK (track));
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   if (select)
     {
@@ -2107,6 +2133,8 @@ plugin_clone (
             plugin_new_from_descr (
               pl->descr, pl->id.track_pos,
               pl->id.slot_type, pl->id.slot);
+          g_return_val_if_fail (
+            IS_PLUGIN_AND_NONNULL (clone), NULL);
 
           /* instantiate using the state */
           int ret =
@@ -2331,8 +2359,6 @@ plugin_get_event_ports (
   Port **  ports,
   int      input)
 {
-  g_return_val_if_fail (pl && ports, -1);
-
   int index = 0;
 
   if (input)

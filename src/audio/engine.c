@@ -827,10 +827,9 @@ engine_realloc_port_buffers (
   /** reallocate port buffers to new size */
   Channel * ch;
   Plugin * pl;
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc (
-      (size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   port_get_all (
     &ports, &max_size, true, &num_ports);

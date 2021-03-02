@@ -25,6 +25,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -46,7 +47,7 @@ transport_action_new_bpm_change (
   bool            already_done)
 {
   TransportAction * self =
-    calloc (1, sizeof (TransportAction));
+    object_new (TransportAction);
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_TRANSPORT;
 
@@ -68,7 +69,7 @@ transport_action_new_time_sig_change (
   bool            already_done)
 {
   TransportAction * self =
-    calloc (1, sizeof (TransportAction));
+    object_new (TransportAction);
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_TRANSPORT;
 

@@ -20,6 +20,7 @@
 #include "actions/undo_stack.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/stack.h"
 #include "zrythm.h"

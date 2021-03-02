@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,6 +47,7 @@
 #include "plugins/plugin_gtk.h"
 #include "settings/settings.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -185,9 +186,9 @@ plugin_gtk_preset_menu_new (
   const char* label)
 {
   PluginGtkPresetMenu* menu =
-    (PluginGtkPresetMenu*) calloc (1, sizeof(PluginGtkPresetMenu));
+    object_new (PluginGtkPresetMenu);
 
-  menu->label = g_strdup(label);
+  menu->label = g_strdup (label);
   menu->item =
     GTK_MENU_ITEM (
       gtk_menu_item_new_with_label(menu->label));

@@ -1949,14 +1949,14 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test create timeline",
+    (GTestFunc) test_create_timeline);
+  g_test_add_func (
     TEST_PREFIX "test midi region split",
     (GTestFunc) test_midi_region_split);
   g_test_add_func (
     TEST_PREFIX "test duplicate midi regions to track below",
     (GTestFunc) test_duplicate_midi_regions_to_track_below);
-  g_test_add_func (
-    TEST_PREFIX "test create timeline",
-    (GTestFunc) test_create_timeline);
   g_test_add_func (
     TEST_PREFIX "test delete timeline",
     (GTestFunc) test_delete_timeline);

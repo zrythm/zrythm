@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019,2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,14 +18,16 @@
  */
 
 #include "utils/dictionary.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 
 Dictionary *
 dictionary_new (void)
 {
   Dictionary proto = {
-    0, 10, malloc (10 * sizeof (DictionaryEntry))
+    0, 10, object_new_n (10, DictionaryEntry)
   };
-  Dictionary * d = malloc(sizeof(Dictionary));
+  Dictionary * d = object_new (Dictionary);
   *d = proto;
   return d;
 }
@@ -61,21 +63,21 @@ _dictionary_add (
   const char * key,
   void *       value)
 {
-  int idx = dictionary_find_index(dict, key);
+  int idx = dictionary_find_index (dict, key);
   if (idx != -1)
     {
-      dict->entry[idx].val= value;
+      dict->entry[idx].val = value;
       return;
     }
   if (dict->len == (int) dict->size)
     {
-      dict->size *= 2;
       dict->entry =
-        realloc (
-          dict->entry,
-          dict->size * sizeof( DictionaryEntry));
+        object_realloc_n (
+          dict->entry, dict->size,
+          dict->size * 2, DictionaryEntry);
+      dict->size *= 2;
     }
-  dict->entry[dict->len].key = strdup (key);
+  dict->entry[dict->len].key = g_strdup (key);
   dict->entry[dict->len].val = value;
   dict->len++;
 }
@@ -86,8 +88,8 @@ dictionary_free (
 {
   for (int i = 0; i < dict->len; i++)
     {
-      free (dict->entry[i].key);
+      g_free_and_null (dict->entry[i].key);
     }
-  free(dict->entry);
-  free(dict);
+  free (dict->entry);
+  free (dict);
 }

@@ -542,11 +542,13 @@ fader_get_channel (
   Fader * self)
 {
   Track * track = fader_get_track (self);
-  g_return_val_if_fail (IS_TRACK (track), NULL);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), NULL);
 
   Channel * ch =
     track_get_channel (track);
-  g_return_val_if_fail (IS_CHANNEL (ch), NULL);
+  g_return_val_if_fail (
+    IS_CHANNEL_AND_NONNULL (ch), NULL);
 
   return ch;
 }
@@ -741,7 +743,8 @@ fader_process (
   if (self->type == FADER_TYPE_AUDIO_CHANNEL)
     {
       track = fader_get_track (self);
-      g_return_if_fail (track);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (track));
     }
 
   if (self->type == FADER_TYPE_AUDIO_CHANNEL ||
@@ -804,6 +807,7 @@ fader_process (
                 track != P_MASTER_TRACK) ||
               (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
                self->type == FADER_TYPE_AUDIO_CHANNEL &&
+               track &&
                track->out_signal_type == TYPE_AUDIO &&
                track->type != TRACK_TYPE_MASTER &&
                !track->bounce))
@@ -853,6 +857,7 @@ fader_process (
            * needed, return */
           if (self->type ==
                 FADER_TYPE_AUDIO_CHANNEL &&
+              track &&
               track->type != TRACK_TYPE_MASTER)
             {
                 return;

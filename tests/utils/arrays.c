@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,8 @@
 #include <stdlib.h>
 
 #include "utils/arrays.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 
 #include <glib.h>
 
@@ -97,6 +99,36 @@ test_array_dynamic_swap ()
   g_assert_cmpuint (sz2, ==, 0);
 }
 
+static void
+test_double_size_if_full ()
+{
+  size_t size = 3;
+  int * arr =
+    calloc (size, sizeof (int));
+
+  arr[0] = 15;
+  arr[1] = 16;
+  arr[2] = 17;
+  int num_objs = 3;
+
+  size_t orig_sz = size;
+  array_double_size_if_full (
+    arr, num_objs, size, int);
+
+  g_assert_cmpuint (
+    size, ==, orig_sz * 2);
+
+  array_append (arr, num_objs, 18);
+
+  g_assert_cmpint (num_objs, ==, 4);
+  g_assert_cmpint (arr[0], ==, 15);
+  g_assert_cmpint (arr[1], ==, 16);
+  g_assert_cmpint (arr[2], ==, 17);
+  g_assert_cmpint (arr[3], ==, 18);
+  g_assert_cmpint (arr[4], ==, 0);
+  g_assert_cmpint (arr[5], ==, 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -107,6 +139,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test array dynamic swap",
     (GTestFunc) test_array_dynamic_swap);
+  g_test_add_func (
+    TEST_PREFIX "test double size if full",
+    (GTestFunc) test_double_size_if_full);
 
   return g_test_run ();
 }

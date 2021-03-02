@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
  * Stack implementation.
  */
 
+#include "utils/objects.h"
 #include "utils/stack.h"
 
 int
@@ -54,7 +55,7 @@ stack_is_full (Stack * s)
 Stack *
 stack_new (int length)
 {
-  Stack * self = calloc (1, sizeof (Stack));
+  Stack * self = object_new (Stack);
 
   if (length == -1)
     {
@@ -63,7 +64,7 @@ stack_new (int length)
   else
     {
       self->elements =
-        calloc ((size_t) length, sizeof (void *));
+        object_new_n ((size_t) length, void *);
       self->max_length = length;
     }
   self->top = -1;
@@ -105,7 +106,7 @@ stack_push (
       if (s->max_length == -1)
         {
           s->elements =
-            realloc (
+            g_realloc (
               s->elements,
               (size_t) (top + 2) * sizeof (void *));
         }

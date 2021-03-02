@@ -461,6 +461,17 @@ test_cflags = [
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   ]
 
+# add attribute macros
+attributes = [
+  'const', 'hot', 'pure', 'nonnull',
+  'returns_nonnull', 'stack_protect',
+  'no_stack_protector', 'deprecated',
+  ]
+foreach a : attributes
+  test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
+endforeach
+test_cflags += '-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))'
+
 if cc.get_id() == 'clang'
   test_cflags += [
     '-DREALTIME=__attribute__((annotate("realtime")))',
@@ -602,6 +613,18 @@ test_strict_cflags = [
   '-Werror=comment',
   '-Werror=sizeof-pointer-div',
   '-Werror=shift-count-overflow',
+  '-Werror=free-nonheap-object',
+  '-fanalyzer',
+  '-Werror=analyzer-possible-null-dereference',
+  '-Werror=analyzer-malloc-leak',
+  '-Werror=analyzer-null-dereference',
+  '-Werror=analyzer-null-argument',
+  '-Werror=analyzer-use-after-free',
+  '-Werror=analyzer-possible-null-argument',
+  '-Werror=analyzer-double-free',
+  '-Werror=analyzer-file-leak',
+  '-Werror=nonnull',
+  '-Werror=nonnull-compare',
   ]
 
 if cc.get_id() == 'gcc'

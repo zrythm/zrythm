@@ -78,8 +78,9 @@ typedef enum PanLaw PanLaw;
 
 #define PORT_MAGIC 456861194
 #define IS_PORT(_p) \
-  ((_p) && \
-   ((Port *) (_p))->magic == PORT_MAGIC)
+  (((Port *) (_p))->magic == PORT_MAGIC)
+#define IS_PORT_AND_NONNULL(x) \
+  ((x) && IS_PORT (x))
 
 #define FOREACH_SRCS(port) \
   for (int i = 0; i < port->num_srcs; i++)
@@ -594,15 +595,18 @@ static const cyaml_schema_value_t
  * Should be called after the ports are loaded from
  * yml.
  */
+NONNULL
 void
 port_init_loaded (
   Port * self,
   bool   is_project);
 
+NONNULL
 Port *
 port_find_from_identifier (
   PortIdentifier * id);
 
+NONNULL
 void
 stereo_ports_init_loaded (
   StereoPorts * sp,
@@ -611,6 +615,7 @@ stereo_ports_init_loaded (
 /**
  * Creates port.
  */
+NONNULL
 Port *
 port_new_with_type (
   PortType     type,
@@ -636,6 +641,7 @@ port_new_with_data (
 /**
  * Creates blank stereo ports.
  */
+NONNULL
 StereoPorts *
 stereo_ports_new_from_existing (Port * l, Port * r);
 
@@ -661,16 +667,19 @@ stereo_ports_new_generic (
  *
  * @return Non-zero if error.
  */
+NONNULL
 void
 stereo_ports_connect (
   StereoPorts * src,
   StereoPorts * dest,
   int           locked);
 
+NONNULL
 void
 stereo_ports_disconnect (
   StereoPorts * self);
 
+NONNULL
 void
 stereo_ports_fill_from_clip (
   StereoPorts * self,
@@ -679,6 +688,7 @@ stereo_ports_fill_from_clip (
   nframes_t     start_frame,
   nframes_t     nframes);
 
+NONNULL
 void
 stereo_ports_free (
   StereoPorts * self);
@@ -688,6 +698,7 @@ stereo_ports_free (
  * Receives MIDI data from the port's exposed
  * JACK port (if any) into the port.
  */
+NONNULL
 void
 port_receive_midi_events_from_jack (
   Port *          self,
@@ -698,6 +709,7 @@ port_receive_midi_events_from_jack (
  * Receives audio data from the port's exposed
  * JACK port (if any) into the port.
  */
+NONNULL
 void
 port_receive_audio_data_from_jack (
   Port *          self,
@@ -710,6 +722,7 @@ port_receive_audio_data_from_jack (
  * format "Track/Port" or "Track/Plugin/Port" in
  * \p buf.
  */
+NONNULL
 void
 port_get_full_designation (
   Port * self,
@@ -727,15 +740,17 @@ port_get_full_designation (
 void
 port_get_all (
   Port *** ports,
-  int *    max_size,
+  size_t * max_size,
   bool     is_dynamic,
   int *    size);
 
+NONNULL
 Track *
 port_get_track (
   const Port * self,
   int          warn_if_fail);
 
+NONNULL
 Plugin *
 port_get_plugin (
   Port * self,
@@ -761,6 +776,7 @@ port_update_identifier (
  * Returns the index of the destination in the dest
  * array.
  */
+NONNULL
 static inline int
 port_get_dest_index (
   Port * self,
@@ -782,6 +798,7 @@ port_get_dest_index (
  * Returns the index of the source in the source
  * array.
  */
+NONNULL
 static inline int
 port_get_src_index (
   Port * self,
@@ -803,6 +820,7 @@ port_get_src_index (
  * Set the multiplier for a destination by its
  * index in the dest array.
  */
+NONNULL
 static inline void
 port_set_multiplier_by_index (
   Port * port,
@@ -816,6 +834,7 @@ port_set_multiplier_by_index (
  * Set the multiplier for a destination by its
  * index in the dest array.
  */
+NONNULL
 static inline void
 port_set_src_multiplier_by_index (
   Port * port,
@@ -829,6 +848,7 @@ port_set_src_multiplier_by_index (
  * Get the multiplier for a destination by its
  * index in the dest array.
  */
+NONNULL
 static inline float
 port_get_multiplier_by_index (
   Port * port,
@@ -837,23 +857,27 @@ port_get_multiplier_by_index (
   return port->multipliers[idx];
 }
 
+NONNULL
 void
 port_set_multiplier (
   Port * src,
   Port * dest,
   float  val);
 
+NONNULL
 float
 port_get_multiplier (
   Port * src,
   Port * dest);
 
+NONNULL
 void
 port_set_enabled (
   Port * src,
   Port * dest,
   bool   enabled);
 
+NONNULL
 bool
 port_get_enabled (
   Port * src,
@@ -864,6 +888,7 @@ port_get_enabled (
  * Dequeue the midi events from the ring
  * buffers into \ref RtMidiDevice.events.
  */
+NONNULL
 void
 port_prepare_rtmidi_events (
   Port * self);
@@ -872,6 +897,7 @@ port_prepare_rtmidi_events (
  * Sums the inputs coming in from RtMidi
  * before the port is processed.
  */
+NONNULL
 void
 port_sum_data_from_rtmidi (
   Port * self,
@@ -884,6 +910,7 @@ port_sum_data_from_rtmidi (
  * Dequeue the audio data from the ring
  * buffers into \ref RtAudioDevice.buf.
  */
+NONNULL
 void
 port_prepare_rtaudio_data (
   Port * self);
@@ -892,6 +919,7 @@ port_prepare_rtaudio_data (
  * Sums the inputs coming in from RtAudio
  * before the port is processed.
  */
+NONNULL
 void
 port_sum_data_from_rtaudio (
   Port * self,
@@ -902,6 +930,7 @@ port_sum_data_from_rtaudio (
 /**
  * Disconnects all hardware inputs from the port.
  */
+NONNULL
 void
 port_disconnect_hw_inputs (
   Port * self);
@@ -909,6 +938,7 @@ port_disconnect_hw_inputs (
 /**
  * Deletes port, doing required cleanup and updating counters.
  */
+NONNULL
 void
 port_free (Port * port);
 
@@ -919,6 +949,7 @@ port_free (Port * port);
  * It checks what the backend is using the engine's
  * audio backend or midi backend settings.
  */
+NONNULL
 void
 port_set_expose_to_backend (
   Port * self,
@@ -927,6 +958,7 @@ port_set_expose_to_backend (
 /**
  * Returns if the port is exposed to the backend.
  */
+NONNULL
 int
 port_is_exposed_to_backend (
   const Port * self);
@@ -934,6 +966,7 @@ port_is_exposed_to_backend (
 /**
  * Renames the port on the backend side.
  */
+NONNULL
 void
 port_rename_backend (
   Port * self);
@@ -966,6 +999,7 @@ port_find_by_alsa_seq_id (
  *   from within Zrythm, this should be true to
  *   notify the plugin of the change.
  */
+NONNULL
 void
 port_set_control_value (
   Port *      self,
@@ -980,11 +1014,13 @@ port_set_control_value (
  * @param normalize Whether to get the value
  *   normalized or not.
  */
+NONNULL
 float
 port_get_control_value (
   Port *      self,
   const bool  normalize);
 
+NONNULL
 void
 port_set_is_project (
   Port * self,
@@ -995,6 +1031,7 @@ port_set_is_project (
  *
  * @param locked Lock the connection or not.
  */
+NONNULL
 int
 port_connect (
   Port * src,
@@ -1004,12 +1041,14 @@ port_connect (
 /**
  * Disconnects src from dest.
  */
+NONNULL
 int
 port_disconnect (Port * src, Port * dest);
 
 /**
  * Disconnects dests of port.
  */
+NONNULL
 static inline int
 port_disconnect_dests (Port * src)
 {
@@ -1026,6 +1065,7 @@ port_disconnect_dests (Port * src)
  * Returns the number of unlocked (user-editable)
  * sources.
  */
+NONNULL
 int
 port_get_num_unlocked_srcs (Port * port);
 
@@ -1033,6 +1073,7 @@ port_get_num_unlocked_srcs (Port * port);
  * Returns the number of unlocked (user-editable)
  * destinations.
  */
+NONNULL
 int
 port_get_num_unlocked_dests (Port * port);
 
@@ -1055,6 +1096,7 @@ port_update_track_pos (
  *   0 in this cycle.
  * @param nframes The number of frames to process.
  */
+NONNULL
 static inline void
 port_apply_fader (
   Port *    port,
@@ -1079,6 +1121,7 @@ port_apply_fader (
  * @param noroll Clear the port buffer in this
  *   range.
  */
+NONNULL
 void
 port_process (
   Port *          port,
@@ -1090,6 +1133,7 @@ port_process (
 /**
  * Sets the owner track & its ID.
  */
+NONNULL
 void
 port_set_owner_track (
   Port *    port,
@@ -1098,6 +1142,7 @@ port_set_owner_track (
 /**
  * Sets the owner track & its ID.
  */
+NONNULL
 void
 port_set_owner_track_from_channel (
   Port *    port,
@@ -1106,6 +1151,7 @@ port_set_owner_track_from_channel (
 /**
  * Sets the owner track & its ID.
  */
+NONNULL
 void
 port_set_owner_track_processor (
   Port *           port,
@@ -1114,6 +1160,7 @@ port_set_owner_track_processor (
 /**
  * Sets the owner sample processor.
  */
+NONNULL
 void
 port_set_owner_sample_processor (
   Port *   port,
@@ -1122,6 +1169,7 @@ port_set_owner_sample_processor (
 /**
  * Sets the owner fader & its ID.
  */
+NONNULL
 void
 port_set_owner_fader (
   Port *    port,
@@ -1140,6 +1188,7 @@ port_set_owner_prefader (
 /**
  * Sets the owner plugin & its ID.
  */
+NONNULL
 void
 port_set_owner_plugin (
   Port *   port,
@@ -1149,6 +1198,7 @@ port_set_owner_plugin (
  * Returns if the connection from \p src to \p
  * dest is locked or not.
  */
+NONNULL
 int
 port_is_connection_locked (
   Port * src,
@@ -1157,6 +1207,7 @@ port_is_connection_locked (
 /**
  * Returns if the two ports are connected or not.
  */
+NONNULL
 bool
 ports_connected (
   Port * src, Port * dest);
@@ -1166,6 +1217,7 @@ ports_connected (
  * the connection will be valid and won't break the
  * acyclicity of the graph).
  */
+NONNULL
 bool
 ports_can_be_connected (
   const Port * src,
@@ -1174,6 +1226,7 @@ ports_can_be_connected (
 /**
  * Disconnects all the given ports.
  */
+NONNULL
 void
 ports_disconnect (
   Port ** ports,
@@ -1184,6 +1237,7 @@ ports_disconnect (
  * Removes all the given ports from the project,
  * optionally freeing them.
  */
+NONNULL
 int
 ports_remove (
   Port ** ports,
@@ -1196,6 +1250,7 @@ ports_remove (
  * Used when doing delete actions so that ports
  * can be restored on undo.
  */
+NONNULL
 void
 port_copy_metadata_from_project (
   Port * self,
@@ -1211,6 +1266,7 @@ port_copy_metadata_from_project (
  * @param self Project port.
  * @param non_project Non-project port.
  */
+NONNULL
 void
 port_restore_from_non_project (
   Port * self,
@@ -1225,12 +1281,14 @@ port_print_connections_all (void);
 /**
  * Clears the port buffer.
  */
+NONNULL
 void
 port_clear_buffer (Port * port);
 
 /**
  * Disconnects all srcs and dests from port.
  */
+NONNULL
 int
 port_disconnect_all (Port * port);
 
@@ -1238,6 +1296,7 @@ port_disconnect_all (Port * port);
  * Verifies that the srcs and dests are correct
  * for project ports.
  */
+NONNULL
 void
 port_verify_src_and_dests (
   Port * self);
@@ -1245,6 +1304,7 @@ port_verify_src_and_dests (
 /**
  * Applies the pan to the given L/R ports.
  */
+NONNULL
 void
 port_apply_pan_stereo (Port *       l,
                        Port *       r,
@@ -1259,6 +1319,7 @@ port_apply_pan_stereo (Port *       l,
  *   0 in this cycle.
  * @param nframes The number of frames to process.
  */
+NONNULL
 void
 port_apply_pan (
   Port *       port,

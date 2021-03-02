@@ -91,6 +91,9 @@ channel_send_get_target_track (
     return NULL;
 
   Track * track = channel_send_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), NULL);
+
   Port * port;
   switch (track->out_signal_type)
     {
@@ -145,6 +148,8 @@ update_connections (
     return;
 
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
   Port * self_port, * dest_port;
   int idx;
   switch (track->out_signal_type)
@@ -197,6 +202,9 @@ channel_send_get_amount_for_widgets (
   g_return_val_if_fail (!self->is_empty, 0.f);
 
   Track * track = channel_send_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), 0.f);
+
   switch (track->out_signal_type)
     {
     case TYPE_AUDIO:
@@ -223,6 +231,8 @@ channel_send_set_amount_from_widget (
   g_return_if_fail (!self->is_empty);
 
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
   switch (track->out_signal_type)
     {
     case TYPE_AUDIO:
@@ -270,6 +280,8 @@ channel_send_connect_stereo (
     }
 
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
   StereoPorts * self_stereo =
     channel_send_is_prefader (self) ?
       track->channel->prefader->stereo_out :
@@ -310,6 +322,8 @@ channel_send_connect_midi (
     &self->dest_midi_id, &port->id);
 
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
   Port * self_port =
     channel_send_is_prefader (self) ?
       track->channel->prefader->midi_out :
@@ -326,6 +340,8 @@ disconnect_midi (
   ChannelSend * self)
 {
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
   Port * self_port =
     channel_send_is_prefader (self) ?
       track->channel->prefader->midi_out :
@@ -340,6 +356,8 @@ disconnect_audio (
   ChannelSend * self)
 {
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
   StereoPorts * self_stereo =
     channel_send_is_prefader (self) ?
       track->channel->prefader->stereo_out :
@@ -367,6 +385,8 @@ channel_send_disconnect (
   g_message ("disconnecting send %p", self);
 
   Track * track = channel_send_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
   if (self->is_sidechain)
     {
       disconnect_audio (self);
@@ -442,6 +462,7 @@ channel_send_get_dest_name (
         {
           Plugin * pl =
             port_get_plugin (port, true);
+          g_return_if_fail (IS_PLUGIN (pl));
           plugin_get_full_port_group_designation (
             pl, port->id.port_group, buf);
         }
@@ -452,6 +473,8 @@ channel_send_get_dest_name (
             {
             case PORT_OWNER_TYPE_TRACK_PROCESSOR:
               track = port_get_track (port, true);
+              g_return_if_fail (
+                IS_TRACK_AND_NONNULL (track));
               sprintf (
                 buf, _("%s input"),
                 track->name);
@@ -497,6 +520,8 @@ channel_send_find (
     TRACKLIST->num_tracks > self->track_pos, NULL);
 
   Track * track = channel_send_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), NULL);
 
   return
     &track->channel->sends[self->slot];

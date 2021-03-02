@@ -250,7 +250,7 @@ create_port (
         port_find_from_identifier (
           &lv2_port->port_id);
       lv2_port->port->buf =
-        realloc (
+        g_realloc (
           lv2_port->port->buf,
           (size_t) AUDIO_ENGINE->block_length *
             sizeof (float));
@@ -769,17 +769,16 @@ lv2_create_or_init_ports (
           self->lilv_plugin);
       self->ports =
         (Lv2Port*)
-        calloc (
-          (size_t) self->num_ports,
-          sizeof (Lv2Port));
+        object_new_n (
+          (size_t) self->num_ports, Lv2Port);
     }
 
   float* default_values =
     (float*)
-    calloc (
+    object_new_n (
       lilv_plugin_get_num_ports (
         self->lilv_plugin),
-      sizeof(float));
+      float);
   lilv_plugin_get_port_ranges_float (
     self->lilv_plugin,
     NULL, NULL, default_values);
@@ -1341,31 +1340,42 @@ lv2_plugin_create_descriptor_from_lilv (
       return NULL;
     }
 
+  /* Zrythm splits the processing cycle so
+   * powerof2 and fixed block length are not
+   * supported */
   LilvNodes *required_features =
     lilv_plugin_get_required_features (lp);
   if (lilv_nodes_contains (
         required_features,
         PM_GET_NODE (
-          LV2_BUF_SIZE__powerOf2BlockLength)) ||
-      lilv_nodes_contains (
-        required_features,
-        PM_GET_NODE (
-          LV2_BUF_SIZE__fixedBlockLength)))
+          LV2_BUF_SIZE__powerOf2BlockLength)))
     {
       g_message (
         "Ignoring LV2 Plugin %s because "
-        "its buffer-size requirements "
-        "cannot be satisfied.",
+        "it requires a power of 2 block length",
         lilv_node_as_string (name));
       lilv_nodes_free (required_features);
       lilv_node_free (name);
       return NULL;
-  }
+    }
+   if (lilv_nodes_contains (
+         required_features,
+         PM_GET_NODE (
+           LV2_BUF_SIZE__fixedBlockLength)))
+    {
+      g_message (
+        "Ignoring LV2 Plugin %s because "
+        "it requires fixed block length",
+        lilv_node_as_string (name));
+      lilv_nodes_free (required_features);
+      lilv_node_free (name);
+      return NULL;
+    }
   lilv_nodes_free (required_features);
 
   /* set descriptor info */
   PluginDescriptor * pd =
-    calloc (1, sizeof (PluginDescriptor));
+    object_new (PluginDescriptor);
   pd->protocol = PROT_LV2;
   pd->arch = ARCH_64;
   const char * str = lilv_node_as_string (name);
@@ -2910,7 +2920,7 @@ lv2_plugin_populate_banks (
       LV2_ZRYTHM__defaultBank,
       _("Default bank"));
   PluginPreset * pl_def_preset =
-    calloc (1, sizeof (PluginPreset));
+    object_new (PluginPreset);
   pl_def_preset->uri =
     g_strdup (LV2_ZRYTHM__initPreset);
   pl_def_preset->name = g_strdup (_("Init"));
@@ -2966,7 +2976,7 @@ lv2_plugin_populate_banks (
           const LilvNode* label =
             lilv_nodes_get_first(labels);
           PluginPreset * pl_preset =
-            calloc (1, sizeof (PluginPreset));
+            object_new (PluginPreset);
           pl_preset->uri =
             g_strdup (lilv_node_as_string (preset));
           pl_preset->name =

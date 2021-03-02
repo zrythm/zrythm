@@ -52,7 +52,7 @@ typedef struct RegionLinkGroup
   /** Identifiers for regions in this link group. */
   RegionIdentifier * ids;
   int                num_ids;
-  int                ids_size;
+  size_t             ids_size;
 
   int                magic;
 

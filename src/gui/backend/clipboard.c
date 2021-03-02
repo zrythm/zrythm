@@ -94,6 +94,8 @@ clipboard_free (
 {
   ArrangerSelections * sel =
     clipboard_get_selections (self);
+  g_return_if_fail (sel);
+
   arranger_selections_free_full (sel);
 
   g_free_and_null (self);

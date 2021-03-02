@@ -112,6 +112,8 @@ test_helper_zrythm_gui_init (
   } G_STMT_END
 #endif
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wanalyzer-unsafe-call-within-signal-handler"
 static void
 segv_handler (int sig)
 {
@@ -130,6 +132,7 @@ segv_handler (int sig)
 
   exit (sig);
 }
+#pragma GCC diagnostic pop
 
 static void
 _test_helper_zrythm_init (

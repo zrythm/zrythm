@@ -21,6 +21,8 @@
 
 #include "audio/region_link_group_manager.h"
 #include "utils/arrays.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 
 void
 region_link_group_manager_init (
@@ -51,8 +53,7 @@ region_link_group_manager_add_group (
   RegionLinkGroupManager * self)
 {
   g_warn_if_fail (
-    self->num_groups >= 0 &&
-    self->groups_size >= 0);
+    self->num_groups >= 0);
 
   array_double_size_if_full (
     self->groups, self->num_groups,
@@ -72,8 +73,7 @@ region_link_group_manager_get_group (
   int                      group_id)
 {
   g_warn_if_fail (
-    self->num_groups >= 0 &&
-    self->groups_size >= 0);
+    self->num_groups >= 0);
 
   RegionLinkGroup * group = &self->groups[group_id];
   g_return_val_if_fail (
@@ -97,7 +97,7 @@ region_link_group_manager_remove_group (
   RegionLinkGroup * group =
     region_link_group_manager_get_group (
       self, group_id);
-  g_return_if_fail (group->num_ids == 0);
+  g_return_if_fail (group && group->num_ids == 0);
 
   --self->num_groups;
   for (int j = group_id; j < self->num_groups; j++)
@@ -112,7 +112,5 @@ region_link_group_manager_remove_group (
         group, next_group);
     }
 
-  g_warn_if_fail (
-    self->num_groups >= 0 &&
-    self->groups_size >= 0);
+  g_warn_if_fail (self->num_groups >= 0);
 }

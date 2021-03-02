@@ -1078,7 +1078,7 @@ create_fade_preset_menu (
   submenu_item = \
     GTK_MENU_ITEM ( \
       gtk_menu_item_new_with_label (name)); \
-  opts = calloc (1, sizeof (CurveOptionInfo)); \
+  opts = object_new (CurveOptionInfo); \
   opts->opts.algo = CURVE_ALGORITHM_##xalgo; \
   opts->opts.curviness = curve; \
   opts->fade_in = fade_in; \
@@ -1203,7 +1203,7 @@ create_musical_mode_pset_menu (
 
   for (int i = 0; i <= REGION_MUSICAL_MODE_ON; i++)
     {
-      nfo = calloc (1, sizeof (MusicalModeInfo));
+      nfo = object_new (MusicalModeInfo);
       nfo->mode = i;
       nfo->obj = obj;
       g_signal_connect (

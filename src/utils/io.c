@@ -54,6 +54,7 @@
 
 #include "utils/file.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/system.h"
 #include "zrythm.h"
@@ -123,8 +124,6 @@ io_touch_file (const char * filename)
 char *
 io_file_strip_ext (const char * filename)
 {
-  g_return_val_if_fail (filename, NULL);
-
   /* if last char is a dot, return the string
    * without the dot */
   size_t len = strlen (filename);
@@ -169,8 +168,6 @@ char *
 io_path_get_parent_dir (
   const char * path)
 {
-  g_return_val_if_fail (path, NULL);
-
 #ifdef _WOE32
 #define PATH_SEP "\\\\"
 #define ROOT_REGEX "[A-Z]:" PATH_SEP
@@ -365,7 +362,8 @@ append_files_from_dir_ending_in (
  * @param dir The directory to look for.
  *
  * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev().
+ *   must be free'd with g_strfreev(), or NULL if
+ *   no files were found.
  */
 char **
 io_get_files_in_dir_ending_in (
@@ -373,12 +371,17 @@ io_get_files_in_dir_ending_in (
   const int    recursive,
   const char * end_string)
 {
-  char ** arr =
-    calloc (1, sizeof (char *));
+  char ** arr = object_new_n (1, char *);
   int count = 0;
 
   append_files_from_dir_ending_in (
     &arr, &count, recursive, _dir, end_string);
+
+  if (count == 0)
+    {
+      free (arr);
+      return NULL;
+    }
 
   return arr;
 }

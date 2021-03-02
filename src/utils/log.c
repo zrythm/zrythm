@@ -673,7 +673,7 @@ int
 log_idle_cb (
   Log * self)
 {
-  if (!self || !self->mqueue)
+  if (!self->mqueue)
     return G_SOURCE_CONTINUE;
 
   /* write queued messages */
@@ -1040,6 +1040,8 @@ log_get_last_n_lines (
 
   /* clear up memory after use */
   free (lines);
+
+  fclose (fp);
 
   return g_string_free (str, false);
 }

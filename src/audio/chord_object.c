@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "gui/widgets/chord_object.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 /**
@@ -37,8 +38,7 @@ chord_object_new (
   int                chord_index,
   int                index)
 {
-  ChordObject * self =
-    calloc (1, sizeof (ChordObject));
+  ChordObject * self = object_new (ChordObject);
 
   ArrangerObject * obj =
     (ArrangerObject *) self;

@@ -256,6 +256,11 @@ tracklist_set_track_pinned (
   int         publish_events,
   int         recalc_graph);
 
+NONNULL
+void
+tracklist_sanity_check (
+  Tracklist * self);
+
 /**
  * Returns the index of the given Track.
  */

@@ -56,6 +56,12 @@ tracklist_init_loaded (
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
+      track_set_magic (track);
+    }
+
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
 
       if (track->type == TRACK_TYPE_CHORD)
         self->chord_track = track;
@@ -360,6 +366,20 @@ tracklist_get_track_pos (
       (void **) self->tracks,
       self->num_tracks,
       (void *) track);
+}
+
+void
+tracklist_sanity_check (
+  Tracklist * self)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      g_return_if_fail (
+        track && track->is_project);
+      track_verify_identifiers (track);
+    }
 }
 
 /**

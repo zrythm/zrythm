@@ -59,6 +59,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/io.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -144,9 +145,8 @@ track_init_loaded (
     }
 
   /** set magic to all track ports */
-  int max_size = 20;
-  Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+  size_t max_size = 0;
+  Port ** ports = NULL;
   int num_ports = 0;
   Port * port;
   track_append_all_ports (
@@ -156,9 +156,14 @@ track_init_loaded (
     {
       port = ports[i];
       port->magic = PORT_MAGIC;
+      if (project)
+        {
+          g_return_if_fail (
+            port->id.track_pos == self->pos);
+        }
       port_init_loaded (port, port->is_project);
     }
-  free (ports);
+  object_zero_and_free_if_nonnull (ports);
 
   track_set_is_project (self, project);
 }
@@ -379,6 +384,8 @@ track_clone (
     track_new (
       track->type, track->pos, track->name,
       F_WITHOUT_LANE);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (new_track), NULL);
 
   new_track->icon_name =
     g_strdup (track->icon_name);
@@ -413,7 +420,7 @@ track_clone (
   TrackLane * lane, * new_lane;
   new_track->num_lanes = track->num_lanes;
   new_track->lanes =
-    realloc (
+    g_realloc (
       new_track->lanes,
       sizeof (TrackLane *) *
         (size_t) track->num_lanes);
@@ -457,6 +464,24 @@ track_clone (
     }
 
   return new_track;
+}
+
+/**
+ * Sets magic on objects recursively.
+ */
+void
+track_set_magic (
+  Track * self)
+{
+  self->magic = TRACK_MAGIC;
+
+  if (track_type_has_channel (self->type))
+    {
+      Channel * ch = self->channel;
+      g_return_if_fail (ch);
+
+      channel_set_magic (ch);
+    }
 }
 
 /**
@@ -702,7 +727,7 @@ track_get_velocities_in_range (
   const Position * end_pos,
   Velocity ***     velocities,
   int *            num_velocities,
-  int *            velocities_size,
+  size_t *         velocities_size,
   int              inside)
 {
   if (track->type != TRACK_TYPE_MIDI &&
@@ -773,10 +798,10 @@ track_verify_identifiers (
   int track_pos = self->pos;
 
   /* verify port identifiers */
-  int max_size = 20;
+  size_t max_size = 20;
   int num_ports = 0;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   track_append_all_ports (
     self, &ports, &num_ports, true, &max_size,
     true);
@@ -1455,10 +1480,9 @@ track_set_pos (
     self->processor, pos);
   self->processor->track = self;
 
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc (
-      (size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   track_append_all_ports (
     self, &ports, &num_ports, true,
@@ -1711,10 +1735,9 @@ track_disconnect (
     }
 
   /* disconnect all ports */
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc (
-      (size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   track_append_all_ports (
     self, &ports, &num_ports,
@@ -1722,9 +1745,14 @@ track_disconnect (
   for (int i = 0; i < num_ports; i++)
     {
       Port * port = ports[i];
-      g_return_if_fail (
-        IS_PORT (port) &&
-        port->is_project == self->is_project);
+      if (!IS_PORT (port) ||
+          port->is_project != self->is_project)
+        {
+          g_critical ("invalid port");
+          object_zero_and_free (ports);
+          return;
+        }
+
       if (ZRYTHM_TESTING)
         {
           port_verify_src_and_dests (port);
@@ -2217,27 +2245,30 @@ track_fill_events (
     local_start_frame, nframes);
 #endif
 
+  TrackType tt = track->type;
+
   /* go through each lane */
   const int num_loops =
-    (track->type == TRACK_TYPE_CHORD ?
+    (tt == TRACK_TYPE_CHORD ?
      1 : track->num_lanes);
   for (int j = 0; j < num_loops; j++)
     {
       TrackLane * lane = NULL;
-      if (track->type != TRACK_TYPE_CHORD)
+      if (tt != TRACK_TYPE_CHORD)
         {
           lane = track->lanes[j];
+          g_return_if_fail (lane);
         }
 
       /* go through each region */
       const int num_regions =
-        (track->type == TRACK_TYPE_CHORD ?
+        (tt == TRACK_TYPE_CHORD ?
          track->num_chord_regions :
          lane->num_regions);
       for (int i = 0; i < num_regions; i++)
         {
           ZRegion * r =
-            track->type == TRACK_TYPE_CHORD ?
+            tt == TRACK_TYPE_CHORD ?
             track->chord_regions[i] :
             lane->regions[i];
           ArrangerObject * r_obj =
@@ -2544,10 +2575,10 @@ track_set_name (
   if (track->channel)
     {
       /* update external ports */
-      int max_size = 20;
-      Port ** ports =
-        calloc (
-          (size_t) max_size, sizeof (Port *));
+      size_t max_size = 0;
+      Port ** ports = NULL;
+        /*object_new_n (*/
+          /*max_size, Port *);*/
       int num_ports = 0;
       track_append_all_ports (
         track, &ports, &num_ports,
@@ -2556,7 +2587,13 @@ track_set_name (
       for (int i = 0; i < num_ports; i++)
         {
           port = ports[i];
-          g_return_if_fail (port);
+
+          if (!IS_PORT (port))
+            {
+              object_zero_and_free (ports);
+              g_critical ("invalid port");
+              return;
+            }
 
           if (port_is_exposed_to_backend (
                 port))
@@ -2564,7 +2601,7 @@ track_set_name (
               port_rename_backend (port);
             }
         }
-      free (ports);
+      object_zero_and_free_if_nonnull (ports);
     }
 
   if (pub_events)
@@ -2744,9 +2781,9 @@ track_set_is_project (
     }
 
   /** set all track ports to non project */
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   Port * port;
   track_append_all_ports (
@@ -2918,7 +2955,7 @@ track_append_all_ports (
   Port ***  ports,
   int *     size,
   bool      is_dynamic,
-  int *     max_size,
+  size_t *  max_size,
   bool      include_plugins)
 {
   if (track_type_has_channel (self->type))
@@ -2938,7 +2975,7 @@ track_append_all_ports (
       array_double_size_if_full ( \
         *ports, (*size), (*max_size), Port *); \
     } \
-  else if (*size == *max_size) \
+  else if ((size_t) *size == *max_size) \
     { \
       g_return_if_reached (); \
     } \
@@ -2987,6 +3024,8 @@ remove_ats_from_automation_tracklist (
 {
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
+
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];

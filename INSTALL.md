@@ -78,9 +78,7 @@ your system, you can install it somewhere
 temporary by configuring with
 `meson build --prefix=/tmp/zrythm` for example, and
 then you can run it with
-`GSETTINGS_SCHEMA_DIR=/tmp/zrythm/share/glib-2.0/schemas ./build/src/zrythm`.
-The built program will be at `build/src/zrythm` by
-default.
+`/tmp/zrythm/bin/zrythm_launch`.
 
 ## Running
 

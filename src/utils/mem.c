@@ -22,18 +22,24 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <gtk/gtk.h>
+
+/**
+ * Reallocate and zero out newly added memory.
+ */
 void *
 realloc_zero (
-  void * pBuffer,
-  size_t oldSize,
-  size_t newSize)
+  void * buf,
+  size_t old_sz,
+  size_t new_sz)
 {
-  void* pNew = realloc (pBuffer, newSize);
-  if ( newSize > oldSize && pNew )
+  /*g_message ("realloc %zu to %zu", old_sz, new_sz);*/
+  void * new_buf = g_realloc (buf, new_sz);
+  if (new_sz > old_sz && new_buf)
     {
-      size_t diff = newSize - oldSize;
-      void* pStart = ((char*)pNew) + oldSize;
-      memset(pStart, 0, diff);
+      size_t diff = new_sz - old_sz;
+      void * pStart = ((char*)new_buf) + old_sz;
+      memset (pStart, 0, diff);
     }
-  return pNew;
+  return new_buf;
 }

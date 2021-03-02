@@ -72,6 +72,8 @@ next_power_of_two(uint32_t size)
   return size;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wanalyzer-possible-null-dereference"
 ZixRing*
 zix_ring_new(uint32_t size)
 {
@@ -83,6 +85,7 @@ zix_ring_new(uint32_t size)
   ring->buf        = (char*)malloc(ring->size);
   return ring;
 }
+#pragma GCC diagnostic pop
 
 void
 zix_ring_free(ZixRing* ring)

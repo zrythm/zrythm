@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,11 +47,12 @@ typedef struct _ArrangerObjectWidget
 
 #define ARRANGER_OBJECT_MAGIC 347616554
 #define IS_ARRANGER_OBJECT(tr) \
-  (tr && \
-   ((ArrangerObject *) tr)->magic == \
+  (((ArrangerObject *) tr)->magic == \
      ARRANGER_OBJECT_MAGIC && \
    ((ArrangerObject *) tr)->type >= ARRANGER_OBJECT_TYPE_REGION && \
    ((ArrangerObject *) tr)->type <= ARRANGER_OBJECT_TYPE_VELOCITY)
+#define IS_ARRANGER_OBJECT_AND_NONNULL(x) \
+  (x && IS_ARRANGER_OBJECT (x))
 
 /**
  * Flag used in some functions.

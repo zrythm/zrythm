@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,8 @@
 
 #include "audio/stretcher.h"
 #include "utils/math.h"
+#include "utils/mem.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
@@ -65,7 +67,7 @@ stretcher_new_rubberband (
   double         pitch_ratio,
   bool           realtime)
 {
-  Stretcher * self = calloc (1, sizeof (Stretcher));
+  Stretcher * self = object_new (Stretcher);
 
   self->backend = STRETCHER_BACKEND_RUBBERBAND;
   self->samplerate = samplerate;
@@ -363,7 +365,7 @@ stretcher_stretch_interleaved (
   for (unsigned int i = 0; i < channels; i++)
     {
       out_samples[i] =
-        malloc (sizeof (float) * out_samples_size);
+        object_new_n (out_samples_size, float);
     }
 
   /* process */
@@ -438,7 +440,7 @@ stretcher_stretch_interleaved (
 
   /* store the output data in the given arrays */
   * _out_samples =
-    realloc (
+    g_realloc (
       * _out_samples,
       (size_t) channels * total_out_frames *
         sizeof (float));

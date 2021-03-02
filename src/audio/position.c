@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,7 @@
 #include "gui/widgets/top_bar.h"
 #include "project.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 

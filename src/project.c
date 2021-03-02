@@ -320,6 +320,8 @@ get_newer_backup (
   char * filepath =
     project_get_path (
       self, PROJECT_PATH_PROJECT_FILE, false);
+  g_return_val_if_fail (filepath, NULL);
+
   if (stat (filepath, &stat_res) == 0)
     {
       orig_tm = localtime (&stat_res.st_mtime);
@@ -473,11 +475,11 @@ create_and_set_dir_and_title (
 void
 project_sanity_check (Project * self)
 {
-  g_message ("%s: checking...", __func__);
+  g_message ("%s: sanity checking...", __func__);
 
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   Port * port;
   port_get_all (
@@ -489,6 +491,8 @@ project_sanity_check (Project * self)
         port, NULL, F_UPDATE_AUTOMATION_TRACK);
     }
   free (ports);
+
+  tracklist_sanity_check (self->tracklist);
 
   /* TODO add arranger_object_get_all and check
    * positions (arranger_object_sanity_check) */
@@ -785,9 +789,9 @@ project_create_default (
     }
 
   /* init ports */
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   Port * port;
   port_get_all (
@@ -876,6 +880,8 @@ project_create_default (
  *   the actual project otherwise.
  * @param is_template Load the project as a
  *   template and create a new project from it.
+ *
+ * @return Non-zero if error.
  */
 static int
 load (
@@ -963,6 +969,8 @@ load (
     project_get_path (
       PROJECT, PROJECT_PATH_PROJECT_FILE,
       use_backup);
+  g_return_val_if_fail (
+    project_file_path_alloc, -1);
   char project_file_path[1600];
   strcpy (
     project_file_path, project_file_path_alloc);
@@ -1113,9 +1121,9 @@ load (
     AUDIO_ENGINE->sample_rate);
 
   /* init ports */
-  int max_size = 20;
+  size_t max_size = 20;
   Port ** ports =
-    calloc ((size_t) max_size, sizeof (Port *));
+    object_new_n (max_size, Port *);
   int num_ports = 0;
   port_get_all (
     &ports, &max_size, true, &num_ports);
@@ -1623,6 +1631,8 @@ project_save (
   const bool   show_notification,
   const bool   async)
 {
+  project_sanity_check (self);
+
   int i, j;
 
   char * dir = g_strdup (_dir);
@@ -1653,6 +1663,7 @@ project_save (
   tmp = \
     project_get_path ( \
       self, PROJECT_PATH_##_path, is_backup); \
+  g_return_val_if_fail (tmp, -1); \
   io_mkdir (tmp); \
   g_free_and_null (tmp)
 

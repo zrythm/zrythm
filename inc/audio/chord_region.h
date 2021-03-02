@@ -43,6 +43,7 @@ typedef struct ZRegion ZRegion;
  *
  * @param idx Index inside chord track.
  */
+NONNULL
 ZRegion *
 chord_region_new (
   const Position * start_pos,
@@ -52,6 +53,7 @@ chord_region_new (
 /**
  * Adds a ChordObject to the Region.
  */
+NONNULL
 void
 chord_region_add_chord_object (
   ZRegion *     self,
@@ -63,6 +65,7 @@ chord_region_add_chord_object (
  *
  * @param free Optionally free the ChordObject.
  */
+NONNULL
 void
 chord_region_remove_chord_object (
   ZRegion *     self,
@@ -75,6 +78,7 @@ chord_region_remove_chord_object (
  *
  * Regions should be free'd using region_free.
  */
+NONNULL
 void
 chord_region_free_members (
   ZRegion * self);

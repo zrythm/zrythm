@@ -99,6 +99,7 @@ extern Log * zlog;
  *
  * @param secs Number of timeout seconds.
  */
+NONNULL
 void
 log_init_writer_idle (
   Log *        self,
@@ -107,6 +108,7 @@ log_init_writer_idle (
 /**
  * Idle callback.
  */
+NONNULL
 int
 log_idle_cb (
   Log * self);
@@ -120,6 +122,7 @@ log_idle_cb (
  *
  * @param n Number of lines.
  */
+NONNULL
 char *
 log_get_last_n_lines (
   Log * self,
@@ -150,6 +153,7 @@ log_new (void);
 /**
  * Stops logging and frees any allocated memory.
  */
+NONNULL
 void
 log_free (
   Log * self);

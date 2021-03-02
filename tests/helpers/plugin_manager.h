@@ -120,6 +120,7 @@ test_plugin_manager_create_tracks_from_plugin (
   PluginDescriptor * descr =
     test_plugin_manager_get_plugin_descriptor (
       pl_bundle, pl_uri, with_carla);
+  g_return_val_if_fail (descr, -1);
 
   TrackType track_type = TRACK_TYPE_AUDIO_BUS;
   if (is_instrument)

@@ -29,6 +29,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -132,11 +133,9 @@ automation_tracklist_init (
 
   g_message ("initing automation tracklist...");
 
-  self->ats_size = 12;
-  self->ats =
-    calloc (
-      self->ats_size,
-      sizeof (AutomationTrack *));
+  /*self->ats_size = 1;*/
+  /*self->ats =*/
+    /*object_new_n (self->ats_size, AutomationTrack *);*/
 }
 
 /**
@@ -365,18 +364,16 @@ automation_tracklist_clone (
   AutomationTracklist * src,
   AutomationTracklist * dest)
 {
-  AutomationTrack * src_at;
   dest->ats_size = (size_t) src->num_ats;
   dest->num_ats = src->num_ats;
   dest->ats =
-    malloc (dest->ats_size *
-            sizeof (AutomationTrack *));
-  int i;
-  for (i = 0; i < src->num_ats; i++)
+    object_new_n (
+      dest->ats_size, AutomationTrack *);
+
+  for (int i = 0; i < src->num_ats; i++)
     {
-      src_at = src->ats[i];
       dest->ats[i] =
-        automation_track_clone (src_at);
+        automation_track_clone (src->ats[i]);
     }
 
   /* TODO create same automation lanes */
@@ -691,19 +688,13 @@ void
 automation_tracklist_free_members (
   AutomationTracklist * self)
 {
-  int i, size;
-  size = self->num_ats;
+  int size = self->num_ats;
   self->num_ats = 0;
-  AutomationTrack * at;
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     {
-      at = self->ats[i];
-      /*g_message ("removing %d %s",*/
-                 /*at->id,*/
-                 /*at->automatable->label);*/
-      /*g_message ("actual automation track index %d",*/
-        /*PROJECT->automation_tracks[at->id]);*/
-      automation_track_free (
-        at);
+      object_free_w_func_and_null (
+        automation_track_free, self->ats[i]);
     }
+
+  object_zero_and_free (self->ats);
 }

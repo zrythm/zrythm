@@ -531,6 +531,9 @@ tracklist_selections_free (
     {
       for (int i = 0; i < self->num_tracks; i++)
         {
+          g_return_if_fail (
+            IS_TRACK_AND_NONNULL (self->tracks[i]));
+
           /* skip project tracks */
           if (self->tracks[i]->is_project)
             continue;

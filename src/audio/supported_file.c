@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 
 #include "audio/supported_file.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -33,8 +34,7 @@ SupportedFile *
 supported_file_new_from_path (
   const char * path)
 {
-  SupportedFile * self =
-    calloc (1, sizeof (SupportedFile));
+  SupportedFile * self = object_new (SupportedFile);
 
   self->abs_path = g_strdup (path);
   self->type =
@@ -101,8 +101,7 @@ SupportedFile *
 supported_file_clone (
   SupportedFile * src)
 {
-  SupportedFile * dest =
-    calloc (1, sizeof (SupportedFile));
+  SupportedFile * dest = object_new (SupportedFile);
 
   dest->type = src->type;
   dest->abs_path = g_strdup (src->abs_path);

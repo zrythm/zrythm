@@ -28,6 +28,7 @@
 #include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #ifdef HAVE_JACK
@@ -432,8 +433,7 @@ static ExtPort *
 ext_port_from_jack_port (
   jack_port_t * jport)
 {
-  ExtPort * self =
-    calloc (1, sizeof (ExtPort));
+  ExtPort * self = object_new (ExtPort);
 
   self->jport = jport;
   self->full_name =
@@ -598,8 +598,7 @@ static ExtPort *
 ext_port_from_rtmidi (
   unsigned int id)
 {
-  ExtPort * self =
-    calloc (1, sizeof (ExtPort));
+  ExtPort * self = object_new (ExtPort);
 
   RtMidiDevice * dev =
     rtmidi_device_new (1, NULL, id, NULL);
@@ -654,8 +653,7 @@ ext_port_from_rtaudio (
   bool         is_input,
   bool         is_duplex)
 {
-  ExtPort * self =
-    calloc (1, sizeof (ExtPort));
+  ExtPort * self = object_new (ExtPort);
 
   RtAudioDevice * dev =
     rtaudio_device_new (
@@ -896,8 +894,7 @@ ext_port_clone (
 {
   g_return_val_if_fail (ext_port, NULL);
 
-  ExtPort * newport =
-    calloc (1, sizeof (ExtPort));
+  ExtPort * newport = object_new (ExtPort);
 
 #ifdef HAVE_JACK
   newport->jport = ext_port->jport;
@@ -963,7 +960,9 @@ ext_ports_free (
 {
   for (int i = 0; i < size; i++)
     {
-      ext_port_free (ext_ports[i]);
+      g_return_if_fail (!ext_ports[i]);
+      object_free_w_func_and_null (
+        ext_port_free, ext_ports[i]);
     }
 }
 
@@ -974,14 +973,10 @@ void
 ext_port_free (
   ExtPort * self)
 {
-  if (self->full_name)
-    g_free (self->full_name);
-  if (self->short_name)
-    g_free (self->short_name);
-  if (self->alias1)
-    g_free (self->alias1);
-  if (self->alias2)
-    g_free (self->alias2);
+  g_free_and_null (self->full_name);
+  g_free_and_null (self->short_name);
+  g_free_and_null (self->alias1);
+  g_free_and_null (self->alias2);
 
-  free (self);
+  object_zero_and_free (self);
 }

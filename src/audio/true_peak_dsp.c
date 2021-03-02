@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,9 @@
 #include <math.h>
 
 #include "audio/true_peak_dsp.h"
+#include "utils/objects.h"
+
+#include <gtk/gtk.h>
 
 /**
  * Process.
@@ -181,7 +184,7 @@ true_peak_dsp_init (
   zita_resampler_setup_with_frel (
     self->src, (unsigned int) samplerate,
     (unsigned int) (samplerate * 4.f), 1, 24, 1.0);
-  self->buf = (float*) malloc (32768 * sizeof(float));
+  self->buf = (float*) g_malloc (32768 * sizeof(float));
 
   self->z1 = self->z2 = .0f;
   self->w1 = 4000.f / samplerate / 4.f;
@@ -204,8 +207,7 @@ true_peak_dsp_init (
 TruePeakDsp *
 true_peak_dsp_new (void)
 {
-  TruePeakDsp * self =
-    calloc (1, sizeof (TruePeakDsp));
+  TruePeakDsp * self = object_new (TruePeakDsp);
 
   self->res = true;
 

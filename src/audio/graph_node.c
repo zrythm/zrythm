@@ -488,7 +488,7 @@ add_feeds (
     }
 
   self->childnodes =
-    (GraphNode **) realloc (
+    (GraphNode **) g_realloc (
       self->childnodes,
       (size_t) (1 + self->n_childnodes) *
         sizeof (GraphNode *));
@@ -507,7 +507,7 @@ add_depends (
 
   /* add parent nodes */
   self->parentnodes =
-    (GraphNode **) realloc (
+    (GraphNode **) g_realloc (
       self->parentnodes,
       (size_t) (self->init_refcount) *
         sizeof (GraphNode *));
@@ -607,8 +607,7 @@ graph_node_new (
   GraphNodeType type,
   void *   data)
 {
-  GraphNode * node =
-    calloc (1, sizeof (GraphNode));
+  GraphNode * node = object_new (GraphNode);
   node->id = (int) graph->num_setup_graph_nodes;
   node->graph = graph;
   node->type = type;

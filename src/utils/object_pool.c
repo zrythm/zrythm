@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,13 +33,12 @@ object_pool_new (
   ObjectFreeFunc    free_func,
   int               max_objects)
 {
-  ObjectPool * self =
-    calloc (1, sizeof (ObjectPool));
+  ObjectPool * self = object_new (ObjectPool);
 
   self->free_func = free_func;
   self->max_objects = max_objects;
   self->obj_available =
-    calloc ((size_t) max_objects, sizeof (void *));
+    object_new_n ((size_t) max_objects, void *);
 
   for (int i = 0; i < max_objects; i++)
     {

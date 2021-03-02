@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -85,6 +85,7 @@ typedef struct Metronome
 Metronome *
 metronome_new (void);
 
+NONNULL
 void
 metronome_set_volume (
   Metronome * self,
@@ -96,12 +97,14 @@ metronome_set_volume (
  *
  * @param loffset Local offset in this cycle.
  */
+NONNULL
 void
 metronome_queue_events (
  AudioEngine *   self,
  const nframes_t loffset,
  const nframes_t nframes);
 
+NONNULL
 void
 metronome_free (
   Metronome * self);

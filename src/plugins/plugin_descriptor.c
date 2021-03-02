@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/plugin.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
@@ -84,7 +85,7 @@ plugin_descriptor_clone (
   const PluginDescriptor * src)
 {
   PluginDescriptor * self =
-    calloc (1, sizeof (PluginDescriptor));
+    object_new (PluginDescriptor);
 
   plugin_descriptor_copy (self, src);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -42,13 +43,12 @@ chord_region_new (
   const Position * end_pos,
   int              idx)
 {
-  ZRegion * self =
-    calloc (1, sizeof (ZRegion));
+  ZRegion * self = object_new (ZRegion);
 
   self->chord_objects_size = 1;
   self->chord_objects =
-    malloc (self->chord_objects_size *
-            sizeof (ChordObject *));
+    object_new_n (
+      self->chord_objects_size, ChordObject *);
 
   self->id.type = REGION_TYPE_CHORD;
 
@@ -102,8 +102,7 @@ chord_region_remove_chord_object (
   bool          fire_events)
 {
   g_return_if_fail (
-    IS_REGION (self) &&
-    IS_CHORD_OBJECT (chord));
+    IS_REGION (self) && IS_CHORD_OBJECT (chord));
 
   /* deselect */
   if (CHORD_SELECTIONS)
@@ -142,13 +141,12 @@ chord_region_free_members (
 {
   g_return_if_fail (IS_REGION (self));
 
-  int i;
-  for (i = 0; i < self->num_chord_objects; i++)
+  for (int i = 0; i < self->num_chord_objects; i++)
     {
       chord_region_remove_chord_object (
         self, self->chord_objects[i], F_FREE,
         F_NO_PUBLISH_EVENTS);
     }
 
-  free (self->chord_objects);
+  object_zero_and_free (self->chord_objects);
 }

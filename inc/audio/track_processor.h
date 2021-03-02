@@ -285,7 +285,7 @@ track_processor_append_ports (
   Port ***         ports,
   int *            size,
   bool             is_dynamic,
-  int *            max_size);
+  size_t *         max_size);
 
 /**
  * Frees the TrackProcessor.

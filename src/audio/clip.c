@@ -55,7 +55,7 @@ audio_clip_update_channel_caches (
   for (unsigned int i = 0; i < self->channels; i++)
     {
       self->ch_frames[i] =
-        realloc (
+        g_realloc (
           self->ch_frames[i],
           sizeof (float) *
             (size_t) self->num_frames);
@@ -73,8 +73,9 @@ audio_clip_init_from_file (
   AudioClip * self,
   const char * full_path)
 {
-  self->samplerate =
-    (int) AUDIO_ENGINE->sample_rate;
+  g_return_if_fail (self);
+
+  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
   g_return_if_fail (self->samplerate > 0);
 
   AudioEncoder * enc =
@@ -87,7 +88,7 @@ audio_clip_init_from_file (
     (size_t) enc->num_out_frames *
     (size_t) enc->nfo.channels;
   self->frames =
-    realloc (
+    g_realloc (
       self->frames, arr_size * sizeof (float));
   self->num_frames = enc->num_out_frames;
   dsp_copy (
@@ -142,8 +143,7 @@ AudioClip *
 audio_clip_new_from_file (
   const char * full_path)
 {
-  AudioClip * self =
-    calloc (1, sizeof (AudioClip));
+  AudioClip * self = object_new (AudioClip);
 
   audio_clip_init_from_file (self, full_path);
 
@@ -167,13 +167,12 @@ audio_clip_new_from_float_array (
   const channels_t channels,
   const char *     name)
 {
-  AudioClip * self =
-    calloc (1, sizeof (AudioClip));
+  AudioClip * self = object_new (AudioClip);
 
   self->frames =
-    calloc (
+    object_new_n (
       (size_t) (nframes * (long) channels),
-      sizeof (sample_t));
+      sample_t);
   self->num_frames = nframes;
   self->channels = channels;
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
@@ -206,14 +205,13 @@ audio_clip_new_recording (
   const long       nframes,
   const char *     name)
 {
-  AudioClip * self =
-    calloc (1, sizeof (AudioClip));
+  AudioClip * self = object_new (AudioClip);
 
   self->channels = channels;
   self->frames =
-    calloc (
+    object_new_n (
       (size_t) (nframes * (long) self->channels),
-      sizeof (sample_t));
+      sample_t);
   self->num_frames = nframes;
   self->name = g_strdup (name);
   self->pool_id = -1;
@@ -398,7 +396,8 @@ audio_clip_free (
   object_zero_and_free (self->frames);
   for (unsigned int i = 0; i < self->channels; i++)
     {
-      object_zero_and_free (self->ch_frames[i]);
+      object_zero_and_free_if_nonnull (
+        self->ch_frames[i]);
     }
   g_free_and_null (self->name);
 

@@ -31,6 +31,7 @@
 #include "utils/flags.h"
 #include "utils/localization.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -338,7 +339,7 @@ make_control (
       ui_setup_device_name_combo_box (
         GTK_COMBO_BOX_TEXT (widget));
       CallbackData * data =
-        calloc (1, sizeof (CallbackData));
+        object_new (CallbackData);
       data->info = info;
       data->preferences_widget = self;
       data->key = g_strdup (key);
@@ -358,7 +359,7 @@ make_control (
       ui_setup_midi_backends_combo_box (
         GTK_COMBO_BOX (widget));
       CallbackData * data =
-        calloc (1, sizeof (CallbackData));
+        object_new (CallbackData);
       data->info = info;
       data->preferences_widget = self;
       data->key = g_strdup (key);
@@ -378,7 +379,7 @@ make_control (
       ui_setup_audio_backends_combo_box (
         GTK_COMBO_BOX (widget));
       CallbackData * data =
-        calloc (1, sizeof (CallbackData));
+        object_new (CallbackData);
       data->info = info;
       data->preferences_widget = self;
       data->key = g_strdup (key);
@@ -490,7 +491,7 @@ make_control (
             path);
           g_free (path);
           CallbackData * data =
-            calloc (1, sizeof (CallbackData));
+            object_new (CallbackData);
           data->info = info;
           data->preferences_widget = self;
           data->key = g_strdup (key);
@@ -592,7 +593,7 @@ make_control (
                 g_settings_get_enum (
                   info->settings, key));
               CallbackData * data =
-                calloc (1, sizeof (CallbackData));
+                object_new (CallbackData);
               data->info = info;
               data->preferences_widget = self;
               data->key = g_strdup (key);
@@ -617,7 +618,7 @@ make_control (
                 GTK_ENTRY (widget), current_val);
               g_free (current_val);
               CallbackData * data =
-                calloc (1, sizeof (CallbackData));
+                object_new (CallbackData);
               data->info = info;
               data->preferences_widget = self;
               data->key = g_strdup (key);
@@ -649,7 +650,7 @@ make_control (
           g_free (joined_str);
           g_strfreev (paths);
           CallbackData * data =
-            calloc (1, sizeof (CallbackData));
+            object_new (CallbackData);
           data->info = info;
           data->preferences_widget = self;
           data->key = g_strdup (key);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 
 #include "gui/widgets/custom_button.h"
 #include "utils/cairo.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -57,7 +58,7 @@ custom_button_widget_new (
   int          size)
 {
   CustomButtonWidget * self =
-    calloc (1, sizeof (CustomButtonWidget));
+    object_new (CustomButtonWidget);
 
   strcpy (self->icon_name, icon_name);
   self->size = size;
@@ -66,7 +67,14 @@ custom_button_widget_new (
   self->icon_surface =
     z_cairo_get_surface_from_icon_name (
       self->icon_name, self->size - 2, 0);
-  g_return_val_if_fail (self->icon_surface, NULL);
+  if (!self->icon_surface)
+    {
+      g_critical (
+        "Failed to get icon surface for %s",
+        self->icon_name);
+      free (self);
+      return NULL;
+    }
 
   return self;
 }

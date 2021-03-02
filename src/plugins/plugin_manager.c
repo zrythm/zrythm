@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,6 +52,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/io.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"

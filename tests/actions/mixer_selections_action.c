@@ -854,9 +854,9 @@ test_move_two_plugins_one_slot_up (void)
   /* verify that first plugin was replaced by 2nd
    * plugin */
   g_assert_true (
-    IS_PLUGIN (track->channel->inserts[0]));
-  g_assert_false (
-    IS_PLUGIN (track->channel->inserts[1]));
+    IS_PLUGIN_AND_NONNULL (
+      track->channel->inserts[0]));
+  g_assert_null (track->channel->inserts[1]);
 
   /* undo and verify that both plugins are back */
   undo_manager_undo (UNDO_MANAGER);
@@ -936,8 +936,7 @@ test_move_two_plugins_one_slot_up (void)
 
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
-  g_assert_false (
-    IS_PLUGIN (track->channel->inserts[1]));
+  g_assert_null (track->channel->inserts[1]);
 
   /* undo and check plugin and port value are
    * restored */
@@ -1135,6 +1134,11 @@ main (int argc, char *argv[])
 
   g_test_add_func (
     TEST_PREFIX
+    "test move two plugins one slot up",
+    (GTestFunc)
+    test_move_two_plugins_one_slot_up);
+  g_test_add_func (
+    TEST_PREFIX
     "test move pl after duplicating track",
     (GTestFunc)
     test_move_pl_after_duplicating_track);
@@ -1162,11 +1166,6 @@ main (int argc, char *argv[])
     (GTestFunc)
     test_port_and_plugin_track_pos_after_move_with_carla);
 #endif
-  g_test_add_func (
-    TEST_PREFIX
-    "test move two plugins one slot up",
-    (GTestFunc)
-    test_move_two_plugins_one_slot_up);
 
   return g_test_run ();
 }

@@ -73,7 +73,10 @@ typedef void MIDI_FILE;
 #define TRACK_DEF_HEIGHT 48
 
 #define TRACK_MAGIC 21890135
-#define IS_TRACK(tr) (tr && tr->magic == TRACK_MAGIC)
+#define IS_TRACK(x) \
+  (((Track *) x)->magic == TRACK_MAGIC)
+#define IS_TRACK_AND_NONNULL(x) \
+  (x && IS_TRACK (x))
 
 /**
  * The Track's type.
@@ -261,7 +264,7 @@ typedef struct Track
   /** Lanes in this track containing Regions. */
   TrackLane **        lanes;
   int                 num_lanes;
-  int                 lanes_size;
+  size_t              lanes_size;
 
   /** MIDI channel (MIDI/Instrument track only). */
   uint8_t             midi_ch;
@@ -336,7 +339,7 @@ typedef struct Track
    */
   ZRegion **           chord_regions;
   int                 num_chord_regions;
-  int                 chord_regions_size;
+  size_t              chord_regions_size;
 
   /**
    * ScaleObject's.
@@ -345,7 +348,7 @@ typedef struct Track
    */
   ScaleObject **      scales;
   int                 num_scales;
-  int                 scales_size;
+  size_t              scales_size;
 
   /* ==== CHORD TRACK END ==== */
 
@@ -353,7 +356,7 @@ typedef struct Track
 
   Marker **           markers;
   int                 num_markers;
-  int                 markers_size;
+  size_t              markers_size;
 
   /* ==== MARKER TRACK END ==== */
 
@@ -372,7 +375,7 @@ typedef struct Track
   /** Modulators. */
   Plugin **         modulators;
   int               num_modulators;
-  int               modulators_size;
+  size_t            modulators_size;
 
   /** Modulator macros. */
   ModulatorMacroProcessor * modulator_macros[128];
@@ -439,7 +442,7 @@ typedef struct Track
    */
   int *                children;
   int                  num_children;
-  int                  children_size;
+  size_t               children_size;
 
   /** Whether the track is currently frozen. */
   bool                 frozen;
@@ -575,6 +578,14 @@ track_clone (
 bool
 track_type_has_channel (
   TrackType type);
+
+/**
+ * Sets magic on objects recursively.
+ */
+NONNULL
+void
+track_set_magic (
+  Track * self);
 
 /**
  * Sets track muted and optionally adds the action
@@ -959,7 +970,7 @@ track_get_velocities_in_range (
   const Position * end_pos,
   Velocity ***     velocities,
   int *            num_velocities,
-  int *            velocities_size,
+  size_t *         velocities_size,
   int              inside);
 
 /**
@@ -1188,7 +1199,7 @@ track_append_all_ports (
   Port ***  ports,
   int *     size,
   bool      is_dynamic,
-  int *     max_size,
+  size_t *  max_size,
   bool      include_plugins);
 
 /**

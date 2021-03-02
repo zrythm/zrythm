@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 
 #include "gui/widgets/automation_mode.h"
 #include "utils/cairo.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -93,7 +94,7 @@ automation_mode_widget_new (
   AutomationTrack * owner)
 {
   AutomationModeWidget * self =
-    calloc (1, sizeof (AutomationModeWidget));
+    object_new (AutomationModeWidget);
 
   self->owner = owner;
   self->height = height;
