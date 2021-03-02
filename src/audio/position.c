@@ -49,8 +49,7 @@ long
 position_to_frames (
   const Position * position)
 {
-  bool is_positive = position->bars > 0;
-  const int diff = G_LIKELY (is_positive) ? 1 : -1;
+  const int diff = (position->bars > 0) ? -1 : 1;
   double frames =
     AUDIO_ENGINE->frames_per_tick *
       (double) (position->bars + diff) *

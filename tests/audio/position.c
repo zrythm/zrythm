@@ -27,6 +27,8 @@
 static void
 test_position_from_ticks ()
 {
+  test_helper_zrythm_init ();
+
   Position pos = {
     4, 4, 4, 4, 4, 4
   };
@@ -40,11 +42,36 @@ test_position_from_ticks ()
       ticks / TRANSPORT->ticks_per_bar + 1));
   g_assert_cmpint (
     pos.bars, >, 0);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_position_to_frames ()
+{
+  test_helper_zrythm_init ();
+
+  Position pos = {
+    4, 4, 4, 4, 4, 4
+  };
+  double ticks = 50000.0;
+
+  /* assert values are correct */
+  position_from_ticks (&pos, ticks);
+  long frames = position_to_frames (&pos);
+  g_assert_cmpint (
+    frames, ==,
+    math_round_double_to_long (
+      AUDIO_ENGINE->frames_per_tick * ticks));
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_get_total_beats ()
 {
+  test_helper_zrythm_init ();
+
   Position start_pos = {
     .bars = 2,
     .beats = 1,
@@ -81,11 +108,15 @@ test_get_total_beats ()
   beats =
     position_get_total_beats (&end_pos);
   g_assert_cmpint (beats, ==, 5);
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_position_benchmarks ()
 {
+  test_helper_zrythm_init ();
+
   double ticks = 50000.0;
   gint64 loop_times = 5;
   gint total_time;
@@ -119,6 +150,8 @@ test_position_benchmarks ()
       total_time += after - before;
     }
   g_message ("time: %ld", total_time / loop_times);
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
@@ -126,13 +159,14 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
 #define TEST_PREFIX "/audio/position/"
 
   g_test_add_func (
     TEST_PREFIX "test position from ticks",
     (GTestFunc) test_position_from_ticks);
+  g_test_add_func (
+    TEST_PREFIX "test position to frames",
+    (GTestFunc) test_position_to_frames);
   g_test_add_func (
     TEST_PREFIX "test get total beats",
     (GTestFunc) test_get_total_beats);
