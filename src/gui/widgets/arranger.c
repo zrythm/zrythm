@@ -1553,6 +1553,7 @@ arranger_widget_on_key_action (
     {
       ArrangerSelections * sel =
         arranger_widget_get_selections (self);
+      g_return_val_if_fail (sel, false);
 
       if (arranger_selections_has_any (sel))
         {

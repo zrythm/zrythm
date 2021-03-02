@@ -235,6 +235,7 @@ on_node_finish (
     }
 }
 
+HOT
 static void
 process_node (
   GraphNode *     node,

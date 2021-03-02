@@ -628,6 +628,7 @@ transport_set_range2 (
  * g_start_frames and (g_start_frames + nframes),
  * otherwise returns 0;
  */
+HOT
 nframes_t
 transport_is_loop_point_met (
   const Transport * self,

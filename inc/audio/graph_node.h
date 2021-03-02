@@ -188,6 +188,7 @@ graph_node_print (
 /**
  * Processes the GraphNode.
  */
+HOT
 void
 graph_node_process (
   GraphNode * node,
@@ -222,6 +223,7 @@ graph_node_set_route_playback_latency (
  * Called by an upstream node when it has completed
  * processing.
  */
+HOT
 void
 graph_node_trigger (
   GraphNode * self);

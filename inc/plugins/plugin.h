@@ -580,6 +580,7 @@ plugin_generate_automation_tracks (
 /**
  * Prepare plugin for processing.
  */
+HOT
 NONNULL
 void
 plugin_prepare_process (

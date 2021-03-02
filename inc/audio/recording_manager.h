@@ -83,6 +83,7 @@ typedef struct RecordingManager
  *   RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING and
  *   RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
  */
+HOT
 void
 recording_manager_handle_recording (
   RecordingManager * self,

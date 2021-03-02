@@ -452,6 +452,7 @@ port_identifier_get_label (
  *
  * @note This frees/allocates memory on \ref dest.
  */
+NONNULL
 void
 port_identifier_copy (
   PortIdentifier * dest,
@@ -460,15 +461,19 @@ port_identifier_copy (
 /**
  * Returns if the 2 PortIdentifier's are equal.
  */
+HOT
+NONNULL
 bool
 port_identifier_is_equal (
   PortIdentifier * src,
   PortIdentifier * dest);
 
+NONNULL
 void
 port_identifier_print (
   PortIdentifier * self);
 
+NONNULL
 void
 port_identifier_free_members (
   PortIdentifier * self);

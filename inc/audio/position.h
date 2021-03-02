@@ -232,11 +232,15 @@ position_set_bar (
   Position * position,
   int        bar);
 
+HOT
+NONNULL
 void
 position_set_beat (
   Position * position,
   int        beat);
 
+HOT
+NONNULL
 void
 position_set_sixteenth (
   Position * position,
@@ -283,6 +287,7 @@ position_sort_array (
  * the rest of the fields, and makes sure the
  * frames are still accurate.
  */
+HOT
 __attribute__ ((access (read_write, 1)))
 void
 position_add_frames (
@@ -292,6 +297,7 @@ position_add_frames (
 /**
  * Converts position bars/beats/quarter beats/ticks to frames
  */
+HOT
 __attribute__ ((access (read_only, 1)))
 long
 position_to_frames (
@@ -322,7 +328,8 @@ long
 position_to_ms (
   const Position * pos);
 
-PURE
+HOT
+NONNULL
 long
 position_ms_to_frames (
   long ms);
@@ -342,6 +349,7 @@ position_add_seconds (
   Position * pos,
   long       seconds);
 
+HOT
 double
 position_to_ticks (
   const Position * pos);
@@ -399,6 +407,8 @@ position_set_min_size (
 /**
  * Updates frames
  */
+HOT
+NONNULL
 void
 position_update_ticks_and_frames (
   Position * position);

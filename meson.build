@@ -463,7 +463,7 @@ test_cflags = [
 
 # add attribute macros
 attributes = [
-  'const', 'hot', 'pure', 'nonnull',
+  'const', 'cold', 'hot', 'pure', 'nonnull',
   'returns_nonnull', 'stack_protect',
   'no_stack_protector', 'deprecated',
   ]

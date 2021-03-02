@@ -32,7 +32,7 @@ port_identifier_copy (
   PortIdentifier * dest,
   PortIdentifier * src)
 {
-  g_return_if_fail (dest && src && dest != src);
+  g_return_if_fail (dest != src);
   string_copy_w_realloc (
     &dest->label, src->label);
   string_copy_w_realloc (

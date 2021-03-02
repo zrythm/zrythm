@@ -994,14 +994,14 @@ graph_setup (
   for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
-      if (port->deleting)
+      if (G_UNLIKELY (port->deleting))
         continue;
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl =
             port_get_plugin (port, 1);
-          if (port_pl->deleting)
+          if (G_UNLIKELY (port_pl->deleting))
             continue;
         }
 

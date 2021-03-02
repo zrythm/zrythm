@@ -275,6 +275,7 @@ automation_track_get_automation_tracklist (
  *   g_get_monotonic_time() passed here to ensure
  *   the same timestamp is used in sequential calls.
  */
+HOT
 NONNULL
 bool
 automation_track_should_read_automation (

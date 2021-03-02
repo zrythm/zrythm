@@ -145,6 +145,7 @@ typedef struct RecordingEvent
   re->func = __func__; \
   re->lineno = __LINE__
 
+COLD
 RecordingEvent *
 recording_event_new (void);
 

@@ -238,6 +238,7 @@ graph_get_max_route_playback_latency (
  * reaches here will inform the main-thread, wait,
  * and kick off the next process cycle.
  */
+HOT
 void
 graph_on_reached_terminal_node (
   Graph *  self);

@@ -623,8 +623,9 @@ midi_events_add_pitchbend (
     self->num_events++;
 }
 
+HOT
 static int
-cmpfunc (
+midi_event_cmpfunc (
   const void * _a,
   const void * _b)
 {
@@ -660,7 +661,7 @@ midi_events_sort (
       num_events = (size_t) self->num_events;
     }
   qsort (events, num_events, sizeof (MidiEvent),
-         cmpfunc);
+         midi_event_cmpfunc);
 }
 
 /**

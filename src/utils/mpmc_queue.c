@@ -130,7 +130,7 @@ mpmc_queue_push_back (
               break;
             }
         }
-      else if (dif < 0)
+      else if (G_UNLIKELY (dif < 0))
         {
           g_return_val_if_reached (0);
         }

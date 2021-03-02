@@ -1121,6 +1121,7 @@ port_apply_fader (
  * @param noroll Clear the port buffer in this
  *   range.
  */
+HOT
 NONNULL
 void
 port_process (
@@ -1281,6 +1282,7 @@ port_print_connections_all (void);
 /**
  * Clears the port buffer.
  */
+HOT
 NONNULL
 void
 port_clear_buffer (Port * port);

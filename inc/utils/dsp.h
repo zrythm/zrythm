@@ -26,6 +26,8 @@
 /**
  * Fill the buffer with the given value.
  */
+HOT
+NONNULL
 void
 dsp_fill (
   float * buf,
@@ -35,6 +37,7 @@ dsp_fill (
 /**
  * Clamp the buffer to min/max.
  */
+NONNULL
 void
 dsp_limit1 (
   float * buf,
@@ -42,6 +45,8 @@ dsp_limit1 (
   float   maxf,
   size_t  size);
 
+NONNULL
+HOT
 void
 dsp_copy (
   float *       dest,
@@ -51,6 +56,7 @@ dsp_copy (
 /**
  * Scale: dst[i] = dst[i] * k.
  */
+NONNULL
 void
 dsp_mul_k2 (
   float * dest,
@@ -62,6 +68,7 @@ dsp_mul_k2 (
  *
  * @return Whether the peak changed.
  */
+NONNULL
 bool
 dsp_abs_max (
   float * buf,
@@ -71,6 +78,7 @@ dsp_abs_max (
 /**
  * Gets the minimum of the buffer.
  */
+NONNULL
 float
 dsp_min (
   float * buf,
@@ -79,6 +87,7 @@ dsp_min (
 /**
  * Gets the maximum of the buffer.
  */
+NONNULL
 float
 dsp_max (
   float * buf,
@@ -87,6 +96,7 @@ dsp_max (
 /**
  * Calculate dst[i] = dst[i] + src[i].
  */
+NONNULL
 void
 dsp_add2 (
   float *       dest,
@@ -96,6 +106,7 @@ dsp_add2 (
 /**
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.
  */
+NONNULL
 void
 dsp_mix2 (
   float *       dest,
@@ -108,6 +119,7 @@ dsp_mix2 (
  * Calculate
  * dst[i] = dst[i] + src1[i] * k1 + src2[i] * k2.
  */
+NONNULL
 void
 dsp_mix_add2 (
   float *       dest,
@@ -130,6 +142,7 @@ dsp_mix_add2 (
  * equal amplitude sum =
  * (L+R) /2 (-6.02dB)
  */
+NONNULL
 void
 dsp_make_mono (
   float * l,

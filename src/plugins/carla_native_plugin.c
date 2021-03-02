@@ -628,7 +628,7 @@ carla_native_plugin_populate_banks (
  * Processes the plugin for this cycle.
  */
 void
-carla_native_plugin_proces (
+carla_native_plugin_process (
   CarlaNativePlugin * self,
   const long          g_start_frames,
   const nframes_t  local_offset,

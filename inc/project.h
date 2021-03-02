@@ -385,6 +385,7 @@ project_get_arranger_selections_for_last_selection (
  * @param start_engine Whether to also start the
  *   engine after creating the project.
  */
+COLD
 Project *
 project_create_default (
   Project *    self,
@@ -401,6 +402,7 @@ project_create_default (
  *
  * @return 0 if successful, non-zero otherwise.
  */
+COLD
 int
 project_load (
   char *    filename,
@@ -460,6 +462,7 @@ project_get_path (
  * Not meant to be used anywhere besides
  * tests and project.c
  */
+COLD
 void
 project_init_selections (Project * self);
 
@@ -498,6 +501,7 @@ _project_compress (
 /**
  * Creates an empty project object.
  */
+COLD
 Project *
 project_new (
   Zrythm * zrythm);

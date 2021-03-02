@@ -1668,7 +1668,7 @@ plugin_process (
 #ifdef HAVE_CARLA
   if (plugin->descr->open_with_carla)
     {
-      carla_native_plugin_proces (
+      carla_native_plugin_process (
         plugin->carla, g_start_frames,
         local_offset, nframes);
     }

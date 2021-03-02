@@ -87,11 +87,14 @@ static void
 test_position_benchmarks ()
 {
   double ticks = 50000.0;
+  gint64 loop_times = 5;
+  gint total_time;
   Position pos;
   position_from_ticks (&pos, ticks);
 
   g_message ("position to frames:");
-  for (int j = 0; j < 5; j++)
+  total_time = 0;
+  for (int j = 0; j < loop_times; j++)
     {
       gint64 before = g_get_monotonic_time ();
       for (int i = 0; i < 100000; i++)
@@ -99,11 +102,13 @@ test_position_benchmarks ()
           position_to_frames (&pos);
         }
       gint64 after = g_get_monotonic_time ();
-      g_message ("time: %ld", after - before);
+      total_time += after - before;
     }
+  g_message ("time: %ld", total_time / loop_times);
 
   g_message ("add frames");
-  for (int j = 0; j < 5; j++)
+  total_time = 0;
+  for (int j = 0; j < loop_times; j++)
     {
       gint64 before = g_get_monotonic_time ();
       for (int i = 0; i < 100000; i++)
@@ -111,8 +116,9 @@ test_position_benchmarks ()
           position_add_frames (&pos, 1000);
         }
       gint64 after = g_get_monotonic_time ();
-      g_message ("time: %ld", after - before);
+      total_time += after - before;
     }
+  g_message ("time: %ld", total_time / loop_times);
 }
 
 int

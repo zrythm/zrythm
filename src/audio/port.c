@@ -3180,9 +3180,10 @@ port_process (
       if (noroll)
         break;
 
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-          !track)
+      if (G_UNLIKELY (
+            port->id.owner_type ==
+              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+            !track))
         {
           g_return_if_reached ();
         }
@@ -3227,7 +3228,8 @@ port_process (
         }
 
       /* set midi capture if hardware */
-      if (port->id.owner_type == PORT_OWNER_TYPE_HW)
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_HW)
         {
           MidiEvents * events = port->midi_events;
           if (events->num_events > 0)
@@ -3446,8 +3448,10 @@ port_process (
           if (!src_port->dest_enabled[dest_idx])
             continue;
 
-          float minf, maxf, depth_range;
-          if (port->id.type == TYPE_AUDIO)
+          float minf = 0.f, maxf = 0.f,
+                depth_range;
+          if (G_LIKELY (
+                port->id.type == TYPE_AUDIO))
             {
               minf = -1.f;
               maxf = 1.f;
@@ -3456,12 +3460,6 @@ port_process (
             {
               maxf = port->maxf;
               minf = port->minf;
-            }
-          else
-            {
-              g_warn_if_reached ();
-              minf = 0.f;
-              maxf = 0.f;
             }
           depth_range =
             (maxf - minf) / 2.f;
@@ -3580,13 +3578,13 @@ port_process (
         g_return_if_fail (
           port->id.flags & PORT_FLAG_AUTOMATABLE);
         AutomationTrack * at = port->at;
-        if (!at)
+        if (G_UNLIKELY (!at))
           {
             g_critical (
               "No automation track found for port "
               "%s", port->id.label);
           }
-        if (at && ZRYTHM_TESTING)
+        if (G_UNLIKELY (at && ZRYTHM_TESTING))
           {
             AutomationTrack * found_at =
               automation_track_find_from_port (
@@ -3636,8 +3634,7 @@ port_process (
                    dest_idx])
               continue;
 
-            if (src_port->id.type ==
-                  TYPE_CV)
+            if (src_port->id.type == TYPE_CV)
               {
                 maxf = port->maxf;
                 minf = port->minf;
@@ -3918,7 +3915,7 @@ port_clear_buffer (Port * port)
 
       return;
     }
-  if (port->id.type == TYPE_EVENT &&
+  else if (port->id.type == TYPE_EVENT &&
       port->midi_events)
     {
       port->midi_events->num_events = 0;

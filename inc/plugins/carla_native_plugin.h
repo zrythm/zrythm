@@ -174,8 +174,9 @@ carla_native_plugin_get_abs_state_file_path (
 /**
  * Processes the plugin for this cycle.
  */
+HOT
 void
-carla_native_plugin_proces (
+carla_native_plugin_process (
   CarlaNativePlugin * self,
   const long          g_start_frames,
   const nframes_t  local_offset,

@@ -50,26 +50,21 @@ position_to_frames (
   const Position * position)
 {
   bool is_positive = position->bars > 0;
+  const int diff = G_LIKELY (is_positive) ? 1 : -1;
   double frames =
     AUDIO_ENGINE->frames_per_tick *
-      (is_positive ?
-       (double) (position->bars - 1) :
-       (double) (position->bars + 1)) *
+      (double) (position->bars + diff) *
       (double) TRANSPORT_BEATS_PER_BAR *
       (double) TRANSPORT->ticks_per_beat;
-  if (position->beats)
+  if (G_LIKELY (position->beats))
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
-        (is_positive ?
-         (double) (position->beats - 1) :
-         (double) (position->beats + 1)) *
+        (double) (position->beats + diff) *
         (double) TRANSPORT->ticks_per_beat);
-  if (position->sixteenths)
+  if (G_LIKELY (position->sixteenths))
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
-        (is_positive ?
-         (double) (position->sixteenths - 1) :
-         (double) (position->sixteenths + 1)) *
+        (double) (position->sixteenths + diff) *
         (double) TICKS_PER_SIXTEENTH_NOTE);
   if (position->ticks)
     frames +=
@@ -83,7 +78,7 @@ position_to_frames (
 }
 
 static int
-cmpfunc (
+position_cmpfunc (
   const void * a,
   const void * b)
 {
@@ -103,7 +98,8 @@ position_sort_array (
   const size_t size)
 {
   qsort (
-    array, size, sizeof (Position), cmpfunc);
+    array, size, sizeof (Position),
+    position_cmpfunc);
 }
 
 /**
@@ -721,22 +717,22 @@ position_to_ticks (
 {
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
   double ticks;
-  if (pos->bars > 0)
+  if (G_LIKELY (pos->bars > 0))
     {
       ticks =
         (double)
         ((pos->bars - 1) * TRANSPORT->ticks_per_bar);
-      if (pos->beats)
+      if (G_LIKELY (pos->beats))
         ticks +=
           (double)
           ((pos->beats - 1) *
              TRANSPORT->ticks_per_beat);
-      if (pos->sixteenths)
+      if (G_LIKELY (pos->sixteenths))
         ticks +=
           (double)
           ((pos->sixteenths - 1) *
             TICKS_PER_SIXTEENTH_NOTE);
-      if (pos->ticks)
+      if (G_LIKELY (pos->ticks))
         ticks += (double) pos->ticks;
       ticks += pos->sub_tick;
       g_warn_if_fail (

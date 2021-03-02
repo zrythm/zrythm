@@ -26,6 +26,8 @@
 #ifndef __ZRYTHM_H__
 #define __ZRYTHM_H__
 
+#include "zrythm-config.h"
+
 #include "zix/sem.h"
 
 typedef struct Project Project;
@@ -55,8 +57,13 @@ typedef struct CairoCaches CairoCaches;
 #define ZRYTHM_GENERATING_PROJECT \
   (ZRYTHM->generating_project)
 #define ZRYTHM_HAVE_UI (ZRYTHM && ZRYTHM->have_ui)
+
+#ifdef HAVE_LSP_DSP
 #define ZRYTHM_USE_OPTIMIZED_DSP \
-  (ZRYTHM->use_optimized_dsp)
+  (G_LIKELY (ZRYTHM->use_optimized_dsp))
+#else
+#define ZRYTHM_USE_OPTIMIZED_DSP false
+#endif
 
 /**
  * Type of Zrythm directory.
