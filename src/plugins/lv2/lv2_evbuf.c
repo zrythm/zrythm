@@ -47,11 +47,13 @@ lv2_evbuf_new (
 {
   g_return_val_if_fail (capacity > 0, NULL);
 
-  // FIXME: memory must be 64-bit aligned
+  // memory must be 64-bit aligned
   LV2_Evbuf* evbuf =
-    malloc (
+    aligned_alloc (
+      64,
       sizeof (LV2_Evbuf) +
       sizeof(LV2_Atom_Sequence) + capacity);
+  g_return_val_if_fail (evbuf, NULL);
   evbuf->capacity      = capacity;
   evbuf->atom_Chunk    = atom_Chunk;
   evbuf->atom_Sequence = atom_Sequence;
@@ -68,7 +70,6 @@ lv2_evbuf_free(LV2_Evbuf* evbuf)
 void
 lv2_evbuf_reset(LV2_Evbuf* evbuf, bool input)
 {
-  g_return_if_fail (evbuf);
   if (input)
     {
       evbuf->atom.atom.size =

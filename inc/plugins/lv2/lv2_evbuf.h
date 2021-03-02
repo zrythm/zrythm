@@ -50,6 +50,7 @@ lv2_evbuf_new(uint32_t       capacity,
 /**
    Free an event buffer allocated with lv2_evbuf_new.
 */
+NONNULL
 void
 lv2_evbuf_free(LV2_Evbuf* evbuf);
 
@@ -60,12 +61,14 @@ lv2_evbuf_free(LV2_Evbuf* evbuf);
    If input is false and this is an atom buffer, the buffer will be prepared
    for writing by the plugin.  This MUST be called before every run cycle.
 */
+NONNULL
 void
 lv2_evbuf_reset(LV2_Evbuf* evbuf, bool input);
 
 /**
    Return the total padded size of the events stored in the buffer.
 */
+NONNULL
 uint32_t
 lv2_evbuf_get_size(LV2_Evbuf* evbuf);
 
@@ -73,18 +76,21 @@ lv2_evbuf_get_size(LV2_Evbuf* evbuf);
    Return the actual buffer implementation.
    The format of the buffer returned depends on the buffer type.
 */
+NONNULL
 void*
 lv2_evbuf_get_buffer(LV2_Evbuf* evbuf);
 
 /**
    Return an iterator to the start of `evbuf`.
 */
+NONNULL
 LV2_Evbuf_Iterator
 lv2_evbuf_begin(LV2_Evbuf* evbuf);
 
 /**
    Return an iterator to the end of `evbuf`.
 */
+NONNULL
 LV2_Evbuf_Iterator
 lv2_evbuf_end(LV2_Evbuf* evbuf);
 
@@ -92,6 +98,7 @@ lv2_evbuf_end(LV2_Evbuf* evbuf);
    Check if `iter` is valid.
    @return True if `iter` is valid, otherwise false (past end of buffer)
 */
+NONNULL
 bool
 lv2_evbuf_is_valid(LV2_Evbuf_Iterator iter);
 
@@ -100,6 +107,7 @@ lv2_evbuf_is_valid(LV2_Evbuf_Iterator iter);
    `iter` must be valid.
    @return True if `iter` is valid, otherwise false (reached end of buffer)
 */
+NONNULL
 LV2_Evbuf_Iterator
 lv2_evbuf_next(LV2_Evbuf_Iterator iter);
 
