@@ -37,11 +37,6 @@ process_cb (gpointer data)
   gulong sleep_time =
     (gulong) (secs_per_block * 1000.0 * 1000);
 
-  engine_update_frames_per_tick (
-    self, self->transport->time_sig.beats_per_bar,
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    self->sample_rate);
-
   g_message (
     "Running dummy audio engine for first time");
 
@@ -114,6 +109,12 @@ engine_dummy_activate (
       g_message ("%s: activating...", __func__);
 
       self->stop_dummy_audio_thread = false;
+
+      engine_update_frames_per_tick (
+        self, self->transport->time_sig.beats_per_bar,
+        tempo_track_get_current_bpm (P_TEMPO_TRACK),
+        self->sample_rate);
+
       self->dummy_audio_thread =
         g_thread_new (
           "process_cb", process_cb, self);

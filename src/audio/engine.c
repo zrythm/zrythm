@@ -119,6 +119,13 @@ engine_update_frames_per_tick (
     "bpm %f, sample rate %u",
     beats_per_bar, (double) bpm, sample_rate);
 
+  if (g_thread_self () != zrythm_app->gtk_thread)
+    {
+      g_critical ("Called %s from non-GTK thread",
+        __func__);
+      return;
+    }
+
   self->frames_per_tick =
     (((double) sample_rate * 60.0 *
        (double) beats_per_bar) /

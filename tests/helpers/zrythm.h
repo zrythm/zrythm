@@ -148,6 +148,10 @@ _test_helper_zrythm_init (
   ZRYTHM =
     zrythm_new (NULL, false, true, optimized);
 
+  /* dummy ZrythmApp object for testing */
+  zrythm_app = object_new (ZrythmApp);
+  zrythm_app->gtk_thread = g_thread_self ();
+
   /* init logging to custom file */
   char * tmp_log_dir =
     g_build_filename (

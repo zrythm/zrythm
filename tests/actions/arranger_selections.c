@@ -1409,8 +1409,10 @@ test_audio_functions ()
     (size_t) orig_clip->num_frames;
   size_t total_frames =
     (size_t) orig_clip->num_frames * channels;
-  float orig_frames[total_frames];
-  float inverted_frames[total_frames];
+  float * orig_frames =
+    object_new_n (total_frames, float);
+  float * inverted_frames =
+    object_new_n (total_frames, float);
   dsp_copy (
     orig_frames, orig_clip->frames,
     total_frames);
@@ -1447,6 +1449,9 @@ test_audio_functions ()
     inverted_frames, frames_per_channel);
 
   undo_manager_undo (UNDO_MANAGER);
+
+  free (orig_frames);
+  free (inverted_frames);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1949,6 +1954,9 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test audio functions",
+    (GTestFunc) test_audio_functions);
+  g_test_add_func (
     TEST_PREFIX "test create timeline",
     (GTestFunc) test_create_timeline);
   g_test_add_func (
@@ -1981,9 +1989,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test quantize",
     (GTestFunc) test_quantize);
-  g_test_add_func (
-    TEST_PREFIX "test audio functions",
-    (GTestFunc) test_audio_functions);
   g_test_add_func (
     TEST_PREFIX "test automation fill",
     (GTestFunc) test_automation_fill);
