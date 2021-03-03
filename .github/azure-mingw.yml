@@ -38,7 +38,7 @@ jobs:
         displayName: 'Fetch repos'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py build -Dtests=true && /mingw64/bin/python3 ../meson/meson.py compile -C build"
+          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py build -Dpkg_config_path=/mingw64/lib/pkgconfig -Dtests=true && /mingw64/bin/python3 ../meson/meson.py compile -C build"
         displayName: 'Configure and build'
 
       - script: |

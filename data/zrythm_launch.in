@@ -26,7 +26,7 @@ schema_prefix="org.zrythm.Zrythm"
 cmd="gsettings get $schema_prefix.preferences.ui.general language"
 $cmd > /dev/null
 first_run=`gsettings get $schema_prefix.general first-run`
-if [[ $? == 0 ]] && [[ $first_run == "false" ]]; then
+if [ $? = 0 ] && [ $first_run = "false" ]; then
   preferences_lang=`$cmd | sed -e "s|'||g"`
   lang=`locale -a | grep $preferences_lang | head -n 1`
   export LANG="$lang"
