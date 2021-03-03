@@ -39,3 +39,20 @@ lots of information online about how to configure
 JACK, such as
 `Demystifying JACK - A Beginners Guide to Getting Started with JACK <https://linuxaudio.github.io/libremusicproduction/html/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_,
 so we will skip this part.
+
+Memory Locking
+--------------
+Zrythm requires memory locking privileges for
+reliable, dropout-free operation. In short, if
+data is not locked into memory, it can be swapped
+by the kernel, causing xruns when attempting to
+access the data.
+
+To set up these privileges for your user, see
+`How do I configure my linux system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_.
+
+Open File Limit
+---------------
+On startup, Zrythm will attempt to increase the
+maximum limit of files it can open. You should give
+your user enough permissions to allow this.
