@@ -49,8 +49,12 @@ lv2_evbuf_new (
 
   // memory must be 64-bit aligned
   LV2_Evbuf* evbuf =
+#ifdef _WOE32
+    malloc (
+#else
     aligned_alloc (
       64,
+#endif
       sizeof (LV2_Evbuf) +
       sizeof(LV2_Atom_Sequence) + capacity);
   g_return_val_if_fail (evbuf, NULL);
