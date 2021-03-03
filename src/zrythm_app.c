@@ -165,33 +165,6 @@ segv_handler (int sig)
 }
 #pragma GCC diagnostic pop
 
-/*static char * project_file = NULL;*/
-
-/**
- * Initializes/creates the default dirs/files.
- */
-static void
-init_dirs_and_files ()
-{
-  g_message ("initing dirs and files");
-  char * dir;
-
-#define MK_USER_DIR(x) \
-  dir =  zrythm_get_dir (ZRYTHM_DIR_USER_##x); \
-  io_mkdir (dir); \
-  g_free (dir)
-
-  MK_USER_DIR (TOP);
-  MK_USER_DIR (PROJECTS);
-  MK_USER_DIR (TEMPLATES);
-  MK_USER_DIR (LOG);
-  MK_USER_DIR (THEMES);
-  MK_USER_DIR (PROFILING);
-  MK_USER_DIR (GDB);
-
-#undef MK_USER_DIR
-}
-
 /**
  * Initializes the array of recent projects in
  * Zrythm app.
@@ -238,24 +211,6 @@ init_recent_projects ()
   g_settings_set_strv (
     S_GENERAL, "recent-projects",
     (const char * const *) ZRYTHM->recent_projects);
-
-  g_message ("done");
-}
-
-/**
- * Initializes the array of recent projects in
- * Zrythm app.
- */
-static void
-init_templates ()
-{
-  g_message ("Initializing templates...");
-
-  char * user_templates_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_TEMPLATES);
-  ZRYTHM->templates =
-    io_get_files_in_dir (user_templates_dir);
-  g_free (user_templates_dir);
 
   g_message ("done");
 }
@@ -360,8 +315,7 @@ init_thread (
   zrythm_app_set_progress_status (
     self, _("Initializing settings"), 0.0);
 
-  ZRYTHM->debug =
-    env_get_int ("ZRYTHM_DEBUG", 0);
+  ZRYTHM->debug = env_get_int ("ZRYTHM_DEBUG", 0);
   /* init zrythm folders ~/Zrythm */
   char msg[500];
   sprintf (
@@ -370,9 +324,9 @@ init_thread (
     PROGRAM_NAME);
   zrythm_app_set_progress_status (
     self, msg, 0.01);
-  init_dirs_and_files ();
+  zrythm_init_user_dirs_and_files (ZRYTHM);
   init_recent_projects ();
-  init_templates ();
+  zrythm_init_templates (ZRYTHM);
 
   /* init log */
   zrythm_app_set_progress_status (

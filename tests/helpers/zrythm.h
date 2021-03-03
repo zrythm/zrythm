@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -147,6 +147,11 @@ _test_helper_zrythm_init (
 
   ZRYTHM =
     zrythm_new (NULL, false, true, optimized);
+
+  /* init logic - note: will use a random dir in
+   * tmp as the user dire */
+  zrythm_init_user_dirs_and_files (ZRYTHM);
+  zrythm_init_templates (ZRYTHM);
 
   /* dummy ZrythmApp object for testing */
   zrythm_app = object_new (ZrythmApp);

@@ -545,7 +545,7 @@ get_vst3_count (
 
       char ** vst_plugins =
         io_get_files_in_dir_ending_in (
-          path, 1, ".vst3");
+          path, 1, ".vst3", false);
       if (!vst_plugins)
         continue;
 
@@ -578,7 +578,7 @@ get_vst_count (
 
       char ** vst_plugins =
         io_get_files_in_dir_ending_in (
-          path, 1, LIB_SUFFIX);
+          path, 1, LIB_SUFFIX, false);
       if (!vst_plugins)
         continue;
 
@@ -642,7 +642,8 @@ get_sf_count (
       char ** sf_instruments =
         io_get_files_in_dir_ending_in (
           path, 1,
-          (prot == PROT_SFZ) ? ".sfz" : ".sf2");
+          (prot == PROT_SFZ) ? ".sfz" : ".sf2",
+          false);
       if (!sf_instruments)
         continue;
 
@@ -881,7 +882,7 @@ scan_carla_descriptors_from_paths (
 
       char ** plugins =
         io_get_files_in_dir_ending_in (
-          path, 1, suffix);
+          path, 1, suffix, false);
       if (!plugins)
         continue;
 

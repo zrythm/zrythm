@@ -61,7 +61,8 @@ test_midi_file_playback ()
   char ** midi_files =
     io_get_files_in_dir_ending_in (
       MIDILIB_TEST_MIDI_FILES_PATH,
-      F_RECURSIVE, ".MID");
+      F_RECURSIVE, ".MID", false);
+  g_assert_nonnull (midi_files);
 
   /* shuffle array */
   int count = 0;

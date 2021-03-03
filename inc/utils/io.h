@@ -128,24 +128,28 @@ io_rmdir (
  *   must be free'd with g_strfreev(), or NULL if
  *   no files were found.
  */
-#define io_get_files_in_dir(dir) \
-  io_get_files_in_dir_ending_in (dir, 0, NULL)
+#define io_get_files_in_dir(dir,allow_empty) \
+  io_get_files_in_dir_ending_in ( \
+    dir, 0, NULL, allow_empty)
 
 /**
  * Returns a list of the files in the given
  * directory.
  *
  * @param dir The directory to look for.
+ * @param allow_empty Whether to allow returning
+ *   an empty array that has only NULL, otherwise
+ *   return NULL if empty.
  *
  * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev(), or NULL if
- *   no files were found.
+ *   must be free'd with g_strfreev() or NULL.
  */
 char **
 io_get_files_in_dir_ending_in (
-  const char * dir,
+  const char * _dir,
   const int    recursive,
-  const char * end_string);
+  const char * end_string,
+  bool         allow_empty);
 
 /**
  * Returns a newly allocated path that is either

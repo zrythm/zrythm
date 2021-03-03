@@ -341,6 +341,23 @@ zrythm_get_user_dir (
   bool  force_default);
 
 /**
+ * Initializes/creates the default dirs/files in
+ * the user directory.
+ */
+NONNULL
+void
+zrythm_init_user_dirs_and_files (
+  Zrythm * self);
+
+/**
+ * Initializes the array of project templates.
+ */
+NONNULL
+void
+zrythm_init_templates (
+  Zrythm * self);
+
+/**
  * Creates a new Zrythm instance.
  *
  * @param have_ui Whether Zrythm is instantiated

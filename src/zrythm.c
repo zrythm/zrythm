@@ -428,6 +428,53 @@ zrythm_get_dir (
 }
 
 /**
+ * Initializes/creates the default dirs/files in
+ * the user directory.
+ */
+NONNULL
+void
+zrythm_init_user_dirs_and_files (
+  Zrythm * self)
+{
+  g_message ("initing dirs and files");
+  char * dir;
+
+#define MK_USER_DIR(x) \
+  dir =  zrythm_get_dir (ZRYTHM_DIR_USER_##x); \
+  io_mkdir (dir); \
+  g_free (dir)
+
+  MK_USER_DIR (TOP);
+  MK_USER_DIR (PROJECTS);
+  MK_USER_DIR (TEMPLATES);
+  MK_USER_DIR (LOG);
+  MK_USER_DIR (THEMES);
+  MK_USER_DIR (PROFILING);
+  MK_USER_DIR (GDB);
+
+#undef MK_USER_DIR
+}
+
+/**
+ * Initializes the array of project templates.
+ */
+void
+zrythm_init_templates (
+  Zrythm * self)
+{
+  g_message ("Initializing templates...");
+
+  char * user_templates_dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_TEMPLATES);
+  ZRYTHM->templates =
+    io_get_files_in_dir (user_templates_dir, true);
+  g_return_if_fail (ZRYTHM->templates);
+  g_free (user_templates_dir);
+
+  g_message ("done");
+}
+
+/**
  * Frees the instance and any unfreed members.
  */
 void

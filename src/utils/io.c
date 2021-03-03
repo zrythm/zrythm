@@ -306,6 +306,9 @@ append_files_from_dir_ending_in (
     {
       if (ZRYTHM_TESTING)
         {
+          /* this is needed because
+           * g_test_expect_message() doesn't work
+           * with below */
           g_warn_if_reached ();
         }
       else
@@ -360,16 +363,19 @@ append_files_from_dir_ending_in (
  * directory.
  *
  * @param dir The directory to look for.
+ * @param allow_empty Whether to allow returning
+ *   an empty array that has only NULL, otherwise
+ *   return NULL if empty.
  *
  * @return a NULL terminated array of strings that
- *   must be free'd with g_strfreev(), or NULL if
- *   no files were found.
+ *   must be free'd with g_strfreev() or NULL.
  */
 char **
 io_get_files_in_dir_ending_in (
   const char * _dir,
   const int    recursive,
-  const char * end_string)
+  const char * end_string,
+  bool         allow_empty)
 {
   char ** arr = object_new_n (1, char *);
   int count = 0;
@@ -377,7 +383,7 @@ io_get_files_in_dir_ending_in (
   append_files_from_dir_ending_in (
     &arr, &count, recursive, _dir, end_string);
 
-  if (count == 0)
+  if (count == 0 && !allow_empty)
     {
       free (arr);
       return NULL;

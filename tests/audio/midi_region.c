@@ -38,7 +38,8 @@ test_export (void)
   char ** midi_files =
     io_get_files_in_dir_ending_in (
       MIDILIB_TEST_MIDI_FILES_PATH,
-      F_RECURSIVE, ".MID");
+      F_RECURSIVE, ".MID", false);
+  g_assert_nonnull (midi_files);
   char * export_dir =
     g_dir_make_tmp ("test_midi_export_XXXXXX", NULL);
 

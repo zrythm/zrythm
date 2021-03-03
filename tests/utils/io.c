@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -115,7 +115,7 @@ test_get_files_in_dir (void)
 
   files =
     io_get_files_in_dir_ending_in (
-      TESTS_SRCDIR, F_NO_RECURSIVE, ".wav");
+      TESTS_SRCDIR, F_NO_RECURSIVE, ".wav", false);
   g_assert_nonnull (files);
   g_strfreev (files);
 
@@ -123,12 +123,23 @@ test_get_files_in_dir (void)
 
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*should not be reached*");
+    "*reached*");
   files =
     io_get_files_in_dir_ending_in (
-      "/non-existent", F_RECURSIVE, ".wav");
+      "/non-existent", F_RECURSIVE, ".wav", false);
   g_test_assert_expected_messages ();
   g_assert_null (files);
+
+  g_test_expect_message (
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+    "*reached*");
+  files =
+    io_get_files_in_dir_ending_in (
+      "/non-existent", F_RECURSIVE, ".wav", true);
+  g_test_assert_expected_messages ();
+  g_assert_nonnull (files);
+  g_assert_null (files[0]);
+  g_strfreev (files);
 #endif
 
   test_helper_zrythm_cleanup ();
