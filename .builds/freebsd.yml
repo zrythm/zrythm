@@ -56,3 +56,4 @@ tasks:
   - install: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install
+      /tmp/usr/local/bin/zrythm_launch --version | grep "built with"
