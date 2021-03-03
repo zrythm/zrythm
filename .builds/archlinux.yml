@@ -9,6 +9,7 @@ packages:
   - gtk3
   - gettext
   - gcovr
+  - gdb
   - graphviz
   - gtksourceview4
   - helm-synth
@@ -32,6 +33,7 @@ packages:
   - rtaudio
   - sed
   - suil
+  - valgrind
   - vim
   - xdg-utils
   - zstd
@@ -60,12 +62,12 @@ tasks:
       meson build --reconfigure -Dgraphviz=enabled -Djack=disabled
       ninja -C build test
       meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled -Doptimization=3
-      ninja -C build test
+      meson test -C build --repeat 2
       meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
       ninja -C build test
-      meson build --reconfigure -Dstrict_flags=true -Duser_manual=true -Dguile=disabled
-      ninja -C build test
-      meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled -Doptimization=s
+      meson build --reconfigure -Duser_manual=true -Doptimization=2
+      meson test -C build --wrap="valgrind --error-exitcode=1" -t 2
+      meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled -Doptimization=s -Dguile=disabled
       ninja -C build test
   - install: |
       cd zrythm
