@@ -38,17 +38,13 @@ jobs:
         displayName: 'Fetch repos'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "/mingw64/bin/pip.exe uninstall -y meson && /mingw64/bin/pip.exe install meson && /mingw64/bin/meson --version && /mingw64/bin/pip.exe install ninja"
-        displayName: 'Install meson through pip'
-
-      - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/meson build -Dtests=true && /mingw64/bin/meson compile -C build"
+          C:\msys64\usr\bin\bash --login -c "cd zrythm && meson build -Dtests=true && meson compile -C build"
         displayName: 'Configure and build'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/meson test -C build"
+          C:\msys64\usr\bin\bash --login -c "cd zrythm && meson test -C build"
         displayName: 'Test'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/meson install -C build"
+          C:\msys64\usr\bin\bash --login -c "cd zrythm && meson install -C build"
         displayName: 'Install'

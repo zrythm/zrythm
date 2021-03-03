@@ -1542,14 +1542,22 @@ channel_disconnect_plugin_from_strip (
     }
 
   if (!prev_plugin && !next_plugin)
-    disconnect_no_prev_no_next (ch, pl);
+    {
+      disconnect_no_prev_no_next (ch, pl);
+    }
   else if (!prev_plugin && next_plugin)
-    disconnect_no_prev_next (ch, pl, next_plugin);
+    {
+      disconnect_no_prev_next (ch, pl, next_plugin);
+    }
   else if (prev_plugin && !next_plugin)
-    disconnect_prev_no_next (ch, prev_plugin, pl);
+    {
+      disconnect_prev_no_next (ch, prev_plugin, pl);
+    }
   else if (prev_plugin && next_plugin)
-    disconnect_prev_next (
-      ch, prev_plugin, pl, next_plugin);
+    {
+      disconnect_prev_next (
+        ch, prev_plugin, pl, next_plugin);
+    }
 
   /* unexpose all JACK ports */
   plugin_expose_ports (
