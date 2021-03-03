@@ -42,6 +42,11 @@ they can be passed directly when running
   Set this to the locations to scan for :term:`VST3`
   plugins.
 
+.. envvar:: ZRYTHM_DSP_THREADS
+
+  Number of DSP threads to use. Defaults to number
+  of CPU cores - 1.
+
 .. envvar:: ZRYTHM_DEBUG
 
   Set to 1 to show extra information useful for
