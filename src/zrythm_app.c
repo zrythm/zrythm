@@ -117,6 +117,9 @@
 #ifdef HAVE_X11
 #include <X11/Xlib.h>
 #endif
+#ifdef PHONE_HOME
+#include <curl/curl.h>
+#endif
 
 /** This is declared extern in zrythm_app.h. */
 ZrythmApp * zrythm_app = NULL;
@@ -942,6 +945,11 @@ zrythm_app_startup (
 
 #endif
 
+  /* init curl */
+#ifdef PHONE_HOME
+  curl_global_init (CURL_GLOBAL_ALL);
+#endif
+
   /* init random */
   g_message ("Initing random...");
 #ifdef _WOE32
@@ -1721,6 +1729,11 @@ finalize (
 
   object_free_w_func_and_null (
     ui_caches_free, self->ui_caches);
+
+  /* init curl */
+#ifdef PHONE_HOME
+  curl_global_cleanup ();
+#endif
 
   g_message ("%s: done", __func__);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,7 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"
+#include "utils/curl.h"
 #include "utils/env.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
@@ -51,6 +52,7 @@
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/io.h"
+#include "utils/string.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -217,6 +219,76 @@ zrythm_get_version_with_capabilities (
 
   g_free (ver);
 }
+
+/**
+ * Returns whether the current Zrythm version is a
+ * release version.
+ *
+ * @note This only does regex checking.
+ */
+bool
+zrythm_is_release (
+  bool official)
+{
+#ifndef INSTALLER_VER
+  if (official)
+    {
+      return false;
+    }
+#endif
+
+  return
+    !string_contains_substr (PACKAGE_VERSION, "g");
+}
+
+#ifdef PHONE_HOME
+/**
+ * Returns the latest release version.
+ */
+char *
+zrythm_fetch_latest_release_ver (void)
+{
+  static char * ver = NULL;
+  static bool called = false;
+
+  if (called)
+    {
+      return ver;
+    }
+
+  called = true;
+
+  char * page =
+    z_curl_get_page_contents (
+      "https://www.zrythm.org/releases/?C=M;O=D");
+  g_return_val_if_fail (page, NULL);
+
+  ver =
+    string_get_regex_group (
+      page, "\"zrythm-(.+).tar.xz\"", 1);
+  g_free (page);
+
+  g_return_val_if_fail (ver, NULL);
+
+  return ver;
+}
+
+bool
+zrythm_is_latest_release (void)
+{
+  char * latest_release =
+    zrythm_fetch_latest_release_ver ();
+  bool ret = false;
+  if (string_is_equal (
+        latest_release, PACKAGE_VERSION))
+    {
+      ret = true;
+    }
+  g_free (latest_release);
+
+  return ret;
+}
+#endif
 
 /**
  * Returns the prefix or in the case of windows

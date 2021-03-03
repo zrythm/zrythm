@@ -280,7 +280,7 @@ string_get_regex_group_as_int (
 /**
  * Gets the string in the given regex group.
  *
- * @return The string, or NULL.
+ * @return A newly allocated string or NULL.
  */
 char *
 string_get_regex_group (

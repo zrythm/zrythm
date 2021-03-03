@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,7 @@
 #include <stdlib.h>
 
 #include "settings/settings.h"
+#include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/terminal.h"
@@ -303,6 +304,75 @@ settings_print (
   int pretty_print)
 {
   print_or_reset (1, pretty_print, 0);
+}
+
+/**
+ * Returns whether the "as" key contains the given
+ * string.
+ */
+bool
+settings_strv_contains_str (
+  GSettings *  settings,
+  const char * key,
+  const char * val)
+{
+  char ** strv =
+    g_settings_get_strv (settings, key);
+
+  for (int i = 0;; i++)
+    {
+      char * str = strv[i];
+      if (!str)
+        break;
+
+      if (string_is_equal (str, val))
+        {
+          g_strfreev (strv);
+          return true;
+        }
+    }
+
+  g_strfreev (strv);
+
+  return false;
+}
+
+/**
+ * Appends the given string to a key of type "as".
+ */
+void
+settings_append_to_strv (
+  GSettings * settings,
+  const char * key,
+  const char * val,
+  bool         ignore_if_duplicate)
+{
+  if (ignore_if_duplicate &&
+      settings_strv_contains_str (
+        settings, key, val))
+    {
+      return;
+    }
+
+  char ** strv =
+    g_settings_get_strv (settings, key);
+
+  size_t i;
+  for (i = 0;; i++)
+    {
+      if (!strv[i])
+        break;
+    }
+
+  strv =
+    object_realloc_n (strv, i + 1, i + 2, char *);
+
+  strv[i] = g_strdup (val);
+
+  g_settings_set_strv (
+    settings, key, (const char * const *) strv);
+
+  g_strfreev (strv);
 }
 
 /**

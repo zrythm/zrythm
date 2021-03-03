@@ -361,6 +361,15 @@ Args:
                  "last-project-dir" "s" ""
                  "Last project directory"
                  "Last directory a project was created in.")
+               (make-schema-key
+                 "run-versions" "as" "[]"
+                 "List of all versions run at least once"
+                 "A list of versions run at least once.")
+               (make-schema-key
+                 "last-version-new-release-notified-on"
+                 "s" "999"
+                 "Last version that was notified of a new release"
+                 "The last version that received a 'new version has been released' notification.")
              ))) ;; general
 
          ;; UI schema

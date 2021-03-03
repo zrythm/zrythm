@@ -290,6 +290,27 @@ zrythm_get_version (
   int with_v);
 
 /**
+ * Returns whether the current Zrythm version is a
+ * release version.
+ *
+ * @note This only does regex checking.
+ */
+bool
+zrythm_is_release (
+  bool official);
+
+#ifdef PHONE_HOME
+/**
+ * Returns the latest release version.
+ */
+char *
+zrythm_fetch_latest_release_ver (void);
+
+bool
+zrythm_is_latest_release (void);
+#endif
+
+/**
  * Returns the veresion and the capabilities.
  */
 void

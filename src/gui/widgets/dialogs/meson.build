@@ -21,6 +21,7 @@ widget_srcs += files([
   'bind_cc_dialog.c',
   'bounce_dialog.c',
   'bug_report_dialog.c',
+  'changelog_dialog.c',
   'create_project_dialog.c',
   'export_dialog.c',
   'export_midi_file_dialog.c',

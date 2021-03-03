@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -22,6 +22,7 @@ util_srcs = [
   'cairo.c',
   'color.c',
   'cpu_windows.cpp',
+  'curl.c',
   'datetime.c',
   'dialogs.c',
   'dictionary.c',

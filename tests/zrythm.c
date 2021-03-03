@@ -37,6 +37,17 @@ test_dummy ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_fetch_latest_release ()
+{
+#ifdef PHONE_HOME
+  char * ver =
+    zrythm_fetch_latest_release_ver ();
+  g_assert_nonnull (ver);
+  g_assert_cmpuint (strlen (ver), <, 20);
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -47,6 +58,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test dummy",
     (GTestFunc) test_dummy);
+  g_test_add_func (
+    TEST_PREFIX "test fetch latest release",
+    (GTestFunc) test_fetch_latest_release);
 
   return g_test_run ();
 }

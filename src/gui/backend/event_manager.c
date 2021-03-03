@@ -55,6 +55,7 @@
 #include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
+#include "gui/widgets/dialogs/changelog_dialog.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/home_toolbar.h"
@@ -100,6 +101,7 @@
 #include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "utils/stack.h"
+#include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -1698,6 +1700,65 @@ process_events (void * data)
           on_project_selection_type_changed ();
           main_notebook_widget_refresh (
             MW_MAIN_NOTEBOOK);
+
+#ifdef PHONE_HOME
+          {
+            bool is_latest_release =
+              zrythm_is_latest_release ();
+
+            /* if latest release and first run on
+             * this release show CHANGELOG */
+            if (is_latest_release &&
+                !settings_strv_contains_str (
+                   S_GENERAL, "run-versions",
+                   PACKAGE_VERSION))
+              {
+                changelog_dialog_widget_run (
+                  GTK_WINDOW (MAIN_WINDOW));
+                settings_append_to_strv (
+                  S_GENERAL, "run-versions",
+                  PACKAGE_VERSION, true);
+              }
+
+            /* if not latest release and this is
+             * an official release, notify user */
+            char * last_version_notified_on =
+              g_settings_get_string (
+                S_GENERAL,
+                "last-version-new-release-notified-on");
+            if (!is_latest_release &&
+                zrythm_is_release (true) &&
+                !string_is_equal (
+                   last_version_notified_on,
+                   PACKAGE_VERSION))
+              {
+                char * latest_release =
+                  zrythm_fetch_latest_release_ver ();
+                GtkWidget * dialog =
+                  gtk_message_dialog_new_with_markup (
+                    GTK_WINDOW (MAIN_WINDOW),
+                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                    GTK_MESSAGE_INFO,
+                    GTK_BUTTONS_CLOSE,
+                    _("A new version of Zrythm "
+                    "has been released: "
+                    "<b>%s</b>\n\n"
+                    "Your current version is "
+                    "%s"),
+                    latest_release,
+                    PACKAGE_VERSION);
+                gtk_dialog_run (
+                  GTK_DIALOG (dialog));
+                gtk_widget_destroy (dialog);
+
+                g_settings_set_string (
+                  S_GENERAL,
+                  "last-version-new-release-notified-on",
+                  PACKAGE_VERSION);
+              }
+            g_free (last_version_notified_on);
+          }
+#endif /* PHONE_HOME */
           break;
         case ET_SPLASH_CLOSED:
           break;

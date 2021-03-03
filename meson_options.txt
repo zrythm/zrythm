@@ -193,3 +193,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'OGG OPUS support (requires libsndfile >= 1.0.29)')
+
+option (
+  'phone_home',
+  type: 'feature',
+  value: 'disabled',
+  description: 'Allow connecting to the internet (eg, for checking the latest version).')

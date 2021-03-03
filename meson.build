@@ -239,6 +239,17 @@ if os_gnu
   endif
 endif
 
+# if latest version in changelog is the project's
+# version, add the changelog to the config
+chlog = fs.read ('CHANGELOG.md').split('\n## [')[1].strip ()
+if chlog.contains (meson.project_version () + '] -')
+  chlog_date = chlog.split (' - ')[1].split ('\n')[0]
+  chlog = chlog.split (chlog_date + '\n')[1]
+  cdata.set ('HAVE_CHANGELOG', 1)
+  cdata.set_quoted ('CHANGELOG_DATE', chlog_date)
+  cdata.set_quoted ('CHANGELOG_TXT', '\\n'.join (chlog.split ('\n')))
+endif
+
 # find plugins for testing
 ext_lv2_plugins = {
   'ams_lfo': [
@@ -1026,6 +1037,15 @@ zrythm_deps = [
   libm,
 ]
 
+phone_home = false
+libcurl_dep = dependency (
+  'libcurl', required: get_option ('phone_home'))
+if libcurl_dep.found () and not get_option ('phone_home').disabled ()
+  phone_home = true
+  zrythm_deps += libcurl_dep
+  cdata.set ('PHONE_HOME', 1)
+endif
+
 if all_static
   zrythm_deps += [
     # provided by bzip2
@@ -1158,11 +1178,13 @@ summary ({
   'Custom logo and splash': get_option ('custom_logo_and_splash'),
   'Trial version': get_option ('trial_ver'),
   'Installer version': get_option ('installer_ver'),
+  'Phone home': phone_home,
   }, section: 'General')
 
 summary ({
   'ALSA': have_alsa,
   'Carla': have_carla,
+  'Curl': phone_home,
   'GraphViz': have_graphviz,
   'Guile': have_guile,
   'JACK': have_jack,
