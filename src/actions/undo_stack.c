@@ -96,7 +96,7 @@ UndoStack *
 undo_stack_new (void)
 {
   g_return_val_if_fail (
-    ZRYTHM_TESTING ||
+    (ZRYTHM && ZRYTHM->testing) ||
       G_IS_SETTINGS (S_P_EDITING_UNDO), NULL);
 
   UndoStack * self = calloc (1, sizeof (UndoStack));

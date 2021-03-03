@@ -1,0 +1,64 @@
+#
+# Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+trigger:
+- master
+- develop
+- bugfixes
+
+pool:
+  vmImage: 'macOS-latest'
+
+jobs:
+  - job: Make
+    timeoutInMinutes: 120
+    steps:
+    - script: |
+        set -e
+        echo "updating brew"
+        brew update || true
+        echo "installing deps"
+        # use || true because it returns 1
+        brew install gnu-sed fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg adwaita-icon-theme gtk+3 guile gtksourceview4 graphviz zstd npm rt-audio rtmidi jack qjackctl cmake help2man || true
+        echo "linking python"
+        brew link --overwrite python
+        #npm install -g appdmg
+        echo "installing cmake"
+        pip3 install scikit-build
+        pip3 install cmake
+      displayName: 'Install deps'
+
+    - script: |
+        git clone https://git.sr.ht/~alextee/zrythm
+        git clone https://github.com/mesonbuild/meson
+      displayName: 'Clone repos'
+
+    - script: |
+        cd zrythm
+        meson build -Dtests=true
+        ninja -C build
+      displayName: 'Configure and build'
+
+    - script: |
+        cd zrythm
+        meson test -C build
+      displayName: 'Test'
+
+    - script: |
+        cd zrythm
+        ninja -C build install
+      displayName: 'Install'
