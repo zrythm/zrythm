@@ -1422,7 +1422,8 @@ port_set_owner_plugin (
 
   if (port->at)
     {
-      port->at->port_id = port->id;
+      port_identifier_copy (
+        &port->at->port_id, &port->id);
     }
 }
 

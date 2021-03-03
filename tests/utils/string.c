@@ -94,6 +94,55 @@ test_is_equal ()
     string_is_equal (NULL, ""));
 }
 
+static void
+test_copy_w_realloc ()
+{
+  char * str = g_strdup ("aa");
+  string_copy_w_realloc (&str, "");
+  g_assert_true (
+    string_is_equal (str, ""));
+  string_copy_w_realloc (&str, "aa");
+  g_assert_true (
+    string_is_equal (str, "aa"));
+  string_copy_w_realloc (&str, "あああ");
+  g_assert_true (
+    string_is_equal (str, "あああ"));
+  string_copy_w_realloc (&str, "あああ");
+  g_assert_true (
+    string_is_equal (str, "あああ"));
+  string_copy_w_realloc (&str, "aa");
+  g_assert_true (
+    string_is_equal (str, "aa"));
+  string_copy_w_realloc (&str, "");
+  g_assert_nonnull (str);
+  g_assert_true (
+    string_is_equal (str, ""));
+
+  string_copy_w_realloc (&str, NULL);
+  g_assert_null (str);
+  string_copy_w_realloc (&str, NULL);
+  g_assert_null (str);
+  string_copy_w_realloc (&str, "");
+  g_assert_nonnull (str);
+  g_assert_true (
+    string_is_equal (str, ""));
+  string_copy_w_realloc (&str, "aaa");
+  g_assert_true (
+    string_is_equal (str, "aaa"));
+  string_copy_w_realloc (&str, "aaa");
+  g_assert_true (
+    string_is_equal (str, "aaa"));
+  string_copy_w_realloc (&str, "aa");
+  g_assert_true (
+    string_is_equal (str, "aa"));
+
+  string_copy_w_realloc (
+    &str,
+    "[Zrythm] Enabled");
+  g_assert_true (
+    string_is_equal (str, "[Zrythm] Enabled"));
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -110,6 +159,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test is equal",
     (GTestFunc) test_is_equal);
+  g_test_add_func (
+    TEST_PREFIX "test copy w realloc",
+    (GTestFunc) test_copy_w_realloc);
 
   return g_test_run ();
 }

@@ -494,12 +494,16 @@ string_copy_w_realloc (
   char **      dest,
   const char * src)
 {
+  g_return_if_fail (
+    dest &&
+    ((!*dest && !src) || (*dest != src)));
   if (src)
     {
+      size_t strlen_src = strlen (src);
       *dest =
-        realloc (
+        g_realloc (
           *dest,
-          (strlen (src) + 1) * sizeof (char));
+          (strlen_src + 1) * sizeof (char));
       strcpy (*dest, src);
     }
   else

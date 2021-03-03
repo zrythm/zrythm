@@ -101,8 +101,19 @@ port_identifier_print (
   PortIdentifier * self)
 {
   g_message (
-    "[PortIdentifier]\nlabel: %s",
-    self->label);
+    "[PortIdentifier %p]\nlabel: %s\n"
+    "sym: %s\nowner type: %s\n"
+    "type: %s\nflow: %s\nflags: %d %d\n"
+    "port group: %s\next port id: %s\n"
+    "track pos: %d\nport idx: %d",
+    self,
+    self->label, self->sym,
+    port_owner_type_strings[self->owner_type].str,
+    port_type_strings[self->type].str,
+    port_flow_strings[self->flow].str,
+    self->flags, self->flags2, self->port_group,
+    self->ext_port_id, self->track_pos,
+    self->port_index);
 }
 
 void

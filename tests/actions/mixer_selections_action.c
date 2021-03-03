@@ -43,6 +43,8 @@ _test_copy_plugins (
   bool         is_instrument,
   bool         with_carla)
 {
+  g_usleep (100);
+
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
@@ -141,6 +143,8 @@ _test_copy_plugins (
           new_track->pos, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
+
+  g_usleep (100);
 }
 
 static void

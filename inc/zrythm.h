@@ -52,8 +52,10 @@ typedef struct CairoCaches CairoCaches;
 #define ZRYTHM_PROJECTS_DIR "projects"
 
 #define MAX_RECENT_PROJECTS 20
-#define DEBUGGING (ZRYTHM && ZRYTHM->debug)
-#define ZRYTHM_TESTING (ZRYTHM && ZRYTHM->testing)
+#define DEBUGGING \
+  (G_UNLIKELY (ZRYTHM && ZRYTHM->debug))
+#define ZRYTHM_TESTING \
+  (G_UNLIKELY (ZRYTHM && ZRYTHM->testing))
 #define ZRYTHM_GENERATING_PROJECT \
   (ZRYTHM->generating_project)
 #define ZRYTHM_HAVE_UI (ZRYTHM && ZRYTHM->have_ui)
