@@ -38,13 +38,13 @@ jobs:
         displayName: 'Fetch repos'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && meson build -Dtests=true && meson compile -C build"
+          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py build -Dtests=true && /mingw64/bin/python3 ../meson/meson.py compile -C build"
         displayName: 'Configure and build'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && meson test -C build"
+          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py test -C build"
         displayName: 'Test'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && meson install -C build"
+          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py install -C build"
         displayName: 'Install'

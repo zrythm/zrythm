@@ -627,8 +627,8 @@ test_strict_cflags = [
   '-fanalyzer',
   '-Werror=analyzer-possible-null-dereference',
   '-Werror=analyzer-malloc-leak',
-  '-Werror=analyzer-null-dereference',
   # gives false positives
+  #'-Werror=analyzer-null-dereference',
   #'-Werror=analyzer-null-argument',
   '-Werror=analyzer-use-after-free',
   '-Werror=analyzer-possible-null-argument',

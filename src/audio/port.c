@@ -3350,7 +3350,8 @@ port_process (
           if (port->id.owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
-              g_return_if_fail (IS_TRACK (track));
+              g_return_if_fail (
+                IS_TRACK_AND_NONNULL (track));
 
               track->trigger_midi_activity = 1;
             }
@@ -3585,7 +3586,7 @@ port_process (
               "No automation track found for port "
               "%s", port->id.label);
           }
-        if (G_UNLIKELY (at && ZRYTHM_TESTING))
+        if (ZRYTHM_TESTING && at)
           {
             AutomationTrack * found_at =
               automation_track_find_from_port (
