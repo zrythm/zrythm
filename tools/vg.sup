@@ -1,5 +1,5 @@
 {
-  <glib>
+  glib_cond
   Memcheck:Cond
   ...
   obj:/usr/lib/libglib-2.0.so.0.6000.7
@@ -7,14 +7,14 @@
 }
 
 {
-  <recompute_visible_regions>
+  recompute_visible_regions
   Memcheck:Cond
   fun:recompute_visible_regions_internal
   ...
 }
 
 {
-  <recompute_visible_regions>
+  recompute_visible_regions
   Memcheck:Cond
   ...
   fun:cairo_region_create_rectangle
@@ -22,7 +22,7 @@
 }
 
 {
-  <sord>
+  sord
   Memcheck:Leak
   fun:malloc
   fun:sord_*
@@ -30,7 +30,7 @@
 }
 
 {
-  <sord_with_zix>
+  sord_with_zix
   Memcheck:Leak
   fun:malloc
   fun:zix_*
@@ -39,7 +39,7 @@
 }
 
 {
-  <lilv>
+  lilv
   Memcheck:Leak
   fun:malloc
   fun:lilv_*
@@ -47,7 +47,7 @@
 }
 
 {
-  <g_object_set>
+  g_object_set
   Memcheck:Leak
   fun:realloc
   fun:g_realloc
@@ -57,7 +57,7 @@
 }
 
 {
-  <g_object_set_malloc>
+  g_object_set_malloc
   Memcheck:Leak
   fun:malloc
   fun:g_malloc
@@ -67,7 +67,7 @@
 }
 
 {
-  <gtk_widget_init_template>
+  gtk_widget_init_template
   Memcheck:Leak
   ...
   fun:gtk_widget_init_template
@@ -75,7 +75,7 @@
 }
 
 {
-  <gtk_scrolled_window_set_vadj>
+  gtk_scrolled_window_set_vadj
   Memcheck:Leak
   ...
   fun:g_object_set
@@ -84,7 +84,7 @@
 }
 
 {
-  <gtk_scrolled_window_set_hadj>
+  gtk_scrolled_window_set_hadj
   Memcheck:Leak
   ...
   fun:g_object_set
@@ -93,9 +93,29 @@
 }
 
 {
-  <pango_pixel_extents>
+  pango_pixel_extents
   Memcheck:Leak
   ...
   fun:pango_layout_get_pixel_extents
   ...
+}
+
+{
+   audec_log_uninitialized_val
+   Memcheck:Value8
+   ...
+   fun:g_strdup_vprintf
+   fun:g_log_structured_standard
+   fun:audio_audec_log_func
+   ...
+}
+
+{
+   audec_log_jump_depending_on_uninitialized_val
+   Memcheck:Cond
+   ...
+   fun:g_strdup_vprintf
+   fun:g_log_structured_standard
+   fun:audio_audec_log_func
+   ...
 }

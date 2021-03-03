@@ -230,7 +230,7 @@ rubberband = find_program (
   'rubberband', required: false)
 
 ulimit = find_program (
-  'scripts/have_unlimited_mem.sh')
+  'tools/check_have_unlimited_memlock.sh')
 if os_gnu
   have_unlimited_mem = run_command (
     ulimit, check: true).stdout ().strip () == 'unlimited'

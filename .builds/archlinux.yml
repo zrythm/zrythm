@@ -65,8 +65,8 @@ tasks:
       meson test -C build --repeat 2
       meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
       ninja -C build test
-      meson build --reconfigure -Duser_manual=true -Doptimization=2
-      meson test -C build --wrap="valgrind --error-exitcode=1" -t 2
+      meson build --reconfigure -Duser_manual=true -Doptimization=2 -Dphone_home=true
+      meson test -C build --wrap="valgrind --track-origins=yes --suppressions=`pwd`/tools/vg.sup  --gen-suppressions=all --error-exitcode=1" -t 2
       meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled -Doptimization=s -Dguile=disabled
       ninja -C build test
   - install: |
