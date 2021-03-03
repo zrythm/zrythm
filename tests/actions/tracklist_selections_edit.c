@@ -235,24 +235,47 @@ _test_edit_tracks (
             TRACKLIST_SELECTIONS, true);
         undo_manager_perform (UNDO_MANAGER, ua);
 
+        /* run the engine for 1 cycle to clear any
+         * pending events */
+        engine_process (
+          AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+
         /* play a note on the instrument track
          * and verify that signal comes out
          * in both tracks */
         midi_events_add_note_on (
-          ins_track->processor->midi_in->
-            midi_events,
+          ins_track->processor->midi_in->midi_events,
           1, 62, 74, 2, true);
 
-        /* let engine run */
-        g_usleep (4000000);
-
-        zix_sem_wait (&ROUTER->graph_access);
         bool has_signal = false;
+
+        /* run the engine for 2 cycles (the event
+         * does not have enough time to make audible
+         * sound in 1 cycle */
+        engine_process (
+          AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+        engine_process (
+          AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+
         Port * l =
           ins_track->channel->fader->stereo_out->l;
+#if 0
+        Port * ins_out_l =
+          plugin_get_port_by_symbol (
+          ins_track->channel->instrument,
+          /*"lv2_audio_out_1");*/
+          "lv2_audio_out_1");
+#endif
         for (nframes_t i = 0;
              i < AUDIO_ENGINE->block_length; i++)
           {
+#if 0
+            g_message (
+              "[%u] %.16f", i, (double) l->buf[i]);
+            g_message (
+              "[%u i] %.16f", i,
+              (double) ins_out_l->buf[i]);
+#endif
             if (l->buf[i] > 0.0001f)
               {
                 has_signal = true;
@@ -260,7 +283,6 @@ _test_edit_tracks (
               }
           }
         g_assert_true (has_signal);
-        zix_sem_post (&ROUTER->graph_access);
 
         /* undo and re-verify */
         undo_manager_undo (UNDO_MANAGER);
@@ -474,9 +496,6 @@ _test_edit_tracks (
     default:
       break;
     }
-
-  /* let the engine run */
-  g_usleep (1000000);
 }
 
 static void __test_edit_tracks (bool with_carla)
@@ -487,6 +506,16 @@ static void __test_edit_tracks (bool with_carla)
     {
       test_helper_zrythm_init ();
 
+      /* stop dummy audio engine processing so we can
+       * process manually */
+      AUDIO_ENGINE->stop_dummy_audio_thread = true;
+      g_usleep (1000000);
+
+#ifdef HAVE_CHIPWAVE
+      _test_edit_tracks (
+        i, CHIPWAVE_BUNDLE, CHIPWAVE_URI, true,
+        with_carla);
+#endif
 #ifdef HAVE_HELM
       _test_edit_tracks (
         i, HELM_BUNDLE, HELM_URI, true, with_carla);

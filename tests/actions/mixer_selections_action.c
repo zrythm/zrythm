@@ -381,7 +381,8 @@ test_create_plugins (void)
         PROT_LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI,
         true, i);
 #endif
-#ifdef HAVE_CALF_COMPRESSOR
+#if defined (HAVE_UNLIMITED_MEM) && \
+    defined (HAVE_CALF_COMPRESSOR)
       _test_create_plugins (
         PROT_LV2, CALF_COMPRESSOR_BUNDLE,
         CALF_COMPRESSOR_URI,

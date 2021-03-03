@@ -229,6 +229,16 @@ dot_bin = find_program ('dot', required: false)
 rubberband = find_program (
   'rubberband', required: false)
 
+ulimit = find_program (
+  'scripts/have_unlimited_mem.sh')
+if os_gnu
+  have_unlimited_mem = run_command (
+    ulimit, check: true).stdout ().strip () == 'unlimited'
+  if have_unlimited_mem
+    cdata.set ('HAVE_UNLIMITED_MEM', 1)
+  endif
+endif
+
 # find plugins for testing
 ext_lv2_plugins = {
   'ams_lfo': [
@@ -268,7 +278,7 @@ ext_lv2_plugins = {
     'urn:juce:TalFilter'],
   'geonkick': [
     'Geonkick',
-    'http://geontime.com/geonkick'],
+    'http://geontime.com/geonkick/single'],
   'chipwave': [
     'ChipWave',
     'https://github.com/linuxmao-org/shiru-plugins/chipwave'],

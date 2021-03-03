@@ -1079,6 +1079,13 @@ engine_process (
   AudioEngine * self,
   nframes_t     total_frames_to_process)
 {
+  if (ZRYTHM_TESTING)
+    {
+      g_debug (
+        "engine process started. total frames to "
+        "process: %u", total_frames_to_process);
+    }
+
   g_return_val_if_fail (
     total_frames_to_process > 0, -1);
 
@@ -1138,6 +1145,14 @@ engine_process (
         MIN (
           total_frames_remaining,
           self->remaining_latency_preroll);
+      if (ZRYTHM_TESTING)
+        {
+          if (num_preroll_frames > 0)
+            {
+              g_message ("prerolling for %u frames",
+                num_preroll_frames);
+            }
+        }
       for (size_t i = 0;
            i < self->router->graph->n_init_triggers;
            i++)
@@ -1274,6 +1289,11 @@ engine_process (
   /*self->cycle++;*/
 
   g_atomic_int_set (&self->cycle_running, 0);
+
+  if (ZRYTHM_TESTING)
+    {
+      g_debug ("engine process ended...");
+    }
 
   /*
    * processing finished, return 0 (OK)

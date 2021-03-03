@@ -732,7 +732,7 @@ lock_memory (void)
 #else
   /* lock down memory */
   g_message ("Locking down memory...");
-  if (mlockall (MCL_CURRENT))
+  if (mlockall (MCL_CURRENT | MCL_FUTURE))
     {
       g_warning ("Cannot lock down memory: %s",
                  strerror (errno));

@@ -734,6 +734,17 @@ fader_process (
   nframes_t       start_frame,
   const nframes_t nframes)
 {
+  if (ZRYTHM_TESTING)
+    {
+#if 0
+      g_debug (
+        "%s: g_start %ld, start frame %u, nframes "
+        "%u",
+        __func__, g_start_frames, start_frame,
+        nframes);
+#endif
+    }
+
   float pan =
     port_get_control_value (self->balance, 0);
   float amp =
@@ -880,6 +891,13 @@ fader_process (
         self->midi_in->midi_events,
         self->midi_out->midi_events,
         start_frame, nframes, 0);
+    }
+
+  if (ZRYTHM_TESTING)
+    {
+#if 0
+      g_debug ("%s: done", __func__);
+#endif
     }
 }
 

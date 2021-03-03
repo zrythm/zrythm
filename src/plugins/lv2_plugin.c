@@ -2695,16 +2695,18 @@ lv2_plugin_process (
                       continue;
                     }
 
-#if 0
-                  g_message (
-                    "writing plugin input event %d "
-                    "at time %u - "
-                    "local frames %u nframes %u",
-                    num_events_written,
-                    ev->time - local_offset,
-                    local_offset, nframes);
-                  midi_event_print (ev);
-#endif
+                  if (ZRYTHM_TESTING)
+                    {
+                      g_message (
+                        "writing plugin input "
+                        "event %d at time %u - "
+                        "local frames %u nframes "
+                        "%u",
+                        num_events_written,
+                        ev->time - local_offset,
+                        local_offset, nframes);
+                      midi_event_print (ev);
+                    }
 
                   lv2_evbuf_write (
                     &iter,
@@ -2747,25 +2749,22 @@ lv2_plugin_process (
     self->plugin->ui_instantiated;
 
   /* Deliver MIDI output and UI events */
-  Port * port;
-  for (p = 0; p < self->num_ports;
-       ++p)
+  for (p = 0; p < self->num_ports; ++p)
     {
-      Lv2Port* const lv2_port =
-        &self->ports[p];
-      port = lv2_port->port;
+      Lv2Port* const lv2_port = &self->ports[p];
+      Port * port = lv2_port->port;
       PortIdentifier * pi = &port->id;
       switch (pi->type)
         {
         case TYPE_CONTROL:
-          if (pi->flow == FLOW_OUTPUT)
+          if (G_UNLIKELY (pi->flow == FLOW_OUTPUT))
             {
               /* if latency changed, recalc graph */
-              if (pi->flags &
+              if (G_UNLIKELY (pi->flags &
                     PORT_FLAG_REPORTS_LATENCY &&
                   self->plugin->latency !=
                     (nframes_t)
-                    lv2_port->port->control)
+                    lv2_port->port->control))
                 {
                   g_message (
                     "%s: latency changed from %d "
@@ -2780,33 +2779,15 @@ lv2_plugin_process (
                   self->plugin->latency =
                     (nframes_t)
                     lv2_port->port->control;
-/* this is probably not needed for plugin ports */
-#if 0
-#ifdef HAVE_JACK
-                  if (AUDIO_ENGINE->
-                        audio_backend ==
-                      AUDIO_BACKEND_JACK)
-                    {
-                      jack_client_t * client =
-                        AUDIO_ENGINE->client;
-                      g_message (
-                        "recomputing total JACK "
-                        "latencies...");
-                      jack_recompute_total_latencies (
-                        client);
-                      g_message ("done");
-                    }
-#endif
-#endif
                 }
 
               /* if UI is instantiated */
-              if (send_ui_updates &&
+              if (G_UNLIKELY (send_ui_updates &&
                   self->plugin->visible &&
                   !lv2_port->received_ui_event &&
                   !math_floats_equal (
                     port->control,
-                    lv2_port->last_sent_control))
+                    lv2_port->last_sent_control)))
                 {
                   /* forward event to UI */
                   lv2_ui_send_control_val_event_from_plugin_to_ui (
