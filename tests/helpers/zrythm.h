@@ -207,6 +207,8 @@ test_helper_zrythm_init_optimized ()
 void
 test_helper_zrythm_cleanup ()
 {
+  g_assert_nonnull (ZRYTHM->testing_dir);
+  io_rmdir (ZRYTHM->testing_dir, true);
   object_free_w_func_and_null (
     zrythm_free, ZRYTHM);
 }
