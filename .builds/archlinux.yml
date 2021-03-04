@@ -55,23 +55,41 @@ tasks:
   - test: |
       cd zrythm
       ninja -C build test
+  - gen-coverage-report: |
+      cd zrythm
       ninja -C build coverage-text
       cat build/meson-logs/coverage.txt
-  - test-multiple-options: |
+  - test-no-jack: |
       cd zrythm
       meson build --reconfigure -Dgraphviz=enabled -Djack=disabled
       ninja -C build test
+  - test-optimized-build: |
+      cd zrythm
       meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled -Doptimization=3
       meson test -C build --repeat 2
+  - test-strict-flags-trial: |
+      cd zrythm
       meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
-      ninja -C build test
+      meson test -C build
+  - test-user-manual-phone-home-valgrind: |
+      cd zrythm
+      meson compile --clean -C build
       meson build --reconfigure -Duser_manual=true -Doptimization=2 -Dphone_home=enabled
-      meson test -C build --wrap="valgrind --track-origins=yes --suppressions=`pwd`/tools/vg.sup  --gen-suppressions=all --error-exitcode=1" -t 2
+      # VM runs out of RAM otherwise
+      ninja -C build -j 1
+      meson test -C build --wrap="valgrind --suppressions=`pwd`/tools/vg.sup  --gen-suppressions=all --error-exitcode=1 --exit-on-first-error=yes" -t 3
+  - test-optimization-s: |
+      cd zrythm
+      meson compile --clean -C build
       meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled -Doptimization=s -Dguile=disabled
-      ninja -C build test
-  - install: |
+      # VM runs out of RAM otherwise
+      ninja -C build -j 1
+      meson test -C build
+  - install-destdir: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install
       /tmp/usr/local/bin/zrythm --version | grep "built with"
+  - install-sudo: |
+      cd zrythm
       sudo ninja -C build install
       /usr/local/bin/zrythm_launch --version | grep "built with"

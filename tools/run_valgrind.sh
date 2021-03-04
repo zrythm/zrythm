@@ -7,5 +7,6 @@
 NO_SCAN_PLUGINS=1 \
   ZRYTHM_DSP_THREADS=1 \
     valgrind --num-callers=30 --log-file=valog \
+    --gen-suppressions=all \
     --suppressions=tools/vg.sup \
     build/src/zrythm

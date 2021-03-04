@@ -119,3 +119,98 @@
    fun:audio_audec_log_func
    ...
 }
+
+{
+   helm_lv2_instantiation
+   Memcheck:Cond
+   ...
+   obj:*/helm-synth.lv2/helm-synth.so
+   fun:lilv_plugin_instantiate
+}
+
+{
+   helm_lv2_feature
+   Memcheck:Cond
+   ...
+   fun:*juce*
+   fun:*Juce*_LV2_Feature
+}
+
+{
+   helm_addr8
+   Memcheck:Addr8
+   ...
+   fun:*Helm*
+   ...
+   fun:lilv_instance_run
+   ...
+}
+
+{
+   helm_free
+   Memcheck:Free
+   ...
+   obj:*/helm-synth.lv2/helm-synth.so
+   fun:lilv_instance_free
+   ...
+}
+
+{
+   lsp_plugins_cond
+   Memcheck:Cond
+   ...
+   obj:*/lsp-plugins.lv2/lsp-plugins-lv2.so
+   ...
+}
+
+{
+   guile_call_cond
+   Memcheck:Cond
+   ...
+   fun:GC_*
+   ...
+}
+
+{
+   guile_value8
+   Memcheck:Value8
+   ...
+   fun:GC_*
+   ...
+}
+
+{
+   guile_scm_value8
+   Memcheck:Value8
+   ...
+   obj:*libguile*.so*
+   ...
+}
+
+{
+   guile_scm_cond
+   Memcheck:Cond
+   ...
+   obj:*libguile*.so*
+   ...
+}
+
+{
+   guile_scm_value8_startthread
+   Memcheck:Value8
+   ...
+   obj:*/libgc.so*
+   ...
+   fun:start_thread
+   fun:clone
+}
+
+{
+   clone_libgc_cond
+   Memcheck:Cond
+   ...
+   obj:*/libgc.so*
+   ...
+   fun:start_thread
+   fun:clone
+}

@@ -267,6 +267,7 @@ test_bounce_region ()
 
   /* bounce it */
   ExportSettings settings;
+  memset (&settings, 0, sizeof (ExportSettings));
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS);
   settings.mode = EXPORT_MODE_REGIONS;
@@ -339,6 +340,7 @@ test_export_midi_routed_to_instrument_track ()
 
   /* bounce it */
   ExportSettings settings;
+  memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_FULL;
   export_settings_set_bounce_defaults (
     &settings, NULL, __func__);

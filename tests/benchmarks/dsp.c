@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +20,7 @@
 #include "zrythm-test-config.h"
 
 #include "utils/dsp.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
@@ -87,8 +88,10 @@ _test_dsp_fill (
     }
 
   gint64 start, end;
-  float buf[LARGE_BUFFER_SIZE];
-  float src[LARGE_BUFFER_SIZE];
+  float * buf =
+    object_new_n (LARGE_BUFFER_SIZE, float);
+  float * src =
+    object_new_n (LARGE_BUFFER_SIZE, float);
   float val = 0.3f;
 
   size_t buf_size =
@@ -160,6 +163,9 @@ _test_dsp_fill (
   LOOP_START
   dsp_mix_add2 (buf, src, src, 0.1f, 0.2f, buf_size);
   LOOP_END ("mix_add2", optimized);
+
+  free (buf);
+  free (src);
 
   test_helper_zrythm_cleanup ();
 }
