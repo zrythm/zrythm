@@ -244,11 +244,6 @@ buffer_size_cb (
   uint32_t      nframes,
   AudioEngine * self)
 {
-#if 0
-  g_atomic_int_set (
-    &AUDIO_ENGINE->changing_buf_size, 1);
-#endif
-
   /* if engine not activated then handle
    * immediately, otherwise push to queue */
   if (self->activated)
@@ -272,11 +267,6 @@ buffer_size_cb (
       engine_jack_handle_buf_size_change (
         self, nframes);
     }
-
-#if 0
-  g_atomic_int_set (
-    &AUDIO_ENGINE->changing_buf_size, 0);
-#endif
 
   return 0;
 }

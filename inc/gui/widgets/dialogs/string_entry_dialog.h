@@ -76,6 +76,14 @@ string_entry_dialog_widget_new (
   GenericStringSetter setter);
 
 /**
+ * Runs a new dialog and returns the string, or
+ * NULL if cancelled.
+ */
+char *
+string_entry_dialog_widget_new_return_string (
+  const char *        label);
+
+/**
  * @}
  */
 

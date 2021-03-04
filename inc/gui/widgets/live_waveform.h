@@ -61,6 +61,9 @@ typedef struct _LiveWaveformWidget
 
   float *        bufs[2];
 
+  /** Current buffer sizes. */
+  size_t         buf_sz[2];
+
   /** Used for drawing. */
   GdkRGBA        color_green;
   GdkRGBA        color_white;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,6 +32,7 @@
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/cpu.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/top_bar.h"
@@ -40,6 +41,7 @@
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -414,26 +416,54 @@ activate_link (
   const gchar * uri,
   gpointer      data)
 {
+  g_debug ("link activated");
+  if (string_is_equal (uri, "enable"))
+    {
+      g_debug ("enable pressed");
+      goto feature_unavailable;
+      engine_activate (AUDIO_ENGINE, true);
+      return true;
+    }
+  else if (string_is_equal (uri, "disable"))
+    {
+      g_debug ("disable pressed");
+      goto feature_unavailable;
+      engine_activate (AUDIO_ENGINE, false);
+      return true;
+    }
+  else if (string_is_equal (uri, "change"))
+    {
+      g_debug ("change buf size pressed");
+      char * str =
+        string_entry_dialog_widget_new_return_string (
+          _("New buffer size"));
+      if (str)
+        {
+          unsigned long long int buf_sz =
+            strtoull (str, NULL, 10);
+          g_free (str);
+          if (buf_sz == 0ULL ||
+              (buf_sz == ULLONG_MAX &&
+               errno == ERANGE))
+            {
+              g_warning ("failed reading value");
+            }
+          else
+            {
+              engine_set_buffer_size (
+                AUDIO_ENGINE, (uint32_t) buf_sz);
+            }
+        }
+      return true;
+    }
+
+  return false;
+
+feature_unavailable:
   ui_show_error_message (
     MAIN_WINDOW,
     _("This feature is not available at the "
     "moment"));
-  return false;
-
-  g_message ("link activated");
-  if (g_strcmp0 (uri, "enable") == 0)
-    {
-      g_message ("enable pressed");
-      engine_activate (AUDIO_ENGINE, true);
-      return true;
-    }
-  else if (g_strcmp0 (uri, "disable") == 0)
-    {
-      g_message ("disable pressed");
-      engine_activate (AUDIO_ENGINE, false);
-      return true;
-    }
-
   return false;
 }
 
@@ -495,7 +525,7 @@ bot_bar_widget_update_status (
     "%s: %s%s%s%s | "
     "%s: %s%s%s%s | "
     "%s: %s%s%s\n"
-    "%s: %s%d frames%s | "
+    "%s: %s%d frames%s (<a href=\"change\">%s</a>) | "
     "%s: %s%d Hz%s | "
     "<a href=\"%s\">%s</a>"
     "</span>",
@@ -523,6 +553,8 @@ bot_bar_widget_update_status (
     AUDIO_ENGINE->activated ?
       AUDIO_ENGINE->block_length : 0,
     color_suffix,
+    /* TRANSLATORS: verb - change buffer size */
+    _("change"),
     /* TRANSLATORS: sample rate */
     _("Rate"),
     color_prefix,

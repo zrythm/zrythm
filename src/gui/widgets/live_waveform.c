@@ -25,6 +25,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/objects.h"
 #include "utils/cairo.h"
 #include "zrythm_app.h"
@@ -173,9 +174,12 @@ live_waveform_draw_cb (
   if (blocks_to_read <= 0)
     return FALSE;
 
-  g_return_val_if_fail (
-    read_space_avail < BUF_SIZE * sizeof (float),
-    false);
+  while (read_space_avail > self->buf_sz[0])
+    {
+      array_double_size_if_full (
+        self->bufs[0], self->buf_sz[0],
+        self->buf_sz[0], float);
+    }
   size_t lblocks_read =
     zix_ring_peek (
       port->audio_ring, &(self->bufs[0][0]),
@@ -200,9 +204,12 @@ live_waveform_draw_cb (
         read_space_avail / block_size_in_bytes;
       g_return_val_if_fail (
         blocks_to_read > 0, FALSE);
-      g_return_val_if_fail (
-        read_space_avail < BUF_SIZE * sizeof (float),
-        false);
+      while (read_space_avail > self->buf_sz[1])
+        {
+          array_double_size_if_full (
+            self->bufs[1], self->buf_sz[1],
+            self->buf_sz[1], float);
+        }
       size_t rblocks_read =
         zix_ring_peek (
           port->audio_ring, &(self->bufs[1][0]),
@@ -252,6 +259,8 @@ init_common (
     object_new_n (BUF_SIZE, float);
   self->bufs[1] =
     object_new_n (BUF_SIZE, float);
+  self->buf_sz[0] = BUF_SIZE;
+  self->buf_sz[1] = BUF_SIZE;
 
   g_signal_connect (
     G_OBJECT (self), "draw",

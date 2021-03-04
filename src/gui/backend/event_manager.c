@@ -1832,6 +1832,8 @@ process_events (void * data)
            }
           break;
         case ET_ENGINE_ACTIVATE_CHANGED:
+        case ET_ENGINE_BUFFER_SIZE_CHANGED:
+        case ET_ENGINE_SAMPLE_RATE_CHANGED:
           bot_bar_widget_refresh (MW_BOT_BAR);
           ruler_widget_redraw_whole (EDITOR_RULER);
           ruler_widget_redraw_whole (MW_RULER);

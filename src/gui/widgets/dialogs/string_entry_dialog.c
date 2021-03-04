@@ -25,6 +25,7 @@
 #include "gui/widgets/marker.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -96,6 +97,55 @@ string_entry_dialog_widget_new (
   gtk_entry_set_text (self->entry, getter (obj));
 
   return self;
+}
+
+static const char *
+str_get (
+  char ** str)
+{
+  if (*str)
+    {
+      return *str;
+    }
+  else
+    {
+      return "";
+    }
+}
+
+static void
+str_set (
+  char **      str,
+  const char * in_str)
+{
+  if (*str)
+    {
+      g_free_and_null (*str);
+    }
+
+  if (strlen (in_str) > 0)
+    {
+      *str = g_strdup (in_str);
+    }
+}
+
+/**
+ * Runs a new dialog and returns the string, or
+ * NULL if cancelled.
+ */
+char *
+string_entry_dialog_widget_new_return_string (
+  const char *        label)
+{
+  char * str = NULL;
+  StringEntryDialogWidget * self =
+    string_entry_dialog_widget_new (
+      label, &str,
+      (GenericStringGetter) str_get,
+      (GenericStringSetter) str_set);
+  gtk_dialog_run (GTK_DIALOG (self));
+
+  return str;
 }
 
 static void

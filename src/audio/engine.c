@@ -107,6 +107,35 @@ engine_audio_backend_to_string (
 }
 
 /**
+ * Request the backend to set the buffer size.
+ *
+ * The backend is expected to call the buffer size
+ * change callbacks.
+ *
+ * @seealso jack_set_buffer_size().
+ */
+void
+engine_set_buffer_size (
+  AudioEngine * self,
+  uint32_t      buf_size)
+{
+  g_return_if_fail (
+    g_thread_self () == zrythm_app->gtk_thread);
+
+  g_message (
+    "request to set engine buffer size to %u",
+    buf_size);
+
+#ifdef HAVE_JACK
+  if (self->audio_backend == AUDIO_BACKEND_JACK)
+    {
+      jack_set_buffer_size (
+        self->client, buf_size);
+    }
+#endif
+}
+
+/**
  * Updates frames per tick based on the time sig,
  * the BPM, and the sample rate
  */
@@ -252,6 +281,8 @@ engine_process_events (
                 self, ev->uint_arg);
             }
 #endif
+           EVENTS_PUSH (
+             ET_ENGINE_BUFFER_SIZE_CHANGED, NULL);
           break;
         case AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE:
 #ifdef HAVE_JACK
@@ -262,6 +293,8 @@ engine_process_events (
                 self, ev->uint_arg);
             }
 #endif
+           EVENTS_PUSH (
+             ET_ENGINE_SAMPLE_RATE_CHANGED, NULL);
           break;
         default:
           g_warning (
