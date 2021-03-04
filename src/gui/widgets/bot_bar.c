@@ -446,7 +446,9 @@ activate_link (
               (buf_sz == ULLONG_MAX &&
                errno == ERANGE))
             {
-              g_warning ("failed reading value");
+              ui_show_error_message (
+                MAIN_WINDOW,
+                _("Failed reading value"));
             }
           else
             {
