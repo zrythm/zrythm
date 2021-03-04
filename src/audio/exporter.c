@@ -325,22 +325,22 @@ export_audio (
     info->mode == EXPORT_MODE_FULL ?
       BOUNCE_OFF : BOUNCE_ON;
 
-  /* set jack freewheeling mode */
+  /* set jack freewheeling mode and temporarily
+   * disable transport link */
 #ifdef HAVE_JACK
+  AudioEngineJackTransportType transport_type =
+    AUDIO_ENGINE->transport_type;
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
       jack_set_freewheel (
         AUDIO_ENGINE->client, 1);
+
+      engine_jack_set_transport_type (
+        AUDIO_ENGINE,
+        AUDIO_ENGINE_NO_JACK_TRANSPORT);
     }
 #endif
-
-  /* pause engine */
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state);
-
-  TRANSPORT->play_state =
-    PLAYSTATE_ROLLING;
 
   nframes_t nframes;
   g_return_val_if_fail (
@@ -462,9 +462,6 @@ export_audio (
     {
       io_remove (info->file_uri);
     }
-
-  /* restart engine */
-  engine_resume (AUDIO_ENGINE, &state);
 
   /* if cancelled, delete */
   if (info->cancelled)
@@ -724,16 +721,15 @@ exporter_export (ExportSettings * info)
 
   g_message ("exporting to %s", info->file_uri);
 
-  /* stop engine and give it some time to stop
-   * running */
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  while (g_atomic_int_get (
-           &AUDIO_ENGINE->cycle_running))
-    {
-      g_usleep (100);
-    }
+  /* pause engine */
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, F_NO_FORCE);
+
+  TRANSPORT->play_state =
+    PLAYSTATE_ROLLING;
+
   AUDIO_ENGINE->exporting = true;
-  info->prev_loop = TRANSPORT->loop;
   TRANSPORT->loop = false;
 
   /* deactivate and activate all plugins to make
@@ -757,8 +753,7 @@ exporter_export (ExportSettings * info)
 
   /* restart engine */
   AUDIO_ENGINE->exporting = false;
-  TRANSPORT->loop = info->prev_loop;
-  g_atomic_int_set (&AUDIO_ENGINE->run, true);
+  engine_resume (AUDIO_ENGINE, &state);
 
   if (ret)
     {

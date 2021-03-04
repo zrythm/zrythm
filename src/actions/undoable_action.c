@@ -90,7 +90,8 @@ undoable_action_do (UndoableAction * self)
   /* stop engine and give it some time to stop
    * running */
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state);
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, F_NO_FORCE);
 
   int ret = 0;
 
@@ -163,7 +164,8 @@ undoable_action_undo (UndoableAction * self)
   /* stop engine and give it some time to stop
    * running */
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state);
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, F_NO_FORCE);
 
   int ret = 0;
 

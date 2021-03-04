@@ -1917,9 +1917,11 @@ ruler_widget_redraw_playhead (
   int width = max_x - min_x;
   if (width < 0)
     {
-      g_message (
+#if 0
+      g_debug (
         "playhead not currently visible in ruler, "
         "skipping redraw");
+#endif
       return;
     }
 

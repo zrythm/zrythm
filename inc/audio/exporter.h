@@ -109,13 +109,6 @@ typedef struct ExportSettings
   Position          custom_end;
 
   /**
-   * The previous loop status (on/off).
-   *
-   * This is set internally.
-   */
-  bool              prev_loop;
-
-  /**
    * Dither or not.
    */
   bool              dither;

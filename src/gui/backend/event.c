@@ -36,9 +36,6 @@ event_new (void)
 void
 event_free (ZEvent * self)
 {
-  if (self->backtrace)
-    {
-      g_free_and_null (self->backtrace);
-    }
+  g_free_and_null (self->backtrace);
   object_zero_and_free (self);
 }

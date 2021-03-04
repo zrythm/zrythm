@@ -256,4 +256,7 @@
 #define F_UPDATE_AUTOMATION_TRACK 1
 #define F_NO_UPDATE_AUTOMATION_TRACK 0
 
+#define F_FORCE 1
+#define F_NO_FORCE 0
+
 #endif

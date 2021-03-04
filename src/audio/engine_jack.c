@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,9 @@
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/backtrace.h"
+#include "utils/mpmc_queue.h"
+#include "utils/object_pool.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -146,13 +149,12 @@ autoconnect_midi_controllers (
 }
 #endif
 
-/** Jack sample rate callback. */
-static int
-sample_rate_cb (
-  uint32_t nframes,
-  AudioEngine * self)
+void
+engine_jack_handle_sample_rate_change (
+  AudioEngine * self,
+  uint32_t      samplerate)
 {
-  AUDIO_ENGINE->sample_rate = nframes;
+  AUDIO_ENGINE->sample_rate = samplerate;
 
   if (P_TEMPO_TRACK)
     {
@@ -164,17 +166,66 @@ sample_rate_cb (
     }
 
   g_message (
-    "JACK: Sample rate changed to %d", nframes);
+    "JACK: Sample rate changed to %d", samplerate);
+}
+
+/**
+ * Jack sample rate callback.
+ *
+ * This is called in a non-RT thread by JACK in
+ * between its processing cycles, and will block
+ * until this function returns so it is safe to
+ * change the buffers here.
+ */
+static int
+sample_rate_cb (
+  uint32_t nframes,
+  AudioEngine * self)
+{
+#if 0
+  g_atomic_int_set (
+    &AUDIO_ENGINE->changing_sample_rate, 1);
+#endif
+
+  /* if engine not activated then handle
+   * immediately, otherwise push to queue */
+  if (self->activated)
+    {
+      ENGINE_EVENTS_PUSH (
+        AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE,
+        NULL, nframes);
+
+      /* wait for gtk thread to process all events */
+      gint64 cur_time = g_get_monotonic_time ();
+      while (
+        cur_time > AUDIO_ENGINE->last_events_process_started ||
+        cur_time > AUDIO_ENGINE->last_events_processed)
+        {
+          g_message ("-------- waiting sample rate change");
+          g_usleep (1000);
+        }
+    }
+  else
+    {
+      engine_jack_handle_sample_rate_change (
+        self, nframes);
+    }
+
+#if 0
+  g_atomic_int_set (
+    &AUDIO_ENGINE->changing_sample_rate, 0);
+#endif
+
   return 0;
 }
 
-/** Jack buffer size callback. */
-static int
-buffer_size_cb (uint32_t nframes,
-                     void *   data)
+void
+engine_jack_handle_buf_size_change (
+  AudioEngine * self,
+  uint32_t      frames)
 {
   engine_realloc_port_buffers (
-    AUDIO_ENGINE, nframes);
+    AUDIO_ENGINE, frames);
 #ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
   AUDIO_ENGINE->midi_buf_size =
     jack_port_type_get_buffer_size(
@@ -185,6 +236,47 @@ buffer_size_cb (uint32_t nframes,
     "midi buf size to %zu",
     AUDIO_ENGINE->block_length,
     AUDIO_ENGINE->midi_buf_size);
+}
+
+/** Jack buffer size callback. */
+static int
+buffer_size_cb (
+  uint32_t      nframes,
+  AudioEngine * self)
+{
+#if 0
+  g_atomic_int_set (
+    &AUDIO_ENGINE->changing_buf_size, 1);
+#endif
+
+  /* if engine not activated then handle
+   * immediately, otherwise push to queue */
+  if (self->activated)
+    {
+      ENGINE_EVENTS_PUSH (
+        AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE,
+        NULL, nframes);
+
+      /* wait for gtk thread to process all events */
+      gint64 cur_time = g_get_monotonic_time ();
+      while (
+        cur_time > AUDIO_ENGINE->last_events_process_started ||
+        cur_time > AUDIO_ENGINE->last_events_processed)
+        {
+          g_message ("-------- waiting buffer size change");
+          g_usleep (1000);
+        }
+    }
+  else
+    {
+      engine_jack_handle_buf_size_change (
+        self, nframes);
+    }
+
+#if 0
+  g_atomic_int_set (
+    &AUDIO_ENGINE->changing_buf_size, 0);
+#endif
 
   return 0;
 }
@@ -413,8 +505,11 @@ engine_jack_set_transport_type (
   AudioEngine * self,
   AudioEngineJackTransportType type)
 {
-  g_settings_set_enum (
-    S_UI, "jack-transport-type", type);
+  if (!ZRYTHM_TESTING)
+    {
+      g_settings_set_enum (
+        S_UI, "jack-transport-type", type);
+    }
 
   /* release timebase master if held */
   if (self->transport_type ==
@@ -526,7 +621,8 @@ engine_jack_setup (
   jack_set_process_callback (
     self->client, process_cb, self);
   jack_set_buffer_size_callback (
-    self->client, buffer_size_cb, self);
+    self->client,
+    (JackBufferSizeCallback) buffer_size_cb, self);
   jack_set_sample_rate_callback (
     self->client,
     (JackSampleRateCallback) sample_rate_cb,

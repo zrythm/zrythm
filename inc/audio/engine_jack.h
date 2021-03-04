@@ -63,6 +63,16 @@ void
 engine_jack_handle_stop (
   AudioEngine * self);
 
+void
+engine_jack_handle_buf_size_change (
+  AudioEngine * self,
+  uint32_t      frames);
+
+void
+engine_jack_handle_sample_rate_change (
+  AudioEngine * self,
+  uint32_t      samplerate);
+
 /**
  * Prepares for processing.
  *

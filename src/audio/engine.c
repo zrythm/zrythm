@@ -79,7 +79,10 @@
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/mpmc_queue.h"
+#include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -119,16 +122,11 @@ engine_update_frames_per_tick (
     "bpm %f, sample rate %u",
     beats_per_bar, (double) bpm, sample_rate);
 
-  bool preparing_for_process =
-    g_atomic_int_get (
-      &self->preparing_for_process) == 1;
-  if (g_thread_self () != zrythm_app->gtk_thread &&
-      !preparing_for_process)
+  if (g_thread_self () != zrythm_app->gtk_thread)
     {
       g_critical (
-        "Called %s from non-GTK thread and not "
-        "from prepare_process(): %d",
-        __func__, preparing_for_process);
+        "Called %s from non-GTK thread",
+        __func__);
       return;
     }
 
@@ -148,15 +146,155 @@ engine_update_frames_per_tick (
     {
       track_update_frames (TRACKLIST->tracks[i]);
     }
+}
 
-  /* if was called from prepare_process(), check
-   * that we are still inside that call */
-  if (preparing_for_process)
+/**
+ * Cleans duplicate events and copies the events
+ * to the given array.
+ */
+static inline void
+clean_duplicates_and_copy (
+  AudioEngine *       self,
+  AudioEngineEvent ** events,
+  int *               num_events)
+{
+  MPMCQueue * q = self->ev_queue;
+  AudioEngineEvent * event;
+  *num_events = 0;
+  int i, already_exists = 0;
+
+  /* only add events once to new array while
+   * popping */
+  while (event_queue_dequeue_event (
+           q, &event))
     {
-      g_return_if_fail (
-        g_atomic_int_get (
-          &self->preparing_for_process) == 1);
+      already_exists = 0;
+
+      for (i = 0; i < *num_events; i++)
+        if (event->type == events[i]->type &&
+            event->arg == events[i]->arg &&
+            event->uint_arg == events[i]->uint_arg)
+          {
+            already_exists = 1;
+          }
+
+      if (already_exists)
+        {
+          object_pool_return (
+            self->ev_pool, event);
+        }
+      else
+        {
+          array_append (
+            events, (*num_events), event);
+        }
     }
+}
+
+/**
+ * GSourceFunc to be added using idle add.
+ *
+ * This will loop indefinintely.
+ */
+static int
+engine_process_events (
+  AudioEngine * self)
+{
+  self->last_events_process_started =
+    g_get_monotonic_time ();
+
+  /*g_debug ("PROCESS EVENTS");*/
+
+  AudioEngineEvent * events[100];
+  AudioEngineEvent * ev;
+  int num_events = 0, i;
+  clean_duplicates_and_copy (
+    self, events, &num_events);
+
+  /*g_debug ("%d EVENTS, waiting for pause", num_events);*/
+
+  EngineState state;
+  if (num_events > 0)
+    {
+      /* pause engine */
+      engine_wait_for_pause (self, &state, F_FORCE);
+    }
+
+  /*g_debug ("waited");*/
+
+  /*g_message ("starting processing");*/
+  for (i = 0; i < num_events; i++)
+    {
+      if (i > 30)
+        {
+          g_message (
+            "more than 30 engine events processed!");
+        }
+      g_message ("processing engine event %d", i);
+
+      ev = events[i];
+      if (ev->type < 0)
+        {
+          g_warn_if_reached ();
+          continue;
+        }
+
+      /*g_message ("event type %d", ev->type);*/
+
+      switch (ev->type)
+        {
+        case AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE:
+#ifdef HAVE_JACK
+          if (self->audio_backend ==
+                AUDIO_BACKEND_JACK)
+            {
+              engine_jack_handle_buf_size_change (
+                self, ev->uint_arg);
+            }
+#endif
+          break;
+        case AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE:
+#ifdef HAVE_JACK
+          if (self->audio_backend ==
+                AUDIO_BACKEND_JACK)
+            {
+              engine_jack_handle_sample_rate_change (
+                self, ev->uint_arg);
+            }
+#endif
+          break;
+        default:
+          g_warning (
+            "event %d not implemented yet",
+            ev->type);
+          break;
+        }
+
+/*return_to_pool:*/
+      object_pool_return (
+        self->ev_pool, ev);
+    }
+  /*g_message ("processed %d events", i);*/
+
+  if (num_events > 6)
+    g_message ("More than 6 events processed. "
+               "Optimization needed.");
+
+  /*g_usleep (8000);*/
+  /*project_sanity_check (PROJECT);*/
+
+  if (num_events > 0)
+    {
+      /* continue engine */
+      engine_resume (self, &state);
+    }
+
+  self->last_events_processed =
+    g_get_monotonic_time ();
+
+  /*g_debug ("END PROCESS EVENTS");*/
+
+  return G_SOURCE_CONTINUE;
 }
 
 /**
@@ -169,6 +307,20 @@ engine_pre_setup (
 {
   /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
+
+  /* start events */
+  if (self->process_source_id)
+    {
+      g_message (
+        "engine already processing events");
+      return;
+    }
+  g_message (
+    "%s: starting event timeout", __func__);
+  self->process_source_id =
+    g_timeout_add (
+      12,
+      (GSourceFunc) engine_process_events, self);
 
   g_return_if_fail (
     self && !self->setup && !self->pre_setup);
@@ -320,6 +472,10 @@ engine_pre_setup (
       engine_dummy_midi_setup (self);
     }
 
+  /* process any events now */
+  g_message ("processing engine events");
+  engine_process_events (self);
+
   self->pre_setup = true;
 }
 
@@ -381,7 +537,28 @@ engine_setup (
   port_set_expose_to_backend (
     self->monitor_out->r, true);
 
+  /* process any events now */
+  g_message ("processing engine events");
+  engine_process_events (self);
+
   g_message ("done");
+}
+
+static AudioEngineEvent *
+engine_event_new (void)
+{
+  AudioEngineEvent * self =
+    object_new (AudioEngineEvent);
+
+  return self;
+}
+
+static void
+engine_event_free (
+  AudioEngineEvent * ev)
+{
+  g_free_and_null (ev->backtrace);
+  object_zero_and_free (ev);
 }
 
 static void
@@ -576,6 +753,18 @@ init_common (
     {
       self->midi_buf_size = 8192;
     }
+
+  self->ev_pool =
+    object_pool_new (
+      (ObjectCreatorFunc) engine_event_new,
+      (ObjectFreeFunc) engine_event_free,
+      ENGINE_MAX_EVENTS);
+  self->ev_queue = mpmc_queue_new ();
+  mpmc_queue_reserve (
+    self->ev_queue,
+    (size_t)
+    ENGINE_MAX_EVENTS *
+      sizeof (AudioEngineEvent *));
 }
 
 void
@@ -671,14 +860,21 @@ engine_new (
   return self;
 }
 
+/**
+ * @param force_pause Whether to force transport
+ *   pause, otherwise for engine to process and
+ *   handle the pause request.
+ */
 void
 engine_wait_for_pause (
   AudioEngine * self,
-  EngineState * state)
+  EngineState * state,
+  bool          force_pause)
 {
   state->running =
     g_atomic_int_get (&self->run);
   state->playing = TRANSPORT_IS_ROLLING;
+  state->looping = TRANSPORT->loop;
 
   /* send panic */
   midi_panic_all (F_QUEUED);
@@ -687,10 +883,17 @@ engine_wait_for_pause (
     {
       transport_request_pause (TRANSPORT);
 
-      while (TRANSPORT->play_state ==
-               PLAYSTATE_PAUSE_REQUESTED)
+      if (force_pause)
         {
-          g_usleep (100);
+          TRANSPORT->play_state = PLAYSTATE_PAUSED;
+        }
+      else
+        {
+          while (TRANSPORT->play_state ==
+                   PLAYSTATE_PAUSE_REQUESTED)
+            {
+              g_usleep (100);
+            }
         }
     }
 
@@ -707,8 +910,7 @@ engine_resume (
   AudioEngine * self,
   EngineState * state)
 {
-  g_atomic_int_set (
-    &self->run, (guint) state->running);
+  TRANSPORT->loop = state->looping;
 
   if (state->playing)
     {
@@ -717,6 +919,13 @@ engine_resume (
         F_NO_PANIC, F_NO_SET_CUE_POINT);
       transport_request_roll (TRANSPORT);
     }
+  else
+    {
+      transport_request_pause (TRANSPORT);
+    }
+
+  g_atomic_int_set (
+    &self->run, (guint) state->running);
 }
 
 /**
@@ -822,6 +1031,10 @@ engine_activate (
       hardware_processor_activate (
         HW_IN_PROCESSOR, true);
     }
+
+  /* process any events now */
+  g_message ("processing engine events");
+  engine_process_events (self);
 
   self->activated = activate;
 
@@ -1555,11 +1768,32 @@ engine_reset_bounce_mode (
     TRACKLIST, false);
 }
 
+/**
+ * Stops events from getting fired.
+ */
+static void
+engine_stop_events (
+  AudioEngine * self)
+{
+  if (self->process_source_id)
+    {
+      /* remove the source func */
+      g_source_remove_and_zero (
+        self->process_source_id);
+    }
+
+  /* process any remaining events - clear the
+   * queue. */
+  engine_process_events (self);
+}
+
 void
 engine_free (
   AudioEngine * self)
 {
   g_message ("freeing...");
+
+  engine_stop_events (self);
 
   if (self->activated)
     {
@@ -1618,6 +1852,11 @@ engine_free (
     control_room_free, self->control_room);
   object_free_w_func_and_null (
     transport_free, self->transport);
+
+  object_free_w_func_and_null (
+    object_pool_free, self->ev_pool);
+  object_free_w_func_and_null (
+    mpmc_queue_free, self->ev_queue);
 
   object_zero_and_free (self);
 

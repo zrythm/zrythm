@@ -4177,16 +4177,10 @@ port_free (Port * self)
     self->dests[0] == 0);
 
   object_zero_and_free (self->buf);
-  if (self->audio_ring)
-    {
-      zix_ring_free (self->audio_ring);
-      self->audio_ring = NULL;
-    }
-  if (self->midi_ring)
-    {
-      zix_ring_free (self->midi_ring);
-      self->midi_ring = NULL;
-    }
+  object_free_w_func_and_null (
+    zix_ring_free, self->audio_ring);
+  object_free_w_func_and_null (
+    zix_ring_free, self->midi_ring);
 
   object_free_w_func_and_null (
     midi_events_free, self->midi_events);

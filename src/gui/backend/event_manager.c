@@ -1151,7 +1151,7 @@ process_events (void * data)
 {
   EventManager * self = (EventManager *) data;
 
-  ZEvent * events[60];
+  ZEvent * events[100];
   ZEvent * ev;
   int num_events = 0, i;
   clean_duplicates_and_copy (

@@ -22,6 +22,7 @@
 #include "audio/engine.h"
 #include "guile/modules.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/string.h"
 #include "utils/io.h"
 
@@ -218,7 +219,7 @@ guile_run_script (
 {
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, F_NO_FORCE);
 
   return
     scm_with_guile (

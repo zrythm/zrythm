@@ -205,27 +205,44 @@ test_export_wav ()
   g_free (tmp_dir);
   g_assert_cmpint (ret, ==, 0);
 
-  ExportSettings settings;
-  settings.has_error = false;
-  settings.cancelled = false;
-  settings.format = AUDIO_FORMAT_WAV;
-  settings.artist = g_strdup ("Test Artist");
-  settings.genre = g_strdup ("Test Genre");
-  settings.depth = BIT_DEPTH_16;
-  settings.mode = EXPORT_MODE_FULL;
-  settings.time_range = TIME_RANGE_LOOP;
-  char * exports_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_EXPORTS, false);
-  settings.file_uri =
-    g_build_filename (
-      exports_dir, "test_wav.wav", NULL);
-  ret = exporter_export (&settings);
-  g_assert_false (AUDIO_ENGINE->exporting);
-  g_assert_cmpint (ret, ==, 0);
 
-  check_fingerprint_similarity (
-    filepath, settings.file_uri, 100, 6);
+  for (int i = 0; i < 2; i++)
+    {
+      g_assert_false (TRANSPORT_IS_ROLLING);
+      g_assert_cmpint (
+        TRANSPORT->playhead_pos.frames, ==, 0);
+
+      char * filename =
+        g_strdup_printf ("test_wav%d.wav", i);
+
+      ExportSettings settings;
+      settings.has_error = false;
+      settings.cancelled = false;
+      settings.format = AUDIO_FORMAT_WAV;
+      settings.artist = g_strdup ("Test Artist");
+      settings.genre = g_strdup ("Test Genre");
+      settings.depth = BIT_DEPTH_16;
+      settings.mode = EXPORT_MODE_FULL;
+      settings.time_range = TIME_RANGE_LOOP;
+      char * exports_dir =
+        project_get_path (
+          PROJECT, PROJECT_PATH_EXPORTS, false);
+      settings.file_uri =
+        g_build_filename (
+          exports_dir, filename, NULL);
+      ret = exporter_export (&settings);
+      g_assert_false (AUDIO_ENGINE->exporting);
+      g_assert_cmpint (ret, ==, 0);
+
+      check_fingerprint_similarity (
+        filepath, settings.file_uri, 100, 6);
+
+      g_free (filename);
+
+      g_assert_false (TRANSPORT_IS_ROLLING);
+      g_assert_cmpint (
+        TRANSPORT->playhead_pos.frames, ==, 0);
+    }
 
   g_free (filepath);
 

@@ -75,6 +75,8 @@ typedef struct Router Router;
 typedef struct Metronome Metronome;
 typedef struct Project Project;
 typedef struct HardwareProcessor HardwareProcessor;
+typedef struct ObjectPool ObjectPool;
+typedef struct MPMCQueue MPMCQueue;
 
 /**
  * @addtogroup audio Audio
@@ -101,6 +103,62 @@ typedef struct HardwareProcessor HardwareProcessor;
  * skip (false). */
 #define engine_set_run(engine,_run) \
   g_atomic_int_set (&engine->run, _run)
+
+#define ENGINE_MAX_EVENTS 100
+
+#define engine_queue_push_back_event(q,x) \
+  mpmc_queue_push_back ( \
+    q, (void *) x)
+
+#define engine_queue_dequeue_event(q,x) \
+  mpmc_queue_dequeue ( \
+    q, (void *) x)
+
+/**
+ * Push events.
+ */
+#define ENGINE_EVENTS_PUSH(et,_arg,_uint_arg) \
+  if (true) \
+    { \
+      AudioEngineEvent * _ev = \
+        (AudioEngineEvent *) \
+        object_pool_get (AUDIO_ENGINE->ev_pool); \
+      _ev->file = __FILE__; \
+      _ev->func = __func__; \
+      _ev->lineno = __LINE__; \
+      _ev->type = et; \
+      _ev->arg = (void *) _arg; \
+      _ev->uint_arg = _uint_arg; \
+      _ev->backtrace = backtrace_get ("", 40); \
+      g_debug ( \
+        "pushing engine event " #et \
+        " (%s:%d)", __func__, __LINE__); \
+      engine_queue_push_back_event ( \
+        AUDIO_ENGINE->ev_queue, _ev); \
+    }
+
+/**
+ * Audio engine event type.
+ */
+typedef enum AudioEngineEventType
+{
+  AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE,
+  AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE,
+} AudioEngineEventType;
+
+/**
+ * Audio engine event.
+ */
+typedef struct AudioEngineEvent
+{
+  AudioEngineEventType type;
+  void *               arg;
+  uint32_t             uint_arg;
+  const char *         file;
+  const char *         func;
+  int                  lineno;
+  char *               backtrace;
+} AudioEngineEvent;
 
 /**
  * Buffer sizes to be used in combo boxes.
@@ -642,6 +700,41 @@ typedef struct AudioEngine
   /** The metronome. */
   Metronome *       metronome;
 
+  /* --- events --- */
+
+  /**
+   * Event queue.
+   *
+   * Events such as buffer size change request and
+   * sample size change request should be queued
+   * here.
+   *
+   * The engine will skip processing while the
+   * queue still has events or is currently
+   * processing events.
+   */
+  MPMCQueue *       ev_queue;
+
+  /**
+   * Object pool of event structs to avoid
+   * allocation.
+   */
+  ObjectPool *      ev_pool;
+
+  /** ID of the event processing source func. */
+  guint             process_source_id;
+
+  /** Whether currently processing events. */
+  int               processing_events;
+
+  /** Time last event processing started. */
+  gint64            last_events_process_started;
+
+  /** Time last event processing completed. */
+  gint64            last_events_processed;
+
+  /* --- end events --- */
+
   /** Whether the cycle is currently running. */
   volatile gint     cycle_running;
 
@@ -729,12 +822,20 @@ typedef struct EngineState
   int      running;
   /** Playback. */
   bool     playing;
+  /** Transport loop. */
+  bool     looping;
 } EngineState;
 
+/**
+ * @param force_pause Whether to force transport
+ *   pause, otherwise for engine to process and
+ *   handle the pause request.
+ */
 void
 engine_wait_for_pause (
   AudioEngine * self,
-  EngineState * state);
+  EngineState * state,
+  bool          force_pause);
 
 void
 engine_resume (
