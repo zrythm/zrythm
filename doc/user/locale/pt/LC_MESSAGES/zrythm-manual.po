@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-01 02:00+0000\n"
+"POT-Creation-Date: 2021-03-04 03:56+0000\n"
 "PO-Revision-Date: 2021-01-05 14:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -87,6 +87,10 @@ msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
 
 #: ../../appendix/environment.rst:47
+msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
+msgstr ""
+
+#: ../../appendix/environment.rst:52
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
 
@@ -489,18 +493,17 @@ msgstr "Conectando Aparelhos de MIDI e Áudio"
 #: ../../configuration/device-setup.rst:11
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
-":ref:`configuration/preferences:Audio inputs` and "
-":ref:`configuration/preferences:MIDI controllers` and make these devices "
-"available in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as "
-"below) and other places."
+":ref:`configuration/preferences:Engine` and make these devices available "
+"in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as below) and "
+"other places."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:23
+#: ../../configuration/device-setup.rst:21
 #: ../../getting-started/system-requirements.rst:34 ../../glossary/intro.rst:66
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup.rst:25
+#: ../../configuration/device-setup.rst:23
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
 "so devices can be attached there using a tool like `Qjackctl "
@@ -510,7 +513,7 @@ msgstr ""
 "para que os aparelhos possam ser conectados lá por uma ferramenta como "
 "`Qjackctl <https://qjackctl.sourceforge.io/>`_."
 
-#: ../../configuration/device-setup.rst:33
+#: ../../configuration/device-setup.rst:31
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
@@ -518,7 +521,7 @@ msgstr ""
 "A depender da sua configuração, os aparelhos MIDI podem precisar ser "
 "ligados ao JACK a usar :term:`a2jmidid`."
 
-#: ../../configuration/device-setup.rst:36
+#: ../../configuration/device-setup.rst:34
 msgid "Zrythm will not remember connections made externally."
 msgstr "A Zrythm não se vai lembrar das ligações feitas externamente."
 
@@ -3609,6 +3612,34 @@ msgid ""
 "jack.html>`_, so we will skip this part."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:44
+msgid "Memory Locking"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:45
+msgid ""
+"Zrythm requires memory locking privileges for reliable, dropout-free "
+"operation. In short, if data is not locked into memory, it can be swapped"
+" by the kernel, causing xruns when attempting to access the data."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:51
+msgid ""
+"To set up these privileges for your user, see `How do I configure my "
+"linux system to allow JACK to use realtime scheduling? "
+"<https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:55
+msgid "Open File Limit"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:56
+msgid ""
+"On startup, Zrythm will attempt to increase the maximum limit of files it"
+" can open. You should give your user enough permissions to allow this."
+msgstr ""
+
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
 msgstr "Glossário"
@@ -5946,7 +5977,6 @@ msgid "actions channel-send-action"
 msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:7
-#, fuzzy
 msgid ""
 "Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
 "stereo_ports*"
@@ -5968,7 +5998,6 @@ msgid "actions port-connection-action"
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:7
-#, fuzzy
 msgid ""
 "Scheme Procedure: **port-connection-action-new-connect** | *src_port_id "
 "dest_port_id*"
@@ -5990,7 +6019,6 @@ msgid "actions tracklist-selections-action"
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:7
-#, fuzzy
 msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-instrument** |"
 " *pl_descr track_pos num_tracks*"
@@ -6008,10 +6036,18 @@ msgid "Returns a new action for creating an instrument track."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:12
+#, fuzzy
 msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-audio-fx-with-"
 "plugin** | *plugin_descriptor track_pos num_tracks*"
 msgstr ""
+"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Imprime a posição como 'barras.batidas.decimos-sextos.ticks'.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:10
 msgid ""
@@ -6020,7 +6056,6 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:16
-#, fuzzy
 msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-audio-fx** | "
 "*track_pos num_tracks*"
@@ -6038,7 +6073,6 @@ msgid "Returns a new action for creating one or more empty Audio FX tracks."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:20
-#, fuzzy
 msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-midi** | *track_pos "
 "num_tracks*"
@@ -6060,7 +6094,6 @@ msgid "actions undo-manager"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **undo-manager-perform** | *undo_manager action*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6076,7 +6109,6 @@ msgid "Performs the given action and adds it to the undo stack."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6088,11 +6120,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions undo_manager.rst:10
+#, fuzzy
 msgid "Undoes the last action."
-msgstr ""
+msgstr "Silencia a faixa."
 
 #: ../../scripting/api/actions undo_manager.rst:15
-#, fuzzy
 msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6112,7 +6144,6 @@ msgid "audio channel"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **channel-get-insert** | *channel insert_slot*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6128,7 +6159,6 @@ msgid "Returns the plugin at the given insert slot"
 msgstr "Retorna o suplemento no compartimento de inserção fornecido"
 
 #: ../../scripting/api/audio channel.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **channel-get-instrument** | *channel*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6144,7 +6174,6 @@ msgid "Returns the instrument at the given channel"
 msgstr "Retorna o instrumento no canal fornecido"
 
 #: ../../scripting/api/audio channel.rst:15
-#, fuzzy
 msgid "Scheme Procedure: **channel-get-send** | *channel send_slot*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6164,7 +6193,6 @@ msgid "audio midi-note"
 msgstr ""
 
 #: ../../scripting/api/audio midi_note.rst:7
-#, fuzzy
 msgid ""
 "Scheme Procedure: **midi-note-new** | *region start_pos end_pos pitch "
 "velocity*"
@@ -6186,7 +6214,6 @@ msgid "audio midi-region"
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:7
-#, fuzzy
 msgid ""
 "Scheme Procedure: **midi-region-new** | *start_pos end_pos track_idx "
 "lane_idx idx_inside_lane*"
@@ -6200,7 +6227,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_region.rst:6
-#, fuzzy
 msgid "Returns a new midi region."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6212,7 +6238,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_region.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **midi-region-add-midi-note** | *region midi_note*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6224,7 +6249,7 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_region.rst:10
-msgid "Adds a midi note to region."
+msgid "Adds a midi note to ``region``."
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:3
@@ -6232,7 +6257,6 @@ msgid "audio port"
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **stereo-ports-get-port** | *stereo_ports left*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6248,7 +6272,6 @@ msgid "Returns the left or right port of the stereo pair."
 msgstr "Retorna a porta esquerda ou direita do par estéreo."
 
 #: ../../scripting/api/audio port.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **port-get-identifier** | *port*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6260,7 +6283,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio port.rst:10
-msgid "Returns the identifier of port."
+#, fuzzy
+msgid "Returns the identifier of ``port``."
 msgstr "Retorna o identificador da porta."
 
 #: ../../scripting/api/audio position.rst:3
@@ -6276,13 +6300,15 @@ msgstr ""
 "sextos.ticks*"
 
 #: ../../scripting/api/audio position.rst:6
-msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
+#, fuzzy
+msgid ""
+"Return a newly-created position as ``bars``.\\ ``beats``.\\ "
+"``sixteenths``.\\ ``ticks``.\\ ``sub_tick``."
 msgstr ""
 "Retorna a posição recém-criada como barras.batidas.decimos-"
 "sextos.ticks.sub_tick."
 
 #: ../../scripting/api/audio position.rst:12
-#, fuzzy
 msgid "Scheme Procedure: **position-print** | *pos*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6302,7 +6328,6 @@ msgid "audio supported-file"
 msgstr ""
 
 #: ../../scripting/api/audio supported_file.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **supported-file-new-from-path** | *path*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6322,7 +6347,6 @@ msgid "audio track"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:8
-#, fuzzy
 msgid "Scheme Procedure: **midi-track-new** | *idx name*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6334,15 +6358,15 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:6
+#, fuzzy
 msgid ""
-"Returns a new track with name name to be placed at position idx in the "
-"tracklist."
+"Returns a new track with name ``name`` to be placed at position ``idx`` "
+"in the tracklist."
 msgstr ""
 "Retorna uma nova faixa com nome a ser localizada na posição idx na lista "
 "de faixas."
 
 #: ../../scripting/api/audio track.rst:12
-#, fuzzy
 msgid "Scheme Procedure: **track-get-name** | *track*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6354,11 +6378,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:11
-msgid "Returns the name of track."
+#, fuzzy
+msgid "Returns the name of ``track``."
 msgstr "Retorna o nome da faixa."
 
 #: ../../scripting/api/audio track.rst:16
-#, fuzzy
 msgid "Scheme Procedure: **track-get-processor** | *track*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6370,11 +6394,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:15
-msgid "Returns the processor of track."
+#, fuzzy
+msgid "Returns the processor of ``track``."
 msgstr "Retorna o processador da faixa."
 
 #: ../../scripting/api/audio track.rst:20
-#, fuzzy
 msgid "Scheme Procedure: **track-get-channel** | *track*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6386,11 +6410,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:19
-msgid "Returns the channel of track."
+#, fuzzy
+msgid "Returns the channel of ``track``."
 msgstr "Retorna o canal da faixa."
 
 #: ../../scripting/api/audio track.rst:25
-#, fuzzy
 msgid "Scheme Procedure: **track-set-muted** | *track muted*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6402,15 +6426,15 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:23
+#, fuzzy
 msgid ""
-"Sets whether track is muted or not. This creates an undoable action and "
-"performs it."
+"Sets whether ``track`` is muted or not. This creates an undoable action "
+"and performs it."
 msgstr ""
 "Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
 "desfeita e executa-a."
 
 #: ../../scripting/api/audio track.rst:30
-#, fuzzy
 msgid "Scheme Procedure: **track-add-lane-region** | *track region lane_pos*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6422,7 +6446,10 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:28
-msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
+#, fuzzy
+msgid ""
+"Adds ``region`` to track ``track``. To be used for regions with lanes "
+"(midi/audio)"
 msgstr ""
 "Adiciona região para rastrear faixa. Para ser usado para regiões com "
 "pistas (midi/áudio)"
@@ -6432,7 +6459,6 @@ msgid "audio track-processor"
 msgstr ""
 
 #: ../../scripting/api/audio track_processor.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **track-processor-get-stereo-in** | *track_processor*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6444,7 +6470,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track_processor.rst:6
-#, fuzzy
 msgid "Returns the stereo in ports instance of the track processor."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6460,7 +6485,6 @@ msgid "audio tracklist"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6472,11 +6496,11 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio tracklist.rst:6
-msgid "Inserts track track at index idx in the tracklist."
+#, fuzzy
+msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
 msgstr "Insere faixa no índice idx na lista de faixas."
 
 #: ../../scripting/api/audio tracklist.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6489,7 +6513,7 @@ msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
 #, fuzzy
-msgid "Returns the track at pos in the tracklist."
+msgid "Returns the track at ``pos`` in the tracklist."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
 "Insere faixa no índice idx na lista de faixas.\n"
@@ -6500,7 +6524,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio tracklist.rst:15
-#, fuzzy
 msgid "Scheme Procedure: **tracklist-get-num-tracks** | *tracklist*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6512,7 +6535,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio tracklist.rst:14
-#, fuzzy
 msgid "Returns the number of tracks in the tracklist."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6532,7 +6554,6 @@ msgid "plugins plugin"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **plugin-get-in-port** | *plugin port_idx*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6548,7 +6569,6 @@ msgid "Returns the input port of the plugin at the given index."
 msgstr "Retorna a porta de entrada do suplemento no índice dado."
 
 #: ../../scripting/api/plugins plugin.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **plugin-get-out-port** | *plugin port_idx*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6568,7 +6588,6 @@ msgid "plugins plugin-manager"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:7
-#, fuzzy
 msgid ""
 "Scheme Procedure: **plugin-manager-find-plugin-from-uri** | "
 "*plugin_manager uri*"
@@ -6582,7 +6601,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
-#, fuzzy
 msgid "Returns the PluginDescriptor matching the given URI."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6594,7 +6612,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/plugins plugin_manager.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6615,7 +6632,6 @@ msgid "project"
 msgstr "project.yml"
 
 #: ../../scripting/api/project.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **project-get-title** | *project*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6623,12 +6639,10 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/project.rst:6
-#, fuzzy
 msgid "Return the project’s title."
 msgstr "Retorna o processador da faixa."
 
 #: ../../scripting/api/project.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **project-get-tracklist** | *project*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6636,7 +6650,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/project.rst:10
-#, fuzzy
 msgid "Returns the tracklist for the project."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6648,7 +6661,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/project.rst:15
-#, fuzzy
 msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6656,7 +6668,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/project.rst:14
-#, fuzzy
 msgid "Returns the undo manager for the project."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6668,7 +6679,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/zrythm.rst:7
-#, fuzzy
 msgid "Scheme Procedure: **zrythm-get-ver**"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6684,7 +6694,6 @@ msgid "Return the Zrythm version as a string."
 msgstr "Retornar a versão do Zrythm como uma cadeia."
 
 #: ../../scripting/api/zrythm.rst:11
-#, fuzzy
 msgid "Scheme Procedure: **zrythm-get-plugin-manager**"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6700,7 +6709,6 @@ msgid "Return the PluginManager instance."
 msgstr "Retornar a instância do PluginManager."
 
 #: ../../scripting/api/zrythm.rst:15
-#, fuzzy
 msgid "Scheme Procedure: **zrythm-get-project**"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6708,12 +6716,10 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/zrythm.rst:14
-#, fuzzy
 msgid "Return the currently loaded Project instance."
 msgstr "Retornar a instância do PluginManager."
 
 #: ../../scripting/api/zrythm.rst:19
-#, fuzzy
 msgid "Scheme Procedure: **zrythm-null**"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6729,7 +6735,6 @@ msgid "Returns a NULL pointer."
 msgstr "Retorna um ponteiro NULL."
 
 #: ../../scripting/api/zrythm.rst:23
-#, fuzzy
 msgid "Scheme Procedure: **zrythm-message** | *message*"
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -8987,9 +8992,6 @@ msgstr ""
 #~ "The backups are saved in the "
 #~ "project's directory, under :file:`backups`."
 #~ msgstr "Os backups são gravados no diretório do projeto, em :file`backups`."
-
-#~ msgid "Create Geonkick with FX track"
-#~ msgstr ""
 
 #~ msgid ""
 #~ "Displays the log, which gets updated "

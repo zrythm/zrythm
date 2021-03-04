@@ -9,9 +9,7 @@ Connecting MIDI and Audio Devices
 ---------------------------------
 
 Zrythm will auto-connect to the devices specified in
-:ref:`configuration/preferences:Audio inputs`
-and
-:ref:`configuration/preferences:MIDI controllers`
+:ref:`configuration/preferences:Engine`
 and make these devices available in the
 :ref:`track inputs <tracks/inspector-page:Inputs>`
 (as below) and other places.

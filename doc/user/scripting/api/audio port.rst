@@ -7,6 +7,6 @@ Scheme Procedure: **stereo-ports-get-port** | *stereo_ports left*
 
 
 Scheme Procedure: **port-get-identifier** | *port*
-   Returns the identifier of port.
+   Returns the identifier of ``port``.
 
 

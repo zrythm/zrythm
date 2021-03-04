@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-01 02:00+0000\n"
+"POT-Creation-Date: 2021-03-04 03:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,6 +85,10 @@ msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
 
 #: ../../appendix/environment.rst:47
+msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
+msgstr ""
+
+#: ../../appendix/environment.rst:52
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
 
@@ -500,18 +504,17 @@ msgstr "Conectar Dispositivos MIDI e de son"
 #: ../../configuration/device-setup.rst:11
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
-":ref:`configuration/preferences:Audio inputs` and "
-":ref:`configuration/preferences:MIDI controllers` and make these devices "
-"available in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as "
-"below) and other places."
+":ref:`configuration/preferences:Engine` and make these devices available "
+"in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as below) and "
+"other places."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:23
+#: ../../configuration/device-setup.rst:21
 #: ../../getting-started/system-requirements.rst:34 ../../glossary/intro.rst:66
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup.rst:25
+#: ../../configuration/device-setup.rst:23
 #, fuzzy
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
@@ -526,13 +529,13 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../configuration/device-setup.rst:33
+#: ../../configuration/device-setup.rst:31
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:36
+#: ../../configuration/device-setup.rst:34
 msgid "Zrythm will not remember connections made externally."
 msgstr ""
 
@@ -4162,6 +4165,34 @@ msgid ""
 "jack.html>`_, so we will skip this part."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:44
+msgid "Memory Locking"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:45
+msgid ""
+"Zrythm requires memory locking privileges for reliable, dropout-free "
+"operation. In short, if data is not locked into memory, it can be swapped"
+" by the kernel, causing xruns when attempting to access the data."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:51
+msgid ""
+"To set up these privileges for your user, see `How do I configure my "
+"linux system to allow JACK to use realtime scheduling? "
+"<https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:55
+msgid "Open File Limit"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:56
+msgid ""
+"On startup, Zrythm will attempt to increase the maximum limit of files it"
+" can open. You should give your user enough permissions to allow this."
+msgstr ""
+
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
 msgstr ""
@@ -6799,8 +6830,9 @@ msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:10
+#, fuzzy
 msgid "Undoes the last action."
-msgstr ""
+msgstr "Silencia a pista."
 
 #: ../../scripting/api/actions undo_manager.rst:15
 msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
@@ -6863,15 +6895,20 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:6
+#, fuzzy
 msgid "Returns a new midi region."
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Edición de Rexións\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_region.rst:11
 msgid "Scheme Procedure: **midi-region-add-midi-note** | *region midi_note*"
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:10
-msgid "Adds a midi note to region."
+msgid "Adds a midi note to ``region``."
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:3
@@ -6891,7 +6928,7 @@ msgid "Scheme Procedure: **port-get-identifier** | *port*"
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:10
-msgid "Returns the identifier of port."
+msgid "Returns the identifier of ``port``."
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:3
@@ -6905,7 +6942,9 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:6
-msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
+msgid ""
+"Return a newly-created position as ``bars``.\\ ``beats``.\\ "
+"``sixteenths``.\\ ``ticks``.\\ ``sub_tick``."
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:12
@@ -6913,8 +6952,18 @@ msgid "Scheme Procedure: **position-print** | *pos*"
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:11
+#, fuzzy
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr ""
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Posición actual da cabeza de reprodución, en compases.pulsos.décimo "
+"sextos.ticks\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Posición actual da cabeza de reprodución, en compases.pulsos.décimo "
+"sextos.ticks\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio supported_file.rst:3
 msgid "audio supported-file"
@@ -6938,8 +6987,8 @@ msgstr ""
 
 #: ../../scripting/api/audio track.rst:6
 msgid ""
-"Returns a new track with name name to be placed at position idx in the "
-"tracklist."
+"Returns a new track with name ``name`` to be placed at position ``idx`` "
+"in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:12
@@ -6947,7 +6996,7 @@ msgid "Scheme Procedure: **track-get-name** | *track*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:11
-msgid "Returns the name of track."
+msgid "Returns the name of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:16
@@ -6955,7 +7004,7 @@ msgid "Scheme Procedure: **track-get-processor** | *track*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:15
-msgid "Returns the processor of track."
+msgid "Returns the processor of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:20
@@ -6963,7 +7012,7 @@ msgid "Scheme Procedure: **track-get-channel** | *track*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:19
-msgid "Returns the channel of track."
+msgid "Returns the channel of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:25
@@ -6972,8 +7021,8 @@ msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
 msgid ""
-"Sets whether track is muted or not. This creates an undoable action and "
-"performs it."
+"Sets whether ``track`` is muted or not. This creates an undoable action "
+"and performs it."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:30
@@ -6981,7 +7030,9 @@ msgid "Scheme Procedure: **track-add-lane-region** | *track region lane_pos*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:28
-msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
+msgid ""
+"Adds ``region`` to track ``track``. To be used for regions with lanes "
+"(midi/audio)"
 msgstr ""
 
 #: ../../scripting/api/audio track_processor.rst:3
@@ -7005,7 +7056,7 @@ msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:6
-msgid "Inserts track track at index idx in the tracklist."
+msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:11
@@ -7013,8 +7064,9 @@ msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
-msgid "Returns the track at pos in the tracklist."
-msgstr ""
+#, fuzzy
+msgid "Returns the track at ``pos`` in the tracklist."
+msgstr "Monta a pista para gravar."
 
 #: ../../scripting/api/audio tracklist.rst:15
 msgid "Scheme Procedure: **tracklist-get-num-tracks** | *tracklist*"
@@ -7080,7 +7132,6 @@ msgid "Scheme Procedure: **project-get-title** | *project*"
 msgstr ""
 
 #: ../../scripting/api/project.rst:6
-#, fuzzy
 msgid "Return the project’s title."
 msgstr "O ficheiro do Proxecto"
 
@@ -7089,7 +7140,6 @@ msgid "Scheme Procedure: **project-get-tracklist** | *project*"
 msgstr ""
 
 #: ../../scripting/api/project.rst:10
-#, fuzzy
 msgid "Returns the tracklist for the project."
 msgstr "Monta a pista para gravar."
 
@@ -7098,8 +7148,9 @@ msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
 msgstr ""
 
 #: ../../scripting/api/project.rst:14
+#, fuzzy
 msgid "Returns the undo manager for the project."
-msgstr ""
+msgstr "Monta a pista para gravar."
 
 #: ../../scripting/api/zrythm.rst:7
 msgid "Scheme Procedure: **zrythm-get-ver**"
@@ -9389,52 +9440,6 @@ msgid ""
 "in the bottom left corner."
 msgstr ""
 
-#~ msgid ""
-#~ "Zrythm will auto-connect to the "
-#~ "devices specified in "
-#~ ":ref:`configuration/preferences/intro:Audio inputs` and"
-#~ " :ref:`configuration/preferences/intro:MIDI controllers` "
-#~ "and make these devices available in "
-#~ "the :ref:`track inputs <tracks/inspector-"
-#~ "page:Inputs>` (as below) and other "
-#~ "places."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "We want to provide a friendly and"
-#~ " harassment-free environment so that "
-#~ "everyone can contribute to the best "
-#~ "of their abilities. To this end "
-#~ "our project uses a `Contributor "
-#~ "Covenant` which was adapted from https"
-#~ "://contributor-covenant.org/. You can find "
-#~ "the full pledge in our `Code of"
-#~ " Conduct <https://forum.zrythm.org/t/code-of-"
-#~ "conduct>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "You are welcome to help us improve"
-#~ " the looks and usability of the "
-#~ "Zrythm website. Please join our "
-#~ "chatrooms and talk to us."
-#~ msgstr ""
-
-#~ msgid "Prints a list of available options."
-#~ msgstr ""
-
-#~ msgid "Pretty-prints the output (where applicable)."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Prints all the user settings. Can "
-#~ "be combined with :option:`--pretty` to "
-#~ "get pretty-printed output, like below."
-#~ msgstr ""
-
-#~ msgid "Resets user settings to their default values."
-#~ msgstr ""
-
 #~ msgid "Project Info"
 #~ msgstr "Información do Proxecto"
 
@@ -9513,21 +9518,6 @@ msgstr ""
 #~ ""
 #~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#~ msgid "Create Geonkick with FX track"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Shows the scripting interface. See "
-#~ ":ref:`scripting` for more information."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Displays the log, which gets updated "
-#~ "real-time. Preferences Shows the "
-#~ "preferences dialog. See :ref:`preferences` for"
-#~ " more information."
-#~ msgstr ""
-
 #~ msgid "Interface Overview"
 #~ msgstr "Visión xeral do Interface"
 
@@ -9552,20 +9542,6 @@ msgstr ""
 #~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 #~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
 #~ "Tempo da canción (pulsos por minuto)\n"
-#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
-#~ msgstr ""
-#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
-#~ "Posición actual da cabeza de "
-#~ "reprodución, en compases.pulsos.décimo sextos.ticks"
-#~ "\n"
-#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
-#~ "Posición actual da cabeza de "
-#~ "reprodución, en compases.pulsos.décimo sextos.ticks"
-#~ "\n"
 #~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #~ msgid "Transport buttons"

@@ -1,6 +1,6 @@
 # used to only create guile docs when possible,
 # otherwise reuse what is already there
-can_make_guile_docs = guile_dep.found () and get_option ('guile_snarf_docs_path') != ''
+can_make_guile_docs = guile_dep.found () and get_option ('guile_snarf_docs_path') != '' and texi2html.found () and pandoc.found ()
 
 # Create custom targets (each API .rst file) and save
 # them in guile_docs

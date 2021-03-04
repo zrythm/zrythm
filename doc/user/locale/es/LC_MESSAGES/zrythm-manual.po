@@ -43,7 +43,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-01 02:00+0000\n"
+"POT-Creation-Date: 2021-03-04 03:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,6 +90,10 @@ msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
 
 #: ../../appendix/environment.rst:47
+msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
+msgstr ""
+
+#: ../../appendix/environment.rst:52
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
 
@@ -492,18 +496,17 @@ msgstr "Conexión de dispositivos MIDI y de audio"
 #: ../../configuration/device-setup.rst:11
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
-":ref:`configuration/preferences:Audio inputs` and "
-":ref:`configuration/preferences:MIDI controllers` and make these devices "
-"available in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as "
-"below) and other places."
+":ref:`configuration/preferences:Engine` and make these devices available "
+"in the :ref:`track inputs <tracks/inspector-page:Inputs>` (as below) and "
+"other places."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:23
+#: ../../configuration/device-setup.rst:21
 #: ../../getting-started/system-requirements.rst:34 ../../glossary/intro.rst:66
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup.rst:25
+#: ../../configuration/device-setup.rst:23
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
 "so devices can be attached there using a tool like `Qjackctl "
@@ -513,7 +516,7 @@ msgstr ""
 "puertos al JACK, así los dispositivos pueden ser agregados ahí usando una"
 " herramienta como `Qjackctl <https://qjackctl.sourceforge.io/>`_."
 
-#: ../../configuration/device-setup.rst:33
+#: ../../configuration/device-setup.rst:31
 #, fuzzy
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
@@ -525,7 +528,7 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../configuration/device-setup.rst:36
+#: ../../configuration/device-setup.rst:34
 msgid "Zrythm will not remember connections made externally."
 msgstr ""
 
@@ -3938,6 +3941,34 @@ msgid ""
 "jack.html>`_, so we will skip this part."
 msgstr ""
 
+#: ../../getting-started/system-requirements.rst:44
+msgid "Memory Locking"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:45
+msgid ""
+"Zrythm requires memory locking privileges for reliable, dropout-free "
+"operation. In short, if data is not locked into memory, it can be swapped"
+" by the kernel, causing xruns when attempting to access the data."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:51
+msgid ""
+"To set up these privileges for your user, see `How do I configure my "
+"linux system to allow JACK to use realtime scheduling? "
+"<https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:55
+msgid "Open File Limit"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:56
+msgid ""
+"On startup, Zrythm will attempt to increase the maximum limit of files it"
+" can open. You should give your user enough permissions to allow this."
+msgstr ""
+
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
 msgstr "Glosario"
@@ -6235,8 +6266,9 @@ msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:10
+#, fuzzy
 msgid "Undoes the last action."
-msgstr ""
+msgstr "Enmudece la pista."
 
 #: ../../scripting/api/actions undo_manager.rst:15
 msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
@@ -6263,16 +6295,18 @@ msgid "Scheme Procedure: **channel-get-instrument** | *channel*"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:10
+#, fuzzy
 msgid "Returns the instrument at the given channel"
-msgstr ""
+msgstr "Regresa el plugin en el inserto"
 
 #: ../../scripting/api/audio channel.rst:15
 msgid "Scheme Procedure: **channel-get-send** | *channel send_slot*"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:14
+#, fuzzy
 msgid "Returns the send instance at the given slot"
-msgstr ""
+msgstr "Regresa el plugin en el inserto"
 
 #: ../../scripting/api/audio midi_note.rst:3
 msgid "audio midi-note"
@@ -6299,15 +6333,20 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:6
+#, fuzzy
 msgid "Returns a new midi region."
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Editar regiones\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_region.rst:11
 msgid "Scheme Procedure: **midi-region-add-midi-note** | *region midi_note*"
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:10
-msgid "Adds a midi note to region."
+msgid "Adds a midi note to ``region``."
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:3
@@ -6327,7 +6366,7 @@ msgid "Scheme Procedure: **port-get-identifier** | *port*"
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:10
-msgid "Returns the identifier of port."
+msgid "Returns the identifier of ``port``."
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:3
@@ -6341,7 +6380,9 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:6
-msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
+msgid ""
+"Return a newly-created position as ``bars``.\\ ``beats``.\\ "
+"``sixteenths``.\\ ``ticks``.\\ ``sub_tick``."
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:12
@@ -6349,8 +6390,11 @@ msgid "Scheme Procedure: **position-print** | *pos*"
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:11
+#, fuzzy
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr ""
+"Posición actual del cabezal de reproducción en "
+"compases.pulsos.semicorcheas.tics."
 
 #: ../../scripting/api/audio supported_file.rst:3
 msgid "audio supported-file"
@@ -6374,8 +6418,8 @@ msgstr ""
 
 #: ../../scripting/api/audio track.rst:6
 msgid ""
-"Returns a new track with name name to be placed at position idx in the "
-"tracklist."
+"Returns a new track with name ``name`` to be placed at position ``idx`` "
+"in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:12
@@ -6383,7 +6427,7 @@ msgid "Scheme Procedure: **track-get-name** | *track*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:11
-msgid "Returns the name of track."
+msgid "Returns the name of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:16
@@ -6391,7 +6435,7 @@ msgid "Scheme Procedure: **track-get-processor** | *track*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:15
-msgid "Returns the processor of track."
+msgid "Returns the processor of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:20
@@ -6399,7 +6443,7 @@ msgid "Scheme Procedure: **track-get-channel** | *track*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:19
-msgid "Returns the channel of track."
+msgid "Returns the channel of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:25
@@ -6408,8 +6452,8 @@ msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
 msgid ""
-"Sets whether track is muted or not. This creates an undoable action and "
-"performs it."
+"Sets whether ``track`` is muted or not. This creates an undoable action "
+"and performs it."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:30
@@ -6417,7 +6461,9 @@ msgid "Scheme Procedure: **track-add-lane-region** | *track region lane_pos*"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:28
-msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
+msgid ""
+"Adds ``region`` to track ``track``. To be used for regions with lanes "
+"(midi/audio)"
 msgstr ""
 
 #: ../../scripting/api/audio track_processor.rst:3
@@ -6441,7 +6487,7 @@ msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:6
-msgid "Inserts track track at index idx in the tracklist."
+msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:11
@@ -6449,7 +6495,7 @@ msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
-msgid "Returns the track at pos in the tracklist."
+msgid "Returns the track at ``pos`` in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:15
@@ -6473,16 +6519,18 @@ msgid "Scheme Procedure: **plugin-get-in-port** | *plugin port_idx*"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:6
+#, fuzzy
 msgid "Returns the input port of the plugin at the given index."
-msgstr ""
+msgstr "Regresa el plugin en el inserto"
 
 #: ../../scripting/api/plugins plugin.rst:11
 msgid "Scheme Procedure: **plugin-get-out-port** | *plugin port_idx*"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:10
+#, fuzzy
 msgid "Returns the output port of the plugin at the given index."
-msgstr ""
+msgstr "Regresa el plugin en el inserto"
 
 #: ../../scripting/api/plugins plugin_manager.rst:3
 msgid "plugins plugin-manager"
@@ -6495,7 +6543,6 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
-#, fuzzy
 msgid "Returns the PluginDescriptor matching the given URI."
 msgstr ""
 "#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
@@ -6524,7 +6571,6 @@ msgid "Scheme Procedure: **project-get-title** | *project*"
 msgstr ""
 
 #: ../../scripting/api/project.rst:6
-#, fuzzy
 msgid "Return the project’s title."
 msgstr "El archivo de proyecto"
 
@@ -8560,17 +8606,6 @@ msgstr ""
 "está visible en la esquina inferior izquierda."
 
 #~ msgid ""
-#~ "Zrythm will auto-connect to the "
-#~ "devices specified in "
-#~ ":ref:`configuration/preferences/intro:Audio inputs` and"
-#~ " :ref:`configuration/preferences/intro:MIDI controllers` "
-#~ "and make these devices available in "
-#~ "the :ref:`track inputs <tracks/inspector-"
-#~ "page:Inputs>` (as below) and other "
-#~ "places."
-#~ msgstr ""
-
-#~ msgid ""
 #~ "We want to provide a friendly and"
 #~ " harassment-free environment so that "
 #~ "everyone can contribute to the best "
@@ -8593,79 +8628,11 @@ msgstr ""
 #~ "en `Código de Conducta "
 #~ "<https://forum.zrythm.org/t/code-of-conduct>`_."
 
-#~ msgid "Prints a list of available options."
-#~ msgstr ""
-
-#~ msgid "Pretty-prints the output (where applicable)."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Prints all the user settings. Can "
-#~ "be combined with :option:`--pretty` to "
-#~ "get pretty-printed output, like below."
-#~ msgstr ""
-
-#~ msgid "Resets user settings to their default values."
-#~ msgstr ""
-
 #~ msgid "Project Info"
 #~ msgstr "Información del proyecto"
 
-#~ msgid ""
-#~ "In Zrythm, your work is saved "
-#~ "inside a Project. Projects consist of"
-#~ " a folder with a YAML file "
-#~ "describing the Project and additional "
-#~ "files used such as MIDI and audio"
-#~ " files."
-#~ msgstr ""
-
-#~ msgid "Regular backups taken automatically by Zrythm"
-#~ msgstr ""
-
-#~ msgid "myproject.bak"
-#~ msgstr ""
-
-#~ msgid "An example backup project"
-#~ msgstr ""
-
 #~ msgid "states"
 #~ msgstr "estados"
-
-#~ msgid "Contains plugin states at the time of save (for LV2)"
-#~ msgstr ""
-
-#~ msgid "exports"
-#~ msgstr ""
-
-#~ msgid "Default directory for exporting files related to the project"
-#~ msgstr ""
-
-#~ msgid "pool"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Used by Zrythm to store and load"
-#~ " files used by the Project, such "
-#~ "as audio files"
-#~ msgstr ""
-
-#~ msgid "project.yml"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The auto-save interval can be "
-#~ "changed (or disabled) in the preferences"
-#~ " window."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The backups are saved in the "
-#~ "project's directory, under :file:`backups`."
-#~ msgstr ""
-
-#~ msgid "Create Geonkick with FX track"
-#~ msgstr ""
 
 #~ msgid ""
 #~ "Displays the log, which gets updated "
@@ -8690,11 +8657,6 @@ msgstr ""
 
 #~ msgid "Song tempo (beats per minute)."
 #~ msgstr "Tempo de la canción (pulsaciones por minuto)."
-
-#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks."
-#~ msgstr ""
-#~ "Posición actual del cabezal de "
-#~ "reproducción en compases.pulsos.semicorcheas.tics."
 
 #~ msgid "Transport buttons"
 #~ msgstr "Botones de transporte"

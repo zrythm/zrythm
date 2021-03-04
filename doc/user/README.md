@@ -5,11 +5,13 @@ Zrythm User Manual
 - Sphinx doc <http://sphinx-doc.org/>
 - sphinx-intl
 - guile
-- `guix build utils` guile module
+- `guix build utils` guile module (installed with guix package)
 - texlive (for PDF)
+- texi2html (for Guile API)
+- pandoc (for Guile API)
 
 # Building
-This is built using `ninja -C build bundle_manual`
+This is built using `ninja -C build manual_bundle`
 
 # Tips
 - To reference the ``Plugin Ports`` section in the
@@ -42,7 +44,7 @@ root of this distribution.
 
 ----
 
-Copyright (C) 2019-2020 Alexandros Theodotou
+Copyright (C) 2019-2021 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
