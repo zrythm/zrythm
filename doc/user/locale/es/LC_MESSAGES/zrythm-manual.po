@@ -1,43 +1,17 @@
-# #-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-# #-#-#-#-#  chords-and-scales.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 # Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
-# #-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#
-# #-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#
-# Alexandros Theodotou <alextee@posteo.net>, 2019.
-# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # Copyright (C) 2019-2020 The Zrythm contributors
 # miri24661 <miriam_g.r@hotmail.com>, 2020.
-# #-#-#-#-#  index.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
-# #-#-#-#-#  mixing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#
 # Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>, 2020.
-# #-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#
 # Theo Iturri <theoiturri@gmail.com>, 2020.
-# #-#-#-#-#  theming.po (Zrythm 0.8)  #-#-#-#-#
-# #-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
-# #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
@@ -6543,15 +6517,10 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
+#, fuzzy
 msgid "Returns the PluginDescriptor matching the given URI."
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Regresa el plugin en el inserto\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Regresa el plugin en el inserto\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"Regresa el plugin en el inserto"
 
 #: ../../scripting/api/plugins plugin_manager.rst:11
 msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"

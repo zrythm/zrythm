@@ -1,36 +1,8 @@
-# #-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-# #-#-#-#-#  chords-and-scales.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#
-# Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2020.
-# #-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#
-# Alexandros Theodotou <alextee@posteo.net>, 2019.
-# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#
-# Copyright (C) 2019-2020 The Zrythm contributors
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-# #-#-#-#-#  index.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#
-# #-#-#-#-#  mixing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  routing.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#
-# #-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#
-# #-#-#-#-#  theming.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#
-# #-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#
-# #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
@@ -174,9 +146,6 @@ msgstr ""
 #, fuzzy
 msgid "Fonts"
 msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Σχόλια"
 
 #: ../../appendix/files-and-directories.rst:54
 msgid ""
@@ -227,8 +196,6 @@ msgid ""
 ":file:`cached_plugin_descriptors.yaml` under the :term:`Zrythm user "
 "path`."
 msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "Το Zrythm θα θυμάται τα σκαναρισμένα πρόσθετα VST και θα αποθηκεύσει "
 "αυτές τις πληροφορίες στο :file:`cached_plugin_descriptors.yaml` στο "
 ":term:`Zrythm user path`."
@@ -237,8 +204,6 @@ msgstr ""
 #, fuzzy
 msgid "Plugin Collections"
 msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "Συλλογές"
 
 #: ../../appendix/files-and-directories.rst:87
@@ -1213,12 +1178,9 @@ msgid ""
 " distribution. These include translators of the software, the user manual"
 " and the website."
 msgstr ""
-"#-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#\n"
 "Βλέπε το αρχείο :download:`TRANSLATORS <../../../TRANSLATORS>` στην "
 "πηγαία διανομή. Περιλαμβάνουν τους μεταφραστές του προγράμματος, το "
-"εγχειρίδιο χρήστη και την ιστοσελίδα.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"εγχειρίδιο χρήστη και την ιστοσελίδα."
 
 #: ../../credits/intro.rst:24
 msgid "Other Contributors"
@@ -1230,11 +1192,7 @@ msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source "
 "distribution."
 msgstr ""
-"#-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#\n"
 "Βλέπε το αρχείο :download:`THANKS <../../../THANKS>` στην πηγαία διανομή."
-"\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39
@@ -1742,10 +1700,7 @@ msgstr "Προβάλλει πληροφορίες για κάθε νότα MIDI 
 #, fuzzy
 msgid "Editor Ruler"
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Γραμμή εργαλείων επεξεργαστή\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Γραμμή εργαλείων επεξεργαστή"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
@@ -2022,10 +1977,7 @@ msgstr ""
 #, fuzzy
 msgid "Duplicating a region"
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Επεξεργασία περιοχών\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Επεξεργασία περιοχών"
 
 #: ../../editing/common-operations.rst:76
 msgid "Delete"
@@ -2105,13 +2057,10 @@ msgid ""
 "and resize objects. This is the most common mode and the most common "
 "operations can be accomplished by just using this."
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Στη λειτουργία επιλογής, μπορείτε να επιλέξετε αντικείμενα και να τα "
 "μετακινήσετε, να τα κλωνοποιήσετε και να αλλάξετε το μέγεθός τους. Αυτή "
 "είναι η πιο κοινή λειτουργία και οι περισσότερες εργασίες μπορούν να "
-"εκπληρωθούν με αυτή τη λειτουργία.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"εκπληρωθούν με αυτή τη λειτουργία."
 
 #: ../../editing/edit-tools.rst:29
 msgid ""
@@ -2123,14 +2072,8 @@ msgstr ""
 "τους θα τεντωθεί ώστε να χωρέσει στο καινούριο μέγεθος."
 
 #: ../../editing/edit-tools.rst:34
-#, fuzzy
 msgid "Creating Objects"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Επιλογή αντικειμένων\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Δημιουργία έργων"
+msgstr "Δημιουργία αντικειμένων"
 
 #: ../../editing/edit-tools.rst:35
 #, fuzzy
@@ -2139,21 +2082,15 @@ msgid ""
 "clicking inside their corresponding arranger and dragging, then releasing"
 " when you are satisfied with the position/size."
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Στη λειτουργία επιλογής (προεπιλεγμένη), όλα τα αντικείμενα "
 "δημιουργούνται κάνοντας διπλό κλικ μέσα στον ταξινόμο και "
-"σύροντας/αφήνοντας όταν είστε ικανοποιημένος με τη θέση/μέγεθος.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"σύροντας/αφήνοντας όταν είστε ικανοποιημένος με τη θέση/μέγεθος."
 
 #: ../../editing/edit-tools.rst:43
 #, fuzzy
 msgid "Creating a region"
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Επεξεργασία περιοχών\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Επεξεργασία περιοχών"
 
 #: ../../editing/edit-tools.rst:46
 msgid "Selecting Objects"
@@ -2184,11 +2121,7 @@ msgstr "Να προστεθεί εικόνα που δείχνει επιλογ�
 #, fuzzy
 msgid "Moving Objects"
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Επεξεργασία αντικειμένων\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Αποθήκευση έργων"
+"Επεξεργασία αντικειμένων"
 
 #: ../../editing/edit-tools.rst:59
 msgid ""
@@ -2203,10 +2136,7 @@ msgstr ""
 #, fuzzy
 msgid "Moving a region"
 msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Επεξεργασία περιοχών\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Επεξεργασία περιοχών"
 
 #: ../../editing/edit-tools.rst:69
 msgid "Cloning (Copy-Moving) Objects"
@@ -6261,13 +6191,6 @@ msgid ""
 "Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
 "stereo_ports*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions channel_send_action.rst:6
 msgid "Returns a new action for creating a send connection."
@@ -6282,13 +6205,6 @@ msgid ""
 "Scheme Procedure: **port-connection-action-new-connect** | *src_port_id "
 "dest_port_id*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions port_connection_action.rst:6
 msgid "Creates an action for connecting 2 ports."
@@ -6303,13 +6219,6 @@ msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-instrument** |"
 " *pl_descr track_pos num_tracks*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:6
 msgid "Returns a new action for creating an instrument track."
@@ -6321,13 +6230,6 @@ msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-audio-fx-with-"
 "plugin** | *plugin_descriptor track_pos num_tracks*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:10
 msgid ""
@@ -6340,13 +6242,6 @@ msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-audio-fx** | "
 "*track_pos num_tracks*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:15
 msgid "Returns a new action for creating one or more empty Audio FX tracks."
@@ -6357,13 +6252,6 @@ msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-midi** | *track_pos "
 "num_tracks*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:19
 msgid "Returns an action for creating one or more empty MIDI tracks."
@@ -6376,13 +6264,6 @@ msgstr ""
 #: ../../scripting/api/actions undo_manager.rst:7
 msgid "Scheme Procedure: **undo-manager-perform** | *undo_manager action*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions undo_manager.rst:6
 msgid "Performs the given action and adds it to the undo stack."
@@ -6391,13 +6272,6 @@ msgstr ""
 #: ../../scripting/api/actions undo_manager.rst:11
 msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions undo_manager.rst:10
 #, fuzzy
@@ -6407,13 +6281,6 @@ msgstr "Βάζει το κομμάτι σε σίγαση."
 #: ../../scripting/api/actions undo_manager.rst:15
 msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/actions undo_manager.rst:14
 msgid "Redoes the last undone action."
@@ -6426,13 +6293,6 @@ msgstr ""
 #: ../../scripting/api/audio channel.rst:7
 msgid "Scheme Procedure: **channel-get-insert** | *channel insert_slot*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
@@ -6441,13 +6301,6 @@ msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέσ�
 #: ../../scripting/api/audio channel.rst:11
 msgid "Scheme Procedure: **channel-get-instrument** | *channel*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio channel.rst:10
 msgid "Returns the instrument at the given channel"
@@ -6456,13 +6309,6 @@ msgstr "Επιστρέφει το όργανο στο δοθέν κανάλι"
 #: ../../scripting/api/audio channel.rst:15
 msgid "Scheme Procedure: **channel-get-send** | *channel send_slot*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio channel.rst:14
 msgid "Returns the send instance at the given slot"
@@ -6477,13 +6323,6 @@ msgid ""
 "Scheme Procedure: **midi-note-new** | *region start_pos end_pos pitch "
 "velocity*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
@@ -6498,13 +6337,6 @@ msgid ""
 "Scheme Procedure: **midi-region-new** | *start_pos end_pos track_idx "
 "lane_idx idx_inside_lane*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_region.rst:6
 #, fuzzy
@@ -6514,13 +6346,6 @@ msgstr "Επιστρέφει μια καινούρια νότα MIDI."
 #: ../../scripting/api/audio midi_region.rst:11
 msgid "Scheme Procedure: **midi-region-add-midi-note** | *region midi_note*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio midi_region.rst:10
 msgid "Adds a midi note to ``region``."
@@ -6533,13 +6358,6 @@ msgstr ""
 #: ../../scripting/api/audio port.rst:7
 msgid "Scheme Procedure: **stereo-ports-get-port** | *stereo_ports left*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
@@ -6548,13 +6366,6 @@ msgstr "Επιστρέφει την αριστερή ή δεξιά θύρα εν
 #: ../../scripting/api/audio port.rst:11
 msgid "Scheme Procedure: **port-get-identifier** | *port*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio port.rst:10
 #, fuzzy
@@ -6570,13 +6381,6 @@ msgid ""
 "Scheme Procedure: **position-new** | *bars beats sixteenths ticks "
 "sub_tick*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio position.rst:6
 #, fuzzy
@@ -6590,13 +6394,6 @@ msgstr ""
 #: ../../scripting/api/audio position.rst:12
 msgid "Scheme Procedure: **position-print** | *pos*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio position.rst:11
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
@@ -6609,13 +6406,6 @@ msgstr ""
 #: ../../scripting/api/audio supported_file.rst:7
 msgid "Scheme Procedure: **supported-file-new-from-path** | *path*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
@@ -6628,13 +6418,6 @@ msgstr ""
 #: ../../scripting/api/audio track.rst:8
 msgid "Scheme Procedure: **midi-track-new** | *idx name*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:6
 #, fuzzy
@@ -6648,13 +6431,6 @@ msgstr ""
 #: ../../scripting/api/audio track.rst:12
 msgid "Scheme Procedure: **track-get-name** | *track*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:11
 #, fuzzy
@@ -6664,13 +6440,6 @@ msgstr "Επιστρέφει το όνομα του κομματιού."
 #: ../../scripting/api/audio track.rst:16
 msgid "Scheme Procedure: **track-get-processor** | *track*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:15
 #, fuzzy
@@ -6680,13 +6449,6 @@ msgstr "Επιστρέφει τον επεξεργαστή του κομματι
 #: ../../scripting/api/audio track.rst:20
 msgid "Scheme Procedure: **track-get-channel** | *track*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:19
 #, fuzzy
@@ -6696,13 +6458,6 @@ msgstr "Επιστρέφει το κανάλι του κομματιού."
 #: ../../scripting/api/audio track.rst:25
 msgid "Scheme Procedure: **track-set-muted** | *track muted*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:23
 #, fuzzy
@@ -6716,13 +6471,6 @@ msgstr ""
 #: ../../scripting/api/audio track.rst:30
 msgid "Scheme Procedure: **track-add-lane-region** | *track region lane_pos*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track.rst:28
 #, fuzzy
@@ -6740,13 +6488,6 @@ msgstr ""
 #: ../../scripting/api/audio track_processor.rst:7
 msgid "Scheme Procedure: **track-processor-get-stereo-in** | *track_processor*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio track_processor.rst:6
 #, fuzzy
@@ -6760,13 +6501,6 @@ msgstr ""
 #: ../../scripting/api/audio tracklist.rst:7
 msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio tracklist.rst:6
 #, fuzzy
@@ -6776,13 +6510,6 @@ msgstr "Εισάγει κομμάτι στον δείκτη idx στη λίστ�
 #: ../../scripting/api/audio tracklist.rst:11
 msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio tracklist.rst:10
 #, fuzzy
@@ -6792,13 +6519,6 @@ msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
 #: ../../scripting/api/audio tracklist.rst:15
 msgid "Scheme Procedure: **tracklist-get-num-tracks** | *tracklist*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/audio tracklist.rst:14
 #, fuzzy
@@ -6816,13 +6536,6 @@ msgstr ""
 #: ../../scripting/api/plugins plugin.rst:7
 msgid "Scheme Procedure: **plugin-get-in-port** | *plugin port_idx*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
@@ -6831,13 +6544,6 @@ msgstr "Επιστρέφει τη θύρα εισαγωγής του προσθ�
 #: ../../scripting/api/plugins plugin.rst:11
 msgid "Scheme Procedure: **plugin-get-out-port** | *plugin port_idx*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/plugins plugin.rst:10
 msgid "Returns the output port of the plugin at the given index."
@@ -6852,13 +6558,6 @@ msgid ""
 "Scheme Procedure: **plugin-manager-find-plugin-from-uri** | "
 "*plugin_manager uri*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
 #, fuzzy
@@ -6868,13 +6567,6 @@ msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέσ�
 #: ../../scripting/api/plugins plugin_manager.rst:11
 msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/plugins plugin_manager.rst:10
 msgid "Scans the system for plugins."
@@ -6888,46 +6580,18 @@ msgstr "έργο.yml"
 #: ../../scripting/api/project.rst:7
 msgid "Scheme Procedure: **project-get-title** | *project*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../scripting/api/project.rst:6
-msgid "Return the project’s title."
-msgstr "Επιστρέφει τον επεξεργαστή του κομματιού."
 
 #: ../../scripting/api/project.rst:11
 msgid "Scheme Procedure: **project-get-tracklist** | *project*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../scripting/api/project.rst:10
-msgid "Returns the tracklist for the project."
-msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
 
 #: ../../scripting/api/project.rst:15
 msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../scripting/api/project.rst:14
-msgid "Returns the undo manager for the project."
-msgstr "Επιστρέφει το αναγνωριστικό της θύρας."
 
 #: ../../scripting/api/zrythm.rst:7
 msgid "Scheme Procedure: **zrythm-get-ver**"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
@@ -6936,13 +6600,6 @@ msgstr "Επιστροφή της έκδοσης του Zrythm ως κλωστή
 #: ../../scripting/api/zrythm.rst:11
 msgid "Scheme Procedure: **zrythm-get-plugin-manager**"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
@@ -6951,24 +6608,10 @@ msgstr "Επιστροφή της περίπτωσης (instance) του PluginM
 #: ../../scripting/api/zrythm.rst:15
 msgid "Scheme Procedure: **zrythm-get-project**"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
-#: ../../scripting/api/zrythm.rst:14
-msgid "Return the currently loaded Project instance."
-msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
 
 #: ../../scripting/api/zrythm.rst:19
 msgid "Scheme Procedure: **zrythm-null**"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/zrythm.rst:18
 msgid "Returns a NULL pointer."
@@ -6977,13 +6620,6 @@ msgstr "Επιστρέφει έναν ΜΗΔΑΜΙΝΟ δείκτη."
 #: ../../scripting/api/zrythm.rst:23
 msgid "Scheme Procedure: **zrythm-message** | *message*"
 msgstr ""
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../scripting/api/zrythm.rst:22
 msgid "Writes the message to the log."
@@ -8526,17 +8162,9 @@ msgid ""
 "`PeerTube TeDomum <https://video.tedomum.net/video-"
 "channels/thil_riposta/videos>`_."
 msgstr ""
-"#-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
 "Ο Till Parisot έχει δημιουργήσει μια λίστα αναπαραγωγής από μαθήματα για "
 "το Zrythm στα Γαλλικά στο `PeerTube TeDonum <https://video.tedomum.net"
 "/video-channels/thil_riposta/videos>`_.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-"Ο Till Parisot έχει δημιουργήσει μια λίστα αναπαραγωγής από μαθήματα για "
-"το Zrythm στα Γαλλικά στο `PeerTube TeDonum <https://video.tedomum.net"
-"/video-channels/thil_riposta/videos>`_.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
@@ -9399,15 +9027,6 @@ msgstr ""
 #~ "πρωτόκολλα δεν είναι λειτουργικό προς το"
 #~ " παρόν."
 
-#~ msgid "Scheme Procedure: **tracklist-get**"
-#~ msgstr ""
-#~ "#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-#~ "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.2)  #-#-#-#-#\n"
-#~ "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘.\n"
-#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #~ msgid ""
 #~ "Tracks can be deleted by right-"

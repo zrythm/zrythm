@@ -46,6 +46,7 @@ foreach lang, lang_str : locales
       test (
         'user-manual-' + lang + '-po',
         msgfmt,
+        suite: 'po',
         args: [
           '-v', '-c', files (po_file_path) ,
           ])
@@ -54,6 +55,7 @@ foreach lang, lang_str : locales
           test (
             'user-manual-' + lang + '-po-illegal-char-' + illegal_char,
             bash,
+            suite: 'po',
             args: [
               illegal_char_test_args, illegal_char,
               files (po_file_path) ,
