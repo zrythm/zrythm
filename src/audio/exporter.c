@@ -418,10 +418,19 @@ export_audio (
       g_warn_if_fail (written_frames == nframes);
 
       covered += nframes;
-      g_warn_if_fail (
-        covered ==
-          TRANSPORT->playhead_pos.frames -
+      if (G_UNLIKELY (
+            covered !=
+              TRANSPORT->playhead_pos.frames -
+                start_pos.frames))
+        {
+          g_critical (
+            "covered (%ld) != "
+            "TRANSPORT->playhead_pos.frames (%ld) "
+            "- start_pos.frames (%ld)",
+            covered, TRANSPORT->playhead_pos.frames,
             start_pos.frames);
+          return -1;
+        }
 
       info->progress =
         (double)
@@ -440,13 +449,15 @@ export_audio (
 
   info->progress = 1.0;
 
-  /* set jack freewheeling mode */
+  /* set jack freewheeling mode and transport type */
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
       jack_set_freewheel (
         AUDIO_ENGINE->client, 0);
+      engine_jack_set_transport_type (
+        AUDIO_ENGINE, transport_type);
     }
 #endif
 

@@ -960,11 +960,6 @@ on_export_clicked (
 
           g_free (info.file_uri);
 
-          /* restart engine */
-          AUDIO_ENGINE->exporting = 0;
-          TRANSPORT->loop = info.prev_loop;
-          g_atomic_int_set (&AUDIO_ENGINE->run, 1);
-
           track->bounce = false;
         }
     }
@@ -1010,11 +1005,6 @@ on_export_clicked (
       g_thread_join (thread);
 
       g_free (info.file_uri);
-
-      /* restart engine */
-      AUDIO_ENGINE->exporting = 0;
-      TRANSPORT->loop = info.prev_loop;
-      g_atomic_int_set (&AUDIO_ENGINE->run, 1);
     }
 }
 

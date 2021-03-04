@@ -38,7 +38,7 @@ jobs:
         displayName: 'Fetch repos'
 
       - script: |
-          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd lv2kit && git checkout meson && rm -rf subprojects/suil && cat meson.build | sed -e '0,/suil_dep/ s/suil_dep/#/' | sed -e '0,/suil_dep/ s/suil_dep/#/' | sed -e '0,/suil_dep/ s/suil_dep/]#/' | sed -e \"0,/'suil-0/ s/'suil-0/\]\)#/\" > meson.build && meson build -Dtests=false -Dutils=false -Ddocs=false && meson compile -C build && meson install -C build"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd lv2kit && git checkout meson && rm -rf subprojects/suil && cat meson.build | sed -e '0,/suil_dep/ s/suil_dep/#/' | sed -e '0,/suil_dep/ s/suil_dep/#/' | sed -e '0,/suil_dep/ s/suil_dep/]#/' | sed -e \"0,/'suil-0/ s/'suil-0/\]\)#/\" > meson.build && meson build -Dtests=false -Dutils=false -Ddocs=disabled && meson compile -C build && meson install -C build"
         displayName: 'Install LV2kit'
 
       - script: |
