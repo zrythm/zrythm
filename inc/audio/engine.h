@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
@@ -509,6 +509,10 @@ typedef struct AudioEngine
 
   /** Flag used when processing in some backends. */
   volatile gint     filled_stereo_out_bufs;
+
+  /** Flag used to check if we are inside
+   * engine_process_prepare(). */
+  gint              preparing_for_process;
 
 #ifdef HAVE_PORT_AUDIO
   /**

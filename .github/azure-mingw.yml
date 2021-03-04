@@ -30,21 +30,21 @@ jobs:
       - script: cinst msys2 --params "/InstallDir=C:/msys64" --no-progress
         displayName: install msys2
 
-      - script: C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-fftw mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libyaml mingw-w64-x86_64-libsndfile mingw-w64-x86_64-rubberband mingw-w64-x86_64-dlfcn mingw-w64-x86_64-SDL2 mingw-w64-x86_64-chromaprint guile libguile-devel mingw-w64-x86_64-graphviz git mingw-w64-x86_64-cantarell-fonts mingw-w64-x86_64-gtksourceview4 mingw-w64-x86_64-gcc mingw-w64-x86_64-make zip mingw-w64-x86_64-binutils mingw-w64-x86_64-portaudio mingw-w64-x86_64-cmake mingw-w64-x86_64-python-setuptools mingw-w64-x86_64-ninja mingw-w64-x86_64-python-pip mingw-w64-x86_64-meson mingw-w64-x86_64-python3 mingw-w64-x86_64-gtk-doc unzip base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-adwaita-icon-theme"
+      - script: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-gtk3 mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-fftw mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libyaml mingw-w64-x86_64-libsndfile mingw-w64-x86_64-rubberband mingw-w64-x86_64-dlfcn mingw-w64-x86_64-SDL2 mingw-w64-x86_64-chromaprint guile libguile-devel mingw-w64-x86_64-graphviz git mingw-w64-x86_64-cantarell-fonts mingw-w64-x86_64-gtksourceview4 mingw-w64-x86_64-gcc mingw-w64-x86_64-make zip mingw-w64-x86_64-binutils mingw-w64-x86_64-portaudio mingw-w64-x86_64-cmake mingw-w64-x86_64-python-setuptools mingw-w64-x86_64-ninja mingw-w64-x86_64-python-pip mingw-w64-x86_64-meson mingw-w64-x86_64-python3 mingw-w64-x86_64-gtk-doc unzip base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-adwaita-icon-theme"
         displayName: install mingw deps
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd && git clone https://git.sr.ht/~alextee/zrythm && git clone https://github.com/mesonbuild/meson"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd && git clone https://git.sr.ht/~alextee/zrythm && git clone https://github.com/mesonbuild/meson"
         displayName: 'Fetch repos'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py build -Dpkg_config_path=/mingw64/lib/pkgconfig -Dtests=true && /mingw64/bin/python3 ../meson/meson.py compile -C build"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && meson build -Dtests=true && meson compile -C build"
         displayName: 'Configure and build'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py test -C build"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && meson test -C build"
         displayName: 'Test'
 
       - script: |
-          C:\msys64\usr\bin\bash --login -c "cd zrythm && /mingw64/bin/python3 ../meson/meson.py install -C build"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 C:\msys64\usr\bin\bash.exe --login -c "cd zrythm && meson install -C build"
         displayName: 'Install'

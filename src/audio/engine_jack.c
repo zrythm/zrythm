@@ -260,7 +260,7 @@ engine_jack_prepare_process (
       transport_set_playhead_pos (
         TRANSPORT, &tmp);
 
-      /* BBT */
+      /* BBT and BPM changes */
       if (pos.valid & JackPositionBBT)
         {
           TRANSPORT->time_sig.beats_per_bar =

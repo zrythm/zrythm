@@ -119,10 +119,16 @@ engine_update_frames_per_tick (
     "bpm %f, sample rate %u",
     beats_per_bar, (double) bpm, sample_rate);
 
-  if (g_thread_self () != zrythm_app->gtk_thread)
+  bool preparing_for_process =
+    g_atomic_int_get (
+      &self->preparing_for_process) == 1;
+  if (g_thread_self () != zrythm_app->gtk_thread &&
+      !preparing_for_process)
     {
-      g_critical ("Called %s from non-GTK thread",
-        __func__);
+      g_critical (
+        "Called %s from non-GTK thread and not "
+        "from prepare_process(): %d",
+        __func__, preparing_for_process);
       return;
     }
 
@@ -141,6 +147,15 @@ engine_update_frames_per_tick (
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track_update_frames (TRACKLIST->tracks[i]);
+    }
+
+  /* if was called from prepare_process(), check
+   * that we are still inside that call */
+  if (preparing_for_process)
+    {
+      g_return_if_fail (
+        g_atomic_int_get (
+          &self->preparing_for_process) == 1);
     }
 }
 
@@ -942,6 +957,9 @@ engine_process_prepare (
   AudioEngine * self,
   uint32_t nframes)
 {
+  g_atomic_int_set (
+    &self->preparing_for_process, 1);
+
   if (self->denormal_prevention_val_positive)
     {
       self->denormal_prevention_val = - 1e-20f;
@@ -1040,6 +1058,9 @@ engine_process_prepare (
     }
 
   self->filled_stereo_out_bufs = 0;
+
+  g_atomic_int_set (
+    &self->preparing_for_process, 0);
 }
 
 static void
