@@ -44,6 +44,7 @@ meter_get_value (
   float *          max)
 {
   Port * port = self->port;
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   /* get amplitude */
   float amp = -1.f;
@@ -69,9 +70,7 @@ meter_get_value (
           return;
         }
 
-      float buf[
-        AUDIO_ENGINE->block_length *
-          blocks_to_read];
+      float buf[read_space_avail];
       size_t blocks_read =
         zix_ring_peek (
           port->audio_ring, &buf[0],
@@ -81,6 +80,7 @@ meter_get_value (
       size_t start_index =
         (blocks_read - (size_t) num_cycles) *
           AUDIO_ENGINE->block_length;
+      g_return_if_fail (IS_PORT_AND_NONNULL (port));
       if (blocks_read == 0)
         {
           g_message (

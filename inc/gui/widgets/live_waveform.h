@@ -59,6 +59,8 @@ typedef struct _LiveWaveformWidget
   /** Draw border or not. */
   int            draw_border;
 
+  float *        bufs[2];
+
   /** Used for drawing. */
   GdkRGBA        color_green;
   GdkRGBA        color_white;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,11 +25,14 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "utils/cairo.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+
+#define BUF_SIZE 65000
 
 G_DEFINE_TYPE (
   LiveWaveformWidget, live_waveform_widget,
@@ -125,7 +128,7 @@ live_waveform_draw_cb (
       cairo_stroke (cr);
     }
 
-  size_t size =
+  size_t block_size_in_bytes =
     sizeof (float) *
     (size_t) AUDIO_ENGINE->block_length;
 
@@ -157,22 +160,27 @@ live_waveform_draw_cb (
       break;
     }
 
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (port), false);
+
   /* get the L buffer */
   size_t read_space_avail =
     zix_ring_read_space (port->audio_ring);
   size_t blocks_to_read =
-    size == 0 ?
-      0 : read_space_avail / size;
+    block_size_in_bytes == 0 ?
+      0 : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
   if (blocks_to_read <= 0)
     return FALSE;
 
-  float lbuf[
-    AUDIO_ENGINE->block_length * blocks_to_read];
+  g_return_val_if_fail (
+    read_space_avail < BUF_SIZE * sizeof (float),
+    false);
   size_t lblocks_read =
     zix_ring_peek (
-      port->audio_ring, &lbuf[0], read_space_avail);
-  lblocks_read /= size;
+      port->audio_ring, &(self->bufs[0][0]),
+      read_space_avail);
+  lblocks_read /= block_size_in_bytes;
   size_t lstart_index =
     (lblocks_read - 1) * AUDIO_ENGINE->block_length;
   if (lblocks_read == 0)
@@ -189,16 +197,17 @@ live_waveform_draw_cb (
       read_space_avail =
         zix_ring_read_space (port->audio_ring);
       blocks_to_read =
-        read_space_avail / size;
+        read_space_avail / block_size_in_bytes;
       g_return_val_if_fail (
         blocks_to_read > 0, FALSE);
-      float rbuf[
-        AUDIO_ENGINE->block_length * blocks_to_read];
+      g_return_val_if_fail (
+        read_space_avail < BUF_SIZE * sizeof (float),
+        false);
       size_t rblocks_read =
         zix_ring_peek (
-          port->audio_ring, &rbuf[0],
+          port->audio_ring, &(self->bufs[1][0]),
           read_space_avail);
-      rblocks_read /= size;
+      rblocks_read /= block_size_in_bytes;
       size_t rstart_index =
         (rblocks_read - 1) *
           AUDIO_ENGINE->block_length;
@@ -209,13 +218,14 @@ live_waveform_draw_cb (
         }
 
       draw_lines (
-        self, cr, lbuf, rbuf, lstart_index,
-        rstart_index);
+        self, cr, self->bufs[0], self->bufs[1],
+        lstart_index, rstart_index);
     }
   else
     {
       draw_lines (
-        self, cr, lbuf, NULL, lstart_index, 0);
+        self, cr, self->bufs[0], NULL, lstart_index,
+        0);
     }
 
   return FALSE;
@@ -237,6 +247,11 @@ init_common (
   LiveWaveformWidget * self)
 {
   self->draw_border = 1;
+
+  self->bufs[0] =
+    object_new_n (BUF_SIZE, float);
+  self->bufs[1] =
+    object_new_n (BUF_SIZE, float);
 
   g_signal_connect (
     G_OBJECT (self), "draw",
@@ -279,6 +294,18 @@ live_waveform_widget_new_port (
 }
 
 static void
+finalize (
+  LiveWaveformWidget * self)
+{
+  object_zero_and_free_if_nonnull (self->bufs[0]);
+  object_zero_and_free_if_nonnull (self->bufs[1]);
+
+  G_OBJECT_CLASS (
+    live_waveform_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 live_waveform_widget_init (
   LiveWaveformWidget * self)
 {
@@ -295,4 +322,8 @@ live_waveform_widget_class_init (
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "live-waveform");
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
