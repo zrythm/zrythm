@@ -747,6 +747,8 @@ log_writer_default_custom (
   gsize            n_fields,
   gpointer         user_data)
 {
+  Log * self = (Log *) user_data;
+
   static gsize initialized = 0;
   static gboolean stderr_is_journal = FALSE;
 
@@ -757,13 +759,11 @@ log_writer_default_custom (
   if (!(log_level & DEFAULT_LEVELS) &&
       !(log_level >> G_LOG_LEVEL_USER_SHIFT))
     {
-      const gchar *domains, *log_domain = NULL;
+      const gchar * log_domain = NULL;
       gsize i;
 
-      domains = g_getenv ("G_MESSAGES_DEBUG");
-
       if ((log_level & INFO_LEVELS) == 0 ||
-          domains == NULL)
+          self->log_domains == NULL)
         return G_LOG_WRITER_HANDLED;
 
       for (i = 0; i < n_fields; i++)
@@ -775,8 +775,9 @@ log_writer_default_custom (
             }
         }
 
-      if (strcmp (domains, "all") != 0 &&
-          (log_domain == NULL || !strstr (domains, log_domain)))
+      if (strcmp (self->log_domains, "all") != 0 &&
+          (log_domain == NULL ||
+           !strstr (self->log_domains, log_domain)))
         return G_LOG_WRITER_HANDLED;
     }
 
@@ -1156,6 +1157,8 @@ log_new (void)
 
   log_always_fatal |= flags & G_LOG_LEVEL_MASK;
 
+  self->log_domains =
+    g_strdup (g_getenv ("G_MESSAGES_DEBUG"));
   self->use_structured_for_console = true;
   self->min_log_level_for_test_console =
     G_LOG_LEVEL_MESSAGE;
@@ -1209,6 +1212,8 @@ log_free (
   object_free_w_func_and_null (
     mpmc_queue_free, self->mqueue);
   /*g_object_unref_and_null (self->messages_buf);*/
+
+  g_free_and_null (self->log_domains);
 
   object_zero_and_free (self);
 

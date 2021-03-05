@@ -57,6 +57,9 @@ typedef struct Log
   /** Object pool for the queue. */
   ObjectPool *    obj_pool;
 
+  /** Used by the writer func. */
+  char *          log_domains;
+
   bool            initialized;
 
   /**

@@ -104,7 +104,10 @@ undoable_action_do (UndoableAction * self)
       g_message ( \
         "[DOING ACTION]: " #uc " (%s)", str); \
       ret = sc##_action_do ((cc##Action *) self); \
-      g_message ("[DONE]: " #uc " (%s)", str); \
+      if (ret == 0) \
+        { \
+          g_message ("[DONE]: " #uc " (%s)", str); \
+        } \
       g_free (str); \
     } \
     break;
@@ -179,8 +182,10 @@ undoable_action_undo (UndoableAction * self)
         "[UNDOING ACTION]: " #uc " (%s)", str); \
       ret = \
         sc##_action_undo ((cc##Action *) self); \
-      g_message ( \
-        "[UNDONE]: " #uc " (%s)", str); \
+      if (ret == 0) \
+        { \
+          g_message ("[UNDONE]: " #uc " (%s)", str); \
+        } \
       g_free (str); \
     } \
     break;

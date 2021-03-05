@@ -195,10 +195,11 @@ host_dispatcher (
   float opt)
 {
   /* TODO */
-  g_message ("host dispatcher (opcode %d)", opcode);
+  g_debug ("host dispatcher (opcode %d)", opcode);
   switch (opcode)
     {
     case NATIVE_HOST_OPCODE_HOST_IDLE:
+      g_debug ("host idle");
       /* some expensive computation is happening.
        * this is used so that the GTK ui does not
        * block */
@@ -453,6 +454,16 @@ create_plugin (
       break;
     default:
       break;
+    }
+
+  /* raise bridge timeout to 8 sec */
+  if (bridge_mode == CARLA_BRIDGE_FULL ||
+      bridge_mode == CARLA_BRIDGE_UI)
+    {
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_UI_BRIDGES_TIMEOUT,
+        8000, NULL);
     }
 
   int ret = 0;
@@ -1362,6 +1373,8 @@ carla_native_plugin_set_param_value (
       return;
     }
 
+  g_debug ("setting param %d value to %f",
+    id, (double) val);
   carla_set_parameter_value (
     self->host_handle, 0, id, val);
 }
