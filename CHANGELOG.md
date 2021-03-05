@@ -1,6 +1,34 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.13.1.1] - 2021-03-05
+### Added
+- Allow changing engine buffer size while running
+- Add event loop to engine to process change requests in GUI thread
+- Show changelog dialog when running official release for first time
+- Show notification when new version is out on official builds
+- User manual: add info about memory locking and open file limits in system requirements
+- User manual: implement lexer for `tree` command output in project section
+- User manual: document `ZRYTHM_DSP_THREADS` in environment vars page
+
+### Changed
+- Enable static analysis when strict flags enabled
+- Add HOT attribute to functions called very often
+- Add NONNULL attribute to functions to enforce checks at compile time
+- Lower number of log lines in error dialog to 100
+- Localize pre-startup output (eg, `--help` output)
+- User manual: convert toc dumps to overview pages in configuration/getting started/projects/zrythm interface chapters
+- User manual: rewrite project structure page
+- Use aligned memory allocation in LV2 event buffer
+
+### Fixed
+- Temporarily disable JACK transport during export (fixes freeze when running as a JACK client)
+- Fix stack overflow in meter logic and live waveform widget
+- Fix error when changing JACK transport BPM from another app while being a client
+- Fix use of `[[` in `zrythm_launch` script
+- Fix memory corruption when using latest LV2
+- Fix warnings when building with `-Doptimization=3`
+
 ## [1.0.0-alpha.13.0.4] - 2021-02-28
 ### Added
 - Allow MIDI learn on transport controls
