@@ -3276,15 +3276,19 @@ lv2_plugin_free (
   /* Terminate the worker */
   lv2_worker_finish (&self->worker);
 
+  /* Deactivate suil instance */
+  object_free_w_func_and_null (
+    suil_instance_free, self->ui_instance);
+
   if (self->instance && self->plugin->activated)
     {
       lilv_instance_deactivate (self->instance);
       self->plugin->activated = false;
     }
 
-  /* Deactivate lilv/suil instances */
-  object_free_w_func_and_null (
-    suil_instance_free, self->ui_instance);
+  /* FIXME helm hangs with this */
+  /*object_free_w_func_and_null (*/
+    /*lilv_instance_free, self->instance);*/
 
   /* Clean up */
   object_free_w_func_and_null (
@@ -3307,9 +3311,6 @@ lv2_plugin_free (
 
   object_free_w_func_and_null (
     free, self->ui_event_buf);
-
-  object_free_w_func_and_null (
-    lilv_instance_free, self->instance);
 
   object_zero_and_free (self);
 }

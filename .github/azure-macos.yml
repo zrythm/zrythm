@@ -48,17 +48,17 @@ jobs:
       displayName: 'Clone repos'
 
     - script: |
-        cd zrythm
+        cd /Users/runner/work/1/s
         meson build -Dtests=true
         ninja -C build
       displayName: 'Configure and build'
 
     - script: |
-        cd zrythm
+        cd s
         meson test -C build
       displayName: 'Test'
 
     - script: |
-        cd zrythm
+        cd s
         ninja -C build install
       displayName: 'Install'
