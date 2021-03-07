@@ -137,12 +137,21 @@ control_port_normalized_val_to_real (
     {
       if (id->flags & PORT_FLAG_LOGARITHMIC)
         {
+          /* make sure none of the values is 0 */
+          float minf =
+            math_floats_equal (self->minf, 0.f) ?
+            0.000000001f : self->minf;
+          float maxf =
+            math_floats_equal (self->maxf, 0.f) ?
+            0.000000001f : self->maxf;
+          normalized_val =
+            math_floats_equal (normalized_val, 0.f) ?
+            0.000000001f : normalized_val;
+
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return
-            self->minf *
-              powf (
-                self->maxf / self->minf,
-                normalized_val);
+            minf *
+              powf (maxf / minf, normalized_val);
         }
       else if (id->flags & PORT_FLAG_TOGGLE)
         {
@@ -194,10 +203,21 @@ control_port_real_val_to_normalized (
     {
       if (self->id.flags & PORT_FLAG_LOGARITHMIC)
         {
+          /* make sure none of the values is 0 */
+          float minf =
+            math_floats_equal (self->minf, 0.f) ?
+            0.000000001f : self->minf;
+          float maxf =
+            math_floats_equal (self->maxf, 0.f) ?
+            0.000000001f : self->maxf;
+          real_val =
+            math_floats_equal (real_val, 0.f) ?
+            0.000000001f : real_val;
+
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return
-            logf (real_val / self->minf) /
-            logf (self->maxf / self->minf);
+            logf (real_val / minf) /
+            logf (maxf / minf);
         }
       else if (self->id.flags & PORT_FLAG_TOGGLE)
         {

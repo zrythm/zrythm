@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 
 #include <float.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "utils/types.h"
@@ -170,6 +171,17 @@ math_dbfs_to_fader_val (
  */
 #define math_round_float_to_long(x) \
   math_round_float_to_type (x,long)
+
+/**
+ * Asserts that the value is non-nan.
+ *
+ * Not real-time safe.
+ *
+ * @return Whether the value is valid (nonnan).
+ */
+bool
+math_assert_nonnann (
+  float x);
 
 /**
  * Initializes coefficients to be used later.

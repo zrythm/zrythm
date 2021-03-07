@@ -33,6 +33,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/color.h"
+#include "utils/math.h"
 #include "zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
@@ -212,11 +213,15 @@ _test_port_and_plugin_track_pos_after_duplication (
   /* create some automation points */
   Port * port = automation_track_get_port (at);
   position_set_to_bar (&start_pos, 1);
+  g_debug ("deff %f", (double) port->deff);
+  float normalized_val =
+    control_port_real_val_to_normalized (
+      port, port->deff);
+  math_assert_nonnann (port->deff);
+  math_assert_nonnann (normalized_val);
   AutomationPoint * ap =
     automation_point_new_float (
-      port->deff,
-      control_port_real_val_to_normalized (
-        port, port->deff),
+      port->deff, normalized_val,
       &start_pos);
   automation_region_add_ap (
     region, ap, F_NO_PUBLISH_EVENTS);
@@ -226,6 +231,8 @@ _test_port_and_plugin_track_pos_after_duplication (
     arranger_selections_action_new_create (
       AUTOMATION_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
+  math_assert_nonnann (ap->fvalue);
+  math_assert_nonnann (ap->normalized_val);
 
   /* duplicate it */
   ua =
@@ -251,6 +258,8 @@ _test_port_and_plugin_track_pos_after_duplication (
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
   float prev_norm_val = ap->normalized_val;
+  math_assert_nonnann (ap->normalized_val);
+  math_assert_nonnann (prev_norm_val);
   automation_point_set_fvalue (
     ap, prev_norm_val - 0.1f, F_NORMALIZED,
     F_NO_PUBLISH_EVENTS);
@@ -1573,18 +1582,6 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
-    TEST_PREFIX "test marker track unpin",
-    (GTestFunc) test_marker_track_unpin);
-  g_test_add_func (
-    TEST_PREFIX "test create from midi file",
-    (GTestFunc) test_create_from_midi_file);
-  g_test_add_func (
-    TEST_PREFIX
-    "test create instrument when redo stack "
-    "non-empty",
-    (GTestFunc)
-    test_create_ins_when_redo_stack_nonempty);
-  g_test_add_func (
     TEST_PREFIX
     "test port and plugin track pos after duplication",
     (GTestFunc)
@@ -1596,6 +1593,18 @@ main (int argc, char *argv[])
     (GTestFunc)
     test_port_and_plugin_track_pos_after_duplication_with_carla);
 #endif
+  g_test_add_func (
+    TEST_PREFIX "test marker track unpin",
+    (GTestFunc) test_marker_track_unpin);
+  g_test_add_func (
+    TEST_PREFIX "test create from midi file",
+    (GTestFunc) test_create_from_midi_file);
+  g_test_add_func (
+    TEST_PREFIX
+    "test create instrument when redo stack "
+    "non-empty",
+    (GTestFunc)
+    test_create_ins_when_redo_stack_nonempty);
   g_test_add_func (
     TEST_PREFIX "test ins track deletion with automation",
     (GTestFunc) test_ins_track_deletion_w_automation);

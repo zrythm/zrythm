@@ -2584,8 +2584,31 @@ arranger_selections_action_stringize (
   switch (self->type)
     {
     case AS_ACTION_CREATE:
-      return
-        g_strdup (_("Create arranger selections"));
+      switch (self->sel->type)
+        {
+        case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+          return
+            g_strdup (
+              _("Create timeline selections"));
+        case ARRANGER_SELECTIONS_TYPE_AUDIO:
+          return
+            g_strdup (
+              _("Create audio selections"));
+        case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+          return
+            g_strdup (
+              _("Create automation selections"));
+        case ARRANGER_SELECTIONS_TYPE_CHORD:
+          return
+            g_strdup (
+              _("Create chord selections"));
+        case ARRANGER_SELECTIONS_TYPE_MIDI:
+          return
+            g_strdup (
+              _("Create MIDI selections"));
+        default:
+          g_return_val_if_reached (NULL);
+        }
     case AS_ACTION_DELETE:
       return
         g_strdup (_("Delete arranger selections"));

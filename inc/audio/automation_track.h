@@ -469,6 +469,11 @@ ZRegion *
 automation_track_get_last_region (
   AutomationTrack * self);
 
+NONNULL
+bool
+automation_track_verify (
+  AutomationTrack * self);
+
 /**
  * Frees the automation track.
  */

@@ -35,6 +35,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -723,6 +724,33 @@ automation_track_get_last_region (
         }
     }
   return last_region;
+}
+
+bool
+automation_track_verify (
+  AutomationTrack * self)
+{
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      ZRegion * r = self->regions[i];
+
+      for (int j = 0; j < r->num_aps; j++)
+        {
+          AutomationPoint * ap = r->aps[j];
+
+          if (ZRYTHM_TESTING)
+            {
+              if (!math_assert_nonnann (
+                     ap->fvalue) ||
+                  !math_assert_nonnann (
+                     ap->normalized_val))
+                {
+                  return false;
+                }
+            }
+        }
+    }
+  return true;
 }
 
 /**

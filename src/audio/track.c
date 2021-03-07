@@ -856,6 +856,8 @@ track_verify_identifiers (
               port, self, false), false);
           g_return_val_if_fail (
             port->at == at, false);
+
+          automation_track_verify (at);
         }
 
       port_verify_src_and_dests (port);

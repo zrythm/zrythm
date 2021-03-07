@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 static AutomationPoint *
@@ -132,6 +133,12 @@ automation_point_new_float (
   AutomationPoint * self =
     _create_new (pos);
 
+  if (ZRYTHM_TESTING)
+    {
+      math_assert_nonnann (value);
+      math_assert_nonnann (normalized_val);
+    }
+
   self->fvalue = value;
   self->normalized_val = normalized_val;
 
@@ -184,6 +191,11 @@ automation_point_set_fvalue (
     automation_point_get_port (self);
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
+  if (ZRYTHM_TESTING)
+    {
+      math_assert_nonnann (real_val);
+    }
+
   if (is_normalized)
     {
       g_message ("received normalized val %f",
@@ -206,6 +218,12 @@ automation_point_set_fvalue (
     }
   g_message ("setting to %f", (double) real_val);
   self->fvalue = real_val;
+
+  if (ZRYTHM_TESTING)
+    {
+      math_assert_nonnann (self->fvalue);
+      math_assert_nonnann (self->normalized_val);
+    }
 
   ZRegion * region =
     arranger_object_get_region (

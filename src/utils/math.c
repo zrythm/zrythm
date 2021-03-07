@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #include <math.h>
 
 #include "utils/math.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -125,6 +126,36 @@ math_calculate_rms_db (
   return
     math_amp_to_dbfs (
       math_calculate_rms_amp (buf, nframes));
+}
+
+/**
+ * Asserts that the value is non-nan.
+ *
+ * Not real-time safe.
+ *
+ * @return Whether the value is valid (nonnan).
+ */
+bool
+math_assert_nonnann (
+  float x)
+{
+  char * val =
+    g_strdup_printf ("%f", (double) x);
+  if (isnan (x) ||
+      string_contains_substr (val, "nan"))
+    {
+      g_critical ("nan");
+      g_free (val);
+      return false;
+    }
+  if (!isfinite (x) ||
+      string_contains_substr (val, "inf"))
+    {
+      g_critical ("inf");
+      g_free (val);
+      return false;
+    }
+  return true;
 }
 
 /**

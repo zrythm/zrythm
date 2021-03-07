@@ -2260,6 +2260,15 @@ clone_automation_point (
   AutomationPoint *       src,
   ArrangerObjectCloneFlag flag)
 {
+  if (ZRYTHM_TESTING)
+    {
+      g_return_val_if_fail (
+        math_assert_nonnann (
+          src->normalized_val) &&
+        math_assert_nonnann (src->fvalue),
+        NULL);
+    }
+
   ArrangerObject * src_obj =
     (ArrangerObject *) src;
   AutomationPoint * ap =
