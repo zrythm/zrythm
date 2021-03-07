@@ -371,17 +371,22 @@ create_plugin (
   self->carla_plugin_id = 0;
 
   /* set binary paths */
-  char * bindir =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_BINDIR);
+  char * zrythm_libdir =
+    zrythm_get_dir (
+      ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+  char * carla_binaries_dir =
+    g_build_filename (
+      zrythm_libdir, "carla", NULL);
   g_message (
     "setting carla engine option "
     "[ENGINE_OPTION_PATH_BINARIES] to '%s'",
-    bindir);
+    carla_binaries_dir);
   carla_set_engine_option (
     self->host_handle,
     ENGINE_OPTION_PATH_BINARIES, 0,
-    bindir);
-  g_free (bindir);
+    carla_binaries_dir);
+  g_free (zrythm_libdir);
+  g_free (carla_binaries_dir);
 
   /* set lv2 path */
   carla_set_engine_option (

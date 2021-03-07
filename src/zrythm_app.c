@@ -963,10 +963,6 @@ zrythm_app_startup (
   gtk_source_init ();
 #endif
 
-  /* init math coefficients */
-  g_message ("Initing math coefficients...");
-  math_init ();
-
   G_APPLICATION_CLASS (zrythm_app_parent_class)->
     startup (G_APPLICATION (self));
 

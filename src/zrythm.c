@@ -420,6 +420,16 @@ zrythm_get_dir (
             g_build_filename (
               prefix, "share", NULL);
           break;
+        case ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR:
+          res =
+            g_build_filename (
+              prefix, "lib", NULL);
+          break;
+        case ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR:
+          res =
+            g_build_filename (
+              prefix, "lib", "zrythm", NULL);
+          break;
         case ZRYTHM_DIR_SYSTEM_LOCALEDIR:
           res =
             g_build_filename (

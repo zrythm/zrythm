@@ -49,6 +49,7 @@ sysconfdir = prefix / get_option ('sysconfdir')
 mandir = datadir / 'man' / 'man1'
 schemasdir = datadir / 'glib-2.0/schemas'
 fontsdir = datadir / 'fonts' / prog_name_lowercase
+zrythm_libdir = libdir / 'zrythm'
 zrythmdatadir = datadir / prog_name_lowercase
 themesdir = zrythmdatadir / 'themes'
 samplesdir = zrythmdatadir / 'samples'
@@ -908,7 +909,7 @@ if have_carla
       carla_bins_dir / 'carla-discovery-native.exe',
       carla_bins_dir /
         'carla-discovery-native').full_path(),
-    install_dir: bindir)
+    install_dir: zrythm_libdir / 'carla')
   cdata.set('HAVE_CARLA', 1)
 
   # install discovery & bridge for 32-bit vst's on
@@ -918,12 +919,12 @@ if have_carla
       find_program (
         carla_bins_dir /
           'carla-discovery-win32.exe').full_path(),
-      install_dir: bindir)
+      install_dir: zrythm_libdir / 'carla')
     install_data (
       find_program (
         carla_bins_dir /
           'carla-bridge-win32.exe').full_path(),
-      install_dir: bindir)
+      install_dir: zrythm_libdir / 'carla')
   endif
 
   # install gnu/linux bridges
@@ -938,7 +939,7 @@ if have_carla
       cdata.set('HAVE_CARLA_BRIDGE_' + bridge_type.underscorify().to_upper(), 1)
       install_data (
         carla_bridge.full_path(),
-        install_dir: bindir)
+        install_dir: zrythm_libdir / 'carla')
     endif
   endforeach
 endif
@@ -1205,7 +1206,6 @@ summary ({
 summary ({
   'ALSA': have_alsa,
   'Carla': have_carla,
-  'Curl': phone_home,
   'GraphViz': have_graphviz,
   'Guile': have_guile,
   'JACK': have_jack,

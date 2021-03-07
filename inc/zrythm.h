@@ -95,6 +95,12 @@ typedef enum ZrythmDirType
   /** "share" under \ref ZRYTHM_DIR_SYSTEM_PREFIX. */
   ZRYTHM_DIR_SYSTEM_PARENT_DATADIR,
 
+  /** "lib" under \ref ZRYTHM_DIR_SYSTEM_PREFIX. */
+  ZRYTHM_DIR_SYSTEM_PARENT_LIBDIR,
+
+  /** lib/zrythm */
+  ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR,
+
   /** Localization under "share". */
   ZRYTHM_DIR_SYSTEM_LOCALEDIR,
 
