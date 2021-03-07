@@ -466,6 +466,16 @@ foreach func : check_functions
   endif
 endforeach
 
+# check standard C functions
+check_c_functions = [
+  'localtime_r',
+  ]
+foreach func : check_c_functions
+  if not cc.has_function (func)
+    error ('function ' + func + ' not found')
+  endif
+endforeach
+
 # Compiler flags
 test_cflags = [
   '-Wformat=2',

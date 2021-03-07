@@ -32,8 +32,10 @@ char *
 datetime_get_current_as_string ()
 {
 
-  time_t t = time(NULL);
-  struct tm tm = *localtime(&t);
+  time_t t = time (NULL);
+  struct tm tm;
+  struct tm * ret = localtime_r (&t, &tm);
+  g_return_val_if_fail (ret, NULL);
 
   char * str =
     g_strdup_printf (
