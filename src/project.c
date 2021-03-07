@@ -1267,6 +1267,12 @@ project_load (
         false, true);
     }
 
+  if (is_template || !filename)
+    {
+      project_save (
+        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+    }
+
   engine_activate (AUDIO_ENGINE, true);
 
   /* connect channel inputs to hardware. has to
@@ -1279,12 +1285,6 @@ project_load (
         continue;
 
       channel_reconnect_ext_input_ports (ch);
-    }
-
-  if (is_template || !filename)
-    {
-      project_save (
-        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
     }
 
   return 0;

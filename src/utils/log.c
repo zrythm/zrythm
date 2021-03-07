@@ -867,7 +867,10 @@ log_writer (
             backtrace_get_with_lines ("", 100);
         }
 
-      if (self->obj_pool->num_obj_available < 200)
+      int num_avail_objs =
+        object_pool_get_num_available (
+          self->obj_pool);
+      if (num_avail_objs < 200)
         {
           log_idle_cb (self);
         }
