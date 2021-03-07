@@ -1360,8 +1360,7 @@ carla_native_plugin_open_ui (
 {
   Plugin * pl = self->plugin;
   g_return_if_fail (
-    IS_PLUGIN_AND_NONNULL (pl) &&
-    pl->descr);
+    IS_PLUGIN_AND_NONNULL (pl) && pl->descr);
 
   switch (pl->descr->protocol)
     {
@@ -1370,58 +1369,66 @@ carla_native_plugin_open_ui (
     case PROT_DSSI:
     case PROT_LV2:
     case PROT_AU:
-      {
-        char * title =
-          plugin_generate_window_title (
-            self->plugin);
-        g_debug ("plugin window title '%s'", title);
-        carla_set_custom_ui_title (
-          self->host_handle, 0, title);
-        g_free (title);
+      if (show)
+        {
+          char * title =
+            plugin_generate_window_title (
+              self->plugin);
+          g_debug ("plugin window title '%s'", title);
+          carla_set_custom_ui_title (
+            self->host_handle, 0, title);
+          g_free (title);
 
-        /* set whether to keep window on top */
-        if (ZRYTHM_HAVE_UI &&
-            g_settings_get_boolean (
-              S_P_PLUGINS_UIS, "stay-on-top"))
-          {
+          /* set whether to keep window on top */
+          if (ZRYTHM_HAVE_UI &&
+              g_settings_get_boolean (
+                S_P_PLUGINS_UIS, "stay-on-top"))
+            {
 #ifdef HAVE_X11
-            char xid[400];
-            sprintf (
-              xid, "%lx",
-              gdk_x11_window_get_xid (
-                gtk_widget_get_window (
-                  GTK_WIDGET (MAIN_WINDOW))));
-            carla_set_engine_option (
-              self->host_handle,
-              ENGINE_OPTION_FRONTEND_WIN_ID, 0,
-              xid);
+              char xid[400];
+              sprintf (
+                xid, "%lx",
+                gdk_x11_window_get_xid (
+                  gtk_widget_get_window (
+                    GTK_WIDGET (MAIN_WINDOW))));
+              carla_set_engine_option (
+                self->host_handle,
+                ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+                xid);
 #endif
-          }
+            }
+        }
 
-        carla_show_custom_ui (
-          self->host_handle, 0, show);
-        self->plugin->visible = show;
+      carla_show_custom_ui (
+        self->host_handle, 0, show);
+      self->plugin->visible = show;
 
-        if (show)
-          {
-            g_warn_if_fail (MAIN_WINDOW);
-            g_debug (
-              "setting tick callback for %s",
-              self->plugin->descr->name);
+      if (show)
+        {
+          g_warn_if_fail (MAIN_WINDOW);
+          g_debug (
+            "setting tick callback for %s",
+            self->plugin->descr->name);
+          self->tick_cb =
             gtk_widget_add_tick_callback (
               GTK_WIDGET (MAIN_WINDOW),
               (GtkTickCallback)
               carla_plugin_tick_cb,
               self, NULL);
-          }
+        }
+      else
+        {
+          gtk_widget_remove_tick_callback (
+            GTK_WIDGET (MAIN_WINDOW),
+            self->tick_cb);
+        }
 
-        if (!ZRYTHM_TESTING)
-          {
-            EVENTS_PUSH (
-              ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
-              self->plugin);
-          }
-      }
+      if (!ZRYTHM_TESTING)
+        {
+          EVENTS_PUSH (
+            ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
+            self->plugin);
+        }
       break;
     default:
       break;

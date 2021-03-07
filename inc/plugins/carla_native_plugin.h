@@ -80,6 +80,9 @@ typedef struct CarlaNativePlugin
   /** Whether ports are already created or not. */
   bool             ports_created;
 
+  /** GTK tick callback. */
+  guint            tick_cb;
+
 } CarlaNativePlugin;
 
 static const cyaml_schema_field_t
