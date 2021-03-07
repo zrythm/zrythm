@@ -1012,6 +1012,13 @@ if have_lsp_dsp
   cdata.set('HAVE_LSP_DSP', 1)
 endif
 
+valgrind_dep = dependency (
+  'valgrind', required: get_option ('valgrind'))
+have_valgrind = not get_option ('valgrind').disabled () and valgrind_dep.found ()
+if have_valgrind
+  cdata.set ('HAVE_VALGRIND', 1)
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1046,6 +1053,7 @@ zrythm_deps = [
   fftw3_deps,
   gtksource_dep,
   lsp_dsp_dep,
+  valgrind_dep,
 
   libm,
 ]
@@ -1228,6 +1236,7 @@ tests_summary = {
   'Build tests': get_option('tests'),
   'GUI tests': get_option('gui_tests'),
   'Coverage reports': get_option('b_coverage'),
+  'Valgrind': have_valgrind,
   }
 foreach name, info : ext_lv2_plugins
   tests_summary += {

@@ -199,3 +199,9 @@ option (
   type: 'feature',
   value: 'disabled',
   description: 'Allow connecting to the internet (eg, for checking the latest version).')
+
+option (
+  'valgrind',
+  type: 'feature',
+  value: 'disabled',
+  description: 'Compile with valgrind lib. Only useful for debugging.')
