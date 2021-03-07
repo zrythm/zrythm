@@ -473,7 +473,7 @@ check_c_functions = [
   ]
 foreach func : check_c_functions
   if not cc.has_function (func)
-    error ('function ' + func + ' not found')
+    cdata.set('HAVE_' + func.underscorify().to_upper(), 1)
   endif
 endforeach
 

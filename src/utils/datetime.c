@@ -33,9 +33,13 @@ datetime_get_current_as_string ()
 {
 
   time_t t = time (NULL);
+#ifdef HAVE_LOCALTIME_R
   struct tm tm;
   struct tm * ret = localtime_r (&t, &tm);
   g_return_val_if_fail (ret, NULL);
+#else
+  struct tm tm = *localtime (&t);
+#endif
 
   char * str =
     g_strdup_printf (
