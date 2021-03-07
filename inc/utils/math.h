@@ -183,10 +183,4 @@ bool
 math_assert_nonnann (
   float x);
 
-/**
- * Initializes coefficients to be used later.
- */
-void
-math_init (void);
-
 #endif

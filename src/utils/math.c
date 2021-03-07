@@ -25,9 +25,6 @@
 
 #include <gtk/gtk.h>
 
-static float fader_coefficient1 = 0.f;
-static float fader_coefficient2 = 0.f;
-
 /**
  * Returns fader value 0.0 to 1.0 from amp value
  * 0.0 to 2.0 (+6 dbFS).
@@ -36,6 +33,11 @@ sample_t
 math_get_fader_val_from_amp (
   sample_t amp)
 {
+  static const float fader_coefficient1 =
+    192.f * logf (2.f);
+  static const float fader_coefficient2 =
+    powf (logf (2.f), 8.f) * powf (198.f, 8.f);
+
   /* to prevent weird values when amp is very
    * small */
   if (amp <= 0.00001f)
@@ -156,15 +158,4 @@ math_assert_nonnann (
       return false;
     }
   return true;
-}
-
-/**
- * Initializes coefficients to be used later.
- */
-void
-math_init ()
-{
-  fader_coefficient1 = 192.f * logf (2.f);
-  fader_coefficient2 =
-    powf (logf (2.f), 8.f) * powf (198.f, 8.f);
 }
