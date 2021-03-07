@@ -2858,7 +2858,7 @@ port_get_control_value (
     self->id.type == TYPE_CONTROL, 0.f);
 
   /* verify that plugin exists if plugin control */
-  if (self->is_project &&
+  if (ZRYTHM_TESTING && self->is_project &&
       self->id.flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       Plugin * pl = port_get_plugin (self, 1);

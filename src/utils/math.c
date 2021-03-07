@@ -46,6 +46,10 @@ math_get_fader_val_from_amp (
     }
   else
     {
+      if (math_floats_equal (amp, 1.f))
+        {
+          amp = 1.f + 1e-20f;
+        }
       sample_t fader =
         powf (
           6.f * logf (amp) + fader_coefficient1, 8.f) /

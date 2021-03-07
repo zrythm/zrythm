@@ -1192,6 +1192,11 @@ handle_automation_event (
     port_get_control_value (port, false);
   float normalized_value =
     port_get_control_value (port, true);
+  if (ZRYTHM_TESTING)
+    {
+      math_assert_nonnann (value);
+      math_assert_nonnann (normalized_value);
+    }
   bool automation_value_changed =
     !port->value_changed_from_reading &&
     !math_floats_equal (

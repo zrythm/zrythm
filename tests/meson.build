@@ -174,6 +174,7 @@ if get_option ('tests')
     'project': { parallel: true },
     'utils/arrays': { parallel: true },
     'utils/general': { parallel: true },
+    'utils/math': { parallel: true },
     'utils/io': { parallel: true },
     'utils/string': { parallel: true },
     'utils/ui': { parallel: true },

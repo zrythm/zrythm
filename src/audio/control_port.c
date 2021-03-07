@@ -140,13 +140,13 @@ control_port_normalized_val_to_real (
           /* make sure none of the values is 0 */
           float minf =
             math_floats_equal (self->minf, 0.f) ?
-            0.000000001f : self->minf;
+            1e-20f : self->minf;
           float maxf =
             math_floats_equal (self->maxf, 0.f) ?
-            0.000000001f : self->maxf;
+            1e-20f : self->maxf;
           normalized_val =
             math_floats_equal (normalized_val, 0.f) ?
-            0.000000001f : normalized_val;
+            1e-20f : normalized_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return
@@ -206,13 +206,13 @@ control_port_real_val_to_normalized (
           /* make sure none of the values is 0 */
           float minf =
             math_floats_equal (self->minf, 0.f) ?
-            0.000000001f : self->minf;
+            1e-20f : self->minf;
           float maxf =
             math_floats_equal (self->maxf, 0.f) ?
-            0.000000001f : self->maxf;
+            1e-20f : self->maxf;
           real_val =
             math_floats_equal (real_val, 0.f) ?
-            0.000000001f : real_val;
+            1e-20f : real_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return
