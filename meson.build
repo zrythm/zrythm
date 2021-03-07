@@ -660,6 +660,7 @@ test_strict_cflags = [
   '-Werror=analyzer-file-leak',
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
+  '-Werror=pointer-size',
   ]
 
 if cc.get_id() == 'gcc'

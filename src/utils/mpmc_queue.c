@@ -113,19 +113,19 @@ mpmc_queue_push_back (
   void * const data)
 {
   cell_t* cell;
-  guint pos =
-    (guint) g_atomic_int_get (&self->enqueue_pos);
+  gint pos =
+    g_atomic_int_get (&self->enqueue_pos);
   for (;;)
     {
-      cell = &self->buffer[pos & self->buffer_mask];
+      cell = &self->buffer[(size_t) pos & self->buffer_mask];
       guint seq =
         (guint) g_atomic_int_get (&cell->sequence);
       intptr_t dif = (intptr_t)seq - (intptr_t)pos;
       if (dif == 0)
         {
           if (g_atomic_int_compare_and_exchange (
-                &self->enqueue_pos, (gint) pos,
-                (gint) (pos + 1)))
+                &self->enqueue_pos, pos,
+                (pos + 1)))
             {
               break;
             }
@@ -137,7 +137,6 @@ mpmc_queue_push_back (
       else
         {
           pos =
-            (guint)
             g_atomic_int_get (&self->enqueue_pos);
         }
     }
@@ -153,12 +152,13 @@ mpmc_queue_dequeue (
   void **     data)
 {
   cell_t * cell;
-  guint pos =
-    (guint)
+  gint pos =
     g_atomic_int_get (&self->dequeue_pos);
   for (;;)
     {
-      cell = &self->buffer[pos & self->buffer_mask];
+      cell =
+        &self->buffer[
+          (size_t) pos & self->buffer_mask];
       guint seq =
         (guint)
         g_atomic_int_get (&cell->sequence);
@@ -167,8 +167,8 @@ mpmc_queue_dequeue (
       if (dif == 0)
         {
           if (g_atomic_int_compare_and_exchange (
-                &self->dequeue_pos, (gint) pos,
-                (gint) (pos + 1)))
+                &self->dequeue_pos, pos,
+                (pos + 1)))
             break;
         }
       else if (dif < 0)
@@ -178,14 +178,13 @@ mpmc_queue_dequeue (
       else
         {
           pos =
-            (guint)
             g_atomic_int_get (&self->dequeue_pos);
         }
     }
   *data = cell->data;
   g_atomic_int_set (
     &cell->sequence,
-    pos + (guint) self->buffer_mask + 1);
+    pos + (gint) self->buffer_mask + 1);
 
   return 1;
 }
