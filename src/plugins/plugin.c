@@ -2872,6 +2872,10 @@ void
 plugin_disconnect (
   Plugin * self)
 {
+  g_message (
+    "disconnecting plugin %s...",
+    self->descr->name);
+
   self->deleting = 1;
 
   if (self->visible)
@@ -2907,6 +2911,10 @@ plugin_disconnect (
         "%s is not a project plugin, skipping "
         "disconnect", self->descr->name);
     }
+
+  g_message (
+    "finished disconnecting plugin %s",
+    self->descr->name);
 }
 
 /**
@@ -2921,6 +2929,10 @@ void
 plugin_delete_state_files (
   Plugin * self)
 {
+  g_message (
+    "deleting state files for plugin %s (%s)",
+    self->descr->name, self->state_dir);
+
   g_return_if_fail (
     g_path_is_absolute (self->state_dir));
 

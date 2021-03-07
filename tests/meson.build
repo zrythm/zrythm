@@ -173,6 +173,7 @@ if get_option ('tests')
       parallel: true },
     'integration/recording': { parallel: false },
     'plugins/carla_discovery': { parallel: false },
+    'plugins/lv2_plugin': { parallel: false },
     'plugins/plugin': { parallel: false },
     'plugins/plugin_manager': { parallel: true },
     'project': { parallel: true },

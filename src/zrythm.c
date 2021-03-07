@@ -577,12 +577,13 @@ zrythm_free (
     "%s: deleting Zrythm instance...",
     __func__);
 
+  object_free_w_func_and_null (
+    project_free, self->project);
+
   self->have_ui = false;
 
   object_free_w_func_and_null (
     z_cairo_caches_free, self->cairo_caches);
-  object_free_w_func_and_null (
-    project_free, self->project);
   object_free_w_func_and_null (
     recording_manager_free,
     self->recording_manager);

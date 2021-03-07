@@ -2366,44 +2366,48 @@ lv2_plugin_instantiate (
   char * library_path =
     lv2_plugin_get_library_path (self);
   void * handle = dlopen (library_path, RTLD_LAZY);
+  g_return_val_if_fail (handle, -1);
   struct link_map * lm;
-  ret =
-    dlinfo (handle, RTLD_DI_LINKMAP, &lm);
+  ret = dlinfo (handle, RTLD_DI_LINKMAP, &lm);
   g_return_val_if_fail (lm && ret == 0, -1);
-  while (lm)
+  if (ZRYTHM_HAVE_UI)
     {
-      g_message (
-        " - %s (0x%016" PRIX64 ")",
-        lm->l_name, lm->l_addr);
-      if (string_contains_substr (
-            lm->l_name, "Qt5Widgets.so") ||
-          string_contains_substr (
-            lm->l_name, "libgtk-3.so") ||
-          string_contains_substr (
-            lm->l_name, "libgtk"))
+      while (lm)
         {
-          char * basename =
-            io_path_get_basename (lm->l_name);
-          char msg[1200];
-          sprintf (
-            msg,
-            _("%s <%s> contains a reference to "
-            "%s, which may cause issues.\n"
-            "If the plugin does not load, please "
-            "try instantiating the plugin in full-"
-            "bridged mode, and report this to the "
-            "plugin distributor and/or author:\n"
-            "%s <%s>"),
-            descr->name, descr->uri,
-            basename, descr->author,
-            descr->website);
-          ui_show_error_message (
-            MAIN_WINDOW, msg);
-          g_free (basename);
-        }
+          g_message (
+            " - %s (0x%016" PRIX64 ")",
+            lm->l_name, lm->l_addr);
+          if (string_contains_substr (
+                lm->l_name, "Qt5Widgets.so") ||
+              string_contains_substr (
+                lm->l_name, "libgtk-3.so") ||
+              string_contains_substr (
+                lm->l_name, "libgtk"))
+            {
+              char * basename =
+                io_path_get_basename (lm->l_name);
+              char msg[1200];
+              sprintf (
+                msg,
+                _("%s <%s> contains a reference to "
+                "%s, which may cause issues.\n"
+                "If the plugin does not load, please "
+                "try instantiating the plugin in full-"
+                "bridged mode, and report this to the "
+                "plugin distributor and/or author:\n"
+                "%s <%s>"),
+                descr->name, descr->uri,
+                basename, descr->author,
+                descr->website);
+              ui_show_error_message (
+                MAIN_WINDOW, msg);
+              g_free (basename);
+            }
 
-      lm = lm->l_next;
+          lm = lm->l_next;
+        }
     }
+  dlclose (handle);
 #endif
 
   self->control_in = -1;
@@ -2747,6 +2751,8 @@ lv2_plugin_activate (
     {
       lilv_instance_deactivate (self->instance);
     }
+
+  self->plugin->activated = activate;
 
   return 0;
 }
@@ -3261,13 +3267,14 @@ lv2_plugin_free (
   /*zix_sem_wait (&self->exit_sem);*/
   self->exit = true;
 
+  /* Terminate the worker */
+  lv2_worker_finish (&self->worker);
+
   if (self->instance && self->plugin->activated)
     {
       lilv_instance_deactivate (self->instance);
+      self->plugin->activated = false;
     }
-
-  /* Terminate the worker */
-  lv2_worker_finish (&self->worker);
 
   /* Deactivate lilv/suil instances */
   object_free_w_func_and_null (
