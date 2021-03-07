@@ -2359,6 +2359,7 @@ lv2_plugin_instantiate (
     }
   g_warn_if_fail (self->lilv_plugin);
 
+  int ret = 0;
 #if !defined (_WOE32) && !defined (__APPLE__)
   /* check that plugin .so doesn't contain illegal
    * dynamic dependencies */
@@ -2366,10 +2367,9 @@ lv2_plugin_instantiate (
     lv2_plugin_get_library_path (self);
   void * handle = dlopen (library_path, RTLD_LAZY);
   struct link_map * lm;
-  int ret =
+  ret =
     dlinfo (handle, RTLD_DI_LINKMAP, &lm);
-  g_return_val_if_fail (
-    lm && ret == 0, -1);
+  g_return_val_if_fail (lm && ret == 0, -1);
   while (lm)
     {
       g_message (
