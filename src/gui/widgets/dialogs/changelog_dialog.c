@@ -28,6 +28,8 @@
 
 #include <glib/gi18n.h>
 
+#ifdef HAVE_CHANGELOG
+
 /**
  * Creates and displays the about dialog.
  */
@@ -50,3 +52,5 @@ changelog_dialog_widget_run (
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }
+
+#endif /* HAVE_CHANGELOG */

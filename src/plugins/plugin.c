@@ -46,7 +46,6 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
-#include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_state.h"
 #include "project.h"
@@ -122,8 +121,8 @@ plugin_init_loaded (
       switch (self->descr->protocol)
         {
         case PROT_LV2:
-          g_return_if_fail (self->lv2);
-          self->lv2->plugin = self;
+          self->lv2 = object_new (Lv2Plugin);
+          self->lv2->magic = LV2_PLUGIN_MAGIC;
           lv2_plugin_init_loaded (
             self->lv2, project);
           break;
@@ -815,13 +814,6 @@ plugin_set_track_and_slot (
             F_NO_UPDATE_AUTOMATION_TRACK);
         }
     }
-
-  if (
-    !pl->descr->open_with_carla &&
-      pl->descr->protocol == PROT_LV2)
-    {
-      lv2_plugin_update_port_identifiers (pl->lv2);
-    }
 }
 
 Track *
@@ -1455,7 +1447,8 @@ plugin_generate_automation_tracks (
   for (int i = 0; i < self->num_in_ports; i++)
   {
     Port * port = self->in_ports[i];
-    if (port->id.type != TYPE_CONTROL)
+    if (port->id.type != TYPE_CONTROL ||
+        !(port->id.flags & PORT_FLAG_AUTOMATABLE))
       continue;
 
     AutomationTrack * at =
@@ -2145,8 +2138,8 @@ plugin_clone (
           /* verify */
           g_return_val_if_fail (
             clone && clone->lv2 &&
-            clone->lv2->num_ports ==
-              pl->lv2->num_ports,
+            clone->num_lilv_ports ==
+              pl->num_lilv_ports,
             NULL);
 
           /* free the state */
@@ -2343,6 +2336,14 @@ plugin_close_ui (
 #ifdef HAVE_CARLA
     }
 #endif
+
+  if (self->update_ui_source_id)
+    {
+      g_source_remove (self->update_ui_source_id);
+      self->update_ui_source_id = 0;
+    }
+
+  self->visible = false;
 }
 
 /**
@@ -2871,6 +2872,11 @@ plugin_disconnect (
 {
   self->deleting = 1;
 
+  if (self->visible)
+    {
+      plugin_close_ui (self);
+    }
+
   if (self->is_project)
     {
       /* disconnect all ports */
@@ -2991,22 +2997,64 @@ plugin_get_port_by_symbol (
       !pl->descr->open_with_carla,
     NULL);
 
-  Lv2Plugin * lv2 = pl->lv2;
-  g_return_val_if_fail (lv2, NULL);
+  g_return_val_if_fail (
+    pl->lv2 && pl->lilv_ports, NULL);
 
-  Lv2Port * lv2_port =
-    lv2_port_get_by_symbol (lv2, sym);
-  g_return_val_if_fail (lv2_port, NULL);
-  Port * port =
-    port_find_from_identifier (&lv2_port->port_id);
-
-  if (!port)
+  for (int i = 0; i < pl->num_in_ports; i++)
     {
-      g_warning (
-        "failed to find port with symbol %s", sym);
+      Port * port = pl->in_ports[i];
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (port), NULL);
+
+      if (string_is_equal (port->id.sym, sym))
+        {
+          return port;
+        }
+    }
+  for (int i = 0; i < pl->num_out_ports; i++)
+    {
+      Port * port = pl->out_ports[i];
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (port), NULL);
+
+      if (string_is_equal (port->id.sym, sym))
+        {
+          return port;
+        }
     }
 
-  return port;
+  g_critical (
+    "failed to find port with symbol %s", sym);
+  return NULL;
+}
+
+Port *
+plugin_get_port_by_param_uri (
+  Plugin *     pl,
+  const char * uri)
+{
+  g_return_val_if_fail (
+    IS_PLUGIN (pl) &&
+      pl->descr->protocol == PROT_LV2 &&
+      !pl->descr->open_with_carla,
+    NULL);
+
+  g_return_val_if_fail (pl->lv2, NULL);
+
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * port = pl->in_ports[i];
+
+      if (string_is_equal (port->id.uri, uri))
+        {
+          return port;
+        }
+    }
+
+  g_critical (
+    "failed to find port with parameter URI <%s>",
+    uri);
+  return NULL;
 }
 
 /**
@@ -3019,13 +3067,32 @@ plugin_free (
 {
   g_return_if_fail (IS_PLUGIN (self));
 
-  g_message ("FREEING PLUGIN %s",
-             self->descr->name);
+  g_return_if_fail (!self->visible);
 
-  ports_remove (
-    self->in_ports, &self->num_in_ports);
-  ports_remove (
-    self->out_ports, &self->num_out_ports);
+  g_debug (
+    "freeing plugin %s", self->descr->name);
+
+  object_free_w_func_and_null (
+    lv2_plugin_free, self->lv2);
+#ifdef HAVE_CARLA
+  object_free_w_func_and_null (
+    carla_native_plugin_free, self->carla);
+#endif
+
+  for (int i = 0; i < self->num_in_ports; i++)
+    {
+      Port * port = self->in_ports[i];
+      object_free_w_func_and_null (
+        port_free, port);
+    }
+  for (int i = 0; i < self->num_out_ports; i++)
+    {
+      Port * port = self->out_ports[i];
+      object_free_w_func_and_null (
+        port_free, port);
+    }
+
+  object_zero_and_free (self->lilv_ports);
 
   object_zero_and_free (self);
 }

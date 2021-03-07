@@ -261,7 +261,11 @@ zrythm_fetch_latest_release_ver (void)
   char * page =
     z_curl_get_page_contents (
       "https://www.zrythm.org/releases/?C=M;O=D");
-  g_return_val_if_fail (page, NULL);
+  if (!page)
+    {
+      g_warning ("failed to get page");
+      return NULL;
+    }
 
   ver =
     string_get_regex_group (
@@ -278,6 +282,12 @@ zrythm_is_latest_release (void)
 {
   char * latest_release =
     zrythm_fetch_latest_release_ver ();
+  if (!latest_release)
+    {
+      g_warning ("error getting latest release");
+      return false;
+    }
+
   bool ret = false;
   if (string_is_equal (
         latest_release, PACKAGE_VERSION))

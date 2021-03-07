@@ -103,6 +103,7 @@ static const cyaml_schema_value_t
 
 #ifdef HAVE_CARLA
 
+NONNULL
 void
 carla_native_plugin_init_loaded (
   CarlaNativePlugin * self);
@@ -116,6 +117,7 @@ carla_native_plugin_init_loaded (
  *
  * @return Non-zero if fail.
  */
+NONNULL
 int
 carla_native_plugin_new_from_descriptor (
   Plugin * plugin);
@@ -124,6 +126,7 @@ carla_native_plugin_new_from_descriptor (
  * Returns a filled in descriptor from the
  * CarlaCachedPluginInfo.
  */
+NONNULL
 PluginDescriptor *
 carla_native_plugin_get_descriptor_from_cached (
   const CarlaCachedPluginInfo * info,
@@ -132,6 +135,7 @@ carla_native_plugin_get_descriptor_from_cached (
 /**
  * Saves the state inside the given directory.
  */
+NONNULL
 int
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
@@ -146,6 +150,7 @@ carla_native_plugin_load_state (
   CarlaNativePlugin * self,
   char *              abs_path);
 
+NONNULL
 void
 carla_native_plugin_populate_banks (
   CarlaNativePlugin * self);
@@ -160,12 +165,14 @@ carla_native_plugin_populate_banks (
  *
  * @return 0 if no errors, non-zero if errors.
  */
+NONNULL
 int
 carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
   bool                loading,
   bool                use_state_file);
 
+NONNULL
 char *
 carla_native_plugin_get_abs_state_file_path (
   CarlaNativePlugin * self,
@@ -175,6 +182,7 @@ carla_native_plugin_get_abs_state_file_path (
  * Processes the plugin for this cycle.
  */
 HOT
+NONNULL
 void
 carla_native_plugin_process (
   CarlaNativePlugin * self,
@@ -185,6 +193,7 @@ carla_native_plugin_process (
 /**
  * Shows or hides the UI.
  */
+NONNULL
 void
 carla_native_plugin_open_ui (
   CarlaNativePlugin * self,
@@ -194,6 +203,7 @@ carla_native_plugin_open_ui (
  * Returns the plugin Port corresponding to the
  * given parameter.
  */
+NONNULL
 Port *
 carla_native_plugin_get_port_from_param_id (
   CarlaNativePlugin * self,
@@ -202,26 +212,37 @@ carla_native_plugin_get_port_from_param_id (
 /**
  * Returns the MIDI out port.
  */
+NONNULL
 Port *
 carla_native_plugin_get_midi_out_port (
   CarlaNativePlugin * self);
 
+NONNULL
 float
 carla_native_plugin_get_param_value (
   CarlaNativePlugin * self,
   const uint32_t      id);
 
+/**
+ * Called from port_set_control_value() to send
+ * the value to carla.
+ *
+ * @param val Real value (ie, not normalized).
+ */
+NONNULL
 void
 carla_native_plugin_set_param_value (
   CarlaNativePlugin * self,
   const uint32_t      id,
   float               val);
 
+NONNULL
 int
 carla_native_plugin_activate (
   CarlaNativePlugin * self,
   bool                activate);
 
+NONNULL
 void
 carla_native_plugin_close (
   CarlaNativePlugin * self);
@@ -229,10 +250,12 @@ carla_native_plugin_close (
 /**
  * Deactivates, cleanups and frees the instance.
  */
+NONNULL
 void
 carla_native_plugin_free (
   CarlaNativePlugin * self);
-#endif // HAVE_CARLA
+
+#endif /* HAVE_CARLA */
 
 /**
  * @}

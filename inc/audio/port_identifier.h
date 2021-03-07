@@ -266,17 +266,43 @@ typedef enum PortFlags
    * by checking flow/type.
    */
   PORT_FLAG_MODULATOR_MACRO = 1 << 29,
+
+  /** Logarithmic. */
+  PORT_FLAG_LOGARITHMIC = 1 << 30,
+
+  /**
+   * Plugin control is a property (changes are set
+   * via atom message on the plugin's control port),
+   * as opposed to conventional float control ports.
+   *
+   * An input Port is created for each parameter
+   * declared as either writable or readable (or
+   * both).
+   *
+   * @seealso http://lv2plug.in/ns/lv2core#Parameter. */
+  PORT_FLAG_IS_PROPERTY = 1 << 31,
 } PortFlags;
 
 typedef enum PortFlags2
 {
   /** Transport ports. */
-  PORT_FLAG_TRANSPORT_ROLL = 1 << 0,
-  PORT_FLAG_TRANSPORT_STOP = 1 << 1,
-  PORT_FLAG_TRANSPORT_BACKWARD = 1 << 2,
-  PORT_FLAG_TRANSPORT_FORWARD = 1 << 3,
-  PORT_FLAG_TRANSPORT_LOOP_TOGGLE = 1 << 4,
-  PORT_FLAG_TRANSPORT_REC_TOGGLE = 1 << 5,
+  PORT_FLAG2_TRANSPORT_ROLL = 1 << 0,
+  PORT_FLAG2_TRANSPORT_STOP = 1 << 1,
+  PORT_FLAG2_TRANSPORT_BACKWARD = 1 << 2,
+  PORT_FLAG2_TRANSPORT_FORWARD = 1 << 3,
+  PORT_FLAG2_TRANSPORT_LOOP_TOGGLE = 1 << 4,
+  PORT_FLAG2_TRANSPORT_REC_TOGGLE = 1 << 5,
+
+  /** LV2 control atom port supports patch
+   * messages. */
+  PORT_FLAG2_SUPPORTS_PATCH_MESSAGE = 1 << 6,
+
+  /** Port's only reasonable values are its scale
+   * points. */
+  PORT_FLAG2_ENUMERATION = 1 << 7,
+
+  /** Parameter port's value type is URI. */
+  PORT_FLAG2_URI_PARAM = 1 << 8,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -312,6 +338,8 @@ port_flags_bitvals[] =
   { .name = "tp_input_gain", .offset = 27, .bits = 1 },
   { .name = "hw", .offset = 28, .bits = 1 },
   { .name = "modulator_macro", .offset = 29, .bits = 1 },
+  { .name = "logarithmic", .offset = 30, .bits = 1 },
+  { .name = "is_property", .offset = 31, .bits = 1 },
 };
 
 static const cyaml_bitdef_t
@@ -323,6 +351,9 @@ port_flags2_bitvals[] =
   { .name = "transport_forward", .offset = 3, .bits = 1 },
   { .name = "transport_loop_toggle", .offset = 4, .bits = 1 },
   { .name = "transport_rec_toggle", .offset = 5, .bits = 1 },
+  { .name = "patch_message", .offset = 6, .bits = 1 },
+  { .name = "enumeration", .offset = 7, .bits = 1 },
+  { .name = "uri_param", .offset = 8, .bits = 1 },
 };
 
 /**
@@ -342,6 +373,12 @@ typedef struct PortIdentifier
 
   /** Symbol, if LV2. */
   char *              sym;
+
+  /** URI, if LV2 property. */
+  char *              uri;
+
+  /** Comment, if any. */
+  char *              comment;
 
   /** Owner type. */
   PortOwnerType       owner_type;
@@ -397,6 +434,10 @@ port_identifier_fields_schema[] =
     PortIdentifier, label),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PortIdentifier, sym),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier, uri),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier, comment),
   YAML_FIELD_ENUM (
     PortIdentifier, owner_type,
     port_owner_type_strings),

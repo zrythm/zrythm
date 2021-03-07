@@ -1394,16 +1394,21 @@ track_remove_empty_last_lanes (
   int removed = 0;
   for (int i = track->num_lanes - 1; i >= 1; i--)
     {
-      if (track->lanes[i]->num_regions > 0)
+      TrackLane * lane = track->lanes[i];
+      TrackLane * prev_lane = track->lanes[i - 1];
+      g_return_if_fail (lane && prev_lane);
+
+      if (lane->num_regions > 0)
         break;
 
-      if (track->lanes[i]->num_regions == 0 &&
-          track->lanes[i - 1]->num_regions == 0)
+      if (lane->num_regions == 0 &&
+          prev_lane->num_regions == 0)
         {
           g_message ("removing lane %d", i);
           track->num_lanes--;
-          free_later (
-            track->lanes[i], track_lane_free);
+          object_free_w_func_and_null (
+            track_lane_free, track->lanes[i]);
+          track->lanes[i] = NULL;
           removed = 1;
         }
     }
@@ -3093,7 +3098,8 @@ track_free (Track * self)
         self, F_NO_PUBLISH_EVENTS);
       object_free_w_func_and_null (
         track_processor_free, self->processor);
-      channel_free (self->channel);
+      object_free_w_func_and_null (
+        channel_free, self->channel);
     }
 
   if (self->widget &&

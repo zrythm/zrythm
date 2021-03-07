@@ -1106,12 +1106,12 @@ engine_realloc_port_buffers (
       Port * port = ports[i];
       g_warn_if_fail (port);
 
-      port->buf =
-        realloc (
-          port->buf,
+      size_t new_sz =
+        MAX (
+          port->min_buf_size,
           nframes * sizeof (float));
-      memset (
-        port->buf, 0, nframes * sizeof (float));
+      port->buf = g_realloc (port->buf, new_sz);
+      memset (port->buf, 0, new_sz);
     }
   free (ports);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)

@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_CHANGELOG_DIALOG_H__
 #define __GUI_WIDGETS_CHANGELOG_DIALOG_H__
 
+#ifdef HAVE_CHANGELOG
+
 #include <gtk/gtk.h>
 
 /**
@@ -44,5 +46,7 @@ changelog_dialog_widget_run (
 /**
  * @}
  */
+
+#endif /* HAVE_CHANGELOG */
 
 #endif

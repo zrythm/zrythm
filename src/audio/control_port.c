@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,7 +26,6 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "plugins/plugin.h"
-#include "plugins/lv2/lv2_control.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -136,57 +135,27 @@ control_port_normalized_val_to_real (
   PortIdentifier * id = &self->id;
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
-      Plugin * pl = port_get_plugin (self, 1);
-
-      if (pl->descr->open_with_carla)
+      if (id->flags & PORT_FLAG_LOGARITHMIC)
         {
-          /* no change for now */
-          return normalized_val;
+          /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+          return
+            self->minf *
+              powf (
+                self->maxf / self->minf,
+                normalized_val);
         }
-
-      switch (pl->descr->protocol)
+      else if (id->flags & PORT_FLAG_TOGGLE)
         {
-        case PROT_LV2:
-          {
-            Lv2Control * ctrl =
-              self->lv2_port->lv2_control;
-            g_return_val_if_fail (ctrl, 0.f);
-            float real_val;
-            if (ctrl->is_logarithmic)
-              {
-                /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-                real_val =
-                  self->minf *
-                    powf (
-                      self->maxf / self->minf,
-                      normalized_val);
-              }
-            else if (ctrl->is_toggle)
-              {
-                real_val =
-                  normalized_val >= 0.001f ? 1.f : 0.f;
-              }
-            else
-              {
-                real_val =
-                  self->minf +
-                  normalized_val *
-                    (self->maxf - self->minf);
-              }
-            return real_val;
-          }
-          break;
-        case PROT_VST:
-        case PROT_VST3:
-        case PROT_AU:
-          /* no change for now */
-          return normalized_val;
-          break;
-        default:
-          g_warn_if_reached ();
-          break;
+          return
+            normalized_val >= 0.001f ? 1.f : 0.f;
         }
-      g_warn_if_reached ();
+      else
+        {
+          return
+            self->minf +
+            normalized_val *
+              (self->maxf - self->minf);
+        }
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
     {
@@ -223,55 +192,24 @@ control_port_real_val_to_normalized (
   PortIdentifier * id = &self->id;
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
-      Plugin * pl = port_get_plugin (self, 1);
-
-      if (pl->descr->open_with_carla)
+      if (self->id.flags & PORT_FLAG_LOGARITHMIC)
         {
-          /* already normalized */
+          /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+          return
+            logf (real_val / self->minf) /
+            logf (self->maxf / self->minf);
+        }
+      else if (self->id.flags & PORT_FLAG_TOGGLE)
+        {
           return real_val;
         }
-
-      switch (pl->descr->protocol)
+      else
         {
-        case PROT_LV2:
-          {
-            g_return_val_if_fail (
-              self->lv2_port, 0.f);
-            Lv2Control * ctrl =
-              self->lv2_port->lv2_control;
-            g_return_val_if_fail (ctrl, 0.f);
-            float normalized_val;
-            if (ctrl->is_logarithmic)
-              {
-                /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-                normalized_val =
-                  logf (real_val / self->minf) /
-                  logf (self->maxf / self->minf);
-              }
-            else if (ctrl->is_toggle)
-              {
-                normalized_val = real_val;
-              }
-            else
-              {
-                float sizef = self->maxf - self->minf;
-                normalized_val =
-                  (sizef - (self->maxf - real_val)) /
-                  sizef;
-              }
-            return normalized_val;
-          }
-          break;
-        case PROT_VST:
-        case PROT_VST3:
-        case PROT_AU:
-          /* vst/AU is already normalized */
-          return real_val;
-          break;
-        default:
-          g_return_val_if_reached (0.f);
+          float sizef = self->maxf - self->minf;
+          return
+            (sizef - (self->maxf - real_val)) /
+            sizef;
         }
-      g_return_val_if_reached (0.f);
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
     {
@@ -318,60 +256,23 @@ control_port_set_val_from_normalized (
   PortIdentifier * id = &self->id;
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
-      Plugin * plugin = port_get_plugin (self, 1);
-
-      if (plugin->descr->open_with_carla)
+      float real_val =
+        control_port_normalized_val_to_real (
+          self, val);
+      if (!math_floats_equal (
+            port_get_control_value (
+              self, F_NORMALIZE),
+            real_val))
         {
-          /* no change for now */
-          float real_val = val;
-          self->base_value = real_val;
-          port_set_control_value (
-            self, real_val, false, true);
-          return;
+          EVENTS_PUSH (
+            ET_AUTOMATION_VALUE_CHANGED, self);
         }
 
-      switch (plugin->descr->protocol)
-        {
-        case PROT_LV2:
-          {
-            Lv2Control * ctrl =
-              self->lv2_port->lv2_control;
-            g_return_if_fail (ctrl);
-            float real_val =
-              control_port_normalized_val_to_real (
-                self, val);
-
-            if (!math_floats_equal (
-                  port_get_control_value (self, 0),
-                  real_val))
-              {
-                EVENTS_PUSH (
-                  ET_AUTOMATION_VALUE_CHANGED, self);
-              }
-
-            port_set_control_value (
-              self, real_val, 0, 1);
-            ctrl->plugin->
-              ports[ctrl->index].automating =
-                automating;
-            self->base_value = real_val;
-          }
-          break;
-        case PROT_VST:
-        case PROT_VST3:
-        case PROT_AU:
-          {
-            /* no change for now */
-            float real_val = val;
-            self->base_value = real_val;
-            port_set_control_value (
-              self, real_val, 0, 1);
-          }
-          break;
-        default:
-          g_warn_if_reached ();
-          break;
-        }
+      port_set_control_value (
+        self, real_val, F_NOT_NORMALIZED,
+        F_PUBLISH_EVENTS);
+      self->automating = automating;
+      self->base_value = real_val;
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
     {

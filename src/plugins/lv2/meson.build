@@ -16,11 +16,11 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 lv2_srcs = [
-  'lv2_control.c',
+  #'lv2_control.c',
   'lv2_log.c',
   'lv2_evbuf.c',
   'lv2_gtk.c',
-  'lv2_port.c',
+  #'lv2_port.c',
   'lv2_state.c',
   'lv2_ui.c',
   'lv2_urid.c',

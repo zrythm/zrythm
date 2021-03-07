@@ -514,20 +514,10 @@ on_window_destroy (
     {
       Lv2Plugin * lv2 = plugin->lv2;
 
-      /* reinit widget in plugin ports and controls */
-      int num_ctrls = lv2->controls.n_controls;
-      int i;
-      for (i = 0; i < num_ctrls; i++)
+      /* reinit widget in plugin ports/parameters */
+      for (int i = 0; i < plugin->num_in_ports; i++)
         {
-          Lv2Control * control =
-            lv2->controls.controls[i];
-
-          control->widget = NULL;
-        }
-
-      for (i = 0; i < lv2->num_ports; i++)
-        {
-          Lv2Port * port = &lv2->ports[i];
+          Port * port = plugin->in_ports[i];
           port->widget = NULL;
         }
 

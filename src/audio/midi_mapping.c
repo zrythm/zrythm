@@ -202,35 +202,35 @@ midi_mappings_apply (
           else if (dest->id.type == TYPE_EVENT)
             {
               if (dest->id.flags2 &
-                    PORT_FLAG_TRANSPORT_ROLL)
+                    PORT_FLAG2_TRANSPORT_ROLL)
                 {
                   transport_request_roll (TRANSPORT);
                 }
               else if (dest->id.flags2 &
-                    PORT_FLAG_TRANSPORT_STOP)
+                    PORT_FLAG2_TRANSPORT_STOP)
                 {
                   transport_request_pause (
                     TRANSPORT);
                 }
               else if (dest->id.flags2 &
-                    PORT_FLAG_TRANSPORT_BACKWARD)
+                    PORT_FLAG2_TRANSPORT_BACKWARD)
                 {
                   transport_move_backward (
                     TRANSPORT);
                 }
               else if (dest->id.flags2 &
-                    PORT_FLAG_TRANSPORT_FORWARD)
+                    PORT_FLAG2_TRANSPORT_FORWARD)
                 {
                   transport_move_forward (TRANSPORT);
                 }
               else if (dest->id.flags2 &
-                    PORT_FLAG_TRANSPORT_LOOP_TOGGLE)
+                    PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
                 {
                   transport_set_loop (
                     TRANSPORT, !TRANSPORT->loop);
                 }
               else if (dest->id.flags2 &
-                    PORT_FLAG_TRANSPORT_REC_TOGGLE)
+                    PORT_FLAG2_TRANSPORT_REC_TOGGLE)
                 {
                   transport_set_recording (
                     TRANSPORT,

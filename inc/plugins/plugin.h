@@ -98,6 +98,15 @@ typedef struct Plugin
   size_t            out_ports_size;
 
   /**
+   * Ports at their lilv indices.
+   *
+   * These point to ports in \ref Plugin.in_ports and
+   * \ref Plugin.out_ports so should not be freed.
+   */
+  Port **           lilv_ports;
+  int               num_lilv_ports;
+
+  /**
    * Control for plugin enabled, for convenience.
    *
    * This port is already in \ref Plugin.in_ports.
@@ -228,6 +237,13 @@ typedef struct Plugin
 
   /** Modulator widget, if modulator. */
   ModulatorWidget * modulator_widget;
+
+  /**
+   * ID of GSource (if > 0).
+   *
+   * @seealso update_plugin_ui().
+   */
+  guint             update_ui_source_id;
 } Plugin;
 
 static const cyaml_schema_field_t
@@ -239,9 +255,11 @@ plugin_fields_schema[] =
   YAML_FIELD_MAPPING_PTR (
     Plugin, descr,
     plugin_descriptor_fields_schema),
+#if 0
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Plugin, lv2,
     lv2_plugin_fields_schema),
+#endif
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Plugin, carla,
     carla_native_plugin_fields_schema),
@@ -501,6 +519,17 @@ Port *
 plugin_get_port_by_symbol (
   Plugin *     pl,
   const char * sym);
+
+/**
+ * Gets a port by its param URI.
+ *
+ * Only works for LV2 plugins.
+ */
+NONNULL
+Port *
+plugin_get_port_by_param_uri (
+  Plugin *     pl,
+  const char * uri);
 
 /**
  * Returns the escaped name of the plugin.

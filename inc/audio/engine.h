@@ -403,7 +403,7 @@ typedef struct AudioEngine
    * channel. */
   nframes_t         block_length;
 
-  /** Size of MIDI port buffers. */
+  /** Size of MIDI port buffers in bytes. */
   size_t            midi_buf_size;
 
   /** Sample rate. */

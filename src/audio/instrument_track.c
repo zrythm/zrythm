@@ -32,7 +32,6 @@
 #include "audio/velocity.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "gui/widgets/track.h"

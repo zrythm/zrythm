@@ -47,9 +47,8 @@ lv2_log_vprintf (
   GLogLevelFlags level;
   if (type == PM_URIDS.log_Trace)
     level = G_LOG_LEVEL_DEBUG;
-  else if (type == PM_URIDS.log_Error)
-    level = G_LOG_LEVEL_ERROR;
-  else if (type == PM_URIDS.log_Warning)
+  else if (type == PM_URIDS.log_Error ||
+           type == PM_URIDS.log_Warning)
     level = G_LOG_LEVEL_WARNING;
   else
     level = G_LOG_LEVEL_MESSAGE;

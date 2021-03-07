@@ -76,7 +76,7 @@ set_values (
        i < (int) CYAML_ARRAY_LEN (port_flags_bitvals);
        i++)
     {
-      if (!(id->flags & (unsigned int) (1 << i)))
+      if (!(id->flags & (1 << i)))
         continue;
 
       GtkWidget * lbl =
@@ -100,6 +100,8 @@ set_values (
       gtk_container_add (
         GTK_CONTAINER (self->flags_box), lbl);
     }
+
+  /* TODO scale points */
 }
 
 /**
@@ -136,6 +138,8 @@ port_info_dialog_widget_class_init (
   BIND_CHILD (default_value_lbl);
   BIND_CHILD (current_val_lbl);
   BIND_CHILD (flags_box);
+  /* TODO */
+  /*BIND_CHILD (scale_points_box);*/
 }
 
 static void

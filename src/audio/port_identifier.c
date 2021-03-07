@@ -37,6 +37,10 @@ port_identifier_copy (
     &dest->label, src->label);
   string_copy_w_realloc (
     &dest->sym, src->sym);
+  string_copy_w_realloc (
+    &dest->uri, src->uri);
+  string_copy_w_realloc (
+    &dest->comment, src->comment);
   dest->owner_type = src->owner_type;
   dest->type = src->type;
   dest->flow = src->flow;
@@ -61,6 +65,8 @@ port_identifier_is_equal (
 {
   bool eq =
     string_is_equal (dest->label, src->label) &&
+    string_is_equal (dest->uri, src->uri) &&
+    string_is_equal (dest->comment, src->comment) &&
     dest->owner_type == src->owner_type &&
     dest->type == src->type &&
     dest->flow == src->flow &&
@@ -102,12 +108,12 @@ port_identifier_print (
 {
   g_message (
     "[PortIdentifier %p]\nlabel: %s\n"
-    "sym: %s\nowner type: %s\n"
+    "sym: %s\nuri: %s\ncomment: %s\nowner type: %s\n"
     "type: %s\nflow: %s\nflags: %d %d\n"
     "port group: %s\next port id: %s\n"
     "track pos: %d\nport idx: %d",
     self,
-    self->label, self->sym,
+    self->label, self->sym, self->uri, self->comment,
     port_owner_type_strings[self->owner_type].str,
     port_type_strings[self->type].str,
     port_flow_strings[self->flow].str,
@@ -122,6 +128,8 @@ port_identifier_free_members (
 {
   g_free_and_null (self->label);
   g_free_and_null (self->sym);
+  g_free_and_null (self->uri);
+  g_free_and_null (self->comment);
   g_free_and_null (self->port_group);
   g_free_and_null (self->ext_port_id);
   object_set_to_zero (self);

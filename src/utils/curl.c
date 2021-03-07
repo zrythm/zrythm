@@ -58,6 +58,8 @@ char *
 z_curl_get_page_contents (
   const char * url)
 {
+  g_debug ("getting page contents for %s...", url);
+
   CURL * curl = curl_easy_init ();
   g_return_val_if_fail (curl, NULL);
 
@@ -71,6 +73,8 @@ z_curl_get_page_contents (
     curl, CURLOPT_WRITEFUNCTION, curl_to_string);
   curl_easy_setopt (
     curl, CURLOPT_WRITEDATA, page_str);
+  curl_easy_setopt (
+    curl, CURLOPT_TIMEOUT, 1);
   curl_easy_setopt (
     curl, CURLOPT_USERAGENT,
     "zrythm-daw/" PACKAGE_VERSION);
@@ -92,7 +96,12 @@ z_curl_get_page_contents (
 
   curl_easy_cleanup (curl);
 
-  g_return_val_if_fail (page, NULL);
+  if (!page)
+    {
+      g_warning ("failed getting page contents");
+    }
+
+  g_debug ("done getting page contents for %s", url);
 
   return page;
 }

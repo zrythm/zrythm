@@ -1637,7 +1637,8 @@ channel_remove_plugin (
       plugin_close_ui (plugin);
 
       plugin_disconnect (plugin);
-      free_later (plugin, plugin_free);
+      object_free_w_func_and_null (
+        plugin_free, plugin);
     }
 
   /*plugin_set_is_project (plugin, false);*/
@@ -2036,7 +2037,7 @@ channel_reattach_midi_editor_manual_press_port (
 AutomationTrack *
 channel_get_automation_track (
   Channel *       channel,
-  uint64_t        port_flags)
+  PortFlags       port_flags)
 {
   Track * track = channel_get_track (channel);
   AutomationTracklist * atl =

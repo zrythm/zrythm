@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,6 +51,7 @@
 #include "settings/settings.h"
 #include "utils/lilv.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -72,23 +73,23 @@ void
 lv2_gtk_on_window_destroy (
   Lv2Plugin * plugin)
 {
+  Plugin * pl = plugin->plugin;
+
+  Port ** ports = NULL;
+  size_t max_size = 0;
+  int num_ports = 0;
+  plugin_append_ports (
+    pl, &ports, &max_size, true, &num_ports);
+
   /* reinit widget in plugin ports and controls */
-  int num_ctrls = plugin->controls.n_controls;
-  int i;
-  for (i = 0; i < num_ctrls; i++)
+  for (int i = 0; i < num_ports; i++)
     {
-      Lv2Control * control =
-        plugin->controls.controls[i];
+      Port * port = ports[i];
 
-      control->widget = NULL;
-    }
-
-  for (i = 0; i < plugin->num_ports; i++)
-    {
-      Lv2Port * port =
-        &plugin->ports[i];
-
-      port->widget = NULL;
+      if (port->widget)
+        {
+          port->widget = NULL;
+        }
     }
 
   suil_instance_free (plugin->ui_instance);
@@ -394,17 +395,16 @@ lv2_gtk_on_delete_preset_activate (
 /**
  * Eventually called by the callbacks when the user
  * changes a widget value (e.g., the slider changed
- * callback).
- *
- * Calls lv2_control_set_control to change the
- * value.
+ * callback) and updates the port values if plugin
+ * is not updating.
  */
 static void
 set_control (
-  const Lv2Control* control,
-  uint32_t         size,
-  LV2_URID         type,
-  const void*      body)
+  Lv2Plugin *  lv2_plugin,
+  Port *       port,
+  uint32_t     size,
+  LV2_URID     type,
+  const void * body)
 {
 #if 0
   g_debug (
@@ -414,10 +414,68 @@ set_control (
     control->plugin->updating);
 #endif
 
-  if (!control->plugin->updating)
+  if (lv2_plugin->updating)
+    return;
+
+  bool is_property =
+    port->id.flags & PORT_FLAG_IS_PROPERTY;
+
+  if (!is_property &&
+      port->value_type == lv2_plugin->forge.Float)
     {
-      lv2_control_set_control (
-        control, size, type, body);
+      g_debug (
+        "setting float control '%s' to '%f'",
+        port->id.sym,
+        (double) * (float *) body);
+
+      port->control = *(float*) body;
+      port->unsnapped_control = *(float*)body;
+    }
+  else if (is_property)
+    {
+      g_debug (
+        "setting property control '%s' to '%s'",
+        port->id.sym,
+        (char *) body);
+
+      /* Copy forge since it is used by process
+       * thread */
+      LV2_Atom_Forge forge = lv2_plugin->forge;
+      LV2_Atom_Forge_Frame frame;
+      uint8_t buf[1024];
+
+      /* forge patch set atom */
+      lv2_atom_forge_set_buffer (
+        &forge, buf, sizeof (buf));
+      lv2_atom_forge_object (
+        &forge, &frame, 0, PM_URIDS.patch_Set);
+      lv2_atom_forge_key (
+        &forge, PM_URIDS.patch_property);
+      lv2_atom_forge_urid (
+        &forge,
+        lv2_urid_map_uri (
+          lv2_plugin, port->id.uri));
+      lv2_atom_forge_key (
+        &forge, PM_URIDS.patch_value);
+      lv2_atom_forge_atom (
+        &forge, size, type);
+      lv2_atom_forge_write (
+        &forge, body, size);
+
+      const LV2_Atom* atom =
+        lv2_atom_forge_deref (
+          &forge, frame.ref);
+      g_return_if_fail (
+        lv2_plugin->control_in >= 0 &&
+        lv2_plugin->control_in < 400000);
+      lv2_ui_send_event_from_ui_to_plugin (
+        lv2_plugin, lv2_plugin->control_in,
+        lv2_atom_total_size (atom),
+        PM_URIDS.atom_eventTransfer, atom);
+    }
+  else
+    {
+      g_warning ("control change not handled");
     }
 }
 
@@ -427,71 +485,58 @@ set_control (
  */
 void
 lv2_gtk_set_float_control (
-  const Lv2Control* control,
-  float value)
+  Lv2Plugin * lv2_plugin,
+  Port *      port,
+  float       value)
 {
+  LV2_URID type = port->value_type;
+
   /*g_message ("lv2_gtk_set_float_control");*/
-  if (control->value_type ==
-      control->plugin->forge.Int)
+  if (type == lv2_plugin->forge.Int)
     {
-      const int32_t ival = lrint(value);
-      set_control (control,
-                   sizeof(ival),
-                   control->plugin->forge.Int,
-                   &ival);
+      const int32_t ival = lrint (value);
+      set_control (
+        lv2_plugin, port, sizeof (ival), type,
+        &ival);
     }
-  else if (control->value_type ==
-           control->plugin->forge.Long)
+  else if (type == lv2_plugin->forge.Long)
     {
       const int64_t lval = lrint(value);
-      set_control (control,
-                   sizeof(lval),
-                   control->plugin->forge.Long,
-                   &lval);
+      set_control (
+        lv2_plugin, port, sizeof (lval), type,
+        &lval);
     }
-  else if (control->value_type ==
-           control->plugin->forge.Float)
+  else if (type == lv2_plugin->forge.Float)
     {
-      set_control (control,
-                   sizeof(value),
-                   control->plugin->forge.Float,
-                   &value);
+      set_control (
+        lv2_plugin, port, sizeof (value),
+        type, &value);
     }
-  else if (control->value_type ==
-           control->plugin->forge.Double)
+  else if (type == lv2_plugin->forge.Double)
     {
       const double dval = value;
-      set_control (control,
-                   sizeof(dval),
-                   control->plugin->forge.Double,
-                   &dval);
+      set_control (
+        lv2_plugin, port, sizeof (dval), type,
+        &dval);
     }
-  else if (control->value_type ==
-           control->plugin->forge.Bool)
+  else if (type == lv2_plugin->forge.Bool)
     {
       const int32_t ival = value;
-      set_control (control,
-                   sizeof(ival),
-                   control->plugin->forge.Bool,
-                   &ival);
+      set_control (
+        lv2_plugin, port, sizeof (ival), type,
+        &ival);
     }
-  /*else*/
-    /*{*/
-      /*[> FIXME ? <]*/
-      /*set_control (control,*/
-                   /*sizeof(value),*/
-                   /*control->plugin->forge.Float,*/
-                   /*&value);*/
-    /*}*/
 
   PluginGtkController * controller =
-    (PluginGtkController *) control->widget;
+    (PluginGtkController *) port->widget;
   if (controller && controller->spin &&
       !math_floats_equal (
         gtk_spin_button_get_value (
           controller->spin), value))
-    gtk_spin_button_set_value (
-      controller->spin, value);
+    {
+      gtk_spin_button_set_value (
+        controller->spin, value);
+    }
 }
 
 static double
@@ -680,24 +725,20 @@ patch_put_get(
  */
 static void
 property_changed (
-  Lv2Plugin* plugin,
-  LV2_URID key,
-  const LV2_Atom* value)
+  Lv2Plugin *      plugin,
+  LV2_URID         key,
+  const LV2_Atom * value)
 {
-  Lv2Control* control =
-    lv2_get_property_control (
-      &plugin->controls, key);
-  if (control)
+  Port * port =
+    lv2_plugin_get_property_port (plugin, key);
+  if (port)
     {
       g_message (
         "LV2 plugin property for %s changed",
-        lilv_node_as_string (control->symbol));
+        port->id.sym);
       control_changed (
-        plugin,
-        (PluginGtkController*)control->widget,
-        value->size,
-        value->type,
-        value + 1);
+        plugin, port->widget, value->size,
+        value->type, value + 1);
     }
   else
     {
@@ -714,35 +755,43 @@ property_changed (
  */
 void
 lv2_gtk_ui_port_event (
-  Lv2Plugin *  plugin,
+  Lv2Plugin *  lv2_plugin,
   uint32_t     port_index,
   uint32_t     buffer_size,
   uint32_t     protocol,
   const void * buffer)
 {
-  if (plugin->ui_instance)
+  if (lv2_plugin->ui_instance)
     {
       suil_instance_port_event (
-        plugin->ui_instance, port_index,
+        lv2_plugin->ui_instance, port_index,
         buffer_size, protocol, buffer);
       return;
     }
-  else if (protocol == 0 &&
-           (PluginGtkController*)plugin->ports[
-             port_index].widget)
+
+  if (protocol == 0)
     {
-      control_changed (
-        plugin,
-        (PluginGtkController*)plugin->ports[port_index].widget,
-        buffer_size,
-        plugin->forge.Float,
-        buffer);
-      return;
+      Plugin * pl = lv2_plugin->plugin;
+      g_return_if_fail (
+        (int) port_index < pl->num_lilv_ports);
+      Port * port = pl->lilv_ports[port_index];
+
+      if (port->widget)
+        {
+          control_changed (
+            lv2_plugin, port->widget,
+            buffer_size, lv2_plugin->forge.Float,
+            buffer);
+          return;
+        }
+      else
+        {
+          /* no widget (probably notOnGUI) */
+          return;
+        }
     }
-  else if (protocol == 0)
-    return;  // No widget (probably notOnGUI)
   else if (protocol !=
-           PM_URIDS.atom_eventTransfer)
+             PM_URIDS.atom_eventTransfer)
     {
       g_warning ("Unknown port event protocol");
       return;
@@ -750,9 +799,9 @@ lv2_gtk_ui_port_event (
 
   const LV2_Atom* atom = (const LV2_Atom*)buffer;
   if (lv2_atom_forge_is_object_type (
-        &plugin->forge, atom->type))
+        &lv2_plugin->forge, atom->type))
     {
-      plugin->updating = true;
+      lv2_plugin->updating = true;
       const LV2_Atom_Object* obj =
         (const LV2_Atom_Object*)buffer;
       if (obj->body.otype ==
@@ -761,67 +810,90 @@ lv2_gtk_ui_port_event (
           const LV2_Atom_URID* property = NULL;
           const LV2_Atom*      value    = NULL;
           if (!patch_set_get (
-                 plugin, obj, &property, &value))
+                 lv2_plugin, obj, &property,
+                 &value))
             {
               property_changed (
-                plugin, property->body, value);
+                lv2_plugin, property->body, value);
             }
         }
       else if (obj->body.otype ==
                PM_URIDS.patch_Put)
         {
           const LV2_Atom_Object* body = NULL;
-          if (!patch_put_get(plugin, obj, &body))
+          if (!patch_put_get(
+                 lv2_plugin, obj, &body))
             {
               LV2_ATOM_OBJECT_FOREACH (body, prop)
                 {
                   property_changed (
-                    plugin, prop->key, &prop->value);
+                    lv2_plugin, prop->key,
+                    &prop->value);
                 }
             }
         }
       else
         g_warning ("Unknown object type?");
-      plugin->updating = false;
+      lv2_plugin->updating = false;
     }
 }
 
 static gboolean
 scale_changed (
-  GtkRange* range, gpointer data)
+  GtkRange * range,
+  Port *     port)
 {
   /*g_message ("scale changed");*/
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (port), false);
+  Plugin * pl = port_get_plugin (port, true);
+  g_return_val_if_fail (
+    IS_PLUGIN_AND_NONNULL (pl), false);
+  Lv2Plugin * lv2_plugin = pl->lv2;
+  g_return_val_if_fail (lv2_plugin, false);
+
   lv2_gtk_set_float_control (
-    (const Lv2Control*)data,
+    lv2_plugin, port,
     gtk_range_get_value(range));
   return FALSE;
 }
 
 static gboolean
 spin_changed (
-  GtkSpinButton* spin, gpointer data)
+  GtkSpinButton * spin,
+  Port *          port)
 {
-  const Lv2Control* control =
-    (const Lv2Control*)data;
   PluginGtkController* controller =
-    (PluginGtkController*)control->widget;
+    port->widget;
   GtkRange* range =
     GTK_RANGE (controller->control);
   const double value =
-    gtk_spin_button_get_value(spin);
+    gtk_spin_button_get_value (spin);
   if (!math_doubles_equal (
         gtk_range_get_value (range), value))
-    gtk_range_set_value (range, value);
+    {
+      gtk_range_set_value (range, value);
+    }
 
   return FALSE;
 }
 
 static gboolean
-log_scale_changed (GtkRange* range, gpointer data)
+log_scale_changed (
+  GtkRange* range,
+  Port *     port)
 {
   /*g_message ("log scale changed");*/
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (port), false);
+  Plugin * pl = port_get_plugin (port, true);
+  g_return_val_if_fail (
+    IS_PLUGIN_AND_NONNULL (pl), false);
+  Lv2Plugin * lv2_plugin = pl->lv2;
+  g_return_val_if_fail (lv2_plugin, false);
+
   lv2_gtk_set_float_control (
-    (const Lv2Control*)data,
+    lv2_plugin, port,
     expf (gtk_range_get_value (range)));
 
   return FALSE;
@@ -829,30 +901,30 @@ log_scale_changed (GtkRange* range, gpointer data)
 
 static gboolean
 log_spin_changed (
-  GtkSpinButton* spin, gpointer data)
+  GtkSpinButton * spin,
+  Port *          port)
 {
-  const Lv2Control* control =
-    (const Lv2Control*)data;
-  PluginGtkController* controller =
-    (PluginGtkController*)control->widget;
-  GtkRange* range =
-    GTK_RANGE(controller->control);
+  PluginGtkController * controller =
+    port->widget;
+  GtkRange * range =
+    GTK_RANGE (controller->control);
   const double value =
     gtk_spin_button_get_value (spin);
   if (!math_doubles_equal (
         gtk_range_get_value (range),
         logf (value)))
-    gtk_range_set_value (range, logf(value));
+    {
+      gtk_range_set_value (range, logf(value));
+    }
 
   return FALSE;
 }
 
 static void
-combo_changed (GtkComboBox* box, gpointer data)
+combo_changed (
+  GtkComboBox * box,
+  Port *        port)
 {
-  const Lv2Control* control =
-    (const Lv2Control*)data;
-
   GtkTreeIter iter;
   if (gtk_combo_box_get_active_iter (box, &iter))
     {
@@ -865,7 +937,16 @@ combo_changed (GtkComboBox* box, gpointer data)
       const double v = g_value_get_float(&value);
       g_value_unset(&value);
 
-      lv2_gtk_set_float_control(control, v);
+      g_return_if_fail (
+        IS_PORT_AND_NONNULL (port));
+      Plugin * pl = port_get_plugin (port, true);
+      g_return_if_fail (
+        IS_PLUGIN_AND_NONNULL (pl));
+      Lv2Plugin * lv2_plugin = pl->lv2;
+      g_return_if_fail (lv2_plugin);
+
+      lv2_gtk_set_float_control (
+        lv2_plugin, port, v);
     }
 }
 
@@ -873,73 +954,102 @@ static gboolean
 switch_state_set (
   GtkSwitch * button,
   gboolean    state,
-  gpointer    data)
+  Port *      port)
 {
   /*g_message ("toggle_changed");*/
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (port), false);
+  Plugin * pl = port_get_plugin (port, true);
+  g_return_val_if_fail (
+    IS_PLUGIN_AND_NONNULL (pl), false);
+  Lv2Plugin * lv2_plugin = pl->lv2;
+  g_return_val_if_fail (lv2_plugin, false);
+
   lv2_gtk_set_float_control (
-    (const Lv2Control*)data,
+    lv2_plugin, port,
     state ? 1.0f : 0.0f);
   return FALSE;
 }
 
 static void
 string_changed (
-  GtkEntry* widget, gpointer data)
+  GtkEntry * widget,
+  Port *     port)
 {
-  Lv2Control* control = (Lv2Control*)data;
   const char* string =
-    gtk_entry_get_text(widget);
+    gtk_entry_get_text (widget);
 
-  set_control (control,
-               strlen(string) + 1,
-               control->plugin->forge.String,
-               string);
+  g_return_if_fail (
+    IS_PORT_AND_NONNULL (port));
+  Plugin * pl = port_get_plugin (port, true);
+  g_return_if_fail (
+    IS_PLUGIN_AND_NONNULL (pl));
+  Lv2Plugin * lv2_plugin = pl->lv2;
+  g_return_if_fail (lv2_plugin);
+
+  set_control (
+    lv2_plugin, port,
+    strlen (string) + 1, lv2_plugin->forge.String,
+    string);
 }
 
 static void
 file_changed (
-  GtkFileChooserButton* widget,
-  gpointer              data)
+  GtkFileChooserButton * widget,
+  Port *                 port)
 {
-  Lv2Control* control = (Lv2Control*)data;
-  Lv2Plugin*       plugin     = control->plugin;
   const char* filename = gtk_file_chooser_get_filename(
-    GTK_FILE_CHOOSER(widget));
+    GTK_FILE_CHOOSER (widget));
+
+  g_return_if_fail (
+    IS_PORT_AND_NONNULL (port));
+  Plugin * pl = port_get_plugin (port, true);
+  g_return_if_fail (
+    IS_PLUGIN_AND_NONNULL (pl));
+  Lv2Plugin * lv2_plugin = pl->lv2;
+  g_return_if_fail (lv2_plugin);
 
   set_control (
-    control, strlen (filename),
-    plugin->forge.Path, filename);
+    lv2_plugin, port, strlen (filename),
+    lv2_plugin->forge.Path, filename);
 }
 
-static PluginGtkController*
-new_controller(GtkSpinButton* spin, GtkWidget* control)
+static PluginGtkController *
+new_controller (
+  GtkSpinButton * spin,
+  GtkWidget *     control)
 {
-  PluginGtkController* controller = (PluginGtkController*)calloc(1, sizeof(PluginGtkController));
-  controller->spin    = spin;
+  PluginGtkController * controller =
+    object_new (PluginGtkController);
+
+  controller->spin = spin;
   controller->control = control;
+
   return controller;
 }
 
-static PluginGtkController*
+static PluginGtkController *
 make_combo (
-  Lv2Control * record,
-  float        value)
+  Port * port,
+  float  value)
 {
   GtkListStore* list_store =
     gtk_list_store_new (
       2, G_TYPE_FLOAT, G_TYPE_STRING);
   int active = -1;
-  for (size_t i = 0; i < record->n_points; ++i)
+  for (int i = 0; i < port->num_scale_points; i++)
     {
-      const Lv2ScalePoint * point =
-        &record->points[i];
-      GtkTreeIter       iter;
-      gtk_list_store_append(list_store, &iter);
-      gtk_list_store_set(list_store, &iter,
-                         0, point->value,
-                         1, point->label,
-                         -1);
-      if (fabs(value - point->value) < FLT_EPSILON)
+      PortScalePoint * point =
+        &port->scale_points[i];
+
+      GtkTreeIter iter;
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, point->val,
+        1, point->label,
+        -1);
+      if (fabs(value - point->val) < FLT_EPSILON)
         {
           active = i;
         }
@@ -952,8 +1062,8 @@ make_combo (
     GTK_COMBO_BOX (combo), active);
   g_object_unref (list_store);
 
-  gtk_widget_set_sensitive (
-    combo, record->is_writable);
+  bool is_input = port->id.flow == FLOW_INPUT;
+  gtk_widget_set_sensitive (combo, is_input);
 
   GtkCellRenderer * cell =
     gtk_cell_renderer_text_new ();
@@ -962,11 +1072,11 @@ make_combo (
   gtk_cell_layout_set_attributes (
     GTK_CELL_LAYOUT (combo), cell, "text", 1, NULL);
 
-  if (record->is_writable)
+  if (is_input)
     {
       g_signal_connect (
         G_OBJECT (combo), "changed",
-        G_CALLBACK (combo_changed), record);
+        G_CALLBACK (combo_changed), port);
     }
 
   return new_controller (NULL, combo);
@@ -974,15 +1084,11 @@ make_combo (
 
 static PluginGtkController *
 make_log_slider (
-  Lv2Control * record,
-  float        value)
+  Port * port,
+  float  value)
 {
-  const float min =
-    lilv_get_float_from_node_with_fallback (
-      record->min, 0.0f);
-  const float max =
-    lilv_get_float_from_node_with_fallback (
-      record->max, 1.0f);
+  const float min = port->minf;
+  const float max = port->maxf;
   const float lmin = logf (min);
   const float lmax = logf (max);
   const float ldft = logf (value);
@@ -996,10 +1102,9 @@ make_log_slider (
     gtk_spin_button_new_with_range (
       min, max, 0.000001);
 
-  gtk_widget_set_sensitive (
-    scale, record->is_writable);
-  gtk_widget_set_sensitive (
-    spin, record->is_writable);
+  bool is_input = port->id.flow == FLOW_INPUT;
+  gtk_widget_set_sensitive (scale, is_input);
+  gtk_widget_set_sensitive (spin, is_input);
 
   gtk_widget_set_hexpand (scale, 1);
 
@@ -1010,14 +1115,14 @@ make_log_slider (
   gtk_spin_button_set_value (
     GTK_SPIN_BUTTON (spin), value);
 
-  if (record->is_writable)
+  if (is_input)
     {
       g_signal_connect (
         G_OBJECT (scale), "value-changed",
-        G_CALLBACK (log_scale_changed), record);
+        G_CALLBACK (log_scale_changed), port);
       g_signal_connect (
         G_OBJECT (spin), "value-changed",
-        G_CALLBACK (log_spin_changed), record);
+        G_CALLBACK (log_spin_changed), port);
     }
 
   return
@@ -1026,15 +1131,16 @@ make_log_slider (
 }
 
 static PluginGtkController*
-make_slider(Lv2Control* record, float value)
+make_slider (
+  Port * port,
+  float value)
 {
-  const float min =
-    lilv_get_float_from_node_with_fallback (
-      record->min, 0.0f);
-  const float max =
-    lilv_get_float_from_node_with_fallback (
-      record->max, 1.0f);
-  const double step  = record->is_integer ? 1.0 : ((max - min) / 100.0);
+  const float min = port->minf;
+  const float max = port->maxf;
+  bool is_integer =
+    port->id.flags & PORT_FLAG_INTEGER;
+  const double step  =
+    is_integer ? 1.0 : ((max - min) / 100.0);
   GtkWidget * scale =
     gtk_scale_new_with_range (
       GTK_ORIENTATION_HORIZONTAL, min, max, step);
@@ -1043,51 +1149,70 @@ make_slider(Lv2Control* record, float value)
   GtkWidget * spin =
     gtk_spin_button_new_with_range (min, max, step);
 
-  gtk_widget_set_sensitive (
-    scale, record->is_writable);
-  gtk_widget_set_sensitive (
-    spin, record->is_writable);
+  bool is_input = port->id.flow == FLOW_INPUT;
+  gtk_widget_set_sensitive (scale, is_input);
+  gtk_widget_set_sensitive (spin, is_input);
 
   gtk_widget_set_hexpand (scale, 1);
 
-  if (record->is_integer) {
-          gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 0);
-  } else {
-          gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 7);
-  }
+  if (is_integer)
+    {
+      gtk_spin_button_set_digits (
+        GTK_SPIN_BUTTON (spin), 0);
+    }
+  else
+    {
+      gtk_spin_button_set_digits (
+        GTK_SPIN_BUTTON (spin), 7);
+    }
 
-  gtk_scale_set_draw_value(GTK_SCALE(scale), FALSE);
-  gtk_range_set_value(GTK_RANGE(scale), value);
-  gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), value);
-  if (record->points) {
-          for (size_t i = 0; i < record->n_points; ++i) {
-                  const Lv2ScalePoint* point = &record->points[i];
+  gtk_scale_set_draw_value (
+    GTK_SCALE (scale), FALSE);
+  gtk_range_set_value (GTK_RANGE(scale), value);
+  gtk_spin_button_set_value (
+    GTK_SPIN_BUTTON (spin), value);
+  if (port->num_scale_points > 0)
+    {
+      for (int i = 0; i < port->num_scale_points;
+           i++)
+        {
+          const PortScalePoint * point =
+            &port->scale_points[i];
 
-                  gchar* str = g_markup_printf_escaped(
-                          "<span font_size=\"small\">%s</span>", point->label);
-                  gtk_scale_add_mark(
-                          GTK_SCALE(scale), point->value, GTK_POS_TOP, str);
-          }
-  }
+          char * str =
+            g_markup_printf_escaped (
+              "<span font_size=\"small\">"
+              "%s</span>", point->label);
+          gtk_scale_add_mark (
+            GTK_SCALE (scale), point->val,
+            GTK_POS_TOP, str);
+        }
+    }
 
-  if (record->is_writable) {
-          g_signal_connect(G_OBJECT(scale), "value-changed",
-                           G_CALLBACK(scale_changed), record);
-          g_signal_connect(G_OBJECT(spin), "value-changed",
-                           G_CALLBACK(spin_changed), record);
-  }
+  if (is_input)
+    {
+      g_signal_connect (
+        G_OBJECT (scale), "value-changed",
+        G_CALLBACK(scale_changed), port);
+      g_signal_connect (
+        G_OBJECT (spin), "value-changed",
+        G_CALLBACK (spin_changed), port);
+    }
 
-  return new_controller(GTK_SPIN_BUTTON(spin), scale);
+  return
+    new_controller (GTK_SPIN_BUTTON (spin), scale);
 }
 
 static PluginGtkController*
-make_toggle(Lv2Control* record, float value)
+make_toggle (
+  Port * port,
+  float  value)
 {
   GtkWidget * check = gtk_switch_new ();
   gtk_widget_set_halign (check, GTK_ALIGN_START);
 
-  gtk_widget_set_sensitive (
-    check, record->is_writable);
+  bool is_input = port->id.flow == FLOW_INPUT;
+  gtk_widget_set_sensitive (check, is_input);
 
   if (value)
     {
@@ -1095,129 +1220,147 @@ make_toggle(Lv2Control* record, float value)
         GTK_SWITCH (check), TRUE);
     }
 
-  if (record->is_writable)
+  if (is_input)
     {
       g_signal_connect (
         G_OBJECT (check), "state-set",
-        G_CALLBACK (switch_state_set), record);
+        G_CALLBACK (switch_state_set), port);
     }
 
   return new_controller (NULL, check);
 }
 
 static PluginGtkController*
-make_entry(Lv2Control* control)
+make_entry (
+  Port * port)
 {
   GtkWidget* entry = gtk_entry_new();
 
-  gtk_widget_set_sensitive(entry, control->is_writable);
-  if (control->is_writable) {
-    g_signal_connect(G_OBJECT(entry), "activate",
-                     G_CALLBACK(string_changed), control);
-  }
+  bool is_input = port->id.flow == FLOW_INPUT;
+  gtk_widget_set_sensitive (entry, is_input);
+  if (is_input)
+    {
+      g_signal_connect (
+        G_OBJECT (entry), "activate",
+        G_CALLBACK (string_changed), port);
+    }
 
-  return new_controller(NULL, entry);
+  return new_controller (NULL, entry);
 }
 
 static PluginGtkController*
-make_file_chooser(Lv2Control* record)
+make_file_chooser (
+  Port * port)
 {
-  GtkWidget* button = gtk_file_chooser_button_new(
-    "Open File", GTK_FILE_CHOOSER_ACTION_OPEN);
+  GtkWidget * button =
+    gtk_file_chooser_button_new (
+    _("Open File"), GTK_FILE_CHOOSER_ACTION_OPEN);
 
-  gtk_widget_set_sensitive(button, record->is_writable);
+  bool is_input = port->id.flow == FLOW_INPUT;
+  gtk_widget_set_sensitive (button, is_input);
 
-  if (record->is_writable) {
-    g_signal_connect(G_OBJECT(button), "file-set",
-                     G_CALLBACK(file_changed), record);
-  }
+  if (is_input)
+    {
+      g_signal_connect (
+        G_OBJECT (button), "file-set",
+        G_CALLBACK (file_changed), port);
+    }
 
-  return new_controller(NULL, button);
+  return new_controller (NULL, button);
 }
 
-static PluginGtkController*
+static PluginGtkController *
 make_controller (
-  Lv2Control * control, float value)
+  Port * port,
+  float  value)
 {
-  PluginGtkController* controller = NULL;
+  PluginGtkController * controller = NULL;
 
-  if (control->is_toggle) {
-    controller = make_toggle (control, value);
-  } else if (control->is_enumeration) {
-    controller = make_combo (control, value);
-  } else if (control->is_logarithmic) {
-    controller = make_log_slider (control, value);
-  } else {
-    controller = make_slider (control, value);
-  }
+  if (port->id.flags & PORT_FLAG_TOGGLE)
+    {
+      controller = make_toggle (port, value);
+    }
+  else if (port->id.flags2 & PORT_FLAG2_ENUMERATION)
+    {
+      controller = make_combo (port, value);
+    }
+  else if (port->id.flags & PORT_FLAG_LOGARITHMIC)
+    {
+      controller = make_log_slider (port, value);
+    }
+  else
+    {
+      controller = make_slider (port, value);
+    }
 
   if (controller)
     {
-      g_return_val_if_fail (control->port, NULL);
-      controller->port = control->port->port;
+      controller->port = port;
     }
 
   return controller;
 }
 
 static int
-control_group_cmp(const void* p1, const void* p2, void* data)
+control_group_cmp (
+  const void* p1, const void* p2, void* data)
 {
-  const Lv2Control* control1 = *(const Lv2Control**)p1;
-  const Lv2Control* control2 = *(const Lv2Control**)p2;
+  const Port * control1 = *(const Port **)p1;
+  const Port * control2 = *(const Port **)p2;
 
-  const int cmp = (control1->group && control2->group)
-    ? strcmp(lilv_node_as_string(control1->group),
-             lilv_node_as_string(control2->group))
-    : ((intptr_t)control1->group - (intptr_t)control2->group);
+  g_return_val_if_fail (IS_PORT (control1), -1);
+  g_return_val_if_fail (IS_PORT (control2), -1);
 
-  return cmp;
+  return
+    (control1->id.port_group &&
+     control2->id.port_group) ?
+      strcmp (
+        control1->id.port_group,
+        control2->id.port_group) : 0;
 }
 
 GtkWidget*
 lv2_gtk_build_control_widget (
-  Lv2Plugin* plugin, GtkWindow* window)
+  Lv2Plugin * lv2_plugin,
+  GtkWindow * window)
 {
-  GtkWidget* port_table =
-    gtk_grid_new ();
+  Plugin * pl = lv2_plugin->plugin;
 
-  /* Make an array of controls sorted by group */
-  GArray* controls =
-    g_array_new (FALSE, TRUE, sizeof(Lv2Control*));
-  int i;
-  for (i = 0;
-       i < plugin->controls.n_controls; ++i)
+  GtkWidget * port_table = gtk_grid_new ();
+
+  /* Make an array of ports sorted by group */
+  GArray * controls =
+    g_array_new (false, true, sizeof (Port *));
+  for (int i = 0; i < pl->num_in_ports; i++)
     {
-      g_array_append_vals (
-        controls, &plugin->controls.controls[i], 1);
+      Port * port = pl->in_ports[i];
+      if (port->id.type != TYPE_CONTROL)
+        continue;
+
+      g_array_append_vals (controls, &port, 1);
     }
   g_array_sort_with_data (
-    controls, control_group_cmp, plugin);
+    controls, control_group_cmp, lv2_plugin);
 
   /* Add controls in group order */
-  LilvNode* last_group = NULL;
+  const char * last_group = NULL;
   int n_rows = 0;
   int num_ctrls = controls->len;
-  for (i = 0; i < num_ctrls; ++i)
+  for (int i = 0; i < num_ctrls; ++i)
     {
-      Lv2Control * record =
-        g_array_index (controls, Lv2Control*, i);
-      PluginGtkController * controller = NULL;
-      LilvNode * group = record->group;
+      Port * port =
+        g_array_index (controls, Port *, i);
+      PluginGtkController  * controller = NULL;
+      const char * group = port->id.port_group;
 
       /* Check group and add new heading if
        * necessary */
-      if (group &&
-          !lilv_node_equals (group, last_group))
+      if (group && group != last_group)
         {
-          LilvNode* group_name =
-            lilv_world_get (
-              LILV_WORLD, group,
-              PM_GET_NODE (LV2_CORE__name), NULL);
-          GtkWidget* group_label =
+          const char * group_name = group;
+          GtkWidget * group_label =
             plugin_gtk_new_label (
-              lilv_node_as_string (group_name),
-              true, false, 0.0f, 1.0f);
+              group_name, true, false, 0.0f, 1.0f);
           gtk_grid_attach (
             GTK_GRID (port_table), group_label,
             0, n_rows, 2, 1);
@@ -1226,61 +1369,48 @@ lv2_gtk_build_control_widget (
       last_group = group;
 
       /* Make control widget */
-      if (record->value_type ==
-            plugin->forge.String)
+      if (port->value_type ==
+            lv2_plugin->forge.String)
         {
-          controller = make_entry (record);
+          controller = make_entry (port);
         }
-      else if (record->value_type ==
-               plugin->forge.Path)
+      else if (port->value_type ==
+                 lv2_plugin->forge.Path)
         {
-          controller = make_file_chooser (record);
+          controller = make_file_chooser (port);
         }
       else
         {
-          const float val =
-            lilv_get_float_from_node_with_fallback (
-              record->def, 0.0f);
           controller =
-            make_controller (record, val);
+            make_controller (port, port->deff);
         }
 
-      record->widget = controller;
-      if (record->type == PORT)
-        plugin->ports[record->index].widget =
-          controller;
+      port->widget = controller;
       if (controller)
         {
           /* Add row to table for this controller */
           plugin_gtk_add_control_row (
             port_table, n_rows++,
-            (record->label
-             ? lilv_node_as_string (record->label)
-             : lilv_node_as_uri (record->node)),
+            (port->id.label ?
+               port->id.label : port->id.sym),
             controller);
 
           /* Set tooltip text from comment,
            * if available */
-          LilvNode* comment =
-            lilv_world_get (
-              LILV_WORLD, record->node,
-              PM_GET_NODE (
-                LILV_NS_RDFS "comment"), NULL);
-          if (comment)
+          if (port->id.comment)
             {
               gtk_widget_set_tooltip_text (
                 controller->control,
-                lilv_node_as_string(comment));
+                port->id.comment);
             }
-          lilv_node_free(comment);
         }
     }
 
   if (n_rows > 0)
     {
       gtk_window_set_resizable (
-        GTK_WINDOW(window), TRUE);
-      GtkWidget* box =
+        GTK_WINDOW (window), TRUE);
+      GtkWidget * box =
         gtk_box_new (
           GTK_ORIENTATION_HORIZONTAL, 0.0);
       /*gtk_alignment_set_padding(GTK_ALIGNMENT(alignment), 0, 0, 8, 8);*/
@@ -1301,13 +1431,14 @@ lv2_gtk_build_control_widget (
         button, "clicked",
         G_CALLBACK (gtk_widget_destroy), window);
       gtk_window_set_resizable (
-        GTK_WINDOW(window), FALSE);
+        GTK_WINDOW (window), FALSE);
       return button;
     }
 }
 
 void
-on_external_ui_closed(void* controller)
+on_external_ui_closed (
+  void * controller)
 {
   g_message ("External LV2 UI closed");
   Lv2Plugin* self = (Lv2Plugin *) controller;
@@ -1320,43 +1451,50 @@ on_external_ui_closed(void* controller)
  *
  * @note This is a GSourceFunc.
  */
+NONNULL
 static int
 update_plugin_ui (
-  Lv2Plugin * plugin)
+  Lv2Plugin * lv2_plugin)
 {
   /* Check quit flag and close if set. */
-  if (zix_sem_try_wait (&plugin->exit_sem))
+#if 0
+  if (zix_sem_try_wait (&lv2_plugin->exit_sem))
     {
-      lv2_gtk_close_ui (plugin);
+      lv2_gtk_close_ui (lv2_plugin);
       return G_SOURCE_REMOVE;
     }
+#endif
+
+  Plugin * pl = lv2_plugin->plugin;
 
   /* Emit UI events. */
-  if (plugin->plugin->visible &&
-       (plugin->plugin->window ||
-        plugin->external_ui_widget))
+  if (pl->visible &&
+       (pl->window ||
+        lv2_plugin->external_ui_widget))
     {
       Lv2ControlChange ev;
       const size_t  space =
         zix_ring_read_space (
-          plugin->plugin_to_ui_events);
+          lv2_plugin->plugin_to_ui_events);
       for (size_t i = 0;
            i + sizeof(ev) < space;
            i += sizeof(ev) + ev.size)
         {
           /* Read event header to get the size */
           zix_ring_read (
-            plugin->plugin_to_ui_events,
+            lv2_plugin->plugin_to_ui_events,
             (char*)&ev, sizeof(ev));
 
           /* Resize read buffer if necessary */
-          plugin->ui_event_buf =
-            realloc (plugin->ui_event_buf, ev.size);
-          void* const buf = plugin->ui_event_buf;
+          lv2_plugin->ui_event_buf =
+            g_realloc (
+              lv2_plugin->ui_event_buf, ev.size);
+          void* const buf =
+            lv2_plugin->ui_event_buf;
 
           /* Read event body */
           zix_ring_read (
-            plugin->plugin_to_ui_events,
+            lv2_plugin->plugin_to_ui_events,
             (char*)buf, ev.size);
 
 #if 0
@@ -1382,13 +1520,12 @@ update_plugin_ui (
 #endif
 
           lv2_gtk_ui_port_event (
-            plugin, ev.index,
+            lv2_plugin, ev.index,
             ev.size, ev.protocol,
             ev.protocol == 0 ?
-            (void *)
-              &plugin->ports[ev.index].
-                port->control :
-            buf);
+              (void *)
+              &pl->lilv_ports[ev.index]->control :
+              buf);
 
 #if 0
           if (ev.protocol == 0)
@@ -1404,11 +1541,11 @@ update_plugin_ui (
 #endif
       }
 
-      if (plugin->has_external_ui &&
-          plugin->external_ui_widget)
+      if (lv2_plugin->has_external_ui &&
+          lv2_plugin->external_ui_widget)
         {
-          plugin->external_ui_widget->run (
-            plugin->external_ui_widget);
+          lv2_plugin->external_ui_widget->run (
+            lv2_plugin->external_ui_widget);
         }
     }
 
@@ -1558,9 +1695,11 @@ lv2_gtk_open_ui (
     plugin->plugin->ui_update_hz >=
       PLUGIN_MIN_REFRESH_RATE, -1);
 
-  g_timeout_add (
-    (int) (1000.f / plugin->plugin->ui_update_hz),
-    (GSourceFunc) update_plugin_ui, plugin);
+  plugin->plugin->update_ui_source_id =
+    g_timeout_add (
+      (int)
+      (1000.f / plugin->plugin->ui_update_hz),
+      (GSourceFunc) update_plugin_ui, plugin);
 
   return 0;
 }

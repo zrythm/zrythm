@@ -72,12 +72,13 @@ allocate_buf (
     {
       if (!self->buf)
         {
+          size_t max =
+            MAX (
+              AUDIO_ENGINE->block_length,
+              self->min_buf_size);
+          max = MAX (max, 1);
           self->buf =
-            object_new_n (
-              AUDIO_ENGINE->block_length > 0 ?
-                AUDIO_ENGINE->block_length :
-                1,
-              float);
+            object_new_n (max, float);
         }
     }
 }
@@ -669,22 +670,22 @@ port_find_from_identifier (
           if (id->flow == FLOW_INPUT)
             {
               if (flags2 &
-                    PORT_FLAG_TRANSPORT_ROLL)
+                    PORT_FLAG2_TRANSPORT_ROLL)
                 return TRANSPORT->roll;
               if (flags2 &
-                    PORT_FLAG_TRANSPORT_STOP)
+                    PORT_FLAG2_TRANSPORT_STOP)
                 return TRANSPORT->stop;
               if (flags2 &
-                    PORT_FLAG_TRANSPORT_BACKWARD)
+                    PORT_FLAG2_TRANSPORT_BACKWARD)
                 return TRANSPORT->backward;
               if (flags2 &
-                    PORT_FLAG_TRANSPORT_FORWARD)
+                    PORT_FLAG2_TRANSPORT_FORWARD)
                 return TRANSPORT->forward;
               if (flags2 &
-                    PORT_FLAG_TRANSPORT_LOOP_TOGGLE)
+                    PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
                 return TRANSPORT->loop_toggle;
               if (flags2 &
-                    PORT_FLAG_TRANSPORT_REC_TOGGLE)
+                    PORT_FLAG2_TRANSPORT_REC_TOGGLE)
                 return TRANSPORT->rec_toggle;
             }
           break;
@@ -1693,14 +1694,7 @@ port_connect (
   if (src->id.type == TYPE_CV &&
       dest->id.type == TYPE_CONTROL)
     {
-      if (dest->internal_type == INTERNAL_LV2_PORT)
-        {
-          g_return_val_if_fail (
-            dest->lv2_port->port, -1);
-          dest->base_value =
-            dest->lv2_port->port->control;
-        }
-      /*dest->has_modulators = 1;*/
+      dest->base_value = dest->control;
     }
 
 #if 0
@@ -1994,12 +1988,14 @@ port_update_identifier (
         }
     }
 
+#if 0
   if (self->lv2_port)
     {
       Lv2Port * port = self->lv2_port;
       port_identifier_copy (
         &port->port_id, &self->id);
     }
+#endif
 }
 
 /**
@@ -2674,14 +2670,14 @@ static void
 port_forward_control_change_event (
   Port * self)
 {
-  if (self->lv2_port)
+  /* if lv2 port/parameter */
+  if (self->value_type > 0)
     {
-      Lv2Port * lv2_port = self->lv2_port;
       Plugin * pl = port_get_plugin (self, 1);
-      g_return_if_fail (pl && pl->lv2);
-      Lv2Plugin * lv2_plugin = pl->lv2;
+      g_return_if_fail (
+        IS_PLUGIN_AND_NONNULL (pl) && pl->lv2);
       lv2_ui_send_control_val_event_from_plugin_to_ui (
-        lv2_plugin, lv2_port);
+        pl->lv2, self);
     }
   else if (
     self->id.owner_type ==
@@ -2861,10 +2857,13 @@ port_get_control_value (
   g_return_val_if_fail (
     self->id.type == TYPE_CONTROL, 0.f);
 
-  if (self->lv2_port)
+  /* verify that plugin exists if plugin control */
+  if (self->is_project &&
+      self->id.flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       Plugin * pl = port_get_plugin (self, 1);
-      g_return_val_if_fail (pl && pl->lv2, 0.f);
+      g_return_val_if_fail (
+        IS_PLUGIN_AND_NONNULL (pl), 0.f);
     }
 
   if (normalize)
@@ -2872,13 +2871,6 @@ port_get_control_value (
       return
         control_port_real_val_to_normalized (
           self, self->control);
-#if 0
-      float minf = self->minf;
-      float maxf = self->maxf;
-      return
-        (self->control - minf) /
-        (maxf - minf);
-#endif
     }
   else
     {
@@ -2886,32 +2878,16 @@ port_get_control_value (
     }
 }
 
-/**
- * Removes all the given ports from the project,
- * optionally freeing them.
- */
 int
-ports_remove (
-  Port ** ports,
-  int *   num_ports)
+port_scale_point_cmp (
+  const void * _a,
+  const void * _b)
 {
-  int i;
-  Port * port;
-
-  /* go through each port */
-  for (i = 0; i < *num_ports; i++)
-    {
-      port = ports[i];
-
-      /* assert no connections */
-      g_warn_if_fail (port->num_srcs == 0);
-      g_warn_if_fail (port->num_dests == 0);
-
-      free_later (port, port_free);
-    }
-  * num_ports = 0;
-
-  return i;
+  const PortScalePoint * a =
+    (PortScalePoint const *) _a;
+  const PortScalePoint * b =
+    (PortScalePoint const *) _b;
+  return a->val - b->val > 0.f;
 }
 
 /**
@@ -3571,7 +3547,9 @@ port_process (
               PORT_OWNER_TYPE_PREFADER ||
             port->id.flags & PORT_FLAG_TP_MONO ||
             port->id.flags &
-              PORT_FLAG_TP_INPUT_GAIN)
+              PORT_FLAG_TP_INPUT_GAIN ||
+            !(port->id.flags &
+                PORT_FLAG_AUTOMATABLE))
           {
             break;
           }
@@ -4201,6 +4179,9 @@ port_free (Port * self)
   object_zero_and_free (self->src_locked);
   object_zero_and_free (self->dest_enabled);
   object_zero_and_free (self->src_enabled);
+
+  object_free_w_func_and_null (
+    lv2_evbuf_free, self->evbuf);
 
   port_identifier_free_members (&self->id);
 

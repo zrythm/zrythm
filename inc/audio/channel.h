@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -559,7 +559,7 @@ NONNULL
 AutomationTrack *
 channel_get_automation_track (
   Channel *       channel,
-  uint64_t        port_flags);
+  PortFlags       port_flags);
 
 
 /**

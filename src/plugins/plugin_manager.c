@@ -1436,7 +1436,9 @@ plugin_manager_free (
         lilv_node_as_string (node));
       lilv_node_free (node);
     }
-  lilv_world_free (self->lilv_world);
+
+  object_free_w_func_and_null (
+    lilv_world_free, self->lilv_world);
 
   plugin_manager_clear_plugins (self);
 

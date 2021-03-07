@@ -228,6 +228,8 @@ msgfmt = find_program ('msgfmt', required: false)
 dot_bin = find_program ('dot', required: false)
 rubberband = find_program (
   'rubberband', required: false)
+cppcheck = find_program (
+  'cppcheck', required: false)
 
 ulimit = find_program (
   'tools/check_have_unlimited_memlock.sh')
@@ -917,7 +919,7 @@ if have_carla
   # install gnu/linux bridges
   bridge_types = [
     'native', 'lv2-gtk2', 'lv2-gtk3', 'lv2-qt4',
-    'lv2-qt5' ]
+    'lv2-qt5', 'lv2-x11' ]
   foreach bridge_type : bridge_types
     carla_bridge = find_program (
         carla_bins_dir / 'carla-bridge-' + bridge_type,
@@ -1164,6 +1166,15 @@ meson.add_install_script (
 
 meson.add_dist_script (
   'scripts/meson_dist.sh')
+
+if cppcheck.found ()
+  run_target (
+    'cppcheck',
+    command : [
+      cppcheck,
+      '--project=' + meson_build_root / 'compile_commands.json',
+      ])
+endif
 
 summary ({
   'Program name': get_option ('program_name'),

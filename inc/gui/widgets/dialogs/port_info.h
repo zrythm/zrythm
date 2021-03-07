@@ -60,6 +60,9 @@ typedef struct _PortInfoDialogWidget
 
   GtkBox *             flags_box;
 
+  /* TODO */
+  GtkBox *             scale_points_box;
+
   /** The port this is about. */
   Port *               port;
 } PortInfoDialogWidget;

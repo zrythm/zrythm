@@ -1706,6 +1706,7 @@ process_events (void * data)
             bool is_latest_release =
               zrythm_is_latest_release ();
 
+#ifdef HAVE_CHANGELOG
             /* if latest release and first run on
              * this release show CHANGELOG */
             if (is_latest_release &&
@@ -1719,6 +1720,7 @@ process_events (void * data)
                   S_GENERAL, "run-versions",
                   PACKAGE_VERSION, true);
               }
+#endif
 
             /* if not latest release and this is
              * an official release, notify user */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,8 +33,11 @@
 
 #include "audio/meter.h"
 #include "audio/port_identifier.h"
+#include "plugins/lv2/lv2_evbuf.h"
 #include "utils/types.h"
 #include "zix/sem.h"
+
+#include <lilv/lilv.h>
 
 #ifdef HAVE_JACK
 #include "weak_libjack.h"
@@ -67,6 +70,8 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct TruePeakDsp TruePeakDsp;
 typedef struct ExtPort ExtPort;
 typedef struct AudioClip AudioClip;
+typedef struct PluginGtkController
+  PluginGtkController;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -114,6 +119,20 @@ typedef enum PortInternalType
   /** Pointer to snd_seq_port_info_t. */
   INTERNAL_ALSA_SEQ_PORT,
 } PortInternalType;
+
+/**
+ * Scale point.
+ */
+typedef struct PortScalePoint
+{
+  float  val;
+  char * label;
+} PortScalePoint;
+
+int
+port_scale_point_cmp (
+  const void * _a,
+  const void * _b);
 
 /**
  * Must ONLY be created via port_new()
@@ -231,9 +250,6 @@ typedef struct Port
   /** Default value, only used for controls. */
   float               deff;
 
-  /** Used for LV2. */
-  Lv2Port *          lv2_port;
-
   /** VST parameter index, if VST control port. */
   int                vst_param_id;
 
@@ -300,6 +316,10 @@ typedef struct Port
   RtAudioDevice *    rtaudio_ins[128];
   int                num_rtaudio_ins;
 #endif
+
+  /** Scale points. */
+  PortScalePoint *   scale_points;
+  int                num_scale_points;
 
   /**
    * The control value if control port, otherwise
@@ -449,6 +469,64 @@ typedef struct Port
    * Not needed for JACK.
    */
   midi_byte_t         last_midi_status;
+
+  /* --- ported from Lv2Port --- */
+
+  /** LV2 port. */
+  const LilvPort* lilv_port;
+
+  /** Float for LV2 control ports, declared type for
+   * LV2 parameters. */
+  LV2_URID        value_type;
+
+  /** For MIDI ports, otherwise NULL. */
+  LV2_Evbuf*      evbuf;
+
+  /**
+   * Control widget, if applicable.
+   *
+   * Only used for generic UIs.
+   */
+  PluginGtkController * widget;
+
+  /**
+   * Minimum buffer size that the port wants, or
+   * 0.
+   *
+   * Used by LV2 plugin ports.
+   */
+  size_t          min_buf_size;
+
+  /** Port index in the lilv plugin, if
+   * non-parameter. */
+  int             lilv_port_index;
+
+  /**
+   * Whether the port received a UI event from
+   * the plugin UI in this cycle.
+   *
+   * This is used to avoid re-sending that event
+   * to the plugin.
+   *
+   * @note for control ports only.
+   */
+  bool            received_ui_event;
+
+  /**
+   * The last known control value sent to the UI
+   * (if control).
+   *
+   * @seealso lv2_ui_send_control_val_event_from_plugin_to_ui().
+   */
+  float           last_sent_control;
+
+  /** Whether this value was set via automation. */
+  bool            automating;
+
+  /** True for event, false for atom. */
+  bool            old_api;
+
+  /* --- end Lv2Port --- */
 
   /**
    * Automation track this port is attached to.
@@ -692,6 +770,21 @@ NONNULL
 void
 stereo_ports_free (
   StereoPorts * self);
+
+/**
+ * Function to get a port's value from its string
+ * symbol.
+ *
+ * Used when saving the LV2 state.
+ * This function MUST set size and type
+ * appropriately.
+ */
+const void *
+port_get_value_from_symbol (
+  const char * port_sym,
+  void       * user_data,
+  uint32_t   * size,
+  uint32_t   * type);
 
 #ifdef HAVE_JACK
 /**
@@ -1233,16 +1326,6 @@ ports_disconnect (
   Port ** ports,
   int     num_ports,
   int     deleting);
-
-/**
- * Removes all the given ports from the project,
- * optionally freeing them.
- */
-NONNULL
-int
-ports_remove (
-  Port ** ports,
-  int *   num_ports);
 
 /**
  * Copies the metadata from a project port to

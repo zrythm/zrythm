@@ -56,10 +56,8 @@
 #include "audio/position.h"
 #include "audio/port.h"
 #include "plugins/lv2/ext/host_info.h"
-#include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/lv2_worker.h"
-#include "plugins/lv2/lv2_port.h"
 #include "zix/ring.h"
 #include "zix/sem.h"
 #include "zix/thread.h"
@@ -108,6 +106,45 @@ typedef struct PluginDescriptor PluginDescriptor;
 #ifndef LV2_CORE__isSideChain
 #define LV2_CORE__isSideChain LV2_CORE_PREFIX "isSideChain"
 #endif
+
+#define LV2_PARAM_MAX_STR_LEN 1200
+
+/**
+ * Used temporarily to transfer data.
+ */
+typedef struct Lv2Parameter
+{
+  /** URI URID. */
+  LV2_URID         urid;
+
+  /** Value type URID (forge.Bool, forge.Int,
+   * etc.). */
+  LV2_URID         value_type_urid;
+  bool             readable;
+  bool             writable;
+  char             symbol[LV2_PARAM_MAX_STR_LEN];
+  char             label[LV2_PARAM_MAX_STR_LEN];
+  char             comment[LV2_PARAM_MAX_STR_LEN];
+
+  /** Whether the ranges below are valid. */
+  bool             has_range;
+
+  /** Value range. */
+  float            minf;
+  float            maxf;
+  float            deff;
+} Lv2Parameter;
+
+/**
+ * Control change event, sent through ring buffers
+ * for UI updates.
+ */
+typedef struct {
+  uint32_t index;
+  uint32_t protocol;
+  uint32_t size;
+  uint8_t  body[];
+} Lv2ControlChange;
 
 /**
  * LV2 plugin.
@@ -160,8 +197,6 @@ typedef struct Lv2Plugin
   LV2_Worker  state_worker;
   /** Lock for plugin work() method. */
   ZixSem             work_lock;
-  /** Exit semaphore. */
-  ZixSem*            done;
   /** Plugin class (RDF data). */
   const LilvPlugin*  lilv_plugin;
   /** Current preset. */
@@ -186,13 +221,6 @@ typedef struct Lv2Plugin
    * This is created at runtime and remembered.
    */
   char *             temp_dir;
-
-  /** Port array of size num_ports. */
-  Lv2Port *          ports;
-  int                num_ports;
-
-  /** Available Lv2Plugin controls. */
-  Lv2Controls        controls;
 
   /** Frames since last update sent to UI. */
   uint32_t           event_delta_t;
@@ -275,6 +303,7 @@ typedef struct Lv2Plugin
 
 } Lv2Plugin;
 
+#if 0
 static const cyaml_schema_field_t
   lv2_plugin_fields_schema[] =
 {
@@ -290,7 +319,9 @@ static const cyaml_schema_value_t
   YAML_VALUE_PTR (
     Lv2Plugin, lv2_plugin_fields_schema),
 };
+#endif
 
+NONNULL
 void
 lv2_plugin_init_loaded (
   Lv2Plugin * self,
@@ -301,6 +332,7 @@ lv2_plugin_init_loaded (
  * the given LilvPlugin
  * if it can be hosted, otherwise NULL.
  */
+NONNULL
 PluginDescriptor *
 lv2_plugin_create_descriptor_from_lilv (
   const LilvPlugin * lp);
@@ -314,6 +346,7 @@ lv2_plugin_create_descriptor_from_lilv (
  *   descriptor filled in.
  * @param uri The URI.
  */
+NONNULL
 Lv2Plugin *
 lv2_plugin_new_from_uri (
   Plugin    *  plugin,
@@ -355,6 +388,7 @@ lv2_plugin_instantiate (
  *
  * @param plugin A newly allocated Plugin instance.
  */
+NONNULL
 Lv2Plugin *
 lv2_plugin_new (
   Plugin *plugin);
@@ -365,12 +399,13 @@ lv2_plugin_new (
  * @param g_start_frames The global start frames.
  * @param nframes The number of frames to process.
  */
+NONNULL
 void
 lv2_plugin_process (
-  Lv2Plugin * lv2_plugin,
-  const long  g_start_frames,
+  Lv2Plugin *      lv2_plugin,
+  const long       g_start_frames,
   const nframes_t  local_offset,
-  const nframes_t   nframes);
+  const nframes_t  nframes);
 
 /**
  * Returns the plugin's latency in samples.
@@ -378,6 +413,7 @@ lv2_plugin_process (
  * This will be 0 if the plugin does not report
  * latency.
  */
+NONNULL
 nframes_t
 lv2_plugin_get_latency (
   Lv2Plugin * pl);
@@ -404,6 +440,7 @@ typedef enum Lv2PluginPickUiFlag
  * @return If the plugin has a deprecated UI,
  *   returns the UI URI, otherwise NULL.
  */
+NONNULL
 char *
 lv2_plugin_has_deprecated_ui (
   const char * uri);
@@ -424,14 +461,30 @@ lv2_plugin_pick_ui (
   const LilvUI **     out_ui,
   const LilvNode **   out_ui_type);
 
+NONNULL
 bool
 lv2_plugin_ui_type_is_external (
   const LilvNode * ui_type);
 
-Lv2Control*
-lv2_plugin_get_control_by_symbol (
-  Lv2Plugin * plugin,
-  const char* sym);
+/**
+ * Ported from Lv2Control.
+ */
+void
+lv2_plugin_set_control (
+  Port *       port,
+  uint32_t     size,
+  LV2_URID     type,
+  const void * body);
+
+/**
+ * Returns the property port matching the given
+ * property URID.
+ */
+NONNULL
+Port *
+lv2_plugin_get_property_port (
+  Lv2Plugin * self,
+  LV2_URID    property);
 
 /**
  * Function to get a port value.
@@ -447,29 +500,26 @@ lv2_plugin_get_port_value (
   uint32_t   * size,
   uint32_t   * type);
 
+NONNULL
 char *
 lv2_plugin_get_library_path (
   Lv2Plugin * self);
 
+NONNULL
 char *
 lv2_plugin_get_abs_state_file_path (
   Lv2Plugin * self,
   bool        is_backup);
 
 /**
- * Updates theh PortIdentifier's in the Lv2Plugin.
- */
-void
-lv2_plugin_update_port_identifiers (
-  Lv2Plugin * self);
-
-/**
  * Allocate port buffers (only necessary for MIDI).
  */
+NONNULL
 void
 lv2_plugin_allocate_port_buffers (
-  Lv2Plugin* plugin);
+  Lv2Plugin * plugin);
 
+NONNULL
 int
 lv2_plugin_activate (
   Lv2Plugin * self,
@@ -478,10 +528,13 @@ lv2_plugin_activate (
 /**
  * Populates the banks in the plugin instance.
  */
+
+NONNULL
 void
 lv2_plugin_populate_banks (
   Lv2Plugin * self);
 
+NONNULL
 int
 lv2_plugin_cleanup (
   Lv2Plugin * self);
@@ -489,9 +542,10 @@ lv2_plugin_cleanup (
 /**
  * Frees the Lv2Plugin and all its components.
  */
+NONNULL
 void
 lv2_plugin_free (
-  Lv2Plugin * plugin);
+  Lv2Plugin * self);
 
 /**
  * @}

@@ -76,8 +76,9 @@ lv2_gtk_ui_port_event(
  */
 void
 lv2_gtk_set_float_control (
-  const Lv2Control* control,
-  float value);
+  Lv2Plugin * lv2_plugin,
+  Port *      port,
+  float       value);
 
 int
 lv2_gtk_open_ui (

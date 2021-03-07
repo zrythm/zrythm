@@ -90,13 +90,13 @@ get_port_index (
   const char* symbol)
 {
 	Lv2Plugin* const  plugin = (Lv2Plugin*)controller;
-	Lv2Port* port =
-    lv2_port_get_by_symbol (
-      plugin, symbol);
+  Port * port =
+    plugin_get_port_by_symbol (
+      plugin->plugin, symbol);
 
 	return
-    port ?
-    port->index :
+    port && port->lilv_port_index >= 0 ?
+    (uint32_t) port->lilv_port_index :
     LV2UI_INVALID_PORT_INDEX;
 }
 
@@ -142,9 +142,10 @@ lv2_ui_read_and_apply_events (
         }
       g_return_if_fail (
         (int) ev.index >= 0 &&
-        (int) ev.index < plugin->num_ports);
-      Lv2Port* const port =
-        &plugin->ports[ev.index];
+        (int) ev.index <
+          plugin->plugin->num_lilv_ports);
+      Port * port =
+        plugin->plugin->lilv_ports[ev.index];
 
       /* float control change - this is only for
        * plugins with custom UIs */
@@ -152,9 +153,9 @@ lv2_ui_read_and_apply_events (
           plugin_has_custom_ui (plugin->plugin))
         {
           assert (ev.size == sizeof (float));
-          g_return_if_fail (port->port);
+          g_return_if_fail (port);
           port_set_control_value (
-            port->port, * (float *) body, 0, 0);
+            port, * (float *) body, 0, 0);
           port->received_ui_event = 1;
 
           /* note: should not be printing in the
@@ -163,7 +164,7 @@ lv2_ui_read_and_apply_events (
             "plugin %s float control '%s' change: "
             "%f - has custom UI %d",
             plugin->plugin->descr->name,
-            port->port->id.label,
+            port->id.label,
             (double) * (float *) body,
             plugin_has_custom_ui (plugin->plugin));
         }
@@ -185,7 +186,7 @@ lv2_ui_read_and_apply_events (
             "%s: plugin %s event transfer "
             "event for %s - has custom UI %d",
             __func__, plugin->plugin->descr->name,
-            port->port->id.label,
+            port->id.label,
             plugin_has_custom_ui (plugin->plugin));
         }
       else
@@ -207,7 +208,7 @@ lv2_ui_read_and_apply_events (
 void
 lv2_ui_send_control_val_event_from_plugin_to_ui (
   Lv2Plugin *  lv2_plugin,
-  Lv2Port *    lv2_port)
+  Port *       port)
 {
   if (!lv2_plugin->plugin->visible ||
       lv2_plugin->plugin->instantiation_failed)
@@ -215,22 +216,18 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
 
   g_debug ("%s: %s: %s (%d)",
     __func__, lv2_plugin->plugin->descr->name,
-    lv2_port->lv2_control ?
-      lilv_node_as_string (
-        lv2_port->lv2_control->symbol) :
-      "",
-    lv2_port->index);
+    port->id.sym,
+    port->lilv_port_index);
 
   char buf[sizeof(Lv2ControlChange) +
     sizeof(float)];
   Lv2ControlChange* ev =
     (Lv2ControlChange*)buf;
-  ev->index = (uint32_t) lv2_port->index;
+  ev->index = (uint32_t) port->lilv_port_index;
   ev->protocol = 0;
   ev->size = sizeof(float);
-  g_return_if_fail (lv2_port->port);
-  *(float*)ev->body = lv2_port->port->control;
-  lv2_port->automating = 0;
+  *(float*)ev->body = port->control;
+  port->automating = 0;
 
   if (zix_ring_write (
         lv2_plugin->plugin_to_ui_events,
@@ -246,8 +243,7 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
         descr->name, descr->uri);
     }
 
-  lv2_port->last_sent_control =
-    lv2_port->port->control;
+  port->last_sent_control = port->control;
 }
 
 /**
@@ -318,7 +314,8 @@ lv2_ui_send_event_from_ui_to_plugin (
   const void*    buffer)
 {
   if ((int) port_index < 0 ||
-      (int) port_index >= plugin->num_ports)
+      (int) port_index >=
+        plugin->plugin->num_lilv_ports)
     {
       g_warning (
         "UI write to out of range port index %d",
@@ -326,17 +323,16 @@ lv2_ui_send_event_from_ui_to_plugin (
       return;
     }
 
-  Lv2Port * lv2_port = &plugin->ports[port_index];
-  if (lv2_port->lv2_control)
+  Port * port =
+    plugin->plugin->lilv_ports[port_index];
+  if (port->lilv_port_index > -1)
     {
-      g_debug (
-        "port %d (%s)", port_index,
-        lilv_node_as_string (
-          lv2_port->lv2_control->symbol));
+      g_debug ("port %d", port_index);
     }
   else
     {
-      g_debug ("port %d", port_index);
+      g_debug (
+        "param %d (%s)", port_index, port->id.sym);
     }
 
   if (protocol != 0 &&
@@ -521,10 +517,12 @@ lv2_ui_init (
   Lv2Plugin* plugin)
 {
   // Set initial control port values
-  for (int i = 0; i < plugin->num_ports; ++i)
+  for (int i = 0;
+       i < plugin->plugin->num_lilv_ports; ++i)
     {
-      Port * port = plugin->ports[i].port;
-      if (port->id.type == TYPE_CONTROL)
+      Port * port = plugin->plugin->lilv_ports[i];
+      if (port->id.type == TYPE_CONTROL &&
+          !(port->id.flags & PORT_FLAG_IS_PROPERTY))
         {
           lv2_gtk_ui_port_event (
             plugin, (uint32_t) i,
@@ -535,7 +533,8 @@ lv2_ui_init (
 
   if (plugin->control_in != -1)
     {
-      // Send patch:Get message for initial parameters/etc
+      /* Send patch:Get message for initial
+       * parameters/etc */
       LV2_Atom_Forge forge = plugin->forge;
       LV2_Atom_Forge_Frame frame;
       uint8_t              buf[1024];
@@ -545,13 +544,13 @@ lv2_ui_init (
         &forge, &frame, 0, PM_URIDS.patch_Get);
 
       const LV2_Atom* atom =
-        lv2_atom_forge_deref(&forge, frame.ref);
+        lv2_atom_forge_deref (&forge, frame.ref);
       lv2_ui_send_event_from_ui_to_plugin (
         plugin,
         (uint32_t) plugin->control_in,
         lv2_atom_total_size (atom),
         PM_URIDS.atom_eventTransfer,
         atom);
-      lv2_atom_forge_pop(&forge, &frame);
+      lv2_atom_forge_pop (&forge, &frame);
     }
 }

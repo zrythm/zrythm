@@ -141,7 +141,7 @@ transport_new (
     PORT_OWNER_TYPE_TRANSPORT;
   self->roll->id.flags |= PORT_FLAG_TOGGLE;
   self->roll->id.flags2 |=
-    PORT_FLAG_TRANSPORT_ROLL;
+    PORT_FLAG2_TRANSPORT_ROLL;
 
   self->stop =
     port_new_with_type (
@@ -150,7 +150,7 @@ transport_new (
     PORT_OWNER_TYPE_TRANSPORT;
   self->stop->id.flags |= PORT_FLAG_TOGGLE;
   self->stop->id.flags2 |=
-    PORT_FLAG_TRANSPORT_STOP;
+    PORT_FLAG2_TRANSPORT_STOP;
 
   self->backward =
     port_new_with_type (
@@ -159,7 +159,7 @@ transport_new (
     PORT_OWNER_TYPE_TRANSPORT;
   self->backward->id.flags |= PORT_FLAG_TOGGLE;
   self->backward->id.flags2 |=
-    PORT_FLAG_TRANSPORT_BACKWARD;
+    PORT_FLAG2_TRANSPORT_BACKWARD;
 
   self->forward =
     port_new_with_type (
@@ -168,7 +168,7 @@ transport_new (
     PORT_OWNER_TYPE_TRANSPORT;
   self->forward->id.flags |= PORT_FLAG_TOGGLE;
   self->forward->id.flags2 |=
-    PORT_FLAG_TRANSPORT_FORWARD;
+    PORT_FLAG2_TRANSPORT_FORWARD;
 
   self->loop_toggle =
     port_new_with_type (
@@ -177,7 +177,7 @@ transport_new (
     PORT_OWNER_TYPE_TRANSPORT;
   self->loop_toggle->id.flags |= PORT_FLAG_TOGGLE;
   self->loop_toggle->id.flags2 |=
-    PORT_FLAG_TRANSPORT_LOOP_TOGGLE;
+    PORT_FLAG2_TRANSPORT_LOOP_TOGGLE;
 
   self->rec_toggle =
     port_new_with_type (
@@ -186,7 +186,7 @@ transport_new (
     PORT_OWNER_TYPE_TRANSPORT;
   self->rec_toggle->id.flags |= PORT_FLAG_TOGGLE;
   self->rec_toggle->id.flags2 |=
-    PORT_FLAG_TRANSPORT_REC_TOGGLE;
+    PORT_FLAG2_TRANSPORT_REC_TOGGLE;
 
   init_common (self);
 

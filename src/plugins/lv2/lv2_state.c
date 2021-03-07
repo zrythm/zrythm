@@ -191,8 +191,9 @@ set_port_value (
   uint32_t    type)
 {
   Lv2Plugin * plugin = (Lv2Plugin*)user_data;
-  Lv2Port* port =
-    lv2_port_get_by_symbol (plugin, port_symbol);
+  Plugin * pl = plugin->plugin;
+  Port* port =
+    plugin_get_port_by_symbol (pl, port_symbol);
   if (!port)
     {
       g_warning (
@@ -224,22 +225,24 @@ set_port_value (
 
   if (TRANSPORT->play_state != PLAYSTATE_ROLLING)
     {
-      // Set value on port struct directly
-      port->port->control = fvalue;
-    } else {
-      // Send value to running plugin
+      /* Set value on port struct directly */
+      port->control = fvalue;
+    }
+  else
+    {
+      /* Send value to running plugin */
       lv2_ui_send_event_from_ui_to_plugin (
-        plugin, port->index,
-        sizeof(fvalue), 0, &fvalue);
+        plugin, port->lilv_port_index,
+        sizeof (fvalue), 0, &fvalue);
     }
 
-  if (plugin->plugin->visible)
+  if (pl->visible)
     {
       // Update UI
       char buf[sizeof (Lv2ControlChange) +
         sizeof (fvalue)];
       Lv2ControlChange* ev = (Lv2ControlChange*)buf;
-      ev->index = port->index;
+      ev->index = port->lilv_port_index;
       ev->protocol = 0;
       ev->size = sizeof(fvalue);
       *(float*)ev->body = fvalue;

@@ -1149,6 +1149,7 @@ create_ports (
           g_return_if_fail (
             IS_PORT_AND_NONNULL (port));
         }
+      /* else if not loading (create new ports) */
       else
         {
           const CarlaParameterInfo * param_info =
@@ -1168,11 +1169,93 @@ create_ports (
             }
           port->id.flags |=
             PORT_FLAG_PLUGIN_CONTROL;
-          port->id.flags |=
-            PORT_FLAG_AUTOMATABLE;
+          port->id.comment =
+            g_strdup (param_info->comment);
+          port->id.port_group =
+            g_strdup (param_info->groupName);
           port->carla_param_id = (int) i;
+
+          const NativeParameter * native_param =
+            self->native_plugin_descriptor->
+              get_parameter_info (
+                self->native_plugin_handle, i);
+          g_return_if_fail (native_param);
+          if (native_param->hints &
+                NATIVE_PARAMETER_IS_LOGARITHMIC)
+            {
+              port->id.flags |=
+                PORT_FLAG_LOGARITHMIC;
+            }
+          if (native_param->hints &
+                NATIVE_PARAMETER_IS_AUTOMABLE)
+            {
+              port->id.flags |=
+                PORT_FLAG_AUTOMATABLE;
+            }
+          if (native_param->hints &
+                NATIVE_PARAMETER_IS_BOOLEAN)
+            {
+              port->id.flags |= PORT_FLAG_TOGGLE;
+            }
+          else if (native_param->hints &
+                     NATIVE_PARAMETER_IS_INTEGER)
+            {
+              port->id.flags |= PORT_FLAG_INTEGER;
+            }
+
+          /* get scale points */
+          if (param_info->scalePointCount > 0)
+            {
+              port->scale_points =
+                object_new_n (
+                  param_info->scalePointCount,
+                  PortScalePoint);
+              port->num_scale_points =
+                (int) param_info->scalePointCount;
+            }
+          for (uint32_t j = 0;
+               j < param_info->scalePointCount; j++)
+            {
+              const CarlaScalePointInfo *
+                scale_point_info =
+                  carla_get_parameter_scalepoint_info (
+                    self->host_handle, 0, i, j);
+
+              port->scale_points[j].val =
+                scale_point_info->value;
+              port->scale_points[j].label =
+                g_strdup (scale_point_info->label);
+            }
+          qsort (
+            port->scale_points,
+            (size_t) port->num_scale_points,
+            sizeof (PortScalePoint),
+            port_scale_point_cmp);
+
           plugin_add_in_port (
             self->plugin, port);
+
+          for (uint32_t j = 0;
+               j < param_info->scalePointCount; j++)
+            {
+              const CarlaScalePointInfo * sp_info =
+                carla_get_parameter_scalepoint_info (
+                  self->host_handle, 0, i, j);
+              g_debug (
+                "scale point: %s", sp_info->label);
+            }
+
+          const ParameterRanges * ranges =
+            carla_get_parameter_ranges (
+              self->host_handle, 0, i);
+          port->deff = ranges->def;
+          port->minf = ranges->min;
+          port->maxf = ranges->max;
+          g_debug (
+            "ranges: min %f max %f default %f",
+            (double) port->minf,
+            (double) port->maxf,
+            (double) port->deff);
         }
       float cur_val =
         carla_native_plugin_get_param_value (
@@ -1205,8 +1288,6 @@ carla_native_plugin_instantiate (
   bool                loading,
   bool                use_state_file)
 {
-  g_return_val_if_fail (self, -1);
-
   g_debug (
     "loading: %i, use state file: %d, "
     "ports_created: %d",
@@ -1272,11 +1353,12 @@ carla_native_plugin_open_ui (
   CarlaNativePlugin * self,
   bool                show)
 {
+  Plugin * pl = self->plugin;
   g_return_if_fail (
-    self && IS_PLUGIN (self->plugin) &&
-    self->plugin->descr);
+    IS_PLUGIN_AND_NONNULL (pl) &&
+    pl->descr);
 
-  switch (self->plugin->descr->protocol)
+  switch (pl->descr->protocol)
     {
     case PROT_VST:
     case PROT_VST3:
@@ -1362,6 +1444,12 @@ carla_native_plugin_get_param_value (
       self->host_handle, 0, id);
 }
 
+/**
+ * Called from port_set_control_value() to send
+ * the value to carla.
+ *
+ * @param val Real value (ie, not normalized).
+ */
 void
 carla_native_plugin_set_param_value (
   CarlaNativePlugin * self,
@@ -1547,6 +1635,7 @@ carla_native_plugin_close (
         self->native_plugin_handle);
       self->native_plugin_descriptor->cleanup (
         self->native_plugin_handle);
+      self->native_plugin_descriptor = NULL;
     }
   if (self->host_handle)
     {
@@ -1564,6 +1653,6 @@ carla_native_plugin_free (
 {
   carla_native_plugin_close (self);
 
-  free (self);
+  object_zero_and_free (self);
 }
 #endif
