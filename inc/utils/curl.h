@@ -40,10 +40,23 @@
  * Returns the contents of the page in a newly
  * allocated string.
  *
+ * @param timeout Timeout in seconds.
+ *
  * @return Newly allocated string or NULL if fail.
  */
 char *
 z_curl_get_page_contents (
+  const char * url,
+  int          timeout);
+
+/**
+ * Returns the contents of the page in a newly
+ * allocated string.
+ *
+ * @return Newly allocated string or NULL if fail.
+ */
+char *
+z_curl_get_page_contents_default (
   const char * url);
 
 /**

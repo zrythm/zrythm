@@ -33,7 +33,7 @@ env_get_string (
   const char * key,
   const char * def)
 {
-  char * val = getenv (key);
+  const char * val = g_getenv (key);
   if (!val)
     return g_strdup (def);
   return g_strdup (val);
@@ -51,7 +51,7 @@ env_get_int (
   const char * key,
   int          def)
 {
-  char * str = getenv (key);
+  const char * str = g_getenv (key);
   if (!str)
     return def;
 

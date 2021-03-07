@@ -259,7 +259,7 @@ zrythm_fetch_latest_release_ver (void)
   called = true;
 
   char * page =
-    z_curl_get_page_contents (
+    z_curl_get_page_contents_default (
       "https://www.zrythm.org/releases/?C=M;O=D");
   if (!page)
     {

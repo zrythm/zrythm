@@ -38,6 +38,7 @@ if get_option ('tests')
   test_env.set ('LADSPA_PATH', '/tmp/zrythm_ladspa')
   test_env.set ('DSSI_PATH', '/tmp/zrythm_dssi')
   test_env.set ('ZRYTHM_DEBUG', '1')
+  test_env.set ('Z_CURL_TIMEOUT', '10')
   test_env.set ('G_MESSAGES_DEBUG', 'zrythm')
 
   test_config = configuration_data ()

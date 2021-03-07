@@ -22,6 +22,7 @@
 #ifdef PHONE_HOME
 
 #include "utils/curl.h"
+#include "utils/env.h"
 
 #include <glib.h>
 
@@ -52,11 +53,14 @@ curl_to_string (
  * Returns the contents of the page in a newly
  * allocated string.
  *
+ * @param timeout Timeout in seconds.
+ *
  * @return Newly allocated string or NULL if fail.
  */
 char *
 z_curl_get_page_contents (
-  const char * url)
+  const char * url,
+  int          timeout)
 {
   g_debug ("getting page contents for %s...", url);
 
@@ -74,7 +78,7 @@ z_curl_get_page_contents (
   curl_easy_setopt (
     curl, CURLOPT_WRITEDATA, page_str);
   curl_easy_setopt (
-    curl, CURLOPT_TIMEOUT, 1);
+    curl, CURLOPT_TIMEOUT, timeout);
   curl_easy_setopt (
     curl, CURLOPT_USERAGENT,
     "zrythm-daw/" PACKAGE_VERSION);
@@ -105,4 +109,25 @@ z_curl_get_page_contents (
 
   return page;
 }
+
+/**
+ * Returns the contents of the page in a newly
+ * allocated string.
+ *
+ * @return Newly allocated string or NULL if fail.
+ */
+char *
+z_curl_get_page_contents_default (
+  const char * url)
+{
+  int timeout = env_get_int ("Z_CURL_TIMEOUT", 0);
+
+  if (timeout <= 0)
+    {
+      timeout = 1;
+    }
+
+  return z_curl_get_page_contents (url, timeout);
+}
+
 #endif /* PHONE_HOME */
