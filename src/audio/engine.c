@@ -1001,12 +1001,8 @@ engine_activate (
         }
 
       /* wait to finish */
-      g_atomic_int_set (&self->run, 0);
-      while (g_atomic_int_get (
-               &self->cycle_running))
-        {
-          g_usleep (100);
-        }
+      EngineState state;
+      engine_wait_for_pause (self, &state, true);
 
       self->activated = false;
     }
@@ -1824,16 +1820,20 @@ void
 engine_free (
   AudioEngine * self)
 {
-  g_message ("freeing...");
+  g_debug ("freeing engine...");
 
   engine_stop_events (self);
+
+  /* terminate graph threads */
+  graph_terminate (self->router->graph);
 
   if (self->activated)
     {
       engine_activate (self, false);
     }
 
-  router_free (self->router);
+  object_free_w_func_and_null (
+    router_free, self->router);
 
   switch (self->audio_backend)
     {
@@ -1893,5 +1893,5 @@ engine_free (
 
   object_zero_and_free (self);
 
-  g_message ("done");
+  g_debug ("finished freeing engine");
 }

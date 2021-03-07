@@ -214,3 +214,79 @@
    fun:start_thread
    fun:clone
 }
+
+{
+   g_thread_self_race
+   Helgrind:Race
+   fun:g_private_get
+   fun:g_thread_self
+   ...
+}
+
+{
+   g_string_new_in_log_race
+   Helgrind:Race
+   ...
+   fun:g_slice_alloc
+   fun:g_string_sized_new
+   fun:log_writer_format_fields
+   fun:log_writer
+   fun:g_log_structured_array
+   fun:g_log_structured_standard
+   ...
+}
+
+{
+   g_string_free_race
+   Helgrind:Race
+   fun:memset
+   fun:g_slice_free1
+   fun:g_string_free
+   ...
+}
+
+{
+   g_string_new_sized_new_race
+   Helgrind:Race
+   ...
+   fun:g_string_sized_new
+   ...
+   fun:log_writer_format_fields
+   fun:log_writer
+   fun:g_log_structured_array
+   fun:g_log_structured_standard
+   ...
+}
+
+{
+   g_string_free_race
+   Helgrind:Race
+   ...
+   fun:g_string_free
+   ...
+   fun:log_writer
+   fun:g_log_structured_array
+   fun:g_log_structured_standard
+   ...
+}
+
+{
+   g_string_insert_len_race
+   Helgrind:Race
+   fun:g_string_insert_len
+   fun:log_writer_format_fields
+   fun:log_writer
+   fun:g_log_structured_array
+   fun:g_log_structured_standard
+   ...
+}
+
+{
+   start_thread_g_private_set_race
+   Helgrind:Race
+   fun:g_private_set
+   obj:*/libglib-2.*
+   fun:mythread_wrapper
+   fun:start_thread
+   fun:clone
+}

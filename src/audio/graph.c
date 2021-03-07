@@ -316,7 +316,16 @@ graph_destroy (
     self->router->graph);
   self->destroying = 1;
 
-  graph_terminate (self);
+  if (!g_atomic_int_get (&self->terminate) &&
+      self->main_thread)
+    {
+      g_message ("terminating graph");
+      graph_terminate (self);
+    }
+  else
+    {
+      g_message ("graph already terminated");
+    }
 
   /* wait for threads to finish */
   g_usleep (1000);
@@ -1144,6 +1153,7 @@ graph_start (
         graph_thread_new (i, 0, graph);
       if (!graph->threads[i])
         {
+          g_critical ("thread new failed");
           graph_terminate (graph);
           return 0;
         }
@@ -1154,12 +1164,25 @@ graph_start (
     graph_thread_new (-1, 1, graph);
   if (!graph->main_thread)
     {
+      g_critical ("thread new failed");
       graph_terminate (graph);
       return 0;
     }
 
   /* breathe */
   sched_yield ();
+
+  /* wait for all threads to go idle */
+  while (
+    g_atomic_int_get (&graph->idle_thread_cnt) !=
+      graph->num_threads)
+    {
+      /* wait for all threads to go idle */
+      g_message (
+        "waiting for threads to go idle after "
+        "creation...");
+      g_usleep (10000);
+    }
 
   return 1;
 }
@@ -1202,13 +1225,30 @@ void
 graph_terminate (
   Graph * self)
 {
+  g_message ("terminating graph...");
+
   /* Flag threads to terminate */
   g_atomic_int_set (&self->terminate, 1);
+
+  while (
+    g_atomic_int_get (&self->idle_thread_cnt) !=
+      self->num_threads)
+    {
+      /* wait for all threads to go idle */
+      g_message (
+        "waiting for threads to go idle...");
+      g_usleep (10000);
+    }
 
   /* wake-up sleeping threads */
   int tc =
     g_atomic_int_get (&self->idle_thread_cnt);
-  g_warn_if_fail (tc == self->num_threads);
+  if (tc != self->num_threads)
+    {
+      g_warning (
+        "expected %d idle threads, found %d",
+        self->num_threads, tc);
+    }
   for (int i = 0; i < tc; ++i)
     {
       zix_sem_post (&self->trigger);
@@ -1224,6 +1264,7 @@ graph_terminate (
     {
       for (int i = 0; i < self->num_threads; i++)
         {
+          g_return_if_fail (self->threads[i]);
 #ifdef HAVE_JACK_CLIENT_STOP_THREAD
           jack_client_stop_thread (
             AUDIO_ENGINE->client,
@@ -1232,7 +1273,9 @@ graph_terminate (
           pthread_join (
             self->threads[i]->jthread, NULL);
 #endif // HAVE_JACK_CLIENT_STOP_THREAD
+          self->threads[i] = NULL;
         }
+      g_return_if_fail (self->main_thread);
 #ifdef HAVE_JACK_CLIENT_STOP_THREAD
       jack_client_stop_thread (
         AUDIO_ENGINE->client,
@@ -1241,20 +1284,28 @@ graph_terminate (
       pthread_join (
         self->main_thread->jthread, NULL);
 #endif // HAVE_JACK_CLIENT_STOP_THREAD
+
+      self->main_thread = NULL;
     }
   else
     {
 #endif // HAVE_JACK
       for (int i = 0; i < self->num_threads; i++)
         {
+          g_return_if_fail (self->threads[i]);
           pthread_join (
             self->threads[i]->pthread, NULL);
+          self->threads[i] = NULL;
         }
+      g_return_if_fail (self->main_thread);
       pthread_join (
         self->main_thread->pthread, NULL);
+      self->main_thread = NULL;
 #ifdef HAVE_JACK
     }
 #endif
+
+  g_message ("graph terminated");
 }
 
 GraphNode *

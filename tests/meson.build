@@ -51,6 +51,10 @@ if get_option ('tests')
     'MIDILIB_TEST_MIDI_FILES_PATH',
     meson_src_root / 'ext/midilib/MIDIFiles')
 
+  test_c_args = [
+    '-DDEBUG_THREADS=1',
+    ]
+
   test_config_guile = configuration_data()
   test_config_guile.merge_from (test_config)
 
@@ -272,6 +276,7 @@ if get_option ('tests')
           ],
         c_args : [
           common_cflags, strict_cflags,
+          test_c_args,
           ],
         dependencies : [
           zrythm_deps,
@@ -297,6 +302,7 @@ if get_option ('tests')
           ],
         c_args : [
           common_cflags, strict_cflags,
+          test_c_args,
           ],
         dependencies : [
           zrythm_deps,
