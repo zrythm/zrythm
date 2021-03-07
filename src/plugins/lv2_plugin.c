@@ -2765,10 +2765,16 @@ lv2_plugin_cleanup (
     "Cleaning up LV2 plugin %s (%p)...",
     self->plugin->descr->name, self);
 
+  if (self->plugin->activated)
+    {
+      lv2_plugin_activate (self, false);
+    }
+
   if (self->plugin->instantiated)
     {
       object_free_w_func_and_null (
         lilv_instance_free, self->instance);
+      self->plugin->instantiated = false;
     }
 
   g_message ("done");

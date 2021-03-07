@@ -68,6 +68,7 @@
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -79,13 +80,20 @@ G_DEFINE_TYPE (MainWindowWidget,
                GTK_TYPE_APPLICATION_WINDOW)
 
 static void
-on_main_window_destroy (MainWindowWidget * self,
-                        gpointer user_data)
+on_main_window_destroy (
+  MainWindowWidget * self,
+  gpointer user_data)
 {
   g_message ("main window destroy");
 
   if (PROJECT->loaded)
     {
+      event_manager_stop_events (EVENT_MANAGER);
+
+      object_free_w_func_and_null (
+        project_free, PROJECT);
+
+#if 0
       /* stop engine */
       engine_activate (AUDIO_ENGINE, false);
 
@@ -93,9 +101,14 @@ on_main_window_destroy (MainWindowWidget * self,
        * prevents some segfaults on shutdown */
       event_manager_stop_events (EVENT_MANAGER);
 
+      /* close any plugin windows */
+#endif
+
       g_application_quit (
         G_APPLICATION (zrythm_app));
     }
+
+  g_message ("main window destroy called");
 }
 
 static void

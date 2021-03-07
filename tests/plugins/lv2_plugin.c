@@ -31,7 +31,7 @@ static void
 test_lilv_instance_activation ()
 {
 #ifdef HAVE_HELM
-  for (int i = 0; i < 20; i++)
+  for (int i = 0; i < 40; i++)
     {
       test_helper_zrythm_init ();
 
@@ -51,7 +51,7 @@ test_lilv_instance_activation ()
       lilv_instance_activate (pl->lv2->instance);
       lilv_instance_deactivate (pl->lv2->instance);
       lilv_instance_activate (pl->lv2->instance);
-      if (i == 1)
+      if (i % 2)
         {
           lilv_instance_deactivate (
             pl->lv2->instance);
