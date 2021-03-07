@@ -565,6 +565,10 @@ channel_get_automation_track (
 /**
  * Removes a plugin at pos from the channel.
  *
+ * FIXME this is the same as
+ * modulator_track_remove_modulator().
+ * TODO refactor into track_remove_plugin().
+ *
  * @param moving_plugin Whether or not we are
  *   moving the plugin.
  * @param deleting_plugin Whether or not we are

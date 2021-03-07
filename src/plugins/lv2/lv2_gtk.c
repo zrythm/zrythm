@@ -1708,6 +1708,8 @@ int
 lv2_gtk_close_ui (
   Lv2Plugin* plugin)
 {
+  g_return_val_if_fail (ZRYTHM_HAVE_UI, -1);
+
   g_message ("%s called", __func__);
   if (plugin->plugin->window)
     {
@@ -1722,5 +1724,5 @@ lv2_gtk_close_ui (
         plugin->external_ui_widget);
     }
 
-  return TRUE;
+  return 0;
 }

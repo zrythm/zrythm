@@ -3261,19 +3261,17 @@ lv2_plugin_free (
   /*zix_sem_wait (&self->exit_sem);*/
   self->exit = true;
 
+  if (self->instance && self->plugin->activated)
+    {
+      lilv_instance_deactivate (self->instance);
+    }
+
   /* Terminate the worker */
   lv2_worker_finish (&self->worker);
 
   /* Deactivate lilv/suil instances */
   object_free_w_func_and_null (
     suil_instance_free, self->ui_instance);
-
-  if (self->instance)
-    {
-      lilv_instance_deactivate (self->instance);
-      lilv_instance_free (self->instance);
-      self->instance = NULL;
-    }
 
   /* Clean up */
   object_free_w_func_and_null (
@@ -3296,6 +3294,9 @@ lv2_plugin_free (
 
   object_free_w_func_and_null (
     free, self->ui_event_buf);
+
+  object_free_w_func_and_null (
+    lilv_instance_free, self->instance);
 
   object_zero_and_free (self);
 }

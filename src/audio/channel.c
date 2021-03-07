@@ -1633,8 +1633,11 @@ channel_remove_plugin (
             slot_type, F_PUBLISH_EVENTS);
         }
 
-      /* close the UI */
-      plugin_close_ui (plugin);
+      if (ZRYTHM_HAVE_UI)
+        {
+          /* close the UI */
+          plugin_close_ui (plugin);
+        }
 
       plugin_disconnect (plugin);
       object_free_w_func_and_null (

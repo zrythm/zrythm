@@ -272,12 +272,15 @@ modulator_track_remove_modulator (
             PLUGIN_SLOT_MODULATOR, F_PUBLISH_EVENTS);
         }
 
-      /* close the UI */
-      plugin_close_ui (plugin);
+      if (ZRYTHM_HAVE_UI)
+        {
+          /* close the UI */
+          plugin_close_ui (plugin);
+        }
 
       plugin_disconnect (plugin);
-
-      free_later (plugin, plugin_free);
+      object_free_w_func_and_null (
+        plugin_free, plugin);
     }
 
   /*plugin_set_is_project (plugin, false);*/

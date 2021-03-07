@@ -2297,6 +2297,8 @@ void
 plugin_close_ui (
   Plugin * self)
 {
+  g_return_if_fail (ZRYTHM_HAVE_UI);
+
   if (self->instantiation_failed)
     {
       g_message (
