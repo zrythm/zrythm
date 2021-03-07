@@ -127,9 +127,11 @@ test_project_save_and_reload (void)
     g_build_filename (
       PROJECT->dir, PROJECT_FILE, NULL);
 
+  object_free_w_func_and_null (
+    project_free, PROJECT);
+
   /* reload it */
-  ret =
-    project_load (prj_file, 0);
+  ret = project_load (prj_file, 0);
   g_assert_cmpint (ret, ==, 0);
 }
 
