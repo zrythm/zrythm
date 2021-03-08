@@ -36,8 +36,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-04 03:56+0000\n"
-"PO-Revision-Date: 2021-01-03 23:56+0000\n"
+"POT-Creation-Date: 2021-03-08 01:24+0000\n"
+"PO-Revision-Date: 2021-03-08 01:16+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: en_GB\n"
 "Language-Team: English (United Kingdom) "
@@ -3264,7 +3264,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:86
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI note"
 
 #: ../../glossary/intro.rst:88
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
@@ -4153,7 +4153,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "File Browser"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
@@ -5800,7 +5800,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:66 ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:75
 msgid "Sends"
-msgstr ""
+msgstr "Sends"
 
 #: ../../tracks/audio-track.rst:58 ../../tracks/instrument-track.rst:77
 #: ../../tracks/midi-track.rst:91
@@ -6184,7 +6184,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:119
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: ../../tracks/inspector-page.rst:120
 msgid "Fader section to control the volume and stereo balance."
@@ -6994,7 +6994,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Save"
-msgstr ""
+msgstr "Save"
 
 #: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save the current project at its current location."
@@ -7002,7 +7002,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
-msgstr ""
+msgstr "Save As"
 
 #: ../../zrythm-interface/main-toolbar.rst:51
 msgid "Save the current project at a new location."
@@ -7022,7 +7022,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Export As"
-msgstr ""
+msgstr "Export As"
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid ""
@@ -7060,7 +7060,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:74
 msgid "Zoom In"
-msgstr ""
+msgstr "Zoom In"
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms in."
@@ -7068,7 +7068,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:76
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zoom Out"
 
 #: ../../zrythm-interface/main-toolbar.rst:77
 msgid "Zooms out."
@@ -7076,7 +7076,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
-msgstr ""
+msgstr "Original Size"
 
 #: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zooms back to the default zoom level."
@@ -7084,7 +7084,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
-msgstr ""
+msgstr "Best Fit"
 
 #: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-04 03:56+0000\n"
+"POT-Creation-Date: 2021-03-08 01:24+0000\n"
 "PO-Revision-Date: 2021-01-05 14:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -207,8 +207,7 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:86
 #, fuzzy
 msgid "Plugin Collections"
-msgstr ""
-"Coleções"
+msgstr "Coleções"
 
 #: ../../appendix/files-and-directories.rst:87
 msgid ""
@@ -1172,8 +1171,7 @@ msgstr "Outros contribuidores"
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source "
 "distribution."
-msgstr ""
-"Veja o :download:`THANKS <../../../THANKS>` na distribuição da fonte."
+msgstr "Veja o :download:`THANKS <../../../THANKS>` na distribuição da fonte."
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39
@@ -5973,7 +5971,6 @@ msgid "Returns a new action for creating an instrument track."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:12
-#, fuzzy
 msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-audio-fx-with-"
 "plugin** | *plugin_descriptor track_pos num_tracks*"
@@ -6089,8 +6086,7 @@ msgstr ""
 #: ../../scripting/api/audio midi_region.rst:6
 #, fuzzy
 msgid "Returns a new midi region."
-msgstr ""
-"Retorna uma nova nota midi."
+msgstr "Retorna uma nova nota midi."
 
 #: ../../scripting/api/audio midi_region.rst:11
 msgid "Scheme Procedure: **midi-region-add-midi-note** | *region midi_note*"
@@ -6243,8 +6239,7 @@ msgstr ""
 #: ../../scripting/api/audio track_processor.rst:6
 #, fuzzy
 msgid "Returns the stereo in ports instance of the track processor."
-msgstr ""
-"Retorna a instância de envio no compartimento fornecido."
+msgstr "Retorna a instância de envio no compartimento fornecido."
 
 #: ../../scripting/api/audio tracklist.rst:3
 msgid "audio tracklist"
@@ -6274,8 +6269,7 @@ msgstr ""
 #: ../../scripting/api/audio tracklist.rst:14
 #, fuzzy
 msgid "Returns the number of tracks in the tracklist."
-msgstr ""
-"Retorna o nome da faixa."
+msgstr "Retorna o nome da faixa."
 
 #: ../../scripting/api/intro.rst:6
 msgid "API"
@@ -6314,8 +6308,7 @@ msgstr ""
 #: ../../scripting/api/plugins plugin_manager.rst:6
 #, fuzzy
 msgid "Returns the PluginDescriptor matching the given URI."
-msgstr ""
-"Retorna o suplemento no compartimento de inserção fornecido"
+msgstr "Retorna o suplemento no compartimento de inserção fornecido"
 
 #: ../../scripting/api/plugins plugin_manager.rst:11
 msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
@@ -6345,8 +6338,7 @@ msgstr ""
 #: ../../scripting/api/project.rst:10
 #, fuzzy
 msgid "Returns the tracklist for the project."
-msgstr ""
-"Insere faixa no índice idx na lista de faixas."
+msgstr "Insere faixa no índice idx na lista de faixas."
 
 #: ../../scripting/api/project.rst:15
 msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
@@ -7053,8 +7045,7 @@ msgstr ""
 #: ../../zrythm-interface/left-panel.rst:17
 #, fuzzy
 msgid "Track Inspector"
-msgstr ""
-"Inspetor de Faixa"
+msgstr "Inspetor de Faixa"
 
 #: ../../tracks/inspector-page.rst:10
 msgid ""
@@ -7868,8 +7859,7 @@ msgstr "Adicionar página para moduladores e faixa de ritmo."
 #: ../../tracks/track-visibility.rst:8 ../../zrythm-interface/left-panel.rst:58
 #, fuzzy
 msgid "Track Visibility"
-msgstr ""
-"Visibilidade da Faixa"
+msgstr "Visibilidade da Faixa"
 
 #: ../../tracks/track-visibility.rst:10
 msgid ""

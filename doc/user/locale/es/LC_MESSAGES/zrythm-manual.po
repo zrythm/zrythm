@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-04 03:56+0000\n"
+"POT-Creation-Date: 2021-03-08 01:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6519,8 +6519,7 @@ msgstr ""
 #: ../../scripting/api/plugins plugin_manager.rst:6
 #, fuzzy
 msgid "Returns the PluginDescriptor matching the given URI."
-msgstr ""
-"Regresa el plugin en el inserto"
+msgstr "Regresa el plugin en el inserto"
 
 #: ../../scripting/api/plugins plugin_manager.rst:11
 msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"

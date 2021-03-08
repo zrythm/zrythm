@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-04 03:56+0000\n"
+"POT-Creation-Date: 2021-03-08 01:24+0000\n"
 "PO-Revision-Date: 2021-02-08 10:50+0000\n"
 "Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
 "Language: el\n"
@@ -143,7 +143,6 @@ msgid ""
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:53
-#, fuzzy
 msgid "Fonts"
 msgstr ""
 
@@ -203,8 +202,7 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:86
 #, fuzzy
 msgid "Plugin Collections"
-msgstr ""
-"Συλλογές"
+msgstr "Συλλογές"
 
 #: ../../appendix/files-and-directories.rst:87
 msgid ""
@@ -1191,8 +1189,7 @@ msgstr "Άλλοι συνεργάτες"
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source "
 "distribution."
-msgstr ""
-"Βλέπε το αρχείο :download:`THANKS <../../../THANKS>` στην πηγαία διανομή."
+msgstr "Βλέπε το αρχείο :download:`THANKS <../../../THANKS>` στην πηγαία διανομή."
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39
@@ -1699,8 +1696,7 @@ msgstr "Προβάλλει πληροφορίες για κάθε νότα MIDI 
 #: ../../editing/clip-editors/ruler.rst:8
 #, fuzzy
 msgid "Editor Ruler"
-msgstr ""
-"Γραμμή εργαλείων επεξεργαστή"
+msgstr "Γραμμή εργαλείων επεξεργαστή"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
@@ -1976,8 +1972,7 @@ msgstr ""
 #: ../../editing/common-operations.rst:73
 #, fuzzy
 msgid "Duplicating a region"
-msgstr ""
-"Επεξεργασία περιοχών"
+msgstr "Επεξεργασία περιοχών"
 
 #: ../../editing/common-operations.rst:76
 msgid "Delete"
@@ -2089,8 +2084,7 @@ msgstr ""
 #: ../../editing/edit-tools.rst:43
 #, fuzzy
 msgid "Creating a region"
-msgstr ""
-"Επεξεργασία περιοχών"
+msgstr "Επεξεργασία περιοχών"
 
 #: ../../editing/edit-tools.rst:46
 msgid "Selecting Objects"
@@ -2120,8 +2114,7 @@ msgstr "Να προστεθεί εικόνα που δείχνει επιλογ�
 #: ../../editing/edit-tools.rst:58
 #, fuzzy
 msgid "Moving Objects"
-msgstr ""
-"Επεξεργασία αντικειμένων"
+msgstr "Επεξεργασία αντικειμένων"
 
 #: ../../editing/edit-tools.rst:59
 msgid ""
@@ -2135,8 +2128,7 @@ msgstr ""
 #: ../../editing/edit-tools.rst:66
 #, fuzzy
 msgid "Moving a region"
-msgstr ""
-"Επεξεργασία περιοχών"
+msgstr "Επεξεργασία περιοχών"
 
 #: ../../editing/edit-tools.rst:69
 msgid "Cloning (Copy-Moving) Objects"
@@ -6225,7 +6217,6 @@ msgid "Returns a new action for creating an instrument track."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:12
-#, fuzzy
 msgid ""
 "Scheme Procedure: **tracklist-selections-action-new-create-audio-fx-with-"
 "plugin** | *plugin_descriptor track_pos num_tracks*"
@@ -6581,13 +6572,27 @@ msgstr "έργο.yml"
 msgid "Scheme Procedure: **project-get-title** | *project*"
 msgstr ""
 
+#: ../../scripting/api/project.rst:6
+msgid "Return the project’s title."
+msgstr ""
+
 #: ../../scripting/api/project.rst:11
 msgid "Scheme Procedure: **project-get-tracklist** | *project*"
 msgstr ""
 
+#: ../../scripting/api/project.rst:10
+#, fuzzy
+msgid "Returns the tracklist for the project."
+msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
+
 #: ../../scripting/api/project.rst:15
 msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
 msgstr ""
+
+#: ../../scripting/api/project.rst:14
+#, fuzzy
+msgid "Returns the undo manager for the project."
+msgstr "Επιστρέφει το όνομα του κομματιού."
 
 #: ../../scripting/api/zrythm.rst:7
 msgid "Scheme Procedure: **zrythm-get-ver**"
@@ -6608,6 +6613,11 @@ msgstr "Επιστροφή της περίπτωσης (instance) του PluginM
 #: ../../scripting/api/zrythm.rst:15
 msgid "Scheme Procedure: **zrythm-get-project**"
 msgstr ""
+
+#: ../../scripting/api/zrythm.rst:14
+#, fuzzy
+msgid "Return the currently loaded Project instance."
+msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
 
 #: ../../scripting/api/zrythm.rst:19
 msgid "Scheme Procedure: **zrythm-null**"
@@ -9026,7 +9036,6 @@ msgstr ""
 #~ "Το φιλτράρισμα ανά συλλογές και "
 #~ "πρωτόκολλα δεν είναι λειτουργικό προς το"
 #~ " παρόν."
-
 
 #~ msgid ""
 #~ "Tracks can be deleted by right-"

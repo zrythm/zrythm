@@ -18,11 +18,9 @@ inc/plugins/plugin_manager.h
 inc/plugins/carla/carla_discovery.h
 inc/plugins/lv2/lv2_ui.h
 inc/plugins/lv2/lv2_gtk.h
-inc/plugins/lv2/lv2_control.h
 inc/plugins/lv2/lv2_external_ui.h
 inc/plugins/lv2/lv2_log.h
 inc/plugins/lv2/lv2_evbuf.h
-inc/plugins/lv2/lv2_port.h
 inc/plugins/lv2/lv2_worker.h
 inc/plugins/lv2/lv2_urid.h
 inc/plugins/lv2/lv2_state.h
@@ -198,6 +196,7 @@ inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
 inc/gui/widgets/dialogs/export_progress_dialog.h
 inc/gui/widgets/dialogs/string_entry_dialog.h
+inc/gui/widgets/dialogs/changelog_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/bug_report_dialog.h
 inc/gui/widgets/dialogs/port_info.h
@@ -233,6 +232,7 @@ inc/gui/backend/file_manager.h
 inc/gui/backend/timeline.h
 inc/gui/backend/mixer_selections.h
 inc/utils/lilv.h
+inc/utils/curl.h
 inc/utils/system.h
 inc/utils/flags.h
 inc/utils/file.h
@@ -253,7 +253,6 @@ inc/utils/color.h
 inc/utils/cpu_windows.h
 inc/utils/stack.h
 inc/utils/dsp.h
-inc/utils/gdb.h
 inc/utils/stoat.h
 inc/utils/objects.h
 inc/utils/string.h
@@ -262,7 +261,6 @@ inc/utils/general.h
 inc/utils/zrythm_object.h
 inc/utils/math.h
 inc/utils/backtrace.h
-inc/utils/valgrind.h
 inc/utils/mpmc_queue.h
 inc/utils/object_pool.h
 inc/utils/mem.h
@@ -410,10 +408,8 @@ src/plugins/lv2/lv2_ui.c
 src/plugins/lv2/lv2_gtk.c
 src/plugins/lv2/lv2_urid.c
 src/plugins/lv2/lv2_worker.c
-src/plugins/lv2/lv2_port.c
 src/plugins/lv2/lv2_evbuf.c
 src/plugins/lv2/lv2_log.c
-src/plugins/lv2/lv2_control.c
 src/plugins/lv2/suil/x11_in_gtk3.c
 src/plugins/lv2/suil/suil_instance.c
 src/plugins/lv2/suil/suil_host.c
@@ -594,6 +590,7 @@ src/gui/widgets/dialogs/bug_report_dialog.c
 src/gui/widgets/dialogs/object_color_chooser_dialog.c
 src/gui/widgets/dialogs/export_dialog.c
 src/gui/widgets/dialogs/track_icon_chooser_dialog.c
+src/gui/widgets/dialogs/changelog_dialog.c
 src/gui/backend/file_manager.c
 src/gui/backend/arranger_selections.c
 src/gui/backend/arranger_object.c
@@ -635,6 +632,7 @@ src/utils/file.c
 src/utils/math.c
 src/utils/general.c
 src/utils/stack.c
+src/utils/curl.c
 src/utils/log.c
 src/utils/arrays.c
 src/utils/gtk.c
@@ -644,9 +642,7 @@ src/utils/dsp.c
 src/utils/resources.c
 src/utils/mpmc_queue.c
 src/utils/dictionary.c
-src/utils/gdb.c
 src/utils/symap.c
-src/utils/valgrind.c
 src/utils/backtrace.c
 src/utils/string.c
 src/settings/settings.c
