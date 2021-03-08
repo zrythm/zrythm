@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-27 03:37+0000\n"
-"PO-Revision-Date: 2021-02-17 03:50+0000\n"
+"PO-Revision-Date: 2021-02-28 04:50+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -90,7 +90,7 @@ msgstr "低"
 #: inc/utils/gtk.h:50
 #, fuzzy
 msgid "MIDI learn"
-msgstr "MIDI In"
+msgstr "MIDI Iearn"
 
 #: inc/utils/gtk.h:54
 msgid "Cu_t"
@@ -1265,7 +1265,7 @@ msgstr "录制模式"
 
 #: src/gui/widgets/transport_controls.c:477
 msgid "Record options"
-msgstr "录制选项"
+msgstr "录音选项"
 
 #: src/gui/widgets/timeline_arranger.c:529
 msgid "Custom Marker"
@@ -2790,24 +2790,22 @@ msgid "Move Track"
 msgstr "移动音轨"
 
 #: src/actions/tracklist_selections.c:1243
-#, fuzzy
 msgid "Pin Track"
-msgstr "Pin/Unpin音轨"
+msgstr "固定音轨"
 
 #: src/actions/tracklist_selections.c:1248
-#, fuzzy, c-format
+#, c-format
 msgid "Pin %d Tracks"
-msgstr "隐藏音轨"
+msgstr "固定 %d 道音轨"
 
 #: src/actions/tracklist_selections.c:1255
-#, fuzzy
 msgid "Unpin Track"
-msgstr "Pin/Unpin音轨"
+msgstr "取消固定音轨"
 
 #: src/actions/tracklist_selections.c:1260
-#, fuzzy, c-format
+#, c-format
 msgid "Unpin %d Tracks"
-msgstr "Pin/Unpin音轨"
+msgstr "取消固定 %d 道音轨"
 
 #: src/guile/guile.c:37
 msgid "Script execution successful"
@@ -4305,9 +4303,8 @@ msgid "Selected transport display type (BBT/time)."
 msgstr "选定的传输显示类型（BBT/时间）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:385
-#, fuzzy
 msgid "JACK transport type"
-msgstr "JACK 客户传输"
+msgstr "JACK 传输类型"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:386
 msgid "Selected JACK transport behavior (master/client/none)"
