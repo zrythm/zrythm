@@ -3286,7 +3286,9 @@ lv2_plugin_free (
       self->plugin->activated = false;
     }
 
-  /* FIXME helm hangs with this */
+  /* FIXME helm hangs/deadlocks with this */
+  /* TODO try https://stackoverflow.com/questions/7738546/how-to-set-a-timeout-for-a-function-in-c
+   * or https://www.gnu.org/software/libc/manual/html_node/Setting-an-Alarm.html */
   /*object_free_w_func_and_null (*/
     /*lilv_instance_free, self->instance);*/
 

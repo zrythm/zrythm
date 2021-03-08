@@ -107,65 +107,8 @@ on_scroll (
   if (event->state & GDK_CONTROL_MASK &&
       event->state & GDK_SHIFT_MASK)
     {
-
-      double /*x = event->x, */
-             y = event->y,
-             adj_val,
-             diff;
-
-      GtkScrolledWindow * scroll =
-        self->piano_roll_keys_scroll;
-      GtkAdjustment * adj;
-
-      /* get current adjustment so we can get the
-       * difference from the cursor */
-      adj =
-        gtk_scrolled_window_get_vadjustment (
-          scroll);
-      adj_val = gtk_adjustment_get_value (adj);
-      double size_before =
-        gtk_adjustment_get_upper (adj);
-      double adj_perc = y / size_before;
-
-      /* get px diff so we can calculate the new
-       * adjustment later */
-      diff = y - adj_val;
-
-      /* scroll down, zoom out */
-      double size_after;
-      float notes_zoom_before =
-        PIANO_ROLL->notes_zoom;
-      if (event->delta_y > 0)
-        {
-          piano_roll_set_notes_zoom (
-            PIANO_ROLL,
-            PIANO_ROLL->notes_zoom / 1.2f, 0);
-          size_after = size_before / 1.2;
-        }
-      else /* scroll up, zoom in */
-        {
-          piano_roll_set_notes_zoom (
-            PIANO_ROLL,
-            PIANO_ROLL->notes_zoom * 1.2f, 0);
-          size_after = size_before * 1.2;
-        }
-
-      if (math_floats_equal (
-            PIANO_ROLL->notes_zoom,
-            notes_zoom_before))
-        {
-          size_after = size_before;
-        }
-
-      /* refresh relevant widgets */
-      midi_editor_space_widget_refresh (self);
-
-      /* get updated adjustment and set its value
-       at the same offset as before */
-      adj =
-        gtk_scrolled_window_get_vadjustment (scroll);
-      gtk_adjustment_set_value (
-        adj, adj_perc * size_after - diff);
+      midi_arranger_handle_vertical_zoom_scroll (
+        MW_MIDI_ARRANGER, event);
     }
 
   return TRUE;

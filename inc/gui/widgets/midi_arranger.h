@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -146,6 +146,14 @@ midi_arranger_show_context_menu (
   ArrangerWidget * self,
   gdouble          x,
   gdouble          y);
+
+/**
+ * Handle ctrl+shift+scroll.
+ */
+void
+midi_arranger_handle_vertical_zoom_scroll (
+  ArrangerWidget * self,
+  GdkEventScroll * event);
 
 /**
  * @}

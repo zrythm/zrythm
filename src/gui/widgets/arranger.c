@@ -4707,56 +4707,70 @@ on_scroll (
   if (!(event->state & GDK_CONTROL_MASK))
     return FALSE;
 
-  Position cursor_pos;
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  GtkAdjustment * adj;
-  int new_x;
-  RulerWidget * ruler =
-    self->type == TYPE (TIMELINE) ?
-    MW_RULER : EDITOR_RULER;
-
-  /* get current adjustment so we can get the
-   * difference from the cursor */
-  adj = gtk_scrolled_window_get_hadjustment (
-    scroll);
-  adj_val = gtk_adjustment_get_value (adj);
-
-  /* get positions of cursor */
-  arranger_widget_px_to_pos (
-    self, x, &cursor_pos, 1);
-
-  /* get px diff so we can calculate the new
-   * adjustment later */
-  diff = x - adj_val;
-
-  /* scroll down, zoom out */
-  if (event->delta_y > 0)
+  /* if shift also pressed, handle vertical zoom */
+  if (event->state & GDK_SHIFT_MASK)
     {
-      ruler_widget_set_zoom_level (
-        ruler,
-        ruler_widget_get_zoom_level (ruler) / 1.3);
+      if (self->type == TYPE (MIDI))
+        {
+          midi_arranger_handle_vertical_zoom_scroll (
+            self, event);
+        }
     }
-  else /* scroll up, zoom in */
+  /* else if just control pressed handle horizontal
+   * zooom */
+  else
     {
-      ruler_widget_set_zoom_level (
-        ruler,
-        ruler_widget_get_zoom_level (ruler) * 1.3);
+      Position cursor_pos;
+      GtkScrolledWindow * scroll =
+        arranger_widget_get_scrolled_window (self);
+      GtkAdjustment * adj;
+      int new_x;
+      RulerWidget * ruler =
+        self->type == TYPE (TIMELINE) ?
+        MW_RULER : EDITOR_RULER;
+
+      /* get current adjustment so we can get the
+       * difference from the cursor */
+      adj = gtk_scrolled_window_get_hadjustment (
+        scroll);
+      adj_val = gtk_adjustment_get_value (adj);
+
+      /* get positions of cursor */
+      arranger_widget_px_to_pos (
+        self, x, &cursor_pos, 1);
+
+      /* get px diff so we can calculate the new
+       * adjustment later */
+      diff = x - adj_val;
+
+      /* scroll down, zoom out */
+      if (event->delta_y > 0)
+        {
+          ruler_widget_set_zoom_level (
+            ruler,
+            ruler_widget_get_zoom_level (ruler) / 1.3);
+        }
+      else /* scroll up, zoom in */
+        {
+          ruler_widget_set_zoom_level (
+            ruler,
+            ruler_widget_get_zoom_level (ruler) * 1.3);
+        }
+
+      new_x = arranger_widget_pos_to_px (
+        self, &cursor_pos, 1);
+
+      /* refresh relevant widgets */
+      if (self->type == TYPE (TIMELINE))
+        timeline_minimap_widget_refresh (
+          MW_TIMELINE_MINIMAP);
+
+      /* get updated adjustment and set its value
+       at the same offset as before */
+      adj =
+        gtk_scrolled_window_get_hadjustment (scroll);
+      gtk_adjustment_set_value (adj, new_x - diff);
     }
-
-  new_x = arranger_widget_pos_to_px (
-    self, &cursor_pos, 1);
-
-  /* refresh relevant widgets */
-  if (self->type == TYPE (TIMELINE))
-    timeline_minimap_widget_refresh (
-      MW_TIMELINE_MINIMAP);
-
-  /* get updated adjustment and set its value
-   at the same offset as before */
-  adj =
-    gtk_scrolled_window_get_hadjustment (scroll);
-  gtk_adjustment_set_value (adj, new_x - diff);
 
   return TRUE;
 }
