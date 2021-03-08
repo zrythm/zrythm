@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-27 03:37+0000\n"
-"PO-Revision-Date: 2021-02-15 05:50+0000\n"
+"PO-Revision-Date: 2021-03-08 01:16+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:220
@@ -87,9 +87,8 @@ msgid "Low"
 msgstr "低"
 
 #: inc/utils/gtk.h:50
-#, fuzzy
 msgid "MIDI learn"
-msgstr "MIDI入力"
+msgstr "MIDI 検知"
 
 #: inc/utils/gtk.h:54
 msgid "Cu_t"
@@ -133,9 +132,8 @@ msgid "Invert"
 msgstr "転化"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
-#, fuzzy
 msgid "Normalize"
-msgstr "普通"
+msgstr "ノーマライズ (Normalize)"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
@@ -424,11 +422,8 @@ msgid "File %s not found."
 msgstr "%sが見つかりません。"
 
 #: src/main.c:181
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
-msgstr ""
-"出力ファイルが指定されていません。`--output [ファイル]` で 1 つを指定してくだ"
-"さい。"
+msgstr "出力ファイルが指定されていません。 `--output [ファイル]` で 1 つを指定してください。"
 
 #: src/main.c:240
 #, c-format
@@ -436,9 +431,8 @@ msgid "Project failed to decompress: %s\n"
 msgstr "プロジェクトの解凍に失敗しました: %s\n"
 
 #: src/main.c:259
-#, fuzzy
 msgid "Unknown operation"
-msgstr "オプションを認知できませんでした\n"
+msgstr "オプションを認知できませんでした"
 
 #: src/main.c:309
 #, c-format
@@ -446,53 +440,49 @@ msgid "libguile is required for this option\n"
 msgstr "このオプションには libguile が必要です。\n"
 
 #: src/main.c:329
-#, fuzzy
 msgid "Print version information"
-msgstr "ライセンス情報"
+msgstr "ライセンス情報を表示"
 
 #: src/main.c:334
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "ZPJ-FILEをYAMLに変換する"
 
 #: src/main.c:339
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "YAML-PROJECT-FILEを.zpj形式に変換する"
 
 #: src/main.c:344
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "SCRIPT-FILEからプロジェクトを生成"
 
 #: src/main.c:348
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "ユーザーフレンドリーな方法で出力"
 
 #: src/main.c:352
 msgid "Print current settings"
-msgstr ""
+msgstr "現在の設定を出力"
 
 #: src/main.c:356
-#, fuzzy
 msgid "Reset to factory settings"
-msgstr "初期設定にリセットされました\n"
+msgstr "初期設定にリセット"
 
 #: src/main.c:359
-#, fuzzy
 msgid "Override the audio backend to use"
-msgstr "使用するオーディオバックエンド。"
+msgstr "使用するオーディオバックエンドをオーバーライド"
 
 #: src/main.c:363
-#, fuzzy
 msgid "Override the MIDI backend to use"
-msgstr "使用するMIDIバックエンド。"
+msgstr "使用するMIDIバックエンドをオーバーライド"
 
 #: src/main.c:367
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "--midi-backend=none --audio-backend=none の省略形"
 
 #: src/main.c:390
 #, c-format
 msgid "[PROJECT-FILE] - Run %s"
-msgstr ""
+msgstr "[PROJECT-FILE] - %sを実行"
 
 #: src/main.c:400
 #, c-format
@@ -505,9 +495,15 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
+"例\n"
+"  --zpj-to-yaml a.zpj > b.yaml a.zpjをYAMLに変換してb.yamlに保存\n"
+"  --gen-project a.scm -o myproject a.scmからmyprojectを生成\n"
+"  -p --pretty 現在の設定をプリティプリントする\n"
+"\n"
+"問題は%sに報告してください\n"
 
 #: src/main.c:442
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
 "\n"
@@ -520,15 +516,16 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
+"%s-%s Copyright (C) 2018-2021 Zrythmの貢献者\n"
 "\n"
 "%sは一切の保証を伴いません！\n"
 "\n"
-"これはフリーソフトウェアで、一定の条件の下で再頒布できます。\n"
+"これはフリーソフトウェアで、一定の条件で再頒布できます。\n"
 "詳細は `COPYING' をご覧ください。\n"
 "\n"
-"コメントやバグは %s\n"
+"コメントやバグは %s までにください (日本語/英語)\n"
 "プロジェクトの支援は https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/zrythm_app.c:218
 msgid "Setting up main window"
@@ -613,9 +610,9 @@ msgstr "%sプラグインをスキャン: %s"
 #. * is plugin protocol, 2nd
 #. * argument is path
 #: src/plugins/plugin_manager.c:1077
-#, fuzzy, c-format
+#, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "%sのLV2プラグインをスキップしました"
+msgstr "%2$sで%1$sのプラグインをスキップしました"
 
 #: src/plugins/plugin_manager.c:1207
 msgid "Scanned LV2 plugin"
@@ -1096,18 +1093,16 @@ msgid "Add to project (bridged full)"
 msgstr "プロジェクトに追加（完全にブリッジ）"
 
 #: src/gui/widgets/plugin_browser.c:469
-#, fuzzy
 msgid "Add to collection"
-msgstr "プロジェクトに追加"
+msgstr "コレクションに追加"
 
 #: src/gui/widgets/plugin_browser.c:518
 msgid "Remove from collection"
 msgstr "コレクションから削除"
 
 #: src/gui/widgets/plugin_browser.c:635 src/gui/widgets/plugin_browser.c:672
-#, fuzzy
 msgid "Collection name"
-msgstr "コレクション"
+msgstr "コレクション名"
 
 #: src/gui/widgets/plugin_browser.c:706
 #, c-format
@@ -1116,9 +1111,8 @@ msgid ""
 msgstr "このコレクションには%dプラグインが含まれています。本当に削除しますか？"
 
 #: src/gui/widgets/plugin_browser.c:747
-#, fuzzy
 msgid "Rename"
-msgstr "region_name"
+msgstr "名前を変更する"
 
 #: src/gui/widgets/plugin_browser.c:758
 #: src/gui/widgets/port_connections_tree.c:182
@@ -1420,14 +1414,12 @@ msgid "Loop Selection"
 msgstr "ループ選択"
 
 #: src/gui/widgets/home_toolbar.c:240
-#, fuzzy
 msgid "Undo..."
-msgstr "元に戻す"
+msgstr "元に戻す..."
 
 #: src/gui/widgets/home_toolbar.c:244
-#, fuzzy
 msgid "Redo..."
-msgstr "やり直し"
+msgstr "再実行..."
 
 #: src/gui/widgets/right_dock_edge.c:98
 msgid "Plugin Browser"
@@ -1495,9 +1487,8 @@ msgid "Macros"
 msgstr "マクロ"
 
 #: src/gui/widgets/automatable_selector_popover.c:381
-#, fuzzy
 msgid "Channel"
-msgstr "チャンネル%s"
+msgstr "チャンネル"
 
 #: src/gui/widgets/automatable_selector_popover.c:392
 #, c-format
@@ -1989,11 +1980,11 @@ msgid "Export Progress"
 msgstr "エクスポートの進行状況"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:85
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%sPlease help us fix this by %ssubmitting a bug report%s using the template "
 "below or by %ssending an email%s."
-msgstr "%s修正に役立ちますので、%sバグ報告を送信してください%s。"
+msgstr "%s修正に役立ちますので、下記テンプレートで%sバグ報告を送信する%sか%sメールで送信してください%s。"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:112
 #, c-format
@@ -2202,16 +2193,15 @@ msgid "Unsupported file type %s"
 msgstr "サポートされていないファイルの種類 %s"
 
 #: src/audio/tracklist.c:1019
-#, fuzzy
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr "既存のトラックにMIDIファイルをドロップできません"
+msgstr "MIDI/インストゥルメントトラックにのみMIDIファイルをドロップすることができます"
 
 #: src/audio/tracklist.c:1032
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
-msgstr ""
+msgstr "この MIDI ファイルには %d トラックが含まれています。既存のトラックにドロップすることはできません。"
 
 #: src/audio/tracklist.c:1046
 msgid "Can only drop audio files on audio tracks"
@@ -2271,9 +2261,9 @@ msgid "Modulators"
 msgstr "モジュレーター"
 
 #: src/audio/exporter.c:138
-#, fuzzy, c-format
+#, c-format
 msgid "Format %s not supported yet"
-msgstr "エクスポートするフォーマット。"
+msgstr "フォーマット %s はまだサポートされていません"
 
 #: src/audio/exporter.c:233
 msgid "SF INFO invalid"
@@ -2357,14 +2347,13 @@ msgid "PulseAudio error: Failed to create main loop"
 msgstr "PulseAudio エラー。メインループの作成に失敗"
 
 #: src/audio/engine_pulse.c:263
-#, fuzzy, c-format
+#, c-format
 msgid "PulseAudio Error: %s"
-msgstr "PortAudioエラー：%s"
+msgstr "PulseAudioエラー：%s"
 
 #: src/audio/engine_pulse.c:282
-#, fuzzy
 msgid "PulseAudio Error: Failed to connect"
-msgstr "接続するオーディオ バックエンド"
+msgstr "PulseAudioエラー：接続に失敗しました"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
@@ -2506,64 +2495,52 @@ msgid "Set control value"
 msgstr "コントロール値の設定"
 
 #: src/actions/arranger_selections.c:2585
-#, fuzzy
 msgid "Create arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーオブジェクトを作成する"
 
 #: src/actions/arranger_selections.c:2588
-#, fuzzy
 msgid "Delete arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトを削除する"
 
 #: src/actions/arranger_selections.c:2592
-#, fuzzy
 msgid "Duplicate arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトを複製"
 
 #: src/actions/arranger_selections.c:2595
-#, fuzzy
 msgid "Move arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトを移動"
 
 #: src/actions/arranger_selections.c:2598
-#, fuzzy
 msgid "Link arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトをリンク"
 
 #: src/actions/arranger_selections.c:2601
-#, fuzzy
 msgid "Record arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトを録音"
 
 #: src/actions/arranger_selections.c:2604
-#, fuzzy
 msgid "Edit arranger selections"
-msgstr "アレンジャーオブジェクトを編集"
+msgstr "アレンジャーのオブジェクトを編集"
 
 #: src/actions/arranger_selections.c:2607
-#, fuzzy
 msgid "Automation fill"
-msgstr "オートメーション"
+msgstr "オートメーションを Fill"
 
 #: src/actions/arranger_selections.c:2610
-#, fuzzy
 msgid "Split arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトを分割"
 
 #: src/actions/arranger_selections.c:2613
-#, fuzzy
 msgid "Merge arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトを結合する"
 
 #: src/actions/arranger_selections.c:2616
-#, fuzzy
 msgid "Resize arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーのオブジェクトのサイズを変更"
 
 #: src/actions/arranger_selections.c:2620
-#, fuzzy
 msgid "Quantize arranger selections"
-msgstr "選択範囲を結合する"
+msgstr "アレンジャーオブジェクトをクオンタイズ"
 
 #: src/actions/midi_mapping_action.c:211
 msgid "MIDI mapping enable"
@@ -2665,9 +2642,8 @@ msgid "Selections must be on the same lane"
 msgstr "選択は同じレーン上にある必要があります"
 
 #: src/actions/actions.c:2191
-#, fuzzy
 msgid "Region name"
-msgstr "region_name"
+msgstr "リージョン名"
 
 #: src/actions/port_connection_action.c:143
 msgid "Connect ports"
@@ -2694,39 +2670,32 @@ msgid "Change BPM"
 msgstr "BPMを変更する"
 
 #: src/actions/transport_action.c:200
-#, fuzzy
 msgid "Change Time Signature"
-msgstr "拍子記号"
+msgstr "拍子記号を変更"
 
 #: src/actions/channel_send_action.c:202
-#, fuzzy
 msgid "Connect sidechain"
-msgstr "コレクション"
+msgstr "サイドチェーンを接続"
 
 #: src/actions/channel_send_action.c:204
-#, fuzzy
 msgid "Connect stereo"
-msgstr "ポートを接続する"
+msgstr "ステレオを接続"
 
 #: src/actions/channel_send_action.c:206
-#, fuzzy
 msgid "Connect MIDI"
-msgstr "ポートを接続する"
+msgstr "MIDI を接続"
 
 #: src/actions/channel_send_action.c:208
-#, fuzzy
 msgid "Disconnect"
-msgstr "ポートを切断する"
+msgstr "切断する"
 
 #: src/actions/channel_send_action.c:210
-#, fuzzy
 msgid "Change amount"
-msgstr "パンを変更"
+msgstr "値を変更"
 
 #: src/actions/channel_send_action.c:212
-#, fuzzy
 msgid "Change ports"
-msgstr "色を変更する"
+msgstr "ポートを変更"
 
 #: src/actions/channel_send_action.c:215
 msgid "Channel send connection"
@@ -2790,9 +2759,8 @@ msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
 #: src/actions/tracklist_selections.c:1138
-#, fuzzy
 msgid "Copy Track"
-msgstr "コードトラック"
+msgstr "トラックをコピー"
 
 #: src/actions/tracklist_selections.c:1143
 #: src/actions/tracklist_selections.c:1235
@@ -2860,33 +2828,30 @@ msgid "Change icon"
 msgstr "アイコンを変更する"
 
 #: src/actions/tracklist_selections.c:1216
-#, fuzzy
 msgid "Change comment"
-msgstr "アイコンを変更する"
+msgstr "コメントを変更"
 
 #: src/actions/tracklist_selections.c:1230
 msgid "Move Track"
 msgstr "トラックを移動"
 
 #: src/actions/tracklist_selections.c:1243
-#, fuzzy
 msgid "Pin Track"
-msgstr "トラックを固定/固定解除"
+msgstr "トラックを固定 (Pin)"
 
 #: src/actions/tracklist_selections.c:1248
-#, fuzzy, c-format
+#, c-format
 msgid "Pin %d Tracks"
-msgstr "トラックを非表示にする"
+msgstr "%dトラックを固定"
 
 #: src/actions/tracklist_selections.c:1255
-#, fuzzy
 msgid "Unpin Track"
-msgstr "トラックを固定/固定解除"
+msgstr "トラックの固定を解除 (Unpin)"
 
 #: src/actions/tracklist_selections.c:1260
-#, fuzzy, c-format
+#, c-format
 msgid "Unpin %d Tracks"
-msgstr "トラックを固定/固定解除"
+msgstr "%dトラックの固定を解除 (Unpin)"
 
 #: src/guile/guile.c:37
 msgid "Script execution successful"
@@ -3436,28 +3401,24 @@ msgid "Scan again for MIDI controllers"
 msgstr "MIDIコントローラをもう一度スキャンする"
 
 #: resources/ui/main_notebook.ui:43 resources/ui/main_notebook.ui:59
-#, fuzzy
 msgid "Timeline"
-msgstr "時間の範囲"
+msgstr "タイムライン"
 
 #: resources/ui/main_notebook.ui:80
 msgid "Port connections"
 msgstr "ポート接続"
 
 #: resources/ui/main_notebook.ui:96
-#, fuzzy
 msgid "Connections"
-msgstr "コレクション"
+msgstr "コネクション"
 
 #: resources/ui/main_notebook.ui:118
-#, fuzzy
 msgid "MIDI CC bindings"
-msgstr "CCバインディング"
+msgstr "MIDI CC のバインディング"
 
 #: resources/ui/main_notebook.ui:134
-#, fuzzy
 msgid "Bindings"
-msgstr "CCバインディング"
+msgstr "バインディング"
 
 #: resources/ui/main_notebook.ui:156
 msgid "Scenes (Live view)"
@@ -3552,7 +3513,7 @@ msgstr "完全指定名"
 
 #: resources/ui/port_info_dialog.ui:114
 msgid "Range"
-msgstr "レンジ"
+msgstr "選択範囲 (Range)"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"
@@ -3778,9 +3739,8 @@ msgid "Keep offset"
 msgstr "オフセットを維持する"
 
 #: resources/ui/snap_box.ui:82
-#, fuzzy
 msgid "Snap to events"
-msgstr "イベント（リージョン）にスナップ"
+msgstr "イベントにスナップする"
 
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
@@ -3945,19 +3905,16 @@ msgid "Link"
 msgstr "リンク"
 
 #: resources/ui/snap_grid_popover.ui:326
-#, fuzzy
 msgid "Link length to snap setting"
-msgstr "スナップするノートの長さ"
+msgstr "長さをスナップの設定とリンク"
 
 #: resources/ui/snap_grid_popover.ui:339
-#, fuzzy
 msgid "Last object"
-msgstr "プロジェクトを読み込み中"
+msgstr "最新のオブジェクト"
 
 #: resources/ui/snap_grid_popover.ui:340
-#, fuzzy
 msgid "Use last created object's length"
-msgstr "タイムラインオブジェクトの長さ"
+msgstr "最後に作成されたオブジェクトの長さを使用"
 
 #: resources/ui/range_action_buttons.ui:58
 msgid "Remove range"
@@ -4167,11 +4124,8 @@ msgid "Timeline object length"
 msgstr "タイムラインオブジェクトの長さ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:243
-#, fuzzy
 msgid "Default length to use when creating timeline objects."
-msgstr ""
-"編集モードなどでタイムラインオブジェクトを作成する際に使用するデフォルトの長"
-"さ。"
+msgstr "タイムラインのオブジェクトを作成する際に使用するデフォルトの長さ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:247
 msgid "Timeline object length type"
@@ -4435,7 +4389,7 @@ msgstr "JACKトランスポートクライアント"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:386
 msgid "Selected JACK transport behavior (master/client/none)"
-msgstr ""
+msgstr "選択された JACK トランスポート動作 (master/client/one)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:390
 msgid "Ruler display type"

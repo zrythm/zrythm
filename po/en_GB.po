@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-02-27 03:37+0000\n"
-"PO-Revision-Date: 2021-01-03 23:56+0000\n"
+"PO-Revision-Date: 2021-03-08 01:16+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/en_GB/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.5.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:220
@@ -127,7 +127,7 @@ msgstr "Unmute"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:202
 msgid "Invert"
-msgstr ""
+msgstr "Invert"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
 #, fuzzy
@@ -136,11 +136,11 @@ msgstr "Normal"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
-msgstr ""
+msgstr "Reverse"
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
-msgstr ""
+msgstr "Invalid"
 
 #: inc/audio/track.h:163 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -464,7 +464,7 @@ msgstr ""
 
 #: src/main.c:356
 msgid "Reset to factory settings"
-msgstr ""
+msgstr "Reset to factory settings"
 
 #: src/main.c:359
 #, fuzzy
@@ -745,7 +745,7 @@ msgstr "Add"
 #: src/gui/widgets/modulator_macro.c:204 src/gui/widgets/fader.c:362
 #: resources/ui/first_run_assistant.ui:134
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: src/gui/widgets/inspector_port.c:205 src/gui/widgets/midi_arranger.c:522
 #: src/gui/widgets/modulator_inner.c:222 src/gui/widgets/modulator_macro.c:220
@@ -1070,7 +1070,7 @@ msgstr "scale"
 
 #: src/gui/widgets/piano_roll_keys.c:179
 msgid "chord"
-msgstr ""
+msgstr "chord"
 
 #: src/gui/widgets/plugin_browser.c:437
 #, fuzzy
@@ -1096,7 +1096,7 @@ msgstr "Loading project"
 
 #: src/gui/widgets/plugin_browser.c:518
 msgid "Remove from collection"
-msgstr ""
+msgstr "Remove from collection"
 
 #: src/gui/widgets/plugin_browser.c:635 src/gui/widgets/plugin_browser.c:672
 #, fuzzy
@@ -1184,7 +1184,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:514
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
@@ -1195,23 +1195,23 @@ msgstr ""
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:527
 msgid "Rate"
-msgstr ""
+msgstr "Rate"
 
 #: src/gui/widgets/bot_bar.c:534 src/gui/widgets/dialogs/export_dialog.c:1309
 msgid "Disable"
-msgstr ""
+msgstr "Disable"
 
 #: src/gui/widgets/bot_bar.c:534 src/gui/widgets/dialogs/export_dialog.c:1299
 msgid "Enable"
-msgstr ""
+msgstr "Enable"
 
 #: src/gui/widgets/bot_bar.c:565
 msgid "Metronome"
-msgstr ""
+msgstr "Metronome"
 
 #: src/gui/widgets/bot_bar.c:565
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: src/gui/widgets/bot_bar.c:649
 msgid "bpm"
@@ -1344,7 +1344,7 @@ msgstr "Preferences"
 
 #: src/gui/widgets/header.c:108
 msgid "Log viewer"
-msgstr ""
+msgstr "Log viewer"
 
 #: src/gui/widgets/header.c:110
 msgid "Scripting interface"
@@ -1372,7 +1372,7 @@ msgstr "Report a Bug"
 
 #: src/gui/widgets/port_connections_tree.c:276
 msgid "Source"
-msgstr ""
+msgstr "Source"
 
 #: src/gui/widgets/port_connections_tree.c:294
 #: src/gui/widgets/cc_bindings_tree.c:303
@@ -1382,7 +1382,7 @@ msgstr "Position"
 
 #: src/gui/widgets/port_connections_tree.c:312
 msgid "Multiplier"
-msgstr ""
+msgstr "Multiplier"
 
 #: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:243
 msgid "Redo"
@@ -1434,7 +1434,7 @@ msgstr "Plugin Browser"
 #: src/gui/widgets/right_dock_edge.c:126
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr ""
+msgstr "File Browser"
 
 #: src/gui/widgets/right_dock_edge.c:153
 msgid "Control Room"
@@ -1455,15 +1455,15 @@ msgstr "Plugin properties"
 #: resources/ui/port_info_dialog.ui:153 resources/ui/panel_file_browser.ui:84
 #: resources/ui/file_browser.ui:84
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: src/gui/widgets/plugin_properties_expander.c:166
 msgid "Banks"
-msgstr ""
+msgstr "Banks"
 
 #: src/gui/widgets/plugin_properties_expander.c:182
 msgid "Presets"
-msgstr ""
+msgstr "Presets"
 
 #: src/gui/widgets/route_target_selector.c:87
 msgid "Cannot be routed"
@@ -1483,7 +1483,7 @@ msgstr "Stereo Out"
 
 #: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:457
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: src/gui/widgets/automatable_selector_popover.c:108
 msgid "No control selected"
@@ -1529,7 +1529,7 @@ msgstr "Snap/Grid options"
 
 #: src/gui/widgets/preferences.c:467 resources/ui/first_run_assistant.ui:124
 msgid "Select a folder"
-msgstr ""
+msgstr "Select a folder"
 
 #: src/gui/widgets/preferences.c:468
 #, fuzzy
@@ -1580,29 +1580,29 @@ msgstr ""
 
 #: src/gui/widgets/clip_editor_inner.c:304
 msgid "Select a region..."
-msgstr ""
+msgstr "Select a region..."
 
 #: src/gui/widgets/channel_sends_expander.c:63
 #: src/gui/widgets/ports_expander.c:381
 msgid "Sends"
-msgstr ""
+msgstr "Sends"
 
 #: src/gui/widgets/event_viewer.c:113 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43
 msgid "Scale"
-msgstr ""
+msgstr "Scale"
 
 #: src/gui/widgets/event_viewer.c:116
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI note"
 
 #: src/gui/widgets/event_viewer.c:122
 msgid "Automation point"
-msgstr ""
+msgstr "Automation point"
 
 #: src/gui/widgets/event_viewer.c:464 src/gui/widgets/event_viewer.c:560
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: src/gui/widgets/event_viewer.c:475
 msgid "Clip start"
@@ -1618,11 +1618,11 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:508 src/gui/widgets/event_viewer.c:571
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/gui/widgets/event_viewer.c:527
 msgid "Note"
-msgstr ""
+msgstr "Note"
 
 #: src/gui/widgets/event_viewer.c:538
 msgid "Pitch"
@@ -1630,11 +1630,11 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:620
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: src/gui/widgets/event_viewer.c:642
 msgid "Value"
-msgstr ""
+msgstr "Value"
 
 #: src/gui/widgets/event_viewer.c:653
 msgid "Curviness"
@@ -1642,7 +1642,7 @@ msgstr ""
 
 #: src/gui/widgets/cc_bindings_tree.c:276
 msgid "Device"
-msgstr ""
+msgstr "Device"
 
 #: src/gui/widgets/cc_bindings_tree.c:287
 #, fuzzy
@@ -1655,31 +1655,31 @@ msgstr "Controls"
 
 #: src/gui/widgets/ports_expander.c:175
 msgid "Control Outs"
-msgstr ""
+msgstr "Control Outs"
 
 #: src/gui/widgets/ports_expander.c:178
 msgid "Audio Ins"
-msgstr ""
+msgstr "Audio Ins"
 
 #: src/gui/widgets/ports_expander.c:181
 msgid "Audio Outs"
-msgstr ""
+msgstr "Audio Outs"
 
 #: src/gui/widgets/ports_expander.c:184
 msgid "MIDI Ins"
-msgstr ""
+msgstr "MIDI Ins"
 
 #: src/gui/widgets/ports_expander.c:187
 msgid "MIDI Outs"
-msgstr ""
+msgstr "MIDI Outs"
 
 #: src/gui/widgets/ports_expander.c:190
 msgid "CV Ins"
-msgstr ""
+msgstr "CV Ins"
 
 #: src/gui/widgets/ports_expander.c:193
 msgid "CV Outs"
-msgstr ""
+msgstr "CV Outs"
 
 #: src/gui/widgets/ports_expander.c:388
 msgid "Stereo In"
@@ -1687,25 +1687,25 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:395
 msgid "MIDI In"
-msgstr ""
+msgstr "MIDI In"
 
 #: src/gui/widgets/ports_expander.c:403
 msgid "MIDI Out"
-msgstr ""
+msgstr "MIDI Out"
 
 #: src/gui/widgets/route_target_selector_popover.c:172
 msgid "Group"
-msgstr ""
+msgstr "Group"
 
 #: src/gui/widgets/route_target_selector_popover.c:243
 #: src/gui/widgets/route_target_selector_popover.c:442
 msgid "No output selected"
-msgstr ""
+msgstr "No output selected"
 
 #: src/gui/widgets/route_target_selector_popover.c:261
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Routing to %s"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
@@ -1713,19 +1713,19 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr ""
+msgstr "Save"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr ""
+msgstr "Save As"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:39
 msgid "Open Project"
-msgstr ""
+msgstr "Open Project"
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr ""
+msgstr "Export As"
 
 #: src/gui/widgets/project_toolbar.c:44
 #, fuzzy
@@ -1738,31 +1738,31 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr ""
+msgstr "Zoom In"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zoom Out"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr ""
+msgstr "Original Size"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr ""
+msgstr "Best Fit"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
-msgstr ""
+msgstr "Fullscreen"
 
 #: src/gui/widgets/view_toolbar.c:45
 msgid "Toggle Left Panel"
-msgstr ""
+msgstr "Toggle Left Panel"
 
 #: src/gui/widgets/view_toolbar.c:46
 msgid "Toggle Bottom Panel"
-msgstr ""
+msgstr "Toggle Bottom Panel"
 
 #: src/gui/widgets/view_toolbar.c:47
 msgid "Toggle Top Panel"
