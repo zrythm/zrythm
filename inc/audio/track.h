@@ -238,7 +238,7 @@ typedef struct Track
   bool                visible;
 
   /** Height of the main part (without lanes). */
-  int                 main_height;
+  double              main_height;
 
   /** Recording or not. */
   bool                recording;
@@ -469,7 +469,7 @@ track_fields_schema[] =
   YAML_FIELD_INT (Track, lanes_visible),
   YAML_FIELD_INT (Track, automation_visible),
   YAML_FIELD_INT (Track, visible),
-  YAML_FIELD_INT (Track, main_height),
+  YAML_FIELD_FLOAT (Track, main_height),
   YAML_FIELD_INT (Track, passthrough_midi_input),
   YAML_FIELD_INT (Track, recording),
   //YAML_FIELD_INT (Track, pinned),
@@ -607,9 +607,16 @@ track_get_type_from_plugin_descriptor (
  * height of all visible automation tracks + height
  * of all visible lanes).
  */
-int
+double
 track_get_full_visible_height (
   Track * self);
+
+bool
+track_multiply_heights (
+  Track * self,
+  double  multiplier,
+  bool    visible_only,
+  bool    check_only);
 
 /**
  * Returns if the track is soloed.

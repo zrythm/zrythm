@@ -694,8 +694,10 @@ automation_track_get_y_px_from_normalized_val (
   AutomationTrack * self,
   float             normalized_val)
 {
-  return self->height -
-    (int) (normalized_val * (float) self->height);
+  return
+    (int)
+    ((float) self->height -
+      (normalized_val * (float) self->height));
 }
 
 /**

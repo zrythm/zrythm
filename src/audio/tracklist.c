@@ -356,6 +356,48 @@ tracklist_append_track (
     publish_events, recalc_graph);
 }
 
+/**
+ * Multiplies all tracks' heights and returns if
+ * the operation was valid.
+ *
+ * @param visible_only Only apply to visible tracks.
+ */
+bool
+tracklist_multiply_track_heights (
+  Tracklist * self,
+  double      multiplier,
+  bool        visible_only,
+  bool        check_only,
+  bool        fire_events)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * tr = self->tracks[i];
+
+      if (visible_only && !tr->visible)
+        continue;
+
+      bool ret =
+        track_multiply_heights (
+          tr, multiplier, visible_only, check_only);
+      /*g_debug ("%s can multiply %d",*/
+        /*tr->name, ret);*/
+
+      if (!ret)
+        {
+          return false;
+        }
+
+      if (!check_only && fire_events)
+        {
+          /* FIXME should be event */
+          track_widget_update_size (tr->widget);
+        }
+    }
+
+  return true;
+}
+
 int
 tracklist_get_track_pos (
   Tracklist * self,

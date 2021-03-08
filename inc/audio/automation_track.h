@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -102,7 +102,7 @@ typedef struct AutomationTrack
   int               y;
 
   /** Position of multipane handle. */
-  int               height;
+  double            height;
 
   /** Last value recorded in this automation
    * track. */
@@ -180,7 +180,7 @@ static const cyaml_schema_field_t
     automation_mode_strings),
   YAML_FIELD_INT (
     AutomationTrack, visible),
-  YAML_FIELD_INT (
+  YAML_FIELD_FLOAT (
     AutomationTrack, height),
 
   CYAML_FIELD_END

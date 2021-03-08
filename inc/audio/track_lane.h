@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -63,7 +63,7 @@ typedef struct TrackLane
   int                 y;
 
   /** Position of handle. */
-  int                 height;
+  double              height;
 
   /** Muted or not. */
   int                 mute;
@@ -100,7 +100,7 @@ track_lane_fields_schema[] =
     TrackLane, pos),
   YAML_FIELD_STRING_PTR (
     TrackLane, name),
-  YAML_FIELD_INT (
+  YAML_FIELD_FLOAT (
     TrackLane, height),
   YAML_FIELD_INT (
     TrackLane, mute),

@@ -118,6 +118,14 @@ tracklist_widget_get_hit_track (
   double            y);
 
 /**
+ * Handle ctrl+shift+scroll.
+ */
+void
+tracklist_widget_handle_vertical_zoom_scroll (
+  TracklistWidget * self,
+  GdkEventScroll *  event);
+
+/**
  * Deletes all tracks and re-adds them.
  */
 void

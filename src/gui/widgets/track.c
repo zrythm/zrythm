@@ -577,7 +577,7 @@ draw_lanes (
   if (!track->lanes_visible)
     return;
 
-  int total_height = track->main_height;
+  int total_height = (int) track->main_height;
   for (int i = 0; i < track->num_lanes; i++)
     {
       TrackLane * lane = track->lanes[i];
@@ -689,7 +689,7 @@ draw_lanes (
             cb, cr, cb->x, cb->y, state);
         }
 
-      total_height += lane->height;
+      total_height += (int) lane->height;
     }
 }
 
@@ -708,14 +708,14 @@ draw_automation (
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   g_return_if_fail (atl);
-  int total_height = track->main_height;
+  int total_height = (int) track->main_height;
 
   if (track->lanes_visible)
     {
       for (int j = 0; j < track->num_lanes; j++)
         {
           TrackLane * lane = track->lanes[j];
-          total_height += lane->height;
+          total_height += (int) lane->height;
         }
     }
 
@@ -996,7 +996,7 @@ draw_automation (
                 cb, cr, cb->x, cb->y, state);
             }
         }
-      total_height += at->height;
+      total_height += (int) at->height;
     }
 }
 
@@ -1105,13 +1105,13 @@ get_at_to_resize (
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   g_return_val_if_fail (atl, NULL);
-  int total_height = track->main_height;
+  int total_height = (int) track->main_height;
   if (track->lanes_visible)
     {
       for (int i = 0; i < track->num_lanes; i++)
         {
           TrackLane * lane = track->lanes[i];
-          total_height += lane->height;
+          total_height += (int) lane->height;
         }
     }
 
@@ -1120,7 +1120,7 @@ get_at_to_resize (
       AutomationTrack * at = atl->ats[i];
 
       if (at->created && at->visible)
-        total_height += at->height;
+        total_height += (int) at->height;
 
       int val = total_height - y;
       if (val >= 0 && val < RESIZE_PX)
@@ -1142,11 +1142,11 @@ get_lane_to_resize (
   if (!track->lanes_visible)
     return NULL;
 
-  int total_height = track->main_height;
+  int total_height = (int) track->main_height;
   for (int i = 0; i < track->num_lanes; i++)
     {
       TrackLane * lane = track->lanes[i];
-      total_height += lane->height;
+      total_height += (int) lane->height;
 
       int val = total_height - y;
       if (val >= 0 && val < RESIZE_PX)
@@ -1283,7 +1283,8 @@ on_motion (
         get_hovered_am_widget (
           self, (int) event->x, (int) event->y);
       int val =
-        self->track->main_height - (int) event->y;
+        (int) self->track->main_height -
+        (int) event->y;
       int resizing_track =
         val >= 0 && val < RESIZE_PX;
       AutomationTrack * resizing_at =
@@ -2340,6 +2341,7 @@ on_drag_update (
           }
           break;
         }
+      /* FIXME should be event */
       track_widget_update_size (self);
     }
   else
@@ -2685,6 +2687,7 @@ track_widget_update_size (
 {
   g_return_if_fail (self->track);
   int height =
+    (int)
     track_get_full_visible_height (self->track);
   int w;
   gtk_widget_get_size_request (

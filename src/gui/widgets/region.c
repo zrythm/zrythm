@@ -1807,5 +1807,5 @@ region_get_lane_full_rect (
 
   *rect = obj->full_rect;
   rect->y += lane->y;
-  rect->height = lane->height - 1;
+  rect->height = (int) lane->height - 1;
 }

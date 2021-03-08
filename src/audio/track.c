@@ -930,11 +930,11 @@ track_type_can_host_region_type (
  * height of all visible automation tracks + height
  * of all visible lanes).
  */
-int
+double
 track_get_full_visible_height (
   Track * self)
 {
-  int height = self->main_height;
+  double height = self->main_height;
 
   if (self->lanes_visible)
     {
@@ -961,6 +961,70 @@ track_get_full_visible_height (
         }
     }
   return height;
+}
+
+bool
+track_multiply_heights (
+  Track * self,
+  double  multiplier,
+  bool    visible_only,
+  bool    check_only)
+{
+  if (self->main_height * multiplier <
+        TRACK_MIN_HEIGHT)
+    return false;
+
+  if (!check_only)
+    {
+      self->main_height *= multiplier;
+    }
+
+  if (!visible_only || self->lanes_visible)
+    {
+      for (int i = 0; i < self->num_lanes; i++)
+        {
+          TrackLane * lane = self->lanes[i];
+
+          if (lane->height * multiplier <
+                TRACK_MIN_HEIGHT)
+            {
+              return false;
+            }
+
+          if (!check_only)
+            {
+              lane->height *= multiplier;
+            }
+        }
+    }
+  if (!visible_only || self->automation_visible)
+    {
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (self);
+      if (atl)
+        {
+          for (int i = 0; i < atl->num_ats; i++)
+            {
+              AutomationTrack * at = atl->ats[i];
+
+              if (visible_only && !at->visible)
+                continue;
+
+              if (at->height * multiplier <
+                    TRACK_MIN_HEIGHT)
+                {
+                  return false;
+                }
+
+              if (!check_only)
+                {
+                  at->height *= multiplier;
+                }
+            }
+        }
+    }
+
+  return true;
 }
 
 /**

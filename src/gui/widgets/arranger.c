@@ -4715,6 +4715,11 @@ on_scroll (
           midi_arranger_handle_vertical_zoom_scroll (
             self, event);
         }
+      else if (self->type == TYPE (TIMELINE))
+        {
+          tracklist_widget_handle_vertical_zoom_scroll (
+            MW_TRACKLIST, event);
+        }
     }
   /* else if just control pressed handle horizontal
    * zooom */

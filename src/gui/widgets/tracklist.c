@@ -298,6 +298,94 @@ tracklist_widget_on_size_allocate (
     ET_TRACKS_RESIZED, self);
 }
 
+/**
+ * Handle ctrl+shift+scroll.
+ */
+void
+tracklist_widget_handle_vertical_zoom_scroll (
+  TracklistWidget * self,
+  GdkEventScroll *  event)
+{
+  if (!(event->state & GDK_CONTROL_MASK &&
+        event->state & GDK_SHIFT_MASK))
+    return;
+
+  GtkScrolledWindow * scroll =
+    self->unpinned_scroll;
+
+  /* get current adjustment so we can get the
+   * difference from the cursor */
+  GtkAdjustment * adj =
+    gtk_scrolled_window_get_vadjustment (scroll);
+  double adj_val = gtk_adjustment_get_value (adj);
+  double size_before =
+    gtk_adjustment_get_upper (adj);
+  double adj_perc = event->y / size_before;
+
+  /* get px diff so we can calculate the new
+   * adjustment later */
+  double diff = event->y - adj_val;
+
+  /* scroll down, zoom out */
+  double size_after;
+  double multiplier = 1.08;
+  if (event->delta_y > 0)
+    {
+      size_after = size_before / multiplier;
+    }
+  else /* scroll up, zoom in */
+    {
+      size_after = size_before * multiplier;
+    }
+
+  bool can_resize =
+    tracklist_multiply_track_heights (
+      self->tracklist,
+      event->delta_y > 0 ?
+        1 / multiplier : multiplier,
+      false, true, false);
+  g_debug ("can resize: %d", can_resize);
+  if (can_resize)
+    {
+      tracklist_multiply_track_heights (
+        self->tracklist,
+        event->delta_y > 0 ?
+          1 / multiplier : multiplier,
+        false, false, true);
+
+      /* get updated adjustment and set its value
+       at the same offset as before */
+      adj =
+        gtk_scrolled_window_get_vadjustment (scroll);
+      gtk_adjustment_set_value (
+        adj, adj_perc * size_after - diff);
+
+      EVENTS_PUSH (
+        ET_TRACKS_RESIZED, self);
+    }
+}
+
+static gboolean
+on_scroll (
+  GtkWidget *widget,
+  GdkEventScroll  *event,
+  TracklistWidget * self)
+{
+  double x = event->x,
+         y = event->y;
+
+  g_debug ("scrolled to %f, %f", x, y);
+
+  if (!(event->state & GDK_CONTROL_MASK &&
+        event->state & GDK_SHIFT_MASK))
+    return FALSE;
+
+  tracklist_widget_handle_vertical_zoom_scroll (
+    self, event);
+
+  return TRUE;
+}
+
 void
 tracklist_widget_hard_refresh (
   TracklistWidget * self)
@@ -580,6 +668,9 @@ tracklist_widget_init (TracklistWidget * self)
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (
       tracklist_widget_on_size_allocate), self);
+  g_signal_connect (
+    G_OBJECT (self), "scroll-event",
+    G_CALLBACK (on_scroll), self);
 }
 
 static void

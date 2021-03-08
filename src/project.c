@@ -1653,6 +1653,10 @@ project_save (
   /* save current datetime */
   set_datetime_str (self);
 
+  /* set the project version */
+  g_free_and_null (self->version);
+  self->version = zrythm_get_version (false);
+
   /* if backup, get next available backup dir */
   if (is_backup)
     {

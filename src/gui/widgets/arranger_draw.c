@@ -229,7 +229,7 @@ draw_timeline_bg (
         continue;
       tw_widget = (GtkWidget *) tw;
 
-      int full_track_height =
+      double full_track_height =
         track_get_full_visible_height (track);
 
       gtk_widget_translate_coordinates (
@@ -241,7 +241,8 @@ draw_timeline_bg (
         0, 0, NULL, &track_start_offset);
 
       line_y =
-        track_start_offset + full_track_height;
+        track_start_offset +
+        (int) full_track_height;
 
       if (line_y >= rect->y &&
           line_y < rect->y + rect->height)
@@ -254,7 +255,7 @@ draw_timeline_bg (
           cairo_fill (cr);
         }
 
-      int total_height = track->main_height;
+      double total_height = track->main_height;
 
 #define OFFSET_PLUS_TOTAL_HEIGHT \
   (track_start_offset + total_height)
@@ -280,7 +281,7 @@ draw_timeline_bg (
                     0, rect->width, 0.5, 0.4);
                 }
 
-              total_height += lane->height;
+              total_height += (double) lane->height;
             }
         }
 
@@ -367,7 +368,7 @@ draw_timeline_bg (
                 /*at->height - y_px);*/
               /*cairo_fill (cr);*/
 
-              total_height += at->height;
+              total_height += (double) at->height;
             }
         }
     }

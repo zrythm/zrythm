@@ -1424,14 +1424,14 @@ highlight_timeline (
   /* if track, get y/height inside track */
   if (track)
     {
-      height = track->main_height;
+      height = (int) track->main_height;
       int track_y_local =
         track_widget_get_local_y (
           track->widget, self, (int) y);
       if (lane)
         {
           y -= track_y_local - lane->y;
-          height = lane->height;
+          height = (int) lane->height;
         }
       else
         {
@@ -1453,6 +1453,7 @@ highlight_timeline (
                 self->is_pinned)
             {
               y_after_last_track +=
+                (int)
                 track_get_full_visible_height (t);
             }
         }

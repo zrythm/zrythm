@@ -357,6 +357,20 @@ tracklist_get_visible_track_diff (
   const Track * dest);
 
 /**
+ * Multiplies all tracks' heights and returns if
+ * the operation was valid.
+ *
+ * @param visible_only Only apply to visible tracks.
+ */
+bool
+tracklist_multiply_track_heights (
+  Tracklist * self,
+  double      multiplier,
+  bool        visible_only,
+  bool        check_only,
+  bool        fire_events);
+
+/**
  * Handles a file drop inside the timeline or in
  * empty space in the tracklist.
  *

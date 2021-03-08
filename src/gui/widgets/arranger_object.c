@@ -735,7 +735,7 @@ arranger_object_set_full_rectangle (
              * scales would require, plus some
              * padding */
             self->full_rect.height =
-              track->main_height -
+              (int) track->main_height -
                 (self->texth +
                  Z_CAIRO_TEXT_PADDING * 4);
 
@@ -762,7 +762,8 @@ arranger_object_set_full_rectangle (
 
             self->full_rect.y =
               wy + at->y;
-            self->full_rect.height = at->height;
+            self->full_rect.height =
+              (int) at->height;
 
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
@@ -770,7 +771,7 @@ arranger_object_set_full_rectangle (
           {
             self->full_rect.y = wy;
             self->full_rect.height =
-              track->main_height;
+              (int) track->main_height;
 
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
@@ -863,7 +864,8 @@ arranger_object_set_full_rectangle (
         int obj_height =
           self->texth + Z_CAIRO_TEXT_PADDING * 2;
         self->full_rect.y =
-          (wy + track->main_height) - obj_height;
+          (wy + (int) track->main_height) -
+            obj_height;
         self->full_rect.height = obj_height;
 
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;
@@ -894,10 +896,10 @@ arranger_object_set_full_rectangle (
           Z_CAIRO_TEXT_PADDING * 2;
 
         int global_y_start =
-          wy + track->main_height;
+          wy + (int) track->main_height;
         int obj_height =
           MIN (
-            track->main_height,
+            (int) track->main_height,
             self->texth + Z_CAIRO_TEXT_PADDING * 2);
         self->full_rect.y =
           global_y_start - obj_height;

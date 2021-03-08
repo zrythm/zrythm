@@ -589,20 +589,14 @@ midi_arranger_handle_vertical_zoom_scroll (
   /* scroll down, zoom out */
   double size_after;
   float notes_zoom_before = PIANO_ROLL->notes_zoom;
-  if (event->delta_y > 0)
-    {
-      piano_roll_set_notes_zoom (
-        PIANO_ROLL,
-        PIANO_ROLL->notes_zoom / 1.2f, 0);
-      size_after = size_before / 1.2;
-    }
-  else /* scroll up, zoom in */
-    {
-      piano_roll_set_notes_zoom (
-        PIANO_ROLL,
-        PIANO_ROLL->notes_zoom * 1.2f, 0);
-      size_after = size_before * 1.2;
-    }
+  double _multiplier = 1.16;
+  double multiplier =
+    event->delta_y > 0 ?
+    1 / _multiplier : _multiplier;
+  piano_roll_set_notes_zoom (
+    PIANO_ROLL,
+    PIANO_ROLL->notes_zoom * (float) multiplier, 0);
+  size_after = size_before * multiplier;
 
   if (math_floats_equal (
         PIANO_ROLL->notes_zoom,
