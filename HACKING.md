@@ -45,27 +45,13 @@ Hacking Zrythm
     ├── meson.options                # Meson options
     ├── PACKAGING.md                 # Information for packagers
     ├── po                           # I18n
-    │   ├── *.po                     # Translations
-    │   ├── LINGUAS                  # Languages
-    │   ├── POTFILES                 # List of translatable files
-    │   └── zrythm.pot               # Source strings
     ├── README.md                    # Main README file
     ├── resources                    # Bundled resources
     │   ├── gen-gtk-resources-xml.scm # Gtk resources generator
     │   ├── icons                    # Icons
     │   ├── theme                    # Parent GTK theme
     │   └── ui                       # GTK ui files for widgets
-    ├── scripts                      # various scripts
-    │   ├── collect_translatables.sh # Prints the translatable files
-    │   ├── generic_guile_wrap.sh    # Wrapper for running guile scripts
-    │   ├── gschema-gen.scm          # GSettings schema generator
-    │   ├── guile-gen-docs.scm       # Guile API doc generator
-    │   ├── guile_gen_texi_docs.sh   # Creates texi docs for the Guile API
-    │   ├── guile-snarf-wrap.scm     # Snarfing for Guile API
-    │   ├── guile-utils.scm          # Utilities used in other scripts
-    │   ├── meson_dist.sh            # Command to run after meson dist
-    │   ├── meson-post-install.scm   # Commands to run after install
-    │   └── run_stoat.sh             # Runs stoat
+    ├── scripts                      # Various scripts
     ├── src                          # Source (.c) counterparts of inc
     ├── subprojects                  # Subprojects to auto-fetch if some dependencies are not found
     ├── tests                        # Unit tests
@@ -102,7 +88,8 @@ use of C macros in gdb so you can do `p TRACKLIST`
 instead of `p zrythm->project->tracklist`.
 
 Use `MALLOC_CHECK_=3` to enforce additional checks
-when allocating memory. See `man malloc` for details.
+when allocating memory. This is used during tests.
+See `man malloc` for details.
 
 ## Environment Variables
 In addition to GTK/GLib variables, Zrythm
@@ -135,7 +122,11 @@ To run the test suite, use
 
 followed by
 
-    ninja -C build test
+    meson test -C build
+
+To run a specific test with gdb use
+
+    meson test -C build --gdb actions_arranger_selections
 
 To get a coverage report see
 <https://mesonbuild.com/howtox.html#producing-a-coverage-report>.
@@ -188,18 +179,20 @@ git-packaging-hooks for more information.
 
 # Coding Guidelines
 ## Commenting
-Please document everything specified in header files using
-Doxygen tags. At a bare minimum, every function
+Please document everything specified in header files
+using Doxygen tags. At a bare minimum, every function
 declaration should have a brief description.
 
-It is extremely helpful if you document each logical block
-within a function using plain comments, in a way that
-one can understand what is happening in each step by
-only reading the comments.
+It is extremely helpful if you document each logical
+block within a function using plain comments, in a
+way that one can understand what is happening in
+each step by only reading the comments.
 
 ## Coding Style
 Generally, try to follow the
 [GNU coding standards](https://www.gnu.org/prep/standards/html_node/Writing-C.html).
+
+TODO: prepare a clang-format config or similar.
 
 ## Include Order
 In alphabetic order:
@@ -211,7 +204,7 @@ In alphabetic order:
 ## Line Length
 We keep lines within 60 characters. This works
 nicely with 4 columns of files open simultaneously
-in a tiled editor like vim, but if you find this
+in a tiled editor, but if you find this
 difficult to work with < 80 characters is acceptable
 too.
 
@@ -221,29 +214,44 @@ purposes) amounts of code in a file, you should append your
 copyright notice (name, year and optionally
 email/website) at the top.
 
+## Commit Messages
+Please follow the 50/72 rule:
+* commit subject within 50 characters
+* commit body (optional) wrapped at 72 characters
+
+See `git log` for examples.
+
+We are considering switching to a format that
+resembles the
+[GNU ChangeLog style](https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html#Style-of-Change-Logs).
+
 ## Submitting Patches
-We prefer code contributions in the form of patches. Use `git format-patch` to generate patch files and
-post them in a new issue on
-[Redmine](https://redmine.zrythm.org/projects/zrythm/issues) or
-send them to the dev mailing list at <~alextee/zrythm-devel@lists.sr.ht>.
-You may also use `git-send-email` for this.
+We prefer code contributions in the form of patches.
+Use `git format-patch` to generate patch files and
+send them to the
+[development mailing list](https://lists.sr.ht/~alextee/zrythm-devel).
+You can also use
+[git-send-email](https://git-send-email.io/) for this.
 If you are having difficulties creating patches
 please contact us and we will guide you.
 
 # Troubleshooting
+
+*TODO: move this section to the dev docs.*
+
 ## Getting random GUI related errors with no trace in valgrind or GTK warnings
 This might happen when calling GTK code or
-`g_idle_add()` from non-GUI threads. GTK runs in a single
-GUI thread. Any GTK-related code must be run from
-the GUI thread only.
+`g_idle_add()` from non-GUI threads. GTK runs in a
+single GUI thread. Any GTK-related code must be run
+from the GUI thread only.
 
 ## Values not being read properly at specific parts of the code (e.g. getting a zero value when we know the variable is non-zero)
-Delete build dir and reconfigure. This is likely
+Delete the build dir and reconfigure. This is likely
 an optimization problem with meson/ninja that
 appears rarely.
 
 ## How to read cyaml backtraces
-Backtrace:
+Example backtrace:
 ```
 Save: Backtrace:
 in mapping field: pool_id <- member in region after name
