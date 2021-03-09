@@ -202,11 +202,9 @@ typedef struct Plugin
    * This is used for both generic UIs and for
    * X11/Windows when plugins are wrapped.
    *
-   * All VST plugin UIs are wrapped.
-   *
-   * LV2 plugin UIs
-   * are only not wrapped when they have external
-   * UIs. In that case, this must be NULL.
+   * LV2 plugin UIs are only not wrapped when they
+   * have external UIs. In that case, this must be
+   * NULL.
    */
   GtkWindow *       window;
 

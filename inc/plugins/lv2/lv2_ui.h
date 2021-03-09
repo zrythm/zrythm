@@ -45,6 +45,9 @@ lv2_ui_is_resizable (
 
 /**
  * Inits the LV2 plugin UI.
+ *
+ * To be called for generic, suil-wrapped and
+ * external UIs.
  */
 void
 lv2_ui_init (

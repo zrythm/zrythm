@@ -361,7 +361,12 @@ plugin_settings_set (
 
   if (own_setting)
     {
-      *own_setting = *setting;
+      own_setting->force_generic_ui =
+        setting->force_generic_ui;
+      own_setting->open_with_carla =
+        setting->open_with_carla;
+      own_setting->bridge_mode =
+        setting->bridge_mode;
     }
   else
     {

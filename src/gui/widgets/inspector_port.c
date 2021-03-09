@@ -324,7 +324,8 @@ set_port_value (
   port_set_control_value (
     self->port,
     control_port_normalized_val_to_real (
-      self->port, val), false, true);
+      self->port, val),
+    F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
 }
 
 static void

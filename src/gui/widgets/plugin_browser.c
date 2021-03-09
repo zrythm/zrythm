@@ -416,6 +416,22 @@ delete_plugin_setting (
 }
 
 static void
+on_use_generic_ui_toggled (
+  GtkCheckMenuItem * menuitem,
+  PluginDescriptor * descr)
+{
+  bool is_active =
+    gtk_check_menu_item_get_active (menuitem);
+
+  PluginSetting * setting =
+    plugin_setting_new_default (descr);
+  setting->force_generic_ui = is_active;
+  plugin_settings_set (
+    S_PLUGIN_SETTINGS, setting, F_SERIALIZE);
+  plugin_setting_free (setting);
+}
+
+static void
 show_plugin_context_menu (
   PluginBrowserWidget * self,
   PluginDescriptor *    descr)
@@ -434,8 +450,6 @@ show_plugin_context_menu (
   menuitem = \
     GTK_MENU_ITEM ( \
       gtk_menu_item_new_with_label (lbl)); \
-  gtk_widget_set_visible ( \
-    GTK_WIDGET (menuitem), true); \
   APPEND; \
   new_setting = plugin_setting_new_default (descr)
 
@@ -447,6 +461,8 @@ show_plugin_context_menu (
     (GClosureNotify) delete_plugin_setting, 0)
 
 #define APPEND \
+  gtk_widget_set_visible ( \
+    GTK_WIDGET (menuitem), true); \
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL (menu), \
     GTK_WIDGET (menuitem));
@@ -464,7 +480,8 @@ show_plugin_context_menu (
 
   if (plugin_descriptor_has_custom_ui (descr) &&
       z_carla_discovery_get_bridge_mode (descr) ==
-        CARLA_BRIDGE_NONE)
+        CARLA_BRIDGE_NONE &&
+      !new_setting->force_generic_ui)
     {
       CREATE_WITH_LBL (
         _("Add to project (bridged UI)"));
@@ -479,6 +496,27 @@ show_plugin_context_menu (
   new_setting->bridge_mode = CARLA_BRIDGE_FULL;
   CONNECT_SIGNAL;
 #endif
+
+  menuitem =
+    GTK_MENU_ITEM (
+      gtk_check_menu_item_new_with_mnemonic (
+        _("Use _Generic UI")));
+  APPEND;
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menuitem),
+    new_setting->force_generic_ui);
+  g_signal_connect (
+    G_OBJECT (menuitem), "toggled",
+    G_CALLBACK (on_use_generic_ui_toggled), descr);
+
+  if (PLUGIN_MANAGER->collections->
+        num_collections > 0)
+    {
+      menuitem =
+        GTK_MENU_ITEM (
+          gtk_separator_menu_item_new ());
+      APPEND;
+    }
 
   /* add to collection */
   menuitem =

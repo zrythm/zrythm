@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -72,11 +72,32 @@ plugin_gtk_create_window (
   Plugin * plugin);
 
 /**
- * Closes the window of the plugin.
+ * Opens the generic UI of the plugin.
+ *
+ * Assumes plugin_gtk_create_window() has been
+ * called.
  */
 void
-plugin_gtk_close_window (
+plugin_gtk_open_generic_ui (
   Plugin * plugin);
+
+/**
+ * Called on each GUI frame to update the GTK UI.
+ *
+ * @note This is a GSourceFunc.
+ */
+NONNULL
+int
+plugin_gtk_update_plugin_ui (
+  Plugin * pl);
+
+/**
+ * Closes the plugin's UI (either LV2 wrapped with
+ * suil, generic or LV2 external).
+ */
+int
+plugin_gtk_close_ui (
+  Plugin* plugin);
 
 void
 plugin_gtk_set_window_title (

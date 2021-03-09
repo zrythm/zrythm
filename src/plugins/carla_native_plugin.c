@@ -1128,8 +1128,12 @@ create_ports (
             PORT_FLAG_PLUGIN_CONTROL;
           port->id.comment =
             g_strdup (param_info->comment);
-          port->id.port_group =
-            g_strdup (param_info->groupName);
+          if (param_info->groupName &&
+              strlen (param_info->groupName) > 0)
+            {
+              port->id.port_group =
+                g_strdup (param_info->groupName);
+            }
           port->carla_param_id = (int) i;
 
           const NativeParameter * native_param =

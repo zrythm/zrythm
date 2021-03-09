@@ -511,6 +511,9 @@ lv2_ui_instantiate (
 
 /**
  * Inits the LV2 plugin UI.
+ *
+ * To be called for generic, suil-wrapped and
+ * external UIs.
  */
 void
 lv2_ui_init (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -80,21 +80,15 @@ lv2_gtk_set_float_control (
   Port *      port,
   float       value);
 
+/**
+ * Opens the LV2 plugin's UI (either wrapped with
+ * suil or external).
+ *
+ * Use plugin_gtk_*() for generic UIs.
+ */
 int
 lv2_gtk_open_ui (
   Lv2Plugin* plugin);
-
-int
-lv2_gtk_close_ui (
-  Lv2Plugin* plugin);
-
-/**
- * To be called by plugin_gtk both on generic UIs
- * and normal UIs when a plugin window is destroyed.
- */
-void
-lv2_gtk_on_window_destroy (
-  Lv2Plugin * plugin);
 
 PluginGtkPresetMenu*
 lv2_gtk_get_bank_menu (

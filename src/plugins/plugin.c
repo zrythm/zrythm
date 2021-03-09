@@ -45,6 +45,7 @@
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
+#include "plugins/plugin_gtk.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_state.h"
@@ -1767,56 +1768,47 @@ plugin_open_ui (
 #endif
     }
 
-  bool generic_ui =
-    !plugin_has_custom_ui (self) ||
-    setting->force_generic_ui;
-  (void) generic_ui;
-
-  /* TODO handle generic UIs, then carla custom,
-   * then LV2 custom */
-
-  if (setting->open_with_carla)
+  /* if plugin already has a window (either generic
+   * or LV2 non-carla and non-external UI) */
+  if (GTK_IS_WINDOW (self->window))
     {
-#ifdef HAVE_CARLA
-      carla_native_plugin_open_ui (
-        self->carla, 1);
-#endif
+      /* present it */
+      gtk_window_present (
+        GTK_WINDOW (self->window));
     }
   else
     {
-      if (GTK_IS_WINDOW (self->window))
+      bool generic_ui =
+        !plugin_has_custom_ui (self) ||
+        setting->force_generic_ui;
+
+      /* handle generic UIs, then carla custom,
+       * then LV2 custom */
+      if (generic_ui)
         {
-          gtk_window_present (
-            GTK_WINDOW (self->window));
-          gtk_window_set_transient_for (
-            GTK_WINDOW (self->window),
-            (GtkWindow *) MAIN_WINDOW);
+          plugin_gtk_create_window (self);
+          plugin_gtk_open_generic_ui (self);
         }
-      else
+      else if (setting->open_with_carla)
         {
-          switch (descr->protocol)
+#ifdef HAVE_CARLA
+          carla_native_plugin_open_ui (
+            self->carla, 1);
+#endif
+        }
+      else if (descr->protocol == PROT_LV2)
+        {
+          if (self->lv2->has_external_ui &&
+              self->lv2->external_ui_widget)
             {
-            case PROT_LV2:
-              {
-                Lv2Plugin * lv2_plugin =
-                  self->lv2;
-                if (lv2_plugin->has_external_ui &&
-                    lv2_plugin->external_ui_widget)
-                  {
-                    lv2_plugin->
-                      external_ui_widget->
-                        show (
-                        lv2_plugin->
-                          external_ui_widget);
-                  }
-                else
-                  {
-                    lv2_gtk_open_ui (lv2_plugin);
-                  }
-              }
-              break;
-            default:
-              break;
+              self->lv2->external_ui_widget->
+                show (
+                  self->lv2->external_ui_widget);
+            }
+          else
+            {
+              plugin_gtk_create_window (self);
+              lv2_gtk_open_ui (self->lv2);
             }
         }
     }
@@ -2290,42 +2282,19 @@ plugin_close_ui (
       return;
     }
 
+  plugin_gtk_close_ui (self);
+
+  bool generic_ui =
+    !plugin_has_custom_ui (self) ||
+    self->setting->force_generic_ui;
 #ifdef HAVE_CARLA
-  if (self->setting->open_with_carla)
+  if (!generic_ui && self->setting->open_with_carla)
     {
+      g_message ("closing carla plugin UI");
       carla_native_plugin_open_ui (
         self->carla, false);
-      g_message ("closing carla plugin UI");
-    }
-  else
-    {
-      g_message ("closing non-carla plugin UI");
-#endif
-      if (GTK_IS_WINDOW (self->window))
-        {
-          g_signal_handler_disconnect (
-            self->window,
-            self->delete_event_id);
-        }
-
-      switch (self->setting->descr->protocol)
-        {
-        case PROT_LV2:
-          lv2_gtk_close_ui (self->lv2);
-          break;
-        default:
-          g_return_if_reached ();
-          break;
-        }
-#ifdef HAVE_CARLA
     }
 #endif
-
-  if (self->update_ui_source_id)
-    {
-      g_source_remove (self->update_ui_source_id);
-      self->update_ui_source_id = 0;
-    }
 
   self->visible = false;
 }
