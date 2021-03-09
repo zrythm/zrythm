@@ -55,6 +55,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -1268,7 +1269,8 @@ build_control_widget (
 
       /* Check group and add new heading if
        * necessary */
-      if (group && group != last_group)
+      if (group &&
+          !string_is_equal (group, last_group))
         {
           const char * group_name = group;
           GtkWidget * group_label =
@@ -1356,6 +1358,133 @@ build_control_widget (
         GTK_WINDOW (window), FALSE);
       return button;
     }
+}
+
+static double
+get_atom_double (
+  Lv2Plugin *  plugin,
+  uint32_t     size,
+  LV2_URID     type,
+  const void * body,
+  bool *       is_nan)
+{
+  *is_nan = false;
+
+  if (type == plugin->forge.Int ||
+      type == plugin->forge.Bool)
+    return *(const int32_t*)body;
+  else if (type == plugin->forge.Long)
+    return *(const int64_t*)body;
+  else if (type == plugin->forge.Float)
+    return *(const float*)body;
+  else if (type == plugin->forge.Double)
+    return *(const double*)body;
+
+  *is_nan = true;
+
+  return NAN;
+}
+
+/**
+ * Called when a property changed or when there is a
+ * UI port event to set (update) the widget's value.
+ */
+void
+plugin_gtk_generic_set_widget_value (
+  Plugin *              pl,
+  PluginGtkController * controller,
+  uint32_t              size,
+  LV2_URID              type,
+  const void *          body)
+{
+  GtkWidget * widget = controller->control;
+  bool is_nan = false;
+  double fvalue;
+  if (pl->lv2)
+    {
+      fvalue =
+        get_atom_double (
+          pl->lv2, size, type, body, &is_nan);
+    }
+  else
+    {
+      fvalue = (double) *(const float*)body;
+    }
+
+  if (!is_nan)
+    {
+      if (GTK_IS_COMBO_BOX (widget))
+        {
+          GtkTreeModel* model =
+            gtk_combo_box_get_model (
+              GTK_COMBO_BOX (widget));
+          GValue value = { 0, { { 0 } } };
+          GtkTreeIter   i;
+          bool valid =
+            gtk_tree_model_get_iter_first (model, &i);
+          while (valid)
+            {
+              gtk_tree_model_get_value (
+                model, &i, 0, &value);
+              const double v =
+                g_value_get_float (&value);
+              g_value_unset (&value);
+              if (fabs (v - fvalue) < DBL_EPSILON)
+                {
+                  gtk_combo_box_set_active_iter (
+                    GTK_COMBO_BOX (widget), &i);
+                  return;
+                }
+              valid =
+                gtk_tree_model_iter_next(model, &i);
+            }
+        }
+      else if (GTK_IS_TOGGLE_BUTTON (widget))
+        {
+          gtk_toggle_button_set_active (
+            GTK_TOGGLE_BUTTON (widget),
+            fvalue > 0.0);
+        }
+      else if (GTK_IS_RANGE (widget))
+        {
+          gtk_range_set_value (
+            GTK_RANGE (widget), fvalue);
+        }
+      else if (GTK_IS_SWITCH (widget))
+        {
+          gtk_switch_set_active (
+            GTK_SWITCH (widget), fvalue > 0.0);
+        }
+      else
+        {
+          g_warning (
+            _("Unknown widget type for value"));
+        }
+
+      if (controller->spin)
+        {
+          // Update spinner for numeric control
+          gtk_spin_button_set_value (
+            GTK_SPIN_BUTTON (controller->spin),
+            fvalue);
+        }
+    }
+  else if (GTK_IS_ENTRY(widget) &&
+           type == PM_URIDS.atom_String)
+    {
+      gtk_entry_set_text (
+        GTK_ENTRY(widget), (const char*)body);
+    }
+  else if (GTK_IS_FILE_CHOOSER (widget) &&
+           type == PM_URIDS.atom_Path)
+    {
+      gtk_file_chooser_set_filename (
+        GTK_FILE_CHOOSER(widget),
+        (const char*)body);
+    }
+  else
+    g_warning (
+      _("Unknown widget type for value\n"));
 }
 
 /**
@@ -1457,6 +1586,15 @@ plugin_gtk_update_plugin_ui (
       /* fetch port values */
       for (int i = 0; i < pl->num_in_ports; i++)
         {
+          Port * port = pl->in_ports[i];
+          if (port->id.type != TYPE_CONTROL ||
+              !port->widget)
+            {
+              continue;
+            }
+
+          plugin_gtk_generic_set_widget_value (
+            pl, port->widget, 0, 0, &port->control);
         }
     }
 

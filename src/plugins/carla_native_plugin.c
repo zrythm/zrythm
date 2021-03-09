@@ -1126,13 +1126,20 @@ create_ports (
             }
           port->id.flags |=
             PORT_FLAG_PLUGIN_CONTROL;
-          port->id.comment =
-            g_strdup (param_info->comment);
+          if (param_info->comment &&
+              strlen (param_info->comment) > 0)
+            {
+              port->id.comment =
+                g_strdup (param_info->comment);
+            }
           if (param_info->groupName &&
               strlen (param_info->groupName) > 0)
             {
               port->id.port_group =
-                g_strdup (param_info->groupName);
+                string_get_substr_before_suffix (
+                  param_info->groupName, ":");
+              g_return_if_fail (
+                port->id.port_group);
             }
           port->carla_param_id = (int) i;
 

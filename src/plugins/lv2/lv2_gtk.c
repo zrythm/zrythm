@@ -359,125 +359,6 @@ lv2_gtk_on_delete_preset_activate (
   gtk_widget_destroy (dialog);
 }
 
-static double
-get_atom_double (
-  Lv2Plugin *  plugin,
-  uint32_t     size,
-  LV2_URID     type,
-  const void * body,
-  bool *       is_nan)
-{
-  *is_nan = false;
-
-  if (type == plugin->forge.Int ||
-      type == plugin->forge.Bool)
-    return *(const int32_t*)body;
-  else if (type == plugin->forge.Long)
-    return *(const int64_t*)body;
-  else if (type == plugin->forge.Float)
-    return *(const float*)body;
-  else if (type == plugin->forge.Double)
-    return *(const double*)body;
-
-  *is_nan = true;
-
-  return NAN;
-}
-
-/**
- * Called when a property changed or when there is a
- * UI port event.
- */
-static void
-control_changed (
-  Lv2Plugin*       plugin,
-  PluginGtkController* controller,
-  uint32_t    size,
-  LV2_URID    type,
-  const void* body)
-{
-  GtkWidget * widget = controller->control;
-  bool is_nan = false;
-  const double fvalue =
-    get_atom_double (
-      plugin, size, type, body, &is_nan);
-
-  if (!is_nan)
-    {
-      if (GTK_IS_COMBO_BOX(widget))
-        {
-          GtkTreeModel* model =
-            gtk_combo_box_get_model (
-              GTK_COMBO_BOX (widget));
-          GValue value = { 0, { { 0 } } };
-          GtkTreeIter   i;
-          bool valid =
-            gtk_tree_model_get_iter_first (model, &i);
-          while (valid)
-            {
-              gtk_tree_model_get_value (
-                model, &i, 0, &value);
-              const double v =
-                g_value_get_float(&value);
-              g_value_unset (&value);
-              if (fabs(v - fvalue) < FLT_EPSILON)
-                {
-                  gtk_combo_box_set_active_iter (
-                    GTK_COMBO_BOX (widget), &i);
-                  return;
-                }
-              valid =
-                gtk_tree_model_iter_next(model, &i);
-            }
-        }
-      else if (GTK_IS_TOGGLE_BUTTON (widget))
-        {
-          gtk_toggle_button_set_active (
-            GTK_TOGGLE_BUTTON (widget),
-            fvalue > 0.0f);
-        }
-      else if (GTK_IS_RANGE (widget))
-        {
-          gtk_range_set_value (
-            GTK_RANGE (widget), fvalue);
-        }
-      else if (GTK_IS_SWITCH (widget))
-        {
-          gtk_switch_set_active (
-            GTK_SWITCH (widget), fvalue > 0.f);
-        }
-      else
-        {
-          g_warning (
-            _("Unknown widget type for value"));
-        }
-
-      if (controller->spin)
-        {
-          // Update spinner for numeric control
-          gtk_spin_button_set_value (
-            GTK_SPIN_BUTTON (controller->spin),
-            fvalue);
-        }
-    }
-  else if (GTK_IS_ENTRY(widget) &&
-           type == PM_URIDS.atom_String)
-    {
-      gtk_entry_set_text (
-        GTK_ENTRY(widget), (const char*)body);
-    }
-  else if (GTK_IS_FILE_CHOOSER (widget) &&
-           type == PM_URIDS.atom_Path)
-    {
-      gtk_file_chooser_set_filename (
-        GTK_FILE_CHOOSER(widget),
-        (const char*)body);
-    }
-  else
-    g_warning (
-      _("Unknown widget type for value\n"));
-}
-
 static int
 patch_set_get (
   Lv2Plugin *            plugin,
@@ -556,8 +437,8 @@ property_changed (
       g_message (
         "LV2 plugin property for %s changed",
         port->id.sym);
-      control_changed (
-        plugin, port->widget, value->size,
+      plugin_gtk_generic_set_widget_value (
+        plugin->plugin, port->widget, value->size,
         value->type, value + 1);
     }
   else
@@ -598,8 +479,8 @@ lv2_gtk_ui_port_event (
 
       if (port->widget)
         {
-          control_changed (
-            lv2_plugin, port->widget,
+          plugin_gtk_generic_set_widget_value (
+            pl, port->widget,
             buffer_size, lv2_plugin->forge.Float,
             buffer);
           return;

@@ -195,6 +195,8 @@ plugin_init (
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT,
       _("[Zrythm] Enabled"));
+  port->id.comment =
+    g_strdup (_("Enables or disables the plugin"));
   plugin_add_in_port (plugin, port);
   port->id.flags |=
     PORT_FLAG_PLUGIN_ENABLED;
@@ -218,6 +220,7 @@ plugin_init (
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT,
       _("[Zrythm] Gain"));
+  port->id.comment = g_strdup (_("Plugin gain"));
   plugin_add_in_port (plugin, port);
   port->id.flags |=
     PORT_FLAG_PLUGIN_GAIN;
@@ -428,6 +431,7 @@ plugin_new_from_setting (
 
   self->setting =
     plugin_setting_clone (setting, F_VALIDATE);
+  setting = self->setting;
   const PluginDescriptor * descr =
     self->setting->descr;
 
@@ -445,6 +449,7 @@ plugin_new_from_setting (
   if (setting->open_with_carla)
     {
 new_carla_plugin:
+      setting->open_with_carla = true;
       carla_native_plugin_new_from_setting (self);
       if (!self->carla)
         {

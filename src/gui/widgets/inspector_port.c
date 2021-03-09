@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -402,17 +403,27 @@ bar_slider_tick_cb (
         self->port, full_designation);
       char * full_designation_escaped =
         g_markup_escape_text (full_designation, -1);
+      char * comment_escaped = NULL;
+      if (self->port->id.comment)
+        {
+          comment_escaped =
+            g_markup_printf_escaped (
+              "<i>%s</i>\n",
+              self->port->id.comment);
+        }
       const char * src_or_dest_str =
         self->port->id.flow == FLOW_INPUT ?
         _("Incoming signals") :
         _("Outgoing signals");
       sprintf (
         str, "<b>%s</b>\n"
+        "%s"
         "%s: <b>%d</b>\n"
         "%s: <b>%f</b>\n"
         "%s: <b>%f</b> | "
         "%s: <b>%f</b>",
         full_designation_escaped,
+        comment_escaped ? comment_escaped : "",
         src_or_dest_str,
         self->port->id.flow == FLOW_INPUT ?
           self->port->num_srcs :
@@ -422,6 +433,7 @@ bar_slider_tick_cb (
         _("Min"), (double) self->minf,
         _("Max"), (double) self->maxf);
       g_free (full_designation_escaped);
+      g_free_and_null (comment_escaped);
 
       /* if the tooltip changed, update it */
       char * cur_tooltip =

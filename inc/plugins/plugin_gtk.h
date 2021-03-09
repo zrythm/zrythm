@@ -176,6 +176,18 @@ plugin_gtk_new_label (
   float        yalign);
 
 /**
+ * Called when a property changed or when there is a
+ * UI port event to set (update) the widget's value.
+ */
+void
+plugin_gtk_generic_set_widget_value (
+  Plugin *              pl,
+  PluginGtkController * controller,
+  uint32_t              size,
+  LV2_URID              type,
+  const void *          body);
+
+/**
  * @}
  */
 
