@@ -1042,28 +1042,34 @@ lv2_plugin_get_parameters (
               LILV_WORLD, property,
               PM_GET_NODE (LILV_NS_RDFS "label"),
               NULL);
-          const char * label_str =
-            lilv_node_as_string (label);
-          strncpy (
-            param->label, label_str,
-            MIN (
-              strlen (label_str) + 1,
-              LV2_PARAM_MAX_STR_LEN));
-          lilv_node_free (label);
+          if (label)
+            {
+              const char * label_str =
+                lilv_node_as_string (label);
+              strncpy (
+                param->label, label_str,
+                MIN (
+                  strlen (label_str) + 1,
+                  LV2_PARAM_MAX_STR_LEN));
+              lilv_node_free (label);
+            }
 
           LilvNode * comment =
             lilv_world_get (
               LILV_WORLD, property,
               PM_GET_NODE (LILV_NS_RDFS "comment"),
               NULL);
-          const char * comment_str =
-            lilv_node_as_string (comment);
-          strncpy (
-            param->comment, comment_str,
-            MIN (
-              strlen (comment_str) + 1,
-              LV2_PARAM_MAX_STR_LEN));
-          lilv_node_free (comment);
+          if (comment)
+            {
+              const char * comment_str =
+                lilv_node_as_string (comment);
+              strncpy (
+                param->comment, comment_str,
+                MIN (
+                  strlen (comment_str) + 1,
+                  LV2_PARAM_MAX_STR_LEN));
+              lilv_node_free (comment);
+            }
 
           LilvNode * min =
             lilv_world_get (
