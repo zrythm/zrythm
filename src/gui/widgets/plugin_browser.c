@@ -106,6 +106,7 @@ update_stack_switcher_emblems (
         continue;
 
       GtkButton * button = GTK_BUTTON (iter->data);
+
       GtkWidget * btn_child =
         gtk_bin_get_child (GTK_BIN (button));
       GtkImage * prev_img = NULL;
@@ -177,8 +178,6 @@ update_stack_switcher_emblems (
         }
       g_return_if_fail (icon_name);
 
-      GIcon * icon = g_themed_icon_new (icon_name);
-
       /* add emblem if needed */
       bool needs_emblem =
         (has_collections &&
@@ -190,22 +189,10 @@ update_stack_switcher_emblems (
         (has_categories &&
          string_is_equal (
            icon_name, CATEGORIES_ICON));
-      if (needs_emblem)
-        {
-          GIcon * dot_icon =
-            g_themed_icon_new ("media-record");
-          GEmblem * emblem =
-            g_emblem_new (dot_icon);
-          icon =
-            g_emblemed_icon_new (icon, emblem);
-        }
 
-      /* set new icon */
-      GtkWidget * img =
-        gtk_image_new_from_gicon (
-          icon, icon_size);
-      gtk_widget_set_visible (img, true);
-      gtk_button_set_image (button, img);
+      z_gtk_button_set_emblem (
+        button,
+        needs_emblem ? "media-record" : NULL);
     }
   g_list_free (children);
 }

@@ -63,6 +63,7 @@
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/file_browser_window.h"
 #include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/header.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/log_viewer.h"
 #include "gui/widgets/main_window.h"
@@ -338,6 +339,13 @@ activate_log (
         GTK_WIDGET (LOG->viewer), 1);
     }
 #endif
+
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_HEADER)
+    {
+      MW_HEADER->log_has_pending_warnings = false;
+      EVENTS_PUSH (
+        ET_LOG_WARNING_STATE_CHANGED, NULL);
+    }
 }
 
 /**

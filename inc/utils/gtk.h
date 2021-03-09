@@ -481,6 +481,15 @@ z_gtk_combo_box_set_ellipsize_mode (
   PangoEllipsizeMode ellipsize);
 
 /**
+ * Sets the given emblem to the button, or unsets
+ * the emblem if \ref emblem_icon is NULL.
+ */
+void
+z_gtk_button_set_emblem (
+  GtkButton *  btn,
+  const char * emblem_icon);
+
+/**
  * Makes the given notebook foldable.
  *
  * The pages of the notebook must all be wrapped

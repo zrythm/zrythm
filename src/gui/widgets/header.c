@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,6 +38,24 @@
 G_DEFINE_TYPE (HeaderWidget,
                header_widget,
                GTK_TYPE_BOX)
+
+void
+header_widget_refresh (
+  HeaderWidget * self)
+{
+  g_debug (
+    "refreshing header widget: "
+    "has pending warnings: %d",
+    self->log_has_pending_warnings);
+  GtkButton * btn =
+    GTK_BUTTON (
+      gtk_bin_get_child (
+        GTK_BIN (self->log_viewer)));
+  z_gtk_button_set_emblem (
+    btn,
+    self->log_has_pending_warnings ?
+      "media-record" : NULL);
+}
 
 void
 header_widget_setup (

@@ -1895,6 +1895,9 @@ process_events (void * data)
           arranger_selections_change_redraw_everything (
             (ArrangerSelections *) TL_SELECTIONS);
           break;
+        case ET_LOG_WARNING_STATE_CHANGED:
+          header_widget_refresh (MW_HEADER);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

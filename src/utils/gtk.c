@@ -368,6 +368,115 @@ z_gtk_button_set_icon_name (
 }
 
 /**
+ * Sets the given emblem to the button, or unsets
+ * the emblem if \ref emblem_icon is NULL.
+ */
+void
+z_gtk_button_set_emblem (
+  GtkButton *  btn,
+  const char * emblem_icon_name)
+{
+  GtkWidget * btn_child =
+    gtk_bin_get_child (GTK_BIN (btn));
+  GtkImage * prev_img = NULL;
+  if (GTK_IS_BIN (btn_child))
+    {
+      GtkWidget * inner_child =
+        gtk_bin_get_child (
+          GTK_BIN (btn_child));
+      if (GTK_IS_CONTAINER (inner_child))
+        {
+          prev_img =
+            GTK_IMAGE (
+              z_gtk_container_get_single_child (
+                GTK_CONTAINER (inner_child)));
+        }
+      else if (GTK_IS_IMAGE (inner_child))
+        {
+          prev_img = GTK_IMAGE (inner_child);
+        }
+      else
+        {
+          g_critical (
+            "unknown type %s",
+            G_OBJECT_TYPE_NAME (inner_child));
+        }
+    }
+  else if (GTK_IS_IMAGE (btn_child))
+    {
+      prev_img = GTK_IMAGE (btn_child);
+    }
+  else if (GTK_IS_CONTAINER (btn_child))
+    {
+      prev_img =
+        GTK_IMAGE (
+          z_gtk_container_get_single_child (
+            GTK_CONTAINER (btn_child)));
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+
+  GtkIconSize icon_size;
+  const char * icon_name = NULL;
+  GtkImageType image_type =
+    gtk_image_get_storage_type (prev_img);
+  if (image_type == GTK_IMAGE_ICON_NAME)
+    {
+      gtk_image_get_icon_name (
+        prev_img, &icon_name, &icon_size);
+    }
+  else if (image_type == GTK_IMAGE_GICON)
+    {
+      GIcon * emblemed_icon = NULL;
+      gtk_image_get_gicon (
+        prev_img, &emblemed_icon, &icon_size);
+      g_return_if_fail (emblemed_icon);
+      GIcon * prev_icon = NULL;
+      if (G_IS_EMBLEMED_ICON (emblemed_icon))
+        {
+          prev_icon =
+            g_emblemed_icon_get_icon (
+              G_EMBLEMED_ICON (emblemed_icon));
+        }
+      else if (G_IS_THEMED_ICON (emblemed_icon))
+        {
+          prev_icon = emblemed_icon;
+        }
+      else
+        {
+          g_return_if_reached ();
+        }
+
+      const char * const * icon_names =
+        g_themed_icon_get_names (
+          G_THEMED_ICON (prev_icon));
+      icon_name =  icon_names[0];
+    }
+  g_return_if_fail (icon_name);
+
+  GIcon * icon = g_themed_icon_new (icon_name);
+
+  if (emblem_icon_name)
+    {
+      GIcon * dot_icon =
+        g_themed_icon_new ("media-record");
+      GEmblem * emblem =
+        g_emblem_new (dot_icon);
+      icon =
+        g_emblemed_icon_new (icon, emblem);
+    }
+
+  /* set new icon */
+  GtkWidget * img =
+    gtk_image_new_from_gicon (
+      icon, icon_size);
+  gtk_widget_set_visible (img, true);
+  gtk_button_set_image (btn, img);
+}
+
+/**
  * Creates a button with the given icon name.
  */
 GtkButton *

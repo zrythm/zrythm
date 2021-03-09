@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex@zrythm.org>
  *
  * This file is part of Zrythm
  *
@@ -47,8 +47,13 @@
 #include <process.h>
 #endif
 
+#include "audio/engine.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
+#include "gui/widgets/header.h"
 #include "gui/widgets/main_window.h"
+#include "project.h"
 #include "utils/backtrace.h"
 #include "utils/datetime.h"
 #include "utils/flags.h"
@@ -721,6 +726,17 @@ log_idle_cb (
               gtk_dialog_run (GTK_DIALOG (dialog));
               gtk_widget_destroy (dialog);
             }
+        }
+
+      if (ev->log_level ==
+            G_LOG_LEVEL_WARNING &&
+          ZRYTHM_HAVE_UI &&
+          MAIN_WINDOW && MW_HEADER)
+        {
+          MW_HEADER->log_has_pending_warnings =
+            true;
+          EVENTS_PUSH (
+            ET_LOG_WARNING_STATE_CHANGED, NULL);
         }
 
       g_free_and_null (ev->message);

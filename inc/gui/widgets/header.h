@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,8 @@
 
 #ifndef __GUI_WIDGETS_HEADER_H__
 #define __GUI_WIDGETS_HEADER_H__
+
+#include <stdbool.h>
 
 #include <gtk/gtk.h>
 
@@ -69,10 +71,19 @@ typedef struct _HeaderWidget
   GtkNotebook *       notebook;
   LiveWaveformWidget *      live_waveform;
   MidiActivityBarWidget *   midi_activity;
+
+  /** Whether log has pending warnings (if true,
+   * the log viewer button will have an emblem until
+   * clicked). */
+  bool                log_has_pending_warnings;
 } HeaderWidget;
 
 HeaderWidget *
 header_widget_new ();
+
+void
+header_widget_refresh (
+  HeaderWidget * self);
 
 void
 header_widget_setup (
