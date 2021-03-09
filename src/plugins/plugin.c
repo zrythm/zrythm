@@ -2284,10 +2284,10 @@ plugin_close_ui (
 
   plugin_gtk_close_ui (self);
 
+#ifdef HAVE_CARLA
   bool generic_ui =
     !plugin_has_custom_ui (self) ||
     self->setting->force_generic_ui;
-#ifdef HAVE_CARLA
   if (!generic_ui && self->setting->open_with_carla)
     {
       g_message ("closing carla plugin UI");

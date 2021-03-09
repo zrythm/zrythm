@@ -288,6 +288,18 @@ _test_create_plugins (
           PLUGIN_SLOT_INSERT,
           TRACKLIST->num_tracks - 1, 0, setting, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
+
+      if (string_is_equal (
+            pl_uri,
+            "http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector") &&
+          !with_carla)
+        {
+          Plugin * pl =
+            TRACKLIST->tracks[
+              TRACKLIST->num_tracks - 1]->channel->
+                inserts[0];
+          g_assert_true (pl->lv2->want_position);
+        }
     }
 
   plugin_setting_free (setting);

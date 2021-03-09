@@ -303,6 +303,9 @@ typedef enum PortFlags2
 
   /** Parameter port's value type is URI. */
   PORT_FLAG2_URI_PARAM = 1 << 8,
+
+  /** Atom port buffer type is sequence. */
+  PORT_FLAG2_SEQUENCE = 1 << 9,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -354,6 +357,7 @@ port_flags2_bitvals[] =
   { .name = "patch_message", .offset = 6, .bits = 1 },
   { .name = "enumeration", .offset = 7, .bits = 1 },
   { .name = "uri_param", .offset = 8, .bits = 1 },
+  { .name = "sequence", .offset = 9, .bits = 1 },
 };
 
 /**

@@ -257,6 +257,9 @@ tracklist_selections_handle_click (
               Track * lowest =
                 tracklist_selections_get_lowest_track (
                   TRACKLIST_SELECTIONS);
+              g_return_if_fail (
+                IS_TRACK_AND_NONNULL (highest) &&
+                IS_TRACK_AND_NONNULL (lowest));
               if (track->pos > highest->pos)
                 {
                   /* select all tracks in between */

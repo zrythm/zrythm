@@ -322,7 +322,7 @@ create_port (
     {
       const LilvPort * lilv_port =
         lilv_plugin_get_port_by_index (
-          lv2_plugin->lilv_plugin, lv2_port_index);
+          lilv_plugin, lv2_port_index);
       const LilvNode * lilv_port_node =
         lilv_port_get_node (
           lilv_plugin, lilv_port);
@@ -613,24 +613,41 @@ create_port (
             }
           port->old_api = false;
 
-          /* set want position flag */
-          if (lilv_port_supports_event (
-                lv2_plugin->lilv_plugin,
-                lilv_port,
-                PM_GET_NODE (
-                  LV2_TIME__position)))
-            {
-              pi->flags |= PORT_FLAG_WANT_POSITION;
-              lv2_plugin->want_position = 1;
-            }
+          LilvNodes * buffer_types =
+            lilv_port_get_value (
+              lilv_plugin, lilv_port,
+              PM_GET_NODE (LV2_ATOM__bufferType));
+          LilvNodes* atom_supports =
+            lilv_port_get_value (
+              lilv_plugin, lilv_port,
+              PM_GET_NODE (LV2_ATOM__supports));
 
-          if (lilv_port_supports_event (
-                lilv_plugin, lilv_port,
-                PM_GET_NODE (LV2_PATCH__Message)))
+          if (lilv_nodes_contains (
+                buffer_types,
+                PM_GET_NODE (LV2_ATOM__Sequence)))
             {
-              pi->flags2 |=
-                PORT_FLAG2_SUPPORTS_PATCH_MESSAGE;
+              pi->flags2 |= PORT_FLAG2_SEQUENCE;
+
+              if (lilv_nodes_contains (
+                    atom_supports,
+                    PM_GET_NODE (
+                      LV2_TIME__Position)))
+                {
+                  pi->flags |=
+                    PORT_FLAG_WANT_POSITION;
+                  lv2_plugin->want_position = true;
+                }
+              if (lilv_nodes_contains (
+                    atom_supports,
+                    PM_GET_NODE (
+                      LV2_PATCH__Message)))
+                {
+                  pi->flags2 |=
+                    PORT_FLAG2_SUPPORTS_PATCH_MESSAGE;
+                }
             }
+          lilv_nodes_free (buffer_types);
+          lilv_nodes_free (atom_supports);
         }
       else if (!optional)
         {
@@ -2809,7 +2826,9 @@ lv2_plugin_process (
         self->rolling,
         self->gframes, g_start_frames,
         (double) self->bpm,
-        (double) TRANSPORT->bpm);
+        (double)
+          tempo_track_get_current_bpm (
+            P_TEMPO_TRACK));
     }
 #endif
 
