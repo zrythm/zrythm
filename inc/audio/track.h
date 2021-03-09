@@ -591,6 +591,7 @@ track_set_magic (
  * Sets track muted and optionally adds the action
  * to the undo stack.
  */
+NONNULL
 void
 track_set_muted (
   Track * track,
@@ -598,6 +599,7 @@ track_set_muted (
   bool    trigger_undo,
   bool    fire_events);
 
+NONNULL
 TrackType
 track_get_type_from_plugin_descriptor (
   PluginDescriptor * descr);
@@ -607,6 +609,7 @@ track_get_type_from_plugin_descriptor (
  * height of all visible automation tracks + height
  * of all visible lanes).
  */
+NONNULL
 double
 track_get_full_visible_height (
   Track * self);
@@ -621,6 +624,7 @@ track_multiply_heights (
 /**
  * Returns if the track is soloed.
  */
+NONNULL
 bool
 track_get_soloed (
   Track * self);
@@ -630,6 +634,7 @@ track_get_soloed (
  * own but its direct out (or its direct out's direct
  * out, etc.) is soloed.
  */
+NONNULL
 bool
 track_get_implied_soloed (
   Track * self);
@@ -637,6 +642,7 @@ track_get_implied_soloed (
 /**
  * Returns if the track is muted.
  */
+NONNULL
 bool
 track_get_muted (
   Track * self);
@@ -645,6 +651,7 @@ track_get_muted (
  * Sets recording and connects/disconnects the
  * JACK ports.
  */
+NONNULL
 void
 track_set_recording (
   Track *   track,
@@ -655,6 +662,7 @@ track_set_recording (
  * Sets track soloed and optionally adds the action
  * to the undo stack.
  */
+NONNULL
 void
 track_set_soloed (
   Track * track,
@@ -665,12 +673,14 @@ track_set_soloed (
 /**
  * Returns if Track is in TracklistSelections.
  */
+NONNULL
 int
 track_is_selected (Track * self);
 
 /**
  * Returns whether the track is pinned.
  */
+NONNULL
 bool
 track_is_pinned (
   Track * self);
@@ -730,6 +740,7 @@ track_insert_region (
 /**
  * Writes the track to the given MIDI file.
  */
+NONNULL
 void
 track_write_to_midi_file (
   Track *     self,
@@ -742,16 +753,18 @@ track_write_to_midi_file (
  * @param fire_events Fire events to update the
  *   UI.
  */
+NONNULL
 void
 track_select (
   Track * self,
-  int     select,
-  int     exclusive,
-  int     fire_events);
+  bool    select,
+  bool    exclusive,
+  bool    fire_events);
 
 /**
  * Unselects all arranger objects in the track.
  */
+NONNULL
 void
 track_unselect_all (
   Track * self);
@@ -759,6 +772,7 @@ track_unselect_all (
 /**
  * Removes all objects recursively from the track.
  */
+NONNULL
 void
 track_clear (
   Track * self);
@@ -768,6 +782,7 @@ track_clear (
  *
  * @pararm free Also free the Region.
  */
+NONNULL
 void
 track_remove_region (
   Track *   self,

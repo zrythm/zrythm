@@ -188,13 +188,13 @@ test_midi_fx_slot_deletion (void)
 #ifdef HAVE_MIDI_CC_MAP
   /* add plugin to slot */
   int slot = 0;
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
   ua =
     mixer_selections_action_new_create (
       PLUGIN_SLOT_MIDI_FX,
-      TRACKLIST->num_tracks - 1, slot, descr, 1);
+      TRACKLIST->num_tracks - 1, slot, setting, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   Track * track =
@@ -236,15 +236,16 @@ _test_create_plugins (
   bool           is_instrument,
   bool           with_carla)
 {
-  PluginDescriptor * descr = NULL;
+  PluginSetting * setting = NULL;
 
   switch (prot)
     {
     case PROT_LV2:
-      descr =
-        plugin_descriptor_clone (
-          test_plugin_manager_get_plugin_descriptor (
-            pl_bundle, pl_uri, with_carla));
+      setting =
+        plugin_setting_clone (
+          test_plugin_manager_get_plugin_setting (
+            pl_bundle, pl_uri, with_carla),
+          F_NO_VALIDATE);
       break;
     case PROT_VST:
 #ifdef HAVE_CARLA
@@ -252,7 +253,9 @@ _test_create_plugins (
           PluginDescriptor ** descriptors =
             z_carla_discovery_create_descriptors_from_file (
               pl_bundle, ARCH_64, PROT_VST);
-          descr = descriptors[0];
+          setting =
+            plugin_setting_new_default (
+              descriptors[0]);
           free (descriptors);
         }
 #endif
@@ -267,7 +270,7 @@ _test_create_plugins (
       /* create an instrument track from helm */
       ua =
         tracklist_selections_action_new_create (
-          TRACK_TYPE_INSTRUMENT, descr, NULL,
+          TRACK_TYPE_INSTRUMENT, setting, NULL,
           TRACKLIST->num_tracks, NULL, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
@@ -283,11 +286,11 @@ _test_create_plugins (
       ua =
         mixer_selections_action_new_create (
           PLUGIN_SLOT_INSERT,
-          TRACKLIST->num_tracks - 1, 0, descr, 1);
+          TRACKLIST->num_tracks - 1, 0, setting, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
 
-  plugin_descriptor_free (descr);
+  plugin_setting_free (setting);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -400,18 +403,18 @@ _test_port_and_plugin_track_pos_after_move (
   const char * pl_uri,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
 
   /* create an instrument track from helm */
   UndoableAction * ua =
     tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS, descr, NULL,
+      TRACK_TYPE_AUDIO_BUS, setting, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  plugin_descriptor_free (descr);
+  plugin_setting_free (setting);
 
   int src_track_pos = TRACKLIST->num_tracks - 1;
   int dest_track_pos = TRACKLIST->num_tracks;
@@ -605,18 +608,18 @@ test_move_two_plugins_one_slot_up (void)
 
 #ifdef HAVE_LSP_COMPRESSOR
   /* create a track with an insert */
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       LSP_COMPRESSOR_BUNDLE,
       LSP_COMPRESSOR_URI, false);
   UndoableAction * ua =
     tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS, descr, NULL,
+      TRACK_TYPE_AUDIO_BUS, setting, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
-  plugin_descriptor_free (descr);
+  plugin_setting_free (setting);
 
   int track_pos = TRACKLIST->num_tracks - 1;
 
@@ -874,7 +877,7 @@ test_move_two_plugins_one_slot_up (void)
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
   g_assert_cmpstr (
-    track->channel->inserts[0]->descr->uri, ==,
+    track->channel->inserts[0]->setting->descr->uri, ==,
     LSP_COMPRESSOR_URI);
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[1]));
@@ -886,12 +889,12 @@ test_move_two_plugins_one_slot_up (void)
 
 #ifdef HAVE_MIDI_CC_MAP
   /* add plugin to slot 0 (replacing current) */
-  descr =
-    test_plugin_manager_get_plugin_descriptor (
+  setting =
+    test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
   ua =
     mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSERT, track->pos, 0, descr, 1);
+      PLUGIN_SLOT_INSERT, track->pos, 0, setting, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* undo and verify that the original plugin is
@@ -900,7 +903,7 @@ test_move_two_plugins_one_slot_up (void)
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
   g_assert_cmpstr (
-    track->channel->inserts[0]->descr->uri, ==,
+    track->channel->inserts[0]->setting->descr->uri, ==,
     LSP_COMPRESSOR_URI);
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[1]));
@@ -910,8 +913,8 @@ test_move_two_plugins_one_slot_up (void)
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
   g_assert_cmpstr (
-    track->channel->inserts[0]->descr->uri, ==,
-    descr->uri);
+    track->channel->inserts[0]->setting->descr->uri, ==,
+    setting->descr->uri);
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[1]));
 
@@ -947,7 +950,7 @@ test_move_two_plugins_one_slot_up (void)
    * restored */
   undo_manager_undo (UNDO_MANAGER);
   pl = track->channel->inserts[0];
-  g_assert_cmpstr (pl->descr->uri, ==, descr->uri);
+  g_assert_cmpstr (pl->setting->descr->uri, ==, setting->descr->uri);
   port = plugin_get_port_by_symbol (pl, "ccin");
   g_assert_cmpfloat_with_epsilon (
     port->control, 120.f, 0.0001f);
@@ -990,14 +993,14 @@ test_create_modulator (void)
 
 #ifdef HAVE_AMS_LFO
   /* create a track with an insert */
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       AMS_LFO_BUNDLE, AMS_LFO_URI, false);
   UndoableAction * ua =
     mixer_selections_action_new_create (
       PLUGIN_SLOT_MODULATOR,
       P_MODULATOR_TRACK->pos,
-      P_MODULATOR_TRACK->num_modulators, descr, 1);
+      P_MODULATOR_TRACK->num_modulators, setting, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
@@ -1009,7 +1012,7 @@ test_create_modulator (void)
     mixer_selections_action_new_create (
       PLUGIN_SLOT_MODULATOR,
       P_MODULATOR_TRACK->pos,
-      P_MODULATOR_TRACK->num_modulators, descr, 1);
+      P_MODULATOR_TRACK->num_modulators, setting, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* connect a cv output from the first modulator
@@ -1056,7 +1059,7 @@ test_create_modulator (void)
   undo_manager_redo (UNDO_MANAGER);
   mixer_selections_free (sel);
 
-  plugin_descriptor_free (descr);
+  plugin_setting_free (setting);
 #endif
 
   test_helper_zrythm_cleanup ();

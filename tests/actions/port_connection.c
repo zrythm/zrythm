@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,8 +47,8 @@ test_modulator_connection (
   bool         is_instrument,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
 
   /* fix the descriptor (for some reason lilv
@@ -56,12 +56,12 @@ test_modulator_connection (
    * you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      descr->category = PC_INSTRUMENT;
+      setting->descr->category = PC_INSTRUMENT;
     }
-  g_free (descr->category_str);
-  descr->category_str =
+  g_free (setting->descr->category_str);
+  setting->descr->category_str =
     plugin_descriptor_category_to_string (
-      descr->category);
+      setting->descr->category);
 
   UndoableAction * ua = NULL;
 
@@ -69,9 +69,9 @@ test_modulator_connection (
   ua =
     mixer_selections_action_new_create (
       PLUGIN_SLOT_MODULATOR, P_MODULATOR_TRACK->pos,
-      0, descr, 1);
+      0, setting, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
-  plugin_descriptor_free (descr);
+  plugin_setting_free (setting);
 
   ModulatorMacroProcessor * macro =
     P_MODULATOR_TRACK->modulator_macros[0];
@@ -148,8 +148,8 @@ _test_port_connection (
   bool         is_instrument,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
 
   /* fix the descriptor (for some reason lilv
@@ -157,12 +157,12 @@ _test_port_connection (
    * you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      descr->category = PC_INSTRUMENT;
+      setting->descr->category = PC_INSTRUMENT;
     }
-  g_free (descr->category_str);
-  descr->category_str =
+  g_free (setting->descr->category_str);
+  setting->descr->category_str =
     plugin_descriptor_category_to_string (
-      descr->category);
+      setting->descr->category);
 
   UndoableAction * ua = NULL;
 
@@ -180,7 +180,7 @@ _test_port_connection (
       /* create an instrument track from helm */
       ua =
         tracklist_selections_action_new_create (
-          TRACK_TYPE_INSTRUMENT, descr, NULL,
+          TRACK_TYPE_INSTRUMENT, setting, NULL,
           TRACKLIST->num_tracks, NULL, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
@@ -195,11 +195,11 @@ _test_port_connection (
       ua =
         mixer_selections_action_new_create (
           PLUGIN_SLOT_INSERT,
-          TRACKLIST->num_tracks - 1, 0, descr, 1);
+          TRACKLIST->num_tracks - 1, 0, setting, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
 
-  plugin_descriptor_free (descr);
+  plugin_setting_free (setting);
 
   Track * src_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

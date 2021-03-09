@@ -30,6 +30,8 @@
 
 #include <gtk/gtk.h>
 
+typedef struct PluginSettings PluginSettings;
+
 /**
  * @addtogroup project Settings
  *
@@ -86,6 +88,9 @@
   g_settings_get_enum ( \
     S_UI, key)
 
+#define S_PLUGIN_SETTINGS \
+  SETTINGS->plugin_settings
+
 typedef struct Settings
 {
   /**
@@ -122,6 +127,8 @@ typedef struct Settings
   GSettings * export;
 
   GSettings * ui_inspector;
+
+  PluginSettings * plugin_settings;
 } Settings;
 
 /**

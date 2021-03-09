@@ -72,8 +72,6 @@ plugin_descriptor_copy (
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
-  dest->open_with_carla = src->open_with_carla;
-  dest->bridge_mode = src->bridge_mode;
   dest->ghash = src->ghash;
 }
 
@@ -449,18 +447,12 @@ void
 plugin_descriptor_free (
   PluginDescriptor * self)
 {
-  if (self->author)
-    g_free (self->author);
-  if (self->name)
-    g_free (self->name);
-  if (self->website)
-    g_free (self->website);
-  if (self->category_str)
-    g_free (self->category_str);
-  if (self->path)
-    g_free (self->path);
-  if (self->uri)
-    g_free (self->uri);
+  g_free_and_null (self->author);
+  g_free_and_null (self->name);
+  g_free_and_null (self->website);
+  g_free_and_null (self->category_str);
+  g_free_and_null (self->path);
+  g_free_and_null (self->uri);
 
-  free (self);
+  object_zero_and_free (self);
 }

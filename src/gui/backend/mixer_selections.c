@@ -458,7 +458,7 @@ mixer_selections_clone (
         {
           g_warning (
             "failed to clone plugin: %s",
-            pl->descr->name);
+            pl->setting->descr->name);
           return NULL;
         }
       ms->slots[i] = src->slots[i];

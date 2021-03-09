@@ -178,24 +178,6 @@ plugin_architecture_strings[] =
   { "64-bit",       ARCH_64     },
 };
 
-/**
- * Carla bridge mode.
- */
-typedef enum CarlaBridgeMode
-{
-  CARLA_BRIDGE_NONE,
-  CARLA_BRIDGE_UI,
-  CARLA_BRIDGE_FULL,
-} CarlaBridgeMode;
-
-static const cyaml_strval_t
-carla_bridge_mode_strings[] =
-{
-  { "None", CARLA_BRIDGE_NONE },
-  { "UI",   CARLA_BRIDGE_UI   },
-  { "Full", CARLA_BRIDGE_FULL },
-};
-
 /***
  * A descriptor to be implemented by all plugins
  * This will be used throughout the UI
@@ -234,18 +216,6 @@ typedef struct PluginDescriptor
   char *           path;
   /** Lv2Plugin URI. */
   char *           uri;
-
-  /** 1 if this plugin is to be instantiated
-   * through Carla. */
-  bool             open_with_carla;
-
-  /** Carla bridge mode. */
-  CarlaBridgeMode  bridge_mode;
-
-  /** Whether the plugin needs to be bridged
-   * through Carla (only used for LV2 plugins
-   * having Gtk2 UIs). */
-  //bool           needs_bridging;
 
   /** Used for VST. */
   int64_t          unique_id;
@@ -288,19 +258,12 @@ plugin_descriptor_fields_schema[] =
     PluginDescriptor, unique_id),
   YAML_FIELD_INT (
     PluginDescriptor, num_cv_outs),
-  YAML_FIELD_INT (
-    PluginDescriptor, open_with_carla),
-  //YAML_FIELD_INT (
-    //PluginDescriptor, needs_bridging),
   YAML_FIELD_ENUM (
     PluginDescriptor, arch,
     plugin_architecture_strings),
   YAML_FIELD_ENUM (
     PluginDescriptor, protocol,
     plugin_protocol_strings),
-  YAML_FIELD_ENUM (
-    PluginDescriptor, bridge_mode,
-    carla_bridge_mode_strings),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginDescriptor, path),
   YAML_FIELD_STRING_PTR_OPTIONAL (

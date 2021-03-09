@@ -56,8 +56,8 @@ _test_edit_tracks (
 {
   UndoableAction * action;
 
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
 
   /* create a track with an instrument */
@@ -66,7 +66,7 @@ _test_edit_tracks (
       is_instrument ?
         TRACK_TYPE_INSTRUMENT :
         TRACK_TYPE_AUDIO_BUS,
-      descr, NULL, 3, NULL, 1);
+      setting, NULL, 3, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * ins_track = get_ins_track ();
   if (is_instrument)

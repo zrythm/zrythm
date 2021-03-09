@@ -47,11 +47,11 @@
  */
 
 /**
- * Get a plugin descriptor clone from the given
+ * Get a plugin setting clone from the given
  * URI in the given bundle.
  */
-PluginDescriptor *
-test_plugin_manager_get_plugin_descriptor (
+PluginSetting *
+test_plugin_manager_get_plugin_setting (
   const char * pl_bundle,
   const char * pl_uri,
   bool         with_carla);
@@ -65,11 +65,11 @@ test_plugin_manager_create_tracks_from_plugin (
   int          num_tracks);
 
 /**
- * Get a plugin descriptor clone from the given
+ * Get a plugin setting clone from the given
  * URI in the given bundle.
  */
-PluginDescriptor *
-test_plugin_manager_get_plugin_descriptor (
+PluginSetting *
+test_plugin_manager_get_plugin_setting (
   const char * pl_bundle,
   const char * pl_uri,
   bool         with_carla)
@@ -96,17 +96,19 @@ test_plugin_manager_get_plugin_descriptor (
               PLUGIN_MANAGER->plugin_descriptors[i]);
         }
     }
-
   g_return_val_if_fail (descr, NULL);
 
+  PluginSetting * setting =
+    plugin_setting_new_default (descr);
+
   /* open with carla if requested */
-  descr->open_with_carla = with_carla;
+  setting->open_with_carla = with_carla;
 
   /* run the logger to avoid too many messages
    * being queued */
   log_idle_cb (LOG);
 
-  return descr;
+  return setting;
 }
 
 int
@@ -117,10 +119,10 @@ test_plugin_manager_create_tracks_from_plugin (
   bool         with_carla,
   int          num_tracks)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
-  g_return_val_if_fail (descr, -1);
+  g_return_val_if_fail (setting, -1);
 
   TrackType track_type = TRACK_TYPE_AUDIO_BUS;
   if (is_instrument)
@@ -128,18 +130,18 @@ test_plugin_manager_create_tracks_from_plugin (
       /* fix the descriptor (for some reason lilv
        * reports it as Plugin instead of Instrument if
        * you don't do lilv_world_load_all) */
-      descr->category = PC_INSTRUMENT;
-      g_free (descr->category_str);
-      descr->category_str =
+      setting->descr->category = PC_INSTRUMENT;
+      g_free (setting->descr->category_str);
+      setting->descr->category_str =
         plugin_descriptor_category_to_string (
-          descr->category);
+          setting->descr->category);
       track_type = TRACK_TYPE_INSTRUMENT;
     }
 
   /* create a track from the plugin */
   UndoableAction * ua =
     tracklist_selections_action_new_create (
-      track_type, descr, NULL,
+      track_type, setting, NULL,
       TRACKLIST->num_tracks, NULL, num_tracks);
   undo_manager_perform (UNDO_MANAGER, ua);
 

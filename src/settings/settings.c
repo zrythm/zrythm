@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "settings/plugin_settings.h"
 #include "settings/settings.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
@@ -37,6 +38,9 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+
+#define G_SETTINGS_ENABLE_BACKEND
+#include <gio/gsettingsbackend.h>
 
 /**
  * Initializes settings.
@@ -94,6 +98,23 @@ settings_new (void)
     self->general &&
     self->export && self->ui &&
     self->ui_inspector, NULL);
+
+#if 0
+  /* plugin settings */
+  GSettingsBackend * psettings_backend =
+    g_keyfile_settings_backend_new (
+      "/filesystem/path/plugin-settings.ini",
+      "/",
+      NULL);
+  self->plugin_settings =
+    g_settings_new_with_backend (
+      GSETTINGS_ZRYTHM_PREFIX ".plugin-settings",
+      psettings_backend);
+  g_settings_set_boolean (
+    self->plugin_settings, "loop", 1);
+#endif
+
+  self->plugin_settings = plugin_settings_new ();
 
   return self;
 }

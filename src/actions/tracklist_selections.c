@@ -82,7 +82,7 @@ copy_track_positions (
  *
  * @param tls Tracklist selections to act upon.
  * @param pos Position to make the tracks at.
- * @param pl_descr Plugin descriptor, if any.
+ * @param pl_setting Plugin setting, if any.
  */
 UndoableAction *
 tracklist_selections_action_new (
@@ -91,7 +91,7 @@ tracklist_selections_action_new (
   TracklistSelections *         tls_after,
   Track *                       track,
   TrackType                     track_type,
-  PluginDescriptor *            pl_descr,
+  PluginSetting *               pl_setting,
   SupportedFile *               file_descr,
   int                           track_pos,
   const Position *              pos,
@@ -117,10 +117,11 @@ tracklist_selections_action_new (
     }
 
   self->type = type;
-  if (pl_descr)
+  if (pl_setting)
     {
-      plugin_descriptor_copy (
-        &self->pl_descr, pl_descr);
+      self->pl_setting =
+        plugin_setting_clone (
+          pl_setting, F_VALIDATE);
     }
   else if (file_descr)
     {
@@ -346,12 +347,13 @@ create_track (
         {
           track =
             track_new (
-              self->track_type, pos, self->pl_descr.name,
+              self->track_type, pos,
+              self->pl_setting->descr->name,
               F_WITH_LANE);
 
           pl=
-            plugin_new_from_descr (
-              &self->pl_descr, track->pos,
+            plugin_new_from_setting (
+              self->pl_setting, track->pos,
               PLUGIN_SLOT_INSERT, 0);
           if (!pl)
             {
@@ -366,7 +368,7 @@ create_track (
                 g_strdup_printf (
                   _("Error instantiating plugin %s. "
                     "Please see log for details."),
-                  pl->descr->name);
+                  pl->setting->descr->name);
 
               if (MAIN_WINDOW)
                 {
@@ -395,7 +397,7 @@ create_track (
           channel_add_plugin (
             track->channel,
             plugin_descriptor_is_instrument (
-              &self->pl_descr) ?
+              self->pl_setting->descr) ?
                 PLUGIN_SLOT_INSTRUMENT :
                 PLUGIN_SLOT_INSERT,
             pl->id.slot, pl,
@@ -1276,6 +1278,8 @@ tracklist_selections_action_free (
     tracklist_selections_free, self->tls_before);
   object_free_w_func_and_null (
     tracklist_selections_free, self->tls_after);
+  object_free_w_func_and_null (
+    plugin_setting_free, self->pl_setting);
 
   object_zero_and_free (self);
 }

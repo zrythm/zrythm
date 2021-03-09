@@ -42,27 +42,9 @@ _test (
   bool         is_instrument,
   bool         with_carla)
 {
-  /* fix the descriptor (for some reason lilv
-   * reports it as Plugin instead of Instrument if
-   * you don't do lilv_world_load_all) */
-  PluginDescriptor * descr =
-    plugin_descriptor_clone (
-      test_plugin_manager_get_plugin_descriptor (
-        pl_bundle, pl_uri, with_carla));
-  descr->category = PC_INSTRUMENT;
-  g_free (descr->category_str);
-  descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
-
   /* 1. add helm */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT, descr, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
-  plugin_descriptor_free (descr);
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   /* select it */
   Track * helm_track =
@@ -71,7 +53,7 @@ _test (
     helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* 2. delete track */
-  ua =
+  UndoableAction * ua =
     tracklist_selections_action_new_delete (
       TRACKLIST_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);

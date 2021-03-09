@@ -37,16 +37,9 @@ _test_loading_non_existing_plugin (
   const char * pl_uri,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
-      pl_bundle, pl_uri, with_carla);
-
   /* create instrument track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT,
-      descr, NULL, TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_bundle, pl_uri, true, with_carla, 1);
 
   /* unload bundle so plugin can't be found */
   LilvNode * path =

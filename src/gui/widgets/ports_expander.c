@@ -51,7 +51,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_ctrl_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
@@ -59,7 +59,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_ctrl_outs > 0);
             }
         }
@@ -70,7 +70,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_audio_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
@@ -78,7 +78,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_audio_outs > 0);
             }
         }
@@ -89,7 +89,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_midi_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
@@ -97,7 +97,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_midi_outs > 0);
             }
         }
@@ -108,7 +108,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_cv_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
@@ -116,7 +116,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin &&
-                  self->plugin->descr->
+                  self->plugin->setting->descr->
                     num_cv_outs > 0);
             }
         }

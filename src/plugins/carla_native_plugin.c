@@ -355,7 +355,9 @@ create_plugin (
   Plugin *     plugin,
   PluginType   type)
 {
-  PluginDescriptor * descr = plugin->descr;
+  PluginSetting * setting = plugin->setting;
+  const PluginDescriptor * descr =
+    setting->descr;
   CarlaNativePlugin * self = _create (plugin);
 
   /* instantiate the plugin to get its info */
@@ -422,24 +424,13 @@ create_plugin (
         NULL);
     }
 
-  /* if no bridge mode specified, calculate the
-   * bridge mode here */
-  CarlaBridgeMode bridge_mode = descr->bridge_mode;
-  if (bridge_mode == CARLA_BRIDGE_NONE)
-    {
-      g_message (
-        "%s: recalculating bridge mode...",
-        __func__);
-      bridge_mode =
-        z_carla_discovery_get_bridge_mode (descr);
-    }
-
   g_message (
     "%s: using bridge mode %s", __func__,
-    carla_bridge_mode_strings[bridge_mode].str);
+    carla_bridge_mode_strings[
+      setting->bridge_mode].str);
 
   /* set bridging on if needed */
-  switch (bridge_mode)
+  switch (setting->bridge_mode)
     {
     case CARLA_BRIDGE_FULL:
       g_message (
@@ -462,8 +453,8 @@ create_plugin (
     }
 
   /* raise bridge timeout to 8 sec */
-  if (bridge_mode == CARLA_BRIDGE_FULL ||
-      bridge_mode == CARLA_BRIDGE_UI)
+  if (setting->bridge_mode == CARLA_BRIDGE_FULL ||
+      setting->bridge_mode == CARLA_BRIDGE_UI)
     {
       carla_set_engine_option (
         self->host_handle,
@@ -546,49 +537,6 @@ create_plugin (
   if (ZRYTHM_TESTING)
     {
       return self;
-    }
-
-  /* cache the new bridge mode if it changed */
-  const PluginDescriptor * known_descr =
-    cached_plugin_descriptors_find (
-      PLUGIN_MANAGER->cached_plugin_descriptors,
-      descr, F_CHECK_VALID,
-      F_NO_CHECK_BLACKLISTED);
-  g_return_val_if_fail (known_descr, NULL);
-  if (bridge_mode == known_descr->bridge_mode &&
-      known_descr->open_with_carla)
-    {
-      g_debug ("No change in bridge mode: %s",
-        carla_bridge_mode_strings[bridge_mode].str);
-    }
-  else
-    {
-      g_message (
-        "Known bridge mode for plugin %s changed "
-        "(%s %s => %s %s), caching...",
-        descr->name,
-        carla_bridge_mode_strings[
-          known_descr->bridge_mode].str,
-        known_descr->open_with_carla ?
-          "carla" : "non-carla",
-        carla_bridge_mode_strings[bridge_mode].str,
-        "carla");
-      PluginDescriptor * new_descr =
-        plugin_descriptor_clone (descr);
-      new_descr->bridge_mode = bridge_mode;
-      new_descr->open_with_carla = true;
-      cached_plugin_descriptors_replace (
-        PLUGIN_MANAGER->cached_plugin_descriptors,
-        new_descr, F_SERIALIZE);
-      plugin_descriptor_free (new_descr);
-
-      /* also change the current descriptors in
-       * the plugin manager for this session */
-      PluginDescriptor * pm_descr =
-        plugin_manager_find_from_descriptor (
-          PLUGIN_MANAGER, descr);
-      pm_descr->bridge_mode = bridge_mode;
-      pm_descr->open_with_carla = true;
     }
 
   return self;
@@ -679,8 +627,8 @@ carla_native_plugin_process (
   self->time_info.bbt.beatsPerMinute =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
-  PluginDescriptor * descr =
-    self->plugin->descr;
+  const PluginDescriptor * descr =
+    self->plugin->setting->descr;
   switch (descr->protocol)
     {
     case PROT_LV2:
@@ -930,7 +878,6 @@ carla_native_plugin_get_descriptor_from_cached (
   PluginDescriptor * descr =
     object_new (PluginDescriptor);
 
-  descr->open_with_carla = 1;
   switch (type)
     {
 #if 0
@@ -987,7 +934,7 @@ carla_native_plugin_get_descriptor_from_cached (
 }
 
 static CarlaNativePlugin *
-create_from_descr (
+create_from_setting (
   Plugin * plugin)
 {
 #if 0
@@ -997,11 +944,13 @@ create_from_descr (
        descr->carla_type > CARLA_PLUGIN_NONE),
     NULL);
 #endif
+  const PluginSetting * setting = plugin->setting;
+  const PluginDescriptor * descr = setting->descr;
   g_return_val_if_fail (
-    plugin->descr->open_with_carla, NULL);
+    setting->open_with_carla, NULL);
 
   CarlaNativePlugin * self = NULL;
-  switch (plugin->descr->protocol)
+  switch (descr->protocol)
     {
     case PROT_LV2:
       self =
@@ -1060,11 +1009,11 @@ create_from_descr (
  * @return Non-zero if fail.
  */
 int
-carla_native_plugin_new_from_descriptor (
+carla_native_plugin_new_from_setting (
   Plugin * plugin)
 {
   CarlaNativePlugin * self =
-    create_from_descr (plugin);
+    create_from_setting (plugin);
   if (!self)
     {
       g_warning ("failed to create plugin");
@@ -1087,7 +1036,8 @@ create_ports (
   char tmp[500];
   char name[4000];
 
-  PluginDescriptor * descr = self->plugin->descr;
+  const PluginDescriptor * descr =
+    self->plugin->setting->descr;
   if (!loading)
     {
       for (int i = 0; i < descr->num_audio_ins; i++)
@@ -1136,6 +1086,7 @@ create_ports (
   const CarlaPortCountInfo * param_counts =
     carla_get_parameter_count_info (
       self->host_handle, 0);
+#if 0
   /* FIXME eventually remove this line. this is added
    * because carla discovery reports 0 params for
    * AU plugins, so we update the descriptor here */
@@ -1143,6 +1094,7 @@ create_ports (
   g_message (
     "params: %d ins and %d outs",
     descr->num_ctrl_ins, (int) param_counts->outs);
+#endif
   for (uint32_t i = 0; i < param_counts->ins; i++)
     {
       Port * port = NULL;
@@ -1303,7 +1255,7 @@ carla_native_plugin_instantiate (
       /* recreate the plugin to create the native
        * plugin descriptor */
       int ret =
-        carla_native_plugin_new_from_descriptor (
+        carla_native_plugin_new_from_setting (
           self->plugin);
       if (ret != 0)
         {
@@ -1360,9 +1312,10 @@ carla_native_plugin_open_ui (
 {
   Plugin * pl = self->plugin;
   g_return_if_fail (
-    IS_PLUGIN_AND_NONNULL (pl) && pl->descr);
+    IS_PLUGIN_AND_NONNULL (pl) &&
+    pl->setting->descr);
 
-  switch (pl->descr->protocol)
+  switch (pl->setting->descr->protocol)
     {
     case PROT_VST:
     case PROT_VST3:
@@ -1408,7 +1361,7 @@ carla_native_plugin_open_ui (
           g_warn_if_fail (MAIN_WINDOW);
           g_debug (
             "setting tick callback for %s",
-            self->plugin->descr->name);
+            self->plugin->setting->descr->name);
           self->tick_cb =
             gtk_widget_add_tick_callback (
               GTK_WIDGET (MAIN_WINDOW),

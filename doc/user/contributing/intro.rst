@@ -67,6 +67,12 @@ For more information on using Weblate,
 please see the
 `official documentation <https://docs.weblate.org/en/latest/user/translating.html>`_.
 
+.. hint:: Zrythm contains terminology similar to
+   existing audio software. You may find it useful
+   to borrow terms from them. See the
+   `Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/>` for example (replace
+   `fr` in the URL with your language code).
+
 User Manual
 ~~~~~~~~~~~
 When translating the user manual, please make sure

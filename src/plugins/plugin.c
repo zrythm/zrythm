@@ -109,7 +109,7 @@ plugin_init_loaded (
   g_return_if_fail (self->enabled && self->gain);
 
 #ifdef HAVE_CARLA
-  if (self->descr->open_with_carla)
+  if (self->setting->open_with_carla)
     {
       g_return_if_fail (self->carla);
       self->carla->plugin = self;
@@ -118,7 +118,7 @@ plugin_init_loaded (
   else
     {
 #endif
-      switch (self->descr->protocol)
+      switch (self->setting->descr->protocol)
         {
         case PROT_LV2:
           self->lv2 = object_new (Lv2Plugin);
@@ -149,7 +149,7 @@ plugin_init_loaded (
             g_strdup_printf (
               _("Instantiation failed for "
               "plugin '%s'. Disabling..."),
-              self->descr->name);
+              self->setting->descr->name);
           g_warning ("%s", msg);
           if (ZRYTHM_HAVE_UI)
             {
@@ -174,9 +174,9 @@ plugin_init (
 {
   g_message (
     "%s: %s (%s) track pos %d slot %d",
-    __func__, plugin->descr->name,
+    __func__, plugin->setting->descr->name,
     plugin_protocol_strings[
-      plugin->descr->protocol].str,
+      plugin->setting->descr->protocol].str,
     track_pos, slot);
 
   plugin->in_ports_size = 1;
@@ -309,10 +309,8 @@ populate_banks (
 {
   g_message ("populating plugin banks...");
 
-  PluginDescriptor * descr = self->descr;
-
 #ifdef HAVE_CARLA
-  if (descr->open_with_carla)
+  if (self->setting->open_with_carla)
     {
       carla_native_plugin_populate_banks (
         self->carla);
@@ -320,7 +318,7 @@ populate_banks (
   else
     {
 #endif
-      switch (descr->protocol)
+      switch (self->setting->descr->protocol)
         {
         case PROT_LV2:
           lv2_plugin_populate_banks (self->lv2);
@@ -364,7 +362,7 @@ plugin_set_selected_preset_from_index (
   g_message (
     "applying preset at index %d", idx);
 
-  if (self->descr->open_with_carla)
+  if (self->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
       /* if init preset */
@@ -385,7 +383,7 @@ plugin_set_selected_preset_from_index (
         }
 #endif
     }
-  else if (self->descr->protocol == PROT_LV2)
+  else if (self->setting->descr->protocol == PROT_LV2)
     {
       /* if init preset */
       if (self->selected_bank.bank_idx == 0 &&
@@ -411,42 +409,43 @@ plugin_set_selected_preset_from_index (
 /**
  * Creates/initializes a plugin and its internal
  * plugin (LV2, etc.)
- * using the given descriptor.
+ * using the given setting.
+ *
+ * @param track_pos The expected position of the
+ *   track the plugin will be in.
+ * @param slot The expected slot the plugin will
+ *   be in.
  */
 Plugin *
-plugin_new_from_descr (
-  PluginDescriptor * descr,
-  int                track_pos,
-  PluginSlotType     slot_type,
-  int                slot)
+plugin_new_from_setting (
+  PluginSetting * setting,
+  int             track_pos,
+  PluginSlotType  slot_type,
+  int             slot)
 {
+  Plugin * self = object_new (Plugin);
+
+  self->setting =
+    plugin_setting_clone (setting, F_VALIDATE);
+  const PluginDescriptor * descr =
+    self->setting->descr;
+
   g_message (
     "%s: %s (%s) track pos %d slot %d",
     __func__, descr->name,
     plugin_protocol_strings[descr->protocol].str,
     track_pos, slot);
 
-  Plugin * plugin = object_new (Plugin);
-
-  plugin->descr =
-    plugin_descriptor_clone (descr);
-  plugin_init (plugin, track_pos, slot_type, slot);
+  plugin_init (self, track_pos, slot_type, slot);
   g_return_val_if_fail (
-    plugin->gain && plugin->enabled, NULL);
+    self->gain && self->enabled, NULL);
 
 #ifdef HAVE_CARLA
-  if (descr->protocol == PROT_VST ||
-      descr->protocol == PROT_VST3 ||
-      descr->protocol == PROT_AU ||
-      descr->protocol == PROT_SFZ ||
-      descr->protocol == PROT_SF2 ||
-      descr->open_with_carla)
+  if (setting->open_with_carla)
     {
 new_carla_plugin:
-      plugin->descr->open_with_carla = true;
-      carla_native_plugin_new_from_descriptor (
-        plugin);
-      if (!plugin->carla)
+      carla_native_plugin_new_from_setting (self);
+      if (!self->carla)
         {
           g_warning ("failed to create plugin");
           return NULL;
@@ -455,7 +454,7 @@ new_carla_plugin:
   else
     {
 #endif
-      switch (plugin->descr->protocol)
+      switch (descr->protocol)
         {
         case PROT_LV2:
           {
@@ -494,50 +493,9 @@ new_carla_plugin:
               }
 #endif
             lv2_plugin_new_from_uri (
-              plugin, descr->uri);
+              self, descr->uri);
             g_return_val_if_fail (
-              plugin->lv2, NULL);
-
-            /* cache the new bridge mode if it
-             * changed */
-            const PluginDescriptor * known_descr =
-              cached_plugin_descriptors_find (
-                PLUGIN_MANAGER->
-                  cached_plugin_descriptors,
-                descr, F_CHECK_VALID,
-                F_NO_CHECK_BLACKLISTED);
-            g_return_val_if_fail (known_descr, NULL);
-            if (known_descr->open_with_carla)
-              {
-                g_message (
-                  "Known bridge mode for plugin %s "
-                  "changed (carla => non-carla), "
-                  "caching...",
-                  descr->name);
-                PluginDescriptor * new_descr =
-                  plugin_descriptor_clone (
-                    descr);
-                new_descr->open_with_carla = false;
-                cached_plugin_descriptors_replace (
-                  PLUGIN_MANAGER->cached_plugin_descriptors,
-                  new_descr, F_SERIALIZE);
-                plugin_descriptor_free (new_descr);
-
-                /* also change the current
-                 * descriptors in the plugin
-                 * manager for this session */
-                PluginDescriptor * pm_descr =
-                  plugin_manager_find_from_descriptor (
-                    PLUGIN_MANAGER, descr);
-                pm_descr->open_with_carla = false;
-              }
-            else
-              {
-                g_message (
-                  "Known bridge mode for plugin %s "
-                  "not changed (non-carla)",
-                  descr->name);
-              }
+              self->lv2, NULL);
           }
           break;
         default:
@@ -548,9 +506,18 @@ new_carla_plugin:
 #endif
 
   /* update banks */
-  populate_banks (plugin);
+  populate_banks (self);
 
-  return plugin;
+  if (!ZRYTHM_TESTING)
+    {
+      /* save the new setting (may have changed
+       * during instantiation) */
+      plugin_settings_set (
+        S_PLUGIN_SETTINGS, self->setting,
+        F_SERIALIZE);
+    }
+
+  return self;
 }
 
 /**
@@ -564,13 +531,17 @@ plugin_new_dummy (
 {
   Plugin * self = object_new (Plugin);
 
-  self->descr = object_new (PluginDescriptor);
-  PluginDescriptor * descr = self->descr;
+  PluginDescriptor * descr =
+    object_new (PluginDescriptor);
   descr->author = g_strdup ("Hoge");
   descr->name = g_strdup ("Dummy Plugin");
   descr->category = cat;
   descr->category_str =
     g_strdup ("Dummy Plugin Category");
+
+  self->setting =
+    plugin_setting_new_default (descr);
+  plugin_descriptor_free (descr);
 
   plugin_init (
     self, track_pos, PLUGIN_SLOT_INSERT, slot);
@@ -904,7 +875,7 @@ plugin_get_full_port_group_designation (
   g_return_if_fail (track);
   sprintf (
     buf, "%s/%s/%s",
-    track->name, self->descr->name, port_group);
+    track->name, self->setting->descr->name, port_group);
 }
 
 Port *
@@ -1004,19 +975,19 @@ char *
 plugin_generate_window_title (
   Plugin * plugin)
 {
-  g_return_val_if_fail (plugin->descr, NULL);
+  g_return_val_if_fail (plugin->setting->descr, NULL);
 
   Track * track = plugin_get_track (plugin);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (track), NULL);
 
   const char* track_name = track->name;
-  const char* plugin_name = plugin->descr->name;
+  const char* plugin_name = plugin->setting->descr->name;
   g_return_val_if_fail (
     track_name && plugin_name, NULL);
 
   char carla[8] = "";
-  if (plugin->descr->open_with_carla)
+  if (plugin->setting->open_with_carla)
     {
       strcpy (carla, " c");
     }
@@ -1028,10 +999,10 @@ plugin_generate_window_title (
     plugin_name, track_name, plugin->id.slot + 1,
     carla);
 
-  switch (plugin->descr->protocol)
+  switch (plugin->setting->descr->protocol)
     {
     case PROT_LV2:
-      if (!plugin->descr->open_with_carla &&
+      if (!plugin->setting->open_with_carla &&
           plugin->lv2->preset)
         {
           Lv2Plugin * lv2 = plugin->lv2;
@@ -1078,11 +1049,11 @@ plugin_activate (
     {
       g_critical (
         "plugin %s not instantiated",
-        pl->descr->name);
+        pl->setting->descr->name);
       return -1;
     }
 
-  if (pl->descr->open_with_carla)
+  if (pl->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
       int ret =
@@ -1093,7 +1064,7 @@ plugin_activate (
     }
   else
     {
-      switch (pl->descr->protocol)
+      switch (pl->setting->descr->protocol)
         {
         case PROT_LV2:
           {
@@ -1123,11 +1094,11 @@ plugin_cleanup (
   Plugin * self)
 {
   g_message (
-    "Cleaning up %s...", self->descr->name);
+    "Cleaning up %s...", self->setting->descr->name);
 
   if (!self->activated && self->instantiated)
     {
-      if (self->descr->open_with_carla)
+      if (self->setting->open_with_carla)
         {
 #ifdef HAVE_CARLA
 #if 0
@@ -1141,7 +1112,7 @@ plugin_cleanup (
         }
       else
         {
-          switch (self->descr->protocol)
+          switch (self->setting->descr->protocol)
             {
             case PROT_LV2:
               {
@@ -1176,14 +1147,14 @@ plugin_update_latency (
 {
   if (
 #ifdef HAVE_CARLA
-    !pl->descr->open_with_carla &&
+    !pl->setting->open_with_carla &&
 #endif
-      pl->descr->protocol == PROT_LV2)
+      pl->setting->descr->protocol == PROT_LV2)
     {
       pl->latency =
         lv2_plugin_get_latency (pl->lv2);
       g_message ("%s latency: %d samples",
-                 pl->descr->name,
+                 pl->setting->descr->name,
                  pl->latency);
     }
 }
@@ -1259,7 +1230,7 @@ plugin_move_automation (
   g_message (
     "moving plugin '%s' automation from "
     "%s to %s -> slot#%d",
-    pl->descr->name, prev_track->name,
+    pl->setting->descr->name, prev_track->name,
     track->name, new_slot);
 
   AutomationTracklist * prev_atl =
@@ -1416,10 +1387,10 @@ char *
 plugin_get_escaped_name (
   Plugin * pl)
 {
-  g_return_val_if_fail (pl->descr, NULL);
+  g_return_val_if_fail (pl->setting->descr, NULL);
 
   char tmp[900];
-  io_escape_dir_name (tmp, pl->descr->name);
+  io_escape_dir_name (tmp, pl->setting->descr->name);
   return g_strdup (tmp);
 }
 
@@ -1440,7 +1411,7 @@ plugin_generate_automation_tracks (
 {
   g_message (
     "generating automation tracks for %s...",
-    self->descr->name);
+    self->setting->descr->name);
 
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
@@ -1532,7 +1503,7 @@ plugin_instantiate (
   LilvState * state)
 {
   g_message ("Instantiating %s...",
-             pl->descr->name);
+             pl->setting->descr->name);
 
   plugin_set_ui_refresh_rate (pl);
 
@@ -1542,7 +1513,7 @@ plugin_instantiate (
     }
   g_message ("state dir: %s", pl->state_dir);
 
-  if (pl->descr->open_with_carla)
+  if (pl->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
       int ret =
@@ -1565,7 +1536,7 @@ plugin_instantiate (
     }
   else
     {
-      switch (pl->descr->protocol)
+      switch (pl->setting->descr->protocol)
         {
         case PROT_LV2:
           {
@@ -1648,7 +1619,7 @@ plugin_process (
     }
 
   /* if has MIDI input port */
-  if (plugin->descr->num_midi_ins > 0)
+  if (plugin->setting->descr->num_midi_ins > 0)
     {
       /* if recording, write MIDI events to the
        * region TODO */
@@ -1659,7 +1630,7 @@ plugin_process (
     }
 
 #ifdef HAVE_CARLA
-  if (plugin->descr->open_with_carla)
+  if (plugin->setting->open_with_carla)
     {
       carla_native_plugin_process (
         plugin->carla, g_start_frames,
@@ -1668,7 +1639,7 @@ plugin_process (
   else
     {
 #endif
-      switch (plugin->descr->protocol)
+      switch (plugin->setting->descr->protocol)
         {
         case PROT_LV2:
           lv2_plugin_process (
@@ -1738,27 +1709,29 @@ plugin_open_ui (
   g_debug ("opening plugin UI");
 
   g_return_if_fail (
-    IS_PLUGIN (self) && self->descr);
+    IS_PLUGIN (self) && self->setting->descr);
+
+  PluginSetting * setting = self->setting;
+  const PluginDescriptor * descr = setting->descr;
 
   if (self->instantiation_failed)
     {
       g_message (
         "plugin %s instantiation failed, no UI to "
         "open",
-        self->descr->name);
+        descr->name);
       return;
     }
 
   /* show error if LV2 UI type is deprecated */
   if (self->is_project &&
-      self->descr->protocol == PROT_LV2 &&
-      (!self->descr->open_with_carla ||
-       self->descr->bridge_mode !=
-         CARLA_BRIDGE_FULL))
+      descr->protocol == PROT_LV2 &&
+      (!setting->open_with_carla ||
+       setting->bridge_mode != CARLA_BRIDGE_FULL))
     {
       char * deprecated_uri =
         lv2_plugin_has_deprecated_ui (
-          self->descr->uri);
+          descr->uri);
       if (deprecated_uri)
         {
           char msg[1200];
@@ -1770,32 +1743,41 @@ plugin_open_ui (
             "instantiating the plugin in full-"
             "bridged mode, and report this to the "
             "author:\n  %s <%s>"),
-            self->descr->name,
-            self->descr->uri,
-            deprecated_uri, self->descr->author,
-            self->descr->website);
+            descr->name,
+            descr->uri,
+            deprecated_uri, descr->author,
+            descr->website);
           ui_show_error_message (
             MAIN_WINDOW, msg);
           g_free (deprecated_uri);
         }
     }
 
-  if (self->descr->open_with_carla)
+  /* check if we should show generic or custom,
+   * and whether we should force opening with
+   * carla */
+  if (z_gtk_is_wayland () &&
+      plugin_has_custom_ui (self) &&
+      !setting->force_generic_ui)
     {
 #ifdef HAVE_CARLA
-      if (!plugin_has_custom_ui (self))
-        {
-          /* TODO create generic UI */
-          g_message (
-            "plugin %s has no custom UI",
-            self->descr->name);
-          return;
-        }
+      setting->open_with_carla = true;
+#else
+      setting->force_generic_ui = true;
+#endif
+    }
 
-      g_message (
-        "plugin %s has custom UI",
-        self->descr->name);
+  bool generic_ui =
+    !plugin_has_custom_ui (self) ||
+    setting->force_generic_ui;
+  (void) generic_ui;
 
+  /* TODO handle generic UIs, then carla custom,
+   * then LV2 custom */
+
+  if (setting->open_with_carla)
+    {
+#ifdef HAVE_CARLA
       carla_native_plugin_open_ui (
         self->carla, 1);
 #endif
@@ -1812,7 +1794,7 @@ plugin_open_ui (
         }
       else
         {
-          switch (self->descr->protocol)
+          switch (descr->protocol)
             {
             case PROT_LV2:
               {
@@ -1900,7 +1882,7 @@ plugin_has_custom_ui (
   Plugin * pl)
 {
   g_return_val_if_fail (
-    IS_PLUGIN (pl) && pl->descr, false);
+    IS_PLUGIN (pl) && pl->setting->descr, false);
 
   if (pl->has_custom_ui_set)
     {
@@ -1913,7 +1895,7 @@ plugin_has_custom_ui (
 
   bool has_custom_ui = false;
 #ifdef HAVE_CARLA
-  if (pl->descr->open_with_carla)
+  if (pl->setting->open_with_carla)
     {
       g_return_val_if_fail (
         pl->carla && pl->carla->host_handle, false);
@@ -1929,7 +1911,7 @@ plugin_has_custom_ui (
   else
     {
 #endif
-      switch (pl->descr->protocol)
+      switch (pl->setting->descr->protocol)
         {
         case PROT_LV2:
           g_return_val_if_fail (
@@ -2039,12 +2021,12 @@ plugin_clone (
 
   Plugin * clone = NULL;
 #ifdef HAVE_CARLA
-  if (pl->descr->open_with_carla)
+  if (pl->setting->open_with_carla)
     {
       /* create a new plugin with same descriptor */
       clone =
-        plugin_new_from_descr (
-          pl->descr, pl->id.track_pos,
+        plugin_new_from_setting (
+          pl->setting, pl->id.track_pos,
           pl->id.slot_type, pl->id.slot);
       g_return_val_if_fail (
         clone && clone->carla, NULL);
@@ -2096,7 +2078,7 @@ plugin_clone (
   else
     {
 #endif
-      if (pl->descr->protocol == PROT_LV2)
+      if (pl->setting->descr->protocol == PROT_LV2)
         {
           /* if src plugin not instantiated,
            * instantiate it */
@@ -2123,8 +2105,8 @@ plugin_clone (
           /* create a new plugin with same
            * descriptor */
           clone =
-            plugin_new_from_descr (
-              pl->descr, pl->id.track_pos,
+            plugin_new_from_setting (
+              pl->setting, pl->id.track_pos,
               pl->id.slot_type, pl->id.slot);
           g_return_val_if_fail (
             IS_PLUGIN_AND_NONNULL (clone), NULL);
@@ -2304,12 +2286,12 @@ plugin_close_ui (
       g_message (
         "plugin %s instantiation failed, "
         "no UI to close",
-        self->descr->name);
+        self->setting->descr->name);
       return;
     }
 
 #ifdef HAVE_CARLA
-  if (self->descr->open_with_carla)
+  if (self->setting->open_with_carla)
     {
       carla_native_plugin_open_ui (
         self->carla, false);
@@ -2326,7 +2308,7 @@ plugin_close_ui (
             self->delete_event_id);
         }
 
-      switch (self->descr->protocol)
+      switch (self->setting->descr->protocol)
         {
         case PROT_LV2:
           lv2_gtk_close_ui (self->lv2);
@@ -2406,8 +2388,8 @@ plugin_connect_to_plugin (
   int i, j, last_index, num_ports_to_connect;
   Port * in_port, * out_port;
 
-  if (src->descr->num_audio_outs == 1 &&
-      dest->descr->num_audio_ins == 1)
+  if (src->setting->descr->num_audio_outs == 1 &&
+      dest->setting->descr->num_audio_ins == 1)
     {
       last_index = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2434,8 +2416,8 @@ plugin_connect_to_plugin (
 done1:
       ;
     }
-  else if (src->descr->num_audio_outs == 1 &&
-           dest->descr->num_audio_ins > 1)
+  else if (src->setting->descr->num_audio_outs == 1 &&
+           dest->setting->descr->num_audio_ins > 1)
     {
       /* plugin is mono and next plugin is
        * not mono, so connect the mono out to
@@ -2463,8 +2445,8 @@ done1:
             }
         }
     }
-  else if (src->descr->num_audio_outs > 1 &&
-           dest->descr->num_audio_ins == 1)
+  else if (src->setting->descr->num_audio_outs > 1 &&
+           dest->setting->descr->num_audio_ins == 1)
     {
       /* connect multi-output channel into mono by
        * only connecting to the first input channel
@@ -2494,15 +2476,15 @@ done1:
 done2:
       ;
     }
-  else if (src->descr->num_audio_outs > 1 &&
-           dest->descr->num_audio_ins > 1)
+  else if (src->setting->descr->num_audio_outs > 1 &&
+           dest->setting->descr->num_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
        * anymore */
       num_ports_to_connect =
-        MIN (src->descr->num_audio_outs,
-             dest->descr->num_audio_ins);
+        MIN (src->setting->descr->num_audio_outs,
+             dest->setting->descr->num_audio_ins);
       last_index = 0;
       int ports_connected = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2595,7 +2577,7 @@ plugin_connect_to_prefader (
     }
   else if (type == TYPE_AUDIO)
     {
-      if (pl->descr->num_audio_outs == 1)
+      if (pl->setting->descr->num_audio_outs == 1)
         {
           /* if mono find the audio out and connect to
            * both stereo out L and R */
@@ -2616,7 +2598,7 @@ plugin_connect_to_prefader (
                 }
             }
         }
-      else if (pl->descr->num_audio_outs > 1)
+      else if (pl->setting->descr->num_audio_outs > 1)
         {
           last_index = 0;
 
@@ -2708,8 +2690,8 @@ plugin_disconnect_from_plugin (
   int i, j, last_index, num_ports_to_connect;
   Port * in_port, * out_port;
 
-  if (src->descr->num_audio_outs == 1 &&
-      dest->descr->num_audio_ins == 1)
+  if (src->setting->descr->num_audio_outs == 1 &&
+      dest->setting->descr->num_audio_ins == 1)
     {
       last_index = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2736,8 +2718,8 @@ plugin_disconnect_from_plugin (
 done1:
       ;
     }
-  else if (src->descr->num_audio_outs == 1 &&
-           dest->descr->num_audio_ins > 1)
+  else if (src->setting->descr->num_audio_outs == 1 &&
+           dest->setting->descr->num_audio_ins > 1)
     {
       /* plugin is mono and next plugin is
        * not mono, so disconnect the mono out from
@@ -2765,8 +2747,8 @@ done1:
             }
         }
     }
-  else if (src->descr->num_audio_outs > 1 &&
-           dest->descr->num_audio_ins == 1)
+  else if (src->setting->descr->num_audio_outs > 1 &&
+           dest->setting->descr->num_audio_ins == 1)
     {
       /* disconnect multi-output channel from mono
        * by disconnecting to the first input channel
@@ -2796,15 +2778,15 @@ done1:
 done2:
       ;
     }
-  else if (src->descr->num_audio_outs > 1 &&
-           dest->descr->num_audio_ins > 1)
+  else if (src->setting->descr->num_audio_outs > 1 &&
+           dest->setting->descr->num_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
        * anymore */
       num_ports_to_connect =
-        MIN (src->descr->num_audio_outs,
-             dest->descr->num_audio_ins);
+        MIN (src->setting->descr->num_audio_outs,
+             dest->setting->descr->num_audio_ins);
       last_index = 0;
       int ports_disconnected = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2874,7 +2856,7 @@ plugin_disconnect (
 {
   g_message (
     "disconnecting plugin %s...",
-    self->descr->name);
+    self->setting->descr->name);
 
   self->deleting = 1;
 
@@ -2894,12 +2876,12 @@ plugin_disconnect (
         self->num_out_ports, true);
       g_message (
         "%s: DISCONNECTED ALL PORTS OF %s %d %d",
-        __func__, self->descr->name,
+        __func__, self->setting->descr->name,
         self->num_in_ports,
         self->num_out_ports);
 
 #ifdef HAVE_CARLA
-      if (self->descr->open_with_carla)
+      if (self->setting->open_with_carla)
         {
           carla_native_plugin_close (self->carla);
         }
@@ -2909,12 +2891,12 @@ plugin_disconnect (
     {
       g_debug (
         "%s is not a project plugin, skipping "
-        "disconnect", self->descr->name);
+        "disconnect", self->setting->descr->name);
     }
 
   g_message (
     "finished disconnecting plugin %s",
-    self->descr->name);
+    self->setting->descr->name);
 }
 
 /**
@@ -2931,7 +2913,7 @@ plugin_delete_state_files (
 {
   g_message (
     "deleting state files for plugin %s (%s)",
-    self->descr->name, self->state_dir);
+    self->setting->descr->name, self->state_dir);
 
   g_return_if_fail (
     g_path_is_absolute (self->state_dir));
@@ -3007,8 +2989,8 @@ plugin_get_port_by_symbol (
 {
   g_return_val_if_fail (
     IS_PLUGIN (pl) &&
-      pl->descr->protocol == PROT_LV2 &&
-      !pl->descr->open_with_carla,
+      pl->setting->descr->protocol == PROT_LV2 &&
+      !pl->setting->open_with_carla,
     NULL);
 
   g_return_val_if_fail (
@@ -3049,8 +3031,8 @@ plugin_get_port_by_param_uri (
 {
   g_return_val_if_fail (
     IS_PLUGIN (pl) &&
-      pl->descr->protocol == PROT_LV2 &&
-      !pl->descr->open_with_carla,
+      pl->setting->descr->protocol == PROT_LV2 &&
+      !pl->setting->open_with_carla,
     NULL);
 
   g_return_val_if_fail (pl->lv2, NULL);
@@ -3084,7 +3066,8 @@ plugin_free (
   g_return_if_fail (!self->visible);
 
   g_debug (
-    "freeing plugin %s", self->descr->name);
+    "freeing plugin %s",
+    self->setting->descr->name);
 
   object_free_w_func_and_null (
     lv2_plugin_free, self->lv2);

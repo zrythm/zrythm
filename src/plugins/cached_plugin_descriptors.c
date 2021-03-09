@@ -23,7 +23,7 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define CACHED_PLUGIN_DESCRIPTORS_VERSION 9
+#define CACHED_PLUGIN_DESCRIPTORS_VERSION 10
 
 static char *
 get_cached_plugin_descriptors_file_path (void)

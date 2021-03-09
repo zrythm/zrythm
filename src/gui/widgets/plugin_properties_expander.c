@@ -79,9 +79,10 @@ plugin_properties_expander_widget_refresh (
   if (pl)
     {
       gtk_label_set_text (
-        self->name, pl->descr->name);
+        self->name, pl->setting->descr->name);
       gtk_label_set_text (
-        self->type, pl->descr->category_str);
+        self->type,
+        pl->setting->descr->category_str);
     }
   else
     {

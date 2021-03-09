@@ -69,31 +69,24 @@ _test (
   bool         is_instrument,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
-      pl_bundle, pl_uri, with_carla);
-
   /* 1. create instrument track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      is_instrument ?
-        TRACK_TYPE_INSTRUMENT : TRACK_TYPE_AUDIO_BUS,
-      descr, NULL, TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_bundle, pl_uri, is_instrument, with_carla, 1);
+
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   int orig_track_pos = track->pos;
 
-  descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
       with_carla);
 
   /* 2. add no delay line */
-  ua =
+  UndoableAction * ua =
     mixer_selections_action_new_create (
       PLUGIN_SLOT_INSERT,
-      TRACKLIST->num_tracks - 1, 0, descr, 1);
+      TRACKLIST->num_tracks - 1, 0, setting, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* 3. set delay to high value */
@@ -135,14 +128,14 @@ _test (
 
   /* add another track with latency and check if
    * OK */
-  descr =
-    test_plugin_manager_get_plugin_descriptor (
+  setting =
+    test_plugin_manager_get_plugin_setting (
       NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
       with_carla);
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS,
-      descr, NULL, TRACKLIST->num_tracks, NULL, 1);
+      setting, NULL, TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * new_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

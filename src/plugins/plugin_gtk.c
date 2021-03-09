@@ -66,7 +66,7 @@ on_save_activate (
   GtkWidget* widget,
   Plugin * plugin)
 {
-  switch (plugin->descr->protocol)
+  switch (plugin->setting->descr->protocol)
     {
     case PROT_LV2:
       g_return_if_fail (plugin->lv2);
@@ -118,7 +118,7 @@ plugin_gtk_set_window_title (
   GtkWindow * window)
 {
   g_return_if_fail (
-    plugin && plugin->descr && window);
+    plugin && plugin->setting->descr && window);
 
   char * title =
     plugin_generate_window_title (plugin);
@@ -139,7 +139,7 @@ plugin_gtk_on_preset_activate (
   if (GTK_CHECK_MENU_ITEM (widget) !=
         plugin->active_preset_item)
     {
-      switch (plugin->descr->protocol)
+      switch (plugin->setting->descr->protocol)
         {
         case PROT_LV2:
           g_return_if_fail (plugin->lv2);
@@ -170,7 +170,7 @@ plugin_gtk_on_preset_destroy (
   PluginGtkPresetRecord * record,
   GClosure* closure)
 {
-  switch (record->plugin->descr->protocol)
+  switch (record->plugin->setting->descr->protocol)
     {
     case PROT_LV2:
       lilv_node_free ((LilvNode *) record->preset);
@@ -271,7 +271,7 @@ plugin_gtk_rebuild_preset_menu (
       g_sequence_new (
         (GDestroyNotify)preset_menu_free),
     };
-  switch (plugin->descr->protocol)
+  switch (plugin->setting->descr->protocol)
     {
     case PROT_LV2:
       lv2_state_load_presets (
@@ -290,7 +290,7 @@ on_save_preset_activate (
   GtkWidget * widget,
   Plugin *    plugin)
 {
-  switch (plugin->descr->protocol)
+  switch (plugin->setting->descr->protocol)
     {
     case PROT_LV2:
       lv2_gtk_on_save_preset_activate (
@@ -306,7 +306,7 @@ on_delete_preset_activate (
   GtkWidget * widget,
   Plugin *    plugin)
 {
-  switch (plugin->descr->protocol)
+  switch (plugin->setting->descr->protocol)
     {
     case PROT_LV2:
       lv2_gtk_on_delete_preset_activate (
@@ -455,7 +455,7 @@ build_menu (
     g_sequence_new (
       (GDestroyNotify) preset_menu_free)
   };
-  switch (plugin->descr->protocol)
+  switch (plugin->setting->descr->protocol)
     {
     case PROT_LV2:
       g_return_if_fail (plugin->lv2);
@@ -498,9 +498,9 @@ on_window_destroy (
   g_return_if_fail (IS_PLUGIN (plugin));
   g_message (
     "destroying window for %s",
-    plugin->descr->name);
+    plugin->setting->descr->name);
 
-  switch (plugin->descr->protocol)
+  switch (plugin->setting->descr->protocol)
     {
     case PROT_LV2:
       g_return_if_fail (plugin->lv2);
@@ -510,7 +510,7 @@ on_window_destroy (
       break;
     }
 
-  if (plugin->descr->protocol == PROT_LV2)
+  if (plugin->setting->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2 = plugin->lv2;
 

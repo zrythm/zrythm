@@ -60,7 +60,7 @@ lv2_log_vprintf (
     fmt[strlen (fmt) - 1] = '\0';
 
   g_logv (
-    plugin->plugin->descr->name,
+    plugin->plugin->setting->descr->name,
     level, fmt, ap);
 
   return 0;

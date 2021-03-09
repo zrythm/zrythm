@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,6 +31,7 @@
 #ifdef HAVE_CARLA
 
 #include "plugins/plugin_descriptor.h"
+#include "settings/plugin_settings.h"
 
 #include <CarlaUtils.h>
 

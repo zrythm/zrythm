@@ -131,6 +131,7 @@ engine_set_buffer_size (
     {
       jack_set_buffer_size (
         self->client, buf_size);
+      g_debug ("called jack_set_buffer_size");
     }
 #endif
 }
@@ -1128,8 +1129,8 @@ engine_realloc_port_buffers (
 
           if (pl && !pl->instantiation_failed)
             {
-              if (pl->descr->protocol == PROT_LV2 &&
-                  !pl->descr->open_with_carla)
+              if (pl->setting->descr->protocol == PROT_LV2 &&
+                  !pl->setting->open_with_carla)
                 {
                   lv2_plugin_allocate_port_buffers (
                     pl->lv2);

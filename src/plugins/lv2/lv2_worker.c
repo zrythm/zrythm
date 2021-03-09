@@ -97,7 +97,7 @@ lv2_worker_init (
 {
   g_message (
     "initializing worker for LV2 plugin %s",
-    plugin->plugin->descr->name);
+    plugin->plugin->setting->descr->name);
   g_return_if_fail (plugin && worker && iface);
   worker->iface = iface;
   worker->threaded = threaded;

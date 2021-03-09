@@ -170,16 +170,28 @@ restore_tree_view_selections (
     "plugin-browser-protocols");
 }
 
+/**
+ * Activate \ref setting if given, otherwise create
+ * a defeault setting from the descriptor.
+ */
 static void
-activate_plugin_descr (
+activate_plugin_setting (
+  PluginSetting *    setting,
   PluginDescriptor * descr)
 {
-  TrackType tt =
-    track_get_type_from_plugin_descriptor (descr);
+  bool setting_created = false;
+  if (!setting)
+    {
+      setting = plugin_setting_new_default (descr);
+      setting_created = true;
+    }
 
+  TrackType tt =
+    track_get_type_from_plugin_descriptor (
+      setting->descr);
   UndoableAction * ua =
     tracklist_selections_action_new_create (
-      tt, descr, NULL, TRACKLIST->num_tracks,
+      tt, setting, NULL, TRACKLIST->num_tracks,
       PLAYHEAD, 1);
 
   int err = undo_manager_perform (UNDO_MANAGER, ua);
@@ -188,6 +200,11 @@ activate_plugin_descr (
       ui_show_error_message (
         MAIN_WINDOW,
         error_code_get_message (err));
+    }
+
+  if (setting_created)
+    {
+      plugin_setting_free (setting);
     }
 }
 
@@ -213,7 +230,7 @@ on_row_activated (
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
 
-  activate_plugin_descr (descr);
+  activate_plugin_setting (NULL, descr);
 }
 
 /**
@@ -346,12 +363,12 @@ visible_func (
 }
 
 static void
-on_plugin_descr_activate (
-  GtkMenuItem *      menuitem,
-  PluginDescriptor * descr)
+on_plugin_setting_activate (
+  GtkMenuItem *   menuitem,
+  PluginSetting * setting)
 {
   g_message ("%s: activated", __func__);
-  activate_plugin_descr (descr);
+  activate_plugin_setting (setting, NULL);
 }
 
 static void
@@ -391,11 +408,11 @@ on_plugin_descr_remove_from_collection (
 }
 
 static void
-delete_plugin_descr (
-  PluginDescriptor * descr,
-  GClosure *         closure)
+delete_plugin_setting (
+  PluginSetting * setting,
+  GClosure *      closure)
 {
-  plugin_descriptor_free (descr);
+  plugin_setting_free (setting);
 }
 
 static void
@@ -409,7 +426,7 @@ show_plugin_context_menu (
 
   GtkMenuItem * menuitem;
   GtkWidget * menu = gtk_menu_new();
-  PluginDescriptor * new_descr;
+  PluginSetting * new_setting;
 
   /* FIXME this is allocating memory every time */
 
@@ -420,14 +437,14 @@ show_plugin_context_menu (
   gtk_widget_set_visible ( \
     GTK_WIDGET (menuitem), true); \
   APPEND; \
-  new_descr = plugin_descriptor_clone (descr)
+  new_setting = plugin_setting_new_default (descr)
 
 #define CONNECT_SIGNAL \
   g_signal_connect_data ( \
     G_OBJECT (menuitem), "activate", \
-    G_CALLBACK (on_plugin_descr_activate), \
-    new_descr, \
-    (GClosureNotify) delete_plugin_descr, 0)
+    G_CALLBACK (on_plugin_setting_activate), \
+    new_setting, \
+    (GClosureNotify) delete_plugin_setting, 0)
 
 #define APPEND \
   gtk_menu_shell_append ( \
@@ -435,14 +452,14 @@ show_plugin_context_menu (
     GTK_WIDGET (menuitem));
 
   CREATE_WITH_LBL (_("Add to project"));
-  new_descr->open_with_carla = false;
+  new_setting->open_with_carla = false;
   CONNECT_SIGNAL;
 
 #ifdef HAVE_CARLA
   CREATE_WITH_LBL (
     _("Add to project (carla)"));
-  new_descr->open_with_carla = true;
-  new_descr->bridge_mode = CARLA_BRIDGE_NONE;
+  new_setting->open_with_carla = true;
+  new_setting->bridge_mode = CARLA_BRIDGE_NONE;
   CONNECT_SIGNAL;
 
   if (plugin_descriptor_has_custom_ui (descr) &&
@@ -451,15 +468,15 @@ show_plugin_context_menu (
     {
       CREATE_WITH_LBL (
         _("Add to project (bridged UI)"));
-      new_descr->open_with_carla = true;
-      new_descr->bridge_mode = CARLA_BRIDGE_UI;
+      new_setting->open_with_carla = true;
+      new_setting->bridge_mode = CARLA_BRIDGE_UI;
       CONNECT_SIGNAL;
     }
 
   CREATE_WITH_LBL (
     _("Add to project (bridged full)"));
-  new_descr->open_with_carla = true;
-  new_descr->bridge_mode = CARLA_BRIDGE_FULL;
+  new_setting->open_with_carla = true;
+  new_setting->bridge_mode = CARLA_BRIDGE_FULL;
   CONNECT_SIGNAL;
 #endif
 

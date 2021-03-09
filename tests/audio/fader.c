@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,16 +34,9 @@ test_fader_process_with_instrument (
   const char * pl_uri,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
-      pl_bundle, pl_uri, with_carla);
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_bundle, pl_uri, true, with_carla, 1);
 
-  /* create instrument track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT,
-      descr, NULL, TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 

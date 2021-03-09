@@ -1071,11 +1071,11 @@ track_processor_connect_to_plugin (
   else if (tr->in_signal_type == TYPE_AUDIO)
     {
       num_ports_to_connect = 0;
-      if (pl->descr->num_audio_ins == 1)
+      if (pl->setting->descr->num_audio_ins == 1)
         {
           num_ports_to_connect = 1;
         }
-      else if (pl->descr->num_audio_ins > 1)
+      else if (pl->setting->descr->num_audio_ins > 1)
         {
           num_ports_to_connect = 2;
         }

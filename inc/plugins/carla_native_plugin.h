@@ -122,7 +122,7 @@ carla_native_plugin_init_loaded (
  */
 NONNULL
 int
-carla_native_plugin_new_from_descriptor (
+carla_native_plugin_new_from_setting (
   Plugin * plugin);
 
 /**

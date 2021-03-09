@@ -494,9 +494,9 @@ track_set_magic (
 void
 track_select (
   Track * self,
-  int     select,
-  int     exclusive,
-  int     fire_events)
+  bool    select,
+  bool    exclusive,
+  bool    fire_events)
 {
   g_return_if_fail (IS_TRACK (self));
 
@@ -533,8 +533,7 @@ bool
 track_get_soloed (
   Track * self)
 {
-  g_return_val_if_fail (
-    self && self->channel, false);
+  g_return_val_if_fail (self->channel, false);
   return fader_get_soloed (self->channel->fader);
 }
 
@@ -547,8 +546,7 @@ bool
 track_get_implied_soloed (
   Track * self)
 {
-  g_return_val_if_fail (
-    self && self->channel, false);
+  g_return_val_if_fail (self->channel, false);
   return
     fader_get_implied_soloed (self->channel->fader);
 }
@@ -560,8 +558,7 @@ bool
 track_get_muted (
   Track * self)
 {
-  g_return_val_if_fail (
-    self && self->channel, false);
+  g_return_val_if_fail (self->channel, false);
   return fader_get_muted (self->channel->fader);
 }
 
@@ -664,7 +661,7 @@ track_set_muted (
   bool    trigger_undo,
   bool    fire_events)
 {
-  g_return_if_fail (self && self->channel);
+  g_return_if_fail (self->channel);
 
   g_message (
     "Setting track %s muted (%d)",
@@ -1038,7 +1035,7 @@ track_set_soloed (
   bool    trigger_undo,
   bool    fire_events)
 {
-  g_return_if_fail (self && self->channel);
+  g_return_if_fail (self->channel);
   fader_set_soloed (
     self->channel->fader, solo, trigger_undo,
     fire_events);
@@ -1052,8 +1049,7 @@ track_write_to_midi_file (
   Track *     self,
   MIDI_FILE * mf)
 {
-  g_return_if_fail (
-    track_has_piano_roll (self));
+  g_return_if_fail (track_has_piano_roll (self));
 
   TrackLane * lane;
   for (int i = 0; i < self->num_lanes; i++)

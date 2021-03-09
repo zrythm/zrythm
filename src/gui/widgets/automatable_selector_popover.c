@@ -390,7 +390,7 @@ create_model_for_types (
           char label[600];
           sprintf (
             label, _("[Instrument] %s"),
-            plugin->descr->name);
+            plugin->setting->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
@@ -410,7 +410,7 @@ create_model_for_types (
               char label[600];
               sprintf (
                 label, _("[MIDI FX %d] %s"),
-                i + 1, plugin->descr->name);
+                i + 1, plugin->setting->descr->name);
               gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
                 list_store, &iter,
@@ -427,7 +427,7 @@ create_model_for_types (
               char label[600];
               sprintf (
                 label, _("[Insert %d] %s"),
-                i + 1, plugin->descr->name);
+                i + 1, plugin->setting->descr->name);
               gtk_list_store_append (
                 list_store, &iter);
               gtk_list_store_set (
@@ -448,7 +448,7 @@ create_model_for_types (
           char label[600];
           sprintf (
             label, _("[Modulator %d] %s"),
-            i + 1, plugin->descr->name);
+            i + 1, plugin->setting->descr->name);
           gtk_list_store_append (
             list_store, &iter);
           gtk_list_store_set (

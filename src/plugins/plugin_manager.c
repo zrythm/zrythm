@@ -978,10 +978,6 @@ scan_carla_descriptors_from_paths (
                       descr->num_midi_ins = 1;
                       descr->arch = ARCH_64;
                       descr->protocol = protocol;
-                      descr->open_with_carla = true;
-                      descr->bridge_mode =
-                        z_carla_discovery_get_bridge_mode (
-                          descr);
                     }
                   else
                     {

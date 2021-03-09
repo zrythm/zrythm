@@ -2687,7 +2687,7 @@ port_forward_control_change_event (
       if (pl)
         {
 #ifdef HAVE_CARLA
-          if (pl->descr->open_with_carla &&
+          if (pl->setting->open_with_carla &&
               self->carla_param_id >= 0)
             {
               g_return_if_fail (pl->carla);
@@ -3821,7 +3821,7 @@ port_get_full_designation (
         g_return_if_fail (track);
         sprintf (
           buf, "%s/%s/%s",
-          track->name, pl->descr->name,
+          track->name, pl->setting->descr->name,
           id->label);
       }
       return;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -399,9 +399,6 @@ z_carla_discovery_create_descriptors_from_file (
         g_file_new_for_path (descr->path);
       descr->ghash = g_file_hash (file);
       g_object_unref (file);
-
-      /* open all VSTs with carla */
-      descr->open_with_carla = true;
     }
 
   return descriptors;
@@ -570,9 +567,6 @@ z_carla_discovery_create_au_descriptor_from_info (
   descr->arch = ARCH_64;
   descr->path = NULL;
 
-  /* open all AUs with carla */
-  descr->open_with_carla = true;
-
   return descr;
 }
 
@@ -620,9 +614,6 @@ z_carla_discovery_create_au_descriptor_from_string (
   free (descriptors);
   descr->protocol = PROT_AU;
   descr->arch = ARCH_64;
-
-  /* open all AUs with carla */
-  descr->open_with_carla = true;
 
   return descr;
 }

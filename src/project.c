@@ -1707,7 +1707,7 @@ project_save (
 
           /* save state */
 #ifdef HAVE_CARLA
-          if (pl->descr->open_with_carla)
+          if (pl->setting->open_with_carla)
             {
               carla_native_plugin_save_state (
                 pl->carla, is_backup);
@@ -1715,7 +1715,7 @@ project_save (
           else
             {
 #endif
-              switch (pl->descr->protocol)
+              switch (pl->setting->descr->protocol)
                 {
                 case PROT_LV2:
                   lv2_state_save_to_file (

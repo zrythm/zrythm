@@ -61,7 +61,7 @@ modulator_widget_new (
 
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
-    modulator->descr->name);
+    modulator->setting->descr->name);
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self),
     "modulator");

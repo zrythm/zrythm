@@ -302,7 +302,8 @@ setup_treeview (
       for (int j = 0; j < num_plugins; j++)
         {
           Plugin * pl = plugins[j];
-          g_debug ("plugin %s", pl->descr->name);
+          g_debug (
+            "plugin %s", pl->setting->descr->name);
 
           for (int k = 0; k < pl->num_in_ports; k++)
             {

@@ -137,28 +137,31 @@ channel_slot_draw_cb (
         width - padding * 2, height - padding * 2);
       cairo_fill(cr);
 
+      const PluginDescriptor * descr =
+        plugin->setting->descr;
+
       /* fill text */
       cairo_set_source_rgba (
         cr, fg.red, fg.green, fg.blue, 1.0);
       int w, h;
       z_cairo_get_text_extents_for_widget (
         widget, self->pl_name_layout,
-        plugin->descr->name, &w, &h);
+        descr->name, &w, &h);
       z_cairo_draw_text_full (
         cr, widget, self->pl_name_layout,
-        plugin->descr->name,
+        descr->name,
         width / 2 - w / 2,
         height / 2 - h / 2);
 
       /* update tooltip */
       if (!self->pl_name ||
           !g_strcmp0 (
-            plugin->descr->name, self->pl_name))
+            descr->name, self->pl_name))
         {
           if (self->pl_name)
             g_free (self->pl_name);
           self->pl_name =
-            g_strdup (plugin->descr->name);
+            g_strdup (descr->name);
           gtk_widget_set_tooltip_text (
             widget, self->pl_name);
         }
@@ -265,7 +268,7 @@ on_drag_data_received (
           self->type != pl->id.slot_type)
         {
           if (plugin_descriptor_is_valid_for_slot_type (
-                pl->descr, self->type,
+                pl->setting->descr, self->type,
                 self->track->type))
             {
               /* determine if moving or copying */
@@ -300,7 +303,7 @@ on_drag_data_received (
           else
             {
               plugin_invalid = true;
-              descr = pl->descr;
+              descr = pl->setting->descr;
             }
         }
     }
@@ -318,13 +321,15 @@ on_drag_data_received (
             descr, self->type,
             self->track->type))
         {
+          PluginSetting * setting =
+            plugin_setting_new_default (descr);
           UndoableAction * ua =
             mixer_selections_action_new_create (
               self->type, self->track->pos,
-              self->slot_index, descr, 1);
-
+              self->slot_index, setting, 1);
           undo_manager_perform (
             UNDO_MANAGER, ua);
+          plugin_setting_free (setting);
         }
       else
         {

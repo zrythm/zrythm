@@ -27,25 +27,25 @@
 static void
 test_find_plugins ()
 {
-  PluginDescriptor * descr;
-  (void) descr;
+  PluginSetting * setting;
+  (void) setting;
 #ifdef HAVE_MDA_AMBIENCE
-  descr =
-    test_plugin_manager_get_plugin_descriptor (
+  setting =
+    test_plugin_manager_get_plugin_setting (
       MDA_AMBIENCE_BUNDLE, MDA_AMBIENCE_URI, false);
-  g_assert_true (descr);
+  g_assert_nonnull (setting);
 #endif
 #ifdef HAVE_AMS_LFO
-  descr =
-    test_plugin_manager_get_plugin_descriptor (
+  setting =
+    test_plugin_manager_get_plugin_setting (
       AMS_LFO_BUNDLE, AMS_LFO_URI, false);
-  g_assert_true (descr);
+  g_assert_nonnull (setting);
 #endif
 #ifdef HAVE_HELM
-  descr =
-    test_plugin_manager_get_plugin_descriptor (
+  setting =
+    test_plugin_manager_get_plugin_setting (
       HELM_BUNDLE, HELM_URI, false);
-  g_assert_true (descr);
+  g_assert_nonnull (setting);
 #endif
 }
 

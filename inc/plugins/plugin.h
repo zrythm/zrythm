@@ -34,6 +34,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_identifier.h"
 #include "plugins/plugin_preset.h"
+#include "settings/plugin_settings.h"
 #include "utils/types.h"
 
 /* pulled in from X11 */
@@ -84,8 +85,8 @@ typedef struct Plugin
   /** Pointer to Carla native plugin. */
   CarlaNativePlugin * carla;
 
-  /** Descriptor. */
-  PluginDescriptor * descr;
+  /** Setting this plugin was instantiated with. */
+  PluginSetting *   setting;
 
   /** Ports coming in as input. */
   Port **           in_ports;
@@ -253,8 +254,8 @@ plugin_fields_schema[] =
     Plugin, id,
     plugin_identifier_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Plugin, descr,
-    plugin_descriptor_fields_schema),
+    Plugin, setting,
+    plugin_setting_fields_schema),
 #if 0
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Plugin, lv2,
@@ -327,7 +328,7 @@ plugin_add_out_port (
 /**
  * Creates/initializes a plugin and its internal
  * plugin (LV2, etc.)
- * using the given descriptor.
+ * using the given setting.
  *
  * @param track_pos The expected position of the
  *   track the plugin will be in.
@@ -336,11 +337,11 @@ plugin_add_out_port (
  */
 NONNULL
 Plugin *
-plugin_new_from_descr (
-  PluginDescriptor * descr,
-  int                track_pos,
-  PluginSlotType     slot_type,
-  int                slot);
+plugin_new_from_setting (
+  PluginSetting * setting,
+  int             track_pos,
+  PluginSlotType  slot_type,
+  int             slot);
 
 /**
  * Create a dummy plugin for tests.

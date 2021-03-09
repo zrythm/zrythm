@@ -163,7 +163,7 @@ lv2_ui_read_and_apply_events (
           g_debug (
             "plugin %s float control '%s' change: "
             "%f - has custom UI %d",
-            plugin->plugin->descr->name,
+            plugin->plugin->setting->descr->name,
             port->id.label,
             (double) * (float *) body,
             plugin_has_custom_ui (plugin->plugin));
@@ -185,7 +185,7 @@ lv2_ui_read_and_apply_events (
           g_debug (
             "%s: plugin %s event transfer "
             "event for %s - has custom UI %d",
-            __func__, plugin->plugin->descr->name,
+            __func__, plugin->plugin->setting->descr->name,
             port->id.label,
             plugin_has_custom_ui (plugin->plugin));
         }
@@ -215,7 +215,7 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
     return;
 
   g_debug ("%s: %s: %s (%d)",
-    __func__, lv2_plugin->plugin->descr->name,
+    __func__, lv2_plugin->plugin->setting->descr->name,
     port->id.sym,
     port->lilv_port_index);
 
@@ -235,7 +235,7 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
       sizeof(buf))
     {
       PluginDescriptor * descr =
-        lv2_plugin->plugin->descr;
+        lv2_plugin->plugin->setting->descr;
       g_warning (
         "Buffer overflow when writing "
         "events from plugin %s (%s) to "
@@ -290,7 +290,7 @@ lv2_ui_send_event_from_plugin_to_ui (
   else
     {
       PluginDescriptor * descr =
-        ((Plugin *)plugin)->descr;
+        ((Plugin *)plugin)->setting->descr;
       g_warning (
         "Buffer overflow when sending plugin %s "
         "(%s) event to its UI",
@@ -505,7 +505,7 @@ lv2_ui_instantiate (
   if (!plugin->ui_instance)
     {
       g_warning ("Failed to get UI instance for %s",
-                 plugin->plugin->descr->name);
+                 plugin->plugin->setting->descr->name);
     }
 }
 

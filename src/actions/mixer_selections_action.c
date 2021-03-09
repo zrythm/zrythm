@@ -114,7 +114,7 @@ clone_ats (
  * @param slot_type Target slot type.
  * @param to_track_pos Target track position.
  * @param to_slot Target slot.
- * @param descr The plugin descriptor, if creating
+ * @param setting The plugin setting, if creating
  *   plugins.
  * @param num_plugins The number of plugins to create,
  *   if creating plugins.
@@ -126,7 +126,7 @@ mixer_selections_action_new (
   PluginSlotType            slot_type,
   int                       to_track_pos,
   int                       to_slot,
-  PluginDescriptor *        descr,
+  PluginSetting *           setting,
   int                       num_plugins)
 {
   MixerSelectionsAction * self =
@@ -142,9 +142,10 @@ mixer_selections_action_new (
     {
       self->new_channel = true;
     }
-  if (descr)
+  if (setting)
     {
-      plugin_descriptor_copy (&self->descr, descr);
+      self->setting =
+        plugin_setting_clone (setting, true);
     }
   self->num_plugins = num_plugins;
 
@@ -309,7 +310,7 @@ revert_deleted_plugin (
 
       g_message (
         "reverting plugin %s in slot %d",
-        self->deleted_ms->plugins[j]->descr->name,
+        self->deleted_ms->plugins[j]->setting->descr->name,
         slot_to_revert);
 
       /* note: this also instantiates the
@@ -398,8 +399,8 @@ do_or_undo_create_or_delete (
           if (create)
             {
               pl =
-                plugin_new_from_descr (
-                  &self->descr, self->to_track_pos,
+                plugin_new_from_setting (
+                  self->setting, self->to_track_pos,
                   slot_type, slot);
 
               /* instantiate so that ports are
@@ -491,7 +492,7 @@ do_or_undo_create_or_delete (
               g_message (
                 "restoring custom connections "
                 "for plugin '%s'",
-                pl->descr->name);
+                pl->setting->descr->name);
               size_t max_size = 20;
               int num_ports = 0;
               Port ** ports =
@@ -542,7 +543,7 @@ do_or_undo_create_or_delete (
               g_message (
                 "remembering custom connections "
                 "for plugin '%s'",
-                own_pl->descr->name);
+                own_pl->setting->descr->name);
               size_t max_size = 20;
               int num_ports = 0;
               Port ** ports =
@@ -703,7 +704,7 @@ do_or_undo_move_or_copy (
           char * str =
             g_strdup_printf (
               "%s (Copy)",
-              own_pl->descr->name);
+              own_pl->setting->descr->name);
           to_tr =
             track_new (
               TRACK_TYPE_AUDIO_BUS,
@@ -1035,13 +1036,15 @@ mixer_selections_action_stringize (
       if (self->num_plugins == 1)
         {
           return g_strdup_printf (
-            _("Create %s"), self->descr.name);
+            _("Create %s"),
+            self->setting->descr->name);
         }
       else
         {
           return g_strdup_printf (
             _("Create %d %ss"),
-            self->num_plugins, self->descr.name);
+            self->num_plugins,
+            self->setting->descr->name);
         }
     case MIXER_SELECTIONS_ACTION_DELETE:
       if (self->ms_before->num_slots == 1)
@@ -1061,7 +1064,7 @@ mixer_selections_action_stringize (
           return g_strdup_printf (
             _("Move %s"),
             self->ms_before->
-              plugins[0]->descr->name);
+              plugins[0]->setting->descr->name);
         }
       else
         {
@@ -1075,7 +1078,7 @@ mixer_selections_action_stringize (
           return g_strdup_printf (
             _("Copy %s"),
             self->ms_before->
-              plugins[0]->descr->name);
+              plugins[0]->setting->descr->name);
         }
       else
         {
@@ -1109,6 +1112,9 @@ mixer_selections_action_free (
       object_free_w_func_and_null (
         automation_track_free, at);
     }
+
+  object_free_w_func_and_null (
+    plugin_setting_free, self->setting);
 
   object_zero_and_free (self);
 }

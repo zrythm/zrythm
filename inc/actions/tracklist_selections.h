@@ -24,6 +24,7 @@
 #include "audio/supported_file.h"
 #include "audio/track.h"
 #include "gui/backend/tracklist_selections.h"
+#include "settings/plugin_settings.h"
 
 /**
  * @addtogroup actions
@@ -117,13 +118,13 @@ typedef struct TracklistSelectionsAction
    * track. */
   int                   is_empty;
 
-  /** PluginDescriptor, if making an instrument or
+  /** PluginSetting, if making an instrument or
    * bus track from a plugin.
    *
    * If this is empty and the track type is
    * instrument, it is assumed that it's an empty
    * track. */
-  PluginDescriptor      pl_descr;
+  PluginSetting *       pl_setting;
 
   /** Filename, if we are making an audio track from
    * a file. */
@@ -204,9 +205,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_ENUM (
     TracklistSelectionsAction, track_type,
     track_type_strings),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    TracklistSelectionsAction, pl_descr,
-    plugin_descriptor_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TracklistSelectionsAction, pl_setting,
+    plugin_setting_fields_schema),
   YAML_FIELD_INT (
     TracklistSelectionsAction, is_empty),
   YAML_FIELD_INT (
@@ -279,7 +280,7 @@ tracklist_selections_action_init_loaded (
  * @param tls_before Tracklist selections to act
  *   upon.
  * @param pos Position to make the tracks at.
- * @param pl_descr Plugin descriptor, if any.
+ * @param pl_setting Plugin setting, if any.
  * @param track Track, if single-track action. Used
  *   if \ref tls_before and \ref tls_after are NULL.
  */
@@ -290,7 +291,7 @@ tracklist_selections_action_new (
   TracklistSelections *         tls_after,
   Track *                       track,
   TrackType                     track_type,
-  PluginDescriptor *            pl_descr,
+  PluginSetting *               pl_setting,
   SupportedFile *               file_descr,
   int                           track_pos,
   const Position *              pos,
@@ -306,11 +307,11 @@ tracklist_selections_action_new (
   bool                          already_edited);
 
 #define tracklist_selections_action_new_create( \
-  track_type,pl_descr,file_descr,track_pos, \
+  track_type,pl_setting,file_descr,track_pos, \
   pos,num_tracks) \
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_CREATE, \
-    NULL, NULL, NULL, track_type, pl_descr, \
+    NULL, NULL, NULL, track_type, pl_setting, \
     file_descr, \
     track_pos, pos, num_tracks, 0, NULL, \
     false, false, NULL, 0.f, 0.f, NULL, false)
@@ -320,9 +321,9 @@ tracklist_selections_action_new (
  * audio FX track.
  */
 #define tracklist_selections_action_new_create_audio_fx( \
-  pl_descr,track_pos,num_tracks) \
+  pl_setting,track_pos,num_tracks) \
   tracklist_selections_action_new_create ( \
-    TRACK_TYPE_AUDIO_BUS, pl_descr, NULL, track_pos, \
+    TRACK_TYPE_AUDIO_BUS, pl_setting, NULL, track_pos, \
     NULL, num_tracks)
 
 /**
@@ -330,9 +331,9 @@ tracklist_selections_action_new (
  * instrument track.
  */
 #define tracklist_selections_action_new_create_instrument( \
-  pl_descr,track_pos,num_tracks) \
+  pl_setting,track_pos,num_tracks) \
   tracklist_selections_action_new_create ( \
-    TRACK_TYPE_INSTRUMENT, pl_descr, NULL, track_pos, \
+    TRACK_TYPE_INSTRUMENT, pl_setting, NULL, track_pos, \
     NULL, num_tracks)
 
 /**

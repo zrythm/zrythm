@@ -154,7 +154,7 @@ modulator_track_insert_modulator (
 
       g_message (
         "Inserting modulator %s at %s:%d",
-        modulator->descr->name, self->name, slot);
+        modulator->setting->descr->name, self->name, slot);
       if (slot == self->num_modulators)
         {
           array_double_size_if_full (
@@ -180,7 +180,7 @@ modulator_track_insert_modulator (
           g_message (
             "setting modulator %s from slot %d "
             "to slot %d",
-            self->modulators[i]->descr->name,
+            self->modulators[i]->setting->descr->name,
             i - 1, i);
           plugin_set_track_and_slot (
             self->modulators[i], self->pos,
@@ -192,7 +192,7 @@ modulator_track_insert_modulator (
   self->modulators[slot] = modulator;
   g_message (
     "setting modulator %s to slot %d",
-    modulator->descr->name, slot);
+    modulator->setting->descr->name, slot);
 
   plugin_set_track_and_slot (
     modulator, self->pos, PLUGIN_SLOT_MODULATOR,
@@ -255,7 +255,7 @@ modulator_track_remove_modulator (
 
   g_message (
     "Removing %s from %s:%d",
-    plugin->descr->name, self->name, slot);
+    plugin->setting->descr->name, self->name, slot);
 
   /* unexpose all JACK ports */
   plugin_expose_ports (

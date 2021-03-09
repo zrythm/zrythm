@@ -177,7 +177,7 @@ lv2_state_save_to_memory (
 
   g_message (
     "Lilv state saved to memory for plugin %s",
-    plugin->plugin->descr->name);
+    plugin->plugin->setting->descr->name);
 
   return state;
 }

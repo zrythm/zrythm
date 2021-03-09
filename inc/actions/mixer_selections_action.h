@@ -78,9 +78,9 @@ typedef struct MixerSelectionsAction
   int              num_plugins;
 
   /**
-   * PluginDescriptor to use when creating.
+   * PluginSetting to use when creating.
    */
-  PluginDescriptor  descr;
+  PluginSetting *  setting;
 
   /**
    * Clone of mixer selections at start.
@@ -135,9 +135,9 @@ static const cyaml_schema_field_t
     MixerSelectionsAction, new_channel),
   YAML_FIELD_INT (
     MixerSelectionsAction, num_plugins),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MixerSelectionsAction, descr,
-    plugin_descriptor_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    MixerSelectionsAction, setting,
+    plugin_setting_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     MixerSelectionsAction, ms_before,
     mixer_selections_fields_schema),
@@ -175,7 +175,7 @@ mixer_selections_action_init_loaded (
  * @param to_track_pos Target track position, or -1
  *   for new channel.
  * @param to_slot Target slot.
- * @param descr The plugin descriptor, if creating
+ * @param setting The plugin setting, if creating
  *   plugins.
  * @param num_plugins The number of plugins to create,
  *   if creating plugins.
@@ -187,14 +187,14 @@ mixer_selections_action_new (
   PluginSlotType            slot_type,
   int                       to_track_pos,
   int                       to_slot,
-  PluginDescriptor *        descr,
+  PluginSetting *           setting,
   int                       num_plugins);
 
 #define mixer_selections_action_new_create( \
-  slot_type,to_tr,to_slot,descr,num_plugins) \
+  slot_type,to_tr,to_slot,setting,num_plugins) \
   mixer_selections_action_new ( \
     NULL, MIXER_SELECTIONS_ACTION_CREATE, \
-    slot_type, to_tr, to_slot, descr, num_plugins)
+    slot_type, to_tr, to_slot, setting, num_plugins)
 
 #define mixer_selections_action_new_copy( \
   ms,slot_type,to_tr,to_slot) \

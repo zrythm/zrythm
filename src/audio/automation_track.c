@@ -302,7 +302,7 @@ automation_track_find_from_port (
                     port_get_plugin (port, true);
                   g_warn_if_fail (pl);
 
-                  if (pl->descr->protocol ==
+                  if (pl->setting->descr->protocol ==
                         PROT_LV2)
                     {
                       /* if lv2 plugin port (not
@@ -514,6 +514,8 @@ automation_track_clear (
       ZRegion * region = self->regions[i];
       Track * track =
         automation_track_get_track (self);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (track));
       track_remove_region (
         track, region, F_NO_PUBLISH_EVENTS, F_FREE);
     }

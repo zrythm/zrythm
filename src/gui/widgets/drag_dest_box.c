@@ -43,6 +43,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "settings/plugin_settings.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
 #include "utils/resources.h"
@@ -228,23 +229,28 @@ on_drag_data_received (
             track_get_type_from_plugin_descriptor (
               pd);
 
+          PluginSetting * setting =
+            plugin_setting_new_default (pd);
           UndoableAction * ua =
             tracklist_selections_action_new_create (
-              tt, pd, NULL,
+              tt, setting, NULL,
               TRACKLIST->num_tracks,
               PLAYHEAD, 1);
-
           undo_manager_perform (UNDO_MANAGER, ua);
+          plugin_setting_free (setting);
         }
       else
         {
+          PluginSetting * setting =
+            plugin_setting_new_default (pd);
           UndoableAction * ua =
             mixer_selections_action_new_create (
               PLUGIN_SLOT_MODULATOR,
               P_MODULATOR_TRACK->pos,
               P_MODULATOR_TRACK->num_modulators,
-              pd, 1);
+              setting, 1);
           undo_manager_perform (UNDO_MANAGER, ua);
+          plugin_setting_free (setting);
         }
     }
   else if (target ==

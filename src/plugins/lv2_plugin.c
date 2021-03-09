@@ -1840,26 +1840,6 @@ lv2_plugin_create_descriptor_from_lilv (
 
   pd->uri = g_strdup (uri_str);
 
-#if defined (_WOE32) && defined (HAVE_CARLA)
-  /* open all LV2 plugins with custom UIs using
-   * carla */
-  if (plugin_descriptor_has_custom_ui (pd))
-    {
-      pd->open_with_carla = true;
-    }
-#endif
-
-#if defined (GDK_WINDOWING_WAYLAND) && \
-  defined (HAVE_CARLA)
-  /* open all LV2 plugins with custom UIs using
-   * carla */
-  if (z_gtk_is_wayland () &&
-      plugin_descriptor_has_custom_ui (pd))
-    {
-      pd->open_with_carla = true;
-    }
-#endif
-
   return pd;
 }
 
@@ -2193,14 +2173,15 @@ lv2_plugin_instantiate (
     "Instantiating... uri: %s, project: %d, "
     "preset_uri: %s, use_state_file: %d"
     "state: %p",
-    self->plugin->descr->uri, project,
+    self->plugin->setting->descr->uri, project,
     preset_uri, use_state_file, state);
 
   Plugin * pl = self->plugin;
   g_return_val_if_fail (
     IS_PLUGIN_AND_NONNULL (pl), -1);
 
-  const PluginDescriptor * descr = pl->descr;
+  const PluginDescriptor * descr =
+    pl->setting->descr;
 
   set_features (self);
 
@@ -2763,7 +2744,7 @@ lv2_plugin_cleanup (
 {
   g_message (
     "Cleaning up LV2 plugin %s (%p)...",
-    self->plugin->descr->name, self);
+    self->plugin->setting->descr->name, self);
 
   if (self->plugin->activated)
     {

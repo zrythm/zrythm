@@ -23,7 +23,7 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define PLUGIN_COLLECTIONS_VERSION 2
+#define PLUGIN_COLLECTIONS_VERSION 3
 
 static char *
 get_plugin_collections_file_path (void)

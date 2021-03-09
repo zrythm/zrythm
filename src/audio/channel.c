@@ -1607,7 +1607,7 @@ channel_remove_plugin (
   Track * track = channel_get_track (channel);
   g_message (
     "Removing %s from %s:%d",
-    plugin->descr->name, track->name, slot);
+    plugin->setting->descr->name, track->name, slot);
 
   /* if moving, the move is already handled in
    * plugin_move_automation() inside
@@ -1786,7 +1786,7 @@ channel_add_plugin (
   g_message (
     "Inserting %s %s at %s:%d",
     plugin_slot_type_to_string (slot_type),
-    plugin->descr->name, track->name, slot);
+    plugin->setting->descr->name, track->name, slot);
   if (slot_type == PLUGIN_SLOT_INSTRUMENT)
     {
       self->instrument = plugin;

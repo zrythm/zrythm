@@ -320,7 +320,7 @@ add_plugin (
   gtk_list_store_set (
     list_store, iter,
     0, "plugins",
-    1, pl->descr->name,
+    1, pl->setting->descr->name,
     2, pl,
     -1);
 }

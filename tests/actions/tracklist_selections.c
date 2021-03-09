@@ -145,36 +145,9 @@ _test_port_and_plugin_track_pos_after_duplication (
   bool         is_instrument,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
-      pl_bundle, pl_uri, with_carla);
-
-  if (is_instrument)
-    {
-      /* fix the descriptor (for some reason lilv
-       * reports it as Plugin instead of Instrument if
-       * you don't do lilv_world_load_all) */
-      descr->category = PC_INSTRUMENT;
-      g_free (descr->category_str);
-      descr->category_str =
-        plugin_descriptor_category_to_string (
-          descr->category);
-    }
-
-  /* open with carla if requested */
-  descr->open_with_carla = with_carla;
-
-  /* create an instrument track from helm */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      is_instrument ?
-        TRACK_TYPE_INSTRUMENT :
-        TRACK_TYPE_AUDIO_BUS,
-      descr, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
-  plugin_descriptor_free (descr);
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_bundle, pl_uri, is_instrument, with_carla,
+    1);
 
   int src_track_pos = TRACKLIST->num_tracks - 1;
   int dest_track_pos = TRACKLIST->num_tracks;
@@ -205,7 +178,7 @@ _test_port_and_plugin_track_pos_after_duplication (
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
+  UndoableAction * ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -327,28 +300,9 @@ _test_undo_track_deletion (
   bool         is_instrument,
   bool         with_carla)
 {
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
-      pl_bundle, pl_uri, with_carla);
-
-  if (is_instrument)
-    {
-      /* fix the descriptor (for some reason lilv
-       * reports it as Plugin instead of Instrument if
-       * you don't do lilv_world_load_all) */
-      descr->category = PC_INSTRUMENT;
-      g_free (descr->category_str);
-      descr->category_str =
-        plugin_descriptor_category_to_string (
-          descr->category);
-    }
-
-  /* create an instrument track from helm */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT, descr, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_bundle, pl_uri, is_instrument, with_carla,
+    1);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -380,7 +334,7 @@ _test_undo_track_deletion (
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
+  UndoableAction * ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -678,21 +632,21 @@ test_track_deletion_with_sends (
 {
   UndoableAction * ua;
 
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, false);
 
   /* create an audio fx track and send both prefader
    * and postfader to a new audio fx track */
   ua =
     tracklist_selections_action_new_create_audio_fx (
-      descr, TRACKLIST->num_tracks, 1);
+      setting, TRACKLIST->num_tracks, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_fx_for_sending =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   ua =
     tracklist_selections_action_new_create_audio_fx (
-      descr, TRACKLIST->num_tracks, 1);
+      setting, TRACKLIST->num_tracks, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_fx_for_receiving =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -903,15 +857,9 @@ test_track_deletion_with_lv2_worker (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_LSP_MULTISAMPLER_24_DO
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
-      LSP_MULTISAMPLER_24_DO_BUNDLE,
-      LSP_MULTISAMPLER_24_DO_URI, false);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT, descr, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  test_plugin_manager_create_tracks_from_plugin (
+    LSP_MULTISAMPLER_24_DO_BUNDLE,
+    LSP_MULTISAMPLER_24_DO_URI, true, false, 1);
 
   /* delete track and undo */
   Track * track =
@@ -920,7 +868,7 @@ test_track_deletion_with_lv2_worker (void)
     track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  ua =
+  UndoableAction * ua =
     tracklist_selections_action_new_delete (
       TRACKLIST_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -956,12 +904,13 @@ test_ins_track_deletion_w_automation (void)
     F_NO_PUBLISH_EVENTS);
 
   /* add an effect */
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
   UndoableAction * ua =
     mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSERT, track->pos, 0, descr, 1);
+      PLUGIN_SLOT_INSERT, track->pos, 0, setting,
+      1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   engine_activate (AUDIO_ENGINE, true);
@@ -1151,22 +1100,22 @@ _test_move_tracks (
   track_verify_identifiers (
     TRACKLIST->tracks[0]);
 
-  PluginDescriptor * descr =
-    test_plugin_manager_get_plugin_descriptor (
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
-  g_return_if_fail (descr);
+  g_return_if_fail (setting);
 
   /* fix the descriptor (for some reason lilv
    * reports it as Plugin instead of Instrument if
    * you don't do lilv_world_load_all) */
   if (is_instrument)
     {
-      descr->category = PC_INSTRUMENT;
+      setting->descr->category = PC_INSTRUMENT;
     }
-  g_free (descr->category_str);
-  descr->category_str =
+  g_free (setting->descr->category_str);
+  setting->descr->category_str =
     plugin_descriptor_category_to_string (
-      descr->category);
+      setting->descr->category);
 
   /* create a track with an instrument */
   action =
@@ -1174,7 +1123,7 @@ _test_move_tracks (
       is_instrument ?
         TRACK_TYPE_INSTRUMENT :
         TRACK_TYPE_AUDIO_BUS,
-      descr, NULL, 3, NULL, 1);
+      setting, NULL, 3, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * ins_track = TRACKLIST->tracks[3];
   if (is_instrument)
