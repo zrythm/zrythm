@@ -1203,7 +1203,7 @@ lv2_create_or_init_ports_and_parameters (
 #endif
     }
 
-  float* default_values =
+  float * default_values =
     object_new_n ((size_t) num_lilv_ports, float);
   lilv_plugin_get_port_ranges_float (
     self->lilv_plugin,
@@ -1251,7 +1251,8 @@ lv2_create_or_init_ports_and_parameters (
           self, (uint32_t) i,
           (i < num_lilv_ports) ?
             NULL : &params[i - num_lilv_ports],
-          default_values[i], ports_exist,
+          i < num_lilv_ports ?
+            default_values[i] : 0, ports_exist,
           project);
       g_return_val_if_fail (
         IS_PORT_AND_NONNULL (port), -1);
