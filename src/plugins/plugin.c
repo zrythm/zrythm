@@ -977,29 +977,46 @@ char *
 plugin_generate_window_title (
   Plugin * plugin)
 {
-  g_return_val_if_fail (plugin->setting->descr, NULL);
+  g_return_val_if_fail (
+    plugin->setting->descr, NULL);
 
   Track * track = plugin_get_track (plugin);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (track), NULL);
 
+  const PluginSetting * setting = plugin->setting;
+
   const char* track_name = track->name;
-  const char* plugin_name = plugin->setting->descr->name;
+  const char* plugin_name = setting->descr->name;
   g_return_val_if_fail (
     track_name && plugin_name, NULL);
 
-  char carla[8] = "";
-  if (plugin->setting->open_with_carla)
+  char bridge_mode[100];
+  strcpy (bridge_mode, "");
+  if (setting->bridge_mode != CARLA_BRIDGE_NONE)
     {
-      strcpy (carla, " c");
+      sprintf (
+        bridge_mode, _(" - bridge: %s"),
+        carla_bridge_mode_strings[
+          setting->bridge_mode].str);
+    }
+
+  char slot[100];
+  sprintf (
+    slot, "#%d", plugin->id.slot + 1);
+  if (plugin->id.slot_type ==
+        PLUGIN_SLOT_INSTRUMENT)
+    {
+      strcpy (slot, _("instrument"));
     }
 
   char title[500];
   sprintf (
     title,
-    "%s (%s #%d%s)",
-    plugin_name, track_name, plugin->id.slot + 1,
-    carla);
+    "%s (%s %s%s%s)",
+    plugin_name, track_name, slot,
+    setting->open_with_carla ? " carla" : "",
+    bridge_mode);
 
   switch (plugin->setting->descr->protocol)
     {
