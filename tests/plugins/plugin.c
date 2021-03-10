@@ -135,6 +135,29 @@ test_loading_fully_bridged_plugin (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_loading_plugins_needing_bridging (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef HAVE_CARLA
+#ifdef HAVE_CALF_MONOSYNTH
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
+      CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI,
+      false);
+  g_assert_true (
+    setting->open_with_carla);
+  g_assert_true (
+    setting->bridge_mode == CARLA_BRIDGE_FULL);
+
+  test_project_save_and_reload ();
+#endif
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -150,6 +173,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test loading fully bridged plugin",
     (GTestFunc) test_loading_fully_bridged_plugin);
+  g_test_add_func (
+    TEST_PREFIX "test loading plugins needing bridging",
+    (GTestFunc) test_loading_plugins_needing_bridging);
 
   return g_test_run ();
 }

@@ -104,6 +104,8 @@ test_plugin_manager_get_plugin_setting (
   /* open with carla if requested */
   setting->open_with_carla = with_carla;
 
+  plugin_setting_validate (setting);
+
   /* run the logger to avoid too many messages
    * being queued */
   log_idle_cb (LOG);

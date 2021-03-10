@@ -41,7 +41,7 @@ plugin_setting_new_default (
   PluginDescriptor * descr)
 {
   PluginSetting * existing = NULL;
-  if (S_PLUGIN_SETTINGS)
+  if (S_PLUGIN_SETTINGS && !ZRYTHM_TESTING)
     {
       existing =
         plugin_settings_find (
@@ -128,26 +128,6 @@ plugin_setting_validate (
 #endif
     }
 
-  if (self->open_with_carla)
-    {
-#ifdef HAVE_CARLA
-      /* if no bridge mode specified, calculate the
-       * bridge mode here */
-      if (self->bridge_mode == CARLA_BRIDGE_NONE)
-        {
-          g_message (
-            "%s: recalculating bridge mode...",
-            __func__);
-          self->bridge_mode =
-            z_carla_discovery_get_bridge_mode (descr);
-        }
-#else
-      g_critical (
-        "Invalid setting requested: open with carla, "
-        "carla not installed");
-#endif
-    }
-
 #if defined (_WOE32) && defined (HAVE_CARLA)
   /* open all LV2 plugins with custom UIs using
    * carla */
@@ -164,6 +144,34 @@ plugin_setting_validate (
       plugin_descriptor_has_custom_ui (self->descr))
     {
       self->open_with_carla = true;
+    }
+#endif
+
+#ifdef HAVE_CARLA
+  /* if no bridge mode specified, calculate the
+   * bridge mode here */
+  g_message (
+    "%s: recalculating bridge mode...",
+    __func__);
+  if (self->bridge_mode == CARLA_BRIDGE_NONE)
+    {
+      self->bridge_mode =
+        z_carla_discovery_get_bridge_mode (descr);
+      if (self->bridge_mode != CARLA_BRIDGE_NONE)
+        {
+          self->open_with_carla = true;
+        }
+    }
+  else
+    {
+      self->open_with_carla = true;
+      CarlaBridgeMode mode =
+        z_carla_discovery_get_bridge_mode (descr);
+
+      if (mode == CARLA_BRIDGE_FULL)
+        {
+          self->bridge_mode = mode;
+        }
     }
 #endif
 

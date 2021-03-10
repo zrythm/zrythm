@@ -258,6 +258,9 @@ ext_lv2_plugins = {
   'ams_lfo': [
     'AMS LFO',
     'http://github.com/blablack/ams-lv2/lfo'],
+  'calf_monosynth': [
+    'Calf Monosynth',
+    'http://calf.sourceforge.net/plugins/Monosynth'],
   'helm': [
     'Helm', 'http://tytel.org/helm'],
   'sherlock_atom_inspector': [
