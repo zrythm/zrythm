@@ -21,6 +21,7 @@
 
 #ifdef HAVE_CARLA
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "audio/engine.h"
@@ -604,20 +605,20 @@ carla_native_plugin_process (
   self->time_info.frame =
     (uint64_t) g_start_frames;
   self->time_info.bbt.bar =
-    PLAYHEAD->bars;
+    position_get_bars (PLAYHEAD, true);
   self->time_info.bbt.beat =
-    PLAYHEAD->beats;
+    position_get_beats (PLAYHEAD, true);
   self->time_info.bbt.tick =
-    PLAYHEAD->sixteenths *
+    position_get_sixteenths (PLAYHEAD, true) *
       TICKS_PER_SIXTEENTH_NOTE +
-    PLAYHEAD->ticks;
+    (int) floor (position_get_ticks (PLAYHEAD));
   Position bar_start;
   position_set_to_bar (
-    &bar_start, PLAYHEAD->bars);
+    &bar_start,
+    position_get_bars (PLAYHEAD, true));
   self->time_info.bbt.barStartTick =
     (double)
-    (PLAYHEAD->total_ticks -
-     bar_start.total_ticks);
+    (PLAYHEAD->ticks - bar_start.ticks);
   self->time_info.bbt.beatsPerBar =
     (float) TRANSPORT_BEATS_PER_BAR;
   self->time_info.bbt.beatType =

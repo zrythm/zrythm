@@ -235,21 +235,15 @@ quantize_options_quantize_position (
 
   /* if previous point is closer */
   double diff;
-  if (pos->total_ticks -
-        prev_point->total_ticks <=
-      next_point->total_ticks -
-        pos->total_ticks)
+  if (pos->ticks - prev_point->ticks <=
+      next_point->ticks - pos->ticks)
     {
-      diff =
-        prev_point->total_ticks -
-        pos->total_ticks;
+      diff = prev_point->ticks - pos->ticks;
     }
   /* if next point is closer */
   else
     {
-      diff =
-        next_point->total_ticks -
-        pos->total_ticks;
+      diff = next_point->ticks - pos->ticks;
     }
 
   /* multiply by amount */

@@ -95,19 +95,14 @@ void
 midi_note_print (
   MidiNote * mn)
 {
-  ArrangerObject * obj =
-    (ArrangerObject *) mn;
+  ArrangerObject * obj = (ArrangerObject *) mn;
+  char start_pos_str[300];
+  position_to_string (&obj->pos, start_pos_str);
+  char end_pos_str[300];
+  position_to_string (&obj->end_pos, end_pos_str);
   g_message (
-    "MidiNote: start pos %d.%d.%d.%d "
-    "end pos %d.%d.%d.%d",
-    obj->pos.bars,
-    obj->pos.beats,
-    obj->pos.sixteenths,
-    obj->pos.ticks,
-    obj->end_pos.bars,
-    obj->end_pos.beats,
-    obj->end_pos.sixteenths,
-    obj->end_pos.ticks);
+    "MidiNote: start pos %s - end pos %s",
+    start_pos_str, end_pos_str);
 }
 
 /**

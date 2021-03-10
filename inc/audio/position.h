@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,8 @@
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
+#include <stdbool.h>
+
 #include "utils/yaml.h"
 
 /**
@@ -38,19 +40,17 @@
 #define TICKS_PER_SIXTEENTH_NOTE 240
 #define TICKS_PER_QUARTER_NOTE_DBL 960.0
 #define TICKS_PER_SIXTEENTH_NOTE_DBL 240.0
-#define position_add_ticks(_pos, _ticks) \
-  position_from_ticks ( \
-    (_pos), \
-    (_pos)->total_ticks + _ticks)
 #define position_add_sixteenths(_pos, _s) \
-  position_set_sixteenth ( \
-    _pos, (_pos)->sixteenths + _s)
+  position_add_ticks ( \
+    (_pos), (_s) * TICKS_PER_SIXTEENTH_NOTE)
 #define position_add_beats(_pos, _b) \
-  position_set_beat ( \
-    _pos, (_pos)->beats + _b)
+  g_warn_if_fail (TRANSPORT->ticks_per_beat > 0); \
+  position_add_ticks ( \
+    (_pos), (_b) * TRANSPORT->ticks_per_beat)
 #define position_add_bars(_pos, _b) \
-  position_set_bar ( \
-    _pos, (_pos)->bars + _b)
+  g_warn_if_fail (TRANSPORT->ticks_per_bar > 0); \
+  position_add_ticks ( \
+    (_pos), (_b) * TRANSPORT->ticks_per_bar)
 #define position_snap_simple(pos, sg) \
   position_snap (NULL, pos, NULL, NULL, sg)
 
@@ -99,7 +99,7 @@
  * positive = p2 is earlier
  */
 #define position_compare_ticks(p1,p2) \
-  ((p1)->total_ticks - (p2)->total_ticks)
+  ((p1)->ticks - (p2)->ticks)
 
 #define position_is_equal_ticks(p1,p2) \
   (fabs (position_compare_ticks (p1, p2)) <= \
@@ -146,13 +146,13 @@ typedef struct Position
    * A negative number indicates a negative
    * position.
    */
-  int       bars;
+  //int       bars;
 
   /**
    * The size of the beat is the the beat unit (bot
    * part of time sig).
    */
-  int       beats;
+  //int       beats;
 
   /**
    * This is always the size of a 1/16th note
@@ -163,17 +163,16 @@ typedef struct Position
    * BBT, so that the user only has 240 ticks to
    * deal with for precise operations instead of 960.
    */
-  int       sixteenths;
+  //int       sixteenths;
 
   /** 240 ticks per sixteenth. */
-  int       ticks;
+  //int       ticks;
 
   /** 0.0 to 1.0 for precision. */
-  double    sub_tick;
+  //double    sub_tick;
 
-  /** Cache so we don't need to call
-   * position_get_ticks. */
-  double    total_ticks;
+  /** Precise total number of ticks. */
+  double    ticks;
 
   /** Position in frames (samples). */
   long      frames;
@@ -182,18 +181,8 @@ typedef struct Position
 static const cyaml_schema_field_t
   position_fields_schema[] =
 {
-  YAML_FIELD_INT (
-    Position, bars),
-  YAML_FIELD_INT (
-    Position, beats),
-  YAML_FIELD_INT (
-    Position, sixteenths),
-  YAML_FIELD_INT (
+  YAML_FIELD_FLOAT (
     Position, ticks),
-  YAML_FIELD_FLOAT (
-    Position, sub_tick),
-  YAML_FIELD_FLOAT (
-    Position, total_ticks),
   YAML_FIELD_INT (
     Position, frames),
 
@@ -210,61 +199,17 @@ static const cyaml_schema_value_t
 /** Start Position to be used in calculations. */
 static const Position POSITION_START =
 {
-  .bars = 1,
-  .beats = 1,
-  .sixteenths = 1,
-  .ticks = 0,
-  .total_ticks = 0,
-  .sub_tick = 0.0,
+  .ticks = 0.0,
   .frames = 0
 };
 
 /**
- * Sets position to given bar
+ * Sets position to given bar.
  */
 void
 position_set_to_bar (
-  Position * position,
-  int        bar_no);
-
-void
-position_set_bar (
-  Position * position,
+  Position * self,
   int        bar);
-
-HOT
-NONNULL
-void
-position_set_beat (
-  Position * position,
-  int        beat);
-
-HOT
-NONNULL
-void
-position_set_sixteenth (
-  Position * position,
-  int        sixteenth);
-
-/**
- * Sets the tick of the Position.
- *
- * If the tick exceeds the max ticks allowed on
- * the positive or negative axis, it calls
- * position_set_sixteenth until it is within range./
- *
- * This function can handle both positive and
- * negative Positions. Negative positions start at
- * -1.-1.-1.-1 (one tick before zero) and positive
- * Positions start at zero (1.1.1.0).
- *
- * FIXME optimize, this is very inefficient. Use use
- * position_from_ticks() for now.
- */
-void
-position_set_tick (
-  Position * position,
-  double     tick);
 
 /**
  * Sorts an array of Position's.
@@ -294,14 +239,9 @@ position_add_frames (
   Position * pos,
   const long frames);
 
-/**
- * Converts position bars/beats/quarter beats/ticks to frames
- */
-HOT
-__attribute__ ((access (read_only, 1)))
-long
-position_to_frames (
-  const Position * position);
+/** Deprecated - added for compatibility. */
+#define position_to_frames(x) ((x)->frames)
+#define position_to_ticks(x) ((x)->ticks)
 
 /**
  * Converts seconds to position and puts the result
@@ -312,14 +252,29 @@ position_from_seconds (
   Position * position,
   double     secs);
 
-static inline void
+HOT
+NONNULL
+void
 position_from_frames (
   Position * pos,
-  long       frames)
-{
-  position_init (pos);
-  position_add_frames (pos, frames);
-}
+  long       frames);
+
+/**
+ * Sets position to the given total tick count.
+ */
+HOT
+NONNULL
+void
+position_from_ticks (
+  Position * pos,
+  double     ticks);
+
+HOT
+NONNULL
+void
+position_add_ticks (
+  Position * self,
+  double     ticks);
 
 /**
  * Returns the Position in milliseconds.
@@ -328,11 +283,9 @@ long
 position_to_ms (
   const Position * pos);
 
-HOT
-NONNULL
 long
 position_ms_to_frames (
-  long ms);
+  const long ms);
 
 void
 position_add_ms (
@@ -348,19 +301,6 @@ void
 position_add_seconds (
   Position * pos,
   long       seconds);
-
-HOT
-double
-position_to_ticks (
-  const Position * pos);
-
-/**
- * Sets position to the given total tick count.
- */
-void
-position_from_ticks (
-  Position * pos,
-  double     ticks);
 
 /**
  * Snaps position using given options.
@@ -405,12 +345,21 @@ position_set_min_size (
   SnapGrid * snap);
 
 /**
- * Updates frames
+ * Updates ticks.
  */
 HOT
 NONNULL
 void
-position_update_ticks_and_frames (
+position_update_ticks_from_frames (
+  Position * position);
+
+/**
+ * Updates frames.
+ */
+HOT
+NONNULL
+void
+position_update_frames_from_ticks (
   Position * position);
 
 /**
@@ -447,52 +396,141 @@ position_get_ticks_diff (
  *
  * Must be free'd by caller.
  */
+NONNULL
 char *
-position_stringize_allocate (
+position_to_string_alloc (
   const Position * pos);
 
 /**
  * Creates a string in the form of "0.0.0.0" from
  * the given position.
- *
- * TODO rename to position_to_string().
  */
+NONNULL
 void
-position_stringize (
+position_to_string (
   const Position * pos,
   char *           buf);
 
 /**
  * Prints the Position in the "0.0.0.0" form.
  */
+NONNULL
 void
 position_print (
   const Position * pos);
 
 /**
- * Returns the total number of bars not including
- * the current one.
+ * Returns the total number of beats.
+ *
+ * @param include_current Whether to count the
+ *   current beat if it is at the beat start.
  */
+NONNULL
 int
 position_get_total_bars (
-  const Position * pos);
+  const Position * pos,
+  bool  include_current);
 
 /**
- * Returns the total number of beats not including
- * the current one.
+ * Returns the total number of beats.
+ *
+ * @param include_current Whether to count the
+ *   current beat if it is at the beat start.
  */
+NONNULL
 int
 position_get_total_beats (
-  const Position * pos);
+  const Position * pos,
+  bool  include_current);
+
+/**
+ * Returns the total number of sixteenths not
+ * including the current one.
+ */
+NONNULL
+int
+position_get_total_sixteenths (
+  const Position * pos,
+  bool             include_current);
 
 /**
  * Changes the sign of the position.
  *
  * For example, 4.2.1.21 would become -4.2.1.21.
  */
+NONNULL
 void
 position_change_sign (
   Position * pos);
+
+/**
+ * Gets the bars of the position.
+ *
+ * Ie, if the position is equivalent to 4.1.2.42,
+ * this will return 4.
+ *
+ * @param start_at_one Start at 1 or -1 instead of
+ *   0.
+ */
+NONNULL
+int
+position_get_bars (
+  const Position * pos,
+  bool  start_at_one);
+
+/**
+ * Gets the beats of the position.
+ *
+ * Ie, if the position is equivalent to 4.1.2.42,
+ * this will return 1.
+ *
+ * @param start_at_one Start at 1 or -1 instead of
+ *   0.
+ */
+NONNULL
+int
+position_get_beats (
+  const Position * pos,
+  bool  start_at_one);
+
+/**
+ * Gets the sixteenths of the position.
+ *
+ * Ie, if the position is equivalent to 4.1.2.42,
+ * this will return 2.
+ *
+ * @param start_at_one Start at 1 or -1 instead of
+ *   0.
+ */
+NONNULL
+int
+position_get_sixteenths (
+  const Position * pos,
+  bool  start_at_one);
+
+/**
+ * Gets the ticks of the position.
+ *
+ * Ie, if the position is equivalent to 4.1.2.42,
+ * this will return 42.
+ */
+NONNULL
+double
+position_get_ticks (
+  const Position * pos);
+
+#if 0
+/**
+ * Gets the subticks of the position.
+ *
+ * Ie, if the position is equivalent to
+ * 4.1.2.42.40124, this will return 0.40124.
+ */
+NONNULL
+double
+position_get_subticks (
+  const Position * pos);
+#endif
 
 SERIALIZE_INC (Position, position)
 DESERIALIZE_INC (Position, position)

@@ -209,7 +209,7 @@ modulator_track_insert_modulator (
 
   if (self->is_project)
     {
-      track_verify_identifiers (self);
+      track_validate (self);
     }
 
   if (pub_events)
@@ -309,7 +309,7 @@ modulator_track_remove_modulator (
        * yet */
       deleting_modulator)
     {
-      track_verify_identifiers (self);
+      track_validate (self);
     }
 
   if (recalc_graph)

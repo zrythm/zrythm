@@ -66,6 +66,11 @@ test_save_load_with_data ()
     g_build_filename (
       PROJECT->dir, PROJECT_FILE, NULL);
 
+  /* stop the engine */
+  EngineState state;
+  engine_wait_for_pause (
+    PROJECT->audio_engine, &state, true);
+
   /* remove objects */
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
@@ -83,6 +88,10 @@ test_save_load_with_data ()
   ret =
     project_load (prj_file, 0);
   g_assert_cmpint (ret, ==, 0);
+
+  /* stop the engine */
+  engine_resume (
+    PROJECT->audio_engine, &state);
 
   /* verify that the data is correct */
   test_project_check_vs_original_state (

@@ -376,7 +376,7 @@ plugin_get_enabled_port (
  */
 NONNULL
 bool
-plugin_verify_identifiers (
+plugin_validate (
   Plugin * self);
 
 /**

@@ -355,8 +355,8 @@ automation_region_get_ap_around (
   ArrangerObject * ap_obj =
     (ArrangerObject *) ap;
   if (ap &&
-      pos.total_ticks -
-        ap_obj->pos.total_ticks <=
+      pos.ticks -
+        ap_obj->pos.ticks <=
           (double) delta_ticks)
     {
       return ap;
@@ -371,8 +371,8 @@ automation_region_get_ap_around (
       if (ap)
         {
           double diff =
-            ap_obj->pos.total_ticks -
-              _pos->total_ticks;
+            ap_obj->pos.ticks -
+              _pos->ticks;
           if (diff >= 0.0)
             return ap;
         }

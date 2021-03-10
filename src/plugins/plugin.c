@@ -652,7 +652,7 @@ plugin_remove_ats_from_automation_tracklist (
  * Verifies that the plugin identifiers are valid.
  */
 bool
-plugin_verify_identifiers (
+plugin_validate (
   Plugin * self)
 {
   g_return_val_if_fail (IS_PLUGIN (self), false);

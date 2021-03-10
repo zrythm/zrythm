@@ -82,8 +82,8 @@ midi_arranger_widget_create_note (
   Position local_pos;
   position_from_ticks (
     &local_pos,
-    pos->total_ticks -
-    region_obj->pos.total_ticks);
+    pos->ticks -
+    region_obj->pos.ticks);
 
   /* set action */
   bool autofilling =
@@ -170,9 +170,9 @@ midi_arranger_widget_snap_midi_notes_l (
   /* get delta with first clicked note's start
    * pos */
   double delta =
-    pos->total_ticks -
-    (self->start_object->pos.total_ticks +
-      r_obj->pos.total_ticks);
+    pos->ticks -
+    (self->start_object->pos.ticks +
+      r_obj->pos.ticks);
   g_debug ("delta %f", delta);
 
   Position new_start_pos, new_global_start_pos;
@@ -199,7 +199,7 @@ midi_arranger_widget_snap_midi_notes_l (
         &new_start_pos);
       position_add_ticks (
         &new_global_start_pos,
-        r_obj->pos.total_ticks);
+        r_obj->pos.ticks);
 
       /* snap the global pos */
       ZRegion * clip_editor_region =
@@ -221,7 +221,7 @@ midi_arranger_widget_snap_midi_notes_l (
         &new_global_start_pos);
       position_add_ticks (
         &new_start_pos,
-        - r_obj->pos.total_ticks);
+        - r_obj->pos.ticks);
 
       if (position_is_before (
             &new_global_start_pos,
@@ -318,9 +318,9 @@ midi_arranger_widget_snap_midi_notes_r (
   /* get delta with first clicked notes's end
    * pos */
   double delta =
-    pos->total_ticks -
-    (self->start_object->end_pos.total_ticks +
-      r_obj->pos.total_ticks);
+    pos->ticks -
+    (self->start_object->end_pos.ticks +
+      r_obj->pos.ticks);
   g_debug ("delta %f", delta);
 
   MidiNote * midi_note;
@@ -348,7 +348,7 @@ midi_arranger_widget_snap_midi_notes_r (
         &new_end_pos);
       position_add_ticks (
         &new_global_end_pos,
-        r_obj->pos.total_ticks);
+        r_obj->pos.ticks);
 
       /* snap the global pos */
       if (SNAP_GRID_ANY_SNAP (
@@ -367,7 +367,7 @@ midi_arranger_widget_snap_midi_notes_r (
         &new_global_end_pos);
       position_add_ticks (
         &new_end_pos,
-        - r_obj->pos.total_ticks);
+        - r_obj->pos.ticks);
 
       if (position_is_before_or_equal (
             &new_end_pos,

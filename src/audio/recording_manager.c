@@ -618,7 +618,7 @@ delete_automation_points (
       Position adj_pos;
       position_set_to_pos (&adj_pos, pos);
       position_add_ticks (
-        &adj_pos, - r_obj->pos.total_ticks);
+        &adj_pos, - r_obj->pos.ticks);
       AutomationPoint * ap =
         automation_point_new_float (
           prev_fvalue,
@@ -659,7 +659,7 @@ create_automation_point (
   Position adj_pos;
   position_set_to_pos (&adj_pos, pos);
   position_add_ticks (
-    &adj_pos, - r_obj->pos.total_ticks);
+    &adj_pos, - r_obj->pos.ticks);
   AutomationPoint * ap =
     automation_point_new_float (
       val, normalized_val, &adj_pos);
@@ -839,8 +839,8 @@ handle_resume_event (
                 &resume_pos, &r_obj->pos))
             {
               double ticks_delta =
-                r_obj->pos.total_ticks -
-                  resume_pos.total_ticks;
+                r_obj->pos.ticks -
+                  resume_pos.ticks;
               arranger_object_set_start_pos_full_size (
                 r_obj, &resume_pos);
               arranger_object_add_ticks_to_children (
@@ -1104,9 +1104,9 @@ handle_midi_event (
   position_set_to_pos (
     &local_end_pos, &end_pos);
   position_add_ticks (
-    &local_pos, - r_obj->pos.total_ticks);
+    &local_pos, - r_obj->pos.ticks);
   position_add_ticks (
-    &local_end_pos, - r_obj->pos.total_ticks);
+    &local_end_pos, - r_obj->pos.ticks);
 
   /* if overwrite mode, clear any notes inside the
    * range */

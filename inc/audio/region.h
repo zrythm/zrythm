@@ -689,7 +689,7 @@ region_get_arranger_selections (
  *   the undo stack, etc.).
  */
 bool
-region_sanity_check (
+region_validate (
   ZRegion * self,
   bool      is_project);
 

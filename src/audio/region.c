@@ -62,7 +62,7 @@
  */
 void
 region_init (
-  ZRegion *         self,
+  ZRegion *        self,
   const Position * start_pos,
   const Position * end_pos,
   int              track_pos,
@@ -99,7 +99,10 @@ region_init (
     &obj->fade_out_pos, length);
 
   arranger_object_init (obj);
+
   self->magic = REGION_MAGIC;
+
+  region_validate (self, false);
 }
 
 /**
@@ -252,8 +255,7 @@ region_stretch (
             (ArrangerObject *) mn;
 
           /* set start pos */
-          double before_ticks =
-            mn_obj->pos.total_ticks;
+          double before_ticks = mn_obj->pos.ticks;
           double new_ticks = before_ticks * ratio;
           Position tmp;
           position_from_ticks (
@@ -263,8 +265,7 @@ region_stretch (
 
           /* set end pos */
           before_ticks =
-            mn_obj->end_pos.
-              total_ticks;
+            mn_obj->end_pos.ticks;
           new_ticks = before_ticks * ratio;
           position_from_ticks (
             &tmp, new_ticks);
@@ -487,7 +488,7 @@ region_type_has_lane (
  *   the undo stack, etc.).
  */
 bool
-region_sanity_check (
+region_validate (
   ZRegion * self,
   bool      is_project)
 {
@@ -500,6 +501,12 @@ region_sanity_check (
           return false;
         }
     }
+
+  ArrangerObject * r_obj =  (ArrangerObject *) self;
+  g_return_val_if_fail (
+    position_is_before (
+    &r_obj->loop_start_pos, &r_obj->loop_end_pos),
+    false);
 
   return true;
 }
@@ -988,9 +995,9 @@ region_print (
   const ZRegion * self)
 {
   char from_pos_str[100], to_pos_str[100];
-  position_stringize (
+  position_to_string (
     &self->base.pos, from_pos_str);
-  position_stringize (
+  position_to_string (
     &self->base.end_pos, to_pos_str);
   char * str =
     g_strdup_printf (

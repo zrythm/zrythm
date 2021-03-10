@@ -192,7 +192,7 @@ test_prepare_common (void)
     arranger_object_get_length_in_ticks (
       (ArrangerObject *) audio_region);
   double missing_ticks  =
-    (end.total_ticks - start.total_ticks) -
+    (end.ticks - start.ticks) -
     audio_region_size_ticks;
   arranger_object_resize (
     (ArrangerObject *) audio_region, false,

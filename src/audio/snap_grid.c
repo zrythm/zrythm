@@ -227,7 +227,7 @@ add_snap_point (
     self->snap_points_size, Position);
   position_from_ticks (
     &self->snap_points[self->num_snap_points++],
-    snap_point->total_ticks);
+    snap_point->ticks);
   /*position_set_to_pos (*/
     /*&self->snap_points[self->num_snap_points++],*/
     /*snap_point);*/
@@ -249,9 +249,9 @@ snap_grid_update_snap_points (
   add_snap_point (self, &tmp);
   long ticks = snap_grid_get_snap_ticks (self);
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
-  while (tmp.total_ticks < end_pos.total_ticks)
+  while (tmp.ticks < end_pos.ticks)
     {
-      tmp.total_ticks += ticks;
+      tmp.ticks += ticks;
       add_snap_point (self, &tmp);
     }
 #if 0

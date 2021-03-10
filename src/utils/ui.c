@@ -244,23 +244,8 @@ px_to_pos (
         px = 0.0;
     }
 
-  pos->bars =
-    (int)
-    floor (px / ruler->px_per_bar + 1.0);
-  px = fmod (px, ruler->px_per_bar);
-  pos->beats =
-    (int)
-    floor (px / ruler->px_per_beat + 1.0);
-  px = fmod (px, ruler->px_per_beat);
-  pos->sixteenths =
-    (int)
-    floor (px / ruler->px_per_sixteenth + 1.0);
-  px = fmod (px, ruler->px_per_sixteenth);
-  double ticks = px / ruler->px_per_tick;
-  pos->ticks = (int) floor (ticks);
-  pos->sub_tick = floor (ticks) - pos->ticks;
-  pos->total_ticks = position_to_ticks (pos);
-  pos->frames = position_to_frames (pos);
+  pos->ticks = px / ruler->px_per_tick;
+  position_update_frames_from_ticks (pos);
 }
 
 /**
@@ -311,7 +296,7 @@ pos_to_px (
 {
   int px =
     (int)
-    (pos->total_ticks * ruler->px_per_tick);
+    (pos->ticks * ruler->px_per_tick);
 
   if (use_padding)
     px += SPACE_BEFORE_START;

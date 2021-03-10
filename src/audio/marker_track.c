@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "gui/backend/event_manager.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
@@ -60,6 +61,17 @@ marker_track_default (
       TRACK_TYPE_MARKER, track_pos, _("Markers"),
       F_WITHOUT_LANE);
 
+#if 0
+  /* hack to allow setting positions */
+  double frames_per_tick_before =
+    AUDIO_ENGINE->frames_per_tick;
+  if (math_doubles_equal (
+        frames_per_tick_before, 0))
+    {
+      AUDIO_ENGINE->frames_per_tick = 512;
+    }
+#endif
+
   /* add start and end markers */
   Marker * marker;
   Position pos;
@@ -77,6 +89,14 @@ marker_track_default (
   arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_END;
   marker_track_add_marker (self, marker);
+
+#if 0
+  if (math_doubles_equal (
+        frames_per_tick_before, 0))
+    {
+      AUDIO_ENGINE->frames_per_tick = 0;
+    }
+#endif
 
   return self;
 }
@@ -131,7 +151,7 @@ marker_track_get_end_marker (
 
 NONNULL
 static void
-sanity_check (
+validate (
   MarkerTrack * self)
 {
   for (int i = 0; i < self->num_markers; i++)
@@ -161,7 +181,7 @@ marker_track_add_marker (
     self->markers, self->num_markers, marker);
   marker->index = self->num_markers - 1;
 
-  sanity_check (self);
+  validate (self);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CREATED, marker);

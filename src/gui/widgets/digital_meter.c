@@ -295,10 +295,12 @@ digital_meter_draw_cb (
         }
       else
         {
-          bars = pos.bars;
-          beats = pos.beats;
-          sixteenths = pos.sixteenths;
-          ticks = pos.ticks;
+          bars = position_get_bars (&pos, true);
+          beats = position_get_beats (&pos, true);
+          sixteenths =
+            position_get_sixteenths (&pos, true);
+          ticks =
+            (int) floor (position_get_ticks (&pos));
 
           z_cairo_get_text_extents_for_widget (
             widget, self->seg7_layout,
@@ -742,26 +744,19 @@ on_scroll (
         {
           if (self->update_bars)
             {
-              position_set_bar (
-                &pos, pos.bars + num);
+              position_add_bars (&pos, num);
             }
           else if (self->update_beats)
             {
-              position_set_beat (
-                &pos,
-                pos.beats + num);
+              position_add_beats (&pos, num);
             }
           else if (self->update_sixteenths)
             {
-              position_set_sixteenth (
-                &pos,
-                pos.sixteenths + num);
+              position_add_sixteenths (&pos, num);
             }
           else if (self->update_ticks)
             {
-              position_set_tick (
-                &pos,
-                pos.ticks + num);
+              position_add_ticks (&pos, num);
             }
           SET_POS;
         }
@@ -956,8 +951,7 @@ drag_update (
               num = (int) diff / 4;
               if (abs (num) > 0)
                 {
-                  position_set_bar (
-                    &pos, pos.bars + num);
+                  position_add_bars (&pos, num);
                   self->last_y = offset_y;
                   self->last_x = offset_x;
                 }
@@ -967,9 +961,7 @@ drag_update (
               num = (int) diff / 4;
               if (abs (num) > 0)
                 {
-                  position_set_beat (
-                    &pos,
-                    pos.beats + num);
+                  position_add_beats (&pos, num);
                   self->last_y = offset_y;
                   self->last_x = offset_x;
                 }
@@ -979,9 +971,8 @@ drag_update (
               num = (int) diff / 4;
               if (abs (num) > 0)
                 {
-                  position_set_sixteenth (
-                    &pos,
-                    pos.sixteenths + num);
+                  position_add_sixteenths (
+                    &pos, num);
                   self->last_y = offset_y;
                   self->last_x = offset_x;
                 }
@@ -991,9 +982,7 @@ drag_update (
               num = (int) diff / 4;
               if (abs (num) > 0)
                 {
-                  position_set_tick (
-                    &pos,
-                    pos.ticks + num);
+                  position_add_ticks (&pos, num);
                   self->last_y = offset_y;
                   self->last_x = offset_x;
                 }

@@ -508,14 +508,14 @@ arranger_object_get_full_rect_x_for_region_child (
     (ArrangerObject *) region;
 
   double region_start_ticks =
-    region_obj->pos.total_ticks;
+    region_obj->pos.ticks;
   Position tmp;
 
   /* use absolute position */
   position_from_ticks (
     &tmp,
     region_start_ticks +
-      self->pos.total_ticks);
+      self->pos.ticks);
   return ui_pos_to_px_editor (&tmp, 1);
 }
 
@@ -561,7 +561,7 @@ arranger_object_set_full_rectangle (
           (ArrangerObject *) region;
 
         double region_start_ticks =
-          region_obj->pos.total_ticks;
+          region_obj->pos.ticks;
         Position tmp;
         int adj_px_per_key =
           chord_editor_space_widget_get_chord_height (
@@ -571,7 +571,7 @@ arranger_object_set_full_rectangle (
         position_from_ticks (
           &tmp,
           region_start_ticks +
-          self->pos.total_ticks);
+          self->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
         self->full_rect.y =
@@ -609,12 +609,12 @@ arranger_object_set_full_rectangle (
 
         /* use absolute position */
         double region_start_ticks =
-          region_obj->pos.total_ticks;
+          region_obj->pos.ticks;
         Position tmp;
         position_from_ticks (
           &tmp,
           region_start_ticks +
-          self->pos.total_ticks);
+          self->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1) -
             AP_WIDGET_POINT_SIZE / 2;
@@ -634,8 +634,8 @@ arranger_object_set_full_rectangle (
              * start AP to the next ap. */
             position_from_ticks (
               &tmp,
-              next_obj->pos.total_ticks -
-                self->pos.total_ticks);
+              next_obj->pos.ticks -
+                self->pos.ticks);
 
             /* width is the relative position in px
              * plus half an AP_WIDGET_POINT_SIZE for
@@ -703,8 +703,8 @@ arranger_object_set_full_rectangle (
         Position tmp;
         position_from_ticks (
           &tmp,
-          self->end_pos.total_ticks -
-            self->pos.total_ticks);
+          self->end_pos.ticks -
+            self->pos.ticks);
         self->full_rect.width =
           ui_pos_to_px_timeline (
             &tmp, false) - 1;
@@ -790,7 +790,7 @@ arranger_object_set_full_rectangle (
           (ArrangerObject *) region;
 
         double region_start_ticks =
-          region_obj->pos.total_ticks;
+          region_obj->pos.ticks;
         Position tmp;
         double adj_px_per_key =
           MW_PIANO_ROLL_KEYS->px_per_key + 1.0;
@@ -799,7 +799,7 @@ arranger_object_set_full_rectangle (
         position_from_ticks (
           &tmp,
           region_start_ticks +
-            self->pos.total_ticks);
+            self->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
         self->full_rect.y =
@@ -827,7 +827,7 @@ arranger_object_set_full_rectangle (
             position_from_ticks (
               &tmp,
               region_start_ticks +
-              self->end_pos.total_ticks);
+              self->end_pos.ticks);
             self->full_rect.width =
               ui_pos_to_px_editor (
                 &tmp, 1) - self->full_rect.x;
@@ -926,12 +926,12 @@ arranger_object_set_full_rectangle (
 
         /* use absolute position */
         double region_start_ticks =
-          region_obj->pos.total_ticks;
+          region_obj->pos.ticks;
         Position tmp;
         position_from_ticks (
           &tmp,
           region_start_ticks +
-          mn_obj->pos.total_ticks);
+          mn_obj->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
         int height =

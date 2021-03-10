@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,7 +20,10 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
+#include "audio/engine.h"
 #include "audio/position.h"
+#include "audio/transport.h"
+#include "project.h"
 #endif
 
 SCM_DEFINE (
@@ -41,12 +44,17 @@ SCM_DEFINE (
     (Position *)
     scm_gc_malloc (sizeof (Position), "position");
 
-  pos->bars = scm_to_int (bars);
-  pos->beats = scm_to_int (beats);
-  pos->sixteenths = scm_to_int (sixteenths);
-  pos->ticks = scm_to_int (ticks);
-  pos->sub_tick = scm_to_double (sub_tick);
-  position_update_ticks_and_frames (pos);
+  position_init (pos);
+  position_add_bars (pos, scm_to_int (bars) - 1);
+  position_add_beats (
+    pos, scm_to_int (beats) - 1);
+  position_add_sixteenths (
+    pos, scm_to_int (sixteenths) - 1);
+  position_add_ticks (
+    pos, (double) scm_to_int (ticks));
+  position_add_ticks (
+    pos, scm_to_double (sub_tick));
+  position_update_frames_from_ticks (pos);
 
   /* wrap the Position * in a new foreign object
    * and return that object */
@@ -65,7 +73,7 @@ ticks.sub_tick`.")
   Position * refpos = scm_to_pointer (pos);
 
   char buf[120];
-  position_stringize (refpos, buf);
+  position_to_string (refpos, buf);
 
   SCM out_port = scm_current_output_port ();
   scm_display (

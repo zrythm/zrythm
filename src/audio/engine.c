@@ -160,6 +160,11 @@ engine_update_frames_per_tick (
       return;
     }
 
+  g_return_if_fail (
+    beats_per_bar > 0 && bpm > 0 &&
+    sample_rate > 0 &&
+    self->transport->ticks_per_bar > 0);
+
   self->frames_per_tick =
     (((double) sample_rate * 60.0 *
        (double) beats_per_bar) /
@@ -315,7 +320,7 @@ engine_process_events (
                "Optimization needed.");
 
   /*g_usleep (8000);*/
-  /*project_sanity_check (PROJECT);*/
+  /*project_validate (PROJECT);*/
 
   if (num_events > 0)
     {
@@ -839,6 +844,7 @@ engine_new (
       project->audio_engine = self;
     }
 
+  self->sample_rate = 44000;
   self->transport = transport_new (self);
   self->pool = audio_pool_new ();
   self->control_room = control_room_new ();

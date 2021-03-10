@@ -366,7 +366,7 @@ static const cyaml_schema_value_t
  * Checks that everything is okay with the project.
  */
 void
-project_sanity_check (Project * self);
+project_validate (Project * self);
 
 ArrangerSelections *
 project_get_arranger_selections_for_last_selection (

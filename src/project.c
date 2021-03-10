@@ -473,7 +473,7 @@ create_and_set_dir_and_title (
  * Checks that everything is okay with the project.
  */
 void
-project_sanity_check (Project * self)
+project_validate (Project * self)
 {
   g_message ("%s: sanity checking...", __func__);
 
@@ -492,10 +492,10 @@ project_sanity_check (Project * self)
     }
   free (ports);
 
-  tracklist_sanity_check (self->tracklist);
+  tracklist_validate (self->tracklist);
 
   /* TODO add arranger_object_get_all and check
-   * positions (arranger_object_sanity_check) */
+   * positions (arranger_object_validate) */
 
   g_message ("%s: done", __func__);
 }
@@ -1181,7 +1181,7 @@ load (
     }
 
   /* sanity check */
-  project_sanity_check (self);
+  project_validate (self);
 
   engine_setup (self->audio_engine);
 
@@ -1631,7 +1631,7 @@ project_save (
   const bool   show_notification,
   const bool   async)
 {
-  project_sanity_check (self);
+  project_validate (self);
 
   int i, j;
 

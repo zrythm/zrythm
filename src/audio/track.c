@@ -460,7 +460,7 @@ track_clone (
    * during unit tests */
   if (ZRYTHM_TESTING && src_is_project)
     {
-      track_verify_identifiers (track);
+      track_validate (track);
     }
 
   return new_track;
@@ -784,7 +784,7 @@ track_get_velocities_in_range (
  * @return True if pass.
  */
 bool
-track_verify_identifiers (
+track_validate (
   Track * self)
 {
   g_return_val_if_fail (self, false);
@@ -874,7 +874,7 @@ track_verify_identifiers (
       if (ch->instrument)
         {
           g_return_val_if_fail (
-            plugin_verify_identifiers (
+            plugin_validate (
               ch->instrument), false);
         }
     }
@@ -883,9 +883,22 @@ track_verify_identifiers (
   if (atl)
     {
       g_return_val_if_fail (
-        automation_tracklist_verify_identifiers (
+        automation_tracklist_validate (
           atl),
         false);
+    }
+
+  /* verify regions */
+  for (int i = 0; i < self->num_lanes; i++)
+    {
+      TrackLane * lane = self->lanes[i];
+
+      for (int j = 0; j < lane->num_regions; j++)
+        {
+          ZRegion * region = lane->regions[j];
+          region_validate (
+            region, self->is_project);
+        }
     }
 
   g_message ("done");
@@ -1325,7 +1338,9 @@ track_insert_region (
     {
       track = automation_track_get_track (at);
     }
-  g_return_if_fail (IS_TRACK (track));
+  g_return_if_fail (
+    IS_TRACK (track) &&
+    region_validate (region, false));
 
   if (gen_name)
     {

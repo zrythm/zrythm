@@ -784,7 +784,7 @@ add_region_ticks (
     arranger_object_get_region (obj);
   g_return_if_fail (region);
   position_add_ticks (
-    pos, region->pos.total_ticks);
+    pos, region->pos.ticks);
 }
 
 /**
@@ -1934,7 +1934,7 @@ arranger_selections_get_length_in_ticks (
   arranger_selections_get_end_pos (
     self, &p2, F_GLOBAL);
 
-  return p2.total_ticks - p1.total_ticks;
+  return p2.ticks - p1.ticks;
 }
 
 /**
@@ -2046,7 +2046,7 @@ arranger_selections_merge (
   arranger_selections_get_start_pos (
     self, &pos, F_GLOBAL);
   position_from_ticks (
-    &end_pos, pos.total_ticks + ticks_length);
+    &end_pos, pos.ticks + ticks_length);
 
   ArrangerObject * first_obj =
     arranger_selections_get_first_object (self);
@@ -2068,8 +2068,8 @@ arranger_selections_merge (
           ArrangerObject * r_obj = objs[i];
           ZRegion * r = (ZRegion *) r_obj;
           double ticks_diff =
-            r_obj->pos.total_ticks -
-              first_obj->pos.total_ticks;
+            r_obj->pos.ticks -
+              first_obj->pos.ticks;
 
           /* copy all midi notes */
           for (int j = 0; j < r->num_midi_notes;
@@ -2147,8 +2147,8 @@ arranger_selections_merge (
           ArrangerObject * r_obj = objs[i];
           ZRegion * r = (ZRegion *) r_obj;
           double ticks_diff =
-            r_obj->pos.total_ticks -
-              first_obj->pos.total_ticks;
+            r_obj->pos.ticks -
+              first_obj->pos.ticks;
 
           /* copy all chord objects */
           for (int j = 0; j < r->num_chord_objects;
@@ -2182,8 +2182,8 @@ arranger_selections_merge (
           ArrangerObject * r_obj = objs[i];
           ZRegion * r = (ZRegion *) r_obj;
           double ticks_diff =
-            r_obj->pos.total_ticks -
-              first_obj->pos.total_ticks;
+            r_obj->pos.ticks -
+              first_obj->pos.ticks;
 
           /* copy all chord objects */
           for (int j = 0; j < r->num_aps;
@@ -2292,8 +2292,8 @@ arranger_selections_paste_to_pos (
 
       arranger_selections_add_ticks (
         clone_sel,
-        pos->total_ticks -
-          first_obj_pos.total_ticks);
+        pos->ticks -
+          first_obj_pos.ticks);
 
       /* add selections to track */
       for (int i = 0; i < ts->num_regions; i++)
@@ -2346,9 +2346,9 @@ arranger_selections_paste_to_pos (
         clone_sel, region);
       arranger_selections_add_ticks (
         clone_sel,
-        (pos->total_ticks -
-          r_obj->pos.total_ticks) -
-          first_obj_pos.total_ticks);
+        (pos->ticks -
+          r_obj->pos.ticks) -
+          first_obj_pos.ticks);
     }
 
   if (undoable)

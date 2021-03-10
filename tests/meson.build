@@ -193,7 +193,7 @@ if get_option ('tests')
       'actions/mixer_selections_action': {
         parallel: false },
       'actions/port_connection': {
-        parallel: true },
+        parallel: false },
       'actions/tracklist_selections': {
         parallel: false },
       'actions/tracklist_selections_edit': {

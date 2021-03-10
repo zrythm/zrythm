@@ -3929,6 +3929,8 @@ port_get_track (
   const Port * self,
   int   warn_if_fail)
 {
+  g_return_val_if_fail (IS_PORT (self), NULL);
+
   Track * track = NULL;
   if (self->id.track_pos != -1)
     {

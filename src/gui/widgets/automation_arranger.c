@@ -120,8 +120,8 @@ automation_arranger_widget_create_ap (
   Position local_pos;
   position_from_ticks (
     &local_pos,
-    pos->total_ticks -
-    region_obj->pos.total_ticks);
+    pos->ticks -
+    region_obj->pos.ticks);
 
   int height =
     gtk_widget_get_allocated_height (

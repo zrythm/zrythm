@@ -816,8 +816,8 @@ snap_region_r (
       Position tmp;
       position_from_ticks (
         &tmp,
-        r_obj->end_pos.total_ticks -
-          r_obj->pos.total_ticks);
+        r_obj->end_pos.ticks -
+          r_obj->pos.ticks);
       if (position_is_before_or_equal (
             new_pos, &r_obj->fade_in_pos) ||
           position_is_after (new_pos, &tmp))

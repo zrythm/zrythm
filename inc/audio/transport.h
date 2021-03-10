@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -50,6 +50,8 @@ typedef struct AudioEngine AudioEngine;
 #define TRANSPORT_DEFAULT_BPM 140.f
 #define TRANSPORT_DEFAULT_BEATS_PER_BAR 4
 #define TRANSPORT_DEFAULT_BEAT_UNIT BEAT_UNIT_4
+
+#define TIME_SIG (&TRANSPORT->time_sig)
 
 #define PLAYHEAD (&TRANSPORT->playhead_pos)
 #define TRANSPORT_IS_ROLLING \

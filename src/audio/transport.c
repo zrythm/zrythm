@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "audio/marker.h"
 #include "audio/marker_track.h"
 #include "audio/midi_event.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "project.h"
 #include "gui/backend/event.h"
@@ -122,16 +123,43 @@ transport_new (
   transport_set_time_sig (
     self, &self->time_sig);
 
-  /* set positions */
-  position_set_to_bar (&self->playhead_pos, 1);
-  position_set_to_bar (&self->cue_pos, 1);
-  position_set_to_bar (&self->loop_start_pos, 1);
-  position_set_to_bar (&self->loop_end_pos, 5);
-  position_set_to_bar (&self->punch_in_pos, 3);
-  position_set_to_bar (&self->punch_out_pos, 5);
+  g_return_val_if_fail (
+    engine->sample_rate > 0, NULL);
+  engine_update_frames_per_tick (
+    engine, self->time_sig.beats_per_bar, 140,
+    engine->sample_rate);
 
-  position_set_to_bar (&self->range_1, 1);
-  position_set_to_bar (&self->range_2, 1);
+  /* hack to allow setting positions */
+  /*double frames_per_tick_before =*/
+    /*AUDIO_ENGINE->frames_per_tick;*/
+  /*if (math_doubles_equal (*/
+        /*frames_per_tick_before, 0))*/
+    /*{*/
+      /*AUDIO_ENGINE->frames_per_tick = 512;*/
+    /*}*/
+
+  /* set positions */
+  position_init (&self->playhead_pos);
+  position_init (&self->cue_pos);
+  position_init (&self->loop_start_pos);
+
+  double ticks_per_bar =
+    TICKS_PER_QUARTER_NOTE * 4.0;
+  self->loop_end_pos.ticks =
+    5 * ticks_per_bar;
+  self->punch_in_pos.ticks =
+    3 * ticks_per_bar;
+  self->punch_out_pos.ticks =
+    5 * ticks_per_bar;
+
+  self->range_1.ticks = 1 * ticks_per_bar;
+  self->range_2.ticks = 1 * ticks_per_bar;
+
+  /*if (math_doubles_equal (*/
+        /*frames_per_tick_before, 0))*/
+    /*{*/
+      /*AUDIO_ENGINE->frames_per_tick = 0;*/
+    /*}*/
 
   /* create ports */
   self->roll =
@@ -669,17 +697,17 @@ void
 transport_update_position_frames (
   Transport * self)
 {
-  position_update_ticks_and_frames (
+  position_update_frames_from_ticks (
     &self->playhead_pos);
-  position_update_ticks_and_frames (
+  position_update_frames_from_ticks (
     &self->cue_pos);
-  position_update_ticks_and_frames (
+  position_update_frames_from_ticks (
     &self->loop_start_pos);
-  position_update_ticks_and_frames (
+  position_update_frames_from_ticks (
     &self->loop_end_pos);
-  position_update_ticks_and_frames (
+  position_update_frames_from_ticks (
     &self->punch_in_pos);
-  position_update_ticks_and_frames (
+  position_update_frames_from_ticks (
     &self->punch_out_pos);
 }
 
@@ -847,8 +875,8 @@ transport_position_add_frames (
       /* adjust the new frames */
       position_add_ticks (
         pos,
-        self->loop_start_pos.total_ticks -
-          self->loop_end_pos.total_ticks);
+        self->loop_start_pos.ticks -
+          self->loop_end_pos.ticks);
 
       g_warn_if_fail (
         pos->frames < self->loop_end_pos.frames);

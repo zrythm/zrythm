@@ -133,7 +133,7 @@ ruler_marker_widget_update_tooltip (
       int set = 0;
       if (self->type == RULER_MARKER_TYPE_PLAYHEAD)
         {
-          position_stringize (PLAYHEAD, tooltip);
+          position_to_string (PLAYHEAD, tooltip);
           set = 1;
         }
 

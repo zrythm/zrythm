@@ -40,7 +40,7 @@ marker_new (
 
   self->name = g_strdup (name);
   self->type = MARKER_TYPE_CUSTOM;
-  position_set_bar (&obj->pos, 1);
+  position_init (&obj->pos);
 
   arranger_object_init (obj);
 

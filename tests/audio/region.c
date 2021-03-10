@@ -78,10 +78,6 @@ test_region_is_hit ()
   ZRegion * r = fixture->midi_region;
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
-  position_update_ticks_and_frames (
-    &r_obj->pos);
-  position_update_ticks_and_frames (
-    &r_obj->end_pos);
 
   Position pos;
   int ret;
@@ -93,7 +89,7 @@ test_region_is_hit ()
    * Returns true either exclusive or inclusive.
    */
   position_set_to_pos (&pos, &r_obj->pos);
-  position_update_ticks_and_frames (&pos);
+  position_update_frames_from_ticks (&pos);
   ret =
     region_is_hit (r, pos.frames, 0);
   g_assert_cmpint (ret, ==, 1);
@@ -108,7 +104,7 @@ test_region_is_hit ()
    * Returns false either exclusive or inclusive.
    */
   position_set_to_pos (&pos, &r_obj->pos);
-  position_update_ticks_and_frames (&pos);
+  position_update_frames_from_ticks (&pos);
   position_add_frames (&pos, -1);
   ret =
     region_is_hit (r, pos.frames, 0);
@@ -124,7 +120,7 @@ test_region_is_hit ()
    * Returns true for inclusive, false for not.
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
-  position_update_ticks_and_frames (&pos);
+  position_update_frames_from_ticks (&pos);
   ret =
     region_is_hit (r, pos.frames, 0);
   g_assert_cmpint (ret, ==, 0);
@@ -139,7 +135,7 @@ test_region_is_hit ()
    * Returns true for both.
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
-  position_update_ticks_and_frames (&pos);
+  position_update_frames_from_ticks (&pos);
   position_add_frames (&pos, -1);
   ret =
     region_is_hit (r, pos.frames, 0);
@@ -155,7 +151,7 @@ test_region_is_hit ()
    * Returns false for both.
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
-  position_update_ticks_and_frames (&pos);
+  position_update_frames_from_ticks (&pos);
   position_add_frames (&pos, 1);
   ret =
     region_is_hit (r, pos.frames, 0);

@@ -1916,7 +1916,7 @@ return_to_pool:
                "Optimization needed.");
 
   /*g_usleep (8000);*/
-  /*project_sanity_check (PROJECT);*/
+  /*project_validate (PROJECT);*/
 
   return G_SOURCE_CONTINUE;
 }

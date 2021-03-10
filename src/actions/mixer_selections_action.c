@@ -515,7 +515,7 @@ do_or_undo_create_or_delete (
             }
         }
 
-      track_verify_identifiers (track);
+      track_validate (track);
 
       EVENTS_PUSH (ET_PLUGINS_ADDED, track);
     }
@@ -865,7 +865,7 @@ do_or_undo_move_or_copy (
 
 #undef FOREACH_SLOT
 
-      track_verify_identifiers (to_tr);
+      track_validate (to_tr);
 
       if (self->new_channel)
         {
@@ -971,7 +971,7 @@ do_or_undo_move_or_copy (
             F_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
         }
 
-      track_verify_identifiers (from_tr);
+      track_validate (from_tr);
 
       EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, to_ch);
     }

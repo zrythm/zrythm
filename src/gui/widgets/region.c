@@ -281,16 +281,16 @@ draw_loop_points (
     (ArrangerObject *) self;
   Position tmp;
   double loop_start_ticks =
-    obj->loop_start_pos.total_ticks;
+    obj->loop_start_pos.ticks;
   double loop_end_ticks =
-    obj->loop_end_pos.total_ticks;
+    obj->loop_end_pos.ticks;
   g_warn_if_fail (
     loop_end_ticks > loop_start_ticks);
   double loop_ticks =
     arranger_object_get_loop_length_in_ticks (
       obj);
   double clip_start_ticks =
-    obj->clip_start_pos.total_ticks;
+    obj->clip_start_pos.ticks;
 
   /* get x px for loop point */
   position_from_ticks (
@@ -401,12 +401,12 @@ draw_midi_region (
 
   /* draw midi notes */
   double loop_end_ticks =
-    obj->loop_end_pos.total_ticks;
+    obj->loop_end_pos.ticks;
   double loop_ticks =
     arranger_object_get_loop_length_in_ticks (
       obj);
   double clip_start_ticks =
-    obj->clip_start_pos.total_ticks;
+    obj->clip_start_pos.ticks;
 
   int vis_offset_x =
     draw_rect->x - full_rect->x;
@@ -570,11 +570,11 @@ draw_chord_region (
 
   /* draw chords notes */
   double loop_end_ticks =
-    obj->loop_end_pos.total_ticks;
+    obj->loop_end_pos.ticks;
   double loop_ticks =
     arranger_object_get_loop_length_in_ticks (obj);
   double clip_start_ticks =
-    obj->clip_start_pos.total_ticks;
+    obj->clip_start_pos.ticks;
   ChordObject * co;
   ChordObject * next_co = NULL;
   ArrangerObject * next_co_obj = NULL;
@@ -589,7 +589,7 @@ draw_chord_region (
       /* get ratio (0.0 - 1.0) on x where chord
        * starts & ends */
       double co_start_ticks =
-        co_obj->pos.total_ticks;
+        co_obj->pos.ticks;
       double co_end_ticks;
       if (i < self->num_chord_objects - 1)
         {
@@ -598,11 +598,11 @@ draw_chord_region (
           next_co_obj =
             (ArrangerObject *) next_co;
           co_end_ticks =
-            next_co_obj->pos.total_ticks;
+            next_co_obj->pos.ticks;
         }
       else
         co_end_ticks =
-          obj->end_pos.total_ticks;
+          obj->end_pos.ticks;
       double tmp_start_ticks, tmp_end_ticks;
 
       /* adjust for clip start */
@@ -733,11 +733,11 @@ draw_automation_region (
 
   /* draw automation */
   double loop_end_ticks =
-    obj->loop_end_pos.total_ticks;
+    obj->loop_end_pos.ticks;
   double loop_ticks =
     arranger_object_get_loop_length_in_ticks (obj);
   double clip_start_ticks =
-    obj->clip_start_pos.total_ticks;
+    obj->clip_start_pos.ticks;
   AutomationPoint * ap, * next_ap;
   for (int i = 0; i < self->num_aps; i++)
     {
@@ -751,12 +751,12 @@ draw_automation_region (
         (ArrangerObject *) next_ap;
 
       double ap_start_ticks =
-        ap_obj->pos.total_ticks;
+        ap_obj->pos.ticks;
       double ap_end_ticks = ap_start_ticks;
       if (next_ap)
         {
           ap_end_ticks =
-            next_ap_obj->pos.total_ticks;
+            next_ap_obj->pos.ticks;
         }
       double tmp_start_ticks, tmp_end_ticks;
 
@@ -1109,7 +1109,7 @@ draw_audio_part (
 
   long loop_end_frames =
     math_round_double_to_long (
-      obj->loop_end_pos.total_ticks *
+      obj->loop_end_pos.ticks *
       frames_per_tick);
   long loop_frames =
     math_round_double_to_long (
@@ -1118,7 +1118,7 @@ draw_audio_part (
       frames_per_tick);
   long clip_start_frames =
     math_round_double_to_long (
-      obj->clip_start_pos.total_ticks *
+      obj->clip_start_pos.ticks *
       frames_per_tick);
 
   double local_start_x = (double) vis_offset_x;

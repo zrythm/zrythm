@@ -1257,7 +1257,8 @@ test_split ()
     P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    r_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
 
   UndoableAction * ua =
     arranger_selections_action_new_create (
@@ -1276,6 +1277,16 @@ test_split ()
   g_assert_cmpint (
     P_CHORD_TRACK->num_chord_regions, ==, 3);
 
+  Track * track2 =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  TrackLane * lane2 = track2->lanes[3];
+  g_assert_cmpint (
+    lane2->num_regions, ==, 1);
+
+  ZRegion * region2 = lane2->regions[0];
+  region_validate (region2, false);
+
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
@@ -1291,16 +1302,22 @@ test_split ()
     lane->num_regions, ==, 1);
 
   ZRegion * region = lane->regions[0];
-  r_obj =
-    (ArrangerObject *) region;
+  region_validate (region, false);
+  r_obj = (ArrangerObject *) region;
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    r_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
   AudioClip * clip =
     audio_region_get_clip (region);
   float first_frame = clip->frames[0];
   g_assert_true (clip->frames[0] > 0.000001f);
 
+  arranger_object_print (r_obj);
+
   position_set_to_bar (&pos, 2);
+  position_print (&pos);
+  position_add_beats (&pos, 1);
+  position_print (&pos);
   ua =
     arranger_selections_action_new_split (
       (ArrangerSelections *) TL_SELECTIONS, &pos);

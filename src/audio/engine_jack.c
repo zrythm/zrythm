@@ -21,6 +21,8 @@
 
 #ifdef HAVE_JACK
 
+#include <math.h>
+
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
@@ -423,18 +425,19 @@ timebase_cb (
   pos->frame = (jack_nframes_t) PLAYHEAD->frames;
 
   /* BBT */
-  pos->bar = PLAYHEAD->bars;
-  pos->beat = PLAYHEAD->beats;
+  pos->bar = position_get_bars (PLAYHEAD, true);
+  pos->beat = position_get_beats (PLAYHEAD, true);
   pos->tick =
-    PLAYHEAD->sixteenths * TICKS_PER_SIXTEENTH_NOTE +
-    PLAYHEAD->ticks;
+    position_get_sixteenths (PLAYHEAD, true) *
+    TICKS_PER_SIXTEENTH_NOTE +
+    (int) floor (position_get_ticks (PLAYHEAD));
   Position bar_start;
   position_set_to_bar (
-    &bar_start, PLAYHEAD->bars);
+    &bar_start, position_get_bars (PLAYHEAD, true));
   pos->bar_start_tick =
     (double)
-    (PLAYHEAD->total_ticks -
-     bar_start.total_ticks);
+    (PLAYHEAD->ticks -
+     bar_start.ticks);
   pos->beats_per_bar =
     (float) TRANSPORT->time_sig.beats_per_bar;
   pos->beat_type =

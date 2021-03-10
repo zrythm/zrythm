@@ -2880,15 +2880,21 @@ lv2_plugin_process (
           1.0 : 0.0);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_barBeat);
+      int bars =
+        position_get_bars (&start_pos, true);
+      int beats =
+        position_get_beats (&start_pos, true);
+      double ticks =
+        position_get_ticks (&start_pos);
       lv2_atom_forge_float (
         forge,
-        ((float) start_pos.beats - 1) +
-        ((float) start_pos.ticks /
+        ((float) beats - 1) +
+        ((float) ticks /
           (float) TRANSPORT->ticks_per_beat));
       lv2_atom_forge_key (
         forge, PM_URIDS.time_bar);
       lv2_atom_forge_long (
-        forge, start_pos.bars - 1);
+        forge, bars - 1);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatUnit);
       lv2_atom_forge_int (

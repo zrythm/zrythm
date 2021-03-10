@@ -288,9 +288,6 @@ test_project_rebootstrap_timeline (
 {
   test_helper_zrythm_init ();
 
-  bool was_active = AUDIO_ENGINE->activated;
-  engine_activate (AUDIO_ENGINE, false);
-
   /* remove any previous work */
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
@@ -489,7 +486,12 @@ test_project_rebootstrap_timeline (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
 
-  engine_activate (AUDIO_ENGINE, was_active);
+  engine_update_frames_per_tick (
+    AUDIO_ENGINE, TIME_SIG->beats_per_bar,
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    AUDIO_ENGINE->sample_rate);
+
+  test_project_save_and_reload ();
 }
 
 /**

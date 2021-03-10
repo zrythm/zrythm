@@ -533,7 +533,7 @@ arranger_object_is_position_valid (
   g_debug (
     "%s position with ticks %f",
     is_valid ? "Valid" : "Invalid",
-    pos->total_ticks);
+    pos->ticks);
 #endif
 
   return is_valid;
@@ -691,23 +691,48 @@ arranger_object_print (
   const char * type =
     arranger_object_stringize_type (self->type);
 
-  char positions[500];
+  char positions[900];
+  char start_pos_str[100];
+  position_to_string (
+    &self->pos, start_pos_str);
   if (arranger_object_type_has_length (self->type))
     {
-      sprintf (
-        positions, "(%d.%d.%d.%d ~ %d.%d.%d.%d)",
-        self->pos.bars, self->pos.beats,
-        self->pos.sixteenths, self->pos.ticks,
-        self->end_pos.bars, self->end_pos.beats,
-        self->end_pos.sixteenths,
-        self->end_pos.ticks);
+      char end_pos_str[100];
+      position_to_string (
+        &self->end_pos, end_pos_str);
+
+      if (arranger_object_type_can_loop (
+            self->type))
+        {
+          char clip_start_pos_str[100];
+          position_to_string (
+            &self->clip_start_pos,
+            clip_start_pos_str);
+          char loop_start_pos_str[100];
+          position_to_string (
+            &self->loop_start_pos,
+            loop_start_pos_str);
+          char loop_end_pos_str[100];
+          position_to_string (
+            &self->loop_end_pos,
+            loop_end_pos_str);
+          sprintf (
+            positions,
+            "(%s ~ %s | cs: %s ls: %s le: %s)",
+            start_pos_str, end_pos_str,
+            clip_start_pos_str,
+            loop_start_pos_str, loop_end_pos_str);
+        }
+      else
+        {
+          sprintf (
+            positions, "(%s ~ %s)",
+            start_pos_str, end_pos_str);
+        }
     }
   else
     {
-      sprintf (
-        positions, "(%d.%d.%d.%d)",
-        self->pos.bars, self->pos.beats,
-        self->pos.sixteenths, self->pos.ticks);
+      sprintf (positions, "(%s)", start_pos_str);
     }
 
   char * extra_info = NULL;
@@ -938,6 +963,8 @@ init_loaded_region (
       }
       break;
     }
+
+  region_validate (self, false);
 }
 
 /**
@@ -951,8 +978,6 @@ arranger_object_init_loaded (
 
   /* init positions */
   self->magic = ARRANGER_OBJECT_MAGIC;
-
-  g_warn_if_fail (self->pos.sub_tick < 1.0);
 
   switch (self->type)
     {
@@ -979,8 +1004,6 @@ arranger_object_init_loaded (
       /* nothing needed */
       break;
     }
-
-  g_warn_if_fail (self->pos.sub_tick < 1.0);
 }
 
 /**
@@ -998,8 +1021,8 @@ arranger_object_get_length_in_ticks (
     0);
 
   return
-    self->end_pos.total_ticks -
-    self->pos.total_ticks;
+    self->end_pos.ticks -
+    self->pos.ticks;
 }
 
 /**
@@ -1033,8 +1056,8 @@ arranger_object_get_loop_length_in_ticks (
     0);
 
   return
-    self->loop_end_pos.total_ticks -
-    self->loop_start_pos.total_ticks;
+    self->loop_end_pos.ticks -
+    self->loop_start_pos.ticks;
 }
 
 /**
@@ -1054,34 +1077,33 @@ arranger_object_get_loop_length_in_frames (
 }
 
 /**
- * Updates the frames of each position in each child
- * recursively.
+ * Updates the frames of each position in each
+ * child recursively.
  */
 void
 arranger_object_update_frames (
   ArrangerObject * self)
 {
-  position_update_ticks_and_frames (
-    &self->pos);
+  position_update_frames_from_ticks (&self->pos);
   if (arranger_object_type_has_length (self->type))
     {
-      position_update_ticks_and_frames (
+      position_update_frames_from_ticks (
         &self->end_pos);
     }
   if (arranger_object_type_can_loop (self->type))
     {
-      position_update_ticks_and_frames (
+      position_update_frames_from_ticks (
         &self->clip_start_pos);
-      position_update_ticks_and_frames (
+      position_update_frames_from_ticks (
         &self->loop_start_pos);
-      position_update_ticks_and_frames (
+      position_update_frames_from_ticks (
         &self->loop_end_pos);
     }
   if (arranger_object_can_fade (self))
     {
-      position_update_ticks_and_frames (
+      position_update_frames_from_ticks (
         &self->fade_in_pos);
-      position_update_ticks_and_frames (
+      position_update_frames_from_ticks (
         &self->fade_out_pos);
     }
 
@@ -1834,9 +1856,9 @@ find_region (
         &self_obj->pos, &obj->pos))
     {
       char tmp[100];
-      position_stringize (&self_obj->pos, tmp);
+      position_to_string (&self_obj->pos, tmp);
       char tmp2[100];
-      position_stringize (&obj->pos, tmp2);
+      position_to_string (&obj->pos, tmp2);
       g_warning (
         "start positions are not equal: "
         "%s (own) vs %s (project)",
@@ -1847,9 +1869,9 @@ find_region (
          &self_obj->end_pos, &obj->end_pos))
     {
       char tmp[100];
-      position_stringize (&self_obj->end_pos, tmp);
+      position_to_string (&self_obj->end_pos, tmp);
       char tmp2[100];
-      position_stringize (&obj->end_pos, tmp2);
+      position_to_string (&obj->end_pos, tmp2);
       g_warning (
         "end positions are not equal: "
         "%s (own) vs %s (project)",
@@ -2444,7 +2466,7 @@ arranger_object_split (
     {
       position_set_to_pos (&globalp, pos);
       position_add_ticks (
-        &globalp, self->pos.total_ticks);
+        &globalp, self->pos.ticks);
       position_set_to_pos (&localp, pos);
     }
   else
@@ -2457,6 +2479,12 @@ arranger_object_split (
               (ZRegion *) self, globalp.frames, 1);
           position_from_frames (
             &localp, localp_frames);
+
+          g_return_if_fail (
+            position_is_after (
+              &globalp, &self->pos) &&
+            position_is_before (
+              &globalp, &self->end_pos));
         }
       else
         {
@@ -2483,7 +2511,7 @@ arranger_object_split (
   position_set_to_pos (
     &r2_fade_out, &((*r2)->end_pos));
   position_add_ticks (
-    &r2_fade_out, - (*r2)->pos.total_ticks);
+    &r2_fade_out, - (*r2)->pos.ticks);
   arranger_object_set_position (
     *r2, &r2_fade_out,
     ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
@@ -2635,7 +2663,7 @@ arranger_object_unsplit (
   position_set_to_pos (
     &fade_out_pos, &r2->end_pos);
   position_add_ticks (
-    &fade_out_pos, - r2->pos.total_ticks);
+    &fade_out_pos, - r2->pos.ticks);
   arranger_object_set_position (
     *obj, &fade_out_pos,
     ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,

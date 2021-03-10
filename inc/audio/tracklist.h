@@ -258,7 +258,7 @@ tracklist_set_track_pinned (
 
 NONNULL
 void
-tracklist_sanity_check (
+tracklist_validate (
   Tracklist * self);
 
 /**

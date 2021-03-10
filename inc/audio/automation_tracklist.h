@@ -281,7 +281,7 @@ automation_tracklist_get_num_visible (
  * @return True if pass.
  */
 bool
-automation_tracklist_verify_identifiers (
+automation_tracklist_validate (
   AutomationTracklist * self);
 
 void

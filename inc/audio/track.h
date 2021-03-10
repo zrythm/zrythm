@@ -823,7 +823,7 @@ track_fill_events (
  * @return True if pass.
  */
 bool
-track_verify_identifiers (
+track_validate (
   Track * self);
 
 /**

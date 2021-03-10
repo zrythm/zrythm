@@ -1074,7 +1074,7 @@ do_or_undo_edit (
           self->edit_type ==
             EDIT_TRACK_ACTION_TYPE_DIRECT_OUT)
         {
-          track_verify_identifiers (track);
+          track_validate (track);
         }
 
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);

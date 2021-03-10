@@ -35,10 +35,11 @@ test_find_and_queue_metronome ()
    * but sub_tick was not, invalid offsets would
    * be generated */
   {
-    Position play_pos = {
-      .bars = 11, .beats = 1, .sixteenths = 1,
-      .ticks = 0, .sub_tick = 0.26567493534093956 };
-    position_update_ticks_and_frames (&play_pos);
+    Position play_pos;
+    position_set_to_bar (&play_pos, 11);
+    position_add_ticks (
+      &play_pos, 0.26567493534093956);
+    position_update_frames_from_ticks (&play_pos);
     transport_set_playhead_pos (
       TRANSPORT, &play_pos);
     metronome_queue_events (
@@ -74,11 +75,13 @@ test_find_and_queue_metronome ()
    * 4 start_pos.frames 75584 151104 226624 302144
    */
   {
-    Position play_pos = {
-      .bars = 4, .beats = 4, .sixteenths = 4,
-      .ticks = 226,
-      .sub_tick = 0.99682539682544302 };
-    position_update_ticks_and_frames (&play_pos);
+    Position play_pos;
+    position_set_to_bar (&play_pos, 4);
+    position_add_beats (&play_pos, 3);
+    position_add_sixteenths (&play_pos, 3);
+    position_add_ticks (
+      &play_pos, 226.99682539682544302);
+    position_update_frames_from_ticks (&play_pos);
     transport_set_playhead_pos (
     TRANSPORT, &play_pos);
     metronome_queue_events (

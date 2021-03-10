@@ -1682,7 +1682,7 @@ channel_remove_plugin (
       deleting_plugin &&
       !moving_plugin)
     {
-      track_verify_identifiers (channel->track);
+      track_validate (channel->track);
     }
 
   if (recalc_graph)
@@ -1921,7 +1921,7 @@ channel_add_plugin (
        * the move */
       !moving_plugin)
     {
-      track_verify_identifiers (track);
+      track_validate (track);
     }
 
   if (pub_events)

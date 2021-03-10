@@ -145,15 +145,15 @@ add_from_object (
 
         region_get_type_as_string (
           r->id.type, type);
-        position_stringize (
+        position_to_string (
           &obj->pos, start_pos);
-        position_stringize (
+        position_to_string (
           &obj->end_pos, end_pos);
-        position_stringize (
+        position_to_string (
           &obj->clip_start_pos, clip_start);
-        position_stringize (
+        position_to_string (
           &obj->loop_start_pos, loop_start);
-        position_stringize (
+        position_to_string (
           &obj->loop_end_pos, loop_end);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
@@ -175,7 +175,7 @@ add_from_object (
 
         get_event_type_as_string (
           EVENT_VIEWER_ET_MARKER, type);
-        position_stringize (
+        position_to_string (
           &obj->pos, start_pos);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
@@ -199,9 +199,9 @@ add_from_object (
           mn, name, 0);
         get_event_type_as_string (
           EVENT_VIEWER_ET_MIDI_NOTE, type);
-        position_stringize (
+        position_to_string (
           &obj->pos, start_pos);
-        position_stringize (
+        position_to_string (
           &obj->end_pos, end_pos);
         char pitch[10];
         char vel[10];
@@ -229,7 +229,7 @@ add_from_object (
           descr, name);
         get_event_type_as_string (
           EVENT_VIEWER_ET_CHORD_OBJECT, type);
-        position_stringize (
+        position_to_string (
           &obj->pos, start_pos);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
@@ -248,7 +248,7 @@ add_from_object (
         get_event_type_as_string (
           EVENT_VIEWER_ET_AUTOMATION_POINT,
           type);
-        position_stringize (
+        position_to_string (
           &obj->pos, start_pos);
         char index[50];
         sprintf (index, "%d", ap->index);

@@ -7,7 +7,7 @@ The project uses [meson](https://mesonbuild.com), so
 the steps to configure and build are
 
     meson build
-    ninja -C build
+    meson compile -C build
 
 To pass options, use the following syntax
 

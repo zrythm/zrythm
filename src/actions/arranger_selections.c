@@ -680,7 +680,7 @@ arranger_selections_action_new_split (
       self->sel, &self->num_split_objs);
   free (objs);
   self->pos = *pos;
-  position_update_ticks_and_frames (&self->pos);
+  position_update_frames_from_ticks (&self->pos);
 
   UndoableAction * ua = (UndoableAction *) self;
   return ua;

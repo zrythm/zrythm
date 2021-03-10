@@ -213,7 +213,7 @@ _test_port_and_plugin_track_pos_after_duplication (
       TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
 
   g_assert_true (
-    track_verify_identifiers (src_track));
+    track_validate (src_track));
 
   undo_manager_perform (UNDO_MANAGER, ua);
 
@@ -221,9 +221,9 @@ _test_port_and_plugin_track_pos_after_duplication (
     TRACKLIST->tracks[dest_track_pos];
 
   g_assert_true (
-    track_verify_identifiers (src_track));
+    track_validate (src_track));
   g_assert_true (
-    track_verify_identifiers (dest_track));
+    track_validate (dest_track));
 
   /* move automation in 2nd track and undo/redo */
   atl = track_get_automation_tracklist (dest_track);
@@ -358,7 +358,7 @@ _test_undo_track_deletion (
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_true (
-    track_verify_identifiers (helm_track));
+    track_validate (helm_track));
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -379,7 +379,7 @@ _test_undo_track_deletion (
   test_project_save_and_reload ();
 
   g_assert_true (
-    track_verify_identifiers (
+    track_validate (
       TRACKLIST->tracks[TRACKLIST->num_tracks -1]));
 
   /* let the engine run */
@@ -959,7 +959,7 @@ test_ins_track_deletion_w_automation (void)
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_true (
-    track_verify_identifiers (track));
+    track_validate (track));
 
   /* get the filter cutoff automation track */
   at = atl->ats[141];
@@ -1002,7 +1002,7 @@ test_ins_track_deletion_w_automation (void)
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_true (
-    track_verify_identifiers (track));
+    track_validate (track));
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -1010,7 +1010,7 @@ test_ins_track_deletion_w_automation (void)
   track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   g_assert_true (
-    track_verify_identifiers (track));
+    track_validate (track));
 
   /* delete it */
   ua =
@@ -1028,7 +1028,7 @@ test_ins_track_deletion_w_automation (void)
   test_project_save_and_reload ();
 
   g_assert_true (
-    track_verify_identifiers (
+    track_validate (
       TRACKLIST->tracks[TRACKLIST->num_tracks -1]));
 
   /* let the engine run */
@@ -1095,9 +1095,9 @@ _test_move_tracks (
       TRACKLIST_SELECTIONS, 0);
   undo_manager_perform (UNDO_MANAGER, action);
 
-  track_verify_identifiers (
+  track_validate (
     TRACKLIST->tracks[prev_pos]);
-  track_verify_identifiers (
+  track_validate (
     TRACKLIST->tracks[0]);
 
   PluginSetting * setting =
@@ -1211,8 +1211,8 @@ _test_move_tracks (
       &send->dest_l_id, &stereo_in->l->id) &&
     port_identifier_is_equal (
       &send->dest_r_id, &stereo_in->r->id));
-  track_verify_identifiers (ins_track);
-  track_verify_identifiers (fx_track);
+  track_validate (ins_track);
+  track_validate (fx_track);
 
   /* check that the clip editor region is updated */
   ZRegion * clip_editor_region =
@@ -1273,8 +1273,8 @@ _test_move_tracks (
       &send->dest_l_id, &stereo_in->l->id) &&
     port_identifier_is_equal (
       &send->dest_r_id, &stereo_in->r->id));
-  track_verify_identifiers (ins_track);
-  track_verify_identifiers (fx_track);
+  track_validate (ins_track);
+  track_validate (fx_track);
 
   /* check that the stereo out of the audio fx
    * track points to the master track */

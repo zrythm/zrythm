@@ -71,7 +71,7 @@ audio_region_new (
     (ArrangerObject *) self;
 
   g_return_val_if_fail (
-    start_pos && start_pos->bars > 0, NULL);
+    start_pos && start_pos->frames >= 0, NULL);
 
   self->id.type = REGION_TYPE_AUDIO;
   self->pool_id = -1;

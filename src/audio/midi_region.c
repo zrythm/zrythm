@@ -116,7 +116,7 @@ midi_region_new_from_chord_descr (
   Position r_end_pos;
   position_from_ticks (
     &r_end_pos,
-    pos->total_ticks + (double) r_length_ticks);
+    pos->ticks + (double) r_length_ticks);
 
   /* create region */
   ZRegion * r =
@@ -257,9 +257,9 @@ midi_region_get_first_midi_note (
     if (
       !result  ||
       ((ArrangerObject *) result)->
-        end_pos.total_ticks >
+        end_pos.ticks >
       ((ArrangerObject *) region->midi_notes[i])->
-        end_pos.total_ticks)
+        end_pos.ticks)
     {
       result = region->midi_notes[i];
     }
@@ -281,9 +281,9 @@ midi_region_get_last_midi_note (
     if (
       !result ||
       ((ArrangerObject *) result)->
-        end_pos.total_ticks <
+        end_pos.ticks <
       ((ArrangerObject *) region->midi_notes[i])->
-        end_pos.total_ticks)
+        end_pos.ticks)
     {
       result = region->midi_notes[i];
     }
@@ -425,7 +425,7 @@ midi_region_new_from_midi_file (
 
   Position end_pos;
   position_from_ticks (
-    &end_pos, start_pos->total_ticks + 1);
+    &end_pos, start_pos->ticks + 1);
   region_init (
     self, start_pos, &end_pos, track_pos,
     lane_pos, idx_inside_lane);
@@ -463,15 +463,16 @@ midi_region_new_from_midi_file (
           position_from_ticks (&pos, ticks);
           position_from_ticks (
             &global_pos,
-            r_obj->pos.total_ticks + ticks);
+            r_obj->pos.ticks + ticks);
           g_debug (
             "dwAbsPos: %d ", msg.dwAbsPos);
 
+          int bars = position_get_bars (&pos, true);
           if (ZRYTHM_HAVE_UI &&
-              pos.bars > TRANSPORT->total_bars -8)
+              bars > TRANSPORT->total_bars -8)
             {
               transport_update_total_bars (
-                TRANSPORT, pos.bars + 8,
+                TRANSPORT, bars + 8,
                 F_PUBLISH_EVENTS);
             }
 
@@ -988,7 +989,7 @@ midi_region_get_as_events (
 
   double region_start = 0;
   if (add_region_start)
-    region_start = self_obj->pos.total_ticks;
+    region_start = self_obj->pos.ticks;
 
   MidiNote * mn;
   for (int i = 0; i < self->num_midi_notes; i++)

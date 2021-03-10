@@ -269,7 +269,7 @@ tracklist_insert_track (
     }
 
   /* verify */
-  track_verify_identifiers (track);
+  track_validate (track);
 
   if (ZRYTHM_TESTING)
     {
@@ -411,7 +411,7 @@ tracklist_get_track_pos (
 }
 
 void
-tracklist_sanity_check (
+tracklist_validate (
   Tracklist * self)
 {
   for (int i = 0; i < self->num_tracks; i++)
@@ -420,7 +420,7 @@ tracklist_sanity_check (
 
       g_return_if_fail (
         track && track->is_project);
-      track_verify_identifiers (track);
+      track_validate (track);
     }
 }
 
