@@ -46,7 +46,7 @@ main (int    argc,
 
   /* send activate signal */
   zrythm_app =
-    zrythm_app_new (argc, argv);
+    zrythm_app_new (argc, (const char **) argv);
 
   int ret =
     g_application_run (

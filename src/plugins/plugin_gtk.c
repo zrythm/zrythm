@@ -180,14 +180,6 @@ plugin_gtk_on_preset_destroy (
   PluginGtkPresetRecord * record,
   GClosure* closure)
 {
-  switch (record->plugin->setting->descr->protocol)
-    {
-    case PROT_LV2:
-      lilv_node_free ((LilvNode *) record->preset);
-      break;
-    default:
-      break;
-    }
   free (record);
 }
 
@@ -585,9 +577,10 @@ plugin_gtk_create_window (
   gtk_widget_show_all (GTK_WIDGET (plugin->vbox));
 
   /* connect signals */
-  g_signal_connect (
-    plugin->window, "destroy",
-    G_CALLBACK (on_window_destroy), plugin);
+  plugin->destroy_window_id =
+    g_signal_connect (
+      plugin->window, "destroy",
+      G_CALLBACK (on_window_destroy), plugin);
   plugin->delete_event_id =
     g_signal_connect (
       G_OBJECT (plugin->window), "delete-event",
@@ -1694,7 +1687,11 @@ plugin_gtk_close_ui (
   if (pl->window)
     {
       g_signal_handler_disconnect (
+        pl->window, pl->destroy_window_id);
+      pl->destroy_window_id = 0;
+      g_signal_handler_disconnect (
         pl->window, pl->delete_event_id);
+      pl->delete_event_id = 0;
       gtk_widget_set_sensitive (
         GTK_WIDGET (pl->window), 0);
       gtk_window_close (

@@ -217,6 +217,11 @@ typedef struct Plugin
    * or used for packing generic UI controls. */
   GtkBox *          vbox;
 
+  /** ID of the destroy signal for \ref
+   * Plugin.window so that we can
+   * deactivate before freeing the plugin. */
+  gulong            destroy_window_id;
+
   /** ID of the delete-event signal for \ref
    * Plugin.window so that we can
    * deactivate before freeing the plugin. */
