@@ -664,6 +664,7 @@ test_strict_cflags = [
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
+  '-Werror=override-init',
   ]
 
 if cc.get_id() == 'gcc'
@@ -958,7 +959,8 @@ if portaudio_dep.found ()
 endif
 
 rtmidi_dep = dependency (
-  'rtmidi', required: get_option ('rtmidi'),
+  'rtmidi', version: '>= 4.0.0',
+  required: get_option ('rtmidi'),
   static: all_static)
 if not rtmidi_dep.found () and not get_option ('rtmidi').disabled ()
   rtmidi_proj = subproject('rtmidi')
