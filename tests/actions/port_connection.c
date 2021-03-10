@@ -39,6 +39,7 @@
 
 #include <glib.h>
 
+#ifdef HAVE_CARLA
 #ifdef HAVE_AMS_LFO
 static void
 test_modulator_connection (
@@ -234,6 +235,8 @@ _test_port_connection (
             }
         }
     }
+  g_assert_nonnull (src_port1);
+  g_assert_nonnull (src_port2);
   object_zero_and_free_if_nonnull (ports);
 
   Port * dest_port = NULL;
@@ -257,8 +260,6 @@ _test_port_connection (
     }
   object_zero_and_free_if_nonnull (ports);
 
-  g_assert_nonnull (src_port1);
-  g_assert_nonnull (src_port2);
   g_assert_nonnull (dest_port);
   g_assert_true (src_port1->is_project);
   g_assert_true (src_port2->is_project);
@@ -317,7 +318,8 @@ _test_port_connection (
   /* let the engine run */
   g_usleep (1000000);
 }
-#endif
+#endif /* HAVE_AMS_LFO */
+#endif /* HAVE_CARLA */
 
 static void
 test_port_connection (void)
@@ -325,11 +327,13 @@ test_port_connection (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_AMS_LFO
+#ifdef HAVE_CARLA
   _test_port_connection (
     AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
   test_modulator_connection (
     AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
-#endif
+#endif /* HAVE_CARLA */
+#endif /* HAVE_AMS_LFO */
 
   test_helper_zrythm_cleanup ();
 }

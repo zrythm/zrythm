@@ -1004,6 +1004,7 @@ test_create_modulator (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_AMS_LFO
+#ifdef HAVE_CARLA
   /* create a track with an insert */
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
@@ -1035,9 +1036,14 @@ test_create_modulator (void)
   Plugin * p2 =
     P_MODULATOR_TRACK->modulators[
       P_MODULATOR_TRACK->num_modulators - 1];
-  Port * cv_out =
-    plugin_get_port_by_symbol (
-      p1, "outSine");
+  Port * cv_out = NULL;
+  for (int i = 0; i < p1->num_out_ports; i++)
+    {
+      Port * p = p1->out_ports[i];
+      if (p->id.type != TYPE_CV)
+        continue;
+      cv_out = p;
+    }
   Port * ctrl_in =
     plugin_get_port_by_symbol (
       p2, "freq");
@@ -1072,7 +1078,8 @@ test_create_modulator (void)
   mixer_selections_free (sel);
 
   plugin_setting_free (setting);
-#endif
+#endif /* HAVE_CARLA */
+#endif /* HAVE_AMS_LFO */
 
   test_helper_zrythm_cleanup ();
 }

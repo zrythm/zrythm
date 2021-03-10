@@ -488,11 +488,7 @@ new_carla_plugin:
                     &picked_ui, NULL);
                 lilv_uis_free (uis);
 
-                if (needs_bridging &&
-                    /* carla doesn't work with
-                     * CV plugins */
-                    descr->num_cv_ins == 0 &&
-                    descr->num_cv_outs == 0)
+                if (needs_bridging)
                   {
                     goto new_carla_plugin;
                   }
@@ -2246,7 +2242,10 @@ plugin_process_passthrough (
                j++)
             {
               Port * out_port = self->out_ports[j];
-              if (out_port->id.type == TYPE_EVENT)
+              if (out_port->id.type ==
+                    TYPE_EVENT &&
+                  out_port->id.flags &
+                    PORT_FLAG2_SUPPORTS_MIDI)
                 {
                   /* copy */
                   midi_events_append (
@@ -2304,6 +2303,7 @@ plugin_close_ui (
   self->visible = false;
 }
 
+#if 0
 /**
  * Returns the event ports in the plugin.
  *
@@ -2345,6 +2345,7 @@ plugin_get_event_ports (
 
   return index;
 }
+#endif
 
 /**
  * Connect the output Ports of the given source
@@ -2498,14 +2499,18 @@ done2:
     {
       out_port = src->out_ports[i];
 
-      if (out_port->id.type == TYPE_EVENT)
+      if (out_port->id.type == TYPE_EVENT &&
+          out_port->id.flags2 &
+            PORT_FLAG2_SUPPORTS_MIDI)
         {
           for (j = 0;
                j < dest->num_in_ports; j++)
             {
               in_port = dest->in_ports[j];
 
-              if (in_port->id.type == TYPE_EVENT)
+              if (in_port->id.type == TYPE_EVENT &&
+                  in_port->id.flags2 &
+                    PORT_FLAG2_SUPPORTS_MIDI)
                 {
                   port_connect (
                     out_port,
@@ -2541,6 +2546,8 @@ plugin_connect_to_prefader (
           out_port = pl->out_ports[i];
           if (out_port->id.type ==
                 TYPE_EVENT &&
+              out_port->id.flags2 &
+                PORT_FLAG2_SUPPORTS_MIDI &&
               out_port->id.flow ==
                 FLOW_OUTPUT)
             {
@@ -2639,7 +2646,9 @@ plugin_disconnect_from_prefader (
         }
       else if (type == TYPE_EVENT &&
                out_port->id.type ==
-                 TYPE_EVENT)
+                 TYPE_EVENT &&
+               out_port->id.flags2 &
+                 PORT_FLAG2_SUPPORTS_MIDI)
         {
           if (ports_connected (
                 out_port,
@@ -2798,7 +2807,9 @@ done2:
     {
       out_port = src->out_ports[i];
 
-      if (out_port->id.type == TYPE_EVENT)
+      if (out_port->id.type == TYPE_EVENT &&
+          out_port->id.flags2 &
+            PORT_FLAG2_SUPPORTS_MIDI)
         {
           for (j = 0;
                j < dest->num_in_ports; j++)
@@ -2806,7 +2817,9 @@ done2:
               in_port = dest->in_ports[j];
 
               if (in_port->id.type ==
-                    TYPE_EVENT)
+                    TYPE_EVENT &&
+                  in_port->id.flags2 &
+                    PORT_FLAG2_SUPPORTS_MIDI)
                 {
                   port_disconnect (
                     out_port,
@@ -2963,12 +2976,8 @@ plugin_get_port_by_symbol (
 {
   g_return_val_if_fail (
     IS_PLUGIN (pl) &&
-      pl->setting->descr->protocol == PROT_LV2 &&
-      !pl->setting->open_with_carla,
+      pl->setting->descr->protocol == PROT_LV2,
     NULL);
-
-  g_return_val_if_fail (
-    pl->lv2 && pl->lilv_ports, NULL);
 
   for (int i = 0; i < pl->num_in_ports; i++)
     {

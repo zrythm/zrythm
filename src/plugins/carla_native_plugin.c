@@ -714,7 +714,9 @@ carla_native_plugin_process (
            i < self->plugin->num_in_ports; i++)
         {
           port = self->plugin->in_ports[i];
-          if (port->id.type == TYPE_EVENT)
+          if (port->id.type == TYPE_EVENT &&
+              port->id.flags2 &
+                PORT_FLAG2_SUPPORTS_MIDI)
             {
               break;
             }
@@ -1067,6 +1069,8 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_INPUT, name);
+          port->id.flags2 |=
+            PORT_FLAG2_SUPPORTS_MIDI;
           plugin_add_in_port (
             self->plugin, port);
         }
@@ -1077,6 +1081,28 @@ create_ports (
           Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_OUTPUT, name);
+          port->id.flags2 |=
+            PORT_FLAG2_SUPPORTS_MIDI;
+          plugin_add_out_port (
+            self->plugin, port);
+        }
+      for (int i = 0; i < descr->num_cv_ins; i++)
+        {
+          strcpy (tmp, _("CV in"));
+          sprintf (name, "%s %d", tmp, i);
+          Port * port =
+            port_new_with_type (
+              TYPE_CV, FLOW_INPUT, name);
+          plugin_add_in_port (
+            self->plugin, port);
+        }
+      for (int i = 0; i < descr->num_cv_outs; i++)
+        {
+          strcpy (tmp, _("CV out"));
+          sprintf (name, "%s %d", tmp, i);
+          Port * port =
+            port_new_with_type (
+              TYPE_CV, FLOW_OUTPUT, name);
           plugin_add_out_port (
             self->plugin, port);
         }
@@ -1455,7 +1481,9 @@ carla_native_plugin_get_midi_out_port (
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       port = pl->out_ports[i];
-      if (port->id.type == TYPE_EVENT)
+      if (port->id.type == TYPE_EVENT &&
+          port->id.flags2 &
+            PORT_FLAG2_SUPPORTS_MIDI)
         return port;
     }
 

@@ -306,6 +306,9 @@ typedef enum PortFlags2
 
   /** Atom port buffer type is sequence. */
   PORT_FLAG2_SEQUENCE = 1 << 9,
+
+  /** Atom or event port supports MIDI. */
+  PORT_FLAG2_SUPPORTS_MIDI = 1 << 10,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -358,6 +361,7 @@ port_flags2_bitvals[] =
   { .name = "enumeration", .offset = 7, .bits = 1 },
   { .name = "uri_param", .offset = 8, .bits = 1 },
   { .name = "sequence", .offset = 9, .bits = 1 },
+  { .name = "supports_midi", .offset = 10, .bits = 1 },
 };
 
 /**

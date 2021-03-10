@@ -596,6 +596,7 @@ create_port (
       else if (is_event)
         {
           pi->type = TYPE_EVENT;
+          pi->flags2 |= PORT_FLAG2_SUPPORTS_MIDI;
           if (!port->midi_events)
             {
               port->midi_events =
@@ -636,6 +637,14 @@ create_port (
                   pi->flags |=
                     PORT_FLAG_WANT_POSITION;
                   lv2_plugin->want_position = true;
+                }
+              if (lilv_nodes_contains (
+                    atom_supports,
+                    PM_GET_NODE (
+                      LV2_MIDI__MidiEvent)))
+                {
+                  pi->flags2 |=
+                    PORT_FLAG2_SUPPORTS_MIDI;
                 }
               if (lilv_nodes_contains (
                     atom_supports,
