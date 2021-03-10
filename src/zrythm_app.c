@@ -1386,12 +1386,24 @@ convert_project (
     }
   else
     {
-      err_msg =
-        project_decompress (
-          &output, &output_size,
-          PROJECT_DECOMPRESS_DATA,
-          file_to_convert, 0,
-          PROJECT_DECOMPRESS_FILE);
+      if (self->output_file)
+        {
+          err_msg =
+            project_decompress (
+              &self->output_file, NULL,
+              PROJECT_DECOMPRESS_FILE,
+              file_to_convert, 0,
+              PROJECT_DECOMPRESS_FILE);
+        }
+      else
+        {
+          err_msg =
+            project_decompress (
+              &output, &output_size,
+              PROJECT_DECOMPRESS_DATA,
+              file_to_convert, 0,
+              PROJECT_DECOMPRESS_FILE);
+        }
     }
 
   if (err_msg)
@@ -1405,7 +1417,7 @@ convert_project (
     }
   else
     {
-      if (!compress)
+      if (!compress && !self->output_file)
         {
           output =
             realloc (
@@ -1479,7 +1491,7 @@ on_handle_local_options (
       char * filepath = NULL;
       g_variant_dict_lookup (
         opts, "yaml-to-zpj", "^ay", &filepath);
-      convert_project (self, false, filepath);
+      convert_project (self, true, filepath);
     }
   else if (g_variant_dict_contains (
              opts, "zpj-to-yaml"))
@@ -1679,8 +1691,8 @@ add_option_entries (
  */
 ZrythmApp *
 zrythm_app_new (
-  int     argc,
-  char ** argv)
+  int           argc,
+  const char ** argv)
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,

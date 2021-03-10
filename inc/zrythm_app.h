@@ -153,8 +153,8 @@ extern ZrythmApp * zrythm_app;
  */
 ZrythmApp *
 zrythm_app_new (
-  int     argc,
-  char ** argv);
+  int           argc,
+  const char ** argv);
 
 /**
  * Sets the current status and progress percentage
