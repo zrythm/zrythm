@@ -596,6 +596,7 @@ show_plugin_context_menu (
 
   CREATE_WITH_LBL (_("Add to project"));
   new_setting->open_with_carla = false;
+  new_setting->bridge_mode = CARLA_BRIDGE_NONE;
   CONNECT_SIGNAL;
 
 #ifdef HAVE_CARLA
