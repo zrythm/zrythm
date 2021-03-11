@@ -60,8 +60,6 @@
 #include <backtrace.h>
 #if BACKTRACE_SUPPORTED
 #define CAN_USE_LIBBACKTRACE 1
-#else
-#error "backtrace not supported"
 #endif
 #endif
 
