@@ -1103,6 +1103,7 @@ activate_delete (
       PROJECT);
 
   if (sel &&
+      arranger_selections_has_any (sel) &&
       !arranger_selections_contains_undeletable_object (
         sel))
     {

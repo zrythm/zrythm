@@ -163,7 +163,8 @@ tracklist_selections_remove_track (
 void
 tracklist_selections_select_single (
   TracklistSelections * ts,
-  Track *               track);
+  Track *               track,
+  bool                  fire_events);
 
 /**
  * Selects all Track's.

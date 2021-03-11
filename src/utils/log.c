@@ -880,7 +880,8 @@ log_writer (
       if (log_level == G_LOG_LEVEL_CRITICAL)
         {
           ev->backtrace =
-            backtrace_get_with_lines ("", 100);
+            backtrace_get_with_lines (
+              "", 100, true);
         }
 
       int num_avail_objs =

@@ -99,7 +99,8 @@ typedef struct EventManager
       if (zrythm_app->gtk_thread == \
             g_thread_self ()) \
         { \
-          _ev->backtrace = backtrace_get ("", 40); \
+          _ev->backtrace = \
+            backtrace_get ("", 40, false); \
         } \
       /* don't print events that are called \
        * continuously */ \

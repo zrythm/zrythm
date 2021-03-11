@@ -116,7 +116,7 @@ segv_handler (int sig)
     prefix,
     _("Error: %s - Backtrace:\n"), strsignal (sig));
 #endif
-  char * bt = backtrace_get (prefix, 100);
+  char * bt = backtrace_get (prefix, 100, false);
 
   g_warning ("%s", bt);
 

@@ -813,7 +813,8 @@ do_or_undo_move_or_copy (
 
               if (i == 0)
                 tracklist_selections_select_single (
-                  TRACKLIST_SELECTIONS, prj_track);
+                  TRACKLIST_SELECTIONS, prj_track,
+                  F_NO_PUBLISH_EVENTS);
               else
                 tracklist_selections_add_track (
                   TRACKLIST_SELECTIONS, prj_track, 0);
@@ -882,7 +883,8 @@ do_or_undo_move_or_copy (
               if (i == 0)
                 {
                   tracklist_selections_select_single (
-                    TRACKLIST_SELECTIONS, prj_track);
+                    TRACKLIST_SELECTIONS, prj_track,
+                    F_NO_PUBLISH_EVENTS);
                 }
               else
                 {

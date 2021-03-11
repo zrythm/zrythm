@@ -212,7 +212,8 @@ tracklist_selections_clear (
         }
     }
 
-  if (self->is_project)
+  if (self->is_project && ZRYTHM_HAVE_UI &&
+      PROJECT->loaded)
     {
       EVENTS_PUSH (
         ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
@@ -352,8 +353,11 @@ tracklist_selections_remove_track (
     ts->num_tracks,
     track);
 
-  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
-               NULL);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
+    }
 }
 
 int
@@ -393,15 +397,19 @@ tracklist_selections_print (
 void
 tracklist_selections_select_single (
   TracklistSelections * ts,
-  Track *               track)
+  Track *               track,
+  bool                  fire_events)
 {
   tracklist_selections_clear (ts);
 
   tracklist_selections_add_track (
     ts, track, 0);
 
-  EVENTS_PUSH (
-    ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
+    }
 }
 
 /**
@@ -418,7 +426,7 @@ tracklist_selections_select_last_visible (
       TRACKLIST_PIN_OPTION_BOTH, true);
   g_warn_if_fail (track);
   tracklist_selections_select_single (
-    ts, track);
+    ts, track, F_PUBLISH_EVENTS);
 }
 
 static int

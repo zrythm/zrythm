@@ -144,7 +144,7 @@ segv_handler (int sig)
     _("Error: %s - Backtrace:\n"), strsignal (sig));
 #endif
   char * bt =
-    backtrace_get_with_lines (prefix, 100);
+    backtrace_get_with_lines (prefix, 100, true);
 
   /* call the callback to write queued messages
    * and get last few lines of the log, before

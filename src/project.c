@@ -1599,7 +1599,8 @@ project_idle_saved_cb (
         ui_show_notification (_("Project saved."));
     }
 
-  if (ZRYTHM_HAVE_UI)
+  if (ZRYTHM_HAVE_UI && PROJECT->loaded &&
+      MAIN_WINDOW)
     {
       EVENTS_PUSH (ET_PROJECT_SAVED, PROJECT);
     }

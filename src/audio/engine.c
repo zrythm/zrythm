@@ -1074,7 +1074,7 @@ engine_activate (
 
   self->activated = activate;
 
-  if (ZRYTHM_HAVE_UI)
+  if (ZRYTHM_HAVE_UI && PROJECT->loaded)
     {
       EVENTS_PUSH (
         ET_ENGINE_ACTIVATE_CHANGED, NULL);

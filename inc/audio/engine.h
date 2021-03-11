@@ -129,7 +129,8 @@ typedef struct MPMCQueue MPMCQueue;
       _ev->type = et; \
       _ev->arg = (void *) _arg; \
       _ev->uint_arg = _uint_arg; \
-      _ev->backtrace = backtrace_get ("", 40); \
+      _ev->backtrace = \
+        backtrace_get ("", 40, false); \
       g_debug ( \
         "pushing engine event " #et \
         " (%s:%d)", __func__, __LINE__); \

@@ -511,7 +511,8 @@ track_select (
       if (exclusive)
         {
           tracklist_selections_select_single (
-            TRACKLIST_SELECTIONS, self);
+            TRACKLIST_SELECTIONS, self,
+            fire_events);
         }
       else
         {

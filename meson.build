@@ -1033,8 +1033,8 @@ libbacktrace_dep = cc.find_library (
 if not libbacktrace_dep.found ()
   libbacktrace_proj = subproject ('libbacktrace')
   libbacktrace_dep = libbacktrace_proj.get_variable ('libbacktrace_dep')
-  cdata.set ('HAVE_LIBBACKTRACE', 1)
 endif
+cdata.set ('HAVE_LIBBACKTRACE', 1)
 
 # TODO add Cantarell font as dependency
 

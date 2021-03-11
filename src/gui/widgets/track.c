@@ -2276,7 +2276,7 @@ on_drag_begin (GtkGestureDrag *gesture,
             {
               tracklist_selections_select_single (
                 TRACKLIST_SELECTIONS,
-                track);
+                track, F_PUBLISH_EVENTS);
             }
           else if (!ctrl && selected)
             { }

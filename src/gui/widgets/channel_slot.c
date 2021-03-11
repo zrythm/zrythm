@@ -541,7 +541,8 @@ select_plugin (
   if (self->track)
     {
       tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, self->track);
+        TRACKLIST_SELECTIONS, self->track,
+        F_PUBLISH_EVENTS);
     }
 }
 

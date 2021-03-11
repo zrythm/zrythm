@@ -60,6 +60,8 @@
 #include <backtrace.h>
 #if BACKTRACE_SUPPORTED
 #define CAN_USE_LIBBACKTRACE 1
+#else
+#error "backtrace not supported"
 #endif
 #endif
 
@@ -237,7 +239,8 @@ _backtrace_get (
   const char * exe_path,
   const char * prefix,
   int          max_lines,
-  bool         with_lines)
+  bool         with_lines,
+  bool         write_to_file)
 {
   char message[12000];
   char current_line[2000];
@@ -252,22 +255,25 @@ _backtrace_get (
     backtrace_create_state (
       exe_path, true, NULL, NULL);
 
-  char * str_datetime =
-    datetime_get_for_filename ();
-  char * user_bt_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_BACKTRACE);
-  char * backtrace_filepath =
-    g_strdup_printf (
-      "%s%sbacktrace_%s.txt",
-      user_bt_dir, G_DIR_SEPARATOR_S,
-      str_datetime);
-  io_mkdir (user_bt_dir);
-  FILE * f = fopen (backtrace_filepath, "a");
-  backtrace_print (state, 0, f);
-  fclose (f);
-  g_free (str_datetime);
-  g_free (user_bt_dir);
-  g_free (backtrace_filepath);
+  if (write_to_file)
+    {
+      char * str_datetime =
+        datetime_get_for_filename ();
+      char * user_bt_dir =
+        zrythm_get_dir (ZRYTHM_DIR_USER_BACKTRACE);
+      char * backtrace_filepath =
+        g_strdup_printf (
+          "%s%sbacktrace_%s.txt",
+          user_bt_dir, G_DIR_SEPARATOR_S,
+          str_datetime);
+      io_mkdir (user_bt_dir);
+      FILE * f = fopen (backtrace_filepath, "a");
+      backtrace_print (state, 0, f);
+      fclose (f);
+      g_free (str_datetime);
+      g_free (user_bt_dir);
+      g_free (backtrace_filepath);
+    }
 
   backtrace_full (
     state, 0, full_cb, NULL, msg_str);
