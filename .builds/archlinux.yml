@@ -16,6 +16,7 @@ packages:
   - helm-synth
   - help2man
   - jack
+  - jq
   - ladspa
   - lilv
   - libx11
@@ -67,6 +68,8 @@ tasks:
   - run_cppcheck: |
       cd zrythm
       ninja -C build cppcheck
+      # pass for now
+      ninja -C build clang-tidy || true
   - test-optimized-build: |
       cd zrythm
       meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled -Doptimization=3

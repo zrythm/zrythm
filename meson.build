@@ -231,6 +231,8 @@ rubberband = find_program (
   'rubberband', required: false)
 cppcheck = find_program (
   'cppcheck', required: false)
+clang_tidy = find_program (
+  'clang-tidy', required: false)
 jq = find_program ('jq', required: false)
 
 ulimit = find_program (

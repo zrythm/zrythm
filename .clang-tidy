@@ -1,0 +1,9 @@
+---
+# use '-' to disable checks
+Checks:          '-llvm-include-order,-clang-diagnostic-unused-parameter'
+WarningsAsErrors: ''
+FormatStyle:     none
+CheckOptions:
+  - key:             cert-dcl16-c.NewSuffixes
+    value:           'L;LL;LU;LLU'
+...
