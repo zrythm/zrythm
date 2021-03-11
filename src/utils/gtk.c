@@ -454,7 +454,10 @@ z_gtk_button_set_emblem (
           G_THEMED_ICON (prev_icon));
       icon_name =  icon_names[0];
     }
-  g_return_if_fail (icon_name);
+  else
+    {
+      g_return_if_reached ();
+    }
 
   GIcon * icon = g_themed_icon_new (icon_name);
 

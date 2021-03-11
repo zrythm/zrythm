@@ -231,6 +231,7 @@ rubberband = find_program (
   'rubberband', required: false)
 cppcheck = find_program (
   'cppcheck', required: false)
+jq = find_program ('jq', required: false)
 
 ulimit = find_program (
   'tools/check_have_unlimited_memlock.sh')
@@ -1185,21 +1186,13 @@ subdir ('inc')
 subdir ('src')
 subdir ('tests')
 subdir ('doc')
+subdir ('tools')
 
 meson.add_install_script (
   'scripts/meson-post-install.sh')
 
 meson.add_dist_script (
   'scripts/meson_dist.sh')
-
-if cppcheck.found ()
-  run_target (
-    'cppcheck',
-    command : [
-      cppcheck,
-      '--project=' + meson_build_root / 'compile_commands.json',
-      ])
-endif
 
 summary ({
   'Program name': get_option ('program_name'),

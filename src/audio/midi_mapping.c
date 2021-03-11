@@ -292,7 +292,7 @@ midi_mappings_get_for_port (
       if (mapping->dest == dest_port)
         {
           arr =
-            realloc (
+            g_realloc (
               arr,
               (size_t) (*count + 1) *
                 sizeof (MidiMapping *));

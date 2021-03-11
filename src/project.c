@@ -1017,7 +1017,7 @@ load (
 
   /* make string null-terminated */
   yaml =
-    realloc (
+    g_realloc (
       yaml,
       yaml_size + sizeof (char));
   yaml[yaml_size] = '\0';

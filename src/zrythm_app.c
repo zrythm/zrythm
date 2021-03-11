@@ -1420,7 +1420,7 @@ convert_project (
       if (!compress && !self->output_file)
         {
           output =
-            realloc (
+            g_realloc (
               output,
               output_size + sizeof (char));
           output[output_size] = '\0';

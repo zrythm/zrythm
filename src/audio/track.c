@@ -171,17 +171,23 @@ track_init_loaded (
 /**
  * Adds a new TrackLane to the Track.
  */
+NONNULL
 static void
 track_add_lane (
   Track * self,
   int     fire_events)
 {
-  g_return_if_fail (self);
+  g_return_if_fail (IS_TRACK (self));
+
   array_double_size_if_full (
     self->lanes, self->num_lanes,
     self->lanes_size, TrackLane *);
-  self->lanes[self->num_lanes++] =
+  TrackLane * lane =
     track_lane_new (self, self->num_lanes);
+  g_return_if_fail (lane);
+  self->lanes[self->num_lanes] = lane;
+
+  self->num_lanes++;
 
   if (fire_events)
     {
