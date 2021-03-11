@@ -266,6 +266,16 @@ _backtrace_get (
           str_datetime);
       io_mkdir (user_bt_dir);
       FILE * f = fopen (backtrace_filepath, "a");
+      if (!f)
+        {
+          g_message (
+            "failed to open file %s",
+            backtrace_filepath);
+          g_free (str_datetime);
+          g_free (user_bt_dir);
+          g_free (backtrace_filepath);
+          goto call_backtrace_full;
+        }
       backtrace_print (state, 0, f);
       fclose (f);
       g_free (str_datetime);
@@ -273,6 +283,7 @@ _backtrace_get (
       g_free (backtrace_filepath);
     }
 
+call_backtrace_full:
   backtrace_full (
     state, 0, full_cb, NULL, msg_str);
 
