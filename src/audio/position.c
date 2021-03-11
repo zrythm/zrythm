@@ -681,6 +681,7 @@ position_to_string (
   int sixteenths =
     position_get_sixteenths (pos, true);
   double ticks = position_get_ticks (pos);
+  g_return_if_fail (bars > -80000);
   sprintf (
     buf, "%d.%d.%d.%f",
     bars, beats, sixteenths, ticks);
@@ -833,6 +834,10 @@ position_get_bars (
   const Position * pos,
   bool  start_at_one)
 {
+  g_return_val_if_fail (
+    ZRYTHM && PROJECT && TRANSPORT &&
+    TRANSPORT->ticks_per_bar > 0, -1);
+
   double total_bars =
     pos->ticks / TRANSPORT->ticks_per_bar;
   if (total_bars >= 0.0)
@@ -870,6 +875,7 @@ position_get_beats (
   bool  start_at_one)
 {
   g_return_val_if_fail (
+    ZRYTHM && PROJECT && TRANSPORT &&
     TRANSPORT->ticks_per_bar > 0 &&
     TRANSPORT->ticks_per_beat > 0 &&
     TIME_SIG->beats_per_bar > 0, -1);
@@ -915,6 +921,7 @@ position_get_sixteenths (
   bool  start_at_one)
 {
   g_return_val_if_fail (
+    ZRYTHM && PROJECT && TRANSPORT &&
     TRANSPORT->sixteenths_per_beat > 0, -1);
 
   double total_beats =

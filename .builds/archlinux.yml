@@ -91,7 +91,7 @@ tasks:
       meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled -Doptimization=s -Dguile=disabled
       # VM runs out of RAM otherwise
       ninja -C build -j 2
-      meson test -C build
+      meson test -C build || cat build/meson-logs/testlog.txt
   - install-destdir: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install

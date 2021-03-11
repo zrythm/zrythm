@@ -157,6 +157,7 @@ test_print_position ()
   g_debug ("---");
 
   Position pos;
+  position_init (&pos);
   for (int i = 0; i < 2000; i++)
     {
       position_add_ticks (&pos, 2.1);

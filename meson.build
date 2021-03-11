@@ -548,6 +548,8 @@ if get_option ('extra_optimizations')
       '-DPIC',
       '-fdata-sections',
       '-ffunction-sections',
+      '-freciprocal-math',
+      '-fsingle-precision-constant',
       '-mtune=generic',
       '-msse',
       '-msse2',
@@ -565,6 +567,21 @@ if get_option ('extra_optimizations')
       '-fomit-frame-pointer',
       ]
   endif
+endif
+
+if get_option ('extra_extra_optimizations')
+  test_cflags += [
+    '-fallow-store-data-races',
+    '-ffinite-math-only',
+    '-fno-signed-zeros',
+    '-fno-trapping-math',
+    '-ffp-contract=fast',
+    '-fmodulo-sched',
+    ]
+elif get_option ('strict_flags')
+  test_cflags += [
+    '-Werror=double-promotion',
+    ]
 endif
 
 if get_option ('extra_debug_info')
@@ -594,7 +611,6 @@ test_strict_cflags = [
   '-Werror=clobbered',
   #'-Werror=conversion',
   '-Werror=disabled-optimization',
-  '-Werror=double-promotion',
   '-Werror=float-equal',
   '-Werror=logical-op',
   '-Werror=pointer-arith',
@@ -1212,6 +1228,7 @@ summary ({
   'Strict flags': get_option ('strict_flags'),
   'Static deps': get_option ('static_deps'),
   'Extra optimizations': get_option ('extra_optimizations'),
+  'Extra extra optimizations': get_option ('extra_extra_optimizations'),
   'Build/install manpage': get_option ('manpage'),
   'Build/install user manual': get_option ('user_manual'),
   'Install DSEG font': get_option ('dseg_font'),
