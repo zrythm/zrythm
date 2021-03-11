@@ -330,12 +330,16 @@ on_closed (
     channel_get_output_track (ch);
 
   Track * own_track = channel_get_track (ch);
+  g_return_if_fail (
+    IS_TRACK_AND_NONNULL (own_track));
   Track * own_track_clone =
     track_clone (own_track, F_PROJECT);
+  g_return_if_fail (
+    IS_TRACK_AND_NONNULL (own_track_clone));
   TracklistSelections * sel =
     tracklist_selections_new (false);
   tracklist_selections_add_track (
-    sel, own_track_clone, F_PUBLISH_EVENTS);
+    sel, own_track_clone, F_NO_PUBLISH_EVENTS);
 
   /* if new track selected, update routing */
   if (self->new_track)

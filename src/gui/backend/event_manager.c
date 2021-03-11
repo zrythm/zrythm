@@ -994,8 +994,10 @@ on_arranger_object_removed (
 }
 
 static void
-on_track_changed (Track * track)
+on_track_changed (
+  Track * track)
 {
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   if (GTK_IS_WIDGET (track->widget))
     {
       gtk_widget_set_visible (
