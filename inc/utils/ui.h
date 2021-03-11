@@ -216,7 +216,14 @@ typedef struct UiCaches
     ui_show_message_full ( \
       GTK_WINDOW (win), \
       GTK_MESSAGE_ERROR, \
-      msg);
+      "%s", msg);
+
+/**
+ * Type can be GTK_MESSAGE_ERROR, etc.
+ */
+#define ui_show_message_printf(win,type,fmt,...) \
+  ui_show_message_full ( \
+    GTK_WINDOW (win), type, fmt, __VA_ARGS__)
 
 #define ui_is_widget_revealed(widget) \
   (gtk_widget_get_allocated_height ( \
@@ -485,9 +492,10 @@ ui_on_motion_set_status_bar_text_cb (
  */
 void
 ui_show_message_full (
-  GtkWindow * parent_window,
+  GtkWindow *    parent_window,
   GtkMessageType type,
-  const char * message);
+  const char *   format,
+  ...);
 
 /**
  * Returns if \ref rect is hit or not by the

@@ -375,6 +375,22 @@ track_type_has_channel (
 }
 
 /**
+ * Returns whether the track type is deletable
+ * by the user.
+ */
+bool
+track_type_is_deletable (
+  TrackType type)
+{
+  return
+    type != TRACK_TYPE_MASTER &&
+    type != TRACK_TYPE_TEMPO &&
+    type != TRACK_TYPE_CHORD &&
+    type != TRACK_TYPE_MODULATOR &&
+    type != TRACK_TYPE_MARKER;
+}
+
+/**
  * Clones the track and returns the clone.
  *
  * @bool src_is_project Whether \ref track is a

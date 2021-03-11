@@ -137,9 +137,9 @@ live_waveform_draw_cb (
   switch (self->type)
     {
     case LIVE_WAVEFORM_ENGINE:
-      if (!P_MASTER_TRACK)
-        return FALSE;
-
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (P_MASTER_TRACK),
+        false);
       if (!P_MASTER_TRACK->channel->stereo_out->l->
             write_ring_buffers)
         {

@@ -151,14 +151,21 @@ void
 ui_show_message_full (
   GtkWindow *    parent_window,
   GtkMessageType type,
-  const char *   message)
+  const char *   format,
+  ...)
 {
+  va_list args;
+  va_start (args, format);
+
+  static char buf[40000];
+  vsprintf (buf, format, args);
+
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;
   GtkWidget * dialog =
     gtk_message_dialog_new (
       parent_window, flags, type,
-      GTK_BUTTONS_CLOSE, "%s", message);
+      GTK_BUTTONS_CLOSE, "%s", buf);
   gtk_window_set_title (
     GTK_WINDOW (dialog), PROGRAM_NAME);
   gtk_window_set_icon_name (
@@ -170,6 +177,8 @@ ui_show_message_full (
     }
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
+
+  va_end (args);
 }
 
 /**

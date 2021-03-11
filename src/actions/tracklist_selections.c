@@ -78,6 +78,27 @@ copy_track_positions (
 }
 
 /**
+ * Validates the newly-created action.
+ */
+static bool
+validate (
+  TracklistSelectionsAction * self)
+{
+  if (self->type ==
+        TRACKLIST_SELECTIONS_ACTION_DELETE)
+    {
+      if (!self->tls_before ||
+          tracklist_selections_contains_undeletable_track (
+            self->tls_before))
+        {
+          return false;
+        }
+    }
+
+  return true;
+}
+
+/**
  * Creates a new TracklistSelectionsAction.
  *
  * @param tls Tracklist selections to act upon.
@@ -279,6 +300,8 @@ tracklist_selections_action_new (
     {
       self->new_txt = g_strdup (new_txt);
     }
+
+  g_return_val_if_fail (validate (self), NULL);
 
   return ua;
 }

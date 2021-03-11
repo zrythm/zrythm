@@ -1529,11 +1529,23 @@ activate_delete_selected_tracks (
 {
   g_message ("deleting selected tracks");
 
-  UndoableAction * ua =
-    tracklist_selections_action_new_delete (
-      TRACKLIST_SELECTIONS);
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  if (tracklist_selections_contains_undeletable_track (
+        TRACKLIST_SELECTIONS))
+    {
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        "%s",
+        _("The track selection contains a track "
+        "that cannot be deleted"));
+    }
+  else
+    {
+      UndoableAction * ua =
+        tracklist_selections_action_new_delete (
+          TRACKLIST_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
 }
 
 void

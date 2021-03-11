@@ -142,6 +142,10 @@ tracklist_selections_handle_click (
   bool    shift,
   bool    dragged);
 
+bool
+tracklist_selections_contains_undeletable_track (
+  TracklistSelections * self);
+
 /**
  * Returns if the Track is selected or not.
  */

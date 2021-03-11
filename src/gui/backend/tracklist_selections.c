@@ -360,6 +360,23 @@ tracklist_selections_remove_track (
     }
 }
 
+bool
+tracklist_selections_contains_undeletable_track (
+  TracklistSelections * self)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (!track_type_is_deletable (track->type))
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
 int
 tracklist_selections_contains_track (
   TracklistSelections * self,

@@ -605,6 +605,15 @@ track_get_type_from_plugin_descriptor (
   PluginDescriptor * descr);
 
 /**
+ * Returns whether the track type is deletable
+ * by the user.
+ */
+NONNULL
+bool
+track_type_is_deletable (
+  TrackType type);
+
+/**
  * Returns the full visible height (main height +
  * height of all visible automation tracks + height
  * of all visible lanes).
