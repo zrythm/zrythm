@@ -501,6 +501,9 @@ test_cflags = [
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   ]
 
+# Stricter flags to be used where needed
+test_strict_cflags = []
+
 # add attribute macros
 attributes = [
   'const', 'cold', 'hot', 'pure', 'nonnull',
@@ -578,10 +581,6 @@ if get_option ('extra_extra_optimizations')
     '-ffp-contract=fast',
     '-fmodulo-sched',
     ]
-elif get_option ('strict_flags')
-  test_cflags += [
-    '-Werror=double-promotion',
-    ]
 endif
 
 if get_option ('extra_debug_info')
@@ -606,7 +605,7 @@ elif os_windows
     ]
 endif
 
-test_strict_cflags = [
+test_strict_cflags += [
   #'-Werror=cast-qual',
   '-Werror=clobbered',
   #'-Werror=conversion',
@@ -619,6 +618,7 @@ test_strict_cflags = [
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
   '-Werror=int-to-pointer-cast',
+  #'-Werror=double-promotion',
   #'-Werror=redundant-decls',
   '-Werror=shadow',
   '-Werror=undef',
@@ -1223,7 +1223,8 @@ meson.add_dist_script (
 
 summary ({
   'Program name': get_option ('program_name'),
-  'Build type': get_option ('buildtype'),
+  'Debug': get_option ('debug'),
+  'Optimization': get_option ('optimization'),
   'Profiling': get_option ('profiling'),
   'Strict flags': get_option ('strict_flags'),
   'Static deps': get_option ('static_deps'),
