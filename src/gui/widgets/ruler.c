@@ -619,6 +619,11 @@ get_clip_start_rect (
   RulerWidget *  self,
   GdkRectangle * rect)
 {
+  /* TODO these were added to fix unused
+   * warnings - check again if valid */
+  rect->x = 0;
+  rect->y = 0;
+
   if (self->type == TYPE (EDITOR))
     {
       ZRegion * region =

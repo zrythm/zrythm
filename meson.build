@@ -1028,6 +1028,14 @@ if have_valgrind
   cdata.set ('HAVE_VALGRIND', 1)
 endif
 
+libbacktrace_dep = cc.find_library (
+  'backtrace', required: false)
+if not libbacktrace_dep.found ()
+  libbacktrace_proj = subproject ('libbacktrace')
+  libbacktrace_dep = libbacktrace_proj.get_variable ('libbacktrace_dep')
+  cdata.set ('HAVE_LIBBACKTRACE', 1)
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1063,6 +1071,7 @@ zrythm_deps = [
   gtksource_dep,
   lsp_dsp_dep,
   valgrind_dep,
+  libbacktrace_dep,
 
   libm,
 ]

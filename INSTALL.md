@@ -48,6 +48,7 @@ with meaningful stack traces and bug reports.
 - gtksourceview (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - libaudec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
+- libbacktrace (3-Clause BSD): <https://github.com/ianlancetaylor/libbacktrace>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
 - reproc (Expat): <https://github.com/DaanDeMeyer/reproc>

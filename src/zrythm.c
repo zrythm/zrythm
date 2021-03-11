@@ -509,6 +509,11 @@ zrythm_get_dir (
             g_build_filename (
               user_dir, "gdb", NULL);
           break;
+        case ZRYTHM_DIR_USER_BACKTRACE:
+          res =
+            g_build_filename (
+              user_dir, "backtraces", NULL);
+          break;
         default:
           break;
         }
