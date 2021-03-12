@@ -185,6 +185,7 @@ if get_option ('tests')
     'utils/io': { parallel: true },
     'utils/string': { parallel: true },
     'utils/ui': { parallel: true },
+    'utils/yaml': { parallel: true },
     'zrythm_app': { parallel: true },
     'zrythm': { parallel: true },
     }

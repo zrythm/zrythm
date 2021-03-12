@@ -1,4 +1,3 @@
 [wrap-git]
-url = https://git.zrythm.org/git/zrythm-cyaml
-revision = 4d488780893b24cfd30d990291358cd45b60cfff
-
+url = https://git.sr.ht/~alextee/zrythm-libcyaml
+revision = load_floats_from_doubles
