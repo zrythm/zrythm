@@ -129,9 +129,11 @@ void
 fader_buttons_widget_block_signal_handlers (
   FaderButtonsWidget * self)
 {
+#if 0
   g_debug (
     "blocking signal handlers for %s...",
     self->track->name);
+#endif
 
   g_signal_handler_block (
     self->mono_compat,
@@ -151,9 +153,11 @@ void
 fader_buttons_widget_unblock_signal_handlers (
   FaderButtonsWidget * self)
 {
+#if 0
   g_debug (
     "unblocking signal handlers for %s...",
     self->track->name);
+#endif
 
   g_signal_handler_unblock (
     self->mono_compat,

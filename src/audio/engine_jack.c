@@ -195,7 +195,11 @@ sample_rate_cb (
 
   /* if engine not activated then handle
    * immediately, otherwise push to queue */
-  if (self->activated)
+  if (g_thread_self () == zrythm_app->gtk_thread)
+    {
+      engine_process_events (self);
+    }
+  else
     {
       /* wait for gtk thread to process all events */
       gint64 cur_time = g_get_monotonic_time ();
@@ -208,10 +212,6 @@ sample_rate_cb (
             "-------- waiting sample rate change");
           g_usleep (1000);
         }
-    }
-  else
-    {
-      engine_process_events (self);
     }
 
 #if 0

@@ -72,7 +72,7 @@ Once the program is built, it will need to be
 installed the first time before it can run (to
 install the [GSettings](https://developer.gnome.org/gio/stable/GSettings.html) among other things).
 
-    ninja -C build install
+    meson install -C build
 
 If you don't want to install anything permanent on
 your system, you can install it somewhere

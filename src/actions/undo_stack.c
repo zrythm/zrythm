@@ -117,7 +117,8 @@ undo_stack_new (void)
  */
 char *
 undo_stack_get_as_string (
-  UndoStack * self)
+  UndoStack * self,
+  int         limit)
 {
   GString * g_str = g_string_new (NULL);
 
@@ -133,6 +134,9 @@ undo_stack_get_as_string (
         g_str, "[%d] %s\n",
         stack->top - i, action_str);
       g_free (action_str);
+
+      if (stack->top - i == limit)
+        break;
     }
 
   return g_string_free (g_str, false);

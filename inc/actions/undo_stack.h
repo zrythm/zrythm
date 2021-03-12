@@ -155,7 +155,8 @@ undo_stack_new (void);
  */
 char *
 undo_stack_get_as_string (
-  UndoStack * self);
+  UndoStack * self,
+  int         limit);
 
 /* --- start wrappers --- */
 
