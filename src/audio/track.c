@@ -2739,7 +2739,7 @@ track_activate_all_plugins (
           track->channel->inserts[
             i - (STRIP_SIZE + 1)];
 
-      if (pl)
+      if (pl && pl->instantiated)
         {
           plugin_activate (pl, activate);
         }
