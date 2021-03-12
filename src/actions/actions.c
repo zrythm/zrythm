@@ -1098,8 +1098,6 @@ activate_delete (
 {
   g_message ("%s", __func__);
 
-  g_critical ("test");
-
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
       PROJECT);
