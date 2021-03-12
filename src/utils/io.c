@@ -353,6 +353,7 @@ append_files_from_dir_ending_in (
 
       g_free (full_path);
     }
+  g_dir_close (dir);
 
   /* NULL terminate */
   (*files)[*num_files] = NULL;
