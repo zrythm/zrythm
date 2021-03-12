@@ -143,7 +143,11 @@ rtmidi_device_get_id_from_name (
       rtmidi_device_free (dev);
     }
 
-  g_return_val_if_reached (-1);
+  g_warning (
+    "could not find RtMidi device with name %s",
+    name);
+
+  return -1;
 }
 
 /**

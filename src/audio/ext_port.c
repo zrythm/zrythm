@@ -214,6 +214,13 @@ ext_port_activate (
                 rtmidi_device_new (
                   true, self->full_name,
                   0, self->port);
+              if (!self->rtmidi_dev)
+                {
+                  g_warning (
+                    "Failed creating RtMidi device "
+                    "for %s", self->full_name);
+                  return;
+                }
               ret =
                 rtmidi_device_open (
                   self->rtmidi_dev, true);
