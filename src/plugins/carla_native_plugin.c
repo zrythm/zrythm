@@ -1535,6 +1535,15 @@ carla_native_plugin_save_state (
   CarlaNativePlugin * self,
   bool                is_backup)
 {
+  if (!self->plugin->instantiated)
+    {
+      g_debug (
+        "plugin %s not instantiated, skipping %s",
+        self->plugin->setting->descr->name,
+        __func__);
+      return 0;
+    }
+
   char * abs_state_dir =
     plugin_get_abs_state_dir (
       self->plugin, is_backup);
