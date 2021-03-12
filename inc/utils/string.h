@@ -124,6 +124,16 @@ string_remove_until_after_first_match (
   const char * str,
   const char * match);
 
+/**
+ * Replaces @ref src_str with @ref replace_str in
+ * all instances matched by @ref regex.
+ */
+void
+string_replace_regex (
+  char **      str,
+  const char * regex,
+  const char * replace_str);
+
 char *
 string_replace (
   const char * str,

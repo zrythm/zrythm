@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,11 +19,13 @@
 
 #include <string.h>
 
+#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
 
 #include <pcre.h>
+#include <regex.h>
 
 int
 string_is_ascii (const char * string)
@@ -234,6 +236,119 @@ string_remove_until_after_first_match (
   char * part = g_strdup (parts[1]);
   g_strfreev (parts);
   return part;
+}
+
+/**
+ * Replaces @ref str with @ref replace_str in
+ * all instances matched by @ref regex.
+ */
+void
+string_replace_regex (
+  char **      str,
+  const char * regex,
+  const char * replace_str)
+{
+  /* edited from https://stackoverflow.com/questions/8044081/how-to-do-regex-string-replacements-in-pure-c */
+  regex_t reg;
+
+  /* if regex can't commpile pattern, do nothing */
+  if (regcomp (&reg, regex, REG_EXTENDED))
+    {
+      g_warning (
+        "Could not compile regex: %s", regex);
+    }
+
+  /* return if no matches */
+  if (reg.re_nsub == 0)
+    {
+      g_debug ("no matches");
+      return;
+    }
+
+  /* count back references in replace_str */
+  int br = 0;
+  const char * p = replace_str;
+  while (1)
+    {
+      /* skip non-control chars */
+      while (*p > 31 || *p > 8)
+        {
+          p++;
+        }
+
+      if (*p)
+        {
+          br++;
+          p++;
+        }
+      else
+        {
+          break;
+        }
+    }
+  /*g_debug ("num back references: %d", br);*/
+
+  size_t nmatch = reg.re_nsub;
+  regmatch_t m[nmatch + 1];
+  memset (
+    &m, 0, sizeof (regmatch_t) * (nmatch + 1));
+
+  /* look for matches and replace */
+  while (!regexec (
+            &reg, *str, nmatch + 1, m, 0))
+    {
+      /*g_debug ("match");*/
+
+      /* make enough room */
+      char * new =
+        object_new_n (
+          strlen (*str) +
+            (size_t) (m[0].rm_eo - m[0].rm_so) + 1,
+          char);
+      new[0] = '\0';
+
+      const char * rpl = replace_str;
+      p = replace_str;
+
+      /* append the full match */
+      strncat (new, *str, (size_t) m[0].rm_so);
+
+      /* go through each back reference */
+      for (int k = 0; k < br; k++)
+        {
+          /* skip printable char */
+          while (*p > 16)
+            {
+              p++;
+            }
+
+          /* back reference (e.g., \1, \2,
+           * ...) */
+          int c = *p;
+
+          /* add head of rpl */
+          strncat (new, rpl, (size_t) (p - rpl));
+
+          /* concat match */
+          strncat (
+            new, *str + m[c].rm_so,
+            (size_t) (m[c].rm_eo - m[c].rm_so));
+
+          /* skip back reference, next match */
+          rpl = p++;
+        }
+
+      /* trailing of rpl */
+      strcat (new, p);
+
+      /* trailing text in *str */
+      strcat (new, *str + m[0].rm_eo);
+      free (*str);
+      *str = strdup (new);
+      free (new);
+    }
+  /* ajust size */
+  *str = g_realloc (*str, strlen (*str) + 1);
 }
 
 char *

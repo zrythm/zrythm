@@ -143,6 +143,39 @@ test_copy_w_realloc ()
     string_is_equal (str, "[Zrythm] Enabled"));
 }
 
+static void
+test_replace_regex (void)
+{
+  const char * replace_str, * regex;
+  char * src_str;
+
+  replace_str = "---\1---";
+  regex = "(abc)+\\1";
+  src_str = g_strdup ("abcabc");
+  string_replace_regex (
+    &src_str, regex, replace_str);
+  g_assert_cmpstr (
+    src_str, ==, "---abc---");
+
+  replace_str = "\1";
+  regex = "(\\?\\?\\?\n)+\\1";
+  src_str =
+    g_strdup ("???\n???\n???\n???\n??? abc");
+  string_replace_regex (
+    &src_str, regex, replace_str);
+  g_assert_cmpstr (
+    src_str, ==, "???\n??? abc");
+
+  replace_str = "???\n";
+  regex = "(\\?\\?\\?\n)+\\1";
+  src_str =
+    g_strdup ("???\n???\n???\n???\n??? abc");
+  string_replace_regex (
+    &src_str, regex, replace_str);
+  g_assert_cmpstr (
+    src_str, ==, "???\n??? abc");
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -150,6 +183,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/utils/general/"
 
+  g_test_add_func (
+    TEST_PREFIX "test replace regex",
+    (GTestFunc) test_replace_regex);
   g_test_add_func (
     TEST_PREFIX "test get int after last space",
     (GTestFunc) test_get_int_after_last_space);
