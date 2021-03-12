@@ -39,7 +39,7 @@ function init()
   readonly PROJECT_DIR=${PWD}
 
   # files to modify
-  readonly VERSION_FILE=meson.build
+  readonly VERSION_FILE=VERSION
   readonly CHANGELOG_FILE=CHANGELOG.md
 
   # detect commit to staging or packaging branch
