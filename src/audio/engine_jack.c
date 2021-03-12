@@ -189,28 +189,29 @@ sample_rate_cb (
     &AUDIO_ENGINE->changing_sample_rate, 1);
 #endif
 
+  ENGINE_EVENTS_PUSH (
+    AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE,
+    NULL, nframes);
+
   /* if engine not activated then handle
    * immediately, otherwise push to queue */
   if (self->activated)
     {
-      ENGINE_EVENTS_PUSH (
-        AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE,
-        NULL, nframes);
-
       /* wait for gtk thread to process all events */
       gint64 cur_time = g_get_monotonic_time ();
       while (
-        cur_time > AUDIO_ENGINE->last_events_process_started ||
-        cur_time > AUDIO_ENGINE->last_events_processed)
+        cur_time >
+          self->last_events_process_started ||
+        cur_time > self->last_events_processed)
         {
-          g_message ("-------- waiting sample rate change");
+          g_message (
+            "-------- waiting sample rate change");
           g_usleep (1000);
         }
     }
   else
     {
-      engine_jack_handle_sample_rate_change (
-        self, nframes);
+      engine_process_events (self);
     }
 
 #if 0

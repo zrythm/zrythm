@@ -121,7 +121,7 @@ refresh_undo_or_redo_button (
                 &stack->stack->top) - i];
 
           char * action_str =
-            undoable_action_stringize (ua);
+            undoable_action_to_string (ua);
 
           GtkWidget * menuitem =
             gtk_menu_item_new_with_label (

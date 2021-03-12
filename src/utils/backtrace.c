@@ -50,6 +50,7 @@
 #include "utils/backtrace.h"
 #include "utils/datetime.h"
 #include "utils/io.h"
+#include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -215,8 +216,10 @@ full_cb (
         state, pc, syminfo_cb, NULL, msg_str);
     }
 
+  /*g_string_append_printf (*/
+    /*msg_str, " [%lu]\n", pc);*/
   g_string_append_printf (
-    msg_str, " [%lu]\n", pc);
+    msg_str, "%s", "\n");
 
   return 0;
 }
@@ -287,7 +290,13 @@ call_backtrace_full:
   backtrace_full (
     state, 0, full_cb, NULL, msg_str);
 
-  return g_string_free (msg_str, false);
+  /* replace multiple instances of ??? with a single
+   * one */
+  char * bt_str = g_string_free (msg_str, false);
+  string_replace_regex (
+    &bt_str, "(\\?\\?\\?\n)+\\1", "\1");
+
+  return bt_str;
 
 #elif defined (_WOE32)
   unsigned int   i;

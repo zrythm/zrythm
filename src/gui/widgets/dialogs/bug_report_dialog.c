@@ -19,7 +19,10 @@
 
 #include "zrythm-config.h"
 
+#include "actions/undo_manager.h"
+#include "actions/undo_stack.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/log.h"
 #include "zrythm.h"
@@ -45,7 +48,10 @@ bug_report_dialog_new (
       NULL);
 
   char * log =
-    log_get_last_n_lines (LOG, 80);
+    log_get_last_n_lines (LOG, 60);
+  char * undo_stack =
+    undo_stack_get_as_string (
+      UNDO_MANAGER->undo_stack);
 
   /* %23 is hash, %0A is new line */
   char ver_with_caps[2000];
@@ -64,8 +70,9 @@ bug_report_dialog_new (
       "# Other info\n"
       "> Context, distro, etc.\n\n"
       "# Backtrace\n```\n%s```\n\n"
+      "# Action stack\n```\n%s```\n\n"
       "# Log\n```\n%s```",
-      ver_with_caps, backtrace, log);
+      ver_with_caps, backtrace, undo_stack, log);
   char * report_template_escaped =
     g_markup_escape_text (report_template, -1);
   char * report_template_escaped_for_uri =
@@ -128,6 +135,8 @@ bug_report_dialog_new (
   g_free (markup);
   g_free (report_template_escaped);
   g_free (report_template_escaped_for_uri);
+  g_free (log);
+  g_free (undo_stack);
 
   return dialog;
 }

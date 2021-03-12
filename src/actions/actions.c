@@ -1096,7 +1096,9 @@ activate_delete (
   GVariant      * variant,
   gpointer        user_data)
 {
-  g_message ("activaging delete");
+  g_message ("%s", __func__);
+
+  g_critical ("test");
 
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (

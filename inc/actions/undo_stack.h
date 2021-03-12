@@ -150,8 +150,11 @@ undo_stack_init_loaded (
 UndoStack *
 undo_stack_new (void);
 
-void
-undo_stack_free (
+/**
+ * Gets the list of actions as a string.
+ */
+char *
+undo_stack_get_as_string (
   UndoStack * self);
 
 /* --- start wrappers --- */
@@ -197,6 +200,10 @@ void
 undo_stack_clear (
   UndoStack * self,
   bool        free);
+
+void
+undo_stack_free (
+  UndoStack * self);
 
 /**
  * @}

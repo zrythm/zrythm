@@ -726,6 +726,16 @@ log_idle_cb (
               gtk_dialog_run (GTK_DIALOG (dialog));
               gtk_widget_destroy (dialog);
             }
+
+          /* write the backtrace to the log after
+           * showing the popup (if any) */
+          if (self->logfile)
+            {
+              g_fprintf (
+                self->logfile, "%s\n",
+                ev->backtrace);
+              fflush (self->logfile);
+            }
         }
 
       if (ev->log_level ==
@@ -739,6 +749,7 @@ log_idle_cb (
             ET_LOG_WARNING_STATE_CHANGED, NULL);
         }
 
+      g_free_and_null (ev->backtrace);
       g_free_and_null (ev->message);
       object_pool_return (
         LOG->obj_pool, ev);
@@ -877,7 +888,8 @@ log_writer (
       ev->log_level = log_level;
       ev->message = str;
 
-      if (log_level == G_LOG_LEVEL_CRITICAL)
+      if (log_level == G_LOG_LEVEL_CRITICAL ||
+          log_level == G_LOG_LEVEL_WARNING)
         {
           ev->backtrace =
             backtrace_get_with_lines (

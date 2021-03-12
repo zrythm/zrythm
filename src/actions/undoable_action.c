@@ -100,7 +100,7 @@ undoable_action_do (UndoableAction * self)
   case UA_##uc: \
     { \
       char * str = \
-        undoable_action_stringize (self); \
+        undoable_action_to_string (self); \
       g_message ( \
         "[DOING ACTION]: " #uc " (%s)", str); \
       ret = sc##_action_do ((cc##Action *) self); \
@@ -177,7 +177,7 @@ undoable_action_undo (UndoableAction * self)
   case UA_##uc: \
     { \
       char * str = \
-        undoable_action_stringize (self); \
+        undoable_action_to_string (self); \
       g_message ( \
         "[UNDOING ACTION]: " #uc " (%s)", str); \
       ret = \
@@ -275,7 +275,7 @@ undoable_action_free (UndoableAction * self)
  * The string MUST be free'd using g_free().
  */
 char *
-undoable_action_stringize (
+undoable_action_to_string (
   UndoableAction * ua)
 {
 #define STRINGIZE_UA(caps,cc,sc) \

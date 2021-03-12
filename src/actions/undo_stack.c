@@ -112,26 +112,30 @@ undo_stack_new (void)
   return self;
 }
 
-void
-undo_stack_free (
+/**
+ * Gets the list of actions as a string.
+ */
+char *
+undo_stack_get_as_string (
   UndoStack * self)
 {
-  g_message ("%s: freeing...", __func__);
+  GString * g_str = g_string_new (NULL);
 
-  while (!undo_stack_is_empty (self))
+  Stack * stack = self->stack;
+  for (int i = stack->top; i >= 0; i--)
     {
-      UndoableAction * ua = undo_stack_pop (self);
-      char * type_str =
-        undoable_action_stringize (ua);
-      g_debug (
-        "%s: freeing %s", __func__, type_str);
-      g_free (type_str);
-      undoable_action_free (ua);
+      UndoableAction * action =
+        (UndoableAction *) stack->elements[i];
+
+      char * action_str =
+        undoable_action_to_string (action);
+      g_string_append_printf (
+        g_str, "[%d] %s\n",
+        stack->top - i, action_str);
+      g_free (action_str);
     }
 
-  object_zero_and_free (self);
-
-  g_message ("%s: done", __func__);
+  return g_string_free (g_str, false);
 }
 
 void
@@ -306,4 +310,26 @@ undo_stack_clear (
           undoable_action_free (ua);
         }
     }
+}
+
+void
+undo_stack_free (
+  UndoStack * self)
+{
+  g_message ("%s: freeing...", __func__);
+
+  while (!undo_stack_is_empty (self))
+    {
+      UndoableAction * ua = undo_stack_pop (self);
+      char * type_str =
+        undoable_action_to_string (ua);
+      g_debug (
+        "%s: freeing %s", __func__, type_str);
+      g_free (type_str);
+      undoable_action_free (ua);
+    }
+
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }

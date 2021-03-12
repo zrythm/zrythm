@@ -882,6 +882,15 @@ engine_update_frames_per_tick (
   const sample_rate_t sample_rate);
 
 /**
+ * GSourceFunc to be added using idle add.
+ *
+ * This will loop indefinintely.
+ */
+int
+engine_process_events (
+  AudioEngine * self);
+
+/**
  * To be called by each implementation to prepare the
  * structures before processing.
  *

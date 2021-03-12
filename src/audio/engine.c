@@ -231,10 +231,14 @@ clean_duplicates_and_copy (
  *
  * This will loop indefinintely.
  */
-static int
+int
 engine_process_events (
   AudioEngine * self)
 {
+  g_return_val_if_fail (
+    g_thread_self () == zrythm_app->gtk_thread,
+    G_SOURCE_REMOVE);
+
   self->last_events_process_started =
     g_get_monotonic_time ();
 
@@ -249,7 +253,7 @@ engine_process_events (
   /*g_debug ("%d EVENTS, waiting for pause", num_events);*/
 
   EngineState state;
-  if (num_events > 0)
+  if (self->activated && num_events > 0)
     {
       /* pause engine */
       engine_wait_for_pause (self, &state, F_FORCE);
@@ -322,7 +326,7 @@ engine_process_events (
   /*g_usleep (8000);*/
   /*project_validate (PROJECT);*/
 
-  if (num_events > 0)
+  if (self->activated && num_events > 0)
     {
       /* continue engine */
       engine_resume (self, &state);

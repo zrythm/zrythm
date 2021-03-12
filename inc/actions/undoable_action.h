@@ -150,7 +150,7 @@ undoable_action_free (
  * The string MUST be free'd using g_free().
  */
 char *
-undoable_action_stringize (
+undoable_action_to_string (
   UndoableAction * ua);
 
 /**
