@@ -54,6 +54,9 @@ typedef struct _ChordWidget
 
   GtkGestureDrag * btn_drag;
 
+  double        drag_start_x;
+  double        drag_start_y;
+
   /** Whether the drag has started. */
   bool          drag_started;
 

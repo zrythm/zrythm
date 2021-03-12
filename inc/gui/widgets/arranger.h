@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -148,6 +148,15 @@ typedef struct _ArrangerWidget
   /** X-axis coordinate at the start of the drag,
    * in pixels. */
   double         start_pos_px;
+
+  /**
+   * Whether a drag update operation started.
+   *
+   * drag_update will be skipped unless this is
+   * true or gtk_drag_check_threshold() returns
+   * true.
+   */
+  bool           drag_update_started;
 
   /** Whether an object exists, so we can use the
    * earliest_obj_start_pos. */

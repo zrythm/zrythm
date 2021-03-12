@@ -2434,10 +2434,10 @@ on_drag_begin_handle_hit_object (
 
 static void
 drag_begin (
-  GtkGestureDrag *   gesture,
-  gdouble            start_x,
-  gdouble            start_y,
-  ArrangerWidget *   self)
+  GtkGestureDrag * gesture,
+  gdouble          start_x,
+  gdouble          start_y,
+  ArrangerWidget * self)
 {
   g_debug ("arranger drag begin starting...");
 
@@ -2445,6 +2445,7 @@ drag_begin (
   arranger_widget_px_to_pos (
     self, start_x, &self->start_pos, 1);
   self->start_y = start_y;
+  self->drag_update_started = false;
 
   /* set last project selection type */
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
@@ -2907,6 +2908,18 @@ drag_update (
   gdouble         offset_y,
   ArrangerWidget * self)
 {
+  if (!self->drag_update_started &&
+      !gtk_drag_check_threshold (
+        GTK_WIDGET (self),
+        (int) self->start_x, (int) self->start_y,
+        (int) (self->start_x + offset_x),
+        (int) (self->start_y + offset_y)))
+    {
+      return;
+    }
+
+  self->drag_update_started = true;
+
   /* state mask needs to be updated */
   GdkModifierType state_mask =
     ui_get_state_mask (
@@ -4216,6 +4229,7 @@ drag_end (
   self->start_y = 0;
   self->last_offset_x = 0;
   self->last_offset_y = 0;
+  self->drag_update_started = false;
   self->last_adj_ticks_diff = 0;
   self->start_object = NULL;
   self->hovered_object = NULL;

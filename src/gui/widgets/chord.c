@@ -120,7 +120,13 @@ on_drag_update (
 {
   g_message ("drag update");
 
-  if (!self->drag_started)
+  if (!self->drag_started &&
+      gtk_drag_check_threshold (
+        GTK_WIDGET (self),
+        (int) self->drag_start_x,
+        (int) self->drag_start_y,
+        (int) (self->drag_start_x + offset_x),
+        (int) (self->drag_start_y + offset_y)))
     {
       self->drag_started = true;
 
@@ -153,6 +159,17 @@ on_drag_update (
 }
 
 static void
+on_drag_begin (
+  GtkGestureDrag * gesture,
+  gdouble          start_x,
+  gdouble          start_y,
+  ChordWidget *    self)
+{
+  self->drag_start_x = start_x;
+  self->drag_start_y = start_y;
+}
+
+static void
 on_drag_end (
   GtkGestureDrag * gesture,
   gdouble          offset_x,
@@ -162,6 +179,8 @@ on_drag_end (
   g_message ("drag end");
 
   self->drag_started = false;
+  self->drag_start_x = 0;
+  self->drag_start_y = 0;
 }
 
 static void
@@ -240,6 +259,9 @@ chord_widget_setup (
     GTK_GESTURE_DRAG (
       gtk_gesture_drag_new (
         GTK_WIDGET (self->btn)));
+  g_signal_connect (
+    self->btn_drag, "drag-begin",
+    G_CALLBACK (on_drag_begin), self);
   g_signal_connect (
     self->btn_drag, "drag-update",
     G_CALLBACK (on_drag_update), self);
