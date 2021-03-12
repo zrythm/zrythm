@@ -394,6 +394,15 @@ on_playhead_changed (
             arranger_widget_redraw_playhead (
               MW_AUDIO_ARRANGER);
         }
+      if (MW_CHORD_ARRANGER)
+        {
+          if (manually)
+            arranger_widget_redraw_whole (
+              MW_CHORD_ARRANGER);
+          else
+            arranger_widget_redraw_playhead (
+              MW_CHORD_ARRANGER);
+        }
     }
 }
 
