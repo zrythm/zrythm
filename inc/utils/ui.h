@@ -136,7 +136,7 @@ typedef struct UiCaches
 /**
  * Space on the edges to show resize cursors
  */
-#define UI_RESIZE_CURSOR_SPACE 9
+#define UI_RESIZE_CURSOR_SPACE 8
 
 /*
  * Drag n Drop related.
