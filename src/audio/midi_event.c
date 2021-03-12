@@ -556,7 +556,7 @@ midi_events_add_control_change (
   uint8_t      channel,
   uint8_t      controller,
   uint8_t      control,
-  uint32_t     time,
+  midi_time_t  time,
   int          queued)
 {
   MidiEvent * ev;
@@ -676,7 +676,7 @@ midi_events_add_note_on (
   uint8_t      channel,
   uint8_t      note_pitch,
   uint8_t      velocity,
-  uint32_t     time,
+  midi_time_t  time,
   int          queued)
 {
 #if 0
@@ -720,9 +720,15 @@ midi_events_add_note_ons_from_chord_descr (
   ChordDescriptor * descr,
   midi_byte_t       channel,
   midi_byte_t       velocity,
-  midi_byte_t       time,
+  midi_time_t       _time,
   bool              queued)
 {
+#if 0
+  g_message (
+    "%s: vel %"PRIu8", time %"PRIu32,
+    __func__, velocity, _time);
+#endif
+
   for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
        i++)
     {
@@ -730,7 +736,7 @@ midi_events_add_note_ons_from_chord_descr (
         {
           midi_events_add_note_on (
             self, channel, i + 36,
-            velocity, time, queued);
+            velocity, _time, queued);
         }
     }
 }
@@ -743,7 +749,7 @@ midi_events_add_note_offs_from_chord_descr (
   MidiEvents *      self,
   ChordDescriptor * descr,
   midi_byte_t       channel,
-  midi_byte_t       time,
+  midi_time_t       time,
   bool              queued)
 {
   for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;

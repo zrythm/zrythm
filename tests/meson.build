@@ -160,6 +160,7 @@ if get_option ('tests')
     'audio/marker_track': { parallel: true },
     'audio/metronome': { parallel: true },
     'audio/midi': { parallel: true },
+    'audio/midi_event': { parallel: true },
     'audio/midi_mapping': { parallel: true },
     'audio/midi_note': { parallel: true },
     'audio/midi_region': { parallel: true },

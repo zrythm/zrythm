@@ -261,7 +261,7 @@ midi_events_add_note_ons_from_chord_descr (
   ChordDescriptor * descr,
   midi_byte_t       channel,
   midi_byte_t       velocity,
-  midi_byte_t       time,
+  midi_time_t       time,
   bool              queued);
 
 /**
@@ -272,7 +272,7 @@ midi_events_add_note_offs_from_chord_descr (
   MidiEvents *      self,
   ChordDescriptor * descr,
   midi_byte_t       channel,
-  midi_byte_t       time,
+  midi_time_t       time,
   bool              queued);
 
 /**
@@ -314,7 +314,7 @@ midi_events_add_note_off (
   MidiEvents * self,
   midi_byte_t  channel,
   midi_byte_t  note_pitch,
-  uint32_t     time,
+  midi_time_t  time,
   int          queued);
 
 /**
@@ -329,7 +329,7 @@ midi_events_add_control_change (
   midi_byte_t  channel,
   midi_byte_t  controller,
   midi_byte_t  control,
-  uint32_t     time,
+  midi_time_t  time,
   int          queued);
 
 /**

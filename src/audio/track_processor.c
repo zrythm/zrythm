@@ -771,10 +771,12 @@ track_processor_process (
       midi_events_dequeue (
         pr->midi_events);
       if (pr->midi_events->num_events > 0)
-        g_message (
-          "%s piano roll has %d events",
-          tr->name,
-          pr->midi_events->num_events);
+        {
+          g_message (
+            "%s piano roll has %d events",
+            tr->name,
+            pr->midi_events->num_events);
+        }
 
       /* append midi events from modwheel and
        * pitchbend to MIDI out */
@@ -821,10 +823,12 @@ track_processor_process (
             }
         }
       if (self->midi_out->midi_events->num_events > 0)
-        g_message (
-          "%s midi processor out has %d events",
-          tr->name,
-          self->midi_out->midi_events->num_events);
+        {
+          g_message (
+            "%s midi processor out has %d events",
+            tr->name,
+            self->midi_out->midi_events->num_events);
+        }
 
       /* append the midi events from piano roll to
        * MIDI out */
@@ -832,6 +836,24 @@ track_processor_process (
         pr->midi_events,
         self->midi_out->midi_events, local_offset,
         nframes, false);
+
+#if 0
+      if (pr->midi_events->num_events > 0)
+        {
+          g_message ("PR");
+          midi_events_print (
+            pr->midi_events, F_NOT_QUEUED);
+        }
+
+      if (self->midi_out->midi_events->num_events >
+            0)
+        {
+          g_message ("midi out");
+          midi_events_print (
+            self->midi_out->midi_events,
+            F_NOT_QUEUED);
+        }
+#endif
     }
 
   /* add inputs to outputs */
@@ -877,7 +899,7 @@ track_processor_process (
       midi_events_append (
         self->midi_in->midi_events,
         self->midi_out->midi_events, local_offset,
-        nframes, 0);
+        nframes, F_NOT_QUEUED);
       break;
     default:
       break;
