@@ -361,6 +361,7 @@ load_bundled_lv2_plugins (
               g_free (str);
               lilv_node_free (uri);
             }
+          g_dir_close (bundle_lv2_dir);
         }
       else
         {

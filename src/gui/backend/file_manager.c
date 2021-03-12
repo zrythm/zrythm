@@ -75,8 +75,7 @@ load_files_from_location (
   SupportedFile * fd;
   self->num_files = 0;
   GDir * dir =
-    g_dir_open (
-      location->path, 0, NULL);
+    g_dir_open (location->path, 0, NULL);
   if (!dir)
     {
       g_warning ("Could not open dir %s",
@@ -143,6 +142,8 @@ load_files_from_location (
                  /*fd->type,*/
                  /*fd->hidden);*/
     }
+  g_dir_close (dir);
+
   qsort (self->files,
          (size_t) self->num_files,
          sizeof (SupportedFile *),
