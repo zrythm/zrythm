@@ -1,6 +1,52 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.14.0.1] - 2021-03-12
+### Added
+- Make LV2 parameters automatable if numeric
+- Add ctrl-shift-scroll to piano roll
+- Add ctrl-shift-scroll to timeline/tracklist
+- Generic UI support for carla-based plugins
+- Add emblems to plugin browser icons to show that something is selected
+- Add emblem to log viewer button to indicate unseen warnings
+- Add action stack info to bug report template
+- Add pcre2 dependency for internal regex operations
+
+### Changed
+- Only read log domains from the environment once
+- Internal refactor of plugin ports: merge lv2-only port logic with generic ports
+- Handle control type properly for carla-based plugins (logarithmic, integer, etc.)
+- Install carla binaries in lib/zrythm/carla instead of bin
+- Wait for all DSP threads to become idle during startup
+- Update Chinese (Simplified), Norwegian Bokmal, Japanese, French translations
+- Split plugin preferences from plugin descriptors and save plugin preferences in plugin-settings.yaml
+- Only connect event ports that support MIDI
+- Use more descriptive title in plugin window
+- Add version dependency on RtMidi
+- Make position struct slimmer: remove bars/beats/sixteenths/ticks/subticks and only remember ticks and frames
+- Use libbacktrace to get backtraces with line numbers
+- Read meson project version from VERSION file
+- Only start drag actions when a movement threshold is reached
+- Enable resize cursors within 8 pixels of object edge instead of 9
+- Force cyaml subproject until upstream fixes issue with restoring floats
+
+### Fixed
+- Fix LV2 plugins not being freed
+- Avoid nans and non-finite numbers in logarithmic port value conversions
+- Fix some race conditions
+- Don't attempt to update window title when closing the UI for carla plugins
+- Fix position info not being sent to plugins
+- Fix `--yaml-to-zpj` option doing the opposite
+- Fix crash when pressing delete with nothing selected
+- Fix crash when changing the direct out of a track and only selecting a category
+- Do not allow deletion of undeletable tracks (master/tempo/chords/etc.)
+- Fix opened directories not being closed when scanning for VST2/VST3/SFZ/SF2
+- Fix crash when attempting to open a project created with RtMidi after removing the device
+- Fix chord track sometimes skipping notes
+- Fix non-fatal error when attempting to export after loading a project with a plugin that failed to instantiate
+- Fix chord editor not redrawing playhead during playback
+- Fix crash during autosave after loading a project containing a carla plugin that failed to instantiate
+
 ## [1.0.0-alpha.13.1.1] - 2021-03-05
 ### Added
 - Allow changing engine buffer size while running
