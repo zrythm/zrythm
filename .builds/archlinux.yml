@@ -28,6 +28,7 @@ packages:
   - meson
   - ninja
   - npm
+  - pcre2
   - python
   - python-sphinx
   - python-pip

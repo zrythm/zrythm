@@ -25,6 +25,7 @@ packages:
   - alsa-lib
   - sratom
   - suil
+  - pcre2
   - libyaml
   - gettext-runtime
   - cairo

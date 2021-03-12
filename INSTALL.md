@@ -51,6 +51,7 @@ with meaningful stack traces and bug reports.
 - libbacktrace (3-Clause BSD): <https://github.com/ianlancetaylor/libbacktrace>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
+- pcre2 (3-Clause BSD): <https://www.pcre.org/>
 - reproc (Expat): <https://github.com/DaanDeMeyer/reproc>
 - zstd (3-Clause BSD): <https://github.com/facebook/zstd>
 

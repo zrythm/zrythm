@@ -25,6 +25,10 @@
 #include <gtk/gtk.h>
 
 #include <pcre.h>
+
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
+
 #include <regex.h>
 
 int
@@ -248,107 +252,36 @@ string_replace_regex (
   const char * regex,
   const char * replace_str)
 {
-  /* edited from https://stackoverflow.com/questions/8044081/how-to-do-regex-string-replacements-in-pure-c */
-  regex_t reg;
-
-  /* if regex can't commpile pattern, do nothing */
-  if (regcomp (&reg, regex, REG_EXTENDED))
+  pcre2_code *re;
+  PCRE2_SIZE erroffset;
+  int errorcode;
+  re =
+    pcre2_compile (
+      (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0,
+      &errorcode, &erroffset, NULL);
+  if (!re)
     {
+      PCRE2_UCHAR8 buffer[120];
+      pcre2_get_error_message (
+        errorcode, buffer, 120);
+
       g_warning (
-        "Could not compile regex: %s", regex);
-    }
-
-  /* return if no matches */
-  if (reg.re_nsub == 0)
-    {
-      g_debug ("no matches");
+        "failed to compile regex %s: %s",
+        regex, buffer);
       return;
     }
 
-  /* count back references in replace_str */
-  int br = 0;
-  const char * p = replace_str;
-  while (1)
-    {
-      /* skip non-control chars */
-      while (*p > 31 || *p > 8)
-        {
-          p++;
-        }
+  static PCRE2_UCHAR8 buf[10000];
+  size_t buf_sz = 10000;
+  pcre2_substitute (
+    re, (PCRE2_SPTR) *str, PCRE2_ZERO_TERMINATED,
+    0, PCRE2_SUBSTITUTE_GLOBAL, NULL, NULL,
+    (PCRE2_SPTR) replace_str, PCRE2_ZERO_TERMINATED,
+    buf, &buf_sz);
+  pcre2_code_free (re);
 
-      if (*p)
-        {
-          br++;
-          p++;
-        }
-      else
-        {
-          break;
-        }
-    }
-  /*g_debug ("num back references: %d", br);*/
-
-  size_t nmatch = reg.re_nsub;
-  regmatch_t m[nmatch + 1];
-  memset (
-    &m, 0, sizeof (regmatch_t) * (nmatch + 1));
-
-  /* look for matches and replace */
-  while (!regexec (
-            &reg, *str, nmatch + 1, m, 0))
-    {
-      /*g_debug ("match");*/
-
-      /* make enough room */
-      char * new =
-        object_new_n (
-          strlen (*str) +
-            (size_t) (m[0].rm_eo - m[0].rm_so) + 1,
-          char);
-      new[0] = '\0';
-
-      const char * rpl = replace_str;
-      p = replace_str;
-
-      /* append the full match */
-      strncat (new, *str, (size_t) m[0].rm_so);
-
-      /* go through each back reference */
-      for (int k = 0; k < br; k++)
-        {
-          /* skip printable char */
-          while (*p > 16)
-            {
-              p++;
-            }
-
-          /* back reference (e.g., \1, \2,
-           * ...) */
-          int c = *p;
-
-          /* add head of rpl */
-          strncat (new, rpl, (size_t) (p - rpl));
-
-          /* concat match */
-          strncat (
-            new, *str + m[c].rm_so,
-            (size_t) (m[c].rm_eo - m[c].rm_so));
-
-          /* skip back reference, next match */
-          rpl = p++;
-        }
-
-      /* trailing of rpl */
-      strcat (new, p);
-
-      /* trailing text in *str */
-      strcat (new, *str + m[0].rm_eo);
-      free (*str);
-      *str = strdup (new);
-      free (new);
-    }
-  /* ajust size */
-  *str = g_realloc (*str, strlen (*str) + 1);
+  g_free (*str);
+  *str = g_strdup ((char *) buf);
 }
 
 char *

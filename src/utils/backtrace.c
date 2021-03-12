@@ -294,7 +294,7 @@ call_backtrace_full:
    * one */
   char * bt_str = g_string_free (msg_str, false);
   string_replace_regex (
-    &bt_str, "(\\?\\?\\?\n)+\\1", "\1");
+    &bt_str, "(\\?\\?\\?\n)+\\1", "??? ...\n");
 
   return bt_str;
 

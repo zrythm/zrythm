@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/midi_region.h"
@@ -34,6 +35,7 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
@@ -649,6 +651,10 @@ timeline_selections_move_regions_to_new_lanes (
       region_move_to_lane (
         region, lane_to_move_to, -1);
     }
+
+  EVENTS_PUSH (
+    ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+
   return true;
 }
 

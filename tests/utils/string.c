@@ -149,7 +149,7 @@ test_replace_regex (void)
   const char * replace_str, * regex;
   char * src_str;
 
-  replace_str = "---\1---";
+  replace_str = "---$1---";
   regex = "(abc)+\\1";
   src_str = g_strdup ("abcabc");
   string_replace_regex (
@@ -157,7 +157,7 @@ test_replace_regex (void)
   g_assert_cmpstr (
     src_str, ==, "---abc---");
 
-  replace_str = "\1";
+  replace_str = "$1";
   regex = "(\\?\\?\\?\n)+\\1";
   src_str =
     g_strdup ("???\n???\n???\n???\n??? abc");
@@ -166,14 +166,14 @@ test_replace_regex (void)
   g_assert_cmpstr (
     src_str, ==, "???\n??? abc");
 
-  replace_str = "???\n";
+  replace_str = "??? ...\n";
   regex = "(\\?\\?\\?\n)+\\1";
   src_str =
-    g_strdup ("???\n???\n???\n???\n??? abc");
+    g_strdup ("???\n???\n???\n???\n??? abc\n???\n???\n??? test");
   string_replace_regex (
     &src_str, regex, replace_str);
   g_assert_cmpstr (
-    src_str, ==, "???\n??? abc");
+    src_str, ==, "??? ...\n??? abc\n??? ...\n??? test");
 }
 
 int
