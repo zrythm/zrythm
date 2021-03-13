@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,7 +23,7 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define PLUGIN_COLLECTIONS_VERSION 3
+#define PLUGIN_COLLECTIONS_VERSION 4
 
 static char *
 get_plugin_collections_file_path (void)
@@ -72,6 +72,29 @@ plugin_collections_serialize_to_file (
   g_free (yaml);
 }
 
+static bool
+is_yaml_our_version (
+  const char * yaml)
+{
+  bool same_version = false;
+  char version_str[120];
+  sprintf (
+    version_str, "version: %d\n",
+    PLUGIN_COLLECTIONS_VERSION);
+  same_version =
+    g_str_has_prefix (yaml, version_str);
+  if (!same_version)
+    {
+      sprintf (
+        version_str, "---\nversion: %d\n",
+        PLUGIN_COLLECTIONS_VERSION);
+      same_version =
+        g_str_has_prefix (yaml, version_str);
+    }
+
+  return same_version;
+}
+
 /**
  * Reads the file and fills up the object.
  */
@@ -105,11 +128,7 @@ return_new_instance:
 
   /* if not same version, purge file and return
    * a new instance */
-  char version_str[120];
-  sprintf (
-    version_str, "version: %d",
-    PLUGIN_COLLECTIONS_VERSION);
-  if (!g_str_has_prefix (yaml, version_str))
+  if (!is_yaml_our_version (yaml))
     {
       g_message (
         "Found old plugin collections file version. "
