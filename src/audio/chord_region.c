@@ -117,6 +117,12 @@ chord_region_remove_chord_object (
     self->chord_objects, self->num_chord_objects,
     chord);
 
+  for (int i = 0; i < self->num_chord_objects; i++)
+    {
+      chord_object_set_region_and_index (
+        self->chord_objects[i], self, i);
+    }
+
   if (free)
     {
       free_later (chord, arranger_object_free);
@@ -128,6 +134,20 @@ chord_region_remove_chord_object (
         ET_ARRANGER_OBJECT_REMOVED,
         ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
     }
+}
+
+bool
+chord_region_validate (
+  ZRegion * self)
+{
+  for (int i = 0; i < self->num_chord_objects; i++)
+    {
+      ChordObject * c = self->chord_objects[i];
+
+      g_return_val_if_fail (c->index == i, false);
+    }
+
+  return true;
 }
 
 /**

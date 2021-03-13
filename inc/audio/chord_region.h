@@ -73,6 +73,11 @@ chord_region_remove_chord_object (
   int           free,
   bool          fire_events);
 
+NONNULL
+bool
+chord_region_validate (
+  ZRegion * self);
+
 /**
  * Frees members only but not the ZRegion itself.
  *

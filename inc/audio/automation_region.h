@@ -145,11 +145,17 @@ automation_region_get_ap_around (
   double     delta_ticks,
   bool       before_only);
 
+NONNULL
+bool
+automation_region_validate (
+  ZRegion * self);
+
 /**
  * Frees members only but not the ZRegion itself.
  *
  * Regions should be free'd using region_free.
  */
+NONNULL
 void
 automation_region_free_members (
   ZRegion * self);

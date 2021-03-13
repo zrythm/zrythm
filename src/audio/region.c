@@ -508,6 +508,18 @@ region_validate (
     &r_obj->loop_start_pos, &r_obj->loop_end_pos),
     false);
 
+  switch (self->id.type)
+    {
+    case REGION_TYPE_CHORD:
+      chord_region_validate (self);
+      break;
+    case REGION_TYPE_AUTOMATION:
+      automation_region_validate (self);
+      break;
+    default:
+      break;
+    }
+
   return true;
 }
 

@@ -524,7 +524,6 @@ sort_aps (
   AutomationPoint * b =
     *(AutomationPoint * const *)_b;
 
-  /* region index doesn't really matter */
   return a->index - b->index;
 }
 
@@ -546,7 +545,6 @@ sort_chords (
   ChordObject * b =
     *(ChordObject * const *)_b;
 
-  /* region index doesn't really matter */
   return a->index - b->index;
 }
 

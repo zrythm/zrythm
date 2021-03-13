@@ -313,6 +313,101 @@ test_delete_timeline ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_delete_chords ()
+{
+  rebootstrap_timeline ();
+
+  ZRegion * r = P_CHORD_TRACK->chord_regions[0];
+  g_assert_true (region_validate (r, F_PROJECT));
+
+  /* add another chord */
+  ChordObject * c =
+    chord_object_new (&r->id, 2, 2);
+  chord_region_add_chord_object (
+    r, c, F_NO_PUBLISH_EVENTS);
+  arranger_selections_add_object (
+    (ArrangerSelections *) CHORD_SELECTIONS,
+    (ArrangerObject *) c);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      CHORD_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete the first chord */
+  arranger_selections_clear (
+    (ArrangerSelections *) CHORD_SELECTIONS,
+    F_NO_FREE, F_NO_PUBLISH_EVENTS);
+  arranger_selections_add_object (
+    (ArrangerSelections *) CHORD_SELECTIONS,
+    (ArrangerObject *) r->chord_objects[0]);
+  ua =
+    arranger_selections_action_new_delete (
+      CHORD_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (region_validate (r, F_PROJECT));
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_delete_automation_points ()
+{
+  rebootstrap_timeline ();
+
+  AutomationTrack * at =
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
+  ZRegion * r = at->regions[0];
+  g_assert_true (region_validate (r, F_PROJECT));
+
+  /* add another ap */
+  Position pos;
+  position_init (&pos);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      AP_VAL1, AP_VAL1, &pos);
+  automation_region_add_ap (
+    r, ap, F_NO_PUBLISH_EVENTS);
+  arranger_selections_add_object (
+    (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    (ArrangerObject *) ap);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete the first chord */
+  arranger_selections_clear (
+    (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    F_NO_FREE, F_NO_PUBLISH_EVENTS);
+  arranger_selections_add_object (
+    (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    (ArrangerObject *) r->aps[0]);
+  ua =
+    arranger_selections_action_new_delete (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (region_validate (r, F_PROJECT));
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
+}
+
 /**
  * Checks the objects after moving.
  *
@@ -1970,6 +2065,12 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test delete chords",
+    (GTestFunc) test_delete_chords);
+  g_test_add_func (
+    TEST_PREFIX "test delete automation points",
+    (GTestFunc) test_delete_automation_points);
   g_test_add_func (
     TEST_PREFIX "test audio functions",
     (GTestFunc) test_audio_functions);

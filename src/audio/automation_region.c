@@ -281,6 +281,12 @@ automation_region_remove_ap (
   array_delete (
     self->aps, self->num_aps, ap);
 
+  for (int i = 0; i < self->num_aps; i++)
+    {
+      automation_point_set_region_and_index (
+        self->aps[i], self, i);
+    }
+
   if (free)
     {
       /* free later otherwise causes problems
@@ -379,6 +385,20 @@ automation_region_get_ap_around (
     }
 
   return NULL;
+}
+
+bool
+automation_region_validate (
+  ZRegion * self)
+{
+  for (int i = 0; i < self->num_aps; i++)
+    {
+      AutomationPoint * ap = self->aps[i];
+
+      g_return_val_if_fail (ap->index == i, false);
+    }
+
+  return true;
 }
 
 /**
