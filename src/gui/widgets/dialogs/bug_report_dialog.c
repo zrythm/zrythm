@@ -66,7 +66,7 @@ bug_report_dialog_new (
       "> Please tell us what happened\n\n"
       "# What is expected?\n"
       "> What is expected to happen?\n\n"
-      "# Version\n%s\n"
+      "# Version\n```\n%s```\n\n"
       "# Other info\n"
       "> Context, distro, etc.\n\n"
       "# Backtrace\n```\n%s```\n\n"
