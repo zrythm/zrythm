@@ -3145,7 +3145,7 @@ lv2_plugin_process (
                     {
                       if (size != 3)
                         {
-                          g_warning (
+                          g_message (
                             "unhandled event from "
                             "port %s of size %"
                             PRIu32,

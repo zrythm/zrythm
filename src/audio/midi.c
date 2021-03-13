@@ -169,7 +169,8 @@ midi_panic_all (
     {
       track = TRACKLIST->tracks[i];
 
-      if (track_has_piano_roll (track))
+      if (track_has_piano_roll (track) ||
+          track->type == TRACK_TYPE_CHORD)
         {
           midi_events_panic (
             track->processor->piano_roll->
