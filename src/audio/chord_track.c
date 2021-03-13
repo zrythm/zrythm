@@ -146,10 +146,16 @@ chord_track_get_chord_at_pos (
   const Position * pos)
 {
   ZRegion * region =
-    track_get_region_at_pos (ct, pos);
+    track_get_region_at_pos (ct, pos, false);
 
   if (!region)
-    return NULL;
+    {
+      return NULL;
+    }
+
+  long local_frames =
+    region_timeline_frames_to_local (
+      region, pos->frames, F_NORMALIZE);
 
   ChordObject * chord = NULL;
   ArrangerObject * c_obj;
@@ -159,8 +165,7 @@ chord_track_get_chord_at_pos (
     {
       chord = region->chord_objects[i];
       c_obj = (ArrangerObject *) chord;
-      if (position_is_before_or_equal (
-            &c_obj->pos, pos))
+      if (c_obj->pos.frames <= local_frames)
         return chord;
     }
   return NULL;

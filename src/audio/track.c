@@ -2128,12 +2128,17 @@ track_get_channel (Track * track)
 }
 
 /**
- * Returns the region at the given position, or NULL.
+ * Returns the region at the given position, or
+ * NULL.
+ *
+ * @param include_region_end Whether to include the
+ *   region's end in the calculation.
  */
 ZRegion *
 track_get_region_at_pos (
   const Track *    track,
-  const Position * pos)
+  const Position * pos,
+  bool             include_region_end)
 {
   int i, j;
 
@@ -2154,9 +2159,12 @@ track_get_region_at_pos (
               r_obj = (ArrangerObject *) r;
               if (pos->frames >=
                     r_obj->pos.frames &&
-                  pos->frames <=
-                    r_obj->end_pos.frames)
-                return r;
+                  pos->frames <
+                    r_obj->end_pos.frames +
+                      (include_region_end ? 1 : 0))
+                {
+                  return r;
+                }
             }
         }
     }
@@ -2170,9 +2178,12 @@ track_get_region_at_pos (
           r_obj = (ArrangerObject *) r;
           if (position_is_after_or_equal (
                 pos, &r_obj->pos) &&
-              position_is_before_or_equal (
-                pos, &r_obj->end_pos))
-            return r;
+              pos->frames <
+                r_obj->end_pos.frames +
+                  (include_region_end ? 1 : 0))
+            {
+              return r;
+            }
         }
     }
 

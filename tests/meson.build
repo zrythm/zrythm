@@ -155,6 +155,7 @@ if get_option ('tests')
     'audio/audio_region': { parallel: true },
     'audio/audio_track': { parallel: true },
     'audio/automation_track': { parallel: true },
+    'audio/chord_track': { parallel: true },
     'audio/curve': { parallel: true },
     'audio/fader': { parallel: true },
     'audio/marker_track': { parallel: true },

@@ -1006,22 +1006,27 @@ void
 region_print (
   const ZRegion * self)
 {
-  char from_pos_str[100], to_pos_str[100];
+  char from_pos_str[100], to_pos_str[100],
+       loop_end_pos_str[100];
   position_to_string (
     &self->base.pos, from_pos_str);
   position_to_string (
     &self->base.end_pos, to_pos_str);
+  position_to_string (
+    &self->base.loop_end_pos, loop_end_pos_str);
   char * str =
     g_strdup_printf (
       "%s [%s] - track pos %d - lane pos %d - "
-      "idx %d - address %p - <%s> to <%s>",
+      "idx %d - address %p - <%s> to <%s> - "
+      "loop end <%s>",
       self->name,
       region_identifier_get_region_type_name (
         self->id.type),
       self->id.track_pos,
       self->id.lane_pos,
       self->id.idx, self,
-      from_pos_str, to_pos_str);
+      from_pos_str, to_pos_str,
+      loop_end_pos_str);
   g_message ("%s", str);
   g_free (str);
 }

@@ -836,12 +836,17 @@ track_validate (
   Track * self);
 
 /**
- * Returns the region at the given position, or NULL.
+ * Returns the region at the given position, or
+ * NULL.
+ *
+ * @param include_region_end Whether to include the
+ *   region's end in the calculation.
  */
 ZRegion *
 track_get_region_at_pos (
   const Track *    track,
-  const Position * pos);
+  const Position * pos,
+  bool             include_region_end);
 
 /**
  * Returns the last ZRegion in the

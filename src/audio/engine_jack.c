@@ -399,7 +399,7 @@ xrun_cb (
         6000000)
     {
       /* FIXME make a notification message queue */
-      g_warning (
+      g_message (
         "%s",
         _("XRUN occurred - check your JACK "
         "configuration"));
