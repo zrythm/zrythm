@@ -1039,6 +1039,14 @@ on_clipboard_received (
 
   Clipboard * clipboard =
     clipboard_deserialize (text);
+  if (!clipboard)
+    {
+      g_message (
+        "invalid clipboard data received:\n%s",
+        text);
+      return;
+    }
+
   ArrangerSelections * sel = NULL;
   switch (clipboard->type)
     {
