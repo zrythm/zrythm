@@ -49,7 +49,7 @@ lv2_evbuf_new (
 
   // memory must be 64-bit aligned
   LV2_Evbuf* evbuf =
-#ifdef _WOE32
+#if defined (_WOE32) || defined (__APPLE__)
     malloc (
 #else
     aligned_alloc (

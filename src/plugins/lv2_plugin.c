@@ -1322,6 +1322,7 @@ lv2_plugin_allocate_port_buffers (
           lv2_plugin->map.map (
             lv2_plugin->map.handle,
             LV2_ATOM__Sequence));
+      g_return_if_fail (port->evbuf);
       lilv_instance_connect_port (
         lv2_plugin->instance,
         (uint32_t) i,
@@ -3187,6 +3188,7 @@ lv2_plugin_process (
       else if (id->type == TYPE_EVENT &&
                id->flow == FLOW_INPUT)
         {
+          g_return_if_fail (port->evbuf);
           lv2_evbuf_reset (port->evbuf, true);
 
           /* Write transport change event if

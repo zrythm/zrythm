@@ -116,6 +116,8 @@ void
 plugin_setting_validate (
   PluginSetting * self)
 {
+  g_debug ("validating plugin setting");
+
   const PluginDescriptor * descr = self->descr;
 
   if (descr->protocol == PROT_VST ||
@@ -138,7 +140,6 @@ plugin_setting_validate (
   if (plugin_descriptor_has_custom_ui (
         self->descr) &&
       !global_force_generic)
-    )
     {
       self->open_with_carla = true;
     }
@@ -185,6 +186,7 @@ plugin_setting_validate (
   /* if no custom UI, force generic */
   if (!plugin_descriptor_has_custom_ui (self->descr))
     {
+      g_debug ("plugin %s has no custom UI", self->descr->name);
       self->force_generic_ui = true;
     }
 
@@ -193,6 +195,7 @@ plugin_setting_validate (
       self->open_with_carla ||
       self->force_generic_ui)
     {
+      g_debug ("cannot have UI URI");
       g_free_and_null (self->ui_uri);
     }
   /* otherwise validate it */
@@ -204,6 +207,7 @@ plugin_setting_validate (
           !lv2_plugin_is_ui_supported (
              self->descr->uri, self->ui_uri))
         {
+          g_debug ("UI URI %s is not supported", self->ui_uri);
           g_free_and_null (self->ui_uri);
         }
 
@@ -220,12 +224,14 @@ plugin_setting_validate (
            * UI URI */
           if (ui_picked)
             {
+              g_debug ("picked %s", self->ui_uri);
               g_return_if_fail (picked_ui);
               self->ui_uri = picked_ui;
             }
           /* otherwise force generic UI */
           else
             {
+              g_debug ("no suitable UI found");
               self->force_generic_ui = true;
             }
         }
