@@ -394,7 +394,7 @@ plugin_descriptor_has_custom_ui (
     case PROT_LV2:
       {
         return
-          lv2_plugin_pick_most_preferrable_ui (
+          lv2_plugin_pick_most_preferable_ui (
             self->uri, NULL, NULL, true);
       }
       break;

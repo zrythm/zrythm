@@ -580,9 +580,9 @@ show_plugin_context_menu (
   APPEND; \
   new_setting = plugin_setting_new_default (descr)
 
-#define CONNECT_SIGNAL \
+#define CONNECT_SIGNAL(x) \
   g_signal_connect_data ( \
-    G_OBJECT (menuitem), "activate", \
+    G_OBJECT (x), "activate", \
     G_CALLBACK (on_plugin_setting_activate), \
     new_setting, \
     (GClosureNotify) delete_plugin_setting, 0)
@@ -597,14 +597,72 @@ show_plugin_context_menu (
   CREATE_WITH_LBL (_("Add to project"));
   new_setting->open_with_carla = false;
   new_setting->bridge_mode = CARLA_BRIDGE_NONE;
-  CONNECT_SIGNAL;
+  CONNECT_SIGNAL (menuitem);
+
+  if (descr->protocol == PROT_LV2 &&
+      lv2_plugin_pick_most_preferable_ui (
+        descr->uri, NULL, NULL,
+        false))
+    {
+      char * uis[40];
+      int num_uis = 0;
+      lv2_plugin_get_uis (
+        descr->uri, uis, &num_uis);
+
+      GtkMenu * submenu = NULL;
+      if (num_uis > 1)
+        {
+          menuitem =
+            GTK_MENU_ITEM (
+              gtk_menu_item_new_with_label (
+                _("Add to project with UI")));
+          APPEND;
+          submenu =
+            GTK_MENU (gtk_menu_new ());
+          gtk_widget_set_visible (
+            GTK_WIDGET (submenu), true);
+        }
+
+      for (int i = 0; i < num_uis; i++)
+        {
+          char * ui = uis[i];
+          if (lv2_plugin_is_ui_supported (
+                descr->uri, ui) &&
+              num_uis > 1)
+            {
+              GtkMenuItem * submenu_item =
+                GTK_MENU_ITEM (
+                  gtk_menu_item_new_with_label (
+                    g_strdup (ui)));
+              gtk_widget_set_visible (
+                GTK_WIDGET (submenu_item), true);
+              gtk_menu_shell_append (
+                GTK_MENU_SHELL (submenu),
+                GTK_WIDGET (submenu_item));
+              new_setting =
+                plugin_setting_new_default (descr);
+              new_setting->open_with_carla = false;
+              new_setting->bridge_mode =
+                CARLA_BRIDGE_NONE;
+              g_free_and_null (new_setting->ui_uri);
+              new_setting->ui_uri = g_strdup (ui);
+              CONNECT_SIGNAL (submenu_item);
+            }
+          g_free (ui);
+        }
+      if (num_uis > 1)
+        {
+          gtk_menu_item_set_submenu (
+            menuitem, GTK_WIDGET (submenu));
+        }
+    }
 
 #ifdef HAVE_CARLA
   CREATE_WITH_LBL (
     _("Add to project (carla)"));
   new_setting->open_with_carla = true;
   new_setting->bridge_mode = CARLA_BRIDGE_NONE;
-  CONNECT_SIGNAL;
+  CONNECT_SIGNAL (menuitem);
 
   if (plugin_descriptor_has_custom_ui (descr) &&
       z_carla_discovery_get_bridge_mode (descr) ==
@@ -615,14 +673,14 @@ show_plugin_context_menu (
         _("Add to project (bridged UI)"));
       new_setting->open_with_carla = true;
       new_setting->bridge_mode = CARLA_BRIDGE_UI;
-      CONNECT_SIGNAL;
+      CONNECT_SIGNAL (menuitem);
     }
 
   CREATE_WITH_LBL (
     _("Add to project (bridged full)"));
   new_setting->open_with_carla = true;
   new_setting->bridge_mode = CARLA_BRIDGE_FULL;
-  CONNECT_SIGNAL;
+  CONNECT_SIGNAL (menuitem);
 #endif
 
   menuitem =

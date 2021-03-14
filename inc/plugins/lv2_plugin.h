@@ -455,6 +455,15 @@ lv2_plugin_is_ui_supported (
   const char * ui_uri);
 
 /**
+ * Returns the UI URIs that this plugin has.
+ */
+void
+lv2_plugin_get_uis (
+  const char * pl_uri,
+  char **      uris,
+  int *        num_uris);
+
+/**
  * Pick the most preferable UI for the given flag.
  *
  * @param[out] ui (Output) UI of the specific
@@ -495,7 +504,7 @@ lv2_plugin_get_ui_binary_uri (
  * @return Whether a UI was picked.
  */
 bool
-lv2_plugin_pick_most_preferrable_ui (
+lv2_plugin_pick_most_preferable_ui (
   const char * plugin_uri,
   char **      out_ui,
   char **      out_ui_type,

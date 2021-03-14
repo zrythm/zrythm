@@ -2042,6 +2042,38 @@ lv2_plugin_is_ui_supported (
   return false;
 }
 
+/**
+ * Returns the UI URIs that this plugin has.
+ */
+void
+lv2_plugin_get_uis (
+  const char * pl_uri,
+  char **      uris,
+  int *        num_uris)
+{
+  *num_uris = 0;
+
+  LilvNode * lv2_uri =
+    lilv_new_uri (LILV_WORLD, pl_uri);
+  const LilvPlugin * lilv_plugin =
+    lilv_plugins_get_by_uri (
+      LILV_PLUGINS, lv2_uri);
+  lilv_node_free (lv2_uri);
+  LilvUIs * uis =
+    lilv_plugin_get_uis (lilv_plugin);
+  LILV_FOREACH (uis, u, uis)
+    {
+      const LilvUI * cur_ui =
+        lilv_uis_get (uis, u);
+      const LilvNode * ui_uri =
+        lilv_ui_get_uri (cur_ui);
+      uris[(*num_uris)++] =
+        g_strdup (lilv_node_as_uri (ui_uri));
+    }
+
+  lilv_uis_free (uis);
+}
+
 char *
 lv2_plugin_get_ui_class (
   const char * pl_uri,
@@ -2166,7 +2198,7 @@ lv2_plugin_is_ui_external (
  * @return Whether a UI was picked.
  */
 bool
-lv2_plugin_pick_most_preferrable_ui (
+lv2_plugin_pick_most_preferable_ui (
   const char * plugin_uri,
   char **      out_ui_str,
   char **      out_ui_type_str,
