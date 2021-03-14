@@ -175,7 +175,8 @@ if get_option ('tests')
     'gui/backend/arranger_selections': {
       parallel: true },
     'integration/recording': { parallel: false },
-    'plugins/carla_discovery': { parallel: false },
+    'plugins/carla_discovery': { parallel: true },
+    'plugins/carla_native_plugin': { parallel: false },
     'plugins/lv2_plugin': { parallel: false },
     'plugins/plugin': { parallel: false },
     'plugins/plugin_manager': { parallel: true },

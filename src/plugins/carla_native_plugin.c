@@ -55,6 +55,35 @@
 
 #include <CarlaHost.h>
 
+static PluginType
+get_plugin_type_from_protocol (
+  PluginProtocol protocol)
+{
+  switch (protocol)
+    {
+    case PROT_LV2:
+      return PLUGIN_LV2;
+    case PROT_AU:
+      return PLUGIN_AU;
+    case PROT_VST:
+      return PLUGIN_VST2;
+    case PROT_VST3:
+      return PLUGIN_VST3;
+    case PROT_SFZ:
+      return PLUGIN_SFZ;
+    case PROT_SF2:
+      return PLUGIN_SF2;
+    case PROT_DSSI:
+      return PLUGIN_DSSI;
+    case PROT_LADSPA:
+      return PLUGIN_LADSPA;
+    default:
+      g_return_val_if_reached (0);
+    }
+
+  g_return_val_if_reached (0);
+}
+
 void
 carla_native_plugin_init_loaded (
   CarlaNativePlugin * self)
@@ -604,6 +633,14 @@ carla_native_plugin_has_custom_ui (
     carla_create_native_plugin_host_handle (
       native_pl->native_plugin_descriptor,
       native_pl->native_plugin_handle);
+  PluginType type =
+    get_plugin_type_from_protocol (descr->protocol);
+  carla_add_plugin (
+    native_pl->host_handle,
+    descr->arch == ARCH_64 ?
+      BINARY_NATIVE : BINARY_WIN32,
+    type, descr->path, descr->name,
+    descr->uri, descr->unique_id, NULL, 0);
   const CarlaPluginInfo * info =
     carla_get_plugin_info (
       native_pl->host_handle, 0);
@@ -979,51 +1016,10 @@ create_from_setting (
   g_return_val_if_fail (
     setting->open_with_carla, NULL);
 
-  CarlaNativePlugin * self = NULL;
-  switch (descr->protocol)
-    {
-    case PROT_LV2:
-      self =
-        create_plugin (plugin, PLUGIN_LV2);
-      break;
-    case PROT_AU:
-      self =
-        create_plugin (plugin, PLUGIN_AU);
-      break;
-    case PROT_VST:
-      self =
-        create_plugin (plugin, PLUGIN_VST2);
-      break;
-    case PROT_VST3:
-      self =
-        create_plugin (plugin, PLUGIN_VST3);
-      break;
-    case PROT_SFZ:
-      self =
-        create_plugin (plugin, PLUGIN_SFZ);
-      break;
-    case PROT_SF2:
-      self =
-        create_plugin (plugin, PLUGIN_SF2);
-      break;
-    case PROT_DSSI:
-      self =
-        create_plugin (plugin, PLUGIN_DSSI);
-      break;
-    case PROT_LADSPA:
-      self =
-        create_plugin (plugin, PLUGIN_LADSPA);
-      break;
-#if 0
-    case PROT_CARLA_INTERNAL:
-      create_carla_internal (
-        descr->carla_type);
-      break;
-#endif
-    default:
-      g_warn_if_reached ();
-      break;
-    }
+  PluginType type =
+    get_plugin_type_from_protocol (descr->protocol);
+  CarlaNativePlugin * self =
+    create_plugin (plugin, type);
   g_warn_if_fail (self);
 
   return self;

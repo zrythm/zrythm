@@ -40,8 +40,8 @@ possible thanks to
 [Carla](https://github.com/falkTX/Carla/).
 
 ### Supported backends
-- Audio: JACK, PulseAudio, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
-- MIDI: JACK, WindowsMME, RtMidi (ALSA sequencer/Windows MME/CoreMIDI)
+- Audio: JACK (PipeWire), PulseAudio, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
+- MIDI: JACK (PipeWire), WindowsMME, RtMidi (ALSA sequencer/Windows MME/CoreMIDI)
 
 ### Supported platforms
 - GNU/Linux, FreeBSD, Windows, MacOS
