@@ -139,7 +139,7 @@ plugin_setting_validate (
    * carla */
   if (plugin_descriptor_has_custom_ui (
         self->descr) &&
-      !global_force_generic)
+      !self->force_generic_ui)
     {
       self->open_with_carla = true;
     }
