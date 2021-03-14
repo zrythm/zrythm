@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.14.1.1] - 2021-03-14
+### Added
+- Add context option to select UI if plugin has multiple
+
+### Changed
+- Wrap version in triple backticks in bug report template
+- Store selected LV2 UI in plugin settings
+- Make bug report dialog top level if main window is not initialized
+- Use timestamp for log file in /tmp
+
+### Fixed
+- Fix blocking when attempting to connect ports
+- Fix errors when deleting automation points or chords
+- Fix plugin collections not being recognized
+- Fix crash on right-click -> paste
+- Fix chord track not receiving MIDI panic messages
+- Fix chord higlighting not working properly
+- Fix LV2 external UIs not opening/closing properly
+- Fix attempting to get a backtrace crashing on some systems
+
+### Removed
+- Remove global option to force generic UIs
+- Remove global option to bridge unsupported UIs
+
 ## [1.0.0-alpha.14.0.1] - 2021-03-12
 ### Added
 - Make LV2 parameters automatable if numeric
