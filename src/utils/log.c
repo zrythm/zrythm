@@ -720,7 +720,8 @@ log_idle_cb (
                 PROGRAM_NAME);
               GtkWidget * dialog =
                 bug_report_dialog_new (
-                  GTK_WINDOW (MAIN_WINDOW),
+                  MAIN_WINDOW ?
+                    GTK_WINDOW (MAIN_WINDOW) : NULL,
                   msg, ev->backtrace);
               gtk_dialog_run (GTK_DIALOG (dialog));
               gtk_widget_destroy (dialog);
