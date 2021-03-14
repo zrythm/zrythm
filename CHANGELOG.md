@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.14.1.1] - 2021-03-14
+## [1.0.0-alpha.14.1.2] - 2021-03-14
 ### Added
 - Add context option to select UI if plugin has multiple
 

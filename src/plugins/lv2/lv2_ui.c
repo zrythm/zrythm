@@ -405,6 +405,7 @@ lv2_ui_instantiate (
 
   const char* bundle_uri =
     plugin->plugin->setting->ui_uri;
+  g_return_if_fail (bundle_uri);
   char * binary_uri =
     lv2_plugin_get_ui_binary_uri (
       plugin->plugin->setting->descr->uri,

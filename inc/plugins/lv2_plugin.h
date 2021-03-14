@@ -479,14 +479,25 @@ lv2_plugin_pick_ui (
   const LilvUI **     out_ui,
   const LilvNode **   out_ui_type);
 
+NONNULL
 char *
 lv2_plugin_get_ui_class (
   const char * pl_uri,
   const char * ui_uri);
 
 /**
+ * Returns the bundle path of the UI as a URI.
+ */
+NONNULL
+char *
+lv2_plugin_get_ui_bundle_uri (
+  const char * pl_uri,
+  const char * ui_uri);
+
+/**
  * Returns the binary path of the UI as a URI.
  */
+NONNULL
 char *
 lv2_plugin_get_ui_binary_uri (
   const char * pl_uri,
@@ -516,6 +527,7 @@ bool
 lv2_plugin_ui_type_is_external (
   const LilvNode * ui_type);
 
+NONNULL
 bool
 lv2_plugin_is_ui_external (
   const char * uri,

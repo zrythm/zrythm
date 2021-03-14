@@ -2113,6 +2113,40 @@ lv2_plugin_get_ui_class (
 }
 
 /**
+ * Returns the bundle path of the UI as a URI.
+ */
+char *
+lv2_plugin_get_ui_bundle_uri (
+  const char * pl_uri,
+  const char * ui_uri)
+{
+  LilvNode * lv2_uri =
+    lilv_new_uri (LILV_WORLD, pl_uri);
+  const LilvPlugin * lilv_plugin =
+    lilv_plugins_get_by_uri (
+      LILV_PLUGINS, lv2_uri);
+  lilv_node_free (lv2_uri);
+  LilvUIs * uis =
+    lilv_plugin_get_uis (lilv_plugin);
+  LilvNode * ui_uri_node =
+    lilv_new_uri (LILV_WORLD, ui_uri);
+  g_return_val_if_fail (ui_uri_node, NULL);
+  const LilvUI * ui =
+    lilv_uis_get_by_uri (uis, ui_uri_node);
+
+  const LilvNode * bundle_uri_node =
+    lilv_ui_get_bundle_uri (ui);
+  char * bundle_uri =
+    g_strdup (
+      lilv_node_as_uri (bundle_uri_node));
+
+  lilv_node_free (ui_uri_node);
+  lilv_uis_free (uis);
+
+  return bundle_uri;
+}
+
+/**
  * Returns the binary path of the UI as a URI.
  */
 char *
@@ -2130,6 +2164,7 @@ lv2_plugin_get_ui_binary_uri (
     lilv_plugin_get_uis (lilv_plugin);
   LilvNode * ui_uri_node =
     lilv_new_uri (LILV_WORLD, ui_uri);
+  g_return_val_if_fail (ui_uri_node, NULL);
   const LilvUI * ui =
     lilv_uis_get_by_uri (uis, ui_uri_node);
 
@@ -2221,6 +2256,7 @@ lv2_plugin_pick_most_preferable_ui (
     lv2_plugin_pick_ui (
       uis, LV2_PLUGIN_UI_WRAPPABLE,
       &out_ui, &out_ui_type);
+  g_debug ("wrappable UI found: %d", ui_picked);
 
 #ifdef HAVE_CARLA
   /* try a bridged UI */
@@ -2230,6 +2266,7 @@ lv2_plugin_pick_most_preferable_ui (
         lv2_plugin_pick_ui (
           uis, LV2_PLUGIN_UI_FOR_BRIDGING,
           &out_ui, &out_ui_type);
+      g_debug ("bridgable UI found: %d", ui_picked);
     }
 #endif
 
@@ -2241,6 +2278,7 @@ lv2_plugin_pick_most_preferable_ui (
           uis, LV2_PLUGIN_UI_EXTERNAL,
           &out_ui, &out_ui_type);
     }
+  g_debug ("external UI found: %d", ui_picked);
 
   if (out_ui_str)
     {
