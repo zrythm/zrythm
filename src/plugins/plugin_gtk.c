@@ -530,6 +530,16 @@ void
 plugin_gtk_create_window (
   Plugin * plugin)
 {
+  if (plugin->lv2 &&
+      plugin->lv2->has_external_ui &&
+      plugin->lv2->external_ui_widget)
+    {
+      g_message (
+        "plugin has external UI, skipping window "
+        "creation");
+      return;
+    }
+
   g_message (
     "creating GTK window for %s",
     plugin->setting->descr->name);
@@ -1700,11 +1710,13 @@ plugin_gtk_close_ui (
 
   if (pl->lv2 &&
       pl->lv2->has_external_ui &&
-      pl->lv2->external_ui_widget)
+      pl->lv2->external_ui_widget &&
+      pl->external_ui_visible)
     {
       g_message ("hiding external LV2 UI");
       pl->lv2->external_ui_widget->hide (
         pl->lv2->external_ui_widget);
+      pl->external_ui_visible = false;
     }
 
   return 0;

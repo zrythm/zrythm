@@ -86,6 +86,7 @@
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_properties_expander.h"
 #include "gui/widgets/track_visibility_tree.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
@@ -1054,6 +1055,10 @@ on_plugin_window_visibility_changed (
           plugin_strip_expander_widget_redraw_slot (
             track->channel->widget->inserts,
             pl->id.slot);
+          break;
+        case PLUGIN_SLOT_INSTRUMENT:
+          track_properties_expander_widget_refresh (
+            MW_TRACK_INSPECTOR->track_info, track);
           break;
         default:
           break;

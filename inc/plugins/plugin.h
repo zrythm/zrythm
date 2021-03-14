@@ -208,6 +208,10 @@ typedef struct Plugin
    */
   GtkWindow *       window;
 
+  /** Whether show () has been called on the LV2
+   * external UI. */
+  bool              external_ui_visible;
+
   /** The GdkWindow of this widget should be
    * somewhere inside \ref Plugin.window and will
    * be used for wrapping plugin UIs in. */

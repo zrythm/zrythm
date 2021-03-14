@@ -545,8 +545,11 @@ on_external_ui_closed (
 {
   g_message ("External LV2 UI closed");
   Lv2Plugin* self = (Lv2Plugin *) controller;
-  self->plugin->visible = 0;
   plugin_gtk_close_ui (self->plugin);
+  self->plugin->visible = 0;
+  EVENTS_PUSH (
+    ET_PLUGIN_VISIBILITY_CHANGED,
+    self->plugin);
 }
 
 /**
@@ -605,8 +608,10 @@ lv2_gtk_open_ui (
   if (plugin->has_external_ui &&
       plugin->external_ui_widget)
     {
+      g_message ("showing external LV2 UI");
       plugin->external_ui_widget->show (
         plugin->external_ui_widget);
+      plugin->plugin->external_ui_visible = true;
     }
   else if (plugin->ui_instance)
     {
@@ -648,9 +653,11 @@ lv2_gtk_open_ui (
   lv2_ui_init (plugin);
 
   plugin->plugin->ui_instantiated = 1;
+#if 0
   EVENTS_PUSH (
     ET_PLUGIN_VISIBILITY_CHANGED,
     plugin->plugin);
+#endif
 
   g_message (
     "plugin window shown, adding idle timeout. "

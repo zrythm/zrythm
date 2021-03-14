@@ -1765,18 +1765,8 @@ plugin_open_ui (
         }
       else if (descr->protocol == PROT_LV2)
         {
-          if (self->lv2->has_external_ui &&
-              self->lv2->external_ui_widget)
-            {
-              self->lv2->external_ui_widget->
-                show (
-                  self->lv2->external_ui_widget);
-            }
-          else
-            {
-              plugin_gtk_create_window (self);
-              lv2_gtk_open_ui (self->lv2);
-            }
+          plugin_gtk_create_window (self);
+          lv2_gtk_open_ui (self->lv2);
         }
     }
 }
