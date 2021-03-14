@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,20 +42,21 @@
 
 #include <lv2/instance-access/instance-access.h>
 
-static const bool dump = true;
+static const bool debug = true;
 
 /**
  * Returns if the UI of the plugin is resizable.
  */
-int
+bool
 lv2_ui_is_resizable (
   Lv2Plugin* plugin)
 {
-  if (!plugin->ui)
-    return 0;
+  g_return_val_if_fail (
+    plugin->plugin->setting->ui_uri, false);
 
-  const LilvNode * s =
-    lilv_ui_get_uri (plugin->ui);
+  LilvNode * s =
+    lilv_new_uri (
+      LILV_WORLD, plugin->plugin->setting->ui_uri);
   LilvNode * p =
     lilv_new_uri (
       LILV_WORLD, LV2_CORE__optionalFeature);
@@ -76,6 +77,7 @@ lv2_ui_is_resizable (
   lilv_node_free (nrs);
   lilv_node_free (fs);
   lilv_node_free (p);
+  lilv_node_free (s);
 
   return !fs_matches && !nrs_matches;
 }
@@ -147,10 +149,12 @@ lv2_ui_read_and_apply_events (
       Port * port =
         plugin->plugin->lilv_ports[ev.index];
 
+      bool have_custom_ui =
+        !plugin->plugin->setting->force_generic_ui;
+
       /* float control change - this is only for
        * plugins with custom UIs */
-      if (ev.protocol == 0 &&
-          plugin_has_custom_ui (plugin->plugin))
+      if (ev.protocol == 0 && have_custom_ui)
         {
           assert (ev.size == sizeof (float));
           g_return_if_fail (port);
@@ -166,7 +170,7 @@ lv2_ui_read_and_apply_events (
             plugin->plugin->setting->descr->name,
             port->id.label,
             (double) * (float *) body,
-            plugin_has_custom_ui (plugin->plugin));
+            have_custom_ui);
         }
       else if (ev.protocol ==
                  PM_URIDS.atom_eventTransfer)
@@ -187,7 +191,7 @@ lv2_ui_read_and_apply_events (
             "event for %s - has custom UI %d",
             __func__, plugin->plugin->setting->descr->name,
             port->id.label,
-            plugin_has_custom_ui (plugin->plugin));
+            have_custom_ui);
         }
       else
         {
@@ -215,7 +219,8 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
     return;
 
   g_debug ("%s: %s: %s (%d)",
-    __func__, lv2_plugin->plugin->setting->descr->name,
+    __func__,
+    lv2_plugin->plugin->setting->descr->name,
     port->id.sym,
     port->lilv_port_index);
 
@@ -346,7 +351,7 @@ lv2_ui_send_event_from_ui_to_plugin (
     }
 
   /* also see https://git.open-music-kontrollers.ch/lv2/sherlock.lv2/tree/atom_inspector_nk.c#n39 */
-  if (dump &&
+  if (debug &&
       protocol == PM_URIDS.atom_eventTransfer)
     {
       const LV2_Atom* atom =
@@ -399,22 +404,24 @@ lv2_ui_instantiate (
   plugin->external_ui_widget = NULL;
 
   const char* bundle_uri =
-    lilv_node_as_uri (
-      lilv_ui_get_bundle_uri ( plugin->ui));
-  const char* binary_uri =
-    lilv_node_as_uri (
-      lilv_ui_get_binary_uri (plugin->ui));
+    plugin->plugin->setting->ui_uri;
+  char * binary_uri =
+    lv2_plugin_get_ui_binary_uri (
+      plugin->plugin->setting->descr->uri,
+      bundle_uri);
   char* bundle_path =
     lilv_file_uri_parse (bundle_uri, NULL);
   char* binary_path =
     lilv_file_uri_parse (binary_uri, NULL);
 
-  const LV2_Feature data_feature = {
-          LV2_DATA_ACCESS_URI, &plugin->ext_data
-  };
-  const LV2_Feature idle_feature = {
-          LV2_UI__idleInterface, NULL
-  };
+  const LV2_Feature data_feature =
+    {
+      LV2_DATA_ACCESS_URI, &plugin->ext_data,
+    };
+  const LV2_Feature idle_feature =
+    {
+      LV2_UI__idleInterface, NULL
+    };
 
   if (plugin->has_external_ui)
     {
@@ -441,17 +448,19 @@ lv2_ui_instantiate (
         NULL
       };
 
+      char * ui_class =
+        lv2_plugin_get_ui_class (
+          plugin->plugin->setting->descr->uri,
+          plugin->plugin->setting->ui_uri);
       plugin->ui_instance =
         suil_instance_new (
           plugin->ui_host, plugin,
           native_ui_type,
-          lilv_node_as_uri (
-            lilv_plugin_get_uri (
-              plugin->lilv_plugin)),
-          lilv_node_as_uri (
-            lilv_ui_get_uri (plugin->ui)),
-          lilv_node_as_uri (plugin->ui_type),
+          plugin->plugin->setting->descr->uri,
+          plugin->plugin->setting->ui_uri,
+          ui_class,
           bundle_path, binary_path, ui_features);
+      g_free (ui_class);
 
       if (plugin->ui_instance)
         {
@@ -467,45 +476,51 @@ lv2_ui_instantiate (
   else
     {
       const LV2_Feature parent_feature = {
-              LV2_UI__parent, parent
+        LV2_UI__parent, parent
       };
       const LV2_Feature instance_feature = {
-              LV2_INSTANCE_ACCESS_URI, lilv_instance_get_handle(plugin->instance)
+        LV2_INSTANCE_ACCESS_URI,
+        lilv_instance_get_handle (plugin->instance)
       };
       const LV2_Feature* ui_features[] = {
-              &plugin->map_feature, &plugin->unmap_feature,
-              &instance_feature,
-              &data_feature,
-              &idle_feature,
-              &plugin->log_feature,
-              &parent_feature,
-              &plugin->options_feature,
-              NULL
+        &plugin->map_feature,
+        &plugin->unmap_feature,
+        &instance_feature,
+        &data_feature,
+        &idle_feature,
+        &plugin->log_feature,
+        &parent_feature,
+        &plugin->options_feature,
+        NULL,
       };
 
+      char * ui_class =
+        lv2_plugin_get_ui_class (
+          plugin->plugin->setting->descr->uri,
+          plugin->plugin->setting->ui_uri);
       plugin->ui_instance =
         suil_instance_new (
           plugin->ui_host,
           plugin,
           native_ui_type,
-          lilv_node_as_uri (
-            lilv_plugin_get_uri (
-              plugin->lilv_plugin)),
-          lilv_node_as_uri (
-            lilv_ui_get_uri(plugin->ui)),
-          lilv_node_as_uri(plugin->ui_type),
+          plugin->plugin->setting->descr->uri,
+          plugin->plugin->setting->ui_uri,
+          ui_class,
           bundle_path,
           binary_path,
           ui_features);
+      g_free (ui_class);
     }
 
-  lilv_free(binary_path);
-  lilv_free(bundle_path);
+  lilv_free (binary_path);
+  lilv_free (bundle_path);
+  g_free (binary_uri);
 
   if (!plugin->ui_instance)
     {
-      g_warning ("Failed to get UI instance for %s",
-                 plugin->plugin->setting->descr->name);
+      g_warning (
+        "Failed to get UI instance for %s",
+        plugin->plugin->setting->descr->name);
     }
 }
 

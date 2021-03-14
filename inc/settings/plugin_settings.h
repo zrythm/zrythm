@@ -75,6 +75,11 @@ typedef struct PluginSetting
 
   /** Requested carla bridge mode. */
   CarlaBridgeMode    bridge_mode;
+
+  /** Requested UI URI (if LV2 and non-bridged and
+   * not forcing a generic UI and have a custom
+   * UI */
+  char *             ui_uri;
 } PluginSetting;
 
 typedef struct PluginSettings
@@ -98,6 +103,8 @@ plugin_setting_fields_schema[] =
   YAML_FIELD_ENUM (
     PluginSetting, bridge_mode,
     carla_bridge_mode_strings),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PluginSetting, ui_uri),
 
   CYAML_FIELD_END
 };

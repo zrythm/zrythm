@@ -18,6 +18,7 @@
  */
 
 #include "plugins/carla/carla_discovery.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
@@ -28,7 +29,7 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define PLUGIN_SETTINGS_VERSION 1
+#define PLUGIN_SETTINGS_VERSION 2
 #define PLUGIN_SETTINGS_FILENAME "plugin-settings.yaml"
 
 /**
@@ -74,6 +75,7 @@ plugin_setting_clone (
   *new_setting = *src;
   new_setting->descr =
     plugin_descriptor_clone (src->descr);
+  new_setting->ui_uri = g_strdup (src->ui_uri);
 
   if (validate)
     {
@@ -92,11 +94,13 @@ plugin_setting_print (
     "descr.uri=%s\n"
     "open_with_carla=%d\n"
     "force_generic_ui=%d\n"
-    "bridge_mode=%s",
+    "bridge_mode=%s\n"
+    "ui_uri=%s",
     self->descr->uri, self->open_with_carla,
     self->force_generic_ui,
     carla_bridge_mode_strings[
-      self->bridge_mode].str);
+      self->bridge_mode].str,
+    self->ui_uri);
 }
 
 /**
@@ -131,7 +135,10 @@ plugin_setting_validate (
 #if defined (_WOE32) && defined (HAVE_CARLA)
   /* open all LV2 plugins with custom UIs using
    * carla */
-  if (plugin_descriptor_has_custom_ui (self->descr))
+  if (plugin_descriptor_has_custom_ui (
+        self->descr) &&
+      !global_force_generic)
+    )
     {
       self->open_with_carla = true;
     }
@@ -174,6 +181,55 @@ plugin_setting_validate (
         }
     }
 #endif
+
+  /* if no custom UI, force generic */
+  if (!plugin_descriptor_has_custom_ui (self->descr))
+    {
+      self->force_generic_ui = true;
+    }
+
+  /* if setting cannot have a UI URI, clear it */
+  if (self->descr->protocol != PROT_LV2 ||
+      self->open_with_carla ||
+      self->force_generic_ui)
+    {
+      g_free_and_null (self->ui_uri);
+    }
+  /* otherwise validate it */
+  else
+    {
+      /* if already have UI uri and not supported,
+       * clear it */
+      if (self->ui_uri &&
+          !lv2_plugin_is_ui_supported (
+             self->descr->uri, self->ui_uri))
+        {
+          g_free_and_null (self->ui_uri);
+        }
+
+      /* if no UI URI, pick one */
+      if (!self->ui_uri)
+        {
+          char * picked_ui = NULL;
+          bool ui_picked =
+            lv2_plugin_pick_most_preferrable_ui (
+              self->descr->uri, &picked_ui,
+              NULL, true);
+
+          /* if a suitable UI was found, set the
+           * UI URI */
+          if (ui_picked)
+            {
+              g_return_if_fail (picked_ui);
+              self->ui_uri = picked_ui;
+            }
+          /* otherwise force generic UI */
+          else
+            {
+              self->force_generic_ui = true;
+            }
+        }
+    }
 
   g_debug ("plugin setting validated. new setting:");
   plugin_setting_print (self);

@@ -448,8 +448,6 @@ plugin_new_from_setting (
 #ifdef HAVE_CARLA
   if (setting->open_with_carla)
     {
-new_carla_plugin:
-      setting->open_with_carla = true;
       carla_native_plugin_new_from_setting (self);
       if (!self->carla)
         {
@@ -460,48 +458,16 @@ new_carla_plugin:
   else
     {
 #endif
-      switch (descr->protocol)
+      if (descr->protocol == PROT_LV2)
         {
-        case PROT_LV2:
-          {
-#ifdef HAVE_CARLA
-            LilvNode * lv2_uri =
-              lilv_new_uri (
-                LILV_WORLD, descr->uri);
-            const LilvPlugin * lilv_plugin =
-              lilv_plugins_get_by_uri (
-                LILV_PLUGINS, lv2_uri);
-            lilv_node_free (lv2_uri);
-
-            /* try to bridge bridgable plugins */
-            if (!ZRYTHM_TESTING &&
-                g_settings_get_boolean (
-                  S_P_PLUGINS_UIS,
-                  "bridge-unsupported"))
-              {
-                LilvUIs * uis =
-                  lilv_plugin_get_uis (lilv_plugin);
-                const LilvUI * picked_ui;
-                bool needs_bridging =
-                  lv2_plugin_pick_ui (
-                    uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-                    &picked_ui, NULL);
-                lilv_uis_free (uis);
-
-                if (needs_bridging)
-                  {
-                    goto new_carla_plugin;
-                  }
-              }
-#endif
-            lv2_plugin_new_from_uri (
-              self, descr->uri);
-            g_return_val_if_fail (
-              self->lv2, NULL);
-          }
-          break;
-        default:
-          break;
+          lv2_plugin_new_from_uri (
+            self, descr->uri);
+          g_return_val_if_fail (
+            self->lv2, NULL);
+        }
+      else
+        {
+          g_return_val_if_reached (NULL);
         }
 #ifdef HAVE_CARLA
     }
@@ -1719,7 +1685,7 @@ plugin_process (
 }
 
 /**
- * shows plugin ui and sets window close callback
+ * Shows plugin ui and sets window close callback
  */
 void
 plugin_open_ui (
@@ -1749,8 +1715,7 @@ plugin_open_ui (
        setting->bridge_mode != CARLA_BRIDGE_FULL))
     {
       char * deprecated_uri =
-        lv2_plugin_has_deprecated_ui (
-          descr->uri);
+        lv2_plugin_has_deprecated_ui (descr->uri);
       if (deprecated_uri)
         {
           char msg[1200];
@@ -1772,20 +1737,6 @@ plugin_open_ui (
         }
     }
 
-  /* check if we should show generic or custom,
-   * and whether we should force opening with
-   * carla */
-  if (z_gtk_is_wayland () &&
-      plugin_has_custom_ui (self) &&
-      !setting->force_generic_ui)
-    {
-#ifdef HAVE_CARLA
-      setting->open_with_carla = true;
-#else
-      setting->force_generic_ui = true;
-#endif
-    }
-
   /* if plugin already has a window (either generic
    * or LV2 non-carla and non-external UI) */
   if (GTK_IS_WINDOW (self->window))
@@ -1796,9 +1747,7 @@ plugin_open_ui (
     }
   else
     {
-      bool generic_ui =
-        !plugin_has_custom_ui (self) ||
-        setting->force_generic_ui;
+      bool generic_ui = setting->force_generic_ui;
 
       /* handle generic UIs, then carla custom,
        * then LV2 custom */
@@ -1882,64 +1831,6 @@ plugin_select (
         MIXER_SELECTIONS, pl->id.slot,
         pl->id.slot_type, F_PUBLISH_EVENTS);
     }
-}
-
-/**
- * Returns whether the plugin has a custom UI.
- */
-bool
-plugin_has_custom_ui (
-  Plugin * pl)
-{
-  g_return_val_if_fail (
-    IS_PLUGIN (pl) && pl->setting->descr, false);
-
-  if (pl->has_custom_ui_set)
-    {
-      return pl->has_custom_ui;
-    }
-
-  /*g_debug (*/
-    /*"checking if plugin %s has custom UI...",*/
-    /*pl->descr->name);*/
-
-  bool has_custom_ui = false;
-#ifdef HAVE_CARLA
-  if (pl->setting->open_with_carla)
-    {
-      g_return_val_if_fail (
-        pl->carla && pl->carla->host_handle, false);
-      /*g_debug ("getting carla plugin info...");*/
-      const CarlaPluginInfo * info =
-        carla_get_plugin_info (
-          pl->carla->host_handle, 0);
-      /*g_debug ("got carla plugin info");*/
-      g_return_val_if_fail (info, false);
-      has_custom_ui =
-        info->hints & PLUGIN_HAS_CUSTOM_UI;
-    }
-  else
-    {
-#endif
-      switch (pl->setting->descr->protocol)
-        {
-        case PROT_LV2:
-          g_return_val_if_fail (
-            IS_LV2_PLUGIN (pl->lv2), false);
-          has_custom_ui =  pl->lv2->ui != NULL;
-          break;
-        default:
-          g_warn_if_reached ();
-          break;
-        }
-#ifdef HAVE_CARLA
-    }
-#endif
-
-  pl->has_custom_ui = has_custom_ui;
-  pl->has_custom_ui_set = true;
-
-  return has_custom_ui;
 }
 
 /**
@@ -2306,9 +2197,7 @@ plugin_close_ui (
   plugin_gtk_close_ui (self);
 
 #ifdef HAVE_CARLA
-  bool generic_ui =
-    !plugin_has_custom_ui (self) ||
-    self->setting->force_generic_ui;
+  bool generic_ui = self->setting->force_generic_ui;
   if (!generic_ui && self->setting->open_with_carla)
     {
       g_message ("closing carla plugin UI");

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,8 @@
 #ifndef __PLUGINS_LV2_LV2_UI_H__
 #define __PLUGINS_LV2_LV2_UI_H__
 
+#include <stdbool.h>
+
 #include <suil/suil.h>
 
 typedef struct Lv2Plugin Lv2Plugin;
@@ -39,7 +41,7 @@ typedef struct Lv2Plugin Lv2Plugin;
 /**
  * Returns if the UI of the plugin is resizable.
  */
-int
+bool
 lv2_ui_is_resizable (
   Lv2Plugin* plugin);
 

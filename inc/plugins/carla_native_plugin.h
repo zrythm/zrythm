@@ -250,6 +250,10 @@ void
 carla_native_plugin_close (
   CarlaNativePlugin * self);
 
+bool
+carla_native_plugin_has_custom_ui (
+  PluginDescriptor * descr);
+
 /**
  * Deactivates, cleanups and frees the instance.
  */

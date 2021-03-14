@@ -1422,6 +1422,9 @@ run (
         plugin->instance->lv2_handle);
     }
 
+  bool have_custom_ui =
+    !plugin->plugin->setting->force_generic_ui;
+
   /* Check if it's time to send updates to the UI */
   plugin->event_delta_t += nframes;
   bool send_ui_updates = false;
@@ -1429,7 +1432,7 @@ run (
     (uint32_t)
     ((float) AUDIO_ENGINE->sample_rate /
      plugin->plugin->ui_update_hz);
-  if (plugin_has_custom_ui (plugin->plugin) &&
+  if (have_custom_ui &&
       plugin->plugin->visible &&
       (plugin->event_delta_t > update_frames))
     {
@@ -2015,7 +2018,219 @@ lv2_plugin_has_deprecated_ui (
 }
 
 /**
- * Pick the most preferable UI.
+ * Returns whether the given UI uri is supported
+ * for non-bridged plugins.
+ */
+bool
+lv2_plugin_is_ui_supported (
+  const char * pl_uri,
+  const char * ui_uri)
+{
+  char * ui_class =
+    lv2_plugin_get_ui_class (
+      pl_uri, ui_uri);
+
+  if (suil_ui_supported (
+        LV2_UI__Gtk3UI, ui_class) ||
+      string_is_equal (
+        ui_class, LV2_KX__externalUi))
+    {
+      g_free (ui_class);
+      return true;
+    }
+
+  return false;
+}
+
+char *
+lv2_plugin_get_ui_class (
+  const char * pl_uri,
+  const char * ui_uri)
+{
+  LilvNode * lv2_uri =
+    lilv_new_uri (LILV_WORLD, pl_uri);
+  const LilvPlugin * lilv_plugin =
+    lilv_plugins_get_by_uri (
+      LILV_PLUGINS, lv2_uri);
+  lilv_node_free (lv2_uri);
+  LilvUIs * uis =
+    lilv_plugin_get_uis (lilv_plugin);
+  LilvNode * ui_uri_node =
+    lilv_new_uri (LILV_WORLD, ui_uri);
+  const LilvUI * ui =
+    lilv_uis_get_by_uri (uis, ui_uri_node);
+
+  const LilvNodes * ui_classes =
+    lilv_ui_get_classes (ui);
+  char * ui_type_uri = NULL;
+  LILV_FOREACH (nodes, t, ui_classes)
+    {
+      const LilvNode * ui_type =
+        lilv_nodes_get (ui_classes, t);
+      ui_type_uri =
+        g_strdup (
+          lilv_node_as_uri (ui_type));
+      break;
+    }
+
+  lilv_node_free (ui_uri_node);
+  lilv_uis_free (uis);
+
+  return ui_type_uri;
+}
+
+/**
+ * Returns the binary path of the UI as a URI.
+ */
+char *
+lv2_plugin_get_ui_binary_uri (
+  const char * pl_uri,
+  const char * ui_uri)
+{
+  LilvNode * lv2_uri =
+    lilv_new_uri (LILV_WORLD, pl_uri);
+  const LilvPlugin * lilv_plugin =
+    lilv_plugins_get_by_uri (
+      LILV_PLUGINS, lv2_uri);
+  lilv_node_free (lv2_uri);
+  LilvUIs * uis =
+    lilv_plugin_get_uis (lilv_plugin);
+  LilvNode * ui_uri_node =
+    lilv_new_uri (LILV_WORLD, ui_uri);
+  const LilvUI * ui =
+    lilv_uis_get_by_uri (uis, ui_uri_node);
+
+  const LilvNode * binary_uri_node =
+    lilv_ui_get_binary_uri (ui);
+  char * binary_uri =
+    g_strdup (
+      lilv_node_as_uri (binary_uri_node));
+
+  lilv_node_free (ui_uri_node);
+  lilv_uis_free (uis);
+
+  return binary_uri;
+}
+
+bool
+lv2_plugin_is_ui_external (
+  const char * uri,
+  const char * ui_uri)
+{
+  LilvNode * lv2_uri =
+    lilv_new_uri (LILV_WORLD, uri);
+  const LilvPlugin * lilv_plugin =
+    lilv_plugins_get_by_uri (
+      LILV_PLUGINS, lv2_uri);
+  lilv_node_free (lv2_uri);
+  LilvUIs * uis =
+    lilv_plugin_get_uis (lilv_plugin);
+  LilvNode * ui_uri_node =
+    lilv_new_uri (LILV_WORLD, ui_uri);
+  const LilvUI * ui =
+    lilv_uis_get_by_uri (uis, ui_uri_node);
+
+  const LilvNodes * ui_classes =
+    lilv_ui_get_classes (ui);
+  LILV_FOREACH (nodes, t, ui_classes)
+    {
+      const LilvNode * ui_type =
+        lilv_nodes_get (ui_classes, t);
+
+      if (lilv_node_equals (
+            ui_type,
+            PM_GET_NODE (LV2_KX__externalUi)))
+        {
+          lilv_node_free (ui_uri_node);
+          lilv_uis_free (uis);
+          return true;
+        }
+    }
+
+  lilv_node_free (ui_uri_node);
+  lilv_uis_free (uis);
+
+  return false;
+}
+
+/**
+ * Pick the most preferable UI for non-bridged
+ * plugins.
+ *
+ * Calls lv2_plugin_pick_ui().
+ *
+ * @param[out] ui (Output) UI of the specific
+ *   plugin.
+ * @param[out] ui_type UI type (eg, X11).
+ *
+ * @return Whether a UI was picked.
+ */
+bool
+lv2_plugin_pick_most_preferrable_ui (
+  const char * plugin_uri,
+  char **      out_ui_str,
+  char **      out_ui_type_str,
+  bool         allow_bridged)
+{
+  LilvNode * uri =
+    lilv_new_uri (LILV_WORLD, plugin_uri);
+  const LilvPlugin * lilv_pl =
+    lilv_plugins_get_by_uri (
+      LILV_PLUGINS, uri);
+  lilv_node_free (uri);
+  LilvUIs * uis =
+    lilv_plugin_get_uis (lilv_pl);
+  const LilvUI * out_ui;
+  const LilvNode * out_ui_type;
+
+  /* get wrappable UI */
+  bool ui_picked =
+    lv2_plugin_pick_ui (
+      uis, LV2_PLUGIN_UI_WRAPPABLE,
+      &out_ui, &out_ui_type);
+
+#ifdef HAVE_CARLA
+  /* try a bridged UI */
+  if (!ui_picked && allow_bridged)
+    {
+      ui_picked =
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
+          &out_ui, &out_ui_type);
+    }
+#endif
+
+  /* try an external UI */
+  if (!ui_picked)
+    {
+      ui_picked =
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_EXTERNAL,
+          &out_ui, &out_ui_type);
+    }
+
+  if (out_ui_str)
+    {
+      const LilvNode * out_ui_uri =
+        lilv_ui_get_uri (out_ui);
+      *out_ui_str =
+        g_strdup (
+          lilv_node_as_uri (out_ui_uri));
+    }
+  if (out_ui_type_str)
+    {
+      *out_ui_type_str =
+        g_strdup (
+          lilv_node_as_uri (out_ui_type));
+    }
+
+  lilv_uis_free (uis);
+
+  return ui_picked;
+}
+
+/**
+ * Pick the most preferable UI for the given flag.
  *
  * @param[out] ui (Output) UI of the specific
  *   plugin.
@@ -2509,49 +2724,30 @@ lv2_plugin_instantiate (
           lilv_plugin_get_uri (self->lilv_plugin));
     }
 
-  /* Get appropriate UI */
-  self->uis =
-    lilv_plugin_get_uis (self->lilv_plugin);
-  if (ZRYTHM_TESTING ||
-      !g_settings_get_boolean (
-        S_P_PLUGINS_UIS, "generic"))
+  const char * pl_uri =
+    self->plugin->setting->descr->uri;
+  const char * ui_uri =
+    self->plugin->setting->ui_uri;
+  if (ui_uri)
     {
-      /* get a wrappable UI */
-      g_message ("Looking for wrappable UI...");
-      bool ui_picked =
-        lv2_plugin_pick_ui (
-          self->uis, LV2_PLUGIN_UI_WRAPPABLE,
-          &self->ui, &self->ui_type);
-
-      /* if wrappable UI not found, get an external
-       * UI */
-      if (!ui_picked)
+      /* set whether the UI is external */
+      if (lv2_plugin_is_ui_external (
+            pl_uri, ui_uri))
         {
-          g_message (
-            "No wrappable UI found. "
-            "Looking for external UI...");
-          ui_picked =
-            lv2_plugin_pick_ui (
-              self->uis, LV2_PLUGIN_UI_EXTERNAL,
-              &self->ui, &self->ui_type);
-          if (ui_picked)
-            {
-              self->has_external_ui = true;
-            }
+          self->has_external_ui = true;
         }
-    }
 
-  if (self->ui)
-    {
-      g_message ("Selected UI: %s (type: %s)",
-        lilv_node_as_uri (
-          lilv_ui_get_uri(self->ui)),
-        lilv_node_as_uri (
-          self->ui_type));
+      char * class =
+        lv2_plugin_get_ui_class (
+          pl_uri, ui_uri);
+      g_message (
+        "Selected UI: %s (type: %s)",
+        ui_uri, class);
+      g_free (class);
     }
   else
     {
-      g_message ("Selected UI: None");
+      g_message ("Selected UI: Generic");
     }
 
   if (self->comm_buffer_size == 0)
@@ -3325,8 +3521,6 @@ lv2_plugin_free (
     sratom_free, self->sratom);
   object_free_w_func_and_null (
     sratom_free, self->ui_sratom);
-  object_free_w_func_and_null (
-    lilv_uis_free, self->uis);
 
   /*zix_sem_destroy (&self->exit_sem);*/
 

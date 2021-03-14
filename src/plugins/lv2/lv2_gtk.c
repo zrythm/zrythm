@@ -568,9 +568,7 @@ lv2_gtk_open_ui (
 
   /* Attempt to instantiate custom UI if
    * necessary */
-  if (plugin->ui &&
-      !g_settings_get_boolean (
-        S_P_PLUGINS_UIS, "generic"))
+  if (!plugin->plugin->setting->force_generic_ui)
     {
       if (plugin->has_external_ui)
         {
@@ -585,10 +583,14 @@ lv2_gtk_open_ui (
           plugin->extui.plugin_human_id =
             lilv_node_as_string (name);
           lilv_node_free (name);
+          char * ui_type =
+            lv2_plugin_get_ui_class (
+              plugin->plugin->setting->descr->uri,
+              plugin->plugin->setting->ui_uri);
           lv2_ui_instantiate (
-            plugin,
-            lilv_node_as_uri (plugin->ui_type),
+            plugin, ui_type,
             &plugin->extui);
+          g_free (ui_type);
         }
       else
         {

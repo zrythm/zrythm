@@ -289,7 +289,6 @@ engine_callback (
     }
 }
 
-
 static CarlaNativePlugin *
 _create (
   Plugin * plugin)
@@ -587,6 +586,34 @@ carla_native_plugin_populate_banks (
   char * str = g_string_free (presets_gstr, false);
   g_message ("%s", str);
   g_free (str);
+}
+
+bool
+carla_native_plugin_has_custom_ui (
+  PluginDescriptor * descr)
+{
+  CarlaNativePlugin * native_pl = _create (NULL);
+
+  /* instantiate the plugin to get its info */
+  native_pl->native_plugin_descriptor =
+    carla_get_native_rack_plugin ();
+  native_pl->native_plugin_handle =
+    native_pl->native_plugin_descriptor->instantiate (
+      &native_pl->native_host_descriptor);
+  native_pl->host_handle =
+    carla_create_native_plugin_host_handle (
+      native_pl->native_plugin_descriptor,
+      native_pl->native_plugin_handle);
+  const CarlaPluginInfo * info =
+    carla_get_plugin_info (
+      native_pl->host_handle, 0);
+  g_return_val_if_fail (info, false);
+  bool has_custom_ui =
+    info->hints & PLUGIN_HAS_CUSTOM_UI;
+
+  carla_native_plugin_free (native_pl);
+
+  return has_custom_ui;
 }
 
 /**

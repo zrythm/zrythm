@@ -393,47 +393,20 @@ plugin_descriptor_has_custom_ui (
     {
     case PROT_LV2:
       {
-        LilvNode * uri =
-          lilv_new_uri (LILV_WORLD, self->uri);
-        const LilvPlugin * lilv_pl =
-          lilv_plugins_get_by_uri (
-            LILV_PLUGINS, uri);
-        LilvUIs * uis =
-          lilv_plugin_get_uis (lilv_pl);
-        const LilvUI * wrappable_ui;
-        const LilvUI * bridged_ui;
-        const LilvUI * external_ui;
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_WRAPPABLE,
-          &wrappable_ui, NULL);
-        if (wrappable_ui)
-          {
-            return true;
-          }
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-          &bridged_ui, NULL);
-        if (bridged_ui)
-          {
-            return true;
-          }
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_EXTERNAL,
-          &external_ui, NULL);
-        if (external_ui)
-          {
-            return true;
-          }
-        lilv_uis_free (uis);
-        lilv_node_free (uri);
-        return false;
+        return
+          lv2_plugin_pick_most_preferrable_ui (
+            self->uri, NULL, NULL, true);
       }
       break;
     case PROT_VST:
     case PROT_VST3:
     case PROT_AU:
-      /* assume true */
-      return true;
+#ifdef HAVE_CARLA
+      return
+        carla_native_plugin_has_custom_ui (self);
+#else
+      return false;
+#endif
       break;
     default:
       return false;
