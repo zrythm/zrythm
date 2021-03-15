@@ -16,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-08 01:24+0000\n"
 "PO-Revision-Date: 2021-03-15 18:02+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -4671,7 +4671,7 @@ msgstr "Si le bouclage est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:527
 msgid "Return to cue"
-msgstr ""
+msgstr "Retour au marqueur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:528
 #, fuzzy
