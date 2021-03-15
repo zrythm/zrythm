@@ -13,20 +13,21 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-03-08 01:24+0000\n"
-"PO-Revision-Date: 2021-03-08 01:16+0000\n"
+"PO-Revision-Date: 2021-03-08 18:37+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.5.1\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
 msgid "Environment Variables"
-msgstr ""
+msgstr "環境変数"
 
 #: ../../appendix/environment.rst:12
 msgid ""
@@ -43,15 +44,15 @@ msgstr ""
 
 #: ../../appendix/environment.rst:25
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr ""
+msgstr "例: ``LV2_PATH=$HOME/custom-LV2-dir``"
 
 #: ../../appendix/environment.rst:30
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "プラグインのスキャンを無効にするには、1 に設定します。"
 
 #: ../../appendix/environment.rst:32
 msgid "Example: ``NO_SCAN_PLUGINS=1``"
-msgstr ""
+msgstr "例: ``NO_SCAN_PLUGINS=1``"
 
 #: ../../appendix/environment.rst:37
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
@@ -71,11 +72,11 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:6
 msgid "Files and Directories"
-msgstr ""
+msgstr "ファイルとディレクトリ"
 
 #: ../../appendix/files-and-directories.rst:9
 msgid "User path"
-msgstr ""
+msgstr "ユーザーパス"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid ""
@@ -86,7 +87,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:15
 msgid "Installed Files"
-msgstr ""
+msgstr "インストールされるファイル"
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "When Zrythm is installed, it installs the following files by default."
@@ -94,7 +95,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:20
 msgid "Desktop Entry"
-msgstr ""
+msgstr "Desktopファイル"
 
 #: ../../appendix/files-and-directories.rst:21
 msgid ""
@@ -107,7 +108,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:28
 msgid "GLib Schema"
-msgstr ""
+msgstr "GLib スキーマ"
 
 #: ../../appendix/files-and-directories.rst:29
 msgid ""
@@ -118,7 +119,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:34
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Desktopエントリーのアイコン"
 
 #: ../../appendix/files-and-directories.rst:35
 msgid ""
@@ -128,7 +129,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:40
 msgid "Localization Files"
-msgstr ""
+msgstr "翻訳メッセージのファイル"
 
 #: ../../appendix/files-and-directories.rst:41
 msgid ""
@@ -160,7 +161,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:60
 msgid "GtkSourceView Stylesheets"
-msgstr ""
+msgstr "GtkSourceView のスタイルシート"
 
 #: ../../appendix/files-and-directories.rst:61
 msgid ""
@@ -170,7 +171,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:66
 msgid "Themes"
-msgstr ""
+msgstr "テーマ"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid ""
@@ -187,11 +188,12 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:77
 msgid "User Files"
-msgstr ""
+msgstr "ユーザーのファイル"
 
 #: ../../appendix/files-and-directories.rst:79
+#, fuzzy
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "キャッシュされたプラグインの記述子"
 
 #: ../../appendix/files-and-directories.rst:80
 msgid ""
@@ -212,7 +214,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:93
 msgid "Log File"
-msgstr ""
+msgstr "ログファイル"
 
 #: ../../appendix/files-and-directories.rst:94
 msgid ""
@@ -228,7 +230,7 @@ msgstr ""
 
 #: ../../appendix/gnu-free-documentation-license.rst:6
 msgid "GNU Free Documentation License"
-msgstr ""
+msgstr "GNUフリー文書利用許諾契約書 (GNU Free Documentation License)"
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
@@ -992,7 +994,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:77
 msgid "General Syntax"
-msgstr ""
+msgstr "一般的な構文"
 
 #: ../../contributing/intro.rst:78
 msgid ""
@@ -1003,7 +1005,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:87 ../../contributing/intro.rst:102
 msgid "should be translated in French as"
-msgstr ""
+msgstr "フランス語で次のように翻訳する必要があります"
 
 #: ../../contributing/intro.rst:93
 msgid ""
@@ -1026,7 +1028,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:130
 msgid "The following examples will cause errors."
-msgstr ""
+msgstr "次の例では、エラーが発生します。"
 
 #: ../../contributing/intro.rst:137
 msgid ""
@@ -1703,7 +1705,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:33
 msgid "Show screenshot."
-msgstr ""
+msgstr "スクリーンショットを表示。"
 
 #: ../../editing/common-operations.rst:35
 msgid ""
@@ -1920,7 +1922,7 @@ msgstr "リージョンの編集"
 
 #: ../../editing/edit-tools.rst:69
 msgid "Cloning (Copy-Moving) Objects"
-msgstr ""
+msgstr "オブジェクトのクローン (複製・移動)"
 
 #: ../../editing/edit-tools.rst:71
 msgid ""
@@ -1930,7 +1932,7 @@ msgstr "オブジェクトを移動中に :kbd:`Ctrl` を押したままにす�
 
 #: ../../editing/edit-tools.rst:78
 msgid "Copy-moving a region"
-msgstr ""
+msgstr "リージョンの複製・移動"
 
 #: ../../editing/edit-tools.rst:81
 msgid "Resizing Objects"
@@ -2264,7 +2266,7 @@ msgstr "リージョンの編集"
 
 #: ../../editing/timeline/arranger.rst:62
 msgid "MIDI regions contain :term:`MIDI` notes."
-msgstr ""
+msgstr "MIDI リージョンには :term:`MIDI` ノートが含まれています。"
 
 #: ../../editing/timeline/arranger.rst:67
 msgid ""
@@ -2290,7 +2292,7 @@ msgstr "オートメーションイベントを収録。"
 
 #: ../../editing/timeline/arranger.rst:83
 msgid "Automation regions appear inside automation lanes."
-msgstr ""
+msgstr "オートメーションリージョンはオートメーションレーン内に表示されます。"
 
 #: ../../editing/timeline/arranger.rst:88
 msgid ""
@@ -2421,11 +2423,11 @@ msgstr "リージョン名を変更するには、その名前をクリックし
 
 #: ../../editing/timeline/arranger.rst:180
 msgid "Renaming a region"
-msgstr ""
+msgstr "リージョン名の変更"
 
 #: ../../editing/timeline/arranger.rst:183
 msgid "Adjusting Fades"
-msgstr ""
+msgstr "フェードの調整"
 
 #: ../../editing/timeline/arranger.rst:184
 msgid ""
@@ -2436,11 +2438,11 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:193
 msgid "Adjusting fade out point (click & drag)"
-msgstr ""
+msgstr "フェードアウトポイントの調整 (クリック＆ドラッグ)"
 
 #: ../../editing/timeline/arranger.rst:198
 msgid "Adjusting fade out point (drop)"
-msgstr ""
+msgstr "フェードアウトポイントの調整 (ドロップ)"
 
 #: ../../editing/timeline/arranger.rst:200
 msgid ""
@@ -2450,7 +2452,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:206
 msgid "Adjusting curviness"
-msgstr ""
+msgstr "曲率の調整"
 
 #: ../../editing/timeline/arranger.rst:208
 msgid ""
@@ -2469,11 +2471,11 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:219
 msgid "Fade algorithms"
-msgstr ""
+msgstr "フェードのアルゴリズム"
 
 #: ../../editing/timeline/arranger.rst:224
 msgid "Linear"
-msgstr ""
+msgstr "リニア (Linear)"
 
 #: ../../editing/timeline/arranger.rst:229
 #, fuzzy
@@ -2617,7 +2619,7 @@ msgstr ""
 
 #: ../../editing/timeline/ruler.rst:35
 msgid "Hold :guilabel:`Shift` to temporarily disable snapping"
-msgstr ""
+msgstr "スナップを一時的に無効にするには :guilabel:`Shift` を押したままにします"
 
 #: ../../editing/timeline/ruler.rst:38
 msgid "Setting the Cue Point"
@@ -3279,7 +3281,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:44
 msgid "Memory Locking"
-msgstr ""
+msgstr "メモリーロック"
 
 #: ../../getting-started/system-requirements.rst:45
 msgid ""
@@ -3297,7 +3299,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:55
 msgid "Open File Limit"
-msgstr ""
+msgstr "開けるファイル数の制限"
 
 #: ../../getting-started/system-requirements.rst:56
 msgid ""
@@ -4189,7 +4191,7 @@ msgstr "寄付"
 
 #: ../../playback-and-recording/recording.rst:75
 msgid "Punch in/out"
-msgstr ""
+msgstr "パンチイン/アウト (Punch in/out)"
 
 #: ../../playback-and-recording/recording.rst:67
 msgid ""
@@ -4204,7 +4206,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:79
 msgid "Start on MIDI input"
-msgstr ""
+msgstr "MIDI 入力時に開始"
 
 #: ../../playback-and-recording/recording.rst:78
 msgid "Automatically start recording when an event is received from a MIDI device"
@@ -4217,7 +4219,7 @@ msgstr "オーディオを録音中"
 
 #: ../../playback-and-recording/recording.rst:84
 msgid "Overwrite events"
-msgstr ""
+msgstr "イベントを上書きする"
 
 #: ../../playback-and-recording/recording.rst:84
 msgid "Overwrite any existing events in the track during recording"
@@ -4225,7 +4227,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:87
 msgid "Merge events"
-msgstr ""
+msgstr "イベントを結合する"
 
 #: ../../playback-and-recording/recording.rst:87
 msgid "Merge the newly recorded events with the existing events in the track"
@@ -4233,7 +4235,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:89
 msgid "Create takes"
-msgstr ""
+msgstr "テイクを作成する"
 
 #: ../../playback-and-recording/recording.rst:90
 msgid "Create a new lane (`take`) for each new recording"
@@ -4241,7 +4243,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:98
 msgid "Create takes (mute previous)"
-msgstr ""
+msgstr "テイクを作成する (前のテイクをミュート)"
 
 #: ../../playback-and-recording/recording.rst:92
 msgid ""
@@ -4418,7 +4420,7 @@ msgstr "有効にすると、プレイヘッドはループ終了ポイントに
 
 #: ../../playback-and-recording/transport-controls.rst:62
 msgid "Playhead Display"
-msgstr ""
+msgstr "プレイヘッド表示"
 
 #: ../../playback-and-recording/transport-controls.rst:63
 msgid ""
@@ -4545,7 +4547,7 @@ msgstr "コントロールポートの値は、バー内をクリックしてド
 
 #: ../../plugins-files/plugins/inspector-page.rst:33
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
-msgstr ""
+msgstr ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:16
@@ -5442,7 +5444,7 @@ msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:3
 msgid "actions channel-send-action"
-msgstr ""
+msgstr "actions channel-send-action"
 
 #: ../../scripting/api/actions channel_send_action.rst:7
 msgid ""
@@ -5458,7 +5460,7 @@ msgstr "送信接続を作成するための新しいアクションを返しま
 
 #: ../../scripting/api/actions port_connection_action.rst:3
 msgid "actions port-connection-action"
-msgstr ""
+msgstr "actions port-connection-action"
 
 #: ../../scripting/api/actions port_connection_action.rst:7
 msgid ""
@@ -5472,7 +5474,7 @@ msgstr "2ポートを接続するためのアクションを作成します。"
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:3
 msgid "actions tracklist-selections-action"
-msgstr ""
+msgstr "actions tracklist-selections-action"
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:7
 msgid ""
@@ -5519,7 +5521,7 @@ msgstr "2ポートを接続するためのアクションを作成します。"
 
 #: ../../scripting/api/actions undo_manager.rst:3
 msgid "actions undo-manager"
-msgstr ""
+msgstr "actions undo-manager"
 
 #: ../../scripting/api/actions undo_manager.rst:7
 msgid "Scheme Procedure: **undo-manager-perform** | *undo_manager action*"
@@ -5547,7 +5549,7 @@ msgstr "最後に元に戻した動作をやり直します。"
 
 #: ../../scripting/api/audio channel.rst:3
 msgid "audio channel"
-msgstr ""
+msgstr "audio channel"
 
 #: ../../scripting/api/audio channel.rst:7
 msgid "Scheme Procedure: **channel-get-insert** | *channel insert_slot*"
@@ -5575,7 +5577,7 @@ msgstr "指定したスロットでのセンドインスタンスを返します
 
 #: ../../scripting/api/audio midi_note.rst:3
 msgid "audio midi-note"
-msgstr ""
+msgstr "audio midi-note"
 
 #: ../../scripting/api/audio midi_note.rst:7
 msgid ""
@@ -5589,7 +5591,7 @@ msgstr "新しい MIDI ノートを返します。"
 
 #: ../../scripting/api/audio midi_region.rst:3
 msgid "audio midi-region"
-msgstr ""
+msgstr "audio midi-region"
 
 #: ../../scripting/api/audio midi_region.rst:7
 msgid ""
@@ -5607,11 +5609,11 @@ msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:10
 msgid "Adds a midi note to ``region``."
-msgstr ""
+msgstr "``region`` に MIDI ノートを追加します。"
 
 #: ../../scripting/api/audio port.rst:3
 msgid "audio port"
-msgstr ""
+msgstr "audio port"
 
 #: ../../scripting/api/audio port.rst:7
 msgid "Scheme Procedure: **stereo-ports-get-port** | *stereo_ports left*"
@@ -5632,7 +5634,7 @@ msgstr "ポートの識別子を返します。"
 
 #: ../../scripting/api/audio position.rst:3
 msgid "audio position"
-msgstr ""
+msgstr "audio position"
 
 #: ../../scripting/api/audio position.rst:8
 msgid ""
@@ -5656,8 +5658,9 @@ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
 #: ../../scripting/api/audio supported_file.rst:3
+#, fuzzy
 msgid "audio supported-file"
-msgstr ""
+msgstr "audio supported-file"
 
 #: ../../scripting/api/audio supported_file.rst:7
 msgid "Scheme Procedure: **supported-file-new-from-path** | *path*"
@@ -5665,11 +5668,11 @@ msgstr ""
 
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
-msgstr ""
+msgstr "SupportedFile のインスタンスを返します。"
 
 #: ../../scripting/api/audio track.rst:3
 msgid "audio track"
-msgstr ""
+msgstr "audio track"
 
 #: ../../scripting/api/audio track.rst:8
 msgid "Scheme Procedure: **midi-track-new** | *idx name*"
@@ -5733,7 +5736,7 @@ msgstr "トラックにリージョンを追加します。レーンのあるリ
 
 #: ../../scripting/api/audio track_processor.rst:3
 msgid "audio track-processor"
-msgstr ""
+msgstr "audio track-processor"
 
 #: ../../scripting/api/audio track_processor.rst:7
 msgid "Scheme Procedure: **track-processor-get-stereo-in** | *track_processor*"
@@ -5745,7 +5748,7 @@ msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:3
 msgid "audio tracklist"
-msgstr ""
+msgstr "audio tracklist"
 
 #: ../../scripting/api/audio tracklist.rst:7
 msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
@@ -5779,7 +5782,7 @@ msgstr "API"
 
 #: ../../scripting/api/plugins plugin.rst:3
 msgid "plugins plugin"
-msgstr ""
+msgstr "plugins plugin"
 
 #: ../../scripting/api/plugins plugin.rst:7
 msgid "Scheme Procedure: **plugin-get-in-port** | *plugin port_idx*"
@@ -5799,7 +5802,7 @@ msgstr "指定したインデックスのプラグインの出力ポートを返
 
 #: ../../scripting/api/plugins plugin_manager.rst:3
 msgid "plugins plugin-manager"
-msgstr ""
+msgstr "plugins plugin-manager"
 
 #: ../../scripting/api/plugins plugin_manager.rst:7
 msgid ""
@@ -5809,7 +5812,7 @@ msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
 msgid "Returns the PluginDescriptor matching the given URI."
-msgstr ""
+msgstr "指定したURIにマッチするPluginDescriptorを返します。"
 
 #: ../../scripting/api/plugins plugin_manager.rst:11
 msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
@@ -5817,7 +5820,7 @@ msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:10
 msgid "Scans the system for plugins."
-msgstr ""
+msgstr "プラグインをスキャンします。"
 
 #: ../../scripting/api/project.rst:3
 #, fuzzy
@@ -5838,7 +5841,7 @@ msgstr ""
 
 #: ../../scripting/api/project.rst:10
 msgid "Returns the tracklist for the project."
-msgstr ""
+msgstr "プロジェクトのトラックリストを返します。"
 
 #: ../../scripting/api/project.rst:15
 msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
@@ -5846,7 +5849,7 @@ msgstr ""
 
 #: ../../scripting/api/project.rst:14
 msgid "Returns the undo manager for the project."
-msgstr ""
+msgstr "プロジェクトの Undo マネージャー (Undo Manager) を返します。"
 
 #: ../../scripting/api/zrythm.rst:7
 msgid "Scheme Procedure: **zrythm-get-ver**"
@@ -5886,7 +5889,7 @@ msgstr ""
 
 #: ../../scripting/api/zrythm.rst:22
 msgid "Writes the message to the log."
-msgstr ""
+msgstr "メッセージをログに書き込みます。"
 
 #: ../../scripting/examples.rst:6
 msgid "Examples"
@@ -5952,7 +5955,7 @@ msgstr "スクリプティングインタフェース"
 
 #: ../../scripting/scripting-interface.rst:8
 msgid "Explain the scripting window/interface."
-msgstr ""
+msgstr "スクリプト ウィンドウ/インターフェイスについて説明する。"
 
 #: ../../theming/css.rst:8
 msgid "CSS"
@@ -6304,7 +6307,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:30
 msgid "Behavior"
-msgstr ""
+msgstr "動作"
 
 #: ../../tracks/automation.rst:31
 msgid ""
@@ -6543,7 +6546,7 @@ msgstr "入力デバイス"
 
 #: ../../tracks/inspector-page.rst:55
 msgid "Device to read MIDI input from"
-msgstr ""
+msgstr "MIDI 入力を読み取るデバイス"
 
 #: ../../tracks/inspector-page.rst:58
 #, fuzzy
@@ -6561,7 +6564,7 @@ msgstr "オーディオ入力"
 
 #: ../../tracks/inspector-page.rst:66
 msgid "Left Input"
-msgstr ""
+msgstr "左入力"
 
 #: ../../tracks/inspector-page.rst:67
 #, fuzzy
@@ -6588,11 +6591,11 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:73
 msgid "Gain knob"
-msgstr ""
+msgstr "ゲイン"
 
 #: ../../tracks/inspector-page.rst:73
 msgid "Adjust input gain"
-msgstr ""
+msgstr "入力ゲインの調整"
 
 #: ../../tracks/inspector-page.rst:76
 msgid "MIDI FX/Inserts"
@@ -7061,7 +7064,7 @@ msgstr "トラックがアウトプットを出す場合、トラックの右側
 
 #: ../../tracks/overview.rst:60
 msgid "Track Icon"
-msgstr ""
+msgstr "トラックのアイコン"
 
 #: ../../tracks/overview.rst:61
 #, fuzzy
@@ -7572,7 +7575,7 @@ msgstr "Zrythm の外観とズームなどのさまざまな領域を変更す�
 
 #: ../../zrythm-interface/main-toolbar.rst:73
 msgid "Zoom"
-msgstr ""
+msgstr "ズーム"
 
 #: ../../zrythm-interface/main-toolbar.rst:74
 msgid "Zoom In"
@@ -7716,7 +7719,7 @@ msgstr "リアルタイムで更新されるログを表示します。"
 
 #: ../../zrythm-interface/main-toolbar.rst:127
 msgid "Shows the preferences dialog."
-msgstr ""
+msgstr "設定ダイアログを表示します。"
 
 #: ../../zrythm-interface/main-toolbar.rst:129
 #, fuzzy
@@ -7725,7 +7728,7 @@ msgstr "詳細については、``INSTALL.md`` ファイルを参照してくだ
 
 #: ../../zrythm-interface/main-toolbar.rst:134
 msgid "MIDI In"
-msgstr ""
+msgstr "MIDI入力"
 
 #: ../../zrythm-interface/main-toolbar.rst:132
 msgid ""
@@ -9500,4 +9503,3 @@ msgstr "現在選択されているバックエンドとオプションに関す
 #~ " used for adjusting the Track's "
 #~ "volume, pan and other settings."
 #~ msgstr "チャンネルはミキサーにあるスロットです。ほとんどのトラックの種類には、トラックのボリューム、パン、その他の設定を調整するための、そのトラックに対応するチャンネルがあります。"
-
