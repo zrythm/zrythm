@@ -1184,10 +1184,10 @@ zrythm_app_startup (
   /* show splash screen */
   self->splash =
     splash_window_widget_new (self);
-  g_message ("created splash widget");
+  g_debug ("created splash widget");
   gtk_window_present (
     GTK_WINDOW (self->splash));
-  g_message ("presented splash widget");
+  g_debug ("presented splash widget");
 
   /* start initialization in another thread */
   zix_sem_init (&self->progress_status_lock, 1);

@@ -516,7 +516,8 @@ engine_pre_setup (
     }
 
   /* process any events now */
-  g_message ("processing engine events");
+  g_message (
+    "%s: processing engine events", __func__);
   engine_process_events (self);
 
   self->pre_setup = true;
@@ -531,6 +532,11 @@ engine_setup (
   AudioEngine * self)
 {
   g_message ("Setting up...");
+
+  /* process any events now  */
+  g_message (
+    "%s: processing engine events", __func__);
+  engine_process_events (self);
 
   hardware_processor_setup (
     self->hw_in_processor);
@@ -999,6 +1005,11 @@ engine_activate (
           g_message ("already activated");
           return;
         }
+
+      /* process any events now  */
+      g_message (
+        "%s: processing engine events", __func__);
+      engine_process_events (self);
 
       engine_realloc_port_buffers (
         self, self->block_length);

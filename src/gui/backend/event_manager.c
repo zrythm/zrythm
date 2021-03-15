@@ -1744,6 +1744,11 @@ process_events (void * data)
               g_settings_get_string (
                 S_GENERAL,
                 "last-version-new-release-notified-on");
+            g_debug (
+              "last version notified on: %s"
+              "\n package version: %s",
+              last_version_notified_on,
+              PACKAGE_VERSION);
             if (!is_latest_release &&
                 zrythm_is_release (true) &&
                 !string_is_equal (

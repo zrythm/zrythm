@@ -55,6 +55,8 @@ void
 splash_window_widget_close (
   SplashWindowWidget * self)
 {
+  g_debug ("closing splash window");
+
   gtk_widget_remove_tick_callback (
     GTK_WIDGET (self), self->tick_cb_id);
   gtk_window_close (GTK_WINDOW (self));
@@ -66,6 +68,8 @@ static void
 finalize (
   SplashWindowWidget * self)
 {
+  g_debug ("finalizing splash screen");
+
   if (zrythm_app->init_thread)
     {
       g_thread_join (zrythm_app->init_thread);

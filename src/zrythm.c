@@ -270,13 +270,14 @@ zrythm_fetch_latest_release_ver (void)
       page, "\"zrythm-(.+).tar.xz\"", 1);
   g_free (page);
 
-  g_return_val_if_fail (ver, NULL);
-
-  if (ver)
+  if (!ver)
     {
-      g_debug ("latest release: %s", ver);
-      called = true;
+      g_warning ("failed to parse version");
+      return NULL;
     }
+
+  g_debug ("latest release: %s", ver);
+  called = true;
 
   return g_strdup (ver);
 }
