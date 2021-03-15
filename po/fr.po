@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-08 01:24+0000\n"
-"PO-Revision-Date: 2021-03-14 17:46+0000\n"
-"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
+"PO-Revision-Date: 2021-03-15 18:02+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -93,9 +93,8 @@ msgid "Low"
 msgstr "Bas"
 
 #: inc/utils/gtk.h:50
-#, fuzzy
 msgid "MIDI learn"
-msgstr "Entrée MIDI"
+msgstr "Apprentissage MIDI"
 
 #: inc/utils/gtk.h:54
 msgid "Cu_t"
@@ -515,7 +514,7 @@ msgstr "Option inconnue"
 #: src/zrythm_app.c:1440
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "libguile est requise pour cette option\n"
 
 #: src/zrythm_app.c:1587
 msgid "Print version information"
@@ -527,11 +526,11 @@ msgstr "Convertir FICHIER-ZPJ en YAML"
 
 #: src/zrythm_app.c:1597
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "Convertir YAML-PROJET-FICHIER au format .zpj"
 
 #: src/zrythm_app.c:1602
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Générer un projet à partir de SCRIPT-FICHIER"
 
 #: src/zrythm_app.c:1606
 msgid "Print output in user-friendly way"
@@ -555,12 +554,11 @@ msgstr "Forcer le dorsal MIDI à utiliser"
 
 #: src/zrythm_app.c:1625
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "Abréviation de --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1651
-#, fuzzy
 msgid "[PROJECT-FILE]"
-msgstr "[FICHIER-PROJET] - Exécutez  %s"
+msgstr "[FICHIER-PROJET]"
 
 #: src/zrythm_app.c:1656
 #, c-format
@@ -667,6 +665,12 @@ msgid ""
 "mode, and report this to the author:\n"
 "  %s <%s>"
 msgstr ""
+"%s <%s> a un type d'interface graphique utilisateur déprécié :\n"
+" %s\n"
+"Si l'interface graphique utilisateur ne se charge pas, veuillez essayer "
+"d'instancier le greffon en mode \"full-bridged\", et signalez-le à l'auteur :"
+"\n"
+" %s <%s>"
 
 #: src/plugins/plugin_gtk.c:82 src/plugins/lv2/lv2_gtk.c:107
 msgid "Save State"
@@ -702,8 +706,8 @@ msgid ""
 msgstr ""
 "%s<%s> contient une référence à %s, ce qui pourrait causer des soucis.\n"
 "Si le greffon ne se charge pas, veuillez essayer alors d'instancier le "
-"greffon en mode pontage total, et reportez ce souci au distributeur/auteur "
-"de ce greffon:\n"
+"greffon en mode pontage-total, et reportez ce souci au distributeur/auteur "
+"de ce greffon :\n"
 "%s<%s>"
 
 #: src/plugins/lv2_plugin.c:3218
@@ -737,9 +741,8 @@ msgid "Unknown widget type for value\n"
 msgstr "Type de widget inconnu pour value\n"
 
 #: src/plugins/lv2/lv2_gtk.c:1257
-#, fuzzy
 msgid "Open File"
-msgstr "Fichiers de sortie"
+msgstr "Ouvrir un fichier"
 
 #: src/plugins/lv2/lv2_gtk.c:1429
 msgid "Close"
@@ -1195,14 +1198,12 @@ msgid "JACK Timebase master"
 msgstr "maître JACK Timebase"
 
 #: src/gui/widgets/bot_bar.c:439
-#, fuzzy
 msgid "New buffer size"
-msgstr "Taille de tampon"
+msgstr "Nouvelle taille de tampon"
 
 #: src/gui/widgets/bot_bar.c:451
-#, fuzzy
 msgid "Failed reading value"
-msgstr "Échec pour récupérer la valeur va_list : %s"
+msgstr "Échec de lecteur de la valeur"
 
 #: src/gui/widgets/bot_bar.c:467
 msgid "This feature is not available at the moment"
@@ -1220,9 +1221,8 @@ msgstr "Tai Tam"
 
 #. TRANSLATORS: verb - change buffer size
 #: src/gui/widgets/bot_bar.c:559
-#, fuzzy
 msgid "change"
-msgstr "Plage"
+msgstr "modifier"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:561
@@ -1284,11 +1284,11 @@ msgstr "position"
 
 #: src/gui/widgets/transport_controls.c:421
 msgid "Punch in/out"
-msgstr "Mode musical"
+msgstr "Punch in/out"
 
 #: src/gui/widgets/transport_controls.c:424
 msgid "Start on MIDI input"
-msgstr "Démarre sur une entrée midi"
+msgstr "Démarrer sur une entrée MIDI"
 
 #: src/gui/widgets/transport_controls.c:427
 msgid "Options"
@@ -1540,7 +1540,7 @@ msgstr "[Inserts%d]%s"
 #: src/gui/widgets/automatable_selector_popover.c:450
 #, c-format
 msgid "[Modulator %d] %s"
-msgstr "[Modulator %d] %s"
+msgstr "[Modulateur %d] %s"
 
 #: src/gui/widgets/snap_grid.c:60
 #, c-format
@@ -2045,11 +2045,11 @@ msgstr "dans le répertoire :"
 
 #: src/gui/widgets/dialogs/export_dialog.c:655
 msgid "<name>.<format>"
-msgstr ""
+msgstr "<nom>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:660
 msgid "<date>_<name>.<format>"
-msgstr ""
+msgstr "<date>_<nom>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:908
 msgid "No tracks to export"
@@ -2390,7 +2390,7 @@ msgstr ""
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
-msgstr "Erreur PulseAudio: échec de création de la boucle principale"
+msgstr "Erreur PulseAudio : échec de création de la boucle principale"
 
 #: src/audio/engine_pulse.c:263
 #, c-format
@@ -2541,84 +2541,68 @@ msgid "Set control value"
 msgstr "Fixe la valeur du contrôle"
 
 #: src/actions/arranger_selections.c:2592
-#, fuzzy
 msgid "Create timeline selections"
-msgstr "Fusionner les sélections"
+msgstr "Créer des sélections de lignes temporelles"
 
 #: src/actions/arranger_selections.c:2596
-#, fuzzy
 msgid "Create audio selections"
-msgstr "Fusionner les sélections"
+msgstr "Créer des sélections audio"
 
 #: src/actions/arranger_selections.c:2600
-#, fuzzy
 msgid "Create automation selections"
-msgstr "Fusionner les sélections"
+msgstr "Créer des sélections d'automatisation"
 
 #: src/actions/arranger_selections.c:2604
-#, fuzzy
 msgid "Create chord selections"
-msgstr "Fusionner les sélections"
+msgstr "Créer des sélections d'accord"
 
 #: src/actions/arranger_selections.c:2608
-#, fuzzy
 msgid "Create MIDI selections"
-msgstr "Fusionner les sélections"
+msgstr "Créer des sélections MIDI"
 
 #: src/actions/arranger_selections.c:2614
-#, fuzzy
 msgid "Delete arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Supprimer les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2618
-#, fuzzy
 msgid "Duplicate arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Dupliquer les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2621
-#, fuzzy
 msgid "Move arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Déplacer les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2624
-#, fuzzy
 msgid "Link arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Lier les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2627
-#, fuzzy
 msgid "Record arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Enregistrer les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2630
-#, fuzzy
 msgid "Edit arranger selections"
-msgstr "Modifier le(s) objet(s) de l'arrangeur"
+msgstr "Modifier les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2633
-#, fuzzy
 msgid "Automation fill"
-msgstr "Automatisation"
+msgstr "Remplissage d'automatisation"
 
 #: src/actions/arranger_selections.c:2636
-#, fuzzy
 msgid "Split arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Diviser les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2639
-#, fuzzy
 msgid "Merge arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Fusionner les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2642
-#, fuzzy
 msgid "Resize arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Redimensionner les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:2646
-#, fuzzy
 msgid "Quantize arranger selections"
-msgstr "Fusionner les sélections"
+msgstr "Quantifier les sélections d'arrangeurs"
 
 #: src/actions/midi_mapping_action.c:211
 msgid "MIDI mapping enable"
@@ -2630,11 +2614,11 @@ msgstr "Désactive le mappage MIDI"
 
 #: src/actions/midi_mapping_action.c:217
 msgid "MIDI mapping bind"
-msgstr ""
+msgstr "Lier du mappage MIDI"
 
 #: src/actions/midi_mapping_action.c:220
 msgid "MIDI mapping unbind"
-msgstr ""
+msgstr "Délier du mappage MIDI"
 
 #: src/actions/actions.c:367
 #, c-format
@@ -2711,7 +2695,7 @@ msgstr "Graphe exporté"
 
 #: src/actions/actions.c:1066
 msgid "Can't paste incompatible data"
-msgstr ""
+msgstr "Impossible de coller des données incompatibles"
 
 #: src/actions/actions.c:1808
 msgid "No regions selected"
@@ -2750,39 +2734,32 @@ msgid "Change BPM"
 msgstr "Changer le tempo"
 
 #: src/actions/transport_action.c:201
-#, fuzzy
 msgid "Change Time Signature"
-msgstr "Signature temporelle"
+msgstr "Modifier la signature temporelle"
 
 #: src/actions/channel_send_action.c:202
-#, fuzzy
 msgid "Connect sidechain"
-msgstr "Collection"
+msgstr "Connecter le chaînage latéral"
 
 #: src/actions/channel_send_action.c:204
-#, fuzzy
 msgid "Connect stereo"
-msgstr "Connecter les ports"
+msgstr "Connecter la stéréo"
 
 #: src/actions/channel_send_action.c:206
-#, fuzzy
 msgid "Connect MIDI"
-msgstr "Connecter les ports"
+msgstr "Connecter le MIDI"
 
 #: src/actions/channel_send_action.c:208
-#, fuzzy
 msgid "Disconnect"
-msgstr "Déconnecte les ports"
+msgstr "Déconnecter"
 
 #: src/actions/channel_send_action.c:210
-#, fuzzy
 msgid "Change amount"
-msgstr "Changer la panoramique"
+msgstr "Changer la quantité"
 
 #: src/actions/channel_send_action.c:212
-#, fuzzy
 msgid "Change ports"
-msgstr "Modifier la couleur"
+msgstr "Modifier les ports"
 
 #: src/actions/channel_send_action.c:215
 msgid "Channel send connection"
@@ -2848,9 +2825,8 @@ msgstr ""
 "pour plus de détails."
 
 #: src/actions/tracklist_selections.c:1140
-#, fuzzy
 msgid "Copy Track"
-msgstr "Piste Accord"
+msgstr "Copier la piste"
 
 #: src/actions/tracklist_selections.c:1145
 #: src/actions/tracklist_selections.c:1237
@@ -2918,33 +2894,30 @@ msgid "Change icon"
 msgstr "Modifier l'icône"
 
 #: src/actions/tracklist_selections.c:1218
-#, fuzzy
 msgid "Change comment"
-msgstr "Modifier l'icône"
+msgstr "Modifier le commentaire"
 
 #: src/actions/tracklist_selections.c:1232
 msgid "Move Track"
 msgstr "Déplacer la piste"
 
 #: src/actions/tracklist_selections.c:1245
-#, fuzzy
 msgid "Pin Track"
-msgstr "Attacher/détacher la piste"
+msgstr "Attacher la piste"
 
 #: src/actions/tracklist_selections.c:1250
-#, fuzzy, c-format
+#, c-format
 msgid "Pin %d Tracks"
-msgstr "Cacher les pistes"
+msgstr "Attacher les pistes %d"
 
 #: src/actions/tracklist_selections.c:1257
-#, fuzzy
 msgid "Unpin Track"
-msgstr "Attacher/détacher la piste"
+msgstr "Détacher la piste"
 
 #: src/actions/tracklist_selections.c:1262
-#, fuzzy, c-format
+#, c-format
 msgid "Unpin %d Tracks"
-msgstr "Attacher/détacher les pistes"
+msgstr "Détacher les pistes %d"
 
 #: src/guile/guile.c:40
 msgid "Script execution successful"
@@ -3497,35 +3470,32 @@ msgid "Scan again for MIDI controllers"
 msgstr "Scanner encore les contrôleurs MIDI"
 
 #: resources/ui/main_notebook.ui:43 resources/ui/main_notebook.ui:59
-#, fuzzy
 msgid "Timeline"
-msgstr "Plage temporelle"
+msgstr "Ligne temporelle"
 
 #: resources/ui/main_notebook.ui:80
 msgid "Port connections"
 msgstr "Connexions du port"
 
 #: resources/ui/main_notebook.ui:96
-#, fuzzy
 msgid "Connections"
-msgstr "Collection"
+msgstr "Connexions"
 
 #: resources/ui/main_notebook.ui:118
-#, fuzzy
 msgid "MIDI CC bindings"
-msgstr "Entrée MIDI"
+msgstr "Mappage CC MIDI"
 
 #: resources/ui/main_notebook.ui:134
 msgid "Bindings"
-msgstr ""
+msgstr "Liaisons"
 
 #: resources/ui/main_notebook.ui:156
 msgid "Scenes (Live view)"
-msgstr ""
+msgstr "Scènes (vue Live)"
 
 #: resources/ui/main_notebook.ui:172
 msgid "Scenes"
-msgstr ""
+msgstr "Scènes"
 
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 msgid "Pitch Wheel"
@@ -3755,7 +3725,7 @@ msgstr "Boucle"
 
 #: resources/ui/splash.ui:38
 msgid "Splash"
-msgstr ""
+msgstr "Écran d'accueil"
 
 #: resources/ui/splash.ui:67
 msgid "Initializing..."
@@ -3831,16 +3801,15 @@ msgstr "ms"
 
 #: resources/ui/snap_box.ui:38
 msgid "Snap to grid"
-msgstr ""
+msgstr "Accrocher à la grille"
 
 #: resources/ui/snap_box.ui:60
 msgid "Keep offset"
-msgstr ""
+msgstr "Maintenir le décalage"
 
 #: resources/ui/snap_box.ui:82
-#, fuzzy
 msgid "Snap to events"
-msgstr "Accrocher aux évènements (régions)"
+msgstr "Accrocher aux évènements"
 
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
@@ -4016,9 +3985,8 @@ msgid "Link length to snap setting"
 msgstr "Longueur de note à accrocher"
 
 #: resources/ui/snap_grid_popover.ui:339
-#, fuzzy
 msgid "Last object"
-msgstr "Chargement du projet"
+msgstr "Dernier objet"
 
 #: resources/ui/snap_grid_popover.ui:340
 #, fuzzy
@@ -4031,7 +3999,7 @@ msgstr "Effacer l'intervalle"
 
 #: resources/ui/editor_toolbar.ui:140 resources/ui/editor_toolbar.ui:183
 msgid "Flip"
-msgstr ""
+msgstr "Basculer"
 
 #: resources/ui/editor_toolbar.ui:142 resources/ui/editor_toolbar.ui:185
 msgid "Horizontal"
@@ -4274,9 +4242,8 @@ msgstr ""
 "ligne temporelle, par exemple en mode édition."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:263
-#, fuzzy
 msgid "Last timeline object's length"
-msgstr "Longueur d'objet de ligne temporelle"
+msgstr "Longueur d'objet de la dernière ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
 #, fuzzy
@@ -4515,9 +4482,8 @@ msgid "Selected transport display type (BBT/time)."
 msgstr "Type d'affichage de transport sélectionné (BBT/temps)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:395
-#, fuzzy
 msgid "JACK transport type"
-msgstr "client du transport JACK"
+msgstr "type de transport JACK"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:396
 msgid "Selected JACK transport behavior (master/client/none)"
@@ -4609,7 +4575,7 @@ msgstr "Motif de nom de fichier pour les fichiers exportés."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:455
 msgid "Add dither while exporting, if applicable."
-msgstr ""
+msgstr "Ajoutez du dither lors de l'exportation, si applicable."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:459
 msgid "Export stems"
@@ -4617,7 +4583,7 @@ msgstr "Exporter des stems"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:460
 msgid "Whether to export stems instead of the mixdown."
-msgstr "S'il s'agit d'exporter les stems au lieu du mix."
+msgstr "S'il s'agit d'exporter les stems au lieu de la mise à plat."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:465
 msgid "Bit depth to use when exporting"
@@ -4875,9 +4841,8 @@ msgstr ""
 "l'écran sera utilisé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:657
-#, fuzzy
 msgid "Scale factor"
-msgstr "Échelle de l'objet"
+msgstr "Facteur d'échelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:658
 #, fuzzy
@@ -4973,9 +4938,8 @@ msgid "Font scale"
 msgstr "Dans la gamme"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:764
-#, fuzzy
 msgid "Font scale."
-msgstr "Dans la gamme"
+msgstr "Échelle des caractères."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:768
 msgid "User interface language"
@@ -5018,14 +4982,12 @@ msgstr ""
 "des signaux mono (non utilisée pour le moment)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:796
-#, fuzzy
 msgid "Scripting"
-msgstr "Interface de scriptage"
+msgstr "Scriptage"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:801
-#, fuzzy
 msgid "Default script"
-msgstr "Valeur par défaut"
+msgstr "Script par défaut"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "The default script to use in the scripting window."
