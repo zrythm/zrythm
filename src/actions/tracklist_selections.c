@@ -119,8 +119,7 @@ tracklist_selections_action_new (
   int                           num_tracks,
   EditTracksActionType          edit_type,
   Track *                       direct_out,
-  bool                          solo_new,
-  bool                          mute_new,
+  int                           ival_after,
   const GdkRGBA *               color_new,
   float                         val_before,
   float                         val_after,
@@ -275,8 +274,7 @@ tracklist_selections_action_new (
     }
 
   self->edit_type = edit_type;
-  self->solo_new = solo_new;
-  self->mute_new = mute_new;
+  self->ival_after = ival_after;
   self->new_direct_out_pos =
     direct_out ? direct_out->pos : -1;
   self->val_before = val_before;
@@ -987,13 +985,13 @@ do_or_undo_edit (
         {
         case EDIT_TRACK_ACTION_TYPE_SOLO:
           track_set_soloed (
-            track, _do == self->solo_new,
+            track, _do == self->ival_after,
             false,
             F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
           track_set_muted (
-            track, _do == self->mute_new,
+            track, _do == self->ival_after,
             F_NO_TRIGGER_UNDO, F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
@@ -1009,6 +1007,23 @@ do_or_undo_edit (
             ch,
             _do ?
               self->val_after : self->val_before);
+          break;
+        case EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE:
+          g_return_val_if_fail (ch, -1);
+          if (_do)
+            {
+              self->ival_before =
+                ch->fader->midi_mode;
+              fader_set_midi_mode (
+                ch->fader, self->ival_after, false,
+                F_PUBLISH_EVENTS);
+            }
+          else
+            {
+              fader_set_midi_mode (
+                ch->fader, self->ival_before, false,
+                F_PUBLISH_EVENTS);
+            }
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           {
@@ -1209,14 +1224,14 @@ tracklist_selections_action_stringize (
           switch (self->edit_type)
             {
             case EDIT_TRACK_ACTION_TYPE_SOLO:
-              if (self->solo_new)
+              if (self->ival_after)
                 return g_strdup (
                   _("Solo Track"));
               else
                 return g_strdup (
                   _("Unsolo Track"));
             case EDIT_TRACK_ACTION_TYPE_MUTE:
-              if (self->mute_new)
+              if (self->ival_after)
                 return g_strdup (
                   _("Mute Track"));
               else
@@ -1243,6 +1258,9 @@ tracklist_selections_action_stringize (
             case EDIT_TRACK_ACTION_TYPE_COMMENT:
               return g_strdup (
                 _("Change comment"));
+            case EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE:
+              return g_strdup (
+                _("Change MIDI fader mode"));
             default:
               g_return_val_if_reached (
                 g_strdup (""));

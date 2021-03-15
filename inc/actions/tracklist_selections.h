@@ -74,6 +74,8 @@ typedef enum EditTracksActionType
   EDIT_TRACK_ACTION_TYPE_COLOR,
   EDIT_TRACK_ACTION_TYPE_COMMENT,
   EDIT_TRACK_ACTION_TYPE_ICON,
+
+  EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE,
 } EditTracksActionType;
 
 static const cyaml_strval_t
@@ -88,6 +90,8 @@ static const cyaml_strval_t
   { "Color", EDIT_TRACK_ACTION_TYPE_COLOR },
   { "comment", EDIT_TRACK_ACTION_TYPE_COMMENT },
   { "Icon", EDIT_TRACK_ACTION_TYPE_ICON },
+  { "MIDI fader mode",
+    EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE },
 };
 
 /**
@@ -170,10 +174,13 @@ typedef struct TracklistSelectionsAction
 
   /* --------------- DELTAS ---------------- */
 
-  /** New solo value 1 or 0. */
-  int                   solo_new;
-  /** New mute value 1 or 0. */
-  int                   mute_new;
+  /**
+   * Int value.
+   *
+   * Also used for bool.
+   */
+  int                   ival_before;
+  int                   ival_after;
 
   /* -------------- end DELTAS ------------- */
 
@@ -244,9 +251,9 @@ static const cyaml_schema_field_t
     TracklistSelectionsAction, edit_type,
     edit_tracks_action_type_strings),
   YAML_FIELD_INT (
-    TracklistSelectionsAction, solo_new),
+    TracklistSelectionsAction, ival_before),
   YAML_FIELD_INT (
-    TracklistSelectionsAction, mute_new),
+    TracklistSelectionsAction, ival_after),
   YAML_FIELD_INT (
     TracklistSelectionsAction, new_direct_out_pos),
   YAML_FIELD_MAPPING_EMBEDDED (
@@ -298,8 +305,7 @@ tracklist_selections_action_new (
   int                           num_tracks,
   EditTracksActionType          edit_type,
   Track *                       direct_out,
-  bool                          solo_new,
-  bool                          mute_new,
+  int                           ival_after,
   const GdkRGBA *               color_new,
   float                         val_before,
   float                         val_after,
@@ -314,7 +320,7 @@ tracklist_selections_action_new (
     NULL, NULL, NULL, track_type, pl_setting, \
     file_descr, \
     track_pos, pos, num_tracks, 0, NULL, \
-    false, false, NULL, 0.f, 0.f, NULL, false)
+    false, NULL, 0.f, 0.f, NULL, false)
 
 /**
  * Creates a new TracklistSelectionsAction for an
@@ -365,7 +371,7 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     tls_before, tls_after, NULL, 0, NULL, NULL, \
     -1, NULL, \
-    -1, type, NULL, false, false, NULL, \
+    -1, type, NULL, false, NULL, \
     0.f, 0.f, NULL, already_edited)
 
 
@@ -379,8 +385,21 @@ tracklist_selections_action_new (
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
-    -1, type, NULL, false, false, NULL, \
+    -1, type, NULL, false, NULL, \
     val_before, val_after, NULL, already_edited)
+
+/**
+ * Convenience wrapper over
+ * tracklist_selections_action_new() for single-track
+ * int edit changes.
+ */
+#define tracklist_selections_action_new_edit_single_int( \
+  type,track,val_after,already_edited) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
+    -1, type, NULL, val_after, NULL, \
+    0.f, 0.f, NULL, already_edited)
 
 #define tracklist_selections_action_new_edit_mute( \
   tls_before,mute_new) \
@@ -388,7 +407,7 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_MUTE, NULL, \
-    false, mute_new, NULL, \
+    mute_new, NULL, \
     0.f, 0.f, NULL, false)
 
 #define tracklist_selections_action_new_edit_solo( \
@@ -397,7 +416,7 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_SOLO, NULL, \
-    solo_new, false, NULL, \
+    solo_new, NULL, \
     0.f, 0.f, NULL, false)
 
 #define tracklist_selections_action_new_edit_direct_out( \
@@ -407,7 +426,7 @@ tracklist_selections_action_new (
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_DIRECT_OUT, \
     direct_out, \
-    false, false, NULL, \
+    false, NULL, \
     0.f, 0.f, NULL, false)
 
 #define tracklist_selections_action_new_edit_color( \
@@ -416,7 +435,7 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_COLOR, NULL, \
-    false, false, color, \
+    false, color, \
     0.f, 0.f, NULL, false)
 
 #define tracklist_selections_action_new_edit_icon( \
@@ -425,7 +444,7 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_ICON, NULL, \
-    false, false, NULL, \
+    false, NULL, \
     0.f, 0.f, icon, false)
 
 #define tracklist_selections_action_new_edit_comment( \
@@ -434,7 +453,7 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_COMMENT, NULL, \
-    false, false, NULL, \
+    false, NULL, \
     0.f, 0.f, comment, false)
 
 #define tracklist_selections_action_new_edit_rename( \
@@ -443,7 +462,7 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_RENAME, NULL, \
-    false, false, NULL, \
+    false, NULL, \
     0.f, 0.f, name, false)
 
 #define tracklist_selections_action_new_move( \
@@ -451,7 +470,7 @@ tracklist_selections_action_new (
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_MOVE, \
     tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
-    -1, 0, NULL, false, false, NULL, \
+    -1, 0, NULL, false, NULL, \
     0.f, 0.f, NULL, false)
 
 #define tracklist_selections_action_new_copy( \
@@ -459,7 +478,7 @@ tracklist_selections_action_new (
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_COPY, \
     tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
-    -1, 0, NULL, false, false, NULL, \
+    -1, 0, NULL, false, NULL, \
     0.f, 0.f, NULL, false)
 
 #define tracklist_selections_action_new_delete( \
@@ -467,7 +486,7 @@ tracklist_selections_action_new (
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_DELETE, \
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
-    -1, 0, NULL, false, false, NULL, \
+    -1, 0, NULL, false, NULL, \
     0.f, 0.f, NULL, false)
 
 /**
@@ -478,7 +497,7 @@ tracklist_selections_action_new (
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_PIN, \
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
-    -1, 0, NULL, false, false, NULL, \
+    -1, 0, NULL, false, NULL, \
     0.f, 0.f, NULL, false)
 
 /**
@@ -489,7 +508,7 @@ tracklist_selections_action_new (
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_UNPIN, \
     tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
-    -1, 0, NULL, false, false, NULL, \
+    -1, 0, NULL, false, NULL, \
     0.f, 0.f, NULL, false)
 
 int

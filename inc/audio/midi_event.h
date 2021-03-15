@@ -179,6 +179,12 @@ midi_event_copy (
   memcpy (dest, src, sizeof (MidiEvent));
 }
 
+NONNULL
+void
+midi_event_set_velocity (
+  MidiEvent * ev,
+  midi_byte_t vel);
+
 void
 midi_event_print (
   const MidiEvent * ev);
@@ -272,6 +278,19 @@ midi_events_add_note_offs_from_chord_descr (
   MidiEvents *      self,
   ChordDescriptor * descr,
   midi_byte_t       channel,
+  midi_time_t       time,
+  bool              queued);
+
+/**
+ * Add CC volume event.
+ *
+ * TODO
+ */
+void
+midi_events_add_cc_volume (
+  MidiEvents *      self,
+  midi_byte_t       channel,
+  midi_byte_t       volume,
   midi_time_t       time,
   bool              queued);
 

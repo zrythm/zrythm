@@ -32,6 +32,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/dsp.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm.h"
@@ -106,6 +107,7 @@ fader_new (
   self->magic = FADER_MAGIC;
 
   self->passthrough = passthrough;
+  self->midi_mode = MIDI_FADER_MODE_VEL_MULTIPLIER;
 
   self->type = type;
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
@@ -477,6 +479,35 @@ fader_get_amp (void * _self)
   return self->amp->control;
 }
 
+void
+fader_set_midi_mode (
+  Fader *       self,
+  MidiFaderMode mode,
+  bool          with_action,
+  bool          fire_events)
+{
+  if (with_action)
+    {
+      Track * track = fader_get_track (self);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (track));
+      UndoableAction * ua =
+        tracklist_selections_action_new_edit_single_int (
+          EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE,
+          track, mode, F_NOT_ALREADY_EDITED);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      self->midi_mode = mode;
+    }
+
+  if (fire_events)
+    {
+      /* TODO */
+    }
+}
+
 /**
  * Gets whether mono compatibility is enabled.
  */
@@ -758,6 +789,32 @@ fader_process (
         IS_TRACK_AND_NONNULL (track));
     }
 
+  bool effectively_muted = false;
+  if (!self->passthrough)
+    {
+      /* muted if any of the following is true:
+       * 1. muted
+       * 2. other track(s) is soloed and this
+       *   isn't
+       * 3. bounce mode and the track is set
+       *   to BOUNCE_OFF */
+      effectively_muted =
+        fader_get_muted (self) ||
+        ((self->type == FADER_TYPE_AUDIO_CHANNEL ||
+          self->type == FADER_TYPE_MIDI_CHANNEL) &&
+         tracklist_has_soloed (TRACKLIST) &&
+         !fader_get_soloed (self) &&
+         !fader_get_implied_soloed (self) &&
+         track != P_MASTER_TRACK) ||
+        (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
+         (self->type == FADER_TYPE_AUDIO_CHANNEL ||
+          self->type == FADER_TYPE_MIDI_CHANNEL) &&
+         track &&
+         /*track->out_signal_type == TYPE_AUDIO &&*/
+         track->type != TRACK_TYPE_MASTER &&
+         !track->bounce);
+    }
+
   if (self->type == FADER_TYPE_AUDIO_CHANNEL ||
       self->type == FADER_TYPE_MONITOR)
     {
@@ -803,25 +860,7 @@ fader_process (
             BALANCE_CONTROL_ALGORITHM_LINEAR,
             pan, &calc_l, &calc_r);
 
-          /* clear it if any of the following is
-           * true:
-           * 1. muted
-           * 2. other track(s) is soloed and this
-           *   isn't
-           * 3. bounce mode and the track is set
-           *   to BOUNCE_OFF */
-          if (fader_get_muted (self) ||
-              (self->type == FADER_TYPE_AUDIO_CHANNEL &&
-                tracklist_has_soloed (TRACKLIST) &&
-                !fader_get_soloed (self) &&
-                !fader_get_implied_soloed (self) &&
-                track != P_MASTER_TRACK) ||
-              (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
-               self->type == FADER_TYPE_AUDIO_CHANNEL &&
-               track &&
-               track->out_signal_type == TYPE_AUDIO &&
-               track->type != TRACK_TYPE_MASTER &&
-               !track->bounce))
+          if (effectively_muted)
             {
             }
           else /* if not muted */
@@ -885,12 +924,53 @@ fader_process (
     } /* fi monitor/audio fader */
   else if (self->type == FADER_TYPE_MIDI_CHANNEL)
     {
-      /* TODO if not passthrough, apply volume
-       * changes */
-      midi_events_append (
-        self->midi_in->midi_events,
-        self->midi_out->midi_events,
-        start_frame, nframes, 0);
+      if (!effectively_muted)
+        {
+          midi_events_append (
+            self->midi_in->midi_events,
+            self->midi_out->midi_events,
+            start_frame, nframes, F_NOT_QUEUED);
+
+          /* if not prefader, also apply volume
+           * changes */
+          if (!self->passthrough)
+            {
+              int num_events =
+                self->midi_out->midi_events->
+                  num_events;
+              for (int i = 0; i < num_events; i++)
+                {
+                  MidiEvent * ev =
+                    &self->midi_out->midi_events->
+                      events[i];
+
+                  if (self->midi_mode ==
+                        MIDI_FADER_MODE_VEL_MULTIPLIER &&
+                      ev->type ==
+                        MIDI_EVENT_TYPE_NOTE_ON)
+                    {
+                      int new_vel =
+                        (int)
+                        ((float) ev->velocity *
+                         self->amp->control);
+                      midi_event_set_velocity (
+                        ev,
+                        (midi_byte_t)
+                          CLAMP (new_vel, 0, 127));
+                    }
+                }
+
+              if (self->midi_mode ==
+                    MIDI_FADER_MODE_CC_VOLUME &&
+                  !math_floats_equal (
+                     self->last_cc_volume,
+                     self->amp->control))
+                {
+                  /* TODO add volume event on each
+                   * channel */
+                }
+            }
+        }
     }
 
   if (ZRYTHM_TESTING)

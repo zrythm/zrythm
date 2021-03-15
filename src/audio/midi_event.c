@@ -903,6 +903,15 @@ midi_events_delete_event (
 }
 
 void
+midi_event_set_velocity (
+  MidiEvent * ev,
+  midi_byte_t vel)
+{
+  ev->velocity = vel;
+  ev->raw_buffer[2] = vel;
+}
+
+void
 midi_event_print (
   const MidiEvent * ev)
 {

@@ -45,6 +45,9 @@ typedef struct Channel Channel;
 #define FADER_MAGIC 32548791
 #define IS_FADER(f) (f && f->magic == FADER_MAGIC)
 
+/**
+ * Fader type.
+ */
 typedef enum FaderType
 {
   FADER_TYPE_NONE,
@@ -61,6 +64,33 @@ typedef enum FaderType
   /** For generic uses. */
   FADER_TYPE_GENERIC,
 } FaderType;
+
+static const cyaml_strval_t
+fader_type_strings[] =
+{
+  { "none",           FADER_TYPE_NONE    },
+  { "monitor channel", FADER_TYPE_MONITOR   },
+  { "audio channel",  FADER_TYPE_AUDIO_CHANNEL   },
+  { "midi channel",   FADER_TYPE_MIDI_CHANNEL   },
+  { "generic",        FADER_TYPE_GENERIC   },
+};
+
+typedef enum MidiFaderMode
+{
+  /** Multiply velocity of all MIDI note ons. */
+  MIDI_FADER_MODE_VEL_MULTIPLIER,
+
+  /** Send CC volume event on change TODO. */
+  MIDI_FADER_MODE_CC_VOLUME,
+} MidiFaderMode;
+
+static const cyaml_strval_t
+midi_fader_mode_strings[] =
+{
+  { "vel_multiplier",
+    MIDI_FADER_MODE_VEL_MULTIPLIER    },
+  { "cc_volume", MIDI_FADER_MODE_CC_VOLUME   },
+};
 
 /**
  * A Fader is a processor that is used for volume
@@ -82,6 +112,15 @@ typedef struct Fader
 
   /** 0.0 ~ 1.0 for widgets. */
   float            fader_val;
+
+  /**
+   * Value of \ref amp during last processing.
+   *
+   * Used when processing MIDI faders.
+   *
+   * TODO
+   */
+  float            last_cc_volume;
 
   /**
    * A control port that controls the volume in
@@ -132,6 +171,9 @@ typedef struct Fader
 
   FaderType        type;
 
+  /** MIDI fader mode. */
+  MidiFaderMode    midi_mode;
+
   /** Whether mono compatibility switch is
    * enabled. */
   bool             mono_compat_enabled;
@@ -147,16 +189,6 @@ typedef struct Fader
 
   bool             is_project;
 } Fader;
-
-static const cyaml_strval_t
-fader_type_strings[] =
-{
-  { "none",           FADER_TYPE_NONE    },
-  { "monitor channel", FADER_TYPE_MONITOR   },
-  { "audio channel",  FADER_TYPE_AUDIO_CHANNEL   },
-  { "midi channel",   FADER_TYPE_MIDI_CHANNEL   },
-  { "generic",        FADER_TYPE_GENERIC   },
-};
 
 static const cyaml_schema_field_t
 fader_fields_schema[] =
@@ -200,6 +232,8 @@ fader_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Fader, stereo_out,
     stereo_ports_fields_schema),
+  YAML_FIELD_ENUM (
+    Fader, midi_mode, midi_fader_mode_strings),
   YAML_FIELD_INT (
     Fader, track_pos),
   YAML_FIELD_INT (
@@ -256,6 +290,14 @@ void
 fader_add_amp (
   void * self,
   float   amp);
+
+NONNULL
+void
+fader_set_midi_mode (
+  Fader *       self,
+  MidiFaderMode mode,
+  bool          with_action,
+  bool          fire_events);
 
 /**
  * Sets track muted and optionally adds the action
