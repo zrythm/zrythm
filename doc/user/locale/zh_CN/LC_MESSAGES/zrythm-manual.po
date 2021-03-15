@@ -39,15 +39,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-03-08 01:24+0000\n"
-"PO-Revision-Date: 2021-02-28 04:50+0000\n"
+"PO-Revision-Date: 2021-03-08 18:37+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.5.1\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -4722,9 +4723,8 @@ msgid ""
 msgstr ""
 
 #: ../../projects/project-structure.rst:16
-#, fuzzy
 msgid "Backups"
-msgstr "音轨"
+msgstr "备份"
 
 #: ../../projects/project-structure.rst:17
 msgid ""
@@ -5498,7 +5498,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr ""
+msgstr "脚本编写"
 
 #: ../../scripting/overview.rst:8
 msgid ""
@@ -6099,7 +6099,6 @@ msgid "Left audio input port to listen to"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:68
-#, fuzzy
 msgid "Right Input"
 msgstr "右侧输入"
 
@@ -7009,7 +7008,6 @@ msgid "Load a project."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:56
-#, fuzzy
 msgid "Export"
 msgstr "导出"
 
@@ -7172,9 +7170,8 @@ msgid "There are the following buttons next to the name of the current project."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:120
-#, fuzzy
 msgid "Shows the scripting interface."
-msgstr "脚本接口"
+msgstr "显示脚本接口。"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "See the :ref:`scripting` section for more information."
@@ -7316,4 +7313,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-
