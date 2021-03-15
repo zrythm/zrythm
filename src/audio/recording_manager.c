@@ -1296,7 +1296,7 @@ handle_automation_event (
   else if (at->record_mode ==
              AUTOMATION_RECORD_MODE_LATCH)
     {
-      g_warn_if_fail (region);
+      g_return_if_fail (region);
       delete_automation_points (
         at, region, &start_pos);
     }

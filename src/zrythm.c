@@ -251,12 +251,10 @@ zrythm_fetch_latest_release_ver (void)
   static char * ver = NULL;
   static bool called = false;
 
-  if (called)
+  if (called && ver)
     {
-      return ver;
+      return g_strdup (ver);
     }
-
-  called = true;
 
   char * page =
     z_curl_get_page_contents_default (
@@ -274,7 +272,13 @@ zrythm_fetch_latest_release_ver (void)
 
   g_return_val_if_fail (ver, NULL);
 
-  return ver;
+  if (ver)
+    {
+      g_debug ("latest release: %s", ver);
+      called = true;
+    }
+
+  return g_strdup (ver);
 }
 
 bool
