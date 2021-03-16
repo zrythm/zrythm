@@ -94,6 +94,8 @@ int
 engine_dummy_midi_setup (
   AudioEngine * self)
 {
+  g_message ("Setting up dummy MIDI engine");
+
   self->midi_buf_size = 4096;
 
   return 0;

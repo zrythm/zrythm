@@ -463,6 +463,8 @@ int
 engine_jack_midi_setup (
   AudioEngine * self)
 {
+  g_message ("%s: Setting up JACK MIDI", __func__);
+
   /* TODO: case 1 - no jack client (using another
    * backend)
    *

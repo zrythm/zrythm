@@ -372,8 +372,7 @@ load_bundled_lv2_plugins (
           if (ZRYTHM_HAVE_UI)
             {
               ui_show_error_message (
-                MAIN_WINDOW ? MAIN_WINDOW : NULL,
-                msg);
+                MAIN_WINDOW, msg);
             }
           g_free (msg);
         }

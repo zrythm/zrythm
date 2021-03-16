@@ -214,7 +214,7 @@ typedef struct UiCaches
  */
 #define ui_show_error_message(win, msg) \
     ui_show_message_full ( \
-      GTK_WINDOW (win), \
+      win ? GTK_WINDOW (win) : NULL, \
       GTK_MESSAGE_ERROR, \
       "%s", msg);
 
@@ -223,7 +223,8 @@ typedef struct UiCaches
  */
 #define ui_show_message_printf(win,type,fmt,...) \
   ui_show_message_full ( \
-    GTK_WINDOW (win), type, fmt, __VA_ARGS__)
+    win ? GTK_WINDOW (win) : NULL, \
+    type, fmt, __VA_ARGS__)
 
 #define ui_is_widget_revealed(widget) \
   (gtk_widget_get_allocated_height ( \
