@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-08 01:24+0000\n"
+"POT-Creation-Date: 2021-03-16 07:18+0000\n"
 "PO-Revision-Date: 2021-02-10 05:50+0000\n"
 "Last-Translator: Arthur O. Reis <aor@cesar.school>\n"
 "Language: pt_BR\n"
@@ -971,84 +971,92 @@ msgid ""
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:71
+#: ../../contributing/intro.rst:70
+msgid ""
+"Zrythm contains terminology similar to existing audio software. You may "
+"find it useful to borrow terms from them. See the `Cubase Pro Artist "
+"manual <https://steinberg.help/cubase_pro_artist/v9/fr/>` for example "
+"(replace `fr` in the URL with your language code)."
+msgstr ""
+
+#: ../../contributing/intro.rst:77
 msgid "User Manual"
 msgstr ""
 
-#: ../../contributing/intro.rst:72
+#: ../../contributing/intro.rst:78
 msgid ""
 "When translating the user manual, please make sure you follow the "
 "following Sphinx/RST syntax, to avoid errors when applying your "
 "translations."
 msgstr ""
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:83
 msgid "General Syntax"
 msgstr ""
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:84
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be "
 "left untranslated. The part following should be left untranslated as "
 "well. For example:"
 msgstr ""
 
-#: ../../contributing/intro.rst:87 ../../contributing/intro.rst:102
+#: ../../contributing/intro.rst:93 ../../contributing/intro.rst:108
 msgid "should be translated in French as"
 msgstr ""
 
-#: ../../contributing/intro.rst:93
+#: ../../contributing/intro.rst:99
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the"
 " translation for ``Parameter``. The only exception to this rule is when "
 "you see the ``<>`` characters. For example:"
 msgstr ""
 
-#: ../../contributing/intro.rst:109
+#: ../../contributing/intro.rst:115
 msgid ""
 "Please make sure you do not insert or remove spaces. The following "
 "examples will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:121
+#: ../../contributing/intro.rst:127
 msgid ""
 "Also, there should be space, comma or period after such syntax, like "
 "below."
 msgstr ""
 
-#: ../../contributing/intro.rst:130
+#: ../../contributing/intro.rst:136
 msgid "The following examples will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:137
+#: ../../contributing/intro.rst:143
 msgid ""
 "The following syntax usually refers to a path, so please keep it "
 "unchanged, otherwise the file it refers to will not be found."
 msgstr ""
 
-#: ../../contributing/intro.rst:146
+#: ../../contributing/intro.rst:152
 msgid "Donations"
 msgstr ""
 
-#: ../../contributing/intro.rst:147
+#: ../../contributing/intro.rst:153
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr ""
 
-#: ../../contributing/intro.rst:151
+#: ../../contributing/intro.rst:157
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:152
+#: ../../contributing/intro.rst:158
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:153
+#: ../../contributing/intro.rst:159
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:155
+#: ../../contributing/intro.rst:161
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -3597,7 +3605,6 @@ msgid ""
 msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:16
-#: ../../scripting/api/zrythm.rst:3
 msgid "zrythm"
 msgstr "zrythm"
 
@@ -5205,13 +5212,11 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:3
-msgid "actions channel-send-action"
+msgid "(actions channel-send-action)"
 msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:7
-msgid ""
-"Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
-"stereo_ports*"
+msgid "``(channel-send-action-new-connect-audio send stereo_ports)``"
 msgstr ""
 
 #: ../../scripting/api/actions channel_send_action.rst:6
@@ -5219,13 +5224,11 @@ msgid "Returns a new action for creating a send connection."
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:3
-msgid "actions port-connection-action"
+msgid "(actions port-connection-action)"
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:7
-msgid ""
-"Scheme Procedure: **port-connection-action-new-connect** | *src_port_id "
-"dest_port_id*"
+msgid "``(port-connection-action-new-connect src_port_id dest_port_id)``"
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:6
@@ -5233,13 +5236,13 @@ msgid "Creates an action for connecting 2 ports."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:3
-msgid "actions tracklist-selections-action"
+msgid "(actions tracklist-selections-action)"
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:7
 msgid ""
-"Scheme Procedure: **tracklist-selections-action-new-create-instrument** |"
-" *pl_descr track_pos num_tracks*"
+"``(tracklist-selections-action-new-create-instrument pl_descr track_pos "
+"num_tracks)``"
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:6
@@ -5248,8 +5251,8 @@ msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:12
 msgid ""
-"Scheme Procedure: **tracklist-selections-action-new-create-audio-fx-with-"
-"plugin** | *plugin_descriptor track_pos num_tracks*"
+"``(tracklist-selections-action-new-create-audio-fx-with-plugin "
+"plugin_descriptor track_pos num_tracks)``"
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:10
@@ -5259,9 +5262,7 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:16
-msgid ""
-"Scheme Procedure: **tracklist-selections-action-new-create-audio-fx** | "
-"*track_pos num_tracks*"
+msgid "``(tracklist-selections-action-new-create-audio-fx track_pos num_tracks)``"
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:15
@@ -5269,9 +5270,7 @@ msgid "Returns a new action for creating one or more empty Audio FX tracks."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:20
-msgid ""
-"Scheme Procedure: **tracklist-selections-action-new-midi** | *track_pos "
-"num_tracks*"
+msgid "``(tracklist-selections-action-new-midi track_pos num_tracks)``"
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:19
@@ -5279,11 +5278,11 @@ msgid "Returns an action for creating one or more empty MIDI tracks."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:3
-msgid "actions undo-manager"
+msgid "(actions undo-manager)"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:7
-msgid "Scheme Procedure: **undo-manager-perform** | *undo_manager action*"
+msgid "``(undo-manager-perform undo_manager action)``"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:6
@@ -5291,7 +5290,7 @@ msgid "Performs the given action and adds it to the undo stack."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:11
-msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
+msgid "``(undo-manager-undo undo_manager)``"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:10
@@ -5299,7 +5298,7 @@ msgid "Undoes the last action."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:15
-msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
+msgid "``(undo-manager-redo undo_manager)``"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:14
@@ -5307,11 +5306,11 @@ msgid "Redoes the last undone action."
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:3
-msgid "audio channel"
+msgid "(audio channel)"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:7
-msgid "Scheme Procedure: **channel-get-insert** | *channel insert_slot*"
+msgid "``(channel-get-insert channel insert_slot)``"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:6
@@ -5319,7 +5318,7 @@ msgid "Returns the plugin at the given insert slot"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:11
-msgid "Scheme Procedure: **channel-get-instrument** | *channel*"
+msgid "``(channel-get-instrument channel)``"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:10
@@ -5327,7 +5326,7 @@ msgid "Returns the instrument at the given channel"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:15
-msgid "Scheme Procedure: **channel-get-send** | *channel send_slot*"
+msgid "``(channel-get-send channel send_slot)``"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:14
@@ -5335,13 +5334,16 @@ msgid "Returns the send instance at the given slot"
 msgstr ""
 
 #: ../../scripting/api/audio midi_note.rst:3
-msgid "audio midi-note"
+#, fuzzy
+msgid "(audio midi-note)"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Interface"
 
 #: ../../scripting/api/audio midi_note.rst:7
-msgid ""
-"Scheme Procedure: **midi-note-new** | *region start_pos end_pos pitch "
-"velocity*"
+msgid "``(midi-note-new region start_pos end_pos pitch velocity)``"
 msgstr ""
 
 #: ../../scripting/api/audio midi_note.rst:6
@@ -5349,13 +5351,11 @@ msgid "Returns a new midi note."
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:3
-msgid "audio midi-region"
+msgid "(audio midi-region)"
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:7
-msgid ""
-"Scheme Procedure: **midi-region-new** | *start_pos end_pos track_idx "
-"lane_idx idx_inside_lane*"
+msgid "``(midi-region-new start_pos end_pos track_idx lane_idx idx_inside_lane)``"
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:6
@@ -5363,7 +5363,7 @@ msgid "Returns a new midi region."
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:11
-msgid "Scheme Procedure: **midi-region-add-midi-note** | *region midi_note*"
+msgid "``(midi-region-add-midi-note region midi_note)``"
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:10
@@ -5371,11 +5371,16 @@ msgid "Adds a midi note to ``region``."
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:3
-msgid "audio port"
+#, fuzzy
+msgid "(audio port)"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Interface"
 
 #: ../../scripting/api/audio port.rst:7
-msgid "Scheme Procedure: **stereo-ports-get-port** | *stereo_ports left*"
+msgid "``(stereo-ports-get-port stereo_ports left)``"
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:6
@@ -5383,7 +5388,7 @@ msgid "Returns the left or right port of the stereo pair."
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:11
-msgid "Scheme Procedure: **port-get-identifier** | *port*"
+msgid "``(port-get-identifier port)``"
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:10
@@ -5391,13 +5396,16 @@ msgid "Returns the identifier of ``port``."
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:3
-msgid "audio position"
+#, fuzzy
+msgid "(audio position)"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Interface"
 
 #: ../../scripting/api/audio position.rst:8
-msgid ""
-"Scheme Procedure: **position-new** | *bars beats sixteenths ticks "
-"sub_tick*"
+msgid "``(position-new bars beats sixteenths ticks sub_tick)``"
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:6
@@ -5407,7 +5415,7 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:12
-msgid "Scheme Procedure: **position-print** | *pos*"
+msgid "``(position-print pos)``"
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:11
@@ -5415,11 +5423,16 @@ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr ""
 
 #: ../../scripting/api/audio supported_file.rst:3
-msgid "audio supported-file"
+#, fuzzy
+msgid "(audio supported-file)"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Interface"
 
 #: ../../scripting/api/audio supported_file.rst:7
-msgid "Scheme Procedure: **supported-file-new-from-path** | *path*"
+msgid "``(supported-file-new-from-path path)``"
 msgstr ""
 
 #: ../../scripting/api/audio supported_file.rst:6
@@ -5427,11 +5440,16 @@ msgid "Returns an instance of SupportedFile."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:3
-msgid "audio track"
+#, fuzzy
+msgid "(audio track)"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Interface"
 
 #: ../../scripting/api/audio track.rst:8
-msgid "Scheme Procedure: **midi-track-new** | *idx name*"
+msgid "``(midi-track-new idx name)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:6
@@ -5441,7 +5459,7 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:12
-msgid "Scheme Procedure: **track-get-name** | *track*"
+msgid "``(track-get-name track)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:11
@@ -5449,7 +5467,7 @@ msgid "Returns the name of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:16
-msgid "Scheme Procedure: **track-get-processor** | *track*"
+msgid "``(track-get-processor track)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:15
@@ -5457,7 +5475,7 @@ msgid "Returns the processor of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:20
-msgid "Scheme Procedure: **track-get-channel** | *track*"
+msgid "``(track-get-channel track)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:19
@@ -5465,7 +5483,7 @@ msgid "Returns the channel of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:25
-msgid "Scheme Procedure: **track-set-muted** | *track muted*"
+msgid "``(track-set-muted track muted)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
@@ -5475,7 +5493,7 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:30
-msgid "Scheme Procedure: **track-add-lane-region** | *track region lane_pos*"
+msgid "``(track-add-lane-region track region lane_pos)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:28
@@ -5485,11 +5503,16 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio track_processor.rst:3
-msgid "audio track-processor"
+#, fuzzy
+msgid "(audio track-processor)"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Interface"
 
 #: ../../scripting/api/audio track_processor.rst:7
-msgid "Scheme Procedure: **track-processor-get-stereo-in** | *track_processor*"
+msgid "``(track-processor-get-stereo-in track_processor)``"
 msgstr ""
 
 #: ../../scripting/api/audio track_processor.rst:6
@@ -5497,11 +5520,17 @@ msgid "Returns the stereo in ports instance of the track processor."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:3
-msgid "audio tracklist"
+#, fuzzy
+msgid "(audio tracklist)"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Faixas"
 
 #: ../../scripting/api/audio tracklist.rst:7
-msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
+msgid "``(tracklist-insert-track tracklist track idx)``"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:6
@@ -5509,7 +5538,7 @@ msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:11
-msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
+msgid "``(tracklist-get-track-at-pos tracklist pos)``"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
@@ -5517,7 +5546,7 @@ msgid "Returns the track at ``pos`` in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:15
-msgid "Scheme Procedure: **tracklist-get-num-tracks** | *tracklist*"
+msgid "``(tracklist-get-num-tracks tracklist)``"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:14
@@ -5529,11 +5558,11 @@ msgid "API"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:3
-msgid "plugins plugin"
+msgid "(plugins plugin)"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:7
-msgid "Scheme Procedure: **plugin-get-in-port** | *plugin port_idx*"
+msgid "``(plugin-get-in-port plugin port_idx)``"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:6
@@ -5541,7 +5570,7 @@ msgid "Returns the input port of the plugin at the given index."
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:11
-msgid "Scheme Procedure: **plugin-get-out-port** | *plugin port_idx*"
+msgid "``(plugin-get-out-port plugin port_idx)``"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:10
@@ -5549,13 +5578,11 @@ msgid "Returns the output port of the plugin at the given index."
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:3
-msgid "plugins plugin-manager"
+msgid "(plugins plugin-manager)"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:7
-msgid ""
-"Scheme Procedure: **plugin-manager-find-plugin-from-uri** | "
-"*plugin_manager uri*"
+msgid "``(plugin-manager-find-plugin-from-uri plugin_manager uri)``"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
@@ -5563,7 +5590,7 @@ msgid "Returns the PluginDescriptor matching the given URI."
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:11
-msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
+msgid "``(plugin-manager-scan-plugins plugin_manager)``"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:10
@@ -5572,11 +5599,11 @@ msgstr ""
 
 #: ../../scripting/api/project.rst:3
 #, fuzzy
-msgid "project"
+msgid "(project)"
 msgstr "Novo Projeto"
 
 #: ../../scripting/api/project.rst:7
-msgid "Scheme Procedure: **project-get-title** | *project*"
+msgid "``(project-get-title project)``"
 msgstr ""
 
 #: ../../scripting/api/project.rst:6
@@ -5584,7 +5611,7 @@ msgid "Return the project’s title."
 msgstr ""
 
 #: ../../scripting/api/project.rst:11
-msgid "Scheme Procedure: **project-get-tracklist** | *project*"
+msgid "``(project-get-tracklist project)``"
 msgstr ""
 
 #: ../../scripting/api/project.rst:10
@@ -5592,15 +5619,20 @@ msgid "Returns the tracklist for the project."
 msgstr ""
 
 #: ../../scripting/api/project.rst:15
-msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
+msgid "``(project-get-undo-manager project)``"
 msgstr ""
 
 #: ../../scripting/api/project.rst:14
 msgid "Returns the undo manager for the project."
 msgstr ""
 
+#: ../../scripting/api/zrythm.rst:3
+#, fuzzy
+msgid "(zrythm)"
+msgstr "zrythm"
+
 #: ../../scripting/api/zrythm.rst:7
-msgid "Scheme Procedure: **zrythm-get-ver**"
+msgid "``(zrythm-get-ver)``"
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:6
@@ -5608,7 +5640,7 @@ msgid "Return the Zrythm version as a string."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:11
-msgid "Scheme Procedure: **zrythm-get-plugin-manager**"
+msgid "``(zrythm-get-plugin-manager)``"
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:10
@@ -5616,7 +5648,7 @@ msgid "Return the PluginManager instance."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:15
-msgid "Scheme Procedure: **zrythm-get-project**"
+msgid "``(zrythm-get-project)``"
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:14
@@ -5624,15 +5656,16 @@ msgid "Return the currently loaded Project instance."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:19
-msgid "Scheme Procedure: **zrythm-null**"
-msgstr ""
+#, fuzzy
+msgid "``(zrythm-null)``"
+msgstr "zrythm"
 
 #: ../../scripting/api/zrythm.rst:18
 msgid "Returns a NULL pointer."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:23
-msgid "Scheme Procedure: **zrythm-message** | *message*"
+msgid "``(zrythm-message message)``"
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:22
@@ -7444,6 +7477,9 @@ msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
 msgstr ""
+
+#~ msgid "``(zrythm)``"
+#~ msgstr "zrythm"
 
 #~ msgid "Title"
 #~ msgstr "Vital"

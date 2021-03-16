@@ -77,13 +77,16 @@
      (invoke
        pandoc-bin
        (html-file private-dir input-file)
-       "-s" "-o" output-file)
+       "-s" "-t" "rst" "-o" output-file)
      ;; edit
      (substitute*
        output-file
        (("Untitled Document")
-        (string-drop-right
-          (base-noext input-file) 1)))
+        (string-append
+          "("
+          (string-drop-right
+            (base-noext input-file) 1)
+          ")")))
      (substitute*
        output-file
        (("^.+$")

@@ -8,6 +8,7 @@ guile_docs = []
 if can_make_guile_docs
   gen_texi_docs_sh = find_program (
     'guile_gen_texi_docs.sh')
+  format_rst = find_program ('format_rst.sh')
   foreach snarfable_src : guile_snarfable_srcs
     split_by_dot = snarfable_src.split('.')
     without_ext = ''
@@ -21,6 +22,7 @@ if can_make_guile_docs
     base_file = ' '.join(without_ext.split (
       meson_src_root)[1].split('/'))
     base_file = base_file.split('src guile ')[1]
+    rst_tmp_file = base_file + '.rst.tmp'
     rst_file = base_file + '.rst'
     texi_file = '-'.join (base_file.split ('_')) + '.texi'
     texi_doc = configure_file (
@@ -34,15 +36,24 @@ if can_make_guile_docs
         '-I' + meson_src_root / 'inc',
         ],
       )
-    rst_doc = configure_file (
-      output: rst_file,
+    rst_tmp_doc = configure_file (
+      output: rst_tmp_file,
       input: texi_doc,
       command: [
         guile_gen_docs_scm,
         guile_dep.name(),
         meson.current_build_dir () / texi_file,
-        meson.current_build_dir () / rst_file,
-        meson.current_build_dir () / rst_file + '.p',
+        '@OUTPUT@',
+        meson.current_build_dir () / rst_tmp_file + '.p',
+        ],
+      )
+    rst_doc = configure_file (
+      output: rst_file,
+      input: rst_tmp_doc,
+      command: [
+        format_rst,
+        meson.current_build_dir () / rst_tmp_file,
+        '@OUTPUT@',
         ],
       )
     rst_files += rst_doc

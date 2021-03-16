@@ -1,8 +1,8 @@
 ========================================
-actions port-connection-action
+(actions port-connection-action)
 ========================================
 
-Scheme Procedure: **port-connection-action-new-connect** | *src_port_id dest_port_id*
+``(port-connection-action-new-connect src_port_id dest_port_id)``
    Creates an action for connecting 2 ports.
 
 
