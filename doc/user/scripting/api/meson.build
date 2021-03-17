@@ -59,6 +59,16 @@ if can_make_guile_docs
     rst_files += rst_doc
     guile_docs += rst_doc
   endforeach
+# else if can't make guile docs, copy existing ones
+else
+  c = run_command (['find', '.', '-name', '*.rst'])
+  existing_api_docs = c.stdout().strip().split('\n')
+  foreach existing_api_doc : existing_api_docs
+    rst_files += configure_file (
+      copy: true,
+      input: existing_api_doc,
+      output: '@PLAINNAME@')
+  endforeach
 endif
 
 # copy the Guile API docs to /api in the
