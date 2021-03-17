@@ -48,6 +48,7 @@ extensions = [
     'sphinx.ext.imgmath',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.todo',
+    'sphinx_copybutton',
     # 'sphinxcontrib.programoutput',
     # 'sphinxcontrib.devhelp',
     # 'recommonmark',
@@ -55,7 +56,7 @@ extensions = [
 
 # Add any paths that contain templates here,
 # relative to this directory.
-templates_path = ['_templates']
+templates_path = ['@MESON_DOC_USER_SRC_DIR@/_templates']
 
 # Make sure the section target is unique
 autosectionlabel_prefix_document = True
@@ -94,12 +95,13 @@ html_static_path = ['_static']
 # a list of builtin themes.
 #
 # html_theme_path = ['./_themes']
-html_theme_path = ['@HTML_THEME_PATH@']
-html_theme = 'sphinx_zrythm_theme'
+# html_theme_path = ['@MESON_DOC_USER_SRC_DIR@']
+# html_theme = 'sphinx_zrythm_theme'
+html_theme = 'furo'
 html_last_updated_fmt = ''
 
-def setup(app):
-   app.add_css_file ("css/custom.css")
+# def setup(app):
+   # app.add_css_file ("css/custom.css")
    # app.add_source_suffix('.rst','restructuredtext')
 
 # define some custom roles
@@ -121,22 +123,26 @@ rst_prolog = """
 # options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'canonical_url': 'https://manual.zrythm.org/',
-    'logo_only': True,
-    'display_version': False,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': False,
+    # 'canonical_url': 'https://manual.zrythm.org/',
+    # 'logo_only': True,
+    # 'display_version': False,
+    # 'prev_next_buttons_location': 'bottom',
+    # 'style_external_links': False,
     # Toc options
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'includehidden': True,
-    'titles_only': False,
+    # 'collapse_navigation': True,
+    # 'sticky_navigation': True,
+    'sidebar_hide_name': True,
+    'navigation_with_keys': True,
+    # 'navigation_depth': 4,
+    # 'includehidden': True,
+    # 'titles_only': False,
+    'light_logo': 'z.svg',
+    'dark_logo': 'z.svg',
 }
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = '_static/z.svg'
+# html_logo = '_static/z.svg'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -152,7 +158,7 @@ html_favicon = '_static/favicon.ico'
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
+# html_sidebars = { '*': ['page.html']}
 
 dev_version = 'develop'  # This line auto-edited by newrelease script
 stable_version = 'master'  # This line auto-edited by newrelease script
@@ -184,6 +190,7 @@ html_context = {
         'vcs_pageview_mode': 'blob',
         'cgit_host': 'https://git.zrythm.org/cgit',
         'cgit_repo': 'zrythm',
+        'show_source': False,
         'downloads':
             [('pdf',
               'https://manual.zrythm.org/en/Zrythm.pdf'),

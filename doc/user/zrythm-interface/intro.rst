@@ -7,25 +7,11 @@ Interface
 
 .. toctree::
    :maxdepth: 4
-   :hidden:
 
+   overview
    timeline
    main-toolbar
    left-panel
    bottom-panel
    transport-bar
    right-panel
-
-The Zrythm interface is split into various
-sub-modules.
-
-.. image:: /_static/img/user-interface-annotated.png
-
-Each sub-module is explained in its own section.
-
-* :ref:`timeline` (1)
-* :ref:`main-toolbar` (2)
-* :ref:`left-panel` (3)
-* :ref:`bottom-panel` (4)
-* :ref:`transport-bar` (5)
-* :ref:`right-panel` (6)

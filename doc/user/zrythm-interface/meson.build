@@ -3,6 +3,7 @@ copy_files = [
   'intro.rst',
   'left-panel.rst',
   'main-toolbar.rst',
+  'overview.rst',
   'right-panel.rst',
   'timeline.rst',
   'transport-bar.rst',

@@ -27,9 +27,8 @@ if get_option ('strict_sphinx_opts')
   sphinx_build_opts = '-E -W -T'
 endif
 
-rtd_theme_files = files ([
-  'sphinx_zrythm_theme/layout.html',
-  'sphinx_zrythm_theme/search.html',
+html_templates = files ([
+  '_templates/page.html',
   ])
 
 run_sphinx_build = configure_file (
@@ -75,7 +74,7 @@ conf_py = configure_file (
   input: 'conf.py.in',
   configuration: {
     'VERSION': meson.project_version (),
-    'HTML_THEME_PATH': meson.current_source_dir (),
+    'MESON_DOC_USER_SRC_DIR': meson.current_source_dir (),
     })
 
 generated_rst_files = [
@@ -122,7 +121,7 @@ foreach lang, lang_str : locales
         name,
         depend_files: [
           conf_py, rst_files,
-          rtd_theme_files,
+          html_templates,
           generated_rst_files,
           ],
         output: name,

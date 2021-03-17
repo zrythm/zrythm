@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-16 07:18+0000\n"
+"POT-Creation-Date: 2021-03-16 09:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -336,6 +336,7 @@ msgstr "Аккорды (Chord) и гаммы (Scale)"
 #: ../../playback-and-recording/overview.rst:6
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 #: ../../scripting/overview.rst:6 ../../tracks/overview.rst:6
+#: ../../zrythm-interface/overview.rst:6
 msgid "Overview"
 msgstr "Обзор"
 
@@ -534,13 +535,6 @@ msgstr ""
 #: ../../configuration/intro.rst:8
 msgid "Configuration"
 msgstr "Конфигурация"
-
-#: ../../configuration/intro.rst:18
-msgid ""
-"This section goes through the :doc:`Preferences dialog <preferences>`, "
-":doc:`setting up devices <device-setup>` and :doc:`additional settings "
-"<additional-settings>`."
-msgstr ""
 
 #: ../../configuration/preferences.rst:10
 #: ../../zrythm-interface/main-toolbar.rst:129
@@ -1115,7 +1109,7 @@ msgstr ""
 msgid ""
 "Zrythm contains terminology similar to existing audio software. You may "
 "find it useful to borrow terms from them. See the `Cubase Pro Artist "
-"manual <https://steinberg.help/cubase_pro_artist/v9/fr/>` for example "
+"manual <https://steinberg.help/cubase_pro_artist/v9/fr/>`_ for example "
 "(replace `fr` in the URL with your language code)."
 msgstr ""
 
@@ -3698,14 +3692,6 @@ msgstr "Вы можете установить портированный Zrythm
 msgid "Getting Started"
 msgstr "Начало работы"
 
-#: ../../getting-started/intro.rst:19
-msgid ""
-"This section discusses :doc:`system requirements <system-requirements>` "
-"for running Zrythm, :doc:`installation methods <installation>`, "
-":doc:`initial configuration steps <running-zrythm>` and :doc:`how to "
-"obtain plugins, instruments and samples <getting-plugins>`."
-msgstr ""
-
 #: ../../getting-started/running-zrythm.rst:8
 #, fuzzy
 msgid "Running Zrythm"
@@ -5906,14 +5892,6 @@ msgid ""
 msgstr ""
 "Инструменты :term:`SFZ` и :term:`SF2` будут искаться во всех каталогах и "
 "подкаталогах, указанных в :ref:`vst-paths`."
-
-#: ../../projects/intro.rst:18
-msgid ""
-"This section goes through the :doc:`project structure <project-"
-"structure>`, :doc:`saving and loading projects <saving-loading>` and "
-":doc:`project management and compatibility <project-management-and-"
-"compatibility>`."
-msgstr ""
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
@@ -8466,38 +8444,6 @@ msgstr "Микширование описано в :ref:`mixing`."
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: ../../zrythm-interface/intro.rst:19
-msgid "The Zrythm interface is split into various sub-modules."
-msgstr "Интерфейс Zrythm разделен на различные модули."
-
-#: ../../zrythm-interface/intro.rst:24
-msgid "Each sub-module is explained in its own section."
-msgstr "Каждый модуль описан в отдельном разделе."
-
-#: ../../zrythm-interface/intro.rst:26
-msgid ":ref:`timeline` (1)"
-msgstr ":ref:`timeline` (1)"
-
-#: ../../zrythm-interface/intro.rst:27
-msgid ":ref:`main-toolbar` (2)"
-msgstr ""
-
-#: ../../zrythm-interface/intro.rst:28
-msgid ":ref:`left-panel` (3)"
-msgstr ""
-
-#: ../../zrythm-interface/intro.rst:29
-msgid ":ref:`bottom-panel` (4)"
-msgstr ":ref:`bottom-panel` (4)"
-
-#: ../../zrythm-interface/intro.rst:30
-msgid ":ref:`transport-bar` (5)"
-msgstr ""
-
-#: ../../zrythm-interface/intro.rst:31
-msgid ":ref:`right-panel` (6)"
-msgstr ""
-
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr "Левая Панель"
@@ -8885,6 +8831,41 @@ msgstr ""
 "Виджет «Вход MIDI» показывает :term:`MIDI` активность автоматически "
 "подключенных MIDI-устройств, а на дисплее формы волны в реальном времени "
 "отображается форма аудиосигнала с главного выхода."
+
+#: ../../zrythm-interface/overview.rst:8
+msgid "The Zrythm interface is split into various sub-modules."
+msgstr "Интерфейс Zrythm разделен на различные модули."
+
+#: ../../zrythm-interface/overview.rst:13
+msgid "Each sub-module is explained in its own section."
+msgstr "Каждый модуль описан в отдельном разделе."
+
+#: ../../zrythm-interface/overview.rst:15
+msgid ":ref:`timeline` (1)"
+msgstr ":ref:`timeline` (1)"
+
+#: ../../zrythm-interface/overview.rst:16
+#, fuzzy
+msgid ":ref:`main-toolbar` (2)"
+msgstr ":ref:`timeline` (1)"
+
+#: ../../zrythm-interface/overview.rst:17
+#, fuzzy
+msgid ":ref:`left-panel` (3)"
+msgstr ":ref:`bottom-panel` (4)"
+
+#: ../../zrythm-interface/overview.rst:18
+msgid ":ref:`bottom-panel` (4)"
+msgstr ":ref:`bottom-panel` (4)"
+
+#: ../../zrythm-interface/overview.rst:19
+msgid ":ref:`transport-bar` (5)"
+msgstr ""
+
+#: ../../zrythm-interface/overview.rst:20
+#, fuzzy
+msgid ":ref:`right-panel` (6)"
+msgstr ":ref:`bottom-panel` (4)"
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"

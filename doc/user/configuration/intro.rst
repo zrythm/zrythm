@@ -9,13 +9,7 @@ Configuration
 
 .. toctree::
    :maxdepth: 4
-   :hidden:
 
    preferences
    device-setup
    additional-settings
-
-This section goes through the
-:doc:`Preferences dialog <preferences>`,
-:doc:`setting up devices <device-setup>` and
-:doc:`additional settings <additional-settings>`.

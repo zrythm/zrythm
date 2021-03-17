@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-16 07:18+0000\n"
+"POT-Creation-Date: 2021-03-16 09:26+0000\n"
 "PO-Revision-Date: 2021-01-05 14:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -305,6 +305,7 @@ msgstr "Acordes e escalas"
 #: ../../playback-and-recording/overview.rst:6
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 #: ../../scripting/overview.rst:6 ../../tracks/overview.rst:6
+#: ../../zrythm-interface/overview.rst:6
 msgid "Overview"
 msgstr "Sinopse"
 
@@ -494,13 +495,6 @@ msgstr "A Zrythm não se vai lembrar das ligações feitas externamente."
 #: ../../configuration/intro.rst:8
 msgid "Configuration"
 msgstr "Configuração"
-
-#: ../../configuration/intro.rst:18
-msgid ""
-"This section goes through the :doc:`Preferences dialog <preferences>`, "
-":doc:`setting up devices <device-setup>` and :doc:`additional settings "
-"<additional-settings>`."
-msgstr ""
 
 #: ../../configuration/preferences.rst:10
 #: ../../zrythm-interface/main-toolbar.rst:129
@@ -1031,7 +1025,7 @@ msgstr ""
 msgid ""
 "Zrythm contains terminology similar to existing audio software. You may "
 "find it useful to borrow terms from them. See the `Cubase Pro Artist "
-"manual <https://steinberg.help/cubase_pro_artist/v9/fr/>` for example "
+"manual <https://steinberg.help/cubase_pro_artist/v9/fr/>`_ for example "
 "(replace `fr` in the URL with your language code)."
 msgstr ""
 
@@ -3333,14 +3327,6 @@ msgstr "Pode instalar a porta de Zrythm dos repositórios oficiais."
 msgid "Getting Started"
 msgstr "Primeiros Passos"
 
-#: ../../getting-started/intro.rst:19
-msgid ""
-"This section discusses :doc:`system requirements <system-requirements>` "
-"for running Zrythm, :doc:`installation methods <installation>`, "
-":doc:`initial configuration steps <running-zrythm>` and :doc:`how to "
-"obtain plugins, instruments and samples <getting-plugins>`."
-msgstr ""
-
 #: ../../getting-started/running-zrythm.rst:8
 msgid "Running Zrythm"
 msgstr "Executar o Zrythm"
@@ -5488,14 +5474,6 @@ msgid ""
 msgstr ""
 "Instrumentos :term:`SFZ` e :term:`SF2` serão procurados em todos os "
 "diretórios e subdiretórios especificados em :ref:`vst-paths`."
-
-#: ../../projects/intro.rst:18
-msgid ""
-"This section goes through the :doc:`project structure <project-"
-"structure>`, :doc:`saving and loading projects <saving-loading>` and "
-":doc:`project management and compatibility <project-management-and-"
-"compatibility>`."
-msgstr ""
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
@@ -8008,38 +7986,6 @@ msgstr "Misturar é abordado em :ref:`mixing`."
 msgid "Interface"
 msgstr "Interface"
 
-#: ../../zrythm-interface/intro.rst:19
-msgid "The Zrythm interface is split into various sub-modules."
-msgstr "A interface do Zrythm está dividida em vários submódulos."
-
-#: ../../zrythm-interface/intro.rst:24
-msgid "Each sub-module is explained in its own section."
-msgstr "Cada sub-módulo é explicado na própria secção dele."
-
-#: ../../zrythm-interface/intro.rst:26
-msgid ":ref:`timeline` (1)"
-msgstr ":ref:`timeline` (1)"
-
-#: ../../zrythm-interface/intro.rst:27
-msgid ":ref:`main-toolbar` (2)"
-msgstr ":ref:`main-toolbar` (2)"
-
-#: ../../zrythm-interface/intro.rst:28
-msgid ":ref:`left-panel` (3)"
-msgstr ":ref:`left-panel` (3)"
-
-#: ../../zrythm-interface/intro.rst:29
-msgid ":ref:`bottom-panel` (4)"
-msgstr ":ref:`bottom-panel` (4)"
-
-#: ../../zrythm-interface/intro.rst:30
-msgid ":ref:`transport-bar` (5)"
-msgstr ":ref:`transport-bar` (5)"
-
-#: ../../zrythm-interface/intro.rst:31
-msgid ":ref:`right-panel` (6)"
-msgstr ":ref:`right-panel` (6)"
-
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr "Painel esquerdo"
@@ -8428,6 +8374,38 @@ msgstr ""
 "O widget Entrada MIDI mostra a atividade :term:`MIDI` de aparelhos MIDI "
 "auto conectados e a vista de forma de onda ao vivo mostra a forma de onda"
 " de áudio da saída principal."
+
+#: ../../zrythm-interface/overview.rst:8
+msgid "The Zrythm interface is split into various sub-modules."
+msgstr "A interface do Zrythm está dividida em vários submódulos."
+
+#: ../../zrythm-interface/overview.rst:13
+msgid "Each sub-module is explained in its own section."
+msgstr "Cada sub-módulo é explicado na própria secção dele."
+
+#: ../../zrythm-interface/overview.rst:15
+msgid ":ref:`timeline` (1)"
+msgstr ":ref:`timeline` (1)"
+
+#: ../../zrythm-interface/overview.rst:16
+msgid ":ref:`main-toolbar` (2)"
+msgstr ":ref:`main-toolbar` (2)"
+
+#: ../../zrythm-interface/overview.rst:17
+msgid ":ref:`left-panel` (3)"
+msgstr ":ref:`left-panel` (3)"
+
+#: ../../zrythm-interface/overview.rst:18
+msgid ":ref:`bottom-panel` (4)"
+msgstr ":ref:`bottom-panel` (4)"
+
+#: ../../zrythm-interface/overview.rst:19
+msgid ":ref:`transport-bar` (5)"
+msgstr ":ref:`transport-bar` (5)"
+
+#: ../../zrythm-interface/overview.rst:20
+msgid ":ref:`right-panel` (6)"
+msgstr ":ref:`right-panel` (6)"
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"

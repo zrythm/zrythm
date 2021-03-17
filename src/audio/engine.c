@@ -455,7 +455,9 @@ engine_pre_setup (
   switch (self->midi_backend)
     {
     case MIDI_BACKEND_DUMMY:
+#ifdef HAVE_JACK
 setup_dummy_midi:
+#endif
       mret =
         engine_dummy_midi_setup (self);
       break;

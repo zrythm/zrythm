@@ -2,8 +2,10 @@ Zrythm User Manual
 ==================
 
 # Dependencies
-- Sphinx doc <http://sphinx-doc.org/>
+- [Sphinx doc](http://sphinx-doc.org/)
+- [furo](https://pypi.org/project/furo/) theme for HTML output
 - sphinx-intl
+- [sphinx-copybutton](https://pypi.org/project/sphinx-copybutton/)
 - guile
 - `guix build utils` guile module (installed with guix package)
 - texlive (for PDF)

@@ -70,7 +70,7 @@ please see the
 .. hint:: Zrythm contains terminology similar to
    existing audio software. You may find it useful
    to borrow terms from them. See the
-   `Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/>` for example (replace
+   `Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/>`_ for example (replace
    `fr` in the URL with your language code).
 
 User Manual
