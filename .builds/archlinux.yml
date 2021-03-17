@@ -47,7 +47,7 @@ secrets:
   - ffff20bf-6fd3-40d6-b26a-92f6c8dc1fcf
 tasks:
   - setup: |
-      sudo pip3 install sphinx-intl
+      sudo pip3 install sphinx-intl sphinx-copybutton furo sphinxcontrib-svg2pdfconverter
       pip3 install --user 'meson' --force-reinstall
       sudo npm install -g sass
       cd zrythm

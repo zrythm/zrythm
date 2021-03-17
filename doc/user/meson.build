@@ -18,13 +18,13 @@
 if sphinx_build.found () and sphinx_intl.found () and sass.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
-sphinx_build_opts = ''
+sphinx_build_opts = []
 if get_option ('strict_sphinx_opts')
     # Fail on warnings.
     # Keep going when getting warnings.
     #'--keep-going',
     # Show full traceback on exception.
-  sphinx_build_opts = '-E -W -T'
+  sphinx_build_opts = [ '-E', '-W', '-T' ]
 endif
 
 html_templates = files ([
@@ -75,11 +75,36 @@ conf_py = configure_file (
   configuration: {
     'VERSION': meson.project_version (),
     'MESON_DOC_USER_SRC_DIR': meson.current_source_dir (),
+    'MESON_DOC_USER_BUILD_DIR': meson.current_build_dir (),
     })
 
 generated_rst_files = [
   scripting_examples_rst,
   ]
+
+# link check
+link_check_target = custom_target (
+  'sphinx_linkcheck_target',
+  output: 'linkcheck',
+  command: [
+    sphinx_build, '-b', 'linkcheck',
+    sphinx_build_opts,
+    meson.current_build_dir (),
+    sphinx_builddir / '@OUTPUT@',
+    ],
+  depend_files: [
+    conf_py, rst_files,
+    html_templates,
+    generated_rst_files,
+    ],
+  install: false,
+  build_by_default: get_option ('user_manual'),
+  )
+
+run_target (
+  'sphinx_linkcheck',
+  command: [ 'echo', 'done' ],
+  depends: link_check_target)
 
 # create run targets for each lang/format combination
 # and custom targets for each language for html
@@ -98,7 +123,7 @@ foreach lang, lang_str : locales
     command = [
       run_sphinx_build,
       sphinx_build.full_path(),
-      sphinx_build_opts,
+      ' '.join (sphinx_build_opts),
       lang, format, meson.current_build_dir (),
       output_dir,
       ]

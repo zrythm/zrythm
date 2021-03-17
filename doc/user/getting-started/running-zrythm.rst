@@ -78,7 +78,7 @@ Project Selection
 Finally, Zrythm will ask you to
 :doc:`load or create a project <../projects/saving-loading>`
 and then the
-:doc:`main interface <../zrythm-interface/zrythm-interface-overview>`
+:doc:`main interface <../zrythm-interface/overview>`
 will show up.
 
 .. figure:: /_static/img/project_list.png

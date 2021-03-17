@@ -206,7 +206,8 @@ will adjust the curviness of the fade.
    Adjusting curviness
 
 The type of fade algorithm used can also be changed
-by right-clicking on the fade.
+by right-clicking on the fade and selecting
+:menuselection:`Fade preset`.
 
 .. figure:: /_static/img/audio-region-fade-context-menu.png
    :align: center
