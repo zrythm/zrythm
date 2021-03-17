@@ -82,30 +82,6 @@ generated_rst_files = [
   scripting_examples_rst,
   ]
 
-# link check
-link_check_target = custom_target (
-  'sphinx_linkcheck_target',
-  output: 'linkcheck',
-  command: [
-    sphinx_build, '-b', 'linkcheck',
-    sphinx_build_opts,
-    meson.current_build_dir (),
-    sphinx_builddir / '@OUTPUT@',
-    ],
-  depend_files: [
-    conf_py, rst_files,
-    html_templates,
-    generated_rst_files,
-    ],
-  install: false,
-  build_by_default: get_option ('user_manual'),
-  )
-
-run_target (
-  'sphinx_linkcheck',
-  command: [ 'echo', 'done' ],
-  depends: link_check_target)
-
 # create run targets for each lang/format combination
 # and custom targets for each language for html
 html_manuals = []
@@ -164,6 +140,26 @@ foreach lang, lang_str : locales
     endif
   endforeach
 endforeach
+
+# link check
+link_check_target = custom_target (
+  'sphinx_linkcheck_target',
+  output: 'linkcheck',
+  command: [
+    sphinx_build, '-b', 'linkcheck',
+    sphinx_build_opts,
+    meson.current_build_dir (),
+    sphinx_builddir / '@OUTPUT@',
+    ],
+  depends: html_manuals,
+  install: false,
+  build_by_default: get_option ('user_manual'),
+  )
+
+run_target (
+  'sphinx_linkcheck',
+  command: [ 'echo', 'done' ],
+  depends: link_check_target)
 
 # Generate POT files in the build dir
 #
