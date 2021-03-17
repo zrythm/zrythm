@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-08 01:24+0000\n"
-"PO-Revision-Date: 2021-02-28 04:50+0000\n"
+"PO-Revision-Date: 2021-03-08 18:37+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.5.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:278
@@ -713,9 +713,8 @@ msgid "Unknown widget type for value\n"
 msgstr "值的小部件类型未知\n"
 
 #: src/plugins/lv2/lv2_gtk.c:1257
-#, fuzzy
 msgid "Open File"
-msgstr "输出文件"
+msgstr "打开文件"
 
 #: src/plugins/lv2/lv2_gtk.c:1429
 msgid "Close"
@@ -1168,9 +1167,8 @@ msgid "JACK Timebase master"
 msgstr "JACK时基Master"
 
 #: src/gui/widgets/bot_bar.c:439
-#, fuzzy
 msgid "New buffer size"
-msgstr "缓冲区大小"
+msgstr "新的缓冲大小"
 
 #: src/gui/widgets/bot_bar.c:451
 msgid "Failed reading value"
@@ -1192,9 +1190,8 @@ msgstr ""
 
 #. TRANSLATORS: verb - change buffer size
 #: src/gui/widgets/bot_bar.c:559
-#, fuzzy
 msgid "change"
-msgstr "范围"
+msgstr "更改"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:561
@@ -2477,29 +2474,24 @@ msgid "Set control value"
 msgstr "设置控件值"
 
 #: src/actions/arranger_selections.c:2592
-#, fuzzy
 msgid "Create timeline selections"
-msgstr "创建编曲者选集"
+msgstr "创建时间轴选区"
 
 #: src/actions/arranger_selections.c:2596
-#, fuzzy
 msgid "Create audio selections"
-msgstr "创建编曲者选集"
+msgstr "创建音频选区"
 
 #: src/actions/arranger_selections.c:2600
-#, fuzzy
 msgid "Create automation selections"
-msgstr "创建编曲者选集"
+msgstr "创建自动选区"
 
 #: src/actions/arranger_selections.c:2604
-#, fuzzy
 msgid "Create chord selections"
-msgstr "创建编曲者选集"
+msgstr "创建和弦选区"
 
 #: src/actions/arranger_selections.c:2608
-#, fuzzy
 msgid "Create MIDI selections"
-msgstr "创建编曲者选集"
+msgstr "创建 MIDI 选区"
 
 #: src/actions/arranger_selections.c:2614
 msgid "Delete arranger selections"
@@ -4097,9 +4089,8 @@ msgid "List of all versions run at least once"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:229
-#, fuzzy
 msgid "A list of versions run at least once."
-msgstr "要启用的控制器列表。"
+msgstr "至少运行一次的版本列表。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:233
 msgid "Last version that was notified of a new release"
@@ -4826,14 +4817,12 @@ msgid ""
 msgstr "对单声道信号应用pan时使用的pan定律（不用于时刻）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:796
-#, fuzzy
 msgid "Scripting"
-msgstr "脚本接口"
+msgstr "脚本编写"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:801
-#, fuzzy
 msgid "Default script"
-msgstr "默认bank"
+msgstr "默认脚本"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "The default script to use in the scripting window."

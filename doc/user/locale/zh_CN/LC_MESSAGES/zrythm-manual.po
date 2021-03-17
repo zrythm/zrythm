@@ -39,7 +39,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-03-17 09:46+0000\n"
-"PO-Revision-Date: 2021-02-28 04:50+0000\n"
+"PO-Revision-Date: 2021-03-08 18:37+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language: zh_CN\n"
 "Language-Team: Chinese (Simplified) "
@@ -4712,9 +4712,8 @@ msgid ""
 msgstr ""
 
 #: ../../projects/project-structure.rst:16
-#, fuzzy
 msgid "Backups"
-msgstr "音轨"
+msgstr "备份"
 
 #: ../../projects/project-structure.rst:17
 msgid ""
@@ -5486,7 +5485,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr ""
+msgstr "脚本编写"
 
 #: ../../scripting/overview.rst:8
 msgid ""
@@ -6087,7 +6086,6 @@ msgid "Left audio input port to listen to"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:68
-#, fuzzy
 msgid "Right Input"
 msgstr "右侧输入"
 
@@ -6972,7 +6970,6 @@ msgid "Load a project."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:56
-#, fuzzy
 msgid "Export"
 msgstr "导出"
 
@@ -7135,9 +7132,8 @@ msgid "There are the following buttons next to the name of the current project."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:120
-#, fuzzy
 msgid "Shows the scripting interface."
-msgstr "脚本接口"
+msgstr "显示脚本接口。"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "See the :ref:`scripting` section for more information."

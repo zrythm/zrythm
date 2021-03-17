@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # webweblate <webweblate@riseup.net>, 2020, 2021.
+# Tymofij Lytvynenko <till.svit@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2021-01-23 15:32+0000\n"
-"Last-Translator: webweblate <webweblate@riseup.net>\n"
+"PO-Revision-Date: 2021-03-12 14:02+0000\n"
+"Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
 "Language: uk\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -249,7 +250,7 @@ msgstr "Крещендо"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:133
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
@@ -661,7 +662,7 @@ msgstr "_Зберегти"
 #: src/plugins/lv2_plugin.c:1746
 #, c-format
 msgid "Failed to find plugin with URI: %s"
-msgstr ""
+msgstr "Не вдалося знайти розширення за URI: %s"
 
 #: src/plugins/lv2_plugin.c:2552
 msgid "Unnamed bank"
@@ -1454,7 +1455,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:682
 #: build/data/org.zrythm.Zrythm.gschema.xml:697
 msgid "General"
-msgstr ""
+msgstr "Загальне"
 
 #: src/gui/widgets/preferences.c:84
 msgctxt "guilabel"
@@ -1465,7 +1466,7 @@ msgstr ""
 #: resources/ui/preferences.ui:449 build/data/org.zrythm.Zrythm.gschema.xml:575
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
 msgid "Plugins"
-msgstr ""
+msgstr "Розширення"
 
 #: src/gui/widgets/preferences.c:88
 msgctxt "guilabel"
@@ -1477,7 +1478,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:652
 #: build/data/org.zrythm.Zrythm.gschema.xml:666
 msgid "Editing"
-msgstr ""
+msgstr "Редагування"
 
 #: src/gui/widgets/preferences.c:92
 msgctxt "guilabel"
@@ -2028,6 +2029,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
+"високоавтоматизована і проста у використанні цифрова звукова робоча станція"
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
@@ -2741,7 +2743,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:92
 msgid "Project"
-msgstr ""
+msgstr "Проєкт"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
@@ -2874,7 +2876,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr ""
+msgstr "Мова"
 
 #: resources/ui/first_run_assistant.ui:111
 msgid ""
@@ -3616,7 +3618,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:292 data/zrythm.desktop.in:10
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:303
 #: build/data/org.zrythm.Zrythm.gschema.xml:394
@@ -3806,7 +3808,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Цифрова звукова робоча станція"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"

@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-08 01:24+0000\n"
-"PO-Revision-Date: 2021-03-08 01:16+0000\n"
+"PO-Revision-Date: 2021-03-10 09:57+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.1\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:278
@@ -329,7 +329,7 @@ msgstr "-6dB"
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1095
 #: src/utils/ui.c:846
 msgid "Linear"
-msgstr "直線"
+msgstr "リニア (Linear)"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:847
 msgid "Square Root"
@@ -1280,7 +1280,7 @@ msgstr "位置"
 
 #: src/gui/widgets/transport_controls.c:421
 msgid "Punch in/out"
-msgstr "パンチイン/アウト"
+msgstr "パンチイン/アウト (Punch in/out)"
 
 #: src/gui/widgets/transport_controls.c:424
 msgid "Start on MIDI input"
@@ -2061,7 +2061,7 @@ msgstr "選択(_S)"
 #: src/gui/widgets/dialogs/changelog_dialog.c:46
 #, c-format
 msgid "Running %s version <b>%s</b>%s%s"
-msgstr ""
+msgstr "実行中の%sバージョンは<b>%s</b>%s%s"
 
 #: src/gui/backend/arranger_object.c:2792
 #, c-format
@@ -2075,6 +2075,9 @@ msgid ""
 "\n"
 "Your current version is %s"
 msgstr ""
+"Zrythmの新バージョンがリリースされました。<b>%s</b>\n"
+"\n"
+"現在のバージョンは%sです。"
 
 #: src/gui/backend/event_manager.c:1795
 #, c-format
@@ -4145,7 +4148,7 @@ msgstr "プロジェクトが作成された最近のディレクトリ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:228
 msgid "List of all versions run at least once"
-msgstr ""
+msgstr "少なくとも一度は実行された全バージョンのリスト"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:229
 #, fuzzy
@@ -4154,13 +4157,13 @@ msgstr "有効にするコントローラーのリスト。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:233
 msgid "Last version that was notified of a new release"
-msgstr ""
+msgstr "新しいリリースが通知された最後のバージョン"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:234
 msgid ""
 "The last version that received a 'new version has been released' "
 "notification."
-msgstr ""
+msgstr "最後に「新バージョンがリリースされました」という通知が届いたバージョン。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:242
 msgid "Bounce with effects"
@@ -4950,7 +4953,7 @@ msgstr "デフォルトバンク"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "The default script to use in the scripting window."
-msgstr ""
+msgstr "スクリプトウィンドウで使用するデフォルトのスクリプト。"
 
 #~ msgid ""
 #~ ";;; This is an example GNU Guile script using modules provided by Zrythm\n"
