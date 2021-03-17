@@ -273,6 +273,7 @@ inc/utils/log.h
 inc/utils/resources.h
 inc/utils/err_codes.h
 inc/utils/gtk.h
+inc/settings/plugin_settings.h
 inc/settings/settings.h
 inc/audio/midi.h
 inc/audio/modulator_macro_processor.h
@@ -645,6 +646,7 @@ src/utils/dictionary.c
 src/utils/symap.c
 src/utils/backtrace.c
 src/utils/string.c
+src/settings/plugin_settings.c
 src/settings/settings.c
 src/audio/midi_file.c
 src/audio/encoder.c
