@@ -43,6 +43,9 @@ typedef struct AudioEngine AudioEngine;
  * @{
  */
 
+#define TIME_SIGNATURE_SCHEMA_VERSION 1
+#define TRANSPORT_SCHEMA_VERSION 1
+
 #define TRANSPORT (AUDIO_ENGINE->transport)
 #define TRANSPORT_DEFAULT_TOTAL_BARS 128
 #define TRANSPORT_MAX_BPM 420.f
@@ -138,6 +141,8 @@ typedef enum TransportRecordingMode
 
 typedef struct TimeSignature
 {
+  int           schema_version;
+
   /**
    * The top part (beats_per_par) is the number of
    * beat units
@@ -160,6 +165,8 @@ static const cyaml_schema_field_t
 time_signature_fields_schema[] =
 {
   YAML_FIELD_INT (
+    TimeSignature, schema_version),
+  YAML_FIELD_INT (
     TimeSignature, beats_per_bar),
   YAML_FIELD_INT (
     TimeSignature, beat_unit),
@@ -179,6 +186,8 @@ time_signature_schema =
  */
 typedef struct Transport
 {
+  int           schema_version;
+
   /** Total bars in the song. */
   int           total_bars;
 
@@ -313,6 +322,8 @@ beat_unit_strings[] =
 static const cyaml_schema_field_t
 transport_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    Transport, schema_version),
   YAML_FIELD_INT (
     Transport, total_bars),
   YAML_FIELD_MAPPING_EMBEDDED (

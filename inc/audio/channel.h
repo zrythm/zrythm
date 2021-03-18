@@ -54,6 +54,8 @@ typedef struct ExtPort ExtPort;
  * @{
  */
 
+#define CHANNEL_SCHEMA_VERSION 1
+
 /** Magic number to identify channels. */
 #define CHANNEL_MAGIC 8431676
 #define IS_CHANNEL(x) \
@@ -72,6 +74,7 @@ typedef struct ExtPort ExtPort;
  */
 typedef struct Channel
 {
+  int              schema_version;
   /**
    * The MIDI effect strip on instrument/MIDI tracks.
    *
@@ -232,6 +235,8 @@ typedef struct Channel
 static const cyaml_schema_field_t
 channel_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    Channel, schema_version),
   YAML_FIELD_SEQUENCE_FIXED (
     Channel, midi_fx,
     plugin_schema, STRIP_SIZE),
@@ -260,26 +265,21 @@ channel_fields_schema[] =
     Channel, output_pos),
   YAML_FIELD_INT (
     Channel, track_pos),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "ext_midi_ins", CYAML_FLAG_DEFAULT,
-    Channel, ext_midi_ins, num_ext_midi_ins,
-    &ext_port_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Channel, ext_midi_ins,
+    ext_port_schema),
   YAML_FIELD_INT (
     Channel, all_midi_ins),
-  CYAML_FIELD_SEQUENCE_FIXED (
-    "midi_channels", CYAML_FLAG_DEFAULT,
-    Channel, midi_channels,
-    &int_schema, 16),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "ext_stereo_l_ins", CYAML_FLAG_DEFAULT,
-    Channel, ext_stereo_l_ins, num_ext_stereo_l_ins,
-    &ext_port_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_SEQUENCE_FIXED (
+    Channel, midi_channels, int_schema, 16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Channel, ext_stereo_l_ins,
+    ext_port_schema),
   YAML_FIELD_INT (
     Channel, all_stereo_l_ins),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "ext_stereo_r_ins", CYAML_FLAG_DEFAULT,
-    Channel, ext_stereo_r_ins, num_ext_stereo_r_ins,
-    &ext_port_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Channel, ext_stereo_r_ins,
+    ext_port_schema),
   YAML_FIELD_INT (
     Channel, all_stereo_r_ins),
   YAML_FIELD_INT (
@@ -293,8 +293,7 @@ channel_fields_schema[] =
 static const cyaml_schema_value_t
 channel_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     Channel, channel_fields_schema),
 };
 

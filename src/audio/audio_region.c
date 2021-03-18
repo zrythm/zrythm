@@ -67,8 +67,8 @@ audio_region_new (
   int              idx_inside_lane)
 {
   ZRegion * self = object_new (ZRegion);
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
+  /*ArrangerObject * obj =*/
+    /*(ArrangerObject *) self;*/
 
   g_return_val_if_fail (
     start_pos && start_pos->frames >= 0, NULL);
@@ -114,10 +114,11 @@ audio_region_new (
     }
 
   /* set end pos to sample end */
+  Position end_pos;
   position_set_to_pos (
-    &obj->end_pos, start_pos);
+    &end_pos, start_pos);
   position_add_frames (
-    &obj->end_pos, clip->num_frames);
+    &end_pos, clip->num_frames);
 
   /* init split points */
   self->split_points_size = 1;
@@ -134,7 +135,7 @@ audio_region_new (
 
   /* init */
   region_init (
-    self, start_pos, &obj->end_pos, track_pos,
+    self, start_pos, &end_pos, track_pos,
     lane_pos, idx_inside_lane);
 
   (void) recording;

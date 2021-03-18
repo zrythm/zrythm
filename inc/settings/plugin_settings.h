@@ -40,6 +40,9 @@
  * @{
  */
 
+#define PLUGIN_SETTING_SCHEMA_VERSION 1
+#define PLUGIN_SETTINGS_SCHEMA_VERSION 3
+
 /**
  * Carla bridge mode.
  */
@@ -63,6 +66,8 @@ carla_bridge_mode_strings[] =
  */
 typedef struct PluginSetting
 {
+  int                schema_version;
+
   /** The descriptor of the plugin this setting is
    * for. */
   PluginDescriptor * descr;
@@ -84,17 +89,17 @@ typedef struct PluginSetting
 
 typedef struct PluginSettings
 {
-  /** Version of the file. */
-  unsigned int       version;
+  int             schema_version;
 
   /** Settings. */
-  PluginSetting *    settings[90000];
-  int                num_settings;
+  PluginSetting * settings[90000];
+  int             num_settings;
 } PluginSettings;
 
 static const cyaml_schema_field_t
 plugin_setting_fields_schema[] =
 {
+  YAML_FIELD_INT (PluginSetting, schema_version),
   YAML_FIELD_MAPPING_PTR (
     PluginSetting, descr,
     plugin_descriptor_fields_schema),
@@ -120,8 +125,8 @@ plugin_setting_schema =
 static const cyaml_schema_field_t
 plugin_settings_fields_schema[] =
 {
-  YAML_FIELD_UINT (
-    PluginSettings, version),
+  YAML_FIELD_INT (
+    PluginSettings, schema_version),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     PluginSettings, settings,
     plugin_setting_schema),
@@ -229,10 +234,5 @@ plugin_settings_free (
 /**
  * @}
  */
-
-SERIALIZE_INC (
-  PluginSettings, plugin_settings);
-DESERIALIZE_INC (
-  PluginSettings, plugin_settings);
 
 #endif

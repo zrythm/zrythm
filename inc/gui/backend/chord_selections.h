@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,8 @@
  * @{
  */
 
+#define CHORD_SELECTIONS_SCHEMA_VERSION 1
+
 #define CHORD_SELECTIONS \
   (&PROJECT->chord_selections)
 
@@ -47,6 +49,8 @@ typedef struct ChordSelections
 {
   /** Base struct. */
   ArrangerSelections  base;
+
+  int                 schema_version;
 
   /** Selected ChordObject's.
    *
@@ -61,24 +65,21 @@ typedef struct ChordSelections
 static const cyaml_schema_field_t
   chord_selections_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ChordSelections, base,
     arranger_selections_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_objects",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_INT (
+    ChordSelections, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     ChordSelections, chord_objects,
-    num_chord_objects,
-    &chord_object_schema, 0, CYAML_UNLIMITED),
+    chord_object_schema),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 chord_selections_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     ChordSelections,
     chord_selections_fields_schema),
 };
@@ -94,13 +95,6 @@ chord_selections_can_be_pasted (
   ChordSelections * ts,
   Position *        pos,
   ZRegion *          region);
-
-SERIALIZE_INC (ChordSelections,
-               chord_selections)
-DESERIALIZE_INC (ChordSelections,
-                 chord_selections)
-PRINT_YAML_INC (ChordSelections,
-                chord_selections)
 
 /**
 * @}

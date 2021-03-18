@@ -57,10 +57,3 @@ automation_selections_can_be_pasted (
 
   return true;
 }
-
-SERIALIZE_SRC (
-  AutomationSelections, automation_selections)
-DESERIALIZE_SRC (
-  AutomationSelections, automation_selections)
-PRINT_YAML_SRC (
-  AutomationSelections, automation_selections)

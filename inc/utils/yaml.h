@@ -243,95 +243,28 @@
     CYAML_FLAG_DEFAULT, cc, fields_schema)
 
 /**
- * Serializes to XML.
+ * Serializes to YAML.
  *
- * MUST be free'd.
+ * @return Newly allocated YAML string, or NULL if
+ *   error.
  */
-#define SERIALIZE_INC(camelcase, lowercase) \
-  NONNULL \
-  char * \
-  lowercase##_serialize ( \
-    camelcase * x);
+NONNULL
+char *
+yaml_serialize (
+  void *                       data,
+  const cyaml_schema_value_t * schema);
 
-#define SERIALIZE_SRC(camelcase, lowercase) \
-  char * \
-  lowercase##_serialize ( \
-    camelcase * x) \
-  { \
-    cyaml_err_t err; \
-    cyaml_config_t cyaml_config; \
-    yaml_get_cyaml_config (&cyaml_config); \
- \
-    char * output; \
-    size_t output_len; \
-    err = \
-      cyaml_save_data ( \
-        &output, \
-        &output_len, \
-        &cyaml_config, \
-        &lowercase##_schema, \
-        x, \
-        0); \
-    if (err != CYAML_OK) \
-      { \
-        g_warning ("error %s", \
-                   cyaml_strerror (err)); \
-        return NULL; \
-      } \
- \
-    char * new_str = \
-      object_new_n (output_len + 1, char);\
-    memcpy (new_str, output, output_len);\
-    new_str[output_len] = '\0'; \
-    cyaml_config.mem_fn(cyaml_config.mem_ctx, output, 0); \
- \
-    return new_str; \
-  }
+NONNULL
+void *
+yaml_deserialize (
+  const char *                 yaml,
+  const cyaml_schema_value_t * schema);
 
-#define DESERIALIZE_INC(camelcase, lowercase) \
-  NONNULL \
-  camelcase * \
-  lowercase##_deserialize (const char * e);
-
-#define DESERIALIZE_SRC(camelcase, lowercase) \
-  camelcase * \
-  lowercase##_deserialize (const char * e) \
-  { \
-    camelcase * self; \
-    cyaml_config_t cyaml_config; \
-    yaml_get_cyaml_config (&cyaml_config); \
- \
-    cyaml_err_t err = \
-      cyaml_load_data ((const unsigned char *) e, \
-                       strlen (e), \
-                       &cyaml_config, \
-                       &lowercase##_schema, \
-                       (cyaml_data_t **) &self, \
-                       NULL); \
-    if (err != CYAML_OK) \
-      { \
-        g_warning ( \
-          "cyaml error: %s", \
-          cyaml_strerror (err)); \
-        return NULL; \
-      } \
- \
-    return self; \
-  }
-
-#define PRINT_YAML_INC(camelcase, lowercase) \
-  void \
-  lowercase##_print_yaml (camelcase * x);
-
-#define PRINT_YAML_SRC(camelcase, lowercase) \
-  void \
-  lowercase##_print_yaml (camelcase * x) \
-  { \
-    char * serialized = \
-      lowercase##_serialize (x); \
-    g_message ("[YAML print]\n"#lowercase" :\n %s", \
-               serialized); \
-  }
+NONNULL
+void
+yaml_print (
+  void *                       data,
+  const cyaml_schema_value_t * schema);
 
 /**
  * Custom logging function for libcyaml.
@@ -387,6 +320,11 @@ gdk_rgba_fields_schema[] =
 
   CYAML_FIELD_END
 };
+
+typedef enum YamlDummyEnum
+{
+  YAML_DUMMY_ENUM1,
+} YamlDummyEnum;
 
 /**
  * @}

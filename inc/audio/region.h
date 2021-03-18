@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,6 +51,8 @@ typedef struct Stretcher Stretcher;
  * @{
  */
 
+#define REGION_SCHEMA_VERSION 1
+
 #define REGION_MAGIC 93075327
 #define IS_REGION(x) \
   (((ZRegion *) x)->magic == REGION_MAGIC)
@@ -100,6 +102,8 @@ typedef struct ZRegion
 {
   /** Base struct. */
   ArrangerObject base;
+
+  int            schema_version;
 
   /** Unique ID. */
   RegionIdentifier id;
@@ -281,14 +285,13 @@ typedef struct ZRegion
 static const cyaml_schema_field_t
   region_fields_schema[] =
 {
+  YAML_FIELD_INT (ZRegion, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
     ZRegion, base, arranger_object_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     ZRegion, id, region_identifier_fields_schema),
-  YAML_FIELD_STRING_PTR (
-    ZRegion, name),
-  YAML_FIELD_INT (
-    ZRegion, pool_id),
+  YAML_FIELD_STRING_PTR (ZRegion, name),
+  YAML_FIELD_INT (ZRegion, pool_id),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
@@ -702,10 +705,6 @@ region_validate (
 void
 region_disconnect (
   ZRegion * self);
-
-SERIALIZE_INC (ZRegion, region)
-DESERIALIZE_INC (ZRegion, region)
-PRINT_YAML_INC (ZRegion, region)
 
 /**
  * @}

@@ -30,17 +30,18 @@
 #include "audio/automation_track.h"
 #include "utils/yaml.h"
 
-#define GET_SELECTED_AUTOMATION_TRACKS \
-  Track * selected_tracks[200]; \
-  int num_selected = 0; \
-  tracklist_get_selected_tracks (PROJECT->tracklist,\
-                                 selected_tracks,\
-                                 &num_selected);
-
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Track Track;
 typedef struct Automatable Automatable;
 typedef struct AutomationLane AutomationLane;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+#define AUTOMATION_TRACKLIST_SCHEMA_VERSION 1
 
 /**
  * Each track has an automation tracklist with automation
@@ -49,6 +50,8 @@ typedef struct AutomationLane AutomationLane;
  */
 typedef struct AutomationTracklist
 {
+  int               schema_version;
+
   /**
    * Automation tracks in this automation
    * tracklist.
@@ -86,22 +89,21 @@ typedef struct AutomationTracklist
 static const cyaml_schema_field_t
   automation_tracklist_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "ats", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    AutomationTracklist, ats, num_ats,
-    &automation_track_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    AutomationTracklist, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    AutomationTracklist, ats,
+    automation_track_schema),
+  YAML_FIELD_INT (
     AutomationTracklist, track_pos),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   automation_tracklist_schema =
 {
-	CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     AutomationTracklist,
     automation_tracklist_fields_schema),
 };
@@ -287,5 +289,9 @@ automation_tracklist_validate (
 void
 automation_tracklist_free_members (
   AutomationTracklist * self);
+
+/**
+ * @}
+ */
 
 #endif

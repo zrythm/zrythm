@@ -36,6 +36,8 @@
  * @{
  */
 
+#define POSITION_SCHEMA_VERSION 1
+
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
 #define TICKS_PER_QUARTER_NOTE_DBL 960.0
@@ -139,37 +141,7 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct Position
 {
-  /*
-   * This is the size of the number of beats per
-   * bar (top part of time sig).
-   *
-   * A negative number indicates a negative
-   * position.
-   */
-  //int       bars;
-
-  /**
-   * The size of the beat is the the beat unit (bot
-   * part of time sig).
-   */
-  //int       beats;
-
-  /**
-   * This is always the size of a 1/16th note
-   * regardless of time sig (so if bot part is 16,
-   * this will always be 1).
-   *
-   * This is added for convenience when compared to
-   * BBT, so that the user only has 240 ticks to
-   * deal with for precise operations instead of 960.
-   */
-  //int       sixteenths;
-
-  /** 240 ticks per sixteenth. */
-  //int       ticks;
-
-  /** 0.0 to 1.0 for precision. */
-  //double    sub_tick;
+  int       schema_version;
 
   /** Precise total number of ticks. */
   double    ticks;
@@ -181,10 +153,9 @@ typedef struct Position
 static const cyaml_schema_field_t
   position_fields_schema[] =
 {
-  YAML_FIELD_FLOAT (
-    Position, ticks),
-  YAML_FIELD_INT (
-    Position, frames),
+  YAML_FIELD_INT (Position, schema_version),
+  YAML_FIELD_FLOAT (Position, ticks),
+  YAML_FIELD_INT (Position, frames),
 
   CYAML_FIELD_END
 };
@@ -199,6 +170,7 @@ static const cyaml_schema_value_t
 /** Start Position to be used in calculations. */
 static const Position POSITION_START =
 {
+  .schema_version = POSITION_SCHEMA_VERSION,
   .ticks = 0.0,
   .frames = 0
 };
@@ -519,22 +491,10 @@ double
 position_get_ticks (
   const Position * pos);
 
-#if 0
-/**
- * Gets the subticks of the position.
- *
- * Ie, if the position is equivalent to
- * 4.1.2.42.40124, this will return 0.40124.
- */
 NONNULL
-double
-position_get_subticks (
+bool
+position_validate (
   const Position * pos);
-#endif
-
-SERIALIZE_INC (Position, position)
-DESERIALIZE_INC (Position, position)
-PRINT_YAML_INC (Position, position)
 
 /**
  * @}

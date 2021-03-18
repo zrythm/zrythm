@@ -27,6 +27,9 @@ void
 chord_editor_init (
   ChordEditor * self)
 {
+  self->schema_version =
+    CHORD_EDITOR_SCHEMA_VERSION;
+
   self->num_chords = 0;
   for (int i = 0; i < 12; i++)
     {

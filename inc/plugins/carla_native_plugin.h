@@ -85,25 +85,6 @@ typedef struct CarlaNativePlugin
 
 } CarlaNativePlugin;
 
-static const cyaml_schema_field_t
-  carla_native_plugin_fields_schema[] =
-{
-  /** Not really needed but cyaml fails to load if
-   * nothing is here. */
-  YAML_FIELD_INT (
-    CarlaNativePlugin, carla_plugin_id),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t
-  carla_native_plugin_schema =
-{
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER, CarlaNativePlugin,
-    carla_native_plugin_fields_schema),
-};
-
 #ifdef HAVE_CARLA
 
 NONNULL

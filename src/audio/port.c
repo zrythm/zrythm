@@ -28,9 +28,7 @@
 #include "audio/channel.h"
 #include "audio/clip.h"
 #include "audio/control_port.h"
-#ifdef HAVE_JACK
 #include "audio/engine_jack.h"
-#endif
 #include "audio/graph.h"
 #include "audio/hardware_processor.h"
 #include "audio/midi_event.h"
@@ -43,6 +41,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/channel.h"
+#include "plugins/carla_native_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "utils/arrays.h"
@@ -724,8 +723,8 @@ _port_new (
 
   Port * self = object_new (Port);
 
-  self->id.plugin_id.slot = -1;
-  self->id.track_pos = -1;
+  self->schema_version = PORT_SCHEMA_VERSION;
+  port_identifier_init (&self->id);
   self->magic = PORT_MAGIC;
 
   self->num_dests = 0;
@@ -816,6 +815,7 @@ stereo_ports_new_from_existing (
   Port * l, Port * r)
 {
   StereoPorts * sp = object_new (StereoPorts);
+  sp->schema_version = STEREO_PORTS_SCHEMA_VERSION;
   sp->l = l;
   l->id.flags |= PORT_FLAG_STEREO_L;
   r->id.flags |= PORT_FLAG_STEREO_R;
@@ -4189,7 +4189,3 @@ port_free (Port * self)
 
   object_zero_and_free (self);
 }
-
-SERIALIZE_SRC (Port, port)
-DESERIALIZE_SRC (Port, port)
-PRINT_YAML_SRC (Port, port)

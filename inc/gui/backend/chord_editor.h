@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,8 @@ typedef struct ChordDescriptor ChordDescriptor;
  * @{
  */
 
+#define CHORD_EDITOR_SCHEMA_VERSION 1
+
 #define CHORD_EDITOR \
   (&CLIP_EDITOR->chord_editor)
 
@@ -47,6 +49,8 @@ typedef struct ChordDescriptor ChordDescriptor;
  */
 typedef struct ChordEditor
 {
+  int              schema_version;
+
   /**
    * The chords to show on the left.
    *
@@ -62,10 +66,10 @@ typedef struct ChordEditor
 static const cyaml_schema_field_t
 chord_editor_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "chords", CYAML_FLAG_DEFAULT,
-    ChordEditor, chords, num_chords,
-    &chord_descriptor_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_INT (
+    ChordEditor, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    ChordEditor, chords, chord_descriptor_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     ChordEditor, editor_settings,
     editor_settings_fields_schema),

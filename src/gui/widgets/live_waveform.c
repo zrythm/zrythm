@@ -30,6 +30,8 @@
 #include "utils/cairo.h"
 #include "zrythm_app.h"
 
+#include "ext/zix/zix/ring.h"
+
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 

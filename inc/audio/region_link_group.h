@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,8 @@ typedef struct ZRegion ZRegion;
  * @{
  */
 
+#define REGION_LINK_GROUP_SCHEMA_VERSION 1
+
 #define REGION_LINK_GROUP_MAGIC 1222013
 #define IS_REGION_LINK_GROUP(x) \
   (((RegionLinkGroup *) (x))->magic == \
@@ -49,6 +51,8 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct RegionLinkGroup
 {
+  int                schema_version;
+
   /** Identifiers for regions in this link group. */
   RegionIdentifier * ids;
   int                num_ids;
@@ -63,6 +67,8 @@ typedef struct RegionLinkGroup
 static const cyaml_schema_field_t
   region_link_group_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    RegionLinkGroup, schema_version),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     RegionLinkGroup, ids,
     region_identifier_schema_default),
@@ -75,15 +81,17 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
   region_link_group_schema =
 {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
-    RegionLinkGroup, region_link_group_fields_schema),
+  YAML_VALUE_PTR (
+    RegionLinkGroup,
+    region_link_group_fields_schema),
 };
 
 static const cyaml_schema_value_t
   region_link_group_schema_default =
 {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
-    RegionLinkGroup, region_link_group_fields_schema),
+  YAML_VALUE_DEFAULT (
+    RegionLinkGroup,
+    region_link_group_fields_schema),
 };
 
 void

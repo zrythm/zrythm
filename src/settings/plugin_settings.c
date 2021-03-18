@@ -29,7 +29,6 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define PLUGIN_SETTINGS_VERSION 2
 #define PLUGIN_SETTINGS_FILENAME "plugin-settings.yaml"
 
 /**
@@ -57,6 +56,8 @@ plugin_setting_new_default (
   else
     {
       self = object_new (PluginSetting);
+      self->schema_version =
+        PLUGIN_SETTING_SCHEMA_VERSION;
       self->descr = plugin_descriptor_clone (descr);
       plugin_setting_validate (self);
     }
@@ -73,6 +74,8 @@ plugin_setting_clone (
     object_new (PluginSetting);
 
   *new_setting = *src;
+  new_setting->schema_version =
+    PLUGIN_SETTING_SCHEMA_VERSION;
   new_setting->descr =
     plugin_descriptor_clone (src->descr);
   new_setting->ui_uri = g_strdup (src->ui_uri);
@@ -270,9 +273,10 @@ void
 plugin_settings_serialize_to_file (
   PluginSettings * self)
 {
-  self->version = PLUGIN_SETTINGS_VERSION;
   g_message ("Serializing plugin settings...");
-  char * yaml = plugin_settings_serialize (self);
+  char * yaml =
+    yaml_serialize (
+      self, &plugin_settings_schema);
   g_return_if_fail (yaml);
   GError *err = NULL;
   char * path =
@@ -303,15 +307,15 @@ is_yaml_our_version (
   bool same_version = false;
   char version_str[120];
   sprintf (
-    version_str, "version: %d\n",
-    PLUGIN_SETTINGS_VERSION);
+    version_str, "schema_version: %d\n",
+    PLUGIN_SETTINGS_SCHEMA_VERSION);
   same_version =
     g_str_has_prefix (yaml, version_str);
   if (!same_version)
     {
       sprintf (
-        version_str, "---\nversion: %d\n",
-        PLUGIN_SETTINGS_VERSION);
+        version_str, "---\nschema_version: %d\n",
+        PLUGIN_SETTINGS_SCHEMA_VERSION);
       same_version =
         g_str_has_prefix (yaml, version_str);
     }
@@ -335,7 +339,11 @@ plugin_settings_new (void)
         "not exist", path);
 return_new_instance:
       g_free (path);
-      return object_new (PluginSettings);
+      PluginSettings * self =
+        object_new (PluginSettings);
+      self->schema_version =
+        PLUGIN_SETTINGS_SCHEMA_VERSION;
+      return self;
     }
   char * yaml = NULL;
   g_file_get_contents (path, &yaml, NULL, &err);
@@ -366,7 +374,8 @@ return_new_instance:
     }
 
   PluginSettings * self =
-    plugin_settings_deserialize (yaml);
+    (PluginSettings *)
+    yaml_deserialize (yaml, &plugin_settings_schema);
   if (!self)
     {
       g_critical (
@@ -463,8 +472,3 @@ plugin_settings_free (
 
   object_zero_and_free (self);
 }
-
-SERIALIZE_SRC (
-  PluginSettings, plugin_settings);
-DESERIALIZE_SRC (
-  PluginSettings, plugin_settings);

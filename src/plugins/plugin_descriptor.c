@@ -20,6 +20,8 @@
 #include <stdlib.h>
 
 #include "audio/track.h"
+#include "plugins/carla_native_plugin.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/plugin.h"
@@ -28,6 +30,17 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+
+PluginDescriptor *
+plugin_descriptor_new (void)
+{
+  PluginDescriptor * self =
+    object_new (PluginDescriptor);
+  self->schema_version =
+    PLUGIN_DESCRIPTOR_SCHEMA_VERSION;
+
+  return self;
+}
 
 const char *
 plugin_protocol_to_str (
@@ -55,6 +68,7 @@ plugin_descriptor_copy (
   PluginDescriptor *       dest,
   const PluginDescriptor * src)
 {
+  dest->schema_version = src->schema_version;
   dest->author = g_strdup (src->author);
   dest->name = g_strdup (src->name);
   dest->website = g_strdup (src->website);

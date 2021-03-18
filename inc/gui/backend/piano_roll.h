@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,8 @@ typedef struct Track Track;
  *
  * @{
  */
+
+#define PIANO_ROLL_SCHEMA_VERSION 1
 
 #define PIANO_ROLL (&CLIP_EDITOR->piano_roll)
 
@@ -168,6 +170,8 @@ typedef struct MidiNoteDescriptor
  */
 typedef struct PianoRoll
 {
+  int             schema_version;
+
   /** Notes zoom level. */
   float           notes_zoom;
 
@@ -221,14 +225,12 @@ midi_modifier_strings[] =
 static const cyaml_schema_field_t
 piano_roll_fields_schema[] =
 {
-  YAML_FIELD_FLOAT (
-    PianoRoll, notes_zoom),
-  CYAML_FIELD_ENUM (
-    "midi_modifier", CYAML_FLAG_DEFAULT,
-    PianoRoll, midi_modifier, midi_modifier_strings,
-    CYAML_ARRAY_LEN (midi_modifier_strings)),
-  YAML_FIELD_INT (
-    PianoRoll, drum_mode),
+  YAML_FIELD_INT (PianoRoll, schema_version),
+  YAML_FIELD_FLOAT (PianoRoll, notes_zoom),
+  YAML_FIELD_ENUM (
+    PianoRoll, midi_modifier,
+    midi_modifier_strings),
+  YAML_FIELD_INT (PianoRoll, drum_mode),
   YAML_FIELD_MAPPING_EMBEDDED (
     PianoRoll, editor_settings,
     editor_settings_fields_schema),
@@ -239,8 +241,7 @@ piano_roll_fields_schema[] =
 static const cyaml_schema_value_t
 piano_roll_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     PianoRoll, piano_roll_fields_schema),
 };
 

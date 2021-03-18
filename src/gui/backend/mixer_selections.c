@@ -50,11 +50,21 @@ mixer_selections_init_loaded (
   mixer_selections_sort (self, F_ASCENDING);
 }
 
+void
+mixer_selections_init (
+  MixerSelections * self)
+{
+  self->schema_version =
+    MIXER_SELECTIONS_SCHEMA_VERSION;
+}
+
 MixerSelections *
 mixer_selections_new (void)
 {
   MixerSelections * self =
     object_new (MixerSelections);
+
+  mixer_selections_init (self);
 
   return self;
 }
@@ -432,7 +442,7 @@ mixer_selections_clone (
   bool              src_is_project)
 {
   MixerSelections * ms =
-    object_new (MixerSelections);
+    mixer_selections_new ();
 
   int i;
 
@@ -493,10 +503,3 @@ mixer_selections_free (MixerSelections * self)
 {
   free (self);
 }
-
-SERIALIZE_SRC (
-  MixerSelections, mixer_selections)
-DESERIALIZE_SRC (
-  MixerSelections, mixer_selections)
-PRINT_YAML_SRC (
-  MixerSelections, mixer_selections)

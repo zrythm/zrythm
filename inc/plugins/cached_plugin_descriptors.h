@@ -35,13 +35,15 @@
  * @{
  */
 
+#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 1
+
 /**
  * Descriptors to be cached.
  */
 typedef struct CachedPluginDescriptors
 {
   /** Version of the file. */
-  unsigned int        version;
+  int                 schema_version;
 
   /** Valid descriptors. */
   PluginDescriptor *  descriptors[90000];
@@ -56,8 +58,8 @@ typedef struct CachedPluginDescriptors
 static const cyaml_schema_field_t
 cached_plugin_descriptors_fields_schema[] =
 {
-  YAML_FIELD_UINT (
-    CachedPluginDescriptors, version),
+  YAML_FIELD_INT (
+    CachedPluginDescriptors, schema_version),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     CachedPluginDescriptors, descriptors,
     plugin_descriptor_schema),
@@ -181,10 +183,5 @@ cached_plugin_descriptors_free (
 /**
  * @}
  */
-
-SERIALIZE_INC (
-  CachedPluginDescriptors, cached_plugin_descriptors);
-DESERIALIZE_INC (
-  CachedPluginDescriptors, cached_plugin_descriptors);
 
 #endif

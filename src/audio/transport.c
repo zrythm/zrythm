@@ -53,6 +53,11 @@ static void
 init_common (
   Transport * self)
 {
+  self->schema_version = TRANSPORT_SCHEMA_VERSION;
+
+  self->time_sig.schema_version =
+    TIME_SIGNATURE_SCHEMA_VERSION;
+
   /* set playstate */
   self->play_state = PLAYSTATE_PAUSED;
 
@@ -142,6 +147,11 @@ transport_new (
   position_init (&self->playhead_pos);
   position_init (&self->cue_pos);
   position_init (&self->loop_start_pos);
+  position_init (&self->loop_end_pos);
+  position_init (&self->punch_in_pos);
+  position_init (&self->punch_out_pos);
+  position_init (&self->range_1);
+  position_init (&self->range_2);
 
   double ticks_per_bar =
     TICKS_PER_QUARTER_NOTE * 4.0;

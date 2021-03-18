@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,6 +37,8 @@
  *
  * @{
  */
+
+#define PLUGIN_DESCRIPTOR_SCHEMA_VERSION 1
 
 /**
  * Plugin category.
@@ -184,6 +186,7 @@ plugin_architecture_strings[] =
  */
 typedef struct PluginDescriptor
 {
+  int              schema_version;
   char *           author;
   char *           name;
   char *           website;
@@ -229,6 +232,8 @@ typedef struct PluginDescriptor
 static const cyaml_schema_field_t
 plugin_descriptor_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    PluginDescriptor, schema_version),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginDescriptor, author),
   YAML_FIELD_STRING_PTR_OPTIONAL (
@@ -277,11 +282,13 @@ plugin_descriptor_fields_schema[] =
 static const cyaml_schema_value_t
 plugin_descriptor_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     PluginDescriptor,
     plugin_descriptor_fields_schema),
 };
+
+PluginDescriptor *
+plugin_descriptor_new (void);
 
 const char *
 plugin_protocol_to_str (

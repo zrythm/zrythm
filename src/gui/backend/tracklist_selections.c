@@ -113,6 +113,9 @@ tracklist_selections_new (
   TracklistSelections * self =
     object_new (TracklistSelections);
 
+  self->schema_version =
+    TRACKLIST_SELECTIONS_SCHEMA_VERSION;
+
   self->is_project = is_project;
 
   return self;
@@ -573,10 +576,3 @@ tracklist_selections_free (
 
   object_zero_and_free (self);
 }
-
-SERIALIZE_SRC (
-  TracklistSelections, tracklist_selections)
-DESERIALIZE_SRC (
-  TracklistSelections, tracklist_selections)
-PRINT_YAML_SRC (
-  TracklistSelections, tracklist_selections)

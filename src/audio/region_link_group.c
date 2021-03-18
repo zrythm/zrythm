@@ -30,6 +30,8 @@ region_link_group_init (
   RegionLinkGroup * self,
   int               idx)
 {
+  self->schema_version =
+    REGION_LINK_GROUP_SCHEMA_VERSION;
   self->num_ids = 0;
   self->ids_size = 0;
   self->ids = NULL;

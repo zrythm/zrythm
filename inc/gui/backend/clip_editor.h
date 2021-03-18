@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,8 @@ typedef struct ArrangerSelections ArrangerSelections;
  * @{
  */
 
+#define CLIP_EDITOR_SCHEMA_VERSION 1
+
 #define CLIP_EDITOR (PROJECT->clip_editor)
 
 /**
@@ -53,6 +55,8 @@ typedef struct ArrangerSelections ArrangerSelections;
  */
 typedef struct ClipEditor
 {
+  int               schema_version;
+
   /** ZRegion currently attached to the clip
    * editor. */
   RegionIdentifier  region_id;
@@ -89,6 +93,7 @@ typedef struct ClipEditor
 static const cyaml_schema_field_t
 clip_editor_fields_schema[] =
 {
+  YAML_FIELD_INT (ClipEditor, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, region_id,
     region_identifier_fields_schema),
@@ -113,8 +118,7 @@ clip_editor_fields_schema[] =
 static const cyaml_schema_value_t
 clip_editor_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     ClipEditor, clip_editor_fields_schema),
 };
 

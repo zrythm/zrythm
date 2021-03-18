@@ -89,6 +89,7 @@ audio_srcs = [
   'recording_event.c',
   'recording_manager.c',
   'region.c',
+  'region_identifier.c',
   'region_link_group.c',
   'region_link_group_manager.c',
   'router.c',

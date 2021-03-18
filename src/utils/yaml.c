@@ -19,6 +19,7 @@
 
 #include <string.h>
 
+#include "utils/objects.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -72,6 +73,82 @@ void yaml_cyaml_log_func (
   strcpy (format, fmt);
   format[strlen (format) - 1] = '\0';
 
-  g_logv (
-    "cyaml", level, format, ap);
+  g_logv ("cyaml", level, format, ap);
+}
+
+/**
+ * Serializes to XML.
+ *
+ * MUST be free'd.
+ */
+char *
+yaml_serialize (
+  void *                       data,
+  const cyaml_schema_value_t * schema)
+{
+  cyaml_err_t err;
+  cyaml_config_t cyaml_config;
+  yaml_get_cyaml_config (&cyaml_config);
+  char * output;
+  size_t output_len;
+  err =
+    cyaml_save_data (
+      &output, &output_len,
+      &cyaml_config, schema, data, 0);
+  if (err != CYAML_OK)
+    {
+      g_warning (
+        "error %s",
+        cyaml_strerror (err));
+      return NULL;
+    }
+  char * new_str =
+    object_new_n (output_len + 1, char);
+  memcpy (new_str, output, output_len);
+  new_str[output_len] = '\0';
+  cyaml_config.mem_fn (
+    cyaml_config.mem_ctx, output, 0);
+
+  return new_str;
+}
+
+void *
+yaml_deserialize (
+  const char *                 yaml,
+  const cyaml_schema_value_t * schema)
+{
+  void * obj;
+  cyaml_config_t cyaml_config;
+  yaml_get_cyaml_config (&cyaml_config);
+  cyaml_err_t err =
+    cyaml_load_data (
+      (const unsigned char *) yaml, strlen (yaml),
+      &cyaml_config, schema, (cyaml_data_t **) &obj,
+      NULL);
+  if (err != CYAML_OK)
+    {
+      g_warning (
+        "cyaml error: %s", cyaml_strerror (err));
+      return NULL;
+    }
+
+  return obj;
+}
+
+void
+yaml_print (
+  void *                       data,
+  const cyaml_schema_value_t * schema)
+{
+  char * yaml = yaml_serialize (data, schema);
+
+  if (yaml)
+    {
+      g_message ("[YAML]\n%s", yaml);
+      g_free (yaml);
+    }
+  else
+    {
+      g_warning ("failed to deserialize %p", data);
+    }
 }

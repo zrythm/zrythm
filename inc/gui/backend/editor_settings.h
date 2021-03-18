@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,11 +34,15 @@
  * @{
  */
 
+#define EDITOR_SETTINGS_SCHEMA_VERSION 1
+
 /**
  * Common editor settings.
  */
 typedef struct EditorSettings
 {
+  int             schema_version;
+
   /** Horizontal scroll start position. */
   int             scroll_start_x;
 
@@ -53,6 +57,8 @@ static const cyaml_schema_field_t
 editor_settings_fields_schema[] =
 {
   YAML_FIELD_INT (
+    EditorSettings, schema_version),
+  YAML_FIELD_INT (
     EditorSettings, scroll_start_x),
   YAML_FIELD_INT (
     EditorSettings, scroll_start_y),
@@ -65,8 +71,7 @@ editor_settings_fields_schema[] =
 static const cyaml_schema_value_t
 editor_settings_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     EditorSettings,
     editor_settings_fields_schema),
 };

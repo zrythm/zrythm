@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,8 @@ typedef enum MetronomeType MetronomeType;
  * @{
  */
 
+#define SAMPLE_PROCESSOR_SCHEMA_VERSION 1
+
 #define SAMPLE_PROCESSOR \
   (AUDIO_ENGINE->sample_processor)
 
@@ -48,6 +50,8 @@ typedef enum MetronomeType MetronomeType;
  */
 typedef struct SampleProcessor
 {
+  int               schema_version;
+
   /** An array of samples currently being played. */
   SamplePlayback    current_samples[256];
   int               num_current_samples;
@@ -60,6 +64,8 @@ typedef struct SampleProcessor
 static const cyaml_schema_field_t
 sample_processor_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    SampleProcessor, schema_version),
   YAML_FIELD_MAPPING_PTR (
     SampleProcessor, stereo_out,
     stereo_ports_fields_schema),
@@ -70,8 +76,7 @@ sample_processor_fields_schema[] =
 static const cyaml_schema_value_t
 sample_processor_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     SampleProcessor,
     sample_processor_fields_schema),
 };

@@ -31,6 +31,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "plugins/carla/carla_discovery.h"
 #include "plugins/collections.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,11 +35,15 @@
  * @{
  */
 
+#define PLUGIN_COLLECTION_SCHEMA_VERSION 1
+
 /**
  * Plugin collection used in the plugin browser.
  */
 typedef struct PluginCollection
 {
+  int              schema_version;
+
   /** Name of the collection. */
   char *           name;
 
@@ -55,6 +59,8 @@ typedef struct PluginCollection
 static const cyaml_schema_field_t
 plugin_collection_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    PluginCollection, schema_version),
   YAML_FIELD_STRING_PTR (
     PluginCollection, name),
   YAML_FIELD_STRING_PTR_OPTIONAL (

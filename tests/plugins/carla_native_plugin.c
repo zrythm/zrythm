@@ -21,6 +21,7 @@
 
 #include "audio/fader.h"
 #include "audio/router.h"
+#include "plugins/carla_native_plugin.h"
 #include "plugins/carla/carla_discovery.h"
 #include "utils/math.h"
 

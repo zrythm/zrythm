@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,8 +29,6 @@
 #include "zrythm-config.h"
 
 #include "audio/port.h"
-#include "plugins/carla_native_plugin.h"
-#include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_identifier.h"
 #include "plugins/plugin_preset.h"
@@ -41,15 +39,18 @@
 #undef Bool
 
 typedef struct Channel Channel;
-typedef struct VstPlugin VstPlugin;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _ModulatorWidget ModulatorWidget;
+typedef struct Lv2Plugin Lv2Plugin;
+typedef struct CarlaNativePlugin CarlaNativePlugin;
 
 /**
  * @addtogroup plugins
  *
  * @{
  */
+
+#define PLUGIN_SCHEMA_VERSION 1
 
 #define PLUGIN_MAGIC 43198683
 #define IS_PLUGIN(x) \
@@ -75,6 +76,8 @@ typedef struct _ModulatorWidget ModulatorWidget;
  */
 typedef struct Plugin
 {
+  int               schema_version;
+
   PluginIdentifier  id;
 
   /**
@@ -251,20 +254,14 @@ typedef struct Plugin
 static const cyaml_schema_field_t
 plugin_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    Plugin, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
     Plugin, id,
     plugin_identifier_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Plugin, setting,
     plugin_setting_fields_schema),
-#if 0
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Plugin, lv2,
-    lv2_plugin_fields_schema),
-#endif
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Plugin, carla,
-    carla_native_plugin_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
     Plugin, in_ports, port_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
@@ -870,8 +867,5 @@ plugin_free (Plugin *plugin);
 /**
  * @}
  */
-
-SERIALIZE_INC (Plugin, plugin);
-DESERIALIZE_INC (Plugin, plugin);
 
 #endif

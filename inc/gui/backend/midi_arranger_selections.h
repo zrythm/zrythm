@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,8 @@
  * @{
  */
 
+#define MA_SELECTIONS_SCHEMA_VERSION 1
+
 #define MA_SELECTIONS \
   (&PROJECT->midi_arranger_selections)
 
@@ -47,6 +49,8 @@ typedef struct MidiArrangerSelections
 {
   /** Base struct. */
   ArrangerSelections base;
+
+  int                schema_version;
 
   /** Selected notes. */
   MidiNote **        midi_notes;
@@ -61,20 +65,18 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     MidiArrangerSelections, base,
     arranger_selections_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_notes",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_INT (
+    MidiArrangerSelections, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     MidiArrangerSelections, midi_notes,
-    num_midi_notes,
-    &midi_note_schema, 0, CYAML_UNLIMITED),
+    midi_note_schema),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 midi_arranger_selections_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     MidiArrangerSelections,
     midi_arranger_selections_fields_schema),
 };
@@ -108,13 +110,6 @@ midi_arranger_selections_can_be_pasted (
   MidiArrangerSelections * ts,
   Position *               pos,
   ZRegion *                 region);
-
-SERIALIZE_INC (MidiArrangerSelections,
-               midi_arranger_selections)
-DESERIALIZE_INC (MidiArrangerSelections,
-                 midi_arranger_selections)
-PRINT_YAML_INC (MidiArrangerSelections,
-                midi_arranger_selections)
 
 /**
 * @}

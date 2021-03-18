@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,8 @@
  *
  * @{
  */
+
+#define CHORD_DESCRIPTOR_SCHEMA_VERSION 1
 
 #define CHORD_DESCRIPTOR_MAX_NOTES 48
 
@@ -143,11 +145,13 @@ static const char * chord_accent_labels[NUM_CHORD_ACCENTS] = { \
  */
 typedef struct ChordDescriptor
 {
+  int            schema_version;
+
   /** Has bass note or not. */
-  int            has_bass;
+  bool           has_bass;
 
   /** 1 if custom. */
-  int            is_custom;
+  bool           is_custom;
 
   /** Root note. */
   MusicalNote    root_note;
@@ -169,7 +173,7 @@ typedef struct ChordDescriptor
    *
    * Starts at C always, from MIDI pitch 36.
    */
-  int            notes[CHORD_DESCRIPTOR_MAX_NOTES];
+  int           notes[CHORD_DESCRIPTOR_MAX_NOTES];
 
   /**
    * 0 no inversion,
@@ -199,6 +203,8 @@ static const cyaml_strval_t musical_note_strings[] = {
 static const cyaml_schema_field_t
   chord_descriptor_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    ChordDescriptor, schema_version),
   YAML_FIELD_INT (
     ChordDescriptor, has_bass),
   YAML_FIELD_ENUM (

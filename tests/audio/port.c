@@ -113,11 +113,12 @@ test_serialization (void)
       TYPE_AUDIO, FLOW_INPUT, "test-port3");
   port_connect (port, port3, true);
 
-  yaml = port_serialize (port);
+  yaml = yaml_serialize (port, &port_schema);
   /*g_warning ("%s", yaml);*/
 
   Port * deserialized_port =
-    port_deserialize (yaml);
+    (Port *)
+    yaml_deserialize (yaml, &port_schema);
   g_assert_cmpfloat_with_epsilon (
     port->multipliers[0],
     deserialized_port->multipliers[0],
@@ -129,10 +130,13 @@ test_serialization (void)
     port->dest_enabled[0], ==,
     deserialized_port->dest_enabled[0]);
 
-  yaml = port_serialize (deserialized_port);
+  yaml =
+    yaml_serialize (deserialized_port, &port_schema);
   /*g_warning ("%s", yaml);*/
 
-  port = port_deserialize (yaml);
+  port =
+    (Port *)
+    yaml_deserialize (yaml, &port_schema);
   g_assert_cmpfloat_with_epsilon (
     port->multipliers[0],
     deserialized_port->multipliers[0],

@@ -100,7 +100,3 @@ clipboard_free (
 
   g_free_and_null (self);
 }
-
-SERIALIZE_SRC (Clipboard, clipboard)
-DESERIALIZE_SRC (Clipboard, clipboard)
-PRINT_YAML_SRC (Clipboard, clipboard)

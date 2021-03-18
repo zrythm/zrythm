@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,6 +37,8 @@
  *
  * @{
  */
+
+#define SCALE_SCHEMA_VERSION 1
 
 /**
  * Scale type (name) eg Aeolian.
@@ -266,6 +268,8 @@ typedef enum MusicalScaleType
  */
 typedef struct MusicalScale
 {
+  int                schema_version;
+
   /** Identification of the scale (e.g. AEOLIAN). */
   MusicalScaleType   type;
 
@@ -311,25 +315,22 @@ static const cyaml_strval_t
 static const cyaml_schema_field_t
   musical_scale_fields_schema[] =
 {
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
-    MusicalScale, type, musical_scale_type_strings,
-    CYAML_ARRAY_LEN (musical_scale_type_strings)),
-  CYAML_FIELD_ENUM (
-    "root_key", CYAML_FLAG_DEFAULT,
-    MusicalScale, root_key, musical_note_strings,
-    CYAML_ARRAY_LEN (musical_note_strings)),
+  YAML_FIELD_INT (
+    MusicalScale, schema_version),
+  YAML_FIELD_ENUM (
+    MusicalScale, type, musical_scale_type_strings),
+  YAML_FIELD_ENUM (
+    MusicalScale, root_key, musical_note_strings),
   CYAML_FIELD_SEQUENCE_FIXED (
     "notes", CYAML_FLAG_OPTIONAL,
     MusicalScale, notes, &int_schema, 12),
 
-  CYAML_FIELD_END
+  CYAML_FIELD_END,
 };
 
 static const cyaml_schema_value_t
   musical_scale_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     MusicalScale, musical_scale_fields_schema),
 };
 

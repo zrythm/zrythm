@@ -31,7 +31,6 @@
 
 #include <stdbool.h>
 
-#include "audio/meter.h"
 #include "audio/port_identifier.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "utils/types.h"
@@ -80,6 +79,9 @@ typedef enum PanLaw PanLaw;
  *
  * @{
  */
+
+#define PORT_SCHEMA_VERSION 1
+#define STEREO_PORTS_SCHEMA_VERSION 1
 
 #define PORT_MAGIC 456861194
 #define IS_PORT(_p) \
@@ -139,6 +141,8 @@ port_scale_point_cmp (
  */
 typedef struct Port
 {
+  int                 schema_version;
+
   PortIdentifier      id;
 
   /**
@@ -278,11 +282,14 @@ typedef struct Port
    */
   WindowsMmeDevice *  mme_connections[40];
   int                 num_mme_connections;
+#else
+  void *              mme_connections[40];
+  int                 num_mme_connections;
+#endif
 
   /** Semaphore for changing the connections
    * atomically. */
   ZixSem              mme_connections_sem;
-#endif
 
   /**
    * Last time the port finished dequeueing
@@ -305,6 +312,11 @@ typedef struct Port
   /** RtMidi pointers for output ports. */
   RtMidiDevice *      rtmidi_outs[128];
   int                 num_rtmidi_outs;
+#else
+  void *      rtmidi_ins[128];
+  int                 num_rtmidi_ins;
+  void *      rtmidi_outs[128];
+  int                 num_rtmidi_outs;
 #endif
 
 #ifdef HAVE_RTAUDIO
@@ -314,6 +326,9 @@ typedef struct Port
    * Each port can have multiple RtAudio devices.
    */
   RtAudioDevice *    rtaudio_ins[128];
+  int                num_rtaudio_ins;
+#else
+  void *    rtaudio_ins[128];
   int                num_rtaudio_ins;
 #endif
 
@@ -480,7 +495,7 @@ typedef struct Port
   LV2_URID        value_type;
 
   /** For MIDI ports, otherwise NULL. */
-  LV2_Evbuf*      evbuf;
+  LV2_Evbuf *     evbuf;
 
   /**
    * Control widget, if applicable.
@@ -557,6 +572,8 @@ port_internal_type_strings[] =
 static const cyaml_schema_field_t
 port_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    Port, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
     Port, id,
     port_identifier_fields_schema),
@@ -640,6 +657,7 @@ port_schema =
  */
 typedef struct StereoPorts
 {
+  int          schema_version;
   Port       * l;
   Port       * r;
 } StereoPorts;
@@ -647,12 +665,12 @@ typedef struct StereoPorts
 static const cyaml_schema_field_t
   stereo_ports_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING_PTR (
-    "l", CYAML_FLAG_POINTER,
+  YAML_FIELD_INT (
+    StereoPorts, schema_version),
+  YAML_FIELD_MAPPING_PTR (
     StereoPorts, l,
     port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "r", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     StereoPorts, r,
     port_fields_schema),
 
@@ -661,8 +679,7 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
   stereo_ports_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     StereoPorts, stereo_ports_fields_schema),
 };
 
@@ -1413,10 +1430,6 @@ port_apply_pan (
   PanAlgorithm pan_algo,
   nframes_t start_frame,
   const nframes_t nframes);
-
-SERIALIZE_INC (Port, port)
-DESERIALIZE_INC (Port, port)
-PRINT_YAML_INC (Port, port)
 
 /**
  * @}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,7 @@
 
 #include "audio/chord_descriptor.h"
 #include "audio/scale.h"
+#include "utils/objects.h"
 
 #include <glib/gi18n.h>
 
@@ -41,8 +42,9 @@ musical_scale_new (
   MusicalNote           root)
 {
   MusicalScale * self =
-    calloc (1, sizeof (MusicalScale));
+    object_new (MusicalScale);
 
+  self->schema_version = SCALE_SCHEMA_VERSION;
   self->type = type;
   self->root_key = root;
 

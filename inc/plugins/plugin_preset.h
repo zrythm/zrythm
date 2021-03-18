@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,11 +35,17 @@
  * @{
  */
 
+#define PLUGIN_BANK_SCHEMA_VERSION 1
+#define PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION 1
+#define PLUGIN_PRESET_SCHEMA_VERSION 1
+
 /**
  * Preset identifier.
  */
 typedef struct PluginPresetIdentifier
 {
+  int              schema_version;
+
   /** Index in bank, or -1 if this is used for
    * a bank. */
   int              idx;
@@ -54,6 +60,8 @@ typedef struct PluginPresetIdentifier
 static const cyaml_schema_field_t
 plugin_preset_identifier_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    PluginPresetIdentifier, schema_version),
   YAML_FIELD_INT (
     PluginPresetIdentifier, idx),
   YAML_FIELD_INT (
@@ -77,6 +85,8 @@ plugin_preset_identifier_schema = {
  */
 typedef struct PluginPreset
 {
+  int              schema_version;
+
   /** Human readable name. */
   char *           name;
 
@@ -92,6 +102,8 @@ typedef struct PluginPreset
 static const cyaml_schema_field_t
 plugin_preset_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    PluginPreset, schema_version),
   YAML_FIELD_STRING_PTR (
     PluginPreset, name),
   YAML_FIELD_STRING_PTR_OPTIONAL (
@@ -119,6 +131,8 @@ plugin_preset_schema = {
  */
 typedef struct PluginBank
 {
+  int              schema_version;
+
   /** Presets in this bank. */
   PluginPreset **  presets;
   int              num_presets;
@@ -136,6 +150,8 @@ typedef struct PluginBank
 static const cyaml_schema_field_t
 plugin_bank_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    PluginBank, schema_version),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
     PluginBank, presets,
     plugin_preset_schema),
@@ -155,6 +171,12 @@ plugin_bank_schema = {
   YAML_VALUE_PTR (
     PluginBank, plugin_bank_fields_schema),
 };
+
+PluginBank *
+plugin_bank_new (void);
+
+PluginPreset *
+plugin_preset_new (void);
 
 /**
  * @}

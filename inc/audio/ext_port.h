@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,6 +52,8 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
  * @{
  */
 
+#define EXT_PORT_SCHEMA_VERSION 1
+
 /**
  * Maximum external ports.
  *
@@ -86,9 +88,13 @@ ext_port_type_strings[] =
  */
 typedef struct ExtPort
 {
+  int              schema_version;
+
   /** JACK port. */
 #ifdef HAVE_JACK
   jack_port_t *    jport;
+#else
+  void *           jport;
 #endif
 
   /** Full port name, used also as ID. */
@@ -113,6 +119,8 @@ typedef struct ExtPort
    * It must NOT be allocated or free'd.
    */
   WindowsMmeDevice * mme_dev;
+#else
+  void *             mme_dev;
 #endif
 
   /** RtAudio channel index. */
@@ -121,7 +129,6 @@ typedef struct ExtPort
   /** RtAudio device name. */
   char *           rtaudio_dev_name;
 
-#ifdef HAVE_RTAUDIO
   /** RtAudio device index. */
   unsigned int     rtaudio_id;
 
@@ -129,14 +136,19 @@ typedef struct ExtPort
   bool             rtaudio_is_input;
   bool             rtaudio_is_duplex;
 
+#ifdef HAVE_RTAUDIO
   RtAudioDevice *  rtaudio_dev;
+#else
+  void *           rtaudio_dev;
 #endif
 
-#ifdef HAVE_RTMIDI
   /** RtMidi port index. */
   unsigned int     rtmidi_id;
 
+#ifdef HAVE_RTMIDI
   RtMidiDevice *   rtmidi_dev;
+#else
+  void *           rtmidi_dev;
 #endif
 
   ExtPortType      type;
@@ -161,6 +173,8 @@ typedef struct ExtPort
 static const cyaml_schema_field_t
 ext_port_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    ExtPort, schema_version),
   YAML_FIELD_STRING_PTR (
     ExtPort, full_name),
   YAML_FIELD_STRING_PTR_OPTIONAL (

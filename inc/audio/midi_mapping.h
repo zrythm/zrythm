@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,8 @@
  */
 typedef struct MidiMapping
 {
+  int            schema_version;
+
   /** Raw MIDI signal. */
   midi_byte_t    key[3];
 
@@ -72,10 +74,11 @@ typedef struct MidiMappings
 static const cyaml_schema_field_t
 midi_mapping_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_FIXED (
-    "key", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    MidiMapping, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
     MidiMapping, key,
-    &uint8_t_schema, 3),
+    uint8_t_schema, 3),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     MidiMapping, device_port,
     ext_port_fields_schema),
@@ -91,19 +94,15 @@ midi_mapping_fields_schema[] =
 static const cyaml_schema_value_t
   midi_mapping_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_DEFAULT,
+  YAML_VALUE_DEFAULT (
     MidiMapping, midi_mapping_fields_schema),
 };
 
 static const cyaml_schema_field_t
 midi_mappings_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "mappings", CYAML_FLAG_DEFAULT,
-    MidiMappings, mappings, num_mappings,
-    &midi_mapping_schema,
-    0, CYAML_UNLIMITED),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    MidiMappings, mappings, midi_mapping_schema),
 
   CYAML_FIELD_END
 };
@@ -111,8 +110,7 @@ midi_mappings_fields_schema[] =
 static const cyaml_schema_value_t
 midi_mappings_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     MidiMappings, midi_mappings_fields_schema),
 };
 

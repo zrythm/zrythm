@@ -627,6 +627,8 @@ static void
 init_common (
   AudioEngine * self)
 {
+  self->schema_version =
+    AUDIO_ENGINE_SCHEMA_VERSION;
   self->metronome = metronome_new ();
   self->router = router_new ();
 

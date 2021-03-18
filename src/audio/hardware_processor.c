@@ -52,6 +52,8 @@ hardware_processor_new (
   HardwareProcessor * self =
     object_new (HardwareProcessor);
 
+  self->schema_version = HW_PROCESSOR_SCHEMA_VERSION;
+
   self->is_input = input;
 
   return self;

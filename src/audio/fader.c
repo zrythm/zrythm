@@ -104,6 +104,7 @@ fader_new (
 {
   Fader * self = object_new (Fader);
 
+  self->schema_version = FADER_SCHEMA_VERSION;
   self->magic = FADER_MAGIC;
 
   self->passthrough = passthrough;

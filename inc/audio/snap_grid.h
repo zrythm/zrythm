@@ -36,6 +36,8 @@
  * @{
  */
 
+#define SNAP_GRID_SCHEMA_VERSION 1
+
 #define SNAP_GRID_IS_MIDI(sg) \
   (&PROJECT->snap_grid_midi == sg)
 #define SNAP_GRID_IS_TIMELINE(sg) \
@@ -93,6 +95,7 @@ typedef enum SnapGridType
 
 typedef struct SnapGrid
 {
+  int              schema_version;
   SnapGridType     type;
 
   /**
@@ -211,6 +214,7 @@ note_type_short_strings[] =
 static const cyaml_schema_field_t
   snap_grid_fields_schema[] =
 {
+  YAML_FIELD_INT (SnapGrid, schema_version),
   YAML_FIELD_ENUM (
     SnapGrid, type, snap_grid_type_strings),
   YAML_FIELD_ENUM (
@@ -224,17 +228,14 @@ static const cyaml_schema_field_t
     note_length_strings),
   YAML_FIELD_ENUM (
     SnapGrid, default_note_type, note_type_strings),
-  YAML_FIELD_INT (
-    SnapGrid, default_adaptive),
+  YAML_FIELD_INT (SnapGrid, default_adaptive),
   YAML_FIELD_ENUM (
     SnapGrid, length_type,
     note_length_type_strings),
-  YAML_FIELD_INT (
-    SnapGrid, snap_to_grid),
+  YAML_FIELD_INT (SnapGrid, snap_to_grid),
   YAML_FIELD_INT (
     SnapGrid, snap_to_grid_keep_offset),
-  YAML_FIELD_INT (
-    SnapGrid, snap_to_events),
+  YAML_FIELD_INT (SnapGrid, snap_to_events),
 
   CYAML_FIELD_END
 };

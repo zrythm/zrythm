@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,6 +37,8 @@
  * @{
  */
 
+#define AUDIO_CLIP_SCHEMA_VERSION 1
+
 /**
  * Audio clips for the pool.
  *
@@ -45,6 +47,8 @@
  */
 typedef struct AudioClip
 {
+  int           schema_version;
+
   /** Name of the clip. */
   char *        name;
 
@@ -98,10 +102,10 @@ typedef struct AudioClip
 static const cyaml_schema_field_t
 audio_clip_fields_schema[] =
 {
-  CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
-    AudioClip, name,
-    0, CYAML_UNLIMITED),
+  YAML_FIELD_INT (
+    AudioClip, schema_version),
+  YAML_FIELD_STRING_PTR (
+    AudioClip, name),
   YAML_FIELD_FLOAT (
     AudioClip, bpm),
   YAML_FIELD_INT (
@@ -114,7 +118,7 @@ audio_clip_fields_schema[] =
 
 static const cyaml_schema_value_t
 audio_clip_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     AudioClip, audio_clip_fields_schema),
 };
 

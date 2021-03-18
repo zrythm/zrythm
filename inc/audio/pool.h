@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,6 +37,8 @@ typedef struct Track Track;
  * @{
  */
 
+#define AUDIO_POOL_SCHEMA_VERSION 1
+
 #define AUDIO_POOL (AUDIO_ENGINE->pool)
 
 /**
@@ -51,6 +53,8 @@ typedef struct Track Track;
  */
 typedef struct AudioPool
 {
+  int            schema_version;
+
   /** The clips. */
   AudioClip **   clips;
 
@@ -64,20 +68,18 @@ typedef struct AudioPool
 static const cyaml_schema_field_t
 audio_pool_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "clips",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    AudioPool, clips, num_clips,
-    &audio_clip_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_INT (
+    AudioPool, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    AudioPool, clips, audio_clip_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 audio_pool_schema =
 {
-	CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     AudioPool, audio_pool_fields_schema),
 };
 

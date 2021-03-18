@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,6 +33,8 @@
  * @{
  */
 
+#define CONTROL_ROOM_SCHEMA_VERSION 1
+
 #define CONTROL_ROOM (AUDIO_ENGINE->control_room)
 
 /**
@@ -43,6 +45,8 @@
  */
 typedef struct ControlRoom
 {
+  int        schema_version;
+
   /** Temporarily dim the output volume. */
   int        dim_output;
 
@@ -67,8 +71,11 @@ typedef struct ControlRoom
 static const cyaml_schema_field_t
 control_room_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    ControlRoom, schema_version),
   YAML_FIELD_MAPPING_PTR (
-    ControlRoom, monitor_fader, fader_fields_schema),
+    ControlRoom, monitor_fader,
+    fader_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -76,8 +83,7 @@ control_room_fields_schema[] =
 static const cyaml_schema_value_t
 control_room_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     ControlRoom, control_room_fields_schema),
 };
 

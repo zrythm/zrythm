@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,8 @@
  * @{
  */
 
+#define AUTOMATION_SELECTIONS_SCHEMA_VERSION 1
+
 #define AUTOMATION_SELECTIONS \
   (&PROJECT->automation_selections)
 
@@ -45,6 +47,8 @@
  */
 typedef struct AutomationSelections
 {
+  int                schema_version;
+
   ArrangerSelections base;
 
   /** Selected AutomationObject's. */
@@ -57,6 +61,8 @@ typedef struct AutomationSelections
 static const cyaml_schema_field_t
   automation_selections_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    AutomationSelections, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
     AutomationSelections, base,
     arranger_selections_fields_schema),
@@ -89,13 +95,6 @@ automation_selections_can_be_pasted (
   AutomationSelections * ts,
   Position *             pos,
   ZRegion *              r);
-
-SERIALIZE_INC (AutomationSelections,
-               automation_selections)
-DESERIALIZE_INC (AutomationSelections,
-                 automation_selections)
-PRINT_YAML_INC (AutomationSelections,
-                automation_selections)
 
 /**
 * @}

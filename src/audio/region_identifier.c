@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,18 +17,20 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-
-#include "audio/channel.h"
-#include "gui/backend/audio_clip_editor.h"
-#include "audio/track.h"
-#include "project.h"
+#include "audio/region_identifier.h"
 
 void
-audio_clip_editor_init (AudioClipEditor * self)
+region_identifier_init (
+  RegionIdentifier * self)
 {
   self->schema_version =
-    AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
+    REGION_IDENTIFIER_SCHEMA_VERSION;
+}
 
-  editor_settings_init (&self->editor_settings);
+bool
+region_identifier_validate (
+  RegionIdentifier * self)
+{
+  /* TODO */
+  return true;
 }

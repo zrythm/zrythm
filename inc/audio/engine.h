@@ -84,6 +84,8 @@ typedef struct MPMCQueue MPMCQueue;
  * @{
  */
 
+#define AUDIO_ENGINE_SCHEMA_VERSION 1
+
 #define BLOCK_LENGTH 4096 // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
@@ -376,6 +378,8 @@ jack_transport_type_strings[] =
  */
 typedef struct AudioEngine
 {
+  int               schema_version;
+
   /**
    * Cycle count to know which cycle we are in.
    *
@@ -386,6 +390,8 @@ typedef struct AudioEngine
 #ifdef HAVE_JACK
   /** JACK client. */
   jack_client_t *   client;
+#else
+  void *            client;
 #endif
 
   /**
@@ -545,8 +551,6 @@ typedef struct AudioEngine
   snd_seq_t *       seq_handle;
   snd_pcm_hw_params_t * hw_params;
   snd_pcm_sw_params_t * sw_params;
-  /** ALSA audio buffer. */
-  float *           alsa_out_buf;
 
   /**
    * Since ALSA MIDI runs in its own thread,
@@ -561,7 +565,15 @@ typedef struct AudioEngine
   /** Semaphore for exclusively writing/reading
    * ALSA MIDI events from above. */
   //ZixSem             alsa_midi_events_sem;
+#else
+  void *       playback_handle;
+  void *       seq_handle;
+  void * hw_params;
+  void * sw_params;
 #endif
+
+  /** ALSA audio buffer. */
+  float *           alsa_out_buf;
 
   /* ------------------------------- */
 
@@ -574,6 +586,11 @@ typedef struct AudioEngine
   gint              preparing_for_process;
 
 #ifdef HAVE_PORT_AUDIO
+  PaStream *        pa_stream;
+#else
+  void *            pa_stream;
+#endif
+
   /**
    * Port Audio output buffer.
    *
@@ -583,32 +600,41 @@ typedef struct AudioEngine
    */
   float *           pa_out_buf;
 
-  PaStream *        pa_stream;
-#endif
-
 #ifdef _WOE32
   /** Windows MME MIDI devices. */
   WindowsMmeDevice * mme_in_devs[1024];
   int                num_mme_in_devs;
   WindowsMmeDevice * mme_out_devs[1024];
   int                num_mme_out_devs;
+#else
+  void * mme_in_devs[1024];
+  int                num_mme_in_devs;
+  void * mme_out_devs[1024];
+  int                num_mme_out_devs;
 #endif
 
 #ifdef HAVE_SDL
   SDL_AudioDeviceID dev;
+#else
+  uint32_t          sdl_dev;
 #endif
 
 #ifdef HAVE_RTAUDIO
   rtaudio_t         rtaudio;
+#else
+  void *            rtaudio;
 #endif
 
 #ifdef HAVE_PULSEAUDIO
   pa_threaded_mainloop * pulse_mainloop;
   pa_context *           pulse_context;
   pa_stream *            pulse_stream;
-
-  gboolean               pulse_notified_underflow;
+#else
+  void *                 pulse_mainloop;
+  void *                 pulse_context;
+  void *                 pulse_stream;
 #endif
+  gboolean               pulse_notified_underflow;
 
   /**
    * Dummy audio DSP processing thread.
@@ -679,7 +705,8 @@ typedef struct AudioEngine
   bool              denormal_prevention_val_positive;
   float             denormal_prevention_val;
 
-#ifdef TRIAL_VER
+  /* --- trial version flags --- */
+
   /** Time at start to keep track if trial limit
    * is reached. */
   gint64            zrythm_start_time;
@@ -687,7 +714,8 @@ typedef struct AudioEngine
   /** Flag to keep track of the first time the
    * limit is reached. */
   int               limit_reached;
-#endif
+
+  /* --- end trial version flags --- */
 
   /**
    * If this is on, only tracks/regions marked as
@@ -753,11 +781,11 @@ typedef struct AudioEngine
 static const cyaml_schema_field_t
 engine_fields_schema[] =
 {
-  CYAML_FIELD_ENUM (
-    "transport_type", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    AudioEngine, schema_version),
+  YAML_FIELD_ENUM (
     AudioEngine, transport_type,
-    jack_transport_type_strings,
-    CYAML_ARRAY_LEN (jack_transport_type_strings)),
+    jack_transport_type_strings),
   YAML_FIELD_INT (
     AudioEngine, sample_rate),
   YAML_FIELD_FLOAT (
@@ -793,8 +821,7 @@ engine_fields_schema[] =
 static const cyaml_schema_value_t
 engine_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     AudioEngine, engine_fields_schema),
 };
 

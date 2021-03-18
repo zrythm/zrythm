@@ -69,18 +69,26 @@ region_init (
   int              lane_pos_or_at_idx,
   int              idx_inside_lane_or_at)
 {
+  self->schema_version = REGION_SCHEMA_VERSION;
+
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->type = ARRANGER_OBJECT_TYPE_REGION;
+  arranger_object_init (obj);
+
+  self->id.schema_version =
+    REGION_IDENTIFIER_SCHEMA_VERSION;
   self->id.track_pos = track_pos;
   self->id.lane_pos = lane_pos_or_at_idx;
   self->id.at_idx = lane_pos_or_at_idx;
   self->id.idx = idx_inside_lane_or_at;
   self->id.link_group = -1;
 
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
-  obj->type = ARRANGER_OBJECT_TYPE_REGION;
+  position_init (&obj->pos);
   position_set_to_pos (
     &obj->pos, start_pos);
   obj->pos.frames = start_pos->frames;
+  position_init (&obj->end_pos);
   position_set_to_pos (
     &obj->end_pos, end_pos);
   obj->end_pos.frames = end_pos->frames;
@@ -88,17 +96,17 @@ region_init (
   long length =
     arranger_object_get_length_in_frames (obj);
   g_warn_if_fail (length > 0);
+  position_init (&obj->loop_start_pos);
+  position_init (&obj->loop_end_pos);
   position_from_frames (
     &obj->loop_end_pos, length);
-  position_init (&obj->loop_start_pos);
   obj->loop_end_pos.frames = length;
 
   /* set fade positions to start/end */
   position_init (&obj->fade_in_pos);
+  position_init (&obj->fade_out_pos);
   position_from_frames (
     &obj->fade_out_pos, length);
-
-  arranger_object_init (obj);
 
   self->magic = REGION_MAGIC;
 
@@ -493,6 +501,11 @@ region_validate (
   bool      is_project)
 {
   g_return_val_if_fail (IS_REGION (self), false);
+
+  if (!region_identifier_validate (&self->id))
+    {
+      return false;
+    }
 
   if (is_project)
     {
@@ -1520,7 +1533,3 @@ region_disconnect (
         /*ar_prv->start_object = NULL;*/
     }
 }
-
-SERIALIZE_SRC (ZRegion, region)
-DESERIALIZE_SRC (ZRegion, region)
-PRINT_YAML_SRC (ZRegion, region)

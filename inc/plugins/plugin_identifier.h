@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,8 @@
  * @{
  */
 
+#define PLUGIN_IDENTIFIER_SCHEMA_VERSION 1
+
 typedef enum PluginSlotType
 {
   PLUGIN_SLOT_INVALID,
@@ -67,6 +69,8 @@ plugin_slot_type_to_string (
  */
 typedef struct PluginIdentifier
 {
+  int              schema_version;
+
   PluginSlotType   slot_type;
   /** The Channel this plugin belongs to. */
   int              track_pos;
@@ -79,6 +83,8 @@ typedef struct PluginIdentifier
 static const cyaml_schema_field_t
 plugin_identifier_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    PluginIdentifier, schema_version),
   YAML_FIELD_ENUM (
     PluginIdentifier, slot_type,
     plugin_slot_type_strings),
@@ -97,6 +103,10 @@ plugin_identifier_schema = {
     plugin_identifier_fields_schema),
 };
 
+void
+plugin_identifier_init (
+  PluginIdentifier * self);
+
 static inline int
 plugin_identifier_is_equal (
   const PluginIdentifier * a,
@@ -113,6 +123,7 @@ plugin_identifier_copy (
   PluginIdentifier * dest,
   const PluginIdentifier * src)
 {
+  dest->schema_version = src->schema_version;
   dest->slot_type = src->slot_type;
   dest->track_pos = src->track_pos;
   dest->slot = src->slot;

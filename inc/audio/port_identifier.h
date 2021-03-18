@@ -39,6 +39,8 @@
  * @{
  */
 
+#define PORT_IDENTIFIER_SCHEMA_VERSION 1
+
 #define PORT_IDENTIFIER_MAGIC 3411841
 #define IS_PORT_IDENTIFIER(tr) \
   (tr && \
@@ -376,6 +378,8 @@ port_flags2_bitvals[] =
  */
 typedef struct PortIdentifier
 {
+  int                 schema_version;
+
   /** Human readable label. */
   char *              label;
 
@@ -438,6 +442,8 @@ port_type_strings[] =
 static const cyaml_schema_field_t
 port_identifier_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    PortIdentifier, schema_version),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PortIdentifier, label),
   YAML_FIELD_STRING_PTR_OPTIONAL (
@@ -476,17 +482,19 @@ port_identifier_fields_schema[] =
 
 static const cyaml_schema_value_t
 port_identifier_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     PortIdentifier, port_identifier_fields_schema),
 };
 
 static const cyaml_schema_value_t
 port_identifier_schema_default = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_DEFAULT,
+  YAML_VALUE_DEFAULT (
     PortIdentifier, port_identifier_fields_schema),
 };
+
+void
+port_identifier_init (
+  PortIdentifier * self);
 
 static inline const char *
 port_identifier_get_label (

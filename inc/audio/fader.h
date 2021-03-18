@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,8 @@ typedef struct Channel Channel;
  *
  * @{
  */
+
+#define FADER_SCHEMA_VERSION 1
 
 #define MONITOR_FADER (CONTROL_ROOM->monitor_fader)
 
@@ -102,6 +104,8 @@ midi_fader_mode_strings[] =
  */
 typedef struct Fader
 {
+  int              schema_version;
+
   /**
    * Volume in dBFS. (-inf ~ +6)
    */
@@ -193,45 +197,29 @@ typedef struct Fader
 static const cyaml_schema_field_t
 fader_fields_schema[] =
 {
+  YAML_FIELD_INT (Fader, schema_version),
   YAML_FIELD_ENUM (
     Fader, type, fader_type_strings),
   YAML_FIELD_FLOAT (
     Fader, volume),
-  CYAML_FIELD_MAPPING_PTR (
-    "amp",
-    CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     Fader, amp, port_fields_schema),
   YAML_FIELD_FLOAT (
     Fader, phase),
-  CYAML_FIELD_MAPPING_PTR (
-    "balance",
-    CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     Fader, balance, port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "mute", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     Fader, mute, port_fields_schema),
   YAML_FIELD_INT (
     Fader, solo),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_in",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Fader, midi_in,
-    port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_out",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Fader, midi_out,
-    port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "stereo_in",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Fader, stereo_in,
-    stereo_ports_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "stereo_out",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Fader, stereo_out,
-    stereo_ports_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader, midi_in, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader, midi_out, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader, stereo_in, stereo_ports_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Fader, stereo_out, stereo_ports_fields_schema),
   YAML_FIELD_ENUM (
     Fader, midi_mode, midi_fader_mode_strings),
   YAML_FIELD_INT (
@@ -247,8 +235,7 @@ fader_fields_schema[] =
 static const cyaml_schema_value_t
 fader_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     Fader, fader_fields_schema),
 };
 

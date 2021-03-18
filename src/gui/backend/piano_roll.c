@@ -335,6 +335,8 @@ piano_roll_set_midi_modifier (
 void
 piano_roll_init (PianoRoll * self)
 {
+  self->schema_version =
+    PIANO_ROLL_SCHEMA_VERSION;
   self->notes_zoom = 3.f;
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;

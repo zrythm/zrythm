@@ -35,6 +35,8 @@
  * @{
  */
 
+#define CURVE_OPTIONS_SCHEMA_VERSION 1
+
 /** Bounds for each algorithm. */
 #define CURVE_SUPERELLIPSE_CURVINESS_BOUND 0.82
 #define CURVE_EXPONENT_CURVINESS_BOUND 0.95
@@ -103,18 +105,20 @@ static const cyaml_strval_t
  */
 typedef struct CurveOptions
 {
+  int            schema_version;
   /** Curve algorithm to use. */
-  CurveAlgorithm    algo;
+  CurveAlgorithm algo;
 
   /** Curviness between -1 and 1, where < 0 tils
    * downwards, > 0 tilts upwards and 0 is a
    * straight line. */
-  double            curviness;
+  double         curviness;
 } CurveOptions;
 
 static const cyaml_schema_field_t
   curve_options_fields_schema[] =
 {
+  YAML_FIELD_INT (CurveOptions, schema_version),
   YAML_FIELD_ENUM (
     CurveOptions, algo,
     curve_algorithm_strings),
@@ -131,6 +135,10 @@ static const cyaml_schema_value_t
     CYAML_FLAG_POINTER,
     CurveOptions, curve_options_fields_schema),
 };
+
+void
+curve_opts_init (
+  CurveOptions * opts);
 
 /**
  * Stores the localized name of the algorithm in

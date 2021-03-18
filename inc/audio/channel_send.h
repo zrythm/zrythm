@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,6 +42,8 @@ typedef struct _ChannelSendWidget ChannelSendWidget;
  * @{
  */
 
+#define CHANNEL_SEND_SCHEMA_VERSION 1
+
 /**
  * The slot where post-fader sends begin (starting
  * from 0).
@@ -56,6 +58,8 @@ typedef struct _ChannelSendWidget ChannelSendWidget;
  */
 typedef struct ChannelSend
 {
+  int            schema_version;
+
   /** Owner track position. */
   int            track_pos;
 
@@ -88,6 +92,7 @@ typedef struct ChannelSend
 static const cyaml_schema_field_t
 channel_send_fields_schema[] =
 {
+  YAML_FIELD_INT (ChannelSend, schema_version),
   YAML_FIELD_INT (ChannelSend, track_pos),
   YAML_FIELD_INT (ChannelSend, slot),
   YAML_FIELD_FLOAT (ChannelSend, amount),
@@ -110,8 +115,7 @@ channel_send_fields_schema[] =
 static const cyaml_schema_value_t
 channel_send_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_DEFAULT,
+  YAML_VALUE_DEFAULT (
     ChannelSend, channel_send_fields_schema),
 };
 

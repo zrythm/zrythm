@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -59,6 +59,8 @@ typedef struct ScaleObject
   /** Base struct. */
   ArrangerObject  base;
 
+  int             schema_version;
+
   MusicalScale *  scale;
 
   int             index;
@@ -72,15 +74,12 @@ typedef struct ScaleObject
 static const cyaml_schema_field_t
   scale_object_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ScaleObject, base,
     arranger_object_fields_schema),
-  CYAML_FIELD_INT (
-    "index", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     ScaleObject, index),
-  CYAML_FIELD_MAPPING_PTR (
-    "scale", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     ScaleObject, scale,
     musical_scale_fields_schema),
 
@@ -89,8 +88,7 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 scale_object_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     ScaleObject, scale_object_fields_schema),
 };
 

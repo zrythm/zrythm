@@ -18,6 +18,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/meter.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
 #include "utils/math.h"

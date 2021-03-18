@@ -42,6 +42,9 @@ sample_processor_new (void)
   SampleProcessor * self =
     object_new (SampleProcessor);
 
+  self->schema_version =
+    SAMPLE_PROCESSOR_SCHEMA_VERSION;
+
   self->stereo_out =
     stereo_ports_new_generic (
       0, _("Sample Processor"),

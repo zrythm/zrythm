@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,18 +17,36 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#include "plugins/plugin_preset.h"
+#include "utils/objects.h"
 
-#include "audio/channel.h"
-#include "gui/backend/audio_clip_editor.h"
-#include "audio/track.h"
-#include "project.h"
-
-void
-audio_clip_editor_init (AudioClipEditor * self)
+static void
+preset_identifier_init (
+  PluginPresetIdentifier * id)
 {
-  self->schema_version =
-    AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
+  id->schema_version =
+    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
+}
 
-  editor_settings_init (&self->editor_settings);
+PluginBank *
+plugin_bank_new (void)
+{
+  PluginBank * self = object_new (PluginBank);
+
+  self->schema_version = PLUGIN_BANK_SCHEMA_VERSION;
+
+  preset_identifier_init (&self->id);
+
+  return self;
+}
+
+PluginPreset *
+plugin_preset_new (void)
+{
+  PluginPreset * self = object_new (PluginPreset);
+
+  self->schema_version = PLUGIN_PRESET_SCHEMA_VERSION;
+  preset_identifier_init (&self->id);
+
+  return self;
 }

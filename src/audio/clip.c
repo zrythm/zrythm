@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,16 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+
+static AudioClip *
+_create ()
+{
+  AudioClip * self = object_new (AudioClip);
+  self->schema_version =
+    AUDIO_CLIP_SCHEMA_VERSION;
+
+  return self;
+}
 
 /**
  * Updates the channel caches.
@@ -143,7 +153,7 @@ AudioClip *
 audio_clip_new_from_file (
   const char * full_path)
 {
-  AudioClip * self = object_new (AudioClip);
+  AudioClip * self = _create ();
 
   audio_clip_init_from_file (self, full_path);
 
@@ -167,7 +177,7 @@ audio_clip_new_from_float_array (
   const channels_t channels,
   const char *     name)
 {
-  AudioClip * self = object_new (AudioClip);
+  AudioClip * self = _create ();
 
   self->frames =
     object_new_n (
@@ -205,7 +215,7 @@ audio_clip_new_recording (
   const long       nframes,
   const char *     name)
 {
-  AudioClip * self = object_new (AudioClip);
+  AudioClip * self = _create ();
 
   self->channels = channels;
   self->frames =

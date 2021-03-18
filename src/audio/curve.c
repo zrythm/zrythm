@@ -24,6 +24,14 @@
 
 #include <glib/gi18n.h>
 
+void
+curve_opts_init (
+  CurveOptions * opts)
+{
+  opts->schema_version =
+    CURVE_OPTIONS_SCHEMA_VERSION;
+}
+
 /**
  * Stores the localized name of the algorithm in
  * \ref buf.

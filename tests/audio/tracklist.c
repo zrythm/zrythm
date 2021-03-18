@@ -132,6 +132,8 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
+  yaml_set_log_level (CYAML_LOG_INFO);
+
 #define TEST_PREFIX "/audio/tracklist/"
 
   g_test_add_func (

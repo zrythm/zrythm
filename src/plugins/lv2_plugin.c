@@ -1743,8 +1743,7 @@ lv2_plugin_create_descriptor_from_lilv (
   lilv_nodes_free (required_features);
 
   /* set descriptor info */
-  PluginDescriptor * pd =
-    object_new (PluginDescriptor);
+  PluginDescriptor * pd = plugin_descriptor_new ();
   pd->protocol = PROT_LV2;
   pd->arch = ARCH_64;
   const char * str = lilv_node_as_string (name);
@@ -3465,7 +3464,7 @@ lv2_plugin_populate_banks (
       LV2_ZRYTHM__defaultBank,
       _("Default bank"));
   PluginPreset * pl_def_preset =
-    object_new (PluginPreset);
+    plugin_preset_new ();
   pl_def_preset->uri =
     g_strdup (LV2_ZRYTHM__initPreset);
   pl_def_preset->name = g_strdup (_("Init"));
@@ -3521,7 +3520,7 @@ lv2_plugin_populate_banks (
           const LilvNode* label =
             lilv_nodes_get_first(labels);
           PluginPreset * pl_preset =
-            object_new (PluginPreset);
+            plugin_preset_new ();
           pl_preset->uri =
             g_strdup (lilv_node_as_string (preset));
           pl_preset->name =

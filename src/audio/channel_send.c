@@ -53,11 +53,17 @@ channel_send_init (
   int           track_pos,
   int           slot)
 {
+  self->schema_version =
+    CHANNEL_SEND_SCHEMA_VERSION;
   self->track_pos = track_pos;
   self->slot = slot;
   self->is_empty = true;
   self->amount = 1.f;
   self->on = true;
+
+  port_identifier_init (&self->dest_l_id);
+  port_identifier_init (&self->dest_r_id);
+  port_identifier_init (&self->dest_midi_id);
 }
 
 Track *

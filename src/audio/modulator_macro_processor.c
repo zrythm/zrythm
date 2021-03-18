@@ -85,6 +85,9 @@ modulator_macro_processor_new (
   ModulatorMacroProcessor * self =
     object_new (ModulatorMacroProcessor);
 
+  self->schema_version =
+    MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION;
+
   char str[600];
   sprintf (str, _("Macro %d"), idx + 1);
   self->name = g_strdup (str);

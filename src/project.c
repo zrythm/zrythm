@@ -1022,7 +1022,9 @@ load (
       yaml_size + sizeof (char));
   yaml[yaml_size] = '\0';
 
-  Project * self = project_deserialize (yaml);
+  Project * self =
+    (Project *)
+    yaml_deserialize (yaml, &project_schema);
   free (yaml);
   if (!self)
     {
@@ -1109,7 +1111,14 @@ load (
 
   engine_init_loaded (self->audio_engine);
   engine_pre_setup (self->audio_engine);
-  undo_manager_init_loaded (self->undo_manager);
+  if (self->undo_manager)
+    {
+      undo_manager_init_loaded (self->undo_manager);
+    }
+  else
+    {
+      self->undo_manager = undo_manager_new ();
+    }
 
   clip_editor_init_loaded (self->clip_editor);
   timeline_init_loaded (self->timeline);
@@ -1448,6 +1457,8 @@ project_new (
   g_message ("%s: Creating...", __func__);
 
   Project * self = object_new (Project);
+  self->schema_version =
+    PROJECT_SCHEMA_VERSION;
 
   if (_zrythm)
     {
@@ -1459,6 +1470,7 @@ project_new (
   self->timeline = timeline_new ();
   self->tracklist_selections =
     tracklist_selections_new (true);
+  mixer_selections_init (&self->mixer_selections);
 
   g_message ("%s: done", __func__);
 
@@ -1514,7 +1526,9 @@ serialize_project_thread (
   g_message ("serializing project to yaml...");
   GError *err = NULL;
   gint64 time_before = g_get_monotonic_time ();
-  char * yaml = project_serialize (&data->project);
+  char * yaml =
+    yaml_serialize (
+      &data->project, &project_schema);
   gint64 time_after = g_get_monotonic_time ();
   g_message (
     "time to serialize: %ldms",
@@ -1855,7 +1869,3 @@ project_save (
 
   RETURN_OK;
 }
-
-SERIALIZE_SRC (Project, project)
-DESERIALIZE_SRC (Project, project)
-PRINT_YAML_SRC (Project, project)

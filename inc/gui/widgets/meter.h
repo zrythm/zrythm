@@ -33,6 +33,8 @@ G_DECLARE_FINAL_TYPE (
   MeterWidget, meter_widget,
   Z, METER_WIDGET, GtkDrawingArea)
 
+typedef struct Meter Meter;
+
 typedef struct _MeterWidget
 {
   GtkDrawingArea         parent_instance;

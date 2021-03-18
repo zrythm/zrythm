@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,8 +23,6 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define CACHED_PLUGIN_DESCRIPTORS_VERSION 10
-
 static char *
 get_cached_plugin_descriptors_file_path (void)
 {
@@ -42,11 +40,11 @@ void
 cached_plugin_descriptors_serialize_to_file (
   CachedPluginDescriptors * self)
 {
-  self->version = CACHED_PLUGIN_DESCRIPTORS_VERSION;
   g_message (
     "Serializing cached plugin descriptors...");
   char * yaml =
-    cached_plugin_descriptors_serialize (self);
+    yaml_serialize (
+      self, &cached_plugin_descriptors_schema);
   g_return_if_fail (yaml);
   GError *err = NULL;
   char * path =
@@ -79,15 +77,15 @@ is_yaml_our_version (
   bool same_version = false;
   char version_str[120];
   sprintf (
-    version_str, "version: %d\n",
-    CACHED_PLUGIN_DESCRIPTORS_VERSION);
+    version_str, "schema_version: %d\n",
+    CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION);
   same_version =
     g_str_has_prefix (yaml, version_str);
   if (!same_version)
     {
       sprintf (
-        version_str, "---\nversion: %d\n",
-        CACHED_PLUGIN_DESCRIPTORS_VERSION);
+        version_str, "---\nschema_version: %d\n",
+        CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION);
       same_version =
         g_str_has_prefix (yaml, version_str);
     }
@@ -111,7 +109,11 @@ cached_plugin_descriptors_new (void)
         "not exist", path);
 return_new_instance:
       g_free (path);
-      return object_new (CachedPluginDescriptors);
+      CachedPluginDescriptors * self =
+        object_new (CachedPluginDescriptors);
+      self->schema_version =
+        CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION;
+      return self;
     }
   char * yaml = NULL;
   g_file_get_contents (path, &yaml, NULL, &err);
@@ -142,7 +144,9 @@ return_new_instance:
     }
 
   CachedPluginDescriptors * self =
-    cached_plugin_descriptors_deserialize (yaml);
+    (CachedPluginDescriptors *)
+    yaml_deserialize (
+      yaml, &cached_plugin_descriptors_schema);
   if (!self)
     {
       g_critical (
@@ -473,8 +477,3 @@ cached_plugin_descriptors_free (
         self->blacklisted[i]);
     }
 }
-
-SERIALIZE_SRC (
-  CachedPluginDescriptors, cached_plugin_descriptors);
-DESERIALIZE_SRC (
-  CachedPluginDescriptors, cached_plugin_descriptors);

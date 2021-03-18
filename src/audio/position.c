@@ -102,6 +102,8 @@ position_set_to_bar (
 {
   g_return_if_fail (TRANSPORT->ticks_per_bar > 0);
 
+  position_init (self);
+
   if (bar > 0)
     {
       bar--;
@@ -572,6 +574,7 @@ position_from_ticks (
   Position * pos,
   double     ticks)
 {
+  pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->ticks = ticks;
   position_update_frames_from_ticks (pos);
 }
@@ -581,6 +584,7 @@ position_from_frames (
   Position * pos,
   long       frames)
 {
+  pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->frames = frames;
   position_update_ticks_from_frames (pos);
 }
@@ -973,36 +977,14 @@ position_get_ticks (
      TICKS_PER_SIXTEENTH_NOTE_DBL);
 }
 
-#if 0
-/**
- * Gets the subticks of the position.
- *
- * Ie, if the position is equivalent to
- * 4.1.2.42.40124, this will return 0.40124.
- */
-double
-position_get_subticks (
+bool
+position_validate (
   const Position * pos)
 {
-  double remainder = fmod (self->ticks, 1);
+  if (!pos->schema_version)
+    {
+      return false;
+    }
 
-  double total_ticks = position_get_ticks (pos);
-  double ticks = pos->ticks - total_ticks;
-  double subticks = 0.0;
-  if (ticks >= 0)
-    {
-      subticks = ticks - floor (ticks);
-      ticks -= subticks;
-    }
-  else
-    {
-      subticks = ticks - ceil (ticks);
-      ticks -= subticks;
-    }
-  return subticks;
+  return true;
 }
-#endif
-
-SERIALIZE_SRC (Position, position)
-DESERIALIZE_SRC (Position, position)
-PRINT_YAML_SRC (Position, position)

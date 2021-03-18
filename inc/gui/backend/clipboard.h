@@ -126,10 +126,6 @@ void
 clipboard_free (
   Clipboard * self);
 
-SERIALIZE_INC (Clipboard, clipboard)
-DESERIALIZE_INC (Clipboard, clipboard)
-PRINT_YAML_INC (Clipboard, clipboard)
-
 /**
  * @}
  */

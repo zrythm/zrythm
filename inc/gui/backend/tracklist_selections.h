@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,8 @@
 
 /**
  * \file
+ *
+ * Tracklist selections.
  */
 
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_H__
@@ -26,6 +28,14 @@
 
 #include "audio/track.h"
 #include "utils/yaml.h"
+
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
+
+#define TRACKLIST_SELECTIONS_SCHEMA_VERSION 1
 
 #define TRACKLIST_SELECTIONS \
   (PROJECT->tracklist_selections)
@@ -40,6 +50,8 @@
  */
 typedef struct TracklistSelections
 {
+  int                  schema_version;
+
   /** Selected Tracks. */
   Track *              tracks[600];
   int                  num_tracks;
@@ -51,10 +63,10 @@ typedef struct TracklistSelections
 static const cyaml_schema_field_t
   tracklist_selections_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "tracks", CYAML_FLAG_DEFAULT,
-    TracklistSelections, tracks, num_tracks,
-    &track_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_INT (
+    TracklistSelections, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    TracklistSelections, tracks, track_schema),
   YAML_FIELD_INT (
     TracklistSelections, is_project),
 
@@ -63,7 +75,7 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 tracklist_selections_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     TracklistSelections,
     tracklist_selections_fields_schema),
 };
@@ -229,11 +241,8 @@ void
 tracklist_selections_free (
   TracklistSelections * self);
 
-SERIALIZE_INC (
-  TracklistSelections, tracklist_selections)
-DESERIALIZE_INC (
-  TracklistSelections, tracklist_selections)
-PRINT_YAML_INC (
-  TracklistSelections, tracklist_selections)
+/**
+ * @}
+ */
 
 #endif

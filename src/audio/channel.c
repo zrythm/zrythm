@@ -1297,6 +1297,8 @@ channel_new (
 {
   Channel * self = object_new (Channel);
 
+  self->schema_version =
+    CHANNEL_SCHEMA_VERSION;
   self->magic = CHANNEL_MAGIC;
   self->track_pos = track->pos;
   self->track = track;

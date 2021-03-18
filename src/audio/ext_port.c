@@ -35,6 +35,15 @@
 #include "weak_libjack.h"
 #endif
 
+static ExtPort *
+_create (void)
+{
+  ExtPort * self = object_new (ExtPort);
+  self->schema_version = EXT_PORT_SCHEMA_VERSION;
+
+  return self;
+}
+
 /**
  * Inits the ExtPort after loading a project.
  */
@@ -440,7 +449,7 @@ static ExtPort *
 ext_port_from_jack_port (
   jack_port_t * jport)
 {
-  ExtPort * self = object_new (ExtPort);
+  ExtPort * self = _create ();
 
   self->jport = jport;
   self->full_name =
@@ -605,7 +614,7 @@ static ExtPort *
 ext_port_from_rtmidi (
   unsigned int id)
 {
-  ExtPort * self = object_new (ExtPort);
+  ExtPort * self = _create ();
 
   RtMidiDevice * dev =
     rtmidi_device_new (1, NULL, id, NULL);
@@ -660,7 +669,7 @@ ext_port_from_rtaudio (
   bool         is_input,
   bool         is_duplex)
 {
-  ExtPort * self = object_new (ExtPort);
+  ExtPort * self = _create ();
 
   RtAudioDevice * dev =
     rtaudio_device_new (
@@ -901,7 +910,7 @@ ext_port_clone (
 {
   g_return_val_if_fail (ext_port, NULL);
 
-  ExtPort * newport = object_new (ExtPort);
+  ExtPort * newport = _create ();
 
 #ifdef HAVE_JACK
   newport->jport = ext_port->jport;

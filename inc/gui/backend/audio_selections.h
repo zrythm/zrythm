@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,8 @@
  * @{
  */
 
+#define AUDIO_SELECTIONS_SCHEMA_VERSION 1
+
 #define AUDIO_SELECTIONS \
   (&PROJECT->audio_selections)
 
@@ -46,6 +48,8 @@
 typedef struct AudioSelections
 {
   ArrangerSelections base;
+
+  int                schema_version;
 
   /** Whether or not a selection exists. */
   bool               has_selection;
@@ -90,6 +94,8 @@ static const cyaml_schema_field_t
     AudioSelections, base,
     arranger_selections_fields_schema),
   YAML_FIELD_INT (
+    AudioSelections, schema_version),
+  YAML_FIELD_INT (
     AudioSelections, has_selection),
   YAML_FIELD_MAPPING_EMBEDDED (
     AudioSelections, sel_start,
@@ -108,8 +114,7 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 audio_selections_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     AudioSelections,
     audio_selections_fields_schema),
 };
@@ -147,13 +152,6 @@ audio_selections_can_be_pasted (
   AudioSelections * ts,
   Position *        pos,
   ZRegion *         r);
-
-SERIALIZE_INC (AudioSelections,
-               audio_selections)
-DESERIALIZE_INC (AudioSelections,
-                 audio_selections)
-PRINT_YAML_INC (AudioSelections,
-                audio_selections)
 
 /**
 * @}

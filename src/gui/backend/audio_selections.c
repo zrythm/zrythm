@@ -44,6 +44,11 @@ void
 audio_selections_init (
   AudioSelections * self)
 {
+  self->schema_version =
+    AUDIO_SELECTIONS_SCHEMA_VERSION;
+  position_init (&self->sel_start);
+  position_init (&self->sel_end);
+  region_identifier_init (&self->region_id);
   self->pool_id = -1;
 }
 
@@ -55,6 +60,8 @@ audio_selections_new (void)
 {
   AudioSelections * self =
     object_new (AudioSelections);
+
+  audio_selections_init (self);
 
   return self;
 }
@@ -97,10 +104,3 @@ audio_selections_can_be_pasted (
   /* TODO */
   return false;
 }
-
-SERIALIZE_SRC (
-  AudioSelections, audio_selections)
-DESERIALIZE_SRC (
-  AudioSelections, audio_selections)
-PRINT_YAML_SRC (
-  AudioSelections, audio_selections)

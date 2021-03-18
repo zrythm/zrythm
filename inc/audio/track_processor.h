@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,8 @@ typedef struct Track Track;
  * @{
  */
 
+#define TRACK_PROCESSOR_SCHEMA_VERSION 1
+
 #define TRACK_PROCESSOR_MAGIC 81213128
 #define IS_TRACK_PROCESSOR(tr) \
   ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
@@ -61,6 +63,8 @@ typedef enum TrackProcessorMidiAutomatable
  */
 typedef struct TrackProcessor
 {
+  int              schema_version;
+
   /**
    * L & R audio input ports, if audio.
    */
@@ -136,6 +140,8 @@ typedef struct TrackProcessor
 static const cyaml_schema_field_t
 track_processor_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    TrackProcessor, schema_version),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, mono,
     port_fields_schema),
@@ -169,8 +175,7 @@ track_processor_fields_schema[] =
 static const cyaml_schema_value_t
 track_processor_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     TrackProcessor, track_processor_fields_schema),
 };
 

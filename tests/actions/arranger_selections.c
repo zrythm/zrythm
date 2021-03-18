@@ -2066,6 +2066,9 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test link timeline",
+    (GTestFunc) test_link_timeline);
+  g_test_add_func (
     TEST_PREFIX "test delete chords",
     (GTestFunc) test_delete_chords);
   g_test_add_func (
@@ -2092,9 +2095,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test duplicate timeline",
     (GTestFunc) test_duplicate_timeline);
-  g_test_add_func (
-    TEST_PREFIX "test link timeline",
-    (GTestFunc) test_link_timeline);
   g_test_add_func (
     TEST_PREFIX "test edit marker",
     (GTestFunc) test_edit_marker);

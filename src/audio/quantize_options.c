@@ -73,9 +73,12 @@ quantize_options_update_quantize_points (
 }
 
 void
-quantize_options_init (QuantizeOptions *   self,
-                NoteLength   note_length)
+quantize_options_init (
+  QuantizeOptions * self,
+  NoteLength        note_length)
 {
+  self->schema_version =
+    QUANTIZE_OPTIONS_SCHEMA_VERSION;
   self->note_length = note_length;
   self->num_q_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;

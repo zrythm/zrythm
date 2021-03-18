@@ -48,19 +48,6 @@ static const cyaml_schema_value_t
     float_struct, float_struct_fields_schema),
 };
 
-SERIALIZE_INC (
-  float_struct, float_struct)
-DESERIALIZE_INC (
-  float_struct, float_struct)
-PRINT_YAML_INC (
-  float_struct, float_struct)
-SERIALIZE_SRC (
-  float_struct, float_struct)
-DESERIALIZE_SRC (
-  float_struct, float_struct)
-PRINT_YAML_SRC (
-  float_struct, float_struct)
-
 static void
 test_load_precise_float (void)
 {
@@ -69,21 +56,24 @@ test_load_precise_float (void)
   float_struct my_struct;
   my_struct.fval = 12;
   char * ret =
-    float_struct_serialize (&my_struct);
+    yaml_serialize (
+      &my_struct, &float_struct_schema);
   g_assert_cmpstr (
     ret, ==, "---\nfval: 12\n...\n");
   g_free (ret);
 
   my_struct.fval = 1.55331e-40f;
   ret =
-    float_struct_serialize (&my_struct);
+    yaml_serialize (
+      &my_struct, &float_struct_schema);
   g_assert_cmpstr (
     ret, ==, "---\nfval: 1.55331e-40\n...\n");
   g_message ("\n%s", ret);
 
   const char * str1 = "---\nfval: 1.55331e-40\n...\n";
   float_struct * ret2 =
-    float_struct_deserialize (str1);
+    (float_struct *)
+    yaml_deserialize (str1, &float_struct_schema);
   g_message ("loaded val %g", ret2->fval);
 
 #if 0

@@ -65,8 +65,12 @@ range_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_RANGE;
 
+  g_return_val_if_fail (
+    position_validate (start_pos) &&
+    position_validate (end_pos), NULL);
+
   self->type = type;
-  self->start_pos = *start_pos;
+  position_set_to_pos (&self->start_pos, start_pos);
   self->end_pos = *end_pos;
   self->first_run = true;
 

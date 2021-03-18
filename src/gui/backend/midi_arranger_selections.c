@@ -126,10 +126,3 @@ midi_arranger_selections_can_be_pasted (
 
   return 1;
 }
-
-SERIALIZE_SRC (MidiArrangerSelections,
-               midi_arranger_selections)
-DESERIALIZE_SRC (MidiArrangerSelections,
-                 midi_arranger_selections)
-PRINT_YAML_SRC (MidiArrangerSelections,
-                midi_arranger_selections)

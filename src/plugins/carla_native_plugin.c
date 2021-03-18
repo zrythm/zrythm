@@ -32,6 +32,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/carla/carla_discovery.h"
@@ -582,7 +583,7 @@ carla_native_plugin_populate_banks (
       LV2_ZRYTHM__defaultBank,
       _("Default bank"));
   PluginPreset * pl_def_preset =
-    object_new (PluginPreset);
+    plugin_preset_new ();
   pl_def_preset->uri =
     g_strdup (LV2_ZRYTHM__initPreset);
   pl_def_preset->name = g_strdup (_("Init"));
@@ -597,7 +598,7 @@ carla_native_plugin_populate_banks (
   for (uint32_t i = 0; i < count; i++)
     {
       PluginPreset * pl_preset =
-        object_new (PluginPreset);
+        plugin_preset_new ();
       pl_preset->carla_program = (int) i;
       pl_preset->name =
         g_strdup (
@@ -943,7 +944,7 @@ carla_native_plugin_get_descriptor_from_cached (
   PluginType              type)
 {
   PluginDescriptor * descr =
-    object_new (PluginDescriptor);
+    plugin_descriptor_new ();
 
   switch (type)
     {

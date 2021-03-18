@@ -132,6 +132,8 @@ automation_tracklist_init (
   self->track_pos = track->pos;
 
   g_message ("initing automation tracklist...");
+  self->schema_version =
+    AUTOMATION_TRACKLIST_SCHEMA_VERSION;
 
   /*self->ats_size = 1;*/
   /*self->ats =*/

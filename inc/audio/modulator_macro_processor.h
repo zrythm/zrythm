@@ -38,6 +38,8 @@ typedef struct Track Track;
  * @{
  */
 
+#define MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION 1
+
 /**
  * Modulator macro button processor.
  *
@@ -48,6 +50,8 @@ typedef struct Track Track;
  */
 typedef struct ModulatorMacroProcessor
 {
+  int               schema_version;
+
   /**
    * Name to be shown in the modulators tab.
    *
@@ -75,6 +79,8 @@ typedef struct ModulatorMacroProcessor
 static const cyaml_schema_field_t
 modulator_macro_processor_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    ModulatorMacroProcessor, schema_version),
   YAML_FIELD_STRING_PTR (
     ModulatorMacroProcessor, name),
   YAML_FIELD_MAPPING_PTR (

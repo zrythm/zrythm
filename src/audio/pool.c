@@ -53,6 +53,8 @@ audio_pool_new ()
 {
   AudioPool * self = object_new (AudioPool);
 
+  self->schema_version = AUDIO_POOL_SCHEMA_VERSION;
+
   self->clips_size = 2;
   self->clips =
     object_new_n (self->clips_size, AudioClip *);

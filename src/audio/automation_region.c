@@ -102,7 +102,7 @@ automation_region_print_automation (
       ap = self->aps[i];
       ap_obj = (ArrangerObject *) ap;
       g_message ("%d", i);
-      position_print_yaml (&ap_obj->pos);
+      position_print (&ap_obj->pos);
     }
 }
 

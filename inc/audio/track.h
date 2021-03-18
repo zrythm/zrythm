@@ -69,6 +69,8 @@ typedef void MIDI_FILE;
  * @{
  */
 
+#define TRACK_SCHEMA_VERSION 1
+
 #define TRACK_MIN_HEIGHT 24
 #define TRACK_DEF_HEIGHT 48
 
@@ -188,6 +190,8 @@ track_type_strings[] =
  */
 typedef struct Track
 {
+  int                 schema_version;
+
   /**
    * Position in the Tracklist.
    *
@@ -460,19 +464,18 @@ typedef struct Track
 static const cyaml_schema_field_t
 track_fields_schema[] =
 {
+  YAML_FIELD_INT (Track, schema_version),
   YAML_FIELD_STRING_PTR (Track, name),
   YAML_FIELD_STRING_PTR (Track, icon_name),
   YAML_FIELD_ENUM (
     Track, type, track_type_strings),
   YAML_FIELD_INT (Track, pos),
-  //YAML_FIELD_INT (Track, pos_before_pinned),
   YAML_FIELD_INT (Track, lanes_visible),
   YAML_FIELD_INT (Track, automation_visible),
   YAML_FIELD_INT (Track, visible),
   YAML_FIELD_FLOAT (Track, main_height),
   YAML_FIELD_INT (Track, passthrough_midi_input),
   YAML_FIELD_INT (Track, recording),
-  //YAML_FIELD_INT (Track, pinned),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track, color, gdk_rgba_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
@@ -506,8 +509,7 @@ track_fields_schema[] =
     Track, in_signal_type, port_type_strings),
   YAML_FIELD_ENUM (
     Track, out_signal_type, port_type_strings),
-  CYAML_FIELD_UINT (
-    "midi_ch", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_UINT (
     Track, midi_ch),
   YAML_FIELD_STRING_PTR (
     Track, comment),

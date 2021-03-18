@@ -23,8 +23,6 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define PLUGIN_COLLECTIONS_VERSION 4
-
 static char *
 get_plugin_collections_file_path (void)
 {
@@ -42,11 +40,11 @@ void
 plugin_collections_serialize_to_file (
   PluginCollections * self)
 {
-  self->version = PLUGIN_COLLECTIONS_VERSION;
   g_message (
     "Serializing plugin collections...");
   char * yaml =
-    plugin_collections_serialize (self);
+    yaml_serialize (
+      self, &plugin_collections_schema);
   g_return_if_fail (yaml);
   GError *err = NULL;
   char * path =
@@ -79,15 +77,15 @@ is_yaml_our_version (
   bool same_version = false;
   char version_str[120];
   sprintf (
-    version_str, "version: %d\n",
-    PLUGIN_COLLECTIONS_VERSION);
+    version_str, "schema_version: %d\n",
+    PLUGIN_COLLECTIONS_SCHEMA_VERSION);
   same_version =
     g_str_has_prefix (yaml, version_str);
   if (!same_version)
     {
       sprintf (
-        version_str, "---\nversion: %d\n",
-        PLUGIN_COLLECTIONS_VERSION);
+        version_str, "---\nschema_version: %d\n",
+        PLUGIN_COLLECTIONS_SCHEMA_VERSION);
       same_version =
         g_str_has_prefix (yaml, version_str);
     }
@@ -110,8 +108,12 @@ plugin_collections_new (void)
         "Plugin collections file at %s does "
         "not exist", path);
 return_new_instance:
-      return
-        calloc (1, sizeof (PluginCollections));
+      g_free (path);
+      PluginCollections * self =
+        object_new (PluginCollections);
+      self->schema_version =
+        PLUGIN_COLLECTIONS_SCHEMA_VERSION;
+      return self;
     }
   char * yaml = NULL;
   g_file_get_contents (path, &yaml, NULL, &err);
@@ -149,7 +151,9 @@ return_new_instance:
     }
 
   PluginCollections * self =
-    plugin_collections_deserialize (yaml);
+    (PluginCollections *)
+    yaml_deserialize (
+      yaml, &plugin_collections_schema);
   if (!self)
     {
       g_critical (
@@ -249,8 +253,3 @@ plugin_collections_free (
         self->collections[i]);
     }
 }
-
-SERIALIZE_SRC (
-  PluginCollections, plugin_collections);
-DESERIALIZE_SRC (
-  PluginCollections, plugin_collections);

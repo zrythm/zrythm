@@ -28,6 +28,8 @@ void
 region_link_group_manager_init (
   RegionLinkGroupManager * self)
 {
+  self->schema_version =
+    REGION_LINK_GROUP_MANAGER_SCHEMA_VERSION;
 }
 
 void

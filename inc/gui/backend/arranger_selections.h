@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,14 @@
 typedef struct ArrangerObject ArrangerObject;
 typedef struct Position Position;
 
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
+
+#define ARRANGER_SELECTIONS_SCHEMA_VERSION 1
+
 #define ARRANGER_SELECTIONS_MAGIC 35867752
 #define IS_ARRANGER_SELECTIONS(x) \
   (((ArrangerSelections *) x)->magic == \
@@ -42,12 +50,6 @@ typedef struct Position Position;
   (x && IS_ARRANGER_SELECTIONS (x))
 #define ARRANGER_SELECTIONS(x) \
   arranger_selections_cast (x)
-
-/**
- * @addtogroup gui_backend
- *
- * @{
- */
 
 typedef enum ArrangerSelectionsType
 {
@@ -61,6 +63,8 @@ typedef enum ArrangerSelectionsType
 
 typedef struct ArrangerSelections
 {
+  int                    schema_version;
+
   /** Type of selections. */
   ArrangerSelectionsType type;
 
@@ -85,20 +89,19 @@ arranger_selections_type_strings[] =
 static const cyaml_schema_field_t
 arranger_selections_fields_schema[] =
 {
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    ArrangerSelections, schema_version),
+  YAML_FIELD_ENUM (
     ArrangerSelections, type,
-    arranger_selections_type_strings,
-    CYAML_ARRAY_LEN (
-      arranger_selections_type_strings)),
+    arranger_selections_type_strings),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 arranger_selections_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER, ArrangerSelections,
+  YAML_VALUE_PTR (
+    ArrangerSelections,
     arranger_selections_fields_schema),
 };
 

@@ -55,6 +55,8 @@ plugin_collection_new (void)
   PluginCollection * self =
     object_new (PluginCollection);
 
+  self->schema_version =
+    PLUGIN_COLLECTION_SCHEMA_VERSION;
   self->name = g_strdup ("");
   self->descriptors_size = 1;
   self->descriptors =
@@ -72,7 +74,8 @@ PluginCollection *
 plugin_collection_clone (
   const PluginCollection * self)
 {
-  PluginCollection * clone = plugin_collection_new ();
+  PluginCollection * clone =
+    plugin_collection_new ();
 
   for (int i = 0; i < self->num_descriptors; i++)
     {

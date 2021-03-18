@@ -43,6 +43,7 @@
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
+#include "plugins/carla_native_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/plugin_gtk.h"
@@ -112,7 +113,8 @@ plugin_init_loaded (
 #ifdef HAVE_CARLA
   if (self->setting->open_with_carla)
     {
-      g_return_if_fail (self->carla);
+      self->carla =
+        object_new (CarlaNativePlugin);
       self->carla->plugin = self;
       carla_native_plugin_init_loaded (self->carla);
     }
@@ -182,6 +184,8 @@ plugin_init (
 
   plugin->in_ports_size = 1;
   plugin->out_ports_size = 1;
+  plugin->id.schema_version =
+    PLUGIN_IDENTIFIER_SCHEMA_VERSION;
   plugin->id.track_pos = track_pos;
   plugin->id.slot_type = slot_type;
   plugin->id.slot = slot;
@@ -271,7 +275,7 @@ plugin_add_bank_if_not_exists (
         }
     }
 
-  PluginBank * bank = object_new (PluginBank);
+  PluginBank * bank = plugin_bank_new ();
 
   bank->id.idx = -1;
   bank->id.bank_idx = self->num_banks;
@@ -284,7 +288,8 @@ plugin_add_bank_if_not_exists (
   array_double_size_if_full (
     self->banks, self->num_banks, self->banks_size,
     PluginBank *);
-  array_append (self->banks, self->num_banks, bank);
+  array_append (
+    self->banks, self->num_banks, bank);
 
   return bank;
 }
@@ -335,10 +340,14 @@ populate_banks (
 #endif
 
   /* select the init preset */
+  self->selected_bank.schema_version =
+    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
   self->selected_bank.bank_idx = 0;
   self->selected_bank.idx = -1;
   plugin_identifier_copy (
     &self->selected_bank.plugin_id, &self->id);
+  self->selected_preset.schema_version =
+    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
   self->selected_preset.bank_idx = 0;
   self->selected_preset.idx = 0;
   plugin_identifier_copy (
@@ -428,6 +437,7 @@ plugin_new_from_setting (
   int             slot)
 {
   Plugin * self = object_new (Plugin);
+  self->schema_version = PLUGIN_SCHEMA_VERSION;
 
   self->setting =
     plugin_setting_clone (setting, F_VALIDATE);
@@ -498,6 +508,7 @@ plugin_new_dummy (
   int            slot)
 {
   Plugin * self = object_new (Plugin);
+  self->schema_version = PLUGIN_SCHEMA_VERSION;
 
   PluginDescriptor * descr =
     object_new (PluginDescriptor);
@@ -2972,6 +2983,3 @@ plugin_free (
 
   object_zero_and_free (self);
 }
-
-SERIALIZE_SRC (Plugin, plugin);
-DESERIALIZE_SRC (Plugin, plugin);

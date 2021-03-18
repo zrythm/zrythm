@@ -216,6 +216,8 @@ track_processor_new (
   TrackProcessor * self =
     object_new (TrackProcessor);
 
+  self->schema_version =
+    TRACK_PROCESSOR_SCHEMA_VERSION;
   self->magic = TRACK_PROCESSOR_MAGIC;
   self->track_pos = tr->pos;
   self->track = tr;

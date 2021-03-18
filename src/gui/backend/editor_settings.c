@@ -23,5 +23,7 @@ void
 editor_settings_init (
   EditorSettings * self)
 {
+  self->schema_version =
+    EDITOR_SETTINGS_SCHEMA_VERSION;
   self->hzoom_level = 1.0;
 }

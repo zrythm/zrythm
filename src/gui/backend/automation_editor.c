@@ -27,5 +27,8 @@ void
 automation_editor_init (
   AutomationEditor * self)
 {
+  self->schema_version =
+    AUTOMATION_EDITOR_SCHEMA_VERSION;
+
   editor_settings_init (&self->editor_settings);
 }

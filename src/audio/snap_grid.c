@@ -269,6 +269,7 @@ snap_grid_init (
   SnapGridType type,
   NoteLength   note_length)
 {
+  self->schema_version = SNAP_GRID_SCHEMA_VERSION;
   self->type = type;
   self->num_snap_points = 0;
   self->snap_note_length = note_length;

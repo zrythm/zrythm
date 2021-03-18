@@ -67,6 +67,8 @@ automation_track_new (
   AutomationTrack * self =
     object_new (AutomationTrack);
 
+  self->schema_version =
+    AUTOMATION_TRACK_SCHEMA_VERSION;
   self->regions_size = 1;
   self->regions =
     object_new_n (

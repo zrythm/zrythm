@@ -24,7 +24,9 @@ plugin_srcs = files ([
   'plugin.c',
   'plugin_descriptor.c',
   'plugin_gtk.c',
+  'plugin_identifier.c',
   'plugin_manager.c',
+  'plugin_preset.c',
   ])
 
 subdir ('carla')

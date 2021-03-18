@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -77,6 +77,8 @@ typedef struct Marker
   /** Base struct. */
   ArrangerObject  base;
 
+  int             schema_version;
+
   /** Marker type. */
   MarkerType        type;
 
@@ -97,32 +99,24 @@ typedef struct Marker
 static const cyaml_schema_field_t
   marker_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Marker, base,
     arranger_object_fields_schema),
-  CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
-    Marker, name,
-    0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_STRING_PTR (
+    Marker, name),
+  YAML_FIELD_INT (
     Marker, track_pos),
-  CYAML_FIELD_INT (
-    "index", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Marker, index),
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
-    Marker, type, marker_type_strings,
-    CYAML_ARRAY_LEN (marker_type_strings)),
+  YAML_FIELD_ENUM (
+    Marker, type, marker_type_strings),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 marker_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     Marker, marker_fields_schema),
 };
 

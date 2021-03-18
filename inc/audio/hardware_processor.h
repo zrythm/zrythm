@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,8 @@
  * @{
  */
 
+#define HW_PROCESSOR_SCHEMA_VERSION 1
+
 #define HW_IN_PROCESSOR \
   (AUDIO_ENGINE->hw_in_processor)
 #define HW_OUT_PROCESSOR \
@@ -46,6 +48,8 @@
  */
 typedef struct HardwareProcessor
 {
+  int             schema_version;
+
   /**
    * Whether this is the processor at the start of
    * the graph (input) or at the end (output).
@@ -97,6 +101,8 @@ static const cyaml_schema_field_t
 hardware_processor_fields_schema[] =
 {
   YAML_FIELD_INT (
+    HardwareProcessor, schema_version),
+  YAML_FIELD_INT (
     HardwareProcessor, is_input),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     HardwareProcessor, ext_audio_ports,
@@ -117,8 +123,7 @@ hardware_processor_fields_schema[] =
 static const cyaml_schema_value_t
 hardware_processor_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     HardwareProcessor,
     hardware_processor_fields_schema),
 };

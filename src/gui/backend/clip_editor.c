@@ -239,6 +239,9 @@ void
 clip_editor_init (
   ClipEditor * self)
 {
+  self->schema_version =
+    CLIP_EDITOR_SCHEMA_VERSION;
+
   piano_roll_init (&self->piano_roll);
   audio_clip_editor_init (&self->audio_clip_editor);
   chord_editor_init (&self->chord_editor);

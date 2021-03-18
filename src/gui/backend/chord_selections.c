@@ -57,10 +57,3 @@ chord_selections_can_be_pasted (
 
   return 1;
 }
-
-SERIALIZE_SRC (
-  ChordSelections, chord_selections)
-DESERIALIZE_SRC (
-  ChordSelections, chord_selections)
-PRINT_YAML_SRC (
-  ChordSelections, chord_selections)

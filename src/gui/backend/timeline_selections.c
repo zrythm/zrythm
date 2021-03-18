@@ -48,9 +48,13 @@ timeline_selections_new (void)
   TimelineSelections * self =
     object_new (TimelineSelections);
 
+  self->schema_version =
+    TL_SELECTIONS_SCHEMA_VERSION;
   self->base.magic = ARRANGER_SELECTIONS_MAGIC;
   self->base.type =
     ARRANGER_SELECTIONS_TYPE_TIMELINE;
+  self->base.schema_version =
+    ARRANGER_SELECTIONS_SCHEMA_VERSION;
 
   return self;
 }
@@ -764,10 +768,3 @@ timeline_selections_set_index_in_prev_lane (
       r_obj->index_in_prev_lane = r->id.idx;
     }
 }
-
-SERIALIZE_SRC (
-  TimelineSelections, timeline_selections)
-DESERIALIZE_SRC (
-  TimelineSelections, timeline_selections)
-PRINT_YAML_SRC (
-  TimelineSelections, timeline_selections)

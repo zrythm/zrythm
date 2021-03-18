@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +35,8 @@
  * @{
  */
 
+#define AUDIO_CLIP_EDITOR_SCHEMA_VERSION 1
+
 #define AUDIO_CLIP_EDITOR \
   (&CLIP_EDITOR->audio_clip_editor)
 
@@ -46,12 +48,15 @@
  */
 typedef struct AudioClipEditor
 {
+  int             schema_version;
   EditorSettings  editor_settings;
 } AudioClipEditor;
 
 static const cyaml_schema_field_t
 audio_clip_editor_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    AudioClipEditor, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
     AudioClipEditor, editor_settings,
     editor_settings_fields_schema),
@@ -62,8 +67,7 @@ audio_clip_editor_fields_schema[] =
 static const cyaml_schema_value_t
 audio_clip_editor_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     AudioClipEditor,
     audio_clip_editor_fields_schema),
 };

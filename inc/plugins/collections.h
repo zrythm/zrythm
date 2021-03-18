@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,13 +35,15 @@
  * @{
  */
 
+#define PLUGIN_COLLECTIONS_SCHEMA_VERSION 1
+
 /**
  * Serializable plugin collections.
  */
 typedef struct PluginCollections
 {
   /** Version of the file. */
-  unsigned int        version;
+  int                 schema_version;
 
   /** Plugin collections. */
   PluginCollection *  collections[90000];
@@ -51,8 +53,8 @@ typedef struct PluginCollections
 static const cyaml_schema_field_t
 plugin_collections_fields_schema[] =
 {
-  YAML_FIELD_UINT (
-    PluginCollections, version),
+  YAML_FIELD_INT (
+    PluginCollections, schema_version),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     PluginCollections, collections,
     plugin_collection_schema),
@@ -109,10 +111,5 @@ plugin_collections_free (
 /**
  * @}
  */
-
-SERIALIZE_INC (
-  PluginCollections, plugin_collections);
-DESERIALIZE_INC (
-  PluginCollections, plugin_collections);
 
 #endif

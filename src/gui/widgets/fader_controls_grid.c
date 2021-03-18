@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/meter.h"
 #include "audio/track.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/center_dock.h"

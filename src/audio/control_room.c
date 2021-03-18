@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,6 +31,8 @@ static void
 init_common (
   ControlRoom * self)
 {
+  self->schema_version = CONTROL_ROOM_SCHEMA_VERSION;
+
   /* set the monitor volume */
   float amp =
     ZRYTHM_TESTING ?

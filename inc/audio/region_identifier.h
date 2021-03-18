@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,8 @@
 #ifndef __AUDIO_REGION_IDENTIFIER_H__
 #define __AUDIO_REGION_IDENTIFIER_H__
 
+#include <stdbool.h>
+
 #include "utils/general.h"
 #include "utils/yaml.h"
 
@@ -37,6 +39,8 @@
  *
  * @{
  */
+
+#define REGION_IDENTIFIER_SCHEMA_VERSION 1
 
 /**
  * Type of Region.
@@ -70,6 +74,8 @@ region_type_bitvals[] =
  */
 typedef struct RegionIdentifier
 {
+  int        schema_version;
+
   RegionType type;
 
   /** Link group index, if any, or -1. */
@@ -89,23 +95,19 @@ typedef struct RegionIdentifier
 static const cyaml_schema_field_t
 region_identifier_fields_schema[] =
 {
-  CYAML_FIELD_BITFIELD (
-    "type", CYAML_FLAG_DEFAULT,
-    RegionIdentifier, type, region_type_bitvals,
-    CYAML_ARRAY_LEN (region_type_bitvals)),
+  YAML_FIELD_INT (
+    RegionIdentifier, schema_version),
+  YAML_FIELD_BITFIELD (
+    RegionIdentifier, type, region_type_bitvals),
   YAML_FIELD_INT (
     RegionIdentifier, link_group),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     RegionIdentifier, track_pos),
-  CYAML_FIELD_INT (
-    "lane_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     RegionIdentifier, lane_pos),
-  CYAML_FIELD_INT (
-    "at_idx", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     RegionIdentifier, at_idx),
-  CYAML_FIELD_INT (
-    "idx", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     RegionIdentifier, idx),
 
   CYAML_FIELD_END
@@ -113,17 +115,21 @@ region_identifier_fields_schema[] =
 
 static const cyaml_schema_value_t
 region_identifier_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     RegionIdentifier,
     region_identifier_fields_schema),
 };
 
 static const cyaml_schema_value_t
 region_identifier_schema_default = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
+  YAML_VALUE_DEFAULT (
     RegionIdentifier,
     region_identifier_fields_schema),
 };
+
+void
+region_identifier_init (
+  RegionIdentifier * self);
 
 static inline int
 region_identifier_is_equal (
@@ -144,6 +150,7 @@ region_identifier_copy (
   RegionIdentifier * dest,
   const RegionIdentifier * src)
 {
+  dest->schema_version = src->schema_version;
   dest->idx = src->idx;
   dest->track_pos = src->track_pos;
   dest->lane_pos = src->lane_pos;
@@ -151,6 +158,10 @@ region_identifier_copy (
   dest->type = src->type;
   dest->link_group = src->link_group;
 }
+
+bool
+region_identifier_validate (
+  RegionIdentifier * self);
 
 static inline const char *
 region_identifier_get_region_type_name (

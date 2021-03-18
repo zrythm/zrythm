@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,12 +28,15 @@
 
 #include "audio/position.h"
 #include "audio/snap_grid.h"
+#include "utils/yaml.h"
 
 /**
  * @addtogroup audio
  *
  * @{
  */
+
+#define QUANTIZE_OPTIONS_SCHEMA_VERSION 1
 
 #define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
   (&PROJECT->quantize_opts_editor == qo)
@@ -48,6 +51,8 @@
 
 typedef struct QuantizeOptions
 {
+  int              schema_version;
+
   /** See SnapGrid. */
   NoteLength       note_length;
 
@@ -87,28 +92,21 @@ typedef struct QuantizeOptions
 static const cyaml_schema_field_t
   quantize_options_fields_schema[] =
 {
-  CYAML_FIELD_ENUM (
-    "note_length", CYAML_FLAG_DEFAULT,
-    QuantizeOptions, note_length, note_length_strings,
-    CYAML_ARRAY_LEN (note_length_strings)),
-  CYAML_FIELD_ENUM (
-    "note_type", CYAML_FLAG_DEFAULT,
-    QuantizeOptions, note_type, note_type_strings,
-    CYAML_ARRAY_LEN (note_type_strings)),
-  CYAML_FIELD_FLOAT (
-    "amount", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (QuantizeOptions, schema_version),
+  YAML_FIELD_ENUM (
+    QuantizeOptions, note_length,
+    note_length_strings),
+  YAML_FIELD_ENUM (
+    QuantizeOptions, note_type, note_type_strings),
+  YAML_FIELD_FLOAT (
     QuantizeOptions, amount),
-  CYAML_FIELD_INT (
-    "adj_start", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     QuantizeOptions, adj_start),
-  CYAML_FIELD_INT (
-    "adj_end", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     QuantizeOptions, adj_end),
-  CYAML_FIELD_FLOAT (
-    "swing", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     QuantizeOptions, swing),
-  CYAML_FIELD_FLOAT (
-    "rand_ticks", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     QuantizeOptions, rand_ticks),
 
   CYAML_FIELD_END
@@ -116,9 +114,9 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 quantize_options_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    QuantizeOptions, quantize_options_fields_schema),
+  YAML_VALUE_PTR (
+    QuantizeOptions,
+    quantize_options_fields_schema),
 };
 
 void

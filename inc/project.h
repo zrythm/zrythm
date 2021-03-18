@@ -64,6 +64,8 @@ typedef struct TracklistSelections
  * @{
  */
 
+#define PROJECT_SCHEMA_VERSION 1
+
 #define PROJECT                 ZRYTHM->project
 #define DEFAULT_PROJECT_NAME    "Untitled Project"
 #define PROJECT_FILE            "project.zpj"
@@ -157,6 +159,8 @@ typedef enum ProjectCompressionFlag
  */
 typedef struct Project
 {
+  int               schema_version;
+
   /** Project title. */
   char *            title;
 
@@ -290,6 +294,8 @@ typedef struct Project
 static const cyaml_schema_field_t
   project_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    Project, schema_version),
   YAML_FIELD_STRING_PTR (
     Project, title),
   YAML_FIELD_STRING_PTR (
@@ -345,7 +351,7 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR (
     Project, midi_mappings,
     midi_mappings_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project, undo_manager,
     undo_manager_fields_schema),
   YAML_FIELD_ENUM (
@@ -511,10 +517,6 @@ project_new (
  */
 void
 project_free (Project * self);
-
-SERIALIZE_INC (Project, project)
-DESERIALIZE_INC (Project, project)
-PRINT_YAML_INC (Project, project)
 
 /**
  * @}

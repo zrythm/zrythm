@@ -88,7 +88,23 @@ void
 arranger_object_init (
   ArrangerObject * self)
 {
+  self->schema_version =
+    ARRANGER_OBJECT_SCHEMA_VERSION;
   self->magic = ARRANGER_OBJECT_MAGIC;
+
+  position_init (&self->pos);
+  position_init (&self->end_pos);
+  position_init (&self->clip_start_pos);
+  position_init (&self->loop_start_pos);
+  position_init (&self->loop_end_pos);
+  position_init (&self->fade_in_pos);
+  position_init (&self->fade_out_pos);
+
+  curve_opts_init (&self->fade_in_opts);
+  curve_opts_init (&self->fade_out_opts);
+
+  self->region_id.schema_version =
+    REGION_IDENTIFIER_SCHEMA_VERSION;
 }
 
 /**
@@ -2172,7 +2188,11 @@ clone_region (
       break;
     }
 
-  g_return_val_if_fail (new_region, NULL);
+  g_return_val_if_fail (
+    new_region &&
+    new_region->schema_version ==
+      REGION_SCHEMA_VERSION,
+    NULL);
 
   /* clone name */
   new_region->name = g_strdup (region->name);
@@ -2369,6 +2389,11 @@ arranger_object_clone (
   g_return_val_if_fail (new_obj, NULL);
 
   /* set positions */
+  g_warn_if_fail (
+    self->schema_version ==
+      ARRANGER_OBJECT_SCHEMA_VERSION &&
+    self->pos.schema_version ==
+      POSITION_SCHEMA_VERSION);
   new_obj->pos = self->pos;
   if (arranger_object_type_has_length (self->type))
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,8 @@
  * @{
  */
 
+#define TL_SELECTIONS_SCHEMA_VERSION 1
+
 #define TL_SELECTIONS \
   (&PROJECT->timeline_selections)
 
@@ -50,6 +52,8 @@ typedef struct TimelineSelections
 {
   /** Base struct. */
   ArrangerSelections base;
+
+  int                schema_version;
 
   /** Selected TrackLane Region's. */
   ZRegion **          regions;
@@ -77,6 +81,8 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     TimelineSelections, base,
     arranger_selections_fields_schema),
+  YAML_FIELD_INT (
+    TimelineSelections, schema_version),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     TimelineSelections, regions, region_schema),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
@@ -94,8 +100,8 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 timeline_selections_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER, TimelineSelections,
+  YAML_VALUE_PTR (
+    TimelineSelections,
     timeline_selections_fields_schema),
 };
 
@@ -204,13 +210,6 @@ timeline_selections_move_regions_to_new_tracks (
 void
 timeline_selections_set_index_in_prev_lane (
   TimelineSelections * self);
-
-SERIALIZE_INC (
-  TimelineSelections, timeline_selections)
-DESERIALIZE_INC (
-  TimelineSelections, timeline_selections)
-PRINT_YAML_INC (
-  TimelineSelections, timeline_selections)
 
 /**
  * @}

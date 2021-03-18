@@ -38,8 +38,6 @@
 #include "utils/stack.h"
 #include "utils/yaml.h"
 
-typedef struct Stack Stack;
-
 /**
  * @addtogroup actions
  *

@@ -99,7 +99,7 @@ undo_stack_new (void)
     (ZRYTHM && ZRYTHM->testing) ||
       G_IS_SETTINGS (S_P_EDITING_UNDO), NULL);
 
-  UndoStack * self = calloc (1, sizeof (UndoStack));
+  UndoStack * self = object_new (UndoStack);
 
   int undo_stack_length =
     ZRYTHM_TESTING ? 64 :

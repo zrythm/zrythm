@@ -147,6 +147,8 @@ arranger_selections_init (
 {
   self->type = type;
   self->magic = ARRANGER_SELECTIONS_MAGIC;
+  self->schema_version =
+    ARRANGER_SELECTIONS_SCHEMA_VERSION;
 
   TimelineSelections * ts;
   ChordSelections * cs;
@@ -162,21 +164,29 @@ arranger_selections_init (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
+      ts->schema_version =
+        TL_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (ts, ZRegion, region);
       SET_OBJ (ts, ScaleObject, scale_object);
       SET_OBJ (ts, Marker, marker);
       break;
     case TYPE (MIDI):
       mas = (MidiArrangerSelections *) self;
+      mas->schema_version =
+        MA_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (mas, MidiNote, midi_note);
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
+      as->schema_version =
+        AUTOMATION_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (
         as, AutomationPoint, automation_point);
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
+      cs->schema_version =
+        CHORD_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (cs, ChordObject, chord_object);
       break;
     case TYPE (AUDIO):

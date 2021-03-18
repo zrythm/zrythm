@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,8 @@ AutomationPointWidget;
  * @{
  */
 
+#define AUTOMATION_POINT_SCHEMA_VERSION 1
+
 #define AP_WIDGET_POINT_SIZE 6
 
 #define automation_point_is_selected(r) \
@@ -56,6 +58,8 @@ typedef struct AutomationPoint
 {
   /** Base struct. */
   ArrangerObject  base;
+
+  int             schema_version;
 
   /** Float value (real). */
   float           fvalue;
@@ -75,6 +79,8 @@ automation_point_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     AutomationPoint, base,
     arranger_object_fields_schema),
+  YAML_FIELD_INT (
+    AutomationPoint, schema_version),
   YAML_FIELD_FLOAT (
     AutomationPoint, fvalue),
   YAML_FIELD_FLOAT (
@@ -91,8 +97,7 @@ automation_point_fields_schema[] =
 static const cyaml_schema_value_t
   automation_point_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     AutomationPoint, automation_point_fields_schema),
 };
 

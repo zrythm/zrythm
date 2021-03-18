@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,6 +40,8 @@ typedef struct Plugin Plugin;
  * @{
  */
 
+#define MIXER_SELECTIONS_SCHEMA_VERSION 1
+
 #define MIXER_SELECTIONS \
   (&PROJECT->mixer_selections)
 
@@ -51,6 +53,8 @@ typedef struct Plugin Plugin;
  */
 typedef struct MixerSelections
 {
+  int            schema_version;
+
   PluginSlotType type;
 
   /** Slots selected. */
@@ -71,14 +75,13 @@ typedef struct MixerSelections
 static const cyaml_schema_field_t
   mixer_selections_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    MixerSelections, schema_version),
   YAML_FIELD_ENUM (
     MixerSelections, type,
     plugin_slot_type_strings),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "slots", CYAML_FLAG_DEFAULT,
-    MixerSelections, slots,
-    num_slots,
-    &int_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    MixerSelections, slots, int_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "plugins", CYAML_FLAG_DEFAULT,
     MixerSelections, plugins,
@@ -94,8 +97,7 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 mixer_selections_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     MixerSelections,
     mixer_selections_fields_schema),
 };
@@ -107,6 +109,10 @@ mixer_selections_init_loaded (
 
 MixerSelections *
 mixer_selections_new (void);
+
+void
+mixer_selections_init (
+  MixerSelections * self);
 
 /**
  * Clone the struct for copying, undoing, etc.
@@ -239,9 +245,5 @@ mixer_selections_free (MixerSelections * self);
 /**
  * @}
  */
-
-SERIALIZE_INC (MixerSelections, mixer_selections)
-DESERIALIZE_INC (MixerSelections, mixer_selections)
-PRINT_YAML_INC (MixerSelections, mixer_selections)
 
 #endif

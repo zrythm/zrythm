@@ -39,6 +39,7 @@ G_DECLARE_FINAL_TYPE (
   GtkOverlay)
 
 typedef struct _BarSliderWidget BarSliderWidget;
+typedef struct Meter Meter;
 
 /**
  * @addtogroup widgets

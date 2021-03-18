@@ -21,6 +21,7 @@
 
 #include "actions/midi_mapping_action.h"
 #include "audio/control_port.h"
+#include "audio/meter.h"
 #include "audio/engine.h"
 #include "audio/midi.h"
 #include "audio/midi_mapping.h"
