@@ -925,6 +925,12 @@ track_validate (
         }
     }
 
+  for (int i = 0; i < self->num_chord_regions; i++)
+    {
+      ZRegion * r = self->chord_regions[i];
+      region_validate (r, self->is_project);
+    }
+
   g_message ("done");
 
   return true;
@@ -1580,6 +1586,12 @@ track_set_pos (
     {
       marker_set_track_pos (
         self->markers[i], pos);
+    }
+
+  for (int i = 0; i < self->num_chord_regions; i++)
+    {
+      ZRegion * r = self->chord_regions[i];
+      region_set_track_pos (r, pos);
     }
 
   track_processor_set_track_pos (

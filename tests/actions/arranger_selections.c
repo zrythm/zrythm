@@ -2058,6 +2058,28 @@ test_midi_region_split ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_pin_unpin ()
+{
+  rebootstrap_timeline ();
+
+  ZRegion * r = P_CHORD_TRACK->chord_regions[0];
+  track_select (
+    P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  UndoableAction * ua =
+    tracklist_selections_action_new_unpin (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_cmpint (
+    r->id.track_pos, ==, P_CHORD_TRACK->pos);
+
+  /* TODO more tests */
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2065,6 +2087,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test pin unpin",
+    (GTestFunc) test_pin_unpin);
   g_test_add_func (
     TEST_PREFIX "test link timeline",
     (GTestFunc) test_link_timeline);

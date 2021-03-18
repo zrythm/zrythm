@@ -509,7 +509,8 @@ region_validate (
 
   if (is_project)
     {
-      if (!region_find (&self->id))
+      ZRegion * found = region_find (&self->id);
+      if (found != self)
         {
           return false;
         }
