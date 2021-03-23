@@ -152,7 +152,7 @@ plugin_bank_fields_schema[] =
 {
   YAML_FIELD_INT (
     PluginBank, schema_version),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     PluginBank, presets,
     plugin_preset_schema),
   YAML_FIELD_STRING_PTR (
