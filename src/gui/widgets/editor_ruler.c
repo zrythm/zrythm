@@ -61,7 +61,8 @@ editor_ruler_on_drag_begin_no_marker_hit (
         &pos, SNAP_GRID_MIDI);
     }
   transport_move_playhead (
-    TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT);
+    TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT,
+    F_PUBLISH_EVENTS);
   self->last_set_pos = pos;
   self->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -180,12 +181,10 @@ editor_ruler_on_drag_update (
             {
               transport_move_playhead (
                 TRANSPORT, &editor_pos,
-                F_PANIC, F_NO_SET_CUE_POINT);
+                F_PANIC, F_NO_SET_CUE_POINT,
+                F_PUBLISH_EVENTS);
               self->last_set_pos = editor_pos;
               ruler_widget_redraw_whole (self);
-              EVENTS_PUSH (
-                ET_PLAYHEAD_POS_CHANGED_MANUALLY,
-                NULL);
             }
 
           /*ruler_marker_widget_update_tooltip (*/

@@ -978,7 +978,8 @@ engine_resume (
     {
       transport_move_playhead (
         TRANSPORT, &TRANSPORT->playhead_before_pause,
-        F_NO_PANIC, F_NO_SET_CUE_POINT);
+        F_NO_PANIC, F_NO_SET_CUE_POINT,
+        F_NO_PUBLISH_EVENTS);
       transport_request_roll (TRANSPORT);
     }
   else
@@ -1591,6 +1592,11 @@ engine_process (
     {
       g_debug ("engine process ended...");
     }
+
+  self->last_timestamp_start =
+    self->timestamp_start;
+  self->last_timestamp_end =
+    g_get_monotonic_time ();
 
   /*
    * processing finished, return 0 (OK)

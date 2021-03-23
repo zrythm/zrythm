@@ -3578,21 +3578,36 @@ port_process (
             automation_track_should_read_automation (
               at, AUDIO_ENGINE->timestamp_start))
           {
+            /* FIXME optimize, calculate this
+             * once at the start of each cycle */
             Position pos;
             position_from_frames (
               &pos, g_start_frames);
+
+            /* if playhead pos changed manually
+             * recently or transport is rolling,
+             * we will force the last known
+             * automation point value regardless
+             * of whether there is a region at
+             * current pos */
+            bool can_read_previous_automation =
+              TRANSPORT_IS_ROLLING ||
+              TRANSPORT->last_manual_playhead_change -
+              AUDIO_ENGINE->last_timestamp_start > 0;
 
             /* if there was an automation event
              * at the playhead position, set val
              * and flag */
             AutomationPoint * ap =
               automation_track_get_ap_before_pos (
-                at, &pos);
+                at, &pos,
+                !can_read_previous_automation);
             if (ap)
               {
                 float val =
                   automation_track_get_val_at_pos (
-                    at, &pos, true);
+                    at, &pos, true,
+                    !can_read_previous_automation);
                 control_port_set_val_from_normalized (
                   port, val, true);
                 port->value_changed_from_reading =

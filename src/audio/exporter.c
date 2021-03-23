@@ -289,7 +289,7 @@ export_audio (
             P_MARKER_TRACK);
         transport_move_playhead (
           TRANSPORT, &start->pos, F_PANIC,
-          F_NO_SET_CUE_POINT);
+          F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
         position_set_to_pos (
           &start_pos,
           &start->pos);
@@ -301,7 +301,8 @@ export_audio (
     case TIME_RANGE_LOOP:
       transport_move_playhead (
         TRANSPORT, &TRANSPORT->loop_start_pos,
-        F_PANIC, F_NO_SET_CUE_POINT);
+        F_PANIC, F_NO_SET_CUE_POINT,
+        F_NO_PUBLISH_EVENTS);
       position_set_to_pos (
         &start_pos,
         &TRANSPORT->loop_start_pos);
@@ -312,7 +313,8 @@ export_audio (
     case TIME_RANGE_CUSTOM:
       transport_move_playhead (
         TRANSPORT, &info->custom_start,
-        F_PANIC, F_NO_SET_CUE_POINT);
+        F_PANIC, F_NO_SET_CUE_POINT,
+        F_NO_PUBLISH_EVENTS);
       position_set_to_pos (
         &start_pos,
         &info->custom_start);
@@ -464,7 +466,8 @@ export_audio (
   AUDIO_ENGINE->bounce_mode = BOUNCE_OFF;
   transport_move_playhead (
     TRANSPORT, &prev_playhead_pos, F_PANIC,
-    F_NO_SET_CUE_POINT);
+    F_NO_SET_CUE_POINT,
+    F_NO_PUBLISH_EVENTS);
 
   sf_close (sndfile);
 

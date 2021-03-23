@@ -357,7 +357,8 @@ automation_region_get_ap_around (
     region_get_automation_track (self);
   /* FIXME only check aps in this region */
   AutomationPoint * ap =
-    automation_track_get_ap_before_pos (at, &pos);
+    automation_track_get_ap_before_pos (
+      at, &pos, true);
   ArrangerObject * ap_obj =
     (ArrangerObject *) ap;
   if (ap &&
@@ -372,7 +373,7 @@ automation_region_get_ap_around (
       position_add_ticks (&pos, delta_ticks);
       ap =
         automation_track_get_ap_before_pos (
-          at, &pos);
+          at, &pos, true);
       ap_obj = (ArrangerObject *) ap;
       if (ap)
         {

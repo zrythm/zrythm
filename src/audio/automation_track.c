@@ -191,26 +191,57 @@ automation_track_get_automation_tracklist (
 }
 
 /**
- * Returns the ZRegion that surrounds the
+ * Returns the ZRegion that starts before
  * given Position, if any.
+ *
+ * @param ends_after Whether to only check for
+ *   regions that also end after \ref pos (ie,
+ *   the region surrounds \ref pos), otherwise
+ *   get the region that ends last.
  */
 ZRegion *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
-  const Position *        pos)
+  const Position *        pos,
+  bool                    ends_after)
 {
-  ZRegion * region;
-  ArrangerObject * r_obj;
-  for (int i = self->num_regions - 1;
-       i >= 0; i--)
+  if (ends_after)
     {
-      region = self->regions[i];
-      r_obj = (ArrangerObject *) region;
-      if (position_is_before_or_equal (
-            &r_obj->pos, pos) &&
-          position_is_after_or_equal (
-            &r_obj->end_pos, pos))
-        return region;
+      for (int i = self->num_regions - 1; i >= 0;
+           i--)
+        {
+          ZRegion * region = self->regions[i];
+          ArrangerObject * r_obj =
+            (ArrangerObject *) region;
+          if (position_is_before_or_equal (
+                &r_obj->pos, pos) &&
+              position_is_after_or_equal (
+                &r_obj->end_pos, pos))
+            return region;
+        }
+    }
+  else
+    {
+      /* find latest region */
+      ZRegion * latest_r = NULL;
+      long latest_distance = LONG_MIN;
+      for (int i = self->num_regions - 1; i >= 0;
+           i--)
+        {
+          ZRegion * region = self->regions[i];
+          ArrangerObject * r_obj =
+            (ArrangerObject *) region;
+          long distance_from_r_end =
+            r_obj->end_pos.frames - pos->frames;
+          if (position_is_before_or_equal (
+                &r_obj->pos, pos) &&
+              distance_from_r_end > latest_distance)
+            {
+              latest_distance = distance_from_r_end;
+              latest_r = region;
+            }
+        }
+      return latest_r;
     }
   return NULL;
 }
@@ -218,26 +249,39 @@ automation_track_get_region_before_pos (
 /**
  * Returns the automation point before the Position
  * on the timeline.
+ *
+ * @param ends_after Whether to only check in
+ *   regions that also end after \ref pos (ie,
+ *   the region surrounds \ref pos), otherwise
+ *   check in the region that ends last.
  */
 AutomationPoint *
 automation_track_get_ap_before_pos (
   const AutomationTrack * self,
-  const Position *        pos)
+  const Position *        pos,
+  bool                    ends_after)
 {
   ZRegion * r =
     automation_track_get_region_before_pos (
-      self, pos);
+      self, pos, ends_after);
+  ArrangerObject * r_obj = (ArrangerObject *) r;
 
-  if (!r ||
-      arranger_object_get_muted (
-        (ArrangerObject *) r))
+  if (!r || arranger_object_get_muted (r_obj))
     {
       return NULL;
     }
 
+  /* if region ends before pos, assume pos is the
+   * region's end pos */
   long local_pos =
     region_timeline_frames_to_local (
-      r, pos->frames, 1);
+      r,
+      !ends_after &&
+        (r_obj->end_pos.frames < pos->frames) ?
+          r_obj->end_pos.frames - 1 :
+          pos->frames,
+      F_NORMALIZE);
+  /*g_debug ("local pos %ld", local_pos);*/
 
   AutomationPoint * ap;
   ArrangerObject * obj;
@@ -583,16 +627,21 @@ automation_track_set_index (
  *
  * @param normalized Whether to return the value
  *   normalized.
+ * @param ends_after Whether to only check in
+ *   regions that also end after \ref pos (ie,
+ *   the region surrounds \ref pos), otherwise
+ *   check in the region that ends last.
  */
 float
 automation_track_get_val_at_pos (
   AutomationTrack * self,
   Position *        pos,
-  bool              normalized)
+  bool              normalized,
+  bool              ends_after)
 {
   AutomationPoint * ap =
     automation_track_get_ap_before_pos (
-      self, pos);
+      self, pos, ends_after);
   ArrangerObject * ap_obj =
     (ArrangerObject *) ap;
 
@@ -610,9 +659,20 @@ automation_track_get_val_at_pos (
 
   ZRegion * region =
     arranger_object_get_region (ap_obj);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+
+  /* if region ends before pos, assume pos is the
+   * region's end pos */
   long localp =
     region_timeline_frames_to_local (
-      region, pos->frames, true);
+      region,
+      !ends_after &&
+        (r_obj->end_pos.frames < pos->frames) ?
+          r_obj->end_pos.frames - 1 :
+          pos->frames,
+      F_NORMALIZE);
+  /*g_debug ("local pos %ld", localp);*/
 
   AutomationPoint * next_ap =
     automation_region_get_next_ap (

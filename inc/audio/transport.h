@@ -308,6 +308,10 @@ typedef struct Transport
 
   /** Play state. */
   Play_State    play_state;
+
+  /** Last timestamp the playhead position was
+   * changed manually. */
+  gint64        last_manual_playhead_change;
 } Transport;
 
 static const cyaml_strval_t
@@ -540,7 +544,8 @@ transport_move_playhead (
   Transport * self,
   Position *  target,
   bool        panic,
-  bool        set_cue_point);
+  bool        set_cue_point,
+  bool        fire_events);
 
 /**
  * Enables or disables loop.

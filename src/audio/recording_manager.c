@@ -876,7 +876,7 @@ handle_resume_event (
       /* get or start new region at resume pos */
       ZRegion * new_region =
         automation_track_get_region_before_pos (
-          at, &resume_pos);
+          at, &resume_pos, true);
       if (!new_region &&
           automation_track_should_be_recording (
             at, cur_time, false))
@@ -1220,7 +1220,7 @@ handle_automation_event (
   /* get the recording region */
   ZRegion * region =
     automation_track_get_region_before_pos (
-      at, &start_pos);
+      at, &start_pos, true);
 #if 0
   position_print (&start_pos);
   position_print (&end_pos);
@@ -1237,7 +1237,7 @@ handle_automation_event (
 
   ZRegion * region_at_end =
     automation_track_get_region_before_pos (
-      at, &end_pos);
+      at, &end_pos, true);
   if (!region && automation_value_changed)
     {
       /* create region */

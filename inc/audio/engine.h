@@ -670,6 +670,12 @@ typedef struct AudioEngine
    * cycle. */
   gint64            timestamp_end;
 
+  /** Timestamp at start of previous cycle. */
+  gint64            last_timestamp_start;
+
+  /** Timestamp at end of previous cycle. */
+  gint64            last_timestamp_end;
+
   /** When first set, it is equal to the max
    * playback latency of all initial trigger
    * nodes. */

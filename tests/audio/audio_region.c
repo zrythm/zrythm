@@ -66,7 +66,8 @@ test_fill_stereo_ports (void)
       NULL);
 
   transport_move_playhead (
-    TRANSPORT, &pos, F_NO_PANIC, false);
+    TRANSPORT, &pos, F_NO_PANIC, false,
+    F_NO_PUBLISH_EVENTS);
   transport_add_to_playhead (
     TRANSPORT, -20);
   audio_region_fill_stereo_ports (

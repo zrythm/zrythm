@@ -395,23 +395,35 @@ automation_track_get_track (
   AutomationTrack * self);
 
 /**
- * Returns the automation point before the pos.
+ * Returns the automation point before the Position
+ * on the timeline.
+ *
+ * @param ends_after Whether to only check in
+ *   regions that also end after \ref pos (ie,
+ *   the region surrounds \ref pos), otherwise
+ *   check in the region that ends last.
  */
 NONNULL
 AutomationPoint *
 automation_track_get_ap_before_pos (
   const AutomationTrack * self,
-  const Position *        pos);
+  const Position *        pos,
+  bool                    ends_after);
 
 /**
- * Returns the ZRegion that surrounds the
+ * Returns the ZRegion that starts before
  * given Position, if any.
+ *
+ * @param ends_after Whether to only check for
+ *   regions that also end after \ref pos (ie,
+ *   the region surrounds \ref pos), otherwise
+ *   get the region that ends last.
  */
-NONNULL
 ZRegion *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
-  const Position *        pos);
+  const Position *        pos,
+  bool                    ends_after);
 
 /**
  * Unselects all arranger objects.
@@ -449,13 +461,18 @@ automation_track_clear (
  *
  * @param normalized Whether to return the value
  *   normalized.
+ * @param ends_after Whether to only check in
+ *   regions that also end after \ref pos (ie,
+ *   the region surrounds \ref pos), otherwise
+ *   check in the region that ends last.
  */
 NONNULL
 float
 automation_track_get_val_at_pos (
   AutomationTrack * at,
   Position *        pos,
-  bool              normalized);
+  bool              normalized,
+  bool              ends_after);
 
 /**
  * Returns the y pixels from the value based on the

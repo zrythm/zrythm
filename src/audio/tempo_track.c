@@ -108,7 +108,7 @@ tempo_track_get_bpm_at_pos (
       &self->bpm_port->id, false);
   return
     automation_track_get_val_at_pos (
-      at, pos, false);
+      at, pos, false, false);
 }
 
 /**

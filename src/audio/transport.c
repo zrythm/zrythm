@@ -534,7 +534,7 @@ transport_request_pause (
     {
       transport_move_playhead (
         self, &self->cue_pos, F_PANIC,
-        F_NO_SET_CUE_POINT);
+        F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
     }
 }
 
@@ -606,7 +606,8 @@ transport_move_playhead (
   Transport * self,
   Position *  target,
   bool        panic,
-  bool        set_cue_point)
+  bool        set_cue_point,
+  bool        fire_events)
 {
   int i, j, k, l;
   /* send MIDI note off on currently playing timeline
@@ -670,8 +671,16 @@ transport_move_playhead (
       position_set_to_pos (&self->cue_pos, target);
     }
 
-  EVENTS_PUSH (
-    ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+  if (fire_events)
+    {
+      /* FIXME use another flag to decide when
+       * to do this */
+      self->last_manual_playhead_change =
+        g_get_monotonic_time ();
+
+      EVENTS_PUSH (
+        ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+    }
 }
 
 /**
@@ -771,7 +780,8 @@ transport_goto_prev_marker (
         {
           transport_move_playhead (
             self, &markers[i - 1], F_PANIC,
-            F_SET_CUE_POINT);
+            F_SET_CUE_POINT,
+            F_PUBLISH_EVENTS);
           break;
         }
       else if (
@@ -780,7 +790,8 @@ transport_goto_prev_marker (
         {
           transport_move_playhead (
             self, &markers[i],
-            F_PANIC, F_SET_CUE_POINT);
+            F_PANIC, F_SET_CUE_POINT,
+            F_PUBLISH_EVENTS);
           break;
         }
     }
@@ -802,7 +813,7 @@ transport_goto_next_marker (
         {
           transport_move_playhead (
             self, &markers[i], F_PANIC,
-            F_SET_CUE_POINT);
+            F_SET_CUE_POINT, F_PUBLISH_EVENTS);
           break;
         }
     }
@@ -1090,7 +1101,8 @@ transport_move_backward (
       &PROJECT->snap_grid_timeline,
       &self->playhead_pos, true);
   transport_move_playhead (
-    self, pos, F_PANIC, F_SET_CUE_POINT);
+    self, pos, F_PANIC, F_SET_CUE_POINT,
+    F_PUBLISH_EVENTS);
 }
 
 /**
@@ -1105,7 +1117,8 @@ transport_move_forward (
       &PROJECT->snap_grid_timeline,
       &self->playhead_pos, false);
   transport_move_playhead (
-    self, pos, F_PANIC, F_SET_CUE_POINT);
+    self, pos, F_PANIC, F_SET_CUE_POINT,
+    F_PUBLISH_EVENTS);
 }
 
 /**
