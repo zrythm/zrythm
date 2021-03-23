@@ -2282,6 +2282,9 @@ on_drag_begin_handle_hit_object (
 #define SET_ACTION(x) \
   self->action = UI_OVERLAY_ACTION_##x
 
+  g_debug ("action before");
+  arranger_widget_print_action (self);
+
   /* update arranger action */
   switch (obj->type)
     {
@@ -2371,34 +2374,79 @@ on_drag_begin_handle_hit_object (
         }
       break;
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      /* TODO switch tool */
-      if (is_resize_up)
-        SET_ACTION (RESIZING_UP);
-      else
-        SET_ACTION (STARTING_MOVING);
+      switch (P_TOOL)
+        {
+        case TOOL_SELECT_NORMAL:
+        case TOOL_EDIT:
+        case TOOL_SELECT_STRETCH:
+          if (is_resize_up)
+            SET_ACTION (RESIZING_UP);
+          else
+            SET_ACTION (STARTING_MOVING);
+          break;
+        default:
+          break;
+        }
       break;
     case ARRANGER_OBJECT_TYPE_VELOCITY:
-      /* TODO switch tool */
-      if (is_resize_up)
-        SET_ACTION (RESIZING_UP);
-      else
-        SET_ACTION (NONE);
+      switch (P_TOOL)
+        {
+        case TOOL_SELECT_NORMAL:
+        case TOOL_EDIT:
+        case TOOL_SELECT_STRETCH:
+        case TOOL_RAMP:
+          SET_ACTION (STARTING_MOVING);
+          if (is_resize_up)
+            SET_ACTION (RESIZING_UP);
+          else
+            SET_ACTION (NONE);
+          break;
+        default:
+          break;
+        }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
-      /* TODO switch tool */
-      SET_ACTION (STARTING_MOVING);
+      switch (P_TOOL)
+        {
+        case TOOL_SELECT_NORMAL:
+        case TOOL_EDIT:
+        case TOOL_SELECT_STRETCH:
+          SET_ACTION (STARTING_MOVING);
+          break;
+        default:
+          break;
+        }
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
-      /* TODO switch tool */
-      SET_ACTION (STARTING_MOVING);
+      switch (P_TOOL)
+        {
+        case TOOL_SELECT_NORMAL:
+        case TOOL_EDIT:
+        case TOOL_SELECT_STRETCH:
+          SET_ACTION (STARTING_MOVING);
+          break;
+        default:
+          break;
+        }
       break;
     case ARRANGER_OBJECT_TYPE_MARKER:
-      /* TODO switch tool */
-      SET_ACTION (STARTING_MOVING);
+      switch (P_TOOL)
+        {
+        case TOOL_SELECT_NORMAL:
+        case TOOL_EDIT:
+        case TOOL_SELECT_STRETCH:
+          SET_ACTION (STARTING_MOVING);
+          break;
+        default:
+          break;
+        }
       break;
     default:
       g_return_val_if_reached (0);
     }
+
+  g_debug ("action after");
+  arranger_widget_print_action (self);
 
 #undef SET_ACTION
 
@@ -2494,6 +2542,7 @@ drag_begin (
     on_drag_begin_handle_hit_object (
       self, start_x, start_y);
   g_message ("objects hit %d", objects_hit);
+  arranger_widget_print_action (self);
 
   if (objects_hit)
     {
@@ -3988,6 +4037,7 @@ on_drag_end_timeline (
       {
         ArrangerObject * obj =
           (ArrangerObject *) self->start_object;
+        g_return_if_fail (obj && obj->transient);
         double ticks_diff =
           obj->pos.ticks -
           obj->transient->pos.ticks;
