@@ -1955,6 +1955,8 @@ channel_update_track_pos (
     {
       Track * out_track =
         channel_get_output_track (self);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (out_track));
       for (int i = 0; i < out_track->num_children;
            i++)
         {
