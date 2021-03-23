@@ -278,7 +278,9 @@ draw_other_region (
   cairo_t *      cr,
   ZRegion *      region)
 {
-  g_message ("drawing other region %s", region->name);
+  /*g_debug (
+   * "drawing other region %s", region->name);*/
+
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));

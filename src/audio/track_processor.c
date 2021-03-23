@@ -772,6 +772,7 @@ track_processor_process (
         }
       midi_events_dequeue (
         pr->midi_events);
+#if 0
       if (pr->midi_events->num_events > 0)
         {
           g_message (
@@ -779,6 +780,7 @@ track_processor_process (
             tr->name,
             pr->midi_events->num_events);
         }
+#endif
 
       /* append midi events from modwheel and
        * pitchbend to MIDI out */
