@@ -3485,6 +3485,7 @@ lv2_plugin_populate_banks (
     {
       const LilvNode* preset =
         lilv_nodes_get (presets, i);
+      lilv_world_load_resource (LILV_WORLD, preset);
 
       LilvNodes * banks =
         lilv_world_find_nodes (
@@ -3542,6 +3543,8 @@ lv2_plugin_populate_banks (
             "no rdfs:label\n",
             lilv_node_as_string (preset));
         }
+      lilv_world_unload_resource (
+        LILV_WORLD, preset);
     }
   lilv_nodes_free (presets);
 
