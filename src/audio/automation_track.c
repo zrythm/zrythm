@@ -43,6 +43,18 @@
 
 #include <glib/gi18n.h>
 
+static AutomationTrack *
+_at_create (void)
+{
+  AutomationTrack * self =
+    object_new (AutomationTrack);
+
+  self->schema_version =
+    AUTOMATION_TRACK_SCHEMA_VERSION;
+
+  return self;
+}
+
 void
 automation_track_init_loaded (
   AutomationTrack * self)
@@ -64,11 +76,8 @@ AutomationTrack *
 automation_track_new (
   Port * port)
 {
-  AutomationTrack * self =
-    object_new (AutomationTrack);
+  AutomationTrack * self = _at_create ();
 
-  self->schema_version =
-    AUTOMATION_TRACK_SCHEMA_VERSION;
   self->regions_size = 1;
   self->regions =
     object_new_n (
@@ -826,8 +835,7 @@ AutomationTrack *
 automation_track_clone (
   AutomationTrack * src)
 {
-  AutomationTrack * dest =
-    object_new (AutomationTrack);
+  AutomationTrack * dest = _at_create ();
 
   dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
