@@ -295,7 +295,7 @@ lv2_ui_send_event_from_plugin_to_ui (
   else
     {
       PluginDescriptor * descr =
-        ((Plugin *)plugin)->setting->descr;
+        plugin->plugin->setting->descr;
       g_warning (
         "Buffer overflow when sending plugin %s "
         "(%s) event to its UI",
