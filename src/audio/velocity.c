@@ -38,6 +38,7 @@ velocity_new (
 {
   Velocity * self = object_new (Velocity);
 
+  self->schema_version = VELOCITY_SCHEMA_VERSION;
   ArrangerObject * obj =
     (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_VELOCITY;

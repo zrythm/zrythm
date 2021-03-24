@@ -42,6 +42,8 @@ typedef struct _VelocityWidget VelocityWidget;
  * @{
  */
 
+#define VELOCITY_SCHEMA_VERSION 1
+
 #define velocity_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
@@ -59,36 +61,36 @@ typedef struct Velocity
   /** Base struct. */
   ArrangerObject  base;
 
+  int             schema_version;
+
   /** Velocity value (0-127). */
-  uint8_t          vel;
+  uint8_t         vel;
 
   /** Velocity at drag begin - used for ramp
    * actions only. */
-  uint8_t          vel_at_start;
+  uint8_t         vel_at_start;
 
   /** Pointer back to the MIDI note. */
-  MidiNote *       midi_note;
+  MidiNote *      midi_note;
 } Velocity;
 
 static const cyaml_schema_field_t
 velocity_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Velocity, base,
     arranger_object_fields_schema),
-  CYAML_FIELD_UINT (
-    "vel", CYAML_FLAG_DEFAULT,
-    Velocity, vel),
-
+  YAML_FIELD_INT (Velocity, schema_version),
+  YAML_FIELD_UINT (Velocity, vel),
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-velocity_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    Velocity, velocity_fields_schema),
+  velocity_schema =
+{
+  YAML_VALUE_PTR (
+    Velocity,
+    velocity_fields_schema),
 };
 
 /**

@@ -3543,8 +3543,10 @@ lv2_plugin_populate_banks (
             "no rdfs:label\n",
             lilv_node_as_string (preset));
         }
-      lilv_world_unload_resource (
-        LILV_WORLD, preset);
+      /* some plugins (Helm LV2) get stuck in an
+       * infinite loop when calling this */
+      /*lilv_world_unload_resource (*/
+        /*LILV_WORLD, preset);*/
     }
   lilv_nodes_free (presets);
 

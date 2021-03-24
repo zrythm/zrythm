@@ -49,6 +49,8 @@ _at_create (void)
   AutomationTrack * self =
     object_new (AutomationTrack);
 
+  port_identifier_init (&self->port_id);
+
   self->schema_version =
     AUTOMATION_TRACK_SCHEMA_VERSION;
 

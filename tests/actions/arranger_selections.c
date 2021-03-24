@@ -2087,6 +2087,10 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  /*yaml_set_log_level (CYAML_LOG_INFO);*/
+  g_test_add_func (
+    TEST_PREFIX "test split",
+    (GTestFunc) test_split);
   g_test_add_func (
     TEST_PREFIX "test pin unpin",
     (GTestFunc) test_pin_unpin);
@@ -2126,9 +2130,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test mute",
     (GTestFunc) test_mute);
-  g_test_add_func (
-    TEST_PREFIX "test split",
-    (GTestFunc) test_split);
   g_test_add_func (
     TEST_PREFIX "test quantize",
     (GTestFunc) test_quantize);

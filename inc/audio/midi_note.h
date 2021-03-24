@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,6 +46,8 @@ typedef struct Velocity Velocity;
  * @{
  */
 
+#define MIDI_NOTE_SCHEMA_VERSION 1
+
 #define MIDI_NOTE_MAGIC 3588791
 #define IS_MIDI_NOTE(tr) \
   ((MidiNote *) tr && \
@@ -63,6 +65,8 @@ typedef struct MidiNote
 {
   /** Base struct. */
   ArrangerObject  base;
+
+  int             schema_version;
 
   /** Velocity. */
   Velocity *      vel;
@@ -94,31 +98,25 @@ typedef struct MidiNote
 } MidiNote;
 
 static const cyaml_schema_field_t
-  midi_note_fields_schema[] =
+midi_note_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     MidiNote, base,
     arranger_object_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "vel", CYAML_FLAG_POINTER,
+  YAML_FIELD_INT (MidiNote, schema_version),
+  YAML_FIELD_MAPPING_PTR (
     MidiNote, vel, velocity_fields_schema),
-  CYAML_FIELD_UINT (
-    "val", CYAML_FLAG_DEFAULT,
-    MidiNote, val),
-  CYAML_FIELD_INT (
-    "muted", CYAML_FLAG_DEFAULT,
-    MidiNote, muted),
-  CYAML_FIELD_INT (
-    "pos", CYAML_FLAG_DEFAULT,
-    MidiNote, pos),
-
+  YAML_FIELD_UINT (MidiNote, val),
+  YAML_FIELD_INT (MidiNote, muted),
+  YAML_FIELD_INT (MidiNote, pos),
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   midi_note_schema =
 {
+  /* allow nullable for mn_r1 in
+   * ArrangerSelectionsAction */
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER_NULL_STR,
     MidiNote, midi_note_fields_schema),
