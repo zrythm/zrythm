@@ -49,16 +49,6 @@ Install the software and send feedback to the
 community about your experience. You can help the
 project by reporting issues.
 
-## Generating Crash Reports
-To get more information about a crash that will help
-us find the issue and fix it, run Zrythm as follows
-
-    zrythm_launch --gdb
-
-When the program exits, it will create a crash report
-inside the `gdb` directory under your Zrythm user
-path. Please send this file to us.
-
 # Translation
 You can help translate the software, the website
 and the manual into your language. Visit

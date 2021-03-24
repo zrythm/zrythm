@@ -100,7 +100,7 @@ published by the Fedora Project at
 <https://getfedora.org/>, OR
 - the FreeBSD operating system, as published by The
 FreeBSD Project at <https://www.freebsd.org/>, OR
-- porting the software to the Arch Linux operating
+- the Arch Linux operating
 system, as published by Levente Polyak and others at
 <https://archlinux.org/>,
 

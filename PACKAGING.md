@@ -95,13 +95,6 @@ the `program_name` and `custom_logo_and_splash` meson
 options, after replacing all files inside
 `data/icon-themes/zrythm-dark/scalable/apps`.
 
-# Issues
-Any issues should be reported to
-[our issue trackers](https://todo.sr.ht/~alextee/).
-If you have patches, please attach them to a new
-issue. You can also use git-send-email to email
-patches to the trackers.
-
 ----
 
 Copyright (C) 2019-2021 Alexandros Theodotou
