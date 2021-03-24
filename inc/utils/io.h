@@ -152,6 +152,18 @@ io_get_files_in_dir_ending_in (
   bool         allow_empty);
 
 /**
+ * @note This will not work if \ref destdir_str has
+ *   a file with the same filename as a directory
+ *   in \ref srcdir_str.
+ */
+void
+io_copy_dir (
+  const char * destdir_str,
+  const char * srcdir_str,
+  bool         follow_symlinks,
+  bool         recursive);
+
+/**
  * Returns a newly allocated path that is either
  * a copy of the original path if the path does
  * not exist, or the original path appended with

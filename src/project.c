@@ -1060,8 +1060,35 @@ load (
     }
   g_message ("Project successfully deserialized.");
 
+  /* if template, also copy the pool and plugin
+   * states */
   if (is_template)
     {
+      char * prev_pool_dir =
+        g_build_filename (
+          dir, PROJECT_POOL_DIR, NULL);
+      char * new_pool_dir =
+        g_build_filename (
+          ZRYTHM->create_project_path,
+          PROJECT_POOL_DIR, NULL);
+      char * prev_plugins_dir =
+        g_build_filename (
+          dir, PROJECT_PLUGINS_DIR, NULL);
+      char * new_plugins_dir =
+        g_build_filename (
+          ZRYTHM->create_project_path,
+          PROJECT_PLUGINS_DIR, NULL);
+      io_copy_dir (
+        new_pool_dir, prev_pool_dir,
+        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
+      io_copy_dir (
+        new_plugins_dir, prev_plugins_dir,
+        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
+      g_free (prev_pool_dir);
+      g_free (new_pool_dir);
+      g_free (prev_plugins_dir);
+      g_free (new_plugins_dir);
+
       g_free (dir);
       dir =
         g_strdup (ZRYTHM->create_project_path);
@@ -1234,8 +1261,8 @@ load (
  */
 int
 project_load (
-  char *    filename,
-  const int is_template)
+  char *     filename,
+  const bool is_template)
 {
   g_message (
     "%s: filename: %s, is template: %d",

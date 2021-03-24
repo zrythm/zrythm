@@ -359,6 +359,97 @@ append_files_from_dir_ending_in (
   (*files)[*num_files] = NULL;
 }
 
+void
+io_copy_dir (
+  const char * destdir_str,
+  const char * srcdir_str,
+  bool         follow_symlinks,
+  bool         recursive)
+{
+  GDir * srcdir;
+  GError *error = NULL;
+  const gchar *filename;
+
+   srcdir = g_dir_open (srcdir_str, 0, &error);
+  if (error)
+    {
+      if (ZRYTHM_TESTING)
+        {
+          /* this is needed because
+           * g_test_expect_message() doesn't work
+           * with below */
+          g_warn_if_reached ();
+        }
+      else
+        {
+          g_warning (
+            "Failed opening directory %s: %s",
+            srcdir_str, error->message);
+        }
+      return;
+    }
+
+  io_mkdir (destdir_str);
+
+  while ((filename = g_dir_read_name (srcdir)))
+    {
+      char * src_full_path =
+        g_build_filename (
+          srcdir_str, filename, NULL);
+      char * dest_full_path =
+        g_build_filename (
+          destdir_str, filename, NULL);
+
+      bool is_dir =
+        g_file_test (
+          src_full_path, G_FILE_TEST_IS_DIR);
+
+      /* recurse if necessary */
+      if (recursive && is_dir)
+        {
+          io_copy_dir (
+            dest_full_path, src_full_path,
+            follow_symlinks, recursive);
+        }
+      /* otherwise if not dir, copy file */
+      else if (!is_dir)
+        {
+          GFile * src_file =
+            g_file_new_for_path (src_full_path);
+          GFile * dest_file =
+            g_file_new_for_path (dest_full_path);
+          g_return_if_fail (src_file && dest_file);
+          error = NULL;
+          GFileCopyFlags flags =
+            G_FILE_COPY_OVERWRITE;
+          if (!follow_symlinks)
+            {
+              flags |=
+                G_FILE_COPY_NOFOLLOW_SYMLINKS;
+            }
+          bool ret =
+            g_file_copy (
+              src_file, dest_file, flags,
+              NULL, NULL, NULL, &error);
+          if (!ret)
+            {
+              g_warning (
+                "Failed copying file %s to %s: %s",
+                src_full_path, dest_full_path,
+                error->message);
+              return;
+            }
+
+          g_object_unref (src_file);
+          g_object_unref (dest_file);
+        }
+
+      g_free (src_full_path);
+      g_free (dest_full_path);
+    }
+  g_dir_close (srcdir);
+}
+
 /**
  * Returns a list of the files in the given
  * directory.

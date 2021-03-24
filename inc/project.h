@@ -411,8 +411,8 @@ project_create_default (
 COLD
 int
 project_load (
-  char *    filename,
-  const int is_template);
+  char *     filename,
+  const bool is_template);
 
 /**
  * Saves the project to a project file in the

@@ -168,7 +168,7 @@ _test_helper_zrythm_init (
   ZRYTHM->create_project_path =
     g_dir_make_tmp (
       "zrythm_test_project_XXXXXX", NULL);
-  project_load (NULL, 0);
+  project_load (NULL, false);
 
   /* set a segv handler */
   signal (SIGSEGV, segv_handler);
@@ -192,7 +192,7 @@ test_helper_zrythm_init_optimized ()
 
 /**
  * To be called by every test's main at the end to
- * clean up (TODO).
+ * clean up.
  */
 void
 test_helper_zrythm_cleanup ()

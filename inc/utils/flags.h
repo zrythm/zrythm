@@ -259,4 +259,7 @@
 #define F_FORCE 1
 #define F_NO_FORCE 0
 
+#define F_FOLLOW_SYMLINKS 1
+#define F_NO_FOLLOW_SYMLINKS 0
+
 #endif

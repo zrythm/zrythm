@@ -25,6 +25,7 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "helpers/plugin_manager.h"
 #include "helpers/project.h"
 #include "helpers/zrythm.h"
 
@@ -34,6 +35,8 @@
 static void
 test_empty_save_load ()
 {
+  test_helper_zrythm_init ();
+
   int ret;
   g_assert_nonnull (PROJECT);
 
@@ -45,11 +48,15 @@ test_empty_save_load ()
     project_save (
       PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_save_load_with_data ()
 {
+  test_helper_zrythm_init ();
+
   int ret;
   g_assert_nonnull (PROJECT);
 
@@ -96,6 +103,43 @@ test_save_load_with_data ()
   /* verify that the data is correct */
   test_project_check_vs_original_state (
     &p1, &p2, 0);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_new_from_template ()
+{
+  test_helper_zrythm_init ();
+
+  /* add plugins */
+#ifdef HAVE_HELM
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+#ifdef HAVE_CARLA
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, true, 1);
+#endif
+#endif
+
+  test_project_save_and_reload ();
+
+  /* create a new project using old one as
+   * template */
+  char * orig_dir = g_strdup (PROJECT->dir);
+  g_assert_nonnull (orig_dir);
+  char * filepath =
+    g_build_filename (
+      orig_dir, "project.zpj", NULL);
+  g_free_and_null (ZRYTHM->create_project_path);
+  ZRYTHM->create_project_path =
+    g_dir_make_tmp (
+      "zrythm_test_project_XXXXXX", NULL);
+  project_load (filepath, true);
+
+  io_rmdir (orig_dir, true);
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
@@ -103,14 +147,14 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
 #define TEST_PREFIX "/project/"
 
   g_test_add_func (
+    TEST_PREFIX "test new from template",
+    (GTestFunc) test_new_from_template);
+  g_test_add_func (
     TEST_PREFIX "test empty save load",
     (GTestFunc) test_empty_save_load);
-
   g_test_add_func (
     TEST_PREFIX "test save load with data",
     (GTestFunc) test_save_load_with_data);
