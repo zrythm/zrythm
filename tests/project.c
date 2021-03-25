@@ -142,6 +142,41 @@ test_new_from_template ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_save_as_load_w_pool ()
+{
+  test_helper_zrythm_init ();
+
+  Position p1, p2;
+  test_project_rebootstrap_timeline (&p1, &p2);
+
+  /* save the project elsewhere */
+  char * orig_dir = g_strdup (PROJECT->dir);
+  g_assert_nonnull (orig_dir);
+  char * new_dir =
+    g_dir_make_tmp (
+      "zrythm_test_project_XXXXXX", NULL);
+  int ret =
+    project_save (
+      PROJECT, new_dir, false, false, F_NO_ASYNC);
+  g_assert_cmpint (ret, ==, 0);
+
+  /* free the project */
+  object_free_w_func_and_null (
+    project_free, PROJECT);
+
+  /* load the new one */
+  char * filepath =
+    g_build_filename (
+      new_dir, "project.zpj", NULL);
+  ret = project_load (filepath, 0);
+  g_assert_cmpint (ret, ==, 0);
+
+  io_rmdir (orig_dir, true);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -149,6 +184,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/project/"
 
+  g_test_add_func (
+    TEST_PREFIX "test save as load w pool",
+    (GTestFunc) test_save_as_load_w_pool);
   g_test_add_func (
     TEST_PREFIX "test new from template",
     (GTestFunc) test_new_from_template);

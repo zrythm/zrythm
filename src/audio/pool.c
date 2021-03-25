@@ -310,6 +310,22 @@ audio_pool_reload_clip_frame_bufs (
     }
 }
 
+/**
+ * Writes all the clips to disk.
+ *
+ * Used when saving a project elsewhere.
+ */
+void
+audio_pool_write_to_disk (
+  AudioPool * self)
+{
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      AudioClip * clip = self->clips[i];
+      audio_clip_write_to_pool (clip, false);
+    }
+}
+
 void
 audio_pool_free (
   AudioPool * self)

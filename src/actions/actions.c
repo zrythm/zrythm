@@ -819,7 +819,8 @@ activate_save_as (GSimpleAction *action,
       filename =
         gtk_file_chooser_get_filename (chooser);
       project_save (
-        PROJECT, filename, 0, 1, F_NO_ASYNC);
+        PROJECT, filename, false, false,
+        F_NO_ASYNC);
       g_free (filename);
     }
 

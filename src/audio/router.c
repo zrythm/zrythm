@@ -120,7 +120,7 @@ router_start_cycle (
   self->local_offset = local_offset;
 
   /* process BPM port first */
-  GraphNode * bpm_node;
+  GraphNode * bpm_node = NULL;
   for (int i = 0;
        i < self->graph->n_graph_nodes; i++)
     {

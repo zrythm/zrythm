@@ -78,8 +78,8 @@ undoable_action_type_strings[] =
   { "MIDI mapping", UA_MIDI_MAPPING },
   { "Port connection", UA_PORT_CONNECTION },
   { "Port", UA_PORT },
-  { "Transport", UA_TRANSPORT },
   { "Range", UA_RANGE },
+  { "Transport", UA_TRANSPORT },
 };
 
 typedef struct UndoableAction
@@ -97,11 +97,9 @@ typedef struct UndoableAction
 static const cyaml_schema_field_t
   undoable_action_fields_schema[] =
 {
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
     UndoableAction, type,
-    undoable_action_type_strings,
-    CYAML_ARRAY_LEN (undoable_action_type_strings)),
+    undoable_action_type_strings),
   YAML_FIELD_INT (
     UndoableAction, stack_idx),
 

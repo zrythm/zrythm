@@ -1773,6 +1773,9 @@ project_save (
         }
     }
 
+  /* write the pool */
+  audio_pool_write_to_disk (AUDIO_POOL);
+
   /* save UI positions */
   if (ZRYTHM_HAVE_UI)
     {
