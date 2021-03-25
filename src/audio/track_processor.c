@@ -299,6 +299,25 @@ track_processor_new (
       break;
     }
 
+  if (tr->type == TRACK_TYPE_AUDIO)
+    {
+      self->output_gain =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT,
+          "TP Output Gain");
+      self->output_gain->minf = 0.f;
+      self->output_gain->maxf = 4.f;
+      self->output_gain->zerof = 0.f;
+      self->output_gain->deff = 1.f;
+      self->output_gain->id.flags2 |=
+        PORT_FLAG2_TP_OUTPUT_GAIN;
+      port_set_control_value (
+        self->output_gain, 1.f, F_NOT_NORMALIZED,
+        F_NO_PUBLISH_EVENTS);
+      port_set_owner_track_processor (
+        self->output_gain, self);
+    }
+
   return self;
 }
 
@@ -336,6 +355,10 @@ track_processor_append_ports (
   if (self->input_gain)
     {
       _ADD (self->input_gain);
+    }
+  if (self->output_gain)
+    {
+      _ADD (self->output_gain);
     }
   if (self->stereo_out)
     {
@@ -450,6 +473,7 @@ track_processor_disconnect_all (
     case TYPE_AUDIO:
       port_disconnect_all (self->mono);
       port_disconnect_all (self->input_gain);
+      port_disconnect_all (self->output_gain);
       port_disconnect_all (self->stereo_in->l);
       port_disconnect_all (self->stereo_in->r);
       port_disconnect_all (self->stereo_out->l);
@@ -975,6 +999,19 @@ track_processor_process (
         self, g_start_frames, local_offset,
         nframes);
     }
+
+  /* apply output gain */
+  if (tr->type == TRACK_TYPE_AUDIO)
+    {
+      for (nframes_t l = local_offset;
+           l < nframes; l++)
+        {
+          self->stereo_out->l->buf[l] *=
+            self->output_gain->control;
+          self->stereo_out->r->buf[l] *=
+            self->output_gain->control;
+        }
+    }
 }
 
 /**
@@ -1262,6 +1299,12 @@ track_processor_free (
       port_disconnect_all (self->input_gain);
       object_free_w_func_and_null (
         port_free, self->input_gain);
+    }
+  if (IS_PORT_AND_NONNULL (self->output_gain))
+    {
+      port_disconnect_all (self->output_gain);
+      object_free_w_func_and_null (
+        port_free, self->output_gain);
     }
   if (self->stereo_in)
     {

@@ -270,7 +270,7 @@ if get_option ('tests')
     timeout = 180
     if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
       is_parallel = false
-      timeout = 360
+      timeout = 420
     endif
 
     if fs.is_file (source)

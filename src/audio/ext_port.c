@@ -976,7 +976,7 @@ ext_ports_free (
 {
   for (int i = 0; i < size; i++)
     {
-      g_return_if_fail (!ext_ports[i]);
+      g_warn_if_fail (!ext_ports[i]);
       object_free_w_func_and_null (
         ext_port_free, ext_ports[i]);
     }

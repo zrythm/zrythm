@@ -1293,6 +1293,11 @@ track_generate_automation_tracks (
           automation_tracklist_add_at (atl, at);
         }
       break;
+    case TRACK_TYPE_AUDIO:
+      at =
+        automation_track_new (
+          track->processor->output_gain);
+      break;
     default:
       break;
     }

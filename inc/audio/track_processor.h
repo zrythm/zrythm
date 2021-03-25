@@ -67,6 +67,14 @@ typedef struct TrackProcessor
   Port *           input_gain;
 
   /**
+   * Output gain, if audio.
+   *
+   * This is applied after regions are processed to
+   * TrackProcessor.streo_out.
+   */
+  Port *           output_gain;
+
+  /**
    * L & R audio output ports, if audio.
    */
   StereoPorts *    stereo_out;
@@ -158,6 +166,9 @@ track_processor_fields_schema[] =
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, input_gain,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TrackProcessor, output_gain,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, midi_in,

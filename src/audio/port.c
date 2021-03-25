@@ -423,6 +423,11 @@ port_find_from_identifier (
             {
               return tr->processor->input_gain;
             }
+          else if (flags2 &
+                     PORT_FLAG2_TP_OUTPUT_GAIN)
+            {
+              return tr->processor->output_gain;
+            }
           else if (flags &
                      PORT_FLAG_MIDI_AUTOMATABLE)
             {
