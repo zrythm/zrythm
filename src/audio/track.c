@@ -1235,11 +1235,30 @@ track_generate_automation_tracks (
   if (track_has_piano_roll (track))
     {
       /* midi automatables */
-      for (int i = 0;
-           i < NUM_MIDI_AUTOMATABLES * 16; i++)
+      for (int i = 0; i < 16; i++)
         {
-          Port * cc =
-            track->processor->midi_automatables[i];
+          Port * cc = NULL;
+          for (int j = 0; j < 128; j++)
+            {
+              cc =
+                track->processor->midi_cc[
+                  i * 128 + j];
+              at = automation_track_new (cc);
+              automation_tracklist_add_at (atl, at);
+            }
+
+          cc =
+            track->processor->pitch_bend[i];
+          at = automation_track_new (cc);
+          automation_tracklist_add_at (atl, at);
+
+          cc =
+            track->processor->poly_key_pressure[i];
+          at = automation_track_new (cc);
+          automation_tracklist_add_at (atl, at);
+
+          cc =
+            track->processor->channel_pressure[i];
           at = automation_track_new (cc);
           automation_tracklist_add_at (atl, at);
         }

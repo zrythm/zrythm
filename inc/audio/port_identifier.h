@@ -311,6 +311,18 @@ typedef enum PortFlags2
 
   /** Atom or event port supports MIDI. */
   PORT_FLAG2_SUPPORTS_MIDI = 1 << 10,
+
+  /** Track processor output gain. */
+  PORT_FLAG2_TP_OUTPUT_GAIN = 1 << 11,
+
+  /** MIDI pitch bend. */
+  PORT_FLAG2_MIDI_PITCH_BEND = 1 << 12,
+
+  /** MIDI poly key pressure. */
+  PORT_FLAG2_MIDI_POLY_KEY_PRESSURE = 1 << 13,
+
+  /** MIDI channel pressure. */
+  PORT_FLAG2_MIDI_CHANNEL_PRESSURE = 1 << 14,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -364,6 +376,10 @@ port_flags2_bitvals[] =
   { .name = "uri_param", .offset = 8, .bits = 1 },
   { .name = "sequence", .offset = 9, .bits = 1 },
   { .name = "supports_midi", .offset = 10, .bits = 1 },
+  { .name = "output_gain", .offset = 11, .bits = 1 },
+  { .name = "pitch_bend", .offset = 12, .bits = 1 },
+  { .name = "poly_key_pressure", .offset = 13, .bits = 1 },
+  { .name = "channel_pressure", .offset = 14, .bits = 1 },
 };
 
 /**

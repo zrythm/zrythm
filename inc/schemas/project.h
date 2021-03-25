@@ -50,9 +50,6 @@ typedef struct Project_v1
   int                  schema_version;
   char *               title;
   char *               datetime_str;
-  char *               dir;
-  char *               backup_dir;
-  void *               undo_manager;
   Tracklist_v1 *       tracklist;
   ClipEditor_v1 *      clip_editor;
   Timeline_v1 *        timeline;
@@ -67,17 +64,11 @@ typedef struct Project_v1
   MidiArrangerSelections_v1 midi_arranger_selections;
   TracklistSelections_v1 * tracklist_selections;
   MixerSelections_v1   mixer_selections;
-  double               timeline_zoom;
-  double               piano_roll_zoom;
   RegionLinkGroupManager_v1 region_link_group_manager;
   AudioEngine_v1 *     audio_engine;
   MidiMappings_v1 *    midi_mappings;
-  YamlDummyEnum        tool;
-  bool                 loading_from_backup;
-  bool                 loaded;
   SelectionType_v1     last_selection;
   char *               version;
-  gint64               last_autosave_time;
 } Project_v1;
 
 static const cyaml_schema_field_t
@@ -97,57 +88,57 @@ static const cyaml_schema_field_t
     Project_v1, tracklist, tracklist_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (
     Project_v1, clip_editor,
-    clip_editor_fields_schema),
+    clip_editor_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (
     Project_v1, timeline,
-    timeline_fields_schema),
+    timeline_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, snap_grid_timeline,
-    snap_grid_fields_schema),
+    snap_grid_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, quantize_opts_timeline,
-    quantize_options_fields_schema),
+    quantize_options_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (
-    Project_v1, audio_engine, engine_fields_schema),
+    Project_v1, audio_engine, engine_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, snap_grid_midi,
-    snap_grid_fields_schema),
+    snap_grid_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, quantize_opts_editor,
-    quantize_options_fields_schema),
+    quantize_options_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, mixer_selections,
-    mixer_selections_fields_schema),
+    mixer_selections_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, timeline_selections,
-    timeline_selections_fields_schema),
+    timeline_selections_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, midi_arranger_selections,
-    midi_arranger_selections_fields_schema),
+    midi_arranger_selections_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, chord_selections,
-    chord_selections_fields_schema),
+    chord_selections_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, automation_selections,
-    automation_selections_fields_schema),
+    automation_selections_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, audio_selections,
-    audio_selections_fields_schema),
+    audio_selections_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (
     Project_v1, tracklist_selections,
-    tracklist_selections_fields_schema),
+    tracklist_selections_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project_v1, region_link_group_manager,
-    region_link_group_manager_fields_schema),
+    region_link_group_manager_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (
     Project_v1, midi_mappings,
-    midi_mappings_fields_schema),
+    midi_mappings_fields_schema_v1),
   /* ignore undo history */
   CYAML_FIELD_IGNORE (
     "undo_manger", CYAML_FLAG_OPTIONAL),
   YAML_FIELD_ENUM (
     Project_v1, last_selection,
-    selection_type_strings),
+    selection_type_strings_v1),
 
   CYAML_FIELD_END
 };

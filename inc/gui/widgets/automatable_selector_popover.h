@@ -50,7 +50,22 @@ typedef struct _AutomatableSelectorButtonWidget
 typedef enum AutomatableSelectorType
 {
   /** Midi automatable (modwheel etc.). */
-  AS_TYPE_MIDI,
+  AS_TYPE_MIDI_CH1,
+  AS_TYPE_MIDI_CH2,
+  AS_TYPE_MIDI_CH3,
+  AS_TYPE_MIDI_CH4,
+  AS_TYPE_MIDI_CH5,
+  AS_TYPE_MIDI_CH6,
+  AS_TYPE_MIDI_CH7,
+  AS_TYPE_MIDI_CH8,
+  AS_TYPE_MIDI_CH9,
+  AS_TYPE_MIDI_CH10,
+  AS_TYPE_MIDI_CH11,
+  AS_TYPE_MIDI_CH12,
+  AS_TYPE_MIDI_CH13,
+  AS_TYPE_MIDI_CH14,
+  AS_TYPE_MIDI_CH15,
+  AS_TYPE_MIDI_CH16,
 
   /** Channel. */
   AS_TYPE_CHANNEL,

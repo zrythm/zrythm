@@ -113,48 +113,65 @@ init_midi_cc_ports (
   TrackProcessor * self,
   int              loading)
 {
-  for (int i = 0; i < NUM_MIDI_AUTOMATABLES * 16;
-       i++)
-    {
-      char name[400];
-      TrackProcessorMidiAutomatable type =
-        i % NUM_MIDI_AUTOMATABLES;
-      /* starting from 1 */
-      int channel = i / NUM_MIDI_AUTOMATABLES + 1;
-      Port * cc = NULL;
-      switch (type)
-        {
-        case MIDI_AUTOMATABLE_MOD_WHEEL:
-          sprintf (
-            name, "Ch%d Mod wheel",
-            channel);
-          cc =
-            port_new_with_type (
-              TYPE_CONTROL, FLOW_INPUT, name);
-          break;
-        case MIDI_AUTOMATABLE_PITCH_BEND:
-          sprintf (
-            name, "Ch%d Pitch bend",
-            channel);
-          cc =
-            port_new_with_type (
-              TYPE_CONTROL, FLOW_INPUT, name);
-          cc->maxf = 8191.f;
-          cc->minf = -8192.f;
-          cc->deff = 0.f;
-          cc->zerof = 0.f;
-          break;
-        default:
-          break;
-        }
-      cc->id.flags |= PORT_FLAG_MIDI_AUTOMATABLE;
-      cc->id.flags |= PORT_FLAG_AUTOMATABLE;
-      cc->id.port_index = i;
+#define INIT_MIDI_PORT(x,idx) \
+  x->id.flags |= PORT_FLAG_MIDI_AUTOMATABLE; \
+  x->id.flags |= PORT_FLAG_AUTOMATABLE; \
+  x->id.port_index = idx; \
+  port_set_owner_track_processor (x, self)
 
-      port_set_owner_track_processor (
-        cc, self);
-      self->midi_automatables[i] = cc;
+  char name[400];
+  for (int i = 0; i < 16; i++)
+    {
+      /* starting from 1 */
+      int channel = i + 1;
+
+      for (int j = 0; j < 128; j++)
+        {
+          sprintf (
+            name, "Ch%d %s", channel,
+            midi_get_cc_name (j));
+          Port * cc =
+            port_new_with_type (
+              TYPE_CONTROL, FLOW_INPUT, name);
+          INIT_MIDI_PORT (cc, i * 128 + j);
+          self->midi_cc[i * 128 + j] = cc;
+        }
+
+      sprintf (
+        name, "Ch%d Pitch bend", i + 1);
+      Port * cc =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT, name);
+      INIT_MIDI_PORT (cc, i);
+      cc->maxf = 8191.f;
+      cc->minf = -8192.f;
+      cc->deff = 0.f;
+      cc->zerof = 0.f;
+      cc->id.flags2 |= PORT_FLAG2_MIDI_PITCH_BEND;
+      self->pitch_bend[i] = cc;
+
+      sprintf (
+        name, "Ch%d Poly key pressure", i + 1);
+      cc =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT, name);
+      INIT_MIDI_PORT (cc, i);
+      cc->id.flags2 |=
+        PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
+      self->poly_key_pressure[i] = cc;
+
+      sprintf (
+        name, "Ch%d Channel pressure", i + 1);
+      cc =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT, name);
+      INIT_MIDI_PORT (cc, i);
+      cc->id.flags2 |=
+        PORT_FLAG2_MIDI_CHANNEL_PRESSURE;
+      self->channel_pressure[i] = cc;
     }
+
+#undef INIT_MIDI_PORT
 }
 
 /**
@@ -337,12 +354,26 @@ track_processor_append_ports (
     {
       _ADD (self->piano_roll);
     }
-  for (int i = 0; i < NUM_MIDI_AUTOMATABLES * 16;
-       i++)
+  for (int i = 0; i < 16; i++)
     {
-      if (self->midi_automatables[i])
+      for (int j = 0; j < 128; j++)
         {
-          _ADD (self->midi_automatables[i]);
+          if (self->midi_cc[i * 128 + j])
+            {
+              _ADD (self->midi_cc[i * 128 + j]);
+            }
+        }
+      if (self->pitch_bend[i])
+        {
+          _ADD (self->pitch_bend[i]);
+        }
+      if (self->poly_key_pressure[i])
+        {
+          _ADD (self->poly_key_pressure[i]);
+        }
+      if (self->channel_pressure[i])
+        {
+          _ADD (self->channel_pressure[i]);
         }
     }
 }
@@ -709,6 +740,68 @@ handle_recording (
     }
 }
 
+static inline void
+add_events_from_midi_controls (
+  TrackProcessor * self,
+  const nframes_t  local_offset)
+{
+  return;
+  for (int i = 0; i < 16; i++)
+    {
+      /* starting from 1 */
+      int channel = i + 1;
+      Port * cc = NULL;
+      int offset = i * 128;
+      for (int j = 0; j < 128; j++)
+        {
+          cc = self->midi_cc[offset + j];
+          if (math_floats_equal (
+                cc->last_sent_control,
+                cc->control))
+            continue;
+
+          midi_events_add_control_change (
+            self->midi_out->midi_events,
+            channel, (midi_byte_t) j,
+            math_round_float_to_type (
+              cc->control * 127.f, midi_byte_t),
+            local_offset, false);
+          cc->last_sent_control = cc->control;
+        }
+
+      cc = self->pitch_bend[i];
+      if (!math_floats_equal (
+            cc->last_sent_control, cc->control))
+        {
+          midi_events_add_pitchbend (
+            self->midi_out->midi_events,
+            channel,
+            math_round_float_to_int (cc->control),
+            local_offset, false);
+          cc->last_sent_control = cc->control;
+        }
+
+      /* TODO */
+#if 0
+      cc = self->poly_key_pressure[i];
+      midi_events_add_pitchbend (
+        self->midi_out->midi_events,
+        channel,
+        math_round_float_to_int (cc->control),
+        local_offset, false);
+      cc->last_sent_control = cc->control;
+
+      cc = self->channel_pressure[i];
+      midi_events_add_pitchbend (
+        self->midi_out->midi_events,
+        channel,
+        math_round_float_to_int (cc->control),
+        local_offset, false);
+      cc->last_sent_control = cc->control;
+#endif
+    }
+}
+
 /**
  * Process the TrackProcessor.
  *
@@ -786,45 +879,8 @@ track_processor_process (
        * pitchbend to MIDI out */
       if (tr->type != TRACK_TYPE_CHORD)
         {
-          for (int i = 0;
-               i < NUM_MIDI_AUTOMATABLES * 16; i++)
-            {
-              Port * cc = self->midi_automatables[i];
-              if (math_floats_equal (
-                    self->last_automatable_vals[i],
-                    cc->control))
-                continue;
-
-              TrackProcessorMidiAutomatable type =
-                i % NUM_MIDI_AUTOMATABLES;
-              /* starting from 1 */
-              int channel =
-                i / NUM_MIDI_AUTOMATABLES + 1;
-              switch (type)
-                {
-                case MIDI_AUTOMATABLE_PITCH_BEND:
-                  midi_events_add_pitchbend (
-                    self->midi_out->midi_events,
-                    channel,
-                    math_round_float_to_int (
-                      cc->control),
-                    local_offset, false);
-                  break;
-                case MIDI_AUTOMATABLE_MOD_WHEEL:
-                  midi_events_add_control_change (
-                    self->midi_out->midi_events,
-                    channel,
-                    0x01,
-                    math_round_float_to_type (
-                      cc->control * 127.f, midi_byte_t),
-                    local_offset, false);
-                  break;
-                default:
-                  break;
-                }
-              self->last_automatable_vals[i] =
-                cc->control;
-            }
+          add_events_from_midi_controls (
+            self, local_offset);
         }
       if (self->midi_out->midi_events->num_events > 0)
         {
@@ -1225,15 +1281,42 @@ track_processor_free (
       object_free_w_func_and_null (
         port_free, self->piano_roll);
     }
-  for (int i = 0; i < NUM_MIDI_AUTOMATABLES * 16;
-       i++)
+  for (int i = 0; i < 16; i++)
     {
-      Port * port = self->midi_automatables[i];
-      if (IS_PORT_AND_NONNULL (port))
+      Port * cc = NULL;
+      for (int j = 0; j < 128; j++)
         {
-          port_disconnect_all (port);
+          cc = self->midi_cc[i * 128 + j];
+          if (IS_PORT_AND_NONNULL (cc))
+            {
+              port_disconnect_all (cc);
+              object_free_w_func_and_null (
+                port_free, cc);
+            }
+        }
+
+      cc = self->pitch_bend[i];
+      if (IS_PORT_AND_NONNULL (cc))
+        {
+          port_disconnect_all (cc);
           object_free_w_func_and_null (
-            port_free, port);
+            port_free, cc);
+        }
+
+      cc = self->poly_key_pressure[i];
+      if (IS_PORT_AND_NONNULL (cc))
+        {
+          port_disconnect_all (cc);
+          object_free_w_func_and_null (
+            port_free, cc);
+        }
+
+      cc = self->channel_pressure[i];
+      if (IS_PORT_AND_NONNULL (cc))
+        {
+          port_disconnect_all (cc);
+          object_free_w_func_and_null (
+            port_free, cc);
         }
     }
 

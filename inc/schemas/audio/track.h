@@ -66,7 +66,6 @@ typedef struct Track_v1
   TrackType_v1           type;
   char *              name;
   char *              icon_name;
-  void *       widget;
   bool                automation_visible;
   bool                lanes_visible;
   bool                visible;
@@ -84,7 +83,6 @@ typedef struct Track_v1
   bool                recording_stop_sent;
   bool                recording_paused;
   int                 last_lane_idx;
-  void *          rt_stretcher;
   ZRegion_v1 **           chord_regions;
   int                 num_chord_regions;
   size_t              chord_regions_size;

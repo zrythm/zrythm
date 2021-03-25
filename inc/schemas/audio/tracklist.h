@@ -31,15 +31,7 @@ typedef struct Tracklist_v1
   int        schema_version;
   Track_v1 * tracks[3000];
   int        num_tracks;
-  void *     chord_track;
-  void *     marker_track;
-  void *     tempo_track;
-  void *     modulator_track;
-  void *     master_track;
-  void *     widget;
-  void *     pinned_widget;
   int        pinned_tracks_cutoff;
-  bool       swapping_tracks;
 } Tracklist_v1;
 
 static const cyaml_schema_field_t

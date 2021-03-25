@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -217,15 +217,50 @@ create_model_for_ports (
       Plugin * plugin = NULL;
       switch (self->selected_type)
         {
-        case AS_TYPE_MIDI:
+        case AS_TYPE_MIDI_CH1:
+        case AS_TYPE_MIDI_CH2:
+        case AS_TYPE_MIDI_CH3:
+        case AS_TYPE_MIDI_CH4:
+        case AS_TYPE_MIDI_CH5:
+        case AS_TYPE_MIDI_CH6:
+        case AS_TYPE_MIDI_CH7:
+        case AS_TYPE_MIDI_CH8:
+        case AS_TYPE_MIDI_CH9:
+        case AS_TYPE_MIDI_CH10:
+        case AS_TYPE_MIDI_CH11:
+        case AS_TYPE_MIDI_CH12:
+        case AS_TYPE_MIDI_CH13:
+        case AS_TYPE_MIDI_CH14:
+        case AS_TYPE_MIDI_CH15:
+        case AS_TYPE_MIDI_CH16:
           /* skip non-channel automation tracks */
           port = automation_track_get_port (at);
           if (!(port->id.flags &
                   PORT_FLAG_MIDI_AUTOMATABLE))
             continue;
-          g_message (
-            "port %s is a midi automatable",
-            port->id.label);
+          /*g_message (*/
+            /*"port %s is a midi automatable",*/
+            /*port->id.label);*/
+
+          if (port->id.flags2 &
+                PORT_FLAG2_MIDI_PITCH_BEND ||
+              port->id.flags2 &
+                PORT_FLAG2_MIDI_POLY_KEY_PRESSURE ||
+              port->id.flags2 &
+                PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+            {
+              if ((int) self->selected_type !=
+                    (AS_TYPE_MIDI_CH1 +
+                       port->id.port_index))
+                continue;
+            }
+          else
+            {
+              if ((int) self->selected_type !=
+                    (AS_TYPE_MIDI_CH1 +
+                       port->id.port_index / 128))
+                continue;
+            }
 
           strcpy (icon_name, "signal-midi");
           break;
@@ -362,14 +397,19 @@ create_model_for_types (
 
   if (track_has_piano_roll (track))
     {
-      gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (
-        list_store, &iter,
-        0, "signal-midi",
-        1, "MIDI",
-        2, AS_TYPE_MIDI,
-        3, 0,
-        -1);
+      for (int i = 0; i < 16; i++)
+        {
+          char name[300];
+          sprintf (name, _("MIDI Ch%d"), i + 1);
+          gtk_list_store_append (list_store, &iter);
+          gtk_list_store_set (
+            list_store, &iter,
+            0, "signal-midi",
+            1, name,
+            2, AS_TYPE_MIDI_CH1 + i,
+            3, 0,
+            -1);
+        }
     }
 
   if (track_type_has_channel (track->type))
@@ -619,7 +659,19 @@ automatable_selector_popover_widget_new (
     }
   else if (id->flags & PORT_FLAG_MIDI_AUTOMATABLE)
     {
-      self->selected_type = AS_TYPE_MIDI;
+      if (id->flags2 & PORT_FLAG2_MIDI_PITCH_BEND ||
+          id->flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE ||
+          id->flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+        {
+          self->selected_type =
+            AS_TYPE_MIDI_CH1 + id->port_index;
+        }
+      else
+        {
+          self->selected_type =
+            AS_TYPE_MIDI_CH1 +
+            id->port_index / 128;
+        }
     }
   else if (id->flags & PORT_FLAG_MODULATOR_MACRO)
     {

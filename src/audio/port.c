@@ -424,11 +424,35 @@ port_find_from_identifier (
               return tr->processor->input_gain;
             }
           else if (flags &
-                PORT_FLAG_MIDI_AUTOMATABLE)
+                     PORT_FLAG_MIDI_AUTOMATABLE)
             {
-              return
-                tr->processor->midi_automatables[
-                  id->port_index];
+              if (flags2 &
+                    PORT_FLAG2_MIDI_PITCH_BEND)
+                {
+                  return
+                    tr->processor->pitch_bend[
+                      id->port_index];
+                }
+              else if (flags2 &
+                    PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
+                {
+                  return
+                    tr->processor->poly_key_pressure[
+                      id->port_index];
+                }
+              else if (flags2 &
+                    PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+                {
+                  return
+                    tr->processor->channel_pressure[
+                      id->port_index];
+                }
+              else
+                {
+                  return
+                    tr->processor->midi_cc[
+                      id->port_index];
+                }
             }
           break;
         default:

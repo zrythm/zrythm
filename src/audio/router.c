@@ -129,8 +129,10 @@ router_start_cycle (
           node->port == P_TEMPO_TRACK->bpm_port)
         bpm_node = node;
     }
-  g_return_if_fail (bpm_node);
-  graph_node_process (bpm_node, nsamples);
+  if (bpm_node)
+    {
+      graph_node_process (bpm_node, nsamples);
+    }
 
   self->callback_in_progress = true;
   zix_sem_post (&self->graph->callback_start);

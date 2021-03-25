@@ -254,7 +254,8 @@ add_plugin (
 static void
 connect_plugin (
   Graph *  self,
-  Plugin * pl)
+  Plugin * pl,
+  bool     drop_unnecessary_ports)
 {
   g_return_if_fail (pl && !pl->deleting);
   GraphNode * pl_node =
@@ -264,11 +265,15 @@ connect_plugin (
     {
       Port * port = pl->in_ports[i];
       g_return_if_fail (
-        port_get_plugin (
-          port, 1) != NULL);
+        port_get_plugin (port, 1) != NULL);
       GraphNode * port_node =
         graph_find_node_from_port (
           self, port);
+      if (drop_unnecessary_ports && !port_node &&
+          port->id.type == TYPE_CONTROL)
+        {
+          continue;
+        }
       g_return_if_fail (port_node);
       graph_node_connect (port_node, pl_node);
     }
@@ -348,6 +353,24 @@ add_port (
   const bool drop_if_unnecessary)
 {
   PortOwnerType owner = port->id.owner_type;
+
+  if (drop_if_unnecessary)
+    {
+      /* skip unnecessary control ports */
+      if (port->id.type == TYPE_CONTROL &&
+          port->id.flags & PORT_FLAG_AUTOMATABLE)
+        {
+          AutomationTrack * found_at =
+            automation_track_find_from_port (
+              port, NULL, true);
+          g_return_val_if_fail (found_at, NULL);
+          if (found_at->num_regions == 0 &&
+              port->num_srcs == 0)
+            {
+              return NULL;
+            }
+        }
+    }
 
   /* drop ports without sources and dests */
   if (
@@ -629,9 +652,11 @@ graph_setup (
         }
       else
         {
+          char label[5000];
+          port_get_full_designation (port, label);
           g_message (
             "%s: skipped port %s",
-            __func__, port->id.label);
+            __func__, label);
         }
     }
 
@@ -802,15 +827,51 @@ graph_setup (
         }
       if (track_has_piano_roll (tr))
         {
-          for (int j = 0;
-               j < NUM_MIDI_AUTOMATABLES * 16; j++)
+          for (int j = 0; j < 16; j++)
             {
+              for (int k = 0; k < 128; k++)
+                {
+                  port =
+                    tr->processor->midi_cc[j * 128 + k];
+                  node2 =
+                    graph_find_node_from_port (
+                      self, port);
+                  if (node2)
+                    {
+                      graph_node_connect (
+                        node2, node);
+                    }
+                }
+
               port =
-                tr->processor->midi_automatables[j];
+                tr->processor->pitch_bend[j];
               node2 =
                 graph_find_node_from_port (
                   self, port);
-              graph_node_connect (node2, node);
+              if (node2 || !drop_unnecessary_ports)
+                {
+                  graph_node_connect (node2, node);
+                }
+
+              port =
+                tr->processor->poly_key_pressure[j];
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              if (node2 || !drop_unnecessary_ports)
+                {
+                  graph_node_connect (node2, node);
+                }
+
+              port =
+                tr->processor->channel_pressure[j];
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              if (node2 || !drop_unnecessary_ports)
+                {
+                  graph_node_connect (node2, node);
+                }
             }
         }
       if (tr->type == TRACK_TYPE_TEMPO)
@@ -818,11 +879,17 @@ graph_setup (
           port = tr->bpm_port;
           node2 =
             graph_find_node_from_port (self, port);
-          graph_node_connect (node2, node);
+          if (node2 || !drop_unnecessary_ports)
+            {
+              graph_node_connect (node2, node);
+            }
           port = tr->time_sig_port;
           node2 =
             graph_find_node_from_port (self, port);
-          graph_node_connect (node2, node);
+          if (node2 || !drop_unnecessary_ports)
+            {
+              graph_node_connect (node2, node);
+            }
           graph_node_connect (
             node, initial_processor_node);
         }
@@ -838,7 +905,9 @@ graph_setup (
 
               if (pl && !pl->deleting)
                 {
-                  connect_plugin (self, pl);
+                  connect_plugin (
+                    self, pl,
+                    drop_unnecessary_ports);
                   for (int k = 0;
                        k < pl->num_in_ports; k++)
                     {
@@ -850,6 +919,13 @@ graph_setup (
                       GraphNode * port_node =
                         graph_find_node_from_port (
                           self, pl_port);
+                      if (drop_unnecessary_ports &&
+                          !port_node &&
+                          port->id.type ==
+                            TYPE_CONTROL)
+                        {
+                          continue;
+                        }
                       g_return_if_fail (port_node);
                       graph_node_connect (
                         node, port_node);
@@ -878,8 +954,11 @@ graph_setup (
               node2 =
                 graph_find_node_from_port (
                   self, port);
-              graph_node_connect (
-                node2, mmp_node);
+              if (node2 || !drop_unnecessary_ports)
+                {
+                  graph_node_connect (
+                    node2, mmp_node);
+                }
               port = mmp->cv_out;
               node2 =
                 graph_find_node_from_port (
@@ -936,15 +1015,24 @@ graph_setup (
       port = fader->amp;
       node2 =
         graph_find_node_from_port (self, port);
-      graph_node_connect (node2, node);
+      if (node2 || !drop_unnecessary_ports)
+        {
+          graph_node_connect (node2, node);
+        }
       port = fader->balance;
       node2 =
         graph_find_node_from_port (self, port);
-      graph_node_connect (node2, node);
+      if (node2 || !drop_unnecessary_ports)
+        {
+          graph_node_connect (node2, node);
+        }
       port = fader->mute;
       node2 =
         graph_find_node_from_port (self, port);
-      graph_node_connect (node2, node);
+      if (node2 || !drop_unnecessary_ports)
+        {
+          graph_node_connect (node2, node);
+        }
 
       /* connect the prefader */
       node =
@@ -996,7 +1084,8 @@ graph_setup (
                 j - (STRIP_SIZE + 1)];
 
           if (pl && !pl->deleting)
-            connect_plugin (self, pl);
+            connect_plugin (self, pl,
+              drop_unnecessary_ports);
         }
     }
 

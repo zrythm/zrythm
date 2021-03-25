@@ -24,6 +24,7 @@
 #include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "audio/marker_track.h"
+#include "audio/router.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -1688,6 +1689,28 @@ do_or_undo_create_or_delete (
 
   self->first_run = 0;
 
+  if (self->sel->type ==
+        ARRANGER_SELECTIONS_TYPE_TIMELINE)
+    {
+      TimelineSelections * ts =
+        (TimelineSelections *) self->sel;
+      bool have_automation_region = false;
+      for (int i = 0; i < ts->num_regions; i++)
+        {
+          ZRegion * r = ts->regions[i];
+          if (r->id.type == REGION_TYPE_AUTOMATION)
+            {
+              have_automation_region = true;
+              break;
+            }
+        }
+
+      if (have_automation_region)
+        {
+          router_recalc_graph (ROUTER, F_NOT_SOFT);
+        }
+    }
+
   return 0;
 }
 
@@ -1829,6 +1852,28 @@ do_or_undo_record (
     ET_ARRANGER_SELECTIONS_REMOVED, sel);
 
   self->first_run = 0;
+
+  if (self->sel->type ==
+        ARRANGER_SELECTIONS_TYPE_TIMELINE)
+    {
+      TimelineSelections * ts =
+        (TimelineSelections *) self->sel;
+      bool have_automation_region = false;
+      for (int i = 0; i < ts->num_regions; i++)
+        {
+          ZRegion * r = ts->regions[i];
+          if (r->id.type == REGION_TYPE_AUTOMATION)
+            {
+              have_automation_region = true;
+              break;
+            }
+        }
+
+      if (have_automation_region)
+        {
+          router_recalc_graph (ROUTER, F_NOT_SOFT);
+        }
+    }
 
   return 0;
 }

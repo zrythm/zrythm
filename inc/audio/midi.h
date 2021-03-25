@@ -59,6 +59,13 @@
 #define MIDI_SYSTEM_MESSAGE 0xF0
 
 /**
+ * Return the name of the given cc (0-127).
+ */
+const char *
+midi_get_cc_name (
+  uint8_t cc);
+
+/**
  * Used for MIDI controls whose values are split
  * between MSB/LSB.
  *

@@ -346,14 +346,10 @@ control_port_set_val_from_normalized (
     }
   else if (id->flags & PORT_FLAG_MIDI_AUTOMATABLE)
     {
-      Track * track = port_get_track (self, true);
       float real_val =
         self->minf +
         val * (self->maxf - self->minf);
-      if (!math_floats_equal (
-            val,
-            track->processor->midi_automatables[
-              self->id.port_index]->control))
+      if (!math_floats_equal (val, self->control))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);

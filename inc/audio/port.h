@@ -531,6 +531,9 @@ typedef struct Port
    * The last known control value sent to the UI
    * (if control).
    *
+   * Also used by track processor for MIDI
+   * controls.
+   *
    * @seealso lv2_ui_send_control_val_event_from_plugin_to_ui().
    */
   float           last_sent_control;

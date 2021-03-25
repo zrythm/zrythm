@@ -48,16 +48,6 @@ typedef struct Track Track;
   ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
 
 /**
- * Automatable MIDI signals.
- */
-typedef enum TrackProcessorMidiAutomatable
-{
-  MIDI_AUTOMATABLE_MOD_WHEEL,
-  MIDI_AUTOMATABLE_PITCH_BEND,
-  NUM_MIDI_AUTOMATABLES,
-} TrackProcessorMidiAutomatable;
-
-/**
  * A TrackProcessor is a processor that is used as
  * the first entry point when processing a track.
  */
@@ -109,12 +99,33 @@ typedef struct TrackProcessor
    */
   Port *           piano_roll;
 
-  /** MIDI CC control ports, 16 channels. */
-  Port *           midi_automatables[NUM_MIDI_AUTOMATABLES * 16];
+  /* --- MIDI controls --- */
 
-  /** Last processed values, to avoid re-sending
-   * messages when the value is the same. */
-  float            last_automatable_vals[NUM_MIDI_AUTOMATABLES * 16];
+  /** MIDI CC control ports, 16 channels. */
+  Port *           midi_cc[128 * 16];
+
+  /** Pitch bend. */
+  Port *           pitch_bend[16];
+
+  /**
+   * Polyphonic key pressure (aftertouch).
+   *
+   * This message is most often sent by pressing
+   * down on the key after it "bottoms out".
+   */
+  Port *           poly_key_pressure[16];
+
+  /**
+   * Channel pressure (aftertouch).
+   *
+   * This message is different from polyphonic
+   * after-touch - sends the single greatest
+   * pressure value (of all the current depressed
+   * keys).
+   */
+  Port *           channel_pressure[16];
+
+  /* --- end MIDI controls --- */
 
   /**
    * Current dBFS after procesing each output port.
@@ -164,8 +175,17 @@ track_processor_fields_schema[] =
     TrackProcessor, stereo_out,
     stereo_ports_fields_schema),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor, midi_automatables,
-    port_schema, NUM_MIDI_AUTOMATABLES * 16),
+    TrackProcessor, midi_cc,
+    port_schema, 128 * 16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    TrackProcessor, pitch_bend,
+    port_schema, 16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    TrackProcessor, poly_key_pressure,
+    port_schema, 16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    TrackProcessor, channel_pressure,
+    port_schema, 16),
   YAML_FIELD_INT (
     TrackProcessor, track_pos),
 
