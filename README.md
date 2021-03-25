@@ -47,7 +47,9 @@ possible thanks to
 - GNU/Linux, FreeBSD, Windows, MacOS
 
 ## Building and Installation
-See [INSTALL.md](INSTALL.md).
+See [INSTALL.md](INSTALL.md) for build instructions.
+Prebuilt packages/installers available at
+<https://www.zrythm.org/en/download.html>.
 
 ## Using
 See the [user manual](http://manual.zrythm.org/).

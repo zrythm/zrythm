@@ -857,13 +857,12 @@ region_remove_all_children (
       break;
     case REGION_TYPE_AUTOMATION:
       {
-        /* add automation points */
         for (int i = region->num_aps - 1;
              i >= 0; i--)
           {
             AutomationPoint * ap = region->aps[i];
             automation_region_remove_ap (
-              region, ap, F_FREE);
+              region, ap, false, F_FREE);
           }
       }
       break;

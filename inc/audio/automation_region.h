@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -117,6 +117,7 @@ void
 automation_region_remove_ap (
   ZRegion *         self,
   AutomationPoint * ap,
+  bool              freeing_region,
   int               free);
 
 /**

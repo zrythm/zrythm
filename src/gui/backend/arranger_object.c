@@ -3253,7 +3253,7 @@ arranger_object_remove_from_project (
         g_return_if_fail (
           IS_REGION_AND_NONNULL (region));
         automation_region_remove_ap (
-          region, ap, F_FREE);
+          region, ap, false, F_FREE);
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:

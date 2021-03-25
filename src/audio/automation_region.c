@@ -261,6 +261,7 @@ void
 automation_region_remove_ap (
   ZRegion *         self,
   AutomationPoint * ap,
+  bool              freeing_region,
   int               free)
 {
   g_return_if_fail (
@@ -281,10 +282,13 @@ automation_region_remove_ap (
   array_delete (
     self->aps, self->num_aps, ap);
 
-  for (int i = 0; i < self->num_aps; i++)
+  if (!freeing_region)
     {
-      automation_point_set_region_and_index (
-        self->aps[i], self, i);
+      for (int i = 0; i < self->num_aps; i++)
+        {
+          automation_point_set_region_and_index (
+            self->aps[i], self, i);
+        }
     }
 
   if (free)
@@ -412,9 +416,11 @@ automation_region_free_members (
   ZRegion * self)
 {
   int i;
-  for (i = 0; i < self->num_aps; i++)
-    automation_region_remove_ap (
-      self, self->aps[i], F_FREE);
+  for (i = self->num_aps - 1; i >= 0; i--)
+    {
+      automation_region_remove_ap (
+        self, self->aps[i], true, F_FREE);
+    }
 
   free (self->aps);
 }

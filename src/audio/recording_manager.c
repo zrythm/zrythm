@@ -588,7 +588,7 @@ delete_automation_points (
     {
       AutomationPoint * ap = aps[i];
       automation_region_remove_ap (
-        region, ap, true);
+        region, ap, false, true);
     }
 
   /* create a new automation point at the pos with
@@ -610,7 +610,8 @@ delete_automation_points (
             region->last_recorded_ap->fvalue))
         {
           automation_region_remove_ap (
-            region, region->last_recorded_ap, true);
+            region, region->last_recorded_ap,
+            false, true);
         }
 
       ArrangerObject * r_obj =
@@ -651,7 +652,7 @@ create_automation_point (
     {
       AutomationPoint * ap = aps[i];
       automation_region_remove_ap (
-        region, ap, true);
+        region, ap, false, true);
     }
 
   ArrangerObject * r_obj =
@@ -905,7 +906,7 @@ handle_resume_event (
             {
               automation_region_remove_ap (
                 new_region, new_region->aps[0],
-                true);
+                false, true);
             }
 
           /* create/replace ap at loop start */
