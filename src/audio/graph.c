@@ -361,8 +361,9 @@ add_port (
           port->id.flags & PORT_FLAG_AUTOMATABLE)
         {
           AutomationTrack * found_at =
-            automation_track_find_from_port (
-              port, NULL, true);
+            port->at;
+            /*automation_track_find_from_port (*/
+              /*port, NULL, true);*/
           g_return_val_if_fail (found_at, NULL);
           if (found_at->num_regions == 0 &&
               port->num_srcs == 0)
@@ -652,11 +653,13 @@ graph_setup (
         }
       else
         {
+#if 0
           char label[5000];
           port_get_full_designation (port, label);
           g_message (
             "%s: skipped port %s",
             __func__, label);
+#endif
         }
     }
 
