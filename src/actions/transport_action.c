@@ -112,7 +112,7 @@ do_or_undo (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT->time_sig.beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate);
+    AUDIO_ENGINE->sample_rate, true);
 
   snap_grid_update_snap_points_default (
     SNAP_GRID_TIMELINE);
@@ -134,7 +134,9 @@ do_or_undo (
             self->bpm_before / self->bpm_after;
         }
 
-      if (self->musical_mode)
+      if (self->musical_mode &&
+          /* doesn't work */
+          false)
         {
           transport_stretch_audio_regions (
             TRANSPORT, NULL, true, time_ratio);
@@ -159,7 +161,7 @@ transport_action_do (
         AUDIO_ENGINE,
         TRANSPORT->time_sig.beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        AUDIO_ENGINE->sample_rate);
+        AUDIO_ENGINE->sample_rate, true);
 
       snap_grid_update_snap_points_default (
         SNAP_GRID_TIMELINE);

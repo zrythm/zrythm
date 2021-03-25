@@ -119,7 +119,8 @@ typedef struct MPMCQueue MPMCQueue;
 /**
  * Push events.
  */
-#define ENGINE_EVENTS_PUSH(et,_arg,_uint_arg) \
+#define ENGINE_EVENTS_PUSH( \
+  et,_arg,_uint_arg,_float_arg) \
   if (true) \
     { \
       AudioEngineEvent * _ev = \
@@ -131,11 +132,16 @@ typedef struct MPMCQueue MPMCQueue;
       _ev->type = et; \
       _ev->arg = (void *) _arg; \
       _ev->uint_arg = _uint_arg; \
-      _ev->backtrace = \
-        backtrace_get ("", 40, false); \
-      g_debug ( \
-        "pushing engine event " #et \
-        " (%s:%d)", __func__, __LINE__); \
+      _ev->float_arg = _float_arg; \
+      if (zrythm_app->gtk_thread == \
+            g_thread_self ()) \
+        { \
+          _ev->backtrace = \
+            backtrace_get ("", 40, false); \
+          g_debug ( \
+            "pushing engine event " #et \
+            " (%s:%d)", __func__, __LINE__); \
+        } \
       engine_queue_push_back_event ( \
         AUDIO_ENGINE->ev_queue, _ev); \
     }
@@ -157,6 +163,7 @@ typedef struct AudioEngineEvent
   AudioEngineEventType type;
   void *               arg;
   uint32_t             uint_arg;
+  float                float_arg;
   const char *         file;
   const char *         func;
   int                  lineno;
@@ -906,13 +913,17 @@ engine_activate (
 /**
  * Updates frames per tick based on the time sig,
  * the BPM, and the sample rate
+ *
+ * @param thread_check Whether to throw a warning
+ *   if not called from GTK thread.
  */
 void
 engine_update_frames_per_tick (
   AudioEngine *       self,
   const int           beats_per_bar,
-  const float         bpm,
-  const sample_rate_t sample_rate);
+  const bpm_t         bpm,
+  const sample_rate_t sample_rate,
+  bool                thread_check);
 
 /**
  * GSourceFunc to be added using idle add.

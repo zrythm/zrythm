@@ -391,6 +391,12 @@ void
 position_print (
   const Position * pos);
 
+NONNULL
+void
+position_print_range (
+  const Position * pos,
+  const Position * pos2);
+
 /**
  * Returns the total number of beats.
  *

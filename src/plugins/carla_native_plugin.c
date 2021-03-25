@@ -226,7 +226,7 @@ host_dispatcher (
   float opt)
 {
   /* TODO */
-  g_debug ("host dispatcher (opcode %d)", opcode);
+  /*g_debug ("host dispatcher (opcode %d)", opcode);*/
   switch (opcode)
     {
     case NATIVE_HOST_OPCODE_HOST_IDLE:

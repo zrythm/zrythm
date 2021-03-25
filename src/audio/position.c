@@ -700,7 +700,24 @@ position_print (
 {
   char buf[140];
   position_to_string (pos, buf);
-  g_message ("%s", buf);
+  g_message ("%s (%ld)", buf, pos->frames);
+}
+
+void
+position_print_range (
+  const Position * pos,
+  const Position * pos2)
+{
+  char buf[140];
+  position_to_string (pos, buf);
+  char buf2[140];
+  position_to_string (pos2, buf2);
+  g_message (
+    "%s (%ld) - %s (%ld) "
+    "<delta %ld frames %f ticks>",
+    buf, pos->frames, buf2, pos2->frames,
+    pos2->frames - pos->frames,
+    pos2->ticks - pos->ticks);
 }
 
 /**

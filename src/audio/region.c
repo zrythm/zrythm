@@ -327,6 +327,7 @@ region_stretch (
       }
       break;
     default:
+      g_critical ("unimplemented");
       break;
     }
 
@@ -1194,6 +1195,9 @@ region_get_musical_mode (
     {
       return true;
     }
+
+  /* off for v1 */
+  return false;
 
   switch (self->musical_mode)
     {

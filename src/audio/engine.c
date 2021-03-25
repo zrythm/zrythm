@@ -139,20 +139,27 @@ engine_set_buffer_size (
 /**
  * Updates frames per tick based on the time sig,
  * the BPM, and the sample rate
+ *
+ * @param thread_check Whether to throw a warning
+ *   if not called from GTK thread.
  */
 void
 engine_update_frames_per_tick (
   AudioEngine *       self,
   const int           beats_per_bar,
   const bpm_t         bpm,
-  const sample_rate_t sample_rate)
+  const sample_rate_t sample_rate,
+  bool                thread_check)
 {
-  g_message (
-    "updating frames per tick: beats per bar %d, "
-    "bpm %f, sample rate %u",
-    beats_per_bar, (double) bpm, sample_rate);
-
-  if (g_thread_self () != zrythm_app->gtk_thread)
+  if (g_thread_self () == zrythm_app->gtk_thread)
+    {
+      g_message (
+        "updating frames per tick: "
+        "beats per bar %d, "
+        "bpm %f, sample rate %u",
+        beats_per_bar, (double) bpm, sample_rate);
+    }
+  else if (thread_check)
     {
       g_critical (
         "Called %s from non-GTK thread",
@@ -1513,7 +1520,7 @@ engine_process (
 
       g_warn_if_fail (
         preroll_offset + num_preroll_frames <=
-          AUDIO_ENGINE->nframes);
+          self->nframes);
 
       /* this will keep looping until everything was
        * processed in this cycle */

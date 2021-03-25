@@ -105,7 +105,9 @@ typedef struct EventManager
         } \
       /* don't print events that are called \
        * continuously */ \
-      if (et != ET_PLAYHEAD_POS_CHANGED) \
+      if (et != ET_PLAYHEAD_POS_CHANGED && \
+            g_thread_self () == \
+              zrythm_app->gtk_thread) \
         { \
           g_debug ( \
             "pushing UI event " #et \

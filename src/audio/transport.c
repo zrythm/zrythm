@@ -132,7 +132,7 @@ transport_new (
     engine->sample_rate > 0, NULL);
   engine_update_frames_per_tick (
     engine, self->time_sig.beats_per_bar, 140,
-    engine->sample_rate);
+    engine->sample_rate, true);
 
   /* hack to allow setting positions */
   /*double frames_per_tick_before =*/
@@ -344,8 +344,7 @@ transport_stretch_audio_regions (
 
           /* don't stretch regions with musical
            * mode off */
-          if (region->musical_mode ==
-                REGION_MUSICAL_MODE_OFF)
+          if (!region_get_musical_mode (region))
             continue;
 
           ArrangerObject * r_obj =
@@ -379,8 +378,8 @@ transport_stretch_audio_regions (
 
                   /* don't stretch regions with
                    * musical mode off */
-                  if (region->musical_mode ==
-                        REGION_MUSICAL_MODE_OFF)
+                  if (!region_get_musical_mode (
+                         region))
                     continue;
 
                   ArrangerObject * r_obj =

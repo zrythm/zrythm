@@ -489,7 +489,7 @@ test_project_rebootstrap_timeline (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TIME_SIG->beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate);
+    AUDIO_ENGINE->sample_rate, true);
 
   test_project_save_and_reload ();
 }

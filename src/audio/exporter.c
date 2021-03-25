@@ -348,22 +348,28 @@ export_audio (
   g_return_val_if_fail (
     stop_pos.frames >= 1 ||
     start_pos.frames >= 0, -1);
-  const unsigned long total_frames =
-    (unsigned long)
-    ((stop_pos.frames - 1) -
-     start_pos.frames);
-  sf_count_t covered = 0;
+  /*const unsigned long total_frames =*/
+    /*(unsigned long)*/
+    /*((stop_pos.frames - 1) -*/
+     /*start_pos.frames);*/
+  const double total_ticks =
+    (stop_pos.ticks - start_pos.ticks);
+  sf_count_t covered_frames = 0;
+  double covered_ticks = 0;
+  /*sf_count_t last_playhead_frames = start_pos.frames;*/
   float out_ptr[
     AUDIO_ENGINE->block_length * EXPORT_CHANNELS];
   do
     {
       /* calculate number of frames to process
        * this time */
+      double nticks =
+        stop_pos.ticks -
+          TRANSPORT->playhead_pos.ticks;
       nframes =
         (nframes_t)
         MIN (
-          (stop_pos.frames - 1) -
-            TRANSPORT->playhead_pos.frames,
+          (long) ceil (AUDIO_ENGINE->frames_per_tick * nticks),
           (long) AUDIO_ENGINE->block_length);
       g_return_val_if_fail (nframes > 0, -1);
 
@@ -389,11 +395,11 @@ export_audio (
         }
 
       /* seek to the write position in the file */
-      if (covered != 0)
+      if (covered_frames != 0)
         {
           sf_count_t seek_cnt =
             sf_seek (
-              sndfile, covered,
+              sndfile, covered_frames,
               SEEK_SET | SFM_WRITE);
 
           /* wav is weird for some reason */
@@ -408,7 +414,7 @@ export_audio (
                   g_message (
                     "Error seeking file: %s", err);
                 }
-              g_warn_if_fail (seek_cnt == covered);
+              g_warn_if_fail (seek_cnt == covered_frames);
             }
         }
 
@@ -419,34 +425,39 @@ export_audio (
           sndfile, out_ptr, nframes);
       g_warn_if_fail (written_frames == nframes);
 
-      covered += nframes;
-      if (G_UNLIKELY (
-            covered !=
-              TRANSPORT->playhead_pos.frames -
-                start_pos.frames))
+      covered_frames += nframes;
+      covered_ticks +=
+        AUDIO_ENGINE->ticks_per_frame * nframes;
+#if 0
+      long expected_nframes =
+        TRANSPORT->playhead_pos.frames -
+          last_playhead_frames;
+      if (G_UNLIKELY (nframes != expected_nframes))
         {
           g_critical (
             "covered (%ld) != "
             "TRANSPORT->playhead_pos.frames (%ld) "
-            "- start_pos.frames (%ld)",
+            "- start_pos.frames (%ld) (=%ld)",
             covered, TRANSPORT->playhead_pos.frames,
-            start_pos.frames);
+            start_pos.frames, expected_nframes);
           return -1;
         }
+      last_playhead_frames += nframes;
+#endif
 
       info->progress =
-        (double)
-        (TRANSPORT->playhead_pos.frames -
-          start_pos.frames) /
-        (double) total_frames;
+        (TRANSPORT->playhead_pos.ticks -
+          start_pos.ticks) /
+        total_ticks;
     } while (
-      TRANSPORT->playhead_pos.frames <
-      stop_pos.frames - 1 && !info->cancelled);
+      TRANSPORT->playhead_pos.ticks <
+      stop_pos.ticks && !info->cancelled);
 
   if (!info->cancelled)
     {
       g_warn_if_fail (
-        covered == (sf_count_t) total_frames);
+        math_floats_equal_epsilon (
+          covered_ticks, total_ticks, 1.0));
     }
 
   info->progress = 1.0;

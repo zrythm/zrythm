@@ -250,10 +250,41 @@ test_export_wav ()
 }
 
 static void
-test_bounce_region ()
+bounce_region (
+  bool with_bpm_automation)
 {
 #ifdef HAVE_HELM
   test_helper_zrythm_init ();
+
+  Position pos, end_pos;
+  position_set_to_bar (&pos, 2);
+  position_set_to_bar (&end_pos, 4);
+
+  if (with_bpm_automation)
+    {
+      /* create bpm automation */
+      AutomationTrack * at =
+        automation_track_find_from_port (
+          P_TEMPO_TRACK->bpm_port, P_TEMPO_TRACK, false);
+      ZRegion * r =
+        automation_region_new (
+          &pos, &end_pos, P_TEMPO_TRACK->pos,
+          at->index, 0);
+      track_add_region (
+        P_TEMPO_TRACK, r, at, 0, 1, 0);
+      position_set_to_bar (&pos, 1);
+      AutomationPoint * ap =
+        automation_point_new_float (
+          168.434006f, 0.361445993f, &pos);
+      automation_region_add_ap (
+        r, ap, F_NO_PUBLISH_EVENTS);
+      position_set_to_bar (&pos, 2);
+      ap =
+        automation_point_new_float (
+          297.348999f, 0.791164994f, &pos);
+      automation_region_add_ap (
+        r, ap, F_NO_PUBLISH_EVENTS);
+    }
 
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
@@ -265,7 +296,6 @@ test_bounce_region ()
     F_NO_PUBLISH_EVENTS);
 
   /* create a region and select it */
-  Position pos, end_pos;
   position_set_to_bar (&pos, 2);
   position_set_to_bar (&end_pos, 4);
   ZRegion * r =
@@ -309,6 +339,18 @@ test_bounce_region ()
 
   test_helper_zrythm_cleanup ();
 #endif
+}
+
+static void
+test_bounce_region ()
+{
+  bounce_region (false);
+}
+
+static void
+test_bounce_with_bpm_automation ()
+{
+  bounce_region (true);
 }
 
 /**
@@ -408,6 +450,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test bounce region",
     (GTestFunc) test_bounce_region);
+  g_test_add_func (
+    TEST_PREFIX "test bounce with bpm automation",
+    (GTestFunc) test_bounce_with_bpm_automation);
 
   return g_test_run ();
 }

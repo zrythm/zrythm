@@ -418,7 +418,7 @@ engine_pulse_setup (
         self,
         self->transport->time_sig.beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        self->sample_rate);
+        self->sample_rate, true);
     }
 
   const pa_buffer_attr * actual_attr =

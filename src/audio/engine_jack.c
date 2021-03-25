@@ -164,7 +164,7 @@ engine_jack_handle_sample_rate_change (
         self,
         TRANSPORT->time_sig.beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        AUDIO_ENGINE->sample_rate);
+        self->sample_rate, true);
     }
 
   g_message (
@@ -217,7 +217,7 @@ sample_rate_cb (
 
   ENGINE_EVENTS_PUSH (
     AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE,
-    NULL, nframes);
+    NULL, nframes, 0.f);
 
   process_change_request (self);
 
@@ -256,7 +256,7 @@ buffer_size_cb (
 {
   ENGINE_EVENTS_PUSH (
     AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE,
-    NULL, nframes);
+    NULL, nframes, 0.f);
 
   process_change_request (self);
 

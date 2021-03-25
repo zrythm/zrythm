@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,6 +47,7 @@
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/sample_processor.h"
+#include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "audio/track_processor.h"
 #include "audio/tracklist.h"
@@ -351,6 +352,16 @@ graph_node_process (
   nframes_t local_offset =
     node->graph->router->local_offset;
 
+  /* skip BPM during cycle (already processed in
+   * router_start_cycle()) */
+  if (G_UNLIKELY (
+        node->graph->router->callback_in_progress &&
+        node->port &&
+        node->port == P_TEMPO_TRACK->bpm_port))
+    {
+      goto node_process_finish;
+    }
+
   /* figure out if we are doing a no-roll */
   if (node->route_playback_latency <
         AUDIO_ENGINE->remaining_latency_preroll)
@@ -445,7 +456,10 @@ graph_node_process (
     }
 
 node_process_finish:
-  on_node_finish (node);
+  if (node->graph->router->callback_in_progress)
+    {
+      on_node_finish (node);
+    }
 }
 
 /**

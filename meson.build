@@ -584,7 +584,7 @@ if get_option ('extra_extra_optimizations')
 endif
 
 if get_option ('extra_debug_info')
-  test_cflags += '-g3 -ggdb'
+  test_cflags += '-ggdb3'
 endif
 
 common_cflags = cc.get_supported_arguments (

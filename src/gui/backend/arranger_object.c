@@ -1100,6 +1100,13 @@ void
 arranger_object_update_frames (
   ArrangerObject * self)
 {
+  long frames_len_before = 0;
+  if (arranger_object_type_has_length (self->type))
+    {
+      frames_len_before =
+        arranger_object_get_length_in_frames (self);
+    }
+
   position_update_frames_from_ticks (&self->pos);
   if (arranger_object_type_has_length (self->type))
     {
@@ -1123,30 +1130,64 @@ arranger_object_update_frames (
         &self->fade_out_pos);
     }
 
-  int i;
   ZRegion * r;
   switch (self->type)
     {
     case TYPE (REGION):
       r = (ZRegion *) self;
-      for (i = 0; i < r->num_midi_notes; i++)
+
+      /* validate */
+      if (r->id.type == REGION_TYPE_AUDIO &&
+          !region_get_musical_mode (r))
+        {
+          long frames_len_after =
+            arranger_object_get_length_in_frames (
+              self);
+          if (frames_len_after !=
+                frames_len_before)
+            {
+              double ticks =
+                (frames_len_before -
+                frames_len_after) *
+                AUDIO_ENGINE->ticks_per_frame;
+              arranger_object_resize (
+                self, false,
+                ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
+                ticks, false);
+            }
+          long tl_frames =
+            self->end_pos.frames - 1;
+          long local_frames;
+          AudioClip * clip;
+          local_frames =
+            region_timeline_frames_to_local (
+              r, tl_frames, F_NORMALIZE);
+          clip = audio_region_get_clip (r);
+          if (local_frames >= clip->num_frames)
+            {
+            }
+          g_return_if_fail (
+            local_frames < clip->num_frames);
+        }
+
+      for (int i = 0; i < r->num_midi_notes; i++)
         {
           arranger_object_update_frames (
             (ArrangerObject *) r->midi_notes[i]);
         }
-      for (i = 0; i < r->num_unended_notes; i++)
+      for (int i = 0; i < r->num_unended_notes; i++)
         {
           arranger_object_update_frames (
             (ArrangerObject *) r->unended_notes[i]);
         }
 
-      for (i = 0; i < r->num_aps; i++)
+      for (int i = 0; i < r->num_aps; i++)
         {
           arranger_object_update_frames (
             (ArrangerObject *) r->aps[i]);
         }
 
-      for (i = 0; i < r->num_chord_objects; i++)
+      for (int i = 0; i < r->num_chord_objects; i++)
         {
           arranger_object_update_frames (
             (ArrangerObject *) r->chord_objects[i]);
@@ -1331,8 +1372,10 @@ arranger_object_resize (
                 F_NO_VALIDATE);
             }
 
-          if (type ==
-                ARRANGER_OBJECT_RESIZE_STRETCH &&
+          if ((type ==
+                ARRANGER_OBJECT_RESIZE_STRETCH ||
+               type ==
+                 ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE) &&
               self->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
@@ -1349,25 +1392,29 @@ arranger_object_resize (
                 arranger_object_get_length_in_ticks (
                   self);
 
-              /* FIXME this flag is not good,
-               * remove from this function and
-               * do it in the arranger */
-              if (during_ui_action)
+              if (type !=
+                    ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE)
                 {
-                  region->stretch_ratio =
-                    new_length /
-                    region->before_length;
-                }
-              /* else if as part of an action */
-              else
-                {
-                  /* stretch contents */
-                  double stretch_ratio =
-                    new_length / before_length;
-                  g_message ("resizing with %f",
-                    stretch_ratio);
-                  region_stretch (
-                    region, stretch_ratio);
+                  /* FIXME this flag is not good,
+                   * remove from this function and
+                   * do it in the arranger */
+                  if (during_ui_action)
+                    {
+                      region->stretch_ratio =
+                        new_length /
+                        region->before_length;
+                    }
+                  /* else if as part of an action */
+                  else
+                    {
+                      /* stretch contents */
+                      double stretch_ratio =
+                        new_length / before_length;
+                      g_message ("resizing with %f",
+                        stretch_ratio);
+                      region_stretch (
+                        region, stretch_ratio);
+                    }
                 }
             }
         }

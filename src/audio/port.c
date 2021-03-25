@@ -2787,7 +2787,7 @@ port_set_control_value (
             AUDIO_ENGINE,
             TRANSPORT_BEATS_PER_BAR,
             self->control,
-            AUDIO_ENGINE->sample_rate);
+            AUDIO_ENGINE->sample_rate, false);
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);
         }
 

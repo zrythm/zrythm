@@ -806,7 +806,7 @@ project_create_default (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT_BEATS_PER_BAR,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate);
+    AUDIO_ENGINE->sample_rate, true);
 
   /* create untitled project */
   create_and_set_dir_and_title (
@@ -1154,7 +1154,7 @@ load (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT_BEATS_PER_BAR,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate);
+    AUDIO_ENGINE->sample_rate, true);
 
   /* init ports */
   size_t max_size = 20;

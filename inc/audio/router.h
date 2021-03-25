@@ -99,6 +99,8 @@ typedef struct Router
   /** Used when recalculating the graph. */
   ZixSem      graph_access;
 
+  bool        callback_in_progress;
+
 } Router;
 
 Router *

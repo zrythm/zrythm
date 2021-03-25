@@ -65,6 +65,14 @@ typedef enum ArrangerObjectResizeType
   ARRANGER_OBJECT_RESIZE_LOOP,
   ARRANGER_OBJECT_RESIZE_FADE,
   ARRANGER_OBJECT_RESIZE_STRETCH,
+
+  /**
+   * Used when we want to resize to contents
+   * when BPM changes.
+   *
+   * Only applies to audio.
+   */
+  ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
 } ArrangerObjectResizeType;
 
 /**
