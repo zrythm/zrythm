@@ -57,6 +57,7 @@ port_identifier_copy (
   dest->type = src->type;
   dest->flow = src->flow;
   dest->flags = src->flags;
+  dest->flags2 = src->flags2;
   plugin_identifier_copy (
     &dest->plugin_id, &src->plugin_id);
   string_copy_w_realloc (
@@ -83,6 +84,7 @@ port_identifier_is_equal (
     dest->type == src->type &&
     dest->flow == src->flow &&
     dest->flags == src->flags &&
+    dest->flags2 == src->flags2 &&
     dest->track_pos == src->track_pos &&
     string_is_equal (
       dest->port_group, src->port_group) &&
