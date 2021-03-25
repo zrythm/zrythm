@@ -230,7 +230,7 @@ host_dispatcher (
   switch (opcode)
     {
     case NATIVE_HOST_OPCODE_HOST_IDLE:
-      g_debug ("host idle");
+      /*g_debug ("host idle");*/
       /* some expensive computation is happening.
        * this is used so that the GTK ui does not
        * block */
@@ -792,7 +792,8 @@ carla_native_plugin_process (
 
       int num_events =
         port ? port->midi_events->num_events : 0;
-      NativeMidiEvent events[4000];
+#define MAX_EVENTS 4000
+      NativeMidiEvent events[MAX_EVENTS];
       int num_events_written = 0;
       for (i = 0; i < num_events; i++)
         {
@@ -832,6 +833,13 @@ carla_native_plugin_process (
           events[num_events_written].data[2] =
             ev->raw_buffer[2];
           num_events_written++;
+
+          if (num_events_written == MAX_EVENTS)
+            {
+              g_warning (
+                "written %d events", MAX_EVENTS);
+              break;
+            }
         }
       if (num_events_written > 0)
         {
