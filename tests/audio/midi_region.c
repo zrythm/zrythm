@@ -32,6 +32,8 @@
 static void
 test_export (void)
 {
+  const int max_files = 18;
+
   char ** midi_files =
     io_get_files_in_dir_ending_in (
       MIDILIB_TEST_MIDI_FILES_PATH,
@@ -93,8 +95,13 @@ test_export (void)
       g_free (export_filepath);
 
       test_helper_zrythm_cleanup ();
+
+      if (iter == max_files)
+        break;
     }
   g_strfreev (midi_files);
+
+  io_rmdir (export_dir, true);
 }
 
 int
