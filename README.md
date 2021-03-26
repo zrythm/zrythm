@@ -3,7 +3,6 @@ Zrythm
 
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 [![builds.sr.ht status](https://builds.sr.ht/~alextee/zrythm.svg)](https://builds.sr.ht/~alextee/zrythm?)
-[![travis build status](https://img.shields.io/travis/zrythm/zrythm?label=travis%20build)](https://travis-ci.org/zrythm/zrythm)
 [![code grade](https://img.shields.io/codacy/grade/c16bdc22f6ae4e539aa6417274e71d17)](https://www.codacy.com/manual/alex-tee/zrythm)
 [![code coverage](https://img.shields.io/coveralls/github/zrythm/zrythm)](https://coveralls.io/github/zrythm/zrythm)
 
@@ -74,6 +73,8 @@ See the [Feature tracker](https://todo.sr.ht/~alextee/zrythm-feature) and [Bug t
 <https://www.zrythm.org/releases>
 
 ## Copying Zrythm
+[![agpl-3.0](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0)
+
 Zrythm is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, version 3.
