@@ -5,8 +5,7 @@
  *
  * Zrythm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, version 3.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,8 +30,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 3.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -495,12 +493,11 @@ static void on_prompt_for_project (
               NULL, flags,
               GTK_MESSAGE_INFO,
               GTK_BUTTONS_OK,
-"Copyright (C) 2018-2020 The Zrythm contributors\n"
+"Copyright (C) 2018-2021 The Zrythm contributors\n"
 "\n"
 "Zrythm is free software: you can redistribute it and/or modify\n"
 "it under the terms of the GNU Affero General Public License as published by\n"
-"the Free Software Foundation, either version 3 of the License, or\n"
-"(at your option) any later version.\n"
+"the Free Software Foundation, version 3.\n"
 "\n"
 "Zrythm is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
