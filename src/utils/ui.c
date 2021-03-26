@@ -160,7 +160,8 @@ ui_show_message_full (
   vsprintf (buf, format, args);
 
   GtkDialogFlags flags =
-    GTK_DIALOG_DESTROY_WITH_PARENT;
+    parent_window ?
+      GTK_DIALOG_DESTROY_WITH_PARENT : 0;
   GtkWidget * dialog =
     gtk_message_dialog_new (
       parent_window, flags, type,

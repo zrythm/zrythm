@@ -43,6 +43,11 @@ max height with `max-content-height`.
 - `gdk_keyval_name()`
 - `gdk_keyval_from_name()`
 
+# Showing popups on startup
+
+First need to set style provider in
+`zrythm_app_startup()` otherwise we get segfaults.
+
  ----
 
 Copyright (C) 2019-2021 Alexandros Theodotou
