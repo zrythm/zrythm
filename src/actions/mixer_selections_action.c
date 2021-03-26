@@ -401,6 +401,8 @@ do_or_undo_create_or_delete (
                 plugin_new_from_setting (
                   self->setting, self->to_track_pos,
                   slot_type, slot);
+              g_return_val_if_fail (
+                IS_PLUGIN_AND_NONNULL (pl), -1);
 
               /* instantiate so that ports are
                * created */

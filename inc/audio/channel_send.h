@@ -27,6 +27,7 @@
 
 #include <stdbool.h>
 
+#include "audio/port.h"
 #include "audio/port_identifier.h"
 #include "utils/yaml.h"
 
@@ -65,14 +66,12 @@ typedef struct ChannelSend
   /** Slot index in the channel sends. */
   int            slot;
 
-  /** Send amount (amplitude), 0 to 2 for audio. */
-  float          amount;
+  /** Send amount (amplitude), 0 to 2 for audio,
+   * velocity multiplier for MIDI. */
+  Port *         amount;
 
-  /** On/off for MIDI. */
-  bool           on;
-
-  /** If the send is currently empty. */
-  bool           is_empty;
+  /** Whether the send is currently enabled. */
+  Port *         enabled;
 
   /** If the send is a sidechain. */
   bool           is_sidechain;
@@ -94,9 +93,10 @@ channel_send_fields_schema[] =
   YAML_FIELD_INT (ChannelSend, schema_version),
   YAML_FIELD_INT (ChannelSend, track_pos),
   YAML_FIELD_INT (ChannelSend, slot),
-  YAML_FIELD_FLOAT (ChannelSend, amount),
-  YAML_FIELD_INT (ChannelSend, on),
-  YAML_FIELD_INT (ChannelSend, is_empty),
+  YAML_FIELD_MAPPING_PTR (
+    ChannelSend, amount, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    ChannelSend, enabled, port_fields_schema),
   YAML_FIELD_INT (ChannelSend, is_sidechain),
   YAML_FIELD_MAPPING_EMBEDDED (
     ChannelSend, dest_l_id,
@@ -114,17 +114,20 @@ channel_send_fields_schema[] =
 static const cyaml_schema_value_t
 channel_send_schema =
 {
-  YAML_VALUE_DEFAULT (
+  YAML_VALUE_PTR (
     ChannelSend, channel_send_fields_schema),
 };
 
+void
+channel_send_init_loaded (
+  ChannelSend * self,
+  bool          is_project);
 
 /**
- * Inits a channel send.
+ * Creates a channel send instance.
  */
-void
-channel_send_init (
-  ChannelSend * self,
+ChannelSend *
+channel_send_new (
   int           track_pos,
   int           slot);
 
@@ -134,6 +137,14 @@ channel_send_init (
 Track *
 channel_send_get_track (
   ChannelSend * self);
+
+NONNULL
+bool
+channel_send_is_enabled (
+  ChannelSend * self);
+
+#define channel_send_is_empty(x) \
+  (!channel_send_is_enabled (x))
 
 /**
  * Returns whether the channel send target is a
@@ -208,11 +219,6 @@ channel_send_set_amount (
   ChannelSend * self,
   float         amount);
 
-void
-channel_send_set_on (
-  ChannelSend * self,
-  bool          on);
-
 /**
  * Get the name of the destination.
  */
@@ -220,6 +226,11 @@ void
 channel_send_get_dest_name (
   ChannelSend * self,
   char *        buf);
+
+void
+channel_send_copy_values (
+  ChannelSend * dest,
+  ChannelSend * src);
 
 ChannelSend *
 channel_send_clone (

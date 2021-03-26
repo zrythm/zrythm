@@ -57,7 +57,7 @@ channel_send_draw_cb (
   ChannelSend * send = self->send;
   char dest_name[400];
   channel_send_get_dest_name (send, dest_name);
-  if (send->is_empty)
+  if (channel_send_is_empty (send))
     {
       /* fill background */
       cairo_set_source_rgba (
@@ -154,7 +154,8 @@ on_drag_begin (
   ChannelSendWidget * self)
 {
   self->start_x = start_x;
-  self->send_amount_at_start = self->send->amount;
+  self->send_amount_at_start =
+    self->send->amount->control;
 }
 
 static void
@@ -164,7 +165,7 @@ on_drag_update (
   gdouble             offset_y,
   ChannelSendWidget * self)
 {
-  if (!self->send->is_empty)
+  if (channel_send_is_enabled (self->send))
     {
       int width =
         gtk_widget_get_allocated_width (
@@ -195,10 +196,14 @@ on_drag_end (
   self->start_x = 0;
   self->last_offset_x = 0;
 
-  float send_amount_at_end = self->send->amount;
-  self->send->amount = self->send_amount_at_start;
+  float send_amount_at_end =
+    self->send->amount->control;
+  port_set_control_value (
+    self->send->amount, self->send_amount_at_start,
+    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
-  if (!self->send->is_empty && self->n_press != 2)
+  if (channel_send_is_enabled (self->send) &&
+      self->n_press != 2)
     {
       UndoableAction * ua =
         channel_send_action_new_change_amount (

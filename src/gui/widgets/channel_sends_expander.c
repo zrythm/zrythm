@@ -98,8 +98,7 @@ channel_sends_expander_widget_setup (
                 GTK_ORIENTATION_HORIZONTAL, 0));
           self->strip_boxes[i] = strip_box;
           ChannelSendWidget * csw =
-            channel_send_widget_new (
-              &ch->sends[i]);
+            channel_send_widget_new (ch->sends[i]);
           self->slots[i] = csw;
           gtk_box_pack_start (
             strip_box, GTK_WIDGET (csw), 1, 1, 0);

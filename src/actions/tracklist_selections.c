@@ -58,6 +58,12 @@ tracklist_selections_action_init_loaded (
 
   self->src_sends_size =
     (size_t) self->num_src_sends;
+
+  for (int i = 0; i < self->num_src_sends; i++)
+    {
+      channel_send_init_loaded (
+        self->src_sends[i], false);
+    }
 }
 
 static void
@@ -247,8 +253,8 @@ tracklist_selections_action_new (
               for (int j = 0; j < STRIP_SIZE; j++)
                 {
                   ChannelSend * send =
-                    &cur_track->channel->sends[j];
-                  if (send->is_empty)
+                    cur_track->channel->sends[j];
+                  if (channel_send_is_empty (send))
                     {
                       continue;
                     }
@@ -267,7 +273,8 @@ tracklist_selections_action_new (
                         ChannelSend);
                       self->src_sends[
                         self->num_src_sends++] =
-                          *send;
+                          channel_send_clone (
+                            send);
                     }
                 }
             }
@@ -615,18 +622,22 @@ do_or_undo_create_or_delete (
               /* get the project track */
               Track * track =
                 TRACKLIST->tracks[own_track->pos];
-              if (!track_type_has_channel (track->type))
+              if (!track_type_has_channel (
+                     track->type))
                 continue;
 
-              /* reconnect any sends sent from the track */
+              /* reconnect any sends sent from the
+               * track */
               for (int j = 0; j < STRIP_SIZE; j++)
                 {
                   ChannelSend * clone_send =
-                    &own_track->channel->sends[j];
+                    own_track->channel->sends[j];
                   ChannelSend * send =
-                    &track->channel->sends[j];
-                  *send = *clone_send;
-                  if (clone_send->is_empty)
+                    track->channel->sends[j];
+                  channel_send_copy_values (
+                    send, clone_send);
+                  if (channel_send_is_empty (
+                        clone_send))
                     continue;
 
                   reconnect_send (send);
@@ -651,21 +662,27 @@ do_or_undo_create_or_delete (
                     prj_port, port);
                 }
               free (ports);
+
+              track_validate (track);
             }
 
           /* re-connect any source sends */
           for (int i = 0; i < self->num_src_sends; i++)
             {
-              ChannelSend * clone_send = &self->src_sends[i];
+              ChannelSend * clone_send =
+                self->src_sends[i];
 
               /* get the original send and connect it */
               Track * orig_track =
-                TRACKLIST->tracks[clone_send->track_pos];
+                TRACKLIST->tracks[
+                  clone_send->track_pos];
               ChannelSend * send =
-                &orig_track->channel->sends[
+                orig_track->channel->sends[
                   clone_send->slot];
 
               reconnect_send (send);
+
+              track_validate (orig_track);
             }
         }
 
@@ -697,15 +714,16 @@ do_or_undo_create_or_delete (
       else
         {
           /* remove any sends pointing to any track */
-          for (int i = 0; i < self->num_src_sends; i++)
+          for (int i = 0; i < self->num_src_sends;
+               i++)
             {
               ChannelSend * clone_send =
-                &self->src_sends[i];
+                self->src_sends[i];
 
               /* get the original send and disconnect
                * it */
               ChannelSend * send =
-                &TRACKLIST->tracks[
+                TRACKLIST->tracks[
                   clone_send->track_pos]->
                     channel->sends[clone_send->slot];
               channel_send_disconnect (send);
@@ -1324,6 +1342,13 @@ tracklist_selections_action_free (
     tracklist_selections_free, self->tls_after);
   object_free_w_func_and_null (
     plugin_setting_free, self->pl_setting);
+
+  for (int i = 0; i < self->num_src_sends; i++)
+    {
+      object_free_w_func_and_null (
+        channel_send_free, self->src_sends[i]);
+    }
+  object_zero_and_free (self->src_sends);
 
   object_zero_and_free (self);
 }

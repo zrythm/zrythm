@@ -68,6 +68,7 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct TruePeakDsp TruePeakDsp;
 typedef struct ExtPort ExtPort;
 typedef struct AudioClip AudioClip;
+typedef struct ChannelSend ChannelSend;
 typedef struct PluginGtkController
   PluginGtkController;
 typedef enum PanAlgorithm PanAlgorithm;
@@ -1287,6 +1288,15 @@ void
 port_set_owner_fader (
   Port *    port,
   Fader *   fader);
+
+/**
+ * Sets the channel send as the port's owner.
+ */
+NONNULL
+void
+port_set_owner_channel_send (
+  Port *        port,
+  ChannelSend * send);
 
 #if 0
 /**

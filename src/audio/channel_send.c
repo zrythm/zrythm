@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,7 @@
  */
 
 #include "audio/channel_send.h"
+#include "audio/control_port.h"
 #include "audio/router.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -43,26 +44,63 @@ get_signal_type (
   return track->out_signal_type;
 }
 
-/**
- * Inits a channel send.
- */
 void
-channel_send_init (
+channel_send_init_loaded (
   ChannelSend * self,
+  bool          is_project)
+{
+  port_init_loaded (self->enabled, is_project);
+  port_init_loaded (self->amount, is_project);
+}
+
+/**
+ * Creates a channel send instance.
+ */
+ChannelSend *
+channel_send_new (
   int           track_pos,
   int           slot)
 {
+  ChannelSend * self = object_new (ChannelSend);
+
   self->schema_version =
     CHANNEL_SEND_SCHEMA_VERSION;
   self->track_pos = track_pos;
   self->slot = slot;
-  self->is_empty = true;
-  self->amount = 1.f;
-  self->on = true;
+
+  char name[600];
+  sprintf (
+    name, _("Channel Send %d enabled"), slot + 1);
+  self->enabled =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, name);
+  self->enabled->id.flags |= PORT_FLAG_TOGGLE;
+  self->enabled->id.flags2 |=
+    PORT_FLAG2_CHANNEL_SEND_ENABLED;
+  port_set_owner_channel_send (self->enabled, self);
+  port_set_control_value (
+    self->enabled, 0.f, F_NOT_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
+
+  sprintf (
+    name, _("Channel Send %d amount"), slot + 1);
+  self->amount =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, name);
+  self->amount->id.flags |= PORT_FLAG_AMPLITUDE;
+  self->amount->id.flags |= PORT_FLAG_AUTOMATABLE;
+  self->amount->id.flags2 |=
+    PORT_FLAG2_CHANNEL_SEND_AMOUNT;
+  port_set_owner_channel_send (self->amount, self);
+  port_set_control_value (
+    self->amount, 1.f, F_NOT_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
 
   port_identifier_init (&self->dest_l_id);
   port_identifier_init (&self->dest_r_id);
   port_identifier_init (&self->dest_midi_id);
+
+  return self;
 }
 
 Track *
@@ -82,7 +120,28 @@ bool
 channel_send_is_target_sidechain (
   ChannelSend * self)
 {
-  return !self->is_empty && self->is_sidechain;
+  return
+    channel_send_is_enabled (self) &&
+    self->is_sidechain;
+}
+
+void
+channel_send_copy_values (
+  ChannelSend * dest,
+  ChannelSend * src)
+{
+  dest->track_pos = src->track_pos;
+  dest->slot = src->slot;
+  port_set_control_value (
+    dest->enabled, src->enabled->control,
+    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  port_set_control_value (
+    dest->amount, src->amount->control,
+    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  dest->is_sidechain = src->is_sidechain;
+  dest->dest_l_id = src->dest_l_id;
+  dest->dest_r_id = src->dest_r_id;
+  dest->dest_midi_id = src->dest_midi_id;
 }
 
 /**
@@ -92,7 +151,7 @@ Track *
 channel_send_get_target_track (
   ChannelSend * self)
 {
-  if (self->is_empty)
+  if (channel_send_is_empty (self))
     return NULL;
 
   Track * track = channel_send_get_track (self);
@@ -149,7 +208,7 @@ static void
 update_connections (
   ChannelSend * self)
 {
-  if (self->is_empty)
+  if (channel_send_is_empty (self))
     return;
 
   Track * track = channel_send_get_track (self);
@@ -181,12 +240,12 @@ update_connections (
             port_get_dest_index (
               self_port, dest_port);
           port_set_multiplier_by_index (
-            self_port, idx, self->amount);
+            self_port, idx, self->amount->control);
           idx =
             port_get_src_index (
               dest_port, self_port);
           port_set_src_multiplier_by_index (
-            dest_port, idx, self->amount);
+            dest_port, idx, self->amount->control);
         }
       break;
     case TYPE_EVENT:
@@ -204,7 +263,8 @@ float
 channel_send_get_amount_for_widgets (
   ChannelSend * self)
 {
-  g_return_val_if_fail (!self->is_empty, 0.f);
+  g_return_val_if_fail (
+    channel_send_is_enabled (self), 0.f);
 
   Track * track = channel_send_get_track (self);
   g_return_val_if_fail (
@@ -213,12 +273,10 @@ channel_send_get_amount_for_widgets (
   switch (track->out_signal_type)
     {
     case TYPE_AUDIO:
-      return
-        math_get_fader_val_from_amp (self->amount);
-      break;
     case TYPE_EVENT:
-      return self->on ? 1.f : 0.f;
-      break;
+      return
+        math_get_fader_val_from_amp (
+          self->amount->control);
     default:
       break;
     }
@@ -233,7 +291,7 @@ channel_send_set_amount_from_widget (
   ChannelSend * self,
   float         val)
 {
-  g_return_if_fail (!self->is_empty);
+  g_return_if_fail (channel_send_is_enabled (self));
 
   Track * track = channel_send_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
@@ -241,11 +299,9 @@ channel_send_set_amount_from_widget (
   switch (track->out_signal_type)
     {
     case TYPE_AUDIO:
-      self->amount =
-        math_get_amp_val_from_fader (val);
-      break;
     case TYPE_EVENT:
-      self->amount = val > 0.001f ? 1.f : 0.f;
+      channel_send_set_amount (
+        self, math_get_amp_val_from_fader (val));
       break;
     default:
       break;
@@ -304,7 +360,9 @@ channel_send_connect_stereo (
       port_connect (self_stereo->r, r, true);
     }
 
-  self->is_empty = false;
+  port_set_control_value (
+    self->enabled, 1.f, F_NOT_NORMALIZED,
+    F_PUBLISH_EVENTS);
   self->is_sidechain = sidechain;
 
   /* set multipliers */
@@ -335,7 +393,9 @@ channel_send_connect_midi (
       track->channel->fader->midi_out;
   port_connect (self_port, port, true);
 
-  self->is_empty = false;
+  port_set_control_value (
+    self->enabled, 1.f, F_NOT_NORMALIZED,
+    F_PUBLISH_EVENTS);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
@@ -384,7 +444,7 @@ void
 channel_send_disconnect (
   ChannelSend * self)
 {
-  if (self->is_empty)
+  if (channel_send_is_empty (self))
     return;
 
   g_message ("disconnecting send %p", self);
@@ -411,7 +471,9 @@ channel_send_disconnect (
         }
     }
 
-  self->is_empty = true;
+  port_set_control_value (
+    self->enabled, 0.f, F_NOT_NORMALIZED,
+    F_PUBLISH_EVENTS);
   self->is_sidechain = false;
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -422,15 +484,9 @@ channel_send_set_amount (
   ChannelSend * self,
   float         amount)
 {
-  self->amount = amount;
-}
-
-void
-channel_send_set_on (
-  ChannelSend * self,
-  bool          on)
-{
-  self->on = on;
+  port_set_control_value (
+    self->amount, amount, F_NOT_NORMALIZED,
+    F_PUBLISH_EVENTS);
 }
 
 /**
@@ -441,7 +497,7 @@ channel_send_get_dest_name (
   ChannelSend * self,
   char *        buf)
 {
-  if (self->is_empty)
+  if (channel_send_is_empty (self))
     {
       if (channel_send_is_prefader (self))
         strcpy (buf, _("Pre-fader send"));
@@ -495,11 +551,27 @@ ChannelSend *
 channel_send_clone (
   ChannelSend * self)
 {
-  ChannelSend * clone = object_new (ChannelSend);
+  ChannelSend * clone =
+    channel_send_new (self->track_pos, self->slot);
 
-  *clone = *self;
+  clone->amount->control = self->amount->control;
+  clone->enabled->control = self->enabled->control;
+  clone->is_sidechain = self->is_sidechain;
+  clone->dest_l_id = self->dest_l_id;
+  clone->dest_r_id = self->dest_r_id;
+  clone->dest_midi_id = self->dest_midi_id;
 
   return clone;
+}
+
+bool
+channel_send_is_enabled (
+  ChannelSend * self)
+{
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (self->enabled), false);
+
+  return control_port_is_toggled (self->enabled);
 }
 
 ChannelSendWidget *
@@ -528,13 +600,17 @@ channel_send_find (
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (track), NULL);
 
-  return
-    &track->channel->sends[self->slot];
+  return track->channel->sends[self->slot];
 }
 
 void
 channel_send_free (
   ChannelSend * self)
 {
+  object_free_w_func_and_null (
+    port_free, self->amount);
+  object_free_w_func_and_null (
+    port_free, self->enabled);
+
   object_zero_and_free (self);
 }

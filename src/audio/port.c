@@ -645,6 +645,27 @@ port_find_from_identifier (
           break;
         }
       break;
+    case PORT_OWNER_TYPE_CHANNEL_SEND:
+      g_warn_if_fail (id->track_pos > -1);
+      tr = TRACKLIST->tracks[id->track_pos];
+      g_warn_if_fail (tr);
+      ch = tr->channel;
+      g_warn_if_fail (ch);
+      if (id->flags2 &
+            PORT_FLAG2_CHANNEL_SEND_ENABLED)
+        {
+          return ch->sends[id->port_index]->enabled;
+        }
+      else if (id->flags2 &
+                 PORT_FLAG2_CHANNEL_SEND_AMOUNT)
+        {
+          return ch->sends[id->port_index]->amount;
+        }
+      else
+        {
+          g_return_val_if_reached (NULL);
+        }
+      break;
     case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
       if (flags & PORT_FLAG_STEREO_L)
         return SAMPLE_PROCESSOR->stereo_out->l;
@@ -1550,6 +1571,39 @@ port_set_owner_fader (
     }
 }
 
+/**
+ * Sets the channel send as the port's owner.
+ */
+void
+port_set_owner_channel_send (
+  Port *        port,
+  ChannelSend * send)
+{
+  PortIdentifier * id = &port->id;
+
+  id->track_pos = send->track_pos;
+  id->port_index = send->slot;
+  id->owner_type = PORT_OWNER_TYPE_CHANNEL_SEND;
+
+  if (id->flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED)
+    {
+      port->minf = 0.f;
+      port->maxf = 1.f;
+      port->zerof = 0.0f;
+    }
+  else if (id->flags2 &
+             PORT_FLAG2_CHANNEL_SEND_AMOUNT)
+    {
+      port->minf = 0.f;
+      port->maxf = 2.f;
+      port->zerof = 0.f;
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+}
+
 #if 0
 /**
  * Sets the owner fader & its ID.
@@ -2058,8 +2112,8 @@ port_update_track_pos (
               for (int j = 0; j < STRIP_SIZE; j++)
                 {
                   ChannelSend * send =
-                    &src_ch->sends[j];
-                  if (send->is_empty)
+                    src_ch->sends[j];
+                  if (channel_send_is_empty (send))
                     continue;
 
                   switch (src_track->out_signal_type)
@@ -3872,6 +3926,7 @@ port_get_full_designation (
     case PORT_OWNER_TYPE_TRACK_PROCESSOR:
     case PORT_OWNER_TYPE_PREFADER:
     case PORT_OWNER_TYPE_FADER:
+    case PORT_OWNER_TYPE_CHANNEL_SEND:
       {
         Track * tr = port_get_track (self, 1);
         g_return_if_fail (

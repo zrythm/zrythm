@@ -45,6 +45,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/channel_sends_expander.h"
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/chord_key.h"
@@ -506,11 +507,19 @@ static void
 on_automation_value_changed (
   Port * port)
 {
-  /*AutomationTrack * at =*/
-    /*automatable_get_automation_track (a);*/
-  /*if (at && at->widget)*/
-    /*automation_track_widget_update_current_val (*/
-      /*at->widget);*/
+  PortIdentifier * id = &port->id;
+
+  if (id->flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
+    {
+      Track * tr = port_get_track (port, true);
+      if (track_is_selected (tr))
+        {
+          gtk_widget_queue_draw (
+            GTK_WIDGET (
+              MW_TRACK_INSPECTOR->sends->
+                slots[id->port_index]));
+        }
+    }
 }
 
 static void

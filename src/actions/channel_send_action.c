@@ -57,7 +57,7 @@ channel_send_action_new (
   self->type = type;
   self->send_before = channel_send_clone (send);
   self->send_after = channel_send_clone (send);
-  self->send_after->amount = amount;
+  self->send_after->amount->control = amount;
 
   if (port &&
       type == CHANNEL_SEND_ACTION_CONNECT_MIDI)
@@ -145,7 +145,7 @@ channel_send_action_do (
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
       channel_send_set_amount (
-        send, self->send_after->amount);
+        send, self->send_after->amount->control);
       break;
     default:
       break;
@@ -180,7 +180,7 @@ channel_send_action_undo (
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
       channel_send_set_amount (
-        send, self->send_before->amount);
+        send, self->send_before->amount->control);
       break;
     default:
       break;

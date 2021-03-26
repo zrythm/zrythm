@@ -136,7 +136,7 @@ on_selection_changed (
   switch (target->type)
     {
     case TARGET_TYPE_NONE:
-      if (!send->is_empty)
+      if (channel_send_is_enabled (send))
         {
           ua =
             channel_send_action_new_disconnect (
@@ -150,7 +150,7 @@ on_selection_changed (
       switch (src_track->out_signal_type)
         {
         case TYPE_EVENT:
-          if (send->is_empty ||
+          if (channel_send_is_empty (send) ||
               !port_identifier_is_equal (
                 &self->send_widget->send->
                   dest_midi_id,
@@ -165,7 +165,7 @@ on_selection_changed (
             }
           break;
         case TYPE_AUDIO:
-          if (send->is_empty ||
+          if (channel_send_is_empty (send) ||
               !port_identifier_is_equal (
                 &self->send_widget->send->
                   dest_l_id,
@@ -189,7 +189,7 @@ on_selection_changed (
         dest_sidechain =
           get_sidechain_from_target (target);
         if (dest_sidechain &&
-            (send->is_empty ||
+            (channel_send_is_empty (send) ||
              !send->is_sidechain ||
              !port_identifier_is_equal (
                &self->send_widget->send->dest_l_id,
@@ -239,8 +239,8 @@ setup_treeview (
   int count = 1;
 
   /* setup tracks */
-  Track * track =
-    channel_send_get_track (self->send_widget->send);
+  ChannelSend * send = self->send_widget->send;
+  Track * track = channel_send_get_track (send);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * target_track = TRACKLIST->tracks[i];
@@ -269,10 +269,9 @@ setup_treeview (
         2, target,
         -1);
 
-      if (!self->send_widget->send->is_empty &&
+      if (channel_send_is_enabled (send) &&
           target_track ==
-            channel_send_get_target_track (
-              self->send_widget->send))
+            channel_send_get_target_track (send))
         {
           select_idx = count;
         }
@@ -374,11 +373,11 @@ setup_treeview (
                 -1);
 
               if (channel_send_is_target_sidechain (
-                    self->send_widget->send))
+                    send))
                 {
                   StereoPorts * sp =
                     channel_send_get_target_sidechain (
-                      self->send_widget->send);
+                      send);
                   if (sp->l == l &&
                       sp->r == r)
                     {

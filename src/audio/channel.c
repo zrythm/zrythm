@@ -426,21 +426,22 @@ channel_prepare_process (Channel * self)
 
 void
 channel_init_loaded (
-  Channel * ch,
+  Channel * self,
   bool      project)
 {
-  g_message ("initing channel");
-  Track * track = channel_get_track (ch);
+  g_debug ("initing channel");
+
+  Track * track = channel_get_track (self);
   g_warn_if_fail (track);
 
-  ch->magic = CHANNEL_MAGIC;
+  self->magic = CHANNEL_MAGIC;
 
   /* fader */
-  ch->prefader->track_pos = track->pos;
-  ch->fader->track_pos = track->pos;
+  self->prefader->track_pos = track->pos;
+  self->fader->track_pos = track->pos;
 
-  fader_init_loaded (ch->prefader, project);
-  fader_init_loaded (ch->fader, project);
+  fader_init_loaded (self->prefader, project);
+  fader_init_loaded (self->fader, project);
 
   PortType out_type =
     track->out_signal_type;
@@ -448,19 +449,19 @@ channel_init_loaded (
   switch (out_type)
     {
     case TYPE_EVENT:
-      ch->midi_out->midi_events =
+      self->midi_out->midi_events =
         midi_events_new (
-          ch->midi_out);
-      ch->midi_out->id.owner_type =
+          self->midi_out);
+      self->midi_out->id.owner_type =
         PORT_OWNER_TYPE_TRACK;
       break;
     case TYPE_AUDIO:
       /* make sure master is expoed to backend */
       if (track->type == TRACK_TYPE_MASTER)
         {
-          ch->stereo_out->l->exposed_to_backend =
+          self->stereo_out->l->exposed_to_backend =
             true;
-          ch->stereo_out->r->exposed_to_backend =
+          self->stereo_out->r->exposed_to_backend =
             true;
         }
       break;
@@ -472,30 +473,37 @@ channel_init_loaded (
   Plugin * pl;
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      pl = ch->inserts[i];
+      pl = self->inserts[i];
       if (pl)
         {
-          pl->id.track_pos = ch->track_pos;
+          pl->id.track_pos = self->track_pos;
           pl->id.slot = i;
           pl->id.slot_type = PLUGIN_SLOT_INSERT;
           plugin_init_loaded (pl, project);
         }
-      pl = ch->midi_fx[i];
+      pl = self->midi_fx[i];
       if (pl)
         {
-          pl->id.track_pos = ch->track_pos;
+          pl->id.track_pos = self->track_pos;
           pl->id.slot = i;
           pl->id.slot_type = PLUGIN_SLOT_MIDI_FX;
           plugin_init_loaded (pl, project);
         }
     }
-  if (ch->instrument)
+  if (self->instrument)
     {
-      pl = ch->instrument;
-      pl->id.track_pos = ch->track_pos;
+      pl = self->instrument;
+      pl->id.track_pos = self->track_pos;
       pl->id.slot = 0;
       pl->id.slot_type = PLUGIN_SLOT_INSTRUMENT;
       plugin_init_loaded (pl, project);
+    }
+
+  /* init sends */
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      channel_send_init_loaded (
+        self->sends[i], project);
     }
 }
 
@@ -1203,6 +1211,12 @@ channel_append_all_ports (
             is_dynamic, size);
         }
     }
+
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      _ADD (ch->sends[i]->enabled);
+      _ADD (ch->sends[i]->amount);
+    }
 #undef _ADD
 }
 
@@ -1332,8 +1346,8 @@ channel_new (
   /* init sends */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      channel_send_init (
-        &self->sends[i], self->track_pos, i);
+      self->sends[i] =
+        channel_send_new (self->track_pos, i);
     }
 
   return self;
@@ -2002,7 +2016,7 @@ channel_update_track_pos (
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      ChannelSend * send = &self->sends[i];
+      ChannelSend * send = self->sends[i];
       send->track_pos = pos;
     }
 
@@ -2129,7 +2143,8 @@ channel_clone (
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      clone->sends[i] = ch->sends[i];
+      clone->sends[i] =
+        channel_send_clone (ch->sends[i]);
     }
 
   /* TODO clone port connections, same for
@@ -2249,6 +2264,13 @@ channel_free (Channel * self)
     stereo_ports_free, self->stereo_out);
   object_free_w_func_and_null (
     port_free, self->midi_out);
+
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      ChannelSend * send = self->sends[i];
+      object_free_w_func_and_null (
+        channel_send_free, send);
+    }
 
   if (GTK_IS_WIDGET (self->widget))
     {

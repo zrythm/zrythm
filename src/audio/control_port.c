@@ -361,9 +361,15 @@ control_port_set_val_from_normalized (
       float real_val =
         control_port_normalized_val_to_real (
           self, val);
+      if (!math_floats_equal (
+            real_val, self->control))
+        {
+          EVENTS_PUSH (
+            ET_AUTOMATION_VALUE_CHANGED, self);
+        }
       port_set_control_value (
         self, real_val, F_NOT_NORMALIZED,
-        false);
+        F_NO_PUBLISH_EVENTS);
     }
   else
     {

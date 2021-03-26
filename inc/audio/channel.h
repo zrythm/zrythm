@@ -95,7 +95,7 @@ typedef struct Channel
    *
    * @note See CHANNEL_SEND_POST_FADER_START_SLOT.
    */
-  ChannelSend      sends[STRIP_SIZE];
+  ChannelSend *    sends[STRIP_SIZE];
 
   /**
    * External MIDI inputs that are currently

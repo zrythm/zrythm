@@ -280,7 +280,11 @@ create_model_for_ports (
                 port->id.flags &
                   PORT_FLAG_CHANNEL_FADER ||
                 port->id.flags &
-                  PORT_FLAG_STEREO_BALANCE))
+                  PORT_FLAG_STEREO_BALANCE ||
+                port->id.flags2 &
+                  PORT_FLAG2_CHANNEL_SEND_ENABLED ||
+                port->id.flags2 &
+                  PORT_FLAG2_CHANNEL_SEND_AMOUNT))
             continue;
 
           strcpy (icon_name, "node-type-cusp");
@@ -652,7 +656,9 @@ automatable_selector_popover_widget_new (
     }
   else if (id->flags & PORT_FLAG_CHANNEL_MUTE ||
       id->flags & PORT_FLAG_CHANNEL_FADER ||
-      id->flags & PORT_FLAG_STEREO_BALANCE)
+      id->flags & PORT_FLAG_STEREO_BALANCE ||
+      id->flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED ||
+      id->flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
     {
       self->selected_type = AS_TYPE_CHANNEL;
     }

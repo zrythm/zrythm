@@ -107,6 +107,9 @@ typedef enum PortOwnerType
   /* track fader */
   PORT_OWNER_TYPE_FADER,
 
+  /** Channel send. */
+  PORT_OWNER_TYPE_CHANNEL_SEND,
+
   /* track prefader */
   PORT_OWNER_TYPE_PREFADER,
 
@@ -133,6 +136,7 @@ port_owner_type_strings[] =
   { "track",     PORT_OWNER_TYPE_TRACK   },
   { "pre-fader", PORT_OWNER_TYPE_PREFADER   },
   { "fader",     PORT_OWNER_TYPE_FADER   },
+  { "channel send", PORT_OWNER_TYPE_CHANNEL_SEND  },
   { "track processor",
     PORT_OWNER_TYPE_TRACK_PROCESSOR   },
   { "monitor fader",
@@ -322,6 +326,12 @@ typedef enum PortFlags2
 
   /** MIDI channel pressure. */
   PORT_FLAG2_MIDI_CHANNEL_PRESSURE = 1 << 14,
+
+  /** Channel send enabled. */
+  PORT_FLAG2_CHANNEL_SEND_ENABLED = 1 << 15,
+
+  /** Channel send amount. */
+  PORT_FLAG2_CHANNEL_SEND_AMOUNT = 1 << 16,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -379,6 +389,8 @@ port_flags2_bitvals[] =
   { .name = "pitch_bend", .offset = 12, .bits = 1 },
   { .name = "poly_key_pressure", .offset = 13, .bits = 1 },
   { .name = "channel_pressure", .offset = 14, .bits = 1 },
+  { .name = "ch_send_enabled", .offset = 15, .bits = 1 },
+  { .name = "ch_send_amount", .offset = 16, .bits = 1 },
 };
 
 /**

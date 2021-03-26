@@ -1497,6 +1497,9 @@ plugin_instantiate (
   bool        project,
   LilvState * state)
 {
+  g_return_val_if_fail (
+    pl->setting && pl->setting->descr, -1);
+
   g_message ("Instantiating %s...",
              pl->setting->descr->name);
 

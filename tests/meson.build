@@ -163,7 +163,7 @@ if get_option ('tests')
     'audio/midi_event': { parallel: true },
     'audio/midi_mapping': { parallel: true },
     'audio/midi_note': { parallel: true },
-    'audio/midi_region': { parallel: true },
+    'audio/midi_region': { parallel: false },
     'audio/midi_track': { parallel: true },
     'audio/position': { parallel: true },
     'audio/port': { parallel: true },

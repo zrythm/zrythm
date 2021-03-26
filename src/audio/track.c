@@ -1208,27 +1208,37 @@ track_generate_automation_tracks (
 
   if (track_type_has_channel (track->type))
     {
+      Channel * ch = track->channel;
+
       /* -- fader -- */
 
       /* volume */
       at =
-        automation_track_new (
-          track->channel->fader->amp);
+        automation_track_new (ch->fader->amp);
       automation_tracklist_add_at (atl, at);
       at->created = 1;
       at->visible = 1;
 
       /* balance */
       at =
-        automation_track_new (
-          track->channel->fader->balance);
+        automation_track_new (ch->fader->balance);
       automation_tracklist_add_at (atl, at);
 
       /* mute */
       at =
-        automation_track_new (
-          track->channel->fader->mute);
+        automation_track_new (ch->fader->mute);
       automation_tracklist_add_at (atl, at);
+
+      /* --- end fader --- */
+
+      /* sends */
+      for (int i = 0; i < STRIP_SIZE; i++)
+        {
+          at =
+            automation_track_new (
+              ch->sends[i]->amount);
+          automation_tracklist_add_at (atl, at);
+        }
     }
 
   if (track_has_piano_roll (track))
