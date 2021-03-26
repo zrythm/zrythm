@@ -18,6 +18,7 @@ gdb -q --batch \
   -ex "set logging on" \
   -ex "set pagination off" \
   -ex "handle SIG32 pass nostop noprint" \
+  -ex "handle SIGTRAP pass nostop noprint" \
   -ex "echo backtrace:\\n" \
   -ex "backtrace full" \
   -ex "echo \\n\\nregisters:\\n" \
