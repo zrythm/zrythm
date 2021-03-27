@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-17 09:59+0000\n"
-"PO-Revision-Date: 2021-03-08 18:37+0000\n"
+"PO-Revision-Date: 2021-03-18 12:18+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.1\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:279
@@ -644,9 +644,8 @@ msgid "[Zrythm] Enabled"
 msgstr "[Zrythm] 已启用"
 
 #: src/plugins/plugin.c:199
-#, fuzzy
 msgid "Enables or disables the plugin"
-msgstr "启用/禁用连接"
+msgstr "启用/禁用插件"
 
 #: src/plugins/plugin.c:222
 msgid "[Zrythm] Gain"
@@ -655,7 +654,7 @@ msgstr "[Zrythm] 增益"
 #: src/plugins/plugin.c:223
 #, fuzzy
 msgid "Plugin gain"
-msgstr "插件"
+msgstr "插件 gain"
 
 #: src/plugins/plugin.c:965
 #, c-format
@@ -663,7 +662,6 @@ msgid " - bridge: %s"
 msgstr ""
 
 #: src/plugins/plugin.c:976
-#, fuzzy
 msgid "instrument"
 msgstr "乐器"
 
@@ -1097,9 +1095,8 @@ msgid "Add to project"
 msgstr "添加到项目"
 
 #: src/gui/widgets/plugin_browser.c:618
-#, fuzzy
 msgid "Add to project with UI"
-msgstr "添加到项目"
+msgstr "添加到有用户界面的项目"
 
 #: src/gui/widgets/plugin_browser.c:662
 msgid "Add to project (carla)"
@@ -1114,9 +1111,8 @@ msgid "Add to project (bridged full)"
 msgstr "添加到项目（桥接完整）"
 
 #: src/gui/widgets/plugin_browser.c:689
-#, fuzzy
 msgid "Use _Generic UI"
-msgstr "通用用户界面"
+msgstr "使用通用用户界面"
 
 #: src/gui/widgets/plugin_browser.c:710
 msgid "Add to collection"
@@ -1311,7 +1307,7 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:438
 msgid "Create takes"
-msgstr "创建场景"
+msgstr ""
 
 #: src/gui/widgets/transport_controls.c:441
 msgid "Create takes (mute previous)"
@@ -1704,7 +1700,7 @@ msgstr "立体声输入"
 
 #: src/gui/widgets/ports_expander.c:395
 msgid "MIDI In"
-msgstr "MIDI输入"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:403
 msgid "MIDI Out"
@@ -2873,9 +2869,8 @@ msgid "Change comment"
 msgstr "修改注解"
 
 #: src/actions/tracklist_selections.c:1263
-#, fuzzy
 msgid "Change MIDI fader mode"
-msgstr "Ch MIDI推子输出"
+msgstr "更改 MIDI 音量控制器模式"
 
 #: src/actions/tracklist_selections.c:1277
 msgid "Move Track"
