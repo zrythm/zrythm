@@ -4,13 +4,13 @@
 # Automatically generated, 2020.
 #
 # xunil-cloud <freed602om@gmail.com>, 2020.
-# sonata-chen <sonatachen39@gmail.com>, 2020.
+# sonata-chen <sonatachen39@gmail.com>, 2020, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-17 09:59+0000\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"PO-Revision-Date: 2021-03-27 08:11+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:279
@@ -348,9 +348,8 @@ msgid "Failed to open file: %s"
 msgstr "無法開啟檔案: %s"
 
 #: src/project.c:187
-#, fuzzy
 msgid "Project not compressed by zstd"
-msgstr "專案未使用 zstd 壓縮！"
+msgstr "專案未使用 zstd 壓縮"
 
 #: src/project.c:200
 #, c-format
@@ -504,7 +503,7 @@ msgstr "無法解壓縮專案: %s\n"
 #: src/zrythm_app.c:1432
 #, fuzzy
 msgid "Unknown operation"
-msgstr "未知的參數\n"
+msgstr "未知的參數"
 
 #: src/zrythm_app.c:1452
 #, c-format
@@ -512,9 +511,8 @@ msgid "libguile is required for this option\n"
 msgstr ""
 
 #: src/zrythm_app.c:1599
-#, fuzzy
 msgid "Print version information"
-msgstr "授權條款"
+msgstr "顯示版本資訊"
 
 #: src/zrythm_app.c:1604
 msgid "Convert ZPJ-FILE to YAML"
@@ -539,7 +537,7 @@ msgstr ""
 #: src/zrythm_app.c:1626
 #, fuzzy
 msgid "Reset to factory settings"
-msgstr "已恢復原廠設定\n"
+msgstr "已恢復原廠設定"
 
 #: src/zrythm_app.c:1629
 #, fuzzy
@@ -549,7 +547,7 @@ msgstr "欲使用的音訊後端"
 #: src/zrythm_app.c:1633
 #, fuzzy
 msgid "Override the MIDI backend to use"
-msgstr "欲使用的 MIDI 後端。"
+msgstr "欲使用的 MIDI 後端"
 
 #: src/zrythm_app.c:1637
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
