@@ -39,15 +39,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-03-17 09:46+0000\n"
-"PO-Revision-Date: 2021-03-08 18:37+0000\n"
+"PO-Revision-Date: 2021-03-18 12:18+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -3928,7 +3929,7 @@ msgstr "录音模式"
 
 #: ../../playback-and-recording/recording.rst:84
 msgid "Overwrite events"
-msgstr ""
+msgstr "覆盖事件"
 
 #: ../../playback-and-recording/recording.rst:84
 msgid "Overwrite any existing events in the track during recording"
@@ -5151,9 +5152,8 @@ msgid "Returns the send instance at the given slot"
 msgstr ""
 
 #: ../../scripting/api/audio midi_note.rst:3
-#, fuzzy
 msgid "(audio midi-note)"
-msgstr "音频后端"
+msgstr "(音频 midi 音符)"
 
 #: ../../scripting/api/audio midi_note.rst:7
 msgid "``(midi-note-new region start_pos end_pos pitch velocity)``"
@@ -5184,9 +5184,8 @@ msgid "Adds a midi note to ``region``."
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:3
-#, fuzzy
 msgid "(audio port)"
-msgstr "音频后端"
+msgstr "(音频端口)"
 
 #: ../../scripting/api/audio port.rst:7
 msgid "``(stereo-ports-get-port stereo_ports left)``"
@@ -5205,9 +5204,8 @@ msgid "Returns the identifier of ``port``."
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:3
-#, fuzzy
 msgid "(audio position)"
-msgstr "音频后端"
+msgstr "(音频位置)"
 
 #: ../../scripting/api/audio position.rst:8
 msgid "``(position-new bars beats sixteenths ticks sub_tick)``"
@@ -5228,9 +5226,8 @@ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr ""
 
 #: ../../scripting/api/audio supported_file.rst:3
-#, fuzzy
 msgid "(audio supported-file)"
-msgstr "音频后端"
+msgstr "(音频支持的文件)"
 
 #: ../../scripting/api/audio supported_file.rst:7
 msgid "``(supported-file-new-from-path path)``"
@@ -5241,9 +5238,8 @@ msgid "Returns an instance of SupportedFile."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:3
-#, fuzzy
 msgid "(audio track)"
-msgstr "音频后端"
+msgstr "(音轨)"
 
 #: ../../scripting/api/audio track.rst:8
 msgid "``(midi-track-new idx name)``"
@@ -5300,9 +5296,8 @@ msgid ""
 msgstr ""
 
 #: ../../scripting/api/audio track_processor.rst:3
-#, fuzzy
 msgid "(audio track-processor)"
-msgstr "音频后端"
+msgstr "(音轨处理器)"
 
 #: ../../scripting/api/audio track_processor.rst:7
 msgid "``(track-processor-get-stereo-in track_processor)``"
@@ -5313,9 +5308,8 @@ msgid "Returns the stereo in ports instance of the track processor."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:3
-#, fuzzy
 msgid "(audio tracklist)"
-msgstr "音频后端"
+msgstr "(音频曲目列表)"
 
 #: ../../scripting/api/audio tracklist.rst:7
 msgid "``(tracklist-insert-track tracklist track idx)``"
@@ -5386,9 +5380,8 @@ msgid "Scans the system for plugins."
 msgstr ""
 
 #: ../../scripting/api/project.rst:3
-#, fuzzy
 msgid "(project)"
-msgstr "项目"
+msgstr "(项目)"
 
 #: ../../scripting/api/project.rst:7
 msgid "``(project-get-title project)``"
@@ -5415,9 +5408,8 @@ msgid "Returns the undo manager for the project."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:3
-#, fuzzy
 msgid "(zrythm)"
-msgstr "zrythm"
+msgstr "(zrythm)"
 
 #: ../../scripting/api/zrythm.rst:7
 msgid "``(zrythm-get-ver)``"
@@ -5444,9 +5436,8 @@ msgid "Return the currently loaded Project instance."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:19
-#, fuzzy
 msgid "``(zrythm-null)``"
-msgstr "zrythm"
+msgstr "``(zrythm-null)``"
 
 #: ../../scripting/api/zrythm.rst:18
 msgid "Returns a NULL pointer."
@@ -7310,4 +7301,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-

@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-03-17 09:46+0000\n"
-"PO-Revision-Date: 2021-03-15 18:02+0000\n"
+"PO-Revision-Date: 2021-03-18 12:18+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.5.2-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -3563,13 +3564,9 @@ msgid "Installer"
 msgstr "Installateur"
 
 #: ../../getting-started/installation.rst:40
-#, fuzzy
 msgid "The installer supports the following distributions (and derivatives):"
 msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"L'installateur prend en charge les distros (et dérivés) suivantes :\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"L'installateur prend en charge les distributions suivantes (et dérivées) :"
 
 #: ../../getting-started/installation.rst:43
 msgid "**Arch Linux** - x86_64"
@@ -9144,7 +9141,7 @@ msgstr ""
 
 #: ../../zrythm-interface/overview.rst:8
 msgid "The Zrythm interface is split into various sub-modules."
-msgstr "L'interface de Zrythm est divisée en différents sous-modules :"
+msgstr "L'interface de Zrythm est divisée en différents sous-modules."
 
 #: ../../zrythm-interface/overview.rst:13
 msgid "Each sub-module is explained in its own section."
@@ -12530,4 +12527,3 @@ msgstr ""
 #~ "du projet et est utilisé pour "
 #~ "mixer les signaux audio de chaque "
 #~ "canal."
-
