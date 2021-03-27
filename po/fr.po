@@ -15,10 +15,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-17 09:59+0000\n"
-"PO-Revision-Date: 2021-03-15 18:02+0000\n"
-"Last-Translator: Romain Alb <romain.alb@lilo.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2021-03-18 12:18+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -610,11 +610,11 @@ msgstr "Sortie MIDI"
 
 #: src/plugins/carla_native_plugin.c:1115
 msgid "CV in"
-msgstr ""
+msgstr "entrée CV"
 
 #: src/plugins/carla_native_plugin.c:1125
 msgid "CV out"
-msgstr ""
+msgstr "sortie CV"
 
 #: src/plugins/plugin_manager.c:370
 msgid "Error loading LV2 bundle dir: "
@@ -661,26 +661,23 @@ msgid "[Zrythm] Enabled"
 msgstr "[Zrythm] Activé"
 
 #: src/plugins/plugin.c:199
-#, fuzzy
 msgid "Enables or disables the plugin"
-msgstr "Active/désactive la connexion"
+msgstr "Active ou désactive le greffon"
 
 #: src/plugins/plugin.c:222
 msgid "[Zrythm] Gain"
 msgstr "[Zrythm] Gain"
 
 #: src/plugins/plugin.c:223
-#, fuzzy
 msgid "Plugin gain"
-msgstr "Greffon 1"
+msgstr "Gain du greffon"
 
 #: src/plugins/plugin.c:965
 #, c-format
 msgid " - bridge: %s"
-msgstr ""
+msgstr " - pont : %s"
 
 #: src/plugins/plugin.c:976
-#, fuzzy
 msgid "instrument"
 msgstr "Instrument"
 
@@ -1127,9 +1124,8 @@ msgid "Add to project"
 msgstr "Ajouter au projet"
 
 #: src/gui/widgets/plugin_browser.c:618
-#, fuzzy
 msgid "Add to project with UI"
-msgstr "Ajouter au projet"
+msgstr "Ajouter au projet avec interface utilisateur"
 
 #: src/gui/widgets/plugin_browser.c:662
 msgid "Add to project (carla)"
@@ -1144,9 +1140,8 @@ msgid "Add to project (bridged full)"
 msgstr "Ajouter au projet(complètement ponté)"
 
 #: src/gui/widgets/plugin_browser.c:689
-#, fuzzy
 msgid "Use _Generic UI"
-msgstr "Interfaces utilisateur génériques"
+msgstr "Utiliser l'interface utilisateur générique"
 
 #: src/gui/widgets/plugin_browser.c:710
 msgid "Add to collection"
@@ -2393,6 +2388,9 @@ msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
+"Le dorsal MIDI JACK ne peut être utilisé qu'avec le dorsal audio JACK (votre "
+"dorsal audio actuel est %s). Nous utiliserons le dorsal MIDI factice à la "
+"place."
 
 #: src/audio/engine.c:522
 #, c-format
@@ -2744,7 +2742,7 @@ msgstr "Impossible de coller des données incompatibles"
 
 #: src/actions/actions.c:1546
 msgid "The track selection contains a track that cannot be deleted"
-msgstr ""
+msgstr "La sélection de piste contient une piste qui ne peut pas être supprimée"
 
 #: src/actions/actions.c:1837
 msgid "No regions selected"
@@ -2947,9 +2945,8 @@ msgid "Change comment"
 msgstr "Modifier le commentaire"
 
 #: src/actions/tracklist_selections.c:1263
-#, fuzzy
 msgid "Change MIDI fader mode"
-msgstr "Sortie MIDI"
+msgstr "Changer le mode de chariot MIDI"
 
 #: src/actions/tracklist_selections.c:1277
 msgid "Move Track"
@@ -4034,9 +4031,8 @@ msgid "Link"
 msgstr "Lien"
 
 #: resources/ui/snap_grid_popover.ui:326
-#, fuzzy
 msgid "Link length to snap setting"
-msgstr "Longueur de note à accrocher"
+msgstr "Paramètre de longueur de note à accrocher"
 
 #: resources/ui/snap_grid_popover.ui:339
 msgid "Last object"
