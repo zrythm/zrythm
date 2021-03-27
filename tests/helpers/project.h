@@ -485,9 +485,12 @@ test_project_rebootstrap_timeline (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
 
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  bpm_t bpm =
+    tempo_track_get_current_bpm (P_TEMPO_TRACK);
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, TIME_SIG->beats_per_bar,
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    AUDIO_ENGINE, beats_per_bar, bpm,
     AUDIO_ENGINE->sample_rate, true);
 
   test_project_save_and_reload ();

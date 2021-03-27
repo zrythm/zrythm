@@ -21,6 +21,7 @@
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/snap_grid.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -764,8 +765,9 @@ position_get_total_beats (
   int beats = position_get_beats (pos, false);
   int bars = position_get_bars (pos, false);
 
-  int ret =
-    beats + bars * TRANSPORT_BEATS_PER_BAR;
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int ret = beats + bars * beats_per_bar;
 
   if (include_current || ret == 0)
     {
@@ -898,14 +900,18 @@ position_get_beats (
     ZRYTHM && PROJECT && TRANSPORT &&
     TRANSPORT->ticks_per_bar > 0 &&
     TRANSPORT->ticks_per_beat > 0 &&
-    TIME_SIG->beats_per_bar > 0, -1);
+    P_TEMPO_TRACK, -1);
+
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  g_return_val_if_fail (beats_per_bar > 0, -1);
 
   double total_bars =
     (double) position_get_bars (pos, false);
   double total_beats =
     pos->ticks / TRANSPORT->ticks_per_beat;
   total_beats -=
-    (double) (total_bars * TIME_SIG->beats_per_bar);
+    (double) (total_bars * beats_per_bar);
   if (total_beats >= 0.0)
     {
       int ret = (int) floor (total_beats);

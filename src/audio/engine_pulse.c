@@ -413,9 +413,11 @@ engine_pulse_setup (
   self->sample_rate = actual_spec->rate;
   if (P_TEMPO_TRACK)
     {
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       engine_update_frames_per_tick (
-        self,
-        self->transport->time_sig.beats_per_bar,
+        self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->sample_rate, true);
     }

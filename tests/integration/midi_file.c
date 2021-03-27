@@ -37,11 +37,13 @@
 #define BUFFER_SIZE 20
 #define LARGE_BUFFER_SIZE 2000
 /* around 100 causes OOM in various CIs */
-#define MAX_FILES 60
+#define MAX_FILES 40
 
 static void
 test_midi_file_playback ()
 {
+  test_helper_zrythm_init ();
+
   /* create a track for testing */
   Track * midi_track =
     track_new (
@@ -149,14 +151,14 @@ test_midi_file_playback ()
   g_strfreev (midi_files);
 
   test_project_save_and_reload ();
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
-
-  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/integration/midi_file/"
 

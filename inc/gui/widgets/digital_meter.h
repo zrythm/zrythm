@@ -143,7 +143,8 @@ typedef struct _DigitalMeterWidget
   int                      update_timesig_bot;
 
   /** Used when changing the time signature. */
-  TimeSignature            prev_time_sig;
+  int                      prev_beats_per_bar;
+  int                      prev_beat_unit;
 
   /* ---------- FOR POSITION ---------------- */
   void *     obj;

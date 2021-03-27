@@ -3161,12 +3161,16 @@ lv2_plugin_process (
         forge, bars - 1);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatUnit);
-      lv2_atom_forge_int (
-        forge, TRANSPORT_BEAT_UNIT_INT);
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
+      int beat_unit =
+        tempo_track_get_beat_unit (P_TEMPO_TRACK);
+      lv2_atom_forge_int (forge, beat_unit);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatsPerBar);
       lv2_atom_forge_float (
-        forge, (float) TRANSPORT_BEATS_PER_BAR);
+        forge, (float) beats_per_bar);
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatsPerMinute);
       lv2_atom_forge_float (

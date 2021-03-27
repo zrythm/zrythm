@@ -683,10 +683,13 @@ carla_native_plugin_process (
   self->time_info.bbt.barStartTick =
     (double)
     (PLAYHEAD->ticks - bar_start.ticks);
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beat_unit =
+    tempo_track_get_beat_unit (P_TEMPO_TRACK);
   self->time_info.bbt.beatsPerBar =
-    (float) TRANSPORT_BEATS_PER_BAR;
-  self->time_info.bbt.beatType =
-    (float) TRANSPORT_BEAT_UNIT_INT;
+    (float) beats_per_bar;
+  self->time_info.bbt.beatType = (float) beat_unit;
   self->time_info.bbt.ticksPerBeat =
     TRANSPORT->ticks_per_beat;
   self->time_info.bbt.beatsPerMinute =

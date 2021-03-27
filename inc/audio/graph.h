@@ -91,8 +91,13 @@ typedef struct Graph
 
   /** List of all graph nodes (only used for memory
    * management) */
-  GraphNode **  graph_nodes;
-  int           n_graph_nodes;
+  GraphNode ** graph_nodes;
+  int          n_graph_nodes;
+
+  /* --- caches for current graph --- */
+  GraphNode *  bpm_node;
+  GraphNode *  beats_per_bar_node;
+  GraphNode *  beat_unit_node;
 
   /** Nodes without incoming edges.
    * These run concurrently at the start of each

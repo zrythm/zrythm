@@ -524,8 +524,11 @@ export_midi (
       midiFileSetVersion (mf, 0);
 
       /* common time: 4 crochet beats, per bar */
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
-        mf, 1, TRANSPORT->time_sig.beats_per_bar,
+        mf, 1, beats_per_bar,
         math_round_double_to_int (
           TRANSPORT->ticks_per_beat));
 

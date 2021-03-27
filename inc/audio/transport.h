@@ -47,13 +47,6 @@ typedef struct AudioEngine AudioEngine;
 
 #define TRANSPORT (AUDIO_ENGINE->transport)
 #define TRANSPORT_DEFAULT_TOTAL_BARS 128
-#define TRANSPORT_MAX_BPM 420.f
-#define TRANSPORT_MIN_BPM 40.f
-#define TRANSPORT_DEFAULT_BPM 140.f
-#define TRANSPORT_DEFAULT_BEATS_PER_BAR 4
-#define TRANSPORT_DEFAULT_BEAT_UNIT BEAT_UNIT_4
-
-#define TIME_SIG (&TRANSPORT->time_sig)
 
 #define PLAYHEAD (&TRANSPORT->playhead_pos)
 #define TRANSPORT_IS_ROLLING \
@@ -62,18 +55,6 @@ typedef struct AudioEngine AudioEngine;
   (TRANSPORT->play_state == PLAYSTATE_PAUSED)
 #define TRANSPORT_IS_LOOPING \
   (TRANSPORT->loop)
-#define TRANSPORT_BEATS_PER_BAR \
-  (TRANSPORT->time_sig.beats_per_bar)
-#define TRANSPORT_BEAT_UNIT_INT \
-  (TRANSPORT->time_sig.beat_unit)
-
-typedef enum BeatUnit
-{
-  BEAT_UNIT_2,
-  BEAT_UNIT_4,
-  BEAT_UNIT_8,
-  BEAT_UNIT_16
-} BeatUnit;
 
 typedef enum {
   PLAYSTATE_ROLL_REQUESTED,
@@ -138,6 +119,7 @@ typedef enum TransportRecordingMode
   RECORDING_MODE_TAKES_MUTED,
 } TransportRecordingMode;
 
+#if 0
 typedef struct TimeSignature
 {
   int           schema_version;
@@ -179,6 +161,7 @@ time_signature_schema =
   YAML_VALUE_PTR (
     TimeSignature, time_signature_fields_schema),
 };
+#endif
 
 /**
  * The transport.
@@ -224,7 +207,7 @@ typedef struct Transport
   /** Whether range should be displayed or not. */
   int           has_range;
 
-  TimeSignature time_sig;
+  //TimeSignature time_sig;
 
   /* ---------- CACHE -------------- */
   double        ticks_per_beat;
@@ -313,15 +296,6 @@ typedef struct Transport
   gint64        last_manual_playhead_change;
 } Transport;
 
-static const cyaml_strval_t
-beat_unit_strings[] =
-{
-  { "2",      BEAT_UNIT_2    },
-  { "4",      BEAT_UNIT_4    },
-  { "8",      BEAT_UNIT_8    },
-  { "16",     BEAT_UNIT_16   },
-};
-
 static const cyaml_schema_field_t
 transport_fields_schema[] =
 {
@@ -353,9 +327,9 @@ transport_fields_schema[] =
     Transport, range_2, position_fields_schema),
   YAML_FIELD_INT (
     Transport, has_range),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport, time_sig,
-    time_signature_fields_schema),
+  //YAML_FIELD_MAPPING_EMBEDDED (
+    //Transport, time_sig,
+    //time_signature_fields_schema),
   YAML_FIELD_INT (
     Transport, position),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -448,28 +422,6 @@ void
 transport_set_recording_mode (
   Transport * self,
   TransportRecordingMode mode);
-
-void
-time_signature_set_beat_unit_from_enum (
-  TimeSignature * self,
-  BeatUnit        ebeat_unit);
-
-BeatUnit
-time_signature_get_beat_unit_enum (
-  int beat_unit);
-
-void
-time_signature_set_beat_unit (
-  TimeSignature * self,
-  int             beat_unit);
-
-/**
- * Updates beat unit and anything depending on it.
- */
-void
-transport_set_time_sig (
-  Transport *     self,
-  TimeSignature * time_sig);
 
 /**
  * Sets whether metronome is enabled or not.
@@ -673,6 +625,12 @@ transport_update_total_bars (
   Transport * self,
   int         total_bars,
   bool        fire_events);
+
+void
+transport_update_caches (
+  Transport * self,
+  int         beats_per_bar,
+  int         beat_unit);
 
 /**
  * Sets recording on/off.

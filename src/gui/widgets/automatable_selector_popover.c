@@ -311,7 +311,10 @@ create_model_for_ports (
 
           /* skip non-tempo automation tracks */
           if (!(port->id.flags & PORT_FLAG_BPM ||
-                port->id.flags & PORT_FLAG_TIME_SIG))
+                port->id.flags2 &
+                  PORT_FLAG2_BEATS_PER_BAR ||
+                port->id.flags2 &
+                  PORT_FLAG2_BEAT_UNIT))
             continue;
           break;
         }
@@ -650,7 +653,8 @@ automatable_selector_popover_widget_new (
     automation_track_get_port (self->owner);
   PortIdentifier * id = &port->id;
   if (id->flags & PORT_FLAG_BPM ||
-      id->flags & PORT_FLAG_TIME_SIG)
+      id->flags2 & PORT_FLAG2_BEATS_PER_BAR ||
+      id->flags2 & PORT_FLAG2_BEAT_UNIT)
     {
       self->selected_type = AS_TYPE_TEMPO;
     }

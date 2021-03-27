@@ -36,6 +36,7 @@
 #include "audio/router.h"
 #include "audio/rtaudio_device.h"
 #include "audio/rtmidi_device.h"
+#include "audio/tempo_track.h"
 #include "audio/windows_mme_device.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -470,9 +471,13 @@ port_find_from_identifier (
         {
           return tr->bpm_port;
         }
-      else if (flags & PORT_FLAG_TIME_SIG)
+      else if (flags2 & PORT_FLAG2_BEATS_PER_BAR)
         {
-          return tr->time_sig_port;
+          return tr->beats_per_bar_port;
+        }
+      else if (flags2 & PORT_FLAG2_BEAT_UNIT)
+        {
+          return tr->beat_unit_port;
         }
       else if (
         flags & PORT_FLAG_MODULATOR_MACRO)
@@ -2865,12 +2870,37 @@ port_set_control_value (
       /* if bpm, update engine */
       if (id->flags & PORT_FLAG_BPM)
         {
+          int beats_per_bar =
+            tempo_track_get_beats_per_bar (
+              P_TEMPO_TRACK);
           engine_update_frames_per_tick (
-            AUDIO_ENGINE,
-            TRANSPORT_BEATS_PER_BAR,
+            AUDIO_ENGINE, beats_per_bar,
             self->control,
             AUDIO_ENGINE->sample_rate, false);
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);
+        }
+
+      /* if time sig value, update transport
+       * caches */
+      if (id->flags2 & PORT_FLAG2_BEATS_PER_BAR ||
+          id->flags2 & PORT_FLAG2_BEAT_UNIT)
+        {
+          int beats_per_bar =
+            tempo_track_get_beats_per_bar (
+              P_TEMPO_TRACK);
+          int beat_unit =
+            tempo_track_get_beat_unit (
+              P_TEMPO_TRACK);
+          bpm_t bpm =
+            tempo_track_get_current_bpm (
+              P_TEMPO_TRACK);
+          transport_update_caches (
+            TRANSPORT, beats_per_bar, beat_unit);
+          engine_update_frames_per_tick (
+            AUDIO_ENGINE, beats_per_bar, bpm,
+            AUDIO_ENGINE->sample_rate, false);
+          EVENTS_PUSH (
+            ET_TIME_SIGNATURE_CHANGED, NULL);
         }
 
       /* if plugin enabled port, also set

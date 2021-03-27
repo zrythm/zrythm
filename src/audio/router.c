@@ -117,19 +117,21 @@ router_start_cycle (
     AUDIO_ENGINE->remaining_latency_preroll;
   self->local_offset = local_offset;
 
-  /* process BPM port first */
-  GraphNode * bpm_node = NULL;
-  for (int i = 0;
-       i < self->graph->n_graph_nodes; i++)
+  /* process tempo track ports first */
+  if (self->graph->bpm_node)
     {
-      GraphNode * node = self->graph->graph_nodes[i];
-      if (node->type == ROUTE_NODE_TYPE_PORT &&
-          node->port == P_TEMPO_TRACK->bpm_port)
-        bpm_node = node;
+      graph_node_process (
+        self->graph->bpm_node, nsamples);
     }
-  if (bpm_node)
+  if (self->graph->beats_per_bar_node)
     {
-      graph_node_process (bpm_node, nsamples);
+      graph_node_process (
+        self->graph->beats_per_bar_node, nsamples);
+    }
+  if (self->graph->beat_unit_node)
+    {
+      graph_node_process (
+        self->graph->beat_unit_node, nsamples);
     }
 
   self->callback_in_progress = true;

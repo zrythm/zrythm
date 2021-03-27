@@ -20,6 +20,7 @@
 
 #include "actions/actions.h"
 #include "audio/position.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -107,8 +108,8 @@ ruler_widget_get_beat_interval (
 
   /* gather divisors of the number of beats per
    * bar */
-#define beats_per_bar \
-  TRANSPORT->time_sig.beats_per_bar
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   int beat_divisors[16];
   int num_beat_divisors = 0;
   for (i = 1; i <= beats_per_bar; i++)
@@ -787,6 +788,8 @@ draw_lines_and_labels (
   char text[40];
   int textw, texth;
 
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
@@ -1947,9 +1950,10 @@ ruler_widget_refresh (RulerWidget * self)
     self->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
   self->px_per_beat =
     self->px_per_tick * TRANSPORT->ticks_per_beat;
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   self->px_per_bar =
-    self->px_per_beat *
-    TRANSPORT->time_sig.beats_per_bar;
+    self->px_per_beat * beats_per_bar;
 
   Position pos;
   position_from_seconds (&pos, 1.0);

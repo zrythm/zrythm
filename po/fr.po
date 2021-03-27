@@ -628,7 +628,7 @@ msgstr "sortie CV"
 
 #: src/plugins/plugin_manager.c:368
 msgid "Error loading LV2 bundle dir: "
-msgstr "Erreur lors du chargement du répertoire bundle LV2 : "
+msgstr "Erreur lors du chargement du répertoire bundle LV2: "
 
 #: src/plugins/plugin_manager.c:1059
 #, c-format
@@ -3938,11 +3938,11 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
-"Les fichiers suivants seront créés :\n"
+"Les fichiers suivants seront créés:\n"
 "\n"
 "Master.wav\n"
 "\n"
-"Dans le répertoire :\n"
+"Dans le répertoire:\n"
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 

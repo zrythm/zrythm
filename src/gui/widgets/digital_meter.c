@@ -436,25 +436,25 @@ digital_meter_draw_cb (
         self->height_start_pos + texth;
 
       BeatUnit bu =
-        time_signature_get_beat_unit_enum (
-          TRANSPORT->time_sig.beat_unit);
+        tempo_track_get_beat_unit_enum (
+          P_TEMPO_TRACK);
       const char * beat_unit =
         beat_unit_strings[bu].str;
-      if (TRANSPORT_BEATS_PER_BAR < 10)
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
+      if (beats_per_bar < 10)
         {
           text[0] = ' ';
           text[1] =
-            (char)
-            (TRANSPORT_BEATS_PER_BAR + '0');
+            (char) (beats_per_bar + '0');
         }
       else
         {
           text[0] =
-            (char)
-            ((TRANSPORT_BEATS_PER_BAR / 10) + '0');
+            (char) ((beats_per_bar / 10) + '0');
           text[1] =
-            (char)
-            ((TRANSPORT_BEATS_PER_BAR % 10) + '0');
+            (char) ((beats_per_bar % 10) + '0');
         }
       text[2] = '\0';
       heap_text =
@@ -589,7 +589,11 @@ on_change_started (
         *self->note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
-      self->prev_time_sig = TRANSPORT->time_sig;
+      self->prev_beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
+      self->prev_beat_unit =
+        tempo_track_get_beat_unit (P_TEMPO_TRACK);
       break;
     case DIGITAL_METER_TYPE_POSITION:
       if (self->on_drag_begin)
@@ -662,12 +666,34 @@ on_change_finished (
           {
             break;
           }
-        UndoableAction * ua =
-          transport_action_new_time_sig_change (
-            &self->prev_time_sig,
-            &TRANSPORT->time_sig,
-            F_ALREADY_EDITED);
-        undo_manager_perform (UNDO_MANAGER, ua);
+
+        int beats_per_bar =
+          tempo_track_get_beats_per_bar (
+            P_TEMPO_TRACK);
+        int beat_unit =
+          tempo_track_get_beat_unit (
+            P_TEMPO_TRACK);
+        if (self->prev_beats_per_bar !=
+              beats_per_bar)
+          {
+            UndoableAction * ua =
+              transport_action_new_time_sig_change (
+                TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE,
+                self->prev_beats_per_bar,
+                beats_per_bar,
+                F_ALREADY_EDITED);
+            undo_manager_perform (UNDO_MANAGER, ua);
+          }
+        else if (self->prev_beat_unit !=
+                   beat_unit)
+          {
+            UndoableAction * ua =
+              transport_action_new_time_sig_change (
+                TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
+                self->prev_beat_unit, beat_unit,
+                F_ALREADY_EDITED);
+            undo_manager_perform (UNDO_MANAGER, ua);
+          }
       }
     break;
     default:
@@ -792,42 +818,46 @@ on_scroll (
         }
       if (self->update_timesig_top)
         {
-          num += self->prev_time_sig.beats_per_bar;
-          if (num < 1)
+          num += self->prev_beats_per_bar;
+          if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
-              TRANSPORT_BEATS_PER_BAR = 1;
+              tempo_track_set_beats_per_bar (
+                P_TEMPO_TRACK,
+                TEMPO_TRACK_MIN_BEATS_PER_BAR);
             }
           else
             {
-              TRANSPORT_BEATS_PER_BAR =
-                num > 16 ? 16 : num;
+              tempo_track_set_beats_per_bar (
+                P_TEMPO_TRACK,
+                num > TEMPO_TRACK_MAX_BEATS_PER_BAR ?
+                  TEMPO_TRACK_MAX_BEATS_PER_BAR :
+                  num);
             }
         }
       else if (self->update_timesig_bot)
         {
           num +=
             (int)
-            time_signature_get_beat_unit_enum (
-              self->prev_time_sig.beat_unit);
+            tempo_track_beat_unit_to_enum (
+              self->prev_beat_unit);
           if (num < 0)
             {
-              time_signature_set_beat_unit_from_enum (
-                &TRANSPORT->time_sig, BEAT_UNIT_2);
+              tempo_track_set_beat_unit_from_enum (
+                P_TEMPO_TRACK, BEAT_UNIT_2);
             }
           else
             {
-              time_signature_set_beat_unit_from_enum (
-                &TRANSPORT->time_sig,
+              tempo_track_set_beat_unit_from_enum (
+                P_TEMPO_TRACK,
                 num > BEAT_UNIT_16 ?
-                BEAT_UNIT_16 : num);
+                  BEAT_UNIT_16 : num);
             }
         }
       if (self->update_timesig_top ||
           self->update_timesig_bot)
         {
           EVENTS_PUSH (
-            ET_TIME_SIGNATURE_CHANGED,
-            NULL);
+            ET_TIME_SIGNATURE_CHANGED, NULL);
         }
       break;
     }
@@ -1022,34 +1052,39 @@ drag_update (
       if (self->update_timesig_top)
         {
           num =
-            self->prev_time_sig.beats_per_bar +
+            self->prev_beats_per_bar +
             (int) diff / 24;
-          if (num < 1)
+          if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
-              TRANSPORT_BEATS_PER_BAR = 1;
+              tempo_track_set_beats_per_bar (
+                P_TEMPO_TRACK,
+                TEMPO_TRACK_MIN_BEATS_PER_BAR);
             }
           else
             {
-              TRANSPORT_BEATS_PER_BAR =
-                num > 16 ? 16 : num;
+              tempo_track_set_beats_per_bar (
+                P_TEMPO_TRACK,
+                num > TEMPO_TRACK_MAX_BEATS_PER_BAR ?
+                  TEMPO_TRACK_MAX_BEATS_PER_BAR :
+                  num);
             }
         }
       else if (self->update_timesig_bot)
         {
           num =
             (int)
-            time_signature_get_beat_unit_enum (
-              self->prev_time_sig.beat_unit) +
+            tempo_track_beat_unit_to_enum (
+              self->prev_beat_unit) +
             (int) diff / 24;
           if (num < 0)
             {
-              time_signature_set_beat_unit_from_enum (
-                &TRANSPORT->time_sig, BEAT_UNIT_2);
+              tempo_track_set_beat_unit_from_enum (
+                P_TEMPO_TRACK, BEAT_UNIT_2);
             }
           else
             {
-              time_signature_set_beat_unit_from_enum (
-                &TRANSPORT->time_sig,
+              tempo_track_set_beat_unit_from_enum (
+                P_TEMPO_TRACK,
                 num > BEAT_UNIT_16 ?
                 BEAT_UNIT_16 : num);
             }
@@ -1058,8 +1093,7 @@ drag_update (
           self->update_timesig_bot)
         {
           EVENTS_PUSH (
-            ET_TIME_SIGNATURE_CHANGED,
-            NULL);
+            ET_TIME_SIGNATURE_CHANGED, NULL);
         }
       break;
     }

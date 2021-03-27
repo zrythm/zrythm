@@ -159,9 +159,11 @@ engine_jack_handle_sample_rate_change (
 
   if (P_TEMPO_TRACK)
     {
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       engine_update_frames_per_tick (
-        self,
-        TRANSPORT->time_sig.beats_per_bar,
+        self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->sample_rate, true);
     }
@@ -336,15 +338,16 @@ engine_jack_prepare_process (
       /* BBT and BPM changes */
       if (pos.valid & JackPositionBBT)
         {
-          TRANSPORT->time_sig.beats_per_bar =
-            (int) pos.beats_per_bar;
+          tempo_track_set_beats_per_bar (
+            P_TEMPO_TRACK,
+            (int) pos.beats_per_bar);
           tempo_track_set_bpm (
             P_TEMPO_TRACK,
             (float) pos.beats_per_minute,
             (float) pos.beats_per_minute,
             true, true);
-          time_signature_set_beat_unit (
-            &TRANSPORT->time_sig,
+          tempo_track_set_beat_unit (
+            P_TEMPO_TRACK,
             (int) pos.beat_type);
         }
     }
@@ -428,9 +431,11 @@ timebase_cb (
     (PLAYHEAD->ticks -
      bar_start.ticks);
   pos->beats_per_bar =
-    (float) TRANSPORT->time_sig.beats_per_bar;
+    (float)
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   pos->beat_type =
-    (float) TRANSPORT->time_sig.beat_unit;
+    (float)
+    tempo_track_get_beat_unit (P_TEMPO_TRACK);
   pos->ticks_per_beat =
     TRANSPORT->ticks_per_beat;
   pos->beats_per_minute =

@@ -41,15 +41,18 @@
 typedef enum TransportActionType
 {
   TRANSPORT_ACTION_BPM_CHANGE,
-  TRANSPORT_ACTION_TIME_SIG_CHANGE,
+  TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE,
+  TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
 } TransportActionType;
 
 static const cyaml_strval_t
 transport_action_type_strings[] =
 {
   { "BPM change", TRANSPORT_ACTION_BPM_CHANGE },
-  { "time sig change",
-    TRANSPORT_ACTION_TIME_SIG_CHANGE },
+  { "beats per bar change",
+    TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE },
+  { "beat unit change",
+    TRANSPORT_ACTION_BEAT_UNIT_CHANGE },
 };
 
 typedef struct TransportAction
@@ -61,8 +64,8 @@ typedef struct TransportAction
   bpm_t            bpm_before;
   bpm_t            bpm_after;
 
-  TimeSignature    time_sig_before;
-  TimeSignature    time_sig_after;
+  int              int_before;
+  int              int_after;
 
   /** Flag whether the action was already performed
    * the first time. */
@@ -86,12 +89,8 @@ static const cyaml_schema_field_t
     TransportAction, bpm_before),
   YAML_FIELD_FLOAT (
     TransportAction, bpm_after),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    TransportAction, time_sig_before,
-    time_signature_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    TransportAction, time_sig_after,
-    time_signature_fields_schema),
+  YAML_FIELD_INT (TransportAction, int_before),
+  YAML_FIELD_INT (TransportAction, int_after),
   YAML_FIELD_INT (
     TransportAction, musical_mode),
 
@@ -118,9 +117,10 @@ transport_action_new_bpm_change (
 
 UndoableAction *
 transport_action_new_time_sig_change (
-  TimeSignature * time_sig_before,
-  TimeSignature * time_sig_after,
-  bool            already_done);
+  TransportActionType type,
+  int                 before,
+  int                 after,
+  bool                already_done);
 
 int
 transport_action_do (

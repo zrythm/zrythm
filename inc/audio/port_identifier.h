@@ -240,9 +240,6 @@ typedef enum PortFlags
   /** This is a BPM port. */
   PORT_FLAG_BPM = 1 << 22,
 
-  /** This is a time signature port. */
-  PORT_FLAG_TIME_SIG = 1 << 23,
-
   /**
    * Generic plugin port not belonging to the
    * underlying plugin.
@@ -250,19 +247,19 @@ typedef enum PortFlags
    * This is for ports that are added by Zrythm
    * such as Enabled and Gain.
    */
-  PORT_FLAG_GENERIC_PLUGIN_PORT = 1 << 24,
+  PORT_FLAG_GENERIC_PLUGIN_PORT = 1 << 23,
 
   /** This is the plugin gain. */
-  PORT_FLAG_PLUGIN_GAIN = 1 << 25,
+  PORT_FLAG_PLUGIN_GAIN = 1 << 24,
 
   /** Track processor input mono switch. */
-  PORT_FLAG_TP_MONO = 1 << 26,
+  PORT_FLAG_TP_MONO = 1 << 25,
 
   /** Track processor input gain. */
-  PORT_FLAG_TP_INPUT_GAIN = 1 << 27,
+  PORT_FLAG_TP_INPUT_GAIN = 1 << 26,
 
   /** Port is a hardware port. */
-  PORT_FLAG_HW = 1 << 28,
+  PORT_FLAG_HW = 1 << 27,
 
   /**
    * Port is part of a modulator macro processor.
@@ -270,10 +267,10 @@ typedef enum PortFlags
    * Which of the ports it is can be determined
    * by checking flow/type.
    */
-  PORT_FLAG_MODULATOR_MACRO = 1 << 29,
+  PORT_FLAG_MODULATOR_MACRO = 1 << 28,
 
   /** Logarithmic. */
-  PORT_FLAG_LOGARITHMIC = 1 << 30,
+  PORT_FLAG_LOGARITHMIC = 1 << 29,
 
   /**
    * Plugin control is a property (changes are set
@@ -285,7 +282,7 @@ typedef enum PortFlags
    * both).
    *
    * @seealso http://lv2plug.in/ns/lv2core#Parameter. */
-  PORT_FLAG_IS_PROPERTY = 1 << 31,
+  PORT_FLAG_IS_PROPERTY = 1 << 30,
 } PortFlags;
 
 typedef enum PortFlags2
@@ -332,6 +329,12 @@ typedef enum PortFlags2
 
   /** Channel send amount. */
   PORT_FLAG2_CHANNEL_SEND_AMOUNT = 1 << 16,
+
+  /** Beats per bar. */
+  PORT_FLAG2_BEATS_PER_BAR = 1 << 17,
+
+  /** Beat unit. */
+  PORT_FLAG2_BEAT_UNIT = 1 << 18,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -360,15 +363,14 @@ port_flags_bitvals[] =
   { .name = "midi_automatable", .offset = 20, .bits = 1 },
   { .name = "send_receivable", .offset = 21, .bits = 1 },
   { .name = "bpm", .offset = 22, .bits = 1 },
-  { .name = "time_sig", .offset = 23, .bits = 1 },
-  { .name = "generic_plugin_port", .offset = 24, .bits = 1 },
-  { .name = "plugin_gain", .offset = 25, .bits = 1 },
-  { .name = "tp_mono", .offset = 26, .bits = 1 },
-  { .name = "tp_input_gain", .offset = 27, .bits = 1 },
-  { .name = "hw", .offset = 28, .bits = 1 },
-  { .name = "modulator_macro", .offset = 29, .bits = 1 },
-  { .name = "logarithmic", .offset = 30, .bits = 1 },
-  { .name = "is_property", .offset = 31, .bits = 1 },
+  { .name = "generic_plugin_port", .offset = 23, .bits = 1 },
+  { .name = "plugin_gain", .offset = 24, .bits = 1 },
+  { .name = "tp_mono", .offset = 25, .bits = 1 },
+  { .name = "tp_input_gain", .offset = 26, .bits = 1 },
+  { .name = "hw", .offset = 27, .bits = 1 },
+  { .name = "modulator_macro", .offset = 28, .bits = 1 },
+  { .name = "logarithmic", .offset = 29, .bits = 1 },
+  { .name = "is_property", .offset = 30, .bits = 1 },
 };
 
 static const cyaml_bitdef_t
@@ -391,6 +393,8 @@ port_flags2_bitvals[] =
   { .name = "channel_pressure", .offset = 14, .bits = 1 },
   { .name = "ch_send_enabled", .offset = 15, .bits = 1 },
   { .name = "ch_send_amount", .offset = 16, .bits = 1 },
+  { .name = "beats_per_bar", .offset = 17, .bits = 1 },
+  { .name = "beat_unit", .offset = 18, .bits = 1 },
 };
 
 /**

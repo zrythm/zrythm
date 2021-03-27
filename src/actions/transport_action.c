@@ -63,19 +63,20 @@ transport_action_new_bpm_change (
 
 UndoableAction *
 transport_action_new_time_sig_change (
-  TimeSignature * time_sig_before,
-  TimeSignature * time_sig_after,
-  bool            already_done)
+  TransportActionType type,
+  int                 before,
+  int                 after,
+  bool                already_done)
 {
   TransportAction * self =
     object_new (TransportAction);
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_TRANSPORT;
 
-  self->type = TRANSPORT_ACTION_TIME_SIG_CHANGE;
+  self->type = type;
 
-  self->time_sig_before = *time_sig_before;
-  self->time_sig_after = *time_sig_after;
+  self->int_before = before;
+  self->int_after = after;
   self->already_done = already_done;
   self->musical_mode =
     g_settings_get_boolean (S_UI, "musical-mode");
@@ -99,17 +100,22 @@ do_or_undo (
         (double)
         tempo_track_get_current_bpm (P_TEMPO_TRACK));
       break;
-    case TRANSPORT_ACTION_TIME_SIG_CHANGE:
-      transport_set_time_sig (
-        TRANSPORT,
-        _do ?
-          &self->time_sig_after :
-          &self->time_sig_before);
+    case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
+      tempo_track_set_beats_per_bar (
+        P_TEMPO_TRACK,
+        _do ? self->int_after : self->int_before);
+      break;
+    case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
+      tempo_track_set_beat_unit (
+        P_TEMPO_TRACK,
+        _do ? self->int_after : self->int_before);
       break;
     }
 
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, TRANSPORT->time_sig.beats_per_bar,
+    AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true);
 
@@ -153,13 +159,14 @@ transport_action_do (
     {
       self->already_done = false;
 
-      transport_set_time_sig (
-        TRANSPORT, &TRANSPORT->time_sig);
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
+      bpm_t bpm =
+        tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
       engine_update_frames_per_tick (
-        AUDIO_ENGINE,
-        TRANSPORT->time_sig.beats_per_bar,
-        tempo_track_get_current_bpm (P_TEMPO_TRACK),
+        AUDIO_ENGINE, beats_per_bar, bpm,
         AUDIO_ENGINE->sample_rate, true);
 
       snap_grid_update_snap_points_default (
@@ -198,8 +205,10 @@ transport_action_stringize (
     {
     case TRANSPORT_ACTION_BPM_CHANGE:
       return g_strdup (_("Change BPM"));
-    case TRANSPORT_ACTION_TIME_SIG_CHANGE:
-      return g_strdup (_("Change Time Signature"));
+    case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
+      return g_strdup (_("Beats per bar change"));
+    case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
+      return g_strdup (_("Beat unit change"));
     }
 
   g_return_val_if_reached (NULL);

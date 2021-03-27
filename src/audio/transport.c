@@ -54,9 +54,6 @@ init_common (
 {
   self->schema_version = TRANSPORT_SCHEMA_VERSION;
 
-  self->time_sig.schema_version =
-    TIME_SIGNATURE_SCHEMA_VERSION;
-
   /* set playstate */
   self->play_state = PLAYSTATE_PAUSED;
 
@@ -82,19 +79,19 @@ init_common (
       S_TRANSPORT, "recording-mode");
 
   zix_sem_init (&self->paused, 0);
-
-  /* update time sig */
-  transport_set_time_sig (
-    self, &self->time_sig);
 }
 
 void
 transport_init_loaded (
   Transport * self)
 {
-  transport_set_time_sig (self, &self->time_sig);
-
   init_common (self);
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beat_unit =
+    tempo_track_get_beat_unit (P_TEMPO_TRACK);
+  transport_update_caches (
+    self, beats_per_bar, beat_unit);
 }
 
 /**
@@ -118,20 +115,8 @@ transport_new (
   self->total_bars =
     TRANSPORT_DEFAULT_TOTAL_BARS;
 
-  /* set BPM related defaults */
-  self->time_sig.beats_per_bar =
-    TRANSPORT_DEFAULT_BEATS_PER_BAR;
-  self->time_sig.beat_unit = 4;
-
-  /* update time sig */
-  transport_set_time_sig (
-    self, &self->time_sig);
-
   g_return_val_if_fail (
     engine->sample_rate > 0, NULL);
-  engine_update_frames_per_tick (
-    engine, self->time_sig.beats_per_bar, 140,
-    engine->sample_rate, true);
 
   /* hack to allow setting positions */
   /*double frames_per_tick_before =*/
@@ -437,12 +422,11 @@ transport_set_recording_mode (
  * Updates beat unit and anything depending on it.
  */
 void
-transport_set_time_sig (
-  Transport *     self,
-  TimeSignature * time_sig)
+transport_update_caches (
+  Transport * self,
+  int         beats_per_bar,
+  int         beat_unit)
 {
-  self->time_sig = *time_sig;
-
   /**
    * Regarding calculation:
    * 3840 = TICKS_PER_QUARTER_NOTE * 4 to get the ticks
@@ -452,70 +436,14 @@ transport_set_time_sig (
    * with the ticks per note
    */
   self->ticks_per_beat =
-    3840.0 / (double) self->time_sig.beat_unit;
+    3840.0 / (double) beat_unit;
   self->ticks_per_bar =
-    (self->ticks_per_beat *
-     self->time_sig.beats_per_bar);
-  self->sixteenths_per_beat =
-    16 / self->time_sig.beat_unit;
+    (self->ticks_per_beat * beats_per_bar);
+  self->sixteenths_per_beat = 16 / beat_unit;
   self->sixteenths_per_bar =
-    (self->sixteenths_per_beat *
-     self->time_sig.beats_per_bar);
+    (self->sixteenths_per_beat * beats_per_bar);
   g_warn_if_fail (self->ticks_per_bar > 0.0);
   g_warn_if_fail (self->ticks_per_beat > 0.0);
-}
-
-void
-time_signature_set_beat_unit_from_enum (
-  TimeSignature * self,
-  BeatUnit        ebeat_unit)
-{
-  switch (ebeat_unit)
-    {
-    case BEAT_UNIT_2:
-      self->beat_unit = 2;
-      break;
-    case BEAT_UNIT_4:
-      self->beat_unit = 4;
-      break;
-    case BEAT_UNIT_8:
-      self->beat_unit = 8;
-      break;
-    case BEAT_UNIT_16:
-      self->beat_unit = 16;
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-}
-
-BeatUnit
-time_signature_get_beat_unit_enum (
-  int beat_unit)
-{
-  switch (beat_unit)
-    {
-    case 2:
-      return BEAT_UNIT_2;
-    case 4:
-      return BEAT_UNIT_4;
-    case 8:
-      return BEAT_UNIT_8;
-    case 16:
-      return BEAT_UNIT_16;;
-    default:
-      break;
-    }
-  g_return_val_if_reached (0);
-}
-
-void
-time_signature_set_beat_unit (
-  TimeSignature * self,
-  int             beat_unit)
-{
-  self->beat_unit = beat_unit;
 }
 
 void
@@ -701,9 +629,11 @@ double
 transport_get_ppqn (
   Transport * self)
 {
+  int beat_unit =
+    tempo_track_get_beat_unit (P_TEMPO_TRACK);
   double res =
     self->ticks_per_beat *
-    ((double) self->time_sig.beat_unit / 4.0);
+    ((double) beat_unit / 4.0);
   return res;
 }
 

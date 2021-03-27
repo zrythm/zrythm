@@ -710,12 +710,6 @@ project_create_default (
 
   self->audio_engine = engine_new (self);
 
-  /* pre-setup engine */
-  if (with_engine)
-    {
-      engine_pre_setup (self->audio_engine);
-    }
-
   /* init undo manager */
   self->undo_manager = undo_manager_new ();
 
@@ -743,6 +737,18 @@ project_create_default (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   self->tracklist->tempo_track = track;
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (track);
+  int beat_unit =
+    tempo_track_get_beat_unit (track);
+  bpm_t bpm =
+    tempo_track_get_current_bpm (track);
+  transport_update_caches (
+    self->audio_engine->transport, beats_per_bar,
+    beat_unit);
+  engine_update_frames_per_tick (
+    self->audio_engine, beats_per_bar, bpm,
+    self->audio_engine->sample_rate, true);
 
   /* modulator */
   g_message ("adding modulator track...");
@@ -780,6 +786,12 @@ project_create_default (
     self->tracklist_selections, track, 0);
   self->last_selection = SELECTION_TYPE_TRACKLIST;
 
+  /* pre-setup engine */
+  if (with_engine)
+    {
+      engine_pre_setup (self->audio_engine);
+    }
+
   engine_setup (self->audio_engine);
 
   if (with_engine)
@@ -804,7 +816,7 @@ project_create_default (
     }
 
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, TRANSPORT_BEATS_PER_BAR,
+    AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true);
 
@@ -1151,8 +1163,10 @@ load (
   timeline_init_loaded (self->timeline);
   tracklist_init_loaded (self->tracklist);
 
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, TRANSPORT_BEATS_PER_BAR,
+    AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true);
 

@@ -1284,7 +1284,11 @@ track_generate_automation_tracks (
       automation_tracklist_add_at (atl, at);
       at =
         automation_track_new (
-          track->time_sig_port);
+          track->beats_per_bar_port);
+      automation_tracklist_add_at (atl, at);
+      at =
+        automation_track_new (
+          track->beat_unit_port);
       automation_tracklist_add_at (atl, at);
       break;
     case TRACK_TYPE_MODULATOR:
@@ -3149,7 +3153,8 @@ track_append_all_ports (
     {
       /* add bpm/time sig ports */
       _ADD (self->bpm_port);
-      _ADD (self->time_sig_port);
+      _ADD (self->beats_per_bar_port);
+      _ADD (self->beat_unit_port);
     }
   else if (self->type == TRACK_TYPE_MODULATOR)
     {
@@ -3238,11 +3243,17 @@ track_free (Track * self)
       object_free_w_func_and_null (
         port_free, self->bpm_port);
     }
-  if (self->time_sig_port)
+  if (self->beats_per_bar_port)
     {
-      port_disconnect_all (self->time_sig_port);
+      port_disconnect_all (self->beats_per_bar_port);
       object_free_w_func_and_null (
-        port_free, self->time_sig_port);
+        port_free, self->beats_per_bar_port);
+    }
+  if (self->beats_per_bar_port)
+    {
+      port_disconnect_all (self->beat_unit_port);
+      object_free_w_func_and_null (
+        port_free, self->beat_unit_port);
     }
 
 #undef _FREE_TRACK

@@ -368,8 +368,11 @@ typedef struct Track
   /** Automatable BPM control. */
   Port *              bpm_port;
 
-  /** Automatable time sig control. */
-  Port *              time_sig_port;
+  /** Automatable beats per bar port. */
+  Port *              beats_per_bar_port;
+
+  /** Automatable beat unit port. */
+  Port *              beat_unit_port;
 
   /* ==== TEMPO TRACK END ==== */
 
@@ -490,7 +493,9 @@ track_fields_schema[] =
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Track, bpm_port, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Track, time_sig_port, port_fields_schema),
+    Track, beats_per_bar_port, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track, beat_unit_port, port_fields_schema),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     Track, modulators, plugin_schema),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (

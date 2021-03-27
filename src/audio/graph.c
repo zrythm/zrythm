@@ -880,18 +880,32 @@ graph_setup (
         }
       if (tr->type == TRACK_TYPE_TEMPO)
         {
+          self->bpm_node = NULL;
+          self->beats_per_bar_node = NULL;
+          self->beat_unit_node = NULL;
+
           port = tr->bpm_port;
           node2 =
             graph_find_node_from_port (self, port);
           if (node2 || !drop_unnecessary_ports)
             {
+              self->bpm_node = node2;
               graph_node_connect (node2, node);
             }
-          port = tr->time_sig_port;
+          port = tr->beats_per_bar_port;
           node2 =
             graph_find_node_from_port (self, port);
           if (node2 || !drop_unnecessary_ports)
             {
+              self->beats_per_bar_node = node2;
+              graph_node_connect (node2, node);
+            }
+          port = tr->beat_unit_port;
+          node2 =
+            graph_find_node_from_port (self, port);
+          if (node2 || !drop_unnecessary_ports)
+            {
+              self->beat_unit_node = node2;
               graph_node_connect (node2, node);
             }
           graph_node_connect (

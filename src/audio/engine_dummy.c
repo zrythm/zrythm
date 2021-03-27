@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -78,9 +78,9 @@ engine_dummy_setup (
       self->sample_rate = 44100;
     }
 
-  g_warn_if_fail (
-    TRANSPORT &&
-    TRANSPORT->time_sig.beats_per_bar >= 1);
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  g_warn_if_fail (beats_per_bar >= 1);
 
   g_message (
     "Dummy Engine set up [samplerate: %u]",
@@ -111,8 +111,11 @@ engine_dummy_activate (
 
       self->stop_dummy_audio_thread = false;
 
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
       engine_update_frames_per_tick (
-        self, self->transport->time_sig.beats_per_bar,
+        self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->sample_rate, true);
 
