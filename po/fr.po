@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-17 09:59+0000\n"
-"PO-Revision-Date: 2021-03-18 12:18+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2021-03-26 17:25+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -618,7 +618,7 @@ msgstr "sortie CV"
 
 #: src/plugins/plugin_manager.c:370
 msgid "Error loading LV2 bundle dir: "
-msgstr "Erreur lors du chargement du répertoire bundle LV2: "
+msgstr "Erreur lors du chargement du répertoire bundle LV2 : "
 
 #: src/plugins/plugin_manager.c:1061
 #, c-format
@@ -3912,11 +3912,11 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
-"Les fichiers suivants seront créés:\n"
+"Les fichiers suivants seront créés :\n"
 "\n"
 "Master.wav\n"
 "\n"
-"Dans le répertoire:\n"
+"Dans le répertoire :\n"
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
@@ -4039,9 +4039,8 @@ msgid "Last object"
 msgstr "Dernier objet"
 
 #: resources/ui/snap_grid_popover.ui:340
-#, fuzzy
 msgid "Use last created object's length"
-msgstr "Longueur d'objet de ligne temporelle"
+msgstr "Utiliser la dernière longueur d'objet créée"
 
 #: resources/ui/range_action_buttons.ui:58
 msgid "Remove range"
@@ -4272,10 +4271,9 @@ msgid "Timeline object length"
 msgstr "Longueur d'objet de ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:253
-#, fuzzy
 msgid "Default length to use when creating timeline objects."
 msgstr ""
-"Longueur par défaut à utiliser lors de la création d'objets de ligne "
+"Longueur par défaut à utiliser lors de la création d'objets dans la ligne "
 "temporelle, par exemple en mode édition."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:257
@@ -4283,57 +4281,49 @@ msgid "Timeline object length type"
 msgstr "Type de longueur d'objet de ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:258
-#, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
 "triplet)."
 msgstr ""
 "Type de longueur par défaut à utiliser lors de la création des objets de la "
-"ligne temporelle, par exemple en mode édition."
+"ligne temporelle (normal, pointé,triolet)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid "Last timeline object's length"
 msgstr "Longueur d'objet de la dernière ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
-#, fuzzy
 msgid "The length of the last created timeline object (in ticks)."
-msgstr ""
-"Longueur par défaut à utiliser lors de la création d'objets de ligne "
-"temporelle, par exemple en mode édition."
+msgstr "La longueur du dernier objet créé dans la ligne temporelle (en clics)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:268
 msgid "Editor object length"
 msgstr "Longueur de l'objet édité"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:269
-#, fuzzy
 msgid "Default length to use when creating editor objects."
 msgstr ""
-"Longueur par défaut à utiliser lors de la création d'objets de ligne "
-"temporelle, par exemple en mode édition."
+"Longueur par défaut à utiliser lors de la création d'objets dans l'éditeur."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:273
 msgid "Editor object length type"
 msgstr "Type de longueur d'objet de l'éditeur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:274
-#, fuzzy
 msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
 "triplet)."
 msgstr ""
 "Type de longueur par défaut à utiliser lors de la création des objets de la "
-"ligne temporelle, par exemple en mode édition."
+"ligne temporelle(normale,pointée,triolet)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:279
-#, fuzzy
 msgid "Last editor object's length"
-msgstr "Longueur de l'objet édité"
+msgstr "Longueur du dernier objet édité"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:280
 msgid "The length of the last created editor object (in ticks)."
-msgstr ""
+msgstr "La longueur du dernier objet éditeur créé (en coche)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:284
 msgid "Note notation"
@@ -4344,7 +4334,7 @@ msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
 msgstr ""
-"Le mode de notation de note utilisé dans le piano-roll / Index de pitch MIDI "
+"Le mode de notation de note utilisé dans le piano-roll - Index de pitch MIDI "
 "ou notes (Do,Do#,etc...)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:290
@@ -4388,13 +4378,14 @@ msgstr ""
 "vélocité des notes est valide pour l'instant)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:309
-#, fuzzy
 msgid "Show automation values"
-msgstr "Afficher les lignes d'automatisation"
+msgstr "Afficher les valeurs d'automatisation"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:310
 msgid "Whether to show automation values in the automation editor."
 msgstr ""
+"Que ce soit pour montrer les valeurs d'automation dans l'éditeur "
+"d'automation."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:314
 msgid "Browser divider position"
@@ -4437,17 +4428,16 @@ msgid "Index of the currently opened right panel tab."
 msgstr "Index de l'onglet du panneau de droite actuellement ouvert."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:339
-#, fuzzy
 msgid "Bot panel divider position"
-msgstr "position de départ"
+msgstr "Position du séparateur du panneau bot"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:340
 msgid "Position of the resize handle of the bot panel."
-msgstr ""
+msgstr "Position de la flèche  de redimensionnement du panneau bot."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:344
 msgid "Bot panel tab index"
-msgstr ""
+msgstr "Index d’onglet de panneau de bot"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:345
 msgid "Index of the currently opened bottom panel tab."
@@ -4470,34 +4460,28 @@ msgid "Selected plugin browser filter"
 msgstr "Filtre du navigateur de greffon sélectionné"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:359
-#, fuzzy
 msgid "Plugin browser collections"
 msgstr "Onglet du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:360
-#, fuzzy
 msgid "Tree paths of the selected collections in the plugin browser."
-msgstr "Hauteur de la partie haute du navigateur de Greffons/Fichiers."
+msgstr "3 chemins de la collection sélectionnée de greffons dans le navigateur."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:364
-#, fuzzy
 msgid "Plugin browser categories"
 msgstr "Filtre du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:365
-#, fuzzy
 msgid "Tree paths of the selected categories in the plugin browser."
-msgstr "Hauteur de la partie haute du navigateur de Greffons/Fichiers."
+msgstr "3 chemins des catégories sélectionnées dans le navigateur de Greffons."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:369
-#, fuzzy
 msgid "Plugin browser protocols"
-msgstr "Onglet du navigateur de greffon"
+msgstr "Onglet du navigateur de greffon (par protocole)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:370
-#, fuzzy
 msgid "Tree paths of the selected protocols in the plugin browser."
-msgstr "Hauteur de la partie haute du navigateur de Greffons/Fichiers."
+msgstr "3 chemins des protocoles sélectionnés dans le navigateur de greffons."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:374
 msgid "Timeline event viewer visibility"
@@ -4580,17 +4564,15 @@ msgstr ""
 "l'énumération de l'action de la fonction d'automatisation)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:420
-#, fuzzy
 msgid "Last used audio function"
-msgstr "Dernière fonction d'automatisation utilisée"
+msgstr "Dernière fonction audio utilisée"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:421
-#, fuzzy
 msgid ""
 "Last used audio function (index corresponding to enum in audio function "
 "action)."
 msgstr ""
-"Dernière fonction d'automatisation utilisée (index correspondant à "
+"Dernière fonction d'automatisation audio utilisée (index correspondant à "
 "l'énumération de l'action de la fonction d'automatisation)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:430
@@ -4724,9 +4706,8 @@ msgid "Return to cue"
 msgstr "Retour au marqueur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:528
-#, fuzzy
 msgid "Whether return to cue on stop is enabled."
-msgstr "Si le métronome est activé."
+msgstr "Pour retourner au marqueur à l'arrêt quand activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:532
 msgid "Metronome enabled"
@@ -4872,13 +4853,12 @@ msgid "Scale factor"
 msgstr "Facteur d'échelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:648
-#, fuzzy
 msgid ""
 "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
 "will be used."
 msgstr ""
-"Taux de rafraîchissement en Hz. Si réglé à 0, le taux de rafraîchissement de "
-"l'écran sera utilisé."
+"Taux de mise à l'échelle des interfaces graphiques de greffons. Si réglé à "
+"0, le réglage de l'écran sera utilisé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:665
 msgid "VST plugins"
@@ -4960,9 +4940,8 @@ msgid "Level of detail to use when drawing graphics."
 msgstr "Niveau de détail à utiliser lors du dessin des graphiques."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:753
-#, fuzzy
 msgid "Font scale"
-msgstr "Dans la gamme"
+msgstr "Mise à l'échelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:754
 msgid "Font scale."
