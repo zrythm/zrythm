@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,8 +24,9 @@
 #include "audio/engine.h"
 #include "audio/engine_sdl.h"
 #include "audio/master_track.h"
-#include "audio/router.h"
 #include "audio/port.h"
+#include "audio/router.h"
+#include "audio/tempo_track.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/ui.h"
@@ -178,8 +179,9 @@ engine_sdl_setup (
     "Setting sample rate to %u and buffer size to "
     "%d", self->sample_rate, self->block_length);
 
-  g_warn_if_fail (
-    TRANSPORT && TRANSPORT_BEATS_PER_BAR > 1);
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  g_warn_if_fail (beats_per_bar > 1);
 
   g_message ("SDL set up");
 
