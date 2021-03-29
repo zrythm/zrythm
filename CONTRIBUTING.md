@@ -44,6 +44,44 @@ material about C. Also, make sure to read
 development setup, as well as the coding and
 cooperation conventions used in the project.
 
+## Submitting Patches
+We prefer code contributions in the form of patches.
+Use `git format-patch` to generate patch files and
+send them to the
+[development mailing list](https://lists.sr.ht/~alextee/zrythm-devel).
+You can also use
+[git-send-email](https://git-send-email.io/) for this.
+If you are having difficulties creating patches
+please contact us and we will guide you.
+
+The Zrythm project uses a Contributor Ceritificate of
+Origin, which is a mechanism similar to the
+[Developer Certificate of Origin (DCO)](https://developercertificate.org/) to manage contributions.
+The Contributor Certificate of Origin is an
+affirmation that you are the creator of your
+contribution, and that you wish to allow the Zrythm
+project to use your work.
+
+Acknowledgement of this permission is done using a
+sign-off process in Git. The sign-off is a simple
+line at the end of the explanation for the patch.
+The Contributor Certificate of Origin can be found
+in the
+[CONTRIBUTOR_CERTIFICATE_OF_ORIGIN](CONTRIBUTOR_CERTIFICATE_OF_ORIGIN)
+file at the root of this distribution.
+
+If you are willing to agree to these terms, please
+add a line to every git commit message:
+
+    Signed-off-by: Joe Smith <joe.smith@email.com>
+
+If you set your user.name and user.email as part of
+your git configuration, you can sign your commit
+automatically with `git commit -s`.
+
+You must use your real name (i.e., pseudonyms or
+anonymous contributions cannot be made).
+
 # Test and Bug Reports
 Install the software and send feedback to the
 community about your experience. You can help the
@@ -65,7 +103,7 @@ available at <https://docs.zrythm.org>.
 
 ----
 
-Copyright (C) 2020 Alexandros Theodotou
+Copyright (C) 2020-2021 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright

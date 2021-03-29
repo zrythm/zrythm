@@ -210,9 +210,11 @@ too.
 
 ## Licensing
 If you contributed significant (for copyright
-purposes) amounts of code in a file, you should append your
-copyright notice (name, year and optionally
-email/website) at the top.
+purposes) amounts of code in a file, you should
+append your copyright notice (name, year and
+optionally email/website) at the top.
+
+See also [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Commit Messages
 Please follow the 50/72 rule:
@@ -224,16 +226,6 @@ See `git log` for examples.
 We are considering switching to a format that
 resembles the
 [GNU ChangeLog style](https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html#Style-of-Change-Logs).
-
-## Submitting Patches
-We prefer code contributions in the form of patches.
-Use `git format-patch` to generate patch files and
-send them to the
-[development mailing list](https://lists.sr.ht/~alextee/zrythm-devel).
-You can also use
-[git-send-email](https://git-send-email.io/) for this.
-If you are having difficulties creating patches
-please contact us and we will guide you.
 
 # Troubleshooting
 
