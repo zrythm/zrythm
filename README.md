@@ -77,7 +77,8 @@ See the [Feature tracker](https://todo.sr.ht/~alextee/zrythm-feature) and [Bug t
 
 Zrythm is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, version 3.
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
 The full text of the license can be found in the
 [COPYING](COPYING) file.

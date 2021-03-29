@@ -5,7 +5,8 @@
  *
  * Zrythm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, version 3.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +33,7 @@
 static void
 test_export (void)
 {
-  const int max_files = 18;
+  const int max_files = 20;
 
   char ** midi_files =
     io_get_files_in_dir_ending_in (
