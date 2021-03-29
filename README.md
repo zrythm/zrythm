@@ -78,7 +78,8 @@ See the [Feature tracker](https://todo.sr.ht/~alextee/zrythm-feature) and [Bug t
 Zrythm is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+License, or (at your option) any later version approved by
+Alexandros Theodotou in a public statement of acceptance.
 
 The full text of the license can be found in the
 [COPYING](COPYING) file.
@@ -105,6 +106,11 @@ For example, you may not distribute a modified form
 of Zrythm and continue to call it Zrythm, or
 include the Zrythm logo, unless explicitly allowed
 by the [Trademark Policy](TRADEMARKS.md).
+
+### Additional terms under AGPLv3 Section 14
+Alexandros Theodotou serves as a proxy who can
+decide which future versions of the GNU Affero
+General Public License can be used.
 
 ## Support
 If you would like to support this project please

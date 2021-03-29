@@ -6,7 +6,8 @@
  * Zrythm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * (at your option) any later version approved by
+ * Alexandros Theodotou in a public statement of acceptance.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -78,7 +79,7 @@ about_dialog_widget_new (
       GTK_TYPE_ABOUT_DIALOG,
       "artists", artists,
       "authors", authors,
-      "copyright", "Copyright © 2018-2020 The Zrythm contributors"
+      "copyright", "Copyright © 2018-2021 The Zrythm contributors"
 #if !defined(HAVE_CUSTOM_LOGO_AND_SPLASH) || \
   !defined (HAVE_CUSTOM_NAME)
       "\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
