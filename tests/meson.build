@@ -202,8 +202,8 @@ if get_option ('tests')
         parallel: false },
       'actions/tracklist_selections_edit': {
         parallel: false },
-      'benchmarks/dsp': {
-        parallel: true },
+      'benchmarks/dsp': { parallel: true },
+      'benchmarks/queues': { parallel: true },
       'integration/midi_file': {
         parallel: false },
       # cannot be parallel because it needs multiple

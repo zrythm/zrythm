@@ -37,7 +37,10 @@ gnome = import ('gnome')
 fs = import ('fs')
 cmake = import ('cmake')
 cmake_opts = cmake.subproject_options ()
-cmake_opts.add_cmake_defines ({'CMAKE_POSITION_INDEPENDENT_CODE': 'ON'})
+cmake_opts.add_cmake_defines ({
+  'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+  #'CMAKE_BUILD_TYPE': 'Release',
+  })
 
 prefix = get_option ('prefix')
 bindir = prefix / get_option ('bindir')
@@ -1054,6 +1057,15 @@ if not libbacktrace_dep.found ()
 endif
 cdata.set ('HAVE_LIBBACKTRACE', 1)
 
+concurrentqueue_dep = []
+if not cc.has_header('concurrentqueue/concurrentqueue.h')
+  concurrentqueue_subproject = cmake.subproject (
+    'concurrentqueue', options: cmake_opts)
+  concurrentqueue_dep = concurrentqueue_subproject.dependency (
+    'concurrentqueue')
+  cdata.set ('CONCURRENT_QUEUE_SUBPROJECT', 1)
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1091,6 +1103,7 @@ zrythm_deps = [
   lsp_dsp_dep,
   valgrind_dep,
   libbacktrace_dep,
+  concurrentqueue_dep,
 
   libm,
 ]

@@ -21,6 +21,7 @@ util_srcs = [
   'backtrace.c',
   'cairo.c',
   'color.c',
+  'concurrent_queue.cpp',
   'cpu_windows.cpp',
   'curl.c',
   'datetime.c',
