@@ -262,6 +262,9 @@ test_delete_timeline ()
       TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  g_assert_false (
+    clip_editor_get_region (CLIP_EDITOR));
+
   /* check */
   check_timeline_objects_deleted (0);
   g_assert_cmpint (
@@ -301,6 +304,9 @@ test_delete_timeline ()
       (ArrangerSelections *) AUTOMATION_SELECTIONS),
     ==, 0);
   check_timeline_objects_deleted (0);
+
+  g_assert_false (
+    clip_editor_get_region (CLIP_EDITOR));
 
   /* undo again to prepare for next test */
   undo_manager_undo (UNDO_MANAGER);
@@ -2089,6 +2095,9 @@ main (int argc, char *argv[])
 
   /*yaml_set_log_level (CYAML_LOG_INFO);*/
   g_test_add_func (
+    TEST_PREFIX "test delete timeline",
+    (GTestFunc) test_delete_timeline);
+  g_test_add_func (
     TEST_PREFIX "test split",
     (GTestFunc) test_split);
   g_test_add_func (
@@ -2115,9 +2124,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test duplicate midi regions to track below",
     (GTestFunc) test_duplicate_midi_regions_to_track_below);
-  g_test_add_func (
-    TEST_PREFIX "test delete timeline",
-    (GTestFunc) test_delete_timeline);
   g_test_add_func (
     TEST_PREFIX "test move timeline",
     (GTestFunc) test_move_timeline);

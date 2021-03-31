@@ -2225,6 +2225,7 @@ clone_region (
               arranger_object_clone (
                 (ArrangerObject *) src_co,
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
+            g_return_val_if_fail (dest_co, NULL);
 
             chord_region_add_chord_object (
               cr, dest_co, F_NO_PUBLISH_EVENTS);

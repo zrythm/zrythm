@@ -649,6 +649,8 @@ graph_setup (
       GraphNode * port_node =
         add_port (
           self, port, drop_unnecessary_ports);
+      (void) port_node;
+#if 0
       if (port_node)
         {
           /*g_debug (*/
@@ -664,6 +666,7 @@ graph_setup (
             __func__, label);
 #endif
         }
+#endif
     }
 
   /* ========================

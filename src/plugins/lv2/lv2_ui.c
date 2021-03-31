@@ -403,13 +403,15 @@ lv2_ui_instantiate (
       get_port_index, NULL, NULL);
   plugin->external_ui_widget = NULL;
 
-  const char* bundle_uri =
-    plugin->plugin->setting->ui_uri;
+  char * bundle_uri =
+    lv2_plugin_get_ui_bundle_uri (
+      plugin->plugin->setting->descr->uri,
+      plugin->plugin->setting->ui_uri);
   g_return_if_fail (bundle_uri);
   char * binary_uri =
     lv2_plugin_get_ui_binary_uri (
       plugin->plugin->setting->descr->uri,
-      bundle_uri);
+      plugin->plugin->setting->ui_uri);
   char* bundle_path =
     lilv_file_uri_parse (bundle_uri, NULL);
   char* binary_path =
@@ -516,6 +518,7 @@ lv2_ui_instantiate (
   lilv_free (binary_path);
   lilv_free (bundle_path);
   g_free (binary_uri);
+  g_free (bundle_uri);
 
   if (!plugin->ui_instance)
     {

@@ -77,6 +77,7 @@ connect_no_prev_no_next (
   Plugin *  pl)
 {
   Track * track = channel_get_track (ch);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   /* -----------------------------------------
    * disconnect ports
@@ -113,6 +114,7 @@ connect_no_prev_next (
   Plugin *  next_pl)
 {
   Track * track = channel_get_track (ch);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   /* -----------------------------------------
    * disconnect ports
@@ -1621,6 +1623,7 @@ channel_remove_plugin (
     plugin->id.track_pos == channel->track_pos);
 
   Track * track = channel_get_track (channel);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   g_message (
     "Removing %s from %s:%d",
     plugin->setting->descr->name, track->name, slot);
@@ -1742,6 +1745,8 @@ channel_add_plugin (
 {
   int i;
   Track * track = channel_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), 0);
   int prev_active = track->active;
   track->active = 0;
 
@@ -2038,6 +2043,7 @@ channel_reattach_midi_editor_manual_press_port (
   const int recalc_graph)
 {
   Track * track = channel_get_track (channel);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   if (connect)
     port_connect (
       AUDIO_ENGINE->midi_editor_manual_press,
