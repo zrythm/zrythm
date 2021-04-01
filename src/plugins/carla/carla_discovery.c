@@ -206,7 +206,7 @@ z_carla_discovery_parse_plugin_info (
           offset_str, discovery_end_txt);
 
       PluginDescriptor * descr =
-        object_new (PluginDescriptor);
+        plugin_descriptor_new ();
       descr->name =
         string_get_regex_group (
           plugin_info,
@@ -535,7 +535,7 @@ z_carla_discovery_create_au_descriptor_from_info (
     return NULL;
 
   PluginDescriptor * descr =
-    object_new (PluginDescriptor);
+    plugin_descriptor_new ();
   descr->name = g_strdup (info->name);
   g_return_val_if_fail (descr->name,  NULL);
   descr->author = g_strdup (info->maker);

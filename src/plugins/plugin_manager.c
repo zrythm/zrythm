@@ -944,8 +944,7 @@ scan_carla_descriptors_from_paths (
                         calloc (
                           2, sizeof (PluginDescriptor *));
                       descriptors[0] =
-                        calloc (
-                          1, sizeof (PluginDescriptor));
+                        plugin_descriptor_new ();
                       PluginDescriptor * descr =
                         descriptors[0];
                       descr->path = g_strdup (plugin_path);
