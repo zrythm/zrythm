@@ -520,8 +520,23 @@ arranger_object_is_position_valid (
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_END:
       {
-        /* TODO */
-        is_valid = 1;
+        is_valid = true;
+        if (self->type ==
+              ARRANGER_OBJECT_TYPE_REGION)
+          {
+            ZRegion * r = (ZRegion *) self;
+            if (r->id.type == REGION_TYPE_AUDIO)
+              {
+                AudioClip * clip =
+                  audio_region_get_clip (r);
+                Position clip_frames;
+                position_from_frames (
+                  &clip_frames, clip->num_frames);
+                is_valid =
+                  position_is_before_or_equal (
+                    pos, &clip_frames);
+              }
+          }
       }
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_CLIP_START:
