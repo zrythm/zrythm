@@ -68,6 +68,7 @@ plugin_descriptor_copy (
   PluginDescriptor *       dest,
   const PluginDescriptor * src)
 {
+  g_return_if_fail (src->schema_version > 0);
   dest->schema_version = src->schema_version;
   dest->author = g_strdup (src->author);
   dest->name = g_strdup (src->name);

@@ -88,12 +88,78 @@ automation_track_new (
 
   self->height = TRACK_DEF_HEIGHT;
 
+  g_return_val_if_fail (
+    port_identifier_validate (&port->id), NULL);
   port_identifier_copy (
     &self->port_id, &port->id);
 
   port->at = self;
 
   return self;
+}
+
+NONNULL
+bool
+automation_track_validate (
+  AutomationTrack * self)
+{
+  g_return_val_if_fail (
+    self->schema_version ==
+      AUTOMATION_TRACK_SCHEMA_VERSION &&
+    port_identifier_validate (&self->port_id),
+    false);
+
+  int track_pos = self->port_id.track_pos;
+  if (self->port_id.owner_type ==
+        PORT_OWNER_TYPE_PLUGIN)
+    {
+      g_return_val_if_fail (
+        self->port_id.plugin_id.track_pos ==
+          track_pos, false);
+    }
+  AutomationTrack * found_at =
+    automation_track_find_from_port_id (
+      &self->port_id, false);
+  g_return_val_if_fail (
+    found_at == self, false);
+  for (int j = 0; j < self->num_regions; j++)
+    {
+      ZRegion * r = self->regions[j];
+      g_return_val_if_fail (
+        r->id.track_pos == track_pos &&
+        r->id.at_idx == self->index &&
+        r->id.idx ==j, false);
+      for (int k = 0; k < r->num_aps; k++)
+        {
+          AutomationPoint * ap = r->aps[k];
+          ArrangerObject * obj =
+            (ArrangerObject *) ap;
+          g_return_val_if_fail (
+            obj->region_id.track_pos ==
+              track_pos, false);
+        }
+      for (int k = 0; k < r->num_midi_notes; k++)
+        {
+          MidiNote * mn = r->midi_notes[k];
+          ArrangerObject * obj =
+            (ArrangerObject *) mn;
+          g_return_val_if_fail (
+            obj->region_id.track_pos ==
+              track_pos, false);
+        }
+      for (int k = 0; k < r->num_chord_objects;
+           k++)
+        {
+          ChordObject * co = r->chord_objects[k];
+          ArrangerObject * obj =
+            (ArrangerObject *) co;
+          g_return_val_if_fail (
+            obj->region_id.track_pos ==
+              track_pos, false);
+        }
+    }
+
+  return true;
 }
 
 /**

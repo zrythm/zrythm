@@ -26,6 +26,10 @@
 #ifndef __AUDIO_AUTOMATION_TRACK_H__
 #define __AUDIO_AUTOMATION_TRACK_H__
 
+#include "zrythm-config.h"
+
+#include <stdbool.h>
+
 #include "audio/automation_point.h"
 #include "audio/port.h"
 #include "audio/position.h"
@@ -225,6 +229,11 @@ NONNULL
 AutomationTrack *
 automation_track_new (
   Port * port);
+
+NONNULL
+bool
+automation_track_validate (
+  AutomationTrack * self);
 
 /**
  * Gets the automation mode as a localized string.

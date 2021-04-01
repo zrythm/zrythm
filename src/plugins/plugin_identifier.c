@@ -27,3 +27,14 @@ plugin_identifier_init (
     PLUGIN_IDENTIFIER_SCHEMA_VERSION;
   self->slot = -1;
 }
+
+bool
+plugin_identifier_validate (
+  PluginIdentifier * self)
+{
+  g_return_val_if_fail (
+    self->schema_version ==
+      PLUGIN_IDENTIFIER_SCHEMA_VERSION,
+    false);
+  return true;
+}

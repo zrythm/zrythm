@@ -136,6 +136,18 @@ port_identifier_print (
     self->port_index);
 }
 
+bool
+port_identifier_validate (
+  PortIdentifier * self)
+{
+  g_return_val_if_fail (
+    self->schema_version ==
+      PORT_IDENTIFIER_SCHEMA_VERSION &&
+    plugin_identifier_validate (&self->plugin_id),
+    false);
+  return true;
+}
+
 void
 port_identifier_free_members (
   PortIdentifier * self)

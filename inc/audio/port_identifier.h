@@ -563,6 +563,11 @@ port_identifier_print (
   PortIdentifier * self);
 
 NONNULL
+bool
+port_identifier_validate (
+  PortIdentifier * self);
+
+NONNULL
 void
 port_identifier_free_members (
   PortIdentifier * self);

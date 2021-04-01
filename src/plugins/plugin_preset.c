@@ -20,8 +20,8 @@
 #include "plugins/plugin_preset.h"
 #include "utils/objects.h"
 
-static void
-preset_identifier_init (
+void
+plugin_preset_identifier_init (
   PluginPresetIdentifier * id)
 {
   id->schema_version =
@@ -35,7 +35,7 @@ plugin_bank_new (void)
 
   self->schema_version = PLUGIN_BANK_SCHEMA_VERSION;
 
-  preset_identifier_init (&self->id);
+  plugin_preset_identifier_init (&self->id);
 
   return self;
 }
@@ -45,8 +45,7 @@ plugin_preset_new (void)
 {
   PluginPreset * self = object_new (PluginPreset);
 
-  self->schema_version = PLUGIN_PRESET_SCHEMA_VERSION;
-  preset_identifier_init (&self->id);
+  plugin_preset_identifier_init (&self->id);
 
   return self;
 }

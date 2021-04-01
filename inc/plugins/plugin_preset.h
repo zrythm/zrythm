@@ -178,6 +178,11 @@ plugin_bank_new (void);
 PluginPreset *
 plugin_preset_new (void);
 
+NONNULL
+void
+plugin_preset_identifier_init (
+  PluginPresetIdentifier * id);
+
 /**
  * @}
  */

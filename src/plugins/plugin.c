@@ -242,8 +242,12 @@ plugin_init (
   port->carla_param_id = -1;
   plugin->gain = port;
 
+  plugin->selected_bank.schema_version =
+    PLUGIN_BANK_SCHEMA_VERSION;
   plugin->selected_bank.bank_idx = -1;
   plugin->selected_bank.idx = -1;
+  plugin_preset_identifier_init (
+    &plugin->selected_preset);
   plugin->selected_preset.bank_idx = -1;
   plugin->selected_preset.idx = -1;
 

@@ -26,6 +26,10 @@
 #ifndef __PLUGINS_PLUGIN_IDENTIFIER_H__
 #define __PLUGINS_PLUGIN_IDENTIFIER_H__
 
+#include "zrythm-config.h"
+
+#include <stdbool.h>
+
 #include "utils/yaml.h"
 
 /**
@@ -128,6 +132,11 @@ plugin_identifier_copy (
   dest->track_pos = src->track_pos;
   dest->slot = src->slot;
 }
+
+NONNULL
+bool
+plugin_identifier_validate (
+  PluginIdentifier * self);
 
 static inline void
 plugin_identifier_print (
