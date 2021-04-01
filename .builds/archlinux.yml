@@ -69,7 +69,7 @@ tasks:
   - run_cppcheck: |
       cd zrythm
       # pass for now
-      ninja -C build cppcheck || true
+      #ninja -C build cppcheck || true
       ninja -C build clang-tidy || true
   - test-optimized-build: |
       cd zrythm
