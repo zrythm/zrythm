@@ -1491,6 +1491,7 @@ process_events (void * data)
             MW_TRACK_VISIBILITY_TREE);
           tracklist_header_widget_refresh_track_count (
             MW_TRACKLIST_HEADER);
+          mixer_widget_hard_refresh (MW_MIXER);
           break;
         case ET_UNDO_REDO_ACTION_DONE:
           home_toolbar_widget_refresh_undo_redo_buttons (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,11 +26,9 @@
 
 #define MIXER_WIDGET_TYPE \
   (mixer_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MixerWidget,
-                      mixer_widget,
-                      Z,
-                      MIXER_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  MixerWidget, mixer_widget,
+  Z, MIXER_WIDGET, GtkBox)
 
 #define MW_MIXER MW_BOT_DOCK_EDGE->mixer
 
