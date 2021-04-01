@@ -820,24 +820,34 @@ engine_jack_activate (
         -1);
 
       g_message ("connecting to system out ports...");
-      if (jack_connect (
-            self->client,
-            jack_port_name (
-              JACK_PORT_T (
-                self->monitor_out->l->data)),
-            ports[0]))
+      int ret =
+        jack_connect (
+          self->client,
+          jack_port_name (
+            JACK_PORT_T (
+              self->monitor_out->l->data)),
+          ports[0]);
+      if (ret)
         {
-          g_critical ("cannot connect output ports");
+          char msg[600];
+          engine_jack_get_error_message (ret, msg);
+          g_critical (
+            "cannot connect monitor out L: %s", msg);
           return -1;
         }
 
-      if (jack_connect (
-            self->client,
-            jack_port_name (
-              JACK_PORT_T (self->monitor_out->r->data)),
-            ports[1]))
+      ret =
+      jack_connect (
+        self->client,
+        jack_port_name (
+          JACK_PORT_T (self->monitor_out->r->data)),
+        ports[1]);
+      if (ret)
         {
-          g_critical ("cannot connect output ports");
+          char msg[600];
+          engine_jack_get_error_message (ret, msg);
+          g_critical (
+            "cannot connect monitor out R: %s", msg);
           return -1;
         }
 
