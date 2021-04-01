@@ -3257,6 +3257,7 @@ drag_update (
                 self, &self->curr_pos,
                 F_NOT_DRY_RUN);
             }
+          move_items_y (self, offset_y);
         }
       else if (self->type == TYPE (AUDIO))
         {
