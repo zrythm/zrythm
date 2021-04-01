@@ -115,6 +115,7 @@ settings_new (void)
 #endif
 
   self->plugin_settings = plugin_settings_new ();
+  g_return_val_if_fail (self->plugin_settings, NULL);
 
   return self;
 }
