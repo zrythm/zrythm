@@ -30,7 +30,8 @@ if get_option ('tests')
     'G_TEST_BUILDDIR', meson.current_build_dir ())
   test_env.set ('G_SLICE', 'debug-blocks')
   test_env.set (
-    'GUILE_LOAD_PATH', '$GUILE_LOAD_PATH:' + meson.current_build_dir ())
+    'GUILE_LOAD_PATH',
+    '$GUILE_LOAD_PATH:' + meson.current_build_dir ())
   test_env.set ('G_DEBUG', 'gc-friendly')
   test_env.set ('MALLOC_CHECK_', '3')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
@@ -40,6 +41,7 @@ if get_option ('tests')
   test_env.set ('ZRYTHM_DEBUG', '1')
   test_env.set ('Z_CURL_TIMEOUT', '10')
   test_env.set ('G_MESSAGES_DEBUG', 'zrythm')
+  test_env.set ('ZRYTHM_DSP_THREADS', '3')
 
   test_config = configuration_data ()
   test_config.set_quoted (

@@ -56,7 +56,7 @@ main (int argc, char *argv[])
 
   test_helper_zrythm_init ();
 
-#define TEST_PREFIX "/audio/metronome/"
+#define TEST_PREFIX "/plugins/plugin_manager/"
 
   /* test that finding the plugins works */
   g_test_add_func (
