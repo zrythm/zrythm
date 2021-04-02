@@ -41,6 +41,7 @@ undo_manager_init_loaded (
   g_message ("%s: loading...", __func__);
   undo_stack_init_loaded (self->undo_stack);
   undo_stack_init_loaded (self->redo_stack);
+  zix_sem_init (&self->action_sem, 1);
   g_message ("%s: done", __func__);
 }
 
@@ -57,6 +58,8 @@ undo_manager_new (void)
   self->undo_stack = undo_stack_new ();
   self->redo_stack = undo_stack_new ();
 
+  zix_sem_init (&self->action_sem, 1);
+
   g_message ("%s: done", __func__);
 
   return self;
@@ -71,6 +74,8 @@ undo_manager_undo (UndoManager * self)
   g_warn_if_fail (
     !undo_stack_is_empty (self->undo_stack));
 
+  zix_sem_wait (&self->action_sem);
+
   /* pop the action from the undo stack and undo it */
   UndoableAction * action =
     (UndoableAction *)
@@ -80,6 +85,7 @@ undo_manager_undo (UndoManager * self)
   if (undoable_action_undo (action))
     {
       g_warn_if_reached ();
+      zix_sem_post (&self->action_sem);
       return;
     }
 
@@ -107,6 +113,8 @@ undo_manager_undo (UndoManager * self)
       /* process UI events now */
       event_manager_process_now (EVENT_MANAGER);
     }
+
+  zix_sem_post (&self->action_sem);
 }
 
 /**
@@ -117,6 +125,8 @@ undo_manager_redo (UndoManager * self)
 {
   g_warn_if_fail (
     !undo_stack_is_empty (self->redo_stack));
+
+  zix_sem_wait (&self->action_sem);
 
   /* pop the action from the redo stack and execute
    * it */
@@ -129,6 +139,7 @@ undo_manager_redo (UndoManager * self)
   if (undoable_action_do (action))
     {
       g_warn_if_reached ();
+      zix_sem_post (&self->action_sem);
       return;
     }
 
@@ -153,6 +164,8 @@ undo_manager_redo (UndoManager * self)
       /* process UI events now */
       event_manager_process_now (EVENT_MANAGER);
     }
+
+  zix_sem_post (&self->action_sem);
 }
 
 /**
@@ -168,6 +181,8 @@ undo_manager_perform (
 {
   g_return_val_if_fail (self && action, -1);
 
+  zix_sem_wait (&self->action_sem);
+
   /* if error return */
   int err = undoable_action_do (action);
   if (err)
@@ -176,6 +191,7 @@ undo_manager_perform (
         "%s: action not performed (err %d)",
         __func__, err);
 
+      zix_sem_post (&self->action_sem);
       return err;
     }
 
@@ -199,6 +215,8 @@ undo_manager_perform (
       /* process UI events now */
       event_manager_process_now (EVENT_MANAGER);
     }
+
+  zix_sem_post (&self->action_sem);
 
   return 0;
 }

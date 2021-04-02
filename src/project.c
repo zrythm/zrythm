@@ -1625,6 +1625,7 @@ serialize_project_thread (
     "%s: successfully saved project", __func__);
 
 serialize_end:
+  zix_sem_post (&UNDO_MANAGER->action_sem);
   data->finished = true;
   return NULL;
 }
@@ -1690,6 +1691,11 @@ project_save (
   const bool   show_notification,
   const bool   async)
 {
+  if (async)
+    {
+      zix_sem_wait (&UNDO_MANAGER->action_sem);
+    }
+
   project_validate (self);
 
   int i, j;

@@ -28,6 +28,8 @@
 
 #include "actions/undo_stack.h"
 
+#include "zix/sem.h"
+
 /**
  * @addtogroup actions
  *
@@ -43,6 +45,9 @@ typedef struct UndoManager
 {
   UndoStack *   undo_stack;
   UndoStack *   redo_stack;
+
+  /** Semaphore for performing actions. */
+  ZixSem        action_sem;
 } UndoManager;
 
 static const cyaml_schema_field_t
