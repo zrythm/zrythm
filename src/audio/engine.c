@@ -972,6 +972,14 @@ engine_wait_for_pause (
     {
       g_usleep (100);
     }
+
+  /* run one more time to flush panic messages */
+  engine_process_prepare (
+    self, 1);
+  router_start_cycle (
+    ROUTER, 1, 0, PLAYHEAD);
+  engine_post_process (
+    self, 1);
 }
 
 void

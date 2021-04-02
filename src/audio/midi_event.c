@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -437,7 +437,7 @@ midi_events_panic (
   bool         queued)
 {
   zix_sem_wait (&self->access_sem);
-  g_message ("sending PANIC");
+  /*g_message ("sending PANIC");*/
   for (midi_byte_t i = 0; i < 16; i++)
     {
       midi_events_add_all_notes_off (

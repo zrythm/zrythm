@@ -457,6 +457,115 @@ test_export_midi_routed_to_instrument_track ()
 #endif
 }
 
+static void
+test_bounce_region_with_first_note (void)
+{
+#ifdef HAVE_HELM
+  test_helper_zrythm_init ();
+
+  Position pos, end_pos;
+  position_set_to_bar (&pos, 2);
+  position_set_to_bar (&end_pos, 4);
+
+  /* create the plugin track */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* create midi region */
+  char * midi_file =
+    g_build_filename (
+      MIDILIB_TEST_MIDI_FILES_PATH,
+      "M1.MID", NULL);
+  int lane_pos = 0;
+  int idx_in_lane = 0;
+  ZRegion * region =
+    midi_region_new_from_midi_file (
+      &pos, midi_file, track->pos,
+      lane_pos, idx_in_lane, 0);
+  ArrangerObject * r_obj = (ArrangerObject *) region;
+  track_add_region (
+    track, region, NULL, lane_pos,
+    F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    r_obj, F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
+
+  position_init (&pos);
+  position_add_beats (&pos, 3);
+  arranger_object_loop_start_pos_setter (
+    r_obj, &pos);
+  arranger_object_clip_start_pos_setter (
+    r_obj, &pos);
+
+  for (int i = region->num_midi_notes - 1; i >= 1;
+       i--)
+    {
+      MidiNote * mn = region->midi_notes[i];
+      midi_region_remove_midi_note (
+        region, mn, F_FREE, F_NO_PUBLISH_EVENTS);
+    }
+  g_assert_cmpint (
+    region->midi_notes[0]->base.pos.frames, ==,
+    region->base.loop_start_pos.frames);
+
+  /* bounce it */
+  ExportSettings settings;
+  memset (&settings, 0, sizeof (ExportSettings));
+  timeline_selections_mark_for_bounce (
+    TL_SELECTIONS);
+  settings.mode = EXPORT_MODE_REGIONS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, region->name);
+  position_add_ms (
+    &settings.custom_end, 4000);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  while (settings.progress < 1.0)
+    {
+      g_message (
+        "progress: %f.1", settings.progress * 100.0);
+      g_usleep (1000);
+    }
+
+  g_thread_join (thread);
+
+  /* assert non silent */
+  AudioClip * clip =
+    audio_clip_new_from_file (settings.file_uri);
+  bool has_audio = false;
+  for (long i = 0; i < clip->num_frames; i++)
+    {
+      for (channels_t j = 0; j < clip->channels; j++)
+        {
+          if (fabsf (clip->ch_frames[j][i]) > 1e-10f)
+            {
+              has_audio = true;
+              break;
+            }
+        }
+    }
+  g_assert_true (has_audio);
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -464,6 +573,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test bounce region with first note",
+    (GTestFunc) test_bounce_region_with_first_note);
   g_test_add_func (
     TEST_PREFIX "test bounce region",
     (GTestFunc) test_bounce_region);

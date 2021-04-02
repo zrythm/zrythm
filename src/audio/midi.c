@@ -302,6 +302,9 @@ void
 midi_panic_all (
   int queued)
 {
+  g_message (
+    "~ midi panic all (queued: %d) ~", queued);
+
   midi_events_panic (
     AUDIO_ENGINE->midi_editor_manual_press->
       midi_events, queued);
