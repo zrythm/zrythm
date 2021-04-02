@@ -68,6 +68,8 @@ typedef struct RecordingManager
    */
   RegionIdentifier   recorded_ids[8000];
   int                num_recorded_ids;
+
+  bool               freeing;
 } RecordingManager;
 
 /**

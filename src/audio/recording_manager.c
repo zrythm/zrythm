@@ -1486,7 +1486,12 @@ recording_manager_process_events (
       if (ev->type < 0)
         {
           g_warn_if_reached ();
-          continue;
+          goto return_to_pool;
+        }
+
+      if (self->freeing)
+        {
+          goto return_to_pool;
         }
 
       /*g_message ("event type %d", ev->type);*/
@@ -1588,6 +1593,7 @@ recording_manager_process_events (
         }
 
       /*UP_RETURNED (ev);*/
+return_to_pool:
       object_pool_return (
         self->event_obj_pool, ev);
     }
@@ -1631,6 +1637,8 @@ recording_manager_free (
   RecordingManager * self)
 {
   g_message ("%s: Freeing...", __func__);
+
+  self->freeing = true;
 
   /* stop source func */
   g_source_remove_and_zero (self->source_id);

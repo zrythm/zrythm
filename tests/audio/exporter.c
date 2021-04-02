@@ -561,6 +561,7 @@ test_bounce_region_with_first_note (void)
         }
     }
   g_assert_true (has_audio);
+  audio_clip_free (clip);
 
   test_helper_zrythm_cleanup ();
 #endif
