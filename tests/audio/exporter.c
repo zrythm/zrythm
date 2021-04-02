@@ -103,7 +103,8 @@ get_fingerprint (
     ctx, sfinfo.samplerate, sfinfo.channels);
   g_assert_cmpint (ret, ==, 1);
   int buf_size = sfinfo.frames * sfinfo.channels;
-  short data[buf_size];
+  short * data =
+    calloc ((size_t) buf_size, sizeof (short));
   sf_count_t frames_read =
     sf_readf_short (sndfile, data, sfinfo.frames);
   g_assert_cmpint (frames_read, ==, sfinfo.frames);
@@ -130,6 +131,7 @@ get_fingerprint (
     fp->compressed_str, fp->size);
 
   chromaprint_free (ctx);
+  free (data);
 
   ret = sf_close (sndfile);
   g_assert_cmpint (ret, ==, 0);
@@ -295,22 +297,29 @@ bounce_region (
     track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  /* create a region and select it */
-  position_set_to_bar (&pos, 2);
-  position_set_to_bar (&end_pos, 4);
-  ZRegion * r =
-    midi_region_new (
-      &pos, &end_pos, track->pos, 0, 0);
-  ArrangerObject * r_obj = (ArrangerObject *) r;
+  /* create midi region */
+  char * midi_file =
+    g_build_filename (
+      MIDILIB_TEST_MIDI_FILES_PATH,
+      "M71.MID", NULL);
+  int lane_pos = 0;
+  int idx_in_lane = 0;
+  ZRegion * region =
+    midi_region_new_from_midi_file (
+      &pos, midi_file, track->pos,
+      lane_pos, idx_in_lane, 0);
   track_add_region (
-    track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    track, region, NULL, lane_pos,
+    F_GEN_NAME, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region,
+    F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   UndoableAction * ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
 
   /* bounce it */
   ExportSettings settings;
@@ -319,7 +328,9 @@ bounce_region (
     TL_SELECTIONS);
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, NULL, r->name);
+    &settings, NULL, region->name);
+  position_add_ms (
+    &settings.custom_end, 4000);
 
   /* start exporting in a new thread */
   GThread * thread =
@@ -336,6 +347,18 @@ bounce_region (
     }
 
   g_thread_join (thread);
+
+  if (!with_bpm_automation)
+    {
+      char * filepath =
+        g_build_filename (
+          TESTS_SRCDIR,
+          "test_export_midi_routed_to_instrument_track.ogg",
+          NULL);
+      check_fingerprint_similarity (
+        filepath, settings.file_uri, 97, 34);
+      g_free (filepath);
+    }
 
   test_helper_zrythm_cleanup ();
 #endif
@@ -442,17 +465,17 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/audio/exporter/"
 
   g_test_add_func (
-    TEST_PREFIX "test export midi routed to instrument track",
-    (GTestFunc) test_export_midi_routed_to_instrument_track);
-  g_test_add_func (
-    TEST_PREFIX "test export wav",
-    (GTestFunc) test_export_wav);
-  g_test_add_func (
     TEST_PREFIX "test bounce region",
     (GTestFunc) test_bounce_region);
   g_test_add_func (
     TEST_PREFIX "test bounce with bpm automation",
     (GTestFunc) test_bounce_with_bpm_automation);
+  g_test_add_func (
+    TEST_PREFIX "test export midi routed to instrument track",
+    (GTestFunc) test_export_midi_routed_to_instrument_track);
+  g_test_add_func (
+    TEST_PREFIX "test export wav",
+    (GTestFunc) test_export_wav);
 
   return g_test_run ();
 }
