@@ -188,8 +188,7 @@ copy_at_regions (
       dest->regions[j] =
         (ZRegion *)
         arranger_object_clone (
-          (ArrangerObject *) src_region,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+          (ArrangerObject *) src_region);
       region_set_automation_track (
         dest->regions[j], dest);
     }
@@ -670,8 +669,7 @@ copy_automation_from_track1_to_track2 (
                 (ZRegion *)
                 arranger_object_clone (
                   (ArrangerObject *)
-                  prev_region,
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  prev_region);
               track_add_region (
                 to_track, new_region, at, -1, 0, 0);
             }

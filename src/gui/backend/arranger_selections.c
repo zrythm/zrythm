@@ -418,8 +418,7 @@ arranger_selections_clone (
       new_##sc = \
         (cc *) \
         arranger_object_clone ( \
-          (ArrangerObject *) sc, \
-          ARRANGER_OBJECT_CLONE_COPY); \
+          (ArrangerObject *) sc); \
       ArrangerObject * new_sc_obj = \
         (ArrangerObject *) new_##sc; \
       sc_obj->transient = new_sc_obj; \
@@ -2086,8 +2085,7 @@ arranger_selections_merge (
               MidiNote * mn = r->midi_notes[j];
               ArrangerObject * new_obj =
                 arranger_object_clone (
-                  (ArrangerObject *) mn,
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  (ArrangerObject *) mn);
               MidiNote * new_mn =
                 (MidiNote *) new_obj;
 
@@ -2166,8 +2164,7 @@ arranger_selections_merge (
                 r->chord_objects[j];
               ArrangerObject * new_obj =
                 arranger_object_clone (
-                  (ArrangerObject *) co,
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  (ArrangerObject *) co);
               ChordObject * new_co =
                 (ChordObject *) new_obj;
 
@@ -2200,8 +2197,7 @@ arranger_selections_merge (
               AutomationPoint * ap = r->aps[j];
               ArrangerObject * new_obj =
                 arranger_object_clone (
-                  (ArrangerObject *) ap,
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  (ArrangerObject *) ap);
               AutomationPoint * new_ap =
                 (AutomationPoint *) new_obj;
 

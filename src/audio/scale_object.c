@@ -33,8 +33,7 @@
  */
 ScaleObject *
 scale_object_new (
-  MusicalScale * descr,
-  int               is_main)
+  MusicalScale * descr)
 {
   ScaleObject * self = object_new (ScaleObject);
 

@@ -198,11 +198,9 @@ set_split_objects (
   if (clone)
     {
       r1 =
-        arranger_object_clone (
-          _r1, ARRANGER_OBJECT_CLONE_COPY);
+        arranger_object_clone (_r1);
       r2 =
-        arranger_object_clone (
-          _r2, ARRANGER_OBJECT_CLONE_COPY);
+        arranger_object_clone (_r2);
     }
   self->r1[i] = r1;
   self->r2[i] = r2;
@@ -645,13 +643,11 @@ arranger_selections_action_new_automation_fill (
   self->region_before =
     (ZRegion *)
     arranger_object_clone (
-      (ArrangerObject *) region_before,
-      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      (ArrangerObject *) region_before);
   self->region_after =
     (ZRegion *)
     arranger_object_clone (
-      (ArrangerObject *) region_after,
-      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      (ArrangerObject *) region_after);
 
   if (!already_changed)
     {
@@ -1124,7 +1120,7 @@ do_or_undo_duplicate_or_link (
    * the cached selections */
   GHashTable * ht = g_hash_table_new (NULL, NULL);
 
-  for (int i = 0; i < size; i++)
+  for (int i = size - 1; i >= 0; i--)
     {
       objs[i]->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
@@ -1138,9 +1134,6 @@ do_or_undo_duplicate_or_link (
        * project object too) */
       if (_do && self->first_run)
         {
-          g_debug (
-            "[%d] moving original object "
-            "backwards", i);
           if (objs[i]->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
@@ -1148,16 +1141,25 @@ do_or_undo_duplicate_or_link (
               region_print (
                 (ZRegion *) objs[i]);
             }
-          ZRegion * r_orig =
-            (ZRegion *) orig_objs[i];
-          ZRegion * r_our =
-            (ZRegion *) objs[i];
-          (void) r_orig;
-          (void) r_our;
+          ZRegion * r_orig = NULL;
+          ZRegion * r_our = NULL;
+          if (objs[i]->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
+            {
+              r_orig = (ZRegion *) orig_objs[i];
+              r_our = (ZRegion *) objs[i];
+              g_return_val_if_fail (
+                IS_REGION_AND_NONNULL (r_orig) &&
+                IS_REGION_AND_NONNULL (r_our), -1);
+            }
           ArrangerObject * obj =
             arranger_object_find (objs[i]);
           g_return_val_if_fail (
             IS_ARRANGER_OBJECT (obj), -1);
+
+          g_debug (
+            "[%d] moving original object "
+            "backwards", i);
 
           /* ticks */
           if (!math_doubles_equal (
@@ -1172,11 +1174,14 @@ do_or_undo_duplicate_or_link (
           /* tracks & lanes */
           if (delta_tracks || delta_lanes)
             {
+              g_return_val_if_fail (r_our, -1);
+
               g_message ("moving prj obj");
               move_obj_by_tracks_and_lanes (
                 obj, - delta_tracks,
                 - delta_lanes, true,
                 objs[i]->index_in_prev_lane);
+
               g_message ("moving own obj");
               RegionIdentifier own_id_before_move =
                 r_our->id;
@@ -1243,8 +1248,10 @@ do_or_undo_duplicate_or_link (
                 F_NORMALIZED,
                 F_NO_PUBLISH_EVENTS);
             }
-        }
+        } /* if do and first run */
     }
+
+  g_debug ("moved original objects back");
 
   for (int i = 0; i < size; i++)
     {
@@ -1252,12 +1259,7 @@ do_or_undo_duplicate_or_link (
       if (_do)
         {
           /* clone the clone */
-          obj =
-            arranger_object_clone (
-              objs[i],
-              link ?
-                ARRANGER_OBJECT_CLONE_COPY_LINK :
-                ARRANGER_OBJECT_CLONE_COPY_MAIN);
+          obj = arranger_object_clone (objs[i]);
 
           /* if region, clear the remembered index
            * so that the region gets appended
@@ -1273,65 +1275,6 @@ do_or_undo_duplicate_or_link (
           /* add to track. */
           arranger_object_add_to_project (
             obj, F_NO_PUBLISH_EVENTS);
-
-          /* if we are linking, create the
-           * necessary links */
-          if (link &&
-              orig_objs[i]->type ==
-                ARRANGER_OBJECT_TYPE_REGION)
-            {
-              /* add link group to original object
-               * if necessary */
-              ArrangerObject * orig_obj =
-                arranger_object_find (
-                  orig_objs[i]);
-              ZRegion * region =
-                (ZRegion *) orig_obj;
-              region_create_link_group_if_none (
-                region);
-              int link_group =
-                region->id.link_group;
-
-              /* add link group to clone */
-              region = (ZRegion *) obj;
-              region_set_link_group (
-                region, link_group, true);
-
-              /* remember link groups */
-              region = (ZRegion *) orig_objs[i];
-              region_set_link_group (
-                region, link_group, true);
-              region = (ZRegion *) objs[i];
-              region_set_link_group (
-                region, link_group, true);
-            }
-          /* else if we are not linking and this
-           * is a region */
-          else if (obj->type ==
-                     ARRANGER_OBJECT_TYPE_REGION)
-            {
-              /* if this is an audio region,
-               * duplicate the clip */
-              ZRegion * region = (ZRegion *) obj;
-              if (region->id.type ==
-                    REGION_TYPE_AUDIO)
-                {
-                  AudioClip * clip =
-                    audio_region_get_clip (region);
-                  int prev_id = clip->pool_id;
-                  int id =
-                    audio_pool_duplicate_clip (
-                      AUDIO_POOL, clip->pool_id,
-                      F_WRITE_FILE);
-                  g_return_val_if_fail (
-                    id > prev_id, -1);
-                  clip =
-                    audio_pool_get_clip (
-                      AUDIO_POOL, id);
-                  g_return_val_if_fail (clip, -1);
-                  region->pool_id = clip->pool_id;
-                }
-            }
         } /* endif do */
       else /* if undo */
         {
@@ -1459,6 +1402,91 @@ do_or_undo_duplicate_or_link (
             F_NO_PUBLISH_EVENTS);
         }
 
+      if (_do)
+        {
+          /* if we are linking, create the
+           * necessary links */
+          if (link &&
+              orig_objs[i]->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
+            {
+              g_debug ("setting link groups");
+
+              /* add link group to original object
+               * if necessary */
+              ArrangerObject * orig_obj =
+                arranger_object_find (
+                  orig_objs[i]);
+              ZRegion * region =
+                (ZRegion *) orig_obj;
+              g_return_val_if_fail (
+                region->id.idx >= 0, -1);
+              region_create_link_group_if_none (
+                region);
+              int link_group =
+                region->id.link_group;
+
+              /* add link group to clone */
+              region = (ZRegion *) obj;
+              g_return_val_if_fail (
+                region->id.idx >= 0, -1);
+              region_set_link_group (
+                region, link_group, true);
+
+              region_link_group_manager_validate (
+                REGION_LINK_GROUP_MANAGER);
+
+              /* remember link groups */
+              region = (ZRegion *) orig_objs[i];
+              region_set_link_group (
+                region, link_group, true);
+              region = (ZRegion *) objs[i];
+              region_set_link_group (
+                region, link_group, true);
+
+              region_link_group_manager_validate (
+                REGION_LINK_GROUP_MANAGER);
+            }
+          /* else if we are not linking and this
+           * is a region */
+          else if (obj->type ==
+                     ARRANGER_OBJECT_TYPE_REGION)
+            {
+              ZRegion * region = (ZRegion *) obj;
+
+              /* remove link group if first run */
+              if (self->first_run)
+                {
+                  if (region_has_link_group (
+                        region))
+                    {
+                      region_unlink (region);
+                    }
+                }
+
+              /* if this is an audio region,
+               * duplicate the clip */
+              if (region->id.type ==
+                    REGION_TYPE_AUDIO)
+                {
+                  AudioClip * clip =
+                    audio_region_get_clip (region);
+                  int prev_id = clip->pool_id;
+                  int id =
+                    audio_pool_duplicate_clip (
+                      AUDIO_POOL, clip->pool_id,
+                      F_WRITE_FILE);
+                  g_return_val_if_fail (
+                    id > prev_id, -1);
+                  clip =
+                    audio_pool_get_clip (
+                      AUDIO_POOL, id);
+                  g_return_val_if_fail (clip, -1);
+                  region->pool_id = clip->pool_id;
+                }
+            }
+        }
+
       /* add the mapping to the hashtable */
       g_hash_table_insert (ht, obj, objs[i]);
 
@@ -1473,6 +1501,9 @@ do_or_undo_duplicate_or_link (
           arranger_object_copy_identifier (
             objs[i], obj);
         }
+
+      region_link_group_manager_validate (
+        REGION_LINK_GROUP_MANAGER);
     }
 
   /* if copy-moving automation points, re-sort
@@ -1507,6 +1538,9 @@ do_or_undo_duplicate_or_link (
             cached_ap, region, prj_ap->index);
         }
     }
+
+  region_link_group_manager_validate (
+    REGION_LINK_GROUP_MANAGER);
 
   free (objs);
   free (orig_objs);
@@ -1578,9 +1612,7 @@ do_or_undo_create_or_delete (
             {
               /* clone the clone */
               ArrangerObject * obj =
-                arranger_object_clone (
-                  objs[i],
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                arranger_object_clone (objs[i]);
 
               /* add it to the project */
               if (create)
@@ -1685,6 +1717,9 @@ do_or_undo_create_or_delete (
         ET_ARRANGER_SELECTIONS_REMOVED, sel);
     }
 
+  region_link_group_manager_validate (
+    REGION_LINK_GROUP_MANAGER);
+
   free (objs);
 
   self->first_run = 0;
@@ -1760,8 +1795,7 @@ do_or_undo_record (
               /* clone the clone */
               ArrangerObject * obj =
                 arranger_object_clone (
-                  after_objs[i],
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  after_objs[i]);
 
               /* add it to the project */
               arranger_object_add_to_project (
@@ -1824,8 +1858,7 @@ do_or_undo_record (
               /* clone the clone */
               ArrangerObject * obj =
                 arranger_object_clone (
-                  before_objs[i],
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  before_objs[i]);
 
               /* add it to the project */
               arranger_object_add_to_project (
@@ -2181,8 +2214,7 @@ do_or_undo_automation_fill (
         arranger_object_clone (
           _do ?
           (ArrangerObject *) self->region_after :
-          (ArrangerObject *) self->region_before,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+          (ArrangerObject *) self->region_before);
 
       /* add it to the project */
       arranger_object_add_to_project (
@@ -2270,9 +2302,7 @@ do_or_undo_split (
           arranger_object_remove_from_project (
             obj);
           obj =
-            arranger_object_clone (
-              objs[i],
-              ARRANGER_OBJECT_CLONE_COPY_MAIN);
+            arranger_object_clone (objs[i]);
           arranger_object_insert_to_project (
             obj);
 
@@ -2348,9 +2378,7 @@ do_or_undo_merge (
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
       ArrangerObject * clone_obj =
-        arranger_object_clone (
-          after_objs[i],
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+        arranger_object_clone (after_objs[i]);
 
       arranger_object_add_to_project (
         clone_obj, F_NO_PUBLISH_EVENTS);

@@ -94,11 +94,18 @@ static const cyaml_schema_value_t
     region_link_group_fields_schema),
 };
 
+NONNULL
+void
+region_link_group_init_loaded (
+  RegionLinkGroup * self);
+
+NONNULL
 void
 region_link_group_init (
   RegionLinkGroup * self,
   int               idx);
 
+NONNULL
 void
 region_link_group_add_region (
   RegionLinkGroup * self,
@@ -111,6 +118,7 @@ region_link_group_add_region (
  *   Automatically remove the last region left in
  *   the group, and the group itself when empty.
  */
+NONNULL
 void
 region_link_group_remove_region (
   RegionLinkGroup * self,
@@ -118,10 +126,16 @@ region_link_group_remove_region (
   bool              autoremove_last_region_and_group,
   bool              update_identifier);
 
+NONNULL
 bool
 region_link_group_contains_region (
   RegionLinkGroup * self,
   ZRegion *         region);
+
+NONNULL
+void
+region_link_group_print (
+  RegionLinkGroup * self);
 
 /**
  * Updates all other regions in the link group.
@@ -129,6 +143,7 @@ region_link_group_contains_region (
  * @param region The region where the change
  *   happened.
  */
+NONNULL
 void
 region_link_group_update (
   RegionLinkGroup * self,
@@ -137,10 +152,16 @@ region_link_group_update (
 /**
  * Moves the regions from \ref src to \ref dest.
  */
+NONNULL
 void
 region_link_group_move (
   RegionLinkGroup * dest,
   RegionLinkGroup * src);
+
+NONNULL
+bool
+region_link_group_validate (
+  RegionLinkGroup * self);
 
 /**
  * @}

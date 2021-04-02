@@ -36,15 +36,30 @@ void
 region_link_group_manager_init_loaded (
   RegionLinkGroupManager * self)
 {
-  g_message ("Initializing...");
-
+  self->groups_size = (size_t) self->num_groups;
   for (int i = 0; i < self->num_groups; i++)
     {
-      self->groups[i].magic =
-        REGION_LINK_GROUP_MAGIC;
+      RegionLinkGroup * link_group =
+        &self->groups[i];
+      region_link_group_init_loaded (link_group);
+    }
+}
+
+bool
+region_link_group_manager_validate (
+  RegionLinkGroupManager * self)
+{
+  for (int i = 0; i < self->num_groups; i++)
+    {
+      RegionLinkGroup * link_group =
+        &self->groups[i];
+      if (!region_link_group_validate (link_group))
+        {
+          return false;
+        }
     }
 
-  g_message ("done");
+  return true;
 }
 
 /**
@@ -74,8 +89,9 @@ region_link_group_manager_get_group (
   RegionLinkGroupManager * self,
   int                      group_id)
 {
-  g_warn_if_fail (
-    self->num_groups >= 0);
+  g_return_val_if_fail (
+    self->num_groups >= 0 &&
+    group_id < self->num_groups, NULL);
 
   RegionLinkGroup * group = &self->groups[group_id];
   g_return_val_if_fail (
@@ -101,8 +117,9 @@ region_link_group_manager_remove_group (
       self, group_id);
   g_return_if_fail (group && group->num_ids == 0);
 
-  --self->num_groups;
-  for (int j = group_id; j < self->num_groups; j++)
+  bool first_run = true;
+  for (int j = self->num_groups - 2; j >= group_id;
+       j--)
     {
       group = &self->groups[j];
       RegionLinkGroup * next_group =
@@ -112,7 +129,26 @@ region_link_group_manager_remove_group (
        * slot */
       region_link_group_move (
         group, next_group);
+
+      group->group_idx = j;
+      next_group->num_ids = 0;
+    }
+  if (first_run)
+    {
+      self->num_groups--;
+      first_run = false;
     }
 
   g_warn_if_fail (self->num_groups >= 0);
+}
+
+void
+region_link_group_manager_print (
+  RegionLinkGroupManager * self)
+{
+  char * str =
+    yaml_serialize (
+      self, &region_link_group_manager_schema);
+  g_message ("%s", str);
+  g_free (str);
 }

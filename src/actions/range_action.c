@@ -220,15 +220,13 @@ range_action_do (
                    * project */
                   ArrangerObject * prj_part1 =
                     arranger_object_clone (
-                      part1,
-                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                      part1);
                   arranger_object_add_to_project (
                     prj_part1, F_NO_PUBLISH_EVENTS);
 
                   ArrangerObject * prj_part2 =
                     arranger_object_clone (
-                      part2,
-                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                      part2);
                   arranger_object_add_to_project (
                     prj_part2, F_NO_PUBLISH_EVENTS);
 
@@ -251,8 +249,7 @@ range_action_do (
                   /* clone and add to sel_after */
                   ArrangerObject * obj_clone =
                     arranger_object_clone (
-                      prj_obj,
-                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                      prj_obj);
 
                   g_message ("moved to object:");
                   arranger_object_print (prj_obj);
@@ -286,8 +283,7 @@ range_action_do (
               /* clone object and add to project */
               ArrangerObject * prj_obj =
                 arranger_object_clone (
-                  obj,
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  obj);
               arranger_object_insert_to_project (
                 prj_obj);
             }
@@ -372,8 +368,7 @@ range_action_do (
                    * project */
                   ArrangerObject * prj_part1 =
                     arranger_object_clone (
-                      part1,
-                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                      part1);
                   arranger_object_add_to_project (
                     prj_part1, F_NO_PUBLISH_EVENTS);
                   ADD_AFTER (prj_part1, part1);
@@ -382,8 +377,7 @@ range_action_do (
                     {
                       ArrangerObject * prj_part2 =
                         arranger_object_clone (
-                          part2,
-                          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                          part2);
                       arranger_object_add_to_project (
                         prj_part2,
                         F_NO_PUBLISH_EVENTS);
@@ -438,8 +432,7 @@ range_action_do (
                    * project */
                   ArrangerObject * prj_part2 =
                     arranger_object_clone (
-                      part2,
-                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                      part2);
                   arranger_object_add_to_project (
                     prj_part2, F_NO_PUBLISH_EVENTS);
                   ADD_AFTER (prj_part2, part2);
@@ -458,8 +451,7 @@ range_action_do (
                   /* clone and add to sel_after */
                   ArrangerObject * obj_clone =
                     arranger_object_clone (
-                      prj_obj,
-                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                      prj_obj);
                   g_message (
                     "object moved to:");
                   arranger_object_print (prj_obj);
@@ -492,9 +484,7 @@ range_action_do (
 
               /* clone object and add to project */
               ArrangerObject * prj_obj =
-                arranger_object_clone (
-                  obj,
-                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                arranger_object_clone (obj);
               arranger_object_insert_to_project (
                 prj_obj);
             }
@@ -572,8 +562,7 @@ range_action_undo (
 
       /* clone object and add to project */
       ArrangerObject * prj_obj =
-        arranger_object_clone (
-          obj, ARRANGER_OBJECT_CLONE_COPY_MAIN);
+        arranger_object_clone (obj);
       arranger_object_insert_to_project (prj_obj);
 
       g_message ("adding");

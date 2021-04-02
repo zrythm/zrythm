@@ -355,8 +355,7 @@ midi_modifier_arranger_set_hit_velocity_vals (
            * change to sel_at_start */
           ArrangerObject * clone =
             arranger_object_clone (
-              (ArrangerObject *) mn,
-              ARRANGER_OBJECT_CLONE_COPY_MAIN);
+              (ArrangerObject *) mn);
           arranger_selections_add_object (
             self->sel_at_start, clone);
 

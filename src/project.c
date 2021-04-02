@@ -494,6 +494,9 @@ project_validate (Project * self)
 
   tracklist_validate (self->tracklist);
 
+  region_link_group_manager_validate (
+    &self->region_link_group_manager);
+
   /* TODO add arranger_object_get_all and check
    * positions (arranger_object_validate) */
 

@@ -928,8 +928,7 @@ automation_track_clone (
       dest->regions[j] =
         (ZRegion *)
         arranger_object_clone (
-          (ArrangerObject *) src_region,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+          (ArrangerObject *) src_region);
     }
 
   return dest;

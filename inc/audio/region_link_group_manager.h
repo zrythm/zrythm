@@ -101,6 +101,16 @@ region_link_group_manager_remove_group (
   RegionLinkGroupManager * self,
   int                      group_id);
 
+NONNULL
+bool
+region_link_group_manager_validate (
+  RegionLinkGroupManager * self);
+
+NONNULL
+void
+region_link_group_manager_print (
+  RegionLinkGroupManager * self);
+
 /**
  * @}
  */

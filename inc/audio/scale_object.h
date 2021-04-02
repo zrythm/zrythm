@@ -97,8 +97,7 @@ scale_object_schema = {
  */
 ScaleObject *
 scale_object_new (
-  MusicalScale * descr,
-  int            is_main);
+  MusicalScale * descr);
 
 int
 scale_object_is_equal (

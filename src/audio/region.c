@@ -178,8 +178,18 @@ region_move_to_track (
 {
   g_return_if_fail (IS_REGION (region) && track);
 
-  /*g_message ("moving region %s to track %s",*/
-    /*region->name, track->name);*/
+  g_message ("moving region %s to track %s",
+    region->name, track->name);
+  g_debug ("before:");
+  region_print (region);
+
+  RegionLinkGroup * link_group = NULL;
+  if (region_has_link_group (region))
+    {
+      link_group = region_get_link_group (region);
+      region_link_group_remove_region (
+        link_group, region, false, true);
+    }
 
   Track * region_track =
     arranger_object_get_track (
@@ -232,6 +242,21 @@ region_move_to_track (
    * last on its track lane */
   track_remove_empty_last_lanes (
     region_track);
+
+  if (link_group)
+    {
+      region_link_group_add_region (
+        link_group, region);
+    }
+
+  g_debug ("after:");
+  region_print (region);
+
+  if (ZRYTHM_TESTING)
+    {
+      region_link_group_manager_validate (
+        REGION_LINK_GROUP_MANAGER);
+    }
 }
 
 /**
@@ -600,8 +625,11 @@ region_set_link_group (
   if (region->id.link_group >= 0 &&
       region->id.link_group != group_idx)
     {
+      RegionLinkGroup * link_group =
+        region_get_link_group (region);
+      g_return_if_fail (link_group);
       region_link_group_remove_region (
-        region_get_link_group (region),
+        link_group,
         region, true, update_identifier);
     }
   if (group_idx >= 0)
@@ -640,6 +668,7 @@ bool
 region_has_link_group (
   ZRegion * region)
 {
+  g_return_val_if_fail (IS_REGION (region), false);
   return region->id.link_group >= 0;
 }
 
@@ -916,8 +945,7 @@ region_copy_children (
             MidiNote * mn =
               (MidiNote *)
               arranger_object_clone (
-                orig_mn_obj,
-                ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                orig_mn_obj);
 
             midi_region_add_midi_note (
               dest, mn, F_NO_PUBLISH_EVENTS);
@@ -957,8 +985,7 @@ region_copy_children (
             dest_co =
               (ChordObject *)
               arranger_object_clone (
-                (ArrangerObject *) src_co,
-                ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                (ArrangerObject *) src_co);
 
             chord_region_add_chord_object (
               dest, dest_co, F_NO_PUBLISH_EVENTS);
@@ -1032,7 +1059,7 @@ region_print (
     g_strdup_printf (
       "%s [%s] - track pos %d - lane pos %d - "
       "idx %d - address %p - <%s> to <%s> - "
-      "loop end <%s>",
+      "loop end <%s> - link group %d",
       self->name,
       region_identifier_get_region_type_name (
         self->id.type),
@@ -1040,7 +1067,8 @@ region_print (
       self->id.lane_pos,
       self->id.idx, self,
       from_pos_str, to_pos_str,
-      loop_end_pos_str);
+      loop_end_pos_str,
+      self->id.link_group);
   g_message ("%s", str);
   g_free (str);
 }
@@ -1058,7 +1086,9 @@ region_set_name (
   arranger_object_set_name (
     (ArrangerObject *) self, name, fire_events);
 
+#if 0
   region_update_identifier (self);
+#endif
 }
 
 /**

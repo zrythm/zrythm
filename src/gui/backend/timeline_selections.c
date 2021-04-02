@@ -85,9 +85,7 @@ timeline_selections_new_for_range (
       if (clone_objs) \
         { \
           _obj =  \
-          arranger_object_clone ( \
-            _obj, \
-            ARRANGER_OBJECT_CLONE_COPY_MAIN); \
+          arranger_object_clone (_obj); \
         } \
       arranger_selections_add_object ( \
         (ArrangerSelections *) self, _obj); \

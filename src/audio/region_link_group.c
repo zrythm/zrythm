@@ -26,6 +26,14 @@
 #include "utils/objects.h"
 
 void
+region_link_group_init_loaded (
+  RegionLinkGroup * self)
+{
+  self->magic = REGION_LINK_GROUP_MAGIC;
+  self->ids_size = (size_t) self->num_ids;
+}
+
+void
 region_link_group_init (
   RegionLinkGroup * self,
   int               idx)
@@ -62,7 +70,9 @@ region_link_group_add_region (
         self, region))
     return;
 
+  g_return_if_fail (region->id.idx >= 0);
   g_return_if_fail (IS_REGION_LINK_GROUP (self));
+
   array_double_size_if_full (
     self->ids, self->num_ids, self->ids_size,
     RegionIdentifier);
@@ -87,13 +97,22 @@ region_link_group_remove_region (
 {
   g_return_if_fail (
     IS_REGION_LINK_GROUP (self) &&
-    IS_REGION (region));
+    IS_REGION (region) && self->num_ids > 0 &&
+    self->group_idx <
+      REGION_LINK_GROUP_MANAGER->num_groups);
+
+  g_message (
+    "removing region '%s' from link group %d "
+    "(num ids: %d)",
+    region->name, self->group_idx, self->num_ids);
+  bool found = false;
   for (int i = 0; i < self->num_ids; i++)
     {
       if (region_identifier_is_equal (
             &self->ids[i], &region->id))
         {
-          --self->num_ids;
+          found = true;
+          self->num_ids--;
           for (int j = i; j < self->num_ids; j++)
             {
               region_identifier_copy (
@@ -102,6 +121,7 @@ region_link_group_remove_region (
           break;
         }
     }
+  g_return_if_fail (found);
 
   if (autoremove_last_region_and_group)
     {
@@ -148,7 +168,8 @@ region_link_group_update (
     {
       ZRegion * region =
         region_find (&self->ids[i]);
-      g_return_if_fail (region);
+      g_return_if_fail (
+        IS_REGION_AND_NONNULL (region));
 
       if (region_identifier_is_equal (
            &self->ids[i], &main_region->id))
@@ -164,6 +185,35 @@ region_link_group_update (
     }
 }
 
+bool
+region_link_group_validate (
+  RegionLinkGroup * self)
+{
+  for (int i = 0; i < self->num_ids; i++)
+    {
+      ZRegion * region =
+        region_find (&self->ids[i]);
+      g_return_val_if_fail (
+        IS_REGION_AND_NONNULL (region), false);
+      RegionLinkGroup * link_group =
+        region_get_link_group (region);
+      g_return_val_if_fail (
+        link_group == self, false);
+    }
+
+  return true;
+}
+
+void
+region_link_group_print (
+  RegionLinkGroup * self)
+{
+  char * str =
+    yaml_serialize (self, &region_link_group_schema);
+  g_message ("%s", str);
+  g_free (str);
+}
+
 /**
  * Moves the regions from \ref src to \ref dest.
  */
@@ -172,9 +222,9 @@ region_link_group_move (
   RegionLinkGroup * dest,
   RegionLinkGroup * src)
 {
-  dest->num_ids = src->num_ids;
-  src->group_idx = dest->group_idx;
-  for (int i = 0; dest->num_ids; i++)
+  dest->num_ids = 0;
+  /*dest->group_idx = src->group_idx;*/
+  for (int i = 0; src->num_ids; i++)
     {
       ZRegion * region =
         region_find (&src->ids[i]);
@@ -182,5 +232,6 @@ region_link_group_move (
         region, dest->group_idx, true);
       region_identifier_copy (
         &dest->ids[i], &region->id);
+      dest->num_ids++;
     }
 }

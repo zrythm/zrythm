@@ -225,8 +225,7 @@ track_lane_clone (
       new_region =
         (ZRegion *)
         arranger_object_clone (
-          (ArrangerObject *) region,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+          (ArrangerObject *) region);
 
       new_lane->regions[i] = new_region;
       region_set_lane (new_region, new_lane);

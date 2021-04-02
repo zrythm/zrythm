@@ -85,7 +85,8 @@ Also see [Running GLib Applications](https://developer.gnome.org/glib/stable/gli
 We suggest building with `-Dextra_debug_info` which
 essentially adds `-g3` to the CFLAGS. This allows
 use of C macros in gdb so you can do `p TRACKLIST`
-instead of `p zrythm->project->tracklist`.
+instead of `p zrythm->project->tracklist`. This may
+slow down gdb on some systems.
 
 Use `MALLOC_CHECK_=3` to enforce additional checks
 when allocating memory. This is used during tests.

@@ -425,9 +425,7 @@ test_project_rebootstrap_timeline (
   MusicalScale * ms =
     musical_scale_new (
       MUSICAL_SCALE_TYPE, MUSICAL_SCALE_ROOT);
-  ScaleObject * s =
-    scale_object_new (
-      ms, 1);
+  ScaleObject * s = scale_object_new (ms);
   chord_track_add_scale (
     P_CHORD_TRACK, s);
   arranger_selections_add_object (

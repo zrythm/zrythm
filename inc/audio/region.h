@@ -379,6 +379,7 @@ region_set_link_group (
   int       group_idx,
   bool      update_identifier);
 
+NONNULL
 bool
 region_has_link_group (
   ZRegion * region);

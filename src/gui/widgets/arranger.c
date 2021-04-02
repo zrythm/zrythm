@@ -2053,8 +2053,7 @@ autofill (
             (ZRegion *)
             arranger_object_clone (
               (ArrangerObject *)
-              clip_editor_region,
-              ARRANGER_OBJECT_CLONE_COPY_MAIN);
+              clip_editor_region);
         }
       else
         {

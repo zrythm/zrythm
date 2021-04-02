@@ -480,11 +480,9 @@ timeline_arranger_widget_create_scale (
 
   /* create a new scale */
   MusicalScale * descr =
-    musical_scale_new (
-      SCALE_AEOLIAN, NOTE_A);
+    musical_scale_new (SCALE_AEOLIAN, NOTE_A);
   ScaleObject * scale =
-    scale_object_new (
-      descr, 1);
+    scale_object_new (descr);
   ArrangerObject * scale_obj =
     (ArrangerObject *) scale;
 

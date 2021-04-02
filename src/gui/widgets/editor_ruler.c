@@ -208,14 +208,12 @@ editor_ruler_on_drag_end (
   g_return_if_fail (r);
   ArrangerObject * r_clone_obj_before =
     arranger_object_clone (
-      (ArrangerObject *) r,
-      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      (ArrangerObject *) r);
   arranger_selections_add_object (
     before_sel, r_clone_obj_before);
   ArrangerObject * r_clone_obj_after =
     arranger_object_clone (
-      (ArrangerObject *) r,
-      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      (ArrangerObject *) r);
   arranger_selections_add_object (
     after_sel, r_clone_obj_after);
 
