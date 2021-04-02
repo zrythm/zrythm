@@ -62,6 +62,48 @@ chord_region_new (
 }
 
 /**
+ * Inserts a ChordObject to the Region.
+ */
+void
+chord_region_insert_chord_object (
+  ZRegion *     self,
+  ChordObject * chord,
+  int           pos,
+  bool          fire_events)
+{
+  g_return_if_fail (IS_REGION (self));
+
+  char str[500];
+  ChordDescriptor * cd =
+    chord_object_get_chord_descriptor (chord);
+  chord_descriptor_to_string (cd, str);
+  g_message (
+    "inserting chord '%s' (index %d) to "
+    "region '%s' at pos %d",
+    str, chord->index, self->name, pos);
+
+  array_double_size_if_full (
+    self->chord_objects, self->num_chord_objects,
+    self->chord_objects_size, ChordObject *);
+  array_insert (
+    self->chord_objects, self->num_chord_objects,
+    pos, chord);
+
+  for (int i = pos; i < self->num_chord_objects; i++)
+    {
+      ChordObject * co = self->chord_objects[i];
+      chord_object_set_region_and_index (
+        co, self, i);
+    }
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CREATED, chord);
+    }
+}
+
+/**
  * Adds a ChordObject to the Region.
  */
 void
@@ -70,23 +112,9 @@ chord_region_add_chord_object (
   ChordObject * chord,
   bool          fire_events)
 {
-  g_return_if_fail (IS_REGION (self));
-
-  array_double_size_if_full (
-    self->chord_objects, self->num_chord_objects,
-    self->chord_objects_size, ChordObject *);
-  array_append (
-    self->chord_objects, self->num_chord_objects,
-    chord);
-
-  chord_object_set_region_and_index (
-    chord, self, self->num_chord_objects - 1);
-
-  if (fire_events)
-    {
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CREATED, chord);
-    }
+  chord_region_insert_chord_object (
+    self, chord, self->num_chord_objects,
+    fire_events);
 }
 
 /**
@@ -104,6 +132,15 @@ chord_region_remove_chord_object (
   g_return_if_fail (
     IS_REGION (self) && IS_CHORD_OBJECT (chord));
 
+  char str[500];
+  ChordDescriptor * cd =
+    chord_object_get_chord_descriptor (chord);
+  chord_descriptor_to_string (cd, str);
+  g_message (
+    "removing chord '%s' (index %d) from "
+    "region '%s'",
+    str, chord->index, self->name);
+
   /* deselect */
   if (CHORD_SELECTIONS)
     {
@@ -113,11 +150,13 @@ chord_region_remove_chord_object (
         F_NO_PUBLISH_EVENTS);
     }
 
-  array_delete (
+  int pos = -1;
+  array_delete_return_pos (
     self->chord_objects, self->num_chord_objects,
-    chord);
+    chord, pos);
+  g_return_if_fail (pos >= 0);
 
-  for (int i = 0; i < self->num_chord_objects; i++)
+  for (int i = pos; i < self->num_chord_objects; i++)
     {
       chord_object_set_region_and_index (
         self->chord_objects[i], self, i);

@@ -47,6 +47,14 @@ marker_new (
   return self;
 }
 
+void
+marker_set_index (
+  Marker * self,
+  int      index)
+{
+  self->index = index;
+}
+
 /**
  * Sets the Track of the Marker.
  */

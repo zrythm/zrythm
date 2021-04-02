@@ -42,6 +42,8 @@ typedef struct MusicalScale MusicalScale;
  * @{
  */
 
+#define SCALE_OBJECT_SCHEMA_VERSION 1
+
 #define scale_object_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
@@ -98,6 +100,11 @@ scale_object_schema = {
 ScaleObject *
 scale_object_new (
   MusicalScale * descr);
+
+void
+scale_object_set_index (
+  ScaleObject * self,
+  int           index);
 
 int
 scale_object_is_equal (

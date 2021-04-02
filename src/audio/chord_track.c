@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 
+#include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "audio/scale.h"
 #include "audio/track.h"
@@ -92,26 +93,42 @@ chord_track_insert_chord_region (
 }
 
 /**
- * Adds a ChordObject to the Track.
- *
- * @param gen_widget Create a widget for the chord.
+ * Inserts a scale to the track.
+ */
+void
+chord_track_insert_scale (
+  ChordTrack *  self,
+  ScaleObject * scale,
+  int           pos)
+{
+  g_warn_if_fail (
+    self->type == TRACK_TYPE_CHORD && scale);
+
+  array_double_size_if_full (
+    self->scales, self->num_scales,
+    self->scales_size, ScaleObject *);
+  array_insert (
+    self->scales, self->num_scales, pos, scale);
+
+  for (int i = pos; i < self->num_scales; i++)
+    {
+      ScaleObject * m = self->scales[i];
+      scale_object_set_index (m, i);
+    }
+
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, scale);
+}
+
+/**
+ * Adds a scale to the track.
  */
 void
 chord_track_add_scale (
-  ChordTrack *  track,
+  ChordTrack *  self,
   ScaleObject * scale)
 {
-  g_warn_if_fail (
-    track->type == TRACK_TYPE_CHORD && scale);
-
-  array_double_size_if_full (
-    track->scales, track->num_scales,
-    track->scales_size, ScaleObject *);
-  array_append (
-    track->scales, track->num_scales, scale);
-  scale->index = track->num_scales - 1;
-
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, scale);
+  chord_track_insert_scale (
+    self, scale, self->num_scales);
 }
 
 /**
@@ -196,6 +213,28 @@ chord_track_clear (
     }
 }
 
+bool
+chord_track_validate (
+  Track * self)
+{
+  for (int i = 0; i < self->num_scales; i++)
+    {
+      ScaleObject * m = self->scales[i];
+      g_return_val_if_fail (m->index == i, false);
+    }
+
+  for (int i = 0; i < self->num_chord_regions; i++)
+    {
+      ZRegion * r = self->chord_regions[i];
+      g_return_val_if_fail (
+        IS_REGION_AND_NONNULL (r), false);
+      g_return_val_if_fail (
+        chord_region_validate (r), false);
+    }
+
+  return true;
+}
+
 /**
  * Removes a scale from the chord Track.
  */
@@ -214,10 +253,18 @@ chord_track_remove_scale (
     F_APPEND,
     F_NO_PUBLISH_EVENTS);
 
-  array_delete (
-    self->scales, self->num_scales, scale);
+  int pos = -1;
+  array_delete_return_pos (
+    self->scales, self->num_scales, scale, pos);
+  g_return_if_fail (pos >= 0);
 
   scale->index = -1;
+
+  for (int i = pos; i < self->num_scales; i++)
+    {
+      ScaleObject * m = self->scales[i];
+      scale_object_set_index (m, i);
+    }
 
   if (free)
     {

@@ -232,6 +232,9 @@
 #define F_ASCENDING 1
 #define F_NOT_ASCENDING 0
 
+#define F_DESCENDING 1
+#define F_NOT_DESCENDING 0
+
 #define F_MOVING_PLUGIN 1
 #define F_NOT_MOVING_PLUGIN 0
 

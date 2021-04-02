@@ -149,26 +149,14 @@ marker_track_get_end_marker (
   return NULL;
 }
 
-NONNULL
-static void
-validate (
-  MarkerTrack * self)
-{
-  for (int i = 0; i < self->num_markers; i++)
-    {
-      g_return_if_fail (self->markers[i]);
-    }
-}
-
 /**
- * Adds a Marker to the Track.\
- *
- * @gen_widget Generates a widget for the Marker.
+ * Inserts a marker to the track.
  */
 void
-marker_track_add_marker (
+marker_track_insert_marker (
   MarkerTrack * self,
-  Marker *      marker)
+  Marker *      marker,
+  int           pos)
 {
   g_return_if_fail (
     self->type == TRACK_TYPE_MARKER && marker);
@@ -177,14 +165,31 @@ marker_track_add_marker (
   array_double_size_if_full (
     self->markers, self->num_markers,
     self->markers_size, Marker *);
-  array_append (
-    self->markers, self->num_markers, marker);
-  marker->index = self->num_markers - 1;
+  array_insert (
+    self->markers, self->num_markers, pos, marker);
 
-  validate (self);
+  for (int i = pos; i < self->num_markers; i++)
+    {
+      Marker * m = self->markers[i];
+      marker_set_index (m, i);
+    }
+
+  marker_track_validate (self);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CREATED, marker);
+}
+
+/**
+ * Adds a marker to the track.
+ */
+void
+marker_track_add_marker (
+  MarkerTrack * self,
+  Marker *      marker)
+{
+  marker_track_insert_marker (
+    self, marker, self->num_markers);
 }
 
 /**
@@ -206,6 +211,18 @@ marker_track_clear (
     }
 }
 
+bool
+marker_track_validate (
+  MarkerTrack * self)
+{
+  for (int i = 0; i < self->num_markers; i++)
+    {
+      Marker * m = self->markers[i];
+      g_return_val_if_fail (m->index == i, false);
+    }
+  return true;
+}
+
 /**
  * Removes a marker, optionally freeing it.
  */
@@ -220,8 +237,16 @@ marker_track_remove_marker (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) marker);
 
-  array_delete (
-    self->markers, self->num_markers, marker);
+  int pos = -1;
+  array_delete_return_pos (
+    self->markers, self->num_markers, marker, pos);
+  g_return_if_fail (pos >= 0);
+
+  for (int i = pos; i < self->num_markers; i++)
+    {
+      Marker * m = self->markers[i];
+      marker_set_index (m, i);
+    }
 
   if (free)
     free_later (marker, arranger_object_free);

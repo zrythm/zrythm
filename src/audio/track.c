@@ -814,7 +814,7 @@ track_validate (
   g_return_val_if_fail (self, false);
 
   g_message (
-    "verifying %s identifiers...", self->name);
+    "validating track '%s'...", self->name);
 
   int track_pos = self->pos;
 

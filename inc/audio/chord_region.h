@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -49,6 +49,17 @@ chord_region_new (
   const Position * start_pos,
   const Position * end_pos,
   int              idx);
+
+/**
+ * Inserts a ChordObject to the Region.
+ */
+NONNULL
+void
+chord_region_insert_chord_object (
+  ZRegion *     self,
+  ChordObject * chord,
+  int           pos,
+  bool          fire_events);
 
 /**
  * Adds a ChordObject to the Region.

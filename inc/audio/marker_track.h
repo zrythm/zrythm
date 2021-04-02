@@ -59,9 +59,16 @@ marker_track_init (
   Track * track);
 
 /**
- * Adds a Marker to the Track.\
- *
- * @gen_widget Generates a widget for the Marker.
+ * Inserts a marker to the track.
+ */
+void
+marker_track_insert_marker (
+  MarkerTrack * self,
+  Marker *      marker,
+  int           pos);
+
+/**
+ * Adds a marker to the track.
  */
 void
 marker_track_add_marker (
@@ -85,6 +92,10 @@ marker_track_remove_marker (
   MarkerTrack * self,
   Marker *      marker,
   int           free);
+
+bool
+marker_track_validate (
+  MarkerTrack * self);
 
 /**
  * Returns the start marker.

@@ -352,7 +352,7 @@ test_project_rebootstrap_timeline (
     automation_region_new (
       p1, p2, P_MASTER_TRACK->pos, at->index, 0);
   track_add_region (
-    P_MASTER_TRACK, r, at, 0, 1, 0);
+    P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
   g_assert_cmpint (
     r->id.track_pos, ==, P_MASTER_TRACK->pos);
   g_assert_cmpint (r->id.at_idx, ==, at->index);
@@ -385,7 +385,8 @@ test_project_rebootstrap_timeline (
   r =
     chord_region_new (p1, p2, 0);
   track_add_region (
-    P_CHORD_TRACK, r, NULL, 0, 1, 0);
+    P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);

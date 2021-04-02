@@ -1281,7 +1281,8 @@ do_or_undo_duplicate_or_link (
           /* find the actual object */
           obj = arranger_object_find (objs[i]);
           g_return_val_if_fail (
-            IS_ARRANGER_OBJECT (obj), -1);
+            IS_ARRANGER_OBJECT_AND_NONNULL (obj),
+            -1);
 
           /* if the object was created with linking,
            * delete the links */
@@ -1539,6 +1540,8 @@ do_or_undo_duplicate_or_link (
         }
     }
 
+  marker_track_validate (P_MARKER_TRACK);
+  chord_track_validate (P_CHORD_TRACK);
   region_link_group_manager_validate (
     REGION_LINK_GROUP_MANAGER);
 
@@ -1580,12 +1583,14 @@ do_or_undo_create_or_delete (
   if (create)
     {
       arranger_selections_sort_by_indices (
-        self->sel, _do ? 0 : 1);
+        self->sel,
+        _do ? F_NOT_DESCENDING : F_DESCENDING);
     }
   else
     {
       arranger_selections_sort_by_indices (
-        self->sel, _do ? 1 : 0);
+        self->sel,
+        _do ? F_DESCENDING : F_NOT_DESCENDING);
     }
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
@@ -1717,6 +1722,8 @@ do_or_undo_create_or_delete (
         ET_ARRANGER_SELECTIONS_REMOVED, sel);
     }
 
+  marker_track_validate (P_MARKER_TRACK);
+  chord_track_validate (P_CHORD_TRACK);
   region_link_group_manager_validate (
     REGION_LINK_GROUP_MANAGER);
 

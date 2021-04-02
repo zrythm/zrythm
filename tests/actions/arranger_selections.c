@@ -363,57 +363,6 @@ test_delete_chords ()
   test_helper_zrythm_cleanup ();
 }
 
-static void
-test_delete_automation_points ()
-{
-  rebootstrap_timeline ();
-
-  AutomationTrack * at =
-    channel_get_automation_track (
-      P_MASTER_TRACK->channel,
-      PORT_FLAG_STEREO_BALANCE);
-  ZRegion * r = at->regions[0];
-  g_assert_true (region_validate (r, F_PROJECT));
-
-  /* add another ap */
-  Position pos;
-  position_init (&pos);
-  AutomationPoint * ap =
-    automation_point_new_float (
-      AP_VAL1, AP_VAL1, &pos);
-  automation_region_add_ap (
-    r, ap, F_NO_PUBLISH_EVENTS);
-  arranger_selections_add_object (
-    (ArrangerSelections *) AUTOMATION_SELECTIONS,
-    (ArrangerObject *) ap);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
-  /* delete the first chord */
-  arranger_selections_clear (
-    (ArrangerSelections *) AUTOMATION_SELECTIONS,
-    F_NO_FREE, F_NO_PUBLISH_EVENTS);
-  arranger_selections_add_object (
-    (ArrangerSelections *) AUTOMATION_SELECTIONS,
-    (ArrangerObject *) r->aps[0]);
-  ua =
-    arranger_selections_action_new_delete (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  g_assert_true (region_validate (r, F_PROJECT));
-
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-
-  test_helper_zrythm_cleanup ();
-}
-
 /**
  * Checks the objects after moving.
  *
@@ -1210,7 +1159,7 @@ test_link_timeline ()
         (ArrangerSelections *) TL_SELECTIONS,
         MOVE_TICKS);
 
-      /* do duplicate */
+      /* do link */
       UndoableAction * ua =
         arranger_selections_action_new_link (
           sel_before,
@@ -2352,6 +2301,278 @@ test_pin_unpin ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_delete_markers ()
+{
+  rebootstrap_timeline ();
+
+  Marker * m, * m_c, * m_d;
+  UndoableAction * ua;
+
+  /* create markers A B C D */
+  const char * names[4] = {
+    "A", "B", "C", "D" };
+  for (int i = 0; i < 4; i++)
+    {
+      m = marker_new (names[i]);
+      marker_track_add_marker (P_MARKER_TRACK, m);
+      arranger_object_select (
+        (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
+        F_NO_PUBLISH_EVENTS);
+      ua =
+        arranger_selections_action_new_create (
+          TL_SELECTIONS);
+      undo_manager_perform (UNDO_MANAGER, ua);
+
+      if (i == 2)
+        {
+          m_c = m;
+        }
+      else if (i == 3)
+        {
+          m_d = m;
+        }
+    }
+
+  /* delete C */
+  arranger_object_select (
+    (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete D */
+  arranger_object_select (
+    (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  for (int i = 0; i < 6; i++)
+    {
+      undo_manager_undo (UNDO_MANAGER);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_delete_scale_objects ()
+{
+  rebootstrap_timeline ();
+
+  ScaleObject * m, * m_c, * m_d;
+  UndoableAction * ua;
+
+  /* create markers A B C D */
+  for (int i = 0; i < 4; i++)
+    {
+      MusicalScale * ms = musical_scale_new (i, i);
+      m = scale_object_new (ms);
+      chord_track_add_scale (P_CHORD_TRACK, m);
+      arranger_object_select (
+        (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
+        F_NO_PUBLISH_EVENTS);
+      ua =
+        arranger_selections_action_new_create (
+          TL_SELECTIONS);
+      undo_manager_perform (UNDO_MANAGER, ua);
+
+      if (i == 2)
+        {
+          m_c = m;
+        }
+      else if (i == 3)
+        {
+          m_d = m;
+        }
+    }
+
+  /* delete C */
+  arranger_object_select (
+    (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete D */
+  arranger_object_select (
+    (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  for (int i = 0; i < 6; i++)
+    {
+      undo_manager_undo (UNDO_MANAGER);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_delete_chord_objects ()
+{
+  rebootstrap_timeline ();
+
+  ChordObject * m, * m_c, * m_d;
+  UndoableAction * ua;
+
+  Position pos1, pos2;
+  position_set_to_bar (&pos1, 1);
+  position_set_to_bar (&pos2, 4);
+  ZRegion * r =
+    chord_region_new (&pos1, &pos2, 0);
+  track_add_region (
+    P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME, 0);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *) r);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* create markers A B C D */
+  for (int i = 0; i < 4; i++)
+    {
+      m = chord_object_new (&r->id, i, i);
+      chord_region_add_chord_object (
+        r, m, F_NO_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
+        F_NO_PUBLISH_EVENTS);
+      ua =
+        arranger_selections_action_new_create (
+          CHORD_SELECTIONS);
+      undo_manager_perform (UNDO_MANAGER, ua);
+
+      if (i == 2)
+        {
+          m_c = m;
+        }
+      else if (i == 3)
+        {
+          m_d = m;
+        }
+    }
+
+  /* delete C */
+  arranger_object_select (
+    (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      CHORD_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete D */
+  arranger_object_select (
+    (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      CHORD_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  for (int i = 0; i < 6; i++)
+    {
+      undo_manager_undo (UNDO_MANAGER);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_delete_automation_points ()
+{
+  rebootstrap_timeline ();
+
+  AutomationPoint * m, * m_c, * m_d;
+  UndoableAction * ua;
+
+  Position pos1, pos2;
+  position_set_to_bar (&pos1, 1);
+  position_set_to_bar (&pos2, 4);
+  AutomationTrack * at =
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_CHANNEL_FADER);
+  g_assert_nonnull (at);
+  ZRegion * r =
+    automation_region_new (
+      &pos1, &pos2, P_MASTER_TRACK->pos,
+      at->index, 0);
+  track_add_region (
+    P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *) r);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* create markers A B C D */
+  for (int i = 0; i < 4; i++)
+    {
+      m =
+        automation_point_new_float (
+          1.f, 1.f, &pos1);
+      automation_region_add_ap (
+        r, m, F_NO_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
+        F_NO_PUBLISH_EVENTS);
+      ua =
+        arranger_selections_action_new_create (
+          AUTOMATION_SELECTIONS);
+      undo_manager_perform (UNDO_MANAGER, ua);
+
+      if (i == 2)
+        {
+          m_c = m;
+        }
+      else if (i == 3)
+        {
+          m_d = m;
+        }
+    }
+
+  /* delete C */
+  arranger_object_select (
+    (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete D */
+  arranger_object_select (
+    (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_delete (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  for (int i = 0; i < 6; i++)
+    {
+      undo_manager_undo (UNDO_MANAGER);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2361,11 +2582,23 @@ main (int argc, char *argv[])
 
   /*yaml_set_log_level (CYAML_LOG_INFO);*/
   g_test_add_func (
+    TEST_PREFIX "test link timeline",
+    (GTestFunc) test_link_timeline);
+  g_test_add_func (
     TEST_PREFIX "test link then duplicate",
     (GTestFunc) test_link_then_duplicate);
   g_test_add_func (
-    TEST_PREFIX "test link timeline",
-    (GTestFunc) test_link_timeline);
+    TEST_PREFIX "test delete automation points",
+    (GTestFunc) test_delete_automation_points);
+  g_test_add_func (
+    TEST_PREFIX "test delete chord objects",
+    (GTestFunc) test_delete_chord_objects);
+  g_test_add_func (
+    TEST_PREFIX "test delete scale objects",
+    (GTestFunc) test_delete_scale_objects);
+  g_test_add_func (
+    TEST_PREFIX "test delete markers",
+    (GTestFunc) test_delete_markers);
   g_test_add_func (
     TEST_PREFIX "test delete timeline",
     (GTestFunc) test_delete_timeline);
@@ -2378,9 +2611,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test delete chords",
     (GTestFunc) test_delete_chords);
-  g_test_add_func (
-    TEST_PREFIX "test delete automation points",
-    (GTestFunc) test_delete_automation_points);
   g_test_add_func (
     TEST_PREFIX "test audio functions",
     (GTestFunc) test_audio_functions);

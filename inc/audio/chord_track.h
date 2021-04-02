@@ -71,12 +71,21 @@ chord_track_insert_chord_region (
   int          idx);
 
 /**
- * Adds a ChordObject to the Track.
+ * Inserts a scale to the track.
+ */
+void
+chord_track_insert_scale (
+  ChordTrack *  track,
+  ScaleObject * scale,
+  int           pos);
+
+/**
+ * Adds a scale to the track.
  */
 void
 chord_track_add_scale (
   ChordTrack *  track,
-  ScaleObject * chord);
+  ScaleObject * scale);
 
 /**
  * Removes a scale from the chord Track.
@@ -94,6 +103,10 @@ void
 chord_track_remove_region (
   ChordTrack * self,
   ZRegion *    region);
+
+bool
+chord_track_validate (
+  Track * self);
 
 /**
  * Returns the current chord.

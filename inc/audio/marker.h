@@ -135,6 +135,11 @@ marker_is_equal (
   Marker * a,
   Marker * b);
 
+void
+marker_set_index (
+  Marker * self,
+  int      index);
+
 /**
  * Sets the Track of the Marker.
  */

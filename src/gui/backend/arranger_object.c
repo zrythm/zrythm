@@ -622,6 +622,17 @@ arranger_object_copy_identifier (
         ChordObject * srcap =
           (ChordObject *) src;
         destap->index = srcap->index;
+        destap->chord_index =
+          srcap->chord_index;
+      }
+      break;
+    case TYPE (SCALE_OBJECT):
+      {
+        ScaleObject * dest_so =
+          (ScaleObject *) dest;
+        ScaleObject * src_so =
+          (ScaleObject *) src;
+        dest_so->index = src_so->index;
       }
       break;
     case TYPE (MARKER):
@@ -767,17 +778,31 @@ arranger_object_print (
     }
 
   char * extra_info = NULL;
-  if (self->type == ARRANGER_OBJECT_TYPE_REGION)
+  switch (self->type)
     {
-      ZRegion * region = (ZRegion *) self;
-      extra_info =
-        g_strdup_printf (
-          " track: %d - lane: %d - idx: %d - "
-          "link group: %d",
-          region->id.track_pos,
-          region->id.lane_pos,
-          region->id.idx,
-          region->id.link_group);
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        ZRegion * region = (ZRegion *) self;
+        extra_info =
+          g_strdup_printf (
+            " track: %d - lane: %d - idx: %d - "
+            "link group: %d",
+            region->id.track_pos,
+            region->id.lane_pos,
+            region->id.idx,
+            region->id.link_group);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+      {
+        ScaleObject * so = (ScaleObject *) self;
+        extra_info =
+          g_strdup_printf (
+            " index: %d", so->index);
+      }
+      break;
+    default:
+      break;
     }
 
   g_message (
@@ -1990,28 +2015,26 @@ find_chord_object (
   g_return_val_if_fail (
     r && r->num_chord_objects > clone->index, NULL);
 
-  return
-    (ArrangerObject *)
+  ChordObject * prj_co =
     r->chord_objects[clone->index];
+  g_return_val_if_fail (
+    chord_object_is_equal (prj_co, clone), NULL);
+
+  return (ArrangerObject *) prj_co;
 }
 
 static ArrangerObject *
 find_scale_object (
   ScaleObject * clone)
 {
-  for (int i = 0;
-       i < P_CHORD_TRACK->num_scales; i++)
-    {
-      if (scale_object_is_equal (
-            P_CHORD_TRACK->scales[i],
-            clone))
-        {
-          return
-            (ArrangerObject *)
-            P_CHORD_TRACK->scales[i];
-        }
-    }
-  return NULL;
+  g_return_val_if_fail (
+    clone->index < P_CHORD_TRACK->num_scales, NULL);
+  ScaleObject * prj_co =
+    P_CHORD_TRACK->scales[clone->index];
+  g_return_val_if_fail (
+    scale_object_is_equal (prj_co, clone), NULL);
+
+  return (ArrangerObject *) prj_co;
 }
 
 static ArrangerObject *
@@ -2332,12 +2355,13 @@ clone_chord_object (
 
 static ArrangerObject *
 clone_scale_object (
-  ScaleObject *           src)
+  ScaleObject * src)
 {
   MusicalScale * musical_scale =
     musical_scale_clone (src->scale);
   ScaleObject * scale =
     scale_object_new (musical_scale);
+  scale->index = src->index;
 
   return (ArrangerObject *) scale;
 }
@@ -3149,8 +3173,9 @@ arranger_object_insert_to_project (
         /* add it to the region */
         g_return_if_fail (
           IS_REGION_AND_NONNULL (region));
-        chord_region_add_chord_object (
-          region, chord, F_NO_PUBLISH_EVENTS);
+        chord_region_insert_chord_object (
+          region, chord, chord->index,
+          F_NO_PUBLISH_EVENTS);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -3171,8 +3196,8 @@ arranger_object_insert_to_project (
           (ScaleObject *) obj;
 
         /* add it to the track */
-        chord_track_add_scale (
-          P_CHORD_TRACK, scale);
+        chord_track_insert_scale (
+          P_CHORD_TRACK, scale, scale->index);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MARKER:
@@ -3181,8 +3206,8 @@ arranger_object_insert_to_project (
           (Marker *) obj;
 
         /* add it to the track */
-        marker_track_add_marker (
-          P_MARKER_TRACK, marker);
+        marker_track_insert_marker (
+          P_MARKER_TRACK, marker, marker->index);
       }
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
