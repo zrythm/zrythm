@@ -22,6 +22,7 @@
 #include "audio/audio_group_track.h"
 #include "audio/control_port.h"
 #include "audio/exporter.h"
+#include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -1634,12 +1635,13 @@ on_quick_bounce_clicked (
 
   if (!settings.has_error && !settings.cancelled)
     {
-      /* create audio track with bounced
-       * material */
-      Position init_pos;
-      position_init (&init_pos);
+      /* create audio track with bounced material */
+      Marker * m =
+        marker_track_get_start_marker (
+          P_MARKER_TRACK);
+      ArrangerObject * m_obj = (ArrangerObject *) m;
       exporter_create_audio_track_after_bounce (
-        &settings, &init_pos);
+        &settings, &m_obj->pos);
     }
 
   export_settings_free_members (&settings);
