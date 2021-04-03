@@ -1043,7 +1043,6 @@ send_notes_off_at (
       /* FIXME set channel */
     }
 
-  /*g_message ("all notes off at %d", time);*/
   midi_events_add_all_notes_off (
     midi_events, channel, time, F_QUEUED);
 
@@ -1104,11 +1103,12 @@ midi_region_fill_midi_events (
   if (g_start_frames == 0)
     {
       g_debug (
-        "fill midi events - g start %ld - "
+        "%s: fill midi events - g start %ld - "
         "local start %"PRIu32" - nframes %"PRIu32" - "
         "notes off at end %u - "
         "r local pos %ld",
-        g_start_frames, local_start_frame, nframes,
+        __func__, g_start_frames,
+        local_start_frame, nframes,
         note_off_at_end, r_local_pos);
     }
 #endif

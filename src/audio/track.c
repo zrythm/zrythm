@@ -2406,9 +2406,9 @@ track_fill_events (
 
 #if 0
   g_message (
-    "TRACK %s STARTING from %ld, "
+    "%s: TRACK %s STARTING from %ld, "
     "local start frame %u, nframes %u",
-    track->name, g_start_frames,
+    __func__, track->name, g_start_frames,
     local_start_frame, nframes);
 #endif
 
@@ -2484,25 +2484,30 @@ track_fill_events (
                 local_start_frame + frames_processed;
 
               bool is_end_loop;
-              long cur_num_frames;
+              long cur_num_frames_till_next_r_loop_or_end;
               region_get_frames_till_next_loop_or_end (
                 r, cur_g_start_frame,
-                &cur_num_frames, &is_end_loop);
+                &cur_num_frames_till_next_r_loop_or_end,
+                &is_end_loop);
 
 #if 0
               g_message (
-                "cur num frames %ld, "
+                "%s: cur num frames till next r "
+                "loop or end %ld, "
                 "num_frames_to_process %ld, "
                 "cur local start frame %u",
-                cur_num_frames,
+                __func__, cur_num_frames_till_next_r_loop_or_end,
                 num_frames_to_process,
                 cur_local_start_frame);
 #endif
 
               /* whether we need a note off */
               bool need_note_off =
-                (cur_num_frames <
+                (cur_num_frames_till_next_r_loop_or_end <
                    num_frames_to_process) ||
+                (cur_num_frames_till_next_r_loop_or_end ==
+                   num_frames_to_process &&
+                 !is_end_loop) ||
                 /* region end */
                 (g_start_frames +
                    num_frames_to_process ==
@@ -2515,9 +2520,9 @@ track_fill_events (
 
               /* number of frames to process this
                * time */
-              cur_num_frames =
+              cur_num_frames_till_next_r_loop_or_end =
                 MIN (
-                  cur_num_frames,
+                  cur_num_frames_till_next_r_loop_or_end,
                   num_frames_to_process);
 
               if (midi_events)
@@ -2525,7 +2530,7 @@ track_fill_events (
                   midi_region_fill_midi_events (
                     r, cur_g_start_frame,
                     cur_local_start_frame,
-                    cur_num_frames, need_note_off,
+                    cur_num_frames_till_next_r_loop_or_end, need_note_off,
                     midi_events);
                 }
               else if (stereo_ports)
@@ -2533,12 +2538,12 @@ track_fill_events (
                   audio_region_fill_stereo_ports (
                     r, cur_g_start_frame,
                     cur_local_start_frame,
-                    cur_num_frames, stereo_ports);
+                    cur_num_frames_till_next_r_loop_or_end, stereo_ports);
                 }
 
-              frames_processed += cur_num_frames;
+              frames_processed += cur_num_frames_till_next_r_loop_or_end;
               num_frames_to_process -=
-                cur_num_frames;
+                cur_num_frames_till_next_r_loop_or_end;
             } /* end while frames left */
         }
     }

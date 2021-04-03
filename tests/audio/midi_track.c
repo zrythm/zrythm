@@ -775,6 +775,51 @@ test_fill_midi_events ()
   g_assert_cmpuint (ev->time, ==, 39);
   midi_events_clear (events, F_QUEUED);
 
+  /**
+   * Premise: region loops back near the end.
+   *
+   * Expected result:
+   * Note on for a few samples then all notes off.
+   */
+  g_message ("-------------------");
+  position_set_to_bar (
+    &r_obj->pos, 1);
+  position_set_to_bar (
+    &r_obj->end_pos, 2);
+  position_set_to_bar (
+    &r_obj->loop_start_pos, 1);
+  position_set_to_bar (
+    &r_obj->loop_end_pos, 2);
+  position_add_frames (
+    &r_obj->loop_end_pos, -10);
+  position_set_to_bar (
+    &mn_obj->pos, 1);
+  position_set_to_bar (
+    &mn_obj->end_pos, 1);
+  position_add_beats (
+    &mn_obj->end_pos, 1);
+  position_set_to_pos (
+    &pos, &r_obj->loop_end_pos);
+  position_add_frames (&pos, - 5);
+  track_fill_events (
+    track, pos.frames, 0, 50, events, NULL);
+  midi_events_print (events, F_QUEUED);
+  g_assert_cmpint (
+    events->num_queued_events, ==, 3);
+  ev = &events->queued_events[0];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (ev->time, ==, 4);
+  ev = &events->queued_events[1];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_cmpuint (ev->time, ==, 5);
+  ev = &events->queued_events[2];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_ALL_NOTES_OFF);
+  g_assert_cmpuint (ev->time, ==, 14);
+  midi_events_clear (events, F_QUEUED);
+
   test_helper_zrythm_cleanup ();
 }
 
