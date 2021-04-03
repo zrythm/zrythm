@@ -543,6 +543,8 @@ if get_option ('profiling')
   endif
 endif
 
+common_cflags = []
+
 extra_optimizations_cflags = []
 if host_machine.cpu() == 'x86_64'
   extra_optimizations_cflags += [
@@ -570,9 +572,10 @@ else
     '-fomit-frame-pointer',
     ]
 endif
+extra_optimizations_cflags = cc.get_supported_arguments (extra_optimizations_cflags)
 
 if get_option ('extra_optimizations')
-  test_cflags += extra_optimizations_cflags
+  common_cflags += extra_optimizations_cflags
 endif
 
 extra_extra_optimizations_cflags = [
@@ -583,16 +586,17 @@ extra_extra_optimizations_cflags = [
   '-ffp-contract=fast',
   '-fmodulo-sched',
   ]
+extra_extra_optimizations_cflags = cc.get_supported_arguments (extra_extra_optimizations_cflags)
 
 if get_option ('extra_extra_optimizations')
-  test_cflags += extra_extra_optimizations_cflags
+  common_cflags += extra_extra_optimizations_cflags
 endif
 
 if get_option ('extra_debug_info')
   test_cflags += '-ggdb3'
 endif
 
-common_cflags = cc.get_supported_arguments (
+common_cflags += cc.get_supported_arguments (
   test_cflags)
 
 if os_freebsd
