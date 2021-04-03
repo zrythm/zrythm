@@ -626,18 +626,7 @@ set_lv2_control (
   bool is_property =
     port->id.flags & PORT_FLAG_IS_PROPERTY;
 
-  if (!is_property &&
-      port->value_type == lv2_plugin->forge.Float)
-    {
-      g_debug (
-        "setting float control '%s' to '%f'",
-        port->id.sym,
-        (double) * (float *) body);
-
-      port->control = *(float*) body;
-      port->unsnapped_control = *(float*)body;
-    }
-  else if (is_property)
+  if (is_property)
     {
       g_debug (
         "setting property control '%s' to '%s'",
@@ -679,6 +668,17 @@ set_lv2_control (
         (uint32_t) lv2_plugin->control_in,
         lv2_atom_total_size (atom),
         PM_URIDS.atom_eventTransfer, atom);
+    }
+  else if (port->value_type ==
+             lv2_plugin->forge.Float)
+    {
+      g_debug (
+        "setting float control '%s' to '%f'",
+        port->id.sym,
+        (double) * (float *) body);
+
+      port->control = *(float*) body;
+      port->unsnapped_control = *(float*)body;
     }
   else
     {
@@ -735,6 +735,13 @@ set_float_control (
           set_lv2_control (
             lv2_plugin, port, sizeof (ival), type,
             &ival);
+        }
+      else if (port->id.flags &
+                 PORT_FLAG_GENERIC_PLUGIN_PORT)
+        {
+          port_set_control_value (
+            port, value, F_NOT_NORMALIZED,
+            F_PUBLISH_EVENTS);
         }
     }
   else if (pl->setting->open_with_carla)
