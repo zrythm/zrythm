@@ -15,10 +15,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-27 08:16+0000\n"
-"PO-Revision-Date: 2021-03-26 18:08+0000\n"
+"PO-Revision-Date: 2021-03-28 13:30+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1562,9 +1562,9 @@ msgid "Macros"
 msgstr "Macros"
 
 #: src/gui/widgets/automatable_selector_popover.c:406
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Ch%d"
-msgstr "Canal MIDI%d"
+msgstr "MIDI Ca%d"
 
 #: src/gui/widgets/automatable_selector_popover.c:424
 msgid "Channel"
@@ -2315,14 +2315,14 @@ msgid "Latch"
 msgstr "Relâcher"
 
 #: src/audio/channel_send.c:73
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d enabled"
-msgstr "Connexion d'envoi du canal"
+msgstr "Envoi du canal %d activé"
 
 #: src/audio/channel_send.c:86
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d amount"
-msgstr "Changer la quantité"
+msgstr "Quantité de l'envoi du canal %d"
 
 #: src/audio/channel_send.c:503
 msgid "Pre-fader send"

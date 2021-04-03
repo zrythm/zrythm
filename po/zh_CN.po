@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-03-27 08:16+0000\n"
-"PO-Revision-Date: 2021-03-18 12:18+0000\n"
+"PO-Revision-Date: 2021-03-28 13:30+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:155 inc/audio/engine.h:287
@@ -1532,9 +1532,9 @@ msgid "Macros"
 msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:406
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Ch%d"
-msgstr "MIDI通道%d"
+msgstr "MIDI通道 %d"
 
 #: src/gui/widgets/automatable_selector_popover.c:424
 msgid "Channel"
@@ -2262,12 +2262,12 @@ msgstr "锁存器"
 #: src/audio/channel_send.c:73
 #, fuzzy, c-format
 msgid "Channel Send %d enabled"
-msgstr "通道发送连接"
+msgstr "频道发送 %d 已启用"
 
 #: src/audio/channel_send.c:86
 #, fuzzy, c-format
 msgid "Channel Send %d amount"
-msgstr "更改数量"
+msgstr "频道发送 %d 数目"
 
 #: src/audio/channel_send.c:503
 msgid "Pre-fader send"
