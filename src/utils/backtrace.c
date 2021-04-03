@@ -279,7 +279,7 @@ _backtrace_get (
   if (state && msg_str)
     {
 
-      if (write_to_file)
+      if (write_to_file && ZRYTHM)
         {
           char * str_datetime =
             datetime_get_for_filename ();

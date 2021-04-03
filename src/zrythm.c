@@ -267,7 +267,7 @@ zrythm_fetch_latest_release_ver (void)
 
   ver =
     string_get_regex_group (
-      page, "\"zrythm-(.+).tar.xz\"", 1);
+      page, "title=\"zrythm-(.+).tar.xz\"", 1);
   g_free (page);
 
   if (!ver)
