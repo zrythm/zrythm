@@ -1,6 +1,67 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.15.0.1] - 2021-04-03
+### Added
+- Implement MIDI fader mute
+- Implement MIDI fader velocity multiplier
+- Add versions to structs
+- Add all automatable CC controls to MIDI tracks
+- Add output gain control on audio tracks
+- Make track sends automatable
+- Make beats per bar and beat unit automatable
+- Add Contributor Certificate of Origin
+- Allow vertical moving when creating MIDI notes
+
+### Changed
+- Update Japanese, Chinese (Simplified), Ukrainian, Spanish, French translations
+- User manual: prettify scheme API docs (use parens)
+- User manual: use Furo theme for HTML docs
+- User manual: use existing API docs if can't generate updated ones
+- Set last known automation value on controls when moving playhead manually
+- Silence some excessive log output
+- Disable musical mode
+- Only add control ports to processing graph if they have sources or automation
+- Don't allow more than max MIDI events in the same processing cycle when processing carla plugins
+- Make graph calculation faster (use port's automation track cache instead of searching)
+- Skip SIGTRAP in `zrythm_gdb`
+- Show error popup if failed to lock down unlimited memory
+- Don't allow setting audio region loop end beyond clip frames
+- JACK: show error message when failing to connect to system ports
+- Hide hidden tracks from mixer view as well
+- Fail if plugin settings cannot be initialized
+- Remove link after duplicating a linked region
+- Use semaphore to avoid saving project while performing actions
+- Always build some DSP code with full optimizations
+- Use plugin hints to check if carla plugin has custom UI
+
+### Fixed
+- Fix latest release dialog
+- Fix pipewire deadlock during startup
+- Fix non-stop errors when selecting JACK MIDI backend with dummy audio backend
+- Fix error when unpinning chord track
+- Fix crash when using ramp tool on arranger objects in timeline
+- Fix project failing to serialize when plugin bank has no presets
+- Fix crash on buffer overflow when sending events to LV2 UIs
+- Fix LV2 presets not being read properly
+- Fix crash when track's output cannot be found
+- Fix creating new projects from templates not copying over plugin states
+- Fix crash when closing project with automation
+- Fix crash when BPM automation exists
+- Fix pool not being saved when saving projects in a different location
+- Fix error when deleting automation region
+- Fix port flags not being copied correctly
+- Fix crash when instantiating ZLFO UI
+- Fix error when deleting markers, scale objects or chord objects
+- Fix bounced track material not moved to start marker
+- Fix bounced audio skipping first MIDI note
+- Fix lag when right-clicking on plugins in the plugin browser
+- Fix endless note being played at end of MIDI region
+- Fix Zrythm enabled/gain controls not working in LV2 generic UIs
+
+### Removed
+- Remove GOVERNANCE document
+
 ## [1.0.0-alpha.14.1.2] - 2021-03-14
 ### Added
 - Add context option to select UI if plugin has multiple
