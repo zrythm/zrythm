@@ -41,25 +41,7 @@
  */
 
 #define PLUGIN_SETTING_SCHEMA_VERSION 1
-#define PLUGIN_SETTINGS_SCHEMA_VERSION 3
-
-/**
- * Carla bridge mode.
- */
-typedef enum CarlaBridgeMode
-{
-  CARLA_BRIDGE_NONE,
-  CARLA_BRIDGE_UI,
-  CARLA_BRIDGE_FULL,
-} CarlaBridgeMode;
-
-static const cyaml_strval_t
-carla_bridge_mode_strings[] =
-{
-  { "None", CARLA_BRIDGE_NONE },
-  { "UI",   CARLA_BRIDGE_UI   },
-  { "Full", CARLA_BRIDGE_FULL },
-};
+#define PLUGIN_SETTINGS_SCHEMA_VERSION 4
 
 /**
  * A setting for a a specific plugin descriptor.

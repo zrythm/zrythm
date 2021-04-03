@@ -140,8 +140,7 @@ plugin_setting_validate (
 #if defined (_WOE32) && defined (HAVE_CARLA)
   /* open all LV2 plugins with custom UIs using
    * carla */
-  if (plugin_descriptor_has_custom_ui (
-        self->descr) &&
+  if (descr->has_custom_ui &&
       !self->force_generic_ui)
     {
       self->open_with_carla = true;
@@ -152,7 +151,7 @@ plugin_setting_validate (
   /* in wayland open all LV2 plugins with custom UIs
    * using carla */
   if (z_gtk_is_wayland () &&
-      plugin_descriptor_has_custom_ui (self->descr))
+      descr->has_custom_ui)
     {
       self->open_with_carla = true;
     }
@@ -167,7 +166,7 @@ plugin_setting_validate (
   if (self->bridge_mode == CARLA_BRIDGE_NONE)
     {
       self->bridge_mode =
-        z_carla_discovery_get_bridge_mode (descr);
+        descr->min_bridge_mode;
       if (self->bridge_mode != CARLA_BRIDGE_NONE)
         {
           self->open_with_carla = true;
@@ -176,25 +175,28 @@ plugin_setting_validate (
   else
     {
       self->open_with_carla = true;
-      CarlaBridgeMode mode =
-        z_carla_discovery_get_bridge_mode (descr);
+      CarlaBridgeMode mode = descr->min_bridge_mode;
 
       if (mode == CARLA_BRIDGE_FULL)
         {
           self->bridge_mode = mode;
         }
     }
+  /*g_debug ("done recalculating bridge mode");*/
 #endif
 
   /* if no custom UI, force generic */
-  if (!plugin_descriptor_has_custom_ui (self->descr))
+  /*g_debug ("checking if plugin has custom UI...");*/
+  if (!descr->has_custom_ui)
     {
-      g_debug ("plugin %s has no custom UI", self->descr->name);
+      g_debug (
+        "plugin %s has no custom UI", descr->name);
       self->force_generic_ui = true;
     }
+  /*g_debug ("done checking if plugin has custom UI");*/
 
   /* if setting cannot have a UI URI, clear it */
-  if (self->descr->protocol != PROT_LV2 ||
+  if (descr->protocol != PROT_LV2 ||
       self->open_with_carla ||
       self->force_generic_ui)
     {
@@ -208,19 +210,20 @@ plugin_setting_validate (
        * clear it */
       if (self->ui_uri &&
           !lv2_plugin_is_ui_supported (
-             self->descr->uri, self->ui_uri))
+             descr->uri, self->ui_uri))
         {
           g_debug ("UI URI %s is not supported", self->ui_uri);
           g_free_and_null (self->ui_uri);
         }
 
       /* if no UI URI, pick one */
+      /*g_debug ("picking a UI URI...");*/
       if (!self->ui_uri)
         {
           char * picked_ui = NULL;
           bool ui_picked =
             lv2_plugin_pick_most_preferable_ui (
-              self->descr->uri, &picked_ui,
+              descr->uri, &picked_ui,
               NULL, true);
 
           /* if a suitable UI was found, set the
@@ -407,6 +410,9 @@ plugin_settings_find (
       PluginSetting * cur_setting = self->settings[i];
       PluginDescriptor * cur_descr =
         cur_setting->descr;
+      g_return_val_if_fail (
+        cur_descr->schema_version >= 0 &&
+        cur_setting->schema_version >= 0, NULL);
       if (plugin_descriptor_is_same_plugin (
             cur_descr, descr))
         {

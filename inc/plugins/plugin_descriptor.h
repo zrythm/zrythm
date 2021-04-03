@@ -180,6 +180,24 @@ plugin_architecture_strings[] =
   { "64-bit",       ARCH_64     },
 };
 
+/**
+ * Carla bridge mode.
+ */
+typedef enum CarlaBridgeMode
+{
+  CARLA_BRIDGE_NONE,
+  CARLA_BRIDGE_UI,
+  CARLA_BRIDGE_FULL,
+} CarlaBridgeMode;
+
+static const cyaml_strval_t
+carla_bridge_mode_strings[] =
+{
+  { "None", CARLA_BRIDGE_NONE },
+  { "UI",   CARLA_BRIDGE_UI   },
+  { "Full", CARLA_BRIDGE_FULL },
+};
+
 /***
  * A descriptor to be implemented by all plugins
  * This will be used throughout the UI
@@ -190,7 +208,7 @@ typedef struct PluginDescriptor
   char *           author;
   char *           name;
   char *           website;
-  ZPluginCategory   category;
+  ZPluginCategory  category;
   /** Lv2 plugin subcategory. */
   char *           category_str;
   /** Number of audio input ports. */
@@ -222,6 +240,11 @@ typedef struct PluginDescriptor
 
   /** Used for VST. */
   int64_t          unique_id;
+
+  /** Minimum required bridge mode. */
+  CarlaBridgeMode  min_bridge_mode;
+
+  bool             has_custom_ui;
 
   /** Hash of the plugin's bundle (.so/.ddl for VST)
    * used when caching PluginDescriptor's, obtained
@@ -273,6 +296,11 @@ plugin_descriptor_fields_schema[] =
     PluginDescriptor, path),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginDescriptor, uri),
+  YAML_FIELD_ENUM (
+    PluginDescriptor, min_bridge_mode,
+    carla_bridge_mode_strings),
+  YAML_FIELD_INT (
+    PluginDescriptor, has_custom_ui),
   YAML_FIELD_UINT (
     PluginDescriptor, ghash),
 
@@ -384,6 +412,15 @@ NONNULL
 bool
 plugin_descriptor_has_custom_ui (
   PluginDescriptor * self);
+
+/**
+ * Returns the minimum bridge mode required for this
+ * plugin.
+ */
+NONNULL
+CarlaBridgeMode
+plugin_descriptor_get_min_bridge_mode (
+  const PluginDescriptor * self);
 
 NONNULL
 void

@@ -665,8 +665,8 @@ show_plugin_context_menu (
   new_setting->bridge_mode = CARLA_BRIDGE_NONE;
   CONNECT_SIGNAL (menuitem);
 
-  if (plugin_descriptor_has_custom_ui (descr) &&
-      z_carla_discovery_get_bridge_mode (descr) ==
+  if (descr->has_custom_ui &&
+      descr->min_bridge_mode ==
         CARLA_BRIDGE_NONE &&
       !new_setting->force_generic_ui)
     {

@@ -399,6 +399,11 @@ z_carla_discovery_create_descriptors_from_file (
         g_file_new_for_path (descr->path);
       descr->ghash = g_file_hash (file);
       g_object_unref (file);
+      descr->min_bridge_mode =
+        plugin_descriptor_get_min_bridge_mode (
+          descr);
+      descr->has_custom_ui =
+        plugin_descriptor_has_custom_ui (descr);
     }
 
   return descriptors;
@@ -446,84 +451,6 @@ z_carla_discovery_run (
     }
 }
 
-CarlaBridgeMode
-z_carla_discovery_get_bridge_mode (
-  const PluginDescriptor * descr)
-{
-  if (descr->protocol == PROT_LV2)
-    {
-      /* TODO if the UI and DSP binary is the same
-       * file, bridge the whole plugin */
-      LilvNode * lv2_uri =
-        lilv_new_uri (LILV_WORLD, descr->uri);
-      const LilvPlugin * lilv_plugin =
-        lilv_plugins_get_by_uri (
-          LILV_PLUGINS, lv2_uri);
-      lilv_node_free (lv2_uri);
-      LilvUIs * uis =
-        lilv_plugin_get_uis (lilv_plugin);
-      const LilvUI * picked_ui;
-      const LilvNode * picked_ui_type;
-      bool needs_bridging =
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-          &picked_ui, &picked_ui_type);
-      if (needs_bridging)
-        {
-          const LilvNode * ui_uri =
-            lilv_ui_get_uri (picked_ui);
-          LilvNodes * ui_required_features =
-            lilv_world_find_nodes (
-              LILV_WORLD, ui_uri,
-              PM_GET_NODE (
-                LV2_CORE__requiredFeature),
-              NULL);
-          if (lilv_nodes_contains (
-                ui_required_features,
-                PM_GET_NODE (LV2_DATA_ACCESS_URI)) ||
-              lilv_nodes_contains (
-                ui_required_features,
-                PM_GET_NODE (
-                  LV2_INSTANCE_ACCESS_URI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__Qt4UI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__Qt5UI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__GtkUI)) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_GET_NODE (LV2_UI__Gtk3UI)))
-            {
-              return CARLA_BRIDGE_FULL;
-            }
-          else
-            {
-              return CARLA_BRIDGE_UI;
-            }
-          lilv_nodes_free (ui_required_features);
-        }
-      else /* does not need bridging */
-        {
-          return CARLA_BRIDGE_NONE;
-        }
-      lilv_uis_free (uis);
-    }
-  else if (descr->arch == ARCH_32)
-    {
-      return CARLA_BRIDGE_FULL;
-    }
-  else
-    {
-      return CARLA_BRIDGE_NONE;
-    }
-
-  g_return_val_if_reached (CARLA_BRIDGE_NONE);
-}
-
 /**
  * Create a descriptor for the given AU plugin.
  */
@@ -566,6 +493,10 @@ z_carla_discovery_create_au_descriptor_from_info (
   descr->protocol = PROT_AU;
   descr->arch = ARCH_64;
   descr->path = NULL;
+  descr->min_bridge_mode =
+    plugin_descriptor_get_min_bridge_mode (descr);
+  descr->has_custom_ui =
+    plugin_descriptor_has_custom_ui (descr);
 
   return descr;
 }
@@ -614,6 +545,11 @@ z_carla_discovery_create_au_descriptor_from_string (
   free (descriptors);
   descr->protocol = PROT_AU;
   descr->arch = ARCH_64;
+  descr->min_bridge_mode =
+    plugin_descriptor_get_min_bridge_mode (
+      descr);
+  descr->has_custom_ui =
+    plugin_descriptor_has_custom_ui (descr);
 
   return descr;
 }

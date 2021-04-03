@@ -1875,6 +1875,10 @@ lv2_plugin_create_descriptor_from_lilv (
       PM_GET_NODE (LV2_CORE__CVPort), NULL);
 
   pd->uri = g_strdup (uri_str);
+  pd->min_bridge_mode =
+    plugin_descriptor_get_min_bridge_mode (pd);
+  pd->has_custom_ui =
+    plugin_descriptor_has_custom_ui (pd);
 
   return pd;
 }

@@ -31,6 +31,8 @@
 
 #include <gtk/gtk.h>
 
+#include <lv2/instance-access/instance-access.h>
+
 PluginDescriptor *
 plugin_descriptor_new (void)
 {
@@ -87,6 +89,8 @@ plugin_descriptor_copy (
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
+  dest->min_bridge_mode = src->min_bridge_mode;
+  dest->has_custom_ui = src->has_custom_ui;
   dest->ghash = src->ghash;
 }
 
@@ -429,6 +433,88 @@ plugin_descriptor_has_custom_ui (
     }
 
   g_return_val_if_reached (false);
+}
+
+/**
+ * Returns the minimum bridge mode required for this
+ * plugin.
+ */
+CarlaBridgeMode
+plugin_descriptor_get_min_bridge_mode (
+  const PluginDescriptor * self)
+{
+  if (self->protocol == PROT_LV2)
+    {
+      /* TODO if the UI and DSP binary is the same
+       * file, bridge the whole plugin */
+      LilvNode * lv2_uri =
+        lilv_new_uri (LILV_WORLD, self->uri);
+      const LilvPlugin * lilv_plugin =
+        lilv_plugins_get_by_uri (
+          LILV_PLUGINS, lv2_uri);
+      lilv_node_free (lv2_uri);
+      LilvUIs * uis =
+        lilv_plugin_get_uis (lilv_plugin);
+      const LilvUI * picked_ui;
+      const LilvNode * picked_ui_type;
+      bool needs_bridging =
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
+          &picked_ui, &picked_ui_type);
+      if (needs_bridging)
+        {
+          const LilvNode * ui_uri =
+            lilv_ui_get_uri (picked_ui);
+          LilvNodes * ui_required_features =
+            lilv_world_find_nodes (
+              LILV_WORLD, ui_uri,
+              PM_GET_NODE (
+                LV2_CORE__requiredFeature),
+              NULL);
+          if (lilv_nodes_contains (
+                ui_required_features,
+                PM_GET_NODE (LV2_DATA_ACCESS_URI)) ||
+              lilv_nodes_contains (
+                ui_required_features,
+                PM_GET_NODE (
+                  LV2_INSTANCE_ACCESS_URI)) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_GET_NODE (LV2_UI__Qt4UI)) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_GET_NODE (LV2_UI__Qt5UI)) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_GET_NODE (LV2_UI__GtkUI)) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_GET_NODE (LV2_UI__Gtk3UI)))
+            {
+              return CARLA_BRIDGE_FULL;
+            }
+          else
+            {
+              return CARLA_BRIDGE_UI;
+            }
+          lilv_nodes_free (ui_required_features);
+        }
+      else /* does not need bridging */
+        {
+          return CARLA_BRIDGE_NONE;
+        }
+      lilv_uis_free (uis);
+    }
+  else if (self->arch == ARCH_32)
+    {
+      return CARLA_BRIDGE_FULL;
+    }
+  else
+    {
+      return CARLA_BRIDGE_NONE;
+    }
+
+  g_return_val_if_reached (CARLA_BRIDGE_NONE);
 }
 
 void
