@@ -26,7 +26,6 @@ util_srcs = [
   'datetime.c',
   'dialogs.c',
   'dictionary.c',
-  'dsp.c',
   'env.c',
   'err_codes.c',
   'general.c',
@@ -37,7 +36,6 @@ util_srcs = [
   'log.c',
   'math.c',
   'mem.c',
-  'mpmc_queue.c',
   'object_utils.c',
   'object_pool.c',
   'objects.c',
@@ -51,5 +49,21 @@ util_srcs = [
   'yaml.c',
   'windows_errors.c',
   ]
+
+# optimized utils
+optimized_utils_lib = static_library (
+  'zrythm-optimized-utils-lib',
+  sources: [
+    'dsp.c',
+    'mpmc_queue.c',
+    ],
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
+  c_args: [
+    common_cflags, strict_cflags, '-O3',
+    extra_optimizations_cflags,
+    extra_extra_optimizations_cflags,
+    ],
+  )
 
 zrythm_srcs += files (util_srcs)
