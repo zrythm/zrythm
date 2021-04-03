@@ -629,6 +629,7 @@ bool
 carla_native_plugin_has_custom_ui (
   PluginDescriptor * descr)
 {
+#if 0
   CarlaNativePlugin * native_pl = _create (NULL);
 
   /* instantiate the plugin to get its info */
@@ -659,6 +660,8 @@ carla_native_plugin_has_custom_ui (
   carla_native_plugin_free (native_pl);
 
   return has_custom_ui;
+#endif
+  g_return_val_if_reached (false);
 }
 
 /**
@@ -1018,7 +1021,7 @@ carla_native_plugin_get_descriptor_from_cached (
   descr->min_bridge_mode =
     plugin_descriptor_get_min_bridge_mode (descr);
   descr->has_custom_ui =
-    plugin_descriptor_has_custom_ui (descr);
+    info->hints & PLUGIN_HAS_CUSTOM_UI;
 
   return descr;
 }
