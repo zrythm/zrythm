@@ -30,6 +30,7 @@
 
 #include <glib.h>
 
+#if 0
 static void
 test_has_custom_ui (void)
 {
@@ -49,6 +50,7 @@ test_has_custom_ui (void)
 
   test_helper_zrythm_cleanup ();
 }
+#endif
 
 int
 main (int argc, char *argv[])
@@ -57,9 +59,11 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/plugins/carla native plugin/"
 
+#if 0
   g_test_add_func (
     TEST_PREFIX "test has custom UI",
     (GTestFunc) test_has_custom_ui);
+#endif
 
   return g_test_run ();
 }
