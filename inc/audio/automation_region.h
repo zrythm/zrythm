@@ -99,6 +99,7 @@ automation_region_get_prev_ap (
  *   of each object. This only matters if \ref
  *   check_positions is true.
  */
+HOT
 AutomationPoint *
 automation_region_get_next_ap (
   ZRegion *         self,

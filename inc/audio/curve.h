@@ -157,6 +157,7 @@ curve_algorithm_get_localized_name (
  * @param opts Curve options.
  * @param start_higher Start at higher point.
  */
+HOT
 double
 curve_get_normalized_y (
   double         x,

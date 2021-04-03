@@ -1129,6 +1129,7 @@ port_set_control_value (
  *   normalized or not.
  */
 NONNULL
+HOT
 float
 port_get_control_value (
   Port *      self,

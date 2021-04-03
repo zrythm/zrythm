@@ -608,6 +608,7 @@ ui_px_to_frames_editor (
  * Converts position to px, optionally adding the ruler
  * padding.
  */
+HOT
 int
 ui_pos_to_px_timeline (
   Position * pos,

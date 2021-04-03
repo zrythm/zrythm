@@ -650,6 +650,7 @@ plugin_set_track_pos (
  * @param nframes The number of frames to process.
  */
 NONNULL
+HOT
 void
 plugin_process (
   Plugin *    plugin,

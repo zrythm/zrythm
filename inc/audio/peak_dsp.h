@@ -60,6 +60,7 @@ typedef struct PeakDsp
  * @param p Frame array.
  * @param n Number of samples.
  */
+HOT
 void
 peak_dsp_process (
   PeakDsp * self,

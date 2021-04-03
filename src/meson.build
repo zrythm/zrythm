@@ -51,6 +51,7 @@ zrythm_link_libs = [
   midilib,
   whereami_lib,
   zita_resampler_lib,
+  optimized_audio_lib,
   optimized_utils_lib,
   ]
 

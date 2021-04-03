@@ -265,6 +265,7 @@ track_processor_get_track (
  * @param local_offset The local start frames.
  * @param nframes The number of frames to process.
  */
+HOT
 void
 track_processor_process (
   TrackProcessor * self,

@@ -61,7 +61,6 @@ audio_srcs = [
   'group_target_track.c',
   'hardware_processor.c',
   'instrument_track.c',
-  'kmeter_dsp.c',
   'marker.c',
   'marker_track.c',
   'master_track.c',
@@ -79,7 +78,6 @@ audio_srcs = [
   'midi_track.c',
   'modulator_macro_processor.c',
   'modulator_track.c',
-  'peak_dsp.c',
   'pool.c',
   'port.c',
   'port_identifier.c',
@@ -113,5 +111,21 @@ audio_srcs = [
   'windows_mmcss.c',
   'windows_mme_device.c',
   ]
+
+# optimized audio
+optimized_audio_lib = static_library (
+  'zrythm-optimized-audio-lib',
+  sources: [
+    'kmeter_dsp.c',
+    'peak_dsp.c',
+    ],
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
+  c_args: [
+    common_cflags, strict_cflags, '-O3',
+    extra_optimizations_cflags,
+    extra_extra_optimizations_cflags,
+    ],
+  )
 
 zrythm_srcs += files (audio_srcs)

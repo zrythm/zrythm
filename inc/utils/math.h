@@ -37,6 +37,7 @@
 /**
  * Returns fader value 0.0 to 1.0 from amp value 0.0 to 2.0 (+6 dbFS).
  */
+HOT
 sample_t
 math_get_fader_val_from_amp (
   sample_t amp);

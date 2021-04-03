@@ -144,6 +144,7 @@ automation_point_set_region_and_index (
  * @param ap The start point (0, 0).
  * @param x Normalized x.
  */
+HOT
 double
 automation_point_get_normalized_value_in_curve (
   AutomationPoint * ap,

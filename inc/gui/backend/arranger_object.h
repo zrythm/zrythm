@@ -445,6 +445,7 @@ arranger_object_set_magic (
  * If the object is part of a ZRegion, returns it,
  * otherwise returns NULL.
  */
+HOT
 ZRegion *
 arranger_object_get_region (
   ArrangerObject * self);
@@ -843,6 +844,7 @@ arranger_object_add_ticks_to_children (
 /**
  * Returns the Track this ArrangerObject is in.
  */
+HOT
 Track *
 arranger_object_get_track (
   ArrangerObject * self);
