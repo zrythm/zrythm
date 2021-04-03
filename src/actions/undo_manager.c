@@ -246,6 +246,8 @@ undo_manager_free (
   object_free_w_func_and_null (
     undo_stack_free, self->redo_stack);
 
+  zix_sem_destroy (&self->action_sem);
+
   object_zero_and_free (self);
 
   g_message ("%s: done", __func__);
