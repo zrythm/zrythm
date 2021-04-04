@@ -113,9 +113,9 @@ donate below or purchase a binary installer from
 takes thousands of hours of work and contributions
 enable us to spend more time working on the project.
 
-- [liberapay.com/Zrythm](https://liberapay.com/Zrythm)
+- [liberapay.com/Zrythm](https://liberapay.com/Zrythm/donate)
 - [paypal.me/zrythm](https://paypal.me/zrythm)
-- [opencollective.com/zrythm](https://opencollective.com/zrythm)
+- [opencollective.com/zrythm](https://opencollective.com/zrythm/donate)
 
 ----
 
