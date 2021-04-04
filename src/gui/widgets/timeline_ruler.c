@@ -212,6 +212,7 @@ timeline_ruler_on_drag_update (
   gdouble       offset_x,
   gdouble       offset_y)
 {
+  g_debug ("update");
   /* handle x */
   switch (self->action)
     {
@@ -352,7 +353,7 @@ timeline_ruler_on_drag_update (
           position_init (&timeline_start);
           position_init (&timeline_end);
           position_set_to_bar (
-            &timeline_end, INT_MAX);
+            &timeline_end, 80000);
 
           /* convert px to position */
           ui_px_to_pos_timeline (
