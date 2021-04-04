@@ -211,8 +211,8 @@ typedef struct Transport
   //TimeSignature time_sig;
 
   /* ---------- CACHE -------------- */
-  double        ticks_per_beat;
-  double        ticks_per_bar;
+  int           ticks_per_beat;
+  int           ticks_per_bar;
   int           sixteenths_per_beat;
   int           sixteenths_per_bar;
 

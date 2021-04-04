@@ -437,9 +437,9 @@ transport_update_caches (
    * with the ticks per note
    */
   self->ticks_per_beat =
-    3840.0 / (double) beat_unit;
+    3840 / beat_unit;
   self->ticks_per_bar =
-    (self->ticks_per_beat * beats_per_bar);
+    self->ticks_per_beat * beats_per_bar;
   self->sixteenths_per_beat = 16 / beat_unit;
   self->sixteenths_per_bar =
     (self->sixteenths_per_beat * beats_per_bar);

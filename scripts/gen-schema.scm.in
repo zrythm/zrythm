@@ -278,10 +278,10 @@ Args:
            "export-filename-pattern"
            '("append-format"
              "prepend-date-append-format"))
-         ;; TODO
          (print-enum
            "note-length"
-           '("2/1" "1/1" "1/2"))
+           '("bar" "beat" "2/1" "1/1" "1/2" "1/4"
+             "1/8" "1/16" "1/32"  "1/64" "1/128"))
          (print-enum
            "note-type"
            '("normal" "dotted" "triplet"))
@@ -387,7 +387,7 @@ Args:
                  "Tail to allow when bouncing (for example to catch reverb tails), in milliseconds.")
                (make-schema-key-with-enum
                  "timeline-object-length"
-                 "note-length" "1/1"
+                 "note-length" "bar"
                  "Timeline object length"
                  "Default length to use when creating timeline objects.")
                (make-schema-key-with-enum
@@ -402,7 +402,7 @@ Args:
                  "The length of the last created timeline object (in ticks).")
                (make-schema-key-with-enum
                  "editor-object-length"
-                 "note-length" "1/1"
+                 "note-length" "beat"
                  "Editor object length"
                  "Default length to use when creating editor objects.")
                (make-schema-key-with-enum

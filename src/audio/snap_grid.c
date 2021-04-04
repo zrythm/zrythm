@@ -34,137 +34,71 @@ snap_grid_get_ticks_from_length_and_type (
   NoteLength length,
   NoteType   type)
 {
+  int ticks = 0;
   switch (length)
     {
+    case NOTE_LENGTH_BAR:
+      g_return_val_if_fail (
+        TRANSPORT && TRANSPORT->ticks_per_bar > 0,
+        -1);
+      ticks = TRANSPORT->ticks_per_bar;
+      break;
+    case NOTE_LENGTH_BEAT:
+      g_return_val_if_fail (
+        TRANSPORT && TRANSPORT->ticks_per_beat > 0,
+        -1);
+      ticks = TRANSPORT->ticks_per_beat;
+      break;
     case NOTE_LENGTH_2_1:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return 8 * TICKS_PER_QUARTER_NOTE;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return 12 * TICKS_PER_QUARTER_NOTE;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return (16 * TICKS_PER_QUARTER_NOTE) / 3;
-          break;
-        }
+      ticks = 8 * TICKS_PER_QUARTER_NOTE;
       break;
     case NOTE_LENGTH_1_1:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return 4 * TICKS_PER_QUARTER_NOTE;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return 6 * TICKS_PER_QUARTER_NOTE;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return (8 * TICKS_PER_QUARTER_NOTE) / 3;
-          break;
-        }
+      ticks = 4 * TICKS_PER_QUARTER_NOTE;
       break;
     case NOTE_LENGTH_1_2:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return 2 * TICKS_PER_QUARTER_NOTE;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return 3 * TICKS_PER_QUARTER_NOTE;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return (4 * TICKS_PER_QUARTER_NOTE) / 3;
-          break;
-        }
+      ticks = 2 * TICKS_PER_QUARTER_NOTE;
       break;
     case NOTE_LENGTH_1_4:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return TICKS_PER_QUARTER_NOTE;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return (3 * TICKS_PER_QUARTER_NOTE) / 2;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return (2 * TICKS_PER_QUARTER_NOTE) / 3;
-          break;
-        }
+      ticks = TICKS_PER_QUARTER_NOTE;
       break;
     case NOTE_LENGTH_1_8:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return TICKS_PER_QUARTER_NOTE / 2;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return (3 * TICKS_PER_QUARTER_NOTE) / 4;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return TICKS_PER_QUARTER_NOTE / 3;
-          break;
-        }
+      ticks = TICKS_PER_QUARTER_NOTE / 2;
       break;
     case NOTE_LENGTH_1_16:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return TICKS_PER_QUARTER_NOTE / 4;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return (3 * TICKS_PER_QUARTER_NOTE) / 8;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return TICKS_PER_QUARTER_NOTE / 6;
-          break;
-        }
+      ticks = TICKS_PER_QUARTER_NOTE / 4;
       break;
     case NOTE_LENGTH_1_32:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return TICKS_PER_QUARTER_NOTE / 8;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return (3 * TICKS_PER_QUARTER_NOTE) / 16;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return TICKS_PER_QUARTER_NOTE / 12;
-          break;
-        }
+      ticks = TICKS_PER_QUARTER_NOTE / 8;
       break;
     case NOTE_LENGTH_1_64:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return TICKS_PER_QUARTER_NOTE / 16;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return (3 * TICKS_PER_QUARTER_NOTE) / 32;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return TICKS_PER_QUARTER_NOTE / 24;
-          break;
-        }
+      ticks = TICKS_PER_QUARTER_NOTE / 16;
       break;
     case NOTE_LENGTH_1_128:
-      switch (type)
-        {
-        case NOTE_TYPE_NORMAL:
-          return TICKS_PER_QUARTER_NOTE / 32;
-          break;
-        case NOTE_TYPE_DOTTED:
-          return (3 * TICKS_PER_QUARTER_NOTE) / 64;
-          break;
-        case NOTE_TYPE_TRIPLET:
-          return TICKS_PER_QUARTER_NOTE / 48;
-          break;
-        }
+      ticks = TICKS_PER_QUARTER_NOTE / 32;
+      break;
+    default:
+      g_return_val_if_reached (-1);
+    }
+
+  switch (type)
+    {
+    case NOTE_TYPE_NORMAL:
+      break;
+    case NOTE_TYPE_DOTTED:
+      ticks = 3 * ticks;
+      g_return_val_if_fail (
+        ticks % 2 == 0, -1);
+      ticks = ticks / 2;
+      break;
+    case NOTE_TYPE_TRIPLET:
+      ticks = 2 * ticks;
+      g_return_val_if_fail (
+        ticks % 3 == 0, -1);
+      ticks = ticks / 3;
       break;
     }
-  g_warn_if_reached ();
-  return -1;
+
+  return ticks;
 }
 
 /**

@@ -814,7 +814,8 @@ arranger_selections_get_start_pos (
   MidiArrangerSelections * mas;
   AutomationSelections * as;
 
-  position_set_to_bar (pos, INT_MAX);
+  position_set_to_bar (pos, 80000);
+  g_return_if_fail (pos->ticks > 0);
     /*&pos, TRANSPORT->total_bars);*/
 
 #define GET_START_POS(sel,cc,sc) \
@@ -1044,9 +1045,7 @@ arranger_selections_get_first_object (
   AutomationSelections * as;
 
   Position pos;
-  position_set_to_bar (
-    /*&pos, TRANSPORT->total_bars);*/
-    &pos, INT_MAX);
+  position_set_to_bar (&pos, 80000);
   ArrangerObject * ret_obj = NULL;
 
 #define GET_FIRST_OBJ(sel,cc,sc) \

@@ -54,6 +54,8 @@
 
 typedef enum NoteLength
 {
+  NOTE_LENGTH_BAR,
+  NOTE_LENGTH_BEAT,
   NOTE_LENGTH_2_1,
   NOTE_LENGTH_1_1,
   NOTE_LENGTH_1_2,
@@ -172,6 +174,8 @@ snap_grid_type_strings[] =
 static const cyaml_strval_t
 note_length_strings[] =
 {
+  { "bar",          NOTE_LENGTH_BAR    },
+  { "beat",         NOTE_LENGTH_BEAT    },
   { "2/1",          NOTE_LENGTH_2_1    },
   { "1/1",          NOTE_LENGTH_1_1   },
   { "1/2",          NOTE_LENGTH_1_2   },
