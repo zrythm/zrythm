@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,7 @@
 #include "gui/widgets/piano_roll_keys.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "utils/color.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -124,7 +125,6 @@ piano_roll_keys_draw (
       else
         {
           /* ---- draw background ---- */
-
           int has_color = 0;
           if (PIANO_ROLL->highlighting ==
                 PR_HIGHLIGHT_BOTH && in_chord &&
@@ -133,18 +133,20 @@ piano_roll_keys_draw (
               has_color = 1;
 
               gdk_cairo_set_source_rgba (
-                cr, &UI_COLORS->highlight_both);
+                cr, &UI_COLORS->highlight_both_bg);
               cairo_rectangle (
                 cr, 0,
                 (127 - i) * px_per_key,
                 label_width, px_per_key);
               cairo_fill (cr);
 
+              char hex[18];
+              ui_gdk_rgba_to_hex (
+                &UI_COLORS->highlight_both_fg, hex);
               sprintf (
                 str,
-                "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
-                descr->note_name_pango,
-                _("both"));
+                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                note_name, hex, _("both"));
             }
           else if ((PIANO_ROLL->highlighting ==
                 PR_HIGHLIGHT_SCALE ||
@@ -154,13 +156,15 @@ piano_roll_keys_draw (
               has_color = 1;
 
               gdk_cairo_set_source_rgba (
-                cr, &UI_COLORS->highlight_in_scale);
+                cr, &UI_COLORS->highlight_scale_bg);
 
+              char hex[18];
+              ui_gdk_rgba_to_hex (
+                &UI_COLORS->highlight_scale_fg, hex);
               sprintf (
                 str,
-                "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
-                note_name,
-                _("scale"));
+                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                note_name, hex, _("scale"));
             }
           else if ((PIANO_ROLL->highlighting ==
                 PR_HIGHLIGHT_CHORD ||
@@ -170,13 +174,15 @@ piano_roll_keys_draw (
               has_color = 1;
 
               gdk_cairo_set_source_rgba (
-                cr, &UI_COLORS->highlight_in_chord);
+                cr, &UI_COLORS->highlight_chord_bg);
 
+              char hex[18];
+              ui_gdk_rgba_to_hex (
+                &UI_COLORS->highlight_chord_fg, hex);
               sprintf (
                 str,
-                "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
-                note_name,
-                _("chord"));
+                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                note_name, hex, _("chord"));
             }
           else
             {

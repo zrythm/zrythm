@@ -1372,8 +1372,7 @@ ui_get_detail_level (void)
 UiCaches *
 ui_caches_new ()
 {
-  UiCaches * self =
-    calloc (1, sizeof (UiCaches));
+  UiCaches * self = object_new (UiCaches);
 
   GtkWidget * widget =
     gtk_drawing_area_new ();
@@ -1388,7 +1387,7 @@ ui_caches_new ()
     gtk_style_context_lookup_color ( \
       context, #cname, \
       &colors->cname); \
-  g_warn_if_fail (ret)
+  g_return_val_if_fail (ret, NULL)
 
   GET_COLOR_FROM_THEME (bright_green);
   GET_COLOR_FROM_THEME (darkish_green);
@@ -1399,6 +1398,14 @@ ui_caches_new ()
   GET_COLOR_FROM_THEME (postfader_send);
   GET_COLOR_FROM_THEME (solo_active);
   GET_COLOR_FROM_THEME (solo_checked);
+  GET_COLOR_FROM_THEME (fader_fill_start);
+  GET_COLOR_FROM_THEME (fader_fill_end);
+  GET_COLOR_FROM_THEME (highlight_scale_bg);
+  GET_COLOR_FROM_THEME (highlight_chord_bg);
+  GET_COLOR_FROM_THEME (highlight_both_bg);
+  GET_COLOR_FROM_THEME (highlight_scale_fg);
+  GET_COLOR_FROM_THEME (highlight_chord_fg);
+  GET_COLOR_FROM_THEME (highlight_both_fg);
 
 #undef GET_COLOR_FROM_THEME
 
@@ -1413,15 +1420,6 @@ ui_caches_new ()
   gdk_rgba_parse (
     &colors->record_checked,
     UI_COLOR_RECORD_CHECKED);
-  gdk_rgba_parse (
-    &colors->highlight_both,
-    UI_COLOR_HIGHLIGHT_BOTH);
-  gdk_rgba_parse (
-    &colors->highlight_in_scale,
-    UI_COLOR_HIGHLIGHT_SCALE);
-  gdk_rgba_parse (
-    &colors->highlight_in_chord,
-    UI_COLOR_HIGHLIGHT_CHORD);
 
   return self;
 }

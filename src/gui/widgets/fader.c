@@ -449,12 +449,11 @@ fader_widget_setup (
 static void
 fader_widget_init (FaderWidget * self)
 {
-  gdk_rgba_parse (&self->start_color, "#D68A0C");
-  gdk_rgba_parse (&self->end_color, "#F9CA1B");
+  self->start_color =  UI_COLORS->fader_fill_start;
+  self->end_color =  UI_COLORS->fader_fill_end;
 
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self),
-    _("Fader"));
+    GTK_WIDGET (self), _("Fader"));
 
   /* make it able to notify */
   gtk_widget_set_has_window (

@@ -51,6 +51,14 @@
 @define-color postfader_send #901ed2;
 @define-color solo_checked @darkish_green;
 @define-color solo_active @matcha;
+@define-color fader_fill_start @dark_orange;
+@define-color fader_fill_end @z_yellow;
+@define-color highlight_scale_bg #662266;
+@define-color highlight_chord_bg #BB22BB;
+@define-color highlight_both_bg #FF22FF;
+@define-color highlight_scale_fg #F79616;
+@define-color highlight_chord_fg #F79616;
+@define-color highlight_both_fg #F79616;
 /* see https://coolors.co/ to generate more or use
  * GPick */
 

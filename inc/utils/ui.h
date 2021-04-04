@@ -55,9 +55,6 @@ typedef struct Position Position;
 #define UI_COLOR_BUTTON_HOVER "#444444"
 #define UI_COLOR_RECORD_CHECKED "#ED2939"
 #define UI_COLOR_RECORD_ACTIVE "#FF2400"
-#define UI_COLOR_HIGHLIGHT_SCALE "#662266"
-#define UI_COLOR_HIGHLIGHT_CHORD "#BB22BB"
-#define UI_COLOR_HIGHLIGHT_BOTH "#FF22FF"
 
 #define UI_DELETE_ICON_NAME "z-edit-delete"
 
@@ -98,15 +95,20 @@ typedef struct UiColors
   GdkRGBA       matcha;
   GdkRGBA       bright_green;
   GdkRGBA       darkish_green;
-  GdkRGBA       highlight_both;
-  GdkRGBA       highlight_in_scale;
-  GdkRGBA       highlight_in_chord;
   GdkRGBA       prefader_send;
   GdkRGBA       postfader_send;
   GdkRGBA       record_active;
   GdkRGBA       record_checked;
   GdkRGBA       solo_active;
   GdkRGBA       solo_checked;
+  GdkRGBA       fader_fill_start;
+  GdkRGBA       fader_fill_end;
+  GdkRGBA       highlight_scale_bg;
+  GdkRGBA       highlight_chord_bg;
+  GdkRGBA       highlight_both_bg;
+  GdkRGBA       highlight_scale_fg;
+  GdkRGBA       highlight_chord_fg;
+  GdkRGBA       highlight_both_fg;
 } UiColors;
 
 /**

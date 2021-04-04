@@ -89,6 +89,11 @@ bool
 color_is_very_bright (
   GdkRGBA * src);
 
+void
+color_get_opposite (
+  GdkRGBA * src,
+  GdkRGBA * dest);
+
 /**
  * @}
  */

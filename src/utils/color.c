@@ -98,3 +98,13 @@ color_is_very_bright (
 {
   return src->red + src->green + src->blue >= 2.0;
 }
+
+void
+color_get_opposite (
+  GdkRGBA * src,
+  GdkRGBA * dest)
+{
+  dest->red = 1.0 - src->red;
+  dest->blue = 1.0 - src->blue;
+  dest->green = 1.0 - src->green;
+}

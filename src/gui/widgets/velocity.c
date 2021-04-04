@@ -81,21 +81,21 @@ velocity_draw (
         PR_HIGHLIGHT_BOTH &&
       in_scale && in_chord)
     {
-      color = UI_COLORS->highlight_both;
+      color = UI_COLORS->highlight_both_bg;
     }
   else if ((PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_SCALE ||
       PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_BOTH) && in_scale)
     {
-      color = UI_COLORS->highlight_in_scale;
+      color = UI_COLORS->highlight_scale_bg;
     }
   else if ((PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_CHORD ||
       PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_BOTH) && in_chord)
     {
-      color = UI_COLORS->highlight_in_chord;
+      color = UI_COLORS->highlight_chord_bg;
     }
   else
     {
