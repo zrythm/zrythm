@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1135,15 +1135,15 @@ recreate_pango_layouts (
 
   self->caption_layout =
     z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, CAPTION_FONT,
+      GTK_WIDGET (self), CAPTION_FONT,
       PANGO_ELLIPSIZE_NONE, -1);
   self->seg7_layout =
     z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, SEG7_FONT,
+      GTK_WIDGET (self), SEG7_FONT,
       PANGO_ELLIPSIZE_NONE, -1);
   self->normal_layout =
     z_cairo_create_pango_layout_from_string (
-      (GtkWidget *) self, NORMAL_FONT,
+      GTK_WIDGET (self), NORMAL_FONT,
       PANGO_ELLIPSIZE_NONE, -1);
 }
 
@@ -1350,8 +1350,7 @@ digital_meter_widget_init (
 
   self->drag =
     GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (
-        (GtkWidget *) self));
+      gtk_gesture_drag_new (GTK_WIDGET (self)));
 
   g_signal_connect (
     G_OBJECT (self), "scroll-event",

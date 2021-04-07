@@ -71,7 +71,7 @@ typedef struct _DigitalMeterWidget
 
   bool                     is_transport;
 
-  GtkGestureDrag           * drag;
+  GtkGestureDrag *         drag;
   double                   last_y;
   double                   last_x;
   int                      height_start_pos;

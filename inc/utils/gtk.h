@@ -191,10 +191,25 @@ z_gtk_configure_simple_combo_box (
   GtkComboBox * cb,
   GtkTreeModel * model);
 
+/**
+ * Sets the icon name and optionally text.
+ */
 void
 z_gtk_button_set_icon_name (
-  GtkButton * btn,
+  GtkButton *  btn,
   const char * name);
+
+/**
+ * Sets the icon name and optionally text.
+ */
+void
+z_gtk_button_set_icon_name_and_text (
+  GtkButton *  btn,
+  const char * name,
+  const char * text,
+  bool         icon_first,
+  GtkOrientation orientation,
+  int          spacing);
 
 /**
  * Creates a button with the given icon name.
@@ -209,6 +224,17 @@ z_gtk_button_new_with_icon (
 GtkToggleButton *
 z_gtk_toggle_button_new_with_icon (
   const char * name);
+
+/**
+ * Creates a toggle button with the given icon name.
+ */
+GtkToggleButton *
+z_gtk_toggle_button_new_with_icon_and_text (
+  const char * name,
+  const char * text,
+  bool         icon_first,
+  GtkOrientation orientation,
+  int          spacing);
 
 /**
  * Creates a button with the given resource name as icon.

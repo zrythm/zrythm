@@ -337,6 +337,10 @@ Args:
            "recording-mode"
            '("overwrite-events" "merge-events"
              "takes" "muted-takes"))
+         (print-enum
+           "bounce-step"
+           '("before-inserts" "pre-fader"
+             "post-fader"))
          (newline)
 
          ;; -- print normal schemas --
@@ -377,10 +381,11 @@ Args:
            (make-schema
              "ui"
              (list
-               (make-schema-key
-                 "bounce-with-effects" "b" "true"
-                 "Bounce with effects"
-                 "If set to true, the effects chain will be included in the bounced material.")
+               (make-schema-key-with-enum
+                 "bounce-step"
+                 "bounce-step" "post-fader"
+                 "Bounce step"
+                 "Step in the processing chain to bounce at.")
                (make-schema-key
                  "bounce-tail" "i" "0"
                  "Bounce tail"

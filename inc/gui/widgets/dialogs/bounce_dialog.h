@@ -36,6 +36,9 @@ G_DECLARE_FINAL_TYPE (
   Z, BOUNCE_DIALOG_WIDGET,
   GtkDialog)
 
+typedef struct _BounceStepSelectorWidget
+  BounceStepSelectorWidget;
+
 /**
  * @addtogroup widgets
  *
@@ -59,7 +62,8 @@ typedef struct _BounceDialogWidget
   GtkDialog            parent_instance;
   GtkButton *          cancel_btn;
   GtkButton *          bounce_btn;
-  GtkCheckButton *     with_effects_check;
+  GtkBox *             bounce_step_box;
+  BounceStepSelectorWidget * bounce_step_selector;
   GtkSpinButton *      tail_spin;
 
   BounceDialogWidgetType type;

@@ -21,6 +21,7 @@
 #include "audio/exporter.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
+#include "gui/widgets/bounce_step_selector.h"
 #include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "project.h"
@@ -70,6 +71,9 @@ on_bounce_clicked (
       settings.mode = EXPORT_MODE_TRACKS;
       break;
     }
+
+  settings.bounce_step =
+    g_settings_get_enum (S_UI, "bounce-step");
 
   if (self->bounce_to_file)
     {
@@ -136,6 +140,12 @@ bounce_dialog_widget_new (
   /* TODO free when destroying */
   self->bounce_name = g_strdup (bounce_name);
 
+  self->bounce_step_selector =
+    bounce_step_selector_widget_new ();
+  gtk_container_add (
+    GTK_CONTAINER (self->bounce_step_box),
+    GTK_WIDGET (self->bounce_step_selector));
+
   g_signal_connect (
     G_OBJECT (self->tail_spin), "value-changed",
     G_CALLBACK (on_tail_value_changed), self);
@@ -157,7 +167,7 @@ bounce_dialog_widget_class_init (
 
   BIND_CHILD (cancel_btn);
   BIND_CHILD (bounce_btn);
-  BIND_CHILD (with_effects_check);
+  BIND_CHILD (bounce_step_box);
   BIND_CHILD (tail_spin);
 
   gtk_widget_class_bind_template_callback (
@@ -171,14 +181,8 @@ bounce_dialog_widget_init (BounceDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_toggle_button_set_active (
-    GTK_TOGGLE_BUTTON (self->with_effects_check),
-    g_settings_get_boolean (
-      S_UI, "bounce-with-effects"));
   gtk_spin_button_set_value (
     self->tail_spin,
     (double)
-    g_settings_get_int (
-      S_UI, "bounce-tail"));
+    g_settings_get_int (S_UI, "bounce-tail"));
 }
-

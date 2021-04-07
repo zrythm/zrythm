@@ -31,6 +31,7 @@ widget_srcs = files([
   'bar_slider.c',
   'bot_bar.c',
   'bot_dock_edge.c',
+  'bounce_step_selector.c',
   'button_with_menu.c',
   'cc_bindings.c',
   'cc_bindings_tree.c',
