@@ -265,4 +265,19 @@
 #define F_FOLLOW_SYMLINKS 1
 #define F_NO_FOLLOW_SYMLINKS 0
 
+#define F_BOUNCE 1
+#define F_NO_BOUNCE 0
+
+#define F_MARK_REGIONS 1
+#define F_NO_MARK_REGIONS 0
+
+#define F_MARK_CHILDREN 1
+#define F_NO_MARK_CHILDREN 0
+
+#define F_MARK_PARENTS 1
+#define F_NO_MARK_PARENTS 0
+
+#define F_MARK_MASTER 1
+#define F_NO_MARK_MASTER 0
+
 #endif

@@ -387,66 +387,6 @@ NONNULL
 float
 channel_get_balance_control (void * _channel);
 
-#if 0
-/* ---- getters ---- */
-
-/**
- * MIDI peak.
- *
- * @note Used by the UI.
- */
-float
-channel_get_current_midi_peak (
-  void * _channel);
-
-/**
- * Digital peak.
- *
- * @note Used by the UI.
- */
-float
-channel_get_current_l_digital_peak (
-  void * _channel);
-
-/**
- * Digital peak.
- *
- * @note Used by the UI.
- */
-float
-channel_get_current_r_digital_peak (
-  void * _channel);
-
-/**
- * Digital peak.
- *
- * @note Used by the UI.
- */
-float
-channel_get_current_l_digital_peak_max (
-  void * _channel);
-
-/**
- * Digital peak.
- *
- * @note Used by the UI.
- */
-float
-channel_get_current_r_digital_peak_max (
-  void * _channel);
-
-/* ---- end getters ---- */
-
-void
-channel_set_current_l_db (
-  Channel * channel, float val);
-
-void
-channel_set_current_r_db (
-  Channel * channel, float val);
-
-#endif
-
 /**
  * Sets fader to 0.0.
  */

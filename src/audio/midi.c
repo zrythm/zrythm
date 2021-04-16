@@ -314,7 +314,7 @@ midi_panic_all (
     {
       track = TRACKLIST->tracks[i];
 
-      if (track_has_piano_roll (track) ||
+      if (track_type_has_piano_roll (track->type) ||
           track->type == TRACK_TYPE_CHORD)
         {
           midi_events_panic (

@@ -57,6 +57,7 @@ dsp_copy (
  * Scale: dst[i] = dst[i] * k.
  */
 NONNULL
+HOT
 void
 dsp_mul_k2 (
   float * dest,
@@ -97,6 +98,7 @@ dsp_max (
  * Calculate dst[i] = dst[i] + src[i].
  */
 NONNULL
+HOT
 void
 dsp_add2 (
   float *       dest,

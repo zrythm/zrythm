@@ -1876,13 +1876,14 @@ channel_add_plugin (
     }
 
   Plugin * prev_pl = NULL;
-  for (i =
-         (slot_type == PLUGIN_SLOT_INSTRUMENT ?
-            STRIP_SIZE - 1 : slot - 1); i >= 0; i--)
+  if (slot_type != PLUGIN_SLOT_INSTRUMENT)
     {
-      prev_pl = prev_plugins[i];
-      if (prev_pl)
-        break;
+      for (i = slot - 1; i >= 0; i--)
+        {
+          prev_pl = prev_plugins[i];
+          if (prev_pl)
+            break;
+        }
     }
   if (!prev_pl &&
       slot_type == PLUGIN_SLOT_INSERT)

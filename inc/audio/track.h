@@ -442,6 +442,13 @@ typedef struct Track
   bool                 bounce;
 
   /**
+   * Whether to temporarily route the output to
+   * master (e.g., when bouncing the track on its
+   * own without its parents).
+   */
+  bool                 bounce_to_master;
+
+  /**
    * Tracks that are routed to this track, if
    * group track.
    *
@@ -976,9 +983,9 @@ track_set_pos (
 /**
  * Returns if the Track should have a piano roll.
  */
-int
-track_has_piano_roll (
-  const Track * track);
+bool
+track_type_has_piano_roll (
+  const TrackType type);
 
 /**
  * Returns if the Track should have an inputs
@@ -1219,13 +1226,16 @@ track_get_plugin_at_slot (
  * @param mark_children Whether to mark all
  *   children tracks as well. Used when exporting
  *   stems on the specific track stem only.
+ * @param mark_parents Whether to mark all parent
+ *   tracks as well.
  */
 void
 track_mark_for_bounce (
   Track * self,
   bool    bounce,
   bool    mark_regions,
-  bool    mark_children);
+  bool    mark_children,
+  bool    mark_parents);
 
 /**
  * Appends all channel ports and optionally

@@ -925,7 +925,8 @@ on_export_clicked (
 
           Track * track = tracks[i];
           track_mark_for_bounce (
-            track, true, true, true);
+            track, F_BOUNCE, F_MARK_REGIONS,
+            F_MARK_CHILDREN, F_MARK_PARENTS);
 
           ExportSettings info;
           init_export_info (self, &info, track);
@@ -977,7 +978,8 @@ on_export_clicked (
         {
           Track * track = tracks[i];
           track_mark_for_bounce (
-            track, true, true, false);
+            track, F_BOUNCE, F_MARK_REGIONS,
+            F_NO_MARK_CHILDREN, F_MARK_PARENTS);
         }
 
       g_message ("exporting %s", info.file_uri);

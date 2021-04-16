@@ -233,9 +233,20 @@ void
 tracklist_selections_sort (
   TracklistSelections * self);
 
+/**
+ * Marks the tracks to be bounced.
+ *
+ * @param with_parents Also mark all the track's
+ *   parents recursively.
+ * @param mark_master Also mark the master track.
+ *   Set to true when exporting the mixdown, false
+ *   otherwise.
+ */
 void
 tracklist_selections_mark_for_bounce (
-  TracklistSelections * ts);
+  TracklistSelections * ts,
+  bool                  with_parents,
+  bool                  mark_master);
 
 void
 tracklist_selections_free (

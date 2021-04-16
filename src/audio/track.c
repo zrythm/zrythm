@@ -1092,7 +1092,8 @@ track_write_to_midi_file (
   Track *     self,
   MIDI_FILE * mf)
 {
-  g_return_if_fail (track_has_piano_roll (self));
+  g_return_if_fail (
+    track_type_has_piano_roll (self->type));
 
   TrackLane * lane;
   for (int i = 0; i < self->num_lanes; i++)
@@ -1242,7 +1243,7 @@ track_generate_automation_tracks (
         }
     }
 
-  if (track_has_piano_roll (track))
+  if (track_type_has_piano_roll (track->type))
     {
       /* midi automatables */
       for (int i = 0; i < 16; i++)
@@ -1567,12 +1568,12 @@ track_remove_empty_last_lanes (
 /**
  * Returns if the Track should have a piano roll.
  */
-int
-track_has_piano_roll (
-  const Track * track)
+bool
+track_type_has_piano_roll (
+  const TrackType type)
 {
-  return track->type == TRACK_TYPE_MIDI ||
-    track->type == TRACK_TYPE_INSTRUMENT;
+  return type == TRACK_TYPE_MIDI ||
+    type == TRACK_TYPE_INSTRUMENT;
 }
 
 /**
@@ -1700,7 +1701,8 @@ track_freeze (
     {
       ExportSettings settings;
       track_mark_for_bounce (
-        self, true, true, false);
+        self, F_BOUNCE, F_MARK_REGIONS,
+        F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
       settings.mode = EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
         &settings, NULL, self->name);
@@ -3050,13 +3052,16 @@ track_get_plugin_at_slot (
  * @param mark_children Whether to mark all
  *   children tracks as well. Used when exporting
  *   stems on the specific track stem only.
+ * @param mark_parents Whether to mark all parent
+ *   tracks as well.
  */
 void
 track_mark_for_bounce (
   Track * self,
   bool    bounce,
   bool    mark_regions,
-  bool    mark_children)
+  bool    mark_children,
+  bool    mark_parents)
 {
   if (!track_type_has_channel (self->type))
     {
@@ -3068,6 +3073,10 @@ track_mark_for_bounce (
     self->name, bounce, mark_regions);
 
   self->bounce = bounce;
+
+  /* bounce directly to master if not marking
+   * parents*/
+  self->bounce_to_master = !mark_parents;
 
   if (mark_regions)
     {
@@ -3093,10 +3102,11 @@ track_mark_for_bounce (
     track_type_has_channel (self->type));
   Track * direct_out =
     channel_get_output_track (self->channel);
-  if (direct_out)
+  if (direct_out && mark_parents)
     {
       track_mark_for_bounce (
-        direct_out, bounce, mark_regions, false);
+        direct_out, bounce, F_NO_MARK_REGIONS,
+        F_NO_MARK_CHILDREN, F_MARK_PARENTS);
     }
 
   if (mark_children)
@@ -3107,7 +3117,8 @@ track_mark_for_bounce (
             TRACKLIST->tracks[self->children[i]];
 
           track_mark_for_bounce (
-            child, bounce, mark_regions, true);
+            child, bounce, mark_regions,
+            F_MARK_CHILDREN, F_NO_MARK_PARENTS);
         }
     }
 }

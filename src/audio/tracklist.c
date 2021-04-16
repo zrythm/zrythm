@@ -1198,7 +1198,8 @@ tracklist_mark_all_tracks_for_bounce (
     {
       Track * track = self->tracks[i];
       track_mark_for_bounce (
-        track, bounce, true, false);
+        track, bounce, F_MARK_REGIONS,
+        F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
     }
 }
 

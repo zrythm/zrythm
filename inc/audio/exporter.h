@@ -125,6 +125,16 @@ typedef struct ExportSettings
   /** Export mode. */
   ExportMode        mode;
 
+  /** Bounce with parent tracks (direct outs). */
+  bool              bounce_with_parents;
+
+  /**
+   * Bounce step (pre inserts, pre fader, post
+   * fader).
+   *
+   * Only valid if ExportSettings.bounce_with_parents
+   * is false.
+   */
   BounceStep        bounce_step;
 
   /** Positions in case of custom time range. */

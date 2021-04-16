@@ -402,7 +402,7 @@ create_model_for_types (
         -1);
     }
 
-  if (track_has_piano_roll (track))
+  if (track_type_has_piano_roll (track->type))
     {
       for (int i = 0; i < 16; i++)
         {

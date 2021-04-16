@@ -7,7 +7,7 @@ System Requirements
 
 Hardware
 --------
-- x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)
+- x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or aarch64 (ARMv8)
 
 Operating System
 ----------------

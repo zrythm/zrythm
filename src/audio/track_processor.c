@@ -248,7 +248,7 @@ track_processor_new (
       init_midi_port (self, 1);
 
       /* set up piano roll port */
-      if (track_has_piano_roll (tr) ||
+      if (track_type_has_piano_roll (tr->type) ||
           tr->type == TRACK_TYPE_CHORD)
         {
           self->piano_roll =
@@ -482,7 +482,7 @@ track_processor_disconnect_all (
     case TYPE_EVENT:
       port_disconnect_all (self->midi_in);
       port_disconnect_all (self->midi_out);
-      if (track_has_piano_roll (track))
+      if (track_type_has_piano_roll (track->type))
         port_disconnect_all (self->piano_roll);
       break;
     default:
@@ -860,7 +860,7 @@ track_processor_process (
     }
 
   /* set the piano roll contents to midi out */
-  if (track_has_piano_roll (tr) ||
+  if (track_type_has_piano_roll (tr->type) ||
       tr->type == TRACK_TYPE_CHORD)
     {
       Port * pr = self->piano_roll;

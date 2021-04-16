@@ -381,6 +381,10 @@ Args:
            (make-schema
              "ui"
              (list
+               (make-schema-key
+                 "bounce-with-parents" "b" "true"
+                 "Bounce with parents"
+                 "Whether to bounce with parent tracks (direct outputs).")
                (make-schema-key-with-enum
                  "bounce-step"
                  "bounce-step" "post-fader"

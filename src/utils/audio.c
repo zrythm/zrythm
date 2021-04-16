@@ -183,6 +183,41 @@ audio_frames_empty (
   return true;
 }
 
+bool
+audio_file_is_silent (
+  const char * filepath)
+{
+  SF_INFO sfinfo;
+  memset (&sfinfo, 0, sizeof (sfinfo));
+  sfinfo.format =
+    sfinfo.format | SF_FORMAT_PCM_16;
+  SNDFILE * sndfile =
+    sf_open (filepath, SFM_READ, &sfinfo);
+  g_return_val_if_fail (
+    sndfile && sfinfo.frames > 0, true);
+
+  long buf_size = sfinfo.frames * sfinfo.channels;
+  float * data =
+    calloc ((size_t) buf_size, sizeof (float));
+  sf_count_t frames_read =
+    sf_readf_float (sndfile, data, sfinfo.frames);
+  g_assert_cmpint (frames_read, ==, sfinfo.frames);
+  g_return_val_if_fail (
+    frames_read == sfinfo.frames, true);
+  g_debug (
+    "read %ld frames for %s", frames_read,
+    filepath);
+
+  bool is_empty =
+    audio_frames_empty (data, (size_t) buf_size);
+  free (data);
+
+  int ret = sf_close (sndfile);
+  g_return_val_if_fail (ret == 0, true);
+
+  return is_empty;
+}
+
 /**
  * Returns the number of CPU cores.
  */

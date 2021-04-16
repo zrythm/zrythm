@@ -19,6 +19,7 @@
 
 #include "audio/chord_track.h"
 #include "audio/engine.h"
+#include "audio/master_track.h"
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -539,9 +540,20 @@ tracklist_selections_paste_to_pos (
   return;
 }
 
+/**
+ * Marks the tracks to be bounced.
+ *
+ * @param with_parents Also mark all the track's
+ *   parents recursively.
+ * @param mark_master Also mark the master track.
+ *   Set to true when exporting the mixdown, false
+ *   otherwise.
+ */
 void
 tracklist_selections_mark_for_bounce (
-  TracklistSelections * ts)
+  TracklistSelections * ts,
+  bool                  with_parents,
+  bool                  mark_master)
 {
   engine_reset_bounce_mode (AUDIO_ENGINE);
 
@@ -549,7 +561,15 @@ tracklist_selections_mark_for_bounce (
     {
       Track * track = ts->tracks[i];
       track_mark_for_bounce (
-        track, true, true, true);
+        track, F_BOUNCE, F_MARK_REGIONS,
+        F_MARK_CHILDREN, with_parents);
+    }
+
+  if (mark_master)
+    {
+      track_mark_for_bounce (
+        P_MASTER_TRACK, F_BOUNCE, F_NO_MARK_REGIONS,
+        F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
     }
 }
 

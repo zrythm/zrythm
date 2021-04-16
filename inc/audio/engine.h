@@ -30,6 +30,7 @@
 #include "zrythm-config.h"
 
 #include "audio/control_room.h"
+#include "audio/exporter.h"
 #include "audio/ext_port.h"
 #include "audio/hardware_processor.h"
 #include "audio/pan.h"
@@ -738,6 +739,9 @@ typedef struct AudioEngine
    * normal.
    */
   BounceMode        bounce_mode;
+
+  /** Bounce step cache. */
+  BounceStep        bounce_step;
 
   /** The metronome. */
   Metronome *       metronome;

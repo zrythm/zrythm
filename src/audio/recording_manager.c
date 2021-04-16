@@ -459,7 +459,7 @@ recording_manager_handle_recording (
 
   /* add recorded track material to event queue */
 
-  if (track_has_piano_roll (tr))
+  if (track_type_has_piano_roll (tr->type))
     {
       MidiEvents * midi_events =
         track_processor->midi_in->midi_events;
@@ -1412,7 +1412,7 @@ handle_start_recording (
     {
       tr->recording_paused = false;
 
-      if (track_has_piano_roll (tr))
+      if (track_type_has_piano_roll (tr->type))
         {
           /* create region */
           int new_lane_pos = tr->num_lanes - 1;

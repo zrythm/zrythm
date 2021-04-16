@@ -324,11 +324,11 @@ bounce_region (
   /* bounce it */
   ExportSettings settings;
   memset (&settings, 0, sizeof (ExportSettings));
-  timeline_selections_mark_for_bounce (
-    TL_SELECTIONS);
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
     &settings, NULL, region->name);
+  timeline_selections_mark_for_bounce (
+    TL_SELECTIONS, settings.bounce_with_parents);
   position_add_ms (
     &settings.custom_end, 4000);
 
@@ -353,7 +353,7 @@ bounce_region (
       char * filepath =
         g_build_filename (
           TESTS_SRCDIR,
-          "test_export_midi_routed_to_instrument_track.ogg",
+          "test_mixdown_midi_routed_to_instrument_track.ogg",
           NULL);
       check_fingerprint_similarity (
         filepath, settings.file_uri, 97, 34);
@@ -381,7 +381,7 @@ test_bounce_with_bpm_automation ()
  * data is routed to an instrument track.
  */
 static void
-test_export_midi_routed_to_instrument_track ()
+test_mixdown_midi_routed_to_instrument_track ()
 {
 #ifdef HAVE_HELM
   test_helper_zrythm_init ();
@@ -447,7 +447,7 @@ test_export_midi_routed_to_instrument_track ()
   char * filepath =
     g_build_filename (
       TESTS_SRCDIR,
-      "test_export_midi_routed_to_instrument_track.ogg",
+      "test_mixdown_midi_routed_to_instrument_track.ogg",
       NULL);
   check_fingerprint_similarity (
     filepath, settings.file_uri, 97, 34);
@@ -521,11 +521,11 @@ test_bounce_region_with_first_note (void)
   /* bounce it */
   ExportSettings settings;
   memset (&settings, 0, sizeof (ExportSettings));
-  timeline_selections_mark_for_bounce (
-    TL_SELECTIONS);
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
     &settings, NULL, region->name);
+  timeline_selections_mark_for_bounce (
+    TL_SELECTIONS, settings.bounce_with_parents);
   position_add_ms (
     &settings.custom_end, 4000);
 
@@ -567,6 +567,110 @@ test_bounce_region_with_first_note (void)
 #endif
 }
 
+static void
+_test_bounce_midi_track_routed_to_instrument_track (
+  BounceStep bounce_step,
+  bool       with_parents)
+{
+#ifdef HAVE_HELM
+  test_helper_zrythm_init ();
+
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  char * midi_file =
+    g_build_filename (
+      MIDILIB_TEST_MIDI_FILES_PATH,
+      "M71.MID", NULL);
+
+  /* create the MIDI track from a MIDI file */
+  SupportedFile * file =
+    supported_file_new_from_path (midi_file);
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_MIDI, NULL, file,
+      TRACKLIST->num_tracks, PLAYHEAD, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * midi_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    midi_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* route the MIDI track to the instrument track */
+  ua =
+    tracklist_selections_action_new_edit_direct_out (
+      TRACKLIST_SELECTIONS, ins_track);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* bounce it */
+  ExportSettings settings;
+  memset (&settings, 0, sizeof (ExportSettings));
+  settings.mode = EXPORT_MODE_TRACKS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, __func__);
+  settings.time_range = TIME_RANGE_LOOP;
+  settings.bounce_with_parents = with_parents;
+  settings.bounce_step = bounce_step;
+
+  /* mark the track for bounce */
+  tracklist_selections_mark_for_bounce (
+    TRACKLIST_SELECTIONS,
+    settings.bounce_with_parents, F_NO_MARK_MASTER);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  while (settings.progress < 1.0)
+    {
+      g_message (
+        "progress: %f.1", settings.progress * 100.0);
+      g_usleep (1000);
+    }
+
+  g_thread_join (thread);
+
+  if (with_parents)
+    {
+      char * filepath =
+        g_build_filename (
+          TESTS_SRCDIR,
+          "test_mixdown_midi_routed_to_instrument_track.ogg",
+          NULL);
+      check_fingerprint_similarity (
+        filepath, settings.file_uri, 97, 34);
+      g_free (filepath);
+    }
+  else
+    {
+      /* assume silence */
+      g_assert_true (
+        audio_file_is_silent (settings.file_uri));
+    }
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
+static void
+test_bounce_midi_track_routed_to_instrument_track (void)
+{
+  _test_bounce_midi_track_routed_to_instrument_track (
+    BOUNCE_STEP_POST_FADER, true);
+  _test_bounce_midi_track_routed_to_instrument_track (
+    BOUNCE_STEP_POST_FADER, false);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -574,6 +678,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test bounce midi track routed to instrument track",
+    (GTestFunc) test_bounce_midi_track_routed_to_instrument_track);
   g_test_add_func (
     TEST_PREFIX "test bounce region with first note",
     (GTestFunc) test_bounce_region_with_first_note);
@@ -584,8 +691,8 @@ main (int argc, char *argv[])
     TEST_PREFIX "test bounce with bpm automation",
     (GTestFunc) test_bounce_with_bpm_automation);
   g_test_add_func (
-    TEST_PREFIX "test export midi routed to instrument track",
-    (GTestFunc) test_export_midi_routed_to_instrument_track);
+    TEST_PREFIX "test mixdown midi routed to instrument track",
+    (GTestFunc) test_mixdown_midi_routed_to_instrument_track);
   g_test_add_func (
     TEST_PREFIX "test export wav",
     (GTestFunc) test_export_wav);

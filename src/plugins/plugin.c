@@ -69,6 +69,66 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+NONNULL
+static void
+set_stereo_outs (
+  Plugin * pl)
+{
+  g_return_if_fail (
+    pl->setting && pl->setting->descr);
+
+  /* set the L/R outputs */
+  if (pl->setting->descr->num_audio_outs == 1)
+    {
+      /* if mono find the audio out and set it as
+       * both stereo out L and R */
+      for (int i = 0; i < pl->num_out_ports; i++)
+        {
+          Port * out_port = pl->out_ports[i];
+          if (out_port->id.type == TYPE_AUDIO)
+            {
+              out_port->id.flags |=
+                PORT_FLAG_STEREO_L;
+              out_port->id.flags |=
+                PORT_FLAG_STEREO_R;
+              pl->l_out = out_port;
+              pl->r_out = out_port;
+              break;
+            }
+        }
+    }
+  else if (pl->setting->descr->num_audio_outs > 1)
+    {
+      int last_index = 0;
+      for (int i = 0; i < pl->num_out_ports; i++)
+        {
+          Port * out_port = pl->out_ports[i];
+          if (out_port->id.type != TYPE_AUDIO)
+            continue;
+
+          if (last_index == 0)
+            {
+              out_port->id.flags |=
+                PORT_FLAG_STEREO_L;
+              pl->l_out = out_port;
+              last_index++;
+            }
+          else if (last_index == 1)
+            {
+              out_port->id.flags |=
+                PORT_FLAG_STEREO_R;
+              pl->r_out = out_port;
+              break;
+            }
+        }
+    }
+
+  if (pl->setting->descr->num_audio_outs > 0)
+    {
+      g_return_if_fail (pl->l_out && pl->r_out);
+    }
+}
+
 void
 plugin_init_loaded (
   Plugin * self,
@@ -1572,6 +1632,9 @@ plugin_instantiate (
   control_port_set_val_from_normalized (
     pl->enabled, 1.f, 0);
 
+  /* set the L/R outputs */
+  set_stereo_outs (pl);
+
   pl->instantiated = true;
 
   return 0;
@@ -2447,17 +2510,15 @@ plugin_connect_to_prefader (
   Plugin *  pl,
   Channel * ch)
 {
-  int i, last_index;
-  Port * out_port;
   Track * track =
     channel_get_track (ch);
   PortType type = track->out_signal_type;
 
   if (type == TYPE_EVENT)
     {
-      for (i = 0; i < pl->num_out_ports; i++)
+      for (int i = 0; i < pl->num_out_ports; i++)
         {
-          out_port = pl->out_ports[i];
+          Port * out_port = pl->out_ports[i];
           if (out_port->id.type ==
                 TYPE_EVENT &&
               out_port->id.flags2 &
@@ -2472,54 +2533,14 @@ plugin_connect_to_prefader (
     }
   else if (type == TYPE_AUDIO)
     {
-      if (pl->setting->descr->num_audio_outs == 1)
+      if (pl->l_out && pl->r_out)
         {
-          /* if mono find the audio out and connect to
-           * both stereo out L and R */
-          for (i = 0; i < pl->num_out_ports; i++)
-            {
-              out_port = pl->out_ports[i];
-
-              if (out_port->id.type ==
-                    TYPE_AUDIO)
-                {
-                  port_connect (
-                    out_port,
-                    ch->prefader->stereo_in->l, 1);
-                  port_connect (
-                    out_port,
-                    ch->prefader->stereo_in->r, 1);
-                  break;
-                }
-            }
-        }
-      else if (pl->setting->descr->num_audio_outs > 1)
-        {
-          last_index = 0;
-
-          for (i = 0; i < pl->num_out_ports; i++)
-            {
-              out_port = pl->out_ports[i];
-
-              if (out_port->id.type !=
-                    TYPE_AUDIO)
-                continue;
-
-              if (last_index == 0)
-                {
-                  port_connect (
-                    out_port,
-                    ch->prefader->stereo_in->l, 1);
-                  last_index++;
-                }
-              else if (last_index == 1)
-                {
-                  port_connect (
-                    out_port,
-                    ch->prefader->stereo_in->r, 1);
-                  break;
-                }
-            }
+          port_connect (
+            pl->l_out, ch->prefader->stereo_in->l,
+            true);
+          port_connect (
+            pl->r_out, ch->prefader->stereo_in->r,
+            true);
         }
     }
 }

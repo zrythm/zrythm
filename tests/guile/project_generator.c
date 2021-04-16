@@ -44,7 +44,7 @@ test_gen_project_from_string ()
       "zrythm_test_project_generator_XXXXXX", NULL);
   char * script_path =
     g_build_filename (
-      TESTS_SRC_ROOT_DIR, "scripts",
+      TESTS_SRC_ROOT_DIR, "tests", "scripts",
       "gen-test-project.scm", NULL);
   int res =
     guile_project_generator_generate_project_from_file (
@@ -74,4 +74,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

@@ -89,6 +89,10 @@ audio_frames_empty (
   float * src,
   size_t  num_frames);
 
+bool
+audio_file_is_silent (
+  const char * filepath);
+
 /**
  * Returns the number of CPU cores.
  */

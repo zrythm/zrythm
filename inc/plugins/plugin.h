@@ -133,6 +133,15 @@ typedef struct Plugin
    */
   Port *            gain;
 
+  /**
+   * Instrument left stereo output, for convenience.
+   *
+   * This port is already in \ref Plugin.out_ports
+   * if instrument.
+   */
+  Port *            l_out;
+  Port *            r_out;
+
   PluginBank **     banks;
   int               num_banks;
   size_t            banks_size;

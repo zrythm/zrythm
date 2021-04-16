@@ -210,11 +210,13 @@ fader_new (
       /* stereo in */
       self->stereo_in =
         stereo_ports_new_generic (
-        1, name,
-        type == FADER_TYPE_AUDIO_CHANNEL ?
-          PORT_OWNER_TYPE_FADER :
-          PORT_OWNER_TYPE_MONITOR_FADER,
-        self);
+        1, name, PORT_OWNER_TYPE_FADER, self);
+
+      /* set proper owner */
+      port_set_owner_fader (
+        self->stereo_in->l, self);
+      port_set_owner_fader (
+        self->stereo_in->r, self);
 
       if (type == FADER_TYPE_AUDIO_CHANNEL)
         {
@@ -235,11 +237,13 @@ fader_new (
       /* stereo out */
       self->stereo_out =
         stereo_ports_new_generic (
-        0, name,
-        type == FADER_TYPE_AUDIO_CHANNEL ?
-          PORT_OWNER_TYPE_FADER :
-          PORT_OWNER_TYPE_MONITOR_FADER,
-        self);
+        0, name, PORT_OWNER_TYPE_FADER, self);
+
+      /* set proper owner */
+      port_set_owner_fader (
+        self->stereo_out->l, self);
+      port_set_owner_fader (
+        self->stereo_out->r, self);
     }
 
   if (type == FADER_TYPE_MIDI_CHANNEL)

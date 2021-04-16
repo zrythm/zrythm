@@ -172,9 +172,14 @@ timeline_selections_can_be_pasted (
   Position *           pos,
   const int            idx);
 
+/**
+ * @param with_parents Also mark all the track's
+ *   parents recursively.
+ */
 void
 timeline_selections_mark_for_bounce (
-  TimelineSelections * ts);
+  TimelineSelections * ts,
+  bool                 with_parents);
 
 /**
  * Move the selected Regions to new Lanes.

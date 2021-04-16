@@ -1607,11 +1607,13 @@ on_quick_bounce_clicked (
   Track *       track)
 {
   ExportSettings settings;
-  tracklist_selections_mark_for_bounce (
-    TRACKLIST_SELECTIONS);
   settings.mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
     &settings, NULL, track->name);
+  tracklist_selections_mark_for_bounce (
+    TRACKLIST_SELECTIONS,
+    settings.bounce_with_parents,
+    F_NO_MARK_MASTER);
 
   /* start exporting in a new thread */
   GThread * thread =
@@ -1774,7 +1776,7 @@ show_context_menu (
     }
 
   /* add midi channel selectors */
-  if (track_has_piano_roll (track))
+  if (track_type_has_piano_roll (track->type))
     {
       menuitem =
         GTK_MENU_ITEM (

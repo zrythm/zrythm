@@ -31,6 +31,7 @@
 #include "audio/engine_jack.h"
 #include "audio/graph.h"
 #include "audio/hardware_processor.h"
+#include "audio/master_track.h"
 #include "audio/midi_event.h"
 #include "audio/pan.h"
 #include "audio/port.h"
@@ -1435,6 +1436,8 @@ port_get_all (
         tr, ports, size, is_dynamic, max_size,
         F_INCLUDE_PLUGINS);
     }
+
+#undef _ADD
 }
 
 #if 0
@@ -3259,12 +3262,24 @@ port_process (
   if (port->id.owner_type ==
         PORT_OWNER_TYPE_TRACK_PROCESSOR ||
       port->id.owner_type ==
-        PORT_OWNER_TYPE_TRACK)
+        PORT_OWNER_TYPE_TRACK ||
+      port->id.owner_type ==
+        PORT_OWNER_TYPE_FADER ||
+      port->id.owner_type ==
+        PORT_OWNER_TYPE_PREFADER ||
+      (port->id.owner_type ==
+        PORT_OWNER_TYPE_PLUGIN &&
+       port->id.plugin_id.slot_type ==
+         PLUGIN_SLOT_INSTRUMENT))
     {
       track = port_get_track (port, true);
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (track));
     }
+
+  bool is_stereo_port =
+    port->id.flags & PORT_FLAG_STEREO_L ||
+    port->id.flags & PORT_FLAG_STEREO_R;
 
   switch (port->id.type)
     {
@@ -3619,8 +3634,7 @@ port_process (
       /* if track output (to be shown on mixer) */
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_TRACK &&
-          (port->id.flags & PORT_FLAG_STEREO_L ||
-           port->id.flags & PORT_FLAG_STEREO_R) &&
+          is_stereo_port &&
           port->id.flow == FLOW_OUTPUT)
         {
           g_return_if_fail (
@@ -3652,6 +3666,104 @@ port_process (
                 }
             }
         }
+
+        /* if bouncing track directly to
+         * master (e.g., when bouncing the
+         * track on its own without parents),
+         * add the buffer to master */
+        if (G_UNLIKELY (
+              AUDIO_ENGINE->bounce_mode >
+                BOUNCE_OFF &&
+              (port->id.owner_type ==
+                 PORT_OWNER_TYPE_TRACK ||
+               port->id.owner_type ==
+                 PORT_OWNER_TYPE_TRACK_PROCESSOR ||
+               port->id.owner_type ==
+                 PORT_OWNER_TYPE_PREFADER ||
+               (port->id.owner_type ==
+                 PORT_OWNER_TYPE_PLUGIN &&
+                port->id.plugin_id.slot_type ==
+                  PLUGIN_SLOT_INSTRUMENT)) &&
+              is_stereo_port &&
+              port->id.flow == FLOW_OUTPUT &&
+              track && track->bounce_to_master))
+          {
+#if 0
+            char id_str[6000];
+            port_get_full_designation (port, id_str);
+            g_message ("%s:", id_str);
+#endif
+
+#define _ADD(l_or_r) \
+  dsp_add2 ( \
+    &P_MASTER_TRACK->channel->stereo_out-> \
+       l_or_r->buf[local_offset], \
+    &port->buf[local_offset], nframes)
+
+            Channel * ch;
+            Fader * prefader;
+            TrackProcessor * tp;
+            switch (AUDIO_ENGINE->bounce_step)
+              {
+              case BOUNCE_STEP_BEFORE_INSERTS:
+                tp = track->processor;
+                g_return_if_fail (tp);
+                if (track->type ==
+                      TRACK_TYPE_INSTRUMENT)
+                  {
+                    if (port == track->channel->instrument->l_out)
+                      {
+                        _ADD (l);
+                      }
+                    if (port == track->channel->instrument->r_out)
+                      {
+                        _ADD (r);
+                      }
+                  }
+                else if (tp->stereo_out &&
+                           track->bounce)
+                  {
+                    if (port == tp->stereo_out->l)
+                      {
+                        _ADD (l);
+                      }
+                    else if (port ==
+                               tp->stereo_out->r)
+                      {
+                        _ADD (r);
+                      }
+                  }
+                break;
+              case BOUNCE_STEP_PRE_FADER:
+                ch = track->channel;
+                g_return_if_fail (ch);
+                prefader = ch->prefader;
+                if (port == prefader->stereo_out->l)
+                  {
+                    _ADD (l);
+                  }
+                else if (port ==
+                           prefader->stereo_out->r)
+                  {
+                    _ADD (r);
+                  }
+                break;
+              case BOUNCE_STEP_POST_FADER:
+                ch = track->channel;
+                g_return_if_fail (ch);
+                if (port == ch->stereo_out->l)
+                  {
+                    _ADD (l);
+                  }
+                else if (port == ch->stereo_out->r)
+                  {
+                    _ADD (r);
+                  }
+                break;
+              }
+#undef _ADD
+
+          }
       break;
     case TYPE_CONTROL:
       {

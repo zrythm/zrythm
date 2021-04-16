@@ -813,7 +813,7 @@ graph_setup (
         }
       else if (tr->in_signal_type == TYPE_EVENT)
         {
-          if (track_has_piano_roll (tr) ||
+          if (track_type_has_piano_roll (tr->type) ||
               tr->type == TRACK_TYPE_CHORD)
             {
               /* connect piano roll */
@@ -834,7 +834,7 @@ graph_setup (
             graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
         }
-      if (track_has_piano_roll (tr))
+      if (track_type_has_piano_roll (tr->type))
         {
           for (int j = 0; j < 16; j++)
             {
