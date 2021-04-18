@@ -293,7 +293,8 @@ Args:
            '("notes" "numbers"))
          (print-enum
            "plugin-browser-tab"
-           '("collection" "category" "protocol"))
+           '("collection" "author" "category"
+             "protocol"))
          (print-enum
            "plugin-browser-filter"
            '("none" "instrument" "effect" "modulator"
@@ -497,6 +498,11 @@ Args:
                  "[]"
                  "Plugin browser collections"
                  "Tree paths of the selected collections in the plugin browser.")
+               (make-schema-key
+                 "plugin-browser-authors" "as"
+                 "[]"
+                 "Plugin browser authors"
+                 "Tree paths of the selected authors in the plugin browser.")
                (make-schema-key
                  "plugin-browser-categories" "as"
                  "[]"

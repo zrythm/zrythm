@@ -70,6 +70,7 @@ enum
 #define PROTOCOLS_ICON "protocol"
 #define COLLECTIONS_ICON "favorite"
 #define CATEGORIES_ICON "category"
+#define AUTHORS_ICON "user"
 
 void
 plugin_browser_widget_refresh_collections (
@@ -84,6 +85,11 @@ update_stack_switcher_emblems (
       gtk_tree_view_get_selection (
         GTK_TREE_VIEW (
           self->collection_tree_view)));
+  bool has_authors =
+    gtk_tree_selection_count_selected_rows (
+      gtk_tree_view_get_selection (
+        GTK_TREE_VIEW (
+          self->author_tree_view)));
   bool has_categories =
     gtk_tree_selection_count_selected_rows (
       gtk_tree_view_get_selection (
@@ -187,6 +193,9 @@ update_stack_switcher_emblems (
         (has_protocols &&
          string_is_equal (
            icon_name, PROTOCOLS_ICON)) ||
+        (has_authors &&
+         string_is_equal (
+           icon_name, AUTHORS_ICON)) ||
         (has_categories &&
          string_is_equal (
            icon_name, CATEGORIES_ICON));
@@ -246,6 +255,9 @@ save_tree_view_selections (
     self, self->collection_tree_view,
     "plugin-browser-collections");
   save_tree_view_selection (
+    self, self->author_tree_view,
+    "plugin-browser-authors");
+  save_tree_view_selection (
     self, self->category_tree_view,
     "plugin-browser-categories");
   save_tree_view_selection (
@@ -290,6 +302,9 @@ restore_tree_view_selections (
   restore_tree_view_selection (
     self, self->collection_tree_view,
     "plugin-browser-collections");
+  restore_tree_view_selection (
+    self, self->author_tree_view,
+    "plugin-browser-authors");
   restore_tree_view_selection (
     self, self->category_tree_view,
     "plugin-browser-categories");
@@ -348,10 +363,7 @@ on_row_activated (
 {
   GtkTreeModel * model = GTK_TREE_MODEL (user_data);
   GtkTreeIter iter;
-  gtk_tree_model_get_iter (
-    model,
-    &iter,
-    tp);
+  gtk_tree_model_get_iter (model, &iter, tp);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (
     model, &iter, PL_COLUMN_DESCR, &value);
@@ -396,6 +408,7 @@ visible_func (
 
   /* no filter, all visible */
   if (self->num_selected_categories == 0 &&
+      self->num_selected_authors == 0 &&
       self->num_selected_protocols == 0 &&
       !self->selected_collection &&
       !self->current_search &&
@@ -413,6 +426,7 @@ visible_func (
    * doesn't match */
   if (self->num_selected_categories > 0)
     {
+      visible = false;
       for (int i = 0;
            i < self->num_selected_categories; i++)
         {
@@ -426,6 +440,36 @@ visible_func (
 
       /* not visible if the category is not one
        * of the selected categories */
+      if (!visible)
+        return false;
+    }
+
+  /* not visible if author selected and plugin
+   * doesn't match */
+  if (self->num_selected_authors > 0)
+    {
+      visible = false;
+      if (descr->author)
+        {
+          for (int i = 0;
+               i < self->num_selected_authors; i++)
+            {
+              if (symap_map (
+                    self->symap, descr->author) ==
+                      self->selected_authors[i])
+                {
+                  visible = true;
+                  break;
+                }
+            }
+        }
+      else
+        {
+          visible = false;
+        }
+
+      /* not visible if the author is not one
+       * of the selected authors */
       if (!visible)
         return false;
     }
@@ -1158,6 +1202,75 @@ on_category_right_click (
   show_category_context_menu (self);
 }
 
+static void
+on_author_reset_activate (
+  GtkMenuItem *         menuitem,
+  PluginBrowserWidget * self)
+{
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      (self->author_tree_view));
+  gtk_tree_selection_unselect_all (selection);
+}
+
+static void
+show_author_context_menu (
+  PluginBrowserWidget * self)
+{
+  GtkWidget *menuitem;
+  GtkWidget * menu = gtk_menu_new();
+
+  /* FIXME this is allocating memory every time */
+
+  menuitem =
+    gtk_menu_item_new_with_label (_("Reset"));
+  gtk_widget_set_visible (menuitem, true);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu),
+    GTK_WIDGET (menuitem));
+
+  g_signal_connect (
+    G_OBJECT (menuitem), "activate",
+    G_CALLBACK (on_author_reset_activate),
+    self);
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
+on_author_right_click (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x_dbl,
+  gdouble                y_dbl,
+  PluginBrowserWidget *  self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkTreePath *path;
+  GtkTreeViewColumn *column;
+
+  int x, y;
+  gtk_tree_view_convert_widget_to_bin_window_coords (
+    GTK_TREE_VIEW (self->author_tree_view),
+    (int) x_dbl, (int) y_dbl, &x, &y);
+
+  if (!gtk_tree_view_get_path_at_pos (
+        GTK_TREE_VIEW (self->author_tree_view),
+        x, y,
+        &path, &column, NULL, NULL))
+    {
+      g_message ("no path at position %d %d", x, y);
+      return;
+    }
+
+  show_author_context_menu (self);
+}
+
 /**
  * Updates the label below the list of plugins with
  * the plugin info.
@@ -1189,6 +1302,24 @@ cat_selected_foreach (
     self->num_selected_categories++] =
       plugin_descriptor_string_to_category (
         str);
+
+  g_free (str);
+}
+
+static void
+author_selected_foreach (
+  GtkTreeModel *model,
+  GtkTreePath *path,
+  GtkTreeIter *iter,
+  PluginBrowserWidget * self)
+{
+  char * str;
+  gtk_tree_model_get (
+    model, iter, 0, &str, -1);
+
+  self->selected_authors[
+    self->num_selected_authors++] =
+      symap_map (self->symap, str);
 
   g_free (str);
 }
@@ -1230,6 +1361,19 @@ on_selection_changed (
         ts,
         (GtkTreeSelectionForeachFunc)
           cat_selected_foreach,
+        self);
+
+      gtk_tree_model_filter_refilter (
+        self->plugin_tree_model);
+    }
+  else if (model == self->author_tree_model)
+    {
+      self->num_selected_authors = 0;
+
+      gtk_tree_selection_selected_foreach (
+        ts,
+        (GtkTreeSelectionForeachFunc)
+          author_selected_foreach,
         self);
 
       gtk_tree_model_filter_refilter (
@@ -1395,6 +1539,32 @@ create_model_for_categories ()
     {
       const gchar * name =
         PLUGIN_MANAGER->plugin_categories[i];
+
+      // Add a new row to the model
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter, 0, name, -1);
+    }
+
+  return GTK_TREE_MODEL (list_store);
+}
+
+static GtkTreeModel *
+create_model_for_authors ()
+{
+  /* plugin author */
+  GtkListStore * list_store =
+    gtk_list_store_new (
+      1, G_TYPE_STRING);
+
+  GtkTreeIter iter;
+
+  for (int i = 0;
+       i < PLUGIN_MANAGER->num_plugin_authors;
+       i++)
+    {
+      const gchar * name =
+        PLUGIN_MANAGER->plugin_authors[i];
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
@@ -1762,6 +1932,13 @@ on_visible_child_changed (
         PLUGIN_BROWSER_TAB_COLLECTION);
     }
   else if (child ==
+             GTK_WIDGET (self->author_scroll))
+    {
+      S_UI_SET_ENUM (
+        "plugin-browser-tab",
+        PLUGIN_BROWSER_TAB_AUTHOR);
+    }
+  else if (child ==
            GTK_WIDGET (self->category_scroll))
     {
       S_UI_SET_ENUM (
@@ -1957,12 +2134,25 @@ on_key_release (
   return false;
 }
 
+static void
+finalize (
+  PluginBrowserWidget * self)
+{
+  symap_free (self->symap);
+
+  G_OBJECT_CLASS (
+    plugin_browser_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
 PluginBrowserWidget *
 plugin_browser_widget_new ()
 {
   PluginBrowserWidget * self =
     g_object_new (
       PLUGIN_BROWSER_WIDGET_TYPE, NULL);
+
+  self->symap = symap_new ();
 
   gtk_label_set_xalign (self->plugin_info, 0);
 
@@ -1989,6 +2179,26 @@ plugin_browser_widget_new ()
     self, self->protocol_tree_view,
     GTK_TREE_MODEL (self->protocol_tree_model),
     F_MULTI_SELECT, F_NO_DND);
+
+  /* setup authors */
+  self->author_tree_model =
+    create_model_for_authors ();
+  tree_view_setup (
+    self, self->author_tree_view,
+    self->author_tree_model,
+    F_MULTI_SELECT, F_NO_DND);
+
+  /* connect right click handler */
+  mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->author_tree_view)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (mp), "pressed",
+    G_CALLBACK (on_author_right_click), self);
 
   /* setup categories */
   self->category_tree_model =
@@ -2050,6 +2260,11 @@ plugin_browser_widget_new ()
       gtk_stack_set_visible_child (
         self->stack,
         GTK_WIDGET (self->collection_scroll));
+      break;
+    case PLUGIN_BROWSER_TAB_AUTHOR:
+      gtk_stack_set_visible_child (
+        self->stack,
+        GTK_WIDGET (self->author_scroll));
       break;
     case PLUGIN_BROWSER_TAB_CATEGORY:
       gtk_stack_set_visible_child (
@@ -2142,10 +2357,12 @@ plugin_browser_widget_class_init (
   BIND_CHILD (collection_scroll);
   BIND_CHILD (protocol_scroll);
   BIND_CHILD (category_scroll);
+  BIND_CHILD (author_scroll);
   BIND_CHILD (plugin_scroll);
   BIND_CHILD (collection_tree_view);
   BIND_CHILD (protocol_tree_view);
   BIND_CHILD (category_tree_view);
+  BIND_CHILD (author_tree_view);
   BIND_CHILD (plugin_tree_view);
   BIND_CHILD (browser_bot);
   BIND_CHILD (plugin_info);
@@ -2166,6 +2383,10 @@ plugin_browser_widget_class_init (
   BIND_SIGNAL (toggles_changed);
 
 #undef BIND_SIGNAL
+
+  GObjectClass * goklass = G_OBJECT_CLASS (_klass);
+  goklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -2190,15 +2411,19 @@ plugin_browser_widget_init (
   GValue iconval1 = G_VALUE_INIT;
   GValue iconval2 = G_VALUE_INIT;
   GValue iconval3 = G_VALUE_INIT;
+  GValue iconval4 = G_VALUE_INIT;
   g_value_init (&iconval1, G_TYPE_STRING);
   g_value_init (&iconval2, G_TYPE_STRING);
   g_value_init (&iconval3, G_TYPE_STRING);
+  g_value_init (&iconval4, G_TYPE_STRING);
   g_value_set_string (
     &iconval1, COLLECTIONS_ICON);
   g_value_set_string(
-    &iconval2, CATEGORIES_ICON);
+    &iconval2, AUTHORS_ICON);
   g_value_set_string(
-    &iconval3, PROTOCOLS_ICON);
+    &iconval3, CATEGORIES_ICON);
+  g_value_set_string(
+    &iconval4, PROTOCOLS_ICON);
 
   gtk_container_child_set_property (
     GTK_CONTAINER (self->stack),
@@ -2212,27 +2437,38 @@ plugin_browser_widget_init (
     "title", &iconval1);
   gtk_container_child_set_property (
     GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->category_scroll),
+    GTK_WIDGET (self->author_scroll),
     "icon-name", &iconval2);
   g_value_set_string (
-    &iconval2, _("Category"));
+    &iconval2, _("Author"));
   gtk_container_child_set_property (
     GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->category_scroll),
+    GTK_WIDGET (self->author_scroll),
     "title", &iconval2);
   gtk_container_child_set_property (
     GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->protocol_scroll),
+    GTK_WIDGET (self->category_scroll),
     "icon-name", &iconval3);
   g_value_set_string (
-    &iconval3, _("Protocol"));
+    &iconval3, _("Category"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->category_scroll),
+    "title", &iconval3);
   gtk_container_child_set_property (
     GTK_CONTAINER (self->stack),
     GTK_WIDGET (self->protocol_scroll),
-    "title", &iconval3);
+    "icon-name", &iconval4);
+  g_value_set_string (
+    &iconval4, _("Protocol"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->protocol_scroll),
+    "title", &iconval4);
   g_value_unset (&iconval1);
   g_value_unset (&iconval2);
   g_value_unset (&iconval3);
+  g_value_unset (&iconval4);
 
   GList *children, *iter;
   children =

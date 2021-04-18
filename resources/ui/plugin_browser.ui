@@ -54,6 +54,16 @@
               </object>
             </child>
             <child>
+              <object class="GtkScrolledWindow" id="author_scroll">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkTreeView" id="author_tree_view">
+                    <property name="visible">1</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
               <object class="GtkScrolledWindow" id="category_scroll">
                 <property name="visible">True</property>
                 <child>

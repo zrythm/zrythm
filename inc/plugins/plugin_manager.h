@@ -70,12 +70,16 @@ typedef struct PluginManager
    *
    * TODO allocate.
    */
-  PluginDescriptor *     plugin_descriptors[40000];
-  int                    num_plugins;
+  PluginDescriptor *  plugin_descriptors[40000];
+  int                 num_plugins;
 
   /** Plugin categories. */
-  char *                 plugin_categories[500];
-  int                    num_plugin_categories;
+  char *              plugin_categories[500];
+  int                 num_plugin_categories;
+
+  /** Plugin authors. */
+  char *              plugin_authors[6000];
+  int                 num_plugin_authors;
 
   LilvWorld *         lilv_world;
   const LilvPlugins * lilv_plugins;

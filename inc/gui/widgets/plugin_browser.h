@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,6 +27,7 @@
 #define __GUI_WIDGETS_PLUGIN_BROWSER_H__
 
 #include "plugins/plugin.h"
+#include "utils/symap.h"
 
 #include <gtk/gtk.h>
 
@@ -53,6 +54,7 @@ typedef struct PluginCollection PluginCollection;
 typedef enum
 {
   PLUGIN_BROWSER_TAB_COLLECTION,
+  PLUGIN_BROWSER_TAB_AUTHOR,
   PLUGIN_BROWSER_TAB_CATEGORY,
   PLUGIN_BROWSER_TAB_PROTOCOL,
 } PluginBrowserTab;
@@ -88,12 +90,14 @@ typedef struct _PluginBrowserWidget
 
   /* The scrolls for each tree view */
   GtkScrolledWindow *  collection_scroll;
+  GtkScrolledWindow *  author_scroll;
   GtkScrolledWindow *  category_scroll;
   GtkScrolledWindow *  protocol_scroll;
   GtkScrolledWindow *  plugin_scroll;
 
   /* The tree views */
   GtkTreeView *        collection_tree_view;
+  GtkTreeView *        author_tree_view;
   GtkTreeView *        category_tree_view;
   GtkTreeView *        protocol_tree_view;
   GtkTreeView *        plugin_tree_view;
@@ -114,6 +118,10 @@ typedef struct _PluginBrowserWidget
    * selected Plugin. */
   GtkLabel *           plugin_info;
 
+  /** Symbol IDs of selected authors. */
+  uint32_t             selected_authors[600];
+  int                  num_selected_authors;
+
   /** Selected categories. */
   ZPluginCategory      selected_categories[600];
   int                  num_selected_categories;
@@ -126,6 +134,7 @@ typedef struct _PluginBrowserWidget
   PluginCollection *   selected_collection;
 
   GtkTreeModel *       collection_tree_model;
+  GtkTreeModel *       author_tree_model;
   GtkTreeModelSort *   protocol_tree_model;
   GtkTreeModel *       category_tree_model;
   GtkTreeModelFilter * plugin_tree_model;
@@ -168,6 +177,9 @@ typedef struct _PluginBrowserWidget
 
   /** Current search string. */
   char *               current_search;
+
+  /** Symbol map for string interning. */
+  Symap *              symap;
 } PluginBrowserWidget;
 
 /**

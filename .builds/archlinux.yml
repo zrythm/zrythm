@@ -5,6 +5,7 @@ packages:
   - cmake
   - chromaprint
   - cppcheck
+  - dpf-plugins
   - fftw
   - ffmpeg
   - gtk3

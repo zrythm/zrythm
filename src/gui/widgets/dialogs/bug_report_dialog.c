@@ -50,8 +50,10 @@ bug_report_dialog_new (
   char * log =
     log_get_last_n_lines (LOG, 60);
   char * undo_stack =
-    undo_stack_get_as_string (
-      UNDO_MANAGER->undo_stack, 12);
+    PROJECT && UNDO_MANAGER ?
+      undo_stack_get_as_string (
+        UNDO_MANAGER->undo_stack, 12) :
+      g_strdup ("<undo stack uninitialized>");
 
   /* %23 is hash, %0A is new line */
   char ver_with_caps[2000];
