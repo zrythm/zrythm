@@ -305,6 +305,9 @@ ext_lv2_plugins = {
   'calf_compressor': [
     'Calf Compressor',
     'http://calf.sourceforge.net/plugins/Compressor'],
+  'mverb': [
+    'MVerb',
+    'http://distrho.sf.net/plugins/MVerb'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}

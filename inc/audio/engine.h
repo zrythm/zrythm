@@ -743,6 +743,10 @@ typedef struct AudioEngine
   /** Bounce step cache. */
   BounceStep        bounce_step;
 
+  /** Whether currently bouncing with parents
+   * (cache). */
+  bool              bounce_with_parents;
+
   /** The metronome. */
   Metronome *       metronome;
 

@@ -327,6 +327,8 @@ export_audio (
     info->mode == EXPORT_MODE_FULL ?
       BOUNCE_OFF : BOUNCE_ON;
   AUDIO_ENGINE->bounce_step = info->bounce_step;
+  AUDIO_ENGINE->bounce_with_parents =
+    info->bounce_with_parents;
 
   /* set jack freewheeling mode and temporarily
    * disable transport link */
@@ -478,6 +480,7 @@ export_audio (
 #endif
 
   AUDIO_ENGINE->bounce_mode = BOUNCE_OFF;
+  AUDIO_ENGINE->bounce_with_parents = false;
   transport_move_playhead (
     TRANSPORT, &prev_playhead_pos, F_PANIC,
     F_NO_SET_CUE_POINT,

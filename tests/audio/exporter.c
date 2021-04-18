@@ -671,6 +671,143 @@ test_bounce_midi_track_routed_to_instrument_track (void)
     BOUNCE_STEP_POST_FADER, false);
 }
 
+static void
+_test_bounce_instrument_track (
+  BounceStep bounce_step,
+  bool       with_parents)
+{
+#if defined (HAVE_HELM) && defined (HAVE_MVERB)
+  test_helper_zrythm_init ();
+
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* create a MIDI region on the instrument track */
+  char * midi_file =
+    g_build_filename (
+      MIDILIB_TEST_MIDI_FILES_PATH,
+      "M71.MID", NULL);
+  ZRegion * r =
+    midi_region_new_from_midi_file (
+      PLAYHEAD, midi_file, ins_track->pos, 0, 0, 0);
+  g_free (midi_file);
+  track_add_region (
+    ins_track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* add MVerb insert */
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
+      MVERB_BUNDLE, MVERB_URI, false);
+  ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_INSERT, ins_track->pos, 0,
+      setting, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* adjust fader */
+  Fader * fader = track_get_fader (ins_track, true);
+  Port * port = fader->amp;
+  ua =
+    port_action_new (
+      PORT_ACTION_SET_CONTROL_VAL, &port->id, 0.5f,
+      false);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpfloat_with_epsilon (
+    port->control, 0.5f, 0.00001f);
+
+  /* bounce it */
+  ExportSettings settings;
+  memset (&settings, 0, sizeof (ExportSettings));
+  settings.mode = EXPORT_MODE_TRACKS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, __func__);
+  settings.time_range = TIME_RANGE_LOOP;
+  settings.bounce_with_parents = with_parents;
+  settings.bounce_step = bounce_step;
+
+  /* mark the track for bounce */
+  tracklist_selections_mark_for_bounce (
+    TRACKLIST_SELECTIONS,
+    settings.bounce_with_parents, F_NO_MARK_MASTER);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  while (settings.progress < 1.0)
+    {
+      g_message (
+        "progress: %f.1", settings.progress * 100.0);
+      g_usleep (1000);
+    }
+
+  g_thread_join (thread);
+
+#define CHECK_SAME_AS_FILE(dirname,x,match_rate) \
+  char * filepath = \
+    g_build_filename (dirname, x, NULL); \
+  check_fingerprint_similarity ( \
+    filepath, settings.file_uri, match_rate, 34); \
+  g_free (filepath)
+
+  if (with_parents ||
+        bounce_step == BOUNCE_STEP_POST_FADER)
+    {
+      CHECK_SAME_AS_FILE (
+        TESTS_BUILDDIR,
+        "test_mixdown_midi_routed_to_instrument_track_w_reverb_half_gain.ogg", 94);
+    }
+  else if (bounce_step ==
+             BOUNCE_STEP_BEFORE_INSERTS)
+    {
+      CHECK_SAME_AS_FILE (
+        TESTS_SRCDIR,
+        "test_mixdown_midi_routed_to_instrument_track.ogg", 97);
+    }
+  else if (bounce_step ==
+             BOUNCE_STEP_PRE_FADER)
+    {
+      CHECK_SAME_AS_FILE (
+        TESTS_BUILDDIR,
+        "test_mixdown_midi_routed_to_instrument_track_w_reverb.ogg", 88);
+    }
+
+#undef CHECK_SAME_AS_FILE
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
+static void
+test_bounce_instrument_track (void)
+{
+  _test_bounce_instrument_track (
+    BOUNCE_STEP_POST_FADER, true);
+  _test_bounce_instrument_track (
+    BOUNCE_STEP_BEFORE_INSERTS, false);
+  _test_bounce_instrument_track (
+    BOUNCE_STEP_PRE_FADER, false);
+  _test_bounce_instrument_track (
+    BOUNCE_STEP_POST_FADER, false);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -678,6 +815,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test instrument track",
+    (GTestFunc) test_bounce_instrument_track);
   g_test_add_func (
     TEST_PREFIX "test bounce midi track routed to instrument track",
     (GTestFunc) test_bounce_midi_track_routed_to_instrument_track);

@@ -3667,10 +3667,30 @@ port_process (
             }
         }
 
+        /* if bouncing tracks directly to
+         * master (e.g., when bouncing the
+         * track on its own without parents),
+         * clear master input */
+        if (G_UNLIKELY (
+              AUDIO_ENGINE->bounce_mode >
+                BOUNCE_OFF &&
+              !AUDIO_ENGINE->bounce_with_parents &&
+              (port ==
+                 P_MASTER_TRACK->processor->stereo_in->l ||
+               port ==
+                 P_MASTER_TRACK->processor->stereo_in->r)))
+
+          {
+            dsp_fill (
+              &port->buf[local_offset],
+              AUDIO_ENGINE->denormal_prevention_val,
+              nframes);
+          }
+
         /* if bouncing track directly to
          * master (e.g., when bouncing the
          * track on its own without parents),
-         * add the buffer to master */
+         * add the buffer to master output */
         if (G_UNLIKELY (
               AUDIO_ENGINE->bounce_mode >
                 BOUNCE_OFF &&
@@ -3751,13 +3771,18 @@ port_process (
               case BOUNCE_STEP_POST_FADER:
                 ch = track->channel;
                 g_return_if_fail (ch);
-                if (port == ch->stereo_out->l)
+                if (track->type !=
+                      TRACK_TYPE_MASTER)
                   {
-                    _ADD (l);
-                  }
-                else if (port == ch->stereo_out->r)
-                  {
-                    _ADD (r);
+                    if (port == ch->stereo_out->l)
+                      {
+                        _ADD (l);
+                      }
+                    else if (port ==
+                               ch->stereo_out->r)
+                      {
+                        _ADD (r);
+                      }
                   }
                 break;
               }
