@@ -10,13 +10,14 @@
 # Olivier Humbert <trebmuh@tuxfamily.org>, 2020, 2021.
 # Romain Alb <romain.alb@lilo.org>, 2021.
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
+# Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-03 15:37+0100\n"
-"PO-Revision-Date: 2021-04-04 15:26+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2021-04-11 23:05+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -70,7 +71,7 @@ msgstr "Objet d'accord"
 #: inc/schemas/gui/backend/arranger_object.h:62
 #: inc/gui/backend/arranger_object.h:109
 msgid "Scale Object"
-msgstr "Échelle de l'objet"
+msgstr "Objet d'échelle"
 
 #: inc/schemas/gui/backend/arranger_object.h:64
 #: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:172
@@ -585,7 +586,7 @@ msgstr ""
 "  --zpj-to-yaml a.zpj > b.yaml Convertir un a.zpj en YAML et sauvegarder "
 "sous b.yaml\n"
 "  --gen-projet a.scm -o monprojet Générer monprojet à partir de a.scm\n"
-"  -p --pretty affichage agréable des paramètres actuels\n"
+"  -p --pretty Affichage agréable des paramètres actuels\n"
 "\n"
 "Veuillez signaler les problèmes à %s\n"
 
@@ -664,7 +665,7 @@ msgstr "Greffon AU ignoré à %u"
 #: src/plugins/plugin.c:153
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
-msgstr "Instanciation échouée pour le plugin `%s`.Désactivation..."
+msgstr "Instanciation échouée pour le plugin `%s`. Désactivation..."
 
 #: src/plugins/plugin.c:201
 msgid "[Zrythm] Enabled"

@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-03-17 09:46+0000\n"
-"PO-Revision-Date: 2021-02-08 10:50+0000\n"
-"Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
+"PO-Revision-Date: 2021-04-13 00:27+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/user-manual/"
+"el/>\n"
 "Language: el\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.6-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -1300,7 +1301,7 @@ msgstr "Εκθετική καμπύλη."
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr "Superellipse"
+msgstr "Υπερέλλειψη"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -1963,7 +1964,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:65
 msgid "Duplicate"
-msgstr "Δημιουργία διπλότυπου"
+msgstr "Δημιουργία διπλοτύπου"
 
 #: ../../editing/common-operations.rst:66
 msgid ""
@@ -4750,7 +4751,7 @@ msgstr "Ηχογράφηση ήχου & MIDI"
 #: ../../tracks/audio-track.rst:47 ../../tracks/inspector-page.rst:42
 #: ../../tracks/instrument-track.rst:59 ../../tracks/midi-track.rst:61
 msgid "Inputs"
-msgstr "Εισαγόμενα"
+msgstr "Είσοδοι"
 
 #: ../../playback-and-recording/recording.rst:42
 msgid ""
@@ -5431,7 +5432,7 @@ msgstr "Ελέγχει αν το πρόσθετο είναι ενεργό ή σ�
 
 #: ../../plugins-files/plugins/plugin-info.rst:68
 msgid "Gain"
-msgstr "Απολαβή (gain)"
+msgstr "Απολαβή"
 
 #: ../../plugins-files/plugins/plugin-info.rst:69
 msgid "Increases the output volume of the plugin (if applicable)."
@@ -8069,7 +8070,7 @@ msgstr "Περιοχές ήχων"
 
 #: ../../tracks/track-types.rst:26
 msgid "Audio Group"
-msgstr "Ομάδα ήχων"
+msgstr "Ομάδα ήχου"
 
 #: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:34
 #: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:54
@@ -8090,7 +8091,7 @@ msgstr "Κανένα"
 
 #: ../../tracks/track-types.rst:31
 msgid "Audio FX"
-msgstr "Εφέ ήχων"
+msgstr "Εφέ ήχου"
 
 #: ../../tracks/track-types.rst:36
 msgid "Chord"
@@ -8111,7 +8112,7 @@ msgstr "Δείκτης"
 
 #: ../../tracks/track-types.rst:51
 msgid "Master"
-msgstr "Master"
+msgstr "Μάστερ"
 
 #: ../../tracks/track-types.rst:66
 msgid "MIDI Group"
@@ -8651,7 +8652,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Log Viewer"
-msgstr "Προβολέας αρχείου καταγραφής"
+msgstr "Προβολέας αρχείου καταγραφής σφαλμάτων"
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Displays the log, which gets updated real-time."
@@ -9317,4 +9318,3 @@ msgstr ""
 #~ "<https://bittube.video/videos/watch/playlist/69bc340a-d0b7"
 #~ "-403d-"
 #~ "83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-aae7-02713b7c1460>`_."
-
