@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-03 15:37+0100\n"
-"PO-Revision-Date: 2021-04-11 23:05+0000\n"
-"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"PO-Revision-Date: 2021-04-13 00:27+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -665,7 +665,7 @@ msgstr "Greffon AU ignoré à %u"
 #: src/plugins/plugin.c:153
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
-msgstr "Instanciation échouée pour le plugin `%s`. Désactivation..."
+msgstr "Instanciation échouée pour le greffon `%s`. Désactivation..."
 
 #: src/plugins/plugin.c:201
 msgid "[Zrythm] Enabled"
@@ -746,7 +746,7 @@ msgstr "Type de widget inconnu pour value\n"
 #: src/plugins/lv2_plugin.c:2646
 #, c-format
 msgid "Failed to find plugin with URI: %s"
-msgstr "Impossible de trouver le plugin avec URI:%s"
+msgstr "Impossible de trouver le greffon avec l'URI:%s"
 
 #: src/plugins/lv2_plugin.c:2695
 #, c-format
@@ -2174,7 +2174,7 @@ msgstr "_Ouvrir"
 
 #: src/utils/dialogs.c:67
 msgid "Overwrite Plugin"
-msgstr "Écraser le plugin"
+msgstr "Écraser le greffon"
 
 #: src/utils/dialogs.c:81
 msgid "A plugin already exists at the selected slot. Overwrite it?"
@@ -2864,7 +2864,7 @@ msgstr "Supprimer le greffon"
 #: src/actions/mixer_selections_action.c:1058
 #, c-format
 msgid "Delete %d Plugins"
-msgstr "Effacer %d Greffons"
+msgstr "Effacer %d greffons"
 
 #: src/actions/mixer_selections_action.c:1065
 #, c-format
@@ -2874,7 +2874,7 @@ msgstr "Déplacer %s"
 #: src/actions/mixer_selections_action.c:1072
 #, c-format
 msgid "Move %d Plugins"
-msgstr "Déplacer %d Greffons"
+msgstr "Déplacer %d greffons"
 
 #: src/actions/mixer_selections_action.c:1079
 #, c-format
@@ -2884,7 +2884,7 @@ msgstr "Copier %s"
 #: src/actions/mixer_selections_action.c:1086
 #, c-format
 msgid "Copy %d Plugins"
-msgstr "Copier %d Greffons"
+msgstr "Copier %d greffons"
 
 #: src/actions/range_action.c:604 resources/ui/range_action_buttons.ui:36
 msgid "Insert silence"
@@ -4428,7 +4428,7 @@ msgstr "Position du séparateur de navigateur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Height of the top part of the plugin/file browser."
-msgstr "Hauteur de la partie haute du navigateur de Greffons/Fichiers."
+msgstr "Hauteur de la partie haute du navigateur de greffon/fichier."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:319
 msgid "Left panel divider position"
@@ -4907,8 +4907,8 @@ msgid ""
 "The search paths to scan for VST plugins in. Duplicate paths will be "
 "deduplicated."
 msgstr ""
-"Les chemins de recherche pour rechercher les plugins VST. Les chemins "
-"dupliqués seront dédupliqués."
+"Les chemins de recherche pour rechercher les greffons VST. Les chemins "
+"dupliqués seront dé-dupliqués."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:670
 msgid "SFZ instruments"
