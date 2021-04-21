@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-03-17 09:46+0000\n"
-"PO-Revision-Date: 2021-03-18 12:18+0000\n"
+"PO-Revision-Date: 2021-04-04 15:26+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -1331,7 +1331,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr "Superellipse"
+msgstr "Super-ellipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."

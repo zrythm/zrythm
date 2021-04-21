@@ -15,10 +15,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-03 15:37+0100\n"
-"PO-Revision-Date: 2021-03-28 13:30+0000\n"
+"PO-Revision-Date: 2021-04-04 15:26+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -97,7 +97,7 @@ msgstr "Exponentiel"
 #: inc/schemas/audio/curve.h:46 inc/audio/curve.h:95 src/audio/curve.c:50
 #, c-format
 msgid "Superellipse"
-msgstr "Superellipse"
+msgstr "Super-ellipse"
 
 #: inc/schemas/audio/curve.h:48 inc/audio/curve.h:97
 #: src/gui/widgets/timeline_arranger.c:1096 src/audio/curve.c:53
@@ -628,7 +628,7 @@ msgstr "sortie CV"
 
 #: src/plugins/plugin_manager.c:370
 msgid "Error loading LV2 bundle dir: "
-msgstr "Erreur lors du chargement du répertoire bundle LV2: "
+msgstr "Erreur lors du chargement du répertoire bundle LV2 : "
 
 #: src/plugins/plugin_manager.c:1060
 #, c-format
@@ -2395,11 +2395,11 @@ msgstr "BPM"
 
 #: src/audio/tempo_track.c:70
 msgid "Beats per bar"
-msgstr ""
+msgstr "Battements par mesure"
 
 #: src/audio/tempo_track.c:91
 msgid "Beat unit"
-msgstr ""
+msgstr "Unité de battement"
 
 #: src/audio/engine.c:445
 #, c-format
@@ -2812,11 +2812,11 @@ msgstr "Changer le tempo"
 
 #: src/actions/transport_action.c:210
 msgid "Beats per bar change"
-msgstr ""
+msgstr "Battements par changement de mesure"
 
 #: src/actions/transport_action.c:212
 msgid "Beat unit change"
-msgstr ""
+msgstr "Changement d'unité de battement"
 
 #: src/actions/channel_send_action.c:202
 msgid "Connect sidechain"
@@ -3946,11 +3946,11 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
-"Les fichiers suivants seront créés:\n"
+"Les fichiers suivants seront créés :\n"
 "\n"
 "Master.wav\n"
 "\n"
-"Dans le répertoire:\n"
+"Dans le répertoire :\n"
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
@@ -4368,7 +4368,7 @@ msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
 msgstr ""
-"La notation de la note utilisée dans le piano-roll - index de hauteur ou de "
+"La notation de note utilisée dans le piano-roll - index de hauteur ou de "
 "notes MIDI (Do, Do#, etc.)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:290
