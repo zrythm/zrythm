@@ -189,6 +189,7 @@ tracklist_print_tracks (
  * @param publish_events Publish UI events.
  * @param recalc_graph Recalculate routing graph.
  */
+NONNULL
 void
 tracklist_insert_track (
   Tracklist * self,
@@ -209,6 +210,7 @@ tracklist_insert_track (
  *   to the UI.
  * @param recalc_graph Recalculate the mixer graph.
  */
+NONNULL
 void
 tracklist_remove_track (
   Tracklist * self,

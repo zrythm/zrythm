@@ -272,7 +272,8 @@ setup_treeview (
 
       if (channel_send_is_enabled (send) &&
           target_track ==
-            channel_send_get_target_track (send))
+            channel_send_get_target_track (
+               send, NULL))
         {
           select_idx = count;
         }

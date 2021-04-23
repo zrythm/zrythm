@@ -469,6 +469,9 @@ typedef struct Track
   /** Whether this is a project track (as opposed
    * to a clone used in actions). */
   bool                 is_project;
+
+  /** Whether currently disconnecting. */
+  bool                 disconnecting;
 } Track;
 
 static const cyaml_schema_field_t

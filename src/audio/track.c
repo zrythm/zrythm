@@ -885,7 +885,7 @@ track_validate (
     }
   free (ports);
 
-  /* verify output is not itself */
+  /* verify output and sends */
   if (self->channel)
     {
       Channel * ch = self->channel;
@@ -894,12 +894,24 @@ track_validate (
       g_return_val_if_fail (
         out_track != self, false);
 
+      if (TRACK_CAN_BE_GROUP_TARGET (self))
+        {
+          group_target_track_validate (self);
+        }
+
       /* verify plugins */
       if (ch->instrument)
         {
           g_return_val_if_fail (
             plugin_validate (
               ch->instrument), false);
+        }
+
+      /* verify sends */
+      for (int i = 0; i < STRIP_SIZE; i++)
+        {
+          ChannelSend * send = ch->sends[i];
+          channel_send_validate (send);
         }
     }
 
@@ -1594,6 +1606,11 @@ track_update_children (
         child->out_signal_type ==
           self->in_signal_type);
       child->channel->output_pos = self->pos;
+      g_debug (
+        "%s: setting output of track %s [%d] to "
+        "%s [%d]",
+        __func__, child->name, child->pos, self->name,
+        self->pos);
     }
 }
 
@@ -1606,9 +1623,9 @@ track_set_pos (
   Track * self,
   int     pos)
 {
-  g_message (
-    "%s (%d) to %d",
-    self->name, self->pos, pos);
+  g_debug (
+    "%s: %s (%d) to %d",
+    __func__, self->name, self->pos, pos);
 
   int prev_pos = self->pos;
   self->pos = pos;
@@ -1883,6 +1900,8 @@ track_disconnect (
   g_message ("disconnecting %s (%d)...",
     self->name, self->pos);
 
+  self->disconnecting = true;
+
   /* if this is a group track and has children,
    * remove them */
   if (TRACK_CAN_BE_GROUP_TARGET (self))
@@ -1930,7 +1949,9 @@ track_disconnect (
         self->channel, remove_pl);
     }
 
-  g_message ("done");
+  self->disconnecting = false;
+
+  g_debug ("done");
 }
 
 /**

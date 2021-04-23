@@ -168,7 +168,8 @@ group_target_track_remove_child (
 {
   g_return_if_fail (
     child_pos != self->pos &&
-    contains_child (self, child_pos));
+    contains_child (self, child_pos) &&
+    child_pos < TRACKLIST->num_tracks);
 
   Track * child = TRACKLIST->tracks[child_pos];
   g_return_if_fail (IS_TRACK (child));
@@ -191,6 +192,12 @@ group_target_track_remove_child (
     "num children: %d",
     child->name, child->pos, self->name, self->pos,
     self->num_children);
+  for (int i = 0; i < self->num_children; i++)
+    {
+      g_debug ("child %d: %s",
+        i,
+        TRACKLIST->tracks[self->children[i]]->name);
+    }
 }
 
 /**
@@ -213,6 +220,25 @@ group_target_track_remove_all_children (
     }
 }
 
+bool
+group_target_track_validate (
+  Track * self)
+{
+  for (int i = 0; i < self->num_children; i++)
+    {
+      Track * track =
+        TRACKLIST->tracks[self->children[i]];
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), false);
+      Track * out_track =
+        channel_get_output_track (track->channel);
+      g_return_val_if_fail (
+        self == out_track, false);
+    }
+
+  return true;
+}
+
 /**
  * Adds a child track to the list of children.
  *
@@ -228,6 +254,11 @@ group_target_track_add_child (
 {
   g_return_if_fail (
     IS_TRACK (self) && self->children);
+
+  g_debug (
+    "adding child track %d to group %s [%d]",
+    child_pos, self->name, self->pos);
+
   if (connect)
     {
       update_child_output (

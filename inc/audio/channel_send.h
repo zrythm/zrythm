@@ -86,6 +86,9 @@ typedef struct ChannelSend
   /** Destination midi port, if midi. */
   PortIdentifier dest_midi_id;
 
+  /** Cache used during track actions. */
+  Track *        dest_track;
+
 } ChannelSend;
 
 static const cyaml_schema_field_t
@@ -119,6 +122,7 @@ channel_send_schema =
     ChannelSend, channel_send_fields_schema),
 };
 
+NONNULL
 void
 channel_send_init_loaded (
   ChannelSend * self,
@@ -135,6 +139,7 @@ channel_send_new (
 /**
  * Gets the owner track.
  */
+NONNULL
 Track *
 channel_send_get_track (
   ChannelSend * self);
@@ -151,22 +156,28 @@ channel_send_is_enabled (
  * Returns whether the channel send target is a
  * sidechain port (rather than a target track).
  */
+NONNULL
 bool
 channel_send_is_target_sidechain (
   ChannelSend * self);
 
 /**
  * Gets the target track.
+ *
+ * @param owner The owner track of the send
+ *   (optional).
  */
 Track *
 channel_send_get_target_track (
-  ChannelSend * self);
+  ChannelSend * self,
+  Track *       owner);
 
 /**
  * Gets the target sidechain port.
  *
  * Returned StereoPorts instance must be free'd.
  */
+NONNULL
 StereoPorts *
 channel_send_get_target_sidechain (
   ChannelSend * self);
@@ -174,6 +185,7 @@ channel_send_get_target_sidechain (
 /**
  * Gets the amount to be used in widgets (0.0-1.0).
  */
+NONNULL
 float
 channel_send_get_amount_for_widgets (
   ChannelSend * self);
@@ -181,6 +193,7 @@ channel_send_get_amount_for_widgets (
 /**
  * Sets the amount from a widget amount (0.0-1.0).
  */
+NONNULL
 void
 channel_send_set_amount_from_widget (
   ChannelSend * self,
@@ -203,6 +216,7 @@ channel_send_connect_stereo (
 /**
  * Connects a send to a midi port.
  */
+NONNULL
 void
 channel_send_connect_midi (
   ChannelSend * self,
@@ -211,10 +225,12 @@ channel_send_connect_midi (
 /**
  * Removes the connection at the given send.
  */
+NONNULL
 void
 channel_send_disconnect (
   ChannelSend * self);
 
+NONNULL
 void
 channel_send_set_amount (
   ChannelSend * self,
@@ -223,31 +239,51 @@ channel_send_set_amount (
 /**
  * Get the name of the destination.
  */
+NONNULL
 void
 channel_send_get_dest_name (
   ChannelSend * self,
   char *        buf);
 
+NONNULL
 void
 channel_send_copy_values (
   ChannelSend * dest,
   ChannelSend * src);
 
+NONNULL
 ChannelSend *
 channel_send_clone (
   ChannelSend * self);
 
+NONNULL
 ChannelSendWidget *
 channel_send_find_widget (
   ChannelSend * self);
 
 /**
+ * Connects the ports if not connected and updates
+ * the multiplier amounts on the port connections.
+ */
+NONNULL
+void
+channel_send_update_connections (
+  ChannelSend * self);
+
+/**
  * Finds the project send from a given send instance.
  */
+NONNULL
 ChannelSend *
 channel_send_find (
   ChannelSend * self);
 
+NONNULL
+bool
+channel_send_validate (
+  ChannelSend * self);
+
+NONNULL
 void
 channel_send_free (
   ChannelSend * self);

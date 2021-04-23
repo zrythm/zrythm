@@ -80,6 +80,10 @@ group_target_track_add_child (
   bool    recalc_graph,
   bool    pub_events);
 
+bool
+group_target_track_validate (
+  Track * self);
+
 void
 group_target_track_add_children (
   Track * self,

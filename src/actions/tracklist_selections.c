@@ -233,12 +233,29 @@ tracklist_selections_action_new (
 
   if (tls_before && need_full_selections)
     {
-      /* save the incoming sends */
-      for (int k = 0;
-           k < self->tls_before->num_tracks; k++)
+      int num_before_tracks =
+        self->tls_before->num_tracks;
+      self->num_out_tracks = num_before_tracks;
+      self->out_tracks =
+        calloc (
+          (size_t) num_before_tracks, sizeof (int));
+
+      /* save the ouputs & incoming sends */
+      for (int k = 0; k < num_before_tracks; k++)
         {
-          int clone_track_pos =
-            self->tls_before->tracks[k]->pos;
+          Track * clone_track =
+            self->tls_before->tracks[k];
+
+          if (clone_track->channel &&
+              clone_track->channel->has_output)
+            {
+              self->out_tracks[k] =
+                clone_track->channel->output_pos;
+            }
+          else
+            {
+              self->out_tracks[k] = -1;
+            }
 
           for (int i = 0; i < TRACKLIST->num_tracks;
                i++)
@@ -262,10 +279,10 @@ tracklist_selections_action_new (
 
                   Track * target_track =
                     channel_send_get_target_track (
-                      send);
+                      send, cur_track);
 
                   if (target_track->pos ==
-                        clone_track_pos)
+                        clone_track->pos)
                     {
                       array_double_size_if_full (
                         self->src_sends,
@@ -574,8 +591,10 @@ do_or_undo_create_or_delete (
       /* else if delete undo */
       else
         {
-          for (int i = 0;
-               i < self->tls_before->num_tracks; i++)
+          int num_tracks =
+            self->tls_before->num_tracks;
+
+          for (int i = 0; i < num_tracks; i++)
             {
               Track * own_track =
                 self->tls_before->tracks[i];
@@ -583,6 +602,28 @@ do_or_undo_create_or_delete (
               /* clone our own track */
               Track * track =
                 track_clone (own_track, false);
+
+              /* remove output */
+              if (track->channel)
+                {
+                  track->channel->has_output =
+                    false;
+                  track->channel->output_pos = -1;
+                }
+
+              /* remove the sends (will be added
+               * later) */
+              if (track->channel)
+                {
+                  for (int j = 0; j < STRIP_SIZE;
+                       j++)
+                    {
+                      ChannelSend * send =
+                        track->channel->sends[j];
+                      send->enabled->control =
+                        0.f;
+                    }
+                }
 
               /* insert it to the tracklist at its
                * original pos */
@@ -614,8 +655,7 @@ do_or_undo_create_or_delete (
                 }
             }
 
-          for (int i = 0;
-               i < self->tls_before->num_tracks; i++)
+          for (int i = 0; i < num_tracks; i++)
             {
               Track * own_track =
                 self->tls_before->tracks[i];
@@ -626,6 +666,26 @@ do_or_undo_create_or_delete (
               if (!track_type_has_channel (
                      track->type))
                 continue;
+
+              /* reconnect output */
+              if (self->out_tracks[i] >= 0)
+                {
+                  Track * out_track =
+                    channel_get_output_track (
+                      track->channel);
+                  group_target_track_remove_child (
+                    out_track, track->pos,
+                    F_DISCONNECT,
+                    F_NO_RECALC_GRAPH,
+                    F_NO_PUBLISH_EVENTS);
+                  out_track =
+                    TRACKLIST->tracks[
+                      self->out_tracks[i]];
+                  group_target_track_add_child (
+                    out_track, track->pos,
+                    F_CONNECT, F_NO_RECALC_GRAPH,
+                    F_NO_PUBLISH_EVENTS);
+                }
 
               /* reconnect any sends sent from the
                * track */
@@ -810,6 +870,8 @@ do_or_undo_create_or_delete (
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
+  tracklist_validate (TRACKLIST);
+
   return 0;
 }
 
@@ -865,9 +927,44 @@ do_or_undo_move_or_copy (
         }
       else if (copy)
         {
-          for (int i = 0;
-               i < self->tls_before->num_tracks;
-               i++)
+          int num_tracks =
+            self->tls_before->num_tracks;
+
+          /* get outputs & sends */
+          Track * outputs[num_tracks];
+          ChannelSend * sends[num_tracks][STRIP_SIZE];
+          for (int i = 0; i < num_tracks; i++)
+            {
+              Track * own_track =
+                self->tls_before->tracks[i];
+              if (own_track->channel)
+                {
+                  outputs[i] =
+                    channel_get_output_track (
+                      own_track->channel);
+                  /*g_warn_if_reached();*/
+
+                  for (int j = 0; j < STRIP_SIZE;
+                       j++)
+                    {
+                      ChannelSend * send =
+                        own_track->channel->sends[j];
+                      sends[i][j] =
+                        channel_send_clone (send);
+                      sends[i][j]->dest_track =
+                        channel_send_get_target_track (
+                          send, own_track);
+                    }
+                }
+              else
+                {
+                  outputs[i] = NULL;
+                }
+            }
+
+          /* create new tracks routed to master */
+          Track * new_tracks[num_tracks];
+          for (int i = 0; i < num_tracks; i++)
             {
               Track * own_track =
                 self->tls_before->tracks[i];
@@ -876,6 +973,26 @@ do_or_undo_move_or_copy (
                * project */
               Track * track =
                 track_clone (own_track, false);
+              new_tracks[i] = track;
+
+              /* remove output */
+              if (track->channel)
+                {
+                  track->channel->has_output =
+                    false;
+                  track->channel->output_pos = -1;
+                }
+
+              /* remove sends */
+              for (int j = 0; j < STRIP_SIZE; j++)
+                {
+                  ChannelSend * send =
+                    track->channel->sends[j];
+                  send->enabled->control = 0.f;
+                }
+
+              /* remove children */
+              track->num_children = 0;
 
               /* add to tracklist at given pos */
               tracklist_insert_track (
@@ -888,6 +1005,77 @@ do_or_undo_move_or_copy (
               track_select (
                 track, F_SELECT, 1,
                 F_NO_PUBLISH_EVENTS);
+            }
+
+          /* reroute new tracks to correct
+           * outputs & sends */
+          for (int i = 0; i < num_tracks; i++)
+            {
+              Track * track = new_tracks[i];
+              if (outputs[i])
+                {
+                  Track * out_track =
+                    channel_get_output_track (
+                      track->channel);
+                  /*g_warn_if_reached ();*/
+                  group_target_track_remove_child (
+                    out_track, track->pos,
+                    F_DISCONNECT,
+                    F_NO_RECALC_GRAPH,
+                    F_NO_PUBLISH_EVENTS);
+                  group_target_track_add_child (
+                    outputs[i], track->pos,
+                    F_CONNECT, F_NO_RECALC_GRAPH,
+                    F_NO_PUBLISH_EVENTS);
+                }
+
+              if (track->channel)
+                {
+                  for (int j = 0; j < STRIP_SIZE;
+                       j++)
+                    {
+                      ChannelSend * own_send =
+                        sends[i][j];
+                      Track * target_track =
+                        own_send->dest_track;
+                      ChannelSend * track_send =
+                        track->channel->sends[j];
+                      if (target_track)
+                        {
+                          switch (track->out_signal_type)
+                            {
+                            case TYPE_AUDIO:
+                              track_send->dest_l_id.
+                                track_pos =
+                                  target_track->pos;
+                              track_send->dest_l_id.
+                                plugin_id.track_pos =
+                                  target_track->pos;
+                              track_send->dest_r_id.
+                                track_pos =
+                                  target_track->pos;
+                              track_send->dest_r_id.
+                                plugin_id.track_pos =
+                                  target_track->pos;
+                              break;
+                            case TYPE_EVENT:
+                              track_send->dest_midi_id.
+                                track_pos =
+                                  target_track->pos;
+                              track_send->dest_midi_id.
+                                plugin_id.track_pos =
+                                  target_track->pos;
+                              break;
+                            default:
+                              break;
+                            }
+                        }
+
+                      channel_send_update_connections (
+                        track_send);
+                      channel_send_free (own_send);
+                    }
+                }
             }
 
           EVENTS_PUSH (ET_TRACK_ADDED, NULL);
@@ -974,6 +1162,8 @@ do_or_undo_move_or_copy (
       TRACKLIST->pinned_tracks_cutoff -=
          self->tls_before->num_tracks;
     }
+
+  tracklist_validate (TRACKLIST);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
@@ -1350,6 +1540,8 @@ tracklist_selections_action_free (
         channel_send_free, self->src_sends[i]);
     }
   object_zero_and_free (self->src_sends);
+
+  object_zero_and_free (self->out_tracks);
 
   object_zero_and_free (self);
 }

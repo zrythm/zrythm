@@ -149,6 +149,10 @@ typedef struct TracklistSelectionsAction
   int                   num_src_sends;
   size_t                src_sends_size;
 
+  /** Direct out tracks of the original tracks */
+  int *                 out_tracks;
+  int                   num_out_tracks;
+
   EditTracksActionType  edit_type;
 
   /**
@@ -244,6 +248,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TracklistSelectionsAction, tls_after,
     tracklist_selections_fields_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    TracklistSelectionsAction, out_tracks,
+    int_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     TracklistSelectionsAction, src_sends,
     channel_send_schema),

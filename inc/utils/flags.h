@@ -280,4 +280,7 @@
 #define F_MARK_MASTER 1
 #define F_NO_MARK_MASTER 0
 
+#define F_LOCKED 1
+#define F_NOT_LOCKED 0
+
 #endif

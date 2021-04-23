@@ -770,6 +770,8 @@ test_track_deletion_with_sends (
           audio_fx_for_receiving_pos];
     }
 
+  project_validate (PROJECT);
+
   /* undo and check that the sends are
    * established again */
   undo_manager_undo (UNDO_MANAGER);
@@ -1523,6 +1525,146 @@ test_marker_track_unpin (void)
   test_helper_zrythm_cleanup ();
 }
 
+/**
+ * Test duplicate when the last track in the
+ * tracklist is the output of the duplicated track.
+ */
+static void
+test_duplicate_w_output_and_send (void)
+{
+  test_helper_zrythm_init ();
+
+  int start_pos = TRACKLIST->num_tracks;
+
+  /* create audio track + audio group track + audio
+   * fx track */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO, NULL, NULL,
+      start_pos, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO_GROUP, NULL, NULL,
+      start_pos + 1, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO_GROUP, NULL, NULL,
+      start_pos + 2, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  ua =
+    tracklist_selections_action_new_create_audio_fx (
+      NULL, start_pos + 3, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  Track * audio_track =
+    TRACKLIST->tracks[start_pos];
+  Track * group_track =
+    TRACKLIST->tracks[start_pos + 1];
+  Track * group_track2 =
+    TRACKLIST->tracks[start_pos + 2];
+  Track * fx_track =
+    TRACKLIST->tracks[start_pos + 3];
+
+  /* connect sends */
+  ua =
+    channel_send_action_new_connect_audio (
+      audio_track->channel->sends[0],
+      fx_track->processor->stereo_in);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_true (
+    TRACKLIST->tracks[start_pos]->type ==
+      TRACK_TYPE_AUDIO);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 1]->type ==
+      TRACK_TYPE_AUDIO_GROUP);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 2]->type ==
+      TRACK_TYPE_AUDIO_GROUP);
+  g_assert_true (
+    TRACKLIST->tracks[start_pos + 3]->type ==
+      TRACK_TYPE_AUDIO_BUS);
+
+  /* route audio track to group track */
+  track_select (
+    TRACKLIST->tracks[start_pos], F_SELECT,
+    F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_edit_direct_out(
+      TRACKLIST_SELECTIONS, group_track);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* route group track to group track 2 */
+  track_select (
+    TRACKLIST->tracks[start_pos + 1], F_SELECT,
+    F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_edit_direct_out(
+      TRACKLIST_SELECTIONS, group_track2);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* duplicate audio track and group track */
+  track_select (
+    TRACKLIST->tracks[start_pos], F_SELECT,
+    F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  g_assert_cmpint (
+    TRACKLIST_SELECTIONS->num_tracks, ==, 2);
+  g_assert_true (
+    TRACKLIST_SELECTIONS->tracks[0] == group_track);
+  g_assert_true (
+    TRACKLIST_SELECTIONS->tracks[1] == audio_track);
+  ua =
+    tracklist_selections_action_new_copy (
+      TRACKLIST_SELECTIONS, start_pos + 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* assert group connected */
+  Track * new_track =
+    TRACKLIST->tracks[start_pos + 1];
+  g_assert_true (
+    new_track->type == TRACK_TYPE_AUDIO);
+  g_assert_cmpint (
+    new_track->channel->output_pos, ==,
+    group_track->pos);
+  g_assert_true (
+    ports_connected (
+      new_track->channel->stereo_out->l,
+      group_track->processor->stereo_in->l) &&
+    ports_connected (
+      new_track->channel->stereo_out->r,
+      group_track->processor->stereo_in->r));
+
+  /* assert sends connected */
+  channel_send_validate (
+    new_track->channel->sends[0]);
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+
+  /* test delete each track */
+  for (int i = 0; i < 4; i++)
+    {
+      new_track =
+        TRACKLIST->tracks[start_pos + i];
+      track_select (
+        new_track, F_SELECT, F_EXCLUSIVE,
+        F_NO_PUBLISH_EVENTS);
+      ua =
+        tracklist_selections_action_new_delete (
+          TRACKLIST_SELECTIONS);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      tracklist_validate (TRACKLIST);
+      test_project_save_and_reload ();
+      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_redo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1531,6 +1673,14 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test duplicate w output and send",
+    (GTestFunc) test_duplicate_w_output_and_send);
+  g_test_add_func (
+    TEST_PREFIX
+    "test source track deletion with sends",
+    (GTestFunc)
+    test_source_track_deletion_with_sends);
+  g_test_add_func (
     TEST_PREFIX "test ins track deletion with automation",
     (GTestFunc) test_ins_track_deletion_w_automation);
   g_test_add_func (
@@ -1538,11 +1688,6 @@ main (int argc, char *argv[])
     "test target track deletion with sends",
     (GTestFunc)
     test_target_track_deletion_with_sends);
-  g_test_add_func (
-    TEST_PREFIX
-    "test source track deletion with sends",
-    (GTestFunc)
-    test_source_track_deletion_with_sends);
   g_test_add_func (
     TEST_PREFIX
     "test port and plugin track pos after duplication",

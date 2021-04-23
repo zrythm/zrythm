@@ -147,20 +147,27 @@ channel_send_copy_values (
 
 /**
  * Gets the target track.
+ *
+ * @param owner The owner track of the send
+ *   (optional).
  */
 Track *
 channel_send_get_target_track (
-  ChannelSend * self)
+  ChannelSend * self,
+  Track *       owner)
 {
   if (channel_send_is_empty (self))
     return NULL;
 
-  Track * track = channel_send_get_track (self);
+  if (!owner)
+    {
+      owner = channel_send_get_track (self);
+    }
   g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (track), NULL);
+    IS_TRACK_AND_NONNULL (owner), NULL);
 
   Port * port;
-  switch (track->out_signal_type)
+  switch (owner->out_signal_type)
     {
     case TYPE_AUDIO:
       port =
@@ -205,8 +212,12 @@ channel_send_get_target_sidechain (
   return sp;
 }
 
-static void
-update_connections (
+/**
+ * Connects the ports if not connected and updates
+ * the multiplier amounts on the port connections.
+ */
+void
+channel_send_update_connections (
   ChannelSend * self)
 {
   if (channel_send_is_empty (self))
@@ -237,6 +248,16 @@ update_connections (
               i == 0 ?
                 &self->dest_l_id :
                 &self->dest_r_id);
+
+          /* make the connection if not exists -
+           * e.g., when cloning tracks */
+          if (!ports_connected (
+                 self_port, dest_port))
+            {
+              port_connect (
+                self_port, dest_port, F_LOCKED);
+            }
+
           idx =
             port_get_dest_index (
               self_port, dest_port);
@@ -307,7 +328,7 @@ channel_send_set_amount_from_widget (
     default:
       break;
     }
-  update_connections (self);
+  channel_send_update_connections (self);
 }
 
 /**
@@ -357,8 +378,8 @@ channel_send_connect_stereo (
     }
   else
     {
-      port_connect (self_stereo->l, l, true);
-      port_connect (self_stereo->r, r, true);
+      port_connect (self_stereo->l, l, F_LOCKED);
+      port_connect (self_stereo->r, r, F_LOCKED);
     }
 
   port_set_control_value (
@@ -367,7 +388,7 @@ channel_send_connect_stereo (
   self->is_sidechain = sidechain;
 
   /* set multipliers */
-  update_connections (self);
+  channel_send_update_connections (self);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
@@ -392,7 +413,7 @@ channel_send_connect_midi (
     channel_send_is_prefader (self) ?
       track->channel->prefader->midi_out :
       track->channel->fader->midi_out;
-  port_connect (self_port, port, true);
+  port_connect (self_port, port, F_LOCKED);
 
   port_set_control_value (
     self->enabled, 1.f, F_NOT_NORMALIZED,
@@ -602,6 +623,50 @@ channel_send_find (
     IS_TRACK_AND_NONNULL (track), NULL);
 
   return track->channel->sends[self->slot];
+}
+
+bool
+channel_send_validate (
+  ChannelSend * self)
+{
+  Track * track = channel_send_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), false);
+
+  if (track->out_signal_type == TYPE_AUDIO)
+    {
+      StereoPorts * self_stereo =
+        channel_send_is_prefader (self) ?
+          track->channel->prefader->stereo_out :
+          track->channel->fader->stereo_out;
+      g_return_val_if_fail (self_stereo, false);
+      Port * port = self_stereo->l;
+      if (channel_send_is_enabled (self))
+        {
+          g_return_val_if_fail (
+            port->num_dests > 0, false);
+        }
+      port = self_stereo->r;
+      if (channel_send_is_enabled (self))
+        {
+          g_return_val_if_fail (
+            port->num_dests > 0, false);
+        }
+    }
+  else if (track->out_signal_type == TYPE_EVENT)
+    {
+      Port * port =
+        channel_send_is_prefader (self) ?
+          track->channel->prefader->midi_out :
+          track->channel->fader->midi_out;
+      if (channel_send_is_enabled (self))
+        {
+          g_return_val_if_fail (
+            port->num_dests > 0, false);
+        }
+    }
+
+  return true;
 }
 
 void
