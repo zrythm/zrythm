@@ -41,6 +41,7 @@ util_srcs = [
   'objects.c',
   'resources.c',
   #'smf.c',
+  'sort.c',
   'stack.c',
   'string.c',
   'symap.c',

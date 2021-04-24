@@ -54,6 +54,7 @@
 #include "utils/io.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "utils/sort.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -132,23 +133,6 @@ add_category_and_author (
               g_strdup (author);
         }
     }
-}
-
-static int
-sort_category_func (
-  const void *a, const void *b)
-{
-  char * pa =
-    *(char * const *) a;
-  char * pb =
-    *(char * const *) b;
-  int r = strcasecmp(pa, pb);
-  if (r)
-    return r;
-
-  /* if equal ignoring case, use opposite of strcmp() result to get
-   * lower before upper */
-  return -strcmp(pa, pb); /* aka: return strcmp(b, a); */
 }
 
 static int sort_plugin_func (
@@ -1357,15 +1341,21 @@ plugin_manager_scan_plugins (
 #endif // HAVE_CARLA
 
   /* sort alphabetically */
-  qsort (self->plugin_descriptors,
-         (size_t) self->num_plugins,
-         sizeof (Plugin *),
-         sort_plugin_func);
-  qsort (self->plugin_categories,
-         (size_t)
-           self->num_plugin_categories,
-         sizeof (char *),
-         sort_category_func);
+  qsort (
+    self->plugin_descriptors,
+    (size_t) self->num_plugins,
+    sizeof (Plugin *),
+    sort_plugin_func);
+  qsort (
+    self->plugin_categories,
+    (size_t) self->num_plugin_categories,
+    sizeof (char *),
+    sort_alphabetical_func);
+  qsort (
+    self->plugin_authors,
+    (size_t) self->num_plugin_authors,
+    sizeof (char *),
+    sort_alphabetical_func);
 
   g_message (
     "%s: %d Plugins scanned.",
