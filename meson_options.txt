@@ -189,6 +189,12 @@ option (
   description: 'Location to collect carla discovery and bridge binaries.')
 
 option (
+  'carla_binaries_dir_32bit',
+  type: 'string',
+  value: '/mingw32/lib/carla',
+  description: 'Location to collect carla discovery and bridge binaries (32-bit).')
+
+option (
   'strict_sphinx_opts',
   type: 'boolean',
   value: true,

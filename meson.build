@@ -953,14 +953,15 @@ if have_carla
   # install discovery & bridge for 32-bit vst's on
   # windows
   if os_windows
+    carla_bins_dir_32bit = get_option ('carla_binaries_dir_32bit')
     install_data (
       find_program (
-        carla_bins_dir /
+        carla_bins_dir_32bit /
           'carla-discovery-win32.exe').full_path(),
       install_dir: zrythm_libdir / 'carla')
     install_data (
       find_program (
-        carla_bins_dir /
+        carla_bins_dir_32bit /
           'carla-bridge-win32.exe').full_path(),
       install_dir: zrythm_libdir / 'carla')
   endif
