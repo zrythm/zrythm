@@ -54,21 +54,21 @@ z_gtk_get_primary_monitor_scale_factor (void)
     gdk_display_get_default ();
   if (!display)
     {
-      g_warning ("no display");
+      g_message ("no display");
       goto return_default_scale_factor;
     }
   monitor =
     gdk_display_get_primary_monitor (display);
   if (!monitor)
     {
-      g_warning ("no primary monitor");
+      g_message ("no primary monitor");
       goto return_default_scale_factor;
     }
   scale_factor =
     gdk_monitor_get_scale_factor (monitor);
   if (scale_factor < 1)
     {
-      g_warning (
+      g_message (
         "invalid scale factor: %d", scale_factor);
       goto return_default_scale_factor;
     }
@@ -76,7 +76,7 @@ z_gtk_get_primary_monitor_scale_factor (void)
   return scale_factor;
 
 return_default_scale_factor:
-  g_warning (
+  g_message (
     "failed to get refresh rate from device, "
     "returning default");
   return 1;
