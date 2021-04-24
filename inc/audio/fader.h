@@ -314,7 +314,8 @@ fader_get_soloed (
 /**
  * Returns whether the fader is not soloed on its
  * own but its direct out (or its direct out's direct
- * out, etc.) is soloed.
+ * out, etc.) or its child (or its children's child,
+ * etc.) is soloed.
  */
 bool
 fader_get_implied_soloed (

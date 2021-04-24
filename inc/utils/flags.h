@@ -283,4 +283,7 @@
 #define F_LOCKED 1
 #define F_NOT_LOCKED 0
 
+#define F_SOLO 1
+#define F_NO_SOLO 0
+
 #endif

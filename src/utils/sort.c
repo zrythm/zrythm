@@ -24,6 +24,8 @@
 
 /**
  * Alphabetical sort func.
+ *
+ * The arguments must be strings (char *).
  */
 int
 sort_alphabetical_func (

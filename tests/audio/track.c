@@ -38,6 +38,7 @@ test_new_track ()
       TRACKLIST->num_tracks,
       "Test Instrument Track 1",
       F_WITH_LANE);
+  g_assert_true (IS_TRACK_AND_NONNULL (track));
 
   g_assert_nonnull (track->name);
 }

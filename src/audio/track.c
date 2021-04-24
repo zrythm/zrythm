@@ -1091,6 +1091,8 @@ track_set_soloed (
   bool    fire_events)
 {
   g_return_if_fail (self->channel);
+  track_select (
+    self, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
   fader_set_soloed (
     self->channel->fader, solo, trigger_undo,
     fire_events);
