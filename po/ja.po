@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-03 15:37+0100\n"
-"PO-Revision-Date: 2021-03-10 09:57+0000\n"
+"PO-Revision-Date: 2021-04-04 15:26+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:288
@@ -588,7 +588,7 @@ msgstr ""
 #: src/zrythm_app.c:1735
 #, c-format
 msgid "Run %s, optionally passing a project file."
-msgstr ""
+msgstr "%sを実行し、オプションでプロジェクトファイルを渡します。"
 
 #: src/plugins/carla_native_plugin.c:591 src/plugins/lv2_plugin.c:3473
 msgid "Default bank"
@@ -616,11 +616,11 @@ msgstr "MIDI出力"
 
 #: src/plugins/carla_native_plugin.c:1138
 msgid "CV in"
-msgstr ""
+msgstr "CV入力"
 
 #: src/plugins/carla_native_plugin.c:1148
 msgid "CV out"
-msgstr ""
+msgstr "CV出力"
 
 #: src/plugins/plugin_manager.c:370
 msgid "Error loading LV2 bundle dir: "
@@ -683,7 +683,7 @@ msgstr "プラグイン1"
 #: src/plugins/plugin.c:980
 #, c-format
 msgid " - bridge: %s"
-msgstr ""
+msgstr " - ブリッジ: %s"
 
 #: src/plugins/plugin.c:991
 #, fuzzy
@@ -2410,6 +2410,8 @@ msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
+"JACK MIDI バックエンドは、JACK audio バックエンドと一緒にしか使えません（現在のオーディオバックエンドは %s "
+"です）。代わりにダミーのMIDIバックエンドを使います。"
 
 #: src/audio/engine.c:529
 #, c-format
@@ -2762,7 +2764,7 @@ msgstr "互換性のないデータを貼り付けられません"
 
 #: src/actions/actions.c:1549
 msgid "The track selection contains a track that cannot be deleted"
-msgstr ""
+msgstr "トラック選択に、削除できないトラックが含まれています"
 
 #: src/actions/actions.c:1840
 msgid "No regions selected"

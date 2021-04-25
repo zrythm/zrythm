@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2021-03-12 14:02+0000\n"
+"PO-Revision-Date: 2021-04-21 17:30+0000\n"
 "Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -266,7 +266,7 @@ msgstr "Легато"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:160
 msgid "Portato"
-msgstr ""
+msgstr "Портато"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:166
 msgid "Staccato"
@@ -638,11 +638,11 @@ msgstr "[Zrythm] Увімкнено"
 
 #: src/plugins/plugin.c:207
 msgid "[Zrythm] Gain"
-msgstr ""
+msgstr "[Zrythm] Підсилення"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
-msgstr ""
+msgstr "Зберегти стан"
 
 #: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
 #: src/plugins/lv2/lv2_gtk.c:357
@@ -666,183 +666,183 @@ msgstr "Не вдалося знайти розширення за URI: %s"
 
 #: src/plugins/lv2_plugin.c:2552
 msgid "Unnamed bank"
-msgstr ""
+msgstr "Банк без назви"
 
 #: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (необов’язково):"
 
 #: src/plugins/lv2/lv2_gtk.c:260
 msgid "_Prefix plugin name"
-msgstr ""
+msgstr "_Назва префікса розширення"
 
 #: src/plugins/lv2/lv2_gtk.c:352
 msgid "Delete Preset?"
-msgstr ""
+msgstr "Видалити переднабір?"
 
 #: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
 #: resources/ui/string_entry_dialog.ui:61
 #: resources/ui/port_selector_popover.ui:254
 msgid "_OK"
-msgstr ""
+msgstr "_Прийняти"
 
 #: src/plugins/lv2/lv2_gtk.c:586
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Невідомий тип віджета для значення"
 
 #: src/plugins/lv2/lv2_gtk.c:612
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Невідомий тип віджета для значення\n"
 
 #: src/plugins/lv2/lv2_gtk.c:1297
 msgid "Close"
-msgstr ""
+msgstr "Закрити"
 
 #: src/gui/widgets/fader_controls_grid.c:92
 msgid "Peak"
-msgstr ""
+msgstr "Пік"
 
 #: src/gui/widgets/port_connections_popover.c:72
 msgid "INPUTS"
-msgstr ""
+msgstr "ВХОДИ"
 
 #: src/gui/widgets/port_connections_popover.c:98
 msgid "OUTPUTS"
-msgstr ""
+msgstr "ВИХОДИ"
 
 #: src/gui/widgets/port_connections_popover.c:202 src/gui/widgets/track.c:1232
 msgid "Add"
-msgstr ""
+msgstr "Додати"
 
 #: src/gui/widgets/inspector_port.c:185 src/gui/widgets/balance_control.c:366
 #: src/gui/widgets/fader.c:380 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
-msgstr ""
+msgstr "Прив'язка MIDI CC"
 
 #: src/gui/widgets/inspector_port.c:195 src/gui/widgets/midi_arranger.c:519
 msgid "View info"
-msgstr ""
+msgstr "Переглянути відомості"
 
 #: src/gui/widgets/inspector_port.c:380
 msgid "Incoming signals"
-msgstr ""
+msgstr "Вхідні сигнали"
 
 #: src/gui/widgets/inspector_port.c:381
 msgid "Outgoing signals"
-msgstr ""
+msgstr "Вихідні сигнали"
 
 #: src/gui/widgets/inspector_port.c:393
 msgid "Current val"
-msgstr ""
+msgstr "Поточний вал"
 
 #: src/gui/widgets/inspector_port.c:395 src/gui/widgets/cc_bindings_tree.c:306
 msgid "Min"
-msgstr ""
+msgstr "Хв"
 
 #: src/gui/widgets/inspector_port.c:396 src/gui/widgets/cc_bindings_tree.c:316
 msgid "Max"
-msgstr ""
+msgstr "Макс."
 
 #: src/gui/widgets/inspector_port.c:523
 msgid "Expose port to JACK"
-msgstr ""
+msgstr "Виставити порт на JACK"
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
-msgstr ""
+msgstr "Перегляд журналів"
 
 #: src/gui/widgets/track_properties_expander.c:110
 #: src/gui/widgets/track_visibility_tree.c:163
 msgid "Track Name"
-msgstr ""
+msgstr "Назва доріжки"
 
 #: src/gui/widgets/track_properties_expander.c:122
 msgid "Direct Out"
-msgstr ""
+msgstr "Прямий вихід (Direct Out)"
 
 #: src/gui/widgets/track_properties_expander.c:147
 msgid "Track Properties"
-msgstr ""
+msgstr "Властивості доріжки"
 
 #: src/gui/widgets/track_input_expander.c:294
 msgid "All MIDI Inputs"
-msgstr ""
+msgstr "Усі входи MIDI"
 
 #: src/gui/widgets/track_input_expander.c:298
 msgid "All Audio Inputs"
-msgstr ""
+msgstr "Усі аудіо входи"
 
 #: src/gui/widgets/track_input_expander.c:345
 msgid "No inputs"
-msgstr ""
+msgstr "Немає входів"
 
 #: src/gui/widgets/track_input_expander.c:348
 msgid "MIDI inputs for recording"
-msgstr ""
+msgstr "MIDI входи для запису"
 
 #: src/gui/widgets/track_input_expander.c:356
 msgid "No left input"
-msgstr ""
+msgstr "Немає лівого входу"
 
 #: src/gui/widgets/track_input_expander.c:357
 msgid "No right input"
-msgstr ""
+msgstr "Немає правого входу"
 
 #: src/gui/widgets/track_input_expander.c:360
 #, c-format
 msgid "Audio input (%s) for recording"
-msgstr ""
+msgstr "Аудіовхід (%s) для запису"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:362
 msgid "L"
-msgstr ""
+msgstr "L"
 
 #: src/gui/widgets/track_input_expander.c:362
 #: resources/ui/automation_track.ui:100
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: src/gui/widgets/track_input_expander.c:440
 msgid "All Channels"
-msgstr ""
+msgstr "Усі канали"
 
 #: src/gui/widgets/track_input_expander.c:449
 #, c-format
 msgid "Channel %s"
-msgstr ""
+msgstr "Канал %s"
 
 #: src/gui/widgets/track_input_expander.c:464
 msgid "No channel"
-msgstr ""
+msgstr "Немає каналу"
 
 #: src/gui/widgets/track_input_expander.c:504
 msgid "MIDI channel to filter to"
-msgstr ""
+msgstr "MIDI-канал для фільтрування"
 
 #: src/gui/widgets/track_input_expander.c:704
 msgid "Mono"
-msgstr ""
+msgstr "Моно"
 
 #: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
-msgstr ""
+msgstr "Підсилення (gain)"
 
 #: src/gui/widgets/track_input_expander.c:749
 msgid "Inputs"
-msgstr ""
+msgstr "Входи"
 
 #: src/gui/widgets/first_run_assistant.c:131
 msgid "Backend combination not supported"
-msgstr ""
+msgstr "Бекенд-сполучення не підтримується"
 
 #: src/gui/widgets/first_run_assistant.c:137
 msgid "The selected backends are operational"
-msgstr ""
+msgstr "Вибрані бекенди працюють"
 
 #: src/gui/widgets/first_run_assistant.c:177
 msgid "JACK MIDI can only be used with JACK audio"
-msgstr ""
+msgstr "JACK MIDI можна використовувати лише зі звуком JACK"
 
 #: src/gui/widgets/project_assistant.c:266
 #: src/gui/widgets/plugin_properties_expander.c:134
@@ -850,37 +850,37 @@ msgstr ""
 #: resources/ui/arranger_object_info_dialog.ui:72
 #: resources/ui/port_info_dialog.ui:72
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: src/gui/widgets/project_assistant.c:276
 #: resources/ui/first_run_assistant.ui:148
 msgid "Path"
-msgstr ""
+msgstr "Шлях"
 
 #: src/gui/widgets/project_assistant.c:286
 msgid "Last Modified"
-msgstr ""
+msgstr "Востаннє змінено"
 
 #: src/gui/widgets/project_assistant.c:529
 msgid "Blank project"
-msgstr ""
+msgstr "Порожній проєкт"
 
 #: src/gui/widgets/project_assistant.c:677
 msgid "Project Assistant"
-msgstr ""
+msgstr "Помічник проєкту"
 
 #: src/gui/widgets/left_dock_edge.c:183
 msgid "Track inspector"
-msgstr ""
+msgstr "Інспектор доріжки"
 
 #: src/gui/widgets/left_dock_edge.c:210
 msgid "Plugin inspector"
-msgstr ""
+msgstr "Інспектор розширень"
 
 #: src/gui/widgets/left_dock_edge.c:232
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
-msgstr ""
+msgstr "Видимість"
 
 #: src/gui/widgets/left_dock_edge.c:258
 msgid "CC Bindings"
@@ -888,111 +888,113 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:285
 msgid "Port connections"
-msgstr ""
+msgstr "Портові з'єднання"
 
 #: src/gui/widgets/plugin_strip_expander.c:152
 msgid "Inserts"
-msgstr ""
+msgstr "Вставки"
 
 #: src/gui/widgets/port_selector_popover.c:55
 msgid "No port selected"
-msgstr ""
+msgstr "Порт не вибрано"
 
 #: src/gui/widgets/port_selector_popover.c:89
 msgid "These ports cannot be connected"
-msgstr ""
+msgstr "Ці порти неможливо підключити"
 
 #: src/gui/widgets/port_selector_popover.c:355
 msgid "Track Ports"
-msgstr ""
+msgstr "Порти доріжки"
 
 #: src/gui/widgets/channel_send_selector.c:322
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
-msgstr ""
+msgstr "Гаразд"
 
 #: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
-msgstr ""
+msgstr "вихідне положення"
 
 #: src/gui/widgets/editor_selection_info.c:85
 #: src/gui/widgets/timeline_selection_info.c:430
 msgid "No object selected"
-msgstr ""
+msgstr "Немає виділених об’єктів."
 
 #: src/gui/widgets/digital_meter.c:403
 msgid "normal"
-msgstr ""
+msgstr "нормально"
 
 #: src/gui/widgets/digital_meter.c:406
 msgid "dotted"
-msgstr ""
+msgstr "крапковано"
 
 #: src/gui/widgets/digital_meter.c:409
 msgid "triplet"
-msgstr ""
+msgstr "триплет"
 
 #: src/gui/widgets/digital_meter.c:1130
 msgid "Tempo/BPM"
-msgstr ""
+msgstr "Темп/BPM"
 
 #: src/gui/widgets/digital_meter.c:1144 src/gui/widgets/event_viewer.c:600
 #: src/gui/widgets/event_viewer.c:630 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
-msgstr ""
+msgstr "Позиція"
 
 #: src/gui/widgets/digital_meter.c:1174
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr ""
+msgstr "Підпис часу - Частота ударів за бар / одиницю удару"
 
 #: src/gui/widgets/drag_dest_box.c:389
 msgid "Add _MIDI Track"
-msgstr ""
+msgstr "Додати _MIDI трек"
 
 #: src/gui/widgets/drag_dest_box.c:401
 msgid "Add Audio Track"
-msgstr ""
+msgstr "Додати звукову доріжку"
 
 #: src/gui/widgets/drag_dest_box.c:433
 msgid "Add FX Track"
-msgstr ""
+msgstr "Додати FX-доріжку"
 
 #: src/gui/widgets/drag_dest_box.c:463
 msgid "Add Group Track"
-msgstr ""
+msgstr "Додати групову доріжку"
 
 #: src/gui/widgets/instrument_track.c:219
 #: src/gui/widgets/transport_controls.c:251 src/gui/widgets/midi_track.c:190
 #: resources/ui/fader_buttons.ui:57
 msgid "Record"
-msgstr ""
+msgstr "Запис"
 
 #: src/gui/widgets/instrument_track.c:253 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
-msgstr ""
+msgstr "Показ смуги автоматизації"
 
 #: src/gui/widgets/instrument_track.c:259 src/gui/widgets/audio_track.c:205
 #: src/gui/widgets/midi_track.c:224
 msgid "Show track lanes"
-msgstr ""
+msgstr "Показ смуги доріжки"
 
 #: src/gui/widgets/instrument_track.c:265 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
-msgstr ""
+msgstr "Блокування доріжки"
 
 #: src/gui/widgets/instrument_track.c:271
 msgid "Freeze track"
-msgstr ""
+msgstr "Замороження доріжки"
 
 #: src/gui/widgets/control_room.c:50
 msgid "Listen dim level"
-msgstr ""
+msgstr "Прослуховування заглушеного рівня"
 
 #: src/gui/widgets/control_room.c:53
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
+"Рівень, на який слід установити інші канали, коли на каналі ввімкнено "
+"Прослуховування"
 
 #: src/gui/widgets/control_room.c:71
 msgid "Monitor out"
@@ -2169,6 +2171,12 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart %s"
 msgstr ""
+"Мова для вибраної мови недоступна. Спершу увімкніть один, скориставшись "
+"наведеними нижче кроками, і спробуйте ще раз.\n"
+"1. Видаліть коментарі з будь-якої локалі, починаючи з коду мови <b> %s </b> "
+"у <b> /etc/locale.gen </b> (потрібні привілеї root)\n"
+"2. Запустіть <b> locale-gen </b> від імені користувача\n"
+"3. Перезапустити %s"
 
 #: src/settings/settings.c:115
 #, c-format
@@ -3232,7 +3240,7 @@ msgstr ""
 
 #: resources/ui/active_hardware_popover.ui:100
 msgid "Scan again for MIDI controllers"
-msgstr ""
+msgstr "Знову шукайте контролери MIDI"
 
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:116

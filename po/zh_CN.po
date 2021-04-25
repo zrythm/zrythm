@@ -7,13 +7,14 @@
 # yu zhang <zhangyu201510@gmail.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Eric <spice2wolf@gmail.com>, 2021.
+# UnluckyNinja <unluckyninja1994@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-03 15:37+0100\n"
-"PO-Revision-Date: 2021-03-28 13:30+0000\n"
-"Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"PO-Revision-Date: 2021-04-11 23:05+0000\n"
+"Last-Translator: UnluckyNinja <unluckyninja1994@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -177,7 +178,7 @@ msgstr "取消静音"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:202
 msgid "Invert"
-msgstr ""
+msgstr "翻转"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
 msgid "Normalize"
@@ -185,11 +186,11 @@ msgstr "正常化"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
-msgstr ""
+msgstr "反转"
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
-msgstr ""
+msgstr "无效化"
 
 #: inc/audio/track.h:168 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -281,8 +282,9 @@ msgid "192,000"
 msgstr "192,000"
 
 #: inc/audio/engine.h:289
+#, fuzzy
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Dummy (libsoundio)"
 
 #: inc/audio/engine.h:356
 msgid "ALSA Sequencer (not working)"
@@ -294,23 +296,23 @@ msgstr "ALSA 音序器（rtmidi）"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:128
 msgid "Crescendo"
-msgstr ""
+msgstr "渐强"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:134
 msgid "Flam"
-msgstr ""
+msgstr "装饰音"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
-msgstr ""
+msgstr "水平翻转"
 
 #: inc/audio/midi_function.h:59 inc/audio/automation_function.h:51
 msgid "Flip V"
-msgstr ""
+msgstr "竖直翻转"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:155
 msgid "Legato"
-msgstr ""
+msgstr "连奏"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:161
 msgid "Portato"
@@ -318,11 +320,11 @@ msgstr "次断音"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:167
 msgid "Staccato"
-msgstr ""
+msgstr "断奏"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:173
 msgid "Strum"
-msgstr ""
+msgstr "扫弦"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -514,7 +516,7 @@ msgstr "未知操作"
 #: src/zrythm_app.c:1507
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "该选项需要 libguile\n"
 
 #: src/zrythm_app.c:1654
 msgid "Print version information"
@@ -522,23 +524,23 @@ msgstr "打印版本信息"
 
 #: src/zrythm_app.c:1659
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "转换 ZPJ-FILE 为 YAML"
 
 #: src/zrythm_app.c:1664
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "转换 YAML-PROJECT-FILE 为 .zpj 格式"
 
 #: src/zrythm_app.c:1669
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "从脚本文件中生成工程"
 
 #: src/zrythm_app.c:1673
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "以用户友好的方式打印输出"
 
 #: src/zrythm_app.c:1677
 msgid "Print current settings"
-msgstr ""
+msgstr "打印当前设定"
 
 #: src/zrythm_app.c:1681
 msgid "Reset to factory settings"
@@ -554,14 +556,15 @@ msgstr "覆盖要使用的MIDI后端"
 
 #: src/zrythm_app.c:1692
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "为以下简写： --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1718
+#, fuzzy
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[PROJECT-FILE]"
 
 #: src/zrythm_app.c:1723
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Examples:\n"
 "  --zpj-to-yaml a.zpj > b.yaml        Convert a a.zpj to YAML and save to b."
@@ -571,11 +574,17 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
+"样例:\n"
+"\t--zpj-to-yaml a.zpj > b.yaml\t转换 a.zpj 到 YAML 并且保存为 b.yaml\n"
+"\t--gen-project a.scm -o myproject\t从 a.scm 生成 myproject\n"
+"\t-p --pretty\t以利于阅读的方式打印当前设置\n"
+"\n"
+"请报告问题至 %s\n"
 
 #: src/zrythm_app.c:1735
 #, c-format
 msgid "Run %s, optionally passing a project file."
-msgstr ""
+msgstr "运行 %s, 可选地传递一个工程文件。"
 
 #: src/plugins/carla_native_plugin.c:591 src/plugins/lv2_plugin.c:3473
 msgid "Default bank"
@@ -603,11 +612,11 @@ msgstr "MIDI Out"
 
 #: src/plugins/carla_native_plugin.c:1138
 msgid "CV in"
-msgstr ""
+msgstr "控制电压(CV)输入"
 
 #: src/plugins/carla_native_plugin.c:1148
 msgid "CV out"
-msgstr ""
+msgstr "控制电压(CV)输出"
 
 #: src/plugins/plugin_manager.c:370
 msgid "Error loading LV2 bundle dir: "
@@ -1130,7 +1139,7 @@ msgstr "添加到集锦"
 
 #: src/gui/widgets/plugin_browser.c:760
 msgid "Remove from collection"
-msgstr ""
+msgstr "从合集中移除"
 
 #: src/gui/widgets/plugin_browser.c:877 src/gui/widgets/plugin_browser.c:914
 msgid "Collection name"
@@ -1216,7 +1225,7 @@ msgstr "新的缓冲大小"
 
 #: src/gui/widgets/bot_bar.c:451
 msgid "Failed reading value"
-msgstr ""
+msgstr "读取数值失败"
 
 #: src/gui/widgets/bot_bar.c:467
 msgid "This feature is not available at the moment"
@@ -1414,7 +1423,7 @@ msgstr "报告错误"
 
 #: src/gui/widgets/port_connections_tree.c:277
 msgid "Source"
-msgstr ""
+msgstr "源"
 
 #: src/gui/widgets/port_connections_tree.c:295
 #: src/gui/widgets/cc_bindings_tree.c:303
@@ -1529,7 +1538,7 @@ msgstr "未选择控件"
 
 #: src/gui/widgets/automatable_selector_popover.c:399
 msgid "Macros"
-msgstr ""
+msgstr "宏"
 
 #: src/gui/widgets/automatable_selector_popover.c:410
 #, c-format
@@ -1715,7 +1724,7 @@ msgstr "立体声输入"
 
 #: src/gui/widgets/ports_expander.c:395
 msgid "MIDI In"
-msgstr ""
+msgstr "MIDI 输入"
 
 #: src/gui/widgets/ports_expander.c:403
 msgid "MIDI Out"
@@ -1891,7 +1900,7 @@ msgstr "删除"
 
 #: src/gui/widgets/track.c:1251
 msgid "Freeze/unfreeze"
-msgstr ""
+msgstr "切换冻结"
 
 #: src/gui/widgets/track.c:1255
 msgid "Lock/unlock"
@@ -2062,7 +2071,7 @@ msgstr "<名称>.<格式>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:660
 msgid "<date>_<name>.<format>"
-msgstr ""
+msgstr "<date>_<name>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:908
 msgid "No tracks to export"
@@ -2289,7 +2298,7 @@ msgstr "标记"
 #: src/audio/modulator_macro_processor.c:92
 #, c-format
 msgid "Macro %d"
-msgstr ""
+msgstr "宏 %d"
 
 #: src/audio/modulator_macro_processor.c:110
 #, c-format
@@ -2609,19 +2618,19 @@ msgstr "量化编曲者选集"
 
 #: src/actions/midi_mapping_action.c:211
 msgid "MIDI mapping enable"
-msgstr ""
+msgstr "MIDI 映射启用"
 
 #: src/actions/midi_mapping_action.c:214
 msgid "MIDI mapping disable"
-msgstr ""
+msgstr "MIDI 映射禁用"
 
 #: src/actions/midi_mapping_action.c:217
 msgid "MIDI mapping bind"
-msgstr ""
+msgstr "MIDI 映射绑定"
 
 #: src/actions/midi_mapping_action.c:220
 msgid "MIDI mapping unbind"
-msgstr ""
+msgstr "MIDI 映射解绑"
 
 #: src/actions/actions.c:375
 #, c-format
@@ -2692,7 +2701,7 @@ msgstr "图形导出"
 
 #: src/actions/actions.c:1085
 msgid "Can't paste incompatible data"
-msgstr ""
+msgstr "无法粘贴不兼容的数据"
 
 #: src/actions/actions.c:1549
 msgid "The track selection contains a track that cannot be deleted"
@@ -3491,7 +3500,7 @@ msgstr "MIDI CC 绑定"
 
 #: resources/ui/main_notebook.ui:134
 msgid "Bindings"
-msgstr ""
+msgstr "绑定"
 
 #: resources/ui/main_notebook.ui:156
 msgid "Scenes (Live view)"
@@ -3934,8 +3943,9 @@ msgid "Filename Pattern"
 msgstr "文件名模式"
 
 #: resources/ui/export_dialog.ui:464
+#, fuzzy
 msgid "~"
-msgstr ""
+msgstr "~"
 
 #: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
@@ -3954,8 +3964,9 @@ msgid "Note length"
 msgstr "音符长度"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
+#, fuzzy
 msgid "t"
-msgstr ""
+msgstr "t"
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
 msgid "Triplet"
@@ -4003,11 +4014,11 @@ msgstr ""
 
 #: resources/ui/editor_toolbar.ui:142 resources/ui/editor_toolbar.ui:185
 msgid "Horizontal"
-msgstr ""
+msgstr "水平"
 
 #: resources/ui/editor_toolbar.ui:148 resources/ui/editor_toolbar.ui:191
 msgid "Vertical"
-msgstr ""
+msgstr "竖直"
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:563
 msgid "Engine"
