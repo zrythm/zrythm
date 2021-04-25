@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-17 09:46+0000\n"
+"POT-Creation-Date: 2021-04-25 05:03+0100\n"
 "PO-Revision-Date: 2021-01-05 14:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -3498,7 +3498,10 @@ msgid "Hardware"
 msgstr "Hardware"
 
 #: ../../getting-started/system-requirements.rst:10
-msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
+#, fuzzy
+msgid ""
+"x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or "
+"aarch64 (ARMv8)"
 msgstr "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) ou aarch64 (ARMv8)"
 
 #: ../../getting-started/system-requirements.rst:13
@@ -6191,10 +6194,23 @@ msgid "Returns the channel of ``track``."
 msgstr "Retorna o canal da faixa."
 
 #: ../../scripting/api/audio track.rst:25
-msgid "``(track-set-muted track muted)``"
+msgid "``(track-set-soloed track solo)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
+#, fuzzy
+msgid ""
+"Sets whether ``track`` is soloed or not. This creates an undoable action "
+"and performs it."
+msgstr ""
+"Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
+"desfeita e executa-a."
+
+#: ../../scripting/api/audio track.rst:30
+msgid "``(track-set-muted track muted)``"
+msgstr ""
+
+#: ../../scripting/api/audio track.rst:28
 #, fuzzy
 msgid ""
 "Sets whether ``track`` is muted or not. This creates an undoable action "
@@ -6203,11 +6219,11 @@ msgstr ""
 "Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
 "desfeita e executa-a."
 
-#: ../../scripting/api/audio track.rst:30
+#: ../../scripting/api/audio track.rst:35
 msgid "``(track-add-lane-region track region lane_pos)``"
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:28
+#: ../../scripting/api/audio track.rst:33
 #, fuzzy
 msgid ""
 "Adds ``region`` to track ``track``. To be used for regions with lanes "

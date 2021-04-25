@@ -38,17 +38,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-17 09:46+0000\n"
+"POT-Creation-Date: 2021-04-25 05:03+0100\n"
 "PO-Revision-Date: 2021-04-11 23:05+0000\n"
 "Last-Translator: UnluckyNinja <unluckyninja1994@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.6-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -3010,7 +3009,9 @@ msgid "Hardware"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:10
-msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
+msgid ""
+"x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or "
+"aarch64 (ARMv8)"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:13
@@ -5276,20 +5277,30 @@ msgid "Returns the channel of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:25
-msgid "``(track-set-muted track muted)``"
+msgid "``(track-set-soloed track solo)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
+msgid ""
+"Sets whether ``track`` is soloed or not. This creates an undoable action "
+"and performs it."
+msgstr ""
+
+#: ../../scripting/api/audio track.rst:30
+msgid "``(track-set-muted track muted)``"
+msgstr ""
+
+#: ../../scripting/api/audio track.rst:28
 msgid ""
 "Sets whether ``track`` is muted or not. This creates an undoable action "
 "and performs it."
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:30
+#: ../../scripting/api/audio track.rst:35
 msgid "``(track-add-lane-region track region lane_pos)``"
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:28
+#: ../../scripting/api/audio track.rst:33
 msgid ""
 "Adds ``region`` to track ``track``. To be used for regions with lanes "
 "(midi/audio)"
@@ -7263,6 +7274,9 @@ msgid ""
 "in the bottom left corner."
 msgstr ""
 
+#~ msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
+#~ msgstr ""
+
 #~ msgid "``(zrythm)``"
 #~ msgstr "zrythm"
 
@@ -7301,3 +7315,4 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
+

@@ -19,6 +19,11 @@
    Returns the channel of ``track``.
 
 
+``(track-set-soloed track solo)``
+   Sets whether ``track`` is soloed or not. This creates an undoable
+   action and performs it.
+
+
 ``(track-set-muted track muted)``
    Sets whether ``track`` is muted or not. This creates an undoable
    action and performs it.

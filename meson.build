@@ -84,8 +84,9 @@ language_mappings = {
   'pl': 'Polski',
   'pt': 'Português',
   'pt_BR': 'Português BR',
-  'ru': 'русский',
+  'ru': 'Русский',
   'sv': 'Svenska',
+  'uk': 'Українська',
   'zh_CN': '简体中文',
   'zh_TW': '繁體中文',
   }

@@ -257,6 +257,7 @@ inc/gui/widgets/pinned_tracklist.h
 inc/gui/widgets/plugin_properties_expander.h
 inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
+inc/gui/widgets/bounce_step_selector.h
 inc/gui/widgets/dialogs/export_progress_dialog.h
 inc/gui/widgets/dialogs/string_entry_dialog.h
 inc/gui/widgets/dialogs/changelog_dialog.h
@@ -311,6 +312,7 @@ inc/utils/algorithms.h
 inc/utils/yaml.h
 inc/utils/dialogs.h
 inc/utils/arrays.h
+inc/utils/sort.h
 inc/utils/io.h
 inc/utils/color.h
 inc/utils/cpu_windows.h
@@ -488,6 +490,7 @@ src/gui/widgets/audio_group_track.c
 src/gui/widgets/midi_group_track.c
 src/gui/widgets/tracklist.c
 src/gui/widgets/piano_keyboard.c
+src/gui/widgets/bounce_step_selector.c
 src/gui/widgets/fader_controls_grid.c
 src/gui/widgets/midi_note.c
 src/gui/widgets/selection_info.c
@@ -711,6 +714,7 @@ src/utils/dictionary.c
 src/utils/symap.c
 src/utils/backtrace.c
 src/utils/string.c
+src/utils/sort.c
 src/settings/plugin_settings.c
 src/settings/settings.c
 src/audio/midi_file.c

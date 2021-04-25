@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-03-17 09:46+0000\n"
+"POT-Creation-Date: 2021-04-25 05:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3320,7 +3320,10 @@ msgid "Hardware"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:10
-msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
+#, fuzzy
+msgid ""
+"x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or "
+"aarch64 (ARMv8)"
 msgstr "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) o aarch64 (ARMv8)"
 
 #: ../../getting-started/system-requirements.rst:13
@@ -5718,20 +5721,30 @@ msgid "Returns the channel of ``track``."
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:25
-msgid "``(track-set-muted track muted)``"
+msgid "``(track-set-soloed track solo)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
+msgid ""
+"Sets whether ``track`` is soloed or not. This creates an undoable action "
+"and performs it."
+msgstr ""
+
+#: ../../scripting/api/audio track.rst:30
+msgid "``(track-set-muted track muted)``"
+msgstr ""
+
+#: ../../scripting/api/audio track.rst:28
 msgid ""
 "Sets whether ``track`` is muted or not. This creates an undoable action "
 "and performs it."
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:30
+#: ../../scripting/api/audio track.rst:35
 msgid "``(track-add-lane-region track region lane_pos)``"
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:28
+#: ../../scripting/api/audio track.rst:33
 msgid ""
 "Adds ``region`` to track ``track``. To be used for regions with lanes "
 "(midi/audio)"
