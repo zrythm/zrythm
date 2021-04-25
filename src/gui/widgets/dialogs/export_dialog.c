@@ -839,6 +839,7 @@ init_export_info (
   ExportSettings *     info,
   Track *              track)
 {
+  memset (info, 0, sizeof (ExportSettings));
   info->format =
     gtk_combo_box_get_active (self->format);
   g_settings_set_enum (
@@ -891,6 +892,8 @@ info->time_range = TIME_RANGE_##x
 
   info->file_uri =
     get_export_filename (self, true, track);
+
+  info->bounce_with_parents = true;
 
   info->mode = EXPORT_MODE_TRACKS;
   info->has_error = false;

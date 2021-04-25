@@ -210,40 +210,59 @@ test_export_wav ()
 
   for (int i = 0; i < 2; i++)
     {
-      g_assert_false (TRANSPORT_IS_ROLLING);
-      g_assert_cmpint (
-        TRANSPORT->playhead_pos.frames, ==, 0);
+      for (int j = 0; j < 2; j++)
+        {
+          g_assert_false (TRANSPORT_IS_ROLLING);
+          g_assert_cmpint (
+            TRANSPORT->playhead_pos.frames, ==, 0);
 
-      char * filename =
-        g_strdup_printf ("test_wav%d.wav", i);
+          char * filename =
+            g_strdup_printf ("test_wav%d.wav", i);
 
-      ExportSettings settings;
-      settings.has_error = false;
-      settings.cancelled = false;
-      settings.format = AUDIO_FORMAT_WAV;
-      settings.artist = g_strdup ("Test Artist");
-      settings.genre = g_strdup ("Test Genre");
-      settings.depth = BIT_DEPTH_16;
-      settings.mode = EXPORT_MODE_FULL;
-      settings.time_range = TIME_RANGE_LOOP;
-      char * exports_dir =
-        project_get_path (
-          PROJECT, PROJECT_PATH_EXPORTS, false);
-      settings.file_uri =
-        g_build_filename (
-          exports_dir, filename, NULL);
-      ret = exporter_export (&settings);
-      g_assert_false (AUDIO_ENGINE->exporting);
-      g_assert_cmpint (ret, ==, 0);
+          ExportSettings settings;
+          settings.has_error = false;
+          settings.cancelled = false;
+          settings.format = AUDIO_FORMAT_WAV;
+          settings.artist = g_strdup ("Test Artist");
+          settings.title = g_strdup ("Test Title");
+          settings.genre = g_strdup ("Test Genre");
+          settings.depth = BIT_DEPTH_16;
+          settings.time_range = TIME_RANGE_LOOP;
+          if (j == 0)
+            {
+              settings.mode = EXPORT_MODE_FULL;
+              tracklist_mark_all_tracks_for_bounce (
+                TRACKLIST, F_NO_BOUNCE);
+              settings.bounce_with_parents = false;
+            }
+          else
+            {
+              settings.mode = EXPORT_MODE_TRACKS;
+              tracklist_mark_all_tracks_for_bounce (
+                TRACKLIST, F_BOUNCE);
+              settings.bounce_with_parents = true;
+            }
+          char * exports_dir =
+            project_get_path (
+              PROJECT, PROJECT_PATH_EXPORTS, false);
+          settings.file_uri =
+            g_build_filename (
+              exports_dir, filename, NULL);
+          ret = exporter_export (&settings);
+          g_assert_false (AUDIO_ENGINE->exporting);
+          g_assert_cmpint (ret, ==, 0);
 
-      check_fingerprint_similarity (
-        filepath, settings.file_uri, 100, 6);
+          check_fingerprint_similarity (
+            filepath, settings.file_uri, 100, 6);
 
-      g_free (filename);
+          io_remove (settings.file_uri);
+          g_free (filename);
+          export_settings_free_members (&settings);
 
-      g_assert_false (TRANSPORT_IS_ROLLING);
-      g_assert_cmpint (
-        TRANSPORT->playhead_pos.frames, ==, 0);
+          g_assert_false (TRANSPORT_IS_ROLLING);
+          g_assert_cmpint (
+            TRANSPORT->playhead_pos.frames, ==, 0);
+        }
     }
 
   g_free (filepath);
@@ -816,6 +835,9 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/audio/exporter/"
 
   g_test_add_func (
+    TEST_PREFIX "test export wav",
+    (GTestFunc) test_export_wav);
+  g_test_add_func (
     TEST_PREFIX "test instrument track",
     (GTestFunc) test_bounce_instrument_track);
   g_test_add_func (
@@ -833,9 +855,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test mixdown midi routed to instrument track",
     (GTestFunc) test_mixdown_midi_routed_to_instrument_track);
-  g_test_add_func (
-    TEST_PREFIX "test export wav",
-    (GTestFunc) test_export_wav);
 
   return g_test_run ();
 }
