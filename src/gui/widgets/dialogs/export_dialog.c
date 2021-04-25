@@ -756,6 +756,7 @@ on_format_changed (
 
   SET_UNSENSITIVE (export_genre);
   SET_UNSENSITIVE (export_artist);
+  SET_UNSENSITIVE (export_title);
   SET_UNSENSITIVE (bit_depth);
   SET_UNSENSITIVE (dither);
 
@@ -767,11 +768,13 @@ on_format_changed (
     case AUDIO_FORMAT_OGG_OPUS:
       SET_SENSITIVE (export_genre);
       SET_SENSITIVE (export_artist);
+      SET_SENSITIVE (export_title);
       SET_SENSITIVE (dither);
       break;
     default:
       SET_SENSITIVE (export_genre);
       SET_SENSITIVE (export_artist);
+      SET_SENSITIVE (export_title);
       SET_SENSITIVE (bit_depth);
       SET_SENSITIVE (dither);
       break;
@@ -852,11 +855,16 @@ init_export_info (
   info->artist =
     g_strdup (
       gtk_entry_get_text (self->export_artist));
+  info->title =
+    g_strdup (
+      gtk_entry_get_text (self->export_title));
   info->genre =
     g_strdup (
       gtk_entry_get_text (self->export_genre));
   g_settings_set_string (
     S_EXPORT, "artist", info->artist);
+  g_settings_set_string (
+    S_EXPORT, "title", info->title);
   g_settings_set_string (
     S_EXPORT, "genre", info->genre);
 
@@ -1475,6 +1483,7 @@ export_dialog_widget_class_init (
   BIND_CHILD (cancel_button);
   BIND_CHILD (export_button);
   BIND_CHILD (export_artist);
+  BIND_CHILD (export_title);
   BIND_CHILD (export_genre);
   BIND_CHILD (filename_pattern);
   BIND_CHILD (bit_depth);
@@ -1503,6 +1512,9 @@ export_dialog_widget_init (
   gtk_entry_set_text (
     GTK_ENTRY (self->export_artist),
     g_settings_get_string (S_EXPORT, "artist"));
+  gtk_entry_set_text (
+    GTK_ENTRY (self->export_title),
+    g_settings_get_string (S_EXPORT, "title"));
   gtk_entry_set_text (
     GTK_ENTRY (self->export_genre),
     g_settings_get_string (S_EXPORT, "genre"));

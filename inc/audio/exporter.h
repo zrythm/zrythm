@@ -116,6 +116,7 @@ typedef struct ExportSettings
 {
   AudioFormat       format;
   char *            artist;
+  char *            title;
   char *            genre;
 
   /** Bit depth (16/24/64). */

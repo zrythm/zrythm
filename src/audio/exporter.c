@@ -265,6 +265,8 @@ export_audio (
   sf_set_string (
     sndfile, SF_STR_ARTIST, info->artist);
   sf_set_string (
+    sndfile, SF_STR_TITLE, info->title);
+  sf_set_string (
     sndfile, SF_STR_GENRE, info->genre);
 
   Position prev_playhead_pos;
@@ -598,6 +600,7 @@ export_settings_set_bounce_defaults (
 {
   self->format = AUDIO_FORMAT_WAV;
   self->artist = g_strdup ("");
+  self->title = g_strdup ("");
   self->genre = g_strdup ("");
   self->depth = BIT_DEPTH_16;
   self->time_range = TIME_RANGE_CUSTOM;
@@ -689,6 +692,7 @@ export_settings_free_members (
   ExportSettings * self)
 {
   g_free_and_null (self->artist);
+  g_free_and_null (self->title);
   g_free_and_null (self->genre);
   g_free_and_null (self->file_uri);
 }
