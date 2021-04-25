@@ -70,16 +70,11 @@ on_solo_toggled (
   Track * track = self->track;
   if (track)
     {
-      if (!track_is_selected (track))
-        {
-          track_select (
-            track, F_SELECT, F_EXCLUSIVE,
-            F_PUBLISH_EVENTS);
-        }
       track_set_soloed (
         self->track,
         gtk_toggle_button_get_active (btn),
-        true, true);
+        F_TRIGGER_UNDO, F_AUTO_SELECT,
+        F_PUBLISH_EVENTS);
     }
 }
 
@@ -91,16 +86,11 @@ on_mute_toggled (
   Track * track = self->track;
   if (track)
     {
-      if (!track_is_selected (track))
-        {
-          track_select (
-            track, F_SELECT, F_EXCLUSIVE,
-            F_PUBLISH_EVENTS);
-        }
       track_set_muted (
         self->track,
         gtk_toggle_button_get_active (btn),
-        true, true);
+        F_TRIGGER_UNDO, F_AUTO_SELECT,
+        F_PUBLISH_EVENTS);
     }
 }
 

@@ -86,7 +86,7 @@
     <child>
       <object class="GtkToolButton" id="export_as">
         <property name="visible">1</property>
-        <property name="icon-name">document-send</property>
+        <property name="icon-name">document-export</property>
         <property name="action-name">win.export-as</property>
       </object>
     </child>

@@ -683,6 +683,7 @@ track_set_muted (
   Track * self,
   bool    mute,
   bool    trigger_undo,
+  bool    auto_select,
   bool    fire_events)
 {
   g_return_if_fail (self->channel);
@@ -690,6 +691,11 @@ track_set_muted (
   g_message (
     "Setting track %s muted (%d)",
     self->name, mute);
+  if (auto_select)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE, fire_events);
+    }
   fader_set_muted (
     self->channel->fader, mute, trigger_undo,
     fire_events);
@@ -1082,17 +1088,28 @@ track_multiply_heights (
 /**
  * Sets track soloed, updates UI and optionally
  * adds the action to the undo stack.
+ *
+ * @param auto_select Makes this track the only
+ *   selection in the tracklist. Useful when soloing
+ *   a single track.
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
  */
 void
 track_set_soloed (
   Track * self,
   bool    solo,
   bool    trigger_undo,
+  bool    auto_select,
   bool    fire_events)
 {
   g_return_if_fail (self->channel);
-  track_select (
-    self, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+  if (auto_select)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE, fire_events);
+    }
   fader_set_soloed (
     self->channel->fader, solo, trigger_undo,
     fire_events);

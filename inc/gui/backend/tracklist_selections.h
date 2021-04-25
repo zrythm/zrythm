@@ -159,6 +159,32 @@ tracklist_selections_contains_undeletable_track (
   TracklistSelections * self);
 
 /**
+ * Returns whether the selections contain a soloed
+ * track if @ref soloed is true or an unsoloed track
+ * if @ref soloed is false.
+ *
+ * @param soloed Whether to check for soloed or
+ *   unsoloed tracks.
+ */
+bool
+tracklist_selections_contains_soloed_track (
+  TracklistSelections * self,
+  bool                  soloed);
+
+/**
+ * Returns whether the selections contain a muted
+ * track if @ref muted is true or an unmuted track
+ * if @ref muted is false.
+ *
+ * @param muted Whether to check for muted or
+ *   unmuted tracks.
+ */
+bool
+tracklist_selections_contains_muted_track (
+  TracklistSelections * self,
+  bool                  muted);
+
+/**
  * Returns if the Track is selected or not.
  */
 int

@@ -1194,15 +1194,22 @@ do_or_undo_edit (
       switch (self->edit_type)
         {
         case EDIT_TRACK_ACTION_TYPE_SOLO:
-          track_set_soloed (
-            track, _do == self->ival_after,
-            false,
-            F_NO_PUBLISH_EVENTS);
+          if (track_type_has_channel (track->type))
+            {
+              track_set_soloed (
+                track, _do == self->ival_after,
+                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_NO_PUBLISH_EVENTS);
+            }
           break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
-          track_set_muted (
-            track, _do == self->ival_after,
-            F_NO_TRIGGER_UNDO, F_NO_PUBLISH_EVENTS);
+          if (track_type_has_channel (track->type))
+            {
+              track_set_muted (
+                track, _do == self->ival_after,
+                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_NO_PUBLISH_EVENTS);
+            }
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
@@ -1478,7 +1485,36 @@ tracklist_selections_action_stringize (
         }
       else
         {
-          g_return_val_if_reached (g_strdup (""));
+          switch (self->edit_type)
+            {
+            case EDIT_TRACK_ACTION_TYPE_SOLO:
+              if (self->ival_after)
+                return g_strdup_printf (
+                  _("Solo %d Tracks"),
+                  self->num_tracks);
+              else
+                return g_strdup_printf (
+                  _("Unsolo %d Tracks"),
+                  self->num_tracks);
+            case EDIT_TRACK_ACTION_TYPE_MUTE:
+              if (self->ival_after)
+                return g_strdup_printf (
+                  _("Mute %d Tracks"),
+                  self->num_tracks);
+              else
+                return g_strdup_printf (
+                  _("Unmute %d Tracks"),
+                  self->num_tracks);
+            case EDIT_TRACK_ACTION_TYPE_COLOR:
+              return g_strdup (
+                _("Change color"));
+            case EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE:
+              return g_strdup (
+                _("Change MIDI fader mode"));
+            default:
+              g_return_val_if_reached (
+                g_strdup (""));
+            }
         }
     case TRACKLIST_SELECTIONS_ACTION_MOVE:
       if (self->tls_before->num_tracks == 1)

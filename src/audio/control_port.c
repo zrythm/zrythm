@@ -313,7 +313,9 @@ control_port_set_val_from_normalized (
         {
           Track * track = port_get_track (self, 1);
           track_set_muted (
-            track, self->control > 0.0001f, 0, 1);
+            track, self->control > 0.0001f,
+            F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+            F_PUBLISH_EVENTS);
         }
     }
   else if (id->flags & PORT_FLAG_CHANNEL_FADER)

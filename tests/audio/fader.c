@@ -190,7 +190,7 @@ test_solo ()
   /* test solo group makes sound */
   track_set_soloed (
     group_track, F_SOLO, F_TRIGGER_UNDO,
-    F_NO_PUBLISH_EVENTS);
+    F_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -200,11 +200,28 @@ test_solo ()
   /* test solo audio track makes sound */
   track_set_soloed (
     audio_track, F_SOLO, F_TRIGGER_UNDO,
-    F_NO_PUBLISH_EVENTS);
+    F_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
   test_track_has_sound (audio_track2, false);
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* test solo both audio tracks */
+  track_select (
+    audio_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    audio_track2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_edit_solo (
+      TRACKLIST_SELECTIONS, F_SOLO);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  test_track_has_sound (P_MASTER_TRACK, true);
+  test_track_has_sound (group_track, true);
+  test_track_has_sound (audio_track, true);
+  test_track_has_sound (audio_track2, true);
   undo_manager_undo (UNDO_MANAGER);
 
   test_helper_zrythm_cleanup ();

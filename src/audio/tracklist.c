@@ -81,6 +81,36 @@ tracklist_init_loaded (
 }
 
 /**
+ * Selects or deselects all tracks.
+ *
+ * @note When deselecting the last track will become
+ *   selected (there must always be >= 1 tracks
+ *   selected).
+ */
+void
+tracklist_select_all (
+  Tracklist * self,
+  bool        select,
+  bool        fire_events)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      track_select (
+        track, select, F_NOT_EXCLUSIVE,
+        fire_events);
+
+      if (!select && i == self->num_tracks - 1)
+        {
+          track_select (
+            track, F_SELECT, F_EXCLUSIVE,
+            fire_events);
+        }
+    }
+}
+
+/**
  * Finds visible tracks and puts them in given array.
  */
 void

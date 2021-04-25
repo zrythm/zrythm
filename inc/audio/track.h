@@ -614,6 +614,7 @@ track_set_muted (
   Track * track,
   bool    mute,
   bool    trigger_undo,
+  bool    auto_select,
   bool    fire_events);
 
 NONNULL
@@ -684,16 +685,25 @@ track_set_recording (
   bool      recording,
   bool      fire_events);
 
+
 /**
- * Sets track soloed and optionally adds the action
- * to the undo stack.
+ * Sets track soloed, updates UI and optionally
+ * adds the action to the undo stack.
+ *
+ * @param auto_select Makes this track the only
+ *   selection in the tracklist. Useful when soloing
+ *   a single track.
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
  */
 NONNULL
 void
 track_set_soloed (
-  Track * track,
+  Track * self,
   bool    solo,
   bool    trigger_undo,
+  bool    auto_select,
   bool    fire_events);
 
 /**

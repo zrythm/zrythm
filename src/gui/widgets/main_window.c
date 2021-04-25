@@ -527,6 +527,14 @@ main_window_widget_init (MainWindowWidget * self)
       activate_hide_selected_tracks },
     { "pin-selected-tracks",
       activate_pin_selected_tracks },
+    { "solo-selected-tracks",
+      activate_solo_selected_tracks },
+    { "unsolo-selected-tracks",
+      activate_unsolo_selected_tracks },
+    { "mute-selected-tracks",
+      activate_mute_selected_tracks },
+    { "unmute-selected-tracks",
+      activate_unmute_selected_tracks },
 
     /* piano roll */
     { "toggle-drum-mode", NULL, NULL,

@@ -286,4 +286,10 @@
 #define F_SOLO 1
 #define F_NO_SOLO 0
 
+#define F_AUTO_SELECT 1
+#define F_NO_AUTO_SELECT 0
+
+#define F_TOGGLE 1
+#define F_NO_TOGGLE 0
+
 #endif

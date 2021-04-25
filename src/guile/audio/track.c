@@ -85,6 +85,23 @@ SCM_DEFINE (
 #undef FUNC_NAME
 
 SCM_DEFINE (
+  s_track_set_soloed,
+  "track-set-soloed", 2, 0, 0,
+  (SCM track, SCM solo),
+  "Sets whether @var{track} is soloed or not. This creates an undoable action and performs it.")
+#define FUNC_NAME s_
+{
+  Track * reftrack = scm_to_pointer (track);
+
+  track_set_soloed (
+    reftrack, scm_to_bool (solo), F_TRIGGER_UNDO,
+    F_AUTO_SELECT, F_PUBLISH_EVENTS);
+
+  return SCM_BOOL_T;
+}
+#undef FUNC_NAME
+
+SCM_DEFINE (
   s_track_set_muted,
   "track-set-muted", 2, 0, 0,
   (SCM track, SCM muted),
@@ -94,8 +111,8 @@ SCM_DEFINE (
   Track * reftrack = scm_to_pointer (track);
 
   track_set_muted (
-    reftrack, scm_to_bool (muted), true,
-    F_PUBLISH_EVENTS);
+    reftrack, scm_to_bool (muted), F_TRIGGER_UNDO,
+    F_AUTO_SELECT, F_PUBLISH_EVENTS);
 
   return SCM_BOOL_T;
 }

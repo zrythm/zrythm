@@ -146,9 +146,27 @@ static const cyaml_schema_value_t
 /**
  * Initializes the tracklist when loading a project.
  */
+NONNULL
 void
 tracklist_init_loaded (
   Tracklist * self);
+
+Tracklist *
+tracklist_new (Project * project);
+
+/**
+ * Selects or deselects all tracks.
+ *
+ * @note When deselecting the last track will become
+ *   selected (there must always be >= 1 tracks
+ *   selected).
+ */
+NONNULL
+void
+tracklist_select_all (
+  Tracklist * self,
+  bool        select,
+  bool        fire_events);
 
 /**
  * Finds visible tracks and puts them in given array.
@@ -168,10 +186,12 @@ tracklist_find_track_by_name (
   Tracklist *  self,
   const char * name);
 
+NONNULL
 int
 tracklist_contains_master_track (
   Tracklist * self);
 
+NONNULL
 int
 tracklist_contains_chord_track (
   Tracklist * self);
@@ -179,6 +199,7 @@ tracklist_contains_chord_track (
 /**
  * Prints the tracks (for debugging).
  */
+NONNULL
 void
 tracklist_print_tracks (
   Tracklist * self);
@@ -443,9 +464,6 @@ tracklist_activate_all_plugins (
 void
 tracklist_expose_ports_to_backend (
   Tracklist * self);
-
-Tracklist *
-tracklist_new (Project * project);
 
 /**
  * Marks or unmarks all tracks for bounce.

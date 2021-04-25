@@ -1175,12 +1175,17 @@ activate_clear_selection (
   if (sel)
     {
       arranger_selections_clear (
-        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+        sel, F_NO_FREE, F_PUBLISH_EVENTS);
+    }
+  else if (PROJECT->last_selection ==
+             SELECTION_TYPE_TRACKLIST)
+    {
+      tracklist_select_all (
+        TRACKLIST, F_NO_SELECT, F_PUBLISH_EVENTS);
     }
   else
     {
-      g_debug (
-        "No arranger focused, doing nothing");
+      g_debug ("%s: doing nothing", __func__);
     }
 }
 
@@ -1198,10 +1203,15 @@ activate_select_all (
       arranger_selections_select_all (
         sel, F_PUBLISH_EVENTS);
     }
+  else if (PROJECT->last_selection ==
+             SELECTION_TYPE_TRACKLIST)
+    {
+      tracklist_select_all (
+        TRACKLIST, F_SELECT, F_PUBLISH_EVENTS);
+    }
   else
     {
-      g_debug (
-        "No arranger focused, doing nothing");
+      g_debug ("%s: doing nothing", __func__);
     }
 }
 
@@ -1598,6 +1608,74 @@ activate_pin_selected_tracks (
         tracklist_selections_action_new_pin (
           TRACKLIST_SELECTIONS);
     }
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
+activate_solo_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_solo (
+      TRACKLIST_SELECTIONS, F_SOLO);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
+activate_unsolo_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_solo (
+      TRACKLIST_SELECTIONS, F_NO_SOLO);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
+activate_mute_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_mute (
+      TRACKLIST_SELECTIONS, F_MUTE);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
+activate_unmute_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_mute (
+      TRACKLIST_SELECTIONS, F_NO_MUTE);
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 

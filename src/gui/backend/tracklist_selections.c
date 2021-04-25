@@ -381,6 +381,58 @@ tracklist_selections_contains_undeletable_track (
   return false;
 }
 
+/**
+ * Returns whether the selections contain a soloed
+ * track if @ref soloed is true or an unsoloed track
+ * if @ref soloed is false.
+ *
+ * @param soloed Whether to check for soloed or
+ *   unsoloed tracks.
+ */
+bool
+tracklist_selections_contains_soloed_track (
+  TracklistSelections * self,
+  bool                  soloed)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      if (!track_type_has_channel (track->type))
+        continue;
+
+      if (track_get_soloed (track) == soloed)
+        return true;
+    }
+
+  return false;
+}
+
+/**
+ * Returns whether the selections contain a muted
+ * track if @ref muted is true or an unmuted track
+ * if @ref muted is false.
+ *
+ * @param muted Whether to check for muted or
+ *   unmuted tracks.
+ */
+bool
+tracklist_selections_contains_muted_track (
+  TracklistSelections * self,
+  bool                  muted)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      if (!track_type_has_channel (track->type))
+        continue;
+
+      if (track_get_muted (track) == muted)
+        return true;
+    }
+
+  return false;
+}
+
 int
 tracklist_selections_contains_track (
   TracklistSelections * self,
