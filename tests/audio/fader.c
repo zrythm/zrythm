@@ -224,6 +224,35 @@ test_solo ()
   test_track_has_sound (audio_track2, true);
   undo_manager_undo (UNDO_MANAGER);
 
+  /* test undo/redo */
+  track_select (
+    audio_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_edit_solo (
+      TRACKLIST_SELECTIONS, F_SOLO);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (track_get_soloed (audio_track));
+  g_assert_false (track_get_soloed (audio_track2));
+  track_select (
+    audio_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    audio_track2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_edit_solo (
+      TRACKLIST_SELECTIONS, F_SOLO);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (track_get_soloed (audio_track));
+  g_assert_true (track_get_soloed (audio_track2));
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (track_get_soloed (audio_track));
+  g_assert_false (track_get_soloed (audio_track2));
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (track_get_soloed (audio_track));
+  g_assert_true (track_get_soloed (audio_track2));
+
   test_helper_zrythm_cleanup ();
 }
 

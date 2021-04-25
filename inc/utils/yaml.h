@@ -321,6 +321,20 @@ gdk_rgba_fields_schema[] =
   CYAML_FIELD_END
 };
 
+static const cyaml_schema_value_t
+  gdk_rgba_schema_default =
+{
+  YAML_VALUE_DEFAULT (
+    GdkRGBA, gdk_rgba_fields_schema),
+};
+
+static const cyaml_schema_value_t
+  gdk_rgba_schema =
+{
+  YAML_VALUE_PTR (
+    GdkRGBA, gdk_rgba_fields_schema),
+};
+
 typedef enum YamlDummyEnum
 {
   YAML_DUMMY_ENUM1,

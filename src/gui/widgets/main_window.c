@@ -535,6 +535,8 @@ main_window_widget_init (MainWindowWidget * self)
       activate_mute_selected_tracks },
     { "unmute-selected-tracks",
       activate_unmute_selected_tracks },
+    { "change-track-color",
+      activate_change_track_color },
 
     /* piano roll */
     { "toggle-drum-mode", NULL, NULL,

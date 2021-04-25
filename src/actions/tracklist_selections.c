@@ -325,6 +325,15 @@ tracklist_selections_action_new (
       self->new_txt = g_strdup (new_txt);
     }
 
+  self->ival_before =
+    calloc (
+      MAX (1, (size_t) self->num_tracks),
+      sizeof (int));
+  self->colors_before =
+    calloc (
+      MAX (1, (size_t) self->num_tracks),
+      sizeof (GdkRGBA));
+
   g_return_val_if_fail (validate (self), NULL);
 
   return ua;
@@ -1196,19 +1205,31 @@ do_or_undo_edit (
         case EDIT_TRACK_ACTION_TYPE_SOLO:
           if (track_type_has_channel (track->type))
             {
+              int soloed = track_get_soloed (track);
               track_set_soloed (
-                track, _do == self->ival_after,
+                track,
+                _do ?
+                  self->ival_after :
+                  self->ival_before[i],
                 F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
                 F_NO_PUBLISH_EVENTS);
+
+              self->ival_before[i] = soloed;
             }
           break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
           if (track_type_has_channel (track->type))
             {
+              int muted = track_get_muted (track);
               track_set_muted (
-                track, _do == self->ival_after,
+                track,
+                _do ?
+                  self->ival_after :
+                  self->ival_before[i],
                 F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
                 F_NO_PUBLISH_EVENTS);
+
+              self->ival_before[i] = muted;
             }
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
@@ -1229,7 +1250,7 @@ do_or_undo_edit (
           g_return_val_if_fail (ch, -1);
           if (_do)
             {
-              self->ival_before =
+              self->ival_before[i] =
                 ch->fader->midi_mode;
               fader_set_midi_mode (
                 ch->fader, self->ival_after, false,
@@ -1238,8 +1259,8 @@ do_or_undo_edit (
           else
             {
               fader_set_midi_mode (
-                ch->fader, self->ival_before, false,
-                F_PUBLISH_EVENTS);
+                ch->fader, self->ival_before[i],
+                false, F_PUBLISH_EVENTS);
             }
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
@@ -1294,11 +1315,14 @@ do_or_undo_edit (
           {
             GdkRGBA cur_color = track->color;
             track_set_color (
-              track, &self->new_color,
+              track,
+              _do ?
+                &self->new_color :
+                &self->colors_before[i],
               F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
 
             /* remember color */
-            self->new_color = cur_color;
+            self->colors_before[i] = cur_color;
           }
           break;
         case EDIT_TRACK_ACTION_TYPE_ICON:
@@ -1578,6 +1602,8 @@ tracklist_selections_action_free (
   object_zero_and_free (self->src_sends);
 
   object_zero_and_free (self->out_tracks);
+  object_zero_and_free (self->colors_before);
+  object_zero_and_free (self->ival_before);
 
   object_zero_and_free (self);
 }

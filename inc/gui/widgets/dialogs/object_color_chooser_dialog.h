@@ -36,8 +36,10 @@ G_DECLARE_FINAL_TYPE (
   Z, OBJECT_COLOR_CHOOSER_DIALOG_WIDGET,
   GtkColorChooserDialog)
 
-typedef Track Track;
-typedef ZRegion ZRegion;
+typedef struct Track Track;
+typedef struct ZRegion ZRegion;
+typedef struct TracklistSelections
+  TracklistSelections;
 
 /**
  * @addtogroup widgets
@@ -58,6 +60,10 @@ typedef struct _ObjectColorChooserDialogWidget
 
   /* Region, if for region. */
   ZRegion *             region;
+
+  /** Tracklist selections, if for tracklist
+   * selections. */
+  TracklistSelections * tracklist_selections;
 } ObjectColorChooserDialogWidget;
 
 /**
@@ -66,6 +72,14 @@ typedef struct _ObjectColorChooserDialogWidget
 ObjectColorChooserDialogWidget *
 object_color_chooser_dialog_widget_new_for_track (
   Track * track);
+
+/**
+ * Creates a new dialog.
+ */
+NONNULL
+ObjectColorChooserDialogWidget *
+object_color_chooser_dialog_widget_new_for_tracklist_selections (
+  TracklistSelections * sel);
 
 /**
  * Creates a new dialog.

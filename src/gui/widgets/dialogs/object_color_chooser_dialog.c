@@ -50,7 +50,7 @@ get_current_obj_color (
     }
   else
     {
-      g_warn_if_reached ();
+      g_return_if_reached ();
     }
 }
 
@@ -75,23 +75,36 @@ object_color_chooser_dialog_widget_run (
       break;
     }
 
+  /* get selected color */
+  GdkRGBA sel_color;
+  gtk_color_chooser_get_rgba (
+    GTK_COLOR_CHOOSER (self), &sel_color);
+
   if (color_set)
     {
-      /* get current object color */
-      GdkRGBA cur_color;
-      get_current_obj_color (self, &cur_color);
-
-      /* get selected color */
-      GdkRGBA sel_color;
-      gtk_color_chooser_get_rgba (
-        GTK_COLOR_CHOOSER (self), &sel_color);
-
-      /* if changed, apply the change */
-      if (!color_is_same (&sel_color, &cur_color))
+      if (self->track)
         {
-          track_set_color (
-            self->track, &sel_color, F_UNDOABLE,
-            F_PUBLISH_EVENTS);
+          /* get current object color */
+          GdkRGBA cur_color;
+          get_current_obj_color (self, &cur_color);
+
+          /* if changed, apply the change */
+          if (!color_is_same (
+                &sel_color, &cur_color))
+            {
+              track_set_color (
+                self->track, &sel_color, F_UNDOABLE,
+                F_PUBLISH_EVENTS);
+            }
+        }
+      else if (self->tracklist_selections)
+        {
+          TracklistSelections * sel =
+            self->tracklist_selections;
+          UndoableAction * ua =
+            tracklist_selections_action_new_edit_color (
+            sel, &sel_color);
+          undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
   gtk_widget_destroy (GTK_WIDGET (self));
@@ -121,6 +134,29 @@ object_color_chooser_dialog_widget_new_for_track (
 
   self->track = track;
   g_warn_if_fail (IS_TRACK (self->track));
+
+  return self;
+}
+
+/**
+ * Creates a new dialog.
+ */
+ObjectColorChooserDialogWidget *
+object_color_chooser_dialog_widget_new_for_tracklist_selections (
+  TracklistSelections * sel)
+{
+  Track * track = sel->tracks[0];
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), NULL);
+  ObjectColorChooserDialogWidget * self =
+    g_object_new (
+      OBJECT_COLOR_CHOOSER_DIALOG_WIDGET_TYPE,
+      "title", _("Track color"),
+      "rgba", &track->color,
+      "use-alpha", false,
+      NULL);
+
+  self->tracklist_selections = sel;
 
   return self;
 }

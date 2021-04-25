@@ -1824,6 +1824,13 @@ show_context_menu (
         }
     }
 
+  ADD_SEPARATOR;
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Change color..."), "color-fill",
+      F_NO_TOGGLE, "win.change-track-color");
+  APPEND (menuitem);
+
   /* add midi channel selectors */
   if (track_type_has_piano_roll (track->type))
     {

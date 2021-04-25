@@ -58,6 +58,7 @@
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/dialogs/about_dialog.h"
+#include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/dialogs/export_dialog.h"
@@ -1503,6 +1504,19 @@ activate_duplicate_selected_tracks (
       TRACKLIST_SELECTIONS->tracks[0]->pos + 1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
+activate_change_track_color (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  ObjectColorChooserDialogWidget * color_chooser =
+    object_color_chooser_dialog_widget_new_for_tracklist_selections (
+      TRACKLIST_SELECTIONS);
+  object_color_chooser_dialog_widget_run (
+    color_chooser);
 }
 
 void
