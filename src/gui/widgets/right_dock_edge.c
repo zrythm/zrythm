@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,9 +19,9 @@
 
 #include "audio/control_room.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/control_room.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/monitor_section.h"
 #include "gui/widgets/panel_file_browser.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
@@ -59,8 +59,8 @@ right_dock_edge_widget_setup (
     MW_CENTER_DOCK->center_right_paned,
     GTK_POS_RIGHT);
 
-  control_room_widget_setup (
-    self->control_room, CONTROL_ROOM);
+  monitor_section_widget_setup (
+    self->monitor_section, CONTROL_ROOM);
 
   int page_num =
     g_settings_get_int (S_UI, "right-panel-tab");
@@ -78,7 +78,7 @@ static void
 right_dock_edge_widget_init (
   RightDockEdgeWidget * self)
 {
-  g_type_ensure (CONTROL_ROOM_WIDGET_TYPE);
+  g_type_ensure (MONITOR_SECTION_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -136,7 +136,8 @@ right_dock_edge_widget_init (
     notebook, GTK_WIDGET (box), img);
 
   /* add control room */
-  self->control_room = control_room_widget_new ();
+  self->monitor_section =
+    monitor_section_widget_new ();
   pixbuf =
     gtk_icon_theme_load_icon_for_scale (
       gtk_icon_theme_get_default (),
@@ -150,13 +151,13 @@ right_dock_edge_widget_init (
   img =
     gtk_image_new_from_pixbuf (pixbuf);
   gtk_widget_set_tooltip_text (
-    img, _("Control Room"));
+    img, _("Monitor Section"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (
     GTK_CONTAINER (box),
-    GTK_WIDGET (self->control_room));
+    GTK_WIDGET (self->monitor_section));
   gtk_widget_set_visible (
     GTK_WIDGET (box), 1);
   gtk_notebook_append_page (

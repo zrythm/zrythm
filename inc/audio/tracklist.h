@@ -431,8 +431,24 @@ tracklist_track_name_is_unique (
 /**
  * Returns if the tracklist has soloed tracks.
  */
+NONNULL
 int
 tracklist_has_soloed (
+  const Tracklist * self);
+
+NONNULL
+int
+tracklist_get_num_muted_tracks (
+  const Tracklist * self);
+
+NONNULL
+int
+tracklist_get_num_soloed_tracks (
+  const Tracklist * self);
+
+NONNULL
+int
+tracklist_get_num_listened_tracks (
   const Tracklist * self);
 
 /**

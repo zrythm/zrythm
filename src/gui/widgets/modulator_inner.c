@@ -19,6 +19,7 @@
 
 #include "actions/mixer_selections_action.h"
 #include "actions/undo_manager.h"
+#include "audio/control_port.h"
 #include "audio/modulator_track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/event.h"
@@ -61,27 +62,6 @@ get_snapped_control_value (
     port_get_control_value (port, F_NOT_NORMALIZED);
 
   return val;
-}
-
-/** Getter for the KnobWidget. */
-static float
-get_control_value (
-  Port * port)
-{
-  float val = port->unsnapped_control;
-
-  return val;
-}
-
-/** Setter for the KnobWidget. */
-static void
-set_control_value (
-  Port * port,
-  float  value)
-{
-  port_set_control_value (
-    port, value, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
 }
 
 static void
@@ -258,7 +238,9 @@ modulator_inner_widget_new (
 
       KnobWidget * knob =
         knob_widget_new_simple (
-          get_control_value, set_control_value,
+          control_port_get_val,
+          control_port_get_default_val,
+          control_port_set_real_val,
           port, port->minf, port->maxf,
           24, port->zerof);
       knob->snapped_getter =

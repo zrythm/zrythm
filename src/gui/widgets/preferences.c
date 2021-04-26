@@ -292,6 +292,10 @@ get_range_vals (
         g_variant_get_double (current_var);
     }
 #undef TYPE_EQUALS
+
+  g_variant_unref (range_vals);
+  g_variant_unref (lower_var);
+  g_variant_unref (upper_var);
 }
 
 static GtkWidget *
@@ -400,7 +404,9 @@ make_control (
         g_object_new (
           ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
       active_hardware_mb_widget_setup (
-        Z_ACTIVE_HARDWARE_MB_WIDGET (widget), false);
+        Z_ACTIVE_HARDWARE_MB_WIDGET (widget),
+        F_INPUT, F_NOT_MIDI, S_P_GENERAL_ENGINE,
+        "audio-inputs");
     }
   else if (KEY_IS (
         "General", "Engine",
@@ -410,7 +416,9 @@ make_control (
         g_object_new (
           ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
       active_hardware_mb_widget_setup (
-        Z_ACTIVE_HARDWARE_MB_WIDGET (widget), true);
+        Z_ACTIVE_HARDWARE_MB_WIDGET (widget),
+        F_INPUT, F_MIDI, S_P_GENERAL_ENGINE,
+        "midi-controllers");
     }
   else if (KEY_IS ("UI", "General", "font-scale"))
     {

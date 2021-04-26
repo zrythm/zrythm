@@ -59,6 +59,10 @@ active_hardware_mb_widget_refresh (
 {
   set_label (self);
   active_hardware_mb_widget_save_settings (self);
+  if (self->callback)
+    {
+      self->callback (self->object);
+    }
 }
 
 void
@@ -89,24 +93,11 @@ active_hardware_mb_widget_save_settings (
     }
   controllers[num_controllers] = NULL;
 
-  int res = 1;
-  if (self->is_midi)
-    {
-      res =
-        g_settings_set_strv (
-          S_P_GENERAL_ENGINE,
-          "midi-controllers",
-          (const char * const*) controllers);
-    }
-  else
-    {
-      res =
-        g_settings_set_strv (
-          S_P_GENERAL_ENGINE,
-          "audio-inputs",
-          (const char * const*) controllers);
-    }
-  g_warn_if_fail (res == 1);
+  int res =
+    g_settings_set_strv (
+      self->settings, self->key,
+      (const char * const*) controllers);
+  g_return_if_fail (res == 1);
 
   g_list_free (children);
 }
@@ -114,14 +105,36 @@ active_hardware_mb_widget_save_settings (
 void
 active_hardware_mb_widget_setup (
   ActiveHardwareMbWidget * self,
-  bool                     is_midi)
+  bool                     is_input,
+  bool                     is_midi,
+  GSettings *              settings,
+  const char *             key)
 {
   self->is_midi = is_midi;
+  self->input = is_input;
+  self->settings = settings;
+  self->key = key;
   self->popover =
     active_hardware_popover_widget_new (self);
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self),
     GTK_WIDGET (self->popover));
+
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->box),
+    is_input ?
+      _("Click to enable inputs") :
+      _("Click to enable outputs"));
+}
+
+ActiveHardwareMbWidget *
+active_hardware_mb_widget_new (void)
+{
+  ActiveHardwareMbWidget * self =
+    g_object_new (
+      ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
+
+  return self;
 }
 
 static void
@@ -140,9 +153,6 @@ active_hardware_mb_widget_init (
         GTK_ORIENTATION_HORIZONTAL, 0));
   self->label =
     GTK_LABEL (gtk_label_new (_("Select...")));
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->box),
-    _("Click to enable inputs"));
   gtk_box_pack_start (
     self->box, GTK_WIDGET (self->label),
     F_EXPAND, F_NO_FILL, 1);

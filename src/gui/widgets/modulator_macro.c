@@ -265,17 +265,6 @@ redraw_cb (
   return G_SOURCE_CONTINUE;
 }
 
-static void
-set_val (
-  void * _port,
-  float  val)
-{
-  Port * port = (Port *) _port;
-  g_return_if_fail (IS_PORT (port));
-  port_set_control_value (
-    port, val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-}
-
 ModulatorMacroWidget *
 modulator_macro_widget_new (
   int modulator_macro_idx)
@@ -292,7 +281,9 @@ modulator_macro_widget_new (
 
   KnobWidget * knob =
     knob_widget_new_simple (
-      control_port_get_val, set_val,
+      control_port_get_val,
+      control_port_get_default_val,
+      control_port_set_real_val,
       port, port->minf, port->maxf, 48, port->zerof);
   self->knob_with_name =
     knob_with_name_widget_new (

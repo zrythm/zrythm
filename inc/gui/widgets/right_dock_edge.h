@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,7 +48,7 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _PluginBrowserWidget
   PluginBrowserWidget;
 typedef struct _FileBrowserWidget FileBrowserWidget;
-typedef struct _ControlRoomWidget ControlRoomWidget;
+typedef struct _MonitorSectionWidget MonitorSectionWidget;
 typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
 typedef struct _PanelFileBrowserWidget PanelFileBrowserWidget;
 
@@ -58,7 +58,7 @@ typedef struct _RightDockEdgeWidget
   FoldableNotebookWidget * right_notebook;
   PluginBrowserWidget *    plugin_browser;
   PanelFileBrowserWidget * file_browser;
-  ControlRoomWidget *      control_room;
+  MonitorSectionWidget *   monitor_section;
 } RightDockEdgeWidget;
 
 /**

@@ -172,6 +172,19 @@ tracklist_selections_contains_soloed_track (
   bool                  soloed);
 
 /**
+ * Returns whether the selections contain a listened
+ * track if @ref listened is true or an unlistened
+ * track if @ref listened is false.
+ *
+ * @param listened Whether to check for listened or
+ *   unlistened tracks.
+ */
+bool
+tracklist_selections_contains_listened_track (
+  TracklistSelections * self,
+  bool                  listened);
+
+/**
  * Returns whether the selections contain a muted
  * track if @ref muted is true or an unmuted track
  * if @ref muted is false.

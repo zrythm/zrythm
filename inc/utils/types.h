@@ -77,11 +77,25 @@ typedef const char * (*GenericStringGetter) (
   void * object);
 
 /**
+ * Getter prototype for strings to be saved in the
+ * given buffer.
+ */
+typedef void (*GenericStringCopyGetter) (
+  void * object,
+  char * buf);
+
+/**
  * Setter prototype for float values.
  */
 typedef void (*GenericStringSetter) (
   void *       object,
   const char * val);
+
+/**
+ * Generic callback.
+ */
+typedef void (*GenericCallback) (
+  void *       object);
 
 typedef enum AudioValueFormat
 {

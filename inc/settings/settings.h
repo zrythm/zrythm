@@ -42,13 +42,13 @@ typedef struct PluginSettings PluginSettings;
 #define SETTINGS (ZRYTHM->settings)
 
 /* ---- Standard settings ---- */
+#define S_MONITOR SETTINGS->monitor
 #define S_UI SETTINGS->ui
 #define S_EXPORT SETTINGS->export
 #define S_GENERAL SETTINGS->general
 #define S_UI_INSPECTOR_SETTINGS \
   SETTINGS->ui_inspector
-#define S_TRANSPORT \
-  SETTINGS->transport
+#define S_TRANSPORT SETTINGS->transport
 
 /* ---- end standard settings ---- */
 
@@ -111,6 +111,9 @@ typedef struct Settings
   GSettings * preferences_projects_general;
   GSettings * preferences_ui_general;
   GSettings * preferences_scripting_general;
+
+  /** Monitor settings. */
+  GSettings * monitor;
 
   /**
    * UI memory.
@@ -176,6 +179,28 @@ settings_append_to_strv (
   const char * key,
   const char * val,
   bool         ignore_if_duplicate);
+
+GVariant *
+settings_get_range (
+  const char * schema,
+  const char * key);
+
+void
+settings_get_range_double (
+  const char * schema,
+  const char * key,
+  double *     lower,
+  double *     upper);
+
+GVariant *
+settings_get_default_value (
+  const char * schema,
+  const char * key);
+
+double
+settings_get_default_value_double (
+  const char * schema,
+  const char * key);
 
 /**
  * Frees settings.

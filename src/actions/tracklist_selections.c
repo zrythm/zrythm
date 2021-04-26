@@ -1211,7 +1211,8 @@ do_or_undo_edit (
                 _do ?
                   self->ival_after :
                   self->ival_before[i],
-                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_NO_TRIGGER_UNDO,
+                F_NO_AUTO_SELECT,
                 F_NO_PUBLISH_EVENTS);
 
               self->ival_before[i] = soloed;
@@ -1226,10 +1227,28 @@ do_or_undo_edit (
                 _do ?
                   self->ival_after :
                   self->ival_before[i],
-                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_NO_TRIGGER_UNDO,
+                F_NO_AUTO_SELECT,
                 F_NO_PUBLISH_EVENTS);
 
               self->ival_before[i] = muted;
+            }
+          break;
+        case EDIT_TRACK_ACTION_TYPE_LISTEN:
+          if (track_type_has_channel (track->type))
+            {
+              int listened =
+                track_get_listened (track);
+              track_set_listened (
+                track,
+                _do ?
+                  self->ival_after :
+                  self->ival_before[i],
+                F_NO_TRIGGER_UNDO,
+                F_NO_AUTO_SELECT,
+                F_NO_PUBLISH_EVENTS);
+
+              self->ival_before[i] = listened;
             }
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
@@ -1478,6 +1497,13 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup (
                   _("Unmute Track"));
+            case EDIT_TRACK_ACTION_TYPE_LISTEN:
+              if (self->ival_after)
+                return g_strdup (
+                  _("Listen Track"));
+              else
+                return g_strdup (
+                  _("Unlisten Track"));
             case EDIT_TRACK_ACTION_TYPE_VOLUME:
               return g_strdup (
                 _("Change Fader"));
@@ -1528,6 +1554,15 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup_printf (
                   _("Unmute %d Tracks"),
+                  self->num_tracks);
+            case EDIT_TRACK_ACTION_TYPE_LISTEN:
+              if (self->ival_after)
+                return g_strdup_printf (
+                  _("Listen %d Tracks"),
+                  self->num_tracks);
+              else
+                return g_strdup_printf (
+                  _("Unlisten %d Tracks"),
                   self->num_tracks);
             case EDIT_TRACK_ACTION_TYPE_COLOR:
               return g_strdup (

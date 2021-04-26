@@ -442,11 +442,8 @@ typedef struct AudioEngine
   /** Input device processor. */
   HardwareProcessor * hw_in_processor;
 
-  /* don't need to handle outputs */
-#if 0
   /** Output device processor. */
   HardwareProcessor * hw_out_processor;
-#endif
 
 #if 0
   /**
@@ -834,6 +831,9 @@ engine_fields_schema[] =
     sample_processor_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     AudioEngine, hw_in_processor,
+    hardware_processor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    AudioEngine, hw_out_processor,
     hardware_processor_fields_schema),
 
   CYAML_FIELD_END

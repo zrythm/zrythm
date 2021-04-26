@@ -505,17 +505,6 @@ setup_midi_channels_cb (
 }
 
 static void
-set_gain (
-  void * _port,
-  float  gain)
-{
-  Port * port = (Port *) _port;
-  g_return_if_fail (IS_PORT (port));
-  port_set_control_value (
-    port, gain, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
-}
-
-static void
 on_mono_toggled (
   GtkToggleButton *          btn,
   TrackInputExpanderWidget * self)
@@ -600,7 +589,9 @@ track_input_expander_widget_refresh (
       Port * port = track->processor->input_gain;
       self->gain =
         knob_widget_new_simple (
-          control_port_get_val, set_gain,
+          control_port_get_val,
+          control_port_get_default_val,
+          control_port_set_real_val_w_events,
           port, port->minf, port->maxf, 24,
           port->zerof);
       gtk_widget_set_visible (

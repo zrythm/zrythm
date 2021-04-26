@@ -377,6 +377,53 @@ Args:
                  "The last version that received a 'new version has been released' notification.")
              ))) ;; general
 
+         ;; Monitor schema
+         (schema-print
+           (make-schema
+             "monitor"
+             (list
+               (make-schema-key-with-range
+                 "monitor-vol" "d"
+                 "0.0" "2.0" "1.0"
+                 "Monitor volume"
+                 "The monitor volume in amplitude (0 to 2).")
+               (make-schema-key-with-range
+                 "mute-vol" "d"
+                 "0.0" "0.5" "0.0"
+                 "Mute volume"
+                 "The monitor mute volume in amplitude (0 to 2).")
+               (make-schema-key-with-range
+                 "listen-vol" "d"
+                 "0.5" "2.0" "1.0"
+                 "Listen volume"
+                 "The monitor listen volume in amplitude (0 to 2).")
+               (make-schema-key-with-range
+                 "dim-vol" "d"
+                 "0.0" "0.5" "0.1"
+                 "Dim volume"
+                 "The monitor dim volume in amplitude (0 to 2).")
+               (make-schema-key
+                 "mono" "b" "false"
+                 "Sum to mono"
+                 "Whether to sum the monitor signal to mono.")
+               (make-schema-key
+                 "dim-output" "b" "false"
+                 "Dim output"
+                 "Whether to dim the the monitor signal.")
+               (make-schema-key
+                 "mute" "b" "false"
+                 "Mute"
+                 "Whether to mute the monitor signal.")
+               (make-schema-key
+                 "l-devices" "as" "[]"
+                 "Left output devices"
+                 "A list of output devices to route the left monitor output to.")
+               (make-schema-key
+                 "r-devices" "as" "[]"
+                 "Left output devices"
+                 "A list of output devices to route the right monitor output to.")
+             ))) ;; monitor
+
          ;; UI schema
          (schema-print
            (make-schema
@@ -523,11 +570,6 @@ Args:
                  "false"
                  "Editor event viewer visibility"
                  "Whether the editor event viewer is visible or not.")
-               (make-schema-key-with-range
-                 "monitor-out-vol" "d"
-                 "0.0" "2.0" "1.0"
-                 "Monitor out volume"
-                 "The monitor out volume in amplitude (0 to 2).")
                (make-schema-key-with-enum
                  "transport-display"
                  "transport-display" "bbt"

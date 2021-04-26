@@ -178,7 +178,7 @@ editable_label_widget_setup (
   self->getter = getter;
   self->setter = setter;
 
-  if (object)
+  if (self->getter)
     {
       gtk_label_set_text (
         self->label,

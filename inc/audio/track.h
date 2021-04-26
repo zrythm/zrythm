@@ -675,6 +675,34 @@ track_get_muted (
   Track * self);
 
 /**
+ * Returns if the track is listened.
+ */
+NONNULL
+bool
+track_get_listened (
+  Track * self);
+
+/**
+ * Sets track soloed, updates UI and optionally
+ * adds the action to the undo stack.
+ *
+ * @param auto_select Makes this track the only
+ *   selection in the tracklist. Useful when
+ *   listening to a single track.
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
+ */
+NONNULL
+void
+track_set_listened (
+  Track * self,
+  bool    listen,
+  bool    trigger_undo,
+  bool    auto_select,
+  bool    fire_events);
+
+/**
  * Sets recording and connects/disconnects the
  * JACK ports.
  */
@@ -684,7 +712,6 @@ track_set_recording (
   Track *   track,
   bool      recording,
   bool      fire_events);
-
 
 /**
  * Sets track soloed, updates UI and optionally

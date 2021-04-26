@@ -433,6 +433,32 @@ tracklist_selections_contains_muted_track (
   return false;
 }
 
+/**
+ * Returns whether the selections contain a listened
+ * track if @ref listened is true or an unlistened
+ * track if @ref listened is false.
+ *
+ * @param listened Whether to check for listened or
+ *   unlistened tracks.
+ */
+bool
+tracklist_selections_contains_listened_track (
+  TracklistSelections * self,
+  bool                  listened)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      if (!track_type_has_channel (track->type))
+        continue;
+
+      if (track_get_listened (track) == listened)
+        return true;
+    }
+
+  return false;
+}
+
 int
 tracklist_selections_contains_track (
   TracklistSelections * self,

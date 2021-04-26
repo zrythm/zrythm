@@ -563,10 +563,8 @@ engine_setup (
 
   hardware_processor_setup (
     self->hw_in_processor);
-#if 0
   hardware_processor_setup (
     self->hw_out_processor);
-#endif
 
   if ((self->audio_backend == AUDIO_BACKEND_JACK &&
        self->midi_backend != MIDI_BACKEND_JACK) ||
@@ -848,6 +846,8 @@ engine_init_loaded (
     self->sample_processor);
   hardware_processor_init_loaded (
     self->hw_in_processor);
+  hardware_processor_init_loaded (
+    self->hw_out_processor);
 
   init_common (self);
 
@@ -919,10 +919,8 @@ engine_new (
 
   self->hw_in_processor =
     hardware_processor_new (true);
-#if 0
   self->hw_out_processor =
     hardware_processor_new (false);
-#endif
 
   init_common (self);
 

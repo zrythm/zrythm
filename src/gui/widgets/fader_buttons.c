@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -95,6 +95,22 @@ on_mute_toggled (
 }
 
 static void
+on_listen_toggled (
+  GtkToggleButton * btn,
+  FaderButtonsWidget * self)
+{
+  Track * track = self->track;
+  if (track)
+    {
+      track_set_listened (
+        self->track,
+        gtk_toggle_button_get_active (btn),
+        F_TRIGGER_UNDO, F_AUTO_SELECT,
+        F_PUBLISH_EVENTS);
+    }
+}
+
+static void
 on_mono_compat_toggled (
   GtkToggleButton *    btn,
   FaderButtonsWidget * self)
@@ -135,6 +151,9 @@ fader_buttons_widget_block_signal_handlers (
     self->mute,
     self->mute_toggled_handler_id);
   g_signal_handler_block (
+    self->listen,
+    self->listen_toggled_handler_id);
+  g_signal_handler_block (
     self->record,
     self->record_toggled_handler_id);
 }
@@ -158,6 +177,9 @@ fader_buttons_widget_unblock_signal_handlers (
   g_signal_handler_unblock (
     self->mute,
     self->mute_toggled_handler_id);
+  g_signal_handler_unblock (
+    self->listen,
+    self->listen_toggled_handler_id);
   g_signal_handler_unblock (
     self->record,
     self->record_toggled_handler_id);
@@ -205,6 +227,8 @@ fader_buttons_widget_refresh (
         }
       gtk_toggle_button_set_active (
         self->solo, track_get_soloed (track));
+      gtk_toggle_button_set_active (
+        self->listen, track_get_listened (track));
       fader_buttons_widget_unblock_signal_handlers (
         self);
     }
@@ -253,6 +277,10 @@ fader_buttons_widget_init (
     g_signal_connect (
       G_OBJECT (self->mute), "toggled",
       G_CALLBACK (on_mute_toggled), self);
+  self->listen_toggled_handler_id =
+    g_signal_connect (
+      G_OBJECT (self->listen), "toggled",
+      G_CALLBACK (on_listen_toggled), self);
   self->record_toggled_handler_id =
     g_signal_connect (
       G_OBJECT (self->record), "toggled",
@@ -275,6 +303,7 @@ fader_buttons_widget_class_init (
   BIND_CHILD (mono_compat);
   BIND_CHILD (solo);
   BIND_CHILD (mute);
+  BIND_CHILD (listen);
   BIND_CHILD (record);
   BIND_CHILD (e);
 

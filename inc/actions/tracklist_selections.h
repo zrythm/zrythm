@@ -62,6 +62,7 @@ typedef enum EditTracksActionType
 {
   EDIT_TRACK_ACTION_TYPE_SOLO,
   EDIT_TRACK_ACTION_TYPE_MUTE,
+  EDIT_TRACK_ACTION_TYPE_LISTEN,
   EDIT_TRACK_ACTION_TYPE_VOLUME,
   EDIT_TRACK_ACTION_TYPE_PAN,
 
@@ -83,6 +84,7 @@ static const cyaml_strval_t
 {
   { "solo", EDIT_TRACK_ACTION_TYPE_SOLO },
   { "mute", EDIT_TRACK_ACTION_TYPE_MUTE },
+  { "listen", EDIT_TRACK_ACTION_TYPE_LISTEN },
   { "volume", EDIT_TRACK_ACTION_TYPE_VOLUME },
   { "pan", EDIT_TRACK_ACTION_TYPE_PAN },
   { "direct out", EDIT_TRACK_ACTION_TYPE_DIRECT_OUT },
@@ -433,6 +435,15 @@ tracklist_selections_action_new (
     TRACKLIST_SELECTIONS_ACTION_EDIT, \
     tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_SOLO, NULL, \
+    solo_new, NULL, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_edit_listen( \
+  tls_before,solo_new) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_LISTEN, NULL, \
     solo_new, NULL, \
     0.f, 0.f, NULL, false)
 

@@ -53,7 +53,7 @@ typedef struct _FaderButtonsWidget
   GtkToggleButton * mute;
   GtkToggleButton * record;
   GtkToggleButton * listen;
-  GtkButton *    e;
+  GtkButton *       e;
 
   /**
    * Signal handler IDs.
@@ -62,6 +62,7 @@ typedef struct _FaderButtonsWidget
   gulong         record_toggled_handler_id;
   gulong         solo_toggled_handler_id;
   gulong         mute_toggled_handler_id;
+  gulong         listen_toggled_handler_id;
 
   /** Owner track. */
   Track *        track;

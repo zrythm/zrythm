@@ -211,6 +211,12 @@
 #define F_MUTE 1
 #define F_NO_MUTE 0
 
+#define F_SOLO 1
+#define F_NO_SOLO 0
+
+#define F_LISTEN 1
+#define F_NO_LISTEN 0
+
 #define F_SHOW_PROGRESS 1
 #define F_NO_SHOW_PROGRESS 0
 
@@ -283,13 +289,16 @@
 #define F_LOCKED 1
 #define F_NOT_LOCKED 0
 
-#define F_SOLO 1
-#define F_NO_SOLO 0
-
 #define F_AUTO_SELECT 1
 #define F_NO_AUTO_SELECT 0
 
 #define F_TOGGLE 1
 #define F_NO_TOGGLE 0
+
+#define F_INPUT 1
+#define F_NOT_INPUT 0
+
+#define F_MIDI 1
+#define F_NOT_MIDI 0
 
 #endif

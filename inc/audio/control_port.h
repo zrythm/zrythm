@@ -119,6 +119,38 @@ control_port_get_val (
   Port * self);
 
 /**
+ * Get the current real unsnapped value of the
+ * control.
+ */
+float
+control_port_get_unsnapped_val (
+  Port * self);
+
+/**
+ * Get the default real value of the control.
+ */
+float
+control_port_get_default_val (
+  Port * self);
+
+/**
+ * Get the default real value of the control.
+ */
+void
+control_port_set_real_val (
+  Port * self,
+  float  val);
+
+/**
+ * Get the default real value of the control and
+ * sends UI events.
+ */
+void
+control_port_set_real_val_w_events (
+  Port * self,
+  float  val);
+
+/**
  * Updates the actual value.
  *
  * The given value is always a normalized 0.0-1.0

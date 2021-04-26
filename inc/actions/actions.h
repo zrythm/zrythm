@@ -398,6 +398,8 @@ DECLARE_SIMPLE (activate_solo_selected_tracks);
 DECLARE_SIMPLE (activate_unsolo_selected_tracks);
 DECLARE_SIMPLE (activate_mute_selected_tracks);
 DECLARE_SIMPLE (activate_unmute_selected_tracks);
+DECLARE_SIMPLE (activate_listen_selected_tracks);
+DECLARE_SIMPLE (activate_unlisten_selected_tracks);
 DECLARE_SIMPLE (activate_change_track_color);
 
 void

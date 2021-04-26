@@ -20,7 +20,6 @@
 #include "audio/control_room.h"
 #include "audio/fader.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/control_room.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "settings/settings.h"
@@ -39,16 +38,110 @@ init_common (
       1.f :
       (float)
       g_settings_get_double (
-        S_UI, "monitor-out-vol");
+        S_MONITOR, "monitor-vol");
   fader_set_amp (self->monitor_fader, amp);
 
-  /* init listen vol fader */
-  self->listen_vol_fader =
+  double lower, upper;
+
+  /* init listen/mute/dim faders */
+  self->mute_fader =
     fader_new (
       FADER_TYPE_GENERIC, NULL, false);
-  fader_set_amp (self->listen_vol_fader, 0.1f);
+  amp =
+    ZRYTHM_TESTING ?
+      0.f :
+      (float)
+      g_settings_get_double (
+        S_MONITOR, "mute-vol");
+  self->mute_fader->amp->deff =
+    ZRYTHM_TESTING ?
+      0.f :
+      (float)
+      settings_get_default_value_double (
+        GSETTINGS_ZRYTHM_PREFIX ".monitor",
+        "mute-vol");
+  if (!ZRYTHM_TESTING)
+    {
+      settings_get_range_double (
+        GSETTINGS_ZRYTHM_PREFIX ".monitor",
+        "mute-vol", &lower, &upper);
+      self->mute_fader->amp->minf = (float) lower;
+      self->mute_fader->amp->maxf = (float) upper;
+    }
+  fader_set_amp (
+    self->mute_fader, amp);
   fader_set_is_project (
-    self->listen_vol_fader, true);
+    self->mute_fader, true);
+
+  self->listen_fader =
+    fader_new (
+      FADER_TYPE_GENERIC, NULL, false);
+  amp =
+    ZRYTHM_TESTING ?
+      1.f :
+      (float)
+      g_settings_get_double (
+        S_MONITOR, "listen-vol");
+  self->listen_fader->amp->deff =
+    ZRYTHM_TESTING ?
+      1.f :
+      (float)
+      settings_get_default_value_double (
+        GSETTINGS_ZRYTHM_PREFIX ".monitor",
+        "listen-vol");
+  fader_set_amp (self->listen_fader, amp);
+  if (!ZRYTHM_TESTING)
+    {
+      settings_get_range_double (
+        GSETTINGS_ZRYTHM_PREFIX ".monitor",
+        "listen-vol", &lower, &upper);
+      self->listen_fader->amp->minf = (float) lower;
+      self->listen_fader->amp->maxf = (float) upper;
+    }
+  fader_set_is_project (
+    self->listen_fader, true);
+
+  self->dim_fader =
+    fader_new (
+      FADER_TYPE_GENERIC, NULL, false);
+  amp =
+    ZRYTHM_TESTING ?
+      0.1f :
+      (float)
+      g_settings_get_double (
+        S_MONITOR, "dim-vol");
+  self->dim_fader->amp->deff =
+    ZRYTHM_TESTING ?
+      0.1f :
+      (float)
+      settings_get_default_value_double (
+        GSETTINGS_ZRYTHM_PREFIX ".monitor",
+        "dim-vol");
+  if (!ZRYTHM_TESTING)
+    {
+      settings_get_range_double (
+        GSETTINGS_ZRYTHM_PREFIX ".monitor",
+        "dim-vol", &lower, &upper);
+      self->dim_fader->amp->minf = (float) lower;
+      self->dim_fader->amp->maxf = (float) upper;
+    }
+  fader_set_amp (self->dim_fader, amp);
+  fader_set_is_project (
+    self->dim_fader, true);
+
+  self->mono =
+    ZRYTHM_TESTING ?
+      false :
+      g_settings_get_boolean (S_MONITOR, "mono");
+  self->dim_output =
+    ZRYTHM_TESTING ?
+      false :
+      g_settings_get_boolean (
+        S_MONITOR, "dim-output");
+  self->mute =
+    ZRYTHM_TESTING ?
+      false :
+      g_settings_get_boolean (S_MONITOR, "mute");
 }
 
 /**
@@ -100,7 +193,11 @@ control_room_free (
   object_free_w_func_and_null (
     fader_free, self->monitor_fader);
   object_free_w_func_and_null (
-    fader_free, self->listen_vol_fader);
+    fader_free, self->listen_fader);
+  object_free_w_func_and_null (
+    fader_free, self->mute_fader);
+  object_free_w_func_and_null (
+    fader_free, self->dim_fader);
 
   object_zero_and_free (self);
 }

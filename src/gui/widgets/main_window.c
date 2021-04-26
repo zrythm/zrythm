@@ -535,6 +535,10 @@ main_window_widget_init (MainWindowWidget * self)
       activate_mute_selected_tracks },
     { "unmute-selected-tracks",
       activate_unmute_selected_tracks },
+    { "listen-selected-tracks",
+      activate_listen_selected_tracks },
+    { "unlisten-selected-tracks",
+      activate_unlisten_selected_tracks },
     { "change-track-color",
       activate_change_track_color },
 

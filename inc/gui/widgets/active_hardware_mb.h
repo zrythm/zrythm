@@ -28,6 +28,8 @@
 
 #include <stdbool.h>
 
+#include "utils/types.h"
+
 #include <gtk/gtk.h>
 
 #define ACTIVE_HARDWARE_MB_WIDGET_TYPE \
@@ -47,6 +49,10 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _ActiveHardwarePopoverWidget
   ActiveHardwarePopoverWidget;
 
+/**
+ * A menu button that allows selecting active
+ * hardware ports.
+ */
 typedef struct _ActiveHardwareMbWidget
 {
   GtkMenuButton     parent_instance;
@@ -65,14 +71,29 @@ typedef struct _ActiveHardwareMbWidget
   /** True for MIDI, false for audio. */
   bool              is_midi;
 
+  /** True for input, false for output. */
+  bool              input;
+
+  /** The settings to save to. */
+  GSettings *       settings;
+
+  /** The key in the settings to save to. */
+  const char *      key;
+
   /** Popover content holder. */
   GtkBox *          content;
+
+  GenericCallback   callback;
+  void *            object;
 } ActiveHardwareMbWidget;
 
 void
 active_hardware_mb_widget_setup (
   ActiveHardwareMbWidget * self,
-  bool                     is_midi);
+  bool                     is_input,
+  bool                     is_midi,
+  GSettings *              settings,
+  const char *             key);
 
 /**
  * Called from PreferencesWidget to save the
@@ -85,6 +106,9 @@ active_hardware_mb_widget_save_settings (
 void
 active_hardware_mb_widget_refresh (
   ActiveHardwareMbWidget * self);
+
+ActiveHardwareMbWidget *
+active_hardware_mb_widget_new (void);
 
 /**
  * @}

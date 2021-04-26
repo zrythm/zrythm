@@ -47,8 +47,33 @@ typedef struct ControlRoom
 {
   int        schema_version;
 
-  /** Temporarily dim the output volume. */
-  int        dim_output;
+  /**
+   * The volume to set muted channels to when
+   * soloing/muting.
+   */
+  Fader *    mute_fader;
+
+  /**
+   * The volume to set listened channels to when
+   * Listen is enabled on a Channel.
+   */
+  Fader *    listen_fader;
+
+  /**
+   * The volume to set other channels to when Listen
+   * is enabled on a Channel, or the monitor when
+   * dim is enabled.
+   */
+  Fader *    dim_fader;
+
+  /** Sum the output to mono. */
+  bool       mono;
+
+  /** Dim the output volume. */
+  bool       dim_output;
+
+  /** Mute the output. */
+  bool       mute;
 
   /**
    * Monitor fader.
@@ -60,11 +85,12 @@ typedef struct ControlRoom
    */
   Fader *    monitor_fader;
 
-  /**
-   * The volume to set other channels to when Listen
-   * is enabled on a Channel.
-   */
-  Fader *    listen_vol_fader;
+  char *     hw_out_l_id;
+  char *     hw_out_r_id;
+
+  /* caches */
+  ExtPort *  hw_out_l;
+  ExtPort *  hw_out_r;
 
 } ControlRoom;
 

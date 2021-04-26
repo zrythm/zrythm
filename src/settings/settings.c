@@ -61,6 +61,9 @@ settings_new (void)
   self->export =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".export");
+  self->monitor =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".monitor");
   self->ui =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui");
@@ -328,6 +331,96 @@ settings_print (
   print_or_reset (1, pretty_print, 0);
 }
 
+GVariant *
+settings_get_range (
+  const char * schema,
+  const char * key)
+{
+  GSettingsSchemaSource * source =
+    g_settings_schema_source_get_default ();
+  GSettingsSchema * g_settings_schema =
+    g_settings_schema_source_lookup (
+      source, schema, 1);
+  GSettingsSchemaKey * schema_key =
+    g_settings_schema_get_key (
+      g_settings_schema, key);
+  GVariant * range =
+    g_settings_schema_key_get_range (
+      schema_key);
+
+  g_settings_schema_key_unref (schema_key);
+  g_settings_schema_unref (g_settings_schema);
+  g_settings_schema_source_unref (source);
+
+  return range;
+}
+
+GVariant *
+settings_get_default_value (
+  const char * schema,
+  const char * key)
+{
+  GSettingsSchemaSource * source =
+    g_settings_schema_source_get_default ();
+  GSettingsSchema * g_settings_schema =
+    g_settings_schema_source_lookup (
+      source, schema, 1);
+  GSettingsSchemaKey * schema_key =
+    g_settings_schema_get_key (
+      g_settings_schema, key);
+  GVariant * def_val =
+    g_settings_schema_key_get_default_value (
+      schema_key);
+
+  g_settings_schema_key_unref (schema_key);
+  g_settings_schema_unref (g_settings_schema);
+  g_settings_schema_source_unref (source);
+
+  return def_val;
+}
+
+double
+settings_get_default_value_double (
+  const char * schema,
+  const char * key)
+{
+  GVariant * def_val =
+    settings_get_default_value (schema, key);
+
+  double ret = g_variant_get_double (def_val);
+
+  g_variant_unref (def_val);
+
+  return ret;
+}
+
+void
+settings_get_range_double (
+  const char * schema,
+  const char * key,
+  double *     lower,
+  double *     upper)
+{
+  GVariant * range =
+    settings_get_range (schema, key);
+
+  GVariant * range_vals =
+    g_variant_get_child_value (range, 1);
+  range_vals =
+    g_variant_get_child_value (range_vals, 0);
+  GVariant * lower_var =
+    g_variant_get_child_value (range_vals, 0);
+  GVariant * upper_var =
+    g_variant_get_child_value (range_vals, 1);
+
+  *lower = g_variant_get_double (lower_var);
+  *upper = g_variant_get_double (upper_var);
+
+  g_variant_unref (range_vals);
+  g_variant_unref (lower_var);
+  g_variant_unref (upper_var);
+}
+
 /**
  * Returns whether the "as" key contains the given
  * string.
@@ -416,6 +509,7 @@ settings_free (
   g_object_unref_and_null (self->export);
   g_object_unref_and_null (self->ui);
   g_object_unref_and_null (self->ui_inspector);
+  g_object_unref_and_null (self->monitor);
 
   /* TODO more */
 

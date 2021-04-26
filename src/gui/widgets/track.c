@@ -78,6 +78,7 @@ G_DEFINE_TYPE (
 #define ICON_NAME_RECORD "media-record"
 #define ICON_NAME_SOLO "solo"
 #define ICON_NAME_MUTE "mute"
+#define ICON_NAME_LISTEN "listen"
 #define ICON_NAME_SHOW_UI "synth"
 #define ICON_NAME_SHOW_AUTOMATION_LANES \
   "node-type-cusp"
@@ -511,6 +512,12 @@ draw_buttons (
       else if (CB_ICON_IS (MUTE) &&
                track_get_muted (
                  track))
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (CB_ICON_IS (LISTEN) &&
+               track_get_listened (track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -1201,6 +1208,17 @@ set_tooltip_from_button (
           SET_TOOLTIP (_("Mute"));
         }
     }
+  else if (CB_ICON_IS (LISTEN))
+    {
+      if (track_get_muted (self->track))
+        {
+          SET_TOOLTIP (_("Unlisten"));
+        }
+      else
+        {
+          SET_TOOLTIP (_("Listen"));
+        }
+    }
   else if (CB_ICON_IS (MONO_COMPAT))
     {
       SET_TOOLTIP (_("Mono compatibility"));
@@ -1780,7 +1798,7 @@ show_context_menu (
         track);
     }
 
-  /* add solo/mute */
+  /* add solo/mute/listen */
   if (track_type_has_channel (track->type))
     {
       ADD_SEPARATOR;
@@ -1820,6 +1838,27 @@ show_context_menu (
             z_gtk_create_menu_item (
               _("Unmute"), "unmute", F_NO_TOGGLE,
               "win.unmute-selected-tracks");
+          APPEND (menuitem);
+        }
+
+      if (tracklist_selections_contains_listened_track (
+            TRACKLIST_SELECTIONS, F_NO_LISTEN))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Listen"), ICON_NAME_LISTEN,
+              F_NO_TOGGLE,
+              "win.listen-selected-tracks");
+          APPEND (menuitem);
+        }
+      if (tracklist_selections_contains_listened_track (
+            TRACKLIST_SELECTIONS, F_LISTEN))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Unlisten"), "unlisten",
+              F_NO_TOGGLE,
+              "win.unlisten-selected-tracks");
           APPEND (menuitem);
         }
     }
@@ -2151,6 +2190,14 @@ multipress_released (
               track_set_muted (
                 track,
                 !track_get_muted (track),
+                F_TRIGGER_UNDO, F_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
+            }
+          else if (CB_ICON_IS (LISTEN))
+            {
+              track_set_listened (
+                track,
+                !track_get_listened (track),
                 F_TRIGGER_UNDO, F_AUTO_SELECT,
                 F_PUBLISH_EVENTS);
             }
@@ -2802,6 +2849,8 @@ track_widget_new (Track * track)
       add_button (
         self, true, ICON_NAME_MUTE);
       add_button (
+        self, true, ICON_NAME_LISTEN);
+      add_button (
         self, true, ICON_NAME_SHOW_UI);
       add_button (
         self, false, ICON_NAME_LOCK);
@@ -2857,6 +2906,8 @@ track_widget_new (Track * track)
       add_button (
         self, 1, ICON_NAME_MUTE);
       add_button (
+        self, true, ICON_NAME_LISTEN);
+      add_button (
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI_BUS:
@@ -2873,6 +2924,8 @@ track_widget_new (Track * track)
       add_button (
         self, 1, ICON_NAME_MUTE);
       add_button (
+        self, true, ICON_NAME_LISTEN);
+      add_button (
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI_GROUP:
@@ -2887,6 +2940,8 @@ track_widget_new (Track * track)
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
+      add_button (
+        self, true, ICON_NAME_LISTEN);
       add_button (
         self, 0, ICON_NAME_LOCK);
       add_button (

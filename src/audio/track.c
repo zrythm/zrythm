@@ -586,6 +586,17 @@ track_get_muted (
   return fader_get_muted (self->channel->fader);
 }
 
+/**
+ * Returns if the track is listened.
+ */
+bool
+track_get_listened (
+  Track * self)
+{
+  g_return_val_if_fail (self->channel, false);
+  return fader_get_listened (self->channel->fader);
+}
+
 TrackType
 track_get_type_from_plugin_descriptor (
   PluginDescriptor * descr)
@@ -1112,6 +1123,36 @@ track_set_soloed (
     }
   fader_set_soloed (
     self->channel->fader, solo, trigger_undo,
+    fire_events);
+}
+
+/**
+ * Sets track soloed, updates UI and optionally
+ * adds the action to the undo stack.
+ *
+ * @param auto_select Makes this track the only
+ *   selection in the tracklist. Useful when
+ *   listening to a single track.
+ * @param trigger_undo Create and perform an
+ *   undoable action.
+ * @param fire_events Fire UI events.
+ */
+void
+track_set_listened (
+  Track * self,
+  bool    listen,
+  bool    trigger_undo,
+  bool    auto_select,
+  bool    fire_events)
+{
+  g_return_if_fail (self->channel);
+  if (auto_select)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE, fire_events);
+    }
+  fader_set_listened (
+    self->channel->fader, listen, trigger_undo,
     fire_events);
 }
 

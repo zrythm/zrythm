@@ -64,6 +64,9 @@ typedef struct _KnobWidget
   /** Getter for the actual value. */
   GenericFloatGetter  getter;
 
+  /** Getter for the default actual value. */
+  GenericFloatGetter  default_getter;
+
   /** Getter for a snapped value (used if
    * passed). */
   GenericFloatGetter  snapped_getter;
@@ -76,6 +79,9 @@ typedef struct _KnobWidget
 
   /** Float setter for drag end. */
   GenericFloatSetter  end_setter;
+
+  /** Value to show when hovering (optional). */
+  GenericStringCopyGetter hover_str_getter;
 
   /** Object to call get/set with. */
   void *              object;
@@ -109,6 +115,10 @@ typedef struct _KnobWidget
   /** Used in gesture drag. */
   double              last_y;
 
+  bool                drag_updated;
+
+  PangoLayout *       layout;
+
   /* ----- FOR PORTS ONLY ------- */
   /** Destination index for the destination
    * multipliers of the port. */
@@ -126,6 +136,8 @@ typedef struct _KnobWidget
  * binds it to the given value.
  *
  * @param get_val Getter function.
+ * @param get_default_val Getter function for
+ *   default value.
  * @param set_val Setter function.
  * @param object Object to call get/set with.
  * @param dest Port destination multiplier index, if
@@ -134,6 +146,7 @@ typedef struct _KnobWidget
 KnobWidget *
 _knob_widget_new (
   GenericFloatGetter get_val,
+  GenericFloatGetter get_default_val,
   GenericFloatSetter set_val,
   void *             object,
   KnobType           type,
@@ -143,9 +156,10 @@ _knob_widget_new (
   int                size,
   float              zero);
 
-#define knob_widget_new_simple(getter,setter,obj,min,max,size,zero) \
+#define knob_widget_new_simple(getter,default_getter,setter,obj,min,max,size,zero) \
   _knob_widget_new ( \
     (GenericFloatGetter) getter, \
+    (GenericFloatGetter) default_getter, \
     (GenericFloatSetter) setter, \
     (void *) obj, \
     KNOB_TYPE_NORMAL, NULL, min, max, size, zero)

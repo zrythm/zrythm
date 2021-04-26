@@ -67,7 +67,9 @@ get_controllers (
 #endif
 
   HardwareProcessor * processor =
-    AUDIO_ENGINE->hw_in_processor;
+    self->owner->input ?
+      AUDIO_ENGINE->hw_in_processor :
+      AUDIO_ENGINE->hw_out_processor;
 
   /* force a rescan just in case */
   hardware_processor_rescan_ext_ports (processor);
@@ -160,13 +162,8 @@ setup (
   /* fetch saved controllers and tick them if they
    * exist */
   gchar ** saved_controllers =
-    self->owner->is_midi ?
-      g_settings_get_strv (
-        S_P_GENERAL_ENGINE,
-        "midi-controllers") :
-      g_settings_get_strv (
-        S_P_GENERAL_ENGINE,
-        "audio-inputs");
+    g_settings_get_strv (
+      self->owner->settings, self->owner->key);
   char * tmp;
   i = 0;
   while ((tmp = saved_controllers[i]) != NULL)

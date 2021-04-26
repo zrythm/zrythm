@@ -68,6 +68,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/modulator.h"
 #include "gui/widgets/modulator_view.h"
+#include "gui/widgets/monitor_section.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll_keys.h"
@@ -1479,6 +1480,8 @@ process_events (void * data)
               on_track_state_changed (
                 TRACKLIST->tracks[j]);
             }
+          monitor_section_widget_refresh (
+            MW_MONITOR_SECTION);
           break;
         case ET_TRACK_VISIBILITY_CHANGED:
           tracklist_widget_update_track_visibility (

@@ -1694,6 +1694,40 @@ activate_unmute_selected_tracks (
 }
 
 void
+activate_listen_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_listen (
+      TRACKLIST_SELECTIONS, F_LISTEN);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
+activate_unlisten_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_listen (
+      TRACKLIST_SELECTIONS, F_NO_LISTEN);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
 change_state_dim_output (
   GSimpleAction * action,
   GVariant *      value,

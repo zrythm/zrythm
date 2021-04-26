@@ -768,6 +768,119 @@ engine_jack_fill_out_bufs (
     /*}*/
 }
 
+/**
+ * Disconnects and reconnects the monitor output
+ * port to the selected devices.
+ */
+int
+engine_jack_reconnect_monitor (
+  AudioEngine * self,
+  bool          left)
+{
+  gchar ** devices =
+    g_settings_get_strv (
+      S_MONITOR, left ? "l-devices" : "r-devices");
+
+  Port * port =
+    left ?
+      self->monitor_out->l : self->monitor_out->r;
+
+  /* disconnect port */
+  int ret =
+    jack_port_disconnect (
+      self->client, JACK_PORT_T (port->data));
+  if (ret)
+    {
+      char msg[600];
+      engine_jack_get_error_message (ret, msg);
+      g_critical (
+        "failed to disconnect monitor out: %s",
+        msg);
+      return ret;
+    }
+
+  int i = 0;
+  int num_connected = 0;
+  while (devices[i])
+    {
+      char * device = devices[i++];
+      ExtPort * ext_port =
+        hardware_processor_find_ext_port (
+          self->hw_out_processor, device);
+      if (ext_port)
+        {
+          /*g_return_val_if_reached (-1);*/
+          ret =
+            jack_connect (
+              self->client,
+              jack_port_name (
+                JACK_PORT_T (
+                  self->monitor_out->l->data)),
+              ext_port->full_name);
+          if (ret)
+            {
+              char msg[600];
+              engine_jack_get_error_message (ret, msg);
+              g_warning (
+                "cannot connect monitor out: %s",
+                msg);
+            }
+          else
+            {
+              num_connected++;
+            }
+        }
+    }
+
+  if (devices)
+    {
+      g_strfreev (devices);
+    }
+
+  /* if nothing connected, attempt to connect to
+   * first port found */
+  if (num_connected == 0)
+    {
+      const char **ports =
+        jack_get_ports (
+          self->client, NULL,
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsPhysical | JackPortIsInput);
+      if (ports == NULL ||
+          ports[0] == NULL ||
+          ports[1] == NULL)
+        {
+          g_critical (
+            "no physical playback ports found");
+          return -1;
+        }
+
+      ret =
+        jack_connect (
+          self->client,
+          jack_port_name (
+            JACK_PORT_T (
+              self->monitor_out->l->data)),
+          left ? ports[0] : ports[1]);
+      if (ret)
+        {
+          char msg[600];
+          engine_jack_get_error_message (ret, msg);
+          g_warning (
+            "cannot connect monitor out: %s",
+            msg);
+        }
+      else
+        {
+          num_connected++;
+        }
+
+      jack_free (ports);
+    }
+
+  return num_connected == 0;
+}
+
 int
 engine_jack_activate (
   AudioEngine * self,
@@ -798,64 +911,27 @@ engine_jack_activate (
        * it.
        */
 
-      /* FIXME this just connects to the first ports
-       * it finds. add a menu in the welcome screen
-       * to set up default output */
-      const char **ports =
-        jack_get_ports (
-          self->client, NULL, JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsPhysical|JackPortIsInput);
-      if (ports == NULL ||
-          ports[0] == NULL ||
-          ports[1] == NULL)
-        {
-          g_critical (
-            "no physical playback ports found");
-          return -1;
-        }
-
       g_return_val_if_fail (
         self->monitor_out->l->data &&
           self->monitor_out->r->data,
         -1);
 
-      g_message ("connecting to system out ports...");
+      g_message (
+        "connecting to system out ports...");
+
       int ret =
-        jack_connect (
-          self->client,
-          jack_port_name (
-            JACK_PORT_T (
-              self->monitor_out->l->data)),
-          ports[0]);
+        engine_jack_reconnect_monitor (self, true);
       if (ret)
         {
-          char msg[600];
-          engine_jack_get_error_message (ret, msg);
-          g_critical (
-            "cannot connect monitor out L: %s", msg);
           return -1;
         }
-
       ret =
-      jack_connect (
-        self->client,
-        jack_port_name (
-          JACK_PORT_T (self->monitor_out->r->data)),
-        ports[1]);
+        engine_jack_reconnect_monitor (
+          self, false);
       if (ret)
         {
-          char msg[600];
-          engine_jack_get_error_message (ret, msg);
-          g_critical (
-            "cannot connect monitor out R: %s", msg);
           return -1;
         }
-
-      /* autoconnect MIDI controllers */
-      /*autoconnect_midi_controllers (*/
-        /*AUDIO_ENGINE);*/
-
-      jack_free (ports);
     }
   else
     {

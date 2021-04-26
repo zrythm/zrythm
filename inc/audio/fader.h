@@ -143,7 +143,10 @@ typedef struct Fader
   Port *           mute;
 
   /** Soloed or not. */
-  int              solo;
+  bool             solo;
+
+  /** Listened or not. */
+  bool             listen;
 
   /**
    * L & R audio input ports, if audio.
@@ -212,6 +215,8 @@ fader_fields_schema[] =
     Fader, mute, port_fields_schema),
   YAML_FIELD_INT (
     Fader, solo),
+  YAML_FIELD_INT (
+    Fader, listen),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Fader, midi_in, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -322,6 +327,25 @@ fader_get_implied_soloed (
   Fader * self);
 
 /**
+ * Returns if the fader is listened.
+ */
+NONNULL
+bool
+fader_get_listened (
+  Fader * self);
+
+/**
+ * Sets fader listen and optionally adds the action
+ * to the undo stack.
+ */
+void
+fader_set_listened (
+  Fader * self,
+  bool    listen,
+  bool    trigger_undo,
+  bool    fire_events);
+
+/**
  * Sets track soloed and optionally adds the action
  * to the undo stack.
  */
@@ -359,6 +383,15 @@ fader_set_mono_compat_enabled (
 float
 fader_get_fader_val (
   void * self);
+
+float
+fader_get_default_fader_val (
+  void * self);
+
+void
+fader_db_string_getter (
+  void * obj,
+  char * buf);
 
 Channel *
 fader_get_channel (

@@ -41,8 +41,10 @@
 
 #include "audio/port.h"
 #include "gui/widgets/knob.h"
+#include "utils/cairo.h"
 #include "utils/math.h"
 #include "utils/string.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -398,14 +400,29 @@ knob_draw_cb (
     ((center_radius*0.4f) * value_y));
   cairo_stroke (cr);
 
-  //highlight if grabbed or if mouse is hovering over
-  //me
   if (self->hover)
     {
-      cairo_set_source_rgba (cr, 1,1,1, 0.12 );
+      /* highlight */
+      cairo_set_source_rgba (cr, 1, 1, 1, 0.12);
       cairo_arc (
-        cr, 0, 0, center_radius, 0, 2.0*G_PI);
+        cr, 0, 0, center_radius, 0, 2.0 * G_PI);
       cairo_fill (cr);
+
+      if (self->hover_str_getter)
+        {
+          /* draw text */
+          char str[50];
+          self->hover_str_getter (self->object, str);
+          cairo_set_source_rgba (cr, 1, 1, 1, 1);
+          int we, he;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->layout, str, &we, &he);
+          cairo_move_to (cr, - we / 2, - he / 2);
+          z_cairo_draw_text_full (
+            cr, widget, self->layout, str,
+            width / 2 - we / 2,
+            height / 2 - he / 2);
+        }
     }
 
   cairo_identity_matrix(cr);
@@ -457,6 +474,8 @@ drag_update (
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw ((GtkWidget *)self);
+
+  self->drag_updated = true;
 }
 
 static void
@@ -466,8 +485,22 @@ drag_end (
   gdouble         offset_y,
   KnobWidget *    self)
 {
+  GdkModifierType state_mask =
+    ui_get_state_mask (GTK_GESTURE (gesture));
+
+  /* reset if ctrl-clicked */
+  if (self->default_getter && self->setter &&
+      !self->drag_updated &&
+      state_mask & GDK_CONTROL_MASK)
+    {
+      float def_fader_val =
+        self->default_getter (self->object);
+      self->setter (self->object, def_fader_val);
+    }
+
   self->last_x = 0;
   self->last_y = 0;
+  self->drag_updated = false;
 }
 
 static bool
@@ -491,12 +524,17 @@ tick_cb (
  * binds it to the given value.
  *
  * @param get_val Getter function.
+ * @param get_default_val Getter function for
+ *   default value.
  * @param set_val Setter function.
  * @param object Object to call get/set with.
+ * @param dest Port destination multiplier index, if
+ *   type is Port, otherwise ignored.
  */
 KnobWidget *
 _knob_widget_new (
   GenericFloatGetter get_val,
+  GenericFloatGetter get_default_val,
   GenericFloatSetter set_val,
   void *             object,
   KnobType           type,
@@ -512,6 +550,7 @@ _knob_widget_new (
     g_object_new (KNOB_WIDGET_TYPE, NULL);
   /*self->value = value;*/
   self->getter = get_val;
+  self->default_getter = get_default_val;
   self->setter = set_val;
   self->object = object;
   self->min = min;
@@ -570,6 +609,18 @@ _knob_widget_new (
 }
 
 static void
+finalize (
+  KnobWidget * self)
+{
+  if (self->layout)
+    g_object_unref (self->layout);
+
+  G_OBJECT_CLASS (
+    knob_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 knob_widget_init (
   KnobWidget * self)
 {
@@ -584,12 +635,21 @@ knob_widget_init (
     GTK_GESTURE_DRAG (
       gtk_gesture_drag_new (GTK_WIDGET (self)));
 
+  self->layout =
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Sans 7",
+      PANGO_ELLIPSIZE_NONE, -1);
+
   gtk_widget_set_visible (
-    GTK_WIDGET (self), 1);
+    GTK_WIDGET (self), true);
 }
 
 static void
 knob_widget_class_init (
   KnobWidgetClass * klass)
 {
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }

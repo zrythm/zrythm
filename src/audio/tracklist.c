@@ -945,6 +945,63 @@ tracklist_has_soloed (
   return 0;
 }
 
+int
+tracklist_get_num_muted_tracks (
+  const Tracklist * self)
+{
+  int count = 0;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (track_type_has_channel (track->type) &&
+          track_get_muted (track))
+        {
+          count++;
+        }
+    }
+
+  return count;
+}
+
+int
+tracklist_get_num_soloed_tracks (
+  const Tracklist * self)
+{
+  int count = 0;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (track_type_has_channel (track->type) &&
+          track_get_soloed (track))
+        {
+          count++;
+        }
+    }
+
+  return count;
+}
+
+int
+tracklist_get_num_listened_tracks (
+  const Tracklist * self)
+{
+  int count = 0;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (track_type_has_channel (track->type) &&
+          track_get_listened (track))
+        {
+          count++;
+        }
+    }
+
+  return count;
+}
+
 /**
  * Activate or deactivate all plugins.
  *

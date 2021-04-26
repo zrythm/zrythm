@@ -43,6 +43,56 @@ control_port_get_val (
 }
 
 /**
+ * Get the current real unsnapped value of the
+ * control.
+ */
+float
+control_port_get_unsnapped_val (
+  Port * self)
+{
+  return self->unsnapped_control;
+}
+
+/**
+ * Get the default real value of the control.
+ */
+float
+control_port_get_default_val (
+  Port * self)
+{
+  return self->deff;
+}
+
+/**
+ * Get the default real value of the control.
+ */
+void
+control_port_set_real_val (
+  Port * self,
+  float  val)
+{
+  g_return_if_fail (IS_PORT (self));
+  port_set_control_value (
+    self, val, F_NOT_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
+}
+
+/**
+ * Get the default real value of the control and
+ * sends UI events.
+ */
+void
+control_port_set_real_val_w_events (
+  Port * self,
+  float  val)
+{
+  g_return_if_fail (IS_PORT (self));
+  port_set_control_value (
+    self, val, F_NOT_NORMALIZED,
+    F_PUBLISH_EVENTS);
+}
+
+/**
  * Returns if the control port is toggled.
  */
 bool

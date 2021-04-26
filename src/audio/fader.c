@@ -126,6 +126,9 @@ fader_new (
       TYPE_CONTROL, FLOW_INPUT,
       passthrough ?
         _("Prefader Volume") : _("Fader Volume"));
+  self->amp->deff = amp;
+  self->amp->minf = 0.f;
+  self->amp->maxf = 2.f;
   port_set_control_value (
     self->amp, amp, F_NOT_NORMALIZED,
     F_NO_PUBLISH_EVENTS);
@@ -452,6 +455,55 @@ fader_set_soloed (
     }
 }
 
+/**
+ * Returns if the fader is listened.
+ */
+bool
+fader_get_listened (
+  Fader * self)
+{
+  return self->listen;
+}
+
+/**
+ * Sets fader listen and optionally adds the action
+ * to the undo stack.
+ */
+void
+fader_set_listened (
+  Fader * self,
+  bool    listen,
+  bool    trigger_undo,
+  bool    fire_events)
+{
+  Track * track = fader_get_track (self);
+  g_return_if_fail (track);
+
+  if (trigger_undo)
+    {
+      /* this is only supported if the fader track
+       * is the only track selected */
+      g_return_if_fail (
+        TRACKLIST_SELECTIONS->num_tracks == 1 &&
+        TRACKLIST_SELECTIONS->tracks[0] == track);
+      UndoableAction * action =
+        tracklist_selections_action_new_edit_listen (
+          TRACKLIST_SELECTIONS, listen);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      self->listen = listen;
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_STATE_CHANGED, track);
+        }
+    }
+}
+
 void
 fader_update_volume_and_fader_val (
   Fader * self)
@@ -492,7 +544,9 @@ fader_add_amp (
 
   float fader_amp = fader_get_amp (self);
   fader_amp =
-    CLAMP (fader_amp + amp, 0.f, 2.f);
+    CLAMP (
+      fader_amp + amp, self->amp->minf,
+      self->amp->maxf);
   fader_set_amp (self, fader_amp);
 
   fader_update_volume_and_fader_val (self);
@@ -571,6 +625,28 @@ fader_get_fader_val (
   return ((Fader *) self)->fader_val;
 }
 
+float
+fader_get_default_fader_val (
+  void * self)
+{
+  Fader * fader = (Fader *) self;
+  return
+    math_get_fader_val_from_amp (
+      fader->amp->deff);
+}
+
+void
+fader_db_string_getter (
+  void * obj,
+  char * buf)
+{
+  Fader * fader = (Fader *) obj;
+
+  sprintf (
+    buf, "%.1f",
+    math_amp_to_dbfs (fader->amp->control));
+}
+
 /**
  * Sets the fader levels from a normalized value
  * 0.0-1.0 (such as in widgets).
@@ -583,13 +659,34 @@ fader_set_fader_val (
   self->fader_val = fader_val;
   float fader_amp =
     math_get_amp_val_from_fader (fader_val);
+  fader_amp =
+    CLAMP (
+      fader_amp, self->amp->minf, self->amp->maxf);
   fader_set_amp (self, fader_amp);
   self->volume = math_amp_to_dbfs (fader_amp);
 
   if (self == MONITOR_FADER)
     {
       g_settings_set_double (
-        S_UI, "monitor-out-vol",
+        S_MONITOR, "monitor-vol",
+        (double) fader_amp);
+    }
+  else if (self == CONTROL_ROOM->mute_fader)
+    {
+      g_settings_set_double (
+        S_MONITOR, "mute-vol",
+        (double) fader_amp);
+    }
+  else if (self == CONTROL_ROOM->listen_fader)
+    {
+      g_settings_set_double (
+        S_MONITOR, "listen-vol",
+        (double) fader_amp);
+    }
+  else if (self == CONTROL_ROOM->dim_fader)
+    {
+      g_settings_set_double (
+        S_MONITOR, "dim-vol",
         (double) fader_amp);
     }
 }
