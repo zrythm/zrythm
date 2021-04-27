@@ -1,5 +1,6 @@
 image: freebsd/latest
 packages:
+  - amsynth
   - cmake
   - gettext-tools
   - meson
@@ -26,7 +27,9 @@ packages:
   - sratom
   - suil
   - pcre2
+  - geonkick-lv2
   - libyaml
+  - lsp-plugins-lv2
   - gettext-runtime
   - cairo
   - glib
@@ -39,6 +42,8 @@ packages:
   - fftw3
   - fftw3-float
   - rubberband
+  - sherlock-lv2
+  - x42-plugins-lv2
   - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm

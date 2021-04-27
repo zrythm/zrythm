@@ -1006,6 +1006,11 @@ fader_process (
                     dim_amp, nframes);
 
                   /* add listened signal */
+                  /* TODO add "listen" buffer
+                   * on fader struct and add
+                   * listened tracks to it during
+                   * processing instead of looping
+                   * here */
                   float listen_amp =
                     fader_get_amp (
                       CONTROL_ROOM->listen_fader);
