@@ -432,8 +432,16 @@ tracklist_track_name_is_unique (
  * Returns if the tracklist has soloed tracks.
  */
 NONNULL
-int
+bool
 tracklist_has_soloed (
+  const Tracklist * self);
+
+/**
+ * Returns if the tracklist has listened tracks.
+ */
+NONNULL
+bool
+tracklist_has_listened (
   const Tracklist * self);
 
 NONNULL

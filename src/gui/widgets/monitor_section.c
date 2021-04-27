@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/control_port.h"
 #include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
@@ -218,7 +219,7 @@ on_mono_toggled (
   MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  CONTROL_ROOM->mono = active;
+  MONITOR_FADER->mono_compat_enabled = active;
   g_settings_set_boolean (
     S_MONITOR, "mono", active);
 }
@@ -240,7 +241,7 @@ on_mute_toggled (
   MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  CONTROL_ROOM->mute = active;
+  MONITOR_FADER->mute->control = active ? 1.f : 0.f;
   g_settings_set_boolean (
     S_MONITOR, "mute", active);
 }
@@ -335,7 +336,8 @@ monitor_section_widget_setup (
     "mono", _("Mono"), true,
     GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
-    self->mono_toggle, CONTROL_ROOM->mono);
+    self->mono_toggle,
+    MONITOR_FADER->mono_compat_enabled);
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->dim_toggle),
@@ -349,7 +351,8 @@ monitor_section_widget_setup (
     "mute", _("Mute"), true,
     GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
-    self->mute_toggle, CONTROL_ROOM->mute);
+    self->mute_toggle,
+    control_port_is_toggled (MONITOR_FADER->mute));
 
   /* left/right outputs */
   if (AUDIO_ENGINE->audio_backend ==

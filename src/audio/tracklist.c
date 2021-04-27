@@ -930,7 +930,7 @@ tracklist_track_name_is_unique (
 /**
  * Returns if the tracklist has soloed tracks.
  */
-int
+bool
 tracklist_has_soloed (
   const Tracklist * self)
 {
@@ -940,9 +940,28 @@ tracklist_has_soloed (
       track = self->tracks[i];
 
       if (track->channel && track_get_soloed (track))
-        return 1;
+        return true;
     }
-  return 0;
+  return false;
+}
+
+/**
+ * Returns if the tracklist has listened tracks.
+ */
+NONNULL
+bool
+tracklist_has_listened (
+  const Tracklist * self)
+{
+  Track * track;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track = self->tracks[i];
+
+      if (track->channel && track_get_listened (track))
+        return true;
+    }
+  return false;
 }
 
 int

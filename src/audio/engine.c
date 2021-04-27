@@ -1692,7 +1692,7 @@ engine_fill_out_bufs (
 #endif
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
-      engine_jack_fill_out_bufs (self, nframes);
+      /*engine_jack_fill_out_bufs (self, nframes);*/
       break;
 #endif
 #ifdef HAVE_PORT_AUDIO

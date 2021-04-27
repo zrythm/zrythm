@@ -129,19 +129,22 @@ init_common (
   fader_set_is_project (
     self->dim_fader, true);
 
-  self->mono =
+  self->monitor_fader->mono_compat_enabled =
     ZRYTHM_TESTING ?
       false :
       g_settings_get_boolean (S_MONITOR, "mono");
+
   self->dim_output =
     ZRYTHM_TESTING ?
       false :
       g_settings_get_boolean (
         S_MONITOR, "dim-output");
-  self->mute =
+  bool mute =
     ZRYTHM_TESTING ?
       false :
       g_settings_get_boolean (S_MONITOR, "mute");
+  self->monitor_fader->mute->control =
+    mute ? 1.f : 0.f;
 }
 
 /**

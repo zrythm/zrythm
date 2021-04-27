@@ -66,14 +66,8 @@ typedef struct ControlRoom
    */
   Fader *    dim_fader;
 
-  /** Sum the output to mono. */
-  bool       mono;
-
   /** Dim the output volume. */
   bool       dim_output;
-
-  /** Mute the output. */
-  bool       mute;
 
   /**
    * Monitor fader.
