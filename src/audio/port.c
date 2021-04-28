@@ -712,19 +712,25 @@ port_find_from_identifier (
     case PORT_OWNER_TYPE_HW:
       {
         Port * port = NULL;
-        if (id->flow == FLOW_INPUT)
+
+        /* note: flows are reversed */
+        if (id->flow == FLOW_OUTPUT)
           {
             port =
               hardware_processor_find_port (
                 HW_IN_PROCESSOR, id->ext_port_id);
           }
-        else if (id->flow == FLOW_OUTPUT)
+        else if (id->flow == FLOW_INPUT)
           {
             port =
               hardware_processor_find_port (
                 HW_OUT_PROCESSOR, id->ext_port_id);
           }
-        g_return_val_if_fail (port, NULL);
+
+        /* only warn when hardware is not
+         * connected anymore */
+        g_warn_if_fail (port);
+        /*g_return_val_if_fail (port, NULL);*/
         return port;
       }
       break;
