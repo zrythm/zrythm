@@ -41,3 +41,11 @@ eg_amp_lv2 = shared_library (
   dependencies: [ lv2_dep, libm ],
   install: false,
   )
+
+test_lv2_plugin_libs += eg_amp_lv2
+test_lv2_plugins += {
+  'name': 'eg-amp',
+  'uri': 'http://lv2plug.in/plugins/eg-amp',
+  'bundle': meson.current_build_dir (),
+  'lib': eg_amp_lv2,
+  }

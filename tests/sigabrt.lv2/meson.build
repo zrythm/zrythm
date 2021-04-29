@@ -44,4 +44,10 @@ sigabrt_lv2_so = shared_library (
   install: false,
   )
 
-test_lv2_plugins += sigabrt_lv2_so
+test_lv2_plugin_libs += sigabrt_lv2_so
+test_lv2_plugins += {
+  'name': 'sigabrt',
+  'uri': 'https://www.zrythm.org/plugins/sigabrt',
+  'bundle': meson.current_build_dir (),
+  'lib': sigabrt_lv2_so,
+  }

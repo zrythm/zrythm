@@ -18,6 +18,7 @@
 if get_option ('tests')
 
   test_lv2_plugins = []
+  test_lv2_plugin_libs = []
   subdir('eg-amp.lv2')
   subdir('eg-fifths.lv2')
   subdir('sigabrt.lv2')
@@ -110,20 +111,25 @@ if get_option ('tests')
   endforeach
 
   # also add bundle/uri macros for test plugins
-  # C
-  test_config.set_quoted (
-    'SIGABRT_URI',
-    'https://www.zrythm.org/plugins/sigabrt')
-  test_config.set_quoted (
-    'SIGABRT_BUNDLE_URI',
-    'file://' + meson.current_build_dir () / 'sigabrt.lv2/')
-  # Guile
-  test_config_guile.set_quoted (
-    'SIGABRT_URI',
-    'https://www.zrythm.org/plugins/sigabrt')
-  test_config_guile.set_quoted (
-    'SIGABRT_BUNDLE_URI',
-    'file://' + meson.current_build_dir () / 'sigabrt.lv2/')
+  foreach pl : test_lv2_plugins
+    name = pl['name']
+    uri = pl['uri']
+    bundle = pl['bundle']
+    lib = pl['lib']
+    name_underscorified = name.underscorify ().to_upper ()
+    # C
+    test_config.set_quoted (
+      name_underscorified + '_URI', uri)
+    test_config.set_quoted (
+      name_underscorified + '_BUNDLE_URI',
+      'file://' + bundle + '/')
+    # Guile
+    test_config_guile.set_quoted (
+      name_underscorified + '_URI', uri)
+    test_config_guile.set_quoted (
+      name_underscorified + '_BUNDLE_URI',
+      'file://' + bundle + '/')
+  endforeach
 
   # use custom lv2apply until upstream merges URID
   # support
@@ -373,7 +379,7 @@ if get_option ('tests')
         args: 'args' in info ? info['args'] : [],
         depends: [
           test_lv2apply_wavs,
-          test_lv2_plugins,
+          test_lv2_plugin_libs,
           ],
         timeout: timeout)
     else

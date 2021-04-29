@@ -56,6 +56,14 @@ test_plugin_manager_get_plugin_setting (
   const char * pl_uri,
   bool         with_carla);
 
+/**
+ * Creates \ref num_tracks tracks for the given
+ * plugin.
+ *
+ * @param num_tracks Number of tracks to create.
+ *
+ * @return The index of the last track created.
+ */
 int
 test_plugin_manager_create_tracks_from_plugin (
   const char * pl_bundle,
@@ -116,6 +124,14 @@ test_plugin_manager_get_plugin_setting (
   return setting;
 }
 
+/**
+ * Creates \ref num_tracks tracks for the given
+ * plugin.
+ *
+ * @param num_tracks Number of tracks to create.
+ *
+ * @return The index of the last track created.
+ */
 int
 test_plugin_manager_create_tracks_from_plugin (
   const char * pl_bundle,

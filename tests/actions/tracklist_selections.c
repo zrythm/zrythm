@@ -1665,6 +1665,42 @@ test_duplicate_w_output_and_send (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_track_deletion_w_mixer_selections (void)
+{
+  test_helper_zrythm_init ();
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_create_audio_fx (
+      NULL, TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * first_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  int pl_track_pos =
+  test_plugin_manager_create_tracks_from_plugin  (
+    EG_AMP_BUNDLE_URI, EG_AMP_URI, false, false, 1);
+  Track * pl_track =
+    TRACKLIST->tracks[pl_track_pos];
+
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, pl_track, PLUGIN_SLOT_INSERT,
+    0, F_NO_CLONE);
+  g_assert_true (MIXER_SELECTIONS->has_any);
+  g_assert_cmpint (
+    MIXER_SELECTIONS->track_pos, ==, pl_track->pos);
+
+  track_select (
+    first_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_delete (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1672,6 +1708,11 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX
+    "test track deletion w mixer selections",
+    (GTestFunc)
+    test_track_deletion_w_mixer_selections);
   g_test_add_func (
     TEST_PREFIX "test duplicate w output and send",
     (GTestFunc) test_duplicate_w_output_and_send);

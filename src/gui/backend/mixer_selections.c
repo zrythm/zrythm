@@ -279,7 +279,7 @@ mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
   PluginSlotType    type,
-  int               publish_events)
+  bool              publish_events)
 {
   g_message ("removing slot %d", slot);
   array_delete_primitive (
@@ -400,6 +400,51 @@ mixer_selections_get_first_plugin (
     }
 
   return NULL;
+}
+
+bool
+mixer_selections_validate (
+  MixerSelections * self)
+{
+  if (!self->has_any)
+    return true;
+
+  Track * track =
+    mixer_selections_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), false);
+
+  for (int i = 0; i < self->num_slots; i++)
+    {
+      Plugin * pl = NULL;
+      switch (self->type)
+        {
+        case PLUGIN_SLOT_INSTRUMENT:
+          pl = track->channel->instrument;
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl =
+            track->channel->inserts[
+              self->slots[i]];
+          break;
+        case PLUGIN_SLOT_MIDI_FX:
+          pl =
+            track->channel->midi_fx[
+              self->slots[i]];
+          break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl = track->modulators[self->slots[i]];
+          break;
+        default:
+          g_return_val_if_reached (false);
+          break;
+        }
+
+      g_return_val_if_fail (
+        IS_PLUGIN_AND_NONNULL (pl), false);
+    }
+
+  return true;
 }
 
 /**

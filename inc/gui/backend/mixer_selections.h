@@ -206,18 +206,20 @@ mixer_selections_add_slot (
  * Assumes that the channel is the one already
  * selected.
  */
+NONNULL
 void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
   PluginSlotType    type,
-  int               publish_events);
+  bool              publish_events);
 
 /**
  * Sorts the selections by slot index.
  *
  * @param asc Ascending or not.
  */
+NONNULL
 void
 mixer_selections_sort (
   MixerSelections * self,
@@ -227,13 +229,20 @@ mixer_selections_sort (
  * Returns the first selected plugin if any is
  * selected, otherwise NULL.
  */
+NONNULL
 Plugin *
 mixer_selections_get_first_plugin (
+  MixerSelections * self);
+
+NONNULL
+bool
+mixer_selections_validate (
   MixerSelections * self);
 
 /**
  * Clears selections.
  */
+NONNULL
 void
 mixer_selections_clear (
   MixerSelections * ms,

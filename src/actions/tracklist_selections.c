@@ -880,6 +880,7 @@ do_or_undo_create_or_delete (
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   tracklist_validate (TRACKLIST);
+  mixer_selections_validate (MIXER_SELECTIONS);
 
   return 0;
 }

@@ -1740,6 +1740,13 @@ track_set_pos (
 
   if (self->is_project)
     {
+      /* update mixer selections */
+      if (MIXER_SELECTIONS->has_any &&
+          MIXER_SELECTIONS->track_pos == prev_pos)
+        {
+          MIXER_SELECTIONS->track_pos = pos;
+        }
+
       /* change the clip editor region */
       if (CLIP_EDITOR->has_region &&
           CLIP_EDITOR->region_id.track_pos ==
