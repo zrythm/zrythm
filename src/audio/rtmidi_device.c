@@ -97,9 +97,12 @@ midi_in_cb (
   g_return_if_fail (ts >= 0);
   char portname[900];
   port_get_full_designation (self->port, portname);
-  g_debug (
-    "[%s] message received of size %zu at %ld",
-    portname, message_size, ts);
+  if (DEBUGGING)
+    {
+      g_debug (
+        "[%s] message received of size %zu at %ld",
+        portname, message_size, ts);
+    }
 
   /* add to ring buffer */
   MidiEventHeader h = {

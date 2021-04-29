@@ -2402,7 +2402,8 @@ port_sum_data_from_rtmidi (
         }
     }
 
-  if (self->midi_events->num_events > 0)
+  if (DEBUGGING &&
+      self->midi_events->num_events > 0)
     {
       MidiEvent * ev =
         &self->midi_events->events[0];
