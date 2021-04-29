@@ -509,12 +509,22 @@ bot_bar_widget_update_status (
 
   /* TODO show xruns on status */
 
-  const char * pipewire_str = "";
+  const char * audio_pipewire_str = "";
+  const char * midi_pipewire_str = "";
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
 #ifdef HAVE_JACK
-      pipewire_str =
+      audio_pipewire_str =
+        engine_jack_is_pipewire (AUDIO_ENGINE) ?
+          " (pw)" : "";
+#endif
+    }
+  if (AUDIO_ENGINE->midi_backend ==
+        MIDI_BACKEND_JACK)
+    {
+#ifdef HAVE_JACK
+      midi_pipewire_str =
         engine_jack_is_pipewire (AUDIO_ENGINE) ?
           " (pw)" : "";
 #endif
@@ -535,13 +545,13 @@ bot_bar_widget_update_status (
     color_prefix,
     engine_audio_backend_to_string (
       AUDIO_ENGINE->audio_backend),
-    pipewire_str,
+    audio_pipewire_str,
     color_suffix,
     "MIDI",
     color_prefix,
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
-    pipewire_str,
+    midi_pipewire_str,
     color_suffix,
     _("Status"),
     AUDIO_ENGINE->activated ?
