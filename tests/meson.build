@@ -17,8 +17,10 @@
 
 if get_option ('tests')
 
+  test_lv2_plugins = []
   subdir('eg-amp.lv2')
   subdir('eg-fifths.lv2')
+  subdir('sigabrt.lv2')
   subdir('test-instrument.lv2')
 
   test_env = environment ()
@@ -106,6 +108,22 @@ if get_option ('tests')
         name.to_upper() + '_BUNDLE', '')
     endif
   endforeach
+
+  # also add bundle/uri macros for test plugins
+  # C
+  test_config.set_quoted (
+    'SIGABRT_URI',
+    'https://www.zrythm.org/plugins/sigabrt')
+  test_config.set_quoted (
+    'SIGABRT_BUNDLE_URI',
+    'file://' + meson.current_build_dir () / 'sigabrt.lv2/')
+  # Guile
+  test_config_guile.set_quoted (
+    'SIGABRT_URI',
+    'https://www.zrythm.org/plugins/sigabrt')
+  test_config_guile.set_quoted (
+    'SIGABRT_BUNDLE_URI',
+    'file://' + meson.current_build_dir () / 'sigabrt.lv2/')
 
   # use custom lv2apply until upstream merges URID
   # support
@@ -353,7 +371,10 @@ if get_option ('tests')
         env: test_env, suite: suite,
         is_parallel: is_parallel,
         args: 'args' in info ? info['args'] : [],
-        depends: test_lv2apply_wavs,
+        depends: [
+          test_lv2apply_wavs,
+          test_lv2_plugins,
+          ],
         timeout: timeout)
     else
       # create C executable for Guile runner

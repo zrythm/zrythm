@@ -81,10 +81,6 @@ test_save_state_w_files (void)
       channel->instrument;
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
-  /* set a sample */
-  /*pl->lv2, port, strlen (filename),*/
-  /*pl->lv2, pl->lv2->forge.Path, filename)*/
-
   char * pset_bundle_path =
     g_build_filename (
       TESTS_SRCDIR, "presets",

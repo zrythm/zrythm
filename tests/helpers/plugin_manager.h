@@ -76,12 +76,15 @@ test_plugin_manager_get_plugin_setting (
 {
   LilvNode * path =
     lilv_new_uri (LILV_WORLD, pl_bundle);
+  g_assert_nonnull (path);
   lilv_world_load_bundle (LILV_WORLD, path);
   lilv_node_free (path);
 
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
   plugin_manager_scan_plugins (
     PLUGIN_MANAGER, 1.0, NULL);
+  g_assert_cmpint (
+    PLUGIN_MANAGER->num_plugins, >, 0);
 
   PluginDescriptor * descr = NULL;
   for (int i = 0; i < PLUGIN_MANAGER->num_plugins;

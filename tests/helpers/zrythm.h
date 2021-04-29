@@ -34,6 +34,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/marker_track.h"
 #include "audio/tracklist.h"
+#include "plugins/plugin_manager.h"
 #include <project.h>
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
@@ -172,6 +173,16 @@ _test_helper_zrythm_init (
 
   /* set a segv handler */
   signal (SIGSEGV, segv_handler);
+
+  /* append lv2 path for test plugins */
+  char * tmp = PLUGIN_MANAGER->lv2_path;
+  PLUGIN_MANAGER->lv2_path =
+    g_strdup_printf (
+      "%s%s%s",
+      PLUGIN_MANAGER->lv2_path,
+      G_SEARCHPATH_SEPARATOR_S,
+      TESTS_BUILDDIR);
+  g_free (tmp);
 }
 
 /**

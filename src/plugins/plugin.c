@@ -1102,6 +1102,7 @@ plugin_activate (
       (!pl->activated && !activate))
     {
       /* nothing to do */
+      g_message ("%s: nothing to do", __func__);
       return 0;
     }
 
@@ -1111,6 +1112,11 @@ plugin_activate (
         "plugin %s not instantiated",
         pl->setting->descr->name);
       return -1;
+    }
+
+  if (!activate)
+    {
+      pl->deactivating = true;
     }
 
   if (pl->setting->open_with_carla)
@@ -1141,6 +1147,7 @@ plugin_activate (
     }
 
   pl->activated = activate;
+  pl->deactivating = false;
 
   return 0;
 }
@@ -1162,11 +1169,8 @@ plugin_cleanup (
         {
 #ifdef HAVE_CARLA
 #if 0
-          /* TODO */
-          int ret =
-            carla_native_plugin_cleanup (
-              self->carla, activate);
-          g_return_val_if_fail (ret == 0, ret);
+          carla_native_plugin_close (
+            self->carla);
 #endif
 #endif
         }
@@ -1766,16 +1770,41 @@ plugin_process (
 }
 
 /**
+ * Prints the plugin to the buffer, if any, or to
+ * the log.
+ */
+void
+plugin_print (
+  Plugin * self,
+  char *   buf,
+  size_t   buf_sz)
+{
+  const char * fmt = "%s (%d):%s:%d - %s";
+  if (buf)
+    {
+      Track * track = plugin_get_track (self);
+      g_return_if_fail (track);
+      snprintf (
+        buf, buf_sz, fmt, track->name, track->pos,
+        plugin_slot_type_strings[
+          self->id.slot_type].str,
+        self->id.slot, self->setting->descr->name);
+    }
+}
+
+/**
  * Shows plugin ui and sets window close callback
  */
 void
 plugin_open_ui (
   Plugin * self)
 {
-  g_debug ("opening plugin UI");
-
   g_return_if_fail (
     IS_PLUGIN (self) && self->setting->descr);
+
+  char pl_str[700];
+  plugin_print (self, pl_str, 700);
+  g_debug ("opening plugin UI [%s]", pl_str);
 
   PluginSetting * setting = self->setting;
   const PluginDescriptor * descr = setting->descr;
@@ -1785,7 +1814,7 @@ plugin_open_ui (
       g_message (
         "plugin %s instantiation failed, no UI to "
         "open",
-        descr->name);
+        pl_str);
       return;
     }
 
@@ -1823,8 +1852,13 @@ plugin_open_ui (
   if (GTK_IS_WINDOW (self->window))
     {
       /* present it */
+      g_debug (
+        "presenting plugin [%s] window %p",
+        pl_str, self->window);
       gtk_window_present (
         GTK_WINDOW (self->window));
+      gtk_widget_show_all (
+        GTK_WIDGET (self->window));
     }
   else
     {
@@ -1834,6 +1868,8 @@ plugin_open_ui (
        * then LV2 custom */
       if (generic_ui)
         {
+          g_debug (
+            "creating and opening generic UI");
           plugin_gtk_create_window (self);
           plugin_gtk_open_generic_ui (self);
         }
@@ -2162,6 +2198,8 @@ plugin_set_enabled (
   bool     enabled,
   bool     fire_events)
 {
+  g_return_if_fail (self->instantiated);
+
   port_set_control_value (
     self->enabled, enabled ? 1.f : 0.f, false,
     fire_events);
@@ -2264,6 +2302,8 @@ plugin_close_ui (
         self->setting->descr->name);
       return;
     }
+
+  g_return_if_fail (self->instantiated);
 
   plugin_gtk_close_ui (self);
 

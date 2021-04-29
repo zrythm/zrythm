@@ -520,6 +520,12 @@ on_delete_event (
   EVENTS_PUSH (
     ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 
+  char pl_str[700];
+  plugin_print (plugin, pl_str, 700);
+  g_message (
+    "%s: deleted plugin [%s] window",
+    __func__, pl_str);
+
   return FALSE;
 }
 
@@ -1623,7 +1629,7 @@ plugin_gtk_open_generic_ui (
   Plugin * plugin)
 {
   g_message (
-    "creating generic GTK window..");
+    "opening generic GTK window..");
   GtkWidget* controls =
     build_control_widget (
       plugin, plugin->window);
@@ -1712,8 +1718,11 @@ plugin_gtk_close_ui (
       pl->delete_event_id = 0;
       gtk_widget_set_sensitive (
         GTK_WIDGET (pl->window), 0);
-      gtk_window_close (
-        GTK_WINDOW (pl->window));
+      /*gtk_window_close (*/
+        /*GTK_WINDOW (pl->window));*/
+      gtk_widget_destroy (
+        GTK_WIDGET (pl->window));
+      pl->window = NULL;
     }
 
   if (pl->lv2 &&

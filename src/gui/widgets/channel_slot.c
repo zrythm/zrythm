@@ -560,10 +560,15 @@ drag_end (
   Plugin * pl = get_plugin (self);
   if (self->n_press == 2)
     {
-      g_message ("opening plugin ");
+      bool new_visible = !pl->visible;
+      g_message (
+        "%s: setting plugin %s visible %d",
+        __func__, pl->setting->descr->name,
+        new_visible);
+      g_warn_if_fail (pl->instantiated);
       if (pl)
         {
-          pl->visible = !pl->visible;
+          pl->visible = new_visible;
           EVENTS_PUSH (
             ET_PLUGIN_VISIBILITY_CHANGED, pl);
         }
@@ -587,7 +592,8 @@ drag_end (
         last_plugin_press =
           g_get_monotonic_time ();
     }
-  g_message ("drag end %d", self->n_press);
+  g_message ("%s: drag end %d press",
+    __func__, self->n_press);
 }
 
 static void

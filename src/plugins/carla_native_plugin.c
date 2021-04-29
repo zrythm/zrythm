@@ -321,6 +321,19 @@ engine_callback (
         ET_PLUGIN_VISIBILITY_CHANGED,
         self->plugin);
       break;
+    case ENGINE_CALLBACK_PARAMETER_VALUE_CHANGED:
+      /* if plugin was deactivated and we didn't
+       * explicitly tell it to deactivate */
+      if (val1 == PARAMETER_ACTIVE &&
+          val2 == 0 && val3 == 0 &&
+          self->plugin->activated &&
+          !self->plugin->deactivating)
+        {
+          /* send crash signal */
+          EVENTS_PUSH (
+            ET_PLUGIN_CRASHED, self->plugin);
+        }
+      break;
     default:
       break;
     }
@@ -1402,6 +1415,10 @@ carla_native_plugin_open_ui (
     IS_PLUGIN_AND_NONNULL (pl) &&
     pl->setting->descr);
 
+  g_message (
+    "%s: show/hide '%s' UI: %d",
+    __func__, pl->setting->descr->name, show);
+
   switch (pl->setting->descr->protocol)
     {
     case PROT_VST:
@@ -1480,6 +1497,8 @@ carla_native_plugin_activate (
   CarlaNativePlugin * self,
   bool                activate)
 {
+  g_message ("setting plugin %s active %d",
+    self->plugin->setting->descr->name, activate);
   carla_set_active (
     self->host_handle, 0, activate);
 

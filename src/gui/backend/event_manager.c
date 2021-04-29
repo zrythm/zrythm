@@ -536,6 +536,18 @@ on_plugin_added (Plugin * plugin)
 }
 
 static void
+on_plugin_crashed (Plugin * plugin)
+{
+  char * str =
+    g_strdup_printf (
+      _("Plugin '%s' has crashed and has been "
+      "disabled."),
+      plugin->setting->descr->name);
+  ui_show_error_message (MAIN_WINDOW, str);
+  g_free (str);
+}
+
+static void
 on_plugin_state_changed (Plugin * pl)
 {
   Track * track = plugin_get_track (pl);
@@ -1520,6 +1532,10 @@ process_events (void * data)
           break;
         case ET_PLUGIN_ADDED:
           on_plugin_added (
+            (Plugin *) ev->arg);
+          break;
+        case ET_PLUGIN_CRASHED:
+          on_plugin_crashed (
             (Plugin *) ev->arg);
           break;
         case ET_PLUGINS_REMOVED:

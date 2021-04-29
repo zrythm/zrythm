@@ -258,6 +258,10 @@ typedef struct Plugin
    * @seealso update_plugin_ui().
    */
   guint             update_ui_source_id;
+
+  /** Temporary variable to check if plugin is
+   * currently undergoing deactivation. */
+  bool              deactivating;
 } Plugin;
 
 static const cyaml_schema_field_t
@@ -382,6 +386,16 @@ NONNULL
 bool
 plugin_validate (
   Plugin * self);
+
+/**
+ * Prints the plugin to the buffer, if any, or to
+ * the log.
+ */
+void
+plugin_print (
+  Plugin * self,
+  char *   buf,
+  size_t   buf_sz);
 
 /**
  * Removes the automation tracks associated with
