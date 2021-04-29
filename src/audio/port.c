@@ -1244,6 +1244,7 @@ expose_to_jack (
         "unexposing port %s from JACK", label);
       if (AUDIO_ENGINE->client)
         {
+          g_warn_if_fail (self->data);
           int ret =
             jack_port_unregister (
               AUDIO_ENGINE->client,

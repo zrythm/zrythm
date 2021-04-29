@@ -566,12 +566,14 @@ typedef struct Port
   int                 magic;
 } Port;
 
+#if 0
 static const cyaml_strval_t
 port_internal_type_strings[] =
 {
   { "LV2 port",       INTERNAL_LV2_PORT    },
   { "JACK port",      INTERNAL_JACK_PORT   },
 };
+#endif
 
 static const cyaml_schema_field_t
 port_fields_schema[] =
@@ -625,10 +627,12 @@ port_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Port, src_enabled, num_srcs,
     &int_schema, 0, CYAML_UNLIMITED),
+#if 0
   CYAML_FIELD_ENUM (
     "internal_type", CYAML_FLAG_DEFAULT,
     Port, internal_type, port_internal_type_strings,
     CYAML_ARRAY_LEN (port_internal_type_strings)),
+#endif
   YAML_FIELD_FLOAT (
     Port, control),
   YAML_FIELD_FLOAT (
