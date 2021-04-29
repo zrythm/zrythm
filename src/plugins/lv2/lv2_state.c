@@ -1,4 +1,24 @@
 /*
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
   Copyright 2007-2016 David Robillard <http://drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
@@ -33,6 +53,7 @@
 #include "utils/datetime.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -135,7 +156,7 @@ lv2_state_save_to_file (
       pl->temp_dir, copy_dir, link_dir,
       abs_state_dir,
       lv2_plugin_get_port_value, pl,
-      LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
+      LV2_STATE_IS_PORTABLE,
       pl->state_features);
   g_return_val_if_fail (state, NULL);
 
@@ -295,6 +316,7 @@ lv2_state_apply_preset (
   plugin->preset =
     lilv_state_new_from_world (
       LILV_WORLD, &plugin->map, preset);
+  g_return_val_if_fail (plugin->preset, -1);
   lv2_state_apply_state (plugin, plugin->preset);
   return 0;
 }
@@ -316,7 +338,7 @@ lv2_state_save_preset (
       &plugin->map,
       plugin->temp_dir, dir, dir, dir,
       lv2_plugin_get_port_value, plugin,
-      LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
+      LV2_STATE_IS_PORTABLE,
       NULL);
 
   if (label)
@@ -363,26 +385,32 @@ lv2_state_load_presets (
     lilv_plugin_get_related (
       plugin->lilv_plugin,
       PM_GET_NODE (LV2_PRESETS__Preset));
-  LILV_FOREACH(nodes, i, presets) {
-    const LilvNode* preset = lilv_nodes_get(presets, i);
-    lilv_world_load_resource(LILV_WORLD, preset);
-    if (!sink) {
-      continue;
-    }
+  LILV_FOREACH(nodes, i, presets)
+    {
+      const LilvNode* preset =
+        lilv_nodes_get(presets, i);
+      lilv_world_load_resource (LILV_WORLD, preset);
+      if (!sink) {
+        continue;
+      }
 
-    LilvNodes* labels =
-      lilv_world_find_nodes (
-        LILV_WORLD, preset,
-        PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
-    if (labels) {
-      const LilvNode* label = lilv_nodes_get_first(labels);
-      sink(plugin, preset, label, data);
-      lilv_nodes_free(labels);
-    } else {
-      fprintf(stderr, "Preset <%s> has no rdfs:label\n",
-              lilv_node_as_string(lilv_nodes_get(presets, i)));
+      LilvNodes* labels =
+        lilv_world_find_nodes (
+          LILV_WORLD, preset,
+          PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
+      if (labels)
+        {
+          const LilvNode* label = lilv_nodes_get_first(labels);
+          sink(plugin, preset, label, data);
+          lilv_nodes_free(labels);
+        }
+      else
+        {
+          g_message (
+            "Preset <%s> has no rdfs:label\n",
+            lilv_node_as_string(preset));
+        }
     }
-  }
   lilv_nodes_free(presets);
 
   return 0;

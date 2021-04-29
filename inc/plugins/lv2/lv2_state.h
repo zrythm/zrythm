@@ -28,7 +28,10 @@
 
 #include "zrythm-config.h"
 
+#include <lilv/lilv.h>
 #include <lv2/state/state.h>
+
+typedef struct Lv2Plugin Lv2Plugin;
 
 /**
  * @addtogroup lv2
