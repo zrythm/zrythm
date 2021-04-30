@@ -1293,9 +1293,11 @@ plugin_move_automation (
 {
   g_message (
     "moving plugin '%s' automation from "
-    "%s to %s -> slot#%d",
+    "%s to %s -> %s:%d",
     pl->setting->descr->name, prev_track->name,
-    track->name, new_slot);
+    track->name,
+    plugin_slot_type_strings[new_slot_type].str,
+    new_slot);
 
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (prev_track);
@@ -1786,10 +1788,13 @@ plugin_print (
   const char * fmt = "%s (%d):%s:%d - %s";
   if (buf)
     {
-      Track * track = plugin_get_track (self);
-      g_return_if_fail (track);
+      Track * track =
+        self->is_project ?
+          plugin_get_track (self) : NULL;
       snprintf (
-        buf, buf_sz, fmt, track->name, track->pos,
+        buf, buf_sz, fmt,
+        track ? track->name : "<no track>",
+        track ? track->pos : -1,
         plugin_slot_type_strings[
           self->id.slot_type].str,
         self->id.slot, self->setting->descr->name);

@@ -1152,6 +1152,68 @@ test_move_pl_after_duplicating_track (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_move_plugin_from_inserts_to_midi_fx (void)
+{
+#ifdef HAVE_MIDI_CC_MAP
+  test_helper_zrythm_init ();
+
+  /* create a track with an insert */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_MIDI, NULL, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  int track_pos = TRACKLIST->num_tracks - 1;
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
+      MIDI_CC_MAP_BUNDLE,
+      MIDI_CC_MAP_URI, false);
+  ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_INSERT, track_pos, 0, setting, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  plugin_setting_free (setting);
+
+  /* select it */
+  Track * track =
+    TRACKLIST->tracks[track_pos];
+  track_select (
+    track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+
+  /* move to midi fx */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
+  ua =
+    mixer_selections_action_new_move (
+      MIXER_SELECTIONS, PLUGIN_SLOT_MIDI_FX,
+      track->pos, 0);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_nonnull (
+    track->channel->midi_fx[0]);
+  g_assert_true (
+    track_validate (track));
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    track_validate (track));
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (
+    track_validate (track));
+  g_assert_nonnull (
+    track->channel->midi_fx[0]);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_validate (track));
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1159,6 +1221,11 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
+  g_test_add_func (
+    TEST_PREFIX
+    "test move plugin from inserts to midi fx",
+    (GTestFunc)
+    test_move_plugin_from_inserts_to_midi_fx);
   g_test_add_func (
     TEST_PREFIX
     "test move two plugins one slot up",

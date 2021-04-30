@@ -1630,8 +1630,9 @@ channel_remove_plugin (
   Track * track = channel_get_track (channel);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   g_message (
-    "Removing %s from %s:%d",
-    plugin->setting->descr->name, track->name, slot);
+    "Removing %s from %s:%s:%d",
+    plugin->setting->descr->name, track->name,
+    plugin_slot_type_strings[slot_type].str, slot);
 
   /* if moving, the move is already handled in
    * plugin_move_automation() inside
@@ -1811,9 +1812,10 @@ channel_add_plugin (
     }
 
   g_message (
-    "Inserting %s %s at %s:%d",
+    "Inserting %s %s at %s:%s:%d",
     plugin_slot_type_to_string (slot_type),
-    plugin->setting->descr->name, track->name, slot);
+    plugin->setting->descr->name, track->name,
+    plugin_slot_type_strings[slot_type].str, slot);
   if (slot_type == PLUGIN_SLOT_INSTRUMENT)
     {
       self->instrument = plugin;
