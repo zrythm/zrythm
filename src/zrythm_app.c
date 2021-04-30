@@ -926,7 +926,7 @@ zrythm_app_startup (
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _("%s-%s Copyright © 2018-2021 The Zrythm contributors\n\n"
+    _("%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n\n"
     "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. See the file `COPYING' for details.\n\n"

@@ -160,6 +160,7 @@ inc/gui/widgets/tracklist_header.h
 inc/gui/widgets/bot_bar.h
 inc/gui/widgets/transport_controls.h
 inc/gui/widgets/route_target_selector_popover.h
+inc/gui/widgets/monitor_section.h
 inc/gui/widgets/track_properties_expander.h
 inc/gui/widgets/modulator_view.h
 inc/gui/widgets/fader.h
@@ -223,7 +224,6 @@ inc/gui/widgets/editor_toolbar.h
 inc/gui/widgets/region.h
 inc/gui/widgets/inspector_region_info.h
 inc/gui/widgets/cpu.h
-inc/gui/widgets/control_room.h
 inc/gui/widgets/splash.h
 inc/gui/widgets/arranger_draw.h
 inc/gui/widgets/midi_arranger.h
@@ -544,7 +544,6 @@ src/gui/widgets/instrument_track.c
 src/gui/widgets/automation_arranger_bg.c
 src/gui/widgets/modulator.c
 src/gui/widgets/marker_track.c
-src/gui/widgets/control_room.c
 src/gui/widgets/channel_slot.c
 src/gui/widgets/arranger.c
 src/gui/widgets/piano_roll_keys.c
@@ -586,6 +585,7 @@ src/gui/widgets/main_window.c
 src/gui/widgets/snap_grid.c
 src/gui/widgets/automation_point.c
 src/gui/widgets/preferences.c
+src/gui/widgets/monitor_section.c
 src/gui/widgets/track_top_grid.c
 src/gui/widgets/scripting_window.c
 src/gui/widgets/active_hardware_mb.c
@@ -865,6 +865,7 @@ resources/ui/project_assistant.ui
 resources/ui/left_dock_edge.ui
 resources/ui/chord_selector_window.ui
 resources/ui/create_project_dialog.ui
+resources/ui/monitor_section.ui
 resources/ui/active_hardware_popover.ui
 resources/ui/chord_pad.ui
 resources/ui/channel.ui
