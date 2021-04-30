@@ -531,12 +531,7 @@ endif
 
 if os_windows
   test_cflags += [
-    '-DPATH_SPLIT=";"',
     '-DUSE_WEAK_JACK=1',
-    ]
-else
-  test_cflags += [
-    '-DPATH_SPLIT=":"',
     ]
 endif
 

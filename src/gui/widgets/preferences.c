@@ -81,7 +81,7 @@ on_path_entry_changed (
     gtk_editable_get_chars (editable, 0, -1);
   g_return_if_fail (str);
   char ** split_str =
-    g_strsplit (str, PATH_SPLIT, 0);
+    g_strsplit (str, G_SEARCHPATH_SEPARATOR_S, 0);
   g_settings_set_strv (
     data->info->settings, data->key,
     (const char * const *) split_str);
@@ -159,7 +159,7 @@ typedef enum PathType
   /** Not a path. */
   PATH_TYPE_NONE,
 
-  /** Single entry separated by PATH_SPLIT. */
+  /** Single entry separated by G_SEARCHPATH_SEPARATOR_S. */
   PATH_TYPE_ENTRY,
 
   /** File chooser button. */
@@ -652,7 +652,7 @@ make_control (
             g_settings_get_strv (
               info->settings, key);
           char * joined_str =
-            g_strjoinv (PATH_SPLIT, paths);
+            g_strjoinv (G_SEARCHPATH_SEPARATOR_S, paths);
           gtk_entry_set_text (
             GTK_ENTRY (widget), joined_str);
           g_free (joined_str);
