@@ -495,7 +495,7 @@ static void on_prompt_for_project (
               NULL, flags,
               GTK_MESSAGE_INFO,
               GTK_BUTTONS_OK,
-"Copyright (C) 2018-2020 The Zrythm contributors\n"
+"Copyright © 2018-2021 The Zrythm contributors\n"
 "\n"
 "Zrythm is free software: you can redistribute it and/or modify\n"
 "it under the terms of the GNU Affero General Public License as published by\n"
@@ -926,7 +926,7 @@ zrythm_app_startup (
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _("%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n\n"
+    _("%s-%s Copyright © 2018-2021 The Zrythm contributors\n\n"
     "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. See the file `COPYING' for details.\n\n"
