@@ -1,6 +1,45 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.16.0.1] - 2021-04-30
+### Added
+- Make fader and piano roll highlight colors themeable
+- Add bar and beat snap options
+- Allow bouncing tracks pre-inserts, pre-fader, post-fader, or with parents
+- Add plugin author filter in plugin browser
+- Add meson option for carla 32bit binaries on windows
+- Allow soloing/muting multiple tracks
+- Allow changing color for multipler tracks
+- Add title field to export dialog
+- Allow changing monitor output device ports (JACK only)
+- Implement channel listen
+- Add option to unsolo/unmute/unlisten all tracks
+- Add mute/listen/dim knobs to monitor section
+- Add mono/dim/mute functionalities to monitor section
+
+### Changed
+- Update French, Japanese, Greek, Chinese (Simplified), Ukrainian translations
+- Show value readings on some knobs
+- Don't serialize port internal value type
+- Pass hardRTCapable and threadSafeRestore LV2 features to plugins during instantiation
+- Stop and restart engine when LV2 plugin does not support thread-safe state restore
+- Do not re-save the state when instantiating plugins unless state dir does not exist
+
+### Fixed
+- Fix fetching latest version in installer build
+- Fix error when duplicating tracks with sends/direct outs
+- Fix soloed tracks being silent when routed to groups
+- Fix LV2 plugin states not being saved correctly when there are files involved
+- Fix error when opening generic UIs for bridged plugins
+- Fix error when deleting a track when mixer selections exist after the track
+- Fix (pw) being shown for MIDI in bot bar when using JACK audio backend with a non-JACK MIDI backend
+- Fix error when moving plugin from inserts to MIDI FX
+- Fix playhead not being redrawn when moving back to cue point
+- Fix incorrect backend being selected in first run wizard
+
+### Removed
+- Remove makePath feature for state saving for LV2 plugins (handled by lilv)
+
 ## [1.0.0-alpha.15.0.1] - 2021-04-03
 ### Added
 - Implement MIDI fader mute
