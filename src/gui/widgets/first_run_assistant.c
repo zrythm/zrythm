@@ -72,10 +72,19 @@ audio_midi_backend_selection_validate (
 {
   AudioBackend ab =
     (AudioBackend)
-    gtk_combo_box_get_active (self->audio_backend);
+    atoi (
+      gtk_combo_box_get_active_id (
+        self->audio_backend));
   MidiBackend mb =
     (MidiBackend)
-    gtk_combo_box_get_active (self->midi_backend);
+    atoi (
+      gtk_combo_box_get_active_id (
+        self->midi_backend));
+  g_message (
+    "selected audio backend: %s, "
+    "selected MIDI backend: %s",
+    audio_backend_str[ab],
+    midi_backend_str[mb]);
 
   /* test audio backends */
   switch (ab)
