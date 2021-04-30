@@ -814,8 +814,7 @@ engine_jack_reconnect_monitor (
             jack_connect (
               self->client,
               jack_port_name (
-                JACK_PORT_T (
-                  self->monitor_out->l->data)),
+                JACK_PORT_T (port->data)),
               ext_port->full_name);
           if (ret)
             {
@@ -859,8 +858,7 @@ engine_jack_reconnect_monitor (
         jack_connect (
           self->client,
           jack_port_name (
-            JACK_PORT_T (
-              self->monitor_out->l->data)),
+            JACK_PORT_T (port->data)),
           left ? ports[0] : ports[1]);
       if (ret)
         {
