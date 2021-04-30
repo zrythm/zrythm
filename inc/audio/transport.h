@@ -458,6 +458,11 @@ transport_set_playhead_pos (
   Transport * self,
   Position *  pos);
 
+void
+transport_set_playhead_to_bar (
+  Transport * self,
+  int         bar);
+
 /**
  * Getter for playhead Position.
  */

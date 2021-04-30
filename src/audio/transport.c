@@ -503,6 +503,16 @@ transport_set_playhead_pos (
     ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
 }
 
+void
+transport_set_playhead_to_bar (
+  Transport * self,
+  int         bar)
+{
+  Position pos;
+  position_set_to_bar (&pos, bar);
+  transport_set_playhead_pos (self, &pos);
+}
+
 /**
  * Getter for playhead Position.
  */

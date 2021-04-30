@@ -77,9 +77,8 @@ do_takes_no_loop_no_punch (
     TRANSPORT, false);
 
   /* move playhead to 2.1.1.0 */
-  Position pos;
-  position_set_to_bar (&pos, PLAYHEAD_START_BAR);
-  transport_set_playhead_pos (TRANSPORT, &pos);
+  transport_set_playhead_to_bar (
+    TRANSPORT, PLAYHEAD_START_BAR);
 
   /* enable recording for audio & ins track */
   track_set_recording (ins_track, true, false);
@@ -146,6 +145,7 @@ do_takes_no_loop_no_punch (
     ins_track->lanes[0]->num_regions, ==, 1);
   mr = ins_track->lanes[0]->regions[0];
   mr_obj = (ArrangerObject *) mr;
+  Position pos;
   position_set_to_pos (
     &pos, &TRANSPORT->playhead_pos);
   g_assert_cmppos (&pos, &mr_obj->end_pos);
