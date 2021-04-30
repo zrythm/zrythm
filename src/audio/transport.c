@@ -461,7 +461,7 @@ transport_request_pause (
     {
       transport_move_playhead (
         self, &self->cue_pos, F_PANIC,
-        F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
+        F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
     }
 }
 
