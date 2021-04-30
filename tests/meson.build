@@ -258,6 +258,7 @@ if get_option ('tests')
     'plugins/carla_discovery': { parallel: true },
     'plugins/carla_native_plugin': { parallel: false },
     'plugins/lv2_plugin': { parallel: false },
+    'plugins/lv2/lv2_state': { parallel: false },
     'plugins/plugin': { parallel: false },
     'plugins/plugin_manager': { parallel: true },
     'project': { parallel: true },

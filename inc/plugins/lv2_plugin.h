@@ -155,24 +155,26 @@ typedef struct Lv2Plugin
 
   LV2_Feature        map_feature;
   LV2_Feature        unmap_feature;
-  LV2_Feature        make_path_feature_save;
-  LV2_Feature        make_path_feature_temp;
+  LV2_Feature        make_path_temp_feature;
   LV2_Feature        sched_feature;
   LV2_Feature        state_sched_feature;
   LV2_Feature        safe_restore_feature;
   LV2_Feature        log_feature;
   LV2_Feature        options_feature;
   LV2_Feature        def_state_feature;
+  LV2_Feature        hard_rt_capable_feature;
 
   /** These features have no data */
   LV2_Feature        buf_size_features[3];
 
-  const LV2_Feature* features[11];
+  /** Supported features passed when instantiating
+   * plugins. */
+  const LV2_Feature* features[13];
 
   /** These are the features that are passed to
    * state extension calls, such as when saving
    * the state. */
-  const LV2_Feature* state_features[8];
+  const LV2_Feature* state_features[7];
 
   LV2_Options_Option options[10];
 
@@ -234,6 +236,16 @@ typedef struct Lv2Plugin
   bool               safe_restore;
 
   /**
+   * Whether the plugin has a default state that
+   * must be loaded before running run() for the
+   * first time.
+   *
+   * @note Set but not used - lilv handles this
+   *   feature automatically.
+   */
+  bool               has_default_state;
+
+  /**
    * Index of control input port, or -1 if no port
    * with "control" designation found.
    *
@@ -292,12 +304,18 @@ typedef struct Lv2Plugin
   /* ---- plugin feature data ---- */
 
   /** Make path feature data. */
-  LV2_State_Make_Path make_path_save;
   LV2_State_Make_Path make_path_temp;
 
+  /** Plugin worker schedule. */
   LV2_Worker_Schedule sched;
+
+  /** State worker schedule. */
   LV2_Worker_Schedule ssched;
+
+  /** Log. */
   LV2_Log_Log         llog;
+
+  /* ---- end plugin feature data ---- */
 
   int                 magic;
 

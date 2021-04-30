@@ -1622,9 +1622,13 @@ plugin_instantiate (
                 pl->instantiated = true;
               }
             g_warn_if_fail (pl->lv2->instance);
-            /* save the state */
-            lv2_state_save_to_file (
-              pl->lv2, F_NOT_BACKUP);
+
+            if (!pl->state_dir)
+              {
+                /* save the state */
+                lv2_state_save_to_file (
+                  pl->lv2, F_NOT_BACKUP);
+              }
           }
           break;
         default:

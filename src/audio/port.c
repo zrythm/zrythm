@@ -4091,6 +4091,38 @@ port_rename_backend (
 }
 
 /**
+ * If MIDI port, returns if there are any events,
+ * if audio port, returns if there is sound in the
+ * buffer.
+ */
+bool
+port_has_sound (
+  Port * self)
+{
+  switch (self->id.type)
+    {
+    case TYPE_AUDIO:
+      g_return_val_if_fail (self->buf, false);
+      for (nframes_t i = 0;
+           i < AUDIO_ENGINE->block_length; i++)
+        {
+          if (fabsf (self->buf[i]) > 0.0000001f)
+            {
+              return true;
+            }
+        }
+      break;
+    case TYPE_EVENT:
+      /* TODO */
+      break;
+    default:
+      break;
+    }
+
+  return false;
+}
+
+/**
  * Copies a full designation of \p self in the
  * format "Track/Port" or "Track/Plugin/Port" in
  * \p buf.

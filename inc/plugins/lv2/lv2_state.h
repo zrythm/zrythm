@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -45,6 +45,47 @@ typedef int (*PresetSink)
   const LilvNode* title,
   void*           data);
 
+/* handled by lilv */
+#if 0
+/**
+ * LV2 state mapPath feature - abstract path
+ * callback.
+ */
+char *
+lv2_state_get_abstract_path (
+  LV2_State_Map_Path_Handle handle,
+  const char *              absolute_path);
+
+/**
+ * LV2 state mapPath feature - absolute path
+ * callback.
+ */
+char *
+lv2_state_get_absolute_path (
+  LV2_State_Map_Path_Handle handle,
+  const char *              abstract_path);
+
+/**
+ * LV2 State freePath implementation.
+ */
+void
+lv2_state_free_path (
+  LV2_State_Free_Path_Handle handle,
+  char *                     path);
+
+/**
+ * LV2 State makePath feature for save only.
+ *
+ * Should be passed to LV2_State_Interface::save().
+ * and this function must return an absolute path.
+ */
+char *
+lv2_state_make_path_save (
+  LV2_State_Make_Path_Handle handle,
+  const char*                path);
+#endif
+
+NONNULL
 void
 lv2_state_apply_state (
   Lv2Plugin* plugin,
@@ -78,17 +119,6 @@ LilvState *
 lv2_state_save_to_string (
   Lv2Plugin *  pl,
   bool         is_backup);
-
-/**
- * LV2 State makePath feature for save only.
- *
- * Should be passed to LV2_State_Interface::save().
- * and this function must return an absolute path.
- */
-char *
-lv2_state_make_path_save (
-  LV2_State_Make_Path_Handle handle,
-  const char*                path);
 
 /**
  * LV2 State makePath feature for temporary files.

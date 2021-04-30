@@ -45,15 +45,29 @@ lv2_worker_init (
   const LV2_Worker_Interface* iface,
   bool                        threaded);
 
+/**
+ * Stops the worker and frees resources.
+ */
 void
 lv2_worker_finish (LV2_Worker* worker);
 
+/**
+ * Called from plugins during run() to request that
+ * Zrythm calls the work() method in a non-realtime
+ * context with the given arguments.
+ */
 LV2_Worker_Status
 lv2_worker_schedule (
   LV2_Worker_Schedule_Handle handle,
   uint32_t                   size,
   const void*                data);
 
+/**
+ * Called during run() to process worker replies.
+ *
+ * Internally calls work_response in
+ * https://lv2plug.in/doc/html/group__worker.html.
+ */
 void
 lv2_worker_emit_responses (
   LV2_Worker* worker, LilvInstance* instance);

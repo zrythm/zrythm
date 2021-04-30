@@ -1516,10 +1516,7 @@ set_features (
   INIT_FEATURE (
     unmap_feature, LV2_URID__unmap, &self->unmap);
   INIT_FEATURE (
-    make_path_feature_save, LV2_STATE__makePath,
-    &self->make_path_save);
-  INIT_FEATURE (
-    make_path_feature_temp, LV2_STATE__makePath,
+    make_path_temp_feature, LV2_STATE__makePath,
     &self->make_path_temp);
   INIT_FEATURE (
     sched_feature, LV2_WORKER__schedule,
@@ -1538,6 +1535,9 @@ set_features (
   INIT_FEATURE (
     def_state_feature, LV2_STATE__loadDefaultState,
     NULL);
+  INIT_FEATURE (
+    hard_rt_capable_feature,
+    LV2_CORE__hardRTCapable, NULL);
 
 #undef INIT_FEATURE
 
@@ -1558,31 +1558,32 @@ set_features (
   self->features[3] = &self->log_feature;
   self->features[4] = &self->options_feature;
   self->features[5] = &self->def_state_feature;
-  self->features[6] =
-    &self->safe_restore_feature;
+  self->features[6] = &self->make_path_temp_feature;
   self->features[7] =
-    &self->buf_size_features[0];
+    &self->safe_restore_feature;
   self->features[8] =
-    &self->buf_size_features[1];
+    &self->buf_size_features[0];
   self->features[9] =
+    &self->buf_size_features[1];
+  self->features[10] =
     &self->buf_size_features[2];
-  self->features[10] = NULL;
+  self->features[11] =
+    &self->hard_rt_capable_feature;
+  self->features[12] = NULL;
 
   self->state_features[0] =
     &self->map_feature;
   self->state_features[1] =
     &self->unmap_feature;
   self->state_features[2] =
-    &self->make_path_feature_save;
-  self->state_features[3] =
     &self->state_sched_feature;
-  self->state_features[4] =
+  self->state_features[3] =
     &self->safe_restore_feature;
-  self->state_features[5] =
+  self->state_features[4] =
     &self->log_feature;
-  self->state_features[6] =
+  self->state_features[5] =
     &self->options_feature;
-  self->state_features[7] = NULL;
+  self->state_features[6] = NULL;
 }
 
 /**
@@ -2551,10 +2552,6 @@ lv2_plugin_instantiate (
     g_strjoin (NULL, templ, "/", NULL);
   g_free (templ);
 
-  self->make_path_save.handle = self;
-  self->make_path_save.path =
-    lv2_state_make_path_save;
-
   self->make_path_temp.handle = self;
   self->make_path_temp.path =
     lv2_state_make_path_temp;
@@ -2736,12 +2733,14 @@ lv2_plugin_instantiate (
       if (feature_is_supported (self, uri))
         {
           g_message (
-            "Feature %s is supported", uri);
+            "Required feature %s is supported",
+            uri);
         }
       else
         {
           g_warning (
-            "Feature %s is not supported", uri);
+            "Required feature %s is not supported",
+            uri);
           lilv_nodes_free (req_feats);
           return -1;
         }
@@ -2757,10 +2756,18 @@ lv2_plugin_instantiate (
       const char* uri =
         lilv_node_as_uri (
           lilv_nodes_get (optional_features, f));
-      g_message (
-        "Feature %s is %ssupported", uri,
-        feature_is_supported (self, uri) ?
-          "" : "not ");
+      if (feature_is_supported (self, uri))
+        {
+          g_message (
+            "Optional feature %s is supported",
+            uri);
+        }
+      else
+        {
+          g_message (
+            "Optional feature %s is not supported",
+            uri);
+        }
     }
   lilv_nodes_free (optional_features);
 
@@ -2785,13 +2792,27 @@ lv2_plugin_instantiate (
         PM_GET_NODE (
           LV2_STATE__threadSafeRestore)))
     {
+      g_message (
+        "plugin has thread safe restore feature");
       self->safe_restore = true;
+    }
+
+  /* Check for default state feature */
+  if (lilv_plugin_has_feature (
+        self->lilv_plugin,
+        PM_GET_NODE (
+          LV2_STATE__loadDefaultState)))
+    {
+      g_message (
+        "plugin has default state feature");
+      self->has_default_state = true;
     }
 
   if (!state)
     {
       /* Not restoring state, load the plugin as a
-       * preset to get default */
+       * preset to get default - see
+       * http://lv2plug.in/ns/ext/state/#loadDefaultState */
       state =
         lilv_state_new_from_world (
           LILV_WORLD, &self->map,
@@ -2997,7 +3018,7 @@ lv2_plugin_instantiate (
   /* Print initial control values */
   if (DEBUGGING)
     {
-      for (int i = 0; pl->num_lilv_ports; i++)
+      for (int i = 0; i < pl->num_lilv_ports; i++)
         {
           Port * port = pl->lilv_ports[i];
           g_return_val_if_fail (
@@ -3008,7 +3029,7 @@ lv2_plugin_instantiate (
         }
     }
 
-  g_message ("done");
+  g_message ("%s: done", __func__);
 
   return 0;
 }

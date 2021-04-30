@@ -836,6 +836,16 @@ port_receive_audio_data_from_jack (
 #endif
 
 /**
+ * If MIDI port, returns if there are any events,
+ * if audio port, returns if there is sound in the
+ * buffer.
+ */
+NONNULL
+bool
+port_has_sound (
+  Port * self);
+
+/**
  * Copies a full designation of \p self in the
  * format "Track/Port" or "Track/Plugin/Port" in
  * \p buf.

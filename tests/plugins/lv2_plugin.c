@@ -67,6 +67,33 @@ test_lilv_instance_activation ()
 }
 
 static void
+check_state_contains_wav (void)
+{
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Plugin * pl = track->channel->instrument;
+  char * state_dir =
+    plugin_get_abs_state_dir (pl, false);
+  char * state_file =
+    g_build_filename (
+      state_dir, "state.ttl", NULL);
+  GError *err = NULL;
+  char * content = NULL;
+  g_file_get_contents (
+    state_file, &content, NULL, &err);
+  g_assert_null (err);
+
+  g_message ("state file: '%s'", state_file);
+  g_assert_true (
+    string_contains_substr (
+      content, "test.wav"));
+
+  g_free (content);
+  g_free (state_file);
+  g_free (state_dir);
+}
+
+static void
 test_save_state_w_files (void)
 {
 #ifdef HAVE_LSP_MULTISAMPLER_24_DO
@@ -76,9 +103,9 @@ test_save_state_w_files (void)
     LSP_MULTISAMPLER_24_DO_BUNDLE,
     LSP_MULTISAMPLER_24_DO_URI, true, false, 1);
 
-  Plugin * pl =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
-      channel->instrument;
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Plugin * pl = track->channel->instrument;
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   char * pset_bundle_path =
@@ -140,29 +167,66 @@ test_save_state_w_files (void)
     pl->lv2, pset_uri_node);
   lilv_node_free (pset_uri_node);
 
+  /* create midi note */
+  Position pos, end_pos;
+  position_init (&pos);
+  position_set_to_bar (&end_pos, 3);
+  ZRegion * r =
+    midi_region_new (
+      &pos, &end_pos, track->pos, 0, 0);
+  track_add_region (
+    track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  MidiNote * mn =
+    midi_note_new (
+      &r->id, &pos, &end_pos, 57, 120);
+  midi_region_add_midi_note (
+    r, mn, F_NO_PUBLISH_EVENTS);
+
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (1000000);
+
+  /* test that plugin makes sound */
+  transport_request_roll (TRANSPORT);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+
+  /* FIXME fails */
+  /*g_assert_true (*/
+    /*port_has_sound (track->channel->stereo_out->l));*/
+
   lv2_state_save_to_file (pl->lv2, false);
+  check_state_contains_wav ();
 
-  char * state_dir =
-    plugin_get_abs_state_dir (pl, false);
-  char * state_file =
-    g_build_filename (
-      state_dir, "state.ttl", NULL);
-  GError *err = NULL;
-  char * content = NULL;
-  g_file_get_contents (
-    state_file, &content, NULL, &err);
-  g_assert_null (err);
+  project_save (
+    PROJECT, PROJECT->dir, false, false, F_NO_ASYNC);
+  check_state_contains_wav ();
 
-  g_assert_true (
-    string_contains_substr (
-      content,
-      "http://lsp-plug.in/plugins/lv2/multisampler_x24_do/ports#sf_0_0"));
+  test_project_save_and_reload ();
+  check_state_contains_wav ();
+
+  track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  transport_request_roll (TRANSPORT);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+
+  /* FIXME fails */
+  /*g_assert_true (*/
+    /*port_has_sound (track->channel->stereo_out->l));*/
 
   g_free (pset_bundle_path);
   g_free (pset_bundle_path_uri);
-  g_free (content);
-  g_free (state_file);
-  g_free (state_dir);
 
   test_helper_zrythm_cleanup ();
 #endif

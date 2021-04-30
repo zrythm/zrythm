@@ -63,6 +63,90 @@
 
 #define STATE_FILENAME "state.ttl"
 
+/* not used - lilv handles these */
+#if 0
+/**
+ * LV2 state mapPath feature - abstract path
+ * callback.
+ */
+char *
+lv2_state_get_abstract_path (
+  LV2_State_Map_Path_Handle handle,
+  const char *              absolute_path)
+{
+  Lv2Plugin * lv2 = (Lv2Plugin *) handle;
+  char * absolute_state_path =
+    plugin_get_abs_state_dir (
+      lv2->plugin, F_NOT_BACKUP);
+
+  GFile * parent =
+    g_file_new_for_path (absolute_state_path);
+  GFile * descendant =
+    g_file_new_for_path (absolute_path);
+
+  char * abstract_path =
+    g_file_get_relative_path (parent, descendant);
+
+  g_object_unref (parent);
+  g_object_unref (descendant);
+  g_free (absolute_state_path);
+
+  g_message (
+    "%s: '%s' -> '%s'",
+    __func__, absolute_path, abstract_path);
+
+  g_return_val_if_fail (abstract_path, NULL);
+
+  return abstract_path;
+}
+
+/**
+ * LV2 state mapPath feature - absolute path
+ * callback.
+ */
+char *
+lv2_state_get_absolute_path (
+  LV2_State_Map_Path_Handle handle,
+  const char *              abstract_path)
+{
+  Lv2Plugin * lv2 = (Lv2Plugin *) handle;
+  char * absolute_state_path =
+    plugin_get_abs_state_dir (
+      lv2->plugin, F_NOT_BACKUP);
+
+  GFile * parent =
+    g_file_new_for_path (absolute_state_path);
+
+  GFile * absolute_path_file =
+    g_file_resolve_relative_path (
+      parent, abstract_path);
+  char * absolute_path =
+    g_file_get_path (absolute_path_file);
+
+  g_object_unref (parent);
+  g_object_unref (absolute_path_file);
+  g_free (absolute_state_path);
+
+  g_message (
+    "%s: '%s' -> '%s'",
+    __func__, abstract_path, absolute_path);
+
+  g_return_val_if_fail (absolute_path, NULL);
+
+  return absolute_path;
+}
+
+/**
+ * LV2 State freePath implementation.
+ */
+void
+lv2_state_free_path (
+  LV2_State_Free_Path_Handle handle,
+  char *                     path)
+{
+  g_free (path);
+}
+
 /**
  * LV2 State makePath feature for save only.
  *
@@ -91,6 +175,7 @@ lv2_state_make_path_save (
 
   return ret;
 }
+#endif
 
 /**
  * LV2 State makePath feature for temporary files.
@@ -278,33 +363,43 @@ lv2_state_apply_state (
   Lv2Plugin* plugin,
   LilvState* state)
 {
-  bool must_pause =
-    !plugin->safe_restore &&
-    TRANSPORT->play_state == PLAYSTATE_ROLLING;
-  if (state)
+  g_message ("%s() start", __func__);
+
+  char pl_str[800];
+  plugin_print (plugin->plugin, pl_str, 800);
+
+  /* if plugin does not support thread safe
+   * restore, stop the engine */
+  EngineState engine_state;
+  bool engine_paused = false;
+  if (!plugin->safe_restore &&
+      AUDIO_ENGINE->run)
     {
-      if (must_pause)
-        {
-          g_message ("must pause");
-          TRANSPORT->play_state =
-            PLAYSTATE_PAUSE_REQUESTED;
-          g_usleep (10000);
-          /*zix_sem_wait(&TRANSPORT->paused);*/
-        }
-
-      g_message ("applying state...");
-      lilv_state_restore (
-        state, plugin->instance,
-        set_port_value, plugin, 0,
-        plugin->state_features);
-      g_message ("state applied");
-
-      if (must_pause)
-        {
-          plugin->request_update = true;
-          TRANSPORT->play_state = PLAYSTATE_ROLLING;
-        }
+      g_message (
+        "plugin '%s' does not support safe "
+        "restore, pausing engine", pl_str);
+      engine_wait_for_pause (
+        AUDIO_ENGINE, &engine_state, F_NO_FORCE);
+      g_return_if_fail (!AUDIO_ENGINE->run);
+      engine_paused = true;
     }
+
+  g_message ("applying state...");
+  lilv_state_restore (
+    state, plugin->instance,
+    set_port_value, plugin, 0,
+    plugin->state_features);
+  g_message ("state applied");
+
+  if (engine_paused)
+    {
+      plugin->request_update = true;
+      g_message ("resuming engine");
+      engine_resume (AUDIO_ENGINE, &engine_state);
+      g_return_if_fail (AUDIO_ENGINE->run);
+    }
+
+  g_message ("%s() end", __func__);
 }
 
 int
