@@ -16,16 +16,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-25 05:03+0100\n"
-"PO-Revision-Date: 2021-04-13 00:27+0000\n"
+"PO-Revision-Date: 2021-04-27 03:32+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -331,17 +331,15 @@ msgstr "Tapoter"
 
 #: inc/audio/exporter.h:99
 msgid "Before inserts"
-msgstr ""
+msgstr "Avant les inserts"
 
 #: inc/audio/exporter.h:100
-#, fuzzy
 msgid "Pre-fader"
-msgstr "Envois pré-fader"
+msgstr "Pré-fader"
 
 #: inc/audio/exporter.h:101
-#, fuzzy
 msgid "Post fader"
-msgstr "Envois post-fader"
+msgstr "Post-fader"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -799,9 +797,8 @@ msgid "_OK"
 msgstr "_OK"
 
 #: src/gui/widgets/bounce_step_selector.c:187
-#, fuzzy
 msgid "Bounce step selector"
-msgstr "Bounce avec effets"
+msgstr "Sélecteur d'étape de bounce"
 
 #: src/gui/widgets/fader_controls_grid.c:98
 msgid "Peak"
@@ -1210,7 +1207,7 @@ msgstr "Collection"
 
 #: src/gui/widgets/plugin_browser.c:2443
 msgid "Author"
-msgstr ""
+msgstr "Auteur"
 
 #: src/gui/widgets/plugin_browser.c:2453
 msgid "Category"
@@ -1988,14 +1985,12 @@ msgid "Pin/Unpin Tracks"
 msgstr "Attacher/détacher les pistes"
 
 #: src/gui/widgets/track.c:1802
-#, fuzzy
 msgid "Unsolo"
-msgstr "Enlever le Solo de la piste"
+msgstr "Enlever le solo"
 
 #: src/gui/widgets/track.c:1830
-#, fuzzy
 msgid "Change color..."
-msgstr "Modifier la couleur"
+msgstr "Modifier la couleur..."
 
 #: src/gui/widgets/track.c:1840
 msgid "Track MIDI Ch"
@@ -2094,9 +2089,8 @@ msgid "%s color"
 msgstr "%s Couleur"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:154
-#, fuzzy
 msgid "Track color"
-msgstr "Ports de la Piste"
+msgstr "Couleur de la piste"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:174
 msgid "Region color"
@@ -4047,14 +4041,13 @@ msgid "Filename Pattern"
 msgstr "Motif de nom de fichier"
 
 #: resources/ui/export_dialog.ui:306
-#, fuzzy
 msgid "My Project"
-msgstr "Projet"
+msgstr "Mon projet"
 
 #: resources/ui/export_dialog.ui:317
 #: build/data/org.zrythm.Zrythm.gschema.xml:464
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: resources/ui/export_dialog.ui:328
 #: build/data/org.zrythm.Zrythm.gschema.xml:459
@@ -4354,7 +4347,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:258
 msgid "Whether to bounce with parent tracks (direct outputs)."
-msgstr ""
+msgstr "Si l'on bounce avec les pistes parent (sorties directes)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:262
 #, fuzzy
@@ -4363,7 +4356,7 @@ msgstr "Queue de bounce"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid "Step in the processing chain to bounce at."
-msgstr ""
+msgstr "Étape de la chaîne de traitement à laquelle bouncer."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:267
 msgid "Bounce tail"
@@ -4585,10 +4578,8 @@ msgid "Plugin browser authors"
 msgstr "Catégories du navigateur de greffons"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:385
-#, fuzzy
 msgid "Tree paths of the selected authors in the plugin browser."
-msgstr ""
-"Trois chemins des catégories sélectionnées dans le navigateur de greffons."
+msgstr "Trois chemins des auteurs sélectionnées dans le navigateur de greffons."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:389
 msgid "Plugin browser categories"
@@ -4711,10 +4702,9 @@ msgstr ""
 "Artiste à utiliser lors de l'exportation, si le type de fichier le supporte."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:465
-#, fuzzy
 msgid "Title to use when exporting, if the file type supports it."
 msgstr ""
-"Artiste à utiliser lors de l'exportation, si le type de fichier le supporte."
+"Titre à utiliser lors de l'exportation, si le type de fichier le supporte."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:469
 msgid "Time range"

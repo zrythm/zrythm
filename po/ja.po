@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-25 05:03+0100\n"
-"PO-Revision-Date: 2021-04-04 15:26+0000\n"
+"PO-Revision-Date: 2021-04-27 03:32+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:289
@@ -324,17 +324,15 @@ msgstr "ストラム"
 
 #: inc/audio/exporter.h:99
 msgid "Before inserts"
-msgstr ""
+msgstr "インサート前"
 
 #: inc/audio/exporter.h:100
-#, fuzzy
 msgid "Pre-fader"
-msgstr "プリフェーダーセンド"
+msgstr "プリフェーダー"
 
 #: inc/audio/exporter.h:101
-#, fuzzy
 msgid "Post fader"
-msgstr "ポストフェーダーセンド"
+msgstr "ポストフェーダー"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -577,9 +575,8 @@ msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "--midi-backend=none --audio-backend=none の省略形"
 
 #: src/zrythm_app.c:1718
-#, fuzzy
 msgid "[PROJECT-FILE]"
-msgstr "[PROJECT-FILE] - %sを実行"
+msgstr "[プロジェクトファイル]"
 
 #: src/zrythm_app.c:1723
 #, c-format
@@ -690,9 +687,8 @@ msgid "[Zrythm] Gain"
 msgstr "[Zrythm]ゲイン"
 
 #: src/plugins/plugin.c:287
-#, fuzzy
 msgid "Plugin gain"
-msgstr "プラグイン1"
+msgstr "プラグインゲイン"
 
 #: src/plugins/plugin.c:1040
 #, c-format
@@ -700,9 +696,8 @@ msgid " - bridge: %s"
 msgstr " - ブリッジ: %s"
 
 #: src/plugins/plugin.c:1051
-#, fuzzy
 msgid "instrument"
-msgstr "音源"
+msgstr "インストゥルメント"
 
 #: src/plugins/plugin.c:1805
 #, c-format
@@ -739,9 +734,8 @@ msgid "_Save"
 msgstr "保存(_S)"
 
 #: src/plugins/plugin_gtk.c:1184
-#, fuzzy
 msgid "Open File"
-msgstr "出力ファイル"
+msgstr "ファイルを開く"
 
 #: src/plugins/plugin_gtk.c:1364
 msgid "Close"
@@ -1207,7 +1201,7 @@ msgstr "コレクション"
 
 #: src/gui/widgets/plugin_browser.c:2443
 msgid "Author"
-msgstr ""
+msgstr "作者"
 
 #: src/gui/widgets/plugin_browser.c:2453
 msgid "Category"
@@ -1262,14 +1256,12 @@ msgid "JACK Timebase master"
 msgstr "JACKタイムベースマスター"
 
 #: src/gui/widgets/bot_bar.c:439
-#, fuzzy
 msgid "New buffer size"
-msgstr "バッファサイズ"
+msgstr "新しいバッファサイズ"
 
 #: src/gui/widgets/bot_bar.c:451
-#, fuzzy
 msgid "Failed reading value"
-msgstr "va_list値を取得できませんでした：%s"
+msgstr "値の読み取りに失敗しました"
 
 #: src/gui/widgets/bot_bar.c:467
 msgid "This feature is not available at the moment"
@@ -1287,9 +1279,8 @@ msgstr "帯域幅"
 
 #. TRANSLATORS: verb - change buffer size
 #: src/gui/widgets/bot_bar.c:559
-#, fuzzy
 msgid "change"
-msgstr "選択範囲 (Range)"
+msgstr "変更する"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:561
@@ -1396,7 +1387,7 @@ msgstr "フェードプリセット"
 
 #: src/gui/widgets/timeline_arranger.c:1094
 msgid "Exponential"
-msgstr "指数"
+msgstr "指数関数"
 
 #: src/gui/widgets/timeline_arranger.c:1095
 msgid "Elliptic"
@@ -1586,7 +1577,7 @@ msgid "Macros"
 msgstr "マクロ"
 
 #: src/gui/widgets/automatable_selector_popover.c:410
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Ch%d"
 msgstr "MIDI チャンネル %d"
 
@@ -1988,14 +1979,12 @@ msgid "Pin/Unpin Tracks"
 msgstr "トラックを固定/固定解除"
 
 #: src/gui/widgets/track.c:1802
-#, fuzzy
 msgid "Unsolo"
-msgstr "トラックのソロを解除"
+msgstr "ソロを解除"
 
 #: src/gui/widgets/track.c:1830
-#, fuzzy
 msgid "Change color..."
-msgstr "色を変更する"
+msgstr "色を変更する..."
 
 #: src/gui/widgets/track.c:1840
 msgid "Track MIDI Ch"
@@ -2092,9 +2081,8 @@ msgid "%s color"
 msgstr "%s色"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:154
-#, fuzzy
 msgid "Track color"
-msgstr "トラックポート"
+msgstr "トラックの色"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:174
 msgid "Region color"
@@ -2428,11 +2416,11 @@ msgstr "BPM"
 
 #: src/audio/tempo_track.c:70
 msgid "Beats per bar"
-msgstr ""
+msgstr "バーあたりのビート数"
 
 #: src/audio/tempo_track.c:91
 msgid "Beat unit"
-msgstr ""
+msgstr "ビートユニット"
 
 #: src/audio/engine.c:445
 #, c-format
@@ -2643,9 +2631,8 @@ msgid "Set control value"
 msgstr "コントロール値の設定"
 
 #: src/actions/arranger_selections.c:2672
-#, fuzzy
 msgid "Create timeline selections"
-msgstr "アレンジャーオブジェクトを作成する"
+msgstr "タイムラインオブジェクトの作成"
 
 #: src/actions/arranger_selections.c:2676
 #, fuzzy
@@ -2844,11 +2831,11 @@ msgstr "BPMを変更する"
 
 #: src/actions/transport_action.c:210
 msgid "Beats per bar change"
-msgstr ""
+msgstr "バーあたりのビート数変更"
 
 #: src/actions/transport_action.c:212
 msgid "Beat unit change"
-msgstr ""
+msgstr "ビートユニットの変更"
 
 #: src/actions/channel_send_action.c:202
 msgid "Connect sidechain"
@@ -3983,7 +3970,7 @@ msgstr "...としてエクスポート"
 
 #: resources/ui/export_dialog.ui:57
 msgid "Export"
-msgstr "エクスポート"
+msgstr "書き出し"
 
 #: resources/ui/export_dialog.ui:80
 msgid "Details"
@@ -4031,14 +4018,13 @@ msgid "Filename Pattern"
 msgstr "ファイル名のパターン"
 
 #: resources/ui/export_dialog.ui:306
-#, fuzzy
 msgid "My Project"
-msgstr "プロジェクト"
+msgstr "マイプロジェクト"
 
 #: resources/ui/export_dialog.ui:317
 #: build/data/org.zrythm.Zrythm.gschema.xml:464
 msgid "Title"
-msgstr ""
+msgstr "タイトル"
 
 #: resources/ui/export_dialog.ui:328
 #: build/data/org.zrythm.Zrythm.gschema.xml:459
@@ -4334,9 +4320,8 @@ msgid "Whether to bounce with parent tracks (direct outputs)."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:262
-#, fuzzy
 msgid "Bounce step"
-msgstr "バウンステール"
+msgstr "バウンスステップ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid "Step in the processing chain to bounce at."
@@ -4470,9 +4455,8 @@ msgstr ""
 "MIDIエディターに表示するMIDIモディファイア（現時点ではベロシティのみ有効）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:329
-#, fuzzy
 msgid "Show automation values"
-msgstr "オートメーションレーンを表示"
+msgstr "オートメーション値を表示する"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:330
 msgid "Whether to show automation values in the automation editor."
@@ -4556,9 +4540,8 @@ msgid "Selected plugin browser filter"
 msgstr "選択したプラグインブラウザのフィルタ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:379
-#, fuzzy
 msgid "Plugin browser collections"
-msgstr "プラグインブラウザのタブ"
+msgstr "プラグインブラウザーコレクション"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:380
 #, fuzzy
@@ -4576,9 +4559,8 @@ msgid "Tree paths of the selected authors in the plugin browser."
 msgstr "プラグイン/ファイルブラウザの上部の高さ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:389
-#, fuzzy
 msgid "Plugin browser categories"
-msgstr "プラグインブラウザのフィルタ"
+msgstr "プラグインブラウザのカテゴリ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:390
 #, fuzzy
@@ -4586,9 +4568,8 @@ msgid "Tree paths of the selected categories in the plugin browser."
 msgstr "プラグイン/ファイルブラウザの上部の高さ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:394
-#, fuzzy
 msgid "Plugin browser protocols"
-msgstr "プラグインブラウザのタブ"
+msgstr "プラグインブラウザのプロトコル"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:395
 #, fuzzy
@@ -4628,9 +4609,8 @@ msgid "Selected transport display type (BBT/time)."
 msgstr "選択したトランスポート表示形式(BBT/時刻)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:420
-#, fuzzy
 msgid "JACK transport type"
-msgstr "JACKトランスポートクライアント"
+msgstr "JACKトランスポートの種類"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:421
 msgid "Selected JACK transport behavior (master/client/none)"
@@ -4971,7 +4951,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:677
 #, fuzzy
 msgid "Scale factor"
-msgstr "スケールオブジェクト"
+msgstr "スケールファクター"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:678
 #, fuzzy
@@ -5054,14 +5034,12 @@ msgid "Level of detail to use when drawing graphics."
 msgstr "グラフィックスをレンダリングするときに使用する詳細レベル。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:783
-#, fuzzy
 msgid "Font scale"
-msgstr "音階内"
+msgstr "フォントのスケール"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:784
-#, fuzzy
 msgid "Font scale."
-msgstr "音階内"
+msgstr "フォントのスケール。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:788
 msgid "User interface language"
@@ -5104,14 +5082,12 @@ msgstr ""
 "ん)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:816
-#, fuzzy
 msgid "Scripting"
-msgstr "スクリプトインタフェース"
+msgstr "スクリプティング"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:821
-#, fuzzy
 msgid "Default script"
-msgstr "デフォルトバンク"
+msgstr "デフォルトのスクリプト"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:822
 msgid "The default script to use in the scripting window."

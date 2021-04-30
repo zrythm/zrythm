@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-04-25 05:03+0100\n"
-"PO-Revision-Date: 2021-03-08 18:37+0000\n"
+"PO-Revision-Date: 2021-04-27 03:32+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.7-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -149,7 +150,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:53
 msgid "Fonts"
-msgstr ""
+msgstr "フォント"
 
 #: ../../appendix/files-and-directories.rst:54
 msgid ""
@@ -190,7 +191,6 @@ msgid "User Files"
 msgstr "ユーザーのファイル"
 
 #: ../../appendix/files-and-directories.rst:79
-#, fuzzy
 msgid "Cached Plugin Descriptors"
 msgstr "キャッシュされたプラグインの記述子"
 
@@ -1532,9 +1532,8 @@ msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr "MIDI アレンジャーの各 MIDI ノートに関する情報を表示します。"
 
 #: ../../editing/clip-editors/ruler.rst:8
-#, fuzzy
 msgid "Editor Ruler"
-msgstr "エディターツールバー"
+msgstr "エディタールーラー"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
@@ -1780,9 +1779,8 @@ msgid ""
 msgstr "コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカットは :zbutton:`Control`+:zbutton:`D` です。"
 
 #: ../../editing/common-operations.rst:73
-#, fuzzy
 msgid "Duplicating a region"
-msgstr "リージョンの編集"
+msgstr "リージョンの複製"
 
 #: ../../editing/common-operations.rst:76
 msgid "Delete"
@@ -1830,9 +1828,8 @@ msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr "選択範囲の周囲にループマーカーを配置します。このショートカットは次のとおりです。 :zbutton:`コントロール` + :zbutton:`L`"
 
 #: ../../editing/edit-tools.rst:8
-#, fuzzy
 msgid "Edit Tools"
-msgstr "編集モード"
+msgstr "編集ツール"
 
 #: ../../editing/edit-tools.rst:10
 #, fuzzy
@@ -1869,9 +1866,8 @@ msgid ""
 msgstr "ストレッチ モードは選択モードと似ていますが、オブジェクトのサイズを変更すると、その内容が新しいサイズに合わせて拡大されます。"
 
 #: ../../editing/edit-tools.rst:34
-#, fuzzy
 msgid "Creating Objects"
-msgstr "オブジェクトの選択"
+msgstr "オブジェクトの作成"
 
 #: ../../editing/edit-tools.rst:35
 #, fuzzy
@@ -1882,9 +1878,8 @@ msgid ""
 msgstr "選択（デフォルト）モードでは、アレンジャーの内側をダブルクリックしてドラッグし、位置/サイズに満足したら解放することで、オブジェクトが作成されます。"
 
 #: ../../editing/edit-tools.rst:43
-#, fuzzy
 msgid "Creating a region"
-msgstr "リージョンの編集"
+msgstr "リージョンの作成"
 
 #: ../../editing/edit-tools.rst:46
 msgid "Selecting Objects"
@@ -1908,9 +1903,8 @@ msgid "Add pic showing object selection."
 msgstr "オブジェクトの選択を示すイラストを追加。"
 
 #: ../../editing/edit-tools.rst:58
-#, fuzzy
 msgid "Moving Objects"
-msgstr "オブジェクトの編集"
+msgstr "オブジェクトの移動"
 
 #: ../../editing/edit-tools.rst:59
 msgid ""
@@ -1919,9 +1913,8 @@ msgid ""
 msgstr "オブジェクトは、クリックしてドラッグすることで移動します。トラック種類に互換性がある場合は、リージョンを他のトラックに移動できます。"
 
 #: ../../editing/edit-tools.rst:66
-#, fuzzy
 msgid "Moving a region"
-msgstr "リージョンの編集"
+msgstr "リージョンの移動"
 
 #: ../../editing/edit-tools.rst:69
 msgid "Cloning (Copy-Moving) Objects"
@@ -2010,9 +2003,8 @@ msgstr ""
 "クリックの代わりにクリックするだけで済みます。"
 
 #: ../../editing/edit-tools.rst:121
-#, fuzzy
 msgid "Erase Tool"
-msgstr "消去モード"
+msgstr "消しゴムツール"
 
 #: ../../editing/edit-tools.rst:122
 #, fuzzy
@@ -2035,9 +2027,8 @@ msgstr ""
 "ノートのベロシティの編集にのみ使用されます。ベロシティエディターでクリックしてドラッグすると、ベロシティランプを作成できます。"
 
 #: ../../editing/edit-tools.rst:138
-#, fuzzy
 msgid "Audition Tool"
-msgstr "オーディションモード"
+msgstr "試聴ツール"
 
 #: ../../editing/edit-tools.rst:139
 msgid "This feature is not implemented yet."
@@ -2244,7 +2235,6 @@ msgid "The following types of regions exist."
 msgstr "次の種類のリージョンがあります。"
 
 #: ../../editing/timeline/arranger.rst:45
-#, fuzzy
 msgid "Audio Regions"
 msgstr "オーディオリージョン"
 
@@ -2263,9 +2253,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:61
-#, fuzzy
 msgid "MIDI Regions"
-msgstr "リージョンの編集"
+msgstr "MIDIリージョン"
 
 #: ../../editing/timeline/arranger.rst:62
 msgid "MIDI regions contain :term:`MIDI` notes."
@@ -2284,7 +2273,6 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:77
-#, fuzzy
 msgid "Automation Regions"
 msgstr "オートメーションリージョン"
 
@@ -2304,7 +2292,6 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:93
-#, fuzzy
 msgid "Chord regions"
 msgstr "コードリージョン"
 
@@ -2465,9 +2452,8 @@ msgid ""
 msgstr "トラックを右クリックして :zbutton:`Delete` を選択すると、トラックを削除することができます。"
 
 #: ../../editing/timeline/arranger.rst:215
-#, fuzzy
 msgid "Fade context menu"
-msgstr "コンテキストメニュー"
+msgstr "フェードのコンテキストメニュー"
 
 #: ../../editing/timeline/arranger.rst:217
 msgid "The various types of fade algorithms available are illustrated below."
@@ -2482,14 +2468,12 @@ msgid "Linear"
 msgstr "リニア (Linear)"
 
 #: ../../editing/timeline/arranger.rst:230
-#, fuzzy
 msgid "Exponential"
-msgstr "指数"
+msgstr "指数関数"
 
 #: ../../editing/timeline/arranger.rst:235
-#, fuzzy
 msgid "Elliptic (Superellipse)"
-msgstr "超楕円"
+msgstr "超楕円 (Superellipse)"
 
 #: ../../editing/timeline/arranger.rst:242
 msgid "Decide what to do about cross-fades (just use fades?)."
@@ -2546,7 +2530,6 @@ msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr "トラック操作の詳細については、 :ref:`tracks` のセクションを参照してください。"
 
 #: ../../editing/timeline/overview.rst:42
-#, fuzzy
 msgid "Minimap"
 msgstr "ミニマップ"
 
@@ -2563,9 +2546,8 @@ msgid "The rest of the timeline elements are explained in the following sections
 msgstr "タイムラインの残りの要素については、以下のセクションで説明します。"
 
 #: ../../editing/timeline/ruler.rst:8
-#, fuzzy
 msgid "Timeline Ruler"
-msgstr "タイムラインアレンジャー"
+msgstr "タイムラインルーラー"
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
@@ -2996,9 +2978,8 @@ msgid "The installers also include bundled plugins."
 msgstr "インストーラにはバンドルされているプラグインも含まれています。"
 
 #: ../../getting-started/installation.rst:25
-#, fuzzy
 msgid "Manual Installation"
-msgstr "手動インストール"
+msgstr "ソースからのインストール"
 
 #: ../../getting-started/installation.rst:26
 msgid ""
@@ -3086,7 +3067,6 @@ msgid "Running Zrythm"
 msgstr "Zrythmの実行"
 
 #: ../../getting-started/running-zrythm.rst:11
-#, fuzzy
 msgid "First Run Wizard"
 msgstr "最初実行ウィザード"
 
@@ -3101,7 +3081,6 @@ msgstr ""
 "user path` 、ユーザーインターフェースの言語、オーディオ/MIDI バックエンドが含まれます。"
 
 #: ../../getting-started/running-zrythm.rst:20
-#, fuzzy
 msgid "Language Selection"
 msgstr "言語の選択"
 
@@ -3130,7 +3109,6 @@ msgid "This is the :term:`Zrythm user path`."
 msgstr "これは :term:`Zrythm user path` です。"
 
 #: ../../getting-started/running-zrythm.rst:42
-#, fuzzy
 msgid "Audio/MIDI Backends"
 msgstr "オーディオ/MIDI バックエンド"
 
@@ -4011,7 +3989,6 @@ msgid ""
 msgstr "BPMメーターなどのウィジェットは、クリックしてドラッグするか、カーソルをその上に置いてスクロールすることで変更できます"
 
 #: ../../playback-and-recording/intro.rst:6
-#, fuzzy
 msgid "Playback and Recording"
 msgstr "再生と録音"
 
@@ -4149,9 +4126,8 @@ msgid ""
 msgstr "イベントを記録したいトラックをアームした後、 :ref:transport-controls` で録音を有効にして、再生を押します。"
 
 #: ../../playback-and-recording/recording.rst:38
-#, fuzzy
 msgid "Recording audio"
-msgstr "オーディオを録音中"
+msgstr "オーディオの録音"
 
 #: ../../playback-and-recording/recording.rst:41
 #: ../../tracks/audio-track.rst:47 ../../tracks/inspector-page.rst:42
@@ -4167,14 +4143,12 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:51
-#, fuzzy
 msgid "Track inputs"
-msgstr "トラックの種類"
+msgstr "トラック入力"
 
 #: ../../playback-and-recording/recording.rst:54
-#, fuzzy
 msgid "Recording Settings"
-msgstr "プロジェクト設定。"
+msgstr "録音設定"
 
 #: ../../playback-and-recording/recording.rst:55
 msgid ""
@@ -4183,14 +4157,12 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:62
-#, fuzzy
 msgid "Recording settings"
-msgstr "プロジェクト設定。"
+msgstr "録音設定"
 
 #: ../../playback-and-recording/recording.rst:65
-#, fuzzy
 msgid "Options"
-msgstr "寄付"
+msgstr "設定"
 
 #: ../../playback-and-recording/recording.rst:75
 msgid "Punch in/out"
@@ -4216,9 +4188,8 @@ msgid "Automatically start recording when an event is received from a MIDI devic
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:82
-#, fuzzy
 msgid "Recording Modes"
-msgstr "オーディオを録音中"
+msgstr "録音モード"
 
 #: ../../playback-and-recording/recording.rst:84
 msgid "Overwrite events"
@@ -4366,9 +4337,8 @@ msgid "Arms the project for recording."
 msgstr "録音のためにプロジェクトをアームする。"
 
 #: ../../playback-and-recording/transport-controls.rst:41
-#, fuzzy
 msgid "Record options"
-msgstr "元に戻すオプション。"
+msgstr "録音設定"
 
 #: ../../playback-and-recording/transport-controls.rst:42
 #, fuzzy
@@ -4433,9 +4403,8 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:72
-#, fuzzy
 msgid "JACK Transport"
-msgstr "トラックインスペクター"
+msgstr "JACK トランスポート"
 
 #: ../../playback-and-recording/transport-controls.rst:73
 msgid ""
@@ -5079,7 +5048,6 @@ msgid ""
 msgstr ""
 
 #: ../../projects/project-structure.rst:16
-#, fuzzy
 msgid "Backups"
 msgstr "バックアップ"
 
@@ -5099,9 +5067,8 @@ msgid ""
 msgstr ""
 
 #: ../../projects/project-structure.rst:33
-#, fuzzy
 msgid "Project Directory"
-msgstr "プロジェクトの選択"
+msgstr "プロジェクトディレクトリ"
 
 #: ../../projects/project-structure.rst:106
 #, fuzzy
@@ -5815,9 +5782,8 @@ msgid "Scans the system for plugins."
 msgstr "プラグインをスキャンします。"
 
 #: ../../scripting/api/project.rst:3
-#, fuzzy
 msgid "(project)"
-msgstr "project.yml"
+msgstr "(project)"
 
 #: ../../scripting/api/project.rst:7
 msgid "``(project-get-title project)``"
@@ -5844,9 +5810,8 @@ msgid "Returns the undo manager for the project."
 msgstr "プロジェクトの Undo マネージャー (Undo Manager) を返します。"
 
 #: ../../scripting/api/zrythm.rst:3
-#, fuzzy
 msgid "(zrythm)"
-msgstr "zrythm"
+msgstr "(zrythm)"
 
 #: ../../scripting/api/zrythm.rst:7
 msgid "``(zrythm-get-ver)``"
@@ -5908,7 +5873,6 @@ msgid "Create MIDI track with notes"
 msgstr "ノート付きの MIDI トラックを作成"
 
 #: ../../scripting/examples.rst:48
-#, fuzzy
 msgid "Hello world"
 msgstr "ハローワールド"
 
@@ -6534,9 +6498,8 @@ msgid ""
 msgstr "トラックが入力を受け取る場合は、入力選択セクションが存在します。"
 
 #: ../../tracks/inspector-page.rst:49
-#, fuzzy
 msgid "MIDI Inputs"
-msgstr "オーディオ入力"
+msgstr "MIDI入力"
 
 #: ../../tracks/inspector-page.rst:54 ../../tracks/midi-track.rst:65
 msgid "Input Device"
@@ -6547,16 +6510,14 @@ msgid "Device to read MIDI input from"
 msgstr "MIDI 入力を読み取るデバイス"
 
 #: ../../tracks/inspector-page.rst:58
-#, fuzzy
 msgid "MIDI Channels"
-msgstr "チャンネル"
+msgstr "MIDI チャンネル"
 
 #: ../../tracks/inspector-page.rst:57
 msgid "MIDI channels to listen to (other channels will be ignored)"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:61
-#, fuzzy
 msgid "Audio Inputs"
 msgstr "オーディオ入力"
 
@@ -6570,18 +6531,16 @@ msgid "Left audio input port to listen to"
 msgstr "自動接続するオーディオ入力の一覧。"
 
 #: ../../tracks/inspector-page.rst:68
-#, fuzzy
 msgid "Right Input"
-msgstr "オーディオ入力"
+msgstr "右入力"
 
 #: ../../tracks/inspector-page.rst:69
 msgid "Right audio input port to listen to"
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:70
-#, fuzzy
 msgid "Mono toggle"
-msgstr "メトロノームのON/OFFの切り替え"
+msgstr "モノトグル"
 
 #: ../../tracks/inspector-page.rst:71
 msgid "Duplicate the left signal on both channels"
@@ -7471,9 +7430,8 @@ msgid ""
 msgstr "MIDIやオーディオの保存、ロード、書き出しなど、プロジェクトに関連するさまざまなアクション"
 
 #: ../../zrythm-interface/main-toolbar.rst:45
-#, fuzzy
 msgid "Project Management"
-msgstr "プロジェクトメニュー"
+msgstr "プロジェクト管理"
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "New Project"
@@ -7508,9 +7466,8 @@ msgid "Load a project."
 msgstr "プロジェクトを読み込む。"
 
 #: ../../zrythm-interface/main-toolbar.rst:56
-#, fuzzy
 msgid "Export"
-msgstr "exports"
+msgstr "書き出し"
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Export As"
@@ -7586,9 +7543,8 @@ msgid ""
 msgstr "タイムライン内のすべてのイベントを表示するために必要なだけズームインまたはズームアウトします。"
 
 #: ../../zrythm-interface/main-toolbar.rst:85
-#, fuzzy
 msgid "Visibility Toggles"
-msgstr "レーンの表示/非表示を切り替えます。"
+msgstr "表示/非表示の切り替え"
 
 #: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Toggle Left/Right/Bottom Panels"
@@ -9540,4 +9496,3 @@ msgstr "現在選択されているバックエンドとオプションに関す
 #~ " used for adjusting the Track's "
 #~ "volume, pan and other settings."
 #~ msgstr "チャンネルはミキサーにあるスロットです。ほとんどのトラックの種類には、トラックのボリューム、パン、その他の設定を調整するための、そのトラックに対応するチャンネルがあります。"
-
