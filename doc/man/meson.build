@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,10 +15,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if help2man.found() and not os_windows
+if (not help2man.found ()) or os_windows
+  subdir_done ()
+endif
+
+manpage_h2m = configure_file (
+  output: 'zrythm.h2m',
+  input: 'zrythm.h2m.in',
+  configuration: {
+    'COPYRIGHT_NAME': copyright_name,
+    'COPYRIGHT_YEARS': copyright_years,
+    }
+  )
+
 manpage = custom_target (
   'manpage',
-  input: 'zrythm.h2m',
+  input: manpage_h2m,
   output: 'zrythm.1',
   depends: zrythm_exe,
   command: [
@@ -48,4 +60,3 @@ run_target (
     ],
   depends: manpage,
   )
-endif

@@ -27,17 +27,77 @@ project (
     ],
   )
 
-meson_src_root = meson.current_source_dir ()
-meson_build_root = meson.current_build_dir ()
-
-prog_name = get_option ('program_name')
-prog_name_lowercase = prog_name.to_lower()
+# --- Import/configure required modules ---
 
 gnome = import ('gnome')
 fs = import ('fs')
 cmake = import ('cmake')
 cmake_opts = cmake.subproject_options ()
 cmake_opts.add_cmake_defines ({'CMAKE_POSITION_INDEPENDENT_CODE': 'ON'})
+
+# --- Check for programs ---
+
+find_program ('sed')
+find_program ('gettext')
+msgattrib = find_program ('msgattrib')
+msguniq = find_program ('msguniq')
+bash = find_program ('bash')
+grep = find_program ('grep')
+msgfmt = find_program ('msgfmt', required: false)
+dot_bin = find_program ('dot', required: false)
+rubberband = find_program (
+  'rubberband', required: false)
+cppcheck = find_program (
+  'cppcheck', required: false)
+clang_tidy = find_program (
+  'clang-tidy', required: false)
+jq = find_program ('jq', required: false)
+sphinx_build = find_program (
+  ['sphinx-build', 'sphinx-build-3'],
+  required: get_option ('user_manual'))
+sphinx_intl = find_program (
+  'sphinx-intl',
+  required: get_option ('user_manual'))
+sass = find_program (
+  'sass', required: get_option ('user_manual'))
+help2man = find_program (
+  ['help2man'],
+  required: get_option ('manpage'))
+stoat = find_program (
+  ['stoat'], required: false)
+python3 = find_program (
+  ['python3', 'python'])
+guile = find_program (
+  ['guile2.2', 'guile'])
+guild = find_program (
+  ['guild2.2', 'guild'], required: false)
+guile_snarf = find_program (
+  ['guile-snarf2.2', 'guile-snarf'], required: false)
+pandoc = find_program (
+  ['pandoc'], required: false)
+texi2html = find_program (
+  ['texi2html'], required: false)
+ulimit = find_program (
+  'tools/check_have_unlimited_memlock.sh')
+lv2ls_bin = find_program ('lv2ls', required: false)
+lv2info_bin = find_program (
+  'lv2info', required: false)
+get_lv2_bundle_uri_bin = find_program (
+  'tools/get_lv2_bundle_uri.sh')
+get_vst_path_bin = find_program (
+  'tools/get_vst_path.sh')
+
+# --- Set common variables ---
+
+cc = meson.get_compiler ('c')
+
+meson_src_root = meson.current_source_dir ()
+meson_build_root = meson.current_build_dir ()
+
+prog_name = get_option ('program_name')
+prog_name_lowercase = prog_name.to_lower()
+copyright_name = 'The ' + prog_name + ' contributors'
+copyright_years = '2018-2021'
 
 prefix = get_option ('prefix')
 bindir = prefix / get_option ('bindir')
@@ -57,8 +117,13 @@ scriptsdir = zrythmdatadir / 'scripts'
 docdir = datadir / 'doc' / prog_name_lowercase
 sourceviewstylesdir = zrythmdatadir / 'sourceview-styles'
 
+resources_dir = meson_src_root / 'resources'
+data_dir = meson_src_root / 'data'
+
 # Used for building manpages, manual, etc., using
-# foreach
+# foreach.
+# The actual languages to use are specified in
+# po/LINGUAS.
 language_mappings = {
   'af_ZA': 'Afrikaans',
   'ar': 'اَلْعَرَبِيَّةُ‎',
@@ -100,6 +165,7 @@ foreach locale : locales_str.split (' ')
 endforeach
 locales_str = ' '.join (locales.keys())
 
+# get host system and library suffix
 os_darwin = false
 os_gnu = false
 os_freebsd = false
@@ -125,75 +191,7 @@ endif
 have_custom_name = prog_name != 'Zrythm'
 have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 
-cdata = configuration_data ()
-cdata.set_quoted ('PROGRAM_NAME', prog_name)
-cdata.set_quoted (
-  'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
-if have_custom_name
-  cdata.set ('HAVE_CUSTOM_NAME', 1)
-endif
-if have_custom_logo_and_splash
-  cdata.set ('HAVE_CUSTOM_LOGO_AND_SPLASH', 1)
-endif
-cdata.set_quoted (
-  'HOST_MACHINE_SYSTEM', host_machine.system ())
-cdata.set_quoted (
-  'PACKAGE_VERSION', '@VCS_TAG@')
-cdata.set_quoted (
-  'COMPILER',
-  meson.get_compiler('c').get_id())
-cdata.set_quoted ('PREFIX', prefix)
-cdata.set_quoted (
-  'COMPILER_VERSION',
-  meson.get_compiler('c').version())
-cdata.set_quoted ('CONFIGURE_DATADIR', datadir)
-cdata.set_quoted (
-  'CONFIGURE_SOURCEVIEW_STYLES_DIR',
-  sourceviewstylesdir)
-cdata.set_quoted (
-  'CONFIGURE_THEMES_DIR', themesdir)
-cdata.set_quoted (
-  'LIBDIR_NAME', get_option ('libdir'))
-cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
-cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
-cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
-cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
-cdata.set_quoted ('GSCHEMAS_DIR', schemasdir)
-cdata.set_quoted (
-  'BUILD_TYPE', get_option ('buildtype'))
-cdata.set_quoted (
-  'INSTALLER_VERSION_STR',
-  get_option ('buildtype'))
-if get_option ('trial_ver')
-  cdata.set ('TRIAL_VER', 1)
-  cdata.set ('TRIAL_LIMIT_MINS', 60)
-endif
-if get_option ('installer_ver')
-  cdata.set ('INSTALLER_VER', 1)
-endif
-cdata.set (
-  'MESON_SOURCE_ROOT', meson_src_root)
-cdata.set (
-  'MESON_BUILD_ROOT', meson_build_root)
-cdata.set_quoted (
-  'ISSUE_TRACKER_URL',
-  'https://sr.ht/~alextee/zrythm/trackers')
-cdata.set_quoted (
-  'NEW_ISSUE_URL',
-  'https://todo.sr.ht/~alextee/zrythm-bug')
-cdata.set_quoted (
-  'NEW_ISSUE_EMAIL',
-  '~alextee/zrythm-bug@todo.sr.ht')
-if (get_option ('user_manual'))
-  cdata.set_quoted ('MANUAL_PATH', docdir)
-endif
-
-if os_darwin
-  add_languages(['objc', 'objcpp'])
-elif os_windows
-  cdata.set ('USE_MMCSS_THREAD_PRIORITIES', 1)
-endif
-
+# include dirs
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
@@ -213,51 +211,9 @@ all_inc = [
   suil_inc,
   ]
 
-resources_dir = meson_src_root / 'resources'
-data_dir = meson_src_root / 'data'
+all_static = get_option ('static_deps')
 
-cc = meson.get_compiler ('c')
-
-# --- Check for programs ---
-
-find_program ('sed')
-find_program ('gettext')
-msgattrib = find_program ('msgattrib')
-msguniq = find_program ('msguniq')
-bash = find_program ('bash')
-grep = find_program ('grep')
-msgfmt = find_program ('msgfmt', required: false)
-dot_bin = find_program ('dot', required: false)
-rubberband = find_program (
-  'rubberband', required: false)
-cppcheck = find_program (
-  'cppcheck', required: false)
-clang_tidy = find_program (
-  'clang-tidy', required: false)
-jq = find_program ('jq', required: false)
-
-ulimit = find_program (
-  'tools/check_have_unlimited_memlock.sh')
-if os_gnu
-  have_unlimited_mem = run_command (
-    ulimit, check: true).stdout ().strip () == 'unlimited'
-  if have_unlimited_mem
-    cdata.set ('HAVE_UNLIMITED_MEM', 1)
-  endif
-endif
-
-# if latest version in changelog is the project's
-# version, add the changelog to the config
-chlog = fs.read ('CHANGELOG.md').split('\n## [')[1].strip ()
-if chlog.contains (meson.project_version () + '] -')
-  chlog_date = chlog.split (' - ')[1].split ('\n')[0]
-  chlog = chlog.split (chlog_date + '\n')[1]
-  cdata.set ('HAVE_CHANGELOG', 1)
-  cdata.set_quoted ('CHANGELOG_DATE', chlog_date)
-  cdata.set_quoted ('CHANGELOG_TXT', '\\n'.join (chlog.split ('\n')))
-endif
-
-# find plugins for testing
+# plugins for testing
 ext_lv2_plugins = {
   'ams_lfo': [
     'AMS LFO',
@@ -318,13 +274,6 @@ ext_vst_plugins = {
 have_ext_vst_plugins = {}
 ext_vst_plugin_paths = {}
 if get_option ('tests')
-  lv2ls_bin = find_program ('lv2ls', required: false)
-  lv2info_bin = find_program (
-    'lv2info', required: false)
-  get_lv2_bundle_uri_bin = find_program (
-    'tools/get_lv2_bundle_uri.sh')
-  get_vst_path_bin = find_program (
-    'tools/get_vst_path.sh')
   # get lv2 bundle paths
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
@@ -364,7 +313,7 @@ if get_option ('tests')
   endif
 endif
 
-# find command to open a directory
+# command to open a directory
 if os_gnu or os_freebsd
   open_dir_cmd = find_program ('xdg-open').full_path ()
 elif os_darwin
@@ -373,8 +322,8 @@ elif os_darwin
 elif os_windows
   open_dir_cmd = 'explorer.exe'
 endif
-cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 
+# illegal characters to detect in PO files
 illegal_chars = [
   ' ', # U+202F
   ]
@@ -383,31 +332,109 @@ illegal_char_test_args = [
   grep.full_path (),
   ]
 
-sphinx_build = find_program (
-  ['sphinx-build', 'sphinx-build-3'],
-  required: get_option ('user_manual'))
-sphinx_intl = find_program (
-  'sphinx-intl',
-  required: get_option ('user_manual'))
-sass = find_program (
-  'sass', required: get_option ('user_manual'))
-help2man = find_program (
-  ['help2man'],
-  required: get_option ('manpage'))
-stoat = find_program (
-  ['stoat'], required: false)
-python3 = find_program (
-  ['python3', 'python'])
-guile = find_program (
-  ['guile2.2', 'guile'])
-guild = find_program (
-  ['guild2.2', 'guild'], required: false)
-guile_snarf = find_program (
-  ['guile-snarf2.2', 'guile-snarf'], required: false)
-pandoc = find_program (
-  ['pandoc'], required: false)
-texi2html = find_program (
-  ['texi2html'], required: false)
+# --- Add extra languages ---
+
+if os_darwin
+  add_languages(['objc', 'objcpp'])
+endif
+
+# --- Create configuration data ---
+#
+# Note: more configuration data might be added after
+# this section.
+
+cdata = configuration_data ()
+cdata.set_quoted ('PROGRAM_NAME', prog_name)
+cdata.set_quoted (
+  'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
+if have_custom_name
+  cdata.set ('HAVE_CUSTOM_NAME', 1)
+endif
+if have_custom_logo_and_splash
+  cdata.set ('HAVE_CUSTOM_LOGO_AND_SPLASH', 1)
+endif
+cdata.set_quoted (
+  'COPYRIGHT_NAME', copyright_name)
+cdata.set_quoted (
+  'COPYRIGHT_YEARS', copyright_years)
+cdata.set_quoted (
+  'HOST_MACHINE_SYSTEM', host_machine.system ())
+cdata.set_quoted (
+  'PACKAGE_VERSION', '@VCS_TAG@')
+cdata.set_quoted (
+  'COMPILER',
+  meson.get_compiler('c').get_id())
+cdata.set_quoted ('PREFIX', prefix)
+cdata.set_quoted (
+  'COMPILER_VERSION',
+  meson.get_compiler('c').version())
+cdata.set_quoted ('CONFIGURE_DATADIR', datadir)
+cdata.set_quoted (
+  'CONFIGURE_SOURCEVIEW_STYLES_DIR',
+  sourceviewstylesdir)
+cdata.set_quoted (
+  'CONFIGURE_THEMES_DIR', themesdir)
+cdata.set_quoted (
+  'LIBDIR_NAME', get_option ('libdir'))
+cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
+cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
+cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
+cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
+cdata.set_quoted ('GSCHEMAS_DIR', schemasdir)
+cdata.set_quoted (
+  'BUILD_TYPE', get_option ('buildtype'))
+cdata.set_quoted (
+  'INSTALLER_VERSION_STR',
+  get_option ('buildtype'))
+if get_option ('trial_ver')
+  cdata.set ('TRIAL_VER', 1)
+  cdata.set ('TRIAL_LIMIT_MINS', 60)
+endif
+if get_option ('installer_ver')
+  cdata.set ('INSTALLER_VER', 1)
+endif
+cdata.set (
+  'MESON_SOURCE_ROOT', meson_src_root)
+cdata.set (
+  'MESON_BUILD_ROOT', meson_build_root)
+cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
+cdata.set_quoted (
+  'ISSUE_TRACKER_URL',
+  'https://sr.ht/~alextee/zrythm/trackers')
+cdata.set_quoted (
+  'NEW_ISSUE_URL',
+  'https://todo.sr.ht/~alextee/zrythm-bug')
+cdata.set_quoted (
+  'NEW_ISSUE_EMAIL',
+  '~alextee/zrythm-bug@todo.sr.ht')
+if (get_option ('user_manual'))
+  cdata.set_quoted ('MANUAL_PATH', docdir)
+endif
+
+if os_windows
+  cdata.set ('USE_MMCSS_THREAD_PRIORITIES', 1)
+endif
+
+# if latest version in changelog is the project's
+# version, add the changelog to the config
+chlog = fs.read ('CHANGELOG.md').split('\n## [')[1].strip ()
+if chlog.contains (meson.project_version () + '] -')
+  chlog_date = chlog.split (' - ')[1].split ('\n')[0]
+  chlog = chlog.split (chlog_date + '\n')[1]
+  cdata.set ('HAVE_CHANGELOG', 1)
+  cdata.set_quoted ('CHANGELOG_DATE', chlog_date)
+  cdata.set_quoted ('CHANGELOG_TXT', '\\n'.join (chlog.split ('\n')))
+endif
+
+if os_gnu
+  have_unlimited_mem = run_command (
+    ulimit, check: true).stdout ().strip () == 'unlimited'
+  if have_unlimited_mem
+    cdata.set ('HAVE_UNLIMITED_MEM', 1)
+  endif
+endif
+
+# --- Check for headers ---
 
 check_headers = [
   'unistd.h',
@@ -422,9 +449,7 @@ endforeach
 
 # --- Check for dependencies/libraries ---
 
-all_static = get_option ('static_deps')
-
-# Maths functions might be implemented in libm
+# math functions might be implemented in libm
 libm = cc.find_library (
   'm', required: false, static: all_static)
 

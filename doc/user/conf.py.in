@@ -1,5 +1,5 @@
 # This is part of the Zrythm Manual.
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 # See the file index.rst for copying conditions.
 #
 # ----------------------------------------------------------------------------
@@ -23,9 +23,9 @@ import os
 
 # --- Project information ---
 
-project = 'Zrythm'
-copyright = '2019-2021 The Zrythm contributors'
-author = 'The Zrythm contributors'
+project = '@PROGRAM_NAME@'
+copyright = '@COPYRIGHT_YEARS@ @COPYRIGHT_NAME@'
+author = '@COPYRIGHT_NAME@'
 
 from subprocess import check_output
 

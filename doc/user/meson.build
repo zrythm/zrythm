@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if sphinx_build.found () and sphinx_intl.found () and sass.found ()
+if (not sphinx_build.found ()) or (not sphinx_intl.found ()) or (not sass.found ())
+  subdir_done ()
+endif
 
 sphinx_builddir = meson.current_build_dir () / '_build'
 sphinx_build_opts = []
@@ -73,7 +75,10 @@ conf_py = configure_file (
   output: 'conf.py',
   input: 'conf.py.in',
   configuration: {
+    'PROGRAM_NAME': prog_name,
     'VERSION': meson.project_version (),
+    'COPYRIGHT_NAME': copyright_name,
+    'COPYRIGHT_YEARS': copyright_years,
     'MESON_DOC_USER_SRC_DIR': meson.current_source_dir (),
     'MESON_DOC_USER_BUILD_DIR': meson.current_build_dir (),
     })
@@ -290,5 +295,3 @@ run_target (
     meson.current_build_dir (),
     ]
   )
-
-endif

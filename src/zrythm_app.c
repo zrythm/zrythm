@@ -495,20 +495,20 @@ static void on_prompt_for_project (
               NULL, flags,
               GTK_MESSAGE_INFO,
               GTK_BUTTONS_OK,
-"Copyright © 2018-2021 The Zrythm contributors\n"
+"Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME "\n"
 "\n"
-"Zrythm is free software: you can redistribute it and/or modify\n"
+PROGRAM_NAME " is free software: you can redistribute it and/or modify\n"
 "it under the terms of the GNU Affero General Public License as published by\n"
 "the Free Software Foundation, either version 3 of the License, or\n"
 "(at your option) any later version.\n"
 "\n"
-"Zrythm is distributed in the hope that it will be useful,\n"
+PROGRAM_NAME " is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU Affero General Public License for more details.\n"
 "\n"
 "You should have received a copy of the GNU Affero General Public License\n"
-"along with Zrythm.  If not, see <https://www.gnu.org/licenses/>."
+"along with " PROGRAM_NAME ".  If not, see <https://www.gnu.org/licenses/>."
 #if !defined(HAVE_CUSTOM_NAME) || !defined(HAVE_CUSTOM_LOGO_AND_SPLASH)
 "\n\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
 #endif
@@ -923,16 +923,19 @@ zrythm_app_startup (
       exe_path ? exe_path : self->argv[0], true,
       false, true);
 
+  const char * copyright_line =
+    "Copyright (C) " COPYRIGHT_YEARS " "
+    COPYRIGHT_NAME;
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _("%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n\n"
+    _("%s-%s %s\n\n"
     "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. See the file `COPYING' for details.\n\n"
     "Write comments and bugs to %s\n"
     "Support this project at https://liberapay.com/Zrythm\n\n"),
-    PROGRAM_NAME, ver, PROGRAM_NAME,
+    PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME,
     ISSUE_TRACKER_URL);
   g_free (ver);
 
@@ -1612,7 +1615,7 @@ print_version (
     stdout,
     "%s\n%s\n%s\n%s\n",
     ver_with_caps,
-    "Copyright © 2018-2021 The Zrythm contributors",
+    "Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME,
     "This is free software; see the source for copying conditions.",
     "There is NO "
     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
