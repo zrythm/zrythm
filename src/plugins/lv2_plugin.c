@@ -141,18 +141,45 @@
 
 /**
  * Returns whether Zrythm supports the given
+ * option.
+ */
+static bool
+option_is_supported (
+  Lv2Plugin  * self,
+  const char * uri)
+{
+  size_t num_opts =
+    sizeof (self->options) /
+    sizeof (self->options[0]);
+  for (size_t i = 0; i < num_opts; i++)
+    {
+      LV2_Options_Option * opt = &self->options[i];
+      if (lv2_urid_map_uri (self, uri) == opt->key)
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
+/**
+ * Returns whether Zrythm supports the given
  * feature.
  */
 static bool
 feature_is_supported (
-  Lv2Plugin * plugin,
-  const char* uri)
+  Lv2Plugin  * self,
+  const char * uri)
 {
   if (string_is_equal (uri, LV2_CORE__isLive))
     return true;
 
+  /* handled by lilv */
+  if (string_is_equal (uri, LV2_STATE__mapPath))
+    return true;
+
   for (const LV2_Feature * const * f =
-         plugin->features; *f; ++f)
+         self->features; *f; ++f)
     {
       if (string_is_equal (uri, (*f)->URI))
         {
@@ -2947,6 +2974,76 @@ lv2_plugin_instantiate (
     -1);
   memcpy (
     self->options, options, sizeof (options));
+
+  /* --- Check for required options --- */
+
+  /* check for required options */
+  g_message ("checking required options");
+  LilvNodes * required_options =
+    lilv_world_find_nodes (
+      LILV_WORLD,
+      lilv_plugin_get_uri (self->lilv_plugin),
+      PM_GET_NODE (LV2_OPTIONS__requiredOption),
+      NULL);
+  if (required_options)
+    {
+      LILV_FOREACH (nodes, i, required_options)
+        {
+          const char * uri =
+            lilv_node_as_uri (
+              lilv_nodes_get (required_options, i));
+
+          if (option_is_supported (self, uri))
+            {
+              g_message (
+                "Required option %s is supported",
+                uri);
+            }
+          else
+            {
+              g_warning (
+                "Required option %s is not supported",
+                uri);
+              lilv_nodes_free (required_options);
+              return -1;
+            }
+        }
+    }
+  lilv_nodes_free (required_options);
+
+  /* check for optional options */
+  g_message ("checking supported options");
+  LilvNodes * supported_options =
+    lilv_world_find_nodes (
+      LILV_WORLD,
+      lilv_plugin_get_uri (self->lilv_plugin),
+      PM_GET_NODE (LV2_OPTIONS__supportedOption),
+      NULL);
+  if (supported_options)
+    {
+      LILV_FOREACH (nodes, i, supported_options)
+        {
+          const char * uri =
+            lilv_node_as_uri (
+              lilv_nodes_get (supported_options, i));
+
+          if (option_is_supported (self, uri))
+            {
+              g_message (
+                "Optional option %s is supported",
+                uri);
+            }
+          else
+            {
+              g_warning (
+                "Optional option %s is not supported",
+                uri);
+              lilv_nodes_free (supported_options);
+              return -1;
+            }
+        }
+    }
+  lilv_nodes_free (supported_options);
 
   /* Create Plugin <=> UI communication
    * buffers */

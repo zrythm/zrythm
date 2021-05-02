@@ -179,6 +179,9 @@ typedef struct Lv2Plugin
    */
   const LV2_Feature* state_features[7];
 
+  /**
+   * Options to pass to plugin on instantiation.
+   */
   LV2_Options_Option options[10];
 
   /**
@@ -219,14 +222,10 @@ typedef struct Lv2Plugin
   const LilvPlugin * lilv_plugin;
   /** Current preset. */
   LilvState *        preset;
-  /** All plugin UIs (RDF data). */
-  //LilvUIs*           uis;
-  /** Plugin UI (RDF data). */
-  //const LilvUI*      ui;
-  /** The native UI type for this plugin. */
-  //const LilvNode*    ui_type;
+
   /** Plugin instance (shared library). */
   LilvInstance *     instance;
+
   /** Plugin UI host support. */
   SuilHost *         suil_host;
   /** Plugin UI instance (shared library). */
