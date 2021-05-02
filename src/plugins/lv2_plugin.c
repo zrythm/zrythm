@@ -1332,16 +1332,23 @@ lv2_plugin_allocate_port_buffers (
           AUDIO_ENGINE->midi_buf_size);
       g_return_if_fail (
         buf_size > 0 && lv2_plugin->map.map);
+      g_debug ("buf size: %zu", buf_size);
+
       port->evbuf =
         lv2_evbuf_new (
           (uint32_t) buf_size,
-          lv2_plugin->map.map (
-            lv2_plugin->map.handle,
-            LV2_ATOM__Chunk),
-          lv2_plugin->map.map (
-            lv2_plugin->map.handle,
-            LV2_ATOM__Sequence));
+          lv2_urid_map_uri (
+            lv2_plugin, LV2_ATOM__Chunk),
+          lv2_urid_map_uri (
+            lv2_plugin, LV2_ATOM__Sequence));
       g_return_if_fail (port->evbuf);
+
+      /* reset the evbuf - needed if output since
+       * it is reset after the run cycle in
+       * lv2_plugin_process() */
+      lv2_evbuf_reset (
+        port->evbuf, port->id.flow == FLOW_INPUT);
+
       lilv_instance_connect_port (
         lv2_plugin->instance,
         (uint32_t) i,

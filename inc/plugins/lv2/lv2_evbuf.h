@@ -1,4 +1,24 @@
 /*
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
   Copyright 2008-2014 David Robillard <http://drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
@@ -17,13 +37,11 @@
 #ifndef LV2_EVBUF_H
 #define LV2_EVBUF_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#else
-#include <stdbool.h>
-#endif
+#include <lv2/atom/atom.h>
+#include <lv2/urid/urid.h>
 
 /**
    An abstract/opaque LV2 event buffer.
@@ -44,8 +62,8 @@ typedef struct {
 */
 LV2_Evbuf*
 lv2_evbuf_new(uint32_t       capacity,
-              uint32_t       atom_Chunk,
-              uint32_t       atom_Sequence);
+              LV2_URID       atom_Chunk,
+              LV2_URID       atom_Sequence);
 
 /**
    Free an event buffer allocated with lv2_evbuf_new.
@@ -77,7 +95,7 @@ lv2_evbuf_get_size(LV2_Evbuf* evbuf);
    The format of the buffer returned depends on the buffer type.
 */
 NONNULL
-void*
+LV2_Atom_Sequence *
 lv2_evbuf_get_buffer(LV2_Evbuf* evbuf);
 
 /**
@@ -141,9 +159,5 @@ lv2_evbuf_write(LV2_Evbuf_Iterator* iter,
                 uint32_t            type,
                 uint32_t            size,
                 const uint8_t*      data);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* LV2_EVBUF_H */

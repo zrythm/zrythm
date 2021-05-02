@@ -28,8 +28,8 @@
 
 struct LV2_Evbuf_Impl {
   uint32_t          capacity;
-  uint32_t          atom_Chunk;
-  uint32_t          atom_Sequence;
+  LV2_URID          atom_Chunk;
+  LV2_URID          atom_Sequence;
   LV2_Atom_Sequence atom;
 };
 
@@ -42,8 +42,8 @@ lv2_evbuf_pad_size(uint32_t size)
 LV2_Evbuf*
 lv2_evbuf_new (
   uint32_t       capacity,
-  uint32_t       atom_Chunk,
-  uint32_t       atom_Sequence)
+  LV2_URID       atom_Chunk,
+  LV2_URID       atom_Sequence)
 {
   g_return_val_if_fail (capacity > 0, NULL);
 
@@ -104,7 +104,7 @@ lv2_evbuf_get_size(LV2_Evbuf* evbuf)
   return 0;
 }
 
-void *
+LV2_Atom_Sequence *
 lv2_evbuf_get_buffer(LV2_Evbuf* evbuf)
 {
   return &evbuf->atom;
