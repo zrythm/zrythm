@@ -438,10 +438,10 @@ static void
 finalize (
   BarSliderWidget * self)
 {
-  if (self->drag)
-    g_object_unref (self->drag);
-  if (self->layout)
-    g_object_unref (self->layout);
+  g_return_if_fail (Z_IS_BAR_SLIDER_WIDGET (self));
+
+  object_free_w_func_and_null (
+    g_object_unref, self->layout);
 
   G_OBJECT_CLASS (
     bar_slider_widget_parent_class)->
