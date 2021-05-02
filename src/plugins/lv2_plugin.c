@@ -1570,19 +1570,11 @@ set_features (
   INIT_FEATURE (
     instance_access_feature,
     LV2_INSTANCE_ACCESS_URI, NULL);
+  INIT_FEATURE (
+    bounded_block_length_feature,
+    LV2_BUF_SIZE__boundedBlockLength, NULL);
 
 #undef INIT_FEATURE
-
-  /** These features have no data */
-  self->buf_size_features[0].URI =
-    LV2_BUF_SIZE__powerOf2BlockLength;
-  self->buf_size_features[0].data = NULL;
-  self->buf_size_features[1].URI =
-    LV2_BUF_SIZE__fixedBlockLength;
-  self->buf_size_features[1].data = NULL;;
-  self->buf_size_features[2].URI =
-    LV2_BUF_SIZE__boundedBlockLength;
-  self->buf_size_features[2].data = NULL;;
 
   self->features[0] = &self->map_feature;
   self->features[1] = &self->unmap_feature;
@@ -1594,18 +1586,14 @@ set_features (
   self->features[7] =
     &self->safe_restore_feature;
   self->features[8] =
-    &self->buf_size_features[0];
-  self->features[9] =
-    &self->buf_size_features[1];
-  self->features[10] =
-    &self->buf_size_features[2];
-  self->features[11] =
     &self->hard_rt_capable_feature;
-  self->features[12] =
+  self->features[9] =
     &self->data_access_feature;
-  self->features[13] =
+  self->features[10] =
     &self->instance_access_feature;
-  self->features[14] = NULL;
+  self->features[11] =
+    &self->bounded_block_length_feature;
+  self->features[12] = NULL;
 
   self->state_features[0] =
     &self->map_feature;
@@ -2919,16 +2907,18 @@ lv2_plugin_instantiate (
     (double) self->plugin->ui_scale_factor);
 
   static float samplerate = 0.f;
-  static int blocklength = 0;
+  static int nominal_blocklength = 0;
+  static int min_blocklength = 0;
+  static int max_blocklength = 4096;
   static int midi_buf_size = 0;
+  static const char * prog_name = PROGRAM_NAME;
 
   samplerate =
     (float) AUDIO_ENGINE->sample_rate;
-  blocklength =
+  nominal_blocklength =
     (int) AUDIO_ENGINE->block_length;
   midi_buf_size =
     (int) AUDIO_ENGINE->midi_buf_size;
-  const char * prog_name = PROGRAM_NAME;
 
   /* Build options array to pass to plugin */
   const LV2_Options_Option options[] =
@@ -2940,11 +2930,15 @@ lv2_plugin_instantiate (
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.bufsz_minBlockLength,
         sizeof (int32_t),
-        PM_URIDS.atom_Int, &blocklength },
+        PM_URIDS.atom_Int, &min_blocklength },
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.bufsz_maxBlockLength,
         sizeof (int32_t),
-        PM_URIDS.atom_Int, &blocklength },
+        PM_URIDS.atom_Int, &max_blocklength },
+      { LV2_OPTIONS_INSTANCE, 0,
+        PM_URIDS.bufsz_nominalBlockLength,
+        sizeof (int32_t),
+        PM_URIDS.atom_Int, &nominal_blocklength },
       { LV2_OPTIONS_INSTANCE, 0,
         PM_URIDS.bufsz_sequenceSize,
         sizeof (int32_t),

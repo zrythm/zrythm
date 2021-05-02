@@ -298,6 +298,9 @@ init_symap (
     bufsz_minBlockLength,
     LV2_BUF_SIZE__minBlockLength);
   SYMAP_MAP (
+    bufsz_nominalBlockLength,
+    LV2_BUF_SIZE__nominalBlockLength);
+  SYMAP_MAP (
     bufsz_sequenceSize,
     LV2_BUF_SIZE__sequenceSize);
   SYMAP_MAP ( log_Error, LV2_LOG__Error);

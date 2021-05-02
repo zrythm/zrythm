@@ -42,6 +42,7 @@ typedef struct Lv2URIDs
   LV2_URID atom_eventTransfer;
   LV2_URID bufsz_maxBlockLength;
   LV2_URID bufsz_minBlockLength;
+  LV2_URID bufsz_nominalBlockLength;
   LV2_URID bufsz_sequenceSize;
   LV2_URID log_Error;
   LV2_URID log_Trace;

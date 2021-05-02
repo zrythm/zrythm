@@ -58,10 +58,10 @@
 #include "plugins/lv2/ext/host_info.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/lv2_worker.h"
+#include "plugins/lv2/lv2_external_ui.h"
 #include "zix/ring.h"
 #include "zix/sem.h"
 #include "zix/thread.h"
-#include "plugins/lv2/lv2_external_ui.h"
 
 #include <lilv/lilv.h>
 
@@ -69,6 +69,7 @@
 #include <lv2/log/log.h>
 #include <lv2/options/options.h>
 #include <lv2/state/state.h>
+#include <lv2/urid/urid.h>
 
 #include <sratom/sratom.h>
 
@@ -163,15 +164,13 @@ typedef struct Lv2Plugin
   LV2_Feature        hard_rt_capable_feature;
   LV2_Feature        data_access_feature;
   LV2_Feature        instance_access_feature;
-
-  /** These features have no data */
-  LV2_Feature        buf_size_features[3];
+  LV2_Feature        bounded_block_length_feature;
 
   /**
    * Supported features passed when instantiating
    * plugins.
    */
-  const LV2_Feature* features[15];
+  const LV2_Feature* features[13];
 
   /**
    * Features that are passed to state extension
