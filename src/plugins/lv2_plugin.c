@@ -955,9 +955,8 @@ lv2_plugin_init_loaded (
  */
 static void
 lv2_plugin_get_parameters (
-  Lv2Plugin *    self,
-  Lv2Parameter * params,
-  int *          num_params)
+  Lv2Plugin *     self,
+  GArray *        params_array)
 {
   const LilvNode* patch_writable =
     PM_GET_NODE (LV2_PATCH__writable);
@@ -1005,21 +1004,28 @@ lv2_plugin_get_parameters (
                 patch_writable,
                 property))
             {
-              for (int j = 0; j < *num_params; j++)
+              for (guint j = 0;
+                   j < params_array->len; j++)
                 {
+                  Lv2Parameter * param =
+                    &g_array_index (
+                      params_array, Lv2Parameter,
+                      j);
                   LV2_URID cur_param_urid =
-                    params[j].urid;
+                    param->urid;
+#if 0
                   const char * cur_param_uri =
                     lv2_urid_unmap_uri (
                       NULL, cur_param_urid);
                   g_message (
                     "param URI %s", cur_param_uri);
+#endif
 
                   if (property_urid ==
                         cur_param_urid)
                     {
                       found = true;
-                      params[j].readable = true;
+                      param->readable = true;
 
                       /* break writable param
                        * search */
@@ -1044,14 +1050,11 @@ lv2_plugin_get_parameters (
             }
 
           /* create new param */
-          memset (
-            &(params[*num_params]), 0,
-            sizeof (Lv2Parameter));
-          Lv2Parameter * param =
-            &(params[*num_params]);
-          param->urid = property_urid;
-          param->readable = !writable;
-          param->writable = writable;
+          Lv2Parameter param;
+          memset (&param, 0, sizeof (Lv2Parameter));
+          param.urid = property_urid;
+          param.readable = !writable;
+          param.writable = writable;
 
           LilvNode * symbol =
             lilv_world_get_symbol (
@@ -1059,7 +1062,7 @@ lv2_plugin_get_parameters (
           const char * symbol_str =
             lilv_node_as_string (symbol);
           strncpy (
-            param->symbol, symbol_str,
+            param.symbol, symbol_str,
             MIN (
               strlen (symbol_str) + 1,
               LV2_PARAM_MAX_STR_LEN));
@@ -1075,7 +1078,7 @@ lv2_plugin_get_parameters (
               const char * label_str =
                 lilv_node_as_string (label);
               strncpy (
-                param->label, label_str,
+                param.label, label_str,
                 MIN (
                   strlen (label_str) + 1,
                   LV2_PARAM_MAX_STR_LEN));
@@ -1092,7 +1095,7 @@ lv2_plugin_get_parameters (
               const char * comment_str =
                 lilv_node_as_string (comment);
               strncpy (
-                param->comment, comment_str,
+                param.comment, comment_str,
                 MIN (
                   strlen (comment_str) + 1,
                   LV2_PARAM_MAX_STR_LEN));
@@ -1107,14 +1110,14 @@ lv2_plugin_get_parameters (
           if (lilv_node_is_int (min) ||
               lilv_node_is_float (min))
             {
-              param->has_range = true;
-              param->minf = lilv_node_as_float (min);
+              param.has_range = true;
+              param.minf = lilv_node_as_float (min);
               LilvNode * max =
                 lilv_world_get (
                   LILV_WORLD, property,
                   PM_GET_NODE (LV2_CORE__maximum),
                   NULL);
-              param->maxf =
+              param.maxf =
                 lilv_node_as_float (max);
               lilv_node_free (max);
 
@@ -1123,13 +1126,13 @@ lv2_plugin_get_parameters (
                   LILV_WORLD, property,
                   PM_GET_NODE (LV2_CORE__default),
                   NULL);
-              param->deff =
+              param.deff =
                 lilv_node_as_float (def);
               lilv_node_free (def);
             }
           else
             {
-              param->has_range = false;
+              param.has_range = false;
             }
           lilv_node_free (min);
 
@@ -1151,13 +1154,13 @@ lv2_plugin_get_parameters (
               if (param_has_range (
                     self, property, *t))
                 {
-                  param->value_type_urid =
+                  param.value_type_urid =
                     lv2_urid_map_uri (NULL, *t);
                   break;
                 }
             }
 
-          if (param->value_type_urid <= 0)
+          if (param.value_type_urid <= 0)
             {
               g_warning (
                 "Unknown value type for property "
@@ -1166,10 +1169,8 @@ lv2_plugin_get_parameters (
               continue;
             }
 
-          (*num_params)++;
-
-          g_message (
-            "param created");
+          g_array_append_val (
+            params_array, param);
         } /* end foreach property */
       lilv_nodes_free (properties);
     } /* end loop 2 */
@@ -1200,10 +1201,12 @@ lv2_create_or_init_ports_and_parameters (
     pl->num_in_ports > 2 ||
     pl->num_out_ports > 0;
 
-  Lv2Parameter params[200];
-  int num_params = 0;
+  GArray * params_array =
+    g_array_new (
+      F_NOT_ZERO_TERMINATED, F_CLEAR,
+      sizeof (Lv2Parameter));
   lv2_plugin_get_parameters (
-    self, params, &num_params);
+    self, params_array);
 
   int num_lilv_ports =
     (int)
@@ -1263,13 +1266,19 @@ lv2_create_or_init_ports_and_parameters (
   /* create and add zrythm ports for lilv ports
    * and parameters */
   for (int i = 0;
-       i < num_lilv_ports + num_params; i++)
+       i < num_lilv_ports +
+         (int) params_array->len;
+       i++)
     {
+      Lv2Parameter * param =
+        &g_array_index (
+          params_array, Lv2Parameter,
+          i - num_lilv_ports);
       Port * port =
         create_port (
           self, (uint32_t) i,
           (i < num_lilv_ports) ?
-            NULL : &params[i - num_lilv_ports],
+            NULL : param,
           i < num_lilv_ports ?
             default_values[i] : 0, ports_exist,
           project);
@@ -1300,6 +1309,7 @@ lv2_create_or_init_ports_and_parameters (
     }
 
   free (default_values);
+  g_array_free (params_array, F_FREE);
 
   return 0;
 }

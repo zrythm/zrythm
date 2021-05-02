@@ -232,6 +232,43 @@ test_save_state_w_files (void)
 #endif
 }
 
+/**
+ * Test a plugin with lots of parameters.
+ */
+static void
+test_lots_of_params (void)
+{
+#ifdef HAVE_SFIZZ
+  test_helper_zrythm_init ();
+
+  test_plugin_manager_create_tracks_from_plugin (
+    SFIZZ_BUNDLE, SFIZZ_URI, true, false, 1);
+
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Plugin * pl = track->channel->instrument;
+  g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
+
+  /* --- run engine a few cycles --- */
+
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (1000000);
+
+  /* test that plugin makes sound */
+  transport_request_roll (TRANSPORT);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (
+    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -239,6 +276,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/plugins/lv2_plugin/"
 
+  g_test_add_func (
+    TEST_PREFIX "test lots of params",
+    (GTestFunc) test_lots_of_params);
   g_test_add_func (
     TEST_PREFIX "test save state with files",
     (GTestFunc) test_save_state_w_files);

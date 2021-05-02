@@ -265,6 +265,9 @@ ext_lv2_plugins = {
   'mverb': [
     'MVerb',
     'http://distrho.sf.net/plugins/MVerb'],
+  'sfizz': [
+    'Sfizz',
+    'http://sfztools.github.io/sfizz'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}

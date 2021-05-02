@@ -301,4 +301,10 @@
 #define F_MIDI 1
 #define F_NOT_MIDI 0
 
+#define F_ZERO_TERMINATED 1
+#define F_NOT_ZERO_TERMINATED 0
+
+#define F_CLEAR 1
+#define F_NO_CLEAR 0
+
 #endif
