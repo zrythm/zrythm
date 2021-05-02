@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,7 +36,7 @@
 @define-color dark_variant2 #030202;
 @define-color light_variant1 #656464;
 @define-color light_variant2 #989797;
-@define-color bright_green #1DDD6A;
+@define-color bright_green #1DD169;
 @define-color darkish_green #19664c;
 @define-color dark_orange #D68A0C;
 @define-color darker_orange #D8690B;
