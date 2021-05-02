@@ -381,13 +381,12 @@ return_new_instance:
     yaml_deserialize (yaml, &plugin_settings_schema);
   if (!self)
     {
-      g_critical (
+      g_warning (
         "Failed to deserialize "
         "PluginSettings from %s", path);
       g_free (err);
       g_free (yaml);
-      g_free (path);
-      return NULL;
+      goto return_new_instance;
     }
   g_free (yaml);
   g_free (path);
