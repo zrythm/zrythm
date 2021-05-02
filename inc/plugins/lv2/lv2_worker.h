@@ -36,12 +36,12 @@ typedef struct {
 	ZixThread                   thread;     ///< Worker thread
 	const LV2_Worker_Interface* iface;      ///< Plugin worker interface
 	bool                        threaded;   ///< Run work in another thread
-} LV2_Worker;
+} Lv2Worker;
 
 void
 lv2_worker_init (
   Lv2Plugin*                       plugin,
-  LV2_Worker*                 worker,
+  Lv2Worker*                 worker,
   const LV2_Worker_Interface* iface,
   bool                        threaded);
 
@@ -49,7 +49,7 @@ lv2_worker_init (
  * Stops the worker and frees resources.
  */
 void
-lv2_worker_finish (LV2_Worker* worker);
+lv2_worker_finish (Lv2Worker* worker);
 
 /**
  * Called from plugins during run() to request that
@@ -70,6 +70,6 @@ lv2_worker_schedule (
  */
 void
 lv2_worker_emit_responses (
-  LV2_Worker* worker, LilvInstance* instance);
+  Lv2Worker* worker, LilvInstance* instance);
 
 #endif

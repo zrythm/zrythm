@@ -379,7 +379,7 @@ patch_set_get (
       return 1;
     }
   else if ((*property)->atom.type !=
-           plugin->forge.URID)
+           plugin->main_forge.URID)
     {
       g_warning (
         "patch:Set property is not a URID");
@@ -407,7 +407,7 @@ patch_put_get(
       return 1;
     }
   else if (!lv2_atom_forge_is_object_type (
-              &plugin->forge,
+              &plugin->main_forge,
               (*body)->atom.type))
     {
       g_warning (
@@ -453,6 +453,8 @@ property_changed (
  * UI.
  *
  * This applies to both generic and custom UIs.
+ *
+ * Called on the main thread.
  */
 void
 lv2_gtk_ui_port_event (
@@ -462,10 +464,10 @@ lv2_gtk_ui_port_event (
   uint32_t     protocol,
   const void * buffer)
 {
-  if (lv2_plugin->ui_instance)
+  if (lv2_plugin->suil_instance)
     {
       suil_instance_port_event (
-        lv2_plugin->ui_instance, port_index,
+        lv2_plugin->suil_instance, port_index,
         buffer_size, protocol, buffer);
       return;
     }
@@ -481,7 +483,8 @@ lv2_gtk_ui_port_event (
         {
           plugin_gtk_generic_set_widget_value (
             pl, port->widget,
-            buffer_size, lv2_plugin->forge.Float,
+            buffer_size,
+            lv2_plugin->main_forge.Float,
             buffer);
           return;
         }
@@ -500,7 +503,7 @@ lv2_gtk_ui_port_event (
 
   const LV2_Atom* atom = (const LV2_Atom*)buffer;
   if (lv2_atom_forge_is_object_type (
-        &lv2_plugin->forge, atom->type))
+        &lv2_plugin->main_forge, atom->type))
     {
       lv2_plugin->updating = true;
       const LV2_Atom_Object* obj =
@@ -580,27 +583,15 @@ lv2_gtk_open_ui (
 
           plugin->extui.ui_closed =
             on_external_ui_closed;
-          LilvNode* name =
-            lilv_plugin_get_name (
-              plugin->lilv_plugin);
           plugin->extui.plugin_human_id =
-            lilv_node_as_string (name);
-          lilv_node_free (name);
-          char * ui_type =
-            lv2_plugin_get_ui_class (
-              plugin->plugin->setting->descr->uri,
-              plugin->plugin->setting->ui_uri);
-          lv2_ui_instantiate (
-            plugin, ui_type,
-            &plugin->extui);
-          g_free (ui_type);
+            plugin_generate_window_title (
+              plugin->plugin);
+          lv2_ui_instantiate (plugin);
         }
       else
         {
           g_message ("Instantiating UI...");
-          lv2_ui_instantiate (
-            plugin, LV2_UI__Gtk3UI,
-            plugin->plugin->ev_box);
+          lv2_ui_instantiate (plugin);
         }
     }
 
@@ -613,13 +604,13 @@ lv2_gtk_open_ui (
         plugin->external_ui_widget);
       plugin->plugin->external_ui_visible = true;
     }
-  else if (plugin->ui_instance)
+  else if (plugin->suil_instance)
     {
       g_message ("Creating suil window for UI...");
       GtkWidget* widget =
         GTK_WIDGET (
           suil_instance_get_widget (
-            plugin->ui_instance));
+            plugin->suil_instance));
 
       /* suil already adds the widget to the
        * container in win_in_gtk3 but it doesn't

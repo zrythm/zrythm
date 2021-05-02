@@ -392,11 +392,9 @@ lv2_ui_send_event_from_ui_to_plugin (
  */
 void
 lv2_ui_instantiate (
-  Lv2Plugin *  plugin,
-  const char * native_ui_type,
-  void*        parent)
+  Lv2Plugin *  plugin)
 {
-  plugin->ui_host =
+  plugin->suil_host =
     suil_host_new (
       (SuilPortWriteFunc)
       lv2_ui_send_event_from_ui_to_plugin,
@@ -417,27 +415,60 @@ lv2_ui_instantiate (
   char* binary_path =
     lilv_file_uri_parse (binary_uri, NULL);
 
+  /*
+   * Data access feature.
+   *
+   * Pass the LV2_Extension_Data_Feature initialized
+   * during plugin instantiation. This allows the UI
+   * to call the data_access method in ext_data to
+   * receive data from the plugin instance.
+   */
   const LV2_Feature data_feature =
     {
-      LV2_DATA_ACCESS_URI, &plugin->ext_data,
+      LV2_DATA_ACCESS_URI, &plugin->ext_data_feature,
     };
+
   const LV2_Feature idle_feature =
     {
       LV2_UI__idleInterface, NULL
     };
 
+  /**
+   * Instance access feature.
+   *
+   * Pass the plugin instance handle.
+   */
+  const LV2_Feature instance_feature = {
+    LV2_INSTANCE_ACCESS_URI,
+    lilv_instance_get_handle (plugin->instance)
+  };
+
+  /*
+   * Instantiate plugin UI.
+   *
+   * Note: suil appends and implements the following
+   * features:
+   * * LV2_UI__portMap
+   * * LV2_UI__portSubscribe
+   * * LV2_UI__touch
+   * * LV2_UI__parent
+   * * LV2_UI__resize
+   * * LV2_UI__idleInterface
+   */
   if (plugin->has_external_ui)
     {
-      const LV2_Feature external_lv_feature = {
-        LV2_EXTERNAL_UI_DEPRECATED_URI, parent
+      /* deprecated URI for backwards
+       * compatibility */
+      const LV2_Feature external_ui_feature = {
+        .URI = LV2_EXTERNAL_UI_DEPRECATED_URI,
+        .data = &plugin->extui,
       };
-      const LV2_Feature external_kx_feature = {
-        LV2_EXTERNAL_UI__Host, parent
+
+      const LV2_Feature external_kxui_feature = {
+        .URI = LV2_EXTERNAL_UI__Host,
+        .data = &plugin->extui,
       };
-      const LV2_Feature instance_feature = {
-        LV2_INSTANCE_ACCESS_URI,
-        lilv_instance_get_handle (plugin->instance)
-      };
+
       const LV2_Feature* ui_features[] = {
         &plugin->map_feature,
         &plugin->unmap_feature,
@@ -445,8 +476,8 @@ lv2_ui_instantiate (
         &data_feature,
         &idle_feature,
         &plugin->log_feature,
-        &external_lv_feature,
-        &external_kx_feature,
+        &external_ui_feature,
+        &external_kxui_feature,
         &plugin->options_feature,
         NULL
       };
@@ -455,21 +486,21 @@ lv2_ui_instantiate (
         lv2_plugin_get_ui_class (
           plugin->plugin->setting->descr->uri,
           plugin->plugin->setting->ui_uri);
-      plugin->ui_instance =
+      plugin->suil_instance =
         suil_instance_new (
-          plugin->ui_host, plugin,
-          native_ui_type,
+          plugin->suil_host, plugin,
+          ui_class,
           plugin->plugin->setting->descr->uri,
           plugin->plugin->setting->ui_uri,
           ui_class,
           bundle_path, binary_path, ui_features);
       g_free (ui_class);
 
-      if (plugin->ui_instance)
+      if (plugin->suil_instance)
         {
           plugin->external_ui_widget =
             suil_instance_get_widget (
-              (SuilInstance*)plugin->ui_instance);
+              plugin->suil_instance);
         }
       else
         {
@@ -478,13 +509,6 @@ lv2_ui_instantiate (
     }
   else
     {
-      const LV2_Feature parent_feature = {
-        LV2_UI__parent, parent
-      };
-      const LV2_Feature instance_feature = {
-        LV2_INSTANCE_ACCESS_URI,
-        lilv_instance_get_handle (plugin->instance)
-      };
       const LV2_Feature* ui_features[] = {
         &plugin->map_feature,
         &plugin->unmap_feature,
@@ -492,7 +516,6 @@ lv2_ui_instantiate (
         &data_feature,
         &idle_feature,
         &plugin->log_feature,
-        &parent_feature,
         &plugin->options_feature,
         NULL,
       };
@@ -501,11 +524,11 @@ lv2_ui_instantiate (
         lv2_plugin_get_ui_class (
           plugin->plugin->setting->descr->uri,
           plugin->plugin->setting->ui_uri);
-      plugin->ui_instance =
+      plugin->suil_instance =
         suil_instance_new (
-          plugin->ui_host,
+          plugin->suil_host,
           plugin,
-          native_ui_type,
+          LV2_UI__Gtk3UI,
           plugin->plugin->setting->descr->uri,
           plugin->plugin->setting->ui_uri,
           ui_class,
@@ -520,7 +543,7 @@ lv2_ui_instantiate (
   g_free (binary_uri);
   g_free (bundle_uri);
 
-  if (!plugin->ui_instance)
+  if (!plugin->suil_instance)
     {
       g_warning (
         "Failed to get UI instance for %s",
@@ -557,22 +580,22 @@ lv2_ui_init (
     {
       /* Send patch:Get message for initial
        * parameters/etc */
-      LV2_Atom_Forge forge = plugin->forge;
+      LV2_Atom_Forge * forge = &plugin->main_forge;
       LV2_Atom_Forge_Frame frame;
-      uint8_t              buf[1024];
+      uint8_t buf[1024];
       lv2_atom_forge_set_buffer (
-        &forge, buf, sizeof(buf));
+        forge, buf, sizeof(buf));
       lv2_atom_forge_object (
-        &forge, &frame, 0, PM_URIDS.patch_Get);
+        forge, &frame, 0, PM_URIDS.patch_Get);
 
       const LV2_Atom* atom =
-        lv2_atom_forge_deref (&forge, frame.ref);
+        lv2_atom_forge_deref (forge, frame.ref);
       lv2_ui_send_event_from_ui_to_plugin (
         plugin,
         (uint32_t) plugin->control_in,
         lv2_atom_total_size (atom),
         PM_URIDS.atom_eventTransfer,
         atom);
-      lv2_atom_forge_pop (&forge, &frame);
+      lv2_atom_forge_pop (forge, &frame);
     }
 }

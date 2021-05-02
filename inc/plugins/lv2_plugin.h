@@ -151,8 +151,6 @@ typedef struct {
  */
 typedef struct Lv2Plugin
 {
-  LV2_Extension_Data_Feature ext_data;
-
   LV2_Feature        map_feature;
   LV2_Feature        unmap_feature;
   LV2_Feature        make_path_temp_feature;
@@ -163,46 +161,64 @@ typedef struct Lv2Plugin
   LV2_Feature        options_feature;
   LV2_Feature        def_state_feature;
   LV2_Feature        hard_rt_capable_feature;
+  LV2_Feature        data_access_feature;
+  LV2_Feature        instance_access_feature;
 
   /** These features have no data */
   LV2_Feature        buf_size_features[3];
 
-  /** Supported features passed when instantiating
-   * plugins. */
-  const LV2_Feature* features[13];
+  /**
+   * Supported features passed when instantiating
+   * plugins.
+   */
+  const LV2_Feature* features[15];
 
-  /** These are the features that are passed to
-   * state extension calls, such as when saving
-   * the state. */
+  /**
+   * Features that are passed to state extension
+   * calls, such as when saving the state.
+   */
   const LV2_Feature* state_features[7];
 
   LV2_Options_Option options[10];
 
+  /**
+   * Data access feature.
+   *
+   * An instance of this will be passed to the plugin
+   * UI after instantiating the plugin, if the
+   * plugin requires data access.
+   *
+   * @seealso https://lv2plug.in/ns/ext/data-access.
+   */
+  LV2_Extension_Data_Feature ext_data_feature;
+
   /** Plugin <=> UI communication buffer size. */
   uint32_t           comm_buffer_size;
 
-  /** Atom forge. */
-  LV2_Atom_Forge     forge;
+  /** Atom forge (main/GTK thread). */
+  LV2_Atom_Forge     main_forge;
+  /** Atom forge (DSP thread). */
+  LV2_Atom_Forge     dsp_forge;
   /** Atom serializer */
-  Sratom*            sratom;
+  Sratom *           sratom;
   /** Atom serializer for UI thread. */
-  Sratom*            ui_sratom;
+  Sratom *           ui_sratom;
   /** Port events from UI to plugin. */
-  ZixRing*           ui_to_plugin_events;
+  ZixRing *          ui_to_plugin_events;
   /** Port events from plugin to UI. */
-  ZixRing*           plugin_to_ui_events;
+  ZixRing *          plugin_to_ui_events;
   /** Buffer for readding UI port events. */
   void*              ui_event_buf;
   /** Worker thread implementation. */
-  LV2_Worker  worker;
+  Lv2Worker          worker;
   /** Synchronous worker for state restore. */
-  LV2_Worker  state_worker;
+  Lv2Worker          state_worker;
   /** Lock for plugin work() method. */
   ZixSem             work_lock;
   /** Plugin class (RDF data). */
-  const LilvPlugin*  lilv_plugin;
+  const LilvPlugin * lilv_plugin;
   /** Current preset. */
-  LilvState*         preset;
+  LilvState *        preset;
   /** All plugin UIs (RDF data). */
   //LilvUIs*           uis;
   /** Plugin UI (RDF data). */
@@ -210,11 +226,11 @@ typedef struct Lv2Plugin
   /** The native UI type for this plugin. */
   //const LilvNode*    ui_type;
   /** Plugin instance (shared library). */
-  LilvInstance*      instance;
+  LilvInstance *     instance;
   /** Plugin UI host support. */
-  SuilHost*          ui_host;
+  SuilHost *         suil_host;
   /** Plugin UI instance (shared library). */
-  SuilInstance*      ui_instance;
+  SuilInstance *     suil_instance;
 
   /**
    * Temporary plugin state directory (absolute
@@ -283,7 +299,7 @@ typedef struct Lv2Plugin
   LV2_URID_Unmap     unmap;
 
   /** Environment for RDF printing. */
-  SerdEnv*           env;
+  SerdEnv *          env;
 
   /** Transport was rolling or not last cycle. */
   int                rolling;

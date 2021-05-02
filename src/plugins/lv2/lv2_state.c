@@ -307,14 +307,16 @@ set_port_value (
       return;
   }
 
+  LV2_Atom_Forge forge = plugin->main_forge;
+
   float fvalue;
-  if (type == plugin->forge.Float)
+  if (type == forge.Float)
     fvalue = *(const float*)value;
-  else if (type == plugin->forge.Double)
+  else if (type == forge.Double)
     fvalue = (float) *(const double*)value;
-  else if (type == plugin->forge.Int)
+  else if (type == forge.Int)
     fvalue = (float) *(const int32_t*)value;
-  else if (type == plugin->forge.Long)
+  else if (type == forge.Long)
     fvalue = (float) *(const int64_t*)value;
   else
     {

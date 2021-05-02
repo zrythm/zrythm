@@ -46,7 +46,7 @@ lv2_worker_respond (
   uint32_t                  size,
   const void*               data)
 {
-  LV2_Worker* worker = (LV2_Worker*)handle;
+  Lv2Worker* worker = (Lv2Worker*)handle;
   zix_ring_write (
     worker->responses, (const char*)&size,
     sizeof(size));
@@ -62,7 +62,7 @@ lv2_worker_respond (
 static void*
 worker_func (void* data)
 {
-  LV2_Worker* worker = (LV2_Worker*)data;
+  Lv2Worker* worker = (Lv2Worker*)data;
   Lv2Plugin*       plugin   = worker->plugin;
   void*       buf    = NULL;
   while (true) {
@@ -106,7 +106,7 @@ worker_func (void* data)
 void
 lv2_worker_init (
   Lv2Plugin*                   plugin,
-  LV2_Worker*                  worker,
+  Lv2Worker*                  worker,
   const LV2_Worker_Interface * iface,
   bool                         threaded)
 {
@@ -132,7 +132,7 @@ lv2_worker_init (
  * Stops the worker and frees resources.
  */
 void
-lv2_worker_finish(LV2_Worker* worker)
+lv2_worker_finish(Lv2Worker* worker)
 {
   if (worker->requests) {
     if (worker->threaded) {
@@ -156,7 +156,7 @@ lv2_worker_schedule (
   uint32_t                   size,
   const void*                data)
 {
-  LV2_Worker * worker = (LV2_Worker *) handle;
+  Lv2Worker * worker = (Lv2Worker *) handle;
   Lv2Plugin * plugin = worker->plugin;
   if (!worker->threaded ||
       AUDIO_ENGINE->exporting)
@@ -203,7 +203,7 @@ lv2_worker_schedule (
  */
 void
 lv2_worker_emit_responses (
-  LV2_Worker* worker,
+  Lv2Worker* worker,
   LilvInstance* instance)
 {
   if (worker->responses)

@@ -60,9 +60,7 @@ lv2_ui_init (
  */
 void
 lv2_ui_instantiate (
-  Lv2Plugin *  plugin,
-  const char * native_ui_type,
-  void*        parent);
+  Lv2Plugin *  plugin);
 
 /**
  * Read and apply control change events from UI,

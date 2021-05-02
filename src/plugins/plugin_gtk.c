@@ -501,11 +501,11 @@ on_window_destroy (
       port->widget = NULL;
     }
 
-  if (pl->lv2 &&
-      pl->lv2->ui_instance)
+  if (pl->lv2)
     {
-      suil_instance_free (pl->lv2->ui_instance);
-      pl->lv2->ui_instance = NULL;
+      object_free_w_func_and_null (
+        suil_instance_free,
+        pl->lv2->suil_instance);
     }
 }
 
@@ -632,6 +632,10 @@ set_lv2_control (
   bool is_property =
     port->id.flags & PORT_FLAG_IS_PROPERTY;
 
+  LV2_Atom_Forge * forge =
+    &lv2_plugin->main_forge;
+  LV2_Atom_Forge_Frame frame;
+
   if (is_property)
     {
       g_debug (
@@ -639,33 +643,29 @@ set_lv2_control (
         port->id.sym,
         (char *) body);
 
-      /* Copy forge since it is used by process
-       * thread */
-      LV2_Atom_Forge forge = lv2_plugin->forge;
-      LV2_Atom_Forge_Frame frame;
       uint8_t buf[1024];
 
       /* forge patch set atom */
       lv2_atom_forge_set_buffer (
-        &forge, buf, sizeof (buf));
+        forge, buf, sizeof (buf));
       lv2_atom_forge_object (
-        &forge, &frame, 0, PM_URIDS.patch_Set);
+        forge, &frame, 0, PM_URIDS.patch_Set);
       lv2_atom_forge_key (
-        &forge, PM_URIDS.patch_property);
+        forge, PM_URIDS.patch_property);
       lv2_atom_forge_urid (
-        &forge,
+        forge,
         lv2_urid_map_uri (
           lv2_plugin, port->id.uri));
       lv2_atom_forge_key (
-        &forge, PM_URIDS.patch_value);
+        forge, PM_URIDS.patch_value);
       lv2_atom_forge_atom (
-        &forge, size, type);
+        forge, size, type);
       lv2_atom_forge_write (
-        &forge, body, size);
+        forge, body, size);
 
       const LV2_Atom* atom =
         lv2_atom_forge_deref (
-          &forge, frame.ref);
+          forge, frame.ref);
       g_return_if_fail (
         lv2_plugin->control_in >= 0 &&
         lv2_plugin->control_in < 400000);
@@ -675,8 +675,7 @@ set_lv2_control (
         lv2_atom_total_size (atom),
         PM_URIDS.atom_eventTransfer, atom);
     }
-  else if (port->value_type ==
-             lv2_plugin->forge.Float)
+  else if (port->value_type == forge->Float)
     {
       g_debug (
         "setting float control '%s' to '%f'",
@@ -705,37 +704,38 @@ set_float_control (
   if (pl->lv2)
     {
       Lv2Plugin * lv2_plugin = pl->lv2;
-
       LV2_URID type = port->value_type;
+      LV2_Atom_Forge * forge =
+        &lv2_plugin->main_forge;
 
-      if (type == lv2_plugin->forge.Int)
+      if (type == forge->Int)
         {
           const int32_t ival = lrint (value);
           set_lv2_control (
             lv2_plugin, port, sizeof (ival), type,
             &ival);
         }
-      else if (type == lv2_plugin->forge.Long)
+      else if (type == forge->Long)
         {
           const int64_t lval = lrint(value);
           set_lv2_control (
             lv2_plugin, port, sizeof (lval), type,
             &lval);
         }
-      else if (type == lv2_plugin->forge.Float)
+      else if (type == forge->Float)
         {
           set_lv2_control (
             lv2_plugin, port, sizeof (value),
             type, &value);
         }
-      else if (type == lv2_plugin->forge.Double)
+      else if (type == forge->Double)
         {
           const double dval = value;
           set_lv2_control (
             lv2_plugin, port, sizeof (dval), type,
             &dval);
         }
-      else if (type == lv2_plugin->forge.Bool)
+      else if (type == forge->Bool)
         {
           const int32_t ival = (int32_t) value;
           set_lv2_control (
@@ -915,7 +915,7 @@ string_changed (
       set_lv2_control (
         pl->lv2, port,
         strlen (string) + 1,
-        pl->lv2->forge.String,
+        pl->lv2->main_forge.String,
         string);
     }
   else
@@ -942,7 +942,7 @@ file_changed (
     {
       set_lv2_control (
         pl->lv2, port, strlen (filename),
-        pl->lv2->forge.Path, filename);
+        pl->lv2->main_forge.Path, filename);
     }
 }
 
@@ -1303,13 +1303,13 @@ build_control_widget (
       /* Make control widget */
       if (pl->lv2)
         {
-          if (port->value_type ==
-                pl->lv2->forge.String)
+          LV2_Atom_Forge * forge =
+            &pl->lv2->main_forge;
+          if (port->value_type == forge->String)
             {
               controller = make_entry (port);
             }
-          else if (port->value_type ==
-                     pl->lv2->forge.Path)
+          else if (port->value_type == forge->Path)
             {
               controller = make_file_chooser (port);
             }
@@ -1387,14 +1387,14 @@ get_atom_double (
 {
   *is_nan = false;
 
-  if (type == plugin->forge.Int ||
-      type == plugin->forge.Bool)
+  LV2_Atom_Forge * forge = &plugin->main_forge;
+  if (type == forge->Int || type == forge->Bool)
     return *(const int32_t*)body;
-  else if (type == plugin->forge.Long)
+  else if (type == forge->Long)
     return *(const int64_t*)body;
-  else if (type == plugin->forge.Float)
+  else if (type == forge->Float)
     return *(const float*)body;
-  else if (type == plugin->forge.Double)
+  else if (type == forge->Double)
     return *(const double*)body;
 
   *is_nan = true;

@@ -230,6 +230,8 @@ create_port (
   Plugin * pl = lv2_plugin->plugin;
   const LilvPlugin * lilv_plugin =
     lv2_plugin->lilv_plugin;
+  LV2_Atom_Forge * forge =
+    &lv2_plugin->main_forge;
   Port * port = NULL;
   if (port_exists && is_project)
     {
@@ -284,34 +286,25 @@ create_port (
           port->deff = param->deff;
         }
 
-      if (param->value_type_urid ==
-            lv2_plugin->forge.Bool)
+      if (param->value_type_urid == forge->Bool)
         {
           pi->flags |= PORT_FLAG_TOGGLE;
         }
-      if (param->value_type_urid ==
-            lv2_plugin->forge.Int ||
-          param->value_type_urid ==
-            lv2_plugin->forge.Long)
+      if (param->value_type_urid == forge->Int ||
+          param->value_type_urid == forge->Long)
         {
           pi->flags |= PORT_FLAG_INTEGER;
         }
-      if (param->value_type_urid ==
-            lv2_plugin->forge.URI)
+      if (param->value_type_urid == forge->URI)
         {
           pi->flags2 |= PORT_FLAG2_URI_PARAM;
         }
 
-      if (param->value_type_urid ==
-            lv2_plugin->forge.Int ||
-          param->value_type_urid ==
-            lv2_plugin->forge.Long ||
-          param->value_type_urid ==
-            lv2_plugin->forge.Float ||
-          param->value_type_urid ==
-            lv2_plugin->forge.Double ||
-          param->value_type_urid ==
-            lv2_plugin->forge.Bool)
+      if (param->value_type_urid == forge->Int ||
+          param->value_type_urid == forge->Long ||
+          param->value_type_urid == forge->Float ||
+          param->value_type_urid == forge->Double ||
+          param->value_type_urid == forge->Bool)
         {
           pi->flags |= PORT_FLAG_AUTOMATABLE;
         }
@@ -406,7 +399,7 @@ create_port (
       port->lilv_port_index = (int) lv2_port_index;
       port->control = 0.0f;
       port->unsnapped_control = 0.0f;
-      port->value_type = lv2_plugin->forge.Float;
+      port->value_type = forge->Float;
 
 #define HAS_PROPERTY(x) \
       lilv_port_has_property ( \
@@ -1509,7 +1502,7 @@ set_features (
   self->x.URI = uri; \
   self->x.data = _data
 
-  self->ext_data.data_access = NULL;
+  self->ext_data_feature.data_access = NULL;
 
   INIT_FEATURE (
     map_feature, LV2_URID__map, &self->map);
@@ -1538,6 +1531,12 @@ set_features (
   INIT_FEATURE (
     hard_rt_capable_feature,
     LV2_CORE__hardRTCapable, NULL);
+  INIT_FEATURE (
+    data_access_feature,
+    LV2_DATA_ACCESS_URI, NULL);
+  INIT_FEATURE (
+    instance_access_feature,
+    LV2_INSTANCE_ACCESS_URI, NULL);
 
 #undef INIT_FEATURE
 
@@ -1569,7 +1568,11 @@ set_features (
     &self->buf_size_features[2];
   self->features[11] =
     &self->hard_rt_capable_feature;
-  self->features[12] = NULL;
+  self->features[12] =
+    &self->data_access_feature;
+  self->features[13] =
+    &self->instance_access_feature;
+  self->features[14] = NULL;
 
   self->state_features[0] =
     &self->map_feature;
@@ -2519,7 +2522,10 @@ lv2_plugin_instantiate (
   self->unmap.handle = self;
   self->unmap.unmap = lv2_urid_unmap_uri;
 
-  lv2_atom_forge_init (&self->forge, &self->map);
+  lv2_atom_forge_init (
+    &self->main_forge, &self->map);
+  lv2_atom_forge_init (
+    &self->dsp_forge, &self->map);
 
   self->env = serd_env_new (NULL);
   serd_env_set_prefix_from_strings (
@@ -2719,7 +2725,9 @@ lv2_plugin_instantiate (
       self, project);
   g_return_val_if_fail (ret == 0, -1);
 
-  /* Check that any required features are
+  /* --- Check for required features --- */
+
+  /* check that any required features are
    * supported */
   g_message ("checking required features");
   LilvNodes* req_feats =
@@ -2962,9 +2970,14 @@ lv2_plugin_instantiate (
     }
   g_message ("Lilv plugin instantiated");
 
-  self->ext_data.data_access =
-    lilv_instance_get_descriptor (
-      self->instance)->extension_data;
+  /* --- Handle extension data --- */
+
+  /* prepare the LV2_Extension_Data_Feature to pass
+   * to the plugin UI */
+  const LV2_Descriptor * lv2_descriptor =
+    lilv_instance_get_descriptor (self->instance);
+  self->ext_data_feature.data_access =
+    lv2_descriptor->extension_data;
 
   lv2_plugin_allocate_port_buffers (self);
 
@@ -2989,12 +3002,10 @@ lv2_plugin_instantiate (
             iface, false);
         }
     }
-  else
-    {
-      g_message ("no workers to instantiate");
-    }
 
-  /* Apply loaded state to plugin instance if
+  /* --- Apply state --- */
+
+  /* apply loaded state to plugin instance if
    * necessary */
   if (state)
     {
@@ -3006,7 +3017,9 @@ lv2_plugin_instantiate (
       g_message ("no state to apply");
     }
 
-  /* Connect ports to buffers */
+  /* --- Connect ports --- */
+
+  /* connect ports to buffers */
   g_message (
     "connecting %d LV2 (lilv) ports to buffers",
     pl->num_lilv_ports);
@@ -3150,11 +3163,9 @@ lv2_plugin_process (
       Position start_pos;
       position_from_frames (
         &start_pos, g_start_frames);
+      LV2_Atom_Forge * forge = &self->dsp_forge;
       lv2_atom_forge_set_buffer (
-        &self->forge,
-        pos_buf,
-        sizeof(pos_buf));
-      LV2_Atom_Forge * forge = &self->forge;
+        forge, pos_buf, sizeof(pos_buf));
       LV2_Atom_Forge_Frame frame;
       lv2_atom_forge_object (
         forge, &frame, 0,
@@ -3601,7 +3612,7 @@ lv2_plugin_free (
 
   /* Deactivate suil instance */
   object_free_w_func_and_null (
-    suil_instance_free, self->ui_instance);
+    suil_instance_free, self->suil_instance);
 
   if (self->instance && self->plugin->activated)
     {
@@ -3621,7 +3632,7 @@ lv2_plugin_free (
   object_free_w_func_and_null (
     zix_ring_free, self->plugin_to_ui_events);
   object_free_w_func_and_null (
-    suil_host_free, self->ui_host);
+    suil_host_free, self->suil_host);
   object_free_w_func_and_null (
     sratom_free, self->sratom);
   object_free_w_func_and_null (
@@ -3634,6 +3645,12 @@ lv2_plugin_free (
 
   object_free_w_func_and_null (
     free, self->ui_event_buf);
+
+  if (self->extui.plugin_human_id)
+    {
+      g_free ((char *) self->extui.plugin_human_id);
+      self->extui.plugin_human_id = NULL;
+    }
 
   object_zero_and_free (self);
 }
