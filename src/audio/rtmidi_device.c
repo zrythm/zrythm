@@ -245,7 +245,7 @@ rtmidi_device_new (
     zix_ring_new (
       sizeof (uint8_t) * (size_t) MIDI_BUFFER_SIZE);
 
-  self->events = midi_events_new (port);
+  self->events = midi_events_new ();
 
   zix_sem_init (&self->midi_ring_sem, 1);
 

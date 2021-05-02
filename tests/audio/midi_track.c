@@ -53,11 +53,7 @@ fixture_set_up (
       F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, self->midi_track, 0, 1);
-  Port * port =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "Test Port");
-  self->events =
-    midi_events_new (port);
+  self->events = midi_events_new ();
 }
 
 /**

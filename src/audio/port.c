@@ -242,8 +242,7 @@ port_init_loaded (
     case TYPE_EVENT:
       if (!self->midi_events)
         {
-          self->midi_events =
-            midi_events_new (self);
+          self->midi_events = midi_events_new ();
         }
       if (!self->midi_ring)
         {
@@ -824,15 +823,14 @@ port_new_with_type (
 
   self->id.type = type;
   if (self->id.type == TYPE_EVENT)
-    self->midi_events = midi_events_new (self);
+    self->midi_events = midi_events_new ();
   self->id.flow = flow;
 
   switch (type)
     {
     case TYPE_EVENT:
       self->maxf = 1.f;
-      self->midi_events =
-        midi_events_new (self);
+      self->midi_events = midi_events_new ();
       self->midi_ring =
         zix_ring_new (
           sizeof (MidiEvent) * (size_t) 11);

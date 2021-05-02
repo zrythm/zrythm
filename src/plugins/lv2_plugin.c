@@ -619,8 +619,7 @@ create_port (
           pi->flags2 |= PORT_FLAG2_SUPPORTS_MIDI;
           if (!port->midi_events)
             {
-              port->midi_events =
-                midi_events_new (port);
+              port->midi_events = midi_events_new ();
             }
           port->old_api = true;
         }
@@ -630,7 +629,7 @@ create_port (
           if (!port->midi_events)
             {
               port->midi_events =
-                midi_events_new (port);
+                midi_events_new ();
             }
           port->old_api = false;
 

@@ -894,10 +894,8 @@ engine_new (
 
   /* init MIDI queues */
   self->midi_editor_manual_press->midi_events =
-    midi_events_new (
-      self->midi_editor_manual_press);
-  self->midi_in->midi_events =
-    midi_events_new (self->midi_in);
+    midi_events_new ();
+  self->midi_in->midi_events = midi_events_new ();
 
   /* create monitor out ports */
   Port * monitor_out_l, * monitor_out_r;

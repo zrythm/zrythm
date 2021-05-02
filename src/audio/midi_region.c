@@ -984,8 +984,7 @@ midi_region_get_as_events (
   const int      add_region_start,
   const int      full)
 {
-  MidiEvents * events =
-    midi_events_new (NULL);
+  MidiEvents * events = midi_events_new ();
 
   ArrangerObject * self_obj =
     (ArrangerObject *) self;

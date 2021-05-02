@@ -35,7 +35,7 @@ test_add_note_ons (void)
   midi_time_t _time = 402;
 
   ChordDescriptor * descr = CHORD_EDITOR->chords[0];
-  MidiEvents * events = midi_events_new (NULL);
+  MidiEvents * events = midi_events_new ();
 
   /* check at least 3 notes are valid */
   midi_events_add_note_ons_from_chord_descr (

@@ -66,13 +66,11 @@ fader_init_loaded (
       break;
     case FADER_TYPE_MIDI_CHANNEL:
       self->midi_in->midi_events =
-        midi_events_new (
-          self->midi_in);
+        midi_events_new ();
       port_set_owner_fader (
         self->midi_in, self);
       self->midi_out->midi_events =
-        midi_events_new (
-          self->midi_out);
+        midi_events_new ();
       port_set_owner_fader (
         self->midi_out, self);
       break;
@@ -266,7 +264,7 @@ fader_new (
         port_new_with_type (
           TYPE_EVENT, FLOW_INPUT, name);
       self->midi_in->midi_events =
-        midi_events_new (self->midi_in);
+        midi_events_new ();
 
       /* MIDI out */
       if (passthrough)
@@ -281,8 +279,7 @@ fader_new (
         port_new_with_type (
           TYPE_EVENT, FLOW_OUTPUT, name);
       self->midi_out->midi_events =
-        midi_events_new (
-          self->midi_out);
+        midi_events_new ();
 
       port_set_owner_fader (
         self->midi_in, self);

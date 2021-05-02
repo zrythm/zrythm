@@ -319,17 +319,13 @@ midi_events_init (
 
 /**
  * Allocates and inits a MidiEvents struct.
- *
- * @param port Owner Port.
  */
 MidiEvents *
-midi_events_new (
-  Port * port)
+midi_events_new (void)
 {
   MidiEvents * self = object_new (MidiEvents);
 
   midi_events_init (self);
-  self->port = port;
 
   return self;
 }

@@ -136,10 +136,6 @@ typedef struct MidiEvents
   /** Semaphore for exclusive read/write. */
   ZixSem     access_sem;
 
-  /** Cache, pointer back to owner Port. */
-  /* FIXME not needed */
-  Port *     port;
-
 } MidiEvents;
 
 /**
@@ -161,12 +157,9 @@ midi_events_init (
 
 /**
  * Allocates and inits a MidiEvents struct.
- *
- * @param port Owner Port.
  */
 MidiEvents *
-midi_events_new (
-  Port * port);
+midi_events_new (void);
 
 /**
  * Copies the members from one MidiEvent to another.
