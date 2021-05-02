@@ -298,12 +298,16 @@ set_port_value (
 {
   Lv2Plugin * plugin = (Lv2Plugin*)user_data;
   Plugin * pl = plugin->plugin;
+  char pl_str[800];
+  plugin_print (plugin->plugin, pl_str, 800);
+
   Port* port =
     plugin_get_port_by_symbol (pl, port_symbol);
   if (!port)
     {
       g_warning (
-        "Preset port %s is missing", port_symbol);
+        "[%s] Preset port %s is missing",
+        pl_str, port_symbol);
       return;
   }
 
@@ -321,15 +325,15 @@ set_port_value (
   else
     {
       g_warning (
-        "Preset `%s' value has bad type <%s>",
-        port_symbol,
+        "[%s] Preset `%s' value has bad type <%s>",
+        pl_str, port_symbol,
         plugin->unmap.unmap (
           plugin->unmap.handle, type));
       return;
     }
   g_debug (
-    "(lv2 state): setting %s=%f...",
-    port_symbol, (double) fvalue);
+    "[%s] (lv2 state): setting %s=%f...",
+    pl_str, port_symbol, (double) fvalue);
 
   if (TRANSPORT->play_state != PLAYSTATE_ROLLING)
     {
@@ -346,7 +350,7 @@ set_port_value (
 
   if (pl->visible)
     {
-      // Update UI
+      /* update UI */
       char buf[sizeof (Lv2ControlChange) +
         sizeof (fvalue)];
       Lv2ControlChange* ev = (Lv2ControlChange*)buf;

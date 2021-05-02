@@ -2986,7 +2986,7 @@ plugin_get_port_by_symbol (
         }
     }
 
-  g_critical (
+  g_warning (
     "failed to find port with symbol %s", sym);
   return NULL;
 }
