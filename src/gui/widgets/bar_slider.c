@@ -25,6 +25,7 @@
 #include "audio/port.h"
 #include "gui/widgets/bar_slider.h"
 #include "utils/cairo.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 

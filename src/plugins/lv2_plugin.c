@@ -3108,6 +3108,17 @@ lv2_plugin_instantiate (
         }
     }
 
+  /* create options interface */
+  if (lilv_plugin_has_extension_data (
+        self->lilv_plugin,
+        PM_GET_NODE (LV2_OPTIONS__interface)))
+    {
+      self->options_iface =
+        (const LV2_Options_Interface *)
+        lilv_instance_get_extension_data (
+          self->instance, LV2_OPTIONS__interface);
+    }
+
   /* --- Apply state --- */
 
   /* apply loaded state to plugin instance if

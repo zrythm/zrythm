@@ -197,6 +197,14 @@ typedef struct Lv2Plugin
   /** Plugin <=> UI communication buffer size. */
   uint32_t           comm_buffer_size;
 
+  /**
+   * Options interface for setting plugin options
+   * dynamically.
+   *
+   * @seealso http://lv2plug.in/ns/ext/options#interface.
+   */
+  const LV2_Options_Interface * options_iface;
+
   /** Atom forge (main/GTK thread). */
   LV2_Atom_Forge     main_forge;
   /** Atom forge (DSP thread). */
