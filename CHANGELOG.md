@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.16.0.12] - 2021-05-02
+### Added
+- Print required/optional lv2 options during instantiation
+- Abort instantiation of LV2 plugins with required options that are not supported
+- Pass nominalBlockLength to LV2 plugins
+
+### Changed
+- Generate copyright name and years from meson config
+- Pass correct window title to external LV2 UIs
+- Pass data access/instance access to plugins as features
+- Mark state:makePath as supported feature
+- Set minBlockLength to 0 and maxBlockLength to 4098 for LV2 plugins
+- Create new plugin settings if failed loading current ones instead of crashing
+
+### Fixed
+- Fix passing invalid ui:parent to lv2 plugins (suil automatically adds it)
+- Fix LV2 event buffer not being reset before run() for output ports
+- Fix crash when instantiating plugins with > 200 parameters
+
+### Removed
+- Remove support for powerOf2BlockLength and fixedBlockLength LV2 features
+
 ## [1.0.0-alpha.16.0.1] - 2021-04-30
 ### Added
 - Make fader and piano roll highlight colors themeable
