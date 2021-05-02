@@ -3045,11 +3045,9 @@ lv2_plugin_instantiate (
             }
           else
             {
-              g_warning (
+              g_message (
                 "Optional option %s is not supported",
                 uri);
-              lilv_nodes_free (supported_options);
-              return -1;
             }
         }
     }
