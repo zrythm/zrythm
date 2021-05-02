@@ -232,17 +232,15 @@ test_save_state_w_files (void)
 #endif
 }
 
-/**
- * Test a plugin with lots of parameters.
- */
 static void
-test_lots_of_params (void)
+test_reloading_project_with_instrument (
+  const char * pl_bundle,
+  const char * pl_uri)
 {
-#ifdef HAVE_SFIZZ
   test_helper_zrythm_init ();
 
   test_plugin_manager_create_tracks_from_plugin (
-    SFIZZ_BUNDLE, SFIZZ_URI, true, false, 1);
+    pl_bundle, pl_uri, true, false, 1);
 
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -265,7 +263,32 @@ test_lots_of_params (void)
   engine_process (
     AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
+  test_project_save_and_reload ();
+
   test_helper_zrythm_cleanup ();
+}
+
+/**
+ * Test a plugin with lots of parameters.
+ */
+static void
+test_lots_of_params (void)
+{
+#ifdef HAVE_SFIZZ
+  test_reloading_project_with_instrument (
+    SFIZZ_BUNDLE, SFIZZ_URI);
+#endif
+}
+
+/**
+ * Test reloading drops project.
+ */
+static void
+test_reloading_drops_project (void)
+{
+#ifdef HAVE_DROPS
+  test_reloading_project_with_instrument (
+    DROPS_BUNDLE, DROPS_URI);
 #endif
 }
 
@@ -279,6 +302,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test lots of params",
     (GTestFunc) test_lots_of_params);
+  g_test_add_func (
+    TEST_PREFIX "test reloading drops project",
+    (GTestFunc) test_reloading_drops_project);
   g_test_add_func (
     TEST_PREFIX "test save state with files",
     (GTestFunc) test_save_state_w_files);

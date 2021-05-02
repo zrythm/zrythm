@@ -268,6 +268,9 @@ ext_lv2_plugins = {
   'sfizz': [
     'Sfizz',
     'http://sfztools.github.io/sfizz'],
+  'drops': [
+    'Drops',
+    'http://github.com/clearly-broken-software/drops'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
