@@ -754,7 +754,8 @@ carla_native_plugin_process (
           if (port->id.type == TYPE_AUDIO)
             {
               inbuf[audio_ports++] =
-                self->plugin->in_ports[i]->buf;
+                &self->plugin->in_ports[i]->buf[
+                  local_offset];
             }
           if (audio_ports == 2)
             break;
@@ -781,7 +782,8 @@ carla_native_plugin_process (
           if (port->id.type == TYPE_AUDIO)
             {
               outbuf[audio_ports++] =
-                self->plugin->out_ports[i]->buf;
+                &self->plugin->out_ports[i]->buf[
+                  local_offset];
             }
           if (audio_ports == 2)
             break;

@@ -251,6 +251,7 @@ if get_option ('tests')
     'audio/region': { parallel: true },
     'audio/snap_grid': { parallel: true },
     'audio/track': { parallel: true },
+    'audio/track_processor': { parallel: true },
     'audio/tracklist': { parallel: true },
     'gui/backend/arranger_selections': {
       parallel: true },

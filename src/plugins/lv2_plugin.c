@@ -3360,23 +3360,13 @@ lv2_plugin_process (
         IS_PORT_AND_NONNULL (port));
 
       PortIdentifier * id = &port->id;
-      if (id->type == TYPE_AUDIO)
+      if (id->type == TYPE_AUDIO ||
+          id->type == TYPE_CV)
         {
-          /* connect lv2 ports to plugin port
-           * buffers */
+          /* connect buffer */
           lilv_instance_connect_port (
             self->instance,
-            (uint32_t) p, port->buf);
-        }
-      else if (id->type == TYPE_CV)
-        {
-          /* connect plugin port directly to a
-           * CV buffer in the port. according to
-           * the docs it has the same size as an
-           * audio port. */
-          lilv_instance_connect_port (
-            self->instance,
-            (uint32_t) p, port->buf);
+            (uint32_t) p, &port->buf[local_offset]);
         }
       else if (id->type == TYPE_EVENT &&
                id->flow == FLOW_INPUT)

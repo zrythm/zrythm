@@ -19,6 +19,7 @@
 
 #include "zrythm-test-config.h"
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "plugins/lv2/lv2_state.h"
@@ -292,6 +293,52 @@ test_reloading_drops_project (void)
 #endif
 }
 
+/**
+ * Test process.
+ */
+static void
+test_process (void)
+{
+#ifdef HAVE_TEST_SIGNAL
+  test_helper_zrythm_init ();
+
+  test_plugin_manager_create_tracks_from_plugin (
+    TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false,
+    false, 1);
+
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Plugin * pl = track->channel->inserts[0];
+  g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
+
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (1000000);
+
+  /* run plugin and check that output is filled */
+  Port * out = pl->out_ports[0];
+  nframes_t local_offset = 60;
+  lv2_plugin_process (
+    pl->lv2, 0,  0, local_offset);
+  for (nframes_t i = 1; i < local_offset; i++)
+    {
+      g_assert_true (fabsf (out->buf[i]) > 1e-10f);
+    }
+  lv2_plugin_process (
+    pl->lv2, local_offset,
+    local_offset,
+    AUDIO_ENGINE->block_length - local_offset);
+  for (nframes_t i = local_offset;
+       i < AUDIO_ENGINE->block_length; i++)
+    {
+      g_assert_true (fabsf (out->buf[i]) > 1e-10f);
+    }
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -299,6 +346,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/plugins/lv2_plugin/"
 
+  g_test_add_func (
+    TEST_PREFIX "test process",
+    (GTestFunc) test_process);
   g_test_add_func (
     TEST_PREFIX "test lots of params",
     (GTestFunc) test_lots_of_params);

@@ -494,11 +494,9 @@ prev_offset, \
         }
 
       stereo_ports->l->buf[current_local_frame] =
-          lbuf_after_ts[j] *
-          fade_in * fade_out;
+        lbuf_after_ts[j] * fade_in * fade_out;
       stereo_ports->r->buf[current_local_frame] =
-          rbuf_after_ts[j] *
-          fade_in * fade_out;
+        rbuf_after_ts[j] * fade_in * fade_out;
     }
 }
 

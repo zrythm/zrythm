@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
@@ -843,8 +844,6 @@ track_processor_process (
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (tr);
 
-  /*g_message ("processing %s", tr->name);*/
-
   /* if frozen, skip */
   if (tr->frozen)
     {
@@ -938,37 +937,40 @@ track_processor_process (
             F_NOT_QUEUED);
         }
 #endif
-    }
+    } /* if has piano roll or is chord track */
 
   /* add inputs to outputs */
   switch (tr->in_signal_type)
     {
     case TYPE_AUDIO:
-      for (nframes_t l = local_offset;
-           l < nframes; l++)
-        {
-          g_return_if_fail (
-            l < AUDIO_ENGINE->block_length);
+      dsp_mix2 (
+        &self->stereo_out->l->buf[local_offset],
+        &self->stereo_in->l->buf[local_offset],
+        1.f,
+        self->input_gain ?
+          self->input_gain->control : 1.f,
+        nframes);
 
-          self->stereo_out->l->buf[l] +=
-            self->stereo_in->l->buf[l] *
-            (self->input_gain ?
-              self->input_gain->control : 1.f);
-          if (self->mono &&
-              control_port_is_toggled (self->mono))
-            {
-              self->stereo_out->r->buf[l] +=
-                self->stereo_in->l->buf[l] *
-                (self->input_gain ?
-                  self->input_gain->control : 1.f);
-            }
-          else
-            {
-              self->stereo_out->r->buf[l] +=
-                self->stereo_in->r->buf[l] *
-                (self->input_gain ?
-                  self->input_gain->control : 1.f);
-            }
+      if (self->mono &&
+          control_port_is_toggled (self->mono))
+        {
+          dsp_mix2 (
+            &self->stereo_out->r->buf[local_offset],
+            &self->stereo_in->l->buf[local_offset],
+            1.f,
+            self->input_gain ?
+              self->input_gain->control : 1.f,
+            nframes);
+        }
+      else
+        {
+          dsp_mix2 (
+            &self->stereo_out->r->buf[local_offset],
+            &self->stereo_in->r->buf[local_offset],
+            1.f,
+            self->input_gain ?
+              self->input_gain->control : 1.f,
+            nframes);
         }
       break;
     case TYPE_EVENT:

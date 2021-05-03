@@ -988,6 +988,7 @@ engine_post_process (
  * Called to fill in the external buffers at the end
  * of the processing cycle.
  */
+NONNULL
 void
 engine_fill_out_bufs (
   AudioEngine *   self,

@@ -271,6 +271,9 @@ ext_lv2_plugins = {
   'drops': [
     'Drops',
     'http://github.com/clearly-broken-software/drops'],
+  'test_signal': [
+    'Test Signal',
+    'http://gareus.org/oss/lv2/testsignal'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
