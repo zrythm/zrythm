@@ -978,7 +978,7 @@ engine_wait_for_pause (
       router_start_cycle (
         ROUTER, 1, 0, PLAYHEAD);
       engine_post_process (
-        self, 1);
+        self, 0, 1);
     }
 }
 
@@ -1565,9 +1565,11 @@ engine_process (
         cur_offset, PLAYHEAD);
     }
 
-  /* run post-process code */
+  /* run post-process code for the number of frames
+   * remaining after handling preroll (if any) */
   engine_post_process (
-    self, total_frames_remaining);
+    self, total_frames_remaining,
+    total_frames_to_process);
 
 #ifdef TRIAL_VER
   /* go silent if limit reached */
@@ -1601,16 +1603,21 @@ engine_process (
   /*
    * processing finished, return 0 (OK)
    */
-  /*g_message ("processing finished");*/
   return 0;
 }
 
 /**
  * To be called after processing for common logic.
+ *
+ * @param roll_nframes Frames to roll (add to the
+ *   playhead - if transport rolling).
+ * @param nframes Total frames for this processing
+ *   cycle.
  */
 void
 engine_post_process (
-  AudioEngine * self,
+  AudioEngine *   self,
+  const nframes_t roll_nframes,
   const nframes_t nframes)
 {
   if (!self->exporting)
@@ -1631,7 +1638,7 @@ engine_post_process (
       self->remaining_latency_preroll == 0)
     {
       transport_add_to_playhead (
-        self->transport, nframes);
+        self->transport, roll_nframes);
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
         {

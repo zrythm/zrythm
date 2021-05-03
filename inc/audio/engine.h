@@ -970,10 +970,18 @@ engine_process (
 
 /**
  * To be called after processing for common logic.
+ *
+ * @param roll_nframes Frames to roll (add to the
+ *   playhead - if transport rolling).
+ * @param nframes Total frames for this processing
+ *   cycle.
  */
+NONNULL
+HOT
 void
 engine_post_process (
-  AudioEngine * self,
+  AudioEngine *   self,
+  const nframes_t roll_nframes,
   const nframes_t nframes);
 
 /**

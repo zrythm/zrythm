@@ -384,7 +384,7 @@ export_audio (
       router_start_cycle (
         ROUTER, nframes, 0, PLAYHEAD);
       engine_post_process (
-        AUDIO_ENGINE, nframes);
+        AUDIO_ENGINE, nframes, nframes);
 
       /* by this time, the Master channel should
        * have its Stereo Out ports filled.
