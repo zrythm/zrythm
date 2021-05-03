@@ -168,6 +168,26 @@ find_and_queue_metronome (
   int bars_diff =
     num_bars_after - num_bars_before;
 
+#if 0
+  char start_pos_str[60];
+  char end_pos_str[60];
+  position_to_string (start_pos, start_pos_str);
+  position_to_string (end_pos, end_pos_str);
+  g_message (
+    "%s: %s ~ %s <num bars before %d after %d>",
+    __func__, start_pos_str, end_pos_str,
+    num_bars_before, num_bars_after);
+#endif
+
+  /* handle start (not caught below) */
+  if (start_pos->frames == 0)
+    {
+      sample_processor_queue_metronome (
+        SAMPLE_PROCESSOR,
+        METRONOME_TYPE_EMPHASIS,
+        loffset);
+    }
+
   for (int i = 0; i < bars_diff; i++)
     {
       /* get position of bar */

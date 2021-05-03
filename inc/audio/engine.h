@@ -948,6 +948,8 @@ engine_process_events (
  *
  * Clears buffers, marks all as unprocessed, etc.
  */
+NONNULL
+HOT
 void
 engine_process_prepare (
   AudioEngine * self,
@@ -959,6 +961,8 @@ engine_process_prepare (
  * To be called by each implementation in its
  * callback.
  */
+NONNULL
+HOT
 int
 engine_process (
   AudioEngine * self,

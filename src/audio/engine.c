@@ -1452,6 +1452,9 @@ engine_process (
 
   nframes_t total_frames_remaining =
     total_frames_to_process;
+
+  /* --- handle preroll --- */
+
   while (self->remaining_latency_preroll > 0)
     {
       nframes_t num_preroll_frames =
@@ -1466,6 +1469,8 @@ engine_process (
                 num_preroll_frames);
             }
         }
+
+      /* loop through each route */
       for (size_t i = 0;
            i < self->router->graph->n_init_triggers;
            i++)
@@ -1473,26 +1478,18 @@ engine_process (
           GraphNode * start_node =
             self->router->graph->
               init_trigger_list[i];
-          nframes_t route_latency =
-            start_node->route_playback_latency;
-#if 0
-          g_message ("route latency for %s is %u",
-            graph_node_get_name (start_node),
-            route_latency);
-#endif
+
+#define route_latency \
+  (start_node->route_playback_latency)
 
           if (self->remaining_latency_preroll >
                 route_latency + num_preroll_frames)
             {
               /* this route will no-roll for the
                * complete pre-roll cycle */
-              /*g_message (*/
-                /*"no-roll for whole pre-roll cycle");*/
-              continue;
             }
-
-          if (self->remaining_latency_preroll >
-                route_latency)
+          else if (self->remaining_latency_preroll >
+                     route_latency)
             {
               /* route may need partial no-roll
                * and partial roll from
@@ -1506,38 +1503,29 @@ engine_process (
                   num_preroll_frames,
                   self->remaining_latency_preroll -
                     route_latency);
-#if 0
-              g_message (
-                "partial roll from %u",
-                num_preroll_frames);
-#endif
+
+              /* this route will do a partial roll
+               * from num_preroll_frames */
             }
           else
             {
-              /* route will do a normal roll for the
-               * complete pre-roll cycle */
-              /*g_message (*/
-                /*"normal roll for complete pre-roll "*/
-                /*"cycle");*/
+              /* this route will do a normal roll
+               * for the complete pre-roll cycle */
             }
-        } /* end foreach trigger node */
 
+#undef route_latency
+
+        } /* foreach route */
+
+      /* offset to start processing at in this
+       * cycle */
       nframes_t preroll_offset =
         total_frames_to_process -
           total_frames_remaining;
-
       g_warn_if_fail (
         preroll_offset + num_preroll_frames <=
           self->nframes);
 
-      /* this will keep looping until everything was
-       * processed in this cycle */
-      /*g_message (*/
-        /*"======== processing at %d for %d samples "*/
-        /*"(preroll: %ld)",*/
-        /*total_frames_to_process - total_frames_remaining,*/
-        /*num_preroll_frames,*/
-        /*self->remaining_latency_preroll);*/
       router_start_cycle (
         self->router, num_preroll_frames,
         preroll_offset, PLAYHEAD);
@@ -1548,37 +1536,34 @@ engine_process (
 
       if (total_frames_remaining == 0)
         break;
-    }
 
+    } /* while latency preroll frames remaining */
+
+  /* if we still have frames to process (i.e., if
+   * preroll finished completely and can start
+   * processing normally) */
   if (total_frames_remaining > 0)
     {
+      nframes_t cur_offset =
+        total_frames_to_process -
+          total_frames_remaining;
+
       /* queue metronome if met within this cycle */
       if (self->transport->metronome_enabled &&
           TRANSPORT_IS_ROLLING)
         {
           metronome_queue_events (
-            self,
-            total_frames_to_process -
-              total_frames_remaining,
+            self, cur_offset,
             total_frames_remaining);
         }
 
-#if 0
-      g_message (
-        "======== processing at %d for %d samples "
-        "(preroll: %u)",
-        total_frames_to_process -
-          total_frames_remaining,
-        total_frames_remaining,
-        self->remaining_latency_preroll);
-#endif
+      /* run the cycle for the remaining frames -
+       * this will also play the queued metronome
+       * events (if any) */
       router_start_cycle (
         self->router, total_frames_remaining,
-        total_frames_to_process -
-          total_frames_remaining,
-        PLAYHEAD);
+        cur_offset, PLAYHEAD);
     }
-  /*g_message ("end====================");*/
 
   /* run post-process code */
   engine_post_process (

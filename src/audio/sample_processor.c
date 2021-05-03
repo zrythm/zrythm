@@ -241,7 +241,19 @@ sample_processor_queue_metronome (
   g_return_if_fail (
     METRONOME->emphasis && METRONOME->normal);
 
-  /*g_message ("metronome queued for %d", offset);*/
+#if 0
+  Position pos;
+  position_set_to_pos (&pos, PLAYHEAD);
+  position_add_frames (&pos, offset);
+  char metronome_pos_str[60];
+  position_to_string (&pos, metronome_pos_str);
+  g_message (
+    "%s metronome queued at %s (loffset %d)",
+    (type == METRONOME_TYPE_EMPHASIS) ?
+      "emphasis" : "normal",
+    metronome_pos_str, offset);
+#endif
+
   SamplePlayback * sp =
     &self->current_samples[
       self->num_current_samples];
