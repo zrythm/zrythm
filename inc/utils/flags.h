@@ -307,4 +307,7 @@
 #define F_CLEAR 1
 #define F_NO_CLEAR 0
 
+#define F_ENABLED 1
+#define F_NOT_ENABLED 0
+
 #endif

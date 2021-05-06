@@ -199,11 +199,15 @@ plugin_init_loaded (
 
   if (project)
     {
+      bool was_enabled = plugin_is_enabled (self);
       int ret =
         plugin_instantiate (self, project, NULL);
       if (ret == 0)
         {
           plugin_activate (self, true);
+
+          plugin_set_enabled (
+            self, was_enabled, F_NO_PUBLISH_EVENTS);
         }
       else
         {

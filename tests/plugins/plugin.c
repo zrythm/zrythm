@@ -158,6 +158,50 @@ test_loading_plugins_needing_bridging (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_bypass_state_after_project_load (void)
+{
+#ifdef HAVE_LSP_COMPRESSOR
+  test_helper_zrythm_init ();
+
+  for (int i = 0;
+#ifdef HAVE_CARLA
+       i < 2;
+#else
+       i < 1;
+#endif
+       i++)
+    {
+      /* create fx track */
+      test_plugin_manager_create_tracks_from_plugin (
+        LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
+        false, i == 1, 1);
+      Track * track =
+        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      Plugin * pl = track->channel->inserts[0];
+      g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
+
+      /* set bypass */
+      plugin_set_enabled (
+        pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
+      g_assert_false (plugin_is_enabled (pl));
+
+      /* reload project */
+      test_project_save_and_reload ();
+
+      track =
+        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      pl = track->channel->inserts[0];
+      g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
+
+      /* check bypass */
+      g_assert_false (plugin_is_enabled (pl));
+    }
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -167,6 +211,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/plugins/plugin/"
 
+  g_test_add_func (
+    TEST_PREFIX "test bypass state after project load",
+    (GTestFunc) test_bypass_state_after_project_load);
   g_test_add_func (
     TEST_PREFIX "test loading non-existing plugin",
     (GTestFunc) test_loading_non_existing_plugin);
