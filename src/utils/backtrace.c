@@ -165,20 +165,48 @@ addr2line (
 #ifdef CAN_USE_LIBBACKTRACE
 static struct backtrace_state * state = NULL;
 
+/**
+ * Note: to get the line number for external libs
+ * use `addr2line -e /lib64/libc.so.6 0x27a50`.
+ *
+ * __libc_start_main in ../csu/libc-start.c:332 from /lib64/libc.so.6(+0x27a50)[0x7feffe060000].
+ */
 static void
 syminfo_cb (
   void *       data,
   uintptr_t    pc,
   const char * symname,
   uintptr_t    symval,
-  uintptr_t    symsize)
+  uintptr_t    symsize
+#ifdef BACKTRACE_HAVE_BIN_FILENAME_AND_BASE_ADDR
+  ,
+  const char * binary_filename,
+  uintptr_t    base_address
+#endif
+  )
 {
   GString * msg_str = (GString *) data;
 
-  if (symname)
+  if (!symname)
+    {
+      symname = "unknown";
+    }
+
+#ifdef BACKTRACE_HAVE_BIN_FILENAME_AND_BASE_ADDR
+  if (base_address != 0 || symval != 0)
     {
       g_string_append_printf (
-        msg_str, " %s", symname);
+        msg_str,
+        " %s from %s(+0x%lx)[0x%lx]",
+        symname, binary_filename,
+        symval - base_address, base_address);
+    }
+  else
+#endif
+    {
+      g_string_append_printf (
+        msg_str,
+        " %s", symname);
     }
 }
 
