@@ -558,7 +558,7 @@ drag_end (
       GTK_GESTURE (gesture));
 
   Plugin * pl = get_plugin (self);
-  if (pl && self->n_press)
+  if (pl && self->n_press == 2)
     {
       bool new_visible = !pl->visible;
       g_message (
