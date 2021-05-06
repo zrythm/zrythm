@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -558,7 +558,7 @@ drag_end (
       GTK_GESTURE (gesture));
 
   Plugin * pl = get_plugin (self);
-  if (self->n_press == 2)
+  if (pl && self->n_press)
     {
       bool new_visible = !pl->visible;
       g_message (
@@ -566,12 +566,9 @@ drag_end (
         __func__, pl->setting->descr->name,
         new_visible);
       g_warn_if_fail (pl->instantiated);
-      if (pl)
-        {
-          pl->visible = new_visible;
-          EVENTS_PUSH (
-            ET_PLUGIN_VISIBILITY_CHANGED, pl);
-        }
+      pl->visible = new_visible;
+      EVENTS_PUSH (
+        ET_PLUGIN_VISIBILITY_CHANGED, pl);
     }
   else if (self->n_press == 1)
     {
