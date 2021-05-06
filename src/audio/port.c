@@ -48,7 +48,7 @@
 #include "plugins/lv2/lv2_ui.h"
 #include "utils/arrays.h"
 #include "utils/dsp.h"
-#include "utils/err_codes.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"

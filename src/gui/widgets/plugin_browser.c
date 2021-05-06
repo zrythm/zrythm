@@ -36,7 +36,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
-#include "utils/err_codes.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"

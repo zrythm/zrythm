@@ -103,6 +103,22 @@ Args:
 "  </gresource>
   <gresource prefix='/org/zrythm/Zrythm/app'>
 ")
+         ;; print GL shaders
+         (let ((gl-shaders-dir "gl/shaders"))
+           (for-each
+             (lambda (x)
+               (display
+                 (string-append
+                   "    <file>"
+                   gl-shaders-dir "/" x
+                   "</file>"))
+               (newline))
+             (scandir
+               (join-path
+                 (list resources-dir
+                       gl-shaders-dir))
+             (lambda (f)
+               (string-suffix? ".glsl" f)))))
 
          ;; Print UI files
          (for-each

@@ -17,27 +17,36 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/err_codes.h"
+/**
+ * \file
+ *
+ * Error handling utils.
+ */
 
-#include <glib/gi18n.h>
+#ifndef __UTILS_ERROR_H__
+#define __UTILS_ERROR_H__
 
+typedef enum ErrorDomain
+{
+  ERROR_DOMAIN_GLAREA,
+} ErrorDomain;
+
+typedef enum ErrorCode
+{
+  ERR_PLUGIN_INSTANTIATION_FAILED = 1,
+  ERR_OBJECT_IS_NULL,
+  ERR_PORT_MAGIC_FAILED,
+  ERR_FAILED_TO_LOAD_STATE_FROM_FILE,
+  ERROR_SHADER_COMPILATION,
+  ERROR_SHADER_LINK,
+} ErrorCode;
+
+/**
+ * Return the message corresponding to the given
+ * error code.
+ */
 const char *
 error_code_get_message (
-  ErrorCode err_code)
-{
-  switch (err_code)
-    {
-    case ERR_PLUGIN_INSTANTIATION_FAILED:
-      return
-        _("Plugin instantiation failed. "
-          "See the logs for details");
-    case ERR_OBJECT_IS_NULL:
-      return
-        _("Object is null. "
-          "See the logs for details");
-    default:
-      break;
-    }
+  ErrorCode err_code);
 
-  g_return_val_if_reached (_("Unknown error"));
-}
+#endif

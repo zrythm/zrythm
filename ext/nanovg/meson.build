@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,9 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-subdir ('midilib')
-subdir ('nanovg')
-subdir ('weakjack')
-subdir ('whereami')
-subdir ('zix')
-subdir ('zita-resampler')
+nanovg_lib = static_library (
+  'nanovg',
+  'nanovg.c',
+  c_args: [
+    '-O3',
+    extra_optimizations_cflags,
+    extra_extra_optimizations_cflags,
+    ],
+  )
+
