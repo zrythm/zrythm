@@ -919,6 +919,14 @@ port_get_dest_index (
       if (self->dests[i] == dest)
         return i;
     }
+
+  char des_src[800];
+  char des_dest[800];
+  port_get_full_designation (dest, des_dest);
+  port_get_full_designation (self, des_src);
+  g_critical (
+    "failed to get dest index for port %s in %s",
+    des_dest, des_src);
   g_return_val_if_reached (-1);
 }
 

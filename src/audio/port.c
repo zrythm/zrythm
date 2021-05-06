@@ -2074,6 +2074,7 @@ port_update_identifier (
           Port * src = self->srcs[i];
           int dest_idx =
             port_get_dest_index (src, self);
+          g_return_if_fail (dest_idx >= 0);
           port_identifier_copy (
             &src->dest_ids[dest_idx], &self->id);
           g_warn_if_fail (
@@ -2086,6 +2087,7 @@ port_update_identifier (
           Port * dest = self->dests[i];
           int src_idx =
             port_get_src_index (dest, self);
+          g_return_if_fail (src_idx >= 0);
           port_identifier_copy (
             &dest->src_ids[src_idx], &self->id);
           g_warn_if_fail (
