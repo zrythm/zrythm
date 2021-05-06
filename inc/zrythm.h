@@ -104,6 +104,12 @@ typedef enum ZrythmDirType
   /** Localization under "share". */
   ZRYTHM_DIR_SYSTEM_LOCALEDIR,
 
+  /**
+   * "gtksourceview-4/language-specs" under
+   * "share".
+   */
+  ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR,
+
   /** share/zrythm */
   ZRYTHM_DIR_SYSTEM_ZRYTHM_DATADIR,
 

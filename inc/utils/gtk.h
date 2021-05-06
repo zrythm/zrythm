@@ -30,6 +30,11 @@
 
 #include <gtk/gtk.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include <gtksourceview/gtksource.h>
+#pragma GCC diagnostic pop
+
 /**
  * @addtogroup utils
  *
@@ -545,6 +550,9 @@ z_gtk_activate_dir_link_func (
   GtkLabel * label,
   char *     uri,
   void *     data);
+
+GtkSourceLanguageManager *
+z_gtk_source_language_manager_get (void);
 
 /**
  * @}

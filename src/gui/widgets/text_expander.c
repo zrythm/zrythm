@@ -173,10 +173,12 @@ text_expander_widget_init (
     GTK_WIDGET (self->popover));
 
   GtkSourceLanguageManager * manager =
-    gtk_source_language_manager_get_default ();
+    z_gtk_source_language_manager_get ();
+  g_return_if_fail (manager);
   GtkSourceLanguage * lang =
     gtk_source_language_manager_get_language (
       manager, "markdown");
+  g_return_if_fail (lang);
   self->buffer =
     gtk_source_buffer_new_with_language (lang);
   self->editor =

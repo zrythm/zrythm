@@ -25,6 +25,7 @@
 #include "guile/guile.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -159,7 +160,7 @@ scripting_window_widget_init (
   g_free (filename);
 
   GtkSourceLanguageManager * manager =
-    gtk_source_language_manager_get_default ();
+    z_gtk_source_language_manager_get ();
   GtkSourceLanguage * lang =
     gtk_source_language_manager_get_language (
       manager, "scheme");

@@ -789,10 +789,16 @@ lock_memory (void)
       g_message ("Locking down memory...");
       if (mlockall (MCL_CURRENT | MCL_FUTURE))
         {
+#ifdef __APPLE__
+          g_warning (
+            "Cannot lock down memory: %s",
+            strerror (errno));
+#else
           ui_show_message_printf (
             NULL, GTK_MESSAGE_WARNING,
             "Cannot lock down memory: %s",
             strerror (errno));
+#endif
         }
     }
 #endif

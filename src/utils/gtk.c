@@ -943,3 +943,48 @@ z_gtk_activate_dir_link_func (
 
   return TRUE;
 }
+
+GtkSourceLanguageManager *
+z_gtk_source_language_manager_get (void)
+{
+  GtkSourceLanguageManager * manager =
+    gtk_source_language_manager_get_default ();
+
+  /* get the default search paths */
+  const char * const * before_paths =
+    gtk_source_language_manager_get_search_path (
+      manager);
+
+  /* build the new paths */
+  GStrvBuilder * after_paths_builder =
+    g_strv_builder_new ();
+  int i = 0;
+  while (before_paths[i])
+    {
+      g_debug (
+        "language specs dir %d: %s",
+        i, before_paths[i]);
+      g_strv_builder_add (
+        after_paths_builder, before_paths[i]);
+      i++;
+    }
+
+  /* add the new path if not already in the list */
+  char * language_specs_dir =
+    zrythm_get_dir (
+      ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR);
+  g_return_val_if_fail (language_specs_dir, NULL);
+  g_strv_builder_add (
+    after_paths_builder, language_specs_dir);
+
+  GStrv dirs =
+    g_strv_builder_end (after_paths_builder);
+
+  gtk_source_language_manager_set_search_path (
+    manager, dirs);
+
+  g_free (language_specs_dir);
+  g_strfreev (dirs);
+
+  return manager;
+}
