@@ -1127,6 +1127,7 @@ zrythm_deps = [
   dependency ('rubberband'),
   dependency ('libpcre'),
   dependency ('libpcre2-8'),
+  dependency ('epoxy'),
   cc.find_library ('dl', static: all_static),
   chromaprint_dep,
   fftw3_deps,

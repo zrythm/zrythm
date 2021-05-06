@@ -33,7 +33,7 @@
 #include "settings/settings.h"
 #include "utils/algorithms.h"
 #include "utils/arrays.h"
-#include "utils/err_codes.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/objects.h"

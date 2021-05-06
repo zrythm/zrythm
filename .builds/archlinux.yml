@@ -40,6 +40,7 @@ packages:
   - suil
   - valgrind
   - vim
+  - x42-plugins
   - xdg-utils
   - zstd
 sources:

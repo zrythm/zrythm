@@ -620,6 +620,11 @@ zrythm_free (
   object_free_w_func_and_null (
     object_utils_free, self->object_utils);
 
+  object_free_w_func_and_null (
+    symap_free, self->symap);
+  object_free_w_func_and_null (
+    symap_free, self->error_domain_symap);
+
   if (ZRYTHM == self)
     {
       ZRYTHM = NULL;
@@ -659,6 +664,7 @@ zrythm_new (
     recording_manager_new ();
   self->plugin_manager = plugin_manager_new ();
   self->symap = symap_new ();
+  self->error_domain_symap = symap_new ();
   self->file_manager = file_manager_new ();
   self->cairo_caches = z_cairo_caches_new ();
 

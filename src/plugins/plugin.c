@@ -55,7 +55,7 @@
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
 #include "utils/dsp.h"
-#include "utils/err_codes.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/flags.h"

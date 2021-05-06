@@ -226,6 +226,11 @@ typedef struct Zrythm
    */
   Symap *             symap;
 
+  /**
+   * String interner for error domains.
+   */
+  Symap *             error_domain_symap;
+
   /** Object utils. */
   ObjectUtils *       object_utils;
 

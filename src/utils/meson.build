@@ -27,7 +27,7 @@ util_srcs = [
   'dialogs.c',
   'dictionary.c',
   'env.c',
-  'err_codes.c',
+  'error.c',
   'general.c',
   'gtk.c',
   'io.c',

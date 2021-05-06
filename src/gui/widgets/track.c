@@ -1510,12 +1510,16 @@ track_widget_redraw_meters (
 
   if (gtk_widget_get_visible (
         GTK_WIDGET (self->meter_l)))
-    gtk_widget_queue_draw (
-      GTK_WIDGET (self->meter_l));
+    {
+      gtk_widget_queue_draw (
+        GTK_WIDGET (self->meter_l));
+    }
   if (gtk_widget_get_visible (
         GTK_WIDGET (self->meter_r)))
-    gtk_widget_queue_draw (
-      GTK_WIDGET (self->meter_r));
+    {
+      gtk_widget_queue_draw (
+        GTK_WIDGET (self->meter_r));
+    }
 }
 
 /**
