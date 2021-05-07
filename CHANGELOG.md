@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.16.0.35] - 2021-05-07
+### Added
+- Add preliminary support for LV2 options interface
+- Import nanovg & make using OpenGL easier
+- Show address and binary file in backtraces if available
+
+### Changed
+- Require glib 2.68 or above
+- Update glib meson wrap to 2.68.1
+- Update French, Chinese (Simplified) translations
+- UI theme: make bright green more blue
+
+### Fixed
+- Fix possible crash in slider widgets
+- Fix metronome not being played on bar 1
+- Fix wrong buffer offsets being passed when splitting dsp cycles
+- Fix crash when double clicking on empty slot
+- Fix segfault when `port_get_dest_index()` fails
+- Fix gtksourceview language specs not found on MacOS installer build
+- Fix plugin bypass state not being restored on project load
+
 ## [1.0.0-alpha.16.0.12] - 2021-05-02
 ### Added
 - Print required/optional lv2 options during instantiation
