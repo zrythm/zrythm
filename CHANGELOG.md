@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.16.0.35] - 2021-05-07
+## [1.0.0-alpha.16.0.37] - 2021-05-07
 ### Added
 - Add preliminary support for LV2 options interface
 - Import nanovg & make using OpenGL easier
