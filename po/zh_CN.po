@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-04-30 23:09+0100\n"
-"PO-Revision-Date: 2021-04-25 04:34+0000\n"
+"PO-Revision-Date: 2021-05-02 17:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -335,12 +335,12 @@ msgstr ""
 #: inc/audio/exporter.h:100
 #, fuzzy
 msgid "Pre-fader"
-msgstr "前推子发送"
+msgstr "前推子"
 
 #: inc/audio/exporter.h:101
 #, fuzzy
 msgid "Post fader"
-msgstr "后推子发送"
+msgstr "后推子"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -575,7 +575,6 @@ msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "为以下简写： --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1718
-#, fuzzy
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
@@ -1499,9 +1498,8 @@ msgid "File Browser"
 msgstr "文件浏览器"
 
 #: src/gui/widgets/right_dock_edge.c:154
-#, fuzzy
 msgid "Monitor Section"
-msgstr "监视器推子输入"
+msgstr "监视器部分"
 
 #: src/gui/widgets/right_dock_edge.c:181
 msgid "Show file browser"
@@ -1607,9 +1605,8 @@ msgid "Some changes will only take effect after you restart %s"
 msgstr "某些更改只有在您重新启动%s后才会生效"
 
 #: src/gui/widgets/monitor_section.c:48
-#, fuzzy
 msgid "Monitor"
-msgstr "监听输出"
+msgstr "监视器"
 
 #: src/gui/widgets/monitor_section.c:62 src/gui/widgets/track.c:1219
 #: src/gui/widgets/track.c:1849 resources/ui/fader_buttons.ui:120
@@ -1619,7 +1616,7 @@ msgstr ""
 #: src/gui/widgets/monitor_section.c:69 src/gui/widgets/monitor_section.c:344
 #, fuzzy
 msgid "Dim"
-msgstr "dim"
+msgstr "Dim"
 
 #: src/gui/widgets/monitor_section.c:85
 #, c-format
@@ -1627,9 +1624,8 @@ msgid "<small>%d muted</small>"
 msgstr ""
 
 #: src/gui/widgets/monitor_section.c:91
-#, fuzzy
 msgid "Currently muted tracks"
-msgstr "取消对 %d 音轨的静音"
+msgstr "当前静音的音轨"
 
 #: src/gui/widgets/monitor_section.c:94
 #, c-format
@@ -1637,9 +1633,8 @@ msgid "<small>%d soloed</small>"
 msgstr ""
 
 #: src/gui/widgets/monitor_section.c:100
-#, fuzzy
 msgid "Currently soloed tracks"
-msgstr "非独奏 %d 音轨"
+msgstr "当前独奏的音轨"
 
 #: src/gui/widgets/monitor_section.c:103
 #, c-format
@@ -1651,29 +1646,24 @@ msgid "Currently listened tracks"
 msgstr ""
 
 #: src/gui/widgets/monitor_section.c:396
-#, fuzzy
 msgid "Unsolo all tracks"
-msgstr "非独奏 %d 音轨"
+msgstr "取消所有音轨的独奏"
 
 #: src/gui/widgets/monitor_section.c:399
-#, fuzzy
 msgid "Unmute all tracks"
-msgstr "取消对 %d 音轨的静音"
+msgstr "取消对所有音轨的静音"
 
 #: src/gui/widgets/monitor_section.c:402
-#, fuzzy
 msgid "Unlisten all tracks"
-msgstr "取消固定 %d 道音轨"
+msgstr "取消倾听所有音轨"
 
 #: src/gui/widgets/monitor_section.c:449
-#, fuzzy
 msgid "Soloing"
-msgstr "独奏"
+msgstr "独奏中"
 
 #: src/gui/widgets/monitor_section.c:453
-#, fuzzy
 msgid "Muting"
-msgstr "编辑中"
+msgstr "静音中"
 
 #: src/gui/widgets/monitor_section.c:457
 msgid "Listening"
@@ -1693,9 +1683,8 @@ msgid "Click to enable inputs"
 msgstr "点击以启用输入"
 
 #: src/gui/widgets/active_hardware_mb.c:127
-#, fuzzy
 msgid "Click to enable outputs"
-msgstr "点击以启用输入"
+msgstr "点击启用输出"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -2041,9 +2030,8 @@ msgid "Pin/Unpin Tracks"
 msgstr "Pin/Unpin音轨"
 
 #: src/gui/widgets/track.c:1820
-#, fuzzy
 msgid "Unsolo"
-msgstr "非独奏曲目"
+msgstr "非独奏"
 
 #: src/gui/widgets/track.c:1869
 msgid "Change color..."
@@ -2999,14 +2987,12 @@ msgid "Unmute Track"
 msgstr "取消音轨静音"
 
 #: src/actions/tracklist_selections.c:1504
-#, fuzzy
 msgid "Listen Track"
-msgstr "固定音轨"
+msgstr "听音轨"
 
 #: src/actions/tracklist_selections.c:1507
-#, fuzzy
 msgid "Unlisten Track"
-msgstr "取消固定音轨"
+msgstr "取消收听音轨"
 
 #: src/actions/tracklist_selections.c:1510
 msgid "Change Fader"
@@ -3063,14 +3049,14 @@ msgid "Unmute %d Tracks"
 msgstr "取消对 %d 音轨的静音"
 
 #: src/actions/tracklist_selections.c:1562
-#, fuzzy, c-format
+#, c-format
 msgid "Listen %d Tracks"
-msgstr "固定 %d 道音轨"
+msgstr "收听 %d 道音轨"
 
 #: src/actions/tracklist_selections.c:1566
-#, fuzzy, c-format
+#, c-format
 msgid "Unlisten %d Tracks"
-msgstr "取消固定 %d 道音轨"
+msgstr "取消收听 %d 道音轨"
 
 #: src/actions/tracklist_selections.c:1583
 msgid "Move Track"
@@ -4359,44 +4345,37 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:258
-#, fuzzy
 msgid "Monitor volume"
-msgstr "监视输出卷"
+msgstr "监视器音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:259
-#, fuzzy
 msgid "The monitor volume in amplitude (0 to 2)."
-msgstr "监视器输出音量的幅度（0到2）。"
+msgstr "监视器音量振幅（0到2）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
-#, fuzzy
 msgid "Mute volume"
-msgstr "节拍器音量"
+msgstr "静音"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:265
-#, fuzzy
 msgid "The monitor mute volume in amplitude (0 to 2)."
-msgstr "监视器输出音量的幅度（0到2）。"
+msgstr "监视器静音幅度（0到2）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:270
-#, fuzzy
 msgid "Listen volume"
-msgstr "侦听昏暗级别"
+msgstr "收听音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:271
-#, fuzzy
 msgid "The monitor listen volume in amplitude (0 to 2)."
-msgstr "监视器输出音量的幅度（0到2）。"
+msgstr "监视器收听音量振幅（0到2）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:276
 #, fuzzy
 msgid "Dim volume"
-msgstr "音量"
+msgstr "模糊音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:277
-#, fuzzy
 msgid "The monitor dim volume in amplitude (0 to 2)."
-msgstr "监视器输出音量的幅度（0到2）。"
+msgstr "监视器模糊音量的振幅（0到2）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:281
 msgid "Sum to mono"
@@ -4405,22 +4384,19 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:282
 #, fuzzy
 msgid "Whether to sum the monitor signal to mono."
-msgstr "不管这是不是第一次运行。"
+msgstr "是否将监视器信号 sum 为单声道。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:286
-#, fuzzy
 msgid "Dim output"
-msgstr "输出"
+msgstr "使输出变弱"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:287
-#, fuzzy
 msgid "Whether to dim the the monitor signal."
-msgstr "不管这是不是第一次运行。"
+msgstr "是否使监视器信号变弱。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:292
-#, fuzzy
 msgid "Whether to mute the monitor signal."
-msgstr "是否启用节拍器。"
+msgstr "是否让监视器信号静音。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:296
 #: build/data/org.zrythm.Zrythm.gschema.xml:301
