@@ -770,7 +770,8 @@ lock_memory (void)
             "privileges to allow %s to lock "
             "unlimited memory. This may cause "
             "audio dropouts. Please refer to "
-            "the user manual for details.",
+            "the 'Getting Started' section in the "
+            "user manual for details.",
             PROGRAM_NAME);
         }
     }
