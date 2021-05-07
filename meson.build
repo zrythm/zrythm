@@ -1129,6 +1129,7 @@ cdata.set ('HAVE_LIBBACKTRACE', 1)
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
+  glib_dep,
   gtk_dep,
   sndfile_dep,
   samplerate_dep,
