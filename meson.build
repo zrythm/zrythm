@@ -491,8 +491,13 @@ if have_jack
 endif
 
 glib_dep = dependency (
-  'glib-2.0', required: false,
+  'glib-2.0', version: '>=2.68', required: false,
   static: all_static)
+if os_freebsd
+  # force system glib on freebsd
+  glib_dep = dependency (
+    'glib-2.0', required: true)
+endif
 if glib_dep.found()
   check_functions += [
     # use a fallback if this does not exist (glib < 2.58)
@@ -501,7 +506,31 @@ if glib_dep.found()
     ]
 else
   cdata.set ('GLIB_SUBPROJECT', 1)
-  glib_proj = subproject ('glib')
+  if os_freebsd
+    # note: fails finding environ during linking
+    glib_proj = subproject (
+      'glib',
+      default_options: [
+        'debug=true',
+        'optimization=3',
+        'xattr=false',
+        'iconv=external',
+        'selinux=disabled',
+        'libmount=disabled',
+        'installed_tests=false',
+        'b_lundef=false',
+        ]
+      )
+  else
+    glib_proj = subproject (
+      'glib',
+      default_options: [
+        'debug=true',
+        'optimization=3',
+        'installed_tests=false',
+        ]
+      )
+  endif
   glib_dep = glib_proj.get_variable ('libglib_dep')
 endif
 
@@ -824,7 +853,7 @@ if get_option ('opus')
   min_version = '>=1.0.29'
 endif
 sndfile_dep = dependency (
-  'sndfile', version: min_version, required: false)
+  'sndfile', version: min_version, required: true)
 if not sndfile_dep.found ()
   sndfile_subproject = cmake.subproject (
     'sndfile', options: cmake_opts)
@@ -832,7 +861,7 @@ if not sndfile_dep.found ()
     'sndfile')
 endif
 samplerate_dep = dependency (
-  'samplerate', version: '>=0.1.8', required: false)
+  'samplerate', version: '>=0.1.8', required: true)
 if not samplerate_dep.found ()
   samplerate_subproject = cmake.subproject (
     'samplerate', options: cmake_opts)

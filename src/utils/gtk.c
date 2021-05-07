@@ -950,6 +950,9 @@ z_gtk_source_language_manager_get (void)
   GtkSourceLanguageManager * manager =
     gtk_source_language_manager_get_default ();
 
+/* wait for latest glib to enable on freebsd */
+#ifndef __FreeBSD__
+
   /* get the default search paths */
   const char * const * before_paths =
     gtk_source_language_manager_get_search_path (
@@ -985,6 +988,7 @@ z_gtk_source_language_manager_get (void)
 
   g_free (language_specs_dir);
   g_strfreev (dirs);
+#endif
 
   return manager;
 }
