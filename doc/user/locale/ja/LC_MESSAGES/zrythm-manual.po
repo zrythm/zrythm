@@ -12,17 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-04-25 05:03+0100\n"
+"POT-Creation-Date: 2021-05-07 04:15+0100\n"
 "PO-Revision-Date: 2021-04-27 03:32+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -3001,6 +3000,7 @@ msgstr ""
 "を参照してください。"
 
 #: ../../getting-started/installation.rst:36
+#: ../../getting-started/system-requirements.rst:52
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -3047,6 +3047,7 @@ msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr "上記のインストーラーは、Windows 64bitとMacOSを完全にサポートしています。"
 
 #: ../../getting-started/installation.rst:58
+#: ../../getting-started/system-requirements.rst:57
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
@@ -3269,18 +3270,24 @@ msgid ""
 " by the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:51
+#: ../../getting-started/system-requirements.rst:53
 msgid ""
 "To set up these privileges for your user, see `How do I configure my "
 "linux system to allow JACK to use realtime scheduling? "
 "<https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:55
+#: ../../getting-started/system-requirements.rst:58
+msgid ""
+"To set up these privileges for your user, change the user class' "
+"``memorylocked`` value in :file:`/etc/login.conf`."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:63
 msgid "Open File Limit"
 msgstr "開けるファイル数の制限"
 
-#: ../../getting-started/system-requirements.rst:56
+#: ../../getting-started/system-requirements.rst:64
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it"
 " can open. You should give your user enough permissions to allow this."
@@ -9496,3 +9503,4 @@ msgstr "現在選択されているバックエンドとオプションに関す
 #~ " used for adjusting the Track's "
 #~ "volume, pan and other settings."
 #~ msgstr "チャンネルはミキサーにあるスロットです。ほとんどのトラックの種類には、トラックのボリューム、パン、その他の設定を調整するための、そのトラックに対応するチャンネルがあります。"
+

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-04-30 23:09+0100\n"
+"POT-Creation-Date: 2021-05-07 04:08+0100\n"
 "PO-Revision-Date: 2021-05-02 17:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -107,7 +107,7 @@ msgid "Pulse"
 msgstr "Pulse"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:86
-#: src/gui/widgets/track.c:1977
+#: src/gui/widgets/track.c:1981
 msgid "Inherit"
 msgstr "继承"
 
@@ -134,47 +134,47 @@ msgstr "正常"
 msgid "Low"
 msgstr "低"
 
-#: inc/utils/gtk.h:50
+#: inc/utils/gtk.h:55
 #, fuzzy
 msgid "MIDI learn"
 msgstr "MIDI Iearn"
 
-#: inc/utils/gtk.h:54
+#: inc/utils/gtk.h:59
 msgid "Cu_t"
 msgstr "剪切"
 
-#: inc/utils/gtk.h:58
+#: inc/utils/gtk.h:63
 msgid "_Copy"
 msgstr "复制"
 
-#: inc/utils/gtk.h:62
+#: inc/utils/gtk.h:67
 msgid "_Paste"
 msgstr "粘贴"
 
-#: inc/utils/gtk.h:66
+#: inc/utils/gtk.h:71
 msgid "_Delete"
 msgstr "删除"
 
-#: inc/utils/gtk.h:70
+#: inc/utils/gtk.h:75
 msgid "Cle_ar Selection"
 msgstr "清空选项"
 
-#: inc/utils/gtk.h:75
+#: inc/utils/gtk.h:80
 msgid "Select A_ll"
 msgstr "全选"
 
-#: inc/utils/gtk.h:80 src/gui/widgets/home_toolbar.c:212
+#: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:212
 msgid "Duplicate"
 msgstr "重复"
 
-#: inc/utils/gtk.h:84 src/gui/widgets/monitor_section.c:55
+#: inc/utils/gtk.h:89 src/gui/widgets/monitor_section.c:55
 #: src/gui/widgets/monitor_section.c:351 src/gui/widgets/track.c:1208
-#: src/gui/widgets/track.c:1830 resources/ui/fader_buttons.ui:99
+#: src/gui/widgets/track.c:1834 resources/ui/fader_buttons.ui:99
 #: build/data/org.zrythm.Zrythm.gschema.xml:291
 msgid "Mute"
 msgstr "静音"
 
-#: inc/utils/gtk.h:88 src/gui/widgets/track.c:1204 src/gui/widgets/track.c:1839
+#: inc/utils/gtk.h:93 src/gui/widgets/track.c:1204 src/gui/widgets/track.c:1843
 msgid "Unmute"
 msgstr "取消静音"
 
@@ -486,10 +486,10 @@ msgstr "许可证信息"
 msgid "Waiting for project"
 msgstr "等待项目"
 
-#: src/zrythm_app.c:929
-#, c-format
+#: src/zrythm_app.c:938
+#, fuzzy, c-format
 msgid ""
-"%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
+"%s-%s %s\n"
 "\n"
 "%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
@@ -511,74 +511,74 @@ msgstr ""
 "在 https://liberapay.com/Zrythm 支持此项目\n"
 "\n"
 
-#: src/zrythm_app.c:1382
+#: src/zrythm_app.c:1391
 #, c-format
 msgid "File %s not found."
 msgstr "文件%s未找到。"
 
-#: src/zrythm_app.c:1403
+#: src/zrythm_app.c:1412
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr "未指定输出文件。请通过`--output=FILE`传递一个。"
 
-#: src/zrythm_app.c:1468
+#: src/zrythm_app.c:1477
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "项目解压缩失败:%s\n"
 
-#: src/zrythm_app.c:1487
+#: src/zrythm_app.c:1496
 msgid "Unknown operation"
 msgstr "未知操作"
 
-#: src/zrythm_app.c:1507
+#: src/zrythm_app.c:1516
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "该选项需要 libguile\n"
 
-#: src/zrythm_app.c:1654
+#: src/zrythm_app.c:1663
 msgid "Print version information"
 msgstr "打印版本信息"
 
-#: src/zrythm_app.c:1659
+#: src/zrythm_app.c:1668
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "转换 ZPJ-FILE 为 YAML"
 
-#: src/zrythm_app.c:1664
+#: src/zrythm_app.c:1673
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "转换 YAML-PROJECT-FILE 为 .zpj 格式"
 
-#: src/zrythm_app.c:1669
+#: src/zrythm_app.c:1678
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "从脚本文件中生成工程"
 
-#: src/zrythm_app.c:1673
+#: src/zrythm_app.c:1682
 msgid "Print output in user-friendly way"
 msgstr "以用户友好的方式打印输出"
 
-#: src/zrythm_app.c:1677
+#: src/zrythm_app.c:1686
 msgid "Print current settings"
 msgstr "打印当前设定"
 
-#: src/zrythm_app.c:1681
+#: src/zrythm_app.c:1690
 msgid "Reset to factory settings"
 msgstr "重置到出厂设置"
 
-#: src/zrythm_app.c:1684
+#: src/zrythm_app.c:1693
 msgid "Override the audio backend to use"
 msgstr "覆盖要使用的音频后端"
 
-#: src/zrythm_app.c:1688
+#: src/zrythm_app.c:1697
 msgid "Override the MIDI backend to use"
 msgstr "覆盖要使用的MIDI后端"
 
-#: src/zrythm_app.c:1692
+#: src/zrythm_app.c:1701
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "为以下简写： --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1718
+#: src/zrythm_app.c:1727
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
-#: src/zrythm_app.c:1723
+#: src/zrythm_app.c:1732
 #, c-format
 msgid ""
 "Examples:\n"
@@ -596,48 +596,48 @@ msgstr ""
 "\n"
 "请报告问题至 %s\n"
 
-#: src/zrythm_app.c:1735
+#: src/zrythm_app.c:1744
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "运行 %s, 可选地传递一个工程文件。"
 
-#: src/plugins/carla_native_plugin.c:604 src/plugins/lv2_plugin.c:3494
+#: src/plugins/carla_native_plugin.c:604 src/plugins/lv2_plugin.c:3611
 msgid "Default bank"
 msgstr "默认bank"
 
-#: src/plugins/carla_native_plugin.c:609 src/plugins/lv2_plugin.c:3499
+#: src/plugins/carla_native_plugin.c:609 src/plugins/lv2_plugin.c:3616
 msgid "Init"
 msgstr "初始化"
 
-#: src/plugins/carla_native_plugin.c:1110
+#: src/plugins/carla_native_plugin.c:1112
 msgid "Audio in"
 msgstr "音频输入"
 
-#: src/plugins/carla_native_plugin.c:1120
+#: src/plugins/carla_native_plugin.c:1122
 msgid "Audio out"
 msgstr "音频输出"
 
-#: src/plugins/carla_native_plugin.c:1130
+#: src/plugins/carla_native_plugin.c:1132
 msgid "MIDI in"
 msgstr "MIDI In"
 
-#: src/plugins/carla_native_plugin.c:1142
+#: src/plugins/carla_native_plugin.c:1144
 msgid "MIDI out"
 msgstr "MIDI Out"
 
-#: src/plugins/carla_native_plugin.c:1154
+#: src/plugins/carla_native_plugin.c:1156
 msgid "CV in"
 msgstr "控制电压(CV)输入"
 
-#: src/plugins/carla_native_plugin.c:1164
+#: src/plugins/carla_native_plugin.c:1166
 msgid "CV out"
 msgstr "控制电压(CV)输出"
 
-#: src/plugins/plugin_manager.c:383
+#: src/plugins/plugin_manager.c:386
 msgid "Error loading LV2 bundle dir: "
 msgstr "加载 LV2 包目录时出错: "
 
-#: src/plugins/plugin_manager.c:1077
+#: src/plugins/plugin_manager.c:1080
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "已扫描 %s 插件: %s"
@@ -645,61 +645,61 @@ msgstr "已扫描 %s 插件: %s"
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
-#: src/plugins/plugin_manager.c:1091
+#: src/plugins/plugin_manager.c:1094
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "跳过了位于 %2$s 的 %1$s 插件"
 
-#: src/plugins/plugin_manager.c:1223
+#: src/plugins/plugin_manager.c:1226
 msgid "Scanned LV2 plugin"
 msgstr "已扫描LV2插件"
 
-#: src/plugins/plugin_manager.c:1234
+#: src/plugins/plugin_manager.c:1237
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "跳过%s处的LV2插件"
 
-#: src/plugins/plugin_manager.c:1322
+#: src/plugins/plugin_manager.c:1325
 msgid "Scanned AU plugin"
 msgstr "已扫描AU插件"
 
-#: src/plugins/plugin_manager.c:1329
+#: src/plugins/plugin_manager.c:1332
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "跳过%u处的AU插件"
 
-#: src/plugins/plugin.c:213
+#: src/plugins/plugin.c:217
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "插件 '%s' 实例化失败。禁用中..."
 
-#: src/plugins/plugin.c:261
+#: src/plugins/plugin.c:265
 msgid "[Zrythm] Enabled"
 msgstr "[Zrythm] 已启用"
 
-#: src/plugins/plugin.c:263
+#: src/plugins/plugin.c:267
 msgid "Enables or disables the plugin"
 msgstr "启用/禁用插件"
 
-#: src/plugins/plugin.c:286
+#: src/plugins/plugin.c:290
 msgid "[Zrythm] Gain"
 msgstr "[Zrythm] 增益"
 
-#: src/plugins/plugin.c:287
+#: src/plugins/plugin.c:291
 #, fuzzy
 msgid "Plugin gain"
 msgstr "插件 gain"
 
-#: src/plugins/plugin.c:1040
+#: src/plugins/plugin.c:1044
 #, c-format
 msgid " - bridge: %s"
 msgstr ""
 
-#: src/plugins/plugin.c:1051
+#: src/plugins/plugin.c:1055
 msgid "instrument"
 msgstr "乐器"
 
-#: src/plugins/plugin.c:1843
+#: src/plugins/plugin.c:1847
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -744,12 +744,12 @@ msgstr "值的小部件类型未知"
 msgid "Unknown widget type for value\n"
 msgstr "值的小部件类型未知\n"
 
-#: src/plugins/lv2_plugin.c:2643
+#: src/plugins/lv2_plugin.c:2680
 #, c-format
 msgid "Failed to find plugin with URI: %s"
 msgstr "无法从指定的 URI 找到插件: %s"
 
-#: src/plugins/lv2_plugin.c:2692
+#: src/plugins/lv2_plugin.c:2729
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -758,7 +758,7 @@ msgid ""
 "%s <%s>"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:3537
+#: src/plugins/lv2_plugin.c:3654
 msgid "Unnamed bank"
 msgstr "未命名bank"
 
@@ -1085,15 +1085,15 @@ msgstr "插槽#%d"
 msgid "Plugin %s cannot be added to this slot"
 msgstr "插件%s无法添加到此插槽"
 
-#: src/gui/widgets/channel_slot.c:709
+#: src/gui/widgets/channel_slot.c:706
 msgid "Bypass"
 msgstr "避开"
 
-#: src/gui/widgets/channel_slot.c:722
+#: src/gui/widgets/channel_slot.c:719
 msgid "Inspect"
 msgstr "检查"
 
-#: src/gui/widgets/channel_slot.c:1056
+#: src/gui/widgets/channel_slot.c:1053
 msgid "empty slot"
 msgstr "空插槽"
 
@@ -1378,11 +1378,11 @@ msgstr "音乐模式"
 msgid "Export as MIDI file"
 msgstr "导出为MIDI文件"
 
-#: src/gui/widgets/timeline_arranger.c:1327 src/gui/widgets/track.c:1782
+#: src/gui/widgets/timeline_arranger.c:1327 src/gui/widgets/track.c:1786
 msgid "Quick bounce"
 msgstr "快速导出"
 
-#: src/gui/widgets/timeline_arranger.c:1338 src/gui/widgets/track.c:1792
+#: src/gui/widgets/timeline_arranger.c:1338 src/gui/widgets/track.c:1796
 msgid "Bounce..."
 msgstr "导出..."
 
@@ -1609,7 +1609,7 @@ msgid "Monitor"
 msgstr "监视器"
 
 #: src/gui/widgets/monitor_section.c:62 src/gui/widgets/track.c:1219
-#: src/gui/widgets/track.c:1849 resources/ui/fader_buttons.ui:120
+#: src/gui/widgets/track.c:1853 resources/ui/fader_buttons.ui:120
 msgid "Listen"
 msgstr ""
 
@@ -1669,7 +1669,7 @@ msgstr "静音中"
 msgid "Listening"
 msgstr ""
 
-#: src/gui/widgets/scripting_window.c:74
+#: src/gui/widgets/scripting_window.c:75
 msgid "Scripting Interface"
 msgstr "脚本接口"
 
@@ -1935,7 +1935,7 @@ msgstr "可见的"
 msgid "Lane %d"
 msgstr "通道%d"
 
-#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1811
+#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1815
 #: resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr "独奏"
@@ -1948,7 +1948,7 @@ msgstr "隐藏乐器界面"
 msgid "Show instrument UI"
 msgstr "显示乐器界面"
 
-#: src/gui/widgets/track.c:1215 src/gui/widgets/track.c:1859
+#: src/gui/widgets/track.c:1215 src/gui/widgets/track.c:1863
 msgid "Unlisten"
 msgstr ""
 
@@ -1993,64 +1993,64 @@ msgstr "切换冻结"
 msgid "Lock/unlock"
 msgstr "锁定/解锁"
 
-#: src/gui/widgets/track.c:1722
+#: src/gui/widgets/track.c:1726
 msgid "_Delete Track"
 msgstr "删除音道"
 
-#: src/gui/widgets/track.c:1725
+#: src/gui/widgets/track.c:1729
 msgid "_Delete Tracks"
 msgstr "删除音道"
 
-#: src/gui/widgets/track.c:1736
+#: src/gui/widgets/track.c:1740
 msgid "_Duplicate Track"
 msgstr "重复音轨"
 
-#: src/gui/widgets/track.c:1739
+#: src/gui/widgets/track.c:1743
 msgid "_Duplicate Tracks"
 msgstr "重复音轨"
 
-#: src/gui/widgets/track.c:1753
+#: src/gui/widgets/track.c:1757
 msgid "Add Region"
 msgstr "添加区域"
 
-#: src/gui/widgets/track.c:1761
+#: src/gui/widgets/track.c:1765
 msgid "Hide Track"
 msgstr "隐藏音轨"
 
-#: src/gui/widgets/track.c:1762
+#: src/gui/widgets/track.c:1766
 msgid "Hide Tracks"
 msgstr "隐藏音轨"
 
-#: src/gui/widgets/track.c:1770
+#: src/gui/widgets/track.c:1774
 msgid "Pin/Unpin Track"
 msgstr "Pin/Unpin音轨"
 
-#: src/gui/widgets/track.c:1771
+#: src/gui/widgets/track.c:1775
 msgid "Pin/Unpin Tracks"
 msgstr "Pin/Unpin音轨"
 
-#: src/gui/widgets/track.c:1820
+#: src/gui/widgets/track.c:1824
 msgid "Unsolo"
 msgstr "非独奏"
 
-#: src/gui/widgets/track.c:1869
+#: src/gui/widgets/track.c:1873
 msgid "Change color..."
 msgstr "修改颜色…"
 
-#: src/gui/widgets/track.c:1879
+#: src/gui/widgets/track.c:1883
 msgid "Track MIDI Ch"
 msgstr "音轨MIDI通道"
 
-#: src/gui/widgets/track.c:1892
+#: src/gui/widgets/track.c:1896
 msgid "Passthrough input"
 msgstr "直通输入"
 
-#: src/gui/widgets/track.c:1921 src/gui/widgets/track.c:1981
+#: src/gui/widgets/track.c:1925 src/gui/widgets/track.c:1985
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "MIDI通道%d"
 
-#: src/gui/widgets/track.c:1961
+#: src/gui/widgets/track.c:1965
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "通道%d MIDI Ch"
@@ -2218,18 +2218,6 @@ msgstr "已达到试用限制。%s将变为静默状态"
 msgid "Failed to write file: %s"
 msgstr "无法写入文件:%s"
 
-#: src/utils/err_codes.c:32
-msgid "Plugin instantiation failed. See the logs for details"
-msgstr "插件实例化失败。有关详细信息，请参阅日志"
-
-#: src/utils/err_codes.c:36
-msgid "Object is null. See the logs for details"
-msgstr "对象为空。有关详细信息，请参阅日志"
-
-#: src/utils/err_codes.c:42
-msgid "Unknown error"
-msgstr "未知错误"
-
 #: src/utils/log.c:716
 #, c-format
 msgid ""
@@ -2279,6 +2267,18 @@ msgstr ""
 "根权限）\n"
 "2.以根用户身份运行<b>locale-gen</b>\n"
 "3.重新启动%s"
+
+#: src/utils/error.c:32
+msgid "Plugin instantiation failed. See the logs for details"
+msgstr "插件实例化失败。有关详细信息，请参阅日志"
+
+#: src/utils/error.c:36
+msgid "Object is null. See the logs for details"
+msgstr "对象为空。有关详细信息，请参阅日志"
+
+#: src/utils/error.c:42
+msgid "Unknown error"
+msgstr "未知错误"
 
 #: src/settings/settings.c:142
 #, c-format
@@ -2529,69 +2529,69 @@ msgstr "示例处理器"
 msgid "Unimplemented"
 msgstr "未实现"
 
-#: src/audio/fader.c:128
+#: src/audio/fader.c:126
 msgid "Prefader Volume"
 msgstr ""
 
-#: src/audio/fader.c:128
+#: src/audio/fader.c:126
 msgid "Fader Volume"
 msgstr "音量控制器音量"
 
-#: src/audio/fader.c:159
+#: src/audio/fader.c:157
 #, fuzzy
 msgid "Prefader Balance"
 msgstr "前推子平衡"
 
-#: src/audio/fader.c:159
+#: src/audio/fader.c:157
 msgid "Fader Balance"
 msgstr "音量控制器平衡"
 
-#: src/audio/fader.c:178
+#: src/audio/fader.c:176
 #, fuzzy
 msgid "Prefader Mute"
 msgstr "前推子静音"
 
-#: src/audio/fader.c:178
+#: src/audio/fader.c:176
 msgid "Fader Mute"
 msgstr "音量控制器静音"
 
-#: src/audio/fader.c:202
+#: src/audio/fader.c:200
 msgid "Ch Pre-Fader in"
 msgstr "Ch预推子输入"
 
-#: src/audio/fader.c:206
+#: src/audio/fader.c:204
 msgid "Ch Fader in"
 msgstr "Ch推子输入"
 
-#: src/audio/fader.c:211
+#: src/audio/fader.c:209
 msgid "Monitor Fader in"
 msgstr "监视器推子输入"
 
-#: src/audio/fader.c:229
+#: src/audio/fader.c:227
 msgid "Ch Pre-Fader out"
 msgstr "Ch预推子输出"
 
-#: src/audio/fader.c:233
+#: src/audio/fader.c:231
 msgid "Ch Fader out"
 msgstr "Ch推子输出"
 
-#: src/audio/fader.c:238
+#: src/audio/fader.c:236
 msgid "Monitor Fader out"
 msgstr "监视器推子输出"
 
-#: src/audio/fader.c:259
+#: src/audio/fader.c:257
 msgid "Ch MIDI Pre-Fader in"
 msgstr "Ch MIDI预推子输入"
 
-#: src/audio/fader.c:263
+#: src/audio/fader.c:261
 msgid "Ch MIDI Fader in"
 msgstr "Ch MIDI推子输入"
 
-#: src/audio/fader.c:274
+#: src/audio/fader.c:272
 msgid "Ch MIDI Pre-Fader out"
 msgstr "Ch MIDI预推子输入"
 
-#: src/audio/fader.c:278
+#: src/audio/fader.c:276
 msgid "Ch MIDI Fader out"
 msgstr "Ch MIDI推子输出"
 

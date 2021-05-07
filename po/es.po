@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-04-30 23:09+0100\n"
+"POT-Creation-Date: 2021-05-07 04:08+0100\n"
 "PO-Revision-Date: 2021-03-13 17:38+0000\n"
 "Last-Translator: Chris <chris@wepache.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
@@ -114,7 +114,7 @@ msgid "Pulse"
 msgstr "Pulso"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:86
-#: src/gui/widgets/track.c:1977
+#: src/gui/widgets/track.c:1981
 msgid "Inherit"
 msgstr "Heredar"
 
@@ -141,47 +141,47 @@ msgstr "Normal"
 msgid "Low"
 msgstr "Bajo"
 
-#: inc/utils/gtk.h:50
+#: inc/utils/gtk.h:55
 #, fuzzy
 msgid "MIDI learn"
 msgstr "Entradas de MIDI"
 
-#: inc/utils/gtk.h:54
+#: inc/utils/gtk.h:59
 msgid "Cu_t"
 msgstr "Cor_tar"
 
-#: inc/utils/gtk.h:58
+#: inc/utils/gtk.h:63
 msgid "_Copy"
 msgstr "_Copiar"
 
-#: inc/utils/gtk.h:62
+#: inc/utils/gtk.h:67
 msgid "_Paste"
 msgstr "_Pegar"
 
-#: inc/utils/gtk.h:66
+#: inc/utils/gtk.h:71
 msgid "_Delete"
 msgstr "_Eliminar"
 
-#: inc/utils/gtk.h:70
+#: inc/utils/gtk.h:75
 msgid "Cle_ar Selection"
 msgstr "V_aciar selección"
 
-#: inc/utils/gtk.h:75
+#: inc/utils/gtk.h:80
 msgid "Select A_ll"
 msgstr "Se_leccionar todo"
 
-#: inc/utils/gtk.h:80 src/gui/widgets/home_toolbar.c:212
+#: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:212
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: inc/utils/gtk.h:84 src/gui/widgets/monitor_section.c:55
+#: inc/utils/gtk.h:89 src/gui/widgets/monitor_section.c:55
 #: src/gui/widgets/monitor_section.c:351 src/gui/widgets/track.c:1208
-#: src/gui/widgets/track.c:1830 resources/ui/fader_buttons.ui:99
+#: src/gui/widgets/track.c:1834 resources/ui/fader_buttons.ui:99
 #: build/data/org.zrythm.Zrythm.gschema.xml:291
 msgid "Mute"
 msgstr "Silenciar"
 
-#: inc/utils/gtk.h:88 src/gui/widgets/track.c:1204 src/gui/widgets/track.c:1839
+#: inc/utils/gtk.h:93 src/gui/widgets/track.c:1204 src/gui/widgets/track.c:1843
 msgid "Unmute"
 msgstr "No silenciar"
 
@@ -496,10 +496,10 @@ msgstr "Información sobre la licencia"
 msgid "Waiting for project"
 msgstr "Esperando un proyecto"
 
-#: src/zrythm_app.c:929
-#, c-format
+#: src/zrythm_app.c:938
+#, fuzzy, c-format
 msgid ""
-"%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
+"%s-%s %s\n"
 "\n"
 "%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
@@ -522,75 +522,75 @@ msgstr ""
 "Apoya este proyecto en https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1382
+#: src/zrythm_app.c:1391
 #, c-format
 msgid "File %s not found."
 msgstr "Archivo %s no encontrado."
 
-#: src/zrythm_app.c:1403
+#: src/zrythm_app.c:1412
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "No se especificó un archivo de salida. Pasa uno con `--salida [ARCHIVO]`."
 
-#: src/zrythm_app.c:1468
+#: src/zrythm_app.c:1477
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "El proyecto no se pudo descomprimir: %s\n"
 
-#: src/zrythm_app.c:1487
+#: src/zrythm_app.c:1496
 msgid "Unknown operation"
 msgstr "Opción desconocida"
 
-#: src/zrythm_app.c:1507
+#: src/zrythm_app.c:1516
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "libguile es requerido para esta opción\n"
 
-#: src/zrythm_app.c:1654
+#: src/zrythm_app.c:1663
 msgid "Print version information"
 msgstr "Información sobre la licencia"
 
-#: src/zrythm_app.c:1659
+#: src/zrythm_app.c:1668
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Convertir ZPJ-FILE a YAML"
 
-#: src/zrythm_app.c:1664
+#: src/zrythm_app.c:1673
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Convertir YAML-PROJECT-FILE a el formato .zpj"
 
-#: src/zrythm_app.c:1669
+#: src/zrythm_app.c:1678
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Generar un projecto de SCRIPT-FILE"
 
-#: src/zrythm_app.c:1673
+#: src/zrythm_app.c:1682
 msgid "Print output in user-friendly way"
 msgstr ""
 
-#: src/zrythm_app.c:1677
+#: src/zrythm_app.c:1686
 msgid "Print current settings"
 msgstr "Imprimir ajustes actuales"
 
-#: src/zrythm_app.c:1681
+#: src/zrythm_app.c:1690
 msgid "Reset to factory settings"
 msgstr "Restablecer la configuración de fábrica"
 
-#: src/zrythm_app.c:1684
+#: src/zrythm_app.c:1693
 msgid "Override the audio backend to use"
 msgstr "Anular el audio backend que se utilizara"
 
-#: src/zrythm_app.c:1688
+#: src/zrythm_app.c:1697
 msgid "Override the MIDI backend to use"
 msgstr "Anular el MIDI backend que se utilizara"
 
-#: src/zrythm_app.c:1692
+#: src/zrythm_app.c:1701
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr ""
 
-#: src/zrythm_app.c:1718
+#: src/zrythm_app.c:1727
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-ARCHIVO]"
 
-#: src/zrythm_app.c:1723
+#: src/zrythm_app.c:1732
 #, c-format
 msgid ""
 "Examples:\n"
@@ -608,48 +608,48 @@ msgstr ""
 "  -p --pretty  Pretty-print ajustes actuales\n"
 "Porfavor reporta errores a %s\n"
 
-#: src/zrythm_app.c:1735
+#: src/zrythm_app.c:1744
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Ejecutar %s, optionalmente pasar el archivo del projecto."
 
-#: src/plugins/carla_native_plugin.c:604 src/plugins/lv2_plugin.c:3494
+#: src/plugins/carla_native_plugin.c:604 src/plugins/lv2_plugin.c:3611
 msgid "Default bank"
 msgstr "Banco predeterminado"
 
-#: src/plugins/carla_native_plugin.c:609 src/plugins/lv2_plugin.c:3499
+#: src/plugins/carla_native_plugin.c:609 src/plugins/lv2_plugin.c:3616
 msgid "Init"
 msgstr "Inicialización"
 
-#: src/plugins/carla_native_plugin.c:1110
+#: src/plugins/carla_native_plugin.c:1112
 msgid "Audio in"
 msgstr "Entrada de audio"
 
-#: src/plugins/carla_native_plugin.c:1120
+#: src/plugins/carla_native_plugin.c:1122
 msgid "Audio out"
 msgstr "Salidas de audio"
 
-#: src/plugins/carla_native_plugin.c:1130
+#: src/plugins/carla_native_plugin.c:1132
 msgid "MIDI in"
 msgstr "Entradas de MIDI"
 
-#: src/plugins/carla_native_plugin.c:1142
+#: src/plugins/carla_native_plugin.c:1144
 msgid "MIDI out"
 msgstr "Salida MIDI"
 
-#: src/plugins/carla_native_plugin.c:1154
+#: src/plugins/carla_native_plugin.c:1156
 msgid "CV in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1164
+#: src/plugins/carla_native_plugin.c:1166
 msgid "CV out"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:383
+#: src/plugins/plugin_manager.c:386
 msgid "Error loading LV2 bundle dir: "
 msgstr "Error al cargar el directorio del paquete LV2: "
 
-#: src/plugins/plugin_manager.c:1077
+#: src/plugins/plugin_manager.c:1080
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "%s plugin escaneado: %s"
@@ -657,65 +657,65 @@ msgstr "%s plugin escaneado: %s"
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
-#: src/plugins/plugin_manager.c:1091
+#: src/plugins/plugin_manager.c:1094
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "plugin %1$s omitido en %2$s"
 
-#: src/plugins/plugin_manager.c:1223
+#: src/plugins/plugin_manager.c:1226
 msgid "Scanned LV2 plugin"
 msgstr "plugin LV2 escaneado"
 
-#: src/plugins/plugin_manager.c:1234
+#: src/plugins/plugin_manager.c:1237
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "Se saltó el plugin del LV2 en %s"
 
-#: src/plugins/plugin_manager.c:1322
+#: src/plugins/plugin_manager.c:1325
 msgid "Scanned AU plugin"
 msgstr "Plugin de AU escaneado"
 
-#: src/plugins/plugin_manager.c:1329
+#: src/plugins/plugin_manager.c:1332
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "Se saltó el plugin AU en %u"
 
-#: src/plugins/plugin.c:213
+#: src/plugins/plugin.c:217
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr ""
 "Se ha producido un error en la creación de instancias para el plugin'%s'. "
 "Deshabilitando..."
 
-#: src/plugins/plugin.c:261
+#: src/plugins/plugin.c:265
 msgid "[Zrythm] Enabled"
 msgstr "[Zrythm] activado"
 
-#: src/plugins/plugin.c:263
+#: src/plugins/plugin.c:267
 #, fuzzy
 msgid "Enables or disables the plugin"
 msgstr "Activar/desactivar conexión"
 
-#: src/plugins/plugin.c:286
+#: src/plugins/plugin.c:290
 msgid "[Zrythm] Gain"
 msgstr "[Zrythm] Ganancia"
 
-#: src/plugins/plugin.c:287
+#: src/plugins/plugin.c:291
 #, fuzzy
 msgid "Plugin gain"
 msgstr "Complemento"
 
-#: src/plugins/plugin.c:1040
+#: src/plugins/plugin.c:1044
 #, c-format
 msgid " - bridge: %s"
 msgstr ""
 
-#: src/plugins/plugin.c:1051
+#: src/plugins/plugin.c:1055
 #, fuzzy
 msgid "instrument"
 msgstr "Instrumento"
 
-#: src/plugins/plugin.c:1843
+#: src/plugins/plugin.c:1847
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -765,12 +765,12 @@ msgstr "Tipo de widget desconocido por valor"
 msgid "Unknown widget type for value\n"
 msgstr "Tipo de widget desconocido para el valor\n"
 
-#: src/plugins/lv2_plugin.c:2643
+#: src/plugins/lv2_plugin.c:2680
 #, c-format
 msgid "Failed to find plugin with URI: %s"
 msgstr "No se pudo encontrar el plugin con URI: %s"
 
-#: src/plugins/lv2_plugin.c:2692
+#: src/plugins/lv2_plugin.c:2729
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -783,7 +783,7 @@ msgstr ""
 "full-bridged, y informaselo al distribuidor y/o autor del plugin:\n"
 "%s <%s>"
 
-#: src/plugins/lv2_plugin.c:3537
+#: src/plugins/lv2_plugin.c:3654
 msgid "Unnamed bank"
 msgstr "Banco sin nombre"
 
@@ -1111,15 +1111,15 @@ msgstr "Ranura #%d"
 msgid "Plugin %s cannot be added to this slot"
 msgstr "No se pueden añadir %s de plugin a esta ranura"
 
-#: src/gui/widgets/channel_slot.c:709
+#: src/gui/widgets/channel_slot.c:706
 msgid "Bypass"
 msgstr "Bypass"
 
-#: src/gui/widgets/channel_slot.c:722
+#: src/gui/widgets/channel_slot.c:719
 msgid "Inspect"
 msgstr "Inspeccionar"
 
-#: src/gui/widgets/channel_slot.c:1056
+#: src/gui/widgets/channel_slot.c:1053
 msgid "empty slot"
 msgstr "ranura vacía"
 
@@ -1409,11 +1409,11 @@ msgstr "Modo musical"
 msgid "Export as MIDI file"
 msgstr "Exportar como archivo MIDI"
 
-#: src/gui/widgets/timeline_arranger.c:1327 src/gui/widgets/track.c:1782
+#: src/gui/widgets/timeline_arranger.c:1327 src/gui/widgets/track.c:1786
 msgid "Quick bounce"
 msgstr "Rebote rápido"
 
-#: src/gui/widgets/timeline_arranger.c:1338 src/gui/widgets/track.c:1792
+#: src/gui/widgets/timeline_arranger.c:1338 src/gui/widgets/track.c:1796
 msgid "Bounce..."
 msgstr "Rebote..."
 
@@ -1642,7 +1642,7 @@ msgid "Monitor"
 msgstr "Monitoreo de la salida"
 
 #: src/gui/widgets/monitor_section.c:62 src/gui/widgets/track.c:1219
-#: src/gui/widgets/track.c:1849 resources/ui/fader_buttons.ui:120
+#: src/gui/widgets/track.c:1853 resources/ui/fader_buttons.ui:120
 msgid "Listen"
 msgstr "Escuchar"
 
@@ -1710,7 +1710,7 @@ msgstr "Edición"
 msgid "Listening"
 msgstr "Escuchar"
 
-#: src/gui/widgets/scripting_window.c:74
+#: src/gui/widgets/scripting_window.c:75
 msgid "Scripting Interface"
 msgstr "Interfaz de línea de comandos"
 
@@ -1977,7 +1977,7 @@ msgstr "Visible"
 msgid "Lane %d"
 msgstr "Carril %d"
 
-#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1811
+#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1815
 #: resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr "Solo"
@@ -1990,7 +1990,7 @@ msgstr "Ocultar la IU del instrumento"
 msgid "Show instrument UI"
 msgstr "Mostrar la IU del instrumento"
 
-#: src/gui/widgets/track.c:1215 src/gui/widgets/track.c:1859
+#: src/gui/widgets/track.c:1215 src/gui/widgets/track.c:1863
 #, fuzzy
 msgid "Unlisten"
 msgstr "Escuchar"
@@ -2035,66 +2035,66 @@ msgstr "Congelar/Descongelar"
 msgid "Lock/unlock"
 msgstr "Bloquear/Desbloquear"
 
-#: src/gui/widgets/track.c:1722
+#: src/gui/widgets/track.c:1726
 msgid "_Delete Track"
 msgstr "_Borrar pista"
 
-#: src/gui/widgets/track.c:1725
+#: src/gui/widgets/track.c:1729
 msgid "_Delete Tracks"
 msgstr "_Borrar pistas"
 
-#: src/gui/widgets/track.c:1736
+#: src/gui/widgets/track.c:1740
 msgid "_Duplicate Track"
 msgstr "_Pista duplicada"
 
-#: src/gui/widgets/track.c:1739
+#: src/gui/widgets/track.c:1743
 msgid "_Duplicate Tracks"
 msgstr "_Pistas duplicadas"
 
-#: src/gui/widgets/track.c:1753
+#: src/gui/widgets/track.c:1757
 msgid "Add Region"
 msgstr "Añadir región"
 
-#: src/gui/widgets/track.c:1761
+#: src/gui/widgets/track.c:1765
 msgid "Hide Track"
 msgstr "Ocultar pista"
 
-#: src/gui/widgets/track.c:1762
+#: src/gui/widgets/track.c:1766
 msgid "Hide Tracks"
 msgstr "Ocultar pistas"
 
-#: src/gui/widgets/track.c:1770
+#: src/gui/widgets/track.c:1774
 msgid "Pin/Unpin Track"
 msgstr "Anclar/desanclar pista"
 
-#: src/gui/widgets/track.c:1771
+#: src/gui/widgets/track.c:1775
 msgid "Pin/Unpin Tracks"
 msgstr "Anclar/desanclar pistas"
 
-#: src/gui/widgets/track.c:1820
+#: src/gui/widgets/track.c:1824
 #, fuzzy
 msgid "Unsolo"
 msgstr "Suprimir el solo de la pista"
 
-#: src/gui/widgets/track.c:1869
+#: src/gui/widgets/track.c:1873
 #, fuzzy
 msgid "Change color..."
 msgstr "Cambiar color"
 
-#: src/gui/widgets/track.c:1879
+#: src/gui/widgets/track.c:1883
 msgid "Track MIDI Ch"
 msgstr "Pista MIDI Ch"
 
-#: src/gui/widgets/track.c:1892
+#: src/gui/widgets/track.c:1896
 msgid "Passthrough input"
 msgstr "Entrada de paso"
 
-#: src/gui/widgets/track.c:1921 src/gui/widgets/track.c:1981
+#: src/gui/widgets/track.c:1925 src/gui/widgets/track.c:1985
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "Canal MIDI %d"
 
-#: src/gui/widgets/track.c:1961
+#: src/gui/widgets/track.c:1965
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "Carril %d MIDI Ch"
@@ -2270,20 +2270,6 @@ msgstr "Se ha alcanzado el límite de prueba. %s ahora se silenciará"
 msgid "Failed to write file: %s"
 msgstr "No se pudo escribir el archivo %s"
 
-#: src/utils/err_codes.c:32
-msgid "Plugin instantiation failed. See the logs for details"
-msgstr ""
-"Se ha producido un error en la creación de instancias del plugin. Consulta "
-"los registros para obtener más detalles"
-
-#: src/utils/err_codes.c:36
-msgid "Object is null. See the logs for details"
-msgstr "El objeto es nulo. Consulta los registros para obtener más detalles"
-
-#: src/utils/err_codes.c:42
-msgid "Unknown error"
-msgstr "Error desconocido"
-
 #: src/utils/log.c:716
 #, c-format
 msgid ""
@@ -2343,6 +2329,20 @@ msgstr ""
 "privilegios de root)\n"
 "2. Ejecuta <b></b> locale-gen como root\n"
 "3. Reinicia %s"
+
+#: src/utils/error.c:32
+msgid "Plugin instantiation failed. See the logs for details"
+msgstr ""
+"Se ha producido un error en la creación de instancias del plugin. Consulta "
+"los registros para obtener más detalles"
+
+#: src/utils/error.c:36
+msgid "Object is null. See the logs for details"
+msgstr "El objeto es nulo. Consulta los registros para obtener más detalles"
+
+#: src/utils/error.c:42
+msgid "Unknown error"
+msgstr "Error desconocido"
 
 #: src/settings/settings.c:142
 #, c-format
@@ -2612,67 +2612,67 @@ msgstr "Procesador de muestra"
 msgid "Unimplemented"
 msgstr "Sin implementar"
 
-#: src/audio/fader.c:128
+#: src/audio/fader.c:126
 msgid "Prefader Volume"
 msgstr "Volumen del pre-fader"
 
-#: src/audio/fader.c:128
+#: src/audio/fader.c:126
 msgid "Fader Volume"
 msgstr "Volumen del fader"
 
-#: src/audio/fader.c:159
+#: src/audio/fader.c:157
 msgid "Prefader Balance"
 msgstr "Balance del pre-fader"
 
-#: src/audio/fader.c:159
+#: src/audio/fader.c:157
 msgid "Fader Balance"
 msgstr "Balance de faders"
 
-#: src/audio/fader.c:178
+#: src/audio/fader.c:176
 msgid "Prefader Mute"
 msgstr "Silenciar pre-fader"
 
-#: src/audio/fader.c:178
+#: src/audio/fader.c:176
 msgid "Fader Mute"
 msgstr "Silenciar fader"
 
-#: src/audio/fader.c:202
+#: src/audio/fader.c:200
 msgid "Ch Pre-Fader in"
 msgstr "Ch Entrada pre-fader"
 
-#: src/audio/fader.c:206
+#: src/audio/fader.c:204
 msgid "Ch Fader in"
 msgstr "Ch Entrada fader"
 
-#: src/audio/fader.c:211
+#: src/audio/fader.c:209
 msgid "Monitor Fader in"
 msgstr "Monitorizar entrada fader"
 
-#: src/audio/fader.c:229
+#: src/audio/fader.c:227
 msgid "Ch Pre-Fader out"
 msgstr "Ch Salida pre-fader"
 
-#: src/audio/fader.c:233
+#: src/audio/fader.c:231
 msgid "Ch Fader out"
 msgstr "Ch Salida fader"
 
-#: src/audio/fader.c:238
+#: src/audio/fader.c:236
 msgid "Monitor Fader out"
 msgstr "Monitorizar salida fader"
 
-#: src/audio/fader.c:259
+#: src/audio/fader.c:257
 msgid "Ch MIDI Pre-Fader in"
 msgstr "Ch Entrada MIDI pre-fader"
 
-#: src/audio/fader.c:263
+#: src/audio/fader.c:261
 msgid "Ch MIDI Fader in"
 msgstr "Ch Entrada MIDI fader"
 
-#: src/audio/fader.c:274
+#: src/audio/fader.c:272
 msgid "Ch MIDI Pre-Fader out"
 msgstr "Ch Salida pre-fader MIDI"
 
-#: src/audio/fader.c:278
+#: src/audio/fader.c:276
 msgid "Ch MIDI Fader out"
 msgstr "Ch Salida MIDI fader"
 

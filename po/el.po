@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-04-30 23:09+0100\n"
+"POT-Creation-Date: 2021-05-07 04:08+0100\n"
 "PO-Revision-Date: 2021-04-13 00:27+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
@@ -104,7 +104,7 @@ msgid "Pulse"
 msgstr "Παλμός"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:86
-#: src/gui/widgets/track.c:1977
+#: src/gui/widgets/track.c:1981
 msgid "Inherit"
 msgstr "Ενσωμάτωση"
 
@@ -131,46 +131,46 @@ msgstr "Κανονικά"
 msgid "Low"
 msgstr "Χαμηλά"
 
-#: inc/utils/gtk.h:50
+#: inc/utils/gtk.h:55
 msgid "MIDI learn"
 msgstr "Μάθηση MIDI"
 
-#: inc/utils/gtk.h:54
+#: inc/utils/gtk.h:59
 msgid "Cu_t"
 msgstr "_Αποκοπή"
 
-#: inc/utils/gtk.h:58
+#: inc/utils/gtk.h:63
 msgid "_Copy"
 msgstr "_Αντιγραφή"
 
-#: inc/utils/gtk.h:62
+#: inc/utils/gtk.h:67
 msgid "_Paste"
 msgstr "_Επικόλληση"
 
-#: inc/utils/gtk.h:66
+#: inc/utils/gtk.h:71
 msgid "_Delete"
 msgstr "_Διαγραφή"
 
-#: inc/utils/gtk.h:70
+#: inc/utils/gtk.h:75
 msgid "Cle_ar Selection"
 msgstr "_Καθαρισμός επιλογής"
 
-#: inc/utils/gtk.h:75
+#: inc/utils/gtk.h:80
 msgid "Select A_ll"
 msgstr "_Επιλογή όλων"
 
-#: inc/utils/gtk.h:80 src/gui/widgets/home_toolbar.c:212
+#: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:212
 msgid "Duplicate"
 msgstr "Δημιουργία διπλοτύπου"
 
-#: inc/utils/gtk.h:84 src/gui/widgets/monitor_section.c:55
+#: inc/utils/gtk.h:89 src/gui/widgets/monitor_section.c:55
 #: src/gui/widgets/monitor_section.c:351 src/gui/widgets/track.c:1208
-#: src/gui/widgets/track.c:1830 resources/ui/fader_buttons.ui:99
+#: src/gui/widgets/track.c:1834 resources/ui/fader_buttons.ui:99
 #: build/data/org.zrythm.Zrythm.gschema.xml:291
 msgid "Mute"
 msgstr "Σίγαση"
 
-#: inc/utils/gtk.h:88 src/gui/widgets/track.c:1204 src/gui/widgets/track.c:1839
+#: inc/utils/gtk.h:93 src/gui/widgets/track.c:1204 src/gui/widgets/track.c:1843
 msgid "Unmute"
 msgstr "Κατάργηση σίγασης"
 
@@ -485,10 +485,10 @@ msgstr "Πληροφορίες άδειας"
 msgid "Waiting for project"
 msgstr "Φόρτωση έργου"
 
-#: src/zrythm_app.c:929
-#, c-format
+#: src/zrythm_app.c:938
+#, fuzzy, c-format
 msgid ""
-"%s-%s Copyright (C) 2018-2021 The Zrythm contributors\n"
+"%s-%s %s\n"
 "\n"
 "%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
@@ -510,76 +510,76 @@ msgstr ""
 "Υποστηρίξτε αυτό το έργο στο https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1382
+#: src/zrythm_app.c:1391
 #, c-format
 msgid "File %s not found."
 msgstr "Το αρχείο %s δεν βρέθηκε."
 
-#: src/zrythm_app.c:1403
+#: src/zrythm_app.c:1412
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Δεν ορίστηκε εξαγόμενο αρχείο. Πρέπει να ορίσετε ένα με `--output [FILE]`."
 
-#: src/zrythm_app.c:1468
+#: src/zrythm_app.c:1477
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Αποτυχία αποσυμπίεσης του έργου: %s\n"
 
-#: src/zrythm_app.c:1487
+#: src/zrythm_app.c:1496
 msgid "Unknown operation"
 msgstr "Άγνωστη λειτουργία"
 
-#: src/zrythm_app.c:1507
+#: src/zrythm_app.c:1516
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "Το libguile είναι προαπαιτούμενο για αυτή την επιλογή\n"
 
-#: src/zrythm_app.c:1654
+#: src/zrythm_app.c:1663
 msgid "Print version information"
 msgstr "Προβολή πληροφοριών έκδοσης"
 
-#: src/zrythm_app.c:1659
+#: src/zrythm_app.c:1668
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Μετατροπή ZPJ-FILE σε YAML"
 
-#: src/zrythm_app.c:1664
+#: src/zrythm_app.c:1673
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Μετατροπή YAML-PROJECT-FILE σε μορφή .zpj"
 
-#: src/zrythm_app.c:1669
+#: src/zrythm_app.c:1678
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Δημιουργία ενός έργου από το SCRIPT-FILE"
 
-#: src/zrythm_app.c:1673
+#: src/zrythm_app.c:1682
 #, fuzzy
 msgid "Print output in user-friendly way"
 msgstr "Προβολή προϊόντος με φιλικό προς τον χρήστη τρόπο"
 
-#: src/zrythm_app.c:1677
+#: src/zrythm_app.c:1686
 msgid "Print current settings"
 msgstr "Προβολή τρεχουσών ρυθμίσεων"
 
-#: src/zrythm_app.c:1681
+#: src/zrythm_app.c:1690
 msgid "Reset to factory settings"
 msgstr "Επαναφορά στις εργαστηριακές ρυθμίσεις"
 
-#: src/zrythm_app.c:1684
+#: src/zrythm_app.c:1693
 msgid "Override the audio backend to use"
 msgstr "Παράκαμψη παρασκηνίου ήχου προς χρήση"
 
-#: src/zrythm_app.c:1688
+#: src/zrythm_app.c:1697
 msgid "Override the MIDI backend to use"
 msgstr "Παράκαμψη παρασκηνίου MIDI προς χρήση"
 
-#: src/zrythm_app.c:1692
+#: src/zrythm_app.c:1701
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Συντομογραφία για --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1718
+#: src/zrythm_app.c:1727
 msgid "[PROJECT-FILE]"
 msgstr "[ΑΡΧΕΙΟ-ΕΡΓΟΥ]"
 
-#: src/zrythm_app.c:1723
+#: src/zrythm_app.c:1732
 #, c-format
 msgid ""
 "Examples:\n"
@@ -598,49 +598,49 @@ msgstr ""
 "\n"
 "Παρακαλούμε αναφέρετε σφάλματα στο %s\n"
 
-#: src/zrythm_app.c:1735
+#: src/zrythm_app.c:1744
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Εκτέλεση %s, προαιρετικά περνώντας ένα αρχείο έργου."
 
-#: src/plugins/carla_native_plugin.c:604 src/plugins/lv2_plugin.c:3494
+#: src/plugins/carla_native_plugin.c:604 src/plugins/lv2_plugin.c:3611
 msgid "Default bank"
 msgstr "Προεπιλεγμένη τράπεζα"
 
-#: src/plugins/carla_native_plugin.c:609 src/plugins/lv2_plugin.c:3499
+#: src/plugins/carla_native_plugin.c:609 src/plugins/lv2_plugin.c:3616
 msgid "Init"
 msgstr "Αρχική κατάσταση"
 
-#: src/plugins/carla_native_plugin.c:1110
+#: src/plugins/carla_native_plugin.c:1112
 msgid "Audio in"
 msgstr "Είσοδος ήχου"
 
-#: src/plugins/carla_native_plugin.c:1120
+#: src/plugins/carla_native_plugin.c:1122
 #, fuzzy
 msgid "Audio out"
 msgstr "Έξοδος ήχου"
 
-#: src/plugins/carla_native_plugin.c:1130
+#: src/plugins/carla_native_plugin.c:1132
 msgid "MIDI in"
 msgstr "Είσοδος MIDI"
 
-#: src/plugins/carla_native_plugin.c:1142
+#: src/plugins/carla_native_plugin.c:1144
 msgid "MIDI out"
 msgstr "Έξοδος MIDI"
 
-#: src/plugins/carla_native_plugin.c:1154
+#: src/plugins/carla_native_plugin.c:1156
 msgid "CV in"
 msgstr "Είσοδος CV"
 
-#: src/plugins/carla_native_plugin.c:1164
+#: src/plugins/carla_native_plugin.c:1166
 msgid "CV out"
 msgstr "Έξοδος CV"
 
-#: src/plugins/plugin_manager.c:383
+#: src/plugins/plugin_manager.c:386
 msgid "Error loading LV2 bundle dir: "
 msgstr "Σφάλμα φόρτωσης καταλόγου πακέτου LV2: "
 
-#: src/plugins/plugin_manager.c:1077
+#: src/plugins/plugin_manager.c:1080
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "Σκαναρίστηκε %s πρόσθετο: %s"
@@ -648,60 +648,60 @@ msgstr "Σκαναρίστηκε %s πρόσθετο: %s"
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
-#: src/plugins/plugin_manager.c:1091
+#: src/plugins/plugin_manager.c:1094
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "Παραλείφθηκε %1$s πρόσθετο στο %2$s"
 
-#: src/plugins/plugin_manager.c:1223
+#: src/plugins/plugin_manager.c:1226
 msgid "Scanned LV2 plugin"
 msgstr "Σκαναρίστηκε πρόσθετο LV2"
 
-#: src/plugins/plugin_manager.c:1234
+#: src/plugins/plugin_manager.c:1237
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "Παραλείφθηκε πρόσθετο LV2 στο %s"
 
-#: src/plugins/plugin_manager.c:1322
+#: src/plugins/plugin_manager.c:1325
 msgid "Scanned AU plugin"
 msgstr "Σκαναρίστηκε πρόσθετο AU"
 
-#: src/plugins/plugin_manager.c:1329
+#: src/plugins/plugin_manager.c:1332
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "Παραλείφθηκε πρόσθετο AU στο %u"
 
-#: src/plugins/plugin.c:213
+#: src/plugins/plugin.c:217
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "Αποτυχία ενσάρκωσης για το πρόσθετο '%s'. Απενεργοποίηση..."
 
-#: src/plugins/plugin.c:261
+#: src/plugins/plugin.c:265
 msgid "[Zrythm] Enabled"
 msgstr "[Zrythm] Ενεργοποιημένο"
 
-#: src/plugins/plugin.c:263
+#: src/plugins/plugin.c:267
 msgid "Enables or disables the plugin"
 msgstr "Ενεργοποιεί ή απενεργοποιεί το πρόσθετο"
 
-#: src/plugins/plugin.c:286
+#: src/plugins/plugin.c:290
 msgid "[Zrythm] Gain"
 msgstr "[Zrythm] Απολαβή"
 
-#: src/plugins/plugin.c:287
+#: src/plugins/plugin.c:291
 msgid "Plugin gain"
 msgstr "Απολαβή προσθέτου"
 
-#: src/plugins/plugin.c:1040
+#: src/plugins/plugin.c:1044
 #, c-format
 msgid " - bridge: %s"
 msgstr " - γέφυρα: %s"
 
-#: src/plugins/plugin.c:1051
+#: src/plugins/plugin.c:1055
 msgid "instrument"
 msgstr "όργανο"
 
-#: src/plugins/plugin.c:1843
+#: src/plugins/plugin.c:1847
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -751,12 +751,12 @@ msgstr "Άγνωστος τύπος widget για την τιμή"
 msgid "Unknown widget type for value\n"
 msgstr "Άγνωστος τύπος widget για την τιμή\n"
 
-#: src/plugins/lv2_plugin.c:2643
+#: src/plugins/lv2_plugin.c:2680
 #, c-format
 msgid "Failed to find plugin with URI: %s"
 msgstr "Αποτυχία εύρεσης προσθέτου με URI: %s"
 
-#: src/plugins/lv2_plugin.c:2692
+#: src/plugins/lv2_plugin.c:2729
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -771,7 +771,7 @@ msgstr ""
 "δημιουργό του προσθέτου:\n"
 "%s <%s>"
 
-#: src/plugins/lv2_plugin.c:3537
+#: src/plugins/lv2_plugin.c:3654
 msgid "Unnamed bank"
 msgstr "Τράπεζα χωρίς όνομα"
 
@@ -1100,15 +1100,15 @@ msgstr "Θέση #%d"
 msgid "Plugin %s cannot be added to this slot"
 msgstr "Το πρόσθετο %s δεν μπορεί να προστεθεί σε αυτή τη θέση"
 
-#: src/gui/widgets/channel_slot.c:709
+#: src/gui/widgets/channel_slot.c:706
 msgid "Bypass"
 msgstr "Παράβλεψη"
 
-#: src/gui/widgets/channel_slot.c:722
+#: src/gui/widgets/channel_slot.c:719
 msgid "Inspect"
 msgstr "Επιθεώρηση"
 
-#: src/gui/widgets/channel_slot.c:1056
+#: src/gui/widgets/channel_slot.c:1053
 msgid "empty slot"
 msgstr "άδεια θέση"
 
@@ -1401,11 +1401,11 @@ msgstr "Μουσική λειτουργία"
 msgid "Export as MIDI file"
 msgstr "Εξαγωγή ως αρχείου MIDI"
 
-#: src/gui/widgets/timeline_arranger.c:1327 src/gui/widgets/track.c:1782
+#: src/gui/widgets/timeline_arranger.c:1327 src/gui/widgets/track.c:1786
 msgid "Quick bounce"
 msgstr "Γρήγορη μετατροπή σε ήχο"
 
-#: src/gui/widgets/timeline_arranger.c:1338 src/gui/widgets/track.c:1792
+#: src/gui/widgets/timeline_arranger.c:1338 src/gui/widgets/track.c:1796
 msgid "Bounce..."
 msgstr "Μετατροπή σε ήχο..."
 
@@ -1637,7 +1637,7 @@ msgid "Monitor"
 msgstr "Μόνιτορ έξω"
 
 #: src/gui/widgets/monitor_section.c:62 src/gui/widgets/track.c:1219
-#: src/gui/widgets/track.c:1849 resources/ui/fader_buttons.ui:120
+#: src/gui/widgets/track.c:1853 resources/ui/fader_buttons.ui:120
 msgid "Listen"
 msgstr "Ακρόαση"
 
@@ -1705,7 +1705,7 @@ msgstr "Επεξεργασία"
 msgid "Listening"
 msgstr "Ακρόαση"
 
-#: src/gui/widgets/scripting_window.c:74
+#: src/gui/widgets/scripting_window.c:75
 msgid "Scripting Interface"
 msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
@@ -1972,7 +1972,7 @@ msgstr "Ορατό"
 msgid "Lane %d"
 msgstr "Λωρίδα %d"
 
-#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1811
+#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1815
 #: resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr "Σόλο"
@@ -1985,7 +1985,7 @@ msgstr "Απόκρυψη διεπαφής χρήστη του οργάνου"
 msgid "Show instrument UI"
 msgstr "Προβολή διεπαφής χρήστη του οργάνου"
 
-#: src/gui/widgets/track.c:1215 src/gui/widgets/track.c:1859
+#: src/gui/widgets/track.c:1215 src/gui/widgets/track.c:1863
 #, fuzzy
 msgid "Unlisten"
 msgstr "Ακρόαση"
@@ -2030,66 +2030,66 @@ msgstr "Πάγωμα/ξεπάγωμα"
 msgid "Lock/unlock"
 msgstr "Κλείδωμα/ξεκλείδωμα"
 
-#: src/gui/widgets/track.c:1722
+#: src/gui/widgets/track.c:1726
 msgid "_Delete Track"
 msgstr "_Διαγραφή κομματιού"
 
-#: src/gui/widgets/track.c:1725
+#: src/gui/widgets/track.c:1729
 msgid "_Delete Tracks"
 msgstr "_Διαγραφή κομματιών"
 
-#: src/gui/widgets/track.c:1736
+#: src/gui/widgets/track.c:1740
 msgid "_Duplicate Track"
 msgstr "_Δημιουργία διπλοτύπου του κομματιού"
 
-#: src/gui/widgets/track.c:1739
+#: src/gui/widgets/track.c:1743
 msgid "_Duplicate Tracks"
 msgstr "_Δημιουργία διπλοτύπου των κομματιών"
 
-#: src/gui/widgets/track.c:1753
+#: src/gui/widgets/track.c:1757
 msgid "Add Region"
 msgstr "Προσθήκη περιοχής"
 
-#: src/gui/widgets/track.c:1761
+#: src/gui/widgets/track.c:1765
 msgid "Hide Track"
 msgstr "Απόκρυψη κομματιού"
 
-#: src/gui/widgets/track.c:1762
+#: src/gui/widgets/track.c:1766
 msgid "Hide Tracks"
 msgstr "Απόκρυψη κομματιών"
 
-#: src/gui/widgets/track.c:1770
+#: src/gui/widgets/track.c:1774
 msgid "Pin/Unpin Track"
 msgstr "Καρφίτσωμα/Ξεκαρφίτσωμα κομματιού"
 
-#: src/gui/widgets/track.c:1771
+#: src/gui/widgets/track.c:1775
 msgid "Pin/Unpin Tracks"
 msgstr "Καρφίτσωμα/ξεκαρφίτσωμα κομματιών"
 
-#: src/gui/widgets/track.c:1820
+#: src/gui/widgets/track.c:1824
 #, fuzzy
 msgid "Unsolo"
 msgstr "Άρση σόλο κομματιού"
 
-#: src/gui/widgets/track.c:1869
+#: src/gui/widgets/track.c:1873
 #, fuzzy
 msgid "Change color..."
 msgstr "Αλλαγή χρώματος"
 
-#: src/gui/widgets/track.c:1879
+#: src/gui/widgets/track.c:1883
 msgid "Track MIDI Ch"
 msgstr "Κομμάτι MIDI Κα"
 
-#: src/gui/widgets/track.c:1892
+#: src/gui/widgets/track.c:1896
 msgid "Passthrough input"
 msgstr "Είσοδος διέλευσης"
 
-#: src/gui/widgets/track.c:1921 src/gui/widgets/track.c:1981
+#: src/gui/widgets/track.c:1925 src/gui/widgets/track.c:1985
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "Κανάλι MIDI %d"
 
-#: src/gui/widgets/track.c:1961
+#: src/gui/widgets/track.c:1965
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "Λωρίδα %d MIDI Κα"
@@ -2264,20 +2264,6 @@ msgstr "Η δοκιμαστική περίοδος έληξε. Το %s θα γί
 msgid "Failed to write file: %s"
 msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
-#: src/utils/err_codes.c:32
-msgid "Plugin instantiation failed. See the logs for details"
-msgstr ""
-"Αποτυχία ενσάρκωσης προσθέτου. Βλέπε τα αρχεία καταγραφής σφαλμάτων για "
-"λεπτομέρειες"
-
-#: src/utils/err_codes.c:36
-msgid "Object is null. See the logs for details"
-msgstr "Μηδαμινό αντικείμενο. Βλέπε τα αρχεία καταγραφής για λεπτομέρειες"
-
-#: src/utils/err_codes.c:42
-msgid "Unknown error"
-msgstr "Άγνωστο σφάλμα"
-
 #: src/utils/log.c:716
 #, c-format
 msgid ""
@@ -2334,6 +2320,20 @@ msgstr ""
 "στο <b>/etc/locale.gen</b> (απαιτούνται προνόμια root)\n"
 "2. Εκτελέστε το <b>locale-gen</b> ως root\n"
 "3. Επανεκκινήστε %s"
+
+#: src/utils/error.c:32
+msgid "Plugin instantiation failed. See the logs for details"
+msgstr ""
+"Αποτυχία ενσάρκωσης προσθέτου. Βλέπε τα αρχεία καταγραφής σφαλμάτων για "
+"λεπτομέρειες"
+
+#: src/utils/error.c:36
+msgid "Object is null. See the logs for details"
+msgstr "Μηδαμινό αντικείμενο. Βλέπε τα αρχεία καταγραφής για λεπτομέρειες"
+
+#: src/utils/error.c:42
+msgid "Unknown error"
+msgstr "Άγνωστο σφάλμα"
 
 #: src/settings/settings.c:142
 #, c-format
@@ -2596,67 +2596,67 @@ msgstr "Επεξεργαστής δείγματος"
 msgid "Unimplemented"
 msgstr "Μη ενσωματωμένο"
 
-#: src/audio/fader.c:128
+#: src/audio/fader.c:126
 msgid "Prefader Volume"
 msgstr "Ένταση pre-fader"
 
-#: src/audio/fader.c:128
+#: src/audio/fader.c:126
 msgid "Fader Volume"
 msgstr "Ένταση fader"
 
-#: src/audio/fader.c:159
+#: src/audio/fader.c:157
 msgid "Prefader Balance"
 msgstr "Ισορροπία pre-fader"
 
-#: src/audio/fader.c:159
+#: src/audio/fader.c:157
 msgid "Fader Balance"
 msgstr "Ισορροπία fader"
 
-#: src/audio/fader.c:178
+#: src/audio/fader.c:176
 msgid "Prefader Mute"
 msgstr "Σίγαση pre-fader"
 
-#: src/audio/fader.c:178
+#: src/audio/fader.c:176
 msgid "Fader Mute"
 msgstr "Σίγαση fader"
 
-#: src/audio/fader.c:202
+#: src/audio/fader.c:200
 msgid "Ch Pre-Fader in"
 msgstr "Είσοδος pre-fader"
 
-#: src/audio/fader.c:206
+#: src/audio/fader.c:204
 msgid "Ch Fader in"
 msgstr "Είσοδος fader"
 
-#: src/audio/fader.c:211
+#: src/audio/fader.c:209
 msgid "Monitor Fader in"
 msgstr "Είσοδος μόνιτορ fader"
 
-#: src/audio/fader.c:229
+#: src/audio/fader.c:227
 msgid "Ch Pre-Fader out"
 msgstr "Έξοδος pre-fader"
 
-#: src/audio/fader.c:233
+#: src/audio/fader.c:231
 msgid "Ch Fader out"
 msgstr "Έξοδος fader"
 
-#: src/audio/fader.c:238
+#: src/audio/fader.c:236
 msgid "Monitor Fader out"
 msgstr "Έξοδος μόνιτορ fader"
 
-#: src/audio/fader.c:259
+#: src/audio/fader.c:257
 msgid "Ch MIDI Pre-Fader in"
 msgstr "Είσοδος MIDI pre-fader"
 
-#: src/audio/fader.c:263
+#: src/audio/fader.c:261
 msgid "Ch MIDI Fader in"
 msgstr "Είσοδος MIDI fader"
 
-#: src/audio/fader.c:274
+#: src/audio/fader.c:272
 msgid "Ch MIDI Pre-Fader out"
 msgstr "Έξοδος MIDI pre-fader"
 
-#: src/audio/fader.c:278
+#: src/audio/fader.c:276
 msgid "Ch MIDI Fader out"
 msgstr "Έξοδος MIDI fader"
 

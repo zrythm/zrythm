@@ -48,8 +48,16 @@ data is not locked into memory, it can be swapped
 by the kernel, causing xruns when attempting to
 access the data.
 
+GNU/Linux
++++++++++
 To set up these privileges for your user, see
 `How do I configure my linux system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_.
+
+FreeBSD
++++++++
+To set up these privileges for your user, change
+the user class' ``memorylocked`` value in
+:file:`/etc/login.conf`.
 
 Open File Limit
 ---------------

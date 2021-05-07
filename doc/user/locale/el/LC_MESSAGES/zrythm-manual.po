@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-04-25 05:03+0100\n"
+"POT-Creation-Date: 2021-05-07 04:15+0100\n"
 "PO-Revision-Date: 2021-04-13 00:27+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language: el\n"
@@ -3462,6 +3462,7 @@ msgstr ""
 "για οδηγίες εγκατάστασης."
 
 #: ../../getting-started/installation.rst:36
+#: ../../getting-started/system-requirements.rst:52
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -3512,6 +3513,7 @@ msgstr ""
 "MacOS."
 
 #: ../../getting-started/installation.rst:58
+#: ../../getting-started/system-requirements.rst:57
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
@@ -3753,18 +3755,24 @@ msgid ""
 " by the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:51
+#: ../../getting-started/system-requirements.rst:53
 msgid ""
 "To set up these privileges for your user, see `How do I configure my "
 "linux system to allow JACK to use realtime scheduling? "
 "<https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:55
+#: ../../getting-started/system-requirements.rst:58
+msgid ""
+"To set up these privileges for your user, change the user class' "
+"``memorylocked`` value in :file:`/etc/login.conf`."
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:63
 msgid "Open File Limit"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:56
+#: ../../getting-started/system-requirements.rst:64
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it"
 " can open. You should give your user enough permissions to allow this."
