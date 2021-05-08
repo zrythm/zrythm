@@ -698,6 +698,7 @@ print_gdk_pixbuf_format_info (
 
 static void
 load_icon (
+  GtkSettings *  default_settings,
   GtkIconTheme * icon_theme,
   const char *   icon_name)
 {
@@ -709,6 +710,22 @@ load_icon (
     gtk_icon_theme_load_icon (
       icon_theme, icon_name, 48, 0, &err);
   g_message ("icon: %p", icon);
+  if (err)
+    {
+      /* fallback to zrythm-dark and try again */
+      g_warning (
+        "icon '%s' not found, falling back to "
+        "zrythm-dark", icon_name);
+      g_object_set (
+        default_settings,
+        "gtk-icon-theme-name", "zrythm-dark", NULL);
+      err = NULL;
+      icon =
+        gtk_icon_theme_load_icon (
+          icon_theme, icon_name, 48, 0, &err);
+      g_message ("icon: %p", icon);
+    }
+
   if (err)
     {
       char err_msg[600];
@@ -1072,9 +1089,6 @@ zrythm_app_startup (
   g_object_set (
     self->default_settings,
     "gtk-cursor-theme-name", "Adwaita", NULL);
-  /*g_object_set (*/
-    /*self->default_settings,*/
-    /*"gtk-icon-theme-name", "breeze-dark", NULL);*/
 #elif defined(__APPLE__)
   g_object_set (
     self->default_settings,
@@ -1095,9 +1109,13 @@ zrythm_app_startup (
 
   GtkIconTheme * icon_theme =
     gtk_icon_theme_get_default ();
+  char * icon_theme_name =
+    g_settings_get_string (
+      S_P_UI_GENERAL, "icon-theme");
   g_object_set (
     self->default_settings, "gtk-icon-theme-name",
-    "zrythm-dark", NULL);
+    icon_theme_name, NULL);
+  g_free_and_null (icon_theme_name);
 
   /* prepend freedesktop system icons to search
    * path, just in case */
@@ -1168,9 +1186,12 @@ zrythm_app_startup (
 
   /* try to load some icons */
   /* zrythm */
-  load_icon (icon_theme, "solo");
+  load_icon (
+    self->default_settings, icon_theme, "solo");
   /* breeze dark */
-  load_icon (icon_theme, "node-type-cusp");
+  load_icon (
+    self->default_settings, icon_theme,
+    "node-type-cusp");
 
   g_message ("Setting gtk icon theme resource paths...");
   gtk_icon_theme_add_resource_path (

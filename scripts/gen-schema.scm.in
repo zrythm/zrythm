@@ -946,6 +946,11 @@ Args:
                      "zrythm-theme.css"
                      "CSS theme"
                      "The CSS theme to use.")
+                   (make-schema-key
+                     "icon-theme" "s"
+                     "zrythm-dark"
+                     "Icon theme"
+                     "The icon theme to use. This is the directory name.")
                  )) ;; ui/general
              ))) ;; ui
 
