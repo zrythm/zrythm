@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -126,11 +126,8 @@ install_data (
   install_dir: sourceviewstylesdir,
   rename: 'monokai-extended-zrythm.xml')
 
-# theme
-install_data (
-  'theme.css',
-  install_dir: themesdir,
-  rename: prog_name_lowercase + '-theme.css')
+# css themes
+subdir ('css-themes')
 
 subdir ('scripts')
 subdir ('windows')

@@ -941,6 +941,11 @@ Args:
                      "en"
                      "User interface language"
                      "The language to use for the user interface.")
+                   (make-schema-key
+                     "css-theme" "s"
+                     "zrythm-theme.css"
+                     "CSS theme"
+                     "The CSS theme to use.")
                  )) ;; ui/general
              ))) ;; ui
 

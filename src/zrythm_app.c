@@ -1198,28 +1198,50 @@ zrythm_app_startup (
     /*1);*/
   g_message ("Resource paths set");
 
-  /* set default css provider */
+  /* get css theme file path */
   GtkCssProvider * css_provider =
     gtk_css_provider_new();
   user_themes_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_THEMES);
+    zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_CSS);
+  char * css_theme_file =
+    g_settings_get_string (
+      S_P_UI_GENERAL, "css-theme");
   char * css_theme_path =
     g_build_filename (
-      user_themes_dir, "theme.css", NULL);
+      user_themes_dir, css_theme_file, NULL);
   g_free (user_themes_dir);
   if (!g_file_test (
          css_theme_path, G_FILE_TEST_EXISTS))
     {
+      /* fallback to theme in system path */
       g_free (css_theme_path);
       system_themes_dir =
         zrythm_get_dir (
-          ZRYTHM_DIR_SYSTEM_THEMESDIR);
+          ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
+      css_theme_path =
+        g_build_filename (
+          system_themes_dir,
+          css_theme_file, NULL);
+      g_free (system_themes_dir);
+    }
+  if (!g_file_test (
+         css_theme_path, G_FILE_TEST_EXISTS))
+    {
+      /* fallback to zrythm-theme.css */
+      g_free (css_theme_path);
+      system_themes_dir =
+        zrythm_get_dir (
+          ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
       css_theme_path =
         g_build_filename (
           system_themes_dir,
           "zrythm-theme.css", NULL);
       g_free (system_themes_dir);
     }
+  g_free (css_theme_file);
+  g_message ("CSS theme path: %s", css_theme_path);
+
+  /* set default css provider */
   GError * err = NULL;
   gtk_css_provider_load_from_path (
     css_provider, css_theme_path, &err);

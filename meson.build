@@ -112,6 +112,7 @@ fontsdir = datadir / 'fonts' / prog_name_lowercase
 zrythm_libdir = prefix / 'lib/zrythm'
 zrythmdatadir = datadir / prog_name_lowercase
 themesdir = zrythmdatadir / 'themes'
+themes_css_dir = themesdir / 'css'
 samplesdir = zrythmdatadir / 'samples'
 scriptsdir = zrythmdatadir / 'scripts'
 docdir = datadir / 'doc' / prog_name_lowercase
@@ -383,6 +384,8 @@ cdata.set_quoted (
   sourceviewstylesdir)
 cdata.set_quoted (
   'CONFIGURE_THEMES_DIR', themesdir)
+cdata.set_quoted (
+  'CONFIGURE_THEMES_CSS_DIR', themes_css_dir)
 cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
 cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)

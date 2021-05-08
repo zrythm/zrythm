@@ -122,6 +122,9 @@ typedef enum ZrythmDirType
   /** Themes. */
   ZRYTHM_DIR_SYSTEM_THEMESDIR,
 
+  /** CSS themes. */
+  ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR,
+
   /* ************************************ */
 
   /*
@@ -138,6 +141,9 @@ typedef enum ZrythmDirType
   ZRYTHM_DIR_USER_PROJECTS,
   ZRYTHM_DIR_USER_TEMPLATES,
   ZRYTHM_DIR_USER_THEMES,
+
+  /** User CSS themes. */
+  ZRYTHM_DIR_USER_THEMES_CSS,
 
   /** User scripts. */
   ZRYTHM_DIR_USER_SCRIPTS,

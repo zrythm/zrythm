@@ -480,6 +480,12 @@ zrythm_get_dir (
               prefix, "share", "zrythm",
               "themes", NULL);
           break;
+        case ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR:
+          res =
+            g_build_filename (
+              prefix, "share", "zrythm",
+              "themes", "css", NULL);
+          break;
         default:
           break;
         }
@@ -520,6 +526,11 @@ zrythm_get_dir (
           res =
             g_build_filename (
               user_dir, "themes", NULL);
+          break;
+        case ZRYTHM_DIR_USER_THEMES_CSS:
+          res =
+            g_build_filename (
+              user_dir, "themes", "css", NULL);
           break;
         case ZRYTHM_DIR_USER_PROFILING:
           res =
@@ -568,6 +579,7 @@ zrythm_init_user_dirs_and_files (
   MK_USER_DIR (TEMPLATES);
   MK_USER_DIR (LOG);
   MK_USER_DIR (THEMES);
+  MK_USER_DIR (THEMES_CSS);
   MK_USER_DIR (PROFILING);
   MK_USER_DIR (GDB);
 
