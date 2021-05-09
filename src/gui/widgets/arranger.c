@@ -1500,6 +1500,8 @@ arranger_widget_on_key_action (
 {
   const guint keyval = event->keyval;
 
+  g_debug ("arranger widget key action");
+
   if (z_gtk_keyval_is_ctrl (keyval))
     {
       self->ctrl_held = 1;
@@ -1737,7 +1739,7 @@ arranger_widget_on_key_action (
                     /*UNDO_MANAGER, action);*/
                 }
             }
-        }
+        } /* arranger selections has any */
     }
 
   if (self->type == TYPE (TIMELINE))
@@ -1748,13 +1750,12 @@ arranger_widget_on_key_action (
 
   /*arranger_widget_update_visibility (self);*/
 
-  arranger_widget_refresh_cursor (
-    self);
+  arranger_widget_refresh_cursor (self);
 
   /*if (num > 0)*/
     /*auto_scroll (self);*/
 
-  return FALSE;
+  return true;
 }
 
 /**
