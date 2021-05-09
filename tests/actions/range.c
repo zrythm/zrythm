@@ -219,6 +219,32 @@ test_prepare_common (void)
 }
 
 static void
+check_start_end_markers ()
+{
+  /* check that start/end markers exist */
+  Marker * start_m =
+    marker_track_get_start_marker (P_MARKER_TRACK);
+  ArrangerObject * start_obj =
+    (ArrangerObject *) start_m;
+  Marker * end_m =
+    marker_track_get_end_marker (P_MARKER_TRACK);
+  ArrangerObject * end_obj =
+    (ArrangerObject *) end_m;
+  g_assert_nonnull (start_m);
+  g_assert_nonnull (end_m);
+
+  /* check positions are valid */
+  Position init_pos;
+  position_init (&init_pos);
+  g_assert_true (
+    position_is_after_or_equal (
+      &start_obj->pos, &init_pos));
+  g_assert_true (
+    position_is_after_or_equal (
+      &end_obj->pos, &init_pos));
+}
+
+static void
 check_before_insert ()
 {
   Track * midi_track =
@@ -284,6 +310,8 @@ check_before_insert ()
     AUDIO_REGION_START_BAR, AUDIO_REGION_END_BAR);
 
 #undef CHECK_POS
+
+  check_start_end_markers ();
 }
 
 static void
@@ -422,6 +450,8 @@ check_after_insert (void)
     cue_pos, CUE_BEFORE);
 
 #undef CHECK_TPOS
+
+  check_start_end_markers ();
 }
 
 static void
@@ -582,6 +612,8 @@ check_after_remove (void)
     cue_pos, CUE_BEFORE);
 
 #undef CHECK_TPOS
+
+  check_start_end_markers ();
 }
 
 static void
@@ -618,6 +650,101 @@ test_remove_range (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_remove_range_w_start_marker (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create audio track */
+  audio_track_pos = TRACKLIST->num_tracks;
+  SupportedFile * file =
+    supported_file_new_from_path (TEST_WAV2);
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO, NULL, file,
+      audio_track_pos, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* remove range */
+  Position start, end;
+  position_set_to_bar (&start, 1);
+  position_set_to_bar (&end, 3);
+  ua =
+    range_action_new_remove (&start, &end);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  check_start_end_markers ();
+
+  /* undo */
+  undo_manager_undo (UNDO_MANAGER);
+
+  check_start_end_markers ();
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_remove_range_w_objects_inside (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create midi track with region */
+  midi_track_pos = TRACKLIST->num_tracks;
+  char * filepath =
+    g_build_filename (
+      TESTS_SRCDIR, "1_track_with_data.mid", NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (filepath);
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_MIDI, NULL, file,
+      midi_track_pos, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * midi_track =
+    TRACKLIST->tracks[midi_track_pos];
+
+  /* create scale object */
+  MusicalScale * ms = musical_scale_new (0, 0);
+  ScaleObject * so = scale_object_new (ms);
+  chord_track_add_scale (P_CHORD_TRACK, so);
+  arranger_object_select (
+    (ArrangerObject *) so, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* remove range */
+  Position start, end;
+  position_set_to_bar (&start, 1);
+  position_set_to_bar (&end, 14);
+  ua =
+    range_action_new_remove (&start, &end);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  check_start_end_markers ();
+
+  /* check scale and midi region removed */
+  g_assert_cmpint (
+    midi_track->lanes[0]->num_regions, ==, 0);
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 0);
+
+  /* undo */
+  undo_manager_undo (UNDO_MANAGER);
+
+  check_start_end_markers ();
+
+  /* check scale and midi region added */
+  g_assert_cmpint (
+    midi_track->lanes[0]->num_regions, ==, 1);
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 1);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -625,6 +752,12 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/range/"
 
+  g_test_add_func (
+    TEST_PREFIX "test remove range w objects inside",
+    (GTestFunc) test_remove_range_w_objects_inside);
+  g_test_add_func (
+    TEST_PREFIX "test remove range w start marker",
+    (GTestFunc) test_remove_range_w_start_marker);
   g_test_add_func (
     TEST_PREFIX "test insert silence",
     (GTestFunc) test_insert_silence);

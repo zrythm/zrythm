@@ -129,6 +129,27 @@ range_action_new (
   UNMOVE_TRANSPORT_MARKER (loop_start_pos, _do); \
   UNMOVE_TRANSPORT_MARKER (loop_end_pos, _do)
 
+static void
+add_to_sel_after (
+  RangeAction *     self,
+  ArrangerObject ** prj_objs,
+  ArrangerObject ** after_objs_for_prj,
+  int *             num_prj_objs,
+  ArrangerObject *  prj_obj,
+  ArrangerObject *  after_obj)
+{
+  prj_objs[*num_prj_objs] = prj_obj;
+  g_debug (
+    "adding to sel after (num prj objs %d)",
+    *num_prj_objs);
+  arranger_object_print (prj_obj);
+  after_objs_for_prj[(*num_prj_objs)++] =
+    after_obj;
+  arranger_selections_add_object (
+    (ArrangerSelections *)
+    self->sel_after, after_obj);
+}
+
 int
 range_action_do (
   RangeAction * self)
@@ -162,14 +183,9 @@ range_action_do (
   ArrangerObject * after_objs_for_prj[num_before_objs * 2];
 
 #define ADD_AFTER(_prj_obj,_after_obj) \
-  prj_objs[num_prj_objs] = _prj_obj; \
-  g_message ("adding %d", num_prj_objs); \
-  arranger_object_print (_prj_obj); \
-  after_objs_for_prj[ \
-    num_prj_objs++] = _after_obj; \
-  arranger_selections_add_object ( \
-    (ArrangerSelections *) \
-    self->sel_after, _after_obj);
+  add_to_sel_after ( \
+    self, prj_objs, after_objs_for_prj, \
+    &num_prj_objs, _prj_obj, _after_obj)
 
   switch (self->type)
     {
@@ -311,6 +327,28 @@ range_action_do (
               ArrangerObject * prj_obj =
                 arranger_object_find (obj);
 
+              bool ends_inside_range = false;
+              if (arranger_object_type_has_length (
+                    prj_obj->type))
+                {
+                  ends_inside_range =
+                    position_is_after_or_equal (
+                      &prj_obj->pos,
+                      &self->start_pos) &&
+                    position_is_before (
+                      &prj_obj->end_pos,
+                      &self->end_pos);
+                }
+              else
+                {
+                  ends_inside_range =
+                    position_is_after_or_equal (
+                      &prj_obj->pos,
+                      &self->start_pos) &&
+                    position_is_before (
+                      &prj_obj->pos, &self->end_pos);
+                }
+
               /* object starts before the range and
                * ends after the range start -
                * split at range start */
@@ -441,6 +479,21 @@ range_action_do (
                     "object split to just:");
                   arranger_object_print (prj_part2);
                 }
+              /* object starts and ends inside range
+               * and not marker start/end - delete */
+              else if (ends_inside_range &&
+                       !(prj_obj->type ==
+                           ARRANGER_OBJECT_TYPE_MARKER &&
+                         (((Marker *) prj_obj)->type ==
+                            MARKER_TYPE_START ||
+                         (((Marker *) prj_obj)->type ==
+                            MARKER_TYPE_END))))
+                {
+                  g_debug ("removing object:");
+                  arranger_object_print (prj_obj);
+                  arranger_object_remove_from_project (
+                    prj_obj);
+                }
               /* object starts at or after range
                * start - only needs a move */
               else
@@ -448,12 +501,25 @@ range_action_do (
                   arranger_object_move (
                     prj_obj, - range_size_ticks);
 
+                  /* move objects to bar 1 if
+                   * negative pos */
+                  Position init_pos;
+                  position_init (&init_pos);
+                  if (position_is_before (
+                        &prj_obj->pos, &init_pos))
+                    {
+                      g_debug (
+                        "moving object back");
+                      arranger_object_move (
+                        prj_obj,
+                        - prj_obj->pos.ticks);
+                    }
+
                   /* clone and add to sel_after */
                   ArrangerObject * obj_clone =
                     arranger_object_clone (
                       prj_obj);
-                  g_message (
-                    "object moved to:");
+                  g_debug ("object moved to:");
                   arranger_object_print (prj_obj);
 
                   ADD_AFTER (prj_obj, obj_clone);
@@ -498,6 +564,8 @@ range_action_do (
     }
   free (before_objs);
   free (after_objs);
+
+#undef ADD_AFTER
 
   for (int i = 0; i < num_prj_objs; i++)
     {

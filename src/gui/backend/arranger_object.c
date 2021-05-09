@@ -2372,6 +2372,7 @@ clone_marker (
 {
   Marker * marker = marker_new (src->name);
   marker->index = src->index;
+  marker->type = src->type;
   marker->track_pos = src->track_pos;
 
   return (ArrangerObject *) marker;

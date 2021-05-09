@@ -55,8 +55,7 @@ test_num_tracks_with_file (
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, file,
       num_tracks_before, PLAYHEAD, 1);
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  undo_manager_perform (UNDO_MANAGER, ua);
 
   Track * first_track =
     TRACKLIST->tracks[num_tracks_before];

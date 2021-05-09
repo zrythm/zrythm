@@ -1449,7 +1449,8 @@ ruler_widget_is_range_hit (
   double               x,
   double               y)
 {
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == TYPE (TIMELINE) &&
+      TRANSPORT->has_range)
     {
       GdkRectangle rect;
       memset (&rect, 0, sizeof (GdkRectangle));
