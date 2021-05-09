@@ -25,4 +25,3 @@ foreach css_theme : css_themes
       install_dir: themes_css_dir)
   endif
 endforeach
-

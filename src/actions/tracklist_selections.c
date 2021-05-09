@@ -1081,6 +1081,9 @@ do_or_undo_move_or_copy (
                             }
                         }
 
+                      track_send->enabled->control =
+                          own_send->enabled->
+                            control;
                       channel_send_update_connections (
                         track_send);
                       channel_send_free (own_send);
