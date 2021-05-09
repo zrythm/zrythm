@@ -369,6 +369,16 @@ typedef struct _ArrangerWidget
    */
   PangoLayout *  ap_layout;
 
+  /**
+   * Cached playhead x to draw.
+   *
+   * This is used to avoid queuing drawing at x and
+   * then drawing after it (if playhead moved). The
+   * playhead will be drawn at the location it
+   * was when the draw was queued.
+   */
+  //int            queued_playhead_px;
+
 } ArrangerWidget;
 
 /**
@@ -633,6 +643,10 @@ arranger_widget_set_highlight_rect (
  */
 EditorSettings *
 arranger_widget_get_editor_settings (
+  ArrangerWidget * self);
+
+bool
+arranger_widget_is_playhead_visible (
   ArrangerWidget * self);
 
 /**

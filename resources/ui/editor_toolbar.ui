@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -93,6 +93,22 @@
         <child>
           <object class="ButtonWithMenuWidget"
             id="functions_btn">
+            <property name="visible">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolItem">
+        <property name="visible">True</property>
+        <child>
+          <object class="PlayheadScrollButtonsWidget"
+            id="playhead_scroll">
             <property name="visible">True</property>
           </object>
         </child>

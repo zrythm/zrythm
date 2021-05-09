@@ -496,6 +496,11 @@ DECLARE_SIMPLE (
 DECLARE_SIMPLE (activate_insert_silence);
 DECLARE_SIMPLE (activate_remove_range);
 
+DECLARE_SIMPLE (change_state_timeline_playhead_scroll_edges);
+DECLARE_SIMPLE (change_state_timeline_playhead_follow);
+DECLARE_SIMPLE (change_state_editor_playhead_scroll_edges);
+DECLARE_SIMPLE (change_state_editor_playhead_follow);
+
 /* Editor functions. */
 DECLARE_SIMPLE (activate_editor_function);
 

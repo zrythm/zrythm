@@ -205,6 +205,11 @@ typedef enum EventType
   /** Log has new unseen warnings or warnings have
    * been seen. */
   ET_LOG_WARNING_STATE_CHANGED,
+
+  /**
+   * Follow playhead/scroll edges state changed.
+   */
+  ET_PLAYHEAD_SCROLL_MODE_CHANGED,
 } EventType;
 
 /**

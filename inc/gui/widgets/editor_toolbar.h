@@ -43,6 +43,8 @@ typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapBoxWidget SnapBoxWidget;
 typedef struct _ButtonWithMenuWidget
   ButtonWithMenuWidget;
+typedef struct _PlayheadScrollButtonsWidget
+  PlayheadScrollButtonsWidget;
 
 /**
  * The PianoRoll toolbar in the top.
@@ -59,6 +61,8 @@ typedef struct _EditorToolbarWidget
 
   GtkSeparator *      sep_after_chord_highlight;
   GtkToolItem *       chord_highlight_tool_item;
+
+  PlayheadScrollButtonsWidget * playhead_scroll;
 
   GMenuModel *        midi_functions_menu;
   GMenuModel *        automation_functions_menu;

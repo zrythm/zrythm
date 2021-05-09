@@ -2111,6 +2111,58 @@ DEFINE_SIMPLE (activate_remove_range)
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 
+DEFINE_SIMPLE (change_state_timeline_playhead_scroll_edges)
+{
+  int enabled = g_variant_get_boolean (variant);
+
+  g_simple_action_set_state (action, variant);
+
+  g_settings_set_boolean (
+    S_UI, "timeline-playhead-scroll-edges", enabled);
+
+  EVENTS_PUSH (
+    ET_PLAYHEAD_SCROLL_MODE_CHANGED, NULL);
+}
+
+DEFINE_SIMPLE (change_state_timeline_playhead_follow)
+{
+  int enabled = g_variant_get_boolean (variant);
+
+  g_simple_action_set_state (action, variant);
+
+  g_settings_set_boolean (
+    S_UI, "timeline-playhead-follow", enabled);
+
+  EVENTS_PUSH (
+    ET_PLAYHEAD_SCROLL_MODE_CHANGED, NULL);
+}
+
+DEFINE_SIMPLE (change_state_editor_playhead_scroll_edges)
+{
+  int enabled = g_variant_get_boolean (variant);
+
+  g_simple_action_set_state (action, variant);
+
+  g_settings_set_boolean (
+    S_UI, "editor-playhead-scroll-edges", enabled);
+
+  EVENTS_PUSH (
+    ET_PLAYHEAD_SCROLL_MODE_CHANGED, NULL);
+}
+
+DEFINE_SIMPLE (change_state_editor_playhead_follow)
+{
+  int enabled = g_variant_get_boolean (variant);
+
+  g_simple_action_set_state (action, variant);
+
+  g_settings_set_boolean (
+    S_UI, "editor-playhead-follow", enabled);
+
+  EVENTS_PUSH (
+    ET_PLAYHEAD_SCROLL_MODE_CHANGED, NULL);
+}
+
 /**
  * Common routine for applying undoable MIDI
  * functions.

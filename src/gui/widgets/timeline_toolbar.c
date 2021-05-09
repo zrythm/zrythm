@@ -23,6 +23,7 @@
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/quantize_box.h"
+#include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/range_action_buttons.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
@@ -71,6 +72,8 @@ timeline_toolbar_widget_init (
   g_type_ensure (QUANTIZE_BOX_WIDGET_TYPE);
   g_type_ensure (RANGE_ACTION_BUTTONS_WIDGET_TYPE);
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
+  g_type_ensure (
+    PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }

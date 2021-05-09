@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-  Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -21,24 +21,24 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="RangeActionButtonsWidget" parent="GtkButtonBox">
+  <template class="PlayheadScrollButtonsWidget" parent="GtkButtonBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="spacing">1</property>
     <property name="layout_style">expand</property>
     <child>
-      <object class="GtkButton" id="insert_silence">
+      <object class="GtkToggleButton" id="scroll_edges">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.insert-silence</property>
+        <property name="action_name">win.timeline-playhead-scroll-edges</property>
         <property name="tooltip-text"
-          translatable="yes">Insert silence</property>
+          translatable="yes">Scroll when playhead reaches the edge</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">timeline-insert</property>
+            <property name="icon-name">measure</property>
           </object>
         </child>
       </object>
@@ -49,18 +49,18 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton" id="remove">
+      <object class="GtkToggleButton" id="follow">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.remove-range</property>
+        <property name="action_name">win.timeline-playhead-follow</property>
         <property name="tooltip-text"
-          translatable="yes">Remove range</property>
+          translatable="yes">Follow playhead</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">timeline-extract</property>
+            <property name="icon-name">auto-scroll-playhead</property>
           </object>
         </child>
       </object>

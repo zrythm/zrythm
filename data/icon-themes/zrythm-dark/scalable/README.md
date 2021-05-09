@@ -143,13 +143,14 @@ git commit info in the gnome-builder project.
 
 The following icons are Copyright (C) 2014 Uri Herrera <uri_herrera@nitrux.in> and others.
 They were taken and modified from KDE's breeze-icons
-at <https://github.com/KDE/breeze-icons> on August 3,
-2020 under the GNU General Public License, version 3
+at <https://github.com/KDE/breeze-icons> on May 9,
+2021 under the GNU General Public License, version 3
 or later.
 You should have received a copy of the GNU General
 Public License version 3 along with Zrythm. If not,
 see <https://www.gnu.org/licenses/gpl-3.0.en.html>.
 
+- auto-scroll-playhead.svg
 - arrow-down-small.svg
 - arrow-up-small.svg
 - audio-midi-plain.svg

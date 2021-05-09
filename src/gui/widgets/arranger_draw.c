@@ -173,7 +173,11 @@ draw_playhead (
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
-  int px = arranger_widget_get_playhead_px (self);
+  int cur_playhead_px =
+    arranger_widget_get_playhead_px (self);
+  int px = cur_playhead_px;
+  /*int px = self->queued_playhead_px;*/
+  /*g_message ("drawing %d", px);*/
 
   if (px >= rect->x && px <= rect->x + rect->width)
     {
@@ -195,6 +199,14 @@ draw_playhead (
         }
       cairo_fill (cr);
       self->last_playhead_px = px;
+
+#if 0
+      if (cur_playhead_px !=
+            self->queued_playhead_px)
+        {
+          arranger_widget_redraw_playhead (self);
+        }
+#endif
     }
 }
 

@@ -1948,6 +1948,8 @@ process_events (void * data)
         case ET_LOG_WARNING_STATE_CHANGED:
           header_widget_refresh (MW_HEADER);
           break;
+        case ET_PLAYHEAD_SCROLL_MODE_CHANGED:
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

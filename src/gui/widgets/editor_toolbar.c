@@ -26,6 +26,7 @@
 #include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
@@ -253,9 +254,19 @@ static void
 editor_toolbar_widget_init (
   EditorToolbarWidget * self)
 {
+  g_type_ensure (
+    PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (
+      self->playhead_scroll->scroll_edges),
+    "win.editor-playhead-scroll-edges");
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->playhead_scroll->follow),
+    "win.editor-playhead-follow");
 
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
@@ -316,4 +327,5 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   BIND_CHILD (audio_functions_menu);
   BIND_CHILD (midi_functions_menu);
   BIND_CHILD (functions_btn);
+  BIND_CHILD (playhead_scroll);
 }

@@ -602,6 +602,26 @@ Args:
                  "audio-function" "i" "0"
                  "Last used audio function"
                  "Last used audio function (index corresponding to enum in audio function action).")
+               (make-schema-key
+                 "timeline-playhead-scroll-edges" "b"
+                 "true"
+                 "Playhead scroll edges (timeline)"
+                 "Whether to scroll when the playhead reaches the visible edge (timeline).")
+               (make-schema-key
+                 "timeline-playhead-follow" "b"
+                 "false"
+                 "Follow playhead (timeline)"
+                 "Whether to follow the playhead. When this is on, the visible area will stay centered on the playhead (timeline).")
+               (make-schema-key
+                 "editor-playhead-scroll-edges" "b"
+                 "true"
+                 "Playhead scroll edges (editor)"
+                 "Whether to scroll when the playhead reaches the visible edge (editor).")
+               (make-schema-key
+                 "editor-playhead-follow" "b"
+                 "false"
+                 "Follow playhead (editor)"
+                 "Whether to follow the playhead. When this is on, the visible area will stay centered on the playhead (editor).")
              ))) ;; ui
 
          (schema-print

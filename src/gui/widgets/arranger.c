@@ -4708,17 +4708,15 @@ arranger_widget_redraw_whole (
     rect.width, rect.height);
 }
 
-/**
- * Only redraws the playhead part.
- */
-void
-arranger_widget_redraw_playhead (
+bool
+arranger_widget_is_playhead_visible (
   ArrangerWidget * self)
 {
   GdkRectangle rect;
   arranger_widget_get_visible_rect (self, &rect);
 
-  int playhead_x = arranger_widget_get_playhead_px (self);
+  int playhead_x =
+    arranger_widget_get_playhead_px (self);
   int min_x =
     MIN (self->last_playhead_px, playhead_x);
   min_x = MAX (min_x - 4, rect.x);
@@ -4726,22 +4724,91 @@ arranger_widget_redraw_playhead (
     MAX (self->last_playhead_px, playhead_x);
   max_x = MIN (max_x + 4, rect.x + rect.width);
 
-  /* skip if playhead is not in the visible
-   * rectangle */
   int width = max_x - min_x;
-  if (width < 0)
-    {
-#if 0
-      g_debug (
-        "playhead not currently visible in "
-        "arranger, skipping redraw");
-#endif
-      return;
-    }
 
+  return width >= 0;
+}
+
+/**
+ * Only redraws the playhead part.
+ */
+void
+arranger_widget_redraw_playhead (
+  ArrangerWidget * self)
+{
+  if (!gtk_widget_is_visible (GTK_WIDGET (self)) ||
+      !arranger_widget_is_playhead_visible (self))
+    return;
+
+  GdkRectangle rect;
+  arranger_widget_get_visible_rect (self, &rect);
+
+  int buffer = 5;
+  int playhead_x =
+    arranger_widget_get_playhead_px (self);
+  int min_x =
+    MIN (self->last_playhead_px, playhead_x);
+  min_x = MAX (min_x - buffer, rect.x);
+  int max_x =
+    MAX (self->last_playhead_px, playhead_x);
+  max_x = MIN (max_x + buffer, rect.x + rect.width);
+
+  /*g_message ("queueing redraw %d", playhead_x);*/
   gtk_widget_queue_draw_area (
     GTK_WIDGET (self), min_x, rect.y,
     (max_x - min_x), rect.height);
+
+  /* auto scroll */
+  bool scroll_edges = false;
+  bool follow = false;
+  if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
+    {
+      scroll_edges =
+        g_settings_get_boolean (
+          S_UI, "timeline-playhead-scroll-edges");
+      follow =
+        g_settings_get_boolean (
+          S_UI, "timeline-playhead-follow");
+    }
+  else
+    {
+      scroll_edges =
+        g_settings_get_boolean (
+          S_UI, "editor-playhead-scroll-edges");
+      follow =
+        g_settings_get_boolean (
+          S_UI, "editor-playhead-follow");
+    }
+
+  GtkScrolledWindow * scroll =
+    arranger_widget_get_scrolled_window (self);
+  GtkAdjustment * adj =
+    gtk_scrolled_window_get_hadjustment (scroll);
+  if (follow)
+    {
+      /* scroll */
+      gtk_adjustment_set_value (
+        adj, playhead_x - rect.width / 2);
+    }
+  else if (scroll_edges)
+    {
+      buffer = 32;
+      if (playhead_x >
+            ((rect.x + rect.width) - buffer) ||
+          playhead_x < rect.x + buffer)
+        {
+          /* scroll */
+          gtk_adjustment_set_value (
+            adj,
+            CLAMP (
+              (double) playhead_x - buffer,
+              gtk_adjustment_get_lower (adj),
+              gtk_adjustment_get_upper (adj)));
+        }
+    }
+
+  /* cache x to draw */
+  /*self->queued_playhead_px = playhead_x;*/
 }
 
 /**
