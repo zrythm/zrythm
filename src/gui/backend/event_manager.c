@@ -848,7 +848,11 @@ on_mixer_selections_changed ()
 static void
 on_track_color_changed (Track * track)
 {
-  channel_widget_refresh (track->channel->widget);
+  if (track_type_has_channel (track->type))
+    {
+      channel_widget_refresh (
+        track->channel->widget);
+    }
   track_widget_force_redraw (track->widget);
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);
