@@ -98,10 +98,8 @@ get_enclosed_velocities (
     object_new_n (
       velocities_size, Velocity *);
   *num_vels = 0;
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
-  track_get_velocities_in_range (
-    arranger_object_get_track (r_obj),
+  midi_region_get_velocities_in_range (
+    region,
     &selection_start_pos, &selection_end_pos,
     &velocities, num_vels, &velocities_size, hit);
 

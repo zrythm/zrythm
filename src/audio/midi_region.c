@@ -1233,6 +1233,58 @@ midi_region_fill_midi_events (
 }
 
 /**
+ * Fills in the array with all the velocities in
+ * the project that are within or outside the
+ * range given.
+ *
+ * @param inside Whether to find velocities inside
+ *   the range (1) or outside (0).
+ */
+void
+midi_region_get_velocities_in_range (
+  const ZRegion *  self,
+  const Position * start_pos,
+  const Position * end_pos,
+  Velocity ***     velocities,
+  int *            num_velocities,
+  size_t *         velocities_size,
+  int              inside)
+{
+  Position global_start_pos;
+  for (int k = 0; k < self->num_midi_notes; k++)
+    {
+      MidiNote * mn = self->midi_notes[k];
+      midi_note_get_global_start_pos (
+        mn, &global_start_pos);
+
+#define ADD_VELOCITY \
+  array_double_size_if_full ( \
+    *velocities, *num_velocities, \
+    *velocities_size, Velocity *); \
+    (*velocities)[(* num_velocities)++] = \
+      mn->vel
+
+      if (inside &&
+          position_is_after_or_equal (
+            &global_start_pos, start_pos) &&
+          position_is_before_or_equal (
+            &global_start_pos, end_pos))
+        {
+          ADD_VELOCITY;
+        }
+      else if (!inside &&
+          (position_is_before (
+            &global_start_pos, start_pos) ||
+          position_is_after (
+            &global_start_pos, end_pos)))
+        {
+          ADD_VELOCITY;
+        }
+#undef ADD_VELOCITY
+    }
+}
+
+/**
  * Frees members only but not the MidiRegion
  * itself.
  *

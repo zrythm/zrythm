@@ -26,6 +26,7 @@
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -37,6 +38,7 @@ typedef struct MidiNote MidiNote;
 typedef struct ZRegion ZRegion;
 typedef struct MidiEvents MidiEvents;
 typedef struct ChordDescriptor ChordDescriptor;
+typedef struct Velocity Velocity;
 typedef ZRegion MidiRegion;
 typedef void MIDI_FILE;
 
@@ -309,6 +311,24 @@ midi_region_get_as_events (
   ZRegion * self,
   const int add_region_start,
   const int full);
+
+/**
+ * Fills in the array with all the velocities in
+ * the project that are within or outside the
+ * range given.
+ *
+ * @param inside Whether to find velocities inside
+ *   the range (1) or outside (0).
+ */
+void
+midi_region_get_velocities_in_range (
+  const ZRegion *  self,
+  const Position * start_pos,
+  const Position * end_pos,
+  Velocity ***     velocities,
+  int *            num_velocities,
+  size_t *         velocities_size,
+  int              inside);
 
 /**
  * Frees members only but not the midi region itself.

@@ -772,48 +772,16 @@ track_get_velocities_in_range (
       track->type != TRACK_TYPE_INSTRUMENT)
     return;
 
-  TrackLane * lane;
-  ZRegion * region;
-  MidiNote * mn;
-  Position global_start_pos;
   for (int i = 0; i < track->num_lanes; i++)
     {
-      lane = track->lanes[i];
+      TrackLane * lane = track->lanes[i];
       for (int j = 0; j < lane->num_regions; j++)
         {
-          region = lane->regions[j];
-          for (int k = 0;
-               k < region->num_midi_notes; k++)
-            {
-              mn = region->midi_notes[k];
-              midi_note_get_global_start_pos (
-                mn, &global_start_pos);
-
-#define ADD_VELOCITY \
-  array_double_size_if_full ( \
-    *velocities, *num_velocities, \
-    *velocities_size, Velocity *); \
-  (*velocities)[(* num_velocities)++] = \
-    mn->vel
-
-              if (inside &&
-                  position_is_after_or_equal (
-                    &global_start_pos, start_pos) &&
-                  position_is_before_or_equal (
-                    &global_start_pos, end_pos))
-                {
-                  ADD_VELOCITY;
-                }
-              else if (!inside &&
-                  (position_is_before (
-                    &global_start_pos, start_pos) ||
-                  position_is_after (
-                    &global_start_pos, end_pos)))
-                {
-                  ADD_VELOCITY;
-                }
-#undef ADD_VELOCITY
-            }
+          ZRegion * r = lane->regions[j];
+          midi_region_get_velocities_in_range (
+            r, start_pos, end_pos, velocities,
+            num_velocities, velocities_size,
+            inside);
         }
     }
 }
