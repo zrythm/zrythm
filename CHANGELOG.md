@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.16.1.1] - 2021-05-14
+### Added
+- Allow choosing CSS theme from preferences
+- Allow choosing icon theme from preferences
+- Add options to follow playhead and auto-scroll on edges
+
+### Changed
+- Update Portuguese, Chinese (Simplified), Ukrainian translations
+- Install `zrythm_launch` on Mac
+- Change insert/remove range button icons
+
+### Fixed
+- Fix sends not copied when duplicating an instrument track
+- Fix errors when removing project range
+- Fix arrangers losing focus when pressing a key
+- Fix crash when changing marker track color
+- Fix dynamic library being used when using glib subproject
+
 ## [1.0.0-alpha.16.0.37] - 2021-05-07
 ### Added
 - Add preliminary support for LV2 options interface
