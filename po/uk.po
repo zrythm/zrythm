@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-05-07 04:08+0100\n"
-"PO-Revision-Date: 2021-04-21 17:30+0000\n"
+"PO-Revision-Date: 2021-05-14 21:35+0000\n"
 "Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
@@ -131,9 +131,8 @@ msgid "Low"
 msgstr "Низька"
 
 #: inc/utils/gtk.h:55
-#, fuzzy
 msgid "MIDI learn"
-msgstr "MIDI в"
+msgstr "Вивчення MIDI"
 
 #: inc/utils/gtk.h:59
 msgid "Cu_t"
@@ -176,20 +175,19 @@ msgstr "Увімкнути звук"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:202
 msgid "Invert"
-msgstr ""
+msgstr "Інвертувати"
 
 #: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:208
-#, fuzzy
 msgid "Normalize"
-msgstr "Нормальна"
+msgstr "Нормалізувати"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
-msgstr ""
+msgstr "Узворотнити"
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
-msgstr ""
+msgstr "Хибно"
 
 #: inc/audio/track.h:168 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -326,15 +324,15 @@ msgstr "Струм"
 
 #: inc/audio/exporter.h:99
 msgid "Before inserts"
-msgstr ""
+msgstr "Перед вставленням"
 
 #: inc/audio/exporter.h:100
 msgid "Pre-fader"
-msgstr ""
+msgstr "Префейдер"
 
 #: inc/audio/exporter.h:101
 msgid "Post fader"
-msgstr ""
+msgstr "Постфейдер"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -499,10 +497,10 @@ msgid ""
 msgstr ""
 "%s - %s Авторське право (C) 2018-2020 Співавтори Zrythm\n"
 "\n"
-"%s поставляється АБСОЛЮТНО БЕЗ ГАРАНТІЙ!\n"
+"%s поставляється ЦІЛКОВИТО БЕЗ ГАРАНТІЙ!\n"
 "\n"
-"Це безкоштовне програмне забезпечення, і ви можете його розповсюдити\n"
-"за певних умов. Детальніше див. У файлі „КОПІЮВАННЯ“.\n"
+"Це безплатне програмне забезпечення, і ви можете його розповсюдити\n"
+"за певних умов. Докладніше див. у файлі „КОПІЮВАННЯ“.\n"
 "\n"
 "Пишіть коментарі та помилки на адресу %s\n"
 "Підтримайте цей проєкт на https://liberapay.com/Zrythm\n"
@@ -514,7 +512,6 @@ msgid "File %s not found."
 msgstr "Файл %s не знайдено."
 
 #: src/zrythm_app.c:1412
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Вихідний файл не вказано. Будь ласка, передайте один з `--output [FILE]`."
@@ -525,59 +522,57 @@ msgid "Project failed to decompress: %s\n"
 msgstr "Не вдалося розпакувати проект: %s\n"
 
 #: src/zrythm_app.c:1496
-#, fuzzy
 msgid "Unknown operation"
-msgstr "Невідомий варіант\n"
+msgstr "Невідома операція"
 
 #: src/zrythm_app.c:1516
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "для цього параметра потрібен libguile\n"
 
 #: src/zrythm_app.c:1663
-#, fuzzy
 msgid "Print version information"
-msgstr "Інформація про ліцензію"
+msgstr "Відомості про ліцензію"
 
 #: src/zrythm_app.c:1668
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "Перетворити ZPJ-FILE на YAML"
 
 #: src/zrythm_app.c:1673
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "Перетворити YAML-PROJECT-FILE у формат .zpj"
 
 #: src/zrythm_app.c:1678
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Утворити проєкт із SCRIPT-FILE"
 
 #: src/zrythm_app.c:1682
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Показ виводу зручним для користувача способом"
 
 #: src/zrythm_app.c:1686
 msgid "Print current settings"
-msgstr ""
+msgstr "Показ поточних налаштувань"
 
 #: src/zrythm_app.c:1690
 msgid "Reset to factory settings"
-msgstr ""
+msgstr "Скидання до заводських налаштувань"
 
 #: src/zrythm_app.c:1693
 msgid "Override the audio backend to use"
-msgstr ""
+msgstr "Перевизначити аудіобекенд для використання"
 
 #: src/zrythm_app.c:1697
 msgid "Override the MIDI backend to use"
-msgstr ""
+msgstr "Перевизначити MIDI-бекенд для використання"
 
 #: src/zrythm_app.c:1701
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "Скорочення для --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1727
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[ПРОЄКТ-ФАЙЛ]"
 
 #: src/zrythm_app.c:1732
 #, c-format
@@ -590,11 +585,18 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
+"приклади:\n"
+"  --zpj-to-yaml a.zpj > b.yaml        Convert a a.zpj to YAML and save to b."
+"yaml\n"
+"  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
+"  -p --pretty                         Pretty-print current settings\n"
+"\n"
+"Будь ласка, повідомляйте про проблеми за адресою %s\n"
 
 #: src/zrythm_app.c:1744
 #, c-format
 msgid "Run %s, optionally passing a project file."
-msgstr ""
+msgstr "Запустити %s, опціонально передавши файл проєкту."
 
 #: src/plugins/carla_native_plugin.c:604 src/plugins/lv2_plugin.c:3611
 msgid "Default bank"
@@ -622,11 +624,11 @@ msgstr "Вихід MIDI"
 
 #: src/plugins/carla_native_plugin.c:1156
 msgid "CV in"
-msgstr ""
+msgstr "CV вхід"
 
 #: src/plugins/carla_native_plugin.c:1166
 msgid "CV out"
-msgstr ""
+msgstr "CV вихід"
 
 #: src/plugins/plugin_manager.c:386
 msgid "Error loading LV2 bundle dir: "
@@ -674,24 +676,22 @@ msgstr "[Zrythm] Увімкнено"
 
 #: src/plugins/plugin.c:267
 msgid "Enables or disables the plugin"
-msgstr ""
+msgstr "Вмикає або вимикає розширення"
 
 #: src/plugins/plugin.c:290
 msgid "[Zrythm] Gain"
 msgstr "[Zrythm] Підсилення"
 
 #: src/plugins/plugin.c:291
-#, fuzzy
 msgid "Plugin gain"
 msgstr "Інспектор розширень"
 
 #: src/plugins/plugin.c:1044
 #, c-format
 msgid " - bridge: %s"
-msgstr ""
+msgstr " - міст: %s"
 
 #: src/plugins/plugin.c:1055
-#, fuzzy
 msgid "instrument"
 msgstr "Інструмент"
 
@@ -726,7 +726,7 @@ msgstr "_Зберегти"
 
 #: src/plugins/plugin_gtk.c:1190
 msgid "Open File"
-msgstr ""
+msgstr "Відкрити файл"
 
 #: src/plugins/plugin_gtk.c:1370
 msgid "Close"
@@ -753,6 +753,10 @@ msgid ""
 "bridged mode, and report this to the plugin distributor and/or author:\n"
 "%s <%s>"
 msgstr ""
+"%s <%s> містить посилання на %s, що може спричинити проблеми.\n"
+"Якщо розширення не завантажується, спробуйте створити його в повному режимі "
+"та повідомте про це розповсюджувачу розширення та / або автору:\n"
+"%s <%s>"
 
 #: src/plugins/lv2_plugin.c:3654
 msgid "Unnamed bank"
@@ -778,7 +782,7 @@ msgstr "_Прийняти"
 
 #: src/gui/widgets/bounce_step_selector.c:187
 msgid "Bounce step selector"
-msgstr ""
+msgstr "Селектор кроку відмов"
 
 #: src/gui/widgets/fader_controls_grid.c:98
 msgid "Peak"
@@ -802,7 +806,7 @@ msgstr "Додати"
 #: src/gui/widgets/balance_control.c:344 src/gui/widgets/modulator_macro.c:204
 #: src/gui/widgets/fader.c:362 resources/ui/first_run_assistant.ui:134
 msgid "Reset"
-msgstr ""
+msgstr "Скинути"
 
 #: src/gui/widgets/inspector_port.c:207 src/gui/widgets/midi_arranger.c:523
 #: src/gui/widgets/modulator_inner.c:204 src/gui/widgets/modulator_macro.c:220
@@ -1069,141 +1073,140 @@ msgstr "Замороження доріжки"
 
 #: src/gui/widgets/channel_slot.c:186
 msgid "No instrument"
-msgstr ""
+msgstr "Немає інструменту"
 
 #: src/gui/widgets/channel_slot.c:191
 #, c-format
 msgid "Slot #%d"
-msgstr ""
+msgstr "Комірка №%d"
 
 #: src/gui/widgets/channel_slot.c:345
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr ""
+msgstr "До цієї комірки не можна додати розширення %s"
 
 #: src/gui/widgets/channel_slot.c:706
 msgid "Bypass"
-msgstr ""
+msgstr "Обхід"
 
 #: src/gui/widgets/channel_slot.c:719
 msgid "Inspect"
-msgstr ""
+msgstr "Інспектувати"
 
 #: src/gui/widgets/channel_slot.c:1053
 msgid "empty slot"
-msgstr ""
+msgstr "порожня комірка"
 
 #: src/gui/widgets/arranger.c:2253 resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
-msgstr ""
+msgstr "Назва маркера"
 
 #: src/gui/widgets/arranger.c:4141
 #, c-format
 msgid "%s name"
-msgstr ""
+msgstr "назва %s"
 
 #: src/gui/widgets/piano_roll_keys.c:149
 msgid "both"
-msgstr ""
+msgstr "обидва"
 
 #: src/gui/widgets/piano_roll_keys.c:167
 msgid "scale"
-msgstr ""
+msgstr "масштаб"
 
 #: src/gui/widgets/piano_roll_keys.c:185
 msgid "chord"
-msgstr ""
+msgstr "акорд"
 
 #: src/gui/widgets/plugin_browser.c:642
 msgid "Add to project"
-msgstr ""
+msgstr "Додати до проєкту"
 
 #: src/gui/widgets/plugin_browser.c:663
 msgid "Add to project with UI"
-msgstr ""
+msgstr "Додати до проєкту за допомогою інтерфейсу користувача"
 
 #: src/gui/widgets/plugin_browser.c:707
 msgid "Add to project (carla)"
-msgstr ""
+msgstr "Додати до проєкту (carla)"
 
 #: src/gui/widgets/plugin_browser.c:718
 msgid "Add to project (bridged UI)"
-msgstr ""
+msgstr "Додати до проєкту (зв’язаний інтерфейс)"
 
 #: src/gui/widgets/plugin_browser.c:725
 msgid "Add to project (bridged full)"
-msgstr ""
+msgstr "Додати до проєкту (з повним мостом)"
 
 #: src/gui/widgets/plugin_browser.c:734
 msgid "Use _Generic UI"
-msgstr ""
+msgstr "Використовуйте _Generic UI"
 
 #: src/gui/widgets/plugin_browser.c:755
-#, fuzzy
 msgid "Add to collection"
-msgstr "Портові з'єднання"
+msgstr "Додати до колекції"
 
 #: src/gui/widgets/plugin_browser.c:804
 msgid "Remove from collection"
-msgstr ""
+msgstr "Вилучити з колекції"
 
 #: src/gui/widgets/plugin_browser.c:921 src/gui/widgets/plugin_browser.c:958
 msgid "Collection name"
-msgstr ""
+msgstr "Назва колекції"
 
 #: src/gui/widgets/plugin_browser.c:992
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
-msgstr ""
+msgstr "Ця колекція містить %d розширень. Ви впевнені, що хочете її видалити?"
 
 #: src/gui/widgets/plugin_browser.c:1033
 msgid "Rename"
-msgstr ""
+msgstr "Перейменувати"
 
 #: src/gui/widgets/plugin_browser.c:1044
 #: src/gui/widgets/port_connections_tree.c:183
 #: src/gui/widgets/home_toolbar.c:214 src/gui/widgets/cc_bindings_tree.c:185
 #: resources/ui/modulator_inner.ui:45
 msgid "Delete"
-msgstr ""
+msgstr "Видалити"
 
 #: src/gui/widgets/plugin_browser.c:2433 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
 msgid "Collection"
-msgstr ""
+msgstr "Колекція"
 
 #: src/gui/widgets/plugin_browser.c:2443
 msgid "Author"
-msgstr ""
+msgstr "Автор"
 
 #: src/gui/widgets/plugin_browser.c:2453
 msgid "Category"
-msgstr ""
+msgstr "Категорія"
 
 #: src/gui/widgets/plugin_browser.c:2463
 msgid "Protocol"
-msgstr ""
+msgstr "Протокол"
 
 #: src/gui/widgets/bot_bar.c:56 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
-msgstr ""
+msgstr "Відтворення"
 
 #: src/gui/widgets/bot_bar.c:58
 msgid "Playhead [Jack Timebase Master]"
-msgstr ""
+msgstr "Playhead [Jack Timebase Master]"
 
 #: src/gui/widgets/bot_bar.c:60
 msgid "Playhead [Jack Client]"
-msgstr ""
+msgstr "Playhead [Джек Клієнт]"
 
 #: src/gui/widgets/bot_bar.c:161 src/gui/widgets/ruler.c:1546
 msgid "BBT display"
-msgstr ""
+msgstr "Дисплей BBT"
 
 #: src/gui/widgets/bot_bar.c:181 src/gui/widgets/ruler.c:1565
 msgid "Time display"
-msgstr ""
+msgstr "Відображення часу"
 
 #: src/gui/widgets/bot_bar.c:211
 msgid "Become JACK Transport master"

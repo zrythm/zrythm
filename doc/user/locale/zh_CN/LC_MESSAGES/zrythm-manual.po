@@ -39,15 +39,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-05-07 04:15+0100\n"
-"PO-Revision-Date: 2021-05-02 17:32+0000\n"
+"PO-Revision-Date: 2021-05-08 04:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.7-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -7257,9 +7258,8 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:17
-#, fuzzy
 msgid "BPM and Time Signature"
-msgstr "BPM 和 时间签名"
+msgstr "BPM 和拍子记号"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
@@ -7321,4 +7321,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-
