@@ -531,6 +531,7 @@ else
         'debug=true',
         'optimization=3',
         'installed_tests=false',
+        'default_library=static',
         ]
       )
   endif
