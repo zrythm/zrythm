@@ -530,6 +530,7 @@ else
       default_options: [
         'debug=true',
         'optimization=3',
+        'tests=false',
         'installed_tests=false',
         'default_library=static',
         ]
