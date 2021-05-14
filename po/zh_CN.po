@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-05-07 04:08+0100\n"
-"PO-Revision-Date: 2021-05-02 17:32+0000\n"
+"PO-Revision-Date: 2021-05-08 04:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -487,7 +487,7 @@ msgid "Waiting for project"
 msgstr "等待项目"
 
 #: src/zrythm_app.c:938
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s %s\n"
 "\n"
@@ -500,7 +500,7 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2021 Zrythm 贡献者\n"
+"%s-%s %s\n"
 "\n"
 "%s 绝对没有担保！\n"
 "\n"
@@ -4369,7 +4369,6 @@ msgid "The monitor listen volume in amplitude (0 to 2)."
 msgstr "监视器收听音量振幅（0到2）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:276
-#, fuzzy
 msgid "Dim volume"
 msgstr "模糊音量"
 
