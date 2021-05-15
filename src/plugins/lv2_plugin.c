@@ -3245,10 +3245,8 @@ lv2_plugin_process (
   /* If transport state is not as expected, then
    * something has changed */
   const bool xport_changed =
-    self->rolling !=
-      (TRANSPORT_IS_ROLLING) ||
-    self->gframes !=
-      g_start_frames ||
+    self->rolling != (TRANSPORT_IS_ROLLING) ||
+    self->gframes != g_start_frames ||
     !math_floats_equal (
       self->bpm,
       tempo_track_get_current_bpm (P_TEMPO_TRACK));
@@ -3257,7 +3255,7 @@ lv2_plugin_process (
     {
       g_message (
         "xport changed lv2_plugin_rolling %d, "
-        "gframes vs g start frames %ld %ld, "
+        "self gframes vs g start frames %ld %ld, "
         "bpm %f %f",
         self->rolling,
         self->gframes, g_start_frames,
@@ -3338,9 +3336,8 @@ lv2_plugin_process (
   if (TRANSPORT_IS_ROLLING)
     {
       Position gpos;
-      position_from_frames (&gpos, self->gframes);
-      transport_position_add_frames (
-        TRANSPORT, &gpos, nframes);
+      position_from_frames (
+        &gpos, g_start_frames + nframes);
       self->gframes = gpos.frames;
       self->rolling = 1;
     }
