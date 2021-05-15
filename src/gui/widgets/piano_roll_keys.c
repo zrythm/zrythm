@@ -89,13 +89,21 @@ piano_roll_keys_draw (
         continue;
 
       /* check if in scale and in chord */
-      int in_scale =
-        so && musical_scale_is_key_in_scale (
-          so->scale, i % 12);
-      int in_chord =
-        co && chord_descriptor_is_key_in_chord (
+      int normalized_key = i % 12;
+      bool in_scale =
+        so &&
+        musical_scale_is_key_in_scale (
+          so->scale, normalized_key);
+      bool in_chord =
+        co &&
+        chord_descriptor_is_key_in_chord (
           chord_object_get_chord_descriptor (co),
-          i % 12);
+          normalized_key);
+      bool is_bass =
+        co &&
+        chord_descriptor_is_key_bass (
+          chord_object_get_chord_descriptor (co),
+          normalized_key);
 
       /* ---- draw label ---- */
 
@@ -126,7 +134,31 @@ piano_roll_keys_draw (
         {
           /* ---- draw background ---- */
           int has_color = 0;
-          if (PIANO_ROLL->highlighting ==
+          if ((PIANO_ROLL->highlighting ==
+                 PR_HIGHLIGHT_BOTH ||
+               PIANO_ROLL->highlighting ==
+                 PR_HIGHLIGHT_CHORD) &&
+              is_bass)
+            {
+              has_color = 1;
+
+              gdk_cairo_set_source_rgba (
+                cr, &UI_COLORS->highlight_bass_bg);
+              cairo_rectangle (
+                cr, 0,
+                (127 - i) * px_per_key,
+                label_width, px_per_key);
+              cairo_fill (cr);
+
+              char hex[18];
+              ui_gdk_rgba_to_hex (
+                &UI_COLORS->highlight_bass_fg, hex);
+              sprintf (
+                str,
+                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                note_name, hex, _("bass"));
+            }
+          else if (PIANO_ROLL->highlighting ==
                 PR_HIGHLIGHT_BOTH && in_chord &&
                 in_scale)
             {

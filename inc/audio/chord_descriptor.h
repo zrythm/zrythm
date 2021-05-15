@@ -276,8 +276,19 @@ chord_descriptor_is_equal (
  *
  * @param key A note inside a single octave (0-11).
  */
-int
+bool
 chord_descriptor_is_key_in_chord (
+  ChordDescriptor * chord,
+  MusicalNote       key);
+
+/**
+ * Returns if @ref key is the bass or root note of
+ * @ref chord.
+ *
+ * @param key A note inside a single octave (0-11).
+ */
+bool
+chord_descriptor_is_key_bass (
   ChordDescriptor * chord,
   MusicalNote       key);
 

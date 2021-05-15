@@ -46,6 +46,7 @@
 @define-color matcha #2eb398;
 @define-color hover_color alpha (white, 0.1);
 @define-color selection_color alpha (white, 0.07);
+@define-color light_blueish #1aa3ff;
 @define-color light_blueish alpha (#1aa3ff, 0.8);
 @define-color prefader_send #D21E6D;
 @define-color postfader_send #901ed2;
@@ -55,10 +56,12 @@
 @define-color fader_fill_end @z_yellow;
 @define-color highlight_scale_bg #662266;
 @define-color highlight_chord_bg #BB22BB;
+@define-color highlight_bass_bg @light_blueish;
 @define-color highlight_both_bg #FF22FF;
 @define-color highlight_scale_fg #F79616;
-@define-color highlight_chord_fg #F79616;
-@define-color highlight_both_fg #F79616;
+@define-color highlight_chord_fg @highlight_scale_fg;
+@define-color highlight_bass_fg white;
+@define-color highlight_both_fg white;
 /* see https://coolors.co/ to generate more or use
  * GPick */
 

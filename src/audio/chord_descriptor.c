@@ -216,28 +216,44 @@ chord_descriptor_chord_accent_to_string (
 }
 
 /**
+ * Returns if @ref key is the bass or root note of
+ * @ref chord.
+ *
+ * @param key A note inside a single octave (0-11).
+ */
+bool
+chord_descriptor_is_key_bass (
+  ChordDescriptor * chord,
+  MusicalNote       key)
+{
+  return
+    (chord->has_bass && chord->bass_note == key) ||
+     chord->root_note == key;
+}
+
+/**
  * Returns if the given key is in the chord
  * represented by the given ChordDescriptor.
  *
  * @param key A note inside a single octave (0-11).
  */
-int
+bool
 chord_descriptor_is_key_in_chord (
   ChordDescriptor * chord,
   MusicalNote       key)
 {
-  if ((chord->has_bass &&
-      chord->bass_note == key) ||
-      chord->root_note == key)
-    return 1;
+  if (chord_descriptor_is_key_bass (chord, key))
+    {
+      return true;
+    }
 
   for (int i = 0; i < 36; i++)
     {
       if (chord->notes[i] == 1 &&
           i % 12 == (int) key)
-        return 1;
+        return true;
     }
-  return 0;
+  return false;
 }
 
 /**

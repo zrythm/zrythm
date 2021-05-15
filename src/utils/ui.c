@@ -1402,9 +1402,11 @@ ui_caches_new ()
   GET_COLOR_FROM_THEME (fader_fill_end);
   GET_COLOR_FROM_THEME (highlight_scale_bg);
   GET_COLOR_FROM_THEME (highlight_chord_bg);
+  GET_COLOR_FROM_THEME (highlight_bass_bg);
   GET_COLOR_FROM_THEME (highlight_both_bg);
   GET_COLOR_FROM_THEME (highlight_scale_fg);
   GET_COLOR_FROM_THEME (highlight_chord_fg);
+  GET_COLOR_FROM_THEME (highlight_bass_fg);
   GET_COLOR_FROM_THEME (highlight_both_fg);
 
 #undef GET_COLOR_FROM_THEME

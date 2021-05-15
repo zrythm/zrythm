@@ -161,13 +161,21 @@ midi_note_draw (
   ScaleObject * so =
     chord_track_get_scale_at_pos (
       P_CHORD_TRACK, &global_start_pos);
-  int in_scale =
-    so && musical_scale_is_key_in_scale (
-      so->scale, self->val % 12);
-  int in_chord =
-    co && chord_descriptor_is_key_in_chord (
+  int normalized_key = self->val % 12;
+  bool in_scale =
+    so &&
+    musical_scale_is_key_in_scale (
+      so->scale, normalized_key);
+  bool in_chord =
+    co &&
+    chord_descriptor_is_key_in_chord (
       chord_object_get_chord_descriptor (co),
-      self->val % 12);
+      normalized_key);
+  bool is_bass =
+    co &&
+    chord_descriptor_is_key_bass (
+      chord_object_get_chord_descriptor (co),
+      normalized_key);
 
   /* get rects */
   GdkRectangle draw_rect;
@@ -177,9 +185,17 @@ midi_note_draw (
 
   /* get color */
   GdkRGBA color;
-  if (PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_BOTH &&
-      in_scale && in_chord)
+  if ((PIANO_ROLL->highlighting ==
+         PR_HIGHLIGHT_BOTH ||
+       PIANO_ROLL->highlighting ==
+         PR_HIGHLIGHT_CHORD) &&
+      is_bass)
+    {
+      color = UI_COLORS->highlight_bass_bg;
+    }
+  else if (PIANO_ROLL->highlighting ==
+             PR_HIGHLIGHT_BOTH &&
+           in_scale && in_chord)
     {
       color = UI_COLORS->highlight_both_bg;
     }

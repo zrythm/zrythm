@@ -105,9 +105,11 @@ typedef struct UiColors
   GdkRGBA       fader_fill_end;
   GdkRGBA       highlight_scale_bg;
   GdkRGBA       highlight_chord_bg;
+  GdkRGBA       highlight_bass_bg;
   GdkRGBA       highlight_both_bg;
   GdkRGBA       highlight_scale_fg;
   GdkRGBA       highlight_chord_fg;
+  GdkRGBA       highlight_bass_fg;
   GdkRGBA       highlight_both_fg;
 } UiColors;
 
