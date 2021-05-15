@@ -517,13 +517,18 @@ recording_manager_handle_recording (
       re->nframes = nframes;
       dsp_copy (
         &re->lbuf[local_offset],
-        &track_processor->stereo_out->l->buf[
+        &track_processor->stereo_in->l->buf[
           local_offset],
         nframes);
+      Port * r =
+        track_processor->mono &&
+        control_port_is_toggled (
+          track_processor->mono) ?
+          track_processor->stereo_in->l :
+          track_processor->stereo_in->r;
       dsp_copy (
         &re->rbuf[local_offset],
-        &track_processor->stereo_out->r->buf[
-          local_offset],
+        &r->buf[local_offset],
         nframes);
       strcpy (re->track_name, tr->name);
       /*UP_RECEIVED (re);*/
@@ -825,8 +830,7 @@ handle_resume_event (
             F_GEN_NAME, F_PUBLISH_EVENTS);
 
           /* remember region */
-          add_recorded_id (
-            self, new_region);
+          add_recorded_id (self, new_region);
           tr->recording_region = new_region;
         }
       /* if MIDI and overwriting or merging
