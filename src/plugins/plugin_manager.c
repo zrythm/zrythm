@@ -317,6 +317,7 @@ init_symap (
   SYMAP_MAP (patch_property, LV2_PATCH__property);
   SYMAP_MAP (patch_value, LV2_PATCH__value);
   SYMAP_MAP (time_Position, LV2_TIME__Position);
+  SYMAP_MAP (time_bar, LV2_TIME__bar);
   SYMAP_MAP (time_barBeat, LV2_TIME__barBeat);
   SYMAP_MAP (time_beatUnit, LV2_TIME__beatUnit);
   SYMAP_MAP (
