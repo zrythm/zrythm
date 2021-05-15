@@ -26,6 +26,8 @@
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
+#include <stdbool.h>
+
 #include "utils/yaml.h"
 
 /**
@@ -115,6 +117,14 @@ static const cyaml_schema_value_t
 
 void
 undoable_action_init_loaded (
+  UndoableAction * self);
+
+/**
+ * Returns whether the action requires pausing
+ * the engine.
+ */
+bool
+undoable_action_needs_pause (
   UndoableAction * self);
 
 /**
