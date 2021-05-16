@@ -226,9 +226,14 @@ chord_descriptor_is_key_bass (
   ChordDescriptor * chord,
   MusicalNote       key)
 {
-  return
-    (chord->has_bass && chord->bass_note == key) ||
-     chord->root_note == key;
+  if (chord->has_bass)
+    {
+      return chord->bass_note == key;
+    }
+  else
+    {
+      return chord->root_note == key;
+    }
 }
 
 /**
