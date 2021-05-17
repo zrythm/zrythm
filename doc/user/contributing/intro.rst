@@ -38,7 +38,7 @@ bugs and feedback on
 
 The latest development branch for new features is
 ``development`` in our
-`git repository <https://git.zrythm.org/cgit/zrythm>`_.
+`git repository <https://git.zrythm.org/zrythm/zrythm>`_.
 
 Editing this Manual
 -------------------

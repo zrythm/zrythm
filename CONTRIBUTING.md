@@ -14,8 +14,8 @@ issue tracking of Zrythm.
 
 The source files for all the components of the
 project, including software, web site, documentation,
-and artwork, are available in Git repositories at
-[CGit](https://git.zrythm.org/cgit/).
+and artwork, are available in our
+[git repositories](https://git.zrythm.org/zrythm).
 
 # Art
 We are always looking for artists to help us design
@@ -32,7 +32,7 @@ developers discover what we do.
 
 # Programming
 Source code is in the
-[main Git repository](https://git.zrythm.org/cgit/zrythm/).
+[main Git repository](https://git.zrythm.org/zrythm/zrythm/).
 We use C as the main programming language for the
 various components of Zrythm, in addition to
 Scheme for writing scripts and Python for the

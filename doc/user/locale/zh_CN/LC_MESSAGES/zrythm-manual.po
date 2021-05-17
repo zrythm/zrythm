@@ -38,17 +38,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-05-07 04:15+0100\n"
+"POT-Creation-Date: 2021-05-17 17:28+0100\n"
 "PO-Revision-Date: 2021-05-08 04:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
@@ -905,7 +904,7 @@ msgstr ""
 #: ../../contributing/intro.rst:39
 msgid ""
 "The latest development branch for new features is ``development`` in our "
-"`git repository <https://git.zrythm.org/cgit/zrythm>`_."
+"`git repository <https://git.zrythm.org/zrythm/zrythm>`_."
 msgstr ""
 
 #: ../../contributing/intro.rst:44
@@ -7283,6 +7282,12 @@ msgid ""
 "in the bottom left corner."
 msgstr ""
 
+#~ msgid ""
+#~ "The latest development branch for new"
+#~ " features is ``development`` in our "
+#~ "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
+#~ msgstr ""
+
 #~ msgid "``(zrythm)``"
 #~ msgstr "zrythm"
 
@@ -7321,3 +7326,4 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
+
