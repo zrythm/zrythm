@@ -833,10 +833,8 @@ have_libsoundio = libsoundio_dep.found ()
 if (have_libsoundio)
   cdata.set('HAVE_LIBSOUNDIO', 1)
 endif
-# force patched version of libcyaml from subproject
-# see https://github.com/tlsa/libcyaml/issues/150
 cyaml_dep = dependency(
-  'libcyaml', required: false, version: '>=99.1.0',
+  'libcyaml', required: false, version: '>=1.2.0',
   static: all_static)
 if not cyaml_dep.found()
   cyaml_proj = subproject('libcyaml')
