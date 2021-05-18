@@ -1038,6 +1038,7 @@ zrythm_app_startup (
 #ifdef HAVE_GTK_SOURCE_VIEW_4
   gtk_source_init ();
 #endif
+  z_gtk_source_language_manager_get ();
 
   G_APPLICATION_CLASS (zrythm_app_parent_class)->
     startup (G_APPLICATION (self));

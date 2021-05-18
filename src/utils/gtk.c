@@ -950,6 +950,13 @@ z_gtk_source_language_manager_get (void)
   GtkSourceLanguageManager * manager =
     gtk_source_language_manager_get_default ();
 
+  static bool already_set = false;
+
+  if (already_set)
+    {
+      return manager;
+    }
+
 /* wait for latest glib to enable on freebsd */
 #ifndef __FreeBSD__
 
@@ -961,6 +968,8 @@ z_gtk_source_language_manager_get (void)
   /* build the new paths */
   GStrvBuilder * after_paths_builder =
     g_strv_builder_new ();
+  GStrvBuilder * after_paths_builder_tmp =
+    g_strv_builder_new ();
   int i = 0;
   while (before_paths[i])
     {
@@ -969,6 +978,8 @@ z_gtk_source_language_manager_get (void)
         i, before_paths[i]);
       g_strv_builder_add (
         after_paths_builder, before_paths[i]);
+      g_strv_builder_add (
+        after_paths_builder_tmp, before_paths[i]);
       i++;
     }
 
@@ -977,11 +988,27 @@ z_gtk_source_language_manager_get (void)
     zrythm_get_dir (
       ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR);
   g_return_val_if_fail (language_specs_dir, NULL);
-  g_strv_builder_add (
-    after_paths_builder, language_specs_dir);
+  GStrv tmp_dirs =
+    g_strv_builder_end (after_paths_builder_tmp);
+  if (!g_strv_contains (
+         (const char * const *) tmp_dirs,
+         language_specs_dir))
+    {
+      g_strv_builder_add (
+        after_paths_builder, language_specs_dir);
+    }
+  g_strfreev (tmp_dirs);
 
   GStrv dirs =
     g_strv_builder_end (after_paths_builder);
+
+  i = 0;
+  while (dirs[i])
+    {
+      const char * dir = dirs[i];
+      g_message ("%d: %s", i, dir);
+      i++;
+    }
 
   gtk_source_language_manager_set_search_path (
     manager, dirs);
@@ -989,6 +1016,8 @@ z_gtk_source_language_manager_get (void)
   g_free (language_specs_dir);
   g_strfreev (dirs);
 #endif
+
+  already_set = true;
 
   return manager;
 }
