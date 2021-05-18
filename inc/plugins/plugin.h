@@ -718,11 +718,15 @@ plugin_select (
 
 /**
  * Returns whether the plugin is enabled.
+ *
+ * @param check_track Whether to check if the track
+ *   is enabled as well.
  */
 NONNULL
 bool
 plugin_is_enabled (
-  Plugin * self);
+  Plugin * self,
+  bool     check_track);
 
 NONNULL
 void

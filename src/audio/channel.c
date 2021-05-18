@@ -1753,8 +1753,8 @@ channel_add_plugin (
   Track * track = channel_get_track (self);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (track), 0);
-  int prev_active = track->active;
-  track->active = 0;
+  bool prev_enabled = track->enabled;
+  track->enabled = false;
 
   Plugin ** plugins = NULL;
   switch (slot_type)
@@ -1936,7 +1936,7 @@ channel_add_plugin (
         self, prev_pl, plugin, next_pl);
     }
 
-  track->active = prev_active;
+  track->enabled = prev_enabled;
 
   if (gen_automatables)
     {

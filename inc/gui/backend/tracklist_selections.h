@@ -197,6 +197,11 @@ tracklist_selections_contains_muted_track (
   TracklistSelections * self,
   bool                  muted);
 
+bool
+tracklist_selections_contains_enabled_track (
+  TracklistSelections * self,
+  bool                  enabled);
+
 /**
  * Returns if the Track is selected or not.
  */

@@ -459,6 +459,21 @@ tracklist_selections_contains_listened_track (
   return false;
 }
 
+bool
+tracklist_selections_contains_enabled_track (
+  TracklistSelections * self,
+  bool                  enabled)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      if (track_is_enabled (track) == enabled)
+        return true;
+    }
+
+  return false;
+}
+
 int
 tracklist_selections_contains_track (
   TracklistSelections * self,

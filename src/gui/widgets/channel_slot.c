@@ -111,7 +111,7 @@ channel_slot_draw_cb (
     {
       GdkRGBA bg, fg;
       fg = UI_COLOR_BLACK;
-      if (!plugin_is_enabled (plugin))
+      if (!plugin_is_enabled (plugin, false))
         {
           bg.red = 0.6;
           bg.green = 0.6;
@@ -641,7 +641,7 @@ on_plugin_bypass_activate (
   Plugin *      pl)
 {
   plugin_set_enabled (
-    pl, !plugin_is_enabled (pl), true);
+    pl, !plugin_is_enabled (pl, false), true);
 }
 
 static void
@@ -706,7 +706,7 @@ show_context_menu (
             _("Bypass")));
       gtk_check_menu_item_set_active (
         GTK_CHECK_MENU_ITEM (menuitem),
-        !plugin_is_enabled (pl));
+        !plugin_is_enabled (pl, false));
       g_signal_connect (
         G_OBJECT (menuitem), "activate",
         G_CALLBACK (on_plugin_bypass_activate), pl);

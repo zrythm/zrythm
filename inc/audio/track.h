@@ -222,16 +222,6 @@ typedef struct Track
    */
   TrackWidget *       widget;
 
-  /**
-   * Whether pinned or not.
-   *
-   * Pinned tracks should keep their original pos
-   * saved so they can get unpinned. When iterating
-   * through unpinned tracks, can just check this
-   * variable.
-   */
-  //bool                pinned;
-
   /** Flag to set automations visible or not. */
   bool                automation_visible;
 
@@ -251,10 +241,9 @@ typedef struct Track
    * Active (enabled) or not.
    *
    * Disabled tracks should be ignored in routing.
-   *
-   * TODO explain what functionality this provides.
+   * Similar to Plugin.enabled (bypass).
    */
-  bool                active;
+  bool                enabled;
 
   /**
    * Track color.
@@ -489,6 +478,7 @@ track_fields_schema[] =
   YAML_FIELD_FLOAT (Track, main_height),
   YAML_FIELD_INT (Track, passthrough_midi_input),
   YAML_FIELD_INT (Track, recording),
+  YAML_FIELD_INT (Track, enabled),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track, color, gdk_rgba_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
@@ -1377,6 +1367,20 @@ track_disconnect (
   Track * self,
   bool    remove_pl,
   bool    recalc_graph);
+
+NONNULL
+bool
+track_is_enabled (
+  Track * self);
+
+NONNULL
+void
+track_set_enabled (
+  Track * self,
+  bool    enabled,
+  bool    trigger_undo,
+  bool    auto_select,
+  bool    fire_events);
 
 static inline const char *
 track_type_to_string (

@@ -199,7 +199,8 @@ plugin_init_loaded (
 
   if (project)
     {
-      bool was_enabled = plugin_is_enabled (self);
+      bool was_enabled =
+        plugin_is_enabled (self, false);
       int ret =
         plugin_instantiate (self, project, NULL);
       if (ret == 0)
@@ -1684,7 +1685,7 @@ plugin_process (
   const nframes_t  local_offset,
   const nframes_t nframes)
 {
-  if (!plugin_is_enabled (plugin) &&
+  if (!plugin_is_enabled (plugin, true) &&
       !plugin->own_enabled_port)
     {
       plugin_process_passthrough (
@@ -2197,12 +2198,28 @@ plugin_clone (
 
 /**
  * Returns whether the plugin is enabled.
+ *
+ * @param check_track Whether to check if the track
+ *   is enabled as well.
  */
 bool
 plugin_is_enabled (
-  Plugin * self)
+  Plugin * self,
+  bool     check_track)
 {
-  return control_port_is_toggled (self->enabled);
+  if (!control_port_is_toggled (self->enabled))
+    return false;
+
+  if (check_track)
+    {
+      Track * track = plugin_get_track (self);
+      g_return_val_if_fail (track, false);
+      return track_is_enabled (track);
+    }
+  else
+    {
+      return true;
+    }
 }
 
 void

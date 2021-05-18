@@ -1255,6 +1255,22 @@ do_or_undo_edit (
               self->ival_before[i] = listened;
             }
           break;
+        case EDIT_TRACK_ACTION_TYPE_ENABLE:
+            {
+              int enabled =
+                track_is_enabled (track);
+              track_set_enabled (
+                track,
+                _do ?
+                  self->ival_after :
+                  self->ival_before[i],
+                F_NO_TRIGGER_UNDO,
+                F_NO_AUTO_SELECT,
+                F_NO_PUBLISH_EVENTS);
+
+              self->ival_before[i] = enabled;
+            }
+          break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
           fader_set_amp (
@@ -1508,6 +1524,13 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup (
                   _("Unlisten Track"));
+            case EDIT_TRACK_ACTION_TYPE_ENABLE:
+              if (self->ival_after)
+                return g_strdup (
+                  _("Enable Track"));
+              else
+                return g_strdup (
+                  _("Disable Track"));
             case EDIT_TRACK_ACTION_TYPE_VOLUME:
               return g_strdup (
                 _("Change Fader"));
@@ -1567,6 +1590,15 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup_printf (
                   _("Unlisten %d Tracks"),
+                  self->num_tracks);
+            case EDIT_TRACK_ACTION_TYPE_ENABLE:
+              if (self->ival_after)
+                return g_strdup_printf (
+                  _("Enable %d Tracks"),
+                  self->num_tracks);
+              else
+                return g_strdup_printf (
+                  _("Disable %d Tracks"),
                   self->num_tracks);
             case EDIT_TRACK_ACTION_TYPE_COLOR:
               return g_strdup (

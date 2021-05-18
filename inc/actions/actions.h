@@ -400,6 +400,8 @@ DECLARE_SIMPLE (activate_mute_selected_tracks);
 DECLARE_SIMPLE (activate_unmute_selected_tracks);
 DECLARE_SIMPLE (activate_listen_selected_tracks);
 DECLARE_SIMPLE (activate_unlisten_selected_tracks);
+DECLARE_SIMPLE (activate_enable_selected_tracks);
+DECLARE_SIMPLE (activate_disable_selected_tracks);
 DECLARE_SIMPLE (activate_change_track_color);
 
 void

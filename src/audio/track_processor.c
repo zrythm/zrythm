@@ -844,8 +844,8 @@ track_processor_process (
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (tr);
 
-  /* if frozen, skip */
-  if (tr->frozen)
+  /* if frozen or disabled, skip */
+  if (tr->frozen || !track_is_enabled (tr))
     {
       return;
     }

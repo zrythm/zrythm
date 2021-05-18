@@ -310,4 +310,7 @@
 #define F_ENABLED 1
 #define F_NOT_ENABLED 0
 
+#define F_ENABLE 1
+#define F_NO_ENABLE 0
+
 #endif

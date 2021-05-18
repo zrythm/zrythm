@@ -211,10 +211,11 @@ track_init (
   const int add_lane)
 {
   self->schema_version = TRACK_SCHEMA_VERSION;
-  self->visible = 1;
+  self->visible = true;
   self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;
   self->magic = TRACK_MAGIC;
+  self->enabled = true;
   self->comment = g_strdup ("");
   track_add_lane (self, 0);
 }
@@ -423,8 +424,7 @@ track_clone (
   COPY_MEMBER (visible);
   COPY_MEMBER (main_height);
   COPY_MEMBER (recording);
-  /*COPY_MEMBER (pinned);*/
-  COPY_MEMBER (active);
+  COPY_MEMBER (enabled);
   COPY_MEMBER (color);
   COPY_MEMBER (pos);
   COPY_MEMBER (midi_ch);
@@ -3250,6 +3250,52 @@ track_append_all_ports (
     }
 
 #undef _ADD
+}
+
+bool
+track_is_enabled (
+  Track * self)
+{
+  return self->enabled;
+}
+
+void
+track_set_enabled (
+  Track * self,
+  bool    enabled,
+  bool    trigger_undo,
+  bool    auto_select,
+  bool    fire_events)
+{
+  self->enabled = enabled;
+
+  g_message (
+    "Setting track %s enabled (%d)",
+    self->name, enabled);
+  if (auto_select)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE, fire_events);
+    }
+
+  if (trigger_undo)
+    {
+      UndoableAction * action =
+        tracklist_selections_action_new_edit_enable (
+          TRACKLIST_SELECTIONS, enabled);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      self->enabled = enabled;
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_STATE_CHANGED, self);
+        }
+    }
 }
 
 /**

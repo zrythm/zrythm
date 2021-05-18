@@ -292,10 +292,13 @@ draw_color_area (
   GdkRectangle * rect,
   int            height)
 {
+  Track * track = self->track;
+
   cairo_surface_t * surface =
     z_cairo_get_surface_from_icon_name (
-      self->track->icon_name, 16, 0);
+      track->icon_name, 16, 0);
 
+  /* draw background */
   GdkRGBA bg_color = self->track->color;
   if (self->color_area_hovered)
     {
@@ -306,9 +309,18 @@ draw_color_area (
     cr, 0, 0, COLOR_AREA_WIDTH, height);
   cairo_fill (cr);
 
+  /* draw stripes if disabled */
+  if (!track_is_enabled (track))
+    {
+      cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1);
+      cairo_move_to (cr, 0, 0);
+      cairo_line_to (cr, COLOR_AREA_WIDTH, height);
+      cairo_stroke (cr);
+    }
+
   GdkRGBA c2, c3;
   ui_get_contrast_color (
-    &self->track->color, &c2);
+    &track->color, &c2);
   ui_get_contrast_color (
     &c2, &c3);
 
@@ -331,92 +343,6 @@ draw_color_area (
   cairo_mask_surface (
     cr, surface, 1, 1);
   cairo_fill (cr);
-
-#if 0
-  /* draw meters */
-  cairo_set_source_rgba (cr, 0, 1, 0.2, 1.0);
-  int height = rect->height;
-  switch (self->track->in_signal_type)
-    {
-    case TYPE_AUDIO:
-      {
-      float rms =
-        port_get_rms_db (
-          self->track->processor.stereo_in->l, 1);
-      sample_t amp =
-        math_dbfs_to_amp (rms);
-      sample_t fader_val =
-        math_get_fader_val_from_amp (amp);
-      fader_val *= (sample_t) height;
-      cairo_rectangle (
-        cr, (COLOR_AREA_WIDTH - 4),
-        (height - (int) fader_val),
-        2, fader_val);
-      cairo_fill (cr);
-
-      rms =
-        port_get_rms_db (
-          self->track->processor.stereo_in->r, 1);
-      amp =
-        math_dbfs_to_amp (rms);
-      fader_val =
-        math_get_fader_val_from_amp (amp);
-      fader_val *= (sample_t) height;
-      cairo_rectangle (
-        cr, (COLOR_AREA_WIDTH - 2),
-        (height - (int) fader_val),
-        2, fader_val);
-      cairo_fill (cr);
-      }
-      break;
-    case TYPE_EVENT:
-      {
-        int has_midi_events = 0;
-        MidiEvent event;
-        float val = 0.f;
-        if (!self->track->processor.midi_out)
-          break;
-        Port * port =
-          self->track->processor.midi_out;
-        while (
-          zix_ring_read (
-            port->midi_ring, &event,
-            sizeof (MidiEvent)) > 0)
-          {
-            has_midi_events = 1;
-          }
-
-        if (has_midi_events)
-          {
-            self->last_midi_in_trigger_time =
-              g_get_real_time ();
-            val = 1.f;
-          }
-        else
-          {
-            gint64 time_diff =
-              g_get_real_time () -
-              self->last_midi_in_trigger_time;
-            if ((float) time_diff < MAX_TIME)
-              {
-                val =
-                  1.f - (float) time_diff / MAX_TIME;
-              }
-            else
-              val = 0.f;
-          }
-        val *= height;
-        cairo_rectangle (
-          cr, (COLOR_AREA_WIDTH - 4),
-          (height - (int) val),
-          4, val);
-        cairo_fill (cr);
-      }
-      break;
-    default:
-      break;
-    }
-#endif
 }
 
 static void
@@ -1865,6 +1791,27 @@ show_context_menu (
               "win.unlisten-selected-tracks");
           APPEND (menuitem);
         }
+    }
+
+  /* add enable/disable */
+  if (tracklist_selections_contains_enabled_track (
+        TRACKLIST_SELECTIONS, F_ENABLED))
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Disable"), "offline",
+          F_NO_TOGGLE,
+          "win.disable-selected-tracks");
+      APPEND (menuitem);
+    }
+  else
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Enable"), "online",
+          F_NO_TOGGLE,
+          "win.enable-selected-tracks");
+      APPEND (menuitem);
     }
 
   ADD_SEPARATOR;

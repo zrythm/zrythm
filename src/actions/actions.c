@@ -1728,6 +1728,40 @@ activate_unlisten_selected_tracks (
 }
 
 void
+activate_enable_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_enable (
+      TRACKLIST_SELECTIONS, F_ENABLE);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
+activate_disable_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    {
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_enable (
+      TRACKLIST_SELECTIONS, F_NO_ENABLE);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
 change_state_dim_output (
   GSimpleAction * action,
   GVariant *      value,
