@@ -85,7 +85,7 @@ test_midi_file_playback ()
       UndoableAction * ua =
         tracklist_selections_action_new_create (
           TRACK_TYPE_MIDI, NULL, file,
-          TRACKLIST->num_tracks, PLAYHEAD, 1);
+          TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
       undo_manager_perform (
         UNDO_MANAGER, ua);
       supported_file_free (file);

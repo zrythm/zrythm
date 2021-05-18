@@ -184,7 +184,8 @@ test_bypass_state_after_project_load (void)
       /* set bypass */
       plugin_set_enabled (
         pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
-      g_assert_false (plugin_is_enabled (pl));
+      g_assert_false (
+        plugin_is_enabled (pl, false));
 
       /* reload project */
       test_project_save_and_reload ();
@@ -195,7 +196,7 @@ test_bypass_state_after_project_load (void)
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
       /* check bypass */
-      g_assert_false (plugin_is_enabled (pl));
+      g_assert_false (plugin_is_enabled (pl, false));
     }
 
   test_helper_zrythm_cleanup ();

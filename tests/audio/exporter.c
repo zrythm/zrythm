@@ -196,7 +196,7 @@ test_export_wav ()
   UndoableAction * action =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
   undo_manager_perform (UNDO_MANAGER, action);
 
   char * tmp_dir =
@@ -425,7 +425,7 @@ test_mixdown_midi_routed_to_instrument_track ()
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * midi_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -614,7 +614,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * midi_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

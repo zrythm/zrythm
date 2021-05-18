@@ -1292,7 +1292,7 @@ tracklist_handle_file_drop (
             tracklist_selections_action_new_create (
               track_type, NULL, file,
               TRACKLIST->num_tracks,
-              pos, 1);
+              pos, 1, -1);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
     }

@@ -54,7 +54,7 @@ test_num_tracks_with_file (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, file,
-      num_tracks_before, PLAYHEAD, 1);
+      num_tracks_before, PLAYHEAD, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   Track * first_track =
@@ -816,7 +816,7 @@ test_audio_track_deletion (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* delete track and undo */
@@ -1124,7 +1124,7 @@ _test_move_tracks (
       is_instrument ?
         TRACK_TYPE_INSTRUMENT :
         TRACK_TYPE_AUDIO_BUS,
-      setting, NULL, 3, NULL, 1);
+      setting, NULL, 3, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * ins_track = TRACKLIST->tracks[3];
   if (is_instrument)
@@ -1137,7 +1137,7 @@ _test_move_tracks (
   action =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-      4, NULL, 1);
+      4, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * fx_track = TRACKLIST->tracks[4];
   g_assert_true (
@@ -1342,17 +1342,17 @@ test_multi_track_duplicate (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, NULL,
-      start_pos, NULL, 1);
+      start_pos, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-      start_pos + 1, NULL, 1);
+      start_pos + 1, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
-      start_pos + 2, NULL, 1);
+      start_pos + 2, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_true (
@@ -1540,17 +1540,17 @@ test_duplicate_w_output_and_send (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
-      start_pos, NULL, 1);
+      start_pos, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_GROUP, NULL, NULL,
-      start_pos + 1, NULL, 1);
+      start_pos + 1, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_GROUP, NULL, NULL,
-      start_pos + 2, NULL, 1);
+      start_pos + 2, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   ua =
     tracklist_selections_action_new_create_audio_fx (

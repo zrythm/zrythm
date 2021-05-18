@@ -333,15 +333,19 @@ tracklist_selections_action_new (
   const char *                  new_txt,
   bool                          already_edited);
 
+/**
+ * @param disable_track_pos Track position to
+ *   disable, or -1 to not disable any track.
+ */
 #define tracklist_selections_action_new_create( \
   track_type,pl_setting,file_descr,track_pos, \
-  pos,num_tracks) \
+  pos,num_tracks,disable_track_pos) \
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_CREATE, \
     NULL, NULL, NULL, track_type, pl_setting, \
     file_descr, \
     track_pos, pos, num_tracks, 0, NULL, \
-    false, NULL, 0.f, 0.f, NULL, false)
+    disable_track_pos, NULL, 0.f, 0.f, NULL, false)
 
 /**
  * Creates a new TracklistSelectionsAction for an
@@ -351,7 +355,7 @@ tracklist_selections_action_new (
   pl_setting,track_pos,num_tracks) \
   tracklist_selections_action_new_create ( \
     TRACK_TYPE_AUDIO_BUS, pl_setting, NULL, track_pos, \
-    NULL, num_tracks)
+    NULL, num_tracks, -1)
 
 /**
  * Creates a new TracklistSelectionsAction for an
@@ -361,7 +365,7 @@ tracklist_selections_action_new (
   pl_setting,track_pos,num_tracks) \
   tracklist_selections_action_new_create ( \
     TRACK_TYPE_INSTRUMENT, pl_setting, NULL, track_pos, \
-    NULL, num_tracks)
+    NULL, num_tracks, -1)
 
 /**
  * Creates a new TracklistSelectionsAction for an
@@ -371,7 +375,7 @@ tracklist_selections_action_new (
   track_pos,num_tracks) \
   tracklist_selections_action_new_create ( \
     TRACK_TYPE_AUDIO_GROUP, NULL, NULL, track_pos, \
-    NULL, num_tracks)
+    NULL, num_tracks, -1)
 
 /**
  * Creates a new TracklistSelectionsAction for a MIDI
@@ -381,7 +385,7 @@ tracklist_selections_action_new (
   track_pos,num_tracks) \
   tracklist_selections_action_new_create ( \
     TRACK_TYPE_MIDI, NULL, NULL, track_pos, \
-    NULL, num_tracks)
+    NULL, num_tracks, -1)
 
 /**
  * Generic edit action.

@@ -124,6 +124,8 @@ on_bounce_clicked (
     }
 
   export_settings_free_members (&settings);
+
+  gtk_window_close (GTK_WINDOW (self));
 }
 
 static void
@@ -146,6 +148,16 @@ on_bounce_with_parents_toggled (
     GTK_WIDGET (self->bounce_step_box), !toggled);
   g_settings_set_boolean (
     S_UI, "bounce-with-parents", toggled);
+}
+
+static void
+on_disable_after_bounce_toggled (
+  GtkToggleButton *    btn,
+  BounceDialogWidget * self)
+{
+  bool toggled = gtk_toggle_button_get_active (btn);
+  g_settings_set_boolean (
+    S_UI, "disable-after-bounce", toggled);
 }
 
 /**
@@ -177,6 +189,23 @@ bounce_dialog_widget_new (
     G_CALLBACK (on_bounce_with_parents_toggled),
     self);
 
+  if (type == BOUNCE_DIALOG_TRACKS)
+    {
+      g_signal_connect (
+        G_OBJECT (self->disable_after_bounce),
+        "toggled",
+        G_CALLBACK (on_disable_after_bounce_toggled),
+        self);
+    }
+  else
+    {
+      /* hide 'disable after bounce' if not bouncing
+       * tracks */
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->disable_after_bounce),
+        false);
+    }
+
   return self;
 }
 
@@ -197,6 +226,7 @@ bounce_dialog_widget_class_init (
   BIND_CHILD (bounce_with_parents);
   BIND_CHILD (bounce_step_box);
   BIND_CHILD (tail_spin);
+  BIND_CHILD (disable_after_bounce);
 
   gtk_widget_class_bind_template_callback (
     klass, on_cancel_clicked);
@@ -205,7 +235,8 @@ bounce_dialog_widget_class_init (
 }
 
 static void
-bounce_dialog_widget_init (BounceDialogWidget * self)
+bounce_dialog_widget_init (
+  BounceDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -223,4 +254,11 @@ bounce_dialog_widget_init (BounceDialogWidget * self)
   gtk_widget_set_visible (
     GTK_WIDGET (self->bounce_step_box),
     !bounce_with_parents);
+
+  bool disable_after_bounce =
+    g_settings_get_boolean (
+      S_UI, "disable-after-bounce");
+  gtk_toggle_button_set_active (
+    GTK_TOGGLE_BUTTON (self->disable_after_bounce),
+    disable_after_bounce);
 }

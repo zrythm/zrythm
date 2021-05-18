@@ -335,7 +335,7 @@ activate_plugin_setting (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       tt, setting, NULL, TRACKLIST->num_tracks,
-      PLAYHEAD, 1);
+      PLAYHEAD, 1, -1);
 
   int err = undo_manager_perform (UNDO_MANAGER, ua);
   if (err)

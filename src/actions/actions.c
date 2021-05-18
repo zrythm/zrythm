@@ -1405,7 +1405,7 @@ activate_create_audio_track (GSimpleAction *action,
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }
@@ -1418,7 +1418,7 @@ activate_create_ins_track (GSimpleAction *action,
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_INSTRUMENT, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }
@@ -1432,7 +1432,7 @@ activate_create_midi_track (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }
@@ -1445,7 +1445,7 @@ activate_create_audio_bus_track (GSimpleAction *action,
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }
@@ -1459,7 +1459,7 @@ activate_create_midi_bus_track (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI_BUS, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }
@@ -1473,7 +1473,7 @@ activate_create_audio_group_track (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_GROUP, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }
@@ -1487,7 +1487,7 @@ activate_create_midi_group_track (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI_GROUP, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }

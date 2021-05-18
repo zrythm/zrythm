@@ -72,7 +72,7 @@ test_crash_handling (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, setting, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   Plugin * pl =

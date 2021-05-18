@@ -117,7 +117,7 @@ test_prepare_common (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   midi_track_pos = TRACKLIST->num_tracks - 1;
   Track * midi_track =
@@ -176,7 +176,7 @@ test_prepare_common (void)
   UndoableAction * action =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, &start, 1);
+      TRACKLIST->num_tracks, &start, 1, -1);
   undo_manager_perform (UNDO_MANAGER, action);
   audio_track_pos = TRACKLIST->num_tracks - 1;
   Track * audio_track =
@@ -662,7 +662,7 @@ test_remove_range_w_start_marker (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
-      audio_track_pos, NULL, 1);
+      audio_track_pos, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* remove range */
@@ -698,7 +698,7 @@ test_remove_range_w_objects_inside (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, file,
-      midi_track_pos, NULL, 1);
+      midi_track_pos, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];

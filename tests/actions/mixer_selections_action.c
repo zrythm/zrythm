@@ -271,7 +271,7 @@ _test_create_plugins (
       ua =
         tracklist_selections_action_new_create (
           TRACK_TYPE_INSTRUMENT, setting, NULL,
-          TRACKLIST->num_tracks, NULL, 1);
+          TRACKLIST->num_tracks, NULL, 1, -1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
   else
@@ -281,7 +281,7 @@ _test_create_plugins (
       ua =
         tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-          TRACKLIST->num_tracks, NULL, 1);
+          TRACKLIST->num_tracks, NULL, 1, -1);
       undo_manager_perform (UNDO_MANAGER, ua);
       ua =
         mixer_selections_action_new_create (
@@ -423,7 +423,7 @@ _test_port_and_plugin_track_pos_after_move (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, setting, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   plugin_setting_free (setting);
@@ -627,7 +627,7 @@ test_move_two_plugins_one_slot_up (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, setting, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
@@ -1162,7 +1162,7 @@ test_move_plugin_from_inserts_to_midi_fx (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   int track_pos = TRACKLIST->num_tracks - 1;
   PluginSetting * setting =

@@ -144,7 +144,7 @@ test_solo ()
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -153,7 +153,7 @@ test_solo ()
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track2 =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

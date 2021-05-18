@@ -433,6 +433,10 @@ Args:
                  "bounce-with-parents" "b" "true"
                  "Bounce with parents"
                  "Whether to bounce with parent tracks (direct outputs).")
+               (make-schema-key
+                 "disable-after-bounce" "b" "false"
+                 "Disable after bounce"
+                 "Disable track after bouncing.")
                (make-schema-key-with-enum
                  "bounce-step"
                  "bounce-step" "post-fader"

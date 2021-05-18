@@ -52,7 +52,7 @@ test_fill_stereo_ports (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
-      num_tracks_before, &pos, 1);
+      num_tracks_before, &pos, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   Track * track =

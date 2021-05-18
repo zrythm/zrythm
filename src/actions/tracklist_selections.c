@@ -596,6 +596,26 @@ do_or_undo_create_or_delete (
               /* TODO select each plugin that was
                * selected */
             }
+
+          /* disable given track, if any (eg when
+           * bouncing) */
+          if (self->ival_after > -1)
+            {
+              g_return_val_if_fail (
+                self->ival_after <
+                  TRACKLIST->num_tracks,
+                -1);
+              Track * tr_to_disable =
+                TRACKLIST->tracks[self->ival_after];
+              g_return_val_if_fail (
+                IS_TRACK_AND_NONNULL (
+                  tr_to_disable),
+                -1);
+              track_set_enabled (
+                tr_to_disable, F_NO_ENABLE,
+                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
+            }
         }
       /* else if delete undo */
       else
@@ -754,7 +774,7 @@ do_or_undo_create_or_delete (
 
               track_validate (orig_track);
             }
-        }
+        } /* if delete undo */
 
       EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
     }
@@ -778,6 +798,26 @@ do_or_undo_create_or_delete (
                 F_REMOVE_PL, F_FREE,
                 F_NO_PUBLISH_EVENTS,
                 F_NO_RECALC_GRAPH);
+            }
+
+          /* reenable given track, if any (eg when
+           * bouncing) */
+          if (self->ival_after > -1)
+            {
+              g_return_val_if_fail (
+                self->ival_after <
+                  TRACKLIST->num_tracks,
+                -1);
+              Track * tr_to_enable =
+                TRACKLIST->tracks[self->ival_after];
+              g_return_val_if_fail (
+                IS_TRACK_AND_NONNULL (
+                  tr_to_enable),
+                -1);
+              track_set_enabled (
+                tr_to_enable, F_ENABLE,
+                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
             }
         }
       /* else if delete do */

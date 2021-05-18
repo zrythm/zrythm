@@ -86,8 +86,11 @@
             <property name="can-focus">False</property>
             <child>
               <object class="GtkCheckButton" id="bounce_with_parents">
-                <property name="visible">True</property>
                 <property name="label" translatable="yes">Bounce with parents</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="receives-default">False</property>
+                <property name="draw-indicator">True</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
@@ -98,6 +101,7 @@
             <child>
               <object class="GtkBox" id="bounce_step_box">
                 <property name="visible">True</property>
+                <property name="can-focus">False</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
@@ -156,6 +160,20 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="disable_after_bounce">
+            <property name="label" translatable="yes">Disable after bounce</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">False</property>
+            <property name="draw-indicator">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
           </packing>
         </child>
       </object>

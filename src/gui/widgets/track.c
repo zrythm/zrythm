@@ -300,6 +300,12 @@ draw_color_area (
 
   /* draw background */
   GdkRGBA bg_color = self->track->color;
+  if (!track_is_enabled (track))
+    {
+      bg_color.red = 0.5;
+      bg_color.green = 0.5;
+      bg_color.blue = 0.5;
+    }
   if (self->color_area_hovered)
     {
       color_brighten_default (&bg_color);
@@ -308,15 +314,6 @@ draw_color_area (
   cairo_rectangle (
     cr, 0, 0, COLOR_AREA_WIDTH, height);
   cairo_fill (cr);
-
-  /* draw stripes if disabled */
-  if (!track_is_enabled (track))
-    {
-      cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1);
-      cairo_move_to (cr, 0, 0);
-      cairo_line_to (cr, COLOR_AREA_WIDTH, height);
-      cairo_stroke (cr);
-    }
 
   GdkRGBA c2, c3;
   ui_get_contrast_color (
@@ -351,8 +348,14 @@ draw_name (
   cairo_t *     cr)
 {
   /* draw text */
-  cairo_set_source_rgba (
-    cr, 1, 1, 1, 1);
+  if (track_is_enabled (self->track))
+    {
+      cairo_set_source_rgba (cr, 1, 1, 1, 1);
+    }
+  else
+    {
+      cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1);
+    }
   cairo_move_to (cr, 22, 2);
   PangoLayout * layout = self->layout;
   pango_layout_set_text (

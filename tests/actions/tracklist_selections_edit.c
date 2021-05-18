@@ -66,7 +66,7 @@ _test_edit_tracks (
       is_instrument ?
         TRACK_TYPE_INSTRUMENT :
         TRACK_TYPE_AUDIO_BUS,
-      setting, NULL, 3, NULL, 1);
+      setting, NULL, 3, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * ins_track = get_ins_track ();
   if (is_instrument)
@@ -130,7 +130,7 @@ _test_edit_tracks (
         action =
           tracklist_selections_action_new_create (
             TRACK_TYPE_MIDI,
-            NULL, NULL, 2, NULL, 1);
+            NULL, NULL, 2, NULL, 1, -1);
         undo_manager_perform (UNDO_MANAGER, action);
         Track * midi_track = TRACKLIST->tracks[2];
         track_select (
@@ -208,7 +208,7 @@ _test_edit_tracks (
         action =
           tracklist_selections_action_new_create (
             TRACK_TYPE_AUDIO_GROUP,
-            NULL, NULL, 2, NULL, 1);
+            NULL, NULL, 2, NULL, 1, -1);
         undo_manager_perform (UNDO_MANAGER, action);
         Track * group_track = TRACKLIST->tracks[2];
 
@@ -565,7 +565,7 @@ test_edit_midi_direct_out_to_ins (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_MIDI, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1);
+      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * midi_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

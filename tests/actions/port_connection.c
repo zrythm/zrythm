@@ -171,7 +171,7 @@ _test_port_connection (
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * target_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -182,7 +182,7 @@ _test_port_connection (
       ua =
         tracklist_selections_action_new_create (
           TRACK_TYPE_INSTRUMENT, setting, NULL,
-          TRACKLIST->num_tracks, NULL, 1);
+          TRACKLIST->num_tracks, NULL, 1, -1);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
   else
@@ -191,7 +191,7 @@ _test_port_connection (
       ua =
         tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-          TRACKLIST->num_tracks, NULL, 1);
+          TRACKLIST->num_tracks, NULL, 1, -1);
       undo_manager_perform (UNDO_MANAGER, ua);
       ua =
         mixer_selections_action_new_create (

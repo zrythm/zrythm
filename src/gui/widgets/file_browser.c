@@ -99,7 +99,7 @@ on_file_chooser_file_activated (
       ua =
         tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO, NULL, file,
-          TRACKLIST->num_tracks, PLAYHEAD, 1);
+          TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
       undo_manager_perform (UNDO_MANAGER, ua);
       break;
     case FILE_TYPE_MIDI:
@@ -110,7 +110,7 @@ on_file_chooser_file_activated (
           PLAYHEAD,
           /* the number of tracks
            * to create depends on the MIDI file */
-          -1);
+          -1, -1);
       undo_manager_perform (UNDO_MANAGER, ua);
       break;
     default:

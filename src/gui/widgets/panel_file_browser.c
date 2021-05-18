@@ -412,7 +412,7 @@ on_row_activated (GtkTreeView       *tree_view,
       UndoableAction * action =
         tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO, NULL, descr,
-          TRACKLIST->num_tracks, PLAYHEAD, 1);
+          TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
       undo_manager_perform (UNDO_MANAGER, action);
     }
 }

@@ -235,7 +235,7 @@ on_drag_data_received (
             tracklist_selections_action_new_create (
               tt, setting, NULL,
               TRACKLIST->num_tracks,
-              PLAYHEAD, 1);
+              PLAYHEAD, 1, -1);
           undo_manager_perform (UNDO_MANAGER, ua);
           plugin_setting_free (setting);
         }

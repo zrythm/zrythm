@@ -163,7 +163,7 @@ test_plugin_manager_create_tracks_from_plugin (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       track_type, setting, NULL,
-      TRACKLIST->num_tracks, NULL, num_tracks);
+      TRACKLIST->num_tracks, NULL, num_tracks, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   return TRACKLIST->num_tracks - 1;

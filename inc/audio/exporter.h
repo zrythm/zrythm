@@ -126,6 +126,12 @@ typedef struct ExportSettings
   /** Export mode. */
   ExportMode        mode;
 
+  /**
+   * Disable exported track (or mute region) after
+   * bounce.
+   */
+  bool              disable_after_bounce;
+
   /** Bounce with parent tracks (direct outs). */
   bool              bounce_with_parents;
 

@@ -135,7 +135,7 @@ _test (
   ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO_BUS,
-      setting, NULL, TRACKLIST->num_tracks, NULL, 1);
+      setting, NULL, TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * new_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

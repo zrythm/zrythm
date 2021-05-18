@@ -617,6 +617,12 @@ export_settings_set_bounce_defaults (
         &self->custom_end, F_GLOBAL);
       break;
     case EXPORT_MODE_TRACKS:
+      self->disable_after_bounce =
+        ZRYTHM_TESTING ?
+          false :
+          g_settings_get_boolean (
+            S_UI, "disable-after-bounce");
+      /* fallthrough */
     case EXPORT_MODE_FULL:
       {
         ArrangerObject * start =
@@ -727,18 +733,23 @@ exporter_create_audio_track_after_bounce (
       settings->file_uri);
 
   /* find next track */
-  Track * track = NULL;
+  Track * last_track = NULL;
+  Track * track_to_disable = NULL;
   switch (settings->mode)
     {
     case EXPORT_MODE_REGIONS:
-      track =
+      last_track =
         timeline_selections_get_last_track (
           TL_SELECTIONS);
       break;
     case EXPORT_MODE_TRACKS:
-      track =
+      last_track =
         tracklist_selections_get_lowest_track (
           TRACKLIST_SELECTIONS);
+      if (settings->disable_after_bounce)
+        {
+          track_to_disable = last_track;
+        }
       break;
     default:
       g_return_if_reached ();
@@ -747,7 +758,8 @@ exporter_create_audio_track_after_bounce (
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL,
-      descr, track->pos + 1, pos, 1);
+      descr, last_track->pos + 1, pos, 1,
+      track_to_disable ? track_to_disable->pos : -1);
   Position tmp;
   position_set_to_pos (&tmp, PLAYHEAD);
   transport_set_playhead_pos (

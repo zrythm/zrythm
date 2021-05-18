@@ -63,6 +63,7 @@ typedef struct _BounceDialogWidget
   GtkButton *          cancel_btn;
   GtkButton *          bounce_btn;
   GtkCheckButton *     bounce_with_parents;
+  GtkCheckButton *     disable_after_bounce;
   GtkBox *             bounce_step_box;
   BounceStepSelectorWidget * bounce_step_selector;
   GtkSpinButton *      tail_spin;

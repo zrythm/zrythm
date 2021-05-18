@@ -744,7 +744,7 @@ test_recording ()
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -908,7 +908,7 @@ test_mono_recording (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -1014,7 +1014,7 @@ test_long_audio_recording (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -1194,7 +1194,7 @@ test_2nd_audio_recording (void)
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, NULL, 1);
+      TRACKLIST->num_tracks, NULL, 1, -1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
