@@ -1113,30 +1113,44 @@ activate_delete (
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
       PROJECT);
+  UndoableAction * ua = NULL;
 
   if (sel &&
       arranger_selections_has_any (sel) &&
       !arranger_selections_contains_undeletable_object (
         sel))
     {
-      UndoableAction * action =
+      ua =
         arranger_selections_action_new_delete (
           sel);
-      if (action)
+      if (ua)
         {
-          undo_manager_perform (
-            UNDO_MANAGER, action);
+          undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
 
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_TRACKLIST)
+  switch (PROJECT->last_selection)
     {
+    case SELECTION_TYPE_TRACKLIST:
       g_message (
         "activating delete selected tracks");
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW),
         "delete-selected-tracks", NULL);
+      break;
+    case SELECTION_TYPE_INSERT:
+      ua =
+        mixer_selections_action_new_delete (
+          MIXER_SELECTIONS);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      break;
+    default:
+      g_warning ("not implemented yet");
+      break;
     }
 }
 
