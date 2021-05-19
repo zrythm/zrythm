@@ -498,6 +498,11 @@ tracklist_mark_all_tracks_for_bounce (
   bool        bounce);
 
 void
+tracklist_get_total_bars (
+  Tracklist * self,
+  int *       total_bars);
+
+void
 tracklist_free (
   Tracklist * self);
 

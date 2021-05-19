@@ -919,6 +919,8 @@ move_items_x (
       automation_region_force_sort (region);
     }
 
+  transport_recalculate_total_bars (TRANSPORT, sel);
+
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 }
@@ -3267,6 +3269,12 @@ drag_update (
                 self, &self->curr_pos);
             }
         }
+      {
+        ArrangerSelections * sel =
+          arranger_widget_get_selections (self);
+        transport_recalculate_total_bars (
+          TRANSPORT, sel);
+      }
       break;
     case UI_OVERLAY_ACTION_RESIZING_UP:
       if (self->type == TYPE (MIDI_MODIFIER))

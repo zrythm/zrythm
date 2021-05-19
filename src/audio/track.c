@@ -3298,6 +3298,68 @@ track_set_enabled (
     }
 }
 
+static void
+get_end_pos_from_objs (
+  ArrangerObject ** objs,
+  int               num_objs,
+  Position *        pos)
+{
+  for (int i = 0; i < num_objs; i++)
+    {
+      ArrangerObject * obj = objs[i];
+      Position end_pos;
+      if (arranger_object_type_has_length (
+            obj->type))
+        {
+          arranger_object_get_end_pos (
+            obj, &end_pos);
+        }
+      else
+        {
+          arranger_object_get_pos (obj, &end_pos);
+        }
+      if (position_is_after (&end_pos, pos))
+        {
+          position_set_to_pos (pos, &end_pos);
+        }
+    }
+}
+
+void
+track_get_total_bars (
+  Track * self,
+  int *   total_bars)
+{
+  Position pos;
+  position_from_bars (&pos, *total_bars);
+
+  for (int i = 0; i < self->num_lanes; i++)
+    {
+      TrackLane * lane = self->lanes[i];
+      get_end_pos_from_objs (
+        (ArrangerObject **) lane->regions,
+        lane->num_regions, &pos);
+    }
+
+  get_end_pos_from_objs (
+    (ArrangerObject **) self->chord_regions,
+    self->num_chord_regions,
+    &pos);
+  get_end_pos_from_objs (
+    (ArrangerObject **) self->scales,
+    self->num_scales, &pos);
+  get_end_pos_from_objs (
+    (ArrangerObject **) self->markers,
+    self->num_markers, &pos);
+
+  int track_total_bars =
+    position_get_total_bars (&pos, true);
+  if (track_total_bars > *total_bars)
+    {
+      *total_bars = track_total_bars;
+    }
+}
+
 /**
  * Removes the AutomationTrack's associated with
  * this channel from the AutomationTracklist in the

@@ -1393,6 +1393,11 @@ TrackType
 track_type_get_from_string (
   const char * str);
 
+void
+track_get_total_bars (
+  Track * self,
+  int *   total_bars);
+
 /**
  * Wrapper for each track type.
  */

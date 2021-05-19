@@ -241,6 +241,12 @@ position_from_ticks (
   Position * pos,
   double     ticks);
 
+NONNULL
+void
+position_from_bars (
+  Position * pos,
+  int        bars);
+
 HOT
 NONNULL
 void

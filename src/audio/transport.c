@@ -49,6 +49,12 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * A buffer of n bars after the end of the last
+ * object.
+ */
+#define BARS_END_BUFFER 4
+
 static void
 init_common (
   Transport * self)
@@ -997,15 +1003,63 @@ transport_position_is_inside_punch_range (
 /**
  * Recalculates the total bars based on the last
  * object's position.
+ *
+ * @param sel If given, only these objects will
+ *   be checked, otherwise every object in the
+ *   project will be checked.
  */
 void
 transport_recalculate_total_bars (
-  Transport * self)
+  Transport *          self,
+  ArrangerSelections * sel)
 {
   if (!ZRYTHM_HAVE_UI)
     return;
 
-  /* TODO */
+  int total_bars = self->total_bars;
+  if (sel)
+    {
+      int num_objs;
+      ArrangerObject ** objs =
+        arranger_selections_get_all_objects (
+          sel, &num_objs);
+      for (int i = 0; i < num_objs; i++)
+        {
+          ArrangerObject * obj = objs[i];
+          Position pos;
+          if (arranger_object_type_has_length (
+                obj->type))
+            {
+              arranger_object_get_end_pos (
+                obj, &pos);
+            }
+          else
+            {
+              arranger_object_get_pos (obj, &pos);
+            }
+          int pos_bars =
+            position_get_total_bars (&pos, true);
+          if (pos_bars > total_bars - 3)
+            {
+              total_bars =
+                pos_bars + BARS_END_BUFFER;
+            }
+        }
+    }
+  /* else no selections, calculate total bars for
+   * every object */
+  else
+    {
+      total_bars = TRANSPORT_DEFAULT_TOTAL_BARS;
+
+      tracklist_get_total_bars (
+        TRACKLIST, &total_bars);
+
+      total_bars += BARS_END_BUFFER;
+    }
+
+  transport_update_total_bars (
+    self, total_bars, F_PUBLISH_EVENTS);
 }
 
 /**
@@ -1017,7 +1071,12 @@ transport_update_total_bars (
   int         total_bars,
   bool        fire_events)
 {
-  g_return_if_fail (self && total_bars > 0);
+  g_return_if_fail (
+    self &&
+    total_bars >= TRANSPORT_DEFAULT_TOTAL_BARS);
+
+  if (self->total_bars == total_bars)
+    return;
 
   self->total_bars = total_bars;
 

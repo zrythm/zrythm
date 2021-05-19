@@ -1324,6 +1324,18 @@ tracklist_mark_all_tracks_for_bounce (
     }
 }
 
+void
+tracklist_get_total_bars (
+  Tracklist * self,
+  int *       total_bars)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      track_get_total_bars (track, total_bars);
+    }
+}
+
 Tracklist *
 tracklist_new (Project * project)
 {

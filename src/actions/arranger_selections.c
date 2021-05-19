@@ -1552,6 +1552,9 @@ do_or_undo_duplicate_or_link (
   sel = get_actual_arranger_selections (self);
   if (_do)
     {
+      transport_recalculate_total_bars (
+        TRANSPORT, self->sel_after);
+
       EVENTS_PUSH (
         ET_ARRANGER_SELECTIONS_CREATED, sel);
     }
@@ -1711,6 +1714,9 @@ do_or_undo_create_or_delete (
   if ((_do && create) || (!_do && !create))
     {
       update_region_link_groups (objs, size);
+
+      transport_recalculate_total_bars (
+        TRANSPORT, self->sel);
 
       EVENTS_PUSH (
         ET_ARRANGER_SELECTIONS_CREATED, sel);

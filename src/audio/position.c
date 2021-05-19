@@ -591,6 +591,15 @@ position_from_frames (
 }
 
 void
+position_from_bars (
+  Position * pos,
+  int        bars)
+{
+  position_init (pos);
+  position_add_bars (pos, bars);
+}
+
+void
 position_add_ticks (
   Position * self,
   double     ticks)
