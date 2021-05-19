@@ -563,6 +563,16 @@ channel_set_mono_compat_enabled (
   bool      fire_events);
 
 /**
+ * Selects/deselects all plugins in the given slot
+ * type.
+ */
+void
+channel_select_all (
+  Channel *      self,
+  PluginSlotType type,
+  bool           select);
+
+/**
  * Clones the channel recursively.
  *
  * @note The given track is not cloned.

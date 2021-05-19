@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,6 +18,7 @@
  */
 
 #include "gui/backend/clipboard.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 /**
@@ -41,22 +42,48 @@ clipboard_new_for_arranger_selections (
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       self->automation_sel =
         (AutomationSelections *) sel;
+      self->type =
+        CLIPBOARD_TYPE_AUTOMATION_SELECTIONS;
       break;
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
       self->timeline_sel =
         (TimelineSelections *) sel;
+      self->type =
+        CLIPBOARD_TYPE_TIMELINE_SELECTIONS;
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       self->ma_sel =
         (MidiArrangerSelections *) sel;
+      self->type =
+        CLIPBOARD_TYPE_MIDI_SELECTIONS;
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
       self->chord_sel =
         (ChordSelections *) sel;
+      self->type =
+        CLIPBOARD_TYPE_CHORD_SELECTIONS;
       break;
     default:
       g_return_val_if_reached (NULL);
     }
+
+  return self;
+}
+
+Clipboard *
+clipboard_new_for_mixer_selections (
+  MixerSelections * sel,
+  bool              clone)
+{
+  Clipboard * self = object_new (Clipboard);
+
+  if (clone)
+    {
+      sel = mixer_selections_clone (sel, F_PROJECT);
+    }
+
+  self->mixer_sel = sel;
+  self->type = CLIPBOARD_TYPE_MIXER_SELECTIONS;
 
   return self;
 }
@@ -92,11 +119,23 @@ void
 clipboard_free (
   Clipboard * self)
 {
-  ArrangerSelections * sel =
-    clipboard_get_selections (self);
-  g_return_if_fail (sel);
-
-  arranger_selections_free_full (sel);
+  switch (self->type)
+    {
+    case CLIPBOARD_TYPE_TIMELINE_SELECTIONS:
+    case CLIPBOARD_TYPE_MIDI_SELECTIONS:
+    case CLIPBOARD_TYPE_AUTOMATION_SELECTIONS:
+    case CLIPBOARD_TYPE_CHORD_SELECTIONS:
+      {
+        ArrangerSelections * sel =
+          clipboard_get_selections (self);
+        g_return_if_fail (sel);
+        arranger_selections_free_full (sel);
+      }
+      break;
+    case CLIPBOARD_TYPE_MIXER_SELECTIONS:
+      mixer_selections_free (self->mixer_sel);
+      break;
+    }
 
   g_free_and_null (self);
 }

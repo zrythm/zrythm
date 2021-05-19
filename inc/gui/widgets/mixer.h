@@ -34,6 +34,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _DragDestBoxWidget DragDestBoxWidget;
 typedef struct Channel Channel;
+typedef struct _ChannelSlotWidget ChannelSlotWidget;
 
 typedef struct _MixerWidget
 {
@@ -57,6 +58,12 @@ typedef struct _MixerWidget
 
   GtkButton *         channels_add;
   GtkBox *            master_box;
+
+  /**
+   * Selected slot to paste selections (when
+   * copy-pasting plugins).
+   */
+  ChannelSlotWidget * paste_slot;
 
   bool                setup;
 } MixerWidget;

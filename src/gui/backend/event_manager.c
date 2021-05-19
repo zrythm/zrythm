@@ -172,6 +172,8 @@ on_project_selection_type_changed (void)
       break;
     case SELECTION_TYPE_INSERT:
     case SELECTION_TYPE_MIDI_FX:
+    case SELECTION_TYPE_INSTRUMENT:
+    case SELECTION_TYPE_MODULATOR:
       break;
     case SELECTION_TYPE_EDITOR:
       z_gtk_widget_add_style_class (

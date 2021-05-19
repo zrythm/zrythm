@@ -146,15 +146,32 @@ int
 mixer_selections_get_lowest_slot (
   MixerSelections * ms);
 
+void
+mixer_selections_post_deserialize (
+  MixerSelections * self);
+
+/**
+ * Returns whether the selections can be pasted to
+ * MixerWidget.paste_slot.
+ */
+NONNULL
+bool
+mixer_selections_can_be_pasted (
+  MixerSelections * self,
+  Channel *         ch,
+  PluginSlotType    type,
+  int               slot);
+
 /**
  * Paste the selections starting at the slot in the
  * given channel.
  */
+NONNULL
 void
 mixer_selections_paste_to_slot (
-  MixerSelections * ts,
+  MixerSelections * ms,
   Channel *         ch,
-  PluginSlotType   type,
+  PluginSlotType    type,
   int               slot);
 
 /**

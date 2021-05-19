@@ -31,7 +31,11 @@ typedef struct MixerSelections MixerSelections;
 
 typedef enum MixerSelectionsActionType
 {
+  /** Duplicate from existing plugins. */
   MIXER_SELECTIONS_ACTION_COPY,
+  /** Create new from clipboard. */
+  MIXER_SELECTIONS_ACTION_PASTE,
+  /** Create new from PluginSetting. */
   MIXER_SELECTIONS_ACTION_CREATE,
   MIXER_SELECTIONS_ACTION_DELETE,
   MIXER_SELECTIONS_ACTION_MOVE,
@@ -41,6 +45,7 @@ static const cyaml_strval_t
 mixer_selections_action_type_strings[] =
 {
   { "Copy", MIXER_SELECTIONS_ACTION_COPY },
+  { "Paste", MIXER_SELECTIONS_ACTION_PASTE },
   { "Create", MIXER_SELECTIONS_ACTION_CREATE },
   { "Delete", MIXER_SELECTIONS_ACTION_DELETE },
   { "Move", MIXER_SELECTIONS_ACTION_MOVE },
@@ -200,6 +205,12 @@ mixer_selections_action_new (
   ms,slot_type,to_tr,to_slot) \
   mixer_selections_action_new ( \
     ms, MIXER_SELECTIONS_ACTION_COPY, slot_type, \
+    to_tr, to_slot, NULL, 0)
+
+#define mixer_selections_action_new_paste( \
+  ms,slot_type,to_tr,to_slot) \
+  mixer_selections_action_new ( \
+    ms, MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
     to_tr, to_slot, NULL, 0)
 
 #define mixer_selections_action_new_move( \

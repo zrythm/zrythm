@@ -124,6 +124,12 @@ typedef enum SelectionType
   /** MIDI FX selections in the mixer. */
   SELECTION_TYPE_MIDI_FX,
 
+  /** Instrument slot. */
+  SELECTION_TYPE_INSTRUMENT,
+
+  /** Modulator slot. */
+  SELECTION_TYPE_MODULATOR,
+
   /** Editor arranger. */
   SELECTION_TYPE_EDITOR,
 } SelectionType;
@@ -135,6 +141,8 @@ selection_type_strings[] =
   { "Timeline", SELECTION_TYPE_TIMELINE },
   { "Insert", SELECTION_TYPE_INSERT },
   { "MIDI FX", SELECTION_TYPE_MIDI_FX },
+  { "Instrument", SELECTION_TYPE_INSTRUMENT },
+  { "Modulator", SELECTION_TYPE_MODULATOR },
   { "Editor", SELECTION_TYPE_EDITOR },
 };
 

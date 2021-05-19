@@ -176,7 +176,7 @@ mixer_selections_get_lowest_slot (
 
   for (int i = 0; i < ms->num_slots; i++)
     {
-      if (ms->slots[i] < max)
+      if (ms->slots[i] > max)
         max = ms->slots[i];
     }
 
@@ -527,20 +527,55 @@ mixer_selections_clone (
   return ms;
 }
 
+void
+mixer_selections_post_deserialize (
+  MixerSelections * self)
+{
+  for (int i = 0; i < self->num_slots; i++)
+    {
+      plugin_init_loaded (
+        self->plugins[i], F_NOT_PROJECT);
+    }
+
+  /* sort the selections */
+  mixer_selections_sort (self, F_ASCENDING);
+}
+
+/**
+ * Returns whether the selections can be pasted to
+ * MixerWidget.paste_slot.
+ */
+bool
+mixer_selections_can_be_pasted (
+  MixerSelections * self,
+  Channel *         ch,
+  PluginSlotType    type,
+  int               slot)
+{
+  int lowest =
+    mixer_selections_get_lowest_slot (self);
+  int highest =
+    mixer_selections_get_highest_slot (self);
+  int delta = lowest - highest;
+
+  return slot + delta < STRIP_SIZE;
+}
+
 /**
  * Paste the selections starting at the slot in the
  * given channel.
  */
 void
 mixer_selections_paste_to_slot (
-  MixerSelections * ts,
+  MixerSelections * ms,
   Channel *         ch,
-  PluginSlotType   type,
+  PluginSlotType    type,
   int               slot)
 {
-  g_warn_if_reached ();
-
-  /* TODO */
+  UndoableAction * ua =
+    mixer_selections_action_new_paste (
+      ms, type, ch->track_pos, slot);
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 void

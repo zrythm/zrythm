@@ -2173,6 +2173,51 @@ channel_clone (
   return clone;
 }
 
+/**
+ * Selects/deselects all plugins in the given slot
+ * type.
+ */
+void
+channel_select_all (
+  Channel *      self,
+  PluginSlotType type,
+  bool           select)
+{
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_PUBLISH_EVENTS);
+  if (!select)
+    return;
+
+  switch (type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      for (int i = 0; i < STRIP_SIZE; i++)
+        {
+          if (self->inserts[i])
+            {
+              plugin_select (
+                self->inserts[i], F_SELECT,
+                F_NOT_EXCLUSIVE);
+            }
+        }
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      for (int i = 0; i < STRIP_SIZE; i++)
+        {
+          if (self->midi_fx[i])
+            {
+              plugin_select (
+                self->midi_fx[i], F_SELECT,
+                F_NOT_EXCLUSIVE);
+            }
+        }
+      break;
+    default:
+      g_warning ("not implemented");
+      break;
+    }
+}
+
 int
 channel_get_plugins (
   Channel * ch,

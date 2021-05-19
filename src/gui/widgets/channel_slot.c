@@ -26,11 +26,13 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/mixer.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/gtk.h"
@@ -623,19 +625,6 @@ multipress_pressed (
 }
 
 static void
-on_plugin_delete (
-  GtkMenuItem *       menu_item,
-  ChannelSlotWidget * self)
-{
-  UndoableAction * ua =
-    mixer_selections_action_new_delete (
-      MIXER_SELECTIONS);
-  g_return_if_fail (ua);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  EVENTS_PUSH (ET_PLUGINS_REMOVED, self->track);
-}
-
-static void
 on_plugin_bypass_activate (
   GtkMenuItem * menuitem,
   Plugin *      pl)
@@ -679,6 +668,33 @@ static void
 show_context_menu (
   ChannelSlotWidget * self)
 {
+  MW_MIXER->paste_slot = self;
+
+  switch (self->type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      PROJECT->last_selection =
+        SELECTION_TYPE_INSERT;
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      PROJECT->last_selection =
+        SELECTION_TYPE_INSTRUMENT;
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      PROJECT->last_selection =
+        SELECTION_TYPE_MIDI_FX;
+      break;
+    case PLUGIN_SLOT_MODULATOR:
+      PROJECT->last_selection =
+        SELECTION_TYPE_MODULATOR;
+      break;
+    default:
+      g_return_if_reached ();
+      break;
+    }
+  EVENTS_PUSH (
+    ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
+
   GtkWidget *menu;
   GtkMenuItem * menuitem;
 
@@ -734,11 +750,13 @@ show_context_menu (
           ADD_TO_SHELL;
         }
 
-      menuitem = CREATE_CUT_MENU_ITEM (NULL);
+      menuitem =
+        CREATE_CUT_MENU_ITEM ("win.cut");
       ADD_TO_SHELL;
-      menuitem = CREATE_COPY_MENU_ITEM (NULL);
+      menuitem = CREATE_COPY_MENU_ITEM ("win.copy");
       ADD_TO_SHELL;
-      menuitem = CREATE_PASTE_MENU_ITEM (NULL);
+      menuitem =
+        CREATE_PASTE_MENU_ITEM ("win.paste");
       ADD_TO_SHELL;
     }
 
@@ -746,10 +764,8 @@ show_context_menu (
   if (pl && self->type != PLUGIN_SLOT_INSTRUMENT)
     {
       /* add delete item */
-      menuitem = CREATE_DELETE_MENU_ITEM (NULL);
-      g_signal_connect (
-        G_OBJECT (menuitem), "activate",
-        G_CALLBACK (on_plugin_delete), self);
+      menuitem =
+        CREATE_DELETE_MENU_ITEM ("win.delete");
       ADD_TO_SHELL;
 
       needs_sep = true;
@@ -764,9 +780,12 @@ show_context_menu (
         }
 
       menuitem =
-        CREATE_CLEAR_SELECTION_MENU_ITEM (NULL);
+        CREATE_CLEAR_SELECTION_MENU_ITEM (
+          "win.clear-selection");
       ADD_TO_SHELL;
-      menuitem = CREATE_SELECT_ALL_MENU_ITEM (NULL);
+      menuitem =
+        CREATE_SELECT_ALL_MENU_ITEM (
+          "win.select-all");
       ADD_TO_SHELL;
 
       needs_sep = true;

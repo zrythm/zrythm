@@ -368,7 +368,9 @@ do_or_undo_create_or_delete (
   PluginSlotType slot_type =
     create ? self->slot_type : own_ms->type;
   int loop_times =
-    create ? self->num_plugins : own_ms->num_slots;
+    create &&
+    self->type != MIXER_SELECTIONS_ACTION_PASTE ?
+      self->num_plugins : own_ms->num_slots;
   bool delete = !create;
 
   /* if creating plugins (create do or delete undo) */
@@ -399,10 +401,22 @@ do_or_undo_create_or_delete (
           Plugin * pl = NULL;
           if (create)
             {
-              pl =
-                plugin_new_from_setting (
-                  self->setting, self->to_track_pos,
-                  slot_type, slot);
+              if (self->type ==
+                    MIXER_SELECTIONS_ACTION_PASTE)
+                {
+                  pl =
+                    plugin_clone (
+                      own_ms->plugins[i],
+                      F_NOT_PROJECT);
+                }
+              else
+                {
+                  pl =
+                    plugin_new_from_setting (
+                      self->setting,
+                      self->to_track_pos,
+                      slot_type, slot);
+                }
               g_return_val_if_fail (
                 IS_PLUGIN_AND_NONNULL (pl), -1);
 
@@ -988,7 +1002,8 @@ do_or_undo_move_or_copy (
             }
 
           /* add orig plugin to mixer selections */
-          g_warn_if_fail (IS_PLUGIN (pl));
+          g_warn_if_fail (
+            IS_PLUGIN_AND_NONNULL (pl));
           mixer_selections_add_slot (
             MIXER_SELECTIONS, from_tr,
             from_slot_type, from_slot,
@@ -1036,6 +1051,11 @@ do_or_undo (
     case MIXER_SELECTIONS_ACTION_COPY:
       return
         do_or_undo_move_or_copy (
+          self, _do, true);
+      break;
+    case MIXER_SELECTIONS_ACTION_PASTE:
+      return
+        do_or_undo_create_or_delete (
           self, _do, true);
       break;
     default:
@@ -1116,6 +1136,20 @@ mixer_selections_action_stringize (
         {
           return g_strdup_printf (
             _("Copy %d Plugins"),
+            self->ms_before->num_slots);
+        }
+    case MIXER_SELECTIONS_ACTION_PASTE:
+      if (self->ms_before->num_slots == 1)
+        {
+          return g_strdup_printf (
+            _("Paste %s"),
+            self->ms_before->
+              plugins[0]->setting->descr->name);
+        }
+      else
+        {
+          return g_strdup_printf (
+            _("Paste %d Plugins"),
             self->ms_before->num_slots);
         }
     default:

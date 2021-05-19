@@ -2041,6 +2041,10 @@ plugin_clone (
 {
   g_return_val_if_fail (IS_PLUGIN (pl), NULL);
 
+  char buf[800];
+  plugin_print (pl, buf, 800);
+  g_debug ("cloning plugin %s", buf);
+
   Plugin * clone = NULL;
 #ifdef HAVE_CARLA
   if (pl->setting->open_with_carla)
