@@ -67,7 +67,19 @@ color_area_draw_cb (
 
       GdkRGBA color;
       if (self->type == COLOR_AREA_TYPE_TRACK)
-        color = self->track->color;
+        {
+          Track * track = self->track;
+          if (track_is_enabled (track))
+            {
+              color = self->track->color;
+            }
+          else
+            {
+              color.red = 0.5;
+              color.green = 0.5;
+              color.blue = 0.5;
+            }
+        }
       else
         color = self->color;
 

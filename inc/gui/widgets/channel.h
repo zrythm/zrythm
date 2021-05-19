@@ -125,6 +125,8 @@ typedef struct _ChannelWidget
   /** Whole channel press. */
   GtkGestureMultiPress * mp;
 
+  GtkGestureMultiPress * right_mouse_mp;
+
   /** Drag on the icon and name event box. */
   GtkGestureDrag       * drag;
 

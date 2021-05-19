@@ -538,6 +538,9 @@ setup_channel_icon (ChannelWidget * self)
   gtk_image_set_from_icon_name (
     self->icon, track->icon_name,
     GTK_ICON_SIZE_BUTTON);
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self->icon),
+    track_is_enabled (track));
 }
 
 static void
@@ -553,8 +556,20 @@ refresh_name (ChannelWidget * self)
   Track * track =
     channel_get_track (self->channel);
   g_warn_if_fail (track->name);
-  gtk_label_set_text (
-    GTK_LABEL (self->name->label), track->name);
+  if (track_is_enabled (track))
+    {
+      gtk_label_set_text (
+        GTK_LABEL (self->name->label), track->name);
+    }
+  else
+    {
+      char * markup =
+        g_strdup_printf (
+          "<span foreground=\"grey\">%s</span>",
+          track->name);
+      gtk_label_set_markup (
+        GTK_LABEL (self->name->label), markup);
+    }
 }
 
 /**
@@ -611,6 +626,7 @@ channel_widget_refresh (ChannelWidget * self)
     self, NULL, NULL);
   channel_widget_refresh_buttons (self);
   refresh_color (self);
+  setup_channel_icon (self);
 
   Track * track =
     channel_get_track (self->channel);
@@ -626,6 +642,222 @@ channel_widget_refresh (ChannelWidget * self)
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_SELECTED);
+    }
+}
+
+static void
+show_context_menu (
+  ChannelWidget * self)
+{
+  GtkWidget *menu;
+  GtkMenuItem *menuitem;
+  menu = gtk_menu_new();
+  Track * track = self->channel->track;
+
+#define APPEND(mi) \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), \
+    GTK_WIDGET (menuitem));
+
+#define ADD_SEPARATOR \
+  menuitem = \
+    GTK_MENU_ITEM ( \
+      gtk_separator_menu_item_new ()); \
+  gtk_widget_set_visible ( \
+    GTK_WIDGET (menuitem), true); \
+  APPEND (menuitem)
+
+  int num_selected =
+    TRACKLIST_SELECTIONS->num_tracks;
+
+  if (num_selected > 0)
+    {
+      char * str;
+
+      if (track->type != TRACK_TYPE_MASTER &&
+          track->type != TRACK_TYPE_CHORD &&
+          track->type != TRACK_TYPE_MARKER &&
+          track->type != TRACK_TYPE_TEMPO)
+        {
+          /* delete track */
+          if (num_selected == 1)
+            str =
+              g_strdup (_("_Delete Track"));
+          else
+            str =
+              g_strdup (_("_Delete Tracks"));
+          menuitem =
+            z_gtk_create_menu_item (
+              str, "edit-delete", F_NO_TOGGLE,
+              "win.delete-selected-tracks");
+          g_free (str);
+          APPEND (menuitem);
+
+          /* duplicate track */
+          if (num_selected == 1)
+            str =
+              g_strdup (_("_Duplicate Track"));
+          else
+            str =
+              g_strdup (_("_Duplicate Tracks"));
+          menuitem =
+            z_gtk_create_menu_item (
+              str, "edit-copy", F_NO_TOGGLE,
+              "win.duplicate-selected-tracks");
+          g_free (str);
+          APPEND (menuitem);
+        }
+
+      menuitem =
+        z_gtk_create_menu_item (
+          num_selected == 1 ?
+            _("Hide Track") :
+            _("Hide Tracks"),
+          "view-hidden", F_NO_TOGGLE,
+          "win.hide-selected-tracks");
+      APPEND (menuitem);
+
+      menuitem =
+        z_gtk_create_menu_item (
+          num_selected == 1 ?
+            _("Pin/Unpin Track") :
+            _("Pin/Unpin Tracks"),
+          "window-pin", F_NO_TOGGLE,
+          "win.pin-selected-tracks");
+      APPEND (menuitem);
+    }
+
+  /* add solo/mute/listen */
+  if (track_type_has_channel (track->type))
+    {
+      ADD_SEPARATOR;
+
+      if (tracklist_selections_contains_soloed_track (
+            TRACKLIST_SELECTIONS, F_NO_SOLO))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Solo"), "solo", F_NO_TOGGLE,
+              "win.solo-selected-tracks");
+          APPEND (menuitem);
+        }
+      if (tracklist_selections_contains_soloed_track (
+            TRACKLIST_SELECTIONS, F_SOLO))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Unsolo"), "unsolo", F_NO_TOGGLE,
+              "win.unsolo-selected-tracks");
+          APPEND (menuitem);
+        }
+
+      if (tracklist_selections_contains_muted_track (
+            TRACKLIST_SELECTIONS, F_NO_MUTE))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Mute"), "mute", F_NO_TOGGLE,
+              "win.mute-selected-tracks");
+          APPEND (menuitem);
+        }
+      if (tracklist_selections_contains_muted_track (
+            TRACKLIST_SELECTIONS, F_MUTE))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Unmute"), "unmute", F_NO_TOGGLE,
+              "win.unmute-selected-tracks");
+          APPEND (menuitem);
+        }
+
+      if (tracklist_selections_contains_listened_track (
+            TRACKLIST_SELECTIONS, F_NO_LISTEN))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Listen"), "listen",
+              F_NO_TOGGLE,
+              "win.listen-selected-tracks");
+          APPEND (menuitem);
+        }
+      if (tracklist_selections_contains_listened_track (
+            TRACKLIST_SELECTIONS, F_LISTEN))
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Unlisten"), "unlisten",
+              F_NO_TOGGLE,
+              "win.unlisten-selected-tracks");
+          APPEND (menuitem);
+        }
+    }
+
+  /* add enable/disable */
+  if (tracklist_selections_contains_enabled_track (
+        TRACKLIST_SELECTIONS, F_ENABLED))
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Disable"), "offline",
+          F_NO_TOGGLE,
+          "win.disable-selected-tracks");
+      APPEND (menuitem);
+    }
+  else
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Enable"), "online",
+          F_NO_TOGGLE,
+          "win.enable-selected-tracks");
+      APPEND (menuitem);
+    }
+
+  ADD_SEPARATOR;
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Change color..."), "color-fill",
+      F_NO_TOGGLE, "win.change-track-color");
+  APPEND (menuitem);
+
+#undef APPEND
+#undef ADD_SEPARATOR
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
+on_right_click (
+  GtkGestureMultiPress * gesture,
+  gint                    n_press,
+  gdouble                x,
+  gdouble                y,
+  ChannelWidget *        self)
+{
+  GdkModifierType state_mask =
+    ui_get_state_mask (GTK_GESTURE (gesture));
+
+  Track * track = self->channel->track;
+  if (!track_is_selected (track))
+    {
+      if (state_mask & GDK_SHIFT_MASK ||
+          state_mask & GDK_CONTROL_MASK)
+        {
+          track_select (
+            track, F_SELECT, 0, 1);
+        }
+      else
+        {
+          track_select (
+            track, F_SELECT, 1, 1);
+        }
+    }
+  if (n_press == 1)
+    {
+      show_context_menu (self);
     }
 }
 
@@ -822,6 +1054,14 @@ channel_widget_init (ChannelWidget * self)
   gtk_widget_set_hexpand (
     GTK_WIDGET (self), 0);
 
+  self->right_mouse_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->icon_and_name_event_box)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->right_mouse_mp),
+    GDK_BUTTON_SECONDARY);
+
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_whole_channel_press), self);
@@ -861,4 +1101,7 @@ channel_widget_init (ChannelWidget * self)
   g_signal_connect (
     GTK_WIDGET (self), "button-release-event",
     G_CALLBACK (on_btn_release), self);
+  g_signal_connect (
+    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
 }
