@@ -74,6 +74,9 @@ plugin_properties_expander_widget_refresh (
   PluginPropertiesExpanderWidget * self,
   Plugin *                         pl)
 {
+  if (self->plugin == pl)
+    return;
+
   self->plugin = pl;
 
   if (pl)
