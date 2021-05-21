@@ -48,7 +48,7 @@ on_bank_changed (
 
   g_signal_handler_block (
     self->presets, self->pset_changed_handler);
-  plugin_gtk_setup_plugin_presets_combo_box (
+  plugin_gtk_setup_plugin_presets_list_box (
     self->presets, self->plugin);
   g_signal_handler_unblock (
     self->presets, self->pset_changed_handler);
@@ -56,14 +56,17 @@ on_bank_changed (
 
 static void
 on_preset_changed (
-  GtkComboBox * cb,
+  GtkListBox *                     box,
   PluginPropertiesExpanderWidget * self)
 {
   if (!self->plugin)
     return;
 
+  GtkListBoxRow * row =
+    gtk_list_box_get_selected_row (box);
   plugin_set_selected_preset_from_index (
-    self->plugin, gtk_combo_box_get_active (cb));
+    self->plugin,
+    gtk_list_box_row_get_index (row));
 }
 
 /**
@@ -103,7 +106,7 @@ plugin_properties_expander_widget_refresh (
     self->banks, self->bank_changed_handler);
   g_signal_handler_block (
     self->presets, self->pset_changed_handler);
-  plugin_gtk_setup_plugin_presets_combo_box (
+  plugin_gtk_setup_plugin_presets_list_box (
     self->presets, pl);
   g_signal_handler_unblock (
     self->presets, self->pset_changed_handler);
@@ -168,13 +171,13 @@ plugin_properties_expander_widget_setup (
     GTK_WIDGET (self->type));
 
   CREATE_LABEL (_("Banks"));
-  gtk_widget_set_visible (lbl, TRUE);
+  gtk_widget_set_visible (lbl, true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
   self->banks =
     GTK_COMBO_BOX_TEXT (gtk_combo_box_text_new ());
   gtk_widget_set_visible (
-    GTK_WIDGET (self->banks), TRUE);
+    GTK_WIDGET (self->banks), true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->banks));
@@ -184,19 +187,32 @@ plugin_properties_expander_widget_setup (
       G_CALLBACK (on_bank_changed), self);
 
   CREATE_LABEL (_("Presets"));
-  gtk_widget_set_visible (lbl, TRUE);
+  gtk_widget_set_visible (lbl, true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
   self->presets =
-    GTK_COMBO_BOX_TEXT (gtk_combo_box_text_new ());
+    GTK_LIST_BOX (gtk_list_box_new ());
   gtk_widget_set_visible (
-    GTK_WIDGET (self->presets), TRUE);
+    GTK_WIDGET (self->presets), true);
+  GtkScrolledWindow * scroll =
+    GTK_SCROLLED_WINDOW (
+      gtk_scrolled_window_new (NULL, NULL));
+  gtk_scrolled_window_set_min_content_height (
+    scroll, 86);
+  gtk_scrolled_window_set_policy (
+    scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_visible (
+    GTK_WIDGET (scroll), true);
+  gtk_container_add (
+    GTK_CONTAINER (scroll),
+    GTK_WIDGET (self->presets));
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->presets));
+    GTK_WIDGET (scroll));
   self->pset_changed_handler =
     g_signal_connect (
-      G_OBJECT (self->presets), "changed",
+      G_OBJECT (self->presets),
+      "selected-rows-changed",
       G_CALLBACK (on_preset_changed), self);
 
   plugin_properties_expander_widget_refresh (

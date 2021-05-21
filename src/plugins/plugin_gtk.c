@@ -54,6 +54,7 @@
 #include "settings/settings.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -1787,13 +1788,14 @@ plugin_gtk_setup_plugin_banks_combo_box (
  * @return Whether any presets were added.
  */
 bool
-plugin_gtk_setup_plugin_presets_combo_box (
-  GtkComboBoxText * cb,
-  Plugin *          plugin)
+plugin_gtk_setup_plugin_presets_list_box (
+  GtkListBox * box,
+  Plugin *     plugin)
 {
   g_debug ("%s: setting up...", __func__);
 
-  gtk_combo_box_text_remove_all (cb);
+  z_gtk_container_destroy_all_children (
+    GTK_CONTAINER (box));
 
   if (!plugin ||
       plugin->selected_bank.bank_idx == -1)
@@ -1815,17 +1817,18 @@ plugin_gtk_setup_plugin_presets_combo_box (
     {
       PluginPreset * preset =
         bank->presets[j];
-#if 0
-      g_debug ("%d: %s", j, preset->uri);
-#endif
-      gtk_combo_box_text_append (
-        cb, preset->uri, preset->name);
+      GtkWidget * label =
+        gtk_label_new (preset->name);
+      gtk_widget_set_visible (label, true);
+      gtk_list_box_insert (
+        box, label, -1);
       ret = true;
     }
 
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (cb),
-    plugin->selected_preset.idx);
+  GtkListBoxRow * row =
+    gtk_list_box_get_row_at_index (
+      box, plugin->selected_preset.idx);
+  gtk_list_box_select_row (box, row);
 
   g_debug ("%s: done", __func__);
 

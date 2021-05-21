@@ -1171,6 +1171,7 @@ test_move_plugin_from_inserts_to_midi_fx (void)
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE,
       MIDI_CC_MAP_URI, false);
+  g_assert_nonnull (setting);
   ua =
     mixer_selections_action_new_create (
       PLUGIN_SLOT_INSERT, track_pos, 0, setting, 1);

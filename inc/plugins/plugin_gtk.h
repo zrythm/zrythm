@@ -153,9 +153,9 @@ plugin_gtk_setup_plugin_banks_combo_box (
  * @return Whether any presets were added.
  */
 bool
-plugin_gtk_setup_plugin_presets_combo_box (
-  GtkComboBoxText * cb,
-  Plugin *          plugin);
+plugin_gtk_setup_plugin_presets_list_box (
+  GtkListBox * box,
+  Plugin *     plugin);
 
 /**
  * Creates a label for a control.
