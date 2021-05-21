@@ -187,6 +187,7 @@ region_move_to_track (
   if (region_has_link_group (region))
     {
       link_group = region_get_link_group (region);
+      g_return_if_fail (link_group);
       region_link_group_remove_region (
         link_group, region, false, true);
     }

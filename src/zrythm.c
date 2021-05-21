@@ -112,11 +112,14 @@ void
 zrythm_remove_recent_project (
   char * filepath)
 {
+  /* FIXME use GStrvBuilder */
   for (int i = 0; i < ZRYTHM->num_recent_projects;
        i++)
     {
-      if (!strcmp (filepath,
-                   ZRYTHM->recent_projects[i]))
+      const char * recent_project =
+        ZRYTHM->recent_projects[i];
+      g_return_if_fail (recent_project);
+      if (string_is_equal (filepath, recent_project))
         {
           array_delete (ZRYTHM->recent_projects,
                         ZRYTHM->num_recent_projects,

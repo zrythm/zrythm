@@ -66,6 +66,7 @@ test_crash_handling (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
     SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
+  g_assert_nonnull (setting);
   setting->bridge_mode = CARLA_BRIDGE_FULL;
 
   /* create a track from the plugin */

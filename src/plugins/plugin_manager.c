@@ -553,6 +553,7 @@ get_vst3_count (
   PluginManager * self)
 {
   char ** paths = get_vst3_paths (self);
+  g_return_val_if_fail (paths, 0);
   int path_idx = 0;
   char * path;
   int count = 0;
@@ -586,6 +587,7 @@ get_vst_count (
   PluginManager * self)
 {
   char ** paths = get_vst_paths (self);
+  g_return_val_if_fail (paths, 0);
   int path_idx = 0;
   char * path;
   int count = 0;
@@ -649,6 +651,7 @@ get_sf_count (
 {
   char ** paths =
     get_sf_paths (self, prot == PROT_SF2);
+  g_return_val_if_fail (paths, 0);
   int path_idx = 0;
   char * path;
   int count = 0;

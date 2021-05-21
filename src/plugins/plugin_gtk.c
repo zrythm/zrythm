@@ -1791,16 +1791,22 @@ plugin_gtk_setup_plugin_presets_combo_box (
   GtkComboBoxText * cb,
   Plugin *          plugin)
 {
-  bool ret = false;
+  g_debug ("%s: setting up...", __func__);
 
   gtk_combo_box_text_remove_all (cb);
 
   if (!plugin ||
       plugin->selected_bank.bank_idx == -1)
     {
+      g_debug (
+        "%s: no plugin (%p) or selected bank (%d)",
+        __func__, plugin,
+        plugin ?
+          plugin->selected_bank.bank_idx : -100);
       return false;
     }
 
+  bool ret = false;
   PluginBank * bank =
     plugin->banks[
       plugin->selected_bank.bank_idx];
@@ -1809,6 +1815,9 @@ plugin_gtk_setup_plugin_presets_combo_box (
     {
       PluginPreset * preset =
         bank->presets[j];
+#if 0
+      g_debug ("%d: %s", j, preset->uri);
+#endif
       gtk_combo_box_text_append (
         cb, preset->uri, preset->name);
       ret = true;
@@ -1817,6 +1826,8 @@ plugin_gtk_setup_plugin_presets_combo_box (
   gtk_combo_box_set_active (
     GTK_COMBO_BOX (cb),
     plugin->selected_preset.idx);
+
+  g_debug ("%s: done", __func__);
 
   return ret;
 }

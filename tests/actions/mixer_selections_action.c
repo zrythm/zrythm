@@ -242,10 +242,12 @@ _test_create_plugins (
     {
     case PROT_LV2:
       setting =
+        test_plugin_manager_get_plugin_setting (
+          pl_bundle, pl_uri, with_carla);
+      g_assert_nonnull (setting);
+      setting =
         plugin_setting_clone (
-          test_plugin_manager_get_plugin_setting (
-            pl_bundle, pl_uri, with_carla),
-          F_NO_VALIDATE);
+          setting, F_NO_VALIDATE);
       break;
     case PROT_VST:
 #ifdef HAVE_CARLA

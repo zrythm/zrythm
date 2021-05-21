@@ -302,6 +302,8 @@ create_port (
           lv2_urid_unmap_uri (NULL, param->urid));
       pi->flags |= PORT_FLAG_IS_PROPERTY;
       pi->sym = g_strdup (param->symbol);
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (port), NULL);
       port->value_type =
         param->value_type_urid;
       pi->comment = g_strdup (param->comment);
@@ -374,6 +376,8 @@ create_port (
         lilv_node_as_string (name_node);
       if (port_exists && is_project)
         {
+          g_return_val_if_fail (
+            IS_PORT_AND_NONNULL (port), NULL);
           port->buf =
             g_realloc (
               port->buf,
@@ -422,6 +426,8 @@ create_port (
         }
       lilv_node_free (name_node);
 
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (port), NULL);
       port->evbuf = NULL;
       port->lilv_port_index = (int) lv2_port_index;
       port->control = 0.0f;

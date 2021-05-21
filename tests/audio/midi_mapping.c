@@ -25,6 +25,7 @@
 #include "helpers/zrythm.h"
 #include "project.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 static void
@@ -35,7 +36,7 @@ test_midi_mappping ()
   g_assert_nonnull (mappings);
   free (mappings);
 
-  ExtPort * ext_port = calloc (1, sizeof (ExtPort));
+  ExtPort * ext_port = object_new (ExtPort);
   ext_port->type = EXT_PORT_TYPE_RTAUDIO;
   ext_port->full_name = g_strdup ("ext port1");
   ext_port->short_name = g_strdup ("extport1");

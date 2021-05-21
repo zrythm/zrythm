@@ -468,9 +468,11 @@ arranger_object_set_to_object (
   ArrangerObject * src);
 
 /**
- * Returns if the lane counterpart should be visible.
+ * Returns if the lane counterpart should be
+ * visible.
  */
-int
+NONNULL
+bool
 arranger_object_should_lane_be_visible (
   ArrangerObject * self);
 

@@ -103,8 +103,7 @@ static void
 test_double_size_if_full ()
 {
   size_t size = 3;
-  int * arr =
-    calloc (size, sizeof (int));
+  int * arr = g_malloc0_n (size, sizeof (int));
 
   arr[0] = 15;
   arr[1] = 16;

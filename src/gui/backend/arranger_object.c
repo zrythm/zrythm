@@ -1868,21 +1868,24 @@ arranger_object_get_arranger (
 }
 
 /**
- * Returns if the lane counterpart should be visible.
+ * Returns if the lane counterpart should be
+ * visible.
  */
-int
+bool
 arranger_object_should_lane_be_visible (
   ArrangerObject * self)
 {
   if (self->type == TYPE (REGION))
     {
-      return
-        arranger_object_get_track (self)->
-          lanes_visible;
+      Track * track =
+        arranger_object_get_track (self);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), false);
+      return track->lanes_visible;
     }
   else
     {
-      return 0;
+      return false;
     }
 }
 
@@ -1908,6 +1911,7 @@ arranger_object_should_orig_be_visible (
 
   ArrangerWidget * arranger =
     arranger_object_get_arranger (self);
+  g_return_val_if_fail (arranger, false);
 
   /* check trans/non-trans visiblity */
   if (ARRANGER_WIDGET_GET_ACTION (
@@ -3355,6 +3359,8 @@ arranger_object_is_frozen (
 {
   Track * track =
     arranger_object_get_track (obj);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (track), false);
   return track->frozen;
 }
 

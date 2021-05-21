@@ -325,6 +325,7 @@ activate_plugin_setting (
   bool setting_created = false;
   if (!setting)
     {
+      g_return_if_fail (descr);
       setting = plugin_setting_new_default (descr);
       setting_created = true;
     }

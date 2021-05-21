@@ -51,6 +51,7 @@ test_modulator_connection (
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
+  g_assert_nonnull (setting);
 
   /* fix the descriptor (for some reason lilv
    * reports it as Plugin instead of Instrument if
@@ -152,6 +153,7 @@ _test_port_connection (
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
+  g_assert_nonnull (setting);
 
   /* fix the descriptor (for some reason lilv
    * reports it as Plugin instead of Instrument if

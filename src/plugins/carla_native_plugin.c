@@ -171,6 +171,8 @@ host_write_midi_event (
 
   Port * midi_out_port =
     carla_native_plugin_get_midi_out_port (self);
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (midi_out_port), 0);
 
   midi_byte_t buf[event->size];
   for (int i = 0; i < event->size; i++)

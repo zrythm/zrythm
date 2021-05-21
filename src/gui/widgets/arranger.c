@@ -906,6 +906,7 @@ move_items_x (
 {
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
+  g_return_if_fail (sel);
   arranger_selections_add_ticks (
     sel, ticks_diff);
 
@@ -1832,6 +1833,7 @@ multipress_pressed (
  * @param autofilling Whether this is part of an
  *   autofill action.
  */
+NONNULL
 static void
 create_item (
   ArrangerWidget * self,
@@ -1992,9 +1994,11 @@ create_item (
   if (!autofilling)
     {
       /* set the start selections */
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+      g_return_if_fail (sel);
       self->sel_at_start =
-        arranger_selections_clone (
-          arranger_widget_get_selections (self));
+        arranger_selections_clone (sel);
     }
 }
 
@@ -2011,6 +2015,7 @@ create_item (
  * the default length at the given position, unless
  * an object already exists there.
  */
+NONNULL
 static void
 autofill (
   ArrangerWidget * self,
@@ -2028,6 +2033,7 @@ autofill (
         UI_OVERLAY_ACTION_AUTOFILLING;
       ArrangerSelections * sel =
         arranger_widget_get_selections (self);
+      g_return_if_fail (sel);
 
       /* clear the actual selections to append
        * created objects */
@@ -2110,12 +2116,14 @@ drag_cancel (
  * Sets the start pos of the earliest object and
  * the flag whether the earliest object exists.
  */
+NONNULL
 static void
 set_earliest_obj (
   ArrangerWidget * self)
 {
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
+  g_return_if_fail (sel);
   if (arranger_selections_has_any (sel))
     {
       arranger_selections_get_start_pos (
@@ -2677,6 +2685,7 @@ drag_begin (
  *   objects in the range or exactly at the current
  *   point.
  */
+NONNULL
 static void
 select_in_range (
   ArrangerWidget * self,
@@ -2686,9 +2695,11 @@ select_in_range (
   bool             ignore_frozen,
   bool             delete)
 {
+  ArrangerSelections * arranger_sel =
+    arranger_widget_get_selections (self);
+  g_return_if_fail (arranger_sel);
   ArrangerSelections * prev_sel =
-    arranger_selections_clone (
-      arranger_widget_get_selections (self));
+    arranger_selections_clone (arranger_sel);
 
   if (delete && in_range)
     {
@@ -2952,11 +2963,12 @@ select_in_range (
     }
 }
 
+NONNULL
 static void
 drag_update (
   GtkGestureDrag * gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
+  gdouble          offset_x,
+  gdouble          offset_y,
   ArrangerWidget * self)
 {
   if (!self->drag_update_started &&
@@ -3067,6 +3079,7 @@ drag_update (
       {
         ArrangerSelections * sel =
           arranger_widget_get_selections (self);
+        g_return_if_fail (sel);
         arranger_selections_clear (
           sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
@@ -3079,6 +3092,7 @@ drag_update (
       {
         ArrangerSelections * sel =
           arranger_widget_get_selections (self);
+        g_return_if_fail (sel);
         arranger_selections_clear (
           sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
@@ -3863,6 +3877,7 @@ on_drag_end_audio (
     }
 }
 
+NONNULL
 static void
 on_drag_end_timeline (
   ArrangerWidget * self)
@@ -3871,6 +3886,7 @@ on_drag_end_timeline (
 
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
+  g_return_if_fail (sel);
 
   switch (self->action)
     {
@@ -4228,6 +4244,7 @@ drag_end (
         UI_OVERLAY_ACTION_DELETE_SELECTING;
       ArrangerSelections * sel =
         arranger_widget_get_selections (self);
+      g_return_if_fail (sel);
       arranger_selections_clear (
         sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
       self->sel_to_delete =

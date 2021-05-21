@@ -71,7 +71,7 @@ typedef struct EventManager
 /** The event queue. */
 #define EVENT_QUEUE (EVENT_MANAGER->mqueue)
 
-#define EVENT_MANAGER_MAX_EVENTS 2000
+#define EVENT_MANAGER_MAX_EVENTS 4000
 
 #define event_queue_push_back_event(q,x) \
   mpmc_queue_push_back (q, (void *) x)

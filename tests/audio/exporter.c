@@ -28,6 +28,7 @@
 #include "audio/supported_file.h"
 #include "project.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -118,7 +119,7 @@ get_fingerprint (
   g_assert_cmpint (ret, ==, 1);
 
   ChromaprintFingerprint * fp =
-    calloc (1, sizeof (ChromaprintFingerprint));
+    object_new (ChromaprintFingerprint);
   ret = chromaprint_get_fingerprint (
     ctx, &fp->compressed_str);
   g_assert_cmpint (ret, ==, 1);

@@ -1242,8 +1242,13 @@ channel_append_all_ports (
 static void
 init_stereo_out_ports (
   Channel * self,
-  int       loading)
+  bool      loading)
 {
+  if (loading)
+    {
+      return;
+    }
+
   char str[80];
   strcpy (str, "Stereo out");
   Port * l, * r;
@@ -1251,24 +1256,16 @@ init_stereo_out_ports (
     &self->stereo_out;
   PortFlow flow = FLOW_OUTPUT;
 
-  if (loading)
-    {
-      l = NULL;
-      r = NULL;
-    }
-  else
-    {
-      strcat (str, " L");
-      l = port_new_with_type (
-        TYPE_AUDIO, flow, str);
+  strcat (str, " L");
+  l = port_new_with_type (
+    TYPE_AUDIO, flow, str);
 
-      str[10] = '\0';
-      strcat (str, " R");
-      r = port_new_with_type (
-        TYPE_AUDIO,
-        flow,
-        str);
-    }
+  str[10] = '\0';
+  strcat (str, " R");
+  r = port_new_with_type (
+    TYPE_AUDIO,
+    flow,
+    str);
 
   port_set_owner_track_from_channel (l, self);
   port_set_owner_track_from_channel (r, self);
@@ -2303,7 +2300,8 @@ channel_disconnect (
     {
       Track * out_track =
         channel_get_output_track (self);
-      g_warn_if_fail (IS_TRACK (out_track));
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (out_track));
       group_target_track_remove_child (
         out_track, self->track_pos, F_DISCONNECT,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);

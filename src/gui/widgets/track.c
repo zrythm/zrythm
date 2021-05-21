@@ -61,6 +61,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/symap.h"
@@ -1885,8 +1886,7 @@ show_context_menu (
               GTK_CHECK_MENU_ITEM (submenu_item), 1);
 
           MidiChSelectionInfo * info =
-            calloc (
-              1, sizeof (MidiChSelectionInfo));
+            object_new (MidiChSelectionInfo);
           info->track = track;
           info->ch = (midi_byte_t) i;
           g_signal_connect (
@@ -1945,8 +1945,7 @@ show_context_menu (
                     submenu_item), 1);
 
               MidiChSelectionInfo * info =
-                calloc (
-                  1, sizeof (MidiChSelectionInfo));
+                object_new (MidiChSelectionInfo);
               info->lane = lane;
               info->ch = (midi_byte_t) i;
               g_signal_connect (

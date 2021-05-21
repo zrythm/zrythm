@@ -1040,7 +1040,7 @@ log_get_last_n_lines (
   /* keep an extra slot for the last failed
    * read at EOF */
   Line * lines =
-    calloc ((size_t) n + 1, sizeof (Line));
+    g_malloc0_n ((size_t) n + 1, sizeof (Line));
   int end = 0;
   int size = 0;
 

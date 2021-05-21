@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,6 +40,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -391,7 +392,7 @@ on_row_activated (GtkTreeView       *tree_view,
     {
       /* FIXME free unnecessary stuff */
       FileBrowserLocation * loc =
-        malloc (sizeof (FileBrowserLocation));
+        object_new (FileBrowserLocation);
       loc->path = descr->abs_path;
       loc->label = g_path_get_basename (loc->path);
       file_manager_set_selection (
