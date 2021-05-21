@@ -439,6 +439,8 @@ plugin_set_selected_preset_from_index (
   Plugin * self,
   int      idx)
 {
+  g_return_if_fail (self->instantiated);
+
   self->selected_preset.idx = idx;
 
   g_message (
@@ -447,6 +449,8 @@ plugin_set_selected_preset_from_index (
   if (self->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
+      g_return_if_fail (self->carla->host_handle);
+
       /* if init preset */
       if (self->selected_bank.bank_idx == 0 &&
           idx == 0)

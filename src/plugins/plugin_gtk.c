@@ -1808,6 +1808,15 @@ plugin_gtk_setup_plugin_presets_list_box (
       return false;
     }
 
+  char pl_str[800];
+  plugin_print (plugin, pl_str, 800);
+  if (!plugin->instantiated)
+    {
+      g_message (
+        "plugin %s not instantiated", pl_str);
+      return false;
+    }
+
   bool ret = false;
   PluginBank * bank =
     plugin->banks[
