@@ -330,9 +330,7 @@ control_port_set_val_from_normalized (
         control_port_normalized_val_to_real (
           self, val);
       if (!math_floats_equal (
-            port_get_control_value (
-              self, F_NORMALIZE),
-            real_val))
+             self->control, real_val))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);

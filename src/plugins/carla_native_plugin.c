@@ -43,6 +43,7 @@
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/io.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -1536,8 +1537,15 @@ carla_native_plugin_set_param_value (
       return;
     }
 
-  g_debug ("setting param %d value to %f",
-    id, (double) val);
+  float cur_val =
+    carla_get_current_parameter_value (
+      self->host_handle, 0, id);
+  if (!math_floats_equal (cur_val, val))
+    {
+      g_debug (
+        "setting param %d value to %f",
+        id, (double) val);
+    }
   carla_set_parameter_value (
     self->host_handle, 0, id, val);
 }
