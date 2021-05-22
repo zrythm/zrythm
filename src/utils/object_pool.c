@@ -77,13 +77,18 @@ void *
 object_pool_get (
   ObjectPool * self)
 {
+  void * ret = NULL;
   zix_sem_wait (&self->access_sem);
-  g_return_val_if_fail (
-    self->num_obj_available > 0, NULL);
-  void * obj =
-    self->obj_available[--self->num_obj_available];
+  if (self->num_obj_available > 0)
+    {
+      ret =
+        self->obj_available[
+          --self->num_obj_available];
+    }
   zix_sem_post (&self->access_sem);
-  return obj;
+
+  g_return_val_if_fail (ret, NULL);
+  return ret;
 }
 
 /**
