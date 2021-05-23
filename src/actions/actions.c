@@ -1265,6 +1265,7 @@ activate_clear_selection (
   switch (PROJECT->last_selection)
     {
     case SELECTION_TYPE_TIMELINE:
+    case SELECTION_TYPE_EDITOR:
       if (sel)
         {
           arranger_selections_clear (
@@ -1317,6 +1318,7 @@ activate_select_all (
   switch (PROJECT->last_selection)
     {
     case SELECTION_TYPE_TIMELINE:
+    case SELECTION_TYPE_EDITOR:
       if (sel)
         {
           arranger_selections_select_all (
