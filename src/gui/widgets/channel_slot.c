@@ -248,16 +248,21 @@ on_drag_data_received (
     gdk_atom_intern_static_string (
       TARGET_ENTRY_PLUGIN_DESCR);
 
+  const guchar * selection_data =
+    gtk_selection_data_get_data (data);
+  if (!selection_data)
+    {
+      return;
+    }
+
   bool plugin_invalid = false;
   Plugin * pl = NULL;
   PluginDescriptor * descr = NULL;
   if (atom == plugin_atom)
     {
       Plugin * received_pl = NULL;
-      const guchar *my_data =
-        gtk_selection_data_get_data (data);
       memcpy (
-        &received_pl, my_data,
+        &received_pl, selection_data,
         sizeof (received_pl));
       pl = plugin_find (&received_pl->id);
       g_warn_if_fail (pl);
@@ -313,10 +318,8 @@ on_drag_data_received (
     {
       gdk_drag_status (
         context, GDK_ACTION_COPY, time);
-      const guchar *my_data =
-        gtk_selection_data_get_data (data);
-      memcpy (&descr, my_data, sizeof (descr));
-      g_warn_if_fail (descr);
+      memcpy (
+        &descr, selection_data, sizeof (descr));
 
       /* validate */
       if (plugin_descriptor_is_valid_for_slot_type (
