@@ -75,36 +75,9 @@ See the [Feature tracker](https://todo.sr.ht/~alextee/zrythm-feature) and [Bug t
 ## Copying Zrythm
 [![agpl-3.0](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0)
 
-Zrythm is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-The full text of the license can be found in the
-[COPYING](COPYING) file.
-
-For the copyright years, Zrythm uses a range (“2008-2010”) instead of
-listing individual years (“2008, 2009, 2010”) if and only if every year
-in the range, inclusive, is a “copyrightable” year that would be listed
-individually.
-
-Some files, where specified, are licensed under
-different licenses.
-
-### Additional terms under AGPLv3 Section 7
-Zrythm and the Zrythm logo are trademarks of
-Alexandros Theodotou and are governed by the Zrythm
-[Trademark Policy](TRADEMARKS.md).
-You may distribute unaltered copies of Zrythm that
-include the Zrythm trademarks without express
-permission from Alexandros Theodotou. However,
-if you make any changes to Zrythm, you may not
-redistribute that product using any Zrythm trademark
-without Alexandros Theodotou’s prior written consent.
-For example, you may not distribute a modified form
-of Zrythm and continue to call it Zrythm, or
-include the Zrythm logo, unless explicitly allowed
-by the [Trademark Policy](TRADEMARKS.md).
+See [COPYING](COPYING) for copying conditions and
+[TRADEMARKS.md](TRADEMARKS.md) for our trademark
+policy.
 
 ## Support
 If you would like to support this project please

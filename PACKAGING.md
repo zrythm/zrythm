@@ -3,15 +3,15 @@ Information for Packagers
 
 # Upstream URLs
 
-You can use
-https://www.zrythm.org/releases
+You can use <https://www.zrythm.org/releases>
 to fetch tarballs. The project's home page is
-https://www.zrythm.org. The git repositories are
-on our [Gitea instance](https://git.zrythm.org/zrythm/).
+<https://www.zrythm.org>. The main git repositories
+are found on our
+[Gitea instance](https://git.zrythm.org/zrythm/).
 
 # Versioning
 
-Starting from v1.0.0-beta.0.1.0, Zrythm follows
+Starting from v1.0.0-alpha.0.1.0, Zrythm follows
 the following
 [Semantic Versioning (SemVer) 2.0.0](https://semver.org/)
 scheme:
@@ -51,10 +51,11 @@ nightlies:
 
 # Included Programs
 
-For various reasons, Zrythm ships with some libraries/resources
-that could be packaged separately. If you wish to package
-them separately and make Zrythm use them, you can pass the
-flags found in `meson_options.txt`.
+For various reasons, Zrythm ships with some
+libraries/resources that could be packaged
+separately. If you wish to package them separately
+and make Zrythm use them, you can pass the flags
+found in `meson_options.txt`.
 
 # Debug Symbols
 
@@ -80,7 +81,8 @@ automatically.
     update-desktop-database
     update-gdk-pixbuf-loaders
 
-See the [post-install script](scripts/meson-post-install.scm)
+See the
+[post-install script](scripts/meson-post-install.sh)
 for more details.
 
 # Trademarks
