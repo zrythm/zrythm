@@ -84,6 +84,8 @@ audio_write_raw_file (
   long         frames_already_written,
   long         nframes,
   uint32_t     samplerate,
+  bool         flac,
+  BitDepth     bit_depth,
   unsigned int channels,
   const char * filename)
 {
@@ -95,9 +97,9 @@ audio_write_raw_file (
   g_debug (
     "writing raw file: already written %ld, "
     "nframes %ld, samplerate %u, channels %u, "
-    "filename %s",
+    "filename %s, flac? %d",
     frames_already_written, nframes, samplerate,
-    channels, filename);
+    channels, filename, flac);
 
   SF_INFO info;
 
@@ -105,7 +107,24 @@ audio_write_raw_file (
   info.frames = nframes;
   info.channels = (int) channels;
   info.samplerate = (int) samplerate;
-  info.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+  info.format =
+    flac ? SF_FORMAT_FLAC : SF_FORMAT_WAV;
+  switch (bit_depth)
+    {
+    case BIT_DEPTH_16:
+      info.format =
+        info.format | SF_FORMAT_PCM_16;
+      break;
+    case BIT_DEPTH_24:
+      info.format =
+        info.format | SF_FORMAT_PCM_24;
+      break;
+    case BIT_DEPTH_32:
+      g_return_val_if_fail (!flac, -1);
+      info.format =
+        info.format | SF_FORMAT_PCM_32;
+      break;
+    }
   info.seekable = 1;
   info.sections = 1;
 
@@ -113,23 +132,48 @@ audio_write_raw_file (
     (frames_already_written > 0) &&
     g_file_test (filename, G_FILE_TEST_IS_REGULAR);
 
-  SNDFILE * sndfile =
-    sf_open (filename, SFM_RDWR, &info);
-
-  long seek_to =
-    write_chunk ? frames_already_written : 0;
-  g_debug ("seeking to %ld", seek_to);
-  int ret =
-    sf_seek (
-      sndfile, seek_to, SEEK_SET | SFM_WRITE);
-  if (ret == -1 || ret != seek_to)
+  if (flac && write_chunk)
     {
-      g_warning ("seek error %d", ret);
+      g_critical ("cannot write chunks for flac");
+      return -1;
+    }
+
+  SNDFILE * sndfile =
+    sf_open (
+      filename, flac ? SFM_WRITE : SFM_RDWR, &info);
+  if (!sndfile)
+    {
+      g_critical (
+        "error opening sndfile: %s",
+        sf_strerror (NULL));
+      return -1;
+    }
+
+  if (!flac)
+    {
+      long seek_to =
+        write_chunk ? frames_already_written : 0;
+      g_debug ("seeking to %ld", seek_to);
+      int ret =
+        sf_seek (
+          sndfile, seek_to, SEEK_SET | SFM_WRITE);
+      if (ret == -1 || ret != seek_to)
+        {
+          g_critical (
+            "seek error %d: %s", ret,
+            sf_strerror (sndfile));
+        }
     }
 
   sf_count_t count =
     sf_writef_float (sndfile, buff, nframes);
-  g_warn_if_fail (count == nframes);
+  if (count != nframes)
+    {
+      g_critical (
+        "mismatch: expected %ld frames, got %ld\n"
+        "error: %s",
+        nframes, count, sf_strerror (sndfile));
+    }
 
   sf_write_sync (sndfile);
 

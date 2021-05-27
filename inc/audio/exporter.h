@@ -21,6 +21,7 @@
 #define __AUDIO_EXPORT_H__
 
 #include "audio/position.h"
+#include "utils/audio.h"
 
 /**
  * @addtogroup audio
@@ -45,16 +46,6 @@ typedef enum AudioFormat
 
   NUM_AUDIO_FORMATS,
 } AudioFormat;
-
-/**
- * Bit depth.
- */
-typedef enum BitDepth
-{
-  BIT_DEPTH_16,
-  BIT_DEPTH_24,
-  BIT_DEPTH_32
-} BitDepth;
 
 /**
  * Time range to export.

@@ -510,7 +510,7 @@ create_track (
           ZRegion * ar =
             audio_region_new (
               self->pool_id, NULL,
-              NULL, 0, NULL, 0,
+              NULL, 0, NULL, 0, 0,
               &start_pos, pos, 0, 0);
           track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,

@@ -820,6 +820,7 @@ handle_resume_event (
               new_region =
                 audio_region_new (
                   -1, NULL, NULL, 1, name, 2,
+                  BIT_DEPTH_32,
                   &resume_pos,
                   tr->pos, new_lane_pos,
                   idx_inside_lane);
@@ -1445,7 +1446,8 @@ handle_start_recording (
           ZRegion * region =
             audio_region_new (
               -1, NULL, NULL, ev->nframes, name, 2,
-              &start_pos, tr->pos, new_lane_pos,
+              BIT_DEPTH_32, &start_pos, tr->pos,
+              new_lane_pos,
               tr->lanes[new_lane_pos]->num_regions);
           g_return_if_fail (region);
           track_add_region (

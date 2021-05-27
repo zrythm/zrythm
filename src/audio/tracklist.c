@@ -1251,7 +1251,7 @@ tracklist_handle_file_drop (
               region =
                 audio_region_new (
                   -1, file->abs_path, NULL, -1, NULL,
-                  0, pos, track->pos, lane_pos,
+                  0, 0, pos, track->pos, lane_pos,
                   idx_in_lane);
               break;
             case TRACK_TYPE_MIDI:

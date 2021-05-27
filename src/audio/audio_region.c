@@ -52,6 +52,7 @@
  * @param nframes Number of frames per channel.
  * @param clip_name Name of audio clip, if not
  *   loading from file.
+ * @param bit_depth Bit depth, if using \ref frames.
  */
 ZRegion *
 audio_region_new (
@@ -61,6 +62,7 @@ audio_region_new (
   const long       nframes,
   const char *     clip_name,
   const channels_t channels,
+  BitDepth         bit_depth,
   const Position * start_pos,
   int              track_pos,
   int              lane_pos,
@@ -90,7 +92,8 @@ audio_region_new (
           g_return_val_if_fail (clip_name, NULL);
           clip =
             audio_clip_new_from_float_array (
-              frames, nframes, channels, clip_name);
+              frames, nframes, channels, bit_depth,
+              clip_name);
         }
       else
         {

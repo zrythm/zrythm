@@ -28,6 +28,7 @@
 
 #include "audio/position.h"
 #include "audio/region.h"
+#include "utils/audio.h"
 #include "utils/types.h"
 
 typedef struct _RegionWidget RegionWidget;
@@ -59,6 +60,7 @@ typedef struct StereoPorts StereoPorts;
  * @param nframes Number of frames per channel.
  * @param clip_name Name of audio clip, if not
  *   loading from file.
+ * @param bit_depth Bit depth, if using \ref frames.
  */
 ZRegion *
 audio_region_new (
@@ -68,6 +70,7 @@ audio_region_new (
   const long       nframes,
   const char *     clip_name,
   const channels_t channels,
+  BitDepth         bit_depth,
   const Position * start_pos,
   int              track_pos,
   int              lane_pos,

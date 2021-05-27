@@ -93,7 +93,6 @@ audio_clip_init_from_file (
   audio_encoder_decode (
     enc, self->samplerate, F_SHOW_PROGRESS);
 
-
   size_t arr_size =
     (size_t) enc->num_out_frames *
     (size_t) enc->nfo.channels;
@@ -111,6 +110,26 @@ audio_clip_init_from_file (
   self->channels = enc->nfo.channels;
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  switch (enc->nfo.bit_depth)
+    {
+    case 16:
+      self->bit_depth = BIT_DEPTH_16;
+      self->use_flac = true;
+      break;
+    case 24:
+      self->bit_depth = BIT_DEPTH_24;
+      self->use_flac = true;
+      break;
+    case 32:
+      self->bit_depth = BIT_DEPTH_32;
+      self->use_flac = false;
+      break;
+    default:
+      g_warning (
+        "unknown bit depth: %d", enc->nfo.bit_depth);
+      self->bit_depth = BIT_DEPTH_32;
+      self->use_flac = false;
+    }
   /*g_message (*/
     /*"\n\n num frames %ld \n\n", self->num_frames);*/
   audio_clip_update_channel_caches (self, 0);
@@ -128,20 +147,15 @@ audio_clip_init_loaded (
   g_debug (
     "%s: %p", __func__, self);
 
-  char * pool_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_POOL, false);
-  char * noext =
-    io_file_strip_ext (self->name);
-  char * tmp =
-    g_build_filename (
-      pool_dir, noext, NULL);
   char * filepath =
-    g_strdup_printf ("%s.wav", tmp);
+    audio_clip_get_path_in_pool_from_name (
+      self->name, self->use_flac);
 
   bpm_t bpm = self->bpm;
   audio_clip_init_from_file (self, filepath);
   self->bpm = bpm;
+
+  g_free (filepath);
 }
 
 /**
@@ -175,6 +189,7 @@ audio_clip_new_from_float_array (
   const float *    arr,
   const long       nframes,
   const channels_t channels,
+  BitDepth         bit_depth,
   const char *     name)
 {
   AudioClip * self = _create ();
@@ -188,6 +203,8 @@ audio_clip_new_from_float_array (
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
   g_return_val_if_fail (self->samplerate > 0, NULL);
   self->name = g_strdup (name);
+  self->bit_depth = bit_depth;
+  self->use_flac = bit_depth < BIT_DEPTH_32;
   self->pool_id = -1;
   dsp_copy (
     self->frames, arr,
@@ -228,6 +245,8 @@ audio_clip_new_recording (
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
+  self->bit_depth = BIT_DEPTH_32;
+  self->use_flac = false;
   g_return_val_if_fail (self->samplerate > 0, NULL);
   dsp_fill (
     self->frames, DENORMAL_PREVENTION_VAL,
@@ -239,7 +258,8 @@ audio_clip_new_recording (
 
 char *
 audio_clip_get_path_in_pool_from_name (
-  const char * name)
+  const char * name,
+  bool         use_flac)
 {
   char * prj_pool_dir =
     project_get_path (
@@ -250,12 +270,11 @@ audio_clip_get_path_in_pool_from_name (
     io_file_strip_ext (name);
   char * basename =
     g_strdup_printf (
-      "%s.wav", without_ext);
+      "%s.%s", without_ext,
+      use_flac ? "FLAC" : "wav");
   char * new_path =
     g_build_filename (
-      prj_pool_dir,
-      basename,
-      NULL);
+      prj_pool_dir, basename, NULL);
   g_free (without_ext);
   g_free (basename);
   g_free (prj_pool_dir);
@@ -269,7 +288,7 @@ audio_clip_get_path_in_pool (
 {
   return
     audio_clip_get_path_in_pool_from_name (
-      self->name);
+      self->name, self->use_flac);
 }
 
 /**
@@ -328,6 +347,7 @@ audio_clip_write_to_file (
         (self->num_frames - self->frames_written) :
         self->num_frames,
       (uint32_t) self->samplerate,
+      self->use_flac, self->bit_depth,
       self->channels, filepath);
   audio_clip_update_channel_caches (
     self, before_frames);

@@ -30,6 +30,7 @@
 #include <stdbool.h>
 
 #include "utils/types.h"
+#include "utils/yaml.h"
 
 #include <audec/audec.h>
 
@@ -38,6 +39,24 @@
  *
  * @{
  */
+
+/**
+ * Bit depth.
+ */
+typedef enum BitDepth
+{
+  BIT_DEPTH_16,
+  BIT_DEPTH_24,
+  BIT_DEPTH_32
+} BitDepth;
+
+static const cyaml_strval_t
+  bit_depth_strings[] =
+{
+  { "16",   BIT_DEPTH_16 },
+  { "24",   BIT_DEPTH_24 },
+  { "32",   BIT_DEPTH_32 },
+};
 
 /**
  * Number of plugin slots per channel.
@@ -69,6 +88,8 @@ audio_write_raw_file (
   long         frames_already_written,
   long         nframes,
   uint32_t     samplerate,
+  bool         flac,
+  BitDepth     bit_depth,
   unsigned int channels,
   const char * filename);
 

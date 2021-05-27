@@ -19,10 +19,14 @@
 
 #include <stdlib.h>
 
+#include "actions/undo_manager.h"
 #include "audio/clip.h"
 #include "audio/pool.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
+#include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
@@ -92,7 +96,6 @@ audio_pool_ensure_unique_clip_name (
   AudioPool * self,
   AudioClip * clip)
 {
-  int i = 1;
   char * orig_name_without_ext =
     io_file_strip_ext (clip->name);
   char * orig_path_in_pool =
@@ -103,16 +106,40 @@ audio_pool_ensure_unique_clip_name (
   bool changed = false;
   while (name_exists (self, new_name))
     {
-      g_free (new_name);
-      new_name =
-        g_strdup_printf (
-          "%s (%d)", orig_name_without_ext, i++);
+      char * prev_new_name = new_name;
+      const char * regex = "^.*\\((\\d+)\\)$";
+      char * cur_val_str =
+        string_get_regex_group (
+          new_name, regex, 1);
+      int cur_val =
+        string_get_regex_group_as_int (
+          new_name, regex, 1, 0);
+      if (cur_val == 0)
+        {
+          new_name =
+            g_strdup_printf ("%s (1)", new_name);
+        }
+      else
+        {
+          size_t len =
+            strlen (new_name) -
+            /* + 2 for the parens */
+            (strlen (cur_val_str) + 2);
+          char tmp[len + 1];
+          memset (tmp, 0, (len + 1) * sizeof (char));
+          strncpy (tmp, new_name, len - 1);
+          new_name =
+            g_strdup_printf (
+              "%s (%d)", tmp, cur_val + 1);
+        }
+      g_free (cur_val_str);
+      g_free (prev_new_name);
       changed = true;
     }
 
   char * new_path_in_pool =
     audio_clip_get_path_in_pool_from_name (
-      new_name);
+      new_name, clip->use_flac);
   if (changed)
     {
       g_return_if_fail (
@@ -215,7 +242,7 @@ audio_pool_duplicate_clip (
   AudioClip * new_clip =
     audio_clip_new_from_float_array (
       clip->frames, clip->num_frames, clip->channels,
-      clip->name);
+      clip->bit_depth, clip->name);
   audio_pool_add_clip (self, new_clip);
 
   g_message (

@@ -2189,7 +2189,7 @@ clone_region (
         ZRegion * ar =
           audio_region_new (
             region->pool_id, NULL, NULL, -1,
-            NULL, 0, &r_obj->pos,
+            NULL, 0, 0, &r_obj->pos,
             region->id.track_pos,
             region->id.lane_pos,
             region->id.idx);

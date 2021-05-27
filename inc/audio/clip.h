@@ -28,6 +28,7 @@
 
 #include <stdbool.h>
 
+#include "utils/audio.h"
 #include "utils/types.h"
 #include "utils/yaml.h"
 
@@ -78,6 +79,16 @@ typedef struct AudioClip
    */
   int           samplerate;
 
+  /**
+   * Bit depth of the clip when the clip was
+   * imported into the project.
+   */
+  BitDepth      bit_depth;
+
+  /** Whether the clip should use FLAC when being
+   * serialized. */
+  bool          use_flac;
+
   /** ID in the audio pool. */
   int           pool_id;
 
@@ -108,6 +119,10 @@ audio_clip_fields_schema[] =
     AudioClip, name),
   YAML_FIELD_FLOAT (
     AudioClip, bpm),
+  YAML_FIELD_ENUM (
+    AudioClip, bit_depth, bit_depth_strings),
+  YAML_FIELD_INT (
+    AudioClip, use_flac),
   YAML_FIELD_INT (
     AudioClip, samplerate),
   YAML_FIELD_INT (
@@ -152,6 +167,7 @@ audio_clip_new_from_float_array (
   const float *    arr,
   const long       nframes,
   const channels_t channels,
+  BitDepth         bit_depth,
   const char *     name);
 
 /**
@@ -214,7 +230,8 @@ audio_clip_write_to_pool (
 NONNULL
 char *
 audio_clip_get_path_in_pool_from_name (
-  const char * name);
+  const char * name,
+  bool         use_flac);
 
 NONNULL
 char *

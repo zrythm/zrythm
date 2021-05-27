@@ -2106,6 +2106,8 @@ arranger_selections_merge (
         dsp_fill (rframes, 0, (size_t) num_frames);
         AudioClip * first_r_clip =
           audio_region_get_clip (first_r);
+        BitDepth max_depth =
+          first_r_clip->bit_depth;
         g_warn_if_fail (first_r_clip->name);
         for (int i = 0; i < size; i++)
           {
@@ -2125,6 +2127,11 @@ arranger_selections_merge (
               &lframes[frames_diff],
               clip->ch_frames[0],
               (size_t) r_frames_length);
+
+            if (clip->bit_depth > max_depth)
+              {
+                max_depth = clip->bit_depth;
+              }
           }
 
         /* interleave */
@@ -2138,7 +2145,7 @@ arranger_selections_merge (
         new_r =
           audio_region_new (
             -1, NULL, frames, num_frames,
-            first_r_clip->name, 2,
+            first_r_clip->name, 2, max_depth,
             &pos, first_r->id.track_pos,
             first_r->id.lane_pos, first_r->id.idx);
       }

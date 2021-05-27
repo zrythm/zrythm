@@ -50,7 +50,8 @@ int
 lv2_log_printf (
   LV2_Log_Handle handle,
   LV2_URID       type,
-  const char*    fmt, ...);
+  const char*    fmt,
+  ...);
 
 /**
  * @}

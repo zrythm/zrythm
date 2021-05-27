@@ -231,7 +231,7 @@ typedef struct PluginDescriptor
   int              num_cv_outs;
   /** Architecture (32/64bit). */
   PluginArchitecture arch;
-  /** Plugin protocol (Lv2/DSSI/LADSPA/VST...). */
+  /** Plugin protocol (Lv2/DSSI/LADSPA/VST/etc.). */
   PluginProtocol   protocol;
   /** Path, if not an Lv2Plugin which uses URIs. */
   char *           path;
