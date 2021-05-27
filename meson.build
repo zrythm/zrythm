@@ -578,9 +578,9 @@ test_strict_cflags = []
 
 # add attribute macros
 attributes = [
-  'const', 'cold', 'hot', 'pure', 'nonnull',
+  'cold', 'hot', 'pure', 'nonnull',
   'returns_nonnull', 'stack_protect',
-  'no_stack_protector', 'deprecated',
+  'no_stack_protector',
   ]
 foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
