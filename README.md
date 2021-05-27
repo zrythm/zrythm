@@ -82,13 +82,16 @@ policy.
 ## Support
 If you would like to support this project please
 donate below or purchase a binary installer from
-<https://www.zrythm.org/en/download.html> - creating a DAW
-takes thousands of hours of work and contributions
-enable us to spend more time working on the project.
+<https://www.zrythm.org/en/download.html> - creating
+a DAW takes thousands of hours of work and
+contributions enable us to spend more time working
+on the project.
 
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm/donate)
 - [paypal.me/zrythm](https://paypal.me/zrythm)
 - [opencollective.com/zrythm](https://opencollective.com/zrythm/donate)
+- Bitcoin (BTC): `bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j`
+- Monero (XMR): `87YVi6nqwDhAQwfAuB8a7UeD6wrr81PJG4yBxkkGT3Ri5ng9D1E91hdbCCQsi3ZzRuXiX3aRWesS95S8ij49YMBKG3oEfnr`
 
 ----
 
