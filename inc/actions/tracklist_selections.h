@@ -134,16 +134,31 @@ typedef struct TracklistSelectionsAction
    * track. */
   PluginSetting *       pl_setting;
 
-  /** Filename, if we are making an audio track from
-   * a file. */
-  SupportedFile *       file_descr;
+  /**
+   * The basename of the file, if any.
+   *
+   * This will be used as the track name.
+   */
+  char *                file_basename;
 
   /**
-   * When this action is created, it will create
-   * the audio file and add it to the pool.
+   * If this is an action to create a MIDI track
+   * from a MIDI file, this is the base64
+   * representation so that the file does not need
+   * to be stored in the project.
    *
-   * New audio regions should use this ID to avoid
-   * duplication.
+   * @note For audio files,
+   *   TracklistSelectionsAction.pool_id is used.
+   */
+  char *                base64_midi;
+
+  /**
+   * If this is an action to create an Audio track
+   * from an audio file, this is the pool ID of the
+   * audio file.
+   *
+   * If this is not -1, this means that an audio
+   * file exists in the pool.
    */
   int                   pool_id;
 
@@ -242,9 +257,10 @@ static const cyaml_schema_field_t
     num_tracks, &int_schema, 0, CYAML_UNLIMITED),
   YAML_FIELD_INT (
     TracklistSelectionsAction, num_tracks),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TracklistSelectionsAction, file_descr,
-    supported_file_fields_schema),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    TracklistSelectionsAction, file_basename),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    TracklistSelectionsAction, base64_midi),
   YAML_FIELD_INT (
     TracklistSelectionsAction, pool_id),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (

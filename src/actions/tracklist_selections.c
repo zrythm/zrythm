@@ -35,6 +35,7 @@
 #include "utils/arrays.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/io.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
@@ -151,12 +152,7 @@ tracklist_selections_action_new (
         plugin_setting_clone (
           pl_setting, F_VALIDATE);
     }
-  else if (file_descr)
-    {
-      self->file_descr =
-        supported_file_clone (file_descr);
-    }
-  else
+  else if (!file_descr)
     {
       self->is_empty = 1;
     }
@@ -185,11 +181,51 @@ tracklist_selections_action_new (
     {
       self->num_tracks =
         midi_file_get_num_tracks (
-          self->file_descr->abs_path, true);
+          file_descr->abs_path, true);
     }
   else
     {
       self->num_tracks = num_tracks;
+    }
+
+  /* create the file in the pool or save base64 if
+   * MIDI */
+  if (file_descr)
+    {
+      if (track_type == TRACK_TYPE_MIDI)
+        {
+          GError * err = NULL;
+          uint8_t * data = NULL;
+          size_t length = 0;
+          if (!g_file_get_contents (
+                 file_descr->abs_path,
+                 (gchar **) &data,
+                 &length, &err))
+            {
+              g_critical (
+                "failed getting contents for %s: "
+                "%s",
+                file_descr->abs_path, err->message);
+              return NULL;
+            }
+          self->base64_midi =
+            g_base64_encode (data, length);
+        }
+      else if (track_type == TRACK_TYPE_AUDIO)
+        {
+          AudioClip * clip =
+            audio_clip_new_from_file (
+              file_descr->abs_path);
+          self->pool_id =
+            audio_pool_add_clip (AUDIO_POOL, clip);
+        }
+      else
+        {
+          g_return_val_if_reached (NULL);
+        }
+
+      self->file_basename =
+        g_path_get_basename (file_descr->abs_path);
     }
 
   bool need_full_selections = true;
@@ -369,33 +405,29 @@ create_track (
         TRACKLIST, track, pos,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
     }
-  else // track is not empty
+  else /* else if track is not empty */
     {
       Plugin * pl = NULL;
 
-      if (self->file_descr &&
-          self->track_type == TRACK_TYPE_AUDIO)
+      /* if creating audio track from file */
+      if (self->track_type == TRACK_TYPE_AUDIO &&
+          self->pool_id >= 0)
         {
-          char * basename =
-            g_path_get_basename (
-              self->file_descr->abs_path);
           track =
             track_new (
-              self->track_type, pos, basename,
+              self->track_type, pos,
+              self->file_basename,
               F_WITH_LANE);
-          g_free (basename);
         }
-      else if (self->file_descr &&
-               self->track_type == TRACK_TYPE_MIDI)
+      /* else if creating MIDI track from file */
+      else if (self->track_type == TRACK_TYPE_MIDI &&
+               self->base64_midi)
         {
-          char * basename =
-            g_path_get_basename (
-              self->file_descr->abs_path);
           track =
             track_new (
-              self->track_type, pos, basename,
+              self->track_type, pos,
+              self->file_basename,
               F_WITH_LANE);
-          g_free (basename);
         }
       /* at this point we can assume it has a
        * plugin */
@@ -477,27 +509,53 @@ create_track (
            * track */
           ZRegion * ar =
             audio_region_new (
-              self->pool_id,
-              self->pool_id == -1 ?
-                self->file_descr->abs_path :
-                NULL,
+              self->pool_id, NULL,
               NULL, 0, NULL, 0,
               &start_pos, pos, 0, 0);
-          self->pool_id =
-            ar->pool_id;
           track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,
             F_NO_PUBLISH_EVENTS);
         }
       else if (self->track_type == TRACK_TYPE_MIDI &&
-               self->file_descr)
+               self->base64_midi &&
+               self->file_basename)
         {
+          /* create a temporary midi file */
+          GError * err = NULL;
+          char * dir =
+            g_dir_make_tmp (
+              "zrythm_tmp_midi_XXXXXX", &err);
+          if (!dir)
+            {
+              g_critical (
+                "failed creating tmpdir: %s",
+                err->message);
+              return -1;
+            }
+          char * full_path =
+            g_build_filename (
+              dir, "data.MID", NULL);
+          size_t len;
+          uint8_t * data =
+            g_base64_decode (
+              self->base64_midi, &len);
+          err = NULL;
+          if (!g_file_set_contents (
+                 full_path,
+                 (const gchar *) data,
+                 (gssize) len, &err))
+            {
+              g_critical (
+                "failed saving file %s: %s",
+                full_path, err->message);
+              return -1;
+            }
+
           /* create a MIDI region from the MIDI
            * file & add to track */
           ZRegion * mr =
             midi_region_new_from_midi_file (
-              &start_pos,
-              self->file_descr->abs_path,
+              &start_pos, full_path,
               pos, 0, 0, idx);
           if (mr)
             {
@@ -516,8 +574,15 @@ create_track (
               g_message (
                 "Failed to create MIDI region from "
                 "file %s",
-                self->file_descr->abs_path);
+                full_path);
             }
+
+          /* remove temporary data */
+          io_remove (full_path);
+          io_rmdir (dir, F_NO_FORCE);
+          g_free (dir);
+          g_free (full_path);
+          g_free (data);
         }
 
       if (pl)
@@ -1715,6 +1780,9 @@ tracklist_selections_action_free (
   object_zero_and_free (self->out_tracks);
   object_zero_and_free (self->colors_before);
   object_zero_and_free (self->ival_before);
+
+  g_free_and_null (self->base64_midi);
+  g_free_and_null (self->file_basename);
 
   object_zero_and_free (self);
 }
