@@ -1627,7 +1627,6 @@ test_split ()
   AudioClip * clip =
     audio_region_get_clip (region);
   float first_frame = clip->frames[0];
-  g_assert_true (clip->frames[0] > 0.000001f);
 
   arranger_object_print (r_obj);
 

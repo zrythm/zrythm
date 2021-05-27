@@ -20,6 +20,7 @@ util_srcs = [
   'audio.c',
   'backtrace.c',
   'cairo.c',
+  'chromaprint.c',
   'color.c',
   'cpu_windows.cpp',
   'curl.c',

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -94,13 +94,22 @@ audio_write_raw_file (
   const char * filename);
 
 /**
+ * Returns the number of frames in the given audio
+ * file.
+ */
+long
+audio_get_num_frames (
+  const char * filepath);
+
+/**
  * Returns whether the frame buffers are equal.
  */
 bool
 audio_frames_equal (
   float * src1,
   float * src2,
-  size_t  num_frames);
+  size_t  num_frames,
+  float   epsilon);
 
 /**
  * Returns whether the frame buffer is empty (zero).

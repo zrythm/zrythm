@@ -27,160 +27,14 @@
 #include "audio/exporter.h"
 #include "audio/supported_file.h"
 #include "project.h"
+#include "utils/chromaprint.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm.h"
 
 #include <glib.h>
 
-#include <chromaprint.h>
 #include <sndfile.h>
-
-/**
- * Chroma fingerprint info for a specific file.
- */
-typedef struct ChromaprintFingerprint
-{
-  uint32_t * fp;
-  int        size;
-  char *     compressed_str;
-} ChromaprintFingerprint;
-
-static void
-chromaprint_fingerprint_free (
-  ChromaprintFingerprint * self)
-{
-  chromaprint_dealloc (self->fp);
-  chromaprint_dealloc (self->compressed_str);
-
-}
-
-static long
-get_num_frames (
-  const char * file)
-{
-  SF_INFO sfinfo;
-  memset (&sfinfo, 0, sizeof (sfinfo));
-  sfinfo.format =
-    sfinfo.format | SF_FORMAT_PCM_16;
-  SNDFILE * sndfile =
-    sf_open (file, SFM_READ, &sfinfo);
-  if (!sndfile)
-    {
-      const char * err_str =
-        sf_strerror (sndfile);
-      g_critical ("sndfile null: %s", err_str);
-    }
-  g_assert_nonnull (sndfile);
-  g_assert_cmpint (sfinfo.frames, >, 0);
-  long frames = sfinfo.frames;
-
-  int ret = sf_close (sndfile);
-  g_assert_cmpint (ret, ==, 0);
-
-  return frames;
-}
-
-static ChromaprintFingerprint *
-get_fingerprint (
-  const char * file1,
-  long         max_frames)
-{
-  int ret;
-
-  SF_INFO sfinfo;
-  memset (&sfinfo, 0, sizeof (sfinfo));
-  sfinfo.format =
-    sfinfo.format | SF_FORMAT_PCM_16;
-  SNDFILE * sndfile =
-    sf_open (file1, SFM_READ, &sfinfo);
-  g_assert_nonnull (sndfile);
-  g_assert_cmpint (sfinfo.frames, >, 0);
-
-  ChromaprintContext * ctx =
-    chromaprint_new (CHROMAPRINT_ALGORITHM_DEFAULT);
-  g_assert_nonnull (ctx);
-  ret = chromaprint_start (
-    ctx, sfinfo.samplerate, sfinfo.channels);
-  g_assert_cmpint (ret, ==, 1);
-  int buf_size = sfinfo.frames * sfinfo.channels;
-  short * data =
-    calloc ((size_t) buf_size, sizeof (short));
-  sf_count_t frames_read =
-    sf_readf_short (sndfile, data, sfinfo.frames);
-  g_assert_cmpint (frames_read, ==, sfinfo.frames);
-  g_message (
-    "read %ld frames for %s", frames_read, file1);
-
-  ret = chromaprint_feed (ctx, data, buf_size);
-  g_assert_cmpint (ret, ==, 1);
-
-  ret = chromaprint_finish (ctx);
-  g_assert_cmpint (ret, ==, 1);
-
-  ChromaprintFingerprint * fp =
-    object_new (ChromaprintFingerprint);
-  ret = chromaprint_get_fingerprint (
-    ctx, &fp->compressed_str);
-  g_assert_cmpint (ret, ==, 1);
-  ret = chromaprint_get_raw_fingerprint (
-    ctx, &fp->fp, &fp->size);
-  g_assert_cmpint (ret, ==, 1);
-
-  g_message (
-    "fingerprint %s [%d]",
-    fp->compressed_str, fp->size);
-
-  chromaprint_free (ctx);
-  free (data);
-
-  ret = sf_close (sndfile);
-  g_assert_cmpint (ret, ==, 0);
-
-  return fp;
-}
-
-/**
- * @param perc Minimum percentage of equal
- *   fingerprints required.
- */
-static void
-check_fingerprint_similarity (
-  const char * file1,
-  const char * file2,
-  int          perc,
-  int          expected_size)
-{
-  const long max_frames =
-    MIN (
-      get_num_frames (file1),
-      get_num_frames (file2));
-  ChromaprintFingerprint * fp1 =
-    get_fingerprint (file1, max_frames);
-  g_assert_cmpint (fp1->size, ==, expected_size);
-  ChromaprintFingerprint * fp2 =
-    get_fingerprint (file2, max_frames);
-
-  int min = MIN (fp1->size, fp2->size);
-  g_assert_cmpint (min, !=, 0);
-  int rate = 0;
-  for (int i = 0; i < min; i++)
-    {
-      if (fp1->fp[i] == fp2->fp[i])
-        rate++;
-    }
-
-  double rated = (double) rate / (double) min;
-  int rate_perc =
-    math_round_double_to_int (rated * 100.0);
-  g_message (
-    "%d out of %d (%d%%)", rate, min, rate_perc);
-
-  g_assert_cmpint (rate_perc, >=, perc);
-
-  chromaprint_fingerprint_free (fp1);
-  chromaprint_fingerprint_free (fp2);
-}
 
 static void
 test_export_wav ()
@@ -253,8 +107,8 @@ test_export_wav ()
           g_assert_false (AUDIO_ENGINE->exporting);
           g_assert_cmpint (ret, ==, 0);
 
-          check_fingerprint_similarity (
-            filepath, settings.file_uri, 100, 6);
+          z_chromaprint_check_fingerprint_similarity (
+            filepath, settings.file_uri, 83, 6);
 
           io_remove (settings.file_uri);
           g_free (filename);
@@ -375,7 +229,7 @@ bounce_region (
           TESTS_SRCDIR,
           "test_mixdown_midi_routed_to_instrument_track.ogg",
           NULL);
-      check_fingerprint_similarity (
+      z_chromaprint_check_fingerprint_similarity (
         filepath, settings.file_uri, 97, 34);
       g_free (filepath);
     }
@@ -469,7 +323,7 @@ test_mixdown_midi_routed_to_instrument_track ()
       TESTS_SRCDIR,
       "test_mixdown_midi_routed_to_instrument_track.ogg",
       NULL);
-  check_fingerprint_similarity (
+  z_chromaprint_check_fingerprint_similarity (
     filepath, settings.file_uri, 97, 34);
   g_free (filepath);
 
@@ -667,7 +521,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
           TESTS_SRCDIR,
           "test_mixdown_midi_routed_to_instrument_track.ogg",
           NULL);
-      check_fingerprint_similarity (
+      z_chromaprint_check_fingerprint_similarity (
         filepath, settings.file_uri, 97, 34);
       g_free (filepath);
     }
@@ -783,7 +637,7 @@ _test_bounce_instrument_track (
 #define CHECK_SAME_AS_FILE(dirname,x,match_rate) \
   char * filepath = \
     g_build_filename (dirname, x, NULL); \
-  check_fingerprint_similarity ( \
+  z_chromaprint_check_fingerprint_similarity ( \
     filepath, settings.file_uri, match_rate, 34); \
   g_free (filepath)
 

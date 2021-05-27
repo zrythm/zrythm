@@ -1121,13 +1121,15 @@ test_long_audio_recording (void)
          new_clip->ch_frames[0],
          (size_t) MIN (
            new_clip->num_frames,
-           r_clip->num_frames)));
+           r_clip->num_frames),
+         0.0001f));
       g_warn_if_fail (
         audio_frames_equal (
          r_clip->frames, new_clip->frames,
          (size_t) MIN (
            new_clip->num_frames * 2,
-           r_clip->num_frames * 2)));
+           r_clip->num_frames * 2),
+         0.0001f));
       audio_clip_free (new_clip);
     }
 
@@ -1161,7 +1163,8 @@ test_long_audio_recording (void)
      r_clip->frames, new_clip->frames,
      (size_t) MIN (
        new_clip->num_frames,
-       r_clip->num_frames)));
+       r_clip->num_frames),
+     0.0001f));
   audio_clip_free (new_clip);
 
   undo_manager_undo (UNDO_MANAGER);

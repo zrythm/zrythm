@@ -125,7 +125,7 @@ audio_clip_init_from_file (
       self->use_flac = false;
       break;
     default:
-      g_warning (
+      g_debug (
         "unknown bit depth: %d", enc->nfo.bit_depth);
       self->bit_depth = BIT_DEPTH_32;
       self->use_flac = false;
@@ -370,15 +370,18 @@ audio_clip_write_to_file (
             "%zu != %zu",
             self->num_frames, new_clip->num_frames);
         }
+      float epsilon = 0.0001f;
       g_warn_if_fail (
         audio_frames_equal (
          self->ch_frames[0], new_clip->ch_frames[0],
-         (size_t) new_clip->num_frames));
+         (size_t) new_clip->num_frames,
+         epsilon));
       g_warn_if_fail (
         audio_frames_equal (
          self->frames, new_clip->frames,
          (size_t)
-         new_clip->num_frames * new_clip->channels));
+         new_clip->num_frames * new_clip->channels,
+         epsilon));
       audio_clip_free (new_clip);
     }
 

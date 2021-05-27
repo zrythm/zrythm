@@ -82,11 +82,11 @@ test_fill_stereo_ports (void)
   g_assert_true (
     audio_frames_equal (
       &r_clip->ch_frames[0][0],
-      &ports->l->buf[20], 80));
+      &ports->l->buf[20], 80, 0.00001f));
   g_assert_true (
     audio_frames_equal (
       &r_clip->ch_frames[1][0],
-      &ports->r->buf[20], 80));
+      &ports->r->buf[20], 80, 0.00001f));
 
   test_helper_zrythm_cleanup ();
 }

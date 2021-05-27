@@ -186,17 +186,49 @@ audio_write_raw_file (
 }
 
 /**
+ * Returns the number of frames in the given audio
+ * file.
+ */
+long
+audio_get_num_frames (
+  const char * filepath)
+{
+  SF_INFO sfinfo;
+  memset (&sfinfo, 0, sizeof (sfinfo));
+  sfinfo.format =
+    sfinfo.format | SF_FORMAT_PCM_16;
+  SNDFILE * sndfile =
+    sf_open (filepath, SFM_READ, &sfinfo);
+  if (!sndfile)
+    {
+      const char * err_str =
+        sf_strerror (sndfile);
+      g_critical ("sndfile null: %s", err_str);
+      return 0;
+    }
+  g_return_val_if_fail (sfinfo.frames > 0, 0);
+  long frames = sfinfo.frames;
+
+  int ret = sf_close (sndfile);
+  g_return_val_if_fail (ret == 0, 0);
+
+  return frames;
+}
+
+/**
  * Returns whether the frame buffers are equal.
  */
 bool
 audio_frames_equal (
   float * src1,
   float * src2,
-  size_t  num_frames)
+  size_t  num_frames,
+  float   epsilon)
 {
   for (size_t i = 0; i < num_frames; i++)
     {
-      if (!math_floats_equal (src1[i], src2[i]))
+      if (!math_floats_equal_epsilon (
+             src1[i], src2[i], epsilon))
         {
           g_debug (
             "[%zu] %f != %f",
