@@ -132,12 +132,13 @@ export_audio (
           exporter_stringize_audio_format (
             info->format, false);
 
-        info->has_error = true;
+        info->progress_info.has_error = true;
         sprintf (
-          info->error_str,
+          info->progress_info.error_str,
           _("Format %s not supported yet"),
           format);
-        g_warning ("%s", info->error_str);
+        g_warning (
+          "%s", info->progress_info.error_str);
 
         return -1;
       }
@@ -228,10 +229,12 @@ export_audio (
 
   if (!sf_format_check (&sfinfo))
     {
-      info->has_error = true;
+      info->progress_info.has_error = true;
       strcpy (
-        info->error_str, _("SF INFO invalid"));
-      g_warning ("%s", info->error_str);
+        info->progress_info.error_str,
+        _("SF INFO invalid"));
+      g_warning (
+        "%s", info->progress_info.error_str);
 
       return - 1;
     }
@@ -248,12 +251,13 @@ export_audio (
       const char * error_str =
         sf_error_number (error);
 
-      info->has_error = true;
+      info->progress_info.has_error = true;
       sprintf (
-        info->error_str,
+        info->progress_info.error_str,
         _("Couldn't open SNDFILE %s:\n%d: %s"),
         info->file_uri, error, error_str);
-      g_warning ("%s", info->error_str);
+      g_warning (
+        "%s", info->progress_info.error_str);
 
       return - 1;
     }
@@ -340,12 +344,17 @@ export_audio (
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
-      jack_set_freewheel (
-        AUDIO_ENGINE->client, 1);
-
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
         AUDIO_ENGINE_NO_JACK_TRANSPORT);
+
+      /* FIXME this is not how freewheeling should
+       * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
+#if 0
+      g_message ("setting freewheel on");
+      jack_set_freewheel (
+        AUDIO_ENGINE->client, 1);
+#endif
     }
 #endif
 
@@ -450,15 +459,16 @@ export_audio (
       last_playhead_frames += nframes;
 #endif
 
-      info->progress =
+      info->progress_info.progress =
         (TRANSPORT->playhead_pos.ticks -
           start_pos.ticks) /
         total_ticks;
     } while (
       TRANSPORT->playhead_pos.ticks <
-      stop_pos.ticks && !info->cancelled);
+        stop_pos.ticks &&
+      !info->progress_info.cancelled);
 
-  if (!info->cancelled)
+  if (!info->progress_info.cancelled)
     {
       g_warn_if_fail (
         math_floats_equal_epsilon (
@@ -467,15 +477,20 @@ export_audio (
 
   /* TODO silence output */
 
-  info->progress = 1.0;
+  info->progress_info.progress = 1.0;
 
   /* set jack freewheeling mode and transport type */
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
+      /* FIXME this is not how freewheeling should
+       * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
+#if 0
+      g_message ("setting freewheel off");
       jack_set_freewheel (
         AUDIO_ENGINE->client, 0);
+#endif
       engine_jack_set_transport_type (
         AUDIO_ENGINE, transport_type);
     }
@@ -491,13 +506,13 @@ export_audio (
   sf_close (sndfile);
 
   /* if cancelled, delete */
-  if (info->cancelled)
+  if (info->progress_info.cancelled)
     {
       io_remove (info->file_uri);
     }
 
   /* if cancelled, delete */
-  if (info->cancelled)
+  if (info->progress_info.cancelled)
     {
       g_message (
         "cancelled export to %s",
@@ -553,14 +568,14 @@ export_midi (
               track_write_to_midi_file (
                 track, mf);
             }
-          info->progress =
+          info->progress_info.progress =
             (double) i /
             (double) TRACKLIST->num_tracks;
         }
 
       midiFileClose(mf);
     }
-  info->progress = 1.0;
+  info->progress_info.progress = 1.0;
 
   return 0;
 }
@@ -604,8 +619,8 @@ export_settings_set_bounce_defaults (
   self->genre = g_strdup ("");
   self->depth = BIT_DEPTH_16;
   self->time_range = TIME_RANGE_CUSTOM;
-  self->cancelled = false;
-  self->has_error = false;
+  self->progress_info.cancelled = false;
+  self->progress_info.has_error = false;
   switch (self->mode)
     {
     case EXPORT_MODE_REGIONS:
@@ -787,11 +802,16 @@ exporter_export (ExportSettings * info)
   engine_wait_for_pause (
     AUDIO_ENGINE, &state, F_NO_FORCE);
 
+  g_message ("engine paused");
+
   TRANSPORT->play_state =
     PLAYSTATE_ROLLING;
 
   AUDIO_ENGINE->exporting = true;
   TRANSPORT->loop = false;
+
+  g_message (
+    "deactivating and reactivating plugins");
 
   /* deactivate and activate all plugins to make
    * them reset their states */

@@ -42,15 +42,7 @@
 G_DEFINE_TYPE (
   ExportProgressDialogWidget,
   export_progress_dialog_widget,
-  GTK_TYPE_DIALOG)
-
-static void
-on_closed (
-  GtkDialog *                  dialog,
-  ExportProgressDialogWidget * self)
-{
-  self->info->cancelled = true;
-}
+  GENERIC_PROGRESS_DIALOG_WIDGET_TYPE)
 
 static void
 on_open_directory_clicked (
@@ -60,69 +52,6 @@ on_open_directory_clicked (
   char * dir = io_get_dir (self->info->file_uri);
   io_open_directory (dir);
   g_free (dir);
-}
-
-static void
-on_ok_clicked (
-  GtkButton * btn,
-  ExportProgressDialogWidget * self)
-{
-  gtk_dialog_response (
-    GTK_DIALOG (self), 0);
-}
-
-static void
-on_cancel_clicked (
-  GtkButton * btn,
-  ExportProgressDialogWidget * self)
-{
-  self->info->cancelled = true;
-}
-
-static gboolean
-tick_cb (
-  GtkWidget *                  widget,
-  GdkFrameClock *              frame_clock,
-  ExportProgressDialogWidget * self)
-{
-  ExportSettings * info = self->info;
-
-  gtk_progress_bar_set_fraction (
-    GTK_PROGRESS_BAR (widget),
-    info->progress);
-
-  if (math_doubles_equal (info->progress, 1.0) ||
-      info->has_error || info->cancelled)
-    {
-      if (self->autoclose || info->cancelled)
-        {
-          gtk_dialog_response (
-            GTK_DIALOG (self), 0);
-        }
-      else
-        {
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->ok), true);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->cancel), false);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->open_directory),
-            self->show_open_dir_btn);
-          gtk_label_set_text (
-            self->label, _("Exported"));
-        }
-
-      if (self->info->has_error)
-        {
-          ui_show_error_message (
-            MAIN_WINDOW, self->info->error_str);
-        }
-      return G_SOURCE_REMOVE;
-    }
-  else
-    {
-      return G_SOURCE_CONTINUE;
-    }
 }
 
 /**
@@ -135,27 +64,47 @@ export_progress_dialog_widget_new (
   bool             show_open_dir_btn,
   bool             cancelable)
 {
+  g_type_ensure (
+    GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
+
   ExportProgressDialogWidget * self =
     g_object_new (
       EXPORT_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
 
+  GenericProgressDialogWidget * generic_progress_dialog =
+    Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
+
   self->info = info;
-  self->autoclose = autoclose;
+  strcpy (
+    info->progress_info.label_str,
+    _("Exporting..."));
+  strcpy (
+    info->progress_info.label_done_str,
+    _("Exported"));
+
+  generic_progress_dialog_widget_setup (
+    generic_progress_dialog, _("Export Progress"),
+    &info->progress_info, autoclose, cancelable);
+
   self->show_open_dir_btn = show_open_dir_btn;
 
-  if (cancelable)
+  if (show_open_dir_btn)
     {
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->cancel), true);
+      self->open_directory =
+        GTK_BUTTON (
+          gtk_button_new_with_label (
+            _("Open Directory")));
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->open_directory),
+        _("Opens the containing directory"));
+      g_signal_connect (
+        G_OBJECT (self->open_directory), "clicked",
+        G_CALLBACK (on_open_directory_clicked), self);
+
+      generic_progress_dialog_add_button (
+        generic_progress_dialog,
+        self->open_directory, true, true);
     }
-
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self->progress_bar),
-    (GtkTickCallback) tick_cb, self, NULL);
-
-  g_signal_connect (
-    G_OBJECT (self), "close",
-    G_CALLBACK (on_closed), self);
 
   return self;
 }
@@ -164,34 +113,12 @@ static void
 export_progress_dialog_widget_class_init (
   ExportProgressDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "export_progress_dialog.ui");
-
-#define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ExportProgressDialogWidget, x)
-
-  BIND_CHILD (label);
-  BIND_CHILD (progress_bar);
-  BIND_CHILD (open_directory);
-  BIND_CHILD (ok);
-  BIND_CHILD (cancel);
-  gtk_widget_class_bind_template_callback (
-    klass, on_open_directory_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass, on_ok_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass, on_cancel_clicked);
 }
 
 static void
 export_progress_dialog_widget_init (
   ExportProgressDialogWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
-
-  gtk_window_set_title (
-    GTK_WINDOW (self),
-    _("Export Progress"));
+  g_type_ensure (
+    GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 }

@@ -246,6 +246,11 @@ engine_process_events (
     g_thread_self () == zrythm_app->gtk_thread,
     G_SOURCE_REMOVE);
 
+  if (self->exporting)
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
   self->last_events_process_started =
     g_get_monotonic_time ();
 
@@ -962,12 +967,18 @@ engine_wait_for_pause (
         }
     }
 
+  g_message (
+    "setting run to 0 and waiting for cycle to "
+    "finish...");
+
   g_atomic_int_set (&self->run, 0);
   while (g_atomic_int_get (
            &self->cycle_running))
     {
       g_usleep (100);
     }
+
+  g_message ("cycle finished");
 
   if (PROJECT->loaded)
     {

@@ -896,9 +896,9 @@ info->time_range = TIME_RANGE_##x
   info->bounce_with_parents = true;
 
   info->mode = EXPORT_MODE_TRACKS;
-  info->has_error = false;
-  info->cancelled = false;
-  strcpy (info->error_str, "");
+  info->progress_info.has_error = false;
+  info->progress_info.cancelled = false;
+  strcpy (info->progress_info.error_str, "");
 }
 
 static void

@@ -270,7 +270,8 @@ timeline_arranger_on_quick_bounce_clicked (
 
   g_thread_join (thread);
 
-  if (!settings.has_error && !settings.cancelled)
+  if (!settings.progress_info.has_error &&
+      !settings.progress_info.cancelled)
     {
       /* create audio track with bounced material */
       Position first_pos;

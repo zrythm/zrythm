@@ -335,6 +335,7 @@ audio_clip_write_to_pool (
     "writing clip %s to pool "
     "(parts %d, is backup  %d): '%s'",
     self->name, parts, is_backup, new_path);
+  g_return_if_fail (new_path);
   audio_clip_write_to_file (
     self, new_path, parts);
   g_free (new_path);
@@ -432,8 +433,10 @@ audio_clip_remove_and_free (
   AudioClip * self)
 {
   char * path =
-    audio_clip_get_path_in_pool (self, F_NOT_BACKUP);
+    audio_clip_get_path_in_pool (
+      self, F_NOT_BACKUP);
   g_debug ("removing clip at %s", path);
+  g_return_if_fail (path);
   io_remove (path);
 
   audio_clip_free (self);

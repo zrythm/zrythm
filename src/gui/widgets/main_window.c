@@ -86,6 +86,8 @@ on_main_window_destroy (
 {
   g_message ("main window destroy");
 
+  event_manager_process_now (EVENT_MANAGER);
+
   if (PROJECT->loaded)
     {
       event_manager_stop_events (EVENT_MANAGER);
@@ -317,6 +319,8 @@ main_window_widget_setup (
     (GSourceFunc) show_startup_errors, self);
 
   self->setup = true;
+
+  event_manager_process_now (EVENT_MANAGER);
 
   g_message ("done");
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_EXPORT_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_PROGRESS_DIALOG_H__
 
+#include "gui/widgets/dialogs/generic_progress_dialog.h"
+
 #include <gtk/gtk.h>
 
 #define EXPORT_PROGRESS_DIALOG_WIDGET_TYPE \
@@ -34,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   ExportProgressDialogWidget,
   export_progress_dialog_widget,
   Z, EXPORT_PROGRESS_DIALOG_WIDGET,
-  GtkDialog)
+  GenericProgressDialogWidget)
 
 typedef struct ExportSettings ExportSettings;
 
@@ -49,19 +51,9 @@ typedef struct ExportSettings ExportSettings;
  */
 typedef struct _ExportProgressDialogWidget
 {
-  GtkDialog            parent_instance;
+  GenericProgressDialogWidget parent_instance;
 
-  GtkLabel *           label;
-  GtkProgressBar *     progress_bar;
-  GtkButton *          ok;
   GtkButton *          open_directory;
-  GtkButton *          cancel;
-
-  GtkButtonBox *       action_btn_box;
-
-  /** Automatically close the progress dialog when
-   * finished. */
-  bool                 autoclose;
 
   /** Whether to show the open directory button or
    * not. */

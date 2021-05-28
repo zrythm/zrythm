@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.22.1 -->
+<!--
+
+  Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
+
+  This file is part of Zrythm
+
+  Zrythm is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Zrythm is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+
+-->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="ExportProgressDialogWidget" parent="GtkDialog">
+  <template class="GenericProgressDialogWidget" parent="GtkDialog">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
@@ -21,12 +41,11 @@
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
-              <object class="GtkButton" id="open_directory">
-                <property name="label" translatable="yes">Open Directory</property>
+              <object class="GtkButton" id="ok">
+                <property name="label" translatable="yes">OK</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Opens the containing directory</property>
-                <signal name="clicked" handler="on_open_directory_clicked" object="ExportProgressDialogWidget" swapped="no"/>
+                <signal name="clicked" handler="on_ok_clicked" object="GenericProgressDialogWidget" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -35,29 +54,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="ok">
-                <property name="label" translatable="yes">OK</property>
+              <object class="GtkButton" id="cancel">
+                <property name="label" translatable="yes">Cancel</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_ok_clicked" object="ExportProgressDialogWidget" swapped="no"/>
+                <signal name="clicked" handler="on_cancel_clicked" object="GenericProgressDialogWidget" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="cancel">
-                <property name="label" translatable="yes">Cancel</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_cancel_clicked" object="ExportProgressDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -79,7 +85,7 @@
               <object class="GtkLabel" id="label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Exporting...</property>
+                <property name="label">Label</property>
               </object>
               <packing>
                 <property name="expand">False</property>

@@ -369,9 +369,8 @@ process_cb (
   nframes_t nframes,
   void *    data)
 {
-  return
-    engine_process (
-      (AudioEngine *) data, nframes);
+  AudioEngine * engine = (AudioEngine *) data;
+  return engine_process (engine, nframes);
 }
 
 /**

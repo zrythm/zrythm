@@ -206,18 +206,15 @@ expander_box_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "expander-box");
 
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    ExpanderBoxWidget,
-    button);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    ExpanderBoxWidget,
-    revealer);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    ExpanderBoxWidget,
-    content);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child_private ( \
+    klass, ExpanderBoxWidget, x)
+
+  BIND_CHILD (button);
+  BIND_CHILD (revealer);
+  BIND_CHILD (content);
+
+#undef BIND_CHILD
 }
 
 static void

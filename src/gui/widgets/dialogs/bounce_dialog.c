@@ -116,7 +116,8 @@ on_bounce_clicked (
   g_thread_join (thread);
 
   if (!self->bounce_to_file &&
-      !settings.has_error && !settings.cancelled)
+      !settings.progress_info.has_error &&
+      !settings.progress_info.cancelled)
     {
       /* create audio track with bounced material */
       exporter_create_audio_track_after_bounce (

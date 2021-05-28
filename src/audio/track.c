@@ -1784,8 +1784,8 @@ track_freeze (
       /* assert exporting is finished */
       g_return_if_fail (!AUDIO_ENGINE->exporting);
 
-      if (!settings.has_error &&
-          !settings.cancelled)
+      if (!settings.progress_info.has_error &&
+          !settings.progress_info.cancelled)
         {
           /* move the temporary file to the pool */
           AudioClip * clip =

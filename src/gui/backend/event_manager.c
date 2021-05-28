@@ -1314,6 +1314,9 @@ process_events (void * data)
             MW_TRACKLIST);
           break;
         case ET_RULER_SIZE_CHANGED:
+          g_return_val_if_fail (
+            Z_IS_RULER_WIDGET (ev->arg),
+            G_SOURCE_CONTINUE);
           gtk_widget_queue_allocate (
             GTK_WIDGET (ev->arg)); // ruler widget
           if (ev->arg == MW_RULER)

@@ -37,6 +37,18 @@
 #include <sndfile.h>
 
 static void
+print_progress_and_sleep (
+  const GenericProgressInfo * info)
+{
+  while (info->progress < 1.0)
+    {
+      g_message (
+        "progress: %f.1", info->progress * 100.0);
+      g_usleep (1000);
+    }
+}
+
+static void
 test_export_wav ()
 {
   test_helper_zrythm_init ();
@@ -75,8 +87,8 @@ test_export_wav ()
             g_strdup_printf ("test_wav%d.wav", i);
 
           ExportSettings settings;
-          settings.has_error = false;
-          settings.cancelled = false;
+          settings.progress_info.has_error = false;
+          settings.progress_info.cancelled = false;
           settings.format = AUDIO_FORMAT_WAV;
           settings.artist = g_strdup ("Test Artist");
           settings.title = g_strdup ("Test Title");
@@ -213,12 +225,8 @@ bounce_region (
       (GThreadFunc) exporter_generic_export_thread,
       &settings);
 
-  while (settings.progress < 1.0)
-    {
-      g_message (
-        "progress: %f.1", settings.progress * 100.0);
-      g_usleep (1000);
-    }
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -309,12 +317,8 @@ test_mixdown_midi_routed_to_instrument_track ()
       (GThreadFunc) exporter_generic_export_thread,
       &settings);
 
-  while (settings.progress < 1.0)
-    {
-      g_message (
-        "progress: %f.1", settings.progress * 100.0);
-      g_usleep (1000);
-    }
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -410,12 +414,8 @@ test_bounce_region_with_first_note (void)
       (GThreadFunc) exporter_generic_export_thread,
       &settings);
 
-  while (settings.progress < 1.0)
-    {
-      g_message (
-        "progress: %f.1", settings.progress * 100.0);
-      g_usleep (1000);
-    }
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -505,12 +505,8 @@ _test_bounce_midi_track_routed_to_instrument_track (
       (GThreadFunc) exporter_generic_export_thread,
       &settings);
 
-  while (settings.progress < 1.0)
-    {
-      g_message (
-        "progress: %f.1", settings.progress * 100.0);
-      g_usleep (1000);
-    }
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 
@@ -625,12 +621,8 @@ _test_bounce_instrument_track (
       (GThreadFunc) exporter_generic_export_thread,
       &settings);
 
-  while (settings.progress < 1.0)
-    {
-      g_message (
-        "progress: %f.1", settings.progress * 100.0);
-      g_usleep (1000);
-    }
+  print_progress_and_sleep (
+    &settings.progress_info);
 
   g_thread_join (thread);
 

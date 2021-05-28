@@ -149,24 +149,11 @@ typedef struct ExportSettings
    */
   char *            file_uri;
 
-  /** whether we are exporting stems. */
-  //bool              stems;
-
-  /** Progress done (0.0 to 1.0). */
-  double            progress;
-
   /** Number of files being simultaneously exported,
    * for progress calculation. */
   int               num_files;
 
-  /** Export cancelled. */
-  bool              cancelled;
-
-  /** Error occured. */
-  bool              has_error;
-
-  /** Error string. */
-  char              error_str[1800];
+  GenericProgressInfo progress_info;
 } ExportSettings;
 
 /**
