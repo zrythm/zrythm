@@ -149,7 +149,7 @@ audio_clip_init_loaded (
 
   char * filepath =
     audio_clip_get_path_in_pool_from_name (
-      self->name, self->use_flac);
+      self->name, self->use_flac, F_NOT_BACKUP);
 
   bpm_t bpm = self->bpm;
   audio_clip_init_from_file (self, filepath);
@@ -256,16 +256,26 @@ audio_clip_new_recording (
   return self;
 }
 
+/**
+ * Gets the path of a clip matching \ref name from
+ * the pool.
+ *
+ * @param use_flac Whether to look for a FLAC file
+ *   instead of a wav file.
+ * @param is_backup Whether writing to a backup
+ *   project.
+ */
 char *
 audio_clip_get_path_in_pool_from_name (
   const char * name,
-  bool         use_flac)
+  bool         use_flac,
+  bool         is_backup)
 {
   char * prj_pool_dir =
     project_get_path (
-      PROJECT, PROJECT_PATH_POOL, false);
-  g_warn_if_fail (
-    file_exists (prj_pool_dir));
+      PROJECT, PROJECT_PATH_POOL, is_backup);
+  g_return_val_if_fail (
+    file_exists (prj_pool_dir), NULL);
   char * without_ext =
     io_file_strip_ext (name);
   char * basename =
@@ -282,13 +292,20 @@ audio_clip_get_path_in_pool_from_name (
   return new_path;
 }
 
+/**
+ * Gets the path of the given clip from the pool.
+ *
+ * @param is_backup Whether writing to a backup
+ *   project.
+ */
 char *
 audio_clip_get_path_in_pool (
-  AudioClip * self)
+  AudioClip * self,
+  bool        is_backup)
 {
   return
     audio_clip_get_path_in_pool_from_name (
-      self->name, self->use_flac);
+      self->name, self->use_flac, is_backup);
 }
 
 /**
@@ -296,25 +313,28 @@ audio_clip_get_path_in_pool (
  *
  * @param parts If true, only write new data. @see
  *   AudioClip.frames_written.
+ * @param is_backup Whether writing to a backup
+ *   project.
  */
 void
 audio_clip_write_to_pool (
   AudioClip * self,
-  bool        parts)
+  bool        parts,
+  bool        is_backup)
 {
   g_warn_if_fail (
     self ==
       audio_pool_get_clip (
         AUDIO_POOL, self->pool_id));
 
-  g_debug (
-    "writing clip %s to pool (parts %d)",
-    self->name, parts);
-
   /* generate a copy of the given filename in the
    * project dir */
   char * new_path =
-    audio_clip_get_path_in_pool (self);
+    audio_clip_get_path_in_pool (self, is_backup);
+  g_debug (
+    "writing clip %s to pool "
+    "(parts %d, is backup  %d): '%s'",
+    self->name, parts, is_backup, new_path);
   audio_clip_write_to_file (
     self, new_path, parts);
   g_free (new_path);
@@ -412,7 +432,7 @@ audio_clip_remove_and_free (
   AudioClip * self)
 {
   char * path =
-    audio_clip_get_path_in_pool (self);
+    audio_clip_get_path_in_pool (self, F_NOT_BACKUP);
   g_debug ("removing clip at %s", path);
   io_remove (path);
 

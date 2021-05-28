@@ -332,7 +332,7 @@ region_stretch (
         g_warn_if_fail (returned_frames > 0);
         new_clip->num_frames = returned_frames;
         audio_clip_write_to_pool (
-          new_clip, F_NO_PARTS);
+          new_clip, F_NO_PARTS, F_NOT_BACKUP);
         (void) obj;
         /* readjust end position to match the
          * number of frames exactly */

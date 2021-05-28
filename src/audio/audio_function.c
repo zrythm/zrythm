@@ -160,7 +160,8 @@ audio_function_apply (
   g_message (
     "writing %s to pool (id %d)",
     clip->name, clip->pool_id);
-  audio_clip_write_to_pool (clip, false);
+  audio_clip_write_to_pool (
+    clip, false, F_NOT_BACKUP);
 
   audio_sel->pool_id = clip->pool_id;
 

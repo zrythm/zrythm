@@ -179,10 +179,13 @@ audio_pool_reload_clip_frame_bufs (
  * Writes all the clips to disk.
  *
  * Used when saving a project elsewhere.
+ *
+ * @param is_backup Whether this is a backup project.
  */
 void
 audio_pool_write_to_disk (
-  AudioPool * self);
+  AudioPool * self,
+  bool        is_backup);
 
 void
 audio_pool_free (

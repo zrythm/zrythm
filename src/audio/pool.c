@@ -26,6 +26,7 @@
 #include "audio/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/mem.h"
@@ -96,10 +97,11 @@ audio_pool_ensure_unique_clip_name (
   AudioPool * self,
   AudioClip * clip)
 {
+  bool is_backup = false;
   char * orig_name_without_ext =
     io_file_strip_ext (clip->name);
   char * orig_path_in_pool =
-    audio_clip_get_path_in_pool (clip);
+    audio_clip_get_path_in_pool (clip, is_backup);
   char * new_name =
     g_strdup (orig_name_without_ext);
 
@@ -139,7 +141,7 @@ audio_pool_ensure_unique_clip_name (
 
   char * new_path_in_pool =
     audio_clip_get_path_in_pool_from_name (
-      new_name, clip->use_flac);
+      new_name, clip->use_flac, is_backup);
   if (changed)
     {
       g_return_if_fail (
@@ -256,7 +258,8 @@ audio_pool_duplicate_clip (
 
   if (write_file)
     {
-      audio_clip_write_to_pool (new_clip, false);
+      audio_clip_write_to_pool (
+        new_clip, F_NO_PARTS, F_NOT_BACKUP);
     }
 
   return new_clip->pool_id;
@@ -341,15 +344,29 @@ audio_pool_reload_clip_frame_bufs (
  * Writes all the clips to disk.
  *
  * Used when saving a project elsewhere.
+ *
+ * @param is_backup Whether this is a backup project.
  */
 void
 audio_pool_write_to_disk (
-  AudioPool * self)
+  AudioPool * self,
+  bool        is_backup)
 {
+  /* ensure pool dir exists */
+  char * prj_pool_dir =
+    project_get_path (
+      PROJECT, PROJECT_PATH_POOL, is_backup);
+  if (!file_exists (prj_pool_dir))
+    {
+      io_mkdir (prj_pool_dir);
+    }
+  g_free (prj_pool_dir);
+
   for (int i = 0; i < self->num_clips; i++)
     {
       AudioClip * clip = self->clips[i];
-      audio_clip_write_to_pool (clip, false);
+      audio_clip_write_to_pool (
+        clip, false, is_backup);
     }
 }
 

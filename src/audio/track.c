@@ -1533,7 +1533,8 @@ track_insert_region (
     {
       AudioClip * clip =
         audio_region_get_clip (region);
-      audio_clip_write_to_pool (clip, false);
+      audio_clip_write_to_pool (
+        clip, false, F_NOT_BACKUP);
     }
 
   g_message ("inserted:");
@@ -1792,7 +1793,7 @@ track_freeze (
               settings.file_uri);
           audio_pool_add_clip (AUDIO_POOL, clip);
           audio_clip_write_to_pool (
-            clip, F_NO_PARTS);
+            clip, F_NO_PARTS, F_NOT_BACKUP);
           self->pool_id = clip->pool_id;
         }
 

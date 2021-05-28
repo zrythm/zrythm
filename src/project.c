@@ -1470,20 +1470,11 @@ project_get_path (
     case PROJECT_PATH_POOL:
       return
         g_build_filename (
-          self->dir, PROJECT_POOL_DIR, NULL);
+          dir, PROJECT_POOL_DIR, NULL);
     case PROJECT_PATH_PROJECT_FILE:
-      if (backup)
-        {
-          return
-            g_build_filename (
-              self->backup_dir, PROJECT_FILE, NULL);
-        }
-      else
-        {
-          return
-            g_build_filename (
-              self->dir, PROJECT_FILE, NULL);
-        }
+      return
+        g_build_filename (
+          dir, PROJECT_FILE, NULL);
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -1797,7 +1788,7 @@ project_save (
     }
 
   /* write the pool */
-  audio_pool_write_to_disk (AUDIO_POOL);
+  audio_pool_write_to_disk (AUDIO_POOL, is_backup);
 
   /* save UI positions */
   if (ZRYTHM_HAVE_UI)

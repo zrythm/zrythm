@@ -171,7 +171,8 @@ handle_stop_recording (
         {
           AudioClip * clip =
             audio_region_get_clip (r);
-          audio_clip_write_to_pool (clip, true);
+          audio_clip_write_to_pool (
+            clip, true, F_NOT_BACKUP);
         }
     }
 
@@ -1038,7 +1039,8 @@ handle_audio_event (
   if ((cur_time - clip->last_write) >
         nano_sec_to_wait)
     {
-      audio_clip_write_to_pool (clip, true);
+      audio_clip_write_to_pool (
+        clip, true, F_NOT_BACKUP);
     }
 
 #if 0

@@ -1106,7 +1106,8 @@ test_long_audio_recording (void)
        * frames are correct */
       AudioClip * new_clip =
         audio_clip_new_from_file (
-          audio_clip_get_path_in_pool (r_clip));
+          audio_clip_get_path_in_pool (
+            r_clip, F_NOT_BACKUP));
       if (r_clip->num_frames <
             new_clip->num_frames)
         {
@@ -1157,7 +1158,8 @@ test_long_audio_recording (void)
     audio_region_get_clip (audio_r);
   AudioClip * new_clip =
     audio_clip_new_from_file (
-      audio_clip_get_path_in_pool (r_clip));
+      audio_clip_get_path_in_pool (
+        r_clip, F_NOT_BACKUP));
   g_warn_if_fail (
     audio_frames_equal (
      r_clip->frames, new_clip->frames,

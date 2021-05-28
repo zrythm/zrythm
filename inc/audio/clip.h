@@ -220,23 +220,43 @@ audio_clip_write_to_file (
  *
  * @param parts If true, only write new data. @see
  *   AudioClip.frames_written.
+ * @param is_backup Whether writing to a backup
+ *   project.
  */
 NONNULL
 void
 audio_clip_write_to_pool (
   AudioClip * self,
-  bool        parts);
+  bool        parts,
+  bool        is_backup);
 
+/**
+ * Gets the path of a clip matching \ref name from
+ * the pool.
+ *
+ * @param use_flac Whether to look for a FLAC file
+ *   instead of a wav file.
+ * @param is_backup Whether writing to a backup
+ *   project.
+ */
 NONNULL
 char *
 audio_clip_get_path_in_pool_from_name (
   const char * name,
-  bool         use_flac);
+  bool         use_flac,
+  bool         is_backup);
 
+/**
+ * Gets the path of the given clip from the pool.
+ *
+ * @param is_backup Whether writing to a backup
+ *   project.
+ */
 NONNULL
 char *
 audio_clip_get_path_in_pool (
-  AudioClip * self);
+  AudioClip * self,
+  bool        is_backup);
 
 /**
  * Returns whether the clip is used inside the

@@ -226,7 +226,8 @@ audio_region_replace_frames (
     &clip->frames[start_frame * clip->channels],
     frames, num_frames * clip->channels);
 
-  audio_clip_write_to_pool (clip, false);
+  audio_clip_write_to_pool (
+    clip, false, F_NOT_BACKUP);
 }
 
 static void
