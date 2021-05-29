@@ -29,6 +29,7 @@ widget_srcs += files([
   'generic_progress_dialog.c',
   'object_color_chooser_dialog.c',
   'port_info.c',
+  'project_progress_dialog.c',
   'quantize_dialog.c',
   'string_entry_dialog.c',
   'track_icon_chooser_dialog.c',

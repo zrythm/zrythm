@@ -377,6 +377,30 @@ static const cyaml_schema_value_t
 };
 
 /**
+ * Projet save data.
+ */
+typedef struct ProjectSaveData
+{
+  /** Project clone (with memcpy). */
+  Project   project;
+
+  /** Full path to save to. */
+  char *    project_file_path;
+
+  bool      is_backup;
+
+  /** To be set to true when the thread finishes. */
+  bool      finished;
+
+  bool      show_notification;
+
+  /** Whether an error occured during saving. */
+  bool      has_error;
+
+  GenericProgressInfo progress_info;
+} ProjectSaveData;
+
+/**
  * Checks that everything is okay with the project.
  */
 void

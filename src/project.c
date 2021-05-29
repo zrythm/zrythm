@@ -58,6 +58,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/dialogs/create_project_dialog.h"
+#include "gui/widgets/dialogs/project_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/midi_arranger.h"
@@ -1512,28 +1513,6 @@ project_new (
   return self;
 }
 
-/**
- * Projet save data.
- */
-typedef struct ProjectSaveData
-{
-  /** Project clone (with memcpy). */
-  Project   project;
-
-  /** Full path to save to. */
-  char *    project_file_path;
-
-  bool      is_backup;
-
-  /** To be set to true when the thread finishes. */
-  bool      finished;
-
-  bool      show_notification;
-
-  /** Whether an error occured during saving. */
-  bool      has_error;
-} ProjectSaveData;
-
 static void
 project_save_data_free (
   ProjectSaveData * self)
@@ -1655,8 +1634,7 @@ project_idle_saved_cb (
       EVENTS_PUSH (ET_PROJECT_SAVED, PROJECT);
     }
 
-  object_free_w_func_and_null (
-    project_save_data_free, data);
+  data->progress_info.progress = 1.0;
 
   return G_SOURCE_REMOVE;
 }
@@ -1682,6 +1660,16 @@ project_save (
   const bool   show_notification,
   const bool   async)
 {
+  /* pause engine */
+  EngineState state;
+  bool engine_paused = false;
+  if (AUDIO_ENGINE->activated)
+    {
+      engine_wait_for_pause (
+        AUDIO_ENGINE, &state, F_NO_FORCE);
+      engine_paused = true;
+    }
+
   if (async)
     {
       zix_sem_wait (&UNDO_MANAGER->action_sem);
@@ -1903,12 +1891,42 @@ project_save (
       g_idle_add (
         (GSourceFunc) project_idle_saved_cb,
         data);
+
+      if (ZRYTHM_HAVE_UI)
+        {
+          /* show progress while saving */
+          ProjectProgressDialogWidget * dialog =
+            project_progress_dialog_widget_new (
+              data);
+          gtk_window_set_transient_for (
+            GTK_WINDOW (dialog),
+            GTK_WINDOW (MAIN_WINDOW));
+          gtk_window_set_modal (
+            GTK_WINDOW (dialog), true);
+          gtk_dialog_run (GTK_DIALOG (dialog));
+          gtk_widget_destroy (GTK_WIDGET (dialog));
+        }
+      else
+        {
+          while (data->progress_info.progress < 1.0)
+            {
+              g_usleep (1000);
+            }
+        }
     }
   else
     {
       /* call synchronously */
       serialize_project_thread (data);
       project_idle_saved_cb (data);
+    }
+
+  object_free_w_func_and_null (
+    project_save_data_free, data);
+
+  if (engine_paused)
+    {
+      engine_resume (AUDIO_ENGINE, &state);
     }
 
   RETURN_OK;

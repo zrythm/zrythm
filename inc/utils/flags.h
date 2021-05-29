@@ -313,4 +313,10 @@
 #define F_ENABLE 1
 #define F_NO_ENABLE 0
 
+#define F_AUTO_CLOSE 1
+#define F_NO_AUTO_CLOSE 0
+
+#define F_CANCELABLE 1
+#define F_NOT_CANCELABLE 0
+
 #endif

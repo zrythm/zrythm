@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 #define GENERIC_PROGRESS_DIALOG_WIDGET_TYPE \
@@ -35,6 +37,9 @@ G_DECLARE_DERIVABLE_TYPE (
   generic_progress_dialog_widget,
   Z, GENERIC_PROGRESS_DIALOG_WIDGET,
   GtkDialog)
+
+typedef struct GenericProgressInfo
+  GenericProgressInfo;
 
 /**
  * @addtogroup widgets
