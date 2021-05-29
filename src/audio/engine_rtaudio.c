@@ -94,7 +94,7 @@ audio_cb (
       g_warning ("XRUN in RtAudio");
     }
 
-  if (!self->run)
+  if (!engine_get_run (self))
     return 0;
 
   nframes_t num_frames = (nframes_t) nframes;

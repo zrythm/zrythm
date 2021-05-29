@@ -105,7 +105,9 @@ typedef struct MPMCQueue MPMCQueue;
 /** Set whether engine should process (true) or
  * skip (false). */
 #define engine_set_run(engine,_run) \
-  g_atomic_int_set (&engine->run, _run)
+  g_atomic_int_set (&(engine)->run, _run)
+#define engine_get_run(engine) \
+  g_atomic_int_get (&(engine)->run)
 
 #define ENGINE_MAX_EVENTS 100
 

@@ -409,7 +409,7 @@ timebase_cb (
   void *arg)
 {
   AudioEngine * self = (AudioEngine *) arg;
-  if (!self->run)
+  if (!engine_get_run (self))
     return;
 
   /* Mandatory fields */

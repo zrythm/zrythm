@@ -960,7 +960,8 @@ engine_wait_for_pause (
       else
         {
           while (TRANSPORT->play_state ==
-                   PLAYSTATE_PAUSE_REQUESTED)
+                   PLAYSTATE_PAUSE_REQUESTED &&
+                 !self->stop_dummy_audio_thread)
             {
               g_usleep (100);
             }
@@ -984,12 +985,9 @@ engine_wait_for_pause (
     {
       /* run one more time to flush panic
        * messages */
-      engine_process_prepare (
-        self, 1);
-      router_start_cycle (
-        ROUTER, 1, 0, PLAYHEAD);
-      engine_post_process (
-        self, 0, 1);
+      engine_process_prepare (self, 1);
+      router_start_cycle (ROUTER, 1, 0, PLAYHEAD);
+      engine_post_process (self, 0, 1);
     }
 }
 
@@ -1430,7 +1428,7 @@ engine_process (
   clear_output_buffers (
     self, total_frames_to_process);
 
-  if (!g_atomic_int_get (&self->run))
+  if (!engine_get_run (self))
     {
       /*g_message ("ENGINE NOT RUNNING");*/
       /*g_message ("skipping processing...");*/
