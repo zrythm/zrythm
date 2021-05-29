@@ -53,39 +53,41 @@ manpage = custom_target (
   )
 
 # gen completions
-bash_completion = custom_target (
-  'bash-completion',
-  output: 'zrythm',
-  input: manpage,
-  command: [
-    gen_completions_sh, manpage.full_path (), 'bash',
-    '@OUTPUT@',
-    ],
-  install: get_option ('completions'),
-  install_dir: datadir / 'bash-completion/completions',
-  build_by_default: get_option ('completions'))
-zsh_completion = custom_target (
-  'zsh-completion',
-  output: '_zrythm',
-  input: manpage,
-  command: [
-    gen_completions_sh, manpage.full_path (), 'zsh',
-    '@OUTPUT@',
-    ],
-  install: get_option ('completions'),
-  install_dir: datadir / 'zsh/site-functions',
-  build_by_default: get_option ('completions'))
-fish_completion = custom_target (
-  'fish-completion',
-  output: 'zrythm.fish',
-  input: manpage,
-  command: [
-    gen_completions_sh, manpage.full_path (), 'fish',
-    '@OUTPUT@',
-    ],
-  install: get_option ('completions'),
-  install_dir: datadir / 'fish/vendor_completions.d',
-  build_by_default: get_option ('completions'))
+if os_gnu
+  bash_completion = custom_target (
+    'bash-completion',
+    output: 'zrythm',
+    input: manpage,
+    command: [
+      gen_completions_sh, manpage.full_path (), 'bash',
+      '@OUTPUT@',
+      ],
+    install: get_option ('completions'),
+    install_dir: datadir / 'bash-completion/completions',
+    build_by_default: get_option ('completions'))
+  zsh_completion = custom_target (
+    'zsh-completion',
+    output: '_zrythm',
+    input: manpage,
+    command: [
+      gen_completions_sh, manpage.full_path (), 'zsh',
+      '@OUTPUT@',
+      ],
+    install: get_option ('completions'),
+    install_dir: datadir / 'zsh/site-functions',
+    build_by_default: get_option ('completions'))
+  fish_completion = custom_target (
+    'fish-completion',
+    output: 'zrythm.fish',
+    input: manpage,
+    command: [
+      gen_completions_sh, manpage.full_path (), 'fish',
+      '@OUTPUT@',
+      ],
+    install: get_option ('completions'),
+    install_dir: datadir / 'fish/vendor_completions.d',
+    build_by_default: get_option ('completions'))
+endif
 
 run_target (
   'build-manpage',
