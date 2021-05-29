@@ -1542,7 +1542,7 @@ serialize_project_thread (
   gint64 time_before = g_get_monotonic_time ();
   char * yaml =
     yaml_serialize (
-      &data->project, &project_schema);
+      data->project, &project_schema);
   gint64 time_after = g_get_monotonic_time ();
   g_message (
     "time to serialize: %ldms",
@@ -1880,8 +1880,7 @@ project_save (
       self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
-  memcpy (
-    &data->project, PROJECT, sizeof (Project));
+  data->project = PROJECT;
   if (async)
     {
       g_thread_new (

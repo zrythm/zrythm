@@ -382,7 +382,7 @@ static const cyaml_schema_value_t
 typedef struct ProjectSaveData
 {
   /** Project clone (with memcpy). */
-  Project   project;
+  Project * project;
 
   /** Full path to save to. */
   char *    project_file_path;
