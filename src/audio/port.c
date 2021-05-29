@@ -2819,8 +2819,14 @@ port_forward_control_change_event (
                 self->control);
             }
 #endif
-          EVENTS_PUSH (
-            ET_PLUGIN_STATE_CHANGED, pl);
+          if (!g_atomic_int_get (
+                 &pl->state_changed_event_sent))
+            {
+              EVENTS_PUSH (
+                ET_PLUGIN_STATE_CHANGED, pl);
+              g_atomic_int_set (
+                &pl->state_changed_event_sent, 1);
+            }
         }
     }
   else if (self->id.owner_type ==

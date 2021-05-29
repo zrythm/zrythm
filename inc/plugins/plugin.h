@@ -262,6 +262,12 @@ typedef struct Plugin
   /** Temporary variable to check if plugin is
    * currently undergoing deactivation. */
   bool              deactivating;
+
+  /**
+   * Set to true to avoid sending multiple
+   * ET_PLUGIN_STATE_CHANGED for the same plugin.
+   */
+  int               state_changed_event_sent;
 } Plugin;
 
 static const cyaml_schema_field_t

@@ -1377,8 +1377,12 @@ process_events (void * data)
             (Plugin *) ev->arg);
           break;
         case ET_PLUGIN_STATE_CHANGED:
-          on_plugin_state_changed (
-            (Plugin *) ev->arg);
+          {
+            Plugin * pl = (Plugin *) ev->arg;
+            on_plugin_state_changed (pl);
+            g_atomic_int_set (
+              &pl->state_changed_event_sent, 0);
+          }
           break;
         case ET_TRANSPORT_TOTAL_BARS_CHANGED:
           snap_grid_update_snap_points_default (
