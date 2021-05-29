@@ -95,3 +95,11 @@ gen_gtk_resources_xml_wrap = configure_file (
   configuration: scripts_conf + {
     'SCRIPT_NAME': 'gen-gtk-resources-xml.scm'},
   )
+
+gen_completions_sh = configure_file (
+  output: 'gen_completions.sh',
+  input: 'gen_completions.sh',
+  configuration: scripts_conf + {
+    'BASH': bash.full_path (),
+    'RUN_SH': manpage_completions_run_sh.full_path (), },
+  )

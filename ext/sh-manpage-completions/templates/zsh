@@ -1,0 +1,5 @@
+#compdef COMMAND
+
+_arguments \
+         '*:file:_files' \
+ARGUMENTS

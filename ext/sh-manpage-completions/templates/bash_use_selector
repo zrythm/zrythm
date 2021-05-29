@@ -1,0 +1,32 @@
+_COMMAND() {
+  IFS='' read -r -d '' descriptions <<'EOF'
+DESCRIPTIONS
+EOF
+
+  COMPREPLY=()
+  local cur
+  cur=$(_get_cword)
+  IFS='' read -r -d '' completions <<'EOF'
+ARGUMENTS
+EOF
+
+  if [ -z "$cur" ]; then
+      if declare -f _filedir &>/dev/null; then
+          _filedir
+      else
+          COMPREPLY=( $(compgen -f -- "$cur") )
+      fi
+      return 0
+  fi
+
+  COMPREPLY=( $( compgen -W "$completions" -- "$cur" ) )
+  if [[ ${#COMPREPLY[*]} -gt 1 ]]; then
+      selector=(SELECTOR)
+      COMPREPLY=("$(echo "$descriptions" | \
+              eval "${selector[@]}" | \
+              cut -d':' -f1 --)")
+  fi
+
+  return 0
+}
+complete -F _COMMAND COMMAND

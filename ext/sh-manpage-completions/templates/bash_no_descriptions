@@ -1,0 +1,22 @@
+_COMMAND() {
+  COMPREPLY=()
+  local cur
+  cur=$(_get_cword)
+  IFS='' read -r -d '' completions <<'EOF'
+ARGUMENTS
+EOF
+
+  if [ -z "$cur" ]; then
+      if declare -f _filedir &>/dev/null; then
+          _filedir
+      else
+          COMPREPLY=( $(compgen -f -- "$cur") )
+      fi
+      return 0
+  fi
+
+  COMPREPLY=( $( compgen -W "$completions" -- "$cur" ) )
+
+  return 0
+}
+complete -F _COMMAND COMMAND

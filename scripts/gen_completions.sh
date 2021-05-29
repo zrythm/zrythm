@@ -1,6 +1,6 @@
-#/usr/bin/env bash
+#!@BASH@
 #
-# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -16,19 +16,22 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+#
+# This script generates the bash/fish/zsh completion
+# files.
 
-_zrythm()
-{
-  local cur prev opts
-  COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD-1]}"
-  opts="--help --version --reset-to-factory -h -v -p --print-settings"
+set -ex
 
-  if [[ ${cur} == -* ]] ; then
-    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-    return 0
-  fi
-}
+run_sh="@RUN_SH@"
+manpage="$1"
+completions_type="$2"
+out_file="$3"
 
-complete -o default -F _zrythm zrythm
+run_sh_dir="`dirname "$run_sh"`"
+
+pushd "$run_sh_dir"
+"$run_sh" "$manpage"
+popd
+
+cp "$run_sh_dir"/completions/$completions_type/*zrythm* \
+  "$out_file"

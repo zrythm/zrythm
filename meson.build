@@ -86,6 +86,8 @@ get_lv2_bundle_uri_bin = find_program (
   'tools/get_lv2_bundle_uri.sh')
 get_vst_path_bin = find_program (
   'tools/get_vst_path.sh')
+manpage_completions_run_sh = find_program (
+  'ext/sh-manpage-completions/run.sh')
 
 # --- Set common variables ---
 
@@ -1311,6 +1313,7 @@ summary ({
   'Extra optimizations': get_option ('extra_optimizations'),
   'Extra extra optimizations': get_option ('extra_extra_optimizations'),
   'Build/install manpage': get_option ('manpage'),
+  'Build/install completions': get_option ('completions'),
   'Build/install user manual': get_option ('user_manual'),
   'Install DSEG font': get_option ('dseg_font'),
   'Custom logo and splash': get_option ('custom_logo_and_splash'),

@@ -100,6 +100,12 @@ option (
   description: 'Build and install manpage')
 
 option (
+  'completions',
+  type: 'boolean',
+  value: true,
+  description: 'Build and install shell completions')
+
+option (
   'user_manual',
   type: 'boolean',
   value: false,

@@ -112,14 +112,6 @@ install_data (
   'org.zrythm.Zrythm-mime.xml',
   install_dir: datadir / 'mime/packages')
 
-if not os_windows
-  install_data (
-    'zrythm-completion.bash',
-    install_dir: sysconfdir / 'bash_completion.d',
-    install_mode: 'r--r--r--',
-    rename: prog_name_lowercase)
-endif
-
 # GtkSourceView styles
 install_data (
   'gtksourceview-monokai-extended.xml',
