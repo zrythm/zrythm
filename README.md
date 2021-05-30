@@ -91,6 +91,7 @@ on the project.
 - [paypal.me/zrythm](https://paypal.me/zrythm)
 - [opencollective.com/zrythm](https://opencollective.com/zrythm/donate)
 - Bitcoin (BTC): `bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j`
+- Bitcoin Cash (BCH): `qrqmv758xzmje83jjnfkajhflneqr8puyvcv2clf0x `
 - Monero (XMR): `87YVi6nqwDhAQwfAuB8a7UeD6wrr81PJG4yBxkkGT3Ri5ng9D1E91hdbCCQsi3ZzRuXiX3aRWesS95S8ij49YMBKG3oEfnr`
 
 ----

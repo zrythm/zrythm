@@ -63,6 +63,8 @@ sass = find_program (
 help2man = find_program (
   ['help2man'],
   required: get_option ('manpage'))
+find_program (
+  'flex', required: get_option ('completions'))
 stoat = find_program (
   ['stoat'], required: false)
 python3 = find_program (
