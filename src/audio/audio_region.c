@@ -514,6 +514,7 @@ audio_region_validate (
 
   AudioClip * clip =
     audio_region_get_clip (self);
+  g_return_val_if_fail (clip, false);
 
   /* verify that the loop does not contain more
    * frames than available in the clip */

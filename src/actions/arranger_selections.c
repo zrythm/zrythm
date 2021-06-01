@@ -2663,6 +2663,47 @@ arranger_selections_action_undo (
   return do_or_undo (self, false);
 }
 
+bool
+arranger_selections_action_contains_clip (
+  ArrangerSelectionsAction * self,
+  AudioClip *                clip)
+{
+  if (self->sel &&
+      arranger_selections_contains_clip (
+        self->sel, clip))
+    {
+      return true;
+    }
+  if (self->sel_after &&
+      arranger_selections_contains_clip (
+        self->sel_after, clip))
+    {
+      return true;
+    }
+
+  /* check split regions (if any) */
+  for (int i = 0; i < self->num_split_objs; i++)
+    {
+      ZRegion * r1 = self->region_r1[i];
+      ZRegion * r2 = self->region_r2[i];
+      if (r1 && r2)
+        {
+          if (r1->id.type != REGION_TYPE_AUDIO)
+            break;
+
+          if (r1->pool_id == clip->pool_id ||
+              r2->pool_id == clip->pool_id)
+            {
+              return true;
+            }
+        }
+      else
+        break;
+    }
+
+  return false;
+}
+
 char *
 arranger_selections_action_stringize (
   ArrangerSelectionsAction * self)

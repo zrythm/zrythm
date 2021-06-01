@@ -38,6 +38,8 @@
 #include "utils/stack.h"
 #include "utils/yaml.h"
 
+typedef struct AudioClip AudioClip;
+
 /**
  * @addtogroup actions
  *
@@ -190,6 +192,11 @@ undo_stack_pop_last (
   UndoStack * self);
 
 /* --- end wrappers --- */
+
+bool
+undo_stack_contains_clip (
+  UndoStack * self,
+  AudioClip * clip);
 
 /**
  * Clears the stack, optionally freeing all the

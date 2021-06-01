@@ -1782,6 +1782,7 @@ project_save (
     }
 
   /* write the pool */
+  audio_pool_remove_unused (AUDIO_POOL, is_backup);
   audio_pool_write_to_disk (AUDIO_POOL, is_backup);
 
   /* save UI positions */

@@ -1808,8 +1808,9 @@ track_freeze (
     }
   else
     {
-      audio_pool_remove_clip (
-        AUDIO_POOL, self->pool_id, true);
+      /* FIXME */
+      /*audio_pool_remove_clip (*/
+        /*AUDIO_POOL, self->pool_id, true);*/
     }
 
   self->frozen = freeze;

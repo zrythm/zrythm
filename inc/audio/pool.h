@@ -134,12 +134,28 @@ audio_pool_get_clip (
 /**
  * Removes the clip with the given ID from the pool
  * and optionally frees it (and removes the file).
+ *
+ * @param backup Whether to remove from backup
+ *   directory.
  */
 void
 audio_pool_remove_clip (
   AudioPool * self,
   int         clip_id,
-  bool        free_and_remove_file);
+  bool        free_and_remove_file,
+  bool        backup);
+
+/**
+ * Removes and frees (and removes the files for) all
+ * clips not used by the project or undo stacks.
+ *
+ * @param backup Whether to remove from backup
+ *   directory.
+ */
+void
+audio_pool_remove_unused (
+  AudioPool * self,
+  bool        backup);
 
 /**
  * Ensures that the name of the clip is unique.

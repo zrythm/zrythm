@@ -2460,6 +2460,40 @@ arranger_selections_get_for_type (
   g_return_val_if_reached (NULL);
 }
 
+bool
+arranger_selections_contains_clip (
+  ArrangerSelections * self,
+  AudioClip *          clip)
+{
+  if (self->type ==
+        ARRANGER_SELECTIONS_TYPE_TIMELINE)
+    {
+      TimelineSelections * sel =
+        (TimelineSelections *) self;
+      for (int i = 0; i < sel->num_regions; i++)
+        {
+          ZRegion * r = sel->regions[i];
+          if (r->id.type == REGION_TYPE_AUDIO &&
+              r->pool_id == clip->pool_id)
+            {
+              return true;
+            }
+        }
+    }
+  else if (self->type ==
+             ARRANGER_SELECTIONS_TYPE_AUDIO)
+    {
+      AudioSelections * sel =
+        (AudioSelections *) self;
+      if (sel->pool_id == clip->pool_id)
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
 /**
  * Redraws each object in the arranger selections.
  */

@@ -133,7 +133,7 @@ audio_clip_fields_schema[] =
 
 static const cyaml_schema_value_t
 audio_clip_schema = {
-  YAML_VALUE_PTR (
+  YAML_VALUE_PTR_NULLABLE (
     AudioClip, audio_clip_fields_schema),
 };
 
@@ -260,24 +260,32 @@ audio_clip_get_path_in_pool (
 
 /**
  * Returns whether the clip is used inside the
- * project (in actual project regions only, not
- * in undo stack).
+ * project.
+ *
+ * @param check_undo_stack If true, this checks both
+ *   project regions and the undo stack. If false,
+ *   this only checks actual project regions only.
  */
 NONNULL
 bool
 audio_clip_is_in_use (
-  AudioClip * self);
+  AudioClip * self,
+  bool        check_undo_stack);
 
 /**
  * To be called by audio_pool_remove_clip().
  *
  * Removes the file associated with the clip and
  * frees the instance.
+ *
+ * @param backup Whether to remove from backup
+ *   directory.
  */
 NONNULL
 void
 audio_clip_remove_and_free (
-  AudioClip * self);
+  AudioClip * self,
+  bool        backup);
 
 /**
  * Frees the audio clip.

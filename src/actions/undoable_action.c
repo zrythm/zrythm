@@ -188,6 +188,38 @@ undoable_action_needs_pause (
 }
 
 /**
+ * Checks whether the action can contain an audio
+ * clip.
+ *
+ * No attempt is made to remove unnused files from
+ * the pool for actions that can't contain audio
+ * clips.
+ */
+bool
+undoable_action_can_contain_clip (
+  UndoableAction * self)
+{
+  switch (self->type)
+    {
+    case UA_TRACKLIST_SELECTIONS:
+      {
+        TracklistSelectionsAction * action =
+          (TracklistSelectionsAction *) self;
+        return action->pool_id >= 0;
+      }
+      break;
+    case UA_ARRANGER_SELECTIONS:
+    case UA_RANGE:
+      return true;
+      break;
+    default:
+      break;
+    }
+
+  return false;
+}
+
+/**
  * Performs the action.
  *
  * @note Only to be called by undo manager.
@@ -370,44 +402,56 @@ undoable_action_undo (UndoableAction * self)
   return ret;
 }
 
-void
-undoable_action_free (UndoableAction * self)
+/**
+ * Checks whether the action actually contains or
+ * refers to the given audio clip.
+ */
+bool
+undoable_action_contains_clip (
+  UndoableAction * self,
+  AudioClip *      clip)
 {
-/* uppercase, camel case, snake case */
-#define FREE_ACTION(uc,sc,cc) \
-  case UA_##uc: \
-    sc##_action_free ((cc##Action *) self); \
-    break;
+  bool ret = false;
 
   switch (self->type)
     {
-    FREE_ACTION (
-      TRACKLIST_SELECTIONS,
-      tracklist_selections,
-      TracklistSelections);
-    FREE_ACTION (CHANNEL_SEND,
-               channel_send,
-               ChannelSend);
-    FREE_ACTION (
-      MIXER_SELECTIONS, mixer_selections,
-      MixerSelections);
-    FREE_ACTION (
-      ARRANGER_SELECTIONS, arranger_selections,
-      ArrangerSelections);
-    FREE_ACTION (
-      MIDI_MAPPING, midi_mapping, MidiMapping);
-    FREE_ACTION (
-      PORT_CONNECTION, port_connection,
-      PortConnection);
-    FREE_ACTION (PORT, port, Port);
-    FREE_ACTION (TRANSPORT, transport, Transport);
-    FREE_ACTION (RANGE, range, Range);
+    case UA_TRACKLIST_SELECTIONS:
+      {
+        TracklistSelectionsAction * action =
+          (TracklistSelectionsAction *) self;
+        ret = clip->pool_id == action->pool_id;
+      }
+      break;
+    case UA_ARRANGER_SELECTIONS:
+      {
+        ArrangerSelectionsAction * action =
+          (ArrangerSelectionsAction *) self;
+        ret =
+          arranger_selections_action_contains_clip (
+            action, clip);
+      }
+      break;
+    case UA_RANGE:
+      {
+        RangeAction * action = (RangeAction *) self;
+        ret =
+          (action->sel_before &&
+           arranger_selections_contains_clip (
+             (ArrangerSelections *)
+             action->sel_before, clip)) ||
+          (action->sel_after &&
+           arranger_selections_contains_clip (
+             (ArrangerSelections *)
+             action->sel_after, clip));
+      }
+      break;
     default:
-      g_warn_if_reached ();
       break;
     }
 
-#undef FREE_ACTION
+  g_debug ("%s: %d", __func__, ret);
+
+  return ret;
 }
 
 /**
@@ -454,4 +498,44 @@ undoable_action_to_string (
     }
 
 #undef STRINGIZE_UA
+}
+
+void
+undoable_action_free (UndoableAction * self)
+{
+/* uppercase, camel case, snake case */
+#define FREE_ACTION(uc,sc,cc) \
+  case UA_##uc: \
+    sc##_action_free ((cc##Action *) self); \
+    break;
+
+  switch (self->type)
+    {
+    FREE_ACTION (
+      TRACKLIST_SELECTIONS,
+      tracklist_selections,
+      TracklistSelections);
+    FREE_ACTION (CHANNEL_SEND,
+               channel_send,
+               ChannelSend);
+    FREE_ACTION (
+      MIXER_SELECTIONS, mixer_selections,
+      MixerSelections);
+    FREE_ACTION (
+      ARRANGER_SELECTIONS, arranger_selections,
+      ArrangerSelections);
+    FREE_ACTION (
+      MIDI_MAPPING, midi_mapping, MidiMapping);
+    FREE_ACTION (
+      PORT_CONNECTION, port_connection,
+      PortConnection);
+    FREE_ACTION (PORT, port, Port);
+    FREE_ACTION (TRANSPORT, transport, Transport);
+    FREE_ACTION (RANGE, range, Range);
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+
+#undef FREE_ACTION
 }

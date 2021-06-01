@@ -46,7 +46,9 @@ audio_pool_init_loaded (
 
   for (int i = 0; i < self->num_clips; i++)
     {
-      audio_clip_init_loaded (self->clips[i]);
+      AudioClip * clip = self->clips[i];
+      if (clip)
+        audio_clip_init_loaded (clip);
     }
 }
 
@@ -76,7 +78,7 @@ name_exists (
   for (int i = 0; i < self->num_clips; i++)
     {
       clip = self->clips[i];
-      if (string_is_equal (clip->name, name))
+      if (clip && string_is_equal (clip->name, name))
         {
           return true;
         }
@@ -165,8 +167,16 @@ get_next_id (
   int next_id = -1;
   for (int i = 0; i < self->num_clips; i++)
     {
-      next_id =
-        MAX (self->clips[i]->pool_id, next_id);
+      AudioClip * clip = self->clips[i];
+      if (clip)
+        {
+          next_id =
+            MAX (clip->pool_id, next_id);
+        }
+      else
+        {
+          return i;
+        }
     }
 
   return next_id + 1;
@@ -192,10 +202,13 @@ audio_pool_add_clip (
   audio_pool_ensure_unique_clip_name (self, clip);
 
   int next_id = get_next_id (self);
-  clip->pool_id = next_id;
+  g_return_val_if_fail (
+    self->clips[next_id] == NULL, -1);
 
-  array_append (
-    self->clips, self->num_clips, clip);
+  clip->pool_id = next_id;
+  self->clips[next_id] = clip;
+  if (next_id == self->num_clips)
+    self->num_clips++;
 
   return clip->pool_id;
 }
@@ -214,7 +227,8 @@ audio_pool_get_clip (
 
   for (int i = 0; i < self->num_clips; i++)
     {
-      if (self->clips[i]->pool_id == clip_id)
+      AudioClip * clip = self->clips[i];
+      if (clip && clip->pool_id == clip_id)
         {
           return self->clips[i];
         }
@@ -285,12 +299,16 @@ audio_pool_gen_name_for_recording_clip (
 /**
  * Removes the clip with the given ID from the pool
  * and optionally frees it (and removes the file).
+ *
+ * @param backup Whether to remove from backup
+ *   directory.
  */
 void
 audio_pool_remove_clip (
   AudioPool * self,
   int         clip_id,
-  bool        free_and_remove_file)
+  bool        free_and_remove_file,
+  bool        backup)
 {
   g_message ("removing clip with ID %d", clip_id);
 
@@ -298,14 +316,48 @@ audio_pool_remove_clip (
     audio_pool_get_clip (self, clip_id);
   g_return_if_fail (clip);
 
-  audio_clip_remove_and_free (clip);
-
-  for (int i = clip_id; i < self->num_clips - 1;
-       i++)
+  if (free_and_remove_file)
     {
-      self->clips[i] = self->clips[i + 1];
+      audio_clip_remove_and_free (clip, backup);
     }
-  self->num_clips--;
+  else
+    {
+      audio_clip_free (clip);
+    }
+
+  self->clips[clip_id] = NULL;
+}
+
+/**
+ * Removes and frees (and removes the files for) all
+ * clips not used by the project or undo stacks.
+ *
+ * @param backup Whether to remove from backup
+ *   directory.
+ */
+void
+audio_pool_remove_unused (
+  AudioPool * self,
+  bool        backup)
+{
+  g_message (
+    "--- removing unused files from pool ---");
+
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      AudioClip * clip = self->clips[i];
+
+      if (clip &&
+          !audio_clip_is_in_use (clip, true))
+        {
+          g_message (
+            "unused clip [%d]: %s", i, clip->name);
+          audio_pool_remove_clip (
+            self, i, F_FREE, backup);
+        }
+    }
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -323,7 +375,11 @@ audio_pool_reload_clip_frame_bufs (
   for (int i = 0; i < self->num_clips; i++)
     {
       AudioClip * clip = self->clips[i];
-      bool in_use = audio_clip_is_in_use (clip);
+      if (!clip)
+        continue;
+
+      bool in_use =
+        audio_clip_is_in_use (clip, false);
 
       if (in_use && clip->num_frames == 0)
         {
@@ -365,8 +421,11 @@ audio_pool_write_to_disk (
   for (int i = 0; i < self->num_clips; i++)
     {
       AudioClip * clip = self->clips[i];
-      audio_clip_write_to_pool (
-        clip, false, is_backup);
+      if (clip)
+        {
+          audio_clip_write_to_pool (
+            clip, false, is_backup);
+        }
     }
 }
 

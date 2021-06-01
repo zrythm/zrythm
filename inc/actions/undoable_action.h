@@ -30,6 +30,8 @@
 
 #include "utils/yaml.h"
 
+typedef struct AudioClip AudioClip;
+
 /**
  * @addtogroup actions
  *
@@ -126,6 +128,28 @@ undoable_action_init_loaded (
 bool
 undoable_action_needs_pause (
   UndoableAction * self);
+
+/**
+ * Checks whether the action can contain an audio
+ * clip.
+ *
+ * No attempt is made to remove unnused files from
+ * the pool for actions that can't contain audio
+ * clips.
+ */
+bool
+undoable_action_can_contain_clip (
+  UndoableAction * self);
+
+
+/**
+ * Checks whether the action actually contains or
+ * refers to the given audio clip.
+ */
+bool
+undoable_action_contains_clip (
+  UndoableAction * self,
+  AudioClip *      clip);
 
 /**
  * Performs the action.

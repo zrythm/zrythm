@@ -222,6 +222,25 @@ undo_manager_perform (
 }
 
 /**
+ * Returns whether the given clip is used by any
+ * stack.
+ */
+bool
+undo_manager_contains_clip (
+  UndoManager * self,
+  AudioClip *   clip)
+{
+  bool ret =
+    undo_stack_contains_clip (
+      self->undo_stack, clip) ||
+    undo_stack_contains_clip (
+      self->redo_stack, clip);
+
+  g_debug ("%s: %d", __func__, ret);
+  return ret;
+}
+
+/**
  * Clears the undo and redo stacks.
  */
 void

@@ -30,6 +30,8 @@
 
 #include "zix/sem.h"
 
+typedef struct AudioClip AudioClip;
+
 /**
  * @addtogroup actions
  *
@@ -113,6 +115,15 @@ undo_manager_perform (
 void
 undo_manager_prepare_for_serialization (
   UndoManager * self);
+
+/**
+ * Returns whether the given clip is used by any
+ * stack.
+ */
+bool
+undo_manager_contains_clip (
+  UndoManager * self,
+  AudioClip *   clip);
 
 /**
  * Clears the undo and redo stacks.

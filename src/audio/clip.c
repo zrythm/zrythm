@@ -320,10 +320,11 @@ audio_clip_write_to_pool (
   bool        parts,
   bool        is_backup)
 {
-  g_warn_if_fail (
-    self ==
-      audio_pool_get_clip (
-        AUDIO_POOL, self->pool_id));
+  AudioClip * pool_clip =
+    audio_pool_get_clip (
+      AUDIO_POOL, self->pool_id);
+  g_return_if_fail (pool_clip);
+  g_return_if_fail (pool_clip == self);
 
   /* generate a copy of the given filename in the
    * project dir */
@@ -409,15 +410,49 @@ audio_clip_write_to_file (
 
 /**
  * Returns whether the clip is used inside the
- * project (in actual project regions only, not
- * in undo stack).
+ * project.
+ *
+ * @param check_undo_stack If true, this checks both
+ *   project regions and the undo stack. If false,
+ *   this only checks actual project regions only.
  */
 bool
 audio_clip_is_in_use (
-  AudioClip * self)
+  AudioClip * self,
+  bool        check_undo_stack)
 {
-  /* TODO */
-  return true;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      if (track->type != TRACK_TYPE_AUDIO)
+        continue;
+
+      for (int j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+
+          for (int k = 0; k < lane->num_regions; k++)
+            {
+              ZRegion * r = lane->regions[k];
+              if (r->id.type != REGION_TYPE_AUDIO)
+                continue;
+
+              if (r->pool_id == self->pool_id)
+                return true;
+            }
+        }
+    }
+
+  if (check_undo_stack)
+    {
+      if (undo_manager_contains_clip (
+            UNDO_MANAGER, self))
+        {
+          return true;
+        }
+    }
+
+  return false;
 }
 
 /**
@@ -425,15 +460,19 @@ audio_clip_is_in_use (
  *
  * Removes the file associated with the clip and
  * frees the instance.
+ *
+ * @param backup Whether to remove from backup
+ *   directory.
  */
 void
 audio_clip_remove_and_free (
-  AudioClip * self)
+  AudioClip * self,
+  bool        backup)
 {
   char * path =
     audio_clip_get_path_in_pool (
       self, F_NOT_BACKUP);
-  g_debug ("removing clip at %s", path);
+  g_message ("removing clip at %s", path);
   g_return_if_fail (path);
   io_remove (path);
 

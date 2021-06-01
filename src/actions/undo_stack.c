@@ -297,6 +297,24 @@ undo_stack_pop_last (
   return action;
 }
 
+bool
+undo_stack_contains_clip (
+  UndoStack * self,
+  AudioClip * clip)
+{
+  for (int i = 0; i <= self->stack->top; i++)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        self->stack->elements[i];
+
+      if (undoable_action_contains_clip (ua, clip))
+        return true;
+    }
+
+  return false;
+}
+
 /**
  * Clears the stack, optionally freeing all the
  * elements.

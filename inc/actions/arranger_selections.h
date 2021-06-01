@@ -658,6 +658,11 @@ char *
 arranger_selections_action_stringize (
   ArrangerSelectionsAction * self);
 
+bool
+arranger_selections_action_contains_clip (
+  ArrangerSelectionsAction * self,
+  AudioClip *                clip);
+
 void
 arranger_selections_action_free (
   ArrangerSelectionsAction * self);
