@@ -476,7 +476,7 @@ create_and_set_dir_and_title (
 void
 project_validate (Project * self)
 {
-  g_message ("%s: sanity checking...", __func__);
+  g_message ("%s: validating...", __func__);
 
   size_t max_size = 20;
   Port ** ports =
@@ -1154,6 +1154,12 @@ load (
 
   engine_init_loaded (self->audio_engine);
   engine_pre_setup (self->audio_engine);
+
+  /* re-load clips because sample rate can change
+   * during engine pre setup */
+  audio_pool_init_loaded (
+    self->audio_engine->pool);
+
   if (self->undo_manager)
     {
       undo_manager_init_loaded (self->undo_manager);

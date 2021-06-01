@@ -85,7 +85,8 @@ audio_clip_init_from_file (
 {
   g_return_if_fail (self);
 
-  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
+  self->samplerate =
+    (int) AUDIO_ENGINE->sample_rate;
   g_return_if_fail (self->samplerate > 0);
 
   AudioEncoder * enc =
@@ -102,10 +103,7 @@ audio_clip_init_from_file (
   self->num_frames = enc->num_out_frames;
   dsp_copy (
     self->frames, enc->out_frames, arr_size);
-  if (self->name)
-    {
-      g_free (self->name);
-    }
+  g_free_and_null (self->name);
   self->name = g_path_get_basename (full_path);
   self->channels = enc->nfo.channels;
   self->bpm =

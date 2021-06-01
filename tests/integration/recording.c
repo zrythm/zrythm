@@ -52,8 +52,7 @@ prepare (void)
 {
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* create dummy input for audio recording */
   AUDIO_ENGINE->dummy_input =
@@ -731,8 +730,7 @@ test_recording ()
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* create an instrument track for testing */
   test_plugin_manager_create_tracks_from_plugin (
@@ -765,8 +763,7 @@ test_automation_touch_recording ()
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* create an instrument track from helm */
   test_plugin_manager_create_tracks_from_plugin (
@@ -901,8 +898,7 @@ test_mono_recording (void)
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* create an audio track */
   UndoableAction * ua =
@@ -1007,8 +1003,7 @@ test_long_audio_recording (void)
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* create an audio track */
   UndoableAction * ua =
@@ -1190,8 +1185,7 @@ test_2nd_audio_recording (void)
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* create an audio track from the file */
   SupportedFile * file =

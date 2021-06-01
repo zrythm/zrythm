@@ -504,8 +504,28 @@ prev_offset, \
     }
 }
 
+bool
+audio_region_validate (
+  ZRegion * self)
+{
+  long loop_len =
+    arranger_object_get_loop_length_in_frames (
+      (ArrangerObject *) self);
+
+  AudioClip * clip =
+    audio_region_get_clip (self);
+
+  /* verify that the loop does not contain more
+   * frames than available in the clip */
+  g_return_val_if_fail (
+    loop_len <= clip->num_frames, false);
+
+  return true;
+}
+
 /**
- * Frees members only but not the audio region itself.
+ * Frees members only but not the audio region
+ * itself.
  *
  * Regions should be free'd using region_free.
  */

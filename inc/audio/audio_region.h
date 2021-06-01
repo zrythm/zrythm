@@ -152,6 +152,10 @@ audio_region_fill_stereo_ports (
   nframes_t     nframes,
   StereoPorts * stereo_ports);
 
+bool
+audio_region_validate (
+  ZRegion * self);
+
 /**
  * Frees members only but not the audio region itself.
  *

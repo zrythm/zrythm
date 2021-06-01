@@ -69,7 +69,7 @@ engine_dummy_setup (
       self->block_length = 256;
     }
 
-  if (ZRYTHM_HAVE_UI && zrythm_app->samplerate > 0)
+  if (zrythm_app->samplerate > 0)
     {
       self->sample_rate =
         (nframes_t) zrythm_app->samplerate;

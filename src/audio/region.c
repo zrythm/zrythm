@@ -557,6 +557,9 @@ region_validate (
     case REGION_TYPE_AUTOMATION:
       automation_region_validate (self);
       break;
+    case REGION_TYPE_AUDIO:
+      audio_region_validate (self);
+      break;
     default:
       break;
     }
