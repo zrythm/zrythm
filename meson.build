@@ -1133,6 +1133,8 @@ if not libbacktrace_dep.found ()
 endif
 cdata.set ('HAVE_LIBBACKTRACE', 1)
 
+xxhash_dep = dependency ('libxxhash')
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1172,6 +1174,7 @@ zrythm_deps = [
   lsp_dsp_dep,
   valgrind_dep,
   libbacktrace_dep,
+  xxhash_dep,
 
   libm,
 ]

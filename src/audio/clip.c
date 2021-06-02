@@ -28,9 +28,11 @@
 #include "utils/dsp.h"
 #include "utils/file.h"
 #include "utils/flags.h"
+#include "utils/hash.h"
+#include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
-#include "utils/io.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -330,13 +332,47 @@ audio_clip_write_to_pool (
    * project dir */
   char * new_path =
     audio_clip_get_path_in_pool (self, is_backup);
+  g_return_if_fail (new_path);
+
+  /* skip if file with same hash already exists */
+  if (file_exists (new_path))
+    {
+      char * existing_file_hash =
+        hash_get_from_file (
+          new_path, HASH_ALGORITHM_XXH3_64);
+      bool same_hash =
+        self->file_hash &&
+        string_is_equal (
+          self->file_hash, existing_file_hash);
+      g_free (existing_file_hash);
+
+      if (same_hash)
+        {
+          g_debug (
+            "skipping writing to existing clip %s "
+            "in pool",
+            new_path);
+          goto write_to_pool_free_and_return;
+        }
+    }
+
   g_debug (
     "writing clip %s to pool "
     "(parts %d, is backup  %d): '%s'",
     self->name, parts, is_backup, new_path);
-  g_return_if_fail (new_path);
   audio_clip_write_to_file (
     self, new_path, parts);
+
+  if (!parts)
+    {
+      /* store file hash */
+      g_free_and_null (self->file_hash);
+      self->file_hash =
+        hash_get_from_file (
+          new_path, HASH_ALGORITHM_XXH3_64);
+    }
+
+write_to_pool_free_and_return:
   g_free (new_path);
 }
 
@@ -493,6 +529,7 @@ audio_clip_free (
         self->ch_frames[i]);
     }
   g_free_and_null (self->name);
+  g_free_and_null (self->file_hash);
 
   object_zero_and_free (self);
 }

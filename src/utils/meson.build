@@ -31,6 +31,7 @@ util_srcs = [
   'error.c',
   'general.c',
   'gtk.c',
+  'hash.c',
   'io.c',
   'lilv.c',
   'localization.c',

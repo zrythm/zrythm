@@ -92,6 +92,10 @@ typedef struct AudioClip
   /** ID in the audio pool. */
   int           pool_id;
 
+  /** File hash, used for checking if a clip is
+   * already written to the pool. */
+  char *        file_hash;
+
   /**
    * Frames already written to the file, per channel.
    *
@@ -117,6 +121,8 @@ audio_clip_fields_schema[] =
     AudioClip, schema_version),
   YAML_FIELD_STRING_PTR (
     AudioClip, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    AudioClip, file_hash),
   YAML_FIELD_FLOAT (
     AudioClip, bpm),
   YAML_FIELD_ENUM (

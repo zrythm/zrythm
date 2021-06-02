@@ -181,7 +181,7 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-#define TEST_PREFIX "/utils/general/"
+#define TEST_PREFIX "/utils/string/"
 
   g_test_add_func (
     TEST_PREFIX "test replace regex",
@@ -201,4 +201,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-
