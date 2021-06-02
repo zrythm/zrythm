@@ -67,7 +67,7 @@ get_xxh32_hash (
   return ret;
 }
 
-#ifdef HAVE_XXHASH_0_7_3
+#if XXH_VERSION_NUMBER >= 800
 static char *
 get_xxh3_64_hash (
   FILE * stream)
@@ -125,7 +125,7 @@ hash_get_from_file (
   switch (algo)
     {
     case HASH_ALGORITHM_XXH3_64:
-#ifdef HAVE_XXHASH_0_7_3
+#if XXH_VERSION_NUMBER >= 800
       ret = get_xxh3_64_hash (stream);
       break;
 #endif

@@ -1135,9 +1135,7 @@ cdata.set ('HAVE_LIBBACKTRACE', 1)
 
 xxhash_dep = dependency (
   'libxxhash', required: false)
-if xxhash_dep.found () and xxhash_dep.version ().version_compare ('>=0.7.3')
-  cdata.set ('HAVE_XXHASH_0_7_3', 1)
-elif not xxhash_dep.found ()
+if not xxhash_dep.found ()
   xxhash_dep = cc.find_library ('xxhash')
 endif
 

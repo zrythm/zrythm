@@ -25,6 +25,8 @@
 
 #include <glib.h>
 
+#include <xxhash.h>
+
 static void
 test_get_from_file (void)
 {
@@ -41,12 +43,14 @@ test_get_from_file (void)
   g_assert_cmpstr (hash, ==, "ca5b86cb");
   g_free (hash);
 
+#if XXH_VERSION_NUMBER >= 800
   g_message ("start");
   hash =
     hash_get_from_file (
       filepath, HASH_ALGORITHM_XXH3_64);
   g_message ("end");
   g_assert_cmpstr (hash, ==, "e9cd4b9c1e12785e");
+#endif
 }
 
 int
