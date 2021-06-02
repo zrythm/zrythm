@@ -42,6 +42,7 @@ packages:
   - vim
   - x42-plugins
   - xdg-utils
+  - xxhash
   - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm

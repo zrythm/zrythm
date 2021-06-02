@@ -29,6 +29,7 @@ util_srcs = [
   'dictionary.c',
   'env.c',
   'error.c',
+  'file.c',
   'general.c',
   'gtk.c',
   'hash.c',

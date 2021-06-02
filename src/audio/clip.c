@@ -330,8 +330,12 @@ audio_clip_write_to_pool (
 
   /* generate a copy of the given filename in the
    * project dir */
+  char * path_in_main_project =
+    audio_clip_get_path_in_pool (
+      self, F_NOT_BACKUP);
   char * new_path =
     audio_clip_get_path_in_pool (self, is_backup);
+  g_return_if_fail (path_in_main_project);
   g_return_if_fail (new_path);
 
   /* skip if file with same hash already exists */
@@ -356,6 +360,65 @@ audio_clip_write_to_pool (
         }
     }
 
+  /* if writing to backup and same file exists in
+   * main project dir, create a symlink (fallback
+   * to copying) */
+  if (self->file_hash && is_backup)
+    {
+      bool exists_in_main_project = false;
+      if (file_exists (path_in_main_project))
+        {
+          char * existing_file_hash =
+            hash_get_from_file (
+              path_in_main_project,
+              HASH_ALGORITHM_XXH3_64);
+          exists_in_main_project =
+            string_is_equal (
+              self->file_hash, existing_file_hash);
+          g_free (existing_file_hash);
+        }
+
+      if (exists_in_main_project)
+        {
+          g_debug (
+            "linking clip from main project "
+            "('%s' to '%s')",
+            path_in_main_project, new_path);
+
+          if (file_symlink (
+                path_in_main_project, new_path) != 0)
+            {
+              g_message (
+                "failed to link, copying instead");
+
+              /* copy */
+              GFile * src_file =
+                g_file_new_for_path (
+                  path_in_main_project);
+              GFile * dest_file =
+                g_file_new_for_path (new_path);
+              GError * err = NULL;
+              g_debug (
+                "copying clip from main project "
+                "('%s' to '%s')",
+                path_in_main_project, new_path);
+              if (g_file_copy (
+                    src_file, dest_file, 0, NULL, NULL,
+                    NULL, &err))
+                {
+                  goto write_to_pool_free_and_return;
+                }
+              else /* else if failed */
+                {
+                  g_warning (
+                    "Failed to copy '%s' to '%s': %s",
+                    path_in_main_project, new_path,
+                    err->message);
+                }
+            }
+        }
+    }
+
   g_debug (
     "writing clip %s to pool "
     "(parts %d, is backup  %d): '%s'",
@@ -373,6 +436,7 @@ audio_clip_write_to_pool (
     }
 
 write_to_pool_free_and_return:
+  g_free (path_in_main_project);
   g_free (new_path);
 }
 

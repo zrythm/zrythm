@@ -45,6 +45,7 @@ packages:
   - rubberband
   - sherlock-lv2
   - x42-plugins-lv2
+  - xxhash
   - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm

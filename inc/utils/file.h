@@ -40,6 +40,16 @@
 #define file_exists(file) \
   g_file_test (file, G_FILE_TEST_EXISTS)
 
+char *
+file_path_relative_to (
+  const char * path,
+  const char * base);
+
+int
+file_symlink (
+  const char * old_path,
+  const char * new_path);
+
 /**
  * @}
  */
