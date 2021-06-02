@@ -67,6 +67,7 @@ get_xxh32_hash (
   return ret;
 }
 
+#ifdef HAVE_XXHASH_0_7_3
 static char *
 get_xxh3_64_hash (
   FILE * stream)
@@ -109,6 +110,7 @@ get_xxh3_64_hash (
 
   return ret;
 }
+#endif
 
 char *
 hash_get_from_file (
@@ -122,11 +124,13 @@ hash_get_from_file (
   char * ret = NULL;
   switch (algo)
     {
+    case HASH_ALGORITHM_XXH3_64:
+#ifdef HAVE_XXHASH_0_7_3
+      ret = get_xxh3_64_hash (stream);
+      break;
+#endif
     case HASH_ALGORITHM_XXH32:
       ret = get_xxh32_hash (stream);
-      break;
-    case HASH_ALGORITHM_XXH3_64:
-      ret = get_xxh3_64_hash (stream);
       break;
     }
 

@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.17.1.1] - 2021-06-02
+## [1.0.0-alpha.17.1.2] - 2021-06-02
 ### Added
 - Highlight bass note in piano roll
 - New xxhash dependency
