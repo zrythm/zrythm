@@ -339,7 +339,7 @@ audio_clip_write_to_pool (
   g_return_if_fail (new_path);
 
   /* skip if file with same hash already exists */
-  if (file_exists (new_path))
+  if (file_exists (new_path) && !parts)
     {
       char * existing_file_hash =
         hash_get_from_file (
