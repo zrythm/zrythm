@@ -1133,7 +1133,11 @@ if not libbacktrace_dep.found ()
 endif
 cdata.set ('HAVE_LIBBACKTRACE', 1)
 
-xxhash_dep = dependency ('libxxhash')
+xxhash_dep = dependency (
+  'libxxhash', required: false)
+if not xxhash_dep.found ()
+  xxhash_dep = cc.find_library ('xxhash')
+endif
 
 # TODO add Cantarell font as dependency
 

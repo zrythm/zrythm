@@ -53,6 +53,7 @@ with meaningful stack traces and bug reports.
 - lilv (ISC): <https://drobilla.net/software/lilv>
 - pcre2 (3-Clause BSD): <https://www.pcre.org/>
 - reproc (Expat): <https://github.com/DaanDeMeyer/reproc>
+- xxhash (2-Clause BSD): <https://cyan4973.github.io/xxHash/>
 - zstd (3-Clause BSD): <https://github.com/facebook/zstd>
 
 ### Recommended
