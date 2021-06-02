@@ -54,28 +54,8 @@ manpage = custom_target (
 
 # gen completions
 if os_gnu
-  bash_completion = custom_target (
-    'bash-completion',
-    output: 'zrythm',
-    input: manpage,
-    command: [
-      gen_completions_sh, manpage.full_path (), 'bash',
-      '@OUTPUT@',
-      ],
-    install: get_option ('completions'),
-    install_dir: datadir / 'bash-completion/completions',
-    build_by_default: get_option ('completions'))
-  zsh_completion = custom_target (
-    'zsh-completion',
-    output: '_zrythm',
-    input: manpage,
-    command: [
-      gen_completions_sh, manpage.full_path (), 'zsh',
-      '@OUTPUT@',
-      ],
-    install: get_option ('completions'),
-    install_dir: datadir / 'zsh/site-functions',
-    build_by_default: get_option ('completions'))
+
+  # fish
   fish_completion = custom_target (
     'fish-completion',
     output: 'zrythm.fish',
@@ -87,6 +67,37 @@ if os_gnu
     install: get_option ('completions'),
     install_dir: datadir / 'fish/vendor_completions.d',
     build_by_default: get_option ('completions'))
+
+  # bash
+  bash_completion = custom_target (
+    'bash-completion',
+    output: 'zrythm',
+    input: manpage,
+    depends: fish_completion,
+    command: [
+      gen_completions_sh, manpage.full_path (), 'bash',
+      '@OUTPUT@',
+      ],
+    install: get_option ('completions'),
+    install_dir: datadir / 'bash-completion/completions',
+    build_by_default: get_option ('completions'))
+
+  # skip zsh completion for now - causes errors
+  # with old bash versions
+  if false
+    zsh_completion = custom_target (
+      'zsh-completion',
+      output: '_zrythm',
+      input: manpage,
+      depends: fish_completion,
+      command: [
+        gen_completions_sh, manpage.full_path (), 'zsh',
+        '@OUTPUT@',
+        ],
+      install: get_option ('completions'),
+      install_dir: datadir / 'zsh/site-functions',
+      build_by_default: get_option ('completions'))
+  endif
 endif
 
 run_target (

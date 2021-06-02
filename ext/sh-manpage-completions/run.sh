@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
+set -ex
+
 BASH_NO_DESCRIPTIONS="${BASH_NO_DESCRIPTIONS:-0}"
 BASH_USE_SELECTOR="${BASH_USE_SELECTOR:-0}"
 SELECTOR="${SELECTOR-fzf}"
 SELECTOR_QUERY="${SELECTOR_QUERY-'-q'}"
 
 usage() {
-  echo "Usage:   $0 man_file"
-  echo "Example: $0 /usr/share/man/man1/man.1.gz"
+  echo "Usage:   $0 shell man_file"
+  echo "Example: $0 zsh /usr/share/man/man1/man.1.gz"
   exit
 }
 
-file=$1
-[ -f "$1" ] || usage
+in_shell=$1
+file=$2
+[ -f "$2" ] || usage
 
 name=$(echo "$file" | sed 's/.*\/\([^.]*\).*/\1/g')
 [ -n "$name" ] || usage
@@ -121,5 +124,6 @@ process_completions() {
   echo "Completion file available at $shell_file."
 }
 
-process_completions bash
-process_completions zsh
+if [[ "$in_shell" != "fish" ]]; then
+  process_completions $in_shell
+fi

@@ -30,7 +30,7 @@ out_file="$3"
 run_sh_dir="`dirname "$run_sh"`"
 
 pushd "$run_sh_dir"
-"$run_sh" "$manpage"
+"$run_sh" $completions_type "$manpage"
 popd
 
 cp "$run_sh_dir"/completions/$completions_type/*zrythm* \
