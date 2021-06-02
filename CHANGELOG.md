@@ -1,6 +1,50 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.17.1.1] - 2021-06-02
+### Added
+- Highlight bass note in piano roll
+- New xxhash dependency
+- Allow enabling/disabling tracks
+- Add bounce option to disable track after bounce
+- Add context menu to channels in mixer
+- Implement cut/copy/paste/delete/select all/deselect all for plugin slots
+- Allow deleting plugins with delete key
+- Automatically adjust timeline length
+- Add CSS theming for list boxes
+- Auto-generate and install CLI completions for fish and bash
+- Remove unused or untracked pool files during save
+
+### Changed
+- Don't pause engine when performing mute/solo/listen actions
+- Change version requirement of libcyaml to 1.2.0
+- Convert plugin presets combo box to list box
+- Don't populate presets list box for uninstantiated plugins
+- Save pool ID or base64 MIDI instead of absolute paths in track creation actions
+- Use FLAC to save imported clips if bit depth < 32
+- Temporarily disable audio engine and show modal dialog during save (fixes random errors during save)
+- Save the project struct directly instead of memcpying it
+- Skip re-writing existing files to audio pool
+- Create symlinks to main project's pool files when saving backups
+- Defer autosave if sound is playing on master
+
+### Fixed
+- Fix notes from multiple regions being selected when ramping velocities
+- Fix audio recording including audio from other regions
+- Fix bars (position) not being passed to LV2 plugins
+- Fix incorrect expected position for next cycle when processing LV2 plugins
+- Fix some broken links (CGit -> Gitea migration)
+- Fix error when opening scripting window
+- Fix GUI freezing when clicking inside piano roll
+- Fix hangs when no more objects are available in object pools
+- Fix UI events being spammed when changing a control value
+- Fix select/deselect all not working in editor
+- Fix crash when dragging non-existing plugin to slot on MacOS
+- Fix naming scheme of duplicate files in the audio pool
+- Fix audio pool not being saved to backup projects
+- Fix too many `ET_PLUGIN_STATE_CHANGED` events being sent
+- Fix error when loading project containing audio files with different sample rate
+
 ## [1.0.0-alpha.16.1.1] - 2021-05-14
 ### Added
 - Allow choosing CSS theme from preferences
