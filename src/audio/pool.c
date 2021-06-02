@@ -343,6 +343,8 @@ audio_pool_remove_unused (
   g_message (
     "--- removing unused files from pool ---");
 
+  /* remove clips from the pool that are not in
+   * use */
   for (int i = 0; i < self->num_clips; i++)
     {
       AudioClip * clip = self->clips[i];
@@ -356,6 +358,47 @@ audio_pool_remove_unused (
             self, i, F_FREE, backup);
         }
     }
+
+  /* remove untracked files from pool directory */
+  char * prj_pool_dir =
+    project_get_path (
+      PROJECT, PROJECT_PATH_POOL, backup);
+  char ** files =
+    io_get_files_in_dir_ending_in (
+      prj_pool_dir, 1, NULL, false);
+  if (files)
+    {
+      for (size_t i = 0; files[i] != NULL; i++)
+        {
+          const char * path = files[i];
+
+          bool found = false;
+          for (int j = 0; j < self->num_clips; j++)
+            {
+              AudioClip * clip = self->clips[j];
+              char * clip_path =
+                audio_clip_get_path_in_pool (
+                  clip, backup);
+
+              if (string_is_equal (clip_path, path))
+                {
+                  found = true;
+                  break;
+                }
+
+              g_free (clip_path);
+            }
+
+          /* if file not found in pool clips,
+           * delete */
+          if (!found)
+            {
+              io_remove (path);
+            }
+        }
+      g_strfreev (files);
+    }
+  g_free (prj_pool_dir);
 
   g_message ("%s: done", __func__);
 }
