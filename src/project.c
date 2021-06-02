@@ -37,6 +37,7 @@
 #include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/marker_track.h"
+#include "audio/master_track.h"
 #include "audio/midi_note.h"
 #include "audio/modulator_track.h"
 #include "audio/router.h"
@@ -1378,21 +1379,30 @@ project_autosave_cb (
            * this gets called is not exact */
           4 * 1000000;
 
-      /* bad time to save */
+      /* skip if bad time to save or rolling */
       if (cur_time - PROJECT->last_autosave_time <
             microsec_to_autosave ||
           TRANSPORT_IS_ROLLING)
         {
           return G_SOURCE_CONTINUE;
         }
-      /* ok to save */
-      else
+
+      /* skip if sound is playing */
+      StereoPorts * out_ports =
+        P_MASTER_TRACK->channel->stereo_out;
+      if (out_ports->l->peak >= 0.0001f ||
+          out_ports->r->peak >= 0.0001f)
         {
-          project_save (
-            PROJECT, PROJECT->dir, 1, 1,
-            F_ASYNC);
-          PROJECT->last_autosave_time = cur_time;
+          g_debug (
+            "sound is playing, skipping autosave");
+          return G_SOURCE_CONTINUE;
         }
+
+      /* ok to save */
+      project_save (
+        PROJECT, PROJECT->dir, 1, 1,
+        F_ASYNC);
+      PROJECT->last_autosave_time = cur_time;
     }
 
   return G_SOURCE_CONTINUE;
