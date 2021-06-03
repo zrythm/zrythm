@@ -19,6 +19,7 @@
 
 #include "audio/engine.h"
 #include "audio/exporter.h"
+#include "audio/marker_track.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/bounce_step_selector.h"
@@ -88,11 +89,22 @@ on_bounce_clicked (
         &start_pos, F_GLOBAL);
       break;
     case BOUNCE_DIALOG_TRACKS:
-      tracklist_selections_mark_for_bounce (
-        TRACKLIST_SELECTIONS,
-        settings.bounce_with_parents,
-        F_NO_MARK_MASTER);
-      settings.mode = EXPORT_MODE_TRACKS;
+      {
+        tracklist_selections_mark_for_bounce (
+          TRACKLIST_SELECTIONS,
+          settings.bounce_with_parents,
+          F_NO_MARK_MASTER);
+        settings.mode = EXPORT_MODE_TRACKS;
+
+        /* start at start marker */
+        Marker * m =
+          marker_track_get_start_marker (
+            P_MARKER_TRACK);
+        ArrangerObject * m_obj =
+          (ArrangerObject *) m;
+        position_set_to_pos (
+          &start_pos, &m_obj->pos);
+      }
       break;
     }
 

@@ -737,8 +737,8 @@ arranger_object_remove_linked_region (
  */
 void
 arranger_object_move (
-  ArrangerObject *         self,
-  const double             ticks);
+  ArrangerObject * self,
+  const double     ticks);
 
 /**
  * Returns the length of the ArrangerObject (if

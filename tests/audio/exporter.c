@@ -657,6 +657,88 @@ _test_bounce_instrument_track (
 
 #undef CHECK_SAME_AS_FILE
 
+  /* --- check bounce song with offset --- */
+
+  /* move playhead to bar 3 */
+  transport_set_playhead_to_bar (TRANSPORT, 3);
+
+  /* move start marker and region to bar 2 */
+  Marker * start_marker =
+    marker_track_get_start_marker (P_MARKER_TRACK);
+  arranger_object_select (
+    (ArrangerObject *) start_marker, F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_move_timeline (
+      TL_SELECTIONS,
+      TRANSPORT->ticks_per_bar, 0, 0,
+      F_NOT_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* move end marker to bar 6 */
+  Marker * end_marker =
+    marker_track_get_end_marker (P_MARKER_TRACK);
+  ArrangerObject * end_marker_obj =
+    (ArrangerObject *) end_marker;
+  arranger_object_select (
+    end_marker_obj, F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_move_timeline (
+      TL_SELECTIONS,
+      TRANSPORT->ticks_per_bar * 6 -
+        end_marker_obj->pos.ticks,
+      0, 0, F_NOT_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* export again */
+  memset (&settings, 0, sizeof (ExportSettings));
+  settings.mode = EXPORT_MODE_TRACKS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, __func__);
+  settings.time_range = TIME_RANGE_SONG;
+  settings.bounce_with_parents = with_parents;
+  settings.bounce_step = bounce_step;
+
+  /* mark the track for bounce */
+  tracklist_selections_mark_for_bounce (
+    TRACKLIST_SELECTIONS,
+    settings.bounce_with_parents, F_NO_MARK_MASTER);
+
+  /* start exporting in a new thread */
+  thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  print_progress_and_sleep (
+    &settings.progress_info);
+
+  g_thread_join (thread);
+
+  /* create audio track with bounced material */
+  ArrangerObject * start_marker_obj =
+    (ArrangerObject *) start_marker;
+  exporter_create_audio_track_after_bounce (
+    &settings, &start_marker_obj->pos);
+
+  /* assert exported material starts at start
+   * marker and ends at end marker */
+  Track * audio_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  ZRegion * bounced_r =
+    audio_track->lanes[0]->regions[0];
+  ArrangerObject * bounce_r_obj =
+    (ArrangerObject *) bounced_r;
+  g_assert_cmppos (
+    &start_marker_obj->pos, &bounce_r_obj->pos);
+  g_assert_cmppos (
+    &end_marker_obj->pos, &bounce_r_obj->end_pos);
+
   test_helper_zrythm_cleanup ();
 #endif
 }
@@ -685,7 +767,7 @@ main (int argc, char *argv[])
     TEST_PREFIX "test export wav",
     (GTestFunc) test_export_wav);
   g_test_add_func (
-    TEST_PREFIX "test instrument track",
+    TEST_PREFIX "test bounce instrument track",
     (GTestFunc) test_bounce_instrument_track);
   g_test_add_func (
     TEST_PREFIX "test bounce midi track routed to instrument track",
