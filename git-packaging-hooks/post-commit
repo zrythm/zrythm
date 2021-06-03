@@ -41,7 +41,7 @@ then TraceStage "running staging-specific post-commit hooks"
           changelog_end=`grep -rne "## \[" CHANGELOG.md | awk -F: '{ print $1 }' | head -n2 | tail -n1`
           changelog_end=$(($changelog_end - 1))
           changelog_msg=`tail -n +$(($changelog_start+1)) CHANGELOG.md | head -n +$(($changelog_end-$changelog_start))`
-          changelog_msg="Zrythm $VERSION_STRING\n\n`echo "$changelog_msg" | sed 's/### //g'`"
+          changelog_msg="`echo "$changelog_msg" | sed 's/### //g'`"
           git tag -a $VERSION_STRING -m "$changelog_msg"
      else declare -a orphaned_tags=( $(cat $TAGS_FILE | sort | uniq) )
           orphaned_minor_tag=${orphaned_tags[0]}
