@@ -1217,6 +1217,71 @@ test_move_plugin_from_inserts_to_midi_fx (void)
 #endif
 }
 
+static void
+test_undoing_deletion_of_multiple_inserts (void)
+{
+  test_helper_zrythm_init ();
+
+#if defined (HAVE_LSP_SIDECHAIN_COMPRESSOR) && \
+    defined (HAVE_HELM) && \
+    defined (HAVE_NO_DELAY_LINE)
+
+  test_plugin_manager_create_tracks_from_plugin (
+      HELM_BUNDLE, HELM_URI, true, false, 1);
+
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  /* add 2 inserts */
+  int slot = 0;
+  PluginSetting * setting =
+    test_plugin_manager_get_plugin_setting (
+      LSP_SIDECHAIN_COMPRESSOR_BUNDLE,
+      LSP_SIDECHAIN_COMPRESSOR_URI, false);
+  UndoableAction * ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_INSERT, ins_track->pos,
+      slot, setting, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  slot = 1;
+  setting =
+    test_plugin_manager_get_plugin_setting (
+      NO_DELAY_LINE_BUNDLE,
+      NO_DELAY_LINE_URI, false);
+  ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_INSERT, ins_track->pos,
+      slot, setting, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  Plugin * compressor =
+    ins_track->channel->inserts[0];
+  Plugin * no_delay_line =
+    ins_track->channel->inserts[1];
+  g_assert_true (
+    IS_PLUGIN_AND_NONNULL (compressor));
+  g_assert_true (
+    IS_PLUGIN_AND_NONNULL (no_delay_line));
+  plugin_select (
+    compressor, F_SELECT, F_EXCLUSIVE);
+  plugin_select (
+    no_delay_line, F_SELECT, F_NOT_EXCLUSIVE);
+
+  /* delete inserts */
+  ua =
+    mixer_selections_action_new_delete (
+      MIXER_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* undo deletion */
+  undo_manager_undo (UNDO_MANAGER);
+
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1224,6 +1289,11 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
+  g_test_add_func (
+    TEST_PREFIX
+    "test undoing deletion of multiple inserts",
+    (GTestFunc)
+    test_undoing_deletion_of_multiple_inserts);
   g_test_add_func (
     TEST_PREFIX
     "test move plugin from inserts to midi fx",

@@ -209,41 +209,35 @@ revert_automation (
 {
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
-  for (int k = 0;
-       k < ms->num_slots; k++)
+  int num_ats =
+     deleted ?
+       self->num_deleted_ats : self->num_ats;
+  AutomationTrack ** ats =
+     deleted ?
+       self->deleted_ats : self->ats;
+  for (int j = 0; j < num_ats; j++)
     {
-      for (int j = 0;
-           j <
-             (deleted ?
-                self->num_deleted_ats :
-                self->num_ats);
-           j++)
+      AutomationTrack * cloned_at = ats[j];
+
+      if (cloned_at->port_id.plugin_id.slot !=
+            slot ||
+          cloned_at->
+            port_id.plugin_id.slot_type !=
+              ms->type)
         {
-          AutomationTrack * cloned_at =
-            (deleted ?
-               self->deleted_ats[j] :
-               self->ats[j]);
-
-          if (cloned_at->port_id.plugin_id.slot !=
-                ms->slots[k] ||
-              cloned_at->
-                port_id.plugin_id.slot_type !=
-                  ms->type)
-            {
-              continue;
-            }
-
-          /* find corresponding automation
-           * track in track and copy
-           * regions */
-          AutomationTrack * actual_at =
-            automation_tracklist_get_plugin_at (
-              atl, ms->type, slot,
-              cloned_at->port_id.label);
-
-          copy_at_regions (
-            actual_at, cloned_at);
+          continue;
         }
+
+      /* find corresponding automation
+       * track in track and copy
+       * regions */
+      AutomationTrack * actual_at =
+        automation_tracklist_get_plugin_at (
+          atl, ms->type, slot,
+          cloned_at->port_id.label);
+
+      copy_at_regions (
+        actual_at, cloned_at);
     }
 }
 
@@ -462,13 +456,6 @@ do_or_undo_create_or_delete (
             F_NO_CONFIRM, F_GEN_AUTOMATABLES,
             F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
-          /* copy automation from before deletion */
-          if (delete)
-            {
-              revert_automation (
-                self, track, own_ms, slot, false);
-            }
-
           /* select the plugin */
           mixer_selections_add_slot (
             MIXER_SELECTIONS, track, slot_type,
@@ -500,11 +487,12 @@ do_or_undo_create_or_delete (
           g_return_val_if_fail (!ret, -1);
         }
 
-      /* restore port connections */
+      /* if undoing deletion */
       if (delete)
         {
           for (int i = 0; i < loop_times; i++)
             {
+              /* restore port connections */
               Plugin * pl = own_ms->plugins[i];
               g_message (
                 "restoring custom connections "
@@ -520,7 +508,6 @@ do_or_undo_create_or_delete (
                 &num_ports);
               for (int j = 0; j < num_ports; j++)
                 {
-                  /*g_warn_if_reached ();*/
                   Port * port = ports[j];
                   Port * prj_port =
                     port_find_from_identifier (
@@ -529,6 +516,12 @@ do_or_undo_create_or_delete (
                     prj_port, port);
                 }
               free (ports);
+
+              /* copy automation from before
+               * deletion */
+              int slot = pl->id.slot;
+              revert_automation (
+                self, track, own_ms, slot, false);
             }
         }
 
