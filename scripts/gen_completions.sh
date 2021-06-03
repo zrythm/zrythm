@@ -20,7 +20,7 @@
 # This script generates the bash/fish/zsh completion
 # files.
 
-set -ex
+set -e
 
 run_sh="@RUN_SH@"
 manpage="$1"

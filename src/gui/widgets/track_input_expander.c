@@ -308,17 +308,12 @@ setup_ext_ins_cb (
            HW_IN_PROCESSOR->num_ext_audio_ports);
        i++)
     {
-      char * label;
       ExtPort * port =
         midi?
           HW_IN_PROCESSOR->ext_midi_ports[i] :
           HW_IN_PROCESSOR->ext_audio_ports[i];
 
-      /* only use active ports. only enabled
-       * ports will be active */
-      if (!port->active)
-        continue;
-
+      char * label;
       if (port->num_aliases == 2)
         label = port->alias2;
       else if (port->num_aliases == 1)
@@ -327,6 +322,11 @@ setup_ext_ins_cb (
         label = port->short_name;
       else
         label = port->full_name;
+
+      /* only use active ports. only enabled
+       * ports will be active */
+      if (!port->active)
+        continue;
 
       char * port_id = ext_port_get_id (port);
       gtk_combo_box_text_append (

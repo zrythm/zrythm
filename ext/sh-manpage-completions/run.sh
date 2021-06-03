@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 BASH_NO_DESCRIPTIONS="${BASH_NO_DESCRIPTIONS:-0}"
 BASH_USE_SELECTOR="${BASH_USE_SELECTOR:-0}"

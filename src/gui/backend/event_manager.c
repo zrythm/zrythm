@@ -1902,6 +1902,9 @@ process_events (void * data)
           bot_bar_widget_refresh (MW_BOT_BAR);
           ruler_widget_redraw_whole (EDITOR_RULER);
           ruler_widget_redraw_whole (MW_RULER);
+          inspector_track_widget_show_tracks (
+            MW_TRACK_INSPECTOR,
+            TRACKLIST_SELECTIONS, false);
           break;
         case ET_MIDI_BINDINGS_CHANGED:
           main_notebook_widget_refresh (
