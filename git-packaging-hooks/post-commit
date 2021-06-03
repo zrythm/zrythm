@@ -35,7 +35,14 @@ then TraceStage "running staging-specific post-commit hooks"
      done
      if   [ ! -f $TAGS_FILE ]
      then TraceStep "adding revision tag '$VERSION_STRING'"
-          git tag $VERSION_STRING -m "$VERSION_STRING"
+          declare -i changelog_start
+          declare -i changelog_end
+          changelog_start=`grep -rne "## \[" CHANGELOG.md | awk -F: '{ print $1 }' | head -n1`
+          changelog_end=`grep -rne "## \[" CHANGELOG.md | awk -F: '{ print $1 }' | head -n2 | tail -n1`
+          changelog_end=$(($changelog_end - 1))
+          changelog_msg=`tail -n +$(($changelog_start+1)) CHANGELOG.md | head -n +$(($changelog_end-$changelog_start))`
+          changelog_msg="Zrythm $VERSION_STRING\n\n`echo "$changelog_msg" | sed 's/### //g'`"
+          git tag -a $VERSION_STRING -m "$changelog_msg"
      else declare -a orphaned_tags=( $(cat $TAGS_FILE | sort | uniq) )
           orphaned_minor_tag=${orphaned_tags[0]}
           orphaned_rev_tag=${orphaned_tags[1]}
