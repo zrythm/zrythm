@@ -114,7 +114,7 @@ midi_note_print (
 void
 midi_note_listen (
   MidiNote * mn,
-  int        listen)
+  bool       listen)
 {
   /*g_message (*/
     /*"%s: %" PRIu8 " listen %d", __func__,*/

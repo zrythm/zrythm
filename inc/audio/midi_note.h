@@ -195,7 +195,7 @@ midi_note_print (
 void
 midi_note_listen (
   MidiNote * mn,
-  int        listen);
+  bool       listen);
 
 /**
  * Shifts MidiNote's position and/or value.

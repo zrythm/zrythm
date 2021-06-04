@@ -432,7 +432,7 @@ midi_arranger_calc_deltamax_for_note_movement (
 void
 midi_arranger_listen_notes (
   ArrangerWidget * self,
-  int              listen)
+  bool             listen)
 {
   /*g_message ("%s: listen: %d", __func__, listen);*/
 
@@ -444,10 +444,23 @@ midi_arranger_listen_notes (
     arranger_widget_get_selections (self);
   MidiArrangerSelections * mas =
     (MidiArrangerSelections *) sel;
+  Position start_pos;
+  arranger_selections_get_start_pos (
+    sel, &start_pos, F_NOT_GLOBAL);
+  double ticks_cutoff =
+    start_pos.ticks +
+    (double) TRANSPORT->ticks_per_beat;
   for (int i = 0; i < mas->num_midi_notes; i++)
     {
       MidiNote * mn = mas->midi_notes[i];
-      midi_note_listen (mn, listen);
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) mn;
+
+      /* only add notes during the first beat of the
+       * selections if listening */
+      if (!listen ||
+          mn_obj->pos.ticks < ticks_cutoff)
+        midi_note_listen (mn, listen);
     }
 }
 

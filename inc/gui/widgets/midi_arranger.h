@@ -139,7 +139,7 @@ midi_arranger_calc_deltamax_for_note_movement (
 void
 midi_arranger_listen_notes (
   ArrangerWidget * self,
-  int              listen);
+  bool             listen);
 
 void
 midi_arranger_show_context_menu (
