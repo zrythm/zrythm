@@ -80,6 +80,16 @@ plugin_setting_clone (
     plugin_descriptor_clone (src->descr);
   new_setting->ui_uri = g_strdup (src->ui_uri);
 
+#ifndef HAVE_CARLA
+  if (new_setting->open_with_carla)
+    {
+      g_message (
+        "disabling open_with_carla for %s",
+        new_setting->descr->name);
+      new_setting->open_with_carla = false;
+    }
+#endif
+
   if (validate)
     {
       plugin_setting_validate (new_setting);
@@ -122,6 +132,17 @@ plugin_setting_validate (
   g_debug ("validating plugin setting");
 
   const PluginDescriptor * descr = self->descr;
+
+#ifndef HAVE_CARLA
+  if (self->open_with_carla)
+    {
+      g_critical (
+        "Requested to open with carla - carla "
+        "functionality is disabled");
+      self->open_with_carla = false;
+      return;
+    }
+#endif
 
   if (descr->protocol == PROT_VST ||
       descr->protocol == PROT_VST3 ||
@@ -243,7 +264,8 @@ plugin_setting_validate (
         }
     }
 
-  g_debug ("plugin setting validated. new setting:");
+  g_debug (
+    "plugin setting validated. new setting:");
   plugin_setting_print (self);
 }
 
