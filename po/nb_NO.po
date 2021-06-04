@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-05-07 04:08+0100\n"
-"PO-Revision-Date: 2021-02-28 04:50+0000\n"
+"PO-Revision-Date: 2021-06-04 04:32+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:289
@@ -2530,12 +2530,12 @@ msgstr ""
 #: src/audio/channel_send.c:74
 #, fuzzy, c-format
 msgid "Channel Send %d enabled"
-msgstr "Slett objekt(er)"
+msgstr "Kanalforsendelse %d påskrudd"
 
 #: src/audio/channel_send.c:87
 #, fuzzy, c-format
 msgid "Channel Send %d amount"
-msgstr "Åpne prosjekt"
+msgstr "Kan ikke sende %d mengde"
 
 #: src/audio/channel_send.c:525
 msgid "Pre-fader send"
@@ -2578,7 +2578,7 @@ msgstr "Modulatorer"
 #: src/audio/exporter.c:138
 #, fuzzy, c-format
 msgid "Format %s not supported yet"
-msgstr "Bakende-kombinasjon støttes ikke"
+msgstr "Formatet %s støttes ikke enda"
 
 #: src/audio/exporter.c:233
 msgid "SF INFO invalid"
@@ -3244,7 +3244,7 @@ msgstr "Flytt %d spor"
 #: src/actions/tracklist_selections.c:1548
 #, fuzzy, c-format
 msgid "Unsolo %d Tracks"
-msgstr "Spor"
+msgstr "Opphev solo for %d spor"
 
 #: src/actions/tracklist_selections.c:1553
 #, fuzzy, c-format
@@ -3252,19 +3252,19 @@ msgid "Mute %d Tracks"
 msgstr "Flytt %d spor"
 
 #: src/actions/tracklist_selections.c:1557
-#, fuzzy, c-format
+#, c-format
 msgid "Unmute %d Tracks"
-msgstr "Opphev forstumming av spor"
+msgstr "Opphev forstumming av %d spor"
 
 #: src/actions/tracklist_selections.c:1562
-#, fuzzy, c-format
+#, c-format
 msgid "Listen %d Tracks"
-msgstr "Spor"
+msgstr "Lytt til %d spor"
 
 #: src/actions/tracklist_selections.c:1566
 #, fuzzy, c-format
 msgid "Unlisten %d Tracks"
-msgstr "Spor"
+msgstr "Opphev lytting av %d spor"
 
 #: src/actions/tracklist_selections.c:1583
 msgid "Move Track"
@@ -3276,9 +3276,9 @@ msgid "Pin Track"
 msgstr "Flytt spor"
 
 #: src/actions/tracklist_selections.c:1601
-#, fuzzy, c-format
+#, c-format
 msgid "Pin %d Tracks"
-msgstr "Spor"
+msgstr "Fest %d spor"
 
 #: src/actions/tracklist_selections.c:1608
 #, fuzzy
@@ -3286,9 +3286,9 @@ msgid "Unpin Track"
 msgstr "Opphev forstumming av spor"
 
 #: src/actions/tracklist_selections.c:1613
-#, fuzzy, c-format
+#, c-format
 msgid "Unpin %d Tracks"
-msgstr "Spor"
+msgstr "Løsne %d spor"
 
 #: src/guile/guile.c:40
 msgid "Script execution successful"
