@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-05-07 04:15+0100\n"
-"PO-Revision-Date: 2021-04-13 00:27+0000\n"
-"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"PO-Revision-Date: 2021-05-19 18:32+0000\n"
+"Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/user-manual/"
+"el/>\n"
 "Language: el\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.7-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../appendix/environment.rst:10
 msgid "Environment Variables"
-msgstr ""
+msgstr "Μεταβλητές Περιβάλλοντος"
 
 #: ../../appendix/environment.rst:12
 msgid ""
@@ -42,11 +43,11 @@ msgstr ""
 
 #: ../../appendix/environment.rst:30
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Ορίστε στο 1 για να απενεργοποιήσετε τη σάρωση προσθηκών."
 
 #: ../../appendix/environment.rst:32
 msgid "Example: ``NO_SCAN_PLUGINS=1``"
-msgstr ""
+msgstr "Παράδειγμα: ``NO_SCAN_PLUGINS=1``"
 
 #: ../../appendix/environment.rst:37
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
@@ -63,6 +64,8 @@ msgstr ""
 #: ../../appendix/environment.rst:52
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
+"Ορίστε στο 1 για να εμφανίσετε επιπλέον πληροφορίες χρήσιμες για τους "
+"προγραμματιστές."
 
 #: ../../appendix/files-and-directories.rst:6
 msgid "Files and Directories"
@@ -9341,4 +9344,3 @@ msgstr ""
 #~ "<https://bittube.video/videos/watch/playlist/69bc340a-d0b7"
 #~ "-403d-"
 #~ "83c1-0a9cce109a50?videoId=5ed01442-f116-4f14-aae7-02713b7c1460>`_."
-
