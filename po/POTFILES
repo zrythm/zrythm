@@ -251,6 +251,7 @@ inc/gui/widgets/color_area.h
 inc/gui/widgets/port_connections_tree.h
 inc/gui/widgets/midi_track.h
 inc/gui/widgets/automatable_selector_popover.h
+inc/gui/widgets/playhead_scroll_buttons.h
 inc/gui/widgets/chord_key.h
 inc/gui/widgets/velocity.h
 inc/gui/widgets/pinned_tracklist.h
@@ -265,6 +266,8 @@ inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/bug_report_dialog.h
 inc/gui/widgets/dialogs/port_info.h
 inc/gui/widgets/dialogs/export_midi_file_dialog.h
+inc/gui/widgets/dialogs/project_progress_dialog.h
+inc/gui/widgets/dialogs/generic_progress_dialog.h
 inc/gui/widgets/dialogs/object_color_chooser_dialog.h
 inc/gui/widgets/dialogs/bind_cc_dialog.h
 inc/gui/widgets/dialogs/create_project_dialog.h
@@ -295,6 +298,7 @@ inc/gui/backend/clip_editor.h
 inc/gui/backend/file_manager.h
 inc/gui/backend/timeline.h
 inc/gui/backend/mixer_selections.h
+inc/utils/chromaprint.h
 inc/utils/lilv.h
 inc/utils/curl.h
 inc/utils/system.h
@@ -331,6 +335,7 @@ inc/utils/mpmc_queue.h
 inc/utils/object_pool.h
 inc/utils/mem.h
 inc/utils/symap.h
+inc/utils/hash.h
 inc/utils/env.h
 inc/utils/cairo.h
 inc/utils/windows_errors.h
@@ -614,6 +619,7 @@ src/gui/widgets/cc_bindings.c
 src/gui/widgets/chord_object.c
 src/gui/widgets/arranger_draw.c
 src/gui/widgets/timeline_minimap_selection.c
+src/gui/widgets/playhead_scroll_buttons.c
 src/gui/widgets/route_target_selector_popover.c
 src/gui/widgets/file_browser_window.c
 src/gui/widgets/automation_editor_legend.c
@@ -649,6 +655,7 @@ src/gui/widgets/dialogs/arranger_object_info.c
 src/gui/widgets/dialogs/create_project_dialog.c
 src/gui/widgets/dialogs/quantize_dialog.c
 src/gui/widgets/dialogs/bind_cc_dialog.c
+src/gui/widgets/dialogs/generic_progress_dialog.c
 src/gui/widgets/dialogs/export_midi_file_dialog.c
 src/gui/widgets/dialogs/bounce_dialog.c
 src/gui/widgets/dialogs/string_entry_dialog.c
@@ -658,6 +665,7 @@ src/gui/widgets/dialogs/export_progress_dialog.c
 src/gui/widgets/dialogs/bug_report_dialog.c
 src/gui/widgets/dialogs/object_color_chooser_dialog.c
 src/gui/widgets/dialogs/export_dialog.c
+src/gui/widgets/dialogs/project_progress_dialog.c
 src/gui/widgets/dialogs/track_icon_chooser_dialog.c
 src/gui/widgets/dialogs/changelog_dialog.c
 src/gui/backend/file_manager.c
@@ -693,12 +701,14 @@ src/utils/system.c
 src/utils/env.c
 src/utils/objects.c
 src/utils/localization.c
+src/utils/chromaprint.c
 src/utils/yaml.c
 src/utils/object_pool.c
 src/utils/audio.c
 src/utils/file.c
 src/utils/math.c
 src/utils/general.c
+src/utils/hash.c
 src/utils/stack.c
 src/utils/curl.c
 src/utils/log.c
@@ -867,10 +877,12 @@ resources/ui/chord_selector_window.ui
 resources/ui/create_project_dialog.ui
 resources/ui/monitor_section.ui
 resources/ui/active_hardware_popover.ui
+resources/ui/generic_progress_dialog.ui
 resources/ui/chord_pad.ui
 resources/ui/channel.ui
 resources/ui/main_notebook.ui
 resources/ui/midi_editor_space.ui
+resources/ui/playhead_scroll_buttons.ui
 resources/ui/automatable_selector.ui
 resources/ui/help_toolbar.ui
 resources/ui/modulator_inner.ui
@@ -903,7 +915,6 @@ resources/ui/splash.ui
 resources/ui/inspector_ap.ui
 resources/ui/bot_bar.ui
 resources/ui/control_room.ui
-resources/ui/export_progress_dialog.ui
 resources/ui/event_viewer.ui
 resources/ui/automation_track.ui
 resources/ui/file_browser.ui
