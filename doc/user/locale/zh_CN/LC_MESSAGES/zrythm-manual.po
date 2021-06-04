@@ -39,7 +39,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-05-07 04:15+0100\n"
-"PO-Revision-Date: 2021-05-08 04:32+0000\n"
+"PO-Revision-Date: 2021-06-04 04:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
@@ -4872,9 +4872,8 @@ msgid "The `Monitor Out` knob controls this volume."
 msgstr ""
 
 #: ../../routing/control-room.rst:28
-#, fuzzy
 msgid "Dim"
-msgstr "Dim"
+msgstr ""
 
 #: ../../routing/control-room.rst:29
 msgid "This is not operational at the moment."
