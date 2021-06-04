@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.17.1.22] - 2021-06-04
+### Changed
+- Update Greek, Spanish, Chinese (Simplified), Norwegian Bokmal, Japanese translations
+- Annotate releases with changelog
+- Make LV2 plugin <=> UI communication buffers larger
+
+### Fixed
+- Fix crash when undoing deletion of multiple inserts
+- Fix audio track inputs not being available after loading a project
+- Fix bounced regions not starting at start marker when bouncing tracks
+- Fix error when attempting to open plugins with carla when zrythm is built without carla support
+
 ## [1.0.0-alpha.17.1.3] - 2021-06-02
 ### Added
 - Highlight bass note in piano roll
