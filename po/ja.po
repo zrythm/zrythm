@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-06-04 07:19+0100\n"
-"PO-Revision-Date: 2021-04-27 03:32+0000\n"
+"PO-Revision-Date: 2021-06-04 09:16+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -489,7 +489,7 @@ msgid "Waiting for project"
 msgstr "プロジェクトを待機中"
 
 #: src/zrythm_app.c:956
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s %s\n"
 "\n"
@@ -502,7 +502,7 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2021 Zrythmの貢献者\n"
+"%s-%s %s\n"
 "\n"
 "%sは一切の保証を伴いません！\n"
 "\n"
@@ -682,9 +682,8 @@ msgid "[Zrythm] Enabled"
 msgstr "[Zrythm]有効"
 
 #: src/plugins/plugin.c:268
-#, fuzzy
 msgid "Enables or disables the plugin"
-msgstr "接続を有効/無効にする"
+msgstr "プラグインを有効/無効にする"
 
 #: src/plugins/plugin.c:291
 msgid "[Zrythm] Gain"
@@ -794,9 +793,8 @@ msgid "_OK"
 msgstr "_OK"
 
 #: src/gui/widgets/bounce_step_selector.c:187
-#, fuzzy
 msgid "Bounce step selector"
-msgstr "エフェクトチェーンでバウンス"
+msgstr "バウンスステップセレクター"
 
 #: src/gui/widgets/fader_controls_grid.c:98
 msgid "Peak"
@@ -917,9 +915,8 @@ msgstr "聴く"
 
 #: src/gui/widgets/channel.c:788 src/gui/widgets/track.c:1145
 #: src/gui/widgets/track.c:1794
-#, fuzzy
 msgid "Unlisten"
-msgstr "聴く"
+msgstr "試聴を解除"
 
 #: src/gui/widgets/channel.c:801 src/gui/widgets/bot_bar.c:578
 #: src/gui/widgets/track.c:1807 src/gui/widgets/dialogs/export_dialog.c:1313
@@ -1189,7 +1186,7 @@ msgstr "%s名前"
 
 #: src/gui/widgets/piano_roll_keys.c:159
 msgid "bass"
-msgstr ""
+msgstr "ベース"
 
 #: src/gui/widgets/piano_roll_keys.c:181
 msgid "both"
@@ -1208,9 +1205,8 @@ msgid "Add to project"
 msgstr "プロジェクトに追加"
 
 #: src/gui/widgets/plugin_browser.c:664
-#, fuzzy
 msgid "Add to project with UI"
-msgstr "プロジェクトに追加"
+msgstr "UIでプロジェクトに追加"
 
 #: src/gui/widgets/plugin_browser.c:708
 msgid "Add to project (carla)"
@@ -1225,9 +1221,8 @@ msgid "Add to project (bridged full)"
 msgstr "プロジェクトに追加（完全にブリッジ）"
 
 #: src/gui/widgets/plugin_browser.c:735
-#, fuzzy
 msgid "Use _Generic UI"
-msgstr "汎用UI"
+msgstr "汎用なUIを使用 (_G)"
 
 #: src/gui/widgets/plugin_browser.c:756
 msgid "Add to collection"
@@ -1577,9 +1572,8 @@ msgid "File Browser"
 msgstr "ファイル ブラウザ"
 
 #: src/gui/widgets/right_dock_edge.c:154
-#, fuzzy
 msgid "Monitor Section"
-msgstr "モニターフェーダーin"
+msgstr "モニターセクション"
 
 #: src/gui/widgets/right_dock_edge.c:181
 msgid "Show file browser"
@@ -1685,73 +1679,63 @@ msgid "Some changes will only take effect after you restart %s"
 msgstr "一部の変更は%sの再起動後にのみ有効になります"
 
 #: src/gui/widgets/monitor_section.c:48
-#, fuzzy
 msgid "Monitor"
-msgstr "モニター出力"
+msgstr "モニター"
 
 #: src/gui/widgets/monitor_section.c:69 src/gui/widgets/monitor_section.c:344
-#, fuzzy
 msgid "Dim"
-msgstr "dim"
+msgstr "ディム"
 
 #: src/gui/widgets/monitor_section.c:85
 #, c-format
 msgid "<small>%d muted</small>"
-msgstr ""
+msgstr "<small>%d ミュート</small>"
 
 #: src/gui/widgets/monitor_section.c:91
-#, fuzzy
 msgid "Currently muted tracks"
-msgstr "トラックの無音を解除"
+msgstr "現在ミュートされているトラック"
 
 #: src/gui/widgets/monitor_section.c:94
 #, c-format
 msgid "<small>%d soloed</small>"
-msgstr ""
+msgstr "<small>%d ソロ</small>"
 
 #: src/gui/widgets/monitor_section.c:100
-#, fuzzy
 msgid "Currently soloed tracks"
-msgstr "トラックのソロを解除"
+msgstr "現在ソロされているトラック数"
 
 #: src/gui/widgets/monitor_section.c:103
 #, c-format
 msgid "<small>%d listened</small>"
-msgstr ""
+msgstr "<small>%d 試聴</small>"
 
 #: src/gui/widgets/monitor_section.c:109
 msgid "Currently listened tracks"
-msgstr ""
+msgstr "現在試聴されているトラック数"
 
 #: src/gui/widgets/monitor_section.c:396
-#, fuzzy
 msgid "Unsolo all tracks"
-msgstr "トラックのソロを解除"
+msgstr "全てのトラックのソロを解除"
 
 #: src/gui/widgets/monitor_section.c:399
-#, fuzzy
 msgid "Unmute all tracks"
-msgstr "トラックの無音を解除"
+msgstr "全てのトラックのミュートを解除"
 
 #: src/gui/widgets/monitor_section.c:402
-#, fuzzy
 msgid "Unlisten all tracks"
-msgstr "%dトラックの固定を解除 (Unpin)"
+msgstr "全てのトラックの試聴を解除"
 
 #: src/gui/widgets/monitor_section.c:449
-#, fuzzy
 msgid "Soloing"
-msgstr "ソロ"
+msgstr "ソロ中"
 
 #: src/gui/widgets/monitor_section.c:453
-#, fuzzy
 msgid "Muting"
-msgstr "編集"
+msgstr "ミュート中"
 
 #: src/gui/widgets/monitor_section.c:457
-#, fuzzy
 msgid "Listening"
-msgstr "聴く"
+msgstr "試聴中"
 
 #: src/gui/widgets/scripting_window.c:75
 msgid "Scripting Interface"
@@ -1767,9 +1751,8 @@ msgid "Click to enable inputs"
 msgstr "クリックして入力を有効にする"
 
 #: src/gui/widgets/active_hardware_mb.c:127
-#, fuzzy
 msgid "Click to enable outputs"
-msgstr "クリックして入力を有効にする"
+msgstr "クリックして出力を有効にする"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -2229,17 +2212,15 @@ msgstr "書き出すトラックがありません"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:65
 msgid "Saving..."
-msgstr ""
+msgstr "保存中..."
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:68
-#, fuzzy
 msgid "Saved"
-msgstr "保存"
+msgstr "保存完了"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:71
-#, fuzzy
 msgid "Project Progress"
-msgstr "エクスポートの進行状況"
+msgstr "プロジェクト保存の進行状況"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, c-format
@@ -2263,7 +2244,7 @@ msgstr "無効なオブジェクト名%s"
 #: src/gui/backend/event_manager.c:545
 #, c-format
 msgid "Plugin '%s' has crashed and has been disabled."
-msgstr ""
+msgstr "プラグイン'%s'がクラッシュし、無効化されました。"
 
 #: src/gui/backend/event_manager.c:1808
 #, c-format
@@ -2453,14 +2434,14 @@ msgid "Latch"
 msgstr "ラッチ"
 
 #: src/audio/channel_send.c:74
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d enabled"
-msgstr "チャンネルセンド接続"
+msgstr "チャンネルセンド %d が有効"
 
 #: src/audio/channel_send.c:87
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d amount"
-msgstr "値を変更"
+msgstr "チャンネルセンド %d 値"
 
 #: src/audio/channel_send.c:525
 msgid "Pre-fader send"
@@ -2752,24 +2733,20 @@ msgid "Create timeline selections"
 msgstr "タイムラインオブジェクトの作成"
 
 #: src/actions/arranger_selections.c:2723
-#, fuzzy
 msgid "Create audio selections"
-msgstr "アレンジャーオブジェクトを作成する"
+msgstr "オーディオセレクションを作成"
 
 #: src/actions/arranger_selections.c:2727
-#, fuzzy
 msgid "Create automation selections"
-msgstr "アレンジャーオブジェクトを作成する"
+msgstr "オートメーションセレクションの作成"
 
 #: src/actions/arranger_selections.c:2731
-#, fuzzy
 msgid "Create chord selections"
-msgstr "アレンジャーオブジェクトを作成する"
+msgstr "コードセレクションを作成"
 
 #: src/actions/arranger_selections.c:2735
-#, fuzzy
 msgid "Create MIDI selections"
-msgstr "アレンジャーオブジェクトを作成する"
+msgstr "MIDI セレクションを作成"
 
 #: src/actions/arranger_selections.c:2741
 msgid "Delete arranger selections"
@@ -3022,14 +2999,14 @@ msgid "Copy %d Plugins"
 msgstr "%dプラグインをコピー"
 
 #: src/actions/mixer_selections_action.c:1138
-#, fuzzy, c-format
+#, c-format
 msgid "Paste %s"
-msgstr "貼り付け"
+msgstr "%s を貼り付け"
 
 #: src/actions/mixer_selections_action.c:1145
-#, fuzzy, c-format
+#, c-format
 msgid "Paste %d Plugins"
-msgstr "%d個のプラグインを削除"
+msgstr "%d個のプラグインを貼り付け"
 
 #: src/actions/range_action.c:672 resources/ui/range_action_buttons.ui:36
 msgid "Insert silence"
@@ -3095,24 +3072,20 @@ msgid "Unmute Track"
 msgstr "トラックの無音を解除"
 
 #: src/actions/tracklist_selections.c:1628
-#, fuzzy
 msgid "Listen Track"
-msgstr "トラックを固定 (Pin)"
+msgstr "トラックを試聴"
 
 #: src/actions/tracklist_selections.c:1631
-#, fuzzy
 msgid "Unlisten Track"
-msgstr "トラックの固定を解除 (Unpin)"
+msgstr "トラックの試聴を解除"
 
 #: src/actions/tracklist_selections.c:1635
-#, fuzzy
 msgid "Enable Track"
-msgstr "トラックの固定を解除 (Unpin)"
+msgstr "トラックを有効にする"
 
 #: src/actions/tracklist_selections.c:1638
-#, fuzzy
 msgid "Disable Track"
-msgstr "トラックを削除"
+msgstr "トラックを無効にする"
 
 #: src/actions/tracklist_selections.c:1641
 msgid "Change Fader"
@@ -3145,49 +3118,48 @@ msgstr "コメントを変更"
 
 #: src/actions/tracklist_selections.c:1662
 #: src/actions/tracklist_selections.c:1713
-#, fuzzy
 msgid "Change MIDI fader mode"
-msgstr "Ch MIDIフェーダーアウト"
+msgstr "MIDIフェーダーモードを変更"
 
 #: src/actions/tracklist_selections.c:1675
-#, fuzzy, c-format
+#, c-format
 msgid "Solo %d Tracks"
-msgstr "トラックをソロ"
+msgstr "%dトラックをソロ"
 
 #: src/actions/tracklist_selections.c:1679
-#, fuzzy, c-format
+#, c-format
 msgid "Unsolo %d Tracks"
-msgstr "トラックのソロを解除"
+msgstr "%dトラックのソロを解除"
 
 #: src/actions/tracklist_selections.c:1684
-#, fuzzy, c-format
+#, c-format
 msgid "Mute %d Tracks"
-msgstr "%d個のプラグインを移動"
+msgstr "%dトラックをミュート"
 
 #: src/actions/tracklist_selections.c:1688
-#, fuzzy, c-format
+#, c-format
 msgid "Unmute %d Tracks"
-msgstr "トラックの無音を解除"
+msgstr "%dトラックのミュートを解除"
 
 #: src/actions/tracklist_selections.c:1693
-#, fuzzy, c-format
+#, c-format
 msgid "Listen %d Tracks"
-msgstr "%dトラックを固定"
+msgstr "%dトラックを試聴"
 
 #: src/actions/tracklist_selections.c:1697
-#, fuzzy, c-format
+#, c-format
 msgid "Unlisten %d Tracks"
-msgstr "%dトラックの固定を解除 (Unpin)"
+msgstr "%dトラックの試聴を解除"
 
 #: src/actions/tracklist_selections.c:1702
-#, fuzzy, c-format
+#, c-format
 msgid "Enable %d Tracks"
-msgstr "%dトラックの固定を解除 (Unpin)"
+msgstr "%dトラックを有効にする"
 
 #: src/actions/tracklist_selections.c:1706
-#, fuzzy, c-format
+#, c-format
 msgid "Disable %d Tracks"
-msgstr "%d個のトラックを削除"
+msgstr "%dトラックを無効にする"
 
 #: src/actions/tracklist_selections.c:1723
 msgid "Move Track"
@@ -3801,12 +3773,11 @@ msgstr "アフタータッチ"
 
 #: resources/ui/playhead_scroll_buttons.ui:36
 msgid "Scroll when playhead reaches the edge"
-msgstr ""
+msgstr "再生ヘッドが端に接近したらスクロールする"
 
 #: resources/ui/playhead_scroll_buttons.ui:58
-#, fuzzy
 msgid "Follow playhead"
-msgstr "再生ヘッド"
+msgstr "再生ヘッドをフォローする"
 
 #: resources/ui/automatable_selector.ui:104
 #: resources/ui/arranger_object_info_dialog.ui:89
@@ -4072,9 +4043,8 @@ msgstr "バウンス"
 
 #: resources/ui/bounce_dialog.ui:89
 #: build/data/org.zrythm.Zrythm.gschema.xml:310
-#, fuzzy
 msgid "Bounce with parents"
-msgstr "エフェクトチェーンでバウンス"
+msgstr "親トラックでバウンス"
 
 #: resources/ui/bounce_dialog.ui:116
 msgid "Tail"
@@ -4086,9 +4056,8 @@ msgstr "ms"
 
 #: resources/ui/bounce_dialog.ui:167
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
-#, fuzzy
 msgid "Disable after bounce"
-msgstr "ポート接続を無効にする"
+msgstr "バウンス後に無効にする"
 
 #: resources/ui/snap_box.ui:38
 msgid "Snap to grid"
@@ -4466,9 +4435,8 @@ msgid "List of all versions run at least once"
 msgstr "少なくとも一度は実行された全バージョンのリスト"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:244
-#, fuzzy
 msgid "A list of versions run at least once."
-msgstr "有効にするコントローラーのリスト。"
+msgstr "少なくとも一度実行されたバージョンのリスト。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:248
 msgid "Last version that was notified of a new release"
@@ -4482,90 +4450,77 @@ msgstr ""
 "最後に「新バージョンがリリースされました」という通知が届いたバージョン。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:258
-#, fuzzy
 msgid "Monitor volume"
-msgstr "モニター出力の音量"
+msgstr "モニターの音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:259
-#, fuzzy
 msgid "The monitor volume in amplitude (0 to 2)."
-msgstr "モニターアウトの音量（0.0～2.0）。"
+msgstr "振幅でのモニターの音量（0.0～2.0）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
-#, fuzzy
 msgid "Mute volume"
-msgstr "メトロノームの音量"
+msgstr "ミュート音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:265
-#, fuzzy
 msgid "The monitor mute volume in amplitude (0 to 2)."
-msgstr "モニターアウトの音量（0.0～2.0）。"
+msgstr "振幅でのミュート音量（0.0～2.0）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:270
-#, fuzzy
 msgid "Listen volume"
-msgstr "聴く"
+msgstr "試聴音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:271
-#, fuzzy
 msgid "The monitor listen volume in amplitude (0 to 2)."
-msgstr "モニターアウトの音量（0.0～2.0）。"
+msgstr "振幅でのモニターの試聴音量（0.0～2.0）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:276
-#, fuzzy
 msgid "Dim volume"
-msgstr "音量"
+msgstr "ディム音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:277
-#, fuzzy
 msgid "The monitor dim volume in amplitude (0 to 2)."
-msgstr "モニターアウトの音量（0.0～2.0）。"
+msgstr "振幅でのディム音量（0.0～2.0）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:281
 msgid "Sum to mono"
-msgstr ""
+msgstr "モノラルに収束"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:282
-#, fuzzy
 msgid "Whether to sum the monitor signal to mono."
-msgstr "これが最初の実行かどうか。"
+msgstr "モニター信号をモノラルに収束するかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:286
-#, fuzzy
 msgid "Dim output"
-msgstr "出力先"
+msgstr "ディム出力"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:287
-#, fuzzy
 msgid "Whether to dim the the monitor signal."
-msgstr "これが最初の実行かどうか。"
+msgstr "モニター信号をディムするかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:292
-#, fuzzy
 msgid "Whether to mute the monitor signal."
-msgstr "メトロノームが有効になっているかどうか。"
+msgstr "モニター信号をミュートするかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:296
 #: build/data/org.zrythm.Zrythm.gschema.xml:301
 msgid "Left output devices"
-msgstr ""
+msgstr "左チャンネルの出力デバイス"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:297
 msgid "A list of output devices to route the left monitor output to."
-msgstr ""
+msgstr "左のモニタ出力をルーティングする出力デバイスのリスト。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:302
 msgid "A list of output devices to route the right monitor output to."
-msgstr ""
+msgstr "右のモニタ出力をルーティングする出力デバイスのリスト。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:311
 msgid "Whether to bounce with parent tracks (direct outputs)."
-msgstr ""
+msgstr "親トラック（ダイレクトアウト）でバウンスするかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:316
-#, fuzzy
 msgid "Disable track after bouncing."
-msgstr "ポート接続を無効にする"
+msgstr "バウンス後にトラックを無効にする。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:320
 msgid "Bounce step"
@@ -4573,7 +4528,7 @@ msgstr "バウンスステップ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:321
 msgid "Step in the processing chain to bounce at."
-msgstr ""
+msgstr "バウンスする処理チェーンのステップ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:325
 msgid "Bounce tail"
@@ -4600,54 +4555,40 @@ msgid "Timeline object length type"
 msgstr "タイムラインオブジェクト長の種類"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:336
-#, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
 "triplet)."
-msgstr ""
-"編集モードなどでタイムラインオブジェクトを作成する際に使用するデフォルトの長"
-"さの種類。"
+msgstr "タイムラインオブジェクトを作成する際に使用するデフォルトの長さの型（ノーマル、ドット、トリプレット）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:341
-#, fuzzy
 msgid "Last timeline object's length"
-msgstr "タイムラインオブジェクトの長さ"
+msgstr "最後に使用したタイムライン オブジェクトの長さ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:342
-#, fuzzy
 msgid "The length of the last created timeline object (in ticks)."
-msgstr ""
-"編集モードなどでタイムラインオブジェクトを作成する際に使用するデフォルトの長"
-"さ。"
+msgstr "最後に作成されたタイムラインオブジェクトの長さ（単位：ティック）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:346
 msgid "Editor object length"
 msgstr "エディター オブジェクトの長さ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:347
-#, fuzzy
 msgid "Default length to use when creating editor objects."
-msgstr ""
-"編集モードなどでタイムラインオブジェクトを作成する際に使用するデフォルトの長"
-"さ。"
+msgstr "エディターオブジェクトを作成する際に使用するデフォルトの長さ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:351
 msgid "Editor object length type"
 msgstr "エディターオブジェクトの長さタイプ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:352
-#, fuzzy
 msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
 "triplet)."
-msgstr ""
-"編集モードなどでタイムラインオブジェクトを作成する際に使用するデフォルトの長"
-"さの種類。"
+msgstr "エディターオブジェクトを作成する際に使用するデフォルトの長さの形式（ノーマル、ドット、トリプレット）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:357
-#, fuzzy
 msgid "Last editor object's length"
-msgstr "エディター オブジェクトの長さ"
+msgstr "最後に作成されたエディターオブジェクトの長さ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:358
 msgid "The length of the last created editor object (in ticks)."
@@ -4727,14 +4668,12 @@ msgid "Position of the resize handle of the left panel."
 msgstr "左パネルのリサイズハンドルの位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:402
-#, fuzzy
 msgid "Left panel tab index"
-msgstr "左パネル"
+msgstr "左パネルのタブインデックス"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:403
-#, fuzzy
 msgid "Index of the currently opened left panel tab."
-msgstr "左パネルのリサイズハンドルの位置。"
+msgstr "現在開いている左パネルのタブのインデックス。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:407
 msgid "Right panel divider position"
@@ -4745,14 +4684,12 @@ msgid "Position of the resize handle of the right panel."
 msgstr "右パネルのリサイズハンドルの位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:412
-#, fuzzy
 msgid "Right panel tab index"
-msgstr "右パネル"
+msgstr "右パネルのタブインデックス"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:413
-#, fuzzy
 msgid "Index of the currently opened right panel tab."
-msgstr "右パネルのリサイズハンドルの位置。"
+msgstr "現在開いている右パネルのタブのインデックス。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:417
 msgid "Bot panel divider position"
@@ -4763,9 +4700,8 @@ msgid "Position of the resize handle of the bot panel."
 msgstr "下パネルのリサイズハンドルの位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:422
-#, fuzzy
 msgid "Bot panel tab index"
-msgstr "下パネルのタブインデックス"
+msgstr "下部パネルのタブインデックス"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:423
 msgid "Index of the currently opened bottom panel tab."
