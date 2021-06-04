@@ -134,10 +134,17 @@
  * is a few times the size of an event output to
  * give the UI a chance to keep up.  Experiments
  * with Ingen, which can highly saturate its event
- * output, led me to this value.  It really ought
- * to be enough for anybody(TM).
+ * output, led me to this value (4).  It really
+ * ought to be enough for anybody(TM).
+ *
+ * The number of MIDI buffers that will fit in a
+ * UI/worker comm buffer.
+ * This needs to be roughly the number of cycles
+ * the UI will get around to actually processing
+ * the traffic.  Lower values are flakier but save
+ * memory.
 */
-#define N_BUFFER_CYCLES 16
+#define N_BUFFER_CYCLES 4
 
 /**
  * Returns whether Zrythm supports the given
@@ -2890,28 +2897,44 @@ lv2_plugin_instantiate (
       g_message ("Selected UI: Generic");
     }
 
-  if (self->comm_buffer_size == 0)
-    {
-      /* The UI ring is fed by self->output
-       * ports (usually one), and the UI
-       * updates roughly once per cycle.
-       * The ring size is a few times the
-       *  size of the MIDI output to give the UI
-       *  a chance to keep up.  The UI
-       * should be able to keep up with 4 cycles,
-       * and tests show this works
-       * for me, but this value might need
-       * increasing to avoid overflows.
-      */
-      self->comm_buffer_size =
-        (uint32_t)
-          (AUDIO_ENGINE->midi_buf_size *
-          N_BUFFER_CYCLES);
-  }
-
-  /* The UI can only go so fast, clamp to reasonable limits */
+  /* The UI ring is fed by self->output
+   * ports (usually one), and the UI
+   * updates roughly once per cycle.
+   * The ring size is a few times the
+   * size of the MIDI output to give the UI
+   * a chance to keep up.  The UI
+   * should be able to keep up with 4 cycles,
+   * and tests show this works
+   * for me, but this value might need
+   * increasing to avoid overflows.
+  */
   self->comm_buffer_size =
-    MAX (4096, self->comm_buffer_size);
+    (uint32_t)
+      (AUDIO_ENGINE->midi_buf_size *
+      N_BUFFER_CYCLES);
+
+  /* buffer data communication from plugin UI to plugin instance.
+   * this buffer needs to potentially hold
+   *   (port's minimumSize) * (audio-periods) / (UI-periods)
+   * bytes.
+   *
+   *  e.g 48kSPS / 128fpp -> audio-periods = 375 Hz
+   *  ui-periods = 25 Hz (SuperRapidScreenUpdate)
+   *  default minimumSize = 32K (see LV2Plugin::allocate_atom_event_buffers()
+   *
+   * it is NOT safe to overflow (msg.size will be misinterpreted)
+   */
+  uint32_t bufsiz = 32768;
+  int fact =
+    (int)
+    ceilf (
+      AUDIO_ENGINE->sample_rate / 3000.f);
+  self->comm_buffer_size =
+    MAX (
+      (uint32_t) bufsiz *  MAX (8, (uint32_t) fact),
+      self->comm_buffer_size);
+
+  g_message ("==========================");
   g_message (
     "Comm buffers: %d bytes",
     self->comm_buffer_size);
@@ -2919,8 +2942,9 @@ lv2_plugin_instantiate (
     "Update rate:  %.01f Hz",
     (double) self->plugin->ui_update_hz);
   g_message (
-    "Scale factor:  %.01f",
+    "Scale factor: %.01f",
     (double) self->plugin->ui_scale_factor);
+  g_message ("==========================");
 
   static float samplerate = 0.f;
   static int nominal_blocklength = 0;
