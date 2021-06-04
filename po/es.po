@@ -15,13 +15,14 @@
 # miri24661 <miriam_g.r@hotmail.com>, 2020.
 # Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>, 2020.
 # Chris <chris@wepache.com>, 2021.
+# Jesus Meneses <jesusm0812@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-05-07 04:08+0100\n"
-"PO-Revision-Date: 2021-03-13 17:38+0000\n"
-"Last-Translator: Chris <chris@wepache.com>\n"
+"PO-Revision-Date: 2021-06-04 04:32+0000\n"
+"Last-Translator: Jesus Meneses <jesusm0812@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -29,7 +30,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:289
@@ -195,7 +196,7 @@ msgstr "Normalizar"
 
 #: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:214
 msgid "Reverse"
-msgstr ""
+msgstr "Reversa"
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
@@ -336,7 +337,7 @@ msgstr "Strum"
 
 #: inc/audio/exporter.h:99
 msgid "Before inserts"
-msgstr ""
+msgstr "Antes de los insertos"
 
 #: inc/audio/exporter.h:100
 #, fuzzy
@@ -639,11 +640,11 @@ msgstr "Salida MIDI"
 
 #: src/plugins/carla_native_plugin.c:1156
 msgid "CV in"
-msgstr ""
+msgstr "Entrada CV"
 
 #: src/plugins/carla_native_plugin.c:1166
 msgid "CV out"
-msgstr ""
+msgstr "Salida CV"
 
 #: src/plugins/plugin_manager.c:386
 msgid "Error loading LV2 bundle dir: "
