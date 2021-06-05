@@ -537,7 +537,11 @@ bot_bar_widget_update_status (
     "%s: %s%s%s%s | "
     "%s: %s%s%s%s | "
     "%s: %s%s%s\n"
-    "%s: %s%d frames%s (<a href=\"change\">%s</a>) | "
+    "%s: %s%d frames%s "
+#ifndef _WOE32
+    "(<a href=\"change\">%s</a>) "
+#endif
+    "| "
     "%s: %s%d Hz%s | "
     "<a href=\"%s\">%s</a>"
     "</span>",
@@ -565,8 +569,10 @@ bot_bar_widget_update_status (
     AUDIO_ENGINE->activated ?
       AUDIO_ENGINE->block_length : 0,
     color_suffix,
+#ifndef _WOE32
     /* TRANSLATORS: verb - change buffer size */
     _("change"),
+#endif
     /* TRANSLATORS: sample rate */
     _("Rate"),
     color_prefix,
