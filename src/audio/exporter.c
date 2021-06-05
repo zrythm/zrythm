@@ -104,8 +104,7 @@ static int
 export_audio (
   ExportSettings * info)
 {
-  SF_INFO sfinfo;
-  memset (&sfinfo, 0, sizeof (sfinfo));
+  SF_INFO sfinfo = {};
 
 #define EXPORT_CHANNELS 2
 

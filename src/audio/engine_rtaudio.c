@@ -158,7 +158,7 @@ engine_rtaudio_create_rtaudio (
     get_api_from_audio_backend (self->audio_backend);
   if (api == RTAUDIO_API_DUMMY)
     {
-      g_critical (
+      g_warning (
         "RtAudio API for %s not enabled",
         audio_backend_str[self->audio_backend]);
       return NULL;
