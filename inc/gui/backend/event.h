@@ -210,6 +210,13 @@ typedef enum EventType
    * Follow playhead/scroll edges state changed.
    */
   ET_PLAYHEAD_SCROLL_MODE_CHANGED,
+
+  /**
+   * Fader button (mute/solo/etc) changed.
+   *
+   * Param: pointer to Track.
+   */
+  ET_TRACK_FADER_BUTTON_CHANGED,
 } EventType;
 
 /**

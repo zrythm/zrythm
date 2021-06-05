@@ -1966,6 +1966,10 @@ process_events (void * data)
           break;
         case ET_PLAYHEAD_SCROLL_MODE_CHANGED:
           break;
+        case ET_TRACK_FADER_BUTTON_CHANGED:
+          on_track_state_changed (
+            (Track *) ev->arg);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

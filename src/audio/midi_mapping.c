@@ -191,13 +191,25 @@ midi_mappings_apply (
           Port * dest = mapping->dest;
           if (dest->id.type == TYPE_CONTROL)
             {
-              float normalized_val =
-                (float) buf[2] / 127.f;
-              port_set_control_value (
-                mapping->dest,
-                control_port_normalized_val_to_real (
-                  mapping->dest, normalized_val),
-                false, true);
+              /* if toggle, reverse value */
+              if (dest->id.flags & PORT_FLAG_TOGGLE)
+                {
+                  control_port_set_toggled (
+                    dest,
+                    !control_port_is_toggled (
+                       dest),
+                    F_PUBLISH_EVENTS);
+                }
+              /* else if not toggle set the control
+               * value received */
+              else
+                {
+                  float normalized_val =
+                    (float) buf[2] / 127.f;
+                  port_set_control_value (
+                    dest, normalized_val,
+                    F_NORMALIZED, F_PUBLISH_EVENTS);
+                }
             }
           else if (dest->id.type == TYPE_EVENT)
             {

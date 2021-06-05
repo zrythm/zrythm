@@ -65,18 +65,16 @@ control_port_real_val_to_normalized (
   float  real_val);
 
 /**
- * Returns if the control port is toggled.
- */
-bool
-control_port_is_toggled (
-  Port * self);
-
-/**
  * Checks if the given value is toggled.
  */
-bool
-control_port_is_val_toggled (
-  float val);
+#define control_port_is_val_toggled(val) \
+  (val > 0.001f)
+
+/**
+ * Returns if the control port is toggled.
+ */
+#define control_port_is_toggled(self) \
+  (control_port_is_val_toggled (self->control))
 
 /**
  * Gets the control value for an integer port.
@@ -151,6 +149,15 @@ control_port_set_real_val_w_events (
   float  val);
 
 /**
+ * Wrapper over port_set_control_value() for toggles.
+ */
+void
+control_port_set_toggled (
+  Port * self,
+  bool   toggled,
+  bool   forward_events);
+
+/**
  * Updates the actual value.
  *
  * The given value is always a normalized 0.0-1.0
@@ -162,6 +169,7 @@ control_port_set_real_val_w_events (
  *   automating field to true, which will cause the
  *   plugin to receive a UI event for this change.
  */
+HOT
 void
 control_port_set_val_from_normalized (
   Port * self,

@@ -26,11 +26,13 @@
 #include "audio/engine_rtaudio.h"
 #include "audio/engine_sdl.h"
 #include "audio/pan.h"
+#include "audio/port.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/editor_ruler.h"
@@ -1367,6 +1369,25 @@ ui_get_detail_level (void)
     (UiDetail)
     g_settings_get_enum (
       S_P_UI_GENERAL, "graphic-detail");
+}
+
+/**
+ * All purpose menuitem callback for binding MIDI
+ * CC to a port.
+ *
+ * An action will be performed if bound.
+ */
+void
+ui_bind_midi_cc_item_activate_cb (
+  GtkMenuItem * menuitem,
+  Port *        port)
+{
+  BindCcDialogWidget * dialog =
+    bind_cc_dialog_widget_new (
+      port, true);
+
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 UiCaches *

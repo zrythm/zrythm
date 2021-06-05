@@ -1184,9 +1184,15 @@ channel_append_all_ports (
   _ADD (ch->prefader->amp);
   _ADD (ch->prefader->balance);
   _ADD (ch->prefader->mute);
+  _ADD (ch->prefader->solo);
+  _ADD (ch->prefader->listen);
+  _ADD (ch->prefader->mono_compat_enabled);
   _ADD (ch->fader->amp);
   _ADD (ch->fader->balance);
   _ADD (ch->fader->mute);
+  _ADD (ch->fader->solo);
+  _ADD (ch->fader->listen);
+  _ADD (ch->fader->mono_compat_enabled);
 
   Plugin * pl;
   if (include_plugins)

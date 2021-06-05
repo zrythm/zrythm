@@ -53,8 +53,13 @@ fader_init_loaded (
 
   switch (self->type)
     {
-    case FADER_TYPE_AUDIO_CHANNEL:
     case FADER_TYPE_MONITOR:
+      self->mute->magic = PORT_MAGIC;
+      self->solo->magic = PORT_MAGIC;
+      self->listen->magic = PORT_MAGIC;
+      self->mono_compat_enabled->magic = PORT_MAGIC;
+      /* fallthrough */
+    case FADER_TYPE_AUDIO_CHANNEL:
       port_set_owner_fader (
         self->stereo_in->l, self);
       port_set_owner_fader (
@@ -81,6 +86,10 @@ fader_init_loaded (
   port_set_owner_fader (self->amp, self);
   port_set_owner_fader (self->balance, self);
   port_set_owner_fader (self->mute, self);
+  port_set_owner_fader (self->solo, self);
+  port_set_owner_fader (self->listen, self);
+  port_set_owner_fader (
+    self->mono_compat_enabled, self);
 
   fader_set_amp ((void *) self, self->amp->control);
 
@@ -174,10 +183,10 @@ fader_new (
       TYPE_CONTROL, FLOW_INPUT,
       passthrough ?
         _("Prefader Mute") : _("Fader Mute"));
-  port_set_control_value (
-    self->mute, 0.f, 0, 0);
+  control_port_set_toggled (
+    self->mute, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->mute->id.flags |=
-    PORT_FLAG_CHANNEL_MUTE;
+    PORT_FLAG_FADER_MUTE;
   self->mute->id.flags |=
     PORT_FLAG_TOGGLE;
   if ((type == FADER_TYPE_AUDIO_CHANNEL ||
@@ -188,6 +197,51 @@ fader_new (
         PORT_FLAG_AUTOMATABLE;
     }
   port_set_owner_fader (self->mute, self);
+
+  /* set solo */
+  self->solo =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT,
+      passthrough ?
+        _("Prefader Solo") : _("Fader Solo"));
+  control_port_set_toggled (
+    self->solo, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+  self->solo->id.flags2 |=
+    PORT_FLAG2_FADER_SOLO;
+  self->solo->id.flags |=
+    PORT_FLAG_TOGGLE;
+  port_set_owner_fader (self->solo, self);
+
+  /* set listen */
+  self->listen =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT,
+      passthrough ?
+        _("Prefader Listen") : _("Fader Listen"));
+  control_port_set_toggled (
+    self->listen, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+  self->listen->id.flags2 |=
+    PORT_FLAG2_FADER_LISTEN;
+  self->listen->id.flags |=
+    PORT_FLAG_TOGGLE;
+  port_set_owner_fader (self->listen, self);
+
+  /* set mono compat */
+  self->mono_compat_enabled =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT,
+      passthrough ?
+        _("Prefader Mono Compat") :
+        _("Fader Mono Compat"));
+  control_port_set_toggled (
+    self->mono_compat_enabled, F_NO_TOGGLE,
+    F_NO_PUBLISH_EVENTS);
+  self->mono_compat_enabled->id.flags2 |=
+    PORT_FLAG2_FADER_MONO_COMPAT;
+  self->mono_compat_enabled->id.flags |=
+    PORT_FLAG_TOGGLE;
+  port_set_owner_fader (
+    self->mono_compat_enabled, self);
 
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
       type == FADER_TYPE_MONITOR)
@@ -319,9 +373,8 @@ fader_set_muted (
     }
   else
     {
-      port_set_control_value (
-        self->mute, mute ? 1.f : 0.f,
-        false, fire_events);
+      control_port_set_toggled (
+        self->mute, mute, fire_events);
 
       if (fire_events)
         {
@@ -348,7 +401,7 @@ bool
 fader_get_soloed (
   Fader * self)
 {
-  return self->solo;
+  return control_port_is_toggled (self->solo);
 }
 
 /**
@@ -364,7 +417,8 @@ fader_get_implied_soloed (
   /* only check channel faders */
   if ((self->type != FADER_TYPE_AUDIO_CHANNEL &&
        self->type != FADER_TYPE_MIDI_CHANNEL) ||
-      self->passthrough || self->solo)
+      self->passthrough ||
+      control_port_is_toggled (self->solo))
     {
       return false;
     }
@@ -442,7 +496,8 @@ fader_set_soloed (
     }
   else
     {
-      self->solo = solo;
+      control_port_set_toggled (
+        self->solo, solo, fire_events);
 
       if (fire_events)
         {
@@ -459,7 +514,7 @@ bool
 fader_get_listened (
   Fader * self)
 {
-  return self->listen;
+  return control_port_is_toggled (self->listen);
 }
 
 /**
@@ -491,7 +546,8 @@ fader_set_listened (
     }
   else
     {
-      self->listen = listen;
+      control_port_set_toggled (
+        self->listen, listen, fire_events);
 
       if (fire_events)
         {
@@ -592,7 +648,9 @@ bool
 fader_get_mono_compat_enabled (
   Fader * self)
 {
-  return self->mono_compat_enabled;
+  return
+    control_port_is_toggled (
+      self->mono_compat_enabled);
 }
 
 /**
@@ -604,14 +662,20 @@ fader_set_mono_compat_enabled (
   bool    enabled,
   bool    fire_events)
 {
-  self->mono_compat_enabled = enabled;
+  control_port_set_toggled (
+    self->mono_compat_enabled, enabled,
+    fire_events);
 
-  Track * track = fader_get_track (self);
-  g_return_if_fail (track);
-  if (fire_events)
+  if (self->type == FADER_TYPE_AUDIO_CHANNEL ||
+      self->type == FADER_TYPE_MIDI_CHANNEL)
     {
-      EVENTS_PUSH (
-        ET_TRACK_STATE_CHANGED, track);
+      Track * track = fader_get_track (self);
+      g_return_if_fail (track);
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_STATE_CHANGED, track);
+        }
     }
 }
 
@@ -729,6 +793,9 @@ fader_set_is_project (
   self->amp->is_project = is_project;
   self->balance->is_project = is_project;
   self->mute->is_project = is_project;
+  self->solo->is_project = is_project;
+  self->listen->is_project = is_project;
+  self->mono_compat_enabled->is_project = is_project;
   if (self->stereo_in)
     {
       self->stereo_in->l->is_project = is_project;
@@ -818,7 +885,10 @@ fader_copy_values (
   dest->amp->control = src->amp->control;
   dest->balance->control = src->balance->control;
   dest->mute->control = src->mute->control;
-  dest->solo = src->solo;
+  dest->solo->control = src->solo->control;
+  dest->listen->control = src->listen->control;
+  dest->mono_compat_enabled->control =
+    src->mono_compat_enabled->control;
 }
 
 /**
@@ -843,6 +913,20 @@ fader_update_track_pos (
   if (self->mute)
     {
       port_update_track_pos (self->mute, NULL, pos);
+    }
+  if (self->solo)
+    {
+      port_update_track_pos (self->solo, NULL, pos);
+    }
+  if (self->listen)
+    {
+      port_update_track_pos (
+        self->listen, NULL, pos);
+    }
+  if (self->mono_compat_enabled)
+    {
+      port_update_track_pos (
+        self->mono_compat_enabled, NULL, pos);
     }
   if (self->stereo_in)
     {
@@ -1081,7 +1165,8 @@ fader_process (
            * (L+R) * 0.7079 (-3dB)
            * equal amplitude sum =
            * (L+R) /2 (-6.02dB) */
-          if (self->mono_compat_enabled)
+          if (control_port_is_toggled (
+                self->mono_compat_enabled))
             {
               dsp_make_mono (
                 &self->stereo_out->l->buf[
@@ -1219,6 +1304,9 @@ fader_free (
   DISCONNECT_AND_FREE (self->amp);
   DISCONNECT_AND_FREE (self->balance);
   DISCONNECT_AND_FREE (self->mute);
+  DISCONNECT_AND_FREE (self->solo);
+  DISCONNECT_AND_FREE (self->listen);
+  DISCONNECT_AND_FREE (self->mono_compat_enabled);
 
 #define DISCONNECT_AND_FREE_STEREO(x) \
   if (x) \

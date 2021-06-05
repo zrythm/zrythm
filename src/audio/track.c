@@ -3382,7 +3382,7 @@ remove_ats_from_automation_tracklist (
       if (at->port_id.flags &
             PORT_FLAG_CHANNEL_FADER ||
           at->port_id.flags &
-            PORT_FLAG_CHANNEL_MUTE ||
+            PORT_FLAG_FADER_MUTE ||
           at->port_id.flags &
             PORT_FLAG_STEREO_BALANCE)
         {

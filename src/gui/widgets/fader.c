@@ -337,19 +337,6 @@ on_reset_fader (GtkMenuItem *menuitem,
 }
 
 static void
-on_bind_midi_cc (
-  GtkMenuItem * menuitem,
-  FaderWidget * self)
-{
-  BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new (
-      self->fader->amp, true);
-
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
 show_context_menu (
   FaderWidget * self)
 {
@@ -370,7 +357,8 @@ show_context_menu (
     GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
   g_signal_connect (
     menuitem, "activate",
-    G_CALLBACK (on_bind_midi_cc), self);
+    G_CALLBACK (ui_bind_midi_cc_item_activate_cb),
+    self->fader->amp);
   gtk_menu_shell_append (
     GTK_MENU_SHELL (menu), menuitem);
 

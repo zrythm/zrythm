@@ -143,10 +143,14 @@ typedef struct Fader
   Port *           mute;
 
   /** Soloed or not. */
-  bool             solo;
+  Port *           solo;
 
   /** Listened or not. */
-  bool             listen;
+  Port *           listen;
+
+  /** Whether mono compatibility switch is
+   * enabled. */
+  Port *           mono_compat_enabled;
 
   /**
    * L & R audio input ports, if audio.
@@ -181,10 +185,6 @@ typedef struct Fader
   /** MIDI fader mode. */
   MidiFaderMode    midi_mode;
 
-  /** Whether mono compatibility switch is
-   * enabled. */
-  bool             mono_compat_enabled;
-
   /** Whether this is a passthrough fader (like
    * a prefader). */
   bool             passthrough;
@@ -213,10 +213,12 @@ fader_fields_schema[] =
     Fader, balance, port_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Fader, mute, port_fields_schema),
-  YAML_FIELD_INT (
-    Fader, solo),
-  YAML_FIELD_INT (
-    Fader, listen),
+  YAML_FIELD_MAPPING_PTR (
+    Fader, solo, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Fader, listen, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Fader, mono_compat_enabled, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Fader, midi_in, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -231,8 +233,6 @@ fader_fields_schema[] =
     Fader, track_pos),
   YAML_FIELD_INT (
     Fader, passthrough),
-  YAML_FIELD_INT (
-    Fader, mono_compat_enabled),
 
   CYAML_FIELD_END
 };

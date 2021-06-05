@@ -578,9 +578,24 @@ port_find_from_identifier (
                   return ch->fader->balance;
                 }
               else if (flags &
-                         PORT_FLAG_CHANNEL_MUTE)
+                         PORT_FLAG_FADER_MUTE)
                 {
                   return ch->fader->mute;
+                }
+              else if (flags2 &
+                         PORT_FLAG2_FADER_SOLO)
+                {
+                  return ch->fader->solo;
+                }
+              else if (flags2 &
+                         PORT_FLAG2_FADER_LISTEN)
+                {
+                  return ch->fader->listen;
+                }
+              else if (flags2 &
+                         PORT_FLAG2_FADER_MONO_COMPAT)
+                {
+                  return ch->fader->mono_compat_enabled;
                 }
             }
           break;
@@ -641,9 +656,24 @@ port_find_from_identifier (
                   return ch->prefader->balance;
                 }
               else if (flags &
-                         PORT_FLAG_CHANNEL_MUTE)
+                         PORT_FLAG_FADER_MUTE)
                 {
                   return ch->prefader->mute;
+                }
+              else if (flags2 &
+                         PORT_FLAG2_FADER_SOLO)
+                {
+                  return ch->prefader->solo;
+                }
+              else if (flags2 &
+                         PORT_FLAG2_FADER_LISTEN)
+                {
+                  return ch->prefader->listen;
+                }
+              else if (flags2 &
+                         PORT_FLAG2_FADER_MONO_COMPAT)
+                {
+                  return ch->prefader->mono_compat_enabled;
                 }
             }
           break;
@@ -1414,6 +1444,9 @@ port_get_all (
   _ADD (MONITOR_FADER->amp);
   _ADD (MONITOR_FADER->balance);
   _ADD (MONITOR_FADER->mute);
+  _ADD (MONITOR_FADER->solo);
+  _ADD (MONITOR_FADER->listen);
+  _ADD (MONITOR_FADER->mono_compat_enabled);
   _ADD (MONITOR_FADER->stereo_in->l);
   _ADD (MONITOR_FADER->stereo_in->r);
   _ADD (MONITOR_FADER->stereo_out->l);
@@ -2830,21 +2863,33 @@ port_forward_control_change_event (
         }
     }
   else if (self->id.owner_type ==
-             PORT_OWNER_TYPE_FADER &&
-           self->id.flags &
-             PORT_FLAG_AMPLITUDE)
+             PORT_OWNER_TYPE_FADER)
     {
       Track * track = port_get_track (self, 1);
       g_return_if_fail (
         track && track->channel);
-      if (ZRYTHM_HAVE_UI)
-        g_return_if_fail (
-          track->channel->widget);
-      fader_update_volume_and_fader_val (
-        track->channel->fader);
-      EVENTS_PUSH (
-        ET_CHANNEL_FADER_VAL_CHANGED,
-        track->channel);
+
+      if (self->id.flags & PORT_FLAG_FADER_MUTE ||
+          self->id.flags2 & PORT_FLAG2_FADER_SOLO ||
+          self->id.flags2 &
+            PORT_FLAG2_FADER_LISTEN ||
+          self->id.flags2 &
+            PORT_FLAG2_FADER_MONO_COMPAT)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_FADER_BUTTON_CHANGED, track);
+        }
+      else if (self->id.flags & PORT_FLAG_AMPLITUDE)
+        {
+          if (ZRYTHM_HAVE_UI)
+            g_return_if_fail (
+              track->channel->widget);
+          fader_update_volume_and_fader_val (
+            track->channel->fader);
+          EVENTS_PUSH (
+            ET_CHANNEL_FADER_VAL_CHANGED,
+            track->channel);
+        }
     }
   else if (self->id.owner_type ==
              PORT_OWNER_TYPE_TRACK)

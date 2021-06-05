@@ -23,6 +23,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm.h"
 
@@ -129,10 +130,12 @@ init_common (
   fader_set_is_project (
     self->dim_fader, true);
 
-  self->monitor_fader->mono_compat_enabled =
+  fader_set_mono_compat_enabled (
+    self->monitor_fader,
     ZRYTHM_TESTING ?
       false :
-      g_settings_get_boolean (S_MONITOR, "mono");
+      g_settings_get_boolean (S_MONITOR, "mono"),
+    F_NO_PUBLISH_EVENTS);
 
   self->dim_output =
     ZRYTHM_TESTING ?

@@ -213,8 +213,8 @@ typedef enum PortFlags
   /** Port is a plugin control. */
   PORT_FLAG_PLUGIN_CONTROL = 1 << 16,
 
-  /** Port is for channel mute. */
-  PORT_FLAG_CHANNEL_MUTE = 1 << 17,
+  /** Port is for fader mute. */
+  PORT_FLAG_FADER_MUTE = 1 << 17,
 
   /** Port is for channel fader. */
   PORT_FLAG_CHANNEL_FADER = 1 << 18,
@@ -286,6 +286,42 @@ typedef enum PortFlags
   PORT_FLAG_IS_PROPERTY = 1 << 30,
 } PortFlags;
 
+static const cyaml_bitdef_t
+port_flags_bitvals[] =
+{
+  { .name = "stereo_l", .offset =  0, .bits =  1 },
+  { .name = "stereo_r", .offset =  1, .bits =  1 },
+  { .name = "piano_roll", .offset = 2, .bits = 1 },
+  { .name = "sidechain", .offset = 3, .bits =  1 },
+  { .name = "main_port", .offset = 4, .bits = 1 },
+  { .name = "manual_press", .offset = 5, .bits = 1 },
+  { .name = "amplitude", .offset = 6, .bits = 1 },
+  { .name = "stereo_balance", .offset = 7, .bits = 1 },
+  { .name = "want_position", .offset = 8, .bits = 1 },
+  { .name = "trigger", .offset = 9, .bits = 1 },
+  { .name = "toggle", .offset = 10, .bits = 1 },
+  { .name = "integer", .offset = 11, .bits = 1 },
+  { .name = "freewheel", .offset = 12, .bits = 1 },
+  { .name = "reports_latency", .offset = 13, .bits = 1 },
+  { .name = "not_on_gui", .offset = 14, .bits = 1 },
+  { .name = "plugin_enabled", .offset = 15, .bits = 1 },
+  { .name = "plugin_control", .offset = 16, .bits = 1 },
+  { .name = "fader_mute", .offset = 17, .bits = 1 },
+  { .name = "channel_fader", .offset = 18, .bits = 1 },
+  { .name = "automatable", .offset = 19, .bits = 1 },
+  { .name = "midi_automatable", .offset = 20, .bits = 1 },
+  { .name = "send_receivable", .offset = 21, .bits = 1 },
+  { .name = "bpm", .offset = 22, .bits = 1 },
+  { .name = "generic_plugin_port", .offset = 23, .bits = 1 },
+  { .name = "plugin_gain", .offset = 24, .bits = 1 },
+  { .name = "tp_mono", .offset = 25, .bits = 1 },
+  { .name = "tp_input_gain", .offset = 26, .bits = 1 },
+  { .name = "hw", .offset = 27, .bits = 1 },
+  { .name = "modulator_macro", .offset = 28, .bits = 1 },
+  { .name = "logarithmic", .offset = 29, .bits = 1 },
+  { .name = "is_property", .offset = 30, .bits = 1 },
+};
+
 typedef enum PortFlags2
 {
   /** Transport ports. */
@@ -336,43 +372,16 @@ typedef enum PortFlags2
 
   /** Beat unit. */
   PORT_FLAG2_BEAT_UNIT = 1 << 18,
-} PortFlags2;
 
-static const cyaml_bitdef_t
-port_flags_bitvals[] =
-{
-  { .name = "stereo_l", .offset =  0, .bits =  1 },
-  { .name = "stereo_r", .offset =  1, .bits =  1 },
-  { .name = "piano_roll", .offset = 2, .bits = 1 },
-  { .name = "sidechain", .offset = 3, .bits =  1 },
-  { .name = "main_port", .offset = 4, .bits = 1 },
-  { .name = "manual_press", .offset = 5, .bits = 1 },
-  { .name = "amplitude", .offset = 6, .bits = 1 },
-  { .name = "stereo_balance", .offset = 7, .bits = 1 },
-  { .name = "want_position", .offset = 8, .bits = 1 },
-  { .name = "trigger", .offset = 9, .bits = 1 },
-  { .name = "toggle", .offset = 10, .bits = 1 },
-  { .name = "integer", .offset = 11, .bits = 1 },
-  { .name = "freewheel", .offset = 12, .bits = 1 },
-  { .name = "reports_latency", .offset = 13, .bits = 1 },
-  { .name = "not_on_gui", .offset = 14, .bits = 1 },
-  { .name = "plugin_enabled", .offset = 15, .bits = 1 },
-  { .name = "plugin_control", .offset = 16, .bits = 1 },
-  { .name = "channel_mute", .offset = 17, .bits = 1 },
-  { .name = "channel_fader", .offset = 18, .bits = 1 },
-  { .name = "automatable", .offset = 19, .bits = 1 },
-  { .name = "midi_automatable", .offset = 20, .bits = 1 },
-  { .name = "send_receivable", .offset = 21, .bits = 1 },
-  { .name = "bpm", .offset = 22, .bits = 1 },
-  { .name = "generic_plugin_port", .offset = 23, .bits = 1 },
-  { .name = "plugin_gain", .offset = 24, .bits = 1 },
-  { .name = "tp_mono", .offset = 25, .bits = 1 },
-  { .name = "tp_input_gain", .offset = 26, .bits = 1 },
-  { .name = "hw", .offset = 27, .bits = 1 },
-  { .name = "modulator_macro", .offset = 28, .bits = 1 },
-  { .name = "logarithmic", .offset = 29, .bits = 1 },
-  { .name = "is_property", .offset = 30, .bits = 1 },
-};
+  /** Fader solo. */
+  PORT_FLAG2_FADER_SOLO = 1 << 19,
+
+  /** Fader listen. */
+  PORT_FLAG2_FADER_LISTEN = 1 << 20,
+
+  /** Fader mono compat. */
+  PORT_FLAG2_FADER_MONO_COMPAT = 1 << 21,
+} PortFlags2;
 
 static const cyaml_bitdef_t
 port_flags2_bitvals[] =
@@ -396,6 +405,9 @@ port_flags2_bitvals[] =
   { .name = "ch_send_amount", .offset = 16, .bits = 1 },
   { .name = "beats_per_bar", .offset = 17, .bits = 1 },
   { .name = "beat_unit", .offset = 18, .bits = 1 },
+  { .name = "fader_solo", .offset = 19, .bits = 1 },
+  { .name = "fader_listen", .offset = 20, .bits = 1 },
+  { .name = "fader_mono_compat", .offset = 21, .bits = 1 },
 };
 
 /**

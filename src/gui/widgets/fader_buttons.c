@@ -235,6 +235,54 @@ fader_buttons_widget_refresh (
 }
 
 static void
+on_btn_right_click (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x_dbl,
+  gdouble                y_dbl,
+  FaderButtonsWidget *   self)
+{
+  GtkWidget * widget =
+    gtk_event_controller_get_widget (
+      GTK_EVENT_CONTROLLER (gesture));
+
+  Fader * fader =
+    track_get_fader (self->track, true);
+
+  GtkWidget * menu = gtk_menu_new();
+  GtkWidget * menuitem =
+    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
+
+  Port * port = NULL;
+  if (widget == GTK_WIDGET (self->mute))
+    {
+      port = fader->mute;
+    }
+  else if (widget == GTK_WIDGET (self->solo))
+    {
+      port = fader->solo;
+    }
+  else if (widget == GTK_WIDGET (self->listen))
+    {
+      port = fader->listen;
+    }
+  else if (widget == GTK_WIDGET (self->mono_compat))
+    {
+      port = fader->mono_compat_enabled;
+    }
+
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (ui_bind_midi_cc_item_activate_cb),
+    port);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
 fader_buttons_finalize (
   FaderButtonsWidget * self)
 {
@@ -285,6 +333,28 @@ fader_buttons_widget_init (
     g_signal_connect (
       G_OBJECT (self->record), "toggled",
       G_CALLBACK (on_record_toggled), self);
+
+  /* add right click menus */
+  GtkGestureMultiPress * mp;
+
+#define ADD_RIGHT_CLICK_CB(widget) \
+  mp = \
+    GTK_GESTURE_MULTI_PRESS ( \
+      gtk_gesture_multi_press_new ( \
+        GTK_WIDGET (widget))); \
+  gtk_gesture_single_set_button ( \
+    GTK_GESTURE_SINGLE (mp), \
+    GDK_BUTTON_SECONDARY); \
+  g_signal_connect ( \
+    G_OBJECT (mp), "pressed", \
+    G_CALLBACK (on_btn_right_click), self)
+
+  ADD_RIGHT_CLICK_CB (self->mute);
+  ADD_RIGHT_CLICK_CB (self->solo);
+  ADD_RIGHT_CLICK_CB (self->listen);
+  ADD_RIGHT_CLICK_CB (self->mono_compat);
+
+#undef ADD_RIGHT_CLICK_CB
 }
 
 static void

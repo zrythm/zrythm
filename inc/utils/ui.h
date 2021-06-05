@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,7 @@
 #include <gtk/gtk.h>
 
 typedef struct Position Position;
+typedef struct Port Port;
 
 /**
  * @addtogroup utils
@@ -827,6 +828,17 @@ ui_get_normalized_draggable_value (
   double       last_px,
   double       multiplier,
   UiDragMode   mode);
+
+/**
+ * All purpose menuitem callback for binding MIDI
+ * CC to a port.
+ *
+ * An action will be performed if bound.
+ */
+void
+ui_bind_midi_cc_item_activate_cb (
+  GtkMenuItem * menuitem,
+  Port *        port);
 
 UiCaches *
 ui_caches_new (void);

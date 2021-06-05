@@ -92,24 +92,16 @@ control_port_set_real_val_w_events (
     F_PUBLISH_EVENTS);
 }
 
-/**
- * Returns if the control port is toggled.
- */
-bool
-control_port_is_toggled (
-  Port * self)
+void
+control_port_set_toggled (
+  Port * self,
+  bool   toggled,
+  bool   forward_events)
 {
-  return control_port_is_val_toggled (self->control);
-}
-
-/**
- * Checks if the given value is toggled.
- */
-bool
-control_port_is_val_toggled (
-  float val)
-{
-  return val > 0.001f;
+  g_return_if_fail (IS_PORT (self));
+  port_set_control_value (
+    self, toggled ? 1.f : 0.f, F_NOT_NORMALIZED,
+    forward_events);
 }
 
 /**
@@ -351,17 +343,17 @@ control_port_set_val_from_normalized (
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);
-          if (real_val > 0.0001f)
-            self->control = 1.f;
-          else
-            self->control = 0.f;
+          self->control =
+            control_port_is_val_toggled (real_val) ?
+              1.f : 0.f;
         }
 
-      if (id->flags & PORT_FLAG_CHANNEL_MUTE)
+      if (id->flags & PORT_FLAG_FADER_MUTE)
         {
           Track * track = port_get_track (self, 1);
           track_set_muted (
-            track, self->control > 0.0001f,
+            track,
+            control_port_is_toggled (self),
             F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
             F_PUBLISH_EVENTS);
         }

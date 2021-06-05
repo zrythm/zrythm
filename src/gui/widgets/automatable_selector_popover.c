@@ -277,7 +277,7 @@ create_model_for_ports (
           /* skip non-channel automation tracks */
           port = automation_track_get_port (at);
           if (!(port->id.flags &
-                  PORT_FLAG_CHANNEL_MUTE ||
+                  PORT_FLAG_FADER_MUTE ||
                 port->id.flags &
                   PORT_FLAG_CHANNEL_FADER ||
                 port->id.flags &
@@ -659,7 +659,7 @@ automatable_selector_popover_widget_new (
     {
       self->selected_type = AS_TYPE_TEMPO;
     }
-  else if (id->flags & PORT_FLAG_CHANNEL_MUTE ||
+  else if (id->flags & PORT_FLAG_FADER_MUTE ||
       id->flags & PORT_FLAG_CHANNEL_FADER ||
       id->flags & PORT_FLAG_STEREO_BALANCE ||
       id->flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED ||

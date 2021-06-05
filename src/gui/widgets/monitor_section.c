@@ -219,7 +219,8 @@ on_mono_toggled (
   MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  MONITOR_FADER->mono_compat_enabled = active;
+  fader_set_mono_compat_enabled (
+    MONITOR_FADER, active, F_NO_PUBLISH_EVENTS);
   g_settings_set_boolean (
     S_MONITOR, "mono", active);
 }
@@ -337,7 +338,7 @@ monitor_section_widget_setup (
     GTK_ORIENTATION_HORIZONTAL, 1);
   gtk_toggle_button_set_active (
     self->mono_toggle,
-    MONITOR_FADER->mono_compat_enabled);
+    fader_get_mono_compat_enabled (MONITOR_FADER));
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->dim_toggle),
