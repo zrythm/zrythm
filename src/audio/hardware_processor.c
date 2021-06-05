@@ -384,12 +384,6 @@ hardware_processor_setup (
 
   /* ---- end scan ---- */
 
-  /* add timer to keep rescanning */
-  g_timeout_add_seconds (
-    7,
-    (GSourceFunc) hardware_processor_rescan_ext_ports,
-    self);
-
   self->setup = true;
 
   return 0;
@@ -457,6 +451,23 @@ hardware_processor_activate (
           g_message (
             "could not find port %s", selected_port);
         }
+    }
+
+  if (activate && !self->rescan_timeout_id)
+    {
+      /* add timer to keep rescanning */
+      self->rescan_timeout_id =
+        g_timeout_add_seconds (
+          7,
+          (GSourceFunc)
+            hardware_processor_rescan_ext_ports,
+          self);
+    }
+  else if (!activate && self->rescan_timeout_id)
+    {
+      /* remove timeout */
+      g_source_remove (self->rescan_timeout_id);
+      self->rescan_timeout_id = 0;
     }
 
   self->activated = activate;

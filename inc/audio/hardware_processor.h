@@ -95,6 +95,8 @@ typedef struct HardwareProcessor
   /** Whether currently active. */
   bool            activated;
 
+  guint           rescan_timeout_id;
+
 } HardwareProcessor;
 
 static const cyaml_schema_field_t
