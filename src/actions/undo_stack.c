@@ -102,9 +102,10 @@ undo_stack_new (void)
   UndoStack * self = object_new (UndoStack);
 
   int undo_stack_length =
-    ZRYTHM_TESTING ? 64 :
-    g_settings_get_int (
-      S_P_EDITING_UNDO, "undo-stack-length");
+    ZRYTHM_TESTING ?
+      ZRYTHM->undo_stack_len :
+      g_settings_get_int (
+        S_P_EDITING_UNDO, "undo-stack-length");
   self->stack =
     stack_new (undo_stack_length);
   self->stack->top = -1;

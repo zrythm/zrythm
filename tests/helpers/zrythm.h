@@ -138,6 +138,7 @@ _test_helper_zrythm_init (
 
   ZRYTHM =
     zrythm_new (NULL, false, true, optimized);
+  ZRYTHM->undo_stack_len = 64;
 
   /* init logic - note: will use a random dir in
    * tmp as the user dire */

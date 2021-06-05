@@ -237,6 +237,7 @@ undo_manager_contains_clip (
       self->redo_stack, clip);
 
   g_debug ("%s: %d", __func__, ret);
+
   return ret;
 }
 

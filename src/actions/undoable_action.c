@@ -449,7 +449,14 @@ undoable_action_contains_clip (
       break;
     }
 
-  g_debug ("%s: %d", __func__, ret);
+  if (ret)
+    {
+      char * str = undoable_action_to_string (self);
+      g_debug (
+        "undoable action %s contains clip %s",
+        str, clip->name);
+      g_free (str);
+    }
 
   return ret;
 }

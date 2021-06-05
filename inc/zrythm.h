@@ -286,6 +286,9 @@ typedef struct Zrythm
   /** Zrythm directory used during unit tests. */
   char *              testing_dir;
 
+  /** Undo stack length, used during tests. */
+  int                 undo_stack_len;
+
   /** Cached version (without 'v'). */
   char *              version;
 } Zrythm;

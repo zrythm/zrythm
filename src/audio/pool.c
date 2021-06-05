@@ -376,6 +376,9 @@ audio_pool_remove_unused (
           for (int j = 0; j < self->num_clips; j++)
             {
               AudioClip * clip = self->clips[j];
+              if (!clip)
+                continue;
+
               char * clip_path =
                 audio_clip_get_path_in_pool (
                   clip, backup);
