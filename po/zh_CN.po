@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-06-04 10:37+0100\n"
-"PO-Revision-Date: 2021-06-04 04:32+0000\n"
+"PO-Revision-Date: 2021-06-05 12:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -2202,14 +2202,12 @@ msgid "Saving..."
 msgstr ""
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:68
-#, fuzzy
 msgid "Saved"
-msgstr "保存"
+msgstr "已保存"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:71
-#, fuzzy
 msgid "Project Progress"
-msgstr "导出进度"
+msgstr "项目进度"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, c-format
@@ -2408,7 +2406,7 @@ msgid "Latch"
 msgstr "锁存器"
 
 #: src/audio/channel_send.c:74
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d enabled"
 msgstr "频道发送 %d 已启用"
 
@@ -2959,14 +2957,14 @@ msgid "Copy %d Plugins"
 msgstr "复制%d个插件"
 
 #: src/actions/mixer_selections_action.c:1138
-#, fuzzy, c-format
+#, c-format
 msgid "Paste %s"
-msgstr "粘帖"
+msgstr "粘帖 %s"
 
 #: src/actions/mixer_selections_action.c:1145
-#, fuzzy, c-format
+#, c-format
 msgid "Paste %d Plugins"
-msgstr "删除%d个插件"
+msgstr "粘贴 %d 个插件"
 
 #: src/actions/range_action.c:672 resources/ui/range_action_buttons.ui:36
 msgid "Insert silence"
@@ -3040,14 +3038,12 @@ msgid "Unlisten Track"
 msgstr "取消收听音轨"
 
 #: src/actions/tracklist_selections.c:1635
-#, fuzzy
 msgid "Enable Track"
-msgstr "取消收听音轨"
+msgstr "启用音轨"
 
 #: src/actions/tracklist_selections.c:1638
-#, fuzzy
 msgid "Disable Track"
-msgstr "删除音轨"
+msgstr "禁用音轨"
 
 #: src/actions/tracklist_selections.c:1641
 msgid "Change Fader"
@@ -3114,14 +3110,14 @@ msgid "Unlisten %d Tracks"
 msgstr "取消收听 %d 道音轨"
 
 #: src/actions/tracklist_selections.c:1702
-#, fuzzy, c-format
+#, c-format
 msgid "Enable %d Tracks"
-msgstr "取消收听 %d 道音轨"
+msgstr "启用 %d 条音轨"
 
 #: src/actions/tracklist_selections.c:1706
-#, fuzzy, c-format
+#, c-format
 msgid "Disable %d Tracks"
-msgstr "删除%d首曲目"
+msgstr "禁用 %d 条音轨"
 
 #: src/actions/tracklist_selections.c:1723
 msgid "Move Track"
@@ -3738,7 +3734,7 @@ msgstr ""
 #: resources/ui/playhead_scroll_buttons.ui:58
 #, fuzzy
 msgid "Follow playhead"
-msgstr "播放头"
+msgstr "遵循播放头"
 
 #: resources/ui/automatable_selector.ui:104
 #: resources/ui/arranger_object_info_dialog.ui:89
@@ -4018,7 +4014,7 @@ msgstr "ms"
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 #, fuzzy
 msgid "Disable after bounce"
-msgstr "禁用端口连接"
+msgstr "弹跳后禁用"
 
 #: resources/ui/snap_box.ui:38
 msgid "Snap to grid"
@@ -4451,7 +4447,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:282
 #, fuzzy
 msgid "Whether to sum the monitor signal to mono."
-msgstr "是否将监视器信号 sum 为单声道。"
+msgstr "是否将监视器信号 sum 到单声道。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:286
 msgid "Dim output"
@@ -4485,7 +4481,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:316
 #, fuzzy
 msgid "Disable track after bouncing."
-msgstr "禁用端口连接"
+msgstr "弹跳后禁用音轨。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:320
 msgid "Bounce step"
@@ -5199,9 +5195,8 @@ msgid "CSS theme"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:866
-#, fuzzy
 msgid "The CSS theme to use."
-msgstr "要使用的PAN算法"
+msgstr "要使用的 CSS 主题。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:870
 msgid "Icon theme"
