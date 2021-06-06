@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.18.1.1] - 2021-06-06
+### Added
+- Make track mute/solo/listen/mono/record MIDI bindable
+
+### Changed
+- Only listen to MIDI notes within the first beat during moving
+- Don't show non-fatal error when RtAudio backend fails to initialize
+- Disable hardware processor callback when disabling the audio engine (fixes occasional error when closing projects)
+- Call cleanup() on all LV2 plugins except helm
+
+### Fixed
+- Fix error when removing unused clips from the pool
+
+### Removed
+- Remove ability to change JACK buffer size on the fly on Windows
+
 ## [1.0.0-alpha.17.1.22] - 2021-06-04
 ### Changed
 - Update Greek, Spanish, Chinese (Simplified), Norwegian Bokmal, Japanese translations
