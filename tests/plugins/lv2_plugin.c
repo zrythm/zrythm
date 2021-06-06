@@ -347,6 +347,9 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/plugins/lv2_plugin/"
 
   g_test_add_func (
+    TEST_PREFIX "test lilv instance activation",
+    (GTestFunc) test_lilv_instance_activation);
+  g_test_add_func (
     TEST_PREFIX "test process",
     (GTestFunc) test_process);
   g_test_add_func (
@@ -358,9 +361,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test save state with files",
     (GTestFunc) test_save_state_w_files);
-  g_test_add_func (
-    TEST_PREFIX "test lilv instance activation",
-    (GTestFunc) test_lilv_instance_activation);
 
   return g_test_run ();
 }
