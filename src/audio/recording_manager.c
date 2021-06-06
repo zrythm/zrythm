@@ -272,14 +272,18 @@ recording_manager_handle_recording (
   /* ---- handle start/stop/pause recording events
    * ---- */
 
-  /* if not recording at all (recording stopped) */
-  if (!TRANSPORT->recording ||
-      !tr->recording ||
-      !TRANSPORT_IS_ROLLING)
+  /* if track type can't record do nothing */
+  if (!track_type_can_record (tr->type))
+    {
+    }
+  /* else if not recording at all (recording
+   * stopped) */
+  else if (!TRANSPORT->recording ||
+           !track_get_recording (tr) ||
+           !TRANSPORT_IS_ROLLING)
     {
       /* if track had previously recorded */
-      if (track_type_can_record (tr->type) &&
-          tr->recording_region &&
+      if (tr->recording_region &&
           !tr->recording_stop_sent)
         {
           tr->recording_stop_sent = true;
@@ -305,9 +309,8 @@ recording_manager_handle_recording (
   /* if pausing */
   else if (nframes == 0)
     {
-      if (track_type_can_record (tr->type) &&
-            (tr->recording_region ||
-             tr->recording_start_sent))
+      if (tr->recording_region ||
+          tr->recording_start_sent)
         {
           /* send pause event */
           RecordingEvent * re =
@@ -332,8 +335,7 @@ recording_manager_handle_recording (
   else if (inside_punch_range)
     {
       /* if no recording started yet */
-      if (track_type_can_record (tr->type) &&
-          !tr->recording_region &&
+      if (!tr->recording_region &&
           !tr->recording_start_sent)
         {
           tr->recording_start_sent = true;

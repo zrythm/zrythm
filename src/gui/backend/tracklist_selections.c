@@ -149,12 +149,14 @@ tracklist_selections_add_track (
 
   g_debug (
     "%s currently recording: %d, have channel: %d",
-    track->name, track->recording,
+    track->name,
+    track_type_can_record (track->type) &&
+      track_get_recording (track),
     track->channel != NULL);
 
-  /* if recording is not already
-   * on, turn these on */
-  if (!track->recording && track->channel)
+  /* if recording is not already on, turn these on */
+  if (track_type_can_record (track->type) &&
+      !track_get_recording (track) && track->channel)
     {
       track_set_recording (
         track, true, fire_events);

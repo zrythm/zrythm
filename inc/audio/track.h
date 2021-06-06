@@ -235,7 +235,7 @@ typedef struct Track
   double              main_height;
 
   /** Recording or not. */
-  bool                recording;
+  Port *              recording;
 
   /**
    * Active (enabled) or not.
@@ -477,7 +477,8 @@ track_fields_schema[] =
   YAML_FIELD_INT (Track, visible),
   YAML_FIELD_FLOAT (Track, main_height),
   YAML_FIELD_INT (Track, passthrough_midi_input),
-  YAML_FIELD_INT (Track, recording),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track, recording, port_fields_schema),
   YAML_FIELD_INT (Track, enabled),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track, color, gdk_rgba_fields_schema),
@@ -691,6 +692,12 @@ track_set_listened (
   bool    trigger_undo,
   bool    auto_select,
   bool    fire_events);
+
+HOT
+NONNULL
+bool
+track_get_recording (
+  Track * track);
 
 /**
  * Sets recording and connects/disconnects the

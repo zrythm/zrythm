@@ -381,6 +381,9 @@ typedef enum PortFlags2
 
   /** Fader mono compat. */
   PORT_FLAG2_FADER_MONO_COMPAT = 1 << 21,
+
+  /** Track recording. */
+  PORT_FLAG2_TRACK_RECORDING = 1 << 22,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -408,6 +411,7 @@ port_flags2_bitvals[] =
   { .name = "fader_solo", .offset = 19, .bits = 1 },
   { .name = "fader_listen", .offset = 20, .bits = 1 },
   { .name = "fader_mono_compat", .offset = 21, .bits = 1 },
+  { .name = "track_recording", .offset = 22, .bits = 1 },
 };
 
 /**

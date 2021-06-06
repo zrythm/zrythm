@@ -340,6 +340,22 @@ track_new (
       group_target_track_init (self);
     }
 
+  if (track_type_can_record (type))
+    {
+      self->recording =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT,
+          _("Track record"));
+      control_port_set_toggled (
+        self->recording, F_NO_TOGGLE,
+        F_NO_PUBLISH_EVENTS);
+      self->recording->id.flags2 |=
+        PORT_FLAG2_TRACK_RECORDING;
+      self->recording->id.flags |=
+        PORT_FLAG_TOGGLE;
+      port_set_owner_track (self->recording, self);
+    }
+
   self->processor = track_processor_new (self);
 
   automation_tracklist_init (
@@ -423,13 +439,20 @@ track_clone (
   COPY_MEMBER (automation_visible);
   COPY_MEMBER (visible);
   COPY_MEMBER (main_height);
-  COPY_MEMBER (recording);
   COPY_MEMBER (enabled);
   COPY_MEMBER (color);
   COPY_MEMBER (pos);
   COPY_MEMBER (midi_ch);
 
 #undef COPY_MEMBER
+
+  if (track->recording)
+    {
+      control_port_set_toggled (
+        new_track->recording,
+        control_port_is_toggled (track->recording),
+        F_NO_PUBLISH_EVENTS);
+    }
 
   if (track->channel)
     {
@@ -610,6 +633,20 @@ track_get_type_from_plugin_descriptor (
     return TRACK_TYPE_AUDIO_BUS;
 }
 
+bool
+track_get_recording (
+  Track * track)
+{
+  g_return_val_if_fail (
+    IS_TRACK (track) &&
+      track_type_can_record (track->type) &&
+      IS_PORT_AND_NONNULL (track->recording),
+    false);
+
+  return
+    control_port_is_toggled (track->recording);
+}
+
 /**
  * Sets recording and connects/disconnects the
  * JACK ports.
@@ -664,7 +701,9 @@ track_set_recording (
         /*channel->midi_in);*/
     /*}*/
 
-  track->recording = recording;
+  control_port_set_toggled (
+    track->recording, recording,
+    F_NO_PUBLISH_EVENTS);
 
   if (recording)
     {
@@ -3223,6 +3262,11 @@ track_append_all_ports (
   g_warn_if_fail (port); \
   array_append ( \
     *ports, (*size), port)
+
+  if (track_type_can_record (self->type))
+    {
+      _ADD (self->recording);
+    }
 
   if (self->type == TRACK_TYPE_TEMPO)
     {

@@ -480,8 +480,11 @@ port_find_from_identifier (
         {
           return tr->beat_unit_port;
         }
-      else if (
-        flags & PORT_FLAG_MODULATOR_MACRO)
+      else if (flags2 & PORT_FLAG2_TRACK_RECORDING)
+        {
+          return tr->recording;
+        }
+      else if (flags & PORT_FLAG_MODULATOR_MACRO)
         {
           ModulatorMacroProcessor * processor =
             tr->modulator_macros[id->port_index];
@@ -3383,7 +3386,8 @@ port_process (
              PORT_OWNER_TYPE_TRACK_PROCESSOR ||
            (port->id.owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-            track && track->recording)) &&
+            track &&
+            track_get_recording (track))) &&
            port->id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
@@ -3468,10 +3472,8 @@ port_process (
                   g_return_if_fail (track);
 
                   /* skip if not armed */
-                  if (!track->recording)
-                    {
-                      continue;
-                    }
+                  if (!track_get_recording (track))
+                    continue;
 
                   /* if not set to "all channels",
                    * filter-append */
@@ -3607,7 +3609,9 @@ port_process (
              PORT_OWNER_TYPE_TRACK_PROCESSOR ||
            (port->id.owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-            track && track->recording)) &&
+            track &&
+            track_type_can_record (track->type) &&
+            track_get_recording (track))) &&
            port->id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)

@@ -218,7 +218,8 @@ fader_buttons_widget_refresh (
           gtk_widget_set_visible (
             GTK_WIDGET (self->record), true);
           gtk_toggle_button_set_active (
-            self->record, track->recording);
+            self->record,
+            track_get_recording (track));
         }
       else
         {
@@ -269,6 +270,10 @@ on_btn_right_click (
   else if (widget == GTK_WIDGET (self->mono_compat))
     {
       port = fader->mono_compat_enabled;
+    }
+  else if (widget == GTK_WIDGET (self->record))
+    {
+      port = self->track->recording;
     }
 
   g_signal_connect (
@@ -353,6 +358,7 @@ fader_buttons_widget_init (
   ADD_RIGHT_CLICK_CB (self->solo);
   ADD_RIGHT_CLICK_CB (self->listen);
   ADD_RIGHT_CLICK_CB (self->mono_compat);
+  ADD_RIGHT_CLICK_CB (self->record);
 
 #undef ADD_RIGHT_CLICK_CB
 }

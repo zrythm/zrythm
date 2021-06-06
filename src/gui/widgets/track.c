@@ -466,7 +466,7 @@ draw_buttons (
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (CB_ICON_IS (RECORD) &&
-               track->recording)
+                 track_get_recording (track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -1106,6 +1106,8 @@ set_tooltip_from_button (
     GTK_WIDGET (self), true); \
   self->tooltip_text = txt
 
+  Track * track = self->track;
+
   if (!cb)
     {
       gtk_widget_set_has_tooltip (
@@ -1118,7 +1120,7 @@ set_tooltip_from_button (
   else if (CB_ICON_IS (SHOW_UI))
     {
       if (instrument_track_is_plugin_visible (
-            self->track))
+            track))
         {
           SET_TOOLTIP (_("Hide instrument UI"));
         }
@@ -1129,7 +1131,7 @@ set_tooltip_from_button (
     }
   else if (CB_ICON_IS (MUTE))
     {
-      if (track_get_muted (self->track))
+      if (track_get_muted (track))
         {
           SET_TOOLTIP (_("Unmute"));
         }
@@ -1140,7 +1142,7 @@ set_tooltip_from_button (
     }
   else if (CB_ICON_IS (LISTEN))
     {
-      if (track_get_muted (self->track))
+      if (track_get_muted (track))
         {
           SET_TOOLTIP (_("Unlisten"));
         }
@@ -1155,7 +1157,7 @@ set_tooltip_from_button (
     }
   else if (CB_ICON_IS (RECORD))
     {
-      if (self->track->recording)
+      if (track_get_recording (track))
         {
           SET_TOOLTIP (_("Disarm"));
         }
@@ -2040,7 +2042,8 @@ multipress_pressed (
   gdouble               y,
   TrackWidget *         self)
 {
-  self->was_armed = self->track->recording;
+  self->was_armed =
+    track_get_recording (self->track);
 
   /* FIXME should do this via focus on click
    * property */
@@ -2623,7 +2626,7 @@ track_widget_on_record_toggled (
   chan->record_set_automatically = false;
   g_debug (
     "%s recording: %d",
-    track->name,  track->recording);
+    track->name, track_get_recording (track));
 
   EVENTS_PUSH (
     ET_TRACK_STATE_CHANGED, track);
