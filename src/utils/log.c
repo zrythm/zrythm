@@ -1024,7 +1024,7 @@ log_get_last_n_lines (
   Log * self,
   int   n)
 {
-  g_warn_if_fail (self->log_filepath);
+  g_return_val_if_fail (self->log_filepath, NULL);
 
   /* call idle_cb to write queued messages */
   log_idle_cb (self);
