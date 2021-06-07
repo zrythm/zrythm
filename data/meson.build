@@ -82,7 +82,7 @@ if os_gnu or os_freebsd
     configuration: zrythm_launcher_config)
   localized_desktop_file = i18n.merge_file (
     input: desktop_file,
-    output: prog_name_lowercase + '.desktop',
+    output: gschema_top + '.desktop',
     type: 'desktop',
     po_dir: '../po',
     install: true,
