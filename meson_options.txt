@@ -223,3 +223,9 @@ option (
   type: 'feature',
   value: 'disabled',
   description: 'Compile with valgrind lib. Only useful for debugging.')
+
+option (
+  'appimage',
+  type: 'boolean',
+  value: false,
+  description: 'Whether this is an AppImage build.')

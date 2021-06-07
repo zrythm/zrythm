@@ -139,6 +139,9 @@ struct _ZrythmApp
   /** CLI args. */
   int                argc;
   char **            argv;
+
+  /** AppImage runtime path, if AppImage build. */
+  char *             appimage_runtime_path;
 };
 
 /**

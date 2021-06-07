@@ -56,6 +56,7 @@
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include "Wrapper.h"
 
@@ -329,6 +330,13 @@ zrythm_get_prefix (void)
   int ret = io_get_bundle_path (bundle_path);
   g_return_val_if_fail (ret == 0, NULL);
   return io_path_get_parent_dir (bundle_path);
+#elif defined (APPIMAGE_BUILD)
+  g_return_val_if_fail (
+    zrythm_app->appimage_runtime_path, NULL);
+  return
+    g_build_filename (
+      zrythm_app->appimage_runtime_path, "usr",
+      NULL);
 #else
   return g_strdup (PREFIX);
 #endif

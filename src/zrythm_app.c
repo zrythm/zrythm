@@ -1649,6 +1649,21 @@ on_handle_local_options (
         }
     }
 
+#ifdef APPIMAGE_BUILD
+    {
+      char * rpath = NULL;
+      if (!g_variant_dict_lookup (
+             opts, "appimage-runtime-path", "&s",
+             &rpath))
+        {
+          g_error (
+            "must pass --appimage-runtime-path");
+        }
+      self->appimage_runtime_path =
+        g_strdup (rpath);
+    }
+#endif
+
   return -1;
 }
 
@@ -1759,10 +1774,16 @@ add_option_entries (
       { "output", 'o', G_OPTION_FLAG_NONE,
         G_OPTION_ARG_STRING, &self->output_file,
         "File or directory to output to", "FILE" },
-      { "cyaml-log-level", 'o', G_OPTION_FLAG_NONE,
+      { "cyaml-log-level", 0, G_OPTION_FLAG_NONE,
         G_OPTION_ARG_STRING, NULL,
-        "Cyaml log level",
-        "LOG-LEVEL" },
+        "Cyaml log level", "LOG-LEVEL" },
+#ifdef APPIMAGE_BUILD
+      { "appimage-runtime-path", 0,
+        G_OPTION_FLAG_NONE,
+        G_OPTION_ARG_STRING, NULL,
+        "AppImage runtime path",
+        "PATH" },
+#endif
       { NULL },
     };
 

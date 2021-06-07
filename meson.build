@@ -409,6 +409,9 @@ endif
 if get_option ('installer_ver')
   cdata.set ('INSTALLER_VER', 1)
 endif
+if get_option ('appimage')
+  cdata.set ('APPIMAGE_BUILD', 1)
+endif
 cdata.set (
   'MESON_SOURCE_ROOT', meson_src_root)
 cdata.set (
@@ -1329,6 +1332,7 @@ summary ({
   'Trial version': get_option ('trial_ver'),
   'Installer version': get_option ('installer_ver'),
   'Phone home': phone_home,
+  'AppImage build': get_option ('appimage'),
   }, section: 'General')
 
 summary ({
