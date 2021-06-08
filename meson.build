@@ -604,7 +604,7 @@ else
     ]
 endif
 
-if os_windows
+if os_windows or get_option ('appimage')
   test_cflags += [
     '-DUSE_WEAK_JACK=1',
     ]
