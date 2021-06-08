@@ -205,7 +205,6 @@ position_sort_array (
  * frames are still accurate.
  */
 HOT
-__attribute__ ((access (read_write, 1)))
 void
 position_add_frames (
   Position * pos,
