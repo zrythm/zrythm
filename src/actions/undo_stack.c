@@ -249,10 +249,11 @@ remove_action (
         self->num_as_actions,
         (ArrangerSelectionsAction *) action,
         removed);
-      g_warn_if_fail (removed);
-      g_warn_if_fail (
+      g_return_val_if_fail (removed, removed);
+      g_return_val_if_fail (
         (int) self->num_as_actions <=
-          g_atomic_int_get (&self->stack->top) + 1);
+          g_atomic_int_get (&self->stack->top) + 1,
+        removed);
       break;
     }
 
@@ -269,7 +270,7 @@ undo_stack_pop (
 
   /* remove the action */
   int removed = remove_action (self, action);
-  g_warn_if_fail (removed);
+  g_return_val_if_fail (removed, action);
 
   /* return it */
   return action;
