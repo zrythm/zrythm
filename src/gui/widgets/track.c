@@ -2042,8 +2042,10 @@ multipress_pressed (
   gdouble               y,
   TrackWidget *         self)
 {
+  Track * track = self->track;
   self->was_armed =
-    track_get_recording (self->track);
+    track_type_can_record (track->type) &&
+    track_get_recording (track);
 
   /* FIXME should do this via focus on click
    * property */
@@ -2065,8 +2067,6 @@ multipress_pressed (
     }
   else
     {
-      Track * track = self->track;
-
       PROJECT->last_selection =
         SELECTION_TYPE_TRACKLIST;
       EVENTS_PUSH (
