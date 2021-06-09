@@ -94,8 +94,7 @@ undo_manager_undo (UndoManager * self)
     {
       UndoableAction * action_to_delete =
         (UndoableAction *)
-        undo_stack_pop_last (
-          self->redo_stack);
+        undo_stack_pop_last (self->redo_stack);
 
       /* TODO create functions to delete unnecessary
        * files held by the action (eg, something
@@ -105,6 +104,8 @@ undo_manager_undo (UndoManager * self)
 
   /* push action to the redo stack */
   undo_stack_push (self->redo_stack, action);
+  undo_stack_get_total_cached_actions (
+    self->redo_stack);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -149,13 +150,14 @@ undo_manager_redo (UndoManager * self)
     {
       UndoableAction * action_to_delete =
         (UndoableAction *)
-        undo_stack_pop_last (
-          self->undo_stack);
+        undo_stack_pop_last (self->undo_stack);
       undoable_action_free (action_to_delete);
     }
 
   /* push action to the undo stack */
   undo_stack_push (self->undo_stack, action);
+  undo_stack_get_total_cached_actions (
+    self->undo_stack);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -205,6 +207,8 @@ undo_manager_perform (
     }
 
   undo_stack_push (self->undo_stack, action);
+  undo_stack_get_total_cached_actions (
+    self->undo_stack);
 
   undo_stack_clear (self->redo_stack, true);
 

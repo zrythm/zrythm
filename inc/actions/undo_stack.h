@@ -158,6 +158,16 @@ undo_stack_get_as_string (
   UndoStack * self,
   int         limit);
 
+/**
+ * Returns the total cached actions.
+ *
+ * Used when loading projects and for error checking.
+ */
+NONNULL
+size_t
+undo_stack_get_total_cached_actions (
+  UndoStack * self);
+
 /* --- start wrappers --- */
 
 #define undo_stack_size(x) \

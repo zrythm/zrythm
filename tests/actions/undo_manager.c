@@ -69,8 +69,8 @@ test_perform_many_actions ()
       if (i % 2 == 0)
         {
           ua =
-            tracklist_selections_action_new_create_midi (
-              TRACKLIST->num_tracks, 1);
+            tracklist_selections_action_new_create_audio_fx (
+              NULL, TRACKLIST->num_tracks, 1);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
       else if (i % 13 == 0)
@@ -123,6 +123,27 @@ test_perform_many_actions ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_fill_stack ()
+{
+  test_helper_zrythm_init ();
+
+  int max_len =
+    UNDO_MANAGER->undo_stack->stack->max_length;
+  for (int i = 0; i < max_len + 8; i++)
+    {
+      UndoableAction * ua = NULL;
+      ua =
+        tracklist_selections_action_new_create_audio_fx (
+          NULL, TRACKLIST->num_tracks, 1);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+
+  test_project_save_and_reload ();
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -130,6 +151,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/undo manager/"
 
+  g_test_add_func (
+    TEST_PREFIX "test fill stack",
+    (GTestFunc) test_fill_stack);
   g_test_add_func (
     TEST_PREFIX "test perform many actions",
     (GTestFunc) test_perform_many_actions);

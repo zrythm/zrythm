@@ -26,6 +26,33 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+NONNULL
+size_t
+undo_stack_get_total_cached_actions (
+  UndoStack * self)
+{
+  size_t total =
+    self->num_as_actions +
+    self->num_mixer_selections_actions +
+    self->num_tracklist_selections_actions +
+    self->num_channel_send_actions +
+    self->num_midi_mapping_actions +
+    self->num_port_actions +
+    self->num_port_connection_actions +
+    self->num_range_actions +
+    self->num_transport_actions;
+
+  if ((int) total > self->stack->max_length)
+    {
+      g_critical (
+        "total stack members (%zu) higher than "
+        "max length (%d)",
+        total, self->stack->max_length);
+    }
+
+  return total;
+}
+
 void
 undo_stack_init_loaded (
   UndoStack * self)
@@ -37,6 +64,19 @@ undo_stack_init_loaded (
   self->stack =
     stack_new (undo_stack_length);
   self->stack->top = -1;
+
+  size_t as_actions_idx = 0;
+  size_t mixer_selections_actions_idx = 0;
+  size_t tracklist_selections_actions_idx = 0;
+  size_t channel_send_actions_idx = 0;
+  size_t port_actions_idx = 0;
+  size_t port_connection_actions_idx = 0;
+  size_t midi_mapping_actions_idx = 0;
+  size_t range_actions_idx = 0;
+  size_t transport_actions_idx = 0;
+
+  size_t total_actions =
+    undo_stack_get_total_cached_actions (self);
 
 #define DO_SIMPLE(cc,sc) \
   /* if there are still actions of this type */ \
@@ -54,29 +94,7 @@ undo_stack_init_loaded (
         } \
     }
 
-  size_t as_actions_idx = 0;
-  size_t mixer_selections_actions_idx = 0;
-  size_t tracklist_selections_actions_idx = 0;
-  size_t channel_send_actions_idx = 0;
-  size_t port_actions_idx = 0;
-  size_t port_connection_actions_idx = 0;
-  size_t midi_mapping_actions_idx = 0;
-  size_t range_actions_idx = 0;
-  size_t transport_actions_idx = 0;
-
-  size_t total_actions =
-    self->num_as_actions +
-    self->num_mixer_selections_actions +
-    self->num_tracklist_selections_actions +
-    self->num_channel_send_actions +
-    self->num_midi_mapping_actions +
-    self->num_port_actions +
-    self->num_port_connection_actions +
-    self->num_range_actions +
-    self->num_transport_actions;
-
-  size_t i = 0;
-  while (i < total_actions)
+  for (size_t i = 0; i < total_actions; i++)
     {
       DO_SIMPLE (ArrangerSelections, as)
       DO_SIMPLE (TracklistSelections, tracklist_selections)
@@ -87,9 +105,12 @@ undo_stack_init_loaded (
       DO_SIMPLE (MidiMapping, midi_mapping)
       DO_SIMPLE (Range, range)
       DO_SIMPLE (Transport, transport)
-
-      i++;
     }
+
+  g_return_if_fail (
+    self->stack->top + 1 ==
+      (int)
+      undo_stack_get_total_cached_actions (self));
 }
 
 UndoStack *
@@ -169,7 +190,6 @@ undo_stack_push (
       (cc##Action *) action); \
     break
 
-
   switch (action->type)
     {
     APPEND_ELEMENT (
@@ -191,17 +211,8 @@ undo_stack_push (
       RANGE, Range, range);
     APPEND_ELEMENT (
       TRANSPORT, Transport, transport);
-    case UA_ARRANGER_SELECTIONS:
-      array_double_size_if_full (
-        self->as_actions,
-        self->num_as_actions,
-        self->as_actions_size,
-        ArrangerSelectionsAction *);
-      array_append (
-        self->as_actions,
-        self->num_as_actions,
-        (ArrangerSelectionsAction *) action);
-      break;
+    APPEND_ELEMENT (
+      ARRANGER_SELECTIONS, ArrangerSelections, as);
     }
 }
 
@@ -218,7 +229,19 @@ remove_action (
       self->num_##sc##_actions, \
       (cc##Action *) action, \
       removed); \
-    g_warn_if_fail (removed); \
+    g_return_val_if_fail (removed, removed); \
+    if ((int) self->num_##sc##_actions > \
+          g_atomic_int_get ( \
+            &self->stack->top) + 1) \
+      { \
+        g_critical ( \
+          "num " #sc " actions (%zu) is greater " \
+          "than current stack top (%d)", \
+          self->num_##sc##_actions, \
+          g_atomic_int_get ( \
+            &self->stack->top) + 1); \
+        return removed; \
+      } \
     break
 
   bool removed = false;
@@ -249,12 +272,22 @@ remove_action (
         self->num_as_actions,
         (ArrangerSelectionsAction *) action,
         removed);
-      g_return_val_if_fail (removed, removed);
       g_return_val_if_fail (
         (int) self->num_as_actions <=
           g_atomic_int_get (&self->stack->top) + 1,
         removed);
       break;
+    }
+
+  /* re-set the indices */
+  for (int i = 0;
+       i <= g_atomic_int_get (&self->stack->top);
+       i++)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        self->stack->elements[i];
+      ua->stack_idx = i;
     }
 
   return removed;
@@ -293,7 +326,7 @@ undo_stack_pop_last (
 
   /* remove the action */
   bool removed = remove_action (self, action);
-  g_warn_if_fail (removed);
+  g_return_val_if_fail (removed, action);
 
   /* return it */
   return action;
