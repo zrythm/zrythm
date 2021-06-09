@@ -20,8 +20,19 @@
 #ifndef __UTILS_DSP_H__
 #define __UTILS_DSP_H__
 
+#include "zrythm-config.h"
+
 #include <stdbool.h>
 #include <stddef.h>
+
+#include "utils/math.h"
+#include "zrythm.h"
+
+#include <glib.h>
+
+#ifdef HAVE_LSP_DSP
+#include <lsp-plug.in/dsp/dsp.h>
+#endif
 
 /**
  * Fill the buffer with the given value.
@@ -38,12 +49,30 @@ dsp_fill (
  * Clamp the buffer to min/max.
  */
 NONNULL
-void
+HOT
+static inline void
 dsp_limit1 (
   float * buf,
   float   minf,
   float   maxf,
-  size_t  size);
+  size_t  size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_limit1 (buf, minf, maxf, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          buf[i] = CLAMP (buf[i], minf, maxf);
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
 
 NONNULL
 HOT
@@ -69,12 +98,43 @@ dsp_mul_k2 (
  *
  * @return Whether the peak changed.
  */
+HOT
 NONNULL
-bool
+static inline bool
 dsp_abs_max (
   float * buf,
   float * cur_peak,
-  size_t  size);
+  size_t  size)
+{
+  float new_peak = *cur_peak;
+
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      new_peak =
+        lsp_dsp_abs_max (buf, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          float val = fabsf (buf[i]);
+          if (val > new_peak)
+            {
+              new_peak = val;
+            }
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+
+  bool changed =
+    !math_floats_equal (new_peak, *cur_peak);
+  *cur_peak = new_peak;
+
+  return changed;
+}
 
 /**
  * Gets the minimum of the buffer.
@@ -109,13 +169,31 @@ dsp_add2 (
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.
  */
 NONNULL
-void
+HOT
+static inline void
 dsp_mix2 (
   float *       dest,
   const float * src,
   float         k1,
   float         k2,
-  size_t        size);
+  size_t        size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_mix2 (dest, src, k1, k2, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] = dest[i] * k1 + src[i] * k2;
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
 
 /**
  * Calculate

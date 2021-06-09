@@ -1078,7 +1078,7 @@ Track *
 channel_get_track (
   Channel * self)
 {
-  if (self->track)
+  if (G_LIKELY (self->track))
     return self->track;
   else
     {

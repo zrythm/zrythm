@@ -267,16 +267,6 @@ arranger_object_set_muted (
 }
 
 /**
- * Gets the mute status of the object.
- */
-bool
-arranger_object_get_muted (
-  ArrangerObject * self)
-{
-  return self->muted;
-}
-
-/**
  * Sets the dest object's values to the main
  * src object's values.
  */
@@ -1102,38 +1092,6 @@ arranger_object_get_length_in_frames (
   return
     self->end_pos.frames -
     self->pos.frames;
-}
-
-/**
- * Returns the length of the loop in ticks.
- */
-double
-arranger_object_get_loop_length_in_ticks (
-  ArrangerObject * self)
-{
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
-
-  return
-    self->loop_end_pos.ticks -
-    self->loop_start_pos.ticks;
-}
-
-/**
- * Returns the length of the loop in ticks.
- */
-long
-arranger_object_get_loop_length_in_frames (
-  ArrangerObject * self)
-{
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
-
-  return
-    self->loop_end_pos.frames -
-    self->loop_start_pos.frames;
 }
 
 /**

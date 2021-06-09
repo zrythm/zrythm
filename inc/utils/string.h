@@ -80,10 +80,8 @@ string_to_upper (
 /**
  * Returns if the two strings are exactly equal.
  */
-bool
-string_is_equal (
-  const char * str1,
-  const char * str2);
+#define string_is_equal(str1,str2) \
+  (!g_strcmp0 (str1, str2))
 
 /**
  * Returns if the two strings are equal ignoring

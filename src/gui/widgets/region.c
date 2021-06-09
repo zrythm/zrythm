@@ -33,6 +33,7 @@
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/cpu.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
@@ -1087,6 +1088,15 @@ draw_audio_part (
     frames_per_tick / MW_RULER->px_per_tick;
 
   UiDetail detail = ui_get_detail_level ();
+
+  /* if > 50% CPU, force lower level of detail */
+  if (detail < UI_DETAIL_LOW)
+    {
+      if (MW_CPU->cpu > 60)
+        detail = UI_DETAIL_LOW;
+      else if (MW_CPU->cpu > 50)
+        detail++;
+    }
 
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   double increment = 1;

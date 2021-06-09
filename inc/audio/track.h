@@ -642,6 +642,7 @@ track_multiply_heights (
 /**
  * Returns if the track is soloed.
  */
+HOT
 NONNULL
 bool
 track_get_soloed (
@@ -740,10 +741,8 @@ track_is_selected (Track * self);
 /**
  * Returns whether the track is pinned.
  */
-NONNULL
-bool
-track_is_pinned (
-  Track * self);
+#define track_is_pinned(x) \
+  (x->pos < TRACKLIST->pinned_tracks_cutoff)
 
 /**
  * Adds a ZRegion to the given lane or
@@ -867,6 +866,7 @@ track_remove_region (
  * @param midi_events MidiEvents to fill (from
  *   Piano Roll Port for example).
  */
+HOT
 void
 track_fill_events (
   Track *         track,

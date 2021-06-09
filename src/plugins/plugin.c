@@ -2256,9 +2256,9 @@ plugin_set_enabled (
  */
 void
 plugin_process_passthrough (
-  Plugin * self,
+  Plugin *        self,
   const long      g_start_frames,
-  const nframes_t  local_offset,
+  const nframes_t local_offset,
   const nframes_t nframes)
 {
   int last_audio_idx = 0;

@@ -312,6 +312,8 @@ fader_get_muted (
 /**
  * Returns if the track is soloed.
  */
+HOT
+NONNULL
 bool
 fader_get_soloed (
   Fader * self);
@@ -327,12 +329,10 @@ fader_get_implied_soloed (
   Fader * self);
 
 /**
- * Returns if the fader is listened.
+ * Returns whether the fader is listened.
  */
-NONNULL
-bool
-fader_get_listened (
-  Fader * self);
+#define fader_get_listened(self) \
+  (control_port_is_toggled (self->listen))
 
 /**
  * Sets fader listen and optionally adds the action
@@ -397,6 +397,7 @@ Channel *
 fader_get_channel (
   Fader * self);
 
+NONNULL
 Track *
 fader_get_track (
   Fader * self);
@@ -413,6 +414,8 @@ fader_update_volume_and_fader_val (
 /**
  * Clears all buffers.
  */
+HOT
+NONNULL
 void
 fader_clear_buffers (
   Fader * self);
@@ -451,6 +454,8 @@ fader_copy_values (
  *   cycle.
  * @param nframes The number of frames to process.
  */
+NONNULL
+HOT
 void
 fader_process (
   Fader *         self,

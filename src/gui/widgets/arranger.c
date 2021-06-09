@@ -363,31 +363,58 @@ get_regions_in_editor_rect (
 }
 #endif
 
+typedef struct ObjectOverlapInfo
+{
+  /**
+   * When rect is NULL, this is a special case for
+   * automation points. The object will only
+   * be added if the cursor is on the automation
+   * point or within n px from the curve.
+   */
+  GdkRectangle *     rect;
+
+  /** X, or -1 to not check x. */
+  double             x;
+
+  /** Y, or -1 to not check y. */
+  double             y;
+
+  /** Position for x or rect->x (cached). */
+  Position           start_pos;
+
+  /**
+   * Position for rect->x + rect->width.
+   *
+   * If rect is NULL, this is the same as
+   * \ref start_pos.
+   */
+  Position           end_pos;
+
+  ArrangerObject **  array;
+  int *              array_size;
+  ArrangerObject *   obj;
+} ObjectOverlapInfo;
+
 /**
  * Adds the object to the array if it or its
  * transient overlaps with the rectangle, or with
  * \ref x \ref y if \ref rect is NULL.
  *
- * When rect is NULL, this is a special case for
- * automation points. The object will only
- * be added if the cursor is on the automation
- * point or within n px from the curve.
- *
- * @param x X, or -1 to not check x.
- * @param y Y, or -1 to not check y.
- *
  * @return Whether the object was added or not.
  */
+HOT
 static bool
 add_object_if_overlap (
-  ArrangerWidget *   self,
-  GdkRectangle *     rect,
-  double             x,
-  double             y,
-  ArrangerObject **  array,
-  int *              array_size,
-  ArrangerObject *   obj)
+  ArrangerWidget *    self,
+  ObjectOverlapInfo * nfo)
 {
+  GdkRectangle * rect = nfo->rect;
+  double x = nfo->x;
+  double y = nfo->y;
+  ArrangerObject ** array = nfo->array;
+  int * array_size = nfo->array_size;
+  ArrangerObject * obj = nfo->obj;
+
   g_return_val_if_fail (
     IS_ARRANGER_OBJECT (obj), false);
   g_return_val_if_fail (
@@ -399,6 +426,59 @@ add_object_if_overlap (
     {
       return false;
     }
+
+  /* --- optimization to skip expensive
+   * calculations for most objects --- */
+
+  /* skip objects that end before the rect */
+  Position tmp;
+  if (arranger_object_type_has_length (obj->type))
+    {
+      if (arranger_object_type_has_global_pos (
+            obj->type))
+        {
+          tmp = obj->end_pos;
+        }
+      else
+        {
+          ZRegion * r =
+            arranger_object_get_region (obj);
+          g_return_val_if_fail (
+            IS_REGION_AND_NONNULL (r), false);
+          tmp = r->base.pos;
+          position_add_ticks (
+            &tmp, obj->end_pos.ticks);
+        }
+      if (position_is_before (
+            &tmp, &nfo->start_pos))
+        {
+          return false;
+        }
+    }
+
+  /* skip objects that start after the end */
+  if (arranger_object_type_has_global_pos (
+        obj->type))
+    {
+      tmp = obj->pos;
+    }
+  else
+    {
+      ZRegion * r =
+        arranger_object_get_region (obj);
+      g_return_val_if_fail (
+        IS_REGION_AND_NONNULL (r), false);
+      tmp = r->base.pos;
+      position_add_ticks (
+        &tmp, obj->pos.ticks);
+    }
+  if (position_is_after (
+        &obj->pos, &nfo->end_pos))
+    {
+      return false;
+    }
+
+  /* --- end optimization --- */
 
   arranger_object_set_full_rectangle (obj, self);
   bool is_same_arranger =
@@ -510,6 +590,28 @@ get_hit_objects (
       return;
     }
 
+  int start_y = rect ? rect->y : (int) y;
+
+  /* prepare struct to pass for each object */
+  ObjectOverlapInfo nfo;
+  nfo.rect = rect;
+  nfo.x = x;
+  nfo.y = y;
+  arranger_widget_px_to_pos (
+    self, rect ? rect->x : x, &nfo.start_pos, true);
+  if (rect)
+    {
+      arranger_widget_px_to_pos (
+        self, rect->x + rect->width,
+        &nfo.end_pos, true);
+    }
+  else
+    {
+      nfo.end_pos = nfo.start_pos;
+    }
+  nfo.array = array;
+  nfo.array_size = array_size;
+
   switch (self->type)
     {
     case TYPE (TIMELINE):
@@ -530,9 +632,8 @@ get_hit_objects (
               obj =
                 (ArrangerObject *)
                 P_CHORD_TRACK->scales[i];
-              add_object_if_overlap (
-                self, rect, x, y, array,
-                array_size, obj);
+              nfo.obj = obj;
+              add_object_if_overlap (self, &nfo);
             }
         }
 
@@ -545,8 +646,45 @@ get_hit_objects (
                i < TRACKLIST->num_tracks;
                i++)
             {
-              Track * track =
-                TRACKLIST->tracks[i];
+              Track * track = TRACKLIST->tracks[i];
+
+              /* skip tracks if not visible or this
+               * is timeline and pin status doesn't
+               * match */
+              if (!track->visible ||
+                  (TYPE (TIMELINE) &&
+                     track_is_pinned (track) !=
+                       self->is_pinned))
+                {
+                  continue;
+                }
+              if (G_LIKELY (track->widget))
+                {
+                  int track_y =
+                    track_widget_get_local_y (
+                      track->widget, self,
+                      start_y);
+
+                  /* skip if track starts after the
+                   * rect */
+                  if (track_y +
+                        (rect ?
+                           rect->height : 0) < 0)
+                    {
+                      continue;
+                    }
+
+                  double full_track_height =
+                    track_get_full_visible_height (
+                      track);
+
+                  /* skip if track ends before the
+                   * rect */
+                  if (track_y > full_track_height)
+                    {
+                      continue;
+                    }
+                }
 
               for (int j = 0;
                    j < track->num_lanes; j++)
@@ -563,10 +701,10 @@ get_hit_objects (
                         IS_REGION (r));
                       obj =
                         (ArrangerObject *) r;
+                      nfo.obj = obj;
                       bool ret =
                         add_object_if_overlap (
-                          self, rect, x, y, array,
-                          array_size, obj);
+                          self, &nfo);
                       if (!ret)
                         {
                           /* check lanes */
@@ -599,16 +737,14 @@ get_hit_objects (
 
               /* chord regions */
               for (int j = 0;
-                   j < P_CHORD_TRACK->num_chord_regions;
+                   j < track->num_chord_regions;
                    j++)
                 {
                   ZRegion * cr =
-                    P_CHORD_TRACK->chord_regions[j];
-                  obj =
-                    (ArrangerObject *) cr;
-                  add_object_if_overlap (
-                    self, rect, x, y, array,
-                    array_size, obj);
+                    track->chord_regions[j];
+                  obj = (ArrangerObject *) cr;
+                  nfo.obj = obj;
+                  add_object_if_overlap (self, &nfo);
                 }
 
               /* automation regions */
@@ -635,9 +771,9 @@ get_hit_objects (
                           obj =
                             (ArrangerObject *)
                             at->regions[k];
+                          nfo.obj = obj;
                           add_object_if_overlap (
-                            self, rect, x, y, array,
-                            array_size, obj);
+                            self, &nfo);
                         }
                     }
                 }
@@ -656,9 +792,8 @@ get_hit_objects (
                 P_CHORD_TRACK->scales[j];
               obj =
                 (ArrangerObject *) scale;
-              add_object_if_overlap (
-                self, rect, x, y, array,
-                array_size, obj);
+              nfo.obj = obj;
+              add_object_if_overlap (self, &nfo);
             }
         }
 
@@ -674,9 +809,8 @@ get_hit_objects (
                 P_MARKER_TRACK->markers[j];
               obj =
                 (ArrangerObject *) marker;
-              add_object_if_overlap (
-                self, rect, x, y, array,
-                array_size, obj);
+              nfo.obj = obj;
+              add_object_if_overlap (self, &nfo);
             }
         }
       break;
@@ -697,9 +831,8 @@ get_hit_objects (
               obj =
                 (ArrangerObject *)
                 mn;
-              add_object_if_overlap (
-                self, rect, x, y, array,
-                array_size, obj);
+              nfo.obj = obj;
+              add_object_if_overlap (self, &nfo);
             }
         }
       break;
@@ -723,9 +856,8 @@ get_hit_objects (
               g_return_if_fail (
                 IS_ARRANGER_OBJECT (vel));
               obj = (ArrangerObject *) vel;
-              add_object_if_overlap (
-                self, rect, x, y, array,
-                array_size, obj);
+              nfo.obj = obj;
+              add_object_if_overlap (self, &nfo);
             }
         }
       break;
@@ -749,9 +881,8 @@ get_hit_objects (
               g_return_if_fail (
                 co->chord_index <
                 CHORD_EDITOR->num_chords);
-              add_object_if_overlap (
-                self, rect, x, y, array,
-                array_size, obj);
+              nfo.obj = obj;
+              add_object_if_overlap (self, &nfo);
             }
         }
       break;
@@ -769,9 +900,8 @@ get_hit_objects (
             {
               AutomationPoint * ap =  r->aps[i];
               obj = (ArrangerObject *) ap;
-              add_object_if_overlap (
-                self, rect, x, y, array,
-                array_size, obj);
+              nfo.obj = obj;
+              add_object_if_overlap (self, &nfo);
             }
         }
       break;

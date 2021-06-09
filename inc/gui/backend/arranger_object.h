@@ -573,9 +573,12 @@ arranger_object_print (
 /**
  * Gets the mute status of the object.
  */
-bool
+static inline bool
 arranger_object_get_muted (
-  ArrangerObject * self);
+  ArrangerObject * self)
+{
+  return self->muted;
+}
 
 /**
  * Sets the mute status of the object.
@@ -763,16 +766,37 @@ arranger_object_get_length_in_frames (
 /**
  * Returns the length of the loop in ticks.
  */
-double
+NONNULL
+static inline double
 arranger_object_get_loop_length_in_ticks (
-  ArrangerObject * self);
+  ArrangerObject * self)
+{
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
+  return
+    self->loop_end_pos.ticks -
+    self->loop_start_pos.ticks;
+}
 
 /**
- * Returns the length of the loop in ticks.
+ * Returns the length of the loop in frames.
  */
-long
+NONNULL
+HOT
+static inline long
 arranger_object_get_loop_length_in_frames (
-  ArrangerObject * self);
+  ArrangerObject * self)
+{
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
+  return
+    self->loop_end_pos.frames -
+    self->loop_start_pos.frames;
+}
 
 /**
  * Updates the frames of each position in each child

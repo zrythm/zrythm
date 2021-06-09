@@ -287,7 +287,6 @@ timestretch_buf (
  *   Position.
  * @param stereo_ports StereoPorts to fill.
  */
-REALTIME
 void
 audio_region_fill_stereo_ports (
   ZRegion *     r,

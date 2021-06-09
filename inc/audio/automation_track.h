@@ -272,6 +272,7 @@ automation_track_find_from_port_id (
  * @param track The track that owns the port, if
  *   known.
  */
+HOT
 AutomationTrack *
 automation_track_find_from_port (
   Port *  port,
@@ -330,6 +331,7 @@ automation_track_should_read_automation (
  *   recording inside a region regardless of whether
  *   we should create/edit automation points or not.
  */
+HOT
 NONNULL
 bool
 automation_track_should_be_recording (

@@ -585,7 +585,7 @@ test_strict_cflags = []
 
 # add attribute macros
 attributes = [
-  'cold', 'hot', 'pure', 'nonnull',
+  'always_inline', 'cold', 'hot', 'pure', 'nonnull',
   'returns_nonnull', 'stack_protect',
   'no_stack_protector',
   ]

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,13 +34,13 @@
  * @{
  */
 
+#define MW_CPU (MW_BOT_BAR->cpu_load)
+
 #define CPU_WIDGET_TYPE \
   (cpu_widget_get_type ())
-G_DECLARE_FINAL_TYPE (CpuWidget,
-                      cpu_widget,
-                      Z,
-                      CPU_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  CpuWidget, cpu_widget,
+  Z, CPU_WIDGET, GtkDrawingArea)
 
 typedef struct _CpuWidget
 {

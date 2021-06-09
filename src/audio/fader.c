@@ -508,16 +508,6 @@ fader_set_soloed (
 }
 
 /**
- * Returns if the fader is listened.
- */
-bool
-fader_get_listened (
-  Fader * self)
-{
-  return control_port_is_toggled (self->listen);
-}
-
-/**
  * Sets fader listen and optionally adds the action
  * to the undo stack.
  */
@@ -773,7 +763,7 @@ fader_get_track (
   Fader * self)
 {
   g_return_val_if_fail (
-    self && self->track_pos < TRACKLIST->num_tracks,
+    self->track_pos < TRACKLIST->num_tracks,
     NULL);
   Track * track =
     TRACKLIST->tracks[self->track_pos];

@@ -1198,17 +1198,6 @@ track_is_selected (Track * self)
 }
 
 /**
- * Returns whether the track is pinned.
- */
-bool
-track_is_pinned (
-  Track * self)
-{
-  return
-    self->pos < TRACKLIST->pinned_tracks_cutoff;
-}
-
-/**
  * Returns the last region in the track, or NULL.
  *
  * FIXME cache.

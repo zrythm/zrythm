@@ -747,12 +747,13 @@ plugin_set_enabled (
  *
  * This is called when the plugin is bypassed.
  */
+HOT
 NONNULL
 void
 plugin_process_passthrough (
-  Plugin * self,
+  Plugin *        self,
   const long      g_start_frames,
-  const nframes_t  local_offset,
+  const nframes_t local_offset,
   const nframes_t nframes);
 
 /**

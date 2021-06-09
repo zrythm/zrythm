@@ -144,6 +144,8 @@ audio_region_replace_frames (
  * @param stereo_ports StereoPorts to fill.
  */
 REALTIME
+HOT
+NONNULL
 void
 audio_region_fill_stereo_ports (
   ZRegion *     self,

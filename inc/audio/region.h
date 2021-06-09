@@ -342,6 +342,8 @@ region_init (
 /**
  * Looks for the ZRegion matching the identifier.
  */
+HOT
+NONNULL
 ZRegion *
 region_find (
   RegionIdentifier * id);
@@ -410,6 +412,8 @@ region_find_midi_note (
  *
  * @return The local frames.
  */
+NONNULL
+HOT
 long
 region_timeline_frames_to_local (
   ZRegion *  self,

@@ -1371,53 +1371,41 @@ region_timeline_frames_to_local (
   const long timeline_frames,
   const bool normalize)
 {
+  g_return_val_if_fail (IS_REGION (self), 0);
+
   long diff_frames;
 
   ArrangerObject * r_obj = (ArrangerObject *) self;
 
   if (normalize)
     {
-      if (self)
-        {
-          diff_frames =
-            timeline_frames -
-            r_obj->pos.frames;
-          long loop_end_frames =
-            r_obj->loop_end_pos.frames;
-          long clip_start_frames =
-            r_obj->clip_start_pos.frames;
-          long loop_size =
-            arranger_object_get_loop_length_in_frames (
-              r_obj);
-          g_return_val_if_fail (
-            loop_size > 0, 0);
+      diff_frames =
+        timeline_frames -
+        r_obj->pos.frames;
+      long loop_end_frames =
+        r_obj->loop_end_pos.frames;
+      long clip_start_frames =
+        r_obj->clip_start_pos.frames;
+      long loop_size =
+        arranger_object_get_loop_length_in_frames (
+          r_obj);
+      g_return_val_if_fail (
+        loop_size > 0, 0);
 
-          diff_frames += clip_start_frames;
+      diff_frames += clip_start_frames;
 
-          while (diff_frames >= loop_end_frames)
-            {
-              diff_frames -= loop_size;
-            }
-        }
-      else
+      while (diff_frames >= loop_end_frames)
         {
-          diff_frames = 0;
+          diff_frames -= loop_size;
         }
 
       return diff_frames;
     }
   else
     {
-      if (self)
-        {
-          diff_frames =
-            timeline_frames -
-            r_obj->pos.frames;
-        }
-      else
-        {
-          diff_frames = 0;
-        }
+      diff_frames =
+        timeline_frames -
+        r_obj->pos.frames;
 
       return diff_frames;
     }
