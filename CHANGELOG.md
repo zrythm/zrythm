@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.18.2.1] - 2021-06-09
+### Added
+- Add AppImage support
+
+### Changed
+- Update Chinese (Simplified), Russian, Ukrainian, Polish translations
+- Install org.zrythm.Zrythm.desktop instead of zrythm.desktop
+- Various DSP/UI optimizations
+
+### Fixed
+- Fix crash when attempting to get last n lines from log file before it is initialized
+- Fix undo stack indices not getting updated when removing actions
+- Fix error when opening automation lanes on master
+
 ## [1.0.0-alpha.18.1.1] - 2021-06-06
 ### Added
 - Make track mute/solo/listen/mono/record MIDI bindable
