@@ -338,6 +338,9 @@ audio_clip_write_to_pool (
   g_return_if_fail (path_in_main_project);
   g_return_if_fail (new_path);
 
+  /* whether a new write is needed */
+  bool need_new_write = true;
+
   /* skip if file with same hash already exists */
   if (file_exists (new_path) && !parts)
     {
@@ -356,14 +359,13 @@ audio_clip_write_to_pool (
             "skipping writing to existing clip %s "
             "in pool",
             new_path);
-          goto write_to_pool_free_and_return;
+          need_new_write = false;
         }
     }
 
   /* if writing to backup and same file exists in
-   * main project dir, create a symlink (fallback
-   * to copying) */
-  if (self->file_hash && is_backup)
+   * main project dir, copy */
+  if (need_new_write && self->file_hash && is_backup)
     {
       bool exists_in_main_project = false;
       if (file_exists (path_in_main_project))
@@ -380,6 +382,11 @@ audio_clip_write_to_pool (
 
       if (exists_in_main_project)
         {
+          /* don't symlink - if files are deleted
+           * from the main project then they won't
+           * be found in old backups - do plain copy
+           * instead */
+#if 0
           g_debug (
             "linking clip from main project "
             "('%s' to '%s')",
@@ -390,6 +397,7 @@ audio_clip_write_to_pool (
             {
               g_message (
                 "failed to link, copying instead");
+#endif
 
               /* copy */
               GFile * src_file =
@@ -406,7 +414,7 @@ audio_clip_write_to_pool (
                     src_file, dest_file, 0, NULL, NULL,
                     NULL, &err))
                 {
-                  goto write_to_pool_free_and_return;
+                  need_new_write = false;
                 }
               else /* else if failed */
                 {
@@ -415,27 +423,31 @@ audio_clip_write_to_pool (
                     path_in_main_project, new_path,
                     err->message);
                 }
+#if 0
             }
+#endif
         }
     }
 
-  g_debug (
-    "writing clip %s to pool "
-    "(parts %d, is backup  %d): '%s'",
-    self->name, parts, is_backup, new_path);
-  audio_clip_write_to_file (
-    self, new_path, parts);
-
-  if (!parts)
+  if (need_new_write)
     {
-      /* store file hash */
-      g_free_and_null (self->file_hash);
-      self->file_hash =
-        hash_get_from_file (
-          new_path, HASH_ALGORITHM_XXH3_64);
+      g_debug (
+        "writing clip %s to pool "
+        "(parts %d, is backup  %d): '%s'",
+        self->name, parts, is_backup, new_path);
+      audio_clip_write_to_file (
+        self, new_path, parts);
+
+      if (!parts)
+        {
+          /* store file hash */
+          g_free_and_null (self->file_hash);
+          self->file_hash =
+            hash_get_from_file (
+              new_path, HASH_ALGORITHM_XXH3_64);
+        }
     }
 
-write_to_pool_free_and_return:
   g_free (path_in_main_project);
   g_free (new_path);
 }
