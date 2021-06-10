@@ -52,6 +52,7 @@
 #include "utils/lilv.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -586,13 +587,12 @@ lv2_gtk_open_ui (
           plugin->extui.plugin_human_id =
             plugin_generate_window_title (
               plugin->plugin);
-          lv2_ui_instantiate (plugin);
         }
       else
         {
           g_message ("Instantiating UI...");
-          lv2_ui_instantiate (plugin);
         }
+      lv2_ui_instantiate (plugin);
     }
 
   /* present the window */
@@ -631,7 +631,10 @@ lv2_gtk_open_ui (
     }
   else
     {
-      g_critical ("Failed to open LV2 UI");
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        _("Failed to open LV2 UI for %s"),
+        plugin->plugin->setting->descr->name);
       return -1;
     }
 
