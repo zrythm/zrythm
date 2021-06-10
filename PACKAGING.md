@@ -95,7 +95,9 @@ the name and logo.
 To replace the trademarked name and logo, you can use
 the `program_name` and `custom_logo_and_splash` meson
 options, after replacing all files inside
-`data/icon-themes/zrythm-dark/scalable/apps`.
+`data/icon-themes/zrythm-dark/scalable/apps`. There
+may be more things that need to be changed that
+we missed. If you find any, please let us know.
 
 ----
 

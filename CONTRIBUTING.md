@@ -4,8 +4,8 @@ Contributing to Zrythm
 Zrythm is a project developed mostly by volunteers
 from all around the world. You are welcome to join
 us on our mailing lists or in the #zrythm channel in
-IRC Freenode. Tell us how would you like to help,
-and we will do our best to guide you.
+Libera.chat IRC. Tell us how would you like to
+help, and we will do our best to guide you.
 
 # Project Management
 We use [Sourcehut](https://sr.ht/~alextee/zrythm/)
@@ -28,7 +28,7 @@ You can read the project documentation already
 available in the manual and help us identify any
 errors or omissions. Creating new manuals,
 tutorials, and blog entries will also help users and
-developers discover what we do.
+developers discover Zrythm.
 
 # Programming
 Source code is in the
