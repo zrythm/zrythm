@@ -28,8 +28,8 @@ be attached there using a tool like
 .. image:: /_static/img/midi-devices.png
    :align: center
 
-.. tip:: Depending on your setup, MIDI devices might need
+.. note:: Depending on your setup, MIDI devices might need
   to be bridged to JACK using :term:`a2jmidid`.
 
-.. warning:: Zrythm will not remember connections made
+.. note:: Zrythm will not remember connections made
    externally.

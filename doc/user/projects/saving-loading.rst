@@ -53,8 +53,8 @@ Saving works as you would expect: :guilabel:`Save As...` will save the Project i
 and :guilabel:`Save` will save the Project in the
 previous location.
 
-.. note:: When saving projects, Zrythm expects you to
-  give it a directory
+.. important:: When saving projects, Zrythm expects
+   you to give it a directory
 
 Automatic Backups
 -----------------

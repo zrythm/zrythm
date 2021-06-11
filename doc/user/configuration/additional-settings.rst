@@ -5,7 +5,9 @@
 Additional Settings
 ===================
 
-Zrythm stores all of its configuration using
+GSettings
+---------
+Zrythm stores most of its configuration using
 the GSettings mechanism, which comes with the
 `gsettings <https://developer.gnome.org/gio/stable/gsettings-tool.html>`_ command for changing settings
 from the command line, or the optional GUI tool
@@ -18,17 +20,35 @@ edit them as Zrythm validates some settings
 before it saves them or uses some settings
 internally, but in some cases you
 may want to change them manually for some
-reason - for example if your selected backend
-causes Zrythm to crash.
+reason.
 
 Viewing the Current Settings
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See :option:`zrythm --print-settings`.
 
 Reset to Factory Settings
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See :option:`zrythm --reset-to-factory`.
 
 .. todo:: This will be added to the UI soon.
+
+Plugin Settings
+---------------
+Located at :file:`plugin-settings.yaml` under the
+:term:`Zrythm user path`, this is a collection of
+per-plugin settings, such as whether to open the
+plugin with :term:`Carla`, the
+:ref:`bridge mode <plugins-files/plugins/plugin-window:Opening Plugins in Bridged Mode>`
+to use and whether to use a
+:ref:`generic UI <plugins-files/plugins/plugin-window:Generic UIs>`.
+
+Zrythm will remember the last setting used for each
+plugin and automatically apply it when you choose to
+instantiate that plugin from the
+:doc:`plugin browser <../plugins-files/plugins/plugin-browser>`.
+
+.. note:: This file is generated and maintained
+   automatically by Zrythm and users are not
+   expected to edit it.

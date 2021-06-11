@@ -5,11 +5,11 @@
 Plugin Overview
 ===============
 
-There are various types of :term:`plugins <Plugin>`
-supported by Zrythm, mentioned in
+There are various :term:`plugin <Plugin>`
+formats supported by Zrythm, covered in
 :ref:`scanning-plugins`.
 
-.. tip:: In Zrythm, :term:`SFZ`/:term:`SF2` are also
+.. note:: In Zrythm, :term:`SFZ`/:term:`SF2` are also
    used as plugins.
 
 .. _plugin-types:
@@ -19,28 +19,26 @@ Plugin Types
 
 Plugins are classified into the following categories.
 
-Instrument
-~~~~~~~~~~
-These plugins will create an instrument track when added
-to the project.
+|icon_instrument| Instrument
+  These plugins will create an
+  :ref:`instrument track <tracks/instrument-track:Instrument Track>`
+  when added to the project.
 
-Effects
-~~~~~~~
-These plugins can be dragged into the insert slots of
-existing channels in the mixer or can be instantiated to
-create new FX tracks.
+|icon_audio-insert| Effect
+  These plugins can be dragged into the insert slots
+  of existing channels in the
+  :ref:`mixer <mixing/overview:Mixer>` or can be
+  instantiated to create new FX tracks.
 
-Modulators
-~~~~~~~~~~
-These plugins output :term:`CV` signals and can be used to modulate
-other plugin or track parameters.
+|icon_modulator| Modulator
+  These plugins output :term:`CV` signals and can be
+  used to modulate other plugin or track parameters.
 
-MIDI Effects
-~~~~~~~~~~~~
-These plugins modify incoming :term:`MIDI` signals and
-can be used
-in the MIDI signal chain of an Instrument or MIDI
-track.
+|icon_signal-midi| MIDI Effect
+  These plugins modify incoming :term:`MIDI` signals
+  and can be used in the MIDI signal chain of an
+  :ref:`instrument <tracks/instrument-track:Instrument Track>` or
+  :ref:`MIDI track <tracks/midi-track:MIDI Track>`.
 
 .. note::
   Zrythm looks inside the plugin's metadata to
@@ -53,7 +51,7 @@ Plugin Ports
 ------------
 Plugins consist of controls (parameters) and
 a variety of audio, :term:`MIDI` and :term:`CV`
-ports. Ports are explained in :ref:`ports`.
+:ref:`ports <ports>`.
 
 Zrythm first creates all plugins with the following
 special control ports.
@@ -61,14 +59,13 @@ After these ports are created, Zrythm appends
 the rest of the plugin's ports.
 
 Enabled
-~~~~~~~
-Controls whether the plugin is active or bypassed.
+  Controls whether the plugin is active or bypassed.
 
 Gain
-~~~~
-Increases the output volume of the plugin (if
-applicable).
+  Increases the output volume of the plugin (if
+  applicable).
 
 .. seealso::
    All of the plugin's ports will be shown in the
-   :ref:`Inspector Page <plugins-files/plugins/inspector-page:Inspector Page>`
+   plugin's
+   :ref:`inspector page <plugins-files/plugins/inspector-page:Inspector Page>`

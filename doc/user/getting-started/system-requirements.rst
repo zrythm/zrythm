@@ -28,7 +28,8 @@ Audio interface
   quality than integrated sound cards (especially if
   recording audio).
 MIDI keyboard
-  For quickly trying out melodies or recording.
+  For quickly trying out melodies, recording and
+  controlling knobs and buttons.
 
 JACK
 ----

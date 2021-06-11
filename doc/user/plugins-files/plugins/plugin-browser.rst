@@ -7,29 +7,33 @@
 Plugin Browser
 ==============
 
-The Plugin Browser makes it easy to browse and
-filter Plugins installed on your computer.
+The plugin browser makes it easy to browse and
+filter plugins installed on your computer.
 
 .. image:: /_static/img/plugin_browser.png
    :align: center
 
-Filters Tab
+Filter Tabs
 -----------
-The filters tab at the top allows you to select how to filter
-the Plugins. There are 3 tabs:
+Plugins can be filtered based on various conditions
+using the filter tabs at the top. The following
+tabs are available:
 
 Collection
   This tab contains your collections. You can create
-  collections such as "MySynths" and filter by the
+  collections such as `MySynths` and filter by the
   selected collections.
+Author
+  Filter by plugin manufacturer/author.
 Category
-  Filter plugins by category based on the plugin
-  metadata, such as "Delay", "Distortion", etc.
+  Filter by category (`Delay`, `Distortion`, etc.).
 Protocol
-  Allows you to filter plugins based their protocol
-  (eg., LV2 or SFZ).
+  Filter by protocol (`LV2`, `SFZ`, etc.).
 
-.. hint:: Where applicable, you can
+.. tip:: You can mix filters from various tabs for
+   a custom search.
+
+.. tip:: Where applicable, you can
    :kbd:`Control`-click to select multiple rows
    or deselect a row.
 
@@ -81,5 +85,5 @@ Double Click/Enter
 ~~~~~~~~~~~~~~~~~~
 
 Double click on the plugin or select it and press the
-return key on your keyboard to create a new track using
-that plugin.
+return key on your keyboard to create a new track
+using that plugin.

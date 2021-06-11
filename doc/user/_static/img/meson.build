@@ -20,8 +20,8 @@ c = run_command ([
 gui_icons = c.stdout().strip().split('\n')
 foreach icon : gui_icons
   # enable to add icons
-  #configure_file (
-    #copy: true,
-    #input: icon,
-    #output: '@PLAINNAME@')
+  configure_file (
+    copy: true,
+    input: icon,
+    output: '@PLAINNAME@')
 endforeach

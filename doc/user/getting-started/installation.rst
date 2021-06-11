@@ -26,7 +26,7 @@ Manual Installation
 If you are an advanced user, you can also build
 Zrythm from source, either using
 a `source distribution tarball <https://www.zrythm.org/releases/>`_
-or `git <https://git.zrythm.org/cgit/zrythm/>`_.
+or `git <https://git.zrythm.org/zrythm/zrythm/>`_.
 
 See :download:`INSTALL.md <../../../INSTALL.md>` in
 the source distribution for installation
@@ -45,6 +45,10 @@ distributions (and derivatives):
 - **Fedora 31 && 32** - x86_64
 - **Ubuntu 18.04, 20.04 & 20.10** - amd64
 
+We also offer an AppImage build, which is currently
+experimental. If you find any issues, please report
+them.
+
 Distribution Package
 ~~~~~~~~~~~~~~~~~~~~
 If your distribution provides a Zrythm package you
@@ -56,8 +60,5 @@ The installers above fully support Windows 64bit and MacOS.
 
 FreeBSD
 -------
-
-Port
-~~~~
 You can install the Zrythm port from the official
 repositories.

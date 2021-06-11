@@ -18,6 +18,7 @@ Backups are also kept in the project directory,
 and each backup is a standalone project
 on its own - ie, it contains all the files it needs
 to load as a separate project.
+
 Projects inside the :file:`backups` dir of a
 parent project are considered backups of the
 parent project.
@@ -104,10 +105,22 @@ Project Directory
 
 Project File Format
 -------------------
-Zrythm uses a custom MIME type
+Zrythm uses a custom
+`MIME <https://en.wikipedia.org/wiki/MIME>`_ type
 ``x-zrythm-project`` (which is an alias of
 ``application/zstd``) for its project files
 (``project.zpj``).
-This is a `zstd <https://facebook.github.io/zstd/>`_-compressed YAML file that can
-be decompressed (converted to YAML) using
+This is a
+`zstd <https://facebook.github.io/zstd/>`_-compressed
+`YAML <http://yaml.org/>`_ file that can be
+decompressed (converted to YAML) for inspection using
 :option:`zrythm --zpj-to-yaml`.
+
+Audio Pool
+----------
+The audio pool (:file:`pool` directory) contains all
+audio files currently used by the project. Zrythm
+will automatically delete unused files during save.
+
+.. note:: These files will be copied to backups as
+   well.

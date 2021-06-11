@@ -36,8 +36,8 @@ group.
 Recommended Plugin Bundles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_
-provides a good variety of synths and effects.
+`DISTRHO Ports`_ provides a good variety of synths
+and effects.
 
 `ZAM Plugins <http://www.zamaudio.com/?p=976>`_
 is an effects pack that contains high quality plugins for
@@ -53,34 +53,57 @@ of various MIDI effect and meter plugins.
 Synths
 ~~~~~~
 
-`Helm <https://tytel.org/helm/>`_ is a powerful subtractive
-synthesizer.
+`Helm <https://tytel.org/helm/>`_ is an easy to use
+subtractive synthesizer.
 
-`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM
-synthesizer that is closely modeled on the Yamaha DX7.
+Vitalium from `DISTRHO Ports`_ is a very powerful
+wavetable synthesizer.
+
+`Surge <https://surge-synthesizer.github.io/>`_ is a
+subtractive hybrid synthesizer with a unique
+interface.
+
+`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is
+an FM synthesizer that is closely modeled on the
+Yamaha DX7.
 
 `ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_
-is a powerful additive/subtractive synth that can synthesize
-a wide variety of sounds.
+is a powerful additive/subtractive synth that can
+synthesize a wide variety of sounds.
 
 Percussion Generators
 ~~~~~~~~~~~~~~~~~~~~~
 
 `GeonKick <https://gitlab.com/iurie/geonkick>`_ is a
-kick drum synthesizer that can also synthesize other types of
-percussion.
+kick drum synthesizer that can also synthesize
+other types of percussion.
 
 .. tip:: See :ref:`scanning-plugins` for paths where plugins
   will be scanned in.
 
+Presets
+-------
+`Freesound`_ has presets available to download for
+specific plugins.
+
+In the future, we will be offering preset packs for
+download.
+
 SFZ/SF2 Instruments
 -------------------
 
-You can find a list of SFZ instruments under free licenses
-at `sfz instruments <https://sfzinstruments.github.io/>`_.
+You can find a list of SFZ instruments under free
+licenses at
+`sfz instruments <https://sfzinstruments.github.io/>`_.
 
 Samples
 -------
 
-We recommend using `Freesound <https://freesound.org/>`_ for
+We recommend using `Freesound`_ for
 collecting CC-licensed samples.
+
+We will also be offering sample packs for download
+in the future.
+
+.. _Freesound: https://freesound.org
+.. _DISTRHO Ports: https://github.com/DISTRHO/DISTRHO-Ports

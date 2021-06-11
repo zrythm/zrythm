@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-06-04 10:25+0100\n"
+"POT-Creation-Date: 2021-06-11 01:02+0100\n"
 "PO-Revision-Date: 2021-05-10 16:32+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -23,6 +23,24 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
+
+#: ../../../../<rst_prolog>:12
+msgid "audio-insert"
+msgstr ""
+
+#: ../../../../<rst_prolog>:15
+#, fuzzy
+msgid "modulator"
+msgstr "Moduladores"
+
+#: ../../../../<rst_prolog>:18
+#, fuzzy
+msgid "instrument"
+msgstr "Instrumento"
+
+#: ../../../../<rst_prolog>:21
+msgid "signal-midi"
+msgstr ""
 
 #: ../../appendix/environment.rst:10
 msgid "Environment Variables"
@@ -137,7 +155,7 @@ msgid ""
 msgstr ""
 
 #: ../../appendix/files-and-directories.rst:47
-#: ../../getting-started/getting-plugins.rst:83
+#: ../../getting-started/getting-plugins.rst:100
 msgid "Samples"
 msgstr "Amostras"
 
@@ -260,7 +278,7 @@ msgid "Troubleshooting"
 msgstr "Resolução de problemas"
 
 #: ../../appendix/troubleshooting.rst:10
-#: ../../configuration/additional-settings.rst:34
+#: ../../configuration/additional-settings.rst:35
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
 #: ../../editing/clip-editors/piano-roll.rst:82
@@ -400,9 +418,15 @@ msgstr "Esta é uma função TODO."
 msgid "Additional Settings"
 msgstr "Configurações adicionais"
 
-#: ../../configuration/additional-settings.rst:8
+#: ../../configuration/additional-settings.rst:9
+#, fuzzy
+msgid "GSettings"
+msgstr "Configurações do projeto."
+
+#: ../../configuration/additional-settings.rst:10
+#, fuzzy
 msgid ""
-"Zrythm stores all of its configuration using the GSettings mechanism, "
+"Zrythm stores most of its configuration using the GSettings mechanism, "
 "which comes with the `gsettings <https://developer.gnome.org/gio/stable"
 "/gsettings-tool.html>`_ command for changing settings from the command "
 "line, or the optional GUI tool `dconf-editor "
@@ -414,14 +438,14 @@ msgstr ""
 "alterar configurações da linha de comando ou a ferramenta opcional GUI "
 "`dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>`_."
 
-#: ../../configuration/additional-settings.rst:14
+#: ../../configuration/additional-settings.rst:16
+#, fuzzy
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of "
 "them are found inside Zrythm's UI, and it is not recommended to edit them"
 " as Zrythm validates some settings before it saves them or uses some "
 "settings internally, but in some cases you may want to change them "
-"manually for some reason - for example if your selected backend causes "
-"Zrythm to crash."
+"manually for some reason."
 msgstr ""
 "Normalmente não deve precisar acessar nenhuma dessas configurações, pois "
 "a maioria delas encontra-se dentro da interface do Zrythm e não é "
@@ -429,25 +453,53 @@ msgstr ""
 "de gravá-las, mas em alguns casos pode querer alterá-las manualmente por "
 "algum motivo."
 
-#: ../../configuration/additional-settings.rst:25
+#: ../../configuration/additional-settings.rst:26
 msgid "Viewing the Current Settings"
 msgstr "Ver as definições atuais"
 
-#: ../../configuration/additional-settings.rst:27
+#: ../../configuration/additional-settings.rst:28
 msgid "See :option:`zrythm --print-settings`."
 msgstr "Veja :option:`zrythm --print-settings`."
 
-#: ../../configuration/additional-settings.rst:30
+#: ../../configuration/additional-settings.rst:31
 msgid "Reset to Factory Settings"
 msgstr "Redefinir para configurações de fábrica"
 
-#: ../../configuration/additional-settings.rst:32
+#: ../../configuration/additional-settings.rst:33
 msgid "See :option:`zrythm --reset-to-factory`."
 msgstr "Veja :option:`zrythm --reset-to-factory`."
 
-#: ../../configuration/additional-settings.rst:34
+#: ../../configuration/additional-settings.rst:35
 msgid "This will be added to the UI soon."
 msgstr "Isto será brevemente adicionado na IU."
+
+#: ../../configuration/additional-settings.rst:38
+#, fuzzy
+msgid "Plugin Settings"
+msgstr "Configurações de :term:`Plugin`."
+
+#: ../../configuration/additional-settings.rst:39
+msgid ""
+"Located at :file:`plugin-settings.yaml` under the :term:`Zrythm user "
+"path`, this is a collection of per-plugin settings, such as whether to "
+"open the plugin with :term:`Carla`, the :ref:`bridge mode <plugins-"
+"files/plugins/plugin-window:Opening Plugins in Bridged Mode>` to use and "
+"whether to use a :ref:`generic UI <plugins-files/plugins/plugin-"
+"window:Generic UIs>`."
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:47
+msgid ""
+"Zrythm will remember the last setting used for each plugin and "
+"automatically apply it when you choose to instantiate that plugin from "
+"the :doc:`plugin browser <../plugins-files/plugins/plugin-browser>`."
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:52
+msgid ""
+"This file is generated and maintained automatically by Zrythm and users "
+"are not expected to edit it."
+msgstr ""
 
 #: ../../configuration/device-setup.rst:6
 msgid "Device Setup"
@@ -466,7 +518,7 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:21
-#: ../../getting-started/system-requirements.rst:34 ../../glossary/intro.rst:66
+#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:66
 msgid "JACK"
 msgstr "JACK"
 
@@ -3118,9 +3170,8 @@ msgid "Recommended Plugin Bundles"
 msgstr "Pacotes de suplementos recomendados"
 
 #: ../../getting-started/getting-plugins.rst:39
-msgid ""
-"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
-"good variety of synths and effects."
+#, fuzzy
+msgid "`DISTRHO Ports`_ provides a good variety of synths and effects."
 msgstr ""
 "`DISTRHO Portos <https://distrho.sourceforge.io/ports.php>`_ fornece uma "
 "boa variedade de sintetizadores e efeitos."
@@ -3154,12 +3205,25 @@ msgid "Synths"
 msgstr "Sintetizadores"
 
 #: ../../getting-started/getting-plugins.rst:56
-msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
+#, fuzzy
+msgid ""
+"`Helm <https://tytel.org/helm/>`_ is an easy to use subtractive "
+"synthesizer."
 msgstr ""
 "`Helm < https://tytel.org/helm/>` _ é um sintetizador subtrativo "
 "excelente."
 
 #: ../../getting-started/getting-plugins.rst:59
+msgid "Vitalium from `DISTRHO Ports`_ is a very powerful wavetable synthesizer."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:62
+msgid ""
+"`Surge <https://surge-synthesizer.github.io/>`_ is a subtractive hybrid "
+"synthesizer with a unique interface."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:66
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer "
 "that is closely modeled on the Yamaha DX7."
@@ -3167,7 +3231,7 @@ msgstr ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed é um sintetizador FM que"
 " é intimamente modelado no Yamaha DX7."
 
-#: ../../getting-started/getting-plugins.rst:62
+#: ../../getting-started/getting-plugins.rst:70
 msgid ""
 "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ is a "
 "powerful additive/subtractive synth that can synthesize a wide variety of"
@@ -3177,11 +3241,11 @@ msgstr ""
 "poderoso sintetizador aditivo/subtrativo que pode sintetizar uma grande "
 "variedade de sons."
 
-#: ../../getting-started/getting-plugins.rst:67
+#: ../../getting-started/getting-plugins.rst:75
 msgid "Percussion Generators"
 msgstr "Geradores de Percussão"
 
-#: ../../getting-started/getting-plugins.rst:69
+#: ../../getting-started/getting-plugins.rst:77
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
@@ -3189,17 +3253,29 @@ msgstr ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ é um sintetizador de "
 "tambor de pontapé que também pode sintetizar outros tipos de percussão."
 
-#: ../../getting-started/getting-plugins.rst:73
+#: ../../getting-started/getting-plugins.rst:81
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
 "Veja :ref:`scanning-plugins` para caminhos onde os suplementos serão "
 "procurados."
 
-#: ../../getting-started/getting-plugins.rst:77
+#: ../../getting-started/getting-plugins.rst:85
+msgid "Presets"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:86
+msgid "`Freesound`_ has presets available to download for specific plugins."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:89
+msgid "In the future, we will be offering preset packs for download."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:93
 msgid "SFZ/SF2 Instruments"
 msgstr "Instrumentos SFZ/SF2"
 
-#: ../../getting-started/getting-plugins.rst:79
+#: ../../getting-started/getting-plugins.rst:95
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
@@ -3207,13 +3283,16 @@ msgstr ""
 "Encontra uma lista de instrumentos SFZ sob licenças livres em `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 
-#: ../../getting-started/getting-plugins.rst:85
-msgid ""
-"We recommend using `Freesound <https://freesound.org/>`_ for collecting "
-"CC-licensed samples."
+#: ../../getting-started/getting-plugins.rst:102
+#, fuzzy
+msgid "We recommend using `Freesound`_ for collecting CC-licensed samples."
 msgstr ""
 "Recomendamos usar 'Freesound <https://freesound.org/>'_ para coletar "
 "amostras licenciadas pelo CC."
+
+#: ../../getting-started/getting-plugins.rst:105
+msgid "We will also be offering sample packs for download in the future."
+msgstr ""
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
@@ -3251,11 +3330,12 @@ msgid "Manual Installation"
 msgstr "Instalação Manual"
 
 #: ../../getting-started/installation.rst:26
+#, fuzzy
 msgid ""
 "If you are an advanced user, you can also build Zrythm from source, "
 "either using a `source distribution tarball "
 "<https://www.zrythm.org/releases/>`_ or `git "
-"<https://git.zrythm.org/cgit/zrythm/>`_."
+"<https://git.zrythm.org/zrythm/zrythm/>`_."
 msgstr ""
 "Se é um utilizador avançado, também pode construir Zrythm a partir do "
 "código-fonte, utilizando um tarball de distribuição de código fonte "
@@ -3271,7 +3351,7 @@ msgstr ""
 "fonte para instruções de instalação."
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/system-requirements.rst:52
+#: ../../getting-started/system-requirements.rst:53
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -3299,11 +3379,17 @@ msgstr "**Fedora 31 && 32** - x86_64"
 msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 
-#: ../../getting-started/installation.rst:49
+#: ../../getting-started/installation.rst:48
+msgid ""
+"We also offer an AppImage build, which is currently experimental. If you "
+"find any issues, please report them."
+msgstr ""
+
+#: ../../getting-started/installation.rst:53
 msgid "Distribution Package"
 msgstr "Pacote de Distribução"
 
-#: ../../getting-started/installation.rst:50
+#: ../../getting-started/installation.rst:54
 msgid ""
 "If your distribution provides a Zrythm package you can also install it "
 "from there."
@@ -3311,24 +3397,20 @@ msgstr ""
 "Se a sua distribuição fornece um pacote Zrythm, também pode instalá-lo de"
 " lá."
 
-#: ../../getting-started/installation.rst:54
+#: ../../getting-started/installation.rst:58
 msgid "Windows & MacOS"
 msgstr "Windows & MacOS"
 
-#: ../../getting-started/installation.rst:55
+#: ../../getting-started/installation.rst:59
 msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr "Os instaladores acima suportam totalmente o Windows 64bit e MacOS."
 
-#: ../../getting-started/installation.rst:58
-#: ../../getting-started/system-requirements.rst:57
+#: ../../getting-started/installation.rst:62
+#: ../../getting-started/system-requirements.rst:58
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
-#: ../../getting-started/installation.rst:61
-msgid "Port"
-msgstr "Porta"
-
-#: ../../getting-started/installation.rst:62
+#: ../../getting-started/installation.rst:63
 msgid "You can install the Zrythm port from the official repositories."
 msgstr "Pode instalar a porta de Zrythm dos repositórios oficiais."
 
@@ -3402,8 +3484,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
-"the recommended one for both, but it takes some time to set up if this is"
-" your first time using it."
+"the recommended one for both."
 msgstr ""
 "#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
 "O Zrythm suporta múltiplos motores de backend de áudio e MIDI. JACK é "
@@ -3415,13 +3496,13 @@ msgstr ""
 "é o recomendado para ambos, mas leva algum tempo para configurar se esta "
 "é a sua primeira vez a utilizá-lo."
 
-#: ../../getting-started/running-zrythm.rst:52
+#: ../../getting-started/running-zrythm.rst:51
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr ""
 "Se o JACK não estiver disponível no seu sistema, recomendamos o RtAudio e"
 " o RtMidi."
 
-#: ../../getting-started/running-zrythm.rst:55
+#: ../../getting-started/running-zrythm.rst:54
 #, fuzzy
 msgid ""
 "Click :guilabel:`Test` to try connecting to the backend to see if it is "
@@ -3434,7 +3515,7 @@ msgstr ""
 "Clique :guilabel:`Test` para tentar conectar-se ao backend para ver se "
 "está funcional."
 
-#: ../../getting-started/running-zrythm.rst:58
+#: ../../getting-started/running-zrythm.rst:57
 #, fuzzy
 msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
@@ -3447,7 +3528,7 @@ msgstr ""
 "Se optar por usar JACK, o JACK MIDI e o backend de áudio JACK devem ser "
 "escolhidos em conjunto."
 
-#: ../../getting-started/running-zrythm.rst:63
+#: ../../getting-started/running-zrythm.rst:62
 msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
@@ -3456,11 +3537,11 @@ msgstr ""
 ":ref:`preferences`, portanto não se preocupe se selecionou as "
 "configurações erradas."
 
-#: ../../getting-started/running-zrythm.rst:68
+#: ../../getting-started/running-zrythm.rst:67
 msgid "Plugin Scan"
 msgstr "Varredura de suplementos"
 
-#: ../../getting-started/running-zrythm.rst:69
+#: ../../getting-started/running-zrythm.rst:68
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning "
 "for plugins <../plugins-files/plugins/scanning>`."
@@ -3469,11 +3550,11 @@ msgstr ""
 "iniciará :doc:`procurar for suplementos <../plugins-"
 "files/plugins/scanning>`."
 
-#: ../../getting-started/running-zrythm.rst:77
+#: ../../getting-started/running-zrythm.rst:76
 msgid "Project Selection"
 msgstr "Seleção de projeto"
 
-#: ../../getting-started/running-zrythm.rst:78
+#: ../../getting-started/running-zrythm.rst:77
 #, fuzzy
 msgid ""
 "Finally, Zrythm will ask you to :doc:`load or create a project "
@@ -3484,11 +3565,11 @@ msgstr ""
 "<../projects/saving-loading>` e depois a :doc:`interface prinipal "
 "<../zrythm-interface/zrythm-interface-overview>` irá aparecer."
 
-#: ../../getting-started/running-zrythm.rst:87
+#: ../../getting-started/running-zrythm.rst:86
 msgid "Project selection"
 msgstr "Seleção de projeto"
 
-#: ../../getting-started/running-zrythm.rst:92
+#: ../../getting-started/running-zrythm.rst:91
 msgid "Main interface"
 msgstr "Interface principal"
 
@@ -3555,15 +3636,18 @@ msgstr ""
 "Uma interface de áudio é recomendada, pois oferece baixa latência e "
 "melhor qualidade (especialmente se estiver a gravar áudio)."
 
-#: ../../getting-started/system-requirements.rst:31
+#: ../../getting-started/system-requirements.rst:32
 msgid "MIDI keyboard"
 msgstr "Teclado MIDI"
 
 #: ../../getting-started/system-requirements.rst:31
-msgid "For quickly trying out melodies or recording."
+#, fuzzy
+msgid ""
+"For quickly trying out melodies, recording and controlling knobs and "
+"buttons."
 msgstr "Para experimentar rapidamente com melodias ou gravações."
 
-#: ../../getting-started/system-requirements.rst:35
+#: ../../getting-started/system-requirements.rst:36
 #, python-format
 msgid ""
 "When using the :term:`JACK` backend, JACK needs to be set up and "
@@ -3575,35 +3659,35 @@ msgid ""
 "jack.html>`_, so we will skip this part."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:44
+#: ../../getting-started/system-requirements.rst:45
 msgid "Memory Locking"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:45
+#: ../../getting-started/system-requirements.rst:46
 msgid ""
 "Zrythm requires memory locking privileges for reliable, dropout-free "
 "operation. In short, if data is not locked into memory, it can be swapped"
 " by the kernel, causing xruns when attempting to access the data."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:53
+#: ../../getting-started/system-requirements.rst:54
 msgid ""
 "To set up these privileges for your user, see `How do I configure my "
 "linux system to allow JACK to use realtime scheduling? "
 "<https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:58
+#: ../../getting-started/system-requirements.rst:59
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:63
+#: ../../getting-started/system-requirements.rst:64
 msgid "Open File Limit"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:64
+#: ../../getting-started/system-requirements.rst:65
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it"
 " can open. You should give your user enough permissions to allow this."
@@ -4223,8 +4307,7 @@ msgstr ""
 " as portas de suplemento sidechain, se o suplemento tiver algum. Veja "
 ":ref:`track-sends` para detalhes."
 
-#: ../../modulators/intro.rst:8 ../../plugins-files/plugins/plugin-info.rst:34
-#: ../../tracks/track-types.rst:56
+#: ../../modulators/intro.rst:8 ../../tracks/track-types.rst:56
 msgid "Modulators"
 msgstr "Moduladores"
 
@@ -4970,78 +5053,86 @@ msgid "Plugin Browser"
 msgstr "Navegador de suplementos"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
+#, fuzzy
 msgid ""
-"The Plugin Browser makes it easy to browse and filter Plugins installed "
+"The plugin browser makes it easy to browse and filter plugins installed "
 "on your computer."
 msgstr ""
 "O Navegador de suplementos facilita a navegação e filtragem dos "
 "suplementos instalados no seu computador."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:17
-msgid "Filters Tab"
+#, fuzzy
+msgid "Filter Tabs"
 msgstr "Separador Filtros"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:18
 msgid ""
-"The filters tab at the top allows you to select how to filter the "
-"Plugins. There are 3 tabs:"
+"Plugins can be filtered based on various conditions using the filter tabs"
+" at the top. The following tabs are available:"
 msgstr ""
-"O separador Filtros na parte superior permite que selecione como filtrar "
-"os suplemento. Existem 3 separadores:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:23
+#: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid "Collection"
 msgstr "Coleção"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:22
+#: ../../plugins-files/plugins/plugin-browser.rst:23
+#, fuzzy
 msgid ""
 "This tab contains your collections. You can create collections such as "
-"\"MySynths\" and filter by the selected collections."
+"`MySynths` and filter by the selected collections."
 msgstr ""
 "Este separador contém suas coleções. Você pode criar coleções como "
 "\"MeusSynths\" e filtrar pelas coleções selecionadas."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
+#, fuzzy
+msgid "Author"
+msgstr "Autores"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:27
+msgid "Filter by plugin manufacturer/author."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Category"
 msgstr "Categoria"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:26
-msgid ""
-"Filter plugins by category based on the plugin metadata, such as "
-"\"Delay\", \"Distortion\", etc."
+#: ../../plugins-files/plugins/plugin-browser.rst:29
+msgid "Filter by category (`Delay`, `Distortion`, etc.)."
 msgstr ""
-"Filtrar suplementos por categoria com base nos metadados dos suplementos,"
-" tais como \"Delay\", \"Distortion\", etc."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:30
+#: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Protocol"
 msgstr "Protocolo"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:29
-msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
+#: ../../plugins-files/plugins/plugin-browser.rst:31
+msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
 msgstr ""
-"Permite-lhe filtrar suplementos com base no seu protocolo (por exemplo, "
-"LV2 ou VST)."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:32
+#: ../../plugins-files/plugins/plugin-browser.rst:33
+msgid "You can mix filters from various tabs for a custom search."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or"
 " deselect a row."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:37
+#: ../../plugins-files/plugins/plugin-browser.rst:41
 msgid "Filter Buttons"
 msgstr "Botões de Filtro"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:38
+#: ../../plugins-files/plugins/plugin-browser.rst:42
 msgid "Additionally to the above, plugins can be filtered based on their type."
 msgstr "Além disso, os suplementos podem ser filtrados com base no tipo deles."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:44
+#: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid "Filtering by modulator plugins"
 msgstr "Filtragem por suplementos moduladores"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:46
+#: ../../plugins-files/plugins/plugin-browser.rst:50
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
@@ -5049,19 +5140,19 @@ msgstr ""
 "Veja :ref:`plugin-types` para mais informações sobre os vários tipos de "
 "suplemento que existem."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:52
+#: ../../plugins-files/plugins/plugin-browser.rst:56
 msgid "Instantiating Plugins"
 msgstr "Instanciar suplementos"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:53
+#: ../../plugins-files/plugins/plugin-browser.rst:57
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "Existem algumas maneiras de instanciar suplementos:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:56
+#: ../../plugins-files/plugins/plugin-browser.rst:60
 msgid "Drag-n-Drop"
 msgstr "Arrastar-e-soltar"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:58
+#: ../../plugins-files/plugins/plugin-browser.rst:62
 msgid ""
 "You can drag and drop the selected plugin into empty space in the "
 "Tracklist or into empty space in the Mixer to create a new track using "
@@ -5071,7 +5162,7 @@ msgstr ""
 "de Faixas ou em espaço vazio no Misturador para criar uma faixa usando "
 "esse suplemento."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:68
+#: ../../plugins-files/plugins/plugin-browser.rst:72
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
@@ -5079,15 +5170,15 @@ msgstr ""
 "Alternativamente, pode arrastar o suplemento num compartimento de "
 "misturador para adicioná-lo lá ou substituir o suplemento anterior."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:74
+#: ../../plugins-files/plugins/plugin-browser.rst:78
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr "Se o suplemento é um modulador, pode pó-lo no separador Moduladores."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:81
+#: ../../plugins-files/plugins/plugin-browser.rst:85
 msgid "Double Click/Enter"
 msgstr "Clique Duplo/Enter"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:83
+#: ../../plugins-files/plugins/plugin-browser.rst:87
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -5100,9 +5191,10 @@ msgid "Plugin Overview"
 msgstr "Visão Geral de Suplementos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
+#, fuzzy
 msgid ""
-"There are various types of :term:`plugins <Plugin>` supported by Zrythm, "
-"mentioned in :ref:`scanning-plugins`."
+"There are various :term:`plugin <Plugin>` formats supported by Zrythm, "
+"covered in :ref:`scanning-plugins`."
 msgstr ""
 "Existem vários tipos de :term:`plugins <Plugin>` suportados pela Zrythm, "
 "mencionados em :ref:`scanning-plugins`."
@@ -5119,31 +5211,40 @@ msgstr "Tipos de suplemento"
 msgid "Plugins are classified into the following categories."
 msgstr "Os suplementos são classificados nas seguintes categorias."
 
-#: ../../plugins-files/plugins/plugin-info.rst:23
-#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
-msgid "Instrument"
-msgstr "Instrumento"
+#: ../../plugins-files/plugins/plugin-info.rst:25
+msgid "|icon_instrument| Instrument"
+msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:24
-msgid "These plugins will create an instrument track when added to the project."
+#: ../../plugins-files/plugins/plugin-info.rst:23
+#, fuzzy
+msgid ""
+"These plugins will create an :ref:`instrument track <tracks/instrument-"
+"track:Instrument Track>` when added to the project."
 msgstr ""
 "Estes suplementos criarão uma faixa de instrumento ao adicionar ao "
 "projeto."
 
-#: ../../plugins-files/plugins/plugin-info.rst:28
-msgid "Effects"
-msgstr "Efeitos"
+#: ../../plugins-files/plugins/plugin-info.rst:31
+msgid "|icon_audio-insert| Effect"
+msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:29
+#: ../../plugins-files/plugins/plugin-info.rst:28
+#, fuzzy
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
-"in the mixer or can be instantiated to create new FX tracks."
+"in the :ref:`mixer <mixing/overview:Mixer>` or can be instantiated to "
+"create new FX tracks."
 msgstr ""
 "Esses suplementos podem ser arrastados para os compartimentos de inserção"
 " de canais existentes no misturador ou podem ser instanciados para criar "
 "faixas FX."
 
 #: ../../plugins-files/plugins/plugin-info.rst:35
+#, fuzzy
+msgid "|icon_modulator| Modulator"
+msgstr "Moduladores de Roteamento"
+
+#: ../../plugins-files/plugins/plugin-info.rst:34
 msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other"
 " plugin or track parameters."
@@ -5151,19 +5252,19 @@ msgstr ""
 "Estes suplementos emitem sinais :term:`CV` e podem ser usados para "
 "modular outros parâmetros de suplemento ou de faixa."
 
-#: ../../plugins-files/plugins/plugin-info.rst:39
-msgid "MIDI Effects"
-msgstr "Efeitos MIDI"
+#: ../../plugins-files/plugins/plugin-info.rst:41
+msgid "|icon_signal-midi| MIDI Effect"
+msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:40
+#: ../../plugins-files/plugins/plugin-info.rst:38
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the"
-" MIDI signal chain of an Instrument or MIDI track."
+" MIDI signal chain of an :ref:`instrument <tracks/instrument-"
+"track:Instrument Track>` or :ref:`MIDI track <tracks/midi-track:MIDI "
+"Track>`."
 msgstr ""
-"Estes suplementos modificam os sinais :term:`MIDI` de entrada e servem na"
-" cadeia de sinais MIDI de um Instrumento ou faixa MIDI (em breve)."
 
-#: ../../plugins-files/plugins/plugin-info.rst:46
+#: ../../plugins-files/plugins/plugin-info.rst:44
 msgid ""
 "Zrythm looks inside the plugin's metadata to determine what type the "
 "plugin is. If that is not enough, Zrythm makes a decision based on the "
@@ -5174,21 +5275,22 @@ msgstr ""
 " o suplemento é. Se não for suficiente, o Zrythm decide à base da "
 "quantidade de portas de entrada e saída de áudio, MIDI, controle e CV."
 
-#: ../../plugins-files/plugins/plugin-info.rst:53
+#: ../../plugins-files/plugins/plugin-info.rst:51
 #: ../../zrythm-interface/left-panel.rst:41
 msgid "Plugin Ports"
 msgstr "Portas de Suplementos"
 
-#: ../../plugins-files/plugins/plugin-info.rst:54
+#: ../../plugins-files/plugins/plugin-info.rst:52
+#, fuzzy
 msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, "
-":term:`MIDI` and :term:`CV` ports. Ports are explained in :ref:`ports`."
+":term:`MIDI` and :term:`CV` :ref:`ports <ports>`."
 msgstr ""
 "Os suplementos consistem em controles (parâmetros) e uma variedade de "
 "portas de áudio, :term:`MIDI` e :term:`CV`. As portas são explicadas em "
 ":ref:`ports`."
 
-#: ../../plugins-files/plugins/plugin-info.rst:58
+#: ../../plugins-files/plugins/plugin-info.rst:56
 msgid ""
 "Zrythm first creates all plugins with the following special control "
 "ports. After these ports are created, Zrythm appends the rest of the "
@@ -5198,26 +5300,27 @@ msgstr ""
 "especiais seguintes. Após estas portas serem criadas, a Zrythm acrescenta"
 " o resto das portas do suplemento."
 
-#: ../../plugins-files/plugins/plugin-info.rst:64
+#: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Enabled"
 msgstr "Ativado"
 
-#: ../../plugins-files/plugins/plugin-info.rst:65
+#: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Controls whether the plugin is active or bypassed."
 msgstr "Controla se o suplemento está ativo ou se foi contornado."
 
-#: ../../plugins-files/plugins/plugin-info.rst:68
+#: ../../plugins-files/plugins/plugin-info.rst:66
 msgid "Gain"
 msgstr "Ganho"
 
-#: ../../plugins-files/plugins/plugin-info.rst:69
+#: ../../plugins-files/plugins/plugin-info.rst:65
 msgid "Increases the output volume of the plugin (if applicable)."
 msgstr "Aumenta o volume de saída do suplemento (se aplicável)."
 
-#: ../../plugins-files/plugins/plugin-info.rst:73
+#: ../../plugins-files/plugins/plugin-info.rst:69
+#, fuzzy
 msgid ""
-"All of the plugin's ports will be shown in the :ref:`Inspector Page "
-"<plugins-files/plugins/inspector-page:Inspector Page>`"
+"All of the plugin's ports will be shown in the plugin's :ref:`inspector "
+"page <plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
 "Todas as portas dos suplementos serão mostradas na :ref:`Página do "
 "inspetor <plugins-files/plugins/inspector-page:Inspector Page>`"
@@ -5555,34 +5658,56 @@ msgstr "backups"
 msgid ""
 "Backups are also kept in the project directory, and each backup is a "
 "standalone project on its own - ie, it contains all the files it needs to"
-" load as a separate project. Projects inside the :file:`backups` dir of a"
-" parent project are considered backups of the parent project."
+" load as a separate project."
 msgstr ""
 
-#: ../../projects/project-structure.rst:26
+#: ../../projects/project-structure.rst:22
+msgid ""
+"Projects inside the :file:`backups` dir of a parent project are "
+"considered backups of the parent project."
+msgstr ""
+
+#: ../../projects/project-structure.rst:27
 msgid ""
 "Zrythm will keep backups automatically by default during autosave. You "
 "can change the autosave interval or turn it off in the :ref:`preferences "
 "<configuration/preferences:General (Project)>`."
 msgstr ""
 
-#: ../../projects/project-structure.rst:33
+#: ../../projects/project-structure.rst:34
 #, fuzzy
 msgid "Project Directory"
 msgstr "Seleção de projeto"
 
-#: ../../projects/project-structure.rst:106
+#: ../../projects/project-structure.rst:107
 #, fuzzy
 msgid "Project File Format"
 msgstr "O ficheiro do Projecto"
 
-#: ../../projects/project-structure.rst:107
+#: ../../projects/project-structure.rst:108
 msgid ""
-"Zrythm uses a custom MIME type ``x-zrythm-project`` (which is an alias of"
-" ``application/zstd``) for its project files (``project.zpj``). This is a"
-" `zstd <https://facebook.github.io/zstd/>`_-compressed YAML file that can"
-" be decompressed (converted to YAML) using :option:`zrythm --zpj-to-"
-"yaml`."
+"Zrythm uses a custom `MIME <https://en.wikipedia.org/wiki/MIME>`_ type "
+"``x-zrythm-project`` (which is an alias of ``application/zstd``) for its "
+"project files (``project.zpj``). This is a `zstd "
+"<https://facebook.github.io/zstd/>`_-compressed `YAML "
+"<http://yaml.org/>`_ file that can be decompressed (converted to YAML) "
+"for inspection using :option:`zrythm --zpj-to-yaml`."
+msgstr ""
+
+#: ../../projects/project-structure.rst:120
+#, fuzzy
+msgid "Audio Pool"
+msgstr "Posição da cabeça de reprodução"
+
+#: ../../projects/project-structure.rst:121
+msgid ""
+"The audio pool (:file:`pool` directory) contains all audio files "
+"currently used by the project. Zrythm will automatically delete unused "
+"files during save."
+msgstr ""
+
+#: ../../projects/project-structure.rst:125
+msgid "These files will be copied to backups as well."
 msgstr ""
 
 #: ../../projects/saving-loading.rst:8
@@ -7090,6 +7215,10 @@ msgstr "O nome da faixa"
 msgid "The track that this track routes its output to."
 msgstr "A faixa para onde esta faixa encaminha a saída dela."
 
+#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
+msgid "Instrument"
+msgstr "Instrumento"
+
 #: ../../tracks/inspector-page.rst:36
 msgid ""
 "If the track is an :ref:`instrument-track`, the instrument plugin for "
@@ -8536,6 +8665,51 @@ msgid ""
 msgstr ""
 "As informações sobre o backend e as opções atualmente selecionadas são "
 "visíveis no canto inferior esquerdo."
+
+#~ msgid ""
+#~ "The filters tab at the top allows"
+#~ " you to select how to filter "
+#~ "the plugins. The following tabs are "
+#~ "available:"
+#~ msgstr ""
+#~ "O separador Filtros na parte superior"
+#~ " permite que selecione como filtrar "
+#~ "os suplemento. Existem 3 separadores:"
+
+#~ msgid ""
+#~ "Filter plugins by category based on "
+#~ "the plugin metadata, such as \"Delay\","
+#~ " \"Distortion\", etc."
+#~ msgstr ""
+#~ "Filtrar suplementos por categoria com "
+#~ "base nos metadados dos suplementos, tais"
+#~ " como \"Delay\", \"Distortion\", etc."
+
+#~ msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
+#~ msgstr ""
+#~ "Permite-lhe filtrar suplementos com base"
+#~ " no seu protocolo (por exemplo, LV2"
+#~ " ou VST)."
+
+#~ msgid ""
+#~ "These plugins modify incoming :term:`MIDI` "
+#~ "signals and can be used in the "
+#~ "MIDI signal chain of an Instrument "
+#~ "or MIDI track."
+#~ msgstr ""
+#~ "Estes suplementos modificam os sinais "
+#~ ":term:`MIDI` de entrada e servem na "
+#~ "cadeia de sinais MIDI de um "
+#~ "Instrumento ou faixa MIDI (em breve)."
+
+#~ msgid "Effects"
+#~ msgstr "Efeitos"
+
+#~ msgid "MIDI Effects"
+#~ msgstr "Efeitos MIDI"
+
+#~ msgid "Port"
+#~ msgstr "Porta"
 
 #~ msgid "test2"
 #~ msgstr "Hastes"

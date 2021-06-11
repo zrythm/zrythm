@@ -46,11 +46,10 @@ Audio/MIDI Backends
 
 Zrythm supports multiple audio and MIDI backend
 engines. :term:`JACK` is the recommended one for
-both, but it takes some time to set up if this is
-your first time using it.
+both.
 
-If JACK is not available on your system,
-we recommend RtAudio and RtMidi.
+If JACK is not available on your system, we
+recommend RtAudio and RtMidi.
 
 Click :guilabel:`Test` to try connecting to the
 backend to see if it is functional.
