@@ -47,6 +47,7 @@ util_srcs = [
   'sort.c',
   'stack.c',
   'string.c',
+  'strv_builder.c',
   'symap.c',
   'system.c',
   'ui.c',

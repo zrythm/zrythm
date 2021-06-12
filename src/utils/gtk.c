@@ -22,6 +22,7 @@
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -957,28 +958,25 @@ z_gtk_source_language_manager_get (void)
       return manager;
     }
 
-/* wait for latest glib to enable on freebsd */
-#ifndef __FreeBSD__
-
   /* get the default search paths */
   const char * const * before_paths =
     gtk_source_language_manager_get_search_path (
       manager);
 
   /* build the new paths */
-  GStrvBuilder * after_paths_builder =
-    g_strv_builder_new ();
-  GStrvBuilder * after_paths_builder_tmp =
-    g_strv_builder_new ();
+  StrvBuilder * after_paths_builder =
+    strv_builder_new ();
+  StrvBuilder * after_paths_builder_tmp =
+    strv_builder_new ();
   int i = 0;
   while (before_paths[i])
     {
       g_debug (
         "language specs dir %d: %s",
         i, before_paths[i]);
-      g_strv_builder_add (
+      strv_builder_add (
         after_paths_builder, before_paths[i]);
-      g_strv_builder_add (
+      strv_builder_add (
         after_paths_builder_tmp, before_paths[i]);
       i++;
     }
@@ -988,19 +986,19 @@ z_gtk_source_language_manager_get (void)
     zrythm_get_dir (
       ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR);
   g_return_val_if_fail (language_specs_dir, NULL);
-  GStrv tmp_dirs =
-    g_strv_builder_end (after_paths_builder_tmp);
+  char ** tmp_dirs =
+    strv_builder_end (after_paths_builder_tmp);
   if (!g_strv_contains (
          (const char * const *) tmp_dirs,
          language_specs_dir))
     {
-      g_strv_builder_add (
+      strv_builder_add (
         after_paths_builder, language_specs_dir);
     }
   g_strfreev (tmp_dirs);
 
-  GStrv dirs =
-    g_strv_builder_end (after_paths_builder);
+  char ** dirs =
+    strv_builder_end (after_paths_builder);
 
   i = 0;
   while (dirs[i])
@@ -1015,7 +1013,6 @@ z_gtk_source_language_manager_get (void)
 
   g_free (language_specs_dir);
   g_strfreev (dirs);
-#endif
 
   already_set = true;
 

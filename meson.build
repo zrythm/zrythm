@@ -501,7 +501,7 @@ if have_jack
 endif
 
 glib_dep = dependency (
-  'glib-2.0', version: '>=2.68', required: false,
+  'glib-2.0', required: false,
   static: all_static)
 if os_freebsd
   # force system glib on freebsd
