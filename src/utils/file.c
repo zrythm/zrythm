@@ -36,9 +36,17 @@
 
 #include "zrythm-config.h"
 
+#include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __linux__
+#include <fcntl.h>
+#include <linux/fs.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#endif
 
 #ifdef _WOE32
 #include <windows.h>
@@ -49,6 +57,7 @@
 #include "utils/file.h"
 
 #include <glib.h>
+#include <glib/gstdio.h>
 
 char *
 file_path_relative_to (
@@ -121,4 +130,27 @@ file_symlink (
 #endif
 
   return ret;
+}
+
+/**
+ * Do cp --reflink from \ref src to \ref dest.
+ *
+ * @return Non-zero on error.
+ */
+int
+file_reflink (
+  const char * dest,
+  const char * src)
+{
+#ifdef __linux__
+  int src_fd = g_open (src, O_RDONLY);
+  if (src_fd)
+    return src_fd;
+  int dest_fd = g_open (dest, O_RDWR | O_CREAT);
+  if (dest_fd)
+    return src_fd;
+  return ioctl (dest_fd, FICLONE, src_fd);
+#else
+  return -1;
+#endif
 }

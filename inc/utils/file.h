@@ -51,6 +51,16 @@ file_symlink (
   const char * new_path);
 
 /**
+ * Do cp --reflink from \ref src to \ref dest.
+ *
+ * @return Non-zero on error.
+ */
+int
+file_reflink (
+  const char * dest,
+  const char * src);
+
+/**
  * @}
  */
 

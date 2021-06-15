@@ -364,7 +364,7 @@ audio_clip_write_to_pool (
     }
 
   /* if writing to backup and same file exists in
-   * main project dir, copy */
+   * main project dir, copy (first try reflink) */
   if (need_new_write && self->file_hash && is_backup)
     {
       bool exists_in_main_project = false;
@@ -382,22 +382,18 @@ audio_clip_write_to_pool (
 
       if (exists_in_main_project)
         {
-          /* don't symlink - if files are deleted
-           * from the main project then they won't
-           * be found in old backups - do plain copy
-           * instead */
-#if 0
+          /* try reflink */
           g_debug (
-            "linking clip from main project "
+            "reflinking clip from main project "
             "('%s' to '%s')",
             path_in_main_project, new_path);
 
-          if (file_symlink (
+          if (file_reflink (
                 path_in_main_project, new_path) != 0)
             {
               g_message (
-                "failed to link, copying instead");
-#endif
+                "failed to reflink, copying "
+                "instead");
 
               /* copy */
               GFile * src_file =
@@ -423,9 +419,7 @@ audio_clip_write_to_pool (
                     path_in_main_project, new_path,
                     err->message);
                 }
-#if 0
-            }
-#endif
+            } /* endif reflink fail */
         }
     }
 
