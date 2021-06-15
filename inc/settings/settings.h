@@ -46,8 +46,11 @@ typedef struct PluginSettings PluginSettings;
 #define S_UI SETTINGS->ui
 #define S_EXPORT SETTINGS->export
 #define S_GENERAL SETTINGS->general
-#define S_UI_INSPECTOR_SETTINGS \
-  SETTINGS->ui_inspector
+#define S_UI_INSPECTOR SETTINGS->ui_inspector
+#define S_UI_PLUGIN_BROWSER \
+  SETTINGS->ui_plugin_browser
+#define S_UI_FILE_BROWSER \
+  SETTINGS->ui_file_browser
 #define S_TRANSPORT SETTINGS->transport
 
 /* ---- end standard settings ---- */
@@ -80,13 +83,17 @@ typedef struct PluginSettings PluginSettings;
 #define S_IS_DEBUG (g_settings_get_int ( \
   S_GENERAL, "debug"))
 
+#define S_SET_ENUM(settings,key,val) \
+  g_settings_set_enum (settings, key, val)
+
+#define S_GET_ENUM(settings,key) \
+  g_settings_get_enum (settings, key)
+
 #define S_UI_SET_ENUM(key,val) \
-  g_settings_set_enum ( \
-    S_UI, key, val)
+  S_SET_ENUM (S_UI, key, val)
 
 #define S_UI_GET_ENUM(key) \
-  g_settings_get_enum ( \
-    S_UI, key)
+  S_GET_ENUM (S_UI, key)
 
 #define S_PLUGIN_SETTINGS \
   SETTINGS->plugin_settings
@@ -130,6 +137,8 @@ typedef struct Settings
   GSettings * export;
 
   GSettings * ui_inspector;
+  GSettings * ui_plugin_browser;
+  GSettings * ui_file_browser;
 
   PluginSettings * plugin_settings;
 } Settings;

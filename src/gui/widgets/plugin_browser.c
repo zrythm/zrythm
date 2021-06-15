@@ -235,7 +235,7 @@ save_tree_view_selection (
     }
   path_strings[num_path_strings] = NULL;
   g_settings_set_strv (
-    S_UI, key,
+    S_UI_PLUGIN_BROWSER, key,
     (const char * const *) path_strings);
   for (int i = 0; i < num_path_strings; i++)
     {
@@ -275,7 +275,7 @@ restore_tree_view_selection (
   const char *          key)
 {
   char ** selection_paths =
-    g_settings_get_strv (S_UI, key);
+    g_settings_get_strv (S_UI_PLUGIN_BROWSER, key);
 
   GtkTreeSelection * selection =
     gtk_tree_view_get_selection (
@@ -1928,28 +1928,32 @@ on_visible_child_changed (
 
   if (child == GTK_WIDGET (self->collection_scroll))
     {
-      S_UI_SET_ENUM (
+      S_SET_ENUM (
+        S_UI_PLUGIN_BROWSER,
         "plugin-browser-tab",
         PLUGIN_BROWSER_TAB_COLLECTION);
     }
   else if (child ==
              GTK_WIDGET (self->author_scroll))
     {
-      S_UI_SET_ENUM (
+      S_SET_ENUM (
+        S_UI_PLUGIN_BROWSER,
         "plugin-browser-tab",
         PLUGIN_BROWSER_TAB_AUTHOR);
     }
   else if (child ==
            GTK_WIDGET (self->category_scroll))
     {
-      S_UI_SET_ENUM (
+      S_SET_ENUM (
+        S_UI_PLUGIN_BROWSER,
         "plugin-browser-tab",
         PLUGIN_BROWSER_TAB_CATEGORY);
     }
   else if (child ==
            GTK_WIDGET (self->protocol_scroll))
     {
-      S_UI_SET_ENUM (
+      S_SET_ENUM (
+        S_UI_PLUGIN_BROWSER,
         "plugin-browser-tab",
         PLUGIN_BROWSER_TAB_PROTOCOL);
     }
@@ -1978,7 +1982,8 @@ toggles_changed (
 
       if (btn == self->toggle_instruments)
         {
-          S_UI_SET_ENUM (
+          S_SET_ENUM (
+            S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_INSTRUMENT);
           gtk_toggle_tool_button_set_active (
@@ -1990,7 +1995,8 @@ toggles_changed (
         }
       else if (btn == self->toggle_effects)
         {
-          S_UI_SET_ENUM (
+          S_SET_ENUM (
+            S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_EFFECT);
           gtk_toggle_tool_button_set_active (
@@ -2002,7 +2008,8 @@ toggles_changed (
         }
       else if (btn == self->toggle_modulators)
         {
-          S_UI_SET_ENUM (
+          S_SET_ENUM (
+            S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_MODULATOR);
           gtk_toggle_tool_button_set_active (
@@ -2014,7 +2021,8 @@ toggles_changed (
         }
       else if (btn == self->toggle_midi_modifiers)
         {
-          S_UI_SET_ENUM (
+          S_SET_ENUM (
+            S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_MIDI_EFFECT);
           gtk_toggle_tool_button_set_active (
@@ -2040,7 +2048,8 @@ toggles_changed (
     }
   else
     {
-      S_UI_SET_ENUM (
+      S_SET_ENUM (
+        S_UI_PLUGIN_BROWSER,
         "plugin-browser-filter",
         PLUGIN_BROWSER_FILTER_NONE);
     }
@@ -2250,9 +2259,11 @@ plugin_browser_widget_new ()
 
   /* set the selected values */
   PluginBrowserTab tab =
-    S_UI_GET_ENUM ("plugin-browser-tab");
+    S_GET_ENUM (
+      S_UI_PLUGIN_BROWSER, "plugin-browser-tab");
   PluginBrowserFilter filter =
-    S_UI_GET_ENUM ("plugin-browser-filter");
+    S_GET_ENUM (
+      S_UI_PLUGIN_BROWSER, "plugin-browser-filter");
   restore_tree_view_selections (self);
 
   switch (tab)

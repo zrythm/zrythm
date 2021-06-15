@@ -70,6 +70,12 @@ settings_new (void)
   self->ui_inspector =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
+  self->ui_plugin_browser =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".ui.plugin-browser");
+  self->ui_file_browser =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".ui.file-browser");
   self->transport =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".transport");
@@ -509,6 +515,8 @@ settings_free (
   g_object_unref_and_null (self->export);
   g_object_unref_and_null (self->ui);
   g_object_unref_and_null (self->ui_inspector);
+  g_object_unref_and_null (self->ui_plugin_browser);
+  g_object_unref_and_null (self->ui_file_browser);
   g_object_unref_and_null (self->monitor);
 
   /* TODO more */

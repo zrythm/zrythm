@@ -59,7 +59,7 @@ reveal_cb (
   if (expander == Z_EXPANDER_BOX_WIDGET (self->mem)) \
     { \
       g_settings_set_boolean ( \
-        S_UI_INSPECTOR_SETTINGS, \
+        S_UI_INSPECTOR, \
         "track-" key "-expanded", revealed); \
     }
 
@@ -336,7 +336,7 @@ inspector_track_widget_init (
   expander_box_widget_set_reveal ( \
     Z_EXPANDER_BOX_WIDGET (self->mem), \
     g_settings_get_boolean ( \
-      S_UI_INSPECTOR_SETTINGS, \
+      S_UI_INSPECTOR, \
       "track-" key "-expanded")); \
   expander_box_widget_set_reveal_callback ( \
     Z_EXPANDER_BOX_WIDGET (self->mem), \
