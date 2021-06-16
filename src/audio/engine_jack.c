@@ -177,6 +177,9 @@ static void
 process_change_request (
   AudioEngine * self)
 {
+  g_atomic_int_set (
+    &self->waiting_for_event_processing, 1);
+
   /* process immediately if gtk thread */
   if (g_thread_self () == zrythm_app->gtk_thread)
     {
@@ -197,6 +200,9 @@ process_change_request (
           g_usleep (1000);
         }
     }
+
+  g_atomic_int_set (
+    &self->waiting_for_event_processing, 0);
 }
 
 /**

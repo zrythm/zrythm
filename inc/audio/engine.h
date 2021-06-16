@@ -782,6 +782,13 @@ typedef struct AudioEngine
   /** Time last event processing completed. */
   gint64            last_events_processed;
 
+  /**
+   * Flag that the engine is currently waiting for
+   * events to be processed (eg, in buffer size
+   * change callback).
+   */
+  int               waiting_for_event_processing;
+
   /* --- end events --- */
 
   /** Whether the cycle is currently running. */

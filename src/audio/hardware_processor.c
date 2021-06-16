@@ -180,6 +180,12 @@ hardware_processor_rescan_ext_ports (
 {
   g_debug ("rescanning ports...");
 
+  if (g_atomic_int_get (
+        &AUDIO_ENGINE->waiting_for_event_processing))
+    {
+      engine_process_events (AUDIO_ENGINE);
+    }
+
   /* get correct flow */
   PortFlow flow =
   /* these are reversed:
