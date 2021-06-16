@@ -22,8 +22,12 @@
 
 #include "audio/supported_file.h"
 #include "gui/backend/file_manager.h"
+#include "settings/settings.h"
+#include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/objects.h"
+#include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "zrythm.h"
 
 #include "gtk/gtk.h"
@@ -39,16 +43,39 @@ file_manager_new (void)
   self->num_files = 0;
   self->num_collections = 0;
 
-  /* add locations */
+  self->locations =
+    g_ptr_array_new_with_free_func (
+      (GDestroyNotify) file_browser_location_free);
+
+  /* add standard locations */
   FileBrowserLocation * fl =
-    object_new (FileBrowserLocation);
+    file_browser_location_new ();
   fl->label = g_strdup ("Home");
   fl->path = g_strdup (g_get_home_dir ());
-  self->locations[0] = fl;
-  self->num_locations = 1;
+  fl->standard = true;
+  g_ptr_array_add (self->locations, fl);
 
   file_manager_set_selection (
     self, fl, FB_SELECTION_TYPE_LOCATIONS, 0);
+
+  if (!ZRYTHM_TESTING)
+    {
+      /* add bookmarks */
+      char ** bookmarks =
+        g_settings_get_strv (
+          S_UI_FILE_BROWSER,
+          "file-browser-bookmarks");
+      for (size_t i = 0; bookmarks[i] != NULL; i++)
+        {
+          char * bookmark = bookmarks[i];
+          fl =
+            file_browser_location_new ();
+          fl->label = g_path_get_basename (bookmark);
+          fl->path = g_strdup (bookmark);
+          g_ptr_array_add (self->locations, fl);
+        }
+      g_strfreev (bookmarks);
+    }
 
   return self;
 }
@@ -119,6 +146,27 @@ load_files_from_location (
       fd->abs_path = absolute_path;
       fd->label = g_strdup (file);
 
+      GError * err = NULL;
+      GFile * gfile =
+        g_file_new_for_path (absolute_path);
+      GFileInfo * info =
+        g_file_query_info (
+          gfile, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN,
+          G_FILE_QUERY_INFO_NONE, NULL, &err);
+      if (err)
+        {
+          g_warning (
+            "failed to query file info for %s",
+            absolute_path);
+        }
+      else
+        {
+          fd->hidden =
+            g_file_info_get_is_hidden (info);
+          g_object_unref (info);
+        }
+      g_object_unref (gfile);
+
       /* set type */
       if (g_file_test (
             absolute_path, G_FILE_TEST_IS_DIR))
@@ -130,11 +178,9 @@ load_files_from_location (
           fd->type = supported_file_get_type (file);
         }
 
-      /* set hidden */
+      /* force hidden if starts with . */
       if (file[0] == '.')
-        fd->hidden = 1;
-      else
-        fd->hidden = 0;
+        fd->hidden = true;
 
       self->files[self->num_files++] = fd;
       /*g_message ("File found: %s (%d - %d)",*/
@@ -144,12 +190,10 @@ load_files_from_location (
     }
   g_dir_close (dir);
 
-  qsort (self->files,
-         (size_t) self->num_files,
-         sizeof (SupportedFile *),
-         alphaBetize);
-  g_message ("Total files: %d",
-             self->num_files);
+  qsort (
+    self->files, (size_t) self->num_files,
+    sizeof (SupportedFile *), alphaBetize);
+  g_message ("Total files: %d", self->num_files);
 }
 
 /**
@@ -189,6 +233,104 @@ file_manager_set_selection (
     }
 }
 
+static bool
+file_browser_location_equal_func (
+  const FileBrowserLocation * a,
+  const FileBrowserLocation * b)
+{
+  bool ret =
+    string_is_equal (a->path, b->path);
+  return ret;
+}
+
+static void
+save_locations (
+  FileManager * self)
+{
+  StrvBuilder * strv_builder = strv_builder_new ();
+  for (guint i = 0;
+       i < FILE_MANAGER->locations->len; i++)
+    {
+      FileBrowserLocation * loc =
+        g_ptr_array_index (
+          FILE_MANAGER->locations, i);
+      if (loc->standard)
+        continue;
+
+      strv_builder_add (
+        strv_builder, loc->path);
+    }
+
+  char ** strings = strv_builder_end (strv_builder);
+  g_settings_set_strv (
+    S_UI_FILE_BROWSER, "file-browser-bookmarks",
+    (const char * const *) strings);
+  g_strfreev (strings);
+}
+
+/**
+ * Adds a location and saves the settings.
+ */
+void
+file_manager_add_location_and_save (
+  FileManager * self,
+  const char *  abs_path)
+{
+  FileBrowserLocation * loc =
+    file_browser_location_new ();
+  loc->path = g_strdup (abs_path);
+  loc->label = g_path_get_basename (loc->path);
+
+  g_ptr_array_add (self->locations, loc);
+
+  save_locations (self);
+}
+
+/**
+ * Removes the given location (bookmark) from the
+ * saved locations.
+ *
+ * @param skip_if_standard Skip removal if the
+ *   given location is a standard location.
+ */
+void
+file_manager_remove_location_and_save (
+  FileManager * self,
+  const char *  location,
+  bool          skip_if_standard)
+{
+  FileBrowserLocation * loc =
+    file_browser_location_new ();
+  loc->path = g_strdup (location);
+
+  unsigned int idx;
+  bool ret =
+    g_ptr_array_find_with_equal_func (
+      self->locations, loc,
+      (GEqualFunc)
+      file_browser_location_equal_func, &idx);
+  if (ret)
+    {
+      FileBrowserLocation * existing_loc =
+        g_ptr_array_index (
+          self->locations, idx);
+      if (!skip_if_standard ||
+          !existing_loc->standard)
+        {
+          g_ptr_array_remove_index (
+            self->locations, idx);
+        }
+    }
+  else
+    {
+      g_warning ("%s not found", location);
+    }
+
+  file_browser_location_free (loc);
+
+  save_locations (self);
+}
+
 /**
  * Frees the file manager.
  */
@@ -202,5 +344,23 @@ file_manager_free (
         supported_file_free, self->files[i]);
     }
 
+  g_ptr_array_free (self->locations, true);
+
   object_zero_and_free (self);
+}
+
+
+FileBrowserLocation *
+file_browser_location_new (void)
+{
+  return object_new (FileBrowserLocation);
+}
+
+void
+file_browser_location_free (
+  FileBrowserLocation * loc)
+{
+  g_free_and_null (loc->label);
+  g_free_and_null (loc->path);
+  object_zero_and_free (loc);
 }

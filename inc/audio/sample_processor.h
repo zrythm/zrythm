@@ -26,11 +26,11 @@
 #ifndef __AUDIO_SAMPLE_PROCESSOR_H__
 #define __AUDIO_SAMPLE_PROCESSOR_H__
 
-#include "audio/sample_playback.h"
+#include "audio/fader.h"
 #include "audio/port.h"
+#include "audio/sample_playback.h"
 #include "utils/types.h"
 
-typedef struct StereoPorts StereoPorts;
 typedef enum MetronomeType MetronomeType;
 
 /**
@@ -47,6 +47,8 @@ typedef enum MetronomeType MetronomeType;
 /**
  * A processor to be used in the routing graph for
  * playing samples independent of the timeline.
+ *
+ * Also used for auditioning files.
  */
 typedef struct SampleProcessor
 {
@@ -56,9 +58,18 @@ typedef struct SampleProcessor
   SamplePlayback    current_samples[256];
   int               num_current_samples;
 
+  /** Track for audio file auditioning. */
+  Track *           audio_track;
+
+  /** Track for MIDI file auditioning. */
+  Track *           ins_track;
+
+  /** Fader connected to the main output. */
+  Fader *           fader;
+
   /** The stereo out ports to be connected to the
    * main output. */
-  StereoPorts *     stereo_out;
+  //StereoPorts *     stereo_out;
 } SampleProcessor;
 
 static const cyaml_schema_field_t
@@ -67,8 +78,8 @@ sample_processor_fields_schema[] =
   YAML_FIELD_INT (
     SampleProcessor, schema_version),
   YAML_FIELD_MAPPING_PTR (
-    SampleProcessor, stereo_out,
-    stereo_ports_fields_schema),
+    SampleProcessor, fader,
+    fader_fields_schema),
 
   CYAML_FIELD_END
 };

@@ -48,7 +48,13 @@ typedef struct FileBrowserLocation
 {
   /** Human readable label. */
   char *             label;
+
+  /** Absolute path. */
   char *             path;
+
+  /** Whether this is a standard (undeletable)
+   * location. */
+  bool               standard;
 } FileBrowserLocation;
 
 /**
@@ -82,9 +88,10 @@ typedef struct FileManager
 
   /**
    * Default locations & user defined locations.
+   *
+   * Array of FileBrowserLocation.
    */
-  FileBrowserLocation *    locations[50];
-  int                      num_locations;
+  GPtrArray *              locations;
 
   /**
    * Current selection in the top window.
@@ -119,6 +126,35 @@ file_manager_set_selection (
 void
 file_manager_free (
   FileManager * self);
+
+FileBrowserLocation *
+file_browser_location_new (void);
+
+/**
+ * Adds a location and saves the settings.
+ */
+void
+file_manager_add_location_and_save (
+  FileManager * self,
+  const char *  abs_path);
+
+/**
+ * Removes the given location (bookmark) from the
+ * saved locations.
+ *
+ * @param skip_if_standard Skip removal if the
+ *   given location is a standard location.
+ */
+void
+file_manager_remove_location_and_save (
+  FileManager * self,
+  const char *  location,
+  bool          skip_if_standard);
+
+NONNULL
+void
+file_browser_location_free (
+  FileBrowserLocation * loc);
 
 /**
  * @}

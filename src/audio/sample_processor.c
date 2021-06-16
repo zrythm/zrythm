@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,14 +22,32 @@
 #include "audio/port.h"
 #include "audio/sample_processor.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 #include <glib/gi18n.h>
+
+static void
+init_common (
+  SampleProcessor * self)
+{
+  self->audio_track =
+    track_new (
+      TRACK_TYPE_AUDIO, -1, "Audio auditioner",
+      true);
+  self->ins_track =
+    track_new (
+      TRACK_TYPE_INSTRUMENT, -1, "MIDI auditioner",
+      true);
+}
 
 void
 sample_processor_init_loaded (
   SampleProcessor * self)
 {
+  fader_init_loaded (self->fader, F_PROJECT);
+
+  init_common (self);
 }
 
 /**
@@ -45,15 +63,12 @@ sample_processor_new (void)
   self->schema_version =
     SAMPLE_PROCESSOR_SCHEMA_VERSION;
 
-  self->stereo_out =
-    stereo_ports_new_generic (
-      0, _("Sample Processor"),
-      PORT_OWNER_TYPE_SAMPLE_PROCESSOR, self);
-  self->stereo_out->l->is_project = true;
-  self->stereo_out->r->is_project = true;
-  g_warn_if_fail (
-    IS_PORT (self->stereo_out->l) &&
-    IS_PORT (self->stereo_out->r));
+  self->fader =
+    fader_new (
+      FADER_TYPE_SAMPLE_PROCESSOR, NULL, false);
+  fader_set_is_project (self->fader, true);
+
+  init_common (self);
 
   return self;
 }
@@ -66,8 +81,7 @@ sample_processor_prepare_process (
   SampleProcessor * self,
   const nframes_t   nframes)
 {
-  port_clear_buffer (self->stereo_out->l);
-  port_clear_buffer (self->stereo_out->r);
+  fader_clear_buffers (self->fader);
 }
 
 /**
@@ -121,14 +135,18 @@ sample_processor_process (
   nframes_t max_frames;
   SamplePlayback * sp;
   g_return_if_fail (
-    self && self->stereo_out &&
+    self && self->fader &&
+    self->fader->stereo_out &&
     self->num_current_samples < 256 &&
-    self->stereo_out->l &&
-    self->stereo_out->l->buf &&
-    self->stereo_out->r &&
-    self->stereo_out->r->buf);
-  float * l = self->stereo_out->l->buf,
-        * r = self->stereo_out->r->buf;
+    self->fader->stereo_out->l &&
+    self->fader->stereo_out->l->buf &&
+    self->fader->stereo_out->r &&
+    self->fader->stereo_out->r->buf);
+
+  float * l = self->fader->stereo_out->l->buf,
+        * r = self->fader->stereo_out->r->buf;
+
+  /* process the samples in the queue */
   for (int i = self->num_current_samples - 1;
        i >= 0; i--)
     {
@@ -226,6 +244,8 @@ sample_processor_process (
             self, sp);
         }
     }
+
+  /* TODO process the tracks */
 }
 
 /**
@@ -298,7 +318,7 @@ void
 sample_processor_disconnect (
   SampleProcessor * self)
 {
-  stereo_ports_disconnect (self->stereo_out);
+  fader_disconnect_all (self->fader);
 }
 
 void
@@ -308,7 +328,7 @@ sample_processor_free (
   sample_processor_disconnect (self);
 
   object_free_w_func_and_null (
-    stereo_ports_free, self->stereo_out);
+    fader_free, self->fader);
 
   object_zero_and_free (self);
 }

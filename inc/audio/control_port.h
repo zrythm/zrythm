@@ -117,6 +117,13 @@ control_port_get_val (
   Port * self);
 
 /**
+ * Get the current normalized value of the control.
+ */
+float
+control_port_get_normalized_val (
+  Port * self);
+
+/**
  * Get the current real unsnapped value of the
  * control.
  */

@@ -62,7 +62,6 @@ typedef struct MPMCQueue MPMCQueue;
 typedef struct Port Port;
 typedef struct Fader Fader;
 typedef struct Track Track;
-typedef struct SampleProcessor SampleProcessor;
 typedef struct Plugin Plugin;
 typedef struct Position Position;
 

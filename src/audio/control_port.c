@@ -43,6 +43,18 @@ control_port_get_val (
 }
 
 /**
+ * Get the current real value of the control.
+ */
+float
+control_port_get_normalized_val (
+  Port * self)
+{
+  return
+    control_port_real_val_to_normalized (
+      self, self->control);
+}
+
+/**
  * Get the current real unsnapped value of the
  * control.
  */
@@ -218,15 +230,11 @@ control_port_normalized_val_to_real (
         (float) math_get_amp_val_from_fader (
           normalized_val);
     }
-  else if (id->flags & PORT_FLAG_AUTOMATABLE)
+  else
     {
       return
         self->minf +
         normalized_val * (self->maxf - self->minf);
-    }
-  else
-    {
-      return normalized_val;
     }
   g_return_val_if_reached (normalized_val);
 }
@@ -283,16 +291,12 @@ control_port_real_val_to_normalized (
         (float)
         math_get_fader_val_from_amp (real_val);
     }
-  else if (id->flags & PORT_FLAG_AUTOMATABLE)
+  else
     {
       float sizef = self->maxf - self->minf;
       return
         (sizef - (self->maxf - real_val)) /
         sizef;
-    }
-  else
-    {
-      return real_val;
     }
   g_return_val_if_reached (0.f);
 }
@@ -414,8 +418,17 @@ control_port_set_val_from_normalized (
         self, real_val, F_NOT_NORMALIZED,
         F_NO_PUBLISH_EVENTS);
     }
+  else if (id->flags & PORT_FLAG_AMPLITUDE)
+    {
+      float real_val =
+        control_port_normalized_val_to_real (
+          self, val);
+      port_set_control_value (
+        self, real_val, F_NOT_NORMALIZED,
+        F_NO_PUBLISH_EVENTS);
+    }
   else
     {
-      g_warn_if_reached ();
+      g_return_if_reached ();
     }
 }

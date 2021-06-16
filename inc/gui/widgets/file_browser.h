@@ -52,24 +52,20 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _FileBrowserWidget
 {
-  GtkPaned               parent_instance;
-  GtkGrid *              browser_top;
-  GtkSearchEntry *       browser_search;
-  GtkExpander *          collections_exp;
-  GtkExpander *          types_exp;
-  GtkExpander *          locations_exp;
-  GtkBox *               browser_bot;
-  GtkLabel *             file_info;
-  ZFileType               selected_type;
-  GtkTreeModel *         type_tree_model;
-  GtkTreeModel *         locations_tree_model;
-  GtkTreeModelFilter *   files_tree_model;
-  GtkTreeView *          files_tree_view;
+  GtkPaned             parent_instance;
+  GtkBox *             browser_top;
+  GtkBox *             browser_bot;
+  GtkLabel *           file_info;
+  ZFileType            selected_type;
+  GtkTreeModel *       type_tree_model;
+  GtkTreeModel *       locations_tree_model;
+  GtkTreeModelFilter * files_tree_model;
+  GtkTreeView *        files_tree_view;
 
   /** The file chooser. */
   GtkFileChooserWidget * file_chooser;
 
-  GtkScrolledWindow *    file_scroll_window;
+  GtkScrolledWindow *  file_scroll_window;
 
   /**
    * A little hack to get the paned position to

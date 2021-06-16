@@ -451,39 +451,45 @@ on_crossing (
 
 static void
 drag_update (
-  GtkGestureDrag *gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  KnobWidget *    self)
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  KnobWidget *     self)
 {
   offset_y = - offset_y;
-  int use_y =
+  const int use_y =
     fabs (offset_y - self->last_y) >
     fabs (offset_x - self->last_x);
-  set_real_val (
-    self,
-    REAL_VAL_FROM_KNOB (
-      CLAMP (
-        KNOB_VAL_FROM_REAL (
-          get_real_val (self, false)) +
-          0.004f * (
-            use_y ?
-            (float) (offset_y - self->last_y) :
-            (float) (offset_x - self->last_x)),
-         0.f, 1.f)));
+  const float cur_real_val =
+    get_real_val (self, false);
+  const float cur_knob_val =
+    KNOB_VAL_FROM_REAL (cur_real_val);
+  const float delta =
+    use_y ?
+      (float) (offset_y - self->last_y) :
+      (float) (offset_x - self->last_x);
+  const float multiplier = 0.004f;
+  const float new_knob_val =
+    CLAMP (
+      cur_knob_val + multiplier * delta,
+       0.f, 1.f);
+  const float new_real_val =
+    REAL_VAL_FROM_KNOB (new_knob_val);
+  set_real_val (self, new_real_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
-  gtk_widget_queue_draw ((GtkWidget *)self);
+
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 
   self->drag_updated = true;
 }
 
 static void
 drag_end (
-  GtkGestureDrag *gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  KnobWidget *    self)
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  KnobWidget *     self)
 {
   GdkModifierType state_mask =
     ui_get_state_mask (GTK_GESTURE (gesture));
@@ -575,8 +581,10 @@ _knob_widget_new (
   self->arc = 1;
   self->bevel = 1;
   self->flat = 1;
-  gdk_rgba_parse (&self->start_color, "rgb(78%,78%,78%)");
-  gdk_rgba_parse (&self->end_color, "rgb(66%,66%,66%)");
+  gdk_rgba_parse (
+    &self->start_color, "rgb(78%,78%,78%)");
+  gdk_rgba_parse (
+    &self->end_color, "rgb(66%,66%,66%)");
   self->last_x = 0;
   self->last_y = 0;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,41 +24,72 @@
 
 #include <gtk/gtk.h>
 
+typedef struct _VolumeWidget VolumeWidget;
+typedef struct FileBrowserLocation
+  FileBrowserLocation;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define PANEL_FILE_BROWSER_WIDGET_TYPE \
   (panel_file_browser_widget_get_type ())
-G_DECLARE_FINAL_TYPE (PanelFileBrowserWidget,
-                      panel_file_browser_widget,
-                      Z,
-                      PANEL_FILE_BROWSER_WIDGET,
-                      GtkPaned)
+G_DECLARE_FINAL_TYPE (
+  PanelFileBrowserWidget, panel_file_browser_widget,
+  Z, PANEL_FILE_BROWSER_WIDGET, GtkPaned)
 
 #define MW_PANEL_FILE_BROWSER \
   MW_RIGHT_DOCK_EDGE->file_browser
 
-typedef struct SupportedFile SupportedFile;
+typedef enum PanelFileBrowserFilter
+{
+  FILE_BROWSER_FILTER_NONE,
+  FILE_BROWSER_FILTER_AUDIO,
+  FILE_BROWSER_FILTER_MIDI,
+  FILE_BROWSER_FILTER_PRESET,
+} PanelFileBrowserFilter;
 
 typedef struct _PanelFileBrowserWidget
 {
-  GtkPaned               parent_instance;
-  GtkGrid *              browser_top;
-  GtkSearchEntry *       browser_search;
-  GtkExpander *          collections_exp;
-  GtkExpander *          types_exp;
-  GtkExpander *          locations_exp;
-  GtkBox *               browser_bot;
-  GtkLabel *             file_info;
-  ZFileType               selected_type;
-  GtkTreeModel *         type_tree_model;
-  GtkTreeModel *         locations_tree_model;
-  GtkTreeModelFilter *   files_tree_model;
-  GtkTreeView *          files_tree_view;
-  GtkScrolledWindow *    file_scroll_window;
-  SupportedFile *        selected_file_descr;
+  GtkPaned             parent_instance;
+  GtkBox *             browser_top;
+  GtkBox *             browser_bot;
 
-  bool                   first_draw;
+  GtkTreeView *        bookmarks_tree_view;
+  GtkTreeModel *       bookmarks_tree_model;
+
+  GtkLabel *           file_info;
+  ZFileType            selected_type;
+  GtkTreeModelFilter * files_tree_model;
+  GtkTreeView *        files_tree_view;
+
+  /** Array of SupportedFile. */
+  GPtrArray *          selected_locations;
+  GPtrArray *          selected_files;
+
+  GtkToggleToolButton * toggle_audio;
+  GtkToggleToolButton * toggle_midi;
+  GtkToggleToolButton * toggle_presets;
+
+  GtkToolButton *      play_btn;
+  GtkToolButton *      stop_btn;
+  GtkMenuButton *      file_settings_btn;
+  VolumeWidget *       volume;
+
+  /** Temp. */
+  const FileBrowserLocation * cur_loc;
+  const SupportedFile * cur_file;
+
+  bool                 first_draw;
 } PanelFileBrowserWidget;
 
 PanelFileBrowserWidget *
 panel_file_browser_widget_new (void);
+
+/**
+ * @}
+ */
 
 #endif

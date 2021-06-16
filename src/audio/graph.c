@@ -677,11 +677,11 @@ graph_setup (
   node =
     graph_find_node_from_sample_processor (
       self, SAMPLE_PROCESSOR);
-  port = SAMPLE_PROCESSOR->stereo_out->l;
+  port = SAMPLE_PROCESSOR->fader->stereo_out->l;
   node2 =
     graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
-  port = SAMPLE_PROCESSOR->stereo_out->r;
+  port = SAMPLE_PROCESSOR->fader->stereo_out->r;
   node2 =
     graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);

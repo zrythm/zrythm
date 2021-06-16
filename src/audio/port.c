@@ -706,13 +706,31 @@ port_find_from_identifier (
         }
       break;
     case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
-      if (flags & PORT_FLAG_STEREO_L)
-        return SAMPLE_PROCESSOR->stereo_out->l;
-      else if (flags &
-                 PORT_FLAG_STEREO_R)
-        return SAMPLE_PROCESSOR->stereo_out->r;
-      else
-        g_return_val_if_reached (NULL);
+      if (id->flow == FLOW_OUTPUT)
+        {
+          if (flags & PORT_FLAG_STEREO_L)
+            return
+              SAMPLE_PROCESSOR->fader->stereo_out->
+                l;
+          else if (flags &
+                     PORT_FLAG_STEREO_R)
+            return
+              SAMPLE_PROCESSOR->fader->stereo_out->
+                r;
+        }
+      else if (id->flow == FLOW_INPUT)
+        {
+          if (flags & PORT_FLAG_STEREO_L)
+            return
+              SAMPLE_PROCESSOR->fader->stereo_in->
+                l;
+          else if (flags &
+                     PORT_FLAG_STEREO_R)
+            return
+              SAMPLE_PROCESSOR->fader->stereo_in->
+                r;
+        }
+      g_return_val_if_reached (NULL);
       break;
     case PORT_OWNER_TYPE_MONITOR_FADER:
       if (id->flow == FLOW_OUTPUT)
@@ -822,8 +840,10 @@ static Port *
 _port_new (
   const char * label)
 {
+#if 0
   g_message (
     "Creating port %s...", label);
+#endif
 
   Port * self = object_new (Port);
 
@@ -1459,8 +1479,10 @@ port_get_all (
   _ADD (AUDIO_ENGINE->monitor_out->r);
   _ADD (AUDIO_ENGINE->midi_editor_manual_press);
   _ADD (AUDIO_ENGINE->midi_in);
-  _ADD (SAMPLE_PROCESSOR->stereo_out->l);
-  _ADD (SAMPLE_PROCESSOR->stereo_out->r);
+  _ADD (SAMPLE_PROCESSOR->fader->stereo_in->l);
+  _ADD (SAMPLE_PROCESSOR->fader->stereo_in->r);
+  _ADD (SAMPLE_PROCESSOR->fader->stereo_out->l);
+  _ADD (SAMPLE_PROCESSOR->fader->stereo_out->r);
 
   _ADD (TRANSPORT->roll);
   _ADD (TRANSPORT->stop);
@@ -1621,6 +1643,11 @@ port_set_owner_fader (
         {
           id->owner_type = PORT_OWNER_TYPE_FADER;
         }
+    }
+  else if (fader->type == FADER_TYPE_SAMPLE_PROCESSOR)
+    {
+      id->owner_type =
+        PORT_OWNER_TYPE_SAMPLE_PROCESSOR;
     }
   else
     {

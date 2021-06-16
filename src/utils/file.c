@@ -146,7 +146,8 @@ file_reflink (
   int src_fd = g_open (src, O_RDONLY);
   if (src_fd)
     return src_fd;
-  int dest_fd = g_open (dest, O_RDWR | O_CREAT);
+  int dest_fd =
+    g_open (dest, O_RDWR | O_CREAT, 0644);
   if (dest_fd)
     return src_fd;
   return ioctl (dest_fd, FICLONE, src_fd);

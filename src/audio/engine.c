@@ -590,7 +590,7 @@ engine_setup (
   /* connect the sample processor to the engine
    * output */
   stereo_ports_connect (
-    self->sample_processor->stereo_out,
+    self->sample_processor->fader->stereo_out,
     self->control_room->monitor_fader->stereo_in,
     true);
 

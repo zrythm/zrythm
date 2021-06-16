@@ -53,6 +53,10 @@ fader_init_loaded (
 
   switch (self->type)
     {
+    case FADER_TYPE_SAMPLE_PROCESSOR:
+      self->amp->magic = PORT_MAGIC;
+      self->balance->magic = PORT_MAGIC;
+      /* fallthrough */
     case FADER_TYPE_MONITOR:
       self->mute->magic = PORT_MAGIC;
       self->solo->magic = PORT_MAGIC;
@@ -244,7 +248,8 @@ fader_new (
     self->mono_compat_enabled, self);
 
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
-      type == FADER_TYPE_MONITOR)
+      type == FADER_TYPE_MONITOR ||
+      type == FADER_TYPE_SAMPLE_PROCESSOR)
     {
       const char * name = NULL;
       if (type == FADER_TYPE_AUDIO_CHANNEL)
@@ -257,6 +262,10 @@ fader_new (
             {
               name = _("Ch Fader in");
             }
+        }
+      else if (type == FADER_TYPE_SAMPLE_PROCESSOR)
+        {
+          name = _("Sample Processor Fader in");
         }
       else
         {
@@ -284,6 +293,10 @@ fader_new (
             {
               name = _("Ch Fader out");
             }
+        }
+      else if (type == FADER_TYPE_SAMPLE_PROCESSOR)
+        {
+          name = _("Sample Processor Fader out");
         }
       else
         {
@@ -817,6 +830,7 @@ fader_clear_buffers (
     {
     case FADER_TYPE_AUDIO_CHANNEL:
     case FADER_TYPE_MONITOR:
+    case FADER_TYPE_SAMPLE_PROCESSOR:
       port_clear_buffer (self->stereo_in->l);
       port_clear_buffer (self->stereo_in->r);
       port_clear_buffer (self->stereo_out->l);
@@ -842,6 +856,7 @@ fader_disconnect_all (
     {
     case FADER_TYPE_AUDIO_CHANNEL:
     case FADER_TYPE_MONITOR:
+    case FADER_TYPE_SAMPLE_PROCESSOR:
       port_disconnect_all (self->stereo_in->l);
       port_disconnect_all (self->stereo_in->r);
       port_disconnect_all (self->stereo_out->l);
@@ -1022,7 +1037,8 @@ fader_process (
     }
 
   if (self->type == FADER_TYPE_AUDIO_CHANNEL ||
-      self->type == FADER_TYPE_MONITOR)
+      self->type == FADER_TYPE_MONITOR ||
+      self->type == FADER_TYPE_SAMPLE_PROCESSOR)
     {
       /* copy the input to output */
       dsp_copy (
@@ -1200,13 +1216,15 @@ fader_process (
                 }
             }
 
-          /* if master or monitor, hard limit the
-           * output */
+          /* if master or monitor or sample
+           * processor, hard limit the output */
           if ((self->type ==
                  FADER_TYPE_AUDIO_CHANNEL &&
                track &&
                track->type == TRACK_TYPE_MASTER) ||
-              self->type == FADER_TYPE_MONITOR)
+              self->type == FADER_TYPE_MONITOR ||
+              self->type ==
+                FADER_TYPE_SAMPLE_PROCESSOR)
             {
               dsp_limit1 (
                 &self->stereo_out->l->buf[

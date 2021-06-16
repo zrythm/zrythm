@@ -184,9 +184,6 @@ zrythm_get_version_with_capabilities (
 #ifdef HAVE_CARLA
     "    +carla\n"
 #endif
-#ifdef HAVE_FFMPEG
-    "    +ffmpeg\n"
-#endif
 #ifdef HAVE_JACK
     "    +jack\n"
 #endif

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.38.2 -->
 <!--
 
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2018-2021 Alexandros Theodotou
 
   This file is part of Zrythm
 
@@ -24,111 +24,138 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="FileBrowserWidget" parent="GtkPaned">
     <property name="visible">True</property>
-    <property name="can_focus">True</property>
+    <property name="can-focus">True</property>
     <property name="orientation">vertical</property>
     <property name="position">220</property>
-    <property name="position_set">True</property>
-    <property name="wide_handle">True</property>
+    <property name="position-set">True</property>
+    <property name="wide-handle">True</property>
     <child>
-      <object class="GtkGrid" id="browser_top">
+      <object class="GtkBox" id="browser_top">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="vexpand">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkSearchEntry" id="browser_search">
+          <object class="GtkBox" id="bookmarks_label_box">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="primary_icon_name">edit-find</property>
-            <property name="primary_icon_activatable">False</property>
-            <property name="primary_icon_sensitive">False</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkExpander" id="collections_exp">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="label_fill">True</property>
-            <child type="label">
-              <object class="GtkLabel" id="glabel-collections">
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkImage">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">Collection</property>
+                <property name="can-focus">False</property>
+                <property name="icon-name">favorite</property>
               </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">0</property>
+              </packing>
             </child>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">1</property>
-            <property name="width">2</property>
-            <property name="height">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkExpander" id="types_exp">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="label_fill">True</property>
-            <child type="label">
-              <object class="GtkLabel" id="glabel-type">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Type</property>
-                <property name="justify">fill</property>
-                <property name="wrap">True</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">3</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkExpander" id="locations_exp">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-            <property name="label_fill">True</property>
-            <child type="label">
+            <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Location</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Bookmarks</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="bookmarks_scroll">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <property name="expand">True</property>
+            <child>
+              <object class="GtkTreeView" id="bookmarks_tree_view">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
               </object>
             </child>
           </object>
           <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">4</property>
-            <property name="width">2</property>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>
       <packing>
-        <property name="resize">True</property>
-        <property name="shrink">False</property>
+        <property name="resize">False</property>
+        <property name="shrink">True</property>
       </packing>
     </child>
     <child>
       <object class="GtkBox" id="browser_bot">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkToolbar" id="filters_toolbar">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="show-arrow">False</property>
+            <property name="icon_size">2</property>
+            <child>
+              <object class="GtkToggleToolButton" id="toggle_audio">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Audio</property>
+                <property name="icon-name">signal-audio</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="toggle_midi">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">MIDI</property>
+                <property name="icon-name">signal-midi</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="toggle_presets">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Presets</property>
+                <property name="icon-name">modulator</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
         <child>
           <object class="GtkLabel" id="file_info">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <attributes>
               <attribute name="variant" value="small-caps"/>
               <attribute name="stretch" value="condensed"/>
@@ -137,8 +164,30 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="files_scroll">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <child>
+              <object class="GtkTreeView" id="files_tree_view">
+                <property name="visible">True</property>
+                <property name="vexpand">True</property>
+                <property name="can-focus">True</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

@@ -298,13 +298,13 @@ file_browser_widget_new ()
 }
 
 static void
-file_browser_widget_class_init (FileBrowserWidgetClass * _klass)
+file_browser_widget_class_init (
+  FileBrowserWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass,
-    "file_browser.ui");
+    klass, "file_browser.ui");
 
   gtk_widget_class_set_css_name (
     klass, "browser");
@@ -316,10 +316,6 @@ file_browser_widget_class_init (FileBrowserWidgetClass * _klass)
     x)
 
   BIND_CHILD (browser_top);
-  BIND_CHILD (browser_search);
-  BIND_CHILD (collections_exp);
-  BIND_CHILD (types_exp);
-  BIND_CHILD (locations_exp);
   BIND_CHILD (browser_bot);
   BIND_CHILD (file_info);
 

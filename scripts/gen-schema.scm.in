@@ -300,6 +300,9 @@ Args:
            '("none" "instrument" "effect" "modulator"
              "midi-effect"))
          (print-enum
+           "file-browser-filter"
+           '("none" "audio" "midi" "preset"))
+         (print-enum
            "piano-roll-highlight"
            '("none" "chord" "scale" "both"))
          (print-enum
@@ -648,6 +651,23 @@ Args:
                  ""
                  "File browser selected bookmark"
                  "Selected bookmark in file browser.")
+               (make-schema-key
+                 "autoplay" "b" "true"
+                 "Autoplay"
+                 "Whether to autoplay the selected file.")
+               (make-schema-key
+                 "show-unsupported-files" "b" "false"
+                 "Show unsupported files"
+                 "Whether to show unsupported files in the file browser.")
+               (make-schema-key
+                 "show-hidden-files" "b" "false"
+                 "Show hidden files"
+                 "Whether to show hidden files in the file browser.")
+               (make-schema-key-with-enum
+                 "filter"
+                 "file-browser-filter" "none"
+                 "File browser filter"
+                 "Selected file browser filter")
              ))) ;; ui.file-browser
 
          (schema-print
