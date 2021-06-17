@@ -32,6 +32,8 @@
 #include "utils/types.h"
 
 typedef enum MetronomeType MetronomeType;
+typedef struct SupportedFile SupportedFile;
+typedef struct Tracklist Tracklist;
 
 /**
  * @addtogroup audio
@@ -58,14 +60,18 @@ typedef struct SampleProcessor
   SamplePlayback    current_samples[256];
   int               num_current_samples;
 
-  /** Track for audio file auditioning. */
-  Track *           audio_track;
-
-  /** Track for MIDI file auditioning. */
-  Track *           ins_track;
+  /** Tracklist for file auditioning. */
+  Tracklist *       tracklist;
 
   /** Fader connected to the main output. */
   Fader *           fader;
+
+  /** Playhead for the tracklist (used when
+   * auditioning files). */
+  Position          playhead;
+
+  /** Whether to roll or not. */
+  bool              roll;
 
   /** The stereo out ports to be connected to the
    * main output. */
@@ -149,6 +155,21 @@ void
 sample_processor_queue_sample_from_file (
   SampleProcessor * self,
   const char *      path);
+
+/**
+ * Adds a file (audio or MIDI) to the queue.
+ */
+void
+sample_processor_queue_file (
+  SampleProcessor *     self,
+  const SupportedFile * file);
+
+/**
+ * Stops playback of files (auditioning).
+ */
+void
+sample_processor_stop_file_playback (
+  SampleProcessor *     self);
 
 void
 sample_processor_disconnect (

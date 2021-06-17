@@ -315,6 +315,10 @@ typedef struct ArrangerObject
   /** Last drawn name rectangle, if object has a
    * name. */
   GdkRectangle       last_name_rect;
+
+  /**
+   * Whether part of an auditioner track. */
+  bool               is_auditioner;
 } ArrangerObject;
 
 static const cyaml_schema_field_t

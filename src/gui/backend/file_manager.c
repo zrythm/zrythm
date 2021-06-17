@@ -56,7 +56,7 @@ file_manager_new (void)
   g_ptr_array_add (self->locations, fl);
 
   file_manager_set_selection (
-    self, fl, FB_SELECTION_TYPE_LOCATIONS, 0);
+    self, fl, false, false);
 
   if (!ZRYTHM_TESTING)
     {
@@ -75,6 +75,21 @@ file_manager_new (void)
           g_ptr_array_add (self->locations, fl);
         }
       g_strfreev (bookmarks);
+
+      /* set remembered location */
+      FileBrowserLocation * loc =
+        file_browser_location_new ();
+      loc->path =
+        g_settings_get_string (
+          S_UI_FILE_BROWSER, "last-location");
+      if (strlen (loc->path) > 0 &&
+          g_file_test (
+            loc->path, G_FILE_TEST_IS_DIR))
+        {
+          file_manager_set_selection (
+            self, loc, true, false);
+        }
+      file_browser_location_free (loc);
     }
 
   return self;
@@ -204,13 +219,9 @@ file_manager_load_files (FileManager * self)
 {
   if (self->selection)
     {
-      if (self->selection_type ==
-            FB_SELECTION_TYPE_LOCATIONS)
-        {
-          load_files_from_location (
-            self,
-            (FileBrowserLocation *) self->selection);
-        }
+      load_files_from_location (
+        self,
+        (FileBrowserLocation *) self->selection);
     }
   else
     {
@@ -218,18 +229,33 @@ file_manager_load_files (FileManager * self)
     }
 }
 
+/**
+ * @param save_to_settings Whether to save this
+ *   location to GSettings.
+ */
 void
 file_manager_set_selection (
   FileManager *            self,
-  void *                   sel,
-  FileBrowserSelectionType sel_type,
-  bool                     load_files)
+  FileBrowserLocation *    sel,
+  bool                     load_files,
+  bool                     save_to_settings)
 {
-  self->selection = sel;
-  self->selection_type = sel_type;
+  g_debug ("setting selection to %s", sel->path);
+
+  if (self->selection)
+    file_browser_location_free (self->selection);
+
+  self->selection =
+    file_browser_location_clone (sel);
   if (load_files)
     {
       file_manager_load_files (self);
+    }
+  if (save_to_settings)
+    {
+      g_settings_set_string (
+        S_UI_FILE_BROWSER, "last-location",
+        self->selection->path);
     }
 }
 
@@ -354,6 +380,18 @@ FileBrowserLocation *
 file_browser_location_new (void)
 {
   return object_new (FileBrowserLocation);
+}
+
+FileBrowserLocation *
+file_browser_location_clone (
+  FileBrowserLocation * loc)
+{
+  FileBrowserLocation * self =
+    file_browser_location_new ();
+  self->path = g_strdup (loc->path);
+  self->label = g_strdup (loc->label);
+
+  return self;
 }
 
 void

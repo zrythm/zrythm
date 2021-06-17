@@ -166,12 +166,16 @@ group_target_track_remove_child (
   bool    recalc_graph,
   bool    pub_events)
 {
+  g_return_if_fail (child_pos != self->pos);
   g_return_if_fail (
-    child_pos != self->pos &&
-    contains_child (self, child_pos) &&
-    child_pos < TRACKLIST->num_tracks);
+    contains_child (self, child_pos));
 
-  Track * child = TRACKLIST->tracks[child_pos];
+  Tracklist * tracklist = track_get_tracklist (self);
+
+  g_return_if_fail (
+    child_pos < tracklist->num_tracks);
+
+  Track * child = tracklist->tracks[child_pos];
   g_return_if_fail (IS_TRACK (child));
   g_message (
     "removing %s (%d) from %s (%d) - disconnect %d",
@@ -196,7 +200,7 @@ group_target_track_remove_child (
     {
       g_debug ("child %d: %s",
         i,
-        TRACKLIST->tracks[self->children[i]]->name);
+        tracklist->tracks[self->children[i]]->name);
     }
 }
 
@@ -261,8 +265,10 @@ group_target_track_add_child (
 
   if (connect)
     {
+      Tracklist * tracklist =
+        track_get_tracklist (self);
       update_child_output (
-        TRACKLIST->tracks[child_pos]->channel, self,
+        tracklist->tracks[child_pos]->channel, self,
         recalc_graph, pub_events);
     }
 

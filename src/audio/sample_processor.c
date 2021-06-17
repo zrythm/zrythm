@@ -17,11 +17,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/audio_region.h"
 #include "audio/engine.h"
 #include "audio/metronome.h"
+#include "audio/midi_file.h"
 #include "audio/port.h"
 #include "audio/sample_processor.h"
+#include "audio/tracklist.h"
 #include "project.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 
@@ -31,14 +35,8 @@ static void
 init_common (
   SampleProcessor * self)
 {
-  self->audio_track =
-    track_new (
-      TRACK_TYPE_AUDIO, -1, "Audio auditioner",
-      true);
-  self->ins_track =
-    track_new (
-      TRACK_TYPE_INSTRUMENT, -1, "MIDI auditioner",
-      true);
+  self->tracklist = tracklist_new (NULL);
+  self->tracklist->is_auditioner = true;
 }
 
 void
@@ -245,7 +243,44 @@ sample_processor_process (
         }
     }
 
-  /* TODO process the tracks */
+  if (self->roll)
+    {
+      for (int i = 1;
+           i < self->tracklist->num_tracks; i++)
+        {
+          Track * track = self->tracklist->tracks[i];
+
+          float * audio_data_l, * audio_data_r;
+          if (track->type == TRACK_TYPE_AUDIO)
+            {
+              track_processor_process (
+                track->processor,
+                self->playhead.frames + cycle_offset,
+                cycle_offset, nframes);
+
+              audio_data_l =
+                track->processor->stereo_out->l->buf;
+              audio_data_r =
+                track->processor->stereo_out->l->buf;
+            }
+
+          if (audio_data_l && audio_data_r)
+            {
+              dsp_mix2 (
+                &l[cycle_offset],
+                &audio_data_l[cycle_offset],
+                1.f, self->fader->amp->control,
+                nframes);
+              dsp_mix2 (
+                &r[cycle_offset],
+                &audio_data_r[cycle_offset],
+                1.f, self->fader->amp->control,
+                nframes);
+            }
+        }
+    }
+
+  position_add_frames (&self->playhead, nframes);
 }
 
 /**
@@ -312,6 +347,111 @@ sample_processor_queue_sample_from_file (
   const char *      path)
 {
   /* TODO */
+}
+
+/**
+ * Adds a file (audio or MIDI) to the queue.
+ */
+void
+sample_processor_queue_file (
+  SampleProcessor *     self,
+  const SupportedFile * file)
+{
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, false);
+
+  /* clear tracks */
+  for (int i = self->tracklist->num_tracks - 1;
+       i >= 0; i--)
+    {
+      Track * track = self->tracklist->tracks[i];
+      tracklist_remove_track (
+        self->tracklist, track, true,
+        F_FREE, F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
+    }
+
+  Position start_pos;
+  position_set_to_bar (&start_pos, 1);
+
+  /* create master track */
+  Track * track =
+    track_new (
+      TRACK_TYPE_MASTER, self->tracklist->num_tracks,
+      "Sample Processor Master", F_WITHOUT_LANE,
+      F_AUDITIONER);
+  self->tracklist->master_track = track;
+  tracklist_insert_track (
+    self->tracklist, track, track->pos,
+    F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+
+  if (supported_file_type_is_audio (file->type))
+    {
+      track =
+        track_new (
+          TRACK_TYPE_AUDIO,
+          self->tracklist->num_tracks,
+          "Sample processor audio",
+          F_WITH_LANE, F_AUDITIONER);
+      track->is_auditioner = true;
+      tracklist_insert_track (
+        self->tracklist, track, track->pos,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+
+      /* create an audio region & add to
+       * track */
+      ZRegion * ar =
+        audio_region_new (
+          -1, file->abs_path, false,
+          NULL, 0, NULL, 0, 0,
+          &start_pos, 0, 0, 0);
+      track_add_region (
+        track, ar, NULL, 0, F_GEN_NAME,
+        F_NO_PUBLISH_EVENTS);
+    }
+  else if (supported_file_type_is_midi (file->type))
+    {
+      int num_tracks =
+        midi_file_get_num_tracks (
+          file->abs_path, true);
+      for (int i = 0; i < num_tracks; i++)
+        {
+          char name[600];
+          sprintf (
+            name, "Sample processor MIDI %d", i);
+          track =
+            track_new (
+              TRACK_TYPE_INSTRUMENT,
+              self->tracklist->num_tracks, name,
+              F_WITH_LANE, F_AUDITIONER);
+          tracklist_insert_track (
+            self->tracklist, track, track->pos,
+            F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+        }
+    }
+
+  self->roll = true;
+  position_set_to_bar (&self->playhead, 1);
+
+  engine_resume (AUDIO_ENGINE, &state);
+}
+
+/**
+ * Stops playback of files (auditioning).
+ */
+void
+sample_processor_stop_file_playback (
+  SampleProcessor *     self)
+{
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, false);
+
+  self->roll = false;
+  position_set_to_bar (&self->playhead, 1);
+
+  engine_resume (AUDIO_ENGINE, &state);
 }
 
 void

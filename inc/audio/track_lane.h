@@ -30,6 +30,7 @@
 #include "utils/yaml.h"
 
 typedef struct _TrackLaneWidget TrackLaneWidget;
+typedef struct Tracklist Tracklist;
 typedef struct CustomButtonWidget
   CustomButtonWidget;
 typedef void MIDI_FILE;
@@ -90,6 +91,9 @@ typedef struct TrackLane
   /** Buttons used by the track widget. */
   CustomButtonWidget * buttons[8];
   int                 num_buttons;
+
+  /** Whether part of an auditioner track. */
+  bool                is_auditioner;
 
 } TrackLane;
 
@@ -216,6 +220,12 @@ track_lane_write_to_midi_file (
   TrackLane * self,
   MIDI_FILE * mf);
 
+NONNULL
+Tracklist *
+track_lane_get_tracklist (
+  TrackLane * self);
+
+NONNULL
 Track *
 track_lane_get_track (
   TrackLane * self);
@@ -223,6 +233,7 @@ track_lane_get_track (
 /**
  * Frees the TrackLane.
  */
+NONNULL
 void
 track_lane_free (
   TrackLane * lane);

@@ -185,6 +185,7 @@ track_add_lane (
   TrackLane * lane =
     track_lane_new (self, self->num_lanes);
   g_return_if_fail (lane);
+  lane->is_auditioner = self->is_auditioner;
   self->lanes[self->num_lanes] = lane;
 
   self->num_lanes++;
@@ -229,16 +230,20 @@ track_init (
  *
  * @param pos Position in the Tracklist.
  * @param with_lane Init the Track with a lane.
+ * @param auditioner Whether this is an auditioner
+ *   track (used by SampleProcessor).
  */
 Track *
 track_new (
   TrackType    type,
   int          pos,
   const char * label,
-  const int    with_lane)
+  const int    with_lane,
+  bool         auditioner)
 {
   Track * self = object_new (Track);
 
+  self->is_auditioner = auditioner;
   self->pos = pos;
   self->type = type;
   track_init (self, with_lane);
@@ -423,7 +428,7 @@ track_clone (
   Track * new_track =
     track_new (
       track->type, track->pos, track->name,
-      F_WITHOUT_LANE);
+      F_WITHOUT_LANE, F_NOT_AUDITIONER);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (new_track), NULL);
 
@@ -527,6 +532,20 @@ track_set_magic (
       g_return_if_fail (ch);
 
       channel_set_magic (ch);
+    }
+}
+
+Tracklist *
+track_get_tracklist (
+  Track * self)
+{
+  if (self->is_auditioner)
+    {
+      return SAMPLE_PROCESSOR->tracklist;
+    }
+  else
+    {
+      return TRACKLIST;
     }
 }
 
@@ -1557,7 +1576,8 @@ track_insert_region (
     }
 
   /* write clip if audio region */
-  if (region->id.type == REGION_TYPE_AUDIO)
+  if (region->id.type == REGION_TYPE_AUDIO &&
+      !track->is_auditioner)
     {
       AudioClip * clip =
         audio_region_get_clip (region);
@@ -2082,6 +2102,9 @@ void
 track_unselect_all (
   Track * self)
 {
+  if (self->is_auditioner)
+    return;
+
   /* unselect lane regions */
   for (int i = 0; i < self->num_lanes; i++)
     {
@@ -2142,6 +2165,26 @@ track_remove_region (
     "removing region from track '%s':",
     self->name);
   region_print (region);
+
+  /* check if region type matches track type */
+  switch (region->id.type)
+    {
+    case REGION_TYPE_AUDIO:
+      g_return_if_fail (
+        self->type == TRACK_TYPE_AUDIO);
+      break;
+    case REGION_TYPE_MIDI:
+      g_return_if_fail (
+        self->type == TRACK_TYPE_MIDI ||
+        self->type == TRACK_TYPE_INSTRUMENT);
+      break;
+    case REGION_TYPE_CHORD:
+      g_return_if_fail (
+        self->type == TRACK_TYPE_CHORD);
+      break;
+    case REGION_TYPE_AUTOMATION:
+      break;
+    }
 
   region_disconnect (region);
 
@@ -2481,7 +2524,8 @@ track_fill_events (
   MidiEvents *    midi_events,
   StereoPorts *   stereo_ports)
 {
-  if (!TRANSPORT_IS_ROLLING)
+  if (!track->is_auditioner &&
+      !TRANSPORT_IS_ROLLING)
     return;
 
   const long g_end_frames =

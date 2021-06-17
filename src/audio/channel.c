@@ -531,8 +531,11 @@ void
 channel_expose_ports_to_backend (
   Channel * ch)
 {
-  Track * tr =
-    channel_get_track (ch);
+  Track * tr = channel_get_track (ch);
+
+  /* skip if auditioner */
+  if (tr->is_auditioner)
+    return;
 
   g_message ("%s: %s", __func__, tr->name);
 
@@ -1008,7 +1011,8 @@ channel_connect (
   g_message ("connecting channel...");
 
   /* set default output */
-  if (tr->type == TRACK_TYPE_MASTER)
+  if (tr->type == TRACK_TYPE_MASTER &&
+      !tr->is_auditioner)
     {
       ch->output_pos = -1;
       ch->has_output = 0;
@@ -1101,13 +1105,15 @@ channel_get_output_track (
   if (!self->has_output)
     return NULL;
 
-  g_return_val_if_fail (
-    (TRACKLIST->swapping_tracks ||
-     self->output_pos < TRACKLIST->num_tracks),
-    NULL);
   Track * track = channel_get_track (self);
+  Tracklist * tracklist =
+    track_get_tracklist (track);
+  g_return_val_if_fail (
+    (tracklist->swapping_tracks ||
+     self->output_pos < tracklist->num_tracks),
+    NULL);
   Track * output_track =
-    TRACKLIST->tracks[self->output_pos];
+    tracklist->tracks[self->output_pos];
   g_return_val_if_fail (
     output_track && track != output_track, NULL);
 

@@ -436,17 +436,6 @@ on_selection_changed (
         model, &iter, tp);
       GValue value = G_VALUE_INIT;
 
-#if 0
-      if (model == self->type_tree_model)
-        {
-          gtk_tree_model_get_value (
-            model, &iter, 0, &value);
-          self->selected_type =
-            g_value_get_int (&value);
-          gtk_tree_model_filter_refilter (
-            self->files_tree_model);
-        }
-#endif
       if (model ==
             GTK_TREE_MODEL (self->files_tree_model))
         {
@@ -465,11 +454,8 @@ on_selection_changed (
             self->selected_files, descr);
 
           char * label;
-          if (
-              descr->type == FILE_TYPE_MP3 ||
-              descr->type == FILE_TYPE_FLAC ||
-              descr->type == FILE_TYPE_OGG ||
-              descr->type == FILE_TYPE_WAV)
+          if (supported_file_type_is_audio (
+                descr->type))
             {
               AudioEncoder * enc =
                 audio_encoder_new_from_file (
@@ -491,48 +477,100 @@ on_selection_changed (
               "%s\nType: %s",
               descr->label, file_type_label);
           update_file_info_label (self, label);
+
+          if (g_settings_get_boolean (
+                S_UI_FILE_BROWSER, "autoplay") &&
+              (supported_file_type_is_audio (
+                 descr->type) ||
+               supported_file_type_is_midi (
+                 descr->type)))
+            {
+              sample_processor_queue_file (
+                SAMPLE_PROCESSOR, descr);
+            }
         }
     }
 }
 
-static void
-on_drag_data_get (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
-  gpointer          user_data)
+static SupportedFile *
+get_selected_file (
+  PanelFileBrowserWidget * self)
 {
   GtkTreeSelection * ts =
-    (GtkTreeSelection *) user_data;
+    gtk_tree_view_get_selection (
+      self->files_tree_view);
   GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (ts, NULL);
+    gtk_tree_selection_get_selected_rows (
+      ts, NULL);
+  if (!selected_rows)
+    return  NULL;
+
   GtkTreePath * tp =
     (GtkTreePath *)
     g_list_first (selected_rows)->data;
   GtkTreeIter iter;
   gtk_tree_model_get_iter (
-    GTK_TREE_MODEL (
-      MW_PANEL_FILE_BROWSER->files_tree_model),
+    GTK_TREE_MODEL (self->files_tree_model),
     &iter, tp);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (
-    GTK_TREE_MODEL (
-      MW_PANEL_FILE_BROWSER->files_tree_model),
-    &iter,
-    COLUMN_DESCR,
-    &value);
+    GTK_TREE_MODEL (self->files_tree_model),
+    &iter, COLUMN_DESCR, &value);
   SupportedFile * descr =
     g_value_get_pointer (&value);
 
-  gtk_selection_data_set (
-    data,
-    gdk_atom_intern_static_string (
-      TARGET_ENTRY_SUPPORTED_FILE),
-    32,
-    (const guchar *)&descr,
-    sizeof (SupportedFile));
+  g_list_free_full (
+    selected_rows,
+    (GDestroyNotify) gtk_tree_path_free);
+
+  return descr;
+}
+
+static void
+on_play_clicked (
+  GtkToolButton *          toolbutton,
+  PanelFileBrowserWidget * self)
+{
+  SupportedFile * descr = get_selected_file (self);
+  if (!descr)
+    return;
+
+  sample_processor_queue_file (
+    SAMPLE_PROCESSOR, descr);
+}
+
+static void
+on_stop_clicked (
+  GtkToolButton *          toolbutton,
+  PanelFileBrowserWidget * self)
+{
+  sample_processor_stop_file_playback (
+    SAMPLE_PROCESSOR);
+}
+
+static void
+on_drag_data_get (
+  GtkWidget *              widget,
+  GdkDragContext *         context,
+  GtkSelectionData *       data,
+  guint                    info,
+  guint                    time,
+  PanelFileBrowserWidget * self)
+{
+  if (GTK_WIDGET (self->files_tree_view) ==
+        widget)
+    {
+      SupportedFile * descr =
+        get_selected_file (self);
+
+      gtk_selection_data_set (
+        data,
+        gdk_atom_intern_static_string (
+          TARGET_ENTRY_SUPPORTED_FILE),
+        32,
+        (const guchar *)&descr,
+        sizeof (SupportedFile));
+    }
 }
 
 static GtkTreeModel *
@@ -540,7 +578,6 @@ create_model_for_files (
   PanelFileBrowserWidget * self)
 {
   GtkListStore *list_store;
-  /*GtkTreePath *path;*/
   GtkTreeIter iter;
   gint i;
 
@@ -645,8 +682,7 @@ on_bookmark_row_activated (
     g_value_get_pointer (&value);
 
   file_manager_set_selection (
-    FILE_MANAGER, loc,
-    FB_SELECTION_TYPE_LOCATIONS, true);
+    FILE_MANAGER, loc, true, true);
   self->files_tree_model =
     GTK_TREE_MODEL_FILTER (
       create_model_for_files (self));
@@ -682,8 +718,7 @@ on_file_row_activated (
       loc->path = descr->abs_path;
       loc->label = g_path_get_basename (loc->path);
       file_manager_set_selection (
-        FILE_MANAGER, loc,
-        FB_SELECTION_TYPE_LOCATIONS, true);
+        FILE_MANAGER, loc, true, true);
       self->files_tree_model =
         GTK_TREE_MODEL_FILTER (
           create_model_for_files (self));
@@ -867,9 +902,7 @@ tree_view_setup (
 
       g_signal_connect (
         GTK_WIDGET (tree_view), "drag-data-get",
-        G_CALLBACK (on_drag_data_get),
-        gtk_tree_view_get_selection (
-          GTK_TREE_VIEW (tree_view)));
+        G_CALLBACK (on_drag_data_get), self);
     }
 
   GtkTreeSelection * sel =
@@ -1045,6 +1078,8 @@ panel_file_browser_widget_class_init (
     klass, sig)
 
   BIND_SIGNAL (toggles_changed);
+  BIND_SIGNAL (on_play_clicked);
+  BIND_SIGNAL (on_stop_clicked);
 
 #undef BIND_SIGNAL
 }

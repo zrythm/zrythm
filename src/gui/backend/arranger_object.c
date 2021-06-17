@@ -965,6 +965,7 @@ init_loaded_region (
     {
     case REGION_TYPE_AUDIO:
       {
+        self->read_from_pool = true;
         AudioClip * clip =
           audio_region_get_clip (self);
         g_return_if_fail (clip);
@@ -1666,6 +1667,9 @@ arranger_object_get_track (
     IS_ARRANGER_OBJECT (self), NULL);
 
   Track * track = NULL;
+  Tracklist * tracklist =
+    self->is_auditioner ?
+      SAMPLE_PROCESSOR->tracklist : TRACKLIST;
 
   switch (self->type)
     {
@@ -1673,10 +1677,10 @@ arranger_object_get_track (
       {
         ZRegion * r = (ZRegion *) self;
         g_return_val_if_fail (
-          r->id.track_pos < TRACKLIST->num_tracks,
+          r->id.track_pos < tracklist->num_tracks,
           NULL);
         track =
-          TRACKLIST->tracks[r->id.track_pos];
+          tracklist->tracks[r->id.track_pos];
       }
       break;
     case TYPE (SCALE_OBJECT):
@@ -1689,9 +1693,9 @@ arranger_object_get_track (
         Marker * marker = (Marker *) self;
         g_return_val_if_fail (
           marker->track_pos <
-            TRACKLIST->num_tracks, NULL);
+            tracklist->num_tracks, NULL);
         track =
-          TRACKLIST->tracks[marker->track_pos];
+          tracklist->tracks[marker->track_pos];
       }
       break;
     case TYPE (AUTOMATION_POINT):
@@ -1709,10 +1713,10 @@ arranger_object_get_track (
     case TYPE (MIDI_NOTE):
       g_return_val_if_fail (
         self->region_id.track_pos <
-          TRACKLIST->num_tracks,
+          tracklist->num_tracks,
         NULL);
       track =
-        TRACKLIST->tracks[
+        tracklist->tracks[
           self->region_id.track_pos];
       break;
     case TYPE (VELOCITY):
@@ -1724,10 +1728,10 @@ arranger_object_get_track (
           (ArrangerObject *) mn;
         g_return_val_if_fail (
           mn_obj->region_id.track_pos <
-            TRACKLIST->num_tracks,
+            tracklist->num_tracks,
         NULL);
         track =
-          TRACKLIST->tracks[
+          tracklist->tracks[
             mn_obj->region_id.track_pos];
       }
       break;
@@ -2146,7 +2150,7 @@ clone_region (
       {
         ZRegion * ar =
           audio_region_new (
-            region->pool_id, NULL, NULL, -1,
+            region->pool_id, NULL, true, NULL, -1,
             NULL, 0, 0, &r_obj->pos,
             region->id.track_pos,
             region->id.lane_pos,

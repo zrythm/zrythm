@@ -319,4 +319,7 @@
 #define F_CANCELABLE 1
 #define F_NOT_CANCELABLE 0
 
+#define F_AUDITIONER 1
+#define F_NOT_AUDITIONER 0
+
 #endif

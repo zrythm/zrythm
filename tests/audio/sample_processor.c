@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,17 +30,22 @@
 #include <locale.h>
 
 static void
-test_new_track ()
+test_queue_file ()
 {
-  Track * track =
-    track_new (
-      TRACK_TYPE_INSTRUMENT,
-      TRACKLIST->num_tracks,
-      "Test Instrument Track 1",
-      F_WITH_LANE, F_NOT_AUDITIONER);
-  g_assert_true (IS_TRACK_AND_NONNULL (track));
+  test_helper_zrythm_init ();
 
-  g_assert_nonnull (track->name);
+  char * filepath =
+    g_build_filename (
+      TESTS_SRCDIR, "test.wav", NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (filepath);
+  for (int i = 0; i < 5; i++)
+    {
+      sample_processor_queue_file (
+        SAMPLE_PROCESSOR, file);
+    }
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
@@ -48,13 +53,11 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
-#define TEST_PREFIX "/audio/track/"
+#define TEST_PREFIX "/audio/sample_processor/"
 
   g_test_add_func (
-    TEST_PREFIX "test new track",
-    (GTestFunc) test_new_track);
+    TEST_PREFIX "test queue file",
+    (GTestFunc) test_queue_file);
 
   return g_test_run ();
 }

@@ -88,7 +88,8 @@ modulator_track_default (
   Track * self =
     track_new (
       TRACK_TYPE_MODULATOR, track_pos,
-      _("Modulators"), F_WITHOUT_LANE);
+      _("Modulators"), F_WITHOUT_LANE,
+      F_NOT_AUDITIONER);
 
   return self;
 }

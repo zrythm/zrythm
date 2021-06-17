@@ -2144,7 +2144,7 @@ arranger_selections_merge (
         /* create new region using frames */
         new_r =
           audio_region_new (
-            -1, NULL, frames, num_frames,
+            -1, NULL, true, frames, num_frames,
             first_r_clip->name, 2, max_depth,
             &pos, first_r->id.track_pos,
             first_r->id.lane_pos, first_r->id.idx);

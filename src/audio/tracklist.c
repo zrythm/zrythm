@@ -223,7 +223,8 @@ swap_tracks (
   Track * src_track = self->tracks[src];
   Track * dest_track = self->tracks[dest];
   g_return_if_fail (
-    IS_TRACK_AND_NONNULL (src_track) &&
+    IS_TRACK_AND_NONNULL (src_track));
+  g_return_if_fail (
     IS_TRACK_AND_NONNULL (dest_track));
   g_debug ("swapping tracks %s [%d] and %s [%d]...",
     src_track->name, src, dest_track->name, dest);
@@ -291,12 +292,16 @@ tracklist_insert_track (
         }
     }
 
-  /* make the track the only selected track */
-  tracklist_selections_select_single (
-    TRACKLIST_SELECTIONS, track,
-    publish_events);
+  if (!self->is_auditioner)
+    {
+      /* make the track the only selected track */
+      tracklist_selections_select_single (
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
+    }
 
-  track_set_is_project (track, true);
+  track_set_is_project (
+    track, !self->is_auditioner);
 
   track_set_pos (track, pos);
 
@@ -310,12 +315,15 @@ tracklist_insert_track (
       track->type != TRACK_TYPE_MASTER)
     {
       group_target_track_add_child (
-        P_MASTER_TRACK, pos, F_CONNECT,
+        self->master_track, pos, F_CONNECT,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
     }
 
-  /* verify */
-  track_validate (track);
+  if (!self->is_auditioner)
+    {
+      /* verify */
+      track_validate (track);
+    }
 
   if (ZRYTHM_TESTING)
     {
@@ -335,7 +343,7 @@ tracklist_insert_track (
         }
     }
 
-  if (ZRYTHM_HAVE_UI)
+  if (ZRYTHM_HAVE_UI && !self->is_auditioner)
     {
       /* generate track widget */
       track->widget = track_widget_new (track);
@@ -738,12 +746,17 @@ tracklist_remove_track (
     rm_pl, free_track, publish_events,
     recalc_graph);
 
-  Track * prev_visible =
-    tracklist_get_prev_visible_track (
-      TRACKLIST, track);
-  Track * next_visible =
-    tracklist_get_next_visible_track (
-      TRACKLIST, track);
+  Track * prev_visible = NULL;
+  Track * next_visible = NULL;
+  if (!self->is_auditioner)
+    {
+      prev_visible =
+        tracklist_get_prev_visible_track (
+          self, track);
+      next_visible =
+        tracklist_get_next_visible_track (
+          self, track);
+    }
 
   /* remove/deselect all objects */
   track_clear (track);
@@ -758,32 +771,40 @@ tracklist_remove_track (
 
   /* move track to the end */
   tracklist_move_track (
-    self, track, TRACKLIST->num_tracks - 1,
+    self, track, self->num_tracks - 1,
     F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
-  tracklist_selections_remove_track (
-    TRACKLIST_SELECTIONS, track, publish_events);
+  if (!self->is_auditioner)
+    {
+      tracklist_selections_remove_track (
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
+    }
+
   array_delete (
     self->tracks, self->num_tracks, track);
 
-  /* if it was the only track selected, select
-   * the next one */
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+  if (!self->is_auditioner)
     {
-      Track * track_to_select = NULL;
-      if (prev_visible || next_visible)
+      /* if it was the only track selected, select
+       * the next one */
+      if (TRACKLIST_SELECTIONS->num_tracks == 0)
         {
-          track_to_select =
-            next_visible ?
-              next_visible : prev_visible;
+          Track * track_to_select = NULL;
+          if (prev_visible || next_visible)
+            {
+              track_to_select =
+                next_visible ?
+                  next_visible : prev_visible;
+            }
+          else
+            {
+              track_to_select = self->tracks[0];
+            }
+          tracklist_selections_add_track (
+            TRACKLIST_SELECTIONS, track_to_select,
+            publish_events);
         }
-      else
-        {
-          track_to_select = TRACKLIST->tracks[0];
-        }
-      tracklist_selections_add_track (
-        TRACKLIST_SELECTIONS, track_to_select,
-        publish_events);
     }
 
   track_set_pos (track, -1);
@@ -833,25 +854,10 @@ tracklist_move_track (
 
   Track * prev_visible =
     tracklist_get_prev_visible_track (
-      TRACKLIST, track);
+      self, track);
   Track * next_visible =
     tracklist_get_next_visible_track (
-      TRACKLIST, track);
-
-  /* clear the editor region if it exists and
-   * belongs to this track */
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (region &&
-      arranger_object_get_track (
-        (ArrangerObject *) region) == track)
-    {
-      clip_editor_set_region (
-        CLIP_EDITOR, NULL, publish_events);
-    }
-
-  /* deselect all objects */
-  track_unselect_all (track);
+      self, track);
 
   int idx =
     array_index_of (
@@ -859,18 +865,38 @@ tracklist_move_track (
   g_warn_if_fail (
     track->pos == idx);
 
-  tracklist_selections_remove_track (
-    TRACKLIST_SELECTIONS, track, publish_events);
-
-  /* if it was the only track selected, select
-   * the next one */
-  if (TRACKLIST_SELECTIONS->num_tracks == 0 &&
-      (prev_visible || next_visible))
+  if (!self->is_auditioner)
     {
-      tracklist_selections_add_track (
-        TRACKLIST_SELECTIONS,
-        next_visible ? next_visible : prev_visible,
+      /* clear the editor region if it exists and
+       * belongs to this track */
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (region &&
+          arranger_object_get_track (
+            (ArrangerObject *) region) == track)
+        {
+          clip_editor_set_region (
+            CLIP_EDITOR, NULL, publish_events);
+        }
+
+      /* deselect all objects */
+      track_unselect_all (track);
+
+      tracklist_selections_remove_track (
+        TRACKLIST_SELECTIONS, track,
         publish_events);
+
+      /* if it was the only track selected, select
+       * the next one */
+      if (TRACKLIST_SELECTIONS->num_tracks == 0 &&
+          (prev_visible || next_visible))
+        {
+          tracklist_selections_add_track (
+            TRACKLIST_SELECTIONS,
+            next_visible ?
+              next_visible : prev_visible,
+            publish_events);
+        }
     }
 
   if (move_higher)
@@ -890,9 +916,13 @@ tracklist_move_track (
         }
     }
 
-  /* make the track the only selected track */
-  tracklist_selections_select_single (
-    TRACKLIST_SELECTIONS, track, publish_events);
+  if (!self->is_auditioner)
+    {
+      /* make the track the only selected track */
+      tracklist_selections_select_single (
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
+    }
 
   if (recalc_graph)
     {
@@ -1250,7 +1280,8 @@ tracklist_handle_file_drop (
                * track */
               region =
                 audio_region_new (
-                  -1, file->abs_path, NULL, -1, NULL,
+                  -1, file->abs_path, true, NULL,
+                  -1, NULL,
                   0, 0, pos, track->pos, lane_pos,
                   idx_in_lane);
               break;
@@ -1291,7 +1322,7 @@ tracklist_handle_file_drop (
           UndoableAction * ua =
             tracklist_selections_action_new_create (
               track_type, NULL, file,
-              TRACKLIST->num_tracks,
+              self->num_tracks,
               pos, 1, -1);
           undo_manager_perform (UNDO_MANAGER, ua);
         }

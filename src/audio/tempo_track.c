@@ -121,7 +121,7 @@ tempo_track_default (
   Track * self =
     track_new (
       TRACK_TYPE_TEMPO, track_pos, _("Tempo"),
-      F_WITHOUT_LANE);
+      F_WITHOUT_LANE, F_NOT_AUDITIONER);
 
   return self;
 }

@@ -400,7 +400,8 @@ create_track (
 
       track =
         track_new (
-          self->track_type, pos, label, F_WITH_LANE);
+          self->track_type, pos, label,
+          F_WITH_LANE, F_NOT_AUDITIONER);
       tracklist_insert_track (
         TRACKLIST, track, pos,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -417,7 +418,7 @@ create_track (
             track_new (
               self->track_type, pos,
               self->file_basename,
-              F_WITH_LANE);
+              F_WITH_LANE, F_NOT_AUDITIONER);
         }
       /* else if creating MIDI track from file */
       else if (self->track_type == TRACK_TYPE_MIDI &&
@@ -427,7 +428,7 @@ create_track (
             track_new (
               self->track_type, pos,
               self->file_basename,
-              F_WITH_LANE);
+              F_WITH_LANE, F_NOT_AUDITIONER);
         }
       /* at this point we can assume it has a
        * plugin */
@@ -437,7 +438,7 @@ create_track (
             track_new (
               self->track_type, pos,
               self->pl_setting->descr->name,
-              F_WITH_LANE);
+              F_WITH_LANE, F_NOT_AUDITIONER);
 
           pl=
             plugin_new_from_setting (
@@ -509,7 +510,7 @@ create_track (
            * track */
           ZRegion * ar =
             audio_region_new (
-              self->pool_id, NULL,
+              self->pool_id, NULL, true,
               NULL, 0, NULL, 0, 0,
               &start_pos, pos, 0, 0);
           track_add_region (

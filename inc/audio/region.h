@@ -44,6 +44,7 @@ typedef struct TrackLane TrackLane;
 typedef struct _AudioClipWidget AudioClipWidget;
 typedef struct RegionLinkGroup RegionLinkGroup;
 typedef struct Stretcher Stretcher;
+typedef struct AudioClip AudioClip;
 
 /**
  * @addtogroup audio
@@ -166,6 +167,17 @@ typedef struct ZRegion
 
   /** Used during arranger UI overlay actions. */
   double            stretch_ratio;
+
+  /**
+   * Whether to read the clip from the pool (used
+   * in most cases).
+   */
+  bool              read_from_pool;
+
+  /**
+   * Clip to read frames from, if not from the pool.
+   */
+  AudioClip *       clip;
 
 #if 0
   /**

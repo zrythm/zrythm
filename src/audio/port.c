@@ -78,8 +78,7 @@ allocate_buf (
               AUDIO_ENGINE->block_length,
               self->min_buf_size);
           max = MAX (max, 1);
-          self->buf =
-            object_new_n (max, float);
+          self->buf = object_new_n (max, float);
         }
     }
 }

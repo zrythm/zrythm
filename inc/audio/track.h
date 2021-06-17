@@ -58,6 +58,7 @@ typedef struct MusicalScale MusicalScale;
 typedef struct Modulator Modulator;
 typedef struct Marker Marker;
 typedef struct PluginDescriptor PluginDescriptor;
+typedef struct Tracklist Tracklist;
 typedef enum PassthroughProcessorType
   PassthroughProcessorType;
 typedef enum FaderType FaderType;
@@ -461,6 +462,10 @@ typedef struct Track
 
   /** Whether currently disconnecting. */
   bool                 disconnecting;
+
+  /** Whether this track is part of the
+   * SampleProcessor auditioner tracklist. */
+  bool                 is_auditioner;
 } Track;
 
 static const cyaml_schema_field_t
@@ -560,13 +565,16 @@ track_init (
  *
  * @param pos Position in the Tracklist.
  * @param with_lane Init the Track with a lane.
+ * @param auditioner Whether this is an auditioner
+ *   track (used by SampleProcessor).
  */
 Track *
 track_new (
   TrackType    type,
   int          pos,
   const char * label,
-  const int    with_lane);
+  const int    with_lane,
+  bool         auditioner);
 
 /**
  * Clones the track and returns the clone.
@@ -621,6 +629,11 @@ NONNULL
 bool
 track_type_is_deletable (
   TrackType type);
+
+NONNULL
+Tracklist *
+track_get_tracklist (
+  Track * self);
 
 /**
  * Returns the full visible height (main height +

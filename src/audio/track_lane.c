@@ -278,6 +278,8 @@ track_lane_clear (
       track_remove_region (
         track, region, 0, 1);
     }
+
+  g_return_if_fail (self->num_regions == 0);
 }
 
 /**
@@ -302,16 +304,28 @@ track_lane_remove_region (
     }
 }
 
+Tracklist *
+track_lane_get_tracklist (
+  TrackLane * self)
+{
+  if (self->is_auditioner)
+    return SAMPLE_PROCESSOR->tracklist;
+  else
+    return TRACKLIST;
+}
+
 Track *
 track_lane_get_track (
   TrackLane * self)
 {
-  g_return_val_if_fail (self, NULL);
+  Tracklist * tracklist =
+    track_lane_get_tracklist (self);
 
-  if (self->track_pos >= TRACKLIST->num_tracks)
-    g_return_val_if_reached (NULL);
+  g_return_val_if_fail (
+    self->track_pos < tracklist->num_tracks, NULL);
 
-  Track * track = TRACKLIST->tracks[self->track_pos];
+  Track * track =
+    tracklist->tracks[self->track_pos];
   g_return_val_if_fail (track, NULL);
 
   return track;

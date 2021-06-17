@@ -50,7 +50,7 @@ fixture_set_up (
       TRACK_TYPE_MIDI,
       TRACKLIST->num_tracks,
       "Test MIDI Track 1",
-      F_WITH_LANE);
+      F_WITH_LANE, F_NOT_AUDITIONER);
   tracklist_append_track (
     TRACKLIST, self->midi_track, 0, 1);
   self->events = midi_events_new ();

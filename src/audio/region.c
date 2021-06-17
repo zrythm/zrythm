@@ -154,6 +154,9 @@ region_set_lane (
   TrackLane * lane)
 {
   g_return_if_fail (IS_REGION (self) && lane);
+  if (lane->is_auditioner)
+    self->base.is_auditioner = true;
+
   self->id.lane_pos = lane->pos;
   self->id.track_pos = lane->track_pos;
 }
@@ -799,6 +802,8 @@ void
 region_update_identifier (
   ZRegion * self)
 {
+  g_return_if_fail (IS_REGION (self));
+
   /* reset link group */
   region_set_link_group (
     self, self->id.link_group, false);

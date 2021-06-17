@@ -822,7 +822,7 @@ handle_resume_event (
                   AUDIO_POOL, tr, new_lane_pos);
               new_region =
                 audio_region_new (
-                  -1, NULL, NULL, 1, name, 2,
+                  -1, NULL, true, NULL, 1, name, 2,
                   BIT_DEPTH_32,
                   &resume_pos,
                   tr->pos, new_lane_pos,
@@ -1449,7 +1449,8 @@ handle_start_recording (
               AUDIO_POOL, tr, new_lane_pos);
           ZRegion * region =
             audio_region_new (
-              -1, NULL, NULL, ev->nframes, name, 2,
+              -1, NULL, true, NULL, ev->nframes,
+              name, 2,
               BIT_DEPTH_32, &start_pos, tr->pos,
               new_lane_pos,
               tr->lanes[new_lane_pos]->num_regions);

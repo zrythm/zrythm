@@ -51,7 +51,7 @@ test_midi_file_playback ()
       TRACK_TYPE_MIDI,
       TRACKLIST->num_tracks,
       "Test MIDI Track 1",
-      F_WITH_LANE);
+      F_WITH_LANE, F_NOT_AUDITIONER);
   tracklist_append_track (
     TRACKLIST, midi_track, 0, 1);
   MidiEvents * events = midi_events_new ();

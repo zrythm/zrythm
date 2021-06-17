@@ -39,14 +39,14 @@
 /**
  * Creates a ZRegion for audio data.
  *
- * FIXME First create the
- * audio on the pool and then pass the pool id here.
- *
  * @param pool_id The pool ID. This is used when
  *   creating clone regions (non-main) and must be
  *   -1 when creating a new clip.
  * @param filename Filename, if loading from
  *   file, otherwise NULL.
+ * @param read_from_pool Whether to save the given
+ *   @a filename to pool and read the data from the
+ *   pool. Only used if @a filename is given.
  * @param frames Float array, if loading from
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
@@ -58,6 +58,7 @@ ZRegion *
 audio_region_new (
   const int        pool_id,
   const char *     filename,
+  bool             read_from_pool,
   const float *    frames,
   const long       nframes,
   const char *     clip_name,
@@ -77,6 +78,7 @@ audio_region_new (
 
   self->id.type = REGION_TYPE_AUDIO;
   self->pool_id = -1;
+  self->read_from_pool = read_from_pool;
 
   AudioClip * clip = NULL;
   int recording = 0;
@@ -104,10 +106,17 @@ audio_region_new (
         }
       g_return_val_if_fail (clip, NULL);
 
-      self->pool_id =
-        audio_pool_add_clip (
-          AUDIO_POOL, clip);
-      g_warn_if_fail (self->pool_id > -1);
+      if (read_from_pool)
+        {
+          self->pool_id =
+            audio_pool_add_clip (
+              AUDIO_POOL, clip);
+          g_warn_if_fail (self->pool_id > -1);
+        }
+      else
+        {
+          self->clip = clip;
+        }
     }
   else
     {
@@ -158,12 +167,24 @@ audio_region_get_clip (
   const ZRegion * self)
 {
   g_return_val_if_fail (
-    self->pool_id >= 0 &&
-    self->id.type == REGION_TYPE_AUDIO,
+    (!self->read_from_pool && self->clip) ||
+      (self->read_from_pool && self->pool_id >= 0),
     NULL);
+  g_return_val_if_fail (
+    self->id.type == REGION_TYPE_AUDIO, NULL);
 
-  AudioClip * clip =
-    AUDIO_POOL->clips[self->pool_id];
+  AudioClip * clip = NULL;
+  if (G_LIKELY (self->read_from_pool))
+    {
+      g_return_val_if_fail (
+        self->pool_id >= 0, NULL);
+      clip = AUDIO_POOL->clips[self->pool_id];
+    }
+  else
+    {
+      g_return_val_if_fail (self->clip, NULL);
+      clip = self->clip;
+    }
 
   g_return_val_if_fail (
     clip && clip->frames && clip->num_frames > 0,
@@ -296,8 +317,8 @@ audio_region_fill_stereo_ports (
   StereoPorts * stereo_ports)
 {
   ArrangerObject * r_obj =  (ArrangerObject *) r;
-  AudioClip * clip =
-    audio_pool_get_clip (AUDIO_POOL, r->pool_id);
+  AudioClip * clip = audio_region_get_clip (r);
+  g_return_if_fail (clip);
   Track * track =
     arranger_object_get_track (r_obj);
 
@@ -532,4 +553,6 @@ audio_region_validate (
 void
 audio_region_free_members (ZRegion * self)
 {
+  object_free_w_func_and_null (
+    audio_clip_free, self->clip);
 }

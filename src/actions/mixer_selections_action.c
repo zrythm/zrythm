@@ -720,7 +720,7 @@ do_or_undo_move_or_copy (
             track_new (
               TRACK_TYPE_AUDIO_BUS,
               TRACKLIST->num_tracks, str,
-              F_WITH_LANE);
+              F_WITH_LANE, F_NOT_AUDITIONER);
           g_free (str);
           g_return_val_if_fail (to_tr, -1);
 

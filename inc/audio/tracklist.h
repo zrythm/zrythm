@@ -123,6 +123,10 @@ typedef struct Tracklist
   /** When this is true, some tracks may temporarily
    * be moved beyond num_tracks. */
   bool                swapping_tracks;
+
+  /** Whether this is an auditioning tracklist (used
+   * by SampleProcessor. */
+  bool                is_auditioner;
 } Tracklist;
 
 static const cyaml_schema_field_t

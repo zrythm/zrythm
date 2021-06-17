@@ -781,7 +781,8 @@ project_create_default (
   track =
     track_new (
       TRACK_TYPE_MASTER, TRACKLIST->num_tracks,
-      _("Master"), F_WITHOUT_LANE);
+      _("Master"), F_WITHOUT_LANE,
+      F_NOT_AUDITIONER);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);

@@ -668,6 +668,10 @@ Args:
                  "file-browser-filter" "none"
                  "File browser filter"
                  "Selected file browser filter")
+               (make-schema-key
+                 "last-location" "s" ""
+                 "Last location"
+                 "Last visited location.")
              ))) ;; ui.file-browser
 
          (schema-print

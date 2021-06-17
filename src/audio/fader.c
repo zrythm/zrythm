@@ -61,7 +61,10 @@ fader_init_loaded (
       self->mute->magic = PORT_MAGIC;
       self->solo->magic = PORT_MAGIC;
       self->listen->magic = PORT_MAGIC;
-      self->mono_compat_enabled->magic = PORT_MAGIC;
+      self->mono_compat_enabled->magic =
+        PORT_MAGIC;
+      self->stereo_in->l->magic = PORT_MAGIC;
+      self->stereo_in->r->magic = PORT_MAGIC;
       /* fallthrough */
     case FADER_TYPE_AUDIO_CHANNEL:
       port_set_owner_fader (

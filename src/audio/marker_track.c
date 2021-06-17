@@ -59,7 +59,7 @@ marker_track_default (
   Track * self =
     track_new (
       TRACK_TYPE_MARKER, track_pos, _("Markers"),
-      F_WITHOUT_LANE);
+      F_WITHOUT_LANE, F_NOT_AUDITIONER);
 
 #if 0
   /* hack to allow setting positions */

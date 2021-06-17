@@ -96,8 +96,7 @@ typedef struct FileManager
   /**
    * Current selection in the top window.
    */
-  void *                   selection;
-  FileBrowserSelectionType selection_type;
+  FileBrowserLocation *    selection;
 
 } FileManager;
 
@@ -113,12 +112,17 @@ file_manager_new (void);
 void
 file_manager_load_files (FileManager * self);
 
+/**
+ * @param save_to_settings Whether to save this
+ *   location to GSettings.
+ */
+NONNULL
 void
 file_manager_set_selection (
   FileManager *            self,
-  void *                   sel,
-  FileBrowserSelectionType sel_type,
-  bool                     load_files);
+  FileBrowserLocation *    sel,
+  bool                     load_files,
+  bool                     save_to_settings);
 
 /**
  * Frees the file manager.
@@ -129,6 +133,10 @@ file_manager_free (
 
 FileBrowserLocation *
 file_browser_location_new (void);
+
+FileBrowserLocation *
+file_browser_location_clone (
+  FileBrowserLocation * loc);
 
 /**
  * Adds a location and saves the settings.

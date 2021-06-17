@@ -47,14 +47,14 @@ typedef struct StereoPorts StereoPorts;
 /**
  * Creates a ZRegion for audio data.
  *
- * FIXME First create the
- * audio on the pool and then pass the pool id here.
- *
  * @param pool_id The pool ID. This is used when
  *   creating clone regions (non-main) and must be
  *   -1 when creating a new clip.
  * @param filename Filename, if loading from
  *   file, otherwise NULL.
+ * @param read_from_pool Whether to save the given
+ *   @a filename to pool and read the data from the
+ *   pool. Only used if @a filename is given.
  * @param frames Float array, if loading from
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
@@ -66,6 +66,7 @@ ZRegion *
 audio_region_new (
   const int        pool_id,
   const char *     filename,
+  bool             read_from_pool,
   const float *    frames,
   const long       nframes,
   const char *     clip_name,
