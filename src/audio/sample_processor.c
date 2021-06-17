@@ -468,6 +468,8 @@ sample_processor_free (
   sample_processor_disconnect (self);
 
   object_free_w_func_and_null (
+    tracklist_free, self->tracklist);
+  object_free_w_func_and_null (
     fader_free, self->fader);
 
   object_zero_and_free (self);
