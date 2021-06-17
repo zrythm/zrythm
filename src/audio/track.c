@@ -1494,9 +1494,12 @@ track_insert_region (
     {
       track = automation_track_get_track (at);
     }
+  g_return_if_fail (IS_TRACK (track));
   g_return_if_fail (
-    IS_TRACK (track) &&
     region_validate (region, false));
+  g_return_if_fail (
+    track_type_can_have_region_type (
+      track->type, region->id.type));
 
   if (gen_name)
     {
@@ -2167,24 +2170,9 @@ track_remove_region (
   region_print (region);
 
   /* check if region type matches track type */
-  switch (region->id.type)
-    {
-    case REGION_TYPE_AUDIO:
-      g_return_if_fail (
-        self->type == TRACK_TYPE_AUDIO);
-      break;
-    case REGION_TYPE_MIDI:
-      g_return_if_fail (
-        self->type == TRACK_TYPE_MIDI ||
-        self->type == TRACK_TYPE_INSTRUMENT);
-      break;
-    case REGION_TYPE_CHORD:
-      g_return_if_fail (
-        self->type == TRACK_TYPE_CHORD);
-      break;
-    case REGION_TYPE_AUTOMATION:
-      break;
-    }
+  g_return_if_fail (
+    track_type_can_have_region_type (
+      self->type, region->id.type));
 
   region_disconnect (region);
 

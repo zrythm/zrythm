@@ -595,6 +595,29 @@ bool
 track_type_has_channel (
   TrackType type);
 
+static inline bool
+track_type_can_have_region_type (
+  TrackType  type,
+  RegionType region_type)
+{
+  switch (region_type)
+    {
+    case REGION_TYPE_AUDIO:
+      return type == TRACK_TYPE_AUDIO;
+    case REGION_TYPE_MIDI:
+      return
+        type == TRACK_TYPE_MIDI ||
+        type == TRACK_TYPE_INSTRUMENT;
+    case REGION_TYPE_CHORD:
+      return
+        type == TRACK_TYPE_CHORD;
+    case REGION_TYPE_AUTOMATION:
+      return true;
+    }
+
+  g_return_val_if_reached (false);
+}
+
 /**
  * Sets magic on objects recursively.
  */

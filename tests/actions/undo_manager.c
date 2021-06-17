@@ -69,8 +69,8 @@ test_perform_many_actions ()
       if (i % 2 == 0)
         {
           ua =
-            tracklist_selections_action_new_create_audio_fx (
-              NULL, TRACKLIST->num_tracks, 1);
+            tracklist_selections_action_new_create_midi (
+              TRACKLIST->num_tracks, 1);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
       else if (i % 13 == 0)
