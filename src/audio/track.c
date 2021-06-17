@@ -2167,7 +2167,8 @@ track_remove_region (
   g_message (
     "removing region from track '%s':",
     self->name);
-  region_print (region);
+  if (!self->is_auditioner)
+    region_print (region);
 
   /* check if region type matches track type */
   g_return_if_fail (
