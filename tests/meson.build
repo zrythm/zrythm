@@ -246,7 +246,7 @@ if get_option ('tests')
     'audio/midi_note': { parallel: true },
     'audio/midi_region': { parallel: false },
     'audio/midi_track': { parallel: true },
-    'audio/pool': { parallel: true },
+    'audio/pool': { parallel: false },
     'audio/position': { parallel: true },
     'audio/port': { parallel: true },
     'audio/region': { parallel: true },
