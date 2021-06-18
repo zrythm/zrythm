@@ -402,6 +402,11 @@ plugin_manager_new (void)
 {
   PluginManager * self = object_new (PluginManager);
 
+  self->plugin_descriptors =
+    g_ptr_array_new_full (
+      100,
+      (GDestroyNotify) plugin_descriptor_free);
+
   self->symap = symap_new();
   zix_sem_init (&self->symap_lock, 1);
 
@@ -933,9 +938,9 @@ scan_carla_descriptors_from_paths (
                   PluginDescriptor * clone =
                     plugin_descriptor_clone (
                       descriptor);
-                  array_append (
+                  g_ptr_array_add (
                     self->plugin_descriptors,
-                    self->num_plugins, clone);
+                    clone);
                   add_category_and_author (
                     self, clone->category_str,
                     clone->author);
@@ -1031,9 +1036,8 @@ scan_carla_descriptors_from_paths (
                       int i = 0;
                       while ((descriptor = descriptors[i++]))
                         {
-                          array_append (
+                          g_ptr_array_add (
                             self->plugin_descriptors,
-                            self->num_plugins,
                             descriptor);
                           add_category_and_author (
                             self,
@@ -1184,10 +1188,10 @@ plugin_manager_scan_plugins (
           /* if cached descriptor found, use it */
           if (found_descr)
             {
-              self->plugin_descriptors[
-                self->num_plugins++] =
-                  plugin_descriptor_clone (
-                    found_descr);;
+              g_ptr_array_add (
+                self->plugin_descriptors,
+                plugin_descriptor_clone (
+                  found_descr));
               add_category_and_author (
                 self, found_descr->category_str,
                 found_descr->author);
@@ -1195,14 +1199,16 @@ plugin_manager_scan_plugins (
               plugin_descriptor_free (
                 descriptor);
               descriptor =
-                self->plugin_descriptors[
-                  self->num_plugins - 1];
+                g_ptr_array_index (
+                  self->plugin_descriptors,
+                  self->plugin_descriptors->len - 1);
             }
           else
             {
               /* add descriptor to list */
-              self->plugin_descriptors[
-                self->num_plugins++] = descriptor;
+              g_ptr_array_add (
+                self->plugin_descriptors,
+                descriptor);
               add_category_and_author (
                 self, descriptor->category_str,
                 descriptor->author);
@@ -1305,9 +1311,9 @@ plugin_manager_scan_plugins (
 
           if (descriptor)
             {
-              self->plugin_descriptors[
-                self->num_plugins++] =
-                  descriptor;
+              g_ptr_array_add (
+                self->plugin_descriptors,
+                descriptor);
               add_category_and_author (
                 self, descriptor->category_str,
                 descriptor->author);
@@ -1349,10 +1355,8 @@ plugin_manager_scan_plugins (
 #endif // HAVE_CARLA
 
   /* sort alphabetically */
-  qsort (
+  g_ptr_array_sort (
     self->plugin_descriptors,
-    (size_t) self->num_plugins,
-    sizeof (Plugin *),
     sort_plugin_func);
   qsort (
     self->plugin_categories,
@@ -1367,7 +1371,7 @@ plugin_manager_scan_plugins (
 
   g_message (
     "%s: %d Plugins scanned.",
-    __func__, self->num_plugins);
+    __func__, self->plugin_descriptors->len);
 
   /*print_plugins ();*/
 }
@@ -1384,10 +1388,12 @@ plugin_manager_find_plugin_from_uri (
   PluginManager * self,
   const char *    uri)
 {
-  for (int i = 0; i < self->num_plugins; i++)
+  for (size_t i = 0;
+       i < self->plugin_descriptors->len; i++)
     {
       PluginDescriptor * descr =
-        self->plugin_descriptors[i];
+        g_ptr_array_index (
+          self->plugin_descriptors, i);
       if (string_is_equal (uri, descr->uri))
         {
           return descr;
@@ -1411,10 +1417,12 @@ plugin_manager_find_from_descriptor (
 {
   g_return_val_if_fail (self && src_descr, NULL);
 
-  for (int i = 0; i < self->num_plugins; i++)
+  for (size_t i = 0;
+       i < self->plugin_descriptors->len; i++)
     {
       PluginDescriptor * descr =
-        self->plugin_descriptors[i];
+        g_ptr_array_index (
+          self->plugin_descriptors, i);
       if (plugin_descriptor_is_same_plugin (
             src_descr, descr))
         {
@@ -1427,17 +1435,34 @@ plugin_manager_find_from_descriptor (
   return NULL;
 }
 
+/**
+ * Returns an instrument plugin, if any.
+ */
+PluginDescriptor *
+plugin_manager_pick_instrument (
+  PluginManager * self)
+{
+  for (size_t i = 0;
+       i < self->plugin_descriptors->len; i++)
+    {
+      PluginDescriptor * descr =
+        g_ptr_array_index (
+          self->plugin_descriptors, i);
+      if (plugin_descriptor_is_instrument (descr))
+        {
+          return descr;
+        }
+    }
+  return NULL;
+}
+
 void
 plugin_manager_clear_plugins (
   PluginManager * self)
 {
-  for (int i = 0; i < self->num_plugins; i++)
-    {
-      object_free_w_func_and_null (
-        plugin_descriptor_free,
-        self->plugin_descriptors[i]);
-    }
-  self->num_plugins = 0;
+  g_ptr_array_remove_range (
+    self->plugin_descriptors,
+    0, self->plugin_descriptors->len);
 
   for (int i = 0; i < self->num_plugin_categories;
        i++)
@@ -1468,7 +1493,7 @@ plugin_manager_free (
   object_free_w_func_and_null (
     lilv_world_free, self->lilv_world);
 
-  plugin_manager_clear_plugins (self);
+  g_ptr_array_unref (self->plugin_descriptors);
 
   object_free_w_func_and_null (
     cached_plugin_descriptors_free,

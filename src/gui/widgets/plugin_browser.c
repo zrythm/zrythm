@@ -1641,7 +1641,6 @@ create_model_for_plugins (
   GtkListStore *list_store;
   /*GtkTreePath *path;*/
   GtkTreeIter iter;
-  gint i;
 
   /* plugin name, index */
   list_store =
@@ -1649,10 +1648,13 @@ create_model_for_plugins (
       PL_NUM_COLUMNS, G_TYPE_STRING,
       G_TYPE_STRING, G_TYPE_POINTER);
 
-  for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
+  for (size_t i = 0;
+       i < PLUGIN_MANAGER->plugin_descriptors->len;
+       i++)
     {
       PluginDescriptor * descr =
-        PLUGIN_MANAGER->plugin_descriptors[i];
+        g_ptr_array_index (
+          PLUGIN_MANAGER->plugin_descriptors, i);
       const char * icon_name = NULL;
       if (plugin_descriptor_is_instrument (descr))
         {

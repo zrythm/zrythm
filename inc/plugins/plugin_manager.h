@@ -67,11 +67,8 @@ typedef struct PluginManager
 {
   /**
    * Scanned plugin descriptors.
-   *
-   * TODO allocate.
    */
-  PluginDescriptor *  plugin_descriptors[40000];
-  int                 num_plugins;
+  GPtrArray *         plugin_descriptors;
 
   /** Plugin categories. */
   char *              plugin_categories[500];
@@ -171,6 +168,13 @@ bool
 plugin_manager_supports_protocol (
   PluginManager * self,
   PluginProtocol  protocol);
+
+/**
+ * Returns an instrument plugin, if any.
+ */
+PluginDescriptor *
+plugin_manager_pick_instrument (
+  PluginManager * self);
 
 void
 plugin_manager_clear_plugins (

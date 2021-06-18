@@ -91,20 +91,21 @@ test_plugin_manager_get_plugin_setting (
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
   plugin_manager_scan_plugins (
     PLUGIN_MANAGER, 1.0, NULL);
-  g_assert_cmpint (
-    PLUGIN_MANAGER->num_plugins, >, 0);
+  g_assert_cmpuint (
+    PLUGIN_MANAGER->plugin_descriptors->len, >, 0);
 
   PluginDescriptor * descr = NULL;
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugins;
+  for (size_t i = 0;
+       i < PLUGIN_MANAGER->plugin_descriptors->len;
        i++)
     {
-      if (string_is_equal (
-            PLUGIN_MANAGER->plugin_descriptors[i]->
-              uri, pl_uri))
+      PluginDescriptor * cur_descr =
+        g_ptr_array_index (
+          PLUGIN_MANAGER->plugin_descriptors, i);
+      if (string_is_equal (cur_descr->uri, pl_uri))
         {
           descr =
-            plugin_descriptor_clone (
-              PLUGIN_MANAGER->plugin_descriptors[i]);
+            plugin_descriptor_clone (cur_descr);
         }
     }
   g_return_val_if_fail (descr, NULL);
