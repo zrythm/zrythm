@@ -90,12 +90,14 @@ paned > separator {
   /*background-color: alpha (white, 0.40);*/
 /*}*/
 
-browser separator:hover
+.plugin-browser separator:hover,
+.file-browser separator:hover
 {
   background-color: @hover_color;
 }
 
-browser separator
+.plugin-browser separator,
+.file-browser separator
 {
   min-height: 6px;
 }
@@ -195,13 +197,15 @@ timeline-selection-info,
 .timeline-toolbar,
 piano-roll-selection-info,
 piano-roll-toolbar,
-browser toolbar,
+.plugin-browser toolbar,
+.file-browser toolbar,
 dialog
 {
 background-color: @bg_dark_variant2;
 }
 
-browser toolbar
+.plugin-browser toolbar,
+.file-browser toolbar
 {
   padding: 0px;
 }

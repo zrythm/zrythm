@@ -104,50 +104,8 @@
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkToolbar" id="filters_toolbar">
+          <object class="FileBrowserFiltersWidget" id="filters_toolbar">
             <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="show-arrow">False</property>
-            <property name="icon_size">2</property>
-            <child>
-              <object class="GtkToggleToolButton" id="toggle_audio">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">Audio</property>
-                <property name="icon-name">signal-audio</property>
-                <signal name="toggled" handler="toggles_changed" object="PanelFileBrowserWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleToolButton" id="toggle_midi">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">MIDI</property>
-                <property name="icon-name">signal-midi</property>
-                <signal name="toggled" handler="toggles_changed" object="PanelFileBrowserWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleToolButton" id="toggle_presets">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">Presets</property>
-                <property name="icon-name">modulator</property>
-                <signal name="toggled" handler="toggles_changed" object="PanelFileBrowserWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -194,89 +152,9 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolbar" id="files_toolbar">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="icon_size">2</property>
-            <property name="show-arrow">False</property>
-            <child>
-              <object class="GtkToolButton" id="play_btn">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">Play/Pause</property>
-                <property name="icon-name">media-playback-start</property>
-                <signal name="clicked" handler="on_play_clicked" object="PanelFileBrowserWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="stop_btn">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">Stop</property>
-                <property name="icon-name">media-playback-stop</property>
-                <signal name="clicked" handler="on_stop_clicked" object="PanelFileBrowserWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolItem">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">Volume</property>
-                <child>
-                  <object class="VolumeWidget" id="volume">
-                  <property name="visible">True</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolItem">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">Preferences</property>
-                <child>
-                  <object class="GtkMenuButton" id="file_settings_btn">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="visible">True</property>
-                        <property name="icon-name">fork-awesome-fa-cog</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkComboBoxText" id="instrument_cb">
+          <object class="FileAuditionerControlsWidget" id="auditioner_controls">
             <property name="visible">True</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-          </packing>
         </child>
       </object>
       <packing>

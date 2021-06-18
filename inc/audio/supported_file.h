@@ -26,6 +26,8 @@
 #ifndef __AUDIO_SUPPORTED_FILE_H__
 #define __AUDIO_SUPPORTED_FILE_H__
 
+#include <stdbool.h>
+
 #include "utils/yaml.h"
 
 /**
@@ -126,6 +128,10 @@ SupportedFile *
 supported_file_new_from_path (
   const char * path);
 
+SupportedFile *
+supported_file_new_from_uri (
+  const char * uri);
+
 /**
  * Returns a human readable description of the given
  * file type.
@@ -179,6 +185,23 @@ supported_file_type_get_ext (
 ZFileType
 supported_file_get_type (
   const char * file);
+
+/**
+ * Returns whether the given file should auto-play
+ * (shorter than 1 min).
+ */
+NONNULL
+bool
+supported_file_should_autoplay (
+  const SupportedFile * self);
+
+/**
+ * Returns a pango markup to be used in GTK labels.
+ */
+NONNULL
+char *
+supported_file_get_info_text_for_label (
+  const SupportedFile * self);
 
 /**
  * Frees the instance and all its members.

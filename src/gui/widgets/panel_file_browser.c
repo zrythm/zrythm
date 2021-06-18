@@ -24,18 +24,18 @@
  */
 
 #include "actions/tracklist_selections.h"
-#include "audio/encoder.h"
 #include "gui/backend/file_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/file_auditioner_controls.h"
+#include "gui/widgets/file_browser_filters.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/panel_file_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/tracklist.h"
-#include "gui/widgets/volume.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -50,9 +50,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
-#include <sndfile.h>
-#include <samplerate.h>
 
 G_DEFINE_TYPE (
   PanelFileBrowserWidget,
@@ -371,13 +368,13 @@ visible_func (
 
   bool show_audio =
     gtk_toggle_tool_button_get_active (
-      self->toggle_audio);
+      self->filters_toolbar->toggle_audio);
   bool show_midi =
     gtk_toggle_tool_button_get_active (
-      self->toggle_midi);
+      self->filters_toolbar->toggle_midi);
   bool show_presets =
     gtk_toggle_tool_button_get_active (
-      self->toggle_presets);
+      self->filters_toolbar->toggle_presets);
   bool all_toggles_off =
     !show_audio && !show_midi && !show_presets;
 
@@ -421,11 +418,11 @@ visible_func (
 static int
 update_file_info_label (
   PanelFileBrowserWidget * self,
-  gpointer user_data)
+  const char *             label)
 {
-  char * label = (char *) user_data;
-
-  gtk_label_set_text (self->file_info, label);
+  gtk_label_set_markup (
+    self->file_info,
+    label ? label : _("No file selected"));
 
   return G_SOURCE_REMOVE;
 }
@@ -440,8 +437,12 @@ on_selection_changed (
   GtkTreeModel * model =
     gtk_tree_view_get_model (tv);
   GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (ts,
-                                          NULL);
+    gtk_tree_selection_get_selected_rows (
+      ts, NULL);
+
+  sample_processor_stop_file_playback (
+    SAMPLE_PROCESSOR);
+
   if (selected_rows)
     {
       GtkTreePath * tp =
@@ -459,9 +460,6 @@ on_selection_changed (
             model, &iter, COLUMN_DESCR, &value);
           SupportedFile * descr =
             g_value_get_pointer (&value);
-          char * file_type_label =
-            supported_file_type_get_description (
-              descr->type);
 
           g_ptr_array_remove_range (
             self->selected_files, 0,
@@ -475,37 +473,15 @@ on_selection_changed (
                  G_FILE_TEST_EXISTS))
             return;
 
-          char * label;
-          if (supported_file_type_is_audio (
-                descr->type))
-            {
-              AudioEncoder * enc =
-                audio_encoder_new_from_file (
-                  descr->abs_path);
-              label =
-                g_strdup_printf (
-                "%s\nFormat: TODO\nSample rate: %d\n"
-                "Channels:%d Bitrate: %d\nBit depth: %d",
-                descr->label,
-                enc->nfo.sample_rate,
-                enc->nfo.channels,
-                enc->nfo.bit_rate,
-                enc->nfo.bit_depth);
-              audio_encoder_free (enc);
-            }
-          else
-            label =
-              g_strdup_printf (
-              "%s\nType: %s",
-              descr->label, file_type_label);
+          char * label =
+            supported_file_get_info_text_for_label (
+              descr);
           update_file_info_label (self, label);
 
           if (g_settings_get_boolean (
                 S_UI_FILE_BROWSER, "autoplay") &&
-              (supported_file_type_is_audio (
-                 descr->type) ||
-               supported_file_type_is_midi (
-                 descr->type)))
+              supported_file_should_autoplay (
+                 descr))
             {
               sample_processor_queue_file (
                 SAMPLE_PROCESSOR, descr);
@@ -546,28 +522,6 @@ get_selected_file (
     (GDestroyNotify) gtk_tree_path_free);
 
   return descr;
-}
-
-static void
-on_play_clicked (
-  GtkToolButton *          toolbutton,
-  PanelFileBrowserWidget * self)
-{
-  SupportedFile * descr = get_selected_file (self);
-  if (!descr)
-    return;
-
-  sample_processor_queue_file (
-    SAMPLE_PROCESSOR, descr);
-}
-
-static void
-on_stop_clicked (
-  GtkToolButton *          toolbutton,
-  PanelFileBrowserWidget * self)
-{
-  sample_processor_stop_file_playback (
-    SAMPLE_PROCESSOR);
 }
 
 static void
@@ -748,75 +702,6 @@ on_file_row_activated (
 }
 
 static void
-toggles_changed (
-  GtkToggleToolButton *    btn,
-  PanelFileBrowserWidget * self)
-{
-  if (gtk_toggle_tool_button_get_active (btn))
-    {
-      /* block signals, unset all, unblock */
-      g_signal_handlers_block_by_func (
-        self->toggle_audio,
-        toggles_changed, self);
-      g_signal_handlers_block_by_func (
-        self->toggle_midi,
-        toggles_changed, self);
-      g_signal_handlers_block_by_func (
-        self->toggle_presets,
-        toggles_changed, self);
-
-      if (btn == self->toggle_audio)
-        {
-          S_SET_ENUM (
-            S_UI_FILE_BROWSER, "filter",
-            FILE_BROWSER_FILTER_AUDIO);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_midi, 0);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_presets, 0);
-        }
-      else if (btn == self->toggle_midi)
-        {
-          S_SET_ENUM (
-            S_UI_FILE_BROWSER, "filter",
-            FILE_BROWSER_FILTER_MIDI);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_audio, 0);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_presets, 0);
-        }
-      else if (btn == self->toggle_presets)
-        {
-          S_SET_ENUM (
-            S_UI_FILE_BROWSER, "filter",
-            FILE_BROWSER_FILTER_PRESET);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_midi, 0);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_audio, 0);
-        }
-
-      g_signal_handlers_unblock_by_func (
-        self->toggle_audio,
-        toggles_changed, self);
-      g_signal_handlers_unblock_by_func (
-        self->toggle_midi,
-        toggles_changed, self);
-      g_signal_handlers_unblock_by_func (
-        self->toggle_presets,
-        toggles_changed, self);
-    }
-  else
-    {
-      S_SET_ENUM (
-        S_UI_FILE_BROWSER, "filter",
-        FILE_BROWSER_FILTER_NONE);
-    }
-  gtk_tree_model_filter_refilter (
-    self->files_tree_model);
-}
-
-static void
 tree_view_setup (
   PanelFileBrowserWidget * self,
   GtkTreeView *            tree_view,
@@ -966,124 +851,11 @@ on_draw (
 }
 
 static void
-on_settings_menu_items_changed (
-  GMenuModel *             model,
-  int                      position,
-  int                      removed,
-  int                      added,
+refilter_files (
   PanelFileBrowserWidget * self)
 {
   gtk_tree_model_filter_refilter (
     self->files_tree_model);
-}
-
-static void
-on_instrument_changed (
-  GtkComboBox *            cb,
-  PanelFileBrowserWidget * self)
-{
-  const char * active_id =
-    gtk_combo_box_get_active_id (cb);
-
-  g_message ("changed: %s", active_id);
-
-  PluginDescriptor * descr =
-    (PluginDescriptor *)
-    yaml_deserialize (
-      active_id, &plugin_descriptor_schema);
-
-  if (SAMPLE_PROCESSOR->instrument_setting &&
-      plugin_descriptor_is_same_plugin (
-         SAMPLE_PROCESSOR->instrument_setting->
-           descr,
-         descr))
-    return;
-
-  EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, false);
-
-  /* clear previous instrument setting */
-  if (SAMPLE_PROCESSOR->instrument_setting)
-    {
-      object_free_w_func_and_null (
-        plugin_setting_free,
-        SAMPLE_PROCESSOR->instrument_setting);
-    }
-
-  /* set setting */
-  PluginSetting * existing_setting =
-    plugin_settings_find (
-      S_PLUGIN_SETTINGS, descr);
-  if (existing_setting)
-    {
-      SAMPLE_PROCESSOR->instrument_setting =
-        plugin_setting_clone (
-          existing_setting, F_VALIDATE);
-    }
-  else
-    {
-      SAMPLE_PROCESSOR->instrument_setting =
-        plugin_setting_new_default (descr);
-    }
-  g_return_if_fail (
-    SAMPLE_PROCESSOR->instrument_setting);
-
-  /* save setting */
-  char * setting_yaml =
-    yaml_serialize (
-      SAMPLE_PROCESSOR->instrument_setting,
-      &plugin_setting_schema);
-  g_settings_set_string (
-    S_UI_FILE_BROWSER, "instrument", setting_yaml);
-  g_free (setting_yaml);
-
-  plugin_descriptor_free (descr);
-
-  engine_resume (AUDIO_ENGINE, &state);
-}
-
-static void
-setup_instrument_cb (
-  PanelFileBrowserWidget * self)
-{
-  /* populate instruments */
-  for (size_t i = 0;
-       i < PLUGIN_MANAGER->plugin_descriptors->
-         len;
-       i++)
-    {
-      PluginDescriptor * descr =
-        g_ptr_array_index (
-          PLUGIN_MANAGER->plugin_descriptors, i);
-      if (plugin_descriptor_is_instrument (descr))
-        {
-          char * id =
-            yaml_serialize (
-              descr, &plugin_descriptor_schema);
-          gtk_combo_box_text_append (
-            self->instrument_cb, id,
-            descr->name);
-          g_free (id);
-        }
-    }
-
-  /* set selected instrument */
-  if (SAMPLE_PROCESSOR->instrument_setting)
-    {
-      char * id =
-        yaml_serialize (
-          SAMPLE_PROCESSOR->instrument_setting->
-            descr,
-          &plugin_descriptor_schema);
-      gtk_combo_box_set_active_id (
-        GTK_COMBO_BOX (self->instrument_cb), id);
-    }
-
-  /* add instrument signal handler */
-  g_signal_connect (
-    G_OBJECT (self->instrument_cb), "changed",
-    G_CALLBACK (on_instrument_changed), self);
 }
 
 PanelFileBrowserWidget *
@@ -1100,10 +872,15 @@ panel_file_browser_widget_new ()
 
   gtk_label_set_xalign (self->file_info, 0);
 
-  volume_widget_setup (
-    self->volume, SAMPLE_PROCESSOR->fader->amp);
-
-  setup_instrument_cb (self);
+  file_auditioner_controls_widget_setup (
+    self->auditioner_controls,
+    GTK_WIDGET (self),
+    (SelectedFileGetter) get_selected_file,
+    (GenericCallback) refilter_files);
+  file_browser_filters_widget_setup (
+    self->filters_toolbar,
+    GTK_WIDGET (self),
+    (GenericCallback) refilter_files);
 
   /* populate bookmarks */
   self->bookmarks_tree_model =
@@ -1170,9 +947,6 @@ panel_file_browser_widget_class_init (
   resources_set_class_template (
     klass, "panel_file_browser.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "browser");
-
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
     klass, PanelFileBrowserWidget, x)
@@ -1181,77 +955,26 @@ panel_file_browser_widget_class_init (
   BIND_CHILD (browser_bot);
   BIND_CHILD (file_info);
   BIND_CHILD (files_tree_view);
+  BIND_CHILD (filters_toolbar);
   BIND_CHILD (bookmarks_tree_view);
-  BIND_CHILD (toggle_audio);
-  BIND_CHILD (toggle_midi);
-  BIND_CHILD (toggle_presets);
-  BIND_CHILD (volume);
-  BIND_CHILD (play_btn);
-  BIND_CHILD (stop_btn);
-  BIND_CHILD (file_settings_btn);
-  BIND_CHILD (instrument_cb);
+  BIND_CHILD (auditioner_controls);
 
 #undef BIND_CHILD
-
-#define BIND_SIGNAL(sig) \
-  gtk_widget_class_bind_template_callback ( \
-    klass, sig)
-
-  BIND_SIGNAL (toggles_changed);
-  BIND_SIGNAL (on_play_clicked);
-  BIND_SIGNAL (on_stop_clicked);
-
-#undef BIND_SIGNAL
 }
 
 static void
 panel_file_browser_widget_init (
   PanelFileBrowserWidget * self)
 {
-  g_type_ensure (VOLUME_WIDGET_TYPE);
+  g_type_ensure (
+    FILE_AUDITIONER_CONTROLS_WIDGET_TYPE);
+  g_type_ensure (
+    FILE_BROWSER_FILTERS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->selected_files = g_ptr_array_new ();
 
-  /* set menu */
-  GSimpleActionGroup * action_group =
-    g_simple_action_group_new ();
-  GAction * action =
-    g_settings_create_action (
-      S_UI_FILE_BROWSER, "autoplay");
-  g_action_map_add_action (
-    G_ACTION_MAP (action_group), action);
-  action =
-    g_settings_create_action (
-      S_UI_FILE_BROWSER, "show-unsupported-files");
-  g_action_map_add_action (
-    G_ACTION_MAP (action_group), action);
-  action =
-    g_settings_create_action (
-      S_UI_FILE_BROWSER, "show-hidden-files");
-  g_action_map_add_action (
-    G_ACTION_MAP (action_group), action);
-  gtk_widget_insert_action_group (
-    GTK_WIDGET (self->file_settings_btn),
-    "settings-btn",
-    G_ACTION_GROUP (action_group));
-
-  GMenu * menu = g_menu_new ();
-  g_menu_append (
-    menu, _("Autoplay"), "settings-btn.autoplay");
-  g_menu_append (
-    menu, _("Show unsupported files"),
-    "settings-btn.show-unsupported-files");
-  g_menu_append (
-    menu, _("Show hidden files"),
-    "settings-btn.show-hidden-files");
-  gtk_menu_button_set_menu_model (
-    self->file_settings_btn,
-    G_MENU_MODEL (menu));
-
-  g_signal_connect (
-    menu, "items-changed",
-    G_CALLBACK (on_settings_menu_items_changed),
-    self);
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (self), "file-browser");
 }

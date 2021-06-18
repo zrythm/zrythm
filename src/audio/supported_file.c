@@ -19,12 +19,14 @@
 
 #include <stdlib.h>
 
+#include "audio/encoder.h"
 #include "audio/supported_file.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 /**
  * Creates a new SupportedFile from the given absolute
@@ -45,6 +47,28 @@ supported_file_new_from_path (
   g_warn_if_fail (
     self->type >= FILE_TYPE_MIDI &&
     self->type < NUM_FILE_TYPES);
+
+  return self;
+}
+
+SupportedFile *
+supported_file_new_from_uri (
+  const char * uri)
+{
+  GError * err = NULL;
+  char * path =
+    g_filename_from_uri (uri, NULL, &err);
+  if (!path)
+    {
+      g_critical (
+        "Error getting file path from URI <%s>: %s",
+        uri, err->message);
+      return NULL;
+    }
+
+  SupportedFile * self =
+    supported_file_new_from_path (path);
+  g_free (path);
 
   return self;
 }
@@ -226,6 +250,92 @@ supported_file_type_get_ext (
     default:
       g_return_val_if_reached (NULL);
     }
+}
+
+/**
+ * Returns whether the given file should auto-play
+ * (shorter than 1 min).
+ */
+bool
+supported_file_should_autoplay (
+  const SupportedFile * self)
+{
+  bool autoplay = true;
+
+  /* no autoplay if not audio/MIDI */
+  if (!supported_file_type_is_audio (self->type) &&
+      !supported_file_type_is_midi (self->type))
+    return false;
+
+  if (supported_file_type_is_audio (self->type))
+    {
+      AudioEncoder * enc =
+        audio_encoder_new_from_file (
+          self->abs_path);
+      if (!enc)
+        return false;
+
+      if ((enc->nfo.length / 1000) > 60)
+        {
+          autoplay = false;
+        }
+      audio_encoder_free (enc);
+    }
+
+  return autoplay;
+}
+
+/**
+ * Returns a pango markup to be used in GTK labels.
+ */
+char *
+supported_file_get_info_text_for_label (
+  const SupportedFile * self)
+{
+  char * file_type_label =
+    supported_file_type_get_description (
+      self->type);
+  char * label = NULL;
+  if (supported_file_type_is_audio (
+        self->type))
+    {
+      AudioEncoder * enc =
+        audio_encoder_new_from_file (
+          self->abs_path);
+      if (!enc)
+        {
+          g_free (file_type_label);
+          return
+            g_strdup (_("Failed opening file"));
+        }
+
+      label =
+        g_markup_printf_escaped (
+          "<b>%s</b>\n"
+          "Format: TODO\n"
+          "Sample rate: %d\n"
+          "Length: %lds | BPM: %.1f\n"
+          "Channels: %d | Bitrate: %d\n"
+          "Bit depth: %d",
+          self->label,
+          enc->nfo.sample_rate,
+          enc->nfo.length / 1000,
+          (double) enc->nfo.bpm,
+          enc->nfo.channels,
+          enc->nfo.bit_rate,
+          enc->nfo.bit_depth);
+      audio_encoder_free (enc);
+    }
+  else
+    label =
+      g_markup_printf_escaped (
+      "<b>%s</b>\n"
+      "Type: %s",
+      self->label, file_type_label);
+
+  g_free (file_type_label);
+
+  return label;
 }
 
 /**

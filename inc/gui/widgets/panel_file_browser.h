@@ -24,9 +24,12 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _VolumeWidget VolumeWidget;
+typedef struct _FileAuditionerControlsWidget
+  FileAuditionerControlsWidget;
 typedef struct FileBrowserLocation
   FileBrowserLocation;
+typedef struct _FileBrowserFiltersWidget
+  FileBrowserFiltersWidget;
 
 /**
  * @addtogroup widgets
@@ -42,14 +45,6 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_PANEL_FILE_BROWSER \
   MW_RIGHT_DOCK_EDGE->file_browser
-
-typedef enum PanelFileBrowserFilter
-{
-  FILE_BROWSER_FILTER_NONE,
-  FILE_BROWSER_FILTER_AUDIO,
-  FILE_BROWSER_FILTER_MIDI,
-  FILE_BROWSER_FILTER_PRESET,
-} PanelFileBrowserFilter;
 
 typedef struct _PanelFileBrowserWidget
 {
@@ -69,16 +64,9 @@ typedef struct _PanelFileBrowserWidget
   GPtrArray *          selected_locations;
   GPtrArray *          selected_files;
 
-  GtkToggleToolButton * toggle_audio;
-  GtkToggleToolButton * toggle_midi;
-  GtkToggleToolButton * toggle_presets;
+  FileBrowserFiltersWidget * filters_toolbar;
 
-  GtkToolButton *      play_btn;
-  GtkToolButton *      stop_btn;
-  GtkMenuButton *      file_settings_btn;
-  VolumeWidget *       volume;
-
-  GtkComboBoxText *    instrument_cb;
+  FileAuditionerControlsWidget * auditioner_controls;
 
   /** Temp. */
   const FileBrowserLocation * cur_loc;

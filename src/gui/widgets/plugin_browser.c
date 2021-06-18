@@ -2359,9 +2359,6 @@ plugin_browser_widget_class_init (
   resources_set_class_template (
     klass, "plugin_browser.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "browser");
-
 #define BIND_CHILD(name) \
   gtk_widget_class_bind_template_child ( \
     klass, \
@@ -2505,4 +2502,7 @@ plugin_browser_widget_init (
     calloc (40000, sizeof (PluginCollection *));
   self->current_descriptors =
     calloc (40000, sizeof (PluginDescriptor *));
+
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (self), "plugin-browser");
 }

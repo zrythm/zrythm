@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,7 +36,12 @@ G_DECLARE_FINAL_TYPE (
   FileBrowserWidget,
   file_browser_widget,
   Z, FILE_BROWSER_WIDGET,
-  GtkPaned)
+  GtkBox)
+
+typedef struct _FileAuditionerControlsWidget
+  FileAuditionerControlsWidget;
+typedef struct _FileBrowserFiltersWidget
+  FileBrowserFiltersWidget;
 
 /**
  * @addtogroup widgets
@@ -52,20 +57,22 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _FileBrowserWidget
 {
-  GtkPaned             parent_instance;
+  GtkBox               parent_instance;
   GtkBox *             browser_top;
   GtkBox *             browser_bot;
   GtkLabel *           file_info;
   ZFileType            selected_type;
-  GtkTreeModel *       type_tree_model;
-  GtkTreeModel *       locations_tree_model;
-  GtkTreeModelFilter * files_tree_model;
-  GtkTreeView *        files_tree_view;
+
+  FileBrowserFiltersWidget * filters_toolbar;
 
   /** The file chooser. */
+  GtkBox *              file_chooser_box;
   GtkFileChooserWidget * file_chooser;
 
-  GtkScrolledWindow *  file_scroll_window;
+  FileAuditionerControlsWidget * auditioner_controls;
+
+  /** Currently selected file. */
+  SupportedFile *      selected_file;
 
   /**
    * A little hack to get the paned position to
