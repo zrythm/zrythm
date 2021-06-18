@@ -76,14 +76,17 @@ tasks:
       #ninja -C build cppcheck || true
       ninja -C build clang-tidy || true
   - test-optimized-build: |
+      rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled -Doptimization=3
       meson test -C build --repeat 2
   - test-strict-flags-trial: |
+      rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
       meson test -C build
   - test-user-manual-phone-home-valgrind: |
+      rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson compile --clean -C build
       meson build --reconfigure -Duser_manual=true -Doptimization=2 -Dphone_home=enabled
@@ -91,6 +94,7 @@ tasks:
       ninja -C build -j 2
       meson test -C build --wrap="valgrind --suppressions=`pwd`/tools/vg.sup  --gen-suppressions=all --error-exitcode=1 --exit-on-first-error=yes" -t 3 || cat build/meson-logs/testlog-valgrind.txt
   - test-optimization-s: |
+      rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson compile --clean -C build
       meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled -Doptimization=s -Dguile=disabled
