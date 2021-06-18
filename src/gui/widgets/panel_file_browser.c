@@ -87,11 +87,25 @@ create_model_for_locations ()
         g_ptr_array_index (
           FILE_MANAGER->locations, i);
 
-      // Add a new row to the model
+      char icon_name[600];
+      switch (loc->special_location)
+        {
+        case FILE_MANAGER_NONE:
+          strcpy (icon_name, "folder");
+          break;
+        case FILE_MANAGER_HOME:
+          strcpy (icon_name, "user-home");
+          break;
+        case FILE_MANAGER_DESKTOP:
+          strcpy (icon_name, "desktop");
+          break;
+        }
+
+      /* Add a new row to the model */
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, "folder",
+        0, icon_name,
         1, loc->label,
         2, loc,
         -1);
@@ -107,7 +121,8 @@ on_bookmark_remove_activate (
 {
   g_return_if_fail (self->cur_loc);
 
-  if (self->cur_loc->standard)
+  if (self->cur_loc->special_location >
+        FILE_MANAGER_NONE)
     {
       ui_show_error_message (
         MAIN_WINDOW,
@@ -578,43 +593,34 @@ static GtkTreeModel *
 create_model_for_files (
   PanelFileBrowserWidget * self)
 {
-  GtkListStore *list_store;
-  GtkTreeIter iter;
-  gint i;
-
   /* file name, index */
-  list_store =
+  GtkListStore * list_store =
     gtk_list_store_new (
       NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_POINTER);
 
-  for (i = 0; i < FILE_MANAGER->num_files; i++)
+  GtkTreeIter iter;
+  for (size_t i = 0; i < FILE_MANAGER->files->len;
+       i++)
     {
       SupportedFile * descr =
-        FILE_MANAGER->files[i];
+        (SupportedFile *)
+        g_ptr_array_index (FILE_MANAGER->files, i);
 
       char icon_name[400];
       switch (descr->type)
         {
         case FILE_TYPE_MIDI:
-          strcpy (
-            icon_name,
-            "audio-midi");
+          strcpy (icon_name, "audio-midi");
           break;
         case FILE_TYPE_MP3:
-          strcpy (
-            icon_name,
-            "audio-x-mpeg");
+          strcpy (icon_name, "audio-x-mpeg");
           break;
         case FILE_TYPE_FLAC:
-          strcpy (
-            icon_name,
-            "audio-x-flac");
+          strcpy (icon_name, "audio-x-flac");
           break;
         case FILE_TYPE_OGG:
-          strcpy (
-            icon_name,
-            "application-ogg");
+          strcpy (icon_name, "application-ogg");
           break;
         case FILE_TYPE_WAV:
           strcpy (
@@ -622,19 +628,14 @@ create_model_for_files (
             "audio-x-wav");
           break;
         case FILE_TYPE_DIR:
-          strcpy (
-            icon_name,
-            "folder");
+          strcpy (icon_name, "folder");
           break;
         case FILE_TYPE_PARENT_DIR:
-          strcpy (
-            icon_name,
-            "folder");
+          strcpy (icon_name, "folder");
           break;
         case FILE_TYPE_OTHER:
           strcpy (
-            icon_name,
-            "application-x-zerosize");
+            icon_name, "application-x-zerosize");
           break;
         default:
           strcpy (icon_name, "");

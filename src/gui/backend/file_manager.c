@@ -30,7 +30,8 @@
 #include "utils/strv_builder.h"
 #include "zrythm.h"
 
-#include "gtk/gtk.h"
+#include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 /**
  * Creates the file manager.
@@ -40,9 +41,11 @@ file_manager_new (void)
 {
   FileManager * self = object_new (FileManager);
 
-  self->num_files = 0;
-  self->num_collections = 0;
+  /*self->num_collections = 0;*/
 
+  self->files =
+    g_ptr_array_new_full (
+      400, (GDestroyNotify) supported_file_free);
   self->locations =
     g_ptr_array_new_with_free_func (
       (GDestroyNotify) file_browser_location_free);
@@ -50,13 +53,25 @@ file_manager_new (void)
   /* add standard locations */
   FileBrowserLocation * fl =
     file_browser_location_new ();
-  fl->label = g_strdup ("Home");
+  /* TRANSLATORS: Home directory */
+  fl->label = g_strdup (_("Home"));
   fl->path = g_strdup (g_get_home_dir ());
-  fl->standard = true;
+  fl->special_location = FILE_MANAGER_HOME;
   g_ptr_array_add (self->locations, fl);
 
   file_manager_set_selection (
     self, fl, false, false);
+
+  fl =
+    file_browser_location_new ();
+  /* TRANSLATORS: Desktop directory */
+  fl->label = g_strdup (_("Desktop"));
+  fl->path =
+    g_strdup (
+      g_get_user_special_dir (
+        G_USER_DIRECTORY_DESKTOP));
+  fl->special_location = FILE_MANAGER_DESKTOP;
+  g_ptr_array_add (self->locations, fl);
 
   if (!ZRYTHM_TESTING)
     {
@@ -72,6 +87,8 @@ file_manager_new (void)
             file_browser_location_new ();
           fl->label = g_path_get_basename (bookmark);
           fl->path = g_strdup (bookmark);
+          fl->special_location =
+            FILE_MANAGER_NONE;
           g_ptr_array_add (self->locations, fl);
         }
       g_strfreev (bookmarks);
@@ -115,7 +132,10 @@ load_files_from_location (
 {
   const gchar * file;
   SupportedFile * fd;
-  self->num_files = 0;
+
+  g_ptr_array_remove_range (
+    self->files, 0, self->files->len);
+
   GDir * dir =
     g_dir_open (location->path, 0, NULL);
   if (!dir)
@@ -138,7 +158,7 @@ load_files_from_location (
   fd->label = g_strdup ("..");
   if (strlen (location->path) > 1)
     {
-      self->files[self->num_files++] = fd;
+      g_ptr_array_add (self->files, fd);
     }
   else
     {
@@ -197,7 +217,7 @@ load_files_from_location (
       if (file[0] == '.')
         fd->hidden = true;
 
-      self->files[self->num_files++] = fd;
+      g_ptr_array_add (self->files, fd);
       /*g_message ("File found: %s (%d - %d)",*/
                  /*fd->abs_path,*/
                  /*fd->type,*/
@@ -205,10 +225,9 @@ load_files_from_location (
     }
   g_dir_close (dir);
 
-  qsort (
-    self->files, (size_t) self->num_files,
-    sizeof (SupportedFile *), alphaBetize);
-  g_message ("Total files: %d", self->num_files);
+  g_ptr_array_sort (
+    self->files, (GCompareFunc) alphaBetize);
+  g_message ("Total files: %d", self->files->len);
 }
 
 /**
@@ -225,7 +244,8 @@ file_manager_load_files (FileManager * self)
     }
   else
     {
-      self->num_files = 0;
+      g_ptr_array_remove_range (
+        self->files, 0, self->files->len);
     }
 }
 
@@ -280,7 +300,7 @@ save_locations (
       FileBrowserLocation * loc =
         g_ptr_array_index (
           FILE_MANAGER->locations, i);
-      if (loc->standard)
+      if (loc->special_location > FILE_MANAGER_NONE)
         continue;
 
       strv_builder_add (
@@ -341,7 +361,8 @@ file_manager_remove_location_and_save (
         g_ptr_array_index (
           self->locations, idx);
       if (!skip_if_standard ||
-          !existing_loc->standard)
+          existing_loc->special_location ==
+            FILE_MANAGER_NONE)
         {
           g_ptr_array_remove_index (
             self->locations, idx);
@@ -364,12 +385,7 @@ void
 file_manager_free (
   FileManager * self)
 {
-  for (int i = 0; i < self->num_files; i++)
-    {
-      object_free_w_func_and_null (
-        supported_file_free, self->files[i]);
-    }
-
+  g_ptr_array_free (self->files, true);
   g_ptr_array_free (self->locations, true);
 
   object_zero_and_free (self);

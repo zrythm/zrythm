@@ -30,6 +30,16 @@ typedef struct SupportedFile SupportedFile;
  * @{
  */
 
+/**
+ * Special location type.
+ */
+typedef enum FileManagerSpecialLocation
+{
+  FILE_MANAGER_NONE,
+  FILE_MANAGER_HOME,
+  FILE_MANAGER_DESKTOP,
+} FileManagerSpecialLocation;
+
 #define FILE_MANAGER (ZRYTHM->file_manager)
 
 /**
@@ -54,7 +64,7 @@ typedef struct FileBrowserLocation
 
   /** Whether this is a standard (undeletable)
    * location. */
-  bool               standard;
+  FileManagerSpecialLocation special_location;
 } FileBrowserLocation;
 
 /**
@@ -75,16 +85,17 @@ typedef struct FileManager
    * To be updated every time location / collection
    * selection changes.
    *
-   * FIXME this should be allocated dynamically.
+   * Array of SupportedFile.
    */
-  SupportedFile *          files[10000];
-  int                      num_files;
+  GPtrArray *              files;
 
+#if 0
   /**
    * User collections.
    */
   char *                   collections[50];
   int                      num_collections;
+#endif
 
   /**
    * Default locations & user defined locations.
