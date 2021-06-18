@@ -1630,20 +1630,23 @@ on_handle_local_options (
       char * log_level = NULL;
       g_variant_dict_lookup (
         opts, "cyaml-log-level", "&s", &log_level);
-      if (string_is_equal (log_level, "debug"))
+      if (string_is_equal_ignore_case (
+            log_level, "debug"))
         {
           yaml_set_log_level (CYAML_LOG_DEBUG);
         }
-      else if (string_is_equal (log_level, "info"))
+      else if (string_is_equal_ignore_case (
+                 log_level, "info"))
         {
           yaml_set_log_level (CYAML_LOG_INFO);
         }
-      else if (string_is_equal (
+      else if (string_is_equal_ignore_case (
                  log_level, "warning"))
         {
           yaml_set_log_level (CYAML_LOG_WARNING);
         }
-      else if (string_is_equal (log_level, "error"))
+      else if (string_is_equal_ignore_case (
+                 log_level, "error"))
         {
           yaml_set_log_level (CYAML_LOG_ERROR);
         }

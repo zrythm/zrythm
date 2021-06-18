@@ -873,7 +873,8 @@ track_processor_process (
         }
       /* get events from track if playing */
       else if (TRANSPORT->play_state ==
-               PLAYSTATE_ROLLING)
+                 PLAYSTATE_ROLLING ||
+               tr->is_auditioner)
         {
           /* fill midi events from piano roll
            * data */

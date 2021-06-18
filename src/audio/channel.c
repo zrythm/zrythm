@@ -824,6 +824,10 @@ channel_reconnect_ext_input_ports (
 {
   Track * track = channel_get_track (self);
 
+  /* skip if auditioner track */
+  if (track->is_auditioner)
+    return;
+
   if (track->type == TRACK_TYPE_INSTRUMENT ||
       track->type == TRACK_TYPE_MIDI)
     {
@@ -1106,6 +1110,7 @@ channel_get_output_track (
     return NULL;
 
   Track * track = channel_get_track (self);
+  g_return_val_if_fail (track, NULL);
   Tracklist * tracklist =
     track_get_tracklist (track);
   g_return_val_if_fail (

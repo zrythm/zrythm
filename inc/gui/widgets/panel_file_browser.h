@@ -78,6 +78,8 @@ typedef struct _PanelFileBrowserWidget
   GtkMenuButton *      file_settings_btn;
   VolumeWidget *       volume;
 
+  GtkComboBoxText *    instrument_cb;
+
   /** Temp. */
   const FileBrowserLocation * cur_loc;
   const SupportedFile * cur_file;

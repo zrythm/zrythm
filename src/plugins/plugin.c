@@ -71,7 +71,7 @@
 
 NONNULL
 static void
-set_stereo_outs (
+set_stereo_outs_and_midi_in (
   Plugin * pl)
 {
   g_return_if_fail (
@@ -126,6 +126,23 @@ set_stereo_outs (
   if (pl->setting->descr->num_audio_outs > 0)
     {
       g_return_if_fail (pl->l_out && pl->r_out);
+    }
+
+  /* set MIDI input */
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * port = pl->in_ports[i];
+      if (port->id.flags2 &
+            PORT_FLAG2_SUPPORTS_MIDI)
+        {
+          pl->midi_in_port = port;
+          break;
+        }
+    }
+  if (plugin_descriptor_is_instrument (
+        pl->setting->descr))
+    {
+      g_return_if_fail (pl->midi_in_port);
     }
 }
 
@@ -843,11 +860,17 @@ Track *
 plugin_get_track (
   Plugin * self)
 {
+  Tracklist * tracklist = NULL;
+  if (self->is_auditioner)
+    tracklist = SAMPLE_PROCESSOR->tracklist;
+  else
+    tracklist = TRACKLIST;
+
   g_return_val_if_fail (
-    self->id.track_pos < TRACKLIST->num_tracks,
+    self->id.track_pos < tracklist->num_tracks,
     NULL);
   Track * track =
-    TRACKLIST->tracks[self->id.track_pos];
+    tracklist->tracks[self->id.track_pos];
   g_return_val_if_fail (track, NULL);
 
   return track;
@@ -870,6 +893,7 @@ plugin_find (
   PluginIdentifier * id)
 {
   Plugin plugin;
+  memset (&plugin, 0, sizeof (Plugin));
   plugin_identifier_copy (
     &plugin.id, id);
   Track * track = plugin_get_track (&plugin);
@@ -1652,7 +1676,7 @@ plugin_instantiate (
     pl->enabled, 1.f, 0);
 
   /* set the L/R outputs */
-  set_stereo_outs (pl);
+  set_stereo_outs_and_midi_in (pl);
 
   pl->instantiated = true;
 

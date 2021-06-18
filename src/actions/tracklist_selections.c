@@ -440,7 +440,7 @@ create_track (
               self->pl_setting->descr->name,
               F_WITH_LANE, F_NOT_AUDITIONER);
 
-          pl=
+          pl =
             plugin_new_from_setting (
               self->pl_setting, track->pos,
               PLUGIN_SLOT_INSERT, 0);

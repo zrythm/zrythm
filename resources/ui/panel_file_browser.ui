@@ -269,6 +269,15 @@
             <property name="fill">True</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkComboBoxText" id="instrument_cb">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+          </packing>
+        </child>
       </object>
       <packing>
         <property name="resize">False</property>

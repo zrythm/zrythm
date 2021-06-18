@@ -40,6 +40,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -969,6 +970,115 @@ on_settings_menu_items_changed (
     self->files_tree_model);
 }
 
+static void
+on_instrument_changed (
+  GtkComboBox *            cb,
+  PanelFileBrowserWidget * self)
+{
+  const char * active_id =
+    gtk_combo_box_get_active_id (cb);
+
+  g_message ("changed: %s", active_id);
+
+  PluginDescriptor * descr =
+    (PluginDescriptor *)
+    yaml_deserialize (
+      active_id, &plugin_descriptor_schema);
+
+  if (SAMPLE_PROCESSOR->instrument_setting &&
+      plugin_descriptor_is_same_plugin (
+         SAMPLE_PROCESSOR->instrument_setting->
+           descr,
+         descr))
+    return;
+
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, false);
+
+  /* clear previous instrument setting */
+  if (SAMPLE_PROCESSOR->instrument_setting)
+    {
+      object_free_w_func_and_null (
+        plugin_setting_free,
+        SAMPLE_PROCESSOR->instrument_setting);
+    }
+
+  /* set setting */
+  PluginSetting * existing_setting =
+    plugin_settings_find (
+      S_PLUGIN_SETTINGS, descr);
+  if (existing_setting)
+    {
+      SAMPLE_PROCESSOR->instrument_setting =
+        plugin_setting_clone (
+          existing_setting, F_VALIDATE);
+    }
+  else
+    {
+      SAMPLE_PROCESSOR->instrument_setting =
+        plugin_setting_new_default (descr);
+    }
+  g_return_if_fail (
+    SAMPLE_PROCESSOR->instrument_setting);
+
+  /* save setting */
+  char * setting_yaml =
+    yaml_serialize (
+      SAMPLE_PROCESSOR->instrument_setting,
+      &plugin_setting_schema);
+  g_settings_set_string (
+    S_UI_FILE_BROWSER, "instrument", setting_yaml);
+  g_free (setting_yaml);
+
+  plugin_descriptor_free (descr);
+
+  engine_resume (AUDIO_ENGINE, &state);
+}
+
+static void
+setup_instrument_cb (
+  PanelFileBrowserWidget * self)
+{
+  /* populate instruments */
+  for (size_t i = 0;
+       i < PLUGIN_MANAGER->plugin_descriptors->
+         len;
+       i++)
+    {
+      PluginDescriptor * descr =
+        g_ptr_array_index (
+          PLUGIN_MANAGER->plugin_descriptors, i);
+      if (plugin_descriptor_is_instrument (descr))
+        {
+          char * id =
+            yaml_serialize (
+              descr, &plugin_descriptor_schema);
+          gtk_combo_box_text_append (
+            self->instrument_cb, id,
+            descr->name);
+          g_free (id);
+        }
+    }
+
+  /* set selected instrument */
+  if (SAMPLE_PROCESSOR->instrument_setting)
+    {
+      char * id =
+        yaml_serialize (
+          SAMPLE_PROCESSOR->instrument_setting->
+            descr,
+          &plugin_descriptor_schema);
+      gtk_combo_box_set_active_id (
+        GTK_COMBO_BOX (self->instrument_cb), id);
+    }
+
+  /* add instrument signal handler */
+  g_signal_connect (
+    G_OBJECT (self->instrument_cb), "changed",
+    G_CALLBACK (on_instrument_changed), self);
+}
+
 PanelFileBrowserWidget *
 panel_file_browser_widget_new ()
 {
@@ -985,6 +1095,8 @@ panel_file_browser_widget_new ()
 
   volume_widget_setup (
     self->volume, SAMPLE_PROCESSOR->fader->amp);
+
+  setup_instrument_cb (self);
 
   /* populate bookmarks */
   self->bookmarks_tree_model =
@@ -1070,6 +1182,7 @@ panel_file_browser_widget_class_init (
   BIND_CHILD (play_btn);
   BIND_CHILD (stop_btn);
   BIND_CHILD (file_settings_btn);
+  BIND_CHILD (instrument_cb);
 
 #undef BIND_CHILD
 

@@ -672,6 +672,10 @@ Args:
                  "last-location" "s" ""
                  "Last location"
                  "Last visited location.")
+               (make-schema-key
+                 "instrument" "s" ""
+                 "Instrument"
+                 "Instrument plugin to use for MIDI auditioning.")
              ))) ;; ui.file-browser
 
          (schema-print

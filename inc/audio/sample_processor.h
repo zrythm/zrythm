@@ -34,6 +34,8 @@
 typedef enum MetronomeType MetronomeType;
 typedef struct SupportedFile SupportedFile;
 typedef struct Tracklist Tracklist;
+typedef struct PluginSetting PluginSetting;
+typedef struct MidiEvents MidiEvents;
 
 /**
  * @addtogroup audio
@@ -63,6 +65,11 @@ typedef struct SampleProcessor
   /** Tracklist for file auditioning. */
   Tracklist *       tracklist;
 
+  /** Instrument for MIDI auditioning. */
+  PluginSetting *   instrument_setting;
+
+  MidiEvents *      midi_events;
+
   /** Fader connected to the main output. */
   Fader *           fader;
 
@@ -72,10 +79,6 @@ typedef struct SampleProcessor
 
   /** Whether to roll or not. */
   bool              roll;
-
-  /** The stereo out ports to be connected to the
-   * main output. */
-  //StereoPorts *     stereo_out;
 } SampleProcessor;
 
 static const cyaml_schema_field_t

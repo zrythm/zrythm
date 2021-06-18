@@ -2207,7 +2207,8 @@ track_remove_region (
         }
     }
 
-  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW &&
+      !self->is_auditioner)
     {
       ArrangerObject * obj =
         (ArrangerObject *) region;

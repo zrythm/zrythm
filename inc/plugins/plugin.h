@@ -96,6 +96,9 @@ typedef struct Plugin
   int               num_in_ports;
   size_t            in_ports_size;
 
+  /** Cache. */
+  Port *            midi_in_port;
+
   /** Outgoing ports. */
   Port **           out_ports;
   int               num_out_ports;
@@ -268,6 +271,10 @@ typedef struct Plugin
    * ET_PLUGIN_STATE_CHANGED for the same plugin.
    */
   int               state_changed_event_sent;
+
+  /** Whether the plugin is used for MIDI
+   * auditioning in SampleProcessor. */
+  bool              is_auditioner;
 } Plugin;
 
 static const cyaml_schema_field_t
