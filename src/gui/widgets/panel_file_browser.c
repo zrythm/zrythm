@@ -469,6 +469,12 @@ on_selection_changed (
           g_ptr_array_add (
             self->selected_files, descr);
 
+          /* return if file does not exist */
+          if (!g_file_test (
+                 descr->abs_path,
+                 G_FILE_TEST_EXISTS))
+            return;
+
           char * label;
           if (supported_file_type_is_audio (
                 descr->type))
