@@ -77,6 +77,14 @@ typedef struct SampleProcessor
    * auditioning files). */
   Position          playhead;
 
+  /**
+   * Position the file ends at.
+   *
+   * Once this position is reached,
+   * SampleProcessor.roll will be set to false.
+   */
+  Position          file_end_pos;
+
   /** Whether to roll or not. */
   bool              roll;
 } SampleProcessor;

@@ -374,6 +374,11 @@ sample_processor_process (
     }
 
   position_add_frames (&self->playhead, nframes);
+
+  /* stop rolling if no more material */
+  if (position_is_after (
+        &self->playhead, &self->file_end_pos))
+    self->roll = false;
 }
 
 /**
@@ -482,6 +487,7 @@ sample_processor_queue_file (
 
   Position start_pos;
   position_set_to_bar (&start_pos, 1);
+  position_set_to_bar (&self->file_end_pos, 1);
 
   /* create master track */
   Track * track =
@@ -517,6 +523,10 @@ sample_processor_queue_file (
       track_add_region (
         track, ar, NULL, 0, F_GEN_NAME,
         F_NO_PUBLISH_EVENTS);
+
+      ArrangerObject * obj =  (ArrangerObject *) ar;
+      position_set_to_pos (
+        &self->file_end_pos, &obj->end_pos);
     }
   else if (supported_file_type_is_midi (
              file->type) &&
@@ -594,6 +604,17 @@ sample_processor_queue_file (
                 mr->name ?
                   F_NO_GEN_NAME : F_GEN_NAME,
                 F_NO_PUBLISH_EVENTS);
+
+              ArrangerObject * obj =
+                (ArrangerObject *) mr;
+              if (position_is_after (
+                    &obj->end_pos,
+                    &self->file_end_pos))
+                {
+                  position_set_to_pos (
+                    &self->file_end_pos,
+                    &obj->end_pos);
+                }
             }
           else
             {
@@ -607,6 +628,9 @@ sample_processor_queue_file (
 
   self->roll = true;
   position_set_to_bar (&self->playhead, 1);
+
+  /* add some room to end pos */
+  position_add_bars (&self->file_end_pos, 1);
 
   engine_resume (AUDIO_ENGINE, &state);
 }
