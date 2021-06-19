@@ -362,5 +362,7 @@ main (int argc, char *argv[])
     TEST_PREFIX "test save state with files",
     (GTestFunc) test_save_state_w_files);
 
+  (void) check_state_contains_wav;
+
   return g_test_run ();
 }
