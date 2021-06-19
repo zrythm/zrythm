@@ -38,7 +38,7 @@
  * @{
  */
 
-#define VELOCITY_WIDTH 12
+#define VELOCITY_WIDTH 8
 
 /**
  * Draws the Velocity in the given cairo context in

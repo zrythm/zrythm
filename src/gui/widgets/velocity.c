@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+#include <math.h>
 
 #include "audio/channel.h"
 #include "audio/channel_track.h"
@@ -104,9 +104,9 @@ velocity_draw (
       color = track->color;
     }
 
-  /* draw velocities of main region */
   if (region == clip_editor_get_region (CLIP_EDITOR))
     {
+      /* get color for velocities of main region */
       ui_get_arranger_object_color (
         &color,
         arranger->hovered_object == mn_obj,
@@ -114,28 +114,52 @@ velocity_draw (
         /* FIXME */
         false, arranger_object_get_muted (mn_obj));
       gdk_cairo_set_source_rgba (cr, &color);
-      cairo_rectangle (
-        cr,
-        obj->full_rect.x - rect->x,
-        obj->full_rect.y - rect->y,
-        obj->full_rect.width,
-        obj->full_rect.height);
-      cairo_fill(cr);
     }
-  /* draw other notes */
   else
     {
+      /* get color for other notes */
       cairo_set_source_rgba (
         cr, color.red, color.green,
         color.blue, 0.5);
-      cairo_rectangle (
-        cr,
-        obj->full_rect.x - rect->x,
-        obj->full_rect.y - rect->y,
-        obj->full_rect.width,
-        obj->full_rect.height);
-      cairo_fill(cr);
     }
+
+  /* make velocity start at 0,0 to make it easier to
+   * draw */
+  cairo_save (cr);
+  cairo_translate (
+    cr,
+    obj->full_rect.x - rect->x,
+    obj->full_rect.y - rect->y);
+
+#if 0
+  cairo_rectangle (
+    cr, 0, 0,
+    obj->full_rect.width,
+    obj->full_rect.height);
+  cairo_stroke(cr);
+#endif
+
+  /* --- draw --- */
+
+  const int line_width = 4;
+  const int circle_radius = obj->full_rect.width / 2;
+
+  /* draw line */
+  cairo_rectangle (
+    cr,
+    obj->full_rect.width / 2 - line_width / 2,
+    circle_radius,
+    line_width,
+    obj->full_rect.height);
+  cairo_fill(cr);
+
+  /* draw circle */
+  cairo_arc (
+    cr, circle_radius, circle_radius, circle_radius,
+    0, 2 * M_PI);
+  cairo_fill(cr);
+
+  cairo_restore (cr);
 }
 
 

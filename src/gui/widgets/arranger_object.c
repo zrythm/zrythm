@@ -934,6 +934,12 @@ arranger_object_set_full_rectangle (
           mn_obj->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
+
+        /* adjust x to start before the MIDI note so
+         * that velocity appears centered at start
+         * of MIDI note */
+        self->full_rect.x -= VELOCITY_WIDTH / 2;
+
         int height =
           gtk_widget_get_allocated_height (
             GTK_WIDGET (arranger));
