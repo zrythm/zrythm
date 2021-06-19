@@ -44,6 +44,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/color.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/ui.h"
@@ -377,8 +378,20 @@ draw_midi_region (
   ArrangerObject * obj =
     (ArrangerObject *) self;
 
-  cairo_set_source_rgba (
-    cr, 1, 1, 1, 1);
+  Track * track =
+    arranger_object_get_track (obj);
+
+  /* set color */
+  cairo_set_source_rgba (cr, 1, 1, 1, 1);
+  if (track)
+    {
+      /* set to grey if track color is very
+       *  bright */
+      if (color_is_very_very_bright (&track->color))
+        cairo_set_source_rgba (
+          cr, 0.7, 0.7, 0.7, 1);
+    }
+
   int num_loops =
     arranger_object_get_num_loops (obj, 1);
   double ticks_in_region =

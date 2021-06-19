@@ -89,10 +89,53 @@ bool
 color_is_very_bright (
   GdkRGBA * src);
 
+/**
+ * Returns if the color is very very bright or not.
+ */
+bool
+color_is_very_very_bright (
+  GdkRGBA * src);
+
+/**
+ * Returns if the color is very dark or not.
+ */
+bool
+color_is_very_dark (
+  GdkRGBA * src);
+
+/**
+ * Returns if the color is very very dark or not.
+ */
+bool
+color_is_very_very_dark (
+  GdkRGBA * src);
+
 void
 color_get_opposite (
   GdkRGBA * src,
   GdkRGBA * dest);
+
+double
+color_get_brightness (
+  GdkRGBA * color);
+
+double
+color_get_darkness (
+  GdkRGBA * color);
+
+/**
+ * Morphs from a to b, depending on the given amount.
+ *
+ * Eg, if @a amt is 0, the resulting color will be
+ * @a a. If @a amt is 1, the resulting color will be
+ * @b.
+ */
+void
+color_morph (
+  GdkRGBA * a,
+  GdkRGBA * b,
+  double    amt,
+  GdkRGBA * result);
 
 /**
  * @}

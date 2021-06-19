@@ -39,6 +39,8 @@
  */
 
 #define VELOCITY_WIDTH 8
+#define VELOCITY_LINE_WIDTH 4
+#define VELOCITY_RESIZE_THRESHOLD 16
 
 /**
  * Draws the Velocity in the given cairo context in

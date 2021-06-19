@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,9 +31,11 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_note.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "utils/color.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -52,76 +54,12 @@ velocity_draw (
   GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
-  ArrangerWidget * arranger =
-    arranger_object_get_arranger (obj);
   MidiNote * mn = velocity_get_midi_note (self);
-  ArrangerObject *  mn_obj =
-    (ArrangerObject *) mn;
-  ZRegion * region =
-    arranger_object_get_region (obj);
-  Position global_start_pos;
-  midi_note_get_global_start_pos (
-    mn, &global_start_pos);
-  ChordObject * co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &global_start_pos);
-  ScaleObject * so =
-    chord_track_get_scale_at_pos (
-      P_CHORD_TRACK, &global_start_pos);
-  int in_scale =
-    so && musical_scale_is_key_in_scale (
-      so->scale, mn->val % 12);
-  int in_chord =
-    co && chord_descriptor_is_key_in_chord (
-      chord_object_get_chord_descriptor (co),
-      mn->val % 12);
 
+  /* get color */
   GdkRGBA color;
-  if (PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_BOTH &&
-      in_scale && in_chord)
-    {
-      color = UI_COLORS->highlight_both_bg;
-    }
-  else if ((PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_SCALE ||
-      PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_BOTH) && in_scale)
-    {
-      color = UI_COLORS->highlight_scale_bg;
-    }
-  else if ((PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_CHORD ||
-      PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_BOTH) && in_chord)
-    {
-      color = UI_COLORS->highlight_chord_bg;
-    }
-  else
-    {
-      Track * track =
-        arranger_object_get_track (obj);
-      color = track->color;
-    }
-
-  if (region == clip_editor_get_region (CLIP_EDITOR))
-    {
-      /* get color for velocities of main region */
-      ui_get_arranger_object_color (
-        &color,
-        arranger->hovered_object == mn_obj,
-        velocity_is_selected (self),
-        /* FIXME */
-        false, arranger_object_get_muted (mn_obj));
-      gdk_cairo_set_source_rgba (cr, &color);
-    }
-  else
-    {
-      /* get color for other notes */
-      cairo_set_source_rgba (
-        cr, color.red, color.green,
-        color.blue, 0.5);
-    }
+  midi_note_get_adjusted_color (mn, &color);
+  gdk_cairo_set_source_rgba (cr, &color);
 
   /* make velocity start at 0,0 to make it easier to
    * draw */
@@ -141,23 +79,28 @@ velocity_draw (
 
   /* --- draw --- */
 
-  const int line_width = 4;
   const int circle_radius = obj->full_rect.width / 2;
 
   /* draw line */
   cairo_rectangle (
     cr,
-    obj->full_rect.width / 2 - line_width / 2,
+    obj->full_rect.width / 2 -
+      VELOCITY_LINE_WIDTH / 2,
     circle_radius,
-    line_width,
+    VELOCITY_LINE_WIDTH,
     obj->full_rect.height);
-  cairo_fill(cr);
+  cairo_fill (cr);
 
   /* draw circle */
   cairo_arc (
     cr, circle_radius, circle_radius, circle_radius,
     0, 2 * M_PI);
-  cairo_fill(cr);
+  cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 1);
+  cairo_fill_preserve (cr);
+
+  gdk_cairo_set_source_rgba (cr, &color);
+  cairo_set_line_width (cr, 2);
+  cairo_stroke (cr);
 
   cairo_restore (cr);
 }

@@ -2305,7 +2305,9 @@ test_delete_markers ()
 {
   rebootstrap_timeline ();
 
-  Marker * m, * m_c, * m_d;
+  Marker * m = NULL,
+         * m_c = NULL,
+         * m_d = NULL;
   UndoableAction * ua;
 
   /* create markers A B C D */
@@ -2364,7 +2366,9 @@ test_delete_scale_objects ()
 {
   rebootstrap_timeline ();
 
-  ScaleObject * m, * m_c, * m_d;
+  ScaleObject * m = NULL,
+         * m_c = NULL,
+         * m_d = NULL;
   UndoableAction * ua;
 
   /* create markers A B C D */
@@ -2422,7 +2426,9 @@ test_delete_chord_objects ()
 {
   rebootstrap_timeline ();
 
-  ChordObject * m, * m_c, * m_d;
+  ChordObject * m = NULL,
+         * m_c = NULL,
+         * m_d = NULL;
   UndoableAction * ua;
 
   Position pos1, pos2;
@@ -2495,7 +2501,9 @@ test_delete_automation_points ()
 {
   rebootstrap_timeline ();
 
-  AutomationPoint * m, * m_c, * m_d;
+  AutomationPoint * m = NULL,
+                  * m_c = NULL,
+                  * m_d = NULL;
   UndoableAction * ua;
 
   Position pos1, pos2;

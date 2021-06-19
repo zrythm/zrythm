@@ -323,10 +323,9 @@ arranger_object_is_resize_up (
   const int        x,
   const int        y)
 {
-  if (self->type ==
-         ARRANGER_OBJECT_TYPE_VELOCITY)
+  if (self->type == ARRANGER_OBJECT_TYPE_VELOCITY)
     {
-      if (y < UI_RESIZE_CURSOR_SPACE)
+      if (y < VELOCITY_RESIZE_THRESHOLD)
         return 1;
     }
   else if (self->type ==
@@ -935,9 +934,9 @@ arranger_object_set_full_rectangle (
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
 
-        /* adjust x to start before the MIDI note so
-         * that velocity appears centered at start
-         * of MIDI note */
+        /* adjust x to start before the MIDI note
+         * so that velocity appears centered at
+         * start of MIDI note */
         self->full_rect.x -= VELOCITY_WIDTH / 2;
 
         int height =
@@ -949,10 +948,16 @@ arranger_object_set_full_rectangle (
           ((float) height *
             ((float) vel->vel / 127.f));
         self->full_rect.y = height - vel_px;
+
         self->full_rect.width = VELOCITY_WIDTH;
         self->full_rect.height = vel_px;
 
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;
+
+        /* adjust for circle radius */
+        self->full_rect.height +=
+          VELOCITY_WIDTH / 2;
+        self->full_rect.y -= VELOCITY_WIDTH / 2;
       }
       break;
     default:
@@ -963,7 +968,10 @@ arranger_object_set_full_rectangle (
   if ((self->full_rect.x < 0 &&
          self->type != TYPE (MIDI_NOTE) &&
          !PIANO_ROLL->drum_mode) ||
-      self->full_rect.y < 0 ||
+      (self->full_rect.y < 0 &&
+         self->type != TYPE (VELOCITY)) ||
+      (self->full_rect.y < - VELOCITY_WIDTH / 2 &&
+       self->type == TYPE (VELOCITY)) ||
       self->full_rect.width < 0 ||
       self->full_rect.height < 0)
     {

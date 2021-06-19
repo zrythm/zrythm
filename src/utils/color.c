@@ -99,6 +99,50 @@ color_is_very_bright (
   return src->red + src->green + src->blue >= 2.0;
 }
 
+/**
+ * Returns if the color is very very bright or not.
+ */
+bool
+color_is_very_very_bright (
+  GdkRGBA * src)
+{
+  return src->red + src->green + src->blue >= 2.5;
+}
+
+/**
+ * Returns if the color is very dark or not.
+ */
+bool
+color_is_very_dark (
+  GdkRGBA * src)
+{
+  return src->red + src->green + src->blue < 1.0;
+}
+
+/**
+ * Returns if the color is very very dark or not.
+ */
+bool
+color_is_very_very_dark (
+  GdkRGBA * src)
+{
+  return src->red + src->green + src->blue < 0.5;
+}
+
+double
+color_get_brightness (
+  GdkRGBA * src)
+{
+  return (src->red + src->green + src->blue) / 3.0;
+}
+
+double
+color_get_darkness (
+  GdkRGBA * color)
+{
+  return 1.0 - color_get_brightness (color);
+}
+
 void
 color_get_opposite (
   GdkRGBA * src,
@@ -107,4 +151,28 @@ color_get_opposite (
   dest->red = 1.0 - src->red;
   dest->blue = 1.0 - src->blue;
   dest->green = 1.0 - src->green;
+}
+
+/**
+ * Morphs from a to b, depending on the given amount.
+ *
+ * Eg, if @a amt is 0, the resulting color will be
+ * @a a. If @a amt is 1, the resulting color will be
+ * @b.
+ */
+void
+color_morph (
+  GdkRGBA * a,
+  GdkRGBA * b,
+  double    amt,
+  GdkRGBA * result)
+{
+  g_return_if_fail (amt >= 0.0);
+  g_return_if_fail (amt <= 1.0);
+  g_return_if_fail (a && b && result);
+
+  double amt_inv = 1.0 - amt;
+  result->red = amt_inv * a->red + amt * b->red;
+  result->green = amt_inv * a->green + amt * b->green;
+  result->blue = amt_inv * a->blue + amt * b->blue;
 }

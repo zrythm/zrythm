@@ -44,6 +44,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/color.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -146,6 +147,72 @@ midi_note_draw (
   GdkRectangle * arr_rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
+
+  /* get rects */
+  GdkRectangle draw_rect;
+  GdkRectangle full_rect = obj->full_rect;
+  arranger_object_get_draw_rectangle (
+    obj, arr_rect, &full_rect, &draw_rect);
+
+  /* get color */
+  GdkRGBA color;
+  midi_note_get_adjusted_color (self, &color);
+  gdk_cairo_set_source_rgba (cr, &color);
+
+  draw_midi_note_bg (
+    self, cr, arr_rect,
+    &full_rect, &draw_rect);
+  cairo_fill (cr);
+
+  char str[30];
+  midi_note_get_val_as_string (self, str, 1);
+
+  char fontize_str[120];
+  int fontsize =
+    piano_roll_keys_widget_get_font_size (
+      MW_PIANO_ROLL_KEYS);
+  sprintf (
+    fontize_str, "<span size=\"%d\">",
+    /* subtract half a point for the padding */
+    fontsize * 1000 - 4000);
+  strcat (fontize_str, "%s</span>");
+
+  char str_to_use[120];
+  sprintf (str_to_use, fontize_str, str);
+
+  double fontsize_ratio =
+    (double) fontsize / 12.0;
+
+  if ((DEBUGGING || !PIANO_ROLL->drum_mode) &&
+      fontsize > 10)
+    {
+      GdkRGBA c2;
+      ui_get_contrast_color (&color, &c2);
+      gdk_cairo_set_source_rgba (cr, &c2);
+
+      recreate_pango_layouts (
+        self, MIN (full_rect.width, 400));
+      cairo_move_to (
+        cr,
+        REGION_NAME_BOX_PADDING +
+          (full_rect.x - arr_rect->x),
+        fontsize_ratio * REGION_NAME_BOX_PADDING +
+          (full_rect.y - arr_rect->y));
+      PangoLayout * layout = self->layout;
+      z_cairo_draw_text (
+        cr,
+        GTK_WIDGET (
+          arranger_object_get_arranger (obj)),
+        layout, str_to_use);
+    }
+}
+
+void
+midi_note_get_adjusted_color (
+  MidiNote * self,
+  GdkRGBA *  color)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
   ZRegion * region =
@@ -177,127 +244,101 @@ midi_note_draw (
       chord_object_get_chord_descriptor (co),
       normalized_key);
 
-  /* get rects */
-  GdkRectangle draw_rect;
-  GdkRectangle full_rect = obj->full_rect;
-  arranger_object_get_draw_rectangle (
-    obj, arr_rect, &full_rect, &draw_rect);
-
   /* get color */
-  GdkRGBA color;
   if ((PIANO_ROLL->highlighting ==
          PR_HIGHLIGHT_BOTH ||
        PIANO_ROLL->highlighting ==
          PR_HIGHLIGHT_CHORD) &&
       is_bass)
     {
-      color = UI_COLORS->highlight_bass_bg;
+      *color = UI_COLORS->highlight_bass_bg;
     }
   else if (PIANO_ROLL->highlighting ==
              PR_HIGHLIGHT_BOTH &&
            in_scale && in_chord)
     {
-      color = UI_COLORS->highlight_both_bg;
+      *color = UI_COLORS->highlight_both_bg;
     }
   else if ((PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_SCALE ||
       PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_BOTH) && in_scale)
     {
-      color = UI_COLORS->highlight_scale_bg;
+      *color = UI_COLORS->highlight_scale_bg;
     }
   else if ((PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_CHORD ||
       PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_BOTH) && in_chord)
     {
-      color = UI_COLORS->highlight_chord_bg;
+      *color = UI_COLORS->highlight_chord_bg;
     }
   else
     {
       Track * track =
         arranger_object_get_track (obj);
-      color = track->color;
+      *color = track->color;
     }
+
+  /*
+   * adjust color so that velocity highlight/
+   * selection color is visible
+   * - if color is black, make it lighter
+   * - if color is white, make it darker
+   * - if color is too dark, make it lighter
+   * - if color is too bright, make it darker
+   */
+  if (color_is_very_very_dark (color))
+    color_brighten (color, 0.7);
+  else if (color_is_very_very_bright (color))
+    color_darken (color, 0.3);
+  else if (color_is_very_dark (color))
+    color_brighten (color, 0.05);
+  else if (color_is_very_bright (color))
+    color_darken (color, 0.05);
+
+  /* adjust color for velocity */
+  GdkRGBA max_vel_color = *color;
+  color_brighten (
+    &max_vel_color,
+    color_get_darkness (color) * 0.1);
+  GdkRGBA grey = *color;
+  color_darken (
+    &grey,
+    color_get_brightness (color) * 0.6);
+  double vel_multiplier =
+    (double) self->vel->vel / 127.0;
+  color_morph (
+    &grey, &max_vel_color, vel_multiplier, color);
+
+  /* also morph into grey */
+  grey.red = 0.5;
+  grey.green = 0.5;
+  grey.blue = 0.5;
+  color_morph (
+    &grey, color, MIN (vel_multiplier + 0.4, 1.0),
+    color);
 
   /* draw notes of main region */
   if (region == ce_region)
     {
       /* get color */
       ui_get_arranger_object_color (
-        &color,
+        color,
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
         false, arranger_object_get_muted (obj));
-      gdk_cairo_set_source_rgba (
-        cr, &color);
-
-      draw_midi_note_bg (
-        self, cr, arr_rect,
-        &full_rect, &draw_rect);
-      cairo_fill (cr);
     }
   /* draw other notes */
   else
     {
       /* get color */
       ui_get_arranger_object_color (
-        &color,
+        color,
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
         /* FIXME */
         false, arranger_object_get_muted (obj));
-      color.alpha = 0.5;
-      gdk_cairo_set_source_rgba (
-        cr, &color);
-
-      draw_midi_note_bg (
-        self, cr, arr_rect,
-        &full_rect, &draw_rect);
-      cairo_fill (cr);
-    }
-
-  char str[30];
-  midi_note_get_val_as_string (self, str, 1);
-
-  char fontize_str[120];
-  int fontsize =
-    piano_roll_keys_widget_get_font_size (
-      MW_PIANO_ROLL_KEYS);
-  sprintf (
-    fontize_str, "<span size=\"%d\">",
-    /* subtract half a point for the padding */
-    fontsize * 1000 - 4000);
-  strcat (fontize_str, "%s</span>");
-
-  char str_to_use[120];
-  sprintf (str_to_use, fontize_str, str);
-
-  double fontsize_ratio =
-    (double) fontsize / 12.0;
-
-  GdkRGBA c2;
-  ui_get_contrast_color (
-    &color, &c2);
-  gdk_cairo_set_source_rgba (
-    cr, &c2);
-  if ((DEBUGGING || !PIANO_ROLL->drum_mode) &&
-      fontsize > 10)
-    {
-      recreate_pango_layouts (
-        self,
-        MIN (full_rect.width, 400));
-      cairo_move_to (
-        cr,
-        REGION_NAME_BOX_PADDING +
-          (full_rect.x - arr_rect->x),
-        fontsize_ratio * REGION_NAME_BOX_PADDING +
-          (full_rect.y - arr_rect->y));
-      PangoLayout * layout = self->layout;
-      z_cairo_draw_text (
-        cr,
-        GTK_WIDGET (
-          arranger_object_get_arranger (obj)),
-        layout, str_to_use);
+      color->alpha = 0.5;
     }
 }

@@ -256,12 +256,26 @@ midi_modifier_arranger_widget_resize_velocities (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
+  /* adjust for circle radius */
+  double start_y =
+    self->start_y;
+    /*self->start_y - VELOCITY_WIDTH / 2;*/
+  /*offset_y -= VELOCITY_WIDTH / 2;*/
+  /*g_message ("start y %f offset y %f res %f height %f", start_y, offset_y, start_y + offset_y,*/
+    /*(double) height);*/
+
   double start_ratio =
-    1.0 - self->start_y / (double) height;
+    CLAMP (
+      1.0 - start_y / (double) height,
+      0.0, 1.0);
   double ratio =
-    1.0 -
-    (self->start_y + offset_y) /
-      (double) height;
+    CLAMP (
+      1.0 -
+      (start_y + offset_y) /
+        (double) height,
+      0.0, 1.0);
+  g_return_if_fail (start_ratio <= 1.0);
+  g_return_if_fail (ratio <= 1.0);
   int start_val = (int) (start_ratio * 127.0);
   int val = (int) (ratio * 127.0);
   self->vel_diff = val - start_val;

@@ -48,6 +48,11 @@ midi_note_draw (
   cairo_t *      cr,
   GdkRectangle * arr_rect);
 
+void
+midi_note_get_adjusted_color (
+  MidiNote * self,
+  GdkRGBA *  color);
+
 /**
  * @}
  */
