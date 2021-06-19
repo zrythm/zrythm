@@ -3413,6 +3413,7 @@ port_process (
            (port->id.owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
             track &&
+            track_type_can_record (track->type) &&
             track_get_recording (track))) &&
            port->id.flow == FLOW_INPUT)
         {

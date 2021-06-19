@@ -1778,6 +1778,22 @@ test_ins_track_duplicate_w_send (void)
 #endif
 }
 
+static void
+test_create_midi_fx_track (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create an audio fx track */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create_midi_fx (
+      NULL, TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_usleep (10000);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1785,6 +1801,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test create midi fx track",
+    (GTestFunc) test_create_midi_fx_track);
   g_test_add_func (
     TEST_PREFIX "test ins track duplicate w send",
     (GTestFunc) test_ins_track_duplicate_w_send);

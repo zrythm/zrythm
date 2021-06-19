@@ -374,6 +374,16 @@ tracklist_selections_action_new (
     NULL, num_tracks, -1)
 
 /**
+ * Creates a new TracklistSelectionsAction for a
+ * MIDI FX track.
+ */
+#define tracklist_selections_action_new_create_midi_fx( \
+  pl_setting,track_pos,num_tracks) \
+  tracklist_selections_action_new_create ( \
+    TRACK_TYPE_MIDI_BUS, pl_setting, NULL, track_pos, \
+    NULL, num_tracks, -1)
+
+/**
  * Creates a new TracklistSelectionsAction for an
  * instrument track.
  */
