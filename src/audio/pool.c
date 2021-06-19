@@ -129,9 +129,11 @@ audio_pool_ensure_unique_clip_name (
             strlen (new_name) -
             /* + 2 for the parens */
             (strlen (cur_val_str) + 2);
-          char tmp[len + 1];
-          memset (tmp, 0, (len + 1) * sizeof (char));
-          strncpy (tmp, new_name, len - 1);
+          /* + 1 for the terminating NULL */
+          size_t tmp_len = len + 1;
+          char tmp[tmp_len];
+          memset (tmp, 0, tmp_len * sizeof (char));
+          memcpy (tmp, new_name, len - 1);
           new_name =
             g_strdup_printf (
               "%s (%d)", tmp, cur_val + 1);
