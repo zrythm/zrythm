@@ -108,7 +108,12 @@ typedef enum PortOwnerType
   /* track fader */
   PORT_OWNER_TYPE_FADER,
 
-  /** Channel send. */
+  /**
+   * Channel send.
+   *
+   * PortIdentifier.port_index will contain the
+   * send index on the port's track's channel.
+   */
   PORT_OWNER_TYPE_CHANNEL_SEND,
 
   /* track prefader */

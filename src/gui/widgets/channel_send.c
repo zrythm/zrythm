@@ -252,7 +252,11 @@ show_context_menu (
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
 
-  menuitem = CREATE_SELECT_ALL_MENU_ITEM (NULL);
+  menuitem = CREATE_MIDI_LEARN_MENU_ITEM;
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (ui_bind_midi_cc_item_activate_cb),
+    self->send->amount);
   ADD_TO_SHELL;
 
 #undef ADD_TO_SHELL

@@ -2921,6 +2921,15 @@ port_forward_control_change_event (
         }
     }
   else if (self->id.owner_type ==
+             PORT_OWNER_TYPE_CHANNEL_SEND)
+    {
+      Track * track = port_get_track (self, 1);
+      ChannelSend * send =
+        track->channel->sends[self->id.port_index];
+      EVENTS_PUSH (
+        ET_CHANNEL_SEND_CHANGED, send);
+    }
+  else if (self->id.owner_type ==
              PORT_OWNER_TYPE_TRACK)
     {
       Track * track = port_get_track (self, 1);
