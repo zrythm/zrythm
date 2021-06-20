@@ -159,6 +159,10 @@ find_and_queue_metronome (
   const Position * end_pos,
   const nframes_t  loffset)
 {
+  /* special case */
+  if (start_pos->frames == end_pos->frames)
+    return;
+
   /* find each bar / beat change from start
    * to finish */
   int num_bars_before =

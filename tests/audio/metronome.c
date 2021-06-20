@@ -142,6 +142,46 @@ test_find_and_queue_metronome ()
       }
   }
 
+  /*
+   * Situation: playhead is exactly block_length
+   * frames before the loop end position.
+   */
+  for (int i = 0; i < 2; i++)
+    {
+      Position play_pos;
+      position_set_to_bar (&play_pos, 16);
+      position_add_frames (
+        &play_pos,
+        - (long) AUDIO_ENGINE->block_length);
+      if (i == 1)
+        position_add_ticks (&play_pos, - 0.01);
+      transport_set_playhead_pos (
+        TRANSPORT, &play_pos);
+      position_set_to_bar (
+        &TRANSPORT->loop_end_pos, 16);
+
+      /* assert no playback from playhead to loop
+       * end */
+      SAMPLE_PROCESSOR->num_current_samples = 0;
+      metronome_queue_events (
+        AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
+      g_assert_cmpint (
+        SAMPLE_PROCESSOR->num_current_samples, ==, 0);
+
+      /* add remaining frames and assert playback
+       * at the first sample */
+      transport_add_to_playhead (
+        TRANSPORT, AUDIO_ENGINE->block_length);
+      SAMPLE_PROCESSOR->num_current_samples = 0;
+      metronome_queue_events (
+        AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
+      g_assert_cmpint (
+        SAMPLE_PROCESSOR->num_current_samples, ==, 1);
+      SamplePlayback * sp =
+        &SAMPLE_PROCESSOR->current_samples[0];
+      g_assert_cmpuint (sp->start_offset, ==, 0);
+    }
+
   test_helper_zrythm_cleanup ();
 }
 
