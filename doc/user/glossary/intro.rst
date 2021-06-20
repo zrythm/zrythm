@@ -28,6 +28,13 @@ Glossary
     The :abbr:`BPM (Beats Per Minute)` is the
     tempo of the song.
 
+  Carla
+    A
+    `plugin host <https://kx.studio/Applications:Carla>`_
+    that provides a library Zrythm uses to load some
+    plugins. Plugins loaded through Carla can be
+    bridged to separate processes.
+
   CLI
     :abbr:`CLI (Command Line Interface)` is the
     interface users interact with when typing

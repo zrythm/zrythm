@@ -292,6 +292,11 @@ locale_dirs = ['locale/']
 # compact all PO files into one
 gettext_compact = 'zrythm-manual'
 
+# -- Options for linkcheck builder ---------------
+linkcheck_ignore = [
+    # too many redirects
+    'https://paypal.me/zrythm'
+    ]
 
 # -- Extension configuration -------------------------------------------------
 
