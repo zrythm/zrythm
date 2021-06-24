@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.19.0.1] - 2021-06-24
+### Added
+- Add bookmarks and filters to file browser
+- Add MIDI/audio auditioning support to file browser
+- Make MIDI note/velocity colors take velocity into account
+- Allow MIDI learn on track sends
+
+### Changed
+- Show error message when plugin UI fails to open
+- Always copy/reflink audio pool files to backups instead of creating symlinks
+- Update user manual sections: getting started, projects, configuration, plugins, audio and MIDI files
+- Lower GLib requirement to 2.64
+- Update Spanish, Russian translations
+- Update popup file browser and refactor common logic with panel file browser
+- Draw MIDI note velocities as lollipops
+- Center velocities under MIDI notes
+
+### Fixed
+- Fix crash when adding a MIDI FX track
+- Fix rare error when attempting to queue metronome samples
+
 ## [1.0.0-alpha.18.2.1] - 2021-06-09
 ### Added
 - Add AppImage support
