@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-06-11 01:02+0100\n"
+"POT-Creation-Date: 2021-06-24 19:33+0100\n"
 "PO-Revision-Date: 2021-06-09 19:16+0000\n"
 "Last-Translator: Blueberry <igory.ygr200@gmail.com>\n"
 "Language: ru\n"
@@ -51,20 +51,28 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
-msgid "audio-insert"
+msgid "media-playback-start"
 msgstr ""
 
 #: ../../../../<rst_prolog>:15
+msgid "media-playback-stop"
+msgstr ""
+
+#: ../../../../<rst_prolog>:18
+msgid "audio-insert"
+msgstr ""
+
+#: ../../../../<rst_prolog>:21
 #, fuzzy
 msgid "modulator"
 msgstr "Модуляторы (Modulators)"
 
-#: ../../../../<rst_prolog>:18
+#: ../../../../<rst_prolog>:24
 #, fuzzy
 msgid "instrument"
 msgstr "Инструмент (Instrument)"
 
-#: ../../../../<rst_prolog>:21
+#: ../../../../<rst_prolog>:27
 msgid "signal-midi"
 msgstr ""
 
@@ -332,8 +340,9 @@ msgstr "Решение проблем (Troubleshooting)"
 #: ../../editing/timeline/arranger.rst:165
 #: ../../editing/timeline/arranger.rst:170
 #: ../../editing/timeline/arranger.rst:242
-#: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:39
-#: ../../exporting/audio-and-midi.rst:44 ../../mixing/overview.rst:62
+#: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:38
+#: ../../mixing/overview.rst:62
+#: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/control-room.rst:31 ../../routing/making-connections.rst:30
 #: ../../scripting/scripting-interface.rst:8 ../../tracks/inspector-page.rst:95
 #: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
@@ -560,7 +569,7 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:21
-#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:66
+#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
 msgid "JACK"
 msgstr "JACK"
 
@@ -592,6 +601,7 @@ msgid "Configuration"
 msgstr "Конфигурация"
 
 #: ../../configuration/preferences.rst:10
+#: ../../plugins-files/audio-midi-files/file-browser.rst:116
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Preferences"
 msgstr "Настройки (Preferences)"
@@ -808,7 +818,7 @@ msgstr "Инструменты SF2 (SF2 instruments)"
 msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Пути поиска инструментов :term:`SF2`."
 
-#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:56
+#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:63
 msgid "DSP"
 msgstr "Цифровая обработка сигналов (DSP)"
 
@@ -855,7 +865,7 @@ msgstr ""
 "Алгоритмы панорамирования (:blue:`Синус (Sine)`, :red:`Квадратный корень "
 "(Square Root)`, :green:`Линейный (Linear)`)."
 
-#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:97
+#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:104
 msgid "Pan law"
 msgstr "Правило панорамирования (Pan law)"
 
@@ -877,12 +887,15 @@ msgstr "Редактирование (Editing)"
 msgid "Editing options."
 msgstr "Настройки редактирования."
 
-#: ../../configuration/preferences.rst:149 ../../routing/ports.rst:41
-#: ../../tracks/track-types.rst:21 ../../tracks/track-types.rst:22
-#: ../../tracks/track-types.rst:23 ../../tracks/track-types.rst:27
-#: ../../tracks/track-types.rst:28 ../../tracks/track-types.rst:32
-#: ../../tracks/track-types.rst:33 ../../tracks/track-types.rst:43
-#: ../../tracks/track-types.rst:52 ../../tracks/track-types.rst:53
+#: ../../configuration/preferences.rst:149
+#: ../../plugins-files/audio-midi-files/file-browser.rst:62
+#: ../../plugins-files/audio-midi-files/overview.rst:18
+#: ../../routing/ports.rst:41 ../../tracks/track-types.rst:21
+#: ../../tracks/track-types.rst:22 ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:27 ../../tracks/track-types.rst:28
+#: ../../tracks/track-types.rst:32 ../../tracks/track-types.rst:33
+#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:52
+#: ../../tracks/track-types.rst:53
 msgid "Audio"
 msgstr "Аудио (Audio)"
 
@@ -3317,43 +3330,26 @@ msgid "Format"
 msgstr "Формат (Format)"
 
 #: ../../exporting/audio-and-midi.rst:31
-msgid "The format to export to. Currently, the following formats are supported"
-msgstr "Формат для экспорта. В настоящее время поддерживаются следующие форматы"
-
-#: ../../exporting/audio-and-midi.rst:34
-msgid "FLAC - .FLAC"
-msgstr "FLAC - .FLAC"
-
-#: ../../exporting/audio-and-midi.rst:35
-msgid "OGG (Vorbis) - .ogg"
-msgstr "OGG (Vorbis) - .ogg"
+msgid ""
+"The format to export to. The formats mentioned in :ref:`Supported Formats"
+" <plugins-files/audio-midi-files/overview:Supported Formats>` are "
+"available, with the exception of MP3."
+msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:36
-msgid "WAV - .wav"
-msgstr "WAV - .wav"
-
-#: ../../exporting/audio-and-midi.rst:37
-msgid "MIDI - .mid"
-msgstr "MIDI - .mid"
-
-#: ../../exporting/audio-and-midi.rst:39
-msgid "MP3 support."
-msgstr "MP3 поддержка."
-
-#: ../../exporting/audio-and-midi.rst:42
 msgid "Dither"
 msgstr "Дизеринг (Dither)"
 
-#: ../../exporting/audio-and-midi.rst:44 ../../tracks/inspector-page.rst:170
+#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:170
 #: ../../tracks/inspector-page.rst:175
 msgid "Implement."
 msgstr "Реализовать."
 
-#: ../../exporting/audio-and-midi.rst:47
+#: ../../exporting/audio-and-midi.rst:41
 msgid "Bit Depth"
 msgstr "Битовая глубина (Bit Depth)"
 
-#: ../../exporting/audio-and-midi.rst:48
+#: ../../exporting/audio-and-midi.rst:42
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
@@ -3363,11 +3359,11 @@ msgstr ""
 " выше битовая глубина, тем больше будет файл, и тем лучше будет его "
 "качество."
 
-#: ../../exporting/audio-and-midi.rst:54
+#: ../../exporting/audio-and-midi.rst:48
 msgid "Time Range"
 msgstr "Временной диапазон (Time Range)"
 
-#: ../../exporting/audio-and-midi.rst:55
+#: ../../exporting/audio-and-midi.rst:49
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
@@ -3377,19 +3373,19 @@ msgstr ""
 "(определенную маркерами начала/конца (Start/End Marker)), текущий "
 "диапазон цикла (Loop Range) или произвольный диапазон времени."
 
-#: ../../exporting/audio-and-midi.rst:60
+#: ../../exporting/audio-and-midi.rst:54
 msgid "Filename Pattern"
 msgstr "Шаблон названия файла (Filename Pattern)"
 
-#: ../../exporting/audio-and-midi.rst:61
+#: ../../exporting/audio-and-midi.rst:55
 msgid "The pattern to use as the name of the file."
 msgstr "Шаблон для использования в качестве имени файла."
 
-#: ../../exporting/audio-and-midi.rst:64
+#: ../../exporting/audio-and-midi.rst:58
 msgid "Mixdown"
 msgstr "Микс (Mixdown)"
 
-#: ../../exporting/audio-and-midi.rst:65
+#: ../../exporting/audio-and-midi.rst:59
 msgid ""
 "When exporting the mixdown, sound from all selected tracks will be "
 "included in the resulting file. This is the option to use when exporting "
@@ -3398,19 +3394,19 @@ msgstr ""
 "При экспорте микса в итоговый файл будет включен звук со всех треков "
 "(Track). Это вариант, который можно использовать при экспорте песни."
 
-#: ../../exporting/audio-and-midi.rst:72
+#: ../../exporting/audio-and-midi.rst:66
 msgid "Export options for mixdown"
 msgstr "Параметры экспорта для микса"
 
-#: ../../exporting/audio-and-midi.rst:77
+#: ../../exporting/audio-and-midi.rst:71
 msgid "Exported file"
 msgstr "Экспортированный файл"
 
-#: ../../exporting/audio-and-midi.rst:80
+#: ../../exporting/audio-and-midi.rst:74
 msgid "Stems"
 msgstr "Стемы (Stems)"
 
-#: ../../exporting/audio-and-midi.rst:81
+#: ../../exporting/audio-and-midi.rst:75
 msgid ""
 "Exporting stems means that each selected track will be exported in its "
 "own file. This is useful when you want to share the components of your "
@@ -3422,11 +3418,11 @@ msgstr ""
 "по отдельности. Например, вы можете произвести :term:`bounce <Bounce>` "
 "над барабанами и басом и получить два отдельных файла."
 
-#: ../../exporting/audio-and-midi.rst:91
+#: ../../exporting/audio-and-midi.rst:85
 msgid "Export options for stems"
 msgstr "Параметры экспорта стемов"
 
-#: ../../exporting/audio-and-midi.rst:96
+#: ../../exporting/audio-and-midi.rst:90
 msgid "Exported files"
 msgstr "Экспортированные файлы"
 
@@ -3613,6 +3609,7 @@ msgstr ""
 "произведен поиск плагинов."
 
 #: ../../getting-started/getting-plugins.rst:85
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
 msgstr ""
 
@@ -4091,10 +4088,21 @@ msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
 msgstr ""
 
 #: ../../glossary/intro.rst:30
+msgid "Carla"
+msgstr ""
+
+#: ../../glossary/intro.rst:32
+msgid ""
+"A `plugin host <https://kx.studio/Applications:Carla>`_ that provides a "
+"library Zrythm uses to load some plugins. Plugins loaded through Carla "
+"can be bridged to separate processes."
+msgstr ""
+
+#: ../../glossary/intro.rst:37
 msgid "CLI"
 msgstr "Интерфейс командной строки (CLI)"
 
-#: ../../glossary/intro.rst:32
+#: ../../glossary/intro.rst:39
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
@@ -4103,19 +4111,19 @@ msgstr ""
 "интерфейс, с которым пользователи взаимодействуют при вводе команд в "
 "терминале."
 
-#: ../../glossary/intro.rst:35
+#: ../../glossary/intro.rst:42
 msgid "Clip"
 msgstr "Клип (Clip)"
 
-#: ../../glossary/intro.rst:37
+#: ../../glossary/intro.rst:44
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr "Является синонимом термина :ref:`Регион (Region) <regions>`."
 
-#: ../../glossary/intro.rst:39 ../../routing/ports.rst:47
+#: ../../glossary/intro.rst:46 ../../routing/ports.rst:47
 msgid "Control"
 msgstr "Порт управления (Control)"
 
-#: ../../glossary/intro.rst:41
+#: ../../glossary/intro.rst:48
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable "
 "control value that affects a processor, such as a plugin. For example, a "
@@ -4125,11 +4133,11 @@ msgstr ""
 "значением, который влияет на какой-либо механизм. Например, регулятор "
 "усиления. Является синонимом термина :term:`Parameter`."
 
-#: ../../glossary/intro.rst:46 ../../routing/ports.rst:51
+#: ../../glossary/intro.rst:53 ../../routing/ports.rst:51
 msgid "CV"
 msgstr "CV"
 
-#: ../../glossary/intro.rst:48
+#: ../../glossary/intro.rst:55
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
@@ -4137,11 +4145,11 @@ msgstr ""
 "В программной среде :abbr:`CV (Управляющее напряжение (Control Voltage))`"
 " представляет данные управления звуком."
 
-#: ../../glossary/intro.rst:51
+#: ../../glossary/intro.rst:58
 msgid "DAW"
 msgstr "Цифровая звуковая рабочая станция (DAW)"
 
-#: ../../glossary/intro.rst:53
+#: ../../glossary/intro.rst:60
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
@@ -4150,7 +4158,7 @@ msgstr ""
 "Workstation)`) - это программа, используемая для создания, записи, "
 "редактирования, аранжировки, микширования и мастеринга музыки."
 
-#: ../../glossary/intro.rst:58
+#: ../../glossary/intro.rst:65
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
@@ -4158,11 +4166,11 @@ msgstr ""
 "В контексте :term:`DAW`, цифровая обработка сигналов (:abbr:`DSP (Digital"
 " Signal Processing)`) означает обработку аудиосигнала."
 
-#: ../../glossary/intro.rst:61
+#: ../../glossary/intro.rst:68
 msgid "Free software"
 msgstr "Свободное программное обеспечение (Free Software)"
 
-#: ../../glossary/intro.rst:63
+#: ../../glossary/intro.rst:70
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
@@ -4171,7 +4179,7 @@ msgstr ""
 " программу, в отличие от проприетарного программного обеспечения, где "
 "программа контролирует пользователей."
 
-#: ../../glossary/intro.rst:68
+#: ../../glossary/intro.rst:75
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers "
 "low latency for users and provides a simple API for developers. It is the"
@@ -4182,11 +4190,11 @@ msgstr ""
 "API для разработчиков. Это стандартный звуковой сервер для "
 "профессионального аудио в GNU/Linux."
 
-#: ../../glossary/intro.rst:74
+#: ../../glossary/intro.rst:81
 msgid "LV2"
 msgstr "LV2"
 
-#: ../../glossary/intro.rst:76
+#: ../../glossary/intro.rst:83
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
@@ -4196,16 +4204,18 @@ msgstr ""
 "открытый стандарт для звуковых плагинов. LV2 имеет простое строение, "
 "сопровождается расширениями, которые добавляют более продвинутые функции."
 
-#: ../../glossary/intro.rst:81 ../../tracks/track-types.rst:37
-#: ../../tracks/track-types.rst:38 ../../tracks/track-types.rst:42
-#: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:62
-#: ../../tracks/track-types.rst:63 ../../tracks/track-types.rst:67
-#: ../../tracks/track-types.rst:68 ../../tracks/track-types.rst:72
-#: ../../tracks/track-types.rst:73
+#: ../../glossary/intro.rst:88
+#: ../../plugins-files/audio-midi-files/file-browser.rst:64
+#: ../../plugins-files/audio-midi-files/overview.rst:58
+#: ../../tracks/track-types.rst:37 ../../tracks/track-types.rst:38
+#: ../../tracks/track-types.rst:42 ../../tracks/track-types.rst:61
+#: ../../tracks/track-types.rst:62 ../../tracks/track-types.rst:63
+#: ../../tracks/track-types.rst:67 ../../tracks/track-types.rst:68
+#: ../../tracks/track-types.rst:72 ../../tracks/track-types.rst:73
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../../glossary/intro.rst:83
+#: ../../glossary/intro.rst:90
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical "
 "standard for communication between musical instruments and computers."
@@ -4214,37 +4224,34 @@ msgstr ""
 "Instrument Digital Interface)`) - технический стандарт для связи между "
 "музыкальными инструментами и компьютерами."
 
-#: ../../glossary/intro.rst:86
+#: ../../glossary/intro.rst:93
 msgid "MIDI note"
 msgstr "MIDI нота (MIDI note)"
 
-#: ../../glossary/intro.rst:88
+#: ../../glossary/intro.rst:95
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 ":term:`MIDI` ноты используются для взаимодействия с виртуальными (или "
 "аппаратными) инструментами."
 
-#: ../../glossary/intro.rst:93
+#: ../../glossary/intro.rst:100
 msgid "Mono"
 msgstr "Моно (Mono)"
 
-#: ../../glossary/intro.rst:95
+#: ../../glossary/intro.rst:102
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
 msgstr "Одноканальный аудиосигнал (читайте также :term:`Stereo`)."
 
-#: ../../glossary/intro.rst:99
-#: ../../plugins-files/audio-midi-files/file-browser.rst:19
-#: ../../plugins-files/audio-midi-files/file-browser.rst:24
-#: ../../tracks/audio-track.rst:55 ../../tracks/midi-track.rst:132
-#: ../../tracks/midi-track.rst:140
+#: ../../glossary/intro.rst:106 ../../tracks/audio-track.rst:55
+#: ../../tracks/midi-track.rst:132 ../../tracks/midi-track.rst:140
 msgid "TODO"
 msgstr "В разработке"
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:107
 msgid "Panning"
 msgstr "Панорамирование (Panning)"
 
-#: ../../glossary/intro.rst:102
+#: ../../glossary/intro.rst:109
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
@@ -4252,19 +4259,19 @@ msgstr ""
 "Панорамирование - это распространение :term:`Mono` сигнала в новом стерео"
 " или многоканальном сигнале."
 
-#: ../../glossary/intro.rst:105
+#: ../../glossary/intro.rst:112
 msgid "Parameter"
 msgstr "Параметр (Parameter)"
 
-#: ../../glossary/intro.rst:107
+#: ../../glossary/intro.rst:114
 msgid "Used interchangeably with :term:`Control`."
 msgstr "Является синонимом термина :term:`Control`."
 
-#: ../../glossary/intro.rst:108
+#: ../../glossary/intro.rst:115
 msgid "Plugin"
 msgstr "Плагин (Plugin)"
 
-#: ../../glossary/intro.rst:110
+#: ../../glossary/intro.rst:117
 msgid ""
 "A plugin is an external module that provides audio processing "
 "capabilities to Zrythm, such as an :term:`SFZ` instrument or an "
@@ -4274,11 +4281,11 @@ msgstr ""
 "возможности работы со звуком, такие как инструмент :term:`SFZ` или плагин"
 " реверберации :term:`LV2`."
 
-#: ../../glossary/intro.rst:114
+#: ../../glossary/intro.rst:121
 msgid "Project"
 msgstr "Проект (Project)"
 
-#: ../../glossary/intro.rst:116
+#: ../../glossary/intro.rst:123
 msgid ""
 "A project refers to a work session. It is saved as a directory containing"
 " a project file along with other auxiliary files. See :ref:`Projects` for"
@@ -4288,19 +4295,19 @@ msgstr ""
 "каталог, содержащий файл проекта вместе с другими вспомогательными "
 "файлами. Смотрите :ref:`Projects` для более подробной информации."
 
-#: ../../glossary/intro.rst:120
+#: ../../glossary/intro.rst:127
 msgid "Range"
 msgstr "Диапазон (Range)"
 
-#: ../../glossary/intro.rst:122
+#: ../../glossary/intro.rst:129
 msgid "A Range is a selection of time between two positions."
 msgstr "Диапазон - это отрезок времени между двумя позициями."
 
-#: ../../glossary/intro.rst:127
+#: ../../glossary/intro.rst:134
 msgid "Region"
 msgstr "Регион (Region)"
 
-#: ../../glossary/intro.rst:129
+#: ../../glossary/intro.rst:136
 msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
@@ -4308,37 +4315,37 @@ msgstr ""
 "Регион (или :term:`Clip`) - это контейнер для MIDI нот, аудио или других "
 "событий. Читайте :ref:`regions`."
 
-#: ../../glossary/intro.rst:132
+#: ../../glossary/intro.rst:139
 msgid "SFZ"
 msgstr "SFZ"
 
-#: ../../glossary/intro.rst:134
+#: ../../glossary/intro.rst:141
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr ""
 "SFZ - это формат файла для виртуальных инструментов (Virtual Instrument) "
 "на основе сэмплов (Sample)."
 
-#: ../../glossary/intro.rst:136
+#: ../../glossary/intro.rst:143
 msgid "SF2"
 msgstr "SF2"
 
-#: ../../glossary/intro.rst:138
+#: ../../glossary/intro.rst:145
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr "SF2 является преемником :term:`SFZ`."
 
-#: ../../glossary/intro.rst:139
+#: ../../glossary/intro.rst:146
 msgid "Stereo"
 msgstr "Стерео (Stereo)"
 
-#: ../../glossary/intro.rst:141
+#: ../../glossary/intro.rst:148
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr "Двухканальный аудиосигнал (левый и правый) (читайте также :term:`Mono`)."
 
-#: ../../glossary/intro.rst:143
+#: ../../glossary/intro.rst:150
 msgid "VST2"
 msgstr "VST2"
 
-#: ../../glossary/intro.rst:145
+#: ../../glossary/intro.rst:152
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
@@ -4346,11 +4353,11 @@ msgstr ""
 "Проприетарный стандарт плагинов и предшественник VST3. Мы не рекомендуем "
 "использовать этот стандарт."
 
-#: ../../glossary/intro.rst:147
+#: ../../glossary/intro.rst:154
 msgid "VST3"
 msgstr "VST3"
 
-#: ../../glossary/intro.rst:149
+#: ../../glossary/intro.rst:156
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to "
 "use VST3 than VST2, because it is released as :term:`Free software`. "
@@ -4360,11 +4367,11 @@ msgstr ""
 " VST3, чем VST2, потому что он является :term:`Free software`. Однако мы "
 "рекомендуем вместо этого использовать стандарт :term:`LV2`."
 
-#: ../../glossary/intro.rst:154
+#: ../../glossary/intro.rst:161
 msgid "Zrythm user path"
 msgstr "Путь данных пользователя Zrythm (Zrythm user path)"
 
-#: ../../glossary/intro.rst:156
+#: ../../glossary/intro.rst:163
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -4373,7 +4380,7 @@ msgstr ""
 "как проекты, временные файлы, пресеты и экспортированный звук. По "
 "умолчанию в каталоге :file:`zrythm` под"
 
-#: ../../glossary/intro.rst:161
+#: ../../glossary/intro.rst:168
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification "
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
@@ -4385,7 +4392,7 @@ msgstr ""
 "latest.html>`_) в системах, совместимых с freedesktop (или если "
 "переменная :envvar:`XDG_DATA_HOME` определена), или"
 
-#: ../../glossary/intro.rst:166
+#: ../../glossary/intro.rst:173
 msgid "the directory for local application data on Windows"
 msgstr "каталогом для данных локального приложения в Windows"
 
@@ -5321,51 +5328,357 @@ msgstr ""
 "Браузер файлов позволяет легко перемещаться по файлам на вашем компьютере"
 " или по вашим пользовательским коллекциям."
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:14
-msgid "This is a work in progress."
-msgstr "Эта функция еще находится в разработке."
+#: ../../plugins-files/audio-midi-files/file-browser.rst:18
+msgid "Bookmarks"
+msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:17
+#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+msgid ""
+"The Bookmarks section contains a list of bookmarked directories. Double-"
+"clicking on a directory will show its contents in the file list below."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:24
+msgid "Standard Bookmarks"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:25
+msgid ""
+"Zrythm provides standard bookmarks for :file:`Home` and :file:`Desktop`, "
+"which correspond to the home and desktop directories of the current user."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:31
+#, fuzzy
+msgid "Custom Bookmarks"
+msgstr "Пользовательские маркеры"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:32
+#, fuzzy
+msgid ""
+"Custom bookmarks can be added by right-clicking on a directory in the "
+"file list and selecting :guilabel:`Add Bookmark`."
+msgstr ""
+"Трек можно удалить, щелкнув по нему правой кнопкой мыши и нажав "
+":zbutton:`Удалить (Delete)`."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:39
+#, fuzzy
+msgid ""
+"Similarly, custom bookmarks can be removed by right-clicking on the "
+"bookmark and selecting :guilabel:`Delete`."
+msgstr ""
+"Трек можно удалить, щелкнув по нему правой кнопкой мыши и нажав "
+":zbutton:`Удалить (Delete)`."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:47
 msgid "Filtering"
 msgstr "Фильтрации"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:22
-msgid "Collections"
-msgstr "Коллекции"
+#: ../../plugins-files/audio-midi-files/file-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:41
+msgid "Filter Buttons"
+msgstr "Кнопки фильтров"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:27
+#: ../../plugins-files/audio-midi-files/file-browser.rst:51
+#, fuzzy
+msgid ""
+"Similarly to the :doc:`plugin browser <../plugins/plugin-browser>`, files"
+" can be filtered based on their type."
+msgstr "В дополнение к вышесказанному, плагины можно фильтровать по их типу."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:58
+msgid "Filtering by audio files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:60
+#, fuzzy
+msgid "The following toggles are available."
+msgstr "Существуют следующие типы регионов."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:63
+#, fuzzy
+msgid "Only show audio files."
+msgstr "Содержит аудиоклипы."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:65
+msgid "Only show MIDI files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
+msgid "Only show preset files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:69
+#, fuzzy
+msgid "Preset filtering is not implemented yet."
+msgstr "Эта функция еще не реализована."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:72
+#, fuzzy
+msgid "Showing Unsupported Files"
+msgstr "Перенаправлять неподдерживаемые интерфейсы (Bridge unsupported UIs)"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:73
+msgid ""
+"By default, only supported files will be shown in the file list. To also "
+"show unsupported files, enable :guilabel:`Show unsupported files` in the "
+":ref:`file browser preferences <plugins-files/audio-midi-files/file-"
+"browser:Preferences>`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:79
+msgid "Showing Hidden Files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:80
+msgid ""
+"By default, only files that are not hidden will be shown in the file "
+"list. To also show hidden files, enable :guilabel:`Show hidden files` in "
+"the :ref:`file browser preferences <plugins-files/audio-midi-files/file-"
+"browser:Preferences>`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:86
+#, fuzzy
+msgid "Auditioning"
+msgstr "Редактирование (Editing)"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:87
+msgid ""
+"Audio and MIDI files can be auditioned by making use of the auditioning "
+"controls at the bottom of the file list."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:94
+#, fuzzy
+msgid "File auditioning controls"
+msgstr "Дополнительные элементы управления (Additional Controls)"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:96
+msgid "|icon_media-playback-start| Play"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
+msgid "Trigger playback of the selected file."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:98
+msgid "|icon_media-playback-stop| Stop"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
+msgid "Stop playback of the selected file."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+msgid "Volume"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+msgid "Control the loudness of the output audio."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:104
+#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
+msgid "Instrument"
+msgstr "Инструмент (Instrument)"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:105
+msgid ""
+"The selected instrument will be used for playing back MIDI files. In the "
+"above example, the `Helm` instrument is selected."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:110
+msgid "Autoplay"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:111
+msgid ""
+"Auto-play (automatically playing back the selected file when the "
+"selection changes) can be enabled in the preferences below."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:118
+msgid "Clicking the cog icon will bring up the preferences for the file browser."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:124
+msgid "File browser preferences"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:127
+msgid "File Info"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:128
+msgid ""
+"Information, such as metadata, for the selected file is always shown at "
+"the bottom of the file panel."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:134
+msgid "Information about the selected audio file"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:137
 msgid "Importing Files"
 msgstr "Импортирование файлов"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:29
+#: ../../plugins-files/audio-midi-files/file-browser.rst:138
+#, fuzzy
 msgid ""
-"Files are imported by either double clicking them in the browser or "
-"dragging and dropping them into a track."
+"Files are imported into the project by either double-clicking or dragging"
+" and dropping into the timeline."
 msgstr ""
 "Файлы импортируются либо двойным щелчком по ним в браузере, либо "
 "перетаскиванием их на трек."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:145
+msgid "Drag-n-dropping an audio file into a new track"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:148
+#, fuzzy
+msgid "Pop-up File Browser"
+msgstr "Браузер файлов (File Browser)"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:149
+msgid ""
+"An additional file browser with similar functionalities is available by "
+"clicking the :guilabel:`Popup File Browser` button near the bottom right "
+"of the main window."
+msgstr ""
 
 #: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
 msgstr "Аудио и MIDI файлы"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
+#, fuzzy
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be"
-" imported by dragging and dropping from your computer or from the :ref"
-":`file-browser` into a track."
+" imported by dragging and dropping from your computer or from the "
+":doc:`file browser <file-browser>` into a track."
 msgstr ""
 "Zrythm может импортировать в проект файлы MIDI и Аудио. Файлы можно "
 "импортировать, перетаскивая их с вашего компьютера или из :ref:`file-"
 "browser` на трек."
 
-#: ../../plugins-files/audio-midi-files/overview.rst:14
-msgid "Supported Audio Formats"
+#: ../../plugins-files/audio-midi-files/overview.rst:15
+#, fuzzy
+msgid "Supported Formats"
 msgstr "Поддерживаемые аудиоформаты"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:15
-msgid "Zrythm supports OGG, FLAC, WAV and MP3."
-msgstr "Zrythm поддерживает OGG, FLAC, WAV и MP3."
+#: ../../plugins-files/audio-midi-files/overview.rst:19
+#, fuzzy
+msgid "The following file formats are supported."
+msgstr "Формат для экспорта. В настоящее время поддерживаются следующие форматы"
+
+#: ../../plugins-files/audio-midi-files/overview.rst:22
+msgid "OGG (Vorbis and OPUS)"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:22
+msgid ""
+"An open and patent-free container format mostly used for lossy audio "
+"files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:25
+msgid ":abbr:`FLAC (Free Lossless Audio Codec)`"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:25
+msgid ""
+"An open and royalty-free audio coding format for lossless compression of "
+"digital audio."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:28
+msgid ":abbr:`WAV (Waveform Audio File Format)`"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:28
+msgid "An audio file format for storing audio bistreams (uncompressed audio)."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:33
+msgid "MP3"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:31
+msgid ""
+"An (originally patented) coding format for compressed audio. Although the"
+" patents have expired, we recommend using OGG instead."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:35
+msgid "OPUS support requires specific project samplerates to work properly."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:38
+msgid ""
+"A software patent is a 20-year monopoly on the use of a feature in a "
+"computer program. When a company has a patent on nested menus, a video "
+"format, or pinch-to-zoom, then no one else can implement that feature for"
+" 20 years unless they get permission from the patent holder."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:46
+msgid ""
+"Computer programs typically contain hundreds or thousands of features, "
+"and many features that users expect, are patented."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:50
+msgid ""
+"The End Software Patents campaign is against software monopolies, and for"
+" software development."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:53
+msgid "Learn more at `EndSoftPatents`_."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:59
+msgid ""
+"Zrythm supports :abbr:`SMF (Standard MIDI File)` files of type 0 and type"
+" 1. Each type is explained below for reference."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:63
+msgid "Type 0"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:64
+msgid "An entire performance merged into a single track."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:66
+msgid "Type 1"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:66
+msgid ""
+"An entire performance in one or more tracks that are performed "
+"simultaneously"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:70
+msgid "Type 2"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:69
+msgid ""
+"Multiple arrangements, each having its own track and intended to be "
+"played in sequence"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:72
+msgid "Type 2 SMF files are rarely used and are not supported."
+msgstr ""
 
 #: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
@@ -5515,10 +5828,6 @@ msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or"
 " deselect a row."
 msgstr ""
-
-#: ../../plugins-files/plugins/plugin-browser.rst:41
-msgid "Filter Buttons"
-msgstr "Кнопки фильтров"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:42
 msgid "Additionally to the above, plugins can be filtered based on their type."
@@ -6961,19 +7270,21 @@ msgstr "Написание скриптов (Scripting)"
 
 #: ../../scripting/overview.rst:8
 msgid ""
-"Zrythm offers a scripting interface using the `Guile language "
-"<https://www.gnu.org/software/guile/>`_, an implementation of Scheme."
+"Zrythm offers a scripting interface using the `GNU Guile language "
+"<https://www.gnu.org/software/guile/>`_, an implementation of `Scheme "
+"<https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_, "
+"which is a dialect of `LISP "
+"<https://en.wikipedia.org/wiki/Lisp_(programming_language)>`_."
 msgstr ""
-"Zrythm предлагает интерфейс скриптов, использующий `Guile language "
-"<https://www.gnu.org/software/guile/>`_, реализацию Scheme."
 
-#: ../../scripting/overview.rst:11
+#: ../../scripting/overview.rst:15
+#, fuzzy
 msgid ""
 "The next section is a comprehensive list of all available procedures in "
 "the API. Each section in the API corresponds to a specific Guile module, "
 "so for example, to use the procedures in the :scheme:`audio position` "
-"section, one would do :scheme:`(use-modules (audio track))` at the top of"
-" the script."
+"section, one would do :scheme:`(use-modules (audio position))` at the top"
+" of the script."
 msgstr ""
 "В следующем разделе представлен полный список всех доступных процедур в "
 "API. Каждый раздел в API соответствует определенному модулю Guile, "
@@ -6981,13 +7292,15 @@ msgstr ""
 "position`, нужно добавить :scheme:`(use-modules (audio track))` в начале "
 "скрипта."
 
-#: ../../scripting/overview.rst:19
+#: ../../scripting/overview.rst:23
 msgid "The Guile API is experimental."
 msgstr "Guile API является экспериментальным."
 
-#: ../../scripting/overview.rst:21
-msgid "The Guile API is not available on Windows."
-msgstr "Guile API недоступен в Windows."
+#: ../../scripting/overview.rst:25
+msgid ""
+"The Guile API is not available on Windows. See `this ticket "
+"<https://github.com/msys2/MINGW-packages/issues/3298>`_ for details."
+msgstr ""
 
 #: ../../scripting/scripting-interface.rst:6
 #: ../../zrythm-interface/main-toolbar.rst:122
@@ -7609,10 +7922,6 @@ msgstr "Название этого трека"
 #: ../../tracks/inspector-page.rst:32
 msgid "The track that this track routes its output to."
 msgstr "Трек, на который этот трек направляет свой выходной сигнал."
-
-#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
-msgid "Instrument"
-msgstr "Инструмент (Instrument)"
 
 #: ../../tracks/inspector-page.rst:36
 msgid ""
@@ -9110,6 +9419,44 @@ msgstr ""
 "Информация о текущем выбранном сервере и параметрах отображается в нижнем"
 " левом углу."
 
+#~ msgid "FLAC - .FLAC"
+#~ msgstr "FLAC - .FLAC"
+
+#~ msgid "OGG (Vorbis) - .ogg"
+#~ msgstr "OGG (Vorbis) - .ogg"
+
+#~ msgid "WAV - .wav"
+#~ msgstr "WAV - .wav"
+
+#~ msgid "MIDI - .mid"
+#~ msgstr "MIDI - .mid"
+
+#~ msgid "MP3 support."
+#~ msgstr "MP3 поддержка."
+
+#~ msgid "This is a work in progress."
+#~ msgstr "Эта функция еще находится в разработке."
+
+#~ msgid "Collections"
+#~ msgstr "Коллекции"
+
+#~ msgid "Zrythm supports OGG, FLAC, WAV and MP3."
+#~ msgstr "Zrythm поддерживает OGG, FLAC, WAV и MP3."
+
+#~ msgid ""
+#~ "Zrythm offers a scripting interface "
+#~ "using the `Guile language "
+#~ "<https://www.gnu.org/software/guile/>`_, an implementation"
+#~ " of Scheme."
+#~ msgstr ""
+#~ "Zrythm предлагает интерфейс скриптов, "
+#~ "использующий `Guile language "
+#~ "<https://www.gnu.org/software/guile/>`_, реализацию "
+#~ "Scheme."
+
+#~ msgid "The Guile API is not available on Windows."
+#~ msgstr "Guile API недоступен в Windows."
+
 #~ msgid ""
 #~ "The filters tab at the top allows"
 #~ " you to select how to filter "
@@ -9589,9 +9936,6 @@ msgstr ""
 
 #~ msgid "split the following to sub-pages"
 #~ msgstr "разделить следующее на подстраницы"
-
-#~ msgid "Contains audio clips."
-#~ msgstr "Содержит аудиоклипы."
 
 #~ msgid "Expand + add pic."
 #~ msgstr "Развернуть + добавить картинку."

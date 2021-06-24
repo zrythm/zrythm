@@ -123,6 +123,8 @@ rst_prolog = """
 enabled_icons = [
     'audio-insert',
     'instrument',
+    'media-playback-start',
+    'media-playback-stop',
     'modulator',
     'signal-midi',
     ]

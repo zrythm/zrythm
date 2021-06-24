@@ -28,15 +28,9 @@ be the project title.
 
 Format
 ~~~~~~
-The format to export to. Currently, the following
-formats are supported
-
-* FLAC - .FLAC
-* OGG (Vorbis) - .ogg
-* WAV - .wav
-* MIDI - .mid
-
-.. todo:: MP3 support.
+The format to export to. The formats mentioned in
+:ref:`Supported Formats <plugins-files/audio-midi-files/overview:Supported Formats>`
+are available, with the exception of MP3.
 
 Dither
 ~~~~~~

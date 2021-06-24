@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-06-11 01:02+0100\n"
+"POT-Creation-Date: 2021-06-24 19:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,20 +27,28 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
-msgid "audio-insert"
+msgid "media-playback-start"
 msgstr ""
 
 #: ../../../../<rst_prolog>:15
+msgid "media-playback-stop"
+msgstr ""
+
+#: ../../../../<rst_prolog>:18
+msgid "audio-insert"
+msgstr ""
+
+#: ../../../../<rst_prolog>:21
 #, fuzzy
 msgid "modulator"
 msgstr "Moduladores"
 
-#: ../../../../<rst_prolog>:18
+#: ../../../../<rst_prolog>:24
 #, fuzzy
 msgid "instrument"
 msgstr "Instrumento"
 
-#: ../../../../<rst_prolog>:21
+#: ../../../../<rst_prolog>:27
 msgid "signal-midi"
 msgstr ""
 
@@ -304,8 +312,9 @@ msgstr "Solución de problemas"
 #: ../../editing/timeline/arranger.rst:165
 #: ../../editing/timeline/arranger.rst:170
 #: ../../editing/timeline/arranger.rst:242
-#: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:39
-#: ../../exporting/audio-and-midi.rst:44 ../../mixing/overview.rst:62
+#: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:38
+#: ../../mixing/overview.rst:62
+#: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/control-room.rst:31 ../../routing/making-connections.rst:30
 #: ../../scripting/scripting-interface.rst:8 ../../tracks/inspector-page.rst:95
 #: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
@@ -537,7 +546,7 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:21
-#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:66
+#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
 msgid "JACK"
 msgstr "JACK"
 
@@ -572,6 +581,7 @@ msgid "Configuration"
 msgstr "Configuración"
 
 #: ../../configuration/preferences.rst:10
+#: ../../plugins-files/audio-midi-files/file-browser.rst:116
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Preferences"
 msgstr "Preferencias"
@@ -809,7 +819,7 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:56
+#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:63
 msgid "DSP"
 msgstr "DSP"
 
@@ -857,7 +867,7 @@ msgstr ""
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 
-#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:97
+#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:104
 msgid "Pan law"
 msgstr "Pan law"
 
@@ -881,12 +891,15 @@ msgstr ""
 "Mostrar automatización\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
-#: ../../configuration/preferences.rst:149 ../../routing/ports.rst:41
-#: ../../tracks/track-types.rst:21 ../../tracks/track-types.rst:22
-#: ../../tracks/track-types.rst:23 ../../tracks/track-types.rst:27
-#: ../../tracks/track-types.rst:28 ../../tracks/track-types.rst:32
-#: ../../tracks/track-types.rst:33 ../../tracks/track-types.rst:43
-#: ../../tracks/track-types.rst:52 ../../tracks/track-types.rst:53
+#: ../../configuration/preferences.rst:149
+#: ../../plugins-files/audio-midi-files/file-browser.rst:62
+#: ../../plugins-files/audio-midi-files/overview.rst:18
+#: ../../routing/ports.rst:41 ../../tracks/track-types.rst:21
+#: ../../tracks/track-types.rst:22 ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:27 ../../tracks/track-types.rst:28
+#: ../../tracks/track-types.rst:32 ../../tracks/track-types.rst:33
+#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:52
+#: ../../tracks/track-types.rst:53
 msgid "Audio"
 msgstr "Audio"
 
@@ -3301,32 +3314,13 @@ msgid "Format"
 msgstr "Formato"
 
 #: ../../exporting/audio-and-midi.rst:31
-msgid "The format to export to. Currently, the following formats are supported"
-msgstr ""
-"El formato al cual exportar. Actualmente se admiten los formatos "
-"siguientes"
-
-#: ../../exporting/audio-and-midi.rst:34
-msgid "FLAC - .FLAC"
-msgstr ""
-
-#: ../../exporting/audio-and-midi.rst:35
-msgid "OGG (Vorbis) - .ogg"
+msgid ""
+"The format to export to. The formats mentioned in :ref:`Supported Formats"
+" <plugins-files/audio-midi-files/overview:Supported Formats>` are "
+"available, with the exception of MP3."
 msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:36
-msgid "WAV - .wav"
-msgstr ""
-
-#: ../../exporting/audio-and-midi.rst:37
-msgid "MIDI - .mid"
-msgstr ""
-
-#: ../../exporting/audio-and-midi.rst:39
-msgid "MP3 support."
-msgstr ""
-
-#: ../../exporting/audio-and-midi.rst:42
 #, fuzzy
 msgid "Dither"
 msgstr ""
@@ -3335,61 +3329,61 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "Editor"
 
-#: ../../exporting/audio-and-midi.rst:44 ../../tracks/inspector-page.rst:170
+#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:170
 #: ../../tracks/inspector-page.rst:175
 msgid "Implement."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:47
+#: ../../exporting/audio-and-midi.rst:41
 msgid "Bit Depth"
 msgstr "Profundidad de bits"
 
-#: ../../exporting/audio-and-midi.rst:48
+#: ../../exporting/audio-and-midi.rst:42
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
 "quality."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:54
+#: ../../exporting/audio-and-midi.rst:48
 msgid "Time Range"
 msgstr "Intervalo temporal"
 
-#: ../../exporting/audio-and-midi.rst:55
+#: ../../exporting/audio-and-midi.rst:49
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
 "time range."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:60
+#: ../../exporting/audio-and-midi.rst:54
 msgid "Filename Pattern"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:61
+#: ../../exporting/audio-and-midi.rst:55
 msgid "The pattern to use as the name of the file."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:64
+#: ../../exporting/audio-and-midi.rst:58
 msgid "Mixdown"
 msgstr "Mezcla de audio"
 
-#: ../../exporting/audio-and-midi.rst:65
+#: ../../exporting/audio-and-midi.rst:59
 msgid ""
 "When exporting the mixdown, sound from all selected tracks will be "
 "included in the resulting file. This is the option to use when exporting "
 "your song."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:72
+#: ../../exporting/audio-and-midi.rst:66
 msgid "Export options for mixdown"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:77
+#: ../../exporting/audio-and-midi.rst:71
 msgid "Exported file"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:80
+#: ../../exporting/audio-and-midi.rst:74
 #, fuzzy
 msgid "Stems"
 msgstr ""
@@ -3398,7 +3392,7 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "estados"
 
-#: ../../exporting/audio-and-midi.rst:81
+#: ../../exporting/audio-and-midi.rst:75
 msgid ""
 "Exporting stems means that each selected track will be exported in its "
 "own file. This is useful when you want to share the components of your "
@@ -3406,11 +3400,11 @@ msgid ""
 "and the bass as separate audio files."
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:91
+#: ../../exporting/audio-and-midi.rst:85
 msgid "Export options for stems"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:96
+#: ../../exporting/audio-and-midi.rst:90
 #, fuzzy
 msgid "Exported files"
 msgstr ""
@@ -3599,6 +3593,7 @@ msgstr ""
 "escanean los plugins."
 
 #: ../../getting-started/getting-plugins.rst:85
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
 msgstr ""
 
@@ -4102,10 +4097,21 @@ msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
 msgstr ""
 
 #: ../../glossary/intro.rst:30
+msgid "Carla"
+msgstr ""
+
+#: ../../glossary/intro.rst:32
+msgid ""
+"A `plugin host <https://kx.studio/Applications:Carla>`_ that provides a "
+"library Zrythm uses to load some plugins. Plugins loaded through Carla "
+"can be bridged to separate processes."
+msgstr ""
+
+#: ../../glossary/intro.rst:37
 msgid "CLI"
 msgstr "CLI"
 
-#: ../../glossary/intro.rst:32
+#: ../../glossary/intro.rst:39
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
@@ -4113,19 +4119,19 @@ msgstr ""
 ":abbr:`CLI (Command Line Interface)` es la interfaz con la cual los "
 "usuarios interactúan cuando teclean comandos en una terminal."
 
-#: ../../glossary/intro.rst:35
+#: ../../glossary/intro.rst:42
 msgid "Clip"
 msgstr "Clip"
 
-#: ../../glossary/intro.rst:37
+#: ../../glossary/intro.rst:44
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr "Usado indistintamente con :ref:`region <regions>`."
 
-#: ../../glossary/intro.rst:39 ../../routing/ports.rst:47
+#: ../../glossary/intro.rst:46 ../../routing/ports.rst:47
 msgid "Control"
 msgstr "Control"
 
-#: ../../glossary/intro.rst:41
+#: ../../glossary/intro.rst:48
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable "
 "control value that affects a processor, such as a plugin. For example, a "
@@ -4136,11 +4142,11 @@ msgstr ""
 "plugin. Por ejemplo, un control de ganancia. Se usa indistintamente con "
 ":term:`Parameter`."
 
-#: ../../glossary/intro.rst:46 ../../routing/ports.rst:51
+#: ../../glossary/intro.rst:53 ../../routing/ports.rst:51
 msgid "CV"
 msgstr "CV"
 
-#: ../../glossary/intro.rst:48
+#: ../../glossary/intro.rst:55
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
@@ -4148,11 +4154,11 @@ msgstr ""
 "En un entorno de software, :abbr:`CV (Control Voltage)` representa los "
 "datos de control de la velocidad de audio."
 
-#: ../../glossary/intro.rst:51
+#: ../../glossary/intro.rst:58
 msgid "DAW"
 msgstr "DAW"
 
-#: ../../glossary/intro.rst:53
+#: ../../glossary/intro.rst:60
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
@@ -4160,7 +4166,7 @@ msgstr ""
 "Una :abbr:`DAW (Digital Audio Workstation)` es un software para componer,"
 " grabar, editar, arreglar, mezclar y masterizar música."
 
-#: ../../glossary/intro.rst:58
+#: ../../glossary/intro.rst:65
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
@@ -4168,11 +4174,11 @@ msgstr ""
 "En el contexto de una :term:`DAW`, :abbr:`DSP (Digital Signal "
 "Processing)` es un procesador de señal audio."
 
-#: ../../glossary/intro.rst:61
+#: ../../glossary/intro.rst:68
 msgid "Free software"
 msgstr "Software libre"
 
-#: ../../glossary/intro.rst:63
+#: ../../glossary/intro.rst:70
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
@@ -4181,7 +4187,7 @@ msgstr ""
 "contrario que el software propietario, donde el programa controla a los "
 "usuarios."
 
-#: ../../glossary/intro.rst:68
+#: ../../glossary/intro.rst:75
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers "
 "low latency for users and provides a simple API for developers. It is the"
@@ -4192,11 +4198,11 @@ msgstr ""
 " desarrolladores. Es el servidor de sonido estándar de facto para audio "
 "profesional en GNU/Linux."
 
-#: ../../glossary/intro.rst:74
+#: ../../glossary/intro.rst:81
 msgid "LV2"
 msgstr "LV2"
 
-#: ../../glossary/intro.rst:76
+#: ../../glossary/intro.rst:83
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
@@ -4207,16 +4213,18 @@ msgstr ""
 "simple, que está acompañada de extensiones que añaden funciones más "
 "avanzadas."
 
-#: ../../glossary/intro.rst:81 ../../tracks/track-types.rst:37
-#: ../../tracks/track-types.rst:38 ../../tracks/track-types.rst:42
-#: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:62
-#: ../../tracks/track-types.rst:63 ../../tracks/track-types.rst:67
-#: ../../tracks/track-types.rst:68 ../../tracks/track-types.rst:72
-#: ../../tracks/track-types.rst:73
+#: ../../glossary/intro.rst:88
+#: ../../plugins-files/audio-midi-files/file-browser.rst:64
+#: ../../plugins-files/audio-midi-files/overview.rst:58
+#: ../../tracks/track-types.rst:37 ../../tracks/track-types.rst:38
+#: ../../tracks/track-types.rst:42 ../../tracks/track-types.rst:61
+#: ../../tracks/track-types.rst:62 ../../tracks/track-types.rst:63
+#: ../../tracks/track-types.rst:67 ../../tracks/track-types.rst:68
+#: ../../tracks/track-types.rst:72 ../../tracks/track-types.rst:73
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../../glossary/intro.rst:83
+#: ../../glossary/intro.rst:90
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical "
 "standard for communication between musical instruments and computers."
@@ -4224,29 +4232,26 @@ msgstr ""
 "Un :abbr:`MIDI (Musical Instrument Digital Interface)` es el estándar "
 "técnico de comunicación entre instrumentos musicales y ordenadores."
 
-#: ../../glossary/intro.rst:86
+#: ../../glossary/intro.rst:93
 msgid "MIDI note"
 msgstr "Nota MIDI"
 
-#: ../../glossary/intro.rst:88
+#: ../../glossary/intro.rst:95
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 "Las notas :term:`MIDI` se usan para activar instrumentos virtuales (o "
 "físicos)."
 
-#: ../../glossary/intro.rst:93
+#: ../../glossary/intro.rst:100
 msgid "Mono"
 msgstr "Mono"
 
-#: ../../glossary/intro.rst:95
+#: ../../glossary/intro.rst:102
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
 msgstr "Una señal audio de canal único (véase también :term:`Stereo`)."
 
-#: ../../glossary/intro.rst:99
-#: ../../plugins-files/audio-midi-files/file-browser.rst:19
-#: ../../plugins-files/audio-midi-files/file-browser.rst:24
-#: ../../tracks/audio-track.rst:55 ../../tracks/midi-track.rst:132
-#: ../../tracks/midi-track.rst:140
+#: ../../glossary/intro.rst:106 ../../tracks/audio-track.rst:55
+#: ../../tracks/midi-track.rst:132 ../../tracks/midi-track.rst:140
 #, fuzzy
 msgid "TODO"
 msgstr ""
@@ -4267,11 +4272,11 @@ msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "PENDIENTE DE HACER"
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:107
 msgid "Panning"
 msgstr "Panoramización"
 
-#: ../../glossary/intro.rst:102
+#: ../../glossary/intro.rst:109
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
@@ -4279,19 +4284,19 @@ msgstr ""
 "La panoramización es una distribución de una señal :term:`Mono` a un "
 "nuevo campo sonoro estéreo o multicanal."
 
-#: ../../glossary/intro.rst:105
+#: ../../glossary/intro.rst:112
 msgid "Parameter"
 msgstr "Parámetro"
 
-#: ../../glossary/intro.rst:107
+#: ../../glossary/intro.rst:114
 msgid "Used interchangeably with :term:`Control`."
 msgstr "Usado indistintamente con :term:`Control`."
 
-#: ../../glossary/intro.rst:108
+#: ../../glossary/intro.rst:115
 msgid "Plugin"
 msgstr "Plugin"
 
-#: ../../glossary/intro.rst:110
+#: ../../glossary/intro.rst:117
 msgid ""
 "A plugin is an external module that provides audio processing "
 "capabilities to Zrythm, such as an :term:`SFZ` instrument or an "
@@ -4301,11 +4306,11 @@ msgstr ""
 "procesamiento de audio, como un instrumento :term:`SFZ` o un plugin de "
 "reverberación :term:`LV2`."
 
-#: ../../glossary/intro.rst:114
+#: ../../glossary/intro.rst:121
 msgid "Project"
 msgstr "Proyecto"
 
-#: ../../glossary/intro.rst:116
+#: ../../glossary/intro.rst:123
 msgid ""
 "A project refers to a work session. It is saved as a directory containing"
 " a project file along with other auxiliary files. See :ref:`Projects` for"
@@ -4315,19 +4320,19 @@ msgstr ""
 " directorio que contiene un archivo de proyecto además de otros archivos "
 "auxiliares. Véase :ref:`Projects` para más detalles."
 
-#: ../../glossary/intro.rst:120
+#: ../../glossary/intro.rst:127
 msgid "Range"
 msgstr "Intervalo"
 
-#: ../../glossary/intro.rst:122
+#: ../../glossary/intro.rst:129
 msgid "A Range is a selection of time between two positions."
 msgstr "Un intervalo es una selección de tiempo entre dos posiciones."
 
-#: ../../glossary/intro.rst:127
+#: ../../glossary/intro.rst:134
 msgid "Region"
 msgstr "Región"
 
-#: ../../glossary/intro.rst:129
+#: ../../glossary/intro.rst:136
 msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
@@ -4335,37 +4340,37 @@ msgstr ""
 "Una región (o :term:`Clip`) es un contenedor de notas MIDI, audio u otros"
 " eventos. Véase :ref:`regions`."
 
-#: ../../glossary/intro.rst:132
+#: ../../glossary/intro.rst:139
 msgid "SFZ"
 msgstr "SFZ"
 
-#: ../../glossary/intro.rst:134
+#: ../../glossary/intro.rst:141
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr "SFZ es un formato de archivo para instrumentos virtuales sampleados."
 
-#: ../../glossary/intro.rst:136
+#: ../../glossary/intro.rst:143
 msgid "SF2"
 msgstr "SF2"
 
-#: ../../glossary/intro.rst:138
+#: ../../glossary/intro.rst:145
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr "SF2 es el sucesor del :term:`SFZ`."
 
-#: ../../glossary/intro.rst:139
+#: ../../glossary/intro.rst:146
 msgid "Stereo"
 msgstr "Estéreo"
 
-#: ../../glossary/intro.rst:141
+#: ../../glossary/intro.rst:148
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
 "Una señal de audio de dos canales (izquierda y derecha) (véase también "
 ":term:`Mono`)."
 
-#: ../../glossary/intro.rst:143
+#: ../../glossary/intro.rst:150
 msgid "VST2"
 msgstr "VST2"
 
-#: ../../glossary/intro.rst:145
+#: ../../glossary/intro.rst:152
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
@@ -4373,11 +4378,11 @@ msgstr ""
 "Un plugin estándar propietario y el predecesor de VST3. No recomendamos "
 "utilizar este estándar."
 
-#: ../../glossary/intro.rst:147
+#: ../../glossary/intro.rst:154
 msgid "VST3"
 msgstr "VST3"
 
-#: ../../glossary/intro.rst:149
+#: ../../glossary/intro.rst:156
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to "
 "use VST3 than VST2, because it is released as :term:`Free software`. "
@@ -4387,11 +4392,11 @@ msgstr ""
 "VST3 en vez de VST2 porque está lanzado como :term:`Free software`. Sin "
 "embargo, recomendamos usar el estándar :term:`LV2`."
 
-#: ../../glossary/intro.rst:154
+#: ../../glossary/intro.rst:161
 msgid "Zrythm user path"
 msgstr "La ruta de usuario de Zrythm"
 
-#: ../../glossary/intro.rst:156
+#: ../../glossary/intro.rst:163
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -4400,7 +4405,7 @@ msgstr ""
 "archivos temporales, presets y audio exportado. La ruta por defecto es "
 ":file:`zrythm`"
 
-#: ../../glossary/intro.rst:161
+#: ../../glossary/intro.rst:168
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification "
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
@@ -4412,7 +4417,7 @@ msgstr ""
 "latest.html>`_) en sistemas compatibles con freedesktop (o si "
 ":envvar:`XDG_DATA_HOME` está definido), o"
 
-#: ../../glossary/intro.rst:166
+#: ../../glossary/intro.rst:173
 msgid "the directory for local application data on Windows"
 msgstr "el directorio de los datos locales de aplicaciones en Windows"
 
@@ -5226,51 +5231,353 @@ msgstr ""
 "El Explorador de Archivos hace que sea fácil navegar por las carpetas de "
 "tu computadora o de tus colecciones personalizadas."
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:14
-msgid "This is a work in progress."
-msgstr "Producto semiterminado."
+#: ../../plugins-files/audio-midi-files/file-browser.rst:18
+msgid "Bookmarks"
+msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:17
+#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+msgid ""
+"The Bookmarks section contains a list of bookmarked directories. Double-"
+"clicking on a directory will show its contents in the file list below."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:24
+msgid "Standard Bookmarks"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:25
+msgid ""
+"Zrythm provides standard bookmarks for :file:`Home` and :file:`Desktop`, "
+"which correspond to the home and desktop directories of the current user."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:31
+msgid "Custom Bookmarks"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:32
+msgid ""
+"Custom bookmarks can be added by right-clicking on a directory in the "
+"file list and selecting :guilabel:`Add Bookmark`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:39
+msgid ""
+"Similarly, custom bookmarks can be removed by right-clicking on the "
+"bookmark and selecting :guilabel:`Delete`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:47
 msgid "Filtering"
 msgstr "Filtrado"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:22
-msgid "Collections"
-msgstr "Colecciones"
+#: ../../plugins-files/audio-midi-files/file-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:41
+msgid "Filter Buttons"
+msgstr "Botones de filtro"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:27
+#: ../../plugins-files/audio-midi-files/file-browser.rst:51
+#, fuzzy
+msgid ""
+"Similarly to the :doc:`plugin browser <../plugins/plugin-browser>`, files"
+" can be filtered based on their type."
+msgstr "Además, los plugins se pueden filtrar según su tipo."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:58
+msgid "Filtering by audio files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:60
+#, fuzzy
+msgid "The following toggles are available."
+msgstr "Existen los siguientes tipos de regiones."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:63
+#, fuzzy
+msgid "Only show audio files."
+msgstr "Contiene clips de audio."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:65
+msgid "Only show MIDI files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
+msgid "Only show preset files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:69
+#, fuzzy
+msgid "Preset filtering is not implemented yet."
+msgstr "Esta función aún no se ha implementado."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:72
+#, fuzzy
+msgid "Showing Unsupported Files"
+msgstr "Puentea interfaces de usuario no compatibles"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:73
+msgid ""
+"By default, only supported files will be shown in the file list. To also "
+"show unsupported files, enable :guilabel:`Show unsupported files` in the "
+":ref:`file browser preferences <plugins-files/audio-midi-files/file-"
+"browser:Preferences>`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:79
+msgid "Showing Hidden Files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:80
+msgid ""
+"By default, only files that are not hidden will be shown in the file "
+"list. To also show hidden files, enable :guilabel:`Show hidden files` in "
+"the :ref:`file browser preferences <plugins-files/audio-midi-files/file-"
+"browser:Preferences>`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:86
+#, fuzzy
+msgid "Auditioning"
+msgstr "Edición"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:87
+msgid ""
+"Audio and MIDI files can be auditioned by making use of the auditioning "
+"controls at the bottom of the file list."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:94
+#, fuzzy
+msgid "File auditioning controls"
+msgstr "Controles adicionales"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:96
+msgid "|icon_media-playback-start| Play"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
+msgid "Trigger playback of the selected file."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:98
+msgid "|icon_media-playback-stop| Stop"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
+msgid "Stop playback of the selected file."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+#, fuzzy
+msgid "Volume"
+msgstr "Inicio"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+msgid "Control the loudness of the output audio."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:104
+#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
+msgid "Instrument"
+msgstr "Instrumento"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:105
+msgid ""
+"The selected instrument will be used for playing back MIDI files. In the "
+"above example, the `Helm` instrument is selected."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:110
+msgid "Autoplay"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:111
+msgid ""
+"Auto-play (automatically playing back the selected file when the "
+"selection changes) can be enabled in the preferences below."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:118
+msgid "Clicking the cog icon will bring up the preferences for the file browser."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:124
+msgid "File browser preferences"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:127
+msgid "File Info"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:128
+msgid ""
+"Information, such as metadata, for the selected file is always shown at "
+"the bottom of the file panel."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:134
+msgid "Information about the selected audio file"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:137
 msgid "Importing Files"
 msgstr "Importar archivos"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:29
+#: ../../plugins-files/audio-midi-files/file-browser.rst:138
+#, fuzzy
 msgid ""
-"Files are imported by either double clicking them in the browser or "
-"dragging and dropping them into a track."
+"Files are imported into the project by either double-clicking or dragging"
+" and dropping into the timeline."
 msgstr ""
 "Los archivos se importan al hacer doble clic en ellos en el explorador o "
 "arrastrándolos y soltándolos en una pista."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:145
+msgid "Drag-n-dropping an audio file into a new track"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:148
+#, fuzzy
+msgid "Pop-up File Browser"
+msgstr "Explorador de archivos"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:149
+msgid ""
+"An additional file browser with similar functionalities is available by "
+"clicking the :guilabel:`Popup File Browser` button near the bottom right "
+"of the main window."
+msgstr ""
 
 #: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
 msgstr "Archivos de audio y MIDI"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
+#, fuzzy
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be"
-" imported by dragging and dropping from your computer or from the :ref"
-":`file-browser` into a track."
+" imported by dragging and dropping from your computer or from the "
+":doc:`file browser <file-browser>` into a track."
 msgstr ""
 "Zrythm puede importar archivos MIDI y de audio al proyecto arrastrándolos"
 " y soltándolos en una pista desde tu ordenador o desde :ref:`file-"
 "browser`."
 
-#: ../../plugins-files/audio-midi-files/overview.rst:14
-msgid "Supported Audio Formats"
+#: ../../plugins-files/audio-midi-files/overview.rst:15
+#, fuzzy
+msgid "Supported Formats"
 msgstr "Formatos de audio compatibles"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:15
-msgid "Zrythm supports OGG, FLAC, WAV and MP3."
-msgstr "Zrythm es compatible con OGG, FLAC, WAV y MP3."
+#: ../../plugins-files/audio-midi-files/overview.rst:19
+#, fuzzy
+msgid "The following file formats are supported."
+msgstr ""
+"El formato al cual exportar. Actualmente se admiten los formatos "
+"siguientes"
+
+#: ../../plugins-files/audio-midi-files/overview.rst:22
+msgid "OGG (Vorbis and OPUS)"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:22
+msgid ""
+"An open and patent-free container format mostly used for lossy audio "
+"files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:25
+msgid ":abbr:`FLAC (Free Lossless Audio Codec)`"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:25
+msgid ""
+"An open and royalty-free audio coding format for lossless compression of "
+"digital audio."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:28
+msgid ":abbr:`WAV (Waveform Audio File Format)`"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:28
+msgid "An audio file format for storing audio bistreams (uncompressed audio)."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:33
+msgid "MP3"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:31
+msgid ""
+"An (originally patented) coding format for compressed audio. Although the"
+" patents have expired, we recommend using OGG instead."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:35
+msgid "OPUS support requires specific project samplerates to work properly."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:38
+msgid ""
+"A software patent is a 20-year monopoly on the use of a feature in a "
+"computer program. When a company has a patent on nested menus, a video "
+"format, or pinch-to-zoom, then no one else can implement that feature for"
+" 20 years unless they get permission from the patent holder."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:46
+msgid ""
+"Computer programs typically contain hundreds or thousands of features, "
+"and many features that users expect, are patented."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:50
+msgid ""
+"The End Software Patents campaign is against software monopolies, and for"
+" software development."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:53
+msgid "Learn more at `EndSoftPatents`_."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:59
+msgid ""
+"Zrythm supports :abbr:`SMF (Standard MIDI File)` files of type 0 and type"
+" 1. Each type is explained below for reference."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:63
+msgid "Type 0"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:64
+msgid "An entire performance merged into a single track."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:66
+msgid "Type 1"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:66
+msgid ""
+"An entire performance in one or more tracks that are performed "
+"simultaneously"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:70
+msgid "Type 2"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:69
+msgid ""
+"Multiple arrangements, each having its own track and intended to be "
+"played in sequence"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:72
+msgid "Type 2 SMF files are rarely used and are not supported."
+msgstr ""
 
 #: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
@@ -5404,10 +5711,6 @@ msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or"
 " deselect a row."
 msgstr ""
-
-#: ../../plugins-files/plugins/plugin-browser.rst:41
-msgid "Filter Buttons"
-msgstr "Botones de filtro"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:42
 msgid "Additionally to the above, plugins can be filtered based on their type."
@@ -6801,25 +7104,30 @@ msgstr ""
 
 #: ../../scripting/overview.rst:8
 msgid ""
-"Zrythm offers a scripting interface using the `Guile language "
-"<https://www.gnu.org/software/guile/>`_, an implementation of Scheme."
+"Zrythm offers a scripting interface using the `GNU Guile language "
+"<https://www.gnu.org/software/guile/>`_, an implementation of `Scheme "
+"<https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_, "
+"which is a dialect of `LISP "
+"<https://en.wikipedia.org/wiki/Lisp_(programming_language)>`_."
 msgstr ""
 
-#: ../../scripting/overview.rst:11
+#: ../../scripting/overview.rst:15
 msgid ""
 "The next section is a comprehensive list of all available procedures in "
 "the API. Each section in the API corresponds to a specific Guile module, "
 "so for example, to use the procedures in the :scheme:`audio position` "
-"section, one would do :scheme:`(use-modules (audio track))` at the top of"
-" the script."
+"section, one would do :scheme:`(use-modules (audio position))` at the top"
+" of the script."
 msgstr ""
 
-#: ../../scripting/overview.rst:19
+#: ../../scripting/overview.rst:23
 msgid "The Guile API is experimental."
 msgstr ""
 
-#: ../../scripting/overview.rst:21
-msgid "The Guile API is not available on Windows."
+#: ../../scripting/overview.rst:25
+msgid ""
+"The Guile API is not available on Windows. See `this ticket "
+"<https://github.com/msys2/MINGW-packages/issues/3298>`_ for details."
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:6
@@ -7408,10 +7716,6 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:32
 msgid "The track that this track routes its output to."
 msgstr ""
-
-#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
-msgid "Instrument"
-msgstr "Instrumento"
 
 #: ../../tracks/inspector-page.rst:36
 msgid ""
@@ -8766,6 +9070,52 @@ msgstr ""
 "La información sobre el backend y las opciones actualmente seleccionadas "
 "está visible en la esquina inferior izquierda."
 
+#~ msgid "FLAC - .FLAC"
+#~ msgstr ""
+
+#~ msgid "OGG (Vorbis) - .ogg"
+#~ msgstr ""
+
+#~ msgid "WAV - .wav"
+#~ msgstr ""
+
+#~ msgid "MIDI - .mid"
+#~ msgstr ""
+
+#~ msgid "MP3 support."
+#~ msgstr ""
+
+#~ msgid "This is a work in progress."
+#~ msgstr "Producto semiterminado."
+
+#~ msgid "Collections"
+#~ msgstr "Colecciones"
+
+#~ msgid "Zrythm supports OGG, FLAC, WAV and MP3."
+#~ msgstr "Zrythm es compatible con OGG, FLAC, WAV y MP3."
+
+#~ msgid ""
+#~ "Zrythm offers a scripting interface "
+#~ "using the `Guile language "
+#~ "<https://www.gnu.org/software/guile/>`_, an implementation"
+#~ " of Scheme."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The next section is a comprehensive "
+#~ "list of all available procedures in "
+#~ "the API. Each section in the API"
+#~ " corresponds to a specific Guile "
+#~ "module, so for example, to use the"
+#~ " procedures in the :scheme:`audio position`"
+#~ " section, one would do :scheme:`(use-"
+#~ "modules (audio track))` at the top "
+#~ "of the script."
+#~ msgstr ""
+
+#~ msgid "The Guile API is not available on Windows."
+#~ msgstr ""
+
 #~ msgid ""
 #~ "The filters tab at the top allows"
 #~ " you to select how to filter "
@@ -9124,9 +9474,6 @@ msgstr ""
 #~ msgid "split the following to sub-pages"
 #~ msgstr "dividir lo siguiente en subpáginas"
 
-#~ msgid "Contains audio clips."
-#~ msgstr "Contiene clips de audio."
-
 #~ msgid "Expand + add pic."
 #~ msgstr "Expandir + agregar imagen."
 
@@ -9306,9 +9653,6 @@ msgstr ""
 
 #~ msgid "Clicking this will show the About dialog"
 #~ msgstr "Al pulsarlo se mostrará el cuadro de diálogo Acerca de"
-
-#~ msgid "Home"
-#~ msgstr "Inicio"
 
 #~ msgid "View"
 #~ msgstr "Ver"

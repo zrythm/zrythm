@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-06-11 01:02+0100\n"
+"POT-Creation-Date: 2021-06-24 19:33+0100\n"
 "PO-Revision-Date: 2021-05-19 18:32+0000\n"
 "Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
 "Language: el\n"
@@ -20,20 +20,28 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
-msgid "audio-insert"
+msgid "media-playback-start"
 msgstr ""
 
 #: ../../../../<rst_prolog>:15
+msgid "media-playback-stop"
+msgstr ""
+
+#: ../../../../<rst_prolog>:18
+msgid "audio-insert"
+msgstr ""
+
+#: ../../../../<rst_prolog>:21
 #, fuzzy
 msgid "modulator"
 msgstr "Διαμορφωτές"
 
-#: ../../../../<rst_prolog>:18
+#: ../../../../<rst_prolog>:24
 #, fuzzy
 msgid "instrument"
 msgstr "Όργανο"
 
-#: ../../../../<rst_prolog>:21
+#: ../../../../<rst_prolog>:27
 msgid "signal-midi"
 msgstr ""
 
@@ -295,8 +303,9 @@ msgstr "Επίλυση προβλημάτων"
 #: ../../editing/timeline/arranger.rst:165
 #: ../../editing/timeline/arranger.rst:170
 #: ../../editing/timeline/arranger.rst:242
-#: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:39
-#: ../../exporting/audio-and-midi.rst:44 ../../mixing/overview.rst:62
+#: ../../editing/timeline/toolbar.rst:11 ../../exporting/audio-and-midi.rst:38
+#: ../../mixing/overview.rst:62
+#: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #: ../../routing/control-room.rst:31 ../../routing/making-connections.rst:30
 #: ../../scripting/scripting-interface.rst:8 ../../tracks/inspector-page.rst:95
 #: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
@@ -523,7 +532,7 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:21
-#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:66
+#: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
 msgid "JACK"
 msgstr "JACK"
 
@@ -555,6 +564,7 @@ msgid "Configuration"
 msgstr "Ρύθμιση"
 
 #: ../../configuration/preferences.rst:10
+#: ../../plugins-files/audio-midi-files/file-browser.rst:116
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Preferences"
 msgstr "Επιλογές"
@@ -760,7 +770,7 @@ msgstr "Όργανα SF2"
 msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Τα μονοπάτια αναζήτησης προς σκανάρισμα προσθέτων :term:`SF2`."
 
-#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:56
+#: ../../configuration/preferences.rst:107 ../../glossary/intro.rst:63
 msgid "DSP"
 msgstr "DSP"
 
@@ -803,7 +813,7 @@ msgstr ""
 "Αλγόριθμοι παναρίσματος (:blue:`ημιτονοειδές`, :red:`τετραγωνική ρίζα`, "
 ":green:`γραμμικό`)."
 
-#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:97
+#: ../../configuration/preferences.rst:138 ../../glossary/intro.rst:104
 msgid "Pan law"
 msgstr "Νόμος παναρίσματος"
 
@@ -821,12 +831,15 @@ msgstr "Επεξεργασία"
 msgid "Editing options."
 msgstr "Ρυθμίσεις επεξεργασίας."
 
-#: ../../configuration/preferences.rst:149 ../../routing/ports.rst:41
-#: ../../tracks/track-types.rst:21 ../../tracks/track-types.rst:22
-#: ../../tracks/track-types.rst:23 ../../tracks/track-types.rst:27
-#: ../../tracks/track-types.rst:28 ../../tracks/track-types.rst:32
-#: ../../tracks/track-types.rst:33 ../../tracks/track-types.rst:43
-#: ../../tracks/track-types.rst:52 ../../tracks/track-types.rst:53
+#: ../../configuration/preferences.rst:149
+#: ../../plugins-files/audio-midi-files/file-browser.rst:62
+#: ../../plugins-files/audio-midi-files/overview.rst:18
+#: ../../routing/ports.rst:41 ../../tracks/track-types.rst:21
+#: ../../tracks/track-types.rst:22 ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:27 ../../tracks/track-types.rst:28
+#: ../../tracks/track-types.rst:32 ../../tracks/track-types.rst:33
+#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:52
+#: ../../tracks/track-types.rst:53
 msgid "Audio"
 msgstr "Ήχος"
 
@@ -3155,43 +3168,26 @@ msgid "Format"
 msgstr "Φορμάτ"
 
 #: ../../exporting/audio-and-midi.rst:31
-msgid "The format to export to. Currently, the following formats are supported"
-msgstr "Το φορμάτ προς εξαγωγή. Προς το παρόν, υποστηρίζονται τα εξής φορμάτ"
-
-#: ../../exporting/audio-and-midi.rst:34
-msgid "FLAC - .FLAC"
-msgstr "FLAC - .FLAC"
-
-#: ../../exporting/audio-and-midi.rst:35
-msgid "OGG (Vorbis) - .ogg"
-msgstr "OGG (Vorbis) - .ogg"
+msgid ""
+"The format to export to. The formats mentioned in :ref:`Supported Formats"
+" <plugins-files/audio-midi-files/overview:Supported Formats>` are "
+"available, with the exception of MP3."
+msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:36
-msgid "WAV - .wav"
-msgstr "WAV - .wav"
-
-#: ../../exporting/audio-and-midi.rst:37
-msgid "MIDI - .mid"
-msgstr "MIDI - .mid"
-
-#: ../../exporting/audio-and-midi.rst:39
-msgid "MP3 support."
-msgstr "Υποστήριξη MP3."
-
-#: ../../exporting/audio-and-midi.rst:42
 msgid "Dither"
 msgstr "Θόρυβος διασποράς"
 
-#: ../../exporting/audio-and-midi.rst:44 ../../tracks/inspector-page.rst:170
+#: ../../exporting/audio-and-midi.rst:38 ../../tracks/inspector-page.rst:170
 #: ../../tracks/inspector-page.rst:175
 msgid "Implement."
 msgstr "Ενσωμάτωση."
 
-#: ../../exporting/audio-and-midi.rst:47
+#: ../../exporting/audio-and-midi.rst:41
 msgid "Bit Depth"
 msgstr "Βάθος bit"
 
-#: ../../exporting/audio-and-midi.rst:48
+#: ../../exporting/audio-and-midi.rst:42
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
@@ -3201,11 +3197,11 @@ msgstr ""
 "υψηλότερο το βάθος bit, τόσο μεγαλύτερο θα είναι το αρχείο, αλλά θα έχει "
 "καλύτερη ποιότητα."
 
-#: ../../exporting/audio-and-midi.rst:54
+#: ../../exporting/audio-and-midi.rst:48
 msgid "Time Range"
 msgstr "Χρονικό εύρος"
 
-#: ../../exporting/audio-and-midi.rst:55
+#: ../../exporting/audio-and-midi.rst:49
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
@@ -3215,19 +3211,19 @@ msgstr ""
 "τραγούδι (το οποίο ορίζεται από τα σημάδια αρχής/τέλους), το τρέχον εύρος"
 " λούπας και το προσαρμοσμένο χρονικό εύρος."
 
-#: ../../exporting/audio-and-midi.rst:60
+#: ../../exporting/audio-and-midi.rst:54
 msgid "Filename Pattern"
 msgstr "Μοτίβο ονόματος αρχείου"
 
-#: ../../exporting/audio-and-midi.rst:61
+#: ../../exporting/audio-and-midi.rst:55
 msgid "The pattern to use as the name of the file."
 msgstr "Το μοτίβο προς χρήση ως όνομα του αρχείου."
 
-#: ../../exporting/audio-and-midi.rst:64
+#: ../../exporting/audio-and-midi.rst:58
 msgid "Mixdown"
 msgstr "Μίξη"
 
-#: ../../exporting/audio-and-midi.rst:65
+#: ../../exporting/audio-and-midi.rst:59
 msgid ""
 "When exporting the mixdown, sound from all selected tracks will be "
 "included in the resulting file. This is the option to use when exporting "
@@ -3237,19 +3233,19 @@ msgstr ""
 "συμπεριληφθεί στο συνεπαγόμενο αρχείο. Αυτή είναι η ρύθμιση που θα "
 "επιλέξετε κατά την εξαγωγή του τραγουδιού σας."
 
-#: ../../exporting/audio-and-midi.rst:72
+#: ../../exporting/audio-and-midi.rst:66
 msgid "Export options for mixdown"
 msgstr "Ρυθμίσεις εξαγωγής για τη μίξη"
 
-#: ../../exporting/audio-and-midi.rst:77
+#: ../../exporting/audio-and-midi.rst:71
 msgid "Exported file"
 msgstr "Εξαγόμενο αρχείο"
 
-#: ../../exporting/audio-and-midi.rst:80
+#: ../../exporting/audio-and-midi.rst:74
 msgid "Stems"
 msgstr "Στελέχη"
 
-#: ../../exporting/audio-and-midi.rst:81
+#: ../../exporting/audio-and-midi.rst:75
 msgid ""
 "Exporting stems means that each selected track will be exported in its "
 "own file. This is useful when you want to share the components of your "
@@ -3261,11 +3257,11 @@ msgstr ""
 " στοιχεία του τραγουδιού σας. Για παράδειγμα, μπορείτε να κάνετε "
 ":term:`bounce <Bounce>` τα κρουστά και το μπάσο σε ξεχωριστά αρχεία ήχου."
 
-#: ../../exporting/audio-and-midi.rst:91
+#: ../../exporting/audio-and-midi.rst:85
 msgid "Export options for stems"
 msgstr "Εξαγωγή ρυθμίσεων για στελέχη"
 
-#: ../../exporting/audio-and-midi.rst:96
+#: ../../exporting/audio-and-midi.rst:90
 msgid "Exported files"
 msgstr "Εξαχθέντα αρχεία"
 
@@ -3454,6 +3450,7 @@ msgstr ""
 "προσθέτων."
 
 #: ../../getting-started/getting-plugins.rst:85
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
 msgstr ""
 
@@ -3924,10 +3921,21 @@ msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
 msgstr ""
 
 #: ../../glossary/intro.rst:30
+msgid "Carla"
+msgstr ""
+
+#: ../../glossary/intro.rst:32
+msgid ""
+"A `plugin host <https://kx.studio/Applications:Carla>`_ that provides a "
+"library Zrythm uses to load some plugins. Plugins loaded through Carla "
+"can be bridged to separate processes."
+msgstr ""
+
+#: ../../glossary/intro.rst:37
 msgid "CLI"
 msgstr "CLI"
 
-#: ../../glossary/intro.rst:32
+#: ../../glossary/intro.rst:39
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
@@ -3935,19 +3943,19 @@ msgstr ""
 ":abbr:`CLI (Command Line Interface)` είναι η διεπαφή με την οποία "
 "αλληλεπιδρούν οι χρήστες όταν πληκτρολογούν εντολές σε ένα τερματικό."
 
-#: ../../glossary/intro.rst:35
+#: ../../glossary/intro.rst:42
 msgid "Clip"
 msgstr "Κλιπ"
 
-#: ../../glossary/intro.rst:37
+#: ../../glossary/intro.rst:44
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr "Είναι ισοδύναμος όρος με την :ref:`region <regions>`."
 
-#: ../../glossary/intro.rst:39 ../../routing/ports.rst:47
+#: ../../glossary/intro.rst:46 ../../routing/ports.rst:47
 msgid "Control"
 msgstr "Χειριστής"
 
-#: ../../glossary/intro.rst:41
+#: ../../glossary/intro.rst:48
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable "
 "control value that affects a processor, such as a plugin. For example, a "
@@ -3958,11 +3966,11 @@ msgstr ""
 "πρόσθετο. Για παράδειγμα, ο χειριστής απολαβής. Είναι ισοδύναμος όρος με "
 "την :term:`Parameter`."
 
-#: ../../glossary/intro.rst:46 ../../routing/ports.rst:51
+#: ../../glossary/intro.rst:53 ../../routing/ports.rst:51
 msgid "CV"
 msgstr "CV"
 
-#: ../../glossary/intro.rst:48
+#: ../../glossary/intro.rst:55
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
@@ -3970,11 +3978,11 @@ msgstr ""
 "Σε περιβάλλον λογισμικού, το :abbr:`CV (Control Voltage)` αντιπροσωπεύει "
 "δεδομένα ελέγχου του ρυθμού ήχου."
 
-#: ../../glossary/intro.rst:51
+#: ../../glossary/intro.rst:58
 msgid "DAW"
 msgstr "DAW"
 
-#: ../../glossary/intro.rst:53
+#: ../../glossary/intro.rst:60
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
@@ -3983,7 +3991,7 @@ msgstr ""
 "χρησιμοποιείται για τη σύνθεση, ηχογράφηση, επεξεργασία, διάταξη, μίξη "
 "και μάστερινγκ μουσικής."
 
-#: ../../glossary/intro.rst:58
+#: ../../glossary/intro.rst:65
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
@@ -3991,11 +3999,11 @@ msgstr ""
 "Στο πλαίσιο του :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "σημαίνει επεξεργασία του ηχητικού σήματος."
 
-#: ../../glossary/intro.rst:61
+#: ../../glossary/intro.rst:68
 msgid "Free software"
 msgstr "Ελεύθερο λογισμικό"
 
-#: ../../glossary/intro.rst:63
+#: ../../glossary/intro.rst:70
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
@@ -4004,7 +4012,7 @@ msgstr ""
 "αντίθεση με το ιδιωτικό λογισμικό, όπου το πρόγραμμα ελέγχει τους "
 "χρήστες."
 
-#: ../../glossary/intro.rst:68
+#: ../../glossary/intro.rst:75
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers "
 "low latency for users and provides a simple API for developers. It is the"
@@ -4016,11 +4024,11 @@ msgstr ""
 "Είναι ο de facto πρότυπος διακομιστής ήχου για επαγγελματικό ήχο σε "
 "GNU/Linux."
 
-#: ../../glossary/intro.rst:74
+#: ../../glossary/intro.rst:81
 msgid "LV2"
 msgstr "LV2"
 
-#: ../../glossary/intro.rst:76
+#: ../../glossary/intro.rst:83
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
@@ -4031,16 +4039,18 @@ msgstr ""
 "του, η οποία συνοδεύεται από πρόσθετα που προσθέτουν πιο προχωρημένη "
 "λειτουργικότητα."
 
-#: ../../glossary/intro.rst:81 ../../tracks/track-types.rst:37
-#: ../../tracks/track-types.rst:38 ../../tracks/track-types.rst:42
-#: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:62
-#: ../../tracks/track-types.rst:63 ../../tracks/track-types.rst:67
-#: ../../tracks/track-types.rst:68 ../../tracks/track-types.rst:72
-#: ../../tracks/track-types.rst:73
+#: ../../glossary/intro.rst:88
+#: ../../plugins-files/audio-midi-files/file-browser.rst:64
+#: ../../plugins-files/audio-midi-files/overview.rst:58
+#: ../../tracks/track-types.rst:37 ../../tracks/track-types.rst:38
+#: ../../tracks/track-types.rst:42 ../../tracks/track-types.rst:61
+#: ../../tracks/track-types.rst:62 ../../tracks/track-types.rst:63
+#: ../../tracks/track-types.rst:67 ../../tracks/track-types.rst:68
+#: ../../tracks/track-types.rst:72 ../../tracks/track-types.rst:73
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../../glossary/intro.rst:83
+#: ../../glossary/intro.rst:90
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical "
 "standard for communication between musical instruments and computers."
@@ -4048,29 +4058,26 @@ msgstr ""
 "Το :abbr:`MIDI (Musical Instrument Digital Interface)` είναι το "
 "τεχνολογικό πρότυπο για τη διασύνδεση μουσικών οργάνων και υπολογιστών."
 
-#: ../../glossary/intro.rst:86
+#: ../../glossary/intro.rst:93
 msgid "MIDI note"
 msgstr "Νότα MIDI"
 
-#: ../../glossary/intro.rst:88
+#: ../../glossary/intro.rst:95
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 "Οι νότες :term:`MIDI` χρησιμοποιούνται για να πυροδοτήσουν ψηφιακά (ή "
 "υλικά) όργανα."
 
-#: ../../glossary/intro.rst:93
+#: ../../glossary/intro.rst:100
 msgid "Mono"
 msgstr "Μόνο"
 
-#: ../../glossary/intro.rst:95
+#: ../../glossary/intro.rst:102
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
 msgstr "Το ηχητικό σήμα μονού καναλιού (βλέπε επίσης :term:`Stereo`)."
 
-#: ../../glossary/intro.rst:99
-#: ../../plugins-files/audio-midi-files/file-browser.rst:19
-#: ../../plugins-files/audio-midi-files/file-browser.rst:24
-#: ../../tracks/audio-track.rst:55 ../../tracks/midi-track.rst:132
-#: ../../tracks/midi-track.rst:140
+#: ../../glossary/intro.rst:106 ../../tracks/audio-track.rst:55
+#: ../../tracks/midi-track.rst:132 ../../tracks/midi-track.rst:140
 #, fuzzy
 msgid "TODO"
 msgstr ""
@@ -4089,11 +4096,11 @@ msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "ΝΑΓΙΝΕΙ"
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:107
 msgid "Panning"
 msgstr "Πανάρισμα"
 
-#: ../../glossary/intro.rst:102
+#: ../../glossary/intro.rst:109
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
@@ -4101,19 +4108,19 @@ msgstr ""
 "Το πανάρισμα είναι η διανομή ενός σήματος :term:`Mono` σε στέρεο ή σε "
 "πολυκαναλικό ηχητικό πεδίο."
 
-#: ../../glossary/intro.rst:105
+#: ../../glossary/intro.rst:112
 msgid "Parameter"
 msgstr "Παράμετρος"
 
-#: ../../glossary/intro.rst:107
+#: ../../glossary/intro.rst:114
 msgid "Used interchangeably with :term:`Control`."
 msgstr "Είναι ισοδύναμος όρος με το :term:`Control`."
 
-#: ../../glossary/intro.rst:108
+#: ../../glossary/intro.rst:115
 msgid "Plugin"
 msgstr "Πρόσθετο"
 
-#: ../../glossary/intro.rst:110
+#: ../../glossary/intro.rst:117
 msgid ""
 "A plugin is an external module that provides audio processing "
 "capabilities to Zrythm, such as an :term:`SFZ` instrument or an "
@@ -4123,11 +4130,11 @@ msgstr ""
 "επεξεργασίας ήχου στο Zrythm, όπως ένα :term:`SFZ` όργανο ή ένα "
 ":term:`LV2` πρόσθετο αντήχησης."
 
-#: ../../glossary/intro.rst:114
+#: ../../glossary/intro.rst:121
 msgid "Project"
 msgstr "Έργο"
 
-#: ../../glossary/intro.rst:116
+#: ../../glossary/intro.rst:123
 msgid ""
 "A project refers to a work session. It is saved as a directory containing"
 " a project file along with other auxiliary files. See :ref:`Projects` for"
@@ -4137,19 +4144,19 @@ msgstr ""
 "που περιέχει το αρχείο έργου μαζί με άλλα επικουρικά αρχεία. Βλέπε "
 ":ref:`Projects` για περισσότερες λεπτομέρειες."
 
-#: ../../glossary/intro.rst:120
+#: ../../glossary/intro.rst:127
 msgid "Range"
 msgstr "Εύρος"
 
-#: ../../glossary/intro.rst:122
+#: ../../glossary/intro.rst:129
 msgid "A Range is a selection of time between two positions."
 msgstr "Το εύρος είναι η επιλογή χρόνου μεταξύ δύο θέσεων."
 
-#: ../../glossary/intro.rst:127
+#: ../../glossary/intro.rst:134
 msgid "Region"
 msgstr "Περιοχή"
 
-#: ../../glossary/intro.rst:129
+#: ../../glossary/intro.rst:136
 msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
@@ -4157,39 +4164,39 @@ msgstr ""
 "Η περιοχή (ή :term:`Clip`) είναι ένα κοντείνερ για νότες MIDI, ήχο ή άλλα"
 " γεγονότα. Βλέπε :ref:`regions`."
 
-#: ../../glossary/intro.rst:132
+#: ../../glossary/intro.rst:139
 msgid "SFZ"
 msgstr "SFZ"
 
-#: ../../glossary/intro.rst:134
+#: ../../glossary/intro.rst:141
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr ""
 "Το SFZ είναι ένα φορμάτ αρχείου για ψηφιακά όργανα που βασίζονται στη "
 "χρήση δειγμάτων."
 
-#: ../../glossary/intro.rst:136
+#: ../../glossary/intro.rst:143
 msgid "SF2"
 msgstr "SF2"
 
-#: ../../glossary/intro.rst:138
+#: ../../glossary/intro.rst:145
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr "Το SF2 είναι ο απόγονος του :term:`SFZ`."
 
-#: ../../glossary/intro.rst:139
+#: ../../glossary/intro.rst:146
 msgid "Stereo"
 msgstr "Στέρεο"
 
-#: ../../glossary/intro.rst:141
+#: ../../glossary/intro.rst:148
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
 "Είναι το δικαναλικό ηχητικό σήμα (αριστερά και δεξιά) (βλέπε επίσης "
 ":term:`Mono`)."
 
-#: ../../glossary/intro.rst:143
+#: ../../glossary/intro.rst:150
 msgid "VST2"
 msgstr "VST2"
 
-#: ../../glossary/intro.rst:145
+#: ../../glossary/intro.rst:152
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
@@ -4197,11 +4204,11 @@ msgstr ""
 "Το ιδιωτικό πρότυπο προσθέτων και ο πρόγονος του VST3. Δεν συνιστούμε τη "
 "χρήση αυτού του προτύπου."
 
-#: ../../glossary/intro.rst:147
+#: ../../glossary/intro.rst:154
 msgid "VST3"
 msgstr "VST3"
 
-#: ../../glossary/intro.rst:149
+#: ../../glossary/intro.rst:156
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to "
 "use VST3 than VST2, because it is released as :term:`Free software`. "
@@ -4212,11 +4219,11 @@ msgstr ""
 ":term:`Free software`. Ωστόσο, αντί αυτού συνιστούμε τη χρήση του "
 "προτύπου :term:`LV2`."
 
-#: ../../glossary/intro.rst:154
+#: ../../glossary/intro.rst:161
 msgid "Zrythm user path"
 msgstr "Μονοπάτι χρήστη Zrythm"
 
-#: ../../glossary/intro.rst:156
+#: ../../glossary/intro.rst:163
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -4225,7 +4232,7 @@ msgstr ""
 "έργα, προσωρινά αρχεία, προρυθμίσεις και εξαγόμενους ήχους. Η προεπιλογή "
 "είναι :file:`zrythm` στο"
 
-#: ../../glossary/intro.rst:161
+#: ../../glossary/intro.rst:168
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification "
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
@@ -4237,7 +4244,7 @@ msgstr ""
 "latest.html>`_) σε συστήματα συμβατά με το freedesktop (ή αν έχει οριστεί"
 " το :envvar:`XDG_DATA_HOME`), ή"
 
-#: ../../glossary/intro.rst:166
+#: ../../glossary/intro.rst:173
 msgid "the directory for local application data on Windows"
 msgstr "ο κατάλογος για τα τοπικά δεδομένα της εφαρμογής στα Windows"
 
@@ -5174,51 +5181,359 @@ msgstr ""
 "Ο περιηγητής αρχείων καθιστά εύκολη την πλοήγηση μεταξύ των αρχείων στον "
 "υπολογιστή σας ή μεταξύ των προσαρμοσμένων συλλογών σας."
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:14
-msgid "This is a work in progress."
-msgstr "Πρόκειται για δουλειά σε εξέλιξη."
+#: ../../plugins-files/audio-midi-files/file-browser.rst:18
+msgid "Bookmarks"
+msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:17
+#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+msgid ""
+"The Bookmarks section contains a list of bookmarked directories. Double-"
+"clicking on a directory will show its contents in the file list below."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:24
+msgid "Standard Bookmarks"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:25
+msgid ""
+"Zrythm provides standard bookmarks for :file:`Home` and :file:`Desktop`, "
+"which correspond to the home and desktop directories of the current user."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:31
+#, fuzzy
+msgid "Custom Bookmarks"
+msgstr "Προσαρμοσμένα σημάδια"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:32
+#, fuzzy
+msgid ""
+"Custom bookmarks can be added by right-clicking on a directory in the "
+"file list and selecting :guilabel:`Add Bookmark`."
+msgstr ""
+"Τα κομμάτια μπορούν να διαγραφούν κάνοντας δεξί κλικ πάνω τους και "
+"επιλέγοντας :zbutton:`Delete`."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:39
+#, fuzzy
+msgid ""
+"Similarly, custom bookmarks can be removed by right-clicking on the "
+"bookmark and selecting :guilabel:`Delete`."
+msgstr ""
+"Τα κομμάτια μπορούν να διαγραφούν κάνοντας δεξί κλικ πάνω τους και "
+"επιλέγοντας :zbutton:`Delete`."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:47
 msgid "Filtering"
 msgstr "Φιλτράρισμα"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:22
-msgid "Collections"
-msgstr "Συλλογές"
+#: ../../plugins-files/audio-midi-files/file-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:41
+msgid "Filter Buttons"
+msgstr "Κουμπιά φίλτρων"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:27
+#: ../../plugins-files/audio-midi-files/file-browser.rst:51
+#, fuzzy
+msgid ""
+"Similarly to the :doc:`plugin browser <../plugins/plugin-browser>`, files"
+" can be filtered based on their type."
+msgstr ""
+"Επιπρόσθετα προς τα παραπάνω, τα πρόσθετα μπορούν να φιλτραριστούν "
+"σύμφωνα με τον τύπο τους."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:58
+msgid "Filtering by audio files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:60
+#, fuzzy
+msgid "The following toggles are available."
+msgstr "Υπάρχουν οι εξής τύποι περιοχών."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:63
+#, fuzzy
+msgid "Only show audio files."
+msgstr "Περιέχει κλιπς ήχων."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:65
+msgid "Only show MIDI files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:67
+msgid "Only show preset files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:69
+#, fuzzy
+msgid "Preset filtering is not implemented yet."
+msgstr "Αυτό το χαρακτηριστικό δεν έχει ενσωματωθεί ακόμα."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:72
+#, fuzzy
+msgid "Showing Unsupported Files"
+msgstr "Γεφύρωση μη υποστηριζόμενων διεπαφών χρήστη"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:73
+msgid ""
+"By default, only supported files will be shown in the file list. To also "
+"show unsupported files, enable :guilabel:`Show unsupported files` in the "
+":ref:`file browser preferences <plugins-files/audio-midi-files/file-"
+"browser:Preferences>`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:79
+msgid "Showing Hidden Files"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:80
+msgid ""
+"By default, only files that are not hidden will be shown in the file "
+"list. To also show hidden files, enable :guilabel:`Show hidden files` in "
+"the :ref:`file browser preferences <plugins-files/audio-midi-files/file-"
+"browser:Preferences>`."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:86
+#, fuzzy
+msgid "Auditioning"
+msgstr "Επεξεργασία"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:87
+msgid ""
+"Audio and MIDI files can be auditioned by making use of the auditioning "
+"controls at the bottom of the file list."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:94
+#, fuzzy
+msgid "File auditioning controls"
+msgstr "Επιπρόσθετοι χειριστές"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:96
+msgid "|icon_media-playback-start| Play"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:97
+msgid "Trigger playback of the selected file."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:98
+msgid "|icon_media-playback-stop| Stop"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:99
+msgid "Stop playback of the selected file."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+msgid "Volume"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:101
+msgid "Control the loudness of the output audio."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:104
+#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
+msgid "Instrument"
+msgstr "Όργανο"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:105
+msgid ""
+"The selected instrument will be used for playing back MIDI files. In the "
+"above example, the `Helm` instrument is selected."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:110
+msgid "Autoplay"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:111
+msgid ""
+"Auto-play (automatically playing back the selected file when the "
+"selection changes) can be enabled in the preferences below."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:118
+msgid "Clicking the cog icon will bring up the preferences for the file browser."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:124
+msgid "File browser preferences"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:127
+msgid "File Info"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:128
+msgid ""
+"Information, such as metadata, for the selected file is always shown at "
+"the bottom of the file panel."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:134
+msgid "Information about the selected audio file"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:137
 msgid "Importing Files"
 msgstr "Εισαγωγή αρχείων"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:29
+#: ../../plugins-files/audio-midi-files/file-browser.rst:138
+#, fuzzy
 msgid ""
-"Files are imported by either double clicking them in the browser or "
-"dragging and dropping them into a track."
+"Files are imported into the project by either double-clicking or dragging"
+" and dropping into the timeline."
 msgstr ""
 "Τα αρχεία εισάγονται είτε κάνοντας διπλό κλικ πάνω τους στον περιηγητή ή "
 "σύρροντας και ρίχνοντάς τα σε ένα κομμάτι."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:145
+msgid "Drag-n-dropping an audio file into a new track"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:148
+#, fuzzy
+msgid "Pop-up File Browser"
+msgstr "Περιηγητής αρχείων"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:149
+msgid ""
+"An additional file browser with similar functionalities is available by "
+"clicking the :guilabel:`Popup File Browser` button near the bottom right "
+"of the main window."
+msgstr ""
 
 #: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
 msgstr "Αρχεία ήχου & MIDI"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
+#, fuzzy
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be"
-" imported by dragging and dropping from your computer or from the :ref"
-":`file-browser` into a track."
+" imported by dragging and dropping from your computer or from the "
+":doc:`file browser <file-browser>` into a track."
 msgstr ""
 "Το Zrythm μπορεί να εισαγάγει αρχεία MIDI και ήχου στο έργο. Τα αρχεία "
 "μπορούν να εισαχθούν σύροντας και ρίχνοντάς τα από τον υπολογιστή σας ή "
 "από τον :ref:`file-browser` σε ένα κομμάτι."
 
-#: ../../plugins-files/audio-midi-files/overview.rst:14
-msgid "Supported Audio Formats"
+#: ../../plugins-files/audio-midi-files/overview.rst:15
+#, fuzzy
+msgid "Supported Formats"
 msgstr "Υποστηριζόμενα φορμάτ ήχου"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:15
-msgid "Zrythm supports OGG, FLAC, WAV and MP3."
-msgstr "Το Zrythm υποστηρίζει OGG, FLAC, WAV και MP3."
+#: ../../plugins-files/audio-midi-files/overview.rst:19
+#, fuzzy
+msgid "The following file formats are supported."
+msgstr "Το φορμάτ προς εξαγωγή. Προς το παρόν, υποστηρίζονται τα εξής φορμάτ"
+
+#: ../../plugins-files/audio-midi-files/overview.rst:22
+msgid "OGG (Vorbis and OPUS)"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:22
+msgid ""
+"An open and patent-free container format mostly used for lossy audio "
+"files."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:25
+msgid ":abbr:`FLAC (Free Lossless Audio Codec)`"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:25
+msgid ""
+"An open and royalty-free audio coding format for lossless compression of "
+"digital audio."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:28
+msgid ":abbr:`WAV (Waveform Audio File Format)`"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:28
+msgid "An audio file format for storing audio bistreams (uncompressed audio)."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:33
+msgid "MP3"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:31
+msgid ""
+"An (originally patented) coding format for compressed audio. Although the"
+" patents have expired, we recommend using OGG instead."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:35
+msgid "OPUS support requires specific project samplerates to work properly."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:38
+msgid ""
+"A software patent is a 20-year monopoly on the use of a feature in a "
+"computer program. When a company has a patent on nested menus, a video "
+"format, or pinch-to-zoom, then no one else can implement that feature for"
+" 20 years unless they get permission from the patent holder."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:46
+msgid ""
+"Computer programs typically contain hundreds or thousands of features, "
+"and many features that users expect, are patented."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:50
+msgid ""
+"The End Software Patents campaign is against software monopolies, and for"
+" software development."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:53
+msgid "Learn more at `EndSoftPatents`_."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:59
+msgid ""
+"Zrythm supports :abbr:`SMF (Standard MIDI File)` files of type 0 and type"
+" 1. Each type is explained below for reference."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:63
+msgid "Type 0"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:64
+msgid "An entire performance merged into a single track."
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:66
+msgid "Type 1"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:66
+msgid ""
+"An entire performance in one or more tracks that are performed "
+"simultaneously"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:70
+msgid "Type 2"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:69
+msgid ""
+"Multiple arrangements, each having its own track and intended to be "
+"played in sequence"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/overview.rst:72
+msgid "Type 2 SMF files are rarely used and are not supported."
+msgstr ""
 
 #: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
@@ -5348,10 +5663,6 @@ msgid ""
 "Where applicable, you can :kbd:`Control`-click to select multiple rows or"
 " deselect a row."
 msgstr ""
-
-#: ../../plugins-files/plugins/plugin-browser.rst:41
-msgid "Filter Buttons"
-msgstr "Κουμπιά φίλτρων"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:42
 msgid "Additionally to the above, plugins can be filtered based on their type."
@@ -6815,20 +7126,21 @@ msgstr "Σύνταξη δέσμης ενεργειών (scripting)"
 
 #: ../../scripting/overview.rst:8
 msgid ""
-"Zrythm offers a scripting interface using the `Guile language "
-"<https://www.gnu.org/software/guile/>`_, an implementation of Scheme."
+"Zrythm offers a scripting interface using the `GNU Guile language "
+"<https://www.gnu.org/software/guile/>`_, an implementation of `Scheme "
+"<https://en.wikipedia.org/wiki/Scheme_%28programming_language%29>`_, "
+"which is a dialect of `LISP "
+"<https://en.wikipedia.org/wiki/Lisp_(programming_language)>`_."
 msgstr ""
-"Το Zrythm προσφέρει μια διεπαφή σύνταξης δέσμης ενεργειών (scripting) "
-"χρησιμοποιώντας τη `γλώσσα Guile <https://www.gnu.org/software/guile/>`_,"
-" μια ενσωμάτωση του Scheme."
 
-#: ../../scripting/overview.rst:11
+#: ../../scripting/overview.rst:15
+#, fuzzy
 msgid ""
 "The next section is a comprehensive list of all available procedures in "
 "the API. Each section in the API corresponds to a specific Guile module, "
 "so for example, to use the procedures in the :scheme:`audio position` "
-"section, one would do :scheme:`(use-modules (audio track))` at the top of"
-" the script."
+"section, one would do :scheme:`(use-modules (audio position))` at the top"
+" of the script."
 msgstr ""
 "Η επόμενη ενότητα είναι μια περιεκτική λίστα όλων των διαθέσιμων "
 "διαδικασιών στη Διεπαφή Προγραμματισμού Εφαρμογών (API). Κάθε ενότητα "
@@ -6837,13 +7149,15 @@ msgstr ""
 ":scheme:`audio position` section, θα πρέπει να κάνει :scheme:`(use-"
 "modules (audio track))` στην κορυφή της δέσμης ενεργειών."
 
-#: ../../scripting/overview.rst:19
+#: ../../scripting/overview.rst:23
 msgid "The Guile API is experimental."
 msgstr "Η API της Guile είναι πειραματική."
 
-#: ../../scripting/overview.rst:21
-msgid "The Guile API is not available on Windows."
-msgstr "Η API της Guile δεν είναι διαθέσιμη στα Windows."
+#: ../../scripting/overview.rst:25
+msgid ""
+"The Guile API is not available on Windows. See `this ticket "
+"<https://github.com/msys2/MINGW-packages/issues/3298>`_ for details."
+msgstr ""
 
 #: ../../scripting/scripting-interface.rst:6
 #: ../../zrythm-interface/main-toolbar.rst:122
@@ -7478,10 +7792,6 @@ msgstr "Όνομα του κομματιού"
 #: ../../tracks/inspector-page.rst:32
 msgid "The track that this track routes its output to."
 msgstr "Το κομμάτι στο οποίο αυτό το κομμάτι δρομολογεί το εξαγόμενό του."
-
-#: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
-msgid "Instrument"
-msgstr "Όργανο"
 
 #: ../../tracks/inspector-page.rst:36
 msgid ""
@@ -8960,6 +9270,45 @@ msgstr ""
 "Οι πληροφορίες σχετικά με το τρέχον επιλεγόμενο παρασκήνιο και τις "
 "ρυθμίσεις είναι ορατές στην κατώ αριστερή γωνία."
 
+#~ msgid "FLAC - .FLAC"
+#~ msgstr "FLAC - .FLAC"
+
+#~ msgid "OGG (Vorbis) - .ogg"
+#~ msgstr "OGG (Vorbis) - .ogg"
+
+#~ msgid "WAV - .wav"
+#~ msgstr "WAV - .wav"
+
+#~ msgid "MIDI - .mid"
+#~ msgstr "MIDI - .mid"
+
+#~ msgid "MP3 support."
+#~ msgstr "Υποστήριξη MP3."
+
+#~ msgid "This is a work in progress."
+#~ msgstr "Πρόκειται για δουλειά σε εξέλιξη."
+
+#~ msgid "Collections"
+#~ msgstr "Συλλογές"
+
+#~ msgid "Zrythm supports OGG, FLAC, WAV and MP3."
+#~ msgstr "Το Zrythm υποστηρίζει OGG, FLAC, WAV και MP3."
+
+#~ msgid ""
+#~ "Zrythm offers a scripting interface "
+#~ "using the `Guile language "
+#~ "<https://www.gnu.org/software/guile/>`_, an implementation"
+#~ " of Scheme."
+#~ msgstr ""
+#~ "Το Zrythm προσφέρει μια διεπαφή σύνταξης"
+#~ " δέσμης ενεργειών (scripting) χρησιμοποιώντας "
+#~ "τη `γλώσσα Guile "
+#~ "<https://www.gnu.org/software/guile/>`_, μια ενσωμάτωση"
+#~ " του Scheme."
+
+#~ msgid "The Guile API is not available on Windows."
+#~ msgstr "Η API της Guile δεν είναι διαθέσιμη στα Windows."
+
 #~ msgid ""
 #~ "The filters tab at the top allows"
 #~ " you to select how to filter "
@@ -9301,9 +9650,6 @@ msgstr ""
 
 #~ msgid "split the following to sub-pages"
 #~ msgstr "να διαχωριστούν τα ακόλουθα σε υπο-σελίδες"
-
-#~ msgid "Contains audio clips."
-#~ msgstr "Περιέχει κλιπς ήχων."
 
 #~ msgid "Expand + add pic."
 #~ msgstr "Επέκταση + προσθήκη εικόνας."
