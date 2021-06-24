@@ -151,6 +151,7 @@ inc/gui/widgets/midi_group_track.h
 inc/gui/widgets/toolbox.h
 inc/gui/widgets/track_top_grid.h
 inc/gui/widgets/track_lanelist.h
+inc/gui/widgets/volume.h
 inc/gui/widgets/snap_grid.h
 inc/gui/widgets/timeline_selection_info.h
 inc/gui/widgets/editor_ruler.h
@@ -201,6 +202,7 @@ inc/gui/widgets/arranger_playhead.h
 inc/gui/widgets/port_selector_popover.h
 inc/gui/widgets/timeline_minimap_selection.h
 inc/gui/widgets/file_browser.h
+inc/gui/widgets/file_browser_filters.h
 inc/gui/widgets/port_connections_popover.h
 inc/gui/widgets/arranger_bg.h
 inc/gui/widgets/timeline_bot_box.h
@@ -247,6 +249,7 @@ inc/gui/widgets/chord.h
 inc/gui/widgets/inspector_ap.h
 inc/gui/widgets/top_bar.h
 inc/gui/widgets/midi_modifier_arranger.h
+inc/gui/widgets/file_auditioner_controls.h
 inc/gui/widgets/color_area.h
 inc/gui/widgets/port_connections_tree.h
 inc/gui/widgets/midi_track.h
@@ -309,6 +312,7 @@ inc/utils/audio.h
 inc/utils/terminal.h
 inc/utils/smf.h
 inc/utils/hashtable.h
+inc/utils/strv_builder.h
 inc/utils/types.h
 inc/utils/error.h
 inc/utils/datetime.h
@@ -530,6 +534,7 @@ src/gui/widgets/modulator_inner.c
 src/gui/widgets/timeline_bg.c
 src/gui/widgets/clip_editor.c
 src/gui/widgets/snap_grid_popover.c
+src/gui/widgets/file_browser_filters.c
 src/gui/widgets/visibility.c
 src/gui/widgets/scale_object.c
 src/gui/widgets/center_dock.c
@@ -582,6 +587,7 @@ src/gui/widgets/modulator_view.c
 src/gui/widgets/timeline_minimap_bg.c
 src/gui/widgets/plugin_properties_expander.c
 src/gui/widgets/route_target_selector.c
+src/gui/widgets/volume.c
 src/gui/widgets/fader_controls_expander.c
 src/gui/widgets/automatable_selector_popover.c
 src/gui/widgets/velocity.c
@@ -594,6 +600,7 @@ src/gui/widgets/monitor_section.c
 src/gui/widgets/track_top_grid.c
 src/gui/widgets/scripting_window.c
 src/gui/widgets/active_hardware_mb.c
+src/gui/widgets/file_auditioner_controls.c
 src/gui/widgets/port_connection_row.c
 src/gui/widgets/port_connections.c
 src/gui/widgets/ruler_marker.c
@@ -700,6 +707,7 @@ src/utils/smf.c
 src/utils/system.c
 src/utils/env.c
 src/utils/objects.c
+src/utils/strv_builder.c
 src/utils/localization.c
 src/utils/chromaprint.c
 src/utils/yaml.c
@@ -903,6 +911,7 @@ resources/ui/export_midi_file_dialog.ui
 resources/ui/modulator_view.ui
 resources/ui/panel_file_browser.ui
 resources/ui/port_selector_popover.ui
+resources/ui/file_auditioner_controls.ui
 resources/ui/audio_editor_space.ui
 resources/ui/header.ui
 resources/ui/inspector_track.ui
@@ -930,6 +939,7 @@ resources/ui/main_window.ui
 resources/ui/clip_editor.ui
 resources/ui/timeline_bot_box.ui
 resources/ui/toolbox.ui
+resources/ui/file_browser_filters.ui
 resources/ui/quantize_box.ui
 resources/ui/snap_grid_popover.ui
 resources/ui/range_action_buttons.ui

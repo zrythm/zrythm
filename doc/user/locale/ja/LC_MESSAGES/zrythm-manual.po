@@ -8223,18 +8223,6 @@ msgstr "現在選択されているバックエンドとオプションに関す
 #~ "<https://www.gnu.org/software/guile/>`_ "
 #~ "を使ったスクリプティングインターフェースを提供しています。"
 
-#~ msgid ""
-#~ "The next section is a comprehensive "
-#~ "list of all available procedures in "
-#~ "the API. Each section in the API"
-#~ " corresponds to a specific Guile "
-#~ "module, so for example, to use the"
-#~ " procedures in the :scheme:`audio position`"
-#~ " section, one would do :scheme:`(use-"
-#~ "modules (audio track))` at the top "
-#~ "of the script."
-#~ msgstr ""
-
 #~ msgid "The Guile API is not available on Windows."
 #~ msgstr "Guile APIはWindowsでは利用できません。"
 

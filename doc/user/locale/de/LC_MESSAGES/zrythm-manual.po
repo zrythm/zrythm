@@ -9187,12 +9187,6 @@ msgstr ""
 #~ msgid "MIDI - .mid"
 #~ msgstr "MIDI - .mid"
 
-#~ msgid "MP3 support."
-#~ msgstr ""
-
-#~ msgid "This is a work in progress."
-#~ msgstr ""
-
 #~ msgid "Collections"
 #~ msgstr "Sammlungen"
 
@@ -9201,28 +9195,6 @@ msgstr ""
 
 #~ msgid "Zrythm supports OGG, FLAC, WAV and MP3."
 #~ msgstr "Zrythm unterstützt OGG, FLAC, WAV, und MP3."
-
-#~ msgid ""
-#~ "Zrythm offers a scripting interface "
-#~ "using the `Guile language "
-#~ "<https://www.gnu.org/software/guile/>`_, an implementation"
-#~ " of Scheme."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The next section is a comprehensive "
-#~ "list of all available procedures in "
-#~ "the API. Each section in the API"
-#~ " corresponds to a specific Guile "
-#~ "module, so for example, to use the"
-#~ " procedures in the :scheme:`audio position`"
-#~ " section, one would do :scheme:`(use-"
-#~ "modules (audio track))` at the top "
-#~ "of the script."
-#~ msgstr ""
-
-#~ msgid "The Guile API is not available on Windows."
-#~ msgstr ""
 
 #~ msgid ""
 #~ "The filters tab at the top allows"

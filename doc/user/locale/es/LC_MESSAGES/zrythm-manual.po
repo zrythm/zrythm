@@ -19,14 +19,13 @@ msgstr ""
 "POT-Creation-Date: 2021-06-24 19:33+0100\n"
 "PO-Revision-Date: 2021-06-11 00:46+0000\n"
 "Last-Translator: Jesus Meneses <jesusm0812@gmail.com>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/es/>\n"
 "Language: es\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/es/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -67,11 +66,11 @@ msgid ""
 ":program:`zrythm` or :program:`zrythm_launch`, like: "
 "``LV2_PATH=/my/custom/path zrythm_launch``"
 msgstr ""
-"Zrythm entiende las siguientes variables de entorno. Pueden ser configuradas "
-"en :file:`.bashrc` o un archivo de configuración del shell similar, la "
-"configuración del sistema operativo, o pueden ser pasadas directamente al "
-"ejecutar :program:`zrythm` o :program:`zrythm_launch`, como: ``LV2_PATH=/mi/"
-"ruta personalizada zrythm_launch``"
+"Zrythm entiende las siguientes variables de entorno. Pueden ser "
+"configuradas en :file:`.bashrc` o un archivo de configuración del shell "
+"similar, la configuración del sistema operativo, o pueden ser pasadas "
+"directamente al ejecutar :program:`zrythm` o :program:`zrythm_launch`, "
+"como: ``LV2_PATH=/mi/ruta personalizada zrythm_launch``"
 
 #: ../../appendix/environment.rst:22
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
@@ -9079,21 +9078,6 @@ msgstr ""
 "La información sobre el backend y las opciones actualmente seleccionadas "
 "está visible en la esquina inferior izquierda."
 
-#~ msgid "FLAC - .FLAC"
-#~ msgstr ""
-
-#~ msgid "OGG (Vorbis) - .ogg"
-#~ msgstr ""
-
-#~ msgid "WAV - .wav"
-#~ msgstr ""
-
-#~ msgid "MIDI - .mid"
-#~ msgstr ""
-
-#~ msgid "MP3 support."
-#~ msgstr ""
-
 #~ msgid "This is a work in progress."
 #~ msgstr "Producto semiterminado."
 
@@ -9102,28 +9086,6 @@ msgstr ""
 
 #~ msgid "Zrythm supports OGG, FLAC, WAV and MP3."
 #~ msgstr "Zrythm es compatible con OGG, FLAC, WAV y MP3."
-
-#~ msgid ""
-#~ "Zrythm offers a scripting interface "
-#~ "using the `Guile language "
-#~ "<https://www.gnu.org/software/guile/>`_, an implementation"
-#~ " of Scheme."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The next section is a comprehensive "
-#~ "list of all available procedures in "
-#~ "the API. Each section in the API"
-#~ " corresponds to a specific Guile "
-#~ "module, so for example, to use the"
-#~ " procedures in the :scheme:`audio position`"
-#~ " section, one would do :scheme:`(use-"
-#~ "modules (audio track))` at the top "
-#~ "of the script."
-#~ msgstr ""
-
-#~ msgid "The Guile API is not available on Windows."
-#~ msgstr ""
 
 #~ msgid ""
 #~ "The filters tab at the top allows"
@@ -9702,3 +9664,4 @@ msgstr ""
 
 #~ msgid "Channel"
 #~ msgstr "Canal"
+

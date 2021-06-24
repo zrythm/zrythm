@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-06-04 10:37+0100\n"
+"POT-Creation-Date: 2021-06-24 20:05+0100\n"
 "PO-Revision-Date: 2021-06-05 12:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -69,7 +69,7 @@ msgid "Scale Object"
 msgstr "缩放对象"
 
 #: inc/schemas/gui/backend/arranger_object.h:64
-#: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:172
+#: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:173
 #: src/gui/widgets/event_viewer.c:110
 msgid "Marker"
 msgstr "标记"
@@ -106,31 +106,31 @@ msgstr "Vital"
 msgid "Pulse"
 msgstr "Pulse"
 
-#: inc/schemas/audio/region.h:47 inc/audio/region.h:86
-#: src/gui/widgets/track.c:1932
+#: inc/schemas/audio/region.h:47 inc/audio/region.h:87
+#: src/gui/widgets/track.c:1934
 msgid "Inherit"
 msgstr "继承"
 
-#: inc/schemas/audio/region.h:49 inc/audio/region.h:88
-#: src/gui/widgets/bot_bar.c:559 src/audio/automation_track.c:182
+#: inc/schemas/audio/region.h:49 inc/audio/region.h:89
+#: src/gui/widgets/bot_bar.c:563 src/audio/automation_track.c:182
 msgid "Off"
 msgstr "关闭"
 
-#: inc/schemas/audio/region.h:51 inc/audio/region.h:90
-#: src/gui/widgets/bot_bar.c:559 src/gui/widgets/port_connections_tree.c:264
+#: inc/schemas/audio/region.h:51 inc/audio/region.h:91
+#: src/gui/widgets/bot_bar.c:563 src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:262 src/audio/automation_track.c:176
 msgid "On"
 msgstr "开"
 
-#: inc/utils/ui.h:74
+#: inc/utils/ui.h:75
 msgid "High"
 msgstr "高"
 
-#: inc/utils/ui.h:75
+#: inc/utils/ui.h:76
 msgid "Normal"
 msgstr "正常"
 
-#: inc/utils/ui.h:76
+#: inc/utils/ui.h:77
 msgid "Low"
 msgstr "低"
 
@@ -168,15 +168,15 @@ msgid "Duplicate"
 msgstr "重复"
 
 #: inc/utils/gtk.h:89 src/gui/widgets/channel.c:759
-#: src/gui/widgets/monitor_section.c:55 src/gui/widgets/monitor_section.c:351
-#: src/gui/widgets/track.c:1138 src/gui/widgets/track.c:1765
+#: src/gui/widgets/monitor_section.c:55 src/gui/widgets/monitor_section.c:352
+#: src/gui/widgets/track.c:1140 src/gui/widgets/track.c:1767
 #: resources/ui/fader_buttons.ui:99
-#: build/data/org.zrythm.Zrythm.gschema.xml:291
+#: build/data/org.zrythm.Zrythm.gschema.xml:297
 msgid "Mute"
 msgstr "静音"
 
 #: inc/utils/gtk.h:93 src/gui/widgets/channel.c:768
-#: src/gui/widgets/track.c:1134 src/gui/widgets/track.c:1774
+#: src/gui/widgets/track.c:1136 src/gui/widgets/track.c:1776
 msgid "Unmute"
 msgstr "取消静音"
 
@@ -196,52 +196,55 @@ msgstr "反转"
 msgid "Invalid"
 msgstr "无效化"
 
-#: inc/audio/track.h:168 src/gui/widgets/track_properties_expander.c:133
+#: inc/audio/track.h:169 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:187
+#: build/data/org.zrythm.Zrythm.gschema.xml:571
 msgid "Instrument"
 msgstr "乐器"
 
-#: inc/audio/track.h:169 src/gui/widgets/bot_bar.c:544 src/audio/region.c:494
-#: build/data/org.zrythm.Zrythm.gschema.xml:787
+#: inc/audio/track.h:170 src/gui/widgets/bot_bar.c:548 src/audio/region.c:497
+#: resources/ui/file_browser_filters.ui:34
+#: build/data/org.zrythm.Zrythm.gschema.xml:841
 msgid "Audio"
 msgstr "音频"
 
-#: inc/audio/track.h:170 src/project.c:784
+#: inc/audio/track.h:171 src/project.c:784
 #: src/gui/widgets/route_target_selector_popover.c:164
 msgid "Master"
 msgstr "控制"
 
-#: inc/audio/track.h:171 src/gui/widgets/event_viewer.c:119
-#: src/gui/widgets/event_viewer.c:590 src/audio/region.c:500
+#: inc/audio/track.h:172 src/gui/widgets/event_viewer.c:119
+#: src/gui/widgets/event_viewer.c:590 src/audio/region.c:503
 msgid "Chord"
 msgstr "和弦"
 
-#: inc/audio/track.h:173 src/gui/widgets/automatable_selector_popover.c:388
+#: inc/audio/track.h:174 src/gui/widgets/automatable_selector_popover.c:388
 #: src/audio/tempo_track.c:123
 msgid "Tempo"
 msgstr "节奏"
 
-#: inc/audio/track.h:174
+#: inc/audio/track.h:175
 msgid "Modulator"
 msgstr "调幅器"
 
-#: inc/audio/track.h:175
+#: inc/audio/track.h:176
 msgid "Audio FX"
 msgstr "音频FX"
 
-#: inc/audio/track.h:176
+#: inc/audio/track.h:177
 msgid "Audio Group"
 msgstr "音频组"
 
-#: inc/audio/track.h:177 src/audio/region.c:491
+#: inc/audio/track.h:178 src/audio/region.c:494
+#: resources/ui/file_browser_filters.ui:47
 msgid "MIDI"
 msgstr "MIDI"
 
-#: inc/audio/track.h:178
+#: inc/audio/track.h:179
 msgid "MIDI FX"
 msgstr "MIDI FX"
 
-#: inc/audio/track.h:179
+#: inc/audio/track.h:180
 msgid "MIDI Group"
 msgstr "MIDI组"
 
@@ -359,11 +362,11 @@ msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1094
-#: src/utils/ui.c:842
+#: src/utils/ui.c:844
 msgid "Linear"
 msgstr "线性"
 
-#: inc/audio/pan.h:77 src/utils/ui.c:843
+#: inc/audio/pan.h:77 src/utils/ui.c:845
 msgid "Square Root"
 msgstr "平方根"
 
@@ -385,7 +388,7 @@ msgstr "项目未被 zstd 压缩"
 msgid "Failed to decompress project file: %s"
 msgstr "无法解压缩项目文件:%s"
 
-#: src/project.c:940
+#: src/project.c:941
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -396,35 +399,35 @@ msgstr ""
 "%s.\n"
 "是否使用新的备份？"
 
-#: src/project.c:945
+#: src/project.c:946
 msgid "Backup found"
 msgstr "找到备份"
 
-#: src/project.c:1005
+#: src/project.c:1006
 #, c-format
 msgid "Unable to read file: %s"
 msgstr "无法读取文件:%s"
 
-#: src/project.c:1059
+#: src/project.c:1060
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr "此项目是使用不同版本%s（%s）创建的。它可能没有正常运作。"
 
-#: src/project.c:1074
+#: src/project.c:1075
 msgid "Failed to load project. Please check the logs for more information."
 msgstr "无法加载项目。请检查日志，查看更多信息。"
 
-#: src/project.c:1303
+#: src/project.c:1304
 msgid "Failed to load project. Will create a new one instead."
 msgstr "无法加载项目。将创建一个新项目。"
 
-#: src/project.c:1634
+#: src/project.c:1635
 msgid "Backup saved."
 msgstr "备份已保存。"
 
-#: src/project.c:1644
+#: src/project.c:1645
 msgid "Project saved."
 msgstr "项目已保存。"
 
@@ -536,51 +539,51 @@ msgstr "未知操作"
 msgid "libguile is required for this option\n"
 msgstr "该选项需要 libguile\n"
 
-#: src/zrythm_app.c:1708
+#: src/zrythm_app.c:1726
 msgid "Print version information"
 msgstr "打印版本信息"
 
-#: src/zrythm_app.c:1713
+#: src/zrythm_app.c:1731
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "转换 ZPJ-FILE 为 YAML"
 
-#: src/zrythm_app.c:1718
+#: src/zrythm_app.c:1736
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "转换 YAML-PROJECT-FILE 为 .zpj 格式"
 
-#: src/zrythm_app.c:1723
+#: src/zrythm_app.c:1741
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "从脚本文件中生成工程"
 
-#: src/zrythm_app.c:1727
+#: src/zrythm_app.c:1745
 msgid "Print output in user-friendly way"
 msgstr "以用户友好的方式打印输出"
 
-#: src/zrythm_app.c:1731
+#: src/zrythm_app.c:1749
 msgid "Print current settings"
 msgstr "打印当前设定"
 
-#: src/zrythm_app.c:1735
+#: src/zrythm_app.c:1753
 msgid "Reset to factory settings"
 msgstr "重置到出厂设置"
 
-#: src/zrythm_app.c:1738
+#: src/zrythm_app.c:1756
 msgid "Override the audio backend to use"
 msgstr "覆盖要使用的音频后端"
 
-#: src/zrythm_app.c:1742
+#: src/zrythm_app.c:1760
 msgid "Override the MIDI backend to use"
 msgstr "覆盖要使用的MIDI后端"
 
-#: src/zrythm_app.c:1746
+#: src/zrythm_app.c:1764
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "为以下简写： --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1772
+#: src/zrythm_app.c:1796
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
-#: src/zrythm_app.c:1777
+#: src/zrythm_app.c:1801
 #, c-format
 msgid ""
 "Examples:\n"
@@ -598,16 +601,16 @@ msgstr ""
 "\n"
 "请报告问题至 %s\n"
 
-#: src/zrythm_app.c:1789
+#: src/zrythm_app.c:1813
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "运行 %s, 可选地传递一个工程文件。"
 
-#: src/plugins/carla_native_plugin.c:607 src/plugins/lv2_plugin.c:3614
+#: src/plugins/carla_native_plugin.c:607 src/plugins/lv2_plugin.c:3638
 msgid "Default bank"
 msgstr "默认bank"
 
-#: src/plugins/carla_native_plugin.c:612 src/plugins/lv2_plugin.c:3619
+#: src/plugins/carla_native_plugin.c:612 src/plugins/lv2_plugin.c:3643
 msgid "Init"
 msgstr "初始化"
 
@@ -639,7 +642,7 @@ msgstr "控制电压(CV)输出"
 msgid "Error loading LV2 bundle dir: "
 msgstr "加载 LV2 包目录时出错: "
 
-#: src/plugins/plugin_manager.c:1084
+#: src/plugins/plugin_manager.c:1088
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "已扫描 %s 插件: %s"
@@ -647,61 +650,61 @@ msgstr "已扫描 %s 插件: %s"
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
-#: src/plugins/plugin_manager.c:1098
+#: src/plugins/plugin_manager.c:1102
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "跳过了位于 %2$s 的 %1$s 插件"
 
-#: src/plugins/plugin_manager.c:1230
+#: src/plugins/plugin_manager.c:1236
 msgid "Scanned LV2 plugin"
 msgstr "已扫描LV2插件"
 
-#: src/plugins/plugin_manager.c:1241
+#: src/plugins/plugin_manager.c:1247
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "跳过%s处的LV2插件"
 
-#: src/plugins/plugin_manager.c:1329
+#: src/plugins/plugin_manager.c:1335
 msgid "Scanned AU plugin"
 msgstr "已扫描AU插件"
 
-#: src/plugins/plugin_manager.c:1336
+#: src/plugins/plugin_manager.c:1342
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "跳过%u处的AU插件"
 
-#: src/plugins/plugin.c:218
+#: src/plugins/plugin.c:235
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "插件 '%s' 实例化失败。禁用中..."
 
-#: src/plugins/plugin.c:266
+#: src/plugins/plugin.c:283
 msgid "[Zrythm] Enabled"
 msgstr "[Zrythm] 已启用"
 
-#: src/plugins/plugin.c:268
+#: src/plugins/plugin.c:285
 msgid "Enables or disables the plugin"
 msgstr "启用/禁用插件"
 
-#: src/plugins/plugin.c:291
+#: src/plugins/plugin.c:308
 msgid "[Zrythm] Gain"
 msgstr "[Zrythm] 增益"
 
-#: src/plugins/plugin.c:292
+#: src/plugins/plugin.c:309
 #, fuzzy
 msgid "Plugin gain"
 msgstr "插件 gain"
 
-#: src/plugins/plugin.c:1049
+#: src/plugins/plugin.c:1073
 #, c-format
 msgid " - bridge: %s"
 msgstr ""
 
-#: src/plugins/plugin.c:1060
+#: src/plugins/plugin.c:1084
 msgid "instrument"
 msgstr "乐器"
 
-#: src/plugins/plugin.c:1852
+#: src/plugins/plugin.c:1876
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -711,12 +714,12 @@ msgid ""
 "  %s <%s>"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:94 src/plugins/lv2/lv2_gtk.c:74
+#: src/plugins/plugin_gtk.c:94 src/plugins/lv2/lv2_gtk.c:75
 msgid "Save State"
 msgstr "保存状态"
 
-#: src/plugins/plugin_gtk.c:97 src/plugins/lv2/lv2_gtk.c:77
-#: src/plugins/lv2/lv2_gtk.c:326
+#: src/plugins/plugin_gtk.c:97 src/plugins/lv2/lv2_gtk.c:78
+#: src/plugins/lv2/lv2_gtk.c:327
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:163
 #: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/actions/actions.c:792
 #: resources/ui/string_entry_dialog.ui:47
@@ -725,7 +728,7 @@ msgstr "保存状态"
 msgid "_Cancel"
 msgstr "取消（_C）"
 
-#: src/plugins/plugin_gtk.c:98 src/plugins/lv2/lv2_gtk.c:78
+#: src/plugins/plugin_gtk.c:98 src/plugins/lv2/lv2_gtk.c:79
 #: src/actions/actions.c:794
 msgid "_Save"
 msgstr "保存（_S）"
@@ -746,12 +749,12 @@ msgstr "值的小部件类型未知"
 msgid "Unknown widget type for value\n"
 msgstr "值的小部件类型未知\n"
 
-#: src/plugins/lv2_plugin.c:2686
+#: src/plugins/lv2_plugin.c:2693
 #, c-format
 msgid "Failed to find plugin with URI: %s"
 msgstr "无法从指定的 URI 找到插件: %s"
 
-#: src/plugins/lv2_plugin.c:2735
+#: src/plugins/lv2_plugin.c:2742
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -760,27 +763,32 @@ msgid ""
 "%s <%s>"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:3657
+#: src/plugins/lv2_plugin.c:3681
 msgid "Unnamed bank"
 msgstr "未命名bank"
 
-#: src/plugins/lv2/lv2_gtk.c:225
+#: src/plugins/lv2/lv2_gtk.c:226
 msgid "URI (Optional):"
 msgstr "URI（可选）:"
 
-#: src/plugins/lv2/lv2_gtk.c:229
+#: src/plugins/lv2/lv2_gtk.c:230
 msgid "_Prefix plugin name"
 msgstr "_Prefix插件名称"
 
-#: src/plugins/lv2/lv2_gtk.c:321
+#: src/plugins/lv2/lv2_gtk.c:322
 msgid "Delete Preset?"
 msgstr "删除预设？"
 
-#: src/plugins/lv2/lv2_gtk.c:327 src/utils/dialogs.c:70
+#: src/plugins/lv2/lv2_gtk.c:328 src/utils/dialogs.c:70
 #: resources/ui/string_entry_dialog.ui:61
 #: resources/ui/port_selector_popover.ui:254
 msgid "_OK"
 msgstr "_OK"
+
+#: src/plugins/lv2/lv2_gtk.c:636
+#, fuzzy, c-format
+msgid "Failed to open LV2 UI for %s"
+msgstr "无法打开文件:%s"
 
 #: src/gui/widgets/bounce_step_selector.c:187
 msgid "Bounce step selector"
@@ -799,18 +807,18 @@ msgid "OUTPUTS"
 msgstr "输出"
 
 #: src/gui/widgets/port_connections_popover.c:202
-#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1191
+#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1193
 msgid "Add"
 msgstr "添加"
 
 #: src/gui/widgets/inspector_port.c:189 src/gui/widgets/modulator_inner.c:188
 #: src/gui/widgets/plugin_browser.c:1158 src/gui/widgets/plugin_browser.c:1227
 #: src/gui/widgets/balance_control.c:344 src/gui/widgets/modulator_macro.c:204
-#: src/gui/widgets/fader.c:362 resources/ui/first_run_assistant.ui:134
+#: src/gui/widgets/fader.c:349 resources/ui/first_run_assistant.ui:134
 msgid "Reset"
 msgstr "重置"
 
-#: src/gui/widgets/inspector_port.c:207 src/gui/widgets/midi_arranger.c:523
+#: src/gui/widgets/inspector_port.c:207 src/gui/widgets/midi_arranger.c:536
 #: src/gui/widgets/modulator_inner.c:204 src/gui/widgets/modulator_macro.c:220
 msgid "View info"
 msgstr "查看信息"
@@ -856,69 +864,69 @@ msgstr "直接输出"
 msgid "Track Properties"
 msgstr "音轨属性"
 
-#: src/gui/widgets/channel.c:685 src/gui/widgets/track.c:1657
+#: src/gui/widgets/channel.c:685 src/gui/widgets/track.c:1659
 msgid "_Delete Track"
 msgstr "删除音道"
 
-#: src/gui/widgets/channel.c:688 src/gui/widgets/track.c:1660
+#: src/gui/widgets/channel.c:688 src/gui/widgets/track.c:1662
 msgid "_Delete Tracks"
 msgstr "删除音道"
 
-#: src/gui/widgets/channel.c:699 src/gui/widgets/track.c:1671
+#: src/gui/widgets/channel.c:699 src/gui/widgets/track.c:1673
 msgid "_Duplicate Track"
 msgstr "重复音轨"
 
-#: src/gui/widgets/channel.c:702 src/gui/widgets/track.c:1674
+#: src/gui/widgets/channel.c:702 src/gui/widgets/track.c:1676
 msgid "_Duplicate Tracks"
 msgstr "重复音轨"
 
-#: src/gui/widgets/channel.c:714 src/gui/widgets/track.c:1696
+#: src/gui/widgets/channel.c:714 src/gui/widgets/track.c:1698
 msgid "Hide Track"
 msgstr "隐藏音轨"
 
-#: src/gui/widgets/channel.c:715 src/gui/widgets/track.c:1697
+#: src/gui/widgets/channel.c:715 src/gui/widgets/track.c:1699
 msgid "Hide Tracks"
 msgstr "隐藏音轨"
 
-#: src/gui/widgets/channel.c:723 src/gui/widgets/track.c:1705
+#: src/gui/widgets/channel.c:723 src/gui/widgets/track.c:1707
 msgid "Pin/Unpin Track"
 msgstr "Pin/Unpin音轨"
 
-#: src/gui/widgets/channel.c:724 src/gui/widgets/track.c:1706
+#: src/gui/widgets/channel.c:724 src/gui/widgets/track.c:1708
 msgid "Pin/Unpin Tracks"
 msgstr "Pin/Unpin音轨"
 
-#: src/gui/widgets/channel.c:740 src/gui/widgets/track.c:1116
-#: src/gui/widgets/track.c:1746 resources/ui/fader_buttons.ui:78
+#: src/gui/widgets/channel.c:740 src/gui/widgets/track.c:1118
+#: src/gui/widgets/track.c:1748 resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr "独奏"
 
-#: src/gui/widgets/channel.c:749 src/gui/widgets/track.c:1755
+#: src/gui/widgets/channel.c:749 src/gui/widgets/track.c:1757
 msgid "Unsolo"
 msgstr "非独奏"
 
 #: src/gui/widgets/channel.c:778 src/gui/widgets/monitor_section.c:62
-#: src/gui/widgets/track.c:1149 src/gui/widgets/track.c:1784
+#: src/gui/widgets/track.c:1151 src/gui/widgets/track.c:1786
 #: resources/ui/fader_buttons.ui:120
 msgid "Listen"
 msgstr ""
 
-#: src/gui/widgets/channel.c:788 src/gui/widgets/track.c:1145
-#: src/gui/widgets/track.c:1794
+#: src/gui/widgets/channel.c:788 src/gui/widgets/track.c:1147
+#: src/gui/widgets/track.c:1796
 msgid "Unlisten"
 msgstr ""
 
-#: src/gui/widgets/channel.c:801 src/gui/widgets/bot_bar.c:578
-#: src/gui/widgets/track.c:1807 src/gui/widgets/dialogs/export_dialog.c:1313
+#: src/gui/widgets/channel.c:801 src/gui/widgets/bot_bar.c:584
+#: src/gui/widgets/track.c:1809 src/gui/widgets/dialogs/export_dialog.c:1313
 msgid "Disable"
 msgstr "禁用"
 
-#: src/gui/widgets/channel.c:810 src/gui/widgets/bot_bar.c:578
-#: src/gui/widgets/track.c:1816 src/gui/widgets/dialogs/export_dialog.c:1303
+#: src/gui/widgets/channel.c:810 src/gui/widgets/bot_bar.c:584
+#: src/gui/widgets/track.c:1818 src/gui/widgets/dialogs/export_dialog.c:1303
 msgid "Enable"
 msgstr "启用"
 
-#: src/gui/widgets/channel.c:819 src/gui/widgets/track.c:1825
+#: src/gui/widgets/channel.c:819 src/gui/widgets/track.c:1827
 msgid "Change color..."
 msgstr "修改颜色…"
 
@@ -981,7 +989,7 @@ msgid "MIDI channel to filter to"
 msgstr "筛选到的MIDI通道"
 
 #: src/gui/widgets/track_input_expander.c:695
-#: src/gui/widgets/monitor_section.c:336
+#: src/gui/widgets/monitor_section.c:337
 msgid "Mono"
 msgstr ""
 
@@ -1165,11 +1173,11 @@ msgstr "检查"
 msgid "empty slot"
 msgstr "空插槽"
 
-#: src/gui/widgets/arranger.c:2264 resources/ui/string_entry_dialog.ui:94
+#: src/gui/widgets/arranger.c:2394 resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
 msgstr "标记名称"
 
-#: src/gui/widgets/arranger.c:4166
+#: src/gui/widgets/arranger.c:4296
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -1237,26 +1245,26 @@ msgid "Rename"
 msgstr "重命名"
 
 #: src/gui/widgets/plugin_browser.c:1045
+#: src/gui/widgets/panel_file_browser.c:179
 #: src/gui/widgets/port_connections_tree.c:183
 #: src/gui/widgets/home_toolbar.c:214 src/gui/widgets/cc_bindings_tree.c:185
 #: resources/ui/modulator_inner.ui:45
 msgid "Delete"
 msgstr "删除"
 
-#: src/gui/widgets/plugin_browser.c:2434 resources/ui/panel_file_browser.ui:63
-#: resources/ui/file_browser.ui:63
+#: src/gui/widgets/plugin_browser.c:2444
 msgid "Collection"
 msgstr "集合"
 
-#: src/gui/widgets/plugin_browser.c:2444
+#: src/gui/widgets/plugin_browser.c:2454
 msgid "Author"
 msgstr ""
 
-#: src/gui/widgets/plugin_browser.c:2454
+#: src/gui/widgets/plugin_browser.c:2464
 msgid "Category"
 msgstr "类别"
 
-#: src/gui/widgets/plugin_browser.c:2464
+#: src/gui/widgets/plugin_browser.c:2474
 msgid "Protocol"
 msgstr "协议"
 
@@ -1316,39 +1324,39 @@ msgstr "读取数值失败"
 msgid "This feature is not available at the moment"
 msgstr "此特性当前不可用"
 
-#: src/gui/widgets/bot_bar.c:556
+#: src/gui/widgets/bot_bar.c:560
 msgid "Status"
 msgstr "状态"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
-#: src/gui/widgets/bot_bar.c:563
+#: src/gui/widgets/bot_bar.c:567
 msgid "Buf sz"
 msgstr ""
 
 #. TRANSLATORS: verb - change buffer size
-#: src/gui/widgets/bot_bar.c:569
+#: src/gui/widgets/bot_bar.c:574
 msgid "change"
 msgstr "更改"
 
 #. TRANSLATORS: sample rate
-#: src/gui/widgets/bot_bar.c:571
+#: src/gui/widgets/bot_bar.c:577
 msgid "Rate"
 msgstr "采样率"
 
-#: src/gui/widgets/bot_bar.c:609
+#: src/gui/widgets/bot_bar.c:615
 msgid "Metronome"
 msgstr "节拍器"
 
-#: src/gui/widgets/bot_bar.c:609
+#: src/gui/widgets/bot_bar.c:615 resources/ui/file_auditioner_controls.ui:65
 msgid "Volume"
 msgstr "音量"
 
-#: src/gui/widgets/bot_bar.c:693
+#: src/gui/widgets/bot_bar.c:699
 msgid "bpm"
 msgstr "BPM"
 
-#: src/gui/widgets/bot_bar.c:697
+#: src/gui/widgets/bot_bar.c:703
 msgid "time sig."
 msgstr "时间符号。"
 
@@ -1410,7 +1418,7 @@ msgid "Create takes (mute previous)"
 msgstr ""
 
 #: src/gui/widgets/transport_controls.c:444
-#: build/data/org.zrythm.Zrythm.gschema.xml:655
+#: build/data/org.zrythm.Zrythm.gschema.xml:709
 msgid "Recording mode"
 msgstr "录制模式"
 
@@ -1442,16 +1450,16 @@ msgstr "音乐模式"
 msgid "Export as MIDI file"
 msgstr "导出为MIDI文件"
 
-#: src/gui/widgets/timeline_arranger.c:1328 src/gui/widgets/track.c:1717
+#: src/gui/widgets/timeline_arranger.c:1328 src/gui/widgets/track.c:1719
 msgid "Quick bounce"
 msgstr "快速导出"
 
-#: src/gui/widgets/timeline_arranger.c:1339 src/gui/widgets/track.c:1727
+#: src/gui/widgets/timeline_arranger.c:1339 src/gui/widgets/track.c:1729
 msgid "Bounce..."
 msgstr "导出..."
 
 #: src/gui/widgets/automation_arranger.c:262
-#: build/data/org.zrythm.Zrythm.gschema.xml:805
+#: build/data/org.zrythm.Zrythm.gschema.xml:859
 msgid "Curve algorithm"
 msgstr "Curve 算法"
 
@@ -1466,7 +1474,7 @@ msgstr "关于Zrythm"
 
 #: src/gui/widgets/header.c:125 src/gui/widgets/preferences.c:931
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
-#: resources/ui/preferences.ui:27
+#: resources/ui/file_auditioner_controls.ui:81 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "首选项"
 
@@ -1477,6 +1485,23 @@ msgstr "日志查看器"
 #: src/gui/widgets/header.c:128
 msgid "Scripting interface"
 msgstr "脚本接口"
+
+#: src/gui/widgets/panel_file_browser.c:126
+msgid "Cannot delete standard bookmark"
+msgstr ""
+
+#: src/gui/widgets/panel_file_browser.c:138
+msgid "Are you sure you want to remove this bookmark?"
+msgstr ""
+
+#: src/gui/widgets/panel_file_browser.c:286
+msgid "Add Bookmark"
+msgstr ""
+
+#: src/gui/widgets/panel_file_browser.c:425 src/gui/widgets/file_browser.c:71
+#, fuzzy
+msgid "No file selected"
+msgstr "未选择剪辑"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1516,7 +1541,7 @@ msgid "Redo"
 msgstr "重做"
 
 #: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:239
-#: build/data/org.zrythm.Zrythm.gschema.xml:815
+#: build/data/org.zrythm.Zrythm.gschema.xml:869
 msgid "Undo"
 msgstr "撤销"
 
@@ -1576,8 +1601,7 @@ msgstr "插件属性"
 #: src/gui/widgets/plugin_properties_expander.c:157
 #: src/gui/widgets/event_viewer.c:453 resources/ui/chord_selector_window.ui:239
 #: resources/ui/arranger_object_info_dialog.ui:114
-#: resources/ui/port_info_dialog.ui:153 resources/ui/panel_file_browser.ui:84
-#: resources/ui/file_browser.ui:84
+#: resources/ui/port_info_dialog.ui:153
 msgid "Type"
 msgstr "类型"
 
@@ -1586,6 +1610,7 @@ msgid "Banks"
 msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:189
+#: resources/ui/file_browser_filters.ui:60
 msgid "Presets"
 msgstr "预设"
 
@@ -1605,7 +1630,7 @@ msgstr "选择将信号路由到的通道"
 msgid "Stereo Out"
 msgstr "立体声输出"
 
-#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:456
+#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:444
 msgid "Fader"
 msgstr "推子"
 
@@ -1672,7 +1697,7 @@ msgstr "某些更改只有在您重新启动%s后才会生效"
 msgid "Monitor"
 msgstr "监视器"
 
-#: src/gui/widgets/monitor_section.c:69 src/gui/widgets/monitor_section.c:344
+#: src/gui/widgets/monitor_section.c:69 src/gui/widgets/monitor_section.c:345
 msgid "Dim"
 msgstr ""
 
@@ -1703,27 +1728,27 @@ msgstr ""
 msgid "Currently listened tracks"
 msgstr ""
 
-#: src/gui/widgets/monitor_section.c:396
+#: src/gui/widgets/monitor_section.c:397
 msgid "Unsolo all tracks"
 msgstr "取消所有音轨的独奏"
 
-#: src/gui/widgets/monitor_section.c:399
+#: src/gui/widgets/monitor_section.c:400
 msgid "Unmute all tracks"
 msgstr "取消对所有音轨的静音"
 
-#: src/gui/widgets/monitor_section.c:402
+#: src/gui/widgets/monitor_section.c:403
 msgid "Unlisten all tracks"
 msgstr "取消倾听所有音轨"
 
-#: src/gui/widgets/monitor_section.c:449
+#: src/gui/widgets/monitor_section.c:450
 msgid "Soloing"
 msgstr "独奏中"
 
-#: src/gui/widgets/monitor_section.c:453
+#: src/gui/widgets/monitor_section.c:454
 msgid "Muting"
 msgstr "静音中"
 
-#: src/gui/widgets/monitor_section.c:457
+#: src/gui/widgets/monitor_section.c:458
 msgid "Listening"
 msgstr ""
 
@@ -1743,6 +1768,23 @@ msgstr "点击以启用输入"
 #: src/gui/widgets/active_hardware_mb.c:127
 msgid "Click to enable outputs"
 msgstr "点击启用输出"
+
+#: src/gui/widgets/file_auditioner_controls.c:275
+#: build/data/org.zrythm.Zrythm.gschema.xml:546
+msgid "Autoplay"
+msgstr ""
+
+#: src/gui/widgets/file_auditioner_controls.c:277
+#: build/data/org.zrythm.Zrythm.gschema.xml:551
+#, fuzzy
+msgid "Show unsupported files"
+msgstr "不支持的文件类型%s"
+
+#: src/gui/widgets/file_auditioner_controls.c:280
+#: build/data/org.zrythm.Zrythm.gschema.xml:556
+#, fuzzy
+msgid "Show hidden files"
+msgstr "显示/隐藏 UI"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -1993,73 +2035,73 @@ msgstr "可见的"
 msgid "Lane %d"
 msgstr "通道%d"
 
-#: src/gui/widgets/track.c:1123
+#: src/gui/widgets/track.c:1125
 msgid "Hide instrument UI"
 msgstr "隐藏乐器界面"
 
-#: src/gui/widgets/track.c:1127
+#: src/gui/widgets/track.c:1129
 msgid "Show instrument UI"
 msgstr "显示乐器界面"
 
-#: src/gui/widgets/track.c:1154 resources/ui/fader_buttons.ui:36
+#: src/gui/widgets/track.c:1156 resources/ui/fader_buttons.ui:36
 msgid "Mono compatibility"
 msgstr ""
 
-#: src/gui/widgets/track.c:1160
+#: src/gui/widgets/track.c:1162
 msgid "Disarm"
 msgstr ""
 
-#: src/gui/widgets/track.c:1164
+#: src/gui/widgets/track.c:1166
 #, fuzzy
 msgid "Arm for recording"
 msgstr "用于录制的 Arm"
 
-#: src/gui/widgets/track.c:1171
+#: src/gui/widgets/track.c:1173
 msgid "Hide lanes"
 msgstr "隐藏音轨"
 
-#: src/gui/widgets/track.c:1175
+#: src/gui/widgets/track.c:1177
 msgid "Show lanes"
 msgstr "显示音轨"
 
-#: src/gui/widgets/track.c:1182
+#: src/gui/widgets/track.c:1184
 msgid "Hide automation"
 msgstr "隐藏自动控制"
 
-#: src/gui/widgets/track.c:1186
+#: src/gui/widgets/track.c:1188
 msgid "Show automation"
 msgstr "显示自动化"
 
-#: src/gui/widgets/track.c:1195 resources/ui/project_assistant.ui:102
+#: src/gui/widgets/track.c:1197 resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr "删除"
 
-#: src/gui/widgets/track.c:1199
+#: src/gui/widgets/track.c:1201
 msgid "Freeze/unfreeze"
 msgstr "切换冻结"
 
-#: src/gui/widgets/track.c:1203
+#: src/gui/widgets/track.c:1205
 msgid "Lock/unlock"
 msgstr "锁定/解锁"
 
-#: src/gui/widgets/track.c:1688
+#: src/gui/widgets/track.c:1690
 msgid "Add Region"
 msgstr "添加区域"
 
-#: src/gui/widgets/track.c:1835
+#: src/gui/widgets/track.c:1837
 msgid "Track MIDI Ch"
 msgstr "音轨MIDI通道"
 
-#: src/gui/widgets/track.c:1848
+#: src/gui/widgets/track.c:1850
 msgid "Passthrough input"
 msgstr "直通输入"
 
-#: src/gui/widgets/track.c:1877 src/gui/widgets/track.c:1936
+#: src/gui/widgets/track.c:1879 src/gui/widgets/track.c:1938
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "MIDI通道%d"
 
-#: src/gui/widgets/track.c:1916
+#: src/gui/widgets/track.c:1918
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "通道%d MIDI Ch"
@@ -2223,7 +2265,17 @@ msgstr "_选择"
 msgid "Running %s version <b>%s</b>%s%s"
 msgstr ""
 
-#: src/gui/backend/arranger_object.c:2919
+#. TRANSLATORS: Home directory
+#: src/gui/backend/file_manager.c:57
+msgid "Home"
+msgstr ""
+
+#. TRANSLATORS: Desktop directory
+#: src/gui/backend/file_manager.c:68
+msgid "Desktop"
+msgstr ""
+
+#: src/gui/backend/arranger_object.c:2881
 #, c-format
 msgid "Invalid object name %s"
 msgstr "无效的对象名称 %s"
@@ -2274,18 +2326,18 @@ msgstr "所选插槽中已存在一个插件。要覆盖它吗？"
 msgid "Error instantiating plugin. Please see log for details."
 msgstr "实例化插件时出错。有关详细信息，请参阅日志。"
 
-#: src/utils/ui.c:844
+#: src/utils/ui.c:846
 msgid "Sine (Equal Power)"
 msgstr "正弦（等功率）"
 
-#: src/utils/ui.c:1014
+#: src/utils/ui.c:1016
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
 msgstr "您选择的语言（%s）的区域设置不可用。请先安装一个，然后重新启动%s"
 
-#: src/utils/ui.c:1019
+#: src/utils/ui.c:1021
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2313,79 +2365,79 @@ msgstr "对象为空。有关详细信息，请参阅日志"
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: src/settings/settings.c:142
+#: src/settings/settings.c:148
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "架构%s%s%s"
 
-#: src/settings/settings.c:153
+#: src/settings/settings.c:159
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "正在重置架构%s.。。\n"
 
-#: src/settings/settings.c:192
+#: src/settings/settings.c:198
 #, c-format
 msgid "skipping %s"
 msgstr "跳过%s"
 
-#: src/settings/settings.c:203
+#: src/settings/settings.c:209
 #, c-format
 msgid "resetting %s to %s"
 msgstr "正在将%s重置为%s"
 
-#: src/settings/settings.c:248
+#: src/settings/settings.c:254
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr "找不到架构%s.可能没有安装%s"
 
-#: src/settings/settings.c:263
+#: src/settings/settings.c:269
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "无法查看架构%s"
 
-#: src/settings/settings.c:270
+#: src/settings/settings.c:276
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "无法重置架构%s"
 
-#: src/settings/settings.c:303
+#: src/settings/settings.c:309
 #, c-format
 msgid ""
 "This will reset %s to factory settings. You will lose all your preferences. "
 "Type 'y' to continue: "
 msgstr "这会将 %s 重置为出厂设置。你将丢失所有首选项。输入 'y' 继续： "
 
-#: src/settings/settings.c:310
+#: src/settings/settings.c:316
 #, c-format
 msgid "Aborting...\n"
 msgstr "正在中止...\n"
 
-#: src/settings/settings.c:321
+#: src/settings/settings.c:327
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "重置到出厂设置成功\n"
 
-#: src/audio/tracklist.c:1159
+#: src/audio/tracklist.c:1189
 msgid "No file was found"
 msgstr "未找到文件"
 
-#: src/audio/tracklist.c:1184
+#: src/audio/tracklist.c:1214
 #, c-format
 msgid "Unsupported file type %s"
 msgstr "不支持的文件类型%s"
 
-#: src/audio/tracklist.c:1207
+#: src/audio/tracklist.c:1237
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr "只能在 MIDI/乐器轨道上放下 MIDI 文件"
 
-#: src/audio/tracklist.c:1220
+#: src/audio/tracklist.c:1250
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
 
-#: src/audio/tracklist.c:1234
+#: src/audio/tracklist.c:1264
 msgid "Can only drop audio files on audio tracks"
 msgstr "只能将音频文件拖放到音频轨道上"
 
@@ -2452,21 +2504,26 @@ msgstr ""
 msgid "Modulators"
 msgstr "调制器"
 
-#: src/audio/exporter.c:138
+#: src/audio/exporter.c:137
 #, c-format
 msgid "Format %s not supported yet"
 msgstr "格式 %s 尚不被支持"
 
-#: src/audio/exporter.c:235
+#: src/audio/exporter.c:234
 msgid "SF INFO invalid"
 msgstr ""
 
-#: src/audio/exporter.c:257
+#: src/audio/exporter.c:256
 #, c-format
 msgid ""
 "Couldn't open SNDFILE %s:\n"
 "%d: %s"
 msgstr ""
+
+#: src/audio/supported_file.c:309
+#, fuzzy
+msgid "Failed opening file"
+msgstr "无法打开文件:%s"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -2474,7 +2531,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr "Portaudio错误:%s"
 
-#: src/audio/region.c:497 build/data/org.zrythm.Zrythm.gschema.xml:801
+#: src/audio/region.c:500 build/data/org.zrythm.Zrythm.gschema.xml:855
 msgid "Automation"
 msgstr "自动化"
 
@@ -2553,78 +2610,118 @@ msgstr "PulseAudio 错误：连接失败"
 msgid "ALSA Error: %s"
 msgstr "ALSA错误:%s"
 
-#: src/audio/sample_processor.c:50
-msgid "Sample Processor"
-msgstr "示例处理器"
+#: src/audio/track.c:353
+#, fuzzy
+msgid "Track record"
+msgstr "音轨颜色"
 
 #. TODO
 #: src/audio/scale.c:565 src/audio/scale.c:599
 msgid "Unimplemented"
 msgstr "未实现"
 
-#: src/audio/fader.c:126
+#: src/audio/fader.c:142
 msgid "Prefader Volume"
 msgstr ""
 
-#: src/audio/fader.c:126
+#: src/audio/fader.c:142
 msgid "Fader Volume"
 msgstr "音量控制器音量"
 
-#: src/audio/fader.c:157
+#: src/audio/fader.c:173
 #, fuzzy
 msgid "Prefader Balance"
 msgstr "前推子平衡"
 
-#: src/audio/fader.c:157
+#: src/audio/fader.c:173
 msgid "Fader Balance"
 msgstr "音量控制器平衡"
 
-#: src/audio/fader.c:176
+#: src/audio/fader.c:192
 #, fuzzy
 msgid "Prefader Mute"
 msgstr "前推子静音"
 
-#: src/audio/fader.c:176
+#: src/audio/fader.c:192
 msgid "Fader Mute"
 msgstr "音量控制器静音"
 
-#: src/audio/fader.c:200
+#: src/audio/fader.c:213
+#, fuzzy
+msgid "Prefader Solo"
+msgstr "前推子"
+
+#: src/audio/fader.c:213
+#, fuzzy
+msgid "Fader Solo"
+msgstr "音量控制器音量"
+
+#: src/audio/fader.c:227
+#, fuzzy
+msgid "Prefader Listen"
+msgstr "前推子发送"
+
+#: src/audio/fader.c:227
+#, fuzzy
+msgid "Fader Listen"
+msgstr "音量控制器静音"
+
+#: src/audio/fader.c:241
+#, fuzzy
+msgid "Prefader Mono Compat"
+msgstr "前推子静音"
+
+#: src/audio/fader.c:242
+msgid "Fader Mono Compat"
+msgstr ""
+
+#: src/audio/fader.c:262
 msgid "Ch Pre-Fader in"
 msgstr "Ch预推子输入"
 
-#: src/audio/fader.c:204
+#: src/audio/fader.c:266
 msgid "Ch Fader in"
 msgstr "Ch推子输入"
 
-#: src/audio/fader.c:209
+#: src/audio/fader.c:271
+#, fuzzy
+msgid "Sample Processor Fader in"
+msgstr "示例处理器"
+
+#: src/audio/fader.c:275
 msgid "Monitor Fader in"
 msgstr "监视器推子输入"
 
-#: src/audio/fader.c:227
+#: src/audio/fader.c:293
 msgid "Ch Pre-Fader out"
 msgstr "Ch预推子输出"
 
-#: src/audio/fader.c:231
+#: src/audio/fader.c:297
 msgid "Ch Fader out"
 msgstr "Ch推子输出"
 
-#: src/audio/fader.c:236
+#: src/audio/fader.c:302
+#, fuzzy
+msgid "Sample Processor Fader out"
+msgstr "示例处理器"
+
+#: src/audio/fader.c:306
 msgid "Monitor Fader out"
 msgstr "监视器推子输出"
 
-#: src/audio/fader.c:257
+#: src/audio/fader.c:327
 msgid "Ch MIDI Pre-Fader in"
 msgstr "Ch MIDI预推子输入"
 
-#: src/audio/fader.c:261
+#: src/audio/fader.c:331
 msgid "Ch MIDI Fader in"
 msgstr "Ch MIDI推子输入"
 
-#: src/audio/fader.c:272
+#: src/audio/fader.c:342
 msgid "Ch MIDI Pre-Fader out"
 msgstr "Ch MIDI预推子输入"
 
-#: src/audio/fader.c:276
+#: src/audio/fader.c:346
 msgid "Ch MIDI Fader out"
 msgstr "Ch MIDI推子输出"
 
@@ -2979,164 +3076,164 @@ msgstr "删除区间"
 msgid "%s Track"
 msgstr "%s音轨"
 
-#: src/actions/tracklist_selections.c:457
+#: src/actions/tracklist_selections.c:458
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "实例化插件%s时出错。有关详细信息，请参阅日志。"
 
-#: src/actions/tracklist_selections.c:1567
+#: src/actions/tracklist_selections.c:1568
 msgid "Copy Track"
 msgstr "复制曲目"
 
-#: src/actions/tracklist_selections.c:1572
-#: src/actions/tracklist_selections.c:1728
+#: src/actions/tracklist_selections.c:1573
+#: src/actions/tracklist_selections.c:1729
 #, c-format
 msgid "Move %d Tracks"
 msgstr "移动%d音轨"
 
-#: src/actions/tracklist_selections.c:1583
+#: src/actions/tracklist_selections.c:1584
 #, c-format
 msgid "Create %s Track"
 msgstr "创建%s音轨"
 
-#: src/actions/tracklist_selections.c:1589
+#: src/actions/tracklist_selections.c:1590
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "创建%d%s曲目"
 
-#: src/actions/tracklist_selections.c:1596
+#: src/actions/tracklist_selections.c:1597
 msgid "Delete Track"
 msgstr "删除音轨"
 
-#: src/actions/tracklist_selections.c:1601
+#: src/actions/tracklist_selections.c:1602
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "删除%d首曲目"
 
-#: src/actions/tracklist_selections.c:1614
+#: src/actions/tracklist_selections.c:1615
 msgid "Solo Track"
 msgstr "独奏曲目"
 
-#: src/actions/tracklist_selections.c:1617
+#: src/actions/tracklist_selections.c:1618
 msgid "Unsolo Track"
 msgstr "非独奏曲目"
 
-#: src/actions/tracklist_selections.c:1621
+#: src/actions/tracklist_selections.c:1622
 msgid "Mute Track"
 msgstr "静音音轨"
 
-#: src/actions/tracklist_selections.c:1624
+#: src/actions/tracklist_selections.c:1625
 msgid "Unmute Track"
 msgstr "取消音轨静音"
 
-#: src/actions/tracklist_selections.c:1628
+#: src/actions/tracklist_selections.c:1629
 msgid "Listen Track"
 msgstr "听音轨"
 
-#: src/actions/tracklist_selections.c:1631
+#: src/actions/tracklist_selections.c:1632
 msgid "Unlisten Track"
 msgstr "取消收听音轨"
 
-#: src/actions/tracklist_selections.c:1635
+#: src/actions/tracklist_selections.c:1636
 msgid "Enable Track"
 msgstr "启用音轨"
 
-#: src/actions/tracklist_selections.c:1638
+#: src/actions/tracklist_selections.c:1639
 msgid "Disable Track"
 msgstr "禁用音轨"
 
-#: src/actions/tracklist_selections.c:1641
+#: src/actions/tracklist_selections.c:1642
 msgid "Change Fader"
 msgstr "更改推子"
 
-#: src/actions/tracklist_selections.c:1644
+#: src/actions/tracklist_selections.c:1645
 msgid "Change Pan"
 msgstr "更改Pan"
 
-#: src/actions/tracklist_selections.c:1647
+#: src/actions/tracklist_selections.c:1648
 msgid "Change direct out"
 msgstr "更改直接输出"
 
-#: src/actions/tracklist_selections.c:1650
+#: src/actions/tracklist_selections.c:1651
 msgid "Rename track"
 msgstr "重命名音轨"
 
-#: src/actions/tracklist_selections.c:1653
-#: src/actions/tracklist_selections.c:1710
+#: src/actions/tracklist_selections.c:1654
+#: src/actions/tracklist_selections.c:1711
 msgid "Change color"
 msgstr "修改颜色"
 
-#: src/actions/tracklist_selections.c:1656
+#: src/actions/tracklist_selections.c:1657
 msgid "Change icon"
 msgstr "修改图标"
 
-#: src/actions/tracklist_selections.c:1659
+#: src/actions/tracklist_selections.c:1660
 msgid "Change comment"
 msgstr "修改注解"
 
-#: src/actions/tracklist_selections.c:1662
-#: src/actions/tracklist_selections.c:1713
+#: src/actions/tracklist_selections.c:1663
+#: src/actions/tracklist_selections.c:1714
 msgid "Change MIDI fader mode"
 msgstr "更改 MIDI 音量控制器模式"
 
-#: src/actions/tracklist_selections.c:1675
+#: src/actions/tracklist_selections.c:1676
 #, c-format
 msgid "Solo %d Tracks"
 msgstr "独奏 %d 音轨"
 
-#: src/actions/tracklist_selections.c:1679
+#: src/actions/tracklist_selections.c:1680
 #, c-format
 msgid "Unsolo %d Tracks"
 msgstr "非独奏 %d 音轨"
 
-#: src/actions/tracklist_selections.c:1684
+#: src/actions/tracklist_selections.c:1685
 #, c-format
 msgid "Mute %d Tracks"
 msgstr "静音 %d音轨"
 
-#: src/actions/tracklist_selections.c:1688
+#: src/actions/tracklist_selections.c:1689
 #, c-format
 msgid "Unmute %d Tracks"
 msgstr "取消对 %d 音轨的静音"
 
-#: src/actions/tracklist_selections.c:1693
+#: src/actions/tracklist_selections.c:1694
 #, c-format
 msgid "Listen %d Tracks"
 msgstr "收听 %d 道音轨"
 
-#: src/actions/tracklist_selections.c:1697
+#: src/actions/tracklist_selections.c:1698
 #, c-format
 msgid "Unlisten %d Tracks"
 msgstr "取消收听 %d 道音轨"
 
-#: src/actions/tracklist_selections.c:1702
+#: src/actions/tracklist_selections.c:1703
 #, c-format
 msgid "Enable %d Tracks"
 msgstr "启用 %d 条音轨"
 
-#: src/actions/tracklist_selections.c:1706
+#: src/actions/tracklist_selections.c:1707
 #, c-format
 msgid "Disable %d Tracks"
 msgstr "禁用 %d 条音轨"
 
-#: src/actions/tracklist_selections.c:1723
+#: src/actions/tracklist_selections.c:1724
 msgid "Move Track"
 msgstr "移动音轨"
 
-#: src/actions/tracklist_selections.c:1736
+#: src/actions/tracklist_selections.c:1737
 msgid "Pin Track"
 msgstr "固定音轨"
 
-#: src/actions/tracklist_selections.c:1741
+#: src/actions/tracklist_selections.c:1742
 #, c-format
 msgid "Pin %d Tracks"
 msgstr "固定 %d 道音轨"
 
-#: src/actions/tracklist_selections.c:1748
+#: src/actions/tracklist_selections.c:1749
 msgid "Unpin Track"
 msgstr "取消固定音轨"
 
-#: src/actions/tracklist_selections.c:1753
+#: src/actions/tracklist_selections.c:1754
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr "取消固定 %d 道音轨"
@@ -3154,11 +3251,11 @@ msgid "Global Shortcuts"
 msgstr ""
 
 #: resources/gtk/help-overlay.ui:35 resources/ui/preferences.ui:365
-#: build/data/org.zrythm.Zrythm.gschema.xml:664
-#: build/data/org.zrythm.Zrythm.gschema.xml:713
-#: build/data/org.zrythm.Zrythm.gschema.xml:830
-#: build/data/org.zrythm.Zrythm.gschema.xml:845
+#: build/data/org.zrythm.Zrythm.gschema.xml:718
+#: build/data/org.zrythm.Zrythm.gschema.xml:767
+#: build/data/org.zrythm.Zrythm.gschema.xml:884
 #: build/data/org.zrythm.Zrythm.gschema.xml:899
+#: build/data/org.zrythm.Zrythm.gschema.xml:953
 msgid "General"
 msgstr "一般设置"
 
@@ -3523,7 +3620,7 @@ msgid "Fishbowl"
 msgstr "Fishbowl"
 
 #: resources/ui/timeline_toolbar.ui:69
-#: build/data/org.zrythm.Zrythm.gschema.xml:367
+#: build/data/org.zrythm.Zrythm.gschema.xml:373
 msgid "Musical mode"
 msgstr "音乐模式"
 
@@ -3877,9 +3974,9 @@ msgstr "格式1"
 msgid "Track name"
 msgstr "曲目名称"
 
-#: resources/ui/panel_file_browser.ui:107 resources/ui/file_browser.ui:107
-msgid "Location"
-msgstr "位置"
+#: resources/ui/panel_file_browser.ui:58
+msgid "Bookmarks"
+msgstr ""
 
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
@@ -3896,6 +3993,15 @@ msgstr "插件"
 #: resources/ui/port_selector_popover.ui:185
 msgid "Port"
 msgstr "端口"
+
+#: resources/ui/file_auditioner_controls.ui:39
+msgid "Play/Pause"
+msgstr ""
+
+#: resources/ui/file_auditioner_controls.ui:52
+#: resources/ui/transport_controls.ui:70
+msgid "Stop"
+msgstr "停止"
 
 #: resources/ui/header.ui:74
 msgid "Edit"
@@ -3928,10 +4034,6 @@ msgstr "停止时返回提示点"
 #: resources/ui/transport_controls.ui:55
 msgid "Play"
 msgstr "播放"
-
-#: resources/ui/transport_controls.ui:70
-msgid "Stop"
-msgstr "停止"
 
 #: resources/ui/transport_controls.ui:85
 msgid "Backward"
@@ -3998,7 +4100,7 @@ msgid "Bounce"
 msgstr "导出"
 
 #: resources/ui/bounce_dialog.ui:89
-#: build/data/org.zrythm.Zrythm.gschema.xml:310
+#: build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "Bounce with parents"
 msgstr ""
 
@@ -4011,7 +4113,7 @@ msgid "ms"
 msgstr "ms"
 
 #: resources/ui/bounce_dialog.ui:167
-#: build/data/org.zrythm.Zrythm.gschema.xml:315
+#: build/data/org.zrythm.Zrythm.gschema.xml:321
 #, fuzzy
 msgid "Disable after bounce"
 msgstr "弹跳后禁用"
@@ -4119,12 +4221,12 @@ msgid "My Project"
 msgstr "我的项目"
 
 #: resources/ui/export_dialog.ui:317
-#: build/data/org.zrythm.Zrythm.gschema.xml:536
+#: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Title"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:328
-#: build/data/org.zrythm.Zrythm.gschema.xml:531
+#: build/data/org.zrythm.Zrythm.gschema.xml:634
 msgid "Artist"
 msgstr "艺术家"
 
@@ -4133,7 +4235,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:351
-#: build/data/org.zrythm.Zrythm.gschema.xml:526
+#: build/data/org.zrythm.Zrythm.gschema.xml:629
 msgid "Genre"
 msgstr "流派"
 
@@ -4142,17 +4244,17 @@ msgid "Electronic"
 msgstr "EDM"
 
 #: resources/ui/export_dialog.ui:384
-#: build/data/org.zrythm.Zrythm.gschema.xml:546
+#: build/data/org.zrythm.Zrythm.gschema.xml:649
 msgid "Format"
 msgstr "格式"
 
 #: resources/ui/export_dialog.ui:397
-#: build/data/org.zrythm.Zrythm.gschema.xml:566
+#: build/data/org.zrythm.Zrythm.gschema.xml:669
 msgid "Bit depth"
 msgstr "位深度"
 
 #: resources/ui/export_dialog.ui:416
-#: build/data/org.zrythm.Zrythm.gschema.xml:556
+#: build/data/org.zrythm.Zrythm.gschema.xml:659
 msgid "Dither"
 msgstr "抖动"
 
@@ -4233,7 +4335,7 @@ msgstr "水平"
 msgid "Vertical"
 msgstr "竖直"
 
-#: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:665
+#: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:719
 msgid "Engine"
 msgstr "引擎"
 
@@ -4265,7 +4367,7 @@ msgstr "要使用的PAN算法"
 msgid "The pan law to use"
 msgstr "PAN算法使用"
 
-#: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:718
+#: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:772
 msgid "Zrythm path"
 msgstr "Zrythm 路径"
 
@@ -4281,13 +4383,13 @@ msgstr "设备名称"
 msgid "Buffer Size"
 msgstr "缓冲区大小"
 
-#: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:684
+#: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:738
 msgid "Samplerate"
 msgstr "采样"
 
 #: resources/ui/preferences.ui:380 resources/ui/preferences.ui:449
-#: build/data/org.zrythm.Zrythm.gschema.xml:727
-#: build/data/org.zrythm.Zrythm.gschema.xml:758
+#: build/data/org.zrythm.Zrythm.gschema.xml:781
+#: build/data/org.zrythm.Zrythm.gschema.xml:812
 msgid "Plugins"
 msgstr "插件"
 
@@ -4315,9 +4417,9 @@ msgstr "VST2路径"
 msgid "Main Window"
 msgstr "主窗口"
 
-#: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:786
-#: build/data/org.zrythm.Zrythm.gschema.xml:800
-#: build/data/org.zrythm.Zrythm.gschema.xml:814
+#: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:840
+#: build/data/org.zrythm.Zrythm.gschema.xml:854
+#: build/data/org.zrythm.Zrythm.gschema.xml:868
 msgid "Editing"
 msgstr "编辑中"
 
@@ -4334,11 +4436,11 @@ msgid "GUI"
 msgstr "GUI"
 
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
-#: build/data/org.zrythm.Zrythm.gschema.xml:829
+#: build/data/org.zrythm.Zrythm.gschema.xml:883
 msgid "Projects"
 msgstr "项目"
 
-#: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:835
+#: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:889
 msgid "Autosave interval"
 msgstr "自动保存间隔"
 
@@ -4357,213 +4459,213 @@ msgstr "数字音频工作站"
 msgid "highly automated and intuitive digital audio workstation"
 msgstr "高度自动化和直观的数字音频工作站"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:223
+#: build/data/org.zrythm.Zrythm.gschema.xml:229
 msgid "Recent project list"
 msgstr "最近的项目列表"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:224
+#: build/data/org.zrythm.Zrythm.gschema.xml:230
 msgid "A list of recent projects to be referenced on startup."
 msgstr "启动时要引用的最近项目的列表。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:228
+#: build/data/org.zrythm.Zrythm.gschema.xml:234
 msgid "First run"
 msgstr "首次运行"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:229
+#: build/data/org.zrythm.Zrythm.gschema.xml:235
 msgid "Whether this is the first run or not."
 msgstr "不管这是不是第一次运行。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:233
+#: build/data/org.zrythm.Zrythm.gschema.xml:239
 msgid "Installation directory"
 msgstr "安装目录"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:234
+#: build/data/org.zrythm.Zrythm.gschema.xml:240
 msgid ""
 "This is the directory Zrythm is installed in. Currently only used on Windows."
 msgstr "这是安装Zrythm的目录。当前仅在Windows上使用。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:238
+#: build/data/org.zrythm.Zrythm.gschema.xml:244
 msgid "Last project directory"
 msgstr "最后一个项目目录"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:239
+#: build/data/org.zrythm.Zrythm.gschema.xml:245
 msgid "Last directory a project was created in."
 msgstr "创建项目的最后一个目录。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:243
+#: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid "List of all versions run at least once"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:244
+#: build/data/org.zrythm.Zrythm.gschema.xml:250
 msgid "A list of versions run at least once."
 msgstr "至少运行一次的版本列表。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:248
+#: build/data/org.zrythm.Zrythm.gschema.xml:254
 msgid "Last version that was notified of a new release"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:249
+#: build/data/org.zrythm.Zrythm.gschema.xml:255
 msgid ""
 "The last version that received a 'new version has been released' "
 "notification."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:258
+#: build/data/org.zrythm.Zrythm.gschema.xml:264
 msgid "Monitor volume"
 msgstr "监视器音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:259
+#: build/data/org.zrythm.Zrythm.gschema.xml:265
 msgid "The monitor volume in amplitude (0 to 2)."
 msgstr "监视器音量振幅（0到2）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:264
+#: build/data/org.zrythm.Zrythm.gschema.xml:270
 msgid "Mute volume"
 msgstr "静音"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:265
+#: build/data/org.zrythm.Zrythm.gschema.xml:271
 msgid "The monitor mute volume in amplitude (0 to 2)."
 msgstr "监视器静音幅度（0到2）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:270
+#: build/data/org.zrythm.Zrythm.gschema.xml:276
 msgid "Listen volume"
 msgstr "收听音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:271
+#: build/data/org.zrythm.Zrythm.gschema.xml:277
 msgid "The monitor listen volume in amplitude (0 to 2)."
 msgstr "监视器收听音量振幅（0到2）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:276
+#: build/data/org.zrythm.Zrythm.gschema.xml:282
 msgid "Dim volume"
 msgstr "模糊音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:277
+#: build/data/org.zrythm.Zrythm.gschema.xml:283
 msgid "The monitor dim volume in amplitude (0 to 2)."
 msgstr "监视器模糊音量的振幅（0到2）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:281
+#: build/data/org.zrythm.Zrythm.gschema.xml:287
 msgid "Sum to mono"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:282
+#: build/data/org.zrythm.Zrythm.gschema.xml:288
 #, fuzzy
 msgid "Whether to sum the monitor signal to mono."
 msgstr "是否将监视器信号 sum 到单声道。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:286
+#: build/data/org.zrythm.Zrythm.gschema.xml:292
 msgid "Dim output"
 msgstr "使输出变弱"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:287
+#: build/data/org.zrythm.Zrythm.gschema.xml:293
 msgid "Whether to dim the the monitor signal."
 msgstr "是否使监视器信号变弱。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:292
+#: build/data/org.zrythm.Zrythm.gschema.xml:298
 msgid "Whether to mute the monitor signal."
 msgstr "是否让监视器信号静音。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:296
-#: build/data/org.zrythm.Zrythm.gschema.xml:301
+#: build/data/org.zrythm.Zrythm.gschema.xml:302
+#: build/data/org.zrythm.Zrythm.gschema.xml:307
 msgid "Left output devices"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:297
+#: build/data/org.zrythm.Zrythm.gschema.xml:303
 msgid "A list of output devices to route the left monitor output to."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:302
+#: build/data/org.zrythm.Zrythm.gschema.xml:308
 msgid "A list of output devices to route the right monitor output to."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:311
+#: build/data/org.zrythm.Zrythm.gschema.xml:317
 msgid "Whether to bounce with parent tracks (direct outputs)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:316
+#: build/data/org.zrythm.Zrythm.gschema.xml:322
 #, fuzzy
 msgid "Disable track after bouncing."
 msgstr "弹跳后禁用音轨。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:320
+#: build/data/org.zrythm.Zrythm.gschema.xml:326
 msgid "Bounce step"
 msgstr "弹跳步骤"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:321
+#: build/data/org.zrythm.Zrythm.gschema.xml:327
 msgid "Step in the processing chain to bounce at."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:325
+#: build/data/org.zrythm.Zrythm.gschema.xml:331
 msgid "Bounce tail"
 msgstr "导出尾"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:326
+#: build/data/org.zrythm.Zrythm.gschema.xml:332
 msgid ""
 "Tail to allow when bouncing (for example to catch reverb tails), in "
 "milliseconds."
 msgstr "弹跳时允许的尾翼（例如捕捉混响尾翼），按毫秒计算。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:330
+#: build/data/org.zrythm.Zrythm.gschema.xml:336
 msgid "Timeline object length"
 msgstr "时间线对象长度"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:331
+#: build/data/org.zrythm.Zrythm.gschema.xml:337
 msgid "Default length to use when creating timeline objects."
 msgstr "创建时间线对象时使用的默认长度。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:335
+#: build/data/org.zrythm.Zrythm.gschema.xml:341
 msgid "Timeline object length type"
 msgstr "时间线对象长度类型"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:336
+#: build/data/org.zrythm.Zrythm.gschema.xml:342
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
 "triplet)."
 msgstr "创建时间线对象时使用的默认长度类型(普通长度、虚线长度、三元组长度)。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:341
+#: build/data/org.zrythm.Zrythm.gschema.xml:347
 msgid "Last timeline object's length"
 msgstr "上一个时间轴对象的长度"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:342
+#: build/data/org.zrythm.Zrythm.gschema.xml:348
 msgid "The length of the last created timeline object (in ticks)."
 msgstr "上个创建的时间轴对象的长度(以刻度为单位)。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:346
+#: build/data/org.zrythm.Zrythm.gschema.xml:352
 msgid "Editor object length"
 msgstr "编辑器对象长度"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:347
+#: build/data/org.zrythm.Zrythm.gschema.xml:353
 msgid "Default length to use when creating editor objects."
 msgstr "创建编辑器对象时使用的默认长度。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:351
+#: build/data/org.zrythm.Zrythm.gschema.xml:357
 msgid "Editor object length type"
 msgstr "编辑器对象长度类型"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:352
+#: build/data/org.zrythm.Zrythm.gschema.xml:358
 msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
 "triplet)."
 msgstr "创建编辑器对象时使用的默认长度类型(普通、带点、三元组)。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:357
+#: build/data/org.zrythm.Zrythm.gschema.xml:363
 msgid "Last editor object's length"
 msgstr "上个编辑器对象长度"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:358
+#: build/data/org.zrythm.Zrythm.gschema.xml:364
 msgid "The length of the last created editor object (in ticks)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:362
+#: build/data/org.zrythm.Zrythm.gschema.xml:368
 msgid "Note notation"
 msgstr "音符记法"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:363
+#: build/data/org.zrythm.Zrythm.gschema.xml:369
 msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
 msgstr "钢琴卷中音音调索引中使用的音符（C，C#，）等）"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:368
+#: build/data/org.zrythm.Zrythm.gschema.xml:374
 msgid ""
 "Whether to use musical mode. If this is on, time-stretching will be applied "
 "to events so that they match the project BPM. This mostly applies to audio "
@@ -4572,677 +4674,733 @@ msgstr ""
 "是否使用音乐模式。如果打开此模式，将会把时间扩展应用于事件，以便它们与项目BPM"
 "匹配。这主要适用于音频区域。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:372
+#: build/data/org.zrythm.Zrythm.gschema.xml:378
 msgid "Listen to notes while they are moved"
 msgstr "在移动时收听音符"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:373
+#: build/data/org.zrythm.Zrythm.gschema.xml:379
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
 msgstr "是否一边听MIDI音符，一边在钢琴卷里拖它们。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:377
+#: build/data/org.zrythm.Zrythm.gschema.xml:383
 msgid "Piano roll highlight"
 msgstr "钢琴卷重头戏"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:378
+#: build/data/org.zrythm.Zrythm.gschema.xml:384
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr "在钢琴卷中是否突出和弦，音阶，全部或都不。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:382
+#: build/data/org.zrythm.Zrythm.gschema.xml:388
 msgid "Piano roll MIDI modifier"
 msgstr "钢琴卷MIDI修改器"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:383
+#: build/data/org.zrythm.Zrythm.gschema.xml:389
 msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
 msgstr "在MIDI编辑器中显示的MIDI修饰符（只有速度在以下时刻有效）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:387
+#: build/data/org.zrythm.Zrythm.gschema.xml:393
 msgid "Show automation values"
 msgstr "显示自动值"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:388
+#: build/data/org.zrythm.Zrythm.gschema.xml:394
 msgid "Whether to show automation values in the automation editor."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:392
+#: build/data/org.zrythm.Zrythm.gschema.xml:398
 msgid "Browser divider position"
 msgstr "浏览器分隔符位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:393
+#: build/data/org.zrythm.Zrythm.gschema.xml:399
 msgid "Height of the top part of the plugin/file browser."
 msgstr "插件/文件浏览器顶部的高度。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:397
+#: build/data/org.zrythm.Zrythm.gschema.xml:403
 msgid "Left panel divider position"
 msgstr "左面板分频器位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:398
+#: build/data/org.zrythm.Zrythm.gschema.xml:404
 msgid "Position of the resize handle of the left panel."
 msgstr "左面板调整大小手柄的位置。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:402
+#: build/data/org.zrythm.Zrythm.gschema.xml:408
 msgid "Left panel tab index"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:403
+#: build/data/org.zrythm.Zrythm.gschema.xml:409
 msgid "Index of the currently opened left panel tab."
 msgstr "当前打开的左面板标签的目录。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:407
+#: build/data/org.zrythm.Zrythm.gschema.xml:413
 msgid "Right panel divider position"
 msgstr "右面板分隔器位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:408
+#: build/data/org.zrythm.Zrythm.gschema.xml:414
 msgid "Position of the resize handle of the right panel."
 msgstr "右面板调整大小手柄的位置。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:412
+#: build/data/org.zrythm.Zrythm.gschema.xml:418
 msgid "Right panel tab index"
 msgstr "右面板标签目录"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:413
+#: build/data/org.zrythm.Zrythm.gschema.xml:419
 msgid "Index of the currently opened right panel tab."
 msgstr "当前打开的右面板标签的目录。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:417
+#: build/data/org.zrythm.Zrythm.gschema.xml:423
 msgid "Bot panel divider position"
 msgstr "Bot面板分隔器位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:418
+#: build/data/org.zrythm.Zrythm.gschema.xml:424
 msgid "Position of the resize handle of the bot panel."
 msgstr "Bot面板调整大小手柄的位置。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:422
+#: build/data/org.zrythm.Zrythm.gschema.xml:428
 msgid "Bot panel tab index"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:423
+#: build/data/org.zrythm.Zrythm.gschema.xml:429
 msgid "Index of the currently opened bottom panel tab."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:427
-msgid "Plugin browser tab"
-msgstr "插件浏览器选项卡"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:428
-msgid "Selected plugin browser tab."
-msgstr "选定的插件浏览器选项卡。"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:432
-msgid "Plugin browser filter"
-msgstr "插件浏览器筛选器"
-
 #: build/data/org.zrythm.Zrythm.gschema.xml:433
-msgid "Selected plugin browser filter"
-msgstr "选定的插件浏览器筛选器"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:437
-msgid "Plugin browser collections"
-msgstr "插件浏览器集锦"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:438
-msgid "Tree paths of the selected collections in the plugin browser."
-msgstr "插件浏览器中所选集锦的树路径。"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:442
-msgid "Plugin browser authors"
-msgstr "插件浏览器作者"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:443
-msgid "Tree paths of the selected authors in the plugin browser."
-msgstr "插件浏览器中所选作者的树路径。"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:447
-msgid "Plugin browser categories"
-msgstr "插件浏览器类别"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:448
-msgid "Tree paths of the selected categories in the plugin browser."
-msgstr "插件浏览器中所选类别的树路径。"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:452
-msgid "Plugin browser protocols"
-msgstr "插件浏览器协议"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:453
-msgid "Tree paths of the selected protocols in the plugin browser."
-msgstr "插件浏览器中所选协议的树路径。"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:457
 msgid "Timeline event viewer visibility"
 msgstr "时间轴事件查看器可见性"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:458
+#: build/data/org.zrythm.Zrythm.gschema.xml:434
 msgid "Whether the timeline event viewer is visible or not."
 msgstr "时间线事件查看器是否可见。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:462
+#: build/data/org.zrythm.Zrythm.gschema.xml:438
 msgid "Editor event viewer visibility"
 msgstr "编辑器事件查看器可见性"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:463
+#: build/data/org.zrythm.Zrythm.gschema.xml:439
 msgid "Whether the editor event viewer is visible or not."
 msgstr "编辑器事件查看器是否可见。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:467
+#: build/data/org.zrythm.Zrythm.gschema.xml:443
 msgid "Transport display type"
 msgstr "传输显示类型"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:468
+#: build/data/org.zrythm.Zrythm.gschema.xml:444
 msgid "Selected transport display type (BBT/time)."
 msgstr "选定的传输显示类型（BBT/时间）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:472
+#: build/data/org.zrythm.Zrythm.gschema.xml:448
 msgid "JACK transport type"
 msgstr "JACK 传输类型"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:473
+#: build/data/org.zrythm.Zrythm.gschema.xml:449
 msgid "Selected JACK transport behavior (master/client/none)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:477
+#: build/data/org.zrythm.Zrythm.gschema.xml:453
 msgid "Ruler display type"
 msgstr "标尺展示类型"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:478
+#: build/data/org.zrythm.Zrythm.gschema.xml:454
 msgid "Selected ruler display type (BBT/time)."
 msgstr "选定的标尺显示类型（BBT/时间）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:482
+#: build/data/org.zrythm.Zrythm.gschema.xml:458
 msgid "Selected editing tool"
 msgstr "选定编辑工具"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:483
+#: build/data/org.zrythm.Zrythm.gschema.xml:459
 msgid "Selected editing tool."
 msgstr "选定的编辑工具。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:487
+#: build/data/org.zrythm.Zrythm.gschema.xml:463
 msgid "Last used MIDI function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:488
+#: build/data/org.zrythm.Zrythm.gschema.xml:464
 msgid ""
 "Last used MIDI function (index corresponding to enum in midi function "
 "action)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:492
+#: build/data/org.zrythm.Zrythm.gschema.xml:468
 msgid "Last used automation function"
 msgstr "上次使用的自动化功能"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:493
+#: build/data/org.zrythm.Zrythm.gschema.xml:469
 msgid ""
 "Last used automation function (index corresponding to enum in automation "
 "function action)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:497
+#: build/data/org.zrythm.Zrythm.gschema.xml:473
 msgid "Last used audio function"
 msgstr "上次使用的音频功能"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:498
+#: build/data/org.zrythm.Zrythm.gschema.xml:474
 msgid ""
 "Last used audio function (index corresponding to enum in audio function "
 "action)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:502
+#: build/data/org.zrythm.Zrythm.gschema.xml:478
 msgid "Playhead scroll edges (timeline)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:503
+#: build/data/org.zrythm.Zrythm.gschema.xml:479
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:507
+#: build/data/org.zrythm.Zrythm.gschema.xml:483
 msgid "Follow playhead (timeline)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:508
+#: build/data/org.zrythm.Zrythm.gschema.xml:484
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:512
+#: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid "Playhead scroll edges (editor)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:513
+#: build/data/org.zrythm.Zrythm.gschema.xml:489
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:517
+#: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid "Follow playhead (editor)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:518
+#: build/data/org.zrythm.Zrythm.gschema.xml:494
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (editor)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:527
-msgid "Genre to use when exporting, if the file type supports it."
-msgstr "导出时使用的类型（如果文件类型支持）。"
+#: build/data/org.zrythm.Zrythm.gschema.xml:502
+msgid "Plugin browser tab"
+msgstr "插件浏览器选项卡"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:532
-msgid "Artist to use when exporting, if the file type supports it."
-msgstr "导出时使用的艺术家（如果文件类型支持）。"
+#: build/data/org.zrythm.Zrythm.gschema.xml:503
+msgid "Selected plugin browser tab."
+msgstr "选定的插件浏览器选项卡。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:507
+msgid "Plugin browser filter"
+msgstr "插件浏览器筛选器"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:508
+msgid "Selected plugin browser filter"
+msgstr "选定的插件浏览器筛选器"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:512
+msgid "Plugin browser collections"
+msgstr "插件浏览器集锦"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:513
+msgid "Tree paths of the selected collections in the plugin browser."
+msgstr "插件浏览器中所选集锦的树路径。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:517
+msgid "Plugin browser authors"
+msgstr "插件浏览器作者"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:518
+msgid "Tree paths of the selected authors in the plugin browser."
+msgstr "插件浏览器中所选作者的树路径。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:522
+msgid "Plugin browser categories"
+msgstr "插件浏览器类别"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:523
+msgid "Tree paths of the selected categories in the plugin browser."
+msgstr "插件浏览器中所选类别的树路径。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:527
+msgid "Plugin browser protocols"
+msgstr "插件浏览器协议"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:528
+msgid "Tree paths of the selected protocols in the plugin browser."
+msgstr "插件浏览器中所选协议的树路径。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:536
+#, fuzzy
+msgid "File browser bookmarks"
+msgstr "文件浏览器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:537
-msgid "Title to use when exporting, if the file type supports it."
-msgstr "导出时使用的标题（如果文件类型支持）。"
+msgid "Location bookmarks for file browser (absolute paths)."
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
-msgid "Time range"
-msgstr "时间范围"
+msgid "File browser selected bookmark"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:542
-msgid "Time range to export."
-msgstr "要导出的时间范围。"
+#, fuzzy
+msgid "Selected bookmark in file browser."
+msgstr "选定的插件浏览器选项卡。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
-msgid "Format to export to."
-msgstr "要导出的格式。"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:551
-msgid "Filename pattern"
-msgstr "文件名模式"
+#, fuzzy
+msgid "Whether to autoplay the selected file."
+msgstr "是否让监视器信号静音。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:552
-msgid "Filename pattern for exported files."
+msgid "Whether to show unsupported files in the file browser."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:557
-msgid "Add dither while exporting, if applicable."
-msgstr "在导出时添加抖动（如果适用）。"
+#, fuzzy
+msgid "Whether to show hidden files in the file browser."
+msgstr "不管这是不是第一次运行。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:561
-msgid "Export stems"
-msgstr ""
+#, fuzzy
+msgid "File browser filter"
+msgstr "插件浏览器筛选器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:562
-msgid "Whether to export stems instead of the mixdown."
-msgstr ""
+#, fuzzy
+msgid "Selected file browser filter"
+msgstr "选定的插件浏览器筛选器"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:566
+#, fuzzy
+msgid "Last location"
+msgstr "位置"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
-msgid "Bit depth to use when exporting"
-msgstr "导出时使用的位深度"
+#, fuzzy
+msgid "Last visited location."
+msgstr "上次使用的音频功能"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:575
+#: build/data/org.zrythm.Zrythm.gschema.xml:572
+msgid "Instrument plugin to use for MIDI auditioning."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:580
 msgid "Track properties expanded"
 msgstr "扩展的音轨属性"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:576
+#: build/data/org.zrythm.Zrythm.gschema.xml:581
 msgid "Whether track properties is expanded."
 msgstr "是否展开音轨属性。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:580
+#: build/data/org.zrythm.Zrythm.gschema.xml:585
 msgid "Track outputs expanded"
 msgstr "音轨输出扩展"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:581
+#: build/data/org.zrythm.Zrythm.gschema.xml:586
 msgid "Whether track outputs is expanded."
 msgstr "是否展开磁道输出。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:585
+#: build/data/org.zrythm.Zrythm.gschema.xml:590
 msgid "Track sends expanded"
 msgstr "音轨发送扩展"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:586
+#: build/data/org.zrythm.Zrythm.gschema.xml:591
 msgid "Whether track sends is expanded."
 msgstr "是否扩展音轨发送。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:590
+#: build/data/org.zrythm.Zrythm.gschema.xml:595
 msgid "Track inputs expanded"
 msgstr "扩展音轨输入"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:591
+#: build/data/org.zrythm.Zrythm.gschema.xml:596
 msgid "Whether track inputs is expanded."
 msgstr "是否展开磁道输入。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:595
+#: build/data/org.zrythm.Zrythm.gschema.xml:600
 msgid "Track controls expanded"
 msgstr "音轨控制展开"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:596
+#: build/data/org.zrythm.Zrythm.gschema.xml:601
 msgid "Whether track controls is expanded."
 msgstr "是否展开音轨控制。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:600
+#: build/data/org.zrythm.Zrythm.gschema.xml:605
 msgid "Track inserts expanded"
 msgstr "扩展的音轨插入"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:601
+#: build/data/org.zrythm.Zrythm.gschema.xml:606
 msgid "Whether track inserts is expanded."
 msgstr "是否展开磁道插入。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:605
+#: build/data/org.zrythm.Zrythm.gschema.xml:610
 msgid "Track midi-fx expanded"
 msgstr "音轨midi-fx扩展"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:606
+#: build/data/org.zrythm.Zrythm.gschema.xml:611
 msgid "Whether track midi-fx is expanded."
 msgstr "是否扩展音轨midi-fx."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:610
+#: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Track fader expanded"
 msgstr "音轨推子扩展"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:611
+#: build/data/org.zrythm.Zrythm.gschema.xml:616
 msgid "Whether track fader is expanded."
 msgstr "音轨推子是否展开。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:615
+#: build/data/org.zrythm.Zrythm.gschema.xml:620
 msgid "Track comment expanded"
 msgstr "音轨注释展开"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:616
+#: build/data/org.zrythm.Zrythm.gschema.xml:621
 msgid "Whether track comment is expanded."
 msgstr "是否展开音轨注释。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:624
+#: build/data/org.zrythm.Zrythm.gschema.xml:630
+msgid "Genre to use when exporting, if the file type supports it."
+msgstr "导出时使用的类型（如果文件类型支持）。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:635
+msgid "Artist to use when exporting, if the file type supports it."
+msgstr "导出时使用的艺术家（如果文件类型支持）。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:640
+msgid "Title to use when exporting, if the file type supports it."
+msgstr "导出时使用的标题（如果文件类型支持）。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:644
+msgid "Time range"
+msgstr "时间范围"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:645
+msgid "Time range to export."
+msgstr "要导出的时间范围。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:650
+msgid "Format to export to."
+msgstr "要导出的格式。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:654
+msgid "Filename pattern"
+msgstr "文件名模式"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:655
+msgid "Filename pattern for exported files."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:660
+msgid "Add dither while exporting, if applicable."
+msgstr "在导出时添加抖动（如果适用）。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:664
+msgid "Export stems"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:665
+msgid "Whether to export stems instead of the mixdown."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:670
+msgid "Bit depth to use when exporting"
+msgstr "导出时使用的位深度"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:678
 msgid "Transport loop"
 msgstr "传输环路"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:625
+#: build/data/org.zrythm.Zrythm.gschema.xml:679
 msgid "Whether looping is enabled."
 msgstr "是否启用循环。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:629
+#: build/data/org.zrythm.Zrythm.gschema.xml:683
 msgid "Return to cue"
 msgstr "返回提示"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:630
+#: build/data/org.zrythm.Zrythm.gschema.xml:684
 msgid "Whether return to cue on stop is enabled."
 msgstr "是否启用了停止时返回提示。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:634
+#: build/data/org.zrythm.Zrythm.gschema.xml:688
 msgid "Metronome enabled"
 msgstr "节拍器已启用"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:635
+#: build/data/org.zrythm.Zrythm.gschema.xml:689
 msgid "Whether the metronome is enabled."
 msgstr "是否启用节拍器。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:640
+#: build/data/org.zrythm.Zrythm.gschema.xml:694
 msgid "Metronome volume"
 msgstr "节拍器音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:641
+#: build/data/org.zrythm.Zrythm.gschema.xml:695
 msgid "The metronome volume in amplitude (0 to 2)."
 msgstr "节拍器振幅（0到2）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:645
+#: build/data/org.zrythm.Zrythm.gschema.xml:699
 msgid "Punch mode enabled"
 msgstr "已启用 Punch 模式"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:646
+#: build/data/org.zrythm.Zrythm.gschema.xml:700
 msgid "Whether punch in/out is enabled for recording."
 msgstr "录制是否启用了 punch in/out。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:650
+#: build/data/org.zrythm.Zrythm.gschema.xml:704
 msgid "Start playback on MIDI input"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:651
+#: build/data/org.zrythm.Zrythm.gschema.xml:705
 msgid "Whether to start playback on MIDI input."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:656
+#: build/data/org.zrythm.Zrythm.gschema.xml:710
 msgid "Recording mode."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:669
+#: build/data/org.zrythm.Zrythm.gschema.xml:723
 msgid "Audio backend"
 msgstr "音频后端"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:670
+#: build/data/org.zrythm.Zrythm.gschema.xml:724
 msgid "The audio backend to use."
 msgstr "要使用的音频后端。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:674
+#: build/data/org.zrythm.Zrythm.gschema.xml:728
 msgid "RtAudio device"
 msgstr "RtAudio设备"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:675
+#: build/data/org.zrythm.Zrythm.gschema.xml:729
 msgid "The name of the RtAudio device to use."
 msgstr "要使用的RtAudio设备的名称。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:679
+#: build/data/org.zrythm.Zrythm.gschema.xml:733
 msgid "SDL device"
 msgstr "SDL设备"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:680
+#: build/data/org.zrythm.Zrythm.gschema.xml:734
 msgid "The name of the SDL device to use."
 msgstr "要使用的SDL设备的名称。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:685
+#: build/data/org.zrythm.Zrythm.gschema.xml:739
 msgid "Samplerate to pass to the backend."
 msgstr "要传递到后端的采样率。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:689
+#: build/data/org.zrythm.Zrythm.gschema.xml:743
 msgid "Buffer size"
 msgstr "缓冲区大小"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:690
+#: build/data/org.zrythm.Zrythm.gschema.xml:744
 msgid "Buffer size to pass to the backend."
 msgstr "要传递到后端的缓冲区大小。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:694
+#: build/data/org.zrythm.Zrythm.gschema.xml:748
 msgid "MIDI backend"
 msgstr "MIDI 后端"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:695
+#: build/data/org.zrythm.Zrythm.gschema.xml:749
 msgid "The MIDI backend to use."
 msgstr "要使用的MIDI后端。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:699
+#: build/data/org.zrythm.Zrythm.gschema.xml:753
 msgid "Audio inputs"
 msgstr "音频输入"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:700
+#: build/data/org.zrythm.Zrythm.gschema.xml:754
 msgid "A list of audio inputs to enable."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:704
+#: build/data/org.zrythm.Zrythm.gschema.xml:758
 msgid "MIDI controllers"
 msgstr "MIDI 控制器"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:705
+#: build/data/org.zrythm.Zrythm.gschema.xml:759
 msgid "A list of controllers to enable."
 msgstr "要启用的控制器列表。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:714
-#: build/data/org.zrythm.Zrythm.gschema.xml:759
+#: build/data/org.zrythm.Zrythm.gschema.xml:768
+#: build/data/org.zrythm.Zrythm.gschema.xml:813
 msgid "Paths"
 msgstr "路径"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:719
+#: build/data/org.zrythm.Zrythm.gschema.xml:773
 msgid "The directory used to save user data in."
 msgstr "用于保存用户数据的目录。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:728
+#: build/data/org.zrythm.Zrythm.gschema.xml:782
 msgid "UIs"
 msgstr "用户界面"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:732
+#: build/data/org.zrythm.Zrythm.gschema.xml:786
 msgid "Open UI on instantiation"
 msgstr "实例化时打开用户界面"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:733
+#: build/data/org.zrythm.Zrythm.gschema.xml:787
 msgid "Open plugin UIs when they are instantiated."
 msgstr "当插件用户界面实例化时打开它们。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:737
+#: build/data/org.zrythm.Zrythm.gschema.xml:791
 msgid "Keep window on top"
 msgstr "将窗口保持在顶部"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:738
+#: build/data/org.zrythm.Zrythm.gschema.xml:792
 msgid "Always show plugin UIs on top of the main window."
 msgstr "总是在主窗口的顶部显示插件用户界面。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:743
+#: build/data/org.zrythm.Zrythm.gschema.xml:797
 msgid "Refresh rate"
 msgstr "刷新率"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:744
+#: build/data/org.zrythm.Zrythm.gschema.xml:798
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr "赫兹为单位的刷新率，如设为 0 将使用屏幕刷新率。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:749
+#: build/data/org.zrythm.Zrythm.gschema.xml:803
 msgid "Scale factor"
 msgstr "缩放因子"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:750
+#: build/data/org.zrythm.Zrythm.gschema.xml:804
 msgid ""
 "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
 "will be used."
 msgstr "传递到插件用户界面的缩放因子，如设为 0，将使用监视器的缩放因子。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:767
+#: build/data/org.zrythm.Zrythm.gschema.xml:821
 msgid "VST plugins"
 msgstr "VST 插件"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:768
+#: build/data/org.zrythm.Zrythm.gschema.xml:822
 msgid ""
 "The search paths to scan for VST plugins in. Duplicate paths will be "
 "deduplicated."
 msgstr "要在其中扫描VST插件的搜索路径。重复路径将是重复数据删除。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:772
+#: build/data/org.zrythm.Zrythm.gschema.xml:826
 msgid "SFZ instruments"
 msgstr "SFZ 乐器"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:773
+#: build/data/org.zrythm.Zrythm.gschema.xml:827
 msgid ""
 "The search paths to scan for SFZ instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr "要在其中扫描SFZ乐器的搜索路径。重复路径将是重复数据删除。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:777
+#: build/data/org.zrythm.Zrythm.gschema.xml:831
 msgid "SF2 instruments"
 msgstr "SF2 乐器"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:778
+#: build/data/org.zrythm.Zrythm.gschema.xml:832
 msgid ""
 "The search paths to scan for SF2 instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr "要在其中扫描SF2乐器的搜索路径。重复路径将是重复数据删除。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:791
+#: build/data/org.zrythm.Zrythm.gschema.xml:845
 msgid "Fade algorithm"
 msgstr "Fade 算法"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:792
+#: build/data/org.zrythm.Zrythm.gschema.xml:846
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr "用于淡入/淡出的默认 fade 算法。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:806
+#: build/data/org.zrythm.Zrythm.gschema.xml:860
 msgid "Default algorithm to use for automation curves."
 msgstr "用于自动化曲线的默认算法。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:820
+#: build/data/org.zrythm.Zrythm.gschema.xml:874
 #, fuzzy
 msgid "Undo stack length"
 msgstr "撤销堆栈长度"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:821
+#: build/data/org.zrythm.Zrythm.gschema.xml:875
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr "最大撤消历史堆栈长度。设置为 -1 表示无限制。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:836
+#: build/data/org.zrythm.Zrythm.gschema.xml:890
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
 msgstr "自动保存项目的间隔，以分钟为单位。若设置为 0 将禁用自动保存。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:844
+#: build/data/org.zrythm.Zrythm.gschema.xml:898
 msgid "UI"
 msgstr "用户界面"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:849
+#: build/data/org.zrythm.Zrythm.gschema.xml:903
 msgid "Draw detail"
 msgstr "绘制详细信息"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:850
+#: build/data/org.zrythm.Zrythm.gschema.xml:904
 msgid "Level of detail to use when drawing graphics."
 msgstr "绘制图形时使用的详细级别。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:855
+#: build/data/org.zrythm.Zrythm.gschema.xml:909
 msgid "Font scale"
 msgstr "字体缩放"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:856
+#: build/data/org.zrythm.Zrythm.gschema.xml:910
 msgid "Font scale."
 msgstr "字体缩放。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:860
+#: build/data/org.zrythm.Zrythm.gschema.xml:914
 msgid "User interface language"
 msgstr "用户界面语言"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:861
+#: build/data/org.zrythm.Zrythm.gschema.xml:915
 msgid "The language to use for the user interface."
 msgstr "用于用户界面的语言。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:865
+#: build/data/org.zrythm.Zrythm.gschema.xml:919
 msgid "CSS theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:866
+#: build/data/org.zrythm.Zrythm.gschema.xml:920
 msgid "The CSS theme to use."
 msgstr "要使用的 CSS 主题。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:870
+#: build/data/org.zrythm.Zrythm.gschema.xml:924
 msgid "Icon theme"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:871
+#: build/data/org.zrythm.Zrythm.gschema.xml:925
 msgid "The icon theme to use. This is the directory name."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:879
+#: build/data/org.zrythm.Zrythm.gschema.xml:933
 msgid "DSP"
 msgstr "DSP"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:880
+#: build/data/org.zrythm.Zrythm.gschema.xml:934
 msgid "Pan"
 msgstr "Pan"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:884
+#: build/data/org.zrythm.Zrythm.gschema.xml:938
 msgid "Pan algorithm"
 msgstr "Pan 算法"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:885
+#: build/data/org.zrythm.Zrythm.gschema.xml:939
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
 "the moment)."
 msgstr "对单声道信号应用摇摄时使用的摇摄算法（不用于那个时刻）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:889
+#: build/data/org.zrythm.Zrythm.gschema.xml:943
 msgid "Pan law"
 msgstr "Pan定律"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:890
+#: build/data/org.zrythm.Zrythm.gschema.xml:944
 msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr "对单声道信号应用pan时使用的pan定律（不用于时刻）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:898
+#: build/data/org.zrythm.Zrythm.gschema.xml:952
 msgid "Scripting"
 msgstr "脚本编写"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:903
+#: build/data/org.zrythm.Zrythm.gschema.xml:957
 msgid "Default script"
 msgstr "默认脚本"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:904
+#: build/data/org.zrythm.Zrythm.gschema.xml:958
 msgid "The default script to use in the scripting window."
 msgstr ""
 
