@@ -35,7 +35,7 @@ is equivalent to `-Ddebug=true -Doptimization=2`
 (`-O2 -g`). This works well in most cases. For
 extremely optimized builds, we suggest building with
 
-    meson build -Ddebug=true -Doptimization=3 -Dextra_optimizations=true
+    meson build -Ddebug=true -Doptimization=3 -Dextra_optimizations=true -Dnative_build=true
 
 We suggest always keeping `-Ddebug=true` to assist
 with meaningful stack traces and bug reports.

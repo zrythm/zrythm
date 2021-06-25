@@ -229,3 +229,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether this is an AppImage build.')
+
+option (
+  'native_build',
+  type: 'boolean',
+  value: false,
+  description: 'Whether this is a native build (will run on the same exact machine it is compiled on). This will turn on -march=native and -mtune=native')

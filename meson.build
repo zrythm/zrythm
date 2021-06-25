@@ -619,6 +619,13 @@ endif
 
 common_cflags = []
 
+if get_option ('native_build')
+  test_cflags += [
+    '-march=native',
+    '-mtune=native',
+    ]
+endif
+
 extra_optimizations_cflags = []
 if host_machine.cpu() == 'x86_64'
   extra_optimizations_cflags += [
@@ -629,13 +636,19 @@ if host_machine.cpu() == 'x86_64'
     '-ffunction-sections',
     '-freciprocal-math',
     '-fsingle-precision-constant',
-    '-mtune=generic',
     '-msse',
     '-msse2',
     '-mfpmath=sse',
     #'-fvisibility=hidden',
     ]
 endif
+
+if not get_option ('native_build')
+  extra_optimizations_cflags += [
+    '-mtune=generic',
+    ]
+endif
+
 if get_option ('extra_debug_info') or get_option ('debug') or get_option ('buildtype').contains ('debug')
   extra_optimizations_cflags += [
     '-fno-omit-frame-pointer',
@@ -649,9 +662,11 @@ endif
 extra_optimizations_cflags = cc.get_supported_arguments (extra_optimizations_cflags)
 
 if get_option ('extra_optimizations')
-  common_cflags += extra_optimizations_cflags
+  test_cflags += extra_optimizations_cflags
 endif
 
+# TODO check
+# -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -ftree-vectorize -floop-parallelize-all -ftree-parallelize-loops=4
 extra_extra_optimizations_cflags = [
   '-fallow-store-data-races',
   '-ffinite-math-only',
@@ -663,7 +678,7 @@ extra_extra_optimizations_cflags = [
 extra_extra_optimizations_cflags = cc.get_supported_arguments (extra_extra_optimizations_cflags)
 
 if get_option ('extra_extra_optimizations')
-  common_cflags += extra_extra_optimizations_cflags
+  test_cflags += extra_extra_optimizations_cflags
 endif
 
 if get_option ('extra_debug_info')
@@ -1324,6 +1339,7 @@ summary ({
   'Static deps': get_option ('static_deps'),
   'Extra optimizations': get_option ('extra_optimizations'),
   'Extra extra optimizations': get_option ('extra_extra_optimizations'),
+  'Native build': get_option ('native_build'),
   'Build/install manpage': get_option ('manpage'),
   'Build/install completions': get_option ('completions'),
   'Build/install user manual': get_option ('user_manual'),
