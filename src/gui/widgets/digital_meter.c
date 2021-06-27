@@ -198,9 +198,9 @@ digital_meter_draw_cb (
 
       /* draw integer part */
       if (num_part < 100)
-        sprintf (text, "!%d", num_part);
+        sprintf (text, "!%d.", num_part);
       else
-        sprintf (text, "%d", num_part);
+        sprintf (text, "%d.", num_part);
       z_cairo_draw_text_full (
         cr, widget, self->seg7_layout, text,
         self->num_part_start_pos,
@@ -263,9 +263,9 @@ digital_meter_draw_cb (
 
           /* draw minutes */
           if (mins < 10)
-            sprintf (text, "!%d", mins);
+            sprintf (text, "!%d.", mins);
           else
-            sprintf (text, "%d", mins);
+            sprintf (text, "%d.", mins);
           z_cairo_draw_text_full (
             cr, widget, self->seg7_layout, text,
             self->minutes_start_pos,
@@ -273,9 +273,9 @@ digital_meter_draw_cb (
 
           /* draw seconds */
           if (secs < 10)
-            sprintf (text, "0%ld", secs);
+            sprintf (text, "0%ld.", secs);
           else
-            sprintf (text, "%ld", secs);
+            sprintf (text, "%ld.", secs);
           z_cairo_draw_text_full (
             cr, widget, self->seg7_layout, text,
             self->seconds_start_pos,
@@ -349,18 +349,19 @@ digital_meter_draw_cb (
             sprintf (text, "!!%d", bars);
           else
             sprintf (text, "!%d", bars);
+          strcat (text, ".");
           z_cairo_draw_text_full (
             cr, widget, self->seg7_layout, text,
             self->bars_start_pos,
             self->height_start_pos);
 
-          sprintf (text, "%d", abs (beats));
+          sprintf (text, "%d.", abs (beats));
           z_cairo_draw_text_full (
             cr, widget, self->seg7_layout, text,
             self->beats_start_pos,
             self->height_start_pos);
 
-          sprintf (text, "%d", abs (sixteenths));
+          sprintf (text, "%d.", abs (sixteenths));
           z_cairo_draw_text_full (
             cr, widget, self->seg7_layout, text,
             self->sixteenths_start_pos,
