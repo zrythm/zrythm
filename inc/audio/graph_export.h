@@ -45,6 +45,7 @@ typedef enum GraphExportType
   GRAPH_EXPORT_PNG,
   GRAPH_EXPORT_DOT,
   GRAPH_EXPORT_PS,
+  GRAPH_EXPORT_SVG,
 #endif
   NUM_GRAPH_EXPORT_TYPES,
 } GraphExportType;

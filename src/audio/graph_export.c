@@ -110,6 +110,7 @@ get_parent_graph (
             }
             break;
           case PORT_OWNER_TYPE_PREFADER:
+          case PORT_OWNER_TYPE_CHANNEL_SEND:
             {
               Track * tr =
                 port_get_track (node->port, true);
@@ -439,6 +440,10 @@ graph_export_as (
     case GRAPH_EXPORT_PS:
       export_as_graphviz_type (
         graph, export_path, "ps");
+      break;
+    case GRAPH_EXPORT_SVG:
+      export_as_graphviz_type (
+        graph, export_path, "svg");
       break;
 #endif
     default:

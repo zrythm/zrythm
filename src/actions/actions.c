@@ -875,7 +875,8 @@ activate_export_graph (
       _("Export routing graph"),
       GTK_WINDOW (MAIN_WINDOW), flags,
       _("Image (PNG)"), 1,
-      _("Dot graph"), 2,
+      _("Image (SVG)"), 2,
+      _("Dot graph"), 3,
       NULL);
   content_area =
     gtk_dialog_get_content_area (
@@ -914,8 +915,13 @@ activate_export_graph (
         filename = "graph.png";
         export_type = GRAPH_EXPORT_PNG;
         break;
-      /* dot */
+      /* svg */
       case 2:
+        filename = "graph.svg";
+        export_type = GRAPH_EXPORT_SVG;
+        break;
+      /* dot */
+      case 3:
         filename = "graph.dot";
         export_type = GRAPH_EXPORT_DOT;
         break;
