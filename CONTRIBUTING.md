@@ -51,6 +51,10 @@ send them to the
 [development mailing list](https://lists.sr.ht/~alextee/zrythm-devel).
 You can also use
 [git-send-email](https://git-send-email.io/) for this.
+SourceHut also has a web UI to make submitting
+patches from your own repositories easier. See
+[this video tutorial](https://spacepub.space/videos/watch/ad258d23-0ac6-488c-83fc-2bacf578de3a)
+for reference.
 If you are having difficulties creating patches
 please contact us and we will guide you.
 
