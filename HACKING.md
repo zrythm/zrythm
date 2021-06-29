@@ -92,6 +92,16 @@ Use `MALLOC_CHECK_=3` to enforce additional checks
 when allocating memory. This is used during tests.
 See `man malloc` for details.
 
+## Verifying Compiler Flags
+Zrythm is built with `-frecord-gcc-switches` by
+default, which stores the gcc flags used in each
+compiled object. To view these flags, use
+
+    readelf -p .GCC.command.line build/src/zrythm
+
+*TODO add --gcc-switches option and use libelf to
+print this info*
+
 ## Environment Variables
 In addition to GTK/GLib variables, Zrythm
 understands the following environment variables.

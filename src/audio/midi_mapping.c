@@ -18,6 +18,7 @@
  */
 
 #include "audio/control_port.h"
+#include "audio/midi_event.h"
 #include "audio/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -35,6 +36,8 @@ void
 midi_mappings_init_loaded (
   MidiMappings * self)
 {
+  self->mappings_size = (size_t) self->num_mappings;
+
   for (int i = 0; i < self->num_mappings; i++)
     {
       MidiMapping * mapping =  &self->mappings[i];
@@ -72,18 +75,27 @@ move_mapping (
  * (must be size 3) to the given Port.
  *
  * @param idx Index to insert at.
+ * @param buf The buffer used for matching at [0] and
+ *   [1].
+ * @param device_port Device port, if custom mapping.
+ * @param track_pos Track position, if track processor.
  */
 void
 midi_mappings_bind_at (
   MidiMappings * self,
   midi_byte_t *  buf,
   ExtPort *      device_port,
+  int            track_pos,
   Port *         dest_port,
   int            idx,
   bool           fire_events)
 {
   g_return_if_fail (
     self && buf && dest_port);
+
+  array_double_size_if_full (
+    self->mappings, self->num_mappings,
+    self->mappings_size, MidiMapping);
 
   for (int i = self->num_mappings; i > idx; i--)
     {
@@ -170,6 +182,116 @@ midi_mapping_get_index (
   g_return_val_if_reached (-1);
 }
 
+static inline void
+apply_mapping (
+  MidiMapping * mapping,
+  midi_byte_t * buf)
+{
+  g_return_if_fail (mapping->dest);
+
+  Port * dest = mapping->dest;
+  if (dest->id.type == TYPE_CONTROL)
+    {
+      /* if toggle, reverse value */
+      if (dest->id.flags & PORT_FLAG_TOGGLE)
+        {
+          control_port_set_toggled (
+            dest,
+            !control_port_is_toggled (
+               dest),
+            F_PUBLISH_EVENTS);
+        }
+      /* else if not toggle set the control
+       * value received */
+      else
+        {
+          float normalized_val =
+            (float) buf[2] / 127.f;
+          port_set_control_value (
+            dest, normalized_val,
+            F_NORMALIZED, F_PUBLISH_EVENTS);
+        }
+    }
+  else if (dest->id.type == TYPE_EVENT)
+    {
+      if (dest->id.flags2 &
+            PORT_FLAG2_TRANSPORT_ROLL)
+        {
+          transport_request_roll (TRANSPORT);
+        }
+      else if (dest->id.flags2 &
+            PORT_FLAG2_TRANSPORT_STOP)
+        {
+          transport_request_pause (
+            TRANSPORT);
+        }
+      else if (dest->id.flags2 &
+            PORT_FLAG2_TRANSPORT_BACKWARD)
+        {
+          transport_move_backward (
+            TRANSPORT);
+        }
+      else if (dest->id.flags2 &
+            PORT_FLAG2_TRANSPORT_FORWARD)
+        {
+          transport_move_forward (TRANSPORT);
+        }
+      else if (dest->id.flags2 &
+            PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
+        {
+          transport_set_loop (
+            TRANSPORT, !TRANSPORT->loop);
+        }
+      else if (dest->id.flags2 &
+            PORT_FLAG2_TRANSPORT_REC_TOGGLE)
+        {
+          transport_set_recording (
+            TRANSPORT,
+            !TRANSPORT->recording,
+            F_PUBLISH_EVENTS);
+        }
+    }
+}
+
+/**
+ * Applies the events to the appropriate mapping.
+ *
+ * This is used only for TrackProcessor.cc_mappings.
+ *
+ * @note Must only be called while transport is
+ *   recording.
+ */
+void
+midi_mappings_apply_from_cc_events (
+  MidiMappings * self,
+  MidiEvents *   events,
+  bool           queued)
+{
+  /* queued not implemented yet */
+  g_return_if_fail (!queued);
+
+  for (int i = 0; i < events->num_events; i++)
+    {
+      MidiEvent * ev = &events->events[i];
+      if (ev->raw_buffer[0] >=
+            (midi_byte_t) MIDI_CH1_CTRL_CHANGE &&
+          ev->raw_buffer[0] <=
+            (midi_byte_t)
+            (MIDI_CH1_CTRL_CHANGE | 15))
+        {
+          midi_byte_t channel =
+            (midi_byte_t)
+            ((ev->raw_buffer[0] & 0xf) + 1);
+          midi_byte_t controller = ev->raw_buffer[1];
+          MidiMapping * mapping =
+            &self->mappings[
+              (channel - 1) * 128 + controller];
+          apply_mapping (
+            mapping, ev->raw_buffer);
+        }
+    }
+}
+
 /**
  * Applies the given buffer to the matching ports.
  */
@@ -186,70 +308,7 @@ midi_mappings_apply (
           mapping->key[0] == buf[0] &&
           mapping->key[1] == buf[1])
         {
-          g_return_if_fail (mapping->dest);
-
-          Port * dest = mapping->dest;
-          if (dest->id.type == TYPE_CONTROL)
-            {
-              /* if toggle, reverse value */
-              if (dest->id.flags & PORT_FLAG_TOGGLE)
-                {
-                  control_port_set_toggled (
-                    dest,
-                    !control_port_is_toggled (
-                       dest),
-                    F_PUBLISH_EVENTS);
-                }
-              /* else if not toggle set the control
-               * value received */
-              else
-                {
-                  float normalized_val =
-                    (float) buf[2] / 127.f;
-                  port_set_control_value (
-                    dest, normalized_val,
-                    F_NORMALIZED, F_PUBLISH_EVENTS);
-                }
-            }
-          else if (dest->id.type == TYPE_EVENT)
-            {
-              if (dest->id.flags2 &
-                    PORT_FLAG2_TRANSPORT_ROLL)
-                {
-                  transport_request_roll (TRANSPORT);
-                }
-              else if (dest->id.flags2 &
-                    PORT_FLAG2_TRANSPORT_STOP)
-                {
-                  transport_request_pause (
-                    TRANSPORT);
-                }
-              else if (dest->id.flags2 &
-                    PORT_FLAG2_TRANSPORT_BACKWARD)
-                {
-                  transport_move_backward (
-                    TRANSPORT);
-                }
-              else if (dest->id.flags2 &
-                    PORT_FLAG2_TRANSPORT_FORWARD)
-                {
-                  transport_move_forward (TRANSPORT);
-                }
-              else if (dest->id.flags2 &
-                    PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
-                {
-                  transport_set_loop (
-                    TRANSPORT, !TRANSPORT->loop);
-                }
-              else if (dest->id.flags2 &
-                    PORT_FLAG2_TRANSPORT_REC_TOGGLE)
-                {
-                  transport_set_recording (
-                    TRANSPORT,
-                    !TRANSPORT->recording,
-                    F_PUBLISH_EVENTS);
-                }
-            }
+          apply_mapping (mapping, buf);
         }
     }
 }
@@ -261,6 +320,10 @@ MidiMappings *
 midi_mappings_new ()
 {
   MidiMappings * self = object_new (MidiMappings);
+
+  self->mappings_size = 4;
+  self->mappings =
+    object_new_n (self->mappings_size, MidiMapping);
 
   return self;
 }
@@ -275,6 +338,7 @@ midi_mappings_free (
         ext_port_free,
         self->mappings[i].device_port);
     }
+  object_zero_and_free (self->mappings);
 
   object_zero_and_free (self);
 }

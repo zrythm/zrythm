@@ -151,9 +151,7 @@ automation_region_add_ap (
 
   if (pub_events)
     {
-      g_message ("pub events %p", ap);
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CREATED, ap);
+      EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, ap);
     }
 }
 

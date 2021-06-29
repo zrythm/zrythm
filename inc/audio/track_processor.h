@@ -34,6 +34,7 @@
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Track Track;
+typedef struct MidiMappings MidiMappings;
 
 /**
  * @addtogroup audio
@@ -108,6 +109,9 @@ typedef struct TrackProcessor
   Port *           piano_roll;
 
   /* --- MIDI controls --- */
+
+  /** Mappings to each CC port. */
+  MidiMappings *   cc_mappings;
 
   /** MIDI CC control ports, 16 channels. */
   Port *           midi_cc[128 * 16];
@@ -260,6 +264,19 @@ track_processor_get_track (
 
 /**
  * Process the TrackProcessor.
+ *
+ * This function performs the following:
+ * - produce output audio/MIDI into stereo out or
+ *   midi out, based on any audio/MIDI regions,
+ *   if has piano roll or is audio track
+ * - produce additional output MIDI events based on
+ *   any MIDI CC automation, if has piano roll
+ * - change MIDI CC control port values based on any
+ *   MIDI input, if applicable
+ *   --- at this point the output is ready ---
+ * - handle recording (create events in regions and
+ *   automation, including MIDI CC automation,
+ *   based on the MIDI CC control ports)
  *
  * @param g_start_frames The global start frames.
  * @param local_offset The local start frames.

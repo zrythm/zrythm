@@ -67,7 +67,8 @@ typedef struct MidiMapping
  */
 typedef struct MidiMappings
 {
-  MidiMapping     mappings[2046];
+  MidiMapping *   mappings;
+  size_t          mappings_size;
   int             num_mappings;
 } MidiMappings;
 
@@ -101,7 +102,7 @@ static const cyaml_schema_value_t
 static const cyaml_schema_field_t
 midi_mappings_fields_schema[] =
 {
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     MidiMappings, mappings, midi_mapping_schema),
 
   CYAML_FIELD_END
@@ -128,10 +129,16 @@ midi_mappings_init_loaded (
 MidiMappings *
 midi_mappings_new (void);
 
-#define midi_mappings_bind( \
+#define midi_mappings_bind_device( \
   self,buf,dev_port,dest_port,fire_events) \
   midi_mappings_bind_at ( \
-    self, buf, dev_port, dest_port, \
+    self, buf, dev_port, -1, dest_port, \
+    (self)->num_mappings, fire_events)
+
+#define midi_mappings_bind_track( \
+  self,buf,track_pos,dest_port,fire_events) \
+  midi_mappings_bind_at ( \
+    self, buf, NULL, track_pos, dest_port, \
     (self)->num_mappings, fire_events)
 
 /**
@@ -139,12 +146,17 @@ midi_mappings_new (void);
  * (must be size 3) to the given Port.
  *
  * @param idx Index to insert at.
+ * @param buf The buffer used for matching at [0] and
+ *   [1].
+ * @param device_port Device port, if custom mapping.
+ * @param track_pos Track position, if track processor.
  */
 void
 midi_mappings_bind_at (
   MidiMappings * self,
   midi_byte_t *  buf,
   ExtPort *      device_port,
+  int            track_pos,
   Port *         dest_port,
   int            idx,
   bool           fire_events);
@@ -170,6 +182,20 @@ int
 midi_mapping_get_index (
   MidiMappings * self,
   MidiMapping *  mapping);
+
+/**
+ * Applies the events to the appropriate mapping.
+ *
+ * This is used only for TrackProcessor.cc_mappings.
+ *
+ * @note Must only be called while transport is
+ *   recording.
+ */
+void
+midi_mappings_apply_from_cc_events (
+  MidiMappings * self,
+  MidiEvents *   events,
+  bool           queued);
 
 /**
  * Applies the given buffer to the matching ports.

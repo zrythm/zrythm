@@ -28,6 +28,7 @@
 #include "audio/engine.h"
 #include "audio/fader.h"
 #include "audio/midi_event.h"
+#include "audio/midi_mapping.h"
 #include "audio/midi_track.h"
 #include "audio/recording_manager.h"
 #include "audio/track.h"
@@ -42,6 +43,44 @@
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
+
+static void
+init_common (
+  TrackProcessor * self,
+  bool             is_project)
+{
+  if (self->midi_cc[0])
+    {
+      self->cc_mappings = midi_mappings_new ();
+
+      for (size_t i = 0; i < 16; i++)
+        {
+          for (size_t j = 0; j < 128; j++)
+            {
+              Port * cc_port =
+                self->midi_cc[i * 128 + j];
+              g_return_if_fail (cc_port);
+
+              /* set model bytes for CC:
+               * [0] = ctrl change + channel
+               * [1] = controller
+               * [2] (unused) = control */
+              midi_byte_t buf[3];
+              buf[0] =
+                (midi_byte_t)
+                (MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
+              buf[1] = (midi_byte_t) j;
+              buf[2] = 0;
+
+              /* bind */
+              midi_mappings_bind_track (
+                self->cc_mappings, buf,
+                self->track_pos, cc_port,
+                F_NO_PUBLISH_EVENTS);
+            }
+        }
+    }
+}
 
 /**
  * Inits fader after a project is loaded.
@@ -69,6 +108,8 @@ track_processor_init_loaded (
   free (ports);
 
   track_processor_set_is_project (self, is_project);
+
+  init_common (self, is_project);
 }
 
 /**
@@ -318,6 +359,8 @@ track_processor_new (
       port_set_owner_track_processor (
         self->output_gain, self);
     }
+
+  init_common (self, true);
 
   return self;
 }
@@ -765,12 +808,17 @@ handle_recording (
     }
 }
 
+/**
+ * Adds events to midi out based on any changes in
+ * MIDI CC control ports.
+ */
+HOT
 static inline void
-add_events_from_midi_controls (
+add_events_from_midi_cc_control_ports (
   TrackProcessor * self,
   const nframes_t  local_offset)
 {
-  return;
+  /* FIXME optimize (use caches) */
   for (int i = 0; i < 16; i++)
     {
       /* starting from 1 */
@@ -780,9 +828,10 @@ add_events_from_midi_controls (
       for (int j = 0; j < 128; j++)
         {
           cc = self->midi_cc[offset + j];
-          if (math_floats_equal (
-                cc->last_sent_control,
-                cc->control))
+          if (G_LIKELY (
+                math_floats_equal (
+                  cc->last_sent_control,
+                  cc->control)))
             continue;
 
           midi_events_add_control_change (
@@ -829,6 +878,19 @@ add_events_from_midi_controls (
 
 /**
  * Process the TrackProcessor.
+ *
+ * This function performs the following:
+ * - produce output audio/MIDI into stereo out or
+ *   midi out, based on any audio/MIDI regions,
+ *   if has piano roll or is audio track
+ * - produce additional output MIDI events based on
+ *   any MIDI CC automation regions, if applicable
+ * - change MIDI CC control port values based on any
+ *   MIDI input, if recording
+ *   --- at this point the output is ready ---
+ * - handle recording (create events in regions and
+ *   automation, including MIDI CC automation,
+ *   based on the MIDI CC control ports)
  *
  * @param g_start_frames The global start frames.
  * @param local_offset The local start frames.
@@ -900,15 +962,15 @@ track_processor_process (
 #endif
 
       /* append midi events from modwheel and
-       * pitchbend to MIDI out */
+       * pitchbend control ports to MIDI out */
       if (tr->type != TRACK_TYPE_CHORD)
         {
-          add_events_from_midi_controls (
+          add_events_from_midi_cc_control_ports (
             self, local_offset);
         }
       if (self->midi_out->midi_events->num_events > 0)
         {
-          g_message (
+          g_debug (
             "%s midi processor out has %d events",
             tr->name,
             self->midi_out->midi_events->num_events);
@@ -983,6 +1045,16 @@ track_processor_process (
             self->midi_in->midi_events, 0,
             tr->midi_ch);
         }
+
+      /* process midi bindings */
+      if (self->cc_mappings && TRANSPORT->recording)
+        {
+          midi_mappings_apply_from_cc_events (
+            self->cc_mappings,
+            self->midi_in->midi_events,
+            F_NOT_QUEUED);
+        }
+
       midi_events_append (
         self->midi_in->midi_events,
         self->midi_out->midi_events, local_offset,
@@ -997,7 +1069,10 @@ track_processor_process (
     {
       /* handle recording. this will only create
        * events in regions. it will not copy the
-       * input content to the output ports */
+       * input content to the output ports.
+       * this will also create automation for MIDI
+       * CC, if any (see
+       * midi_mappings_apply_cc_events above) */
       handle_recording (
         self, g_start_frames, local_offset,
         nframes);

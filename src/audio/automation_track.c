@@ -84,7 +84,6 @@ automation_track_new (
   self->regions =
     object_new_n (
       self->regions_size, ZRegion *);
-  self->automation_mode = AUTOMATION_MODE_READ;
 
   self->height = TRACK_DEF_HEIGHT;
 
@@ -94,6 +93,16 @@ automation_track_new (
     &self->port_id, &port->id);
 
   port->at = self;
+
+  if (port->id.flags & PORT_FLAG_MIDI_AUTOMATABLE)
+    {
+      self->automation_mode =
+        AUTOMATION_MODE_RECORD;
+      self->record_mode =
+        AUTOMATION_RECORD_MODE_TOUCH;
+    }
+  else
+    self->automation_mode = AUTOMATION_MODE_READ;
 
   return self;
 }

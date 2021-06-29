@@ -3944,6 +3944,7 @@ port_process (
             g_return_if_fail (
               at == found_at);
           }
+
         if (at &&
             port->id.flags &
               PORT_FLAG_AUTOMATABLE &&

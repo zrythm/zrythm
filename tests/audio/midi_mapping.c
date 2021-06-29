@@ -42,7 +42,7 @@ test_midi_mappping ()
   ext_port->short_name = g_strdup ("extport1");
 
   midi_byte_t buf[3] = { 0xB0, 0x07, 121 };
-  midi_mappings_bind (
+  midi_mappings_bind_device (
     MIDI_MAPPINGS, buf, ext_port,
     P_MASTER_TRACK->channel->fader->amp,
     F_NO_PUBLISH_EVENTS);

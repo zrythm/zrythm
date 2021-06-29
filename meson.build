@@ -565,6 +565,7 @@ endforeach
 
 # Compiler flags
 test_cflags = [
+  '-frecord-gcc-switches',
   '-Wformat=2',
   '-Wno-missing-field-initializers',
   '-Wno-unused-parameter',
