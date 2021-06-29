@@ -1026,14 +1026,6 @@ zrythm_app_startup (
   curl_global_init (CURL_GLOBAL_ALL);
 #endif
 
-  /* init random */
-  g_message ("Initing random...");
-#ifdef _WOE32
-  srand ((unsigned int) time (NULL));
-#else
-  srandom ((unsigned int) time (NULL));
-#endif
-
   /* init gtksourceview */
 #ifdef HAVE_GTK_SOURCE_VIEW_4
   gtk_source_init ();

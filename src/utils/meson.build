@@ -61,6 +61,7 @@ optimized_utils_lib = static_library (
   sources: [
     'dsp.c',
     'mpmc_queue.c',
+    'pcg_rand.c',
     ],
   dependencies: zrythm_deps,
   include_directories: all_inc,

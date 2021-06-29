@@ -40,6 +40,7 @@ typedef struct FileManager FileManager;
 typedef struct Settings Settings;
 typedef struct Log Log;
 typedef struct CairoCaches CairoCaches;
+typedef struct PCGRand PCGRand;
 
 /**
  * @addtogroup general
@@ -245,6 +246,9 @@ typedef struct Zrythm
 
   /** Object utils. */
   ObjectUtils *       object_utils;
+
+  /** Random number generator. */
+  PCGRand *           rand;
 
   /**
    * In debug mode or not (determined by GSetting).

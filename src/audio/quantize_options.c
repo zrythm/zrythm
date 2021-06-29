@@ -27,6 +27,8 @@
 #include "project.h"
 #include "utils/algorithms.h"
 #include "utils/objects.h"
+#include "utils/pcg_rand.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -227,14 +229,10 @@ quantize_options_quantize_position (
 
   const double upper = self->rand_ticks;
   const double lower = - self->rand_ticks;
+  double rand_double =
+    (double) pcg_rand_u32 (ZRYTHM->rand);
   double rand_ticks =
-#ifdef _WOE32
-    fmod (rand (),
-#else
-    fmod (random(),
-#endif
-      (upper - lower + 1.0)) +
-    lower;
+    fmod (rand_double, (upper - lower + 1.0)) + lower;
 
   /* if previous point is closer */
   double diff;

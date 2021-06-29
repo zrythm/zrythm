@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,8 @@
 #include "utils/arrays.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "utils/pcg_rand.h"
+#include "zrythm.h"
 
 #include <glib.h>
 
@@ -278,7 +280,10 @@ void array_shuffle (
       size_t i;
       for (i = 0; i < n - 1; ++i)
         {
-          size_t rnd = (size_t) rand();
+          size_t rnd =
+            (size_t)
+            ((double) pcg_rand_uf (ZRYTHM->rand) *
+             (double) RAND_MAX);
           size_t j =
             i + rnd / (RAND_MAX / (n - i) + 1);
 

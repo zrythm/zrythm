@@ -52,6 +52,7 @@
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/io.h"
+#include "utils/pcg_rand.h"
 #include "utils/string.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
@@ -677,6 +678,8 @@ zrythm_new (
 {
   Zrythm * self = object_new (Zrythm);
   ZRYTHM = self;
+
+  self->rand = pcg_rand_new ();
 
   self->exe_path = g_strdup (exe_path);
 
