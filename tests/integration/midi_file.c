@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,7 +38,7 @@
 #define BUFFER_SIZE 20
 #define LARGE_BUFFER_SIZE 2000
 /* around 100 causes OOM in various CIs */
-#define MAX_FILES 40
+#define MAX_FILES 20
 
 static void
 test_midi_file_playback ()
