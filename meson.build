@@ -24,6 +24,8 @@ project (
     'warning_level=2',
     'buildtype=debugoptimized',
     'c_std=gnu11',
+    'b_lto=true',
+    'b_lto_threads=2',
     ],
   )
 
@@ -1336,6 +1338,7 @@ summary ({
   'Program name': get_option ('program_name'),
   'Debug': get_option ('debug'),
   'Optimization': get_option ('optimization'),
+  'Link-Time Optimization': get_option ('b_lto'),
   'Profiling': get_option ('profiling'),
   'Strict flags': get_option ('strict_flags'),
   'Static deps': get_option ('static_deps'),
