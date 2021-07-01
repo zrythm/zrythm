@@ -239,8 +239,7 @@ mixer_selections_add_slot (
     plugin_slot_type_strings[type].str, slot);
 
   Plugin * pl = NULL;
-  if (type != PLUGIN_SLOT_INSTRUMENT &&
-      !array_contains_int (
+  if (!array_contains_int (
         ms->slots, ms->num_slots, slot))
     {
       switch (type)
@@ -253,6 +252,9 @@ mixer_selections_add_slot (
           break;
         case PLUGIN_SLOT_MODULATOR:
           pl = track->modulators[slot];
+          break;
+        case PLUGIN_SLOT_INSTRUMENT:
+          pl = track->channel->instrument;
           break;
         default:
           break;

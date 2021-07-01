@@ -504,12 +504,22 @@ automation_tracklist_remove_at (
   bool                  fire_events)
 {
   int deleted_idx = 0;
-  array_delete_return_pos (
-    self->ats, self->num_ats, at, deleted_idx);
+
   g_debug (
     "[track %d atl] removing automation track at: "
     "%d '%s'",
     self->track_pos, deleted_idx, at->port_id.label);
+
+  if (free_at)
+    {
+      /* this needs to be called before removing the
+       * automation track in case the region is
+       * referenced elsewhere (e.g., clip editor) */
+      automation_track_clear (at);
+    }
+
+  array_delete_return_pos (
+    self->ats, self->num_ats, at, deleted_idx);
 
   /* move automation track regions for automation
    * tracks after the deleted one*/
@@ -552,7 +562,6 @@ automation_tracklist_remove_at (
 
   if (free_at)
     {
-      automation_track_clear (at);
       automation_track_free (at);
     }
 

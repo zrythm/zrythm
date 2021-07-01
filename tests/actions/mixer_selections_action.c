@@ -1289,6 +1289,7 @@ _test_replace_instrument (
   const char *   pl_uri,
   bool           with_carla)
 {
+#ifdef HAVE_LSP_COMPRESSOR
   PluginSetting * setting = NULL;
 
   switch (prot)
@@ -1319,6 +1320,12 @@ _test_replace_instrument (
       break;
     }
 
+  /* create an fx track from a plugin */
+  test_plugin_manager_create_tracks_from_plugin (
+      LSP_SIDECHAIN_COMPRESSOR_BUNDLE,
+      LSP_SIDECHAIN_COMPRESSOR_URI, false, false,
+      1);
+
   /* create an instrument track */
   UndoableAction * ua =
     tracklist_selections_action_new_create (
@@ -1341,6 +1348,109 @@ _test_replace_instrument (
     IS_PLUGIN_AND_NONNULL (
       src_track->channel->instrument));
 
+  /* create a port connection */
+  int num_port_connection_actions =
+    UNDO_MANAGER->undo_stack->num_port_connection_actions;
+  int lsp_track_pos = TRACKLIST->num_tracks - 2;
+  Track * lsp_track =
+    TRACKLIST->tracks[lsp_track_pos];
+  Plugin * lsp =
+    lsp_track->channel->inserts[0];
+  Port * sidechain_port = NULL;
+  PortIdentifier sidechain_port_id;
+  memset (
+    &sidechain_port_id, 0, sizeof (PortIdentifier));
+  port_identifier_init (&sidechain_port_id);
+  for (int i = 0; i < lsp->num_in_ports; i++)
+    {
+      Port * port = lsp->in_ports[i];
+      if (port->id.flags & PORT_FLAG_SIDECHAIN)
+        {
+          sidechain_port = port;
+          port_identifier_copy (
+            &sidechain_port_id, &port->id);
+          break;
+        }
+    }
+  g_assert_true (
+    IS_PORT_AND_NONNULL (sidechain_port));
+
+/*#if 0*/
+  PortIdentifier helm_l_out_port_id;
+  memset (
+    &helm_l_out_port_id, 0,
+    sizeof (PortIdentifier));
+  port_identifier_init (&helm_l_out_port_id);
+  port_identifier_copy (
+    &helm_l_out_port_id,
+    &src_track->channel->instrument->l_out->id);
+  ua =
+    port_connection_action_new_connect (
+      &src_track->channel->instrument->l_out->id,
+      &sidechain_port->id);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (
+    sidechain_port->num_srcs, ==, 1);
+  g_assert_true (
+    string_is_equal (
+      helm_l_out_port_id.sym,
+      UNDO_MANAGER->undo_stack->port_connection_actions[num_port_connection_actions]->src_port_id.sym));
+/*#endif*/
+
+  /*test_project_save_and_reload ();*/
+  src_track =
+    TRACKLIST->tracks[src_track_pos];
+
+  /* get an automation track */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (src_track);
+  AutomationTrack * at = atl->ats[atl->num_ats - 1];
+  g_assert_true (
+    at->port_id.owner_type ==
+      PORT_OWNER_TYPE_PLUGIN);
+  at->created = true;
+  at->visible = true;
+
+  /* create an automation region */
+  Position start_pos, end_pos;
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start_pos, &end_pos, src_track->pos,
+      at->index, at->num_regions);
+  track_add_region  (
+    src_track, region, at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) region, true, false,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* create some automation points */
+  Port * port = automation_track_get_port (at);
+  position_set_to_bar (&start_pos, 1);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      port->deff,
+      control_port_real_val_to_normalized (
+        port, port->deff),
+      &start_pos);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, true, false,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  int num_ats = atl->num_ats;
+
   /* replace the instrument with a new instance */
   ua =
     mixer_selections_action_new_create (
@@ -1349,7 +1459,37 @@ _test_replace_instrument (
   undo_manager_perform (UNDO_MANAGER, ua);
   g_assert_true (track_validate (src_track));
 
+  g_assert_cmpint (num_ats, ==, atl->num_ats);
+  g_assert_cmpint (
+    sidechain_port->num_srcs, ==, 0);
+  g_assert_true (
+    string_is_equal (
+      helm_l_out_port_id.sym,
+      UNDO_MANAGER->undo_stack->port_connection_actions[num_port_connection_actions]->src_port_id.sym));
+
+  /* test undo and redo */
+  g_assert_true (
+    IS_PLUGIN_AND_NONNULL (
+      src_track->channel->instrument));
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    IS_PLUGIN_AND_NONNULL (
+      src_track->channel->instrument));
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (
+    IS_PLUGIN_AND_NONNULL (
+      src_track->channel->instrument));
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  /*yaml_set_log_level (CYAML_LOG_INFO);*/
+  test_project_save_and_reload ();
+  /*yaml_set_log_level (CYAML_LOG_WARNING);*/
+
   /* duplicate the track */
+  src_track =
+    TRACKLIST->tracks[src_track_pos];
   track_select (
     src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
   ua =
@@ -1370,6 +1510,14 @@ _test_replace_instrument (
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+/*#if 0*/
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+/*#endif*/
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
@@ -1381,9 +1529,8 @@ _test_replace_instrument (
 
   test_project_save_and_reload ();
 
-  g_message ("done");
-
   plugin_setting_free (setting);
+#endif /* HAVE LSP_COMPRESSOR */
 }
 
 static void

@@ -51,8 +51,10 @@ port_connection_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_PORT_CONNECTION;
 
-  self->src_port_id = *src_id;
-  self->dest_port_id = *dest_id;
+  port_identifier_copy (
+    &self->src_port_id, src_id);
+  port_identifier_copy (
+    &self->dest_port_id, dest_id);
   self->type = type;
   self->val = new_val;
 

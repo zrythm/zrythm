@@ -758,8 +758,8 @@ region_find (
 
       AutomationTracklist * atl =
         &track->automation_tracklist;
-      if (id->at_idx >= atl->num_ats)
-        g_return_val_if_reached (NULL);
+      g_return_val_if_fail (
+        id->at_idx < atl->num_ats, NULL);
       at = atl->ats[id->at_idx];
       g_return_val_if_fail (at, NULL);
 
