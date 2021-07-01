@@ -824,6 +824,10 @@ plugin_set_track_and_slot (
   PluginSlotType slot_type,
   int            slot)
 {
+  g_return_if_fail (
+    plugin_identifier_validate_slot_type_slot_combo (
+      slot_type, slot));
+
   pl->id.track_pos = track_pos;
   pl->id.slot = slot;
   pl->id.slot_type = slot_type;

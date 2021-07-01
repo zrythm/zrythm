@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex and zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex and zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -496,7 +496,7 @@ channel_init_loaded (
     {
       pl = self->instrument;
       pl->id.track_pos = self->track_pos;
-      pl->id.slot = 0;
+      pl->id.slot = -1;
       pl->id.slot_type = PLUGIN_SLOT_INSTRUMENT;
       plugin_init_loaded (pl, project);
     }
@@ -1749,9 +1749,9 @@ channel_remove_plugin (
  * @param recalc_graph Recalculate mixer graph.
  * @param pub_events Publish events.
  *
- * @return 1 if plugin added, 0 if not.
+ * @return true if plugin added, false if not.
  */
-int
+bool
 channel_add_plugin (
   Channel * self,
   PluginSlotType slot_type,
@@ -1763,6 +1763,11 @@ channel_add_plugin (
   bool      recalc_graph,
   bool      pub_events)
 {
+  g_return_val_if_fail (
+    plugin_identifier_validate_slot_type_slot_combo (
+      slot_type, slot),
+    false);
+
   int i;
   Track * track = channel_get_track (self);
   g_return_val_if_fail (
@@ -1786,33 +1791,34 @@ channel_add_plugin (
     }
 
   Plugin * existing_pl = NULL;
-  if (slot_type != PLUGIN_SLOT_INSTRUMENT)
-    {
-      /* confirm if another plugin exists */
-      existing_pl = plugins[slot];
-      if (existing_pl)
-        {
-          g_message (
-            "existing plugin exists at %s:%d",
-            track->name, slot);
-        }
-      /* TODO move confirmation to widget */
-#if 0
-      if (confirm && existing_pl && ZRYTHM_HAVE_UI)
-        {
-          GtkDialog * dialog =
-            dialogs_get_overwrite_plugin_dialog (
-              GTK_WINDOW (MAIN_WINDOW));
-          int result =
-            gtk_dialog_run (dialog);
-          gtk_widget_destroy (GTK_WIDGET (dialog));
+  if (slot_type == PLUGIN_SLOT_INSTRUMENT)
+    existing_pl = self->instrument;
+  else
+    existing_pl = plugins[slot];
 
-          /* do nothing if not accepted */
-          if (result != GTK_RESPONSE_ACCEPT)
-            return 0;
-        }
-#endif
+  if (existing_pl)
+    {
+      g_message (
+        "existing plugin exists at %s:%d",
+        track->name, slot);
     }
+  /* TODO move confirmation to widget */
+#if 0
+  /* confirm if another plugin exists */
+  if (confirm && existing_pl && ZRYTHM_HAVE_UI)
+    {
+      GtkDialog * dialog =
+        dialogs_get_overwrite_plugin_dialog (
+          GTK_WINDOW (MAIN_WINDOW));
+      int result =
+        gtk_dialog_run (dialog);
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+
+      /* do nothing if not accepted */
+      if (result != GTK_RESPONSE_ACCEPT)
+        return 0;
+    }
+#endif
 
   /* free current plugin */
   if (existing_pl)
@@ -2162,7 +2168,7 @@ channel_clone (
           ch->instrument, src_is_project);
       channel_add_plugin (
         clone, PLUGIN_SLOT_INSTRUMENT,
-        0, clone_pl, F_NO_CONFIRM,
+        -1, clone_pl, F_NO_CONFIRM,
         F_NOT_MOVING_PLUGIN,
         F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
         F_NO_PUBLISH_EVENTS);

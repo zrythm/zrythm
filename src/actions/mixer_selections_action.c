@@ -242,7 +242,8 @@ revert_automation (
 }
 
 /**
- * Save an existing plugin about to be replaced.
+ * Save an existing plugin about to be replaced
+ * into @ref tmp_ms.
  */
 static void
 save_existing_plugin (
@@ -258,6 +259,16 @@ save_existing_plugin (
   Plugin * existing_pl =
     track_get_plugin_at_slot (
       to_tr, to_slot_type, to_slot);
+  g_debug (
+    "existing plugin at (%s:%s:%d => %s:%s:%d): %s",
+    from_tr ? from_tr->name : "(none)",
+    plugin_slot_type_to_string (from_slot_type),
+    from_slot,
+    to_tr ? to_tr->name : "(none)",
+    plugin_slot_type_to_string (to_slot_type),
+    to_slot,
+    existing_pl ?
+      existing_pl->setting->descr->name : "(none)");
   if (existing_pl &&
       (from_tr != to_tr ||
        from_slot_type != to_slot_type ||

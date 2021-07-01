@@ -445,10 +445,10 @@ channel_process (Channel * channel);
  * @param recalc_graph Recalculate mixer graph.
  * @param pub_events Publish events.
  *
- * @return 1 if plugin added, 0 if not.
+ * @return true if plugin added, false if not.
  */
 NONNULL
-int
+bool
 channel_add_plugin (
   Channel * channel,
   PluginSlotType slot_type,

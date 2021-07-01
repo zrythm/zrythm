@@ -73,14 +73,11 @@ get_plugin (
       break;
     case PLUGIN_SLOT_INSTRUMENT:
       if (self->track && self->track->channel)
-        {
-          return self->track->channel->instrument;
-        }
+        return self->track->channel->instrument;
       break;
     case PLUGIN_SLOT_MODULATOR:
       return
-        self->track->modulators[
-          self->slot_index];
+        self->track->modulators[self->slot_index];
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -856,8 +853,7 @@ on_drag_motion (
   ChannelSlotWidget * self)
 {
   GdkModifierType mask;
-  z_gtk_widget_get_mask (
-    widget, &mask);
+  z_gtk_widget_get_mask (widget, &mask);
   if (mask & GDK_CONTROL_MASK)
     gdk_drag_status (
       context, GDK_ACTION_COPY, time);
@@ -1019,12 +1015,16 @@ channel_slot_widget_new (
     },
   };
 
-  /* set as drag source for plugin */
-  gtk_drag_source_set (
-    GTK_WIDGET (self),
-    GDK_BUTTON1_MASK,
-    entries, 1,
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  if (type != PLUGIN_SLOT_INSTRUMENT)
+    {
+      /* set as drag source for plugin */
+      gtk_drag_source_set (
+        GTK_WIDGET (self),
+        GDK_BUTTON1_MASK,
+        entries, 1,
+        GDK_ACTION_MOVE | GDK_ACTION_COPY);
+    }
+
   /* set as drag dest for both plugins and
    * plugin descriptors */
   gtk_drag_dest_set (
@@ -1046,12 +1046,8 @@ ChannelSlotWidget *
 channel_slot_widget_new_instrument (void)
 {
   ChannelSlotWidget * self =
-    g_object_new (
-      CHANNEL_SLOT_WIDGET_TYPE, NULL);
-  self->slot_index = -1;
-  self->type = PLUGIN_SLOT_INSTRUMENT;
-  self->track = NULL;
-  self->open_plugin_inspector_on_click = false;
+    channel_slot_widget_new (
+      -1, NULL, PLUGIN_SLOT_INSTRUMENT, false);
 
   return self;
 }

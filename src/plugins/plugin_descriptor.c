@@ -376,6 +376,10 @@ plugin_descriptor_is_valid_for_slot_type (
     case PLUGIN_SLOT_MIDI_FX:
       return self->num_midi_outs > 0;
       break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      return
+        track_type == TRACK_TYPE_INSTRUMENT &&
+        plugin_descriptor_is_instrument (self);
     default:
       break;
     }

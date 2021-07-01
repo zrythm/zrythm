@@ -885,6 +885,12 @@ track_validate (
             pid->track_pos == track_pos, false);
           Plugin * pl = plugin_find (pid);
           g_return_val_if_fail (
+            plugin_identifier_validate (pid),
+            false);
+          g_return_val_if_fail (
+            plugin_identifier_validate (&pl->id),
+            false);
+          g_return_val_if_fail (
             plugin_identifier_is_equal (
               &pl->id, pid), false);
           if (pid->slot_type ==
@@ -1885,6 +1891,10 @@ track_insert_plugin (
   bool           recalc_graph,
   bool           fire_events)
 {
+  g_return_if_fail (
+    plugin_identifier_validate_slot_type_slot_combo (
+      slot_type, slot));
+
   if (slot_type == PLUGIN_SLOT_MODULATOR)
     {
       modulator_track_insert_modulator (

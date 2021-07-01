@@ -234,6 +234,10 @@ mixer_selections_add_slot (
   ms->type = type;
   ms->has_any = true;
 
+  g_debug ("adding slot %s:%s:%d",
+    track->name,
+    plugin_slot_type_strings[type].str, slot);
+
   Plugin * pl = NULL;
   if (type != PLUGIN_SLOT_INSTRUMENT &&
       !array_contains_int (

@@ -1403,9 +1403,9 @@ engine_process (
 {
   if (ZRYTHM_TESTING)
     {
-      g_debug (
-        "engine process started. total frames to "
-        "process: %u", total_frames_to_process);
+      /*g_debug (*/
+        /*"engine process started. total frames to "*/
+        /*"process: %u", total_frames_to_process);*/
     }
 
   g_return_val_if_fail (
@@ -1601,7 +1601,7 @@ engine_process (
 
   if (ZRYTHM_TESTING)
     {
-      g_debug ("engine process ended...");
+      /*g_debug ("engine process ended...");*/
     }
 
   self->last_timestamp_start =

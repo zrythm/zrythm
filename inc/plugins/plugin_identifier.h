@@ -79,8 +79,13 @@ typedef struct PluginIdentifier
   /** The Channel this plugin belongs to. */
   int              track_pos;
 
-  /** The slot this plugin is in in the channel, or
-   * thie index if this is part of a modulator. */
+  /**
+   * The slot this plugin is in in the channel, or
+   * the index if this is part of a modulator.
+   *
+   * If PluginIdentifier.slot_type is an instrument,
+   * this must be set to -1.
+   */
   int              slot;
 } PluginIdentifier;
 
@@ -122,21 +127,24 @@ plugin_identifier_is_equal (
     a->slot == b->slot;
 }
 
-static inline void
+void
 plugin_identifier_copy (
   PluginIdentifier * dest,
-  const PluginIdentifier * src)
-{
-  dest->schema_version = src->schema_version;
-  dest->slot_type = src->slot_type;
-  dest->track_pos = src->track_pos;
-  dest->slot = src->slot;
-}
+  const PluginIdentifier * src);
 
 NONNULL
 bool
 plugin_identifier_validate (
-  PluginIdentifier * self);
+  const PluginIdentifier * self);
+
+/**
+ * Verifies that @ref slot_type and @ref slot is
+ * a valid combination.
+ */
+bool
+plugin_identifier_validate_slot_type_slot_combo (
+  PluginSlotType slot_type,
+  int            slot);
 
 static inline void
 plugin_identifier_print (

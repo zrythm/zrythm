@@ -483,13 +483,15 @@ create_track (
 
       if (track->channel && pl)
         {
+          bool is_instrument =
+            track->type == TRACK_TYPE_INSTRUMENT;
           channel_add_plugin (
             track->channel,
-            plugin_descriptor_is_instrument (
-              self->pl_setting->descr) ?
-                PLUGIN_SLOT_INSTRUMENT :
-                PLUGIN_SLOT_INSERT,
-            pl->id.slot, pl,
+            is_instrument ?
+              PLUGIN_SLOT_INSTRUMENT :
+              PLUGIN_SLOT_INSERT,
+            is_instrument ? -1 : pl->id.slot,
+            pl,
             F_CONFIRM, F_NOT_MOVING_PLUGIN,
             F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);

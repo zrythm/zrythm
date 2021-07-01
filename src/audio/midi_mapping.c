@@ -119,9 +119,14 @@ midi_mappings_bind_at (
   char str[100];
   midi_ctrl_change_get_ch_and_description (
     buf, str);
-  g_message (
-    "bounded MIDI mapping from %s to %s",
-    str, dest_port->id.label);
+
+  if (!(dest_port->id.flags &
+          PORT_FLAG_MIDI_AUTOMATABLE))
+    {
+      g_message (
+        "bounded MIDI mapping from %s to %s",
+        str, dest_port->id.label);
+    }
 
   if (fire_events && ZRYTHM_HAVE_UI)
     {

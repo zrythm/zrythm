@@ -1282,6 +1282,143 @@ test_undoing_deletion_of_multiple_inserts (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+_test_replace_instrument (
+  PluginProtocol prot,
+  const char *   pl_bundle,
+  const char *   pl_uri,
+  bool           with_carla)
+{
+  PluginSetting * setting = NULL;
+
+  switch (prot)
+    {
+    case PROT_LV2:
+      setting =
+        test_plugin_manager_get_plugin_setting (
+          pl_bundle, pl_uri, with_carla);
+      g_assert_nonnull (setting);
+      setting =
+        plugin_setting_clone (
+          setting, F_NO_VALIDATE);
+      break;
+    case PROT_VST:
+#ifdef HAVE_CARLA
+        {
+          PluginDescriptor ** descriptors =
+            z_carla_discovery_create_descriptors_from_file (
+              pl_bundle, ARCH_64, PROT_VST);
+          setting =
+            plugin_setting_new_default (
+              descriptors[0]);
+          free (descriptors);
+        }
+#endif
+      break;
+    default:
+      break;
+    }
+
+  /* create an instrument track */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_INSTRUMENT, setting, NULL,
+      TRACKLIST->num_tracks, NULL, 1, -1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  int src_track_pos = TRACKLIST->num_tracks - 1;
+  Track * src_track =
+    TRACKLIST->tracks[src_track_pos];
+  g_assert_true (track_validate (src_track));
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  test_project_save_and_reload ();
+
+  src_track =
+    TRACKLIST->tracks[src_track_pos];
+  g_assert_true (
+    IS_PLUGIN_AND_NONNULL (
+      src_track->channel->instrument));
+
+  /* replace the instrument with a new instance */
+  ua =
+    mixer_selections_action_new_create (
+      PLUGIN_SLOT_INSTRUMENT, src_track_pos, -1,
+      setting, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (track_validate (src_track));
+
+  /* duplicate the track */
+  track_select (
+    src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_copy (
+      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
+  g_assert_true (track_validate (src_track));
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  int dest_track_pos = TRACKLIST->num_tracks - 1;
+  Track * dest_track =
+    TRACKLIST->tracks[dest_track_pos];
+
+  g_assert_true (
+    track_validate (src_track));
+  g_assert_true (
+    track_validate (dest_track));
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+
+  g_message ("letting engine run...");
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  test_project_save_and_reload ();
+
+  g_message ("done");
+
+  plugin_setting_free (setting);
+}
+
+static void
+test_replace_instrument (void)
+{
+  test_helper_zrythm_init ();
+
+  for (int i = 0; i < 2; i++)
+    {
+      if (i == 1)
+        {
+#ifdef HAVE_CARLA
+#ifdef HAVE_NOIZEMAKER
+          _test_replace_instrument (
+            PROT_VST, NOIZEMAKER_PATH, NULL, i);
+#endif
+#else
+          break;
+#endif
+        }
+
+#ifdef HAVE_HELM
+      _test_replace_instrument (
+        PROT_LV2, HELM_BUNDLE, HELM_URI, i);
+#endif
+#ifdef HAVE_CARLA_RACK
+      _test_replace_instrument (
+        PROT_LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI,
+        i);
+#endif
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1289,6 +1426,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
+  g_test_add_func (
+    TEST_PREFIX "test replace instrument",
+    (GTestFunc) test_replace_instrument);
   g_test_add_func (
     TEST_PREFIX
     "test undoing deletion of multiple inserts",
