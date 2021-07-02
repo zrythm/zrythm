@@ -500,7 +500,8 @@ automation-lane
   border-color: alpha (grey, 0.3);
 }
 
-.section_heading
+.section_heading,
+.port-group-lbl
 {
   font-weight: bold;
   font-size: small;

@@ -52,6 +52,7 @@ typedef struct _PortInfoDialogWidget
   GtkDialog            parent_instance;
 
   GtkLabel *           name_lbl;
+  GtkLabel *           group_lbl;
   GtkLabel *           full_designation_lbl;
   GtkLabel *           type_lbl;
   GtkLabel *           range_lbl;

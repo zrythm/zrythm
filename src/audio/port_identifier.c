@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/port.h"
 #include "audio/port_identifier.h"
 #include "plugins/plugin_identifier.h"
 #include "utils/objects.h"
@@ -30,6 +31,36 @@ port_identifier_init (
     PORT_IDENTIFIER_SCHEMA_VERSION;
   self->track_pos = -1;
   plugin_identifier_init (&self->plugin_id);
+}
+
+/**
+ * Port group comparator function where @ref p1 and
+ * @ref p2 are pointers to Port.
+ */
+int
+port_identifier_port_group_cmp (
+  const void* p1, const void* p2)
+{
+  const Port * control1 = *(const Port **)p1;
+  const Port * control2 = *(const Port **)p2;
+
+  g_return_val_if_fail (IS_PORT (control1), -1);
+  g_return_val_if_fail (IS_PORT (control2), -1);
+
+  /* use index for now - this assumes that ports
+   * inside port groups are declared in sequence */
+  return
+    control1->id.port_index -
+    control2->id.port_index;
+
+#if 0
+  return
+    (control1->id.port_group &&
+     control2->id.port_group) ?
+      strcmp (
+        control1->id.port_group,
+        control2->id.port_group) : 0;
+#endif
 }
 
 /**

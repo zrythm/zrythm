@@ -557,6 +557,14 @@ port_identifier_get_label (
 }
 
 /**
+ * Port group comparator function where @ref p1 and
+ * @ref p2 are pointers to Port.
+ */
+int
+port_identifier_port_group_cmp (
+  const void* p1, const void* p2);
+
+/**
  * Copy the identifier content from \ref src to
  * \ref dest.
  *

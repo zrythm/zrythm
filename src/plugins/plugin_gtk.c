@@ -1361,24 +1361,6 @@ make_controller (
   return controller;
 }
 
-static int
-control_group_cmp (
-  const void* p1, const void* p2, void* data)
-{
-  const Port * control1 = *(const Port **)p1;
-  const Port * control2 = *(const Port **)p2;
-
-  g_return_val_if_fail (IS_PORT (control1), -1);
-  g_return_val_if_fail (IS_PORT (control2), -1);
-
-  return
-    (control1->id.port_group &&
-     control2->id.port_group) ?
-      strcmp (
-        control1->id.port_group,
-        control2->id.port_group) : 0;
-}
-
 static GtkWidget*
 build_control_widget (
   Plugin *    pl,
@@ -1395,10 +1377,10 @@ build_control_widget (
       if (port->id.type != TYPE_CONTROL)
         continue;
 
-      g_array_append_vals (controls, &port, 1);
+      g_array_append_val (controls, port);
     }
-  g_array_sort_with_data (
-    controls, control_group_cmp, pl);
+  g_array_sort (
+    controls, port_identifier_port_group_cmp);
 
   /* Add controls in group order */
   const char * last_group = NULL;

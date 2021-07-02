@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,8 @@
 #include "gui/widgets/ports_expander.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/gtk.h"
+#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -217,12 +219,8 @@ ports_expander_widget_setup_plugin (
   gtk_widget_set_vexpand_set (
     GTK_WIDGET (prv->content), 1);
 
-#define ADD_SINGLE(x) \
-  ip = \
-    inspector_port_widget_new (x); \
-  two_col_expander_box_widget_add_single ( \
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
-    GTK_WIDGET (ip))
+  GArray * ports =
+    g_array_new (false, true, sizeof (Port *));
 
   InspectorPortWidget * ip;
   Port * port;
@@ -238,7 +236,7 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
   else if (pl && type == TYPE_CONTROL &&
@@ -252,7 +250,7 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
   else if (pl && type == TYPE_CV &&
@@ -266,7 +264,7 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
   else if (pl && type == TYPE_CV &&
@@ -280,7 +278,7 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
   else if (pl && type == TYPE_AUDIO &&
@@ -294,7 +292,7 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
   else if (pl && type == TYPE_AUDIO &&
@@ -308,7 +306,7 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
   else if (pl && type == TYPE_EVENT &&
@@ -322,7 +320,7 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
   else if (pl && type == TYPE_EVENT &&
@@ -336,9 +334,54 @@ ports_expander_widget_setup_plugin (
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
-          ADD_SINGLE (port);
+          g_array_append_val (ports, port);
         }
     }
+  g_array_sort (
+    ports, port_identifier_port_group_cmp);
+
+#define ADD_SINGLE(x) \
+  ip = \
+    inspector_port_widget_new (x); \
+  two_col_expander_box_widget_add_single ( \
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
+    GTK_WIDGET (ip))
+
+  /* Add ports in group order */
+  const char * last_group = NULL;
+  int num_ports = (int) ports->len;
+  for (int i = 0; i < num_ports; ++i)
+    {
+      port = g_array_index (ports, Port *, i);
+      const char * group = port->id.port_group;
+
+      /* Check group and add new heading if
+       * necessary */
+      if (!string_is_equal (group, last_group))
+        {
+          const char * group_name =
+            group ? group : _("Ungrouped");
+          GtkWidget * group_label =
+            gtk_label_new (group_name);
+          gtk_label_set_xalign (
+            GTK_LABEL (group_label), 0.f);
+          z_gtk_widget_add_style_class (
+            group_label, "port-group-lbl");
+          gtk_widget_set_visible (group_label, true);
+          gtk_widget_set_margin_top (
+            group_label, 3);
+          gtk_widget_set_margin_bottom (
+            group_label, 3);
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (group_label));
+        }
+      last_group = group;
+
+      /* Add row to table for this controller */
+      ADD_SINGLE (port);
+    }
+
 #undef ADD_SINGLE
 
   ports_expander_widget_refresh (self);

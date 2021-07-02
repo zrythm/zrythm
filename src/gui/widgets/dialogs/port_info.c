@@ -17,11 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * PortInfo dialog.
- */
+/* FIXME don't need a template, add rows
+ * dynamically */
 
 #include "audio/port.h"
 #include "gui/widgets/dialogs/port_info.h"
@@ -50,6 +47,8 @@ set_values (
   char tmp[600];
   gtk_label_set_text (
     self->name_lbl, id->label);
+  gtk_label_set_text (
+    self->group_lbl, id->port_group);
   port_get_full_designation (port, tmp);
   gtk_label_set_text (
     self->full_designation_lbl, tmp);
@@ -132,6 +131,7 @@ port_info_dialog_widget_class_init (
     klass, PortInfoDialogWidget, x)
 
   BIND_CHILD (name_lbl);
+  BIND_CHILD (group_lbl);
   BIND_CHILD (full_designation_lbl);
   BIND_CHILD (type_lbl);
   BIND_CHILD (range_lbl);
