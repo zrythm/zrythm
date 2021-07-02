@@ -157,6 +157,8 @@ timeline_panel_widget_init (
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
   g_type_ensure (TIMELINE_TOOLBAR_WIDGET_TYPE);
+  g_type_ensure (RULER_WIDGET_TYPE);
+  g_type_ensure (ARRANGER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

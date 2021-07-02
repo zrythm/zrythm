@@ -197,6 +197,8 @@ static void
 midi_editor_space_widget_init (
   MidiEditorSpaceWidget * self)
 {
+  g_type_ensure (PIANO_ROLL_KEYS_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->arranger->type =
