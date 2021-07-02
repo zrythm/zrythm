@@ -336,7 +336,7 @@ Args:
              "audition"))
          (print-enum
            "graphic-detail"
-           '("high" "normal" "low"))
+           '("high" "normal" "low" "ultra-low"))
          (print-enum
            "recording-mode"
            '("overwrite-events" "merge-events"

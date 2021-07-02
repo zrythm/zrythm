@@ -68,6 +68,7 @@ typedef enum UiDetail
   UI_DETAIL_HIGH,
   UI_DETAIL_NORMAL,
   UI_DETAIL_LOW,
+  UI_DETAIL_ULTRA_LOW,
 } UiDetail;
 
 static const char * ui_detail_str[] =
@@ -75,6 +76,7 @@ static const char * ui_detail_str[] =
   __("High"),
   __("Normal"),
   __("Low"),
+  __("Ultra Low"),
 };
 
 static inline const char *

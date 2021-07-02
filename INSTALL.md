@@ -16,6 +16,8 @@ To pass options, use the following syntax
 To see all available options, type the following
 after the build directory is initialized, or look
 inside [meson_options.txt](meson_options.txt).
+Built-in meson options can be found
+[here](https://mesonbuild.com/Builtin-options.html).
 
     meson configure build
 

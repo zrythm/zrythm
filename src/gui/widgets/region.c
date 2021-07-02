@@ -1102,12 +1102,14 @@ draw_audio_part (
 
   UiDetail detail = ui_get_detail_level ();
 
-  /* if > 50% CPU, force lower level of detail */
-  if (detail < UI_DETAIL_LOW)
+  /* if > 40% CPU, force lower level of detail */
+  if (detail < UI_DETAIL_ULTRA_LOW)
     {
       if (MW_CPU->cpu > 60)
-        detail = UI_DETAIL_LOW;
+        detail = UI_DETAIL_ULTRA_LOW;
       else if (MW_CPU->cpu > 50)
+        detail = UI_DETAIL_LOW;
+      else if (MW_CPU->cpu > 40)
         detail++;
     }
 
@@ -1128,7 +1130,14 @@ draw_audio_part (
       increment = 2;
       width = 2;
       break;
+    case UI_DETAIL_ULTRA_LOW:
+      increment = 4;
+      width = 4;
+      break;
     }
+
+  g_message ("current detail: %s",
+    ui_detail_str[detail]);
 
   long loop_end_frames =
     math_round_double_to_long (
@@ -1208,6 +1217,7 @@ draw_audio_part (
       break; \
     case UI_DETAIL_NORMAL: \
     case UI_DETAIL_LOW: \
+    case UI_DETAIL_ULTRA_LOW: \
       cairo_rectangle ( \
         cr, (int) (x), (int) (from_y), \
         width, (int) _height); \

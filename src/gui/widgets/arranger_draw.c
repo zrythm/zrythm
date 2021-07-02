@@ -23,10 +23,12 @@
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger_draw.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/cpu.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/midi_arranger.h"
@@ -192,6 +194,7 @@ draw_playhead (
           break;
         case UI_DETAIL_NORMAL:
         case UI_DETAIL_LOW:
+        case UI_DETAIL_ULTRA_LOW:
           cairo_rectangle (
             cr, (int) (px - rect->x) - 1, 0, 2,
             (int) rect->height);
@@ -512,6 +515,18 @@ draw_audio_bg (
   UiDetail detail = ui_get_detail_level ();
   double increment = 1;
   double width = 1;
+
+  /* if > 40% CPU, force lower level of detail */
+  if (detail < UI_DETAIL_ULTRA_LOW)
+    {
+      if (MW_CPU->cpu > 60)
+        detail = UI_DETAIL_ULTRA_LOW;
+      else if (MW_CPU->cpu > 50)
+        detail = UI_DETAIL_LOW;
+      else if (MW_CPU->cpu > 40)
+        detail++;
+    }
+
   switch (detail)
     {
     case UI_DETAIL_HIGH:
@@ -525,6 +540,10 @@ draw_audio_bg (
     case UI_DETAIL_LOW:
       increment = 2;
       width = 2;
+      break;
+    case UI_DETAIL_ULTRA_LOW:
+      increment = 4;
+      width = 4;
       break;
     }
 
@@ -575,6 +594,7 @@ draw_audio_bg (
       break; \
     case UI_DETAIL_NORMAL: \
     case UI_DETAIL_LOW: \
+    case UI_DETAIL_ULTRA_LOW: \
       cairo_rectangle ( \
         cr, (int) (x), (int) (from_y), \
         width, (int) _height); \
