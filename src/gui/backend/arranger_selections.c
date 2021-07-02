@@ -74,9 +74,9 @@ arranger_selections_init_loaded (
       ArrangerObject * obj = \
         (ArrangerObject *) sel->sc##s[i]; \
       arranger_object_set_magic (obj); \
-      arranger_object_update_frames (obj); \
       if (project) \
         { \
+          arranger_object_update_frames (obj); \
           sel->sc##s[i] = \
             (cc *) \
             arranger_object_find (obj); \
@@ -85,6 +85,7 @@ arranger_selections_init_loaded (
         { \
           arranger_object_init_loaded ( \
             (ArrangerObject *) sel->sc##s[i]); \
+          arranger_object_update_frames (obj); \
         } \
     }
 

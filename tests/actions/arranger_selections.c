@@ -2580,6 +2580,45 @@ test_delete_automation_points ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_duplicate_audio_regions ()
+{
+  test_helper_zrythm_init ();
+
+  char audio_file_path[2000];
+  sprintf (
+    audio_file_path, "%s%s%s",
+    TESTS_SRCDIR, G_DIR_SEPARATOR_S,
+    "test.wav");
+
+  /* create audio track with region */
+  Position pos1;
+  position_init (&pos1);
+  int track_pos = TRACKLIST->num_tracks;
+  SupportedFile * file =
+    supported_file_new_from_path (audio_file_path);
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO, NULL, file, track_pos,
+      &pos1, 1, -1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  Track * track = TRACKLIST->tracks[track_pos];
+
+  arranger_object_select (
+    (ArrangerObject *) track->lanes[0]->regions[0],
+    F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_duplicate_timeline (
+      TL_SELECTIONS, MOVE_TICKS, 0, 0,
+      F_NOT_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  test_project_save_and_reload ();
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2587,7 +2626,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
-  /*yaml_set_log_level (CYAML_LOG_INFO);*/
+  g_test_add_func (
+    TEST_PREFIX "test duplicate audio regions",
+    (GTestFunc) test_duplicate_audio_regions);
   g_test_add_func (
     TEST_PREFIX "test link timeline",
     (GTestFunc) test_link_timeline);

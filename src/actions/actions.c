@@ -1253,8 +1253,7 @@ activate_duplicate (
         arranger_selections_action_new_duplicate (
           sel, length, 0, 0, 0, 0, 0,
           F_NOT_ALREADY_MOVED);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      undo_manager_perform (UNDO_MANAGER, ua);
     }
 }
 
