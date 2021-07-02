@@ -126,8 +126,12 @@ on_load_preset_clicked (
 
   if (setting->open_with_carla)
     {
+#ifdef HAVE_CARLA
       carla_native_plugin_load_state (
         self->plugin->carla, path);
+#else
+      g_return_if_reached ();
+#endif
     }
   else if (setting->descr->protocol == PROT_LV2)
     {

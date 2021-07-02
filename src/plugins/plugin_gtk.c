@@ -306,12 +306,16 @@ plugin_gtk_on_save_preset_activate (
 
   if (open_with_carla)
     {
+#ifdef HAVE_CARLA
       char * homedir =
         g_build_filename (
           g_get_home_dir(), NULL);
       gtk_file_chooser_set_current_folder (
         GTK_FILE_CHOOSER (dialog), homedir);
       g_free (homedir);
+#else
+      g_return_if_reached ();
+#endif
     }
   else if (is_lv2)
     {
@@ -374,6 +378,7 @@ plugin_gtk_on_save_preset_activate (
           GTK_TOGGLE_BUTTON (add_prefix));
       if (open_with_carla)
         {
+#ifdef HAVE_CARLA
           const char * prefix = "";
           const char * sep = "";
           char * dirname =
@@ -404,6 +409,7 @@ plugin_gtk_on_save_preset_activate (
           g_free (sprefix);
           g_free (bundle);
           g_free (dir);
+#endif
         }
       else if (is_lv2)
         {
