@@ -107,10 +107,17 @@ lv2_gtk_add_preset_to_menu (
   const LilvNode* title,
   void*           data);
 
+/**
+ * Called by plugin_gtk_on_save_preset_activate()
+ * on accept.
+ */
 void
 lv2_gtk_on_save_preset_activate (
-  GtkWidget* widget,
-  Lv2Plugin * plugin);
+  GtkWidget*   widget,
+  Lv2Plugin *  plugin,
+  const char * path,
+  const char * uri,
+  bool         add_prefix);
 
 GtkWidget*
 lv2_gtk_build_control_widget (

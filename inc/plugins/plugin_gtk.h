@@ -59,8 +59,11 @@ typedef struct PluginGtkPresetMenu
 typedef struct PluginGtkPresetRecord
 {
   Plugin*     plugin;
-  /** This will be a LilvNode * for LV2. */
-  void * preset;
+  /**
+   * This will be a LilvNode * for LV2 and an
+   * absolute path for carla.
+   */
+  void *      preset;
 } PluginGtkPresetRecord;
 
 /**
@@ -120,6 +123,11 @@ void
 plugin_gtk_on_preset_destroy (
   PluginGtkPresetRecord * record,
   GClosure* closure);
+
+void
+plugin_gtk_on_save_preset_activate (
+  GtkWidget * widget,
+  Plugin *    plugin);
 
 gint
 plugin_gtk_menu_cmp (

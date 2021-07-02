@@ -43,6 +43,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
+#include "plugins/carla_native_plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_state.h"
@@ -151,15 +152,13 @@ plugin_gtk_on_preset_activate (
   if (GTK_CHECK_MENU_ITEM (widget) !=
         plugin->active_preset_item)
     {
-      switch (plugin->setting->descr->protocol)
+      if (plugin->setting->descr->protocol ==
+                 PROT_LV2)
         {
-        case PROT_LV2:
           g_return_if_fail (plugin->lv2);
           lv2_state_apply_preset (
-            plugin->lv2, (LilvNode *) record->preset);
-          break;
-        default:
-          break;
+            plugin->lv2,
+            (LilvNode *) record->preset, NULL);
         }
       if (plugin->active_preset_item)
         {
@@ -172,8 +171,8 @@ plugin_gtk_on_preset_activate (
         GTK_CHECK_MENU_ITEM (widget);
       gtk_check_menu_item_set_active (
         plugin->active_preset_item, TRUE);
-      plugin_gtk_set_window_title (
-        plugin, plugin->window);
+
+      EVENTS_PUSH (ET_PLUGIN_PRESET_LOADED, plugin);
     }
 }
 
@@ -285,20 +284,141 @@ plugin_gtk_rebuild_preset_menu (
   gtk_widget_show_all (GTK_WIDGET(pset_menu));
 }
 
-static void
-on_save_preset_activate (
+void
+plugin_gtk_on_save_preset_activate (
   GtkWidget * widget,
   Plugin *    plugin)
 {
-  switch (plugin->setting->descr->protocol)
+  const PluginSetting * setting = plugin->setting;
+  const PluginDescriptor * descr = setting->descr;
+  bool open_with_carla = setting->open_with_carla;
+  bool is_lv2 = descr->protocol == PROT_LV2;
+
+  GtkWidget* dialog =
+    gtk_file_chooser_dialog_new (
+    _("Save Preset"),
+    plugin->window ?
+      plugin->window : GTK_WINDOW (MAIN_WINDOW),
+    GTK_FILE_CHOOSER_ACTION_SAVE,
+    _("_Cancel"), GTK_RESPONSE_REJECT,
+    _("_Save"), GTK_RESPONSE_ACCEPT,
+    NULL);
+
+  if (open_with_carla)
     {
-    case PROT_LV2:
-      lv2_gtk_on_save_preset_activate (
-        widget, plugin->lv2);
-      break;
-    default:
-      break;
+      char * homedir =
+        g_build_filename (
+          g_get_home_dir(), NULL);
+      gtk_file_chooser_set_current_folder (
+        GTK_FILE_CHOOSER (dialog), homedir);
+      g_free (homedir);
     }
+  else if (is_lv2)
+    {
+      char * dot_lv2 =
+        g_build_filename (
+          g_get_home_dir(), ".lv2", NULL);
+      gtk_file_chooser_set_current_folder (
+        GTK_FILE_CHOOSER (dialog), dot_lv2);
+      g_free (dot_lv2);
+    }
+
+  /* add additional inputs */
+  GtkWidget* content =
+    gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog));
+  GtkWidget * uri_entry = NULL;
+  GtkWidget * add_prefix =
+    add_prefix =
+      gtk_check_button_new_with_mnemonic (
+        _("_Prefix plugin name"));
+  gtk_toggle_button_set_active (
+    GTK_TOGGLE_BUTTON (add_prefix), TRUE);
+  GtkBox* box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8));
+  if (open_with_carla)
+    {
+    }
+  else if (is_lv2)
+    {
+      GtkWidget* uri_label =
+        gtk_label_new (_("URI (Optional):"));
+      uri_entry = gtk_entry_new();
+
+      gtk_box_pack_start (
+        box, uri_label, FALSE, TRUE, 2);
+      gtk_box_pack_start (
+        box, uri_entry, TRUE, TRUE, 2);
+      gtk_box_pack_start (
+        GTK_BOX(content), GTK_WIDGET(box),
+        FALSE, FALSE, 6);
+      gtk_entry_set_activates_default (
+        GTK_ENTRY(uri_entry), TRUE);
+    }
+  gtk_box_pack_start (
+    GTK_BOX (content), add_prefix,
+    FALSE, FALSE, 6);
+
+  gtk_widget_show_all (GTK_WIDGET (dialog));
+  gtk_dialog_set_default_response (
+    GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+  if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
+        GTK_RESPONSE_ACCEPT)
+    {
+      const char* path =
+        gtk_file_chooser_get_filename (
+          GTK_FILE_CHOOSER (dialog));
+      bool add_prefix_active =
+        gtk_toggle_button_get_active (
+          GTK_TOGGLE_BUTTON (add_prefix));
+      if (open_with_carla)
+        {
+          const char * prefix = "";
+          const char * sep = "";
+          char * dirname =
+            g_path_get_dirname(path);
+          char * basename =
+            g_path_get_basename(path);
+          char * sym =
+            string_symbolify (basename);
+          if (add_prefix_active)
+            {
+              prefix = descr->name;
+              sep = "_";
+            }
+          char * sprefix =
+            string_symbolify (prefix);
+          char * bundle =
+            g_strjoin (
+              NULL, sprefix, sep, sym,
+              ".preset.carla", NULL);
+          char * dir =
+            g_build_filename (
+              dirname, bundle, NULL);
+          carla_native_plugin_save_state (
+            plugin->carla, false, dir);
+          g_free (dirname);
+          g_free (basename);
+          g_free (sym);
+          g_free (sprefix);
+          g_free (bundle);
+          g_free (dir);
+        }
+      else if (is_lv2)
+        {
+          const char * uri =
+            gtk_entry_get_text (
+              GTK_ENTRY (uri_entry));
+          lv2_gtk_on_save_preset_activate (
+            widget, plugin->lv2, path, uri,
+            add_prefix_active);
+        }
+    }
+
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+
+  EVENTS_PUSH (ET_PLUGIN_PRESET_SAVED, plugin);
 }
 
 static void
@@ -472,7 +592,7 @@ build_menu (
     G_CALLBACK(on_save_activate), plugin);
   g_signal_connect (
     G_OBJECT(save_preset), "activate",
-    G_CALLBACK(on_save_preset_activate), plugin);
+    G_CALLBACK(plugin_gtk_on_save_preset_activate), plugin);
   g_signal_connect (
     G_OBJECT(delete_preset), "activate",
     G_CALLBACK(on_delete_preset_activate), plugin);

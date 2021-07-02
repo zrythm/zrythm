@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,13 +20,19 @@
 #include "audio/engine.h"
 #include "audio/port.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/inspector_port.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/plugin_properties_expander.h"
+#include "plugins/carla_native_plugin.h"
+#include "plugins/lv2/lv2_state.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -67,6 +73,72 @@ on_preset_changed (
   plugin_set_selected_preset_from_index (
     self->plugin,
     gtk_list_box_row_get_index (row));
+}
+
+static void
+on_save_preset_clicked (
+  GtkButton *                      btn,
+  PluginPropertiesExpanderWidget * self)
+{
+  if (!self->plugin || !self->plugin->instantiated)
+    return;
+
+  plugin_gtk_on_save_preset_activate (
+    GTK_WIDGET (self), self->plugin);
+}
+
+static void
+on_load_preset_clicked (
+  GtkButton *                      btn,
+  PluginPropertiesExpanderWidget * self)
+{
+  if (!self->plugin || !self->plugin->instantiated)
+    return;
+
+  const PluginSetting * setting =
+    self->plugin->setting;
+
+  GtkWidget* dialog =
+    gtk_file_chooser_dialog_new (
+    _("Load Preset"),
+    self->plugin->window ?
+      self->plugin->window :
+      GTK_WINDOW (MAIN_WINDOW),
+      GTK_FILE_CHOOSER_ACTION_OPEN,
+    _("_Cancel"), GTK_RESPONSE_REJECT,
+    _("_Load"), GTK_RESPONSE_ACCEPT,
+    NULL);
+  gtk_file_chooser_set_current_folder (
+    GTK_FILE_CHOOSER (dialog), g_get_home_dir ());
+  gtk_widget_show_all (GTK_WIDGET (dialog));
+  gtk_dialog_set_default_response (
+    GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+  if (gtk_dialog_run (GTK_DIALOG(dialog)) !=
+        GTK_RESPONSE_ACCEPT)
+    {
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+      return;
+    }
+
+  const char* path =
+    gtk_file_chooser_get_filename (
+      GTK_FILE_CHOOSER (dialog));
+
+  if (setting->open_with_carla)
+    {
+      carla_native_plugin_load_state (
+        self->plugin->carla, path);
+    }
+  else if (setting->descr->protocol == PROT_LV2)
+    {
+      lv2_state_apply_preset (
+        self->plugin->lv2, NULL, path);
+    }
+
+  EVENTS_PUSH (
+    ET_PLUGIN_PRESET_LOADED, self->plugin);
+
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 /**
@@ -214,6 +286,40 @@ plugin_properties_expander_widget_setup (
       G_OBJECT (self->presets),
       "selected-rows-changed",
       G_CALLBACK (on_preset_changed), self);
+
+  self->save_preset_btn =
+    z_gtk_button_new_with_icon_and_text (
+      "document-save-as", _("Save"), true,
+      GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->save_preset_btn),
+    _("Save preset"));
+  self->load_preset_btn =
+    z_gtk_button_new_with_icon_and_text (
+      "document-open", _("Load"), true,
+      GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->load_preset_btn),
+    _("Load preset"));
+  GtkWidget * box =
+    gtk_button_box_new (
+      GTK_ORIENTATION_HORIZONTAL);
+  gtk_widget_set_visible (box, true);
+  gtk_container_add (
+    GTK_CONTAINER (box),
+    GTK_WIDGET (self->save_preset_btn));
+  gtk_container_add (
+    GTK_CONTAINER (box),
+    GTK_WIDGET (self->load_preset_btn));
+  z_gtk_widget_add_style_class (box, "linked");
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), box);
+  g_signal_connect (
+    G_OBJECT (self->save_preset_btn), "clicked",
+    G_CALLBACK (on_save_preset_clicked), self);
+  g_signal_connect (
+    G_OBJECT (self->load_preset_btn), "clicked",
+    G_CALLBACK (on_load_preset_clicked), self);
 
   plugin_properties_expander_widget_refresh (
     self, pl);

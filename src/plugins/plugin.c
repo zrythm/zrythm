@@ -503,7 +503,7 @@ plugin_set_selected_preset_from_index (
                 self->selected_bank.bank_idx]->
                   presets[idx]->uri);
           lv2_state_apply_preset (
-            self->lv2, pset_uri);
+            self->lv2, pset_uri, NULL);
           lilv_node_free (pset_uri);
         }
     }
@@ -1635,7 +1635,7 @@ plugin_instantiate (
 
       /* save the state */
       carla_native_plugin_save_state (
-        pl->carla, false);
+        pl->carla, false, NULL);
 #else
       g_return_val_if_reached (-1);
 #endif
@@ -2110,7 +2110,7 @@ plugin_clone (
 
       /* save the state of the original plugin */
       carla_native_plugin_save_state (
-        pl->carla, F_NOT_BACKUP);
+        pl->carla, F_NOT_BACKUP, NULL);
 
       /* load the state to the new plugin. */
       char * state_file_abs_path =
@@ -2124,7 +2124,7 @@ plugin_clone (
       plugin_ensure_state_dir (
         clone, F_NOT_BACKUP);
       carla_native_plugin_save_state (
-        clone->carla, F_NOT_BACKUP);
+        clone->carla, F_NOT_BACKUP, NULL);
 
       /* cleanup the source if it wasnt in the
        * project */

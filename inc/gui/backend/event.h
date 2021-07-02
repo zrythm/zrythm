@@ -217,6 +217,20 @@ typedef enum EventType
    * Param: pointer to Track.
    */
   ET_TRACK_FADER_BUTTON_CHANGED,
+
+  /**
+   * Plugin preset saved.
+   *
+   * Arg: Plugin.
+   */
+  ET_PLUGIN_PRESET_SAVED,
+
+  /**
+   * Plugin preset loaded.
+   *
+   * Arg: Plugin.
+   */
+  ET_PLUGIN_PRESET_LOADED,
 } EventType;
 
 /**

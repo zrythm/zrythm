@@ -142,10 +142,15 @@ lv2_state_save_preset (
   const char * label,
   const char * filename);
 
+/**
+ * Applies the given preset, or the preset in the
+ * path if @ref preset is NULL.
+ */
 int
 lv2_state_apply_preset (
   Lv2Plugin* plugin,
-  const LilvNode* preset);
+  const LilvNode* preset,
+  const char *    path);
 
 /**
  * Deletes the current preset.

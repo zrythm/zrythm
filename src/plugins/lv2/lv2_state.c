@@ -408,15 +408,29 @@ lv2_state_apply_state (
   g_message ("%s() end", __func__);
 }
 
+/**
+ * Applies the given preset, or the preset in the
+ * path if @ref preset is NULL.
+ */
 int
 lv2_state_apply_preset (
   Lv2Plugin* plugin,
-  const LilvNode* preset)
+  const LilvNode* preset,
+  const char *    path)
 {
   lilv_state_free (plugin->preset);
-  plugin->preset =
-    lilv_state_new_from_world (
-      LILV_WORLD, &plugin->map, preset);
+  if (preset)
+    {
+      plugin->preset =
+        lilv_state_new_from_world (
+          LILV_WORLD, &plugin->map, preset);
+    }
+  else
+    {
+      plugin->preset =
+        lilv_state_new_from_file (
+          LILV_WORLD, &plugin->map, NULL, path);
+    }
   g_return_val_if_fail (plugin->preset, -1);
   lv2_state_apply_state (plugin, plugin->preset);
   return 0;

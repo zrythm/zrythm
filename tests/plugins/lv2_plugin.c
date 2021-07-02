@@ -165,7 +165,7 @@ test_save_state_w_files (void)
     lilv_new_uri (LILV_WORLD, pset_uri);
   g_assert_nonnull (pset_uri_node);
   lv2_state_apply_preset (
-    pl->lv2, pset_uri_node);
+    pl->lv2, pset_uri_node, NULL);
   lilv_node_free (pset_uri_node);
 
   /* create midi note */

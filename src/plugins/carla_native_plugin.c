@@ -1606,14 +1606,23 @@ carla_native_plugin_get_port_from_param_id (
   g_return_val_if_reached (NULL);
 }
 
-
 /**
- * Saves the state inside the given directory.
+ * Saves the state inside the standard state
+ * directory.
+ *
+ * @param is_backup Whether this is a backup
+ *   project. Used for calculating the absolute
+ *   path to the state dir.
+ * @param abs_state_dir If passed, the state will
+ *   be saved inside this directory instead of the
+ *   plugin's state directory. Used when saving
+ *   presets.
  */
 int
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
-  bool                is_backup)
+  bool                is_backup,
+  const char *        abs_state_dir)
 {
   if (!self->plugin->instantiated)
     {
@@ -1624,20 +1633,29 @@ carla_native_plugin_save_state (
       return 0;
     }
 
-  char * abs_state_dir =
-    plugin_get_abs_state_dir (
-      self->plugin, is_backup);
-  io_mkdir (abs_state_dir);
+  char * dir_to_use = NULL;
+  if (abs_state_dir)
+    {
+      dir_to_use = g_strdup (abs_state_dir);
+    }
+  else
+    {
+      dir_to_use =
+        plugin_get_abs_state_dir (
+          self->plugin, is_backup);
+    }
+  io_mkdir (dir_to_use);
   char * state_file_abs_path =
     g_build_filename (
-      abs_state_dir, CARLA_STATE_FILENAME, NULL);
+      dir_to_use, CARLA_STATE_FILENAME, NULL);
+  /* FIXME use carla_save_plugin_state */
   char * state =
     self->native_plugin_descriptor->get_state (
       self->native_plugin_handle);
   GError * err = NULL;
   g_file_set_contents (
     state_file_abs_path, state, -1, &err);
-  g_free (abs_state_dir);
+  g_free (dir_to_use);
   g_free (state_file_abs_path);
   g_free (state);
   if (err)
@@ -1677,7 +1695,7 @@ carla_native_plugin_get_abs_state_file_path (
 void
 carla_native_plugin_load_state (
   CarlaNativePlugin * self,
-  char *              abs_path)
+  const char *        abs_path)
 {
   char * state_file;
   if (abs_path)

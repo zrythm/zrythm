@@ -117,13 +117,22 @@ carla_native_plugin_get_descriptor_from_cached (
   PluginType              type);
 
 /**
- * Saves the state inside the given directory.
+ * Saves the state inside the standard state
+ * directory.
+ *
+ * @param is_backup Whether this is a backup
+ *   project. Used for calculating the absolute
+ *   path to the state dir.
+ * @param abs_state_dir If passed, the state will
+ *   be saved inside this directory instead of the
+ *   plugin's state directory. Used when saving
+ *   presets.
  */
-NONNULL
 int
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
-  bool                is_backup);
+  bool                is_backup,
+  const char *        abs_state_dir);
 
 /**
  * Loads the state from the given file or from
@@ -132,7 +141,7 @@ carla_native_plugin_save_state (
 void
 carla_native_plugin_load_state (
   CarlaNativePlugin * self,
-  char *              abs_path);
+  const char *        abs_path);
 
 NONNULL
 void

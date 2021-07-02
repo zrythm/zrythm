@@ -582,6 +582,28 @@ z_gtk_toggle_button_new_with_icon_and_text (
 }
 
 /**
+ * Creates a button with the given icon name and
+ * text.
+ */
+GtkButton *
+z_gtk_button_new_with_icon_and_text (
+  const char * name,
+  const char * text,
+  bool         icon_first,
+  GtkOrientation orientation,
+  int          spacing)
+{
+  GtkButton * btn =
+    GTK_BUTTON (gtk_button_new ());
+  z_gtk_button_set_icon_name_and_text (
+    GTK_BUTTON (btn), name, text, icon_first,
+    orientation, spacing);
+  gtk_widget_set_visible (GTK_WIDGET (btn), true);
+
+  return btn;
+}
+
+/**
  * Creates a button with the given resource name as icon.
  */
 GtkButton *

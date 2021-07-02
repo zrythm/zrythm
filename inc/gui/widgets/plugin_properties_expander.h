@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -68,6 +68,9 @@ typedef struct _PluginPropertiesExpanderWidget
 
   GtkComboBoxText * banks;
   GtkListBox *  presets;
+
+  GtkButton *   save_preset_btn;
+  GtkButton *   load_preset_btn;
 
   /** Currently selected plugin. */
   Plugin *      plugin;

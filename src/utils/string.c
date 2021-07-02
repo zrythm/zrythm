@@ -552,3 +552,23 @@ string_copy_w_realloc (
         }
     }
 }
+
+/**
+ * Returns a new string with only ASCII alphanumeric
+ * characters and replaces ther est with underscore.
+ */
+char *
+string_symbolify (
+  const char * in)
+{
+  const size_t len = strlen(in);
+  char*        out = (char*)calloc(len + 1, 1);
+  for (size_t i = 0; i < len; ++i) {
+    if (g_ascii_isalnum(in[i])) {
+      out[i] = in[i];
+    } else {
+      out[i] = '_';
+    }
+  }
+  return out;
+}

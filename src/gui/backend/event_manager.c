@@ -94,6 +94,7 @@
 #include "gui/widgets/tracklist_header.h"
 #include "gui/widgets/transport_controls.h"
 #include "gui/widgets/visibility.h"
+#include "plugins/plugin_gtk.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
@@ -1969,6 +1970,17 @@ process_events (void * data)
         case ET_TRACK_FADER_BUTTON_CHANGED:
           on_track_state_changed (
             (Track *) ev->arg);
+          break;
+        case ET_PLUGIN_PRESET_SAVED:
+        case ET_PLUGIN_PRESET_LOADED:
+          {
+            Plugin * pl = (Plugin *) ev->arg;
+            if (pl->window)
+              {
+                plugin_gtk_set_window_title (
+                  pl, pl->window);
+              }
+          }
           break;
         default:
           g_warning (

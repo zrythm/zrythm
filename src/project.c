@@ -1771,7 +1771,7 @@ project_save (
           if (pl->setting->open_with_carla)
             {
               carla_native_plugin_save_state (
-                pl->carla, is_backup);
+                pl->carla, is_backup, NULL);
             }
           else
             {

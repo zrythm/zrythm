@@ -208,6 +208,14 @@ string_copy_w_realloc (
   const char * src);
 
 /**
+ * Returns a new string with only ASCII alphanumeric
+ * characters and replaces ther est with underscore.
+ */
+char *
+string_symbolify (
+  const char * in);
+
+/**
  * @}
  */
 
