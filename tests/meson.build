@@ -144,6 +144,7 @@ if get_option ('tests')
       sndfile_dep,
       lilv_dep,
       gtk_dep,
+      libm,
       ],
     include_directories: all_inc,
     c_args: [ common_cflags ],
