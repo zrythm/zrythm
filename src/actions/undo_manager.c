@@ -68,19 +68,26 @@ undo_manager_new (void)
 /**
  * Does or undoes the given action.
  *
+ * @param action An action, when performing,
+ *   otherwise NULL if undoing/redoing.
  * @param main_stack Undo stack if undoing, redo
  *   stack if doing.
  */
 static int
 do_or_undo_action (
   UndoManager *    self,
+  UndoableAction * action,
   UndoStack *      main_stack,
   UndoStack *      opposite_stack)
 {
-  /* pop the action from the undo stack and
-   * undo it */
-  UndoableAction * action =
-    (UndoableAction *) undo_stack_pop (main_stack);
+  if (!action)
+    {
+      /* pop the action from the undo stack and
+       * undo it */
+      action =
+        (UndoableAction *)
+        undo_stack_pop (main_stack);
+    }
 
   int ret = 0;
   if (main_stack == self->undo_stack)
@@ -94,7 +101,10 @@ do_or_undo_action (
   else
     {
       /* invalid stack */
-      g_return_val_if_reached (-1);
+      g_critical (
+        "%s: invalid stack (err %d)",
+        __func__, ret);
+      return -1;
     }
 
   /* if error return. this should never happen
@@ -102,9 +112,11 @@ do_or_undo_action (
    * undefined */
   if (ret)
     {
-      g_warn_if_reached ();
       zix_sem_post (&self->action_sem);
-      g_return_val_if_reached (-1);
+      g_critical (
+        "%s: action not performed (err %d)",
+        __func__, ret);
+      return -1;
     }
 
   /* if the redo stack is full, delete the last
@@ -151,7 +163,8 @@ undo_manager_undo (UndoManager * self)
   for (int i = 0; i < num_actions; i++)
     {
       do_or_undo_action (
-        self, self->undo_stack, self->redo_stack);
+        self, NULL, self->undo_stack,
+        self->redo_stack);
     }
 
   if (ZRYTHM_HAVE_UI)
@@ -186,7 +199,8 @@ undo_manager_redo (UndoManager * self)
   for (int i = 0; i < num_actions; i++)
     {
       do_or_undo_action (
-        self, self->redo_stack, self->undo_stack);
+        self, NULL, self->redo_stack,
+        self->undo_stack);
     }
 
   if (ZRYTHM_HAVE_UI)
@@ -216,29 +230,16 @@ undo_manager_perform (
   zix_sem_wait (&self->action_sem);
 
   /* if error return */
-  int err = undoable_action_do (action);
+  int err =
+    do_or_undo_action (
+      self, action, self->redo_stack,
+      self->undo_stack);
   if (err)
     {
       g_warning (
-        "%s: action not performed (err %d)",
-        __func__, err);
-
-      zix_sem_post (&self->action_sem);
+        "failed to perform action: %d", err);
       return err;
     }
-
-  /* if the undo stack is full, delete the last
-   * element */
-  if (undo_stack_is_full (self->undo_stack))
-    {
-      UndoableAction * last_action =
-        undo_stack_pop_last (self->undo_stack);
-      undoable_action_free (last_action);
-    }
-
-  undo_stack_push (self->undo_stack, action);
-  undo_stack_get_total_cached_actions (
-    self->undo_stack);
 
   undo_stack_clear (self->redo_stack, true);
 
