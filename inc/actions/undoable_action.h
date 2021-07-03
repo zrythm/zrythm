@@ -138,6 +138,7 @@ static const cyaml_schema_value_t
     UndoableAction, undoable_action_fields_schema),
 };
 
+NONNULL
 void
 undoable_action_init_loaded (
   UndoableAction * self);
@@ -145,6 +146,7 @@ undoable_action_init_loaded (
 /**
  * Initializer to be used by implementing actions.
  */
+NONNULL
 void
 undoable_action_init (
   UndoableAction *   self,
@@ -154,6 +156,7 @@ undoable_action_init (
  * Returns whether the action requires pausing
  * the engine.
  */
+NONNULL
 bool
 undoable_action_needs_pause (
   UndoableAction * self);
@@ -166,6 +169,7 @@ undoable_action_needs_pause (
  * the pool for actions that can't contain audio
  * clips.
  */
+NONNULL
 bool
 undoable_action_can_contain_clip (
   UndoableAction * self);
@@ -175,10 +179,23 @@ undoable_action_can_contain_clip (
  * Checks whether the action actually contains or
  * refers to the given audio clip.
  */
+NONNULL
 bool
 undoable_action_contains_clip (
   UndoableAction * self,
   AudioClip *      clip);
+
+/**
+ * Sets the number of actions for this action.
+ *
+ * This should be set on the last action to be
+ * performed.
+ */
+NONNULL
+void
+undoable_action_set_num_actions (
+  UndoableAction * self,
+  int              num_actions);
 
 /**
  * Performs the action.
@@ -187,6 +204,7 @@ undoable_action_contains_clip (
  *
  * @return Non-zero if errors occurred.
  */
+NONNULL
 int
 undoable_action_do (
   UndoableAction * self);
@@ -196,6 +214,7 @@ undoable_action_do (
  *
  * @return Non-zero if errors occurred.
  */
+NONNULL
 int
 undoable_action_undo (
   UndoableAction * self);
@@ -210,6 +229,7 @@ undoable_action_free (
  *
  * The string MUST be free'd using g_free().
  */
+NONNULL
 char *
 undoable_action_to_string (
   UndoableAction * ua);

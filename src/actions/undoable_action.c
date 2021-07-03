@@ -476,6 +476,23 @@ undoable_action_contains_clip (
 }
 
 /**
+ * Sets the number of actions for this action.
+ *
+ * This should be set on the last action to be
+ * performed.
+ */
+void
+undoable_action_set_num_actions (
+  UndoableAction * self,
+  int              num_actions)
+{
+  g_return_if_fail (
+    num_actions > 0 &&
+    num_actions < ZRYTHM->undo_stack_len);
+  self->num_actions = num_actions;
+}
+
+/**
  * Stringizes the action to be used in Undo/Redo
  * buttons.
  *

@@ -22,6 +22,7 @@
 #include "audio/audio_group_track.h"
 #include "audio/control_port.h"
 #include "audio/exporter.h"
+#include "audio/group_target_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
@@ -1616,6 +1617,73 @@ on_bounce_clicked (
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
+typedef struct DirectOutChangeData
+{
+  /** Self. */
+  TrackWidget * tw;
+
+  /** Direct out to route to (index). */
+  int           direct_out;
+} DirectOutChangeData;
+
+static void
+free_direct_out_change_data (
+  DirectOutChangeData * data,
+  GClosure *            closure)
+{
+  free (data);
+}
+
+static void
+on_direct_out_activated (
+  GtkCheckMenuItem *    item,
+  DirectOutChangeData * data)
+{
+  TrackWidget * self = data->tw;
+  Track * direct_out =
+    tracklist_get_track (
+      TRACKLIST, data->direct_out);
+  g_return_if_fail (direct_out && self);
+
+  /* skip if all selected tracks already connected
+   * to direct out */
+  bool need_change = false;
+  for (int i = 0;
+       i < TRACKLIST_SELECTIONS->num_tracks; i++)
+    {
+      Track * cur_track =
+        TRACKLIST_SELECTIONS->tracks[i];
+      if (!track_type_has_channel (cur_track->type))
+        return;
+
+      if (cur_track->out_signal_type !=
+            direct_out->in_signal_type)
+        {
+          g_message ("mismatching signal type");
+          return;
+        }
+
+      Channel * ch = track_get_channel (cur_track);
+      if (channel_get_output_track (ch) !=
+            direct_out)
+        {
+          need_change = true;
+          break;
+        }
+    }
+
+  if (!need_change)
+    {
+      g_message ("no direct out change needed");
+      return;
+    }
+
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_direct_out (
+      TRACKLIST_SELECTIONS, direct_out);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
 static void
 show_context_menu (
   TrackWidget * self,
@@ -1740,6 +1808,8 @@ show_context_menu (
     {
       ADD_SEPARATOR;
 
+      Channel * ch = track_get_channel (track);
+
       if (tracklist_selections_contains_soloed_track (
             TRACKLIST_SELECTIONS, F_NO_SOLO))
         {
@@ -1798,9 +1868,68 @@ show_context_menu (
               "win.unlisten-selected-tracks");
           APPEND (menuitem);
         }
+
+      /* change direct out */
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Change direct out"),
+          "gnome-builder-debug-step-out-symbolic-light",
+          F_NO_TOGGLE, NULL);
+
+      GtkMenu * submenu =
+        GTK_MENU (gtk_menu_new ());
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu), 1);
+      GtkMenuItem * submenu_item;
+
+      Track * direct_out =
+        channel_get_output_track (ch);
+      (void) direct_out;
+      /*GSList * radio_group = NULL;*/
+      for (int i = 0; i < TRACKLIST->num_tracks;
+           i++)
+        {
+          Track * cur_tr = TRACKLIST->tracks[i];
+
+          if (!TRACK_CAN_BE_GROUP_TARGET (cur_tr) ||
+              track->out_signal_type !=
+                cur_tr->in_signal_type)
+            continue;
+
+          submenu_item =
+            GTK_MENU_ITEM (
+              gtk_menu_item_new_with_label (
+                cur_tr->name));
+          /*radio_group =*/
+            /*gtk_radio_menu_item_get_group (*/
+              /*GTK_RADIO_MENU_ITEM (submenu_item));*/
+          /*gtk_check_menu_item_set_active (*/
+            /*GTK_CHECK_MENU_ITEM (submenu_item),*/
+            /*cur_tr == direct_out);*/
+          DirectOutChangeData * data =
+            object_new (DirectOutChangeData);
+          data->tw = self;
+          data->direct_out = cur_tr->pos;
+          g_signal_connect_data (
+            G_OBJECT (submenu_item), "activate",
+            G_CALLBACK (on_direct_out_activated),
+            data,
+            (GClosureNotify)
+            free_direct_out_change_data,
+            0);
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL (submenu),
+            GTK_WIDGET (submenu_item));
+          gtk_widget_set_visible (
+            GTK_WIDGET (submenu_item), true);
+        }
+      gtk_menu_item_set_submenu (
+        menuitem, GTK_WIDGET (submenu));
+      APPEND (menuitem);
     }
 
   /* add enable/disable */
+  ADD_SEPARATOR;
   if (tracklist_selections_contains_enabled_track (
         TRACKLIST_SELECTIONS, F_ENABLED))
     {

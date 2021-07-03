@@ -615,6 +615,101 @@ test_edit_midi_direct_out_to_ins (void)
 #endif
 }
 
+static void
+test_edit_multi_track_direct_out (void)
+{
+#ifdef HAVE_HELM
+  test_helper_zrythm_init ();
+
+  /* create 2 instrument tracks */
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 2);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  Track * ins_track2 =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  /* create an audio group */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create_audio_group (
+      TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * audio_group =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  /* route the ins tracks to the audio group */
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    ins_track2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_edit_direct_out (
+      TRACKLIST_SELECTIONS, audio_group);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  Channel * ch = ins_track->channel;
+  Channel * ch2 = ins_track2->channel;
+  Track * direct_out =
+    channel_get_output_track (ch);
+  Track * direct_out2 =
+    channel_get_output_track (ch2);
+  g_assert_true (IS_TRACK (direct_out));
+  g_assert_true (IS_TRACK (direct_out2));
+  g_assert_true (direct_out == audio_group);
+  g_assert_true (direct_out2 == audio_group);
+  g_assert_cmpint (audio_group->num_children, ==, 2);
+
+  /* delete the audio group, undo and verify that
+   * the ins track output is the audio group */
+  track_select (
+    audio_group, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_delete (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  direct_out = channel_get_output_track (ch);
+  direct_out2 = channel_get_output_track (ch2);
+  g_assert_null (direct_out);
+  g_assert_null (direct_out2);
+
+  /* as a second action, route the tracks to
+   * master */
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    ins_track2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_edit_direct_out (
+      TRACKLIST_SELECTIONS, P_MASTER_TRACK);
+  undoable_action_set_num_actions (ua, 2);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  direct_out = channel_get_output_track (ch);
+  direct_out2 = channel_get_output_track (ch2);
+  g_assert_true (direct_out == P_MASTER_TRACK);
+  g_assert_true (direct_out2 == P_MASTER_TRACK);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  audio_group =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  direct_out = channel_get_output_track (ch);
+  direct_out2 = channel_get_output_track (ch2);
+  g_assert_true (IS_TRACK (direct_out));
+  g_assert_true (IS_TRACK (direct_out2));
+  g_assert_true (direct_out == audio_group);
+  g_assert_true (direct_out2 == audio_group);
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -622,6 +717,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections_edit/"
 
+  g_test_add_func (
+    TEST_PREFIX "test edit multi track direct out",
+    (GTestFunc) test_edit_multi_track_direct_out);
   g_test_add_func (
     TEST_PREFIX "test edit midi direct out to ins",
     (GTestFunc) test_edit_midi_direct_out_to_ins);

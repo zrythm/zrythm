@@ -289,6 +289,18 @@ tracklist_validate (
   Tracklist * self);
 
 /**
+ * Returns the track at the given index or NULL if
+ * the index is invalid.
+ *
+ * Not to be used in real-time code.
+ */
+NONNULL
+Track *
+tracklist_get_track (
+  Tracklist * self,
+  int         idx);
+
+/**
  * Returns the index of the given Track.
  */
 int

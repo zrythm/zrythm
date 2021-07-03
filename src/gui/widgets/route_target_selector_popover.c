@@ -356,8 +356,8 @@ on_closed (
            prev_output_track != NULL)
     {
       UndoableAction * ua =
-        tracklist_selections_action_new_edit_direct_out (
-          sel, NULL);
+        tracklist_selections_action_new_edit_remove_direct_out (
+          sel);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
 

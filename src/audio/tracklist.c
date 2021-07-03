@@ -452,6 +452,28 @@ tracklist_multiply_track_heights (
   return true;
 }
 
+/**
+ * Returns the track at the given index or NULL if
+ * the index is invalid.
+ */
+Track *
+tracklist_get_track (
+  Tracklist * self,
+  int         idx)
+{
+  if (idx < 0 || idx >= self->num_tracks)
+    {
+      g_warning ("invalid track idx %d", idx);
+      return NULL;
+    }
+
+  Track * tr = self->tracks[idx];
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (tr), NULL);
+
+  return tr;
+}
+
 int
 tracklist_get_track_pos (
   Tracklist * self,

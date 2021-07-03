@@ -125,7 +125,6 @@ tracklist_selections_action_new (
   const Position *              pos,
   int                           num_tracks,
   EditTracksActionType          edit_type,
-  Track *                       direct_out,
   int                           ival_after,
   const GdkRGBA *               color_new,
   float                         val_before,
@@ -338,8 +337,6 @@ tracklist_selections_action_new (
 
   self->edit_type = edit_type;
   self->ival_after = ival_after;
-  self->new_direct_out_pos =
-    direct_out ? direct_out->pos : -1;
   self->val_before = val_before;
   self->val_after = val_after;
   self->already_edited = already_edited;
@@ -964,7 +961,8 @@ do_or_undo_create_or_delete (
               free (ports);
               free (clone_ports);
 
-              /* if group track, remove all children */
+              /* if group track, remove all
+               * children */
               if (TRACK_CAN_BE_GROUP_TARGET (track))
                 {
                   group_target_track_remove_all_children (
@@ -1428,11 +1426,14 @@ do_or_undo_edit (
                   F_PUBLISH_EVENTS);
               }
 
+            int target_pos =
+              _do ?
+                self->ival_after :
+                self->ival_before[i];
+
             /* reconnect to the new track */
-            if (self->new_direct_out_pos != -1)
+            if (target_pos != -1)
               {
-                int target_pos =
-                  self->new_direct_out_pos;
                 g_return_val_if_fail (
                   target_pos != ch->track->pos, -1);
                 group_target_track_add_child (
@@ -1442,7 +1443,7 @@ do_or_undo_edit (
               }
 
             /* remember previous pos */
-            self->new_direct_out_pos =
+            self->ival_before[i] =
               cur_direct_out;
           }
           break;
@@ -1715,6 +1716,9 @@ tracklist_selections_action_stringize (
             case EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE:
               return g_strdup (
                 _("Change MIDI fader mode"));
+            case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
+              return g_strdup (
+                _("Change direct out"));
             default:
               g_return_val_if_reached (
                 g_strdup (""));

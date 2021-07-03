@@ -2005,7 +2005,8 @@ track_disconnect (
   if (TRACK_CAN_BE_GROUP_TARGET (self))
     {
       group_target_track_remove_all_children (
-        self, F_DISCONNECT, F_NO_RECALC_GRAPH,
+        self, F_DISCONNECT,
+        F_NO_RECALC_GRAPH,
         F_NO_PUBLISH_EVENTS);
     }
 
