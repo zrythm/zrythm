@@ -276,8 +276,9 @@ _create_action (
   set_selections (self, sel, true, false);
   self->first_run = true;
 
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_ARRANGER_SELECTIONS;
+  undoable_action_init (
+    (UndoableAction *) self,
+    UA_ARRANGER_SELECTIONS);
 
   return self;
 }
@@ -634,7 +635,8 @@ arranger_selections_action_new_automation_fill (
     object_new (ArrangerSelectionsAction);
 
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_ARRANGER_SELECTIONS;
+  undoable_action_init (
+    ua, UA_ARRANGER_SELECTIONS);
 
   self->first_run = true;
 

@@ -66,6 +66,71 @@ undo_manager_new (void)
 }
 
 /**
+ * Does or undoes the given action.
+ *
+ * @param main_stack Undo stack if undoing, redo
+ *   stack if doing.
+ */
+static int
+do_or_undo_action (
+  UndoManager *    self,
+  UndoStack *      main_stack,
+  UndoStack *      opposite_stack)
+{
+  /* pop the action from the undo stack and
+   * undo it */
+  UndoableAction * action =
+    (UndoableAction *) undo_stack_pop (main_stack);
+
+  int ret = 0;
+  if (main_stack == self->undo_stack)
+    {
+      ret = undoable_action_undo (action);
+    }
+  else if (main_stack == self->redo_stack)
+    {
+      ret = undoable_action_do (action);
+    }
+  else
+    {
+      /* invalid stack */
+      g_return_val_if_reached (-1);
+    }
+
+  /* if error return. this should never happen
+   * and anything that happens afterwards is
+   * undefined */
+  if (ret)
+    {
+      g_warn_if_reached ();
+      zix_sem_post (&self->action_sem);
+      g_return_val_if_reached (-1);
+    }
+
+  /* if the redo stack is full, delete the last
+   * element */
+  if (undo_stack_is_full (opposite_stack))
+    {
+      UndoableAction * action_to_delete =
+        (UndoableAction *)
+        undo_stack_pop_last (opposite_stack);
+
+      /* TODO create functions to delete
+       * unnecessary files held by the action
+       * (eg, something that calls
+       * plugin_delete_state_files()) */
+      undoable_action_free (action_to_delete);
+    }
+
+  /* push action to the redo stack */
+  undo_stack_push (opposite_stack, action);
+  undo_stack_get_total_cached_actions (
+    opposite_stack);
+
+  return 0;
+}
+
+/**
  * Undo last action.
  */
 void
@@ -76,36 +141,18 @@ undo_manager_undo (UndoManager * self)
 
   zix_sem_wait (&self->action_sem);
 
-  /* pop the action from the undo stack and undo it */
   UndoableAction * action =
     (UndoableAction *)
-    undo_stack_pop (self->undo_stack);
-  /* if error return. this should never happen and
-   * anything that happens afterwards is undefined */
-  if (undoable_action_undo (action))
+    undo_stack_peek (self->undo_stack);
+  g_return_if_fail (action);
+  const int num_actions = action->num_actions;
+  g_return_if_fail (num_actions > 0);
+
+  for (int i = 0; i < num_actions; i++)
     {
-      g_warn_if_reached ();
-      zix_sem_post (&self->action_sem);
-      return;
+      do_or_undo_action (
+        self, self->undo_stack, self->redo_stack);
     }
-
-  /* if the redo stack is full, delete the last element */
-  if (undo_stack_is_full (self->redo_stack))
-    {
-      UndoableAction * action_to_delete =
-        (UndoableAction *)
-        undo_stack_pop_last (self->redo_stack);
-
-      /* TODO create functions to delete unnecessary
-       * files held by the action (eg, something
-       * that calls plugin_delete_state_files()) */
-      undoable_action_free (action_to_delete);
-    }
-
-  /* push action to the redo stack */
-  undo_stack_push (self->redo_stack, action);
-  undo_stack_get_total_cached_actions (
-    self->redo_stack);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -129,35 +176,18 @@ undo_manager_redo (UndoManager * self)
 
   zix_sem_wait (&self->action_sem);
 
-  /* pop the action from the redo stack and execute
-   * it */
   UndoableAction * action =
     (UndoableAction *)
-    undo_stack_pop (self->redo_stack);
+    undo_stack_peek (self->redo_stack);
+  g_return_if_fail (action);
+  const int num_actions = action->num_actions;
+  g_return_if_fail (num_actions > 0);
 
-  /* if error return. this should never happen and
-   * anything that happens afterwards is undefined */
-  if (undoable_action_do (action))
+  for (int i = 0; i < num_actions; i++)
     {
-      g_warn_if_reached ();
-      zix_sem_post (&self->action_sem);
-      return;
+      do_or_undo_action (
+        self, self->redo_stack, self->undo_stack);
     }
-
-  /* if the undo stack is full, delete the last
-   * element */
-  if (undo_stack_is_full (self->undo_stack))
-    {
-      UndoableAction * action_to_delete =
-        (UndoableAction *)
-        undo_stack_pop_last (self->undo_stack);
-      undoable_action_free (action_to_delete);
-    }
-
-  /* push action to the undo stack */
-  undo_stack_push (self->undo_stack, action);
-  undo_stack_get_total_cached_actions (
-    self->undo_stack);
 
   if (ZRYTHM_HAVE_UI)
     {

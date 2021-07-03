@@ -49,7 +49,7 @@ transport_action_new_bpm_change (
   TransportAction * self =
     object_new (TransportAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_TRANSPORT;
+  undoable_action_init (ua, UA_TRANSPORT);
 
   self->type = TRANSPORT_ACTION_BPM_CHANGE;
 
@@ -72,7 +72,7 @@ transport_action_new_time_sig_change (
   TransportAction * self =
     object_new (TransportAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_TRANSPORT;
+  undoable_action_init (ua, UA_TRANSPORT);
 
   self->type = type;
 

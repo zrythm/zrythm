@@ -48,7 +48,7 @@ midi_mapping_action_new_enable (
   MidiMappingAction * self =
     object_new (MidiMappingAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_MIDI_MAPPING;
+  undoable_action_init (ua, UA_MIDI_MAPPING);
 
   self->type =
     enable ?
@@ -71,7 +71,7 @@ midi_mapping_action_new_bind (
   MidiMappingAction * self =
     object_new (MidiMappingAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_MIDI_MAPPING;
+  undoable_action_init (ua, UA_MIDI_MAPPING);
 
   self->type = MIDI_MAPPING_ACTION_BIND;
   memcpy (self->buf, buf, 3 * sizeof (midi_byte_t));
@@ -94,7 +94,7 @@ midi_mapping_action_new_unbind (
   MidiMappingAction * self =
     object_new (MidiMappingAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_MIDI_MAPPING;
+  undoable_action_init (ua, UA_MIDI_MAPPING);
 
   self->type = MIDI_MAPPING_ACTION_UNBIND;
   self->idx = idx;

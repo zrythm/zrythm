@@ -50,7 +50,7 @@ port_action_new (
   PortAction * self =
     object_new (PortAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_PORT;
+  undoable_action_init (ua, UA_PORT);
 
   self->port_id = *port_id;
   self->type = type;

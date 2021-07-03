@@ -136,7 +136,8 @@ tracklist_selections_action_new (
   TracklistSelectionsAction * self =
     object_new (TracklistSelectionsAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_TRACKLIST_SELECTIONS;
+  undoable_action_init (
+    ua, UA_TRACKLIST_SELECTIONS);
 
   position_init (&self->pos);
 

@@ -53,7 +53,7 @@ channel_send_action_new (
   ChannelSendAction * self =
     object_new (ChannelSendAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_CHANNEL_SEND;
+  undoable_action_init (ua, UA_CHANNEL_SEND);
 
   self->type = type;
   self->send_before = channel_send_clone (send);

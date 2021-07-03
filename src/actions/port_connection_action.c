@@ -49,7 +49,7 @@ port_connection_action_new (
   PortConnectionAction * self =
     object_new (PortConnectionAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_PORT_CONNECTION;
+  undoable_action_init (ua, UA_PORT_CONNECTION);
 
   port_identifier_copy (
     &self->src_port_id, src_id);

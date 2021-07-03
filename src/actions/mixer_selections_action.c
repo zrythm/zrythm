@@ -132,7 +132,8 @@ mixer_selections_action_new (
   MixerSelectionsAction * self =
     object_new (MixerSelectionsAction);
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UA_MIXER_SELECTIONS;
+  undoable_action_init (
+    ua, UA_MIXER_SELECTIONS);
 
   self->type = type;
   self->slot_type = slot_type;

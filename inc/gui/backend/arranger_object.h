@@ -151,6 +151,7 @@ typedef enum ArrangerObjectPositionType
 typedef struct ArrangerObject
 {
   int                schema_version;
+
   ArrangerObjectType type;
 
   /** Flags. */

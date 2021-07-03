@@ -38,6 +38,8 @@ typedef struct AudioClip AudioClip;
  * @{
  */
 
+#define UNDOABLE_ACTION_SCHEMA_VERSION 1
+
 /**
  * Type of UndoableAction.
  */
@@ -86,8 +88,15 @@ undoable_action_type_strings[] =
   { "Transport", UA_TRANSPORT },
 };
 
+/**
+ * Base struct to be inherited by implementing
+ * undoable actions.
+ */
 typedef struct UndoableAction
 {
+  int                schema_version;
+
+  /** Undoable action type. */
   UndoableActionType  type;
 
   /**
@@ -96,16 +105,28 @@ typedef struct UndoableAction
    * Used during deserialization.
    */
   int                 stack_idx;
+
+  /**
+   * Number of actions to perform.
+   *
+   * This is used to group multiple actions into
+   * one logical action (eg, create a group track
+   * and route multiple tracks to it).
+   */
+  int                 num_actions;
 } UndoableAction;
 
 static const cyaml_schema_field_t
   undoable_action_fields_schema[] =
 {
+  YAML_FIELD_INT (UndoableAction, schema_version),
   YAML_FIELD_ENUM (
     UndoableAction, type,
     undoable_action_type_strings),
   YAML_FIELD_INT (
     UndoableAction, stack_idx),
+  YAML_FIELD_INT (
+    UndoableAction, num_actions),
 
   CYAML_FIELD_END
 };
@@ -120,6 +141,14 @@ static const cyaml_schema_value_t
 void
 undoable_action_init_loaded (
   UndoableAction * self);
+
+/**
+ * Initializer to be used by implementing actions.
+ */
+void
+undoable_action_init (
+  UndoableAction *   self,
+  UndoableActionType type);
 
 /**
  * Returns whether the action requires pausing

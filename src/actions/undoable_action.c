@@ -72,6 +72,20 @@ undoable_action_init_loaded (
 }
 
 /**
+ * Initializer to be used by implementing actions.
+ */
+void
+undoable_action_init (
+  UndoableAction *   self,
+  UndoableActionType type)
+{
+  self->schema_version =
+    UNDOABLE_ACTION_SCHEMA_VERSION;
+  self->type = type;
+  self->num_actions = 1;
+}
+
+/**
  * Returns whether the total transport bars need to
  * be recalculated.
  *
