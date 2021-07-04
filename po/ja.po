@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-06-24 20:05+0100\n"
-"PO-Revision-Date: 2021-06-04 09:16+0000\n"
+"PO-Revision-Date: 2021-06-28 01:35+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.7.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -4900,40 +4900,43 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:478
 msgid "Playhead scroll edges (timeline)"
-msgstr ""
+msgstr "再生ヘッドのエッジスクロール (タイムライン)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:479
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
-msgstr ""
+msgstr "プレイヘッドが可視エッジ（タイムライン）に達したときにスクロールするかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:483
 msgid "Follow playhead (timeline)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:484
+#, fuzzy
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
-msgstr ""
+msgstr "プレイヘッドに追従するかどうか。これがオンになっていると、可視領域はプレイヘッド（タイムライン）の中央に保たれます。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid "Playhead scroll edges (editor)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:489
+#, fuzzy
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
-msgstr ""
+msgstr "プレイヘッドが可視エッジ（エディタ）に達したときにスクロールするかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid "Follow playhead (editor)"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:494
+#, fuzzy
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (editor)."
-msgstr ""
+msgstr "プレイヘッドに追従するかどうか。これがオンになっていると、可視領域はプレイヘッド（エディタ）の中央に保たれます。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid "Plugin browser tab"
@@ -5427,7 +5430,7 @@ msgstr "ユーザーインターフェースに使用する言語。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:919
 msgid "CSS theme"
-msgstr ""
+msgstr "CSSテーマ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:920
 #, fuzzy
@@ -5436,11 +5439,11 @@ msgstr "使用するパンのアルゴリズム"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:924
 msgid "Icon theme"
-msgstr ""
+msgstr "アイコンテーマ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:925
 msgid "The icon theme to use. This is the directory name."
-msgstr ""
+msgstr "使用するアイコンテーマ (ディレクトリ名)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:933
 msgid "DSP"
