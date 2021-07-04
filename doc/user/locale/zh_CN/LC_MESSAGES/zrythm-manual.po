@@ -39,15 +39,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-06-24 19:33+0100\n"
-"PO-Revision-Date: 2021-06-04 04:32+0000\n"
+"PO-Revision-Date: 2021-06-26 01:33+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.7.1-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -63,12 +64,10 @@ msgid "audio-insert"
 msgstr ""
 
 #: ../../../../<rst_prolog>:21
-#, fuzzy
 msgid "modulator"
-msgstr "调制器"
+msgstr "调幅器"
 
 #: ../../../../<rst_prolog>:24
-#, fuzzy
 msgid "instrument"
 msgstr "乐器"
 
@@ -435,9 +434,8 @@ msgid "Additional Settings"
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:9
-#, fuzzy
 msgid "GSettings"
-msgstr "录音设置"
+msgstr "GSettings"
 
 #: ../../configuration/additional-settings.rst:10
 msgid ""
@@ -478,9 +476,8 @@ msgid "This will be added to the UI soon."
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:38
-#, fuzzy
 msgid "Plugin Settings"
-msgstr "录音设置"
+msgstr "插件设置"
 
 #: ../../configuration/additional-settings.rst:39
 msgid ""
@@ -4318,9 +4315,8 @@ msgid "Preset filtering is not implemented yet."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:72
-#, fuzzy
 msgid "Showing Unsupported Files"
-msgstr "将不受支持的用户界面结合在一起"
+msgstr "显示不受支持的文件"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:73
 msgid ""
@@ -4343,9 +4339,8 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:86
-#, fuzzy
 msgid "Auditioning"
-msgstr "编辑中"
+msgstr "试音中"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
 msgid ""
@@ -4439,9 +4434,8 @@ msgid "Drag-n-dropping an audio file into a new track"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:148
-#, fuzzy
 msgid "Pop-up File Browser"
-msgstr "文件浏览器"
+msgstr "弹窗文件浏览器"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:149
 msgid ""
@@ -4651,9 +4645,8 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
-#, fuzzy
 msgid "Author"
-msgstr "路径"
+msgstr "作曲"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Filter by plugin manufacturer/author."
@@ -5152,9 +5145,8 @@ msgid ""
 msgstr ""
 
 #: ../../projects/project-structure.rst:120
-#, fuzzy
 msgid "Audio Pool"
-msgstr "(音频端口)"
+msgstr "音频池"
 
 #: ../../projects/project-structure.rst:121
 msgid ""
@@ -7737,4 +7729,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-
