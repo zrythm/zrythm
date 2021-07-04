@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-06-24 19:33+0100\n"
-"PO-Revision-Date: 2021-05-14 21:35+0000\n"
-"Last-Translator: Tymofij Lytvynenko <till.svit@gmail.com>\n"
+"PO-Revision-Date: 2021-07-04 14:32+0000\n"
+"Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/uk/>\n"
 "Language: uk\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/uk/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -510,7 +511,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:116
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Preferences"
-msgstr ""
+msgstr "Уподобання (Preferences)"
 
 #: ../../configuration/preferences.rst:12
 msgid ""
@@ -767,7 +768,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:157 ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "Автоматизація"
 
 #: ../../configuration/preferences.rst:159
 msgid "Automation editing."
@@ -775,7 +776,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:163
 msgid "Curve algorithm"
-msgstr ""
+msgstr "Алгоритм кривої/Curve algorithm"
 
 #: ../../configuration/preferences.rst:162
 msgid "Default curve algorithm to use for automation curves."
@@ -783,7 +784,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:166
 msgid "Undo"
-msgstr ""
+msgstr "Скасувати"
 
 #: ../../configuration/preferences.rst:168
 msgid "Undo options."
@@ -1254,7 +1255,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "Акорди"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -1504,7 +1505,7 @@ msgstr ""
 #: ../../editing/clip-editors/ruler.rst:21
 #: ../../editing/timeline/arranger.rst:106 ../../tracks/track-types.rst:50
 msgid "Markers"
-msgstr ""
+msgstr "Маркери"
 
 #: ../../editing/clip-editors/ruler.rst:24
 msgid "Clip Start"
@@ -1674,7 +1675,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:44
 msgid "Cut"
-msgstr ""
+msgstr "Вирізати"
 
 #: ../../editing/common-operations.rst:45
 msgid ""
@@ -1684,7 +1685,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:51
 msgid "Copy"
-msgstr ""
+msgstr "Скопіювати"
 
 #: ../../editing/common-operations.rst:52
 msgid ""
@@ -1694,7 +1695,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:58
 msgid "Paste"
-msgstr ""
+msgstr "Вставити"
 
 #: ../../editing/common-operations.rst:59
 msgid ""
@@ -1730,7 +1731,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:84
 msgid "Clear Selection"
-msgstr ""
+msgstr "Очистити виділення/Clear Selection"
 
 #: ../../editing/common-operations.rst:85
 msgid "Clear current selection (unselect all objects)."
@@ -1744,7 +1745,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:90
 msgid "Select All"
-msgstr ""
+msgstr "Виділити все/Select All"
 
 #: ../../editing/common-operations.rst:91
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
@@ -1752,7 +1753,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:97
 msgid "Loop Selection"
-msgstr ""
+msgstr "Виділення петлі"
 
 #: ../../editing/common-operations.rst:98
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
@@ -2359,7 +2360,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:230
 msgid "Exponential"
-msgstr ""
+msgstr "Експоненціально"
 
 #: ../../editing/timeline/arranger.rst:235
 msgid "Elliptic (Superellipse)"
@@ -2513,7 +2514,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:24
 msgid "Musical Mode"
-msgstr ""
+msgstr "Музичний режим"
 
 #: ../../editing/timeline/toolbar.rst:25
 msgid ""
@@ -2779,7 +2780,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
-msgstr ""
+msgstr "Переднабори/Presets"
 
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
@@ -3054,7 +3055,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
-msgstr ""
+msgstr "Монітор"
 
 #: ../../getting-started/system-requirements.rst:24
 msgid ""
@@ -3171,7 +3172,7 @@ msgstr ""
 #: ../../glossary/intro.rst:26
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
-msgstr ""
+msgstr "Уд/хв/BPM"
 
 #: ../../glossary/intro.rst:28
 msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
@@ -3290,7 +3291,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:93
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI нота/MIDI note"
 
 #: ../../glossary/intro.rst:95
 msgid ""
@@ -3660,7 +3661,7 @@ msgstr ""
 
 #: ../../modulators/intro.rst:8 ../../tracks/track-types.rst:56
 msgid "Modulators"
-msgstr ""
+msgstr "Модулятори"
 
 #: ../../modulators/intro.rst:9
 msgid ""
@@ -3924,11 +3925,11 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:65
 msgid "Options"
-msgstr ""
+msgstr "Параметри"
 
 #: ../../playback-and-recording/recording.rst:75
 msgid "Punch in/out"
-msgstr ""
+msgstr "Удар в/із"
 
 #: ../../playback-and-recording/recording.rst:67
 msgid ""
@@ -3943,7 +3944,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:79
 msgid "Start on MIDI input"
-msgstr ""
+msgstr "Почати з входу MIDI"
 
 #: ../../playback-and-recording/recording.rst:78
 msgid ""
@@ -3956,7 +3957,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:84
 msgid "Overwrite events"
-msgstr ""
+msgstr "Перезаписати події"
 
 #: ../../playback-and-recording/recording.rst:84
 msgid "Overwrite any existing events in the track during recording"
@@ -3964,7 +3965,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:87
 msgid "Merge events"
-msgstr ""
+msgstr "Об’єднати події"
 
 #: ../../playback-and-recording/recording.rst:87
 msgid "Merge the newly recorded events with the existing events in the track"
@@ -3972,7 +3973,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:89
 msgid "Create takes"
-msgstr ""
+msgstr "Створити дублі"
 
 #: ../../playback-and-recording/recording.rst:90
 msgid "Create a new lane (`take`) for each new recording"
@@ -3980,7 +3981,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:98
 msgid "Create takes (mute previous)"
-msgstr ""
+msgstr "Створити дублі (нехтув. попередніми)"
 
 #: ../../playback-and-recording/recording.rst:92
 msgid ""
@@ -4000,7 +4001,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:107
 msgid "Latch"
-msgstr ""
+msgstr "Фіксація/Latch"
 
 #: ../../playback-and-recording/recording.rst:112
 msgid ""
@@ -4010,7 +4011,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:116
 msgid "Touch"
-msgstr ""
+msgstr "Дотик/Touch"
 
 #: ../../playback-and-recording/recording.rst:121
 msgid ""
@@ -4037,7 +4038,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Controls"
-msgstr ""
+msgstr "Елементи керування"
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Metronome toggle"
@@ -4092,7 +4093,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:41
 msgid "Record options"
-msgstr ""
+msgstr "Параметри запису"
 
 #: ../../playback-and-recording/transport-controls.rst:42
 msgid "Sets the settings to use when recording."
@@ -4168,7 +4169,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "Оглядач файлів/File Browser"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
@@ -4308,7 +4309,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
 msgid "Volume"
-msgstr ""
+msgstr "Гучність"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
 msgid "Control the loudness of the output audio."
@@ -4327,7 +4328,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:110
 msgid "Autoplay"
-msgstr ""
+msgstr "Самопрогравання"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:111
 msgid ""
@@ -4552,7 +4553,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Оглядач розширень/Plugin Browser"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""
@@ -5205,7 +5206,7 @@ msgstr ""
 
 #: ../../routing/control-room.rst:28
 msgid "Dim"
-msgstr ""
+msgstr "Зниж"
 
 #: ../../routing/control-room.rst:29
 msgid "This is not operational at the moment."
@@ -5860,7 +5861,7 @@ msgstr ""
 #: ../../scripting/scripting-interface.rst:6
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Scripting Interface"
-msgstr ""
+msgstr "Інтерфейс сценаріїв/Scripting Interface"
 
 #: ../../scripting/scripting-interface.rst:8
 msgid "Explain the scripting window/interface."
@@ -6025,7 +6026,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:28 ../../tracks/modulator-track.rst:27
 #: ../../tracks/tempo-track.rst:27
 msgid "Solo"
-msgstr ""
+msgstr "Соло"
 
 #: ../../tracks/audio-track.rst:20 ../../tracks/bus-track-audio.rst:20
 #: ../../tracks/bus-track-midi.rst:20 ../../tracks/group-track-audio.rst:24
@@ -6124,7 +6125,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:66 ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:75
 msgid "Sends"
-msgstr ""
+msgstr "Відправки/Sends"
 
 #: ../../tracks/audio-track.rst:58 ../../tracks/instrument-track.rst:77
 #: ../../tracks/midi-track.rst:91
@@ -6505,7 +6506,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:119
 msgid "Fader"
-msgstr ""
+msgstr "Змішувач/Fader"
 
 #: ../../tracks/inspector-page.rst:120
 msgid "Fader section to control the volume and stereo balance."
@@ -6567,7 +6568,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:164
 msgid "Listen"
-msgstr ""
+msgstr "Слухати"
 
 #: ../../tracks/inspector-page.rst:165
 msgid ""
@@ -7189,7 +7190,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Властивості розширення/Plugin Properties"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -7280,7 +7281,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "New Project"
-msgstr ""
+msgstr "Новий проєкт"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Create a new project."
@@ -7288,7 +7289,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Save"
-msgstr ""
+msgstr "Зберегти"
 
 #: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save the current project at its current location."
@@ -7296,7 +7297,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
-msgstr ""
+msgstr "Зберегти як"
 
 #: ../../zrythm-interface/main-toolbar.rst:51
 msgid "Save the current project at a new location."
@@ -7316,7 +7317,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Export As"
-msgstr ""
+msgstr "Експортувати як"
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid ""
@@ -7326,7 +7327,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid "Export Graph"
-msgstr ""
+msgstr "Експорт графіка"
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid ""
@@ -7354,7 +7355,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:74
 msgid "Zoom In"
-msgstr ""
+msgstr "Збільшити"
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms in."
@@ -7362,7 +7363,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:76
 msgid "Zoom Out"
-msgstr ""
+msgstr "Зменшити"
 
 #: ../../zrythm-interface/main-toolbar.rst:77
 msgid "Zooms out."
@@ -7370,7 +7371,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
-msgstr ""
+msgstr "Початковий розмір"
 
 #: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zooms back to the default zoom level."
@@ -7378,7 +7379,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
-msgstr ""
+msgstr "Оптимальний розмір"
 
 #: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""
@@ -7426,7 +7427,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:98
 msgid "Manual"
-msgstr ""
+msgstr "Посібник/Manual"
 
 #: ../../zrythm-interface/main-toolbar.rst:99
 msgid "View the user manual."
@@ -7442,7 +7443,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Гарячі клавіші/Keyboard Shortcuts"
 
 #: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Show all the available keyboard shortcuts."
@@ -7450,7 +7451,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate"
-msgstr ""
+msgstr "Пожертвувати"
 
 #: ../../zrythm-interface/main-toolbar.rst:105
 msgid "Donate to Zrythm through LiberaPay."
@@ -7458,7 +7459,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Report a Bug"
-msgstr ""
+msgstr "Повідомити про помилку"
 
 #: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Opens the page to report a new bug."
@@ -7499,7 +7500,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:134
 msgid "MIDI In"
-msgstr ""
+msgstr "MIDI в"
 
 #: ../../zrythm-interface/main-toolbar.rst:132
 msgid ""
