@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * BindCc dialog.
- */
-
 #include "audio/engine.h"
 #include "audio/midi.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"

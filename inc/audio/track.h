@@ -1126,6 +1126,15 @@ track_set_name (
   bool         pub_events);
 
 /**
+ * Returns a unique name for a new track based on
+ * the given name.
+ */
+char *
+track_get_unique_name (
+  Track *      track_to_skip,
+  const char * name);
+
+/**
  * Returns the Track from the Project matching
  * \p name.
  *

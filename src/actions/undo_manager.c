@@ -162,6 +162,15 @@ undo_manager_undo (UndoManager * self)
 
   for (int i = 0; i < num_actions; i++)
     {
+      g_message (
+        "[ACTION %d/%d]", i + 1, num_actions);
+      action =
+        (UndoableAction *)
+        undo_stack_peek (self->undo_stack);
+      if (i == 0)
+        action->num_actions = 1;
+      else if (i == num_actions - 1)
+        action->num_actions = num_actions;
       do_or_undo_action (
         self, NULL, self->undo_stack,
         self->redo_stack);
@@ -198,6 +207,15 @@ undo_manager_redo (UndoManager * self)
 
   for (int i = 0; i < num_actions; i++)
     {
+      g_message (
+        "[ACTION %d/%d]", i + 1, num_actions);
+      action =
+        (UndoableAction *)
+        undo_stack_peek (self->redo_stack);
+      if (i == 0)
+        action->num_actions = 1;
+      else if (i == num_actions - 1)
+        action->num_actions = num_actions;
       do_or_undo_action (
         self, NULL, self->redo_stack,
         self->undo_stack);

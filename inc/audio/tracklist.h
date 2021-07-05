@@ -438,7 +438,7 @@ tracklist_handle_file_drop (
  *
  * @param track_to_skip Track to skip when searching.
  */
-int
+bool
 tracklist_track_name_is_unique (
   Tracklist *  self,
   const char * name,

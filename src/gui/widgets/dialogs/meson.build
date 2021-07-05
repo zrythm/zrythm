@@ -17,6 +17,7 @@
 
 widget_srcs += files([
   'about_dialog.c',
+  'add_tracks_to_group_dialog.c',
   'arranger_object_info.c',
   'bind_cc_dialog.c',
   'bounce_dialog.c',

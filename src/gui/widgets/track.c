@@ -40,6 +40,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/custom_button.h"
+#include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
@@ -1624,6 +1625,9 @@ typedef struct DirectOutChangeData
 
   /** Direct out to route to (index). */
   int           direct_out;
+
+  /** Whether to create a new group. */
+  bool          new_group;
 } DirectOutChangeData;
 
 static void
@@ -1640,19 +1644,35 @@ on_direct_out_activated (
   DirectOutChangeData * data)
 {
   TrackWidget * self = data->tw;
-  Track * direct_out =
-    tracklist_get_track (
-      TRACKLIST, data->direct_out);
+
+  TracklistSelections * sel_before =
+    tracklist_selections_clone (
+      TRACKLIST_SELECTIONS);
+
+  Track * direct_out = NULL;
+  if (data->new_group)
+    {
+      direct_out =
+        add_tracks_to_group_dialog_widget_get_track (sel_before);
+      if (!direct_out)
+        return;
+    }
+  else
+    {
+      direct_out =
+        tracklist_get_track (
+          TRACKLIST, data->direct_out);
+    }
   g_return_if_fail (direct_out && self);
 
   /* skip if all selected tracks already connected
    * to direct out */
   bool need_change = false;
-  for (int i = 0;
-       i < TRACKLIST_SELECTIONS->num_tracks; i++)
+  for (int i = 0; i < sel_before->num_tracks; i++)
     {
       Track * cur_track =
-        TRACKLIST_SELECTIONS->tracks[i];
+        TRACKLIST->tracks[
+          sel_before->tracks[i]->pos];
       if (!track_type_has_channel (cur_track->type))
         return;
 
@@ -1678,10 +1698,32 @@ on_direct_out_activated (
       return;
     }
 
+  if (data->new_group)
+    {
+      /* reset the selections */
+      tracklist_selections_clear (
+        TRACKLIST_SELECTIONS);
+      for (int i = 0; i < sel_before->num_tracks;
+           i++)
+        {
+          Track * cur_track =
+            TRACKLIST->tracks[
+              sel_before->tracks[i]->pos];
+          track_select (
+            cur_track, F_SELECT, F_NOT_EXCLUSIVE,
+            F_NO_PUBLISH_EVENTS);
+        }
+    }
+
   UndoableAction * ua =
     tracklist_selections_action_new_edit_direct_out (
       TRACKLIST_SELECTIONS, direct_out);
+  if (data->new_group)
+    ua->num_actions = 3;
   undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* free previous selections */
+  tracklist_selections_free (sel_before);
 }
 
 static void
@@ -1808,7 +1850,7 @@ show_context_menu (
     {
       ADD_SEPARATOR;
 
-      Channel * ch = track_get_channel (track);
+      /*Channel * ch = track_get_channel (track);*/
 
       if (tracklist_selections_contains_soloed_track (
             TRACKLIST_SELECTIONS, F_NO_SOLO))
@@ -1882,10 +1924,7 @@ show_context_menu (
         GTK_WIDGET (submenu), 1);
       GtkMenuItem * submenu_item;
 
-      Track * direct_out =
-        channel_get_output_track (ch);
-      (void) direct_out;
-      /*GSList * radio_group = NULL;*/
+      bool have_groups = false;
       for (int i = 0; i < TRACKLIST->num_tracks;
            i++)
         {
@@ -1900,12 +1939,6 @@ show_context_menu (
             GTK_MENU_ITEM (
               gtk_menu_item_new_with_label (
                 cur_tr->name));
-          /*radio_group =*/
-            /*gtk_radio_menu_item_get_group (*/
-              /*GTK_RADIO_MENU_ITEM (submenu_item));*/
-          /*gtk_check_menu_item_set_active (*/
-            /*GTK_CHECK_MENU_ITEM (submenu_item),*/
-            /*cur_tr == direct_out);*/
           DirectOutChangeData * data =
             object_new (DirectOutChangeData);
           data->tw = self;
@@ -1922,7 +1955,44 @@ show_context_menu (
             GTK_WIDGET (submenu_item));
           gtk_widget_set_visible (
             GTK_WIDGET (submenu_item), true);
+          have_groups = true;
         }
+
+      if (have_groups)
+        {
+          submenu_item =
+            GTK_MENU_ITEM (
+              gtk_separator_menu_item_new ());
+          gtk_widget_set_visible (
+            GTK_WIDGET (submenu_item), true);
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL (submenu),
+            GTK_WIDGET (submenu_item));
+        }
+
+      /* add "route to new group */
+      submenu_item =
+        GTK_MENU_ITEM (
+          gtk_menu_item_new_with_label (
+            _("New group")));
+      DirectOutChangeData * data =
+        object_new (DirectOutChangeData);
+      data->tw = self;
+      data->direct_out = -1;
+      data->new_group = true;
+      g_signal_connect_data (
+        G_OBJECT (submenu_item), "activate",
+        G_CALLBACK (on_direct_out_activated),
+        data,
+        (GClosureNotify)
+        free_direct_out_change_data,
+        0);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (submenu),
+        GTK_WIDGET (submenu_item));
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu_item), true);
+
       gtk_menu_item_set_submenu (
         menuitem, GTK_WIDGET (submenu));
       APPEND (menuitem);

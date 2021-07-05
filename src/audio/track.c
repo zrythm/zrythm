@@ -2836,23 +2836,18 @@ track_get_regions_in_range (
 }
 
 /**
- * Setter for the track name.
- *
- * If a track with that name already exists, it
- * adds a number at the end.
- *
- * Must only be called from the GTK thread.
+ * Returns a unique name for a new track based on
+ * the given name.
  */
-void
-track_set_name (
-  Track *      track,
-  const char * _name,
-  bool         pub_events)
+char *
+track_get_unique_name (
+  Track *      track_to_skip,
+  const char * _name)
 {
-  char name[800];
+  char name[strlen (_name) + 1];
   strcpy (name, _name);
   while (!tracklist_track_name_is_unique (
-            TRACKLIST, name, track))
+            TRACKLIST, name, track_to_skip))
     {
       char name_without_num[780];
       int ending_num =
@@ -2871,6 +2866,27 @@ track_set_name (
             name_without_num, ending_num + 1);
         }
     }
+
+  return g_strdup (name);
+}
+
+/**
+ * Setter for the track name.
+ *
+ * If a track with that name already exists, it
+ * adds a number at the end.
+ *
+ * Must only be called from the GTK thread.
+ */
+void
+track_set_name (
+  Track *      track,
+  const char * _name,
+  bool         pub_events)
+{
+  char * name =
+    track_get_unique_name (track, _name);
+  g_return_if_fail (name);
 
   if (track->name)
     g_free (track->name);
@@ -2914,6 +2930,8 @@ track_set_name (
       EVENTS_PUSH (
         ET_TRACK_NAME_CHANGED, track);
     }
+
+  g_free (name);
 }
 
 void

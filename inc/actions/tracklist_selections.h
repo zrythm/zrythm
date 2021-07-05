@@ -398,6 +398,16 @@ tracklist_selections_action_new (
     NULL, num_tracks, -1)
 
 /**
+ * Creates a new TracklistSelectionsAction for a
+ * MIDI group track.
+ */
+#define tracklist_selections_action_new_create_midi_group( \
+  track_pos,num_tracks) \
+  tracklist_selections_action_new_create ( \
+    TRACK_TYPE_MIDI_GROUP, NULL, NULL, track_pos, \
+    NULL, num_tracks, -1)
+
+/**
  * Creates a new TracklistSelectionsAction for a MIDI
  * track.
  */

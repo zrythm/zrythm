@@ -964,7 +964,7 @@ tracklist_move_track (
  *
  * @param track_to_skip Track to skip when searching.
  */
-int
+bool
 tracklist_track_name_is_unique (
   Tracklist *  self,
   const char * name,
@@ -972,11 +972,12 @@ tracklist_track_name_is_unique (
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
-      if (!g_strcmp0 (name, self->tracks[i]->name) &&
+      if (string_is_equal (
+            name, self->tracks[i]->name) &&
           self->tracks[i] != track_to_skip)
-        return 0;
+        return false;
     }
-  return 1;
+  return true;
 }
 
 /**

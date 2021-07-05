@@ -124,6 +124,67 @@ test_perform_many_actions ()
 }
 
 static void
+test_multi_actions ()
+{
+  test_helper_zrythm_init ();
+
+  int max_actions = 3;
+  const int num_tracks_at_start =
+    TRACKLIST->num_tracks;
+  for (int i = 0; i < max_actions; i++)
+    {
+      UndoableAction * ua =
+        tracklist_selections_action_new_create_midi (
+          TRACKLIST->num_tracks, 1);
+      if (i == 2)
+        ua->num_actions = max_actions;
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+
+  g_assert_cmpint (
+    TRACKLIST->num_tracks, ==,
+    num_tracks_at_start + max_actions);
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->stack->top, ==,
+    max_actions - 1);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->stack->top, ==, -1);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  g_assert_cmpint (
+    TRACKLIST->num_tracks, ==, num_tracks_at_start);
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->stack->top, ==, -1);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->stack->top, ==,
+    max_actions - 1);
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  g_assert_cmpint (
+    TRACKLIST->num_tracks, ==,
+    num_tracks_at_start + max_actions);
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->stack->top, ==,
+    max_actions - 1);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->stack->top, ==, -1);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  g_assert_cmpint (
+    TRACKLIST->num_tracks, ==, num_tracks_at_start);
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->stack->top, ==, -1);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->stack->top, ==,
+    max_actions - 1);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
 test_fill_stack ()
 {
   test_helper_zrythm_init ();
@@ -151,6 +212,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/undo manager/"
 
+  g_test_add_func (
+    TEST_PREFIX "test multi actions",
+    (GTestFunc) test_multi_actions);
   g_test_add_func (
     TEST_PREFIX "test fill stack",
     (GTestFunc) test_fill_stack);
