@@ -31,6 +31,7 @@
 #include "audio/chord_track.h"
 #include "audio/control_port.h"
 #include "audio/exporter.h"
+#include "audio/foldable_track.h"
 #include "audio/group_target_track.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
@@ -218,6 +219,7 @@ track_init (
   self->magic = TRACK_MAGIC;
   self->enabled = true;
   self->comment = g_strdup ("");
+  self->size = 1;
   track_add_lane (self, 0);
 }
 
@@ -336,8 +338,19 @@ track_new (
         TYPE_UNKNOWN;
       modulator_track_init (self);
       break;
+    case TRACK_TYPE_FOLDER:
+      self->in_signal_type =
+        TYPE_UNKNOWN;
+      self->out_signal_type =
+        TYPE_UNKNOWN;
+      break;
     default:
       g_return_val_if_reached (NULL);
+    }
+
+  if (track_type_is_foldable (type))
+    {
+      foldable_track_init (self);
     }
 
   if (TRACK_CAN_BE_GROUP_TARGET (self))
@@ -389,6 +402,7 @@ track_type_has_channel (
     case TRACK_TYPE_MARKER:
     case TRACK_TYPE_TEMPO:
     case TRACK_TYPE_MODULATOR:
+    case TRACK_TYPE_FOLDER:
       return false;
     default:
       break;
@@ -448,6 +462,8 @@ track_clone (
   COPY_MEMBER (color);
   COPY_MEMBER (pos);
   COPY_MEMBER (midi_ch);
+  COPY_MEMBER (size);
+  COPY_MEMBER (folded);
 
 #undef COPY_MEMBER
 
@@ -599,6 +615,14 @@ bool
 track_get_soloed (
   Track * self)
 {
+  if (self->type == TRACK_TYPE_FOLDER)
+    {
+      return
+        foldable_track_is_status (
+          self,
+          FOLDABLE_TRACK_MIXER_STATUS_SOLOED);
+    }
+
   g_return_val_if_fail (self->channel, false);
   return fader_get_soloed (self->channel->fader);
 }
@@ -612,6 +636,14 @@ bool
 track_get_implied_soloed (
   Track * self)
 {
+  if (self->type == TRACK_TYPE_FOLDER)
+    {
+      return
+        foldable_track_is_status (
+          self,
+          FOLDABLE_TRACK_MIXER_STATUS_IMPLIED_SOLOED);
+    }
+
   g_return_val_if_fail (self->channel, false);
   return
     fader_get_implied_soloed (self->channel->fader);
@@ -624,6 +656,14 @@ bool
 track_get_muted (
   Track * self)
 {
+  if (self->type == TRACK_TYPE_FOLDER)
+    {
+      return
+        foldable_track_is_status (
+          self,
+          FOLDABLE_TRACK_MIXER_STATUS_MUTED);
+    }
+
   g_return_val_if_fail (self->channel, false);
   return fader_get_muted (self->channel->fader);
 }
@@ -635,6 +675,14 @@ bool
 track_get_listened (
   Track * self)
 {
+  if (self->type == TRACK_TYPE_FOLDER)
+    {
+      return
+        foldable_track_is_status (
+          self,
+          FOLDABLE_TRACK_MIXER_STATUS_LISTENED);
+    }
+
   g_return_val_if_fail (self->channel, false);
   return fader_get_listened (self->channel->fader);
 }
@@ -755,6 +803,12 @@ track_set_muted (
   bool    auto_select,
   bool    fire_events)
 {
+  if (self->type == TRACK_TYPE_FOLDER)
+    {
+      /* TODO */
+      return;
+    }
+
   g_return_if_fail (self->channel);
 
   g_message (
@@ -768,6 +822,52 @@ track_set_muted (
   fader_set_muted (
     self->channel->fader, mute, trigger_undo,
     fire_events);
+}
+
+/**
+ * Sets track folded and optionally adds the action
+ * to the undo stack.
+ */
+void
+track_set_folded (
+  Track * self,
+  bool    folded,
+  bool    trigger_undo,
+  bool    auto_select,
+  bool    fire_events)
+{
+  g_return_if_fail (
+    track_type_is_foldable (self->type));
+
+  g_message (
+    "Setting track %s folded (%d)",
+    self->name, folded);
+  if (auto_select)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE, fire_events);
+    }
+
+  if (trigger_undo)
+    {
+      g_return_if_fail (
+        TRACKLIST_SELECTIONS->num_tracks == 1 &&
+        TRACKLIST_SELECTIONS->tracks[0] == self);
+      UndoableAction * action =
+        tracklist_selections_action_new_edit_fold (
+          TRACKLIST_SELECTIONS, folded);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      self->folded = folded;
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (ET_TRACK_FOLD_CHANGED, self);
+        }
+    }
 }
 
 /**
@@ -998,6 +1098,40 @@ track_validate (
 }
 
 /**
+ * Adds the track's folder parents to the given
+ * array.
+ *
+ * @param prepend Whether to prepend instead of
+ *   append.
+ */
+void
+track_add_folder_parents (
+  Track *     self,
+  GPtrArray * parents,
+  bool        prepend)
+{
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * cur_track = TRACKLIST->tracks[i];
+      if (!track_type_is_foldable (
+             cur_track->type))
+        continue;
+
+      /* last position covered by the foldable
+       * track cur_track */
+      int last_covered_pos =
+        cur_track->pos + (cur_track->size - 1);
+
+      if (cur_track->pos < self->pos &&
+          self->pos <= last_covered_pos)
+        {
+          g_ptr_array_insert (
+            parents, prepend ? 0 : -1, cur_track);
+        }
+    }
+}
+
+/**
  * Returns if the given TrackType can host the
  * given RegionType.
  */
@@ -1024,6 +1158,35 @@ track_type_can_host_region_type (
         tt == TRACK_TYPE_CHORD;
     }
   g_return_val_if_reached (-1);
+}
+
+/**
+ * Returns whether the track should be visible.
+ *
+ * Takes into account Track.visible and whether
+ * any of the track's foldable parents are folded.
+ */
+NONNULL
+bool
+track_get_should_be_visible (
+  Track * self)
+{
+  if (!self->visible)
+    return false;
+
+  GPtrArray * parents = g_ptr_array_new ();
+  track_add_folder_parents (
+    self, parents, false);
+  for (size_t i = 0; i < parents->len; i++)
+    {
+      Track * parent =
+        g_ptr_array_index (parents, i);
+      if (!parent->visible || parent->folded)
+        return false;
+    }
+  g_ptr_array_unref (parents);
+
+  return true;
 }
 
 /**
@@ -1147,6 +1310,12 @@ track_set_soloed (
   bool    auto_select,
   bool    fire_events)
 {
+  if (self->type == TRACK_TYPE_FOLDER)
+    {
+      /* TODO */
+      return;
+    }
+
   g_return_if_fail (self->channel);
   if (auto_select)
     {
@@ -1177,6 +1346,12 @@ track_set_listened (
   bool    auto_select,
   bool    fire_events)
 {
+  if (self->type == TRACK_TYPE_FOLDER)
+    {
+      /* TODO */
+      return;
+    }
+
   g_return_if_fail (self->channel);
   if (auto_select)
     {
@@ -1295,7 +1470,8 @@ track_generate_automation_tracks (
   Track * track)
 {
   g_message (
-    "generating for %s", track->name);
+    "generating automation tracks for '%s'",
+    track->name);
 
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
@@ -2262,6 +2438,7 @@ track_get_automation_tracklist (Track * track)
   switch (track->type)
     {
     case TRACK_TYPE_MARKER:
+    case TRACK_TYPE_FOLDER:
       break;
     case TRACK_TYPE_CHORD:
     case TRACK_TYPE_AUDIO_BUS:
@@ -3494,7 +3671,7 @@ remove_ats_from_automation_tracklist (
 void
 track_free (Track * self)
 {
-  g_debug ("freeing %s (%d)...",
+  g_debug ("freeing track '%s' (pos %d)...",
     self->name, self->pos);
 
   /* remove regions */

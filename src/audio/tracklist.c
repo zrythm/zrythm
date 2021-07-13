@@ -123,7 +123,7 @@ tracklist_get_visible_tracks (
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
-      if (track->visible)
+      if (track_get_should_be_visible (track))
         {
           visible_tracks[*num_visible++] = track;
         }
@@ -149,7 +149,7 @@ tracklist_get_visible_track_diff (
       for (int i = src->pos; i < dest->pos; i++)
         {
           Track * track = self->tracks[i];
-          if (track->visible)
+          if (track_get_should_be_visible (track))
             {
               count++;
             }
@@ -160,7 +160,7 @@ tracklist_get_visible_track_diff (
       for (int i = dest->pos; i < src->pos; i++)
         {
           Track * track = self->tracks[i];
-          if (track->visible)
+          if (track_get_should_be_visible (track))
             {
               count--;
             }
@@ -205,9 +205,16 @@ tracklist_print_tracks (
   for (int i = 0; i < self->num_tracks; i++)
     {
       track = self->tracks[i];
-      g_message ("[idx %d] %s (pos %d)",
-                 i, track->name,
-                 track->pos);
+      if (track)
+        {
+          g_message (
+            "[idx %d] %s (pos %d)",
+            i, track->name, track->pos);
+        }
+      else
+        {
+          g_message ("[idx %d] (null)", i);
+        }
     }
   g_message ("------ end ------");
 }
@@ -222,27 +229,28 @@ swap_tracks (
 
   Track * src_track = self->tracks[src];
   Track * dest_track = self->tracks[dest];
-  g_return_if_fail (
-    IS_TRACK_AND_NONNULL (src_track));
-  g_return_if_fail (
-    IS_TRACK_AND_NONNULL (dest_track));
   g_debug ("swapping tracks %s [%d] and %s [%d]...",
-    src_track->name, src, dest_track->name, dest);
+    src_track ? src_track->name : "(null)", src,
+    dest_track ? dest_track->name : "(null)",
+    dest);
 
   /* move src somewhere temporarily */
   self->tracks[src] = NULL;
-  self->tracks[self->num_tracks] = src_track;
-  track_set_pos (src_track, self->num_tracks);
+  self->tracks[self->num_tracks + 1] = src_track;
+  if (src_track)
+    track_set_pos (src_track, self->num_tracks + 1);
 
   /* move dest to src */
   self->tracks[src] = dest_track;
   self->tracks[dest] = NULL;
-  track_set_pos (dest_track, src);
+  if (dest_track)
+    track_set_pos (dest_track, src);
 
   /* move src from temp pos to dest */
   self->tracks[dest] = src_track;
-  self->tracks[self->num_tracks] = NULL;
-  track_set_pos (src_track, dest);
+  self->tracks[self->num_tracks + 1] = NULL;
+  if (src_track)
+    track_set_pos (src_track, dest);
 
   self->swapping_tracks = false;
   g_debug ("tracks swapped");
@@ -275,7 +283,8 @@ tracklist_insert_track (
       track->channel->track_pos = -1;
     }
 
-  track_set_name (track, track->name, 0);
+  track_set_name (
+    track, track->name, F_NO_PUBLISH_EVENTS);
 
   /* append the track at the end */
   array_append (
@@ -428,7 +437,8 @@ tracklist_multiply_track_heights (
     {
       Track * tr = self->tracks[i];
 
-      if (visible_only && !tr->visible)
+      if (visible_only &&
+          !track_get_should_be_visible (tr))
         continue;
 
       bool ret =
@@ -530,7 +540,8 @@ tracklist_get_last_pos (
         {
           continue;
         }
-      if (visible_only && !tr->visible)
+      if (visible_only &&
+          !track_get_should_be_visible (tr))
         {
           continue;
         }
@@ -632,7 +643,7 @@ tracklist_get_first_visible_track (
   for (int i = 0; i < self->num_tracks; i++)
     {
       tr = self->tracks[i];
-      if (tr->visible &&
+      if (track_get_should_be_visible (tr) &&
           track_is_pinned (tr) == pinned)
         {
           return self->tracks[i];
@@ -656,7 +667,7 @@ tracklist_get_prev_visible_track (
        i >= 0; i--)
     {
       tr = self->tracks[i];
-      if (tr->visible)
+      if (track_get_should_be_visible (tr))
         {
           g_warn_if_fail (tr != track);
           return tr;
@@ -730,7 +741,7 @@ tracklist_get_next_visible_track (
        i < self->num_tracks; i++)
     {
       tr = self->tracks[i];
-      if (tr->visible)
+      if (track_get_should_be_visible (tr))
         {
           g_warn_if_fail (tr != track);
           return tr;
@@ -793,7 +804,7 @@ tracklist_remove_track (
 
   /* move track to the end */
   tracklist_move_track (
-    self, track, self->num_tracks - 1,
+    self, track, self->num_tracks - 1, false,
     F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
   if (!self->is_auditioner)
@@ -856,6 +867,13 @@ tracklist_remove_track (
  * Moves a track from its current position to the
  * position given by \p pos.
  *
+ * @param pos Position to insert at, or -1 to
+ *   insert at the end.
+ * @param always_before_pos Whether the track
+ *   should always be put before the track currently
+ *   at @ref pos. If this is true, when moving
+ *   down, the resulting track position will be
+ *   @ref pos - 1.
  * @param publish_events Push UI update events or
  *   not.
  * @param recalc_graph Recalculate routing graph.
@@ -865,13 +883,17 @@ tracklist_move_track (
   Tracklist * self,
   Track *     track,
   int         pos,
-  int         publish_events,
-  int         recalc_graph)
+  bool        always_before_pos,
+  bool        publish_events,
+  bool        recalc_graph)
 {
   g_message (
     "%s: %s from %d to %d",
     __func__, track->name, track->pos, pos);
-  /*int prev_pos = track->pos;*/
+
+  if (pos == track->pos)
+    return;
+
   bool move_higher = pos < track->pos;
 
   Track * prev_visible =
@@ -936,6 +958,12 @@ tracklist_move_track (
         {
           swap_tracks (self, i, i + 1);
         }
+
+      if (always_before_pos && pos > 0)
+        {
+          /* swap with previous track */
+          swap_tracks (self, pos, pos - 1);
+        }
     }
 
   if (!self->is_auditioner)
@@ -956,7 +984,8 @@ tracklist_move_track (
       EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
     }
 
-  g_message ("%s: finished moving track", __func__);
+  g_debug (
+    "%s: finished moving track", __func__);
 }
 
 /**
@@ -1105,7 +1134,8 @@ tracklist_get_num_visible_tracks (
     {
       Track * track = self->tracks[i];
 
-      if (track->visible == visible)
+      if (track_get_should_be_visible (track) ==
+            visible)
         ret++;
     }
 

@@ -162,7 +162,8 @@ Args:
                      (string-suffix? ".svg" f)
                      (string-suffix? ".png" f))))))
            '("gnome-builder" "ext"
-             "fork-awesome" "font-awesome"))
+             "fork-awesome" "font-awesome"
+             "fluentui"))
 
          ;; insert standard gtk menus
          ;; (see GtkApplication docs)

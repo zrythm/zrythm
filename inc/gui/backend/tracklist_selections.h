@@ -145,6 +145,14 @@ tracklist_selections_clear (
   TracklistSelections * self);
 
 /**
+ * Make sure all children of foldable tracks in
+ * the selection are also selected.
+ */
+void
+tracklist_selections_select_foldable_children (
+  TracklistSelections * self);
+
+/**
  * Handle a click selection.
  */
 void
@@ -272,10 +280,13 @@ tracklist_selections_paste_to_pos (
 
 /**
  * Sorts the tracks by position.
+ *
+ * @param asc Ascending or not.
  */
 void
 tracklist_selections_sort (
-  TracklistSelections * self);
+  TracklistSelections * self,
+  bool                  asc);
 
 /**
  * Marks the tracks to be bounced.

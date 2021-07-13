@@ -233,6 +233,14 @@ inspector_track_widget_setup (
   TracklistSelections *  tls)
 {
   g_return_if_fail (tls);
+  if (tls->num_tracks == 0)
+    {
+      g_critical (
+        "no tracks selected. this should never "
+        "happen");
+      return;
+    }
+
   Track * track = tls->tracks[0];
   g_return_if_fail (track);
 

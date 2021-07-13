@@ -112,6 +112,8 @@ typedef struct UndoableAction
    * This is used to group multiple actions into
    * one logical action (eg, create a group track
    * and route multiple tracks to it).
+   *
+   * To be set on the last action being performed.
    */
   int                 num_actions;
 } UndoableAction;

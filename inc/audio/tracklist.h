@@ -249,6 +249,13 @@ tracklist_remove_track (
  * Moves a track from its current position to the
  * position given by \p pos.
  *
+ * @param pos Position to insert at, or -1 to
+ *   insert at the end.
+ * @param always_before_pos Whether the track
+ *   should always be put before the track currently
+ *   at @ref pos. If this is true, when moving
+ *   down, the resulting track position will be
+ *   @ref pos - 1.
  * @param publish_events Push UI update events or
  *   not.
  * @param recalc_graph Recalculate routing graph.
@@ -258,8 +265,9 @@ tracklist_move_track (
   Tracklist * self,
   Track *     track,
   int         pos,
-  int         publish_events,
-  int         recalc_graph);
+  bool        always_before_pos,
+  bool        publish_events,
+  bool        recalc_graph);
 
 /**
  * Calls tracklist_insert_track with the given

@@ -335,63 +335,18 @@ activate_snap_keep_offset (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
 
-void
-activate_create_audio_track (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+DECLARE_SIMPLE (activate_create_audio_track);
+DECLARE_SIMPLE (activate_create_midi_track);
+DECLARE_SIMPLE (activate_create_ins_track);
+DECLARE_SIMPLE (activate_create_audio_bus_track);
+DECLARE_SIMPLE (activate_create_midi_bus_track);
+DECLARE_SIMPLE (activate_create_audio_group_track);
+DECLARE_SIMPLE (activate_create_midi_group_track);
+DECLARE_SIMPLE (activate_create_folder_track);
 
-void
-activate_create_midi_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
-
-void
-activate_create_ins_track (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
-
-void
-activate_create_audio_bus_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
-
-void
-activate_create_midi_bus_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
-
-void
-activate_create_audio_group_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
-
-void
-activate_create_midi_group_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
-
-void
-activate_duplicate_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
-
-void
-activate_delete_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
-
-void
-activate_hide_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data);
+DECLARE_SIMPLE (activate_duplicate_selected_tracks);
+DECLARE_SIMPLE (activate_delete_selected_tracks);
+DECLARE_SIMPLE (activate_hide_selected_tracks);
 
 DECLARE_SIMPLE (activate_pin_selected_tracks);
 DECLARE_SIMPLE (activate_solo_selected_tracks);

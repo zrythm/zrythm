@@ -97,6 +97,40 @@ color_area_draw_cb (
       /* show track icon */
       if (self->type == COLOR_AREA_TYPE_TRACK)
         {
+          Track * track = self->track;
+
+          /* draw each parent */
+          GPtrArray * parents =
+            g_ptr_array_sized_new (8);
+          track_add_folder_parents (
+            track, parents, false);
+
+          size_t len = parents->len + 1;
+          for (size_t i = 0; i < parents->len; i++)
+            {
+              Track * parent_track =
+                g_ptr_array_index (parents, i);
+
+              double start_y =
+                ((double) i /
+                 (double) len) *
+                (double) height;
+              double h =
+                (double) height /
+                (double) len;
+
+              cairo_rectangle (
+                self->cached_cr,
+                0, start_y, width, h);
+              color = parent_track->color;
+              if (self->hovered)
+                color_brighten_default (&color);
+              gdk_cairo_set_source_rgba (
+                self->cached_cr, &color);
+              cairo_fill (self->cached_cr);
+            }
+          g_ptr_array_unref (parents);
+
           /*TRACK_WIDGET_GET_PRIVATE (*/
             /*self->track->widget);*/
 
@@ -198,8 +232,7 @@ color_area_widget_setup_generic (
   ColorAreaWidget * self,
   GdkRGBA * color)
 {
-  /* TODO */
-
+  self->color = *color;
 }
 
 /**
@@ -244,7 +277,6 @@ color_area_widget_init (ColorAreaWidget * self)
     GTK_WIDGET (self),
     GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK |
     GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
-
 
   GtkGestureMultiPress * mp =
     GTK_GESTURE_MULTI_PRESS (

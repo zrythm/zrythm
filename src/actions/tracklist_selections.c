@@ -38,6 +38,7 @@
 #include "utils/io.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -145,6 +146,17 @@ tracklist_selections_action_new (
       num_tracks = 0;
     }
 
+  if (type ==
+        TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE)
+    {
+      Track * foldable_tr =
+        foldable_tr =
+          TRACKLIST->tracks[track_pos];
+      g_return_val_if_fail (
+        track_type_is_foldable (foldable_tr->type),
+        NULL);
+    }
+
   self->type = type;
   if (pl_setting)
     {
@@ -241,7 +253,7 @@ tracklist_selections_action_new (
           self->tls_before =
             tracklist_selections_clone (tls_before);
           tracklist_selections_sort (
-            self->tls_before);
+            self->tls_before, true);
         }
       else
         {
@@ -257,7 +269,7 @@ tracklist_selections_action_new (
           self->tls_after =
             tracklist_selections_clone (tls_after);
           tracklist_selections_sort (
-            self->tls_after);
+            self->tls_after, true);
         }
       else
         {
@@ -992,11 +1004,16 @@ do_or_undo_create_or_delete (
   return 0;
 }
 
+/**
+ * @param inside Whether moving/copying inside a
+ *   foldable track.
+ */
 static int
 do_or_undo_move_or_copy (
   TracklistSelectionsAction * self,
   bool                        _do,
-  bool                        copy)
+  bool                        copy,
+  bool                        inside)
 {
   bool move = !copy;
   bool pin =
@@ -1006,30 +1023,86 @@ do_or_undo_move_or_copy (
 
   if (_do)
     {
+      Track * foldable_tr = NULL;
+      self->num_fold_change_tracks = 0;
+      if (inside)
+        {
+          foldable_tr =
+            TRACKLIST->tracks[self->track_pos];
+          g_return_val_if_fail (
+            track_type_is_foldable (
+              foldable_tr->type),
+            -1);
+        }
+
+      Track * prev_track = NULL;
       if (move)
         {
-          /* get the project tracks */
-          Track * prj_tracks[4000];
+          /* calculate how many tracks are not
+           * already in the folder */
           for (int i = 0;
-               i < self->tls_before->num_tracks; i++)
+               i < self->tls_before->num_tracks;
+               i++)
             {
-              prj_tracks[i] =
-                TRACKLIST->tracks[
-                  self->tls_before->tracks[i]->pos];
+              Track * prj_track =
+                track_find_by_name (
+                  self->tls_before->tracks[i]->
+                    name);
+              g_return_val_if_fail (prj_track, -1);
+              if (inside)
+                {
+                  GPtrArray * parents =
+                    g_ptr_array_new ();
+                  track_add_folder_parents (
+                    prj_track, parents, false);
+                  if (!g_ptr_array_find (
+                        parents, foldable_tr, NULL))
+                    self->num_fold_change_tracks++;
+                  g_ptr_array_unref (parents);
+                }
             }
 
-          for (int i =
-               self->tls_before->num_tracks - 1;
-               i >= 0; i--)
+          for (int i = 0;
+               i < self->tls_before->num_tracks;
+               i++)
             {
-              Track * prj_track = prj_tracks[i];
+              Track * prj_track =
+                track_find_by_name (
+                  self->tls_before->tracks[i]->
+                    name);
               g_return_val_if_fail (prj_track, -1);
 
+              int target_pos = -1;
+              /* if not first track to be moved */
+              if (prev_track)
+                {
+                  /* move to last track's
+                   * index + 1 */
+                  target_pos = prev_track->pos + 1;
+                }
+              /* else if first track to be moved */
+              else
+                {
+                  /* move to given pos */
+                  target_pos = self->track_pos;
+
+                  /* if moving inside, skip folder
+                   * track */
+                  if (inside)
+                    target_pos++;
+                }
+
+              /* save index */
+              Track * own_track =
+                self->tls_before->tracks[i];
+              own_track->pos = prj_track->pos;
+
               tracklist_move_track (
-                TRACKLIST, prj_track,
-                self->track_pos,
+                TRACKLIST, prj_track, target_pos,
+                true,
                 F_NO_PUBLISH_EVENTS,
                 F_NO_RECALC_GRAPH);
+              prev_track = prj_track;
 
               if (i == 0)
                 tracklist_selections_select_single (
@@ -1038,6 +1111,8 @@ do_or_undo_move_or_copy (
               else
                 tracklist_selections_add_track (
                   TRACKLIST_SELECTIONS, prj_track, 0);
+
+              tracklist_print_tracks (TRACKLIST);
             }
 
           EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
@@ -1046,6 +1121,12 @@ do_or_undo_move_or_copy (
         {
           int num_tracks =
             self->tls_before->num_tracks;
+
+          if (inside)
+            {
+              self->num_fold_change_tracks =
+                self->tls_before->num_tracks;
+            }
 
           /* get outputs & sends */
           Track * outputs[num_tracks];
@@ -1059,7 +1140,6 @@ do_or_undo_move_or_copy (
                   outputs[i] =
                     channel_get_output_track (
                       own_track->channel);
-                  /*g_warn_if_reached();*/
 
                   for (int j = 0; j < STRIP_SIZE;
                        j++)
@@ -1092,29 +1172,33 @@ do_or_undo_move_or_copy (
                 track_clone (own_track, false);
               new_tracks[i] = track;
 
-              /* remove output */
               if (track->channel)
                 {
+                  /* remove output */
                   track->channel->has_output =
                     false;
                   track->channel->output_pos = -1;
-                }
 
-              /* remove sends */
-              for (int j = 0; j < STRIP_SIZE; j++)
-                {
-                  ChannelSend * send =
-                    track->channel->sends[j];
-                  send->enabled->control = 0.f;
+                  /* remove sends */
+                  for (int j = 0; j < STRIP_SIZE;
+                       j++)
+                    {
+                      ChannelSend * send =
+                        track->channel->sends[j];
+                      send->enabled->control = 0.f;
+                    }
                 }
 
               /* remove children */
               track->num_children = 0;
 
+              int target_pos = self->track_pos + i;
+              if (inside)
+                target_pos++;
+
               /* add to tracklist at given pos */
               tracklist_insert_track (
-                TRACKLIST, track,
-                self->track_pos + i,
+                TRACKLIST, track, target_pos,
                 F_NO_PUBLISH_EVENTS,
                 F_NO_RECALC_GRAPH);
 
@@ -1202,30 +1286,36 @@ do_or_undo_move_or_copy (
           EVENTS_PUSH (
             ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
         }
+
+      if (inside)
+        {
+          foldable_tr->size +=
+            self->num_fold_change_tracks;
+        }
     }
   /* if undoing */
   else
     {
       if (move)
         {
-          for (int i =
-                 self->tls_before->num_tracks - 1;
-               i >= 0; i--)
+          for (int i = self->tls_before->num_tracks - 1;
+               i >= 0;
+               i--)
             {
               Track * own_track =
                 self->tls_before->tracks[i];
 
               Track * prj_track =
-                TRACKLIST->tracks[
-                  self->track_pos];
-              g_return_val_if_fail (prj_track, -1);
+                track_find_by_name (
+                  own_track->name);
               g_return_val_if_fail (
-                own_track->pos != prj_track->pos,
+                IS_TRACK_AND_NONNULL (prj_track),
                 -1);
 
+              int target_pos = own_track->pos;
               tracklist_move_track (
                 TRACKLIST, prj_track,
-                own_track->pos,
+                target_pos, false,
                 F_NO_PUBLISH_EVENTS,
                 F_NO_RECALC_GRAPH);
 
@@ -1247,16 +1337,20 @@ do_or_undo_move_or_copy (
         }
       else if (copy)
         {
-          for (int i =
-                 self->tls_before->num_tracks - 1;
-               i >= 0; i--)
+          for (int i = self->tls_before->num_tracks - 1;
+               i >= 0;
+               i--)
             {
               /* get the track from the inserted
                * pos */
+              int target_pos = self->track_pos + i;
+              if (inside)
+                target_pos++;
+
               Track * track =
-                TRACKLIST->tracks[
-                  self->track_pos + i];
-              g_return_val_if_fail (track, -1);
+                TRACKLIST->tracks[target_pos];
+              g_return_val_if_fail (
+                IS_TRACK_AND_NONNULL (track), -1);
 
               /* remove it */
               tracklist_remove_track (
@@ -1267,6 +1361,19 @@ do_or_undo_move_or_copy (
           EVENTS_PUSH (
             ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
           EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
+        }
+
+      Track * foldable_tr = NULL;
+      if (inside)
+        {
+          foldable_tr =
+            TRACKLIST->tracks[self->track_pos];
+          g_return_val_if_fail (
+            track_type_is_foldable (
+              foldable_tr->type), -1);
+
+          foldable_tr->size -=
+            self->num_fold_change_tracks;
         }
     }
 
@@ -1376,6 +1483,21 @@ do_or_undo_edit (
                 F_NO_PUBLISH_EVENTS);
 
               self->ival_before[i] = enabled;
+            }
+          break;
+        case EDIT_TRACK_ACTION_TYPE_FOLD:
+            {
+              int folded = track->folded;
+              track_set_folded (
+                track,
+                _do ?
+                  self->ival_after :
+                  self->ival_before[i],
+                F_NO_TRIGGER_UNDO,
+                F_NO_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
+
+              self->ival_before[i] = folded;
             }
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
@@ -1521,9 +1643,12 @@ do_or_undo (
   switch (self->type)
     {
     case TRACKLIST_SELECTIONS_ACTION_COPY:
+    case TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE:
       return
         do_or_undo_move_or_copy (
-          self, _do, true);
+          self, _do, true,
+          self->type ==
+            TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE);
     case TRACKLIST_SELECTIONS_ACTION_CREATE:
       return
         do_or_undo_create_or_delete (
@@ -1535,11 +1660,14 @@ do_or_undo (
     case TRACKLIST_SELECTIONS_ACTION_EDIT:
       return do_or_undo_edit (self, _do);
     case TRACKLIST_SELECTIONS_ACTION_MOVE:
+    case TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE:
     case TRACKLIST_SELECTIONS_ACTION_PIN:
     case TRACKLIST_SELECTIONS_ACTION_UNPIN:
       return
         do_or_undo_move_or_copy (
-          self, _do, false);
+          self, _do, false,
+          self->type ==
+            TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE);
     }
 
   g_return_val_if_reached (-1);
@@ -1566,16 +1694,28 @@ tracklist_selections_action_stringize (
   switch (self->type)
     {
     case TRACKLIST_SELECTIONS_ACTION_COPY:
+    case TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE:
       if (self->tls_before->num_tracks == 1)
         {
-          return g_strdup (
-            _("Copy Track"));
+          if (self->type ==
+                TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE)
+            return
+              g_strdup (_("Copy Track inside"));
+          else
+            return g_strdup (_("Copy Track"));
         }
       else
         {
-          return g_strdup_printf (
-            _("Move %d Tracks"),
-            self->tls_before->num_tracks);
+          if (self->type ==
+                TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE)
+            return
+              g_strdup_printf (
+                _("Copy %d Tracks inside"),
+                self->tls_before->num_tracks);
+          else
+            return g_strdup_printf (
+              _("Copy %d Tracks"),
+              self->tls_before->num_tracks);
         }
     case TRACKLIST_SELECTIONS_ACTION_CREATE:
       {
@@ -1641,6 +1781,13 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup (
                   _("Disable Track"));
+            case EDIT_TRACK_ACTION_TYPE_FOLD:
+              if (self->ival_after)
+                return g_strdup (
+                  _("Fold Track"));
+              else
+                return g_strdup (
+                  _("Unfold Track"));
             case EDIT_TRACK_ACTION_TYPE_VOLUME:
               return g_strdup (
                 _("Change Fader"));
@@ -1710,6 +1857,15 @@ tracklist_selections_action_stringize (
                 return g_strdup_printf (
                   _("Disable %d Tracks"),
                   self->num_tracks);
+            case EDIT_TRACK_ACTION_TYPE_FOLD:
+              if (self->ival_after)
+                return g_strdup_printf (
+                  _("Fold %d Tracks"),
+                  self->num_tracks);
+              else
+                return g_strdup_printf (
+                  _("Unfold %d Tracks"),
+                  self->num_tracks);
             case EDIT_TRACK_ACTION_TYPE_COLOR:
               return g_strdup (
                 _("Change color"));
@@ -1725,16 +1881,36 @@ tracklist_selections_action_stringize (
             }
         }
     case TRACKLIST_SELECTIONS_ACTION_MOVE:
+    case TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE:
       if (self->tls_before->num_tracks == 1)
         {
-          return g_strdup (
-            _("Move Track"));
+          if (self->type ==
+                TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE)
+            {
+              return g_strdup (_("Move Track inside"));
+            }
+          else
+            {
+              return g_strdup (_("Move Track"));
+            }
         }
       else
         {
-          return g_strdup_printf (
-            _("Move %d Tracks"),
-            self->tls_before->num_tracks);
+          if (self->type ==
+                TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE)
+            {
+              return
+                g_strdup_printf (
+                  _("Move %d Tracks inside"),
+                  self->tls_before->num_tracks);
+            }
+          else
+            {
+              return
+                g_strdup_printf (
+                  _("Move %d Tracks"),
+                  self->tls_before->num_tracks);
+            }
         }
       break;
     case TRACKLIST_SELECTIONS_ACTION_PIN:

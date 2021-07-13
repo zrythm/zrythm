@@ -50,6 +50,16 @@ typedef struct AutomationModeWidget
  */
 
 /**
+ * Highlight location.
+ */
+typedef enum TrackWidgetHighlight
+{
+  TRACK_WIDGET_HIGHLIGHT_TOP,
+  TRACK_WIDGET_HIGHLIGHT_BOTTOM,
+  TRACK_WIDGET_HIGHLIGHT_INSIDE,
+} TrackWidgetHighlight;
+
+/**
  * Resize target.
  */
 typedef enum TrackWidgetResizeTarget
@@ -74,6 +84,9 @@ typedef struct _TrackWidget
   /** Main box containing the drawing area and the
    * meters on the right. */
   GtkBox *          main_box;
+
+  /** Group colors. */
+  GtkBox *          group_colors_box;
 
   GtkGestureDrag *  drag;
   GtkGestureMultiPress * multipress;
@@ -143,6 +156,10 @@ typedef struct _TrackWidget
   /** Used for highlighting. */
   GtkBox *          highlight_top_box;
   GtkBox *          highlight_bot_box;
+
+  /** Whether to highlight inside the track (eg,
+   * when dragging inside foldable tracks). */
+  bool              highlight_inside;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in
@@ -291,12 +308,28 @@ track_widget_is_cursor_in_top_half (
   double        y);
 
 /**
+ * Updates the track icons.
+ */
+void
+track_widget_update_icons (
+  TrackWidget * self);
+
+/**
  * Updates the full track size and redraws the
  * track.
  */
 void
 track_widget_update_size (
   TrackWidget * self);
+
+/**
+ * Returns the highlight location based on y
+ * relative to @ref self.
+ */
+TrackWidgetHighlight
+track_widget_get_highlight_location (
+  TrackWidget * self,
+  int           y);
 
 /**
  * Highlights/unhighlights the Tracks
@@ -327,6 +360,13 @@ track_widget_get_local_y (
  */
 void
 track_widget_redraw_meters (
+  TrackWidget * self);
+
+/**
+ * Re-fills TrackWidget.group_colors_box.
+ */
+void
+track_widget_recreate_group_colors (
   TrackWidget * self);
 
 /**

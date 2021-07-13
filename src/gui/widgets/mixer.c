@@ -76,7 +76,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
     {
       track = TRACKLIST->tracks[i];
 
-      if (!track->visible ||
+      if (!track_get_should_be_visible (track) ||
           !track_type_has_channel (track->type))
         continue;
 

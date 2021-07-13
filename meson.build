@@ -786,6 +786,8 @@ test_strict_cflags += [
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
   '-Werror=override-init',
+  '-Werror=bool-compare',
+  '-Werror=tautological-compare',
   ]
 
 if cc.get_id() == 'gcc'

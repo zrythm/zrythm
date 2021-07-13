@@ -35,10 +35,12 @@
 typedef enum TracklistSelectionsActionType
 {
   TRACKLIST_SELECTIONS_ACTION_COPY,
+  TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE,
   TRACKLIST_SELECTIONS_ACTION_CREATE,
   TRACKLIST_SELECTIONS_ACTION_DELETE,
   TRACKLIST_SELECTIONS_ACTION_EDIT,
   TRACKLIST_SELECTIONS_ACTION_MOVE,
+  TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE,
   TRACKLIST_SELECTIONS_ACTION_PIN,
   TRACKLIST_SELECTIONS_ACTION_UNPIN,
 } TracklistSelectionsActionType;
@@ -47,10 +49,13 @@ static const cyaml_strval_t
 tracklist_selections_action_type_strings[] =
 {
   { "Copy", TRACKLIST_SELECTIONS_ACTION_COPY },
+  { "Copy inside",
+    TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE },
   { "Create", TRACKLIST_SELECTIONS_ACTION_CREATE },
   { "Delete", TRACKLIST_SELECTIONS_ACTION_DELETE },
   { "Edit", TRACKLIST_SELECTIONS_ACTION_EDIT },
   { "Move", TRACKLIST_SELECTIONS_ACTION_MOVE },
+  { "Move inside", TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE },
   { "Pin", TRACKLIST_SELECTIONS_ACTION_PIN },
   { "Unpin", TRACKLIST_SELECTIONS_ACTION_UNPIN },
 };
@@ -64,6 +69,7 @@ typedef enum EditTracksActionType
   EDIT_TRACK_ACTION_TYPE_MUTE,
   EDIT_TRACK_ACTION_TYPE_LISTEN,
   EDIT_TRACK_ACTION_TYPE_ENABLE,
+  EDIT_TRACK_ACTION_TYPE_FOLD,
   EDIT_TRACK_ACTION_TYPE_VOLUME,
   EDIT_TRACK_ACTION_TYPE_PAN,
 
@@ -87,6 +93,7 @@ static const cyaml_strval_t
   { "mute", EDIT_TRACK_ACTION_TYPE_MUTE },
   { "listen", EDIT_TRACK_ACTION_TYPE_LISTEN },
   { "enable", EDIT_TRACK_ACTION_TYPE_ENABLE },
+  { "fold", EDIT_TRACK_ACTION_TYPE_FOLD },
   { "volume", EDIT_TRACK_ACTION_TYPE_VOLUME },
   { "pan", EDIT_TRACK_ACTION_TYPE_PAN },
   { "direct out", EDIT_TRACK_ACTION_TYPE_DIRECT_OUT },
@@ -171,6 +178,14 @@ typedef struct TracklistSelectionsAction
   /** Direct out tracks of the original tracks */
   int *                 out_tracks;
   int                   num_out_tracks;
+
+  /**
+   * Number of tracks under folder affected.
+   *
+   * Counter to be filled while doing to be used
+   * when undoing.
+   */
+  int                   num_fold_change_tracks;
 
   EditTracksActionType  edit_type;
 
@@ -297,6 +312,9 @@ static const cyaml_schema_field_t
     TracklistSelectionsAction, val_before),
   YAML_FIELD_FLOAT (
     TracklistSelectionsAction, val_after),
+  YAML_FIELD_INT (
+    TracklistSelectionsAction,
+    num_fold_change_tracks),
 
   CYAML_FIELD_END
 };
@@ -418,6 +436,16 @@ tracklist_selections_action_new (
     NULL, num_tracks, -1)
 
 /**
+ * Creates a new TracklistSelectionsAction for a
+ * folder track.
+ */
+#define tracklist_selections_action_new_create_folder( \
+  track_pos,num_tracks) \
+  tracklist_selections_action_new_create ( \
+    TRACK_TYPE_FOLDER, NULL, NULL, track_pos, \
+    NULL, num_tracks, -1)
+
+/**
  * Generic edit action.
  */
 #define tracklist_selections_action_new_edit_generic( \
@@ -492,6 +520,15 @@ tracklist_selections_action_new (
     enable_new, NULL, \
     0.f, 0.f, NULL, false)
 
+#define tracklist_selections_action_new_edit_fold( \
+  tls_before,fold_new) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_FOLD, \
+    fold_new, NULL, \
+    0.f, 0.f, NULL, false)
+
 #define tracklist_selections_action_new_edit_direct_out( \
   tls,direct_out) \
   tracklist_selections_action_new ( \
@@ -545,6 +582,17 @@ tracklist_selections_action_new (
     false, NULL, \
     0.f, 0.f, name, false)
 
+/**
+ * Move @ref tls to @ref track_pos.
+ *
+ * Tracks starting at @ref track_pos will be pushed
+ * down.
+ *
+ * @param track_pos Track position indicating the
+ *   track to push down and insert the selections
+ *   above. This is the track position before the
+ *   move will be executed.
+ */
 #define tracklist_selections_action_new_move( \
   tls,track_pos) \
   tracklist_selections_action_new ( \
@@ -557,6 +605,35 @@ tracklist_selections_action_new (
   tls,track_pos) \
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_COPY, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+/**
+ * Move inside a foldable track.
+ *
+ * @param track_pos Foldable track index.
+ *
+ * When foldable tracks are included in @ref tls,
+ * all their children must be marked as
+ * selected as well before calling this.
+ *
+ * @note This should be called in combination with
+ *   a move action to move the tracks to the required
+ *   index after putting them inside a group.
+ */
+#define tracklist_selections_action_new_move_inside( \
+  tls,track_pos) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false)
+
+#define tracklist_selections_action_new_copy_inside( \
+  tls,track_pos) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE, \
     tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
     -1, 0, false, NULL, \
     0.f, 0.f, NULL, false)

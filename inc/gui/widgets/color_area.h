@@ -87,7 +87,7 @@ typedef struct _ColorAreaWidget
 void
 color_area_widget_setup_generic (
   ColorAreaWidget * self,
-  GdkRGBA * color);
+  GdkRGBA *         color);
 
 /**
  * Creates a ColorAreaWidget for use inside

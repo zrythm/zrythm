@@ -54,6 +54,7 @@ audio_srcs = [
   'ext_port.c',
   'fade.c',
   'fader.c',
+  'foldable_track.c',
   'graph.c',
   'graph_node.c',
   'graph_thread.c',

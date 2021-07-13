@@ -64,11 +64,13 @@ automation_tracklist_add_at (
   AutomationTracklist * self,
   AutomationTrack *     at)
 {
+#if 0
   g_debug (
     "[track %d atl] adding automation track at: "
     "%d '%s'",
     self->track_pos, self->num_ats,
     at->port_id.label);
+#endif
 
   array_double_size_if_full (
     self->ats, self->num_ats, self->ats_size,

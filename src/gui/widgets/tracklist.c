@@ -60,7 +60,7 @@ on_drag_leave (
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
-      if (track->visible &&
+      if (track_get_should_be_visible (track) &&
           track->widget)
         {
           track_widget_do_highlight (
@@ -97,7 +97,7 @@ on_dnd_motion (
     {
       Track * track = TRACKLIST->tracks[i];
 
-      if (!track->visible)
+      if (!track_get_should_be_visible (track))
         continue;
 
       if (ui_is_child_hit (
@@ -150,7 +150,7 @@ on_dnd_drag_data_received (
     {
       Track * track = TRACKLIST->tracks[i];
 
-      if (!track->visible)
+      if (!track_get_should_be_visible (track))
         continue;
 
       if (ui_is_child_hit (
@@ -169,7 +169,7 @@ on_dnd_drag_data_received (
 
   g_return_if_fail (hit_tw);
 
-  Track * this = hit_tw->track;
+  Track * this_track = hit_tw->track;
 
   /* determine if moving or copying */
   GdkDragAction action =
@@ -187,59 +187,72 @@ on_dnd_drag_data_received (
     GTK_WIDGET (hit_tw),
     (int) x, (int) y, &wx, &wy);
 
-  int h =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (hit_tw));
-
   /* determine position to move to */
-  int pos;
-  if (wy < h / 2)
+  TrackWidgetHighlight location =
+    track_widget_get_highlight_location (hit_tw, wy);
+
+  int pos = -1;
+  if (location == TRACK_WIDGET_HIGHLIGHT_TOP)
     {
-      if (this->pos <=
-          MW_MIXER->start_drag_track->pos)
-        pos = this->pos;
-      else
-        {
-          Track * prev =
-            tracklist_get_prev_visible_track (
-              TRACKLIST, this);
-          pos =
-            prev ? prev->pos : this->pos;
-        }
+      pos = this_track->pos;
     }
   else
     {
-      if (this->pos >=
-          MW_MIXER->start_drag_track->pos)
-        pos = this->pos;
+      Track * next =
+        tracklist_get_next_visible_track (
+          TRACKLIST, this_track);
+      if (next)
+        pos = next->pos;
+      /* else if last track, move to end */
+      else if (this_track->pos ==
+                 TRACKLIST->num_tracks - 1)
+        pos = TRACKLIST->num_tracks;
+      /* else if last visible track but not last
+       * track */
       else
-        {
-          Track * next =
-            tracklist_get_next_visible_track (
-              TRACKLIST, this);
-          pos =
-            next ? next->pos : this->pos;
-        }
+        pos = this_track->pos + 1;
     }
+
+  if (pos == -1)
+    return;
+
+  tracklist_selections_select_foldable_children (
+    TRACKLIST_SELECTIONS);
 
   UndoableAction * ua = NULL;
   if (action == GDK_ACTION_COPY)
     {
-      ua =
-        tracklist_selections_action_new_copy (
-          TRACKLIST_SELECTIONS, pos);
+      if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
+        {
+          ua =
+            tracklist_selections_action_new_copy_inside (
+              TRACKLIST_SELECTIONS, this_track->pos);
+        }
+      else
+        {
+          ua =
+            tracklist_selections_action_new_copy (
+              TRACKLIST_SELECTIONS, pos);
+        }
     }
   else if (action == GDK_ACTION_MOVE)
     {
-      ua =
-        tracklist_selections_action_new_move (
-          TRACKLIST_SELECTIONS, pos);
+      if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
+        {
+          ua =
+            tracklist_selections_action_new_move_inside (
+              TRACKLIST_SELECTIONS, this_track->pos);
+        }
+      else
+        {
+          ua =
+            tracklist_selections_action_new_move (
+              TRACKLIST_SELECTIONS, pos);
+        }
     }
+  g_return_if_fail (ua);
 
-  g_warn_if_fail (ua);
-
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 TrackWidget *
@@ -253,7 +266,8 @@ tracklist_widget_get_hit_track (
       i < self->tracklist->num_tracks; i++)
     {
       Track * track = self->tracklist->tracks[i];
-      if (!track->visible || track_is_pinned (track))
+      if (!track_get_should_be_visible (track) ||
+          track_is_pinned (track))
         continue;
 
       TrackWidget * tw = track->widget;
@@ -386,6 +400,24 @@ on_scroll (
   return TRUE;
 }
 
+static void
+refresh_track_widget (
+  Track *           track)
+{
+  /* create widget */
+  if (!GTK_IS_WIDGET (track->widget))
+    track->widget = track_widget_new (track);
+
+  gtk_widget_set_visible (
+    (GtkWidget *) track->widget,
+    track_get_should_be_visible (track));
+
+  track_widget_recreate_group_colors (
+    track->widget);
+  track_widget_update_icons (track->widget);
+  track_widget_update_size (track->widget);
+}
+
 void
 tracklist_widget_hard_refresh (
   TracklistWidget * self)
@@ -405,17 +437,7 @@ tracklist_widget_hard_refresh (
       if (!track_is_pinned (track))
         continue;
 
-      /* create widget */
-      if (!GTK_IS_WIDGET (track->widget))
-        track->widget = track_widget_new (track);
-
-      gtk_widget_set_visible (
-        (GtkWidget *) track->widget,
-        track->visible);
-
-      /*track_widget_refresh (track->widget);*/
-
-      track_widget_update_size (track->widget);
+      refresh_track_widget (track);
 
       gtk_container_add (
         (GtkContainer *) self->pinned_box,
@@ -432,17 +454,7 @@ tracklist_widget_hard_refresh (
       if (track_is_pinned (track))
         continue;
 
-      /* create widget */
-      if (!GTK_IS_WIDGET (track->widget))
-        track->widget = track_widget_new (track);
-
-      gtk_widget_set_visible (
-        (GtkWidget *) track->widget,
-        track->visible);
-
-      /*track_widget_refresh (track->widget);*/
-
-      track_widget_update_size (track->widget);
+      refresh_track_widget (track);
 
       gtk_container_add (
         (GtkContainer *) self->unpinned_box,
@@ -503,10 +515,10 @@ tracklist_widget_update_track_visibility (
 
       gtk_widget_set_visible (
         GTK_WIDGET (track->widget),
-        track->visible);
+        track_get_should_be_visible (track));
 
-      track_widget_update_size (
-        track->widget);
+      track_widget_update_icons (track->widget);
+      track_widget_update_size (track->widget);
     }
 }
 

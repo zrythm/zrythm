@@ -47,12 +47,11 @@ track_properties_expander_widget_refresh (
 
   if (track)
     {
-      if (track_type_has_channel (track->type))
-        {
-          g_return_if_fail (self->direct_out);
-          route_target_selector_widget_refresh (
-            self->direct_out, track->channel);
-        }
+      g_return_if_fail (self->direct_out);
+      route_target_selector_widget_refresh (
+        self->direct_out,
+        track_type_has_channel (track->type) ?
+          track->channel : NULL);
 
       editable_label_widget_setup (
         self->name, track,

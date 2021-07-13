@@ -231,6 +231,13 @@ typedef enum EventType
    * Arg: Plugin.
    */
   ET_PLUGIN_PRESET_LOADED,
+
+  /**
+   * Track folded status changed.
+   *
+   * Arg: track.
+   */
+  ET_TRACK_FOLD_CHANGED,
 } EventType;
 
 /**

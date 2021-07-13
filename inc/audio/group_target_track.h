@@ -93,4 +93,4 @@ group_target_track_add_children (
   bool    recalc_graph,
   bool    pub_events);
 
-#endif // __AUDIO_GROUP_TRACK_H__
+#endif /* __AUDIO_GROUP_TARGET_TRACK_H__ */

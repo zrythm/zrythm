@@ -229,6 +229,37 @@ tracklist_selections_clear (
 }
 
 /**
+ * Make sure all children of foldable tracks in
+ * the selection are also selected.
+ */
+void
+tracklist_selections_select_foldable_children (
+  TracklistSelections * self)
+{
+  int num_tracklist_sel = self->num_tracks;
+  for (int i = 0; i < num_tracklist_sel; i++)
+    {
+      Track * cur_track = self->tracks[i];
+      int cur_idx = cur_track->pos;
+      if (track_type_is_foldable (cur_track->type))
+        {
+          for (int j = 1; j < cur_track->size; j++)
+            {
+              Track * child_track =
+                TRACKLIST->tracks[j + cur_idx];
+              if (!track_is_selected (child_track))
+                {
+                  track_select (
+                    child_track, F_SELECT,
+                    F_NOT_EXCLUSIVE,
+                    F_NO_PUBLISH_EVENTS);
+                }
+            }
+        }
+    }
+}
+
+/**
  * Handle a click selection.
  */
 void
@@ -243,9 +274,12 @@ tracklist_selections_handle_click (
     {
       if ((ctrl || shift) && !dragged)
         {
-          track_select (
-            track, F_NO_SELECT, F_NOT_EXCLUSIVE,
-            F_PUBLISH_EVENTS);
+          if (TRACKLIST_SELECTIONS->num_tracks > 1)
+            {
+              track_select (
+                track, F_NO_SELECT, F_NOT_EXCLUSIVE,
+                F_PUBLISH_EVENTS);
+            }
         }
       else
         {
@@ -546,6 +580,14 @@ tracklist_selections_select_last_visible (
 }
 
 static int
+sort_tracks_func_desc (const void *a, const void *b)
+{
+  Track * aa = * (Track * const *) a;
+  Track * bb = * (Track * const *) b;
+  return aa->pos < bb->pos;
+}
+
+static int
 sort_tracks_func (const void *a, const void *b)
 {
   Track * aa = * (Track * const *) a;
@@ -555,15 +597,19 @@ sort_tracks_func (const void *a, const void *b)
 
 /**
  * Sorts the tracks by position.
+ *
+ * @param asc Ascending or not.
  */
 void
 tracklist_selections_sort (
-  TracklistSelections * self)
+  TracklistSelections * self,
+  bool                  asc)
 {
-  qsort (self->tracks,
-         (size_t) self->num_tracks,
-         sizeof (Track *),
-         sort_tracks_func);
+  qsort (
+    self->tracks,
+    (size_t) self->num_tracks,
+    sizeof (Track *),
+    asc ? sort_tracks_func : sort_tracks_func_desc);
 }
 
 /**

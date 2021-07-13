@@ -295,10 +295,13 @@ on_drag_data_received (
   else if (target ==
             GET_ATOM (TARGET_ENTRY_TRACK))
     {
+      tracklist_selections_select_foldable_children (
+        TRACKLIST_SELECTIONS);
       int pos =
         tracklist_get_last_pos (
           TRACKLIST,
           TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
+      pos++;
 
       /* determine if moving or copying */
       GdkDragAction action =
@@ -330,20 +333,22 @@ on_drag_data_received (
 }
 
 static void
-drag_begin (GtkGestureDrag * gesture,
-               gdouble         start_x,
-               gdouble         start_y,
-               gpointer        user_data)
+drag_begin (
+  GtkGestureDrag * gesture,
+  double           start_x,
+  double           start_y,
+  gpointer         user_data)
 {
   g_message ("drag");
 
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag * gesture,
+  double           offset_x,
+  double           offset_y,
+  gpointer         user_data)
 {
 
 }
@@ -391,21 +396,21 @@ show_context_menu (DragDestBoxWidget * self)
   GtkMenuItem * menu_item;
   menu = gtk_menu_new ();
 
+#define APPEND(menu,menu_item) \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL(menu), GTK_WIDGET (menu_item))
+
   menu_item =
     z_gtk_create_menu_item (
       _("Add _MIDI Track"), NULL, false,
       "win.create-midi-track");
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL(menu),
-    GTK_WIDGET (menu_item));
+  APPEND (menu, menu_item);
 
   menu_item =
     z_gtk_create_menu_item (
       _("Add Audio Track"), NULL, false,
       "win.create-audio-track");
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL(menu),
-    GTK_WIDGET (menu_item));
+  APPEND (menu, menu_item);
 
   submenu = gtk_menu_new ();
   menu_item =
@@ -413,27 +418,20 @@ show_context_menu (DragDestBoxWidget * self)
       _(track_type_to_string (
           TRACK_TYPE_AUDIO_BUS)),
       NULL, false, "win.create-audio-bus-track");
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (submenu),
-    GTK_WIDGET (menu_item));
+  APPEND (submenu, menu_item);
   menu_item =
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_MIDI_BUS)),
       NULL, false, "win.create-midi-bus-track");
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (submenu),
-    GTK_WIDGET (menu_item));
+  APPEND (submenu, menu_item);
   menu_item =
     GTK_MENU_ITEM (
       gtk_menu_item_new_with_label (
         _("Add FX Track")));
   gtk_menu_item_set_submenu (
-    GTK_MENU_ITEM (menu_item),
-    submenu);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu),
-    GTK_WIDGET (menu_item));
+    GTK_MENU_ITEM (menu_item), submenu);
+  APPEND (menu, menu_item);
 
   submenu = gtk_menu_new ();
   menu_item =
@@ -441,17 +439,13 @@ show_context_menu (DragDestBoxWidget * self)
       _(track_type_to_string (
           TRACK_TYPE_AUDIO_GROUP)),
       NULL, false, "win.create-audio-group-track");
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (submenu),
-    GTK_WIDGET (menu_item));
+  APPEND (submenu, menu_item);
   menu_item =
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_MIDI_GROUP)),
       NULL, false, "win.create-midi-group-track");
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (submenu),
-    GTK_WIDGET (menu_item));
+  APPEND (submenu, menu_item);
   menu_item =
     GTK_MENU_ITEM (
       gtk_menu_item_new_with_label (
@@ -459,14 +453,17 @@ show_context_menu (DragDestBoxWidget * self)
   gtk_menu_item_set_submenu (
     GTK_MENU_ITEM (menu_item),
     submenu);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu),
-    GTK_WIDGET (menu_item));
+  APPEND (menu, menu_item);
 
-  gtk_widget_show_all(menu);
-  gtk_menu_attach_to_widget (GTK_MENU (menu),
-                             GTK_WIDGET (self),
-                             NULL);
+  menu_item =
+    z_gtk_create_menu_item (
+      _("Add Folder Track"), NULL, false,
+      "win.create-folder-track");
+  APPEND (menu, menu_item);
+
+  gtk_widget_show_all (menu);
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 

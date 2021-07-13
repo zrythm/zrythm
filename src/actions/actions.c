@@ -1625,16 +1625,19 @@ activate_create_audio_group_track (
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 
-void
-activate_create_midi_group_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_create_midi_group_track)
 {
   UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI_GROUP, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
+    tracklist_selections_action_new_create_midi_group (
+      TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+DEFINE_SIMPLE (activate_create_folder_track)
+{
+  UndoableAction * ua =
+    tracklist_selections_action_new_create_folder (
+      TRACKLIST->num_tracks, 1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }

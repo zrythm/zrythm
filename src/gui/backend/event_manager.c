@@ -1982,6 +1982,9 @@ process_events (void * data)
               }
           }
           break;
+        case ET_TRACK_FOLD_CHANGED:
+          on_track_added ((Track *) ev->arg);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

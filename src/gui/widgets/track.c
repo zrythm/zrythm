@@ -98,6 +98,8 @@ G_DEFINE_TYPE (
 #define ICON_NAME_MIDI "instrument"
 #define ICON_NAME_TEMPO "filename-bpm-amarok"
 #define ICON_NAME_MODULATOR "modulator"
+#define ICON_NAME_FOLD "fluentui-folder-regular"
+#define ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
 
 #ifdef _WOE32
 #define NAME_FONT "9"
@@ -350,19 +352,24 @@ draw_name (
   TrackWidget * self,
   cairo_t *     cr)
 {
+  Track * track = self->track;
+
   /* draw text */
-  if (track_is_enabled (self->track))
-    {
-      cairo_set_source_rgba (cr, 1, 1, 1, 1);
-    }
+  if (track_is_enabled (track))
+    cairo_set_source_rgba (cr, 1, 1, 1, 1);
   else
-    {
-      cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1);
-    }
+    cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1);
+
+  char name[strlen (track->name) + 10];
+  if (DEBUGGING)
+    sprintf (
+      name, "[%d] %s", track->pos, track->name);
+  else
+    strcpy (name, track->name);
+
   cairo_move_to (cr, 22, 2);
   PangoLayout * layout = self->layout;
-  pango_layout_set_text (
-    layout, self->track->name, -1);
+  pango_layout_set_text (layout, name, -1);
   pango_cairo_show_layout (cr, layout);
 }
 
@@ -482,6 +489,11 @@ draw_buttons (
       else if (CB_ICON_IS (
                  SHOW_AUTOMATION_LANES) &&
                track->automation_visible)
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (CB_ICON_IS (FOLD_OPEN))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -951,13 +963,14 @@ track_draw_cb (
 
   Track * track = self->track;
 
-  /*g_message (*/
-    /*"track %s rect x %d %d redraw %d",*/
-    /*self->track->name, rect.x, rect.y,*/
-    /*self->redraw);*/
-  /*g_message (*/
-    /*"redrawing track (frames left: %d)",*/
-    /*self->redraw);*/
+#if 0
+  g_message (
+    "track %s rect x %d %d redraw %d "
+    "highlight inside %d",
+    self->track->name, rect.x, rect.y,
+    self->redraw, self->highlight_inside);
+#endif
+
   if (self->redraw)
     {
       GtkStyleContext *context =
@@ -976,6 +989,21 @@ track_draw_cb (
       gtk_render_background (
         context, self->cached_cr, 0, 0,
         width, height);
+
+      if (self->highlight_inside)
+        {
+          gdk_cairo_set_source_rgba (
+            self->cached_cr,
+            &UI_COLORS->bright_orange);
+          const int line_w = MIN (128, width);
+          const int line_h = 4;
+          cairo_rectangle (
+            self->cached_cr,
+            width / 2 - line_w / 2,
+            height / 2 - line_h / 2,
+            line_w, line_h);
+          cairo_fill (self->cached_cr);
+        }
 
       if (self->bg_hovered)
         {
@@ -1205,6 +1233,14 @@ set_tooltip_from_button (
   else if (CB_ICON_IS (LOCK))
     {
       SET_TOOLTIP (_("Lock/unlock"));
+    }
+  else if (CB_ICON_IS (FOLD_OPEN))
+    {
+      SET_TOOLTIP (_("Fold"));
+    }
+  else if (CB_ICON_IS (FOLD))
+    {
+      SET_TOOLTIP (_("Unfold"));
     }
   else
     {
@@ -2373,6 +2409,14 @@ multipress_released (
               track_widget_on_show_automation_toggled (
                 self);
             }
+          else if (CB_ICON_IS (FOLD_OPEN) ||
+                   CB_ICON_IS (FOLD))
+            {
+              track_set_folded (
+                track, !track->folded,
+                F_TRIGGER_UNDO, F_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
+            }
           else if (CB_ICON_IS (FREEZE))
             {
 #if 0
@@ -2683,6 +2727,34 @@ on_dnd_drag_data_get (
 }
 
 /**
+ * Returns the highlight location based on y
+ * relative to @ref self.
+ */
+TrackWidgetHighlight
+track_widget_get_highlight_location (
+  TrackWidget * self,
+  int           y)
+{
+  Track * track = self->track;
+  int h =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+  if (track_type_is_foldable (track->type) &&
+      y < h - 12 && y > 12)
+    {
+      return TRACK_WIDGET_HIGHLIGHT_INSIDE;
+    }
+  else if (y < h / 2)
+    {
+      return TRACK_WIDGET_HIGHLIGHT_TOP;
+    }
+  else
+    {
+      return TRACK_WIDGET_HIGHLIGHT_BOTTOM;
+    }
+}
+
+/**
  * Highlights/unhighlights the Tracks
  * appropriately.
  *
@@ -2696,16 +2768,36 @@ track_widget_do_highlight (
   gint          y,
   const int     highlight)
 {
-  g_message ("DOING H IGHLIGHT ON %s",
-    self->track->name);
   if (highlight)
     {
-      /* if we are closer to the start of selection
-       * than the end */
-      int h =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self));
-      if (y < h / 2)
+      TrackWidgetHighlight location =
+        track_widget_get_highlight_location (
+          self, y);
+      if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
+        {
+          /* highlight inside */
+          self->highlight_inside = true;
+
+          /* unhilight top */
+          gtk_drag_unhighlight (
+            GTK_WIDGET (
+              self->highlight_top_box));
+          gtk_widget_set_size_request (
+            GTK_WIDGET (
+              self->highlight_top_box),
+            -1, -1);
+
+          /* unhilight bot */
+          gtk_drag_unhighlight (
+            GTK_WIDGET (
+              self->highlight_bot_box));
+          gtk_widget_set_size_request (
+            GTK_WIDGET (
+              self->highlight_bot_box),
+            -1, -1);
+        }
+      else if (location ==
+                 TRACK_WIDGET_HIGHLIGHT_TOP)
         {
           /* highlight top */
           gtk_drag_highlight (
@@ -2724,6 +2816,9 @@ track_widget_do_highlight (
             GTK_WIDGET (
               self->highlight_bot_box),
             -1, -1);
+
+          /* unhighlight inside */
+          self->highlight_inside = false;
         }
       else
         {
@@ -2744,10 +2839,14 @@ track_widget_do_highlight (
             GTK_WIDGET (
               self->highlight_top_box),
             -1, -1);
+
+          /* unhighlight inside */
+          self->highlight_inside = false;
         }
     }
   else
     {
+      /* unhighlight all */
       gtk_drag_unhighlight (
         GTK_WIDGET (
           self->highlight_top_box));
@@ -2760,7 +2859,10 @@ track_widget_do_highlight (
       gtk_widget_set_size_request (
         GTK_WIDGET (self->highlight_bot_box),
         -1, -1);
+      self->highlight_inside = false;
     }
+
+  track_widget_force_redraw (self);
 }
 
 /**
@@ -2829,6 +2931,42 @@ track_widget_on_record_toggled (
 
   EVENTS_PUSH (
     ET_TRACK_STATE_CHANGED, track);
+}
+
+/**
+ * Re-fills TrackWidget.group_colors_box.
+ */
+void
+track_widget_recreate_group_colors (
+  TrackWidget * self)
+{
+  Track * track = self->track;
+
+  GPtrArray * array = g_ptr_array_sized_new (8);
+  track_add_folder_parents (track, array, false);
+
+  /* remove existing group colors */
+  z_gtk_container_destroy_all_children (
+    GTK_CONTAINER (self->group_colors_box));
+
+  for (size_t i = 0; i < array->len; i++)
+    {
+      Track * parent_track =
+        g_ptr_array_index (array, i);
+      ColorAreaWidget * ca =
+        g_object_new (
+          COLOR_AREA_WIDGET_TYPE,
+          "visible", true, NULL);
+      color_area_widget_setup_generic (
+        ca, &parent_track->color);
+      gtk_widget_set_size_request (
+        GTK_WIDGET (ca), 8, -1);
+      gtk_container_add (
+        GTK_CONTAINER (self->group_colors_box),
+        GTK_WIDGET (ca));
+    }
+
+  g_ptr_array_unref (array);
 }
 
 static void
@@ -2965,6 +3103,36 @@ track_widget_update_size (
   track_widget_force_redraw (self);
 }
 
+/**
+ * Updates the track icons.
+ */
+void
+track_widget_update_icons (
+  TrackWidget * self)
+{
+  for (int i = 0; i < self->num_bot_buttons; i++)
+    {
+      CustomButtonWidget * cb =
+        self->bot_buttons[i];
+
+      if (CB_ICON_IS (FOLD_OPEN) ||
+          CB_ICON_IS (FOLD))
+        {
+          custom_button_widget_free (cb);
+          cb =
+            custom_button_widget_new (
+              self->track->folded ?
+                ICON_NAME_FOLD :
+                ICON_NAME_FOLD_OPEN,
+              BUTTON_SIZE);
+          cb->owner_type =
+            CUSTOM_BUTTON_WIDGET_OWNER_TRACK;
+          cb->owner = self->track;
+          self->bot_buttons[i] = cb;
+        }
+    }
+}
+
 static gboolean
 track_tick_cb (
   GtkWidget *     widget,
@@ -3083,6 +3251,10 @@ track_widget_new (Track * track)
         self, true, ICON_NAME_LISTEN);
       add_button (
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
+      add_button (
+        self, false,
+        track->folded ?
+          ICON_NAME_FOLD : ICON_NAME_FOLD_OPEN);
       break;
     case TRACK_TYPE_MIDI_GROUP:
       add_solo_button (self, 1);
@@ -3090,6 +3262,10 @@ track_widget_new (Track * track)
         self, 1, ICON_NAME_MUTE);
       add_button (
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
+      add_button (
+        self, false,
+        track->folded ?
+          ICON_NAME_FOLD : ICON_NAME_FOLD_OPEN);
       break;
     case TRACK_TYPE_AUDIO:
       add_record_button (self, 1);
@@ -3105,11 +3281,22 @@ track_widget_new (Track * track)
       add_button (
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
+    case TRACK_TYPE_FOLDER:
+      add_solo_button (self, 1);
+      add_button (
+        self, true, ICON_NAME_MUTE);
+      add_button (
+        self, true, ICON_NAME_LISTEN);
+      add_button (
+        self, false,
+        track->folded ?
+          ICON_NAME_FOLD : ICON_NAME_FOLD_OPEN);
+      break;
     }
 
-  if (track_type_has_channel (self->track->type))
+  if (track_type_has_channel (track->type))
     {
-      switch (self->track->out_signal_type)
+      switch (track->out_signal_type)
         {
         case TYPE_EVENT:
           meter_widget_setup (
@@ -3144,6 +3331,8 @@ track_widget_new (Track * track)
       gtk_widget_set_visible (
         GTK_WIDGET (self->meter_r), 0);
     }
+
+  track_widget_recreate_group_colors (self);
 
   track_widget_update_size (self);
 
@@ -3293,6 +3482,7 @@ track_widget_class_init (TrackWidgetClass * _klass)
 
   BIND_CHILD (drawing_area);
   BIND_CHILD (main_box);
+  BIND_CHILD (group_colors_box);
   BIND_CHILD (meter_l);
   BIND_CHILD (meter_r);
   BIND_CHILD (highlight_top_box);

@@ -161,6 +161,9 @@ typedef enum TrackType
 
   /** Same with audio group but for MIDI signals. */
   TRACK_TYPE_MIDI_GROUP,
+
+  /** Foldable track used for visual grouping. */
+  TRACK_TYPE_FOLDER,
 } TrackType;
 
 static const cyaml_strval_t
@@ -178,6 +181,7 @@ track_type_strings[] =
   { __("MIDI"),         TRACK_TYPE_MIDI   },
   { __("MIDI FX"),      TRACK_TYPE_MIDI_BUS   },
   { __("MIDI Group"),   TRACK_TYPE_MIDI_GROUP   },
+  { __("Folder"),       TRACK_TYPE_FOLDER   },
 };
 
 /**
@@ -320,7 +324,7 @@ typedef struct Track
   /* ==== AUDIO TRACK ==== */
 
   /** Real-time time stretcher. */
-  Stretcher *          rt_stretcher;
+  Stretcher *         rt_stretcher;
 
   /* ==== AUDIO TRACK END ==== */
 
@@ -331,7 +335,7 @@ typedef struct Track
    *
    * Note: these must always be sorted by Position.
    */
-  ZRegion **           chord_regions;
+  ZRegion **          chord_regions;
   int                 num_chord_regions;
   size_t              chord_regions_size;
 
@@ -367,17 +371,31 @@ typedef struct Track
 
   /* ==== TEMPO TRACK END ==== */
 
+  /* ==== FOLDABLE TRACK ==== */
+
+  /**
+   * Number of tracks inside this track.
+   *
+   * Should be 1 unless foldable.
+   */
+  int                 size;
+
+  /** Whether currently folded. */
+  bool                folded;
+
+  /* ==== FOLDABLE TRACK END ==== */
+
   /* ==== MODULATOR TRACK ==== */
 
   /** Modulators. */
-  Plugin **         modulators;
-  int               num_modulators;
-  size_t            modulators_size;
+  Plugin **           modulators;
+  int                 num_modulators;
+  size_t              modulators_size;
 
   /** Modulator macros. */
   ModulatorMacroProcessor * modulator_macros[128];
-  int               num_modulator_macros;
-  int               num_visible_modulator_macros;
+  int                 num_modulator_macros;
+  int                 num_visible_modulator_macros;
 
   /* ==== MODULATOR TRACK END ==== */
 
@@ -406,22 +424,22 @@ typedef struct Track
    * the UI should create a separate event using
    * EVENTS_PUSH.
    */
-  bool                 trigger_midi_activity;
+  bool                trigger_midi_activity;
 
   /**
    * The input signal type (eg audio bus tracks have
    * audio input signals).
    */
-  PortType             in_signal_type;
+  PortType            in_signal_type;
 
   /**
    * The output signal type (eg midi tracks have
    * MIDI output singals).
    */
-  PortType             out_signal_type;
+  PortType            out_signal_type;
 
   /** User comments. */
-  char *               comment;
+  char *              comment;
 
   /**
    * Set to ON during bouncing if this
@@ -429,14 +447,14 @@ typedef struct Track
    *
    * Only relevant for tracks that output audio.
    */
-  bool                 bounce;
+  bool                bounce;
 
   /**
    * Whether to temporarily route the output to
    * master (e.g., when bouncing the track on its
    * own without its parents).
    */
-  bool                 bounce_to_master;
+  bool                bounce_to_master;
 
   /**
    * Tracks that are routed to this track, if
@@ -444,28 +462,28 @@ typedef struct Track
    *
    * This is used when undoing track deletion.
    */
-  int *                children;
-  int                  num_children;
-  size_t               children_size;
+  int *               children;
+  int                 num_children;
+  size_t              children_size;
 
   /** Whether the track is currently frozen. */
-  bool                 frozen;
+  bool                frozen;
 
   /** Pool ID of the clip if track is frozen. */
-  int                  pool_id;
+  int                 pool_id;
 
-  int                  magic;
+  int                 magic;
 
   /** Whether this is a project track (as opposed
    * to a clone used in actions). */
-  bool                 is_project;
+  bool                is_project;
 
   /** Whether currently disconnecting. */
-  bool                 disconnecting;
+  bool                disconnecting;
 
   /** Whether this track is part of the
    * SampleProcessor auditioner tracklist. */
-  bool                 is_auditioner;
+  bool                is_auditioner;
 } Track;
 
 static const cyaml_schema_field_t
@@ -528,6 +546,8 @@ track_fields_schema[] =
     Track, children, int_schema),
   YAML_FIELD_INT (Track, frozen),
   YAML_FIELD_INT (Track, pool_id),
+  YAML_FIELD_INT (Track, size),
+  YAML_FIELD_INT (Track, folded),
 
   CYAML_FIELD_END
 };
@@ -618,6 +638,16 @@ track_type_can_have_region_type (
   g_return_val_if_reached (false);
 }
 
+static inline bool
+track_type_is_foldable (
+  TrackType type)
+{
+  return
+    type == TRACK_TYPE_FOLDER ||
+    type == TRACK_TYPE_MIDI_GROUP ||
+    type == TRACK_TYPE_AUDIO_GROUP;
+}
+
 /**
  * Sets magic on objects recursively.
  */
@@ -639,6 +669,19 @@ track_set_muted (
   bool    auto_select,
   bool    fire_events);
 
+/**
+ * Sets track folded and optionally adds the action
+ * to the undo stack.
+ */
+NONNULL
+void
+track_set_folded (
+  Track * self,
+  bool    folded,
+  bool    trigger_undo,
+  bool    auto_select,
+  bool    fire_events);
+
 NONNULL
 TrackType
 track_get_type_from_plugin_descriptor (
@@ -656,6 +699,17 @@ track_type_is_deletable (
 NONNULL
 Tracklist *
 track_get_tracklist (
+  Track * self);
+
+/**
+ * Returns whether the track should be visible.
+ *
+ * Takes into account Track.visible and whether
+ * any of the track's foldable parents are folded.
+ */
+NONNULL
+bool
+track_get_should_be_visible (
   Track * self);
 
 /**
@@ -921,6 +975,19 @@ track_fill_events (
 bool
 track_validate (
   Track * self);
+
+/**
+ * Adds the track's folder parents to the given
+ * array.
+ *
+ * @param prepend Whether to prepend instead of
+ *   append.
+ */
+void
+track_add_folder_parents (
+  Track *     self,
+  GPtrArray * parents,
+  bool        prepend);
 
 /**
  * Returns the region at the given position, or

@@ -4364,7 +4364,8 @@ port_get_track (
 
   if (!track && warn_if_fail)
     {
-      g_warning ("not found");
+      g_warning ("track %d not found for port %s",
+        self->id.track_pos, self->id.label);
     }
 
   return track;

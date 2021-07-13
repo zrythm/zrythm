@@ -509,6 +509,8 @@ main_window_widget_init (MainWindowWidget * self)
       activate_create_audio_group_track },
     { "create-midi-group-track",
       activate_create_midi_group_track },
+    { "create-folder-track",
+      activate_create_folder_track },
     { "add-region", activate_add_region },
 
     /* modes */
