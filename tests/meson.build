@@ -232,7 +232,7 @@ if get_option ('tests')
     'actions/arranger_selections': {
       parallel: false },
     'actions/range': { parallel: true },
-    'actions/undo_manager': { parallel: true },
+    'actions/undo_manager': { parallel: false },
     'audio/audio_region': { parallel: true },
     'audio/audio_track': { parallel: true },
     'audio/automation_track': { parallel: true },
