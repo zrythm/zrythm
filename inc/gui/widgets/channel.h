@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -145,10 +145,12 @@ channel_widget_redraw_fader (
   ChannelWidget * self);
 
 /**
- * Creates a channel widget using the given channel data.
+ * Creates a channel widget using the given channel
+ * data.
  */
 ChannelWidget *
-channel_widget_new (Channel * channel);
+channel_widget_new (
+  Channel * channel);
 
 void
 channel_widget_tear_down (
@@ -170,7 +172,8 @@ channel_widget_update_meter_reading (
  * fix if it causes lags.
  */
 void
-channel_widget_refresh (ChannelWidget * self);
+channel_widget_refresh (
+  ChannelWidget * self);
 
 void
 channel_widget_refresh_buttons (
@@ -180,7 +183,7 @@ channel_widget_refresh_buttons (
  * Displays the widget.
  */
 void
-channel_widget_show (ChannelWidget * self);
-
+channel_widget_show (
+  ChannelWidget * self);
 
 #endif

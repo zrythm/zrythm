@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,8 +29,7 @@
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/channel.h"
-#include "gui/widgets/channel_slot.h"
+#include "gui/widgets/folder_channel.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/fader_buttons.h"
 #include "gui/widgets/editable_label.h"
@@ -56,84 +55,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ChannelWidget,
-               channel_widget,
-               GTK_TYPE_EVENT_BOX)
-
-/**
- * Tick function.
- *
- * usually, the way to do that is via g_idle_add() or g_main_context_invoke()
- * the other option is to use polling and have the GTK thread check if the
- * value changed every monitor refresh
- * that would be done via gtk_widget_set_tick_functions()
- * gtk_widget_set_tick_function()
- */
-gboolean
-channel_widget_update_meter_reading (
-  ChannelWidget * self,
-  GdkFrameClock * frame_clock,
-  gpointer        user_data)
-{
-  double prev = self->meter_reading_val;
-  Channel * channel = self->channel;
-
-  if (!gtk_widget_get_mapped (
-        GTK_WIDGET (self)))
-    {
-      return G_SOURCE_CONTINUE;
-    }
-
-  /* TODO */
-  Track * track =
-    channel_get_track (channel);
-  if (track->out_signal_type == TYPE_EVENT)
-    {
-      gtk_label_set_text (
-        self->meter_reading, "-∞");
-      return G_SOURCE_CONTINUE;
-    }
-
-  float amp =
-    MAX (
-      self->meter_l->meter->prev_max,
-      self->meter_r->meter->prev_max);
-  double val = (double) math_amp_to_dbfs (amp);
-  if (math_doubles_equal (val, prev))
-    return G_SOURCE_CONTINUE;
-  if (val < -100.)
-    gtk_label_set_text (self->meter_reading, "-∞");
-  else
-    {
-      char string[40];
-      if (val < -10.)
-        {
-          sprintf (string, "%.0f", val);
-        }
-      else
-        {
-          sprintf (string, "%.1f", val);
-        }
-      char formatted_str[80];
-      if (val > 0)
-        {
-          sprintf (
-            formatted_str,
-            "<span foreground=\"#FF0A05\">%s</span>",
-            string);
-        }
-      else
-        {
-          strcpy (formatted_str, string);
-        }
-      gtk_label_set_markup (
-        self->meter_reading, formatted_str);
-    }
-
-  self->meter_reading_val = val;
-
-  return G_SOURCE_CONTINUE;
-}
+G_DEFINE_TYPE (
+  FolderChannelWidget, folder_channel_widget,
+  GTK_TYPE_EVENT_BOX)
 
 static void
 on_drag_data_received (
@@ -144,19 +68,15 @@ on_drag_data_received (
   GtkSelectionData *data,
   guint             info,
   guint             time,
-  ChannelWidget * self)
+  FolderChannelWidget * self)
 {
   g_message ("drag data received");
-  Track * this =
-    channel_get_track (self->channel);
+  Track * this = self->track;
 
   /* determine if moving or copying */
   GdkDragAction action =
     gdk_drag_context_get_selected_action (
       context);
-
-  /*tracklist_selections_print (*/
-    /*TRACKLIST_SELECTIONS);*/
 
   int w =
     gtk_widget_get_allocated_width (widget);
@@ -222,7 +142,7 @@ on_drag_data_get (
   GtkSelectionData *data,
   guint             info,
   guint             time,
-  ChannelWidget * self)
+  FolderChannelWidget * self)
 {
   g_message ("drag data get");
 
@@ -244,10 +164,9 @@ static void
 on_dnd_drag_begin (
   GtkWidget      *widget,
   GdkDragContext *context,
-  ChannelWidget * self)
+  FolderChannelWidget * self)
 {
-  Track * track =
-    channel_get_track (self->channel);
+  Track * track = self->track;
   self->selected_in_dnd = 1;
   MW_MIXER->start_drag_track = track;
 
@@ -278,12 +197,12 @@ on_dnd_drag_begin (
 }
 
 /**
- * Highlights/unhighlights the channels
+ * Highlights/unhighlights the folder_channels
  * appropriately.
  */
 static void
 do_highlight (
-  ChannelWidget * self,
+  FolderChannelWidget * self,
   gint x,
   gint y)
 {
@@ -341,7 +260,7 @@ on_drag_motion (
   gint x,
   gint y,
   guint time,
-  ChannelWidget * self)
+  FolderChannelWidget * self)
 {
   GdkModifierType mask;
   z_gtk_widget_get_mask (
@@ -359,7 +278,7 @@ on_drag_leave (
   GtkWidget *      widget,
   GdkDragContext * context,
   guint            time,
-  ChannelWidget *  self)
+  FolderChannelWidget *  self)
 {
   g_message ("on_drag_leave");
 
@@ -377,19 +296,19 @@ on_drag_leave (
 }
 
 /**
- * Callback when somewhere in the channel is
+ * Callback when somewhere in the folder_channel is
  * pressed.
  *
  * Only responsible for setting the tracklist
  * selection and should not do anything else.
  */
 static void
-on_whole_channel_press (
+on_whole_folder_channel_press (
   GtkGestureMultiPress *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
-  ChannelWidget * self)
+  FolderChannelWidget * self)
 {
   self->n_press = n_press;
 
@@ -400,21 +319,12 @@ on_whole_channel_press (
     state_mask & GDK_CONTROL_MASK;
 }
 
-void
-channel_widget_redraw_fader (
-  ChannelWidget * self)
-{
-  g_return_if_fail (self->fader);
-  gtk_widget_queue_draw (
-    GTK_WIDGET (self->fader));
-}
-
 static void
 on_drag_begin (
   GtkGestureDrag * gesture,
   gdouble          start_x,
   gdouble          start_y,
-  ChannelWidget *  self)
+  FolderChannelWidget *  self)
 {
   self->selected_in_dnd = 0;
   self->dragged = 0;
@@ -425,31 +335,25 @@ on_drag_update (
   GtkGestureDrag * gesture,
   gdouble          offset_x,
   gdouble          offset_y,
-  ChannelWidget *  self)
+  FolderChannelWidget *  self)
 {
-  self->dragged = 1;
+  self->dragged = true;
 }
 
-static gboolean
+static bool
 on_btn_release (
   GtkWidget *      widget,
   GdkEventButton * event,
-  ChannelWidget *  self)
+  FolderChannelWidget *  self)
 {
   if (self->dragged || self->selected_in_dnd)
-    return FALSE;
+    return false;
 
-  Track * track =
-    channel_get_track (self->channel);
+  Track * track = self->track;
   if (self->n_press == 1)
     {
-      gint64 cur_time = g_get_monotonic_time ();
-      if (cur_time - self->last_plugin_press >
-            1000)
-        {
-          PROJECT->last_selection =
-            SELECTION_TYPE_TRACKLIST;
-        }
+      PROJECT->last_selection =
+        SELECTION_TYPE_TRACKLIST;
 
       bool ctrl = event->state & GDK_CONTROL_MASK;
       bool shift = event->state & GDK_SHIFT_MASK;
@@ -461,83 +365,23 @@ on_btn_release (
 }
 
 static void
-refresh_color (ChannelWidget * self)
+refresh_color (
+  FolderChannelWidget * self)
 {
-  Track * track =
-    channel_get_track (self->channel);
+  Track * track = self->track;
+  color_area_widget_setup_track (
+    self->color_top, track);
   color_area_widget_set_color (
-    self->color, &track->color);
-}
-
-#if 0
-static void
-setup_phase_panel (ChannelWidget * self)
-{
-  self->phase_knob =
-    knob_widget_new_simple (
-      channel_get_phase,
-      channel_set_phase,
-      self->channel,
-      0, 180, 20, 0.0f);
-  gtk_box_pack_end (self->phase_controls,
-                       GTK_WIDGET (self->phase_knob),
-                       0, 1, 0);
-  char * str =
-    g_strdup_printf (
-      "%.1f",
-      (double) self->channel->fader.phase);
-  gtk_label_set_text (
-    self->phase_reading, str);
-  g_free (str);
-}
-#endif
-
-static void
-setup_meter (ChannelWidget * self)
-{
-  Track * track =
-    channel_get_track (self->channel);
-  switch (track->out_signal_type)
-    {
-    case TYPE_EVENT:
-      meter_widget_setup (
-        self->meter_l,
-        self->channel->midi_out, 14);
-      gtk_widget_set_margin_start (
-        GTK_WIDGET (self->meter_l), 5);
-      gtk_widget_set_margin_end (
-        GTK_WIDGET (self->meter_l), 5);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->meter_r), 0);
-      break;
-    case TYPE_AUDIO:
-      meter_widget_setup (
-        self->meter_l,
-        self->channel->stereo_out->l, 12);
-      meter_widget_setup (
-        self->meter_r,
-        self->channel->stereo_out->r, 12);
-      break;
-    default:
-      break;
-    }
-}
-
-/**
- * Updates the inserts.
- */
-void
-channel_widget_update_inserts (ChannelWidget * self)
-{
-  plugin_strip_expander_widget_refresh (
-    self->inserts);
+    self->color_top, &track->color);
+  color_area_widget_set_color (
+    self->color_left, &track->color);
 }
 
 static void
-setup_channel_icon (ChannelWidget * self)
+setup_folder_channel_icon (
+  FolderChannelWidget * self)
 {
-  Track * track =
-    channel_get_track (self->channel);
+  Track * track = self->track;
   gtk_image_set_from_icon_name (
     self->icon, track->icon_name,
     GTK_ICON_SIZE_BUTTON);
@@ -547,18 +391,9 @@ setup_channel_icon (ChannelWidget * self)
 }
 
 static void
-refresh_output (ChannelWidget * self)
+refresh_name (FolderChannelWidget * self)
 {
-  route_target_selector_widget_refresh (
-    self->output, self->channel);
-}
-
-static void
-refresh_name (ChannelWidget * self)
-{
-  Track * track =
-    channel_get_track (self->channel);
-  g_warn_if_fail (track->name);
+  Track * track = self->track;
   if (track_is_enabled (track))
     {
       gtk_label_set_text (
@@ -573,46 +408,8 @@ refresh_name (ChannelWidget * self)
       gtk_label_set_markup (
         GTK_LABEL (self->name->label), markup);
     }
-}
 
-/**
- * Sets up the icon and name box for drag & move.
- */
-/*static void*/
-/*setup_drag_move (*/
-  /*ChannelWidget * self)*/
-/*{*/
-
-/*}*/
-
-static void
-setup_balance_control (ChannelWidget * self)
-{
-  self->balance_control =
-    balance_control_widget_new (
-      channel_get_balance_control,
-      channel_set_balance_control,
-      self->channel, self->channel->fader->balance,
-      12);
-  gtk_box_pack_start (
-    self->balance_control_box,
-    GTK_WIDGET (self->balance_control),
-    F_NO_EXPAND, F_FILL, 0);
-}
-
-static void
-setup_aux_buttons (
-  ChannelWidget * self)
-{
-}
-
-void
-channel_widget_refresh_buttons (
-  ChannelWidget * self)
-{
-  fader_buttons_widget_refresh (
-    self->fader_buttons,
-    channel_get_track (self->channel));
+  gtk_label_set_angle (self->name->label, 90);
 }
 
 /**
@@ -621,18 +418,34 @@ channel_widget_refresh_buttons (
  * It is reduntant but keeps code organized. Should fix if it causes lags.
  */
 void
-channel_widget_refresh (ChannelWidget * self)
+folder_channel_widget_refresh (
+  FolderChannelWidget * self)
 {
   refresh_name (self);
-  refresh_output (self);
-  channel_widget_update_meter_reading (
-    self, NULL, NULL);
-  channel_widget_refresh_buttons (self);
   refresh_color (self);
-  setup_channel_icon (self);
+  setup_folder_channel_icon (self);
 
-  Track * track =
-    channel_get_track (self->channel);
+#define ICON_NAME_FOLD "fluentui-folder-regular"
+#define ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
+
+  Track * track = self->track;
+  z_gtk_button_set_icon_name (
+    GTK_BUTTON (self->fold_toggle),
+    track->folded ?
+      ICON_NAME_FOLD : ICON_NAME_FOLD_OPEN);
+
+#undef ICON_NAME_FOLD
+#undef ICON_NAME_FOLD_OPEN
+
+  g_signal_handler_block (
+    self->fold_toggle,
+    self->fold_toggled_handler_id);
+  gtk_toggle_button_set_active (
+    self->fold_toggle, !track->folded);
+  g_signal_handler_unblock (
+    self->fold_toggle,
+    self->fold_toggled_handler_id);
+
   if (track_is_selected (track))
     {
       /* set selected or not */
@@ -650,12 +463,12 @@ channel_widget_refresh (ChannelWidget * self)
 
 static void
 show_context_menu (
-  ChannelWidget * self)
+  FolderChannelWidget * self)
 {
   GtkWidget *menu;
   GtkMenuItem *menuitem;
   menu = gtk_menu_new();
-  Track * track = self->channel->track;
+  Track * track = self->track;
 
 #define APPEND(mi) \
   gtk_menu_shell_append ( \
@@ -731,68 +544,65 @@ show_context_menu (
     }
 
   /* add solo/mute/listen */
-  if (track_type_has_channel (track->type))
+  ADD_SEPARATOR;
+
+  if (tracklist_selections_contains_soloed_track (
+        TRACKLIST_SELECTIONS, F_NO_SOLO))
     {
-      ADD_SEPARATOR;
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Solo"), "solo", F_NO_TOGGLE,
+          "win.solo-selected-tracks");
+      APPEND (menuitem);
+    }
+  if (tracklist_selections_contains_soloed_track (
+        TRACKLIST_SELECTIONS, F_SOLO))
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Unsolo"), "unsolo", F_NO_TOGGLE,
+          "win.unsolo-selected-tracks");
+      APPEND (menuitem);
+    }
 
-      if (tracklist_selections_contains_soloed_track (
-            TRACKLIST_SELECTIONS, F_NO_SOLO))
-        {
-          menuitem =
-            z_gtk_create_menu_item (
-              _("Solo"), "solo", F_NO_TOGGLE,
-              "win.solo-selected-tracks");
-          APPEND (menuitem);
-        }
-      if (tracklist_selections_contains_soloed_track (
-            TRACKLIST_SELECTIONS, F_SOLO))
-        {
-          menuitem =
-            z_gtk_create_menu_item (
-              _("Unsolo"), "unsolo", F_NO_TOGGLE,
-              "win.unsolo-selected-tracks");
-          APPEND (menuitem);
-        }
+  if (tracklist_selections_contains_muted_track (
+        TRACKLIST_SELECTIONS, F_NO_MUTE))
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Mute"), "mute", F_NO_TOGGLE,
+          "win.mute-selected-tracks");
+      APPEND (menuitem);
+    }
+  if (tracklist_selections_contains_muted_track (
+        TRACKLIST_SELECTIONS, F_MUTE))
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Unmute"), "unmute", F_NO_TOGGLE,
+          "win.unmute-selected-tracks");
+      APPEND (menuitem);
+    }
 
-      if (tracklist_selections_contains_muted_track (
-            TRACKLIST_SELECTIONS, F_NO_MUTE))
-        {
-          menuitem =
-            z_gtk_create_menu_item (
-              _("Mute"), "mute", F_NO_TOGGLE,
-              "win.mute-selected-tracks");
-          APPEND (menuitem);
-        }
-      if (tracklist_selections_contains_muted_track (
-            TRACKLIST_SELECTIONS, F_MUTE))
-        {
-          menuitem =
-            z_gtk_create_menu_item (
-              _("Unmute"), "unmute", F_NO_TOGGLE,
-              "win.unmute-selected-tracks");
-          APPEND (menuitem);
-        }
-
-      if (tracklist_selections_contains_listened_track (
-            TRACKLIST_SELECTIONS, F_NO_LISTEN))
-        {
-          menuitem =
-            z_gtk_create_menu_item (
-              _("Listen"), "listen",
-              F_NO_TOGGLE,
-              "win.listen-selected-tracks");
-          APPEND (menuitem);
-        }
-      if (tracklist_selections_contains_listened_track (
-            TRACKLIST_SELECTIONS, F_LISTEN))
-        {
-          menuitem =
-            z_gtk_create_menu_item (
-              _("Unlisten"), "unlisten",
-              F_NO_TOGGLE,
-              "win.unlisten-selected-tracks");
-          APPEND (menuitem);
-        }
+  if (tracklist_selections_contains_listened_track (
+        TRACKLIST_SELECTIONS, F_NO_LISTEN))
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Listen"), "listen",
+          F_NO_TOGGLE,
+          "win.listen-selected-tracks");
+      APPEND (menuitem);
+    }
+  if (tracklist_selections_contains_listened_track (
+        TRACKLIST_SELECTIONS, F_LISTEN))
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Unlisten"), "unlisten",
+          F_NO_TOGGLE,
+          "win.unlisten-selected-tracks");
+      APPEND (menuitem);
     }
 
   /* add enable/disable */
@@ -838,12 +648,12 @@ on_right_click (
   gint                    n_press,
   gdouble                x,
   gdouble                y,
-  ChannelWidget *        self)
+  FolderChannelWidget *        self)
 {
   GdkModifierType state_mask =
     ui_get_state_mask (GTK_GESTURE (gesture));
 
-  Track * track = self->channel->track;
+  Track * track = self->track;
   if (!track_is_selected (track))
     {
       if (state_mask & GDK_SHIFT_MASK ||
@@ -865,70 +675,50 @@ on_right_click (
 }
 
 static void
-on_destroy (
-  ChannelWidget * self)
+on_fold_toggled (
+  GtkToggleButton *     toggle,
+  FolderChannelWidget * self)
 {
-  channel_widget_tear_down (self);
+  bool folded =
+    !gtk_toggle_button_get_active (toggle);
+
+  track_set_folded (
+    self->track, folded,
+    F_TRIGGER_UNDO, F_AUTO_SELECT,
+    F_PUBLISH_EVENTS);
 }
 
-ChannelWidget *
-channel_widget_new (Channel * channel)
+static void
+on_destroy (
+  FolderChannelWidget * self)
 {
-  ChannelWidget * self =
-    g_object_new (CHANNEL_WIDGET_TYPE, NULL);
-  self->channel = channel;
+  folder_channel_widget_tear_down (self);
+}
 
-  /*setup_phase_panel (self);*/
-  plugin_strip_expander_widget_setup (
-    self->inserts, PLUGIN_SLOT_INSERT,
-    PSE_POSITION_CHANNEL, channel->track);
-  setup_aux_buttons (self);
-  fader_widget_setup (
-    self->fader, channel->fader, 38, -1);
-  setup_meter (self);
-  setup_balance_control (self);
-  setup_channel_icon (self);
-  Track * track =
-    channel_get_track (self->channel);
+FolderChannelWidget *
+folder_channel_widget_new (
+  Track * track)
+{
+  FolderChannelWidget * self =
+    g_object_new (FOLDER_CHANNEL_WIDGET_TYPE, NULL);
+  self->track = track;
+
+  setup_folder_channel_icon (self);
   editable_label_widget_setup (
     self->name, track,
     (GenericStringGetter) track_get_name,
     (GenericStringSetter)
     track_set_name_with_action);
-  route_target_selector_widget_setup (
-    self->output, self->channel);
-  color_area_widget_setup_track (
-    self->color, track);
 
-#if 0
-  /*if (self->channel->track->type ==*/
-        /*TRACK_TYPE_INSTRUMENT)*/
-    /*{*/
-      self->instrument_slot =
-        channel_slot_widget_new (
-          -1, self->channel, PLUGIN_SLOT_INSTRUMENT,
-          true);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->instrument_slot), true);
-      gtk_widget_set_hexpand (
-        GTK_WIDGET (self->instrument_slot), true);
-      gtk_container_add (
-        GTK_CONTAINER (self->instrument_box),
-        GTK_WIDGET (self->instrument_slot));
-    /*}*/
-#endif
-
-  channel_widget_refresh (self);
-
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback)
-      channel_widget_update_meter_reading,
-    self, NULL);
-
+  self->fold_toggled_handler_id =
+    g_signal_connect (
+      self->fold_toggle, "toggled",
+      G_CALLBACK (on_fold_toggled), self);
   g_signal_connect (
     self, "destroy",
     G_CALLBACK (on_destroy), NULL);
+
+  folder_channel_widget_refresh (self);
 
   g_object_ref (self);
 
@@ -941,82 +731,63 @@ channel_widget_new (Channel * channel)
  * Prepare for finalization.
  */
 void
-channel_widget_tear_down (
-  ChannelWidget * self)
+folder_channel_widget_tear_down (
+  FolderChannelWidget * self)
 {
-  g_debug ("tearing down %p...", self);
-
   if (self->setup)
     {
       g_object_unref (self);
-      self->channel->widget = NULL;
+      self->track->folder_ch_widget = NULL;
       self->setup = false;
     }
-
-  g_debug ("done");
 }
 
 static void
-channel_widget_class_init (
-  ChannelWidgetClass * _klass)
+folder_channel_widget_class_init (
+  FolderChannelWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "channel.ui");
+    klass, "folder_channel.ui");
   gtk_widget_class_set_css_name (
-    klass, "channel");
+    klass, "folder_channel");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, ChannelWidget, x)
+    klass, FolderChannelWidget, x)
 
-  BIND_CHILD (color);
-  BIND_CHILD (output);
+  BIND_CHILD (color_left);
+  BIND_CHILD (color_top);
   BIND_CHILD (grid);
   BIND_CHILD (icon_and_name_event_box);
   BIND_CHILD (name);
-  BIND_CHILD (inserts);
-  BIND_CHILD (instrument_box);
   BIND_CHILD (fader_buttons);
-  BIND_CHILD (fader);
-  BIND_CHILD (meter_area);
-  BIND_CHILD (meter_l);
-  BIND_CHILD (meter_r);
-  BIND_CHILD (meter_reading);
   BIND_CHILD (icon);
-  BIND_CHILD (balance_control_box);
+  BIND_CHILD (fold_toggle);
   BIND_CHILD (highlight_left_box);
   BIND_CHILD (highlight_right_box);
-  BIND_CHILD (aux_buttons_box);
 
 #undef BIND_CHILD
 }
 
 static void
-channel_widget_init (ChannelWidget * self)
+folder_channel_widget_init (
+  FolderChannelWidget * self)
 {
-  g_type_ensure (ROUTE_TARGET_SELECTOR_WIDGET_TYPE);
-  g_type_ensure (FADER_WIDGET_TYPE);
   g_type_ensure (FADER_BUTTONS_WIDGET_TYPE);
-  g_type_ensure (METER_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
-  g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
-
-  self->last_midi_trigger_time = 0;
 
   /* set font sizes */
   GtkStyleContext * context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->name->label));
   gtk_style_context_add_class (
-    context, "channel_label");
+    context, "folder_channel_label");
   gtk_label_set_max_width_chars (
     self->name->label, 10);
-  gtk_label_set_max_width_chars (
-    self->output->label, 9);
 
   char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
   GtkTargetEntry entries[] = {
@@ -1033,7 +804,7 @@ channel_widget_init (ChannelWidget * self)
     entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
 
-  /* set as drag dest for channel (the channel will
+  /* set as drag dest for folder_channel (the folder_channel will
    * be moved based on which half it was dropped in,
    * left or right) */
   gtk_drag_dest_set (
@@ -1067,24 +838,17 @@ channel_widget_init (ChannelWidget * self)
 
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
-    G_CALLBACK (on_whole_channel_press), self);
+    G_CALLBACK (on_whole_folder_channel_press), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (on_drag_begin), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-update",
     G_CALLBACK (on_drag_update), self);
-  /*g_signal_connect (*/
-    /*G_OBJECT (self->drag), "drag-end",*/
-    /*G_CALLBACK (on_drag_end), self);*/
   g_signal_connect_after (
     GTK_WIDGET (self->icon_and_name_event_box),
     "drag-begin",
     G_CALLBACK(on_dnd_drag_begin), self);
-  /*g_signal_connect (*/
-    /*GTK_WIDGET (self->icon_and_name_event_box),*/
-    /*"drag-end",*/
-    /*G_CALLBACK(on_dnd_drag_end), self);*/
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-received",
     G_CALLBACK(on_drag_data_received), self);
@@ -1098,9 +862,6 @@ channel_widget_init (ChannelWidget * self)
   g_signal_connect (
     GTK_WIDGET (self), "drag-leave",
     G_CALLBACK (on_drag_leave), self);
-  /*g_signal_connect (*/
-    /*GTK_WIDGET (self), "drag-failed",*/
-    /*G_CALLBACK (on_drag_failed), self);*/
   g_signal_connect (
     GTK_WIDGET (self), "button-release-event",
     G_CALLBACK (on_btn_release), self);

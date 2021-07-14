@@ -48,6 +48,8 @@ typedef struct AutomationTracklist
 typedef struct ZRegion ZRegion;
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
+typedef struct _FolderChannelWidget
+  FolderChannelWidget;
 typedef struct Channel Channel;
 typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
@@ -226,6 +228,11 @@ typedef struct Track
    * 1 track has 1 widget.
    */
   TrackWidget *       widget;
+
+  /**
+   * Widget used for foldable tracks in the mixer.
+   */
+  FolderChannelWidget * folder_ch_widget;
 
   /** Flag to set automations visible or not. */
   bool                automation_visible;

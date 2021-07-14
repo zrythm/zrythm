@@ -25,6 +25,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
+#include "gui/widgets/folder_channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/tracklist.h"
@@ -76,8 +77,26 @@ mixer_widget_hard_refresh (MixerWidget * self)
     {
       track = TRACKLIST->tracks[i];
 
-      if (!track_get_should_be_visible (track) ||
-          !track_type_has_channel (track->type))
+      if (!track_get_should_be_visible (track))
+        continue;
+
+      if (track_type_is_foldable (track->type) &&
+          track->type != TRACK_TYPE_MASTER)
+        {
+          if (!track->folder_ch_widget)
+            track->folder_ch_widget =
+              folder_channel_widget_new (track);
+
+          folder_channel_widget_refresh (
+            track->folder_ch_widget);
+
+          gtk_box_pack_start (
+            self->channels_box,
+            GTK_WIDGET (track->folder_ch_widget),
+            F_NO_EXPAND, F_NO_FILL, 0);
+        }
+
+      if (!track_type_has_channel (track->type))
         continue;
 
       ch = track->channel;

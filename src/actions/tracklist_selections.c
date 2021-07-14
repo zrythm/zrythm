@@ -147,7 +147,9 @@ tracklist_selections_action_new (
     }
 
   if (type ==
-        TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE)
+        TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE ||
+      type ==
+        TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE)
     {
       Track * foldable_tr =
         foldable_tr =
@@ -155,6 +157,12 @@ tracklist_selections_action_new (
       g_return_val_if_fail (
         track_type_is_foldable (foldable_tr->type),
         NULL);
+    }
+
+  if (tls_before == TRACKLIST_SELECTIONS)
+    {
+      tracklist_selections_select_foldable_children (
+        tls_before);
     }
 
   self->type = type;
