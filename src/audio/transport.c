@@ -147,11 +147,11 @@ transport_new (
   double ticks_per_bar =
     TICKS_PER_QUARTER_NOTE * 4.0;
   self->loop_end_pos.ticks =
-    5 * ticks_per_bar;
+    4 * ticks_per_bar;
   self->punch_in_pos.ticks =
-    3 * ticks_per_bar;
+    2 * ticks_per_bar;
   self->punch_out_pos.ticks =
-    5 * ticks_per_bar;
+    4 * ticks_per_bar;
 
   self->range_1.ticks = 1 * ticks_per_bar;
   self->range_2.ticks = 1 * ticks_per_bar;
