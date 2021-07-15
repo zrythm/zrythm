@@ -970,10 +970,12 @@ track_processor_process (
         }
       if (self->midi_out->midi_events->num_events > 0)
         {
+#if 0
           g_debug (
             "%s midi processor out has %d events",
             tr->name,
             self->midi_out->midi_events->num_events);
+#endif
         }
 
       /* append the midi events from piano roll to
