@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-06-27 01:49+0100\n"
-"PO-Revision-Date: 2021-06-05 12:32+0000\n"
+"PO-Revision-Date: 2021-06-26 01:33+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.7.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -786,9 +786,9 @@ msgid "_OK"
 msgstr "_OK"
 
 #: src/plugins/lv2/lv2_gtk.c:636
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open LV2 UI for %s"
-msgstr "无法打开文件:%s"
+msgstr "未能打开 %s 的 LV2 用户界面"
 
 #: src/gui/widgets/bounce_step_selector.c:187
 msgid "Bounce step selector"
@@ -1258,7 +1258,7 @@ msgstr "集合"
 
 #: src/gui/widgets/plugin_browser.c:2454
 msgid "Author"
-msgstr ""
+msgstr "作曲"
 
 #: src/gui/widgets/plugin_browser.c:2464
 msgid "Category"
@@ -1499,9 +1499,8 @@ msgid "Add Bookmark"
 msgstr ""
 
 #: src/gui/widgets/panel_file_browser.c:425 src/gui/widgets/file_browser.c:71
-#, fuzzy
 msgid "No file selected"
-msgstr "未选择剪辑"
+msgstr "未选中文件"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1776,15 +1775,13 @@ msgstr ""
 
 #: src/gui/widgets/file_auditioner_controls.c:277
 #: build/data/org.zrythm.Zrythm.gschema.xml:552
-#, fuzzy
 msgid "Show unsupported files"
-msgstr "不支持的文件类型%s"
+msgstr "显示不受支持的文件"
 
 #: src/gui/widgets/file_auditioner_controls.c:280
 #: build/data/org.zrythm.Zrythm.gschema.xml:557
-#, fuzzy
 msgid "Show hidden files"
-msgstr "显示/隐藏 UI"
+msgstr "显示隐藏文件"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -2521,9 +2518,8 @@ msgid ""
 msgstr ""
 
 #: src/audio/supported_file.c:309
-#, fuzzy
 msgid "Failed opening file"
-msgstr "无法打开文件:%s"
+msgstr "未能打开文件"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -2611,9 +2607,8 @@ msgid "ALSA Error: %s"
 msgstr "ALSA错误:%s"
 
 #: src/audio/track.c:353
-#, fuzzy
 msgid "Track record"
-msgstr "音轨颜色"
+msgstr "音轨录制"
 
 #. TODO
 #: src/audio/scale.c:565 src/audio/scale.c:599
@@ -2647,29 +2642,24 @@ msgid "Fader Mute"
 msgstr "音量控制器静音"
 
 #: src/audio/fader.c:213
-#, fuzzy
 msgid "Prefader Solo"
-msgstr "前推子"
+msgstr "前推子 Solo"
 
 #: src/audio/fader.c:213
-#, fuzzy
 msgid "Fader Solo"
-msgstr "音量控制器音量"
+msgstr ""
 
 #: src/audio/fader.c:227
-#, fuzzy
 msgid "Prefader Listen"
-msgstr "前推子发送"
+msgstr "前推子侦听"
 
 #: src/audio/fader.c:227
-#, fuzzy
 msgid "Fader Listen"
-msgstr "音量控制器静音"
+msgstr "音量控制器聆听"
 
 #: src/audio/fader.c:241
-#, fuzzy
 msgid "Prefader Mono Compat"
-msgstr "前推子静音"
+msgstr "前推子 Mono 兼容"
 
 #: src/audio/fader.c:242
 msgid "Fader Mono Compat"
@@ -2684,9 +2674,8 @@ msgid "Ch Fader in"
 msgstr "Ch推子输入"
 
 #: src/audio/fader.c:271
-#, fuzzy
 msgid "Sample Processor Fader in"
-msgstr "示例处理器"
+msgstr ""
 
 #: src/audio/fader.c:275
 msgid "Monitor Fader in"
@@ -2701,9 +2690,8 @@ msgid "Ch Fader out"
 msgstr "Ch推子输出"
 
 #: src/audio/fader.c:302
-#, fuzzy
 msgid "Sample Processor Fader out"
-msgstr "示例处理器"
+msgstr ""
 
 #: src/audio/fader.c:306
 msgid "Monitor Fader out"
@@ -3829,9 +3817,8 @@ msgid "Scroll when playhead reaches the edge"
 msgstr ""
 
 #: resources/ui/playhead_scroll_buttons.ui:58
-#, fuzzy
 msgid "Follow playhead"
-msgstr "遵循播放头"
+msgstr "跟随播放头"
 
 #: resources/ui/automatable_selector.ui:104
 #: resources/ui/arranger_object_info_dialog.ui:89
@@ -4279,7 +4266,6 @@ msgid "Note length"
 msgstr "音符长度"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
-#, fuzzy
 msgid "t"
 msgstr "t"
 
@@ -4928,9 +4914,8 @@ msgid "Tree paths of the selected protocols in the plugin browser."
 msgstr "插件浏览器中所选协议的树路径。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:537
-#, fuzzy
 msgid "File browser bookmarks"
-msgstr "文件浏览器"
+msgstr "文件浏览器书签"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:538
 msgid "Location bookmarks for file browser (absolute paths)."
@@ -4941,43 +4926,36 @@ msgid "File browser selected bookmark"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:543
-#, fuzzy
 msgid "Selected bookmark in file browser."
-msgstr "选定的插件浏览器选项卡。"
+msgstr "文件浏览器中选中的书签。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
-#, fuzzy
 msgid "Whether to autoplay the selected file."
-msgstr "是否让监视器信号静音。"
+msgstr "是否自动播放选中文件。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:553
 msgid "Whether to show unsupported files in the file browser."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:558
-#, fuzzy
 msgid "Whether to show hidden files in the file browser."
-msgstr "不管这是不是第一次运行。"
+msgstr "是否在文件浏览器中显示隐藏文件。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:562
-#, fuzzy
 msgid "File browser filter"
-msgstr "插件浏览器筛选器"
+msgstr "文件浏览器筛选器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:563
-#, fuzzy
 msgid "Selected file browser filter"
-msgstr "选定的插件浏览器筛选器"
+msgstr "选中的文件浏览器筛选器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
-#, fuzzy
 msgid "Last location"
-msgstr "位置"
+msgstr "上个位置"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
-#, fuzzy
 msgid "Last visited location."
-msgstr "上次使用的音频功能"
+msgstr "上次访问的位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:573
 msgid "Instrument plugin to use for MIDI auditioning."

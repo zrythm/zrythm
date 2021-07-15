@@ -4,50 +4,26 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-# #-#-#-#-#  chords-and-scales.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # yu zhang <zhangyu201510@gmail.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
-# #-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#
-# #-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#
-# Weblate Admin <weblate.admin@zrythm.org>, 2019.
-# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # Copyright (C) 2019-2020 The Zrythm contributors
-# #-#-#-#-#  index.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
-# #-#-#-#-#  mixing.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#
-# #-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#
-# #-#-#-#-#  theming.po (Zrythm 0.8)  #-#-#-#-#
-# #-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#
-# #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
-# #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
-# #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-06-27 01:51+0100\n"
-"PO-Revision-Date: 2021-06-04 04:32+0000\n"
+"PO-Revision-Date: 2021-06-26 01:33+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.7.1-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -63,12 +39,10 @@ msgid "audio-insert"
 msgstr ""
 
 #: ../../../../<rst_prolog>:21
-#, fuzzy
 msgid "modulator"
-msgstr "调制器"
+msgstr "调幅器"
 
 #: ../../../../<rst_prolog>:24
-#, fuzzy
 msgid "instrument"
 msgstr "乐器"
 
@@ -435,9 +409,8 @@ msgid "Additional Settings"
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:9
-#, fuzzy
 msgid "GSettings"
-msgstr "录音设置"
+msgstr "GSettings"
 
 #: ../../configuration/additional-settings.rst:10
 msgid ""
@@ -478,9 +451,8 @@ msgid "This will be added to the UI soon."
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:38
-#, fuzzy
 msgid "Plugin Settings"
-msgstr "录音设置"
+msgstr "插件设置"
 
 #: ../../configuration/additional-settings.rst:39
 msgid ""
@@ -4318,9 +4290,8 @@ msgid "Preset filtering is not implemented yet."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:72
-#, fuzzy
 msgid "Showing Unsupported Files"
-msgstr "将不受支持的用户界面结合在一起"
+msgstr "显示不受支持的文件"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:73
 msgid ""
@@ -4343,9 +4314,8 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:86
-#, fuzzy
 msgid "Auditioning"
-msgstr "编辑中"
+msgstr "试音中"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
 msgid ""
@@ -4439,9 +4409,8 @@ msgid "Drag-n-dropping an audio file into a new track"
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:148
-#, fuzzy
 msgid "Pop-up File Browser"
-msgstr "文件浏览器"
+msgstr "弹窗文件浏览器"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:149
 msgid ""
@@ -4651,9 +4620,8 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
-#, fuzzy
 msgid "Author"
-msgstr "路径"
+msgstr "作曲"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Filter by plugin manufacturer/author."
@@ -5152,9 +5120,8 @@ msgid ""
 msgstr ""
 
 #: ../../projects/project-structure.rst:120
-#, fuzzy
 msgid "Audio Pool"
-msgstr "(音频端口)"
+msgstr "音频池"
 
 #: ../../projects/project-structure.rst:121
 msgid ""
@@ -7737,4 +7704,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-
