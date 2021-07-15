@@ -1,6 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.20.0.1] - 2021-07-15
+### Added
+- Add meson option for native build
+- Add dots to position/BPM displays
+- Add Indonesian translation
+- Add graph SVG export
+- Record incoming MIDI CC events into automation lanes
+- Add ability to change instrument
+- Add ability to save/load presets from plugin inspector
+- Show port groups in plugin inspector
+- Add ability to perform multiple undoable actions in sequence
+- Add ability to change direct out for multiple tracks (and to create a new group to route to)
+- Add folder tracks
+
+### Changed
+- Enable link time optimization (LTO) by default
+- Draw even less detail on audio regions when CPU usage is above 40%
+- Update French, Chinese (Simplified), Japanese, Ukrainian translations
+- Make group tracks foldable
+- Silence unnecessary MIDI event logs
+- Do not attempt to free swh lv2 plugins (upstream issue)
+
+### Fixed
+- Fix channel sends being outside pre-fader group in graph exports
+- Fix various issues on MacOS
+- Fix missing libm dependency on lv2apply used during tests
+- Fix error when loading project with duplicated audio region
+- Fix multiple tracks losing their order when moved
+- Fix incorrectly allowing 0 tracks to be selected when ctrl-clicking on track
+- Fix default loop range being 5 bars long instead of 4 bars
+- Fix memory leak in track processors
+- Fix crash when setting listen status on MIDI track
+
 ## [1.0.0-alpha.19.0.1] - 2021-06-24
 ### Added
 - Add bookmarks and filters to file browser
