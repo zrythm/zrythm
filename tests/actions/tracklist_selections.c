@@ -2367,6 +2367,63 @@ _test_move_inside (
   g_assert_cmpint (audio_fx2->pos, ==, 9);
   g_assert_cmpint (lsp_comp->pos, ==, 10);
 
+  undo_manager_undo (UNDO_MANAGER);
+
+  /*
+   * [00] Chords
+   * [01] Tempo
+   * [02] Modulators
+   * [03] Markers
+   * [04] Master
+   * [05] Audio Group Track
+   * [06] -- Folder Track
+   * [07] ---- LSP Compressor Stereo
+   * [08] Folder Track 1
+   * [09] -- Audio FX Track
+   * [10] -- Audio FX Track 1
+   */
+
+  /* move audio fx 2 above master */
+  track_select (
+    audio_fx2, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_move (
+      TRACKLIST_SELECTIONS, P_MASTER_TRACK->pos);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (audio_fx2->pos, ==, 4);
+  g_assert_cmpint (audio_group->pos, ==, 6);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 7);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 8);
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 2);
+  g_assert_cmpint (audio_fx->pos, ==, 10);
+
+  undo_manager_undo (UNDO_MANAGER);
+  tracklist_print_tracks (TRACKLIST);
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 7);
+  g_assert_cmpint (folder2->pos, ==, 8);
+  g_assert_cmpint (folder2->size, ==, 3);
+  g_assert_cmpint (audio_fx->pos, ==, 9);
+  g_assert_cmpint (audio_fx2->pos, ==, 10);
+
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_cmpint (audio_fx2->pos, ==, 4);
+  g_assert_cmpint (audio_group->pos, ==, 6);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 7);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 8);
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 2);
+  g_assert_cmpint (audio_fx->pos, ==, 10);
+
   test_helper_zrythm_cleanup ();
 }
 

@@ -19,6 +19,7 @@
 
 #include "actions/tracklist_selections.h"
 #include "audio/audio_region.h"
+#include "audio/foldable_track.h"
 #include "audio/group_target_track.h"
 #include "audio/midi_file.h"
 #include "audio/router.h"
@@ -1107,12 +1108,45 @@ do_or_undo_move_or_copy (
                 self->tls_before->tracks[i];
               own_track->pos = prj_track->pos;
 
+              GPtrArray * parents =
+                g_ptr_array_new ();
+              track_add_folder_parents (
+                prj_track, parents, false);
+
               tracklist_move_track (
                 TRACKLIST, prj_track, target_pos,
                 true,
                 F_NO_PUBLISH_EVENTS,
                 F_NO_RECALC_GRAPH);
               prev_track = prj_track;
+
+              /* adjust parent sizes */
+              if (!inside)
+                {
+                  for (size_t k = 0;
+                       k < parents->len; k++)
+                    {
+                      Track * parent =
+                        g_ptr_array_index (
+                          parents, k);
+
+                      /* if new pos is outside
+                       * parent */
+                      if (prj_track->pos <
+                            parent->pos ||
+                          prj_track->pos >=
+                            parent->pos +
+                            parent->size)
+                        {
+                          parent->size--;
+                        }
+
+                      if (k == parents->len - 1)
+                        own_track->prev_folder_parent =
+                          g_strdup (parent->name);
+                    }
+                }
+              g_ptr_array_unref (parents);
 
               if (i == 0)
                 tracklist_selections_select_single (
@@ -1301,20 +1335,9 @@ do_or_undo_move_or_copy (
         {
           /* update foldable track sizes (incl.
            * parents) */
-          foldable_tr->size +=
-            self->num_fold_change_tracks;
-          GPtrArray * parents =
-            g_ptr_array_new ();
-          track_add_folder_parents (
-            foldable_tr, parents, false);
-          for (size_t k = 0; k < parents->len; k++)
-            {
-              Track * parent =
-                g_ptr_array_index (parents, k);
-              parent->size +=
-                self->num_fold_change_tracks;
-            }
-          g_ptr_array_unref (parents);
+          foldable_track_add_to_size (
+            foldable_tr,
+            self->num_fold_change_tracks);
         }
     }
   /* if undoing */
@@ -1342,6 +1365,21 @@ do_or_undo_move_or_copy (
                 target_pos, false,
                 F_NO_PUBLISH_EVENTS,
                 F_NO_RECALC_GRAPH);
+
+              if (!inside &&
+                  own_track->prev_folder_parent)
+                {
+                  Track * parent =
+                    track_find_by_name (
+                      own_track->
+                        prev_folder_parent);
+                  if (!foldable_track_is_child (
+                        parent, prj_track))
+                    {
+                      foldable_track_add_to_size (
+                        parent, 1);
+                    }
+                }
 
               if (i == 0)
                 {
@@ -1398,21 +1436,9 @@ do_or_undo_move_or_copy (
             track_type_is_foldable (
               foldable_tr->type), -1);
 
-          foldable_tr->size -=
-            self->num_fold_change_tracks;
-
-          GPtrArray * parents =
-            g_ptr_array_new ();
-          track_add_folder_parents (
-            foldable_tr, parents, false);
-          for (size_t k = 0; k < parents->len; k++)
-            {
-              Track * parent =
-                g_ptr_array_index (parents, k);
-              parent->size -=
-                self->num_fold_change_tracks;
-            }
-          g_ptr_array_unref (parents);
+          foldable_track_add_to_size (
+            foldable_tr,
+            - self->num_fold_change_tracks);
         }
     }
 

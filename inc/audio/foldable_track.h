@@ -48,4 +48,24 @@ foldable_track_is_status (
   Track *                  self,
   FoldableTrackMixerStatus status);
 
+/**
+ * Returns whether @p child is a folder child of
+ * @p self.
+ */
+bool
+foldable_track_is_child (
+  Track * self,
+  Track * child);
+
+/**
+ * Adds to the size recursively.
+ *
+ * This must only be called from the lowest-level
+ * foldable track.
+ */
+void
+foldable_track_add_to_size (
+  Track * self,
+  int     delta);
+
 #endif /* __AUDIO_FOLDABLE_TRACK_H__ */

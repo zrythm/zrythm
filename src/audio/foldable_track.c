@@ -83,3 +83,55 @@ foldable_track_is_status (
     }
   return all_soloed;
 }
+
+/**
+ * Returns whether @p child is a folder child of
+ * @p self.
+ */
+bool
+foldable_track_is_child (
+  Track * self,
+  Track * child)
+{
+  GPtrArray * parents = g_ptr_array_new ();
+  track_add_folder_parents (child, parents, false);
+
+  bool match = false;
+  for (size_t i = 0; i < parents->len; i++)
+    {
+      Track * parent =
+        g_ptr_array_index (parents, i);
+      if (parent == self)
+        {
+          match = true;
+          break;
+        }
+    }
+  g_ptr_array_unref (parents);
+
+  return match;
+}
+
+/**
+ * Adds to the size recursively.
+ *
+ * This must only be called from the lowest-level
+ * foldable track.
+ */
+void
+foldable_track_add_to_size (
+  Track * self,
+  int     delta)
+{
+  GPtrArray * parents = g_ptr_array_new ();
+  track_add_folder_parents (self, parents, false);
+
+  self->size += delta;
+  for (size_t i = 0; i < parents->len; i++)
+    {
+      Track * parent =
+        g_ptr_array_index (parents, i);
+      parent->size += delta;
+    }
+  g_ptr_array_unref (parents);
+}

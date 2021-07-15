@@ -491,6 +491,13 @@ typedef struct Track
   /** Whether this track is part of the
    * SampleProcessor auditioner tracklist. */
   bool                is_auditioner;
+
+  /**
+   * Closest parent before an action was performed.
+   *
+   * Used in undoable actions.
+   */
+  char *              prev_folder_parent;
 } Track;
 
 static const cyaml_schema_field_t
@@ -555,6 +562,8 @@ track_fields_schema[] =
   YAML_FIELD_INT (Track, pool_id),
   YAML_FIELD_INT (Track, size),
   YAML_FIELD_INT (Track, folded),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    Track, prev_folder_parent),
 
   CYAML_FIELD_END
 };

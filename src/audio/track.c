@@ -965,7 +965,7 @@ track_validate (
 {
   g_return_val_if_fail (self, false);
 
-  g_message (
+  g_debug (
     "validating track '%s'...", self->name);
 
   int track_pos = self->pos;
@@ -1101,7 +1101,7 @@ track_validate (
       region_validate (r, self->is_project);
     }
 
-  g_message ("done");
+  g_debug ("done");
 
   return true;
 }
@@ -3769,6 +3769,7 @@ track_free (Track * self)
   g_free_and_null (self->name);
   g_free_and_null (self->comment);
   g_free_and_null (self->icon_name);
+  g_free_and_null (self->prev_folder_parent);
 
   for (int i = 0; i < self->num_modulator_macros;
        i++)
