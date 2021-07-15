@@ -424,6 +424,8 @@ folder_channel_widget_refresh (
   refresh_name (self);
   refresh_color (self);
   setup_folder_channel_icon (self);
+  fader_buttons_widget_refresh (
+    self->fader_buttons, self->track);
 
 #define ICON_NAME_FOLD "fluentui-folder-regular"
 #define ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"

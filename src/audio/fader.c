@@ -1062,6 +1062,8 @@ fader_process (
 
                       if (track_type_has_channel (
                             t->type) &&
+                          t->out_signal_type ==
+                            TYPE_AUDIO &&
                           track_get_listened (t))
                         {
                           Fader * f =
