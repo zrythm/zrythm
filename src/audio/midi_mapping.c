@@ -333,21 +333,6 @@ midi_mappings_new ()
   return self;
 }
 
-void
-midi_mappings_free (
-  MidiMappings * self)
-{
-  for (int i = 0; i < self->num_mappings; i++)
-    {
-      object_free_w_func_and_null (
-        ext_port_free,
-        self->mappings[i].device_port);
-    }
-  object_zero_and_free (self->mappings);
-
-  object_zero_and_free (self);
-}
-
 /**
  * Get MIDI mappings for the given port.
  *
@@ -382,4 +367,19 @@ midi_mappings_get_for_port (
         }
     }
   return arr;
+}
+
+void
+midi_mappings_free (
+  MidiMappings * self)
+{
+  for (int i = 0; i < self->num_mappings; i++)
+    {
+      object_free_w_func_and_null (
+        ext_port_free,
+        self->mappings[i].device_port);
+    }
+  object_zero_and_free (self->mappings);
+
+  object_zero_and_free (self);
 }

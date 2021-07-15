@@ -1366,6 +1366,9 @@ void
 track_processor_free (
   TrackProcessor * self)
 {
+  object_free_w_func_and_null (
+    midi_mappings_free, self->cc_mappings);
+
   if (IS_PORT_AND_NONNULL (self->mono))
     {
       port_disconnect_all (self->mono);
