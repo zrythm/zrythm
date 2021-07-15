@@ -28,6 +28,7 @@
 
 #include "audio/engine.h"
 #include "audio/track.h"
+#include "gui/widgets/track.h"
 
 typedef struct Track Track;
 typedef struct _TracklistWidget TracklistWidget;
@@ -440,6 +441,13 @@ tracklist_handle_file_drop (
   TrackLane *     lane,
   Position *      pos,
   bool            perform_actions);
+
+void
+tracklist_handle_move_or_copy (
+  Tracklist *          self,
+  Track *              this_track,
+  TrackWidgetHighlight location,
+  GdkDragAction        action);
 
 /**
  * Returns 1 if the track name is not taken.

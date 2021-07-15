@@ -265,6 +265,21 @@ tracklist_selections_action_new (
             tracklist_selections_clone (tls_before);
           tracklist_selections_sort (
             self->tls_before, true);
+          self->foldable_tls_before =
+            tracklist_selections_new (
+              F_NOT_PROJECT);
+          for (int i = 0;
+               i < TRACKLIST->num_tracks; i++)
+            {
+              Track * tr = TRACKLIST->tracks[i];
+              if (track_type_is_foldable (tr->type))
+                {
+                  tracklist_selections_add_track (
+                    self->foldable_tls_before,
+                    track_clone (tr, F_PROJECT),
+                    F_NO_PUBLISH_EVENTS);
+                }
+            }
         }
       else
         {
@@ -1121,29 +1136,43 @@ do_or_undo_move_or_copy (
               prev_track = prj_track;
 
               /* adjust parent sizes */
-              if (!inside)
+              for (size_t k = 0;
+                   k < parents->len; k++)
                 {
-                  for (size_t k = 0;
-                       k < parents->len; k++)
+                  Track * parent =
+                    g_ptr_array_index (parents, k);
+
+                  /* if new pos is outside
+                   * parent */
+                  if (prj_track->pos <
+                        parent->pos ||
+                      prj_track->pos >=
+                        parent->pos + parent->size)
                     {
-                      Track * parent =
-                        g_ptr_array_index (
-                          parents, k);
+                      g_debug (
+                        "new pos of %s (%d) is "
+                        "outside parent %s: "
+                        "parent--",
+                        prj_track->name,
+                        prj_track->pos,
+                        parent->name);
+                      parent->size--;
+                    }
 
-                      /* if new pos is outside
-                       * parent */
-                      if (prj_track->pos <
-                            parent->pos ||
-                          prj_track->pos >=
-                            parent->pos +
-                            parent->size)
-                        {
-                          parent->size--;
-                        }
-
-                      if (k == parents->len - 1)
-                        own_track->prev_folder_parent =
-                          g_strdup (parent->name);
+                  /* if foldable track is child of
+                   * parent (size will be readded
+                   * later) */
+                  if (inside &&
+                      foldable_track_is_child (
+                        parent, foldable_tr))
+                    {
+                      g_debug (
+                        "foldable track %s is "
+                        "child of parent %s: "
+                        "parent--",
+                        foldable_tr->name,
+                        parent->name);
+                      parent->size--;
                     }
                 }
               g_ptr_array_unref (parents);
@@ -1366,21 +1395,6 @@ do_or_undo_move_or_copy (
                 F_NO_PUBLISH_EVENTS,
                 F_NO_RECALC_GRAPH);
 
-              if (!inside &&
-                  own_track->prev_folder_parent)
-                {
-                  Track * parent =
-                    track_find_by_name (
-                      own_track->
-                        prev_folder_parent);
-                  if (!foldable_track_is_child (
-                        parent, prj_track))
-                    {
-                      foldable_track_add_to_size (
-                        parent, 1);
-                    }
-                }
-
               if (i == 0)
                 {
                   tracklist_selections_select_single (
@@ -1439,6 +1453,19 @@ do_or_undo_move_or_copy (
           foldable_track_add_to_size (
             foldable_tr,
             - self->num_fold_change_tracks);
+        }
+
+      /* reset foldable track sizes */
+      for (int i = 0;
+           i < self->foldable_tls_before->
+             num_tracks;
+           i++)
+        {
+          Track * own_tr =
+            self->foldable_tls_before->tracks[i];
+          Track * prj_tr =
+            track_find_by_name (own_tr->name);
+          prj_tr->size = own_tr->size;
         }
     }
 

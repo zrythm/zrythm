@@ -89,6 +89,33 @@ foldable_track_is_status (
  * @p self.
  */
 bool
+foldable_track_is_direct_child (
+  Track * self,
+  Track * child)
+{
+  GPtrArray * parents = g_ptr_array_new ();
+  track_add_folder_parents (child, parents, true);
+
+  bool match = parents->len > 0;
+  if (match)
+    {
+      Track * parent =
+        g_ptr_array_index (parents, 0);
+      if (parent != self)
+        {
+          match = false;
+        }
+    }
+  g_ptr_array_unref (parents);
+
+  return match;
+}
+
+/**
+ * Returns whether @p child is a folder child of
+ * @p self.
+ */
+bool
 foldable_track_is_child (
   Track * self,
   Track * child)
@@ -127,11 +154,17 @@ foldable_track_add_to_size (
   track_add_folder_parents (self, parents, false);
 
   self->size += delta;
+  g_debug (
+    "new %s size: %d (added %d)",
+    self->name, self->size, delta);
   for (size_t i = 0; i < parents->len; i++)
     {
       Track * parent =
         g_ptr_array_index (parents, i);
       parent->size += delta;
+      g_debug (
+        "new %s size: %d (added %d)",
+        parent->name, parent->size, delta);
     }
   g_ptr_array_unref (parents);
 }

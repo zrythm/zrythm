@@ -191,68 +191,8 @@ on_dnd_drag_data_received (
   TrackWidgetHighlight location =
     track_widget_get_highlight_location (hit_tw, wy);
 
-  int pos = -1;
-  if (location == TRACK_WIDGET_HIGHLIGHT_TOP)
-    {
-      pos = this_track->pos;
-    }
-  else
-    {
-      Track * next =
-        tracklist_get_next_visible_track (
-          TRACKLIST, this_track);
-      if (next)
-        pos = next->pos;
-      /* else if last track, move to end */
-      else if (this_track->pos ==
-                 TRACKLIST->num_tracks - 1)
-        pos = TRACKLIST->num_tracks;
-      /* else if last visible track but not last
-       * track */
-      else
-        pos = this_track->pos + 1;
-    }
-
-  if (pos == -1)
-    return;
-
-  tracklist_selections_select_foldable_children (
-    TRACKLIST_SELECTIONS);
-
-  UndoableAction * ua = NULL;
-  if (action == GDK_ACTION_COPY)
-    {
-      if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
-        {
-          ua =
-            tracklist_selections_action_new_copy_inside (
-              TRACKLIST_SELECTIONS, this_track->pos);
-        }
-      else
-        {
-          ua =
-            tracklist_selections_action_new_copy (
-              TRACKLIST_SELECTIONS, pos);
-        }
-    }
-  else if (action == GDK_ACTION_MOVE)
-    {
-      if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
-        {
-          ua =
-            tracklist_selections_action_new_move_inside (
-              TRACKLIST_SELECTIONS, this_track->pos);
-        }
-      else
-        {
-          ua =
-            tracklist_selections_action_new_move (
-              TRACKLIST_SELECTIONS, pos);
-        }
-    }
-  g_return_if_fail (ua);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, this_track, location, action);
 }
 
 TrackWidget *

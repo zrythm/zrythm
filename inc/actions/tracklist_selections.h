@@ -207,8 +207,11 @@ typedef struct TracklistSelectionsAction
    * applicable. */
   TracklistSelections * tls_after;
 
-  /* TODO remove the following and use
-   * before/after */
+  /**
+   * Foldable tracks before the change, used when
+   * undoing to set the correct sizes.
+   */
+  TracklistSelections * foldable_tls_before;
 
   /* --------------- DELTAS ---------------- */
 
@@ -280,6 +283,9 @@ static const cyaml_schema_field_t
     tracklist_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TracklistSelectionsAction, tls_after,
+    tracklist_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TracklistSelectionsAction, foldable_tls_before,
     tracklist_selections_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     TracklistSelectionsAction, out_tracks,

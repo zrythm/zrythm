@@ -27,6 +27,7 @@
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/math.h"

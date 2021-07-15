@@ -41,6 +41,7 @@
 #include "gui/widgets/knob.h"
 #include "gui/widgets/plugin_strip_expander.h"
 #include "gui/widgets/route_target_selector.h"
+#include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -146,7 +147,7 @@ on_drag_data_received (
   guint             time,
   ChannelWidget * self)
 {
-  g_message ("drag data received");
+  g_debug ("channel widget: drag data received");
   Track * this =
     channel_get_track (self->channel);
 
@@ -155,64 +156,25 @@ on_drag_data_received (
     gdk_drag_context_get_selected_action (
       context);
 
-  /*tracklist_selections_print (*/
-    /*TRACKLIST_SELECTIONS);*/
-
   int w =
     gtk_widget_get_allocated_width (widget);
 
-  /* determine position to move to */
-  int pos;
-  if (x < w / 2)
+  TrackWidgetHighlight location;
+  if (track_type_is_foldable (this->type) &&
+      x < w - 12 && x > 12)
     {
-      if (this->pos <=
-          MW_MIXER->start_drag_track->pos)
-        pos = this->pos;
-      else
-        {
-          Track * prev =
-            tracklist_get_prev_visible_track (
-              TRACKLIST, this);
-          pos =
-            prev ? prev->pos : this->pos;
-        }
+      location = TRACK_WIDGET_HIGHLIGHT_INSIDE;
+    }
+  else if (x < w / 2)
+    {
+      location = TRACK_WIDGET_HIGHLIGHT_TOP;
     }
   else
     {
-      if (this->pos >=
-          MW_MIXER->start_drag_track->pos)
-        pos = this->pos;
-      else
-        {
-          Track * next =
-            tracklist_get_next_visible_track (
-              TRACKLIST, this);
-          pos =
-            next ? next->pos : this->pos;
-        }
+      location = TRACK_WIDGET_HIGHLIGHT_BOTTOM;
     }
-
-  tracklist_selections_select_foldable_children (
-    TRACKLIST_SELECTIONS);
-
-  UndoableAction * ua = NULL;
-  if (action == GDK_ACTION_COPY)
-    {
-      ua =
-        tracklist_selections_action_new_copy (
-          TRACKLIST_SELECTIONS, pos);
-    }
-  else if (action == GDK_ACTION_MOVE)
-    {
-      ua =
-        tracklist_selections_action_new_move (
-          TRACKLIST_SELECTIONS, pos);
-    }
-
-  g_warn_if_fail (ua);
-
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, this, location, action);
 }
 
 static void
@@ -224,7 +186,7 @@ on_drag_data_get (
   guint             time,
   ChannelWidget * self)
 {
-  g_message ("drag data get");
+  g_debug ("channel widget: drag data get");
 
   /* Not really needed since the selections are
    * used. just send master */

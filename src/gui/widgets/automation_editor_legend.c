@@ -23,6 +23,7 @@
 #include "gui/widgets/automation_editor_legend.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"

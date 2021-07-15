@@ -1141,6 +1141,26 @@ track_add_folder_parents (
 }
 
 /**
+ * Returns the closest foldable parent or NULL.
+ */
+Track *
+track_get_direct_folder_parent (
+  Track * track)
+{
+  GPtrArray * parents = g_ptr_array_new ();
+  track_add_folder_parents (
+    track, parents, false);
+  Track * parent = NULL;
+  if (parents->len > 0)
+    {
+      parent = g_ptr_array_index (parents, 0);
+    }
+  g_ptr_array_unref (parents);
+
+  return parent;
+}
+
+/**
  * Returns if the given TrackType can host the
  * given RegionType.
  */
@@ -3769,7 +3789,6 @@ track_free (Track * self)
   g_free_and_null (self->name);
   g_free_and_null (self->comment);
   g_free_and_null (self->icon_name);
-  g_free_and_null (self->prev_folder_parent);
 
   for (int i = 0; i < self->num_modulator_macros;
        i++)

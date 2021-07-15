@@ -53,6 +53,15 @@ foldable_track_is_status (
  * @p self.
  */
 bool
+foldable_track_is_direct_child (
+  Track * self,
+  Track * child);
+
+/**
+ * Returns whether @p child is a folder child of
+ * @p self.
+ */
+bool
 foldable_track_is_child (
   Track * self,
   Track * child);
