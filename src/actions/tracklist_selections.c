@@ -159,7 +159,9 @@ tracklist_selections_action_new (
         NULL);
     }
 
-  if (tls_before == TRACKLIST_SELECTIONS)
+  if (tls_before == TRACKLIST_SELECTIONS &&
+      (type != TRACKLIST_SELECTIONS_ACTION_EDIT ||
+       edit_type != EDIT_TRACK_ACTION_TYPE_FOLD))
     {
       tracklist_selections_select_foldable_children (
         tls_before);
@@ -1297,8 +1299,22 @@ do_or_undo_move_or_copy (
 
       if (inside)
         {
+          /* update foldable track sizes (incl.
+           * parents) */
           foldable_tr->size +=
             self->num_fold_change_tracks;
+          GPtrArray * parents =
+            g_ptr_array_new ();
+          track_add_folder_parents (
+            foldable_tr, parents, false);
+          for (size_t k = 0; k < parents->len; k++)
+            {
+              Track * parent =
+                g_ptr_array_index (parents, k);
+              parent->size +=
+                self->num_fold_change_tracks;
+            }
+          g_ptr_array_unref (parents);
         }
     }
   /* if undoing */
@@ -1374,6 +1390,8 @@ do_or_undo_move_or_copy (
       Track * foldable_tr = NULL;
       if (inside)
         {
+          /* update foldable track sizes (incl.
+           * parents) */
           foldable_tr =
             TRACKLIST->tracks[self->track_pos];
           g_return_val_if_fail (
@@ -1382,6 +1400,19 @@ do_or_undo_move_or_copy (
 
           foldable_tr->size -=
             self->num_fold_change_tracks;
+
+          GPtrArray * parents =
+            g_ptr_array_new ();
+          track_add_folder_parents (
+            foldable_tr, parents, false);
+          for (size_t k = 0; k < parents->len; k++)
+            {
+              Track * parent =
+                g_ptr_array_index (parents, k);
+              parent->size -=
+                self->num_fold_change_tracks;
+            }
+          g_ptr_array_unref (parents);
         }
     }
 

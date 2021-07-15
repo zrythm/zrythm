@@ -368,35 +368,18 @@ void
 fader_set_muted (
   Fader * self,
   bool    mute,
-  bool    trigger_undo,
   bool    fire_events)
 {
   Track * track = fader_get_track (self);
   g_return_if_fail (track);
 
-  if (trigger_undo)
-    {
-      /* this is only supported if the fader track is
-       * the only track selected */
-      g_return_if_fail (
-        TRACKLIST_SELECTIONS->num_tracks == 1 &&
-        TRACKLIST_SELECTIONS->tracks[0] == track);
-      UndoableAction * action =
-        tracklist_selections_action_new_edit_mute (
-          TRACKLIST_SELECTIONS, mute);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
-    }
-  else
-    {
-      control_port_set_toggled (
-        self->mute, mute, fire_events);
+  control_port_set_toggled (
+    self->mute, mute, fire_events);
 
-      if (fire_events)
-        {
-          EVENTS_PUSH (
-            ET_TRACK_STATE_CHANGED, track);
-        }
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRACK_STATE_CHANGED, track);
     }
 }
 
@@ -491,35 +474,18 @@ void
 fader_set_soloed (
   Fader * self,
   bool    solo,
-  bool    trigger_undo,
   bool    fire_events)
 {
   Track * track = fader_get_track (self);
   g_return_if_fail (track);
 
-  if (trigger_undo)
-    {
-      /* this is only supported if the fader track is
-       * the only track selected */
-      g_return_if_fail (
-        TRACKLIST_SELECTIONS->num_tracks == 1 &&
-        TRACKLIST_SELECTIONS->tracks[0] == track);
-      UndoableAction * action =
-        tracklist_selections_action_new_edit_solo (
-          TRACKLIST_SELECTIONS, solo);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
-    }
-  else
-    {
-      control_port_set_toggled (
-        self->solo, solo, fire_events);
+  control_port_set_toggled (
+    self->solo, solo, fire_events);
 
-      if (fire_events)
-        {
-          EVENTS_PUSH (
-            ET_TRACK_STATE_CHANGED, track);
-        }
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRACK_STATE_CHANGED, track);
     }
 }
 
@@ -531,35 +497,18 @@ void
 fader_set_listened (
   Fader * self,
   bool    listen,
-  bool    trigger_undo,
   bool    fire_events)
 {
   Track * track = fader_get_track (self);
   g_return_if_fail (track);
 
-  if (trigger_undo)
-    {
-      /* this is only supported if the fader track
-       * is the only track selected */
-      g_return_if_fail (
-        TRACKLIST_SELECTIONS->num_tracks == 1 &&
-        TRACKLIST_SELECTIONS->tracks[0] == track);
-      UndoableAction * action =
-        tracklist_selections_action_new_edit_listen (
-          TRACKLIST_SELECTIONS, listen);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
-    }
-  else
-    {
-      control_port_set_toggled (
-        self->listen, listen, fire_events);
+  control_port_set_toggled (
+    self->listen, listen, fire_events);
 
-      if (fire_events)
-        {
-          EVENTS_PUSH (
-            ET_TRACK_STATE_CHANGED, track);
-        }
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRACK_STATE_CHANGED, track);
     }
 }
 

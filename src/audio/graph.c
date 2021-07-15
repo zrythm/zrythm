@@ -559,8 +559,12 @@ graph_setup (
   Plugin * pl;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      tr = TRACKLIST->tracks[i];
-      g_warn_if_fail (tr);
+      tr = tracklist_get_track (TRACKLIST, i);
+      if (!tr)
+        {
+          g_warning ("track not found at %d", i);
+          return;
+        }
 
       /* add the track */
       graph_create_node (

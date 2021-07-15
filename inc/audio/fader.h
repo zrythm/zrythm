@@ -303,7 +303,6 @@ void
 fader_set_muted (
   Fader * self,
   bool    mute,
-  bool    trigger_undo,
   bool    fire_events);
 
 /**
@@ -346,7 +345,6 @@ void
 fader_set_listened (
   Fader * self,
   bool    listen,
-  bool    trigger_undo,
   bool    fire_events);
 
 /**
@@ -357,7 +355,6 @@ void
 fader_set_soloed (
   Fader * self,
   bool    solo,
-  bool    trigger_undo,
   bool    fire_events);
 
 /**

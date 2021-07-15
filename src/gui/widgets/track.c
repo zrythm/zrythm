@@ -362,8 +362,11 @@ draw_name (
 
   char name[strlen (track->name) + 10];
   if (DEBUGGING)
-    sprintf (
-      name, "[%d] %s", track->pos, track->name);
+    {
+      sprintf (
+        name, "[%d - %d] %s",
+        track->pos, track->size, track->name);
+    }
   else
     strcpy (name, track->name);
 

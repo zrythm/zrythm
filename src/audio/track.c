@@ -803,25 +803,34 @@ track_set_muted (
   bool    auto_select,
   bool    fire_events)
 {
-  if (self->type == TRACK_TYPE_FOLDER)
-    {
-      /* TODO */
-      return;
-    }
-
-  g_return_if_fail (self->channel);
-
   g_message (
     "Setting track %s muted (%d)",
     self->name, mute);
+
   if (auto_select)
     {
       track_select (
         self, F_SELECT, F_EXCLUSIVE, fire_events);
     }
-  fader_set_muted (
-    self->channel->fader, mute, trigger_undo,
-    fire_events);
+
+  if (trigger_undo)
+    {
+      /* this is only supported if the fader track is
+       * the only track selected */
+      g_return_if_fail (
+        TRACKLIST_SELECTIONS->num_tracks == 1 &&
+        TRACKLIST_SELECTIONS->tracks[0] == self);
+      UndoableAction * action =
+        tracklist_selections_action_new_edit_mute (
+          TRACKLIST_SELECTIONS, mute);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      fader_set_muted (
+        self->channel->fader, mute, fire_events);
+    }
 }
 
 /**
@@ -1310,21 +1319,38 @@ track_set_soloed (
   bool    auto_select,
   bool    fire_events)
 {
+#if 0
   if (self->type == TRACK_TYPE_FOLDER)
     {
       /* TODO */
       return;
     }
+#endif
 
-  g_return_if_fail (self->channel);
   if (auto_select)
     {
       track_select (
         self, F_SELECT, F_EXCLUSIVE, fire_events);
     }
-  fader_set_soloed (
-    self->channel->fader, solo, trigger_undo,
-    fire_events);
+
+  if (trigger_undo)
+    {
+      /* this is only supported if the fader track is
+       * the only track selected */
+      g_return_if_fail (
+        TRACKLIST_SELECTIONS->num_tracks == 1 &&
+        TRACKLIST_SELECTIONS->tracks[0] == self);
+      UndoableAction * action =
+        tracklist_selections_action_new_edit_solo (
+          TRACKLIST_SELECTIONS, solo);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      fader_set_soloed (
+        self->channel->fader, solo, fire_events);
+    }
 }
 
 /**
@@ -1346,21 +1372,30 @@ track_set_listened (
   bool    auto_select,
   bool    fire_events)
 {
-  if (self->type == TRACK_TYPE_FOLDER)
-    {
-      /* TODO */
-      return;
-    }
-
-  g_return_if_fail (self->channel);
   if (auto_select)
     {
       track_select (
         self, F_SELECT, F_EXCLUSIVE, fire_events);
     }
-  fader_set_listened (
-    self->channel->fader, listen, trigger_undo,
-    fire_events);
+
+  if (trigger_undo)
+    {
+      /* this is only supported if the fader track
+       * is the only track selected */
+      g_return_if_fail (
+        TRACKLIST_SELECTIONS->num_tracks == 1 &&
+        TRACKLIST_SELECTIONS->tracks[0] == self);
+      UndoableAction * action =
+        tracklist_selections_action_new_edit_listen (
+          TRACKLIST_SELECTIONS, listen);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      fader_set_listened (
+        self->channel->fader, listen, fire_events);
+    }
 }
 
 /**

@@ -2069,7 +2069,6 @@ _test_move_inside (
   bool         is_instrument,
   bool         with_carla)
 {
-  return;
   test_helper_zrythm_init ();
 
   /* create folder track */
@@ -2283,6 +2282,91 @@ _test_move_inside (
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
 
+  /*
+   * [00] Chords
+   * [01] Tempo
+   * [02] Modulators
+   * [03] Markers
+   * [04] Master
+   * [05] Audio Group Track
+   * [06] -- Folder Track
+   * [07] ---- LSP Compressor Stereo
+   * [08] Folder Track 1
+   * [09] -- Audio FX Track
+   * [10] -- Audio FX Track 1
+   */
+
+  audio_group = TRACKLIST->tracks[5];
+  folder = TRACKLIST->tracks[6];
+  Track * lsp_comp = TRACKLIST->tracks[7];
+  folder2 = TRACKLIST->tracks[8];
+  audio_fx = TRACKLIST->tracks[9];
+  audio_fx2 = TRACKLIST->tracks[10];
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 7);
+  g_assert_cmpint (folder2->pos, ==, 8);
+  g_assert_cmpint (folder2->size, ==, 3);
+  g_assert_cmpint (audio_fx->pos, ==, 9);
+  g_assert_cmpint (audio_fx2->pos, ==, 10);
+
+  /* move folder 2 into folder 1 */
+  track_select (
+    folder2, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_move_inside (
+      TRACKLIST_SELECTIONS, folder->pos);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /*
+   * expect:
+   * [00] Chords
+   * [01] Tempo
+   * [02] Modulators
+   * [03] Markers
+   * [04] Master
+   * [05] Audio Group Track
+   * [06] -- Folder Track
+   * [08] ---- Folder Track 1
+   * [09] ------ Audio FX Track
+   * [10] ------ Audio FX Track 1
+   * [07] ---- LSP Compressor Stereo
+   */
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 6);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 5);
+  g_assert_cmpint (folder2->pos, ==, 7);
+  g_assert_cmpint (folder2->size, ==, 3);
+  g_assert_cmpint (audio_fx->pos, ==, 8);
+  g_assert_cmpint (audio_fx2->pos, ==, 9);
+  g_assert_cmpint (lsp_comp->pos, ==, 10);
+
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 7);
+  g_assert_cmpint (folder2->pos, ==, 8);
+  g_assert_cmpint (folder2->size, ==, 3);
+  g_assert_cmpint (audio_fx->pos, ==, 9);
+  g_assert_cmpint (audio_fx2->pos, ==, 10);
+
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 6);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 5);
+  g_assert_cmpint (folder2->pos, ==, 7);
+  g_assert_cmpint (folder2->size, ==, 3);
+  g_assert_cmpint (audio_fx->pos, ==, 8);
+  g_assert_cmpint (audio_fx2->pos, ==, 9);
+  g_assert_cmpint (lsp_comp->pos, ==, 10);
+
   test_helper_zrythm_cleanup ();
 }
 
@@ -2413,6 +2497,18 @@ test_move_multiple_inside ()
     folder->pos, ==, TRACKLIST->num_tracks - 2);
   g_assert_cmpint (
     audio_fx1->pos, ==, TRACKLIST->num_tracks - 1);
+
+  /*
+   * [0] Chords
+   * [1] Tempo
+   * [2] Modulators
+   * [3] Markers
+   * [4] Master
+   * [5] Audio FX Track 1
+   * [6] Audio Group Track
+   * [7] -- Folder Track
+   * [8] ---- Audio FX Track
+   */
 
   test_helper_zrythm_cleanup ();
 }
@@ -2573,6 +2669,9 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test move inside",
+    (GTestFunc) test_move_inside);
+  g_test_add_func (
     TEST_PREFIX "test copy multiple inside",
     (GTestFunc) test_copy_multiple_inside);
   g_test_add_func (
@@ -2581,9 +2680,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test move multiple tracks",
     (GTestFunc) test_move_multiple_tracks);
-  g_test_add_func (
-    TEST_PREFIX "test move inside",
-    (GTestFunc) test_move_inside);
   g_test_add_func (
     TEST_PREFIX "test_move_tracks",
     (GTestFunc) test_move_tracks);

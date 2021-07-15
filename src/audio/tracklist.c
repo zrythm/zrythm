@@ -207,13 +207,28 @@ tracklist_print_tracks (
       track = self->tracks[i];
       if (track)
         {
+          char parent_str[200];
+          strcpy (parent_str, "");
+          GPtrArray * parents = g_ptr_array_new ();
+          track_add_folder_parents (
+            track, parents, false);
+          for (size_t j = 0; j < parents->len; j++)
+            {
+              strcat (parent_str, "--");
+              if (j == parents->len - 1)
+                strcat (parent_str, " ");
+            }
+
           g_message (
-            "[idx %d] %s (pos %d)",
-            i, track->name, track->pos);
+            "[%03d] %s%s (pos %d, parents %d, "
+            "size %d)",
+            i, parent_str, track->name,
+            track->pos, parents->len, track->size);
+          g_ptr_array_unref (parents);
         }
       else
         {
-          g_message ("[idx %d] (null)", i);
+          g_message ("[%03d] (null)", i);
         }
     }
   g_message ("------ end ------");
@@ -496,18 +511,26 @@ tracklist_get_track_pos (
       (void *) track);
 }
 
-void
+bool
 tracklist_validate (
   Tracklist * self)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
+      g_return_val_if_fail (
+        track && track->is_project, false);
 
-      g_return_if_fail (
-        track && track->is_project);
-      track_validate (track);
+      if (!track_validate (track))
+        return false;
+
+      /* validate size */
+      g_return_val_if_fail (
+        track->pos + track->size <=
+          self->num_tracks, false);
     }
+
+  return true;
 }
 
 /**
@@ -803,8 +826,9 @@ tracklist_remove_track (
     track, rm_pl, F_NO_RECALC_GRAPH);
 
   /* move track to the end */
+  int end_pos = self->num_tracks - 1;
   tracklist_move_track (
-    self, track, self->num_tracks - 1, false,
+    self, track, end_pos, false,
     F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
   if (!self->is_auditioner)
@@ -847,7 +871,7 @@ tracklist_remove_track (
   if (free_track)
     {
       track_free (track);
-      track = NULL;
+      self->tracks[end_pos] = NULL;
     }
 
   if (recalc_graph)

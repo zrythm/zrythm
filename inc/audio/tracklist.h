@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -292,7 +292,7 @@ tracklist_set_track_pinned (
   int         recalc_graph);
 
 NONNULL
-void
+bool
 tracklist_validate (
   Tracklist * self);
 
