@@ -113,6 +113,7 @@ inc/gui/widgets/automation_arranger_bg.h
 inc/gui/widgets/timeline_bg.h
 inc/gui/widgets/cc_bindings_tree.h
 inc/gui/widgets/port_connections.h
+inc/gui/widgets/folder_channel.h
 inc/gui/widgets/chord_track.h
 inc/gui/widgets/quantize_box.h
 inc/gui/widgets/event_viewer.h
@@ -263,6 +264,7 @@ inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
 inc/gui/widgets/bounce_step_selector.h
 inc/gui/widgets/dialogs/export_progress_dialog.h
+inc/gui/widgets/dialogs/add_tracks_to_group_dialog.h
 inc/gui/widgets/dialogs/string_entry_dialog.h
 inc/gui/widgets/dialogs/changelog_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
@@ -339,6 +341,7 @@ inc/utils/mpmc_queue.h
 inc/utils/object_pool.h
 inc/utils/mem.h
 inc/utils/symap.h
+inc/utils/pcg_rand.h
 inc/utils/hash.h
 inc/utils/env.h
 inc/utils/cairo.h
@@ -441,6 +444,7 @@ inc/audio/engine_pulse.h
 inc/audio/router.h
 inc/audio/engine_rtaudio.h
 inc/audio/recording_event.h
+inc/audio/foldable_track.h
 inc/audio/windows_mme_device.h
 inc/audio/supported_file.h
 inc/audio/midi_track.h
@@ -600,6 +604,7 @@ src/gui/widgets/monitor_section.c
 src/gui/widgets/track_top_grid.c
 src/gui/widgets/scripting_window.c
 src/gui/widgets/active_hardware_mb.c
+src/gui/widgets/folder_channel.c
 src/gui/widgets/file_auditioner_controls.c
 src/gui/widgets/port_connection_row.c
 src/gui/widgets/port_connections.c
@@ -667,6 +672,7 @@ src/gui/widgets/dialogs/export_midi_file_dialog.c
 src/gui/widgets/dialogs/bounce_dialog.c
 src/gui/widgets/dialogs/string_entry_dialog.c
 src/gui/widgets/dialogs/port_info.c
+src/gui/widgets/dialogs/add_tracks_to_group_dialog.c
 src/gui/widgets/dialogs/about_dialog.c
 src/gui/widgets/dialogs/export_progress_dialog.c
 src/gui/widgets/dialogs/bug_report_dialog.c
@@ -703,6 +709,7 @@ src/utils/cairo.c
 src/utils/mem.c
 src/utils/datetime.c
 src/utils/color.c
+src/utils/pcg_rand.c
 src/utils/smf.c
 src/utils/system.c
 src/utils/env.c
@@ -829,6 +836,7 @@ src/audio/scale.c
 src/audio/clip.c
 src/audio/region_link_group.c
 src/audio/fader.c
+src/audio/foldable_track.c
 src/audio/engine_jack.c
 src/actions/port_action.c
 src/actions/arranger_selections.c
@@ -882,6 +890,7 @@ resources/ui/track_top_grid.ui
 resources/ui/project_assistant.ui
 resources/ui/left_dock_edge.ui
 resources/ui/chord_selector_window.ui
+resources/ui/folder_channel.ui
 resources/ui/create_project_dialog.ui
 resources/ui/monitor_section.ui
 resources/ui/active_hardware_popover.ui
