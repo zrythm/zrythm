@@ -178,8 +178,8 @@ activate_news (
 {
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://forum.zrythm.org/c/"
-    "News-and-blog-entries", 0, NULL);
+    "https://mastodon.social/@zrythm",
+    GDK_CURRENT_TIME, NULL);
 }
 
 void
