@@ -1108,14 +1108,12 @@ track_processor_process (
   /* apply output gain */
   if (tr->type == TRACK_TYPE_AUDIO)
     {
-      for (nframes_t l = local_offset;
-           l < nframes; l++)
-        {
-          self->stereo_out->l->buf[l] *=
-            self->output_gain->control;
-          self->stereo_out->r->buf[l] *=
-            self->output_gain->control;
-        }
+      dsp_mul_k2 (
+        &self->stereo_out->l->buf[local_offset],
+        self->output_gain->control, nframes);
+      dsp_mul_k2 (
+        &self->stereo_out->r->buf[local_offset],
+        self->output_gain->control, nframes);
     }
 }
 
