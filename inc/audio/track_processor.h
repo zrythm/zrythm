@@ -108,6 +108,19 @@ typedef struct TrackProcessor
    */
   Port *           piano_roll;
 
+  /**
+   * Whether to monitor the audio output.
+   *
+   * This is only used on audio tracks. During
+   * recording, if on, the recorded audio will be
+   * passed to the output. If off, the recorded
+   * audio will not be passed to the output.
+   *
+   * When not recording, this will only take effect
+   * when paused.
+   */
+  Port *           monitor_audio;
+
   /* --- MIDI controls --- */
 
   /** Mappings to each CC port. */
@@ -182,6 +195,9 @@ track_processor_fields_schema[] =
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, piano_roll,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TrackProcessor, monitor_audio,
     port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, stereo_in,

@@ -687,6 +687,50 @@ track_get_listened (
   return fader_get_listened (self->channel->fader);
 }
 
+/**
+ * Returns whether monitor audio is on.
+ */
+bool
+track_get_monitor_audio (
+  Track * self)
+{
+  g_return_val_if_fail (
+    IS_TRACK (self) && self->processor &&
+    IS_PORT_AND_NONNULL (
+      self->processor->monitor_audio),
+    false);
+
+  return
+    control_port_is_toggled (
+      self->processor->monitor_audio);
+}
+
+/**
+ * Sets whether monitor audio is on.
+ */
+void
+track_set_monitor_audio (
+  Track * self,
+  bool    monitor,
+  bool    auto_select,
+  bool    fire_events)
+{
+  g_return_if_fail (
+    IS_TRACK (self) && self->processor &&
+    IS_PORT_AND_NONNULL (
+      self->processor->monitor_audio));
+
+  if (auto_select)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE, fire_events);
+    }
+
+  control_port_set_toggled (
+    self->processor->monitor_audio,
+    monitor, fire_events);
+}
+
 TrackType
 track_get_type_from_plugin_descriptor (
   PluginDescriptor * descr)

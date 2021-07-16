@@ -772,6 +772,25 @@ track_get_listened (
   Track * self);
 
 /**
+ * Returns whether monitor audio is on.
+ */
+NONNULL
+bool
+track_get_monitor_audio (
+  Track * self);
+
+/**
+ * Sets whether monitor audio is on.
+ */
+NONNULL
+void
+track_set_monitor_audio (
+  Track * self,
+  bool    monitor,
+  bool    auto_select,
+  bool    fire_events);
+
+/**
  * Sets track soloed, updates UI and optionally
  * adds the action to the undo stack.
  *

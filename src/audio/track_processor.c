@@ -358,6 +358,20 @@ track_processor_new (
         F_NO_PUBLISH_EVENTS);
       port_set_owner_track_processor (
         self->output_gain, self);
+
+      self->monitor_audio =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT,
+          "Monitor audio");
+      self->monitor_audio->id.flags |=
+        PORT_FLAG_TOGGLE;
+      self->monitor_audio->id.flags2 |=
+        PORT_FLAG2_TP_MONITOR_AUDIO;
+      port_set_control_value (
+        self->monitor_audio, 0.f, F_NOT_NORMALIZED,
+        F_NO_PUBLISH_EVENTS);
+      port_set_owner_track_processor (
+        self->monitor_audio, self);
     }
 
   init_common (self, true);
@@ -403,6 +417,10 @@ track_processor_append_ports (
   if (self->output_gain)
     {
       _ADD (self->output_gain);
+    }
+  if (self->monitor_audio)
+    {
+      _ADD (self->monitor_audio);
     }
   if (self->stereo_out)
     {
@@ -518,6 +536,7 @@ track_processor_disconnect_all (
       port_disconnect_all (self->mono);
       port_disconnect_all (self->input_gain);
       port_disconnect_all (self->output_gain);
+      port_disconnect_all (self->monitor_audio);
       port_disconnect_all (self->stereo_in->l);
       port_disconnect_all (self->stereo_in->r);
       port_disconnect_all (self->stereo_out->l);
@@ -1008,34 +1027,40 @@ track_processor_process (
   switch (tr->in_signal_type)
     {
     case TYPE_AUDIO:
-      dsp_mix2 (
-        &self->stereo_out->l->buf[local_offset],
-        &self->stereo_in->l->buf[local_offset],
-        1.f,
-        self->input_gain ?
-          self->input_gain->control : 1.f,
-        nframes);
-
-      if (self->mono &&
-          control_port_is_toggled (self->mono))
+      if (tr->type != TRACK_TYPE_AUDIO ||
+          (tr->type == TRACK_TYPE_AUDIO &&
+             control_port_is_toggled (
+               self->monitor_audio)))
         {
           dsp_mix2 (
-            &self->stereo_out->r->buf[local_offset],
+            &self->stereo_out->l->buf[local_offset],
             &self->stereo_in->l->buf[local_offset],
             1.f,
             self->input_gain ?
               self->input_gain->control : 1.f,
             nframes);
-        }
-      else
-        {
-          dsp_mix2 (
-            &self->stereo_out->r->buf[local_offset],
-            &self->stereo_in->r->buf[local_offset],
-            1.f,
-            self->input_gain ?
-              self->input_gain->control : 1.f,
-            nframes);
+
+          if (self->mono &&
+              control_port_is_toggled (self->mono))
+            {
+              dsp_mix2 (
+                &self->stereo_out->r->buf[local_offset],
+                &self->stereo_in->l->buf[local_offset],
+                1.f,
+                self->input_gain ?
+                  self->input_gain->control : 1.f,
+                nframes);
+            }
+          else
+            {
+              dsp_mix2 (
+                &self->stereo_out->r->buf[local_offset],
+                &self->stereo_in->r->buf[local_offset],
+                1.f,
+                self->input_gain ?
+                  self->input_gain->control : 1.f,
+                nframes);
+            }
         }
       break;
     case TYPE_EVENT:
@@ -1106,6 +1131,16 @@ track_processor_copy_values (
     {
       dest->input_gain->control =
         src->input_gain->control;
+    }
+  if (src->monitor_audio)
+    {
+      dest->monitor_audio->control =
+        src->monitor_audio->control;
+    }
+  if (src->output_gain)
+    {
+      dest->output_gain->control =
+        src->output_gain->control;
     }
   if (src->mono)
     {
@@ -1388,6 +1423,12 @@ track_processor_free (
       port_disconnect_all (self->output_gain);
       object_free_w_func_and_null (
         port_free, self->output_gain);
+    }
+  if (IS_PORT_AND_NONNULL (self->monitor_audio))
+    {
+      port_disconnect_all (self->monitor_audio);
+      object_free_w_func_and_null (
+        port_free, self->monitor_audio);
     }
   if (self->stereo_in)
     {

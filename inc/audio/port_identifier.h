@@ -389,6 +389,9 @@ typedef enum PortFlags2
 
   /** Track recording. */
   PORT_FLAG2_TRACK_RECORDING = 1 << 22,
+
+  /** Track processor monitor audio. */
+  PORT_FLAG2_TP_MONITOR_AUDIO = 1 << 23,
 } PortFlags2;
 
 static const cyaml_bitdef_t
@@ -417,6 +420,7 @@ port_flags2_bitvals[] =
   { .name = "fader_listen", .offset = 20, .bits = 1 },
   { .name = "fader_mono_compat", .offset = 21, .bits = 1 },
   { .name = "track_recording", .offset = 22, .bits = 1 },
+  { .name = "tp_monitor_audio", .offset = 23, .bits = 1 },
 };
 
 /**

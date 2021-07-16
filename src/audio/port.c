@@ -428,6 +428,11 @@ port_find_from_identifier (
             {
               return tr->processor->output_gain;
             }
+          else if (flags2 &
+                     PORT_FLAG2_TP_MONITOR_AUDIO)
+            {
+              return tr->processor->monitor_audio;
+            }
           else if (flags &
                      PORT_FLAG_MIDI_AUTOMATABLE)
             {

@@ -100,6 +100,7 @@ G_DEFINE_TYPE (
 #define ICON_NAME_MODULATOR "modulator"
 #define ICON_NAME_FOLD "fluentui-folder-regular"
 #define ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
+#define ICON_NAME_MONITOR_AUDIO "audition"
 
 #ifdef _WOE32
 #define NAME_FONT "9"
@@ -460,6 +461,12 @@ draw_buttons (
         }
       else if (CB_ICON_IS (LISTEN) &&
                track_get_listened (track))
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (CB_ICON_IS (MONITOR_AUDIO) &&
+               track_get_monitor_audio (track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -1183,6 +1190,10 @@ set_tooltip_from_button (
         {
           SET_TOOLTIP (_("Listen"));
         }
+    }
+  else if (CB_ICON_IS (MONITOR_AUDIO))
+    {
+      SET_TOOLTIP (_("Monitor"));
     }
   else if (CB_ICON_IS (MONO_COMPAT))
     {
@@ -2396,6 +2407,13 @@ multipress_released (
                 F_TRIGGER_UNDO, F_AUTO_SELECT,
                 F_PUBLISH_EVENTS);
             }
+          else if (CB_ICON_IS (MONITOR_AUDIO))
+            {
+              track_set_monitor_audio (
+                track,
+                !track_get_monitor_audio (track),
+                F_AUTO_SELECT, F_PUBLISH_EVENTS);
+            }
           else if (CB_ICON_IS (SHOW_TRACK_LANES))
             {
               track_widget_on_show_lanes_toggled (
@@ -3277,6 +3295,8 @@ track_widget_new (Track * track)
         self, 1, ICON_NAME_MUTE);
       add_button (
         self, true, ICON_NAME_LISTEN);
+      add_button (
+        self, 0, ICON_NAME_MONITOR_AUDIO);
       add_button (
         self, 0, ICON_NAME_LOCK);
       add_button (
