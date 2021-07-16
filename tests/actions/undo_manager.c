@@ -40,16 +40,20 @@ perform_create_region_action ()
   position_set_to_bar (&p2, 2);
   int track_pos = TRACKLIST->num_tracks - 1;
   ZRegion * r =
-    midi_region_new (
+    automation_region_new (
       &p1, &p2, track_pos, 0, 0);
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
+  Track * track =  TRACKLIST->tracks[track_pos];
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[0];
   track_add_region (
-    TRACKLIST->tracks[track_pos],
-    r, NULL, 0, F_GEN_NAME,
+    track, r, at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    r_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
   UndoableAction * ua =
     arranger_selections_action_new_create (
       (ArrangerSelections *) TL_SELECTIONS);
@@ -69,8 +73,8 @@ test_perform_many_actions ()
       if (i % 2 == 0)
         {
           ua =
-            tracklist_selections_action_new_create_midi (
-              TRACKLIST->num_tracks, 1);
+            tracklist_selections_action_new_create_audio_fx (
+              NULL, TRACKLIST->num_tracks, 1);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
       else if (i % 13 == 0)
@@ -134,8 +138,8 @@ test_multi_actions ()
   for (int i = 0; i < max_actions; i++)
     {
       UndoableAction * ua =
-        tracklist_selections_action_new_create_midi (
-          TRACKLIST->num_tracks, 1);
+        tracklist_selections_action_new_create_audio_fx (
+          NULL, TRACKLIST->num_tracks, 1);
       if (i == 2)
         ua->num_actions = max_actions;
       undo_manager_perform (UNDO_MANAGER, ua);
