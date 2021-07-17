@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-07-17 10:51+0100\n"
-"PO-Revision-Date: 2021-06-26 01:33+0000\n"
+"PO-Revision-Date: 2021-07-16 23:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -4798,7 +4799,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Enabled"
-msgstr ""
+msgstr "已启用"
 
 #: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Controls whether the plugin is active or bypassed."
@@ -7703,4 +7704,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-

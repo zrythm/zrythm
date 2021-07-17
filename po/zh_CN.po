@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-07-15 17:32+0100\n"
-"PO-Revision-Date: 2021-06-26 01:33+0000\n"
+"PO-Revision-Date: 2021-07-16 23:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7.1-dev\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -688,9 +688,8 @@ msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "插件 '%s' 实例化失败。禁用中..."
 
 #: src/plugins/plugin.c:282
-#, fuzzy
 msgid "Enabled"
-msgstr "启用"
+msgstr "已启用"
 
 #: src/plugins/plugin.c:284
 msgid "Enables or disables the plugin"
@@ -745,9 +744,8 @@ msgid "_Save"
 msgstr "保存（_S）"
 
 #: src/plugins/plugin_gtk.c:299
-#, fuzzy
 msgid "Save Preset"
-msgstr "保存项目"
+msgstr "保存预设"
 
 #: src/plugins/plugin_gtk.c:338
 msgid "_Prefix plugin name"
@@ -1151,9 +1149,8 @@ msgid "Add Group Track"
 msgstr "添加组音轨"
 
 #: src/gui/widgets/drag_dest_box.c:460
-#, fuzzy
 msgid "Add Folder Track"
-msgstr "添加FX 轨"
+msgstr "添加文件夹轨道"
 
 #: src/gui/widgets/instrument_track.c:219
 #: src/gui/widgets/transport_controls.c:476 src/gui/widgets/midi_track.c:190
@@ -1625,9 +1622,8 @@ msgid "Show file browser"
 msgstr "显示文件浏览器"
 
 #: src/gui/widgets/plugin_properties_expander.c:103
-#, fuzzy
 msgid "Load Preset"
-msgstr "淡入淡出预设"
+msgstr "加载预设"
 
 #: src/gui/widgets/plugin_properties_expander.c:109
 msgid "_Load"
@@ -1659,18 +1655,16 @@ msgid "Save"
 msgstr "保存"
 
 #: src/gui/widgets/plugin_properties_expander.c:300
-#, fuzzy
 msgid "Save preset"
-msgstr "淡入淡出预设"
+msgstr "保存预设"
 
 #: src/gui/widgets/plugin_properties_expander.c:303
 msgid "Load"
 msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:307
-#, fuzzy
 msgid "Load preset"
-msgstr "淡入淡出预设"
+msgstr "加载预设"
 
 #: src/gui/widgets/route_target_selector.c:87
 msgid "Cannot be routed"
@@ -2159,9 +2153,8 @@ msgid "Change direct out"
 msgstr "更改直接输出"
 
 #: src/gui/widgets/track.c:2016
-#, fuzzy
 msgid "New group"
-msgstr "新项目"
+msgstr "新组"
 
 #: src/gui/widgets/track.c:2075
 msgid "Track MIDI Ch"
@@ -2228,19 +2221,16 @@ msgid "Port info"
 msgstr "端口信息"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:83
-#, fuzzy
 msgid "Enter group name"
-msgstr "输入区域名称..."
+msgstr "输入组名称"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:93
-#, fuzzy
 msgid "Group name"
-msgstr "组"
+msgstr "组名"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:96
-#, fuzzy
 msgid "New Group"
-msgstr "组"
+msgstr "新组"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:102
 msgid "Move tracks under group"
@@ -3002,9 +2992,8 @@ msgid "Image (PNG)"
 msgstr "图像(PNG)"
 
 #: src/actions/actions.c:878
-#, fuzzy
 msgid "Image (SVG)"
-msgstr "图像(PNG)"
+msgstr "图像(SVG)"
 
 #: src/actions/actions.c:879
 msgid "Dot graph"
@@ -3172,23 +3161,22 @@ msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "实例化插件%s时出错。有关详细信息，请参阅日志。"
 
 #: src/actions/tracklist_selections.c:1795
-#, fuzzy
 msgid "Copy Track inside"
-msgstr "复制曲目"
+msgstr "复制内部音轨"
 
 #: src/actions/tracklist_selections.c:1797
 msgid "Copy Track"
 msgstr "复制曲目"
 
 #: src/actions/tracklist_selections.c:1805
-#, fuzzy, c-format
+#, c-format
 msgid "Copy %d Tracks inside"
-msgstr "复制曲目"
+msgstr "复制%d条内部音轨"
 
 #: src/actions/tracklist_selections.c:1809
-#, fuzzy, c-format
+#, c-format
 msgid "Copy %d Tracks"
-msgstr "复制曲目"
+msgstr "复制%d条音轨"
 
 #: src/actions/tracklist_selections.c:1820
 #, c-format
@@ -3242,14 +3230,12 @@ msgid "Disable Track"
 msgstr "禁用音轨"
 
 #: src/actions/tracklist_selections.c:1879
-#, fuzzy
 msgid "Fold Track"
-msgstr "独奏曲目"
+msgstr "折叠音轨"
 
 #: src/actions/tracklist_selections.c:1882
-#, fuzzy
 msgid "Unfold Track"
-msgstr "非独奏曲目"
+msgstr "展开音轨"
 
 #: src/actions/tracklist_selections.c:1885
 msgid "Change Fader"
@@ -3322,28 +3308,27 @@ msgid "Disable %d Tracks"
 msgstr "禁用 %d 条音轨"
 
 #: src/actions/tracklist_selections.c:1955
-#, fuzzy, c-format
+#, c-format
 msgid "Fold %d Tracks"
-msgstr "独奏 %d 音轨"
+msgstr "折叠 %d 条音轨"
 
 #: src/actions/tracklist_selections.c:1959
-#, fuzzy, c-format
+#, c-format
 msgid "Unfold %d Tracks"
-msgstr "非独奏 %d 音轨"
+msgstr "展开 %d 条音轨"
 
 #: src/actions/tracklist_selections.c:1982
-#, fuzzy
 msgid "Move Track inside"
-msgstr "移动音轨"
+msgstr "移动内部音轨"
 
 #: src/actions/tracklist_selections.c:1986
 msgid "Move Track"
 msgstr "移动音轨"
 
 #: src/actions/tracklist_selections.c:1996
-#, fuzzy, c-format
+#, c-format
 msgid "Move %d Tracks inside"
-msgstr "移动%d音轨"
+msgstr "移动了%d条内部音轨"
 
 #: src/actions/tracklist_selections.c:2003
 #, c-format
@@ -3895,9 +3880,8 @@ msgid "Circle of Fifths"
 msgstr "五分之一圈"
 
 #: resources/ui/folder_channel.ui:150
-#, fuzzy
 msgid "togglebutton"
-msgstr "切换底部面板"
+msgstr "切换按钮"
 
 #: resources/ui/create_project_dialog.ui:70
 msgid "Parent directory"
