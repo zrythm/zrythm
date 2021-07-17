@@ -25,6 +25,7 @@
 #include "audio/midi_file.h"
 #include "audio/port.h"
 #include "audio/sample_processor.h"
+#include "audio/tempo_track.h"
 #include "audio/tracklist.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
@@ -198,6 +199,16 @@ sample_processor_process (
     {
       sp = &self->current_samples[i];
       g_return_if_fail (sp->channels > 0);
+
+      /* if sample starts after this cycle (eg,
+       * when counting in for metronome),
+       * update offset and skip processing */
+      if (sp->start_offset >=
+            AUDIO_ENGINE->block_length)
+        {
+          sp->start_offset -= nframes;
+          continue;
+        }
 
       /* if sample is already playing */
       if (sp->offset > 0)
@@ -382,8 +393,68 @@ sample_processor_process (
 }
 
 /**
+ * Queues a metronomem tick at the given offset.
+ *
+ * Used for countin.
+ */
+void
+sample_processor_queue_metronome_countin (
+  SampleProcessor * self)
+{
+  PrerollCountBars bars =
+    g_settings_get_enum (
+      S_TRANSPORT, "metronome-countin");
+  int num_bars =
+    transport_preroll_count_bars_enum_to_int (bars);
+  int beats_per_bar =
+    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int num_beats = beats_per_bar * num_bars;
+
+  double frames_per_bar =
+    AUDIO_ENGINE->frames_per_tick *
+    (double) TRANSPORT->ticks_per_bar;
+  for (int i = 0; i < num_bars; i++)
+    {
+      long offset =
+        (long) ((double) i * frames_per_bar);
+      SamplePlayback * sp =
+        &self->current_samples[
+          self->num_current_samples];
+      sample_playback_init (
+        sp, &METRONOME->emphasis,
+        METRONOME->emphasis_size,
+        METRONOME->emphasis_channels,
+        0.1f * METRONOME->volume, offset);
+      self->num_current_samples++;
+    }
+
+  double frames_per_beat =
+    AUDIO_ENGINE->frames_per_tick *
+    (double) TRANSPORT->ticks_per_beat;
+  for (int i = 0; i < num_beats; i++)
+    {
+      if (i % beats_per_bar == 0)
+        continue;
+
+      long offset =
+        (long) ((double) i * frames_per_beat);
+      SamplePlayback * sp =
+        &self->current_samples[
+          self->num_current_samples];
+      sample_playback_init (
+        sp, &METRONOME->normal,
+        METRONOME->normal_size,
+        METRONOME->normal_channels,
+        0.1f * METRONOME->volume, offset);
+      self->num_current_samples++;
+    }
+}
+
+/**
  * Queues a metronomem tick at the given local
  * offset.
+ *
+ * Realtime function.
  */
 void
 sample_processor_queue_metronome (

@@ -150,7 +150,19 @@ sample_processor_remove_sample_playback (
   SamplePlayback *  sp);
 
 /**
- * Queues a metronomem tick at the given local offset.
+ * Queues a metronomem tick at the given offset.
+ *
+ * Used for countin.
+ */
+void
+sample_processor_queue_metronome_countin (
+  SampleProcessor * self);
+
+/**
+ * Queues a metronomem tick at the given local
+ * offset.
+ *
+ * Realtime function.
  */
 void
 sample_processor_queue_metronome (

@@ -120,6 +120,7 @@ widget_srcs = files([
   'port_selector_popover.c',
   'ports_expander.c',
   'preferences.c',
+  'preroll_count_selector.c',
   'project_assistant.c',
   'project_toolbar.c',
   'range_action_buttons.c',

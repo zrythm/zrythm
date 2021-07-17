@@ -57,6 +57,32 @@ typedef struct AudioEngine AudioEngine;
 #define TRANSPORT_IS_LOOPING \
   (TRANSPORT->loop)
 
+typedef enum PrerollCountBars
+{
+  PREROLL_COUNT_BARS_NONE,
+  PREROLL_COUNT_BARS_ONE,
+  PREROLL_COUNT_BARS_TWO,
+  PREROLL_COUNT_BARS_FOUR,
+} PrerollCountBars;
+
+static inline int
+transport_preroll_count_bars_enum_to_int (
+  PrerollCountBars bars)
+{
+  switch (bars)
+    {
+    case PREROLL_COUNT_BARS_NONE:
+      return 0;
+    case PREROLL_COUNT_BARS_ONE:
+      return 1;
+    case PREROLL_COUNT_BARS_TWO:
+      return 2;
+    case PREROLL_COUNT_BARS_FOUR:
+      return 4;
+    }
+  return -1;
+}
+
 typedef enum {
   PLAYSTATE_ROLL_REQUESTED,
   PLAYSTATE_ROLLING,
@@ -236,6 +262,9 @@ typedef struct Transport
 
   /** Metronome enabled or not. */
   bool          metronome_enabled;
+
+  /** Countin frames remaining. */
+  long          countin_frames_remaining;
 
   /** Whether to start playback on MIDI input. */
   bool          start_playback_on_midi_input;

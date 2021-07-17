@@ -476,6 +476,28 @@ transport_request_roll (
   Transport * self)
 {
   g_message ("requesting roll");
+
+  if (!ZRYTHM_TESTING)
+    {
+      PrerollCountBars bars =
+        g_settings_get_enum (
+          S_TRANSPORT, "metronome-countin");
+      int num_bars =
+        transport_preroll_count_bars_enum_to_int (
+          bars);
+      double frames_per_bar =
+        AUDIO_ENGINE->frames_per_tick *
+        (double) TRANSPORT->ticks_per_bar;
+      self->countin_frames_remaining =
+        (long)
+        (long) ((double) num_bars * frames_per_bar);
+      if (self->metronome_enabled)
+        {
+          sample_processor_queue_metronome_countin (
+            SAMPLE_PROCESSOR);
+        }
+    }
+
   self->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 

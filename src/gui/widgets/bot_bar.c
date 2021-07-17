@@ -35,6 +35,7 @@
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/preroll_count_selector.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
@@ -48,9 +49,8 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (BotBarWidget,
-               bot_bar_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  BotBarWidget, bot_bar_widget, GTK_TYPE_BOX)
 
 #define PLAYHEAD_CAPTION \
   _("Playhead")
@@ -612,13 +612,27 @@ setup_metronome (
     self->metronome,
     GTK_BUTTON (self->metronome_btn),
     NULL, NULL,
-    false, 38, _("Metronome"), _("Volume"));
+    false, 38, _("Metronome"),
+    _("Metronome options"));
 
-  /* create popover for changing volume */
+  /* create popover for changing metronome options */
   GtkPopover * popover =
     GTK_POPOVER (
       gtk_popover_new (
         GTK_WIDGET (self->metronome->menu_btn)));
+  GtkWidget * grid = gtk_grid_new ();
+  gtk_grid_set_row_spacing (GTK_GRID (grid), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid), 4);
+  gtk_widget_set_visible (grid, true);
+  gtk_container_add (
+    GTK_CONTAINER (popover), grid);
+
+  /* volume */
+  GtkWidget * label = gtk_label_new (_("Volume"));
+  gtk_widget_set_visible (label, true);
+  gtk_grid_attach (
+    GTK_GRID (grid), GTK_WIDGET (label),
+    0, 0, 1, 1);
   GtkScale * scale =
     GTK_SCALE (
       gtk_scale_new_with_range (
@@ -632,8 +646,22 @@ setup_metronome (
   gtk_range_set_value (
     GTK_RANGE (scale), METRONOME->volume);
   gtk_widget_set_visible (GTK_WIDGET (scale), true);
-  gtk_container_add (
-    GTK_CONTAINER (popover), GTK_WIDGET (scale));
+  gtk_grid_attach (
+    GTK_GRID (grid), GTK_WIDGET (scale),
+    1, 0, 1, 1);
+
+  /* countin */
+  label = gtk_label_new (_("Count-in"));
+  gtk_widget_set_visible (label, true);
+  gtk_grid_attach (
+    GTK_GRID (grid), GTK_WIDGET (label),
+    0, 1, 1, 1);
+  PrerollCountSelectorWidget * preroll_count =
+    preroll_count_selector_widget_new (
+      PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN);
+  gtk_grid_attach (
+    GTK_GRID (grid), GTK_WIDGET (preroll_count),
+    1, 1, 1, 1);
 
   gtk_menu_button_set_popover (
     self->metronome->menu_btn, GTK_WIDGET (popover));

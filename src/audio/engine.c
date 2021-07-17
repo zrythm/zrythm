@@ -1289,7 +1289,9 @@ engine_process_prepare (
 #endif
     }
   else if (self->transport->play_state ==
-           PLAYSTATE_ROLL_REQUESTED)
+             PLAYSTATE_ROLL_REQUESTED &&
+           self->transport->
+             countin_frames_remaining == 0)
     {
       self->transport->play_state = PLAYSTATE_ROLLING;
       self->remaining_latency_preroll =
@@ -1559,11 +1561,25 @@ engine_process (
 
       /* queue metronome if met within this cycle */
       if (self->transport->metronome_enabled &&
-          TRANSPORT_IS_ROLLING)
+            TRANSPORT_IS_ROLLING)
         {
           metronome_queue_events (
             self, cur_offset,
             total_frames_remaining);
+        }
+
+      if (self->transport->
+            countin_frames_remaining > 0)
+        {
+          /* note: this is not accurate - ideally
+           * the cycle should be split on where
+           * countin_frames_remaining becomes 0 */
+          self->transport->
+            countin_frames_remaining -=
+              MIN (
+                total_frames_remaining,
+                self->transport->
+                  countin_frames_remaining);
         }
 
       /* run the cycle for the remaining frames -
