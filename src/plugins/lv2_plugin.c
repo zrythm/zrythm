@@ -2081,6 +2081,13 @@ lv2_plugin_is_ui_supported (
   char * ui_class =
     lv2_plugin_get_ui_class (
       pl_uri, ui_uri);
+  if (!ui_class)
+    {
+      g_warning (
+        "failed to get UI class for <%s>:<%s>",
+        pl_uri, ui_uri);
+      return false;
+    }
 
   if (suil_ui_supported (
         LV2_UI__Gtk3UI, ui_class) ||
@@ -2137,6 +2144,7 @@ lv2_plugin_get_ui_class (
     lilv_plugins_get_by_uri (
       LILV_PLUGINS, lv2_uri);
   lilv_node_free (lv2_uri);
+  g_return_val_if_fail (lilv_plugin, NULL);
   LilvUIs * uis =
     lilv_plugin_get_uis (lilv_plugin);
   LilvNode * ui_uri_node =
@@ -2297,6 +2305,8 @@ lv2_plugin_pick_most_preferable_ui (
     lilv_plugins_get_by_uri (
       LILV_PLUGINS, uri);
   lilv_node_free (uri);
+  g_return_val_if_fail (lilv_pl, false);
+
   LilvUIs * uis =
     lilv_plugin_get_uis (lilv_pl);
   const LilvUI * out_ui;

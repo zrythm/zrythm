@@ -20,6 +20,7 @@
 #include "plugins/carla/carla_discovery.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_manager.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
 #include "utils/file.h"
@@ -227,11 +228,25 @@ plugin_setting_validate (
   /* otherwise validate it */
   else
     {
+      LilvNode * lv2_uri =
+        lilv_new_uri (LILV_WORLD, descr->uri);
+      const LilvPlugin * lilv_plugin =
+        lilv_plugins_get_by_uri (
+          LILV_PLUGINS, lv2_uri);
+      lilv_node_free (lv2_uri);
+      if (!lilv_plugin)
+        {
+          g_debug (
+            "failed to load plugin <%s>",
+            descr->uri);
+          g_free_and_null (self->ui_uri);
+          self->force_generic_ui = true;
+        }
       /* if already have UI uri and not supported,
        * clear it */
-      if (self->ui_uri &&
-          !lv2_plugin_is_ui_supported (
-             descr->uri, self->ui_uri))
+      else if (self->ui_uri &&
+               !lv2_plugin_is_ui_supported (
+                  descr->uri, self->ui_uri))
         {
           g_debug ("UI URI %s is not supported", self->ui_uri);
           g_free_and_null (self->ui_uri);
@@ -239,7 +254,7 @@ plugin_setting_validate (
 
       /* if no UI URI, pick one */
       /*g_debug ("picking a UI URI...");*/
-      if (!self->ui_uri)
+      if (!self->ui_uri && lilv_plugin)
         {
           char * picked_ui = NULL;
           bool ui_picked =
