@@ -38,7 +38,7 @@
             <property name="can-focus">False</property>
             <property name="tooltip-text" translatable="yes">Play/Pause</property>
             <property name="icon-name">media-playback-start</property>
-            <signal name="clicked" handler="on_play_clicked" object="PanelFileBrowserWidget" swapped="no"/>
+            <signal name="clicked" handler="on_play_clicked" object="FileAuditionerControlsWidget" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -51,7 +51,7 @@
             <property name="can-focus">False</property>
             <property name="tooltip-text" translatable="yes">Stop</property>
             <property name="icon-name">media-playback-stop</property>
-            <signal name="clicked" handler="on_stop_clicked" object="PanelFileBrowserWidget" swapped="no"/>
+            <signal name="clicked" handler="on_stop_clicked" object="FileAuditionerControlsWidget" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>
