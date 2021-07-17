@@ -1596,6 +1596,7 @@ engine_process (
     self, total_frames_remaining,
     total_frames_to_process);
 
+#if 0
 #ifdef TRIAL_VER
   /* go silent if limit reached */
   if (self->timestamp_start -
@@ -1609,6 +1610,7 @@ engine_process (
           self->limit_reached = 1;
         }
     }
+#endif
 #endif
 
   /*self->cycle++;*/
