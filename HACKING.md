@@ -188,6 +188,12 @@ Releases are created using git hooks.
 See the [README](git-packaging-hooks/README.md) in
 git-packaging-hooks for more information.
 
+# Merging Pull Requests
+
+    git remote add <name> <fork url>
+    git fetch <name>
+    git merge <name>/<branch-name>
+
 # Coding Guidelines
 ## Commenting
 Please document everything specified in header files
