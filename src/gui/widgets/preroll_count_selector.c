@@ -160,10 +160,10 @@ preroll_count_selector_widget_new (
       G_OBJECT (self->x##_toggle), "toggled", \
       G_CALLBACK (on_btn_toggled), self)
 
-  CREATE (none, _("None"));
-  CREATE (one_bar, _("1 bar"));
-  CREATE (two_bars, _("2 bars"));
-  CREATE (four_bars, _("4 bars"));
+  CREATE (none, _(preroll_count_bars_str[0]));
+  CREATE (one_bar, _(preroll_count_bars_str[1]));
+  CREATE (two_bars, _(preroll_count_bars_str[2]));
+  CREATE (four_bars, _(preroll_count_bars_str[3]));
 
   PrerollCountBars preroll_type =
     PREROLL_COUNT_BARS_NONE;

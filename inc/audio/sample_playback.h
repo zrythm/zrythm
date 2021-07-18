@@ -60,20 +60,36 @@ typedef struct SamplePlayback
   /** Offset relative to the current processing cycle
    * to start playing the sample. */
   nframes_t      start_offset;
+
+  /** Source file initialized from. */
+  const char *   file;
+
+  /** Function initialized from. */
+  const char *   func;
+
+  /** Line no initialized from. */
+  int            lineno;
 } SamplePlayback;
 
 /**
  * Initializes a SamplePlayback with a sample to
  * play back.
  */
-void
-sample_playback_init (
-  SamplePlayback * self,
-  sample_t **      buf,
-  long             buf_size,
-  channels_t       channels,
-  float            vol,
-  nframes_t        start_offset);
+#define sample_playback_init( \
+  self,_buf,_buf_size,_channels,_vol,_start_offset) \
+  if (_channels <= 0) \
+    { \
+      g_critical ("channels: %u", _channels); \
+    } \
+  (self)->buf = _buf; \
+  (self)->buf_size = _buf_size; \
+  (self)->volume = _vol; \
+  (self)->offset = 0; \
+  (self)->channels = _channels; \
+  (self)->start_offset = _start_offset; \
+  (self)->file = __FILE__; \
+  (self)->func = __func__; \
+  (self)->lineno = __LINE__
 
 /**
  * @}

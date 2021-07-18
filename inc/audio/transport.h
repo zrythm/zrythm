@@ -65,6 +65,20 @@ typedef enum PrerollCountBars
   PREROLL_COUNT_BARS_FOUR,
 } PrerollCountBars;
 
+static const char * preroll_count_bars_str[] = {
+  __("None"),
+  __("1 bar"),
+  __("2 bars"),
+  __("4 bars"),
+};
+
+static inline const char *
+transport_preroll_count_to_str (
+  PrerollCountBars bars)
+{
+  return preroll_count_bars_str[bars];
+}
+
 static inline int
 transport_preroll_count_bars_enum_to_int (
   PrerollCountBars bars)
@@ -257,11 +271,15 @@ typedef struct Transport
   /** Whether punch in/out mode is enabled. */
   bool          punch_mode;
 
-  /** Recording or not. */
+  /** Whether MIDI/audio recording is enabled
+   * (recording toggle in transport bar). */
   bool          recording;
 
   /** Metronome enabled or not. */
   bool          metronome_enabled;
+
+  /** Preroll frames remaining. */
+  long          preroll_frames_remaining;
 
   /** Countin frames remaining. */
   long          countin_frames_remaining;

@@ -1091,8 +1091,9 @@ track_processor_process (
       break;
     }
 
-  if (track_type_can_record (tr->type) ||
-      tr->automation_tracklist.num_ats > 0)
+  if (TRANSPORT->preroll_frames_remaining == 0 &&
+      (track_type_can_record (tr->type) ||
+       tr->automation_tracklist.num_ats > 0))
     {
       /* handle recording. this will only create
        * events in regions. it will not copy the

@@ -1293,14 +1293,17 @@ engine_process_prepare (
            self->transport->
              countin_frames_remaining == 0)
     {
-      self->transport->play_state = PLAYSTATE_ROLLING;
+      self->transport->play_state =
+        PLAYSTATE_ROLLING;
       self->remaining_latency_preroll =
         router_get_max_route_playback_latency (
           self->router);
+#if 0
       g_message (
         "starting playback, remaining latency "
         "preroll: %u",
         self->remaining_latency_preroll);
+#endif
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
         {
@@ -1568,27 +1571,75 @@ engine_process (
             total_frames_remaining);
         }
 
+      /* split at countin */
       if (self->transport->
             countin_frames_remaining > 0)
         {
-          /* note: this is not accurate - ideally
-           * the cycle should be split on where
-           * countin_frames_remaining becomes 0 */
+          nframes_t countin_frames =
+            MIN (
+              total_frames_remaining,
+              self->transport->
+                countin_frames_remaining);
+
+          /* process for countin frames */
+          router_start_cycle (
+            self->router, countin_frames,
+            cur_offset, PLAYHEAD);
           self->transport->
             countin_frames_remaining -=
-              MIN (
-                total_frames_remaining,
-                self->transport->
-                  countin_frames_remaining);
+              countin_frames;
+
+          /* adjust total frames remaining to
+           * process and current offset */
+          total_frames_remaining -= countin_frames;
+          if (total_frames_remaining == 0)
+            goto finalize_processing;
+          cur_offset += countin_frames;
         }
 
-      /* run the cycle for the remaining frames -
-       * this will also play the queued metronome
-       * events (if any) */
-      router_start_cycle (
-        self->router, total_frames_remaining,
-        cur_offset, PLAYHEAD);
+      /* split at preroll */
+      if (self->transport->
+            countin_frames_remaining == 0 &&
+          self->transport->
+            preroll_frames_remaining > 0)
+        {
+          nframes_t preroll_frames =
+            MIN (
+              total_frames_remaining,
+              self->transport->
+                preroll_frames_remaining);
+
+          /* process for preroll frames */
+          router_start_cycle (
+            self->router, preroll_frames,
+            cur_offset, PLAYHEAD);
+          self->transport->
+            preroll_frames_remaining -=
+              preroll_frames;
+
+          /* process for remaining frames */
+          cur_offset += preroll_frames;
+          nframes_t remaining_frames =
+            total_frames_remaining - preroll_frames;
+          if (remaining_frames > 0)
+            {
+              router_start_cycle (
+                self->router, remaining_frames,
+                cur_offset, PLAYHEAD);
+            }
+        }
+      else
+        {
+          /* run the cycle for the remaining
+           * frames - this will also play the
+           * queued metronome events (if any) */
+          router_start_cycle (
+            self->router, total_frames_remaining,
+            cur_offset, PLAYHEAD);
+        }
     }
+
+finalize_processing:
 
   /* run post-process code for the number of frames
    * remaining after handling preroll (if any) */

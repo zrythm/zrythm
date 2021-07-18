@@ -479,6 +479,7 @@ transport_request_roll (
 
   if (!ZRYTHM_TESTING)
     {
+      /* handle countin */
       PrerollCountBars bars =
         g_settings_get_enum (
           S_TRANSPORT, "metronome-countin");
@@ -489,12 +490,35 @@ transport_request_roll (
         AUDIO_ENGINE->frames_per_tick *
         (double) TRANSPORT->ticks_per_bar;
       self->countin_frames_remaining =
-        (long)
         (long) ((double) num_bars * frames_per_bar);
       if (self->metronome_enabled)
         {
           sample_processor_queue_metronome_countin (
             SAMPLE_PROCESSOR);
+        }
+
+      if (self->recording)
+        {
+          /* handle preroll */
+          bars =
+            g_settings_get_enum (
+              S_TRANSPORT, "recording-preroll");
+          num_bars =
+            transport_preroll_count_bars_enum_to_int (
+              bars);
+          Position pos;
+          position_set_to_pos (
+            &pos, &self->playhead_pos);
+          position_add_bars (&pos, - num_bars);
+          position_print (&pos);
+          if (pos.frames < 0)
+            position_init (&pos);
+          self->preroll_frames_remaining =
+            self->playhead_pos.frames - pos.frames;
+          transport_set_playhead_pos (self, &pos);
+          g_debug (
+            "preroll %ld frames",
+            self->preroll_frames_remaining);
         }
     }
 

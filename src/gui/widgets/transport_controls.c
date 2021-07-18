@@ -283,14 +283,9 @@ record_toggled_cb (
   GtkToggleButton * tg,
   gpointer        user_data)
 {
-  if (gtk_toggle_button_get_active (tg))
-    {
-      TRANSPORT->recording = 1;
-    }
-  else
-    {
-      TRANSPORT->recording = 0;
-    }
+  transport_set_recording (
+    TRANSPORT, gtk_toggle_button_get_active (tg),
+    F_PUBLISH_EVENTS);
 }
 
 static void
@@ -369,7 +364,50 @@ activate_recording_mode (
       transport_set_recording_mode (
         TRANSPORT, RECORDING_MODE_TAKES_MUTED);
     }
+  else
+    {
+      g_return_if_reached ();
+    }
   g_message ("recording mode changed");
+}
+
+static void
+activate_preroll (
+  GSimpleAction *action,
+  GVariant      *_variant,
+  gpointer       user_data)
+{
+  g_return_if_fail (_variant);
+
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  g_simple_action_set_state (action, _variant);
+  PrerollCountBars preroll_type =
+    PREROLL_COUNT_BARS_NONE;
+  if (string_is_equal (variant, "none"))
+    {
+      preroll_type = PREROLL_COUNT_BARS_NONE;
+    }
+  if (string_is_equal (variant, "one"))
+    {
+      preroll_type = PREROLL_COUNT_BARS_ONE;
+    }
+  else if (string_is_equal (variant, "two"))
+    {
+      preroll_type = PREROLL_COUNT_BARS_TWO;
+    }
+  else if (string_is_equal (variant, "four"))
+    {
+      preroll_type = PREROLL_COUNT_BARS_FOUR;
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+  g_settings_set_enum (
+    S_TRANSPORT, "recording-preroll", preroll_type);
+  g_message ("preroll type");
 }
 
 void
@@ -444,11 +482,30 @@ setup_record_btn (
     menu, _("Recording mode"),
     G_MENU_MODEL (modes_section));
   g_object_unref (modes_section);
+  GMenu * preroll_section = g_menu_new ();
+  g_menu_append (
+    preroll_section, _(preroll_count_bars_str[0]),
+    "record-btn.preroll::none");
+  g_menu_append (
+    preroll_section, _(preroll_count_bars_str[1]),
+    "record-btn.preroll::one");
+  g_menu_append (
+    preroll_section, _(preroll_count_bars_str[2]),
+    "record-btn.preroll::two");
+  g_menu_append (
+    preroll_section, _(preroll_count_bars_str[3]),
+    "record-btn.preroll::four");
+  g_menu_append_section (
+    menu, _("Preroll"),
+    G_MENU_MODEL (preroll_section));
+  g_object_unref (preroll_section);
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
   const char * recording_modes[] = {
     "'overwrite'", "'merge'", "'takes'",
     "'takes-muted'", };
+  const char * preroll_types[] = {
+    "'none'", "'one'", "'two'", "'four'", };
   GActionEntry actions[] = {
     { "punch-mode", NULL, NULL,
       (TRANSPORT->punch_mode ? "true" : "false"),
@@ -460,6 +517,11 @@ setup_record_btn (
     { "recording-mode",
       activate_recording_mode, "s",
       recording_modes[TRANSPORT->recording_mode] },
+    { "preroll",
+      activate_preroll, "s",
+      preroll_types[
+        g_settings_get_enum (
+          S_TRANSPORT, "recording-preroll")] },
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), actions,

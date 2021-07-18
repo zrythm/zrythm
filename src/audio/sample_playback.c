@@ -20,25 +20,3 @@
 #include "audio/sample_playback.h"
 
 #include <gtk/gtk.h>
-
-/**
- * Initializes a SamplePlayback with a sample to
- * play back.
- */
-void
-sample_playback_init (
-  SamplePlayback * self,
-  sample_t **      buf,
-  long             buf_size,
-  channels_t       channels,
-  float            vol,
-  nframes_t        start_offset)
-{
-  g_return_if_fail (channels > 0);
-  self->buf = buf;
-  self->buf_size = buf_size;
-  self->volume = vol;
-  self->offset = 0;
-  self->channels = channels;
-  self->start_offset = start_offset;
-}

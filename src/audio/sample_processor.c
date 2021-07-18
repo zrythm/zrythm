@@ -203,8 +203,7 @@ sample_processor_process (
       /* if sample starts after this cycle (eg,
        * when counting in for metronome),
        * update offset and skip processing */
-      if (sp->start_offset >=
-            AUDIO_ENGINE->block_length)
+      if (sp->start_offset >= nframes)
         {
           sp->start_offset -= nframes;
           continue;
@@ -225,8 +224,7 @@ sample_processor_process (
               nframes_t buf_offset =
                 j + cycle_offset;
               g_return_if_fail (
-                buf_offset <
-                  AUDIO_ENGINE->block_length &&
+                buf_offset < nframes &&
                 sp->offset < sp->buf_size);
               if (sp->channels == 1)
                 {
@@ -269,8 +267,7 @@ sample_processor_process (
               nframes_t buf_offset =
                 j + sp->start_offset;
               g_return_if_fail (
-                buf_offset <
-                  AUDIO_ENGINE->block_length &&
+                buf_offset < nframes &&
                 sp->offset < sp->buf_size);
               if (sp->channels == 1)
                 {
