@@ -70,7 +70,7 @@ See the `manpage` and `user_manual` meson options.
 # Post-Install Commands
 
 Depending on the distro, some of the
-the following commands will need to be run with
+following commands will need to be run with
 appropriate options. Some distros run these
 automatically.
 
