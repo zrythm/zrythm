@@ -17,10 +17,17 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Flags.
+ */
 
 #ifndef __UTILS_FLAGS_H__
 #define __UTILS_FLAGS_H__
+
+/* FIXME prefix with something unique
+ * (ZRYTHM_F_*). */
 
 /**
  * Used to select something instead of using 1s and
@@ -321,5 +328,8 @@
 
 #define F_AUDITIONER 1
 #define F_NOT_AUDITIONER 0
+
+#define ZRYTHM_F_NOTIFY 1
+#define ZRYTHM_F_NO_NOTIFY 0
 
 #endif

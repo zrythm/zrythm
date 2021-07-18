@@ -893,6 +893,79 @@ project_create_default (
 }
 
 /**
+ * Returns the YAML representation of the saved
+ * project file.
+ *
+ * To be free'd with free().
+ *
+ * @param backup Whether to use the project file
+ *   from the most recent backup.
+ */
+char *
+project_get_existing_yaml (
+  Project * self,
+  bool      backup)
+{
+  /* get file contents */
+  char * project_file_path =
+    project_get_path (
+      self, PROJECT_PATH_PROJECT_FILE, backup);
+  g_return_val_if_fail (project_file_path, NULL);
+  g_message (
+    "%s: getting YAML for project file %s",
+    __func__, project_file_path);
+
+  char * compressed_pj;
+  gsize compressed_pj_size;
+  GError *err = NULL;
+  g_file_get_contents (
+    project_file_path, &compressed_pj,
+    &compressed_pj_size, &err);
+  if (err != NULL)
+    {
+      /* Report error to user, and free error */
+      char str[1200];
+      sprintf (
+        str, _("Unable to read file: %s"),
+        err->message);
+      ui_show_error_message (MAIN_WINDOW, str);
+      g_error_free (err);
+      return NULL;
+    }
+
+  /* decompress */
+  g_message (
+    "%s: decompressing project...", __func__);
+  char * yaml = NULL;
+  size_t yaml_size;
+  char * error_msg =
+    project_decompress (
+      &yaml, &yaml_size,
+      PROJECT_DECOMPRESS_DATA,
+      compressed_pj, compressed_pj_size,
+      PROJECT_DECOMPRESS_DATA);
+  g_free (compressed_pj);
+  if (error_msg)
+    {
+      g_warning (
+        "Failed to decompress project file: %s",
+        error_msg);
+      ui_show_error_message (
+        MAIN_WINDOW, error_msg);
+      g_free (error_msg);
+      return NULL;
+    }
+
+  /* make string null-terminated */
+  yaml =
+    g_realloc (
+      yaml, yaml_size + sizeof (char));
+  yaml[yaml_size] = '\0';
+
+  return yaml;
+}
+
+/**
  * @param filename The filename to open. This will
  *   be the template in the case of template, or
  *   the actual project otherwise.
@@ -979,66 +1052,8 @@ load (
   bool use_backup = PROJECT->backup_dir != NULL;
   PROJECT->loading_from_backup = use_backup;
 
-  /* get file contents */
-  char * compressed_pj;
-  gsize compressed_pj_size;
-  GError *err = NULL;
-  char * project_file_path_alloc =
-    project_get_path (
-      PROJECT, PROJECT_PATH_PROJECT_FILE,
-      use_backup);
-  g_return_val_if_fail (
-    project_file_path_alloc, -1);
-  char project_file_path[1600];
-  strcpy (
-    project_file_path, project_file_path_alloc);
-  g_message (
-    "%s: loading project file %s",
-    __func__, project_file_path);
-  g_file_get_contents (
-    project_file_path, &compressed_pj,
-    &compressed_pj_size, &err);
-  if (err != NULL)
-    {
-      /* Report error to user, and free error */
-      char str[800];
-      sprintf (
-        str, _("Unable to read file: %s"),
-        err->message);
-      ui_show_error_message (MAIN_WINDOW, str);
-      g_error_free (err);
-      RETURN_ERROR
-    }
-
-  /* decompress */
-  g_message (
-    "%s: decompressing project...", __func__);
-  char * yaml = NULL;
-  size_t yaml_size;
-  char * error_msg =
-    project_decompress (
-      &yaml, &yaml_size,
-      PROJECT_DECOMPRESS_DATA,
-      compressed_pj, compressed_pj_size,
-      PROJECT_DECOMPRESS_DATA);
-  g_free (compressed_pj);
-  if (error_msg)
-    {
-      g_warning (
-        "Failed to decompress project file: %s",
-        error_msg);
-      ui_show_error_message (
-        MAIN_WINDOW, error_msg);
-      g_free (error_msg);
-      return -1;
-    }
-
-  /* make string null-terminated */
-  yaml =
-    g_realloc (
-      yaml,
-      yaml_size + sizeof (char));
-  yaml[yaml_size] = '\0';
+  char * yaml =
+    project_get_existing_yaml (PROJECT, use_backup);
 
   Project * self =
     (Project *)

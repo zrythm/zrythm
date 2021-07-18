@@ -66,10 +66,13 @@
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/string.h"
+#include "utils/system.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -79,6 +82,10 @@ G_DEFINE_TYPE (MainWindowWidget,
                main_window_widget,
                GTK_TYPE_APPLICATION_WINDOW)
 
+/**
+ * This is called when the window closing is
+ * finalized and cannot be intercepted.
+ */
 static void
 on_main_window_destroy (
   MainWindowWidget * self,
@@ -113,10 +120,163 @@ on_main_window_destroy (
   g_message ("main window destroy called");
 }
 
+/**
+ * This is called when a close request is handled
+ * and can be intercepted.
+ */
+static bool
+on_delete_event (
+  GtkWidget *        widget,
+  GdkEvent *         event,
+  MainWindowWidget * self)
+{
+  g_debug (
+    "%s: main window delete event called", __func__);
+
+  /* temporarily pause engine */
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, F_NO_FORCE);
+
+  /* get yaml for live project */
+  char * live_yaml =
+    yaml_serialize (PROJECT, &project_schema);
+
+  /* get yaml for existing project file */
+  char * file_yaml =
+    project_get_existing_yaml (
+      PROJECT, F_NOT_BACKUP);
+
+  /* ask for save if project has unsaved changes */
+  bool ret = false;
+  if (!string_is_equal (file_yaml, live_yaml))
+    {
+      bool show_diff = false;
+      char * diff = NULL;
+
+      /* get diff using `diff` */
+      const size_t max_diff_len = 400;
+      GError * err = NULL;
+      char * tmp_dir =
+        g_dir_make_tmp ("zrythm-diff-XXXXXX", &err);
+      g_return_val_if_fail (err == NULL, false);
+      char * tmp_live_fp =
+        g_build_filename (
+          tmp_dir, "live.yaml", NULL);
+      char * tmp_file_fp =
+        g_build_filename (
+          tmp_dir, "file.yaml", NULL);
+      err = NULL;
+      g_file_set_contents (
+        tmp_live_fp, live_yaml, -1, &err);
+      g_return_val_if_fail (err == NULL, false);
+      err = NULL;
+      g_file_set_contents (
+        tmp_file_fp, file_yaml, -1, &err);
+      g_return_val_if_fail (err == NULL, false);
+
+      char * diff_bin =
+        g_find_program_in_path ("diff");
+      diff = NULL;
+      if (diff_bin)
+        {
+          const char * argv[] = {
+            diff_bin, tmp_live_fp, tmp_file_fp, NULL };
+          diff =
+            system_get_cmd_output (
+              (char **) argv, -1, false);
+          g_debug ("diff: %s", diff);
+          g_free (diff_bin);
+        }
+      show_diff =
+        diff && strlen (diff) < max_diff_len;
+
+      io_remove (tmp_live_fp);
+      io_remove (tmp_file_fp);
+      io_rmdir (tmp_dir, F_NO_FORCE);
+      g_free (tmp_dir);
+      g_free (tmp_live_fp);
+      g_free (tmp_file_fp);
+
+      GtkWidget * dialog =
+        gtk_dialog_new_with_buttons (
+          _("Unsaved changes"),
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_DIALOG_MODAL |
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+          _("Save & Quit"),
+          GTK_RESPONSE_ACCEPT,
+          _("Quit without saving"),
+          GTK_RESPONSE_REJECT,
+          _("Cancel"),
+          GTK_RESPONSE_CANCEL,
+          NULL);
+      gtk_dialog_set_default_response (
+        GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
+      const char * label_question =
+        _("The project contains unsaved changes.\n"
+        "If you quit without saving, unsaved "
+        "changes will be lost.");
+      char label_str[4000];
+      sprintf (
+        label_str,
+        show_diff ? _("%s\n\nChanges:\n%s") : "%s%s",
+        label_question,
+        show_diff ? diff : "");
+      GtkWidget * label = gtk_label_new (label_str);
+      gtk_widget_set_margin_top (label, 4);
+      gtk_widget_set_margin_bottom (label, 4);
+      gtk_widget_set_visible (label, true);
+      GtkWidget * content =
+        gtk_dialog_get_content_area (
+          GTK_DIALOG (dialog));
+      gtk_container_add (
+        GTK_CONTAINER (content), label);
+      int dialog_res =
+        gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+      switch (dialog_res)
+        {
+        case GTK_RESPONSE_ACCEPT:
+          /* save project */
+          g_message ("saving project...");
+          project_save (
+            PROJECT, PROJECT->dir, F_NOT_BACKUP,
+            ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC);
+          break;
+        case GTK_RESPONSE_REJECT:
+          /* no action needed - just quit */
+          g_message ("quitting without saving...");
+          break;
+        default:
+          /* return true to cancel */
+          g_message ("cancel");
+          ret = true;
+          break;
+        }
+
+      if (diff)
+        g_free (diff);
+
+    } /* endif project has unsaved changes */
+  g_free (live_yaml);
+  free (file_yaml);
+
+  /* restart engine */
+  engine_resume (AUDIO_ENGINE, &state);
+
+  g_debug (
+    "%s: main window delete event returning %d",
+    __func__, ret);
+
+  return ret;
+}
+
 static void
-on_state_changed (MainWindowWidget * self,
-                  GdkEventWindowState  * event,
-                  gpointer    user_data)
+on_state_changed (
+  MainWindowWidget *    self,
+  GdkEventWindowState * event,
+  gpointer              user_data)
 {
   self->is_maximized =
     event->new_window_state &
@@ -639,6 +799,9 @@ main_window_widget_init (MainWindowWidget * self)
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (on_key_release), self);
+  g_signal_connect (
+    G_OBJECT (self), "delete-event",
+    G_CALLBACK (on_delete_event), self);
 
   g_message ("done");
 }

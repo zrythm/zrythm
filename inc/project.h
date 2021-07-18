@@ -537,6 +537,20 @@ _project_compress (
   _project_compress (false, a, b, c, d, e, f)
 
 /**
+ * Returns the YAML representation of the saved
+ * project file.
+ *
+ * To be free'd with free().
+ *
+ * @param backup Whether to use the project file
+ *   from the most recent backup.
+ */
+char *
+project_get_existing_yaml (
+  Project * self,
+  bool      backup);
+
+/**
  * Creates an empty project object.
  */
 COLD

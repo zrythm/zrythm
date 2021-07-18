@@ -263,10 +263,15 @@ activate_about (GSimpleAction *action,
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
+/**
+ * @note This is never called but keep it around
+ * for shortcut window.
+ */
 void
-activate_quit (GSimpleAction *action,
-               GVariant      *variant,
-               gpointer       user_data)
+activate_quit (
+  GSimpleAction * action,
+  GVariant      * variant,
+  gpointer        user_data)
 {
   g_application_quit (G_APPLICATION (user_data));
 }
@@ -652,15 +657,12 @@ activate_new (GSimpleAction *action,
   return;
 #endif
 
-  GtkWidget *dialog;
-  GtkDialogFlags flags =
-    GTK_DIALOG_MODAL |
-    GTK_DIALOG_DESTROY_WITH_PARENT;
-  dialog =
+  GtkWidget * dialog =
     gtk_dialog_new_with_buttons (
       _("Create new project"),
       GTK_WINDOW (MAIN_WINDOW),
-      flags,
+      GTK_DIALOG_MODAL |
+        GTK_DIALOG_DESTROY_WITH_PARENT,
       _("Yes"),
       GTK_RESPONSE_ACCEPT,
       _("No"),
@@ -670,7 +672,7 @@ activate_new (GSimpleAction *action,
     gtk_label_new (
       _("Any unsaved changes to the current "
         "project will be lost. Continue?"));
-  gtk_widget_set_visible (label, 1);
+  gtk_widget_set_visible (label, true);
   GtkWidget * content =
     gtk_dialog_get_content_area (
       GTK_DIALOG (dialog));
@@ -763,13 +765,15 @@ activate_save (GSimpleAction *action,
     "project dir: %s", PROJECT->dir);
 
   project_save (
-    PROJECT, PROJECT->dir, 0, 1, F_NO_ASYNC);
+    PROJECT, PROJECT->dir, F_NOT_BACKUP,
+    ZRYTHM_F_NOTIFY, F_NO_ASYNC);
 }
 
 void
-activate_save_as (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_save_as (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
 #ifdef TRIAL_VER
   ui_show_error_message (
@@ -821,8 +825,8 @@ activate_save_as (GSimpleAction *action,
       filename =
         gtk_file_chooser_get_filename (chooser);
       project_save (
-        PROJECT, filename, false, false,
-        F_NO_ASYNC);
+        PROJECT, filename, F_NOT_BACKUP,
+        ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC);
       g_free (filename);
     }
 

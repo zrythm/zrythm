@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -152,15 +152,11 @@ activate_zoom_out (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
 
-void
-activate_new (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+COLD
+DECLARE_SIMPLE (activate_new);
 
-void
-activate_iconify (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+COLD
+DECLARE_SIMPLE (activate_iconify);
 
 void
 activate_open (GSimpleAction *action,
@@ -168,25 +164,19 @@ activate_open (GSimpleAction *action,
                   gpointer       user_data);
 
 void
-activate_save (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
-
-void
-activate_save_as (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
-
-void
-activate_export_as (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
-
-void
-activate_export_graph (
+activate_save (
   GSimpleAction *action,
   GVariant      *variant,
   gpointer       user_data);
+
+COLD
+DECLARE_SIMPLE (activate_save_as);
+
+COLD
+DECLARE_SIMPLE (activate_export_as);
+
+COLD
+DECLARE_SIMPLE (activate_export_graph);
 
 void
 activate_properties (GSimpleAction *action,
@@ -284,36 +274,17 @@ activate_fullscreen (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
 
+COLD DECLARE_SIMPLE (activate_news);
+COLD DECLARE_SIMPLE (activate_manual);
+COLD DECLARE_SIMPLE (activate_chat);
+COLD DECLARE_SIMPLE (activate_bugreport);
+COLD DECLARE_SIMPLE (activate_donate);
+
 void
-activate_news (
+activate_loop_selection (
   GSimpleAction *action,
   GVariant      *variant,
   gpointer       user_data);
-
-void
-activate_manual (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
-
-void
-activate_chat (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data);
-
-void
-activate_bugreport (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
-
-void
-activate_donate (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
-
-void
-activate_loop_selection (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
 
 void
 activate_best_fit (GSimpleAction *action,
@@ -445,7 +416,7 @@ activate_unlink_jack_transport (
   GVariant      *variant,
   gpointer       user_data);
 
-DECLARE_SIMPLE (activate_show_file_browser);
+COLD DECLARE_SIMPLE (activate_show_file_browser);
 DECLARE_SIMPLE (
   activate_toggle_timeline_event_viewer);
 DECLARE_SIMPLE (
@@ -453,15 +424,19 @@ DECLARE_SIMPLE (
 DECLARE_SIMPLE (activate_insert_silence);
 DECLARE_SIMPLE (activate_remove_range);
 
-DECLARE_SIMPLE (change_state_timeline_playhead_scroll_edges);
-DECLARE_SIMPLE (change_state_timeline_playhead_follow);
-DECLARE_SIMPLE (change_state_editor_playhead_scroll_edges);
-DECLARE_SIMPLE (change_state_editor_playhead_follow);
+DECLARE_SIMPLE (
+  change_state_timeline_playhead_scroll_edges);
+DECLARE_SIMPLE (
+  change_state_timeline_playhead_follow);
+DECLARE_SIMPLE (
+  change_state_editor_playhead_scroll_edges);
+DECLARE_SIMPLE (
+  change_state_editor_playhead_follow);
 
 /* Editor functions. */
 DECLARE_SIMPLE (activate_editor_function);
 
-DECLARE_SIMPLE (
+COLD DECLARE_SIMPLE (
   activate_midi_editor_highlighting);
 
 DECLARE_SIMPLE (
