@@ -71,6 +71,7 @@ typedef struct _ChannelWidget
 
   GtkBox *            mid_box;
   PluginStripExpanderWidget * inserts;
+  PluginStripExpanderWidget * midi_fx;
 
   /** Sends. */
   ChannelSendsExpanderWidget * sends;
@@ -148,7 +149,7 @@ typedef struct _ChannelWidget
  * Updates the inserts.
  */
 void
-channel_widget_update_inserts (
+channel_widget_update_midi_fx_and_inserts (
   ChannelWidget * self);
 
 void

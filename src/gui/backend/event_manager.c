@@ -1594,7 +1594,7 @@ process_events (void * data)
               ch ? ch->widget : NULL;
             if (cw)
               {
-                channel_widget_update_inserts (
+                channel_widget_update_midi_fx_and_inserts (
                   cw);
               }
           }
@@ -1997,6 +1997,7 @@ process_events (void * data)
           on_track_added ((Track *) ev->arg);
           break;
         case ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED:
+        case ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED:
         case ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED:
           mixer_widget_soft_refresh (MW_MIXER);
           break;

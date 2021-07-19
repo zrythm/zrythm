@@ -220,6 +220,11 @@
             <property name="visible">1</property>
             <property name="orientation">vertical</property>
             <child>
+              <object class="PluginStripExpanderWidget" id="midi_fx">
+                <property name="visible">1</property>
+              </object>
+            </child>
+            <child>
               <object class="PluginStripExpanderWidget" id="inserts">
                 <property name="visible">1</property>
               </object>

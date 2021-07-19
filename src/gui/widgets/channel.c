@@ -491,10 +491,13 @@ setup_meter (ChannelWidget * self)
  * Updates the inserts.
  */
 void
-channel_widget_update_inserts (ChannelWidget * self)
+channel_widget_update_midi_fx_and_inserts (
+  ChannelWidget * self)
 {
   plugin_strip_expander_widget_refresh (
     self->inserts);
+  plugin_strip_expander_widget_refresh (
+    self->midi_fx);
 }
 
 static void
@@ -587,6 +590,10 @@ update_reveal_status (
     Z_EXPANDER_BOX_WIDGET (self->inserts),
     g_settings_get_boolean (
       S_UI_MIXER, "inserts-expanded"));
+  expander_box_widget_set_reveal (
+    Z_EXPANDER_BOX_WIDGET (self->midi_fx),
+    g_settings_get_boolean (
+      S_UI_MIXER, "midi-fx-expanded"));
   expander_box_widget_set_reveal (
     Z_EXPANDER_BOX_WIDGET (self->sends),
     g_settings_get_boolean (
@@ -863,6 +870,17 @@ channel_widget_new (Channel * channel)
   plugin_strip_expander_widget_setup (
     self->inserts, PLUGIN_SLOT_INSERT,
     PSE_POSITION_CHANNEL, track);
+  if (track->in_signal_type == TYPE_EVENT)
+    {
+      plugin_strip_expander_widget_setup (
+        self->midi_fx, PLUGIN_SLOT_MIDI_FX,
+        PSE_POSITION_CHANNEL, track);
+    }
+  else
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->midi_fx), false);
+    }
   channel_sends_expander_widget_setup (
     self->sends, CSE_POSITION_CHANNEL, track);
   setup_aux_buttons (self);
@@ -959,6 +977,7 @@ channel_widget_class_init (
   BIND_CHILD (name);
   BIND_CHILD (mid_box);
   BIND_CHILD (inserts);
+  BIND_CHILD (midi_fx);
   BIND_CHILD (sends);
   BIND_CHILD (instrument_box);
   BIND_CHILD (fader_buttons);

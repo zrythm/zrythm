@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,8 @@ on_clicked (
       prv->revealer);
   gtk_revealer_set_reveal_child (
     prv->revealer, revealed);
+  gtk_widget_set_visible (
+    GTK_WIDGET (prv->revealer), revealed);
 
   if (prv->reveal_cb)
     {
@@ -72,8 +74,9 @@ expander_box_widget_set_reveal (
 {
   GET_PRIVATE (self);
   gtk_revealer_set_reveal_child (
-    prv->revealer,
-    reveal);
+    prv->revealer, reveal);
+  gtk_widget_set_visible (
+    GTK_WIDGET (prv->revealer), reveal);
 }
 
 /**

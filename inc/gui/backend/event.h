@@ -240,12 +240,12 @@ typedef enum EventType
   ET_TRACK_FOLD_CHANGED,
 
   /**
-   * Channel sends revealed status changed in the
+   * Channel MIDI FX revealed status changed in the
    * mixer.
    *
    * Arg: Pointer to Channel.
    */
-  ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED,
+  ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED,
 
   /**
    * Channel inserts revealed status changed in the
@@ -254,6 +254,14 @@ typedef enum EventType
    * Arg: Pointer to Channel.
    */
   ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED,
+
+  /**
+   * Channel sends revealed status changed in the
+   * mixer.
+   *
+   * Arg: Pointer to Channel.
+   */
+  ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED,
 } EventType;
 
 /**

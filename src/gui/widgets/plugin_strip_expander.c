@@ -143,16 +143,29 @@ on_reveal_changed (
   bool                        revealed,
   PluginStripExpanderWidget * self)
 {
-  if (self->position == PSE_POSITION_CHANNEL &&
-      self->slot_type == PLUGIN_SLOT_INSERT)
+  if (self->position == PSE_POSITION_CHANNEL)
     {
-      g_settings_set_boolean (
-        S_UI_MIXER, "inserts-expanded", revealed);
       Channel * ch =
         track_get_channel (self->track);
-      EVENTS_PUSH (
-        ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED,
-        ch);
+      if (self->slot_type == PLUGIN_SLOT_INSERT)
+        {
+          g_settings_set_boolean (
+            S_UI_MIXER, "inserts-expanded",
+            revealed);
+          EVENTS_PUSH (
+            ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED,
+            ch);
+        }
+      else if (self->slot_type ==
+                 PLUGIN_SLOT_MIDI_FX)
+        {
+          g_settings_set_boolean (
+            S_UI_MIXER, "midi-fx-expanded",
+            revealed);
+          EVENTS_PUSH (
+            ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED,
+            ch);
+        }
     }
 }
 
@@ -261,7 +274,8 @@ plugin_strip_expander_widget_setup (
     case PSE_POSITION_CHANNEL:
       gtk_widget_set_size_request (
         GTK_WIDGET (self->scroll), -1, 68);
-      if (slot_type == PLUGIN_SLOT_INSERT)
+      if (slot_type == PLUGIN_SLOT_INSERT ||
+          slot_type == PLUGIN_SLOT_MIDI_FX)
         {
           expander_box_widget_set_reveal_callback (
             Z_EXPANDER_BOX_WIDGET (self),
