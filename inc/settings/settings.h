@@ -47,6 +47,7 @@ typedef struct PluginSettings PluginSettings;
 #define S_EXPORT SETTINGS->export
 #define S_GENERAL SETTINGS->general
 #define S_UI_INSPECTOR SETTINGS->ui_inspector
+#define S_UI_MIXER SETTINGS->ui_mixer
 #define S_UI_PLUGIN_BROWSER \
   SETTINGS->ui_plugin_browser
 #define S_UI_FILE_BROWSER \
@@ -136,6 +137,7 @@ typedef struct Settings
 
   GSettings * export;
 
+  GSettings * ui_mixer;
   GSettings * ui_inspector;
   GSettings * ui_plugin_browser;
   GSettings * ui_file_browser;

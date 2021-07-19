@@ -684,6 +684,24 @@ Args:
 
          (schema-print
            (make-schema
+             "ui.mixer"
+             (list
+               (make-schema-key
+                 "inserts-expanded" "b" "true"
+                 "Inserts expanded"
+                 "Whether inserts are expanded.")
+               (make-schema-key
+                 "midi-fx-expanded" "b" "false"
+                 "MIDI FX expanded"
+                 "Whether MIDI FX are expanded.")
+               (make-schema-key
+                 "sends-expanded" "b" "false"
+                 "Sends expanded"
+                 "Whether sends are expanded.")
+             ))) ;; ui.mixer
+
+         (schema-print
+           (make-schema
              "ui.inspector"
              (list
                (make-schema-key

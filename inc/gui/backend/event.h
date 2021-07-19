@@ -238,6 +238,22 @@ typedef enum EventType
    * Arg: track.
    */
   ET_TRACK_FOLD_CHANGED,
+
+  /**
+   * Channel sends revealed status changed in the
+   * mixer.
+   *
+   * Arg: Pointer to Channel.
+   */
+  ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED,
+
+  /**
+   * Channel inserts revealed status changed in the
+   * mixer.
+   *
+   * Arg: Pointer to Channel.
+   */
+  ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED,
 } EventType;
 
 /**

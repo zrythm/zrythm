@@ -19,10 +19,14 @@
 
 #include "audio/channel.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/plugin_strip_expander.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -133,6 +137,25 @@ plugin_strip_expander_widget_refresh (
     }
 }
 
+static void
+on_reveal_changed (
+  ExpanderBoxWidget *         expander_box,
+  bool                        revealed,
+  PluginStripExpanderWidget * self)
+{
+  if (self->position == PSE_POSITION_CHANNEL &&
+      self->slot_type == PLUGIN_SLOT_INSERT)
+    {
+      g_settings_set_boolean (
+        S_UI_MIXER, "inserts-expanded", revealed);
+      Channel * ch =
+        track_get_channel (self->track);
+      EVENTS_PUSH (
+        ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED,
+        ch);
+    }
+}
+
 /**
  * Sets up the PluginStripExpanderWidget.
  */
@@ -238,6 +261,13 @@ plugin_strip_expander_widget_setup (
     case PSE_POSITION_CHANNEL:
       gtk_widget_set_size_request (
         GTK_WIDGET (self->scroll), -1, 68);
+      if (slot_type == PLUGIN_SLOT_INSERT)
+        {
+          expander_box_widget_set_reveal_callback (
+            Z_EXPANDER_BOX_WIDGET (self),
+            (ExpanderBoxRevealFunc)
+            on_reveal_changed, self);
+        }
       break;
     }
 

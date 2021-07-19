@@ -51,8 +51,8 @@ G_DECLARE_DERIVABLE_TYPE (
  */
 typedef void (*ExpanderBoxRevealFunc) (
   ExpanderBoxWidget * expander_box,
-  const bool    revealed,
-  void *        user_data);
+  bool                revealed,
+  void *              user_data);
 
 /**
  * An expander box is a base widget with a button that

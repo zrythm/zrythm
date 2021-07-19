@@ -45,6 +45,7 @@
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -578,6 +579,20 @@ channel_widget_refresh_buttons (
     channel_get_track (self->channel));
 }
 
+static void
+update_reveal_status (
+  ChannelWidget * self)
+{
+  expander_box_widget_set_reveal (
+    Z_EXPANDER_BOX_WIDGET (self->inserts),
+    g_settings_get_boolean (
+      S_UI_MIXER, "inserts-expanded"));
+  expander_box_widget_set_reveal (
+    Z_EXPANDER_BOX_WIDGET (self->sends),
+    g_settings_get_boolean (
+      S_UI_MIXER, "sends-expanded"));
+}
+
 /**
  * Updates everything on the widget.
  *
@@ -592,6 +607,7 @@ channel_widget_refresh (ChannelWidget * self)
     self, NULL, NULL);
   channel_widget_refresh_buttons (self);
   refresh_color (self);
+  update_reveal_status (self);
   setup_channel_icon (self);
 
   Track * track =

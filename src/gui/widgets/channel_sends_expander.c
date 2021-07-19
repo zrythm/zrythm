@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,10 +19,14 @@
 
 #include "audio/channel.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_sends_expander.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -45,6 +49,22 @@ channel_sends_expander_widget_refresh (
     {
       gtk_widget_queue_draw (
         GTK_WIDGET (self->slots[i]));
+    }
+}
+
+static void
+on_reveal_changed (
+  ExpanderBoxWidget *          expander_box,
+  bool                         revealed,
+  ChannelSendsExpanderWidget * self)
+{
+  if (self->position == CSE_POSITION_CHANNEL)
+    {
+      g_settings_set_boolean (
+        S_UI_MIXER, "sends-expanded", revealed);
+      EVENTS_PUSH (
+        ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED,
+        self->track->channel);
     }
 }
 
@@ -124,6 +144,10 @@ channel_sends_expander_widget_setup (
     case CSE_POSITION_CHANNEL:
       gtk_widget_set_size_request (
         GTK_WIDGET (self->scroll), -1, 68);
+      expander_box_widget_set_reveal_callback (
+        Z_EXPANDER_BOX_WIDGET (self),
+        (ExpanderBoxRevealFunc) on_reveal_changed,
+        self);
       break;
     }
 

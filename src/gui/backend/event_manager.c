@@ -1996,6 +1996,10 @@ process_events (void * data)
         case ET_TRACK_FOLD_CHANGED:
           on_track_added ((Track *) ev->arg);
           break;
+        case ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED:
+        case ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED:
+          mixer_widget_soft_refresh (MW_MIXER);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

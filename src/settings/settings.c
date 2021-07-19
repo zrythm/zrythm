@@ -70,6 +70,9 @@ settings_new (void)
   self->ui_inspector =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
+  self->ui_mixer =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".ui.mixer");
   self->ui_plugin_browser =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui.plugin-browser");
@@ -515,6 +518,7 @@ settings_free (
   g_object_unref_and_null (self->export);
   g_object_unref_and_null (self->ui);
   g_object_unref_and_null (self->ui_inspector);
+  g_object_unref_and_null (self->ui_mixer);
   g_object_unref_and_null (self->ui_plugin_browser);
   g_object_unref_and_null (self->ui_file_browser);
   g_object_unref_and_null (self->monitor);
