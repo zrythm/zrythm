@@ -47,6 +47,8 @@ typedef struct _EditableLabelWidget
   EditableLabelWidget;
 typedef struct _FaderButtonsWidget
   FaderButtonsWidget;
+typedef struct _ChannelSendsExpanderWidget
+  ChannelSendsExpanderWidget;
 
 typedef struct _ChannelWidget
 {
@@ -65,21 +67,30 @@ typedef struct _ChannelWidget
   GtkBox *            instrument_box;
   ChannelSlotWidget * instrument_slot;
 
-  /* ----- Inserts ------ */
+  /* ----- mid box ------ */
+
+  GtkBox *            mid_box;
   PluginStripExpanderWidget * inserts;
 
-  /* -------- end --------- */
+  /** Sends. */
+  ChannelSendsExpanderWidget * sends;
+
+  /* -------- end mid box --------- */
 
   FaderButtonsWidget *  fader_buttons;
-  GtkBox              * meter_area;  ///< vertical including reading
+
+  /** Meter area including reading. */
+  GtkBox *            meter_area;
   GtkBox *            balance_control_box;
   BalanceControlWidget * balance_control;
-  FaderWidget         * fader;
-  MeterWidget         * meter_l;
-  MeterWidget         * meter_r;
-  GtkLabel            * meter_reading;
-  GtkImage            * icon;
-  double                meter_reading_val; ///< cache
+  FaderWidget *       fader;
+  MeterWidget *       meter_l;
+  MeterWidget *       meter_r;
+  GtkLabel *          meter_reading;
+  GtkImage *          icon;
+
+  /** Cache. */
+  double              meter_reading_val;
 
   /** Used for highlighting. */
   GtkBox *            highlight_left_box;

@@ -229,6 +229,18 @@ plugin_strip_expander_widget_setup (
   self->slot_type = slot_type;
   self->position = position;
 
+  switch (position)
+    {
+    case PSE_POSITION_INSPECTOR:
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self->scroll), -1, 124);
+      break;
+    case PSE_POSITION_CHANNEL:
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self->scroll), -1, 68);
+      break;
+    }
+
   plugin_strip_expander_widget_refresh (self);
 }
 
@@ -252,8 +264,6 @@ plugin_strip_expander_widget_init (
     GTK_WIDGET (self->scroll), 1);
   gtk_scrolled_window_set_shadow_type (
     self->scroll, GTK_SHADOW_ETCHED_IN);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->scroll), -1, 124);
 
   self->viewport =
     GTK_VIEWPORT (

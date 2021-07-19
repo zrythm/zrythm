@@ -1875,6 +1875,17 @@ process_events (void * data)
                 gtk_widget_queue_draw (
                   GTK_WIDGET (widget));
               }
+            Track * tr =
+              channel_send_get_track (send);
+            ChannelWidget * ch_w =
+              tr->channel->widget;
+            if (ch_w)
+              {
+                gtk_widget_queue_draw (
+                  GTK_WIDGET (
+                    ch_w->sends->slots[
+                      send->slot]));
+              }
           }
           break;
         case ET_RULER_DISPLAY_TYPE_CHANGED:

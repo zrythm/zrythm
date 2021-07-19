@@ -115,6 +115,18 @@ channel_sends_expander_widget_setup (
   self->track = track;
   self->position = position;
 
+  switch (position)
+    {
+    case CSE_POSITION_INSPECTOR:
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self->scroll), -1, 124);
+      break;
+    case CSE_POSITION_CHANNEL:
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self->scroll), -1, 68);
+      break;
+    }
+
   channel_sends_expander_widget_refresh (self);
 }
 
@@ -138,8 +150,6 @@ channel_sends_expander_widget_init (
     GTK_WIDGET (self->scroll), 1);
   gtk_scrolled_window_set_shadow_type (
     self->scroll, GTK_SHADOW_ETCHED_IN);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->scroll), -1, 124);
 
   self->viewport =
     GTK_VIEWPORT (

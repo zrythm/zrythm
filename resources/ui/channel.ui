@@ -216,8 +216,19 @@
           </packing>
         </child>
         <child>
-          <object class="PluginStripExpanderWidget" id="inserts">
+          <object class="GtkBox" id="mid_box">
             <property name="visible">1</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="PluginStripExpanderWidget" id="inserts">
+                <property name="visible">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="ChannelSendsExpanderWidget" id="sends">
+                <property name="visible">1</property>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="left_attach">1</property>

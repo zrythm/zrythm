@@ -30,6 +30,7 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/channel_sends_expander.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/fader_buttons.h"
@@ -840,18 +841,20 @@ channel_widget_new (Channel * channel)
     g_object_new (CHANNEL_WIDGET_TYPE, NULL);
   self->channel = channel;
 
-  /*setup_phase_panel (self);*/
+  Track * track =
+    channel_get_track (self->channel);
+
   plugin_strip_expander_widget_setup (
     self->inserts, PLUGIN_SLOT_INSERT,
-    PSE_POSITION_CHANNEL, channel->track);
+    PSE_POSITION_CHANNEL, track);
+  channel_sends_expander_widget_setup (
+    self->sends, CSE_POSITION_CHANNEL, track);
   setup_aux_buttons (self);
   fader_widget_setup (
     self->fader, channel->fader, 38, -1);
   setup_meter (self);
   setup_balance_control (self);
   setup_channel_icon (self);
-  Track * track =
-    channel_get_track (self->channel);
   editable_label_widget_setup (
     self->name, track,
     (GenericStringGetter) track_get_name,
@@ -938,7 +941,9 @@ channel_widget_class_init (
   BIND_CHILD (grid);
   BIND_CHILD (icon_and_name_event_box);
   BIND_CHILD (name);
+  BIND_CHILD (mid_box);
   BIND_CHILD (inserts);
+  BIND_CHILD (sends);
   BIND_CHILD (instrument_box);
   BIND_CHILD (fader_buttons);
   BIND_CHILD (fader);
@@ -964,6 +969,8 @@ channel_widget_init (ChannelWidget * self)
   g_type_ensure (METER_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
   g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
