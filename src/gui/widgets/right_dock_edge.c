@@ -193,7 +193,7 @@ right_dock_edge_widget_init (
     _("Show file browser"));
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (tb),
-    "win.show-file-browser");
+    "app.show-file-browser");
   gtk_notebook_set_action_widget (
     notebook, GTK_WIDGET (tb),
     GTK_PACK_END);

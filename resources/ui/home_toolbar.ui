@@ -70,35 +70,35 @@
       <object class="GtkToolButton" id="cut">
         <property name="visible">1</property>
         <property name="icon-name">edit-cut</property>
-        <property name="action-name">win.cut</property>
+        <property name="action-name">app.cut</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="copy">
         <property name="visible">1</property>
         <property name="icon-name">edit-copy</property>
-        <property name="action-name">win.copy</property>
+        <property name="action-name">app.copy</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="paste">
         <property name="visible">1</property>
         <property name="icon-name">edit-paste</property>
-        <property name="action-name">win.paste</property>
+        <property name="action-name">app.paste</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="duplicate">
         <property name="visible">1</property>
         <property name="icon-name">edit-duplicate</property>
-        <property name="action-name">win.duplicate</property>
+        <property name="action-name">app.duplicate</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="delete">
         <property name="visible">1</property>
         <property name="icon-name">edit-delete</property>
-        <property name="action-name">win.delete</property>
+        <property name="action-name">app.delete</property>
       </object>
     </child>
     <child>
@@ -115,21 +115,21 @@
       <object class="GtkToolButton" id="clear_selection">
         <property name="visible">1</property>
         <property name="icon-name">edit-clear</property>
-        <property name="action-name">win.clear-selection</property>
+        <property name="action-name">app.clear-selection</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="select_all">
         <property name="visible">1</property>
         <property name="icon-name">edit-select-all</property>
-        <property name="action-name">win.select-all</property>
+        <property name="action-name">app.select-all</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="loop_selection">
         <property name="visible">1</property>
         <property name="icon-name">media-playlist-repeat</property>
-        <property name="action-name">win.loop-selection</property>
+        <property name="action-name">app.loop-selection</property>
       </object>
     </child>
     <child>

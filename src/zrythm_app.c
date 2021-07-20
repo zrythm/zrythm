@@ -1315,75 +1315,75 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "<Control><Shift>p", "app.preferences");
   INSTALL_ACCEL (
-    "F2", "win.rename-track-or-region");
-  INSTALL_ACCEL ("<Control>n", "win.new");
-  INSTALL_ACCEL ("<Control>o", "win.open");
-  INSTALL_ACCEL ("<Control>s", "win.save");
+    "F2", "app.rename-track-or-region");
+  INSTALL_ACCEL ("<Control>n", "app.new");
+  INSTALL_ACCEL ("<Control>o", "app.open");
+  INSTALL_ACCEL ("<Control>s", "app.save");
   INSTALL_ACCEL (
-    "<Control><Shift>s", "win.save-as");
-  INSTALL_ACCEL ("<Control>e", "win.export-as");
-  INSTALL_ACCEL ("<Control>z", "win.undo");
+    "<Control><Shift>s", "app.save-as");
+  INSTALL_ACCEL ("<Control>e", "app.export-as");
+  INSTALL_ACCEL ("<Control>z", "app.undo");
   INSTALL_ACCEL (
-    "<Control><Shift>z", "win.redo");
+    "<Control><Shift>z", "app.redo");
   INSTALL_ACCEL (
-    "<Control>x", "win.cut");
+    "<Control>x", "app.cut");
   INSTALL_ACCEL (
-    "<Control>c", "win.copy");
+    "<Control>c", "app.copy");
   INSTALL_ACCEL (
-    "<Control>v", "win.paste");
+    "<Control>v", "app.paste");
   INSTALL_ACCEL (
-    "<Control>d", "win.duplicate");
+    "<Control>d", "app.duplicate");
   INSTALL_ACCEL (
-    "Delete", "win.delete");
+    "Delete", "app.delete");
   INSTALL_ACCEL (
-    "<Control><Shift>a", "win.clear-selection");
+    "<Control><Shift>a", "app.clear-selection");
   INSTALL_ACCEL (
-    "<Control>a", "win.select-all");
+    "<Control>a", "app.select-all");
   INSTALL_ACCEL (
-    "<Control><Shift>4", "win.toggle-left-panel");
+    "<Control><Shift>4", "app.toggle-left-panel");
   INSTALL_ACCEL (
-    "<Control><Shift>6", "win.toggle-right-panel");
+    "<Control><Shift>6", "app.toggle-right-panel");
   INSTALL_ACCEL (
-    "<Control><Shift>2", "win.toggle-bot-panel");
+    "<Control><Shift>2", "app.toggle-bot-panel");
   INSTALL_ACCEL (
-    "<Control>equal", "win.zoom-in");
+    "<Control>equal", "app.zoom-in");
   INSTALL_ACCEL (
-    "<Control>minus", "win.zoom-out");
+    "<Control>minus", "app.zoom-out");
   INSTALL_ACCEL (
-    "<Control>plus", "win.original-size");
+    "<Control>plus", "app.original-size");
   INSTALL_ACCEL (
-    "<Control>bracketleft", "win.best-fit");
+    "<Control>bracketleft", "app.best-fit");
   INSTALL_ACCEL (
-    "<Control>l", "win.loop-selection");
+    "<Control>l", "app.loop-selection");
   INSTALL_ACCEL (
-    "1", "win.select-mode");
+    "1", "app.select-mode");
   INSTALL_ACCEL (
-    "2", "win.edit-mode");
+    "2", "app.edit-mode");
   INSTALL_ACCEL (
-    "3", "win.cut-mode");
+    "3", "app.cut-mode");
   INSTALL_ACCEL (
-    "4", "win.eraser-mode");
+    "4", "app.eraser-mode");
   INSTALL_ACCEL (
-    "5", "win.ramp-mode");
+    "5", "app.ramp-mode");
   INSTALL_ACCEL (
-    "6", "win.audition-mode");
+    "6", "app.audition-mode");
   accel_install_action_accelerator (
-    "KP_4", "BackSpace", "win.goto-prev-marker");
+    "KP_4", "BackSpace", "app.goto-prev-marker");
   INSTALL_ACCEL (
-    "KP_6", "win.goto-next-marker");
+    "KP_6", "app.goto-next-marker");
   INSTALL_ACCEL (
-    "space", "win.play-pause");
+    "space", "app.play-pause");
   INSTALL_ACCEL (
-    "Q", "win.quick-quantize::global");
+    "Q", "app.quick-quantize::global");
   INSTALL_ACCEL (
-    "<Alt>Q", "win.quantize-options::global");
+    "<Alt>Q", "app.quantize-options::global");
   INSTALL_ACCEL (
-    "<Shift>M", "win.mute-selection::global");
+    "<Shift>M", "app.mute-selection::global");
   INSTALL_ACCEL (
-    "<Control>J", "win.merge-selection");
+    "<Control>J", "app.merge-selection");
   INSTALL_ACCEL (
     gdk_keyval_name (GDK_KEY_Home),
-    "win.go-to-start");
+    "app.go-to-start");
 
 #undef INSTALL_ACCEL
 

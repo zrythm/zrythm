@@ -74,13 +74,13 @@ snap_box_widget_setup (
 
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_grid),
-    "win.snap-to-grid");
+    "app.snap-to-grid");
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
-    "win.snap-keep-offset");
+    "app.snap-keep-offset");
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_events),
-    "win.snap-events");
+    "app.snap-events");
 
   if (sg == SNAP_GRID_TIMELINE)
     {

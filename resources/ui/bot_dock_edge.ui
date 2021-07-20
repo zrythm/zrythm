@@ -230,7 +230,7 @@
                 <property name="visible">1</property>
                 <property name="tooltip-text">Show/hide top panel</property>
                 <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
-                <property name="action-name">win.toggle-top-panel</property>
+                <property name="action-name">app.toggle-top-panel</property>
               </object>
             </child>
           </object>

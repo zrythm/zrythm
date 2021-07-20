@@ -34,7 +34,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.quick-quantize</property>
+        <property name="action_name">app.quick-quantize</property>
         <property name="action_target">"global"</property>
         <property name="tooltip-text" translatable="yes">Quick Quantize</property>
         <child>
@@ -56,7 +56,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.quantize-options</property>
+        <property name="action_name">app.quantize-options</property>
         <property name="action_target">"global"</property>
         <property name="tooltip-text" translatable="yes">Full Quantize...</property>
         <child>

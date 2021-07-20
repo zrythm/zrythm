@@ -33,7 +33,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.snap-to-grid</property>
+        <property name="action_name">app.snap-to-grid</property>
         <property name="action_target">"timeline"</property>
         <property name="tooltip-text" translatable="yes">Snap to grid</property>
         <child>
@@ -55,7 +55,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.snap-keep-offset</property>
+        <property name="action_name">app.snap-keep-offset</property>
         <property name="action_target">"timeline"</property>
         <property name="tooltip-text" translatable="yes">Keep offset</property>
         <child>
@@ -77,7 +77,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.snap-events</property>
+        <property name="action_name">app.snap-events</property>
         <property name="action_target">"timeline"</property>
         <property name="tooltip-text" translatable="yes">Snap to events</property>
         <child>

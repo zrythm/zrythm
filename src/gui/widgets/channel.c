@@ -678,7 +678,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               str, "edit-delete", F_NO_TOGGLE,
-              "win.delete-selected-tracks");
+              "app.delete-selected-tracks");
           g_free (str);
           APPEND (menuitem);
 
@@ -692,7 +692,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               str, "edit-copy", F_NO_TOGGLE,
-              "win.duplicate-selected-tracks");
+              "app.duplicate-selected-tracks");
           g_free (str);
           APPEND (menuitem);
         }
@@ -703,7 +703,7 @@ show_context_menu (
             _("Hide Track") :
             _("Hide Tracks"),
           "view-hidden", F_NO_TOGGLE,
-          "win.hide-selected-tracks");
+          "app.hide-selected-tracks");
       APPEND (menuitem);
 
       menuitem =
@@ -712,7 +712,7 @@ show_context_menu (
             _("Pin/Unpin Track") :
             _("Pin/Unpin Tracks"),
           "window-pin", F_NO_TOGGLE,
-          "win.pin-selected-tracks");
+          "app.pin-selected-tracks");
       APPEND (menuitem);
     }
 
@@ -727,7 +727,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               _("Solo"), "solo", F_NO_TOGGLE,
-              "win.solo-selected-tracks");
+              "app.solo-selected-tracks");
           APPEND (menuitem);
         }
       if (tracklist_selections_contains_soloed_track (
@@ -736,7 +736,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               _("Unsolo"), "unsolo", F_NO_TOGGLE,
-              "win.unsolo-selected-tracks");
+              "app.unsolo-selected-tracks");
           APPEND (menuitem);
         }
 
@@ -746,7 +746,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               _("Mute"), "mute", F_NO_TOGGLE,
-              "win.mute-selected-tracks");
+              "app.mute-selected-tracks");
           APPEND (menuitem);
         }
       if (tracklist_selections_contains_muted_track (
@@ -755,7 +755,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               _("Unmute"), "unmute", F_NO_TOGGLE,
-              "win.unmute-selected-tracks");
+              "app.unmute-selected-tracks");
           APPEND (menuitem);
         }
 
@@ -766,7 +766,7 @@ show_context_menu (
             z_gtk_create_menu_item (
               _("Listen"), "listen",
               F_NO_TOGGLE,
-              "win.listen-selected-tracks");
+              "app.listen-selected-tracks");
           APPEND (menuitem);
         }
       if (tracklist_selections_contains_listened_track (
@@ -776,7 +776,7 @@ show_context_menu (
             z_gtk_create_menu_item (
               _("Unlisten"), "unlisten",
               F_NO_TOGGLE,
-              "win.unlisten-selected-tracks");
+              "app.unlisten-selected-tracks");
           APPEND (menuitem);
         }
     }
@@ -789,7 +789,7 @@ show_context_menu (
         z_gtk_create_menu_item (
           _("Disable"), "offline",
           F_NO_TOGGLE,
-          "win.disable-selected-tracks");
+          "app.disable-selected-tracks");
       APPEND (menuitem);
     }
   else
@@ -798,7 +798,7 @@ show_context_menu (
         z_gtk_create_menu_item (
           _("Enable"), "online",
           F_NO_TOGGLE,
-          "win.enable-selected-tracks");
+          "app.enable-selected-tracks");
       APPEND (menuitem);
     }
 
@@ -806,7 +806,7 @@ show_context_menu (
   menuitem =
     z_gtk_create_menu_item (
       _("Change color..."), "color-fill",
-      F_NO_TOGGLE, "win.change-track-color");
+      F_NO_TOGGLE, "app.change-track-color");
   APPEND (menuitem);
 
 #undef APPEND

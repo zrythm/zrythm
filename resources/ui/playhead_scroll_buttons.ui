@@ -31,7 +31,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.timeline-playhead-scroll-edges</property>
+        <property name="action_name">app.timeline-playhead-scroll-edges</property>
         <property name="tooltip-text"
           translatable="yes">Scroll when playhead reaches the edge</property>
         <child>
@@ -53,7 +53,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.timeline-playhead-follow</property>
+        <property name="action_name">app.timeline-playhead-follow</property>
         <property name="tooltip-text"
           translatable="yes">Follow playhead</property>
         <child>

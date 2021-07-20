@@ -511,20 +511,20 @@ midi_arranger_show_context_menu (
         }
 
       menu_item =
-        CREATE_CUT_MENU_ITEM ("win.cut");
+        CREATE_CUT_MENU_ITEM ("app.cut");
       APPEND_TO_MENU;
       menu_item =
-        CREATE_COPY_MENU_ITEM ("win.copy");
+        CREATE_COPY_MENU_ITEM ("app.copy");
       APPEND_TO_MENU;
       menu_item =
-        CREATE_PASTE_MENU_ITEM ("win.paste");
+        CREATE_PASTE_MENU_ITEM ("app.paste");
       APPEND_TO_MENU;
       menu_item =
-        CREATE_DELETE_MENU_ITEM ("win.delete");
+        CREATE_DELETE_MENU_ITEM ("app.delete");
       APPEND_TO_MENU;
       menu_item =
         CREATE_DUPLICATE_MENU_ITEM (
-          "win.duplicate");
+          "app.duplicate");
       APPEND_TO_MENU;
       menu_item =
         GTK_MENU_ITEM (
@@ -548,7 +548,7 @@ midi_arranger_show_context_menu (
         F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       menu_item =
-        CREATE_PASTE_MENU_ITEM ("win.paste");
+        CREATE_PASTE_MENU_ITEM ("app.paste");
       APPEND_TO_MENU;
     }
   menu_item =
@@ -556,11 +556,11 @@ midi_arranger_show_context_menu (
   APPEND_TO_MENU;
   menu_item =
     CREATE_CLEAR_SELECTION_MENU_ITEM (
-      "win.clear-selection");
+      "app.clear-selection");
   APPEND_TO_MENU;
   menu_item =
     CREATE_SELECT_ALL_MENU_ITEM (
-      "win.select-all");
+      "app.select-all");
   APPEND_TO_MENU;
 
 #undef APPEND_TO_MENU

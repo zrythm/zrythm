@@ -776,9 +776,14 @@ main_window_widget_init (MainWindowWidget * self)
       activate_rename_track_or_region },
   };
 
+#if 0
   g_action_map_add_action_entries (
     G_ACTION_MAP (self), actions,
     G_N_ELEMENTS (actions), self);
+#endif
+  g_action_map_add_action_entries (
+    G_ACTION_MAP (zrythm_app), actions,
+    G_N_ELEMENTS (actions), zrythm_app);
 
   g_type_ensure (HEADER_WIDGET_TYPE);
   g_type_ensure (TOP_BAR_WIDGET_TYPE);

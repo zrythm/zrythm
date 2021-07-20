@@ -263,10 +263,10 @@ editor_toolbar_widget_init (
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (
       self->playhead_scroll->scroll_edges),
-    "win.editor-playhead-scroll-edges");
+    "app.editor-playhead-scroll-edges");
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->playhead_scroll->follow),
-    "win.editor-playhead-follow");
+    "app.editor-playhead-follow");
 
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
@@ -284,7 +284,7 @@ editor_toolbar_widget_init (
         GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_actionable_set_detailed_action_name (
     GTK_ACTIONABLE (self->apply_function_btn),
-    "win.editor-function::current");
+    "app.editor-function::current");
   gtk_button_set_label (
     self->apply_function_btn, str);
   gtk_button_set_always_show_image (

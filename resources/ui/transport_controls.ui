@@ -112,7 +112,7 @@
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Loop</property>
-        <property name="action_name">win.toggle-loop</property>
+        <property name="action_name">app.toggle-loop</property>
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>

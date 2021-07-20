@@ -1240,20 +1240,20 @@ timeline_arranger_widget_show_context_menu (
       /* create cut, copy, duplicate, delete */
       menuitem =
         GTK_WIDGET (
-          CREATE_CUT_MENU_ITEM ("win.cut"));
+          CREATE_CUT_MENU_ITEM ("app.cut"));
       APPEND_TO_MENU;
       menuitem =
         GTK_WIDGET (
-          CREATE_COPY_MENU_ITEM ("win.copy"));
+          CREATE_COPY_MENU_ITEM ("app.copy"));
       APPEND_TO_MENU;
       menuitem =
         GTK_WIDGET (
           CREATE_DUPLICATE_MENU_ITEM (
-            "win.duplicate"));
+            "app.duplicate"));
       APPEND_TO_MENU;
       menuitem =
         GTK_WIDGET (
-          CREATE_DELETE_MENU_ITEM ("win.delete"));
+          CREATE_DELETE_MENU_ITEM ("app.delete"));
       APPEND_TO_MENU;
       menuitem =
         gtk_separator_menu_item_new ();
@@ -1268,7 +1268,7 @@ timeline_arranger_widget_show_context_menu (
               menuitem =
                 GTK_WIDGET (
                   CREATE_UNMUTE_MENU_ITEM (
-                    "win.mute-selection"));
+                    "app.mute-selection"));
               gtk_actionable_set_action_target (
                 GTK_ACTIONABLE (menuitem),
                 "s", "timeline");
@@ -1278,7 +1278,7 @@ timeline_arranger_widget_show_context_menu (
               menuitem =
                 GTK_WIDGET (
                   CREATE_MUTE_MENU_ITEM (
-                    "win.mute-selection"));
+                    "app.mute-selection"));
               gtk_actionable_set_action_target (
                 GTK_ACTIONABLE (menuitem),
                 "s", "timeline");
@@ -1351,7 +1351,7 @@ timeline_arranger_widget_show_context_menu (
     {
       menuitem =
         GTK_WIDGET (
-          CREATE_PASTE_MENU_ITEM ("win.paste"));
+          CREATE_PASTE_MENU_ITEM ("app.paste"));
       APPEND_TO_MENU;
     }
 

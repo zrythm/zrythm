@@ -150,11 +150,10 @@ action_enable_app_action (
 {
   GAction * action =
     g_action_map_lookup_action (
-      G_ACTION_MAP (ZRYTHM),
+      G_ACTION_MAP (zrythm_app),
       action_name);
   g_simple_action_set_enabled (
-    G_SIMPLE_ACTION (action),
-    1);
+    G_SIMPLE_ACTION (action), true);
 }
 
 void
@@ -163,11 +162,10 @@ action_disable_app_action (
 {
   GAction * action =
     g_action_map_lookup_action (
-      G_ACTION_MAP (ZRYTHM),
+      G_ACTION_MAP (zrythm_app),
       action_name);
   g_simple_action_set_enabled (
-    G_SIMPLE_ACTION (action),
-    0);
+    G_SIMPLE_ACTION (action), false);
 }
 
 void

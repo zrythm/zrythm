@@ -751,12 +751,12 @@ show_context_menu (
         }
 
       menuitem =
-        CREATE_CUT_MENU_ITEM ("win.cut");
+        CREATE_CUT_MENU_ITEM ("app.cut");
       ADD_TO_SHELL;
-      menuitem = CREATE_COPY_MENU_ITEM ("win.copy");
+      menuitem = CREATE_COPY_MENU_ITEM ("app.copy");
       ADD_TO_SHELL;
       menuitem =
-        CREATE_PASTE_MENU_ITEM ("win.paste");
+        CREATE_PASTE_MENU_ITEM ("app.paste");
       ADD_TO_SHELL;
     }
 
@@ -765,7 +765,7 @@ show_context_menu (
     {
       /* add delete item */
       menuitem =
-        CREATE_DELETE_MENU_ITEM ("win.delete");
+        CREATE_DELETE_MENU_ITEM ("app.delete");
       ADD_TO_SHELL;
 
       needs_sep = true;
@@ -781,11 +781,11 @@ show_context_menu (
 
       menuitem =
         CREATE_CLEAR_SELECTION_MENU_ITEM (
-          "win.clear-selection");
+          "app.clear-selection");
       ADD_TO_SHELL;
       menuitem =
         CREATE_SELECT_ALL_MENU_ITEM (
-          "win.select-all");
+          "app.select-all");
       ADD_TO_SHELL;
 
       needs_sep = true;

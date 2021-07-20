@@ -29,7 +29,7 @@
       <object class="GtkToolButton" id="status_bar">
         <property name="visible">1</property>
         <property name="icon-name">show-menu</property>
-        <property name="action-name">win.toggle-status-bar</property>
+        <property name="action-name">app.toggle-status-bar</property>
       </object>
     </child>
     <child>
@@ -46,28 +46,28 @@
       <object class="GtkToolButton" id="zoom_in">
         <property name="visible">1</property>
         <property name="icon-name">zoom-in</property>
-        <property name="action-name">win.zoom-in</property>
+        <property name="action-name">app.zoom-in</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="zoom_out">
         <property name="visible">1</property>
         <property name="icon-name">zoom-out</property>
-        <property name="action-name">win.zoom-out</property>
+        <property name="action-name">app.zoom-out</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="original_size">
         <property name="visible">1</property>
         <property name="icon-name">zoom-original</property>
-        <property name="action-name">win.original-size</property>
+        <property name="action-name">app.original-size</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="best_fit">
         <property name="visible">1</property>
         <property name="icon-name">zoom-fit-best</property>
-        <property name="action-name">win.best-fit</property>
+        <property name="action-name">app.best-fit</property>
       </object>
     </child>
     <child>
@@ -102,7 +102,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="icon-name">gnome-builder-builder-view-left-pane-symbolic-light</property>
-        <property name="action_name">win.toggle-left-panel</property>
+        <property name="action_name">app.toggle-left-panel</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -114,7 +114,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="icon-name">gnome-builder-builder-view-bottom-pane-symbolic-light</property>
-        <property name="action_name">win.toggle-bot-panel</property>
+        <property name="action_name">app.toggle-bot-panel</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -126,7 +126,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
-        <property name="action_name">win.toggle-top-panel</property>
+        <property name="action_name">app.toggle-top-panel</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -138,7 +138,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="icon-name">gnome-builder-builder-view-right-pane-symbolic-light</property>
-        <property name="action_name">win.toggle-right-panel</property>
+        <property name="action_name">app.toggle-right-panel</property>
       </object>
       <packing>
         <property name="expand">False</property>

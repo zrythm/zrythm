@@ -64,7 +64,7 @@
     <child>
       <object class="GtkToggleToolButton" id="musical_mode_toggle">
         <property name="visible">True</property>
-        <property name="action-name">win.toggle-musical-mode</property>
+        <property name="action-name">app.toggle-musical-mode</property>
         <property name="icon-name">musical-mode</property>
         <property name="tooltip-text" translatable="yes">Musical mode</property>
       </object>
@@ -111,7 +111,7 @@
     <child>
       <object class="GtkToolButton" id="merge_btn">
         <property name="visible">True</property>
-        <property name="action-name">win.merge-selection</property>
+        <property name="action-name">app.merge-selection</property>
         <property name="icon-name">merge</property>
         <property name="tooltip-text" translatable="yes">Merge selections</property>
       </object>
@@ -134,7 +134,7 @@
     <child>
       <object class="GtkToolButton" id="event_viewer_toggle">
         <property name="visible">True</property>
-        <property name="action-name">win.toggle-timeline-event-viewer</property>
+        <property name="action-name">app.toggle-timeline-event-viewer</property>
         <property name="icon-name">event-viewer</property>
         <property name="tooltip-text" translatable="yes">Toggle event viewer</property>
       </object>

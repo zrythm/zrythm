@@ -403,13 +403,13 @@ show_context_menu (DragDestBoxWidget * self)
   menu_item =
     z_gtk_create_menu_item (
       _("Add _MIDI Track"), NULL, false,
-      "win.create-midi-track");
+      "app.create-midi-track");
   APPEND (menu, menu_item);
 
   menu_item =
     z_gtk_create_menu_item (
       _("Add Audio Track"), NULL, false,
-      "win.create-audio-track");
+      "app.create-audio-track");
   APPEND (menu, menu_item);
 
   submenu = gtk_menu_new ();
@@ -417,13 +417,13 @@ show_context_menu (DragDestBoxWidget * self)
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_AUDIO_BUS)),
-      NULL, false, "win.create-audio-bus-track");
+      NULL, false, "app.create-audio-bus-track");
   APPEND (submenu, menu_item);
   menu_item =
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_MIDI_BUS)),
-      NULL, false, "win.create-midi-bus-track");
+      NULL, false, "app.create-midi-bus-track");
   APPEND (submenu, menu_item);
   menu_item =
     GTK_MENU_ITEM (
@@ -438,13 +438,13 @@ show_context_menu (DragDestBoxWidget * self)
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_AUDIO_GROUP)),
-      NULL, false, "win.create-audio-group-track");
+      NULL, false, "app.create-audio-group-track");
   APPEND (submenu, menu_item);
   menu_item =
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_MIDI_GROUP)),
-      NULL, false, "win.create-midi-group-track");
+      NULL, false, "app.create-midi-group-track");
   APPEND (submenu, menu_item);
   menu_item =
     GTK_MENU_ITEM (
@@ -458,7 +458,7 @@ show_context_menu (DragDestBoxWidget * self)
   menu_item =
     z_gtk_create_menu_item (
       _("Add Folder Track"), NULL, false,
-      "win.create-folder-track");
+      "app.create-folder-track");
   APPEND (menu, menu_item);
 
   gtk_widget_show_all (menu);

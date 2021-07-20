@@ -223,13 +223,13 @@ home_toolbar_widget_init (
   self->undo_btn =
     z_gtk_button_new_with_icon ("edit-undo");
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->undo_btn), "win.undo");
+    GTK_ACTIONABLE (self->undo_btn), "app.undo");
   gtk_widget_set_visible (
     GTK_WIDGET (self->undo_btn), true);
   self->redo_btn =
     z_gtk_button_new_with_icon ("edit-redo");
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->redo_btn), "win.redo");
+    GTK_ACTIONABLE (self->redo_btn), "app.redo");
   gtk_widget_set_visible (
     GTK_WIDGET (self->redo_btn), true);
 

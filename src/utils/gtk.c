@@ -26,6 +26,7 @@
 #include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
@@ -1145,11 +1146,19 @@ on_create_window (
     G_OBJECT (new_window), "destroy",
     G_CALLBACK (on_new_window_destroyed),
     data);
+  gtk_window_set_icon_name (
+    GTK_WINDOW (new_window), "zrythm");
   gtk_window_set_transient_for (
     GTK_WINDOW (new_window),
     GTK_WINDOW (data->parent_window));
   gtk_window_set_destroy_with_parent (
     new_window, true);
+
+  /* set application so that actions are connected
+   * properly */
+  gtk_window_set_application (
+    GTK_WINDOW (new_window),
+    GTK_APPLICATION (zrythm_app));
 
   gtk_widget_show_all (
     GTK_WIDGET (new_window));

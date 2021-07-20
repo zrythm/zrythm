@@ -2012,7 +2012,7 @@ ruler_widget_set_zoom_level (
     }
   else
     {
-      action_enable_window_action ("zoom-in");
+      action_enable_app_action ("zoom-in");
     }
   if (zoom_level < MIN_ZOOM_LEVEL)
     {
@@ -2020,7 +2020,7 @@ ruler_widget_set_zoom_level (
     }
   else
     {
-      action_enable_window_action ("zoom-out");
+      action_enable_app_action ("zoom-out");
     }
 
   int update = zoom_level >= MIN_ZOOM_LEVEL &&
