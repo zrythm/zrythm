@@ -1216,17 +1216,20 @@ tracklist_handle_file_drop (
   Position *      pos,
   bool            perform_actions)
 {
-  /* get a local file */
-  SupportedFile * file = NULL;
+  GPtrArray * file_arr =
+    g_ptr_array_new_with_free_func (
+      (GDestroyNotify) supported_file_free);
   if (orig_file)
     {
-      file = supported_file_clone (orig_file);
+      SupportedFile * file =
+        supported_file_clone (orig_file);
+      g_ptr_array_add (file_arr, file);
     }
   else
     {
       g_return_if_fail (uri_list);
 
-      char * uri, * filepath = NULL;
+      char * uri = NULL;
       int i = 0;
       while ((uri = uri_list[i++]) != NULL)
         {
@@ -1235,182 +1238,194 @@ tracklist_handle_file_drop (
                 uri, "file://"))
             continue;
 
-          if (filepath)
-            g_free (filepath);
           GError * err = NULL;
-          filepath =
-            g_filename_from_uri (
-              uri, NULL, &err);
+          char * filepath =
+            g_filename_from_uri (uri, NULL, &err);
           if (err)
             {
               g_warning (
                 "%s", err->message);
             }
 
-          /* only accept 1 file for now */
-          break;
-        }
-
-      if (filepath)
-        {
-          file =
-            supported_file_new_from_path (
-              filepath);
-          g_free (filepath);
+          if (filepath)
+            {
+              SupportedFile * file =
+                supported_file_new_from_path (
+                  filepath);
+              g_free (filepath);
+              g_ptr_array_add (file_arr, file);
+            }
         }
     }
 
-  if (!file)
+  if (file_arr->len == 0)
     {
       ui_show_error_message (
         MAIN_WINDOW, _("No file was found"));
 
-      return;
+      goto free_file_array_and_return;
     }
 
-  TrackType track_type = 0;
-  if (supported_file_type_is_supported (
-        file->type) &&
-      supported_file_type_is_audio (
-        file->type))
+  for (size_t i = 0; i < file_arr->len; i++)
     {
-      track_type = TRACK_TYPE_AUDIO;
-    }
-  else if (supported_file_type_is_midi (
-             file->type))
-    {
-      track_type = TRACK_TYPE_MIDI;
-    }
-  else
-    {
-      char * descr =
-        supported_file_type_get_description (
-          file->type);
-      char * msg =
-        g_strdup_printf (
-          _("Unsupported file type %s"),
-          descr);
-      g_free (descr);
-      ui_show_error_message (
-        MAIN_WINDOW, msg);
+      SupportedFile * file =
+        g_ptr_array_index (file_arr, i);
 
-      goto free_file_and_return;
-    }
-
-  if (perform_actions)
-    {
-      /* if current track exists and track type are
-       * incompatible, do nothing */
-      if (track)
+      TrackType track_type = 0;
+      if (supported_file_type_is_supported (
+            file->type) &&
+          supported_file_type_is_audio (
+            file->type))
         {
-          if (track_type == TRACK_TYPE_MIDI)
-            {
-              if (track->type != TRACK_TYPE_MIDI &&
-                  track->type !=
-                    TRACK_TYPE_INSTRUMENT)
-                {
-                  ui_show_error_message (
-                    MAIN_WINDOW,
-                    _("Can only drop MIDI files on "
-                    "MIDI/instrument tracks"));
-                  goto free_file_and_return;
-                }
-
-              int num_nonempty_tracks =
-                midi_file_get_num_tracks (
-                  file->abs_path, true);
-              if (num_nonempty_tracks > 1)
-                {
-                  char msg[600];
-                  sprintf (
-                    msg,
-                    _("This MIDI file contains %d "
-                    "tracks. It cannot be dropped "
-                    "into an existing track"),
-                    num_nonempty_tracks);
-                  ui_show_error_message (
-                    MAIN_WINDOW, msg);
-                  goto free_file_and_return;
-                }
-            }
-          else if (track_type == TRACK_TYPE_AUDIO &&
-              track->type != TRACK_TYPE_AUDIO)
-            {
-              ui_show_error_message (
-                MAIN_WINDOW,
-                _("Can only drop audio files on "
-                "audio tracks"));
-              goto free_file_and_return;
-            }
-
-          int lane_pos =
-            lane ? lane->pos :
-            (track->num_lanes == 1 ?
-             0 : track->num_lanes - 2);
-          int idx_in_lane =
-            track->lanes[lane_pos]->num_regions;
-          ZRegion * region = NULL;
-          switch (track_type)
-            {
-            case TRACK_TYPE_AUDIO:
-              /* create audio region in audio
-               * track */
-              region =
-                audio_region_new (
-                  -1, file->abs_path, true, NULL,
-                  -1, NULL,
-                  0, 0, pos, track->pos, lane_pos,
-                  idx_in_lane);
-              break;
-            case TRACK_TYPE_MIDI:
-              region =
-                midi_region_new_from_midi_file (
-                  pos, file->abs_path, track->pos,
-                  lane_pos, idx_in_lane, 0);
-              break;
-            default:
-              break;
-            }
-
-          if (region)
-            {
-              track_add_region (
-                track, region, NULL, lane_pos,
-                F_GEN_NAME, F_PUBLISH_EVENTS);
-              arranger_object_select (
-                (ArrangerObject *) region,
-                F_SELECT,
-                F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-              UndoableAction * ua =
-                arranger_selections_action_new_create (
-                  TL_SELECTIONS);
-              undo_manager_perform (
-                UNDO_MANAGER, ua);
-            }
-          else
-            {
-              g_warn_if_reached ();
-            }
-
-          goto free_file_and_return;
+          track_type = TRACK_TYPE_AUDIO;
+        }
+      else if (supported_file_type_is_midi (
+                 file->type))
+        {
+          track_type = TRACK_TYPE_MIDI;
         }
       else
         {
-          UndoableAction * ua =
-            tracklist_selections_action_new_create (
-              track_type, NULL, file,
-              self->num_tracks,
-              pos, 1, -1);
-          undo_manager_perform (UNDO_MANAGER, ua);
-        }
-    }
-  else
-    {
-      g_warning ("operation not supported yet");
-    }
+          char * descr =
+            supported_file_type_get_description (
+              file->type);
+          char * msg =
+            g_strdup_printf (
+              _("Unsupported file type %s"),
+              descr);
+          g_free (descr);
+          ui_show_error_message (MAIN_WINDOW, msg);
+          g_free (msg);
 
-free_file_and_return:
-  supported_file_free (file);
+          goto free_file_array_and_return;
+        }
+
+      if (perform_actions)
+        {
+          /* if current track exists and track
+           * type are incompatible, do nothing */
+          if (track)
+            {
+              if (file_arr->len > 1)
+                {
+                  ui_show_error_message (
+                    MAIN_WINDOW,
+                    _("Can only drop 1 file at a "
+                    "time on existing tracks"));
+                  goto free_file_array_and_return;
+                }
+
+              if (track_type == TRACK_TYPE_MIDI)
+                {
+                  if (track->type != TRACK_TYPE_MIDI &&
+                      track->type !=
+                        TRACK_TYPE_INSTRUMENT)
+                    {
+                      ui_show_error_message (
+                        MAIN_WINDOW,
+                        _("Can only drop MIDI files on "
+                        "MIDI/instrument tracks"));
+                      goto free_file_array_and_return;
+                    }
+
+                  int num_nonempty_tracks =
+                    midi_file_get_num_tracks (
+                      file->abs_path, true);
+                  if (num_nonempty_tracks > 1)
+                    {
+                      char msg[600];
+                      sprintf (
+                        msg,
+                        _("This MIDI file contains %d "
+                        "tracks. It cannot be dropped "
+                        "into an existing track"),
+                        num_nonempty_tracks);
+                      ui_show_error_message (
+                        MAIN_WINDOW, msg);
+                      goto free_file_array_and_return;
+                    }
+                }
+              else if (track_type == TRACK_TYPE_AUDIO &&
+                  track->type != TRACK_TYPE_AUDIO)
+                {
+                  ui_show_error_message (
+                    MAIN_WINDOW,
+                    _("Can only drop audio files on "
+                    "audio tracks"));
+                  goto free_file_array_and_return;
+                }
+
+              int lane_pos =
+                lane ? lane->pos :
+                (track->num_lanes == 1 ?
+                 0 : track->num_lanes - 2);
+              int idx_in_lane =
+                track->lanes[lane_pos]->num_regions;
+              ZRegion * region = NULL;
+              switch (track_type)
+                {
+                case TRACK_TYPE_AUDIO:
+                  /* create audio region in audio
+                   * track */
+                  region =
+                    audio_region_new (
+                      -1, file->abs_path, true, NULL,
+                      -1, NULL,
+                      0, 0, pos, track->pos, lane_pos,
+                      idx_in_lane);
+                  break;
+                case TRACK_TYPE_MIDI:
+                  region =
+                    midi_region_new_from_midi_file (
+                      pos, file->abs_path, track->pos,
+                      lane_pos, idx_in_lane, 0);
+                  break;
+                default:
+                  break;
+                }
+
+              if (region)
+                {
+                  track_add_region (
+                    track, region, NULL, lane_pos,
+                    F_GEN_NAME, F_PUBLISH_EVENTS);
+                  arranger_object_select (
+                    (ArrangerObject *) region,
+                    F_SELECT,
+                    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+                  UndoableAction * ua =
+                    arranger_selections_action_new_create (
+                      TL_SELECTIONS);
+                  undo_manager_perform (
+                    UNDO_MANAGER, ua);
+                }
+              else
+                {
+                  g_warn_if_reached ();
+                }
+
+              goto free_file_array_and_return;
+            }
+          else /* else if no track given */
+            {
+              UndoableAction * ua =
+                tracklist_selections_action_new_create (
+                  track_type, NULL, file,
+                  self->num_tracks,
+                  pos, 1, -1);
+              ua->num_actions = i + 1;
+              undo_manager_perform (
+                UNDO_MANAGER, ua);
+            }
+        }
+      else
+        {
+          g_warning ("operation not supported yet");
+        }
+    } /* foreach file */
+
+free_file_array_and_return:
+  g_ptr_array_unref (file_arr);
 
   return;
 }
