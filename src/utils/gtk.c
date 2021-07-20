@@ -18,6 +18,14 @@
  */
 
 #include "gui/accel.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/main_notebook.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/right_dock_edge.h"
+#include "gui/widgets/visibility.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -1118,6 +1126,120 @@ on_new_window_destroyed (
     }
 }
 
+static bool
+on_new_window_delete_event (
+  GtkWidget * widget,
+  GdkEvent *  event,
+  GtkWidget * page)
+{
+#define PROCESS_KEY(key) \
+  int w, h; \
+  gtk_window_get_size ( \
+    GTK_WINDOW (widget), &w, &h); \
+  g_settings_set_boolean ( \
+    S_UI_PANELS, key "-detached", false); \
+  g_settings_set ( \
+    S_UI_PANELS, key "-size", "(ii)", w, h); \
+  g_debug ("saving %s size %d %d", key, w, w)
+
+  if (page ==
+        GTK_WIDGET (
+          MW_LEFT_DOCK_EDGE->visibility_box))
+    {
+      PROCESS_KEY ("track-visibility");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_LEFT_DOCK_EDGE->
+                 track_inspector_scroll))
+    {
+      PROCESS_KEY ("track-inspector");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_LEFT_DOCK_EDGE->
+                 plugin_inspector_scroll))
+    {
+      PROCESS_KEY ("plugin-inspector");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_RIGHT_DOCK_EDGE->
+                 plugin_browser_box))
+    {
+      PROCESS_KEY ("plugin-browser");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_RIGHT_DOCK_EDGE->
+                 file_browser_box))
+    {
+      PROCESS_KEY ("file-browser");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_RIGHT_DOCK_EDGE->
+                 monitor_section_box))
+    {
+      PROCESS_KEY ("monitor-section");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->
+                 modulator_view_box))
+    {
+      PROCESS_KEY ("modulator-view");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->mixer_box))
+    {
+      PROCESS_KEY ("mixer");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->clip_editor_box))
+    {
+      PROCESS_KEY ("clip-editor");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->chord_pad_box))
+    {
+      PROCESS_KEY ("chord-pad");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->
+                 timeline_plus_event_viewer_paned))
+    {
+      PROCESS_KEY ("timeline");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->cc_bindings_box))
+    {
+      PROCESS_KEY ("cc-bindings");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->
+                 port_connections_box))
+    {
+      PROCESS_KEY ("port-connections");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->scenes_box))
+    {
+      PROCESS_KEY ("scenes");
+    }
+
+#undef PROCESS_KEY
+
+  return false;
+}
+
 static GtkNotebook *
 on_create_window (
   GtkNotebook *            notebook,
@@ -1146,6 +1268,10 @@ on_create_window (
     G_OBJECT (new_window), "destroy",
     G_CALLBACK (on_new_window_destroyed),
     data);
+  g_signal_connect (
+    G_OBJECT (new_window), "delete-event",
+    G_CALLBACK (on_new_window_delete_event),
+    page);
   gtk_window_set_icon_name (
     GTK_WINDOW (new_window), "zrythm");
   gtk_window_set_transient_for (
@@ -1168,6 +1294,124 @@ on_create_window (
     data->new_windows, new_window);
   g_ptr_array_add (
     data->new_notebooks, new_notebook);
+
+  /* save/load settings */
+  GVariant * size_val;
+  int width, height;
+#define PROCESS_KEY(key) \
+  g_settings_set_boolean ( \
+    S_UI_PANELS, key "-detached", true); \
+  size_val = \
+    g_settings_get_value ( \
+      S_UI_PANELS, key "-size"); \
+  width = \
+    (int) \
+    g_variant_get_int32 ( \
+      g_variant_get_child_value (size_val, 0)); \
+  height = \
+    (int) \
+    g_variant_get_int32 ( \
+      g_variant_get_child_value (size_val, 1)); \
+  g_debug ( \
+    "loading %s size %d %d", key, width, height); \
+  gtk_window_resize ( \
+    GTK_WINDOW (new_window), width, height); \
+  g_variant_unref (size_val)
+
+  if (page ==
+        GTK_WIDGET (
+          MW_LEFT_DOCK_EDGE->visibility_box))
+    {
+      PROCESS_KEY ("track-visibility");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_LEFT_DOCK_EDGE->
+                 track_inspector_scroll))
+    {
+      PROCESS_KEY ("track-inspector");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_LEFT_DOCK_EDGE->
+                 plugin_inspector_scroll))
+    {
+      PROCESS_KEY ("plugin-inspector");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_RIGHT_DOCK_EDGE->
+                 plugin_browser_box))
+    {
+      PROCESS_KEY ("plugin-browser");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_RIGHT_DOCK_EDGE->
+                 file_browser_box))
+    {
+      PROCESS_KEY ("file-browser");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_RIGHT_DOCK_EDGE->
+                 monitor_section_box))
+    {
+      PROCESS_KEY ("monitor-section");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->
+                 modulator_view_box))
+    {
+      PROCESS_KEY ("modulator-view");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->mixer_box))
+    {
+      PROCESS_KEY ("mixer");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->clip_editor_box))
+    {
+      PROCESS_KEY ("clip-editor");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_BOT_DOCK_EDGE->chord_pad_box))
+    {
+      PROCESS_KEY ("chord-pad");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->
+                 timeline_plus_event_viewer_paned))
+    {
+      PROCESS_KEY ("timeline");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->cc_bindings_box))
+    {
+      PROCESS_KEY ("cc-bindings");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->
+                 port_connections_box))
+    {
+      PROCESS_KEY ("port-connections");
+    }
+  else if (page ==
+             GTK_WIDGET (
+               MW_MAIN_NOTEBOOK->scenes_box))
+    {
+      PROCESS_KEY ("scenes");
+    }
+
+#undef PROCESS_KEY
 
   return new_notebook;
 }

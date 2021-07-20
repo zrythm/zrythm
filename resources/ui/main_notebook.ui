@@ -167,7 +167,7 @@
       </packing>
     </child>
     <child type="tab">
-      <object class="GtkBox">
+      <object class="GtkBox" id="scenes_box">
         <property name="visible">1</property>
         <property name="tooltip-text" translatable="yes">Scenes (Live view)</property>
         <child>

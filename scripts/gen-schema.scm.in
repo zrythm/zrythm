@@ -753,6 +753,152 @@ Args:
 
          (schema-print
            (make-schema
+             "ui.panels"
+             (list
+               (make-schema-key
+                 "track-visibility-detached" "b"
+                 "false"
+                 "Track visibility detached"
+                 "Whether the track visibility panel is detached.")
+               (make-schema-key
+                 "track-visibility-size"
+                 "(ii)" "(128,128)"
+                 "Track visibility size"
+                 "Track visibility panel size when detached.")
+               (make-schema-key
+                 "track-inspector-detached" "b"
+                 "false"
+                 "Track inspector detached"
+                 "Whether the track inspector panel is detached.")
+               (make-schema-key
+                 "track-inspector-size"
+                 "(ii)" "(128,128)"
+                 "Track inspector size"
+                 "Track inspector panel size when detached.")
+               (make-schema-key
+                 "plugin-inspector-detached" "b"
+                 "false"
+                 "Plugin inspector detached"
+                 "Whether the plugin inspector panel is detached.")
+               (make-schema-key
+                 "plugin-inspector-size"
+                 "(ii)" "(128,128)"
+                 "Plugin inspector size"
+                 "Plugin inspector panel size when detached.")
+               (make-schema-key
+                 "plugin-browser-detached" "b"
+                 "false"
+                 "Plugin browser detached"
+                 "Whether the plugin browser panel is detached.")
+               (make-schema-key
+                 "plugin-browser-size"
+                 "(ii)" "(128,128)"
+                 "Plugin browser size"
+                 "Plugin browser panel size when detached.")
+               (make-schema-key
+                 "file-browser-detached" "b"
+                 "false"
+                 "File browser detached"
+                 "Whether the file browser panel is detached.")
+               (make-schema-key
+                 "file-browser-size"
+                 "(ii)" "(128,128)"
+                 "File browser size"
+                 "File browser panel size when detached.")
+               (make-schema-key
+                 "monitor-section-detached" "b"
+                 "false"
+                 "Monitor section detached"
+                 "Whether the monitor section panel is detached.")
+               (make-schema-key
+                 "monitor-section-size"
+                 "(ii)" "(128,128)"
+                 "Monitor section size"
+                 "Monitor section panel size when detached.")
+               (make-schema-key
+                 "modulator-view-detached" "b"
+                 "false"
+                 "Modulator view detached"
+                 "Whether the modulator view panel is detached.")
+               (make-schema-key
+                 "modulator-view-size"
+                 "(ii)" "(128,128)"
+                 "Modulator view size"
+                 "Modulator view panel size when detached.")
+               (make-schema-key
+                 "mixer-detached" "b"
+                 "false"
+                 "Mixer detached"
+                 "Whether the mixer panel is detached.")
+               (make-schema-key
+                 "mixer-size"
+                 "(ii)" "(128,128)"
+                 "Mixer size"
+                 "Mixer panel size when detached.")
+               (make-schema-key
+                 "clip-editor-detached" "b"
+                 "false"
+                 "Clip editor detached"
+                 "Whether the clip editor panel is detached.")
+               (make-schema-key
+                 "clip-editor-size"
+                 "(ii)" "(128,128)"
+                 "Clip editor size"
+                 "Clip editor panel size when detached.")
+               (make-schema-key
+                 "chord-pad-detached" "b"
+                 "false"
+                 "Chord pad detached"
+                 "Whether the chord pad panel is detached.")
+               (make-schema-key
+                 "chord-pad-size"
+                 "(ii)" "(128,128)"
+                 "Chord pad size"
+                 "Chord pad panel size when detached.")
+               (make-schema-key
+                 "timeline-detached" "b"
+                 "false"
+                 "Timeline detached"
+                 "Whether the timeline panel is detached.")
+               (make-schema-key
+                 "timeline-size"
+                 "(ii)" "(128,128)"
+                 "Timeline size"
+                 "Timeline panel size when detached.")
+               (make-schema-key
+                 "cc-bindings-detached" "b"
+                 "false"
+                 "CC bindings detached"
+                 "Whether the CC bindings panel is detached.")
+               (make-schema-key
+                 "cc-bindings-size"
+                 "(ii)" "(128,128)"
+                 "CC bindings size"
+                 "CC bindings panel size when detached.")
+               (make-schema-key
+                 "port-connections-detached" "b"
+                 "false"
+                 "Port connections detached"
+                 "Whether the port connections panel is detached.")
+               (make-schema-key
+                 "port-connections-size"
+                 "(ii)" "(128,128)"
+                 "Port connections size"
+                 "Port connections panel size when detached.")
+               (make-schema-key
+                 "scenes-detached" "b"
+                 "false"
+                 "Scenes detached"
+                 "Whether the scenes panel is detached.")
+               (make-schema-key
+                 "scenes-size"
+                 "(ii)" "(128,128)"
+                 "Scenes size"
+                 "Scenes panel size when detached.")
+             ))) ;; ui.panels
+
+         (schema-print
+           (make-schema
              "export"
              (list
                (make-schema-key

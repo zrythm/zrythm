@@ -126,8 +126,12 @@ bot_dock_edge_widget_class_init (
 
   BIND_CHILD (bot_notebook);
   BIND_CHILD (clip_editor);
+  BIND_CHILD (clip_editor_box);
   BIND_CHILD (mixer);
+  BIND_CHILD (mixer_box);
   BIND_CHILD (event_viewer);
   BIND_CHILD (modulator_view);
+  BIND_CHILD (modulator_view_box);
   BIND_CHILD (chord_pad);
+  BIND_CHILD (chord_pad_box);
 }

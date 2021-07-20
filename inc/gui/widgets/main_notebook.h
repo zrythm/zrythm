@@ -70,6 +70,8 @@ typedef struct _MainNotebookWidget
 
   GtkBox *              port_connections_box;
   PortConnectionsWidget * port_connections;
+
+  GtkBox *              scenes_box;
 } MainNotebookWidget;
 
 void

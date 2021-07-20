@@ -126,4 +126,5 @@ main_notebook_widget_class_init (
   BIND_CHILD (cc_bindings_box);
   BIND_CHILD (port_connections_box);
   BIND_CHILD (timeline_plus_event_viewer_paned);
+  BIND_CHILD (scenes_box);
 }

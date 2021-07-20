@@ -71,17 +71,23 @@ typedef enum LeftDockEdgeTab
  */
 typedef struct _LeftDockEdgeWidget
 {
-  GtkBox                   parent_instance;
+  GtkBox                  parent_instance;
   FoldableNotebookWidget * inspector_notebook;
-  //InspectorWidget *        inspector;
-  VisibilityWidget *       visibility;
-  GtkGestureMultiPress *   mp;
+
+  /** Track visibility. */
+  GtkBox *                visibility_box;
+  VisibilityWidget *      visibility;
 
   /** For TracklistSelections. */
+  GtkScrolledWindow *     track_inspector_scroll;
   InspectorTrackWidget *  track_inspector;
 
   /** For MixerSelections. */
+  GtkScrolledWindow *     plugin_inspector_scroll;
   InspectorPluginWidget * plugin_inspector;
+
+  /** Mouse button press handler. */
+  GtkGestureMultiPress *  mp;
 } LeftDockEdgeWidget;
 
 void

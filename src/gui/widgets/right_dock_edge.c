@@ -110,6 +110,7 @@ right_dock_edge_widget_init (
     notebook, GTK_WIDGET (box), true);
   gtk_notebook_set_tab_reorderable (
     notebook, GTK_WIDGET (box), true);
+  self->plugin_browser_box = box;
 
   /* add file browser */
   self->file_browser =
@@ -142,6 +143,7 @@ right_dock_edge_widget_init (
     notebook, GTK_WIDGET (box), true);
   gtk_notebook_set_tab_reorderable (
     notebook, GTK_WIDGET (box), true);
+  self->file_browser_box = box;
 
   /* add control room */
   self->monitor_section =
@@ -174,6 +176,7 @@ right_dock_edge_widget_init (
     notebook, GTK_WIDGET (box), true);
   gtk_notebook_set_tab_reorderable (
     notebook, GTK_WIDGET (box), true);
+  self->monitor_section_box = box;
 
   /* add file browser button */
   img =

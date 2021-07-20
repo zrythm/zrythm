@@ -31,7 +31,7 @@
         <property name="can-focus">1</property>
         <property name="tab-pos">bottom</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="clip_editor_box">
             <property name="visible">1</property>
             <child>
               <object class="GtkPaned"
@@ -94,7 +94,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="mixer_box">
             <property name="visible">1</property>
             <child>
               <object class="MixerWidget" id="mixer">
@@ -137,7 +137,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="modulator_view_box">
             <property name="visible">1</property>
             <child>
               <object class="ModulatorViewWidget" id="modulator_view">
@@ -180,7 +180,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="chord_pad_box">
             <property name="visible">1</property>
             <child>
               <object class="ChordPadWidget" id="chord_pad">

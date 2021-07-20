@@ -200,6 +200,7 @@ left_dock_edge_widget_init (
   gtk_widget_set_size_request (
     GTK_WIDGET (self->track_inspector),
     min_width, -1);
+  self->track_inspector_scroll = scroll;
 
   /* setup plugin inspector */
   self->plugin_inspector =
@@ -218,15 +219,19 @@ left_dock_edge_widget_init (
     GTK_WIDGET (self->plugin_inspector));
   gtk_widget_set_visible (
     GTK_WIDGET (inspector_wrap), 1);
+  scroll =
+    wrap_inspector_in_scrolled_window (
+      self, GTK_WIDGET (inspector_wrap));
   gtk_notebook_append_page (
-    notebook, GTK_WIDGET (inspector_wrap), img);
+    notebook, GTK_WIDGET (scroll), img);
   gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (inspector_wrap), true);
+    notebook, GTK_WIDGET (scroll), true);
   gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (inspector_wrap), true);
+    notebook, GTK_WIDGET (scroll), true);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->plugin_inspector),
     min_width, -1);
+  self->plugin_inspector_scroll = scroll;
 
   /* setup visibility */
   img =
@@ -238,20 +243,23 @@ left_dock_edge_widget_init (
   self->visibility = visibility_widget_new ();
   gtk_widget_set_visible (
     GTK_WIDGET (self->visibility), 1);
-  GtkBox * visibility_box =
+  self->visibility_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (
-    GTK_CONTAINER (visibility_box),
+    GTK_CONTAINER (self->visibility_box),
     GTK_WIDGET (self->visibility));
   gtk_widget_set_visible (
-    GTK_WIDGET (visibility_box), 1);
+    GTK_WIDGET (self->visibility_box), 1);
   gtk_notebook_append_page (
-    notebook, GTK_WIDGET (visibility_box), img);
+    notebook, GTK_WIDGET (self->visibility_box),
+    img);
   gtk_notebook_set_tab_detachable (
-    notebook, GTK_WIDGET (visibility_box), true);
+    notebook, GTK_WIDGET (self->visibility_box),
+    true);
   gtk_notebook_set_tab_reorderable (
-    notebook, GTK_WIDGET (visibility_box), true);
+    notebook, GTK_WIDGET (self->visibility_box),
+    true);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->visibility),
     min_width, -1);
