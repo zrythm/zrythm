@@ -1064,6 +1064,10 @@ typedef struct DetachableNotebookData
 
   /** New notebooks inside new windows. */
   GPtrArray *     new_notebooks;
+
+  /** Hashtable of settings schema keys => widget
+   * pointers. */
+  GHashTable *    ht;
 } DetachableNotebookData;
 
 static void
@@ -1126,118 +1130,47 @@ on_new_window_destroyed (
     }
 }
 
+typedef struct DetachableNotebookDeleteEventData
+{
+  DetachableNotebookData * data;
+  GtkWidget *              page;
+} DetachableNotebookDeleteEventData;
+
 static bool
 on_new_window_delete_event (
-  GtkWidget * widget,
-  GdkEvent *  event,
-  GtkWidget * page)
+  GtkWidget *                         widget,
+  GdkEvent *                          event,
+  DetachableNotebookDeleteEventData * delete_data)
 {
-#define PROCESS_KEY(key) \
-  int w, h; \
-  gtk_window_get_size ( \
-    GTK_WINDOW (widget), &w, &h); \
-  g_settings_set_boolean ( \
-    S_UI_PANELS, key "-detached", false); \
-  g_settings_set ( \
-    S_UI_PANELS, key "-size", "(ii)", w, h); \
-  g_debug ("saving %s size %d %d", key, w, w)
+  GtkWidget * page = delete_data->page;
 
-  if (page ==
-        GTK_WIDGET (
-          MW_LEFT_DOCK_EDGE->visibility_box))
-    {
-      PROCESS_KEY ("track-visibility");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_LEFT_DOCK_EDGE->
-                 track_inspector_scroll))
-    {
-      PROCESS_KEY ("track-inspector");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_LEFT_DOCK_EDGE->
-                 plugin_inspector_scroll))
-    {
-      PROCESS_KEY ("plugin-inspector");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_RIGHT_DOCK_EDGE->
-                 plugin_browser_box))
-    {
-      PROCESS_KEY ("plugin-browser");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_RIGHT_DOCK_EDGE->
-                 file_browser_box))
-    {
-      PROCESS_KEY ("file-browser");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_RIGHT_DOCK_EDGE->
-                 monitor_section_box))
-    {
-      PROCESS_KEY ("monitor-section");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->
-                 modulator_view_box))
-    {
-      PROCESS_KEY ("modulator-view");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->mixer_box))
-    {
-      PROCESS_KEY ("mixer");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->clip_editor_box))
-    {
-      PROCESS_KEY ("clip-editor");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->chord_pad_box))
-    {
-      PROCESS_KEY ("chord-pad");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->
-                 timeline_plus_event_viewer_paned))
-    {
-      PROCESS_KEY ("timeline");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->cc_bindings_box))
-    {
-      PROCESS_KEY ("cc-bindings");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->
-                 port_connections_box))
-    {
-      PROCESS_KEY ("port-connections");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->scenes_box))
-    {
-      PROCESS_KEY ("scenes");
-    }
+  char * val =
+    g_hash_table_lookup (
+      delete_data->data->ht, page);
+  g_return_val_if_fail (val, false);
+  char key_detached[600];
+  sprintf (key_detached, "%s-detached", val);
+  char key_size[600];
+  sprintf (key_size, "%s-size", val);
 
-#undef PROCESS_KEY
+  int w, h;
+  gtk_window_get_size (
+    GTK_WINDOW (widget), &w, &h);
+  g_settings_set_boolean (
+    S_UI_PANELS, key_detached, false);
+  g_settings_set (
+    S_UI_PANELS, key_size, "(ii)", w, h);
+  g_debug ("saving %s size %d %d", val, w, w);
 
   return false;
+}
+
+static void
+free_delete_data (
+  DetachableNotebookDeleteEventData * data,
+  GClosure *                          closure)
+{
+  free (data);
 }
 
 static GtkNotebook *
@@ -1268,10 +1201,17 @@ on_create_window (
     G_OBJECT (new_window), "destroy",
     G_CALLBACK (on_new_window_destroyed),
     data);
-  g_signal_connect (
+
+  DetachableNotebookDeleteEventData * delete_data =
+    object_new (
+      DetachableNotebookDeleteEventData);
+  delete_data->data = data;
+  delete_data->page = page;
+  g_signal_connect_data (
     G_OBJECT (new_window), "delete-event",
     G_CALLBACK (on_new_window_delete_event),
-    page);
+    delete_data,
+    (GClosureNotify) free_delete_data, 0);
   gtk_window_set_icon_name (
     GTK_WINDOW (new_window), "zrythm");
   gtk_window_set_transient_for (
@@ -1295,123 +1235,33 @@ on_create_window (
   g_ptr_array_add (
     data->new_notebooks, new_notebook);
 
+  char * val =
+    g_hash_table_lookup (data->ht, page);
+  g_return_val_if_fail (val, NULL);
+  char key_detached[600];
+  sprintf (key_detached, "%s-detached", val);
+  char key_size[600];
+  sprintf (key_size, "%s-size", val);
+
   /* save/load settings */
-  GVariant * size_val;
-  int width, height;
-#define PROCESS_KEY(key) \
-  g_settings_set_boolean ( \
-    S_UI_PANELS, key "-detached", true); \
-  size_val = \
-    g_settings_get_value ( \
-      S_UI_PANELS, key "-size"); \
-  width = \
-    (int) \
-    g_variant_get_int32 ( \
-      g_variant_get_child_value (size_val, 0)); \
-  height = \
-    (int) \
-    g_variant_get_int32 ( \
-      g_variant_get_child_value (size_val, 1)); \
-  g_debug ( \
-    "loading %s size %d %d", key, width, height); \
-  gtk_window_resize ( \
-    GTK_WINDOW (new_window), width, height); \
-  g_variant_unref (size_val)
-
-  if (page ==
-        GTK_WIDGET (
-          MW_LEFT_DOCK_EDGE->visibility_box))
-    {
-      PROCESS_KEY ("track-visibility");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_LEFT_DOCK_EDGE->
-                 track_inspector_scroll))
-    {
-      PROCESS_KEY ("track-inspector");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_LEFT_DOCK_EDGE->
-                 plugin_inspector_scroll))
-    {
-      PROCESS_KEY ("plugin-inspector");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_RIGHT_DOCK_EDGE->
-                 plugin_browser_box))
-    {
-      PROCESS_KEY ("plugin-browser");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_RIGHT_DOCK_EDGE->
-                 file_browser_box))
-    {
-      PROCESS_KEY ("file-browser");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_RIGHT_DOCK_EDGE->
-                 monitor_section_box))
-    {
-      PROCESS_KEY ("monitor-section");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->
-                 modulator_view_box))
-    {
-      PROCESS_KEY ("modulator-view");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->mixer_box))
-    {
-      PROCESS_KEY ("mixer");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->clip_editor_box))
-    {
-      PROCESS_KEY ("clip-editor");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_BOT_DOCK_EDGE->chord_pad_box))
-    {
-      PROCESS_KEY ("chord-pad");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->
-                 timeline_plus_event_viewer_paned))
-    {
-      PROCESS_KEY ("timeline");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->cc_bindings_box))
-    {
-      PROCESS_KEY ("cc-bindings");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->
-                 port_connections_box))
-    {
-      PROCESS_KEY ("port-connections");
-    }
-  else if (page ==
-             GTK_WIDGET (
-               MW_MAIN_NOTEBOOK->scenes_box))
-    {
-      PROCESS_KEY ("scenes");
-    }
-
-#undef PROCESS_KEY
+  g_settings_set_boolean (
+    S_UI_PANELS, key_detached, true);
+  GVariant * size_val =
+    g_settings_get_value (
+      S_UI_PANELS, key_size);
+  int width =
+    (int)
+    g_variant_get_int32 (
+      g_variant_get_child_value (size_val, 0));
+  int height =
+    (int)
+    g_variant_get_int32 (
+      g_variant_get_child_value (size_val, 1));
+  g_debug (
+    "loading %s size %d %d", val, width, height);
+  gtk_window_resize (
+    GTK_WINDOW (new_window), width, height);
+  g_variant_unref (size_val);
 
   return new_notebook;
 }
@@ -1423,7 +1273,63 @@ on_detachable_notebook_destroyed (
 {
   g_ptr_array_free (data->new_windows, false);
   g_ptr_array_free (data->new_notebooks, false);
+  g_hash_table_destroy (data->ht);
   free (data);
+}
+
+/**
+ * Detach eligible pages programmatically into a
+ * new window.
+ *
+ * Used during startup.
+ *
+ * @param data Data received from
+ *   z_gtk_notebook_make_detachable.
+ */
+static void
+detach_pages_programmatically (
+  GtkNotebook *            old_notebook,
+  DetachableNotebookData * data)
+{
+  int n_pages =
+    gtk_notebook_get_n_pages (old_notebook);
+  for (int i = n_pages - 1; i >= 0; i--)
+    {
+      GtkWidget * page =
+        gtk_notebook_get_nth_page (
+          old_notebook, i);
+      GtkWidget * tab_label =
+        gtk_notebook_get_tab_label (
+          old_notebook, page);
+
+      char * val =
+        g_hash_table_lookup (data->ht, page);
+      g_return_if_fail (val);
+      char key_detached[600];
+      sprintf (key_detached, "%s-detached", val);
+      bool needs_detach =
+        g_settings_get_boolean (
+          S_UI_PANELS, key_detached);
+
+      if (needs_detach)
+        {
+          g_object_ref (page);
+          g_object_ref (tab_label);
+          GtkNotebook * new_notebook =
+            on_create_window (
+              old_notebook, page, 12, 12, data);
+          gtk_notebook_detach_tab (
+            old_notebook, page);
+          gtk_notebook_append_page (
+            new_notebook, page, tab_label);
+          gtk_notebook_set_tab_detachable (
+            new_notebook, page, true);
+          gtk_notebook_set_tab_reorderable (
+            new_notebook, page, true);
+          g_object_unref (page);
+          g_object_unref (tab_label);
+        }
+    }
 }
 
 /**
@@ -1441,6 +1347,62 @@ z_gtk_notebook_make_detachable (
   data->new_windows = g_ptr_array_new ();
   data->new_notebooks = g_ptr_array_new ();
   data->parent_window = parent_window;
+
+  /* prepare hashtable */
+#define ADD_PAIR(key,w) \
+  g_return_if_fail (key); \
+  g_return_if_fail (w); \
+  g_hash_table_insert ( \
+    data->ht, w, g_strdup (key))
+
+  data->ht =
+    g_hash_table_new_full (
+      NULL, NULL, NULL, g_free);
+  ADD_PAIR ("track-visibility",
+    MW_LEFT_DOCK_EDGE->visibility_box);
+  ADD_PAIR (
+    "track-inspector",
+    MW_LEFT_DOCK_EDGE->track_inspector_scroll);
+  ADD_PAIR (
+    "plugin-inspector",
+    MW_LEFT_DOCK_EDGE->plugin_inspector_scroll);
+  ADD_PAIR (
+    "plugin-browser",
+    MW_RIGHT_DOCK_EDGE->plugin_browser_box);
+  ADD_PAIR (
+    "file-browser",
+    MW_RIGHT_DOCK_EDGE->file_browser_box);
+  ADD_PAIR (
+    "monitor-section",
+    MW_RIGHT_DOCK_EDGE->monitor_section_box);
+  ADD_PAIR (
+    "modulator-view",
+    MW_BOT_DOCK_EDGE->modulator_view_box);
+  ADD_PAIR (
+    "mixer",
+    MW_BOT_DOCK_EDGE->mixer_box);
+  ADD_PAIR (
+    "clip-editor",
+    MW_BOT_DOCK_EDGE->clip_editor_box);
+  ADD_PAIR (
+    "chord-pad",
+    MW_BOT_DOCK_EDGE->chord_pad_box);
+  ADD_PAIR (
+    "timeline",
+    MW_MAIN_NOTEBOOK->
+      timeline_plus_event_viewer_paned);
+  ADD_PAIR (
+    "cc-bindings",
+    MW_MAIN_NOTEBOOK->cc_bindings_box);
+  ADD_PAIR (
+    "port-connections",
+    MW_MAIN_NOTEBOOK->port_connections_box);
+  ADD_PAIR (
+    "scenes",
+    MW_MAIN_NOTEBOOK->scenes_box);
+
+#undef ADD_PAIR
+
   g_signal_connect (
     G_OBJECT (notebook), "create-window",
     G_CALLBACK (on_create_window), data);
@@ -1448,4 +1410,6 @@ z_gtk_notebook_make_detachable (
     G_OBJECT (notebook), "destroy",
     G_CALLBACK (on_detachable_notebook_destroyed),
     data);
+
+  detach_pages_programmatically (notebook, data);
 }
