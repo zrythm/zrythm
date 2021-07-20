@@ -311,18 +311,19 @@ supported_file_get_info_text_for_label (
 
       label =
         g_markup_printf_escaped (
-          "<b>%s</b>\n"
-          "Format: TODO\n"
+          _("<b>%s</b>\n"
           "Sample rate: %d\n"
-          "Length: %lds | BPM: %.1f\n"
-          "Channels: %d | Bitrate: %d\n"
-          "Bit depth: %d",
+          "Length: %ld s %ld ms | BPM: %.1f\n"
+          "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
+          "Bit depth: %d bits"),
           self->label,
           enc->nfo.sample_rate,
           enc->nfo.length / 1000,
+          enc->nfo.length % 1000,
           (double) enc->nfo.bpm,
           enc->nfo.channels,
-          enc->nfo.bit_rate,
+          enc->nfo.bit_rate / 1000,
+          (enc->nfo.bit_rate % 1000) / 100,
           enc->nfo.bit_depth);
       audio_encoder_free (enc);
     }

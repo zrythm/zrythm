@@ -476,6 +476,8 @@ on_selection_changed (
           char * label =
             supported_file_get_info_text_for_label (
               descr);
+          g_message (
+            "selected file: %s", descr->abs_path);
           update_file_info_label (self, label);
 
           if (g_settings_get_boolean (
