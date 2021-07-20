@@ -204,11 +204,11 @@ on_delete_event (
           GTK_WINDOW (MAIN_WINDOW),
           GTK_DIALOG_MODAL |
             GTK_DIALOG_DESTROY_WITH_PARENT,
-          _("Save & Quit"),
+          _("_Save & Quit"),
           GTK_RESPONSE_ACCEPT,
-          _("Quit without saving"),
+          _("_Quit without saving"),
           GTK_RESPONSE_REJECT,
-          _("Cancel"),
+          _("_Cancel"),
           GTK_RESPONSE_CANCEL,
           NULL);
       gtk_dialog_set_default_response (
