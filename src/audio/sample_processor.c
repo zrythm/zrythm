@@ -615,7 +615,7 @@ sample_processor_queue_file (
         plugin_new_from_setting (
           self->instrument_setting,
           instrument_track->pos,
-          PLUGIN_SLOT_INSTRUMENT, 0);
+          PLUGIN_SLOT_INSTRUMENT, -1);
       pl->is_auditioner = true;
       g_return_if_fail (pl);
       g_return_if_fail (

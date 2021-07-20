@@ -264,6 +264,10 @@ plugin_init (
       plugin->setting->descr->protocol].str,
     track_pos, slot);
 
+  g_return_if_fail (
+    plugin_identifier_validate_slot_type_slot_combo (
+      slot_type, slot));
+
   plugin->in_ports_size = 1;
   plugin->out_ports_size = 1;
   plugin->id.schema_version =
