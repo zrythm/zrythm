@@ -252,8 +252,6 @@ fader_controls_grid_widget_tear_down (
 FaderControlsGridWidget *
 fader_controls_grid_widget_new (void)
 {
-  g_message ("creating...");
-
   FaderControlsGridWidget * self =
     g_object_new (
       FADER_CONTROLS_GRID_WIDGET_TYPE, NULL);
@@ -264,8 +262,6 @@ fader_controls_grid_widget_new (void)
       (GtkTickCallback) update_meter_reading,
       self, NULL);
 
-  g_message ("done");
-
   return self;
 }
 
@@ -273,15 +269,11 @@ static void
 fader_controls_grid_finalize (
   FaderControlsGridWidget * self)
 {
-  g_message ("finalizing...");
-
   fader_controls_grid_widget_tear_down (self);
 
   G_OBJECT_CLASS (
     fader_controls_grid_widget_parent_class)->
       finalize (G_OBJECT (self));
-
-  g_message ("done");
 }
 
 static void

@@ -106,6 +106,10 @@ right_dock_edge_widget_init (
     GTK_WIDGET (box), 1);
   gtk_notebook_prepend_page (
     notebook, GTK_WIDGET (box), img);
+  gtk_notebook_set_tab_detachable (
+    notebook, GTK_WIDGET (box), true);
+  gtk_notebook_set_tab_reorderable (
+    notebook, GTK_WIDGET (box), true);
 
   /* add file browser */
   self->file_browser =
@@ -134,6 +138,10 @@ right_dock_edge_widget_init (
     GTK_WIDGET (box), 1);
   gtk_notebook_append_page (
     notebook, GTK_WIDGET (box), img);
+  gtk_notebook_set_tab_detachable (
+    notebook, GTK_WIDGET (box), true);
+  gtk_notebook_set_tab_reorderable (
+    notebook, GTK_WIDGET (box), true);
 
   /* add control room */
   self->monitor_section =
@@ -162,6 +170,10 @@ right_dock_edge_widget_init (
     GTK_WIDGET (box), 1);
   gtk_notebook_append_page (
     notebook, GTK_WIDGET (box), img);
+  gtk_notebook_set_tab_detachable (
+    notebook, GTK_WIDGET (box), true);
+  gtk_notebook_set_tab_reorderable (
+    notebook, GTK_WIDGET (box), true);
 
   /* add file browser button */
   img =

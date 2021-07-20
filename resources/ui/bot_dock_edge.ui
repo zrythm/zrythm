@@ -59,6 +59,10 @@
               </object>
             </child>
           </object>
+          <packing>
+            <property name="detachable">1</property>
+            <property name="reorderable">1</property>
+          </packing>
         </child>
         <child type="tab">
           <object class="GtkBox">
@@ -98,6 +102,10 @@
               </object>
             </child>
           </object>
+          <packing>
+            <property name="detachable">1</property>
+            <property name="reorderable">1</property>
+          </packing>
         </child>
         <child type="tab">
           <object class="GtkBox">
@@ -137,6 +145,10 @@
               </object>
             </child>
           </object>
+          <packing>
+            <property name="detachable">1</property>
+            <property name="reorderable">1</property>
+          </packing>
         </child>
         <child type="tab">
           <object class="GtkBox">
@@ -176,6 +188,10 @@
               </object>
             </child>
           </object>
+          <packing>
+            <property name="detachable">1</property>
+            <property name="reorderable">1</property>
+          </packing>
         </child>
         <child type="tab">
           <object class="GtkBox">

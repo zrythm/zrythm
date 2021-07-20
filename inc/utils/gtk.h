@@ -567,6 +567,15 @@ GtkSourceLanguageManager *
 z_gtk_source_language_manager_get (void);
 
 /**
+ * Makes the given GtkNotebook detachable to
+ * a new window.
+ */
+void
+z_gtk_notebook_make_detachable (
+  GtkNotebook * notebook,
+  GtkWindow *   parent_window);
+
+/**
  * @}
  */
 #endif

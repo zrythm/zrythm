@@ -66,14 +66,20 @@ typedef struct _FoldableNotebookWidget
   /** Notebook position in the paned. */
   GtkPositionType        pos_in_paned;
 
-  //DzlDockRevealer *      dock_revealer;
-
   /** Previous paned position before setting it to
    * max/min. */
   //int                    prev_paned_pos;
 
   /** Revealer position before hiding. */
   int                    prev_pos;
+
+  /**
+   * Current tab during a press action.
+   *
+   * Used to check if the same tab is active on
+   * release in order to hide the tab.
+   */
+  GtkWidget *            tab_during_press;
 } FoldableNotebookWidget;
 
 /**

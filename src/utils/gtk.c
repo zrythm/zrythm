@@ -20,6 +20,7 @@
 #include "gui/accel.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/strv_builder.h"
@@ -1039,4 +1040,159 @@ z_gtk_source_language_manager_get (void)
   already_set = true;
 
   return manager;
+}
+
+typedef struct DetachableNotebookData
+{
+  /** Parent window of original notebook. */
+  GtkWindow *     parent_window;
+
+  /** Original notebook. */
+  GtkNotebook *   notebook;
+
+  /** Windows for dropping detached tabs. */
+  GPtrArray *     new_windows;
+
+  /** New notebooks inside new windows. */
+  GPtrArray *     new_notebooks;
+} DetachableNotebookData;
+
+static void
+on_new_notebook_page_removed (
+  GtkNotebook *            notebook,
+  GtkWidget *              child,
+  guint                    page_num,
+  GtkWindow *              new_window)
+{
+  /* destroy the sub window after the notebook is
+   * empty */
+  if (gtk_notebook_get_n_pages (notebook) == 0)
+    {
+      gtk_widget_destroy (GTK_WIDGET (new_window));
+    }
+}
+
+static void
+on_new_window_destroyed (
+  GtkWidget *              widget,
+  DetachableNotebookData * data)
+{
+  guint idx;
+  bool found =
+    g_ptr_array_find (
+      data->new_windows, widget, &idx);
+  g_return_if_fail (found);
+
+  GtkNotebook * new_notebook =
+    g_ptr_array_index (data->new_notebooks, idx);
+  g_ptr_array_remove_index (data->new_windows, idx);
+  g_ptr_array_remove_index (
+    data->new_notebooks, idx);
+
+  /* if the sub window gets destroyed, push pages
+   * back to the main window */
+  /* detach the notebook pages in reverse sequence
+   * to avoid index errors */
+  int n_pages =
+    gtk_notebook_get_n_pages (new_notebook);
+  for (int i = n_pages - 1; i >= 0; i--)
+    {
+      GtkWidget * page =
+        gtk_notebook_get_nth_page (new_notebook, i);
+      GtkWidget * tab_label =
+        gtk_notebook_get_tab_label (
+          new_notebook, page);
+      g_object_ref (page);
+      g_object_ref (tab_label);
+      gtk_notebook_detach_tab (
+        new_notebook, page);
+      gtk_notebook_append_page (
+        data->notebook, page, tab_label);
+      g_object_unref (page);
+      g_object_unref (tab_label);
+      gtk_notebook_set_tab_detachable (
+        data->notebook, page, true);
+      gtk_notebook_set_tab_reorderable (
+        data->notebook, page, true);
+    }
+}
+
+static GtkNotebook *
+on_create_window (
+  GtkNotebook *            notebook,
+  GtkWidget *              page,
+  int                      x,
+  int                      y,
+  DetachableNotebookData * data)
+{
+  GtkWindow * new_window =
+    GTK_WINDOW (
+      gtk_window_new (GTK_WINDOW_TOPLEVEL));
+  GtkNotebook * new_notebook =
+    GTK_NOTEBOOK (gtk_notebook_new ());
+  gtk_container_add (
+    GTK_CONTAINER (new_window),
+    GTK_WIDGET (new_notebook));
+  /* very important for DND */
+  gtk_notebook_set_group_name (
+    new_notebook, "foldable-notebook-group");
+
+  g_signal_connect (
+    G_OBJECT (new_notebook), "page-removed",
+    G_CALLBACK (on_new_notebook_page_removed),
+    new_window);
+  g_signal_connect (
+    G_OBJECT (new_window), "destroy",
+    G_CALLBACK (on_new_window_destroyed),
+    data);
+  gtk_window_set_transient_for (
+    GTK_WINDOW (new_window),
+    GTK_WINDOW (data->parent_window));
+  gtk_window_set_destroy_with_parent (
+    new_window, true);
+
+  gtk_widget_show_all (
+    GTK_WIDGET (new_window));
+  gtk_widget_set_visible (page, true);
+
+  g_ptr_array_add (
+    data->new_windows, new_window);
+  g_ptr_array_add (
+    data->new_notebooks, new_notebook);
+
+  return new_notebook;
+}
+
+static void
+on_detachable_notebook_destroyed (
+  GtkWidget * widget,
+  DetachableNotebookData * data)
+{
+  g_ptr_array_free (data->new_windows, false);
+  g_ptr_array_free (data->new_notebooks, false);
+  free (data);
+}
+
+/**
+ * Makes the given GtkNotebook detachable to
+ * a new window.
+ */
+void
+z_gtk_notebook_make_detachable (
+  GtkNotebook * notebook,
+  GtkWindow *   parent_window)
+{
+  DetachableNotebookData * data =
+    object_new (DetachableNotebookData);
+  data->notebook = notebook;
+  data->new_windows = g_ptr_array_new ();
+  data->new_notebooks = g_ptr_array_new ();
+  data->parent_window = parent_window;
+  g_signal_connect (
+    G_OBJECT (notebook), "create-window",
+    G_CALLBACK (on_create_window), data);
+  g_signal_connect_after (
+    G_OBJECT (notebook), "destroy",
+    G_CALLBACK (on_detachable_notebook_destroyed),
+    data);
 }

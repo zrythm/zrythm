@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,8 +18,10 @@
  */
 
 #include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   FoldableNotebookWidget,
@@ -176,23 +178,20 @@ foldable_notebook_widget_get_widget_at_page (
 }
 
 /**
- * Callback for the foldable notebook.
+ * Tab release callback.
  */
 static void
-on_multipress_pressed (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
+on_multipress_released (
+  GtkGestureMultiPress *   gesture,
+  gint                     n_press,
+  gdouble                  x,
+  gdouble                  y,
   FoldableNotebookWidget * self)
 {
-  GtkWidget * current_tab =
-    z_gtk_notebook_get_current_tab_label_widget (
-      GTK_NOTEBOOK (self));
-  int hit =
+  bool hit =
     ui_is_child_hit (
       GTK_WIDGET (self),
-      current_tab,
+      self->tab_during_press,
       1, 1, x, y,  16, 3);
   if (hit)
     {
@@ -206,6 +205,22 @@ on_multipress_pressed (
     }
 }
 
+/**
+ * Tab press callback.
+ */
+static void
+on_multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  FoldableNotebookWidget * self)
+{
+  self->tab_during_press =
+    z_gtk_notebook_get_current_tab_label_widget (
+      GTK_NOTEBOOK (self));
+}
+
 FoldableNotebookWidget *
 foldable_notebook_widget_new ()
 {
@@ -216,6 +231,15 @@ foldable_notebook_widget_new ()
   return self;
 }
 
+static void
+foldable_notebook_widget_finalize (
+  FoldableNotebookWidget * self)
+{
+  G_OBJECT_CLASS (
+    foldable_notebook_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
 /**
  * Sets up an existing FoldableNotebookWidget.
  */
@@ -223,17 +247,19 @@ void
 foldable_notebook_widget_setup (
   FoldableNotebookWidget * self,
   GtkPaned *               paned,
-  /*DzlDockRevealer *        dock_revealer,*/
   GtkPositionType          pos_in_paned)
 {
   self->paned = paned;
   self->pos_in_paned = pos_in_paned;
-  /*self->dock_revealer = dock_revealer;*/
 
   /* add events */
   gtk_widget_add_events (
     GTK_WIDGET (self),
     GDK_ALL_EVENTS_MASK);
+
+  /* make detachable */
+  z_gtk_notebook_make_detachable (
+    GTK_NOTEBOOK (self), GTK_WINDOW (MAIN_WINDOW));
 
   /* add signals */
   self->mp =
@@ -245,18 +271,23 @@ foldable_notebook_widget_setup (
     GTK_PHASE_CAPTURE);
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
-    G_CALLBACK (on_multipress_pressed),
-    self);
+    G_CALLBACK (on_multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self->mp), "released",
+    G_CALLBACK (on_multipress_released), self);
   g_signal_connect (
     G_OBJECT (self), "switch-page",
-    G_CALLBACK (on_switch_page),
-    self);
+    G_CALLBACK (on_switch_page), self);
 }
 
 static void
 foldable_notebook_widget_class_init (
   FoldableNotebookWidgetClass * klass)
 {
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc)
+    foldable_notebook_widget_finalize;
 }
 
 static void

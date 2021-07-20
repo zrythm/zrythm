@@ -206,6 +206,10 @@ typedef struct Channel
   /** Track associated with this channel. */
   int              track_pos;
 
+  /** Channel widget width - reserved for future
+   * use. */
+  int              width;
+
   /** This must be set to CHANNEL_MAGIC. */
   int              magic;
 
@@ -286,6 +290,7 @@ channel_fields_schema[] =
     Channel, all_midi_channels),
   YAML_FIELD_INT (
     Channel, record_set_automatically),
+  YAML_FIELD_INT (Channel, width),
 
   CYAML_FIELD_END
 };

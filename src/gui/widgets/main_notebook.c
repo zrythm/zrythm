@@ -23,11 +23,13 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/main_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/port_connections.h"
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -44,6 +46,10 @@ main_notebook_widget_setup (
   event_viewer_widget_setup (
     self->event_viewer,
     EVENT_VIEWER_TYPE_TIMELINE);
+
+  /* make detachable */
+  z_gtk_notebook_make_detachable (
+    GTK_NOTEBOOK (self), GTK_WINDOW (MAIN_WINDOW));
 
   /* set event viewer visibility */
   gtk_widget_set_visible (
@@ -68,12 +74,8 @@ void
 main_notebook_widget_tear_down (
   MainNotebookWidget * self)
 {
-  g_message ("tearing down %p...", self);
-
   timeline_panel_widget_tear_down (
     self->timeline_panel);
-
-  g_message ("done");
 }
 
 static void

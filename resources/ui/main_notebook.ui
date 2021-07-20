@@ -36,6 +36,10 @@
           </packing>
         </child>
       </object>
+      <packing>
+        <property name="detachable">1</property>
+        <property name="reorderable">1</property>
+      </packing>
     </child>
     <child type="tab">
       <object class="GtkBox">
@@ -73,6 +77,10 @@
       <object class="GtkBox" id="port_connections_box">
         <property name="visible">True</property>
       </object>
+      <packing>
+        <property name="detachable">1</property>
+        <property name="reorderable">1</property>
+      </packing>
     </child>
     <child type="tab">
       <object class="GtkBox">
@@ -111,6 +119,10 @@
       <object class="GtkBox" id="cc_bindings_box">
         <property name="visible">True</property>
       </object>
+      <packing>
+        <property name="detachable">1</property>
+        <property name="reorderable">1</property>
+      </packing>
     </child>
     <child type="tab">
       <object class="GtkBox">
@@ -149,6 +161,10 @@
       <object class="GtkBox">
         <property name="visible">True</property>
       </object>
+      <packing>
+        <property name="detachable">1</property>
+        <property name="reorderable">1</property>
+      </packing>
     </child>
     <child type="tab">
       <object class="GtkBox">

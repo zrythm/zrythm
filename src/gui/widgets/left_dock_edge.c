@@ -168,6 +168,9 @@ left_dock_edge_widget_init (
   GtkBox * inspector_wrap;
   GtkScrolledWindow * scroll;
 
+  GtkNotebook * notebook =
+    GTK_NOTEBOOK (self->inspector_notebook);
+
   /* setup track inspector */
   self->track_inspector =
     inspector_track_widget_new ();
@@ -189,8 +192,11 @@ left_dock_edge_widget_init (
     wrap_inspector_in_scrolled_window (
       self, GTK_WIDGET (inspector_wrap));
   gtk_notebook_prepend_page (
-    GTK_NOTEBOOK (self->inspector_notebook),
-    GTK_WIDGET (scroll), img);
+    notebook, GTK_WIDGET (scroll), img);
+  gtk_notebook_set_tab_detachable (
+    notebook, GTK_WIDGET (scroll), true);
+  gtk_notebook_set_tab_reorderable (
+    notebook, GTK_WIDGET (scroll), true);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->track_inspector),
     min_width, -1);
@@ -213,8 +219,11 @@ left_dock_edge_widget_init (
   gtk_widget_set_visible (
     GTK_WIDGET (inspector_wrap), 1);
   gtk_notebook_append_page (
-    GTK_NOTEBOOK (self->inspector_notebook),
-    GTK_WIDGET (inspector_wrap), img);
+    notebook, GTK_WIDGET (inspector_wrap), img);
+  gtk_notebook_set_tab_detachable (
+    notebook, GTK_WIDGET (inspector_wrap), true);
+  gtk_notebook_set_tab_reorderable (
+    notebook, GTK_WIDGET (inspector_wrap), true);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->plugin_inspector),
     min_width, -1);
@@ -238,9 +247,11 @@ left_dock_edge_widget_init (
   gtk_widget_set_visible (
     GTK_WIDGET (visibility_box), 1);
   gtk_notebook_append_page (
-    GTK_NOTEBOOK (self->inspector_notebook),
-    GTK_WIDGET (visibility_box),
-    img);
+    notebook, GTK_WIDGET (visibility_box), img);
+  gtk_notebook_set_tab_detachable (
+    notebook, GTK_WIDGET (visibility_box), true);
+  gtk_notebook_set_tab_reorderable (
+    notebook, GTK_WIDGET (visibility_box), true);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->visibility),
     min_width, -1);
