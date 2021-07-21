@@ -1,6 +1,35 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.21.0.1] - 2021-07-21
+### Added
+- Add monitor toggle to audio tracks
+- Add Vietnamese translation
+- Add metronome count-in
+- Add recording preroll option
+- Ask for save on close
+- Add sends/MIDI FX to mixer channels
+- Make all notebook tabs detachable
+- Allow importing multiple files at the same time
+- Allow overriding keyboard shortcuts
+- User manual: add MIDI bindings section
+
+### Changed
+- Update Chinese (Simplified), Japanese, Russian translations
+- Link reveal status of channel sends/inserts/MIDI FX on mixer
+- Prettify file info in file browser
+- User manual: move Shortcuts section
+
+### Fixed
+- Fix broken news button URL
+- Fix crash when selected auditioning instrument is not found on startup
+- Fix passing incorrect widget in file auditioning controls widget signals
+- Fix error when attempting to audition MIDI file
+- Fix incorrectly allowing the user to undo mid-sequence
+
+### Removed
+- Remove trial time limit
+
 ## [1.0.0-alpha.20.0.1] - 2021-07-15
 ### Added
 - Add meson option for native build
