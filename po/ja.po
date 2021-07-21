@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-07-15 17:32+0100\n"
+"POT-Creation-Date: 2021-07-21 18:06+0100\n"
 "PO-Revision-Date: 2021-07-19 10:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -29,7 +29,7 @@ msgid "Dummy"
 msgstr "ダミー"
 
 #: inc/schemas/gui/backend/arranger_object.h:52
-#: inc/gui/backend/arranger_object.h:99
+#: inc/gui/backend/arranger_object.h:99 inc/audio/transport.h:69
 #: src/gui/widgets/channel_send_selector.c:236
 #: src/gui/widgets/plugin_properties_expander.c:172
 #: src/gui/widgets/plugin_properties_expander.c:174
@@ -105,7 +105,7 @@ msgid "Pulse"
 msgstr "パルス"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
-#: src/gui/widgets/track.c:2172
+#: src/gui/widgets/track.c:2183
 msgid "Inherit"
 msgstr "継承"
 
@@ -164,21 +164,21 @@ msgstr "選択をクリア (_A)"
 msgid "Select A_ll"
 msgstr "すべてを選択 (_A)"
 
-#: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:212
+#: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:216
 msgid "Duplicate"
 msgstr "複製"
 
-#: inc/utils/gtk.h:89 src/gui/widgets/channel.c:724
+#: inc/utils/gtk.h:89 src/gui/widgets/channel.c:748
 #: src/gui/widgets/monitor_section.c:55 src/gui/widgets/monitor_section.c:352
-#: src/gui/widgets/folder_channel.c:575 src/gui/widgets/track.c:1173
-#: src/gui/widgets/track.c:1918 resources/ui/fader_buttons.ui:99
-#: build/data/org.zrythm.Zrythm.gschema.xml:299
+#: src/gui/widgets/folder_channel.c:575 src/gui/widgets/track.c:1180
+#: src/gui/widgets/track.c:1929 resources/ui/fader_buttons.ui:99
+#: build/data/org.zrythm.Zrythm.gschema.xml:306
 msgid "Mute"
 msgstr "無音"
 
-#: inc/utils/gtk.h:93 src/gui/widgets/channel.c:733
-#: src/gui/widgets/folder_channel.c:584 src/gui/widgets/track.c:1169
-#: src/gui/widgets/track.c:1927
+#: inc/utils/gtk.h:93 src/gui/widgets/channel.c:757
+#: src/gui/widgets/folder_channel.c:584 src/gui/widgets/track.c:1176
+#: src/gui/widgets/track.c:1938
 msgid "Unmute"
 msgstr "ミュートを解除"
 
@@ -198,15 +198,27 @@ msgstr "反転"
 msgid "Invalid"
 msgstr "不正"
 
+#: inc/audio/transport.h:70
+msgid "1 bar"
+msgstr ""
+
+#: inc/audio/transport.h:71
+msgid "2 bars"
+msgstr ""
+
+#: inc/audio/transport.h:72
+msgid "4 bars"
+msgstr ""
+
 #: inc/audio/track.h:174 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:187
-#: build/data/org.zrythm.Zrythm.gschema.xml:573
+#: build/data/org.zrythm.Zrythm.gschema.xml:580
 msgid "Instrument"
 msgstr "音源"
 
 #: inc/audio/track.h:175 src/gui/widgets/bot_bar.c:548 src/audio/region.c:497
 #: resources/ui/file_browser_filters.ui:34
-#: build/data/org.zrythm.Zrythm.gschema.xml:843
+#: build/data/org.zrythm.Zrythm.gschema.xml:1023
 msgid "Audio"
 msgstr "オーディオ"
 
@@ -391,7 +403,12 @@ msgstr "プロジェクトは zstd で圧縮されていません"
 msgid "Failed to decompress project file: %s"
 msgstr "プロジェクト・ファイルの解凍に失敗しました：%s"
 
-#: src/project.c:941
+#: src/project.c:929
+#, c-format
+msgid "Unable to read file: %s"
+msgstr "ファイル読み込みに失敗しました：%s"
+
+#: src/project.c:1014
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -402,16 +419,11 @@ msgstr ""
 "  %s.\n"
 "新しいバックアップを使用しますか?"
 
-#: src/project.c:946
+#: src/project.c:1019
 msgid "Backup found"
 msgstr "バックアップが見つかりました"
 
-#: src/project.c:1006
-#, c-format
-msgid "Unable to read file: %s"
-msgstr "ファイル読み込みに失敗しました：%s"
-
-#: src/project.c:1060
+#: src/project.c:1075
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
@@ -420,87 +432,87 @@ msgstr ""
 "このプロジェクトは、%s (%s) の異なるバージョンで作成されました。正しく動作し"
 "ない可能性があります。"
 
-#: src/project.c:1075
+#: src/project.c:1090
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "プロジェクトの読み込みに失敗しました。詳細については、ログを確認してくださ"
 "い。"
 
-#: src/project.c:1304
+#: src/project.c:1319
 msgid "Failed to load project. Will create a new one instead."
 msgstr ""
 "プロジェクトの読み込みに失敗しました。代わりに新しいプロジェクトを作成しま"
 "す。"
 
-#: src/project.c:1635
+#: src/project.c:1650
 msgid "Backup saved."
 msgstr "バックアップが保存されました。"
 
-#: src/project.c:1645
+#: src/project.c:1660
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
-#: src/zrythm_app.c:140
+#: src/zrythm_app.c:141
 msgid "Error - Backtrace:\n"
 msgstr "エラー - バックトレース:\n"
 
-#: src/zrythm_app.c:144
+#: src/zrythm_app.c:145
 #, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "エラー: %s - バックトレース:\n"
 
-#: src/zrythm_app.c:158
+#: src/zrythm_app.c:159
 #, c-format
 msgid "%s has crashed. "
 msgstr "%s がクラッシュしました。 "
 
-#: src/zrythm_app.c:238
+#: src/zrythm_app.c:239
 msgid "Setting up main window"
 msgstr "メイン ウィンドウを設定中"
 
-#: src/zrythm_app.c:283
+#: src/zrythm_app.c:284
 msgid "Loading project"
 msgstr "プロジェクトを読み込み中"
 
-#: src/zrythm_app.c:296
+#: src/zrythm_app.c:297
 #, c-format
 msgid "No project has been selected. %s will now close."
 msgstr "プロジェクトが選択されていません。%s が閉じます。"
 
-#: src/zrythm_app.c:319
+#: src/zrythm_app.c:320
 msgid "Initializing settings"
 msgstr "設定を初期化中"
 
-#: src/zrythm_app.c:326
+#: src/zrythm_app.c:327
 #, c-format
 msgid "Initializing %s directories"
 msgstr "%sディレクトリを初期化中"
 
-#: src/zrythm_app.c:336
+#: src/zrythm_app.c:337
 msgid "Initializing logging system"
 msgstr "ログシステムを初期化中"
 
-#: src/zrythm_app.c:346
+#: src/zrythm_app.c:347
 msgid "Initializing caches"
 msgstr "キャッシュを初期化中"
 
-#: src/zrythm_app.c:350
+#: src/zrythm_app.c:351
 msgid "Initializing file manager"
 msgstr "ファイルマネージャを初期化中"
 
-#: src/zrythm_app.c:357
+#: src/zrythm_app.c:358
 msgid "Scanning plugins"
 msgstr "プラグインをスキャン中"
 
-#: src/zrythm_app.c:518
+#: src/zrythm_app.c:519
 msgid "License Information"
 msgstr "ライセンス情報"
 
-#: src/zrythm_app.c:546
+#: src/zrythm_app.c:547
 msgid "Waiting for project"
 msgstr "プロジェクトを待機中"
 
-#: src/zrythm_app.c:956
+#: src/zrythm_app.c:957
 #, c-format
 msgid ""
 "%s-%s %s\n"
@@ -525,76 +537,76 @@ msgstr ""
 "プロジェクトの支援は https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1431
+#: src/zrythm_app.c:1436
 #, c-format
 msgid "File %s not found."
 msgstr "%sが見つかりません。"
 
-#: src/zrythm_app.c:1452
+#: src/zrythm_app.c:1457
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "出力ファイルが指定されていません。 `--output [ファイル]` で 1 つを指定してく"
 "ださい。"
 
-#: src/zrythm_app.c:1517
+#: src/zrythm_app.c:1522
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "プロジェクトの解凍に失敗しました: %s\n"
 
-#: src/zrythm_app.c:1536
+#: src/zrythm_app.c:1541
 msgid "Unknown operation"
 msgstr "オプションを認知できませんでした"
 
-#: src/zrythm_app.c:1556
+#: src/zrythm_app.c:1561
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "このオプションには libguile が必要です。\n"
 
-#: src/zrythm_app.c:1721
+#: src/zrythm_app.c:1726
 msgid "Print version information"
 msgstr "バージョン情報を表示"
 
-#: src/zrythm_app.c:1726
+#: src/zrythm_app.c:1731
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "ZPJ-FILEをYAMLに変換する"
 
-#: src/zrythm_app.c:1731
+#: src/zrythm_app.c:1736
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "YAML-PROJECT-FILEを.zpj形式に変換する"
 
-#: src/zrythm_app.c:1736
+#: src/zrythm_app.c:1741
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "SCRIPT-FILEからプロジェクトを生成"
 
-#: src/zrythm_app.c:1740
+#: src/zrythm_app.c:1745
 msgid "Print output in user-friendly way"
 msgstr "ユーザーフレンドリーな方法で出力"
 
-#: src/zrythm_app.c:1744
+#: src/zrythm_app.c:1749
 msgid "Print current settings"
 msgstr "現在の設定を出力"
 
-#: src/zrythm_app.c:1748
+#: src/zrythm_app.c:1753
 msgid "Reset to factory settings"
 msgstr "初期設定にリセット"
 
-#: src/zrythm_app.c:1751
+#: src/zrythm_app.c:1756
 msgid "Override the audio backend to use"
 msgstr "使用するオーディオバックエンドをオーバーライド"
 
-#: src/zrythm_app.c:1755
+#: src/zrythm_app.c:1760
 msgid "Override the MIDI backend to use"
 msgstr "使用するMIDIバックエンドをオーバーライド"
 
-#: src/zrythm_app.c:1759
+#: src/zrythm_app.c:1764
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "--midi-backend=none --audio-backend=none の省略形"
 
-#: src/zrythm_app.c:1791
+#: src/zrythm_app.c:1796
 msgid "[PROJECT-FILE]"
 msgstr "[プロジェクトファイル]"
 
-#: src/zrythm_app.c:1796
+#: src/zrythm_app.c:1801
 #, c-format
 msgid ""
 "Examples:\n"
@@ -612,16 +624,16 @@ msgstr ""
 "\n"
 "問題は%sに報告してください\n"
 
-#: src/zrythm_app.c:1808
+#: src/zrythm_app.c:1813
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "%sを実行し、オプションでプロジェクトファイルを渡します。"
 
-#: src/plugins/carla_native_plugin.c:607 src/plugins/lv2_plugin.c:3663
+#: src/plugins/carla_native_plugin.c:607 src/plugins/lv2_plugin.c:3673
 msgid "Default bank"
 msgstr "デフォルトバンク"
 
-#: src/plugins/carla_native_plugin.c:612 src/plugins/lv2_plugin.c:3668
+#: src/plugins/carla_native_plugin.c:612 src/plugins/lv2_plugin.c:3678
 msgid "Init"
 msgstr "Init"
 
@@ -689,32 +701,32 @@ msgstr "%uのAUプラグインをスキップしました"
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "プラグイン '%s'のインスタンス化に失敗しました。無効にしています..."
 
-#: src/plugins/plugin.c:282
+#: src/plugins/plugin.c:286
 msgid "Enabled"
 msgstr "有効"
 
-#: src/plugins/plugin.c:284
+#: src/plugins/plugin.c:288
 msgid "Enables or disables the plugin"
 msgstr "プラグインを有効/無効にする"
 
-#: src/plugins/plugin.c:307 src/gui/widgets/track_input_expander.c:727
+#: src/plugins/plugin.c:311 src/gui/widgets/track_input_expander.c:727
 msgid "Gain"
 msgstr "ゲイン"
 
-#: src/plugins/plugin.c:308
+#: src/plugins/plugin.c:312
 msgid "Plugin gain"
 msgstr "プラグインゲイン"
 
-#: src/plugins/plugin.c:1077
+#: src/plugins/plugin.c:1081
 #, c-format
 msgid " - bridge: %s"
 msgstr " - ブリッジ: %s"
 
-#: src/plugins/plugin.c:1088
+#: src/plugins/plugin.c:1092
 msgid "instrument"
 msgstr "インストゥルメント"
 
-#: src/plugins/plugin.c:1880
+#: src/plugins/plugin.c:1884
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -736,8 +748,9 @@ msgstr "状態を保存"
 #: src/plugins/plugin_gtk.c:98 src/plugins/plugin_gtk.c:303
 #: src/plugins/lv2/lv2_gtk.c:79 src/plugins/lv2/lv2_gtk.c:264
 #: src/gui/widgets/plugin_properties_expander.c:108
+#: src/gui/widgets/main_window.c:211
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:163
-#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/actions/actions.c:792
+#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/actions/actions.c:794
 #: resources/ui/string_entry_dialog.ui:47
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
@@ -745,7 +758,7 @@ msgid "_Cancel"
 msgstr "取り消し(_C)"
 
 #: src/plugins/plugin_gtk.c:99 src/plugins/plugin_gtk.c:304
-#: src/plugins/lv2/lv2_gtk.c:80 src/actions/actions.c:794
+#: src/plugins/lv2/lv2_gtk.c:80 src/actions/actions.c:796
 msgid "_Save"
 msgstr "保存(_S)"
 
@@ -777,12 +790,12 @@ msgstr "値が不明なウィジェットタイプ"
 msgid "Unknown widget type for value\n"
 msgstr "値が不明なウィジェットタイプ\n"
 
-#: src/plugins/lv2_plugin.c:2693
+#: src/plugins/lv2_plugin.c:2703
 #, c-format
 msgid "Failed to find plugin with URI: %s"
 msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
-#: src/plugins/lv2_plugin.c:2742
+#: src/plugins/lv2_plugin.c:2752
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -795,7 +808,7 @@ msgstr ""
 "ス化してみて、プラグインの配布元および/または作者に報告してください。\n"
 "%s <%s>"
 
-#: src/plugins/lv2_plugin.c:3706
+#: src/plugins/lv2_plugin.c:3716
 msgid "Unnamed bank"
 msgstr "無名バンク"
 
@@ -831,7 +844,7 @@ msgid "OUTPUTS"
 msgstr "出力"
 
 #: src/gui/widgets/port_connections_popover.c:202
-#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1226
+#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1237
 msgid "Add"
 msgstr "追加"
 
@@ -888,82 +901,82 @@ msgstr "ダイレクトアウト"
 msgid "Track Properties"
 msgstr "トラックの属性"
 
-#: src/gui/widgets/channel.c:650 src/gui/widgets/folder_channel.c:503
-#: src/gui/widgets/track.c:1808
+#: src/gui/widgets/channel.c:674 src/gui/widgets/folder_channel.c:503
+#: src/gui/widgets/track.c:1819
 msgid "_Delete Track"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/channel.c:653 src/gui/widgets/folder_channel.c:506
-#: src/gui/widgets/track.c:1811
+#: src/gui/widgets/channel.c:677 src/gui/widgets/folder_channel.c:506
+#: src/gui/widgets/track.c:1822
 msgid "_Delete Tracks"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/channel.c:664 src/gui/widgets/folder_channel.c:517
-#: src/gui/widgets/track.c:1822
+#: src/gui/widgets/channel.c:688 src/gui/widgets/folder_channel.c:517
+#: src/gui/widgets/track.c:1833
 msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/channel.c:667 src/gui/widgets/folder_channel.c:520
-#: src/gui/widgets/track.c:1825
+#: src/gui/widgets/channel.c:691 src/gui/widgets/folder_channel.c:520
+#: src/gui/widgets/track.c:1836
 msgid "_Duplicate Tracks"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/channel.c:679 src/gui/widgets/folder_channel.c:532
-#: src/gui/widgets/track.c:1847
+#: src/gui/widgets/channel.c:703 src/gui/widgets/folder_channel.c:532
+#: src/gui/widgets/track.c:1858
 msgid "Hide Track"
 msgstr "トラックを非表示にする"
 
-#: src/gui/widgets/channel.c:680 src/gui/widgets/folder_channel.c:533
-#: src/gui/widgets/track.c:1848
+#: src/gui/widgets/channel.c:704 src/gui/widgets/folder_channel.c:533
+#: src/gui/widgets/track.c:1859
 msgid "Hide Tracks"
 msgstr "トラックを非表示にする"
 
-#: src/gui/widgets/channel.c:688 src/gui/widgets/folder_channel.c:541
-#: src/gui/widgets/track.c:1856
+#: src/gui/widgets/channel.c:712 src/gui/widgets/folder_channel.c:541
+#: src/gui/widgets/track.c:1867
 msgid "Pin/Unpin Track"
 msgstr "トラックを固定/固定解除"
 
-#: src/gui/widgets/channel.c:689 src/gui/widgets/folder_channel.c:542
-#: src/gui/widgets/track.c:1857
+#: src/gui/widgets/channel.c:713 src/gui/widgets/folder_channel.c:542
+#: src/gui/widgets/track.c:1868
 msgid "Pin/Unpin Tracks"
 msgstr "トラックを固定/固定解除"
 
-#: src/gui/widgets/channel.c:705 src/gui/widgets/folder_channel.c:556
-#: src/gui/widgets/track.c:1151 src/gui/widgets/track.c:1899
+#: src/gui/widgets/channel.c:729 src/gui/widgets/folder_channel.c:556
+#: src/gui/widgets/track.c:1158 src/gui/widgets/track.c:1910
 #: resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr "ソロ"
 
-#: src/gui/widgets/channel.c:714 src/gui/widgets/folder_channel.c:565
-#: src/gui/widgets/track.c:1908
+#: src/gui/widgets/channel.c:738 src/gui/widgets/folder_channel.c:565
+#: src/gui/widgets/track.c:1919
 msgid "Unsolo"
 msgstr "ソロを解除"
 
-#: src/gui/widgets/channel.c:743 src/gui/widgets/monitor_section.c:62
-#: src/gui/widgets/folder_channel.c:594 src/gui/widgets/track.c:1184
-#: src/gui/widgets/track.c:1937 resources/ui/fader_buttons.ui:120
+#: src/gui/widgets/channel.c:767 src/gui/widgets/monitor_section.c:62
+#: src/gui/widgets/folder_channel.c:594 src/gui/widgets/track.c:1191
+#: src/gui/widgets/track.c:1948 resources/ui/fader_buttons.ui:120
 msgid "Listen"
 msgstr "聴く"
 
-#: src/gui/widgets/channel.c:753 src/gui/widgets/folder_channel.c:604
-#: src/gui/widgets/track.c:1180 src/gui/widgets/track.c:1947
+#: src/gui/widgets/channel.c:777 src/gui/widgets/folder_channel.c:604
+#: src/gui/widgets/track.c:1187 src/gui/widgets/track.c:1958
 msgid "Unlisten"
 msgstr "試聴を解除"
 
-#: src/gui/widgets/channel.c:766 src/gui/widgets/bot_bar.c:584
-#: src/gui/widgets/folder_channel.c:616 src/gui/widgets/track.c:2047
+#: src/gui/widgets/channel.c:790 src/gui/widgets/bot_bar.c:584
+#: src/gui/widgets/folder_channel.c:616 src/gui/widgets/track.c:2058
 #: src/gui/widgets/dialogs/export_dialog.c:1313
 msgid "Disable"
 msgstr "無効にする"
 
-#: src/gui/widgets/channel.c:775 src/gui/widgets/bot_bar.c:584
-#: src/gui/widgets/folder_channel.c:625 src/gui/widgets/track.c:2056
+#: src/gui/widgets/channel.c:799 src/gui/widgets/bot_bar.c:584
+#: src/gui/widgets/folder_channel.c:625 src/gui/widgets/track.c:2067
 #: src/gui/widgets/dialogs/export_dialog.c:1303
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/gui/widgets/channel.c:784 src/gui/widgets/folder_channel.c:634
-#: src/gui/widgets/track.c:2065
+#: src/gui/widgets/channel.c:808 src/gui/widgets/folder_channel.c:634
+#: src/gui/widgets/track.c:2076
 msgid "Change color..."
 msgstr "色を変更する..."
 
@@ -1071,20 +1084,20 @@ msgstr "空白のプロジェクト"
 msgid "Project Assistant"
 msgstr "プロジェクトアシスタント"
 
-#: src/gui/widgets/left_dock_edge.c:179
+#: src/gui/widgets/left_dock_edge.c:182
 msgid "Track inspector"
 msgstr "トラックインスペクター"
 
-#: src/gui/widgets/left_dock_edge.c:206
+#: src/gui/widgets/left_dock_edge.c:213
 msgid "Plugin inspector"
 msgstr "プラグインインスペクター"
 
-#: src/gui/widgets/left_dock_edge.c:228
+#: src/gui/widgets/left_dock_edge.c:242
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
 msgstr "ビジビリティ"
 
-#: src/gui/widgets/plugin_strip_expander.c:152
+#: src/gui/widgets/plugin_strip_expander.c:188
 msgid "Inserts"
 msgstr "インサート"
 
@@ -1163,7 +1176,7 @@ msgid "Add Folder Track"
 msgstr "フォルダトラックを追加"
 
 #: src/gui/widgets/instrument_track.c:219
-#: src/gui/widgets/transport_controls.c:476 src/gui/widgets/midi_track.c:190
+#: src/gui/widgets/transport_controls.c:538 src/gui/widgets/midi_track.c:190
 #: resources/ui/fader_buttons.ui:57
 msgid "Record"
 msgstr "録音"
@@ -1285,7 +1298,7 @@ msgstr "名前を変更する"
 #: src/gui/widgets/plugin_browser.c:1045
 #: src/gui/widgets/panel_file_browser.c:179
 #: src/gui/widgets/port_connections_tree.c:183
-#: src/gui/widgets/home_toolbar.c:214 src/gui/widgets/cc_bindings_tree.c:185
+#: src/gui/widgets/home_toolbar.c:218 src/gui/widgets/cc_bindings_tree.c:185
 #: resources/ui/modulator_inner.ui:45
 msgid "Delete"
 msgstr "削除"
@@ -1386,15 +1399,26 @@ msgstr "SR"
 msgid "Metronome"
 msgstr "メトロノーム"
 
-#: src/gui/widgets/bot_bar.c:615 resources/ui/file_auditioner_controls.ui:65
+#: src/gui/widgets/bot_bar.c:616
+#, fuzzy
+msgid "Metronome options"
+msgstr "メトロノーム"
+
+#. volume
+#: src/gui/widgets/bot_bar.c:631 resources/ui/file_auditioner_controls.ui:65
 msgid "Volume"
 msgstr "音量"
 
-#: src/gui/widgets/bot_bar.c:699
+#. countin
+#: src/gui/widgets/bot_bar.c:654
+msgid "Count-in"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:727
 msgid "bpm"
 msgstr "bpm"
 
-#: src/gui/widgets/bot_bar.c:703
+#: src/gui/widgets/bot_bar.c:731
 msgid "time sig."
 msgstr "拍子記号"
 
@@ -1427,40 +1451,44 @@ msgstr "ループの終わり（相対的）"
 msgid "position"
 msgstr "位置"
 
-#: src/gui/widgets/transport_controls.c:421
+#: src/gui/widgets/transport_controls.c:459
 msgid "Punch in/out"
 msgstr "パンチイン/アウト (Punch in/out)"
 
-#: src/gui/widgets/transport_controls.c:424
+#: src/gui/widgets/transport_controls.c:462
 msgid "Start on MIDI input"
 msgstr "MIDI 入力時に開始"
 
-#: src/gui/widgets/transport_controls.c:427
+#: src/gui/widgets/transport_controls.c:465
 msgid "Options"
 msgstr "設定"
 
-#: src/gui/widgets/transport_controls.c:432
+#: src/gui/widgets/transport_controls.c:470
 msgid "Overwrite events"
 msgstr "イベントを上書きする"
 
-#: src/gui/widgets/transport_controls.c:435
+#: src/gui/widgets/transport_controls.c:473
 msgid "Merge events"
 msgstr "イベントを結合する"
 
-#: src/gui/widgets/transport_controls.c:438
+#: src/gui/widgets/transport_controls.c:476
 msgid "Create takes"
 msgstr "テイクを作成する"
 
-#: src/gui/widgets/transport_controls.c:441
+#: src/gui/widgets/transport_controls.c:479
 msgid "Create takes (mute previous)"
 msgstr "テイクを作成する (前のテイクをミュート)"
 
-#: src/gui/widgets/transport_controls.c:444
-#: build/data/org.zrythm.Zrythm.gschema.xml:711
+#: src/gui/widgets/transport_controls.c:482
+#: build/data/org.zrythm.Zrythm.gschema.xml:886
 msgid "Recording mode"
 msgstr "録音モード"
 
-#: src/gui/widgets/transport_controls.c:477
+#: src/gui/widgets/transport_controls.c:499
+msgid "Preroll"
+msgstr ""
+
+#: src/gui/widgets/transport_controls.c:539
 msgid "Record options"
 msgstr "録音設定"
 
@@ -1488,16 +1516,16 @@ msgstr "ミュージカルモード"
 msgid "Export as MIDI file"
 msgstr "MIDIファイルとしてエクスポート"
 
-#: src/gui/widgets/timeline_arranger.c:1328 src/gui/widgets/track.c:1868
+#: src/gui/widgets/timeline_arranger.c:1328 src/gui/widgets/track.c:1879
 msgid "Quick bounce"
 msgstr "クイックバウンス"
 
-#: src/gui/widgets/timeline_arranger.c:1339 src/gui/widgets/track.c:1878
+#: src/gui/widgets/timeline_arranger.c:1339 src/gui/widgets/track.c:1889
 msgid "Bounce..."
 msgstr "バウンス..."
 
 #: src/gui/widgets/automation_arranger.c:262
-#: build/data/org.zrythm.Zrythm.gschema.xml:861
+#: build/data/org.zrythm.Zrythm.gschema.xml:1041
 msgid "Curve algorithm"
 msgstr "カーブのアルゴリズム"
 
@@ -1573,44 +1601,44 @@ msgstr "送信先"
 msgid "Multiplier"
 msgstr "乗数"
 
-#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:243
+#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:247
 msgid "Redo"
 msgstr "やり直し"
 
-#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:239
-#: build/data/org.zrythm.Zrythm.gschema.xml:871
+#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:243
+#: build/data/org.zrythm.Zrythm.gschema.xml:1051
 msgid "Undo"
 msgstr "元に戻す"
 
-#: src/gui/widgets/home_toolbar.c:206
+#: src/gui/widgets/home_toolbar.c:210
 msgid "Cut"
 msgstr "切り取り"
 
-#: src/gui/widgets/home_toolbar.c:208
+#: src/gui/widgets/home_toolbar.c:212
 msgid "Copy"
 msgstr "コピー"
 
-#: src/gui/widgets/home_toolbar.c:210
+#: src/gui/widgets/home_toolbar.c:214
 msgid "Paste"
 msgstr "貼り付け"
 
-#: src/gui/widgets/home_toolbar.c:216
+#: src/gui/widgets/home_toolbar.c:220
 msgid "Clear Selection"
 msgstr "選択をクリア"
 
-#: src/gui/widgets/home_toolbar.c:218
+#: src/gui/widgets/home_toolbar.c:222
 msgid "Select All"
 msgstr "すべてを選択"
 
-#: src/gui/widgets/home_toolbar.c:220
+#: src/gui/widgets/home_toolbar.c:224
 msgid "Loop Selection"
 msgstr "ループ選択"
 
-#: src/gui/widgets/home_toolbar.c:240
+#: src/gui/widgets/home_toolbar.c:244
 msgid "Undo..."
 msgstr "元に戻す..."
 
-#: src/gui/widgets/home_toolbar.c:244
+#: src/gui/widgets/home_toolbar.c:248
 msgid "Redo..."
 msgstr "再実行..."
 
@@ -1618,16 +1646,16 @@ msgstr "再実行..."
 msgid "Plugin Browser"
 msgstr "プラグインブラウザ"
 
-#: src/gui/widgets/right_dock_edge.c:126
+#: src/gui/widgets/right_dock_edge.c:131
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
 msgstr "ファイル ブラウザ"
 
-#: src/gui/widgets/right_dock_edge.c:154
+#: src/gui/widgets/right_dock_edge.c:164
 msgid "Monitor Section"
 msgstr "モニターセクション"
 
-#: src/gui/widgets/right_dock_edge.c:181
+#: src/gui/widgets/right_dock_edge.c:196
 msgid "Show file browser"
 msgstr "ファイルブラウザを表示"
 
@@ -1733,6 +1761,33 @@ msgstr "【インサート%d】%s"
 msgid "[Modulator %d] %s"
 msgstr "[モジュレータ%d]%s"
 
+#: src/gui/widgets/main_window.c:203
+msgid "Unsaved changes"
+msgstr ""
+
+#: src/gui/widgets/main_window.c:207
+msgid "_Save & Quit"
+msgstr ""
+
+#: src/gui/widgets/main_window.c:209
+msgid "_Quit without saving"
+msgstr ""
+
+#: src/gui/widgets/main_window.c:217
+msgid ""
+"The project contains unsaved changes.\n"
+"If you quit without saving, unsaved changes will be lost."
+msgstr ""
+
+#: src/gui/widgets/main_window.c:223
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"Changes:\n"
+"%s"
+msgstr ""
+
 #: src/gui/widgets/snap_grid.c:60
 #, c-format
 msgid "%s - Last object"
@@ -1755,7 +1810,7 @@ msgstr "ファイルを選択"
 msgid "Some changes will only take effect after you restart %s"
 msgstr "一部の変更は%sの再起動後にのみ有効になります"
 
-#: src/gui/widgets/monitor_section.c:48
+#: src/gui/widgets/monitor_section.c:48 src/gui/widgets/track.c:1196
 msgid "Monitor"
 msgstr "モニター"
 
@@ -1832,17 +1887,17 @@ msgid "Click to enable outputs"
 msgstr "クリックして出力を有効にする"
 
 #: src/gui/widgets/file_auditioner_controls.c:275
-#: build/data/org.zrythm.Zrythm.gschema.xml:548
+#: build/data/org.zrythm.Zrythm.gschema.xml:555
 msgid "Autoplay"
 msgstr "自動再生"
 
 #: src/gui/widgets/file_auditioner_controls.c:277
-#: build/data/org.zrythm.Zrythm.gschema.xml:553
+#: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "Show unsupported files"
 msgstr "サポートされていないファイルを表示"
 
 #: src/gui/widgets/file_auditioner_controls.c:280
-#: build/data/org.zrythm.Zrythm.gschema.xml:558
+#: build/data/org.zrythm.Zrythm.gschema.xml:565
 msgid "Show hidden files"
 msgstr "隠しファイルを表示"
 
@@ -1862,7 +1917,7 @@ msgstr "生波形表示"
 msgid "Select a region..."
 msgstr "リージョンを選択してください…"
 
-#: src/gui/widgets/channel_sends_expander.c:63
+#: src/gui/widgets/channel_sends_expander.c:83
 #: src/gui/widgets/ports_expander.c:424
 msgid "Sends"
 msgstr "センド"
@@ -2091,94 +2146,94 @@ msgstr "コメント"
 msgid "Visible"
 msgstr "表示状態"
 
-#: src/gui/widgets/track.c:562 src/audio/track_lane.c:75
+#: src/gui/widgets/track.c:569 src/audio/track_lane.c:75
 #, c-format
 msgid "Lane %d"
 msgstr "レーン%d"
 
-#: src/gui/widgets/track.c:1158
+#: src/gui/widgets/track.c:1165
 msgid "Hide instrument UI"
 msgstr "インストゥルメントのUI を非表示にする"
 
-#: src/gui/widgets/track.c:1162
+#: src/gui/widgets/track.c:1169
 msgid "Show instrument UI"
 msgstr "インストゥルメントのUIを表示"
 
-#: src/gui/widgets/track.c:1189 resources/ui/fader_buttons.ui:36
+#: src/gui/widgets/track.c:1200 resources/ui/fader_buttons.ui:36
 msgid "Mono compatibility"
 msgstr "モノ互換性"
 
-#: src/gui/widgets/track.c:1195
+#: src/gui/widgets/track.c:1206
 msgid "Disarm"
 msgstr "解除"
 
-#: src/gui/widgets/track.c:1199
+#: src/gui/widgets/track.c:1210
 msgid "Arm for recording"
 msgstr "録音用アーム"
 
-#: src/gui/widgets/track.c:1206
+#: src/gui/widgets/track.c:1217
 msgid "Hide lanes"
 msgstr "レーンを非表示にする"
 
-#: src/gui/widgets/track.c:1210
+#: src/gui/widgets/track.c:1221
 msgid "Show lanes"
 msgstr "レーンを表示する"
 
-#: src/gui/widgets/track.c:1217
+#: src/gui/widgets/track.c:1228
 msgid "Hide automation"
 msgstr "オートメーションを非表示にする"
 
-#: src/gui/widgets/track.c:1221
+#: src/gui/widgets/track.c:1232
 msgid "Show automation"
 msgstr "オートメーションを表示"
 
-#: src/gui/widgets/track.c:1230 resources/ui/project_assistant.ui:102
+#: src/gui/widgets/track.c:1241 resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr "削除"
 
-#: src/gui/widgets/track.c:1234
+#: src/gui/widgets/track.c:1245
 msgid "Freeze/unfreeze"
 msgstr "フリーズ/フリーズ解除"
 
-#: src/gui/widgets/track.c:1238
+#: src/gui/widgets/track.c:1249
 msgid "Lock/unlock"
 msgstr "ロック/ロック解除"
 
-#: src/gui/widgets/track.c:1242
+#: src/gui/widgets/track.c:1253
 msgid "Fold"
 msgstr "折りたたむ"
 
-#: src/gui/widgets/track.c:1246
+#: src/gui/widgets/track.c:1257
 msgid "Unfold"
 msgstr "展開する"
 
-#: src/gui/widgets/track.c:1839
+#: src/gui/widgets/track.c:1850
 msgid "Add Region"
 msgstr "リージョンを追加"
 
-#: src/gui/widgets/track.c:1956 src/actions/tracklist_selections.c:1891
+#: src/gui/widgets/track.c:1967 src/actions/tracklist_selections.c:1891
 #: src/actions/tracklist_selections.c:1969
 msgid "Change direct out"
 msgstr "ダイレクトアウトを変更"
 
-#: src/gui/widgets/track.c:2016
+#: src/gui/widgets/track.c:2027
 msgid "New group"
 msgstr "新しいグループ"
 
-#: src/gui/widgets/track.c:2075
+#: src/gui/widgets/track.c:2086
 msgid "Track MIDI Ch"
 msgstr "トラックのMIDI Ch"
 
-#: src/gui/widgets/track.c:2088
+#: src/gui/widgets/track.c:2099
 msgid "Passthrough input"
 msgstr "パススルー入力"
 
-#: src/gui/widgets/track.c:2117 src/gui/widgets/track.c:2176
+#: src/gui/widgets/track.c:2128 src/gui/widgets/track.c:2187
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "MIDI チャンネル %d"
 
-#: src/gui/widgets/track.c:2156
+#: src/gui/widgets/track.c:2167
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "レーン%d Midi Ch"
@@ -2471,43 +2526,43 @@ msgstr "オブジェクトはnullです。詳細はログを参照してくだ�
 msgid "Unknown error"
 msgstr "不明なエラー"
 
-#: src/settings/settings.c:148
+#: src/settings/settings.c:161
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "スキーマ %s%s%s"
 
-#: src/settings/settings.c:159
+#: src/settings/settings.c:172
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "スキーマ %s をリセット中...\n"
 
-#: src/settings/settings.c:198
+#: src/settings/settings.c:211
 #, c-format
 msgid "skipping %s"
 msgstr "%sをスキップ"
 
-#: src/settings/settings.c:209
+#: src/settings/settings.c:222
 #, c-format
 msgid "resetting %s to %s"
 msgstr "%sを%sにリセット中"
 
-#: src/settings/settings.c:254
+#: src/settings/settings.c:267
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr ""
 "スキーマ %s が見つかりませんでした。%sはおそらくインストールされていません"
 
-#: src/settings/settings.c:269
+#: src/settings/settings.c:282
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "スキーマ %s を表示できませんでした"
 
-#: src/settings/settings.c:276
+#: src/settings/settings.c:289
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/settings/settings.c:309
+#: src/settings/settings.c:322
 #, c-format
 msgid ""
 "This will reset %s to factory settings. You will lose all your preferences. "
@@ -2516,31 +2571,36 @@ msgstr ""
 "これにより、%sが初期設定にリセットされます。すべての設定が失われます。続行す"
 "るには「y」と入力してください: "
 
-#: src/settings/settings.c:316
+#: src/settings/settings.c:329
 #, c-format
 msgid "Aborting...\n"
 msgstr "中止しています...\n"
 
-#: src/settings/settings.c:327
+#: src/settings/settings.c:340
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "初期設定にリセットされました\n"
 
-#: src/audio/tracklist.c:1266
+#: src/audio/tracklist.c:1264
 msgid "No file was found"
 msgstr "ファイルが見つかりませんでした"
 
-#: src/audio/tracklist.c:1291
+#: src/audio/tracklist.c:1294
 #, c-format
 msgid "Unsupported file type %s"
 msgstr "サポートされていないファイルの種類 %s"
 
-#: src/audio/tracklist.c:1314
+#: src/audio/tracklist.c:1313
+#, fuzzy
+msgid "Can only drop 1 file at a time on existing tracks"
+msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
+
+#: src/audio/tracklist.c:1326
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr ""
 "MIDI/インストゥルメントトラックにのみMIDIファイルをドロップすることができます"
 
-#: src/audio/tracklist.c:1327
+#: src/audio/tracklist.c:1339
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
@@ -2549,7 +2609,7 @@ msgstr ""
 "この MIDI ファイルには %d トラックが含まれています。既存のトラックにドロップ"
 "することはできません。"
 
-#: src/audio/tracklist.c:1341
+#: src/audio/tracklist.c:1353
 msgid "Can only drop audio files on audio tracks"
 msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
 
@@ -2611,8 +2671,8 @@ msgstr "マクロ CV In %d"
 msgid "Macro CV Out %d"
 msgstr "マクロ CV 出力 %d"
 
-#: src/audio/modulator_track.c:91 resources/ui/bot_dock_edge.ui:144
-#: resources/ui/bot_dock_edge.ui:160
+#: src/audio/modulator_track.c:91 resources/ui/bot_dock_edge.ui:156
+#: resources/ui/bot_dock_edge.ui:172
 msgid "Modulators"
 msgstr "モジュレーター"
 
@@ -2638,13 +2698,23 @@ msgstr ""
 msgid "Failed opening file"
 msgstr "ファイルを開くことができませんでした"
 
+#: src/audio/supported_file.c:314
+#, c-format
+msgid ""
+"<b>%s</b>\n"
+"Sample rate: %d\n"
+"Length: %ld s %ld ms | BPM: %.1f\n"
+"Channel(s): %d | Bitrate: %'d.%d kb/s\n"
+"Bit depth: %d bits"
+msgstr ""
+
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
 #, c-format
 msgid "PortAudio Error: %s"
 msgstr "PortAudioエラー：%s"
 
-#: src/audio/region.c:500 build/data/org.zrythm.Zrythm.gschema.xml:857
+#: src/audio/region.c:500 build/data/org.zrythm.Zrythm.gschema.xml:1037
 msgid "Automation"
 msgstr "オートメーション"
 
@@ -2984,7 +3054,7 @@ msgstr "MIDIマッピングバインド"
 msgid "MIDI mapping unbind"
 msgstr "MIDI マッピングのバインド解除"
 
-#: src/actions/actions.c:377
+#: src/actions/actions.c:380
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -2993,7 +3063,7 @@ msgstr ""
 "<ahref=\"%s\">GNU Guile</a> によるスクリプト拡張機能は、使用中の%sバージョン"
 "やOSでは有効になっていません。"
 
-#: src/actions/actions.c:647
+#: src/actions/actions.c:650
 #, c-format
 msgid ""
 "Creating new projects is disabled. Please restart %s to start a new project"
@@ -3001,7 +3071,7 @@ msgstr ""
 "新しいプロジェクトの作成は無効です。%sを再起動して新しいプロジェクトを開始し"
 "てください"
 
-#: src/actions/actions.c:661 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:660 resources/gtk/help-overlay.ui:103
 #: resources/ui/project_assistant.ui:86
 msgid "Create new project"
 msgstr "プロジェクトの新規作成"
@@ -3022,31 +3092,31 @@ msgstr "現在のプロジェクトに保存されていない変更は失われ
 msgid "Loading is disabled in the trial version"
 msgstr "試用版では読み込みが無効になっています"
 
-#: src/actions/actions.c:751 src/actions/actions.c:777
+#: src/actions/actions.c:751 src/actions/actions.c:779
 msgid "Saving is disabled in the trial version"
 msgstr "試用版では保存が無効になっています"
 
-#: src/actions/actions.c:789
+#: src/actions/actions.c:791
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
-#: src/actions/actions.c:875
+#: src/actions/actions.c:877
 msgid "Export routing graph"
 msgstr "ルーティング図のエクスポート"
 
-#: src/actions/actions.c:877
+#: src/actions/actions.c:879
 msgid "Image (PNG)"
 msgstr "画像（PNG）"
 
-#: src/actions/actions.c:878
+#: src/actions/actions.c:880
 msgid "Image (SVG)"
 msgstr "画像（SVG）"
 
-#: src/actions/actions.c:879
+#: src/actions/actions.c:881
 msgid "Dot graph"
 msgstr "ドット図"
 
-#: src/actions/actions.c:887
+#: src/actions/actions.c:889
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -3055,27 +3125,27 @@ msgstr ""
 "グラフは<a href=\"%s\"> %s</a> にエクスポートされます\n"
 "エクスポートする形式を選択してください"
 
-#: src/actions/actions.c:942
+#: src/actions/actions.c:944
 msgid "Graph exported"
 msgstr "エクスポートしました"
 
-#: src/actions/actions.c:1166
+#: src/actions/actions.c:1168
 msgid "Can't paste incompatible data"
 msgstr "互換性のないデータを貼り付けられません"
 
-#: src/actions/actions.c:1723
+#: src/actions/actions.c:1725
 msgid "The track selection contains a track that cannot be deleted"
 msgstr "トラック選択に、削除できないトラックが含まれています"
 
-#: src/actions/actions.c:2150
+#: src/actions/actions.c:2152
 msgid "No regions selected"
 msgstr "リージョンが選択されていません"
 
-#: src/actions/actions.c:2158
+#: src/actions/actions.c:2160
 msgid "Selections must be on the same lane"
 msgstr "選択は同じレーン上にある必要があります"
 
-#: src/actions/actions.c:2585
+#: src/actions/actions.c:2587
 msgid "Region name"
 msgstr "リージョン名"
 
@@ -3412,11 +3482,11 @@ msgid "Global Shortcuts"
 msgstr "一般のショートカットキー"
 
 #: resources/gtk/help-overlay.ui:35 resources/ui/preferences.ui:365
-#: build/data/org.zrythm.Zrythm.gschema.xml:720
-#: build/data/org.zrythm.Zrythm.gschema.xml:769
-#: build/data/org.zrythm.Zrythm.gschema.xml:886
-#: build/data/org.zrythm.Zrythm.gschema.xml:901
-#: build/data/org.zrythm.Zrythm.gschema.xml:955
+#: build/data/org.zrythm.Zrythm.gschema.xml:900
+#: build/data/org.zrythm.Zrythm.gschema.xml:949
+#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#: build/data/org.zrythm.Zrythm.gschema.xml:1081
+#: build/data/org.zrythm.Zrythm.gschema.xml:1135
 msgid "General"
 msgstr "全般"
 
@@ -3754,27 +3824,27 @@ msgstr "TODO キーボード"
 msgid "Custom"
 msgstr "カスタム"
 
-#: resources/ui/bot_dock_edge.ui:66
+#: resources/ui/bot_dock_edge.ui:70
 msgid "Editor view"
 msgstr "編集画面"
 
-#: resources/ui/bot_dock_edge.ui:82
+#: resources/ui/bot_dock_edge.ui:86
 msgid "Editor"
 msgstr "エディター"
 
-#: resources/ui/bot_dock_edge.ui:105
+#: resources/ui/bot_dock_edge.ui:113
 msgid "Mixer view"
 msgstr "ミキサー画面"
 
-#: resources/ui/bot_dock_edge.ui:121
+#: resources/ui/bot_dock_edge.ui:129
 msgid "Mixer"
 msgstr "ミキサー"
 
-#: resources/ui/bot_dock_edge.ui:183
+#: resources/ui/bot_dock_edge.ui:199
 msgid "Chord pad"
 msgstr "コードパッド"
 
-#: resources/ui/bot_dock_edge.ui:199
+#: resources/ui/bot_dock_edge.ui:215
 msgid "Chord Pad"
 msgstr "コードパッド"
 
@@ -3783,7 +3853,7 @@ msgid "Fishbowl"
 msgstr "フィッシュボウル"
 
 #: resources/ui/timeline_toolbar.ui:69
-#: build/data/org.zrythm.Zrythm.gschema.xml:375
+#: build/data/org.zrythm.Zrythm.gschema.xml:382
 msgid "Musical mode"
 msgstr "ミュージカルモード"
 
@@ -3927,11 +3997,6 @@ msgstr "TODO"
 msgid "Circle of Fifths"
 msgstr "五度圏"
 
-#: resources/ui/folder_channel.ui:150
-#, fuzzy
-msgid "togglebutton"
-msgstr "下部パネルを切り替える"
-
 #: resources/ui/create_project_dialog.ui:70
 msgid "Parent directory"
 msgstr "親ディレクトリ"
@@ -3952,31 +4017,31 @@ msgstr "再スキャン"
 msgid "Scan again for MIDI controllers"
 msgstr "MIDIコントローラをもう一度スキャンする"
 
-#: resources/ui/main_notebook.ui:43 resources/ui/main_notebook.ui:59
+#: resources/ui/main_notebook.ui:47 resources/ui/main_notebook.ui:63
 msgid "Timeline"
 msgstr "タイムライン"
 
-#: resources/ui/main_notebook.ui:80
+#: resources/ui/main_notebook.ui:88
 msgid "Port connections"
 msgstr "ポート接続"
 
-#: resources/ui/main_notebook.ui:96
+#: resources/ui/main_notebook.ui:104
 msgid "Connections"
 msgstr "コネクション"
 
-#: resources/ui/main_notebook.ui:118
+#: resources/ui/main_notebook.ui:130
 msgid "MIDI CC bindings"
 msgstr "MIDI CC のバインディング"
 
-#: resources/ui/main_notebook.ui:134
+#: resources/ui/main_notebook.ui:146
 msgid "Bindings"
 msgstr "バインディング"
 
-#: resources/ui/main_notebook.ui:156
+#: resources/ui/main_notebook.ui:172
 msgid "Scenes (Live view)"
 msgstr "シーン（ライブビュー）"
 
-#: resources/ui/main_notebook.ui:172
+#: resources/ui/main_notebook.ui:188
 msgid "Scenes"
 msgstr "シーン"
 
@@ -4269,7 +4334,7 @@ msgid "Bounce"
 msgstr "バウンス"
 
 #: resources/ui/bounce_dialog.ui:89
-#: build/data/org.zrythm.Zrythm.gschema.xml:318
+#: build/data/org.zrythm.Zrythm.gschema.xml:325
 msgid "Bounce with parents"
 msgstr "親トラックでバウンス"
 
@@ -4282,7 +4347,7 @@ msgid "ms"
 msgstr "ms"
 
 #: resources/ui/bounce_dialog.ui:167
-#: build/data/org.zrythm.Zrythm.gschema.xml:323
+#: build/data/org.zrythm.Zrythm.gschema.xml:330
 msgid "Disable after bounce"
 msgstr "バウンス後に無効にする"
 
@@ -4384,12 +4449,12 @@ msgid "My Project"
 msgstr "マイプロジェクト"
 
 #: resources/ui/export_dialog.ui:317
-#: build/data/org.zrythm.Zrythm.gschema.xml:641
+#: build/data/org.zrythm.Zrythm.gschema.xml:811
 msgid "Title"
 msgstr "タイトル"
 
 #: resources/ui/export_dialog.ui:328
-#: build/data/org.zrythm.Zrythm.gschema.xml:636
+#: build/data/org.zrythm.Zrythm.gschema.xml:806
 msgid "Artist"
 msgstr "アーティスト"
 
@@ -4398,7 +4463,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:351
-#: build/data/org.zrythm.Zrythm.gschema.xml:631
+#: build/data/org.zrythm.Zrythm.gschema.xml:801
 msgid "Genre"
 msgstr "ジャンル"
 
@@ -4407,17 +4472,17 @@ msgid "Electronic"
 msgstr "ジャンル"
 
 #: resources/ui/export_dialog.ui:384
-#: build/data/org.zrythm.Zrythm.gschema.xml:651
+#: build/data/org.zrythm.Zrythm.gschema.xml:821
 msgid "Format"
 msgstr "フォーマット"
 
 #: resources/ui/export_dialog.ui:397
-#: build/data/org.zrythm.Zrythm.gschema.xml:671
+#: build/data/org.zrythm.Zrythm.gschema.xml:841
 msgid "Bit depth"
 msgstr "ビット深度"
 
 #: resources/ui/export_dialog.ui:416
-#: build/data/org.zrythm.Zrythm.gschema.xml:661
+#: build/data/org.zrythm.Zrythm.gschema.xml:831
 msgid "Dither"
 msgstr "ディザ"
 
@@ -4497,7 +4562,7 @@ msgstr "水平方向"
 msgid "Vertical"
 msgstr "垂直方向"
 
-#: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:721
+#: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:901
 msgid "Engine"
 msgstr "エンジン"
 
@@ -4529,7 +4594,7 @@ msgstr "使用するパンのアルゴリズム"
 msgid "The pan law to use"
 msgstr "使用するパン法則"
 
-#: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:774
+#: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:954
 msgid "Zrythm path"
 msgstr "Zrythmのパス"
 
@@ -4545,13 +4610,13 @@ msgstr "デバイス名"
 msgid "Buffer Size"
 msgstr "バッファサイズ"
 
-#: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:740
+#: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:920
 msgid "Samplerate"
 msgstr "サンプルレート"
 
 #: resources/ui/preferences.ui:380 resources/ui/preferences.ui:449
-#: build/data/org.zrythm.Zrythm.gschema.xml:783
-#: build/data/org.zrythm.Zrythm.gschema.xml:814
+#: build/data/org.zrythm.Zrythm.gschema.xml:963
+#: build/data/org.zrythm.Zrythm.gschema.xml:994
 msgid "Plugins"
 msgstr "プラグイン"
 
@@ -4579,9 +4644,10 @@ msgstr "VST2のパス"
 msgid "Main Window"
 msgstr "メインウィンドウ"
 
-#: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:842
-#: build/data/org.zrythm.Zrythm.gschema.xml:856
-#: build/data/org.zrythm.Zrythm.gschema.xml:870
+#: resources/ui/preferences.ui:482
+#: build/data/org.zrythm.Zrythm.gschema.xml:1022
+#: build/data/org.zrythm.Zrythm.gschema.xml:1036
+#: build/data/org.zrythm.Zrythm.gschema.xml:1050
 msgid "Editing"
 msgstr "編集"
 
@@ -4598,11 +4664,12 @@ msgid "GUI"
 msgstr "GUI"
 
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
-#: build/data/org.zrythm.Zrythm.gschema.xml:885
+#: build/data/org.zrythm.Zrythm.gschema.xml:1065
 msgid "Projects"
 msgstr "プロジェクト"
 
-#: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:891
+#: resources/ui/preferences.ui:584
+#: build/data/org.zrythm.Zrythm.gschema.xml:1071
 msgid "Autosave interval"
 msgstr "自動保存間隔"
 
@@ -4622,146 +4689,146 @@ msgstr "デジタル・オーディオ・ワークステーション"
 msgid "highly automated and intuitive digital audio workstation"
 msgstr "高度に自動化された直感的なデジタルオーディオワークステーション"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:231
+#: build/data/org.zrythm.Zrythm.gschema.xml:238
 msgid "Recent project list"
 msgstr "最近のプロジェクト一覧"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:232
+#: build/data/org.zrythm.Zrythm.gschema.xml:239
 msgid "A list of recent projects to be referenced on startup."
 msgstr "起動時に参照される最近のプロジェクトのリスト。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:236
+#: build/data/org.zrythm.Zrythm.gschema.xml:243
 msgid "First run"
 msgstr "初回起"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:237
+#: build/data/org.zrythm.Zrythm.gschema.xml:244
 msgid "Whether this is the first run or not."
 msgstr "これが最初の実行かどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:241
+#: build/data/org.zrythm.Zrythm.gschema.xml:248
 msgid "Installation directory"
 msgstr "インストールディレクトリ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:242
+#: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid ""
 "This is the directory Zrythm is installed in. Currently only used on Windows."
 msgstr ""
 "Zrythmがインストールされているディレクトリです。現在はWindowsでのみ使用されて"
 "います。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:246
+#: build/data/org.zrythm.Zrythm.gschema.xml:253
 msgid "Last project directory"
 msgstr "最後のプロジェクトディレクトリ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:247
+#: build/data/org.zrythm.Zrythm.gschema.xml:254
 msgid "Last directory a project was created in."
 msgstr "プロジェクトが作成された最近のディレクトリ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:251
+#: build/data/org.zrythm.Zrythm.gschema.xml:258
 msgid "List of all versions run at least once"
 msgstr "少なくとも一度は実行された全バージョンのリスト"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:252
+#: build/data/org.zrythm.Zrythm.gschema.xml:259
 msgid "A list of versions run at least once."
 msgstr "少なくとも一度実行されたバージョンのリスト。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:256
+#: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid "Last version that was notified of a new release"
 msgstr "新しいリリースが通知された最後のバージョン"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:257
+#: build/data/org.zrythm.Zrythm.gschema.xml:264
 msgid ""
 "The last version that received a 'new version has been released' "
 "notification."
 msgstr ""
 "最後に「新バージョンがリリースされました」という通知が届いたバージョン。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:266
+#: build/data/org.zrythm.Zrythm.gschema.xml:273
 msgid "Monitor volume"
 msgstr "モニターの音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:267
+#: build/data/org.zrythm.Zrythm.gschema.xml:274
 msgid "The monitor volume in amplitude (0 to 2)."
 msgstr "振幅でのモニターの音量（0.0～2.0）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:272
+#: build/data/org.zrythm.Zrythm.gschema.xml:279
 msgid "Mute volume"
 msgstr "ミュート音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:273
+#: build/data/org.zrythm.Zrythm.gschema.xml:280
 msgid "The monitor mute volume in amplitude (0 to 2)."
 msgstr "振幅でのミュート音量（0.0～2.0）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:278
+#: build/data/org.zrythm.Zrythm.gschema.xml:285
 msgid "Listen volume"
 msgstr "試聴音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:279
+#: build/data/org.zrythm.Zrythm.gschema.xml:286
 msgid "The monitor listen volume in amplitude (0 to 2)."
 msgstr "振幅でのモニターの試聴音量（0.0～2.0）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:284
+#: build/data/org.zrythm.Zrythm.gschema.xml:291
 msgid "Dim volume"
 msgstr "ディム音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:285
+#: build/data/org.zrythm.Zrythm.gschema.xml:292
 msgid "The monitor dim volume in amplitude (0 to 2)."
 msgstr "振幅でのディム音量（0.0～2.0）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:289
+#: build/data/org.zrythm.Zrythm.gschema.xml:296
 msgid "Sum to mono"
 msgstr "モノラルに収束"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:290
+#: build/data/org.zrythm.Zrythm.gschema.xml:297
 msgid "Whether to sum the monitor signal to mono."
 msgstr "モニター信号をモノラルに収束するかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:294
+#: build/data/org.zrythm.Zrythm.gschema.xml:301
 msgid "Dim output"
 msgstr "ディム出力"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:295
+#: build/data/org.zrythm.Zrythm.gschema.xml:302
 msgid "Whether to dim the the monitor signal."
 msgstr "モニター信号をディムするかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:300
+#: build/data/org.zrythm.Zrythm.gschema.xml:307
 msgid "Whether to mute the monitor signal."
 msgstr "モニター信号をミュートするかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:304
-#: build/data/org.zrythm.Zrythm.gschema.xml:309
+#: build/data/org.zrythm.Zrythm.gschema.xml:311
+#: build/data/org.zrythm.Zrythm.gschema.xml:316
 msgid "Left output devices"
 msgstr "左チャンネルの出力デバイス"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:305
+#: build/data/org.zrythm.Zrythm.gschema.xml:312
 msgid "A list of output devices to route the left monitor output to."
 msgstr "左のモニタ出力をルーティングする出力デバイスのリスト。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:310
+#: build/data/org.zrythm.Zrythm.gschema.xml:317
 msgid "A list of output devices to route the right monitor output to."
 msgstr "右のモニタ出力をルーティングする出力デバイスのリスト。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:319
+#: build/data/org.zrythm.Zrythm.gschema.xml:326
 msgid "Whether to bounce with parent tracks (direct outputs)."
 msgstr "親トラック（ダイレクトアウト）でバウンスするかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:324
+#: build/data/org.zrythm.Zrythm.gschema.xml:331
 msgid "Disable track after bouncing."
 msgstr "バウンス後にトラックを無効にする。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:328
+#: build/data/org.zrythm.Zrythm.gschema.xml:335
 msgid "Bounce step"
 msgstr "バウンスステップ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:329
+#: build/data/org.zrythm.Zrythm.gschema.xml:336
 msgid "Step in the processing chain to bounce at."
 msgstr "バウンスする処理チェーンのステップ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:333
+#: build/data/org.zrythm.Zrythm.gschema.xml:340
 msgid "Bounce tail"
 msgstr "バウンステール"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:334
+#: build/data/org.zrythm.Zrythm.gschema.xml:341
 msgid ""
 "Tail to allow when bouncing (for example to catch reverb tails), in "
 "milliseconds."
@@ -4769,19 +4836,19 @@ msgstr ""
 "バウンドするときに許可するテール（例えば、リバーブのテールをキャッチしたいと"
 "きなど）をミリ秒単位で指定します。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:338
+#: build/data/org.zrythm.Zrythm.gschema.xml:345
 msgid "Timeline object length"
 msgstr "タイムラインオブジェクトの長さ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:339
+#: build/data/org.zrythm.Zrythm.gschema.xml:346
 msgid "Default length to use when creating timeline objects."
 msgstr "タイムラインのオブジェクトを作成する際に使用するデフォルトの長さ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:343
+#: build/data/org.zrythm.Zrythm.gschema.xml:350
 msgid "Timeline object length type"
 msgstr "タイムラインオブジェクト長の種類"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:344
+#: build/data/org.zrythm.Zrythm.gschema.xml:351
 msgid ""
 "Default length type to use when creating timeline objects (normal, dotted, "
 "triplet)."
@@ -4789,27 +4856,27 @@ msgstr ""
 "タイムラインオブジェクトを作成する際に使用するデフォルトの長さの型（ノーマ"
 "ル、ドット、トリプレット）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:349
+#: build/data/org.zrythm.Zrythm.gschema.xml:356
 msgid "Last timeline object's length"
 msgstr "最後に使用したタイムライン オブジェクトの長さ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:350
+#: build/data/org.zrythm.Zrythm.gschema.xml:357
 msgid "The length of the last created timeline object (in ticks)."
 msgstr "最後に作成されたタイムラインオブジェクトの長さ（単位：ティック）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:354
+#: build/data/org.zrythm.Zrythm.gschema.xml:361
 msgid "Editor object length"
 msgstr "エディター オブジェクトの長さ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:355
+#: build/data/org.zrythm.Zrythm.gschema.xml:362
 msgid "Default length to use when creating editor objects."
 msgstr "エディターオブジェクトを作成する際に使用するデフォルトの長さ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:359
+#: build/data/org.zrythm.Zrythm.gschema.xml:366
 msgid "Editor object length type"
 msgstr "エディターオブジェクトの長さタイプ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:360
+#: build/data/org.zrythm.Zrythm.gschema.xml:367
 msgid ""
 "Default length type to use when creating editor objects (normal, dotted, "
 "triplet)."
@@ -4817,19 +4884,19 @@ msgstr ""
 "エディターオブジェクトを作成する際に使用するデフォルトの長さの形式（ノーマ"
 "ル、ドット、トリプレット）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:365
+#: build/data/org.zrythm.Zrythm.gschema.xml:372
 msgid "Last editor object's length"
 msgstr "最後に作成されたエディターオブジェクトの長さ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:366
+#: build/data/org.zrythm.Zrythm.gschema.xml:373
 msgid "The length of the last created editor object (in ticks)."
 msgstr "最後に作成されたエディタオブジェクトの長さ（ティック数）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:370
+#: build/data/org.zrythm.Zrythm.gschema.xml:377
 msgid "Note notation"
 msgstr "音符表記"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:371
+#: build/data/org.zrythm.Zrythm.gschema.xml:378
 msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
@@ -4837,7 +4904,7 @@ msgstr ""
 "ピアノロールで使用されている音符表記 - MIDIピッチインデックスまたは音符（C、"
 "C#など）"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:376
+#: build/data/org.zrythm.Zrythm.gschema.xml:383
 msgid ""
 "Whether to use musical mode. If this is on, time-stretching will be applied "
 "to events so that they match the project BPM. This mostly applies to audio "
@@ -4847,192 +4914,196 @@ msgstr ""
 "致するようにイベントにタイムストレッチが適用されます。これは主にオーディオ"
 "リージョンに適用されます。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:380
+#: build/data/org.zrythm.Zrythm.gschema.xml:387
 msgid "Listen to notes while they are moved"
 msgstr "音符を移動させながら試聴"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:381
+#: build/data/org.zrythm.Zrythm.gschema.xml:388
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
 msgstr "ピアノロールでドラッグしながらMIDI音符を試聴かどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:385
+#: build/data/org.zrythm.Zrythm.gschema.xml:392
 msgid "Piano roll highlight"
 msgstr "ピアノロールハイライト"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:386
+#: build/data/org.zrythm.Zrythm.gschema.xml:393
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr "ピアノロールで和音、音階、両方、または何も強調表示しないかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:390
+#: build/data/org.zrythm.Zrythm.gschema.xml:397
 msgid "Piano roll MIDI modifier"
 msgstr "ピアノロールのMIDIモディファイア"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:391
+#: build/data/org.zrythm.Zrythm.gschema.xml:398
 msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
 msgstr ""
 "MIDIエディターに表示するMIDIモディファイア（現時点ではベロシティのみ有効）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:395
+#: build/data/org.zrythm.Zrythm.gschema.xml:402
 msgid "Show automation values"
 msgstr "オートメーション値を表示する"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:396
+#: build/data/org.zrythm.Zrythm.gschema.xml:403
 msgid "Whether to show automation values in the automation editor."
 msgstr "オートメーションエディタでオートメーションの値を表示するかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:400
+#: build/data/org.zrythm.Zrythm.gschema.xml:407
 msgid "Browser divider position"
 msgstr "ブラウザの区切り位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:401
+#: build/data/org.zrythm.Zrythm.gschema.xml:408
 msgid "Height of the top part of the plugin/file browser."
 msgstr "プラグイン/ファイルブラウザの上部の高さ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:405
+#: build/data/org.zrythm.Zrythm.gschema.xml:412
 msgid "Left panel divider position"
 msgstr "左パネルの仕切り位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:406
+#: build/data/org.zrythm.Zrythm.gschema.xml:413
 msgid "Position of the resize handle of the left panel."
 msgstr "左パネルのリサイズハンドルの位置。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:410
+#: build/data/org.zrythm.Zrythm.gschema.xml:417
 msgid "Left panel tab index"
 msgstr "左パネルのタブインデックス"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:411
+#: build/data/org.zrythm.Zrythm.gschema.xml:418
 msgid "Index of the currently opened left panel tab."
 msgstr "現在開いている左パネルのタブのインデックス。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:415
+#: build/data/org.zrythm.Zrythm.gschema.xml:422
 msgid "Right panel divider position"
 msgstr "右パネルの仕切り位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:416
+#: build/data/org.zrythm.Zrythm.gschema.xml:423
 msgid "Position of the resize handle of the right panel."
 msgstr "右パネルのリサイズハンドルの位置。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:420
+#: build/data/org.zrythm.Zrythm.gschema.xml:427
 msgid "Right panel tab index"
 msgstr "右パネルのタブインデックス"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:421
+#: build/data/org.zrythm.Zrythm.gschema.xml:428
 msgid "Index of the currently opened right panel tab."
 msgstr "現在開いている右パネルのタブのインデックス。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:425
+#: build/data/org.zrythm.Zrythm.gschema.xml:432
 msgid "Bot panel divider position"
 msgstr "ボットパネルの仕切り位置"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:426
+#: build/data/org.zrythm.Zrythm.gschema.xml:433
 msgid "Position of the resize handle of the bot panel."
 msgstr "下パネルのリサイズハンドルの位置。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:430
+#: build/data/org.zrythm.Zrythm.gschema.xml:437
 msgid "Bot panel tab index"
 msgstr "下部パネルのタブインデックス"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:431
+#: build/data/org.zrythm.Zrythm.gschema.xml:438
 msgid "Index of the currently opened bottom panel tab."
 msgstr "現在開いている下部パネルのタブのインデックス。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:435
+#: build/data/org.zrythm.Zrythm.gschema.xml:442
 msgid "Timeline event viewer visibility"
 msgstr "イベント ビューアを表示"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:436
+#: build/data/org.zrythm.Zrythm.gschema.xml:443
 msgid "Whether the timeline event viewer is visible or not."
 msgstr "タイムラインのイベントビューアが表示されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:440
+#: build/data/org.zrythm.Zrythm.gschema.xml:447
 msgid "Editor event viewer visibility"
 msgstr "エディタイベントビューアの可視性"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:441
+#: build/data/org.zrythm.Zrythm.gschema.xml:448
 msgid "Whether the editor event viewer is visible or not."
 msgstr "エディタのイベントビューアが表示されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:445
+#: build/data/org.zrythm.Zrythm.gschema.xml:452
 msgid "Transport display type"
 msgstr "トランスポートの表示形式"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:446
+#: build/data/org.zrythm.Zrythm.gschema.xml:453
 msgid "Selected transport display type (BBT/time)."
 msgstr "選択したトランスポート表示形式(BBT/時刻)。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:450
+#: build/data/org.zrythm.Zrythm.gschema.xml:457
 msgid "JACK transport type"
 msgstr "JACKトランスポートの種類"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:451
+#: build/data/org.zrythm.Zrythm.gschema.xml:458
 msgid "Selected JACK transport behavior (master/client/none)"
 msgstr "選択された JACK トランスポート動作 (master/client/one)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:455
+#: build/data/org.zrythm.Zrythm.gschema.xml:462
 msgid "Ruler display type"
 msgstr "ルーラーの表示形式"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:456
+#: build/data/org.zrythm.Zrythm.gschema.xml:463
 msgid "Selected ruler display type (BBT/time)."
 msgstr "選択したルーラーの表示形式(BBT/時刻)。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:460
+#: build/data/org.zrythm.Zrythm.gschema.xml:467
 msgid "Selected editing tool"
 msgstr "選択された編集ツール"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:461
+#: build/data/org.zrythm.Zrythm.gschema.xml:468
 msgid "Selected editing tool."
 msgstr "選択した編集ツール。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:465
+#: build/data/org.zrythm.Zrythm.gschema.xml:472
 msgid "Last used MIDI function"
 msgstr "最後に使用したMIDI関数"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:466
+#: build/data/org.zrythm.Zrythm.gschema.xml:473
 msgid ""
 "Last used MIDI function (index corresponding to enum in midi function "
 "action)."
 msgstr ""
 "最後に使用したMIDI関数（MIDI関数アクションのenumに対するインデックス）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:470
+#: build/data/org.zrythm.Zrythm.gschema.xml:477
 msgid "Last used automation function"
 msgstr "最後に使用したオートメーション関数"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:471
+#: build/data/org.zrythm.Zrythm.gschema.xml:478
 msgid ""
 "Last used automation function (index corresponding to enum in automation "
 "function action)."
-msgstr "最後に使用したオートメーション関数（オートメーション関数アクションのenumに対するインデックス）。"
+msgstr ""
+"最後に使用したオートメーション関数（オートメーション関数アクションのenumに対"
+"するインデックス）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:475
+#: build/data/org.zrythm.Zrythm.gschema.xml:482
 msgid "Last used audio function"
 msgstr "最後に使用したオーディオ関数"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:476
+#: build/data/org.zrythm.Zrythm.gschema.xml:483
 msgid ""
 "Last used audio function (index corresponding to enum in audio function "
 "action)."
-msgstr "最後に使用したオーディオ関数（オーディオ関数アクションのenumに対するインデックス）。"
+msgstr ""
+"最後に使用したオーディオ関数（オーディオ関数アクションのenumに対するインデッ"
+"クス）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:480
+#: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Playhead scroll edges (timeline)"
 msgstr "再生ヘッドのエッジスクロール (タイムライン)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:481
+#: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
 "プレイヘッドが可視エッジ（タイムライン）に達したときにスクロールするかどう"
 "か。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:485
+#: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "Follow playhead (timeline)"
 msgstr "再生ヘッドをフォローする (タイムライン)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:486
+#: build/data/org.zrythm.Zrythm.gschema.xml:493
 #, fuzzy
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
@@ -5041,21 +5112,21 @@ msgstr ""
 "プレイヘッドに追従するかどうか。これがオンになっていると、可視領域はプレイ"
 "ヘッド（タイムライン）の中央に保たれます。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:490
+#: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid "Playhead scroll edges (editor)"
 msgstr "再生ヘッド・スクロール エッジ (エディター)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:491
+#: build/data/org.zrythm.Zrythm.gschema.xml:498
 #, fuzzy
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
 msgstr ""
 "プレイヘッドが可視エッジ（エディタ）に達したときにスクロールするかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:495
+#: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid "Follow playhead (editor)"
 msgstr "再生ヘッドをフォローする (エディター)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:496
+#: build/data/org.zrythm.Zrythm.gschema.xml:503
 #, fuzzy
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
@@ -5064,388 +5135,695 @@ msgstr ""
 "プレイヘッドに追従するかどうか。これがオンになっていると、可視領域はプレイ"
 "ヘッド（エディタ）の中央に保たれます。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:504
+#: build/data/org.zrythm.Zrythm.gschema.xml:511
 msgid "Plugin browser tab"
 msgstr "プラグインブラウザのタブ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:505
+#: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "Selected plugin browser tab."
 msgstr "選択したプラグインブラウザのタブ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:509
+#: build/data/org.zrythm.Zrythm.gschema.xml:516
 msgid "Plugin browser filter"
 msgstr "プラグインブラウザのフィルタ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:510
+#: build/data/org.zrythm.Zrythm.gschema.xml:517
 msgid "Selected plugin browser filter"
 msgstr "選択したプラグインブラウザのフィルタ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:514
+#: build/data/org.zrythm.Zrythm.gschema.xml:521
 msgid "Plugin browser collections"
 msgstr "プラグインブラウザーコレクション"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:515
+#: build/data/org.zrythm.Zrythm.gschema.xml:522
 msgid "Tree paths of the selected collections in the plugin browser."
 msgstr "プラグインブラウザの選択したコレクションのツリーパス。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:519
+#: build/data/org.zrythm.Zrythm.gschema.xml:526
 msgid "Plugin browser authors"
 msgstr "プラグインブラウザでのプラグイン作者"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:520
+#: build/data/org.zrythm.Zrythm.gschema.xml:527
 msgid "Tree paths of the selected authors in the plugin browser."
 msgstr "プラグインブラウザで選択した作者のツリーパス。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:524
+#: build/data/org.zrythm.Zrythm.gschema.xml:531
 msgid "Plugin browser categories"
 msgstr "プラグインブラウザのカテゴリ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:525
+#: build/data/org.zrythm.Zrythm.gschema.xml:532
 #, fuzzy
 msgid "Tree paths of the selected categories in the plugin browser."
 msgstr "プラグイン/ファイルブラウザの上部の高さ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:529
+#: build/data/org.zrythm.Zrythm.gschema.xml:536
 msgid "Plugin browser protocols"
 msgstr "プラグインブラウザのプロトコル"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:530
+#: build/data/org.zrythm.Zrythm.gschema.xml:537
 #, fuzzy
 msgid "Tree paths of the selected protocols in the plugin browser."
 msgstr "プラグイン/ファイルブラウザの上部の高さ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:538
+#: build/data/org.zrythm.Zrythm.gschema.xml:545
 msgid "File browser bookmarks"
 msgstr "ファイル ブラウザのブックマーク"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:539
+#: build/data/org.zrythm.Zrythm.gschema.xml:546
 msgid "Location bookmarks for file browser (absolute paths)."
 msgstr "ファイルブラウザのロケーションブックマーク（絶対パス）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:543
+#: build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "File browser selected bookmark"
 msgstr "ファイルブラウザでの選択したブックマーク"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:544
+#: build/data/org.zrythm.Zrythm.gschema.xml:551
 msgid "Selected bookmark in file browser."
 msgstr "ファイル ブラウザで選択したブックマーク。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:549
+#: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "Whether to autoplay the selected file."
 msgstr "選択したファイルを自動再生するかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:554
+#: build/data/org.zrythm.Zrythm.gschema.xml:561
 msgid "Whether to show unsupported files in the file browser."
 msgstr "サポートされていないファイルをファイルブラウザーに表示するかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:559
+#: build/data/org.zrythm.Zrythm.gschema.xml:566
 msgid "Whether to show hidden files in the file browser."
 msgstr "ファイルブラウザに隠しファイルを表示するかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:563
+#: build/data/org.zrythm.Zrythm.gschema.xml:570
 msgid "File browser filter"
 msgstr "ファイルブラウザフィルタ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:564
+#: build/data/org.zrythm.Zrythm.gschema.xml:571
 msgid "Selected file browser filter"
 msgstr "選択したファイル ブラウザのフィルタ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:568
+#: build/data/org.zrythm.Zrythm.gschema.xml:575
 #, fuzzy
 msgid "Last location"
 msgstr "パス"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:569
+#: build/data/org.zrythm.Zrythm.gschema.xml:576
 #, fuzzy
 msgid "Last visited location."
 msgstr "最後に使用したMIDI関数"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:574
+#: build/data/org.zrythm.Zrythm.gschema.xml:581
 msgid "Instrument plugin to use for MIDI auditioning."
 msgstr "MIDIオーディションに使用するインストゥルメントプラグイン。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:582
+#: build/data/org.zrythm.Zrythm.gschema.xml:589
+#, fuzzy
+msgid "Inserts expanded"
+msgstr "トラックインサートの展開状況"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:590
+#, fuzzy
+msgid "Whether inserts are expanded."
+msgstr "トラックインサートが展開されているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:594
+#, fuzzy
+msgid "MIDI FX expanded"
+msgstr "MIDI 検知"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:595
+#, fuzzy
+msgid "Whether MIDI FX are expanded."
+msgstr "トラックフェーダーが展開されているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:599
+#, fuzzy
+msgid "Sends expanded"
+msgstr "トラックセンドの展開状況"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:600
+#, fuzzy
+msgid "Whether sends are expanded."
+msgstr "トラックセンドが展開されているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:608
 msgid "Track properties expanded"
 msgstr "トラック属性の展開状態"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:583
+#: build/data/org.zrythm.Zrythm.gschema.xml:609
 msgid "Whether track properties is expanded."
 msgstr "トラックのプロパティが展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:587
+#: build/data/org.zrythm.Zrythm.gschema.xml:613
 msgid "Track outputs expanded"
 msgstr "トラック出力の展開状況"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:588
+#: build/data/org.zrythm.Zrythm.gschema.xml:614
 msgid "Whether track outputs is expanded."
 msgstr "トラック出力が展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:592
+#: build/data/org.zrythm.Zrythm.gschema.xml:618
 msgid "Track sends expanded"
 msgstr "トラックセンドの展開状況"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:593
+#: build/data/org.zrythm.Zrythm.gschema.xml:619
 msgid "Whether track sends is expanded."
 msgstr "トラックセンドが展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:597
+#: build/data/org.zrythm.Zrythm.gschema.xml:623
 msgid "Track inputs expanded"
 msgstr "トラック入力の展開状況"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:598
+#: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "Whether track inputs is expanded."
 msgstr "トラック入力が展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:602
+#: build/data/org.zrythm.Zrythm.gschema.xml:628
 msgid "Track controls expanded"
 msgstr "トラックコントロールの展開状況"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:603
+#: build/data/org.zrythm.Zrythm.gschema.xml:629
 msgid "Whether track controls is expanded."
 msgstr "トラックコントロールが展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:607
+#: build/data/org.zrythm.Zrythm.gschema.xml:633
 msgid "Track inserts expanded"
 msgstr "トラックインサートの展開状況"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:608
+#: build/data/org.zrythm.Zrythm.gschema.xml:634
 msgid "Whether track inserts is expanded."
 msgstr "トラックインサートが展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:612
+#: build/data/org.zrythm.Zrythm.gschema.xml:638
 msgid "Track midi-fx expanded"
 msgstr "トラックmidi-fxの展開状態"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:613
+#: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Whether track midi-fx is expanded."
 msgstr "トラックMIDI-FXが展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:617
+#: build/data/org.zrythm.Zrythm.gschema.xml:643
 msgid "Track fader expanded"
 msgstr "トラックフェーダーの展開状況"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:618
+#: build/data/org.zrythm.Zrythm.gschema.xml:644
 msgid "Whether track fader is expanded."
 msgstr "トラックフェーダーが展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:622
+#: build/data/org.zrythm.Zrythm.gschema.xml:648
 msgid "Track comment expanded"
 msgstr "トラックコメントの展開状態"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:623
+#: build/data/org.zrythm.Zrythm.gschema.xml:649
 msgid "Whether track comment is expanded."
 msgstr "トラックコメントが展開されているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:632
+#: build/data/org.zrythm.Zrythm.gschema.xml:657
+msgid "Track visibility detached"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:658
+#, fuzzy
+msgid "Whether the track visibility panel is detached."
+msgstr "トラックインサートが展開されているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:662
+msgid "Track visibility size"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:663
+msgid "Track visibility panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:667
+#, fuzzy
+msgid "Track inspector detached"
+msgstr "トラックインスペクター"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:668
+#, fuzzy
+msgid "Whether the track inspector panel is detached."
+msgstr "トラックインサートが展開されているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:672
+#, fuzzy
+msgid "Track inspector size"
+msgstr "トラックインスペクター"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:673
+msgid "Track inspector panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:677
+#, fuzzy
+msgid "Plugin inspector detached"
+msgstr "プラグインインスペクター"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:678
+#, fuzzy
+msgid "Whether the plugin inspector panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:682
+#, fuzzy
+msgid "Plugin inspector size"
+msgstr "プラグインインスペクター"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:683
+msgid "Plugin inspector panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:687
+#, fuzzy
+msgid "Plugin browser detached"
+msgstr "プラグインブラウザのタブ"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:688
+#, fuzzy
+msgid "Whether the plugin browser panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:692
+#, fuzzy
+msgid "Plugin browser size"
+msgstr "プラグインブラウザのフィルタ"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:693
+msgid "Plugin browser panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:697
+#, fuzzy
+msgid "File browser detached"
+msgstr "ファイルブラウザフィルタ"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:698
+#, fuzzy
+msgid "Whether the file browser panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:702
+#, fuzzy
+msgid "File browser size"
+msgstr "ファイルブラウザフィルタ"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:703
+msgid "File browser panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:707
+#, fuzzy
+msgid "Monitor section detached"
+msgstr "モニターセクション"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:708
+#, fuzzy
+msgid "Whether the monitor section panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:712
+#, fuzzy
+msgid "Monitor section size"
+msgstr "モニターセクション"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:713
+msgid "Monitor section panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:717
+msgid "Modulator view detached"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:718
+#, fuzzy
+msgid "Whether the modulator view panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:722
+#, fuzzy
+msgid "Modulator view size"
+msgstr "モジュレーター"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:723
+msgid "Modulator view panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:727
+msgid "Mixer detached"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:728
+#, fuzzy
+msgid "Whether the mixer panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:732
+#, fuzzy
+msgid "Mixer size"
+msgstr "ミキサー画面"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:733
+msgid "Mixer panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:737
+msgid "Clip editor detached"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:738
+#, fuzzy
+msgid "Whether the clip editor panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:742
+msgid "Clip editor size"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:743
+msgid "Clip editor panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:747
+#, fuzzy
+msgid "Chord pad detached"
+msgstr "コードパッド"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:748
+#, fuzzy
+msgid "Whether the chord pad panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:752
+#, fuzzy
+msgid "Chord pad size"
+msgstr "コードパッド"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:753
+msgid "Chord pad panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:757
+#, fuzzy
+msgid "Timeline detached"
+msgstr "タイムライン"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:758
+#, fuzzy
+msgid "Whether the timeline panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:762
+#, fuzzy
+msgid "Timeline size"
+msgstr "タイムライン"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:763
+msgid "Timeline panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:767
+#, fuzzy
+msgid "CC bindings detached"
+msgstr "MIDI CC のバインディング"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:768
+#, fuzzy
+msgid "Whether the CC bindings panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:772
+#, fuzzy
+msgid "CC bindings size"
+msgstr "MIDI CC のバインディング"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:773
+msgid "CC bindings panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:777
+#, fuzzy
+msgid "Port connections detached"
+msgstr "ポート接続"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:778
+#, fuzzy
+msgid "Whether the port connections panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:782
+#, fuzzy
+msgid "Port connections size"
+msgstr "ポート接続"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:783
+msgid "Port connections panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:787
+msgid "Scenes detached"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:788
+#, fuzzy
+msgid "Whether the scenes panel is detached."
+msgstr "メトロノームが有効になっているかどうか。"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:792
+#, fuzzy
+msgid "Scenes size"
+msgstr "シーン"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:793
+msgid "Scenes panel size when detached."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "Genre to use when exporting, if the file type supports it."
 msgstr ""
 "ファイルタイプがサポートしている場合は、エクスポート時に使用するジャンルの指"
 "定。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:637
+#: build/data/org.zrythm.Zrythm.gschema.xml:807
 msgid "Artist to use when exporting, if the file type supports it."
 msgstr ""
 "ファイル形式がサポートしている場合は、エクスポート時に使用するアーティストの"
 "指定。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:642
+#: build/data/org.zrythm.Zrythm.gschema.xml:812
 msgid "Title to use when exporting, if the file type supports it."
 msgstr "ファイルタイプがサポートしている場合は、エクスポート時に使用する曲名。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:646
+#: build/data/org.zrythm.Zrythm.gschema.xml:816
 msgid "Time range"
 msgstr "時間の範囲"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:647
+#: build/data/org.zrythm.Zrythm.gschema.xml:817
 msgid "Time range to export."
 msgstr "エクスポートする時間範囲。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:652
+#: build/data/org.zrythm.Zrythm.gschema.xml:822
 msgid "Format to export to."
 msgstr "エクスポートするフォーマット。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:656
+#: build/data/org.zrythm.Zrythm.gschema.xml:826
 msgid "Filename pattern"
 msgstr "ファイル名パターン"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:657
+#: build/data/org.zrythm.Zrythm.gschema.xml:827
 msgid "Filename pattern for exported files."
 msgstr "書き出すファイルのファイル名パターン。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:662
+#: build/data/org.zrythm.Zrythm.gschema.xml:832
 msgid "Add dither while exporting, if applicable."
 msgstr "エクスポート中にディザを追加します。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:666
+#: build/data/org.zrythm.Zrythm.gschema.xml:836
 msgid "Export stems"
 msgstr "ステムの書き出し"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:667
+#: build/data/org.zrythm.Zrythm.gschema.xml:837
 msgid "Whether to export stems instead of the mixdown."
 msgstr "ミックスダウンの代わりにステムを書き出すかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:672
+#: build/data/org.zrythm.Zrythm.gschema.xml:842
 msgid "Bit depth to use when exporting"
 msgstr "エクスポート時に使用するビット深度"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:680
+#: build/data/org.zrythm.Zrythm.gschema.xml:850
 msgid "Transport loop"
 msgstr "トランスポートのループ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:681
+#: build/data/org.zrythm.Zrythm.gschema.xml:851
 msgid "Whether looping is enabled."
 msgstr "ループが有効になっているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:685
+#: build/data/org.zrythm.Zrythm.gschema.xml:855
 msgid "Return to cue"
 msgstr "キューに戻る"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:686
+#: build/data/org.zrythm.Zrythm.gschema.xml:856
 msgid "Whether return to cue on stop is enabled."
 msgstr "停止時にキューへ戻るかどうかが有効になっているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:690
+#: build/data/org.zrythm.Zrythm.gschema.xml:860
 msgid "Metronome enabled"
 msgstr "メトロノームの有効状態"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:691
+#: build/data/org.zrythm.Zrythm.gschema.xml:861
 msgid "Whether the metronome is enabled."
 msgstr "メトロノームが有効になっているかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:696
+#: build/data/org.zrythm.Zrythm.gschema.xml:866
 msgid "Metronome volume"
 msgstr "メトロノームの音量"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:697
+#: build/data/org.zrythm.Zrythm.gschema.xml:867
 msgid "The metronome volume in amplitude (0 to 2)."
 msgstr "メトロノームの音量の振幅（0.0～2.0）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:701
+#: build/data/org.zrythm.Zrythm.gschema.xml:871
+#, fuzzy
+msgid "Metronome Count-in"
+msgstr "メトロノームの音量"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:872
+msgid "Count-in bars for the metronome."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:876
 msgid "Punch mode enabled"
 msgstr "パンチモードの有効状態"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:702
+#: build/data/org.zrythm.Zrythm.gschema.xml:877
 msgid "Whether punch in/out is enabled for recording."
 msgstr "録音時にパンチイン/アウトが有効かどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:706
+#: build/data/org.zrythm.Zrythm.gschema.xml:881
 msgid "Start playback on MIDI input"
 msgstr "MIDI 入力時に再生を開始する"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:707
+#: build/data/org.zrythm.Zrythm.gschema.xml:882
 msgid "Whether to start playback on MIDI input."
 msgstr "MIDI入力で再生を開始するかどうか。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:712
+#: build/data/org.zrythm.Zrythm.gschema.xml:887
 msgid "Recording mode."
 msgstr "録音モード。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:725
+#: build/data/org.zrythm.Zrythm.gschema.xml:891
+#, fuzzy
+msgid "Recording Pre-Roll"
+msgstr "録音モード"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:892
+msgid "Number of bars to pre-roll when recording."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:905
 msgid "Audio backend"
 msgstr "オーディオバックエンド"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:726
+#: build/data/org.zrythm.Zrythm.gschema.xml:906
 msgid "The audio backend to use."
 msgstr "使用するオーディオバックエンド。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:730
+#: build/data/org.zrythm.Zrythm.gschema.xml:910
 msgid "RtAudio device"
 msgstr "RtAudioのデバイス名"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:731
+#: build/data/org.zrythm.Zrythm.gschema.xml:911
 msgid "The name of the RtAudio device to use."
 msgstr "使用する RtAudio デバイスの名前。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:735
+#: build/data/org.zrythm.Zrythm.gschema.xml:915
 msgid "SDL device"
 msgstr "SDLのデバイス名"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:736
+#: build/data/org.zrythm.Zrythm.gschema.xml:916
 msgid "The name of the SDL device to use."
 msgstr "使用する SDL デバイスの名前。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:741
+#: build/data/org.zrythm.Zrythm.gschema.xml:921
 msgid "Samplerate to pass to the backend."
 msgstr "バックエンドに渡すサンプルレート。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:745
+#: build/data/org.zrythm.Zrythm.gschema.xml:925
 msgid "Buffer size"
 msgstr "バッファサイズ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:746
+#: build/data/org.zrythm.Zrythm.gschema.xml:926
 msgid "Buffer size to pass to the backend."
 msgstr "バックエンドに渡すバッファサイズ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:750
+#: build/data/org.zrythm.Zrythm.gschema.xml:930
 msgid "MIDI backend"
 msgstr "MIDIバックエンド"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:751
+#: build/data/org.zrythm.Zrythm.gschema.xml:931
 msgid "The MIDI backend to use."
 msgstr "使用するMIDIバックエンド。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:755
+#: build/data/org.zrythm.Zrythm.gschema.xml:935
 msgid "Audio inputs"
 msgstr "オーディオ入力"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:756
+#: build/data/org.zrythm.Zrythm.gschema.xml:936
 msgid "A list of audio inputs to enable."
 msgstr "有効にするオーディオ入力のリスト。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:760
+#: build/data/org.zrythm.Zrythm.gschema.xml:940
 msgid "MIDI controllers"
 msgstr "MIDIコントローラー"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:761
+#: build/data/org.zrythm.Zrythm.gschema.xml:941
 msgid "A list of controllers to enable."
 msgstr "有効にするコントローラーのリスト。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:770
-#: build/data/org.zrythm.Zrythm.gschema.xml:815
+#: build/data/org.zrythm.Zrythm.gschema.xml:950
+#: build/data/org.zrythm.Zrythm.gschema.xml:995
 msgid "Paths"
 msgstr "パス"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:775
+#: build/data/org.zrythm.Zrythm.gschema.xml:955
 msgid "The directory used to save user data in."
 msgstr "ユーザーデータの保存に使用されるディレクトリ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:784
+#: build/data/org.zrythm.Zrythm.gschema.xml:964
 msgid "UIs"
 msgstr "UI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:788
+#: build/data/org.zrythm.Zrythm.gschema.xml:968
 msgid "Open UI on instantiation"
 msgstr "インスタンス化時に UI を開く"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:789
+#: build/data/org.zrythm.Zrythm.gschema.xml:969
 msgid "Open plugin UIs when they are instantiated."
 msgstr "インスタンス化されたときにプラグインのUIを開く。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:793
+#: build/data/org.zrythm.Zrythm.gschema.xml:973
 msgid "Keep window on top"
 msgstr "ウィンドウを上に保持"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:794
+#: build/data/org.zrythm.Zrythm.gschema.xml:974
 msgid "Always show plugin UIs on top of the main window."
 msgstr "常にメインウィンドウの上にプラグインのUIを表示します。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:799
+#: build/data/org.zrythm.Zrythm.gschema.xml:979
 msgid "Refresh rate"
 msgstr "再描画間隔"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:800
+#: build/data/org.zrythm.Zrythm.gschema.xml:980
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 "リフレッシュレート（Hz）。0に設定すると、画面のリフレッシュレートが使用されま"
 "す。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:805
+#: build/data/org.zrythm.Zrythm.gschema.xml:985
 #, fuzzy
 msgid "Scale factor"
 msgstr "スケールファクター"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:806
+#: build/data/org.zrythm.Zrythm.gschema.xml:986
 #, fuzzy
 msgid ""
 "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
@@ -5454,58 +5832,58 @@ msgstr ""
 "リフレッシュレート（Hz）。0に設定すると、画面のリフレッシュレートが使用されま"
 "す。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:823
+#: build/data/org.zrythm.Zrythm.gschema.xml:1003
 msgid "VST plugins"
 msgstr "VSTプラグイン"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:824
+#: build/data/org.zrythm.Zrythm.gschema.xml:1004
 msgid ""
 "The search paths to scan for VST plugins in. Duplicate paths will be "
 "deduplicated."
 msgstr ""
 "VST プラグインをスキャンするための検索パス。重複するパスは重複除去されます。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:828
+#: build/data/org.zrythm.Zrythm.gschema.xml:1008
 msgid "SFZ instruments"
 msgstr "SFZ音源"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:829
+#: build/data/org.zrythm.Zrythm.gschema.xml:1009
 msgid ""
 "The search paths to scan for SFZ instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr "SFZ 音源をスキャンするための検索パス。重複するパスは重複除去されます。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:833
+#: build/data/org.zrythm.Zrythm.gschema.xml:1013
 msgid "SF2 instruments"
 msgstr "SF2音源"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:834
+#: build/data/org.zrythm.Zrythm.gschema.xml:1014
 msgid ""
 "The search paths to scan for SF2 instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr "SF2 音源をスキャンするための検索パス。重複するパスは重複除去されます。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:847
+#: build/data/org.zrythm.Zrythm.gschema.xml:1027
 msgid "Fade algorithm"
 msgstr "フェードアルゴリズム"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:848
+#: build/data/org.zrythm.Zrythm.gschema.xml:1028
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr "フェードイン/アウトに使用するデフォルトのフェードアルゴリズム。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:862
+#: build/data/org.zrythm.Zrythm.gschema.xml:1042
 msgid "Default algorithm to use for automation curves."
 msgstr "オートメーションカーブに使用するデフォルトのアルゴリズム。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:876
+#: build/data/org.zrythm.Zrythm.gschema.xml:1056
 msgid "Undo stack length"
 msgstr "元に戻すスタックの長さ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:877
+#: build/data/org.zrythm.Zrythm.gschema.xml:1057
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr "元に戻す履歴のスタックの最大長。無制限の場合は -1 に設定します。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:892
+#: build/data/org.zrythm.Zrythm.gschema.xml:1072
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
@@ -5513,63 +5891,63 @@ msgstr ""
 "プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを 0 に"
 "設定すると、自動保存が無効になります。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:900
+#: build/data/org.zrythm.Zrythm.gschema.xml:1080
 msgid "UI"
 msgstr "UI"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:905
+#: build/data/org.zrythm.Zrythm.gschema.xml:1085
 msgid "Draw detail"
 msgstr "詳細レベル"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:906
+#: build/data/org.zrythm.Zrythm.gschema.xml:1086
 msgid "Level of detail to use when drawing graphics."
 msgstr "グラフィックスをレンダリングするときに使用する詳細レベル。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:911
+#: build/data/org.zrythm.Zrythm.gschema.xml:1091
 msgid "Font scale"
 msgstr "フォントのスケール"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:912
+#: build/data/org.zrythm.Zrythm.gschema.xml:1092
 msgid "Font scale."
 msgstr "フォントのスケール。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:916
+#: build/data/org.zrythm.Zrythm.gschema.xml:1096
 msgid "User interface language"
 msgstr "ユーザー インターフェイス言語"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:917
+#: build/data/org.zrythm.Zrythm.gschema.xml:1097
 msgid "The language to use for the user interface."
 msgstr "ユーザーインターフェースに使用する言語。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:921
+#: build/data/org.zrythm.Zrythm.gschema.xml:1101
 msgid "CSS theme"
 msgstr "CSSテーマ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:922
+#: build/data/org.zrythm.Zrythm.gschema.xml:1102
 msgid "The CSS theme to use."
 msgstr "使用する CSS テーマ。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:926
+#: build/data/org.zrythm.Zrythm.gschema.xml:1106
 msgid "Icon theme"
 msgstr "アイコンテーマ"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:927
+#: build/data/org.zrythm.Zrythm.gschema.xml:1107
 msgid "The icon theme to use. This is the directory name."
 msgstr "使用するアイコンテーマ (ディレクトリ名)。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:935
+#: build/data/org.zrythm.Zrythm.gschema.xml:1115
 msgid "DSP"
 msgstr "DSP"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:936
+#: build/data/org.zrythm.Zrythm.gschema.xml:1116
 msgid "Pan"
 msgstr "パン"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:940
+#: build/data/org.zrythm.Zrythm.gschema.xml:1120
 msgid "Pan algorithm"
 msgstr "パンの計算法"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:941
+#: build/data/org.zrythm.Zrythm.gschema.xml:1121
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
 "the moment)."
@@ -5577,11 +5955,11 @@ msgstr ""
 "モノラル信号にパンを適用するときに使用するパンニングアルゴリズム（現時点では"
 "使用されていません）。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:945
+#: build/data/org.zrythm.Zrythm.gschema.xml:1125
 msgid "Pan law"
 msgstr "パン・ロー"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:946
+#: build/data/org.zrythm.Zrythm.gschema.xml:1126
 msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
@@ -5589,17 +5967,21 @@ msgstr ""
 "モノラル信号にパンを適用するときに使用するパン則(現時点では使用されていませ"
 "ん)。"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:954
+#: build/data/org.zrythm.Zrythm.gschema.xml:1134
 msgid "Scripting"
 msgstr "スクリプティング"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:959
+#: build/data/org.zrythm.Zrythm.gschema.xml:1139
 msgid "Default script"
 msgstr "デフォルトのスクリプト"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:960
+#: build/data/org.zrythm.Zrythm.gschema.xml:1140
 msgid "The default script to use in the scripting window."
 msgstr "スクリプトウィンドウで使用するデフォルトのスクリプト。"
+
+#, fuzzy
+#~ msgid "togglebutton"
+#~ msgstr "下部パネルを切り替える"
 
 #~ msgid "[Zrythm] Enabled"
 #~ msgstr "[Zrythm]有効"

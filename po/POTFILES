@@ -179,6 +179,7 @@ inc/gui/widgets/automation_point.h
 inc/gui/widgets/audio_arranger.h
 inc/gui/widgets/scale_selector_window.h
 inc/gui/widgets/project_assistant.h
+inc/gui/widgets/preroll_count_selector.h
 inc/gui/widgets/automation_region.h
 inc/gui/widgets/range_action_buttons.h
 inc/gui/widgets/cc_bindings.h
@@ -350,6 +351,7 @@ inc/utils/object_utils.h
 inc/utils/log.h
 inc/utils/resources.h
 inc/utils/gtk.h
+inc/settings/user_shortcuts.h
 inc/settings/plugin_settings.h
 inc/settings/settings.h
 inc/audio/midi.h
@@ -621,6 +623,7 @@ src/gui/widgets/scale_selector_window.c
 src/gui/widgets/bar_slider.c
 src/gui/widgets/timeline_panel.c
 src/gui/widgets/timeline_toolbar.c
+src/gui/widgets/preroll_count_selector.c
 src/gui/widgets/event_viewer.c
 src/gui/widgets/cc_bindings_tree.c
 src/gui/widgets/automation_mode.c
@@ -740,6 +743,7 @@ src/utils/symap.c
 src/utils/backtrace.c
 src/utils/string.c
 src/utils/sort.c
+src/settings/user_shortcuts.c
 src/settings/plugin_settings.c
 src/settings/settings.c
 src/audio/midi_file.c
