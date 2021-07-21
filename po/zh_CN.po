@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-07-15 17:32+0100\n"
-"PO-Revision-Date: 2021-07-16 23:32+0000\n"
-"Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"PO-Revision-Date: 2021-07-21 17:02+0000\n"
+"Last-Translator: UnluckyNinja <unluckyninja1994@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -136,7 +136,7 @@ msgstr "低"
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
-msgstr ""
+msgstr "极低"
 
 #: inc/utils/gtk.h:55
 #, fuzzy
@@ -255,7 +255,7 @@ msgstr "MIDI组"
 
 #: inc/audio/track.h:186
 msgid "Folder"
-msgstr ""
+msgstr "文件夹"
 
 #: inc/audio/engine.h:201
 msgid "1,024"
@@ -1952,7 +1952,7 @@ msgstr "CV输出"
 
 #: src/gui/widgets/ports_expander.c:363
 msgid "Ungrouped"
-msgstr ""
+msgstr "未分组"
 
 #: src/gui/widgets/ports_expander.c:431
 msgid "Stereo In"
@@ -2325,7 +2325,7 @@ msgstr "没有音轨可供导出"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:65
 msgid "Saving..."
-msgstr ""
+msgstr "保存中..."
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:68
 msgid "Saved"
@@ -2352,12 +2352,12 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr ""
+msgstr "用户目录"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
 msgid "Desktop"
-msgstr ""
+msgstr "桌面"
 
 #: src/gui/backend/arranger_object.c:2881
 #, c-format
@@ -3363,7 +3363,7 @@ msgstr "脚本执行失败"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "全局快捷键"
 
 #: resources/gtk/help-overlay.ui:35 resources/ui/preferences.ui:365
 #: build/data/org.zrythm.Zrythm.gschema.xml:720
@@ -4095,7 +4095,7 @@ msgstr "曲目名称"
 
 #: resources/ui/panel_file_browser.ui:58
 msgid "Bookmarks"
-msgstr ""
+msgstr "书签"
 
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
@@ -4115,7 +4115,7 @@ msgstr "端口"
 
 #: resources/ui/file_auditioner_controls.ui:39
 msgid "Play/Pause"
-msgstr ""
+msgstr "播放/暂停"
 
 #: resources/ui/file_auditioner_controls.ui:52
 #: resources/ui/transport_controls.ui:70

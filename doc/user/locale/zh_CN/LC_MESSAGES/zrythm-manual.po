@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-07-17 10:51+0100\n"
-"PO-Revision-Date: 2021-07-16 23:32+0000\n"
-"Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"PO-Revision-Date: 2021-07-21 17:02+0000\n"
+"Last-Translator: UnluckyNinja <unluckyninja1994@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -270,7 +270,7 @@ msgstr "快捷键"
 
 #: ../../appendix/shortcut-keys.rst:9
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "全局快捷键"
 
 #: ../../appendix/shortcut-keys.rst:15
 msgid "Editor Shortcuts"
@@ -4216,7 +4216,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:18
 msgid "Bookmarks"
-msgstr ""
+msgstr "书签"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 msgid ""
