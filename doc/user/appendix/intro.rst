@@ -8,7 +8,6 @@ Appendix
 .. toctree::
    :maxdepth: 4
 
-   shortcut-keys
    menu-actions
    environment
    files-and-directories

@@ -5,7 +5,6 @@ copy_files = [
   'intro.rst',
   'menu-actions.rst',
   'meson.build',
-  'shortcut-keys.rst',
   'troubleshooting.rst',
   ]
 

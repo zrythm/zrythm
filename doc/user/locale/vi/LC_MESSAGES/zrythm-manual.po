@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.20\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-17 10:51+0100\n"
+"POT-Creation-Date: 2021-07-21 12:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -259,11 +259,11 @@ msgstr ""
 msgid "Shortcut Keys"
 msgstr ""
 
-#: ../../appendix/shortcut-keys.rst:9
+#: ../../appendix/shortcut-keys.rst:9 ../../configuration/shortcuts.rst:12
 msgid "Global Shortcuts"
 msgstr ""
 
-#: ../../appendix/shortcut-keys.rst:15
+#: ../../appendix/shortcut-keys.rst:15 ../../configuration/shortcuts.rst:18
 msgid "Editor Shortcuts"
 msgstr ""
 
@@ -273,6 +273,7 @@ msgstr ""
 
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:35
+#: ../../configuration/shortcuts.rst:43
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
 #: ../../editing/clip-editors/piano-roll.rst:82
@@ -871,6 +872,34 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:218
 msgid "Some of these settings require a restart of Zrythm to take effect."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:6
+msgid "Shortcuts"
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:8
+msgid ""
+"Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or"
+" :kbd:`Control-F1`."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:24
+msgid "Custom Shortcuts"
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:26
+msgid ""
+"Shortcuts can be overridden by placing a file named "
+":file:`shortcuts.yaml` under the :term:`Zrythm user path`."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:30
+msgid "An example is given below."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:43
+msgid "Make this more user friendly & document all actions."
 msgstr ""
 
 #: ../../contributing/intro.rst:6
@@ -7652,4 +7681,11 @@ msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
 msgstr ""
+
+#~ msgid ""
+#~ "Shortcuts (key bindings) can be "
+#~ "overridden by placing a file named "
+#~ ":file:`shortcuts.yaml` under the :term:`Zrythm "
+#~ "user path`."
+#~ msgstr ""
 

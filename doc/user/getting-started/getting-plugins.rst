@@ -47,8 +47,8 @@ EQ and Saturation.
 The `LSP Project <https://lsp-plug.in/>`_ has a wide variety
 of effect plugins.
 
-`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection
-of various MIDI effect and meter plugins.
+`X42 Plugins <http://x42-plugins.com/x42/>`_ is a
+collection of various MIDI effect and meter plugins.
 
 Synths
 ~~~~~~

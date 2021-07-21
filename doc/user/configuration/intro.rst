@@ -12,4 +12,5 @@ Configuration
 
    preferences
    device-setup
+   shortcuts
    additional-settings

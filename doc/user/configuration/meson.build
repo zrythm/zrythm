@@ -3,6 +3,7 @@ copy_files = [
   'device-setup.rst',
   'intro.rst',
   'preferences.rst',
+  'shortcuts.rst',
   ]
 
 foreach f : copy_files

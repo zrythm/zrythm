@@ -13,17 +13,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-17 10:51+0100\n"
+"POT-Creation-Date: 2021-07-21 12:28+0100\n"
 "PO-Revision-Date: 2021-07-16 23:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7.2-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -268,11 +267,11 @@ msgstr "菜单选项"
 msgid "Shortcut Keys"
 msgstr "快捷键"
 
-#: ../../appendix/shortcut-keys.rst:9
+#: ../../appendix/shortcut-keys.rst:9 ../../configuration/shortcuts.rst:12
 msgid "Global Shortcuts"
 msgstr ""
 
-#: ../../appendix/shortcut-keys.rst:15
+#: ../../appendix/shortcut-keys.rst:15 ../../configuration/shortcuts.rst:18
 msgid "Editor Shortcuts"
 msgstr "编辑器快捷方式"
 
@@ -282,6 +281,7 @@ msgstr ""
 
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:35
+#: ../../configuration/shortcuts.rst:43
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
 #: ../../editing/clip-editors/piano-roll.rst:82
@@ -881,6 +881,36 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:218
 msgid "Some of these settings require a restart of Zrythm to take effect."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:6
+#, fuzzy
+msgid "Shortcuts"
+msgstr "快捷键"
+
+#: ../../configuration/shortcuts.rst:8
+msgid ""
+"Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or"
+" :kbd:`Control-F1`."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:24
+#, fuzzy
+msgid "Custom Shortcuts"
+msgstr "编辑器快捷方式"
+
+#: ../../configuration/shortcuts.rst:26
+msgid ""
+"Shortcuts can be overridden by placing a file named "
+":file:`shortcuts.yaml` under the :term:`Zrythm user path`."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:30
+msgid "An example is given below."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:43
+msgid "Make this more user friendly & document all actions."
 msgstr ""
 
 #: ../../contributing/intro.rst:6
@@ -7663,6 +7693,13 @@ msgid ""
 "in the bottom left corner."
 msgstr ""
 
+#~ msgid ""
+#~ "Shortcuts (key bindings) can be "
+#~ "overridden by placing a file named "
+#~ ":file:`shortcuts.yaml` under the :term:`Zrythm "
+#~ "user path`."
+#~ msgstr ""
+
 #~ msgid "Port"
 #~ msgstr "端口"
 
@@ -7704,3 +7741,4 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
+

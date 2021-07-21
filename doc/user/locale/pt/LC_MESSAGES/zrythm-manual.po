@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-17 10:51+0100\n"
+"POT-Creation-Date: 2021-07-21 12:28+0100\n"
 "PO-Revision-Date: 2021-05-10 16:32+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -273,11 +273,11 @@ msgstr "Menu Ações"
 msgid "Shortcut Keys"
 msgstr "Teclas de Atalho"
 
-#: ../../appendix/shortcut-keys.rst:9
+#: ../../appendix/shortcut-keys.rst:9 ../../configuration/shortcuts.rst:12
 msgid "Global Shortcuts"
 msgstr "Atalhos Globais"
 
-#: ../../appendix/shortcut-keys.rst:15
+#: ../../appendix/shortcut-keys.rst:15 ../../configuration/shortcuts.rst:18
 msgid "Editor Shortcuts"
 msgstr "Atalhos do Editor"
 
@@ -287,6 +287,7 @@ msgstr "Resolução de problemas"
 
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:35
+#: ../../configuration/shortcuts.rst:43
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
 #: ../../editing/clip-editors/piano-roll.rst:82
@@ -954,6 +955,40 @@ msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
 "Algumas destas configurações requerem um reinício do Zrythm para terem "
 "efeito."
+
+#: ../../configuration/shortcuts.rst:6
+#, fuzzy
+msgid "Shortcuts"
+msgstr "Teclas de Atalho"
+
+#: ../../configuration/shortcuts.rst:8
+msgid ""
+"Shortcuts (key bindings) can be previewed by pressing :kbd:`Control-?` or"
+" :kbd:`Control-F1`."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:24
+#, fuzzy
+msgid "Custom Shortcuts"
+msgstr "Atalhos do Editor"
+
+#: ../../configuration/shortcuts.rst:26
+#, fuzzy
+msgid ""
+"Shortcuts can be overridden by placing a file named "
+":file:`shortcuts.yaml` under the :term:`Zrythm user path`."
+msgstr ""
+"Zrythm lembrará-se dos suplementos VST analizados e gravará esta "
+"informação em :file:`cached_plugin_descriptors.yaml` no :term:`Zrythm "
+"user path`."
+
+#: ../../configuration/shortcuts.rst:30
+msgid "An example is given below."
+msgstr ""
+
+#: ../../configuration/shortcuts.rst:43
+msgid "Make this more user friendly & document all actions."
+msgstr ""
 
 #: ../../contributing/intro.rst:6
 msgid "Contributing"
@@ -8976,6 +9011,13 @@ msgid ""
 msgstr ""
 "As informações sobre o backend e as opções atualmente selecionadas são "
 "visíveis no canto inferior esquerdo."
+
+#~ msgid ""
+#~ "Shortcuts (key bindings) can be "
+#~ "overridden by placing a file named "
+#~ ":file:`shortcuts.yaml` under the :term:`Zrythm "
+#~ "user path`."
+#~ msgstr ""
 
 #~ msgid "FLAC - .FLAC"
 #~ msgstr "FLAC - .FLAC"
