@@ -9,13 +9,14 @@
 # iLyd <mrzarp@protonmail.com>, 2020.
 # Artem <KovalevArtem.ru@gmail.com>, 2020.
 # Artem <blinow99@mail.ru>, 2020.
+# Anna Malinovskaia <tacitcoast@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-07-15 17:32+0100\n"
-"PO-Revision-Date: 2021-02-10 05:50+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2021-07-19 10:33+0000\n"
+"Last-Translator: Anna Malinovskaia <tacitcoast@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -24,13 +25,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5-dev\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
 #: inc/audio/engine.h:358
 msgid "Dummy"
-msgstr ""
+msgstr "Dummy"
 
 #: inc/schemas/gui/backend/arranger_object.h:52
 #: inc/gui/backend/arranger_object.h:99
@@ -68,7 +69,7 @@ msgstr "Объект Аккорда"
 #: inc/schemas/gui/backend/arranger_object.h:62
 #: inc/gui/backend/arranger_object.h:109
 msgid "Scale Object"
-msgstr ""
+msgstr "Масштабный объект"
 
 #: inc/schemas/gui/backend/arranger_object.h:64
 #: inc/gui/backend/arranger_object.h:111 inc/audio/track.h:178
@@ -111,18 +112,18 @@ msgstr "Пульс (Pulse)"
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
 #: src/gui/widgets/track.c:2172
 msgid "Inherit"
-msgstr ""
+msgstr "Наследовать"
 
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:563 src/audio/automation_track.c:191
 msgid "Off"
-msgstr ""
+msgstr "Выключен"
 
 #: inc/schemas/audio/region.h:51 inc/audio/region.h:91
 #: src/gui/widgets/bot_bar.c:563 src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:262 src/audio/automation_track.c:185
 msgid "On"
-msgstr ""
+msgstr "Подключен"
 
 #: inc/utils/ui.h:76
 msgid "High"
@@ -138,7 +139,7 @@ msgstr "низкий"
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
-msgstr ""
+msgstr "Ультранизкий"
 
 #: inc/utils/gtk.h:55
 #, fuzzy
@@ -185,7 +186,7 @@ msgstr "Заглушить (Mute)"
 #: src/gui/widgets/folder_channel.c:584 src/gui/widgets/track.c:1169
 #: src/gui/widgets/track.c:1927
 msgid "Unmute"
-msgstr ""
+msgstr "Включить микрофон"
 
 #: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:218
 msgid "Invert"
@@ -202,7 +203,7 @@ msgstr ""
 
 #: inc/audio/audio_function.h:57
 msgid "Invalid"
-msgstr ""
+msgstr "Неверный"
 
 #: inc/audio/track.h:174 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -258,79 +259,79 @@ msgstr "MIDI-групповой (MIDI Group)"
 
 #: inc/audio/track.h:186
 msgid "Folder"
-msgstr ""
+msgstr "Папка"
 
 #: inc/audio/engine.h:201
 msgid "1,024"
-msgstr ""
+msgstr "1,024"
 
 #: inc/audio/engine.h:202
 msgid "2,048"
-msgstr ""
+msgstr "2,048"
 
 #: inc/audio/engine.h:203
 msgid "4,096"
-msgstr ""
+msgstr "4,096"
 
 #: inc/audio/engine.h:230
 msgid "22,050"
-msgstr ""
+msgstr "22,050"
 
 #: inc/audio/engine.h:231
 msgid "32,000"
-msgstr ""
+msgstr "32,000"
 
 #: inc/audio/engine.h:232
 msgid "44,100"
-msgstr ""
+msgstr "44,100"
 
 #: inc/audio/engine.h:233
 msgid "48,000"
-msgstr ""
+msgstr "48,000"
 
 #: inc/audio/engine.h:234
 msgid "88,200"
-msgstr ""
+msgstr "88,200"
 
 #: inc/audio/engine.h:235
 msgid "96,000"
-msgstr ""
+msgstr "96,000"
 
 #: inc/audio/engine.h:236
 msgid "192,000"
-msgstr ""
+msgstr "192,000"
 
 #: inc/audio/engine.h:292
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Фиктивный (libsoundio)"
 
 #: inc/audio/engine.h:359
 msgid "ALSA Sequencer (not working)"
-msgstr ""
+msgstr "ALSA Sequencer (не работает)"
 
 #: inc/audio/engine.h:360
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "AlSA Sequencer (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:144
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:150
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
-msgstr ""
+msgstr "Flip H"
 
 #: inc/audio/midi_function.h:59 inc/audio/automation_function.h:51
 msgid "Flip V"
-msgstr ""
+msgstr "Flip V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:171
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:177
 #, fuzzy
@@ -339,64 +340,64 @@ msgstr "Порт"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:183
 msgid "Staccato"
-msgstr ""
+msgstr "Staccato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:189
 msgid "Strum"
-msgstr ""
+msgstr "Strum"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
-msgstr ""
+msgstr "Перед вставками"
 
 #: inc/audio/exporter.h:91
 msgid "Pre-fader"
-msgstr ""
+msgstr "Предварительный фейдер"
 
 #: inc/audio/exporter.h:92
 msgid "Post fader"
-msgstr ""
+msgstr "Пост фейдер"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1094
 #: src/utils/ui.c:844
 msgid "Linear"
-msgstr ""
+msgstr "Линейный"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:845
 msgid "Square Root"
-msgstr ""
+msgstr "Квадратный корень"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Синус"
 
 #: src/project.c:145
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "Не удалось открыть файл: %s"
 
 #: src/project.c:189
 msgid "Project not compressed by zstd"
-msgstr ""
+msgstr "Проект не сжат zstd"
 
 #: src/project.c:202
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "Не удалось распаковать файл проекта: %s"
 
 #: src/project.c:941
 #, c-format
@@ -405,15 +406,18 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Найдена более новая резервная копия:\n"
+"  %s.\n"
+"Использовать более новую резервную копию?"
 
 #: src/project.c:946
 msgid "Backup found"
-msgstr ""
+msgstr "Найдено резервное копирование"
 
 #: src/project.c:1006
 #, c-format
 msgid "Unable to read file: %s"
-msgstr ""
+msgstr "Невозможно прочитать файл: %s"
 
 #: src/project.c:1060
 #, c-format
@@ -421,82 +425,86 @@ msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
+"Этот проект был создан с другой версией %s (%s). Он может работать "
+"некорректно."
 
 #: src/project.c:1075
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Не удалось загрузить проект. Пожалуйста, проверьте журналы для получения "
+"дополнительной информации."
 
 #: src/project.c:1304
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
+msgstr "Не удалось загрузить проект. Вместо него будет создан новый."
 
 #: src/project.c:1635
 msgid "Backup saved."
-msgstr ""
+msgstr "Резервная копия сохранена."
 
 #: src/project.c:1645
 msgid "Project saved."
-msgstr ""
+msgstr "Проект сохранен."
 
 #: src/zrythm_app.c:140
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Ошибка - Откат:\n"
 
 #: src/zrythm_app.c:144
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Ошибка: %s - Откат:\n"
 
 #: src/zrythm_app.c:158
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s потерпел крах. "
 
 #: src/zrythm_app.c:238
 msgid "Setting up main window"
-msgstr ""
+msgstr "Настройка главного окна"
 
 #: src/zrythm_app.c:283
 msgid "Loading project"
-msgstr ""
+msgstr "Загрузка проекта"
 
 #: src/zrythm_app.c:296
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr ""
+msgstr "Проект не был выбран. Сейчас %s будет закрыт."
 
 #: src/zrythm_app.c:319
 msgid "Initializing settings"
-msgstr ""
+msgstr "Инициализация настроек"
 
 #: src/zrythm_app.c:326
 #, c-format
 msgid "Initializing %s directories"
-msgstr ""
+msgstr "Инициализация %s каталогов"
 
 #: src/zrythm_app.c:336
 msgid "Initializing logging system"
-msgstr ""
+msgstr "Инициализация системы протоколирования"
 
 #: src/zrythm_app.c:346
 msgid "Initializing caches"
-msgstr ""
+msgstr "Инициализация кэшей"
 
 #: src/zrythm_app.c:350
 msgid "Initializing file manager"
-msgstr ""
+msgstr "Инициализация файлового менеджера"
 
 #: src/zrythm_app.c:357
 msgid "Scanning plugins"
-msgstr ""
+msgstr "Сканирование плагинов"
 
 #: src/zrythm_app.c:518
 msgid "License Information"
-msgstr ""
+msgstr "Лицензионная информация"
 
 #: src/zrythm_app.c:546
 msgid "Waiting for project"
-msgstr ""
+msgstr "Ожидание проекта"
 
 #: src/zrythm_app.c:956
 #, c-format
@@ -512,57 +520,68 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"%s-%s %s\n"
+"\n"
+"%s поставляется с АБСОЛЮТНО БЕЗ ГАРАНТИИ!\n"
+"\n"
+"Это свободное программное обеспечение, и вы можете распространять его\n"
+"при определенных условиях. Подробности смотрите в файле `COPYING'.\n"
+"\n"
+"Пишите комментарии и ошибки по адресу %s\n"
+"Поддержите этот проект на https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/zrythm_app.c:1431
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "Файл %s не найден."
 
 #: src/zrythm_app.c:1452
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
+"Не указан выходной файл. Пожалуйста, передайте один файл с `--output=FILE`."
 
 #: src/zrythm_app.c:1517
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "Проект не удалось распаковать: %s\n"
 
 #: src/zrythm_app.c:1536
 msgid "Unknown operation"
-msgstr ""
+msgstr "Неизвестная операция"
 
 #: src/zrythm_app.c:1556
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "libguile требуется для этой опции\n"
 
 #: src/zrythm_app.c:1721
 msgid "Print version information"
-msgstr ""
+msgstr "Информация о версии для печати"
 
 #: src/zrythm_app.c:1726
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "Преобразование ZPJ-FILE в YAML"
 
 #: src/zrythm_app.c:1731
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "Преобразование YAML-PROJECT-FILE в формат .zpj"
 
 #: src/zrythm_app.c:1736
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Создание проекта из SCRIPT-FILE"
 
 #: src/zrythm_app.c:1740
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Вывод на печать удобным для пользователя способом"
 
 #: src/zrythm_app.c:1744
 msgid "Print current settings"
-msgstr ""
+msgstr "Печать текущих настроек"
 
 #: src/zrythm_app.c:1748
 msgid "Reset to factory settings"
-msgstr ""
+msgstr "Сброс до заводских настроек"
 
 #: src/zrythm_app.c:1751
 msgid "Override the audio backend to use"
@@ -693,9 +712,8 @@ msgid " - bridge: %s"
 msgstr ""
 
 #: src/plugins/plugin.c:1088
-#, fuzzy
 msgid "instrument"
-msgstr "Инструмент (Instrument)"
+msgstr "инструмент"
 
 #: src/plugins/plugin.c:1880
 #, c-format
@@ -2363,7 +2381,7 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr ""
+msgstr "Главная"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
@@ -3737,7 +3755,7 @@ msgstr "Редактор (Editor)"
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
-msgstr ""
+msgstr "Вид микшера"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
