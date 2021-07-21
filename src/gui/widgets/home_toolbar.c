@@ -95,16 +95,16 @@ refresh_undo_or_redo_button (
     GTK_WIDGET (btn_w_menu),
     !undo_stack_is_empty (stack));
 
-#define SET_TOOLTIP(x, tooltip) \
+#define SET_TOOLTIP(tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (self->x), \
-    _(tooltip))
-  char * tooltip =
-    g_strdup (redo ? _("Redo") : _("Undo"));
+    GTK_ACTIONABLE (btn), (tooltip))
+
+  const char * undo_or_redo_str =
+    redo ? _("Redo") : _("Undo");
   GtkMenu * menu = NULL;
   if (undo_stack_is_empty (stack))
     {
-      /*SET_TOOLTIP (undo, undo);*/
+      SET_TOOLTIP (undo_or_redo_str);
     }
   else
     {
@@ -113,7 +113,7 @@ refresh_undo_or_redo_button (
       /* fill 8 actions */
       int max_actions =
         MIN (8, stack->stack->top + 1);
-      for (int i = 0; i < max_actions; i++)
+      for (int i = 0; i < max_actions;)
         {
           UndoableAction * ua =
             stack->stack->elements[
@@ -139,19 +139,28 @@ refresh_undo_or_redo_button (
               destroy_undo_history_data,
             0);
           gtk_menu_shell_append (
-            GTK_MENU_SHELL (menu),
-            menuitem);
+            GTK_MENU_SHELL (menu), menuitem);
 
           if (i == 0)
             {
-              char * tmp = tooltip;
-              tooltip =
-                g_strdup_printf (
-                  "%s %s", tooltip, action_str);
-              /*SET_TOOLTIP (undo, undo);*/
-              g_free (tmp);
+              char tooltip[800];
+              sprintf (
+                tooltip, "%s %s",
+                undo_or_redo_str, action_str);
+              if (ua->num_actions > 1)
+                {
+                  char num_actions_str[100];
+                  sprintf (
+                    num_actions_str, " (x%d)",
+                    ua->num_actions);
+                  strcat (tooltip, num_actions_str);
+                }
+              SET_TOOLTIP (tooltip);
             }
           g_free (action_str);
+
+          g_return_if_fail (ua->num_actions >= 1);
+          i += ua->num_actions;
         }
     }
 #undef SET_TOOLTIP
@@ -161,10 +170,6 @@ refresh_undo_or_redo_button (
       gtk_menu_button_set_popup (
         btn_w_menu->menu_btn, GTK_WIDGET (menu));
     }
-
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (btn), tooltip);
-  g_free (tooltip);
 }
 
 /* TODO rename to refresh buttons and refresh
@@ -200,8 +205,7 @@ home_toolbar_widget_init (
 
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (self->x), \
-    tooltip)
+    GTK_ACTIONABLE (self->x), tooltip)
   SET_TOOLTIP (
     cut, _("Cut"));
   SET_TOOLTIP (

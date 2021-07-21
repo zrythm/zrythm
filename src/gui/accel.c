@@ -61,8 +61,7 @@ accel_install_action_accelerator (
     { primary, secondary, NULL };
   gtk_application_set_accels_for_action (
     GTK_APPLICATION (zrythm_app),
-    action_name,
-    accels);
+    action_name, accels);
 }
 
 /**

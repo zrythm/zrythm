@@ -328,4 +328,6 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   BIND_CHILD (midi_functions_menu);
   BIND_CHILD (functions_btn);
   BIND_CHILD (playhead_scroll);
+
+#undef BIND_CHILD
 }

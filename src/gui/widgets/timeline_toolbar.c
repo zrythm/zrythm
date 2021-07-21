@@ -76,6 +76,18 @@ timeline_toolbar_widget_init (
     PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+#define SET_TOOLTIP(x) \
+  z_gtk_set_tooltip_for_actionable ( \
+    GTK_ACTIONABLE (self->x), \
+    gtk_widget_get_tooltip_text ( \
+      GTK_WIDGET (self->x)))
+
+  SET_TOOLTIP (event_viewer_toggle);
+  SET_TOOLTIP (musical_mode_toggle);
+  SET_TOOLTIP (merge_btn);
+
+#undef SET_TOOLTIP
 }
 
 static void

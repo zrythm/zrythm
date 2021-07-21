@@ -797,11 +797,28 @@ z_gtk_set_tooltip_for_actionable (
   GtkActionable * actionable,
   const char *    tooltip)
 {
-  char * accel, * tt;
-  accel =
+  const char * action_name =
+    gtk_actionable_get_action_name (
+      actionable);
+  char detailed_action[600];
+  strcpy (detailed_action, action_name);
+  GVariant * target_value =
+    gtk_actionable_get_action_target_value (
+      actionable);
+  if (target_value &&
+      string_is_equal (
+        g_variant_get_type_string (target_value),
+        "s"))
+    {
+      sprintf (
+        detailed_action, "%s::%s",
+        action_name,
+        g_variant_get_string (target_value, 0));
+    }
+  char * accel =
     accel_get_primary_accel_for_action (
-      gtk_actionable_get_action_name (
-        actionable));
+      detailed_action);
+  char * tt;
   if (accel)
     tt =
       g_strdup_printf (

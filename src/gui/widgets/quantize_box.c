@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,12 +26,13 @@
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (QuantizeBoxWidget,
-               quantize_box_widget,
-               GTK_TYPE_BUTTON_BOX)
+G_DEFINE_TYPE (
+  QuantizeBoxWidget, quantize_box_widget,
+  GTK_TYPE_BUTTON_BOX)
 
 /**
  * Sets up the QuantizeBoxWidget.
@@ -73,18 +74,29 @@ quantize_box_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "quantize-box");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    QuantizeBoxWidget,
-    quick_quantize_btn);
-  gtk_widget_class_bind_template_child (
-    klass,
-    QuantizeBoxWidget,
-    quantize_opts_btn);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, QuantizeBoxWidget, x)
+
+  BIND_CHILD (quick_quantize_btn);
+  BIND_CHILD (quantize_opts_btn);
+
+#undef BIND_CHILD
 }
 
 static void
 quantize_box_widget_init (QuantizeBoxWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+#define SET_TOOLTIP(x) \
+  z_gtk_set_tooltip_for_actionable ( \
+    GTK_ACTIONABLE (self->x), \
+    gtk_widget_get_tooltip_text ( \
+      GTK_WIDGET (self->x)))
+
+  SET_TOOLTIP (quick_quantize_btn);
+  SET_TOOLTIP (quantize_opts_btn);
+
+#undef SET_TOOLTIP
 }
