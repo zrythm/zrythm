@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 
 typedef struct PluginSettings PluginSettings;
+typedef struct UserShortcuts UserShortcuts;
 
 /**
  * @addtogroup project Settings
@@ -97,8 +98,9 @@ typedef struct PluginSettings PluginSettings;
 #define S_UI_GET_ENUM(key) \
   S_GET_ENUM (S_UI, key)
 
-#define S_PLUGIN_SETTINGS \
-  SETTINGS->plugin_settings
+#define S_PLUGIN_SETTINGS SETTINGS->plugin_settings
+
+#define S_USER_SHORTCUTS  SETTINGS->user_shortcuts
 
 typedef struct Settings
 {
@@ -145,6 +147,8 @@ typedef struct Settings
   GSettings * ui_file_browser;
 
   PluginSettings * plugin_settings;
+
+  UserShortcuts * user_shortcuts;
 } Settings;
 
 /**

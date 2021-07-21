@@ -18,6 +18,7 @@
 settings_srcs = [
   'plugin_settings.c',
   'settings.c',
+  'user_shortcuts.c',
   ]
 
 zrythm_srcs += files (settings_srcs)

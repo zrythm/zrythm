@@ -75,6 +75,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "settings/user_shortcuts.h"
 #include "utils/arrays.h"
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
@@ -1305,9 +1306,13 @@ zrythm_app_startup (
   g_idle_add ((GSourceFunc) idle_func, self);
 
   /* install accelerators for each action */
+  const char * shortcut = NULL;
 #define INSTALL_ACCEL(keybind,action) \
+  shortcut = \
+    user_shortcuts_get ( \
+      S_USER_SHORTCUTS, action, keybind); \
   accel_install_primary_action_accelerator ( \
-    keybind, action)
+    shortcut, action)
 
   INSTALL_ACCEL ("F1", "app.manual");
   INSTALL_ACCEL ("<Alt>F4", "app.quit");

@@ -152,7 +152,6 @@ return_new_instance:
       g_critical (
         "Failed to deserialize "
         "CachedPluginDescriptors from %s", path);
-      g_free (err);
       g_free (yaml);
       g_free (path);
       return NULL;
@@ -476,4 +475,6 @@ cached_plugin_descriptors_free (
         plugin_descriptor_free,
         self->blacklisted[i]);
     }
+
+  object_zero_and_free (self);
 }

@@ -30,6 +30,7 @@
 
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
+#include "settings/user_shortcuts.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -131,6 +132,12 @@ settings_new (void)
 
   self->plugin_settings = plugin_settings_new ();
   g_return_val_if_fail (self->plugin_settings, NULL);
+
+  self->user_shortcuts = user_shortcuts_new ();
+  if (!self->user_shortcuts)
+    {
+      g_warning ("failed to parse user shortcuts");
+    }
 
   return self;
 }
