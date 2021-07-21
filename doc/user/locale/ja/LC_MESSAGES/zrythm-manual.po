@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-21 12:28+0100\n"
+"POT-Creation-Date: 2021-07-21 17:33+0100\n"
 "PO-Revision-Date: 2021-06-04 09:16+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -279,18 +279,6 @@ msgstr "付録"
 msgid "Menu Actions"
 msgstr "メニューアクション"
 
-#: ../../appendix/shortcut-keys.rst:6
-msgid "Shortcut Keys"
-msgstr "ショートカット キー"
-
-#: ../../appendix/shortcut-keys.rst:9 ../../configuration/shortcuts.rst:12
-msgid "Global Shortcuts"
-msgstr "一般のショートカットキー"
-
-#: ../../appendix/shortcut-keys.rst:15 ../../configuration/shortcuts.rst:18
-msgid "Editor Shortcuts"
-msgstr "編集画面のショートカット"
-
 #: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr "トラブルシューティング"
@@ -325,6 +313,7 @@ msgstr "トラブルシューティング"
 #: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
 #: ../../tracks/modulator-track.rst:8 ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8 ../../tracks/track-types.rst:85
+#: ../../zrythm-interface/intro.rst:19
 msgid "Todo"
 msgstr "行うべきこと"
 
@@ -510,14 +499,19 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:6
+#, fuzzy
+msgid "Devices"
+msgstr "MIDIデバイス"
+
+#: ../../configuration/device-setup.rst:9
 msgid "Device Setup"
 msgstr "デバイス設定"
 
-#: ../../configuration/device-setup.rst:9
+#: ../../configuration/device-setup.rst:12
 msgid "Connecting MIDI and Audio Devices"
 msgstr "MIDI とオーディオ デバイスの接続"
 
-#: ../../configuration/device-setup.rst:11
+#: ../../configuration/device-setup.rst:14
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
 ":ref:`configuration/preferences:Engine` and make these devices available "
@@ -525,12 +519,12 @@ msgid ""
 "other places."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:21
+#: ../../configuration/device-setup.rst:24
 #: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup.rst:23
+#: ../../configuration/device-setup.rst:26
 #, fuzzy
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
@@ -540,15 +534,76 @@ msgstr ""
 "JACKオーディオとMIDIバックエンドを使用する場合、ZrythmはポートをJACKに公開するので、デバイスはCatiaのようなツールを使用してそこに取り付けることができます。MIDI"
 " の場合、デバイスは 'a2jmidid' を使用して JACK にブリッジする必要がある場合があります。"
 
-#: ../../configuration/device-setup.rst:31
-msgid ""
-"Depending on your setup, MIDI devices might need to be bridged to JACK "
-"using :term:`a2jmidid`."
+#: ../../configuration/device-setup.rst:34
+#, fuzzy
+msgid "ALSA MIDI devices might need to be bridged to JACK using :term:`a2jmidid`."
 msgstr "設定によっては、:term:`a2jmidid` を使用してMIDIデバイスをJACKにブリッジする必要があります。"
 
-#: ../../configuration/device-setup.rst:34
+#: ../../configuration/device-setup.rst:37
 msgid "Zrythm will not remember connections made externally."
 msgstr "Zrythmは、外部で行われた接続を記憶しません。"
+
+#: ../../configuration/device-setup.rst:41
+msgid "MIDI Bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:44
+#, fuzzy
+msgid "Creating Bindings"
+msgstr "リージョンの作成"
+
+#: ../../configuration/device-setup.rst:46
+msgid ""
+"MIDI device controls can be mapped to controls inside Zrythm (on controls"
+" that support it). After enabling a device in the :ref:`preferences "
+"<configuration/preferences:Engine>`, a mapping can be created by right-"
+"clicking on eligible controls and selecting :guilabel:`MIDI learn`."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:57
+msgid "MIDI learn on channel sends"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:59
+msgid ""
+"A window will show up asking you to press a key or move a knob on your "
+"MIDI device."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:65
+msgid "MIDI learn window"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:67
+msgid ""
+"When the mapping is confirmed, the selected control can be controlled "
+"using the MIDI device."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:71
+msgid "Managing Bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:73
+msgid ""
+"Device mappings (bindings) can be found under the :guilabel:`Bindings` "
+"tab in the main panel."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:80
+msgid "MIDI CC bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:82
+#, fuzzy
+msgid ""
+"Bindings can be deleted by right-clicking on a row and selecting "
+":guilabel:`Delete`."
+msgstr "トラックを右クリックして :guilabel:`Delete` を選択すると、トラックを削除することができます。"
+
+#: ../../configuration/device-setup.rst:88
+msgid "Deleting a binding"
+msgstr ""
 
 #: ../../configuration/intro.rst:8
 msgid "Configuration"
@@ -947,6 +1002,14 @@ msgid ""
 msgstr ""
 "元に戻しのショートカットは :kbd:`Control` + :kbd:`Z` で、やり直しのショートカットは :kbd:`Ctrl` + "
 ":kbd:`Shift` + :kbd:`Z` です。"
+
+#: ../../configuration/shortcuts.rst:12
+msgid "Global Shortcuts"
+msgstr "一般のショートカットキー"
+
+#: ../../configuration/shortcuts.rst:18
+msgid "Editor Shortcuts"
+msgstr "編集画面のショートカット"
 
 #: ../../configuration/shortcuts.rst:24
 #, fuzzy
@@ -7754,6 +7817,10 @@ msgstr "ミキシングについては :ref:`mixing` で説明しています。
 msgid "Interface"
 msgstr "インターフェイス"
 
+#: ../../zrythm-interface/intro.rst:19
+msgid "Add main panel section that contains the timeline."
+msgstr ""
+
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr "左パネル"
@@ -8223,12 +8290,8 @@ msgid ""
 "in the bottom left corner."
 msgstr "現在選択されているバックエンドとオプションに関する情報は、左下に表示されます。"
 
-#~ msgid ""
-#~ "Shortcuts (key bindings) can be "
-#~ "overridden by placing a file named "
-#~ ":file:`shortcuts.yaml` under the :term:`Zrythm "
-#~ "user path`."
-#~ msgstr ""
+#~ msgid "Shortcut Keys"
+#~ msgstr "ショートカット キー"
 
 #~ msgid "FLAC - .FLAC"
 #~ msgstr "FLAC - .FLAC"
@@ -8890,9 +8953,6 @@ msgstr "現在選択されているバックエンドとオプションに関す
 #~ " デバイス、デフォルトの Zrythm パス、インターフェイス言語、オーディオ/MIDI "
 #~ "バックエンドの設定が含まれます。"
 
-#~ msgid "MIDI Devices"
-#~ msgstr "MIDIデバイス"
-
 #~ msgid ""
 #~ "These are the discovered devices that"
 #~ " will be auto-connected and ready "
@@ -9012,9 +9072,6 @@ msgstr "現在選択されているバックエンドとオプションに関す
 
 #~ msgid "MIDI notes are created by double-clicking and dragging."
 #~ msgstr "MIDIノートは、ダブルクリックしてドラッグすることで作成されます。"
-
-#~ msgid "Creating Regions"
-#~ msgstr "リージョンの作成"
 
 #~ msgid "Regions are created by double clicking and dragging."
 #~ msgstr "リージョンはダブルクリックとドラッグで作成されます。"

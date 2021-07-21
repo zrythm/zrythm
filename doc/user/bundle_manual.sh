@@ -4,16 +4,20 @@ set -ex
 
 languages="$1"
 
-# directory to render to
-renderdir="$2"
+# doc/user source dir
+srcdir="$2"
 
-# build dir containing the html dirs for each language
-builddir="$3"
+# directory to render to
+renderdir="$3"
+
+# build dir containing the html dirs for each
+# language
+builddir="$4"
 
 # zip file containing the bundled website
-out_file="$4"
+out_file="$5"
 
-private_dir="$5"
+private_dir="$6"
 
 out_filename=`basename "$out_file"`
 
@@ -27,6 +31,9 @@ for lang in $languages ; do
   zip -r $renderdir/$lang/Zrythm-html.zip ./* ; \
   popd
 done
+
+# copy favicon
+cp $srcdir/_static/favicon.ico $renderdir/
 
 # create result zip
 out_filename_noext="${out_filename%.*}"

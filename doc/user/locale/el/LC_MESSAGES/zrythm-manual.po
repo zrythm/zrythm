@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-21 12:28+0100\n"
+"POT-Creation-Date: 2021-07-21 17:33+0100\n"
 "PO-Revision-Date: 2021-05-19 18:32+0000\n"
 "Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
 "Language: el\n"
@@ -266,18 +266,6 @@ msgstr "Παράρτημα"
 msgid "Menu Actions"
 msgstr "Ενέργειες μενού"
 
-#: ../../appendix/shortcut-keys.rst:6
-msgid "Shortcut Keys"
-msgstr "Συντομεύσεις πληκτρολογίου"
-
-#: ../../appendix/shortcut-keys.rst:9 ../../configuration/shortcuts.rst:12
-msgid "Global Shortcuts"
-msgstr "Γενικές συντομεύσεις"
-
-#: ../../appendix/shortcut-keys.rst:15 ../../configuration/shortcuts.rst:18
-msgid "Editor Shortcuts"
-msgstr "Συντομεύσεις επεξεργαστή"
-
 #: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr "Επίλυση προβλημάτων"
@@ -312,6 +300,7 @@ msgstr "Επίλυση προβλημάτων"
 #: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
 #: ../../tracks/modulator-track.rst:8 ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8 ../../tracks/track-types.rst:85
+#: ../../zrythm-interface/intro.rst:19
 msgid "Todo"
 msgstr "Ναγίνει"
 
@@ -517,14 +506,18 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:6
+msgid "Devices"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:9
 msgid "Device Setup"
 msgstr "Στήσιμο περιφερειακών συσκευών"
 
-#: ../../configuration/device-setup.rst:9
+#: ../../configuration/device-setup.rst:12
 msgid "Connecting MIDI and Audio Devices"
 msgstr "Σύνδεση συσκευών MIDI και ήχου"
 
-#: ../../configuration/device-setup.rst:11
+#: ../../configuration/device-setup.rst:14
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
 ":ref:`configuration/preferences:Engine` and make these devices available "
@@ -532,12 +525,12 @@ msgid ""
 "other places."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:21
+#: ../../configuration/device-setup.rst:24
 #: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup.rst:23
+#: ../../configuration/device-setup.rst:26
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
 "so devices can be attached there using a tool like `Qjackctl "
@@ -548,17 +541,80 @@ msgstr ""
 "χρησιμοποιώντας ένα εργαλείο όπως το `Qjackctl "
 "<https://qjackctl.sourceforge.io/>`_."
 
-#: ../../configuration/device-setup.rst:31
-msgid ""
-"Depending on your setup, MIDI devices might need to be bridged to JACK "
-"using :term:`a2jmidid`."
+#: ../../configuration/device-setup.rst:34
+#, fuzzy
+msgid "ALSA MIDI devices might need to be bridged to JACK using :term:`a2jmidid`."
 msgstr ""
 "Ανάλογα το στήσιμό σας, οι συσκευές MIDI ενδέχεται να απαιτούν γεφύρωση "
 "στο JACK χρησιμοποιώντας το :term:`a2jmidid`."
 
-#: ../../configuration/device-setup.rst:34
+#: ../../configuration/device-setup.rst:37
 msgid "Zrythm will not remember connections made externally."
 msgstr "Το Zrythm δεν θα θυμάται συνδέσεις που έγιναν εξωτερικά."
+
+#: ../../configuration/device-setup.rst:41
+msgid "MIDI Bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:44
+#, fuzzy
+msgid "Creating Bindings"
+msgstr "Δημιουργία αντικειμένων"
+
+#: ../../configuration/device-setup.rst:46
+msgid ""
+"MIDI device controls can be mapped to controls inside Zrythm (on controls"
+" that support it). After enabling a device in the :ref:`preferences "
+"<configuration/preferences:Engine>`, a mapping can be created by right-"
+"clicking on eligible controls and selecting :guilabel:`MIDI learn`."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:57
+msgid "MIDI learn on channel sends"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:59
+msgid ""
+"A window will show up asking you to press a key or move a knob on your "
+"MIDI device."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:65
+msgid "MIDI learn window"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:67
+msgid ""
+"When the mapping is confirmed, the selected control can be controlled "
+"using the MIDI device."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:71
+msgid "Managing Bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:73
+msgid ""
+"Device mappings (bindings) can be found under the :guilabel:`Bindings` "
+"tab in the main panel."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:80
+msgid "MIDI CC bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:82
+#, fuzzy
+msgid ""
+"Bindings can be deleted by right-clicking on a row and selecting "
+":guilabel:`Delete`."
+msgstr ""
+"Τα κομμάτια μπορούν να διαγραφούν κάνοντας δεξί κλικ πάνω τους και "
+"επιλέγοντας :zbutton:`Delete`."
+
+#: ../../configuration/device-setup.rst:88
+msgid "Deleting a binding"
+msgstr ""
 
 #: ../../configuration/intro.rst:8
 msgid "Configuration"
@@ -983,6 +1039,14 @@ msgid ""
 msgstr ""
 "Οι συντομεύσεις για την αναίρεση και την επαναφορά είναι :kbd:`Control-z`"
 " και :kbd:`Control-Shift-z`."
+
+#: ../../configuration/shortcuts.rst:12
+msgid "Global Shortcuts"
+msgstr "Γενικές συντομεύσεις"
+
+#: ../../configuration/shortcuts.rst:18
+msgid "Editor Shortcuts"
+msgstr "Συντομεύσεις επεξεργαστή"
 
 #: ../../configuration/shortcuts.rst:24
 #, fuzzy
@@ -8792,6 +8856,10 @@ msgstr "Η μίξη καλύπτεται στη :ref:`mixing`."
 msgid "Interface"
 msgstr "Διεπαφή"
 
+#: ../../zrythm-interface/intro.rst:19
+msgid "Add main panel section that contains the timeline."
+msgstr ""
+
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr "Αριστερό πάνελ"
@@ -9308,12 +9376,8 @@ msgstr ""
 "Οι πληροφορίες σχετικά με το τρέχον επιλεγόμενο παρασκήνιο και τις "
 "ρυθμίσεις είναι ορατές στην κατώ αριστερή γωνία."
 
-#~ msgid ""
-#~ "Shortcuts (key bindings) can be "
-#~ "overridden by placing a file named "
-#~ ":file:`shortcuts.yaml` under the :term:`Zrythm "
-#~ "user path`."
-#~ msgstr ""
+#~ msgid "Shortcut Keys"
+#~ msgstr "Συντομεύσεις πληκτρολογίου"
 
 #~ msgid "FLAC - .FLAC"
 #~ msgstr "FLAC - .FLAC"

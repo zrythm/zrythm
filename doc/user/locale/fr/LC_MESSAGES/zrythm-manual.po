@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-21 12:28+0100\n"
+"POT-Creation-Date: 2021-07-21 17:33+0100\n"
 "PO-Revision-Date: 2021-05-02 17:32+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -288,18 +288,6 @@ msgstr "Annexe"
 msgid "Menu Actions"
 msgstr "Actions du menu"
 
-#: ../../appendix/shortcut-keys.rst:6
-msgid "Shortcut Keys"
-msgstr "Raccourcis clavier"
-
-#: ../../appendix/shortcut-keys.rst:9 ../../configuration/shortcuts.rst:12
-msgid "Global Shortcuts"
-msgstr "Raccourcis globaux"
-
-#: ../../appendix/shortcut-keys.rst:15 ../../configuration/shortcuts.rst:18
-msgid "Editor Shortcuts"
-msgstr "Éditeur de raccourcis"
-
 #: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr "Résolution de problèmes"
@@ -334,6 +322,7 @@ msgstr "Résolution de problèmes"
 #: ../../tracks/inspector-page.rst:170 ../../tracks/inspector-page.rst:175
 #: ../../tracks/modulator-track.rst:8 ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8 ../../tracks/track-types.rst:85
+#: ../../zrythm-interface/intro.rst:19
 msgid "Todo"
 msgstr "Àfaire"
 
@@ -535,14 +524,19 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:6
+#, fuzzy
+msgid "Devices"
+msgstr "Périphériques MIDI"
+
+#: ../../configuration/device-setup.rst:9
 msgid "Device Setup"
 msgstr "Configuration du périphérique"
 
-#: ../../configuration/device-setup.rst:9
+#: ../../configuration/device-setup.rst:12
 msgid "Connecting MIDI and Audio Devices"
 msgstr "Connecter les périphériques MIDI et audio"
 
-#: ../../configuration/device-setup.rst:11
+#: ../../configuration/device-setup.rst:14
 msgid ""
 "Zrythm will auto-connect to the devices specified in "
 ":ref:`configuration/preferences:Engine` and make these devices available "
@@ -550,12 +544,12 @@ msgid ""
 "other places."
 msgstr ""
 
-#: ../../configuration/device-setup.rst:21
+#: ../../configuration/device-setup.rst:24
 #: ../../getting-started/system-requirements.rst:35 ../../glossary/intro.rst:73
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup.rst:23
+#: ../../configuration/device-setup.rst:26
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
 "so devices can be attached there using a tool like `Qjackctl "
@@ -567,16 +561,79 @@ msgstr ""
 "MIDI, les périphériques peuvent avoir besoin d'être pontés à JACK en "
 "utilisant ``a2jmidid``."
 
-#: ../../configuration/device-setup.rst:31
-msgid ""
-"Depending on your setup, MIDI devices might need to be bridged to JACK "
-"using :term:`a2jmidid`."
+#: ../../configuration/device-setup.rst:34
+#, fuzzy
+msgid "ALSA MIDI devices might need to be bridged to JACK using :term:`a2jmidid`."
 msgstr ""
 "En fonction de votre configuration, les appareils midi peuvent devoir "
 "être pontés à JACK en utilisant :term:`a2jmidid`."
 
-#: ../../configuration/device-setup.rst:34
+#: ../../configuration/device-setup.rst:37
 msgid "Zrythm will not remember connections made externally."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:41
+msgid "MIDI Bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:44
+#, fuzzy
+msgid "Creating Bindings"
+msgstr "Créer des régions"
+
+#: ../../configuration/device-setup.rst:46
+msgid ""
+"MIDI device controls can be mapped to controls inside Zrythm (on controls"
+" that support it). After enabling a device in the :ref:`preferences "
+"<configuration/preferences:Engine>`, a mapping can be created by right-"
+"clicking on eligible controls and selecting :guilabel:`MIDI learn`."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:57
+msgid "MIDI learn on channel sends"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:59
+msgid ""
+"A window will show up asking you to press a key or move a knob on your "
+"MIDI device."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:65
+msgid "MIDI learn window"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:67
+msgid ""
+"When the mapping is confirmed, the selected control can be controlled "
+"using the MIDI device."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:71
+msgid "Managing Bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:73
+msgid ""
+"Device mappings (bindings) can be found under the :guilabel:`Bindings` "
+"tab in the main panel."
+msgstr ""
+
+#: ../../configuration/device-setup.rst:80
+msgid "MIDI CC bindings"
+msgstr ""
+
+#: ../../configuration/device-setup.rst:82
+#, fuzzy
+msgid ""
+"Bindings can be deleted by right-clicking on a row and selecting "
+":guilabel:`Delete`."
+msgstr ""
+"Les pistes peuvent être effacées en cliquant avec le bouton droit de la "
+"souris et en sélectionnant :zbutton:`Effacer`."
+
+#: ../../configuration/device-setup.rst:88
+msgid "Deleting a binding"
 msgstr ""
 
 #: ../../configuration/intro.rst:8
@@ -1030,6 +1087,14 @@ msgstr ""
 ":zbutton:`Z` pour Refaire.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+
+#: ../../configuration/shortcuts.rst:12
+msgid "Global Shortcuts"
+msgstr "Raccourcis globaux"
+
+#: ../../configuration/shortcuts.rst:18
+msgid "Editor Shortcuts"
+msgstr "Éditeur de raccourcis"
 
 #: ../../configuration/shortcuts.rst:24
 #, fuzzy
@@ -9208,6 +9273,10 @@ msgstr ""
 msgid "Interface"
 msgstr "Interface"
 
+#: ../../zrythm-interface/intro.rst:19
+msgid "Add main panel section that contains the timeline."
+msgstr ""
+
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
 msgstr ""
@@ -9721,12 +9790,8 @@ msgid ""
 "in the bottom left corner."
 msgstr ""
 
-#~ msgid ""
-#~ "Shortcuts (key bindings) can be "
-#~ "overridden by placing a file named "
-#~ ":file:`shortcuts.yaml` under the :term:`Zrythm "
-#~ "user path`."
-#~ msgstr ""
+#~ msgid "Shortcut Keys"
+#~ msgstr "Raccourcis clavier"
 
 #~ msgid "FLAC - .FLAC"
 #~ msgstr "FLAC - .FLAC"
@@ -10694,9 +10759,6 @@ msgstr ""
 #~ "défaut de Zrythm, de la langue de"
 #~ " l'interface et des systèmes audio/MIDI."
 
-#~ msgid "MIDI Devices"
-#~ msgstr "Périphériques MIDI"
-
 #~ msgid ""
 #~ "These are the discovered devices that"
 #~ " will be auto-connected and ready "
@@ -11268,9 +11330,6 @@ msgstr ""
 
 #~ msgid "MIDI notes are created by double-clicking and dragging."
 #~ msgstr "Les notes MIDI sont créées par un double-clic et un glissement."
-
-#~ msgid "Creating Regions"
-#~ msgstr "Créer des régions"
 
 #~ msgid "Regions are created by double clicking and dragging."
 #~ msgstr "Les régions sont créées par un double clic et un glissement."

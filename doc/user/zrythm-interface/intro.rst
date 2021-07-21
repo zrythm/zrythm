@@ -15,3 +15,6 @@ Interface
    bottom-panel
    transport-bar
    right-panel
+
+.. todo:: Add main panel section that contains the
+   timeline.

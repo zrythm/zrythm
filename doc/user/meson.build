@@ -263,6 +263,7 @@ bundle_manual_target = custom_target (
     ],
   command: [
     bundle_manual_sh, locales_str,
+    meson.current_source_dir (),
     meson.current_build_dir () / '_rendered',
     sphinx_builddir, '@OUTPUT@',
     '@PRIVATE_DIR@',
