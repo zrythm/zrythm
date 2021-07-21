@@ -34,31 +34,29 @@
 
 #define TOOLBOX_WIDGET_TYPE \
   (toolbox_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ToolboxWidget,
-                      toolbox_widget,
-                      Z,
-                      TOOLBOX_WIDGET,
-                      GtkButtonBox)
+G_DECLARE_FINAL_TYPE (
+  ToolboxWidget, toolbox_widget,
+  Z, TOOLBOX_WIDGET, GtkButtonBox)
 
 #define MW_TOOLBOX MW_HOME_TOOLBAR->toolbox
 
 typedef struct _ToolboxWidget
 {
-  GtkButtonBox          parent_instance;
-  GtkToggleButton *     select_mode;
-  GtkToggleButton *     edit_mode;
-  GtkToggleButton *     cut_mode;
-  GtkToggleButton *     erase_mode;
-  GtkToggleButton *     ramp_mode;
-  GtkToggleButton *     audition_mode;
-  GtkImage *            select_img;
+  GtkButtonBox      parent_instance;
+  GtkToggleButton * select_mode;
+  GtkToggleButton * edit_mode;
+  GtkToggleButton * cut_mode;
+  GtkToggleButton * erase_mode;
+  GtkToggleButton * ramp_mode;
+  GtkToggleButton * audition_mode;
+  GtkImage *        select_img;
 
-  gulong                 select_handler_id;
-  gulong                 edit_handler_id;
-  gulong                 cut_handler_id;
-  gulong                 erase_handler_id;
-  gulong                 ramp_handler_id;
-  gulong                 audition_handler_id;
+  gulong            select_handler_id;
+  gulong            edit_handler_id;
+  gulong            cut_handler_id;
+  gulong            erase_handler_id;
+  gulong            ramp_handler_id;
+  gulong            audition_handler_id;
 } ToolboxWidget;
 
 /**

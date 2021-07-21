@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,17 +30,19 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/toolbox.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (ToolboxWidget,
-               toolbox_widget,
-               GTK_TYPE_BUTTON_BOX)
+G_DEFINE_TYPE (
+  ToolboxWidget, toolbox_widget,
+  GTK_TYPE_BUTTON_BOX)
 
 static int
-on_motion (GtkWidget *      widget,
-           GdkEventMotion * event,
-           GtkToggleButton * self)
+on_motion (
+  GtkWidget *       widget,
+  GdkEventMotion *  event,
+  GtkToggleButton * self)
 {
   if (event->type == GDK_ENTER_NOTIFY)
     {
@@ -240,4 +242,23 @@ toolbox_widget_init (ToolboxWidget * self)
   CONNECT_NOTIFY_SIGNALS (audition);
 
 #undef CONNECT_NOTIFY_SIGNALS
+
+  char * tooltip_text;
+#define SET_TOOLTIP(x,action) \
+  tooltip_text = \
+    gtk_widget_get_tooltip_text ( \
+      GTK_WIDGET (self->x##_mode)); \
+  z_gtk_widget_set_tooltip_for_action ( \
+    GTK_WIDGET (self->x##_mode), action, \
+    tooltip_text); \
+  g_free (tooltip_text)
+
+  SET_TOOLTIP (select, "app.select-mode");
+  SET_TOOLTIP (edit, "app.edit-mode");
+  SET_TOOLTIP (cut, "app.cut-mode");
+  SET_TOOLTIP (erase, "app.eraser-mode");
+  SET_TOOLTIP (ramp, "app.ramp-mode");
+  SET_TOOLTIP (audition, "app.audition-mode");
+
+#undef SET_TOOLTIP
 }

@@ -307,6 +307,34 @@ z_gtk_get_label_from_menu_item (
   GtkMenuItem * mi);
 
 /**
+ * Gets the tooltip for the given action on the
+ * given widget.
+ *
+ * If the action is valid, an orange text showing
+ * the accelerator will be added to the tooltip.
+ *
+ * @return A new string that must be free'd with
+ *   g_free().
+ */
+char *
+z_gtk_get_tooltip_for_action (
+  const char * detailed_action,
+  const char * tooltip);
+
+/**
+ * Sets the tooltip for the given action on the
+ * given widget.
+ *
+ * If the action is valid, an orange text showing
+ * the accelerator will be added to the tooltip.
+ */
+void
+z_gtk_widget_set_tooltip_for_action (
+  GtkWidget *  widget,
+  const char * detailed_action,
+  const char * tooltip);
+
+/**
  * Sets the tooltip and finds the accel keys and
  * appends them to the tooltip in small text.
  */
