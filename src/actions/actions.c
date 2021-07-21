@@ -741,9 +741,10 @@ activate_open (GSimpleAction *action,
 }
 
 void
-activate_save (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_save (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
 #ifdef TRIAL_VER
   ui_show_error_message (

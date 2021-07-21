@@ -239,10 +239,14 @@ on_delete_event (
         {
         case GTK_RESPONSE_ACCEPT:
           /* save project */
+#ifdef TRIAL_VER
+          g_message ("skipping save project...");
+#else
           g_message ("saving project...");
           project_save (
             PROJECT, PROJECT->dir, F_NOT_BACKUP,
             ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC);
+#endif
           break;
         case GTK_RESPONSE_REJECT:
           /* no action needed - just quit */
