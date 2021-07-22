@@ -1136,8 +1136,10 @@ draw_audio_part (
       break;
     }
 
+#if 0
   g_message ("current detail: %s",
     ui_detail_str[detail]);
+#endif
 
   long loop_end_frames =
     math_round_double_to_long (
