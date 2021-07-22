@@ -2333,8 +2333,11 @@ track_disconnect (
     }
   free (ports);
 
-  /* disconnect from folders */
-  track_remove_from_folder_parents (self);
+  if (self->is_project)
+    {
+      /* disconnect from folders */
+      track_remove_from_folder_parents (self);
+    }
 
   if (recalc_graph)
     {
