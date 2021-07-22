@@ -25,6 +25,7 @@
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"
 #include "audio/control_port.h"
+#include "audio/foldable_track.h"
 #include "audio/master_track.h"
 #include "audio/midi_event.h"
 #include "audio/midi_note.h"
@@ -2512,8 +2513,6 @@ _test_move_inside (
    */
 
   /* move folder inside itself */
-  tracklist_print_tracks (TRACKLIST);
-
   track_select (
     folder, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
@@ -2521,6 +2520,19 @@ _test_move_inside (
     TRACKLIST, folder,
     TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
+
+  /* move chanel-less track into folder and get
+   * status */
+  track_select (
+    P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE,
+    GDK_ACTION_MOVE);
+  foldable_track_is_status (
+    folder, FOLDABLE_TRACK_MIXER_STATUS_MUTED);
+  undo_manager_undo (UNDO_MANAGER);
 
   test_helper_zrythm_cleanup ();
 }

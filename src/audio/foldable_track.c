@@ -54,6 +54,7 @@ foldable_track_is_status (
   g_return_val_if_fail (
     self->is_project, false);
   bool all_soloed = self->size > 1;
+  bool has_channel_tracks = false;
   for (int i = 1; i < self->size; i++)
     {
       int pos = self->pos + i;
@@ -61,6 +62,12 @@ foldable_track_is_status (
         tracklist_get_track (TRACKLIST, pos);
       g_return_val_if_fail (
         IS_TRACK_AND_NONNULL (child), false);
+
+      if (track_type_has_channel (child->type))
+        has_channel_tracks = true;
+      else
+        continue;
+
       switch (status)
         {
         case FOLDABLE_TRACK_MIXER_STATUS_MUTED:
@@ -81,7 +88,7 @@ foldable_track_is_status (
           break;
         }
     }
-  return all_soloed;
+  return has_channel_tracks && all_soloed;
 }
 
 /**
