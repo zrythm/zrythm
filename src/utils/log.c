@@ -706,7 +706,12 @@ log_idle_cb (
               !string_contains_substr (
                 ev->message,
                 "assertion 'size >= 0' failed in "
-                "GtkScrollbar"))
+                "GtkScrollbar") &&
+              !string_contains_substr (
+                ev->message,
+                "assertion 'size >= 0' failed in "
+                "GtkNotebook")
+              )
             {
               self->last_popup_time = time_now;
 
