@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.21.0.13] - 2021-07-22
+### Added
+- Add accelerators to toolbox tooltips
+
+### Changed
+- Disable saving in save dialog shown when closing a project on trial version
+- Silence debug messages printed when drawing audio regions
+
+### Fixed
+- Silence non-fatal error when detaching panels on some systems
+- Fix error when dragging folder track into itself
+- Fix dragging markers track inside folder track causing a crash
+- Fix crash when deleting a track inside a folder track
+- Fix crash on MacOS when loading a project
+- Fix error when closing project containing folder tracks
+- Fix error when loading project where an audio region is selected
+
 ## [1.0.0-alpha.21.0.1] - 2021-07-21
 ### Added
 - Add monitor toggle to audio tracks
