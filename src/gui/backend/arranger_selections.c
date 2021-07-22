@@ -76,6 +76,22 @@ arranger_selections_init_loaded (
       arranger_object_set_magic (obj); \
       if (project) \
         { \
+          /* throws an error otherwise */ \
+          if (obj->type == \
+                ARRANGER_OBJECT_TYPE_REGION) \
+            { \
+              ZRegion * r = (ZRegion *) obj; \
+              if (r->id.type == \
+                    REGION_TYPE_AUDIO) \
+                { \
+                  r->read_from_pool = true; \
+                  AudioClip * clip = \
+                    audio_region_get_clip (r); \
+                  g_return_if_fail (clip); \
+                  r->last_clip_change = \
+                    g_get_monotonic_time (); \
+                } \
+            } \
           arranger_object_update_frames (obj); \
           sel->sc##s[i] = \
             (cc *) \

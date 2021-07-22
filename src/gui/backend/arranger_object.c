@@ -1166,6 +1166,7 @@ arranger_object_update_frames (
             region_timeline_frames_to_local (
               r, tl_frames, F_NORMALIZE);
           clip = audio_region_get_clip (r);
+          g_return_if_fail (clip);
           if (local_frames >= clip->num_frames)
             {
             }

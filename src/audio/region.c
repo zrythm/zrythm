@@ -1229,11 +1229,6 @@ bool
 region_get_musical_mode (
   ZRegion * self)
 {
-  if (ZRYTHM_TESTING)
-    {
-      return true;
-    }
-
   /* off for v1 */
   return false;
 

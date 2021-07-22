@@ -151,6 +151,42 @@ test_change_samplerate (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_load_project_with_selected_audio_region (void)
+{
+  test_helper_zrythm_init ();
+
+  Position pos;
+  position_set_to_bar (&pos, 2);
+
+  /* create audio track with region */
+  char * filepath =
+    g_build_filename (
+      TESTS_SRCDIR,
+      "test_start_with_signal.mp3", NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (filepath);
+  int num_tracks_before = TRACKLIST->num_tracks;
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      TRACK_TYPE_AUDIO, NULL, file,
+      num_tracks_before, &pos, 1, -1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* select region */
+  Track * track =
+    TRACKLIST->tracks[num_tracks_before];
+  ZRegion * r =
+    track->lanes[0]->regions[0];
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+
+  test_project_save_and_reload ();
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -158,6 +194,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/audio_region/"
 
+  g_test_add_func (
+    TEST_PREFIX "test load project with selected audio region",
+    (GTestFunc) test_load_project_with_selected_audio_region);
   g_test_add_func (
     TEST_PREFIX "test change samplerate",
     (GTestFunc) test_change_samplerate);
