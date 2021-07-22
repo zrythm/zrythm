@@ -1205,6 +1205,27 @@ track_get_direct_folder_parent (
 }
 
 /**
+ * Remove the track from all folders.
+ *
+ * Used when deleting tracks.
+ */
+void
+track_remove_from_folder_parents (
+  Track * self)
+{
+  GPtrArray * parents = g_ptr_array_new ();
+  track_add_folder_parents (
+    self, parents, false);
+  for (size_t j = 0; j < parents->len; j++)
+    {
+      Track * parent =
+        g_ptr_array_index (parents, j);
+      parent->size--;
+    }
+  g_ptr_array_unref (parents);
+}
+
+/**
  * Returns if the given TrackType can host the
  * given RegionType.
  */
@@ -2311,6 +2332,9 @@ track_disconnect (
       port_disconnect_all (port);
     }
   free (ports);
+
+  /* disconnect from folders */
+  track_remove_from_folder_parents (self);
 
   if (recalc_graph)
     {

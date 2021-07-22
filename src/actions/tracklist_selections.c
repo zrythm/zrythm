@@ -90,6 +90,29 @@ copy_track_positions (
 }
 
 /**
+ * Resets the foldable track sizes when undoing
+ * an action.
+ *
+ * @note Must only be used during undo.
+ */
+static void
+reset_foldable_track_sizes (
+  TracklistSelectionsAction * self)
+{
+  for (int i = 0;
+       i < self->foldable_tls_before->
+         num_tracks;
+       i++)
+    {
+      Track * own_tr =
+        self->foldable_tls_before->tracks[i];
+      Track * prj_tr =
+        track_find_by_name (own_tr->name);
+      prj_tr->size = own_tr->size;
+    }
+}
+
+/**
  * Validates the newly-created action.
  */
 static bool
@@ -894,6 +917,9 @@ do_or_undo_create_or_delete (
 
               track_validate (orig_track);
             }
+
+          /* reset foldable track sizes */
+          reset_foldable_track_sizes (self);
         } /* if delete undo */
 
       EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
@@ -1472,17 +1498,7 @@ do_or_undo_move_or_copy (
         }
 
       /* reset foldable track sizes */
-      for (int i = 0;
-           i < self->foldable_tls_before->
-             num_tracks;
-           i++)
-        {
-          Track * own_tr =
-            self->foldable_tls_before->tracks[i];
-          Track * prj_tr =
-            track_find_by_name (own_tr->name);
-          prj_tr->size = own_tr->size;
-        }
+      reset_foldable_track_sizes (self);
     }
 
   if ((pin && _do) ||

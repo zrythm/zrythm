@@ -1023,6 +1023,15 @@ track_get_direct_folder_parent (
   Track * track);
 
 /**
+ * Remove the track from all folders.
+ *
+ * Used when deleting tracks.
+ */
+void
+track_remove_from_folder_parents (
+  Track * self);
+
+/**
  * Returns the region at the given position, or
  * NULL.
  *

@@ -2534,6 +2534,35 @@ _test_move_inside (
     folder, FOLDABLE_TRACK_MIXER_STATUS_MUTED);
   undo_manager_undo (UNDO_MANAGER);
 
+  /* delete a track inside the folder */
+  track_select (
+    audio_fx, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    tracklist_selections_action_new_delete (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 7);
+  g_assert_cmpint (folder2->pos, ==, 8);
+  g_assert_cmpint (folder2->size, ==, 2);
+  g_assert_cmpint (audio_fx2->pos, ==, 9);
+
+  undo_manager_undo (UNDO_MANAGER);
+  audio_fx = TRACKLIST->tracks[9];
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 7);
+  g_assert_cmpint (folder2->pos, ==, 8);
+  g_assert_cmpint (folder2->size, ==, 3);
+  g_assert_cmpint (audio_fx->pos, ==, 9);
+  g_assert_cmpint (audio_fx2->pos, ==, 10);
+
   test_helper_zrythm_cleanup ();
 }
 
