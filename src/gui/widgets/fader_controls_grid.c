@@ -282,6 +282,7 @@ fader_controls_grid_widget_init (
 {
   g_type_ensure (FADER_WIDGET_TYPE);
   g_type_ensure (FADER_BUTTONS_WIDGET_TYPE);
+  g_type_ensure (METER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
