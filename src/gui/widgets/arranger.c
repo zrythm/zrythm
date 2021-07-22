@@ -4278,12 +4278,18 @@ on_drag_end_timeline (
             position_snap_simple (
               &cut_pos, self->snap_grid);
           }
-        UndoableAction * ua =
-          arranger_selections_action_new_split (
-            (ArrangerSelections *) TL_SELECTIONS,
-            &cut_pos);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        if (arranger_selections_can_split_at_pos (
+              (ArrangerSelections *) TL_SELECTIONS,
+              &cut_pos))
+          {
+            UndoableAction * ua =
+              arranger_selections_action_new_split (
+                (ArrangerSelections *)
+                TL_SELECTIONS,
+                &cut_pos);
+            undo_manager_perform (
+              UNDO_MANAGER, ua);
+          }
       }
       break;
     case UI_OVERLAY_ACTION_RENAMING:

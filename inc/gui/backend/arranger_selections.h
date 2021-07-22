@@ -75,6 +75,8 @@ typedef struct ArrangerSelections
 static const cyaml_strval_t
 arranger_selections_type_strings[] =
 {
+  { "None",
+    ARRANGER_SELECTIONS_TYPE_NONE    },
   { "Chord",
     ARRANGER_SELECTIONS_TYPE_CHORD    },
   { "Timeline",
@@ -231,7 +233,7 @@ arranger_selections_get_end_pos (
 NONNULL
 int
 arranger_selections_get_num_objects (
-  ArrangerSelections * self);
+  const ArrangerSelections * self);
 
 /**
  * Gets first object.
@@ -416,6 +418,12 @@ bool
 arranger_selections_contains_clip (
   ArrangerSelections * self,
   AudioClip *          clip);
+
+NONNULL
+bool
+arranger_selections_can_split_at_pos (
+  const ArrangerSelections * self,
+  const Position *           pos);
 
 NONNULL
 ArrangerSelections *

@@ -1518,7 +1518,7 @@ arranger_selections_clear (
  */
 int
 arranger_selections_get_num_objects (
-  ArrangerSelections * self)
+  const ArrangerSelections * self)
 {
   TimelineSelections * ts;
   ChordSelections * cs;
@@ -2509,6 +2509,81 @@ arranger_selections_contains_clip (
     }
 
   return false;
+}
+
+bool
+arranger_selections_can_split_at_pos (
+  const ArrangerSelections * self,
+  const Position *           pos)
+{
+  int num_objs =
+    arranger_selections_get_num_objects (self);
+  TimelineSelections * ts;
+  MidiArrangerSelections * mas;
+  bool can_split = true;
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      ts = (TimelineSelections *) self;
+      if (num_objs != ts->num_regions)
+        {
+          can_split = false;
+          goto return_can_split;
+        }
+      for (int i = 0; i < ts->num_regions; i++)
+        {
+          ZRegion * r = ts->regions[i];
+          ArrangerObject * r_obj =
+            (ArrangerObject *) r;
+
+          /* don't allow splitting at edges */
+          if (position_is_before_or_equal (
+                pos, &r_obj->pos) ||
+              position_is_after_or_equal (
+                pos, &r_obj->end_pos))
+            {
+              can_split = false;
+              goto return_can_split;
+            }
+        }
+      break;
+    case TYPE (MIDI):
+      mas = (MidiArrangerSelections *) self;
+      for (int i = 0; i < mas->num_midi_notes; i++)
+        {
+          MidiNote * mn = mas->midi_notes[i];
+          ArrangerObject * mn_obj =
+            (ArrangerObject *) mn;
+
+          /* don't allow splitting at edges */
+          if (position_is_before_or_equal (
+                pos, &mn_obj->pos) ||
+              position_is_after_or_equal (
+                pos, &mn_obj->end_pos))
+            {
+              can_split = false;
+              goto return_can_split;
+            }
+        }
+      break;
+    default:
+      can_split = false;
+      break;
+    }
+
+return_can_split:
+  if (!can_split)
+    {
+      char pos_str[400];
+      position_to_string (pos, pos_str);
+      g_message (
+        "cannot split %s selections at %s",
+        arranger_selections_type_strings[
+          self->type].str,
+        pos_str);
+    }
+
+  return can_split;
 }
 
 /**
