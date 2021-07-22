@@ -1523,9 +1523,24 @@ tracklist_handle_move_or_copy (
     {
       if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
-          ua =
-            tracklist_selections_action_new_move_inside (
-              TRACKLIST_SELECTIONS, this_track->pos);
+          if (tracklist_selections_contains_track (
+                TRACKLIST_SELECTIONS, this_track))
+            {
+              if (!ZRYTHM_TESTING)
+                {
+                  ui_show_error_message (
+                    MAIN_WINDOW,
+                    _("Cannot drag folder into "
+                    "itself"));
+                }
+              return;
+            }
+          else
+            {
+              ua =
+                tracklist_selections_action_new_move_inside (
+                  TRACKLIST_SELECTIONS, this_track->pos);
+            }
         }
       else
         {
@@ -1560,7 +1575,8 @@ tracklist_handle_move_or_copy (
           ua =
             tracklist_selections_action_new_move (
               tls, pos);
-          ua->num_actions = num_actions;
+          if (ua)
+            ua->num_actions = num_actions;
         }
     }
   g_return_if_fail (ua);

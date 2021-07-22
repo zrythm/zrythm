@@ -510,7 +510,7 @@ tracklist_selections_contains_enabled_track (
   return false;
 }
 
-int
+bool
 tracklist_selections_contains_track (
   TracklistSelections * self,
   Track *               track)
@@ -518,6 +518,21 @@ tracklist_selections_contains_track (
   return
     array_contains (
       self->tracks, self->num_tracks, track);
+}
+
+bool
+tracklist_selections_contains_track_index (
+  TracklistSelections * self,
+  int                   track_idx)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      if (track->pos == track_idx)
+        return true;
+    }
+
+  return false;
 }
 
 /**

@@ -2476,7 +2476,6 @@ _test_move_inside (
   g_assert_cmpint (audio_fx->pos, ==, 10);
 
   undo_manager_undo (UNDO_MANAGER);
-  tracklist_print_tracks (TRACKLIST);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 4);
   g_assert_cmpint (audio_fx2->pos, ==, 6);
@@ -2497,6 +2496,31 @@ _test_move_inside (
   g_assert_cmpint (folder2->size, ==, 3);
   g_assert_cmpint (audio_fx->pos, ==, 9);
   g_assert_cmpint (audio_fx2->pos, ==, 10);
+
+  /*
+   * [00] Chords
+   * [01] Tempo
+   * [02] Modulators
+   * [03] Markers
+   * [04] Master
+   * [05] Audio Group Track
+   * [06] -- Folder Track
+   * [07] ---- LSP Compressor Stereo
+   * [08] Folder Track 1
+   * [09] -- Audio FX Track
+   * [10] -- Audio FX Track 1
+   */
+
+  /* move folder inside itself */
+  tracklist_print_tracks (TRACKLIST);
+
+  track_select (
+    folder, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE,
+    GDK_ACTION_MOVE);
 
   test_helper_zrythm_cleanup ();
 }

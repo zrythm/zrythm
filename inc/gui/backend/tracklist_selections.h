@@ -213,10 +213,15 @@ tracklist_selections_contains_enabled_track (
 /**
  * Returns if the Track is selected or not.
  */
-int
+bool
 tracklist_selections_contains_track (
   TracklistSelections * self,
   Track *               track);
+
+bool
+tracklist_selections_contains_track_index (
+  TracklistSelections * self,
+  int                   track_idx);
 
 void
 tracklist_selections_remove_track (

@@ -45,6 +45,9 @@
 
 #include <glib/gi18n.h>
 
+#define TYPE_IS(x) \
+  (self->type == TRACKLIST_SELECTIONS_ACTION_##x)
+
 void
 tracklist_selections_action_init_loaded (
   TracklistSelectionsAction * self)
@@ -93,8 +96,7 @@ static bool
 validate (
   TracklistSelectionsAction * self)
 {
-  if (self->type ==
-        TRACKLIST_SELECTIONS_ACTION_DELETE)
+  if (TYPE_IS (DELETE))
     {
       if (!self->tls_before ||
           tracklist_selections_contains_undeletable_track (
@@ -102,6 +104,13 @@ validate (
         {
           return false;
         }
+    }
+  else if (TYPE_IS (MOVE_INSIDE))
+    {
+      if (!self->tls_before ||
+          tracklist_selections_contains_track_index (
+             self->tls_before, self->track_pos))
+        return false;
     }
 
   return true;
@@ -406,7 +415,14 @@ tracklist_selections_action_new (
       MAX (1, (size_t) self->num_tracks),
       sizeof (GdkRGBA));
 
-  g_return_val_if_fail (validate (self), NULL);
+  if (!validate (self))
+    {
+      g_critical (
+        "failed to validate tracklist "
+        "selections action");
+      tracklist_selections_action_free (self);
+      return NULL;
+    }
 
   return ua;
 }
