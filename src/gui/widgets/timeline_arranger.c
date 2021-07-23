@@ -1321,7 +1321,8 @@ timeline_arranger_widget_show_context_menu (
                 self, menu, obj);
             }
 
-          if (r->id.type == REGION_TYPE_MIDI)
+          if (r->id.type == REGION_TYPE_MIDI ||
+              r->id.type == REGION_TYPE_AUDIO)
             {
               menuitem =
                 gtk_menu_item_new_with_label (
