@@ -30,6 +30,12 @@ current configuration, use
 
     meson compile --clean -C build
 
+*Hint: If your distro's meson package is too old,
+you can either install meson from
+[pip](https://pypi.org/project/pip/) or run
+`meson.py` directly from
+[meson's source code](https://github.com/mesonbuild/meson).*
+
 ## Optimization
 
 The default build type is `debugoptmized`, which
