@@ -351,8 +351,6 @@ graph_node_process (
   /*g_message (*/
     /*"processing %s", graph_node_get_name (node));*/
 
-  nframes_t num_processable_frames = 0;
-
   /* skip BPM during cycle (already processed in
    * router_start_cycle()) */
   if (G_UNLIKELY (
@@ -413,13 +411,13 @@ graph_node_process (
     }
 
   /* split at loop points */
-  while (
-    (num_processable_frames =
-      MIN (
-        transport_is_loop_point_met (
-          TRANSPORT, time_nfo.g_start_frames,
-          time_nfo.nframes),
-        time_nfo.nframes)))
+  for (nframes_t num_processable_frames = 0;
+       (num_processable_frames =
+          MIN (
+            transport_is_loop_point_met (
+              TRANSPORT, time_nfo.g_start_frames,
+              time_nfo.nframes),
+            time_nfo.nframes)) != 0;)
     {
 #if 0
       g_message (
