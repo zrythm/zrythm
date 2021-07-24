@@ -48,6 +48,7 @@
 
 #include <pthread.h>
 
+#include "audio/engine.h"
 #include "utils/types.h"
 
 #include "zix/sem.h"
@@ -64,6 +65,8 @@ typedef struct Fader Fader;
 typedef struct Track Track;
 typedef struct Plugin Plugin;
 typedef struct Position Position;
+typedef struct EngineProcessTimeInfo
+  EngineProcessTimeInfo;
 
 #ifdef HAVE_JACK
 #include "weak_libjack.h"
@@ -81,8 +84,8 @@ typedef struct Router
 {
   Graph * graph;
 
-  /** Number of samples to process in this cycle. */
-  nframes_t   nsamples;
+  /** Time info for this processing cycle. */
+  EngineProcessTimeInfo time_nfo;
 
   /** Stored for the currently processing cycle */
   nframes_t   max_route_playback_latency;
@@ -91,9 +94,6 @@ typedef struct Router
    * of all routes - remaining latency from
    * engine). */
   nframes_t   global_offset;
-
-  /** Offset in the current cycle. */
-  nframes_t   local_offset;
 
   /** Used when recalculating the graph. */
   ZixSem      graph_access;
@@ -117,17 +117,11 @@ router_recalc_graph (
 
 /**
  * Starts a new cycle.
- *
- * @param local_offset The local offset to start
- *   playing from in this cycle:
- *   (0 - <engine buffer size>)
  */
 void
 router_start_cycle (
-  Router *         self,
-  const nframes_t  nsamples,
-  const nframes_t  local_offset,
-  const Position * pos);
+  Router *              self,
+  EngineProcessTimeInfo time_nfo);
 
 /**
  * Returns the max playback latency of the trigger

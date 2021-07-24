@@ -3359,26 +3359,21 @@ stereo_ports_new_generic (
  * First sets port buf to 0, then sums the given
  * port signal from its inputs.
  *
- * @param local_offset The start frame offset from
- *   0 in this cycle.
- * @param nframes The number of frames to process.
  * @param noroll Clear the port buffer in this
  *   range.
  */
 void
 port_process (
-  Port *          port,
-  const long      g_start_frames,
-  const nframes_t local_offset,
-  const nframes_t nframes,
-  const bool      noroll)
+  Port *                              port,
+  const EngineProcessTimeInfo * const time_nfo,
+  const bool                          noroll)
 {
   Port * src_port;
   int k;
 
-  g_warn_if_fail (
-    local_offset + nframes <=
-      AUDIO_ENGINE->nframes);
+#define nframes (time_nfo->nframes)
+#define local_offset (time_nfo->local_offset)
+
   g_return_if_fail (IS_PORT (port));
 
   Track * track = NULL;
@@ -3956,11 +3951,9 @@ port_process (
             automation_track_should_read_automation (
               at, AUDIO_ENGINE->timestamp_start))
           {
-            /* FIXME optimize, calculate this
-             * once at the start of each cycle */
             Position pos;
             position_from_frames (
-              &pos, g_start_frames);
+              &pos, time_nfo->g_start_frames);
 
             /* if playhead pos changed manually
              * recently or transport is rolling,
@@ -3969,9 +3962,10 @@ port_process (
              * of whether there is a region at
              * current pos */
             bool can_read_previous_automation =
-              TRANSPORT_IS_ROLLING ||
-              TRANSPORT->last_manual_playhead_change -
-              AUDIO_ENGINE->last_timestamp_start > 0;
+              TRANSPORT_IS_ROLLING
+              ||
+              (TRANSPORT->last_manual_playhead_change
+               - AUDIO_ENGINE->last_timestamp_start > 0);
 
             /* if there was an automation event
              * at the playhead position, set val
@@ -4051,6 +4045,9 @@ port_process (
     default:
       break;
     }
+
+#undef nframes
+#undef local_offset
 }
 
 /**

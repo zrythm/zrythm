@@ -191,8 +191,7 @@ worker_thread (void * arg)
       g_message ("[%d]: running node", thread->id);
 #endif
       graph_node_process (
-        to_run, graph->router->nsamples);
-
+        to_run, graph->router->time_nfo);
     }
 
 terminate_thread:

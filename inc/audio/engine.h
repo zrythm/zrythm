@@ -384,6 +384,34 @@ jack_transport_type_strings[] =
 };
 
 /**
+ * Common struct to pass around during processing
+ * to avoid repeating the data in function
+ * arguments.
+ */
+typedef struct EngineProcessTimeInfo
+{
+  /** Global position at the start of the
+   * processing cycle. */
+  long       g_start_frames;
+
+  /** Offset in the current processing cycle,
+   * between 0 and nframes_total. */
+  nframes_t  local_offset;
+
+  /**
+   * Number of frames to process in this call.
+   *
+   * May be less than nframes_total if the cycle
+   * is split.
+   */
+  nframes_t  nframes;
+
+  /** Total number of frames to process in the
+   * current processing cycle. */
+  const nframes_t  nframes_total;
+} EngineProcessTimeInfo;
+
+/**
  * The audio engine.
  */
 typedef struct AudioEngine

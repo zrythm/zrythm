@@ -89,21 +89,15 @@ router_get_max_route_playback_latency (
 
 /**
  * Starts a new cycle.
- *
- * @param local_offset The local offset to start
- *   playing from in this cycle:
- *   (0 - <engine buffer size>)
  */
 void
 router_start_cycle (
-  Router *         self,
-  const nframes_t  nsamples,
-  const nframes_t  local_offset,
-  const Position * pos)
+  Router *              self,
+  EngineProcessTimeInfo time_nfo)
 {
   g_return_if_fail (self && self->graph);
   g_return_if_fail (
-    local_offset + nsamples <=
+    time_nfo.local_offset + time_nfo.nframes <=
       AUDIO_ENGINE->nframes);
 
   if (!zix_sem_try_wait (&self->graph_access))
@@ -113,27 +107,28 @@ router_start_cycle (
       return;
     }
 
-  self->nsamples = nsamples;
   self->global_offset =
     self->max_route_playback_latency -
     AUDIO_ENGINE->remaining_latency_preroll;
-  self->local_offset = local_offset;
+  memcpy (
+    &self->time_nfo, &time_nfo,
+    sizeof (EngineProcessTimeInfo));
 
   /* process tempo track ports first */
   if (self->graph->bpm_node)
     {
       graph_node_process (
-        self->graph->bpm_node, nsamples);
+        self->graph->bpm_node, time_nfo);
     }
   if (self->graph->beats_per_bar_node)
     {
       graph_node_process (
-        self->graph->beats_per_bar_node, nsamples);
+        self->graph->beats_per_bar_node, time_nfo);
     }
   if (self->graph->beat_unit_node)
     {
       graph_node_process (
-        self->graph->beat_unit_node, nsamples);
+        self->graph->beat_unit_node, time_nfo);
     }
 
   self->callback_in_progress = true;

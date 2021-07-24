@@ -238,13 +238,15 @@ on_node_finish (
 }
 
 HOT
-static void
+static inline void
 process_node (
-  GraphNode *     node,
-  long            g_start_frames,
-  const nframes_t local_offset,
-  const nframes_t nframes)
+  const GraphNode *                   node,
+  const EngineProcessTimeInfo * const time_nfo)
 {
+#define g_start_frames (time_nfo->g_start_frames)
+#define local_offset (time_nfo->local_offset)
+#define nframes (time_nfo->nframes)
+
   switch (node->type)
     {
     case ROUTE_NODE_TYPE_PLUGIN:
@@ -322,15 +324,17 @@ process_node (
 
         else
           {
-            port_process (
-              port, g_start_frames, local_offset,
-              nframes, false);
+            port_process (port, time_nfo, false);
           }
       }
       break;
     default:
       break;
     }
+
+#undef g_start_frames
+#undef local_offset
+#undef nframes
 }
 
 /**
@@ -338,19 +342,16 @@ process_node (
  */
 void
 graph_node_process (
-  GraphNode * node,
-  nframes_t   nframes)
+  GraphNode *           node,
+  EngineProcessTimeInfo time_nfo)
 {
   g_return_if_fail (
-    node && node->graph && node->graph->router &&
-    nframes == node->graph->router->nsamples);
+    node && node->graph && node->graph->router);
 
   /*g_message (*/
     /*"processing %s", graph_node_get_name (node));*/
 
   nframes_t num_processable_frames = 0;
-  nframes_t local_offset =
-    node->graph->router->local_offset;
 
   /* skip BPM during cycle (already processed in
    * router_start_cycle()) */
@@ -386,9 +387,6 @@ graph_node_process (
         /*}*/
     }
 
-  /* global positions in frames (samples) */
-  long g_start_frames;
-
   /* only compensate latency when rolling */
   if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
@@ -410,11 +408,8 @@ graph_node_process (
         TRANSPORT, &playhead_copy,
         node->route_playback_latency -
           AUDIO_ENGINE->remaining_latency_preroll);
-      g_start_frames = playhead_copy.frames;
-    }
-  else
-    {
-      g_start_frames = PLAYHEAD->frames;
+      time_nfo.g_start_frames =
+        playhead_copy.frames;
     }
 
   /* split at loop points */
@@ -422,8 +417,9 @@ graph_node_process (
     (num_processable_frames =
       MIN (
         transport_is_loop_point_met (
-          TRANSPORT, g_start_frames, nframes),
-        nframes)))
+          TRANSPORT, time_nfo.g_start_frames,
+          time_nfo.nframes),
+        time_nfo.nframes)))
     {
 #if 0
       g_message (
@@ -433,26 +429,25 @@ graph_node_process (
         g_start_frames, num_processable_frames);
 #endif
 
-      process_node (
-        node, g_start_frames, local_offset,
-        num_processable_frames);
-
-      g_start_frames += num_processable_frames;
+      time_nfo.nframes =
+        num_processable_frames;
+      process_node (node, &time_nfo);
 
       /* loop back to loop start */
-      g_start_frames =
-        (g_start_frames +
-          TRANSPORT->loop_start_pos.frames) -
-        TRANSPORT->loop_end_pos.frames;
-
-      local_offset += num_processable_frames;
-      nframes -= num_processable_frames;
+      time_nfo.g_start_frames =
+        (time_nfo.g_start_frames
+         + num_processable_frames
+         + TRANSPORT->loop_start_pos.frames)
+        - TRANSPORT->loop_end_pos.frames;
+      time_nfo.local_offset +=
+        num_processable_frames;
+      time_nfo.nframes -=
+        num_processable_frames;
     }
 
-  if (nframes > 0)
+  if (time_nfo.nframes > 0)
     {
-      process_node (
-        node, g_start_frames, local_offset, nframes);
+      process_node (node, &time_nfo);
     }
 
 node_process_finish:

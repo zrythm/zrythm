@@ -986,7 +986,12 @@ engine_wait_for_pause (
       /* run one more time to flush panic
        * messages */
       engine_process_prepare (self, 1);
-      router_start_cycle (ROUTER, 1, 0, PLAYHEAD);
+      EngineProcessTimeInfo time_nfo = {
+        .g_start_frames = PLAYHEAD->frames,
+        .local_offset = 0,
+        .nframes = 1,
+        .nframes_total = self->block_length };
+      router_start_cycle (ROUTER, time_nfo);
       engine_post_process (self, 0, 1);
     }
 }
@@ -1469,6 +1474,13 @@ engine_process (
 
   /* --- handle preroll --- */
 
+  EngineProcessTimeInfo split_time_nfo = {
+    .g_start_frames = PLAYHEAD->frames,
+    .local_offset = 0,
+    .nframes = 0,
+    .nframes_total =
+      total_frames_to_process };
+
   while (self->remaining_latency_preroll > 0)
     {
       nframes_t num_preroll_frames =
@@ -1540,9 +1552,10 @@ engine_process (
         preroll_offset + num_preroll_frames <=
           self->nframes);
 
+      split_time_nfo.local_offset = preroll_offset;
+      split_time_nfo.nframes = num_preroll_frames;
       router_start_cycle (
-        self->router, num_preroll_frames,
-        preroll_offset, PLAYHEAD);
+        self->router, split_time_nfo);
 
       self->remaining_latency_preroll -=
         num_preroll_frames;
@@ -1582,9 +1595,10 @@ engine_process (
                 countin_frames_remaining);
 
           /* process for countin frames */
+          split_time_nfo.local_offset = cur_offset;
+          split_time_nfo.nframes = countin_frames;
           router_start_cycle (
-            self->router, countin_frames,
-            cur_offset, PLAYHEAD);
+            self->router, split_time_nfo);
           self->transport->
             countin_frames_remaining -=
               countin_frames;
@@ -1610,9 +1624,10 @@ engine_process (
                 preroll_frames_remaining);
 
           /* process for preroll frames */
+          split_time_nfo.local_offset = cur_offset;
+          split_time_nfo.nframes = preroll_frames;
           router_start_cycle (
-            self->router, preroll_frames,
-            cur_offset, PLAYHEAD);
+            self->router, split_time_nfo);
           self->transport->
             preroll_frames_remaining -=
               preroll_frames;
@@ -1623,9 +1638,12 @@ engine_process (
             total_frames_remaining - preroll_frames;
           if (remaining_frames > 0)
             {
+              split_time_nfo.local_offset =
+                cur_offset;
+              split_time_nfo.nframes =
+                remaining_frames;
               router_start_cycle (
-                self->router, remaining_frames,
-                cur_offset, PLAYHEAD);
+                self->router, split_time_nfo);
             }
         }
       else
@@ -1633,9 +1651,11 @@ engine_process (
           /* run the cycle for the remaining
            * frames - this will also play the
            * queued metronome events (if any) */
+          split_time_nfo.local_offset = cur_offset;
+          split_time_nfo.nframes =
+            total_frames_remaining;
           router_start_cycle (
-            self->router, total_frames_remaining,
-            cur_offset, PLAYHEAD);
+            self->router, split_time_nfo);
         }
     }
 

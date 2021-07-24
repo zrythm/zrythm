@@ -62,6 +62,8 @@ typedef struct Plugin Plugin;
 typedef struct HardwareProcessor HardwareProcessor;
 typedef struct ModulatorMacroProcessor
   ModulatorMacroProcessor;
+typedef struct EngineProcessTimeInfo
+  EngineProcessTimeInfo;
 
 /**
  * @addtogroup audio
@@ -191,8 +193,8 @@ graph_node_print (
 HOT
 void
 graph_node_process (
-  GraphNode * node,
-  nframes_t   nframes);
+  GraphNode *           node,
+  EngineProcessTimeInfo time_nfo);
 
 /**
  * Returns the latency of only the given port,

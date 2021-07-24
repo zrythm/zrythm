@@ -72,6 +72,8 @@ typedef struct AudioClip AudioClip;
 typedef struct ChannelSend ChannelSend;
 typedef struct PluginGtkController
   PluginGtkController;
+typedef struct EngineProcessTimeInfo
+  EngineProcessTimeInfo;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -1252,9 +1254,6 @@ port_apply_fader (
  * First sets port buf to 0, then sums the given
  * port signal from its inputs.
  *
- * @param start_frame The start frame offset from
- *   0 in this cycle.
- * @param nframes The number of frames to process.
  * @param noroll Clear the port buffer in this
  *   range.
  */
@@ -1262,11 +1261,9 @@ HOT
 NONNULL
 void
 port_process (
-  Port *          port,
-  const long      g_start_frames,
-  const nframes_t start_frame,
-  const nframes_t nframes,
-  const bool      noroll);
+  Port *                              port,
+  const EngineProcessTimeInfo * const time_nfo,
+  const bool                          noroll);
 
 /**
  * Sets the owner track & its ID.
