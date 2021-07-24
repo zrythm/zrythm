@@ -201,24 +201,24 @@ clean_duplicates_and_copy (
   int *               num_events)
 {
   MPMCQueue * q = self->ev_queue;
-  AudioEngineEvent * event;
-  *num_events = 0;
-  int i, already_exists = 0;
 
   /* only add events once to new array while
    * popping */
-  while (event_queue_dequeue_event (
-           q, &event))
+  *num_events = 0;
+  AudioEngineEvent * event;
+  while (event_queue_dequeue_event (q, &event))
     {
-      already_exists = 0;
+      bool already_exists = false;
 
-      for (i = 0; i < *num_events; i++)
-        if (event->type == events[i]->type &&
-            event->arg == events[i]->arg &&
-            event->uint_arg == events[i]->uint_arg)
-          {
-            already_exists = 1;
-          }
+      for (int i = 0; i < *num_events; i++)
+        {
+          if (event->type == events[i]->type
+              && event->arg == events[i]->arg
+              && event->uint_arg == events[i]->uint_arg)
+            {
+              already_exists = true;
+            }
+        }
 
       if (already_exists)
         {
@@ -571,10 +571,11 @@ engine_setup (
   hardware_processor_setup (
     self->hw_out_processor);
 
-  if ((self->audio_backend == AUDIO_BACKEND_JACK &&
-       self->midi_backend != MIDI_BACKEND_JACK) ||
-      (self->audio_backend != AUDIO_BACKEND_JACK &&
-       self->midi_backend == MIDI_BACKEND_JACK))
+  if ((self->audio_backend == AUDIO_BACKEND_JACK
+       && self->midi_backend != MIDI_BACKEND_JACK)
+      ||
+      (self->audio_backend != AUDIO_BACKEND_JACK
+       && self->midi_backend == MIDI_BACKEND_JACK))
     {
       ui_show_message_printf (
         GTK_WINDOW (MAIN_WINDOW),
@@ -801,19 +802,18 @@ init_common (
     }
 
   self->pan_law =
-    ZRYTHM_TESTING ?
-      PAN_LAW_MINUS_3DB :
-      (PanLaw)
-      g_settings_get_enum (
-        S_P_DSP_PAN,
-        "pan-law");
+    ZRYTHM_TESTING
+    ? PAN_LAW_MINUS_3DB
+    :
+    (PanLaw)
+    g_settings_get_enum (S_P_DSP_PAN, "pan-law");
   self->pan_algo =
-    ZRYTHM_TESTING ?
-      PAN_ALGORITHM_SINE_LAW :
-      (PanAlgorithm)
-      g_settings_get_enum (
-        S_P_DSP_PAN,
-        "pan-algorithm");
+    ZRYTHM_TESTING
+    ? PAN_ALGORITHM_SINE_LAW
+    :
+    (PanAlgorithm)
+    g_settings_get_enum (
+      S_P_DSP_PAN, "pan-algorithm");
 
   /* set a temporary buffer sizes */
   if (self->block_length == 0)
@@ -1403,8 +1403,8 @@ receive_midi_events (
  */
 int
 engine_process (
-  AudioEngine * self,
-  nframes_t     total_frames_to_process)
+  AudioEngine *   self,
+  const nframes_t total_frames_to_process)
 {
   if (ZRYTHM_TESTING)
     {
@@ -1647,23 +1647,6 @@ finalize_processing:
     self, total_frames_remaining,
     total_frames_to_process);
 
-#if 0
-#ifdef TRIAL_VER
-  /* go silent if limit reached */
-  if (self->timestamp_start -
-        self->zrythm_start_time >
-          (TRIAL_LIMIT_MINS * (gint64) 60000000))
-    {
-      if (!self->limit_reached)
-        {
-          EVENTS_PUSH (
-            ET_TRIAL_LIMIT_REACHED, NULL);
-          self->limit_reached = 1;
-        }
-    }
-#endif
-#endif
-
   /*self->cycle++;*/
 
   g_atomic_int_set (&self->cycle_running, 0);
@@ -1712,8 +1695,8 @@ engine_post_process (
 
   /* move the playhead if rolling and not
    * pre-rolling */
-  if (TRANSPORT_IS_ROLLING &&
-      self->remaining_latency_preroll == 0)
+  if (TRANSPORT_IS_ROLLING
+      && self->remaining_latency_preroll == 0)
     {
       transport_add_to_playhead (
         self->transport, roll_nframes);

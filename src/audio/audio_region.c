@@ -167,8 +167,8 @@ audio_region_get_clip (
   const ZRegion * self)
 {
   g_return_val_if_fail (
-    (!self->read_from_pool && self->clip) ||
-      (self->read_from_pool && self->pool_id >= 0),
+    (!self->read_from_pool && self->clip)
+    || (self->read_from_pool && self->pool_id >= 0),
     NULL);
   g_return_val_if_fail (
     self->id.type == REGION_TYPE_AUDIO, NULL);

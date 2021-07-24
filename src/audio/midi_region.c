@@ -220,8 +220,7 @@ midi_region_pop_unended_note (
   for (int i = 0; i < self->num_unended_notes; i++)
     {
       MidiNote * mn = self->unended_notes[i];
-      if (pitch == -1 ||
-          mn->val == pitch)
+      if (pitch == -1 || mn->val == pitch)
         {
           match = mn;
           break;
@@ -254,12 +253,12 @@ midi_region_get_first_midi_note (
     i < region->num_midi_notes;
     i++)
   {
-    if (
-      !result  ||
-      ((ArrangerObject *) result)->
-        end_pos.ticks >
-      ((ArrangerObject *) region->midi_notes[i])->
-        end_pos.ticks)
+    ArrangerObject * cur_mn_obj =
+      (ArrangerObject *) region->midi_notes[i];
+    ArrangerObject * result_obj =
+      (ArrangerObject *) result;
+    if (!result
+        || result_obj->end_pos.ticks > cur_mn_obj->end_pos.ticks)
     {
       result = region->midi_notes[i];
     }
@@ -303,8 +302,8 @@ midi_region_get_highest_midi_note (
     i < region->num_midi_notes;
     i++)
   {
-    if (!result ||
-        result->val < region->midi_notes[i]->val)
+    if (!result
+        || result->val < region->midi_notes[i]->val)
     {
       result = region->midi_notes[i];
     }
@@ -324,8 +323,8 @@ midi_region_get_lowest_midi_note (
     i < region->num_midi_notes;
     i++)
   {
-    if (!result ||
-        result->val > region->midi_notes[i]->val)
+    if (!result
+        || result->val > region->midi_notes[i]->val)
     {
       result = region->midi_notes[i];
     }
@@ -980,9 +979,9 @@ midi_region_get_midi_ch (
  */
 MidiEvents *
 midi_region_get_as_events (
-  ZRegion * self,
-  const int      add_region_start,
-  const int      full)
+  const ZRegion * self,
+  const int       add_region_start,
+  const int       full)
 {
   MidiEvents * events = midi_events_new ();
 

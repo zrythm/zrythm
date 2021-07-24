@@ -308,9 +308,9 @@ midi_region_get_midi_ch (
  */
 MidiEvents *
 midi_region_get_as_events (
-  ZRegion * self,
-  const int add_region_start,
-  const int full);
+  const ZRegion * self,
+  const int       add_region_start,
+  const int       full);
 
 /**
  * Fills in the array with all the velocities in

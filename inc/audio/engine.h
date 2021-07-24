@@ -967,8 +967,8 @@ NONNULL
 HOT
 int
 engine_process (
-  AudioEngine * self,
-  nframes_t     nframes);
+  AudioEngine *   self,
+  const nframes_t total_frames_to_process);
 
 /**
  * To be called after processing for common logic.
