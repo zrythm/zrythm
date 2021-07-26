@@ -38,6 +38,8 @@ supported_file_new_from_path (
 {
   SupportedFile * self = object_new (SupportedFile);
 
+  g_debug (
+    "creating new SupportedFile for %s", path);
   self->abs_path = g_strdup (path);
   self->type =
     supported_file_get_type (path);

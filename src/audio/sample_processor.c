@@ -558,6 +558,7 @@ sample_processor_queue_file (
   position_set_to_bar (&self->file_end_pos, 1);
 
   /* create master track */
+  g_debug ("creating master track...");
   Track * track =
     track_new (
       TRACK_TYPE_MASTER, self->tracklist->num_tracks,
@@ -570,6 +571,7 @@ sample_processor_queue_file (
 
   if (supported_file_type_is_audio (file->type))
     {
+      g_debug ("creating audio track...");
       track =
         track_new (
           TRACK_TYPE_AUDIO,
@@ -601,6 +603,7 @@ sample_processor_queue_file (
            self->instrument_setting)
     {
       /* create an instrument track */
+      g_debug ("creating instrument track...");
       Track * instrument_track =
         track_new (
           TRACK_TYPE_INSTRUMENT,
@@ -635,6 +638,8 @@ sample_processor_queue_file (
       int num_tracks =
         midi_file_get_num_tracks (
           file->abs_path, true);
+      g_debug (
+        "creating %d MIDI tracks...", num_tracks);
       for (int i = 0; i < num_tracks; i++)
         {
           char name[600];

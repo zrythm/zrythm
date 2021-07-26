@@ -579,6 +579,8 @@ automation_track_should_be_recording (
         {
           Port * port =
             automation_track_get_port (at);
+          g_return_val_if_fail (
+            IS_PORT_AND_NONNULL (port), false);
           gint64 diff =
             cur_time - port->last_change;
           if (diff <
