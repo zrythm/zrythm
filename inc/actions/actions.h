@@ -26,6 +26,8 @@
 #ifndef __ACTIONS_ACTIONS_H__
 #define __ACTIONS_ACTIONS_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 #define DECLARE_SIMPLE(x) \
@@ -41,20 +43,9 @@
  */
 
 void
-action_enable_window_action (
-  const char * action_name);
-
-void
-action_disable_window_action (
-  const char * action_name);
-
-void
-action_enable_app_action (
-  const char * action_name);
-
-void
-action_disable_app_action (
-  const char * action_name);
+actions_set_app_action_enabled (
+  const char * action_name,
+  const bool   enabled);
 
 void
 activate_about (GSimpleAction *action,

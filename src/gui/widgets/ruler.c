@@ -2008,19 +2008,23 @@ ruler_widget_set_zoom_level (
 {
   if (zoom_level > MAX_ZOOM_LEVEL)
     {
-      action_disable_window_action ("zoom-in");
+      actions_set_app_action_enabled (
+        "zoom-in", false);
     }
   else
     {
-      action_enable_app_action ("zoom-in");
+      actions_set_app_action_enabled (
+        "zoom-in", true);
     }
   if (zoom_level < MIN_ZOOM_LEVEL)
     {
-      action_disable_window_action ("zoom-out");
+      actions_set_app_action_enabled (
+        "zoom-out", false);
     }
   else
     {
-      action_enable_app_action ("zoom-out");
+      actions_set_app_action_enabled (
+        "zoom-out", true);
     }
 
   int update = zoom_level >= MIN_ZOOM_LEVEL &&

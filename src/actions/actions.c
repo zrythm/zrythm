@@ -119,53 +119,15 @@ x ( \
   gpointer        user_data) \
 
 void
-action_enable_window_action (
-  const char * action_name)
+actions_set_app_action_enabled (
+  const char * action_name,
+  const bool   enabled)
 {
   GAction * action =
     g_action_map_lookup_action (
-      G_ACTION_MAP (MAIN_WINDOW),
-      action_name);
+      G_ACTION_MAP (zrythm_app), action_name);
   g_simple_action_set_enabled (
-    G_SIMPLE_ACTION (action),
-    1);
-}
-
-void
-action_disable_window_action (
-  const char * action_name)
-{
-  GAction * action =
-    g_action_map_lookup_action (
-      G_ACTION_MAP (MAIN_WINDOW),
-      action_name);
-  g_simple_action_set_enabled (
-    G_SIMPLE_ACTION (action),
-    0);
-}
-
-void
-action_enable_app_action (
-  const char * action_name)
-{
-  GAction * action =
-    g_action_map_lookup_action (
-      G_ACTION_MAP (zrythm_app),
-      action_name);
-  g_simple_action_set_enabled (
-    G_SIMPLE_ACTION (action), true);
-}
-
-void
-action_disable_app_action (
-  const char * action_name)
-{
-  GAction * action =
-    g_action_map_lookup_action (
-      G_ACTION_MAP (zrythm_app),
-      action_name);
-  g_simple_action_set_enabled (
-    G_SIMPLE_ACTION (action), false);
+    G_SIMPLE_ACTION (action), enabled);
 }
 
 void
