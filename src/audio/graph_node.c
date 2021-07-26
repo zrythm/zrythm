@@ -291,9 +291,7 @@ process_node (
             track->type != TRACK_TYPE_MARKER)
           {
             track_processor_process (
-              track->processor,
-              g_start_frames, local_offset,
-              nframes);
+              track->processor, time_nfo);
           }
       }
       break;

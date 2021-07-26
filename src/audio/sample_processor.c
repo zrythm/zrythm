@@ -314,12 +314,16 @@ sample_processor_process (
           track_processor_clear_buffers (
             track->processor);
 
+          EngineProcessTimeInfo time_nfo = {
+            .g_start_frames =
+              self->playhead.frames + cycle_offset,
+            .local_offset = cycle_offset,
+            .nframes = nframes, };
+
           if (track->type == TRACK_TYPE_AUDIO)
             {
               track_processor_process (
-                track->processor,
-                self->playhead.frames + cycle_offset,
-                cycle_offset, nframes);
+                track->processor, &time_nfo);
 
               audio_data_l =
                 track->processor->stereo_out->l->buf;
@@ -329,9 +333,7 @@ sample_processor_process (
           else if (track->type == TRACK_TYPE_MIDI)
             {
               track_processor_process (
-                track->processor,
-                self->playhead.frames + cycle_offset,
-                cycle_offset, nframes);
+                track->processor, &time_nfo);
               midi_events_append (
                 track->processor->midi_out->
                   midi_events,

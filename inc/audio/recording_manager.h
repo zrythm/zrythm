@@ -85,15 +85,12 @@ typedef struct RecordingManager
  *   RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING and
  *   RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
  */
-HOT
 REALTIME
 void
 recording_manager_handle_recording (
-  RecordingManager * self,
-  TrackProcessor *   track_processor,
-  const long         g_start_frames,
-  const nframes_t    local_offset,
-  const nframes_t    nframes);
+  RecordingManager *     self,
+  const TrackProcessor * track_processor,
+  const EngineProcessTimeInfo * const time_nfo);
 
 /**
  * GSourceFunc to be added using idle add.

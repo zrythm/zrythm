@@ -86,9 +86,12 @@ test_fill_when_region_starts_on_loop_end ()
   Position pos;
   position_set_to_bar (&pos, LOOP_BAR);
   position_add_frames (&pos, - nframes);
+  EngineProcessTimeInfo time_nfo = {
+    .g_start_frames = pos.frames,
+    .local_offset = 0,
+    .nframes = (nframes_t) nframes, };
   track_fill_events (
-    track, pos.frames, 0, (nframes_t) nframes,
-    NULL, ports);
+    track, &time_nfo, NULL, ports);
   for (int j = 0; j < nframes; j++)
     {
       g_assert_cmpfloat_with_epsilon (
@@ -100,9 +103,11 @@ test_fill_when_region_starts_on_loop_end ()
   /* run after loop end and make sure sample is
    * played */
   position_set_to_bar (&pos, LOOP_BAR);
+  time_nfo.g_start_frames = pos.frames;
+  time_nfo.local_offset = 0;
+  time_nfo.nframes = (nframes_t) nframes;
   track_fill_events (
-    track, pos.frames, 0, (nframes_t) nframes,
-    NULL, ports);
+    track, &time_nfo, NULL, ports);
   for (int j = 0; j < nframes; j++)
     {
       g_assert_true (

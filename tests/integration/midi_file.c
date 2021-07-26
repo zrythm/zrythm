@@ -132,9 +132,12 @@ test_midi_file_playback ()
           /* try all possible offsets */
           for (int j = 0; j < BUFFER_SIZE; j++)
             {
+              EngineProcessTimeInfo time_nfo = {
+                .g_start_frames = i,
+                .local_offset = (nframes_t) j,
+                .nframes = BUFFER_SIZE, };
               track_fill_events (
-                track, i, (nframes_t) j,
-                BUFFER_SIZE, events, NULL);
+                track, &time_nfo, events, NULL);
               midi_events_clear (events, true);
             }
         }

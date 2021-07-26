@@ -35,6 +35,8 @@ typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Track Track;
 typedef struct MidiMappings MidiMappings;
+typedef struct EngineProcessTimeInfo
+  EngineProcessTimeInfo;
 
 /**
  * @addtogroup audio
@@ -276,7 +278,7 @@ track_processor_disconnect_all (
 
 Track *
 track_processor_get_track (
-  TrackProcessor * self);
+  const TrackProcessor * self);
 
 /**
  * Process the TrackProcessor.
@@ -298,13 +300,10 @@ track_processor_get_track (
  * @param local_offset The local start frames.
  * @param nframes The number of frames to process.
  */
-HOT
 void
 track_processor_process (
-  TrackProcessor * self,
-  const long       g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t  nframes);
+  const TrackProcessor *              self,
+  const EngineProcessTimeInfo * const time_nfo);
 
 /**
  * Disconnect the TrackProcessor's stereo out ports

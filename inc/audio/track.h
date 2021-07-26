@@ -973,22 +973,14 @@ track_remove_region (
  * @note The engine splits the cycle so transport
  *   loop related logic is not needed.
  *
- * @param g_start_frame Global start frame.
- * @param local_start_frame The start frame offset
- *   from 0 in this cycle.
- * @param nframes Number of frames at start
- *   Position.
  * @param stereo_ports StereoPorts to fill.
  * @param midi_events MidiEvents to fill (from
  *   Piano Roll Port for example).
  */
-HOT
 void
 track_fill_events (
-  Track *         track,
-  const long      g_start_frames,
-  const nframes_t local_start_frame,
-  nframes_t       nframes,
+  const Track *         track,
+  const EngineProcessTimeInfo * const time_nfo,
   MidiEvents *    midi_events,
   StereoPorts *   stereo_ports);
 

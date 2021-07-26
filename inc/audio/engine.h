@@ -392,6 +392,9 @@ typedef struct EngineProcessTimeInfo
 {
   /** Global position at the start of the
    * processing cycle. */
+  /* FIXME in some places this is adjusted to the
+   * local offset. it should be adjusted to the
+   * local offset everywhere */
   long       g_start_frames;
 
   /** Offset in the current processing cycle,

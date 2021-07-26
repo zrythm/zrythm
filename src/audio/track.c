@@ -2810,24 +2810,21 @@ track_update_frames (
  * @note The engine splits the cycle so transport
  *   loop related logic is not needed.
  *
- * @param g_start_frame Global start frame.
- * @param local_start_frame The start frame offset
- *   from 0 in this cycle.
- * @param nframes Number of frames at start
- *   Position.
  * @param stereo_ports StereoPorts to fill.
  * @param midi_events MidiEvents to fill (from
  *   Piano Roll Port for example).
  */
 void
 track_fill_events (
-  Track *         track,
-  const long      g_start_frames,
-  const nframes_t local_start_frame,
-  nframes_t       nframes,
+  const Track *         track,
+  const EngineProcessTimeInfo * const time_nfo,
   MidiEvents *    midi_events,
   StereoPorts *   stereo_ports)
 {
+#define g_start_frames (time_nfo->g_start_frames)
+#define local_offset (time_nfo->local_offset)
+#define nframes (time_nfo->nframes)
+
   if (!track->is_auditioner &&
       !TRANSPORT_IS_ROLLING)
     return;
@@ -2917,7 +2914,7 @@ track_fill_events (
               long cur_g_start_frame =
                 g_start_frames + frames_processed;
               nframes_t cur_local_start_frame =
-                local_start_frame + frames_processed;
+                local_offset + frames_processed;
 
               bool is_end_loop;
               long cur_num_frames_till_next_r_loop_or_end;
@@ -2998,6 +2995,10 @@ track_fill_events (
 
       zix_sem_post (&midi_events->access_sem);
     }
+
+#undef g_start_frames
+#undef local_offset
+#undef nframes
 }
 
 /**

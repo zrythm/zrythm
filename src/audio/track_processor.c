@@ -555,7 +555,7 @@ track_processor_disconnect_all (
 
 Track *
 track_processor_get_track (
-  TrackProcessor * self)
+  const TrackProcessor * self)
 {
   g_return_val_if_fail (
     IS_TRACK_PROCESSOR (self) &&
@@ -581,10 +581,8 @@ track_processor_get_track (
  */
 static void
 handle_recording (
-  TrackProcessor * self,
-  const long       g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t  nframes)
+  const TrackProcessor * self,
+  const EngineProcessTimeInfo * const time_nfo)
 {
 #if 0
   g_message ("handle recording %ld %" PRIu32,
@@ -595,8 +593,9 @@ handle_recording (
   long each_nframes[6];
   int num_split_points = 1;
 
-  long start_frames = g_start_frames;
-  long end_frames = start_frames + nframes;
+  long start_frames = time_nfo->g_start_frames;
+  long end_frames =
+    start_frames + time_nfo->nframes;
 
   /* split the cycle at loop and punch points and
    * record */
@@ -605,7 +604,7 @@ handle_recording (
   /*bool punch_out_hit = false;*/
   /*int loop_end_idx = -1;*/
   split_points[0] = start_frames;
-  each_nframes[0] = nframes;
+  each_nframes[0] = time_nfo->nframes;
   if (TRANSPORT->loop)
     {
       if (TRANSPORT->loop_end_pos.frames ==
@@ -629,7 +628,7 @@ handle_recording (
           split_points[2] =
             TRANSPORT->loop_start_pos.frames;
           each_nframes[2] =
-            nframes - each_nframes[0];
+            time_nfo->nframes - each_nframes[0];
         }
     }
   if (TRANSPORT->punch_mode)
@@ -821,9 +820,12 @@ handle_recording (
         split_point, each_nframes[i]);
 #endif
 
+      EngineProcessTimeInfo cur_time_nfo = {
+        .g_start_frames = split_point,
+        .local_offset = 0,
+        .nframes = each_nframes[i], };
       recording_manager_handle_recording (
-        RECORDING_MANAGER, self, split_point,
-        0, each_nframes[i]);
+        RECORDING_MANAGER, self, &cur_time_nfo);
     }
 }
 
@@ -831,11 +833,10 @@ handle_recording (
  * Adds events to midi out based on any changes in
  * MIDI CC control ports.
  */
-HOT
 static inline void
 add_events_from_midi_cc_control_ports (
-  TrackProcessor * self,
-  const nframes_t  local_offset)
+  const TrackProcessor * self,
+  const nframes_t        local_offset)
 {
   /* FIXME optimize (use caches) */
   for (int i = 0; i < 16; i++)
@@ -917,11 +918,13 @@ add_events_from_midi_cc_control_ports (
  */
 void
 track_processor_process (
-  TrackProcessor * self,
-  const long       g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t  nframes)
+  const TrackProcessor *              self,
+  const EngineProcessTimeInfo * const time_nfo)
 {
+#define g_start_frames (time_nfo->g_start_frames)
+#define local_offset (time_nfo->local_offset)
+#define nframes (time_nfo->nframes)
+
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (tr);
 
@@ -935,8 +938,7 @@ track_processor_process (
   if (tr->type == TRACK_TYPE_AUDIO)
     {
       track_fill_events (
-        tr, g_start_frames, local_offset, nframes,
-        NULL, self->stereo_out);
+        tr, time_nfo, NULL, self->stereo_out);
     }
 
   /* set the piano roll contents to midi out */
@@ -965,8 +967,7 @@ track_processor_process (
             tr->name, g_start_frames);
 #endif
           track_fill_events (
-            tr, g_start_frames, local_offset,
-            nframes, pr->midi_events, NULL);
+            tr, time_nfo, pr->midi_events, NULL);
         }
       midi_events_dequeue (
         pr->midi_events);
@@ -1103,9 +1104,7 @@ track_processor_process (
        * this will also create automation for MIDI
        * CC, if any (see
        * midi_mappings_apply_cc_events above) */
-      handle_recording (
-        self, g_start_frames, local_offset,
-        nframes);
+      handle_recording (self, time_nfo);
     }
 
   /* apply output gain */
@@ -1118,6 +1117,10 @@ track_processor_process (
         &self->stereo_out->r->buf[local_offset],
         self->output_gain->control, nframes);
     }
+
+#undef g_start_frames
+#undef local_offset
+#undef nframes
 }
 
 /**

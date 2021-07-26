@@ -221,11 +221,9 @@ handle_stop_recording (
  */
 void
 recording_manager_handle_recording (
-  RecordingManager * self,
-  TrackProcessor *   track_processor,
-  const long         g_start_frames,
-  const nframes_t    local_offset,
-  const nframes_t    nframes)
+  RecordingManager *     self,
+  const TrackProcessor * track_processor,
+  const EngineProcessTimeInfo * const time_nfo)
 {
 #if 0
   g_message (
@@ -253,13 +251,14 @@ recording_manager_handle_recording (
   bool inside_punch_range = false;
 
   g_return_if_fail (
-    local_offset + nframes <=
+    time_nfo->local_offset + time_nfo->nframes <=
       AUDIO_ENGINE->block_length);
 
   if (TRANSPORT->punch_mode)
     {
       Position tmp;
-      position_from_frames (&tmp, g_start_frames);
+      position_from_frames (
+        &tmp, time_nfo->g_start_frames);
       inside_punch_range =
         transport_position_is_inside_punch_range (
           TRANSPORT, &tmp);
@@ -296,9 +295,12 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes =
+            time_nfo->nframes;
           strcpy (re->track_name, tr->name);
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
@@ -307,7 +309,7 @@ recording_manager_handle_recording (
       skip_adding_track_events = true;
     }
   /* if pausing */
-  else if (nframes == 0)
+  else if (time_nfo->nframes == 0)
     {
       if (tr->recording_region ||
           tr->recording_start_sent)
@@ -320,9 +322,12 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes =
+            time_nfo->nframes;
           strcpy (re->track_name, tr->name);
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
@@ -348,9 +353,12 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_START_TRACK_RECORDING;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes =
+            time_nfo->nframes;
           strcpy (re->track_name, tr->name);
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
@@ -380,9 +388,12 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes =
+            time_nfo->nframes;
           port_identifier_copy (
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
@@ -393,11 +404,13 @@ recording_manager_handle_recording (
           skip_adding_automation_events = true;
         }
       /* if pausing (only at loop end) */
-      else if (at->recording_start_sent &&
-               nframes == 0 &&
+      else if (at->recording_start_sent
+               && time_nfo->nframes == 0
+               &&
                (long)
-               (g_start_frames + local_offset) ==
-                 TRANSPORT->loop_end_pos.frames)
+               ((time_nfo->g_start_frames
+                 + time_nfo->local_offset)
+                == TRANSPORT->loop_end_pos.frames))
         {
           /* send pause event */
           RecordingEvent * re =
@@ -407,9 +420,12 @@ recording_manager_handle_recording (
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes =
+            time_nfo->nframes;
           port_identifier_copy (
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
@@ -439,9 +455,12 @@ recording_manager_handle_recording (
               recording_event_init (re);
               re->type =
                 RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING;
-              re->g_start_frames = g_start_frames;
-              re->local_offset = local_offset;
-              re->nframes = nframes;
+              re->g_start_frames =
+                time_nfo->g_start_frames;
+              re->local_offset =
+                time_nfo->local_offset;
+              re->nframes =
+                time_nfo->nframes;
               port_identifier_copy (
                 &re->port_id, &at->port_id);
               strcpy (re->track_name, tr->name);
@@ -479,9 +498,12 @@ recording_manager_handle_recording (
               self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes =
+            time_nfo->nframes;
           re->has_midi_event = 1;
           midi_event_copy (&re->midi_event, me);
           strcpy (re->track_name, tr->name);
@@ -498,9 +520,12 @@ recording_manager_handle_recording (
               self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes =
+            time_nfo->nframes;
           re->has_midi_event = 0;
           strcpy (re->track_name, tr->name);
           /*UP_RECEIVED (re);*/
@@ -515,14 +540,14 @@ recording_manager_handle_recording (
         object_pool_get (self->event_obj_pool);
       recording_event_init (re);
       re->type = RECORDING_EVENT_TYPE_AUDIO;
-      re->g_start_frames = g_start_frames;
-      re->local_offset = local_offset;
-      re->nframes = nframes;
+      re->g_start_frames = time_nfo->g_start_frames;
+      re->local_offset = time_nfo->local_offset;
+      re->nframes = time_nfo->nframes;
       dsp_copy (
-        &re->lbuf[local_offset],
+        &re->lbuf[time_nfo->local_offset],
         &track_processor->stereo_in->l->buf[
-          local_offset],
-        nframes);
+          time_nfo->local_offset],
+        time_nfo->nframes);
       Port * r =
         track_processor->mono &&
         control_port_is_toggled (
@@ -530,9 +555,9 @@ recording_manager_handle_recording (
           track_processor->stereo_in->l :
           track_processor->stereo_in->r;
       dsp_copy (
-        &re->rbuf[local_offset],
-        &r->buf[local_offset],
-        nframes);
+        &re->rbuf[time_nfo->local_offset],
+        &r->buf[time_nfo->local_offset],
+        time_nfo->nframes);
       strcpy (re->track_name, tr->name);
       /*UP_RECEIVED (re);*/
       recording_event_queue_push_back_event (
@@ -563,9 +588,11 @@ add_automation_events:
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_AUTOMATION;
-          re->g_start_frames = g_start_frames;
-          re->local_offset = local_offset;
-          re->nframes = nframes;
+          re->g_start_frames =
+            time_nfo->g_start_frames;
+          re->local_offset =
+            time_nfo->local_offset;
+          re->nframes = time_nfo->nframes;
           port_identifier_copy (
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);

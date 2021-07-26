@@ -57,14 +57,21 @@ test_process_master ()
     }
 
   nframes_t local_offset = 60;
+  EngineProcessTimeInfo time_nfo = {
+    .g_start_frames = 0,
+    .local_offset = 0,
+    .nframes = local_offset, };
   track_processor_process (
-    P_MASTER_TRACK->processor, 0,  0, local_offset);
+    P_MASTER_TRACK->processor, &time_nfo);
+  time_nfo.g_start_frames = local_offset;
+  time_nfo.local_offset = local_offset;
+  time_nfo.nframes =
+    AUDIO_ENGINE->block_length - local_offset;
   track_processor_process (
-    P_MASTER_TRACK->processor, local_offset,
-    local_offset,
-    AUDIO_ENGINE->block_length - local_offset);
+    P_MASTER_TRACK->processor, &time_nfo);
 
-  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length;
+  for (nframes_t i = 0;
+       i < AUDIO_ENGINE->block_length;
        i++)
     {
       g_assert_cmpfloat_with_epsilon (
