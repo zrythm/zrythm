@@ -14,17 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-07-21 17:33+0100\n"
-"PO-Revision-Date: 2021-07-21 17:02+0000\n"
-"Last-Translator: UnluckyNinja <unluckyninja1994@gmail.com>\n"
+"PO-Revision-Date: 2021-07-22 23:33+0000\n"
+"Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -937,9 +936,8 @@ msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
 
 #: ../../configuration/shortcuts.rst:6
-#, fuzzy
 msgid "Shortcuts"
-msgstr "快捷键"
+msgstr "快捷方式"
 
 #: ../../configuration/shortcuts.rst:8
 msgid ""
@@ -956,9 +954,8 @@ msgid "Editor Shortcuts"
 msgstr "编辑器快捷方式"
 
 #: ../../configuration/shortcuts.rst:24
-#, fuzzy
 msgid "Custom Shortcuts"
-msgstr "编辑器快捷方式"
+msgstr "自定义快捷方式"
 
 #: ../../configuration/shortcuts.rst:26
 msgid ""
@@ -4191,7 +4188,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:33
 msgid "Metronome options"
-msgstr ""
+msgstr "节拍器选项"
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Sets the volume of the metronome"
@@ -7802,4 +7799,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-
