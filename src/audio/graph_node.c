@@ -427,9 +427,17 @@ graph_node_process (
         g_start_frames, num_processable_frames);
 #endif
 
+      /* temporarily change the nframes to avoid
+       * having to declare a separate
+       * EngineProcessTimeInfo */
+      nframes_t orig_nframes = time_nfo.nframes;
       time_nfo.nframes =
         num_processable_frames;
       process_node (node, &time_nfo);
+
+      /* calculate the remaining frames */
+      time_nfo.nframes =
+        orig_nframes - num_processable_frames;
 
       /* loop back to loop start */
       time_nfo.g_start_frames =
@@ -438,8 +446,6 @@ graph_node_process (
          + TRANSPORT->loop_start_pos.frames)
         - TRANSPORT->loop_end_pos.frames;
       time_nfo.local_offset +=
-        num_processable_frames;
-      time_nfo.nframes -=
         num_processable_frames;
     }
 
