@@ -32,11 +32,12 @@ towards a stable release.
 ![screenshot](https://www.zrythm.org/static/images/feb-20-2021.png)
 
 ### Supported plugins/instruments
-- LV2, VST2, VST3, AU, SFZ, SF2, DSSI, LADSPA
+- Native support: [LV2](https://lv2plug.in/)
+- Support via [Carla](https://github.com/falkTX/Carla/): LV2, VST2, VST3, AU, SFZ, SF2, DSSI, LADSPA
 
-Support for all formats besides LV2 is
-possible thanks to
-[Carla](https://github.com/falkTX/Carla/).
+### Supported file formats
+- Audio: OGG (Vorbis), FLAC, WAV, MP3
+- MIDI: SMF Type 0, SMF Type 1
 
 ### Supported backends
 - Audio: JACK (PipeWire), PulseAudio, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)

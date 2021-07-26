@@ -101,6 +101,9 @@ html_static_path = ['_static']
 html_theme = 'furo'
 html_last_updated_fmt = ''
 
+# change html title (figure out how to localize)
+# html_title = '@PROGRAM_NAME@ v@VERSION@ manual'
+
 # def setup(app):
    # app.add_css_file ("css/custom.css")
    # app.add_source_suffix('.rst','restructuredtext')
@@ -180,6 +183,8 @@ dev_version = 'develop'  # This line auto-edited by newrelease script
 stable_version = 'master'  # This line auto-edited by newrelease script
 release_version = 'latest'  # This line auto-edited by newrelease script
 
+# A dictionary of values to pass into the template
+# engine’s context for all pages
 html_context = {
         'current_version': '{0}'.format(release),
         'languages':
