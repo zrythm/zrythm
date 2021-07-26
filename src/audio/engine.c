@@ -989,8 +989,7 @@ engine_wait_for_pause (
       EngineProcessTimeInfo time_nfo = {
         .g_start_frames = PLAYHEAD->frames,
         .local_offset = 0,
-        .nframes = 1,
-        .nframes_total = self->block_length };
+        .nframes = 1, };
       router_start_cycle (ROUTER, time_nfo);
       engine_post_process (self, 0, 1);
     }
@@ -1477,9 +1476,7 @@ engine_process (
   EngineProcessTimeInfo split_time_nfo = {
     .g_start_frames = PLAYHEAD->frames,
     .local_offset = 0,
-    .nframes = 0,
-    .nframes_total =
-      total_frames_to_process };
+    .nframes = 0, };
 
   while (self->remaining_latency_preroll > 0)
     {

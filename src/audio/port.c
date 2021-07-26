@@ -3368,9 +3368,6 @@ port_process (
   const EngineProcessTimeInfo * const time_nfo,
   const bool                          noroll)
 {
-  Port * src_port;
-  int k;
-
 #define nframes (time_nfo->nframes)
 #define local_offset (time_nfo->local_offset)
 
@@ -3378,17 +3375,18 @@ port_process (
 
   Track * track = NULL;
   if (port->id.owner_type ==
-        PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-      port->id.owner_type ==
-        PORT_OWNER_TYPE_TRACK ||
-      port->id.owner_type ==
-        PORT_OWNER_TYPE_FADER ||
-      port->id.owner_type ==
-        PORT_OWNER_TYPE_PREFADER ||
-      (port->id.owner_type ==
-        PORT_OWNER_TYPE_PLUGIN &&
-       port->id.plugin_id.slot_type ==
-         PLUGIN_SLOT_INSTRUMENT))
+        PORT_OWNER_TYPE_TRACK_PROCESSOR
+      || port->id.owner_type ==
+        PORT_OWNER_TYPE_TRACK
+      || port->id.owner_type ==
+        PORT_OWNER_TYPE_FADER
+      || port->id.owner_type ==
+        PORT_OWNER_TYPE_PREFADER
+      || (port->id.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN
+          &&
+          port->id.plugin_id.slot_type ==
+            PLUGIN_SLOT_INSTRUMENT))
     {
       track = port_get_track (port, true);
       g_return_if_fail (
@@ -3476,21 +3474,22 @@ port_process (
                 }
 
               /* send cc to mapped ports */
-              for (int i = 0; i < events->num_events; i++)
+              for (int i = 0;
+                   i < events->num_events; i++)
                 {
-                  MidiEvent * ev = &events->events[i];
+                  MidiEvent * ev =
+                    &events->events[i];
                   midi_mappings_apply (
                     MIDI_MAPPINGS, ev->raw_buffer);
                 }
             }
         }
 
-      for (k = 0; k < port->num_srcs; k++)
+      for (int k = 0; k < port->num_srcs; k++)
         {
-          src_port = port->srcs[k];
+          Port * src_port = port->srcs[k];
           int dest_idx =
-            port_get_dest_index (
-              src_port, port);
+            port_get_dest_index (src_port, port);
           if (src_port->dest_enabled[dest_idx])
             {
               g_return_if_fail (
@@ -3584,9 +3583,10 @@ port_process (
       if (local_offset + nframes ==
             AUDIO_ENGINE->block_length)
         {
+          MidiEvents * events = port->midi_events;
           if (port->write_ring_buffers)
             {
-              for (int i = port->midi_events->num_events - 1;
+              for (int i = events->num_events - 1;
                    i >= 0; i--)
                 {
                   if (zix_ring_write_space (
@@ -3599,7 +3599,7 @@ port_process (
                     }
 
                   MidiEvent * ev =
-                    &port->midi_events->events[i];
+                    &events->events[i];
                   ev->systime =
                     g_get_monotonic_time ();
                   zix_ring_write (
@@ -3609,8 +3609,7 @@ port_process (
             }
           else
             {
-              if (port->midi_events->num_events >
-                    0)
+              if (events->num_events > 0)
                 {
                   port->last_midi_event_time =
                     g_get_monotonic_time ();
@@ -3630,25 +3629,22 @@ port_process (
           break;
         }
 
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-          !track)
-        {
-          g_return_if_reached ();
-        }
+      g_return_if_fail (
+        port->id.owner_type !=
+          PORT_OWNER_TYPE_TRACK_PROCESSOR
+        || IS_TRACK_AND_NONNULL (track));
 
       /* only consider incoming external data if
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
       if ((port->id.owner_type !=
-             PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-           (port->id.owner_type ==
-              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-            track &&
-            track_type_can_record (track->type) &&
-            track_get_recording (track))) &&
-           port->id.flow == FLOW_INPUT)
+             PORT_OWNER_TYPE_TRACK_PROCESSOR
+           || (port->id.owner_type ==
+                 PORT_OWNER_TYPE_TRACK_PROCESSOR
+               && track_type_can_record (track->type)
+               && track_get_recording (track)))
+          && port->id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
@@ -3667,12 +3663,11 @@ port_process (
             }
         }
 
-      for (k = 0; k < port->num_srcs; k++)
+      for (int k = 0; k < port->num_srcs; k++)
         {
-          src_port = port->srcs[k];
+          Port * src_port = port->srcs[k];
           int dest_idx =
-            port_get_dest_index (
-              src_port, port);
+            port_get_dest_index (src_port, port);
           if (!src_port->dest_enabled[dest_idx])
             continue;
 
@@ -3689,8 +3684,7 @@ port_process (
               maxf = port->maxf;
               minf = port->minf;
             }
-          depth_range =
-            (maxf - minf) / 2.f;
+          depth_range = (maxf - minf) / 2.f;
 
           if (port->id.type == TYPE_AUDIO)
             {
@@ -3792,14 +3786,16 @@ port_process (
          * track on its own without parents),
          * clear master input */
         if (G_UNLIKELY (
-              AUDIO_ENGINE->bounce_mode >
-                BOUNCE_OFF &&
-              !AUDIO_ENGINE->bounce_with_parents &&
+              AUDIO_ENGINE->bounce_mode > BOUNCE_OFF
+              && !AUDIO_ENGINE->bounce_with_parents
+              &&
               (port ==
-                 P_MASTER_TRACK->processor->stereo_in->l ||
+                 P_MASTER_TRACK->processor->
+                   stereo_in->l
+               ||
                port ==
-                 P_MASTER_TRACK->processor->stereo_in->r)))
-
+                 P_MASTER_TRACK->processor->
+                   stereo_in->r)))
           {
             dsp_fill (
               &port->buf[local_offset],
@@ -3828,11 +3824,6 @@ port_process (
               port->id.flow == FLOW_OUTPUT &&
               track && track->bounce_to_master))
           {
-#if 0
-            char id_str[6000];
-            port_get_full_designation (port, id_str);
-            g_message ("%s:", id_str);
-#endif
 
 #define _ADD(l_or_r) \
   dsp_add2 ( \
@@ -3991,12 +3982,11 @@ port_process (
         /* whether this is the first CV processed
          * on this control port */
         bool first_cv = true;
-        for (k = 0; k < port->num_srcs; k++)
+        for (int k = 0; k < port->num_srcs; k++)
           {
-            src_port = port->srcs[k];
+            Port * src_port = port->srcs[k];
             int dest_idx =
-              port_get_dest_index (
-                src_port, port);
+              port_get_dest_index (src_port, port);
             if (!src_port->dest_enabled[
                    dest_idx])
               continue;

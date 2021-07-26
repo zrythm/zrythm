@@ -317,8 +317,8 @@ process_node (
         /* if exporting and the port is not a
          * project port, ignore it */
         else if (
-          engine_is_port_own (AUDIO_ENGINE, port) &&
-          AUDIO_ENGINE->exporting)
+          engine_is_port_own (AUDIO_ENGINE, port)
+          && AUDIO_ENGINE->exporting)
           {
           }
 

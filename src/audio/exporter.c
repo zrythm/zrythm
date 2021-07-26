@@ -392,8 +392,7 @@ export_audio (
       EngineProcessTimeInfo time_nfo = {
         .g_start_frames = PLAYHEAD->frames,
         .local_offset = 0,
-        .nframes = nframes,
-        .nframes_total = nframes };
+        .nframes = nframes, };
       router_start_cycle (ROUTER, time_nfo);
       engine_post_process (
         AUDIO_ENGINE, nframes, nframes);

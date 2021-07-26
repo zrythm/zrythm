@@ -395,20 +395,14 @@ typedef struct EngineProcessTimeInfo
   long       g_start_frames;
 
   /** Offset in the current processing cycle,
-   * between 0 and nframes_total. */
+   * between 0 and the number of frames in
+   * AudioEngine.block_length. */
   nframes_t  local_offset;
 
   /**
    * Number of frames to process in this call.
-   *
-   * May be less than nframes_total if the cycle
-   * is split.
    */
   nframes_t  nframes;
-
-  /** Total number of frames to process in the
-   * current processing cycle. */
-  const nframes_t  nframes_total;
 } EngineProcessTimeInfo;
 
 /**
