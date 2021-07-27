@@ -73,3 +73,25 @@ optimized_utils_lib = static_library (
   )
 
 zrythm_srcs += files (util_srcs)
+
+# use custom lv2apply until upstream merges URID
+# support
+lv2apply = executable (
+  'zrythm_lv2apply',
+  sources: [
+    'lv2apply.c',
+    'objects.c',
+    'symap.c',
+    ],
+  dependencies : [
+    sndfile_dep,
+    lilv_dep,
+    gtk_dep,
+    libm,
+    ],
+  include_directories: all_inc,
+  c_args: [ common_cflags ],
+  link_args: common_ldflags,
+  install: true,
+  install_dir: get_option ('bindir'),
+  )

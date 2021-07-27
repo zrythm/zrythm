@@ -131,27 +131,6 @@ if get_option ('tests')
       'file://' + bundle + '/')
   endforeach
 
-  # use custom lv2apply until upstream merges URID
-  # support
-  lv2apply = executable (
-    'lv2apply',
-    sources: [
-      'helpers/lv2apply.c',
-      '../src/utils/objects.c',
-      '../src/utils/symap.c',
-      ],
-    dependencies : [
-      sndfile_dep,
-      lilv_dep,
-      gtk_dep,
-      libm,
-      ],
-    include_directories: all_inc,
-    c_args: [ common_cflags ],
-    link_args: common_ldflags,
-    install: false,
-    )
-
   test_lv2apply_wavs = []
   if test_config.has ('HAVE_MVERB')
     file_prefix = 'test_mixdown_midi_routed_to_instrument_track'
