@@ -46,6 +46,13 @@ audio_selections_init (
 {
   self->schema_version =
     AUDIO_SELECTIONS_SCHEMA_VERSION;
+
+  self->base.magic = ARRANGER_SELECTIONS_MAGIC;
+  self->base.type =
+    ARRANGER_SELECTIONS_TYPE_AUDIO;
+  self->base.schema_version =
+    ARRANGER_SELECTIONS_SCHEMA_VERSION;
+
   position_init (&self->sel_start);
   position_init (&self->sel_end);
   region_identifier_init (&self->region_id);

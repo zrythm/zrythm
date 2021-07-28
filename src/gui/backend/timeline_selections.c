@@ -773,3 +773,30 @@ timeline_selections_set_index_in_prev_lane (
       r_obj->index_in_prev_lane = r->id.idx;
     }
 }
+
+bool
+timeline_selections_contains_only_regions (
+  TimelineSelections * self)
+{
+  return
+    self->num_regions > 0
+    && self->num_scale_objects == 0
+    && self->num_markers == 0 ;
+}
+
+bool
+timeline_selections_contains_only_region_types (
+  TimelineSelections * self,
+  RegionType           types)
+{
+  if (!timeline_selections_contains_only_regions (self))
+    return false;
+
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      ZRegion * r = self->regions[i];
+      if (!(types & r->id.type))
+        return false;
+    }
+  return true;
+}

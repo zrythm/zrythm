@@ -1211,6 +1211,46 @@ create_musical_mode_pset_menu (
     }
 }
 
+typedef struct ContextMenuData
+{
+  AudioFunctionType audio_func;
+} ContextMenuData;
+
+static void
+free_context_menu_data (
+  ContextMenuData * data,
+  GClosure *        closure)
+{
+  free (data);
+}
+
+static void
+on_audio_func_activate (
+  GtkCheckMenuItem * item,
+  ContextMenuData *  data)
+{
+  for (int i = 0; i < TL_SELECTIONS->num_regions;
+       i++)
+    {
+      ZRegion * r = TL_SELECTIONS->regions[i];
+      AudioSelections * sel =
+        audio_selections_new ();
+      region_identifier_copy (
+        &sel->region_id, &r->id);
+      sel->has_selection = true;
+      position_set_to_pos (
+        &sel->sel_start, &r->base.pos);
+      position_set_to_pos (
+        &sel->sel_end, &r->base.end_pos);
+      UndoableAction * ua =
+        arranger_selections_action_new_edit_audio_function (
+          (ArrangerSelections *) sel,
+          data->audio_func, NULL);
+      ua->num_actions = i + 1;
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+}
+
 /**
  * Show context menu at x, y.
  */
@@ -1259,9 +1299,63 @@ timeline_arranger_widget_show_context_menu (
         gtk_separator_menu_item_new ();
       APPEND_TO_MENU;
 
-      if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
+      if (timeline_selections_contains_only_regions (TL_SELECTIONS))
         {
           ZRegion * r = (ZRegion *) obj;
+
+          if (timeline_selections_contains_only_region_types (TL_SELECTIONS, REGION_TYPE_AUDIO))
+            {
+              menuitem =
+                GTK_WIDGET (
+                  z_gtk_create_menu_item (
+                    _("Apply Function"),
+                    "modulator", F_NO_TOGGLE,
+                    NULL));
+              gtk_widget_set_visible (
+                GTK_WIDGET (menuitem), true);
+
+              GtkMenu * submenu =
+                GTK_MENU (gtk_menu_new ());
+              gtk_widget_set_visible (
+                GTK_WIDGET (submenu), true);
+              for (int i = AUDIO_FUNCTION_INVERT;
+                   i < AUDIO_FUNCTION_CUSTOM_PLUGIN;
+                   i++)
+                {
+                  if (i == AUDIO_FUNCTION_NORMALIZE_RMS
+                      || i == AUDIO_FUNCTION_NORMALIZE_LUFS)
+                    continue;
+
+                  GtkWidget * submenu_item =
+                    GTK_WIDGET (
+                      z_gtk_create_menu_item (
+                        _(audio_function_type_to_string (i)),
+                        NULL, F_NO_TOGGLE, NULL));
+                  ContextMenuData * data =
+                    object_new (ContextMenuData);
+                  data->audio_func = i;
+                  g_signal_connect_data (
+                    G_OBJECT (submenu_item),
+                    "activate",
+                    G_CALLBACK (
+                      on_audio_func_activate),
+                    data,
+                    (GClosureNotify)
+                    free_context_menu_data,
+                    0);
+                  gtk_widget_set_visible (
+                    GTK_WIDGET (submenu_item),
+                    true);
+                  gtk_menu_shell_append (
+                    GTK_MENU_SHELL (submenu),
+                    submenu_item);
+                }
+              gtk_menu_item_set_submenu (
+                GTK_MENU_ITEM (menuitem),
+                GTK_WIDGET (submenu));
+              gtk_menu_shell_append (
+                GTK_MENU_SHELL (menu), menuitem);
+            }
 
           if (arranger_object_get_muted (obj))
             {
@@ -1286,7 +1380,7 @@ timeline_arranger_widget_show_context_menu (
           gtk_menu_shell_append (
             GTK_MENU_SHELL(menu), menuitem);
 
-          if (r->id.type == REGION_TYPE_MIDI)
+          if (timeline_selections_contains_only_region_types (TL_SELECTIONS, REGION_TYPE_MIDI))
             {
               menuitem =
                 gtk_menu_item_new_with_label (
@@ -1321,31 +1415,27 @@ timeline_arranger_widget_show_context_menu (
                 self, menu, obj);
             }
 
-          if (r->id.type == REGION_TYPE_MIDI ||
-              r->id.type == REGION_TYPE_AUDIO)
-            {
-              menuitem =
-                gtk_menu_item_new_with_label (
-                  _("Quick bounce"));
-              gtk_menu_shell_append (
-                GTK_MENU_SHELL(menu), menuitem);
-              g_signal_connect (
-                menuitem, "activate",
-                G_CALLBACK (
-                  timeline_arranger_on_quick_bounce_clicked),
-                r);
+          menuitem =
+            gtk_menu_item_new_with_label (
+              _("Quick bounce"));
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL(menu), menuitem);
+          g_signal_connect (
+            menuitem, "activate",
+            G_CALLBACK (
+              timeline_arranger_on_quick_bounce_clicked),
+            r);
 
-              menuitem =
-                gtk_menu_item_new_with_label (
-                  _("Bounce..."));
-              gtk_menu_shell_append (
-                GTK_MENU_SHELL(menu), menuitem);
-              g_signal_connect (
-                menuitem, "activate",
-                G_CALLBACK (
-                  timeline_arranger_on_bounce_clicked),
-                r);
-            }
+          menuitem =
+            gtk_menu_item_new_with_label (
+              _("Bounce..."));
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL(menu), menuitem);
+          g_signal_connect (
+            menuitem, "activate",
+            G_CALLBACK (
+              timeline_arranger_on_bounce_clicked),
+            r);
         }
     }
   else

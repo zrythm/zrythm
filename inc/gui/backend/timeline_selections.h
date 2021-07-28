@@ -216,6 +216,15 @@ void
 timeline_selections_set_index_in_prev_lane (
   TimelineSelections * self);
 
+bool
+timeline_selections_contains_only_regions (
+  TimelineSelections * self);
+
+bool
+timeline_selections_contains_only_region_types (
+  TimelineSelections * self,
+  RegionType           types);
+
 /**
  * @}
  */
