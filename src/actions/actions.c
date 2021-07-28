@@ -2489,10 +2489,10 @@ DEFINE_SIMPLE (activate_editor_function)
             do_audio_func (
               AUDIO_FUNCTION_INVERT, NULL);
           }
-        else if (string_is_equal (str, "normalize"))
+        else if (string_is_equal (str, "normalize-peak"))
           {
             do_audio_func (
-              AUDIO_FUNCTION_NORMALIZE, NULL);
+              AUDIO_FUNCTION_NORMALIZE_PEAK, NULL);
           }
         else if (string_is_equal (str, "reverse"))
           {

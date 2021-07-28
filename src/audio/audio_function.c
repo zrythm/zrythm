@@ -331,7 +331,7 @@ audio_function_apply (
           dsp_mul_k2 (
             &frames[0], -1.f, num_frames * channels);
           break;
-        case AUDIO_FUNCTION_NORMALIZE:
+        case AUDIO_FUNCTION_NORMALIZE_PEAK:
           /* peak-normalize */
           {
             float abs_peak = 0.f;
@@ -342,6 +342,12 @@ audio_function_apply (
               &frames[0], 1.f / abs_peak,
               num_frames * channels);
           }
+          break;
+        case AUDIO_FUNCTION_NORMALIZE_RMS:
+          /* TODO rms-normalize */
+          break;
+        case AUDIO_FUNCTION_NORMALIZE_LUFS:
+          /* TODO lufs-normalize */
           break;
         case AUDIO_FUNCTION_REVERSE:
           for (size_t i = 0; i < num_frames; i++)

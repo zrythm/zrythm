@@ -42,7 +42,9 @@ typedef struct Plugin Plugin;
 typedef enum AudioFunctionType
 {
   AUDIO_FUNCTION_INVERT,
-  AUDIO_FUNCTION_NORMALIZE,
+  AUDIO_FUNCTION_NORMALIZE_PEAK,
+  AUDIO_FUNCTION_NORMALIZE_RMS,
+  AUDIO_FUNCTION_NORMALIZE_LUFS,
   AUDIO_FUNCTION_REVERSE,
 
   /** Custom plugin. */
@@ -56,7 +58,9 @@ static const cyaml_strval_t
   audio_function_type_strings[] =
 {
   { __("Invert"), AUDIO_FUNCTION_INVERT },
-  { __("Normalize"), AUDIO_FUNCTION_NORMALIZE },
+  { __("Normalize Peak"), AUDIO_FUNCTION_NORMALIZE_PEAK },
+  { __("Normalize RMS"), AUDIO_FUNCTION_NORMALIZE_RMS },
+  { __("Normalize LUFS"), AUDIO_FUNCTION_NORMALIZE_LUFS },
   { __("Reverse"), AUDIO_FUNCTION_REVERSE },
   { __("Custom Plugin"), AUDIO_FUNCTION_CUSTOM_PLUGIN },
   { __("Invalid"), AUDIO_FUNCTION_INVALID },
