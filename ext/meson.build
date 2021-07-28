@@ -17,6 +17,7 @@
 
 subdir ('midilib')
 subdir ('nanovg')
+subdir ('noisegate-lv2')
 subdir ('weakjack')
 subdir ('whereami')
 subdir ('zix')
