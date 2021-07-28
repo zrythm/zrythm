@@ -249,6 +249,8 @@ audio_region_replace_frames (
 
   audio_clip_write_to_pool (
     clip, false, F_NOT_BACKUP);
+
+  self->last_clip_change = g_get_monotonic_time ();
 }
 
 static void

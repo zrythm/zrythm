@@ -402,7 +402,6 @@ audio_function_apply (
       audio_region_replace_frames (
         r, frames, (size_t) start.frames,
         num_frames, F_NO_DUPLICATE_CLIP);
-      r->last_clip_change = g_get_monotonic_time ();
     }
 
   if (!ZRYTHM_TESTING
