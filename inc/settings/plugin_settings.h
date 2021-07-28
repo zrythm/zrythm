@@ -132,7 +132,7 @@ plugin_settings_schema =
 PluginSetting *
 NONNULL
 plugin_setting_new_default (
-  PluginDescriptor * descr);
+  const PluginDescriptor * descr);
 
 PluginSetting *
 NONNULL

@@ -577,14 +577,16 @@ arranger_selections_action_new_edit_automation_function (
 UndoableAction *
 arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
-  AudioFunctionType    audio_func_type)
+  AudioFunctionType    audio_func_type,
+  const char *         uri)
 {
   /* prepare selections before */
   ArrangerSelections * sel_before_clone =
     arranger_selections_clone (sel_before);
   int res =
     audio_function_apply (
-      sel_before_clone, AUDIO_FUNCTION_INVALID);
+      sel_before_clone, AUDIO_FUNCTION_INVALID,
+      NULL);
   if (res != 0)
     {
       arranger_selections_free_full (
@@ -596,7 +598,7 @@ arranger_selections_action_new_edit_audio_function (
     arranger_selections_clone (sel_before);
   res =
     audio_function_apply (
-      sel_after, audio_func_type);
+      sel_after, audio_func_type, uri);
   if (res != 0)
     {
       arranger_selections_free_full (sel_after);
@@ -1954,7 +1956,8 @@ do_or_undo_edit (
   if (!self->first_run)
     {
       if (self->edit_type ==
-            ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION &&
+            ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION
+          &&
           self->sel->type ==
             ARRANGER_SELECTIONS_TYPE_AUDIO)
         {

@@ -426,6 +426,7 @@ DECLARE_SIMPLE (
 
 /* Editor functions. */
 DECLARE_SIMPLE (activate_editor_function);
+DECLARE_SIMPLE (activate_editor_function_lv2);
 
 COLD DECLARE_SIMPLE (
   activate_midi_editor_highlighting);

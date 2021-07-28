@@ -1057,17 +1057,15 @@ on_plugin_window_visibility_changed (
     }
 
   Track * track = plugin_get_track (pl);
-  if (track->type ==
-      TRACK_TYPE_INSTRUMENT &&
-      track->widget &&
-      Z_IS_TRACK_WIDGET (
-        track->widget))
+  if (track && track->type == TRACK_TYPE_INSTRUMENT
+      && track->widget
+      && Z_IS_TRACK_WIDGET (track->widget))
     track_widget_force_redraw (track->widget);
 
-  if (track->channel &&
-      track->channel->widget &&
-      Z_IS_CHANNEL_WIDGET (
-        track->channel->widget))
+  if (track && track->channel
+      && track->channel->widget
+      &&
+      Z_IS_CHANNEL_WIDGET (track->channel->widget))
     {
       /* redraw slot */
       switch (pl->id.slot_type)

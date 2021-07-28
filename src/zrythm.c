@@ -495,6 +495,12 @@ zrythm_get_dir (
               prefix, "share", "zrythm",
               "themes", "css", NULL);
           break;
+        case ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR:
+          res =
+            g_build_filename (
+              prefix, "share", "zrythm",
+              "lv2", NULL);
+          break;
         default:
           break;
         }

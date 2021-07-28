@@ -871,11 +871,15 @@ plugin_get_track (
   Tracklist * tracklist = NULL;
   if (self->is_auditioner)
     tracklist = SAMPLE_PROCESSOR->tracklist;
-  else
+  else if (!self->is_function)
     tracklist = TRACKLIST;
 
+  if (!tracklist)
+    return NULL;
+
   g_return_val_if_fail (
-    self->id.track_pos < tracklist->num_tracks,
+    self->id.track_pos >= 0
+    && self->id.track_pos < tracklist->num_tracks,
     NULL);
   Track * track =
     tracklist->tracks[self->id.track_pos];
@@ -1062,14 +1066,19 @@ plugin_generate_window_title (
   g_return_val_if_fail (
     plugin->setting->descr, NULL);
 
-  Track * track = plugin_get_track (plugin);
-  g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (track), NULL);
+  Track * track = NULL;
+  if (plugin->is_project)
+    {
+      track = plugin_get_track (plugin);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), NULL);
+    }
 
   const PluginSetting * setting = plugin->setting;
 
-  const char* track_name = track->name;
-  const char* plugin_name = setting->descr->name;
+  const char * track_name =
+    track ? track->name : "";
+  const char * plugin_name = setting->descr->name;
   g_return_val_if_fail (
     track_name && plugin_name, NULL);
 
@@ -1921,7 +1930,8 @@ plugin_open_ui (
           g_debug (
             "creating and opening generic UI");
           plugin_gtk_create_window (self);
-          plugin_gtk_open_generic_ui (self);
+          plugin_gtk_open_generic_ui (
+            self, F_PUBLISH_EVENTS);
         }
       else if (setting->open_with_carla)
         {

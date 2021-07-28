@@ -1762,7 +1762,7 @@ test_audio_functions ()
   UndoableAction * ua =
     arranger_selections_action_new_edit_audio_function (
       (ArrangerSelections *) AUDIO_SELECTIONS,
-      AUDIO_FUNCTION_INVERT);
+      AUDIO_FUNCTION_INVERT, NULL);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   verify_audio_function (

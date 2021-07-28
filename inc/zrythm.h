@@ -126,6 +126,9 @@ typedef enum ZrythmDirType
   /** CSS themes. */
   ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR,
 
+  /** Built-in plugins path. */
+  ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR,
+
   /* ************************************ */
 
   /*

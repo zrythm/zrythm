@@ -411,7 +411,7 @@ plugin_descriptor_is_same_plugin (
 NONNULL
 bool
 plugin_descriptor_has_custom_ui (
-  PluginDescriptor * self);
+  const PluginDescriptor * self);
 
 /**
  * Returns the minimum bridge mode required for this

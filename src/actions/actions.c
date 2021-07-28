@@ -91,6 +91,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/tracklist.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/dialogs.h"
@@ -2359,10 +2360,13 @@ do_automation_func (
 /**
  * Common routine for applying undoable audio
  * functions.
+ *
+ * @param uri Plugin URI, if applying plugin.
  */
 static void
 do_audio_func (
-  AudioFunctionType type)
+  const AudioFunctionType  type,
+  const char *             uri)
 {
   g_return_if_fail (
     region_find (&CLIP_EDITOR->region_id));
@@ -2376,9 +2380,11 @@ do_audio_func (
       return;
     }
 
-  UndoableAction * ua =
+  UndoableAction * ua = NULL;
+  ua =
     arranger_selections_action_new_edit_audio_function (
-      sel, type);
+      sel, type, uri);
+
   if (ua)
     {
       undo_manager_perform (UNDO_MANAGER, ua);
@@ -2476,22 +2482,22 @@ DEFINE_SIMPLE (activate_editor_function)
           {
             do_audio_func (
               g_settings_get_int (
-                S_UI, "audio-function"));
+                S_UI, "audio-function"), NULL);
           }
         else if (string_is_equal (str, "invert"))
           {
             do_audio_func (
-              AUDIO_FUNCTION_INVERT);
+              AUDIO_FUNCTION_INVERT, NULL);
           }
         else if (string_is_equal (str, "normalize"))
           {
             do_audio_func (
-              AUDIO_FUNCTION_NORMALIZE);
+              AUDIO_FUNCTION_NORMALIZE, NULL);
           }
         else if (string_is_equal (str, "reverse"))
           {
             do_audio_func (
-              AUDIO_FUNCTION_REVERSE);
+              AUDIO_FUNCTION_REVERSE, NULL);
           }
         else
           {
@@ -2500,6 +2506,40 @@ DEFINE_SIMPLE (activate_editor_function)
       }
       break;
     default:
+      break;
+    }
+}
+
+DEFINE_SIMPLE (activate_editor_function_lv2)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (!region)
+    return;
+
+  PluginDescriptor * descr =
+    plugin_manager_find_plugin_from_uri (
+      PLUGIN_MANAGER, str);
+  g_return_if_fail (descr);
+
+  switch (region->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      {
+      }
+      break;
+    case REGION_TYPE_AUDIO:
+      {
+        do_audio_func (
+          AUDIO_FUNCTION_CUSTOM_PLUGIN, str);
+      }
+      break;
+    default:
+      g_return_if_reached ();
       break;
     }
 }

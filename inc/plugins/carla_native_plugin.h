@@ -242,7 +242,7 @@ carla_native_plugin_close (
 
 bool
 carla_native_plugin_has_custom_ui (
-  PluginDescriptor * descr);
+  const PluginDescriptor * descr);
 
 /**
  * Deactivates, cleanups and frees the instance.

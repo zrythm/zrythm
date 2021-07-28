@@ -93,5 +93,4 @@ lv2apply = executable (
   c_args: [ common_cflags ],
   link_args: common_ldflags,
   install: true,
-  install_dir: get_option ('bindir'),
   )

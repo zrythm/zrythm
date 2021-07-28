@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,6 +30,7 @@
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
@@ -50,6 +51,67 @@ on_highlighting_changed (
   piano_roll_set_highlighting (
     PIANO_ROLL,
     gtk_combo_box_get_active (widget));
+}
+
+/**
+ * Appends eligible plugins.
+ */
+static void
+update_audio_funcs_menu (
+  EditorToolbarWidget * self)
+{
+  if (self->added_audio_funcs)
+    return;
+
+  GMenu * plugins_menu = g_menu_new ();
+  for (size_t i = 0;
+       i < PLUGIN_MANAGER->plugin_descriptors->len;
+       i++)
+    {
+      PluginDescriptor * descr =
+        g_ptr_array_index (
+          PLUGIN_MANAGER->plugin_descriptors, i);
+      if (descr->protocol != PROT_LV2
+          || !plugin_descriptor_is_effect (descr)
+          || descr->num_audio_ins != 2
+          || descr->num_audio_outs != 2
+          || descr->category == PC_ANALYZER)
+        continue;
+
+      /* skip if open with carla by default */
+      PluginSetting * setting =
+        plugin_setting_new_default (descr);
+      g_return_if_fail (setting);
+      bool skip = false;
+      if (setting->open_with_carla)
+        {
+          skip = true;
+        }
+      plugin_setting_free (setting);
+      if (skip)
+        continue;
+
+      char * detailed_action =
+        g_strdup_printf (
+          "app.editor-function-lv2::%s", descr->uri);
+      GMenuItem * item =
+        g_menu_item_new (
+          descr->name, detailed_action);
+      g_menu_item_set_attribute (
+        item, G_MENU_ATTRIBUTE_ICON,
+        "s", "edit-select-invert",
+        NULL);
+      g_menu_append_item (
+        G_MENU (plugins_menu), item);
+    }
+
+  g_menu_append_submenu (
+    G_MENU (self->audio_functions_menu),
+    _("Plugin Effect"), G_MENU_MODEL (plugins_menu));
+
+  self->added_audio_funcs = true;
+  g_menu_freeze (
+    G_MENU (self->audio_functions_menu));
 }
 
 /**
@@ -157,6 +219,8 @@ editor_toolbar_widget_refresh (
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
+
+        update_audio_funcs_menu (self);
 
         button_with_menu_widget_set_menu_model (
           self->functions_btn,
