@@ -134,9 +134,28 @@ typedef enum EventType
   ET_MODULATOR_ADDED,
   ET_RT_SELECTIONS_CHANGED,
   ET_PINNED_TRACKLIST_SIZE_CHANGED,
+
+  /**
+   * Track lanes visibility changed.
+   *
+   * Arg: (null).
+   */
   ET_TRACK_LANES_VISIBILITY_CHANGED,
+
+  /**
+   * Track lane added.
+   *
+   * Arg: (null).
+   */
   ET_TRACK_LANE_ADDED,
+
+  /**
+   * Track lane removed.
+   *
+   * Arg: (null).
+   */
   ET_TRACK_LANE_REMOVED,
+
   ET_PIANO_ROLL_HIGHLIGHTING_CHANGED,
   ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED,
   ET_AUTOMATION_TRACKLIST_AT_REMOVED,

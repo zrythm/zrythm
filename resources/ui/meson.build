@@ -87,7 +87,6 @@ resource_files += files ([
   'timeline_toolbar.ui',
   'toolbox.ui',
   'top_bar.ui',
-  'track_lane.ui',
   'tracklist_header.ui',
   'track_top_grid.ui',
   'track.ui',

@@ -45,6 +45,7 @@
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/main_notebook.h"
@@ -565,10 +566,8 @@ draw_lanes (
           BUTTON_PADDING_FROM_EDGE,
         total_height + BUTTON_PADDING_FROM_EDGE);
       PangoLayout * layout = self->layout;
-      char str[50];
-      sprintf (str, _("Lane %d"), i + 1);
       pango_layout_set_text (
-        layout, str, -1);
+        layout, lane->name, -1);
       pango_cairo_show_layout (cr, layout);
 
       /* create buttons if necessary */
@@ -1548,21 +1547,23 @@ get_lane_at_y (
   if (!track->lanes_visible)
     return NULL;
 
-  TrackLane * lane = NULL;
+  double height_before = track->main_height;
   for (int i = 0; i < track->num_lanes; i++)
     {
-      lane = track->lanes[i];
-
-      g_message ("checking %d", i);
-      if (lane->widget &&
-          ui_is_child_hit (
-            GTK_WIDGET (self),
-            GTK_WIDGET (lane->widget),
-            0, 1, 0, y, 0, 0))
+      TrackLane * lane = track->lanes[i];
+      double next_height =
+        height_before + lane->height;
+      if (y > height_before
+          && y <= next_height)
         {
+          g_debug (
+            "found lane %d at y %f", i, y);
           return lane;
         }
+      height_before = next_height;
     }
+
+  g_debug ("no lane found at y %f", y);
 
   return NULL;
 }
@@ -1597,6 +1598,23 @@ on_midi_ch_selected (
     }
   free (info);
 }
+
+#if 0
+static void
+on_lane_rename (
+  GtkMenuItem * menu_item,
+  TrackLane *   lane)
+{
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Marker name"), lane,
+      (GenericStringGetter)
+      track_lane_get_name,
+      (GenericStringSetter)
+      track_lane_rename_with_action);
+  gtk_widget_show_all (GTK_WIDGET (dialog));
+}
+#endif
 
 static void
 on_passthrough_input_toggled (
@@ -1789,6 +1807,8 @@ show_context_menu (
     get_lane_at_y (self, y);
 
 #define APPEND(mi) \
+  gtk_widget_set_visible ( \
+    GTK_WIDGET (menuitem), true); \
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL (menu), \
     GTK_WIDGET (menuitem));
@@ -2077,6 +2097,17 @@ show_context_menu (
       F_NO_TOGGLE, "app.change-track-color");
   APPEND (menuitem);
 
+#if 0
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Rename lane..."), "text-field",
+      F_NO_TOGGLE, NULL);
+  g_signal_connect (
+    G_OBJECT (menuitem), "activate",
+    G_CALLBACK (on_lane_rename), lane);
+  APPEND (menuitem);
+#endif
+
   /* add midi channel selectors */
   if (track_type_has_piano_roll (track->type))
     {
@@ -2269,18 +2300,25 @@ on_right_click (
  */
 static void
 show_edit_name_popover (
-  TrackWidget * self)
+  TrackWidget * self,
+  TrackLane *   lane)
 {
-  /*GtkWidget * popover =*/
-    /*gtk_popover_new (GTK_WIDGET (self));*/
-
-  /*gtk_container_add (*/
-
-  editable_label_widget_show_popover_for_widget (
-    GTK_WIDGET (self), self->track,
-    (GenericStringGetter) track_get_name,
-    (GenericStringSetter)
-    track_set_name_with_action);
+  if (lane)
+    {
+      editable_label_widget_show_popover_for_widget (
+        GTK_WIDGET (self), lane,
+        (GenericStringGetter) track_lane_get_name,
+        (GenericStringSetter)
+        track_lane_rename_with_action);
+    }
+  else
+    {
+      editable_label_widget_show_popover_for_widget (
+        GTK_WIDGET (self), self->track,
+        (GenericStringGetter) track_get_name,
+        (GenericStringSetter)
+        track_set_name_with_action);
+    }
 }
 
 static void
@@ -2555,8 +2593,11 @@ multipress_released (
     }
   else if (n_press == 2)
     {
+      TrackLane * lane =
+        get_lane_at_y (self, y);
+
       /* show popup to edit the name */
-      show_edit_name_popover (self);
+      show_edit_name_popover (self, lane);
     }
 
   self->button_pressed = 0;
@@ -3384,6 +3425,16 @@ on_destroy (
     {
       cb = self->bot_buttons[i];
       custom_button_widget_free (cb);
+    }
+
+  for (int i = 0; i < track->num_lanes; i++)
+    {
+      TrackLane * lane = track->lanes[i];
+      for (int j = 0; j < lane->num_buttons; j++)
+        {
+          cb = lane->buttons[j];
+          custom_button_widget_free (cb);
+        }
     }
 
   g_object_unref (self);

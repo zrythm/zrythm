@@ -79,6 +79,9 @@ typedef enum EditTracksActionType
   /** Rename track. */
   EDIT_TRACK_ACTION_TYPE_RENAME,
 
+  /** Rename lane. */
+  EDIT_TRACK_ACTION_TYPE_RENAME_LANE,
+
   EDIT_TRACK_ACTION_TYPE_COLOR,
   EDIT_TRACK_ACTION_TYPE_COMMENT,
   EDIT_TRACK_ACTION_TYPE_ICON,
@@ -98,6 +101,8 @@ static const cyaml_strval_t
   { "pan", EDIT_TRACK_ACTION_TYPE_PAN },
   { "direct out", EDIT_TRACK_ACTION_TYPE_DIRECT_OUT },
   { "Rename", EDIT_TRACK_ACTION_TYPE_RENAME },
+  { "Rename lane",
+    EDIT_TRACK_ACTION_TYPE_RENAME_LANE },
   { "Color", EDIT_TRACK_ACTION_TYPE_COLOR },
   { "comment", EDIT_TRACK_ACTION_TYPE_COMMENT },
   { "Icon", EDIT_TRACK_ACTION_TYPE_ICON },
@@ -586,6 +591,16 @@ tracklist_selections_action_new (
     NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
     -1, EDIT_TRACK_ACTION_TYPE_RENAME, \
     false, NULL, \
+    0.f, 0.f, name, false)
+
+#define tracklist_selections_action_new_edit_rename_lane( \
+  track_lane,name) \
+  tracklist_selections_action_new ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track_lane_get_track (track_lane), \
+    0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_RENAME_LANE, \
+    track_lane->pos, NULL, \
     0.f, 0.f, name, false)
 
 /**

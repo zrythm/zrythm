@@ -3871,5 +3871,5 @@ track_free (Track * self)
 
   object_zero_and_free (self);
 
-  g_debug ("done");
+  g_debug ("done freeing track");
 }

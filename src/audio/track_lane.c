@@ -23,6 +23,8 @@
 #include "audio/track.h"
 #include "audio/track_lane.h"
 #include "audio/tracklist.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
@@ -72,7 +74,8 @@ track_lane_new (
 {
   TrackLane * self = object_new (TrackLane);
 
-  self->name = g_strdup_printf (_("Lane %d"), pos);
+  self->name =
+    g_strdup_printf (_("Lane %d"), pos + 1);
   self->pos = pos;
   self->track_pos = track->pos;
 
@@ -83,6 +86,53 @@ track_lane_new (
   self->height = TRACK_DEF_HEIGHT;
 
   return self;
+}
+
+/**
+ * Rename the lane.
+ *
+ * @param with_action Whether to make this an
+ *   undoable action.
+ */
+void
+track_lane_rename (
+  TrackLane *  self,
+  const char * new_name,
+  bool         with_action)
+{
+  if (with_action)
+    {
+      UndoableAction * ua =
+        tracklist_selections_action_new_edit_rename_lane (
+          self, new_name);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      EVENTS_PUSH (
+        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+    }
+  else
+    {
+      char * prev_name = self->name;
+      self->name = g_strdup (new_name);
+      g_free (prev_name);
+    }
+}
+
+/**
+ * Wrapper over track_lane_rename().
+ */
+void
+track_lane_rename_with_action (
+  TrackLane *  self,
+  const char * new_name)
+{
+  track_lane_rename (self, new_name, true);
+}
+
+const char *
+track_lane_get_name (
+  TrackLane * self)
+{
+  return self->name;
 }
 
 /**
@@ -373,19 +423,15 @@ void
 track_lane_free (
   TrackLane * self)
 {
-  if (self->widget)
-    {
-      if (GTK_IS_WIDGET (self->widget))
-        g_object_unref (
-          G_OBJECT (self->widget));
-    }
-
-  if (self->name)
-    g_free (self->name);
+  g_free_and_null (self->name);
 
   for (int i = 0; i < self->num_regions; i++)
-    arranger_object_free (
-      (ArrangerObject *) self->regions[i]);
+    {
+      arranger_object_free (
+        (ArrangerObject *) self->regions[i]);
+    }
 
-  free (self);
+  object_zero_and_free_if_nonnull (self->regions);
+
+  object_zero_and_free (self);
 }

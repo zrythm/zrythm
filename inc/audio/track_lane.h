@@ -58,7 +58,7 @@ typedef struct TrackLane
   char *              name;
 
   /** TrackLaneWidget for this lane. */
-  TrackLaneWidget *   widget;
+  //TrackLaneWidget *   widget;
 
   /** Y local to track. */
   int                 y;
@@ -184,6 +184,30 @@ track_lane_unselect_all (
  */
 void
 track_lane_clear (
+  TrackLane * self);
+
+/**
+ * Rename the lane.
+ *
+ * @param with_action Whether to make this an
+ *   undoable action.
+ */
+void
+track_lane_rename (
+  TrackLane *  self,
+  const char * new_name,
+  bool         with_action);
+
+/**
+ * Wrapper over track_lane_rename().
+ */
+void
+track_lane_rename_with_action (
+  TrackLane *  self,
+  const char * new_name);
+
+const char *
+track_lane_get_name (
   TrackLane * self);
 
 /**

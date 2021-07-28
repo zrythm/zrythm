@@ -1706,6 +1706,20 @@ do_or_undo_edit (
             self->new_txt = cur_name;
           }
           break;
+        case EDIT_TRACK_ACTION_TYPE_RENAME_LANE:
+          {
+            TrackLane * lane =
+              track->lanes[self->ival_after];
+            char * cur_name =
+              g_strdup (lane->name);
+            track_lane_rename (
+              lane, self->new_txt, false);
+
+            /* remember the new name */
+            g_free (self->new_txt);
+            self->new_txt = cur_name;
+          }
+          break;
         case EDIT_TRACK_ACTION_TYPE_COLOR:
           {
             GdkRGBA cur_color = track->color;
@@ -1924,6 +1938,9 @@ tracklist_selections_action_stringize (
             case EDIT_TRACK_ACTION_TYPE_RENAME:
               return g_strdup (
                 _("Rename track"));
+            case EDIT_TRACK_ACTION_TYPE_RENAME_LANE:
+              return g_strdup (
+                _("Rename lane"));
             case EDIT_TRACK_ACTION_TYPE_COLOR:
               return g_strdup (
                 _("Change color"));

@@ -315,6 +315,33 @@ _test_edit_tracks (
         undo_manager_undo (UNDO_MANAGER);
       }
       break;
+    case EDIT_TRACK_ACTION_TYPE_RENAME_LANE:
+      {
+        const char * new_name = "new name";
+        TrackLane * lane = ins_track->lanes[0];
+        char * name_before =
+          g_strdup (lane->name);
+        track_lane_rename (lane, new_name, true);
+        g_assert_true (
+          string_is_equal (
+            lane->name, new_name));
+
+        /* undo/redo and re-verify */
+        undo_manager_undo (UNDO_MANAGER);
+        g_assert_true (
+          string_is_equal (
+            lane->name, name_before));
+        undo_manager_redo (UNDO_MANAGER);
+        g_assert_true (
+          string_is_equal (
+            lane->name, new_name));
+
+        g_free (name_before);
+
+        /* undo to go back to original state */
+        undo_manager_undo (UNDO_MANAGER);
+      }
+      break;
     case EDIT_TRACK_ACTION_TYPE_VOLUME:
     case EDIT_TRACK_ACTION_TYPE_PAN:
       {
@@ -718,14 +745,14 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections_edit/"
 
   g_test_add_func (
+    TEST_PREFIX "test_edit_tracks",
+    (GTestFunc) test_edit_tracks);
+  g_test_add_func (
     TEST_PREFIX "test edit multi track direct out",
     (GTestFunc) test_edit_multi_track_direct_out);
   g_test_add_func (
     TEST_PREFIX "test edit midi direct out to ins",
     (GTestFunc) test_edit_midi_direct_out_to_ins);
-  g_test_add_func (
-    TEST_PREFIX "test_edit_tracks",
-    (GTestFunc) test_edit_tracks);
 
   return g_test_run ();
 }
