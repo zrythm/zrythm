@@ -731,8 +731,16 @@ region_find (
       track =  TRACKLIST->tracks[id->track_pos];
       g_return_val_if_fail (track, NULL);
 
-      g_return_val_if_fail (
-        id->lane_pos < track->num_lanes, NULL);
+      if (id->lane_pos >= track->num_lanes)
+        {
+          g_critical (
+            "%s: given lane pos %d is greater than "
+            "track '%s' (%d) number of lanes %d",
+            __func__,
+            id->lane_pos, track->name, track->pos,
+            track->num_lanes);
+          return NULL;
+        }
       lane = track->lanes[id->lane_pos];
       g_return_val_if_fail (lane, NULL);
 

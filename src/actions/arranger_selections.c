@@ -912,6 +912,12 @@ do_or_undo_move (
                * lanes */
               region_move_to_lane (
                 r, lane_to_move_to, -1);
+
+              /* remember info in identifier */
+              ZRegion * r_own =
+                (ZRegion *) objs[i];
+              region_identifier_copy (
+                &r_own->id, &r->id);
             }
 
           if (delta_chords != 0)
@@ -953,15 +959,17 @@ do_or_undo_move (
         }
 
       /* if moving automation points, re-sort
-       * the region and remember the new indices */
-      ArrangerObject * obj =
-        /* get the actual object from the
-         * project */
-        arranger_object_find (objs[0]);
-      g_return_val_if_fail (obj, -1);
-      if (obj->type ==
+       * the region and remember the new
+       * indices */
+      if (objs[0]->type ==
             ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
         {
+          ArrangerObject * obj =
+            /* get the actual object from the
+             * project */
+            arranger_object_find (objs[0]);
+          g_return_val_if_fail (obj, -1);
+
           ZRegion * region =
             arranger_object_get_region (obj);
           g_return_val_if_fail (region, -1);

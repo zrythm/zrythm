@@ -2619,6 +2619,65 @@ test_duplicate_audio_regions ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_undo_moving_midi_region_to_other_lane ()
+{
+  test_helper_zrythm_init ();
+
+  /* create midi track with region */
+  UndoableAction * ua =
+    tracklist_selections_action_new_create_midi (
+      TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * midi_track =
+    tracklist_get_last_track (
+      TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
+      false);
+  g_assert_true (
+    midi_track->type == TRACK_TYPE_MIDI);
+
+  ZRegion * r = NULL;
+  for (int i = 0; i < 4; i++)
+    {
+      Position start, end;
+      position_init (&start);
+      position_init (&end);
+      position_add_bars (&end, 1);
+      int lane_pos = (i == 3) ? 2 : 0;
+      int idx_inside_lane = (i == 3) ? 0 : i;
+      r =
+        midi_region_new (
+          &start, &end, midi_track->pos,
+          lane_pos, idx_inside_lane);
+      track_add_region (
+        midi_track, r, NULL, lane_pos,
+        F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+        F_NO_PUBLISH_EVENTS);
+      ua =
+        arranger_selections_action_new_create (
+          TL_SELECTIONS);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+
+  /* move last region to top lane */
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    arranger_selections_action_new_move_timeline (
+      TL_SELECTIONS, MOVE_TICKS, 0, -2,
+      F_NOT_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2626,6 +2685,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test undo moving midi_region to other lane",
+    (GTestFunc) test_undo_moving_midi_region_to_other_lane);
   g_test_add_func (
     TEST_PREFIX "test duplicate audio regions",
     (GTestFunc) test_duplicate_audio_regions);
