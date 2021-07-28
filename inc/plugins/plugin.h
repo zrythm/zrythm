@@ -275,6 +275,9 @@ typedef struct Plugin
   /** Whether the plugin is used for MIDI
    * auditioning in SampleProcessor. */
   bool              is_auditioner;
+
+  /** Whether the plugin is used for functions. */
+  bool              is_function;
 } Plugin;
 
 static const cyaml_schema_field_t

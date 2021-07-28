@@ -31,6 +31,7 @@
 #include "utils/yaml.h"
 
 typedef struct ArrangerSelections ArrangerSelections;
+typedef struct Plugin Plugin;
 
 /**
  * @addtogroup audio
@@ -44,6 +45,9 @@ typedef enum AudioFunctionType
   AUDIO_FUNCTION_NORMALIZE,
   AUDIO_FUNCTION_REVERSE,
 
+  /** Custom plugin. */
+  AUDIO_FUNCTION_CUSTOM_PLUGIN,
+
   /* reserved */
   AUDIO_FUNCTION_INVALID,
 } AudioFunctionType;
@@ -54,6 +58,7 @@ static const cyaml_strval_t
   { __("Invert"), AUDIO_FUNCTION_INVERT },
   { __("Normalize"), AUDIO_FUNCTION_NORMALIZE },
   { __("Reverse"), AUDIO_FUNCTION_REVERSE },
+  { __("Custom Plugin"), AUDIO_FUNCTION_CUSTOM_PLUGIN },
   { __("Invalid"), AUDIO_FUNCTION_INVALID },
 };
 
@@ -65,6 +70,23 @@ audio_function_type_to_string (
 }
 
 /**
+ * Returns the URI of the plugin responsible for
+ * handling the type, if any.
+ */
+static inline const char *
+audio_function_get_plugin_uri_for_type (
+  AudioFunctionType type)
+{
+  switch (type)
+    {
+    default:
+      break;
+    }
+
+  return NULL;
+}
+
+/**
  * Applies the given action to the given selections.
  *
  * @param sel Selections to edit.
@@ -73,7 +95,8 @@ audio_function_type_to_string (
 int
 audio_function_apply (
   ArrangerSelections * sel,
-  AudioFunctionType    type);
+  AudioFunctionType    type,
+  const char *         uri);
 
 /**
  * @}

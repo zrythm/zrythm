@@ -216,9 +216,14 @@ create_and_load_lilv_word (
   self->lv2_path = NULL;
   LilvNode * lv2_path = NULL;
   char * env_lv2_path = getenv ("LV2_PATH");
+  char * builtin_plugins_path =
+    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_LV2_PLUGINS_DIR);
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
     {
-      self->lv2_path = g_strdup (env_lv2_path);
+      self->lv2_path =
+        g_strdup_printf (
+          "%s:%s",
+          env_lv2_path, builtin_plugins_path);
     }
   else
     {
@@ -227,8 +232,9 @@ create_and_load_lilv_word (
           self->lv2_path =
             g_strdup_printf (
               "%s/.lv2:/usr/local/lib/lv2:"
-              "/usr/lib/lv2",
-              g_get_home_dir ());
+              "/usr/lib/lv2:%s",
+              g_get_home_dir (),
+              builtin_plugins_path);
         }
       else
         {
@@ -238,8 +244,9 @@ create_and_load_lilv_word (
               "/lv2:/usr/" LIBDIR_NAME "/lv2:"
               /* some distros report the wrong
                * LIBDIR_NAME so hardcode these */
-              "/usr/local/lib/lv2:/usr/lib/lv2",
-              g_get_home_dir ());
+              "/usr/local/lib/lv2:/usr/lib/lv2:%s",
+              g_get_home_dir (),
+              builtin_plugins_path);
         }
     }
   g_return_if_fail (self->lv2_path);
@@ -537,12 +544,12 @@ get_vst3_paths (
         }
 
       g_message (
-        "Using standard VST paths: %s", vst_path);
+        "Using standard VST3 paths: %s", vst_path);
     }
   else
     {
       g_message (
-        "using %s from the environment (VST_PATH)",
+        "using %s from the environment (VST3_PATH)",
         vst_path);
     }
   g_return_val_if_fail (vst_path, NULL);

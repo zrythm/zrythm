@@ -46,6 +46,9 @@ typedef struct PluginGtkController
 
   /** Port this control is for. */
   Port *         port;
+
+  /** Pointer back to plugin. */
+  Plugin *       plugin;
 } PluginGtkController;
 
 typedef struct PluginGtkPresetMenu
@@ -82,7 +85,8 @@ plugin_gtk_create_window (
  */
 void
 plugin_gtk_open_generic_ui (
-  Plugin * plugin);
+  Plugin * plugin,
+  bool     fire_events);
 
 /**
  * Called on each GUI frame to update the GTK UI.
@@ -194,6 +198,12 @@ plugin_gtk_generic_set_widget_value (
   uint32_t              size,
   LV2_URID              type,
   const void *          body);
+
+void
+plugin_gtk_build_menu (
+  Plugin *    plugin,
+  GtkWidget * window,
+  GtkWidget * vbox);
 
 /**
  * @}

@@ -774,6 +774,8 @@ main_window_widget_init (MainWindowWidget * self)
     /* editor functions */
     { "editor-function", activate_editor_function,
       "s" },
+    { "editor-function-lv2",
+      activate_editor_function_lv2, "s" },
 
     /* rename track/region */
     { "rename-track-or-region",

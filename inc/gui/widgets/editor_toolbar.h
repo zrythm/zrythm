@@ -67,6 +67,10 @@ typedef struct _EditorToolbarWidget
   GMenuModel *        midi_functions_menu;
   GMenuModel *        automation_functions_menu;
   GMenuModel *        audio_functions_menu;
+
+  /** Whether audio functions were already added
+   * to the menu. */
+  bool                added_audio_funcs;
 } EditorToolbarWidget;
 
 /**

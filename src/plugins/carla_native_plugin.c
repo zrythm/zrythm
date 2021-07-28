@@ -643,7 +643,7 @@ carla_native_plugin_populate_banks (
 
 bool
 carla_native_plugin_has_custom_ui (
-  PluginDescriptor * descr)
+  const PluginDescriptor * descr)
 {
 #if 0
   CarlaNativePlugin * native_pl = _create (NULL);

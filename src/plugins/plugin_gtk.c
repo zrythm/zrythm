@@ -540,8 +540,8 @@ plugin_gtk_add_control_row (
     control_left_attach, row, 3 - control_left_attach, 1);
 }
 
-static void
-build_menu (
+void
+plugin_gtk_build_menu (
   Plugin* plugin,
   GtkWidget* window,
   GtkWidget* vbox)
@@ -706,7 +706,7 @@ plugin_gtk_create_window (
     GTK_WIDGET (plugin->vbox));
 
   /* add menu bar */
-  build_menu (
+  plugin_gtk_build_menu (
     plugin, GTK_WIDGET (plugin->window),
     GTK_WIDGET (plugin->vbox));
 
@@ -906,7 +906,8 @@ scale_changed (
   /*g_message ("scale changed");*/
   g_return_val_if_fail (
     IS_PORT_AND_NONNULL (port), false);
-  Plugin * pl = port_get_plugin (port, true);
+  PluginGtkController * controller = port->widget;
+  Plugin * pl = controller->plugin;
   g_return_val_if_fail (
     IS_PLUGIN_AND_NONNULL (pl), false);
 
@@ -944,7 +945,8 @@ log_scale_changed (
   /*g_message ("log scale changed");*/
   g_return_val_if_fail (
     IS_PORT_AND_NONNULL (port), false);
-  Plugin * pl = port_get_plugin (port, true);
+  PluginGtkController * controller = port->widget;
+  Plugin * pl = controller->plugin;
   g_return_val_if_fail (
     IS_PLUGIN_AND_NONNULL (pl), false);
 
@@ -1013,7 +1015,8 @@ switch_state_set (
   /*g_message ("toggle_changed");*/
   g_return_val_if_fail (
     IS_PORT_AND_NONNULL (port), false);
-  Plugin * pl = port_get_plugin (port, true);
+  PluginGtkController * controller = port->widget;
+  Plugin * pl = controller->plugin;
   g_return_val_if_fail (
     IS_PLUGIN_AND_NONNULL (pl), false);
 
@@ -1033,7 +1036,8 @@ string_changed (
 
   g_return_if_fail (
     IS_PORT_AND_NONNULL (port));
-  Plugin * pl = port_get_plugin (port, true);
+  PluginGtkController * controller = port->widget;
+  Plugin * pl = controller->plugin;
   g_return_if_fail (
     IS_PLUGIN_AND_NONNULL (pl));
 
@@ -1061,7 +1065,8 @@ file_changed (
 
   g_return_if_fail (
     IS_PORT_AND_NONNULL (port));
-  Plugin * pl = port_get_plugin (port, true);
+  PluginGtkController * controller = port->widget;
+  Plugin * pl = controller->plugin;
   g_return_if_fail (
     IS_PLUGIN_AND_NONNULL (pl));
 
@@ -1331,8 +1336,9 @@ make_file_chooser (
 
 static PluginGtkController *
 make_controller (
-  Port * port,
-  float  value)
+  Plugin * pl,
+  Port *   port,
+  float    value)
 {
   PluginGtkController * controller = NULL;
 
@@ -1356,6 +1362,7 @@ make_controller (
   if (controller)
     {
       controller->port = port;
+      controller->plugin = pl;
     }
 
   return controller;
@@ -1425,14 +1432,16 @@ build_control_widget (
           else
             {
               controller =
-                make_controller (port, port->deff);
+                make_controller (
+                  pl, port, port->deff);
             }
         }
       else
         {
           /* TODO handle non-float carla params */
           controller =
-            make_controller (port, port->deff);
+            make_controller (
+              pl, port, port->deff);
         }
 
       port->widget = controller;
@@ -1735,7 +1744,8 @@ plugin_gtk_update_plugin_ui (
  */
 void
 plugin_gtk_open_generic_ui (
-  Plugin * plugin)
+  Plugin * plugin,
+  bool     fire_events)
 {
   g_message (
     "opening generic GTK window..");
@@ -1781,8 +1791,11 @@ plugin_gtk_open_generic_ui (
     }
 
   plugin->ui_instantiated = true;
-  EVENTS_PUSH (
-    ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+    }
 
   g_message (
     "plugin window shown, adding idle timeout. "
@@ -1819,12 +1832,18 @@ plugin_gtk_close_ui (
   g_message ("%s called", __func__);
   if (pl->window)
     {
-      g_signal_handler_disconnect (
-        pl->window, pl->destroy_window_id);
-      pl->destroy_window_id = 0;
-      g_signal_handler_disconnect (
-        pl->window, pl->delete_event_id);
-      pl->delete_event_id = 0;
+      if (pl->destroy_window_id)
+        {
+          g_signal_handler_disconnect (
+            pl->window, pl->destroy_window_id);
+          pl->destroy_window_id = 0;
+        }
+      if (pl->delete_event_id)
+        {
+          g_signal_handler_disconnect (
+            pl->window, pl->delete_event_id);
+          pl->delete_event_id = 0;
+        }
       gtk_widget_set_sensitive (
         GTK_WIDGET (pl->window), 0);
       /*gtk_window_close (*/

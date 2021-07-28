@@ -39,7 +39,7 @@
  */
 PluginSetting *
 plugin_setting_new_default (
-  PluginDescriptor * descr)
+  const PluginDescriptor * descr)
 {
   PluginSetting * existing = NULL;
   if (S_PLUGIN_SETTINGS && !ZRYTHM_TESTING)

@@ -585,7 +585,8 @@ arranger_selections_action_new_edit_automation_function (
 UndoableAction *
 arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
-  AudioFunctionType    audio_func_type);
+  AudioFunctionType    audio_func_type,
+  const char *         uri);
 
 /**
  * Creates a new action for automation autofill.
