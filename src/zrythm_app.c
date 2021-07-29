@@ -91,6 +91,7 @@
 #include "utils/string.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
+#include "utils/vamp.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -1288,6 +1289,9 @@ zrythm_app_startup (
   raise_open_file_limit ();
 
   lock_memory ();
+
+  /* print detected vamp plugins */
+  vamp_print_all ();
 
   /* show splash screen */
   self->splash =

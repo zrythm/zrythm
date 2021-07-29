@@ -39,6 +39,7 @@ packages:
   - sfizz
   - suil
   - valgrind
+  - vamp-plugin-sdk
   - vim
   - x42-plugins
   - xdg-utils

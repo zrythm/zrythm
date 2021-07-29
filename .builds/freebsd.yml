@@ -44,6 +44,7 @@ packages:
   - fftw3-float
   - rubberband
   - sherlock-lv2
+  - vamp-plugin-sdk
   - x42-plugins-lv2
   - xxhash
   - zstd

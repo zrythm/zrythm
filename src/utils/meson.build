@@ -51,8 +51,9 @@ util_srcs = [
   'symap.c',
   'system.c',
   'ui.c',
-  'yaml.c',
+  'vamp.c',
   'windows_errors.c',
+  'yaml.c',
   ]
 
 # optimized utils

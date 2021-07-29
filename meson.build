@@ -1163,6 +1163,10 @@ if not xxhash_dep.found ()
   xxhash_dep = cc.find_library ('xxhash')
 endif
 
+vamp_dep = dependency ('vamp')
+vamp_host_sdk_dep = dependency ('vamp-hostsdk')
+vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1203,6 +1207,7 @@ zrythm_deps = [
   valgrind_dep,
   libbacktrace_dep,
   xxhash_dep,
+  vamp_deps,
 
   libm,
 ]
