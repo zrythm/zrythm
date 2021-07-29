@@ -39,8 +39,6 @@ typedef struct Plugin Plugin;
  * @{
  */
 
-#define AUDIO_FUNCTION_DEFAULT_NUDGE_TICKS 0.1
-
 typedef enum AudioFunctionType
 {
   AUDIO_FUNCTION_INVERT,

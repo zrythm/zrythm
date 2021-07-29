@@ -2650,3 +2650,47 @@ change_state_show_automation_values (
   EVENTS_PUSH (
     ET_AUTOMATION_VALUE_VISIBILITY_CHANGED, NULL);
 }
+
+DEFINE_SIMPLE (activate_nudge_selection)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
+  double ticks =
+    ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS;
+  bool left = string_is_equal (str, "left");
+  if (left)
+    ticks = - ticks;
+
+  ArrangerSelections * sel =
+    project_get_arranger_selections_for_last_selection (
+      PROJECT);
+  if (!sel)
+    return;
+
+  if (sel->type == ARRANGER_SELECTIONS_TYPE_AUDIO)
+    {
+      do_audio_func (
+        left
+        ? AUDIO_FUNCTION_NUDGE_LEFT
+        : AUDIO_FUNCTION_NUDGE_RIGHT,
+        NULL);
+      return;
+    }
+
+  Position start_pos;
+  arranger_selections_get_start_pos (
+    sel, &start_pos, F_GLOBAL);
+  if (start_pos.ticks + ticks < 0)
+    {
+      g_message ("cannot nudge left");
+      return;
+    }
+
+  UndoableAction * ua =
+    arranger_selections_action_new_move (
+      sel, ticks, 0, 0, 0, 0, 0,
+      F_NOT_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}

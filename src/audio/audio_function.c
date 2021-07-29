@@ -380,7 +380,7 @@ audio_function_apply (
 
   long nudge_frames =
     position_get_frames_from_ticks (
-      AUDIO_FUNCTION_DEFAULT_NUDGE_TICKS);
+      ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS);
   size_t nudge_frames_all_channels =
     channels * (size_t) nudge_frames;
   size_t num_frames_excl_nudge;

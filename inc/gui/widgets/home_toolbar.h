@@ -62,6 +62,8 @@ typedef struct _HomeToolbarWidget
   GtkToolButton *    paste;
   GtkToolButton *    duplicate;
   GtkToolButton *    delete;
+  GtkToolButton *    nudge_left;
+  GtkToolButton *    nudge_right;
   GtkToolButton *    clear_selection;
   GtkToolButton *    select_all;
   GtkToolButton *    loop_selection;

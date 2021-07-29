@@ -803,11 +803,14 @@ z_gtk_get_tooltip_for_action (
   const char * detailed_action,
   const char * tooltip)
 {
-  char * accel =
+  char * tmp =
     accel_get_primary_accel_for_action (
       detailed_action);
-  if (accel)
+  if (tmp)
     {
+      char * accel =
+        g_markup_escape_text (tmp, -1);
+      g_free (tmp);
       char edited_tooltip[800];
       sprintf (
         edited_tooltip,

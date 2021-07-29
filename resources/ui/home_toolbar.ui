@@ -112,6 +112,32 @@
       </packing>
     </child>
     <child>
+      <object class="GtkToolButton" id="nudge_left">
+        <property name="visible">1</property>
+        <property name="icon-name">arrow-left</property>
+        <property name="action-name">app.nudge-selection</property>
+        <property name="action-target">'left'</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="nudge_right">
+        <property name="visible">1</property>
+        <property name="icon-name">arrow-right</property>
+        <property name="action-name">app.nudge-selection</property>
+        <property name="action-target">'right'</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkToolButton" id="clear_selection">
         <property name="visible">1</property>
         <property name="icon-name">edit-clear</property>

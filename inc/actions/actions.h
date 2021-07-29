@@ -437,6 +437,8 @@ DECLARE_SIMPLE (
 DECLARE_SIMPLE (activate_add_region);
 DECLARE_SIMPLE (activate_go_to_start);
 
+DECLARE_SIMPLE (activate_nudge_selection);
+
 /**
  * @}
  */

@@ -780,6 +780,10 @@ main_window_widget_init (MainWindowWidget * self)
     /* rename track/region */
     { "rename-track-or-region",
       activate_rename_track_or_region },
+
+    /* arranger selections */
+    { "nudge-selection",
+      activate_nudge_selection, "s" },
   };
 
 #if 0

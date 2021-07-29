@@ -52,6 +52,8 @@ typedef struct AudioClip AudioClip;
 #define ARRANGER_SELECTIONS(x) \
   arranger_selections_cast (x)
 
+#define ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS 0.1
+
 typedef enum ArrangerSelectionsType
 {
   ARRANGER_SELECTIONS_TYPE_NONE,

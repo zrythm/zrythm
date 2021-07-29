@@ -217,11 +217,15 @@ home_toolbar_widget_init (
   SET_TOOLTIP (
     delete, _("Delete"));
   SET_TOOLTIP (
-    clear_selection, _("Clear Selection"));
+    clear_selection, _("Clear selection"));
   SET_TOOLTIP (
-    select_all, _("Select All"));
+    select_all, _("Select all"));
   SET_TOOLTIP (
-    loop_selection, _("Loop Selection"));
+    loop_selection, _("Loop selection"));
+  SET_TOOLTIP (
+    nudge_left, _("Nudge left"));
+  SET_TOOLTIP (
+    nudge_right, _("Nudge right"));
 #undef SET_TOOLTIP
 
   self->undo_btn =
@@ -270,6 +274,8 @@ home_toolbar_widget_class_init (
   BIND_CHILD (paste);
   BIND_CHILD (duplicate);
   BIND_CHILD (delete);
+  BIND_CHILD (nudge_left);
+  BIND_CHILD (nudge_right);
   BIND_CHILD (clear_selection);
   BIND_CHILD (select_all);
   BIND_CHILD (loop_selection);
