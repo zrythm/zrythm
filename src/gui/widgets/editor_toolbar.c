@@ -91,6 +91,8 @@ update_audio_funcs_menu (
         item);
     }
 
+  /* ignore plugins for now */
+#if 0
   GMenu * plugins_menu = g_menu_new ();
   for (size_t i = 0;
        i < PLUGIN_MANAGER->plugin_descriptors->len;
@@ -135,6 +137,7 @@ update_audio_funcs_menu (
   g_menu_append_submenu (
     G_MENU (self->audio_functions_menu),
     _("Plugin Effect"), G_MENU_MODEL (plugins_menu));
+#endif
 
   g_menu_freeze (
     G_MENU (self->audio_functions_menu));

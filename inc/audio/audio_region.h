@@ -44,6 +44,9 @@ typedef struct StereoPorts StereoPorts;
  * @{
  */
 
+/** Default fade to inject when playing back. */
+#define AUDIO_REGION_DEFAULT_FADE_MS 1
+
 /**
  * Creates a ZRegion for audio data.
  *
