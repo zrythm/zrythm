@@ -50,6 +50,8 @@
 #include "plugins/plugin.h"
 #include "zrythm.h"
 
+#include "ext/zix/zix/sem.h"
+
 #include <gtk/gtk.h>
 
 typedef struct Timeline Timeline;
@@ -295,6 +297,9 @@ typedef struct Project
 
   /** Zrythm version, for serialization */
   char *            version;
+
+  /** Semaphore used to block saving. */
+  ZixSem            save_sem;
 
   gint64            last_autosave_time;
 } Project;

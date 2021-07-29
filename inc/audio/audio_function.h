@@ -88,6 +88,10 @@ audio_function_type_to_string (
 }
 
 char *
+audio_function_get_action_target_for_type (
+  AudioFunctionType type);
+
+char *
 audio_function_get_detailed_action_for_type (
   AudioFunctionType type);
 

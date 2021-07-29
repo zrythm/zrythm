@@ -583,6 +583,9 @@ arranger_selections_action_new_edit_audio_function (
   /* prepare selections before */
   ArrangerSelections * sel_before_clone =
     arranger_selections_clone (sel_before);
+
+  g_debug (
+    "saving file before applying audio func...");
   int res =
     audio_function_apply (
       sel_before_clone, AUDIO_FUNCTION_INVALID,
@@ -596,6 +599,7 @@ arranger_selections_action_new_edit_audio_function (
 
   ArrangerSelections * sel_after =
     arranger_selections_clone (sel_before);
+  g_debug ("applying actual audio func...");
   res =
     audio_function_apply (
       sel_after, audio_func_type, uri);
@@ -1993,6 +1997,15 @@ do_or_undo_edit (
           g_return_val_if_fail (
             (long) num_frames ==
               src_clip->num_frames, -1);
+
+          char * src_clip_path =
+            audio_clip_get_path_in_pool (
+              src_clip, F_NOT_BACKUP);
+          g_message (
+            "replacing audio region %s frames with "
+            "'%s' frames",
+            r->name, src_clip_path);
+          g_free (src_clip_path);
 
           /* replace the frames in the region */
           audio_region_replace_frames (

@@ -127,8 +127,7 @@ update_audio_funcs_menu (
           descr->name, detailed_action);
       g_menu_item_set_attribute (
         item, G_MENU_ATTRIBUTE_ICON,
-        "s", "edit-select-invert",
-        NULL);
+        "s", "logo-lv2", NULL);
       g_menu_append_item (
         G_MENU (plugins_menu), item);
     }

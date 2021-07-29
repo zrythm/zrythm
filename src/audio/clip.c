@@ -23,6 +23,7 @@
 #include "audio/encoder.h"
 #include "audio/engine.h"
 #include "audio/tempo_track.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/dsp.h"
@@ -36,6 +37,7 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 static AudioClip *
 _create ()
@@ -559,6 +561,156 @@ audio_clip_is_in_use (
     }
 
   return false;
+}
+
+typedef struct AppLaunchData
+{
+  GFile *         file;
+  GtkAppChooser * app_chooser;
+} AppLaunchData;
+
+static void
+app_launch_data_free (
+  AppLaunchData * data,
+  GClosure *      closure)
+{
+  free (data);
+}
+
+static void
+on_launch_clicked (
+  GtkButton *     btn,
+  AppLaunchData * data)
+{
+  GError * err = NULL;
+  GList * file_list = NULL;
+  file_list =
+    g_list_append (file_list, data->file);
+  GAppInfo * app_nfo =
+    gtk_app_chooser_get_app_info (data->app_chooser);
+  bool success =
+    g_app_info_launch (
+      app_nfo, file_list, NULL, &err);
+  g_list_free (file_list);
+  if (!success)
+    {
+      g_message ("app launch unsuccessful");
+    }
+}
+
+/**
+ * Shows a dialog with info on how to edit a file,
+ * with an option to open an app launcher.
+ *
+ * When the user closes the dialog, the clip is
+ * assumed to have been edited.
+ *
+ * The given audio clip will be free'd.
+ *
+ * @note This must not be used on pool clips.
+ *
+ * @return A new instance of AudioClip if successful,
+ *   NULL, if not.
+ */
+AudioClip *
+audio_clip_edit_in_ext_program (
+  AudioClip * self)
+{
+  GError * err = NULL;
+  char * tmp_dir =
+    g_dir_make_tmp (
+      "zrythm-audio-clip-tmp-XXXXXX", &err);
+  g_return_val_if_fail (tmp_dir, NULL);
+  char * abs_path =
+    g_build_filename (
+      tmp_dir, "tmp.wav", NULL);
+  audio_clip_write_to_file (
+    self, abs_path, false);
+  audio_clip_free (self);
+
+  GFile * file =
+    g_file_new_for_path (abs_path);
+  err = NULL;
+  GFileInfo * file_info =
+    g_file_query_info (
+      file, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+      G_FILE_QUERY_INFO_NONE, NULL, &err);
+  g_return_val_if_fail (file_info, false);
+  const char * content_type =
+    g_file_info_get_content_type (file_info);
+
+  GtkWidget * dialog =
+    gtk_dialog_new_with_buttons (
+      _("Edit in external app"),
+      GTK_WINDOW (MAIN_WINDOW),
+      GTK_DIALOG_MODAL
+      | GTK_DIALOG_DESTROY_WITH_PARENT,
+      _("_OK"), GTK_RESPONSE_ACCEPT,
+      _("_Cancel"), GTK_RESPONSE_REJECT,
+      NULL);
+
+  /* populate content area */
+  GtkWidget * content_area =
+    gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog));
+  GtkWidget * main_box =
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  gtk_widget_set_margin_start (main_box, 4);
+  gtk_widget_set_margin_end (main_box, 4);
+  gtk_widget_set_margin_top (main_box, 4);
+  gtk_widget_set_margin_bottom (main_box, 4);
+  gtk_container_add (
+    GTK_CONTAINER (content_area), main_box);
+
+  GtkWidget * lbl = gtk_label_new ("");
+  gtk_label_set_selectable (GTK_LABEL (lbl), true);
+  char * markup =
+    g_markup_printf_escaped (
+      _("Edit the file at <u>%s</u>, then "
+      "press OK"),
+      abs_path);
+  gtk_label_set_markup (
+    GTK_LABEL (lbl), markup);
+  gtk_container_add (GTK_CONTAINER (main_box), lbl);
+
+  GtkWidget * launch_box =
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_halign (
+    launch_box, GTK_ALIGN_CENTER);
+  GtkWidget * app_chooser_button =
+    gtk_app_chooser_button_new (content_type);
+  gtk_container_add (
+    GTK_CONTAINER (launch_box), app_chooser_button);
+  GtkWidget * btn =
+    gtk_button_new_with_label (_("Launch"));
+  AppLaunchData * data = object_new (AppLaunchData);
+  data->file = file;
+  data->app_chooser =
+    GTK_APP_CHOOSER (app_chooser_button);
+  g_signal_connect_data (
+    G_OBJECT (btn), "clicked",
+    G_CALLBACK (on_launch_clicked), data,
+    (GClosureNotify) app_launch_data_free, 0);
+  gtk_container_add (
+    GTK_CONTAINER (launch_box), btn);
+  gtk_container_add (
+    GTK_CONTAINER (main_box), launch_box);
+
+  gtk_widget_show_all (content_area);
+  int ret =
+    gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+  if (ret != GTK_RESPONSE_ACCEPT)
+    {
+      g_debug ("cancelled");
+      return NULL;
+    }
+
+  /* ok - reload from file */
+  self = audio_clip_new_from_file (abs_path);
+  g_return_val_if_fail (self, false);
+
+  return self;
 }
 
 /**

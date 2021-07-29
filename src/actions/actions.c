@@ -2388,6 +2388,8 @@ do_audio_func (
       goto free_audio_sel_and_return;
     }
 
+  zix_sem_wait (&PROJECT->save_sem);
+
   ua =
     arranger_selections_action_new_edit_audio_function (
       sel, type, uri);
@@ -2396,6 +2398,8 @@ do_audio_func (
     {
       undo_manager_perform (UNDO_MANAGER, ua);
     }
+
+  zix_sem_post (&PROJECT->save_sem);
 
 free_audio_sel_and_return:
   arranger_selections_free (sel);
@@ -2488,28 +2492,29 @@ DEFINE_SIMPLE (activate_editor_function)
       break;
     case REGION_TYPE_AUDIO:
       {
+        bool done = false;
         if (string_is_equal (str, "current"))
           {
             do_audio_func (
               g_settings_get_int (
                 S_UI, "audio-function"), NULL);
+            done = true;
           }
-#define DO_FUNC(string_rep,caps) \
-        else if (string_is_equal (str, string_rep)) \
-          { \
-            do_audio_func ( \
-              AUDIO_FUNCTION_##caps, NULL); \
-          }
-        DO_FUNC ("invert", INVERT)
-        DO_FUNC ("normalize-peak", NORMALIZE_PEAK)
-        DO_FUNC ("nudge-left", NUDGE_LEFT)
-        DO_FUNC ("nudge-right", NUDGE_RIGHT)
-        DO_FUNC ("reverse", REVERSE)
-#undef DO_FUNC
-        else
+
+        for (int i = AUDIO_FUNCTION_INVERT;
+             i < AUDIO_FUNCTION_CUSTOM_PLUGIN; i++)
           {
-            g_return_if_reached ();
+            char * audio_func_target =
+              audio_function_get_action_target_for_type (
+                i);
+            if (string_is_equal (
+                  str, audio_func_target))
+              do_audio_func (i, NULL);
+            g_free (audio_func_target);
+            done = true;
           }
+
+        g_return_if_fail (done);
       }
       break;
     default:

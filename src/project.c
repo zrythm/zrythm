@@ -90,6 +90,13 @@
 
 #include <zstd.h>
 
+static void
+init_common (
+  Project * self)
+{
+  zix_sem_init (&self->save_sem, 1);
+}
+
 /**
  * Compresses/decompress a project from a file/data
  * to a file/data.
@@ -1130,6 +1137,8 @@ load (
 
   self->title = filepath_noext;
 
+  init_common (self);
+
   engine_init_loaded (self->audio_engine);
   engine_pre_setup (self->audio_engine);
 
@@ -1345,6 +1354,7 @@ project_autosave_cb (
       PROJECT->dir &&
       PROJECT->datetime_str)
     {
+      StereoPorts * out_ports;
       gint64 cur_time = g_get_monotonic_time ();
       gint64 microsec_to_autosave =
         (gint64)
@@ -1356,23 +1366,32 @@ project_autosave_cb (
            * this gets called is not exact */
           4 * 1000000;
 
+      /* skip if semaphore busy */
+      if (!zix_sem_try_wait (&PROJECT->save_sem))
+        {
+          g_message (
+            "can't acquire project lock - skipping "
+            "autosave");
+          return G_SOURCE_CONTINUE;
+        }
+
       /* skip if bad time to save or rolling */
       if (cur_time - PROJECT->last_autosave_time <
             microsec_to_autosave ||
           TRANSPORT_IS_ROLLING)
         {
-          return G_SOURCE_CONTINUE;
+          goto post_save_sem_and_continue;
         }
 
       /* skip if sound is playing */
-      StereoPorts * out_ports =
+      out_ports =
         P_MASTER_TRACK->channel->stereo_out;
       if (out_ports->l->peak >= 0.0001f ||
           out_ports->r->peak >= 0.0001f)
         {
           g_debug (
             "sound is playing, skipping autosave");
-          return G_SOURCE_CONTINUE;
+          goto post_save_sem_and_continue;
         }
 
       /* ok to save */
@@ -1380,6 +1399,9 @@ project_autosave_cb (
         PROJECT, PROJECT->dir, 1, 1,
         F_ASYNC);
       PROJECT->last_autosave_time = cur_time;
+
+post_save_sem_and_continue:
+      zix_sem_post (&PROJECT->save_sem);
     }
 
   return G_SOURCE_CONTINUE;
@@ -1500,6 +1522,8 @@ project_new (
   self->tracklist_selections =
     tracklist_selections_new (true);
   mixer_selections_init (&self->mixer_selections);
+
+  init_common (self);
 
   g_message ("%s: done", __func__);
 
@@ -1989,6 +2013,8 @@ project_free (Project * self)
     timeline_free, self->timeline);
 
   free_arranger_selections (self);
+
+  zix_sem_destroy (&self->save_sem);
 
   object_zero_and_free (self);
 

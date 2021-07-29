@@ -36,22 +36,33 @@
 #include "zrythm_app.h"
 
 char *
-audio_function_get_detailed_action_for_type (
+audio_function_get_action_target_for_type (
   AudioFunctionType type)
 {
-  const char * base_action = "app.editor-function";
-
   const char * type_str =
     audio_function_type_to_string (type);
   char * type_str_lower = g_strdup (type_str);
   string_to_lower (type_str, type_str_lower);
   char * substituted =
     string_replace (type_str_lower, " ", "-");
+  g_free (type_str_lower);
+
+  return substituted;
+}
+
+char *
+audio_function_get_detailed_action_for_type (
+  AudioFunctionType type)
+{
+  const char * base_action = "app.editor-function";
+
+  char * target =
+    audio_function_get_action_target_for_type (
+      type);
   char * ret =
     g_strdup_printf (
-      "%s::%s", base_action, substituted);
-  g_free (substituted);
-  g_free (type_str_lower);
+      "%s::%s", base_action, target);
+  g_free (target);
 
   return ret;
 }
@@ -379,85 +390,108 @@ audio_function_apply (
     num_frames, nudge_frames);
   g_return_val_if_fail (nudge_frames > 0, -1);
 
-  if (type == AUDIO_FUNCTION_CUSTOM_PLUGIN)
+  switch (type)
     {
+    case AUDIO_FUNCTION_INVERT:
+      dsp_mul_k2 (
+        &frames[0], -1.f, num_frames * channels);
+      break;
+    case AUDIO_FUNCTION_NORMALIZE_PEAK:
+      /* peak-normalize */
+      {
+        float abs_peak = 0.f;
+        dsp_abs_max (
+          &frames[0], &abs_peak,
+          num_frames * channels);
+        dsp_mul_k2 (
+          &frames[0], 1.f / abs_peak,
+          num_frames * channels);
+      }
+      break;
+    case AUDIO_FUNCTION_NORMALIZE_RMS:
+      /* TODO rms-normalize */
+      break;
+    case AUDIO_FUNCTION_NORMALIZE_LUFS:
+      /* TODO lufs-normalize */
+      break;
+    case AUDIO_FUNCTION_NUDGE_LEFT:
+      g_return_val_if_fail (
+        (long) num_frames > nudge_frames, -1);
+      num_frames_excl_nudge =
+        num_frames - (size_t) nudge_frames;
+      dsp_copy (
+        &frames[0],
+        &src_frames[nudge_frames_all_channels],
+        channels * num_frames_excl_nudge);
+      dsp_fill (
+        &frames[
+          channels * num_frames_excl_nudge],
+        0.f,
+        nudge_frames_all_channels);
+      break;
+    case AUDIO_FUNCTION_NUDGE_RIGHT:
+      g_return_val_if_fail (
+        (long) num_frames > nudge_frames, -1);
+      num_frames_excl_nudge =
+        num_frames - (size_t) nudge_frames;
+      dsp_copy (
+        &frames[nudge_frames], &src_frames[0],
+        channels * num_frames_excl_nudge);
+      dsp_fill (
+        &frames[0], 0.f,
+        nudge_frames_all_channels);
+      break;
+    case AUDIO_FUNCTION_REVERSE:
+      for (size_t i = 0; i < num_frames; i++)
+        {
+          for (size_t j = 0; j < channels; j++)
+            {
+              frames[i * channels + j] =
+                orig_clip->frames[
+                  ((size_t) start.frames +
+                   ((num_frames - i) - 1)) *
+                    channels + j];
+            }
+        }
+      break;
+    case AUDIO_FUNCTION_EXT_PROGRAM:
+      {
+        AudioClip * tmp_clip =
+          audio_clip_new_from_float_array (
+            src_frames, (long) num_frames, channels,
+            BIT_DEPTH_32, "tmp-clip");
+        tmp_clip =
+          audio_clip_edit_in_ext_program (tmp_clip);
+        if (!tmp_clip)
+          return -1;
+        dsp_copy (
+          &frames[0], &tmp_clip->frames[0],
+          MIN (
+            num_frames,
+            (size_t) tmp_clip->num_frames) *
+          channels);
+        if ((size_t) tmp_clip->num_frames
+            < num_frames)
+          {
+            dsp_fill (
+              &frames[0], 0.f,
+              (num_frames
+               - (size_t) tmp_clip->num_frames)
+              * channels);
+          }
+      }
+      break;
+    case AUDIO_FUNCTION_CUSTOM_PLUGIN:
       g_return_val_if_fail (uri, -1);
       apply_plugin (
         uri, frames, num_frames, channels);
-    }
-  else
-    {
-      switch (type)
-        {
-        case AUDIO_FUNCTION_INVERT:
-          dsp_mul_k2 (
-            &frames[0], -1.f, num_frames * channels);
-          break;
-        case AUDIO_FUNCTION_NORMALIZE_PEAK:
-          /* peak-normalize */
-          {
-            float abs_peak = 0.f;
-            dsp_abs_max (
-              &frames[0], &abs_peak,
-              num_frames * channels);
-            dsp_mul_k2 (
-              &frames[0], 1.f / abs_peak,
-              num_frames * channels);
-          }
-          break;
-        case AUDIO_FUNCTION_NORMALIZE_RMS:
-          /* TODO rms-normalize */
-          break;
-        case AUDIO_FUNCTION_NORMALIZE_LUFS:
-          /* TODO lufs-normalize */
-          break;
-        case AUDIO_FUNCTION_NUDGE_LEFT:
-          g_return_val_if_fail (
-            (long) num_frames > nudge_frames, -1);
-          num_frames_excl_nudge =
-            num_frames - (size_t) nudge_frames;
-          dsp_copy (
-            &frames[0],
-            &src_frames[nudge_frames_all_channels],
-            channels * num_frames_excl_nudge);
-          dsp_fill (
-            &frames[
-              channels * num_frames_excl_nudge],
-            0.f,
-            nudge_frames_all_channels);
-          break;
-        case AUDIO_FUNCTION_NUDGE_RIGHT:
-          g_return_val_if_fail (
-            (long) num_frames > nudge_frames, -1);
-          num_frames_excl_nudge =
-            num_frames - (size_t) nudge_frames;
-          dsp_copy (
-            &frames[nudge_frames], &src_frames[0],
-            channels * num_frames_excl_nudge);
-          dsp_fill (
-            &frames[0], 0.f,
-            nudge_frames_all_channels);
-          break;
-        case AUDIO_FUNCTION_REVERSE:
-          for (size_t i = 0; i < num_frames; i++)
-            {
-              for (size_t j = 0; j < channels; j++)
-                {
-                  frames[i * channels + j] =
-                    orig_clip->frames[
-                      ((size_t) start.frames +
-                       ((num_frames - i) - 1)) *
-                        channels + j];
-                }
-            }
-          break;
-        case AUDIO_FUNCTION_INVALID:
-          /* do nothing */
-          break;
-        default:
-          g_warning ("not implemented");
-          break;
-        }
+      break;
+    case AUDIO_FUNCTION_INVALID:
+      /* do nothing */
+      break;
+    default:
+      g_warning ("not implemented");
+      break;
     }
 
 #if 0

@@ -207,6 +207,25 @@ audio_clip_update_channel_caches (
   size_t      start_from);
 
 /**
+ * Shows a dialog with info on how to edit a file,
+ * with an option to open an app launcher.
+ *
+ * When the user closes the dialog, the clip is
+ * assumed to have been edited.
+ *
+ * The given audio clip will be free'd.
+ *
+ * @note This must not be used on pool clips.
+ *
+ * @return A new instance of AudioClip if successful,
+ *   NULL, if not.
+ */
+NONNULL
+AudioClip *
+audio_clip_edit_in_ext_program (
+  AudioClip * self);
+
+/**
  * Writes the given audio clip data to a file.
  *
  * @param parts If true, only write new data. @see
