@@ -331,6 +331,13 @@ position_update_ticks_from_frames (
   Position * position);
 
 /**
+ * Converts ticks to frames.
+ */
+long
+position_get_frames_from_ticks (
+  double ticks);
+
+/**
  * Updates frames.
  */
 HOT

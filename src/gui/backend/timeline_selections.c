@@ -40,26 +40,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Creates a new TimelineSelections instance.
- */
-TimelineSelections *
-timeline_selections_new (void)
-{
-  TimelineSelections * self =
-    object_new (TimelineSelections);
-
-  self->schema_version =
-    TL_SELECTIONS_SCHEMA_VERSION;
-  self->base.magic = ARRANGER_SELECTIONS_MAGIC;
-  self->base.type =
-    ARRANGER_SELECTIONS_TYPE_TIMELINE;
-  self->base.schema_version =
-    ARRANGER_SELECTIONS_SCHEMA_VERSION;
-
-  return self;
-}
-
-/**
  * Creates a new TimelineSelections instance for
  * the given range.
  *
@@ -73,7 +53,9 @@ timeline_selections_new_for_range (
   bool       clone_objs)
 {
   TimelineSelections * self =
-    timeline_selections_new ();
+    (TimelineSelections *)
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_TIMELINE);
 
 #define ADD_OBJ(obj) \
   if (arranger_object_is_hit ( \

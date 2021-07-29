@@ -39,7 +39,7 @@
 #define AUDIO_SELECTIONS_SCHEMA_VERSION 1
 
 #define AUDIO_SELECTIONS \
-  (&PROJECT->audio_selections)
+  (PROJECT->audio_selections)
 
 /**
  * Selections to be used for the AudioArrangerWidget's
@@ -63,7 +63,7 @@ typedef struct AudioSelections
    * Start position is included in the range, end
    * position is excluded.
    *
-   * @note These are editor positions and must
+   * @note These are global positions and must
    * be adjusted for the region's start position.
    */
   Position           sel_start;
@@ -118,19 +118,6 @@ audio_selections_schema = {
     AudioSelections,
     audio_selections_fields_schema),
 };
-
-/**
- * Inits the audio selections.
- */
-void
-audio_selections_init (
-  AudioSelections * self);
-
-/**
- * Creates a new AudioSelections instance.
- */
-AudioSelections *
-audio_selections_new (void);
 
 /**
  * Sets whether a range selection exists and sends

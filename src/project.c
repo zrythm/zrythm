@@ -240,45 +240,6 @@ _project_compress (
 }
 
 /**
- * Tears down the project.
- */
-void
-project_free (Project * self)
-{
-  g_message ("%s: tearing down...", __func__);
-
-  PROJECT->loaded = false;
-
-  g_free_and_null (self->title);
-
-  if (self->audio_engine &&
-      self->audio_engine->activated)
-    {
-      engine_activate (self->audio_engine, false);
-    }
-  /* remove region from clip editor to avoid
-   * lookups for it when removing regions from
-   * track */
-  self->clip_editor->has_region = false;
-  object_free_w_func_and_null (
-    tracklist_free, self->tracklist);
-  object_free_w_func_and_null (
-    engine_free, self->audio_engine);
-  object_free_w_func_and_null (
-    midi_mappings_free, self->midi_mappings);
-  object_free_w_func_and_null (
-    undo_manager_free, self->undo_manager);
-  object_free_w_func_and_null (
-    clip_editor_free, self->clip_editor);
-  object_free_w_func_and_null (
-    timeline_free, self->timeline);
-
-  object_zero_and_free (self);
-
-  g_message ("%s: done", __func__);
-}
-
-/**
  * Frees the current x if any and sets a copy of
  * the given string.
  */
@@ -649,26 +610,26 @@ recreate_main_window (void)
 void
 project_init_selections (Project * self)
 {
-  arranger_selections_init (
-    (ArrangerSelections *)
-    &self->automation_selections,
-    ARRANGER_SELECTIONS_TYPE_AUTOMATION);
-  arranger_selections_init (
-    (ArrangerSelections *)
-    &self->audio_selections,
-    ARRANGER_SELECTIONS_TYPE_AUDIO);
-  arranger_selections_init (
-    (ArrangerSelections *)
-    &self->chord_selections,
-    ARRANGER_SELECTIONS_TYPE_CHORD);
-  arranger_selections_init (
-    (ArrangerSelections *)
-    &self->timeline_selections,
-    ARRANGER_SELECTIONS_TYPE_TIMELINE);
-  arranger_selections_init (
-    (ArrangerSelections *)
-    &self->midi_arranger_selections,
-    ARRANGER_SELECTIONS_TYPE_MIDI);
+  self->automation_selections =
+    (AutomationSelections *)
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_AUTOMATION);
+  self->audio_selections =
+    (AudioSelections *)
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_AUDIO);
+  self->chord_selections =
+    (ChordSelections *)
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_CHORD);
+  self->timeline_selections =
+    (TimelineSelections *)
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_TIMELINE);
+  self->midi_arranger_selections =
+    (MidiArrangerSelections *)
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_MIDI);
 }
 
 /**
@@ -1216,19 +1177,19 @@ load (
 
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->timeline_selections, true);
+    self->timeline_selections, true);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->midi_arranger_selections, true);
+    self->midi_arranger_selections, true);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->chord_selections, true);
+    self->chord_selections, true);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->automation_selections, true);
+    self->automation_selections, true);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->audio_selections, true);
+    self->audio_selections, true);
 
   tracklist_selections_init_loaded (
     self->tracklist_selections);
@@ -1962,4 +1923,74 @@ project_save (
     }
 
   RETURN_OK;
+}
+
+/**
+ * Frees the selections in the project.
+ */
+static void
+free_arranger_selections (
+  Project * self)
+{
+  object_free_w_func_and_null_cast (
+    arranger_selections_free,
+    ArrangerSelections *,
+    self->automation_selections);
+  object_free_w_func_and_null_cast (
+    arranger_selections_free,
+    ArrangerSelections *,
+    self->audio_selections);
+  object_free_w_func_and_null_cast (
+    arranger_selections_free,
+    ArrangerSelections *,
+    self->chord_selections);
+  object_free_w_func_and_null_cast (
+    arranger_selections_free,
+    ArrangerSelections *,
+    self->timeline_selections);
+  object_free_w_func_and_null_cast (
+    arranger_selections_free,
+    ArrangerSelections *,
+    self->midi_arranger_selections);
+}
+
+/**
+ * Tears down the project.
+ */
+void
+project_free (Project * self)
+{
+  g_message ("%s: tearing down...", __func__);
+
+  PROJECT->loaded = false;
+
+  g_free_and_null (self->title);
+
+  if (self->audio_engine &&
+      self->audio_engine->activated)
+    {
+      engine_activate (self->audio_engine, false);
+    }
+  /* remove region from clip editor to avoid
+   * lookups for it when removing regions from
+   * track */
+  self->clip_editor->has_region = false;
+  object_free_w_func_and_null (
+    tracklist_free, self->tracklist);
+  object_free_w_func_and_null (
+    engine_free, self->audio_engine);
+  object_free_w_func_and_null (
+    midi_mappings_free, self->midi_mappings);
+  object_free_w_func_and_null (
+    undo_manager_free, self->undo_manager);
+  object_free_w_func_and_null (
+    clip_editor_free, self->clip_editor);
+  object_free_w_func_and_null (
+    timeline_free, self->timeline);
+
+  free_arranger_selections (self);
+
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }

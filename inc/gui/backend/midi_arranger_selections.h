@@ -39,7 +39,7 @@
 #define MA_SELECTIONS_SCHEMA_VERSION 1
 
 #define MA_SELECTIONS \
-  (&PROJECT->midi_arranger_selections)
+  (PROJECT->midi_arranger_selections)
 
 /**
  * Selections to be used for the midi_arranger's

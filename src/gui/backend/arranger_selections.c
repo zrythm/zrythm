@@ -210,7 +210,12 @@ arranger_selections_init (
       {
         AudioSelections * sel =
           (AudioSelections *) self;
-        audio_selections_init (sel);
+        sel->schema_version =
+          AUDIO_SELECTIONS_SCHEMA_VERSION;
+        position_init (&sel->sel_start);
+        position_init (&sel->sel_end);
+        region_identifier_init (&sel->region_id);
+        sel->pool_id = -1;
       }
       break;
     default:
@@ -218,6 +223,51 @@ arranger_selections_init (
     }
 
 #undef SET_OBJ
+}
+
+/**
+ * Creates new arranger selections.
+ */
+ArrangerSelections *
+arranger_selections_new (
+  ArrangerSelectionsType type)
+{
+  ArrangerSelections * self = NULL;
+
+  switch (type)
+    {
+    case TYPE (TIMELINE):
+      self =
+        (ArrangerSelections *)
+        object_new (TimelineSelections);
+      break;
+    case TYPE (MIDI):
+      self =
+        (ArrangerSelections *)
+        object_new (MidiArrangerSelections);
+      break;
+    case TYPE (AUTOMATION):
+      self =
+        (ArrangerSelections *)
+        object_new (AutomationSelections);
+      break;
+    case TYPE (CHORD):
+      self =
+        (ArrangerSelections *)
+        object_new (ChordSelections);
+      break;
+    case TYPE (AUDIO):
+      self =
+        (ArrangerSelections *)
+        object_new (AudioSelections);
+      break;
+    default:
+      g_return_val_if_reached (NULL);
+    }
+
+  arranger_selections_init (self, type);
+
+  return self;
 }
 
 /**
@@ -1624,11 +1674,61 @@ arranger_selections_post_deserialize (
 #undef POST_DESERIALIZE
 }
 
+bool
+arranger_selections_validate (
+  ArrangerSelections * self)
+{
+  TimelineSelections * ts;
+  ChordSelections * cs;
+  MidiArrangerSelections * mas;
+  AutomationSelections * as;
+  AudioSelections * aus;
+
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      ts = (TimelineSelections *) self;
+      (void) ts;
+      break;
+    case TYPE (MIDI):
+      mas = (MidiArrangerSelections *) self;
+      (void) mas;
+      break;
+    case TYPE (AUTOMATION):
+      as = (AutomationSelections *) self;
+      (void) as;
+      break;
+    case TYPE (CHORD):
+      cs = (ChordSelections *) self;
+      (void) cs;
+      break;
+    case TYPE (AUDIO):
+      {
+        aus = (AudioSelections *) self;
+        ZRegion * r = region_find (&aus->region_id);
+        g_return_val_if_fail (
+          IS_REGION_AND_NONNULL (r), false);
+        if (position_is_before (
+              &aus->sel_start, &r->base.pos)
+            ||
+            position_is_after_or_equal (
+              &aus->sel_end, &r->base.end_pos))
+          return false;
+      }
+      break;
+    default:
+      g_return_val_if_reached (false);
+    }
+
+  return true;
+}
+
 /**
- * Frees the selections but not the objects.
+ * Frees anything allocated by the selections
+ * but not the objects or @ref self itself.
  */
 void
-arranger_selections_free (
+arranger_selections_free_members (
   ArrangerSelections * self)
 {
   TimelineSelections * ts;
@@ -1643,26 +1743,36 @@ arranger_selections_free (
       free (ts->regions);
       free (ts->scale_objects);
       free (ts->markers);
-      free (ts);
       break;
     case TYPE (MIDI):
       mas = (MidiArrangerSelections *) self;
       free (mas->midi_notes);
-      free (mas);
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
       free (as->automation_points);
-      free (as);
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
       free (cs->chord_objects);
-      free (cs);
+      break;
+    case TYPE (AUDIO):
+      /* nothing to free */
       break;
     default:
       g_return_if_reached ();
     }
+}
+
+/**
+ * Frees the selections but not the objects.
+ */
+void
+arranger_selections_free (
+  ArrangerSelections * self)
+{
+  arranger_selections_free_members (self);
+  object_zero_and_free (self);
 }
 
 /**

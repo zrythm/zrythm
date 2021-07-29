@@ -1234,7 +1234,9 @@ on_audio_func_activate (
     {
       ZRegion * r = TL_SELECTIONS->regions[i];
       AudioSelections * sel =
-        audio_selections_new ();
+        (AudioSelections *)
+        arranger_selections_new (
+          ARRANGER_SELECTIONS_TYPE_AUDIO);
       region_identifier_copy (
         &sel->region_id, &r->id);
       sel->has_selection = true;

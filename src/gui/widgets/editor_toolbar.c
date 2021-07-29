@@ -60,8 +60,36 @@ static void
 update_audio_funcs_menu (
   EditorToolbarWidget * self)
 {
-  if (self->added_audio_funcs)
+  if (self->audio_functions_menu)
     return;
+
+  self->audio_functions_menu =
+    G_MENU_MODEL (g_menu_new ());
+  for (int i = AUDIO_FUNCTION_INVERT;
+       i < AUDIO_FUNCTION_CUSTOM_PLUGIN; i++)
+    {
+      /* not implemented yet */
+      if (i == AUDIO_FUNCTION_NORMALIZE_RMS
+          || i == AUDIO_FUNCTION_NORMALIZE_LUFS)
+        continue;
+
+      char * detailed_action =
+        audio_function_get_detailed_action_for_type (
+          i);
+      GMenuItem * item =
+        g_menu_item_new (
+          audio_function_type_to_string (i),
+          detailed_action);
+      g_free (detailed_action);
+      const char * icon_name =
+        audio_function_get_icon_name_for_type (i);
+      g_menu_item_set_attribute (
+        item, G_MENU_ATTRIBUTE_ICON,
+        "s", icon_name, NULL);
+      g_menu_append_item (
+        G_MENU (self->audio_functions_menu),
+        item);
+    }
 
   GMenu * plugins_menu = g_menu_new ();
   for (size_t i = 0;
@@ -109,7 +137,6 @@ update_audio_funcs_menu (
     G_MENU (self->audio_functions_menu),
     _("Plugin Effect"), G_MENU_MODEL (plugins_menu));
 
-  self->added_audio_funcs = true;
   g_menu_freeze (
     G_MENU (self->audio_functions_menu));
 }
@@ -388,7 +415,7 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (automation_functions_menu);
-  BIND_CHILD (audio_functions_menu);
+  /*BIND_CHILD (audio_functions_menu);*/
   BIND_CHILD (midi_functions_menu);
   BIND_CHILD (functions_btn);
   BIND_CHILD (playhead_scroll);

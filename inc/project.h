@@ -213,28 +213,28 @@ typedef struct Project
    * Selected objects in the
    * AutomationArrangerWidget.
    */
-  AutomationSelections automation_selections;
+  AutomationSelections * automation_selections;
 
   /**
    * Selected objects in the audio editor.
    */
-  AudioSelections   audio_selections;
+  AudioSelections * audio_selections;
 
   /**
    * Selected objects in the
    * ChordObjectArrangerWidget.
    */
-  ChordSelections   chord_selections;
+  ChordSelections * chord_selections;
 
   /**
    * Selected objects in the TimelineArrangerWidget.
    */
-  TimelineSelections timeline_selections;
+  TimelineSelections * timeline_selections;
 
   /**
    * Selected MidiNote's in the MidiArrangerWidget.
    */
-  MidiArrangerSelections midi_arranger_selections;
+  MidiArrangerSelections * midi_arranger_selections;
 
   /**
    * Selected Track's.
@@ -335,19 +335,19 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     Project, mixer_selections,
     mixer_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, timeline_selections,
     timeline_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, midi_arranger_selections,
     midi_arranger_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, chord_selections,
     chord_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, automation_selections,
     automation_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, audio_selections,
     audio_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (

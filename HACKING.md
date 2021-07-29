@@ -70,9 +70,7 @@ synchronously, which can be useful for UI debugging,
 but it will slow down performance.
 
 An easy way to test something is to add a
-`g_warning ("hello");` or
-`g_warn_if_reached ();`
-and it will automatically break there for you.
+`G_BREAKPOINT ();`.
 
 Debug messages can be enabled with
 `G_MESSAGES_DEBUG=zrythm`.

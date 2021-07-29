@@ -35,6 +35,52 @@
 #include "utils/string.h"
 #include "zrythm_app.h"
 
+char *
+audio_function_get_detailed_action_for_type (
+  AudioFunctionType type)
+{
+  const char * base_action = "app.editor-function";
+
+  const char * type_str =
+    audio_function_type_to_string (type);
+  char * type_str_lower = g_strdup (type_str);
+  string_to_lower (type_str, type_str_lower);
+  char * substituted =
+    string_replace (type_str_lower, " ", "-");
+  char * ret =
+    g_strdup_printf (
+      "%s::%s", base_action, substituted);
+  g_free (substituted);
+  g_free (type_str_lower);
+
+  return ret;
+}
+
+const char *
+audio_function_get_icon_name_for_type (
+  AudioFunctionType type)
+{
+  switch (type)
+    {
+    case AUDIO_FUNCTION_INVERT:
+      return "edit-select-invert";
+    case AUDIO_FUNCTION_REVERSE:
+      return "path-reverse";
+    case AUDIO_FUNCTION_NORMALIZE_PEAK:
+      return "kt-set-max-upload-speed";
+    case AUDIO_FUNCTION_NUDGE_LEFT:
+      return "arrow-left";
+    case AUDIO_FUNCTION_NUDGE_RIGHT:
+      return "arrow-right";
+    case AUDIO_FUNCTION_NORMALIZE_RMS:
+    case AUDIO_FUNCTION_NORMALIZE_LUFS:
+    default:
+      return "modulator";
+      break;
+    }
+
+  g_return_val_if_reached (NULL);
+}
 
 /**
  * @param frames Interleaved frames.
@@ -307,15 +353,31 @@ audio_function_apply (
   /* create a copy of the frames to be replaced */
   size_t num_frames =
     (size_t) (end.frames - start.frames);
-  g_debug ("num frames %zu", num_frames);
 
   /* interleaved frames */
   size_t channels = orig_clip->channels;
+  float src_frames[num_frames * channels];
   float frames[num_frames * channels];
   dsp_copy (
     &frames[0],
-    &orig_clip->frames[start.frames * (long) channels],
+    &orig_clip->frames[
+      start.frames * (long) channels],
     num_frames * channels);
+  dsp_copy (
+    &src_frames[0], &frames[0],
+    num_frames * channels);
+
+  long nudge_frames =
+    position_get_frames_from_ticks (
+      AUDIO_FUNCTION_DEFAULT_NUDGE_TICKS);
+  size_t nudge_frames_all_channels =
+    channels * (size_t) nudge_frames;
+  size_t num_frames_excl_nudge;
+
+  g_debug (
+    "num frames %zu, nudge_frames %ld",
+    num_frames, nudge_frames);
+  g_return_val_if_fail (nudge_frames > 0, -1);
 
   if (type == AUDIO_FUNCTION_CUSTOM_PLUGIN)
     {
@@ -348,6 +410,33 @@ audio_function_apply (
           break;
         case AUDIO_FUNCTION_NORMALIZE_LUFS:
           /* TODO lufs-normalize */
+          break;
+        case AUDIO_FUNCTION_NUDGE_LEFT:
+          g_return_val_if_fail (
+            (long) num_frames > nudge_frames, -1);
+          num_frames_excl_nudge =
+            num_frames - (size_t) nudge_frames;
+          dsp_copy (
+            &frames[0],
+            &src_frames[nudge_frames_all_channels],
+            channels * num_frames_excl_nudge);
+          dsp_fill (
+            &frames[
+              channels * num_frames_excl_nudge],
+            0.f,
+            nudge_frames_all_channels);
+          break;
+        case AUDIO_FUNCTION_NUDGE_RIGHT:
+          g_return_val_if_fail (
+            (long) num_frames > nudge_frames, -1);
+          num_frames_excl_nudge =
+            num_frames - (size_t) nudge_frames;
+          dsp_copy (
+            &frames[nudge_frames], &src_frames[0],
+            channels * num_frames_excl_nudge);
+          dsp_fill (
+            &frames[0], 0.f,
+            nudge_frames_all_channels);
           break;
         case AUDIO_FUNCTION_REVERSE:
           for (size_t i = 0; i < num_frames; i++)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,13 +39,23 @@ typedef struct Plugin Plugin;
  * @{
  */
 
+#define AUDIO_FUNCTION_DEFAULT_NUDGE_TICKS 0.1
+
 typedef enum AudioFunctionType
 {
   AUDIO_FUNCTION_INVERT,
   AUDIO_FUNCTION_NORMALIZE_PEAK,
   AUDIO_FUNCTION_NORMALIZE_RMS,
   AUDIO_FUNCTION_NORMALIZE_LUFS,
+  AUDIO_FUNCTION_NUDGE_LEFT,
+  AUDIO_FUNCTION_NUDGE_RIGHT,
   AUDIO_FUNCTION_REVERSE,
+
+  /** External program. */
+  AUDIO_FUNCTION_EXT_PROGRAM,
+
+  /** Guile script. */
+  AUDIO_FUNCTION_GUILE_SCRIPT,
 
   /** Custom plugin. */
   AUDIO_FUNCTION_CUSTOM_PLUGIN,
@@ -58,11 +68,15 @@ static const cyaml_strval_t
   audio_function_type_strings[] =
 {
   { __("Invert"), AUDIO_FUNCTION_INVERT },
-  { __("Normalize Peak"), AUDIO_FUNCTION_NORMALIZE_PEAK },
+  { __("Normalize peak"), AUDIO_FUNCTION_NORMALIZE_PEAK },
   { __("Normalize RMS"), AUDIO_FUNCTION_NORMALIZE_RMS },
   { __("Normalize LUFS"), AUDIO_FUNCTION_NORMALIZE_LUFS },
+  { __("Nudge left"), AUDIO_FUNCTION_NUDGE_LEFT },
+  { __("Nudge right"), AUDIO_FUNCTION_NUDGE_RIGHT },
   { __("Reverse"), AUDIO_FUNCTION_REVERSE },
-  { __("Custom Plugin"), AUDIO_FUNCTION_CUSTOM_PLUGIN },
+  { __("External program"), AUDIO_FUNCTION_EXT_PROGRAM },
+  { __("Guile script"), AUDIO_FUNCTION_GUILE_SCRIPT },
+  { __("Custom plugin"), AUDIO_FUNCTION_CUSTOM_PLUGIN },
   { __("Invalid"), AUDIO_FUNCTION_INVALID },
 };
 
@@ -72,6 +86,14 @@ audio_function_type_to_string (
 {
   return audio_function_type_strings[type].str;
 }
+
+char *
+audio_function_get_detailed_action_for_type (
+  AudioFunctionType type);
+
+const char *
+audio_function_get_icon_name_for_type (
+  AudioFunctionType type);
 
 /**
  * Returns the URI of the plugin responsible for

@@ -39,7 +39,7 @@
 #define CHORD_SELECTIONS_SCHEMA_VERSION 1
 
 #define CHORD_SELECTIONS \
-  (&PROJECT->chord_selections)
+  (PROJECT->chord_selections)
 
 /**
  * Selections to be used for the ChordArrangerWidget's

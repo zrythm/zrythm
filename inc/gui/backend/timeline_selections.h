@@ -42,7 +42,7 @@
 #define TL_SELECTIONS_SCHEMA_VERSION 1
 
 #define TL_SELECTIONS \
-  (&PROJECT->timeline_selections)
+  (PROJECT->timeline_selections)
 
 /**
  * Selections to be used for the timeline's current
@@ -104,12 +104,6 @@ timeline_selections_schema = {
     TimelineSelections,
     timeline_selections_fields_schema),
 };
-
-/**
- * Creates a new TimelineSelections instance.
- */
-TimelineSelections *
-timeline_selections_new (void);
 
 /**
  * Creates a new TimelineSelections instance for

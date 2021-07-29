@@ -80,17 +80,28 @@ position_update_ticks_from_frames (
 }
 
 /**
+ * Converts ticks to frames.
+ */
+long
+position_get_frames_from_ticks (
+  double ticks)
+{
+  g_return_val_if_fail (
+    AUDIO_ENGINE->frames_per_tick > 0, -1);
+  return
+    math_round_double_to_long (
+      (ticks * AUDIO_ENGINE->frames_per_tick));
+}
+
+/**
  * Updates frames.
  */
 void
 position_update_frames_from_ticks (
   Position * self)
 {
-  g_return_if_fail (
-    AUDIO_ENGINE->frames_per_tick > 0);
   self->frames =
-    math_round_double_to_long (
-      (self->ticks * AUDIO_ENGINE->frames_per_tick));
+    position_get_frames_from_ticks (self->ticks);
 }
 
 /**

@@ -2380,7 +2380,14 @@ do_audio_func (
       return;
     }
 
+  sel = arranger_selections_clone (sel);
+
   UndoableAction * ua = NULL;
+  if (!arranger_selections_validate (sel))
+    {
+      goto free_audio_sel_and_return;
+    }
+
   ua =
     arranger_selections_action_new_edit_audio_function (
       sel, type, uri);
@@ -2389,6 +2396,9 @@ do_audio_func (
     {
       undo_manager_perform (UNDO_MANAGER, ua);
     }
+
+free_audio_sel_and_return:
+  arranger_selections_free (sel);
 }
 
 DEFINE_SIMPLE (activate_editor_function)
@@ -2484,21 +2494,18 @@ DEFINE_SIMPLE (activate_editor_function)
               g_settings_get_int (
                 S_UI, "audio-function"), NULL);
           }
-        else if (string_is_equal (str, "invert"))
-          {
-            do_audio_func (
-              AUDIO_FUNCTION_INVERT, NULL);
+#define DO_FUNC(string_rep,caps) \
+        else if (string_is_equal (str, string_rep)) \
+          { \
+            do_audio_func ( \
+              AUDIO_FUNCTION_##caps, NULL); \
           }
-        else if (string_is_equal (str, "normalize-peak"))
-          {
-            do_audio_func (
-              AUDIO_FUNCTION_NORMALIZE_PEAK, NULL);
-          }
-        else if (string_is_equal (str, "reverse"))
-          {
-            do_audio_func (
-              AUDIO_FUNCTION_REVERSE, NULL);
-          }
+        DO_FUNC ("invert", INVERT)
+        DO_FUNC ("normalize-peak", NORMALIZE_PEAK)
+        DO_FUNC ("nudge-left", NUDGE_LEFT)
+        DO_FUNC ("nudge-right", NUDGE_RIGHT)
+        DO_FUNC ("reverse", REVERSE)
+#undef DO_FUNC
         else
           {
             g_return_if_reached ();

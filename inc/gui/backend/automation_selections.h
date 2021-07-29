@@ -39,7 +39,7 @@
 #define AUTOMATION_SELECTIONS_SCHEMA_VERSION 1
 
 #define AUTOMATION_SELECTIONS \
-  (&PROJECT->automation_selections)
+  (PROJECT->automation_selections)
 
 /**
  * Selections to be used for the AutomationArrangerWidget's

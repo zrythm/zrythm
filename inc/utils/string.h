@@ -78,6 +78,18 @@ string_to_upper (
   char *       out);
 
 /**
+ * Converts the given string to lowercase in \ref
+ * out.
+ *
+ * Assumes \ref out is already allocated to as many
+ * chars as \ref in.
+ */
+void
+string_to_lower (
+  const char * in,
+  char *       out);
+
+/**
  * Returns if the two strings are exactly equal.
  */
 #define string_is_equal(str1,str2) \

@@ -199,11 +199,11 @@ editor_ruler_on_drag_end (
 {
   /* prepare selections for edit action */
   ArrangerSelections * before_sel =
-    (ArrangerSelections *)
-    timeline_selections_new ();
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_TIMELINE);
   ArrangerSelections * after_sel =
-    (ArrangerSelections *)
-    timeline_selections_new ();
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_TIMELINE);
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (r);
   ArrangerObject * r_clone_obj_before =

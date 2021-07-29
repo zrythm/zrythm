@@ -141,6 +141,13 @@ arranger_selections_init (
   ArrangerSelectionsType type);
 
 /**
+ * Creates new arranger selections.
+ */
+ArrangerSelections *
+arranger_selections_new (
+  ArrangerSelectionsType type);
+
+/**
  * Verify that the objects are not invalid.
  */
 NONNULL
@@ -338,6 +345,20 @@ arranger_selections_clear (
 NONNULL
 void
 arranger_selections_post_deserialize (
+  ArrangerSelections * self);
+
+NONNULL
+bool
+arranger_selections_validate (
+  ArrangerSelections * self);
+
+/**
+ * Frees anything allocated by the selections
+ * but not the objects or @ref self itself.
+ */
+NONNULL
+void
+arranger_selections_free_members (
   ArrangerSelections * self);
 
 /**

@@ -1386,6 +1386,13 @@ zrythm_app_startup (
     "<Shift>M", "app.mute-selection::global");
   INSTALL_ACCEL (
     "<Control>J", "app.merge-selection");
+  /* TODO implement */
+  INSTALL_ACCEL (
+    "<Control><Shift>leftarrow",
+    "app.nudge-selection::left");
+  INSTALL_ACCEL (
+    "<Control><Shift>rightarrow",
+    "app.nudge-selection::right");
   INSTALL_ACCEL (
     gdk_keyval_name (GDK_KEY_Home),
     "app.go-to-start");

@@ -80,7 +80,10 @@ range_action_new (
   self->sel_before =
     timeline_selections_new_for_range (
       start_pos, &inf, F_CLONE);
-  self->sel_after = timeline_selections_new ();
+  self->sel_after =
+    (TimelineSelections *)
+    arranger_selections_new (
+      ARRANGER_SELECTIONS_TYPE_TIMELINE);
 
   self->transport = transport_clone (TRANSPORT);
 

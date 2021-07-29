@@ -149,6 +149,28 @@ string_to_upper (
 }
 
 /**
+ * Converts the given string to lowercase in \ref
+ * out.
+ *
+ * Assumes \ref out is already allocated to as many
+ * chars as \ref in.
+ */
+void
+string_to_lower (
+  const char * in,
+  char *       out)
+{
+  const char * src = in;
+  char * dest = out;
+  while (*src)
+    {
+      *dest = g_ascii_tolower (*src);
+      src++;
+      dest++;
+    }
+}
+
+/**
  * Returns a newly allocated string that is a
  * filename version of the given string.
  *
