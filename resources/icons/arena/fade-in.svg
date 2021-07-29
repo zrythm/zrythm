@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="300px"
+   width="300px"
+   fill="#000000"
+   viewBox="0 0 12 12"
+   version="1.1"
+   x="0px"
+   y="0px"
+   id="svg12"
+   sodipodi:docname="fade-in.svg"
+   inkscape:version="1.1 (c4e8f9ed74, 2021-05-24)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+  <defs
+     id="defs16" />
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="2.4233333"
+     inkscape:cx="150.20633"
+     inkscape:cy="150"
+     inkscape:window-width="1920"
+     inkscape:window-height="1020"
+     inkscape:window-x="0"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg12" />
+  <title
+     id="title2">fade-in</title>
+  <desc
+     id="desc4">Created with Sketch.</desc>
+  <g
+     stroke="none"
+     stroke-width="1"
+     fill="none"
+     fill-rule="evenodd"
+     sketch:type="MSPage"
+     id="g10"
+     style="fill:#e6e6e6">
+    <g
+       sketch:type="MSArtboardGroup"
+       fill="#000000"
+       id="g8"
+       style="fill:#e6e6e6">
+      <path
+         d="M2.36104879,11 L3.02267628,11 L3.02267628,8.14778382 C2.78361358,8.32337314 2.55923877,8.4834648 2.36104879,8.62233825 L2.36104879,11 L2.36104879,11 Z M1.6994213,10.9911346 C1.54051621,10.963987 1.43961057,10.9420751 1.3142702,10.8583531 C0.867732249,10.5600848 0.856557959,9.33531566 1.54494042,9.17685045 C1.54494042,9.17685045 1.60037091,9.14093208 1.6994213,9.07497197 L1.6994213,10.9911346 L1.6994213,10.9911346 Z M3.68430378,11 L4.34593127,10.9999999 L4.34593127,7.11849849 C4.12690971,7.30055306 3.90394843,7.47854225 3.68430378,7.64885548 L3.68430378,11 L3.68430378,11 Z M5.66918625,10.9999999 L5.66918625,5.88579886 C5.62370622,5.93375283 5.19748615,6.36748828 5.00755876,6.54206952 L5.00755876,10.9999999 L5.66918625,10.9999999 Z M7.65406873,10.9999998 L7.65406873,3.77567404 C7.20580492,4.25396328 6.73669627,4.75384933 6.33081375,5.18500894 L6.33081375,10.9999999 L7.65406873,10.9999998 Z M10.054494,10.9999997 C10.4084803,10.9952325 10.9367262,10.63537 10.9367262,9.90611 C10.9367262,9.17685004 11,3.34277027 11,2.61351035 C11,1.88593912 11,1.51962047 10.6848313,1.15499049 C10.3250859,0.738787957 9.90158037,1.22143189 9.42415674,1.88425045 C9.42415674,1.88425045 8.94791153,2.39396673 8.31569622,3.06930548 L8.31569622,10.9999998 L10.054494,10.9999997 Z"
+         sketch:type="MSShapeGroup"
+         id="path6"
+         style="fill:#e6e6e6" />
+    </g>
+  </g>
+</svg>

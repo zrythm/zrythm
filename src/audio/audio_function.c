@@ -79,6 +79,10 @@ audio_function_get_icon_name_for_type (
       return "path-reverse";
     case AUDIO_FUNCTION_NORMALIZE_PEAK:
       return "kt-set-max-upload-speed";
+    case AUDIO_FUNCTION_LINEAR_FADE_IN:
+      return "arena-fade-in";
+    case AUDIO_FUNCTION_LINEAR_FADE_OUT:
+      return "arena-fade-out";
     case AUDIO_FUNCTION_NUDGE_LEFT:
       return "arrow-left";
     case AUDIO_FUNCTION_NUDGE_RIGHT:
@@ -413,6 +417,14 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_NORMALIZE_LUFS:
       /* TODO lufs-normalize */
+      break;
+    case AUDIO_FUNCTION_LINEAR_FADE_IN:
+      dsp_linear_fade_in (
+        &frames[0], num_frames * channels);
+      break;
+    case AUDIO_FUNCTION_LINEAR_FADE_OUT:
+      dsp_linear_fade_out (
+        &frames[0], num_frames * channels);
       break;
     case AUDIO_FUNCTION_NUDGE_LEFT:
       g_return_val_if_fail (

@@ -147,12 +147,6 @@ Args:
                      "\">icons/"
                      dir "/" icon-file
                      "</file>"))
-                 (newline)
-                 (display
-                   (string-append
-                     "    <file>icons/"
-                     dir "/" icon-file
-                     "</file>"))
                  (newline))
                (scandir
                  (join-path
@@ -161,7 +155,7 @@ Args:
                    (or
                      (string-suffix? ".svg" f)
                      (string-suffix? ".png" f))))))
-           '("gnome-builder" "ext"
+           '("arena" "gnome-builder" "ext"
              "fork-awesome" "font-awesome"
              "fluentui"))
 

@@ -210,6 +210,26 @@ dsp_mix_add2 (
   size_t        size);
 
 /**
+ * Calculate linear fade in by multiplying from
+ * 0 to 1.
+ */
+NONNULL
+void
+dsp_linear_fade_in (
+  float * dest,
+  size_t  size);
+
+/**
+ * Calculate linear fade in by multiplying from
+ * 1 to 0.
+ */
+NONNULL
+void
+dsp_linear_fade_out (
+  float * dest,
+  size_t  size);
+
+/**
  * Makes the two signals mono.
  *
  * @param equal_power True for equal power, false

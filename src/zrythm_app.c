@@ -1193,6 +1193,9 @@ zrythm_app_startup (
     "/org/zrythm/Zrythm/app/icons/zrythm");
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/arena");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
     "/org/zrythm/Zrythm/app/icons/fork-awesome");
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),
