@@ -1163,8 +1163,8 @@ if not xxhash_dep.found ()
   xxhash_dep = cc.find_library ('xxhash')
 endif
 
-vamp_dep = dependency ('vamp')
-vamp_host_sdk_dep = dependency ('vamp-hostsdk')
+vamp_dep = dependency ('vamp', static: get_option ('vamp-static'))
+vamp_host_sdk_dep = dependency ('vamp-hostsdk', static: get_option ('vamp-static'))
 vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 # TODO add Cantarell font as dependency
