@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-07-31 12:40+0100\n"
-"PO-Revision-Date: 2021-05-02 17:32+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2021-07-26 22:33+0000\n"
+"Last-Translator: sub26nico10b0a294e11e4b4b <faurenicolas5595@neuf.fr>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.7.2-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -621,7 +622,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:80
 msgid "MIDI CC bindings"
-msgstr ""
+msgstr "Mappage CC MIDI"
 
 #: ../../configuration/device-setup.rst:82
 #, fuzzy
@@ -3654,7 +3655,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
-msgstr ""
+msgstr "Pré-réglages"
 
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
@@ -5241,16 +5242,8 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:33
-#, fuzzy
 msgid "Metronome options"
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Basculement du métronome\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Basculement du métronome\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Options du Métronome"
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Sets the volume of the metronome"
@@ -5519,9 +5512,8 @@ msgid "Stop playback of the selected file."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
-#, fuzzy
 msgid "Volume"
-msgstr "Accueil"
+msgstr "Volume"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
 msgid "Control the loudness of the output audio."
@@ -5540,7 +5532,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:110
 msgid "Autoplay"
-msgstr ""
+msgstr "Lecture automatique"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:111
 msgid ""
@@ -5852,9 +5844,8 @@ msgstr ""
 "telles que \"MesSynthés\" et filtrer par collections sélectionnées."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
-#, fuzzy
 msgid "Author"
-msgstr "Auteurs"
+msgstr "Auteur"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Filter by plugin manufacturer/author."
@@ -6118,7 +6109,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Enabled"
-msgstr ""
+msgstr "Activé"
 
 #: ../../plugins-files/plugins/plugin-info.rst:62
 msgid "Controls whether the plugin is active or bypassed."
@@ -9479,7 +9470,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
-msgstr ""
+msgstr "Charger"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
@@ -13181,4 +13172,3 @@ msgstr ""
 #~ "du projet et est utilisé pour "
 #~ "mixer les signaux audio de chaque "
 #~ "canal."
-
