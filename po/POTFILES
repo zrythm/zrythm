@@ -151,7 +151,6 @@ inc/gui/widgets/timeline_toolbar.h
 inc/gui/widgets/midi_group_track.h
 inc/gui/widgets/toolbox.h
 inc/gui/widgets/track_top_grid.h
-inc/gui/widgets/track_lanelist.h
 inc/gui/widgets/volume.h
 inc/gui/widgets/snap_grid.h
 inc/gui/widgets/timeline_selection_info.h
@@ -196,7 +195,6 @@ inc/gui/widgets/expander_box.h
 inc/gui/widgets/visibility.h
 inc/gui/widgets/inspector_chord.h
 inc/gui/widgets/fader_controls_grid.h
-inc/gui/widgets/track_lane.h
 inc/gui/widgets/chord_region.h
 inc/gui/widgets/active_hardware_mb.h
 inc/gui/widgets/bar_slider.h
@@ -339,6 +337,7 @@ inc/utils/zrythm_object.h
 inc/utils/math.h
 inc/utils/backtrace.h
 inc/utils/mpmc_queue.h
+inc/utils/vamp.h
 inc/utils/object_pool.h
 inc/utils/mem.h
 inc/utils/symap.h
@@ -583,7 +582,6 @@ src/gui/widgets/timeline_ruler.c
 src/gui/widgets/port_connections_tree.c
 src/gui/widgets/region.c
 src/gui/widgets/audio_bus_track.c
-src/gui/widgets/track_lane.c
 src/gui/widgets/marker.c
 src/gui/widgets/text_expander.c
 src/gui/widgets/home_toolbar.c
@@ -618,7 +616,6 @@ src/gui/widgets/audio_track.c
 src/gui/widgets/clip_editor_inner.c
 src/gui/widgets/button_with_menu.c
 src/gui/widgets/channel_sends_expander.c
-src/gui/widgets/track_lanelist.c
 src/gui/widgets/scale_selector_window.c
 src/gui/widgets/bar_slider.c
 src/gui/widgets/timeline_panel.c
@@ -704,6 +701,7 @@ src/gui/backend/editor_settings.c
 src/gui/backend/timeline.c
 src/gui/backend/automation_editor.c
 src/gui/backend/event.c
+src/utils/vamp.c
 src/utils/lilv.c
 src/utils/windows_errors.c
 src/utils/io.c
@@ -735,6 +733,7 @@ src/utils/gtk.c
 src/utils/dialogs.c
 src/utils/ui.c
 src/utils/error.c
+src/utils/lv2apply.c
 src/utils/dsp.c
 src/utils/resources.c
 src/utils/mpmc_queue.c
@@ -919,7 +918,6 @@ resources/ui/automation_editor_space.ui
 resources/ui/route_target_selector.ui
 resources/ui/inspector_master.ui
 resources/ui/port_info_dialog.ui
-resources/ui/track_lane.ui
 resources/ui/export_midi_file_dialog.ui
 resources/ui/modulator_view.ui
 resources/ui/panel_file_browser.ui

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-07-21 18:06+0100\n"
+"POT-Creation-Date: 2021-07-31 23:19+0100\n"
 "PO-Revision-Date: 2021-07-04 14:32+0000\n"
 "Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -104,7 +104,7 @@ msgid "Pulse"
 msgstr "Пульс"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
-#: src/gui/widgets/track.c:2183
+#: src/gui/widgets/track.c:2214
 msgid "Inherit"
 msgstr "Успадковувати"
 
@@ -169,31 +169,72 @@ msgstr "Дублювати"
 
 #: inc/utils/gtk.h:89 src/gui/widgets/channel.c:748
 #: src/gui/widgets/monitor_section.c:55 src/gui/widgets/monitor_section.c:352
-#: src/gui/widgets/folder_channel.c:575 src/gui/widgets/track.c:1180
-#: src/gui/widgets/track.c:1929 resources/ui/fader_buttons.ui:99
+#: src/gui/widgets/folder_channel.c:575 src/gui/widgets/track.c:1179
+#: src/gui/widgets/track.c:1949 resources/ui/fader_buttons.ui:99
 #: build/data/org.zrythm.Zrythm.gschema.xml:306
 msgid "Mute"
 msgstr "Вимкнути звук"
 
 #: inc/utils/gtk.h:93 src/gui/widgets/channel.c:757
-#: src/gui/widgets/folder_channel.c:584 src/gui/widgets/track.c:1176
-#: src/gui/widgets/track.c:1938
+#: src/gui/widgets/folder_channel.c:584 src/gui/widgets/track.c:1175
+#: src/gui/widgets/track.c:1958
 msgid "Unmute"
 msgstr "Увімкнути звук"
 
-#: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:218
+#: inc/audio/audio_function.h:70
 msgid "Invert"
 msgstr "Інвертувати"
 
-#: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:224
-msgid "Normalize"
+#: inc/audio/audio_function.h:71
+#, fuzzy
+msgid "Normalize peak"
 msgstr "Нормалізувати"
 
-#: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:230
+#: inc/audio/audio_function.h:72
+#, fuzzy
+msgid "Normalize RMS"
+msgstr "Нормалізувати"
+
+#: inc/audio/audio_function.h:73
+#, fuzzy
+msgid "Normalize LUFS"
+msgstr "Нормалізувати"
+
+#: inc/audio/audio_function.h:74
+#, fuzzy
+msgid "Linear fade in"
+msgstr "Лінійний"
+
+#: inc/audio/audio_function.h:76
+msgid "Linear fade out"
+msgstr ""
+
+#: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:226
+msgid "Nudge left"
+msgstr ""
+
+#: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:228
+msgid "Nudge right"
+msgstr ""
+
+#: inc/audio/audio_function.h:80
 msgid "Reverse"
 msgstr "Узворотнити"
 
-#: inc/audio/audio_function.h:57
+#: inc/audio/audio_function.h:81
+msgid "External program"
+msgstr ""
+
+#: inc/audio/audio_function.h:82
+#, fuzzy
+msgid "Guile script"
+msgstr "Банк за замовчуванням"
+
+#: inc/audio/audio_function.h:83
+msgid "Custom plugin"
+msgstr ""
+
+#: inc/audio/audio_function.h:84
 msgid "Invalid"
 msgstr "Хибно"
 
@@ -221,7 +262,7 @@ msgstr "Інструмент"
 msgid "Audio"
 msgstr "Аудіо"
 
-#: inc/audio/track.h:176 src/project.c:784
+#: inc/audio/track.h:176 src/project.c:752
 #: src/gui/widgets/route_target_selector_popover.c:164
 msgid "Master"
 msgstr "Магістр"
@@ -388,26 +429,26 @@ msgstr "Квадратний корінь"
 msgid "Sine"
 msgstr "Синус"
 
-#: src/project.c:145
+#: src/project.c:152
 #, c-format
 msgid "Failed to open file: %s"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/project.c:189
+#: src/project.c:196
 msgid "Project not compressed by zstd"
 msgstr "Проєкт не стиснений zstd"
 
-#: src/project.c:202
+#: src/project.c:209
 #, c-format
 msgid "Failed to decompress project file: %s"
 msgstr "Не вдалося розпакувати файл проєкту: %s"
 
-#: src/project.c:929
+#: src/project.c:897
 #, c-format
 msgid "Unable to read file: %s"
 msgstr "Не вдається прочитати файл: %s"
 
-#: src/project.c:1014
+#: src/project.c:982
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -418,11 +459,11 @@ msgstr ""
 "  %s.\n"
 "Використовувати новішу резервну копію?"
 
-#: src/project.c:1019
+#: src/project.c:987
 msgid "Backup found"
 msgstr "Знайдено резервну копію"
 
-#: src/project.c:1075
+#: src/project.c:1043
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
@@ -430,93 +471,94 @@ msgid ""
 msgstr ""
 "Проєкт створено з іншою версією %s (%s). Він може працювати некоректно."
 
-#: src/project.c:1090
+#: src/project.c:1058
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Не вдалося завантажити проєкт. Будь ласка, перевірте журнали для отримання "
 "додаткової інформації."
 
-#: src/project.c:1319
+#: src/project.c:1289
 msgid "Failed to load project. Will create a new one instead."
 msgstr "Не вдалося завантажити проєкт. Натомість створіть новий."
 
-#: src/project.c:1650
+#: src/project.c:1635
 msgid "Backup saved."
 msgstr "Резервну копію збережено."
 
-#: src/project.c:1660
+#: src/project.c:1645
 msgid "Project saved."
 msgstr "Проєкт збережено."
 
-#: src/zrythm_app.c:141
+#: src/zrythm_app.c:142
 msgid "Error - Backtrace:\n"
 msgstr "Помилка - зворотне відстеження:\n"
 
-#: src/zrythm_app.c:145
+#: src/zrythm_app.c:146
 #, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "Помилка: %s - зворотне відстеження:\n"
 
-#: src/zrythm_app.c:159
+#: src/zrythm_app.c:160
 #, c-format
 msgid "%s has crashed. "
 msgstr "%s аварійно завершив роботу. "
 
-#: src/zrythm_app.c:239
+#: src/zrythm_app.c:240
 msgid "Setting up main window"
 msgstr "Налаштування головного вікна"
 
-#: src/zrythm_app.c:284
+#: src/zrythm_app.c:285
 msgid "Loading project"
 msgstr "Завантаження проєкту"
 
-#: src/zrythm_app.c:297
+#: src/zrythm_app.c:298
 #, c-format
 msgid "No project has been selected. %s will now close."
 msgstr "Жоден проєкт не вибрано. %s тепер закриється."
 
-#: src/zrythm_app.c:320
+#: src/zrythm_app.c:321
 msgid "Initializing settings"
 msgstr "Ініціалізація налаштувань"
 
-#: src/zrythm_app.c:327
+#: src/zrythm_app.c:328
 #, c-format
 msgid "Initializing %s directories"
 msgstr "Ініціалізація %s каталогів"
 
-#: src/zrythm_app.c:337
+#: src/zrythm_app.c:338
 msgid "Initializing logging system"
 msgstr "Ініціалізація системи реєстрації"
 
-#: src/zrythm_app.c:347
+#: src/zrythm_app.c:348
 msgid "Initializing caches"
 msgstr "Ініціалізація кеш-пам’яті"
 
-#: src/zrythm_app.c:351
+#: src/zrythm_app.c:352
 msgid "Initializing file manager"
 msgstr "Ініціалізація файлового менеджера"
 
-#: src/zrythm_app.c:358
+#: src/zrythm_app.c:359
 msgid "Scanning plugins"
 msgstr "Сканування плагінів"
 
-#: src/zrythm_app.c:519
+#: src/zrythm_app.c:520
 msgid "License Information"
 msgstr "Інформація про ліцензію"
 
-#: src/zrythm_app.c:547
+#: src/zrythm_app.c:548
 msgid "Waiting for project"
 msgstr "Чекаю на проєкт"
 
-#: src/zrythm_app.c:957
-#, c-format
+#: src/zrythm_app.c:958
+#, fuzzy, c-format
 msgid ""
-"%s-%s %s\n"
+"%s-%s\n"
+"%s\n"
 "\n"
 "%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
-"under certain conditions. See the file `COPYING' for details.\n"
+"under certain conditions. See the file 'COPYING' for details.\n"
 "\n"
 "Write comments and bugs to %s\n"
 "Support this project at https://liberapay.com/Zrythm\n"
@@ -533,75 +575,75 @@ msgstr ""
 "Підтримайте цей проєкт на https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1436
+#: src/zrythm_app.c:1449
 #, c-format
 msgid "File %s not found."
 msgstr "Файл %s не знайдено."
 
-#: src/zrythm_app.c:1457
+#: src/zrythm_app.c:1470
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Вихідний файл не вказано. Будь ласка, передайте один з `--output [FILE]`."
 
-#: src/zrythm_app.c:1522
+#: src/zrythm_app.c:1535
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Не вдалося розпакувати проект: %s\n"
 
-#: src/zrythm_app.c:1541
+#: src/zrythm_app.c:1554
 msgid "Unknown operation"
 msgstr "Невідома операція"
 
-#: src/zrythm_app.c:1561
+#: src/zrythm_app.c:1574
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "для цього параметра потрібен libguile\n"
 
-#: src/zrythm_app.c:1726
+#: src/zrythm_app.c:1739
 msgid "Print version information"
 msgstr "Відомості про ліцензію"
 
-#: src/zrythm_app.c:1731
+#: src/zrythm_app.c:1744
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Перетворити ZPJ-FILE на YAML"
 
-#: src/zrythm_app.c:1736
+#: src/zrythm_app.c:1749
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Перетворити YAML-PROJECT-FILE у формат .zpj"
 
-#: src/zrythm_app.c:1741
+#: src/zrythm_app.c:1754
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Утворити проєкт із SCRIPT-FILE"
 
-#: src/zrythm_app.c:1745
+#: src/zrythm_app.c:1758
 msgid "Print output in user-friendly way"
 msgstr "Показ виводу зручним для користувача способом"
 
-#: src/zrythm_app.c:1749
+#: src/zrythm_app.c:1762
 msgid "Print current settings"
 msgstr "Показ поточних налаштувань"
 
-#: src/zrythm_app.c:1753
+#: src/zrythm_app.c:1766
 msgid "Reset to factory settings"
 msgstr "Скидання до заводських налаштувань"
 
-#: src/zrythm_app.c:1756
+#: src/zrythm_app.c:1769
 msgid "Override the audio backend to use"
 msgstr "Перевизначити аудіобекенд для використання"
 
-#: src/zrythm_app.c:1760
+#: src/zrythm_app.c:1773
 msgid "Override the MIDI backend to use"
 msgstr "Перевизначити MIDI-бекенд для використання"
 
-#: src/zrythm_app.c:1764
+#: src/zrythm_app.c:1777
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Скорочення для --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1796
+#: src/zrythm_app.c:1809
 msgid "[PROJECT-FILE]"
 msgstr "[ПРОЄКТ-ФАЙЛ]"
 
-#: src/zrythm_app.c:1801
+#: src/zrythm_app.c:1814
 #, c-format
 msgid ""
 "Examples:\n"
@@ -620,7 +662,7 @@ msgstr ""
 "\n"
 "Будь ласка, повідомляйте про проблеми за адресою %s\n"
 
-#: src/zrythm_app.c:1813
+#: src/zrythm_app.c:1826
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Запустити %s, опціонально передавши файл проєкту."
@@ -657,11 +699,11 @@ msgstr "CV вхід"
 msgid "CV out"
 msgstr "CV вихід"
 
-#: src/plugins/plugin_manager.c:387
+#: src/plugins/plugin_manager.c:394
 msgid "Error loading LV2 bundle dir: "
 msgstr "Помилка завантаження каталогу LV2: "
 
-#: src/plugins/plugin_manager.c:1088
+#: src/plugins/plugin_manager.c:1095
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "Відсканований %s плагін: %s"
@@ -669,25 +711,25 @@ msgstr "Відсканований %s плагін: %s"
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
-#: src/plugins/plugin_manager.c:1102
+#: src/plugins/plugin_manager.c:1109
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "Пропущений %1$s плагін у %2$s"
 
-#: src/plugins/plugin_manager.c:1236
+#: src/plugins/plugin_manager.c:1243
 msgid "Scanned LV2 plugin"
 msgstr "Відсканований плагін LV2"
 
-#: src/plugins/plugin_manager.c:1247
+#: src/plugins/plugin_manager.c:1254
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "Пропущений плагін LV2 о %s"
 
-#: src/plugins/plugin_manager.c:1335
+#: src/plugins/plugin_manager.c:1342
 msgid "Scanned AU plugin"
 msgstr "Відсканований плагін AU"
 
-#: src/plugins/plugin_manager.c:1342
+#: src/plugins/plugin_manager.c:1349
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "Пропущений плагін AU на %u"
@@ -714,16 +756,16 @@ msgstr "Підсилення (gain)"
 msgid "Plugin gain"
 msgstr "Інспектор розширень"
 
-#: src/plugins/plugin.c:1081
+#: src/plugins/plugin.c:1090
 #, c-format
 msgid " - bridge: %s"
 msgstr " - міст: %s"
 
-#: src/plugins/plugin.c:1092
+#: src/plugins/plugin.c:1101
 msgid "instrument"
 msgstr "Інструмент"
 
-#: src/plugins/plugin.c:1884
+#: src/plugins/plugin.c:1893
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -747,15 +789,15 @@ msgstr "Зберегти стан"
 #: src/gui/widgets/plugin_properties_expander.c:108
 #: src/gui/widgets/main_window.c:211
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:163
-#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/actions/actions.c:794
-#: resources/ui/string_entry_dialog.ui:47
+#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/audio/clip.c:649
+#: src/actions/actions.c:758 resources/ui/string_entry_dialog.ui:47
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Скасувати"
 
 #: src/plugins/plugin_gtk.c:99 src/plugins/plugin_gtk.c:304
-#: src/plugins/lv2/lv2_gtk.c:80 src/actions/actions.c:796
+#: src/plugins/lv2/lv2_gtk.c:80 src/actions/actions.c:760
 msgid "_Save"
 msgstr "_Зберегти"
 
@@ -772,19 +814,19 @@ msgstr "_Назва префікса розширення"
 msgid "URI (Optional):"
 msgstr "URI (необов’язково):"
 
-#: src/plugins/plugin_gtk.c:1317
+#: src/plugins/plugin_gtk.c:1322
 msgid "Open File"
 msgstr "Відкрити файл"
 
-#: src/plugins/plugin_gtk.c:1479
+#: src/plugins/plugin_gtk.c:1488
 msgid "Close"
 msgstr "Закрити"
 
-#: src/plugins/plugin_gtk.c:1587
+#: src/plugins/plugin_gtk.c:1596
 msgid "Unknown widget type for value"
 msgstr "Невідомий тип віджета для значення"
 
-#: src/plugins/plugin_gtk.c:1613
+#: src/plugins/plugin_gtk.c:1622
 msgid "Unknown widget type for value\n"
 msgstr "Невідомий тип віджета для значення\n"
 
@@ -814,7 +856,7 @@ msgstr "Банк без назви"
 msgid "Delete Preset?"
 msgstr "Видалити переднабір?"
 
-#: src/plugins/lv2/lv2_gtk.c:265 src/utils/dialogs.c:70
+#: src/plugins/lv2/lv2_gtk.c:265 src/utils/dialogs.c:70 src/audio/clip.c:648
 #: resources/ui/string_entry_dialog.ui:61
 #: resources/ui/port_selector_popover.ui:254
 msgid "_OK"
@@ -842,7 +884,7 @@ msgid "OUTPUTS"
 msgstr "ВИХОДИ"
 
 #: src/gui/widgets/port_connections_popover.c:202
-#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1237
+#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1236
 msgid "Add"
 msgstr "Додати"
 
@@ -900,81 +942,81 @@ msgid "Track Properties"
 msgstr "Властивості доріжки"
 
 #: src/gui/widgets/channel.c:674 src/gui/widgets/folder_channel.c:503
-#: src/gui/widgets/track.c:1819
+#: src/gui/widgets/track.c:1839
 msgid "_Delete Track"
 msgstr "_Видалити доріжку"
 
 #: src/gui/widgets/channel.c:677 src/gui/widgets/folder_channel.c:506
-#: src/gui/widgets/track.c:1822
+#: src/gui/widgets/track.c:1842
 msgid "_Delete Tracks"
 msgstr "_Видалити доріжки"
 
 #: src/gui/widgets/channel.c:688 src/gui/widgets/folder_channel.c:517
-#: src/gui/widgets/track.c:1833
+#: src/gui/widgets/track.c:1853
 msgid "_Duplicate Track"
 msgstr "_ Дубльована доріжка"
 
 #: src/gui/widgets/channel.c:691 src/gui/widgets/folder_channel.c:520
-#: src/gui/widgets/track.c:1836
+#: src/gui/widgets/track.c:1856
 msgid "_Duplicate Tracks"
 msgstr "_ Дубльовані доріжки"
 
 #: src/gui/widgets/channel.c:703 src/gui/widgets/folder_channel.c:532
-#: src/gui/widgets/track.c:1858
+#: src/gui/widgets/track.c:1878
 msgid "Hide Track"
 msgstr "Приховати доріжку"
 
 #: src/gui/widgets/channel.c:704 src/gui/widgets/folder_channel.c:533
-#: src/gui/widgets/track.c:1859
+#: src/gui/widgets/track.c:1879
 msgid "Hide Tracks"
 msgstr "Приховати доріжки"
 
 #: src/gui/widgets/channel.c:712 src/gui/widgets/folder_channel.c:541
-#: src/gui/widgets/track.c:1867
+#: src/gui/widgets/track.c:1887
 msgid "Pin/Unpin Track"
 msgstr "Закріпити/відкріпити доріжку"
 
 #: src/gui/widgets/channel.c:713 src/gui/widgets/folder_channel.c:542
-#: src/gui/widgets/track.c:1868
+#: src/gui/widgets/track.c:1888
 msgid "Pin/Unpin Tracks"
 msgstr "Закріпити/відкріпити доріжки"
 
 #: src/gui/widgets/channel.c:729 src/gui/widgets/folder_channel.c:556
-#: src/gui/widgets/track.c:1158 src/gui/widgets/track.c:1910
+#: src/gui/widgets/track.c:1157 src/gui/widgets/track.c:1930
 #: resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr "Соло"
 
 #: src/gui/widgets/channel.c:738 src/gui/widgets/folder_channel.c:565
-#: src/gui/widgets/track.c:1919
+#: src/gui/widgets/track.c:1939
 msgid "Unsolo"
 msgstr "Несоло (unsolo)"
 
 #: src/gui/widgets/channel.c:767 src/gui/widgets/monitor_section.c:62
-#: src/gui/widgets/folder_channel.c:594 src/gui/widgets/track.c:1191
-#: src/gui/widgets/track.c:1948 resources/ui/fader_buttons.ui:120
+#: src/gui/widgets/folder_channel.c:594 src/gui/widgets/track.c:1190
+#: src/gui/widgets/track.c:1968 resources/ui/fader_buttons.ui:120
 msgid "Listen"
 msgstr "Слухати"
 
 #: src/gui/widgets/channel.c:777 src/gui/widgets/folder_channel.c:604
-#: src/gui/widgets/track.c:1187 src/gui/widgets/track.c:1958
+#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1978
 msgid "Unlisten"
 msgstr "Не слухати"
 
 #: src/gui/widgets/channel.c:790 src/gui/widgets/bot_bar.c:584
-#: src/gui/widgets/folder_channel.c:616 src/gui/widgets/track.c:2058
+#: src/gui/widgets/folder_channel.c:616 src/gui/widgets/track.c:2078
 #: src/gui/widgets/dialogs/export_dialog.c:1313
 msgid "Disable"
 msgstr "Вимкнути"
 
 #: src/gui/widgets/channel.c:799 src/gui/widgets/bot_bar.c:584
-#: src/gui/widgets/folder_channel.c:625 src/gui/widgets/track.c:2067
+#: src/gui/widgets/folder_channel.c:625 src/gui/widgets/track.c:2087
 #: src/gui/widgets/dialogs/export_dialog.c:1303
 msgid "Enable"
 msgstr "Увімкнути"
 
 #: src/gui/widgets/channel.c:808 src/gui/widgets/folder_channel.c:634
-#: src/gui/widgets/track.c:2076
+#: src/gui/widgets/track.c:2096
 msgid "Change color..."
 msgstr "Змінити колір..."
 
@@ -1223,11 +1265,12 @@ msgstr "Інспектувати"
 msgid "empty slot"
 msgstr "порожня комірка"
 
-#: src/gui/widgets/arranger.c:2394 resources/ui/string_entry_dialog.ui:94
+#: src/gui/widgets/arranger.c:2394 src/gui/widgets/track.c:1610
+#: resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
 msgstr "Назва маркера"
 
-#: src/gui/widgets/arranger.c:4296
+#: src/gui/widgets/arranger.c:4302
 #, c-format
 msgid "%s name"
 msgstr "назва %s"
@@ -1511,15 +1554,20 @@ msgstr "Еліптично"
 msgid "Musical Mode"
 msgstr "Музичний режим"
 
-#: src/gui/widgets/timeline_arranger.c:1293
+#: src/gui/widgets/timeline_arranger.c:1313
+#, fuzzy
+msgid "Apply Function"
+msgstr "Вибрати функцію"
+
+#: src/gui/widgets/timeline_arranger.c:1389
 msgid "Export as MIDI file"
 msgstr "Експортувати як MIDI-файл"
 
-#: src/gui/widgets/timeline_arranger.c:1328 src/gui/widgets/track.c:1879
+#: src/gui/widgets/timeline_arranger.c:1422 src/gui/widgets/track.c:1899
 msgid "Quick bounce"
 msgstr "Різкий зрив (Quick bounce)"
 
-#: src/gui/widgets/timeline_arranger.c:1339 src/gui/widgets/track.c:1889
+#: src/gui/widgets/timeline_arranger.c:1433 src/gui/widgets/track.c:1909
 msgid "Bounce..."
 msgstr "Зрив/Bounce..."
 
@@ -1600,11 +1648,11 @@ msgstr "Призначення/Destination"
 msgid "Multiplier"
 msgstr "Множник/Multiplier"
 
-#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:247
+#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:251
 msgid "Redo"
 msgstr "Повторити"
 
-#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:243
+#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:247
 #: build/data/org.zrythm.Zrythm.gschema.xml:1051
 msgid "Undo"
 msgstr "Скасувати"
@@ -1622,22 +1670,23 @@ msgid "Paste"
 msgstr "Вставити"
 
 #: src/gui/widgets/home_toolbar.c:220
-msgid "Clear Selection"
+#, fuzzy
+msgid "Clear selection"
 msgstr "Очистити виділення/Clear Selection"
 
-#: src/gui/widgets/home_toolbar.c:222
-msgid "Select All"
-msgstr "Виділити все/Select All"
+#: src/gui/widgets/home_toolbar.c:222 resources/gtk/help-overlay.ui:180
+msgid "Select all"
+msgstr ""
 
-#: src/gui/widgets/home_toolbar.c:224
-msgid "Loop Selection"
-msgstr "Виділення петлі"
+#: src/gui/widgets/home_toolbar.c:224 resources/gtk/help-overlay.ui:306
+msgid "Loop selection"
+msgstr ""
 
-#: src/gui/widgets/home_toolbar.c:244
+#: src/gui/widgets/home_toolbar.c:248
 msgid "Undo..."
 msgstr "Скасувати..."
 
-#: src/gui/widgets/home_toolbar.c:248
+#: src/gui/widgets/home_toolbar.c:252
 msgid "Redo..."
 msgstr "Повторити..."
 
@@ -1813,7 +1862,7 @@ msgstr "Вибір файлу"
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Деякі зміни набудуть чинності лише після перезапуску %s"
 
-#: src/gui/widgets/monitor_section.c:48 src/gui/widgets/track.c:1196
+#: src/gui/widgets/monitor_section.c:48 src/gui/widgets/track.c:1195
 msgid "Monitor"
 msgstr "Монітор"
 
@@ -2109,35 +2158,40 @@ msgstr "Перемикнути верхню панель"
 msgid "Toggle Right Panel"
 msgstr "Перемикнути праву панель"
 
-#: src/gui/widgets/editor_toolbar.c:85 src/gui/widgets/editor_toolbar.c:121
-#: src/gui/widgets/editor_toolbar.c:147
+#: src/gui/widgets/editor_toolbar.c:139
+#, fuzzy
+msgid "Plugin Effect"
+msgstr "Інспектор розширень"
+
+#: src/gui/widgets/editor_toolbar.c:176 src/gui/widgets/editor_toolbar.c:212
+#: src/gui/widgets/editor_toolbar.c:238
 #, c-format
 msgid "Apply %s"
 msgstr "Застосувати %s"
 
-#: src/gui/widgets/editor_toolbar.c:89 src/gui/widgets/editor_toolbar.c:125
-#: src/gui/widgets/editor_toolbar.c:151
+#: src/gui/widgets/editor_toolbar.c:180 src/gui/widgets/editor_toolbar.c:216
+#: src/gui/widgets/editor_toolbar.c:242
 #, c-format
 msgid "Apply %s with previous settings"
 msgstr "Застосувати %s з попередніми налаштуваннями"
 
-#: src/gui/widgets/editor_toolbar.c:199
+#: src/gui/widgets/editor_toolbar.c:292
 msgid "No Highlight"
 msgstr "Не виділено"
 
-#: src/gui/widgets/editor_toolbar.c:206
+#: src/gui/widgets/editor_toolbar.c:299
 msgid "Highlight Chord"
 msgstr "Виділити акорд"
 
-#: src/gui/widgets/editor_toolbar.c:213
+#: src/gui/widgets/editor_toolbar.c:306
 msgid "Highlight Scale"
 msgstr "Виділити шкалу"
 
-#: src/gui/widgets/editor_toolbar.c:220
+#: src/gui/widgets/editor_toolbar.c:313
 msgid "Highlight Both"
 msgstr "Виділити обидва"
 
-#: src/gui/widgets/editor_toolbar.c:298
+#: src/gui/widgets/editor_toolbar.c:391
 msgid "Select function"
 msgstr "Вибрати функцію"
 
@@ -2149,95 +2203,95 @@ msgstr "Коментар"
 msgid "Visible"
 msgstr "Видно"
 
-#: src/gui/widgets/track.c:569 src/audio/track_lane.c:75
-#, c-format
-msgid "Lane %d"
-msgstr "Смуга %d"
-
-#: src/gui/widgets/track.c:1165
+#: src/gui/widgets/track.c:1164
 msgid "Hide instrument UI"
 msgstr "Сховати інтерфейс інструменту"
 
-#: src/gui/widgets/track.c:1169
+#: src/gui/widgets/track.c:1168
 msgid "Show instrument UI"
 msgstr "Показати інтерфейс інструменту"
 
-#: src/gui/widgets/track.c:1200 resources/ui/fader_buttons.ui:36
+#: src/gui/widgets/track.c:1199 resources/ui/fader_buttons.ui:36
 msgid "Mono compatibility"
 msgstr "Моно сумісність"
 
-#: src/gui/widgets/track.c:1206
+#: src/gui/widgets/track.c:1205
 msgid "Disarm"
 msgstr "Знешкодити"
 
-#: src/gui/widgets/track.c:1210
+#: src/gui/widgets/track.c:1209
 msgid "Arm for recording"
 msgstr "MIDI входи для запису"
 
-#: src/gui/widgets/track.c:1217
+#: src/gui/widgets/track.c:1216
 msgid "Hide lanes"
 msgstr "Приховати смуги"
 
-#: src/gui/widgets/track.c:1221
+#: src/gui/widgets/track.c:1220
 msgid "Show lanes"
 msgstr "Показати смуги"
 
-#: src/gui/widgets/track.c:1228
+#: src/gui/widgets/track.c:1227
 msgid "Hide automation"
 msgstr "Приховати автоматизацію"
 
-#: src/gui/widgets/track.c:1232
+#: src/gui/widgets/track.c:1231
 msgid "Show automation"
 msgstr "Показати автоматизацію"
 
-#: src/gui/widgets/track.c:1241 resources/ui/project_assistant.ui:102
+#: src/gui/widgets/track.c:1240 resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr "Вилучити"
 
-#: src/gui/widgets/track.c:1245
+#: src/gui/widgets/track.c:1244
 msgid "Freeze/unfreeze"
 msgstr "Заморозити/розморозити / Freeze/unfreeze"
 
-#: src/gui/widgets/track.c:1249
+#: src/gui/widgets/track.c:1248
 msgid "Lock/unlock"
 msgstr "Блокувати/розблокувати / Lock/unlock"
 
-#: src/gui/widgets/track.c:1253
+#: src/gui/widgets/track.c:1252
 msgid "Fold"
 msgstr ""
 
-#: src/gui/widgets/track.c:1257
+#: src/gui/widgets/track.c:1256
 msgid "Unfold"
 msgstr ""
 
-#: src/gui/widgets/track.c:1850
+#: src/gui/widgets/track.c:1870
 msgid "Add Region"
 msgstr "Додати регіон"
 
-#: src/gui/widgets/track.c:1967 src/actions/tracklist_selections.c:1891
-#: src/actions/tracklist_selections.c:1969
+#: src/gui/widgets/track.c:1987 src/actions/tracklist_selections.c:1937
+#: src/actions/tracklist_selections.c:2018
 msgid "Change direct out"
 msgstr ""
 
-#: src/gui/widgets/track.c:2027
+#: src/gui/widgets/track.c:2047
 #, fuzzy
 msgid "New group"
 msgstr "Новий проєкт"
 
-#: src/gui/widgets/track.c:2086
+#: src/gui/widgets/track.c:2103
+#, fuzzy
+msgid "Rename lane..."
+msgstr "Перейменувати"
+
+#: src/gui/widgets/track.c:2117
 msgid "Track MIDI Ch"
 msgstr "Акорд доріжки MIDI"
 
-#: src/gui/widgets/track.c:2099
+#: src/gui/widgets/track.c:2130
 msgid "Passthrough input"
 msgstr "Прохідний вхід"
 
-#: src/gui/widgets/track.c:2128 src/gui/widgets/track.c:2187
+#: src/gui/widgets/track.c:2159 src/gui/widgets/track.c:2218
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "MIDI-канал %d"
 
-#: src/gui/widgets/track.c:2167
+#: src/gui/widgets/track.c:2198
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "Смуга %d MIDI акорда"
@@ -2434,7 +2488,7 @@ msgstr "Домівка"
 msgid "Desktop"
 msgstr "Стільниця"
 
-#: src/gui/backend/arranger_object.c:2881
+#: src/gui/backend/arranger_object.c:2882
 #, c-format
 msgid "Invalid object name %s"
 msgstr "Недійсна назва об’єкта %s"
@@ -2444,7 +2498,7 @@ msgstr "Недійсна назва об’єкта %s"
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr "Розширення '%s' аварійно завершило роботу та було вимкнено."
 
-#: src/gui/backend/event_manager.c:1809
+#: src/gui/backend/event_manager.c:1808
 #, c-format
 msgid ""
 "A new version of Zrythm has been released: <b>%s</b>\n"
@@ -2455,7 +2509,7 @@ msgstr ""
 "\n"
 "Ваша поточна версія %s"
 
-#: src/gui/backend/event_manager.c:1859
+#: src/gui/backend/event_manager.c:1858
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr "Досягнуто пробної межі. %s тепер змовкне"
@@ -2465,7 +2519,7 @@ msgstr "Досягнуто пробної межі. %s тепер змовкне
 msgid "Failed to write file: %s"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/utils/log.c:716
+#: src/utils/log.c:721
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -2533,42 +2587,42 @@ msgstr "Об'єкт нульовий. Дивіться журнали для п�
 msgid "Unknown error"
 msgstr "Невідома помилка"
 
-#: src/settings/settings.c:161
+#: src/settings/settings.c:162
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "Схема %s%s%s"
 
-#: src/settings/settings.c:172
+#: src/settings/settings.c:173
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "Скидання схеми %s...\n"
 
-#: src/settings/settings.c:211
+#: src/settings/settings.c:212
 #, c-format
 msgid "skipping %s"
 msgstr "пропуск %s"
 
-#: src/settings/settings.c:222
+#: src/settings/settings.c:223
 #, c-format
 msgid "resetting %s to %s"
 msgstr "скидання %s до %s"
 
-#: src/settings/settings.c:267
+#: src/settings/settings.c:268
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr "Не вдалося знайти схему %s. %s, ймовірно, не встановлено"
 
-#: src/settings/settings.c:282
+#: src/settings/settings.c:283
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "Не вдалося переглянути схему %s"
 
-#: src/settings/settings.c:289
+#: src/settings/settings.c:290
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/settings/settings.c:322
+#: src/settings/settings.c:323
 #, c-format
 msgid ""
 "This will reset %s to factory settings. You will lose all your preferences. "
@@ -2577,12 +2631,12 @@ msgstr ""
 "Це скине %s до початкових налаштувань. Ви втратите всі свої уподобання. "
 "Введіть \"y\" (латиниця), щоб продовжити: "
 
-#: src/settings/settings.c:329
+#: src/settings/settings.c:330
 #, c-format
 msgid "Aborting...\n"
 msgstr "Переривання...\n"
 
-#: src/settings/settings.c:340
+#: src/settings/settings.c:341
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "Скидання до початкових налаштувань успішне\n"
@@ -2616,6 +2670,10 @@ msgstr ""
 #: src/audio/tracklist.c:1353
 msgid "Can only drop audio files on audio tracks"
 msgstr "Можливо лише скидання аудіофайлів на аудіодоріжки"
+
+#: src/audio/tracklist.c:1533
+msgid "Cannot drag folder into itself"
+msgstr ""
 
 #: src/audio/chord_track.c:59 resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -2698,11 +2756,11 @@ msgstr ""
 "Не вдалося відкрити SNDFILE %s:\n"
 "%d: %s"
 
-#: src/audio/supported_file.c:309
+#: src/audio/supported_file.c:311
 msgid "Failed opening file"
 msgstr "Не вдалося відкрити файл"
 
-#: src/audio/supported_file.c:314
+#: src/audio/supported_file.c:316
 #, c-format
 msgid ""
 "<b>%s</b>\n"
@@ -2761,13 +2819,13 @@ msgstr ""
 "використовуватиметься фіктивний сервер. Будь ласка, перевірте свої "
 "налаштування бекенда в Уподобаннях."
 
-#: src/audio/engine.c:582
+#: src/audio/engine.c:583
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
 
-#: src/audio/engine.c:794
+#: src/audio/engine.c:795
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2797,6 +2855,11 @@ msgstr ""
 msgid "PulseAudio Error: Failed to connect"
 msgstr ""
 
+#: src/audio/track_lane.c:78
+#, c-format
+msgid "Lane %d"
+msgstr "Смуга %d"
+
 #: src/audio/engine_alsa.c:344
 #, c-format
 msgid "ALSA Error: %s"
@@ -2810,6 +2873,19 @@ msgstr "Порти доріжки"
 #. TODO
 #: src/audio/scale.c:565 src/audio/scale.c:599
 msgid "Unimplemented"
+msgstr ""
+
+#: src/audio/clip.c:644
+msgid "Edit in external app"
+msgstr ""
+
+#: src/audio/clip.c:669
+#, c-format
+msgid "Edit the file at <u>%s</u>, then press OK"
+msgstr ""
+
+#: src/audio/clip.c:685
+msgid "Launch"
 msgstr ""
 
 #: src/audio/fader.c:142
@@ -2971,74 +3047,74 @@ msgstr ""
 msgid "Set control value"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2721
+#: src/actions/arranger_selections.c:2745
 msgid "Create timeline selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2725
+#: src/actions/arranger_selections.c:2749
 #, fuzzy
 msgid "Create audio selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:2729
+#: src/actions/arranger_selections.c:2753
 #, fuzzy
 msgid "Create automation selections"
 msgstr "Показ смуги автоматизації"
 
-#: src/actions/arranger_selections.c:2733
+#: src/actions/arranger_selections.c:2757
 #, fuzzy
 msgid "Create chord selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:2737
+#: src/actions/arranger_selections.c:2761
 #, fuzzy
 msgid "Create MIDI selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:2743
+#: src/actions/arranger_selections.c:2767
 #, fuzzy
 msgid "Delete arranger selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:2747
+#: src/actions/arranger_selections.c:2771
 msgid "Duplicate arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2750
+#: src/actions/arranger_selections.c:2774
 #, fuzzy
 msgid "Move arranger selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:2753
+#: src/actions/arranger_selections.c:2777
 msgid "Link arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2756
+#: src/actions/arranger_selections.c:2780
 msgid "Record arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2759
+#: src/actions/arranger_selections.c:2783
 msgid "Edit arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2762
+#: src/actions/arranger_selections.c:2786
 #, fuzzy
 msgid "Automation fill"
 msgstr "Точка автоматизації"
 
-#: src/actions/arranger_selections.c:2765
+#: src/actions/arranger_selections.c:2789
 msgid "Split arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2768
+#: src/actions/arranger_selections.c:2792
 msgid "Merge arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2771
+#: src/actions/arranger_selections.c:2795
 msgid "Resize arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2775
+#: src/actions/arranger_selections.c:2799
 msgid "Quantize arranger selections"
 msgstr ""
 
@@ -3058,92 +3134,92 @@ msgstr ""
 msgid "MIDI mapping unbind"
 msgstr ""
 
-#: src/actions/actions.c:380
+#: src/actions/actions.c:343
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
 
-#: src/actions/actions.c:650
+#: src/actions/actions.c:613
 #, c-format
 msgid ""
 "Creating new projects is disabled. Please restart %s to start a new project"
 msgstr ""
 
-#: src/actions/actions.c:660 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:623 resources/gtk/help-overlay.ui:103
 #: resources/ui/project_assistant.ui:86
 msgid "Create new project"
 msgstr ""
 
-#: src/actions/actions.c:664
+#: src/actions/actions.c:627
 msgid "Yes"
 msgstr ""
 
-#: src/actions/actions.c:666
+#: src/actions/actions.c:629
 msgid "No"
 msgstr ""
 
-#: src/actions/actions.c:671
+#: src/actions/actions.c:634
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 
-#: src/actions/actions.c:723
+#: src/actions/actions.c:686
 msgid "Loading is disabled in the trial version"
 msgstr ""
 
-#: src/actions/actions.c:751 src/actions/actions.c:779
+#: src/actions/actions.c:715 src/actions/actions.c:743
 msgid "Saving is disabled in the trial version"
 msgstr ""
 
-#: src/actions/actions.c:791
+#: src/actions/actions.c:755
 msgid "Save Project"
 msgstr ""
 
-#: src/actions/actions.c:877
+#: src/actions/actions.c:841
 msgid "Export routing graph"
 msgstr ""
 
-#: src/actions/actions.c:879
+#: src/actions/actions.c:843
 msgid "Image (PNG)"
 msgstr ""
 
-#: src/actions/actions.c:880
+#: src/actions/actions.c:844
 msgid "Image (SVG)"
 msgstr ""
 
-#: src/actions/actions.c:881
+#: src/actions/actions.c:845
 msgid "Dot graph"
 msgstr ""
 
-#: src/actions/actions.c:889
+#: src/actions/actions.c:853
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
 
-#: src/actions/actions.c:944
+#: src/actions/actions.c:908
 msgid "Graph exported"
 msgstr ""
 
-#: src/actions/actions.c:1168
+#: src/actions/actions.c:1132
 msgid "Can't paste incompatible data"
 msgstr ""
 
-#: src/actions/actions.c:1725
+#: src/actions/actions.c:1689
 msgid "The track selection contains a track that cannot be deleted"
 msgstr ""
 
-#: src/actions/actions.c:2152
+#: src/actions/actions.c:2116
 msgid "No regions selected"
 msgstr ""
 
-#: src/actions/actions.c:2160
+#: src/actions/actions.c:2124
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2587
+#: src/actions/actions.c:2602
 msgid "Region name"
 msgstr ""
 
@@ -3257,218 +3333,223 @@ msgstr "_Вставити"
 msgid "Paste %d Plugins"
 msgstr "Розширення"
 
-#: src/actions/range_action.c:672 resources/ui/range_action_buttons.ui:36
+#: src/actions/range_action.c:675 resources/ui/range_action_buttons.ui:36
 msgid "Insert silence"
 msgstr ""
 
-#: src/actions/range_action.c:675
+#: src/actions/range_action.c:678
 msgid "Delete range"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:435
+#: src/actions/tracklist_selections.c:474
 #, c-format
 msgid "%s Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:494
+#: src/actions/tracklist_selections.c:533
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1795
+#: src/actions/tracklist_selections.c:1841
 #, fuzzy
 msgid "Copy Track inside"
 msgstr "Додати групову доріжку"
 
-#: src/actions/tracklist_selections.c:1797
+#: src/actions/tracklist_selections.c:1843
 #, fuzzy
 msgid "Copy Track"
 msgstr "Додати групову доріжку"
 
-#: src/actions/tracklist_selections.c:1805
+#: src/actions/tracklist_selections.c:1851
 #, fuzzy, c-format
 msgid "Copy %d Tracks inside"
 msgstr "Додати групову доріжку"
 
-#: src/actions/tracklist_selections.c:1809
+#: src/actions/tracklist_selections.c:1855
 #, fuzzy, c-format
 msgid "Copy %d Tracks"
 msgstr "Додати групову доріжку"
 
-#: src/actions/tracklist_selections.c:1820
+#: src/actions/tracklist_selections.c:1866
 #, c-format
 msgid "Create %s Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1826
+#: src/actions/tracklist_selections.c:1872
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1833
+#: src/actions/tracklist_selections.c:1879
 msgid "Delete Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1838
+#: src/actions/tracklist_selections.c:1884
 #, c-format
 msgid "Delete %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1851
+#: src/actions/tracklist_selections.c:1897
 msgid "Solo Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1854
+#: src/actions/tracklist_selections.c:1900
 msgid "Unsolo Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1858
+#: src/actions/tracklist_selections.c:1904
 msgid "Mute Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1861
+#: src/actions/tracklist_selections.c:1907
 msgid "Unmute Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1865
+#: src/actions/tracklist_selections.c:1911
 msgid "Listen Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1868
+#: src/actions/tracklist_selections.c:1914
 msgid "Unlisten Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1872
+#: src/actions/tracklist_selections.c:1918
 msgid "Enable Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1875
+#: src/actions/tracklist_selections.c:1921
 msgid "Disable Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1879
+#: src/actions/tracklist_selections.c:1925
 #, fuzzy
 msgid "Fold Track"
 msgstr "Приховати доріжку"
 
-#: src/actions/tracklist_selections.c:1882
+#: src/actions/tracklist_selections.c:1928
 #, fuzzy
 msgid "Unfold Track"
 msgstr "Приховати доріжку"
 
-#: src/actions/tracklist_selections.c:1885
+#: src/actions/tracklist_selections.c:1931
 msgid "Change Fader"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1888
+#: src/actions/tracklist_selections.c:1934
 msgid "Change Pan"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1894
+#: src/actions/tracklist_selections.c:1940
 msgid "Rename track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1897
-#: src/actions/tracklist_selections.c:1963
+#: src/actions/tracklist_selections.c:1943
+#, fuzzy
+msgid "Rename lane"
+msgstr "Перейменувати"
+
+#: src/actions/tracklist_selections.c:1946
+#: src/actions/tracklist_selections.c:2012
 msgid "Change color"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1900
+#: src/actions/tracklist_selections.c:1949
 msgid "Change icon"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1903
+#: src/actions/tracklist_selections.c:1952
 msgid "Change comment"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1906
-#: src/actions/tracklist_selections.c:1966
+#: src/actions/tracklist_selections.c:1955
+#: src/actions/tracklist_selections.c:2015
 msgid "Change MIDI fader mode"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1919
+#: src/actions/tracklist_selections.c:1968
 #, c-format
 msgid "Solo %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1923
+#: src/actions/tracklist_selections.c:1972
 #, c-format
 msgid "Unsolo %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1928
+#: src/actions/tracklist_selections.c:1977
 #, c-format
 msgid "Mute %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1932
+#: src/actions/tracklist_selections.c:1981
 #, c-format
 msgid "Unmute %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1937
+#: src/actions/tracklist_selections.c:1986
 #, c-format
 msgid "Listen %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1941
+#: src/actions/tracklist_selections.c:1990
 #, c-format
 msgid "Unlisten %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1946
+#: src/actions/tracklist_selections.c:1995
 #, c-format
 msgid "Enable %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1950
+#: src/actions/tracklist_selections.c:1999
 #, c-format
 msgid "Disable %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1955
+#: src/actions/tracklist_selections.c:2004
 #, fuzzy, c-format
 msgid "Fold %d Tracks"
 msgstr "Приховати доріжки"
 
-#: src/actions/tracklist_selections.c:1959
+#: src/actions/tracklist_selections.c:2008
 #, fuzzy, c-format
 msgid "Unfold %d Tracks"
 msgstr "Прибрати соло всіх доріжок/Unsolo all tracks"
 
-#: src/actions/tracklist_selections.c:1982
+#: src/actions/tracklist_selections.c:2031
 #, fuzzy
 msgid "Move Track inside"
 msgstr "Інспектор доріжки"
 
-#: src/actions/tracklist_selections.c:1986
+#: src/actions/tracklist_selections.c:2035
 msgid "Move Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1996
+#: src/actions/tracklist_selections.c:2045
 #, c-format
 msgid "Move %d Tracks inside"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:2003
+#: src/actions/tracklist_selections.c:2052
 #, c-format
 msgid "Move %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:2012
+#: src/actions/tracklist_selections.c:2061
 msgid "Pin Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:2017
+#: src/actions/tracklist_selections.c:2066
 #, c-format
 msgid "Pin %d Tracks"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:2024
+#: src/actions/tracklist_selections.c:2073
 msgid "Unpin Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:2029
+#: src/actions/tracklist_selections.c:2078
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr ""
@@ -3562,10 +3643,6 @@ msgstr ""
 msgid "Selections"
 msgstr ""
 
-#: resources/gtk/help-overlay.ui:180
-msgid "Select all"
-msgstr ""
-
 #: resources/gtk/help-overlay.ui:187
 msgid "Unselect all"
 msgstr ""
@@ -3632,10 +3709,6 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr ""
-
-#: resources/gtk/help-overlay.ui:306
-msgid "Loop selection"
 msgstr ""
 
 #: resources/ui/first_run_assistant.ui:27
@@ -4156,10 +4229,6 @@ msgstr ""
 
 #: resources/ui/port_info_dialog.ui:288
 msgid "Port Info"
-msgstr ""
-
-#: resources/ui/track_lane.ui:34
-msgid "Lane 1"
 msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:36
@@ -5912,6 +5981,12 @@ msgstr "Банк за замовчуванням"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1140
 msgid "The default script to use in the scripting window."
 msgstr ""
+
+#~ msgid "Select All"
+#~ msgstr "Виділити все/Select All"
+
+#~ msgid "Loop Selection"
+#~ msgstr "Виділення петлі"
 
 #~ msgid "[Zrythm] Enabled"
 #~ msgstr "[Zrythm] Увімкнено"

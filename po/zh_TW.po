@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2021-07-21 18:06+0100\n"
+"POT-Creation-Date: 2021-07-31 23:19+0100\n"
 "PO-Revision-Date: 2021-03-27 08:11+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -104,7 +104,7 @@ msgid "Pulse"
 msgstr "Pulse"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:87
-#: src/gui/widgets/track.c:2183
+#: src/gui/widgets/track.c:2214
 msgid "Inherit"
 msgstr "使用全域的設定"
 
@@ -170,32 +170,71 @@ msgstr "拷貝"
 
 #: inc/utils/gtk.h:89 src/gui/widgets/channel.c:748
 #: src/gui/widgets/monitor_section.c:55 src/gui/widgets/monitor_section.c:352
-#: src/gui/widgets/folder_channel.c:575 src/gui/widgets/track.c:1180
-#: src/gui/widgets/track.c:1929 resources/ui/fader_buttons.ui:99
+#: src/gui/widgets/folder_channel.c:575 src/gui/widgets/track.c:1179
+#: src/gui/widgets/track.c:1949 resources/ui/fader_buttons.ui:99
 #: build/data/org.zrythm.Zrythm.gschema.xml:306
 msgid "Mute"
 msgstr "靜音"
 
 #: inc/utils/gtk.h:93 src/gui/widgets/channel.c:757
-#: src/gui/widgets/folder_channel.c:584 src/gui/widgets/track.c:1176
-#: src/gui/widgets/track.c:1938
+#: src/gui/widgets/folder_channel.c:584 src/gui/widgets/track.c:1175
+#: src/gui/widgets/track.c:1958
 msgid "Unmute"
 msgstr "取消靜音"
 
-#: inc/audio/audio_function.h:54 resources/ui/editor_toolbar.ui:218
+#: inc/audio/audio_function.h:70
 msgid "Invert"
 msgstr ""
 
-#: inc/audio/audio_function.h:55 resources/ui/editor_toolbar.ui:224
+#: inc/audio/audio_function.h:71
 #, fuzzy
-msgid "Normalize"
+msgid "Normalize peak"
 msgstr "一般"
 
-#: inc/audio/audio_function.h:56 resources/ui/editor_toolbar.ui:230
+#: inc/audio/audio_function.h:72
+#, fuzzy
+msgid "Normalize RMS"
+msgstr "一般"
+
+#: inc/audio/audio_function.h:73
+#, fuzzy
+msgid "Normalize LUFS"
+msgstr "一般"
+
+#: inc/audio/audio_function.h:74
+msgid "Linear fade in"
+msgstr ""
+
+#: inc/audio/audio_function.h:76
+msgid "Linear fade out"
+msgstr ""
+
+#: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:226
+msgid "Nudge left"
+msgstr ""
+
+#: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:228
+msgid "Nudge right"
+msgstr ""
+
+#: inc/audio/audio_function.h:80
 msgid "Reverse"
 msgstr ""
 
-#: inc/audio/audio_function.h:57
+#: inc/audio/audio_function.h:81
+msgid "External program"
+msgstr ""
+
+#: inc/audio/audio_function.h:82
+msgid "Guile script"
+msgstr ""
+
+#: inc/audio/audio_function.h:83
+#, fuzzy
+msgid "Custom plugin"
+msgstr "自訂"
+
+#: inc/audio/audio_function.h:84
 msgid "Invalid"
 msgstr ""
 
@@ -223,7 +262,7 @@ msgstr "樂器"
 msgid "Audio"
 msgstr "音訊"
 
-#: inc/audio/track.h:176 src/project.c:784
+#: inc/audio/track.h:176 src/project.c:752
 #: src/gui/widgets/route_target_selector_popover.c:164
 msgid "Master"
 msgstr "Master"
@@ -394,26 +433,26 @@ msgstr ""
 msgid "Sine"
 msgstr ""
 
-#: src/project.c:145
+#: src/project.c:152
 #, c-format
 msgid "Failed to open file: %s"
 msgstr "無法開啟檔案: %s"
 
-#: src/project.c:189
+#: src/project.c:196
 msgid "Project not compressed by zstd"
 msgstr "專案未使用 zstd 壓縮"
 
-#: src/project.c:202
+#: src/project.c:209
 #, c-format
 msgid "Failed to decompress project file: %s"
 msgstr "專案無法解壓縮: %s"
 
-#: src/project.c:929
+#: src/project.c:897
 #, c-format
 msgid "Unable to read file: %s"
 msgstr "無法開啟檔案: %s"
 
-#: src/project.c:1014
+#: src/project.c:982
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -424,103 +463,104 @@ msgstr ""
 "  %s。\n"
 "是否要套用新的備份？"
 
-#: src/project.c:1019
+#: src/project.c:987
 msgid "Backup found"
 msgstr "發現一個備份"
 
-#: src/project.c:1075
+#: src/project.c:1043
 #, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr "此專案由不同版本的 %s (%s) 所建立。軟體可能無法正常運作。"
 
-#: src/project.c:1090
+#: src/project.c:1058
 #, fuzzy
 msgid "Failed to load project. Please check the logs for more information."
 msgstr "無法載入專案。"
 
-#: src/project.c:1319
+#: src/project.c:1289
 msgid "Failed to load project. Will create a new one instead."
 msgstr "無法載入專案，新的專案將被建立。"
 
-#: src/project.c:1650
+#: src/project.c:1635
 msgid "Backup saved."
 msgstr "已完成備份。"
 
-#: src/project.c:1660
+#: src/project.c:1645
 msgid "Project saved."
 msgstr "專案已儲存。"
 
-#: src/zrythm_app.c:141
+#: src/zrythm_app.c:142
 msgid "Error - Backtrace:\n"
 msgstr "錯誤 - 堆疊追蹤：\n"
 
-#: src/zrythm_app.c:145
+#: src/zrythm_app.c:146
 #, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "錯誤：%s - 堆疊追蹤：\n"
 
-#: src/zrythm_app.c:159
+#: src/zrythm_app.c:160
 #, c-format
 msgid "%s has crashed. "
 msgstr "%s 無法執行。 "
 
-#: src/zrythm_app.c:239
+#: src/zrythm_app.c:240
 msgid "Setting up main window"
 msgstr "建立主視窗"
 
-#: src/zrythm_app.c:284
+#: src/zrythm_app.c:285
 msgid "Loading project"
 msgstr "載入專案中"
 
-#: src/zrythm_app.c:297
+#: src/zrythm_app.c:298
 #, c-format
 msgid "No project has been selected. %s will now close."
 msgstr "沒有選擇任何專案。%s 即將關閉。"
 
-#: src/zrythm_app.c:320
+#: src/zrythm_app.c:321
 msgid "Initializing settings"
 msgstr "初始化設定"
 
-#: src/zrythm_app.c:327
+#: src/zrythm_app.c:328
 #, c-format
 msgid "Initializing %s directories"
 msgstr "初始化 %s 目錄"
 
-#: src/zrythm_app.c:337
+#: src/zrythm_app.c:338
 msgid "Initializing logging system"
 msgstr ""
 
-#: src/zrythm_app.c:347
+#: src/zrythm_app.c:348
 msgid "Initializing caches"
 msgstr "初始化快取"
 
-#: src/zrythm_app.c:351
+#: src/zrythm_app.c:352
 msgid "Initializing file manager"
 msgstr "初始化檔案管理器"
 
-#: src/zrythm_app.c:358
+#: src/zrythm_app.c:359
 msgid "Scanning plugins"
 msgstr "正在掃描外掛"
 
-#: src/zrythm_app.c:519
+#: src/zrythm_app.c:520
 msgid "License Information"
 msgstr "授權條款"
 
-#: src/zrythm_app.c:547
+#: src/zrythm_app.c:548
 msgid "Waiting for project"
 msgstr "等待專案"
 
-#: src/zrythm_app.c:957
+#: src/zrythm_app.c:958
 #, fuzzy, c-format
 msgid ""
-"%s-%s %s\n"
+"%s-%s\n"
+"%s\n"
 "\n"
 "%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
-"under certain conditions. See the file `COPYING' for details.\n"
+"under certain conditions. See the file 'COPYING' for details.\n"
 "\n"
 "Write comments and bugs to %s\n"
 "Support this project at https://liberapay.com/Zrythm\n"
@@ -537,79 +577,79 @@ msgstr ""
 "到這裡 https://liberapay.com/Zrythm 支持本專案\n"
 "\n"
 
-#: src/zrythm_app.c:1436
+#: src/zrythm_app.c:1449
 #, c-format
 msgid "File %s not found."
 msgstr "找不到 %s。"
 
-#: src/zrythm_app.c:1457
+#: src/zrythm_app.c:1470
 #, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr "未指定輸出檔案。請加上參數 `--output [檔案名稱]`。"
 
-#: src/zrythm_app.c:1522
+#: src/zrythm_app.c:1535
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "無法解壓縮專案: %s\n"
 
-#: src/zrythm_app.c:1541
+#: src/zrythm_app.c:1554
 #, fuzzy
 msgid "Unknown operation"
 msgstr "未知的參數"
 
-#: src/zrythm_app.c:1561
+#: src/zrythm_app.c:1574
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr ""
 
-#: src/zrythm_app.c:1726
+#: src/zrythm_app.c:1739
 msgid "Print version information"
 msgstr "顯示版本資訊"
 
-#: src/zrythm_app.c:1731
+#: src/zrythm_app.c:1744
 msgid "Convert ZPJ-FILE to YAML"
 msgstr ""
 
-#: src/zrythm_app.c:1736
+#: src/zrythm_app.c:1749
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr ""
 
-#: src/zrythm_app.c:1741
+#: src/zrythm_app.c:1754
 msgid "Generate a project from SCRIPT-FILE"
 msgstr ""
 
-#: src/zrythm_app.c:1745
+#: src/zrythm_app.c:1758
 msgid "Print output in user-friendly way"
 msgstr ""
 
-#: src/zrythm_app.c:1749
+#: src/zrythm_app.c:1762
 msgid "Print current settings"
 msgstr ""
 
-#: src/zrythm_app.c:1753
+#: src/zrythm_app.c:1766
 #, fuzzy
 msgid "Reset to factory settings"
 msgstr "已恢復原廠設定"
 
-#: src/zrythm_app.c:1756
+#: src/zrythm_app.c:1769
 #, fuzzy
 msgid "Override the audio backend to use"
 msgstr "欲使用的音訊後端"
 
-#: src/zrythm_app.c:1760
+#: src/zrythm_app.c:1773
 #, fuzzy
 msgid "Override the MIDI backend to use"
 msgstr "欲使用的 MIDI 後端"
 
-#: src/zrythm_app.c:1764
+#: src/zrythm_app.c:1777
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr ""
 
-#: src/zrythm_app.c:1796
+#: src/zrythm_app.c:1809
 msgid "[PROJECT-FILE]"
 msgstr ""
 
-#: src/zrythm_app.c:1801
+#: src/zrythm_app.c:1814
 #, c-format
 msgid ""
 "Examples:\n"
@@ -621,7 +661,7 @@ msgid ""
 "Please report issues to %s\n"
 msgstr ""
 
-#: src/zrythm_app.c:1813
+#: src/zrythm_app.c:1826
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr ""
@@ -658,11 +698,11 @@ msgstr ""
 msgid "CV out"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:387
+#: src/plugins/plugin_manager.c:394
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1088
+#: src/plugins/plugin_manager.c:1095
 #, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "已掃描 %s 外掛：%s"
@@ -670,25 +710,25 @@ msgstr "已掃描 %s 外掛：%s"
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
-#: src/plugins/plugin_manager.c:1102
+#: src/plugins/plugin_manager.c:1109
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
 msgstr "略過 %2$s 下的 %1$s 外掛"
 
-#: src/plugins/plugin_manager.c:1236
+#: src/plugins/plugin_manager.c:1243
 msgid "Scanned LV2 plugin"
 msgstr "已掃描 LV2 外掛"
 
-#: src/plugins/plugin_manager.c:1247
+#: src/plugins/plugin_manager.c:1254
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "略過 %s 下的 LV2 外掛"
 
-#: src/plugins/plugin_manager.c:1335
+#: src/plugins/plugin_manager.c:1342
 msgid "Scanned AU plugin"
 msgstr "已掃描 AU 外掛"
 
-#: src/plugins/plugin_manager.c:1342
+#: src/plugins/plugin_manager.c:1349
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "略過第 %u 個 AU 外掛"
@@ -717,17 +757,17 @@ msgstr "增益"
 msgid "Plugin gain"
 msgstr "外掛"
 
-#: src/plugins/plugin.c:1081
+#: src/plugins/plugin.c:1090
 #, c-format
 msgid " - bridge: %s"
 msgstr ""
 
-#: src/plugins/plugin.c:1092
+#: src/plugins/plugin.c:1101
 #, fuzzy
 msgid "instrument"
 msgstr "樂器"
 
-#: src/plugins/plugin.c:1884
+#: src/plugins/plugin.c:1893
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -746,15 +786,15 @@ msgstr ""
 #: src/gui/widgets/plugin_properties_expander.c:108
 #: src/gui/widgets/main_window.c:211
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:163
-#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/actions/actions.c:794
-#: resources/ui/string_entry_dialog.ui:47
+#: src/utils/dialogs.c:42 src/utils/dialogs.c:72 src/audio/clip.c:649
+#: src/actions/actions.c:758 resources/ui/string_entry_dialog.ui:47
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "取消"
 
 #: src/plugins/plugin_gtk.c:99 src/plugins/plugin_gtk.c:304
-#: src/plugins/lv2/lv2_gtk.c:80 src/actions/actions.c:796
+#: src/plugins/lv2/lv2_gtk.c:80 src/actions/actions.c:760
 msgid "_Save"
 msgstr "儲存"
 
@@ -771,20 +811,20 @@ msgstr ""
 msgid "URI (Optional):"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:1317
+#: src/plugins/plugin_gtk.c:1322
 #, fuzzy
 msgid "Open File"
 msgstr "輸出的檔案"
 
-#: src/plugins/plugin_gtk.c:1479
+#: src/plugins/plugin_gtk.c:1488
 msgid "Close"
 msgstr "關閉"
 
-#: src/plugins/plugin_gtk.c:1587
+#: src/plugins/plugin_gtk.c:1596
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/plugin_gtk.c:1613
+#: src/plugins/plugin_gtk.c:1622
 msgid "Unknown widget type for value\n"
 msgstr ""
 
@@ -810,7 +850,7 @@ msgstr ""
 msgid "Delete Preset?"
 msgstr ""
 
-#: src/plugins/lv2/lv2_gtk.c:265 src/utils/dialogs.c:70
+#: src/plugins/lv2/lv2_gtk.c:265 src/utils/dialogs.c:70 src/audio/clip.c:648
 #: resources/ui/string_entry_dialog.ui:61
 #: resources/ui/port_selector_popover.ui:254
 msgid "_OK"
@@ -838,7 +878,7 @@ msgid "OUTPUTS"
 msgstr "輸出"
 
 #: src/gui/widgets/port_connections_popover.c:202
-#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1237
+#: src/gui/widgets/plugin_browser.c:1060 src/gui/widgets/track.c:1236
 msgid "Add"
 msgstr "添加"
 
@@ -897,81 +937,81 @@ msgid "Track Properties"
 msgstr "音軌屬性"
 
 #: src/gui/widgets/channel.c:674 src/gui/widgets/folder_channel.c:503
-#: src/gui/widgets/track.c:1819
+#: src/gui/widgets/track.c:1839
 msgid "_Delete Track"
 msgstr "刪除音軌"
 
 #: src/gui/widgets/channel.c:677 src/gui/widgets/folder_channel.c:506
-#: src/gui/widgets/track.c:1822
+#: src/gui/widgets/track.c:1842
 msgid "_Delete Tracks"
 msgstr "刪除所選音軌"
 
 #: src/gui/widgets/channel.c:688 src/gui/widgets/folder_channel.c:517
-#: src/gui/widgets/track.c:1833
+#: src/gui/widgets/track.c:1853
 msgid "_Duplicate Track"
 msgstr "複製音軌"
 
 #: src/gui/widgets/channel.c:691 src/gui/widgets/folder_channel.c:520
-#: src/gui/widgets/track.c:1836
+#: src/gui/widgets/track.c:1856
 msgid "_Duplicate Tracks"
 msgstr "複製這些音軌"
 
 #: src/gui/widgets/channel.c:703 src/gui/widgets/folder_channel.c:532
-#: src/gui/widgets/track.c:1858
+#: src/gui/widgets/track.c:1878
 msgid "Hide Track"
 msgstr "隱藏音軌"
 
 #: src/gui/widgets/channel.c:704 src/gui/widgets/folder_channel.c:533
-#: src/gui/widgets/track.c:1859
+#: src/gui/widgets/track.c:1879
 msgid "Hide Tracks"
 msgstr "隱藏所選音軌"
 
 #: src/gui/widgets/channel.c:712 src/gui/widgets/folder_channel.c:541
-#: src/gui/widgets/track.c:1867
+#: src/gui/widgets/track.c:1887
 msgid "Pin/Unpin Track"
 msgstr "釘選/取消釘選"
 
 #: src/gui/widgets/channel.c:713 src/gui/widgets/folder_channel.c:542
-#: src/gui/widgets/track.c:1868
+#: src/gui/widgets/track.c:1888
 msgid "Pin/Unpin Tracks"
 msgstr "釘選/取消釘選全部"
 
 #: src/gui/widgets/channel.c:729 src/gui/widgets/folder_channel.c:556
-#: src/gui/widgets/track.c:1158 src/gui/widgets/track.c:1910
+#: src/gui/widgets/track.c:1157 src/gui/widgets/track.c:1930
 #: resources/ui/fader_buttons.ui:78
 msgid "Solo"
 msgstr ""
 
 #: src/gui/widgets/channel.c:738 src/gui/widgets/folder_channel.c:565
-#: src/gui/widgets/track.c:1919
+#: src/gui/widgets/track.c:1939
 msgid "Unsolo"
 msgstr ""
 
 #: src/gui/widgets/channel.c:767 src/gui/widgets/monitor_section.c:62
-#: src/gui/widgets/folder_channel.c:594 src/gui/widgets/track.c:1191
-#: src/gui/widgets/track.c:1948 resources/ui/fader_buttons.ui:120
+#: src/gui/widgets/folder_channel.c:594 src/gui/widgets/track.c:1190
+#: src/gui/widgets/track.c:1968 resources/ui/fader_buttons.ui:120
 msgid "Listen"
 msgstr ""
 
 #: src/gui/widgets/channel.c:777 src/gui/widgets/folder_channel.c:604
-#: src/gui/widgets/track.c:1187 src/gui/widgets/track.c:1958
+#: src/gui/widgets/track.c:1186 src/gui/widgets/track.c:1978
 msgid "Unlisten"
 msgstr ""
 
 #: src/gui/widgets/channel.c:790 src/gui/widgets/bot_bar.c:584
-#: src/gui/widgets/folder_channel.c:616 src/gui/widgets/track.c:2058
+#: src/gui/widgets/folder_channel.c:616 src/gui/widgets/track.c:2078
 #: src/gui/widgets/dialogs/export_dialog.c:1313
 msgid "Disable"
 msgstr "停用"
 
 #: src/gui/widgets/channel.c:799 src/gui/widgets/bot_bar.c:584
-#: src/gui/widgets/folder_channel.c:625 src/gui/widgets/track.c:2067
+#: src/gui/widgets/folder_channel.c:625 src/gui/widgets/track.c:2087
 #: src/gui/widgets/dialogs/export_dialog.c:1303
 msgid "Enable"
 msgstr "啟用"
 
 #: src/gui/widgets/channel.c:808 src/gui/widgets/folder_channel.c:634
-#: src/gui/widgets/track.c:2076
+#: src/gui/widgets/track.c:2096
 #, fuzzy
 msgid "Change color..."
 msgstr "更改顏色"
@@ -1222,11 +1262,12 @@ msgstr "詳細資訊"
 msgid "empty slot"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2394 resources/ui/string_entry_dialog.ui:94
+#: src/gui/widgets/arranger.c:2394 src/gui/widgets/track.c:1610
+#: resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
 msgstr "標記的名稱"
 
-#: src/gui/widgets/arranger.c:4296
+#: src/gui/widgets/arranger.c:4302
 #, c-format
 msgid "%s name"
 msgstr "%s 名稱"
@@ -1516,15 +1557,19 @@ msgstr ""
 msgid "Musical Mode"
 msgstr "音樂模式"
 
-#: src/gui/widgets/timeline_arranger.c:1293
+#: src/gui/widgets/timeline_arranger.c:1313
+msgid "Apply Function"
+msgstr ""
+
+#: src/gui/widgets/timeline_arranger.c:1389
 msgid "Export as MIDI file"
 msgstr "輸出成MIDI檔"
 
-#: src/gui/widgets/timeline_arranger.c:1328 src/gui/widgets/track.c:1879
+#: src/gui/widgets/timeline_arranger.c:1422 src/gui/widgets/track.c:1899
 msgid "Quick bounce"
 msgstr "快速轉換成音訊"
 
-#: src/gui/widgets/timeline_arranger.c:1339 src/gui/widgets/track.c:1889
+#: src/gui/widgets/timeline_arranger.c:1433 src/gui/widgets/track.c:1909
 msgid "Bounce..."
 msgstr "轉換成音訊..."
 
@@ -1606,11 +1651,11 @@ msgstr "目標"
 msgid "Multiplier"
 msgstr ""
 
-#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:247
+#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:251
 msgid "Redo"
 msgstr "重做"
 
-#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:243
+#: src/gui/widgets/home_toolbar.c:103 src/gui/widgets/home_toolbar.c:247
 #: build/data/org.zrythm.Zrythm.gschema.xml:1051
 msgid "Undo"
 msgstr "復原"
@@ -1628,23 +1673,24 @@ msgid "Paste"
 msgstr "貼上"
 
 #: src/gui/widgets/home_toolbar.c:220
-msgid "Clear Selection"
+#, fuzzy
+msgid "Clear selection"
 msgstr "取消選取"
 
-#: src/gui/widgets/home_toolbar.c:222
-msgid "Select All"
+#: src/gui/widgets/home_toolbar.c:222 resources/gtk/help-overlay.ui:180
+msgid "Select all"
 msgstr "全選"
 
-#: src/gui/widgets/home_toolbar.c:224
-msgid "Loop Selection"
+#: src/gui/widgets/home_toolbar.c:224 resources/gtk/help-overlay.ui:306
+msgid "Loop selection"
 msgstr "循環選擇"
 
-#: src/gui/widgets/home_toolbar.c:244
+#: src/gui/widgets/home_toolbar.c:248
 #, fuzzy
 msgid "Undo..."
 msgstr "復原"
 
-#: src/gui/widgets/home_toolbar.c:248
+#: src/gui/widgets/home_toolbar.c:252
 #, fuzzy
 msgid "Redo..."
 msgstr "重做"
@@ -1822,7 +1868,7 @@ msgstr "選擇一個檔案"
 msgid "Some changes will only take effect after you restart %s"
 msgstr "有些設定必須重新啟動 %s 才會生效"
 
-#: src/gui/widgets/monitor_section.c:48 src/gui/widgets/track.c:1196
+#: src/gui/widgets/monitor_section.c:48 src/gui/widgets/track.c:1195
 #, fuzzy
 msgid "Monitor"
 msgstr "監聽輸出"
@@ -2128,35 +2174,40 @@ msgstr "顯示/隱藏頂部面板"
 msgid "Toggle Right Panel"
 msgstr "顯示/隱藏右邊面板"
 
-#: src/gui/widgets/editor_toolbar.c:85 src/gui/widgets/editor_toolbar.c:121
-#: src/gui/widgets/editor_toolbar.c:147
+#: src/gui/widgets/editor_toolbar.c:139
+#, fuzzy
+msgid "Plugin Effect"
+msgstr "外掛面板"
+
+#: src/gui/widgets/editor_toolbar.c:176 src/gui/widgets/editor_toolbar.c:212
+#: src/gui/widgets/editor_toolbar.c:238
 #, c-format
 msgid "Apply %s"
 msgstr "套用 %s"
 
-#: src/gui/widgets/editor_toolbar.c:89 src/gui/widgets/editor_toolbar.c:125
-#: src/gui/widgets/editor_toolbar.c:151
+#: src/gui/widgets/editor_toolbar.c:180 src/gui/widgets/editor_toolbar.c:216
+#: src/gui/widgets/editor_toolbar.c:242
 #, c-format
 msgid "Apply %s with previous settings"
 msgstr ""
 
-#: src/gui/widgets/editor_toolbar.c:199
+#: src/gui/widgets/editor_toolbar.c:292
 msgid "No Highlight"
 msgstr ""
 
-#: src/gui/widgets/editor_toolbar.c:206
+#: src/gui/widgets/editor_toolbar.c:299
 msgid "Highlight Chord"
 msgstr ""
 
-#: src/gui/widgets/editor_toolbar.c:213
+#: src/gui/widgets/editor_toolbar.c:306
 msgid "Highlight Scale"
 msgstr ""
 
-#: src/gui/widgets/editor_toolbar.c:220
+#: src/gui/widgets/editor_toolbar.c:313
 msgid "Highlight Both"
 msgstr ""
 
-#: src/gui/widgets/editor_toolbar.c:298
+#: src/gui/widgets/editor_toolbar.c:391
 msgid "Select function"
 msgstr ""
 
@@ -2168,95 +2219,95 @@ msgstr "註解"
 msgid "Visible"
 msgstr "顯示"
 
-#: src/gui/widgets/track.c:569 src/audio/track_lane.c:75
-#, c-format
-msgid "Lane %d"
-msgstr ""
-
-#: src/gui/widgets/track.c:1165
+#: src/gui/widgets/track.c:1164
 msgid "Hide instrument UI"
 msgstr ""
 
-#: src/gui/widgets/track.c:1169
+#: src/gui/widgets/track.c:1168
 msgid "Show instrument UI"
 msgstr ""
 
-#: src/gui/widgets/track.c:1200 resources/ui/fader_buttons.ui:36
+#: src/gui/widgets/track.c:1199 resources/ui/fader_buttons.ui:36
 msgid "Mono compatibility"
 msgstr ""
 
-#: src/gui/widgets/track.c:1206
+#: src/gui/widgets/track.c:1205
 msgid "Disarm"
 msgstr ""
 
-#: src/gui/widgets/track.c:1210
+#: src/gui/widgets/track.c:1209
 msgid "Arm for recording"
 msgstr ""
 
-#: src/gui/widgets/track.c:1217
+#: src/gui/widgets/track.c:1216
 msgid "Hide lanes"
 msgstr "隱藏子音軌"
 
-#: src/gui/widgets/track.c:1221
+#: src/gui/widgets/track.c:1220
 msgid "Show lanes"
 msgstr "顯示子音軌"
 
-#: src/gui/widgets/track.c:1228
+#: src/gui/widgets/track.c:1227
 msgid "Hide automation"
 msgstr "隱藏自動控制軌"
 
-#: src/gui/widgets/track.c:1232
+#: src/gui/widgets/track.c:1231
 msgid "Show automation"
 msgstr "顯示自動控制軌"
 
-#: src/gui/widgets/track.c:1241 resources/ui/project_assistant.ui:102
+#: src/gui/widgets/track.c:1240 resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr "移除"
 
-#: src/gui/widgets/track.c:1245
+#: src/gui/widgets/track.c:1244
 msgid "Freeze/unfreeze"
 msgstr "凍結/取消凍結"
 
-#: src/gui/widgets/track.c:1249
+#: src/gui/widgets/track.c:1248
 msgid "Lock/unlock"
 msgstr "鎖定/取消鎖定"
 
-#: src/gui/widgets/track.c:1253
+#: src/gui/widgets/track.c:1252
 msgid "Fold"
 msgstr ""
 
-#: src/gui/widgets/track.c:1257
+#: src/gui/widgets/track.c:1256
 msgid "Unfold"
 msgstr ""
 
-#: src/gui/widgets/track.c:1850
+#: src/gui/widgets/track.c:1870
 msgid "Add Region"
 msgstr "新增片段"
 
-#: src/gui/widgets/track.c:1967 src/actions/tracklist_selections.c:1891
-#: src/actions/tracklist_selections.c:1969
+#: src/gui/widgets/track.c:1987 src/actions/tracklist_selections.c:1937
+#: src/actions/tracklist_selections.c:2018
 msgid "Change direct out"
 msgstr "變更直通輸出"
 
-#: src/gui/widgets/track.c:2027
+#: src/gui/widgets/track.c:2047
 #, fuzzy
 msgid "New group"
 msgstr "建立新專案"
 
-#: src/gui/widgets/track.c:2086
+#: src/gui/widgets/track.c:2103
+#, fuzzy
+msgid "Rename lane..."
+msgstr "重新命名"
+
+#: src/gui/widgets/track.c:2117
 msgid "Track MIDI Ch"
 msgstr ""
 
-#: src/gui/widgets/track.c:2099
+#: src/gui/widgets/track.c:2130
 msgid "Passthrough input"
 msgstr ""
 
-#: src/gui/widgets/track.c:2128 src/gui/widgets/track.c:2187
+#: src/gui/widgets/track.c:2159 src/gui/widgets/track.c:2218
 #, c-format
 msgid "MIDI Channel %d"
 msgstr "MIDI 通道 %d"
 
-#: src/gui/widgets/track.c:2167
+#: src/gui/widgets/track.c:2198
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr ""
@@ -2453,7 +2504,7 @@ msgstr ""
 msgid "Desktop"
 msgstr ""
 
-#: src/gui/backend/arranger_object.c:2881
+#: src/gui/backend/arranger_object.c:2882
 #, c-format
 msgid "Invalid object name %s"
 msgstr ""
@@ -2463,7 +2514,7 @@ msgstr ""
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1809
+#: src/gui/backend/event_manager.c:1808
 #, c-format
 msgid ""
 "A new version of Zrythm has been released: <b>%s</b>\n"
@@ -2471,7 +2522,7 @@ msgid ""
 "Your current version is %s"
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1859
+#: src/gui/backend/event_manager.c:1858
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
@@ -2481,7 +2532,7 @@ msgstr ""
 msgid "Failed to write file: %s"
 msgstr "無法存檔: %s"
 
-#: src/utils/log.c:716
+#: src/utils/log.c:721
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -2538,54 +2589,54 @@ msgstr ""
 msgid "Unknown error"
 msgstr "不明的錯誤"
 
-#: src/settings/settings.c:161
+#: src/settings/settings.c:162
 #, c-format
 msgid "Schema %s%s%s"
 msgstr ""
 
-#: src/settings/settings.c:172
+#: src/settings/settings.c:173
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr ""
 
-#: src/settings/settings.c:211
+#: src/settings/settings.c:212
 #, c-format
 msgid "skipping %s"
 msgstr ""
 
-#: src/settings/settings.c:222
+#: src/settings/settings.c:223
 #, c-format
 msgid "resetting %s to %s"
 msgstr ""
 
-#: src/settings/settings.c:267
+#: src/settings/settings.c:268
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
 msgstr ""
 
-#: src/settings/settings.c:282
+#: src/settings/settings.c:283
 #, c-format
 msgid "Failed to view schema %s"
 msgstr ""
 
-#: src/settings/settings.c:289
+#: src/settings/settings.c:290
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr ""
 
-#: src/settings/settings.c:322
+#: src/settings/settings.c:323
 #, c-format
 msgid ""
 "This will reset %s to factory settings. You will lose all your preferences. "
 "Type 'y' to continue: "
 msgstr ""
 
-#: src/settings/settings.c:329
+#: src/settings/settings.c:330
 #, c-format
 msgid "Aborting...\n"
 msgstr "正在退出...\n"
 
-#: src/settings/settings.c:340
+#: src/settings/settings.c:341
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "已恢復原廠設定\n"
@@ -2619,6 +2670,10 @@ msgstr ""
 #: src/audio/tracklist.c:1353
 msgid "Can only drop audio files on audio tracks"
 msgstr "音訊軌只支援音訊檔"
+
+#: src/audio/tracklist.c:1533
+msgid "Cannot drag folder into itself"
+msgstr ""
 
 #: src/audio/chord_track.c:59 resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -2699,12 +2754,12 @@ msgid ""
 "%d: %s"
 msgstr ""
 
-#: src/audio/supported_file.c:309
+#: src/audio/supported_file.c:311
 #, fuzzy
 msgid "Failed opening file"
 msgstr "無法開啟檔案: %s"
 
-#: src/audio/supported_file.c:314
+#: src/audio/supported_file.c:316
 #, c-format
 msgid ""
 "<b>%s</b>\n"
@@ -2757,13 +2812,13 @@ msgid ""
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 
-#: src/audio/engine.c:582
+#: src/audio/engine.c:583
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
 
-#: src/audio/engine.c:794
+#: src/audio/engine.c:795
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2790,6 +2845,11 @@ msgstr ""
 msgid "PulseAudio Error: Failed to connect"
 msgstr ""
 
+#: src/audio/track_lane.c:78
+#, c-format
+msgid "Lane %d"
+msgstr ""
+
 #: src/audio/engine_alsa.c:344
 #, c-format
 msgid "ALSA Error: %s"
@@ -2803,6 +2863,19 @@ msgstr "音軌面板"
 #. TODO
 #: src/audio/scale.c:565 src/audio/scale.c:599
 msgid "Unimplemented"
+msgstr ""
+
+#: src/audio/clip.c:644
+msgid "Edit in external app"
+msgstr ""
+
+#: src/audio/clip.c:669
+#, c-format
+msgid "Edit the file at <u>%s</u>, then press OK"
+msgstr ""
+
+#: src/audio/clip.c:685
+msgid "Launch"
 msgstr ""
 
 #: src/audio/fader.c:142
@@ -2966,82 +3039,82 @@ msgstr ""
 msgid "Set control value"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2721
+#: src/actions/arranger_selections.c:2745
 #, fuzzy
 msgid "Create timeline selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2725
+#: src/actions/arranger_selections.c:2749
 #, fuzzy
 msgid "Create audio selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2729
+#: src/actions/arranger_selections.c:2753
 #, fuzzy
 msgid "Create automation selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2733
+#: src/actions/arranger_selections.c:2757
 #, fuzzy
 msgid "Create chord selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2737
+#: src/actions/arranger_selections.c:2761
 #, fuzzy
 msgid "Create MIDI selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2743
+#: src/actions/arranger_selections.c:2767
 #, fuzzy
 msgid "Delete arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2747
+#: src/actions/arranger_selections.c:2771
 #, fuzzy
 msgid "Duplicate arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2750
+#: src/actions/arranger_selections.c:2774
 #, fuzzy
 msgid "Move arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2753
+#: src/actions/arranger_selections.c:2777
 #, fuzzy
 msgid "Link arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2756
+#: src/actions/arranger_selections.c:2780
 #, fuzzy
 msgid "Record arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2759
+#: src/actions/arranger_selections.c:2783
 #, fuzzy
 msgid "Edit arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2762
+#: src/actions/arranger_selections.c:2786
 #, fuzzy
 msgid "Automation fill"
 msgstr "自動化控制"
 
-#: src/actions/arranger_selections.c:2765
+#: src/actions/arranger_selections.c:2789
 #, fuzzy
 msgid "Split arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2768
+#: src/actions/arranger_selections.c:2792
 #, fuzzy
 msgid "Merge arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2771
+#: src/actions/arranger_selections.c:2795
 #, fuzzy
 msgid "Resize arranger selections"
 msgstr "合併全部"
 
-#: src/actions/arranger_selections.c:2775
+#: src/actions/arranger_selections.c:2799
 #, fuzzy
 msgid "Quantize arranger selections"
 msgstr "合併全部"
@@ -3062,93 +3135,93 @@ msgstr ""
 msgid "MIDI mapping unbind"
 msgstr ""
 
-#: src/actions/actions.c:380
+#: src/actions/actions.c:343
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
 
-#: src/actions/actions.c:650
+#: src/actions/actions.c:613
 #, c-format
 msgid ""
 "Creating new projects is disabled. Please restart %s to start a new project"
 msgstr ""
 
-#: src/actions/actions.c:660 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:623 resources/gtk/help-overlay.ui:103
 #: resources/ui/project_assistant.ui:86
 msgid "Create new project"
 msgstr "建立新專案"
 
-#: src/actions/actions.c:664
+#: src/actions/actions.c:627
 msgid "Yes"
 msgstr "是"
 
-#: src/actions/actions.c:666
+#: src/actions/actions.c:629
 msgid "No"
 msgstr "否"
 
-#: src/actions/actions.c:671
+#: src/actions/actions.c:634
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "專案尚未儲存，確定要繼續？"
 
-#: src/actions/actions.c:723
+#: src/actions/actions.c:686
 msgid "Loading is disabled in the trial version"
 msgstr ""
 
-#: src/actions/actions.c:751 src/actions/actions.c:779
+#: src/actions/actions.c:715 src/actions/actions.c:743
 msgid "Saving is disabled in the trial version"
 msgstr ""
 
-#: src/actions/actions.c:791
+#: src/actions/actions.c:755
 msgid "Save Project"
 msgstr "儲存專案"
 
-#: src/actions/actions.c:877
+#: src/actions/actions.c:841
 msgid "Export routing graph"
 msgstr ""
 
-#: src/actions/actions.c:879
+#: src/actions/actions.c:843
 msgid "Image (PNG)"
 msgstr "圖片 (PNG)"
 
-#: src/actions/actions.c:880
+#: src/actions/actions.c:844
 #, fuzzy
 msgid "Image (SVG)"
 msgstr "圖片 (PNG)"
 
-#: src/actions/actions.c:881
+#: src/actions/actions.c:845
 msgid "Dot graph"
 msgstr ""
 
-#: src/actions/actions.c:889
+#: src/actions/actions.c:853
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
 
-#: src/actions/actions.c:944
+#: src/actions/actions.c:908
 msgid "Graph exported"
 msgstr ""
 
-#: src/actions/actions.c:1168
+#: src/actions/actions.c:1132
 msgid "Can't paste incompatible data"
 msgstr ""
 
-#: src/actions/actions.c:1725
+#: src/actions/actions.c:1689
 msgid "The track selection contains a track that cannot be deleted"
 msgstr ""
 
-#: src/actions/actions.c:2152
+#: src/actions/actions.c:2116
 msgid "No regions selected"
 msgstr ""
 
-#: src/actions/actions.c:2160
+#: src/actions/actions.c:2124
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2587
+#: src/actions/actions.c:2602
 #, fuzzy
 msgid "Region name"
 msgstr "片段內容"
@@ -3268,225 +3341,230 @@ msgstr "貼上"
 msgid "Paste %d Plugins"
 msgstr "刪除 %d 個外掛"
 
-#: src/actions/range_action.c:672 resources/ui/range_action_buttons.ui:36
+#: src/actions/range_action.c:675 resources/ui/range_action_buttons.ui:36
 msgid "Insert silence"
 msgstr ""
 
-#: src/actions/range_action.c:675
+#: src/actions/range_action.c:678
 msgid "Delete range"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:435
+#: src/actions/tracklist_selections.c:474
 #, c-format
 msgid "%s Track"
 msgstr "%s 音軌"
 
-#: src/actions/tracklist_selections.c:494
+#: src/actions/tracklist_selections.c:533
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1795
+#: src/actions/tracklist_selections.c:1841
 #, fuzzy
 msgid "Copy Track inside"
 msgstr "移動音軌"
 
-#: src/actions/tracklist_selections.c:1797
+#: src/actions/tracklist_selections.c:1843
 #, fuzzy
 msgid "Copy Track"
 msgstr "移動音軌"
 
-#: src/actions/tracklist_selections.c:1805
+#: src/actions/tracklist_selections.c:1851
 #, fuzzy, c-format
 msgid "Copy %d Tracks inside"
 msgstr "移動音軌"
 
-#: src/actions/tracklist_selections.c:1809
+#: src/actions/tracklist_selections.c:1855
 #, fuzzy, c-format
 msgid "Copy %d Tracks"
 msgstr "移動音軌"
 
-#: src/actions/tracklist_selections.c:1820
+#: src/actions/tracklist_selections.c:1866
 #, c-format
 msgid "Create %s Track"
 msgstr "新增 %s 音軌"
 
-#: src/actions/tracklist_selections.c:1826
+#: src/actions/tracklist_selections.c:1872
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "新增 %d 個 %s 音軌"
 
-#: src/actions/tracklist_selections.c:1833
+#: src/actions/tracklist_selections.c:1879
 msgid "Delete Track"
 msgstr "刪除音軌"
 
-#: src/actions/tracklist_selections.c:1838
+#: src/actions/tracklist_selections.c:1884
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "刪除 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:1851
+#: src/actions/tracklist_selections.c:1897
 msgid "Solo Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1854
+#: src/actions/tracklist_selections.c:1900
 msgid "Unsolo Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1858
+#: src/actions/tracklist_selections.c:1904
 msgid "Mute Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1861
+#: src/actions/tracklist_selections.c:1907
 msgid "Unmute Track"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1865
+#: src/actions/tracklist_selections.c:1911
 #, fuzzy
 msgid "Listen Track"
 msgstr "釘選/取消釘選"
 
-#: src/actions/tracklist_selections.c:1868
+#: src/actions/tracklist_selections.c:1914
 #, fuzzy
 msgid "Unlisten Track"
 msgstr "釘選/取消釘選"
 
-#: src/actions/tracklist_selections.c:1872
+#: src/actions/tracklist_selections.c:1918
 #, fuzzy
 msgid "Enable Track"
 msgstr "釘選/取消釘選"
 
-#: src/actions/tracklist_selections.c:1875
+#: src/actions/tracklist_selections.c:1921
 #, fuzzy
 msgid "Disable Track"
 msgstr "刪除音軌"
 
-#: src/actions/tracklist_selections.c:1879
+#: src/actions/tracklist_selections.c:1925
 #, fuzzy
 msgid "Fold Track"
 msgstr "移動 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:1882
+#: src/actions/tracklist_selections.c:1928
 #, fuzzy
 msgid "Unfold Track"
 msgstr "釘選/取消釘選全部"
 
-#: src/actions/tracklist_selections.c:1885
+#: src/actions/tracklist_selections.c:1931
 msgid "Change Fader"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1888
+#: src/actions/tracklist_selections.c:1934
 msgid "Change Pan"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1894
+#: src/actions/tracklist_selections.c:1940
 msgid "Rename track"
 msgstr "重新命名"
 
-#: src/actions/tracklist_selections.c:1897
-#: src/actions/tracklist_selections.c:1963
+#: src/actions/tracklist_selections.c:1943
+#, fuzzy
+msgid "Rename lane"
+msgstr "片段內容"
+
+#: src/actions/tracklist_selections.c:1946
+#: src/actions/tracklist_selections.c:2012
 msgid "Change color"
 msgstr "更改顏色"
 
-#: src/actions/tracklist_selections.c:1900
+#: src/actions/tracklist_selections.c:1949
 msgid "Change icon"
 msgstr "更改圖示"
 
-#: src/actions/tracklist_selections.c:1903
+#: src/actions/tracklist_selections.c:1952
 #, fuzzy
 msgid "Change comment"
 msgstr "更改圖示"
 
-#: src/actions/tracklist_selections.c:1906
-#: src/actions/tracklist_selections.c:1966
+#: src/actions/tracklist_selections.c:1955
+#: src/actions/tracklist_selections.c:2015
 msgid "Change MIDI fader mode"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:1919
+#: src/actions/tracklist_selections.c:1968
 #, fuzzy, c-format
 msgid "Solo %d Tracks"
 msgstr "移動 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:1923
+#: src/actions/tracklist_selections.c:1972
 #, fuzzy, c-format
 msgid "Unsolo %d Tracks"
 msgstr "釘選/取消釘選全部"
 
-#: src/actions/tracklist_selections.c:1928
+#: src/actions/tracklist_selections.c:1977
 #, fuzzy, c-format
 msgid "Mute %d Tracks"
 msgstr "移動 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:1932
+#: src/actions/tracklist_selections.c:1981
 #, fuzzy, c-format
 msgid "Unmute %d Tracks"
 msgstr "釘選/取消釘選全部"
 
-#: src/actions/tracklist_selections.c:1937
+#: src/actions/tracklist_selections.c:1986
 #, fuzzy, c-format
 msgid "Listen %d Tracks"
 msgstr "隱藏所選音軌"
 
-#: src/actions/tracklist_selections.c:1941
+#: src/actions/tracklist_selections.c:1990
 #, fuzzy, c-format
 msgid "Unlisten %d Tracks"
 msgstr "釘選/取消釘選全部"
 
-#: src/actions/tracklist_selections.c:1946
+#: src/actions/tracklist_selections.c:1995
 #, fuzzy, c-format
 msgid "Enable %d Tracks"
 msgstr "釘選/取消釘選全部"
 
-#: src/actions/tracklist_selections.c:1950
+#: src/actions/tracklist_selections.c:1999
 #, fuzzy, c-format
 msgid "Disable %d Tracks"
 msgstr "刪除 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:1955
+#: src/actions/tracklist_selections.c:2004
 #, fuzzy, c-format
 msgid "Fold %d Tracks"
 msgstr "移動 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:1959
+#: src/actions/tracklist_selections.c:2008
 #, fuzzy, c-format
 msgid "Unfold %d Tracks"
 msgstr "釘選/取消釘選全部"
 
-#: src/actions/tracklist_selections.c:1982
+#: src/actions/tracklist_selections.c:2031
 #, fuzzy
 msgid "Move Track inside"
 msgstr "移動音軌"
 
-#: src/actions/tracklist_selections.c:1986
+#: src/actions/tracklist_selections.c:2035
 msgid "Move Track"
 msgstr "移動音軌"
 
-#: src/actions/tracklist_selections.c:1996
+#: src/actions/tracklist_selections.c:2045
 #, fuzzy, c-format
 msgid "Move %d Tracks inside"
 msgstr "移動 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:2003
+#: src/actions/tracklist_selections.c:2052
 #, c-format
 msgid "Move %d Tracks"
 msgstr "移動 %d 個音軌"
 
-#: src/actions/tracklist_selections.c:2012
+#: src/actions/tracklist_selections.c:2061
 #, fuzzy
 msgid "Pin Track"
 msgstr "釘選/取消釘選"
 
-#: src/actions/tracklist_selections.c:2017
+#: src/actions/tracklist_selections.c:2066
 #, fuzzy, c-format
 msgid "Pin %d Tracks"
 msgstr "隱藏所選音軌"
 
-#: src/actions/tracklist_selections.c:2024
+#: src/actions/tracklist_selections.c:2073
 #, fuzzy
 msgid "Unpin Track"
 msgstr "釘選/取消釘選"
 
-#: src/actions/tracklist_selections.c:2029
+#: src/actions/tracklist_selections.c:2078
 #, fuzzy, c-format
 msgid "Unpin %d Tracks"
 msgstr "釘選/取消釘選全部"
@@ -3580,10 +3658,6 @@ msgstr "重做上一个指令"
 msgid "Selections"
 msgstr "選取"
 
-#: resources/gtk/help-overlay.ui:180
-msgid "Select all"
-msgstr "全選"
-
 #: resources/gtk/help-overlay.ui:187
 msgid "Unselect all"
 msgstr "取消全部的選取"
@@ -3652,10 +3726,6 @@ msgstr "量化"
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
 msgstr "循環"
-
-#: resources/gtk/help-overlay.ui:306
-msgid "Loop selection"
-msgstr "循環選擇"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
@@ -4180,10 +4250,6 @@ msgstr "目前的值"
 
 #: resources/ui/port_info_dialog.ui:288
 msgid "Port Info"
-msgstr ""
-
-#: resources/ui/track_lane.ui:34
-msgid "Lane 1"
 msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:36
@@ -5960,6 +6026,12 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1140
 msgid "The default script to use in the scripting window."
 msgstr ""
+
+#~ msgid "Select All"
+#~ msgstr "全選"
+
+#~ msgid "Loop Selection"
+#~ msgstr "循環選擇"
 
 #, fuzzy
 #~ msgid "togglebutton"
