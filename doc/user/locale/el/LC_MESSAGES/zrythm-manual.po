@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-21 17:33+0100\n"
+"POT-Creation-Date: 2021-07-31 12:40+0100\n"
 "PO-Revision-Date: 2021-05-19 18:32+0000\n"
 "Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
 "Language: el\n"
@@ -8728,14 +8728,37 @@ msgid "User Media"
 msgstr "Μέσα χρηστών"
 
 #: ../../user-media/intro.rst:9
+msgid "Mascot"
+msgstr ""
+
+#: ../../user-media/intro.rst:12
+#, fuzzy
+msgid "Concept"
+msgstr "Μετατροπή σε ήχο"
+
+#: ../../user-media/intro.rst:14
+msgid ""
+"`[Mascot concept by FanaticMoose] "
+"<https://mastodon.social/@zrythm/106672099997205356>`_"
+msgstr ""
+
+#: ../../user-media/intro.rst:17
+msgid "Sketches"
+msgstr ""
+
+#: ../../user-media/intro.rst:19
+msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
+msgstr ""
+
+#: ../../user-media/intro.rst:22
 msgid "Video"
 msgstr "Βίντεο"
 
-#: ../../user-media/intro.rst:12
+#: ../../user-media/intro.rst:25
 msgid "French Tutorials"
 msgstr "Γαλλικά μαθήματα"
 
-#: ../../user-media/intro.rst:13
+#: ../../user-media/intro.rst:26
 #, fuzzy
 msgid ""
 "Till Parisot has compiled a playlist of Zrythm tutorials in French on "

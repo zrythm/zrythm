@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-21 17:33+0100\n"
+"POT-Creation-Date: 2021-07-31 12:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7649,14 +7649,36 @@ msgid "User Media"
 msgstr ""
 
 #: ../../user-media/intro.rst:9
-msgid "Video"
+msgid "Mascot"
 msgstr ""
 
 #: ../../user-media/intro.rst:12
+msgid "Concept"
+msgstr ""
+
+#: ../../user-media/intro.rst:14
+msgid ""
+"`[Mascot concept by FanaticMoose] "
+"<https://mastodon.social/@zrythm/106672099997205356>`_"
+msgstr ""
+
+#: ../../user-media/intro.rst:17
+msgid "Sketches"
+msgstr ""
+
+#: ../../user-media/intro.rst:19
+msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
+msgstr ""
+
+#: ../../user-media/intro.rst:22
+msgid "Video"
+msgstr ""
+
+#: ../../user-media/intro.rst:25
 msgid "French Tutorials"
 msgstr ""
 
-#: ../../user-media/intro.rst:13
+#: ../../user-media/intro.rst:26
 msgid ""
 "Till Parisot has compiled a playlist of Zrythm tutorials in French on "
 "`PeerTube TeDomum <https://video.tedomum.net/video-"
