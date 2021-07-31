@@ -245,6 +245,7 @@ if get_option ('tests')
     'plugins/plugin': { parallel: false },
     'plugins/plugin_manager': { parallel: true },
     'project': { parallel: true },
+    'settings/settings': { parallel: true },
     'utils/arrays': { parallel: true },
     'utils/file': { parallel: true },
     'utils/general': { parallel: true },

@@ -1766,7 +1766,8 @@ process_events (void * data)
 #ifdef HAVE_CHANGELOG
             /* if latest release and first run on
              * this release show CHANGELOG */
-            if (is_latest_release &&
+            if (is_latest_release
+                &&
                 !settings_strv_contains_str (
                    S_GENERAL, "run-versions",
                    PACKAGE_VERSION))

@@ -34,6 +34,7 @@
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/terminal.h"
 #include "zrythm.h"
 
@@ -481,32 +482,48 @@ settings_append_to_strv (
   const char * val,
   bool         ignore_if_duplicate)
 {
-  if (ignore_if_duplicate &&
-      settings_strv_contains_str (
-        settings, key, val))
+  if (ignore_if_duplicate
+      && !ZRYTHM_TESTING
+      && settings_strv_contains_str (
+           settings, key, val))
     {
       return;
     }
 
-  char ** strv =
-    g_settings_get_strv (settings, key);
+  g_debug (
+    "%s: key %s val %s ignore if duplicate %d",
+    __func__, key, val, ignore_if_duplicate);
 
-  size_t i;
-  for (i = 0;; i++)
+  StrvBuilder * builder = strv_builder_new ();
+  char ** strv =
+    ZRYTHM_TESTING
+    ? NULL
+    : g_settings_get_strv (settings, key);
+  if (strv)
+    strv_builder_addv (
+      builder, (const char **) strv);
+  strv_builder_add (builder, val);
+
+  char ** new_strv = strv_builder_end (builder);
+
+  if (ZRYTHM_TESTING)
     {
-      if (!strv[i])
-        break;
+      for (size_t i = 0; new_strv[i] != NULL; i++)
+        {
+          char * tmp = new_strv[i];
+          g_message (
+            "setting [%zu]: %s", i, tmp);
+        }
+    }
+  else
+    {
+      g_settings_set_strv (
+        settings, key,
+        (const char * const *) new_strv);
     }
 
-  strv =
-    object_realloc_n (strv, i + 1, i + 2, char *);
-
-  strv[i] = g_strdup (val);
-
-  g_settings_set_strv (
-    settings, key, (const char * const *) strv);
-
   g_strfreev (strv);
+  g_strfreev (new_strv);
 }
 
 /**
