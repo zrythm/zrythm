@@ -1,6 +1,36 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.22.0.1] - 2021-08-01
+### Added
+- Add Turkish translation
+- Install `zrythm_lv2apply`
+- Allow renaming track lanes
+- Allow applying audio functions on audio regions from the timeline
+- Add nudge actions
+- Add option to edit audio in an external app
+- Add linear fade in/out and nudge functions in audio editor
+- New dependency: vamp-plugin-sdk
+
+### Changed
+- Allow bouncing audio regions
+- DSP refactor: use common time struct for processing
+- Update Chinese (Simplified), French translations
+- User manual: add section for mascot in user media chapter
+- Don't allow resizing objects if not all selected objects are resizable
+
+### Fixed
+- Fix non-fatal error when attempting to split region at its start
+- Fix recording incorrectly being handled for auditioner tracks
+- Fix track lane not being correctly fetched when drawing tracks
+- Fix crash when moving a region to another lane and undoing
+- Fix audio regions not being redrawn when a function is applied
+- Fix crash when showing changelog on MacOS
+- Fix move action not being created when resizing an dmoving notes simultaneously
+
+### Removed
+- Remove unused source files for track lanes
+
 ## [1.0.0-alpha.21.0.13] - 2021-07-22
 ### Added
 - Add accelerators to toolbox tooltips
