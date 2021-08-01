@@ -2429,6 +2429,8 @@ on_drag_begin_handle_hit_object (
       ArrangerObject ** objs =
         arranger_selections_get_all_objects (
           sel, &num_objs);
+      bool have_looped = false;
+      bool have_unloopable = false;
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * cur_obj = objs[i];
@@ -2437,7 +2439,47 @@ on_drag_begin_handle_hit_object (
             {
               is_resize_l = false;
               is_resize_r = false;
+              is_resize_loop = false;
               break;
+
+              int num_loops =
+                arranger_object_get_num_loops (
+                  cur_obj, false);
+              if (num_loops > 0)
+                have_looped = true;
+
+              if (!arranger_object_type_can_loop (
+                    cur_obj->type))
+                have_unloopable = true;
+            }
+        }
+
+      if (!is_resize_loop && have_looped)
+        {
+          if (have_unloopable)
+            {
+              /* cancel resize since we have
+               * a looped object mixed with
+               * unloopable objects in the
+               * selection */
+              g_debug (
+                "cancel resize - "
+                "have looped object mixed with "
+                "unloopable objects");
+              is_resize_l = false;
+              is_resize_r = false;
+            }
+          else
+            {
+              /* loop-resize since we have a
+               * loopable object in the selection
+               * and all other objects are
+               * loopable */
+              g_debug (
+                "convert resize to resize-loop - "
+                "have looped object in the "
+                "selection");
+              is_resize_loop = true;
             }
         }
     }
