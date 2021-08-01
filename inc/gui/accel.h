@@ -39,10 +39,10 @@ accel_install_action_accelerator (
 /**
  * Install accelerator for an action.
  */
-void
-accel_install_primary_action_accelerator (
-  const char *     primary,
-  const char *     action_name);
+#define accel_install_primary_action_accelerator( \
+  primary,action_name) \
+  accel_install_action_accelerator ( \
+    primary, NULL, action_name)
 
 /**
  * Returns the primary accelerator for the given

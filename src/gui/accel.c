@@ -64,18 +64,6 @@ accel_install_action_accelerator (
     action_name, accels);
 }
 
-/**
- * Install accelerator for an action.
- */
-void
-accel_install_primary_action_accelerator (
-  const char *     primary,
-  const char *     action_name)
-{
-  accel_install_action_accelerator (
-    primary, NULL, action_name);
-}
-
 char *
 accel_get_primary_accel_for_action (
   const char * action_name)

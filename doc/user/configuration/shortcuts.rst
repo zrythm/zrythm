@@ -32,12 +32,15 @@ An example is given below.
 .. code-block:: yaml
 
     ---
-    schema_version: 1
+    schema_version: 2
     shortcuts:
       - action: app.manual
-        shortcut: F1
+        primary: F1
       - action: app.open
-        shortcut: <Control>o
+        primary: <Control>o
+      - action: app.goto-prev-marker
+        primary: KP_4 # keypad 4
+        secondary: Backspace
     ...
 
 .. todo:: Make this more user friendly & document all

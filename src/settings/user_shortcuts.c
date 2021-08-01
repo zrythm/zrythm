@@ -27,8 +27,9 @@ void
 user_shortcut_free (
   UserShortcut * shortcut)
 {
-  g_free (shortcut->action);
-  g_free (shortcut->shortcut);
+  g_free_and_null (shortcut->action);
+  g_free_and_null (shortcut->primary);
+  g_free_and_null (shortcut->secondary);
 
   object_zero_and_free (shortcut);
 }
@@ -134,10 +135,14 @@ return_new_instance:
 /**
  * Returns a shortcut for the given action, or @p
  * default_shortcut if not found.
+ *
+ * @param primary Whether to get the primary
+ *   shortcut, otherwise the secondary.
  */
 const char *
 user_shortcuts_get (
   UserShortcuts * self,
+  bool            primary,
   const char *    action,
   const char *    default_shortcut)
 {
@@ -148,7 +153,10 @@ user_shortcuts_get (
       if (string_is_equal (
             cur_shortcut->action, action))
         {
-          return cur_shortcut->shortcut;
+          if (primary)
+            return cur_shortcut->primary;
+          else
+            return cur_shortcut->secondary;
         }
     }
 

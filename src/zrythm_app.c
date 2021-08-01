@@ -1313,13 +1313,23 @@ zrythm_app_startup (
   g_idle_add ((GSourceFunc) idle_func, self);
 
   /* install accelerators for each action */
-  const char * shortcut = NULL;
-#define INSTALL_ACCEL(keybind,action) \
-  shortcut = \
+  const char * primary = NULL;
+  const char * secondary = NULL;
+#define INSTALL_ACCEL_WITH_SECONDARY( \
+  keybind,secondary_keybind,action) \
+  primary = \
     user_shortcuts_get ( \
-      S_USER_SHORTCUTS, action, keybind); \
-  accel_install_primary_action_accelerator ( \
-    shortcut, action)
+      S_USER_SHORTCUTS, true, action, keybind); \
+  secondary = \
+    user_shortcuts_get ( \
+      S_USER_SHORTCUTS, false, action, \
+      secondary_keybind); \
+  accel_install_action_accelerator ( \
+    primary, secondary, action)
+
+#define INSTALL_ACCEL(keybind,action) \
+  INSTALL_ACCEL_WITH_SECONDARY ( \
+    keybind, NULL, action)
 
   INSTALL_ACCEL ("F1", "app.manual");
   INSTALL_ACCEL ("<Alt>F4", "app.quit");
@@ -1379,8 +1389,8 @@ zrythm_app_startup (
     "5", "app.ramp-mode");
   INSTALL_ACCEL (
     "6", "app.audition-mode");
-  accel_install_action_accelerator (
-    "KP_4", "BackSpace", "app.goto-prev-marker");
+  INSTALL_ACCEL_WITH_SECONDARY (
+    "KP_4", "Backspace", "app.goto-prev-marker");
   INSTALL_ACCEL (
     "KP_6", "app.goto-next-marker");
   INSTALL_ACCEL (

@@ -26,6 +26,8 @@
 #ifndef __SETTINGS_USER_SHORTCUTS_H__
 #define __SETTINGS_USER_SHORTCUTS_H__
 
+#include <stdbool.h>
+
 #include "utils/yaml.h"
 
 /**
@@ -34,12 +36,13 @@
  * @{
  */
 
-#define USER_SHORTCUTS_SCHEMA_VERSION 1
+#define USER_SHORTCUTS_SCHEMA_VERSION 2
 
 typedef struct UserShortcut
 {
   char *       action;
-  char *       shortcut;
+  char *       primary;
+  char *       secondary;
 } UserShortcut;
 
 /**
@@ -59,7 +62,9 @@ static const cyaml_schema_field_t
 user_shortcut_fields_schema[] =
 {
   YAML_FIELD_STRING_PTR (UserShortcut, action),
-  YAML_FIELD_STRING_PTR (UserShortcut, shortcut),
+  YAML_FIELD_STRING_PTR (UserShortcut, primary),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    UserShortcut, secondary),
 
   CYAML_FIELD_END
 };
@@ -104,10 +109,14 @@ user_shortcuts_new (void);
 /**
  * Returns a shortcut for the given action, or @p
  * default_shortcut if not found.
+ *
+ * @param primary Whether to get the primary
+ *   shortcut, otherwise the secondary.
  */
 const char *
 user_shortcuts_get (
   UserShortcuts * self,
+  bool            primary,
   const char *    action,
   const char *    default_shortcut);
 
