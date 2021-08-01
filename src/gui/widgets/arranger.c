@@ -3824,6 +3824,10 @@ on_drag_end_midi (
     {
       ArrangerObject * obj =
         (ArrangerObject *) self->start_object;
+      MidiNote * mn = (MidiNote *) obj;
+      MidiNote * mn_trans =
+        (MidiNote *) obj->transient;
+      int pitch_diff = mn->val - mn_trans->val;
       double ticks_diff =
         obj->end_pos.ticks -
         obj->transient->end_pos.ticks;
@@ -3834,6 +3838,16 @@ on_drag_end_midi (
           ticks_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
+      if (pitch_diff)
+        {
+          ua =
+            arranger_selections_action_new_move_midi (
+              MA_SELECTIONS, 0, pitch_diff,
+              F_ALREADY_MOVED);
+          ua->num_actions = 2;
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
     }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
