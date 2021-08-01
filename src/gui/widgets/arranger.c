@@ -2419,6 +2419,51 @@ on_drag_begin_handle_hit_object (
         }
     }
 
+  /* check if all selected objects are fadeable or
+   * resizeable */
+  if (is_resize_l || is_resize_r)
+    {
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+      int num_objs;
+      ArrangerObject ** objs =
+        arranger_selections_get_all_objects (
+          sel, &num_objs);
+      for (int i = 0; i < num_objs; i++)
+        {
+          ArrangerObject * cur_obj = objs[i];
+          if (!arranger_object_type_has_length (
+                 cur_obj->type))
+            {
+              is_resize_l = false;
+              is_resize_r = false;
+              break;
+            }
+        }
+    }
+  if (is_fade_in_point || is_fade_in_outer
+      || is_fade_out_point || is_fade_out_outer)
+    {
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+      int num_objs;
+      ArrangerObject ** objs =
+        arranger_selections_get_all_objects (
+          sel, &num_objs);
+      for (int i = 0; i < num_objs; i++)
+        {
+          ArrangerObject * cur_obj = objs[i];
+          if (!arranger_object_can_fade (cur_obj))
+            {
+              is_fade_in_point = false;
+              is_fade_in_outer = false;
+              is_fade_out_point = false;
+              is_fade_out_outer = false;
+              break;
+            }
+        }
+    }
+
 #define SET_ACTION(x) \
   self->action = UI_OVERLAY_ACTION_##x
 
