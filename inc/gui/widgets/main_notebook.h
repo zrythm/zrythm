@@ -60,7 +60,6 @@ typedef struct _MainNotebookWidget
   /** Event viewr + timeline panel. */
   GtkPaned *
     timeline_plus_event_viewer_paned;
-
   TimelinePanelWidget * timeline_panel;
   EventViewerWidget *   event_viewer;
   GtkStack *            end_stack;

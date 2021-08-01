@@ -23,6 +23,7 @@
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/mixer.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/visibility.h"
 #include "settings/settings.h"
@@ -39,6 +40,8 @@
 #ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
 #endif
+
+#include <glib/gi18n.h>
 
 int
 z_gtk_widget_destroy_idle (
@@ -1131,6 +1134,12 @@ typedef struct DetachableNotebookData
   /** Hashtable of settings schema keys => widget
    * pointers. */
   GHashTable *    ht;
+
+  /** Window title. */
+  const char *    title;
+
+  /** Window role. */
+  const char *    role;
 } DetachableNotebookData;
 
 static void
@@ -1252,6 +1261,71 @@ on_create_window (
   gtk_container_add (
     GTK_CONTAINER (new_window),
     GTK_WIDGET (new_notebook));
+
+  const char * title = "Zrythm";
+  const char * role = "zrythm-panel";
+
+#define SET_TITLE_AND_ROLE(w,t,r) \
+  if (page == GTK_WIDGET (w)) \
+    { \
+      title = t; \
+      role = r; \
+    }
+
+  /* FIXME the names should be fetched from the
+   * tab labels instead of repeating the names
+   * here */
+  SET_TITLE_AND_ROLE (
+    MW_BOT_DOCK_EDGE->mixer_box,
+    _("Mixer"), "mixer");
+  SET_TITLE_AND_ROLE (
+    MW_BOT_DOCK_EDGE->modulator_view_box,
+    _("Modulators"), "modulators");
+  SET_TITLE_AND_ROLE (
+    MW_BOT_DOCK_EDGE->chord_pad_box,
+    _("Chord Pad"), "chord-pad");
+  SET_TITLE_AND_ROLE (
+    MW_BOT_DOCK_EDGE->clip_editor_box,
+    _("Editor"), "editor");
+  SET_TITLE_AND_ROLE (
+    MW_LEFT_DOCK_EDGE->visibility_box,
+    _("Visibility"), "track-visibility");
+  SET_TITLE_AND_ROLE (
+    MW_LEFT_DOCK_EDGE->track_inspector_scroll,
+    _("Track Inspector"), "track-inspector");
+  SET_TITLE_AND_ROLE (
+    MW_LEFT_DOCK_EDGE->plugin_inspector_scroll,
+    _("Plugin Inspector"), "plugin-inspector");
+  SET_TITLE_AND_ROLE (
+    MW_RIGHT_DOCK_EDGE->plugin_browser_box,
+    _("Plugin Browser"), "plugin-browser");
+  SET_TITLE_AND_ROLE (
+    MW_RIGHT_DOCK_EDGE->file_browser_box,
+    _("File Browser"), "file-browser");
+  SET_TITLE_AND_ROLE (
+    MW_RIGHT_DOCK_EDGE->monitor_section_box,
+    _("Monitor"), "monitor");
+  SET_TITLE_AND_ROLE (
+    MW_MAIN_NOTEBOOK->
+      timeline_plus_event_viewer_paned,
+    _("Timeline"), "timeline");
+  SET_TITLE_AND_ROLE (
+    MW_MAIN_NOTEBOOK->cc_bindings_box,
+    _("MIDI CC Bindings"), "midi-cc-bindings");
+  SET_TITLE_AND_ROLE (
+    MW_MAIN_NOTEBOOK->port_connections_box,
+    _("Port Connections"), "port-connections");
+  SET_TITLE_AND_ROLE (
+    MW_MAIN_NOTEBOOK->scenes_box,
+    _("Scenes"), "scenes");
+
+#undef SET_TITLE_AND_ROLE
+
+  gtk_window_set_title (
+    new_window, title);
+  gtk_window_set_role (
+    new_window, role);
+
   /* very important for DND */
   gtk_notebook_set_group_name (
     new_notebook, "foldable-notebook-group");

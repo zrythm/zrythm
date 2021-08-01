@@ -137,7 +137,6 @@ void
 foldable_notebook_widget_setup (
   FoldableNotebookWidget * self,
   GtkPaned *               paned,
-  //DzlDockRevealer *        dock_revealer,
   GtkPositionType          pos_in_paned);
 
 /**
