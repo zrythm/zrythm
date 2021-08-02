@@ -2569,6 +2569,7 @@ _test_move_inside (
 static void
 test_move_inside ()
 {
+  (void) _test_move_inside;
 #ifdef HAVE_LSP_COMPRESSOR
   _test_move_inside (
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,

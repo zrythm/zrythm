@@ -204,99 +204,100 @@ if get_option ('tests')
   ]
 
   # 0: path
-  # 1: is parallel
-  # 2: args
-  parallel = 'parallel'
+  # 1: dictionary of args
   tests = {
     'actions/arranger_selections': {
-      parallel: false },
-    'actions/range': { parallel: true },
-    'actions/undo_manager': { parallel: false },
-    'audio/audio_region': { parallel: true },
-    'audio/audio_track': { parallel: true },
-    'audio/automation_track': { parallel: true },
-    'audio/chord_track': { parallel: true },
-    'audio/curve': { parallel: true },
-    'audio/fader': { parallel: true },
-    'audio/marker_track': { parallel: true },
-    'audio/metronome': { parallel: true },
-    'audio/midi': { parallel: true },
-    'audio/midi_event': { parallel: true },
-    'audio/midi_mapping': { parallel: true },
-    'audio/midi_note': { parallel: true },
-    'audio/midi_region': { parallel: false },
-    'audio/midi_track': { parallel: true },
-    'audio/pool': { parallel: false },
-    'audio/position': { parallel: true },
-    'audio/port': { parallel: true },
-    'audio/region': { parallel: true },
-    'audio/sample_processor': { parallel: true },
-    'audio/snap_grid': { parallel: true },
-    'audio/track': { parallel: true },
-    'audio/track_processor': { parallel: true },
-    'audio/tracklist': { parallel: true },
+      'parallel': false },
+    'actions/range': { 'parallel': true },
+    # skip CI because it uses too much RAM
+    'actions/undo_manager': {
+      'parallel': false,
+      'extra_suites': [ 'skip-ci' ] },
+    'audio/audio_region': { 'parallel': true },
+    'audio/audio_track': { 'parallel': true },
+    'audio/automation_track': { 'parallel': true },
+    'audio/chord_track': { 'parallel': true },
+    'audio/curve': { 'parallel': true },
+    'audio/fader': { 'parallel': true },
+    'audio/marker_track': { 'parallel': true },
+    'audio/metronome': { 'parallel': true },
+    'audio/midi': { 'parallel': true },
+    'audio/midi_event': { 'parallel': true },
+    'audio/midi_mapping': { 'parallel': true },
+    'audio/midi_note': { 'parallel': true },
+    'audio/midi_region': { 'parallel': false },
+    'audio/midi_track': { 'parallel': true },
+    'audio/pool': { 'parallel': false },
+    'audio/position': { 'parallel': true },
+    'audio/port': { 'parallel': true },
+    'audio/region': { 'parallel': true },
+    'audio/sample_processor': { 'parallel': true },
+    'audio/snap_grid': { 'parallel': true },
+    'audio/track': { 'parallel': true },
+    'audio/track_processor': { 'parallel': true },
+    'audio/tracklist': { 'parallel': true },
     'gui/backend/arranger_selections': {
-      parallel: true },
-    'integration/recording': { parallel: false },
-    'plugins/carla_discovery': { parallel: true },
-    'plugins/carla_native_plugin': { parallel: false },
-    'plugins/lv2_plugin': { parallel: false },
-    'plugins/lv2/lv2_state': { parallel: false },
-    'plugins/plugin': { parallel: false },
-    'plugins/plugin_manager': { parallel: true },
-    'project': { parallel: true },
-    'settings/settings': { parallel: true },
-    'utils/arrays': { parallel: true },
-    'utils/file': { parallel: true },
-    'utils/general': { parallel: true },
-    'utils/hash': { parallel: true },
-    'utils/math': { parallel: true },
-    'utils/io': { parallel: true },
-    'utils/string': { parallel: true },
-    'utils/ui': { parallel: true },
-    'utils/yaml': { parallel: true },
-    'zrythm_app': { parallel: true },
-    'zrythm': { parallel: true },
+      'parallel': true },
+    'integration/recording': { 'parallel': false },
+    'plugins/carla_discovery': { 'parallel': true },
+    'plugins/carla_native_plugin': { 'parallel': false },
+    'plugins/lv2_plugin': { 'parallel': false },
+    'plugins/lv2/lv2_state': { 'parallel': false },
+    'plugins/plugin': { 'parallel': false },
+    'plugins/plugin_manager': { 'parallel': true },
+    'project': { 'parallel': true },
+    'settings/settings': { 'parallel': true },
+    'utils/arrays': { 'parallel': true },
+    'utils/file': { 'parallel': true },
+    'utils/general': { 'parallel': true },
+    'utils/hash': { 'parallel': true },
+    'utils/math': { 'parallel': true },
+    'utils/io': { 'parallel': true },
+    'utils/string': { 'parallel': true },
+    'utils/ui': { 'parallel': true },
+    'utils/yaml': { 'parallel': true },
+    'zrythm_app': { 'parallel': true },
+    'zrythm': { 'parallel': true },
     }
 
   if os_gnu or os_darwin
     tests += {
       'actions/mixer_selections_action': {
-        parallel: false },
+        'parallel': false },
       'actions/port_connection': {
-        parallel: false },
+        'parallel': false },
       'actions/tracklist_selections': {
-        parallel: false },
+        'parallel': false },
       'actions/tracklist_selections_edit': {
-        parallel: false },
+        'parallel': false },
       'benchmarks/dsp': {
-        parallel: true },
+        'parallel': true },
       'integration/midi_file': {
-        parallel: false },
+        'parallel': false },
       # cannot be parallel because it needs multiple
       # threads
       'integration/run_graph_with_latencies': {
-        parallel: false },
+        'parallel': false },
       'integration/undo_redo_helm_track_creation': {
-        parallel: false },
+        'parallel': false },
       'utils/system': {
-        parallel: false },
+        'parallel': false },
       }
   endif
 
   if get_option ('gui_tests')
     tests += {
       'gui/widgets/region': {
-        parallel: false },
+        'parallel': false },
       'gui/widgets/track': {
-        parallel: false },
+        'parallel': false },
       }
   endif
 
   if chromaprint_dep.found ()
     tests += {
       'audio/exporter': {
-        parallel: true },
+        'parallel': true },
       }
   endif
 
@@ -304,7 +305,7 @@ if get_option ('tests')
     foreach f : data_script_filenames
       tests += {
         ('guile/script_runner/' + f.substring (0, -4)).underscorify(): {
-          parallel: true,
+          'parallel': true,
           'args': meson_src_root / 'data/scripts' / f,
           'different_source': 'guile/script_runner.c',
           },
@@ -315,7 +316,7 @@ if get_option ('tests')
     if false
       tests += {
         'guile/project_generator': {
-          parallel: true },
+          'parallel': true },
         }
     endif
   endif
@@ -326,19 +327,24 @@ if get_option ('tests')
   endif
 
   foreach name, info : tests
-    is_parallel = info[parallel]
+    is_parallel = info['parallel']
     test_name = '_'.join(name.split('/'))
-    suite = name.split('/')[0]
+    suites = [ name.split('/')[0] ]
+    if 'extra_suites' in info
+      suites += info['extra_suites']
+    endif
     if 'different_source' in info
       source = info['different_source']
     else
       source = name + '.c'
     endif
     timeout = 180
-    if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
-      is_parallel = false
-      timeout = 420
-    endif
+    foreach suite : suites
+      if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
+        is_parallel = false
+        timeout = 420
+      endif
+    endforeach
 
     if fs.is_file (source)
       # create C executable for C runner
@@ -361,7 +367,7 @@ if get_option ('tests')
       )
       test (
         test_name, exe,
-        env: test_env, suite: suite,
+        env: test_env, suite: suites,
         is_parallel: is_parallel,
         args: 'args' in info ? info['args'] : [],
         depends: [
@@ -392,10 +398,15 @@ if get_option ('tests')
       test (
         test_name, exe,
         args: source,
-        env: test_env, suite: suite,
+        env: test_env, suite: suites,
         is_parallel: is_parallel,
         timeout: timeout)
     endif
   endforeach
+
+  add_test_setup (
+    'ci',
+    exclude_suites: 'skip-ci',
+    )
 
 endif

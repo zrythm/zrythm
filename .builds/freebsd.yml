@@ -61,7 +61,7 @@ tasks:
       ninja -C build
   - test: |
       cd zrythm
-      ninja -C build test
+      ../meson/meson.py test -C build --no-suite=skip-ci
   - install: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install
