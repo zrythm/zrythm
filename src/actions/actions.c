@@ -961,6 +961,7 @@ activate_cut (
   switch (PROJECT->last_selection)
     {
     case SELECTION_TYPE_TIMELINE:
+    case SELECTION_TYPE_EDITOR:
       if (sel && arranger_selections_has_any (sel))
         {
           ua =
@@ -1000,6 +1001,7 @@ activate_copy (
   switch (PROJECT->last_selection)
     {
     case SELECTION_TYPE_TIMELINE:
+    case SELECTION_TYPE_EDITOR:
       if (sel)
         {
           Clipboard * clipboard =
