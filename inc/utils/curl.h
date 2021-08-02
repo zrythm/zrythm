@@ -26,8 +26,6 @@
 #ifndef __UTILS_CURL_H__
 #define __UTILS_CURL_H__
 
-#ifdef PHONE_HOME
-
 #include <stdbool.h>
 
 /**
@@ -63,5 +61,4 @@ z_curl_get_page_contents_default (
  * @}
  */
 
-#endif /* PHONE_HOME */
 #endif

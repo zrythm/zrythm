@@ -396,6 +396,9 @@ cdata.set_quoted (
   'CONFIGURE_THEMES_CSS_DIR', themes_css_dir)
 cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
+if get_option ('check_updates')
+  cdata.set ('CHECK_UPDATES', 1)
+endif
 cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
 cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
 cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
@@ -1163,8 +1166,8 @@ if not xxhash_dep.found ()
   xxhash_dep = cc.find_library ('xxhash')
 endif
 
-vamp_dep = dependency ('vamp', static: get_option ('vamp-static'))
-vamp_host_sdk_dep = dependency ('vamp-hostsdk', static: get_option ('vamp-static'))
+vamp_dep = dependency ('vamp', static: get_option ('vamp_static'))
+vamp_host_sdk_dep = dependency ('vamp-hostsdk', static: get_option ('vamp_static'))
 vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 # TODO add Cantarell font as dependency
@@ -1208,18 +1211,10 @@ zrythm_deps = [
   libbacktrace_dep,
   xxhash_dep,
   vamp_deps,
+  dependency ('libcurl'),
 
   libm,
 ]
-
-phone_home = false
-libcurl_dep = dependency (
-  'libcurl', required: get_option ('phone_home'))
-if libcurl_dep.found () and not get_option ('phone_home').disabled ()
-  phone_home = true
-  zrythm_deps += libcurl_dep
-  cdata.set ('PHONE_HOME', 1)
-endif
 
 if all_static
   zrythm_deps += [
@@ -1359,7 +1354,7 @@ summary ({
   'Custom logo and splash': get_option ('custom_logo_and_splash'),
   'Trial version': get_option ('trial_ver'),
   'Installer version': get_option ('installer_ver'),
-  'Phone home': phone_home,
+  'Check for updates': get_option ('check_updates'),
   'AppImage build': get_option ('appimage'),
   }, section: 'General')
 

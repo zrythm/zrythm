@@ -213,10 +213,10 @@ option (
   description: 'OGG OPUS support (requires libsndfile >= 1.0.29)')
 
 option (
-  'phone_home',
-  type: 'feature',
-  value: 'disabled',
-  description: 'Allow connecting to the internet (eg, for checking the latest version).')
+  'check_updates',
+  type: 'boolean',
+  value: true,
+  description: 'Whether to check for updates on startup.')
 
 option (
   'valgrind',
@@ -237,7 +237,7 @@ option (
   description: 'Whether this is a native build (will run on the same exact machine it is compiled on). This will turn on -march=native and -mtune=native')
 
 option (
-  'vamp-static',
+  'vamp_static',
   type: 'boolean',
   value: false,
   description: 'Whether to use static vamp libs (if available).')

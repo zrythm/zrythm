@@ -119,9 +119,7 @@
 #ifdef HAVE_X11
 #include <X11/Xlib.h>
 #endif
-#ifdef PHONE_HOME
 #include <curl/curl.h>
-#endif
 
 /** This is declared extern in zrythm_app.h. */
 ZrythmApp * zrythm_app = NULL;
@@ -1024,9 +1022,7 @@ zrythm_app_startup (
 #endif
 
   /* init curl */
-#ifdef PHONE_HOME
   curl_global_init (CURL_GLOBAL_ALL);
-#endif
 
   /* init gtksourceview */
 #ifdef HAVE_GTK_SOURCE_VIEW_4
@@ -1895,9 +1891,7 @@ finalize (
     ui_caches_free, self->ui_caches);
 
   /* init curl */
-#ifdef PHONE_HOME
   curl_global_cleanup ();
-#endif
 
   g_message ("%s: done", __func__);
 }

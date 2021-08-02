@@ -40,7 +40,7 @@ test_dummy ()
 static void
 test_fetch_latest_release ()
 {
-#ifdef PHONE_HOME
+#ifdef CHECK_UPDATES
   char * ver =
     zrythm_fetch_latest_release_ver ();
   g_assert_nonnull (ver);

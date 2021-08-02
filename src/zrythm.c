@@ -243,7 +243,6 @@ zrythm_is_release (
     !string_contains_substr (PACKAGE_VERSION, "g");
 }
 
-#ifdef PHONE_HOME
 /**
  * Returns the latest release version.
  */
@@ -305,7 +304,6 @@ zrythm_is_latest_release (void)
 
   return ret;
 }
-#endif
 
 /**
  * Returns the prefix or in the case of windows

@@ -335,7 +335,6 @@ bool
 zrythm_is_release (
   bool official);
 
-#ifdef PHONE_HOME
 /**
  * Returns the latest release version.
  */
@@ -344,7 +343,6 @@ zrythm_fetch_latest_release_ver (void);
 
 bool
 zrythm_is_latest_release (void);
-#endif
 
 /**
  * Returns the veresion and the capabilities.

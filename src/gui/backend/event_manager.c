@@ -1758,7 +1758,7 @@ process_events (void * data)
           main_notebook_widget_refresh (
             MW_MAIN_NOTEBOOK);
 
-#ifdef PHONE_HOME
+#ifdef CHECK_UPDATES
           {
             bool is_latest_release =
               zrythm_is_latest_release ();
@@ -1778,7 +1778,7 @@ process_events (void * data)
                   S_GENERAL, "run-versions",
                   PACKAGE_VERSION, true);
               }
-#endif
+#endif /* HAVE_CHANGELOG */
 
             /* if not latest release and this is
              * an official release, notify user */
@@ -1823,7 +1823,7 @@ process_events (void * data)
               }
             g_free (last_version_notified_on);
           }
-#endif /* PHONE_HOME */
+#endif /* CHECK_UPDATES */
           break;
         case ET_SPLASH_CLOSED:
           break;

@@ -19,16 +19,12 @@
 
 #include "zrythm-config.h"
 
-#ifdef PHONE_HOME
-
 #include "utils/curl.h"
 #include "utils/env.h"
 
 #include <glib.h>
 
-#ifdef PHONE_HOME
 #include <curl/curl.h>
-#endif
 
 static size_t
 curl_to_string (
@@ -129,5 +125,3 @@ z_curl_get_page_contents_default (
 
   return z_curl_get_page_contents (url, timeout);
 }
-
-#endif /* PHONE_HOME */
