@@ -2073,20 +2073,9 @@ activate_mute_selection (
     }
   else if (string_is_equal (variant, "global"))
     {
-#if 0
-      if (PROJECT->last_selection ==
-            SELECTION_TYPE_TIMELINE)
-        {
-          sel =
-            (ArrangerSelections *) TL_SELECTIONS;
-        }
-      if (PROJECT->last_selection ==
-            SELECTION_TYPE_EDITOR)
-        {
-          sel =
-            (ArrangerSelections *) MA_SELECTIONS;
-        }
-#endif
+      sel =
+        project_get_arranger_selections_for_last_selection (
+          PROJECT);
     }
   else
     {
