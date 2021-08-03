@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -25,6 +25,7 @@ resource_files += files ([
   'bot_bar.ui',
   'bot_dock_edge.ui',
   'bounce_dialog.ui',
+  'bug_report_dialog.ui',
   'center_dock.ui',
   'channel.ui',
   'chord_editor_space.ui',

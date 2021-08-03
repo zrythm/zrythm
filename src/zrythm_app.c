@@ -156,13 +156,13 @@ segv_handler (int sig)
   char str[500];
   sprintf (
     str, _("%s has crashed. "), PROGRAM_NAME);
-  GtkWidget * dialog =
+  BugReportDialogWidget * dialog =
     bug_report_dialog_new (
       GTK_WINDOW (MAIN_WINDOW), str, bt);
 
   /* run the dialog */
   gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 
   exit (EXIT_FAILURE);
 }

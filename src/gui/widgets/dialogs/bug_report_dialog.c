@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,35 +25,49 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/log.h"
+#include "utils/resources.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
 
-/**
- * Creates and displays the about dialog.
- */
-GtkWidget *
-bug_report_dialog_new (
-  GtkWindow *  parent,
-  const char * msg_prefix,
-  const char * backtrace)
-{
-  GtkDialogFlags flags =
-    GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkWidget * dialog =
-    gtk_message_dialog_new_with_markup (
-      parent, flags,
-      GTK_MESSAGE_ERROR,
-      GTK_BUTTONS_CLOSE,
-      NULL);
+G_DEFINE_TYPE (
+  BugReportDialogWidget,
+  bug_report_dialog_widget,
+  GTK_TYPE_DIALOG)
 
-  char * log =
-    log_get_last_n_lines (LOG, 60);
-  char * undo_stack =
-    PROJECT && UNDO_MANAGER ?
-      undo_stack_get_as_string (
-        UNDO_MANAGER->undo_stack, 12) :
-      g_strdup ("<undo stack uninitialized>");
+static char *
+get_report_template (
+  BugReportDialogWidget * self,
+  bool                    for_uri)
+{
+  GtkTextIter start_iter, end_iter;
+  gtk_text_buffer_get_start_iter (
+    GTK_TEXT_BUFFER (
+      self->steps_to_reproduce_buffer),
+    &start_iter);
+  gtk_text_buffer_get_end_iter (
+    GTK_TEXT_BUFFER (
+      self->steps_to_reproduce_buffer),
+    &end_iter);
+  char * steps_to_reproduce =
+    gtk_text_buffer_get_text (
+      GTK_TEXT_BUFFER (
+        self->steps_to_reproduce_buffer),
+      &start_iter, &end_iter, false);
+
+  gtk_text_buffer_get_start_iter (
+    GTK_TEXT_BUFFER (
+      self->other_info_buffer),
+    &start_iter);
+  gtk_text_buffer_get_end_iter (
+    GTK_TEXT_BUFFER (
+      self->other_info_buffer),
+    &end_iter);
+  char * other_info =
+    gtk_text_buffer_get_text (
+      GTK_TEXT_BUFFER (
+        self->other_info_buffer),
+      &start_iter, &end_iter, false);
 
   /* %23 is hash, %0A is new line */
   char ver_with_caps[2000];
@@ -61,84 +75,260 @@ bug_report_dialog_new (
     ver_with_caps);
   char * report_template =
     g_strdup_printf (
-      "# Steps to reproduce\n"
-      "> Write a list of steps to reproduce the "
-      "bug\n\n"
-      "# What happens?\n"
-      "> Please tell us what happened\n\n"
-      "# What is expected?\n"
-      "> What is expected to happen?\n\n"
+      "# What did you do?\n"
+      "%s\n\n"
       "# Version\n```\n%s```\n\n"
       "# Other info\n"
-      "> Context, distro, etc.\n\n"
+      "%s\n\n"
       "# Backtrace\n```\n%s```\n\n"
       "# Action stack\n```\n%s```\n\n"
       "# Log\n```\n%s```",
-      ver_with_caps, backtrace, undo_stack, log);
-  char * report_template_escaped =
-    g_markup_escape_text (report_template, -1);
-  char * report_template_escaped_for_uri =
-    g_uri_escape_string (
-      report_template, NULL, FALSE);
+      steps_to_reproduce,
+      ver_with_caps, other_info,
+      self->backtrace,
+      self->undo_stack, self->log);
+
+  char * ret;
+  if (for_uri)
+    ret =
+      g_uri_escape_string (
+        report_template, NULL, FALSE);
+  else
+    ret =
+      g_markup_escape_text (report_template, -1);
+
+  g_free (steps_to_reproduce);
+  g_free (other_info);
+  g_free (report_template);
+
+  return ret;
+}
+
+static void
+on_button_close_clicked (
+  GtkButton *             btn,
+  BugReportDialogWidget * self)
+{
+  gtk_dialog_response (
+    GTK_DIALOG (self), GTK_RESPONSE_CLOSE);
+}
+
+static void
+on_button_send_srht_clicked (
+  GtkButton *             btn,
+  BugReportDialogWidget * self)
+{
+  /* create new dialog */
+  GtkDialogFlags flags =
+    GTK_DIALOG_MODAL
+    | GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget * dialog =
+    gtk_message_dialog_new_with_markup (
+      GTK_WINDOW (self), flags,
+      GTK_MESSAGE_ERROR,
+      GTK_BUTTONS_CLOSE,
+      NULL);
+
+  gtk_window_set_title (
+    GTK_WINDOW (dialog), _("Send via Sourcehut"));
+
+  /* set top text */
   char * atag =
     g_strdup_printf (
       "<a href=\"%s\">",
       NEW_ISSUE_URL);
-  char * atag_email =
-    g_strdup_printf (
-      "<a href=\"mailto:%s?body=%s\">",
-      NEW_ISSUE_EMAIL,
-      report_template_escaped_for_uri);
   char * markup =
     g_strdup_printf (
-      _("%sPlease help us fix "
-        "this by "
-        "%ssubmitting a bug report%s "
-        "using the template below or by "
-        "%ssending an email%s."),
-      msg_prefix, atag, "</a>",
-      atag_email, "</a>");
-
+      _("Please copy the template below in a "
+        "%snew issue%s."),
+      atag, "</a>");
   gtk_message_dialog_set_markup (
-    GTK_MESSAGE_DIALOG (dialog),
-    markup);
+    GTK_MESSAGE_DIALOG (dialog), markup);
+  g_free (atag);
+  g_free (markup);
+
+  /* set bottom text - template */
+  char * report_template =
+    get_report_template (self, false);
   gtk_message_dialog_format_secondary_markup (
     GTK_MESSAGE_DIALOG (dialog),
-    "%s", report_template_escaped);
+    "%s", report_template);
+  g_free (report_template);
+
+  /* make label selectable */
   GtkLabel * label =
     z_gtk_message_dialog_get_label (
       GTK_MESSAGE_DIALOG (dialog), 1);
-  gtk_label_set_selectable (
-    label, 1);
+  gtk_label_set_selectable (label, true);
 
-  /* wrap the backtrace in a scrolled window */
-  GtkBox * box =
-    GTK_BOX (
-      gtk_message_dialog_get_message_area (
-        GTK_MESSAGE_DIALOG (dialog)));
-  GtkWidget * secondary_area =
-    z_gtk_container_get_nth_child (
-      GTK_CONTAINER (box), 1);
-  gtk_container_remove (
-    GTK_CONTAINER (box), secondary_area);
-  GtkWidget * scrolled_window =
-    gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_min_content_height (
-    GTK_SCROLLED_WINDOW (scrolled_window), 360);
-  gtk_container_add (
-    GTK_CONTAINER (scrolled_window),
-    secondary_area);
-  gtk_container_add (
-    GTK_CONTAINER (box), scrolled_window);
-  gtk_widget_show_all (GTK_WIDGET (box));
+  /* wrap bottom text in a scrolled window */
+  z_gtk_message_dialog_wrap_message_area_in_scroll (
+    GTK_MESSAGE_DIALOG (dialog), 580, 360);
 
+  /* run the dialog */
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (
+    GTK_WIDGET (dialog));
+}
+
+static void
+on_button_send_email_clicked (
+  GtkButton *             btn,
+  BugReportDialogWidget * self)
+{
+  char * report_template =
+    get_report_template (self, true);
+  char * email_url =
+    g_strdup_printf (
+      "mailto:%s?body=%s",
+      NEW_ISSUE_EMAIL, report_template);
   g_free (report_template);
-  g_free (atag);
-  g_free (markup);
-  g_free (report_template_escaped);
-  g_free (report_template_escaped_for_uri);
-  g_free (log);
-  g_free (undo_stack);
 
-  return dialog;
+  GError * err = NULL;
+  bool success =
+    gtk_show_uri_on_window (
+      GTK_WINDOW (self), email_url,
+      GDK_CURRENT_TIME, &err);
+  g_free (email_url);
+  if (!success)
+    {
+      g_warning (
+        "failed to show URI on window: %s",
+        err->message);
+    }
+}
+
+static void
+on_button_send_automatically_clicked (
+  GtkButton *             btn,
+  BugReportDialogWidget * self)
+{
+  /* TODO */
+}
+
+static void
+setup_text_view (
+  GtkSourceView * text_view)
+{
+  /* set text language */
+  GtkSourceLanguageManager * manager =
+    z_gtk_source_language_manager_get ();
+  GtkSourceLanguage * lang =
+    gtk_source_language_manager_get_language (
+      manager, "markdown");
+  GtkSourceBuffer * buffer =
+    GTK_SOURCE_BUFFER (
+      gtk_text_view_get_buffer (
+        GTK_TEXT_VIEW (text_view)));
+  gtk_source_buffer_set_language (buffer, lang);
+
+/*#if 0*/
+  /* set style */
+  GtkSourceStyleSchemeManager * style_mgr =
+    gtk_source_style_scheme_manager_get_default ();
+  gtk_source_style_scheme_manager_prepend_search_path (
+    style_mgr, CONFIGURE_SOURCEVIEW_STYLES_DIR);
+  gtk_source_style_scheme_manager_force_rescan (
+    style_mgr);
+  GtkSourceStyleScheme * scheme =
+    gtk_source_style_scheme_manager_get_scheme (
+      style_mgr, "monokai-extended-zrythm");
+  gtk_source_buffer_set_style_scheme (
+    buffer, scheme);
+/*#endif*/
+}
+
+/**
+ * Creates and displays the about dialog.
+ */
+BugReportDialogWidget *
+bug_report_dialog_new (
+  GtkWindow *  parent,
+  const char * msg_prefix,
+  const char * backtrace)
+{
+  BugReportDialogWidget * self =
+    g_object_new (
+      BUG_REPORT_DIALOG_WIDGET_TYPE, NULL);
+
+  char * markup =
+    g_strdup_printf (
+      _("%sPlease help us fix this by "
+        "submitting a bug report."),
+      msg_prefix);
+  gtk_label_set_markup (
+    self->top_lbl, markup);
+
+  self->log =
+    log_get_last_n_lines (LOG, 60);
+  self->log_long =
+    log_get_last_n_lines (LOG, 200);
+  self->undo_stack =
+    PROJECT && UNDO_MANAGER ?
+      undo_stack_get_as_string (
+        UNDO_MANAGER->undo_stack, 12) :
+      g_strdup ("<undo stack uninitialized>");
+  self->undo_stack_long =
+    PROJECT && UNDO_MANAGER ?
+      undo_stack_get_as_string (
+        UNDO_MANAGER->undo_stack, 64) :
+      g_strdup ("<undo stack uninitialized>");
+  self->backtrace = g_strdup (backtrace);
+
+  setup_text_view (
+    self->steps_to_reproduce_text_view);
+  setup_text_view (
+    self->other_info_text_view);
+
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (
+      self->steps_to_reproduce_text_view),
+    _("Enter a list of steps to reproduce the "
+    "error. Markdown is supported."));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (
+      self->other_info_text_view),
+    _("Enter more context, what distro you use, "
+    "etc. Markdown is supported."));
+
+  return self;
+}
+
+static void
+bug_report_dialog_widget_class_init (
+  BugReportDialogWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "bug_report_dialog.ui");
+
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, BugReportDialogWidget, x)
+
+  BIND_CHILD (top_lbl);
+  BIND_CHILD (steps_to_reproduce_text_view);
+  BIND_CHILD (other_info_text_view);
+  BIND_CHILD (steps_to_reproduce_buffer);
+  BIND_CHILD (other_info_buffer);
+
+#undef BIND_CHILD
+
+#define BIND_CALLBACK(x) \
+  gtk_widget_class_bind_template_callback ( \
+    klass, x);
+
+  BIND_CALLBACK (on_button_close_clicked);
+  BIND_CALLBACK (on_button_send_srht_clicked);
+  BIND_CALLBACK (on_button_send_email_clicked);
+  BIND_CALLBACK (on_button_send_automatically_clicked);
+
+#undef BIND_CALLBACK
+}
+
+static void
+bug_report_dialog_widget_init (
+  BugReportDialogWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
 }

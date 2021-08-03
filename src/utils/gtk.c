@@ -1550,3 +1550,37 @@ z_gtk_notebook_make_detachable (
 
   detach_pages_programmatically (notebook, data);
 }
+
+/**
+ * Wraps the message area in a scrolled window.
+ */
+void
+z_gtk_message_dialog_wrap_message_area_in_scroll (
+  GtkMessageDialog * dialog,
+  int                min_width,
+  int                min_height)
+{
+  GtkBox * box =
+    GTK_BOX (
+      gtk_message_dialog_get_message_area (
+        GTK_MESSAGE_DIALOG (dialog)));
+  GtkWidget * secondary_area =
+    z_gtk_container_get_nth_child (
+      GTK_CONTAINER (box), 1);
+  gtk_container_remove (
+    GTK_CONTAINER (box), secondary_area);
+  GtkWidget * scrolled_window =
+    gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_min_content_width (
+    GTK_SCROLLED_WINDOW (scrolled_window),
+    min_width);
+  gtk_scrolled_window_set_min_content_height (
+    GTK_SCROLLED_WINDOW (scrolled_window),
+    min_height);
+  gtk_container_add (
+    GTK_CONTAINER (scrolled_window),
+    secondary_area);
+  gtk_container_add (
+    GTK_CONTAINER (box), scrolled_window);
+  gtk_widget_show_all (GTK_WIDGET (box));
+}

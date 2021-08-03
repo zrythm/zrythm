@@ -604,6 +604,15 @@ z_gtk_notebook_make_detachable (
   GtkWindow *   parent_window);
 
 /**
+ * Wraps the message area in a scrolled window.
+ */
+void
+z_gtk_message_dialog_wrap_message_area_in_scroll (
+  GtkMessageDialog * dialog,
+  int                min_width,
+  int                min_height);
+
+/**
  * @}
  */
 #endif

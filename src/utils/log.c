@@ -723,13 +723,14 @@ log_idle_cb (
                 "continue to run but "
                 "behavior will be undefined. "),
                 PROGRAM_NAME);
-              GtkWidget * dialog =
+              BugReportDialogWidget * dialog =
                 bug_report_dialog_new (
                   MAIN_WINDOW ?
                     GTK_WINDOW (MAIN_WINDOW) : NULL,
                   msg, ev->backtrace);
               gtk_dialog_run (GTK_DIALOG (dialog));
-              gtk_widget_destroy (dialog);
+              gtk_widget_destroy (
+                GTK_WIDGET (dialog));
             }
 
           /* write the backtrace to the log after
