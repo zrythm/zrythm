@@ -11,10 +11,18 @@ Mascot
 Concept
 ~~~~~~~
 
-`[Mascot concept by FanaticMoose] <https://mastodon.social/@zrythm/106672099997205356>`_
+.. figure:: /_static/img/zchan-concept.png
+   :align: center
+
+   Concept by `FanaticMoose`_ [`CC-BY-SA`_]
 
 Sketches
 ~~~~~~~~
+
+.. figure:: /_static/img/zchan-sketch.png
+   :align: center
+
+   Sketch by `FanaticMoose`_ [`CC-BY-SA`_]
 
 `[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_
 
@@ -27,4 +35,4 @@ Till Parisot has compiled a playlist of Zrythm
 tutorials in French on `PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/videos>`_.
 
 .. _FanaticMoose: https://mastodon.online/@FanaticMoose
-.. _CCBYSA: https://creativecommons.org/licenses/by-sa/4.0/
+.. _CC-BY-SA: https://creativecommons.org/licenses/by-sa/4.0/

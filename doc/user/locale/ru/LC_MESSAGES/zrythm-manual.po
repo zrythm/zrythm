@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-31 12:40+0100\n"
+"POT-Creation-Date: 2021-08-04 23:01+0100\n"
 "PO-Revision-Date: 2021-07-19 10:33+0000\n"
 "Last-Translator: Anna Malinovskaia <tacitcoast@gmail.com>\n"
 "Language: ru\n"
@@ -318,7 +318,7 @@ msgstr "Решение проблем (Troubleshooting)"
 
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:35
-#: ../../configuration/shortcuts.rst:43
+#: ../../configuration/shortcuts.rst:46
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
 #: ../../editing/clip-editors/piano-roll.rst:82
@@ -1154,7 +1154,7 @@ msgstr ""
 msgid "An example is given below."
 msgstr ""
 
-#: ../../configuration/shortcuts.rst:43
+#: ../../configuration/shortcuts.rst:46
 msgid "Make this more user friendly & document all actions."
 msgstr ""
 
@@ -8911,29 +8911,31 @@ msgstr ""
 msgid "Concept"
 msgstr "Запекание (Bounce)"
 
-#: ../../user-media/intro.rst:14
-msgid ""
-"`[Mascot concept by FanaticMoose] "
-"<https://mastodon.social/@zrythm/106672099997205356>`_"
+#: ../../user-media/intro.rst:17
+msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
 msgstr ""
 
-#: ../../user-media/intro.rst:17
+#: ../../user-media/intro.rst:20
 msgid "Sketches"
 msgstr ""
 
-#: ../../user-media/intro.rst:19
+#: ../../user-media/intro.rst:25
+msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA`_]"
+msgstr ""
+
+#: ../../user-media/intro.rst:27
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
 msgstr ""
 
-#: ../../user-media/intro.rst:22
+#: ../../user-media/intro.rst:30
 msgid "Video"
 msgstr "Видео"
 
-#: ../../user-media/intro.rst:25
+#: ../../user-media/intro.rst:33
 msgid "French Tutorials"
 msgstr ""
 
-#: ../../user-media/intro.rst:26
+#: ../../user-media/intro.rst:34
 msgid ""
 "Till Parisot has compiled a playlist of Zrythm tutorials in French on "
 "`PeerTube TeDomum <https://video.tedomum.net/video-"
@@ -9558,6 +9560,11 @@ msgid ""
 msgstr ""
 "Информация о текущем выбранном сервере и параметрах отображается в нижнем"
 " левом углу."
+
+#~ msgid ""
+#~ "`[Mascot concept by FanaticMoose] "
+#~ "<https://mastodon.social/@zrythm/106672099997205356>`_"
+#~ msgstr ""
 
 #~ msgid "Shortcut Keys"
 #~ msgstr "Горячие клавиши (Shortcut Keys)"
