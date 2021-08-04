@@ -23,6 +23,7 @@ packages:
   - libsndfile
   - sord
   - guile2
+  - json-glib
   - alsa-lib
   - sratom
   - suil
