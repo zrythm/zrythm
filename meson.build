@@ -432,6 +432,12 @@ cdata.set_quoted (
 cdata.set_quoted (
   'NEW_ISSUE_EMAIL',
   '~alextee/zrythm-bug@todo.sr.ht')
+cdata.set_quoted (
+  'PRIVACY_POLICY_URL',
+  'https://www.zrythm.org/en/privacy.html')
+cdata.set_quoted (
+  'BUG_REPORT_API_ENDPOINT',
+  'https://accounts.zrythm.org/api/v1/error-reports/new')
 if (get_option ('user_manual'))
   cdata.set_quoted ('MANUAL_PATH', docdir)
 endif
@@ -1212,6 +1218,7 @@ zrythm_deps = [
   xxhash_dep,
   vamp_deps,
   dependency ('libcurl'),
+  dependency ('json-glib-1.0'),
 
   libm,
 ]

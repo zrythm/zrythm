@@ -158,7 +158,7 @@ segv_handler (int sig)
     str, _("%s has crashed. "), PROGRAM_NAME);
   BugReportDialogWidget * dialog =
     bug_report_dialog_new (
-      GTK_WINDOW (MAIN_WINDOW), str, bt);
+      GTK_WINDOW (MAIN_WINDOW), str, bt, true);
 
   /* run the dialog */
   gtk_dialog_run (GTK_DIALOG (dialog));

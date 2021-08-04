@@ -1584,3 +1584,99 @@ z_gtk_message_dialog_wrap_message_area_in_scroll (
     GTK_CONTAINER (box), scrolled_window);
   gtk_widget_show_all (GTK_WIDGET (box));
 }
+
+/**
+ * Returns the full text contained in the text
+ * buffer.
+ *
+ * Must be free'd using g_free().
+ */
+char *
+z_gtk_text_buffer_get_full_text (
+  GtkTextBuffer * buffer)
+{
+  GtkTextIter start_iter, end_iter;
+  gtk_text_buffer_get_start_iter (
+    buffer, &start_iter);
+  gtk_text_buffer_get_end_iter (
+    buffer, &end_iter);
+  return
+    gtk_text_buffer_get_text (
+      GTK_TEXT_BUFFER (buffer),
+      &start_iter, &end_iter, false);
+}
+
+/**
+ * Generates a screenshot image for the given
+ * widget.
+ *
+ * See gdk_pixbuf_savev() for the parameters.
+ *
+ * @param[out] ret_dir Placeholder for directory to
+ *   be deleted after using the screenshot.
+ * @param[out] ret_path Placeholder for absolute path
+ *   to the screenshot.
+ */
+void
+z_gtk_generate_screenshot_image (
+  GtkWidget *  widget,
+  const char * type,
+  char **      option_keys,
+  char **      option_values,
+  char **      ret_dir,
+  char **      ret_path)
+{
+  g_return_if_fail (
+    *ret_dir == NULL && *ret_path == NULL);
+
+  GdkWindow * w = gtk_widget_get_window (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  GdkPixbuf * pixbuf =
+    gdk_pixbuf_get_from_window (
+      w, 0, 0, width, height);
+
+  if (!pixbuf)
+    {
+      g_warning ("failed to generate pixbuf");
+      return;
+    }
+
+  GError * err = NULL;
+  *ret_dir =
+    g_dir_make_tmp ("zrythm-widget-XXXXXX", &err);
+  if (*ret_dir == NULL)
+    {
+      g_warning (
+        "failed creating temporary dir: %s",
+        err->message);
+      return;
+    }
+  char * abs_path =
+    g_build_filename (
+      *ret_dir, "screenshot.jpeg", NULL);
+
+  err = NULL;
+  bool ret =
+    gdk_pixbuf_savev (
+      pixbuf, abs_path, type,
+      option_keys, option_values, &err);
+  if (ret)
+    {
+      *ret_path = abs_path;
+      return;
+    }
+  else
+    {
+      g_warning (
+        "pixbuf save failed: %s",
+        err->message);
+      return;
+    }
+
+  g_message (
+    "saved widget screenshot to %s", *ret_path);
+}

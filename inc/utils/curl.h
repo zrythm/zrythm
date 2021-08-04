@@ -28,6 +28,8 @@
 
 #include <stdbool.h>
 
+#include <gtk/gtk.h>
+
 /**
  * @addtogroup utils
  *
@@ -56,6 +58,24 @@ z_curl_get_page_contents (
 char *
 z_curl_get_page_contents_default (
   const char * url);
+
+/**
+ * Posts the given JSON to the URL without any
+ * authentication.
+ *
+ * @param timeout Timeout, in seconds.
+ * @param filepath Optional file to send as
+ *   multi-part.
+ *
+ * @return Non-zero if error.
+ */
+int
+z_curl_post_json_no_auth (
+  const char * url,
+  const char * data,
+  const char * filepath,
+  int          timeout,
+  GError **    error);
 
 /**
  * @}

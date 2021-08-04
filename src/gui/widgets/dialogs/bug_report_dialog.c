@@ -22,13 +22,23 @@
 #include "actions/undo_manager.h"
 #include "actions/undo_stack.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
+#include "gui/widgets/dialogs/generic_progress_dialog.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/curl.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/io.h"
 #include "utils/log.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include <json-glib/json-glib.h>
 
 G_DEFINE_TYPE (
   BugReportDialogWidget,
@@ -40,34 +50,15 @@ get_report_template (
   BugReportDialogWidget * self,
   bool                    for_uri)
 {
-  GtkTextIter start_iter, end_iter;
-  gtk_text_buffer_get_start_iter (
-    GTK_TEXT_BUFFER (
-      self->steps_to_reproduce_buffer),
-    &start_iter);
-  gtk_text_buffer_get_end_iter (
-    GTK_TEXT_BUFFER (
-      self->steps_to_reproduce_buffer),
-    &end_iter);
   char * steps_to_reproduce =
-    gtk_text_buffer_get_text (
+    z_gtk_text_buffer_get_full_text (
       GTK_TEXT_BUFFER (
-        self->steps_to_reproduce_buffer),
-      &start_iter, &end_iter, false);
+        self->steps_to_reproduce_buffer));
 
-  gtk_text_buffer_get_start_iter (
-    GTK_TEXT_BUFFER (
-      self->other_info_buffer),
-    &start_iter);
-  gtk_text_buffer_get_end_iter (
-    GTK_TEXT_BUFFER (
-      self->other_info_buffer),
-    &end_iter);
   char * other_info =
-    gtk_text_buffer_get_text (
+    z_gtk_text_buffer_get_full_text (
       GTK_TEXT_BUFFER (
-        self->other_info_buffer),
-      &start_iter, &end_iter, false);
+        self->other_info_buffer));
 
   /* %23 is hash, %0A is new line */
   char ver_with_caps[2000];
@@ -198,12 +189,303 @@ on_button_send_email_clicked (
     }
 }
 
+static char *
+get_json_string (
+  BugReportDialogWidget * self)
+{
+  g_debug ("%s: generating json...", __func__);
+
+  JsonBuilder *builder = json_builder_new ();
+
+  json_builder_begin_object (builder);
+
+  char * steps_to_reproduce =
+    z_gtk_text_buffer_get_full_text (
+      GTK_TEXT_BUFFER (
+        self->steps_to_reproduce_buffer));
+  json_builder_set_member_name (
+    builder, "steps_to_reproduce");
+  json_builder_add_string_value (
+    builder, steps_to_reproduce);
+  g_free (steps_to_reproduce);
+
+  char * other_info =
+    z_gtk_text_buffer_get_full_text (
+      GTK_TEXT_BUFFER (
+        self->other_info_buffer));
+  json_builder_set_member_name (
+    builder, "extra_info");
+  json_builder_add_string_value (
+    builder, other_info);
+  g_free (other_info);
+
+  json_builder_set_member_name (
+    builder, "action_stack");
+  json_builder_add_string_value (
+    builder, self->undo_stack_long);
+
+  json_builder_set_member_name (
+    builder, "backtrace");
+  json_builder_add_string_value (
+    builder, self->backtrace);
+
+  json_builder_set_member_name (
+    builder, "log");
+  json_builder_add_string_value (
+    builder, self->log_long);
+
+  json_builder_set_member_name (
+    builder, "fatal");
+  json_builder_add_int_value (
+    builder, self->fatal);
+
+  char ver_with_caps[2000];
+  zrythm_get_version_with_capabilities (
+    ver_with_caps);
+  json_builder_set_member_name (
+    builder, "version");
+  json_builder_add_string_value (
+    builder, ver_with_caps);
+
+  json_builder_end_object (builder);
+
+  JsonGenerator *gen = json_generator_new ();
+  JsonNode * root = json_builder_get_root (builder);
+  json_generator_set_root (gen, root);
+  gchar *str = json_generator_to_data (gen, NULL);
+
+  json_node_free (root);
+  g_object_unref (gen);
+  g_object_unref (builder);
+
+  return str;
+}
+
+typedef struct AutomaticReportData
+{
+  const char * json;
+  const char * screenshot_path;
+  GenericProgressInfo progress_nfo;
+} AutomaticReportData;
+
+static void *
+send_data (
+  AutomaticReportData * data)
+{
+  GError * err = NULL;
+  int ret =
+    z_curl_post_json_no_auth (
+      BUG_REPORT_API_ENDPOINT, data->json,
+      data->screenshot_path, 7, &err);
+  if (ret != 0)
+    {
+      data->progress_nfo.has_error = true;
+      sprintf (
+        data->progress_nfo.error_str,
+        _("error: %s"), err->message);
+    }
+
+  data->progress_nfo.progress = 1.0;
+  strcpy (
+    data->progress_nfo.label_done_str, _("Done"));
+
+  return NULL;
+}
+
 static void
 on_button_send_automatically_clicked (
   GtkButton *             btn,
   BugReportDialogWidget * self)
 {
-  /* TODO */
+  /* create new dialog */
+  GtkDialogFlags flags =
+    GTK_DIALOG_MODAL
+    | GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget * dialog =
+    gtk_dialog_new_with_buttons (
+      _("Send Automatically"),
+      GTK_WINDOW (self), flags,
+      _("_OK"),
+      GTK_RESPONSE_OK,
+      _("_Cancel"),
+      GTK_RESPONSE_CANCEL,
+      NULL);
+
+  GtkWidget * content_area =
+    gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog));
+  GtkGrid * grid = GTK_GRID (gtk_grid_new ());
+  z_gtk_widget_set_margin (GTK_WIDGET (grid), 4);
+  gtk_grid_set_row_spacing (grid, 2);
+  gtk_container_add (
+    GTK_CONTAINER (content_area),
+    GTK_WIDGET (grid));
+
+  /* set top text */
+  char * atag =
+    g_strdup_printf (
+      "<a href=\"%s\">",
+      PRIVACY_POLICY_URL);
+  char * markup =
+    g_strdup_printf (
+      _("Click OK to submit. You can verify "
+      "what will be sent below. "
+      "By clicking OK, you agree to our "
+      "%sPrivacy Policy%s."),
+      atag, "</a>");
+  GtkWidget * top_label = gtk_label_new ("");
+  gtk_label_set_markup (
+    GTK_LABEL (top_label), markup);
+  gtk_grid_attach (
+    grid, top_label, 0, 0, 1, 1);
+  g_free (atag);
+  g_free (markup);
+
+  /* set json */
+  GtkWidget * json_heading = gtk_label_new ("");
+  gtk_label_set_markup (
+    GTK_LABEL (json_heading),
+    _("<b>Data</b>"));
+  gtk_grid_attach (
+    grid, json_heading, 0, 1, 1, 1);
+  char * json_str = get_json_string (self);
+  GtkWidget * json_label = gtk_label_new (json_str);
+  gtk_label_set_selectable (
+    GTK_LABEL (json_label), true);
+  gtk_label_set_line_wrap (
+    GTK_LABEL (json_label), true);
+  gtk_label_set_line_wrap_mode (
+    GTK_LABEL (json_label), PANGO_WRAP_WORD_CHAR);
+  GtkWidget * scrolled_window =
+    gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (
+    GTK_SCROLLED_WINDOW (scrolled_window),
+    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_min_content_width (
+    GTK_SCROLLED_WINDOW (scrolled_window),
+    580);
+  gtk_scrolled_window_set_min_content_height (
+    GTK_SCROLLED_WINDOW (scrolled_window),
+    360);
+  gtk_container_add (
+    GTK_CONTAINER (scrolled_window), json_label);
+  gtk_grid_attach (
+    grid, scrolled_window, 0, 2, 1, 1);
+
+  GtkWidget * screenshot_heading =
+    gtk_label_new ("");
+  gtk_label_set_markup (
+    GTK_LABEL (screenshot_heading),
+    _("<b>Screenshot</b>"));
+  gtk_grid_attach (
+    grid, screenshot_heading, 0, 3, 1, 1);
+
+  /* screenshot */
+  char * screenshot_tmpdir = NULL;
+  char * screenshot_path = NULL;
+  if (MAIN_WINDOW)
+    {
+      const char * option_keys[] = {
+        "quality", NULL, };
+      const char * option_vals[] = {
+        "30", NULL, };
+      z_gtk_generate_screenshot_image (
+        GTK_WIDGET (MAIN_WINDOW), "jpeg",
+        (char **) option_keys, (char **) option_vals,
+        &screenshot_tmpdir,
+        &screenshot_path);
+    }
+  GtkWidget * img = gtk_image_new ();
+  if (screenshot_path)
+    {
+      GError * err = NULL;
+      GdkPixbuf * pixbuf =
+        gdk_pixbuf_new_from_file_at_scale (
+          screenshot_path, 580, 580, true, &err);
+      if (pixbuf)
+        {
+          gtk_image_set_from_pixbuf (
+            GTK_IMAGE (img), pixbuf);
+          g_object_unref (pixbuf);
+        }
+      else
+        {
+          g_warning (
+            "could not get pixbuf from %s: %s",
+            screenshot_path, err->message);
+        }
+    }
+  gtk_grid_attach (
+    grid, img, 0, 4, 1, 1);
+
+  /* run the dialog */
+  gtk_widget_show_all (content_area);
+  int ret = gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (
+    GTK_WIDGET (dialog));
+
+  if (ret != GTK_RESPONSE_OK)
+    return;
+
+  char message[6000];
+  strcpy (message, _("Sending"));
+
+  AutomaticReportData data;
+  memset (&data, 0, sizeof (AutomaticReportData));
+  data.json = json_str;
+  data.screenshot_path = screenshot_path;
+  data.progress_nfo.progress = 0;
+  strcpy (
+    data.progress_nfo.label_str, _("Sending data..."));
+  strcpy (
+    data.progress_nfo.label_done_str, _("Done"));
+  strcpy (data.progress_nfo.error_str, _("Failed"));
+  GenericProgressDialogWidget * progress_dialog =
+    generic_progress_dialog_widget_new ();
+  generic_progress_dialog_widget_setup (
+    progress_dialog, _("Sending..."),
+    &data.progress_nfo,
+    true, false);
+
+  /* start sending in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) send_data,
+      &data);
+
+  /* run dialog */
+  gtk_window_set_transient_for (
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (self));
+  gtk_dialog_run (GTK_DIALOG (progress_dialog));
+  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+
+  g_thread_join (thread);
+
+  if (!data.progress_nfo.has_error)
+    {
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->button_send_automatically),
+        false);
+
+      ui_show_message_printf (
+        self, GTK_MESSAGE_INFO, "%s",
+        _("Sent successfully"));
+    }
+
+  if (screenshot_path)
+    {
+      io_remove (screenshot_path);
+      g_free_and_null (screenshot_path);
+    }
+  if (screenshot_tmpdir)
+    {
+      io_rmdir (screenshot_tmpdir, F_NO_FORCE);
+      g_free_and_null (screenshot_tmpdir);
+    }
+
+  g_free (json_str);
 }
 
 static void
@@ -222,7 +504,6 @@ setup_text_view (
         GTK_TEXT_VIEW (text_view)));
   gtk_source_buffer_set_language (buffer, lang);
 
-/*#if 0*/
   /* set style */
   GtkSourceStyleSchemeManager * style_mgr =
     gtk_source_style_scheme_manager_get_default ();
@@ -235,7 +516,6 @@ setup_text_view (
       style_mgr, "monokai-extended-zrythm");
   gtk_source_buffer_set_style_scheme (
     buffer, scheme);
-/*#endif*/
 }
 
 /**
@@ -245,7 +525,8 @@ BugReportDialogWidget *
 bug_report_dialog_new (
   GtkWindow *  parent,
   const char * msg_prefix,
-  const char * backtrace)
+  const char * backtrace,
+  bool         fatal)
 {
   BugReportDialogWidget * self =
     g_object_new (
@@ -262,7 +543,7 @@ bug_report_dialog_new (
   self->log =
     log_get_last_n_lines (LOG, 60);
   self->log_long =
-    log_get_last_n_lines (LOG, 200);
+    log_get_last_n_lines (LOG, 160);
   self->undo_stack =
     PROJECT && UNDO_MANAGER ?
       undo_stack_get_as_string (
@@ -274,6 +555,7 @@ bug_report_dialog_new (
         UNDO_MANAGER->undo_stack, 64) :
       g_strdup ("<undo stack uninitialized>");
   self->backtrace = g_strdup (backtrace);
+  self->fatal = fatal;
 
   setup_text_view (
     self->steps_to_reproduce_text_view);
@@ -307,6 +589,7 @@ bug_report_dialog_widget_class_init (
     klass, BugReportDialogWidget, x)
 
   BIND_CHILD (top_lbl);
+  BIND_CHILD (button_send_automatically);
   BIND_CHILD (steps_to_reproduce_text_view);
   BIND_CHILD (other_info_text_view);
   BIND_CHILD (steps_to_reproduce_buffer);

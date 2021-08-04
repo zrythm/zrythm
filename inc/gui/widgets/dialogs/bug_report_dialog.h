@@ -53,6 +53,8 @@ typedef struct _BugReportDialogWidget
 
   GtkLabel *      top_lbl;
 
+  GtkButton *     button_send_automatically;
+
   GtkSourceView * steps_to_reproduce_text_view;
   GtkSourceView * other_info_text_view;
   GtkSourceBuffer * steps_to_reproduce_buffer;
@@ -63,6 +65,7 @@ typedef struct _BugReportDialogWidget
   char *          undo_stack;
   char *          undo_stack_long;
   char *          backtrace;
+  bool            fatal;
 
 } BugReportDialogWidget;
 
@@ -73,7 +76,8 @@ BugReportDialogWidget *
 bug_report_dialog_new (
   GtkWindow *  parent,
   const char * msg_prefix,
-  const char * backtrace);
+  const char * backtrace,
+  bool         fatal);
 
 /**
  * @}

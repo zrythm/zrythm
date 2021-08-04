@@ -116,8 +116,11 @@ tick_cb (
 
       if (info->has_error)
         {
+          GtkWindow * transient_parent =
+            gtk_window_get_transient_for (
+              GTK_WINDOW (self));
           ui_show_error_message (
-            MAIN_WINDOW, info->error_str);
+            transient_parent, info->error_str);
         }
       return G_SOURCE_REMOVE;
     }

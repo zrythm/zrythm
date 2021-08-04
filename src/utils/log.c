@@ -608,6 +608,30 @@ log_writer_standard_streams (
   return G_LOG_WRITER_HANDLED;
 }
 
+static bool
+need_backtrace (
+  const LogEvent * const ev)
+{
+  return
+    (ev->log_level == G_LOG_LEVEL_CRITICAL
+     || ev->log_level == G_LOG_LEVEL_WARNING)
+    &&
+    !string_contains_substr (
+      ev->message,
+      "assertion 'size >= 0' failed in "
+      "GtkScrollbar")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "assertion 'size >= 0' failed in "
+      "GtkNotebook")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "gtk_window_set_titlebar() called on a "
+      "realized window");
+}
+
 /**
  * Write a log message to the log file and to each
  * buffer.
@@ -699,18 +723,11 @@ log_idle_cb (
           gint64 time_now =
             g_get_monotonic_time ();
           if (ev->log_level ==
-                G_LOG_LEVEL_CRITICAL &&
-              ZRYTHM_HAVE_UI &&
+                G_LOG_LEVEL_CRITICAL
+              && ZRYTHM_HAVE_UI
+              &&
               (time_now - self->last_popup_time) >
-                8000000 &&
-              !string_contains_substr (
-                ev->message,
-                "assertion 'size >= 0' failed in "
-                "GtkScrollbar") &&
-              !string_contains_substr (
-                ev->message,
-                "assertion 'size >= 0' failed in "
-                "GtkNotebook")
+                8000000
               )
             {
               self->last_popup_time = time_now;
@@ -727,7 +744,8 @@ log_idle_cb (
                 bug_report_dialog_new (
                   MAIN_WINDOW ?
                     GTK_WINDOW (MAIN_WINDOW) : NULL,
-                  msg, ev->backtrace);
+                  msg, ev->backtrace,
+                  false);
               gtk_dialog_run (GTK_DIALOG (dialog));
               gtk_widget_destroy (
                 GTK_WIDGET (dialog));
@@ -894,8 +912,7 @@ log_writer (
       ev->log_level = log_level;
       ev->message = str;
 
-      if (log_level == G_LOG_LEVEL_CRITICAL ||
-          log_level == G_LOG_LEVEL_WARNING)
+      if (need_backtrace (ev))
         {
           ev->backtrace =
             backtrace_get_with_lines (

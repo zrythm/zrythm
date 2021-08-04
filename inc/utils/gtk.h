@@ -613,6 +613,36 @@ z_gtk_message_dialog_wrap_message_area_in_scroll (
   int                min_height);
 
 /**
+ * Returns the full text contained in the text
+ * buffer.
+ *
+ * Must be free'd using g_free().
+ */
+char *
+z_gtk_text_buffer_get_full_text (
+  GtkTextBuffer * buffer);
+
+/**
+ * Generates a screenshot image for the given
+ * widget.
+ *
+ * See gdk_pixbuf_savev() for the parameters.
+ *
+ * @param[out] ret_dir Placeholder for directory to
+ *   be deleted after using the screenshot.
+ * @param[out] ret_path Placeholder for absolute path
+ *   to the screenshot.
+ */
+void
+z_gtk_generate_screenshot_image (
+  GtkWidget *  widget,
+  const char * type,
+  char **      option_keys,
+  char **      option_values,
+  char **      ret_dir,
+  char **      ret_path);
+
+/**
  * @}
  */
 #endif
