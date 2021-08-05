@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -349,7 +349,7 @@ activate_recording_mode (
       transport_set_recording_mode (
         TRANSPORT, RECORDING_MODE_OVERWRITE_EVENTS);
     }
-  if (string_is_equal (variant, "merge"))
+  else if (string_is_equal (variant, "merge"))
     {
       transport_set_recording_mode (
         TRANSPORT, RECORDING_MODE_MERGE_EVENTS);
