@@ -382,6 +382,10 @@ Args:
                  "s" "999"
                  "Last version that was notified of a new release"
                  "The last version that received a 'new version has been released' notification.")
+               (make-schema-key
+                 "first-check-for-updates" "b" "true"
+                 "First check for updates"
+                 "Whether this is the first time attempting to check for updates.")
              ))) ;; general
 
          ;; Monitor schema
@@ -1052,7 +1056,18 @@ Args:
                      "zrythm-dir" "s"
                      "" "Zrythm path"
                      "The directory used to save user data in.")
-                 )) ;; general/paths
+                 )) ;; general/updates
+               (make-schema
+                 "updates"
+                 (list
+                   (make-schema-key
+                     "info" "ai" "[0,2]"
+                     "General" "Updates")
+                   (make-schema-key
+                     "check-for-updates" "b" "false"
+                     "Check for updates"
+                     "Whether to check for updates.")
+                 )) ;; general/updates
              ))) ;; general
 
          (preferences-category-print

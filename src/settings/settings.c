@@ -103,6 +103,7 @@ settings_new (void)
   NEW_PREFERENCES_SETTINGS (editing, undo);
   NEW_PREFERENCES_SETTINGS (general, engine);
   NEW_PREFERENCES_SETTINGS (general, paths);
+  NEW_PREFERENCES_SETTINGS (general, updates);
   NEW_PREFERENCES_SETTINGS (plugins, uis);
   NEW_PREFERENCES_SETTINGS (plugins, paths);
   NEW_PREFERENCES_SETTINGS (projects, general);
@@ -533,25 +534,38 @@ void
 settings_free (
   Settings * self)
 {
-  g_object_unref_and_null (self->general);
-  g_object_unref_and_null (
-    self->preferences_dsp_pan);
-  g_object_unref_and_null (
-    self->preferences_editing_audio);
-  g_object_unref_and_null (
-    self->preferences_editing_automation);
-  g_object_unref_and_null (
-    self->preferences_editing_undo);
-  g_object_unref_and_null (self->export);
-  g_object_unref_and_null (self->ui);
-  g_object_unref_and_null (self->ui_inspector);
-  g_object_unref_and_null (self->ui_mixer);
-  g_object_unref_and_null (self->ui_panels);
-  g_object_unref_and_null (self->ui_plugin_browser);
-  g_object_unref_and_null (self->ui_file_browser);
-  g_object_unref_and_null (self->monitor);
+#define FREE_SETTING(x) \
+  g_object_unref_and_null (self->x)
 
-  /* TODO more */
+  FREE_SETTING (general);
+  FREE_SETTING (preferences_dsp_pan);
+  FREE_SETTING (preferences_editing_audio);
+  FREE_SETTING (preferences_editing_automation);
+  FREE_SETTING (preferences_editing_undo);
+  FREE_SETTING (preferences_general_engine);
+  FREE_SETTING (preferences_general_paths);
+  FREE_SETTING (preferences_general_updates);
+  FREE_SETTING (preferences_plugins_uis);
+  FREE_SETTING (preferences_plugins_paths);
+  FREE_SETTING (preferences_projects_general);
+  FREE_SETTING (preferences_ui_general);
+  FREE_SETTING (preferences_scripting_general);
+  FREE_SETTING (monitor);
+  FREE_SETTING (ui);
+  FREE_SETTING (transport);
+  FREE_SETTING (export);
+  FREE_SETTING (ui_mixer);
+  FREE_SETTING (ui_inspector);
+  FREE_SETTING (ui_panels);
+  FREE_SETTING (ui_plugin_browser);
+  FREE_SETTING (ui_file_browser);
+
+#undef FREE_SETTING
+
+  object_free_w_func_and_null (
+    plugin_settings_free, self->plugin_settings);
+  object_free_w_func_and_null (
+    user_shortcuts_free, self->user_shortcuts);
 
   object_zero_and_free (self);
 }

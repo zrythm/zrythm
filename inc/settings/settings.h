@@ -70,6 +70,8 @@ typedef struct UserShortcuts UserShortcuts;
   SETTINGS->preferences_general_engine
 #define S_P_GENERAL_PATHS \
   SETTINGS->preferences_general_paths
+#define S_P_GENERAL_UPDATES \
+  SETTINGS->preferences_general_updates
 #define S_P_PLUGINS_UIS \
   SETTINGS->preferences_plugins_uis
 #define S_P_PLUGINS_PATHS \
@@ -117,6 +119,7 @@ typedef struct Settings
   GSettings * preferences_editing_undo;
   GSettings * preferences_general_engine;
   GSettings * preferences_general_paths;
+  GSettings * preferences_general_updates;
   GSettings * preferences_plugins_uis;
   GSettings * preferences_plugins_paths;
   GSettings * preferences_projects_general;
