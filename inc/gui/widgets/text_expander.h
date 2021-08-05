@@ -99,6 +99,7 @@ text_expander_widget_refresh (
 void
 text_expander_widget_setup (
   TextExpanderWidget * self,
+  bool                 wrap_text,
   GenericStringGetter  getter,
   GenericStringSetter  setter,
   void *               obj);

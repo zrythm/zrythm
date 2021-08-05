@@ -95,6 +95,7 @@ text_expander_widget_refresh (
 void
 text_expander_widget_setup (
   TextExpanderWidget * self,
+  bool                 wrap_text,
   GenericStringGetter  getter,
   GenericStringSetter  setter,
   void *               obj)
@@ -102,6 +103,11 @@ text_expander_widget_setup (
   self->getter = getter;
   self->setter = setter;
   self->obj = obj;
+
+  gtk_label_set_line_wrap (self->label, wrap_text);
+  if (wrap_text)
+    gtk_label_set_line_wrap_mode (
+      self->label, PANGO_WRAP_WORD_CHAR);
 
   text_expander_widget_refresh (self);
 }

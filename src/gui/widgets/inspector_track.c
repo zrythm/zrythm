@@ -151,7 +151,7 @@ inspector_track_widget_show_tracks (
         GTK_WIDGET (self->comment), true);
 
       text_expander_widget_setup (
-        self->comment, track_get_comment,
+        self->comment, true, track_get_comment,
         track_comment_setter, track);
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self->comment),
@@ -217,7 +217,7 @@ inspector_track_widget_show_tracks (
         self->controls,
         track, PE_TRACK_PORT_TYPE_CONTROLS);
       text_expander_widget_setup (
-        self->comment, NULL, NULL, NULL);
+        self->comment, false, NULL, NULL, NULL);
 
       setup_color (self, NULL);
     }
