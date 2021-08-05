@@ -1418,12 +1418,23 @@ carla_native_plugin_open_ui (
 {
   Plugin * pl = self->plugin;
   g_return_if_fail (
-    IS_PLUGIN_AND_NONNULL (pl) &&
-    pl->setting->descr);
+    IS_PLUGIN_AND_NONNULL (pl)
+    && pl->is_project && pl->setting->descr);
 
   g_message (
-    "%s: show/hide '%s' UI: %d",
-    __func__, pl->setting->descr->name, show);
+    "%s: show/hide '%s (%p)' UI: %d",
+    __func__, pl->setting->descr->name, pl, show);
+
+  if ((self->tick_cb == 0 && !show)
+      || (self->tick_cb != 0 && show))
+    {
+      /* this should not be reached */
+      g_critical (
+        "plugin already has visibility status %d, "
+        "doing nothing",
+        show);
+      return;
+    }
 
   switch (pl->setting->descr->protocol)
     {
@@ -1435,8 +1446,7 @@ carla_native_plugin_open_ui (
       if (show)
         {
           char * title =
-            plugin_generate_window_title (
-              self->plugin);
+            plugin_generate_window_title (pl);
           g_debug ("plugin window title '%s'", title);
           carla_set_custom_ui_title (
             self->host_handle, 0, title);
@@ -1464,14 +1474,25 @@ carla_native_plugin_open_ui (
 
       carla_show_custom_ui (
         self->host_handle, 0, show);
-      self->plugin->visible = show;
+      pl->visible = show;
+
+      if (self->tick_cb)
+        {
+          g_debug (
+            "removing tick callback for %s",
+            pl->setting->descr->name);
+          gtk_widget_remove_tick_callback (
+            GTK_WIDGET (MAIN_WINDOW),
+            self->tick_cb);
+          self->tick_cb = 0;
+        }
 
       if (show)
         {
           g_warn_if_fail (MAIN_WINDOW);
           g_debug (
             "setting tick callback for %s",
-            self->plugin->setting->descr->name);
+            pl->setting->descr->name);
           self->tick_cb =
             gtk_widget_add_tick_callback (
               GTK_WIDGET (MAIN_WINDOW),
@@ -1479,18 +1500,12 @@ carla_native_plugin_open_ui (
               carla_plugin_tick_cb,
               self, NULL);
         }
-      else
-        {
-          gtk_widget_remove_tick_callback (
-            GTK_WIDGET (MAIN_WINDOW),
-            self->tick_cb);
-        }
 
       if (!ZRYTHM_TESTING)
         {
           EVENTS_PUSH (
             ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
-            self->plugin);
+            pl);
         }
       break;
     default:
@@ -1698,6 +1713,9 @@ carla_native_plugin_load_state (
   CarlaNativePlugin * self,
   const char *        abs_path)
 {
+  Plugin * pl = self->plugin;
+  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+
   g_debug (
     "%s: loading state from %s...",
     __func__, abs_path);
@@ -1710,7 +1728,7 @@ carla_native_plugin_load_state (
     {
       char * state_dir_abs_path =
         plugin_get_abs_state_dir (
-          self->plugin,
+          pl,
           PROJECT->loading_from_backup);
       state_file =
         g_build_filename (
@@ -1719,27 +1737,27 @@ carla_native_plugin_load_state (
       g_free (state_dir_abs_path);
     }
 
-  g_warn_if_fail (file_exists (state_file));
+  g_return_if_fail (file_exists (state_file));
   char * state = NULL;
   GError * err = NULL;
   g_file_get_contents (
     state_file, &state, NULL, &err);
   if (err)
     {
-      g_warning (
+      g_critical (
         "An error occurred reading the state: %s",
         err->message);
+      g_error_free_and_null (err);
       return;
     }
   self->loading_state = true;
-  bool was_visible = self->plugin->visible;
   self->native_plugin_descriptor->set_state (
     self->native_plugin_handle, state);
   self->loading_state = false;
-  if (was_visible)
+  if (pl->visible && pl->is_project)
     {
       EVENTS_PUSH (
-        ET_PLUGIN_VISIBILITY_CHANGED, self->plugin);
+        ET_PLUGIN_VISIBILITY_CHANGED, pl);
     }
   g_message (
     "%s: successfully loaded carla plugin state "

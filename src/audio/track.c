@@ -1102,11 +1102,17 @@ track_validate (
         }
 
       /* verify plugins */
-      if (ch->instrument)
+      Plugin * plugins[60];
+      int num_plugins =
+        channel_get_plugins (
+          self->channel, plugins);
+      for (int i = 0; i < num_plugins; i++)
         {
+          Plugin * pl = plugins[i];
           g_return_val_if_fail (
-            plugin_validate (
-              ch->instrument), false);
+            pl->is_project == self->is_project
+            && plugin_validate (pl),
+            false);
         }
 
       /* verify sends */
@@ -3437,6 +3443,7 @@ track_set_is_project (
       for (int i = 0; i < num_plugins; i++)
         {
           Plugin * pl = plugins[i];
+          plugin_set_is_project (pl, is_project);
           if (!pl->instantiation_failed)
             {
               plugin_activate (pl, is_project);
