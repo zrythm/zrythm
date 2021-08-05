@@ -136,9 +136,6 @@ arranger_widget_get_playhead_px (
           if (clip_editor_region->id.type !=
                 REGION_TYPE_AUTOMATION)
             {
-              /*g_warning (*/
-                /*"%p clip editor region currently "*/
-                /*"being changed", self);*/
               return 0;
             }
 
