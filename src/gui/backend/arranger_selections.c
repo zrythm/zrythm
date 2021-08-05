@@ -1989,6 +1989,78 @@ arranger_selections_contains_undeletable_object (
 }
 
 /**
+ * Checks whether an object matches the given
+ * parameters.
+ *
+ * If a parameter should be checked, the has_*
+ * argument must be true and the corresponding
+ * argument must have the value to be checked
+ * against.
+ */
+bool
+arranger_selections_contains_object_with_property (
+  ArrangerSelections *       self,
+  ArrangerSelectionsProperty property,
+  bool                       value)
+{
+  int num_objs;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self, &num_objs);
+
+#define CHECK_PROP(x) \
+  (property == ARRANGER_SELECTIONS_PROPERTY_##x)
+
+  bool ret = false;
+  for (int i = 0; i < num_objs; i++)
+    {
+      ArrangerObject * cur_obj = objs[i];
+
+      if (CHECK_PROP (HAS_LENGTH)
+          &&
+          arranger_object_type_has_length (
+            cur_obj->type) == value)
+        {
+          ret = true;
+          break;
+        }
+
+      int num_loops =
+        arranger_object_get_num_loops (
+          cur_obj, false);
+      if (CHECK_PROP (HAS_LOOPED)
+          && (num_loops > 0) == value)
+        {
+          ret = true;
+          break;
+        }
+
+      if (CHECK_PROP (CAN_LOOP)
+          &&
+          arranger_object_type_can_loop (
+            cur_obj->type) == value)
+        {
+          ret = true;
+          break;
+        }
+
+      if (CHECK_PROP (CAN_FADE)
+          &&
+          arranger_object_can_fade (cur_obj)
+            == value)
+        {
+          ret = true;
+          break;
+        }
+    }
+
+#undef CHECK_PROP
+
+  free (objs);
+  return ret;
+}
+
+/**
  * Removes the arranger object from the selections.
  */
 void

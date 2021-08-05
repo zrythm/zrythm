@@ -771,7 +771,7 @@ timeline_arranger_widget_snap_regions_l (
 /**
  * Snaps the region's end point.
  *
- * @param new_end_pos Position to snap to.
+ * @param new_end_pos New end position to snap to.
  * @parram dry_run Don't resize notes; just check
  *   if the resize is allowed (check if invalid
  *   resizes will happen)
@@ -779,7 +779,7 @@ timeline_arranger_widget_snap_regions_l (
  * @return 0 if the operation was successful,
  *   nonzero otherwise.
  */
-static inline int
+static int
 snap_region_r (
   ArrangerWidget * self,
   ZRegion *        region,
@@ -795,9 +795,9 @@ snap_region_r (
   else if ACTION_IS (STRETCHING_R)
     type = ARRANGER_OBJECT_RESIZE_STRETCH;
 
-  if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
-        !self->shift_held &&
-        type != ARRANGER_OBJECT_RESIZE_FADE)
+  if (SNAP_GRID_ANY_SNAP (self->snap_grid)
+      && !self->shift_held
+      && type != ARRANGER_OBJECT_RESIZE_FADE)
     {
       Track * track =
         arranger_object_get_track (

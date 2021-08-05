@@ -2416,49 +2416,49 @@ on_drag_begin_handle_hit_object (
     {
       ArrangerSelections * sel =
         arranger_widget_get_selections (self);
-      int num_objs;
-      ArrangerObject ** objs =
-        arranger_selections_get_all_objects (
-          sel, &num_objs);
-      bool have_looped = false;
-      bool have_unloopable = false;
-      for (int i = 0; i < num_objs; i++)
+
+      bool have_unresizable =
+        arranger_selections_contains_object_with_property (
+          sel,
+          ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
+          false);
+      if (have_unresizable)
         {
-          ArrangerObject * cur_obj = objs[i];
-          if (!arranger_object_type_has_length (
-                 cur_obj->type))
-            {
-              is_resize_l = false;
-              is_resize_r = false;
-              is_resize_loop = false;
-              break;
-
-              int num_loops =
-                arranger_object_get_num_loops (
-                  cur_obj, false);
-              if (num_loops > 0)
-                have_looped = true;
-
-              if (!arranger_object_type_can_loop (
-                    cur_obj->type))
-                have_unloopable = true;
-            }
+          ui_show_message_printf (
+            MAIN_WINDOW, GTK_MESSAGE_WARNING,
+            "%s",
+            _("Cannot resize because the "
+            "selection contains objects "
+            "without length"));
+          return false;
         }
 
-      if (!is_resize_loop && have_looped)
+      bool have_looped =
+        arranger_selections_contains_object_with_property (
+          sel,
+          ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED,
+          true);
+      if ((is_resize_l || is_resize_r)
+          && !is_resize_loop && have_looped)
         {
+          bool have_unloopable =
+            arranger_selections_contains_object_with_property (
+              sel,
+              ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP,
+              false);
           if (have_unloopable)
             {
               /* cancel resize since we have
                * a looped object mixed with
                * unloopable objects in the
                * selection */
-              g_debug (
-                "cancel resize - "
-                "have looped object mixed with "
-                "unloopable objects");
-              is_resize_l = false;
-              is_resize_r = false;
+              ui_show_message_printf (
+                MAIN_WINDOW, GTK_MESSAGE_WARNING,
+                "%s",
+                _("Cannot resize because the "
+                "selection contains a mix of "
+                "looped and unloopable objects"));
+              return false;
             }
           else
             {
@@ -2479,21 +2479,18 @@ on_drag_begin_handle_hit_object (
     {
       ArrangerSelections * sel =
         arranger_widget_get_selections (self);
-      int num_objs;
-      ArrangerObject ** objs =
-        arranger_selections_get_all_objects (
-          sel, &num_objs);
-      for (int i = 0; i < num_objs; i++)
+      bool have_unfadeable =
+        arranger_selections_contains_object_with_property (
+          sel,
+          ARRANGER_SELECTIONS_PROPERTY_CAN_FADE,
+          false);
+      if (have_unfadeable)
         {
-          ArrangerObject * cur_obj = objs[i];
-          if (!arranger_object_can_fade (cur_obj))
-            {
-              is_fade_in_point = false;
-              is_fade_in_outer = false;
-              is_fade_out_point = false;
-              is_fade_out_outer = false;
-              break;
-            }
+          /* don't fade */
+          is_fade_in_point = false;
+          is_fade_in_outer = false;
+          is_fade_out_point = false;
+          is_fade_out_outer = false;
         }
     }
 
@@ -3440,10 +3437,10 @@ drag_update (
             {
               int ret =
                 timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, 1);
+                  self, &self->curr_pos, F_DRY_RUN);
               if (!ret)
                 timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, 0);
+                  self, &self->curr_pos, F_NOT_DRY_RUN);
             }
         }
       break;

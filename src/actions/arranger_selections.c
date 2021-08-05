@@ -720,6 +720,60 @@ arranger_selections_action_new_resize (
   ArrangerSelectionsActionResizeType type,
   const double                       ticks)
 {
+  /* validate */
+  bool have_unresizable =
+    arranger_selections_contains_object_with_property (
+      sel,
+      ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
+      false);
+  g_return_val_if_fail (!have_unresizable, NULL);
+
+  bool have_looped =
+    arranger_selections_contains_object_with_property (
+      sel,
+      ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED,
+      true);
+  if (have_looped
+      &&
+      (type
+         == ARRANGER_SELECTIONS_ACTION_RESIZE_L
+       ||
+       type
+         == ARRANGER_SELECTIONS_ACTION_RESIZE_R
+       ||
+       type
+         == ARRANGER_SELECTIONS_ACTION_STRETCH_L
+       ||
+       type
+         == ARRANGER_SELECTIONS_ACTION_STRETCH_R))
+    {
+      g_critical (
+        "cannot perform %s resize - selections "
+        "contain looped objects",
+        arranger_selections_action_resize_type_strings[type].str);
+      return NULL;
+    }
+
+  bool have_unloopable =
+    arranger_selections_contains_object_with_property (
+      sel,
+      ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP,
+      false);
+  if (have_unloopable
+      &&
+      (type
+         == ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP
+       ||
+       type
+         == ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP))
+    {
+      g_critical (
+        "cannot perform %s resize - selections "
+        "contain unloopable objects",
+        arranger_selections_action_resize_type_strings[type].str);
+      return NULL;
+    }
+
   ArrangerSelectionsAction * self =
     _create_action (sel);
   self->type = AS_ACTION_RESIZE;

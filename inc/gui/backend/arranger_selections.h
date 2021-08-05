@@ -64,16 +64,6 @@ typedef enum ArrangerSelectionsType
   ARRANGER_SELECTIONS_TYPE_AUDIO,
 } ArrangerSelectionsType;
 
-typedef struct ArrangerSelections
-{
-  int                    schema_version;
-
-  /** Type of selections. */
-  ArrangerSelectionsType type;
-
-  int                    magic;
-} ArrangerSelections;
-
 static const cyaml_strval_t
 arranger_selections_type_strings[] =
 {
@@ -90,6 +80,16 @@ arranger_selections_type_strings[] =
   { "Audio",
     ARRANGER_SELECTIONS_TYPE_AUDIO   },
 };
+
+typedef struct ArrangerSelections
+{
+  int                    schema_version;
+
+  /** Type of selections. */
+  ArrangerSelectionsType type;
+
+  int                    magic;
+} ArrangerSelections;
 
 static const cyaml_schema_field_t
 arranger_selections_fields_schema[] =
@@ -109,6 +109,14 @@ arranger_selections_schema = {
     ArrangerSelections,
     arranger_selections_fields_schema),
 };
+
+typedef enum ArrangerSelectionsProperty
+{
+  ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
+  ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP,
+  ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED,
+  ARRANGER_SELECTIONS_PROPERTY_CAN_FADE,
+} ArrangerSelectionsProperty;
 
 static inline ArrangerSelections *
 arranger_selections_cast (void * sel)
@@ -403,6 +411,22 @@ NONNULL
 bool
 arranger_selections_contains_undeletable_object (
   ArrangerSelections * self);
+
+/**
+ * Checks whether an object matches the given
+ * parameters.
+ *
+ * If a parameter should be checked, the has_*
+ * argument must be true and the corresponding
+ * argument must have the value to be checked
+ * against.
+ */
+NONNULL
+bool
+arranger_selections_contains_object_with_property (
+  ArrangerSelections *       self,
+  ArrangerSelectionsProperty property,
+  bool                       value);
 
 /**
  * Removes the arranger object from the selections.
