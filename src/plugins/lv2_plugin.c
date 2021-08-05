@@ -3422,18 +3422,24 @@ lv2_plugin_process (
         IS_PORT_AND_NONNULL (port));
 
       PortIdentifier * id = &port->id;
-      if (id->type == TYPE_AUDIO ||
-          id->type == TYPE_CV)
+      if (id->type == TYPE_AUDIO
+          || id->type == TYPE_CV)
         {
           /* connect buffer */
           lilv_instance_connect_port (
             self->instance,
             (uint32_t) p, &port->buf[local_offset]);
         }
-      else if (id->type == TYPE_EVENT &&
-               id->flow == FLOW_INPUT)
+      else if (id->type == TYPE_EVENT
+               && id->flow == FLOW_INPUT)
         {
-          g_return_if_fail (port->evbuf);
+          if (G_UNLIKELY (!port->evbuf))
+            {
+              g_critical (
+                "evbuf is NULL for %s",
+                pl->setting->descr->uri);
+              return;
+            }
           lv2_evbuf_reset (port->evbuf, true);
 
           /* Write transport change event if
