@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,8 @@
 
 #ifndef __GUI_WIDGETS_FOLDABLE_NOTEBOOK_H__
 #define __GUI_WIDGETS_FOLDABLE_NOTEBOOK_H__
+
+#include <stdbool.h>
 
 #include <gtk/gtk.h>
 
@@ -113,7 +115,7 @@ foldable_notebook_widget_get_current_widget (
 void
 foldable_notebook_widget_set_visibility (
   FoldableNotebookWidget * self,
-  int                      new_visibility);
+  bool                     new_visibility);
 
 /**
  * Returns if the content of the foldable notebook

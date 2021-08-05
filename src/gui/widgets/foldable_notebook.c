@@ -55,7 +55,7 @@ on_switch_page (
 void
 foldable_notebook_widget_set_visibility (
   FoldableNotebookWidget * self,
-  int                      new_visibility)
+  bool                     new_visibility)
 {
   /* toggle visibility of all box children.
    * do this on the children because toggling
@@ -64,7 +64,6 @@ foldable_notebook_widget_set_visibility (
   int num_pages =
     gtk_notebook_get_n_pages (
       GTK_NOTEBOOK (self));
-  /*int max_width = 0, max_height = 0;*/
   for (int i = 0; i < num_pages; i++)
     {
       GtkWidget * widget =
@@ -76,7 +75,7 @@ foldable_notebook_widget_set_visibility (
 
   if (new_visibility)
     {
-      if (self->paned)
+      if (self->paned && self->prev_pos > 0)
         {
           gtk_paned_set_position (
             self->paned, self->prev_pos);
@@ -86,12 +85,11 @@ foldable_notebook_widget_set_visibility (
     {
       if (self->paned)
         {
-          /*[> remember position before hiding <]*/
+          /* remember position before hiding */
           self->prev_pos =
-            gtk_paned_get_position (
-              self->paned);
+            gtk_paned_get_position (self->paned);
 
-          /*[> hide <]*/
+          /* hide */
           int position;
           if (self->pos_in_paned == GTK_POS_BOTTOM)
             {

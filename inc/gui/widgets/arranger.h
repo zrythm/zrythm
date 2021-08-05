@@ -419,15 +419,6 @@ arranger_widget_refresh_cursor (
   ArrangerWidget * self);
 
 /**
- * Sets transient object and actual object
- * visibility for every ArrangerObject in the
- * ArrangerWidget based on the current action.
- */
-//void
-//arranger_widget_update_visibility (
-  //ArrangerWidget * self);
-
-/**
  * Gets the corresponding scrolled window.
  */
 GtkScrolledWindow *

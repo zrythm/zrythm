@@ -2360,7 +2360,8 @@ on_drag_begin_handle_hit_object (
 
   /* set editor region and show editor if double
    * click */
-  if (obj->type == ARRANGER_OBJECT_TYPE_REGION &&
+  if (obj->type == ARRANGER_OBJECT_TYPE_REGION
+      &&
       self->drag_start_btn == GDK_BUTTON_PRIMARY)
     {
       clip_editor_set_region (
@@ -2373,14 +2374,7 @@ on_drag_begin_handle_hit_object (
           g_debug (
             "double clicked on region - "
             "showing piano roll");
-          /* set the bot panel visible */
-          gtk_widget_set_visible (
-            GTK_WIDGET (
-              MW_BOT_DOCK_EDGE), 1);
-          foldable_notebook_widget_set_visibility (
-            MW_BOT_FOLDABLE_NOTEBOOK, 1);
-
-          SHOW_CLIP_EDITOR;
+          EVENTS_PUSH (ET_REGION_ACTIVATED, NULL);
         }
     }
   /* if open marker dialog if double click on

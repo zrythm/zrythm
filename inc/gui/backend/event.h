@@ -281,6 +281,13 @@ typedef enum EventType
    * Arg: Pointer to Channel.
    */
   ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED,
+
+  /**
+   * Double click (or similar action) on region.
+   *
+   * Arg: None.
+   */
+  ET_REGION_ACTIVATED,
 } EventType;
 
 /**

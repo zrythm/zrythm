@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 #define BOT_DOCK_EDGE_WIDGET_TYPE \
@@ -36,15 +38,8 @@ G_DECLARE_FINAL_TYPE (
   Z, BOT_DOCK_EDGE_WIDGET,
   GtkBox)
 
-#define MW_BOT_DOCK_EDGE MW_CENTER_DOCK->bot_dock_edge
-
-/**
- * Brings up the Clip Editor in the notebook.
- */
-#define SHOW_CLIP_EDITOR \
-  gtk_notebook_set_current_page ( \
-    GTK_NOTEBOOK ( \
-      MW_BOT_DOCK_EDGE->bot_notebook), 0)
+#define MW_BOT_DOCK_EDGE \
+   MW_CENTER_DOCK->bot_dock_edge
 
 typedef struct _MixerWidget MixerWidget;
 typedef struct _ClipEditorWidget ClipEditorWidget;
@@ -54,6 +49,12 @@ typedef struct _FoldableNotebookWidget
   FoldableNotebookWidget;
 typedef struct _EventViewerWidget EventViewerWidget;
 typedef struct _ChordPadWidget ChordPadWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 /**
  * Bot dock widget.
@@ -86,5 +87,20 @@ typedef struct _BotDockEdgeWidget
 void
 bot_dock_edge_widget_setup (
   BotDockEdgeWidget * self);
+
+/**
+ * Brings up the clip editor.
+ *
+ * @param navigate_to_region_start Whether to adjust
+ *   the view to start at the region start.
+ */
+void
+bot_dock_edge_widget_show_clip_editor (
+  BotDockEdgeWidget * self,
+  bool                navigate_to_region_start);
+
+/**
+ * @}
+ */
 
 #endif

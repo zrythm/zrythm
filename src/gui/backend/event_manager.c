@@ -1780,19 +1780,11 @@ process_events (void * data)
               int ret =
                 gtk_dialog_run (
                   GTK_DIALOG (dialog));
-              if (ret == GTK_RESPONSE_YES)
-                {
-                  g_settings_set_boolean (
-                    S_P_GENERAL_UPDATES,
-                    "check-for-updates", true);
-                }
-              else
-                {
-                  g_settings_set_boolean (
-                    S_P_GENERAL_UPDATES,
-                    "check-for-updates", false);
-                }
               gtk_widget_destroy (dialog);
+              g_settings_set_boolean (
+                S_P_GENERAL_UPDATES,
+                "check-for-updates",
+                ret == GTK_RESPONSE_YES);
               g_settings_set_boolean (
                 S_GENERAL,
                 "first-check-for-updates", false);
@@ -2041,6 +2033,10 @@ process_events (void * data)
         case ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED:
         case ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED:
           mixer_widget_soft_refresh (MW_MIXER);
+          break;
+        case ET_REGION_ACTIVATED:
+          bot_dock_edge_widget_show_clip_editor (
+            MW_BOT_DOCK_EDGE, true);
           break;
         default:
           g_warning (

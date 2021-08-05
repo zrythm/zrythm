@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,8 +22,11 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_pad.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/modulator_view.h"
 #include "project.h"
@@ -88,6 +91,58 @@ bot_dock_edge_widget_setup (
     G_OBJECT (self->bot_notebook),
     "switch-page",
     G_CALLBACK (on_notebook_switch_page), self);
+}
+
+/**
+ * Brings up the clip editor.
+ *
+ * @param navigate_to_region_start Whether to adjust
+ *   the view to start at the region start.
+ */
+void
+bot_dock_edge_widget_show_clip_editor (
+  BotDockEdgeWidget * self,
+  bool                navigate_to_region_start)
+{
+  int num_pages =
+    gtk_notebook_get_n_pages (
+      GTK_NOTEBOOK (self->bot_notebook));
+  for (int i = 0; i < num_pages; i++)
+    {
+      GtkWidget * widget =
+        gtk_notebook_get_nth_page (
+          GTK_NOTEBOOK (self->bot_notebook), i);
+      if (widget ==
+            GTK_WIDGET (self->clip_editor_box))
+        {
+          gtk_widget_set_visible (
+            GTK_WIDGET (self), true);
+          foldable_notebook_widget_set_visibility (
+            self->bot_notebook, true);
+          gtk_notebook_set_current_page (
+            GTK_NOTEBOOK (
+              MW_BOT_DOCK_EDGE->bot_notebook), i);
+          break;
+        }
+    }
+
+  if (navigate_to_region_start
+      && CLIP_EDITOR->has_region)
+    {
+      ZRegion * r =
+        clip_editor_get_region (CLIP_EDITOR);
+      g_return_if_fail (IS_REGION_AND_NONNULL (r));
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
+      int px =
+        ui_pos_to_px_editor (&r_obj->pos, false);
+      GtkScrolledWindow * scroll =
+        arranger_widget_get_scrolled_window (
+          Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
+      GtkAdjustment * hadj =
+        gtk_scrolled_window_get_hadjustment (scroll);
+      gtk_adjustment_set_value (hadj, px);
+    }
 }
 
 static void
