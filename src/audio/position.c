@@ -112,7 +112,11 @@ position_set_to_bar (
   Position * self,
   int        bar)
 {
-  g_return_if_fail (TRANSPORT->ticks_per_bar > 0);
+  g_return_if_fail (
+    TRANSPORT->ticks_per_bar > 0
+    /* don't use INT_MAX, it results in a negative
+     * position */
+    && bar <= POSITION_MAX_BAR);
 
   position_init (self);
 

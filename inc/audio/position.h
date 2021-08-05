@@ -56,6 +56,8 @@
 #define position_snap_simple(pos, sg) \
   position_snap (NULL, pos, NULL, NULL, sg)
 
+#define POSITION_MAX_BAR 80000
+
 /**
  * Whether the position starts on or after f1 and
  * before f2.

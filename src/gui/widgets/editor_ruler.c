@@ -72,8 +72,8 @@ editor_ruler_on_drag_begin_no_marker_hit (
 void
 editor_ruler_on_drag_update (
   RulerWidget * self,
-  gdouble             offset_x,
-  gdouble             offset_y)
+  gdouble       offset_x,
+  gdouble       offset_y)
 {
   g_return_if_fail (self);
 
@@ -171,7 +171,7 @@ editor_ruler_on_drag_update (
                    timeline_end;
           position_init (&timeline_start);
           position_set_to_bar (
-            &timeline_end, INT_MAX);
+            &timeline_end, POSITION_MAX_BAR);
 
           /* if position is acceptable */
           if (position_is_after_or_equal (

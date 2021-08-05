@@ -353,7 +353,7 @@ timeline_ruler_on_drag_update (
           position_init (&timeline_start);
           position_init (&timeline_end);
           position_set_to_bar (
-            &timeline_end, 80000);
+            &timeline_end, POSITION_MAX_BAR);
 
           /* convert px to position */
           ui_px_to_pos_timeline (
@@ -368,10 +368,10 @@ timeline_ruler_on_drag_update (
           if (self->target == RW_TARGET_PLAYHEAD)
             {
               /* if position is acceptable */
-              if (position_compare (
-                    &tmp, &timeline_start) >= 0 &&
-                  position_compare (
-                    &tmp, &timeline_end) <= 0)
+              if (position_is_after_or_equal (
+                    &tmp, &timeline_start) &&
+                  position_is_before_or_equal (
+                    &tmp, &timeline_end))
                 {
                   transport_move_playhead (
                     TRANSPORT, &tmp,
