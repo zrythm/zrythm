@@ -327,10 +327,11 @@ engine_callback (
     case ENGINE_CALLBACK_PARAMETER_VALUE_CHANGED:
       /* if plugin was deactivated and we didn't
        * explicitly tell it to deactivate */
-      if (val1 == PARAMETER_ACTIVE &&
-          val2 == 0 && val3 == 0 &&
-          self->plugin->activated &&
-          !self->plugin->deactivating)
+      if (val1 == PARAMETER_ACTIVE
+          && val2 == 0 && val3 == 0
+          && self->plugin->activated
+          && !self->plugin->deactivating
+          && !self->loading_state)
         {
           /* send crash signal */
           EVENTS_PUSH (
@@ -1697,6 +1698,9 @@ carla_native_plugin_load_state (
   CarlaNativePlugin * self,
   const char *        abs_path)
 {
+  g_debug (
+    "%s: loading state from %s...",
+    __func__, abs_path);
   char * state_file;
   if (abs_path)
     {
@@ -1727,10 +1731,19 @@ carla_native_plugin_load_state (
         err->message);
       return;
     }
+  self->loading_state = true;
+  bool was_visible = self->plugin->visible;
   self->native_plugin_descriptor->set_state (
     self->native_plugin_handle, state);
+  self->loading_state = false;
+  if (was_visible)
+    {
+      EVENTS_PUSH (
+        ET_PLUGIN_VISIBILITY_CHANGED, self->plugin);
+    }
   g_message (
-    "%s: loading carla plugin state from %s",
+    "%s: successfully loaded carla plugin state "
+    "from %s",
     __func__, state_file);
 
   g_free (state);

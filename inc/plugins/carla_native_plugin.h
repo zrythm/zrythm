@@ -80,6 +80,9 @@ typedef struct CarlaNativePlugin
   /** Whether ports are already created or not. */
   bool             ports_created;
 
+  /** Flag. */
+  bool             loading_state;
+
   /** GTK tick callback. */
   guint            tick_cb;
 
