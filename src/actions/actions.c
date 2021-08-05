@@ -1947,42 +1947,20 @@ change_state_listen_notes (
     S_UI, "listen-notes", enabled);
 }
 
-void
-activate_quick_quantize (
-  GSimpleAction *action,
-  GVariant      * _variant,
-  gpointer       user_data)
+static void
+do_quantize (
+  const char * variant,
+  bool         quick)
 {
-  g_return_if_fail (_variant);
+  g_debug ("quantize opts: %s", variant);
 
-  gsize size;
-  const char * variant =
-    g_variant_get_string (_variant, &size);
-  if (string_is_equal (variant, "timeline"))
+  if (string_is_equal (variant, "timeline")
+      ||
+      (string_is_equal (variant, "global")
+       && PROJECT->last_selection
+          == SELECTION_TYPE_TIMELINE))
     {
-      UndoableAction * ua =
-        arranger_selections_action_new_quantize (
-          (ArrangerSelections *) TL_SELECTIONS,
-          QUANTIZE_OPTIONS_TIMELINE);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else if (string_is_equal (variant, "editor"))
-    {
-      ArrangerSelections * sel =
-        clip_editor_get_arranger_selections (
-          CLIP_EDITOR);
-      g_return_if_fail (sel);
-      UndoableAction * ua =
-        arranger_selections_action_new_quantize (
-          sel, QUANTIZE_OPTIONS_EDITOR);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else if (string_is_equal (variant, "global"))
-    {
-      if (PROJECT->last_selection ==
-            SELECTION_TYPE_TIMELINE)
+      if (quick)
         {
           UndoableAction * ua =
             arranger_selections_action_new_quantize (
@@ -1991,50 +1969,7 @@ activate_quick_quantize (
           undo_manager_perform (
             UNDO_MANAGER, ua);
         }
-    }
-  else
-    {
-      g_return_if_reached ();
-    }
-}
-
-void
-activate_quantize_options (
-  GSimpleAction *action,
-  GVariant      *_variant,
-  gpointer       user_data)
-{
-  g_return_if_fail (_variant);
-
-  gsize size;
-  const char * variant =
-    g_variant_get_string (_variant, &size);
-  if (string_is_equal (variant, "timeline"))
-    {
-      QuantizeDialogWidget * quant =
-        quantize_dialog_widget_new (
-          QUANTIZE_OPTIONS_TIMELINE);
-      gtk_window_set_transient_for (
-        GTK_WINDOW (quant),
-        GTK_WINDOW (MAIN_WINDOW));
-      gtk_dialog_run (GTK_DIALOG (quant));
-      gtk_widget_destroy (GTK_WIDGET (quant));
-    }
-  else if (string_is_equal (variant, "editor"))
-    {
-      QuantizeDialogWidget * quant =
-        quantize_dialog_widget_new (
-          QUANTIZE_OPTIONS_EDITOR);
-      gtk_window_set_transient_for (
-        GTK_WINDOW (quant),
-        GTK_WINDOW (MAIN_WINDOW));
-      gtk_dialog_run (GTK_DIALOG (quant));
-      gtk_widget_destroy (GTK_WIDGET (quant));
-    }
-  else if (string_is_equal (variant, "global"))
-    {
-      if (PROJECT->last_selection ==
-            SELECTION_TYPE_TIMELINE)
+      else
         {
           QuantizeDialogWidget * quant =
             quantize_dialog_widget_new (
@@ -2046,11 +1981,72 @@ activate_quantize_options (
           gtk_widget_destroy (GTK_WIDGET (quant));
         }
     }
+  else if (string_is_equal (variant, "editor")
+           ||
+           (string_is_equal (variant, "global")
+            && PROJECT->last_selection
+               == SELECTION_TYPE_EDITOR))
+    {
+      if (quick)
+        {
+          ArrangerSelections * sel =
+            clip_editor_get_arranger_selections (
+              CLIP_EDITOR);
+          g_return_if_fail (sel);
+          UndoableAction * ua =
+            arranger_selections_action_new_quantize (
+              sel, QUANTIZE_OPTIONS_EDITOR);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          QuantizeDialogWidget * quant =
+            quantize_dialog_widget_new (
+              QUANTIZE_OPTIONS_EDITOR);
+          gtk_window_set_transient_for (
+            GTK_WINDOW (quant),
+            GTK_WINDOW (MAIN_WINDOW));
+          gtk_dialog_run (GTK_DIALOG (quant));
+          gtk_widget_destroy (GTK_WIDGET (quant));
+        }
+    }
   else
     {
-      g_return_if_reached ();
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_WARNING,
+        _("Must select either the timeline or the "
+        "editor first. The current selection is "
+        "%s"),
+        selection_type_strings[
+          PROJECT->last_selection].str);
     }
-  g_message ("quantize opts");
+}
+
+void
+activate_quick_quantize (
+  GSimpleAction *action,
+  GVariant      * _variant,
+  gpointer       user_data)
+{
+  g_return_if_fail (_variant);
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  do_quantize (variant, true);
+}
+
+void
+activate_quantize_options (
+  GSimpleAction *action,
+  GVariant      *_variant,
+  gpointer       user_data)
+{
+  g_return_if_fail (_variant);
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  do_quantize (variant, false);
 }
 
 void
