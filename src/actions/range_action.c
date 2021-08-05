@@ -76,7 +76,7 @@ range_action_new (
 
   /* create selections for overlapping objects */
   Position inf;
-  position_set_to_bar (&inf, 160000);
+  position_set_to_bar (&inf, POSITION_MAX_BAR);
   self->sel_before =
     timeline_selections_new_for_range (
       start_pos, &inf, F_CLONE);
