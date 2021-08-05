@@ -44,6 +44,8 @@
 typedef enum
 {
   Z_UTILS_CURL_ERROR_BAD_REQUEST,
+  Z_UTILS_CURL_ERROR_CANNOT_INIT,
+  Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
 } ZUtilsCurlError;
 
 #define Z_UTILS_CURL_ERROR \
@@ -205,9 +207,10 @@ z_curl_post_json_no_auth (
   CURL * curl = curl_easy_init ();
   if (!curl)
     {
-      g_set_error (
-        error, 0, 0,
-        "Failed to init curl: %s", "null");
+      g_set_error_literal (
+        error, Z_UTILS_CURL_ERROR,
+        Z_UTILS_CURL_ERROR_CANNOT_INIT,
+        "Failed to init curl");
       return -1;
     }
 
@@ -325,7 +328,7 @@ z_curl_post_json_no_auth (
     {
       g_set_error (
         error, Z_UTILS_CURL_ERROR,
-        Z_UTILS_CURL_ERROR_BAD_REQUEST,
+        Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
         "POST failed: [%ld] %s",
         http_code, response_str);
 

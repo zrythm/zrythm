@@ -56,7 +56,6 @@
 #include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
-#include "gui/widgets/dialogs/changelog_dialog.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/home_toolbar.h"
@@ -1759,104 +1758,7 @@ process_events (void * data)
             MW_MAIN_NOTEBOOK);
 
 #ifdef CHECK_UPDATES
-          if (g_settings_get_boolean (
-                S_GENERAL,
-                "first-check-for-updates"))
-            {
-              GtkWidget * dialog =
-                gtk_message_dialog_new (
-                  GTK_WINDOW (MAIN_WINDOW),
-                  GTK_DIALOG_DESTROY_WITH_PARENT,
-                  GTK_MESSAGE_QUESTION,
-                  GTK_BUTTONS_YES_NO,
-                  _("Do you want %s to check for "
-                  "updates on startup?"),
-                  PROGRAM_NAME);
-              gtk_window_set_icon_name (
-                GTK_WINDOW (dialog), "zrythm");
-              gtk_window_set_title (
-                GTK_WINDOW (dialog),
-                _("Check for Updates"));
-              int ret =
-                gtk_dialog_run (
-                  GTK_DIALOG (dialog));
-              gtk_widget_destroy (dialog);
-              g_settings_set_boolean (
-                S_P_GENERAL_UPDATES,
-                "check-for-updates",
-                ret == GTK_RESPONSE_YES);
-              g_settings_set_boolean (
-                S_GENERAL,
-                "first-check-for-updates", false);
-            }
-
-          if (g_settings_get_boolean (
-                S_P_GENERAL_UPDATES,
-                "check-for-updates"))
-            {
-              bool is_latest_release =
-                zrythm_is_latest_release ();
-
-#ifdef HAVE_CHANGELOG
-              /* if latest release and first run on
-               * this release show CHANGELOG */
-              if (is_latest_release
-                  &&
-                  !settings_strv_contains_str (
-                     S_GENERAL, "run-versions",
-                     PACKAGE_VERSION))
-                {
-                  changelog_dialog_widget_run (
-                    GTK_WINDOW (MAIN_WINDOW));
-                  settings_append_to_strv (
-                    S_GENERAL, "run-versions",
-                    PACKAGE_VERSION, true);
-                }
-#endif /* HAVE_CHANGELOG */
-
-              /* if not latest release and this is
-               * an official release, notify user */
-              char * last_version_notified_on =
-                g_settings_get_string (
-                  S_GENERAL,
-                  "last-version-new-release-notified-on");
-              g_debug (
-                "last version notified on: %s"
-                "\n package version: %s",
-                last_version_notified_on,
-                PACKAGE_VERSION);
-              if (!is_latest_release &&
-                  zrythm_is_release (true) &&
-                  !string_is_equal (
-                     last_version_notified_on,
-                     PACKAGE_VERSION))
-                {
-                  char * latest_release =
-                    zrythm_fetch_latest_release_ver ();
-                  GtkWidget * dialog =
-                    gtk_message_dialog_new_with_markup (
-                      GTK_WINDOW (MAIN_WINDOW),
-                      GTK_DIALOG_DESTROY_WITH_PARENT,
-                      GTK_MESSAGE_INFO,
-                      GTK_BUTTONS_CLOSE,
-                      _("A new version of Zrythm "
-                      "has been released: "
-                      "<b>%s</b>\n\n"
-                      "Your current version is "
-                      "%s"),
-                      latest_release,
-                      PACKAGE_VERSION);
-                  gtk_dialog_run (
-                    GTK_DIALOG (dialog));
-                  gtk_widget_destroy (dialog);
-
-                  g_settings_set_string (
-                    S_GENERAL,
-                    "last-version-new-release-notified-on",
-                    PACKAGE_VERSION);
-                }
-              g_free (last_version_notified_on);
-            }
+          zrythm_app_check_for_updates (zrythm_app);
 #endif /* CHECK_UPDATES */
           break;
         case ET_SPLASH_CLOSED:

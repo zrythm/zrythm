@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -59,7 +59,7 @@ typedef struct UiCaches UiCaches;
  * The global struct.
  *
  * Contains data that is only relevant to the GUI
- * and not to Zrythm.
+ * or command line.
  */
 struct _ZrythmApp
 {
@@ -176,6 +176,14 @@ void
 zrythm_app_set_font_scale (
   ZrythmApp * self,
   double      font_scale);
+
+/**
+ * Handles the logic for checking for updates on
+ * startup.
+ */
+void
+zrythm_app_check_for_updates (
+  ZrythmApp * self);
 
 /**
  * @}

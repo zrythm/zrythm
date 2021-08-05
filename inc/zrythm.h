@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,8 @@
 #include "zrythm-config.h"
 
 #include "zix/sem.h"
+
+#include <glib.h>
 
 typedef struct Project Project;
 typedef struct Symap Symap;
@@ -341,8 +343,15 @@ zrythm_is_release (
 char *
 zrythm_fetch_latest_release_ver (void);
 
+/**
+ * Returns whether this is the latest release.
+ *
+ * @p error will be set if an error occured and the
+ * return value should be ignored.
+ */
 bool
-zrythm_is_latest_release (void);
+zrythm_is_latest_release (
+  GError ** error);
 
 /**
  * Returns the veresion and the capabilities.

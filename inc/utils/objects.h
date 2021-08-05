@@ -81,24 +81,6 @@ _object_zero_and_free (
   _object_zero_and_free ( \
     (void **) &(ptr), sizeof (*(ptr)))
 
-#define object_zero_and_free_if_nonnull(ptr) \
-  if (ptr) { object_zero_and_free (ptr); }
-
-/**
- * Frees memory, sets the pointer to NULL and
- * zero's out the struct.
- *
- * @param ptr A pointer to a pointer to be free'd.
- */
-#define g_object_unref_and_null(ptr) \
-  if (ptr) { g_object_unref (ptr); ptr = NULL; }
-
-/**
- * Frees memory and sets the pointer to NULL.
- */
-#define g_free_and_null(ptr) \
-  { if (ptr) g_free (ptr); (ptr) = NULL; }
-
 /**
  * Call the function \ref _func to free \ref _obj
  * and set \ref _obj to NULL.
@@ -106,6 +88,23 @@ _object_zero_and_free (
 #define object_free_w_func_and_null(_func,_obj) \
   if (_obj) { _func (_obj); _obj = NULL; }
 
+#define object_zero_and_free_if_nonnull(ptr) \
+  object_free_w_func_and_null ( \
+    object_zero_and_free, ptr)
+
+/** Convenience wrapper. */
+#define g_object_unref_and_null(ptr) \
+  object_free_w_func_and_null (g_object_unref, ptr)
+
+/** Convenience wrapper. */
+#define g_free_and_null(ptr) \
+  object_free_w_func_and_null (g_free, ptr)
+
+/** Convenience wrapper. */
+#define g_error_free_and_null(ptr) \
+  object_free_w_func_and_null (g_error_free, ptr)
+
+/** Convenience wrapper. */
 #define object_free_w_func_and_null_cast(\
   _func,_cast,_obj) \
   if (_obj) { _func ((_cast)_obj); _obj = NULL; }

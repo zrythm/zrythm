@@ -65,6 +65,17 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+typedef enum
+{
+  Z_ZRYTHM_ERROR_CANNOT_GET_LATEST_RELEASE,
+} ZZrythmError;
+
+#define Z_ZRYTHM_ERROR \
+  z_zrythm_error_quark ()
+GQuark z_zrythm_error_quark (void);
+G_DEFINE_QUARK (
+  z-zrythm-error-quark, z_zrythm_error)
+
 /** This is declared extern in zrythm.h. */
 Zrythm * zrythm = NULL;
 
@@ -283,14 +294,27 @@ zrythm_fetch_latest_release_ver (void)
   return g_strdup (ver);
 }
 
+/**
+ * Returns whether this is the latest release.
+ *
+ * @p error will be set if an error occured and the
+ * return value should be ignored.
+ */
 bool
-zrythm_is_latest_release (void)
+zrythm_is_latest_release (
+  GError ** error)
 {
+  g_return_val_if_fail (
+    *error == NULL, false);
+
   char * latest_release =
     zrythm_fetch_latest_release_ver ();
   if (!latest_release)
     {
-      g_warning ("error getting latest release");
+      g_set_error_literal (
+        error, Z_ZRYTHM_ERROR,
+        Z_ZRYTHM_ERROR_CANNOT_GET_LATEST_RELEASE,
+        "Error getting latest release");
       return false;
     }
 
