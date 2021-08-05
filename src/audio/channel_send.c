@@ -512,7 +512,8 @@ channel_send_set_amount (
 }
 
 /**
- * Get the name of the destination.
+ * Get the name of the destination, or a placeholder
+ * text if empty.
  */
 void
 channel_send_get_dest_name (
@@ -541,6 +542,7 @@ channel_send_get_dest_name (
 
       Port * port =
         port_find_from_identifier (dest);
+      g_return_if_fail (IS_PORT_AND_NONNULL (port));
       if (self->is_sidechain)
         {
           Plugin * pl =

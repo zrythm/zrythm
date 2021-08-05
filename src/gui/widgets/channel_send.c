@@ -56,7 +56,7 @@ channel_send_draw_cb (
 
   int padding = 2;
   ChannelSend * send = self->send;
-  char dest_name[400];
+  char dest_name[400] = "";
   channel_send_get_dest_name (send, dest_name);
   if (channel_send_is_empty (send))
     {

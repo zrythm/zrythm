@@ -360,7 +360,8 @@ port_find_from_identifier (
           g_return_val_if_reached (NULL);
           break;
         }
-      g_warn_if_fail (IS_PLUGIN (pl));
+      g_return_val_if_fail (
+        IS_PLUGIN_AND_NONNULL (pl), NULL);
       switch (id->flow)
         {
         case FLOW_INPUT:
@@ -377,8 +378,11 @@ port_find_from_identifier (
         }
       break;
     case PORT_OWNER_TYPE_TRACK_PROCESSOR:
-      tr = TRACKLIST->tracks[id->track_pos];
-      g_warn_if_fail (tr);
+      tr =
+        tracklist_get_track (
+          TRACKLIST, id->track_pos);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (tr), NULL);
       switch (id->type)
         {
         case TYPE_EVENT:

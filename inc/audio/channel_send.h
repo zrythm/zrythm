@@ -237,7 +237,8 @@ channel_send_set_amount (
   float         amount);
 
 /**
- * Get the name of the destination.
+ * Get the name of the destination, or a placeholder
+ * text if empty.
  */
 NONNULL
 void
