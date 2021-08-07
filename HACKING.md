@@ -4,90 +4,112 @@ Hacking Zrythm
 # Code Structure
 
     .
-    ├── AUTHORS                      # Author information
-    ├── CHANGELOG.md                 # Changelog
-    ├── CONTRIBUTING.md              # Contributing guidelines
+    ├── AUTHORS                           # Author information
+    ├── CHANGELOG.md                      # Changelog
+    ├── CONTRIBUTING.md                   # Contributing guidelines
     ├── CONTRIBUTOR_CERTIFICATE_OF_ORIGIN # Certificate for contributing
-    ├── COPYING                      # Main license
-    ├── COPYING.*                    # Other licenses
-    ├── INSTALL.md                   # Installation instructions
-    ├── PACKAGING.md                 # Information for packagers
-    ├── README.md                    # Main README file
-    ├── THANKS                       # Thanks notice
-    ├── TRADEMARKS.md                # Trademark policy
-    ├── TRANSLATORS                  # List of translators
-    ├── VERSION                      # Version file
-    ├── build                        # temporary build dir
-    ├── data                         # Data files to be installed
-    │   ├── css-themes               # UI CSS themes
-    │   ├── fonts                    # Fonts
-    │   ├── gtksourceview-*.xml      # GtkSourceView themes
-    │   ├── icon-themes              # Icon themes
-    │   ├── org.zrythm.Zrythm-mime.xml # Custom MIME types
-    │   ├── samples                  # Audio samples
-    │   ├── scripts                  # Built-in Guile scripts
-    │   ├── windows                  # Files used on windows builds
-    │   ├── zrythm.desktop.in        # Desktop file
-    │   ├── zrythm_launch.in         # Launcher script
-    │   └── zrythm_*.in              # Other scripts
-    ├── doc                          # Documentation
-    │   ├── dev                      # Developer docs
-    │   ├── man                      # Manpage
-    │   └── user                     # User manual
-    ├── ext                          # External libs
-    │   ├── midilib                  # MIDI file serialization
-    │   ├── nanovg                   # OpenGL drawing
-    │   ├── sh-manpage-completions   # Shell completion generator
-    │   ├── weakjack                 # Weakly-linked JACK
-    │   ├── whereami                 # Get executable path
-    │   ├── zita-resampler           # Real-time resampler
-    │   └── zix                      # Data struct utils
-    ├── git-packaging-hooks          # Git hooks for packaging
-    ├── inc                          # Include dir
-    │   ├── actions                  # Actions (undo, quit, etc.)
-    │   ├── audio                    # Audio-related headers
-    │   ├── gui                      # Gui-related headers
-    │   │   ├── backend              # Backend for serialization
-    │   │   └── widgets              # Gui widgets
-    │   ├── guile                    # Guile scripting interface
-    │   ├── plugins                  # Plugin handling
-    │   │   ├── carla                # Carla plugin handling
-    │   │   └── lv2                  # LV2 plugin handling
-    │   ├── schemas                  # Struct schema history
-    │   ├── settings                 # Settings
-    │   ├── utils                    # Various utils
-    │   └── zrythm.h                 # Main zrythm struct
-    ├── meson.build                  # Meson conf
-    ├── meson.options                # Meson options
-    ├── po                           # I18n
-    ├── resources                    # Bundled resources
-    │   ├── gl                       # OpenGL
-    │   │   └── shaders              # Shaders
-    │   ├── gtk                      # Standard GTK resources
-    │   ├── icons                    # Icons
-    │   ├── theme                    # Parent GTK theme
-    │   └── ui                       # GTK ui files for widgets
-    ├── scripts                      # Various scripts
-    ├── src                          # Source (.c) counterparts of inc
-    ├── subprojects                  # Subprojects to auto-fetch if some dependencies are not found
-    ├── tests                        # Unit & integration tests
-    │   └── helpers                  # Test helpers
-    └── tools                        # Various tools
+    ├── COPYING                           # Main license
+    ├── COPYING.*                         # Other licenses
+    ├── INSTALL.md                        # Installation instructions
+    ├── PACKAGING.md                      # Information for packagers
+    ├── README.md                         # Main README file
+    ├── THANKS                            # Thanks notice
+    ├── TRADEMARKS.md                     # Trademark policy
+    ├── TRANSLATORS                       # List of translators
+    ├── VERSION                           # Version file
+    ├── build                             # temporary build dir
+    ├── data                              # Data files to be installed
+    │   ├── css-themes                    # UI CSS themes
+    │   ├── fonts                         # Fonts
+    │   ├── gtksourceview-*.xml           # GtkSourceView themes
+    │   ├── icon-themes                   # Icon themes
+    │   ├── org.zrythm.Zrythm-mime.xml    # Custom MIME types
+    │   ├── samples                       # Audio samples
+    │   ├── scripts                       # Built-in Guile scripts
+    │   ├── windows                       # Files used on windows builds
+    │   ├── zrythm.desktop.in             # Desktop file
+    │   ├── zrythm_launch.in              # Launcher script
+    │   └── zrythm_*.in                   # Other scripts
+    ├── doc                               # Documentation
+    │   ├── dev                           # Developer docs
+    │   ├── man                           # Manpage
+    │   └── user                          # User manual
+    ├── ext                               # External libs
+    │   ├── midilib                       # MIDI file serialization
+    │   ├── nanovg                        # OpenGL drawing
+    │   ├── sh-manpage-completions        # Shell completion generator
+    │   ├── weakjack                      # Weakly-linked JACK
+    │   ├── whereami                      # Get executable path
+    │   ├── zita-resampler                # Real-time resampler
+    │   └── zix                           # Data struct utils
+    ├── git-packaging-hooks               # Git hooks for packaging
+    ├── inc                               # Include dir
+    │   ├── actions                       # Actions (undo, quit, etc.)
+    │   ├── audio                         # Audio-related headers
+    │   ├── gui                           # Gui-related headers
+    │   │   ├── backend                   # Backend for serialization
+    │   │   └── widgets                   # Gui widgets
+    │   ├── guile                         # Guile scripting interface
+    │   ├── plugins                       # Plugin handling
+    │   │   ├── carla                     # Carla plugin handling
+    │   │   └── lv2                       # LV2 plugin handling
+    │   ├── schemas                       # Struct schema history
+    │   ├── settings                      # Settings
+    │   ├── utils                         # Various utils
+    │   └── zrythm.h                      # Main zrythm struct
+    ├── meson.build                       # Meson conf
+    ├── meson.options                     # Meson options
+    ├── po                                # I18n
+    ├── resources                         # Bundled resources
+    │   ├── gl                            # OpenGL
+    │   │   └── shaders                   # Shaders
+    │   ├── gtk                           # Standard GTK resources
+    │   ├── icons                         # Icons
+    │   ├── theme                         # Parent GTK theme
+    │   └── ui                            # GTK ui files for widgets
+    ├── scripts                           # Various scripts
+    ├── src                               # Source (.c) counterparts of inc
+    ├── subprojects                       # Subprojects to auto-fetch if some dependencies are not found
+    ├── tests                             # Unit & integration tests
+    │   └── helpers                       # Test helpers
+    └── tools                             # Various tools
 
 # Debugging
-Use `G_DEBUG=fatal_warnings gdb build/src/zrythm`.
-`G_DEBUG=fatal_warnings` will trigger break points at
-warning messages, and is very useful when debugging.
+After installing Zrythm once, for example in
+`~/.local`, use
 
-`GDK_SYNCHRONIZE=1` will make all X requests
+    G_MESSAGES_DEBUG=zrythm G_DEBUG=fatal_criticals GSETTINGS_SCHEMA_DIR=~/.local/share/glib-2.0/schemas GDK_SYNCHRONIZE=1 ZRYTHM_DEBUG=1 gdb -ex "handle SIG32 noprint nostop" -ex run --args build/src/zrythm
+
+Command-line options can be passed at the end. For
+example,
+
+    ... -ex run --args build/src/zrythm --dummy
+
+- `G_DEBUG=fatal_criticals` will trigger
+breakpoints at critical messages. `fatal_warnings`
+is similar and also includes warnings.
+- `GDK_SYNCHRONIZE=1` will make all X requests
 synchronously, which can be useful for UI debugging,
 but it will slow down performance.
+- `G_MESSAGES_DEBUG=zrythm` will enable debug
+messages.
+- `ZRYTHM_DEBUG=1` behaves like a "developer mode" -
+it shows more debug info in various elements in
+the UI.
 
 An easy way to test something is to add a
 `G_BREAKPOINT ();`.
 
-Debug messages can be enabled with
-`G_MESSAGES_DEBUG=zrythm`.
+Below is a GDB cheatsheet. For more information
+about using GDB, see `man gdb`.
+- `r`: run the program
+- `c`: continue execution
+- `q`: quit
+- `bt`: print backtrace
+- `p myvar`: print variable `myvar`
+- `call (void) myfunc (arg1, arg2)`: call function
+`myfunc`, which takes in 2 arguments and returns
+void
 
 For more information on warnings and assertions see
 <https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html>.
@@ -122,6 +144,9 @@ understands the following environment variables.
 - `NO_SCAN_PLUGINS` - disable plugin scanning
 - `ZRYTHM_DEBUG` - shows additional debug info about
   objects
+
+**FIXME** these are not up to date. link to user
+manual or point to the manpage
 
 ## UI Debugging
 [GTK inspector](https://wiki.gnome.org/action/show/Projects/GTK/Inspector)
