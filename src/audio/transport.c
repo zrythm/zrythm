@@ -333,9 +333,10 @@ transport_stretch_audio_regions (
           ZRegion * region =
             TL_SELECTIONS->regions[i];
 
-          /* don't stretch regions with musical
-           * mode off */
-          if (!region_get_musical_mode (region))
+          /* don't stretch audio regions with
+           * musical mode off */
+          if (region->id.type == REGION_TYPE_AUDIO
+              && !region_get_musical_mode (region))
             continue;
 
           ArrangerObject * r_obj =

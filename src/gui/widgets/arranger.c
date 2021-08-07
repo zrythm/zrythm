@@ -4227,8 +4227,18 @@ on_drag_end_timeline (
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_STRETCH_R,
             ticks_diff);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        if (ua)
+          {
+            undo_manager_perform (
+              UNDO_MANAGER, ua);
+          }
+        else
+          {
+            ui_show_message_printf (
+              MAIN_WINDOW, GTK_MESSAGE_ERROR,
+              "%s",
+              _("Failed to create resize action"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:

@@ -1377,9 +1377,11 @@ arranger_object_resize (
             }
 
           if ((type ==
-                ARRANGER_OBJECT_RESIZE_STRETCH ||
+                ARRANGER_OBJECT_RESIZE_STRETCH
+               ||
                type ==
-                 ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE) &&
+                 ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE)
+              &&
               self->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
