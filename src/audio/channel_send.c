@@ -173,12 +173,16 @@ channel_send_get_target_track (
       port =
         port_find_from_identifier (
           &self->dest_l_id);
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (port), NULL);
       return
         port_get_track (port, true);
     case TYPE_EVENT:
       port =
         port_find_from_identifier (
           &self->dest_midi_id);
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (port), NULL);
       return
         port_get_track (port, true);
     default:

@@ -336,7 +336,8 @@ port_find_from_identifier (
       break;
     case PORT_OWNER_TYPE_PLUGIN:
       tr = TRACKLIST->tracks[id->track_pos];
-      g_warn_if_fail (IS_TRACK_AND_NONNULL (tr));
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (tr), NULL);
       switch (id->plugin_id.slot_type)
         {
         case PLUGIN_SLOT_MIDI_FX:
@@ -360,8 +361,14 @@ port_find_from_identifier (
           g_return_val_if_reached (NULL);
           break;
         }
-      g_return_val_if_fail (
-        IS_PLUGIN_AND_NONNULL (pl), NULL);
+      if (!IS_PLUGIN_AND_NONNULL (pl))
+        {
+          g_critical (
+            "could not find plugin for port of "
+            "track %s", tr->name);
+          return NULL;
+        }
+
       switch (id->flow)
         {
         case FLOW_INPUT:
