@@ -149,6 +149,9 @@ timeline_arranger_widget_get_track_at_y (
         self->is_pinned != track_is_pinned (track))
         continue;
 
+      if (!track_get_should_be_visible (track))
+        continue;
+
       g_return_val_if_fail (track->widget, NULL);
 
       if (ui_is_child_hit (
@@ -1540,7 +1543,8 @@ highlight_timeline (
            i++)
         {
           Track * t = TRACKLIST->tracks[i];
-          if (t->visible &&
+          if (track_get_should_be_visible (t)
+              &&
               track_is_pinned (t) ==
                 self->is_pinned)
             {
