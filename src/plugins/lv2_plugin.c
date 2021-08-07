@@ -131,6 +131,7 @@ typedef enum
   Z_PLUGINS_LV2_PLUGIN_ERROR_CREATION_FAILED,
   Z_PLUGINS_LV2_PLUGIN_ERROR_INSTANTIATION_FAILED,
   Z_PLUGINS_LV2_PLUGIN_ERROR_NO_UI,
+  Z_PLUGINS_LV2_PLUGIN_ERROR_CANNOT_FIND_URI,
 } ZPluginsLv2PluginError;
 
 #define Z_PLUGINS_LV2_PLUGIN_ERROR \
@@ -2721,8 +2722,10 @@ lv2_plugin_instantiate (
               LILV_PLUGINS, lv2_uri);
           if (!self->lilv_plugin)
             {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err,
+              g_set_error (
+                error,
+                Z_PLUGINS_LV2_PLUGIN_ERROR,
+                Z_PLUGINS_LV2_PLUGIN_ERROR_CANNOT_FIND_URI,
                 _("Failed to find plugin with URI "
                 "<%s>"),
                 lv2_uri_str);

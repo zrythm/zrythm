@@ -65,6 +65,8 @@ error_propagate_prefixed_prv (
   const char * format,
   ...)
 {
+  g_return_if_fail (err != NULL);
+
   va_list args;
   va_start (args, format);
 
