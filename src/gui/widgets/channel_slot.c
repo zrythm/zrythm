@@ -140,15 +140,25 @@ channel_slot_draw_cb (
         plugin->setting->descr;
 
       /* fill text */
+      char txt[strlen (descr->name) + 40];
+      if (plugin->instantiation_failed)
+        {
+          sprintf (
+            txt, "(!) %s", descr->name);
+        }
+      else
+        {
+          strcpy (txt, descr->name);
+        }
       cairo_set_source_rgba (
         cr, fg.red, fg.green, fg.blue, 1.0);
       int w, h;
       z_cairo_get_text_extents_for_widget (
         widget, self->pl_name_layout,
-        descr->name, &w, &h);
+        txt, &w, &h);
       z_cairo_draw_text_full (
         cr, widget, self->pl_name_layout,
-        descr->name,
+        txt,
         width / 2 - w / 2,
         height / 2 - h / 2);
 

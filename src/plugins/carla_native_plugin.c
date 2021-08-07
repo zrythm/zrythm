@@ -1408,6 +1408,17 @@ carla_native_plugin_instantiate (
   return 0;
 }
 
+static void
+carla_plugin_tick_cb_destroy (
+  void * data)
+{
+  g_return_if_fail (data);
+  CarlaNativePlugin * self =
+    (CarlaNativePlugin *) data;
+
+  self->tick_cb = 0;
+}
+
 /**
  * Shows or hides the UI.
  */
@@ -1488,7 +1499,7 @@ carla_native_plugin_open_ui (
 
       if (show)
         {
-          g_warn_if_fail (MAIN_WINDOW);
+          g_return_if_fail (MAIN_WINDOW);
           g_debug (
             "setting tick callback for %s",
             pl->setting->descr->name);
@@ -1497,7 +1508,8 @@ carla_native_plugin_open_ui (
               GTK_WIDGET (MAIN_WINDOW),
               (GtkTickCallback)
               carla_plugin_tick_cb,
-              self, NULL);
+              self,
+              carla_plugin_tick_cb_destroy);
         }
 
       if (!ZRYTHM_TESTING)
