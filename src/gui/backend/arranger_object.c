@@ -1831,28 +1831,6 @@ arranger_object_get_arranger (
 }
 
 /**
- * Returns if the lane counterpart should be
- * visible.
- */
-bool
-arranger_object_should_lane_be_visible (
-  ArrangerObject * self)
-{
-  if (self->type == TYPE (REGION))
-    {
-      Track * track =
-        arranger_object_get_track (self);
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (track), false);
-      return track->lanes_visible;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-/**
  * Returns if the cached object should be visible,
  * ie, while copy- moving (ctrl+drag) we want to
  * show both the object at its original position

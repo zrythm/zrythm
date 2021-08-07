@@ -477,14 +477,16 @@ add_object_if_overlap (
 
   /* --- end optimization --- */
 
-  arranger_object_set_full_rectangle (obj, self);
   bool is_same_arranger =
     arranger_object_get_arranger (obj) == self;
+  if (!is_same_arranger)
+    return false;
+
+  arranger_object_set_full_rectangle (obj, self);
   bool add = false;
   if (rect)
     {
-      if (is_same_arranger &&
-          (ui_rectangle_overlap (
+      if ((ui_rectangle_overlap (
              &obj->full_rect, rect) ||
            /* also check original (transient) */
            (arranger_object_should_orig_be_visible (
@@ -497,7 +499,6 @@ add_object_if_overlap (
         }
     }
   else if (
-    is_same_arranger &&
     (ui_is_point_in_rect_hit (
        &obj->full_rect,
        x >= 0 ? true : false,
@@ -655,6 +656,13 @@ get_hit_objects (
                 {
                   continue;
                 }
+
+              /* skip if track should not be
+               * visible */
+              if (!track_get_should_be_visible (
+                     track))
+                continue;
+
               if (G_LIKELY (track->widget))
                 {
                   int track_y =

@@ -473,15 +473,6 @@ arranger_object_set_to_object (
   ArrangerObject * src);
 
 /**
- * Returns if the lane counterpart should be
- * visible.
- */
-NONNULL
-bool
-arranger_object_should_lane_be_visible (
-  ArrangerObject * self);
-
-/**
  * Returns if the cached object should be visible,
  * ie, while copy- moving (ctrl+drag) we want to
  * show both the object at its original position
