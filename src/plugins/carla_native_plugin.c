@@ -1428,8 +1428,7 @@ carla_native_plugin_open_ui (
   if ((self->tick_cb == 0 && !show)
       || (self->tick_cb != 0 && show))
     {
-      /* this should not be reached */
-      g_critical (
+      g_message (
         "plugin already has visibility status %d, "
         "doing nothing",
         show);
