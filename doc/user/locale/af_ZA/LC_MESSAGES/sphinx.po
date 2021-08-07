@@ -48,10 +48,9 @@ msgstr ""
 msgid ""
 "Built with <a href=\"https://www.sphinx-doc.org/\">Sphinx</a>\n"
 "              and\n"
-"              <a class=\"muted-link\" "
-"href=\"https://pradyunsg.me\">@pradyunsg</a>'s\n"
-"              <a href=\"https://github.com/pradyunsg/furo\">Furo "
-"theme</a>."
+"              <a class=\"muted-link\" href=\"https://pradyunsg.me"
+"\">@pradyunsg</a>'s\n"
+"              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 msgstr ""
 
 #: ../../_templates/page.html:116
@@ -61,4 +60,3 @@ msgstr ""
 #: ../../_templates/page.html:137
 msgid "Contents"
 msgstr ""
-

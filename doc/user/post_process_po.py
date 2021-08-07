@@ -8,61 +8,15 @@
 # files when "make gettext" is run for the manual
 
 import os
+import subprocess
 import re
 
 srcpath = '@MANUAL_SRC_DIR@/locale'
 for subdir, dirs, files in os.walk(srcpath):
     for file in files:
         fullpath = os.path.join(subdir,file)
-        if file.endswith('scripting.po'):
-            with open(fullpath, 'r') as f :
-                filedata = f.read()
-
-                # remove "Schema Procedure"
-                # translations
-                # filedata = re.sub(
-                        # r'#:.*?api.*?\n(#: .*?\n)*msgid "Scheme Procedure.*?\nmsgstr .*?\n\n',
-                    # '', filedata)
-                # filedata = re.sub(
-                    # r'#:.*?api.*?\n(#: .*?\n)*msgid ""\n"Scheme Procedure.*?\n(".*"\n)*?msgstr .*?\n\n',
-                    # '', filedata)
-
-                # filedata = re.sub(
-                    # r'#:.*?api.*?:3\n.*?\nmsgstr .*?\n\n',
-                    # '', filedata)
-
-                # remove absolute directories (possible
-                # bug with new versions of sphinx-intl)
-                filedata = re.sub(
-                    r'#: .*?/doc/user/',
-                    '#: ../../', filedata, flags=re.DOTALL)
-
-                with open(fullpath, 'w') as fw:
-                  fw.write(filedata)
-
-        elif file.endswith('appendix.po'):
-            with open(fullpath, 'r') as f :
-                filedata = f.read()
-
-                # remove GFDL translations
-                filedata = re.sub(
-                    r'#:.*?gnu-free-documentation-license.*?msgstr ""\n',
-                    '', filedata, flags=re.DOTALL)
-
-                # clean extra new lines
-                filedata = re.sub(
-                    r'\n{2,600}',
-                    '\n\n', filedata, flags=re.DOTALL)
-
-                # remove absolute directories (possible
-                # bug with new versions of sphinx-intl)
-                filedata = re.sub(
-                    r'#: .*?/doc/user/',
-                    '#: ../../', filedata, flags=re.DOTALL)
-
-                with open(fullpath, 'w') as fw:
-                  fw.write(filedata)
-        elif file.endswith('.po'):
+        if file.endswith('.po'):
+            print ('processing file %s' % fullpath)
             with open(fullpath, 'r') as f :
                 filedata = f.read()
 
@@ -71,6 +25,22 @@ for subdir, dirs, files in os.walk(srcpath):
                 filedata = re.sub(
                     r'#: .*?/doc/user/',
                     '#: ../../', filedata, flags=re.DOTALL)
+
+                # run msggrep to remove prolog
+                if file.endswith ('zrythm-manual.po'):
+                    completed_process = subprocess.run ([
+                        '@MSGGREP@',
+                        '--invert-match',
+                        '--location',
+                        '../../../../<rst_prolog>',
+                        '-',
+                        ],
+                        input = filedata,
+                        text = True,
+                        capture_output = True,
+                        check = True)
+                    filedata = completed_process.stdout
 
                 with open(fullpath, 'w') as f:
-                  f.write(filedata)
+                    print ('writing to file %s' % fullpath)
+                    f.write(filedata)

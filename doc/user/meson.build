@@ -238,6 +238,7 @@ post_process_po_py = configure_file (
   configuration: {
     'PYTHON3': python3.full_path (),
     'MANUAL_SRC_DIR': meson.current_source_dir (),
+    'MSGGREP': msggrep.full_path (),
     })
 manual_gettext_post = custom_target (
   'manual_gettext_post',
@@ -247,6 +248,7 @@ manual_gettext_post = custom_target (
     python3, '@INPUT@',
     ],
   depends: manual_gettext_update_po,
+  console: true,
   )
 
 bundle_manual_sh = configure_file (
