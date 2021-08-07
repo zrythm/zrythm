@@ -1483,6 +1483,7 @@ tracklist_handle_move_or_copy (
           if (!ret)
             return;
         }
+      /* else if not highlighted inside */
       else
         {
           int num_actions = 1;
@@ -1505,8 +1506,8 @@ tracklist_handle_move_or_copy (
                   track_below_parent != cur_parent)
                 {
                   bool ret =
-                    tracklist_selections_move_or_copy_inside_with_action (
-                      tls, true,
+                    tracklist_selections_copy_inside_w_action (
+                      tls,
                       track_below_parent->pos);
                   if (!ret)
                     return;
@@ -1515,22 +1516,13 @@ tracklist_handle_move_or_copy (
                 }
             }
 
-          if (num_actions == 1)
-            {
-              bool ret =
-                tracklist_selections_move_or_copy_with_action (
-                  tls, true, pos);
-              if (!ret)
-                return;
-            }
-          else
-            {
-              bool ret =
-                tracklist_selections_move_or_copy_with_action (
-                  tls, false, pos);
-              if (!ret)
-                return;
-            }
+          bool copy = num_actions == 1;
+          bool ret =
+            tracklist_selections_move_or_copy_with_action (
+              tls, copy, pos);
+          if (!ret)
+            return;
+
           UndoableAction * ua =
             undo_manager_get_last_action (
               UNDO_MANAGER);
@@ -1556,18 +1548,20 @@ tracklist_handle_move_or_copy (
           else
             {
               bool ret =
-                tracklist_selections_move_or_copy_inside_with_action (
-                  TRACKLIST_SELECTIONS, false,
+                tracklist_selections_move_inside_w_action (
+                  TRACKLIST_SELECTIONS,
                   this_track->pos);
               if (!ret)
                 return;
             }
         }
+      /* else if not highlighted inside */
       else
         {
           int num_actions = 1;
           TracklistSelections * tls =
             TRACKLIST_SELECTIONS;
+          bool move_inside = false;
           if (pos < TRACKLIST->num_tracks)
             {
               Track * track_below =
@@ -1584,9 +1578,10 @@ tracklist_handle_move_or_copy (
               if (track_below_parent &&
                   track_below_parent != cur_parent)
                 {
+                  move_inside = true;
                   bool ret =
-                    tracklist_selections_move_or_copy_inside_with_action (
-                      tls, false,
+                    tracklist_selections_move_inside_w_action (
+                      tls,
                       track_below_parent->pos);
                   if (!ret)
                     return;
@@ -1595,9 +1590,16 @@ tracklist_handle_move_or_copy (
                 }
             }
 
-          bool ret =
-            tracklist_selections_move_or_copy_inside_with_action (
-              tls, false, pos);
+          bool ret;
+          if (move_inside)
+            ret =
+              tracklist_selections_move_inside_w_action (
+                tls, pos);
+          else
+            ret =
+              tracklist_selections_move_w_action (
+                tls, pos);
+
           if (!ret)
             return;
 
