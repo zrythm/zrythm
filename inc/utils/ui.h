@@ -576,9 +576,15 @@ ui_get_detail_level (void);
 /**
  * Converts from pixels to position.
  *
- * @param has_padding Whether the given px contain
+ * Only works with positive numbers. Negatives will
+ * be clamped at 0. If a negative is needed, pass
+ * the abs to this function and then change the
+ * sign.
+ *
+ * @param has_padding Whether @ref px contains
  *   padding.
  */
+NONNULL
 void
 ui_px_to_pos_timeline (
   double     px,
@@ -612,10 +618,10 @@ ui_px_to_frames_editor (
   int    has_padding);
 
 /**
- * Converts position to px, optionally adding the ruler
- * padding.
+ * Converts position to px, optionally adding the
+ * ruler padding.
  */
-HOT
+NONNULL
 int
 ui_pos_to_px_timeline (
   Position * pos,
@@ -625,6 +631,7 @@ ui_pos_to_px_timeline (
  * Converts position to px, optionally adding the ruler
  * padding.
  */
+NONNULL
 int
 ui_pos_to_px_editor (
   Position * pos,
@@ -633,14 +640,20 @@ ui_pos_to_px_editor (
 /**
  * Converts from pixels to position.
  *
- * @param has_padding Whether \ref px contains
+ * Only works with positive numbers. Negatives will
+ * be clamped at 0. If a negative is needed, pass
+ * the abs to this function and then change the
+ * sign.
+ *
+ * @param has_padding Whether @ref px contains
  *   padding.
  */
+NONNULL
 void
 ui_px_to_pos_editor (
-  double            px,
-  Position *        pos,
-  int               has_padding);
+  double     px,
+  Position * pos,
+  int        has_padding);
 
 /**
  * Converts RGB to hex string.

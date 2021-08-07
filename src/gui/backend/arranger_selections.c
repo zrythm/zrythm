@@ -1178,7 +1178,8 @@ arranger_selections_get_last_object (
   MidiArrangerSelections * mas;
   AutomationSelections * as;
 
-  POSITION_INIT_ON_STACK (pos);
+  Position pos;
+  position_set_to_bar (&pos, - POSITION_MAX_BAR);
   ArrangerObject * ret_obj = NULL;
 
 #define GET_LAST_OBJ(sel,cc,sc) \

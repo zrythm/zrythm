@@ -588,6 +588,7 @@ arranger_widget_on_key_release (
  * @param up Whether scrolling up or down.
  * @param padding Padding pixels.
  */
+NONNULL
 void
 arranger_widget_scroll_until_obj (
   ArrangerWidget * self,

@@ -282,43 +282,55 @@ px_to_pos (
 /**
  * Converts from pixels to position.
  *
- * Only works with positive numbers. Negatives will be
- * clamped at 0. If a negative is needed, pass the abs to
- * this function and then change the sign.
+ * Only works with positive numbers. Negatives will
+ * be clamped at 0. If a negative is needed, pass
+ * the abs to this function and then change the
+ * sign.
+ *
+ * @param has_padding Whether @ref px contains
+ *   padding.
  */
 void
 ui_px_to_pos_timeline (
   double     px,
   Position * pos,
-  int        has_padding) ///< whether the given px include padding
+  int        has_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return;
 
-  px_to_pos (px, pos, has_padding,
-             Z_RULER_WIDGET (MW_RULER));
+  px_to_pos (
+    px, pos, has_padding,
+    Z_RULER_WIDGET (MW_RULER));
 }
 
 
 /**
  * Converts from pixels to position.
  *
- * Only works with positive numbers. Negatives will be
- * clamped at 0. If a negative is needed, pass the abs to
- * this function and then change the sign.
+ * Only works with positive numbers. Negatives will
+ * be clamped at 0. If a negative is needed, pass
+ * the abs to this function and then change the
+ * sign.
+ *
+ * @param has_padding Whether @ref px contains
+ *   padding.
  */
 void
-ui_px_to_pos_editor (double               px,
-           Position *        pos,
-           int               has_padding) ///< whether the given px include padding
+ui_px_to_pos_editor (
+  double     px,
+  Position * pos,
+  int        has_padding)
 {
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return;
 
-  px_to_pos (px, pos, has_padding,
-             (RulerWidget *) (EDITOR_RULER));
+  px_to_pos (
+    px, pos, has_padding,
+    Z_RULER_WIDGET (EDITOR_RULER));
 }
 
+NONNULL
 static int
 pos_to_px (
   Position *       pos,
@@ -336,8 +348,8 @@ pos_to_px (
 }
 
 /**
- * Gets pixels from the position, based on the
- * timeline ruler.
+ * Converts position to px, optionally adding the
+ * ruler padding.
  */
 int
 ui_pos_to_px_timeline (
