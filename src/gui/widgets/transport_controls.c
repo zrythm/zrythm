@@ -389,7 +389,7 @@ activate_preroll (
     {
       preroll_type = PREROLL_COUNT_BARS_NONE;
     }
-  if (string_is_equal (variant, "one"))
+  else if (string_is_equal (variant, "one"))
     {
       preroll_type = PREROLL_COUNT_BARS_ONE;
     }

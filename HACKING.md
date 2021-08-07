@@ -85,14 +85,18 @@ example,
 
     ... -ex run --args build/src/zrythm --dummy
 
+- `G_MESSAGES_DEBUG=zrythm` will enable debug
+messages.
 - `G_DEBUG=fatal_criticals` will trigger
 breakpoints at critical messages. `fatal_warnings`
 is similar and also includes warnings.
+- `GSETTINGS_SCHEMA_DIR` specifies the path to look
+for GSettings schemas. Zrythm will install its
+schema under `share/glib-2.0/schemas` in the install
+prefix.
 - `GDK_SYNCHRONIZE=1` will make all X requests
 synchronously, which can be useful for UI debugging,
 but it will slow down performance.
-- `G_MESSAGES_DEBUG=zrythm` will enable debug
-messages.
 - `ZRYTHM_DEBUG=1` behaves like a "developer mode" -
 it shows more debug info in various elements in
 the UI.
@@ -106,6 +110,8 @@ about using GDB, see `man gdb`.
 - `c`: continue execution
 - `q`: quit
 - `bt`: print backtrace
+- `up`: go up in the call stack
+- `down`: go down in the call stack
 - `p myvar`: print variable `myvar`
 - `call (void) myfunc (arg1, arg2)`: call function
 `myfunc`, which takes in 2 arguments and returns
