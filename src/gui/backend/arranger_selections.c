@@ -2029,8 +2029,12 @@ arranger_selections_contains_object_with_property (
       if (CHECK_PROP (HAS_LOOPED))
         {
           int num_loops =
+            arranger_object_type_can_loop (
+              cur_obj->type)
+            ?
             arranger_object_get_num_loops (
-              cur_obj, false);
+              cur_obj, false)
+            : 0;
           if ((num_loops > 0) == value)
             {
               ret = true;

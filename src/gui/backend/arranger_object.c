@@ -205,6 +205,9 @@ arranger_object_get_num_loops (
   ArrangerObject * self,
   const int        count_incomplete)
 {
+  g_return_val_if_fail (
+    arranger_object_type_can_loop (self->type), 0);
+
   int i = 0;
   long loop_size =
     arranger_object_get_loop_length_in_frames (
