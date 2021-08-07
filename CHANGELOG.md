@@ -1,6 +1,45 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.22.1.1] - 2021-08-07
+### Added
+- Set window title and role when detaching tabs
+- Add automatic bug reporting option
+- Add json-glib dependency
+- User manual: add Zchan images
+- Add opt-in popup for checking for updates
+- Move to start of double-clicked region in the editor
+- Add line wraps to track comments
+
+### Changed
+- Allow specifying primary and secondary user shortcuts
+- Always build with libcurl
+- Change `phone_home` option to `check_updates`
+- Redesign bug report dialog (add text input fields and buttons to send via email/sourcehut/automatically)
+- Switch to resize-loop when attempting to resize-only a selection that contains a mix of looped and unlooped objects
+- Propagate errors using GError for tracklist selections actions
+- Show "(!)" on channel slot if plugin instantiation failed
+
+### Fixed
+- Fix app.goto-prev-marker user shortcut not being read
+- Fix shift-m not working for muting objects
+- Fix copy-paste and cut-paste not working in editor
+- Fix editor size becoming larger when double-clicking region
+- Fix playhead jumping to the start of a region in the editor if placed at the end of the region
+- Fix quantize/quick-quantize not working in the editor
+- Fix carla plugins becoming disabled when loading a preset
+- Fix crash when selecting "overwrite events" recording mode
+- Fix segfault in port code
+- Fix click and drag to move playhead not working in editor ruler
+- Fix incorrectly assuming the current version is not the latest version when checking for updates fails
+- Fix crash when pressing right arrow on MIDI notes ending before the region start
+- Fix error when moving folder track
+- Fix folded track objects being visible in the timeline
+- Fix error when changing preroll from 2 bars to none
+- Fix timeline drop highlighting not taking into account folded tracks
+- Fix crash when right clicking on an audio region and applying a function
+- Fix stretching of MIDI regions not working
+
 ## [1.0.0-alpha.22.0.1] - 2021-08-01
 ### Added
 - Add Turkish translation
