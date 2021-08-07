@@ -129,10 +129,14 @@ test_serialization (void)
   g_assert_cmpint (
     port->dest_enabled[0], ==,
     deserialized_port->dest_enabled[0]);
+  deserialized_port->magic = PORT_MAGIC;
 
   yaml =
     yaml_serialize (deserialized_port, &port_schema);
   /*g_warning ("%s", yaml);*/
+
+  port_disconnect_all (port);
+  port_free (port);
 
   port =
     (Port *)
@@ -147,6 +151,52 @@ test_serialization (void)
   g_assert_cmpint (
     port->dest_enabled[0], ==,
     deserialized_port->dest_enabled[0]);
+  port->magic = PORT_MAGIC;
+
+  port_disconnect_all (port);
+  port_disconnect_all (port2);
+  port_disconnect_all (port3);
+  port_disconnect_all (deserialized_port);
+  port_free (port);
+  port_free (port2);
+  port_free (port3);
+  port_free (deserialized_port);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_get_hash (void)
+{
+  test_helper_zrythm_init ();
+
+  Port * port1 =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+  Port * port2 =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+  Port * port3 =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_OUTPUT, "test-port3");
+
+  unsigned int hash1 = port_get_hash (port1);
+  unsigned int hash2 = port_get_hash (port2);
+  unsigned int hash3 = port_get_hash (port3);
+  g_assert_cmpuint (hash1, !=, hash2);
+  g_assert_cmpuint (hash1, !=, hash3);
+
+  /* hash again and check equal */
+  unsigned int hash11 = port_get_hash (port1);
+  unsigned int hash22 = port_get_hash (port2);
+  unsigned int hash33 = port_get_hash (port3);
+  g_assert_cmpuint (hash1, ==, hash11);
+  g_assert_cmpuint (hash2, ==, hash22);
+  g_assert_cmpuint (hash3, ==, hash33);
+
+  port_free (port1);
+  port_free (port2);
+  port_free (port3);
 
   test_helper_zrythm_cleanup ();
 }
@@ -158,6 +208,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/port/"
 
+  g_test_add_func (
+    TEST_PREFIX "test get hash",
+    (GTestFunc) test_get_hash);
   g_test_add_func (
     TEST_PREFIX "test port disconnect",
     (GTestFunc) test_port_disconnect);

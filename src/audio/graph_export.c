@@ -42,18 +42,29 @@ typedef struct ANode
   Agraph_t *  graph;
 } ANode;
 
+static ANode *
+anode_new (void)
+{
+  return object_new (ANode);
+}
+
+static void
+anode_free (
+  ANode * anode)
+{
+  object_zero_and_free (anode);
+}
+
 static Agraph_t *
 get_graph_from_node (
-  ANode *    anodes,
-  int         num_anodes,
-  GraphNode * node)
+  GHashTable * anodes,
+  GraphNode *  node)
 {
-  for (int i = 0; i < num_anodes; i++)
-    {
-      ANode * anode = &anodes[i];
-      if (anode->node->id == node->id)
-        return anode->graph;
-    }
+  ANode * anode =
+    (ANode *)
+    g_hash_table_lookup (anodes, node);
+  if (anode && anode->node->id == node->id)
+    return anode->graph;
   g_warning (
     "%p %s", node, graph_node_get_name (node));
   g_return_val_if_reached (NULL);
@@ -61,9 +72,8 @@ get_graph_from_node (
 
 static Agraph_t *
 get_parent_graph (
-  ANode *    anodes,
-  int         num_anodes,
-  GraphNode * node)
+  GHashTable * anodes,
+  GraphNode *  node)
 {
   GraphNode * parent_node = NULL;
   switch (node->type)
@@ -152,18 +162,17 @@ get_parent_graph (
 
   return
     get_graph_from_node (
-      anodes, num_anodes, parent_node);
+      anodes, parent_node);
 }
 
 static Agnode_t *
 create_anode (
-  Agraph_t *  aroot_graph,
-  GraphNode * node,
-  ANode *    anodes,
-  int         num_anodes)
+  Agraph_t *   aroot_graph,
+  GraphNode *  node,
+  GHashTable * anodes)
 {
   Agraph_t * aparent_graph =
-    get_parent_graph (anodes, num_anodes, node);
+    get_parent_graph (anodes, node);
   if (!aparent_graph)
     aparent_graph = aroot_graph;
 
@@ -227,28 +236,35 @@ create_anode (
 
 static void
 fill_anodes (
-  Graph *    graph,
-  Agraph_t * aroot_graph,
-  ANode *    anodes)
+  Graph *      graph,
+  Agraph_t *   aroot_graph,
+  GHashTable * anodes)
 {
   char cluster_name[600];
 
   /* fill nodes */
-  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init (
+    &iter, graph->setup_graph_nodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      GraphNode * node = graph->setup_graph_nodes[i];
-      ANode * anode = &anodes[i];
+      GraphNode * node = (GraphNode *) value;
+      ANode * anode = anode_new ();
       anode->node = node;
-      get_graph_from_node (
-        anodes, graph->num_setup_graph_nodes, node);
+      g_hash_table_insert (anodes, node, anode);
+      get_graph_from_node (anodes, node);
     }
 
   /* create top clusters (tracks, sample processor,
    * monitor fader) */
-  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
+  g_hash_table_iter_init (&iter, anodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      GraphNode * node = graph->setup_graph_nodes[i];
-      ANode * anode = &anodes[i];
+      GraphNode * node = (GraphNode *) key;
+      ANode * anode = (ANode *) value;
 
       if (node->type != ROUTE_NODE_TYPE_TRACK &&
           node->type !=
@@ -270,10 +286,12 @@ fill_anodes (
     }
 
   /* create track subclusters */
-  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
+  g_hash_table_iter_init (&iter, anodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      GraphNode * node = graph->setup_graph_nodes[i];
-      ANode * anode = &anodes[i];
+      GraphNode * node = (GraphNode *) key;
+      ANode * anode = (ANode *) value;
 
       if (node->type != ROUTE_NODE_TYPE_PLUGIN &&
           node->type != ROUTE_NODE_TYPE_FADER &&
@@ -331,8 +349,7 @@ fill_anodes (
 
       Agraph_t * aparent_graph =
         get_parent_graph (
-          anodes, graph->num_setup_graph_nodes,
-          parent_node);
+          anodes, parent_node);
       g_warn_if_fail (aparent_graph);
       char * node_name =
         graph_node_get_name (node);
@@ -359,26 +376,32 @@ export_as_graphviz_type (
       NULL);
 
   /* fill anodes with subgraphs */
-  ANode * anodes =
-    object_new_n (
-      (size_t) graph->num_setup_graph_nodes,
-      ANode);
+  /* Hash table of
+   * key: (GraphNode *), value: (ANode *) */
+  GHashTable * anodes =
+    g_hash_table_new_full (
+      g_direct_hash, g_direct_equal, NULL,
+      (GDestroyNotify) anode_free);
   fill_anodes (graph, agraph, anodes);
 
   /* create graph */
-  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init (&iter, anodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      GraphNode * node = graph->setup_graph_nodes[i];
+      GraphNode * node = (GraphNode *) key;
+
       Agnode_t * anode =
         create_anode (
-          agraph, node, anodes, graph->num_setup_graph_nodes);
+          agraph, node, anodes);
       for (int j = 0; j < node->n_childnodes; j++)
         {
           GraphNode * child = node->childnodes[j];
           Agnode_t * achildnode =
             create_anode (
-              agraph, child, anodes,
-              graph->num_setup_graph_nodes);
+              agraph, child, anodes);
 
           /* create edge */
           Agedge_t * edge =
@@ -410,7 +433,8 @@ export_as_graphviz_type (
   gvFreeLayout(gvc, agraph);
   agclose (agraph);
   gvFreeContext(gvc);
-  object_zero_and_free (anodes);
+  object_free_w_func_and_null (
+    g_hash_table_unref, anodes);
 }
 #endif
 

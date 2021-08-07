@@ -140,3 +140,13 @@ hash_get_from_file (
 
   return ret;
 }
+
+unsigned int
+hash_get_for_struct (
+  const void * const obj,
+  size_t             size)
+{
+  XXH32_hash_t hash = XXH32 (obj, size, SEED_32);
+
+  return (unsigned int) hash;
+}

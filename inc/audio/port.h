@@ -1074,13 +1074,6 @@ port_disconnect_hw_inputs (
   Port * self);
 
 /**
- * Deletes port, doing required cleanup and updating counters.
- */
-NONNULL
-void
-port_free (Port * port);
-
-/**
  * Sets whether to expose the port to the backend
  * and exposes it or removes it.
  *
@@ -1463,6 +1456,21 @@ port_apply_pan (
   PanAlgorithm pan_algo,
   nframes_t start_frame,
   const nframes_t nframes);
+
+/**
+ * Generates a hash for a given port.
+ */
+NONNULL
+unsigned int
+port_get_hash (
+  const void * ptr);
+
+/**
+ * Deletes port, doing required cleanup and updating counters.
+ */
+NONNULL
+void
+port_free (Port * port);
 
 /**
  * @}

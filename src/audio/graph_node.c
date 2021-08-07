@@ -621,7 +621,9 @@ graph_node_new (
   void *   data)
 {
   GraphNode * node = object_new (GraphNode);
-  node->id = (int) graph->num_setup_graph_nodes;
+  node->id =
+    (int)
+    g_hash_table_size (graph->setup_graph_nodes);
   node->graph = graph;
   node->type = type;
   switch (type)
@@ -658,6 +660,8 @@ graph_node_new (
       node->modulator_macro_processor =
         (ModulatorMacroProcessor *) data;
       break;
+    default:
+      g_return_val_if_reached (node);
     }
 
   return node;

@@ -43,6 +43,11 @@ hash_get_from_file (
   const char *  filepath,
   HashAlgorithm algo);
 
+unsigned int
+hash_get_for_struct (
+  const void * const obj,
+  size_t             size);
+
 /**
  * @}
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -229,7 +229,8 @@ main_thread (void * arg)
   if (!self->destroying)
     {
       /* Can't run without a graph */
-      g_warn_if_fail (self->n_graph_nodes > 0);
+      g_warn_if_fail (
+        g_hash_table_size (self->graph_nodes) > 0);
       g_warn_if_fail (self->n_init_triggers > 0);
       g_warn_if_fail (self->n_terminal_nodes > 0);
     }

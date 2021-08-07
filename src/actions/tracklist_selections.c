@@ -448,6 +448,10 @@ tracklist_selections_action_new (
                   Track * target_track =
                     channel_send_get_target_track (
                       send, cur_track);
+                  g_return_val_if_fail (
+                    IS_TRACK_AND_NONNULL (
+                      target_track),
+                    NULL);
 
                   if (target_track->pos ==
                         clone_track->pos)

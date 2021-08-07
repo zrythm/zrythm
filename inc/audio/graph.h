@@ -93,8 +93,8 @@ typedef struct Graph
 
   /** List of all graph nodes (only used for memory
    * management) */
-  GraphNode ** graph_nodes;
-  int          n_graph_nodes;
+  /** key = internal pointer, value = graph node. */
+  GHashTable * graph_nodes;
 
   /* --- caches for current graph --- */
   GraphNode *  bpm_node;
@@ -140,8 +140,9 @@ typedef struct Graph
   /** Chain used to setup in the background.
    * This is applied and cleared by graph_rechain()
    */
-  GraphNode **         setup_graph_nodes;
-  size_t               num_setup_graph_nodes;
+  /** key = internal pointer, value = graph node. */
+  GHashTable *         setup_graph_nodes;
+
   GraphNode **         setup_init_trigger_list;
   size_t               num_setup_init_triggers;
 
@@ -150,6 +151,9 @@ typedef struct Graph
    * the playback latencies. */
   GraphNode **         setup_terminal_nodes;
   size_t               num_setup_terminal_nodes;
+
+  /** Dummy member to make lookups work. */
+  int                  initial_processor;
 
   /* ------------------------------------ */
 
@@ -169,62 +173,64 @@ graph_destroy (
 
 GraphNode *
 graph_find_node_from_port (
-  Graph * graph,
-  const Port * port);
+  const Graph * self,
+  const Port *  port);
 
 GraphNode *
 graph_find_node_from_plugin (
-  Graph * graph,
-  Plugin * pl);
+  const Graph *  self,
+  const Plugin * pl);
 
 GraphNode *
 graph_find_node_from_track (
-  Graph * graph,
-  Track * track,
-  bool    use_setup_nodes);
+  const Graph * self,
+  const Track * track,
+  bool          use_setup_nodes);
 
 GraphNode *
 graph_find_node_from_fader (
-  Graph * graph,
-  Fader * fader);
+  const Graph * self,
+  const Fader * fader);
 
 GraphNode *
 graph_find_node_from_prefader (
-  Graph * graph,
-  Fader * prefader);
+  const Graph * self,
+  const Fader * prefader);
 
 GraphNode *
 graph_find_node_from_sample_processor (
-  Graph * graph,
-  SampleProcessor * sample_processor);
+  const Graph *           self,
+  const SampleProcessor * sample_processor);
 
 GraphNode *
 graph_find_node_from_monitor_fader (
-  Graph * graph,
-  Fader * fader);
+  const Graph * self,
+  const Fader * fader);
 
 GraphNode *
 graph_find_node_from_modulator_macro_processor (
-  Graph * graph,
-  ModulatorMacroProcessor * processor);
+  const Graph *                   self,
+  const ModulatorMacroProcessor * processor);
 
 GraphNode *
 graph_find_initial_processor_node (
-  Graph * graph);
+  const Graph * self);
 
 GraphNode *
 graph_find_hw_processor_node (
-  Graph * graph);
+  const Graph *             self,
+  const HardwareProcessor * processor);
 
 /**
  * Creates a new node, adds it to the graph and
  * returns it.
  */
+NONNULL
 GraphNode *
 graph_create_node (
-  Graph * graph,
+  Graph *       self,
   GraphNodeType type,
-  void * data);
+  void *        data);
 
 /**
  * Returns the max playback latency of the trigger

@@ -134,7 +134,10 @@ is_valid (
   /* Fill up an array of trigger nodes, and make
    * it large enough so that we can append more
    * nodes to it */
-  GraphNode * triggers[self->num_setup_graph_nodes];
+  int num_setup_graph_nodes =
+    (int)
+    g_hash_table_size (self->setup_graph_nodes);
+  GraphNode * triggers[num_setup_graph_nodes];
   int num_triggers = self->num_setup_init_triggers;
   for (int i = 0; i < num_triggers; i++)
     {
@@ -159,10 +162,14 @@ is_valid (
         }
     }
 
-  for (size_t j = 0;
-       j < self->num_setup_graph_nodes; j++)
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init (
+    &iter, self->setup_graph_nodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      GraphNode * n = self->setup_graph_nodes[j];
+      GraphNode * n = (GraphNode *) value;
       if (n->n_childnodes > 0 ||
           n->init_refcount > 0)
         {
@@ -177,14 +184,8 @@ static void
 clear_setup (
   Graph * self)
 {
-  for (size_t i = 0;
-       i < self->num_setup_graph_nodes; i++)
-    {
-      object_free_w_func_and_null (
-        graph_node_free,
-        self->setup_graph_nodes[i]);
-    }
-  self->num_setup_graph_nodes = 0;
+  g_hash_table_remove_all (
+    self->setup_graph_nodes);
   self->num_setup_init_triggers = 0;
   self->num_setup_terminal_nodes = 0;
 }
@@ -200,10 +201,43 @@ graph_rechain (
     g_atomic_int_get (
       &self->trigger_queue_size) == 0);
 
-  array_dynamic_swap (
-    &self->graph_nodes, &self->n_graph_nodes,
-    &self->setup_graph_nodes,
-    &self->num_setup_graph_nodes);
+  /* --- swap setup nodes with graph nodes --- */
+  g_return_if_fail (
+    self->graph_nodes && self->setup_graph_nodes);
+  GHashTable * tmp =
+    g_hash_table_new_full (
+      g_direct_hash, g_direct_equal, NULL, NULL);
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init (
+    &iter, self->graph_nodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
+    {
+      g_hash_table_insert (tmp, key, value);
+    }
+  g_hash_table_steal_all (self->graph_nodes);
+
+  g_hash_table_iter_init (
+    &iter, self->setup_graph_nodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
+    {
+      g_hash_table_insert (
+        self->graph_nodes, key, value);
+    }
+  g_hash_table_steal_all (self->setup_graph_nodes);
+
+  g_hash_table_iter_init (&iter, tmp);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
+    {
+      g_hash_table_insert (
+        self->setup_graph_nodes, key, value);
+    }
+
+  /* --- end --- */
+
   array_dynamic_swap (
     &self->init_trigger_list,
     &self->n_init_triggers,
@@ -223,7 +257,8 @@ graph_rechain (
 
   mpmc_queue_reserve (
     self->trigger_queue,
-    (size_t) self->n_graph_nodes);
+    (size_t)
+    g_hash_table_size (self->graph_nodes));
 
   clear_setup (self);
 }
@@ -295,12 +330,18 @@ graph_print (
   Graph * self)
 {
   g_message ("==printing graph");
-  /*GraphNode * node;*/
-  for (size_t i = 0;
-       i < self->num_setup_graph_nodes; i++)
+
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init (
+    &iter, self->setup_graph_nodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      graph_node_print (self->setup_graph_nodes[i]);
+      GraphNode * n = (GraphNode *) value;
+      graph_node_print (n);
     }
+
   g_message (
     "num trigger nodes %zu | "
     /*"num max trigger nodes %d | "*/
@@ -468,39 +509,32 @@ graph_update_latencies (
   g_message ("updating graph latencies...");
 
   /* reset latencies */
-  for (size_t i = 0;
-       i <
-         (use_setup_nodes ?
-           self->num_setup_graph_nodes :
-           (size_t) self->n_graph_nodes);
-       i++)
+  GHashTable * ht =
+    use_setup_nodes
+    ? self->setup_graph_nodes : self->graph_nodes;
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init (&iter, ht);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      GraphNode * node =
-        (use_setup_nodes ?
-          self->setup_graph_nodes[i] :
-          self->graph_nodes[i]);
-      node->playback_latency = 0;
-      node->route_playback_latency = 0;
+      GraphNode * n = (GraphNode *) value;
+      n->playback_latency = 0;
+      n->route_playback_latency = 0;
     }
 
-  for (size_t i = 0;
-       i <
-         (use_setup_nodes ?
-           self->num_setup_graph_nodes :
-           (size_t) self->n_graph_nodes);
-       i++)
+  g_hash_table_iter_init (&iter, ht);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      GraphNode * node =
-        (use_setup_nodes ?
-          self->setup_graph_nodes[i] :
-          self->graph_nodes[i]);
-      node->playback_latency =
+      GraphNode * n = (GraphNode *) value;
+      n->playback_latency =
         graph_node_get_single_playback_latency (
-          node);
-      if (node->playback_latency > 0)
+          n);
+      if (n->playback_latency > 0)
         {
           graph_node_set_route_playback_latency (
-            node, node->playback_latency);
+            n, n->playback_latency);
         }
     }
 
@@ -547,7 +581,7 @@ graph_setup (
   /* add the initial processor */
   graph_create_node (
     self, ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
-    NULL);
+    &self->initial_processor);
 
   /* add the hardware input processor */
   graph_create_node (
@@ -716,7 +750,8 @@ graph_setup (
 
   /* connect the HW input processor */
   GraphNode * hw_processor_node =
-    graph_find_hw_processor_node (self);
+    graph_find_hw_processor_node (
+      self, HW_IN_PROCESSOR);
   for (int i = 0;
        i < HW_IN_PROCESSOR->num_audio_ports; i++)
     {
@@ -1161,10 +1196,14 @@ graph_setup (
   /* ========================
    * set initial and terminal nodes
    * ======================== */
-  for (size_t ii = 0;
-       ii < self->num_setup_graph_nodes; ii++)
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init (
+    &iter, self->setup_graph_nodes);
+  while (g_hash_table_iter_next (
+           &iter, &key, &value))
     {
-      node = self->setup_graph_nodes[ii];
+      node = (GraphNode *) value;
       if (node->n_childnodes == 0)
         {
           /* terminal node */
@@ -1345,7 +1384,14 @@ graph_new (
     object_new (GraphNode *);
   self->terminal_nodes =
     object_new (GraphNode *);
-  self->graph_nodes = object_new (GraphNode *);
+  self->graph_nodes =
+    g_hash_table_new_full (
+      g_direct_hash, g_direct_equal, NULL,
+      (GDestroyNotify) graph_node_free);
+  self->setup_graph_nodes =
+    g_hash_table_new_full (
+      g_direct_hash, g_direct_equal, NULL,
+      (GDestroyNotify) graph_node_free);
 
   zix_sem_init (&self->callback_start, 0);
   zix_sem_init (&self->callback_done, 0);
@@ -1451,185 +1497,174 @@ graph_terminate (
 
 GraphNode *
 graph_find_node_from_port (
-  Graph * graph,
-  const Port * port)
+  const Graph * self,
+  const Port *  port)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, port);
+  if (node && node->type == ROUTE_NODE_TYPE_PORT)
     {
-      node = graph->setup_graph_nodes[i];
-      if (node->type == ROUTE_NODE_TYPE_PORT &&
-          node->port == port)
-        return node;
+      g_return_val_if_fail (
+        node->port == port, NULL);
+      return node;
     }
+
   return NULL;
 }
 
 GraphNode *
 graph_find_node_from_plugin (
-  Graph * graph,
-  Plugin * pl)
+  const Graph *  self,
+  const Plugin * pl)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type == ROUTE_NODE_TYPE_PLUGIN &&
-          node->pl == pl)
-        return node;
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, pl);
+  if (node && node->type == ROUTE_NODE_TYPE_PLUGIN)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_node_from_track (
-  Graph * graph,
-  Track * track,
-  bool    use_setup_nodes)
+  const Graph * self,
+  const Track * track,
+  bool          use_setup_nodes)
 {
-  GraphNode ** nodes =
+  GHashTable * nodes =
     (use_setup_nodes ?
-       graph->setup_graph_nodes :
-       graph->graph_nodes);
-  size_t num_nodes =
-    (use_setup_nodes ?
-       graph->num_setup_graph_nodes :
-       (size_t) graph->n_graph_nodes);
-  GraphNode * node;
-  for (size_t i = 0; i < num_nodes; i++)
-    {
-      node = nodes[i];
-      if (node->type == ROUTE_NODE_TYPE_TRACK &&
-          node->track == track)
-        return node;
-    }
-  return NULL;
+       self->setup_graph_nodes :
+       self->graph_nodes);
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (nodes, track);
+  if (node && node->type == ROUTE_NODE_TYPE_TRACK)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_node_from_fader (
-  Graph * graph,
-  Fader * fader)
+  const Graph * self,
+  const Fader * fader)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type == ROUTE_NODE_TYPE_FADER &&
-          node->fader == fader)
-        return node;
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, fader);
+  if (node && node->type == ROUTE_NODE_TYPE_FADER)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_node_from_prefader (
-  Graph * graph,
-  Fader * prefader)
+  const Graph * self,
+  const Fader * prefader)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type == ROUTE_NODE_TYPE_PREFADER &&
-          node->prefader == prefader)
-        return node;
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, prefader);
+  if (node
+      && node->type == ROUTE_NODE_TYPE_PREFADER)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_node_from_sample_processor (
-  Graph * graph,
-  SampleProcessor * sample_processor)
+  const Graph *           self,
+  const SampleProcessor * sample_processor)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type ==
-            ROUTE_NODE_TYPE_SAMPLE_PROCESSOR &&
-          node->sample_processor ==
-            sample_processor)
-        return node;
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, sample_processor);
+  if (node
+      &&
+      node->type ==
+        ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_node_from_monitor_fader (
-  Graph * graph,
-  Fader * fader)
+  const Graph * self,
+  const Fader * fader)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type ==
-            ROUTE_NODE_TYPE_MONITOR_FADER &&
-          node->fader == fader)
-        return node;
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, fader);
+  if (node
+      &&
+      node->type == ROUTE_NODE_TYPE_MONITOR_FADER)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_initial_processor_node (
-  Graph * graph)
+  const Graph * self)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type ==
-            ROUTE_NODE_TYPE_INITIAL_PROCESSOR)
-        return node;
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes,
+      &self->initial_processor);
+  if (node
+      &&
+      node->type ==
+        ROUTE_NODE_TYPE_INITIAL_PROCESSOR)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_hw_processor_node (
-  Graph * graph)
+  const Graph *             self,
+  const HardwareProcessor * processor)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type ==
-            ROUTE_NODE_TYPE_HW_PROCESSOR)
-        return node;
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, processor);
+  if (node
+      &&
+      node->type == ROUTE_NODE_TYPE_HW_PROCESSOR)
+    return node;
+  else
+    return NULL;
 }
 
 GraphNode *
 graph_find_node_from_modulator_macro_processor (
-  Graph * graph,
-  ModulatorMacroProcessor * processor)
+  const Graph *                   self,
+  const ModulatorMacroProcessor * processor)
 {
-  GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
-    {
-      node = graph->setup_graph_nodes[i];
-      if (node->type ==
-            ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR &&
-          node->modulator_macro_processor ==
-            processor)
-        {
-          return node;
-        }
-    }
-  return NULL;
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, processor);
+  if (node
+      &&
+      node->type ==
+        ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR)
+    return node;
+  else
+    return NULL;
 }
 
 /**
@@ -1638,20 +1673,14 @@ graph_find_node_from_modulator_macro_processor (
  */
 GraphNode *
 graph_create_node (
-  Graph * graph,
+  Graph *       self,
   GraphNodeType type,
-  void * data)
+  void *        data)
 {
-  graph->setup_graph_nodes =
-    (GraphNode **) realloc (
-      graph->setup_graph_nodes,
-      (size_t) (1 + graph->num_setup_graph_nodes) *
-      sizeof (GraphNode *));
-
   GraphNode * node =
-    graph_node_new (graph, type, data);
-  graph->setup_graph_nodes[
-    graph->num_setup_graph_nodes++] = node;
+    graph_node_new (self, type, data);
+  g_hash_table_insert (
+    self->setup_graph_nodes, data, node);
 
   return node;
 }
@@ -1665,14 +1694,11 @@ graph_free (
 {
   g_debug ("%s: freeing...", __func__);
 
-  for (int i = 0; i < self->n_graph_nodes; ++i)
-    {
-      object_free_w_func_and_null (
-        graph_node_free, self->graph_nodes[i]);
-    }
-  object_zero_and_free (self->graph_nodes);
+  object_free_w_func_and_null (
+    g_hash_table_unref, self->graph_nodes);
   object_zero_and_free (self->init_trigger_list);
-  object_zero_and_free (self->setup_graph_nodes);
+  object_free_w_func_and_null (
+    g_hash_table_unref, self->setup_graph_nodes);
   object_zero_and_free (
     self->setup_init_trigger_list);
   object_zero_and_free (

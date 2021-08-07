@@ -50,6 +50,7 @@
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/hash.h"
 #include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/object_utils.h"
@@ -4555,6 +4556,18 @@ port_get_enabled (
 {
   int dest_idx = port_get_dest_index (src, dest);
   return src->dest_enabled[dest_idx];
+}
+
+/**
+ * Generates a hash for a given port.
+ */
+unsigned int
+port_get_hash (
+  const void * ptr)
+{
+  Port * self = (Port *) ptr;
+  return
+    hash_get_for_struct (self, sizeof (Port));
 }
 
 /**
