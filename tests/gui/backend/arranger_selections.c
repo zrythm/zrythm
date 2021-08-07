@@ -118,6 +118,54 @@ test_get_last_object (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_contains_object_with_property (void)
+{
+  test_helper_zrythm_init ();
+
+  Track * track =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI);
+
+  Position p1, p2;
+  position_set_to_bar (&p1, 3);
+  position_set_to_bar (&p2, 4);
+  ZRegion * r =
+    midi_region_new (
+      &p1, &p2, track->pos, 0, 0);
+  track_add_region (
+    track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+
+  position_from_frames (&p1, -40000);
+  position_from_frames (&p2, -4000);
+  MidiNote * mn =
+    midi_note_new (
+      &r->id, &p1, &p2, 60, 60);
+  ArrangerObject * mn_obj = (ArrangerObject *) mn;
+  midi_region_add_midi_note (
+    r, mn, F_NO_PUBLISH_EVENTS);
+
+  arranger_object_select (
+    mn_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+
+  bool ret =
+    arranger_selections_contains_object_with_property (
+      (ArrangerSelections *) MA_SELECTIONS,
+      ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
+      true);
+  g_assert_true (ret);
+  ret =
+    arranger_selections_contains_object_with_property (
+      (ArrangerSelections *) MA_SELECTIONS,
+      ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
+      false);
+  g_assert_false (ret);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -125,6 +173,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/gui/backend/arranger selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test contains object with property",
+    (GTestFunc) test_contains_object_with_property);
   g_test_add_func (
     TEST_PREFIX "test get last object",
     (GTestFunc) test_get_last_object);

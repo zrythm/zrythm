@@ -2026,14 +2026,16 @@ arranger_selections_contains_object_with_property (
           break;
         }
 
-      int num_loops =
-        arranger_object_get_num_loops (
-          cur_obj, false);
-      if (CHECK_PROP (HAS_LOOPED)
-          && (num_loops > 0) == value)
+      if (CHECK_PROP (HAS_LOOPED))
         {
-          ret = true;
-          break;
+          int num_loops =
+            arranger_object_get_num_loops (
+              cur_obj, false);
+          if ((num_loops > 0) == value)
+            {
+              ret = true;
+              break;
+            }
         }
 
       if (CHECK_PROP (CAN_LOOP)
