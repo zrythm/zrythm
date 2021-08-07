@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-07-31 12:40+0100\n"
-"PO-Revision-Date: 2021-07-22 23:33+0000\n"
-"Last-Translator: UnluckyNinja <unluckyninja1994@gmail.com>\n"
+"PO-Revision-Date: 2021-08-02 00:45+0000\n"
+"Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../../../<rst_prolog>:12
@@ -7209,7 +7210,7 @@ msgstr ""
 #: ../../user-media/intro.rst:12
 #, fuzzy
 msgid "Concept"
-msgstr "导出"
+msgstr "概念"
 
 #: ../../user-media/intro.rst:14
 msgid ""
@@ -7821,4 +7822,3 @@ msgstr ""
 
 #~ msgid "Help"
 #~ msgstr "帮助"
-
