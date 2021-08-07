@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.22.1.11] - 2021-08-07
+### Added
+- Add Thai language
+
+### Changed
+- Update Chinese (Simplified), Japanese, Portuguese translations
+
+### Fixed
+- Fix segfault when requested LV2 plugin UI not found
+- Fix error when saving project with uninstantiated plugins
+- Fix crash when moving a track
+- Fix error when attempting to resize MIDI notes
+
 ## [1.0.0-alpha.22.1.1] - 2021-08-07
 ### Added
 - Set window title and role when detaching tabs
