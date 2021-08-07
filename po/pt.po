@@ -2,14 +2,14 @@
 # Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
-# ssantos <ssantos@web.de>, 2020.
+# ssantos <ssantos@web.de>, 2020, 2021.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-07-31 23:19+0100\n"
-"PO-Revision-Date: 2020-11-12 17:28+0000\n"
+"PO-Revision-Date: 2021-08-07 10:22+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -132,7 +132,7 @@ msgstr "Baixo"
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
-msgstr ""
+msgstr "Ultra Baixo"
 
 #: inc/utils/gtk.h:55
 #, fuzzy
@@ -183,22 +183,19 @@ msgstr "Ativar som"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Inverter"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "normal"
+msgstr "Normalizar o pico"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "normal"
+msgstr "Normalizar o RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "normal"
+msgstr "Normalizar LUFS"
 
 #: inc/audio/audio_function.h:74
 #, fuzzy
@@ -267,7 +264,7 @@ msgstr "Áudio"
 #: inc/audio/track.h:176 src/project.c:752
 #: src/gui/widgets/route_target_selector_popover.c:164
 msgid "Master"
-msgstr "Mestre"
+msgstr "Máster"
 
 #: inc/audio/track.h:177 src/gui/widgets/event_viewer.c:119
 #: src/gui/widgets/event_viewer.c:590 src/audio/region.c:503
@@ -492,7 +489,7 @@ msgstr "Cópia de segurança guardada."
 
 #: src/project.c:1645
 msgid "Project saved."
-msgstr "Projeto gravado."
+msgstr "Projeto guardado."
 
 #: src/zrythm_app.c:142
 msgid "Error - Backtrace:\n"
@@ -514,7 +511,7 @@ msgstr "Configurar a janela principal"
 
 #: src/zrythm_app.c:285
 msgid "Loading project"
-msgstr "Carregando o projeto"
+msgstr "A carregar o projeto"
 
 #: src/zrythm_app.c:298
 #, c-format
@@ -706,7 +703,7 @@ msgstr ""
 
 #: src/plugins/plugin_manager.c:394
 msgid "Error loading LV2 bundle dir: "
-msgstr "Erro ao carregar o diretório de molhos LV2: "
+msgstr "Erro ao carregar a diretoria de conjuntos LV2: "
 
 #: src/plugins/plugin_manager.c:1095
 #, c-format
@@ -785,7 +782,7 @@ msgstr ""
 
 #: src/plugins/plugin_gtk.c:95 src/plugins/lv2/lv2_gtk.c:76
 msgid "Save State"
-msgstr "Gravar Estado"
+msgstr "Guardar Estado"
 
 #: src/plugins/plugin_gtk.c:98 src/plugins/plugin_gtk.c:303
 #: src/plugins/lv2/lv2_gtk.c:79 src/plugins/lv2/lv2_gtk.c:264
@@ -802,7 +799,7 @@ msgstr "_Cancelar"
 #: src/plugins/plugin_gtk.c:99 src/plugins/plugin_gtk.c:304
 #: src/plugins/lv2/lv2_gtk.c:80 src/actions/actions.c:760
 msgid "_Save"
-msgstr "_Gravar"
+msgstr "_Guardar"
 
 #: src/plugins/plugin_gtk.c:299
 #, fuzzy
@@ -811,7 +808,7 @@ msgstr "Gravar Projeto"
 
 #: src/plugins/plugin_gtk.c:338
 msgid "_Prefix plugin name"
-msgstr "_Prefixo do nome do suplemento"
+msgstr "_Prefixo do nome do plug-in"
 
 #: src/plugins/plugin_gtk.c:350
 msgid "URI (Optional):"
@@ -854,7 +851,7 @@ msgstr "Banco sem nome"
 
 #: src/plugins/lv2/lv2_gtk.c:259
 msgid "Delete Preset?"
-msgstr "Apagar Predefinição?"
+msgstr "Eliminar pré-ajuste?"
 
 #: src/plugins/lv2/lv2_gtk.c:265 src/utils/dialogs.c:70 src/audio/clip.c:648
 #: resources/ui/string_entry_dialog.ui:61
@@ -1224,11 +1221,11 @@ msgstr "Adicionar faixa de FX"
 #: src/gui/widgets/transport_controls.c:538 src/gui/widgets/midi_track.c:190
 #: resources/ui/fader_buttons.ui:57
 msgid "Record"
-msgstr "Registo"
+msgstr "Registro"
 
 #: src/gui/widgets/instrument_track.c:253 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
-msgstr "Mostrar pistas de automação"
+msgstr "Mostrar faixas de automação"
 
 #: src/gui/widgets/instrument_track.c:259 src/gui/widgets/audio_track.c:205
 #: src/gui/widgets/midi_track.c:224
@@ -1372,7 +1369,7 @@ msgstr "Protocolo"
 
 #: src/gui/widgets/bot_bar.c:56 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
-msgstr "Cabeça de reprodução"
+msgstr "Cabeça de Reprodução"
 
 #: src/gui/widgets/bot_bar.c:58
 msgid "Playhead [Jack Timebase Master]"
@@ -1639,7 +1636,7 @@ msgstr "Manual"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
-msgstr "Atalhos de teclado"
+msgstr "Atalhos de Teclado"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
@@ -1708,12 +1705,12 @@ msgstr "Refazer"
 
 #: src/gui/widgets/right_dock_edge.c:98
 msgid "Plugin Browser"
-msgstr "Navegador de suplementos"
+msgstr "Navegador de Plugins"
 
 #: src/gui/widgets/right_dock_edge.c:131
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr "Navegador de ficheiros"
+msgstr "Navegador de Ficheiros"
 
 #: src/gui/widgets/right_dock_edge.c:164
 #, fuzzy
@@ -1955,7 +1952,7 @@ msgstr "Interface de script"
 #: src/gui/widgets/active_hardware_mb.c:50
 #: src/gui/widgets/active_hardware_mb.c:155
 msgid "Select..."
-msgstr "Selecione..."
+msgstr "Selecionar..."
 
 #: src/gui/widgets/active_hardware_mb.c:126
 msgid "Click to enable inputs"
@@ -1997,7 +1994,7 @@ msgstr "Indicador de forma de onda ao vivo"
 
 #: src/gui/widgets/clip_editor_inner.c:304
 msgid "Select a region..."
-msgstr "Selecione uma região...."
+msgstr "Selecionar uma região..."
 
 #: src/gui/widgets/channel_sends_expander.c:83
 #: src/gui/widgets/ports_expander.c:424
@@ -2130,11 +2127,11 @@ msgstr "Roteamento para %s"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr "Novo projeto"
+msgstr "Novo Projeto"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr "Gravar como"
+msgstr "Gravar Como"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:39
 msgid "Open Project"
@@ -2142,7 +2139,7 @@ msgstr "Abrir Projeto"
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr "Exportar como"
+msgstr "Exportar Como"
 
 #: src/gui/widgets/project_toolbar.c:44
 msgid "Export Graph"
@@ -2154,19 +2151,19 @@ msgstr "Alternar Barra de Estado"
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr "Aumentar"
+msgstr "Zoom +"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr "Reduzir"
+msgstr "Zoom -"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr "Tamanho original"
+msgstr "Tamanho Original"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr "Melhor ajuste"
+msgstr "Melhor Ajuste"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
@@ -2336,7 +2333,7 @@ msgstr "Criar Novo Projeto"
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:125
 msgid "Untitled Project"
-msgstr "Projeto sem título"
+msgstr "Projeto Sem Título"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:122
 msgid "note length"
@@ -2564,17 +2561,16 @@ msgstr "_Abrir"
 
 #: src/utils/dialogs.c:67
 msgid "Overwrite Plugin"
-msgstr "Sobrescrever suplemento"
+msgstr "Sobrescrever Plugin"
 
 #: src/utils/dialogs.c:81
 msgid "A plugin already exists at the selected slot. Overwrite it?"
-msgstr "Já existe um suplemento no compartimento selecionado. Sobrescrever?"
+msgstr "Já existe um plugin no compartimento selecionado. Sobrescrever?"
 
 #: src/utils/dialogs.c:105
 msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
-"Erro ao instanciar o suplemento. Por favor, veja o registo para mais "
-"detalhes."
+"Erro ao instanciar o plugin. Por favor, veja o registo para mais detalhes."
 
 #: src/utils/ui.c:846
 msgid "Sine (Equal Power)"
@@ -3036,7 +3032,7 @@ msgstr "JACK fechou"
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:661
 msgid "Overall operation failed"
-msgstr "Operação geral falhou"
+msgstr "A operação geral falhou"
 
 #: src/audio/engine_jack.c:667
 msgid "The operation contained an invalid or unsupported option"
@@ -3202,7 +3198,7 @@ msgstr ""
 #: src/actions/actions.c:623 resources/gtk/help-overlay.ui:103
 #: resources/ui/project_assistant.ui:86
 msgid "Create new project"
-msgstr "Criar projeto"
+msgstr "Criar novo projeto"
 
 #: src/actions/actions.c:627
 msgid "Yes"
@@ -3357,12 +3353,12 @@ msgstr "Criar %d %ss"
 
 #: src/actions/mixer_selections_action.c:1110
 msgid "Delete Plugin"
-msgstr "Apagar suplemento"
+msgstr "Apagar Plugin"
 
 #: src/actions/mixer_selections_action.c:1115
 #, c-format
 msgid "Delete %d Plugins"
-msgstr "Apagar %d suplementos"
+msgstr "Apagar %d Plugins"
 
 #: src/actions/mixer_selections_action.c:1122
 #, c-format
@@ -3372,7 +3368,7 @@ msgstr "Mover %s"
 #: src/actions/mixer_selections_action.c:1129
 #, c-format
 msgid "Move %d Plugins"
-msgstr "Mover %d suplementos"
+msgstr "Mover %d Plugins"
 
 #: src/actions/mixer_selections_action.c:1136
 #, c-format
@@ -3382,7 +3378,7 @@ msgstr "Copiar %s"
 #: src/actions/mixer_selections_action.c:1143
 #, c-format
 msgid "Copy %d Plugins"
-msgstr "Copiar %d suplementos"
+msgstr "Copiar %d Plugins"
 
 #: src/actions/mixer_selections_action.c:1150
 #, fuzzy, c-format
@@ -3411,8 +3407,7 @@ msgstr "%s Faixa"
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
-"Erro ao instanciar o suplemento %s. Por favor, veja o registo para mais "
-"detalhes."
+"Erro ao instanciar o plugin %s. Por favor, veja o registo para mais detalhes."
 
 #: src/actions/tracklist_selections.c:1841
 #, fuzzy
@@ -3648,7 +3643,7 @@ msgstr "Geral"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
-msgstr "Alternar ecrã inteiro"
+msgstr "Alternar Ecrã Completo"
 
 #: resources/gtk/help-overlay.ui:60
 msgid "Quit"
@@ -3680,7 +3675,7 @@ msgstr "Abrir um projeto"
 
 #: resources/gtk/help-overlay.ui:117
 msgid "Save the project"
-msgstr "Gravar o projeto"
+msgstr "Guardar o projeto"
 
 #: resources/gtk/help-overlay.ui:126
 msgid "Copy and Paste"
@@ -3700,11 +3695,11 @@ msgstr "Colar da área de transferência"
 
 #: resources/gtk/help-overlay.ui:154
 msgid "Undo and Redo"
-msgstr "Desfazer e Refazer"
+msgstr "Anular e Refazer"
 
 #: resources/gtk/help-overlay.ui:159
 msgid "Undo previous command"
-msgstr "Desfazer comando anterior"
+msgstr "Anular comando anterior"
 
 #: resources/gtk/help-overlay.ui:166
 msgid "Redo previous command"
@@ -3716,7 +3711,7 @@ msgstr "Seleções"
 
 #: resources/gtk/help-overlay.ui:187
 msgid "Unselect all"
-msgstr "Desmarcar tudo"
+msgstr "Desselecionar tudo"
 
 #: resources/gtk/help-overlay.ui:199
 msgid "Editor Shortcuts"
@@ -3752,11 +3747,11 @@ msgstr "Amunentando"
 
 #: resources/gtk/help-overlay.ui:250
 msgid "Zoom in"
-msgstr "Aumentar"
+msgstr "Zoom +"
 
 #: resources/gtk/help-overlay.ui:257
 msgid "Zoom out"
-msgstr "Diminuir"
+msgstr "Zoom -"
 
 #: resources/gtk/help-overlay.ui:264
 msgid "Best fit"
@@ -3995,7 +3990,7 @@ msgstr "Pad de acordes"
 
 #: resources/ui/bot_dock_edge.ui:215
 msgid "Chord Pad"
-msgstr "Pad de Acordes"
+msgstr "Pad Acordes"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
@@ -4016,7 +4011,7 @@ msgstr "Alternar visualizador de eventos"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
-msgstr "Selecionar um Projeto"
+msgstr "Selecionar Projeto"
 
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
@@ -4140,7 +4135,7 @@ msgstr "Diatónico"
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr "A FAZER"
+msgstr "TAREFAS"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
@@ -4372,7 +4367,7 @@ msgstr "Faixa"
 
 #: resources/ui/port_selector_popover.ui:123
 msgid "Plugin"
-msgstr "Suplemento"
+msgstr "Plugin"
 
 #: resources/ui/port_selector_popover.ui:185
 msgid "Port"
@@ -4757,7 +4752,7 @@ msgstr "A Pan law para usar"
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:954
 msgid "Zrythm path"
-msgstr "Caminho do Zrythm"
+msgstr "Caminho de Zrythm"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
@@ -4781,15 +4776,15 @@ msgstr "Samplerate"
 #: build/data/org.zrythm.Zrythm.gschema.xml:963
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
 msgid "Plugins"
-msgstr "Suplementos"
+msgstr "Plugins"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
-msgstr "Sempre abrir IUs de suplementos"
+msgstr "Sempre abrir UIs de plugins"
 
 #: resources/ui/preferences.ui:394
 msgid "Always show the plugin UI when instantiating a plugin"
-msgstr "Mostrar sempre o suplemento IU ao instanciar um suplemento"
+msgstr "Mostrar sempre o plugin UI ao instanciar um plugin"
 
 #: resources/ui/preferences.ui:406
 msgid "Keep plugin UIs on top"
@@ -4834,7 +4829,7 @@ msgstr "Projetos"
 #: resources/ui/preferences.ui:584
 #: build/data/org.zrythm.Zrythm.gschema.xml:1071
 msgid "Autosave interval"
-msgstr "Intervalo de gravação automática"
+msgstr "Intervalo de gravamento automático"
 
 #: resources/ui/preferences.ui:595
 msgid ""
@@ -4846,7 +4841,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr "Estação De Trabalho De Áudio Digital"
+msgstr "Estação de Trabalho de Áudio Digital"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
