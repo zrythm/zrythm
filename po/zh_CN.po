@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-07-31 23:19+0100\n"
-"PO-Revision-Date: 2021-07-22 23:33+0000\n"
+"PO-Revision-Date: 2021-08-02 00:45+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7.2-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -190,29 +190,24 @@ msgid "Invert"
 msgstr "翻转"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "正常化"
+msgstr "正常化峰值"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "正常化"
+msgstr "正常化 RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "正常化"
+msgstr "正常化 LUFS"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "线性"
+msgstr "线性淡入"
 
 #: inc/audio/audio_function.h:76
-#, fuzzy
 msgid "Linear fade out"
-msgstr "监视器推子输出"
+msgstr "线性淡出"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:226
 msgid "Nudge left"
@@ -231,14 +226,12 @@ msgid "External program"
 msgstr ""
 
 #: inc/audio/audio_function.h:82
-#, fuzzy
 msgid "Guile script"
-msgstr "默认脚本"
+msgstr "Guile 脚本"
 
 #: inc/audio/audio_function.h:83
-#, fuzzy
 msgid "Custom plugin"
-msgstr "自定义"
+msgstr "自定义插件"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
@@ -556,7 +549,7 @@ msgid "Waiting for project"
 msgstr "等待项目"
 
 #: src/zrythm_app.c:958
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s\n"
 "%s\n"
@@ -570,15 +563,16 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s %s\n"
+"%s-%s \n"
+"%s\n"
 "\n"
-"%s 绝对没有担保！\n"
+"%s 绝无任何担保责任！\n"
 "\n"
 "这是自由软件，欢迎您在特定条件下\n"
 "对其进行再分发。有关详细信息，请参阅文件`COPYING'。\n"
 "\n"
-"写评论和程序错误到 %s\n"
-"在 https://liberapay.com/Zrythm 支持此项目\n"
+"请将评论和程序错误发送到 %s\n"
+"要支持此项目，请前往https://liberapay.com/Zrythm\n"
 "\n"
 
 #: src/zrythm_app.c:1449
@@ -756,9 +750,8 @@ msgid "Gain"
 msgstr "增益"
 
 #: src/plugins/plugin.c:312
-#, fuzzy
 msgid "Plugin gain"
-msgstr "插件 gain"
+msgstr "插件增益"
 
 #: src/plugins/plugin.c:1090
 #, c-format
@@ -1547,9 +1540,8 @@ msgid "Musical Mode"
 msgstr "音乐模式"
 
 #: src/gui/widgets/timeline_arranger.c:1313
-#, fuzzy
 msgid "Apply Function"
-msgstr "选择功能"
+msgstr "应用函数"
 
 #: src/gui/widgets/timeline_arranger.c:1389
 msgid "Export as MIDI file"
@@ -1662,7 +1654,6 @@ msgid "Paste"
 msgstr "粘帖"
 
 #: src/gui/widgets/home_toolbar.c:220
-#, fuzzy
 msgid "Clear selection"
 msgstr "清除选定内容"
 
@@ -2147,9 +2138,8 @@ msgid "Toggle Right Panel"
 msgstr "切换右面板"
 
 #: src/gui/widgets/editor_toolbar.c:139
-#, fuzzy
 msgid "Plugin Effect"
-msgstr "插件检查器"
+msgstr "插件效果"
 
 #: src/gui/widgets/editor_toolbar.c:176 src/gui/widgets/editor_toolbar.c:212
 #: src/gui/widgets/editor_toolbar.c:238
@@ -2262,9 +2252,8 @@ msgid "New group"
 msgstr "新组"
 
 #: src/gui/widgets/track.c:2103
-#, fuzzy
 msgid "Rename lane..."
-msgstr "重命名音轨"
+msgstr "重命名音轨…"
 
 #: src/gui/widgets/track.c:2117
 msgid "Track MIDI Ch"
@@ -3396,9 +3385,8 @@ msgid "Rename track"
 msgstr "重命名音轨"
 
 #: src/actions/tracklist_selections.c:1943
-#, fuzzy
 msgid "Rename lane"
-msgstr "重命名"
+msgstr "重命名音轨"
 
 #: src/actions/tracklist_selections.c:1946
 #: src/actions/tracklist_selections.c:2012
@@ -5231,9 +5219,8 @@ msgid "Instrument plugin to use for MIDI auditioning."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:589
-#, fuzzy
 msgid "Inserts expanded"
-msgstr "扩展的音轨插入"
+msgstr "插入已展开"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:590
 msgid "Whether inserts are expanded."
