@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-08-04 23:01+0100\n"
+"POT-Creation-Date: 2021-08-07 11:39+0100\n"
 "PO-Revision-Date: 2021-07-19 10:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -5951,44 +5951,6 @@ msgstr "2ポートを接続するためのアクションを作成します。"
 msgid "(actions tracklist-selections-action)"
 msgstr "(actions tracklist-selections-action)"
 
-#: ../../scripting/api/actions tracklist_selections_action.rst:7
-msgid ""
-"``(tracklist-selections-action-new-create-instrument pl_descr track_pos "
-"num_tracks)``"
-msgstr ""
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:6
-msgid "Returns a new action for creating an instrument track."
-msgstr "送信接続を作成するための新しいアクションを返します。"
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:12
-msgid ""
-"``(tracklist-selections-action-new-create-audio-fx-with-plugin "
-"plugin_descriptor track_pos num_tracks)``"
-msgstr ""
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:10
-msgid ""
-"Returns a new action for creating one or more Audio FX tracks with a "
-"plugin."
-msgstr "プラグインを使用して1つまたは複数のAudio FXトラックを作成するための新しいアクションを返します。"
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:16
-msgid "``(tracklist-selections-action-new-create-audio-fx track_pos num_tracks)``"
-msgstr ""
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:15
-msgid "Returns a new action for creating one or more empty Audio FX tracks."
-msgstr "1つまたは複数の空のAudio FXトラックを作成するための新しいアクションを返します。"
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:20
-msgid "``(tracklist-selections-action-new-midi track_pos num_tracks)``"
-msgstr ""
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:19
-msgid "Returns an action for creating one or more empty MIDI tracks."
-msgstr "2ポートを接続するためのアクションを作成します。"
-
 #: ../../scripting/api/actions undo_manager.rst:3
 msgid "(actions undo-manager)"
 msgstr "(actions undo-manager)"
@@ -8316,9 +8278,38 @@ msgid ""
 msgstr "現在選択されているバックエンドとオプションに関する情報は、左下に表示されます。"
 
 #~ msgid ""
-#~ "`[Mascot concept by FanaticMoose] "
-#~ "<https://mastodon.social/@zrythm/106672099997205356>`_"
+#~ "``(tracklist-selections-action-new-create-"
+#~ "instrument pl_descr track_pos num_tracks)``"
 #~ msgstr ""
+
+#~ msgid "Returns a new action for creating an instrument track."
+#~ msgstr "送信接続を作成するための新しいアクションを返します。"
+
+#~ msgid ""
+#~ "``(tracklist-selections-action-new-create-"
+#~ "audio-fx-with-plugin plugin_descriptor "
+#~ "track_pos num_tracks)``"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Returns a new action for creating "
+#~ "one or more Audio FX tracks with"
+#~ " a plugin."
+#~ msgstr "プラグインを使用して1つまたは複数のAudio FXトラックを作成するための新しいアクションを返します。"
+
+#~ msgid ""
+#~ "``(tracklist-selections-action-new-create-"
+#~ "audio-fx track_pos num_tracks)``"
+#~ msgstr ""
+
+#~ msgid "Returns a new action for creating one or more empty Audio FX tracks."
+#~ msgstr "1つまたは複数の空のAudio FXトラックを作成するための新しいアクションを返します。"
+
+#~ msgid "``(tracklist-selections-action-new-midi track_pos num_tracks)``"
+#~ msgstr ""
+
+#~ msgid "Returns an action for creating one or more empty MIDI tracks."
+#~ msgstr "2ポートを接続するためのアクションを作成します。"
 
 #~ msgid "Shortcut Keys"
 #~ msgstr "ショートカット キー"

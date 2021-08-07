@@ -159,6 +159,7 @@ language_mappings = {
   'pt_BR': 'Português BR',
   'ru': 'Русский',
   'sv': 'Svenska',
+  'th': 'ภาษาไทย',
   'uk': 'Українська',
   'vi': 'Tiếng Việt',
   'zh_CN': '简体中文',

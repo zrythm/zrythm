@@ -26,7 +26,7 @@ i18n.gettext (
   meson.project_name(),
   args: [
     '--directory=' + meson_src_root,
-    '--msgid-bugs-address=https://redmine.zrythm.org/projects/zrythm/issues/new',
+    '--msgid-bugs-address=https://todo.sr.ht/~alextee/zrythm-bug',
     '--add-comments',
     '--keyword=__',
     '--keyword=C_:1c,2',
@@ -62,7 +62,7 @@ locales_h = configure_file (
 
 # Test PO files for errors.
 foreach lang, lang_str : locales
-  if msgfmt.found () and lang != 'en'
+  if msgfmt.found () and lang != 'en' and fs.is_file (lang + '.po')
     test (
       lang + '-po', msgfmt,
       args: [ '-v', '-c', files (lang + '.po') ])

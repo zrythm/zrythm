@@ -891,6 +891,7 @@ resources/ui/fishbowl_window.ui
 resources/ui/timeline_toolbar.ui
 resources/ui/track_top_grid.ui
 resources/ui/project_assistant.ui
+resources/ui/bug_report_dialog.ui
 resources/ui/left_dock_edge.ui
 resources/ui/chord_selector_window.ui
 resources/ui/folder_channel.ui
