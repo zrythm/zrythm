@@ -367,6 +367,26 @@ typedef struct Port
    */
   gint64              last_change;
 
+  /**
+   * Pointer to plugin owner, if any.
+   *
+   * To be set when realculating the graph and to
+   * be used during DSP.
+   *
+   * In all other cases, use port_get_plugin().
+   */
+  Plugin *            plugin;
+
+  /**
+   * Pointer to track owner, if any.
+   *
+   * To be set when realculating the graph and to
+   * be used during DSP.
+   *
+   * In all other cases, use port_get_plugin().
+   */
+  Track *             track;
+
   /* ====== flags to indicate port owner ====== */
 
   /**
@@ -374,12 +394,6 @@ typedef struct Port
    * plugin doesn't exist yet in its supposed slot).
    */
   Plugin *            tmp_plugin;
-
-  /**
-   * Temporary track (used when the track doesn't
-   * exist yet in its supposed position).
-   */
-  //Track *             tmp_track;
 
   SampleProcessor *   sample_processor;
 

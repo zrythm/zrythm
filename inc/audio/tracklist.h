@@ -304,6 +304,7 @@ tracklist_validate (
  * Not to be used in real-time code.
  */
 NONNULL
+HOT
 Track *
 tracklist_get_track (
   Tracklist * self,

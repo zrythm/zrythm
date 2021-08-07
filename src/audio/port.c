@@ -4355,6 +4355,14 @@ port_get_track (
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
 
+  /* return the pointer if already stored */
+  if (self->track)
+    {
+      g_return_val_if_fail (
+        IS_TRACK (self->track), NULL);
+      return self->track;
+    }
+
   Track * track = NULL;
   if (self->id.track_pos != -1)
     {
@@ -4380,6 +4388,14 @@ port_get_plugin (
   bool   warn_if_fail)
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
+
+  /* return the pointer if already stored */
+  if (self->plugin)
+    {
+      g_return_val_if_fail (
+        IS_PLUGIN (self->plugin), NULL);
+      return self->plugin;
+    }
 
   Track * track = port_get_track (self, 0);
   if (!track && self->tmp_plugin)

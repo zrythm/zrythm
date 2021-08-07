@@ -395,6 +395,21 @@ add_port (
 {
   PortOwnerType owner = port->id.owner_type;
 
+  if (owner == PORT_OWNER_TYPE_PLUGIN)
+    {
+      port->plugin = port_get_plugin (port, true);
+      g_return_val_if_fail (
+        IS_PLUGIN_AND_NONNULL (port->plugin),
+        NULL);
+    }
+
+  if (port->id.track_pos != -1)
+    {
+      port->track = port_get_track (port, true);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (port->track), NULL);
+    }
+
   if (drop_if_unnecessary)
     {
       /* skip unnecessary control ports */
