@@ -24,27 +24,6 @@
 
 #include <glib/gi18n.h>
 
-const char *
-error_code_get_message (
-  ErrorCode err_code)
-{
-  switch (err_code)
-    {
-    case ERR_PLUGIN_INSTANTIATION_FAILED:
-      return
-        _("Plugin instantiation failed. "
-          "See the logs for details");
-    case ERR_OBJECT_IS_NULL:
-      return
-        _("Object is null. "
-          "See the logs for details");
-    default:
-      break;
-    }
-
-  g_return_val_if_reached (_("Unknown error"));
-}
-
 /**
  * Only to be called by HANDLE_ERROR macro.
  */

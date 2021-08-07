@@ -439,10 +439,8 @@ do_or_undo_create_or_delete (
               if (!IS_PLUGIN_AND_NONNULL (pl))
                 {
                   HANDLE_ERROR (
-                    err,
-                    _("Could not create plugin: "
-                    "%s"),
-                    err->message);
+                    err, "%s",
+                    _("Could not create plugin"));
                   return -1;
                 }
 
@@ -450,8 +448,15 @@ do_or_undo_create_or_delete (
                * created */
               int ret =
                 plugin_instantiate (
-                  pl, F_NOT_PROJECT, NULL);
-              g_return_val_if_fail (!ret, -1);
+                  pl, F_NOT_PROJECT, NULL, &err);
+              if (ret != 0)
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to instantiate "
+                    "plugin"));
+                  return -1;
+                }
             }
           else if (delete)
             {

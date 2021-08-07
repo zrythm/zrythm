@@ -38,6 +38,17 @@
 
 #include <glib/gi18n.h>
 
+typedef enum
+{
+  Z_AUDIO_AUDIO_FUNCTION_ERROR_INVALID_POSITIONS,
+} ZAudioAudioFunctionError;
+
+#define Z_AUDIO_AUDIO_FUNCTION_ERROR \
+  z_audio_audio_function_error_quark ()
+GQuark z_audio_audio_function_error_quark (void);
+G_DEFINE_QUARK (
+  z-audio-audio-function-error-quark, z_audio_audio_function_error)
+
 char *
 audio_function_get_action_target_for_type (
   AudioFunctionType type)
@@ -104,41 +115,49 @@ audio_function_get_icon_name_for_type (
  * @param frames Interleaved frames.
  * @param num_frames Number of frames per channel.
  * @param channels Number of channels.
+ *
+ * @return Non-zero if fail
  */
-static void
+static int
 apply_plugin (
   const char * uri,
   float *      frames,
   size_t       num_frames,
-  channels_t   channels)
+  channels_t   channels,
+  GError **    error)
 {
   PluginDescriptor * descr =
     plugin_manager_find_plugin_from_uri (
       PLUGIN_MANAGER, uri);
-  g_return_if_fail (descr);
+  g_return_val_if_fail (descr, -1);
   PluginSetting * setting =
     plugin_setting_new_default (descr);
-  g_return_if_fail (setting);
+  g_return_val_if_fail (setting, -1);
   setting->force_generic_ui = true;
   GError * err = NULL;
   Plugin * pl =
     plugin_new_from_setting (
       setting, -1, PLUGIN_SLOT_INSERT, 0, &err);
-  if (!pl)
+  if (!IS_PLUGIN_AND_NONNULL (pl))
     {
-      HANDLE_ERROR (
-        err, _("Failed to create plugin %s"),
-        err->message);
-      return;
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _("Failed to create plugin"));
+      return -1;
     }
   pl->is_function = true;
-  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
   int ret =
     plugin_instantiate (
-      pl, F_NOT_PROJECT, NULL);
-  g_return_if_fail (ret == 0);
+      pl, F_NOT_PROJECT, NULL, &err);
+  if (ret != 0)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _("Failed to instantiate plugin"));
+      return -1;
+    }
   ret = plugin_activate (pl, true);
-  g_return_if_fail (ret == 0);
+  g_return_val_if_fail (ret == 0, -1);
   plugin_setting_free (setting);
 
   /* create window */
@@ -295,7 +314,7 @@ apply_plugin (
           long actual_j =
             (long) (i + j + num_frames) -
             (long) latency;
-          g_return_if_fail (actual_j >= 0);
+          g_return_val_if_fail (actual_j >= 0, -1);
 #if 0
           g_message (
             "%ld %f",
@@ -315,6 +334,8 @@ apply_plugin (
 
   plugin_gtk_close_ui (pl);
   plugin_free (pl);
+
+  return 0;
 }
 
 /**
@@ -329,12 +350,15 @@ apply_plugin (
  *   for the unchanged audio material (used in
  *   audio selection actions for the selections
  *   before the change).
+ *
+ * @return Non-zero if error.
  */
 int
 audio_function_apply (
   ArrangerSelections * sel,
   AudioFunctionType    type,
-  const char *         uri)
+  const char *         uri,
+  GError **            error)
 {
   g_message (
     "applying %s...",
@@ -358,10 +382,13 @@ audio_function_apply (
       position_is_after (
         &audio_sel->sel_end, &r->base.end_pos))
     {
-      g_warning (
-        "invalid positions - skipping function");
       position_print (&audio_sel->sel_start);
       position_print (&audio_sel->sel_end);
+      g_set_error_literal (
+        error,
+        Z_AUDIO_AUDIO_FUNCTION_ERROR,
+        Z_AUDIO_AUDIO_FUNCTION_ERROR_INVALID_POSITIONS,
+        _("Invalid positions - skipping function"));
       return -1;
     }
 
@@ -505,9 +532,20 @@ audio_function_apply (
       }
       break;
     case AUDIO_FUNCTION_CUSTOM_PLUGIN:
-      g_return_val_if_fail (uri, -1);
-      apply_plugin (
-        uri, frames, num_frames, channels);
+      {
+        g_return_val_if_fail (uri, -1);
+        GError * err = NULL;
+        int ret =
+          apply_plugin (
+            uri, frames, num_frames, channels, &err);
+        if (ret != 0)
+          {
+            PROPAGATE_PREFIXED_ERROR (
+              error, err, "%s",
+              _("Failed to apply plugin"));
+            return ret;
+          }
+      }
       break;
     case AUDIO_FUNCTION_INVALID:
       /* do nothing */

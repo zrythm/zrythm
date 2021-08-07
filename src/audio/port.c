@@ -2006,8 +2006,7 @@ int
 port_disconnect_all (
   Port * self)
 {
-  g_return_val_if_fail (
-    IS_PORT (self), ERR_PORT_MAGIC_FAILED);
+  g_return_val_if_fail (IS_PORT (self), -1);
 
   if (!self->is_project)
     {

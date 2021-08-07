@@ -412,13 +412,15 @@ lv2_plugin_new_from_uri (
  *
  * @return 0 if OK, non-zero if error.
  */
+NONNULL_ARGS (1)
 int
 lv2_plugin_instantiate (
   Lv2Plugin *  self,
   bool         project,
   bool         use_state_file,
   char *       preset_uri,
-  LilvState *  state);
+  LilvState *  state,
+  GError **    error);
 
 /**
  * Creates a new LV2 plugin using the given Plugin
@@ -572,7 +574,8 @@ NONNULL
 bool
 lv2_plugin_is_ui_external (
   const char * uri,
-  const char * ui_uri);
+  const char * ui_uri,
+  GError **    error);
 
 /**
  * Ported from Lv2Control.

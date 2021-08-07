@@ -672,12 +672,13 @@ plugin_prepare_process (
  * @param project Whether this is a project plugin
  *   (as opposed to a clone used in actions).
  */
-__attribute__ ((nonnull (1)))
+NONNULL_ARGS (1)
 int
 plugin_instantiate (
   Plugin *    self,
   bool        project,
-  LilvState * state);
+  LilvState * state,
+  GError **   error);
 
 /**
  * Sets the track and track_pos on the plugin.

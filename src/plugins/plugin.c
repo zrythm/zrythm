@@ -230,8 +230,10 @@ plugin_init_loaded (
     {
       bool was_enabled =
         plugin_is_enabled (self, false);
+      GError * err = NULL;
       int ret =
-        plugin_instantiate (self, project, NULL);
+        plugin_instantiate (
+          self, project, NULL, &err);
       if (ret == 0)
         {
           plugin_activate (self, true);
@@ -242,18 +244,11 @@ plugin_init_loaded (
       else
         {
           /* disable plugin, instantiation failed */
-          char * msg =
-            g_strdup_printf (
-              _("Instantiation failed for "
-              "plugin '%s'. Disabling..."),
-              self->setting->descr->name);
-          g_warning ("%s", msg);
-          if (ZRYTHM_HAVE_UI)
-            {
-              ui_show_error_message (
-                MAIN_WINDOW, msg);
-            }
-          g_free (msg);
+          HANDLE_ERROR (
+            err,
+            _("Instantiation failed for "
+            "plugin '%s'. Disabling..."),
+            self->setting->descr->name);
           self->instantiation_failed = true;
         }
     }
@@ -565,10 +560,14 @@ plugin_new_from_setting (
 #ifdef HAVE_CARLA
   if (setting->open_with_carla)
     {
-      carla_native_plugin_new_from_setting (self);
+      GError * err = NULL;
+      carla_native_plugin_new_from_setting (
+        self, &err);
       if (!self->carla)
         {
-          g_warning ("failed to create plugin");
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to get Carla plugin"));
           return NULL;
         }
     }
@@ -1164,8 +1163,7 @@ plugin_activate (
   Plugin * pl,
   bool     activate)
 {
-  g_return_val_if_fail (
-    IS_PLUGIN (pl), ERR_OBJECT_IS_NULL);
+  g_return_val_if_fail (IS_PLUGIN (pl), -1);
 
   if ((pl->activated && activate) ||
       (!pl->activated && !activate))
@@ -1635,13 +1633,15 @@ int
 plugin_instantiate (
   Plugin *    pl,
   bool        project,
-  LilvState * state)
+  LilvState * state,
+  GError **   error)
 {
   g_return_val_if_fail (
     pl->setting && pl->setting->descr, -1);
 
-  g_message ("Instantiating %s...",
-             pl->setting->descr->name);
+  g_message (
+    "Instantiating %s...",
+    pl->setting->descr->name);
 
   plugin_set_ui_refresh_rate (pl);
 
@@ -1654,14 +1654,17 @@ plugin_instantiate (
   if (pl->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
+      GError * err = NULL;
       int ret =
         carla_native_plugin_instantiate (
           pl->carla, !PROJECT->loaded,
-          pl->state_dir ? true : false);
+          pl->state_dir ? true : false,
+          &err);
       if (ret != 0)
         {
-          g_warning (
-            "carla plugin instantiation failed");
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Carla plugin instantiation failed"));
           return -1;
         }
 
@@ -1679,20 +1682,26 @@ plugin_instantiate (
         case PROT_LV2:
           {
             pl->lv2->plugin = pl;
-            if (lv2_plugin_instantiate (
-                  pl->lv2, project,
-                  pl->state_dir ? true : false,
-                  NULL, state))
+            GError * err = NULL;
+            int ret =
+              lv2_plugin_instantiate (
+                pl->lv2, project,
+                pl->state_dir ? true : false,
+                NULL, state, &err);
+            if (ret != 0)
               {
-                g_warning (
-                  "lv2 instantiate failed");
+                PROPAGATE_PREFIXED_ERROR (
+                  error, err, "%s",
+                  _("LV2 plugin instantiation "
+                  "failed"));
                 return -1;
               }
             else
               {
                 pl->instantiated = true;
               }
-            g_warn_if_fail (pl->lv2->instance);
+            g_return_val_if_fail (
+              pl->lv2->instance, -1);
 
             if (!pl->state_dir)
               {
@@ -2138,17 +2147,17 @@ plugin_clone (
 
       /* instantiate */
       int ret =
-        plugin_instantiate (clone, false, NULL);
+        plugin_instantiate (
+          clone, false, NULL, &err);
       if (ret != 0)
         {
-          g_warn_if_reached ();
           object_free_w_func_and_null (
             plugin_free, clone);
-          g_set_error (
-            error, Z_PLUGINS_PLUGIN_ERROR,
-            Z_PLUGINS_PLUGIN_ERROR_INSTANTIATION_FAILED,
-            "Failed to instantiate cloned "
-            "plugin %s", buf);
+          PROPAGATE_PREFIXED_ERROR (
+            error, err,
+            _("Failed to instantiate cloned "
+            "plugin %s"),
+            buf);
           return NULL;
         }
 
@@ -2159,15 +2168,14 @@ plugin_clone (
         {
           ret =
             plugin_instantiate (
-              pl, src_is_project, NULL);
+              pl, src_is_project, NULL, &err);
           if (ret != 0)
             {
-              g_warn_if_reached ();
-              g_set_error (
-                error, Z_PLUGINS_PLUGIN_ERROR,
-                Z_PLUGINS_PLUGIN_ERROR_INSTANTIATION_FAILED,
-                "Failed to reinstantiate source "
-                "plugin %s", buf);
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _("Failed to instantiate source "
+                "plugin"),
+                buf);
               return NULL;
             }
           g_return_val_if_fail (
@@ -2212,11 +2220,19 @@ plugin_clone (
               g_message (
                 "source plugin not instantiated, "
                 "instantiating it...");
+              GError * err = NULL;
               int ret =
                 plugin_instantiate (
-                  pl, src_is_project, NULL);
-              g_return_val_if_fail (
-                ret == 0, NULL);
+                  pl, src_is_project, NULL, &err);
+              if (ret != 0)
+                {
+                  PROPAGATE_PREFIXED_ERROR (
+                    error, err,
+                    _("Failed to instantiate "
+                    "source plugin"),
+                    buf);
+                  return NULL;
+                }
             }
           g_return_val_if_fail (
             pl->instantiated &&
@@ -2246,8 +2262,15 @@ plugin_clone (
           /* instantiate using the state */
           int ret =
             plugin_instantiate (
-              clone, false, state);
-          g_return_val_if_fail (!ret, NULL);
+              clone, false, state, &err);
+          if (ret != 0)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to instantiate cloned "
+                "plugin"));
+              return NULL;
+            }
 
           /* verify */
           g_return_val_if_fail (

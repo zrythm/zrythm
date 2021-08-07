@@ -1766,6 +1766,15 @@ project_save (
           if (!pl)
             continue;
 
+          if (!pl->instantiated)
+            {
+              g_warning (
+                "skipping uninstantiated plugin "
+                "%s...",
+                pl->setting->descr->name);
+              continue;
+            }
+
           /* save state */
 #ifdef HAVE_CARLA
           if (pl->setting->open_with_carla)

@@ -522,7 +522,8 @@ tracklist_selections_action_new (
 static int
 create_track (
   TracklistSelectionsAction * self,
-  int                         idx)
+  int                         idx,
+  GError **                   error)
 {
   Track * track;
   int pos = self->track_pos + idx;
@@ -571,44 +572,42 @@ create_track (
        * plugin */
       else
         {
+          PluginSetting * setting =
+            self->pl_setting;
+          PluginDescriptor * descr =
+            setting->descr;
+
           track =
             track_new (
               self->track_type, pos,
-              self->pl_setting->descr->name,
+              descr->name,
               F_WITH_LANE, F_NOT_AUDITIONER);
 
           GError * err = NULL;
           pl =
             plugin_new_from_setting (
-              self->pl_setting, track->pos,
+              setting, track->pos,
               PLUGIN_SLOT_INSERT, 0, &err);
           if (!pl)
             {
-              HANDLE_ERROR (
-                err,
-                _("Failed to create plugin: %s"),
-                err->message);
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _("Failed to create plugin %s"),
+                descr->name);
               return -1;
             }
 
-          if (plugin_instantiate (pl, true, NULL) != 0)
+          int ret =
+            plugin_instantiate (
+              pl, true, NULL, &err);
+          if (ret != 0)
             {
-              char * message =
-                g_strdup_printf (
-                  _("Error instantiating plugin %s. "
-                    "Please see log for details."),
-                  pl->setting->descr->name);
-
-              if (MAIN_WINDOW)
-                {
-                  ui_show_error_message (
-                    GTK_WINDOW (MAIN_WINDOW),
-                    message);
-                }
-              g_free (message);
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _("Error instantiating plugin %s"),
+                descr->name);
               plugin_free (pl);
-              return
-                ERR_PLUGIN_INSTANTIATION_FAILED;
+              return -1;
             }
 
           /* activate */
@@ -688,9 +687,10 @@ create_track (
                  (const gchar *) data,
                  (gssize) len, &err))
             {
-              g_critical (
-                "failed saving file %s: %s",
-                full_path, err->message);
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _("Failed saving file %s"),
+                full_path);
               return -1;
             }
 
@@ -784,7 +784,8 @@ static int
 do_or_undo_create_or_delete (
   TracklistSelectionsAction * self,
   bool                        _do,
-  bool                        create)
+  bool                        create,
+  GError **                   error)
 {
   /* if creating tracks (do create or undo delete) */
   if ((create && _do) ||
@@ -794,10 +795,15 @@ do_or_undo_create_or_delete (
         {
           for (int i = 0; i < self->num_tracks; i++)
             {
-              int ret = create_track (self, i);
+              GError * err = NULL;
+              int ret =
+                create_track (self, i, &err);
               if (ret != 0)
                 {
-                  g_warn_if_reached ();
+                  PROPAGATE_PREFIXED_ERROR (
+                    error, err,
+                    _("Failed to create track "
+                    "at %d"), i);
                   return ret;
                 }
 
@@ -1156,7 +1162,8 @@ do_or_undo_move_or_copy (
   TracklistSelectionsAction * self,
   bool                        _do,
   bool                        copy,
-  bool                        inside)
+  bool                        inside,
+  GError **                   error)
 {
   bool move = !copy;
   bool pin =
@@ -1609,7 +1616,8 @@ do_or_undo_move_or_copy (
 static int
 do_or_undo_edit (
   TracklistSelectionsAction * self,
-  bool                        _do)
+  bool                        _do,
+  GError **                   error)
 {
   if (_do && self->already_edited)
     {
@@ -1861,7 +1869,8 @@ do_or_undo_edit (
 static int
 do_or_undo (
   TracklistSelectionsAction * self,
-  bool                        _do)
+  bool                        _do,
+  GError **                   error)
 {
   switch (self->type)
     {
@@ -1871,17 +1880,18 @@ do_or_undo (
         do_or_undo_move_or_copy (
           self, _do, true,
           self->type ==
-            TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE);
+            TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE,
+          error);
     case TRACKLIST_SELECTIONS_ACTION_CREATE:
       return
         do_or_undo_create_or_delete (
-          self, _do, true);
+          self, _do, true, error);
     case TRACKLIST_SELECTIONS_ACTION_DELETE:
       return
         do_or_undo_create_or_delete (
-          self, _do, false);
+          self, _do, false, error);
     case TRACKLIST_SELECTIONS_ACTION_EDIT:
-      return do_or_undo_edit (self, _do);
+      return do_or_undo_edit (self, _do, error);
     case TRACKLIST_SELECTIONS_ACTION_MOVE:
     case TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE:
     case TRACKLIST_SELECTIONS_ACTION_PIN:
@@ -1890,7 +1900,8 @@ do_or_undo (
         do_or_undo_move_or_copy (
           self, _do, false,
           self->type ==
-            TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE);
+            TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE,
+          error);
     }
 
   g_return_val_if_reached (-1);
@@ -1900,14 +1911,32 @@ int
 tracklist_selections_action_do (
   TracklistSelectionsAction * self)
 {
-  return do_or_undo (self, true);
+  GError * err = NULL;
+  int ret = do_or_undo (self, true, &err);
+  if (err)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to do tracklist selections "
+        "action"));
+    }
+  return ret;
 }
 
 int
 tracklist_selections_action_undo (
   TracklistSelectionsAction * self)
 {
-  return do_or_undo (self, false);
+  GError * err = NULL;
+  int ret = do_or_undo (self, false, &err);
+  if (err)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to do tracklist selections "
+        "action"));
+    }
+  return ret;
 }
 
 char *

@@ -39,9 +39,10 @@
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
-#include "utils/gtk.h"
+#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -56,6 +57,17 @@
 #include <glib/gi18n.h>
 
 #include <CarlaHost.h>
+
+typedef enum
+{
+  Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+} ZPluginsCarlaNativePluginError;
+
+#define Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR \
+  z_plugins_carla_native_plugin_error_quark ()
+GQuark z_plugins_carla_native_plugin_error_quark (void);
+G_DEFINE_QUARK (
+  z-plugins-carla-native-plugin-error-quark, z_plugins_carla_native_plugin_error)
 
 static PluginType
 get_plugin_type_from_protocol (
@@ -407,12 +419,14 @@ _create (
 static CarlaNativePlugin *
 create_plugin (
   Plugin *     plugin,
-  PluginType   type)
+  PluginType   type,
+  GError **    error)
 {
   PluginSetting * setting = plugin->setting;
   const PluginDescriptor * descr =
     setting->descr;
   CarlaNativePlugin * self = _create (plugin);
+  g_return_val_if_fail (self, NULL);
 
   /* instantiate the plugin to get its info */
   self->native_plugin_descriptor =
@@ -564,8 +578,11 @@ create_plugin (
 
   if (ret != 1)
     {
-      g_warning (
-        "Error adding carla plugin: %s",
+      g_set_error (
+        error,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+        _("Error adding carla plugin: %s"),
         carla_get_last_error (self->host_handle));
       return NULL;
     }
@@ -587,11 +604,6 @@ create_plugin (
   /* add engine callback */
   carla_set_engine_callback (
     self->host_handle, engine_callback, self);
-
-  if (ZRYTHM_TESTING)
-    {
-      return self;
-    }
 
   return self;
 }
@@ -1047,7 +1059,8 @@ carla_native_plugin_get_descriptor_from_cached (
 
 static CarlaNativePlugin *
 create_from_setting (
-  Plugin * plugin)
+  Plugin *  plugin,
+  GError ** error)
 {
 #if 0
   g_return_val_if_fail (
@@ -1062,10 +1075,10 @@ create_from_setting (
     setting->open_with_carla, NULL);
 
   PluginType type =
-    get_plugin_type_from_protocol (descr->protocol);
+    get_plugin_type_from_protocol (
+      descr->protocol);
   CarlaNativePlugin * self =
-    create_plugin (plugin, type);
-  g_warn_if_fail (self);
+    create_plugin (plugin, type, error);
 
   return self;
 }
@@ -1081,13 +1094,13 @@ create_from_setting (
  */
 int
 carla_native_plugin_new_from_setting (
-  Plugin * plugin)
+  Plugin *  plugin,
+  GError ** error)
 {
   CarlaNativePlugin * self =
-    create_from_setting (plugin);
+    create_from_setting (plugin, error);
   if (!self)
     {
-      g_warning ("failed to create plugin");
       return -1;
     }
 
@@ -1349,7 +1362,8 @@ int
 carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
   bool                loading,
-  bool                use_state_file)
+  bool                use_state_file,
+  GError **           error)
 {
   g_debug (
     "loading: %i, use state file: %d, "
@@ -1360,11 +1374,16 @@ carla_native_plugin_instantiate (
     {
       /* recreate the plugin to create the native
        * plugin descriptor */
+      GError * err = NULL;
       int ret =
         carla_native_plugin_new_from_setting (
-          self->plugin);
+          self->plugin, &err);
       if (ret != 0)
         {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to instantiate Carla "
+            "plugin"));
           self->plugin->instantiation_failed =
             true;
           return -1;

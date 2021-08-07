@@ -130,7 +130,8 @@ typedef enum
 {
   Z_PLUGINS_LV2_PLUGIN_ERROR_CREATION_FAILED,
   Z_PLUGINS_LV2_PLUGIN_ERROR_INSTANTIATION_FAILED,
-} ZPluginsPluginError;
+  Z_PLUGINS_LV2_PLUGIN_ERROR_NO_UI,
+} ZPluginsLv2PluginError;
 
 #define Z_PLUGINS_LV2_PLUGIN_ERROR \
   z_plugins_lv2_plugin_error_quark ()
@@ -2255,7 +2256,8 @@ lv2_plugin_get_ui_binary_uri (
 bool
 lv2_plugin_is_ui_external (
   const char * uri,
-  const char * ui_uri)
+  const char * ui_uri,
+  GError **    error)
 {
   LilvNode * lv2_uri =
     lilv_new_uri (LILV_WORLD, uri);
@@ -2269,6 +2271,15 @@ lv2_plugin_is_ui_external (
     lilv_new_uri (LILV_WORLD, ui_uri);
   const LilvUI * ui =
     lilv_uis_get_by_uri (uis, ui_uri_node);
+  if (!ui)
+    {
+      g_set_error (
+        error, Z_PLUGINS_LV2_PLUGIN_ERROR,
+        Z_PLUGINS_LV2_PLUGIN_ERROR_NO_UI,
+        _("Could not find UI by URI <%s>"),
+        ui_uri);
+      return false;
+    }
 
   const LilvNodes * ui_classes =
     lilv_ui_get_classes (ui);
@@ -2560,7 +2571,8 @@ lv2_plugin_instantiate (
   bool         project,
   bool         use_state_file,
   char *       preset_uri,
-  LilvState *  state)
+  LilvState *  state,
+  GError **    error)
 {
   g_message (
     "Instantiating... uri: %s, project: %d, "
@@ -2616,9 +2628,9 @@ lv2_plugin_instantiate (
     g_dir_make_tmp ("lv2_self_XXXXXX", &err);
   if (!templ)
     {
-      g_warning (
-        "LV2 plugin instantiation failed: %s",
-        err->message);
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _("Failed to make temporary dir"));
       return -1;
     }
   self->temp_dir =
@@ -2677,11 +2689,11 @@ lv2_plugin_instantiate (
               state_file_path);
           if (!state)
             {
-              g_critical (
-                "Failed to load state from %s",
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _("Failed to load state from %s"),
                 state_file_path);
-              return
-                ERR_FAILED_TO_LOAD_STATE_FROM_FILE;
+              return -1;
             }
           g_free (state_file_path);
 
@@ -2709,21 +2721,11 @@ lv2_plugin_instantiate (
               LILV_PLUGINS, lv2_uri);
           if (!self->lilv_plugin)
             {
-              if (ZRYTHM_HAVE_UI)
-                {
-                  char * msg =
-                    g_strdup_printf (
-                      _("Failed to find plugin "
-                      "with URI: %s"),
-                      lv2_uri_str);
-                  g_warning ("%s", msg);
-                  if (ZRYTHM_HAVE_UI)
-                    {
-                      ui_show_error_message (
-                        MAIN_WINDOW, msg);
-                    }
-                  g_free (msg);
-                }
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _("Failed to find plugin with URI "
+                "<%s>"),
+                lv2_uri_str);
               lilv_node_free (lv2_uri);
               return -1;
             }
@@ -2901,8 +2903,18 @@ lv2_plugin_instantiate (
   if (ui_uri)
     {
       /* set whether the UI is external */
-      if (lv2_plugin_is_ui_external (
-            pl_uri, ui_uri))
+      bool is_ui_external =
+        lv2_plugin_is_ui_external (
+          pl_uri, ui_uri, &err);
+      if (err)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed checking whether lv2 plugin "
+            "UI is external"));
+          return -1;
+        }
+      else if (is_ui_external)
         {
           self->has_external_ui = true;
         }

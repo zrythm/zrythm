@@ -123,14 +123,24 @@ audio_function_get_plugin_uri_for_type (
 /**
  * Applies the given action to the given selections.
  *
+ * This will save a file in the pool and store the
+ * pool ID in the selections.
+ *
  * @param sel Selections to edit.
- * @param type Function type.
+ * @param type Function type. If invalid is passed,
+ *   this will simply add the audio file in the pool
+ *   for the unchanged audio material (used in
+ *   audio selection actions for the selections
+ *   before the change).
+ *
+ * @return Non-zero if error.
  */
 int
 audio_function_apply (
   ArrangerSelections * sel,
   AudioFunctionType    type,
-  const char *         uri);
+  const char *         uri,
+  GError **            error);
 
 /**
  * @}

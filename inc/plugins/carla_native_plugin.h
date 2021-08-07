@@ -104,10 +104,11 @@ carla_native_plugin_init_loaded (
  *
  * @return Non-zero if fail.
  */
-NONNULL
+NONNULL_ARGS (1)
 int
 carla_native_plugin_new_from_setting (
-  Plugin * plugin);
+  Plugin *  plugin,
+  GError ** error);
 
 /**
  * Returns a filled in descriptor from the
@@ -161,12 +162,13 @@ carla_native_plugin_populate_banks (
  *
  * @return 0 if no errors, non-zero if errors.
  */
-NONNULL
+NONNULL_ARGS (1)
 int
 carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
   bool                loading,
-  bool                use_state_file);
+  bool                use_state_file,
+  GError **           error);
 
 NONNULL
 char *

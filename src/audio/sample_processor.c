@@ -626,14 +626,22 @@ sample_processor_queue_file (
       if (!pl)
         {
           HANDLE_ERROR (
-            err, _("Failed to create plugin: %s"),
-            err->message);
+            err,
+            _("Failed to create plugin %s"),
+            self->instrument_setting->descr->name);
           return;
         }
       pl->is_auditioner = true;
-      g_return_if_fail (pl);
-      g_return_if_fail (
-        plugin_instantiate (pl, true, NULL) == 0);
+      int ret =
+        plugin_instantiate (pl, true, NULL, &err);
+      if (ret != 0)
+        {
+          HANDLE_ERROR (
+            err,
+            _("Failed to instantiate plugin %s"),
+            self->instrument_setting->descr->name);
+          return;
+        }
       g_return_if_fail (
         plugin_activate (pl, F_ACTIVATE) == 0);
       g_return_if_fail (pl->midi_in_port);

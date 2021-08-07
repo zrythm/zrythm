@@ -28,31 +28,6 @@
 
 #include <glib.h>
 
-/* FIXME delete start */
-typedef enum ErrorDomain
-{
-  ERROR_DOMAIN_GLAREA,
-} ErrorDomain;
-
-typedef enum ErrorCode
-{
-  ERR_PLUGIN_INSTANTIATION_FAILED = 1,
-  ERR_OBJECT_IS_NULL,
-  ERR_PORT_MAGIC_FAILED,
-  ERR_FAILED_TO_LOAD_STATE_FROM_FILE,
-  ERROR_SHADER_COMPILATION,
-  ERROR_SHADER_LINK,
-} ErrorCode;
-
-/**
- * Return the message corresponding to the given
- * error code.
- */
-const char *
-error_code_get_message (
-  ErrorCode err_code);
-/* FIXME delete end */
-
 /**
  * Only to be called by HANDLE_ERROR macro.
  */

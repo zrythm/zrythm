@@ -33,6 +33,7 @@
 #include "gui/widgets/center_dock.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/object_utils.h"
@@ -586,12 +587,16 @@ arranger_selections_action_new_edit_audio_function (
 
   g_debug (
     "saving file before applying audio func...");
+  GError * err = NULL;
   int res =
     audio_function_apply (
       sel_before_clone, AUDIO_FUNCTION_INVALID,
-      NULL);
+      NULL, &err);
   if (res != 0)
     {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to apply audio function"));
       arranger_selections_free_full (
         sel_before_clone);
       return NULL;
@@ -602,9 +607,12 @@ arranger_selections_action_new_edit_audio_function (
   g_debug ("applying actual audio func...");
   res =
     audio_function_apply (
-      sel_after, audio_func_type, uri);
+      sel_after, audio_func_type, uri, &err);
   if (res != 0)
     {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to apply audio function"));
       arranger_selections_free_full (sel_after);
       return NULL;
     }
