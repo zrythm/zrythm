@@ -28,7 +28,10 @@
 #include "project.h"
 #include "utils/objects.h"
 #include "utils/stack.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 /**
  * Inits the undo manager by populating the
@@ -80,13 +83,15 @@ do_or_undo_action (
   UndoStack *      main_stack,
   UndoStack *      opposite_stack)
 {
+  bool need_pop = false;
   if (!action)
     {
       /* pop the action from the undo stack and
        * undo it */
       action =
         (UndoableAction *)
-        undo_stack_pop (main_stack);
+        undo_stack_peek (main_stack);
+      need_pop = true;
     }
 
   int ret = 0;
@@ -107,16 +112,26 @@ do_or_undo_action (
       return -1;
     }
 
-  /* if error return. this should never happen
-   * and anything that happens afterwards is
-   * undefined */
+  /* if error return */
   if (ret)
     {
       zix_sem_post (&self->action_sem);
-      g_critical (
+      if (ZRYTHM_HAVE_UI)
+        {
+          ui_show_message_printf (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            "%s",
+            _("Failed to perform action"));
+        }
+      g_warning (
         "%s: action not performed (err %d)",
         __func__, ret);
       return -1;
+    }
+  /* else if no error pop from the stack */
+  else if (need_pop)
+    {
+      undo_stack_pop (main_stack);
     }
 
   /* if the redo stack is full, delete the last
@@ -243,7 +258,15 @@ undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action)
 {
-  g_return_val_if_fail (self && action, -1);
+  /* check that action is not already in the
+   * stacks */
+  g_return_val_if_fail (
+    !undo_stack_contains_action (
+       self->undo_stack, action)
+    &&
+    !undo_stack_contains_action (
+       self->redo_stack, action),
+    -1);
 
   zix_sem_wait (&self->action_sem);
 
@@ -256,6 +279,7 @@ undo_manager_perform (
     {
       g_warning (
         "failed to perform action: %d", err);
+      zix_sem_post (&self->action_sem);
       return err;
     }
 
@@ -295,6 +319,20 @@ undo_manager_contains_clip (
 }
 
 /**
+ * Returns the last performed action, or NULL if
+ * the stack is empty.
+ */
+UndoableAction *
+undo_manager_get_last_action (
+  UndoManager * self)
+{
+  UndoableAction * action =
+    (UndoableAction *)
+    undo_stack_peek (self->undo_stack);
+  return action;
+}
+
+/**
  * Clears the undo and redo stacks.
  */
 void
@@ -303,7 +341,7 @@ undo_manager_clear_stacks (
   bool          free)
 {
   g_return_if_fail (
-    self && self->undo_stack && self->redo_stack);
+    self->undo_stack && self->redo_stack);
   undo_stack_clear (self->undo_stack, free);
   undo_stack_clear (self->redo_stack, free);
 }

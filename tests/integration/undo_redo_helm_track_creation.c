@@ -53,10 +53,8 @@ _test (
     helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* 2. delete track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_delete (
-      TRACKLIST_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_delete_with_action (
+    TRACKLIST_SELECTIONS);
 
   /* 3. undo track deletion */
   undo_manager_undo (UNDO_MANAGER);

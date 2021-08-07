@@ -132,13 +132,10 @@ _test (
     test_plugin_manager_get_plugin_setting (
       NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
       with_carla);
-  ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS,
-      setting, NULL, TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * new_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_with_action (
+      TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
+      TRACKLIST->num_tracks, 1);
 
   pl = new_track->channel->inserts[0];
   port = get_delay_port (pl);;

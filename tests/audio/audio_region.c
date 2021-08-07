@@ -49,11 +49,9 @@ test_fill_stereo_ports (void)
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   int num_tracks_before = TRACKLIST->num_tracks;
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      num_tracks_before, &pos, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos,
+    num_tracks_before, 1);
 
   Track * track =
     TRACKLIST->tracks[num_tracks_before];
@@ -107,11 +105,9 @@ test_change_samplerate (void)
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   int num_tracks_before = TRACKLIST->num_tracks;
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      num_tracks_before, &pos, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos,
+    num_tracks_before, 1);
 
   /*Track * track =*/
     /*TRACKLIST->tracks[num_tracks_before];*/
@@ -167,11 +163,9 @@ test_load_project_with_selected_audio_region (void)
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   int num_tracks_before = TRACKLIST->num_tracks;
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      num_tracks_before, &pos, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos,
+    num_tracks_before, 1);
 
   /* select region */
   Track * track =

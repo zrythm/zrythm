@@ -60,11 +60,9 @@ test_export_wav ()
       TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  UndoableAction * action =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, action);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    TRACKLIST->num_tracks, 1);
 
   char * tmp_dir =
     g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
@@ -285,22 +283,17 @@ test_mixdown_midi_routed_to_instrument_track ()
   /* create the MIDI track from a MIDI file */
   SupportedFile * file =
     supported_file_new_from_path (midi_file);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * midi_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_with_action (
+      TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+      TRACKLIST->num_tracks, 1);
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
   /* route the MIDI track to the instrument track */
-  ua =
-    tracklist_selections_action_new_edit_direct_out (
-      TRACKLIST_SELECTIONS, ins_track);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_direct_out_with_action (
+    TRACKLIST_SELECTIONS, ins_track);
 
   /* bounce it */
   ExportSettings settings;
@@ -466,22 +459,17 @@ _test_bounce_midi_track_routed_to_instrument_track (
   /* create the MIDI track from a MIDI file */
   SupportedFile * file =
     supported_file_new_from_path (midi_file);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * midi_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_with_action (
+      TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+      TRACKLIST->num_tracks, 1);
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
   /* route the MIDI track to the instrument track */
-  ua =
-    tracklist_selections_action_new_edit_direct_out (
-      TRACKLIST_SELECTIONS, ins_track);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_direct_out_with_action (
+    TRACKLIST_SELECTIONS, ins_track);
 
   /* bounce it */
   ExportSettings settings;

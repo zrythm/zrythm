@@ -362,13 +362,14 @@ plugin_add_out_port (
  * @param slot The expected slot the plugin will
  *   be in.
  */
-NONNULL
+NONNULL_ARGS (1)
 Plugin *
 plugin_new_from_setting (
   PluginSetting * setting,
   int             track_pos,
   PluginSlotType  slot_type,
-  int             slot);
+  int             slot,
+  GError **       error);
 
 /**
  * Create a dummy plugin for tests.
@@ -432,14 +433,19 @@ plugin_remove_ats_from_automation_tracklist (
 /**
  * Clones the given plugin.
  *
- * @bool src_is_project Whether \ref pl is a project
+ * @param error To be filled if an error occurred.
+ * @param src_is_project Whether @p pl is a project
  *   plugin.
+ *
+ * @return The cloned plugin, or NULL if an error
+ *   occurred.
  */
-NONNULL
+NONNULL_ARGS (1)
 Plugin *
 plugin_clone (
-  Plugin * pl,
-  bool     src_is_project);
+  Plugin *  pl,
+  bool      src_is_project,
+  GError ** error);
 
 void
 plugin_get_full_port_group_designation (

@@ -115,24 +115,9 @@ on_drag_data_received (
   tracklist_selections_select_foldable_children (
     TRACKLIST_SELECTIONS);
 
-  UndoableAction * ua = NULL;
-  if (action == GDK_ACTION_COPY)
-    {
-      ua =
-        tracklist_selections_action_new_copy (
-          TRACKLIST_SELECTIONS, pos);
-    }
-  else if (action == GDK_ACTION_MOVE)
-    {
-      ua =
-        tracklist_selections_action_new_move (
-          TRACKLIST_SELECTIONS, pos);
-    }
-
-  g_warn_if_fail (ua);
-
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  tracklist_selections_move_or_copy_with_action (
+    TRACKLIST_SELECTIONS, action == GDK_ACTION_COPY,
+    pos);
 }
 
 static void

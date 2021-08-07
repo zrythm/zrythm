@@ -351,6 +351,27 @@ undo_stack_contains_clip (
 }
 
 /**
+ * Checks if the undo stack contains the given
+ * action pointer.
+ */
+bool
+undo_stack_contains_action (
+  UndoStack *      self,
+  UndoableAction * ua)
+{
+  for (int i = 0; i <= self->stack->top; i++)
+    {
+      UndoableAction * action =
+        (UndoableAction *)
+        self->stack->elements[i];
+      if (ua == action)
+        return true;
+    }
+
+  return false;
+}
+
+/**
  * Clears the stack, optionally freeing all the
  * elements.
  */

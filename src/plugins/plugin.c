@@ -69,6 +69,18 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+typedef enum
+{
+  Z_PLUGINS_PLUGIN_ERROR_CREATION_FAILED,
+  Z_PLUGINS_PLUGIN_ERROR_INSTANTIATION_FAILED,
+} ZPluginsPluginError;
+
+#define Z_PLUGINS_PLUGIN_ERROR \
+  z_plugins_plugin_error_quark ()
+GQuark z_plugins_plugin_error_quark (void);
+G_DEFINE_QUARK (
+  z-plugins-plugin-error-quark, z_plugins_plugin_error)
+
 NONNULL
 static void
 set_stereo_outs_and_midi_in (
@@ -528,7 +540,8 @@ plugin_new_from_setting (
   PluginSetting * setting,
   int             track_pos,
   PluginSlotType  slot_type,
-  int             slot)
+  int             slot,
+  GError **       error)
 {
   Plugin * self = object_new (Plugin);
   self->schema_version = PLUGIN_SCHEMA_VERSION;
@@ -564,10 +577,16 @@ plugin_new_from_setting (
 #endif
       if (descr->protocol == PROT_LV2)
         {
+          GError * err = NULL;
           lv2_plugin_new_from_uri (
-            self, descr->uri);
-          g_return_val_if_fail (
-            self->lv2, NULL);
+            self, descr->uri, &err);
+          if (!self->lv2)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to get LV2 plugin"));
+              return NULL;
+            }
         }
       else
         {
@@ -2077,14 +2096,20 @@ plugin_ensure_state_dir (
 /**
  * Clones the given plugin.
  *
- * @bool src_is_project Whether the given plugin
- *   is a project plugin.
+ * @param error To be filled if an error occurred.
+ * @param src_is_project Whether @p pl is a project
+ *   plugin.
+ *
+ * @return The cloned plugin, or NULL if an error
+ *   occurred.
  */
 Plugin *
 plugin_clone (
-  Plugin * pl,
-  bool     src_is_project)
+  Plugin *  pl,
+  bool      src_is_project,
+  GError ** error)
 {
+  g_return_val_if_fail (!error || !*error, NULL);
   g_return_val_if_fail (IS_PLUGIN (pl), NULL);
 
   char buf[800];
@@ -2096,17 +2121,36 @@ plugin_clone (
   if (pl->setting->open_with_carla)
     {
       /* create a new plugin with same descriptor */
+      GError * err = NULL;
       clone =
         plugin_new_from_setting (
           pl->setting, pl->id.track_pos,
-          pl->id.slot_type, pl->id.slot);
-      g_return_val_if_fail (
-        clone && clone->carla, NULL);
+          pl->id.slot_type, pl->id.slot, &err);
+      if (!clone || !clone->carla)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err,
+            _("Failed to create plugin clone for "
+            "%s"),
+            buf);
+          return NULL;
+        }
 
       /* instantiate */
       int ret =
         plugin_instantiate (clone, false, NULL);
-      g_return_val_if_fail (ret == 0, NULL);
+      if (ret != 0)
+        {
+          g_warn_if_reached ();
+          object_free_w_func_and_null (
+            plugin_free, clone);
+          g_set_error (
+            error, Z_PLUGINS_PLUGIN_ERROR,
+            Z_PLUGINS_PLUGIN_ERROR_INSTANTIATION_FAILED,
+            "Failed to instantiate cloned "
+            "plugin %s", buf);
+          return NULL;
+        }
 
       /* also instantiate the source, if not
        * already instantiated, so its state can
@@ -2116,8 +2160,17 @@ plugin_clone (
           ret =
             plugin_instantiate (
               pl, src_is_project, NULL);
+          if (ret != 0)
+            {
+              g_warn_if_reached ();
+              g_set_error (
+                error, Z_PLUGINS_PLUGIN_ERROR,
+                Z_PLUGINS_PLUGIN_ERROR_INSTANTIATION_FAILED,
+                "Failed to reinstantiate source "
+                "plugin %s", buf);
+              return NULL;
+            }
           g_return_val_if_fail (
-            ret == 0 &&
             pl->num_in_ports ==
               clone->num_in_ports, NULL);
         }
@@ -2176,12 +2229,19 @@ plugin_clone (
 
           /* create a new plugin with same
            * descriptor */
+          GError * err = NULL;
           clone =
             plugin_new_from_setting (
               pl->setting, pl->id.track_pos,
-              pl->id.slot_type, pl->id.slot);
-          g_return_val_if_fail (
-            IS_PLUGIN_AND_NONNULL (clone), NULL);
+              pl->id.slot_type, pl->id.slot,
+              &err);
+          if (!IS_PLUGIN_AND_NONNULL (clone))
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to create plugin clone"));
+              return NULL;
+            }
 
           /* instantiate using the state */
           int ret =

@@ -46,6 +46,10 @@
  * @{
  */
 
+void
+test_plugin_manager_reload_lilv_world_w_path (
+  const char *    path);
+
 /**
  * Get a plugin setting clone from the given
  * URI in the given bundle.
@@ -71,6 +75,27 @@ test_plugin_manager_create_tracks_from_plugin (
   bool         is_instrument,
   bool         with_carla,
   int          num_tracks);
+
+void
+test_plugin_manager_reload_lilv_world_w_path (
+  const char *    path)
+{
+  LilvWorld * world = lilv_world_new ();
+  PLUGIN_MANAGER->lilv_world = world;
+
+  lilv_world_load_specifications (world);
+  lilv_world_load_plugin_classes (world);
+  LilvNode * lv2_path =
+    lilv_new_string (LILV_WORLD, path);
+  lilv_world_set_option (
+    world, LILV_OPTION_LV2_PATH, lv2_path);
+  lilv_world_load_all (world);
+  object_free_w_func_and_null (
+    lilv_node_free, lv2_path);
+  plugin_manager_clear_plugins (PLUGIN_MANAGER);
+  plugin_manager_scan_plugins (
+    PLUGIN_MANAGER, 1.0, NULL);
+}
 
 /**
  * Get a plugin setting clone from the given
@@ -161,11 +186,11 @@ test_plugin_manager_create_tracks_from_plugin (
     }
 
   /* create a track from the plugin */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      track_type, setting, NULL,
-      TRACKLIST->num_tracks, NULL, num_tracks, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  bool ret =
+    track_create_with_action (
+      track_type, setting, NULL, NULL,
+      TRACKLIST->num_tracks, num_tracks);
+  g_assert_true (ret);
 
   return TRACKLIST->num_tracks - 1;
 }

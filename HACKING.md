@@ -152,6 +152,10 @@ program ends, run
 
 and check the results file for the profiling results.
 
+*If you are running Zrythm using `zrythm_launch`,
+use the path of the `zrythm` binary in the same
+directory.*
+
 ## Callgrind
 Alternatively, you can use callgrind with kcachegrind.
 Build Zrythm normally and then run it through
@@ -223,6 +227,15 @@ in a tiled editor, but if you find this
 difficult to work with < 80 characters is acceptable
 too.
 
+## Error Handling
+To report invalid program states (such as programming
+errors), use the `g_return_*` functions or
+`g_critical`. This will show a bug report popup
+if hit.
+To report non-programming errors, such as failure
+to open a file, use the
+[GError](https://www.freedesktop.org/software/gstreamer-sdk/data/docs/latest/glib/glib-Error-Reporting.html) mechanism.
+
 ## Licensing
 If you contributed significant (for copyright
 purposes) amounts of code in a file, you should
@@ -256,26 +269,6 @@ from the GUI thread only.
 Delete the build dir and reconfigure. This is likely
 an optimization problem with meson/ninja that
 appears rarely.
-
-## How to read cyaml backtraces
-Example backtrace:
-```
-Save: Backtrace:
-in mapping field: pool_id <- member in region after name
-in sequence entry: 1 <- first region in automation track
-in mapping field: created <- member after regions in automation track
-in sequence entry: 39
-in mapping field: track_pos <- member after ats in automation tracklist
-in mapping field: in_signal_type <- member after automation tracklist in track
-in sequence entry: 6 <- ???
-in mapping field: (null) <- ???
-in mapping field: clip_editor
-error Invalid value
-```
-Problem: region name was NULL.
-
-Can get more info by setting the cyaml log level
-in `yaml_get_cyaml_config()`.
 
 ----
 

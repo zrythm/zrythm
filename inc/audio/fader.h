@@ -279,6 +279,19 @@ fader_set_amp (
   float   amp);
 
 /**
+ * Sets the amp value with an undoable action.
+ *
+ * @param skip_if_equal Whether to skip the action
+ *   if the amp hasn't changed.
+ */
+void
+fader_set_amp_with_action (
+  Fader * self,
+  float   amp_from,
+  float   amp_to,
+  bool    skip_if_equal);
+
+/**
  * Adds (or subtracts if negative) to the amplitude
  * of the fader (clamped at 0.0 to 2.0).
  */

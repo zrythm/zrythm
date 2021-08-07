@@ -273,6 +273,11 @@ undoable_action_do (UndoableAction * self)
         { \
           g_message ("[DONE]: " #uc " (%s)", str); \
         } \
+      else \
+        { \
+          g_warning ( \
+            "[FAILED]: " #uc " (%s)", str); \
+        } \
       g_free (str); \
     } \
     break;

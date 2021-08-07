@@ -70,11 +70,9 @@ test_crash_handling (void)
   setting->bridge_mode = CARLA_BRIDGE_FULL;
 
   /* create a track from the plugin */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS, setting, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_for_plugin_at_idx_w_action (
+    TRACK_TYPE_AUDIO_BUS, setting,
+    TRACKLIST->num_tracks);
 
   Plugin * pl =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->

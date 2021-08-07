@@ -209,6 +209,15 @@ undo_stack_contains_clip (
   AudioClip * clip);
 
 /**
+ * Checks if the undo stack contains the given
+ * action pointer.
+ */
+bool
+undo_stack_contains_action (
+  UndoStack *      self,
+  UndoableAction * ua);
+
+/**
  * Clears the stack, optionally freeing all the
  * elements.
  */

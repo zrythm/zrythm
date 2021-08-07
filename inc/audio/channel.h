@@ -582,17 +582,19 @@ channel_select_all (
  *
  * @note The given track is not cloned.
  *
+ * @param error To be filled if an error occurred.
  * @param track The track to use for getting the
  *   name.
  * @bool src_is_project Whether \ref ch is a project
  *   channel.
  */
-NONNULL
+NONNULL_ARGS (1,2)
 Channel *
 channel_clone (
   Channel * ch,
   Track *   track,
-  bool      src_is_project);
+  bool      src_is_project,
+  GError ** error);
 
 /**
  * Disconnects the channel from the processing

@@ -101,10 +101,8 @@ object_color_chooser_dialog_widget_run (
         {
           TracklistSelections * sel =
             self->tracklist_selections;
-          UndoableAction * ua =
-            tracklist_selections_action_new_edit_color (
+          tracklist_selections_set_color_with_action (
             sel, &sel_color);
-          undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
   gtk_widget_destroy (GTK_WIDGET (self));

@@ -135,10 +135,8 @@ on_unsolo_all_clicked (
   /* unsolo all */
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_solo (
-      TRACKLIST_SELECTIONS, F_NO_SOLO);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_soloed_with_action (
+    TRACKLIST_SELECTIONS, F_NO_SOLO);
 
   /* restore selections */
   for (int i = 0; i < num_tracks_before; i++)
@@ -167,10 +165,8 @@ on_unmute_all_clicked (
   /* unsolo all */
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_mute (
-      TRACKLIST_SELECTIONS, F_NO_MUTE);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_muted_with_action (
+    TRACKLIST_SELECTIONS, F_NO_MUTE);
 
   /* restore selections */
   for (int i = 0; i < num_tracks_before; i++)
@@ -199,10 +195,8 @@ on_unlisten_all_clicked (
   /* unsolo all */
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_listen (
-      TRACKLIST_SELECTIONS, F_NO_LISTEN);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_listened_with_action (
+    TRACKLIST_SELECTIONS, F_NO_LISTEN);
 
   /* restore selections */
   for (int i = 0; i < num_tracks_before; i++)

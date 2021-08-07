@@ -33,6 +33,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -535,8 +536,36 @@ fader_set_amp (void * _fader, float amp)
 
   port_set_control_value (self->amp, amp, 0, 0);
 
-  fader_update_volume_and_fader_val (
-    self);
+  fader_update_volume_and_fader_val (self);
+}
+
+/**
+ * Sets the amp value with an undoable action.
+ *
+ * @param skip_if_equal Whether to skip the action
+ *   if the amp hasn't changed.
+ */
+void
+fader_set_amp_with_action (
+  Fader * self,
+  float   amp_from,
+  float   amp_to,
+  bool    skip_if_equal)
+{
+  Track * track = fader_get_track (self);
+  bool is_equal =
+    math_floats_equal_epsilon (
+      amp_from, amp_to,
+      0.0001f);
+  if (!skip_if_equal || !is_equal)
+    {
+      UndoableAction * ua =
+        tracklist_selections_action_new_edit_single_float (
+          EDIT_TRACK_ACTION_TYPE_VOLUME,
+          track, amp_from, amp_to, true, NULL);
+      g_return_if_fail (ua);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
 }
 
 /**
@@ -579,11 +608,21 @@ fader_set_midi_mode (
       Track * track = fader_get_track (self);
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (track));
+      GError * err = NULL;
       UndoableAction * ua =
         tracklist_selections_action_new_edit_single_int (
           EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE,
-          track, mode, F_NOT_ALREADY_EDITED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          track, mode, F_NOT_ALREADY_EDITED, &err);
+      if (ua)
+        {
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err, _("Could not set MIDI mode: %s"),
+            err->message);
+        }
     }
   else
     {

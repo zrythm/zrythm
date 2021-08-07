@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,14 +26,19 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+
+#include <glib/gi18n.h>
 
 void
 tracklist_selections_init_loaded (
@@ -666,18 +671,33 @@ tracklist_selections_toggle_pinned (
 /**
  * Clone the struct for copying, undoing, etc.
  */
+NONNULL_ARGS (1)
 TracklistSelections *
 tracklist_selections_clone (
-  TracklistSelections * src)
+  TracklistSelections * src,
+  GError **             error)
 {
+  g_return_val_if_fail (!error || !*error, NULL);
+
   TracklistSelections * new_ts =
     object_new (TracklistSelections);
 
   for (int i = 0; i < src->num_tracks; i++)
     {
       Track * r = src->tracks[i];
+      GError * err = NULL;
       Track * new_r =
-        track_clone (r, src->is_project);
+        track_clone (r, src->is_project, &err);
+      if (!new_r)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err,
+            _("Failed to clone track '%s'"),
+            r->name);
+          object_free_w_func_and_null (
+            tracklist_selections_free, new_ts);
+          return NULL;
+        }
       array_append (
         new_ts->tracks, new_ts->num_tracks,
         new_r);
@@ -729,6 +749,323 @@ tracklist_selections_mark_for_bounce (
     }
 }
 
+/**
+ * Sets the soloed status of all selected tracks.
+ */
+void
+tracklist_selections_set_soloed_with_action (
+  TracklistSelections * self,
+  bool                  solo)
+{
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_solo (
+      self, solo, &err);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_return_if_fail (err);
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        solo
+        ? _("Cannot solo tracks: %s")
+        : _("Cannot unsolo tracks: %s"),
+        err->message);
+      g_error_free_and_null (err);
+    }
+}
+
+/**
+ * Sets the muted status of all selected tracks.
+ */
+void
+tracklist_selections_set_muted_with_action (
+  TracklistSelections * self,
+  bool                  mute)
+{
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_mute (
+      self, mute, &err);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_return_if_fail (err);
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        mute
+        ? _("Cannot mute tracks: %s")
+        : _("Cannot unmute tracks: %s"),
+        err->message);
+      g_error_free_and_null (err);
+    }
+}
+
+/**
+ * Sets the listened status of all selected tracks.
+ */
+void
+tracklist_selections_set_listened_with_action (
+  TracklistSelections * self,
+  bool                  listen)
+{
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_listen (
+      self, listen, &err);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_return_if_fail (err);
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        listen
+        ? _("Cannot listen tracks: %s")
+        : _("Cannot unlisten tracks: %s"),
+        err->message);
+      g_error_free_and_null (err);
+    }
+}
+
+/**
+ * Sets the enabled status of all selected tracks.
+ */
+void
+tracklist_selections_set_enabled_with_action (
+  TracklistSelections * self,
+  bool                  enable)
+{
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_enable (
+      TRACKLIST_SELECTIONS, enable, &err);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_return_if_fail (err);
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        enable
+        ? _("Cannot enable tracks: %s")
+        : _("Cannot disable tracks: %s"),
+        err->message);
+      g_error_free_and_null (err);
+    }
+}
+
+bool
+tracklist_selections_move_or_copy_with_action (
+  TracklistSelections * self,
+  bool                  copy,
+  int                   pos)
+{
+  UndoableAction * ua = NULL;
+  GError * err = NULL;
+  if (copy)
+    {
+      ua =
+        tracklist_selections_action_new_copy (
+          self, pos, &err);
+    }
+  else
+    {
+      ua =
+        tracklist_selections_action_new_move (
+          self, pos, &err);
+    }
+
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+      return true;
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed copying/moving tracks"));
+      return false;
+    }
+}
+
+void
+tracklist_selections_delete_with_action (
+  TracklistSelections * self)
+{
+  if (tracklist_selections_contains_undeletable_track (
+        self))
+    {
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        "%s",
+        _("The track selection contains a track "
+        "that cannot be deleted"));
+    }
+  else
+    {
+      GError * err = NULL;
+      UndoableAction * ua =
+        tracklist_selections_action_new_delete (
+          self, &err);
+      if (ua)
+        {
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to delete tracks"));
+        }
+    }
+}
+
+void
+tracklist_selections_set_pinned_with_action (
+  TracklistSelections * self,
+  bool                  pin)
+{
+  UndoableAction * ua = NULL;
+  GError * err = NULL;
+  if (pin)
+    {
+      ua =
+        tracklist_selections_action_new_pin (
+          TRACKLIST_SELECTIONS, &err);
+    }
+  else
+    {
+      ua =
+        tracklist_selections_action_new_unpin (
+          TRACKLIST_SELECTIONS, &err);
+    }
+
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_return_if_fail (err);
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        _("Failed to pin/unpin tracks: %s"),
+        err->message);
+      g_error_free_and_null (err);
+    }
+}
+
+/**
+ * Edit or remove direct out.
+ *
+ * @param direct_out A track to route the
+ *   selections to, or NULL to route nowhere.
+ *
+ * @return Whether successful.
+ */
+bool
+tracklist_selections_set_direct_out_with_action (
+  TracklistSelections * self,
+  Track *               direct_out)
+{
+  GError * err = NULL;
+  UndoableAction * ua = NULL;
+  if (direct_out)
+    {
+      ua =
+        tracklist_selections_action_new_edit_direct_out (
+          self, direct_out, &err);
+    }
+  else
+    {
+      ua =
+        tracklist_selections_action_new_edit_remove_direct_out (
+          self, &err);
+    }
+
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+      return true;
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to set direct out"));
+      return false;
+    }
+}
+
+bool
+tracklist_selections_set_color_with_action (
+  TracklistSelections * self,
+  GdkRGBA *             color)
+{
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_color (
+      self, color, &err);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+      return true;
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to set color"));
+      return false;
+    }
+}
+
+bool
+tracklist_selections_move_or_copy_inside_with_action (
+  TracklistSelections * self,
+  bool                  copy,
+  int                   track_pos)
+{
+  GError * err = NULL;
+  UndoableAction * ua = NULL;
+
+  if (copy)
+    {
+      ua =
+        tracklist_selections_action_new_copy_inside (
+          self, track_pos, &err);
+    }
+  else
+    {
+      ua =
+        tracklist_selections_action_new_move_inside (
+          self, track_pos, &err);
+    }
+
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+      return true;
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to copy track inside"));
+      return false;
+    }
+}
 
 void
 tracklist_selections_free (

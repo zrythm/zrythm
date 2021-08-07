@@ -739,13 +739,9 @@ test_recording ()
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
   /* create an audio track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO);
 
   /* get master track */
   Track * master_track = P_MASTER_TRACK;
@@ -901,13 +897,9 @@ test_mono_recording (void)
   test_project_stop_dummy_engine ();
 
   /* create an audio track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -1006,13 +998,9 @@ test_long_audio_recording (void)
   test_project_stop_dummy_engine ();
 
   /* create an audio track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -1190,13 +1178,10 @@ test_2nd_audio_recording (void)
   /* create an audio track from the file */
   SupportedFile * file =
     supported_file_new_from_path (TEST_WAV2);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file, NULL,
+      TRACKLIST->num_tracks, 1);
 
   prepare ();
   TRANSPORT->recording = true;

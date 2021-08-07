@@ -33,6 +33,7 @@
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -616,11 +617,19 @@ sample_processor_queue_file (
         self->tracklist, instrument_track,
         instrument_track->pos,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+      GError * err = NULL;
       Plugin * pl =
         plugin_new_from_setting (
           self->instrument_setting,
           instrument_track->pos,
-          PLUGIN_SLOT_INSTRUMENT, -1);
+          PLUGIN_SLOT_INSTRUMENT, -1, &err);
+      if (!pl)
+        {
+          HANDLE_ERROR (
+            err, _("Failed to create plugin: %s"),
+            err->message);
+          return;
+        }
       pl->is_auditioner = true;
       g_return_if_fail (pl);
       g_return_if_fail (

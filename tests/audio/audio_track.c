@@ -65,17 +65,15 @@ test_fill_when_region_starts_on_loop_end ()
     supported_file_new_from_path (filepath);
   int num_tracks_before = TRACKLIST->num_tracks;
 
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      num_tracks_before, &TRANSPORT->loop_end_pos, 1, -1);
   transport_request_pause (TRANSPORT);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * track =
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file,
+      &TRANSPORT->loop_end_pos,
+      num_tracks_before, 1);
   /*transport_request_roll (TRANSPORT);*/
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
-  Track * track =
-    TRACKLIST->tracks[num_tracks_before];
   StereoPorts * ports =
     stereo_ports_new_generic (
       false, "ports", PORT_OWNER_TYPE_TRACK, track);

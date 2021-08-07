@@ -1408,14 +1408,21 @@ tracklist_handle_file_drop (
             }
           else /* else if no track given */
             {
-              UndoableAction * ua =
-                tracklist_selections_action_new_create (
-                  track_type, NULL, file,
-                  self->num_tracks,
-                  pos, 1, -1);
-              ua->num_actions = i + 1;
-              undo_manager_perform (
-                UNDO_MANAGER, ua);
+              bool ret =
+                track_create_with_action (
+                  track_type, NULL, file, pos,
+                  self->num_tracks, 1);
+              if (ret)
+                {
+                  UndoableAction * ua =
+                    undo_manager_get_last_action (
+                      UNDO_MANAGER);
+                  ua->num_actions = i + 1;
+                }
+              else
+                {
+                  goto free_file_array_and_return;
+                }
             }
         }
       else
@@ -1465,14 +1472,16 @@ tracklist_handle_move_or_copy (
   tracklist_selections_select_foldable_children (
     TRACKLIST_SELECTIONS);
 
-  UndoableAction * ua = NULL;
   if (action == GDK_ACTION_COPY)
     {
       if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
-          ua =
-            tracklist_selections_action_new_copy_inside (
-              TRACKLIST_SELECTIONS, this_track->pos);
+          bool ret =
+            tracklist_selections_move_or_copy_inside_with_action (
+              TRACKLIST_SELECTIONS, false,
+              this_track->pos);
+          if (!ret)
+            return;
         }
       else
         {
@@ -1495,27 +1504,36 @@ tracklist_handle_move_or_copy (
               if (track_below_parent &&
                   track_below_parent != cur_parent)
                 {
-                  ua =
-                    tracklist_selections_action_new_copy_inside (
-                      tls, track_below_parent->pos);
-                  undo_manager_perform (
-                    UNDO_MANAGER, ua);
+                  bool ret =
+                    tracklist_selections_move_or_copy_inside_with_action (
+                      tls, true,
+                      track_below_parent->pos);
+                  if (!ret)
+                    return;
+
                   num_actions++;
                 }
             }
 
           if (num_actions == 1)
             {
-              ua =
-                tracklist_selections_action_new_copy (
-                  tls, pos);
+              bool ret =
+                tracklist_selections_move_or_copy_with_action (
+                  tls, true, pos);
+              if (!ret)
+                return;
             }
           else
             {
-              ua =
-                tracklist_selections_action_new_move (
-                  tls, pos);
+              bool ret =
+                tracklist_selections_move_or_copy_with_action (
+                  tls, false, pos);
+              if (!ret)
+                return;
             }
+          UndoableAction * ua =
+            undo_manager_get_last_action (
+              UNDO_MANAGER);
           ua->num_actions = num_actions;
         }
     }
@@ -1537,9 +1555,12 @@ tracklist_handle_move_or_copy (
             }
           else
             {
-              ua =
-                tracklist_selections_action_new_move_inside (
-                  TRACKLIST_SELECTIONS, this_track->pos);
+              bool ret =
+                tracklist_selections_move_or_copy_inside_with_action (
+                  TRACKLIST_SELECTIONS, false,
+                  this_track->pos);
+              if (!ret)
+                return;
             }
         }
       else
@@ -1563,25 +1584,29 @@ tracklist_handle_move_or_copy (
               if (track_below_parent &&
                   track_below_parent != cur_parent)
                 {
-                  ua =
-                    tracklist_selections_action_new_move_inside (
-                      tls, track_below_parent->pos);
-                  undo_manager_perform (
-                    UNDO_MANAGER, ua);
+                  bool ret =
+                    tracklist_selections_move_or_copy_inside_with_action (
+                      tls, false,
+                      track_below_parent->pos);
+                  if (!ret)
+                    return;
+
                   num_actions++;
                 }
             }
 
-          ua =
-            tracklist_selections_action_new_move (
-              tls, pos);
-          if (ua)
-            ua->num_actions = num_actions;
+          bool ret =
+            tracklist_selections_move_or_copy_inside_with_action (
+              tls, false, pos);
+          if (!ret)
+            return;
+
+          UndoableAction * ua =
+            undo_manager_get_last_action (
+              UNDO_MANAGER);
+          ua->num_actions = num_actions;
         }
     }
-  g_return_if_fail (ua);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 /**

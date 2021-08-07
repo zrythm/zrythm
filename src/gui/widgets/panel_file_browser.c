@@ -695,11 +695,9 @@ on_file_row_activated (
            descr->type == FILE_TYPE_FLAC ||
            descr->type == FILE_TYPE_MP3)
     {
-      UndoableAction * action =
-        tracklist_selections_action_new_create (
-          TRACK_TYPE_AUDIO, NULL, descr,
-          TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-      undo_manager_perform (UNDO_MANAGER, action);
+      track_create_with_action (
+        TRACK_TYPE_AUDIO, NULL, descr,
+        PLAYHEAD, TRACKLIST->num_tracks, 1);
     }
 }
 

@@ -46,30 +46,25 @@ test_remove_unused ()
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   int num_tracks_before = TRACKLIST->num_tracks;
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      num_tracks_before, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+    num_tracks_before, 1);
 
   /* delete the first track so that the clip for it
    * will no longer exist (pushed off undo stack) */
   track_select (
     TRACKLIST->tracks[num_tracks_before], F_SELECT,
     F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_delete (
-      TRACKLIST_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_delete_with_action (
+    TRACKLIST_SELECTIONS);
 
   /* create more tracks */
   for (int i = 0; i < (ZRYTHM->undo_stack_len + 4);
        i++)
     {
-      ua = tracklist_selections_action_new_create (
-          TRACK_TYPE_AUDIO, NULL, file,
-          TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      track_create_with_action (
+        TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+        TRACKLIST->num_tracks, 1);
     }
 
   /* assert all clips still exist */
@@ -115,11 +110,9 @@ test_remove_unused ()
 
   /* do another action so that the undoable action
    * for last file no longer exists */
-  ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, NULL,
-      num_tracks_before, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_MIDI, NULL, NULL, PLAYHEAD,
+    num_tracks_before, 1);
 
   /* save the project to remove unused files from
    * pool */

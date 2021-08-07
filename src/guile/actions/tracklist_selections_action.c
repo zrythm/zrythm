@@ -24,6 +24,7 @@
 #include "project.h"
 #endif
 
+#if 0
 SCM_DEFINE (
   s_tracklist_selections_action_new_create_instrument,
   "tracklist-selections-action-new-create-instrument",
@@ -98,6 +99,7 @@ SCM_DEFINE (
     scm_from_pointer (ua, NULL);
 }
 #undef FUNC_NAME
+#endif
 
 static void
 init_module (void * data)
@@ -106,12 +108,14 @@ init_module (void * data)
 #include "actions_tracklist_selections_action.x"
 #endif
 
+#if 0
   scm_c_export (
     "tracklist-selections-action-new-create-instrument",
     "tracklist-selections-action-new-create-audio-fx-with-plugin",
     "tracklist-selections-action-new-create-audio-fx",
     "tracklist-selections-action-new-midi",
     NULL);
+#endif
 }
 
 void

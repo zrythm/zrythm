@@ -75,20 +75,14 @@ test_swap_with_automation_regions ()
 {
   test_helper_zrythm_init ();
 
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, NULL, PLAYHEAD,
+    TRACKLIST->num_tracks, 1);
 
   create_automation_region (
     TRACKLIST->num_tracks - 1);
 
-  ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (TRACK_TYPE_MIDI);
 
   create_automation_region (
     TRACKLIST->num_tracks - 1);
@@ -101,10 +95,8 @@ test_swap_with_automation_regions ()
   track_select (
     track2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_move (
-      TRACKLIST_SELECTIONS, track1->pos);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_move_w_action (
+    TRACKLIST_SELECTIONS, track1->pos);
 
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);

@@ -31,6 +31,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -302,12 +303,23 @@ drag_end (
       Track * track =
         channel_get_track ((Channel *) self->object);
         {
+          GError * err = NULL;
           UndoableAction * ua =
             tracklist_selections_action_new_edit_single_float (
               EDIT_TRACK_ACTION_TYPE_PAN,
               track, self->balance_at_start,
-              GET_VAL, true);
-          undo_manager_perform (UNDO_MANAGER, ua);
+              GET_VAL, true, &err);
+          if (ua)
+            undo_manager_perform (UNDO_MANAGER, ua);
+          else
+            {
+              g_return_if_fail (err);
+              ui_show_message_printf (
+                MAIN_WINDOW, GTK_MESSAGE_ERROR,
+                _("Failed to change balance: %s"),
+                err->message);
+              g_error_free_and_null (err);
+            }
         }
     }
 }

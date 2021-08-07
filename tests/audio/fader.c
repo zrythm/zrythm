@@ -141,46 +141,33 @@ test_solo ()
       TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+      TRACKLIST->num_tracks, 1);
 
   /* create audio track 2 */
-  ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_track2 =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
+      TRACKLIST->num_tracks, 1);
 
   /* create group track */
-  ua =
-    tracklist_selections_action_new_create_audio_group (
-      TRACKLIST->num_tracks, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * group_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO_GROUP);
 
   /* route audio tracks to group track */
   track_select (
     audio_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_edit_direct_out(
-      TRACKLIST_SELECTIONS, group_track);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_direct_out_with_action (
+    TRACKLIST_SELECTIONS, group_track);
   track_select (
     audio_track2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_edit_direct_out(
-      TRACKLIST_SELECTIONS, group_track);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_direct_out_with_action (
+    TRACKLIST_SELECTIONS, group_track);
 
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -214,10 +201,8 @@ test_solo ()
   track_select (
     audio_track2, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_edit_solo (
-      TRACKLIST_SELECTIONS, F_SOLO);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_soloed_with_action (
+    TRACKLIST_SELECTIONS, F_SOLO);
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -228,10 +213,8 @@ test_solo ()
   track_select (
     audio_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_edit_solo (
-      TRACKLIST_SELECTIONS, F_SOLO);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_soloed_with_action (
+    TRACKLIST_SELECTIONS, F_SOLO);
   g_assert_true (track_get_soloed (audio_track));
   g_assert_false (track_get_soloed (audio_track2));
   track_select (
@@ -240,10 +223,8 @@ test_solo ()
   track_select (
     audio_track2, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_edit_solo (
-      TRACKLIST_SELECTIONS, F_SOLO);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_soloed_with_action (
+    TRACKLIST_SELECTIONS, F_SOLO);
   g_assert_true (track_get_soloed (audio_track));
   g_assert_true (track_get_soloed (audio_track2));
   undo_manager_undo (UNDO_MANAGER);

@@ -56,6 +56,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
@@ -2117,6 +2118,7 @@ channel_get_automation_track (
  *
  * @note The given track is not cloned.
  *
+ * @param error To be filled if an error occurred.
  * @param track The track to use for getting the
  *   name.
  * @bool src_is_project Whether \ref ch is a project
@@ -2126,53 +2128,61 @@ Channel *
 channel_clone (
   Channel * ch,
   Track *   track,
-  bool      src_is_project)
+  bool      src_is_project,
+  GError ** error)
 {
+  g_return_val_if_fail (!error || !*error, NULL);
+
   Channel * clone = channel_new (track);
+
+#define CLONE_AND_ADD_PL(pl,slot_type,slot) \
+  { \
+    GError * err = NULL; \
+    Plugin * clone_pl = \
+      plugin_clone (pl, src_is_project, &err); \
+    if (!clone_pl) \
+      { \
+        PROPAGATE_PREFIXED_ERROR ( \
+          error, err, "%s", \
+          _("Failed to clone plugin")); \
+        object_free_w_func_and_null ( \
+          channel_free, clone); \
+        return NULL; \
+      } \
+    channel_add_plugin ( \
+      clone, slot_type, \
+      slot, clone_pl, F_NO_CONFIRM, \
+      F_NOT_MOVING_PLUGIN, \
+      F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH, \
+      F_NO_PUBLISH_EVENTS); \
+  }
 
   /* copy plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       if (ch->inserts[i])
         {
-          Plugin * clone_pl =
-            plugin_clone (
-              ch->inserts[i], src_is_project);
-          channel_add_plugin (
-            clone, PLUGIN_SLOT_INSERT,
-            i, clone_pl, F_NO_CONFIRM,
-            F_NOT_MOVING_PLUGIN,
-            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
-            F_NO_PUBLISH_EVENTS);
+          CLONE_AND_ADD_PL (
+            ch->inserts[i], PLUGIN_SLOT_INSERT, i);
         }
     }
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       if (ch->midi_fx[i])
         {
-          Plugin * clone_pl =
-            plugin_clone (
-              ch->midi_fx[i], src_is_project);
-          channel_add_plugin (
-            clone, PLUGIN_SLOT_MIDI_FX,
-            i, clone_pl, F_NO_CONFIRM,
-            F_NOT_MOVING_PLUGIN,
-            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
-            F_NO_PUBLISH_EVENTS);
+          CLONE_AND_ADD_PL (
+            ch->midi_fx[i], PLUGIN_SLOT_MIDI_FX,
+            i);
         }
     }
   if (ch->instrument)
     {
-      Plugin * clone_pl =
-        plugin_clone (
-          ch->instrument, src_is_project);
-      channel_add_plugin (
-        clone, PLUGIN_SLOT_INSTRUMENT,
-        -1, clone_pl, F_NO_CONFIRM,
-        F_NOT_MOVING_PLUGIN,
-        F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
-        F_NO_PUBLISH_EVENTS);
+      CLONE_AND_ADD_PL (
+        ch->instrument, PLUGIN_SLOT_INSTRUMENT,
+        -1);
     }
+
+#undef CLONE_AND_ADD_PL
 
   clone->fader->track_pos = clone->track_pos;
   clone->prefader->track_pos = clone->track_pos;

@@ -1715,7 +1715,7 @@ on_direct_out_activated (
 
   TracklistSelections * sel_before =
     tracklist_selections_clone (
-      TRACKLIST_SELECTIONS);
+      TRACKLIST_SELECTIONS, NULL);
 
   Track * direct_out = NULL;
   if (data->new_group)
@@ -1783,12 +1783,16 @@ on_direct_out_activated (
         }
     }
 
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_direct_out (
+  bool success =
+    tracklist_selections_set_direct_out_with_action (
       TRACKLIST_SELECTIONS, direct_out);
-  if (data->new_group)
-    ua->num_actions = 3;
-  undo_manager_perform (UNDO_MANAGER, ua);
+  if (success)
+    {
+      UndoableAction * ua =
+        undo_manager_get_last_action (UNDO_MANAGER);
+      if (data->new_group)
+        ua->num_actions = 3;
+    }
 
   /* free previous selections */
   tracklist_selections_free (sel_before);

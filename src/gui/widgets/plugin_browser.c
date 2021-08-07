@@ -330,21 +330,10 @@ activate_plugin_setting (
       setting_created = true;
     }
 
-  TrackType tt =
+  TrackType type =
     track_get_type_from_plugin_descriptor (
       setting->descr);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      tt, setting, NULL, TRACKLIST->num_tracks,
-      PLAYHEAD, 1, -1);
-
-  int err = undo_manager_perform (UNDO_MANAGER, ua);
-  if (err)
-    {
-      ui_show_error_message (
-        MAIN_WINDOW,
-        error_code_get_message (err));
-    }
+  track_create_empty_with_action (type);
 
   if (setting_created)
     {

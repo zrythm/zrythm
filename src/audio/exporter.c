@@ -37,6 +37,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
@@ -772,18 +773,30 @@ exporter_create_audio_track_after_bounce (
       g_return_if_reached ();
     }
 
+  GError * err = NULL;
   UndoableAction * ua =
     tracklist_selections_action_new_create (
       TRACK_TYPE_AUDIO, NULL,
       descr, last_track->pos + 1, pos, 1,
-      track_to_disable ? track_to_disable->pos : -1);
-  Position tmp;
-  position_set_to_pos (&tmp, PLAYHEAD);
-  transport_set_playhead_pos (
-    TRANSPORT, &settings->custom_start);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  transport_set_playhead_pos (
-    TRANSPORT, &tmp);
+      track_to_disable
+      ? track_to_disable->pos : -1,
+      &err);
+  if (ua)
+    {
+      Position tmp;
+      position_set_to_pos (&tmp, PLAYHEAD);
+      transport_set_playhead_pos (
+        TRANSPORT, &settings->custom_start);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      transport_set_playhead_pos (
+        TRANSPORT, &tmp);
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, _("Failed to create audio track: %s"),
+        err->message);
+    }
 }
 
 /**

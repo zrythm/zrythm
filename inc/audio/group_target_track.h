@@ -31,7 +31,7 @@
 typedef struct Track Track;
 
 #define TRACK_CAN_BE_GROUP_TARGET(tr) \
-  (tr && IS_TRACK (tr) && \
+  (IS_TRACK (tr) && \
    (tr->type == TRACK_TYPE_AUDIO_GROUP || \
     tr->type == TRACK_TYPE_MIDI_GROUP || \
     tr->type == TRACK_TYPE_INSTRUMENT || \

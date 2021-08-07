@@ -48,6 +48,17 @@
 #define TYPE_IS(x) \
   (self->type == TRACKLIST_SELECTIONS_ACTION_##x)
 
+typedef enum
+{
+  Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_NO_TRACKS,
+} ZActionsTracklistSelectionsError;
+
+#define Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR \
+  z_actions_tracklist_selections_error_quark ()
+GQuark z_actions_tracklist_selections_error_quark (void);
+G_DEFINE_QUARK (
+  z-actions-tracklist-selections-error-quark, z_actions_tracklist_selections_error)
+
 void
 tracklist_selections_action_init_loaded (
   TracklistSelectionsAction * self)
@@ -142,9 +153,13 @@ validate (
 /**
  * Creates a new TracklistSelectionsAction.
  *
- * @param tls Tracklist selections to act upon.
+ * @param tls_before Tracklist selections to act
+ *   upon.
  * @param pos Position to make the tracks at.
  * @param pl_setting Plugin setting, if any.
+ * @param track Track, if single-track action. Used
+ *   if @ref tls_before and @ref tls_after are NULL.
+ * @param error To be filled in if an error occured.
  */
 UndoableAction *
 tracklist_selections_action_new (
@@ -164,7 +179,8 @@ tracklist_selections_action_new (
   float                         val_before,
   float                         val_after,
   const char *                  new_txt,
-  bool                          already_edited)
+  bool                          already_edited,
+  GError **                     error)
 {
   TracklistSelectionsAction * self =
     object_new (TracklistSelectionsAction);
@@ -257,10 +273,10 @@ tracklist_selections_action_new (
                  (gchar **) &data,
                  &length, &err))
             {
-              g_critical (
-                "failed getting contents for %s: "
-                "%s",
-                file_descr->abs_path, err->message);
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _("Failed getting contents for %s"),
+                file_descr->abs_path);
               return NULL;
             }
           self->base64_midi =
@@ -291,10 +307,36 @@ tracklist_selections_action_new (
 
   if (tls_before)
     {
+      if (tls_before->num_tracks == 0)
+        {
+          g_set_error_literal (
+            error,
+            Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
+            Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_NO_TRACKS,
+            _("No tracks selected"));
+          object_free_w_func_and_null_cast (
+            undoable_action_free,
+            UndoableAction *, self);
+          return NULL;
+        }
+
       if (need_full_selections)
         {
+          GError * err = NULL;
           self->tls_before =
-            tracklist_selections_clone (tls_before);
+            tracklist_selections_clone (
+              tls_before, &err);
+          if (err)
+            {
+              object_free_w_func_and_null_cast (
+                undoable_action_free,
+                UndoableAction *, self);
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to clone tracklist "
+                "selections"));
+              return NULL;
+            }
           tracklist_selections_sort (
             self->tls_before, true);
           self->foldable_tls_before =
@@ -306,9 +348,19 @@ tracklist_selections_action_new (
               Track * tr = TRACKLIST->tracks[i];
               if (track_type_is_foldable (tr->type))
                 {
+                  Track * clone_tr =
+                    track_clone (
+                      tr, F_PROJECT, &err);
+                  if (err)
+                    {
+                      PROPAGATE_PREFIXED_ERROR (
+                        error, err, "%s",
+                        _("Failed to clone track"));
+                      return NULL;
+                    }
                   tracklist_selections_add_track (
                     self->foldable_tls_before,
-                    track_clone (tr, F_PROJECT),
+                    clone_tr,
                     F_NO_PUBLISH_EVENTS);
                 }
             }
@@ -324,8 +376,18 @@ tracklist_selections_action_new (
     {
       if (need_full_selections)
         {
+          GError * err = NULL;
           self->tls_after =
-            tracklist_selections_clone (tls_after);
+            tracklist_selections_clone (
+              tls_after, &err);
+          if (err)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to clone tracklist "
+                "selections: "));
+              return NULL;
+            }
           tracklist_selections_sort (
             self->tls_after, true);
         }
@@ -515,15 +577,18 @@ create_track (
               self->pl_setting->descr->name,
               F_WITH_LANE, F_NOT_AUDITIONER);
 
+          GError * err = NULL;
           pl =
             plugin_new_from_setting (
               self->pl_setting, track->pos,
-              PLUGIN_SLOT_INSERT, 0);
+              PLUGIN_SLOT_INSERT, 0, &err);
           if (!pl)
             {
-              g_warning (
-                "plugin instantiation failed");
-              return ERR_PLUGIN_INSTANTIATION_FAILED;
+              HANDLE_ERROR (
+                err,
+                _("Failed to create plugin: %s"),
+                err->message);
+              return -1;
             }
 
           if (plugin_instantiate (pl, true, NULL) != 0)
@@ -772,8 +837,18 @@ do_or_undo_create_or_delete (
                 self->tls_before->tracks[i];
 
               /* clone our own track */
+              GError * err = NULL;
               Track * track =
-                track_clone (own_track, false);
+                track_clone (
+                  own_track, false, &err);
+              if (!track)
+                {
+                  HANDLE_ERROR (
+                    err,
+                    _("Failed to clone track: %s"),
+                    err->message);
+                  return -1;
+                }
 
               /* remove output */
               if (track->channel)
@@ -1283,8 +1358,18 @@ do_or_undo_move_or_copy (
 
               /* create a new clone to use in the
                * project */
+              GError * err = NULL;
               Track * track =
-                track_clone (own_track, false);
+                track_clone (
+                  own_track, false, &err);
+              if (!track)
+                {
+                  HANDLE_ERROR (
+                    err,
+                    _("Failed to clone track: %s"),
+                    err->message);
+                  return -1;
+                }
               new_tracks[i] = track;
 
               if (track->channel)

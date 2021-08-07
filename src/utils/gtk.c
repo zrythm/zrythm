@@ -862,24 +862,21 @@ z_gtk_set_tooltip_for_actionable (
   const char * action_name =
     gtk_actionable_get_action_name (
       actionable);
-  char detailed_action[600];
-  strcpy (detailed_action, action_name);
+  char * detailed_action = g_strdup (action_name);
   GVariant * target_value =
     gtk_actionable_get_action_target_value (
       actionable);
-  if (target_value &&
-      string_is_equal (
-        g_variant_get_type_string (target_value),
-        "s"))
+  if (target_value)
     {
-      sprintf (
-        detailed_action, "%s::%s",
-        action_name,
-        g_variant_get_string (target_value, 0));
+      g_free (detailed_action);
+      detailed_action =
+        g_action_print_detailed_name (
+          action_name, target_value);
     }
   z_gtk_widget_set_tooltip_for_action (
     GTK_WIDGET (actionable), detailed_action,
     tooltip);
+  g_free (detailed_action);
 }
 
 /**

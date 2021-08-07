@@ -333,7 +333,7 @@ on_closed (
   g_return_if_fail (
     IS_TRACK_AND_NONNULL (own_track));
   Track * own_track_clone =
-    track_clone (own_track, F_PROJECT);
+    track_clone (own_track, F_PROJECT, NULL);
   g_return_if_fail (
     IS_TRACK_AND_NONNULL (own_track_clone));
   TracklistSelections * sel =
@@ -346,19 +346,15 @@ on_closed (
     {
       if (self->new_track != prev_output_track)
         {
-          UndoableAction * ua =
-            tracklist_selections_action_new_edit_direct_out (
-              sel, self->new_track);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          tracklist_selections_set_direct_out_with_action (
+            sel, self->new_track);
         }
     }
   else if (self->type == ROUTE_TARGET_TYPE_NONE &&
            prev_output_track != NULL)
     {
-      UndoableAction * ua =
-        tracklist_selections_action_new_edit_remove_direct_out (
-          sel);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      tracklist_selections_set_direct_out_with_action (
+        sel, NULL);
     }
 
   route_target_selector_widget_refresh (

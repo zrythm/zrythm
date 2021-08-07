@@ -30,6 +30,7 @@
 #include "midilib/src/midiinfo.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
@@ -102,12 +103,23 @@ track_lane_rename (
 {
   if (with_action)
     {
+      GError * err = NULL;
       UndoableAction * ua =
         tracklist_selections_action_new_edit_rename_lane (
-          self, new_name);
-      undo_manager_perform (UNDO_MANAGER, ua);
-      EVENTS_PUSH (
-        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+          self, new_name, &err);
+      if (ua)
+        {
+          undo_manager_perform (UNDO_MANAGER, ua);
+          EVENTS_PUSH (
+            ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err, _("Failed to rename lane: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {

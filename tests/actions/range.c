@@ -114,14 +114,9 @@ test_prepare_common (void)
   test_helper_zrythm_init ();
 
   /* create MIDI track with region */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  midi_track_pos = TRACKLIST->num_tracks - 1;
   Track * midi_track =
-    TRACKLIST->tracks[midi_track_pos];
+    track_create_empty_with_action (TRACK_TYPE_MIDI);
+  midi_track_pos = midi_track->pos;
 
 #define ADD_MREGION(start_bar,end_bar) \
   position_set_to_bar ( \
@@ -147,6 +142,7 @@ test_prepare_common (void)
   /* add all the midi regions */
   Position start, end;
   ZRegion * midi_region;
+  UndoableAction * ua;
   ADD_MREGION (
     MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
   ADD_MREGION (
@@ -173,14 +169,11 @@ test_prepare_common (void)
     &start, AUDIO_REGION_START_BAR);
   position_set_to_bar (
     &end, AUDIO_REGION_END_BAR);
-  UndoableAction * action =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      TRACKLIST->num_tracks, &start, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, action);
-  audio_track_pos = TRACKLIST->num_tracks - 1;
   Track * audio_track =
-    TRACKLIST->tracks[audio_track_pos];
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file, &start,
+      TRACKLIST->num_tracks, 1);
+  audio_track_pos = audio_track->pos;
   ZRegion * audio_region =
     audio_track->lanes[0]->regions[0];
 
@@ -659,17 +652,15 @@ test_remove_range_w_start_marker (void)
   audio_track_pos = TRACKLIST->num_tracks;
   SupportedFile * file =
     supported_file_new_from_path (TEST_WAV2);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file,
-      audio_track_pos, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, NULL,
+    audio_track_pos, 1);
 
   /* remove range */
   Position start, end;
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 3);
-  ua =
+  UndoableAction * ua =
     range_action_new_remove (&start, &end);
   undo_manager_perform (UNDO_MANAGER, ua);
 
@@ -695,13 +686,10 @@ test_remove_range_w_objects_inside (void)
       TESTS_SRCDIR, "1_track_with_data.mid", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, file,
-      midi_track_pos, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * midi_track =
-    TRACKLIST->tracks[midi_track_pos];
+    track_create_with_action (
+      TRACK_TYPE_MIDI, NULL, file, NULL,
+      midi_track_pos, 1);
 
   /* create scale object */
   MusicalScale * ms = musical_scale_new (0, 0);
@@ -710,7 +698,7 @@ test_remove_range_w_objects_inside (void)
   arranger_object_select (
     (ArrangerObject *) so, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
+  UndoableAction * ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);

@@ -69,13 +69,10 @@ test_perform_many_actions ()
        !undo_stack_is_full (UNDO_MANAGER->undo_stack);
        i++)
     {
-      UndoableAction * ua = NULL;
       if (i % 2 == 0)
         {
-          ua =
-            tracklist_selections_action_new_create_audio_fx (
-              NULL, TRACKLIST->num_tracks, 1);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          track_create_empty_with_action (
+            TRACK_TYPE_AUDIO_BUS);
         }
       else if (i % 13 == 0)
         {
@@ -90,10 +87,8 @@ test_perform_many_actions ()
           perform_create_region_action ();
         }
     }
-  UndoableAction * ua =
-    tracklist_selections_action_new_create_midi (
-      TRACKLIST->num_tracks, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI);
   perform_create_region_action ();
   perform_create_region_action ();
 
@@ -137,12 +132,15 @@ test_multi_actions ()
     TRACKLIST->num_tracks;
   for (int i = 0; i < max_actions; i++)
     {
-      UndoableAction * ua =
-        tracklist_selections_action_new_create_audio_fx (
-          NULL, TRACKLIST->num_tracks, 1);
+      track_create_empty_with_action (
+        TRACK_TYPE_AUDIO_BUS);
       if (i == 2)
-        ua->num_actions = max_actions;
-      undo_manager_perform (UNDO_MANAGER, ua);
+        {
+          UndoableAction * ua =
+            undo_manager_get_last_action (
+              UNDO_MANAGER);
+          ua->num_actions = max_actions;
+        }
     }
 
   g_assert_cmpint (
@@ -197,11 +195,8 @@ test_fill_stack ()
     UNDO_MANAGER->undo_stack->stack->max_length;
   for (int i = 0; i < max_len + 8; i++)
     {
-      UndoableAction * ua = NULL;
-      ua =
-        tracklist_selections_action_new_create_audio_fx (
-          NULL, TRACKLIST->num_tracks, 1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      track_create_empty_with_action (
+        TRACK_TYPE_AUDIO_BUS);
     }
 
   test_project_save_and_reload ();

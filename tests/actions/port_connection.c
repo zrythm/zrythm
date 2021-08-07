@@ -126,7 +126,13 @@ test_modulator_connection (
     "*ports cannot be connected*");
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+    "*FAILED*");
+  g_test_expect_message (
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*action not performed*");
+  g_test_expect_message (
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+    "*failed to perform action*");
 
   /* connect the macro button to the plugin's
    * control input */
@@ -170,31 +176,23 @@ _test_port_connection (
   UndoableAction * ua = NULL;
 
   /* create an extra track */
-  ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * target_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO_BUS);
 
   if (is_instrument)
     {
       /* create an instrument track from helm */
-      ua =
-        tracklist_selections_action_new_create (
-          TRACK_TYPE_INSTRUMENT, setting, NULL,
-          TRACKLIST->num_tracks, NULL, 1, -1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      track_create_for_plugin_at_idx_w_action (
+        TRACK_TYPE_INSTRUMENT, setting,
+        TRACKLIST->num_tracks);
     }
   else
     {
-      /* create an audio fx track and add the plugin */
-      ua =
-        tracklist_selections_action_new_create (
-          TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-          TRACKLIST->num_tracks, NULL, 1, -1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      /* create an audio fx track and add the
+       * plugin */
+      track_create_empty_with_action (
+        TRACK_TYPE_AUDIO_BUS);
       ua =
         mixer_selections_action_new_create (
           PLUGIN_SLOT_INSERT,

@@ -304,19 +304,9 @@ drag_end (
 
   g_return_if_fail (IS_FADER (self->fader));
 
-  Track * track = fader_get_track (self->fader);
   float cur_amp = fader_get_amp (self->fader);
-  if (!math_floats_equal_epsilon (
-        self->amp_at_start,
-        fader_get_amp (self->fader),
-        0.0001f))
-    {
-      UndoableAction * ua =
-        tracklist_selections_action_new_edit_single_float (
-          EDIT_TRACK_ACTION_TYPE_VOLUME,
-          track, self->amp_at_start, cur_amp, true);
-      undo_manager_perform (UNDO_MANAGER, ua);
-    }
+  fader_set_amp_with_action (
+    self->fader, self->amp_at_start, cur_amp, true);
 
   self->dragging = false;
 }

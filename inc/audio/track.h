@@ -61,6 +61,7 @@ typedef struct Modulator Modulator;
 typedef struct Marker Marker;
 typedef struct PluginDescriptor PluginDescriptor;
 typedef struct Tracklist Tracklist;
+typedef struct SupportedFile SupportedFile;
 typedef enum PassthroughProcessorType
   PassthroughProcessorType;
 typedef enum FaderType FaderType;
@@ -606,13 +607,16 @@ track_new (
 /**
  * Clones the track and returns the clone.
  *
- * @bool src_is_project Whether \ref track is a
+ * @param error To be filled if an error occurred.
+ * @param src_is_project Whether @ref track is a
  *   project track.
  */
+NONNULL_ARGS (1)
 Track *
 track_clone (
-  Track * track,
-  bool    src_is_project);
+  Track *   track,
+  bool      src_is_project,
+  GError ** error);
 
 /**
  * Returns if the given TrackType is a type of
@@ -1204,6 +1208,16 @@ const char *
 track_get_name (Track * track);
 
 /**
+ * Internally called by
+ * track_set_name_with_action().
+ */
+NONNULL
+bool
+track_set_name_with_action_full (
+  Track *      track,
+  const char * name);
+
+/**
  * Setter to be used by the UI to create an
  * undoable action.
  */
@@ -1550,6 +1564,35 @@ void
 track_get_total_bars (
   Track * self,
   int *   total_bars);
+
+Track *
+track_create_with_action (
+  TrackType       type,
+  PluginSetting * pl_setting,
+  SupportedFile * file_descr,
+  Position *      pos,
+  int             index,
+  int             num_tracks);
+
+#define track_create_empty_at_idx_with_action( \
+  type,idx) \
+  track_create_with_action ( \
+    type, NULL, NULL, NULL, idx, 1)
+
+/**
+ * Create track at index for plugin with action.
+ */
+#define track_create_for_plugin_at_idx_w_action(type,pl_setting,idx) \
+  track_create_with_action ( \
+    type, pl_setting, NULL, NULL, idx, 1)
+
+/**
+ * Creates a new empty track at the end of the
+ * tracklist.
+ */
+#define track_create_empty_with_action(type) \
+  track_create_empty_at_idx_with_action ( \
+    type, TRACKLIST->num_tracks)
 
 /**
  * Wrapper for each track type.

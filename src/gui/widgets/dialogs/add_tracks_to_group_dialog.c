@@ -119,17 +119,15 @@ add_tracks_to_group_dialog_widget_get_track (
     case GTK_RESPONSE_OK:
       if (signal_type == TYPE_AUDIO)
         {
-          UndoableAction * ua =
-            tracklist_selections_action_new_create_audio_group (
-              lowest_track->pos + 1, 1);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          track_create_empty_at_idx_with_action (
+            TRACK_TYPE_AUDIO_GROUP,
+            lowest_track->pos + 1);
         }
       else if (signal_type == TYPE_EVENT)
         {
-          UndoableAction * ua =
-            tracklist_selections_action_new_create_midi_group (
-              lowest_track->pos + 1, 1);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          track_create_empty_at_idx_with_action (
+            TRACK_TYPE_MIDI_GROUP,
+            lowest_track->pos + 1);
         }
       else
         {
@@ -150,10 +148,15 @@ add_tracks_to_group_dialog_widget_get_track (
     track->type == TRACK_TYPE_MIDI_GROUP,
     NULL);
 
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_rename (
+  bool ret =
+    track_set_name_with_action_full (
       track, track_name);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  if (ret)
+    {
+      UndoableAction * ua =
+        undo_manager_get_last_action (UNDO_MANAGER);
+      ua->num_actions = 2;
+    }
 
   return track;
 }

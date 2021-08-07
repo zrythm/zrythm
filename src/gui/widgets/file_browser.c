@@ -93,6 +93,7 @@ on_file_chooser_file_activated (
              abs_path);
 
   UndoableAction * ua = NULL;
+  GError * err = NULL;
   switch (file->type)
     {
     case FILE_TYPE_WAV:
@@ -102,8 +103,8 @@ on_file_chooser_file_activated (
       ua =
         tracklist_selections_action_new_create (
           TRACK_TYPE_AUDIO, NULL, file,
-          TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          TRACKLIST->num_tracks, PLAYHEAD, 1, -1,
+          &err);
       break;
     case FILE_TYPE_MIDI:
       ua =
@@ -113,11 +114,24 @@ on_file_chooser_file_activated (
           PLAYHEAD,
           /* the number of tracks
            * to create depends on the MIDI file */
-          -1, -1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          -1, -1, &err);
       break;
     default:
       break;
+    }
+
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_return_if_fail (err);
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        _("Could not create track: %s"),
+        err->message);
+      g_error_free_and_null (err);
     }
 
   g_free (abs_path);

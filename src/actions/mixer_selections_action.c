@@ -27,6 +27,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -284,7 +285,10 @@ save_existing_plugin (
     }
 }
 
-static void
+/**
+ * @return Non-zero if error.
+ */
+static int
 revert_deleted_plugin (
   MixerSelectionsAction * self,
   Track *                 to_tr,
@@ -295,14 +299,14 @@ revert_deleted_plugin (
       g_debug (
         "No deleted plugin to revert at %s#%d",
         to_tr->name, to_slot);
-      return;
+      return 0;
     }
 
   if (self->deleted_ms->type ==
         PLUGIN_SLOT_MODULATOR)
     {
       /* modulators are never replaced */
-      return;
+      return 0;
     }
 
   for (int j = 0;
@@ -322,10 +326,16 @@ revert_deleted_plugin (
 
       /* note: this also instantiates the
        * plugin */
+      GError * err = NULL;
       Plugin * new_pl =
         plugin_clone (
           self->deleted_ms->plugins[j],
-          F_NOT_PROJECT);
+          F_NOT_PROJECT, &err);
+      if (!new_pl)
+        {
+          g_warning ("%s", err->message);
+          return -1;
+        }
 
       /* add to channel */
       track_add_plugin (
@@ -355,6 +365,8 @@ revert_deleted_plugin (
             new_pl);
         }
     }
+
+  return 0;
 }
 
 static int
@@ -407,13 +419,14 @@ do_or_undo_create_or_delete (
           Plugin * pl = NULL;
           if (create)
             {
+              GError * err = NULL;
               if (self->type ==
                     MIXER_SELECTIONS_ACTION_PASTE)
                 {
                   pl =
                     plugin_clone (
                       own_ms->plugins[i],
-                      F_NOT_PROJECT);
+                      F_NOT_PROJECT, &err);
                 }
               else
                 {
@@ -421,10 +434,17 @@ do_or_undo_create_or_delete (
                     plugin_new_from_setting (
                       self->setting,
                       self->to_track_pos,
-                      slot_type, slot);
+                      slot_type, slot, &err);
                 }
-              g_return_val_if_fail (
-                IS_PLUGIN_AND_NONNULL (pl), -1);
+              if (!IS_PLUGIN_AND_NONNULL (pl))
+                {
+                  HANDLE_ERROR (
+                    err,
+                    _("Could not create plugin: "
+                    "%s"),
+                    err->message);
+                  return -1;
+                }
 
               /* instantiate so that ports are
                * created */
@@ -437,9 +457,22 @@ do_or_undo_create_or_delete (
             {
               /* note: this also instantiates the
                * plugin */
+              GError * err = NULL;
               pl =
                 plugin_clone (
-                  own_ms->plugins[i], false);
+                  own_ms->plugins[i], false, &err);
+              if (!IS_PLUGIN_AND_NONNULL (pl))
+                {
+                  if (err)
+                    {
+                      g_warning (
+                        "Failed to clone plugin: "
+                        "%s",
+                        err->message);
+                      g_error_free_and_null (err);
+                    }
+                  return -1;
+                }
             }
 
           /* validate */
@@ -618,8 +651,13 @@ do_or_undo_create_or_delete (
 
           /* if there was a plugin at the slot
            * before, bring it back */
-          revert_deleted_plugin (
-            self, track, slot);
+          int ret =
+            revert_deleted_plugin (
+              self, track, slot);
+          if (ret != 0)
+            {
+              return -1;
+            }
         }
 
       EVENTS_PUSH (ET_PLUGINS_REMOVED, NULL);
@@ -796,17 +834,31 @@ do_or_undo_move_or_copy (
               pl =
                 track_get_plugin_at_slot (
                   from_tr, own_ms->type, from_slot);
-              g_warn_if_fail (
-                pl &&
-                pl->id.track_pos == from_tr->pos);
+              g_return_val_if_fail (
+                IS_PLUGIN_AND_NONNULL (pl)
+                &&
+                pl->id.track_pos == from_tr->pos,
+                -1);
             }
           else
             {
+              GError * err = NULL;
               pl =
                 plugin_clone (
-                  own_ms->plugins[i], false);
+                  own_ms->plugins[i], false, &err);
+              if (!IS_PLUGIN_AND_NONNULL (pl))
+                {
+                  if (err)
+                    {
+                      g_warning (
+                        "Could not create plugin: "
+                        "%s",
+                        err->message);
+                      g_error_free (err);
+                    }
+                  return -1;
+                }
             }
-          g_return_val_if_fail (IS_PLUGIN (pl), -1);
 
           int to_slot = self->to_slot + i;
 

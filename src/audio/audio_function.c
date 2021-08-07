@@ -31,9 +31,12 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 char *
 audio_function_get_action_target_for_type (
@@ -117,9 +120,17 @@ apply_plugin (
     plugin_setting_new_default (descr);
   g_return_if_fail (setting);
   setting->force_generic_ui = true;
+  GError * err = NULL;
   Plugin * pl =
     plugin_new_from_setting (
-      setting, -1, PLUGIN_SLOT_INSERT, 0);
+      setting, -1, PLUGIN_SLOT_INSERT, 0, &err);
+  if (!pl)
+    {
+      HANDLE_ERROR (
+        err, _("Failed to create plugin %s"),
+        err->message);
+      return;
+    }
   pl->is_function = true;
   g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
   int ret =

@@ -332,4 +332,10 @@
 #define ZRYTHM_F_NOTIFY 1
 #define ZRYTHM_F_NO_NOTIFY 0
 
+#define Z_F_COPY 1
+#define Z_F_NO_COPY 0
+
+#define Z_F_PIN 1
+#define Z_F_NO_PIN 0
+
 #endif

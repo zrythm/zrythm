@@ -80,10 +80,9 @@ _test_copy_plugins (
     track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  UndoableAction * ua =
-    tracklist_selections_action_new_copy (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_move_or_copy_with_action (
+    TRACKLIST_SELECTIONS, true,
+    TRACKLIST->num_tracks);
   num_master_children++;
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==,
@@ -137,7 +136,7 @@ _test_copy_plugins (
       mixer_selections_add_slot (
         MIXER_SELECTIONS, track,
         PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-      ua =
+      UndoableAction * ua =
         mixer_selections_action_new_copy (
           MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
           new_track->pos, 1);
@@ -180,10 +179,7 @@ test_midi_fx_slot_deletion (void)
   test_helper_zrythm_init ();
 
   /* create MIDI track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create_midi (
-      TRACKLIST->num_tracks, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (TRACK_TYPE_MIDI);
 
 #ifdef HAVE_MIDI_CC_MAP
   /* add plugin to slot */
@@ -191,7 +187,7 @@ test_midi_fx_slot_deletion (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
-  ua =
+  UndoableAction * ua =
     mixer_selections_action_new_create (
       PLUGIN_SLOT_MIDI_FX,
       TRACKLIST->num_tracks - 1, slot, setting, 1);
@@ -270,21 +266,16 @@ _test_create_plugins (
   if (is_instrument)
     {
       /* create an instrument track from helm */
-      ua =
-        tracklist_selections_action_new_create (
-          TRACK_TYPE_INSTRUMENT, setting, NULL,
-          TRACKLIST->num_tracks, NULL, 1, -1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      track_create_with_action (
+        TRACK_TYPE_INSTRUMENT, setting, NULL,
+        NULL, TRACKLIST->num_tracks, 1);
     }
   else
     {
       /* create an audio fx track and add the
        * plugin */
-      ua =
-        tracklist_selections_action_new_create (
-          TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-          TRACKLIST->num_tracks, NULL, 1, -1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      track_create_empty_with_action (
+        TRACK_TYPE_AUDIO_BUS);
       ua =
         mixer_selections_action_new_create (
           PLUGIN_SLOT_INSERT,
@@ -327,12 +318,11 @@ _test_create_plugins (
   /* duplicate the track */
   track_select (
     src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_copy (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
   g_assert_true (
     track_validate (src_track));
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_move_or_copy_with_action (
+    TRACKLIST_SELECTIONS, true,
+    TRACKLIST->num_tracks);
 
   int dest_track_pos = TRACKLIST->num_tracks - 1;
   Track * dest_track =
@@ -422,11 +412,9 @@ _test_port_and_plugin_track_pos_after_move (
       pl_bundle, pl_uri, with_carla);
 
   /* create an instrument track from helm */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS, setting, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
+    TRACKLIST->num_tracks, 1);
 
   plugin_setting_free (setting);
 
@@ -459,7 +447,7 @@ _test_port_and_plugin_track_pos_after_move (
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
+  UndoableAction * ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -483,14 +471,11 @@ _test_port_and_plugin_track_pos_after_move (
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* duplicate it */
-  ua =
-    tracklist_selections_action_new_copy (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
-
   g_assert_true (
     track_validate (src_track));
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_move_or_copy_with_action (
+    TRACKLIST_SELECTIONS, true,
+    TRACKLIST->num_tracks);
 
   Track * dest_track =
     TRACKLIST->tracks[dest_track_pos];
@@ -626,11 +611,9 @@ test_move_two_plugins_one_slot_up (void)
     test_plugin_manager_get_plugin_setting (
       LSP_COMPRESSOR_BUNDLE,
       LSP_COMPRESSOR_URI, false);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS, setting, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_for_plugin_at_idx_w_action (
+    TRACK_TYPE_AUDIO_BUS, setting,
+    TRACKLIST->num_tracks);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
   plugin_setting_free (setting);
@@ -670,7 +653,7 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
+  UndoableAction * ua =
     arranger_selections_action_new_create (
       TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -1130,10 +1113,9 @@ test_move_pl_after_duplicating_track (void)
   track_select (
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_copy (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_move_or_copy_with_action (
+    TRACKLIST_SELECTIONS, Z_F_COPY,
+    TRACKLIST->num_tracks);
 
   Track * dest_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -1161,18 +1143,14 @@ test_move_plugin_from_inserts_to_midi_fx (void)
   test_helper_zrythm_init ();
 
   /* create a track with an insert */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (TRACK_TYPE_MIDI);
   int track_pos = TRACKLIST->num_tracks - 1;
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE,
       MIDI_CC_MAP_URI, false);
   g_assert_nonnull (setting);
-  ua =
+  UndoableAction * ua =
     mixer_selections_action_new_create (
       PLUGIN_SLOT_INSERT, track_pos, 0, setting, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -1327,11 +1305,9 @@ _test_replace_instrument (
       1);
 
   /* create an instrument track */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT, setting, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_for_plugin_at_idx_w_action (
+    TRACK_TYPE_INSTRUMENT, setting,
+    TRACKLIST->num_tracks);
   int src_track_pos = TRACKLIST->num_tracks - 1;
   Track * src_track =
     TRACKLIST->tracks[src_track_pos];
@@ -1384,7 +1360,7 @@ _test_replace_instrument (
   port_identifier_copy (
     &helm_l_out_port_id,
     &src_track->channel->instrument->l_out->id);
-  ua =
+  UndoableAction * ua =
     port_connection_action_new_connect (
       &src_track->channel->instrument->l_out->id,
       &sidechain_port->id);
@@ -1492,11 +1468,10 @@ _test_replace_instrument (
     TRACKLIST->tracks[src_track_pos];
   track_select (
     src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_copy (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
   g_assert_true (track_validate (src_track));
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_move_or_copy_with_action (
+    TRACKLIST_SELECTIONS, Z_F_COPY,
+    TRACKLIST->num_tracks);
 
   int dest_track_pos = TRACKLIST->num_tracks - 1;
   Track * dest_track =

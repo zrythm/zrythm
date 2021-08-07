@@ -52,12 +52,9 @@ test_export (void)
 
       SupportedFile * file =
         supported_file_new_from_path (midi_file);
-      UndoableAction * ua =
-        tracklist_selections_action_new_create (
-          TRACK_TYPE_MIDI, NULL, file,
-          TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      track_create_with_action (
+        TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+        TRACKLIST->num_tracks, 1);
       supported_file_free (file);
 
       Track * track =

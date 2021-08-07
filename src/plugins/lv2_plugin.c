@@ -126,8 +126,17 @@
 #include <sratom/sratom.h>
 #include <suil/suil.h>
 
-/*#define NS_RDF "http://www.w3.org/1999/02/22-rdf-syntax-ns#"*/
-/*#define NS "http://lv2plug.in/ns/"*/
+typedef enum
+{
+  Z_PLUGINS_LV2_PLUGIN_ERROR_CREATION_FAILED,
+  Z_PLUGINS_LV2_PLUGIN_ERROR_INSTANTIATION_FAILED,
+} ZPluginsPluginError;
+
+#define Z_PLUGINS_LV2_PLUGIN_ERROR \
+  z_plugins_lv2_plugin_error_quark ()
+GQuark z_plugins_lv2_plugin_error_quark (void);
+G_DEFINE_QUARK (
+  z-plugins-lv2-plugin-error-quark, z_plugins_lv2_plugin_error)
 
 /**
  * Size factor for UI ring buffers.  The ring size
@@ -1945,7 +1954,8 @@ lv2_plugin_create_descriptor_from_lilv (
 Lv2Plugin *
 lv2_plugin_new_from_uri (
   Plugin    *  pl,
-  const char * uri)
+  const char * uri,
+  GError **    error)
 {
   g_message ("Creating from uri: %s...", uri);
 
@@ -1958,8 +1968,11 @@ lv2_plugin_new_from_uri (
 
   if (!lilv_plugin)
     {
-      g_error (
-        "Failed to get LV2 Plugin from URI %s",
+      g_set_error (
+        error, Z_PLUGINS_LV2_PLUGIN_ERROR,
+        Z_PLUGINS_LV2_PLUGIN_ERROR_CREATION_FAILED,
+        _("Failed to get LV2 plugin from URI "
+        "<%s>"),
         uri);
       return NULL;
     }

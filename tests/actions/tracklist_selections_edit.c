@@ -54,20 +54,15 @@ _test_edit_tracks (
   bool         is_instrument,
   bool         with_carla)
 {
-  UndoableAction * action;
-
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, with_carla);
 
   /* create a track with an instrument */
-  action =
-    tracklist_selections_action_new_create (
-      is_instrument ?
-        TRACK_TYPE_INSTRUMENT :
-        TRACK_TYPE_AUDIO_BUS,
-      setting, NULL, 3, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, action);
+  track_create_with_action (
+    is_instrument
+    ? TRACK_TYPE_INSTRUMENT : TRACK_TYPE_AUDIO_BUS,
+    setting, NULL, NULL, 3, 1);
   Track * ins_track = get_ins_track ();
   if (is_instrument)
     {
@@ -96,11 +91,8 @@ _test_edit_tracks (
     {
     case EDIT_TRACK_ACTION_TYPE_MUTE:
       {
-        ua =
-          tracklist_selections_action_new_edit_mute (
-            TRACKLIST_SELECTIONS, true);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        tracklist_selections_set_muted_with_action (
+          TRACKLIST_SELECTIONS, true);
         if (is_instrument)
           {
             g_assert_true (
@@ -127,11 +119,8 @@ _test_edit_tracks (
           break;
 
         /* create a MIDI track */
-        action =
-          tracklist_selections_action_new_create (
-            TRACK_TYPE_MIDI,
-            NULL, NULL, 2, NULL, 1, -1);
-        undo_manager_perform (UNDO_MANAGER, action);
+        track_create_with_action (
+          TRACK_TYPE_MIDI, NULL, NULL, NULL, 2, 1);
         Track * midi_track = TRACKLIST->tracks[2];
         track_select (
           midi_track, F_SELECT, F_EXCLUSIVE,
@@ -142,10 +131,8 @@ _test_edit_tracks (
 
         /* change the direct out to the
          * instrument */
-        ua =
-          tracklist_selections_action_new_edit_direct_out (
-            TRACKLIST_SELECTIONS, ins_track);
-        undo_manager_perform (UNDO_MANAGER, ua);
+        tracklist_selections_set_direct_out_with_action (
+          TRACKLIST_SELECTIONS, ins_track);
 
         /* verify direct out established */
         g_assert_true (
@@ -168,19 +155,15 @@ _test_edit_tracks (
         track_select (
           ins_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
-        ua =
-          tracklist_selections_action_new_move (
-            TRACKLIST_SELECTIONS, 1);
-        undo_manager_perform (UNDO_MANAGER, ua);
+        tracklist_selections_move_or_copy_with_action (
+          TRACKLIST_SELECTIONS, Z_F_NO_COPY, 1);
         undo_manager_undo (UNDO_MANAGER);
 
         /* create an audio group track and test
          * routing instrument track to audio
          * group */
-        ua =
-          tracklist_selections_action_new_create_audio_group (
-            TRACKLIST->num_tracks, 1);
-        undo_manager_perform (UNDO_MANAGER, ua);
+        track_create_empty_with_action (
+          TRACK_TYPE_AUDIO_GROUP);
         undo_manager_undo (UNDO_MANAGER);
         undo_manager_redo (UNDO_MANAGER);
         Track * audio_group =
@@ -189,10 +172,8 @@ _test_edit_tracks (
         track_select (
           ins_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
-        ua =
-          tracklist_selections_action_new_edit_direct_out (
-            TRACKLIST_SELECTIONS, audio_group);
-        undo_manager_perform (UNDO_MANAGER, ua);
+        tracklist_selections_set_direct_out_with_action (
+          TRACKLIST_SELECTIONS, audio_group);
         undo_manager_undo (UNDO_MANAGER);
         undo_manager_redo (UNDO_MANAGER);
         undo_manager_undo (UNDO_MANAGER);
@@ -205,11 +186,9 @@ _test_edit_tracks (
           break;
 
         /* create an audio group track */
-        action =
-          tracklist_selections_action_new_create (
-            TRACK_TYPE_AUDIO_GROUP,
-            NULL, NULL, 2, NULL, 1, -1);
-        undo_manager_perform (UNDO_MANAGER, action);
+        track_create_with_action (
+          TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL,
+          2, 1);
         Track * group_track = TRACKLIST->tracks[2];
 
         g_assert_cmpint (
@@ -221,19 +200,15 @@ _test_edit_tracks (
         track_select (
           ins_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
-        ua =
-          tracklist_selections_action_new_edit_direct_out (
-            TRACKLIST_SELECTIONS, group_track);
-        undo_manager_perform (UNDO_MANAGER, ua);
+        tracklist_selections_set_direct_out_with_action (
+          TRACKLIST_SELECTIONS, group_track);
 
         /* solo the group track */
         track_select (
           group_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
-        ua =
-          tracklist_selections_action_new_edit_solo (
-            TRACKLIST_SELECTIONS, true);
-        undo_manager_perform (UNDO_MANAGER, ua);
+        tracklist_selections_set_soloed_with_action (
+          TRACKLIST_SELECTIONS, true);
 
         /* run the engine for 1 cycle to clear any
          * pending events */
@@ -355,11 +330,13 @@ _test_edit_tracks (
               channel_get_balance_control (
                 ins_track->channel);
           }
+        GError * err = NULL;
         ua =
           tracklist_selections_action_new_edit_single_float (
             type,
             ins_track, val_before, new_val,
-            false);
+            false, &err);
+        g_assert_nonnull (ua);
         undo_manager_perform (UNDO_MANAGER, ua);
 
         /* verify */
@@ -589,11 +566,9 @@ test_edit_midi_direct_out_to_ins (void)
   /* create the MIDI track from a MIDI file */
   SupportedFile * file =
     supported_file_new_from_path (midi_files[0]);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, file,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_with_action (
+    TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+    TRACKLIST->num_tracks, 1);
   Track * midi_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
@@ -602,10 +577,8 @@ test_edit_midi_direct_out_to_ins (void)
   g_strfreev (midi_files);
 
   /* route the MIDI track to the instrument track */
-  ua =
-    tracklist_selections_action_new_edit_direct_out (
-      TRACKLIST_SELECTIONS, ins_track);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_direct_out_with_action (
+    TRACKLIST_SELECTIONS, ins_track);
 
   Channel * ch = midi_track->channel;
   Track * direct_out =
@@ -620,13 +593,10 @@ test_edit_midi_direct_out_to_ins (void)
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  ua =
-    tracklist_selections_action_new_delete (
-      TRACKLIST_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_delete_with_action (
+    TRACKLIST_SELECTIONS);
 
-  direct_out =
-    channel_get_output_track (ch);
+  direct_out = channel_get_output_track (ch);
   g_assert_null (direct_out);
 
   undo_manager_undo (UNDO_MANAGER);
@@ -657,12 +627,9 @@ test_edit_multi_track_direct_out (void)
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
   /* create an audio group */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create_audio_group (
-      TRACKLIST->num_tracks, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_group =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO_GROUP);
 
   /* route the ins tracks to the audio group */
   track_select (
@@ -671,10 +638,8 @@ test_edit_multi_track_direct_out (void)
   track_select (
     ins_track2, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_edit_direct_out (
-      TRACKLIST_SELECTIONS, audio_group);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_direct_out_with_action (
+    TRACKLIST_SELECTIONS, audio_group);
 
   Channel * ch = ins_track->channel;
   Channel * ch2 = ins_track2->channel;
@@ -693,10 +658,8 @@ test_edit_multi_track_direct_out (void)
   track_select (
     audio_group, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_delete (
-      TRACKLIST_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_delete_with_action (
+    TRACKLIST_SELECTIONS);
 
   direct_out = channel_get_output_track (ch);
   direct_out2 = channel_get_output_track (ch2);
@@ -711,11 +674,11 @@ test_edit_multi_track_direct_out (void)
   track_select (
     ins_track2, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    tracklist_selections_action_new_edit_direct_out (
-      TRACKLIST_SELECTIONS, P_MASTER_TRACK);
+  tracklist_selections_set_direct_out_with_action (
+    TRACKLIST_SELECTIONS, P_MASTER_TRACK);
+  UndoableAction * ua =
+    undo_manager_get_last_action (UNDO_MANAGER);
   undoable_action_set_num_actions (ua, 2);
-  undo_manager_perform (UNDO_MANAGER, ua);
 
   direct_out = channel_get_output_track (ch);
   direct_out2 = channel_get_output_track (ch2);
@@ -756,4 +719,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

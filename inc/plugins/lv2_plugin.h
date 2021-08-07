@@ -386,11 +386,12 @@ lv2_plugin_create_descriptor_from_lilv (
  *   descriptor filled in.
  * @param uri The URI.
  */
-NONNULL
+NONNULL_ARGS (1,2)
 Lv2Plugin *
 lv2_plugin_new_from_uri (
   Plugin    *  plugin,
-  const char * uri);
+  const char * uri,
+  GError **    error);
 
 /**
  * Instantiate the plugin.

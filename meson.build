@@ -591,6 +591,8 @@ test_cflags = [
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
+  '-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))',
+  '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
   ]
 
 # Stricter flags to be used where needed
@@ -605,7 +607,6 @@ attributes = [
 foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
 endforeach
-test_cflags += '-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))'
 
 if cc.get_id() == 'clang'
   test_cflags += [

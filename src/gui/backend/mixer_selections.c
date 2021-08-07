@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -260,11 +260,26 @@ mixer_selections_add_slot (
           break;
         }
       g_return_if_fail (pl);
+
+      Plugin * pl_to_append = pl;
+      if (clone_pl)
+        {
+          GError * err = NULL;
+          pl_to_append =
+            plugin_clone (pl, F_PROJECT, &err);
+          if (!pl_to_append)
+            {
+              /* FIXME handle properly */
+              g_critical (
+                "failed to clone plugin: %s",
+                err->message);
+              return;
+            }
+        }
+
       array_double_append (
         ms->slots, ms->plugins, ms->num_slots,
-        slot,
-        clone_pl ?
-          plugin_clone (pl, F_PROJECT) : pl);
+        slot, pl_to_append);
     }
 
   if (pl && pl->is_project)
@@ -513,13 +528,16 @@ mixer_selections_clone (
         {
           pl = src->plugins[i];
         }
+
+      GError * err = NULL;
       ms->plugins[i] =
-        plugin_clone (pl, true);
+        plugin_clone (pl, F_PROJECT, &err);
       if (!ms->plugins[i])
         {
           g_warning (
-            "failed to clone plugin: %s",
-            pl->setting->descr->name);
+            "failed to clone plugin %s: %s",
+            pl->setting->descr->name, err->message);
+          g_error_free_and_null (err);
           return NULL;
         }
       ms->slots[i] = src->slots[i];

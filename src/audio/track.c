@@ -58,6 +58,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/mem.h"
@@ -430,15 +431,18 @@ track_type_is_deletable (
 /**
  * Clones the track and returns the clone.
  *
- * @bool src_is_project Whether \ref track is a
+ * @param error To be filled if an error occurred.
+ * @param src_is_project Whether @ref track is a
  *   project track.
  */
 Track *
 track_clone (
-  Track * track,
-  bool    src_is_project)
+  Track *   track,
+  bool      src_is_project,
+  GError ** error)
 {
-  int j;
+  g_return_val_if_fail (!error || !*error, NULL);
+
   Track * new_track =
     track_new (
       track->type, track->pos, track->name,
@@ -477,10 +481,20 @@ track_clone (
 
   if (track->channel)
     {
+      GError * err = NULL;
       Channel * ch =
         channel_clone (
           track->channel, new_track,
-          src_is_project);
+          src_is_project, &err);
+      if (!ch)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to clone channel"));
+          object_free_w_func_and_null (
+            track_free, new_track);
+          return NULL;
+        }
       new_track->channel = ch;
     }
 
@@ -491,7 +505,7 @@ track_clone (
       new_track->lanes,
       sizeof (TrackLane *) *
         (size_t) track->num_lanes);
-  for (j = 0; j < track->num_lanes; j++)
+  for (int j = 0; j < track->num_lanes; j++)
     {
       /* clone lane */
        lane = track->lanes[j];
@@ -859,16 +873,28 @@ track_set_muted (
 
   if (trigger_undo)
     {
-      /* this is only supported if the fader track is
-       * the only track selected */
+      /* this is only supported if the fader track
+       * is the only track selected */
       g_return_if_fail (
         TRACKLIST_SELECTIONS->num_tracks == 1 &&
         TRACKLIST_SELECTIONS->tracks[0] == self);
-      UndoableAction * action =
+
+      GError * err = NULL;
+      UndoableAction * ua =
         tracklist_selections_action_new_edit_mute (
-          TRACKLIST_SELECTIONS, mute);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
+          TRACKLIST_SELECTIONS, mute, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err, _("Cannot set track muted: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -906,11 +932,23 @@ track_set_folded (
       g_return_if_fail (
         TRACKLIST_SELECTIONS->num_tracks == 1 &&
         TRACKLIST_SELECTIONS->tracks[0] == self);
-      UndoableAction * action =
+
+      GError * err = NULL;
+      UndoableAction * ua =
         tracklist_selections_action_new_edit_fold (
-          TRACKLIST_SELECTIONS, folded);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
+          TRACKLIST_SELECTIONS, folded, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err, _("Cannot set track folded: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -1426,16 +1464,28 @@ track_set_soloed (
 
   if (trigger_undo)
     {
-      /* this is only supported if the fader track is
-       * the only track selected */
+      /* this is only supported if the fader track
+       * is the only track selected */
       g_return_if_fail (
         TRACKLIST_SELECTIONS->num_tracks == 1 &&
         TRACKLIST_SELECTIONS->tracks[0] == self);
-      UndoableAction * action =
+
+      GError * err = NULL;
+      UndoableAction * ua =
         tracklist_selections_action_new_edit_solo (
-          TRACKLIST_SELECTIONS, solo);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
+          TRACKLIST_SELECTIONS, solo, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err, _("Cannot set track soloed: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -1476,11 +1526,24 @@ track_set_listened (
       g_return_if_fail (
         TRACKLIST_SELECTIONS->num_tracks == 1 &&
         TRACKLIST_SELECTIONS->tracks[0] == self);
-      UndoableAction * action =
+
+      GError * err = NULL;
+      UndoableAction * ua =
         tracklist_selections_action_new_edit_listen (
-          TRACKLIST_SELECTIONS, listen);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
+          TRACKLIST_SELECTIONS, listen, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err,
+            _("Cannot set track listened: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -3026,6 +3089,38 @@ track_get_name (Track * track)
 }
 
 /**
+ * Internally called by
+ * track_set_name_with_action().
+ */
+bool
+track_set_name_with_action_full (
+  Track *      track,
+  const char * name)
+{
+  g_return_val_if_fail (IS_TRACK (track), false);
+
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_edit_rename (
+      track, name, &err);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+      return true;
+    }
+  else
+    {
+      g_return_val_if_fail (err, false);
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR,
+        _("Failed to rename track: %s"),
+        err->message);
+      g_error_free_and_null (err);
+      return false;
+    }
+}
+
+/**
  * Setter to be used by the UI to create an
  * undoable action.
  */
@@ -3034,12 +3129,8 @@ track_set_name_with_action (
   Track *      track,
   const char * name)
 {
-  g_return_if_fail (IS_TRACK (track) && name);
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_rename (
-      track, name);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_set_name_with_action_full (
+    track, name);
 }
 
 static void
@@ -3304,10 +3395,24 @@ track_set_comment (
       track_select (
         self, F_SELECT, F_EXCLUSIVE,
         F_NO_PUBLISH_EVENTS);
+
+      GError * err = NULL;
       UndoableAction * ua =
         tracklist_selections_action_new_edit_comment (
-          TRACKLIST_SELECTIONS, comment);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          TRACKLIST_SELECTIONS, comment, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err,
+            _("Cannot set track comment: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -3344,10 +3449,24 @@ track_set_color (
       track_select (
         self, F_SELECT, F_EXCLUSIVE,
         F_NO_PUBLISH_EVENTS);
+
+      GError * err = NULL;
       UndoableAction * ua =
         tracklist_selections_action_new_edit_color (
-          TRACKLIST_SELECTIONS, color);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          TRACKLIST_SELECTIONS, color, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err,
+            _("Cannot set track comment: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -3376,10 +3495,24 @@ track_set_icon (
       track_select (
         self, F_SELECT, F_EXCLUSIVE,
         F_NO_PUBLISH_EVENTS);
+
+      GError * err = NULL;
       UndoableAction * ua =
         tracklist_selections_action_new_edit_icon (
-          TRACKLIST_SELECTIONS, icon_name);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          TRACKLIST_SELECTIONS, icon_name, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err,
+            _("Cannot set track comment: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -3689,11 +3822,23 @@ track_set_enabled (
 
   if (trigger_undo)
     {
-      UndoableAction * action =
+      GError * err = NULL;
+      UndoableAction * ua =
         tracklist_selections_action_new_edit_enable (
-          TRACKLIST_SELECTIONS, enabled);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
+          TRACKLIST_SELECTIONS, enabled, &err);
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          HANDLE_ERROR (
+            err,
+            _("Cannot set track enabled: %s"),
+            err->message);
+          return;
+        }
     }
   else
     {
@@ -3766,6 +3911,39 @@ track_get_total_bars (
   if (track_total_bars > *total_bars)
     {
       *total_bars = track_total_bars;
+    }
+}
+
+Track *
+track_create_with_action (
+  TrackType       type,
+  PluginSetting * pl_setting,
+  SupportedFile * file_descr,
+  Position *      pos,
+  int             index,
+  int             num_tracks)
+{
+  GError * err = NULL;
+  UndoableAction * ua =
+    tracklist_selections_action_new_create (
+      type, pl_setting, file_descr,
+      index, pos, num_tracks, -1, &err);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+
+      Track * track =
+        tracklist_get_track (TRACKLIST, index);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), NULL);
+      return track;
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, _("Failed to create track: %s"),
+        err->message);
+      return NULL;
     }
 }
 

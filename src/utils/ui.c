@@ -162,24 +162,42 @@ ui_show_message_full (
   static char buf[40000];
   vsprintf (buf, format, args);
 
-  GtkDialogFlags flags =
-    parent_window ?
-      GTK_DIALOG_DESTROY_WITH_PARENT : 0;
-  GtkWidget * dialog =
-    gtk_message_dialog_new (
-      parent_window, flags, type,
-      GTK_BUTTONS_CLOSE, "%s", buf);
-  gtk_window_set_title (
-    GTK_WINDOW (dialog), PROGRAM_NAME);
-  gtk_window_set_icon_name (
-    GTK_WINDOW (dialog), "zrythm");
-  if (parent_window)
+  if (ZRYTHM_HAVE_UI)
     {
-      gtk_window_set_transient_for (
-        GTK_WINDOW (dialog), parent_window);
+      GtkDialogFlags flags =
+        parent_window ?
+          GTK_DIALOG_DESTROY_WITH_PARENT : 0;
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          parent_window, flags, type,
+          GTK_BUTTONS_CLOSE, "%s", buf);
+      gtk_window_set_title (
+        GTK_WINDOW (dialog), PROGRAM_NAME);
+      gtk_window_set_icon_name (
+        GTK_WINDOW (dialog), "zrythm");
+      if (parent_window)
+        {
+          gtk_window_set_transient_for (
+            GTK_WINDOW (dialog), parent_window);
+        }
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
     }
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
+  else
+    {
+      switch (type)
+        {
+        case GTK_MESSAGE_ERROR:
+          g_warning ("%s", buf);
+          break;
+        case GTK_MESSAGE_INFO:
+          g_message ("%s", buf);
+          break;
+        default:
+          g_critical ("should not be reached");
+          break;
+        }
+    }
 
   va_end (args);
 }

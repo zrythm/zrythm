@@ -211,11 +211,8 @@ test_new_region ()
 static void
 test_timeline_frames_to_local (void)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, NULL, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI);
 
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

@@ -2287,10 +2287,8 @@ test_pin_unpin ()
   track_select (
     P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    tracklist_selections_action_new_unpin (
-      TRACKLIST_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_pinned_with_action (
+    TRACKLIST_SELECTIONS, Z_F_NO_PIN);
 
   g_assert_cmpint (
     r->id.track_pos, ==, P_CHORD_TRACK->pos);
@@ -2597,18 +2595,15 @@ test_duplicate_audio_regions ()
   int track_pos = TRACKLIST->num_tracks;
   SupportedFile * file =
     supported_file_new_from_path (audio_file_path);
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, file, track_pos,
-      &pos1, 1, -1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
-  Track * track = TRACKLIST->tracks[track_pos];
+  Track * track =
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file, &pos1,
+      track_pos, 1);
 
   arranger_object_select (
     (ArrangerObject *) track->lanes[0]->regions[0],
     F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  ua =
+  UndoableAction * ua =
     arranger_selections_action_new_duplicate_timeline (
       TL_SELECTIONS, MOVE_TICKS, 0, 0,
       F_NOT_ALREADY_MOVED);
@@ -2625,10 +2620,7 @@ test_undo_moving_midi_region_to_other_lane ()
   test_helper_zrythm_init ();
 
   /* create midi track with region */
-  UndoableAction * ua =
-    tracklist_selections_action_new_create_midi (
-      TRACKLIST->num_tracks, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (TRACK_TYPE_MIDI);
   Track * midi_track =
     tracklist_get_last_track (
       TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
@@ -2655,7 +2647,7 @@ test_undo_moving_midi_region_to_other_lane ()
       arranger_object_select (
         (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
-      ua =
+      UndoableAction * ua =
         arranger_selections_action_new_create (
           TL_SELECTIONS);
       undo_manager_perform (UNDO_MANAGER, ua);
@@ -2665,7 +2657,7 @@ test_undo_moving_midi_region_to_other_lane ()
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
+  UndoableAction * ua =
     arranger_selections_action_new_move_timeline (
       TL_SELECTIONS, MOVE_TICKS, 0, -2,
       F_NOT_ALREADY_MOVED);

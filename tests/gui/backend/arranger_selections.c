@@ -66,13 +66,9 @@ test_get_length_in_ticks ()
 {
   test_helper_zrythm_init ();
 
-  UndoableAction * ua =
-    tracklist_selections_action_new_create_midi (
-      TRACKLIST->num_tracks, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
   Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI);
 
   test_region_length_in_ticks (track, 3, 4);
   test_region_length_in_ticks (track, 100, 102);

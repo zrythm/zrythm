@@ -46,6 +46,7 @@
 #include "settings/plugin_settings.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/symap.h"
@@ -231,12 +232,25 @@ on_drag_data_received (
 
           PluginSetting * setting =
             plugin_setting_new_default (pd);
+          GError * err = NULL;
           UndoableAction * ua =
             tracklist_selections_action_new_create (
               tt, setting, NULL,
               TRACKLIST->num_tracks,
-              PLAYHEAD, 1, -1);
-          undo_manager_perform (UNDO_MANAGER, ua);
+              PLAYHEAD, 1, -1, &err);
+          if (ua)
+            {
+              undo_manager_perform (UNDO_MANAGER, ua);
+            }
+          else
+            {
+              g_return_if_fail (err);
+              ui_show_message_printf (
+                MAIN_WINDOW, GTK_MESSAGE_ERROR,
+                _("Failed to create track: %s"),
+                err->message);
+              g_error_free_and_null (err);
+            }
           plugin_setting_free (setting);
         }
       else
@@ -309,23 +323,33 @@ on_drag_data_received (
           context);
 
       UndoableAction * ua = NULL;
+      GError * err = NULL;
       if (action == GDK_ACTION_COPY)
         {
           ua =
             tracklist_selections_action_new_copy (
-              TRACKLIST_SELECTIONS, pos);
+              TRACKLIST_SELECTIONS, pos, &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ua =
             tracklist_selections_action_new_move (
-              TRACKLIST_SELECTIONS, pos);
+              TRACKLIST_SELECTIONS, pos, &err);
         }
 
-      g_warn_if_fail (ua);
-
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      if (ua)
+        {
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+      else
+        {
+          g_return_if_fail (err);
+          ui_show_message_printf (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            _("Failed to copy or move track: %s"),
+            &err);
+          g_error_free_and_null (err);
+        }
     }
 
 #undef IS_SUPPORTED_FILE

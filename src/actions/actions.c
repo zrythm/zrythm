@@ -1512,123 +1512,60 @@ activate_snap_events (GSimpleAction *action,
     }
 }
 
-void
-activate_create_audio_track (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_create_audio_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (TRACK_TYPE_AUDIO);
 }
 
-void
-activate_create_ins_track (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_create_ins_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_INSTRUMENT, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_INSTRUMENT);
 }
 
-void
-activate_create_midi_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_create_midi_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (TRACK_TYPE_MIDI);
 }
 
-void
-activate_create_audio_bus_track (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_create_audio_bus_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_AUDIO_BUS);
 }
 
-void
-activate_create_midi_bus_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_create_midi_bus_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_MIDI_BUS, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI_BUS);
 }
 
-void
-activate_create_audio_group_track (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_create_audio_group_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO_GROUP, NULL, NULL,
-      TRACKLIST->num_tracks, PLAYHEAD, 1, -1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_AUDIO_GROUP);
 }
 
 DEFINE_SIMPLE (activate_create_midi_group_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create_midi_group (
-      TRACKLIST->num_tracks, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI_GROUP);
 }
 
 DEFINE_SIMPLE (activate_create_folder_track)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_create_folder (
-      TRACKLIST->num_tracks, 1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  track_create_empty_with_action (
+    TRACK_TYPE_FOLDER);
 }
 
-void
-activate_duplicate_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_duplicate_selected_tracks)
 {
-  UndoableAction * ua =
-    tracklist_selections_action_new_copy (
-      TRACKLIST_SELECTIONS,
-      TRACKLIST_SELECTIONS->tracks[0]->pos + 1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_move_or_copy_with_action (
+    TRACKLIST_SELECTIONS, true,
+    TRACKLIST_SELECTIONS->tracks[0]->pos + 1);
 }
 
-void
-activate_change_track_color (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_change_track_color)
 {
   ObjectColorChooserDialogWidget * color_chooser =
     object_color_chooser_dialog_widget_new_for_tracklist_selections (
@@ -1637,31 +1574,17 @@ activate_change_track_color (
     color_chooser);
 }
 
-void
-activate_goto_prev_marker (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_goto_prev_marker)
 {
-  transport_goto_prev_marker (
-    TRANSPORT);
+  transport_goto_prev_marker (TRANSPORT);
 }
 
-void
-activate_goto_next_marker (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_goto_next_marker)
 {
-  transport_goto_next_marker (
-    TRANSPORT);
+  transport_goto_next_marker (TRANSPORT);
 }
 
-void
-activate_play_pause (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_play_pause)
 {
   if (TRANSPORT_IS_ROLLING)
     {
@@ -1681,202 +1604,73 @@ activate_delete_selected_tracks (
   gpointer       user_data)
 {
   g_message ("deleting selected tracks");
-
-  if (tracklist_selections_contains_undeletable_track (
-        TRACKLIST_SELECTIONS))
-    {
-      ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR,
-        "%s",
-        _("The track selection contains a track "
-        "that cannot be deleted"));
-    }
-  else
-    {
-      UndoableAction * ua =
-        tracklist_selections_action_new_delete (
-          TRACKLIST_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
+  tracklist_selections_delete_with_action (
+    TRACKLIST_SELECTIONS);
 }
 
-void
-activate_hide_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_hide_selected_tracks)
 {
   g_message ("hiding selected tracks");
-
   tracklist_selections_toggle_visibility (
     TRACKLIST_SELECTIONS);
 }
 
-void
-activate_pin_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_pin_selected_tracks)
 {
   g_message ("pin/unpinning selected tracks");
 
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
-  UndoableAction * ua = NULL;
-  if (track_is_pinned (track))
-    {
-      ua =
-        tracklist_selections_action_new_unpin (
-          TRACKLIST_SELECTIONS);
-    }
-  else
-    {
-      ua =
-        tracklist_selections_action_new_pin (
-          TRACKLIST_SELECTIONS);
-    }
-  undo_manager_perform (UNDO_MANAGER, ua);
+  bool pin = !track_is_pinned (track);
+  tracklist_selections_set_pinned_with_action (
+    TRACKLIST_SELECTIONS, pin);
 }
 
-void
-activate_solo_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_solo_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_solo (
-      TRACKLIST_SELECTIONS, F_SOLO);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_soloed_with_action (
+    TRACKLIST_SELECTIONS, F_SOLO);
 }
 
-void
-activate_unsolo_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_unsolo_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_solo (
-      TRACKLIST_SELECTIONS, F_NO_SOLO);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_soloed_with_action (
+    TRACKLIST_SELECTIONS, F_NO_SOLO);
 }
 
-void
-activate_mute_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_mute_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_mute (
-      TRACKLIST_SELECTIONS, F_MUTE);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_muted_with_action (
+    TRACKLIST_SELECTIONS, F_MUTE);
 }
 
-void
-activate_unmute_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_unmute_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_mute (
-      TRACKLIST_SELECTIONS, F_NO_MUTE);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_muted_with_action (
+    TRACKLIST_SELECTIONS, F_NO_MUTE);
 }
 
-void
-activate_listen_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_listen_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_listen (
-      TRACKLIST_SELECTIONS, F_LISTEN);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_listened_with_action (
+    TRACKLIST_SELECTIONS, F_LISTEN);
 }
 
-void
-activate_unlisten_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_unlisten_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_listen (
-      TRACKLIST_SELECTIONS, F_NO_LISTEN);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_listened_with_action (
+    TRACKLIST_SELECTIONS, F_NO_LISTEN);
 }
 
-void
-activate_enable_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_enable_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_enable (
-      TRACKLIST_SELECTIONS, F_ENABLE);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_enabled_with_action (
+    TRACKLIST_SELECTIONS, F_ENABLE);
 }
 
-void
-activate_disable_selected_tracks (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+DEFINE_SIMPLE (activate_disable_selected_tracks)
 {
-  if (TRACKLIST_SELECTIONS->num_tracks == 0)
-    {
-      return;
-    }
-
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_enable (
-      TRACKLIST_SELECTIONS, F_NO_ENABLE);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  tracklist_selections_set_enabled_with_action (
+    TRACKLIST_SELECTIONS, F_NO_ENABLE);
 }
 
 void

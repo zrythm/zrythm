@@ -76,6 +76,7 @@ static const cyaml_schema_value_t
  * Inits the undo manager by populating the
  * undo/redo stacks.
  */
+NONNULL
 void
 undo_manager_init_loaded (
   UndoManager * self);
@@ -90,6 +91,7 @@ undo_manager_new (void);
 /**
  * Undo last action.
  */
+NONNULL
 void
 undo_manager_undo (
   UndoManager * self);
@@ -97,6 +99,7 @@ undo_manager_undo (
 /**
  * Redo last undone action.
  */
+NONNULL
 void
 undo_manager_redo (
   UndoManager * self);
@@ -107,32 +110,41 @@ undo_manager_redo (
  *
  * @return Non-zero if error.
  */
+NONNULL
 int
 undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action);
 
-void
-undo_manager_prepare_for_serialization (
-  UndoManager * self);
-
 /**
  * Returns whether the given clip is used by any
  * stack.
  */
+NONNULL
 bool
 undo_manager_contains_clip (
   UndoManager * self,
   AudioClip *   clip);
 
 /**
+ * Returns the last performed action, or NULL if
+ * the stack is empty.
+ */
+NONNULL
+UndoableAction *
+undo_manager_get_last_action (
+  UndoManager * self);
+
+/**
  * Clears the undo and redo stacks.
  */
+NONNULL
 void
 undo_manager_clear_stacks (
   UndoManager * self,
   bool          free);
 
+NONNULL
 void
 undo_manager_free (
   UndoManager * self);
