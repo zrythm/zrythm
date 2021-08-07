@@ -1243,16 +1243,43 @@ on_audio_func_activate (
       region_identifier_copy (
         &sel->region_id, &r->id);
       sel->has_selection = true;
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
+
+      /* timeline start pos */
       position_set_to_pos (
-        &sel->sel_start, &r->base.pos);
+        &sel->sel_start, &r_obj->clip_start_pos);
+      position_add_ticks (
+        &sel->sel_start, r_obj->pos.ticks);
+
+      /* timeline end pos */
       position_set_to_pos (
-        &sel->sel_end, &r->base.end_pos);
+        &sel->sel_end, &r_obj->loop_end_pos);
+      position_add_ticks (
+        &sel->sel_end, r_obj->pos.ticks);
+      if (position_is_after (
+            &sel->sel_end, &r_obj->end_pos))
+        {
+          position_set_to_pos (
+            &sel->sel_end, &r_obj->end_pos);
+        }
+
       UndoableAction * ua =
         arranger_selections_action_new_edit_audio_function (
           (ArrangerSelections *) sel,
           data->audio_func, NULL);
-      ua->num_actions = i + 1;
-      undo_manager_perform (UNDO_MANAGER, ua);
+      if (ua)
+        {
+          ua->num_actions = i + 1;
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+      else
+        {
+          /* handle error */
+          ui_show_message_printf (
+            MAIN_WINDOW, GTK_MESSAGE_ERROR,
+            "%s", _("Could not perform action"));
+        }
     }
 }
 
