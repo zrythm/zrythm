@@ -650,6 +650,9 @@ show_plugin_context_menu (
           menuitem =
             GTK_MENU_ITEM (
               gtk_menu_item_new_with_label (
+                /* TRANSLATORS: Add plugin to project
+                 * using the selected UI. This opens
+                 * up a submenu to choose a UI */
                 _("Add to project with UI")));
           APPEND;
           submenu =

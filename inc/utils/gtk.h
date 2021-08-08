@@ -72,6 +72,7 @@
 
 #define CREATE_CLEAR_SELECTION_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
+    /* TRANSLATORS: deselects everything */ \
     _("Cle_ar Selection"), "edit-clear", \
     false, action)
 

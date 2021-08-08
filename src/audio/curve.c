@@ -50,7 +50,7 @@ curve_algorithm_get_localized_name (
       sprintf (buf, _("Superellipse"));
       break;
     case CURVE_ALGORITHM_VITAL:
-      sprintf (buf, _("Vital"));
+      sprintf (buf, "Vital");
       break;
     case CURVE_ALGORITHM_PULSE:
       sprintf (buf, _("Pulse"));
