@@ -1,4 +1,4 @@
-;;;  Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+;;;  Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
 ;;;
 ;;;  This file is part of Zrythm
 ;;;
@@ -55,7 +55,7 @@ Args:
 
          (display
 "<!--
-  Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -157,7 +157,7 @@ Args:
                      (string-suffix? ".png" f))))))
            '("arena" "gnome-builder" "ext"
              "fork-awesome" "font-awesome"
-             "fluentui"))
+             "fluentui" "jam-icons"))
 
          ;; insert standard gtk menus
          ;; (see GtkApplication docs)

@@ -1331,6 +1331,9 @@ zrythm_app_startup (
     "/org/zrythm/Zrythm/app/icons/fluentui");
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/jam-icons");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
     "/org/zrythm/Zrythm/app/icons/breeze-icons");
 
   /*gtk_icon_theme_set_search_path (*/

@@ -83,7 +83,7 @@ G_DEFINE_TYPE (
 #define ICON_NAME_SOLO "solo"
 #define ICON_NAME_MUTE "mute"
 #define ICON_NAME_LISTEN "listen"
-#define ICON_NAME_SHOW_UI "synth"
+#define ICON_NAME_SHOW_UI "jam-icons-screen"
 #define ICON_NAME_SHOW_AUTOMATION_LANES \
   "node-type-cusp"
 #define ICON_NAME_SHOW_TRACK_LANES \
