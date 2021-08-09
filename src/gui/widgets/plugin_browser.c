@@ -333,7 +333,15 @@ activate_plugin_setting (
   TrackType type =
     track_get_type_from_plugin_descriptor (
       setting->descr);
-  track_create_empty_with_action (type);
+
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (type, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to create track"));
+    }
 
   if (setting_created)
     {

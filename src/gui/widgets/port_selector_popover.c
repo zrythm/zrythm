@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,7 @@
 #include "gui/widgets/port_selector_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -35,9 +36,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (PortSelectorPopoverWidget,
-               port_selector_popover_widget,
-               GTK_TYPE_POPOVER)
+G_DEFINE_TYPE (
+  PortSelectorPopoverWidget,
+  port_selector_popover_widget,
+  GTK_TYPE_POPOVER)
 
 /** Used as the first row in the Plugin treeview to
  * indicate if "Track ports is selected or not. */
@@ -76,10 +78,17 @@ on_ok_clicked (
     {
       gtk_widget_destroy (GTK_WIDGET (self->owner));
 
-      UndoableAction * ua =
-        port_connection_action_new_connect (
-          &src->id, &dest->id);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      GError * err = NULL;
+      bool ret =
+        port_connection_action_perform_connect (
+          &src->id, &dest->id, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err,
+            _("Failed to connect %s to %s"),
+            src->id.label, dest->id.label);
+        }
 
       /*port_connections_popover_widget_refresh (*/
         /*self->owner);*/

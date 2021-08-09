@@ -661,8 +661,6 @@ main_window_widget_init (MainWindowWidget * self)
     /* track actions */
     { "create-audio-track",
       activate_create_audio_track },
-    { "create-ins-track",
-      activate_create_ins_track },
     { "create-audio-bus-track",
       activate_create_audio_bus_track },
     { "create-midi-bus-track",

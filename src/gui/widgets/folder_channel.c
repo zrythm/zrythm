@@ -42,6 +42,7 @@
 #include "gui/widgets/route_target_selector.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -115,9 +116,27 @@ on_drag_data_received (
   tracklist_selections_select_foldable_children (
     TRACKLIST_SELECTIONS);
 
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, action == GDK_ACTION_COPY,
-    pos);
+  GError * err = NULL;
+  bool ret;
+  if (action == GDK_ACTION_COPY)
+    {
+      ret =
+        tracklist_selections_action_perform_copy (
+          TRACKLIST_SELECTIONS, pos, &err);
+    }
+  else
+    {
+      ret =
+        tracklist_selections_action_perform_move (
+          TRACKLIST_SELECTIONS, pos, &err);
+    }
+
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to move or copy track(s)"));
+    }
 }
 
 static void
@@ -129,7 +148,7 @@ on_drag_data_get (
   guint             time,
   FolderChannelWidget * self)
 {
-  g_message ("drag data get");
+  g_debug ("drag data get");
 
   /* Not really needed since the selections are
    * used. just send master */

@@ -34,6 +34,7 @@
 #include "gui/widgets/port_connections_popover.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/mem.h"
@@ -87,9 +88,17 @@ on_delete_clicked (
   mixer_selections_add_slot (
     sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR,
     modulator->id.slot, F_NO_CLONE);
-  UndoableAction * ua =
-    mixer_selections_action_new_delete (sel);
-  undo_manager_perform (UNDO_MANAGER, ua);
+
+  GError * err = NULL;
+  bool ret =
+    mixer_selections_action_perform_delete (
+      sel, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to delete plugins"));
+    }
+
   mixer_selections_free (sel);
 }
 
@@ -165,9 +174,16 @@ on_reset_control (
   GtkMenuItem * menuitem,
   Port *        port)
 {
-  UndoableAction * ua =
-    port_action_new_reset_control (&port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    port_action_perform_reset_control (
+      &port->id, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, _("Failed to reset %s"),
+        port->id.label);
+    }
 }
 
 static void

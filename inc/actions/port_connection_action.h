@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -102,46 +102,84 @@ port_connection_action_init_loaded (
 /**
  * Create a new action.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 port_connection_action_new (
   PortConnectionActionType type,
   PortIdentifier *         src_id,
   PortIdentifier *         dest_id,
-  float                    new_val);
+  float                    new_val,
+  GError **                error);
 
 #define port_connection_action_new_connect( \
-  src_id,dest_id) \
+  src_id,dest_id,error) \
   port_connection_action_new ( \
     PORT_CONNECTION_CONNECT, \
-    src_id, dest_id, 0.f)
+    src_id, dest_id, 0.f, error)
 
 #define port_connection_action_new_disconnect( \
-  src_id,dest_id) \
+  src_id,dest_id,error) \
   port_connection_action_new ( \
     PORT_CONNECTION_DISCONNECT, \
-    src_id, dest_id, 0.f)
+    src_id, dest_id, 0.f, error)
 
 #define port_connection_action_new_enable( \
-  src_id,dest_id,enable) \
+  src_id,dest_id,enable,error) \
   port_connection_action_new ( \
     enable ? \
       PORT_CONNECTION_ENABLE : \
       PORT_CONNECTION_DISABLE, \
-    src_id, dest_id, 0.f)
+    src_id, dest_id, 0.f, error)
 
 #define port_connection_action_new_change_multiplier( \
-  src_id,dest_id, new_multiplier) \
+  src_id,dest_id, new_multiplier,error) \
   port_connection_action_new ( \
     PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
-    dest_id, new_multiplier)
+    dest_id, new_multiplier, error)
+
+bool
+port_connection_action_perform (
+  PortConnectionActionType type,
+  PortIdentifier *         src_id,
+  PortIdentifier *         dest_id,
+  float                    new_val,
+  GError **                error);
+
+#define port_connection_action_perform_connect( \
+  src_id,dest_id,error) \
+  port_connection_action_perform ( \
+    PORT_CONNECTION_CONNECT, \
+    src_id, dest_id, 0.f, error)
+
+#define port_connection_action_perform_disconnect( \
+  src_id,dest_id,error) \
+  port_connection_action_perform ( \
+    PORT_CONNECTION_DISCONNECT, \
+    src_id, dest_id, 0.f, error)
+
+#define port_connection_action_perform_enable( \
+  src_id,dest_id,enable,error) \
+  port_connection_action_perform ( \
+    enable ? \
+      PORT_CONNECTION_ENABLE : \
+      PORT_CONNECTION_DISABLE, \
+    src_id, dest_id, 0.f, error)
+
+#define port_connection_action_perform_change_multiplier( \
+  src_id,dest_id,new_multiplier,error) \
+  port_connection_action_perform ( \
+    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
+    dest_id, new_multiplier, error)
 
 int
 port_connection_action_do (
-  PortConnectionAction * self);
+  PortConnectionAction * self,
+  GError **              error);
 
 int
 port_connection_action_undo (
-  PortConnectionAction * self);
+  PortConnectionAction * self,
+  GError **              error);
 
 char *
 port_connection_action_stringize (

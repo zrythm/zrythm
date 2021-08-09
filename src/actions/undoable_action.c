@@ -241,7 +241,9 @@ undoable_action_can_contain_clip (
  * @return Non-zero if errors occurred.
  */
 int
-undoable_action_do (UndoableAction * self)
+undoable_action_do (
+  UndoableAction * self,
+  GError **        error)
 {
 #if 0
   g_debug ("waiting for port operation lock...");
@@ -268,7 +270,9 @@ undoable_action_do (UndoableAction * self)
         undoable_action_to_string (self); \
       g_message ( \
         "[DOING ACTION]: " #uc " (%s)", str); \
-      ret = sc##_action_do ((cc##Action *) self); \
+      ret = \
+        sc##_action_do ( \
+          (cc##Action *) self, error); \
       if (ret == 0) \
         { \
           g_message ("[DONE]: " #uc " (%s)", str); \
@@ -337,10 +341,12 @@ undoable_action_do (UndoableAction * self)
 /**
  * Undoes the action.
  *
- * Note: only to be called by undo manager.
+ * @return Non-zero if errors occurred.
  */
 int
-undoable_action_undo (UndoableAction * self)
+undoable_action_undo (
+  UndoableAction * self,
+  GError **        error)
 {
   /*zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);*/
 
@@ -364,10 +370,16 @@ undoable_action_undo (UndoableAction * self)
       g_message ( \
         "[UNDOING ACTION]: " #uc " (%s)", str); \
       ret = \
-        sc##_action_undo ((cc##Action *) self); \
+        sc##_action_undo ( \
+          (cc##Action *) self, error); \
       if (ret == 0) \
         { \
           g_message ("[UNDONE]: " #uc " (%s)", str); \
+        } \
+      else \
+        { \
+          g_warning ( \
+            "[FAILED]: " #uc " (%s)", str); \
         } \
       g_free (str); \
     } \
@@ -376,12 +388,10 @@ undoable_action_undo (UndoableAction * self)
   switch (self->type)
     {
     UNDO_ACTION (
-      TRACKLIST_SELECTIONS,
-      tracklist_selections,
+      TRACKLIST_SELECTIONS, tracklist_selections,
       TracklistSelections);
-    UNDO_ACTION (CHANNEL_SEND,
-               channel_send,
-               ChannelSend);
+    UNDO_ACTION (
+      CHANNEL_SEND, channel_send, ChannelSend);
     UNDO_ACTION (
       MIXER_SELECTIONS, mixer_selections,
       MixerSelections);

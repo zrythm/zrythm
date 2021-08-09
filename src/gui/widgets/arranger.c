@@ -73,8 +73,9 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"
-#include "utils/gtk.h"
+#include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
@@ -1726,14 +1727,22 @@ arranger_widget_on_key_action (
                 arranger_selections_get_first_object (
                   sel);
 
-              if (obj->pos.ticks - move_ticks >= min_possible_pos.ticks)
+              if (obj->pos.ticks - move_ticks >=
+                    min_possible_pos.ticks)
                 {
-                  UndoableAction * action =
-                    arranger_selections_action_new_move (
+                  GError * err = NULL;
+                  bool ret =
+                    arranger_selections_action_perform_move (
                       sel, - move_ticks, 0, 0,
-                      0, 0, 0, F_NOT_ALREADY_MOVED);
-                  undo_manager_perform (
-                    UNDO_MANAGER, action);
+                      0, 0, 0, F_NOT_ALREADY_MOVED,
+                      &err);
+                  if (!ret)
+                    {
+                      HANDLE_ERROR (
+                        err, "%s",
+                        _("Failed to move "
+                        "selection"));
+                    }
 
                   /* scroll left if needed */
                   arranger_widget_scroll_until_obj (
@@ -1743,12 +1752,18 @@ arranger_widget_on_key_action (
             }
           else if (keyval == GDK_KEY_Right)
             {
-              UndoableAction * action =
-                arranger_selections_action_new_move (
+              GError * err = NULL;
+              bool ret =
+                arranger_selections_action_perform_move (
                   sel, move_ticks, 0, 0, 0, 0, 0,
-                  F_NOT_ALREADY_MOVED);
-              undo_manager_perform (
-                UNDO_MANAGER, action);
+                  F_NOT_ALREADY_MOVED,
+                  &err);
+              if (!ret)
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to move selection"));
+                }
 
               /* get latest object */
               ArrangerObject * obj =
@@ -1762,7 +1777,6 @@ arranger_widget_on_key_action (
             }
           else if (keyval == GDK_KEY_Down)
             {
-              UndoableAction * action;
               if (self == MW_MIDI_ARRANGER ||
                   self == MW_MIDI_MODIFIER_ARRANGER)
                 {
@@ -1786,13 +1800,19 @@ arranger_widget_on_key_action (
 
                   if (pitch_delta)
                     {
-                      action =
-                        arranger_selections_action_new_move (
-                          sel, 0, 0, pitch_delta,
-                          0, 0, 0,
-                          F_NOT_ALREADY_MOVED);
-                      undo_manager_perform (
-                        UNDO_MANAGER, action);
+                      GError * err = NULL;
+                      bool ret =
+                        arranger_selections_action_perform_move_midi (
+                          sel, 0, pitch_delta,
+                          F_NOT_ALREADY_MOVED,
+                          &err);
+                      if (!ret)
+                        {
+                          HANDLE_ERROR (
+                            err, "%s",
+                            _("Failed to move "
+                            "selection"));
+                        }
 
                       /* scroll down if needed */
                       arranger_widget_scroll_until_obj (
@@ -1802,12 +1822,17 @@ arranger_widget_on_key_action (
                 }
               else if (self == MW_CHORD_ARRANGER)
                 {
-                  action =
-                    arranger_selections_action_new_move (
-                      sel, 0, -1, 0, 0, 0, 0,
-                      F_NOT_ALREADY_MOVED);
-                  undo_manager_perform (
-                    UNDO_MANAGER, action);
+                  GError * err = NULL;
+                  bool ret =
+                    arranger_selections_action_perform_move_chord (
+                      sel, 0, -1,
+                      F_NOT_ALREADY_MOVED, &err);
+                  if (!ret)
+                    {
+                      HANDLE_ERROR (
+                        err, "%s",
+                        _("Failed to move chords"));
+                    }
                 }
               else if (self == MW_TIMELINE)
                 {
@@ -1821,7 +1846,6 @@ arranger_widget_on_key_action (
             }
           else if (keyval == GDK_KEY_Up)
             {
-              UndoableAction * action;
               if (self == MW_MIDI_ARRANGER ||
                   self == MW_MIDI_MODIFIER_ARRANGER)
                 {
@@ -1845,12 +1869,19 @@ arranger_widget_on_key_action (
 
                   if (pitch_delta)
                     {
-                      action =
-                        arranger_selections_action_new_move_midi (
+                      GError * err = NULL;
+                      bool ret =
+                        arranger_selections_action_perform_move_midi (
                           sel, 0, pitch_delta,
-                          F_NOT_ALREADY_MOVED);
-                      undo_manager_perform (
-                        UNDO_MANAGER, action);
+                          F_NOT_ALREADY_MOVED,
+                          &err);
+                      if (!ret)
+                        {
+                          HANDLE_ERROR (
+                            err, "%s",
+                            _("Failed to move "
+                            "selection"));
+                        }
 
                       /* scroll up if needed */
                       arranger_widget_scroll_until_obj (
@@ -1860,12 +1891,18 @@ arranger_widget_on_key_action (
                 }
               else if (self == MW_CHORD_ARRANGER)
                 {
-                  action =
-                    arranger_selections_action_new_move_chord (
+                  GError * err = NULL;
+                  bool ret =
+                    arranger_selections_action_perform_move_chord (
                       sel, 0, 1,
-                      F_NOT_ALREADY_MOVED);
-                  undo_manager_perform (
-                    UNDO_MANAGER, action);
+                      F_NOT_ALREADY_MOVED, &err);
+                  if (!ret)
+                    {
+                      HANDLE_ERROR (
+                        err, "%s",
+                        _("Failed to move "
+                        "selection"));
+                    }
                 }
               else if (self == MW_TIMELINE)
                 {
@@ -3594,12 +3631,17 @@ handle_erase_action (
             self->sel_to_delete) &&
           !arranger_selections_contains_undeletable_object (
             self->sel_to_delete))
-      {
-        UndoableAction * ua =
-          arranger_selections_action_new_delete (
-            self->sel_to_delete);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+        {
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_delete (
+              self->sel_to_delete, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to delete selection"));
+            }
         }
       object_free_w_func_and_null (
         arranger_selections_free,
@@ -3615,15 +3657,20 @@ on_drag_end_automation (
     {
     case UI_OVERLAY_ACTION_RESIZING_UP:
       {
-        UndoableAction * ua =
-          arranger_selections_action_new_edit (
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_edit (
             self->sel_at_start,
             (ArrangerSelections *)
             AUTOMATION_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-            F_ALREADY_EDITED);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            F_ALREADY_EDITED, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to edit selection"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -3667,13 +3714,18 @@ on_drag_end_automation (
           (double)
           (ap->normalized_val -
            start_ap->normalized_val);
-        UndoableAction * ua =
-          arranger_selections_action_new_move_automation (
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_move_automation (
             AUTOMATION_SELECTIONS,
             ticks_diff, norm_value_diff,
-            F_ALREADY_MOVED);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            F_ALREADY_MOVED, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to move automation"));
+          }
       }
       break;
   /* if copy-moved */
@@ -3688,16 +3740,21 @@ on_drag_end_automation (
           ((AutomationPoint *) obj)->normalized_val -
           ((AutomationPoint *) obj->transient)->
             normalized_val;
-        UndoableAction * ua = NULL;
-        ua =
+
+        GError * err = NULL;
+        bool ret =
           (UndoableAction *)
-          arranger_selections_action_new_duplicate_automation (
+          arranger_selections_action_perform_duplicate_automation (
             (ArrangerSelections *)
               AUTOMATION_SELECTIONS,
             ticks_diff, value_diff,
-            F_ALREADY_MOVED);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            F_ALREADY_MOVED, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to duplicate automation"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -3712,12 +3769,16 @@ on_drag_end_automation (
     /* if something was created */
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       {
-        UndoableAction * ua =
-          arranger_selections_action_new_create (
-            (ArrangerSelections *)
-            AUTOMATION_SELECTIONS);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_create (
+            AUTOMATION_SELECTIONS, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to create objects"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
@@ -3728,10 +3789,18 @@ on_drag_end_automation (
       {
         ZRegion * region =
           clip_editor_get_region (CLIP_EDITOR);
-        UndoableAction * ua =
-          arranger_selections_action_new_automation_fill (
-            self->region_at_start, region, true);
-        undo_manager_perform (UNDO_MANAGER, ua);
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_automation_fill (
+            self->region_at_start, region, true,
+            &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to fill automation"));
+          }
       }
       break;
     /* if didn't click on something */
@@ -3751,14 +3820,20 @@ on_drag_end_midi_modifier (
     case UI_OVERLAY_ACTION_RESIZING_UP:
       {
         g_return_if_fail (self->sel_at_start);
-        UndoableAction * ua =
-          arranger_selections_action_new_edit (
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_edit (
             self->sel_at_start,
             (ArrangerSelections *) MA_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-            true);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            true, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to edit selections"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_RAMPING:
@@ -3799,15 +3874,19 @@ on_drag_end_midi_modifier (
             vel->vel = vel->vel_at_start;
           }
 
-        UndoableAction * ua =
-          arranger_selections_action_new_edit (
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_edit (
             self->sel_at_start,
             (ArrangerSelections *) MA_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-            true);
-        if (ua)
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+            true, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to edit selections"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
@@ -3818,15 +3897,19 @@ on_drag_end_midi_modifier (
       if (arranger_selections_has_any (
             (ArrangerSelections *) MA_SELECTIONS))
         {
-          UndoableAction * ua =
-            arranger_selections_action_new_edit (
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_edit (
               self->sel_at_start,
               (ArrangerSelections *) MA_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-              true);
-          if (ua)
-            undo_manager_perform (
-              UNDO_MANAGER, ua);
+              true, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to edit selections"));
+            }
         }
       break;
     default:
@@ -3849,13 +3932,19 @@ on_drag_end_midi (
       double ticks_diff =
         obj->pos.ticks -
         obj->transient->pos.ticks;
-      UndoableAction * ua =
-        arranger_selections_action_new_resize (
+
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_resize (
           (ArrangerSelections *) MA_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_RESIZE_L,
-          ticks_diff);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+          ticks_diff, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to resize objects"));
+        }
     }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
@@ -3869,22 +3958,38 @@ on_drag_end_midi (
       double ticks_diff =
         obj->end_pos.ticks -
         obj->transient->end_pos.ticks;
-      UndoableAction * ua =
-        arranger_selections_action_new_resize (
+
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_resize (
           (ArrangerSelections *) MA_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_RESIZE_R,
-          ticks_diff);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-      if (pitch_diff)
+          ticks_diff, &err);
+      if (!ret)
         {
-          ua =
-            arranger_selections_action_new_move_midi (
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to resize objects"));
+        }
+      else if (pitch_diff)
+        {
+          ret =
+            arranger_selections_action_perform_move_midi (
               MA_SELECTIONS, 0, pitch_diff,
-              F_ALREADY_MOVED);
-          ua->num_actions = 2;
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              F_ALREADY_MOVED, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to move MIDI notes"));
+            }
+          else
+            {
+              UndoableAction * ua =
+                undo_manager_get_last_action (
+                  UNDO_MANAGER);
+              ua->num_actions = 2;
+            }
         }
     }
       break;
@@ -3916,12 +4021,18 @@ on_drag_end_midi (
       int pitch_diff =
         ((MidiNote *) obj)->val -
         ((MidiNote *) obj->transient)->val;
-      UndoableAction * ua =
-        arranger_selections_action_new_move_midi (
+
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_move_midi (
           MA_SELECTIONS, ticks_diff, pitch_diff,
-          F_ALREADY_MOVED);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+          F_ALREADY_MOVED, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to move MIDI notes"));
+        }
     }
       break;
     /* if copy/link-moved */
@@ -3935,18 +4046,18 @@ on_drag_end_midi (
       int pitch_diff =
         ((MidiNote *) obj)->val -
         ((MidiNote *) obj->transient)->val;
-      UndoableAction * ua = NULL;
-      ua =
-        (UndoableAction *)
-        arranger_selections_action_new_duplicate_midi (
+
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_duplicate_midi (
           (ArrangerSelections *) MA_SELECTIONS,
           ticks_diff, pitch_diff,
-          F_ALREADY_MOVED);
-
-      if (ua)
+          F_ALREADY_MOVED, &err);
+      if (!ret)
         {
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to duplicate MIDI notes"));
         }
     }
       break;
@@ -3961,11 +4072,16 @@ on_drag_end_midi (
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
     case UI_OVERLAY_ACTION_AUTOFILLING:
       {
-        UndoableAction * ua =
-          arranger_selections_action_new_create (
-            (ArrangerSelections *) MA_SELECTIONS);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_create (
+            MA_SELECTIONS, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to create MIDI notes"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
@@ -4021,13 +4137,18 @@ on_drag_end_chord (
         double ticks_diff =
           obj->pos.ticks -
           obj->transient->pos.ticks;
-        UndoableAction * ua =
-          (UndoableAction *)
-          arranger_selections_action_new_move_chord (
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_move_chord (
             CHORD_SELECTIONS, ticks_diff,
-            0, F_ALREADY_MOVED);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            0, F_ALREADY_MOVED, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to move chords"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
@@ -4038,13 +4159,18 @@ on_drag_end_chord (
         double ticks_diff =
           obj->pos.ticks -
           obj->transient->pos.ticks;
-        UndoableAction * ua =
-          (UndoableAction *)
-          arranger_selections_action_new_duplicate_chord (
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_duplicate_chord (
             CHORD_SELECTIONS, ticks_diff,
-            0, F_ALREADY_MOVED);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            0, F_ALREADY_MOVED, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to duplicate chords"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -4058,11 +4184,16 @@ on_drag_end_chord (
       break;
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       {
-        UndoableAction * ua =
-          arranger_selections_action_new_create (
-            (ArrangerSelections *) CHORD_SELECTIONS);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_create (
+            CHORD_SELECTIONS, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to create objects"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
@@ -4120,14 +4251,19 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
       {
-        UndoableAction * ua =
-          arranger_selections_action_new_edit (
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_edit (
             self->sel_at_start,
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
-            true);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            true, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to edit timeline objects"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
@@ -4138,13 +4274,20 @@ on_drag_end_timeline (
           double ticks_diff =
             obj->pos.ticks -
             obj->transient->pos.ticks;
-          UndoableAction * ua =
-            arranger_selections_action_new_resize (
+
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L,
-              ticks_diff);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              ticks_diff, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to resize timeline "
+                "objects"));
+            }
         }
       break;
     case UI_OVERLAY_ACTION_STRETCHING_L:
@@ -4154,13 +4297,20 @@ on_drag_end_timeline (
         double ticks_diff =
           obj->pos.ticks -
           obj->transient->pos.ticks;
-        UndoableAction * ua =
-          arranger_selections_action_new_resize (
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_STRETCH_L,
-            ticks_diff);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            ticks_diff, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to resize timeline "
+              "objects"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
@@ -4170,13 +4320,19 @@ on_drag_end_timeline (
           double ticks_diff =
             obj->pos.ticks -
             obj->transient->pos.ticks;
-          UndoableAction * ua =
-            arranger_selections_action_new_resize (
+
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
-              ticks_diff);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              ticks_diff, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to resize selection"));
+            }
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_FADE:
@@ -4186,13 +4342,20 @@ on_drag_end_timeline (
           double ticks_diff =
             obj->fade_in_pos.ticks -
             obj->transient->fade_in_pos.ticks;
-          UndoableAction * ua =
-            arranger_selections_action_new_resize (
+
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE,
-              ticks_diff);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              ticks_diff, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed setting fade in "
+                "position"));
+            }
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
@@ -4203,13 +4366,19 @@ on_drag_end_timeline (
           double ticks_diff =
             obj->end_pos.ticks -
             obj->transient->end_pos.ticks;
-          UndoableAction * ua =
-            arranger_selections_action_new_resize (
+
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_R,
-              ticks_diff);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              ticks_diff, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed resizing selections"));
+            }
         }
       break;
     case UI_OVERLAY_ACTION_STRETCHING_R:
@@ -4222,22 +4391,18 @@ on_drag_end_timeline (
         /* stretch now */
         transport_stretch_audio_regions (
           TRANSPORT, TL_SELECTIONS, false, 0.0);
-        UndoableAction * ua =
-          arranger_selections_action_new_resize (
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_STRETCH_R,
-            ticks_diff);
-        if (ua)
+            ticks_diff, &err);
+        if (!ret)
           {
-            undo_manager_perform (
-              UNDO_MANAGER, ua);
-          }
-        else
-          {
-            ui_show_message_printf (
-              MAIN_WINDOW, GTK_MESSAGE_ERROR,
-              "%s",
-              _("Failed to create resize action"));
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed resizing selections"));
           }
       }
       break;
@@ -4248,13 +4413,19 @@ on_drag_end_timeline (
         double ticks_diff =
           obj->end_pos.ticks -
           obj->transient->end_pos.ticks;
-        UndoableAction * ua =
-          arranger_selections_action_new_resize (
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-            ticks_diff);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            ticks_diff, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed resizing selections"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_FADE:
@@ -4264,13 +4435,19 @@ on_drag_end_timeline (
           double ticks_diff =
             obj->fade_out_pos.ticks -
             obj->transient->fade_out_pos.ticks;
-          UndoableAction * ua =
-            arranger_selections_action_new_resize (
+
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
-              ticks_diff);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              ticks_diff, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed resizing selection"));
+            }
         }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -4286,7 +4463,7 @@ on_drag_end_timeline (
                 self->start_object,
                 F_NO_SELECT, F_APPEND,
                 F_PUBLISH_EVENTS);
-              g_message ("DESELECTING");
+              g_debug ("deselecting object");
             }
         }
       else if (self->n_press == 2)
@@ -4303,13 +4480,19 @@ on_drag_end_timeline (
         double ticks_diff =
           obj->pos.ticks -
           obj->transient->pos.ticks;
-        UndoableAction * ua =
-          arranger_selections_action_new_move_timeline (
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_move_timeline (
             TL_SELECTIONS, ticks_diff,
             self->visible_track_diff,
-            self->lane_diff, F_ALREADY_MOVED);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+            self->lane_diff, F_ALREADY_MOVED, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to move objects"));
+          }
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
@@ -4320,32 +4503,36 @@ on_drag_end_timeline (
         double ticks_diff =
           obj->pos.ticks -
           obj->transient->pos.ticks;
-        UndoableAction * ua = NULL;
+
+        GError * err = NULL;
+        bool ret;
         if (ACTION_IS (MOVING_COPY))
           {
-            ua =
-              (UndoableAction *)
-              arranger_selections_action_new_duplicate_timeline (
+            ret =
+              arranger_selections_action_perform_duplicate_timeline (
                 TL_SELECTIONS, ticks_diff,
                 self->visible_track_diff,
-                self->lane_diff, F_ALREADY_MOVED);
+                self->lane_diff, F_ALREADY_MOVED,
+                &err);
           }
         else if (ACTION_IS (MOVING_LINK))
           {
-            ua =
-              (UndoableAction *)
-              arranger_selections_action_new_link (
+            ret =
+              arranger_selections_action_perform_link (
                 self->sel_at_start,
                 (ArrangerSelections *)
                   TL_SELECTIONS, ticks_diff,
                 self->visible_track_diff,
-                self->lane_diff, F_ALREADY_MOVED);
+                self->lane_diff, F_ALREADY_MOVED,
+                &err);
           }
 
-        if (ua)
+        if (!ret)
           {
-            undo_manager_perform (
-              UNDO_MANAGER, ua);
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to link or move "
+              "selection"));
           }
       }
       break;
@@ -4360,11 +4547,16 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_AUTOFILLING:
       if (arranger_selections_has_any (sel))
         {
-          UndoableAction * ua =
-            arranger_selections_action_new_create (
-              sel);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+          GError * err = NULL;
+          bool ret =
+          arranger_selections_action_perform_create (
+            sel, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to create objects"));
+            }
         }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
@@ -4389,13 +4581,18 @@ on_drag_end_timeline (
               (ArrangerSelections *) TL_SELECTIONS,
               &cut_pos))
           {
-            UndoableAction * ua =
-              arranger_selections_action_new_split (
+            GError * err = NULL;
+            bool ret =
+              arranger_selections_action_perform_split (
                 (ArrangerSelections *)
                 TL_SELECTIONS,
-                &cut_pos);
-            undo_manager_perform (
-              UNDO_MANAGER, ua);
+                &cut_pos, &err);
+            if (!ret)
+              {
+                HANDLE_ERROR (
+                  err, "%s",
+                  _("Failed to split selection"));
+              }
           }
       }
       break;

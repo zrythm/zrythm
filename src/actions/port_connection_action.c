@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -44,7 +44,8 @@ port_connection_action_new (
   PortConnectionActionType type,
   PortIdentifier *         src_id,
   PortIdentifier *         dest_id,
-  float                    new_val)
+  float                    new_val,
+  GError **                error)
 {
   PortConnectionAction * self =
     object_new (PortConnectionAction);
@@ -61,10 +62,25 @@ port_connection_action_new (
   return ua;
 }
 
+bool
+port_connection_action_perform (
+  PortConnectionActionType type,
+  PortIdentifier *         src_id,
+  PortIdentifier *         dest_id,
+  float                    new_val,
+  GError **                error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    port_connection_action_new,
+    error, type, src_id, dest_id, new_val,
+    error);
+}
+
 static int
 port_connection_action_do_or_undo (
   PortConnectionAction * self,
-  bool                   _do)
+  bool                   _do,
+  GError **              error)
 {
   Port * src =
     port_find_from_identifier (&self->src_port_id);
@@ -121,18 +137,22 @@ port_connection_action_do_or_undo (
 
 int
 port_connection_action_do (
-  PortConnectionAction * self)
+  PortConnectionAction * self,
+  GError **              error)
 {
   return
-    port_connection_action_do_or_undo (self, true);
+    port_connection_action_do_or_undo (
+      self, true, error);
 }
 
 int
 port_connection_action_undo (
-  PortConnectionAction * self)
+  PortConnectionAction * self,
+  GError **              error)
 {
   return
-    port_connection_action_do_or_undo (self, false);
+    port_connection_action_do_or_undo (
+      self, false, error);
 }
 
 char *

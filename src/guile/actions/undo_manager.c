@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "project.h"
 #endif
 
+#if 0
 SCM_DEFINE (
   s_undo_manager_perform,
   "undo-manager-perform", 2, 0, 0,
@@ -73,6 +74,7 @@ SCM_DEFINE (
   return SCM_BOOL_T;
 }
 #undef FUNC_NAME
+#endif
 
 static void
 init_module (void * data)
@@ -82,9 +84,11 @@ init_module (void * data)
 #endif
 
   scm_c_export (
+#if 0
     "undo-manager-perform",
     "undo-manager-undo",
     "undo-manager-redo",
+#endif
     NULL);
 }
 

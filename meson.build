@@ -595,6 +595,8 @@ test_cflags = [
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   '-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))',
   '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
+  '-DACCESS(...)=__attribute__((access(__VA_ARGS__)))',
+  '-DACCESS_READ_ONLY(...)=ACCESS(read_only,__VA_ARGS__)',
   ]
 
 # Stricter flags to be used where needed
@@ -604,7 +606,7 @@ test_strict_cflags = []
 attributes = [
   'always_inline', 'cold', 'hot', 'pure', 'nonnull',
   'returns_nonnull', 'stack_protect',
-  'no_stack_protector',
+  'no_stack_protector', 'warn_unused_result',
   ]
 foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
@@ -800,6 +802,7 @@ test_strict_cflags += [
   '-Werror=override-init',
   '-Werror=bool-compare',
   '-Werror=tautological-compare',
+  '-Werror=unused-result',
   ]
 
 if cc.get_id() == 'gcc'

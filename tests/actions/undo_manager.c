@@ -54,10 +54,8 @@ perform_create_region_action ()
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      (ArrangerSelections *) TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    (ArrangerSelections *) TL_SELECTIONS, NULL);
 }
 
 static void
@@ -72,11 +70,11 @@ test_perform_many_actions ()
       if (i % 2 == 0)
         {
           track_create_empty_with_action (
-            TRACK_TYPE_AUDIO_BUS);
+            TRACK_TYPE_AUDIO_BUS, NULL);
         }
       else if (i % 13 == 0)
         {
-          undo_manager_undo (UNDO_MANAGER);
+          undo_manager_undo (UNDO_MANAGER, NULL);
         }
       else if (i % 17 == 0)
         {
@@ -88,7 +86,7 @@ test_perform_many_actions ()
         }
     }
   track_create_empty_with_action (
-    TRACK_TYPE_MIDI);
+    TRACK_TYPE_MIDI, NULL);
   perform_create_region_action ();
   perform_create_region_action ();
 
@@ -115,7 +113,7 @@ test_perform_many_actions ()
         }
       else
         {
-          undo_manager_redo (UNDO_MANAGER);
+          undo_manager_redo (UNDO_MANAGER, NULL);
         }
     }
 
@@ -133,7 +131,7 @@ test_multi_actions ()
   for (int i = 0; i < max_actions; i++)
     {
       track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS);
+        TRACK_TYPE_AUDIO_BUS, NULL);
       if (i == 2)
         {
           UndoableAction * ua =
@@ -152,7 +150,7 @@ test_multi_actions ()
   g_assert_cmpint (
     UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   g_assert_cmpint (
     TRACKLIST->num_tracks, ==, num_tracks_at_start);
@@ -162,7 +160,7 @@ test_multi_actions ()
     UNDO_MANAGER->redo_stack->stack->top, ==,
     max_actions - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   g_assert_cmpint (
     TRACKLIST->num_tracks, ==,
@@ -173,7 +171,7 @@ test_multi_actions ()
   g_assert_cmpint (
     UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   g_assert_cmpint (
     TRACKLIST->num_tracks, ==, num_tracks_at_start);
@@ -196,7 +194,7 @@ test_fill_stack ()
   for (int i = 0; i < max_len + 8; i++)
     {
       track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS);
+        TRACK_TYPE_AUDIO_BUS, NULL);
     }
 
   test_project_save_and_reload ();

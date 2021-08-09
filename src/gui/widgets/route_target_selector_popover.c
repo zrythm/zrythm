@@ -24,6 +24,7 @@
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/route_target_selector_popover.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -346,15 +347,31 @@ on_closed (
     {
       if (self->new_track != prev_output_track)
         {
-          tracklist_selections_set_direct_out_with_action (
-            sel, self->new_track);
+          GError * err = NULL;
+          bool ret =
+            tracklist_selections_action_perform_set_direct_out (
+            sel, self->new_track, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to change direct out"));
+            }
         }
     }
   else if (self->type == ROUTE_TARGET_TYPE_NONE &&
            prev_output_track != NULL)
     {
-      tracklist_selections_set_direct_out_with_action (
-        sel, NULL);
+      GError * err = NULL;
+      bool ret =
+        tracklist_selections_action_perform_set_direct_out (
+        sel, NULL, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to remove direct out"));
+        }
     }
 
   route_target_selector_widget_refresh (

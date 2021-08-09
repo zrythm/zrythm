@@ -32,6 +32,7 @@
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -166,9 +167,16 @@ on_reset_control (
   GtkMenuItem *         menuitem,
   InspectorPortWidget * self)
 {
-  UndoableAction * ua =
-    port_action_new_reset_control (&self->port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    port_action_perform_reset_control (
+      &self->port->id, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, _("Failed to reset %s"),
+        self->port->id.label);
+    }
 }
 
 static void
@@ -358,11 +366,17 @@ val_change_finished (
           self->normalized_init_port_val),
         F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
-      UndoableAction * ua =
-        port_action_new (
+      GError * err = NULL;
+      bool ret =
+        port_action_perform (
           PORT_ACTION_SET_CONTROL_VAL,
-          &self->port->id, val, F_NORMALIZED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          &self->port->id, val, F_NORMALIZED, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, _("Failed to set control %s to %f"),
+            self->port->id.label, (double) val);
+        }
     }
 }
 

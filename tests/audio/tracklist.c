@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,10 +52,8 @@ create_automation_region (
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      (ArrangerSelections *) TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    (ArrangerSelections *) TL_SELECTIONS, NULL);
 
   AutomationPoint * ap =
     automation_point_new_float (
@@ -64,10 +62,9 @@ create_automation_region (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      (ArrangerSelections *) AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    NULL);
 }
 
 static void
@@ -77,12 +74,13 @@ test_swap_with_automation_regions ()
 
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, NULL, PLAYHEAD,
-    TRACKLIST->num_tracks, 1);
+    TRACKLIST->num_tracks, 1, NULL);
 
   create_automation_region (
     TRACKLIST->num_tracks - 1);
 
-  track_create_empty_with_action (TRACK_TYPE_MIDI);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI, NULL);
 
   create_automation_region (
     TRACKLIST->num_tracks - 1);
@@ -95,26 +93,26 @@ test_swap_with_automation_regions ()
   track_select (
     track2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_w_action (
-    TRACKLIST_SELECTIONS, track1->pos);
+  tracklist_selections_action_perform_move (
+    TRACKLIST_SELECTIONS, track1->pos, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   test_project_save_and_reload ();
 
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }

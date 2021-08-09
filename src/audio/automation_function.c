@@ -58,10 +58,11 @@ flip (
  * @param sel Selections to edit.
  * @param type Function type.
  */
-void
+int
 automation_function_apply (
   ArrangerSelections *   sel,
-  AutomationFunctionType type)
+  AutomationFunctionType type,
+  GError **              error)
 {
   g_message (
     "applying %s...",
@@ -82,4 +83,6 @@ automation_function_apply (
     S_UI, "automation-function", type);
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
+
+  return 0;
 }

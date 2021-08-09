@@ -1770,11 +1770,6 @@ ports_disconnect (
   for (i = 0; i < num_ports; i++)
     {
       port = ports[i];
-      g_message ("Attempting to disconnect %s ("
-                 "current srcs %d)",
-                 port->id.label,
-                 port->num_srcs);
-      port->deleting = deleting;
 
       /* disconnect incoming ports */
       for (j = port->num_srcs - 1; j >= 0; j--)
@@ -1787,10 +1782,18 @@ ports_disconnect (
           port_disconnect (
             port, port->dests[j]);
         }
-      g_message ("%s num srcs %d dests %d",
-                 port->id.label,
-                 port->num_srcs,
-                 port->num_dests);
+
+      if (port->num_srcs != 0
+          || port->num_dests != 0)
+        {
+          g_critical (
+            "failed to disconnect port %s",
+            port->id.label);
+          return;
+        }
+      g_debug (
+        "Disconnected port %s", port->id.label);
+      port->deleting = deleting;
     }
 }
 
@@ -4355,8 +4358,10 @@ port_get_track (
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
 
-  /* return the pointer if already stored */
-  if (self->track)
+  /* return the pointer if dsp thread */
+  if (G_LIKELY (
+        self->track
+        && router_is_processing_thread (ROUTER)))
     {
       g_return_val_if_fail (
         IS_TRACK (self->track), NULL);
@@ -4389,8 +4394,10 @@ port_get_plugin (
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
 
-  /* return the pointer if already stored */
-  if (self->plugin)
+  /* if DSP thread, return the pointer */
+  if (G_LIKELY (
+        self->plugin
+        && router_is_processing_thread (ROUTER)))
     {
       g_return_val_if_fail (
         IS_PLUGIN (self->plugin), NULL);

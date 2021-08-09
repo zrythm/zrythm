@@ -72,7 +72,7 @@ test_crash_handling (void)
   /* create a track from the plugin */
   track_create_for_plugin_at_idx_w_action (
     TRACK_TYPE_AUDIO_BUS, setting,
-    TRACKLIST->num_tracks);
+    TRACKLIST->num_tracks, NULL);
 
   Plugin * pl =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->

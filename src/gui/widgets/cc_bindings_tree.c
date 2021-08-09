@@ -20,6 +20,7 @@
 #include "actions/midi_mapping_action.h"
 #include "gui/widgets/cc_bindings_tree.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/string.h"
@@ -87,10 +88,15 @@ on_enabled_toggled (
   gtk_tree_path_free (path);
 
   /* perform an undoable action */
-  UndoableAction * ua =
-    midi_mapping_action_new_enable (
-      mapping_idx, enabled);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    midi_mapping_action_perform_enable (
+      mapping_idx, enabled, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to enable binding"));
+    }
 }
 
 static GtkTreeModel *
@@ -165,9 +171,15 @@ on_delete_activate (
   /* get index */
   int idx =
     midi_mapping_get_index (MIDI_MAPPINGS, mapping);
-  UndoableAction * ua =
-    midi_mapping_action_new_unbind (idx);
-  undo_manager_perform (UNDO_MANAGER, ua);
+
+  GError * err = NULL;
+  bool ret =
+    midi_mapping_action_perform_unbind (idx, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to unbind"));
+    }
 }
 
 static void

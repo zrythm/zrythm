@@ -45,7 +45,8 @@ port_action_new (
   PortActionType   type,
   PortIdentifier * port_id,
   float            val,
-  bool             is_normalized)
+  bool             is_normalized,
+  GError **        error)
 {
   PortAction * self =
     object_new (PortAction);
@@ -75,7 +76,8 @@ port_action_new (
  */
 UndoableAction *
 port_action_new_reset_control (
-  PortIdentifier * port_id)
+  PortIdentifier * port_id,
+  GError **        error)
 {
   Port * port =
     port_find_from_identifier (port_id);
@@ -83,13 +85,36 @@ port_action_new_reset_control (
   return
     port_action_new (
       PORT_ACTION_SET_CONTROL_VAL, port_id,
-      port->deff, F_NOT_NORMALIZED);
+      port->deff, F_NOT_NORMALIZED, error);
+}
+
+bool
+port_action_perform (
+  PortActionType   type,
+  PortIdentifier * port_id,
+  float            val,
+  bool             is_normalized,
+  GError **        error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    port_action_new,
+    error, type, port_id, val, is_normalized, error);
+}
+
+bool
+port_action_perform_reset_control (
+  PortIdentifier * port_id,
+  GError **        error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    port_action_new_reset_control,
+    error, port_id, error);
 }
 
 static int
 port_action_do_or_undo (
   PortAction * self,
-  bool                   _do)
+  bool         _do)
 {
   Port * port =
     port_find_from_identifier (&self->port_id);
@@ -115,7 +140,8 @@ port_action_do_or_undo (
 
 int
 port_action_do (
-  PortAction * self)
+  PortAction * self,
+  GError **    error)
 {
   return
     port_action_do_or_undo (self, true);
@@ -123,7 +149,8 @@ port_action_do (
 
 int
 port_action_undo (
-  PortAction * self)
+  PortAction * self,
+  GError **    error)
 {
   return
     port_action_do_or_undo (self, false);

@@ -408,30 +408,35 @@ arranger_selections_action_init_loaded (
   ArrangerSelectionsAction * self);
 
 /**
- * Creates a new action for creating/deleting objects.
+ * Creates a new action for creating/deleting
+ * objects.
  *
  * @param create 1 to create 0 to delte.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_create_or_delete (
   ArrangerSelections * sel,
-  const bool           create);
+  const bool           create,
+  GError **            error);
 
 #define \
-arranger_selections_action_new_create(sel) \
+arranger_selections_action_new_create(sel,error) \
   arranger_selections_action_new_create_or_delete ( \
-    (ArrangerSelections *) sel, true)
+    (ArrangerSelections *) sel, true, error)
 
 #define \
-arranger_selections_action_new_delete(sel) \
+arranger_selections_action_new_delete(sel,error) \
   arranger_selections_action_new_create_or_delete ( \
-    (ArrangerSelections *) sel, false)
+    (ArrangerSelections *) sel, false, error)
 
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_record (
   ArrangerSelections * sel_before,
   ArrangerSelections * sel_after,
-  const bool           already_recorded);
+  const bool           already_recorded,
+  GError **            error);
 
 /**
  * Creates a new action for moving or duplicating
@@ -444,6 +449,7 @@ arranger_selections_action_new_record (
  *   normalized amount, such as automation point
  *   normalized value.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
   ArrangerSelections * sel,
@@ -454,7 +460,78 @@ arranger_selections_action_new_move_or_duplicate (
   const int            delta_tracks,
   const int            delta_lanes,
   const double         delta_normalized_amount,
-  const bool           already_moved);
+  const bool           already_moved,
+  GError **            error);
+
+#define \
+arranger_selections_action_new_move( \
+  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
+  already_moved,error) \
+  arranger_selections_action_new_move_or_duplicate ( \
+    (ArrangerSelections *) sel, 1, ticks, chords, \
+    pitch, tracks, lanes, norm_amt, already_moved, \
+    error)
+#define \
+arranger_selections_action_new_duplicate( \
+  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
+  already_moved,error) \
+  arranger_selections_action_new_move_or_duplicate ( \
+    (ArrangerSelections *) sel, 0, ticks, chords, \
+    pitch, tracks, lanes, norm_amt, already_moved, \
+    error)
+
+#define \
+arranger_selections_action_new_move_timeline( \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved,error) \
+  arranger_selections_action_new_move ( \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_new_duplicate_timeline( \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved,error) \
+  arranger_selections_action_new_duplicate ( \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    0, already_moved, error)
+
+#define \
+arranger_selections_action_new_move_midi( \
+  sel,ticks,delta_pitch, already_moved,error) \
+  arranger_selections_action_new_move ( \
+    sel, ticks, 0, delta_pitch, 0, 0, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_new_duplicate_midi( \
+  sel,ticks,delta_pitch,already_moved,error) \
+  arranger_selections_action_new_duplicate ( \
+    sel, ticks, 0, delta_pitch, 0, 0, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_new_move_chord( \
+  sel,ticks,delta_chords, already_moved,error) \
+  arranger_selections_action_new_move ( \
+    sel, ticks, delta_chords, 0, 0, 0, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_new_duplicate_chord( \
+  sel,ticks,delta_chords, already_moved,error) \
+  arranger_selections_action_new_duplicate ( \
+    sel, ticks, delta_chords, 0, 0, 0, \
+    0, already_moved, error)
+
+#define \
+arranger_selections_action_new_move_automation( \
+  sel,ticks,norm_amt,already_moved,error) \
+  arranger_selections_action_new_move ( \
+    sel, ticks, 0, 0, 0, 0, norm_amt, \
+    already_moved, error)
+#define \
+arranger_selections_action_new_duplicate_automation( \
+  sel,ticks,norm_amt,already_moved,error) \
+  arranger_selections_action_new_duplicate ( \
+    sel, ticks, 0, 0, 0, 0, norm_amt, \
+    already_moved, error)
 
 /**
  * Creates a new action for linking regions.
@@ -464,6 +541,7 @@ arranger_selections_action_new_move_or_duplicate (
  * @param sel_before Original selections.
  * @param sel_after Selections after duplication.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_link (
   ArrangerSelections * sel_before,
@@ -471,74 +549,8 @@ arranger_selections_action_new_link (
   const double         ticks,
   const int            delta_tracks,
   const int            delta_lanes,
-  const bool           already_moved);
-
-#define \
-arranger_selections_action_new_move( \
-  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
-  already_moved) \
-  arranger_selections_action_new_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 1, ticks, chords, \
-    pitch, tracks, lanes, norm_amt, already_moved)
-#define \
-arranger_selections_action_new_duplicate( \
-  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
-  already_moved) \
-  arranger_selections_action_new_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 0, ticks, chords, \
-    pitch, tracks, lanes, norm_amt, already_moved)
-
-#define \
-arranger_selections_action_new_move_timeline( \
-  sel,ticks,delta_tracks,delta_lanes, \
-  already_moved) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
-    0, already_moved)
-#define \
-arranger_selections_action_new_duplicate_timeline( \
-  sel,ticks,delta_tracks,delta_lanes, \
-  already_moved) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
-    0, already_moved)
-
-#define \
-arranger_selections_action_new_move_midi( \
-  sel,ticks,delta_pitch, already_moved) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0, \
-    0, already_moved)
-#define \
-arranger_selections_action_new_duplicate_midi( \
-  sel,ticks,delta_pitch,already_moved) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0, \
-    0, already_moved)
-
-#define \
-arranger_selections_action_new_move_chord( \
-  sel,ticks,delta_chords, already_moved) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, delta_chords, 0, 0, 0, \
-    0, already_moved)
-#define \
-arranger_selections_action_new_duplicate_chord( \
-  sel,ticks,delta_chords, already_moved) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0, \
-    0, already_moved)
-
-#define \
-arranger_selections_action_new_move_automation( \
-  sel,ticks,norm_amt,already_moved) \
-  arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved)
-#define \
-arranger_selections_action_new_duplicate_automation( \
-  sel,ticks,norm_amt,already_moved) \
-  arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved)
+  const bool           already_moved,
+  GError **            error);
 
 /**
  * Creates a new action for editing properties
@@ -550,43 +562,51 @@ arranger_selections_action_new_duplicate_automation( \
  *   change.
  * @param type Indication of which field has changed.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_edit (
   ArrangerSelections *             sel_before,
   ArrangerSelections *             sel_after,
   ArrangerSelectionsActionEditType type,
-  bool                             already_edited);
+  bool                             already_edited,
+  GError **                        error);
 
 /**
  * Wrapper over
  * arranger_selections_action_new_edit() for MIDI
  * functions.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_edit_midi_function (
   ArrangerSelections * sel_before,
-  MidiFunctionType     midi_func_type);
+  MidiFunctionType     midi_func_type,
+  GError **            error);
 
 /**
  * Wrapper over
  * arranger_selections_action_new_edit() for
  * automation functions.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_edit_automation_function (
-  ArrangerSelections * sel_before,
-  AutomationFunctionType automation_func_type);
+  ArrangerSelections *   sel_before,
+  AutomationFunctionType automation_func_type,
+  GError **              error);
 
 /**
  * Wrapper over
  * arranger_selections_action_new_edit() for
  * automation functions.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type,
-  const char *         uri);
+  const char *         uri,
+  GError **            error);
 
 /**
  * Creates a new action for automation autofill.
@@ -598,11 +618,13 @@ arranger_selections_action_new_edit_audio_function (
  * @param already_changed Whether the change was
  *   already made.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_automation_fill (
   ZRegion * region_before,
   ZRegion * region_after,
-  bool      already_changed);
+  bool      already_changed,
+  GError ** error);
 
 /**
  * Creates a new action for splitting
@@ -610,18 +632,22 @@ arranger_selections_action_new_automation_fill (
  *
  * @param pos Global position to split at.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_split (
   ArrangerSelections * sel,
-  const Position *     pos);
+  const Position *     pos,
+  GError **            error);
 
 /**
  * Creates a new action for merging
  * ArrangerObject's.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_merge (
-  ArrangerSelections * sel);
+  ArrangerSelections * sel,
+  GError **            error);
 
 /**
  * Creates a new action for resizing
@@ -630,11 +656,13 @@ arranger_selections_action_new_merge (
  * @param ticks How many ticks to add to the resizing
  *   edge.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
-  const double                       ticks);
+  const double                       ticks,
+  GError **                          error);
 
 /**
  * Creates a new action fro quantizing
@@ -642,18 +670,198 @@ arranger_selections_action_new_resize (
  *
  * @param opts Quantize options.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_quantize (
   ArrangerSelections * sel,
-  QuantizeOptions *    opts);
+  QuantizeOptions *    opts,
+  GError **            error);
+
+bool
+arranger_selections_action_perform_create_or_delete (
+  ArrangerSelections * sel,
+  const bool           create,
+  GError **            error);
+
+#define \
+arranger_selections_action_perform_create( \
+  sel,error) \
+  arranger_selections_action_perform_create_or_delete ( \
+    (ArrangerSelections *) sel, true, error)
+
+#define \
+arranger_selections_action_perform_delete( \
+  sel,error) \
+  arranger_selections_action_perform_create_or_delete ( \
+    (ArrangerSelections *) sel, false, error)
+
+bool
+arranger_selections_action_perform_record (
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
+  const bool           already_recorded,
+  GError **            error);
+
+bool
+arranger_selections_action_perform_move_or_duplicate (
+  ArrangerSelections * sel,
+  const bool           move,
+  const double         ticks,
+  const int            delta_chords,
+  const int            delta_pitch,
+  const int            delta_tracks,
+  const int            delta_lanes,
+  const double         delta_normalized_amount,
+  const bool           already_moved,
+  GError **            error);
+
+#define \
+arranger_selections_action_perform_move( \
+  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
+  already_moved,error) \
+  arranger_selections_action_perform_move_or_duplicate ( \
+    (ArrangerSelections *) sel, 1, ticks, chords, \
+    pitch, tracks, lanes, norm_amt, already_moved, \
+    error)
+#define \
+arranger_selections_action_perform_duplicate( \
+  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
+  already_moved,error) \
+  arranger_selections_action_perform_move_or_duplicate ( \
+    (ArrangerSelections *) sel, 0, ticks, chords, \
+    pitch, tracks, lanes, norm_amt, already_moved, \
+    error)
+
+#define \
+arranger_selections_action_perform_move_timeline( \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved,error) \
+  arranger_selections_action_perform_move ( \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_perform_duplicate_timeline( \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved,error) \
+  arranger_selections_action_perform_duplicate ( \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    0, already_moved, error)
+
+#define \
+arranger_selections_action_perform_move_midi( \
+  sel,ticks,delta_pitch, already_moved,error) \
+  arranger_selections_action_perform_move ( \
+    sel, ticks, 0, delta_pitch, 0, 0, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_perform_duplicate_midi( \
+  sel,ticks,delta_pitch,already_moved,error) \
+  arranger_selections_action_perform_duplicate ( \
+    sel, ticks, 0, delta_pitch, 0, 0, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_perform_move_chord( \
+  sel,ticks,delta_chords, already_moved,error) \
+  arranger_selections_action_perform_move ( \
+    sel, ticks, delta_chords, 0, 0, 0, \
+    0, already_moved, error)
+#define \
+arranger_selections_action_perform_duplicate_chord( \
+  sel,ticks,delta_chords, already_moved,error) \
+  arranger_selections_action_perform_duplicate ( \
+    sel, ticks, delta_chords, 0, 0, 0, \
+    0, already_moved, error)
+
+#define \
+arranger_selections_action_perform_move_automation( \
+  sel,ticks,norm_amt,already_moved,error) \
+  arranger_selections_action_perform_move ( \
+    sel, ticks, 0, 0, 0, 0, norm_amt, \
+    already_moved, error)
+#define \
+arranger_selections_action_perform_duplicate_automation( \
+  sel,ticks,norm_amt,already_moved,error) \
+  arranger_selections_action_perform_duplicate ( \
+    sel, ticks, 0, 0, 0, 0, norm_amt, \
+    already_moved, error)
+
+bool
+arranger_selections_action_perform_link (
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
+  const double         ticks,
+  const int            delta_tracks,
+  const int            delta_lanes,
+  const bool           already_moved,
+  GError **            error);
+
+bool
+arranger_selections_action_perform_edit (
+  ArrangerSelections *             sel_before,
+  ArrangerSelections *             sel_after,
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited,
+  GError **                        error);
+
+bool
+arranger_selections_action_perform_edit_midi_function (
+  ArrangerSelections * sel_before,
+  MidiFunctionType     midi_func_type,
+  GError **            error);
+
+bool
+arranger_selections_action_perform_edit_automation_function (
+  ArrangerSelections *   sel_before,
+  AutomationFunctionType automation_func_type,
+  GError **              error);
+
+bool
+arranger_selections_action_perform_edit_audio_function (
+  ArrangerSelections * sel_before,
+  AudioFunctionType    audio_func_type,
+  const char *         uri,
+  GError **            error);
+
+bool
+arranger_selections_action_perform_automation_fill (
+  ZRegion * region_before,
+  ZRegion * region_after,
+  bool      already_changed,
+  GError ** error);
+
+bool
+arranger_selections_action_perform_split (
+  ArrangerSelections * sel,
+  const Position *     pos,
+  GError **            error);
+
+bool
+arranger_selections_action_perform_merge (
+  ArrangerSelections * sel,
+  GError **            error);
+
+bool
+arranger_selections_action_perform_resize (
+  ArrangerSelections *               sel,
+  ArrangerSelectionsActionResizeType type,
+  const double                       ticks,
+  GError **                          error);
+
+bool
+arranger_selections_action_perform_quantize (
+  ArrangerSelections * sel,
+  QuantizeOptions *    opts,
+  GError **            error);
 
 int
 arranger_selections_action_do (
-  ArrangerSelectionsAction * self);
+  ArrangerSelectionsAction * self,
+  GError **                  error);
 
 int
 arranger_selections_action_undo (
-  ArrangerSelectionsAction * self);
+  ArrangerSelectionsAction * self,
+  GError **                  error);
 
 char *
 arranger_selections_action_stringize (

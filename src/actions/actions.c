@@ -95,6 +95,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/dialogs.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
@@ -919,26 +920,34 @@ activate_properties (GSimpleAction *action,
   g_message ("ZOOMING IN");
 }
 
-void
-activate_undo (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_undo)
 {
   if (undo_stack_is_empty (
         UNDO_MANAGER->undo_stack))
     return;
-  undo_manager_undo (UNDO_MANAGER);
+
+  GError * err = NULL;
+  int ret = undo_manager_undo (UNDO_MANAGER, &err);
+  if (ret != 0)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to undo"));
+    }
 }
 
-void
-activate_redo (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_redo)
 {
   if (undo_stack_is_empty (
         UNDO_MANAGER->redo_stack))
     return;
-  undo_manager_redo (UNDO_MANAGER);
+
+  GError * err = NULL;
+  int ret = undo_manager_redo (UNDO_MANAGER, &err);
+  if (ret != 0)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to redo"));
+    }
 
   EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE,
                NULL);
@@ -957,17 +966,22 @@ activate_cut (
     project_get_arranger_selections_for_last_selection (
       PROJECT);
 
-  UndoableAction * ua = NULL;
   switch (PROJECT->last_selection)
     {
     case SELECTION_TYPE_TIMELINE:
     case SELECTION_TYPE_EDITOR:
       if (sel && arranger_selections_has_any (sel))
         {
-          ua =
-            arranger_selections_action_new_delete (
-              sel);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_delete (
+              sel, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to delete selections"));
+            }
         }
       break;
     case SELECTION_TYPE_INSERT:
@@ -975,10 +989,16 @@ activate_cut (
       if (mixer_selections_has_any (
             MIXER_SELECTIONS))
         {
-          ua =
-            mixer_selections_action_new_delete (
-              MIXER_SELECTIONS);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          GError * err = NULL;
+          bool ret =
+            mixer_selections_action_perform_delete (
+              MIXER_SELECTIONS, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to delete selections"));
+            }
         }
       break;
     default:
@@ -1161,19 +1181,21 @@ activate_delete (
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
       PROJECT);
-  UndoableAction * ua = NULL;
 
   if (sel &&
       arranger_selections_has_any (sel) &&
       !arranger_selections_contains_undeletable_object (
         sel))
     {
-      ua =
-        arranger_selections_action_new_delete (
-          sel);
-      if (ua)
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_delete (
+          sel, &err);
+      if (!ret)
         {
-          undo_manager_perform (UNDO_MANAGER, ua);
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to delete selections"));
         }
     }
 
@@ -1188,13 +1210,18 @@ activate_delete (
       break;
     case SELECTION_TYPE_INSERT:
     case SELECTION_TYPE_MIDI_FX:
-      ua =
-        mixer_selections_action_new_delete (
-          MIXER_SELECTIONS);
-      if (ua)
-        {
-          undo_manager_perform (UNDO_MANAGER, ua);
-        }
+      {
+        GError * err = NULL;
+        bool ret =
+          mixer_selections_action_perform_delete (
+            MIXER_SELECTIONS, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to delete plugins"));
+          }
+      }
       break;
     default:
       g_warning ("not implemented yet");
@@ -1217,11 +1244,18 @@ activate_duplicate (
       double length =
         arranger_selections_get_length_in_ticks (
           sel);
-      UndoableAction * ua =
-        arranger_selections_action_new_duplicate (
+
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_duplicate (
           sel, length, 0, 0, 0, 0, 0,
-          F_NOT_ALREADY_MOVED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          F_NOT_ALREADY_MOVED, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to duplicate selections"));
+        }
     }
 }
 
@@ -1448,12 +1482,17 @@ activate_snap_to_grid (
       if (PROJECT->last_selection ==
             SELECTION_TYPE_TIMELINE)
         {
-          UndoableAction * ua =
-            arranger_selections_action_new_quantize (
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_quantize (
               (ArrangerSelections *) TL_SELECTIONS,
-              QUANTIZE_OPTIONS_TIMELINE);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              QUANTIZE_OPTIONS_TIMELINE, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to quantize"));
+            }
         }
     }
   else
@@ -1514,55 +1553,116 @@ activate_snap_events (GSimpleAction *action,
 
 DEFINE_SIMPLE (activate_create_audio_track)
 {
-  track_create_empty_with_action (TRACK_TYPE_AUDIO);
-}
-
-DEFINE_SIMPLE (activate_create_ins_track)
-{
-  track_create_empty_with_action (
-    TRACK_TYPE_INSTRUMENT);
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create audio track"));
+    }
 }
 
 DEFINE_SIMPLE (activate_create_midi_track)
 {
-  track_create_empty_with_action (TRACK_TYPE_MIDI);
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create MIDI track"));
+    }
 }
 
 DEFINE_SIMPLE (activate_create_audio_bus_track)
 {
-  track_create_empty_with_action (
-    TRACK_TYPE_AUDIO_BUS);
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO_BUS, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create audio FX track"));
+    }
 }
 
 DEFINE_SIMPLE (activate_create_midi_bus_track)
 {
-  track_create_empty_with_action (
-    TRACK_TYPE_MIDI_BUS);
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI_BUS, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create MIDI FX track"));
+    }
 }
 
 DEFINE_SIMPLE (activate_create_audio_group_track)
 {
-  track_create_empty_with_action (
-    TRACK_TYPE_AUDIO_GROUP);
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO_GROUP, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create audio group track"));
+    }
 }
 
 DEFINE_SIMPLE (activate_create_midi_group_track)
 {
-  track_create_empty_with_action (
-    TRACK_TYPE_MIDI_GROUP);
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI_GROUP, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create MIDI group track"));
+    }
 }
 
 DEFINE_SIMPLE (activate_create_folder_track)
 {
-  track_create_empty_with_action (
-    TRACK_TYPE_FOLDER);
+  GError * err = NULL;
+  bool ret =
+    track_create_empty_with_action (
+      TRACK_TYPE_FOLDER, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create folder track"));
+    }
 }
 
 DEFINE_SIMPLE (activate_duplicate_selected_tracks)
 {
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, true,
-    TRACKLIST_SELECTIONS->tracks[0]->pos + 1);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS,
+    TRACKLIST_SELECTIONS->tracks[0]->pos + 1,
+    &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to duplicate tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_change_track_color)
@@ -1604,8 +1704,16 @@ activate_delete_selected_tracks (
   gpointer       user_data)
 {
   g_message ("deleting selected tracks");
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_delete (
+      TRACKLIST_SELECTIONS, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to delete tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_hide_selected_tracks)
@@ -1621,56 +1729,131 @@ DEFINE_SIMPLE (activate_pin_selected_tracks)
 
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
   bool pin = !track_is_pinned (track);
-  tracklist_selections_set_pinned_with_action (
-    TRACKLIST_SELECTIONS, pin);
+
+  GError * err = NULL;
+  bool ret;
+  if (pin)
+    {
+      ret =
+        tracklist_selections_action_perform_pin (
+          TRACKLIST_SELECTIONS, &err);
+    }
+  else
+    {
+      ret =
+        tracklist_selections_action_perform_unpin (
+          TRACKLIST_SELECTIONS, &err);
+    }
+
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to pin/unpin tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_solo_selected_tracks)
 {
-  tracklist_selections_set_soloed_with_action (
-    TRACKLIST_SELECTIONS, F_SOLO);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_solo (
+      TRACKLIST_SELECTIONS, F_SOLO, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to solo tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_unsolo_selected_tracks)
 {
-  tracklist_selections_set_soloed_with_action (
-    TRACKLIST_SELECTIONS, F_NO_SOLO);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_solo (
+      TRACKLIST_SELECTIONS, F_NO_SOLO, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to unsolo tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_mute_selected_tracks)
 {
-  tracklist_selections_set_muted_with_action (
-    TRACKLIST_SELECTIONS, F_MUTE);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_mute (
+      TRACKLIST_SELECTIONS, F_MUTE, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to mute tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_unmute_selected_tracks)
 {
-  tracklist_selections_set_muted_with_action (
-    TRACKLIST_SELECTIONS, F_NO_MUTE);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_mute (
+      TRACKLIST_SELECTIONS, F_NO_MUTE, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to unmute tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_listen_selected_tracks)
 {
-  tracklist_selections_set_listened_with_action (
-    TRACKLIST_SELECTIONS, F_LISTEN);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_listen (
+      TRACKLIST_SELECTIONS, F_LISTEN, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to listen tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_unlisten_selected_tracks)
 {
-  tracklist_selections_set_listened_with_action (
-    TRACKLIST_SELECTIONS, F_NO_LISTEN);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_listen (
+      TRACKLIST_SELECTIONS, F_NO_LISTEN, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to unlisten tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_enable_selected_tracks)
 {
-  tracklist_selections_set_enabled_with_action (
-    TRACKLIST_SELECTIONS, F_ENABLE);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_enable (
+      TRACKLIST_SELECTIONS, F_ENABLE, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to enable tracks"));
+    }
 }
 
 DEFINE_SIMPLE (activate_disable_selected_tracks)
 {
-  tracklist_selections_set_enabled_with_action (
-    TRACKLIST_SELECTIONS, F_NO_ENABLE);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_enable (
+      TRACKLIST_SELECTIONS, F_NO_ENABLE, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to disable tracks"));
+    }
 }
 
 void
@@ -1756,12 +1939,17 @@ do_quantize (
     {
       if (quick)
         {
-          UndoableAction * ua =
-            arranger_selections_action_new_quantize (
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_quantize (
               (ArrangerSelections *) TL_SELECTIONS,
-              QUANTIZE_OPTIONS_TIMELINE);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              QUANTIZE_OPTIONS_TIMELINE, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to quantize"));
+            }
         }
       else
         {
@@ -1787,11 +1975,17 @@ do_quantize (
             clip_editor_get_arranger_selections (
               CLIP_EDITOR);
           g_return_if_fail (sel);
-          UndoableAction * ua =
-            arranger_selections_action_new_quantize (
-              sel, QUANTIZE_OPTIONS_EDITOR);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+
+          GError * err = NULL;
+          bool ret =
+            arranger_selections_action_perform_quantize (
+              sel, QUANTIZE_OPTIONS_EDITOR, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to quantize"));
+            }
         }
       else
         {
@@ -1876,12 +2070,18 @@ activate_mute_selection (
 
   if (sel)
     {
-      UndoableAction * ua =
-        arranger_selections_action_new_edit (
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_edit (
           sel, NULL,
           ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
-          F_NOT_ALREADY_EDITED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          F_NOT_ALREADY_EDITED, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to mute selections"));
+        }
     }
 
   g_message ("mute/unmute selections");
@@ -1911,10 +2111,16 @@ DEFINE_SIMPLE (activate_merge_selection)
       return;
     }
 
-  UndoableAction * ua =
-    arranger_selections_action_new_merge (
-      (ArrangerSelections *) TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_merge (
+      (ArrangerSelections *) TL_SELECTIONS, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to merge selections"));
+    }
 }
 
 void
@@ -2022,9 +2228,16 @@ DEFINE_SIMPLE (activate_insert_silence)
     TRANSPORT, true, &start);
   transport_get_range_pos (
     TRANSPORT, false, &end);
-  UndoableAction * ua =
-    range_action_new_insert_silence (&start, &end);
-  undo_manager_perform (UNDO_MANAGER, ua);
+
+  GError * err = NULL;
+  bool ret =
+    range_action_perform_insert_silence (
+      &start, &end, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to insert silence"));
+    }
 }
 
 DEFINE_SIMPLE (activate_remove_range)
@@ -2037,9 +2250,17 @@ DEFINE_SIMPLE (activate_remove_range)
     TRANSPORT, true, &start);
   transport_get_range_pos (
     TRANSPORT, false, &end);
-  UndoableAction * ua =
-    range_action_new_remove (&start, &end);
-  undo_manager_perform (UNDO_MANAGER, ua);
+
+  GError * err = NULL;
+  bool ret =
+    range_action_perform_remove (
+      &start, &end, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to remove range"));
+    }
 }
 
 DEFINE_SIMPLE (change_state_timeline_playhead_scroll_edges)
@@ -2110,10 +2331,16 @@ do_midi_func (
       return;
     }
 
-  UndoableAction * ua =
-    arranger_selections_action_new_edit_midi_function (
-      sel, type);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit_midi_function (
+      sel, type, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to apply MIDI function"));
+    }
 }
 
 /**
@@ -2132,10 +2359,16 @@ do_automation_func (
       return;
     }
 
-  UndoableAction * ua =
-    arranger_selections_action_new_edit_automation_function (
-      sel, type);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit_automation_function (
+      sel, type, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to apply automation function"));
+    }
 }
 
 /**
@@ -2163,7 +2396,8 @@ do_audio_func (
 
   sel = arranger_selections_clone (sel);
 
-  UndoableAction * ua = NULL;
+  GError * err = NULL;
+  bool ret;
   if (!arranger_selections_validate (sel))
     {
       goto free_audio_sel_and_return;
@@ -2171,13 +2405,14 @@ do_audio_func (
 
   zix_sem_wait (&PROJECT->save_sem);
 
-  ua =
-    arranger_selections_action_new_edit_audio_function (
-      sel, type, uri);
-
-  if (ua)
+  ret =
+    arranger_selections_action_perform_edit_audio_function (
+      sel, type, uri, &err);
+  if (!ret)
     {
-      undo_manager_perform (UNDO_MANAGER, ua);
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to apply automation function"));
     }
 
   zix_sem_post (&PROJECT->save_sem);
@@ -2469,9 +2704,15 @@ DEFINE_SIMPLE (activate_nudge_selection)
       return;
     }
 
-  UndoableAction * ua =
-    arranger_selections_action_new_move (
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_move (
       sel, ticks, 0, 0, 0, 0, 0,
-      F_NOT_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      F_NOT_ALREADY_MOVED, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to move selections"));
+    }
 }

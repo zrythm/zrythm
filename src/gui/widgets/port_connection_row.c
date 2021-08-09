@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #include "gui/widgets/port_connection_row.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
@@ -41,11 +42,17 @@ on_enable_toggled (
   GtkToggleButton *         btn,
   PortConnectionRowWidget * self)
 {
-  UndoableAction * ua =
-    port_connection_action_new_enable (
+  GError * err = NULL;
+  bool ret =
+    port_connection_action_perform_enable (
       &self->src->id, &self->dest->id,
-      gtk_toggle_button_get_active (btn));
-  undo_manager_perform (UNDO_MANAGER, ua);
+      gtk_toggle_button_get_active (btn), &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to enable connection"));
+    }
 
   port_connections_popover_widget_refresh (
     self->parent);
@@ -56,10 +63,16 @@ on_del_clicked (
   GtkButton *               btn,
   PortConnectionRowWidget * self)
 {
-  UndoableAction * ua =
-    port_connection_action_new_disconnect (
-      &self->src->id, &self->dest->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    port_connection_action_perform_disconnect (
+      &self->src->id, &self->dest->id, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to disconnect"));
+    }
 
   port_connections_popover_widget_refresh (
     self->parent);

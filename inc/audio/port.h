@@ -383,7 +383,7 @@ typedef struct Port
    * To be set when realculating the graph and to
    * be used during DSP.
    *
-   * In all other cases, use port_get_plugin().
+   * In all other cases, use port_get_track().
    */
   Track *             track;
 

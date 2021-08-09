@@ -58,6 +58,7 @@
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -2891,12 +2892,19 @@ arranger_object_set_name_with_action (
   arranger_object_set_name (
     after_obj, name, F_NO_PUBLISH_EVENTS);
 
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit (
       before, after,
       ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
-      F_NOT_ALREADY_EDITED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      F_NOT_ALREADY_EDITED, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to rename object"));
+    }
+
   arranger_selections_free_full (before);
   arranger_selections_free_full (after);
 }

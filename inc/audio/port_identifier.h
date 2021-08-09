@@ -583,6 +583,7 @@ port_identifier_copy (
 /**
  * Returns if the 2 PortIdentifier's are equal.
  */
+WARN_UNUSED_RESULT
 HOT
 NONNULL
 bool

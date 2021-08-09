@@ -85,24 +85,27 @@ undo_manager_init_loaded (
  * Inits the undo manager by creating the undo/redo
  * stacks.
  */
+WARN_UNUSED_RESULT
 UndoManager *
 undo_manager_new (void);
 
 /**
  * Undo last action.
  */
-NONNULL
-void
+NONNULL_ARGS (1)
+int
 undo_manager_undo (
-  UndoManager * self);
+  UndoManager * self,
+  GError **     error);
 
 /**
  * Redo last undone action.
  */
-NONNULL
-void
+NONNULL_ARGS (1)
+int
 undo_manager_redo (
-  UndoManager * self);
+  UndoManager * self,
+  GError **     error);
 
 /**
  * Performs the action and pushes it to the undo
@@ -110,11 +113,32 @@ undo_manager_redo (
  *
  * @return Non-zero if error.
  */
-NONNULL
+NONNULL_ARGS (1,2)
 int
 undo_manager_perform (
   UndoManager *    self,
-  UndoableAction * action);
+  UndoableAction * action,
+  GError **        error);
+
+/**
+ * Second and last argument given must be a
+ * GError **.
+ */
+#define UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR( \
+  action,err,...) \
+  { \
+  UndoableAction * ua = \
+    action (__VA_ARGS__); \
+  if (ua) \
+    { \
+      int ret = \
+        undo_manager_perform ( \
+          UNDO_MANAGER, ua, err); \
+      if (ret == 0) \
+        return true; \
+    } \
+  return false; \
+  }
 
 /**
  * Returns whether the given clip is used by any

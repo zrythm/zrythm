@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "gui/widgets/scale_selector_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -60,12 +61,19 @@ on_delete_event (
   tl_after->scale_objects[0]->scale =
     musical_scale_clone (self->descr);
 
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit (
       before, after,
       ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
-      F_NOT_ALREADY_EDITED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      F_NOT_ALREADY_EDITED, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to edit scale"));
+    }
+
   arranger_selections_free_full (before);
   arranger_selections_free_full (after);
 

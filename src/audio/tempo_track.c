@@ -27,6 +27,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -195,14 +196,19 @@ tempo_track_set_bpm (
 
   if (!temporary)
     {
-      UndoableAction * action =
-        transport_action_new_bpm_change (
+      GError * err = NULL;
+      bool ret =
+        transport_action_perform_bpm_change (
           start_bpm,
           port_get_control_value (
             self->bpm_port, false),
-          false);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
+          false, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to change BPM"));
+        }
     }
 
   if (fire_events)

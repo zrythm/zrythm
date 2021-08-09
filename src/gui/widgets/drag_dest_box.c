@@ -44,8 +44,9 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "settings/plugin_settings.h"
-#include "utils/gtk.h"
+#include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
@@ -233,23 +234,16 @@ on_drag_data_received (
           PluginSetting * setting =
             plugin_setting_new_default (pd);
           GError * err = NULL;
-          UndoableAction * ua =
-            tracklist_selections_action_new_create (
+          bool ret =
+            tracklist_selections_action_perform_create (
               tt, setting, NULL,
               TRACKLIST->num_tracks,
               PLAYHEAD, 1, -1, &err);
-          if (ua)
+          if (!ret)
             {
-              undo_manager_perform (UNDO_MANAGER, ua);
-            }
-          else
-            {
-              g_return_if_fail (err);
-              ui_show_message_printf (
-                MAIN_WINDOW, GTK_MESSAGE_ERROR,
-                _("Failed to create track: %s"),
-                err->message);
-              g_error_free_and_null (err);
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to create track"));
             }
           plugin_setting_free (setting);
         }
@@ -257,13 +251,19 @@ on_drag_data_received (
         {
           PluginSetting * setting =
             plugin_setting_new_default (pd);
-          UndoableAction * ua =
-            mixer_selections_action_new_create (
+          GError * err = NULL;
+          bool ret =
+            mixer_selections_action_perform_create (
               PLUGIN_SLOT_MODULATOR,
               P_MODULATOR_TRACK->pos,
               P_MODULATOR_TRACK->num_modulators,
-              setting, 1);
-          undo_manager_perform (UNDO_MANAGER, ua);
+              setting, 1, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to create plugin"));
+            }
           plugin_setting_free (setting);
         }
     }
@@ -286,25 +286,29 @@ on_drag_data_received (
         gdk_drag_context_get_selected_action (
           context);
 
-      UndoableAction * ua = NULL;
+      GError * err = NULL;
+      bool ret;
       if (action == GDK_ACTION_COPY)
         {
-          ua =
-            mixer_selections_action_new_copy (
+          ret =
+            mixer_selections_action_perform_copy (
               MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-              -1, 0);
+              -1, 0, &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
-          ua =
-            mixer_selections_action_new_move (
+          ret =
+            mixer_selections_action_perform_move (
               MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-              -1, 0);
+              -1, 0, &err);
         }
-      g_warn_if_fail (ua);
 
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to move or copy plugin"));
+        }
     }
   else if (target ==
             GET_ATOM (TARGET_ENTRY_TRACK))
@@ -322,33 +326,26 @@ on_drag_data_received (
         gdk_drag_context_get_selected_action (
           context);
 
-      UndoableAction * ua = NULL;
       GError * err = NULL;
+      bool ret;
       if (action == GDK_ACTION_COPY)
         {
-          ua =
-            tracklist_selections_action_new_copy (
+          ret =
+            tracklist_selections_action_perform_copy (
               TRACKLIST_SELECTIONS, pos, &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
-          ua =
-            tracklist_selections_action_new_move (
+          ret =
+            tracklist_selections_action_perform_move (
               TRACKLIST_SELECTIONS, pos, &err);
         }
 
-      if (ua)
+      if (!ret)
         {
-          undo_manager_perform (UNDO_MANAGER, ua);
-        }
-      else
-        {
-          g_return_if_fail (err);
-          ui_show_message_printf (
-            MAIN_WINDOW, GTK_MESSAGE_ERROR,
-            _("Failed to copy or move track: %s"),
-            &err);
-          g_error_free_and_null (err);
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to move or copy track"));
         }
     }
 

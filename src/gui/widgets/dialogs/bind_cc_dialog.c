@@ -21,6 +21,7 @@
 #include "audio/midi.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -43,10 +44,16 @@ on_ok_clicked (
     {
       if (self->cc[0])
         {
-          UndoableAction * ua =
-            midi_mapping_action_new_bind (
-            self->cc, NULL, self->port);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          GError * err = NULL;
+          bool ret =
+            midi_mapping_action_perform_bind (
+            self->cc, NULL, self->port, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to bind mapping"));
+            }
         }
     }
 

@@ -80,9 +80,11 @@ _test_copy_plugins (
     track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, true,
-    TRACKLIST->num_tracks);
+  bool ret =
+    tracklist_selections_action_perform_copy (
+      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+      NULL);
+  g_assert_true (ret);
   num_master_children++;
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==,
@@ -124,9 +126,9 @@ _test_copy_plugins (
           MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
           -1, 0);
       undo_manager_perform (UNDO_MANAGER, ua);
-      undo_manager_undo (UNDO_MANAGER);
-      undo_manager_redo (UNDO_MANAGER);
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
+      undo_manager_redo (UNDO_MANAGER, NULL);
+      undo_manager_undo (UNDO_MANAGER, NULL);
 #endif
     }
   else
@@ -136,11 +138,11 @@ _test_copy_plugins (
       mixer_selections_add_slot (
         MIXER_SELECTIONS, track,
         PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-      UndoableAction * ua =
-        mixer_selections_action_new_copy (
+      ret =
+        mixer_selections_action_perform_copy (
           MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-          new_track->pos, 1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          new_track->pos, 1, NULL);
+      g_assert_true (ret);
     }
 
   g_usleep (100);
@@ -179,7 +181,8 @@ test_midi_fx_slot_deletion (void)
   test_helper_zrythm_init ();
 
   /* create MIDI track */
-  track_create_empty_with_action (TRACK_TYPE_MIDI);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI, NULL);
 
 #ifdef HAVE_MIDI_CC_MAP
   /* add plugin to slot */
@@ -187,11 +190,12 @@ test_midi_fx_slot_deletion (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
-  UndoableAction * ua =
-    mixer_selections_action_new_create (
+  bool ret =
+    mixer_selections_action_perform_create (
       PLUGIN_SLOT_MIDI_FX,
-      TRACKLIST->num_tracks - 1, slot, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      TRACKLIST->num_tracks - 1, slot, setting, 1,
+      NULL);
+  g_assert_true (ret);
 
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -206,19 +210,19 @@ test_midi_fx_slot_deletion (void)
 
   /* delete slot */
   plugin_select (pl, F_SELECT, F_EXCLUSIVE);
-  ua =
-    mixer_selections_action_new_delete (
-      MIXER_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  ret =
+    mixer_selections_action_perform_delete (
+      MIXER_SELECTIONS, NULL);
+  g_assert_true (ret);
 
   /* undo and check port value is restored */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   pl = track->channel->midi_fx[slot];
   port = plugin_get_port_by_symbol (pl, "ccin");
   g_assert_cmpfloat_with_epsilon (
     port->control, 120.f, 0.0001f);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -262,25 +266,25 @@ _test_create_plugins (
       break;
     }
 
-  UndoableAction * ua = NULL;
   if (is_instrument)
     {
       /* create an instrument track from helm */
       track_create_with_action (
         TRACK_TYPE_INSTRUMENT, setting, NULL,
-        NULL, TRACKLIST->num_tracks, 1);
+        NULL, TRACKLIST->num_tracks, 1, NULL);
     }
   else
     {
       /* create an audio fx track and add the
        * plugin */
       track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS);
-      ua =
-        mixer_selections_action_new_create (
+        TRACK_TYPE_AUDIO_BUS, NULL);
+      bool ret =
+        mixer_selections_action_perform_create (
           PLUGIN_SLOT_INSERT,
-          TRACKLIST->num_tracks - 1, 0, setting, 1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          TRACKLIST->num_tracks - 1, 0, setting, 1,
+          NULL);
+      g_assert_true (ret);
 
       if (string_is_equal (
             pl_uri,
@@ -320,9 +324,9 @@ _test_create_plugins (
     src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
   g_assert_true (
     track_validate (src_track));
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, true,
-    TRACKLIST->num_tracks);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    NULL);
 
   int dest_track_pos = TRACKLIST->num_tracks - 1;
   Track * dest_track =
@@ -333,10 +337,10 @@ _test_create_plugins (
   g_assert_true (
     track_validate (dest_track));
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   g_message ("letting engine run...");
 
@@ -414,7 +418,7 @@ _test_port_and_plugin_track_pos_after_move (
   /* create an instrument track from helm */
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
-    TRACKLIST->num_tracks, 1);
+    TRACKLIST->num_tracks, 1, NULL);
 
   plugin_setting_free (setting);
 
@@ -447,10 +451,10 @@ _test_port_and_plugin_track_pos_after_move (
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  bool ret =
+    arranger_selections_action_perform_create (
+      TL_SELECTIONS, NULL);
+  g_assert_true (ret);
 
   /* create some automation points */
   Port * port = automation_track_get_port (at);
@@ -465,17 +469,17 @@ _test_port_and_plugin_track_pos_after_move (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  ret =
+    arranger_selections_action_perform_create (
+      AUTOMATION_SELECTIONS, NULL);
+  g_assert_true (ret);
 
   /* duplicate it */
   g_assert_true (
     track_validate (src_track));
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, true,
-    TRACKLIST->num_tracks);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    NULL);
 
   Track * dest_track =
     TRACKLIST->tracks[dest_track_pos];
@@ -492,12 +496,11 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_add_slot (
     MIXER_SELECTIONS, src_track,
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      dest_track->pos, 1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+      dest_track->pos, 1, NULL);
+  g_assert_true (ret);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -507,21 +510,21 @@ _test_port_and_plugin_track_pos_after_move (
   g_assert_true (
     track_validate (dest_track));
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   g_assert_true (
     track_validate (src_track));
   g_assert_true (
     track_validate (dest_track));
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   g_assert_true (
     track_validate (src_track));
   g_assert_true (
     track_validate (dest_track));
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* move plugin from 1st slot to the 2nd slot and
    * undo/redo */
@@ -530,13 +533,13 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_add_slot (
     MIXER_SELECTIONS, src_track,
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      src_track->pos, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+      src_track->pos, 1, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -548,23 +551,23 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_add_slot (
     MIXER_SELECTIONS, src_track,
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
-  ua =
+  ret =
     mixer_selections_action_new_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      -1, 0);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+      -1, 0, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* let the engine run */
   g_usleep (1000000);
 
   /* go back to the start */
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 }
 #endif
 
@@ -613,9 +616,9 @@ test_move_two_plugins_one_slot_up (void)
       LSP_COMPRESSOR_URI, false);
   track_create_for_plugin_at_idx_w_action (
     TRACK_TYPE_AUDIO_BUS, setting,
-    TRACKLIST->num_tracks);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+    TRACKLIST->num_tracks, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   plugin_setting_free (setting);
 
   int track_pos = TRACKLIST->num_tracks - 1;
@@ -653,12 +656,12 @@ test_move_two_plugins_one_slot_up (void)
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  bool ret =
+    arranger_selections_action_perform_create (
+      TL_SELECTIONS, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -684,12 +687,12 @@ test_move_two_plugins_one_slot_up (void)
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  ret =
+    arranger_selections_action_perform_create (
+      AUTOMATION_SELECTIONS, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -702,13 +705,13 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_copy (
+  ret =
+    mixer_selections_action_perform_copy (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+      track->pos, 1, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* at this point we have a plugin at slot#0 and
    * its clone at slot#1 */
@@ -719,13 +722,13 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_delete (
-      MIXER_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  ret =
+    mixer_selections_action_perform_delete (
+      MIXER_SELECTIONS, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -742,17 +745,17 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      track->pos, 1, NULL);
+  g_assert_true (ret);
   g_assert_true (
     track_validate (track));
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
 
@@ -771,17 +774,17 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 2, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 2);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      track->pos, 2, NULL);
+  g_assert_true (ret);
   g_assert_true (
     track_validate (track));
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
 
@@ -800,17 +803,17 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 3, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      track->pos, 1, NULL);
+  g_assert_true (ret);
   g_assert_true (
     track_validate (track));
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
 
@@ -829,13 +832,13 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 0);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+      track->pos, 0, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   g_assert_true (
     track_validate (track));
@@ -850,11 +853,11 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 0);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      track->pos, 0, NULL);
+  g_assert_true (ret);
 
   /* verify that first plugin was replaced by 2nd
    * plugin */
@@ -864,13 +867,13 @@ test_move_two_plugins_one_slot_up (void)
   g_assert_null (track->channel->inserts[1]);
 
   /* undo and verify that both plugins are back */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[1]));
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
   g_assert_cmpstr (
@@ -889,14 +892,15 @@ test_move_two_plugins_one_slot_up (void)
   setting =
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
-  ua =
-    mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSERT, track->pos, 0, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  ret =
+    mixer_selections_action_perform_create (
+      PLUGIN_SLOT_INSERT, track->pos, 0, setting,
+      1, NULL);
+  g_assert_true (ret);
 
   /* undo and verify that the original plugin is
    * back */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
   g_assert_cmpstr (
@@ -906,7 +910,7 @@ test_move_two_plugins_one_slot_up (void)
     IS_PLUGIN (track->channel->inserts[1]));
 
   /* redo */
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_true (
     IS_PLUGIN (track->channel->inserts[0]));
   g_assert_cmpstr (
@@ -930,11 +934,11 @@ test_move_two_plugins_one_slot_up (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 0);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      track->pos, 0, NULL);
+  g_assert_true (ret);
 
   test_project_save_and_reload ();
   track = TRACKLIST->tracks[track_pos];
@@ -945,7 +949,7 @@ test_move_two_plugins_one_slot_up (void)
 
   /* undo and check plugin and port value are
    * restored */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   pl = track->channel->inserts[0];
   g_assert_cmpstr (pl->setting->descr->uri, ==, setting->descr->uri);
   port = plugin_get_port_by_symbol (pl, "ccin");
@@ -960,7 +964,7 @@ test_move_two_plugins_one_slot_up (void)
   test_project_save_and_reload ();
   track = TRACKLIST->tracks[track_pos];
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 #endif
 
   g_assert_true (
@@ -971,13 +975,13 @@ test_move_two_plugins_one_slot_up (void)
 
   test_project_save_and_reload ();
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -994,24 +998,26 @@ test_create_modulator (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       AMS_LFO_BUNDLE, AMS_LFO_URI, false);
-  UndoableAction * ua =
-    mixer_selections_action_new_create (
+  bool ret =
+    mixer_selections_action_perform_create (
       PLUGIN_SLOT_MODULATOR,
       P_MODULATOR_TRACK->pos,
-      P_MODULATOR_TRACK->num_modulators, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+      P_MODULATOR_TRACK->num_modulators, setting,
+      1, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* create another one */
-  ua =
-    mixer_selections_action_new_create (
+  ret =
+    mixer_selections_action_perform_create (
       PLUGIN_SLOT_MODULATOR,
       P_MODULATOR_TRACK->pos,
-      P_MODULATOR_TRACK->num_modulators, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      P_MODULATOR_TRACK->num_modulators, setting,
+      1, NULL);
+  g_assert_true (ret);
 
   /* connect a cv output from the first modulator
    * to a control of the 2nd */
@@ -1038,28 +1044,30 @@ test_create_modulator (void)
   PortIdentifier ctrl_in_id = ctrl_in->id;
 
   /* connect the ports */
-  ua =
-    port_connection_action_new_connect (
-      &cv_out->id, &ctrl_in->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  ret =
+    port_connection_action_perform_connect (
+      &cv_out->id, &ctrl_in->id, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   MixerSelections * sel = mixer_selections_new ();
   mixer_selections_add_slot (
     sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR,
     P_MODULATOR_TRACK->num_modulators - 2,
     F_NO_CLONE);
-  ua = mixer_selections_action_new_delete (sel);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
+  ret =
+    mixer_selections_action_perform_delete (
+      sel, NULL);
+  g_assert_true (ret);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* verify port connection is back */
   cv_out = port_find_from_identifier (&cv_out_id);
   ctrl_in = port_find_from_identifier (&ctrl_in_id);
   g_assert_true (ports_connected (cv_out, ctrl_in));
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   mixer_selections_free (sel);
 
   plugin_setting_free (setting);
@@ -1103,33 +1111,37 @@ test_move_pl_after_duplicating_track (void)
     }
   g_assert_nonnull (sidechain_port);
 
-  UndoableAction * ua =
-    port_connection_action_new_connect (
+  /* create sidechain connection from instrument
+   * track to lsp plugin in lsp track */
+  bool ret =
+    port_connection_action_perform_connect (
       &ins_track->channel->fader->stereo_out->
         l->id,
-      &sidechain_port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      &sidechain_port->id, NULL);
+  g_assert_true (ret);
 
+  /* duplicate instrument track */
   track_select (
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_COPY,
-    TRACKLIST->num_tracks);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    NULL);
 
   Track * dest_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
+  /* move lsp plugin to newly created track */
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
     MIXER_SELECTIONS, lsp_track,
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      dest_track->pos, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      dest_track->pos, 1, NULL);
+  g_assert_true (ret);
 
 #endif
 
@@ -1143,17 +1155,19 @@ test_move_plugin_from_inserts_to_midi_fx (void)
   test_helper_zrythm_init ();
 
   /* create a track with an insert */
-  track_create_empty_with_action (TRACK_TYPE_MIDI);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI, NULL);
   int track_pos = TRACKLIST->num_tracks - 1;
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE,
       MIDI_CC_MAP_URI, false);
   g_assert_nonnull (setting);
-  UndoableAction * ua =
-    mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSERT, track_pos, 0, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  bool ret =
+    mixer_selections_action_perform_create (
+      PLUGIN_SLOT_INSERT, track_pos, 0, setting,
+      1, NULL);
+  g_assert_true (ret);
   plugin_setting_free (setting);
 
   /* select it */
@@ -1168,19 +1182,19 @@ test_move_plugin_from_inserts_to_midi_fx (void)
   mixer_selections_add_slot (
     MIXER_SELECTIONS, track,
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
-  ua =
-    mixer_selections_action_new_move (
+  ret =
+    mixer_selections_action_perform_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_MIDI_FX,
-      track->pos, 0);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      track->pos, 0, NULL);
+  g_assert_true (ret);
   g_assert_nonnull (
     track->channel->midi_fx[0]);
   g_assert_true (
     track_validate (track));
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_true (
     track_validate (track));
   g_assert_nonnull (
@@ -1216,22 +1230,22 @@ test_undoing_deletion_of_multiple_inserts (void)
     test_plugin_manager_get_plugin_setting (
       LSP_SIDECHAIN_COMPRESSOR_BUNDLE,
       LSP_SIDECHAIN_COMPRESSOR_URI, false);
-  UndoableAction * ua =
-    mixer_selections_action_new_create (
+  bool ret =
+    mixer_selections_action_perform_create (
       PLUGIN_SLOT_INSERT, ins_track->pos,
-      slot, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      slot, setting, 1, NULL);
+  g_assert_true (ret);
 
   slot = 1;
   setting =
     test_plugin_manager_get_plugin_setting (
       NO_DELAY_LINE_BUNDLE,
       NO_DELAY_LINE_URI, false);
-  ua =
-    mixer_selections_action_new_create (
+  ret =
+    mixer_selections_action_perform_create (
       PLUGIN_SLOT_INSERT, ins_track->pos,
-      slot, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      slot, setting, 1, NULL);
+  g_assert_true (ret);
 
   Plugin * compressor =
     ins_track->channel->inserts[0];
@@ -1247,13 +1261,13 @@ test_undoing_deletion_of_multiple_inserts (void)
     no_delay_line, F_SELECT, F_NOT_EXCLUSIVE);
 
   /* delete inserts */
-  ua =
-    mixer_selections_action_new_delete (
-      MIXER_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  ret =
+    mixer_selections_action_perform_delete (
+      MIXER_SELECTIONS, NULL);
+  g_assert_true (ret);
 
   /* undo deletion */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
 #endif
 
@@ -1307,7 +1321,7 @@ _test_replace_instrument (
   /* create an instrument track */
   track_create_for_plugin_at_idx_w_action (
     TRACK_TYPE_INSTRUMENT, setting,
-    TRACKLIST->num_tracks);
+    TRACKLIST->num_tracks, NULL);
   int src_track_pos = TRACKLIST->num_tracks - 1;
   Track * src_track =
     TRACKLIST->tracks[src_track_pos];
@@ -1360,11 +1374,9 @@ _test_replace_instrument (
   port_identifier_copy (
     &helm_l_out_port_id,
     &src_track->channel->instrument->l_out->id);
-  UndoableAction * ua =
-    port_connection_action_new_connect (
-      &src_track->channel->instrument->l_out->id,
-      &sidechain_port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  port_connection_action_perform_connect (
+    &src_track->channel->instrument->l_out->id,
+    &sidechain_port->id, NULL);
   g_assert_cmpint (
     sidechain_port->num_srcs, ==, 1);
   g_assert_true (
@@ -1401,10 +1413,11 @@ _test_replace_instrument (
   arranger_object_select (
     (ArrangerObject *) region, true, false,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
+  int num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 1);
 
   /* create some automation points */
   Port * port = automation_track_get_port (at);
@@ -1420,20 +1433,45 @@ _test_replace_instrument (
   arranger_object_select (
     (ArrangerObject *) ap, true, false,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
+  num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 1);
 
   int num_ats = atl->num_ats;
 
   /* replace the instrument with a new instance */
-  ua =
-    mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSTRUMENT, src_track_pos, -1,
-      setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  mixer_selections_action_perform_create (
+    PLUGIN_SLOT_INSTRUMENT, src_track_pos, -1,
+    setting, 1, NULL);
   g_assert_true (track_validate (src_track));
+
+  src_track =
+    TRACKLIST->tracks[src_track_pos];
+  atl =
+    track_get_automation_tracklist (src_track);
+
+  /* verify automation is gone */
+  num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 0);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+
+  /* verify automation is back */
+  atl =
+    track_get_automation_tracklist (src_track);
+  num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 1);
+
+  undo_manager_redo (UNDO_MANAGER, NULL);
+
+  /* verify automation is gone */
+  num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 0);
 
   g_assert_cmpint (num_ats, ==, atl->num_ats);
   g_assert_cmpint (
@@ -1447,11 +1485,21 @@ _test_replace_instrument (
   g_assert_true (
     IS_PLUGIN_AND_NONNULL (
       src_track->channel->instrument));
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     IS_PLUGIN_AND_NONNULL (
       src_track->channel->instrument));
-  undo_manager_redo (UNDO_MANAGER);
+
+  /* verify automation is back */
+  src_track =
+    TRACKLIST->tracks[src_track_pos];
+  atl =
+    track_get_automation_tracklist (src_track);
+  num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 1);
+
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_true (
     IS_PLUGIN_AND_NONNULL (
       src_track->channel->instrument));
@@ -1463,15 +1511,36 @@ _test_replace_instrument (
   test_project_save_and_reload ();
   /*yaml_set_log_level (CYAML_LOG_WARNING);*/
 
+  src_track =
+    TRACKLIST->tracks[src_track_pos];
+  atl =
+    track_get_automation_tracklist (src_track);
+  num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 0);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+
+  /* verify automation is back */
+  atl =
+    track_get_automation_tracklist (src_track);
+  num_regions =
+    automation_tracklist_get_num_regions (atl);
+  g_assert_cmpint (num_regions, ==, 1);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+
   /* duplicate the track */
   src_track =
     TRACKLIST->tracks[src_track_pos];
   track_select (
     src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
   g_assert_true (track_validate (src_track));
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_COPY,
-    TRACKLIST->num_tracks);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    NULL);
 
   int dest_track_pos = TRACKLIST->num_tracks - 1;
   Track * dest_track =
@@ -1482,20 +1551,20 @@ _test_replace_instrument (
   g_assert_true (
     track_validate (dest_track));
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 /*#if 0*/
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 /*#endif*/
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   g_message ("letting engine run...");
 
@@ -1549,6 +1618,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
   g_test_add_func (
+    TEST_PREFIX
+    "test move pl after duplicating track",
+    (GTestFunc)
+    test_move_pl_after_duplicating_track);
+  g_test_add_func (
     TEST_PREFIX "test replace instrument",
     (GTestFunc) test_replace_instrument);
   g_test_add_func (
@@ -1566,11 +1640,6 @@ main (int argc, char *argv[])
     "test move two plugins one slot up",
     (GTestFunc)
     test_move_two_plugins_one_slot_up);
-  g_test_add_func (
-    TEST_PREFIX
-    "test move pl after duplicating track",
-    (GTestFunc)
-    test_move_pl_after_duplicating_track);
   g_test_add_func (
     TEST_PREFIX "test create modulator",
     (GTestFunc) test_create_modulator);

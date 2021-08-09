@@ -115,7 +115,8 @@ test_prepare_common (void)
 
   /* create MIDI track with region */
   Track * midi_track =
-    track_create_empty_with_action (TRACK_TYPE_MIDI);
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
   midi_track_pos = midi_track->pos;
 
 #define ADD_MREGION(start_bar,end_bar) \
@@ -134,15 +135,12 @@ test_prepare_common (void)
   arranger_object_select ( \
     (ArrangerObject *) midi_region, F_SELECT, \
     F_NO_APPEND, F_NO_PUBLISH_EVENTS); \
-  ua = \
-    arranger_selections_action_new_create ( \
-      (ArrangerSelections *) TL_SELECTIONS); \
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create ( \
+    (ArrangerSelections *) TL_SELECTIONS, NULL)
 
   /* add all the midi regions */
   Position start, end;
   ZRegion * midi_region;
-  UndoableAction * ua;
   ADD_MREGION (
     MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
   ADD_MREGION (
@@ -172,7 +170,7 @@ test_prepare_common (void)
   Track * audio_track =
     track_create_with_action (
       TRACK_TYPE_AUDIO, NULL, file, &start,
-      TRACKLIST->num_tracks, 1);
+      TRACKLIST->num_tracks, 1, NULL);
   audio_track_pos = audio_track->pos;
   ZRegion * audio_region =
     audio_track->lanes[0]->regions[0];
@@ -191,12 +189,10 @@ test_prepare_common (void)
     (ArrangerObject *) audio_region, false,
     ARRANGER_OBJECT_RESIZE_LOOP, missing_ticks,
     false);
-  ua =
-    arranger_selections_action_new_resize (
-      (ArrangerSelections *) TL_SELECTIONS,
-      ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-      missing_ticks);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_resize (
+    (ArrangerSelections *) TL_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
+    missing_ticks, NULL);
   g_assert_cmppos (
     &end, &audio_region->base.end_pos);
 
@@ -457,10 +453,12 @@ test_insert_silence (void)
   position_set_to_bar (&start, RANGE_START_BAR);
   position_set_to_bar (&end, RANGE_END_BAR);
   UndoableAction * ua =
-    range_action_new_insert_silence (&start, &end);
+    range_action_new_insert_silence (
+      &start, &end, NULL);
 
   /* verify that number of objects is as expected */
-  RangeAction * ra = (RangeAction *) ua;
+  RangeAction * ra =
+    (RangeAction *) ua;
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) ra->sel_before), ==, 7);
@@ -468,17 +466,17 @@ test_insert_silence (void)
   check_before_insert ();
 
   /* perform action */
-  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_perform (UNDO_MANAGER, ua, NULL);
 
   check_after_insert ();
 
   /* undo and verify things are back to previous
    * state */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   check_before_insert ();
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   check_after_insert ();
 
@@ -620,23 +618,20 @@ test_remove_range (void)
     &start, RANGE_START_BAR);
   position_set_to_bar (
     &end, RANGE_END_BAR);
-  UndoableAction * ua =
-    range_action_new_remove (&start, &end);
 
   check_before_insert ();
 
-  /* perform action */
-  undo_manager_perform (UNDO_MANAGER, ua);
+  range_action_perform_remove (&start, &end, NULL);
 
   check_after_remove ();
 
   /* undo and verify things are back to previous
    * state */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   check_before_insert ();
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   check_after_remove ();
 
@@ -654,20 +649,18 @@ test_remove_range_w_start_marker (void)
     supported_file_new_from_path (TEST_WAV2);
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, NULL,
-    audio_track_pos, 1);
+    audio_track_pos, 1, NULL);
 
   /* remove range */
   Position start, end;
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 3);
-  UndoableAction * ua =
-    range_action_new_remove (&start, &end);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  range_action_perform_remove (&start, &end, NULL);
 
   check_start_end_markers ();
 
   /* undo */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   check_start_end_markers ();
 
@@ -689,7 +682,7 @@ test_remove_range_w_objects_inside (void)
   Track * midi_track =
     track_create_with_action (
       TRACK_TYPE_MIDI, NULL, file, NULL,
-      midi_track_pos, 1);
+      midi_track_pos, 1, NULL);
 
   /* create scale object */
   MusicalScale * ms = musical_scale_new (0, 0);
@@ -698,18 +691,14 @@ test_remove_range_w_objects_inside (void)
   arranger_object_select (
     (ArrangerObject *) so, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* remove range */
   Position start, end;
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 14);
-  ua =
-    range_action_new_remove (&start, &end);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  range_action_perform_remove (&start, &end, NULL);
 
   check_start_end_markers ();
 
@@ -720,7 +709,7 @@ test_remove_range_w_objects_inside (void)
     P_CHORD_TRACK->num_scales, ==, 0);
 
   /* undo */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   check_start_end_markers ();
 

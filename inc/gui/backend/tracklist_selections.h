@@ -29,6 +29,11 @@
 #include "audio/track.h"
 #include "utils/yaml.h"
 
+typedef enum TracklistSelectionsActionType
+  TracklistSelectionsActionType;
+typedef enum EditTracksActionType
+  EditTracksActionType;
+
 /**
  * @addtogroup gui_backend
  *
@@ -309,98 +314,6 @@ tracklist_selections_mark_for_bounce (
   TracklistSelections * ts,
   bool                  with_parents,
   bool                  mark_master);
-
-/**
- * Sets the soloed status of all selected tracks.
- */
-void
-tracklist_selections_set_soloed_with_action (
-  TracklistSelections * self,
-  bool                  solo);
-
-/**
- * Sets the muted status of all selected tracks.
- */
-void
-tracklist_selections_set_muted_with_action (
-  TracklistSelections * self,
-  bool                  mute);
-
-/**
- * Sets the listened status of all selected tracks.
- */
-void
-tracklist_selections_set_listened_with_action (
-  TracklistSelections * self,
-  bool                  listen);
-
-/**
- * Sets the enabled status of all selected tracks.
- */
-void
-tracklist_selections_set_enabled_with_action (
-  TracklistSelections * self,
-  bool                  enable);
-
-bool
-tracklist_selections_move_or_copy_with_action (
-  TracklistSelections * self,
-  bool                  copy,
-  int                   pos);
-
-#define tracklist_selections_move_w_action(sel,pos) \
-  tracklist_selections_move_or_copy_with_action ( \
-    sel, Z_F_NO_COPY, pos)
-
-#define tracklist_selections_copy_w_action(sel,pos) \
-  tracklist_selections_move_or_copy_with_action ( \
-    sel, Z_F_COPY, pos)
-
-void
-tracklist_selections_duplicate_with_action (
-  TracklistSelections * self,
-  int                   pos);
-
-void
-tracklist_selections_delete_with_action (
-  TracklistSelections * self);
-
-void
-tracklist_selections_set_pinned_with_action (
-  TracklistSelections * self,
-  bool                  pin);
-
-/**
- * Edit or remove direct out.
- *
- * @param direct_out A track to route the
- *   selections to, or NULL to route nowhere.
- *
- * @return Whether successful.
- */
-bool
-tracklist_selections_set_direct_out_with_action (
-  TracklistSelections * self,
-  Track *               direct_out);
-
-bool
-tracklist_selections_set_color_with_action (
-  TracklistSelections * self,
-  GdkRGBA *             color);
-
-bool
-tracklist_selections_move_or_copy_inside_with_action (
-  TracklistSelections * self,
-  bool                  copy,
-  int                   track_pos);
-
-#define tracklist_selections_move_inside_w_action(sel,pos) \
-  tracklist_selections_move_or_copy_inside_with_action ( \
-    sel, Z_F_NO_COPY, pos)
-
-#define tracklist_selections_copy_inside_w_action(sel,pos) \
-  tracklist_selections_move_or_copy_inside_with_action ( \
-    sel, Z_F_COPY, pos)
 
 void
 tracklist_selections_free (

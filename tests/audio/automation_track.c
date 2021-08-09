@@ -64,11 +64,8 @@ test_set_at_index ()
   arranger_object_select (
     (ArrangerObject *) region, F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      (ArrangerSelections *) TL_SELECTIONS);
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    (ArrangerSelections *) TL_SELECTIONS, NULL);
 
   clip_editor_set_region (
     CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);

@@ -206,20 +206,22 @@ undoable_action_set_num_actions (
  *
  * @return Non-zero if errors occurred.
  */
-NONNULL
+NONNULL_ARGS (1)
 int
 undoable_action_do (
-  UndoableAction * self);
+  UndoableAction * self,
+  GError **        error);
 
 /**
  * Undoes the action.
  *
  * @return Non-zero if errors occurred.
  */
-NONNULL
+NONNULL_ARGS (1)
 int
 undoable_action_undo (
-  UndoableAction * self);
+  UndoableAction * self,
+  GError **        error);
 
 void
 undoable_action_free (

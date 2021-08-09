@@ -110,26 +110,47 @@ void
 transport_action_init_loaded (
   TransportAction * self);
 
+WARN_UNUSED_RESULT
 UndoableAction *
 transport_action_new_bpm_change (
-  bpm_t           bpm_before,
-  bpm_t           bpm_after,
-  bool            already_done);
+  bpm_t     bpm_before,
+  bpm_t     bpm_after,
+  bool      already_done,
+  GError ** error);
 
+WARN_UNUSED_RESULT
 UndoableAction *
 transport_action_new_time_sig_change (
   TransportActionType type,
   int                 before,
   int                 after,
-  bool                already_done);
+  bool                already_done,
+  GError **           error);
+
+bool
+transport_action_perform_bpm_change (
+  bpm_t     bpm_before,
+  bpm_t     bpm_after,
+  bool      already_done,
+  GError ** error);
+
+bool
+transport_action_perform_time_sig_change (
+  TransportActionType type,
+  int                 before,
+  int                 after,
+  bool                already_done,
+  GError **           error);
 
 int
 transport_action_do (
-  TransportAction * self);
+  TransportAction * self,
+  GError **         error);
 
 int
 transport_action_undo (
-  TransportAction * self);
+  TransportAction * self,
+  GError **         error);
 
 char *
 transport_action_stringize (

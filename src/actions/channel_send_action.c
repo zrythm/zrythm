@@ -48,7 +48,8 @@ channel_send_action_new (
   ChannelSendActionType type,
   Port *                port,
   StereoPorts *         stereo,
-  float                 amount)
+  float                 amount,
+  GError **             error)
 {
   ChannelSendAction * self =
     object_new (ChannelSendAction);
@@ -72,6 +73,23 @@ channel_send_action_new (
     }
 
   return ua;
+}
+
+/**
+ * Wrapper to create action and perform it.
+ */
+bool
+channel_send_action_perform (
+  ChannelSend *         send,
+  ChannelSendActionType type,
+  Port *                port,
+  StereoPorts *         stereo,
+  float                 amount,
+  GError **             error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    channel_send_action_new,
+    error, send, type, port, stereo, amount, error);
 }
 
 static void
@@ -127,7 +145,8 @@ connect_or_disconnect (
 
 int
 channel_send_action_do (
-  ChannelSendAction * self)
+  ChannelSendAction * self,
+  GError **           error)
 {
   /* get the actual channel send from the project */
   ChannelSend * send =
@@ -162,7 +181,8 @@ channel_send_action_do (
  */
 int
 channel_send_action_undo (
-  ChannelSendAction * self)
+  ChannelSendAction * self,
+  GError **           error)
 {
   /* get the actual channel send from the project */
   ChannelSend * send =

@@ -32,10 +32,11 @@
  * @param sel Selections to edit.
  * @param type Function type.
  */
-void
+int
 midi_function_apply (
   ArrangerSelections * sel,
-  MidiFunctionType     type)
+  MidiFunctionType     type,
+  GError **            error)
 {
   /* TODO */
   g_message (
@@ -47,4 +48,6 @@ midi_function_apply (
     S_UI, "midi-function", type);
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
+
+  return 0;
 }

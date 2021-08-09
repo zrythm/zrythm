@@ -40,6 +40,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "zrythm.h"
@@ -678,23 +679,37 @@ on_change_finished (
         if (self->prev_beats_per_bar !=
               beats_per_bar)
           {
-            UndoableAction * ua =
-              transport_action_new_time_sig_change (
+            GError * err = NULL;
+            bool ret =
+              transport_action_perform_time_sig_change (
                 TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE,
                 self->prev_beats_per_bar,
                 beats_per_bar,
-                F_ALREADY_EDITED);
-            undo_manager_perform (UNDO_MANAGER, ua);
+                F_ALREADY_EDITED, &err);
+            if (!ret)
+              {
+                HANDLE_ERROR (
+                  err, "%s",
+                  _("Failed to change time "
+                  "signature"));
+              }
           }
         else if (self->prev_beat_unit !=
                    beat_unit)
           {
-            UndoableAction * ua =
-              transport_action_new_time_sig_change (
+            GError * err = NULL;
+            bool ret =
+              transport_action_perform_time_sig_change (
                 TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
                 self->prev_beat_unit, beat_unit,
-                F_ALREADY_EDITED);
-            undo_manager_perform (UNDO_MANAGER, ua);
+                F_ALREADY_EDITED, &err);
+            if (!ret)
+              {
+                HANDLE_ERROR (
+                  err, "%s",
+                  _("Failed to change time "
+                  "signature"));
+              }
           }
       }
     break;

@@ -189,7 +189,7 @@ test_plugin_manager_create_tracks_from_plugin (
   bool ret =
     track_create_with_action (
       track_type, setting, NULL, NULL,
-      TRACKLIST->num_tracks, num_tracks);
+      TRACKLIST->num_tracks, num_tracks, NULL);
   g_assert_true (ret);
 
   return TRACKLIST->num_tracks - 1;

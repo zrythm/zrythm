@@ -62,7 +62,7 @@ test_export_wav ()
     supported_file_new_from_path (filepath);
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1);
+    TRACKLIST->num_tracks, 1, NULL);
 
   char * tmp_dir =
     g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
@@ -199,11 +199,8 @@ bounce_region (
     (ArrangerObject *) region,
     F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* bounce it */
   ExportSettings settings;
@@ -286,14 +283,14 @@ test_mixdown_midi_routed_to_instrument_track ()
   Track * midi_track =
     track_create_with_action (
       TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-      TRACKLIST->num_tracks, 1);
+      TRACKLIST->num_tracks, 1, NULL);
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
   /* route the MIDI track to the instrument track */
-  tracklist_selections_set_direct_out_with_action (
-    TRACKLIST_SELECTIONS, ins_track);
+  tracklist_selections_action_perform_set_direct_out (
+    TRACKLIST_SELECTIONS, ins_track, NULL);
 
   /* bounce it */
   ExportSettings settings;
@@ -365,11 +362,8 @@ test_bounce_region_with_first_note (void)
   arranger_object_select (
     r_obj, F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   position_init (&pos);
   position_add_beats (&pos, 3);
@@ -462,14 +456,14 @@ _test_bounce_midi_track_routed_to_instrument_track (
   Track * midi_track =
     track_create_with_action (
       TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-      TRACKLIST->num_tracks, 1);
+      TRACKLIST->num_tracks, 1, NULL);
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
   /* route the MIDI track to the instrument track */
-  tracklist_selections_set_direct_out_with_action (
-    TRACKLIST_SELECTIONS, ins_track);
+  tracklist_selections_action_perform_set_direct_out (
+    TRACKLIST_SELECTIONS, ins_track, NULL);
 
   /* bounce it */
   ExportSettings settings;
@@ -561,29 +555,23 @@ _test_bounce_instrument_track (
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* add MVerb insert */
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       MVERB_BUNDLE, MVERB_URI, false);
-  ua =
-    mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSERT, ins_track->pos, 0,
-      setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  mixer_selections_action_perform_create (
+    PLUGIN_SLOT_INSERT, ins_track->pos, 0,
+    setting, 1, NULL);
 
   /* adjust fader */
   Fader * fader = track_get_fader (ins_track, true);
   Port * port = fader->amp;
-  ua =
-    port_action_new (
-      PORT_ACTION_SET_CONTROL_VAL, &port->id, 0.5f,
-      false);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  port_action_perform (
+    PORT_ACTION_SET_CONTROL_VAL, &port->id, 0.5f,
+    false, NULL);
   g_assert_cmpfloat_with_epsilon (
     port->control, 0.5f, 0.00001f);
 
@@ -659,12 +647,10 @@ _test_bounce_instrument_track (
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_move_timeline (
-      TL_SELECTIONS,
-      TRANSPORT->ticks_per_bar, 0, 0,
-      F_NOT_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS,
+    TRANSPORT->ticks_per_bar, 0, 0,
+    F_NOT_ALREADY_MOVED, NULL);
 
   /* move end marker to bar 6 */
   Marker * end_marker =
@@ -674,13 +660,11 @@ _test_bounce_instrument_track (
   arranger_object_select (
     end_marker_obj, F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_move_timeline (
-      TL_SELECTIONS,
-      TRANSPORT->ticks_per_bar * 6 -
-        end_marker_obj->pos.ticks,
-      0, 0, F_NOT_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS,
+    TRANSPORT->ticks_per_bar * 6 -
+      end_marker_obj->pos.ticks,
+    0, 0, F_NOT_ALREADY_MOVED, NULL);
 
   /* export again */
   memset (&settings, 0, sizeof (ExportSettings));

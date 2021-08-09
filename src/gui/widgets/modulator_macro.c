@@ -32,6 +32,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/string.h"
@@ -181,9 +182,17 @@ on_reset_control (
   GtkMenuItem * menuitem,
   Port *        port)
 {
-  UndoableAction * ua =
-    port_action_new_reset_control (&port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    port_action_perform_reset_control (
+      &port->id, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err,
+        _("Failed to reset control '%s'"),
+        port->id.label);
+    }
 }
 
 static void

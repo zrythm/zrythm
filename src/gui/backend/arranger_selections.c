@@ -42,10 +42,13 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 #define TYPE(x) \
   (ARRANGER_SELECTIONS_TYPE_##x)
@@ -2569,10 +2572,16 @@ arranger_selections_paste_to_pos (
 
   if (undoable)
     {
-      UndoableAction * ua =
-        arranger_selections_action_new_create (
-          clone_sel);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_create (
+          clone_sel, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to paste selections"));
+        }
     }
 }
 

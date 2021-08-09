@@ -26,12 +26,25 @@
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/objects.h"
 #include "utils/stack.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+typedef enum
+{
+  Z_ACTIONS_UNDO_MANAGER_ERROR_FAILED,
+  Z_ACTIONS_UNDO_MANAGER_ERROR_ACTION_FAILED,
+} ZActionsUndoManagerError;
+
+#define Z_ACTIONS_UNDO_MANAGER_ERROR \
+  z_actions_undo_manager_error_quark ()
+GQuark z_actions_undo_manager_error_quark (void);
+G_DEFINE_QUARK (
+  z-actions-undo-manager-error-quark, z_actions_undo_manager_error)
 
 /**
  * Inits the undo manager by populating the
@@ -81,7 +94,8 @@ do_or_undo_action (
   UndoManager *    self,
   UndoableAction * action,
   UndoStack *      main_stack,
-  UndoStack *      opposite_stack)
+  UndoStack *      opposite_stack,
+  GError **        error)
 {
   bool need_pop = false;
   if (!action)
@@ -97,11 +111,11 @@ do_or_undo_action (
   int ret = 0;
   if (main_stack == self->undo_stack)
     {
-      ret = undoable_action_undo (action);
+      ret = undoable_action_undo (action, error);
     }
   else if (main_stack == self->redo_stack)
     {
-      ret = undoable_action_do (action);
+      ret = undoable_action_do (action, error);
     }
   else
     {
@@ -113,16 +127,9 @@ do_or_undo_action (
     }
 
   /* if error return */
-  if (ret)
+  if (ret != 0)
     {
       zix_sem_post (&self->action_sem);
-      if (ZRYTHM_HAVE_UI)
-        {
-          ui_show_message_printf (
-            MAIN_WINDOW, GTK_MESSAGE_ERROR,
-            "%s",
-            _("Failed to perform action"));
-        }
       g_warning (
         "%s: action not performed (err %d)",
         __func__, ret);
@@ -160,8 +167,10 @@ do_or_undo_action (
 /**
  * Undo last action.
  */
-void
-undo_manager_undo (UndoManager * self)
+int
+undo_manager_undo (
+  UndoManager * self,
+  GError **     error)
 {
   g_warn_if_fail (
     !undo_stack_is_empty (self->undo_stack));
@@ -171,10 +180,11 @@ undo_manager_undo (UndoManager * self)
   UndoableAction * action =
     (UndoableAction *)
     undo_stack_peek (self->undo_stack);
-  g_return_if_fail (action);
+  g_return_val_if_fail (action, -1);
   const int num_actions = action->num_actions;
-  g_return_if_fail (num_actions > 0);
+  g_return_val_if_fail (num_actions > 0, -1);
 
+  int ret = 0;
   for (int i = 0; i < num_actions; i++)
     {
       g_message (
@@ -186,9 +196,19 @@ undo_manager_undo (UndoManager * self)
         action->num_actions = 1;
       else if (i == num_actions - 1)
         action->num_actions = num_actions;
-      do_or_undo_action (
-        self, NULL, self->undo_stack,
-        self->redo_stack);
+
+      GError * err = NULL;
+      ret =
+        do_or_undo_action (
+          self, NULL, self->undo_stack,
+          self->redo_stack, &err);
+      if (ret != 0)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to undo action"));
+          break;
+        }
     }
 
   if (ZRYTHM_HAVE_UI)
@@ -200,13 +220,17 @@ undo_manager_undo (UndoManager * self)
     }
 
   zix_sem_post (&self->action_sem);
+
+  return ret;
 }
 
 /**
  * Redo last undone action.
  */
-void
-undo_manager_redo (UndoManager * self)
+int
+undo_manager_redo (
+  UndoManager * self,
+  GError **     error)
 {
   g_warn_if_fail (
     !undo_stack_is_empty (self->redo_stack));
@@ -216,10 +240,11 @@ undo_manager_redo (UndoManager * self)
   UndoableAction * action =
     (UndoableAction *)
     undo_stack_peek (self->redo_stack);
-  g_return_if_fail (action);
+  g_return_val_if_fail (action, -1);
   const int num_actions = action->num_actions;
-  g_return_if_fail (num_actions > 0);
+  g_return_val_if_fail (num_actions > 0, -1);
 
+  int ret = 0;
   for (int i = 0; i < num_actions; i++)
     {
       g_message (
@@ -231,9 +256,19 @@ undo_manager_redo (UndoManager * self)
         action->num_actions = 1;
       else if (i == num_actions - 1)
         action->num_actions = num_actions;
-      do_or_undo_action (
-        self, NULL, self->redo_stack,
-        self->undo_stack);
+
+      GError * err = NULL;
+      ret =
+        do_or_undo_action (
+          self, NULL, self->redo_stack,
+          self->undo_stack, &err);
+      if (ret != 0)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to redo action"));
+          break;
+        }
     }
 
   if (ZRYTHM_HAVE_UI)
@@ -245,6 +280,8 @@ undo_manager_redo (UndoManager * self)
     }
 
   zix_sem_post (&self->action_sem);
+
+  return ret;
 }
 
 /**
@@ -256,7 +293,8 @@ undo_manager_redo (UndoManager * self)
 int
 undo_manager_perform (
   UndoManager *    self,
-  UndoableAction * action)
+  UndoableAction * action,
+  GError **        error)
 {
   /* check that action is not already in the
    * stacks */
@@ -271,16 +309,18 @@ undo_manager_perform (
   zix_sem_wait (&self->action_sem);
 
   /* if error return */
-  int err =
+  GError * err = NULL;
+  int ret =
     do_or_undo_action (
       self, action, self->redo_stack,
-      self->undo_stack);
-  if (err)
+      self->undo_stack, &err);
+  if (ret != 0)
     {
-      g_warning (
-        "failed to perform action: %d", err);
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _("Failed to perform action"));
       zix_sem_post (&self->action_sem);
-      return err;
+      return ret;
     }
 
   undo_stack_clear (self->redo_stack, true);

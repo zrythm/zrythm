@@ -65,14 +65,10 @@ test_modulator_connection (
     plugin_descriptor_category_to_string (
       setting->descr->category);
 
-  UndoableAction * ua = NULL;
-
   /* create a modulator */
-  ua =
-    mixer_selections_action_new_create (
-      PLUGIN_SLOT_MODULATOR, P_MODULATOR_TRACK->pos,
-      0, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  mixer_selections_action_perform_create (
+    PLUGIN_SLOT_MODULATOR, P_MODULATOR_TRACK->pos,
+    0, setting, 1, NULL);
   plugin_setting_free (setting);
 
   ModulatorMacroProcessor * macro =
@@ -111,11 +107,8 @@ test_modulator_connection (
 
   /* connect the plugin's CV out to the macro
    * button */
-  ua =
-    port_connection_action_new_connect (
-      &pl_cv_port->id, &macro->cv_in->id);
-  int ret = undo_manager_perform (UNDO_MANAGER, ua);
-  g_assert_cmpint (ret, ==, 0);
+  port_connection_action_perform_connect (
+    &pl_cv_port->id, &macro->cv_in->id, NULL);
 
   /* expect messages */
   LOG->use_structured_for_console = false;
@@ -130,17 +123,15 @@ test_modulator_connection (
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*action not performed*");
-  g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*failed to perform action*");
+  /*g_test_expect_message (*/
+    /*G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,*/
+    /*"*failed to perform action*");*/
 
   /* connect the macro button to the plugin's
    * control input */
-  ua =
-    port_connection_action_new_connect (
-      &macro->cv_out->id, &pl_control_port->id);
-  ret = undo_manager_perform (UNDO_MANAGER, ua);
-  g_assert_cmpint (ret, !=, 0);
+  port_connection_action_perform_connect (
+    &macro->cv_out->id, &pl_control_port->id,
+    NULL);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -173,31 +164,28 @@ _test_port_connection (
     plugin_descriptor_category_to_string (
       setting->descr->category);
 
-  UndoableAction * ua = NULL;
-
   /* create an extra track */
   Track * target_track =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
 
   if (is_instrument)
     {
       /* create an instrument track from helm */
       track_create_for_plugin_at_idx_w_action (
         TRACK_TYPE_INSTRUMENT, setting,
-        TRACKLIST->num_tracks);
+        TRACKLIST->num_tracks, NULL);
     }
   else
     {
       /* create an audio fx track and add the
        * plugin */
       track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS);
-      ua =
-        mixer_selections_action_new_create (
-          PLUGIN_SLOT_INSERT,
-          TRACKLIST->num_tracks - 1, 0, setting, 1);
-      undo_manager_perform (UNDO_MANAGER, ua);
+        TRACK_TYPE_AUDIO_BUS, NULL);
+      mixer_selections_action_perform_create (
+        PLUGIN_SLOT_INSERT,
+        TRACKLIST->num_tracks - 1, 0, setting, 1,
+        NULL);
     }
 
   plugin_setting_free (setting);
@@ -264,29 +252,27 @@ _test_port_connection (
   g_assert_true (src_port1->is_project);
   g_assert_true (src_port2->is_project);
   g_assert_true (dest_port->is_project);
+  g_assert_cmpint (dest_port->num_srcs, ==, 0);
+  g_assert_cmpint (src_port1->num_dests, ==, 0);
 
-  ua =
-    port_connection_action_new_connect (
-      &src_port1->id, &dest_port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  port_connection_action_perform_connect (
+    &src_port1->id, &dest_port->id, NULL);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 1);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 0);
   g_assert_cmpint (src_port1->num_dests, ==, 0);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 1);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
 
-  ua =
-    port_connection_action_new_connect (
-      &src_port2->id, &dest_port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  port_connection_action_perform_connect (
+    &src_port2->id, &dest_port->id, NULL);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 2);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
@@ -312,8 +298,8 @@ _test_port_connection (
   g_assert_true (
     dest_port == src_port2->dests[0]);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* let the engine run */
   g_usleep (1000000);

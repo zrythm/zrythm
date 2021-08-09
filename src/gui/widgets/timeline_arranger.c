@@ -39,6 +39,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
@@ -1042,13 +1043,19 @@ on_fade_preset_selected (
 
   g_warn_if_fail (
     arranger_object_is_selected (info->obj));
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
+
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit (
       sel_before,
       (ArrangerSelections *) TL_SELECTIONS,
       ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
-      true);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      true, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to edit fades"));
+    }
 
   g_warn_if_fail (IS_ARRANGER_OBJECT (info->obj));
   EVENTS_PUSH (
@@ -1135,13 +1142,20 @@ on_musical_mode_toggled (
 
   g_warn_if_fail (
     arranger_object_is_selected (info->obj));
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
+
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit (
       sel_before,
       (ArrangerSelections *) TL_SELECTIONS,
       ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-      true);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      true, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to edit selections"));
+    }
 
   g_warn_if_fail (IS_ARRANGER_OBJECT (info->obj));
   EVENTS_PUSH (
@@ -1264,21 +1278,24 @@ on_audio_func_activate (
             &sel->sel_end, &r_obj->end_pos);
         }
 
-      UndoableAction * ua =
-        arranger_selections_action_new_edit_audio_function (
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_edit_audio_function (
           (ArrangerSelections *) sel,
-          data->audio_func, NULL);
-      if (ua)
+          data->audio_func, NULL, &err);
+      if (!ret)
         {
-          ua->num_actions = i + 1;
-          undo_manager_perform (UNDO_MANAGER, ua);
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to apply audio function"));
+          break;
         }
       else
         {
-          /* handle error */
-          ui_show_message_printf (
-            MAIN_WINDOW, GTK_MESSAGE_ERROR,
-            "%s", _("Could not perform action"));
+          UndoableAction * ua =
+            undo_manager_get_last_action (
+              UNDO_MANAGER);
+          ua->num_actions = i + 1;
         }
     }
 }
@@ -1666,11 +1683,16 @@ on_dnd_data_received (
         F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
 
-      UndoableAction * ua =
-        arranger_selections_action_new_create (
-          TL_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_create (
+          TL_SELECTIONS, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to create selections"));
+        }
     }
   else if (target ==
              GET_ATOM (TARGET_ENTRY_URI_LIST) ||

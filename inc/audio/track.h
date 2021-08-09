@@ -1572,27 +1572,29 @@ track_create_with_action (
   SupportedFile * file_descr,
   Position *      pos,
   int             index,
-  int             num_tracks);
+  int             num_tracks,
+  GError **       error);
 
 #define track_create_empty_at_idx_with_action( \
-  type,idx) \
+  type,idx,error) \
   track_create_with_action ( \
-    type, NULL, NULL, NULL, idx, 1)
+    type, NULL, NULL, NULL, idx, 1, error)
 
 /**
  * Create track at index for plugin with action.
  */
-#define track_create_for_plugin_at_idx_w_action(type,pl_setting,idx) \
+#define track_create_for_plugin_at_idx_w_action( \
+  type,pl_setting,idx,error) \
   track_create_with_action ( \
-    type, pl_setting, NULL, NULL, idx, 1)
+    type, pl_setting, NULL, NULL, idx, 1, error)
 
 /**
  * Creates a new empty track at the end of the
  * tracklist.
  */
-#define track_create_empty_with_action(type) \
+#define track_create_empty_with_action(type,error) \
   track_create_empty_at_idx_with_action ( \
-    type, TRACKLIST->num_tracks)
+    type, TRACKLIST->num_tracks, error)
 
 /**
  * Wrapper for each track type.

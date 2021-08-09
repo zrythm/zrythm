@@ -43,6 +43,17 @@
 
 #include <glib/gi18n.h>
 
+typedef enum
+{
+  Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
+} ZActionsArrangerSelectionsError;
+
+#define Z_ACTIONS_ARRANGER_SELECTIONS_ERROR \
+  z_actions_arranger_selections_error_quark ()
+GQuark z_actions_arranger_selections_error_quark (void);
+G_DEFINE_QUARK (
+  z-actions-arranger-selections-error-quark, z_actions_arranger_selections_error)
+
 static void
 move_obj_by_tracks_and_lanes (
   ArrangerObject * obj,
@@ -239,34 +250,6 @@ free_split_objects (
   self->region_r2[i] = NULL;
 }
 
-#if 0
-static void
-set_single_object (
-  ArrangerSelectionsAction * self,
-  ArrangerObject *           obj)
-{
-  self->obj = obj;
-
-  switch (obj->type)
-    {
-    case ARRANGER_OBJECT_TYPE_REGION:
-      self->region = (ZRegion *) obj;
-      break;
-    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-      self->midi_note = (MidiNote *) obj;
-      break;
-    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
-      self->scale = (ScaleObject *) obj;
-      break;
-    case ARRANGER_OBJECT_TYPE_MARKER:
-      self->marker = (Marker *) obj;
-      break;
-    default:
-      g_return_if_reached ();
-    }
-}
-#endif
-
 static ArrangerSelectionsAction *
 _create_action (
   ArrangerSelections * sel)
@@ -335,7 +318,8 @@ arranger_selections_action_new_move_or_duplicate (
   const int            delta_tracks,
   const int            delta_lanes,
   const double         delta_normalized_amount,
-  const bool           already_moved)
+  const bool           already_moved,
+  GError **            error)
 {
   g_return_val_if_fail (
     IS_ARRANGER_SELECTIONS (sel) &&
@@ -385,7 +369,8 @@ arranger_selections_action_new_link (
   const double         ticks,
   const int            delta_tracks,
   const int            delta_lanes,
-  const bool           already_moved)
+  const bool           already_moved,
+  GError **            error)
 {
   g_return_val_if_fail (
     sel_before && sel_after, NULL);
@@ -416,7 +401,8 @@ arranger_selections_action_new_link (
 UndoableAction *
 arranger_selections_action_new_create_or_delete (
   ArrangerSelections * sel,
-  const bool           create)
+  const bool           create,
+  GError **            error)
 {
   g_return_val_if_fail (
     IS_ARRANGER_SELECTIONS (sel) &&
@@ -425,9 +411,12 @@ arranger_selections_action_new_create_or_delete (
   if (arranger_selections_contains_undeletable_object (
         sel))
     {
-      g_warning (
-        "attempted to delete an undeletable "
-        "object");
+      g_set_error (
+        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
+        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
+        "%s",
+        _("Arranger selections contain an "
+          "undeletable object"));
       return NULL;
     }
 
@@ -450,7 +439,8 @@ UndoableAction *
 arranger_selections_action_new_record (
   ArrangerSelections * sel_before,
   ArrangerSelections * sel_after,
-  const bool           already_recorded)
+  const bool           already_recorded,
+  GError **            error)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel_before);
@@ -480,7 +470,8 @@ arranger_selections_action_new_edit (
   ArrangerSelections *             sel_before,
   ArrangerSelections *             sel_after,
   ArrangerSelectionsActionEditType type,
-  bool                             already_edited)
+  bool                             already_edited,
+  GError **                        error)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel_before);
@@ -527,17 +518,30 @@ arranger_selections_action_new_edit (
 UndoableAction *
 arranger_selections_action_new_edit_midi_function (
   ArrangerSelections * sel_before,
-  MidiFunctionType     midi_func_type)
+  MidiFunctionType     midi_func_type,
+  GError **            error)
 {
   ArrangerSelections * sel_after =
     arranger_selections_clone (sel_before);
-  midi_function_apply (sel_after, midi_func_type);
+
+  GError * err = NULL;
+  int ret =
+    midi_function_apply (
+      sel_after, midi_func_type, &err);
+  if (ret != 0)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _("Failed to apply MIDI function"));
+      arranger_selections_free_full (sel_after);
+      return NULL;
+    }
 
   UndoableAction * ua =
     arranger_selections_action_new_edit (
       sel_before, sel_after,
       ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-      F_NOT_ALREADY_EDITED);
+      F_NOT_ALREADY_EDITED, error);
 
   arranger_selections_free_full (sel_after);
 
@@ -551,19 +555,31 @@ arranger_selections_action_new_edit_midi_function (
  */
 UndoableAction *
 arranger_selections_action_new_edit_automation_function (
-  ArrangerSelections * sel_before,
-  AutomationFunctionType automation_func_type)
+  ArrangerSelections *   sel_before,
+  AutomationFunctionType automation_func_type,
+  GError **              error)
 {
   ArrangerSelections * sel_after =
     arranger_selections_clone (sel_before);
-  automation_function_apply (
-    sel_after, automation_func_type);
+
+  GError * err = NULL;
+  int ret =
+    automation_function_apply (
+      sel_after, automation_func_type, &err);
+  if (ret != 0)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _("Failed to apply automation function"));
+      arranger_selections_free_full (sel_after);
+      return NULL;
+    }
 
   UndoableAction * ua =
     arranger_selections_action_new_edit (
       sel_before, sel_after,
       ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-      F_NOT_ALREADY_EDITED);
+      F_NOT_ALREADY_EDITED, error);
 
   arranger_selections_free_full (sel_after);
 
@@ -579,7 +595,8 @@ UndoableAction *
 arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type,
-  const char *         uri)
+  const char *         uri,
+  GError **            error)
 {
   /* prepare selections before */
   ArrangerSelections * sel_before_clone =
@@ -588,14 +605,14 @@ arranger_selections_action_new_edit_audio_function (
   g_debug (
     "saving file before applying audio func...");
   GError * err = NULL;
-  int res =
+  int ret =
     audio_function_apply (
       sel_before_clone, AUDIO_FUNCTION_INVALID,
       NULL, &err);
-  if (res != 0)
+  if (ret != 0)
     {
-      HANDLE_ERROR (
-        err, "%s",
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
         _("Failed to apply audio function"));
       arranger_selections_free_full (
         sel_before_clone);
@@ -605,13 +622,13 @@ arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_after =
     arranger_selections_clone (sel_before);
   g_debug ("applying actual audio func...");
-  res =
+  ret =
     audio_function_apply (
       sel_after, audio_func_type, uri, &err);
-  if (res != 0)
+  if (ret != 0)
     {
-      HANDLE_ERROR (
-        err, "%s",
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
         _("Failed to apply audio function"));
       arranger_selections_free_full (sel_after);
       return NULL;
@@ -621,7 +638,7 @@ arranger_selections_action_new_edit_audio_function (
     arranger_selections_action_new_edit (
       sel_before_clone, sel_after,
       ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
-      F_NOT_ALREADY_EDITED);
+      F_NOT_ALREADY_EDITED, error);
 
   arranger_selections_free_full (sel_after);
   arranger_selections_free_full (sel_before_clone);
@@ -643,7 +660,8 @@ UndoableAction *
 arranger_selections_action_new_automation_fill (
   ZRegion * region_before,
   ZRegion * region_after,
-  bool      already_changed)
+  bool      already_changed,
+  GError ** error)
 {
   ArrangerSelectionsAction * self =
     object_new (ArrangerSelectionsAction);
@@ -682,7 +700,8 @@ arranger_selections_action_new_automation_fill (
 UndoableAction *
 arranger_selections_action_new_split (
   ArrangerSelections * sel,
-  const Position *     pos)
+  const Position *     pos,
+  GError **            error)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
@@ -705,7 +724,8 @@ arranger_selections_action_new_split (
  */
 UndoableAction *
 arranger_selections_action_new_merge (
-  ArrangerSelections * sel)
+  ArrangerSelections * sel,
+  GError **            error)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
@@ -726,7 +746,8 @@ UndoableAction *
 arranger_selections_action_new_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
-  const double                       ticks)
+  const double                       ticks,
+  GError **                          error)
 {
   /* validate */
   bool have_unresizable =
@@ -734,7 +755,16 @@ arranger_selections_action_new_resize (
       sel,
       ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH,
       false);
-  g_return_val_if_fail (!have_unresizable, NULL);
+  if (have_unresizable)
+    {
+      g_set_error (
+        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
+        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
+        "%s",
+        _("Attempted to resize unresizable "
+          "objects"));
+      return NULL;
+    }
 
   bool have_looped =
     arranger_selections_contains_object_with_property (
@@ -755,9 +785,11 @@ arranger_selections_action_new_resize (
        type
          == ARRANGER_SELECTIONS_ACTION_STRETCH_R))
     {
-      g_critical (
-        "cannot perform %s resize - selections "
-        "contain looped objects",
+      g_set_error (
+        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
+        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
+        _("Cannot perform %s resize - selections "
+        "contain looped objects"),
         arranger_selections_action_resize_type_strings[type].str);
       return NULL;
     }
@@ -775,9 +807,11 @@ arranger_selections_action_new_resize (
        type
          == ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP))
     {
-      g_critical (
-        "cannot perform %s resize - selections "
-        "contain unloopable objects",
+      g_set_error (
+        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
+        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED,
+        _("Cannot perform %s resize - selections "
+        "contain unloopable objects"),
         arranger_selections_action_resize_type_strings[type].str);
       return NULL;
     }
@@ -802,7 +836,8 @@ arranger_selections_action_new_resize (
 UndoableAction *
 arranger_selections_action_new_quantize (
   ArrangerSelections * sel,
-  QuantizeOptions *    opts)
+  QuantizeOptions *    opts,
+  GError **            error)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
@@ -813,6 +848,174 @@ arranger_selections_action_new_quantize (
 
   UndoableAction * ua = (UndoableAction *) self;
   return ua;
+}
+
+bool
+arranger_selections_action_perform_create_or_delete (
+  ArrangerSelections * sel,
+  const bool           create,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_create_or_delete,
+    error, sel, create, error);
+}
+
+bool
+arranger_selections_action_perform_record (
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
+  const bool           already_recorded,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_record,
+    error, sel_before, sel_after, already_recorded,
+    error);
+}
+
+bool
+arranger_selections_action_perform_move_or_duplicate (
+  ArrangerSelections * sel,
+  const bool           move,
+  const double         ticks,
+  const int            delta_chords,
+  const int            delta_pitch,
+  const int            delta_tracks,
+  const int            delta_lanes,
+  const double         delta_normalized_amount,
+  const bool           already_moved,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_move_or_duplicate,
+    error, sel, move, ticks, delta_chords,
+    delta_pitch,
+    delta_tracks, delta_lanes,
+    delta_normalized_amount, already_moved, error);
+}
+
+bool
+arranger_selections_action_perform_link (
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
+  const double         ticks,
+  const int            delta_tracks,
+  const int            delta_lanes,
+  const bool           already_moved,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_link,
+    error, sel_before, sel_after, ticks,
+    delta_tracks, delta_lanes, already_moved,
+    error);
+}
+
+bool
+arranger_selections_action_perform_edit (
+  ArrangerSelections *             sel_before,
+  ArrangerSelections *             sel_after,
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited,
+  GError **                        error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_edit, error,
+    sel_before, sel_after, type, already_edited,
+    error);
+}
+
+bool
+arranger_selections_action_perform_edit_midi_function (
+  ArrangerSelections * sel_before,
+  MidiFunctionType     midi_func_type,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_edit_midi_function,
+    error, sel_before, midi_func_type, error);
+}
+
+bool
+arranger_selections_action_perform_edit_automation_function (
+  ArrangerSelections *   sel_before,
+  AutomationFunctionType automation_func_type,
+  GError **              error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_edit_automation_function,
+    error, sel_before, automation_func_type, error);
+}
+
+bool
+arranger_selections_action_perform_edit_audio_function (
+  ArrangerSelections * sel_before,
+  AudioFunctionType    audio_func_type,
+  const char *         uri,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_edit_audio_function,
+    error, sel_before, audio_func_type, uri,
+    error);
+}
+
+bool
+arranger_selections_action_perform_automation_fill (
+  ZRegion * region_before,
+  ZRegion * region_after,
+  bool      already_changed,
+  GError ** error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_automation_fill,
+    error, region_before, region_after,
+    already_changed, error);
+}
+
+bool
+arranger_selections_action_perform_split (
+  ArrangerSelections * sel,
+  const Position *     pos,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_split,
+    error, sel, pos, error);
+}
+
+bool
+arranger_selections_action_perform_merge (
+  ArrangerSelections * sel,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_merge,
+    error, sel, error);
+}
+
+bool
+arranger_selections_action_perform_resize (
+  ArrangerSelections *               sel,
+  ArrangerSelectionsActionResizeType type,
+  const double                       ticks,
+  GError **                          error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_resize,
+    error, sel, type, ticks, error);
+}
+
+bool
+arranger_selections_action_perform_quantize (
+  ArrangerSelections * sel,
+  QuantizeOptions *    opts,
+  GError **            error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    arranger_selections_action_new_quantize,
+    error, sel, opts, error);
 }
 
 static void
@@ -849,7 +1052,8 @@ update_region_link_groups (
 static int
 do_or_undo_move (
   ArrangerSelectionsAction * self,
-  const bool                 _do)
+  const bool                 _do,
+  GError **                  error)
 {
   int size = 0;
   arranger_selections_sort_by_indices (
@@ -1152,7 +1356,8 @@ static int
 do_or_undo_duplicate_or_link (
   ArrangerSelectionsAction * self,
   const bool                 link,
-  const bool                 _do)
+  const bool                 _do,
+  GError **                  error)
 {
   arranger_selections_sort_by_indices (
     self->sel, !_do);
@@ -1658,7 +1863,8 @@ static int
 do_or_undo_create_or_delete (
   ArrangerSelectionsAction * self,
   const int                  _do,
-  const int                  create)
+  const int                  create,
+  GError **                  error)
 {
   int size = 0;
   if (create)
@@ -1850,7 +2056,8 @@ do_or_undo_create_or_delete (
 static int
 do_or_undo_record (
   ArrangerSelectionsAction * self,
-  const bool                 _do)
+  const bool                 _do,
+  GError **                  error)
 {
   int size_before = 0;
   int size_after = 0;
@@ -2012,7 +2219,8 @@ do_or_undo_record (
 static int
 do_or_undo_edit (
   ArrangerSelectionsAction * self,
-  const int                  _do)
+  const int                  _do,
+  GError **                  error)
 {
   int size = 0;
   ArrangerObject ** objs_before =
@@ -2272,7 +2480,8 @@ do_or_undo_edit (
 static int
 do_or_undo_automation_fill (
   ArrangerSelectionsAction * self,
-  const int                  _do)
+  const int                  _do,
+  GError **                  error)
 {
   if (!self->first_run)
     {
@@ -2347,7 +2556,8 @@ do_or_undo_automation_fill (
 static int
 do_or_undo_split (
   ArrangerSelectionsAction * self,
-  const int                  _do)
+  const int                  _do,
+  GError **                  error)
 {
   int size = 0;
   ArrangerObject ** objs =
@@ -2431,7 +2641,8 @@ do_or_undo_split (
 static int
 do_or_undo_merge (
   ArrangerSelectionsAction * self,
-  const bool                 _do)
+  const bool                 _do,
+  GError **                  error)
 {
   /* if first run, merge */
   if (self->first_run)
@@ -2510,7 +2721,8 @@ do_or_undo_merge (
 static int
 do_or_undo_resize (
   ArrangerSelectionsAction * self,
-  const int                  _do)
+  const int                  _do,
+  GError **                  error)
 {
   int size = 0;
   ArrangerObject ** objs =
@@ -2602,7 +2814,8 @@ do_or_undo_resize (
 static int
 do_or_undo_quantize (
   ArrangerSelectionsAction * self,
-  const int                  _do)
+  const int                  _do,
+  GError **                  error)
 {
   int size = 0;
   ArrangerObject ** objs =
@@ -2686,50 +2899,51 @@ do_or_undo_quantize (
 static int
 do_or_undo (
   ArrangerSelectionsAction * self,
-  bool                       _do)
+  bool                       _do,
+  GError **                  error)
 {
   switch (self->type)
     {
     case AS_ACTION_CREATE:
       return
         do_or_undo_create_or_delete (
-          self, _do, true);
+          self, _do, true, error);
       break;
     case AS_ACTION_DELETE:
       return
         do_or_undo_create_or_delete (
-          self, _do, false);
+          self, _do, false, error);
       break;
     case AS_ACTION_DUPLICATE:
       return
         do_or_undo_duplicate_or_link (
-          self, false, _do);
+          self, false, _do, error);
     case AS_ACTION_MOVE:
-      return do_or_undo_move (self, _do);
+      return do_or_undo_move (self, _do, error);
     case AS_ACTION_LINK:
       return
         do_or_undo_duplicate_or_link (
-          self, true, _do);
+          self, true, _do, error);
     case AS_ACTION_RECORD:
-      return do_or_undo_record (self, _do);
+      return do_or_undo_record (self, _do, error);
       break;
     case AS_ACTION_EDIT:
-      return do_or_undo_edit (self, _do);
+      return do_or_undo_edit (self, _do, error);
       break;
     case AS_ACTION_AUTOMATION_FILL:
       return do_or_undo_automation_fill (
-        self, _do);
+        self, _do, error);
     case AS_ACTION_SPLIT:
-      return do_or_undo_split (self, _do);
+      return do_or_undo_split (self, _do, error);
       break;
     case AS_ACTION_MERGE:
-      return do_or_undo_merge (self, _do);
+      return do_or_undo_merge (self, _do, error);
       break;
     case AS_ACTION_RESIZE:
-      return do_or_undo_resize (self, _do);
+      return do_or_undo_resize (self, _do, error);
       break;
     case AS_ACTION_QUANTIZE:
-      return do_or_undo_quantize (self, _do);
+      return do_or_undo_quantize (self, _do, error);
       break;
     default:
       break;
@@ -2739,16 +2953,18 @@ do_or_undo (
 
 int
 arranger_selections_action_do (
-  ArrangerSelectionsAction * self)
+  ArrangerSelectionsAction * self,
+  GError **                  error)
 {
-  return do_or_undo (self, true);
+  return do_or_undo (self, true, error);
 }
 
 int
 arranger_selections_action_undo (
-  ArrangerSelectionsAction * self)
+  ArrangerSelectionsAction * self,
+  GError **                  error)
 {
-  return do_or_undo (self, false);
+  return do_or_undo (self, false, error);
 }
 
 bool

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "project.h"
 #include "utils/color.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "zrythm_app.h"
@@ -101,8 +102,17 @@ object_color_chooser_dialog_widget_run (
         {
           TracklistSelections * sel =
             self->tracklist_selections;
-          tracklist_selections_set_color_with_action (
-            sel, &sel_color);
+
+          GError * err = NULL;
+          bool ret =
+            tracklist_selections_action_perform_edit_color (
+            sel, &sel_color, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to change color"));
+            }
         }
     }
   gtk_widget_destroy (GTK_WIDGET (self));

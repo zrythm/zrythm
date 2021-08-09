@@ -30,9 +30,21 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+typedef enum
+{
+  Z_ACTIONS_MIXER_SELECTIONS_ERROR_FAILED,
+} ZActionsMixerSelectionsError;
+
+#define Z_ACTIONS_MIXER_SELECTIONS_ERROR \
+  z_actions_mixer_selections_error_quark ()
+GQuark z_actions_mixer_selections_error_quark (void);
+G_DEFINE_QUARK (
+  z-actions-mixer-selections-error-quark, z_actions_mixer_selections_error)
 
 void
 mixer_selections_action_init_loaded (
@@ -76,8 +88,13 @@ clone_ats (
 {
   Track * track =
     TRACKLIST->tracks[ms->track_pos];
+  g_message (
+    "cloning automation tracks for track %s",
+    track->name);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  int count = 0;
+  int regions_count = 0;
   for (int j = 0;
        j < ms->num_slots; j++)
     {
@@ -103,8 +120,14 @@ clone_ats (
               self->ats[self->num_ats++] =
                 automation_track_clone (at);
             }
+          count++;
+          regions_count += at->num_regions;
         }
     }
+  g_message (
+    "cloned %d automation tracks for track %s, "
+    "total regions %d",
+    count, track->name, regions_count);
 }
 
 /**
@@ -128,7 +151,8 @@ mixer_selections_action_new (
   int                       to_track_pos,
   int                       to_slot,
   PluginSetting *           setting,
-  int                       num_plugins)
+  int                       num_plugins,
+  GError **                 error)
 {
   MixerSelectionsAction * self =
     object_new (MixerSelectionsAction);
@@ -158,8 +182,11 @@ mixer_selections_action_new (
           ms, ms == MIXER_SELECTIONS);
       if (!self->ms_before)
         {
-          g_warning (
-            "failed to clone mixer selections");
+          g_set_error_literal (
+            error,
+            Z_ACTIONS_MIXER_SELECTIONS_ERROR,
+            Z_ACTIONS_MIXER_SELECTIONS_ERROR_FAILED,
+            _("Failed to clone mixer selections"));
           return NULL;
         }
       g_warn_if_fail (
@@ -170,6 +197,23 @@ mixer_selections_action_new (
     }
 
   return ua;
+}
+
+bool
+mixer_selections_action_perform (
+  MixerSelections *         ms,
+  MixerSelectionsActionType type,
+  PluginSlotType            slot_type,
+  int                       to_track_pos,
+  int                       to_slot,
+  PluginSetting *           setting,
+  int                       num_plugins,
+  GError **                 error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    mixer_selections_action_new,
+    error, ms, type, slot_type, to_track_pos,
+    to_slot, setting, num_plugins, error);
 }
 
 static void
@@ -194,6 +238,15 @@ copy_at_regions (
       region_set_automation_track (
         dest->regions[j], dest);
     }
+
+  if (dest->num_regions > 0)
+    {
+      g_message (
+        "reverted %d regions for "
+        "automation track %d:",
+        dest->num_regions, dest->index);
+      port_identifier_print (&dest->port_id);
+    }
 }
 
 /**
@@ -209,6 +262,10 @@ revert_automation (
   int                     slot,
   bool                    deleted)
 {
+  g_message (
+    "reverting automation for %s#%d",
+    track->name, slot);
+
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   int num_ats =
@@ -217,6 +274,8 @@ revert_automation (
   AutomationTrack ** ats =
      deleted ?
        self->deleted_ats : self->ats;
+  int num_reverted_ats = 0;
+  int num_reverted_regions = 0;
   for (int j = 0; j < num_ats; j++)
     {
       AutomationTrack * cloned_at = ats[j];
@@ -236,11 +295,19 @@ revert_automation (
       AutomationTrack * actual_at =
         automation_tracklist_get_plugin_at (
           atl, ms->type, slot,
-          cloned_at->port_id.label);
+          cloned_at->port_id.port_index,
+          cloned_at->port_id.sym);
 
       copy_at_regions (
         actual_at, cloned_at);
+      num_reverted_regions +=
+        actual_at->num_regions;
+      num_reverted_ats++;
     }
+
+  g_message (
+    "reverted %d automation tracks and %d regions",
+    num_reverted_ats, num_reverted_regions);
 }
 
 /**
@@ -283,6 +350,12 @@ save_existing_plugin (
         self, tmp_ms, true,
         tmp_ms->num_slots - 1);
     }
+  else
+    {
+      g_message (
+        "skipping saving slot and cloning "
+        "automation tracks - same slot");
+    }
 }
 
 /**
@@ -292,7 +365,8 @@ static int
 revert_deleted_plugin (
   MixerSelectionsAction * self,
   Track *                 to_tr,
-  int                     to_slot)
+  int                     to_slot,
+  GError **               error)
 {
   if (!self->deleted_ms)
     {
@@ -301,6 +375,10 @@ revert_deleted_plugin (
         to_tr->name, to_slot);
       return 0;
     }
+
+  g_message (
+    "reverting deleted plugin at %s#%d",
+    to_tr->name, to_slot);
 
   if (self->deleted_ms->type ==
         PLUGIN_SLOT_MODULATOR)
@@ -319,9 +397,11 @@ revert_deleted_plugin (
           continue;
         }
 
+      Plugin * deleted_pl =
+        self->deleted_ms->plugins[j];
       g_message (
         "reverting plugin %s in slot %d",
-        self->deleted_ms->plugins[j]->setting->descr->name,
+        deleted_pl->setting->descr->name,
         slot_to_revert);
 
       /* note: this also instantiates the
@@ -329,11 +409,12 @@ revert_deleted_plugin (
       GError * err = NULL;
       Plugin * new_pl =
         plugin_clone (
-          self->deleted_ms->plugins[j],
-          F_NOT_PROJECT, &err);
+          deleted_pl, F_NOT_PROJECT, &err);
       if (!new_pl)
         {
-          g_warning ("%s", err->message);
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to clone plugin"));
           return -1;
         }
 
@@ -355,9 +436,9 @@ revert_deleted_plugin (
       plugin_activate (new_pl, F_ACTIVATE);
 
       /* show if was visible before */
-      if (ZRYTHM_HAVE_UI &&
-          self->deleted_ms->plugins[j]->
-            visible)
+      if (ZRYTHM_HAVE_UI
+          &&
+          self->deleted_ms->plugins[j]->visible)
         {
           new_pl->visible = true;
           EVENTS_PUSH (
@@ -373,7 +454,8 @@ static int
 do_or_undo_create_or_delete (
   MixerSelectionsAction * self,
   bool                    _do,
-  bool                    create)
+  bool                    create,
+  GError **               error)
 {
   Track * track =
     TRACKLIST->tracks[
@@ -656,11 +738,16 @@ do_or_undo_create_or_delete (
 
           /* if there was a plugin at the slot
            * before, bring it back */
+          GError * err = NULL;
           int ret =
             revert_deleted_plugin (
-              self, track, slot);
+              self, track, slot, &err);
           if (ret != 0)
             {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to revert deleted "
+                "plugin"));
               return -1;
             }
         }
@@ -746,7 +833,8 @@ static int
 do_or_undo_move_or_copy (
   MixerSelectionsAction * self,
   bool                    _do,
-  bool                    copy)
+  bool                    copy,
+  GError **               error)
 {
   MixerSelections * own_ms = self->ms_before;
   PluginSlotType from_slot_type =
@@ -1052,8 +1140,18 @@ do_or_undo_move_or_copy (
 
           /* if there was a plugin at the slot
            * before, bring it back */
-          revert_deleted_plugin (
-            self, to_tr, to_slot);
+          GError * err = NULL;
+          int ret =
+            revert_deleted_plugin (
+              self, to_tr, to_slot, &err);
+          if (ret != 0)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                _("Failed to revert deleted "
+                "plugin"));
+              return -1;
+            }
 
           if (copy)
             {
@@ -1093,32 +1191,33 @@ do_or_undo_move_or_copy (
 static int
 do_or_undo (
   MixerSelectionsAction * self,
-  bool                    _do)
+  bool                    _do,
+  GError **               error)
 {
   switch (self->type)
     {
     case MIXER_SELECTIONS_ACTION_CREATE:
       return
         do_or_undo_create_or_delete (
-          self, _do, true);
+          self, _do, true, error);
     case MIXER_SELECTIONS_ACTION_DELETE:
       return
         do_or_undo_create_or_delete (
-          self, _do, false);
+          self, _do, false, error);
     case MIXER_SELECTIONS_ACTION_MOVE:
       return
         do_or_undo_move_or_copy (
-          self, _do, false);
+          self, _do, false, error);
       break;
     case MIXER_SELECTIONS_ACTION_COPY:
       return
         do_or_undo_move_or_copy (
-          self, _do, true);
+          self, _do, true, error);
       break;
     case MIXER_SELECTIONS_ACTION_PASTE:
       return
         do_or_undo_create_or_delete (
-          self, _do, true);
+          self, _do, true, error);
       break;
     default:
       g_warn_if_reached ();
@@ -1128,16 +1227,18 @@ do_or_undo (
 
 int
 mixer_selections_action_do (
-  MixerSelectionsAction * self)
+  MixerSelectionsAction * self,
+  GError **               error)
 {
-  return do_or_undo (self, true);
+  return do_or_undo (self, true, error);
 }
 
 int
 mixer_selections_action_undo (
-  MixerSelectionsAction * self)
+  MixerSelectionsAction * self,
+  GError **               error)
 {
-  return do_or_undo (self, false);
+  return do_or_undo (self, false, error);
 }
 
 char *

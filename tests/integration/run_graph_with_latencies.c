@@ -83,11 +83,9 @@ _test (
       with_carla);
 
   /* 2. add no delay line */
-  UndoableAction * ua =
-    mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSERT,
-      TRACKLIST->num_tracks - 1, 0, setting, 1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  mixer_selections_action_perform_create (
+    PLUGIN_SLOT_INSERT,
+    TRACKLIST->num_tracks - 1, 0, setting, 1, NULL);
 
   /* 3. set delay to high value */
   Plugin * pl = track->channel->inserts[0];
@@ -135,7 +133,7 @@ _test (
   Track * new_track =
     track_create_with_action (
       TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
-      TRACKLIST->num_tracks, 1);
+      TRACKLIST->num_tracks, 1, NULL);
 
   pl = new_track->channel->inserts[0];
   port = get_delay_port (pl);;

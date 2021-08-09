@@ -203,9 +203,9 @@ router_new (void)
  */
 bool
 router_is_processing_thread (
-  Router * self)
+  const Router * const self)
 {
-  if (!self || !self->graph)
+  if (!self->graph)
     return false;
 
   for (int j = 0;

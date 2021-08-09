@@ -212,7 +212,7 @@ static void
 test_timeline_frames_to_local (void)
 {
   track_create_empty_with_action (
-    TRACK_TYPE_MIDI);
+    TRACK_TYPE_MIDI, NULL);
 
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];

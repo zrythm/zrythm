@@ -31,6 +31,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mpmc_queue.h"
@@ -39,6 +40,7 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #if 0
 static int received = 0;
@@ -155,11 +157,18 @@ handle_stop_recording (
     }
 
   /* perform the create action */
-  UndoableAction * action =
-    arranger_selections_action_new_record (
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_record (
       self->selections_before_start,
-      (ArrangerSelections *) TL_SELECTIONS, true);
-  undo_manager_perform (UNDO_MANAGER, action);
+      (ArrangerSelections *) TL_SELECTIONS, true,
+      &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to create recorded regions"));
+    }
 
   /* update frame caches and write audio clips to
    * pool */

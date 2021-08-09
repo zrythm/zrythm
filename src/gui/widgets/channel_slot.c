@@ -35,8 +35,9 @@
 #include "gui/widgets/mixer.h"
 #include "project.h"
 #include "utils/cairo.h"
-#include "utils/gtk.h"
+#include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "utils/resources.h"
@@ -290,29 +291,32 @@ on_drag_data_received (
                 gdk_drag_context_get_selected_action (
                   context);
 
-              UndoableAction * ua = NULL;
+              bool ret;
+              GError * err = NULL;
               if (action == GDK_ACTION_COPY)
                 {
-                  ua =
-                    mixer_selections_action_new_copy (
+                  ret =
+                    mixer_selections_action_perform_copy (
                       MIXER_SELECTIONS,
-                      self->type,
-                      self->track->pos,
-                      self->slot_index);
+                      self->type, self->track->pos,
+                      self->slot_index, &err);
                 }
               else if (action == GDK_ACTION_MOVE)
                 {
-                  ua =
-                    mixer_selections_action_new_move (
+                  ret =
+                    mixer_selections_action_perform_move (
                       MIXER_SELECTIONS,
-                      self->type,
-                      self->track->pos,
-                      self->slot_index);
+                      self->type, self->track->pos,
+                      self->slot_index, &err);
                 }
-              g_warn_if_fail (ua);
 
-              undo_manager_perform (
-                UNDO_MANAGER, ua);
+              if (!ret)
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to move or copy "
+                    "plugins"));
+                }
             }
           else
             {
@@ -335,12 +339,17 @@ on_drag_data_received (
         {
           PluginSetting * setting =
             plugin_setting_new_default (descr);
-          UndoableAction * ua =
-            mixer_selections_action_new_create (
+          GError * err = NULL;
+          bool ret =
+            mixer_selections_action_perform_create (
               self->type, self->track->pos,
-              self->slot_index, setting, 1);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              self->slot_index, setting, 1, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, _("Failed to create plugin %s"),
+                setting->descr->name);
+            }
           plugin_setting_free (setting);
         }
       else

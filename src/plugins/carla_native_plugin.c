@@ -626,7 +626,7 @@ carla_native_plugin_populate_banks (
   plugin_add_preset_to_bank (
     self->plugin, pl_def_bank, pl_def_preset);
 
-  GString * presets_gstr = g_string_new (NULL);
+  /*GString * presets_gstr = g_string_new (NULL);*/
 
   uint32_t count =
     carla_get_program_count (
@@ -643,15 +643,21 @@ carla_native_plugin_populate_banks (
       plugin_add_preset_to_bank (
         self->plugin, pl_def_bank, pl_preset);
 
+#if 0
       g_string_append_printf (
         presets_gstr,
         "found preset %s (%d)\n",
         pl_preset->name, pl_preset->carla_program);
+#endif
     }
 
+  g_message ("found %d presets", count);
+
+#if 0
   char * str = g_string_free (presets_gstr, false);
   g_message ("%s", str);
   g_free (str);
+#endif
 }
 
 bool
@@ -1327,16 +1333,18 @@ create_ports (
           port->deff = ranges->def;
           port->minf = ranges->min;
           port->maxf = ranges->max;
+#if 0
           g_debug (
             "ranges: min %f max %f default %f",
             (double) port->minf,
             (double) port->maxf,
             (double) port->deff);
+#endif
         }
       float cur_val =
         carla_native_plugin_get_param_value (
           self, i);
-      g_message (
+      g_debug (
         "%d: %s=%f%s", i, port->id.label,
         (double) cur_val,
         loading ? " (loading)" : "");

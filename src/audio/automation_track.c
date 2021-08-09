@@ -129,8 +129,20 @@ automation_track_validate (
   AutomationTrack * found_at =
     automation_track_find_from_port_id (
       &self->port_id, false);
-  g_return_val_if_fail (
-    found_at == self, false);
+  if (found_at != self)
+    {
+      g_message (
+        "The automation track for the following "
+        "port identifier was not found");
+      port_identifier_print (&self->port_id);
+      g_message (
+        "automation tracks:");
+      AutomationTracklist * atl =
+        automation_track_get_automation_tracklist (
+          self);
+      automation_tracklist_print_ats (atl);
+      g_return_val_if_reached (false);
+    }
   for (int j = 0; j < self->num_regions; j++)
     {
       ZRegion * r = self->regions[j];

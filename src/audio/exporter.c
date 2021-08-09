@@ -787,15 +787,23 @@ exporter_create_audio_track_after_bounce (
       position_set_to_pos (&tmp, PLAYHEAD);
       transport_set_playhead_pos (
         TRANSPORT, &settings->custom_start);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      int ret =
+        undo_manager_perform (
+          UNDO_MANAGER, ua, &err);
+      if (ret != 0)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to create audio track"));
+        }
       transport_set_playhead_pos (
         TRANSPORT, &tmp);
     }
   else
     {
       HANDLE_ERROR (
-        err, _("Failed to create audio track: %s"),
-        err->message);
+        err, "%s",
+        _("Failed to create audio track"));
     }
 }
 

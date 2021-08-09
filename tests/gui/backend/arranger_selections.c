@@ -68,7 +68,7 @@ test_get_length_in_ticks ()
 
   Track * track =
     track_create_empty_with_action (
-      TRACK_TYPE_MIDI);
+      TRACK_TYPE_MIDI, NULL);
 
   test_region_length_in_ticks (track, 3, 4);
   test_region_length_in_ticks (track, 100, 102);
@@ -84,7 +84,7 @@ test_get_last_object (void)
 
   Track * track =
     track_create_empty_with_action (
-      TRACK_TYPE_MIDI);
+      TRACK_TYPE_MIDI, NULL);
 
   Position p1, p2;
   position_set_to_bar (&p1, 3);
@@ -125,7 +125,7 @@ test_contains_object_with_property (void)
 
   Track * track =
     track_create_empty_with_action (
-      TRACK_TYPE_MIDI);
+      TRACK_TYPE_MIDI, NULL);
 
   Position p1, p2;
   position_set_to_bar (&p1, 3);

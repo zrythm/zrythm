@@ -90,17 +90,18 @@ automation_tracklist_add_at (
 }
 
 /**
- * Gets the automation track with the given label.
+ * Gets the automation track matching the given
+ * arguments.
  *
- * Only works for plugin port labels and mainly
- * used in tests.
+ * Currently only used in mixer selections action.
  */
 AutomationTrack *
 automation_tracklist_get_plugin_at (
   AutomationTracklist * self,
   PluginSlotType        slot_type,
   const int             plugin_slot,
-  const char *          label)
+  const int             port_index,
+  const char *          symbol)
 {
   for (int i = 0; i < self->num_ats; i++)
     {
@@ -108,13 +109,15 @@ automation_tracklist_get_plugin_at (
       g_return_val_if_fail (at, NULL);
 
       if (at->port_id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN &&
-          plugin_slot ==
-            at->port_id.plugin_id.slot &&
-          slot_type ==
-            at->port_id.plugin_id.slot_type &&
-          string_is_equal (
-            label, at->port_id.label))
+            PORT_OWNER_TYPE_PLUGIN
+          && plugin_slot ==
+            at->port_id.plugin_id.slot
+          && slot_type ==
+            at->port_id.plugin_id.slot_type
+          && port_index ==
+            at->port_id.port_index
+          && string_is_equal (
+            symbol, at->port_id.sym))
         {
           return at;
         }
@@ -652,6 +655,53 @@ automation_tracklist_validate (
     }
 
   return true;
+}
+
+/**
+ * Counts the total number of regions in the
+ * automation tracklist.
+ */
+int
+automation_tracklist_get_num_regions (
+  AutomationTracklist * self)
+{
+  int count = 0;
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      AutomationTrack * at = self->ats[i];
+      count += at->num_regions;
+    }
+  return count;
+}
+
+void
+automation_tracklist_print_regions (
+  AutomationTracklist * self)
+{
+  Track * track =
+    automation_tracklist_get_track (self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+
+  GString * str = g_string_new (NULL);
+  g_string_append_printf (
+    str,
+    "Automation regions for track %s "
+    "(total automation tracks %d):",
+    track->name, self->num_ats);
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      AutomationTrack * at = self->ats[i];
+      if (at->num_regions == 0)
+        continue;
+
+      g_string_append_printf (
+        str,
+        "\n  [%d] port '%s': %d regions",
+        i, at->port_id.label, at->num_regions);
+    }
+  char * tmp = g_string_free (str, false);
+  g_message ("%s", tmp);
+  g_free (tmp);
 }
 
 void

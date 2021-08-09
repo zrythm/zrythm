@@ -42,8 +42,9 @@ midi_mapping_action_init_loaded (
  */
 UndoableAction *
 midi_mapping_action_new_enable (
-  int  idx,
-  bool enable)
+  int       idx,
+  bool      enable,
+  GError ** error)
 {
   MidiMappingAction * self =
     object_new (MidiMappingAction);
@@ -64,9 +65,10 @@ midi_mapping_action_new_enable (
  */
 UndoableAction *
 midi_mapping_action_new_bind (
-  midi_byte_t *  buf,
-  ExtPort *      device_port,
-  Port *         dest_port)
+  midi_byte_t * buf,
+  ExtPort *     device_port,
+  Port *        dest_port,
+  GError **     error)
 {
   MidiMappingAction * self =
     object_new (MidiMappingAction);
@@ -89,7 +91,8 @@ midi_mapping_action_new_bind (
  */
 UndoableAction *
 midi_mapping_action_new_unbind (
-  int            idx)
+  int       idx,
+  GError ** error)
 {
   MidiMappingAction * self =
     object_new (MidiMappingAction);
@@ -100,6 +103,48 @@ midi_mapping_action_new_unbind (
   self->idx = idx;
 
   return ua;
+}
+
+/**
+ * Wrapper of midi_mapping_action_new_enable().
+ */
+bool
+midi_mapping_action_perform_enable (
+  int       idx,
+  bool      enable,
+  GError ** error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    midi_mapping_action_new_enable,
+    error, idx, enable, error);
+}
+
+/**
+ * Wrapper of midi_mapping_action_new_bind().
+ */
+bool
+midi_mapping_action_perform_bind (
+  midi_byte_t *  buf,
+  ExtPort *      device_port,
+  Port *         dest_port,
+  GError **      error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    midi_mapping_action_new_bind,
+    error, buf, device_port, dest_port, error);
+}
+
+/**
+ * Wrapper of midi_mapping_action_new_unbind().
+ */
+bool
+midi_mapping_action_perform_unbind (
+  int       idx,
+  GError ** error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    midi_mapping_action_new_unbind,
+    error, idx, error);
 }
 
 static void
@@ -142,7 +187,8 @@ bind_or_unbind (
 
 int
 midi_mapping_action_do (
-  MidiMappingAction * self)
+  MidiMappingAction * self,
+  GError **           error)
 {
   switch (self->type)
     {
@@ -174,7 +220,8 @@ midi_mapping_action_do (
  */
 int
 midi_mapping_action_undo (
-  MidiMappingAction * self)
+  MidiMappingAction * self,
+  GError **           error)
 {
   switch (self->type)
     {

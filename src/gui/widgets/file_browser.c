@@ -37,6 +37,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -92,23 +93,23 @@ on_file_chooser_file_activated (
              file->type,
              abs_path);
 
-  UndoableAction * ua = NULL;
   GError * err = NULL;
+  bool ret = true;
   switch (file->type)
     {
     case FILE_TYPE_WAV:
     case FILE_TYPE_OGG:
     case FILE_TYPE_FLAC:
     case FILE_TYPE_MP3:
-      ua =
-        tracklist_selections_action_new_create (
+      ret =
+        tracklist_selections_action_perform_create (
           TRACK_TYPE_AUDIO, NULL, file,
           TRACKLIST->num_tracks, PLAYHEAD, 1, -1,
           &err);
       break;
     case FILE_TYPE_MIDI:
-      ua =
-        tracklist_selections_action_new_create (
+      ret =
+        tracklist_selections_action_perform_create (
           TRACK_TYPE_MIDI, NULL, file,
           TRACKLIST->num_tracks,
           PLAYHEAD,
@@ -120,18 +121,12 @@ on_file_chooser_file_activated (
       break;
     }
 
-  if (ua)
+  if (!ret)
     {
-      undo_manager_perform (UNDO_MANAGER, ua);
-    }
-  else
-    {
-      g_return_if_fail (err);
-      ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR,
-        _("Could not create track: %s"),
-        err->message);
-      g_error_free_and_null (err);
+      HANDLE_ERROR (
+        err,
+        _("Failed to create track for file '%s'"),
+        abs_path);
     }
 
   g_free (abs_path);

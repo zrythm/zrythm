@@ -51,7 +51,7 @@ test_fill_stereo_ports (void)
   int num_tracks_before = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos,
-    num_tracks_before, 1);
+    num_tracks_before, 1, NULL);
 
   Track * track =
     TRACKLIST->tracks[num_tracks_before];
@@ -107,7 +107,7 @@ test_change_samplerate (void)
   int num_tracks_before = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos,
-    num_tracks_before, 1);
+    num_tracks_before, 1, NULL);
 
   /*Track * track =*/
     /*TRACKLIST->tracks[num_tracks_before];*/
@@ -165,7 +165,7 @@ test_load_project_with_selected_audio_region (void)
   int num_tracks_before = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos,
-    num_tracks_before, 1);
+    num_tracks_before, 1, NULL);
 
   /* select region */
   Track * track =

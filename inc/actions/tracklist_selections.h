@@ -353,6 +353,7 @@ tracklist_selections_action_init_loaded (
  *   if @ref tls_before and @ref tls_after are NULL.
  * @param error To be filled in if an error occured.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 tracklist_selections_action_new (
   TracklistSelectionsActionType type,
@@ -692,13 +693,368 @@ tracklist_selections_action_new (
     -1, 0, false, NULL, \
     0.f, 0.f, NULL, false, err)
 
+bool
+tracklist_selections_action_perform (
+  TracklistSelectionsActionType type,
+  TracklistSelections *         tls_before,
+  TracklistSelections *         tls_after,
+  Track *                       track,
+  TrackType                     track_type,
+  PluginSetting *               pl_setting,
+  SupportedFile *               file_descr,
+  int                           track_pos,
+  const Position *              pos,
+  int                           num_tracks,
+  EditTracksActionType          edit_type,
+  int                           ival_after,
+  const GdkRGBA *               color_new,
+  float                         val_before,
+  float                         val_after,
+  const char *                  new_txt,
+  bool                          already_edited,
+  GError **                     error);
+
+/**
+ * @param disable_track_pos Track position to
+ *   disable, or -1 to not disable any track.
+ */
+#define tracklist_selections_action_perform_create( \
+  track_type,pl_setting,file_descr,track_pos, \
+  pos,num_tracks,disable_track_pos,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_CREATE, \
+    NULL, NULL, NULL, track_type, pl_setting, \
+    file_descr, \
+    track_pos, pos, num_tracks, 0, \
+    disable_track_pos, NULL, 0.f, 0.f, NULL, false, \
+    err)
+
+/**
+ * Creates a new TracklistSelectionsAction for an
+ * audio FX track.
+ */
+#define tracklist_selections_action_perform_create_audio_fx( \
+  pl_setting,track_pos,num_tracks,err) \
+  tracklist_selections_action_perform_create ( \
+    TRACK_TYPE_AUDIO_BUS, pl_setting, NULL, track_pos, \
+    NULL, num_tracks, -1, err)
+
+/**
+ * Creates a new TracklistSelectionsAction for a
+ * MIDI FX track.
+ */
+#define tracklist_selections_action_perform_create_midi_fx( \
+  pl_setting,track_pos,num_tracks,err) \
+  tracklist_selections_action_perform_create ( \
+    TRACK_TYPE_MIDI_BUS, pl_setting, NULL, track_pos, \
+    NULL, num_tracks, -1, err)
+
+/**
+ * Creates a new TracklistSelectionsAction for an
+ * instrument track.
+ */
+#define tracklist_selections_action_perform_create_instrument( \
+  pl_setting,track_pos,num_tracks,err) \
+  tracklist_selections_action_perform_create ( \
+    TRACK_TYPE_INSTRUMENT, pl_setting, NULL, track_pos, \
+    NULL, num_tracks, -1, err)
+
+/**
+ * Creates a new TracklistSelectionsAction for an
+ * audio group track.
+ */
+#define tracklist_selections_action_perform_create_audio_group( \
+  track_pos,num_tracks,err) \
+  tracklist_selections_action_perform_create ( \
+    TRACK_TYPE_AUDIO_GROUP, NULL, NULL, track_pos, \
+    NULL, num_tracks, -1, err)
+
+/**
+ * Creates a new TracklistSelectionsAction for a
+ * MIDI group track.
+ */
+#define tracklist_selections_action_perform_create_midi_group( \
+  track_pos,num_tracks,err) \
+  tracklist_selections_action_perform_create ( \
+    TRACK_TYPE_MIDI_GROUP, NULL, NULL, track_pos, \
+    NULL, num_tracks, -1, err)
+
+/**
+ * Creates a new TracklistSelectionsAction for a MIDI
+ * track.
+ */
+#define tracklist_selections_action_perform_create_midi( \
+  track_pos,num_tracks,err) \
+  tracklist_selections_action_perform_create ( \
+    TRACK_TYPE_MIDI, NULL, NULL, track_pos, \
+    NULL, num_tracks, -1, err)
+
+/**
+ * Creates a new TracklistSelectionsAction for a
+ * folder track.
+ */
+#define tracklist_selections_action_perform_create_folder( \
+  track_pos,num_tracks,err) \
+  tracklist_selections_action_perform_create ( \
+    TRACK_TYPE_FOLDER, NULL, NULL, track_pos, \
+    NULL, num_tracks, -1, err)
+
+/**
+ * Generic edit action.
+ */
+#define tracklist_selections_action_perform_edit_generic( \
+  type,tls_before,tls_after,already_edited,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, tls_after, NULL, 0, NULL, NULL, \
+    -1, NULL, \
+    -1, type, false, NULL, \
+    0.f, 0.f, NULL, already_edited, err)
+
+
+/**
+ * Convenience wrapper over
+ * tracklist_selections_action_perform() for single-track
+ * float edit changes.
+ */
+#define tracklist_selections_action_perform_edit_single_float( \
+  type,track,val_before,val_after,already_edited,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
+    -1, type, false, NULL, \
+    val_before, val_after, NULL, already_edited, err)
+
+/**
+ * Convenience wrapper over
+ * tracklist_selections_action_perform() for single-track
+ * int edit changes.
+ */
+#define tracklist_selections_action_perform_edit_single_int( \
+  type,track,val_after,already_edited,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
+    -1, type, val_after, NULL, \
+    0.f, 0.f, NULL, already_edited, err)
+
+#define tracklist_selections_action_perform_edit_mute( \
+  tls_before,mute_new,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_MUTE, \
+    mute_new, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_solo( \
+  tls_before,solo_new,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_SOLO, \
+    solo_new, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_listen( \
+  tls_before,solo_new,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_LISTEN, \
+    solo_new, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_enable( \
+  tls_before,enable_new,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_ENABLE, \
+    enable_new, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_fold( \
+  tls_before,fold_new,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls_before, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_FOLD, \
+    fold_new, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_direct_out( \
+  tls,direct_out,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_DIRECT_OUT, \
+    (direct_out)->pos, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_remove_direct_out( \
+  tls,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_DIRECT_OUT, \
+    -1, NULL, 0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_color( \
+  tls,color,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_COLOR, \
+    false, color, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_edit_icon( \
+  tls,icon,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_ICON, \
+    false, NULL, \
+    0.f, 0.f, icon, false, err)
+
+#define tracklist_selections_action_perform_edit_comment( \
+  tls,comment,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_COMMENT, \
+    false, NULL, \
+    0.f, 0.f, comment, false, err)
+
+#define tracklist_selections_action_perform_edit_rename( \
+  track,name,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track, 0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_RENAME, \
+    false, NULL, \
+    0.f, 0.f, name, false, err)
+
+#define tracklist_selections_action_perform_edit_rename_lane( \
+  track_lane,name,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_EDIT, \
+    NULL, NULL, track_lane_get_track (track_lane), \
+    0, NULL, NULL, -1, NULL, \
+    -1, EDIT_TRACK_ACTION_TYPE_RENAME_LANE, \
+    track_lane->pos, NULL, \
+    0.f, 0.f, name, false, err)
+
+/**
+ * Move @ref tls to @ref track_pos.
+ *
+ * Tracks starting at @ref track_pos will be pushed
+ * down.
+ *
+ * @param track_pos Track position indicating the
+ *   track to push down and insert the selections
+ *   above. This is the track position before the
+ *   move will be executed.
+ */
+#define tracklist_selections_action_perform_move( \
+  tls,track_pos,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_MOVE, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_copy( \
+  tls,track_pos,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_COPY, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+/**
+ * Move inside a foldable track.
+ *
+ * @param track_pos Foldable track index.
+ *
+ * When foldable tracks are included in @ref tls,
+ * all their children must be marked as
+ * selected as well before calling this.
+ *
+ * @note This should be called in combination with
+ *   a move action to move the tracks to the required
+ *   index after putting them inside a group.
+ */
+#define tracklist_selections_action_perform_move_inside( \
+  tls,track_pos,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_copy_inside( \
+  tls,track_pos,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE, \
+    tls, NULL, NULL, 0, NULL, NULL, track_pos, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+#define tracklist_selections_action_perform_delete( \
+  tls,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_DELETE, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+/**
+ * Toggle the current pin status of the track.
+ */
+#define tracklist_selections_action_perform_pin( \
+  tls,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_PIN, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+/**
+ * Toggle the current pin status of the track.
+ */
+#define tracklist_selections_action_perform_unpin( \
+  tls,err) \
+  tracklist_selections_action_perform ( \
+    TRACKLIST_SELECTIONS_ACTION_UNPIN, \
+    tls, NULL, NULL, 0, NULL, NULL, -1, NULL, \
+    -1, 0, false, NULL, \
+    0.f, 0.f, NULL, false, err)
+
+/**
+ * Edit or remove direct out.
+ *
+ * @param direct_out A track to route the
+ *   selections to, or NULL to route nowhere.
+ *
+ * @return Whether successful.
+ */
+bool
+tracklist_selections_action_perform_set_direct_out (
+  TracklistSelections * self,
+  Track *               direct_out,
+  GError **             error);
+
 int
 tracklist_selections_action_do (
-  TracklistSelectionsAction * self);
+  TracklistSelectionsAction * self,
+  GError **                   error);
 
 int
 tracklist_selections_action_undo (
-  TracklistSelectionsAction * self);
+  TracklistSelectionsAction * self,
+  GError **                   error);
 
 char *
 tracklist_selections_action_stringize (

@@ -29,6 +29,7 @@
 #include "gui/widgets/slider_bar.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/gtk.h"
@@ -135,8 +136,16 @@ on_unsolo_all_clicked (
   /* unsolo all */
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_soloed_with_action (
-    TRACKLIST_SELECTIONS, F_NO_SOLO);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_solo (
+      TRACKLIST_SELECTIONS, F_NO_SOLO, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to unsolo all tracks"));
+    }
 
   /* restore selections */
   for (int i = 0; i < num_tracks_before; i++)
@@ -162,11 +171,19 @@ on_unmute_all_clicked (
         TRACKLIST_SELECTIONS->tracks[i]->pos;
     }
 
-  /* unsolo all */
+  /* unmute all */
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_muted_with_action (
-    TRACKLIST_SELECTIONS, F_NO_MUTE);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_mute (
+      TRACKLIST_SELECTIONS, F_NO_MUTE, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to unmute all tracks"));
+    }
 
   /* restore selections */
   for (int i = 0; i < num_tracks_before; i++)
@@ -192,11 +209,19 @@ on_unlisten_all_clicked (
         TRACKLIST_SELECTIONS->tracks[i]->pos;
     }
 
-  /* unsolo all */
+  /* unlisten all */
   tracklist_select_all (
     TRACKLIST, F_SELECT, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_listened_with_action (
-    TRACKLIST_SELECTIONS, F_NO_LISTEN);
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_edit_listen (
+      TRACKLIST_SELECTIONS, F_NO_LISTEN, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to unlisten all tracks"));
+    }
 
   /* restore selections */
   for (int i = 0; i < num_tracks_before; i++)

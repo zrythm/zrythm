@@ -516,6 +516,64 @@ tracklist_selections_action_new (
   return ua;
 }
 
+bool
+tracklist_selections_action_perform (
+  TracklistSelectionsActionType type,
+  TracklistSelections *         tls_before,
+  TracklistSelections *         tls_after,
+  Track *                       track,
+  TrackType                     track_type,
+  PluginSetting *               pl_setting,
+  SupportedFile *               file_descr,
+  int                           track_pos,
+  const Position *              pos,
+  int                           num_tracks,
+  EditTracksActionType          edit_type,
+  int                           ival_after,
+  const GdkRGBA *               color_new,
+  float                         val_before,
+  float                         val_after,
+  const char *                  new_txt,
+  bool                          already_edited,
+  GError **                     error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    tracklist_selections_action_new, error,
+    type, tls_before, tls_after, track, track_type,
+    pl_setting, file_descr, track_pos, pos,
+    num_tracks, edit_type, ival_after, color_new,
+    val_before, val_after, new_txt, already_edited,
+    error);
+}
+
+/**
+ * Edit or remove direct out.
+ *
+ * @param direct_out A track to route the
+ *   selections to, or NULL to route nowhere.
+ *
+ * @return Whether successful.
+ */
+bool
+tracklist_selections_action_perform_set_direct_out (
+  TracklistSelections * self,
+  Track *               direct_out,
+  GError **             error)
+{
+  if (direct_out)
+    {
+      UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+        tracklist_selections_action_new_edit_direct_out,
+        error, self, direct_out, error);
+    }
+  else
+    {
+      UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+        tracklist_selections_action_new_edit_remove_direct_out,
+        error, self, error);
+    }
+}
+
 /**
  * @param add_to_project Used when the track to
  *   create is meant to be used in the project (ie
@@ -1913,33 +1971,19 @@ do_or_undo (
 
 int
 tracklist_selections_action_do (
-  TracklistSelectionsAction * self)
+  TracklistSelectionsAction * self,
+  GError **                   error)
 {
-  GError * err = NULL;
-  int ret = do_or_undo (self, true, &err);
-  if (err)
-    {
-      HANDLE_ERROR (
-        err, "%s",
-        _("Failed to do tracklist selections "
-        "action"));
-    }
+  int ret = do_or_undo (self, true, error);
   return ret;
 }
 
 int
 tracklist_selections_action_undo (
-  TracklistSelectionsAction * self)
+  TracklistSelectionsAction * self,
+  GError **                   error)
 {
-  GError * err = NULL;
-  int ret = do_or_undo (self, false, &err);
-  if (err)
-    {
-      HANDLE_ERROR (
-        err, "%s",
-        _("Failed to do tracklist selections "
-        "action"));
-    }
+  int ret = do_or_undo (self, false, error);
   return ret;
 }
 

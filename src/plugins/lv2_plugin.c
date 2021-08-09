@@ -3713,7 +3713,7 @@ lv2_plugin_populate_banks (
   plugin_add_preset_to_bank (
     self->plugin, pl_def_bank, pl_def_preset);
 
-  GString * presets_str = g_string_new (NULL);
+  /*GString * presets_str = g_string_new (NULL);*/
 
   LilvNodes * presets =
     lilv_plugin_get_related (
@@ -3723,6 +3723,7 @@ lv2_plugin_populate_banks (
     PM_GET_NODE (LV2_PRESETS__bank);
   const LilvNode * rdfs_label =
     PM_GET_NODE (LILV_NS_RDFS "label");
+  int count = 0;
   LILV_FOREACH (nodes, i, presets)
     {
       const LilvNode* preset =
@@ -3772,17 +3773,19 @@ lv2_plugin_populate_banks (
             self->plugin, pl_bank, pl_preset);
           lilv_nodes_free (labels);
 
+#if 0
           g_string_append_printf (
             presets_str,
             "found preset %s (<%s>)\n",
             pl_preset->name, pl_preset->uri);
+#endif
+          count++;
         }
       else
         {
-          g_string_append_printf (
-            presets_str,
+          g_message (
             "Skipping preset <%s> because it has "
-            "no rdfs:label\n",
+            "no rdfs:label",
             lilv_node_as_string (preset));
         }
       /* some plugins (Helm LV2) get stuck in an
@@ -3792,9 +3795,13 @@ lv2_plugin_populate_banks (
     }
   lilv_nodes_free (presets);
 
+  g_message ("found %d presets", count);
+
+#if 0
   char * str = g_string_free (presets_str, false);
   g_message ("%s", str);
   g_free (str);
+#endif
 }
 
 /**

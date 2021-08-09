@@ -34,6 +34,8 @@
 typedef struct ArrangerObject ArrangerObject;
 typedef struct Position Position;
 typedef struct AudioClip AudioClip;
+typedef enum ArrangerSelectionsActionEditType
+  ArrangerSelectionsActionEditType;
 
 /**
  * @addtogroup gui_backend

@@ -21,6 +21,7 @@
 #include "audio/midi.h"
 #include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -119,15 +120,33 @@ add_tracks_to_group_dialog_widget_get_track (
     case GTK_RESPONSE_OK:
       if (signal_type == TYPE_AUDIO)
         {
-          track_create_empty_at_idx_with_action (
-            TRACK_TYPE_AUDIO_GROUP,
-            lowest_track->pos + 1);
+          GError * err = NULL;
+          bool ret =
+            track_create_empty_at_idx_with_action (
+              TRACK_TYPE_AUDIO_GROUP,
+              lowest_track->pos + 1, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to create audio group "
+                "track"));
+            }
         }
       else if (signal_type == TYPE_EVENT)
         {
-          track_create_empty_at_idx_with_action (
-            TRACK_TYPE_MIDI_GROUP,
-            lowest_track->pos + 1);
+          GError * err = NULL;
+          bool ret =
+            track_create_empty_at_idx_with_action (
+              TRACK_TYPE_MIDI_GROUP,
+              lowest_track->pos + 1, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to create MIDI group "
+                "track"));
+            }
         }
       else
         {

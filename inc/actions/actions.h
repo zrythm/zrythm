@@ -299,7 +299,6 @@ activate_snap_keep_offset (GSimpleAction *action,
 
 DECLARE_SIMPLE (activate_create_audio_track);
 DECLARE_SIMPLE (activate_create_midi_track);
-DECLARE_SIMPLE (activate_create_ins_track);
 DECLARE_SIMPLE (activate_create_audio_bus_track);
 DECLARE_SIMPLE (activate_create_midi_bus_track);
 DECLARE_SIMPLE (activate_create_audio_group_track);

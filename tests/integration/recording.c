@@ -338,9 +338,9 @@ do_takes_no_loop_no_punch (
 
   /* save and undo/redo */
   test_project_save_and_reload ();
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 }
 
 static void
@@ -694,9 +694,9 @@ do_takes_loop_no_punch (
 
   /* save and undo/redo */
   test_project_save_and_reload ();
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 }
 
 static void
@@ -741,7 +741,7 @@ test_recording ()
   /* create an audio track */
   Track * audio_track =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO);
+      TRACK_TYPE_AUDIO, NULL);
 
   /* get master track */
   Track * master_track = P_MASTER_TRACK;
@@ -899,7 +899,7 @@ test_mono_recording (void)
   /* create an audio track */
   Track * audio_track =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO);
+      TRACK_TYPE_AUDIO, NULL);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -980,8 +980,8 @@ test_mono_recording (void)
 
   /* save and undo/redo */
   test_project_save_and_reload ();
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1000,7 +1000,7 @@ test_long_audio_recording (void)
   /* create an audio track */
   Track * audio_track =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO);
+      TRACK_TYPE_AUDIO, NULL);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -1152,8 +1152,8 @@ test_long_audio_recording (void)
      0.0001f));
   audio_clip_free (new_clip);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
 #endif
 
@@ -1181,7 +1181,7 @@ test_2nd_audio_recording (void)
   Track * audio_track =
     track_create_with_action (
       TRACK_TYPE_AUDIO, NULL, file, NULL,
-      TRACKLIST->num_tracks, 1);
+      TRACKLIST->num_tracks, 1, NULL);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -1278,8 +1278,8 @@ test_2nd_audio_recording (void)
   /* save and undo/redo */
   test_project_save_and_reload ();
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
 #endif
 

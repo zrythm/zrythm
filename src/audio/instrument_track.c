@@ -67,7 +67,7 @@ instrument_track_get_instrument (
   g_return_val_if_fail (
     self &&
     self->type == TRACK_TYPE_INSTRUMENT &&
-    self->channel, 0);
+    self->channel, false);
 
   Plugin * plugin = self->channel->instrument;
   g_return_val_if_fail (plugin, NULL);

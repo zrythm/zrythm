@@ -27,6 +27,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/toolbox.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
@@ -56,15 +57,37 @@ on_undo_history_activated (
   g_debug ("redo %d, idx %d", data->redo, data->idx);
   for (int i = 0; i <= data->idx; i++)
     {
+      GError * err = NULL;
+      int ret = 0;
       if (data->redo)
         {
-          undo_manager_redo (UNDO_MANAGER);
+          ret =
+            undo_manager_redo (UNDO_MANAGER, &err);
         }
       else
         {
-          undo_manager_undo (UNDO_MANAGER);
+          ret =
+            undo_manager_undo (UNDO_MANAGER, &err);
         }
-    }
+
+      if (ret != 0)
+        {
+          if (data->redo)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to redo action"));
+            }
+          else
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to undo action"));
+            }
+
+        } /* endif ret != 0 */
+
+    } /* endforeach */
 }
 
 static void

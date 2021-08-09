@@ -59,7 +59,8 @@ UndoableAction *
 range_action_new (
   RangeActionType type,
   Position *      start_pos,
-  Position *      end_pos)
+  Position *      end_pos,
+  GError **       error)
 {
   RangeAction * self = object_new (RangeAction);
   UndoableAction * ua = (UndoableAction *) self;
@@ -88,6 +89,18 @@ range_action_new (
   self->transport = transport_clone (TRANSPORT);
 
   return ua;
+}
+
+bool
+range_action_perform (
+  RangeActionType type,
+  Position *      start_pos,
+  Position *      end_pos,
+  GError **       error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    range_action_new,
+    error, type, start_pos, end_pos, error);
 }
 
 #define _MOVE_TRANSPORT_MARKER(x,_ticks,_do) \
@@ -155,7 +168,8 @@ add_to_sel_after (
 
 int
 range_action_do (
-  RangeAction * self)
+  RangeAction * self,
+  GError **     error)
 {
   /* sort the selections in ascending order */
   arranger_selections_sort_by_indices (
@@ -588,7 +602,8 @@ range_action_do (
 
 int
 range_action_undo (
-  RangeAction * self)
+  RangeAction * self,
+  GError **     error)
 {
   /* sort the selections in ascending order */
   arranger_selections_sort_by_indices (

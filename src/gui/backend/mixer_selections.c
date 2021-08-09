@@ -25,12 +25,14 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 void
 mixer_selections_init_loaded (
@@ -596,10 +598,16 @@ mixer_selections_paste_to_slot (
   PluginSlotType    type,
   int               slot)
 {
-  UndoableAction * ua =
-    mixer_selections_action_new_paste (
-      ms, type, ch->track_pos, slot);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    mixer_selections_action_perform_paste (
+      ms, type, ch->track_pos, slot, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to paste plugins"));
+    }
 }
 
 void

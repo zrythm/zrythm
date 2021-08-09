@@ -84,7 +84,7 @@ test_midi_file_playback ()
         supported_file_new_from_path (midi_file);
       track_create_with_action (
         TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-        TRACKLIST->num_tracks, 1);
+        TRACKLIST->num_tracks, 1, NULL);
       supported_file_free (file);
       g_message ("testing %s", midi_file);
 

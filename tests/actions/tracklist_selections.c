@@ -55,7 +55,7 @@ test_num_tracks_with_file (
   bool ret =
     track_create_with_action (
       TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-      num_tracks_before, 1);
+      num_tracks_before, 1, NULL);
   g_assert_true (ret);
 
   Track * first_track =
@@ -63,9 +63,9 @@ test_num_tracks_with_file (
   track_select (
     first_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
-  undo_manager_undo (UNDO_MANAGER);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   g_assert_cmpint (
     TRACKLIST->num_tracks, ==,
@@ -115,21 +115,21 @@ test_create_ins_when_redo_stack_nonempty (void)
   test_helper_zrythm_init ();
 
   track_create_empty_with_action (
-    TRACK_TYPE_MIDI);
+    TRACK_TYPE_MIDI, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
 #ifdef HAVE_HELM
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 #endif
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -174,10 +174,8 @@ _test_port_and_plugin_track_pos_after_duplication (
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* create some automation points */
   Port * port = automation_track_get_port (at);
@@ -196,10 +194,8 @@ _test_port_and_plugin_track_pos_after_duplication (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
   math_assert_nonnann (ap->fvalue);
   math_assert_nonnann (ap->normalized_val);
 
@@ -207,9 +203,9 @@ _test_port_and_plugin_track_pos_after_duplication (
     track_validate (src_track));
 
   /* duplicate it */
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, true,
-    TRACKLIST->num_tracks);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS,  TRACKLIST->num_tracks,
+    NULL);
 
   Track * dest_track =
     TRACKLIST->tracks[dest_track_pos];
@@ -230,23 +226,21 @@ _test_port_and_plugin_track_pos_after_duplication (
   automation_point_set_fvalue (
     ap, prev_norm_val - 0.1f, F_NORMALIZED,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_move_automation (
-      (ArrangerSelections *) AUTOMATION_SELECTIONS,
-      0, 0.1, F_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  arranger_selections_action_perform_move_automation (
+    (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    0, 0.1, F_ALREADY_MOVED, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* let the engine run */
   g_usleep (1000000);
 
   /* go back to the start */
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 }
 
 static void
@@ -328,10 +322,8 @@ _test_undo_track_deletion (
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* create some automation points */
   Port * port = automation_track_get_port (at);
@@ -346,10 +338,8 @@ _test_undo_track_deletion (
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
 
   g_assert_true (
     track_validate (helm_track));
@@ -358,14 +348,14 @@ _test_undo_track_deletion (
   test_project_save_and_reload ();
 
   /* delete it */
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
   /* undo deletion */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -401,13 +391,13 @@ test_group_track_deletion (void)
    * a new group track */
   Track * audio_fx1 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
   Track * audio_fx2 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
   Track * group =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_GROUP);
+      TRACK_TYPE_AUDIO_GROUP, NULL);
 
   g_assert_true (group->children);
   g_assert_false (audio_fx1->children);
@@ -419,21 +409,21 @@ test_group_track_deletion (void)
   track_select (
     audio_fx1, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_direct_out_with_action (
-    TRACKLIST_SELECTIONS, group);
+  tracklist_selections_action_perform_set_direct_out (
+    TRACKLIST_SELECTIONS, group, NULL);
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==, 2);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==, 3);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==, 2);
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_direct_out_with_action (
-    TRACKLIST_SELECTIONS, group);
+  tracklist_selections_action_perform_set_direct_out (
+    TRACKLIST_SELECTIONS, group, NULL);
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==, 1);
 
@@ -459,8 +449,8 @@ test_group_track_deletion (void)
   track_select (
     group, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
   g_assert_false (audio_fx1->channel->has_output);
   g_assert_false (audio_fx2->channel->has_output);
 
@@ -476,7 +466,7 @@ test_group_track_deletion (void)
 
   /* undo and check that the connections are
    * established again */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   group = TRACKLIST->tracks[group_pos];
   g_assert_cmpint (group->num_children, ==, 2);
   g_assert_cmpint (
@@ -499,7 +489,7 @@ test_group_track_deletion (void)
 
   /* redo and check that the connections are
    * gone again */
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_false (audio_fx1->channel->has_output);
   g_assert_false (audio_fx2->channel->has_output);
 
@@ -606,8 +596,6 @@ test_track_deletion_with_sends (
   const char * pl_bundle,
   const char * pl_uri)
 {
-  UndoableAction * ua;
-
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       pl_bundle, pl_uri, false);
@@ -617,24 +605,20 @@ test_track_deletion_with_sends (
   Track * audio_fx_for_sending =
     track_create_for_plugin_at_idx_w_action (
       TRACK_TYPE_AUDIO_BUS, setting,
-      TRACKLIST->num_tracks);
+      TRACKLIST->num_tracks, NULL);
   Track * audio_fx_for_receiving =
     track_create_for_plugin_at_idx_w_action (
       TRACK_TYPE_AUDIO_BUS, setting,
-      TRACKLIST->num_tracks);
-  ua =
-    channel_send_action_new_connect_audio (
-      audio_fx_for_sending->channel->sends[0],
-      audio_fx_for_receiving->processor->
-        stereo_in);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  ua =
-    channel_send_action_new_connect_audio (
-      audio_fx_for_sending->channel->sends[
-        CHANNEL_SEND_POST_FADER_START_SLOT],
-      audio_fx_for_receiving->processor->
-        stereo_in);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      TRACKLIST->num_tracks, NULL);
+  channel_send_action_perform_connect_audio (
+    audio_fx_for_sending->channel->sends[0],
+    audio_fx_for_receiving->processor->
+      stereo_in, NULL);
+  channel_send_action_perform_connect_audio (
+    audio_fx_for_sending->channel->sends[
+      CHANNEL_SEND_POST_FADER_START_SLOT],
+    audio_fx_for_receiving->processor->
+      stereo_in, NULL);
 
   /* connect plugin from sending track to
    * plugin on receiving track */
@@ -668,10 +652,8 @@ test_track_deletion_with_sends (
           break;
         }
     }
-  ua =
-    port_connection_action_new_connect (
-      &out_port->id, &in_port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  port_connection_action_perform_connect (
+    &out_port->id, &in_port->id, NULL);
 
   /* assert they are connected */
   assert_sends_connected (
@@ -700,8 +682,8 @@ test_track_deletion_with_sends (
       track_select (
         audio_fx_for_receiving, F_SELECT,
         F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-      tracklist_selections_delete_with_action (
-        TRACKLIST_SELECTIONS);
+      tracklist_selections_action_perform_delete (
+        TRACKLIST_SELECTIONS, NULL);
       assert_sends_connected (
         audio_fx_for_sending, NULL, false,
         out_port_idx, in_port_idx);
@@ -725,8 +707,8 @@ test_track_deletion_with_sends (
       track_select (
         audio_fx_for_sending, F_SELECT,
         F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-      tracklist_selections_delete_with_action (
-        TRACKLIST_SELECTIONS);
+      tracklist_selections_action_perform_delete (
+        TRACKLIST_SELECTIONS, NULL);
       audio_fx_for_receiving_pos =
         audio_fx_for_receiving->pos;
 
@@ -741,7 +723,7 @@ test_track_deletion_with_sends (
 
   /* undo and check that the sends are
    * established again */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   audio_fx_for_sending =
     TRACKLIST->tracks[audio_fx_for_sending_pos];
@@ -783,7 +765,7 @@ test_audio_track_deletion (void)
 
   Track * track =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO);
+      TRACK_TYPE_AUDIO, NULL);
 
   /* delete track and undo */
   track_select (
@@ -797,10 +779,10 @@ test_audio_track_deletion (void)
   port_set_control_value (
     track->processor->mono, 1.0f, false, false);
 
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -810,7 +792,7 @@ test_audio_track_deletion (void)
   g_assert_cmpfloat_with_epsilon (
     track->processor->mono->control, 1.0f, 0.001f);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -832,12 +814,12 @@ test_track_deletion_with_lv2_worker (void)
     track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -869,11 +851,9 @@ test_ins_track_deletion_w_automation (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
-  UndoableAction * ua =
-    mixer_selections_action_new_create (
-      PLUGIN_SLOT_INSERT, track->pos, 0, setting,
-      1);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  mixer_selections_action_perform_create (
+    PLUGIN_SLOT_INSERT, track->pos, 0, setting,
+    1, NULL);
 
   engine_activate (AUDIO_ENGINE, true);
 
@@ -897,10 +877,8 @@ test_ins_track_deletion_w_automation (void)
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* create some automation points */
   Port * port = automation_track_get_port (at);
@@ -915,10 +893,8 @@ test_ins_track_deletion_w_automation (void)
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
 
   g_assert_true (
     track_validate (track));
@@ -940,10 +916,8 @@ test_ins_track_deletion_w_automation (void)
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* create some automation points */
   port = automation_track_get_port (at);
@@ -958,10 +932,8 @@ test_ins_track_deletion_w_automation (void)
     region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
 
   g_assert_true (
     track_validate (track));
@@ -974,14 +946,14 @@ test_ins_track_deletion_w_automation (void)
   g_assert_true (track_validate (track));
 
   /* delete it */
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
   /* undo deletion */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -1010,7 +982,7 @@ test_no_visible_tracks_after_track_deletion (void)
     }
 
   track_create_empty_with_action (
-    TRACK_TYPE_AUDIO_BUS);
+    TRACK_TYPE_AUDIO_BUS, NULL);
 
   /* assert a track is selected */
   g_assert_cmpint (
@@ -1021,8 +993,8 @@ test_no_visible_tracks_after_track_deletion (void)
     F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* delete the track */
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
 
   /* assert a track is selected */
   g_assert_cmpint (
@@ -1038,15 +1010,13 @@ _test_move_tracks (
   bool         is_instrument,
   bool         with_carla)
 {
-  UndoableAction * action;
-
   /* move markers track to the top */
   int prev_pos = P_MARKER_TRACK->pos;
   track_select (
     P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_NO_COPY, 0);
+  tracklist_selections_action_perform_move (
+    TRACKLIST_SELECTIONS, 0, NULL);
 
   track_validate (
     TRACKLIST->tracks[prev_pos]);
@@ -1074,7 +1044,7 @@ _test_move_tracks (
   track_create_for_plugin_at_idx_w_action (
     is_instrument
     ? TRACK_TYPE_INSTRUMENT : TRACK_TYPE_AUDIO_BUS,
-    setting, 3);
+    setting, 3, NULL);
   Track * ins_track = TRACKLIST->tracks[3];
   if (is_instrument)
     {
@@ -1085,7 +1055,7 @@ _test_move_tracks (
   /* create an fx track and send to it */
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL,
-    4, 1);
+    4, 1, NULL);
   Track * fx_track = TRACKLIST->tracks[4];
   g_assert_true (
     fx_track->type == TRACK_TYPE_AUDIO_BUS);
@@ -1119,10 +1089,8 @@ _test_move_tracks (
     -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ar, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  action =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, action);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* make the region the clip editor region */
   clip_editor_set_region (
@@ -1132,8 +1100,8 @@ _test_move_tracks (
   track_select (
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_NO_COPY, 5);
+  tracklist_selections_action_perform_move (
+    TRACKLIST_SELECTIONS, 5, NULL);
 
   /* check that ids are updated */
   ins_track = TRACKLIST->tracks[4];
@@ -1195,7 +1163,7 @@ _test_move_tracks (
     P_MASTER_TRACK->processor->stereo_in->r);
 
   /* unswap tracks */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* check that ids are updated */
   ins_track = TRACKLIST->tracks[3];
@@ -1288,13 +1256,13 @@ test_multi_track_duplicate (void)
    * track */
   track_create_with_action (
     TRACK_TYPE_MIDI, NULL, NULL, NULL,
-      start_pos, 1);
+      start_pos, 1, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL,
-      start_pos + 1, 1);
+      start_pos + 1, 1, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, NULL, NULL,
-      start_pos + 2, 1);
+      start_pos + 2, 1, NULL);
 
   g_assert_true (
     TRACKLIST->tracks[start_pos]->type ==
@@ -1316,8 +1284,8 @@ test_multi_track_duplicate (void)
   track_select (
     TRACKLIST->tracks[start_pos + 2], F_SELECT,
     F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_COPY, start_pos + 3);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, start_pos + 3, NULL);
 
   /* check order correct */
   g_assert_true (
@@ -1340,7 +1308,7 @@ test_multi_track_duplicate (void)
       TRACK_TYPE_AUDIO);
 
   /* undo and check */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     TRACKLIST->tracks[start_pos]->type ==
       TRACK_TYPE_MIDI);
@@ -1361,8 +1329,8 @@ test_multi_track_duplicate (void)
   track_select (
     TRACKLIST->tracks[start_pos + 2], F_SELECT,
     F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_COPY, start_pos + 1);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, start_pos + 1, NULL);
 
   /* check order correct */
   g_assert_true (
@@ -1429,8 +1397,8 @@ test_marker_track_unpin (void)
   track_select (
     P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_pinned_with_action (
-    TRACKLIST_SELECTIONS, false);
+  tracklist_selections_action_perform_unpin (
+    TRACKLIST_SELECTIONS, NULL);
 
   for (int i = 0; i < P_MARKER_TRACK->num_markers;
        i++)
@@ -1443,7 +1411,7 @@ test_marker_track_unpin (void)
       g_assert_false (track_is_pinned (m_track));
     }
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   for (int i = 0; i < P_MARKER_TRACK->num_markers;
        i++)
@@ -1474,16 +1442,16 @@ test_duplicate_w_output_and_send (void)
    * fx track */
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, NULL, NULL,
-    start_pos, 1);
+    start_pos, 1, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL,
-    start_pos + 1, 1);
+    start_pos + 1, 1, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL,
-    start_pos + 2, 1);
+    start_pos + 2, 1, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL,
-    start_pos + 3, 1);
+    start_pos + 3, 1, NULL);
 
   Track * audio_track =
     TRACKLIST->tracks[start_pos];
@@ -1495,11 +1463,9 @@ test_duplicate_w_output_and_send (void)
     TRACKLIST->tracks[start_pos + 3];
 
   /* send from audio track to fx track */
-  UndoableAction * ua =
-    channel_send_action_new_connect_audio (
-      audio_track->channel->sends[0],
-      fx_track->processor->stereo_in);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  channel_send_action_perform_connect_audio (
+    audio_track->channel->sends[0],
+    fx_track->processor->stereo_in, NULL);
 
   g_assert_true (
     TRACKLIST->tracks[start_pos]->type ==
@@ -1518,15 +1484,15 @@ test_duplicate_w_output_and_send (void)
   track_select (
     TRACKLIST->tracks[start_pos], F_SELECT,
     F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_direct_out_with_action (
-    TRACKLIST_SELECTIONS, group_track);
+  tracklist_selections_action_perform_set_direct_out (
+    TRACKLIST_SELECTIONS, group_track, NULL);
 
   /* route group track to group track 2 */
   track_select (
     TRACKLIST->tracks[start_pos + 1], F_SELECT,
     F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_direct_out_with_action (
-    TRACKLIST_SELECTIONS, group_track2);
+  tracklist_selections_action_perform_set_direct_out (
+    TRACKLIST_SELECTIONS, group_track2, NULL);
 
   /* duplicate audio track and group track */
   track_select (
@@ -1538,8 +1504,8 @@ test_duplicate_w_output_and_send (void)
     TRACKLIST_SELECTIONS->tracks[0] == group_track);
   g_assert_true (
     TRACKLIST_SELECTIONS->tracks[1] == audio_track);
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_COPY, start_pos + 1);
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, start_pos + 1, NULL);
 
   /* assert group of new audio track is group of
    * original audio track */
@@ -1582,8 +1548,8 @@ test_duplicate_w_output_and_send (void)
   channel_send_validate (send);
   g_assert_true (channel_send_is_enabled (send));
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* test delete each track */
   for (int i = 0; i < 4; i++)
@@ -1593,13 +1559,13 @@ test_duplicate_w_output_and_send (void)
       track_select (
         new_track, F_SELECT, F_EXCLUSIVE,
         F_NO_PUBLISH_EVENTS);
-      tracklist_selections_delete_with_action (
-        TRACKLIST_SELECTIONS);
+      tracklist_selections_action_perform_delete (
+        TRACKLIST_SELECTIONS, NULL);
       tracklist_validate (TRACKLIST);
       test_project_save_and_reload ();
-      undo_manager_undo (UNDO_MANAGER);
-      undo_manager_redo (UNDO_MANAGER);
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
+      undo_manager_redo (UNDO_MANAGER, NULL);
+      undo_manager_undo (UNDO_MANAGER, NULL);
     }
 
   test_helper_zrythm_cleanup ();
@@ -1612,7 +1578,7 @@ test_track_deletion_w_mixer_selections (void)
 
   Track * first_track =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
 
   int pl_track_pos =
   test_plugin_manager_create_tracks_from_plugin  (
@@ -1630,8 +1596,8 @@ test_track_deletion_w_mixer_selections (void)
   track_select (
     first_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1654,24 +1620,22 @@ test_ins_track_duplicate_w_send (void)
   int audio_fx_track_pos = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL,
-    audio_fx_track_pos, 1);
+    audio_fx_track_pos, 1, NULL);
   Track * audio_fx_track =
     TRACKLIST->tracks[audio_fx_track_pos];
 
   /* send from audio track to fx track */
-  UndoableAction * ua =
-    channel_send_action_new_connect_audio (
-      ins_track->channel->sends[0],
-      audio_fx_track->processor->stereo_in);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  channel_send_action_perform_connect_audio (
+    ins_track->channel->sends[0],
+    audio_fx_track->processor->stereo_in, NULL);
 
   /* duplicate the instrument track */
   track_select (
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_or_copy_with_action (
-      TRACKLIST_SELECTIONS, Z_F_COPY,
-      audio_fx_track_pos);
+  tracklist_selections_action_perform_copy (
+      TRACKLIST_SELECTIONS,
+      audio_fx_track_pos, NULL);
   Track * new_ins_track =
     TRACKLIST->tracks[audio_fx_track_pos];
   g_assert_true (
@@ -1698,7 +1662,7 @@ test_create_midi_fx_track (void)
 
   /* create an audio fx track */
   track_create_empty_with_action (
-    TRACK_TYPE_MIDI_BUS);
+    TRACK_TYPE_MIDI_BUS, NULL);
 
   g_usleep (10000);
 
@@ -1714,7 +1678,7 @@ test_move_multiple_tracks (void)
   for (int i = 0; i < 5; i++)
     {
       track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS);
+        TRACK_TYPE_AUDIO_BUS, NULL);
     }
 
   /* move the first 2 tracks to the end */
@@ -1735,9 +1699,9 @@ test_move_multiple_tracks (void)
     track2, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (track1->pos, <, track2->pos);
-  tracklist_selections_move_or_copy_with_action (
-    TRACKLIST_SELECTIONS, Z_F_NO_COPY,
-    TRACKLIST->num_tracks);
+  tracklist_selections_action_perform_move (
+    TRACKLIST_SELECTIONS,
+    TRACKLIST->num_tracks, NULL);
   g_assert_cmpint (
     track3->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1749,7 +1713,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track2->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1761,7 +1725,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track5->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track3->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1773,7 +1737,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track2->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1793,9 +1757,9 @@ test_move_multiple_tracks (void)
   track_select (
     track1, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_w_action (
+  tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
-    TRACKLIST->num_tracks);
+    TRACKLIST->num_tracks, NULL);
   g_assert_cmpint (
     track3->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1807,7 +1771,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track2->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1819,7 +1783,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track5->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track3->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1831,7 +1795,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track2->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1851,9 +1815,9 @@ test_move_multiple_tracks (void)
     track5, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (track4->pos, <, track5->pos);
-  tracklist_selections_move_w_action (
+  tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
-    TRACKLIST->num_tracks - 5);
+    TRACKLIST->num_tracks - 5, NULL);
   g_assert_cmpint (
     track4->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1865,7 +1829,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track3->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1877,7 +1841,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track5->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track4->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1889,7 +1853,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track3->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1908,9 +1872,9 @@ test_move_multiple_tracks (void)
   track_select (
     track5, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_w_action (
+  tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
-    TRACKLIST->num_tracks - 2);
+    TRACKLIST->num_tracks - 2, NULL);
   g_assert_cmpint (
     track2->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1922,7 +1886,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track4->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1934,7 +1898,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track5->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track2->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1946,7 +1910,7 @@ test_move_multiple_tracks (void)
   g_assert_cmpint (
     track4->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     track1->pos, ==, TRACKLIST->num_tracks - 5);
   g_assert_cmpint (
@@ -1972,7 +1936,7 @@ _test_move_inside (
 
   /* create folder track */
   track_create_empty_with_action (
-    TRACK_TYPE_FOLDER);
+    TRACK_TYPE_FOLDER, NULL);
 
   /* create audio fx track */
   test_plugin_manager_create_tracks_from_plugin (
@@ -1988,14 +1952,14 @@ _test_move_inside (
   track_select (
     audio_fx, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_w_action (
+  tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
-    TRACKLIST->num_tracks - 1);
+    TRACKLIST->num_tracks - 1, NULL);
   track_select (
     audio_fx, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, folder->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, folder->pos, NULL);
   UndoableAction * ua =
     undo_manager_get_last_action (UNDO_MANAGER);
   ua->num_actions = 2;
@@ -2018,24 +1982,24 @@ _test_move_inside (
    * group */
   Track * audio_group =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_GROUP);
+      TRACK_TYPE_AUDIO_GROUP, NULL);
   track_select (
     folder, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   track_select (
     audio_fx, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_w_action (
+  tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
-    TRACKLIST->num_tracks - 1);
+    TRACKLIST->num_tracks - 1, NULL);
   track_select (
     folder, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   track_select (
     audio_fx, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, audio_group->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, audio_group->pos, NULL);
   ua =
     undo_manager_get_last_action (UNDO_MANAGER);
   ua->num_actions = 2;
@@ -2069,13 +2033,13 @@ _test_move_inside (
   /* add 3 more tracks */
   Track * audio_fx2 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
   Track * folder2 =
     track_create_empty_with_action (
-      TRACK_TYPE_FOLDER);
+      TRACK_TYPE_FOLDER, NULL);
   Track * audio_fx3 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
 
   /* move 2 new fx tracks to folder */
   track_select (
@@ -2084,11 +2048,11 @@ _test_move_inside (
   track_select (
     audio_fx3, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_w_action (
+  tracklist_selections_action_perform_move (
     TRACKLIST_SELECTIONS,
-    TRACKLIST->num_tracks - 1);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, folder2->pos);
+    TRACKLIST->num_tracks - 1, NULL);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, folder2->pos, NULL);
   ua =
     undo_manager_get_last_action (UNDO_MANAGER);
   ua->num_actions = 2;
@@ -2117,12 +2081,12 @@ _test_move_inside (
   g_ptr_array_unref (parents);
 
   /* undo move 2 tracks inside */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* undo create 3 tracks */
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* validate */
   g_assert_cmpint (folder->size, ==, 2);
@@ -2151,15 +2115,15 @@ _test_move_inside (
   g_ptr_array_unref (parents);
 
   /* undo move folder inside group */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /*
    * [00] Chords
@@ -2195,8 +2159,8 @@ _test_move_inside (
   track_select (
     folder2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, folder->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, folder->pos, NULL);
 
   /*
    * expect:
@@ -2222,7 +2186,7 @@ _test_move_inside (
   g_assert_cmpint (audio_fx2->pos, ==, 9);
   g_assert_cmpint (lsp_comp->pos, ==, 10);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (folder->pos, ==, 6);
@@ -2233,7 +2197,7 @@ _test_move_inside (
   g_assert_cmpint (audio_fx->pos, ==, 9);
   g_assert_cmpint (audio_fx2->pos, ==, 10);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 6);
   g_assert_cmpint (folder->pos, ==, 6);
@@ -2244,7 +2208,7 @@ _test_move_inside (
   g_assert_cmpint (audio_fx2->pos, ==, 9);
   g_assert_cmpint (lsp_comp->pos, ==, 10);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /*
    * [00] Chords
@@ -2264,8 +2228,9 @@ _test_move_inside (
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_w_action (
-    TRACKLIST_SELECTIONS, P_MASTER_TRACK->pos);
+  tracklist_selections_action_perform_move (
+    TRACKLIST_SELECTIONS, P_MASTER_TRACK->pos,
+    NULL);
   g_assert_cmpint (audio_fx2->pos, ==, 4);
   g_assert_cmpint (audio_group->pos, ==, 6);
   g_assert_cmpint (audio_group->size, ==, 3);
@@ -2276,7 +2241,7 @@ _test_move_inside (
   g_assert_cmpint (folder2->size, ==, 2);
   g_assert_cmpint (audio_fx->pos, ==, 10);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (folder->pos, ==, 6);
@@ -2287,7 +2252,7 @@ _test_move_inside (
   g_assert_cmpint (audio_fx->pos, ==, 9);
   g_assert_cmpint (audio_fx2->pos, ==, 10);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (audio_fx2->pos, ==, 4);
   g_assert_cmpint (audio_group->pos, ==, 6);
   g_assert_cmpint (audio_group->size, ==, 3);
@@ -2298,7 +2263,7 @@ _test_move_inside (
   g_assert_cmpint (folder2->size, ==, 2);
   g_assert_cmpint (audio_fx->pos, ==, 10);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /*
    * [00] Chords
@@ -2318,8 +2283,8 @@ _test_move_inside (
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, audio_group->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, audio_group->pos, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 4);
   g_assert_cmpint (audio_fx2->pos, ==, 6);
@@ -2334,8 +2299,8 @@ _test_move_inside (
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, folder->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, folder->pos, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 4);
   g_assert_cmpint (folder->pos, ==, 6);
@@ -2346,7 +2311,7 @@ _test_move_inside (
   g_assert_cmpint (folder2->size, ==, 2);
   g_assert_cmpint (audio_fx->pos, ==, 10);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 4);
   g_assert_cmpint (audio_fx2->pos, ==, 6);
@@ -2357,7 +2322,7 @@ _test_move_inside (
   g_assert_cmpint (folder2->size, ==, 2);
   g_assert_cmpint (audio_fx->pos, ==, 10);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (folder->pos, ==, 6);
@@ -2402,14 +2367,14 @@ _test_move_inside (
     GDK_ACTION_MOVE);
   foldable_track_is_status (
     folder, FOLDABLE_TRACK_MIXER_STATUS_MUTED);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* delete a track inside the folder */
   track_select (
     audio_fx, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (folder->pos, ==, 6);
@@ -2419,7 +2384,7 @@ _test_move_inside (
   g_assert_cmpint (folder2->size, ==, 2);
   g_assert_cmpint (audio_fx2->pos, ==, 9);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   audio_fx = TRACKLIST->tracks[9];
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 3);
@@ -2453,22 +2418,22 @@ test_move_multiple_inside ()
   /* create folder track */
   Track * folder =
     track_create_empty_with_action (
-      TRACK_TYPE_FOLDER);
+      TRACK_TYPE_FOLDER, NULL);
 
   /* create 2 audio fx tracks */
   Track * audio_fx1 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
   Track * audio_fx2 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
 
   /* move audio fx 1 inside folder */
   track_select (
     audio_fx1, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, folder->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, folder->pos, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (
     folder->pos, ==, TRACKLIST->num_tracks - 3);
@@ -2477,7 +2442,7 @@ test_move_multiple_inside ()
   g_assert_cmpint (
     audio_fx2->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 1);
   g_assert_cmpint (
     folder->pos, ==, TRACKLIST->num_tracks - 3);
@@ -2486,7 +2451,7 @@ test_move_multiple_inside ()
   g_assert_cmpint (
     audio_fx2->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (
     folder->pos, ==, TRACKLIST->num_tracks - 3);
@@ -2498,7 +2463,7 @@ test_move_multiple_inside ()
   /* create audio group */
   Track * audio_group =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_GROUP);
+      TRACK_TYPE_AUDIO_GROUP, NULL);
 
   /* move folder to audio group */
   track_select (
@@ -2507,8 +2472,8 @@ test_move_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, audio_group->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, audio_group->pos, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (
@@ -2521,7 +2486,7 @@ test_move_multiple_inside ()
   g_assert_cmpint (
     audio_fx1->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 1);
   g_assert_cmpint (
@@ -2534,7 +2499,7 @@ test_move_multiple_inside ()
     audio_group->pos, ==,
     TRACKLIST->num_tracks - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (
@@ -2570,27 +2535,27 @@ test_copy_multiple_inside ()
   /* create folder track */
   Track * folder =
     track_create_empty_with_action (
-      TRACK_TYPE_FOLDER);
+      TRACK_TYPE_FOLDER, NULL);
 
   /* create 2 audio fx tracks */
   Track * audio_fx1 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
   Track * audio_fx2 =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS);
+      TRACK_TYPE_AUDIO_BUS, NULL);
 
   /* move audio fx 1 inside folder */
   track_select (
     audio_fx1, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, folder->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, folder->pos, NULL);
 
   /* create audio group */
   Track * audio_group =
     track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_GROUP);
+      TRACK_TYPE_AUDIO_GROUP, NULL);
 
   /* move folder to audio group */
   track_select (
@@ -2599,13 +2564,13 @@ test_copy_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_inside_w_action (
-    TRACKLIST_SELECTIONS, audio_group->pos);
+  tracklist_selections_action_perform_move_inside (
+    TRACKLIST_SELECTIONS, audio_group->pos, NULL);
 
   /* create new folder */
   Track * folder2 =
     track_create_empty_with_action (
-      TRACK_TYPE_FOLDER);
+      TRACK_TYPE_FOLDER, NULL);
 
   /* copy-move audio group inside new folder */
   track_select (
@@ -2617,8 +2582,8 @@ test_copy_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_move_or_copy_inside_with_action (
-    TRACKLIST_SELECTIONS, Z_F_COPY, folder2->pos);
+  tracklist_selections_action_perform_copy_inside (
+    TRACKLIST_SELECTIONS, folder2->pos, NULL);
   tracklist_print_tracks (TRACKLIST);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
@@ -2644,7 +2609,7 @@ test_copy_multiple_inside ()
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
       type == TRACK_TYPE_AUDIO_BUS);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   tracklist_print_tracks (TRACKLIST);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
@@ -2660,7 +2625,7 @@ test_copy_multiple_inside ()
   g_assert_cmpint (
     folder2->pos, ==, TRACKLIST->num_tracks - 1);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   tracklist_print_tracks (TRACKLIST);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
@@ -2714,26 +2679,25 @@ test_copy_after_uninstalling_plugin (void)
   for (int i = 0; i < 2; i++)
     {
       /* expect failure */
-      LOG->use_structured_for_console = false;
-      LOG->min_log_level_for_test_console =
-        G_LOG_LEVEL_WARNING;
-      g_test_expect_message (
-        G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*Failed*");
+      GError * err = NULL;
       bool ret = false;
       switch (i)
         {
         case 0:
-          tracklist_selections_copy_w_action (
-            TRACKLIST_SELECTIONS,
-            TRACKLIST->num_tracks);
+          ret =
+            tracklist_selections_action_perform_copy (
+              TRACKLIST_SELECTIONS,
+              TRACKLIST->num_tracks, &err);
           break;
         case 1:
-          tracklist_selections_delete_with_action (
-            TRACKLIST_SELECTIONS);
+          ret =
+            tracklist_selections_action_perform_delete (
+              TRACKLIST_SELECTIONS, &err);
           break;
         }
-      g_test_assert_expected_messages ();
       g_assert_false (ret);
+      g_assert_nonnull (err);
+      g_error_free_and_null (err);
     }
 
   test_helper_zrythm_cleanup ();

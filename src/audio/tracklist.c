@@ -39,6 +39,7 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
@@ -1393,11 +1394,18 @@ tracklist_handle_file_drop (
                     (ArrangerObject *) region,
                     F_SELECT,
                     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-                  UndoableAction * ua =
-                    arranger_selections_action_new_create (
-                      TL_SELECTIONS);
-                  undo_manager_perform (
-                    UNDO_MANAGER, ua);
+
+                  GError * err = NULL;
+                  bool ret =
+                    arranger_selections_action_perform_create (
+                      TL_SELECTIONS, &err);
+                  if (!ret)
+                    {
+                      HANDLE_ERROR (
+                        err, "%s",
+                        _("Failed to create arranger "
+                        "objects"));
+                    }
                 }
               else
                 {
@@ -1408,10 +1416,11 @@ tracklist_handle_file_drop (
             }
           else /* else if no track given */
             {
+              GError * err = NULL;
               bool ret =
                 track_create_with_action (
                   track_type, NULL, file, pos,
-                  self->num_tracks, 1);
+                  self->num_tracks, 1, &err);
               if (ret)
                 {
                   UndoableAction * ua =
@@ -1421,6 +1430,9 @@ tracklist_handle_file_drop (
                 }
               else
                 {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to create track"));
                   goto free_file_array_and_return;
                 }
             }
@@ -1476,12 +1488,18 @@ tracklist_handle_move_or_copy (
     {
       if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
+          GError * err = NULL;
           bool ret =
-            tracklist_selections_move_or_copy_inside_with_action (
-              TRACKLIST_SELECTIONS, false,
-              this_track->pos);
+            tracklist_selections_action_perform_move_inside (
+              TRACKLIST_SELECTIONS,
+              this_track->pos, &err);
           if (!ret)
-            return;
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to move track inside"));
+              return;
+            }
         }
       /* else if not highlighted inside */
       else
@@ -1505,23 +1523,49 @@ tracklist_handle_move_or_copy (
               if (track_below_parent &&
                   track_below_parent != cur_parent)
                 {
+                  GError * err = NULL;
                   bool ret =
-                    tracklist_selections_copy_inside_w_action (
+                    tracklist_selections_action_perform_copy_inside (
                       tls,
-                      track_below_parent->pos);
+                      track_below_parent->pos,
+                      &err);
                   if (!ret)
-                    return;
+                    {
+                      HANDLE_ERROR (
+                        err, "%s",
+                        _("Failed to copy track "
+                        "inside"));
+                      return;
+                    }
 
                   num_actions++;
                 }
             }
 
           bool copy = num_actions == 1;
-          bool ret =
-            tracklist_selections_move_or_copy_with_action (
-              tls, copy, pos);
+          GError * err = NULL;
+          bool ret;
+          if (copy)
+            {
+              ret =
+                tracklist_selections_action_perform_copy (
+                  tls, pos, &err);
+            }
+          else
+            {
+              ret =
+                tracklist_selections_action_perform_move (
+                  tls, pos, &err);
+            }
+
           if (!ret)
-            return;
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to move or copy track "
+                "inside folder"));
+              return;
+            }
 
           UndoableAction * ua =
             undo_manager_get_last_action (
@@ -1547,12 +1591,19 @@ tracklist_handle_move_or_copy (
             }
           else
             {
+              GError * err = NULL;
               bool ret =
-                tracklist_selections_move_inside_w_action (
+                tracklist_selections_action_perform_move_inside (
                   TRACKLIST_SELECTIONS,
-                  this_track->pos);
+                  this_track->pos, &err);
               if (!ret)
-                return;
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to move track "
+                    "inside folder"));
+                  return;
+                }
             }
         }
       /* else if not highlighted inside */
@@ -1579,29 +1630,48 @@ tracklist_handle_move_or_copy (
                   track_below_parent != cur_parent)
                 {
                   move_inside = true;
+
+                  GError * err = NULL;
                   bool ret =
-                    tracklist_selections_move_inside_w_action (
+                    tracklist_selections_action_perform_move_inside (
                       tls,
-                      track_below_parent->pos);
+                      track_below_parent->pos,
+                      &err);
                   if (!ret)
-                    return;
+                    {
+                      HANDLE_ERROR (
+                        err, "%s",
+                        _("Failed to move track "
+                        "inside folder"));
+                      return;
+                    }
 
                   num_actions++;
                 }
             }
 
+          GError * err = NULL;
           bool ret;
           if (move_inside)
-            ret =
-              tracklist_selections_move_inside_w_action (
-                tls, pos);
+            {
+              ret =
+                tracklist_selections_action_perform_move_inside (
+                  tls, pos, &err);
+            }
           else
-            ret =
-              tracklist_selections_move_w_action (
-                tls, pos);
+            {
+              ret =
+                tracklist_selections_action_perform_move (
+                  tls, pos, &err);
+            }
 
           if (!ret)
-            return;
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to move track"));
+              return;
+            }
 
           UndoableAction * ua =
             undo_manager_get_last_action (

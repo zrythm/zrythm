@@ -169,16 +169,6 @@ automation_tracklist_update_track_pos (
   Track *               track);
 
 /**
- * Updates the automation tracks. (adds missing)
- *
- * Builds an automation track for each automatable in the channel and its plugins,
- * unless it already exists.
- */
-//void
-//automation_tracklist_update (
-  //AutomationTracklist * self);
-
-/**
  * Removes the AutomationTrack from the
  * AutomationTracklist, optionally freeing it.
  */
@@ -253,18 +243,21 @@ automation_tracklist_set_at_index (
   bool                  push_down);
 
 /**
- * Gets the automation track with the given label.
+ * Gets the automation track matching the given
+ * arguments.
  *
- * Only works for plugin port labels and mainly
- * used in tests.
+ * Currently only used in mixer selections action.
  */
 AutomationTrack *
 automation_tracklist_get_plugin_at (
   AutomationTracklist * self,
   PluginSlotType        slot_type,
   const int             plugin_slot,
-  const char *          label);
+  const int             port_index,
+  const char *          symbol);
 
+WARN_UNUSED_RESULT
+NONNULL
 AutomationTrack *
 automation_tracklist_get_first_invisible_at (
   AutomationTracklist * self);
@@ -272,6 +265,7 @@ automation_tracklist_get_first_invisible_at (
 /**
  * Returns the number of visible AutomationTrack's.
  */
+NONNULL
 int
 automation_tracklist_get_num_visible (
   AutomationTracklist * self);
@@ -282,10 +276,27 @@ automation_tracklist_get_num_visible (
  *
  * @return True if pass.
  */
+NONNULL
 bool
 automation_tracklist_validate (
   AutomationTracklist * self);
 
+/**
+ * Counts the total number of regions in the
+ * automation tracklist.
+ */
+WARN_UNUSED_RESULT
+NONNULL
+int
+automation_tracklist_get_num_regions (
+  AutomationTracklist * self);
+
+NONNULL
+void
+automation_tracklist_print_regions (
+  AutomationTracklist * self);
+
+NONNULL
 void
 automation_tracklist_free_members (
   AutomationTracklist * self);

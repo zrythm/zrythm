@@ -70,7 +70,7 @@ test_fill_when_region_starts_on_loop_end ()
     track_create_with_action (
       TRACK_TYPE_AUDIO, NULL, file,
       &TRANSPORT->loop_end_pos,
-      num_tracks_before, 1);
+      num_tracks_before, 1, NULL);
   /*transport_request_roll (TRANSPORT);*/
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -54,7 +54,7 @@ test_export (void)
         supported_file_new_from_path (midi_file);
       track_create_with_action (
         TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-        TRACKLIST->num_tracks, 1);
+        TRACKLIST->num_tracks, 1, NULL);
       supported_file_free (file);
 
       Track * track =

@@ -104,22 +104,16 @@ track_lane_rename (
   if (with_action)
     {
       GError * err = NULL;
-      UndoableAction * ua =
-        tracklist_selections_action_new_edit_rename_lane (
+      bool ret =
+        tracklist_selections_action_perform_edit_rename_lane (
           self, new_name, &err);
-      if (ua)
-        {
-          undo_manager_perform (UNDO_MANAGER, ua);
-          EVENTS_PUSH (
-            ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
-        }
-      else
+      if (!ret)
         {
           HANDLE_ERROR (
-            err, _("Failed to rename lane: %s"),
-            err->message);
-          return;
+            err, "%s", _("Failed to rename lane"));
         }
+      EVENTS_PUSH (
+        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
     }
   else
     {

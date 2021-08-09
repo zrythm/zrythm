@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,8 +23,9 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/cairo.h"
-#include "utils/gtk.h"
+#include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/ui.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -206,10 +207,16 @@ on_drag_end (
   if (channel_send_is_enabled (self->send) &&
       self->n_press != 2)
     {
-      UndoableAction * ua =
-        channel_send_action_new_change_amount (
-          self->send, send_amount_at_end);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      GError * err = NULL;
+      bool ret =
+        channel_send_action_perform_change_amount (
+          self->send, send_amount_at_end, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to change send amount"));
+        }
     }
 }
 

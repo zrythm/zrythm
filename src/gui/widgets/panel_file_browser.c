@@ -40,6 +40,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
@@ -695,9 +696,16 @@ on_file_row_activated (
            descr->type == FILE_TYPE_FLAC ||
            descr->type == FILE_TYPE_MP3)
     {
-      track_create_with_action (
-        TRACK_TYPE_AUDIO, NULL, descr,
-        PLAYHEAD, TRACKLIST->num_tracks, 1);
+      GError * err = NULL;
+      bool ret =
+        track_create_with_action (
+          TRACK_TYPE_AUDIO, NULL, descr,
+          PLAYHEAD, TRACKLIST->num_tracks, 1, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _("Failed to create track"));
+        }
     }
 }
 

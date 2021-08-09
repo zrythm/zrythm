@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -92,27 +92,46 @@ port_action_init_loaded (
 /**
  * Create a new action.
  */
-UndoableAction *
-port_action_new_reset_control (
-  PortIdentifier * port_id);
-
-/**
- * Create a new action.
- */
+WARN_UNUSED_RESULT
 UndoableAction *
 port_action_new (
   PortActionType   type,
   PortIdentifier * port_id,
   float            val,
-  bool             is_normalized);
+  bool             is_normalized,
+  GError **        error);
+
+/**
+ * Create a new action.
+ */
+WARN_UNUSED_RESULT
+UndoableAction *
+port_action_new_reset_control (
+  PortIdentifier * port_id,
+  GError **        error);
+
+bool
+port_action_perform (
+  PortActionType   type,
+  PortIdentifier * port_id,
+  float            val,
+  bool             is_normalized,
+  GError **        error);
+
+bool
+port_action_perform_reset_control (
+  PortIdentifier * port_id,
+  GError **        error);
 
 int
 port_action_do (
-  PortAction * self);
+  PortAction * self,
+  GError **    error);
 
 int
 port_action_undo (
-  PortAction * self);
+  PortAction * self,
+  GError **    error);
 
 char *
 port_action_stringize (

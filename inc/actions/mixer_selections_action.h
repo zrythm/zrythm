@@ -185,6 +185,7 @@ mixer_selections_action_init_loaded (
  * @param num_plugins The number of plugins to create,
  *   if creating plugins.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 mixer_selections_action_new (
   MixerSelections *         ms,
@@ -193,44 +194,93 @@ mixer_selections_action_new (
   int                       to_track_pos,
   int                       to_slot,
   PluginSetting *           setting,
-  int                       num_plugins);
+  int                       num_plugins,
+  GError **                 error);
 
 #define mixer_selections_action_new_create( \
-  slot_type,to_tr,to_slot,setting,num_plugins) \
+  slot_type,to_tr,to_slot,setting,num_plugins, \
+  error) \
   mixer_selections_action_new ( \
     NULL, MIXER_SELECTIONS_ACTION_CREATE, \
-    slot_type, to_tr, to_slot, setting, num_plugins)
+    slot_type, to_tr, to_slot, setting, \
+    num_plugins, error)
 
 #define mixer_selections_action_new_copy( \
-  ms,slot_type,to_tr,to_slot) \
+  ms,slot_type,to_tr,to_slot,error) \
   mixer_selections_action_new ( \
     ms, MIXER_SELECTIONS_ACTION_COPY, slot_type, \
-    to_tr, to_slot, NULL, 0)
+    to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_new_paste( \
-  ms,slot_type,to_tr,to_slot) \
+  ms,slot_type,to_tr,to_slot,error) \
   mixer_selections_action_new ( \
     ms, MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
-    to_tr, to_slot, NULL, 0)
+    to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_new_move( \
-  ms,slot_type,to_tr,to_slot) \
+  ms,slot_type,to_tr,to_slot,error) \
   mixer_selections_action_new ( \
     ms, MIXER_SELECTIONS_ACTION_MOVE, slot_type, \
-    to_tr, to_slot, NULL, 0)
+    to_tr, to_slot, NULL, 0, error)
 
-#define mixer_selections_action_new_delete(ms) \
+#define mixer_selections_action_new_delete( \
+  ms,error) \
   mixer_selections_action_new ( \
     ms, MIXER_SELECTIONS_ACTION_DELETE, 0, \
-    0, 0, NULL, 0)
+    0, 0, NULL, 0, error)
+
+bool
+mixer_selections_action_perform (
+  MixerSelections *         ms,
+  MixerSelectionsActionType type,
+  PluginSlotType            slot_type,
+  int                       to_track_pos,
+  int                       to_slot,
+  PluginSetting *           setting,
+  int                       num_plugins,
+  GError **                 error);
+
+#define mixer_selections_action_perform_create( \
+  slot_type,to_tr,to_slot,setting,num_plugins, \
+  error) \
+  mixer_selections_action_perform ( \
+    NULL, MIXER_SELECTIONS_ACTION_CREATE, \
+    slot_type, to_tr, to_slot, setting, \
+    num_plugins, error)
+
+#define mixer_selections_action_perform_copy( \
+  ms,slot_type,to_tr,to_slot,error) \
+  mixer_selections_action_perform ( \
+    ms, MIXER_SELECTIONS_ACTION_COPY, slot_type, \
+    to_tr, to_slot, NULL, 0, error)
+
+#define mixer_selections_action_perform_paste( \
+  ms,slot_type,to_tr,to_slot,error) \
+  mixer_selections_action_perform ( \
+    ms, MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
+    to_tr, to_slot, NULL, 0, error)
+
+#define mixer_selections_action_perform_move( \
+  ms,slot_type,to_tr,to_slot,error) \
+  mixer_selections_action_perform ( \
+    ms, MIXER_SELECTIONS_ACTION_MOVE, slot_type, \
+    to_tr, to_slot, NULL, 0, error)
+
+#define mixer_selections_action_perform_delete( \
+  ms,error) \
+  mixer_selections_action_perform ( \
+    ms, MIXER_SELECTIONS_ACTION_DELETE, 0, \
+    0, 0, NULL, 0, error)
 
 int
 mixer_selections_action_do (
-  MixerSelectionsAction * self);
+  MixerSelectionsAction * self,
+  GError **               error);
 
 int
 mixer_selections_action_undo (
-  MixerSelectionsAction * self);
+  MixerSelectionsAction * self,
+  GError **               error);
 
 char *
 mixer_selections_action_stringize (

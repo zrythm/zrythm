@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -107,34 +107,69 @@ midi_mapping_action_init_loaded (
 /**
  * Creates a new action.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 midi_mapping_action_new_enable (
-  int  idx,
-  bool enable);
+  int       idx,
+  bool      enable,
+  GError ** error);
 
 /**
  * Creates a new action.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 midi_mapping_action_new_bind (
   midi_byte_t *  buf,
   ExtPort *      device_port,
-  Port *         dest_port);
+  Port *         dest_port,
+  GError **      error);
 
 /**
  * Creates a new action.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 midi_mapping_action_new_unbind (
-  int            idx);
+  int       idx,
+  GError ** error);
+
+/**
+ * Wrapper of midi_mapping_action_new_enable().
+ */
+bool
+midi_mapping_action_perform_enable (
+  int       idx,
+  bool      enable,
+  GError ** error);
+
+/**
+ * Wrapper of midi_mapping_action_new_bind().
+ */
+bool
+midi_mapping_action_perform_bind (
+  midi_byte_t *  buf,
+  ExtPort *      device_port,
+  Port *         dest_port,
+  GError **      error);
+
+/**
+ * Wrapper of midi_mapping_action_new_unbind().
+ */
+bool
+midi_mapping_action_perform_unbind (
+  int       idx,
+  GError ** error);
 
 int
 midi_mapping_action_do (
-  MidiMappingAction * self);
+  MidiMappingAction * self,
+  GError **           error);
 
 int
 midi_mapping_action_undo (
-  MidiMappingAction * self);
+  MidiMappingAction * self,
+  GError **           error);
 
 char *
 midi_mapping_action_stringize (

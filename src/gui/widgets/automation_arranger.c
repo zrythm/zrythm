@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -77,6 +77,7 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
@@ -223,14 +224,20 @@ on_curve_algorithm_selected (
   /* change */
   info->ap->curve_opts.algo = info->algo;
 
-  /* create undoable action */
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
+  /* perform action */
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit (
       sel_before,
       (ArrangerSelections *) AUTOMATION_SELECTIONS,
       ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-      true);
-  undo_manager_perform (UNDO_MANAGER, ua);
+      true, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to set curve algorithm"));
+    }
 
   free (info);
   arranger_selections_free_full (sel_before);

@@ -135,9 +135,13 @@ router_get_max_route_playback_latency (
  * Returns if the current thread is a
  * processing thread.
  */
+WARN_UNUSED_RESULT
+HOT
+NONNULL
+ACCESS_READ_ONLY (1)
 bool
 router_is_processing_thread (
-  Router * router);
+  const Router * const router);
 
 void
 router_free (

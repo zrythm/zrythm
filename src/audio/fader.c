@@ -559,12 +559,17 @@ fader_set_amp_with_action (
       0.0001f);
   if (!skip_if_equal || !is_equal)
     {
-      UndoableAction * ua =
-        tracklist_selections_action_new_edit_single_float (
+      GError * err = NULL;
+      bool ret =
+        tracklist_selections_action_perform_edit_single_float (
           EDIT_TRACK_ACTION_TYPE_VOLUME,
-          track, amp_from, amp_to, true, NULL);
-      g_return_if_fail (ua);
-      undo_manager_perform (UNDO_MANAGER, ua);
+          track, amp_from, amp_to, true, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to change volume"));
+        }
     }
 }
 
@@ -608,20 +613,17 @@ fader_set_midi_mode (
       Track * track = fader_get_track (self);
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (track));
+
       GError * err = NULL;
-      UndoableAction * ua =
-        tracklist_selections_action_new_edit_single_int (
+      bool ret =
+        tracklist_selections_action_perform_edit_single_int (
           EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE,
           track, mode, F_NOT_ALREADY_EDITED, &err);
-      if (ua)
-        {
-          undo_manager_perform (UNDO_MANAGER, ua);
-        }
-      else
+      if (!ret)
         {
           HANDLE_ERROR (
-            err, _("Could not set MIDI mode: %s"),
-            err->message);
+            err, "%s",
+            _("Failed to set MIDI mode"));
         }
     }
   else

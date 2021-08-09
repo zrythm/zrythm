@@ -53,11 +53,11 @@ _test (
     helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* 2. delete track */
-  tracklist_selections_delete_with_action (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, NULL);
 
   /* 3. undo track deletion */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -66,10 +66,10 @@ _test (
   test_project_save_and_reload ();
 
   /* 5. redo track deletion */
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* 6. undo track deletion */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* let the engine run */
   g_usleep (1000000);

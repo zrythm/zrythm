@@ -773,6 +773,7 @@ region_find (
 
       if (id->idx >= at->num_regions)
         {
+          automation_tracklist_print_regions (atl);
           g_critical (
             "Automation track for %s has no "
             "regions", at->port_id.label);

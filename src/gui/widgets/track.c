@@ -61,6 +61,7 @@
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -1783,10 +1784,17 @@ on_direct_out_activated (
         }
     }
 
-  bool success =
-    tracklist_selections_set_direct_out_with_action (
-      TRACKLIST_SELECTIONS, direct_out);
-  if (success)
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_set_direct_out (
+      TRACKLIST_SELECTIONS, direct_out, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to change direct output"));
+    }
+  else
     {
       UndoableAction * ua =
         undo_manager_get_last_action (UNDO_MANAGER);

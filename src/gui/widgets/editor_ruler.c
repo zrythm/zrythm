@@ -35,11 +35,13 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #define ACTION_IS(x) \
   (self->action == UI_OVERLAY_ACTION_##x)
@@ -220,12 +222,17 @@ editor_ruler_on_drag_end (
 #define PERFORM_ACTION(pos_member) \
   r_clone_obj_before->pos_member = \
     self->drag_start_pos; \
-  UndoableAction * ua = \
-    arranger_selections_action_new_edit ( \
+  GError * err = NULL; \
+  bool ret = \
+    arranger_selections_action_perform_edit ( \
       before_sel, after_sel, \
       ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
-      F_NOT_ALREADY_EDITED); \
-  undo_manager_perform (UNDO_MANAGER, ua)
+      F_NOT_ALREADY_EDITED, &err); \
+  if (!ret) \
+    { \
+      HANDLE_ERROR ( \
+        err, "%s", _("Failed to edit position")); \
+    }
 
   if ((ACTION_IS (MOVING) ||
          ACTION_IS (STARTING_MOVING)))

@@ -218,10 +218,8 @@ test_create_timeline ()
   rebootstrap_timeline ();
 
   /* do create */
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* check */
   g_assert_cmpint (
@@ -234,14 +232,14 @@ test_create_timeline ()
   check_timeline_objects_vs_original_state (1, 1, 0);
 
   /* undo and check that the objects are deleted */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) MA_SELECTIONS), ==, 0);
   check_timeline_objects_deleted (1);
 
   /* redo and check that the objects are there */
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
@@ -257,10 +255,8 @@ test_delete_timeline ()
   rebootstrap_timeline ();
 
   /* do delete */
-  UndoableAction * ua =
-    arranger_selections_action_new_delete (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    TL_SELECTIONS, NULL);
 
   g_assert_false (
     clip_editor_get_region (CLIP_EDITOR));
@@ -280,7 +276,7 @@ test_delete_timeline ()
     ==, 0);
 
   /* undo and check that the objects are created */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
@@ -288,7 +284,7 @@ test_delete_timeline ()
   check_timeline_objects_vs_original_state (1, 0, 1);
 
   /* redo and check that the objects are gone */
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==, 0);
@@ -309,7 +305,7 @@ test_delete_timeline ()
     clip_editor_get_region (CLIP_EDITOR));
 
   /* undo again to prepare for next test */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
@@ -335,10 +331,8 @@ test_delete_chords ()
   arranger_selections_add_object (
     (ArrangerSelections *) CHORD_SELECTIONS,
     (ArrangerObject *) c);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      CHORD_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    CHORD_SELECTIONS, NULL);
 
   /* delete the first chord */
   arranger_selections_clear (
@@ -347,18 +341,16 @@ test_delete_chords ()
   arranger_selections_add_object (
     (ArrangerSelections *) CHORD_SELECTIONS,
     (ArrangerObject *) r->chord_objects[0]);
-  ua =
-    arranger_selections_action_new_delete (
-      CHORD_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    CHORD_SELECTIONS, NULL);
   g_assert_true (region_validate (r, F_PROJECT));
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -583,18 +575,16 @@ test_move_timeline ()
           ==, i ? 1 : 0);
 
       /* do move ticks */
-      UndoableAction * ua =
-        arranger_selections_action_new_move_timeline (
-          TL_SELECTIONS, MOVE_TICKS, track_diff, 0,
-          F_NOT_ALREADY_MOVED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_move_timeline (
+        TL_SELECTIONS, MOVE_TICKS, track_diff, 0,
+        F_NOT_ALREADY_MOVED, NULL);
 
       /* check */
       check_after_move_timeline (i);
 
       /* undo and check that the objects are at
        * their original state*/
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       g_assert_cmpint (
         arranger_selections_get_num_objects (
           (ArrangerSelections *) TL_SELECTIONS), ==,
@@ -605,11 +595,11 @@ test_move_timeline ()
 
       /* redo and check that the objects are moved
        * again */
-      undo_manager_redo (UNDO_MANAGER);
+      undo_manager_redo (UNDO_MANAGER, NULL);
       check_after_move_timeline (i);
 
       /* undo again to prepare for next test */
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       if (track_diff)
         {
           g_assert_cmpint (
@@ -972,28 +962,26 @@ test_duplicate_timeline ()
         MOVE_TICKS);
 
       /* do duplicate */
-      UndoableAction * ua =
-        arranger_selections_action_new_duplicate_timeline (
-          TL_SELECTIONS, MOVE_TICKS,
-          i > 0 ? 2 : 0, 0, F_ALREADY_MOVED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_duplicate_timeline (
+        TL_SELECTIONS, MOVE_TICKS,
+        i > 0 ? 2 : 0, 0, F_ALREADY_MOVED, NULL);
 
       /* check */
       check_after_duplicate_timeline (i, false);
 
       /* undo and check that the objects are at
        * their original state*/
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       check_timeline_objects_vs_original_state (
         0, 0, 1);
 
       /* redo and check that the objects are moved
        * again */
-      undo_manager_redo (UNDO_MANAGER);
+      undo_manager_redo (UNDO_MANAGER, NULL);
       check_after_duplicate_timeline (i, false);
 
       /* undo again to prepare for next test */
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       check_timeline_objects_vs_original_state (
         0, 0, 1);
     }
@@ -1029,10 +1017,8 @@ test_duplicate_automation_region ()
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
   position_add_frames (&start_pos, 14);
   ap =
     automation_point_new_float (
@@ -1042,10 +1028,8 @@ test_duplicate_automation_region ()
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
 
   float curviness_after = 0.8f;
   ap = r1->aps[0];
@@ -1056,25 +1040,23 @@ test_duplicate_automation_region ()
     arranger_selections_clone (
       (ArrangerSelections *) AUTOMATION_SELECTIONS);
   ap->curve_opts.curviness = curviness_after;
-  ua =
-    arranger_selections_action_new_edit (
-      before,
-      (ArrangerSelections *) AUTOMATION_SELECTIONS,
-      ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-      F_ALREADY_EDITED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_edit (
+    before,
+    (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+    F_ALREADY_EDITED, NULL);
 
   ap = r1->aps[0];
   g_assert_cmpfloat_with_epsilon (
     ap->curve_opts.curviness, curviness_after,
     0.00001f);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   ap = r1->aps[0];
   g_assert_cmpfloat_with_epsilon (
     ap->curve_opts.curviness, 0.f, 0.00001f);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   ap = r1->aps[0];
   g_assert_cmpfloat_with_epsilon (
     ap->curve_opts.curviness, curviness_after,
@@ -1084,11 +1066,9 @@ test_duplicate_automation_region ()
     (ArrangerObject *) r1, F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
-  ua =
-    arranger_selections_action_new_duplicate_timeline (
-      TL_SELECTIONS, MOVE_TICKS, 0, 0,
-      F_NOT_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_duplicate_timeline (
+    TL_SELECTIONS, MOVE_TICKS, 0, 0,
+    F_NOT_ALREADY_MOVED, NULL);
 
   r1 = at->regions[1];
   ap = r1->aps[0];
@@ -1096,8 +1076,8 @@ test_duplicate_automation_region ()
     ap->curve_opts.curviness, curviness_after,
     0.00001f);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   r1 = at->regions[1];
   ap = r1->aps[0];
@@ -1160,30 +1140,28 @@ test_link_timeline ()
         MOVE_TICKS);
 
       /* do link */
-      UndoableAction * ua =
-        arranger_selections_action_new_link (
-          sel_before,
-          (ArrangerSelections *)TL_SELECTIONS,
-          MOVE_TICKS,
-          i > 0 ? 2 : 0, 0, F_ALREADY_MOVED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_link (
+        sel_before,
+        (ArrangerSelections *)TL_SELECTIONS,
+        MOVE_TICKS,
+        i > 0 ? 2 : 0, 0, F_ALREADY_MOVED, NULL);
 
       /* check */
       check_after_duplicate_timeline (i, true);
 
       /* undo and check that the objects are at
        * their original state*/
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       check_timeline_objects_vs_original_state (
         0, 0, 1);
 
       /* redo and check that the objects are moved
        * again */
-      undo_manager_redo (UNDO_MANAGER);
+      undo_manager_redo (UNDO_MANAGER, NULL);
       check_after_duplicate_timeline (i, true);
 
       /* undo again to prepare for next test */
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       check_timeline_objects_vs_original_state (
         0, 0, 1);
 
@@ -1247,13 +1225,11 @@ test_link_then_duplicate ()
         MOVE_TICKS);
 
       /* do link */
-      UndoableAction * ua =
-        arranger_selections_action_new_link (
-          sel_before,
-          (ArrangerSelections *)TL_SELECTIONS,
-          MOVE_TICKS,
-          i > 0 ? 2 : 0, 0, F_ALREADY_MOVED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_link (
+        sel_before,
+        (ArrangerSelections *)TL_SELECTIONS,
+        MOVE_TICKS,
+        i > 0 ? 2 : 0, 0, F_ALREADY_MOVED, NULL);
 
       /* check */
       check_after_duplicate_timeline (i, true);
@@ -1347,11 +1323,9 @@ test_link_then_duplicate ()
       /*g_warn_if_reached ();*/
 
       /* do duplicate */
-      ua =
-        arranger_selections_action_new_duplicate_timeline (
-          TL_SELECTIONS, MOVE_TICKS,
-          i > 0 ? 2 : 0, 0, F_ALREADY_MOVED);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_duplicate_timeline (
+        TL_SELECTIONS, MOVE_TICKS,
+        i > 0 ? 2 : 0, 0, F_ALREADY_MOVED, NULL);
 
       /* check that new objects have no links */
       for (int j = 0;
@@ -1417,22 +1391,21 @@ test_link_then_duplicate ()
       arranger_object_select (
         (ArrangerObject *) mn, F_SELECT,
         F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-      ua =
-        arranger_selections_action_new_create (
-          (ArrangerSelections *) MA_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_create (
+        (ArrangerSelections *) MA_SELECTIONS,
+        NULL);
 
       /* undo MIDI note */
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
 
       /* undo duplicate */
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
 
       test_project_save_and_reload ();
 
       /* undo and check that the objects are at
        * their original state*/
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       check_timeline_objects_vs_original_state (
         0, 0, false);
 
@@ -1440,13 +1413,13 @@ test_link_then_duplicate ()
 
       /* redo and check that the objects are moved
        * again */
-      undo_manager_redo (UNDO_MANAGER);
+      undo_manager_redo (UNDO_MANAGER, NULL);
       check_after_duplicate_timeline (i, true);
 
       test_project_save_and_reload ();
 
       /* undo again to prepare for next test */
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
       check_timeline_objects_vs_original_state (
         0, 0, false);
 
@@ -1471,10 +1444,8 @@ test_edit_marker ()
     marker_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_object_add_to_project (
     marker_obj, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* change name */
   ArrangerSelections * clone_sel =
@@ -1483,33 +1454,31 @@ test_edit_marker ()
   marker_set_name (
     ((TimelineSelections *) clone_sel)->markers[0],
     "bb");
-  ua =
-    arranger_selections_action_new_edit (
-      (ArrangerSelections *) TL_SELECTIONS,
-      clone_sel,
-      ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
-      F_NOT_ALREADY_EDITED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_edit (
+    (ArrangerSelections *) TL_SELECTIONS,
+    clone_sel,
+    ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
+    F_NOT_ALREADY_EDITED, NULL);
 
   /* assert name changed */
   g_assert_true (
     string_is_equal (marker->name, "bb"));
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (
     string_is_equal (marker->name, "aa"));
 
   /* undo again and check that all objects are at
    * original state */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* redo and check that the name is changed */
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* return to original state */
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1528,28 +1497,26 @@ test_mute ()
   ArrangerObject * obj = (ArrangerObject *) r;
   g_assert_true (IS_ARRANGER_OBJECT (obj));
 
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
-      (ArrangerSelections *) TL_SELECTIONS, NULL,
-      ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
-      F_NOT_ALREADY_EDITED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_edit (
+    (ArrangerSelections *) TL_SELECTIONS, NULL,
+    ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
+    F_NOT_ALREADY_EDITED, NULL);
 
   /* assert muted */
   g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_true (obj->muted);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_false (obj->muted);
 
   /* redo and recheck */
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_true (obj->muted);
 
   /* return to original state */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_false (obj->muted);
 
@@ -1577,19 +1544,16 @@ test_split ()
     r_obj, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
 
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   g_assert_cmpint (
     P_CHORD_TRACK->num_chord_regions, ==, 2);
 
   position_set_to_bar (&pos, 3);
-  ua =
-    arranger_selections_action_new_split (
-      (ArrangerSelections *) TL_SELECTIONS, &pos);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos,
+    NULL);
 
   g_assert_cmpint (
     P_CHORD_TRACK->num_chord_regions, ==, 3);
@@ -1604,10 +1568,10 @@ test_split ()
   ZRegion * region2 = lane2->regions[0];
   region_validate (region2, false);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* --- test audio region split --- */
 
@@ -1634,10 +1598,9 @@ test_split ()
   position_print (&pos);
   position_add_beats (&pos, 1);
   position_print (&pos);
-  ua =
-    arranger_selections_action_new_split (
-      (ArrangerSelections *) TL_SELECTIONS, &pos);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos,
+    NULL);
 
   test_project_save_and_reload ();
 
@@ -1653,7 +1616,7 @@ test_split ()
   g_assert_cmpfloat_with_epsilon (
     first_frame, clip->frames[0], 0.000001f);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1669,12 +1632,9 @@ test_quantize ()
   g_assert_true (
     audio_track->type == TRACK_TYPE_AUDIO);
 
-  UndoableAction * ua =
-    arranger_selections_action_new_quantize (
-      (ArrangerSelections *) AUDIO_SELECTIONS,
-      QUANTIZE_OPTIONS_EDITOR);
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
+  arranger_selections_action_perform_quantize (
+    (ArrangerSelections *) AUDIO_SELECTIONS,
+    QUANTIZE_OPTIONS_EDITOR, NULL);
 
   /* TODO test audio/MIDI quantization */
   TrackLane * lane = audio_track->lanes[3];
@@ -1682,7 +1642,7 @@ test_quantize ()
   g_assert_true (IS_ARRANGER_OBJECT (region));
 
   /* return to original state */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1759,29 +1719,27 @@ test_audio_functions ()
     orig_frames, frames_per_channel);
 
   /* invert */
-  UndoableAction * ua =
-    arranger_selections_action_new_edit_audio_function (
-      (ArrangerSelections *) AUDIO_SELECTIONS,
-      AUDIO_FUNCTION_INVERT, NULL);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_edit_audio_function (
+    (ArrangerSelections *) AUDIO_SELECTIONS,
+    AUDIO_FUNCTION_INVERT, NULL, NULL);
 
   verify_audio_function (
     inverted_frames, frames_per_channel);
 
   test_project_save_and_reload ();
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   verify_audio_function (
     orig_frames, frames_per_channel);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* verify that frames are edited again */
   verify_audio_function (
     inverted_frames, frames_per_channel);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   free (orig_frames);
   free (inverted_frames);
@@ -1832,13 +1790,11 @@ test_automation_fill ()
   arranger_object_select (
     (ArrangerObject *) ap, F_SELECT,
     F_APPEND, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_automation_fill (
-      r1_clone, r1, F_ALREADY_EDITED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_automation_fill (
+    r1_clone, r1, F_ALREADY_EDITED, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1868,10 +1824,8 @@ test_duplicate_midi_regions_to_track_below ()
   arranger_object_select (
     (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
     F_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
   g_assert_cmpint (lane->num_regions, ==, 1);
 
   position_set_to_bar (&pos, 5);
@@ -1886,10 +1840,8 @@ test_duplicate_midi_regions_to_track_below ()
   arranger_object_select (
     (ArrangerObject *) r2, F_SELECT, F_NO_APPEND,
     F_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
   g_assert_cmpint (lane->num_regions, ==, 2);
 
   /* select the regions */
@@ -1926,22 +1878,20 @@ test_duplicate_midi_regions_to_track_below ()
   region_print (TL_SELECTIONS->regions[0]);
   region_print (TL_SELECTIONS->regions[1]);
 
-  ua =
-    arranger_selections_action_new_duplicate (
-      TL_SELECTIONS, ticks, 0, 0,
-      new_midi_track->pos - midi_track->pos, 0, 0,
-      F_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_duplicate (
+    TL_SELECTIONS, ticks, 0, 0,
+    new_midi_track->pos - midi_track->pos, 0, 0,
+    F_ALREADY_MOVED, NULL);
 
   /* check that new regions are created */
   g_assert_cmpint (target_lane->num_regions, ==, 2);
 
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* check that new regions are deleted */
   g_assert_cmpint (target_lane->num_regions, ==, 0);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* check that new regions are created */
   g_assert_cmpint (target_lane->num_regions, ==, 2);
@@ -1974,10 +1924,8 @@ test_midi_region_split ()
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
   g_assert_cmpint (lane->num_regions, ==, 1);
 
   /* create some MIDI notes */
@@ -1993,10 +1941,8 @@ test_midi_region_split ()
       arranger_object_select (
         (ArrangerObject *) mn, F_SELECT,
         F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-      ua =
-        arranger_selections_action_new_create (
-          MA_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_create (
+        MA_SELECTIONS, NULL);
       g_assert_cmpint (
         r->num_midi_notes, ==, i + 1);
     }
@@ -2008,10 +1954,9 @@ test_midi_region_split ()
 
   /* split at bar 2 */
   position_set_to_bar (&pos, 2);
-  ua =
-    arranger_selections_action_new_split (
-      (ArrangerSelections *) TL_SELECTIONS, &pos);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos,
+    NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 2);
   r = lane->regions[1];
@@ -2026,10 +1971,9 @@ test_midi_region_split ()
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_split (
-      (ArrangerSelections *) TL_SELECTIONS, &pos);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos,
+    NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 3);
 
@@ -2066,10 +2010,9 @@ test_midi_region_split ()
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_split (
-      (ArrangerSelections *) TL_SELECTIONS, &pos);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos,
+    NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 4);
 
@@ -2106,7 +2049,7 @@ test_midi_region_split ()
     pos.frames, ==, r->base.end_pos.frames);
 
   /* undo and verify */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 3);
 
@@ -2135,7 +2078,7 @@ test_midi_region_split ()
     pos.frames, ==, r->base.end_pos.frames);
 
   /* undo and verify */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 2);
 
@@ -2156,7 +2099,7 @@ test_midi_region_split ()
     pos.frames, ==, r->base.end_pos.frames);
 
   /* undo and verify */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 1);
 
@@ -2169,7 +2112,7 @@ test_midi_region_split ()
     pos.frames, ==, r->base.end_pos.frames);
 
   /* redo to bring 3 regions back */
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 2);
 
@@ -2189,7 +2132,7 @@ test_midi_region_split ()
   g_assert_cmpint (
     pos.frames, ==, r->base.end_pos.frames);
 
-  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 3);
 
@@ -2222,10 +2165,8 @@ test_midi_region_split ()
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      (ArrangerSelections *) TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    (ArrangerSelections *) TL_SELECTIONS, NULL);
 
   g_assert_cmpint (
     lane->num_regions, ==, 2);
@@ -2247,7 +2188,7 @@ test_midi_region_split ()
     pos.frames, ==, r->base.end_pos.frames);
 
   /* undo to bring it back */
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
     lane->num_regions, ==, 3);
 
@@ -2287,8 +2228,8 @@ test_pin_unpin ()
   track_select (
     P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_set_pinned_with_action (
-    TRACKLIST_SELECTIONS, Z_F_NO_PIN);
+  tracklist_selections_action_perform_unpin (
+    TRACKLIST_SELECTIONS, NULL);
 
   g_assert_cmpint (
     r->id.track_pos, ==, P_CHORD_TRACK->pos);
@@ -2306,7 +2247,6 @@ test_delete_markers ()
   Marker * m = NULL,
          * m_c = NULL,
          * m_d = NULL;
-  UndoableAction * ua;
 
   /* create markers A B C D */
   const char * names[4] = {
@@ -2318,10 +2258,8 @@ test_delete_markers ()
       arranger_object_select (
         (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
-      ua =
-        arranger_selections_action_new_create (
-          TL_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_create (
+        TL_SELECTIONS, NULL);
 
       if (i == 2)
         {
@@ -2337,23 +2275,19 @@ test_delete_markers ()
   arranger_object_select (
     (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    TL_SELECTIONS, NULL);
 
   /* delete D */
   arranger_object_select (
     (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    TL_SELECTIONS, NULL);
 
   for (int i = 0; i < 6; i++)
     {
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
     }
 
   test_helper_zrythm_cleanup ();
@@ -2367,7 +2301,6 @@ test_delete_scale_objects ()
   ScaleObject * m = NULL,
          * m_c = NULL,
          * m_d = NULL;
-  UndoableAction * ua;
 
   /* create markers A B C D */
   for (int i = 0; i < 4; i++)
@@ -2378,10 +2311,8 @@ test_delete_scale_objects ()
       arranger_object_select (
         (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
-      ua =
-        arranger_selections_action_new_create (
-          TL_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_create (
+        TL_SELECTIONS, NULL);
 
       if (i == 2)
         {
@@ -2397,23 +2328,19 @@ test_delete_scale_objects ()
   arranger_object_select (
     (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    TL_SELECTIONS, NULL);
 
   /* delete D */
   arranger_object_select (
     (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    TL_SELECTIONS, NULL);
 
   for (int i = 0; i < 6; i++)
     {
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
     }
 
   test_helper_zrythm_cleanup ();
@@ -2427,7 +2354,6 @@ test_delete_chord_objects ()
   ChordObject * m = NULL,
          * m_c = NULL,
          * m_d = NULL;
-  UndoableAction * ua;
 
   Position pos1, pos2;
   position_set_to_bar (&pos1, 1);
@@ -2439,10 +2365,8 @@ test_delete_chord_objects ()
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
-  ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* create markers A B C D */
   for (int i = 0; i < 4; i++)
@@ -2453,10 +2377,8 @@ test_delete_chord_objects ()
       arranger_object_select (
         (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
-      ua =
-        arranger_selections_action_new_create (
-          CHORD_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_create (
+        CHORD_SELECTIONS, NULL);
 
       if (i == 2)
         {
@@ -2472,23 +2394,19 @@ test_delete_chord_objects ()
   arranger_object_select (
     (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      CHORD_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+      CHORD_SELECTIONS, NULL);
 
   /* delete D */
   arranger_object_select (
     (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      CHORD_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    CHORD_SELECTIONS, NULL);
 
   for (int i = 0; i < 6; i++)
     {
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
     }
 
   test_helper_zrythm_cleanup ();
@@ -2502,7 +2420,6 @@ test_delete_automation_points ()
   AutomationPoint * m = NULL,
                   * m_c = NULL,
                   * m_d = NULL;
-  UndoableAction * ua;
 
   Position pos1, pos2;
   position_set_to_bar (&pos1, 1);
@@ -2521,10 +2438,8 @@ test_delete_automation_points ()
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
-  ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
 
   /* create markers A B C D */
   for (int i = 0; i < 4; i++)
@@ -2537,10 +2452,8 @@ test_delete_automation_points ()
       arranger_object_select (
         (ArrangerObject *) m, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
-      ua =
-        arranger_selections_action_new_create (
-          AUTOMATION_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_create (
+        AUTOMATION_SELECTIONS, NULL);
 
       if (i == 2)
         {
@@ -2556,23 +2469,19 @@ test_delete_automation_points ()
   arranger_object_select (
     (ArrangerObject *) m_c, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    AUTOMATION_SELECTIONS, NULL);
 
   /* delete D */
   arranger_object_select (
     (ArrangerObject *) m_d, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  ua =
-    arranger_selections_action_new_delete (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_delete (
+    AUTOMATION_SELECTIONS, NULL);
 
   for (int i = 0; i < 6; i++)
     {
-      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER, NULL);
     }
 
   test_helper_zrythm_cleanup ();
@@ -2598,16 +2507,14 @@ test_duplicate_audio_regions ()
   Track * track =
     track_create_with_action (
       TRACK_TYPE_AUDIO, NULL, file, &pos1,
-      track_pos, 1);
+      track_pos, 1, NULL);
 
   arranger_object_select (
     (ArrangerObject *) track->lanes[0]->regions[0],
     F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_duplicate_timeline (
-      TL_SELECTIONS, MOVE_TICKS, 0, 0,
-      F_NOT_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_duplicate_timeline (
+    TL_SELECTIONS, MOVE_TICKS, 0, 0,
+    F_NOT_ALREADY_MOVED, NULL);
 
   test_project_save_and_reload ();
 
@@ -2620,7 +2527,8 @@ test_undo_moving_midi_region_to_other_lane ()
   test_helper_zrythm_init ();
 
   /* create midi track with region */
-  track_create_empty_with_action (TRACK_TYPE_MIDI);
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI, NULL);
   Track * midi_track =
     tracklist_get_last_track (
       TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
@@ -2647,25 +2555,21 @@ test_undo_moving_midi_region_to_other_lane ()
       arranger_object_select (
         (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
-      UndoableAction * ua =
-        arranger_selections_action_new_create (
-          TL_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_action_perform_create (
+        TL_SELECTIONS, NULL);
     }
 
   /* move last region to top lane */
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
-  UndoableAction * ua =
-    arranger_selections_action_new_move_timeline (
-      TL_SELECTIONS, MOVE_TICKS, 0, -2,
-      F_NOT_ALREADY_MOVED);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS, MOVE_TICKS, 0, -2,
+    F_NOT_ALREADY_MOVED, NULL);
 
-  undo_manager_undo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }

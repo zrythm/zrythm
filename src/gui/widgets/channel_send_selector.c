@@ -25,6 +25,7 @@
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -133,16 +134,21 @@ on_selection_changed (
     channel_send_get_track (send);
   Track * dest_track = NULL;
   StereoPorts * dest_sidechain = NULL;
-  UndoableAction * ua = NULL;
   switch (target->type)
     {
     case TARGET_TYPE_NONE:
       if (channel_send_is_enabled (send))
         {
-          ua =
-            channel_send_action_new_disconnect (
-              self->send_widget->send);
-          undo_manager_perform (UNDO_MANAGER, ua);
+          GError * err = NULL;
+          bool ret =
+            channel_send_action_perform_disconnect (
+              self->send_widget->send, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to disconnect send"));
+            }
         }
       break;
     case TARGET_TYPE_TRACK:
@@ -157,12 +163,18 @@ on_selection_changed (
                   dest_midi_id,
                 &dest_track->processor->midi_in->id))
             {
-              ua =
-                channel_send_action_new_connect_midi (
+              GError * err = NULL;
+              bool ret =
+                channel_send_action_perform_connect_midi (
                   self->send_widget->send,
-                  dest_track->processor->midi_in);
-              undo_manager_perform (
-                UNDO_MANAGER, ua);
+                  dest_track->processor->midi_in,
+                  &err);
+              if (!ret)
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to connect send"));
+                }
             }
           break;
         case TYPE_AUDIO:
@@ -173,12 +185,18 @@ on_selection_changed (
                 &dest_track->processor->stereo_in->
                   l->id))
             {
-              ua =
-                channel_send_action_new_connect_audio (
+              GError * err = NULL;
+              bool ret =
+                channel_send_action_perform_connect_audio (
                   self->send_widget->send,
-                  dest_track->processor->stereo_in);
-              undo_manager_perform (
-                UNDO_MANAGER, ua);
+                  dest_track->processor->stereo_in,
+                  &err);
+              if (!ret)
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to connect send"));
+                }
             }
           break;
         default:
@@ -196,11 +214,17 @@ on_selection_changed (
                &self->send_widget->send->dest_l_id,
                &dest_sidechain->l->id)))
           {
-            ua =
-              channel_send_action_new_connect_sidechain (
+            GError * err = NULL;
+            bool ret =
+              channel_send_action_perform_connect_sidechain (
                 self->send_widget->send,
-                dest_sidechain);
-            undo_manager_perform (UNDO_MANAGER, ua);
+                dest_sidechain, &err);
+            if (!ret)
+              {
+                HANDLE_ERROR (
+                  err, "%s",
+                  _("Failed to connect send"));
+              }
           }
         object_zero_and_free (dest_sidechain);
       }

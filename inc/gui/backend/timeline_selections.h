@@ -219,6 +219,22 @@ timeline_selections_contains_only_region_types (
   TimelineSelections * self,
   RegionType           types);
 
+#define \
+timeline_selections_move_w_action( \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved) \
+  arranger_selections_move_w_action ( \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    0, already_moved)
+
+#define \
+timeline_selections_duplicate_w_action( \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved) \
+  arranger_selections_duplicate_w_action ( \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    0, already_moved)
+
 /**
  * @}
  */

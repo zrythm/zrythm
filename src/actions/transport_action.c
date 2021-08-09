@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -44,7 +44,8 @@ UndoableAction *
 transport_action_new_bpm_change (
   bpm_t           bpm_before,
   bpm_t           bpm_after,
-  bool            already_done)
+  bool            already_done,
+  GError **       error)
 {
   TransportAction * self =
     object_new (TransportAction);
@@ -67,7 +68,8 @@ transport_action_new_time_sig_change (
   TransportActionType type,
   int                 before,
   int                 after,
-  bool                already_done)
+  bool                already_done,
+  GError **           error)
 {
   TransportAction * self =
     object_new (TransportAction);
@@ -83,6 +85,33 @@ transport_action_new_time_sig_change (
     g_settings_get_boolean (S_UI, "musical-mode");
 
   return ua;
+}
+
+bool
+transport_action_perform_bpm_change (
+  bpm_t     bpm_before,
+  bpm_t     bpm_after,
+  bool      already_done,
+  GError ** error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    transport_action_new_bpm_change,
+    error, bpm_before, bpm_after, already_done,
+    error);
+}
+
+bool
+transport_action_perform_time_sig_change (
+  TransportActionType type,
+  int                 before,
+  int                 after,
+  bool                already_done,
+  GError **           error)
+{
+  UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
+    transport_action_new_time_sig_change,
+    error, type, before, after, already_done,
+    error);
 }
 
 static int
@@ -154,7 +183,8 @@ do_or_undo (
 
 int
 transport_action_do (
-  TransportAction * self)
+  TransportAction * self,
+  GError **         error)
 {
   if (self->already_done)
     {
@@ -188,7 +218,8 @@ transport_action_do (
 
 int
 transport_action_undo (
-  TransportAction * self)
+  TransportAction * self,
+  GError **         error)
 {
   do_or_undo (self, false);
 

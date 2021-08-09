@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -108,50 +108,97 @@ channel_send_action_init_loaded (
  * @param port MIDI port, if connecting MIDI.
  * @param stereo Stereo ports, if connecting audio.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 channel_send_action_new (
   ChannelSend *         send,
   ChannelSendActionType type,
   Port *                port,
   StereoPorts *         stereo,
-  float                 amount);
+  float                 amount,
+  GError **             error);
 
-#define channel_send_action_new_disconnect(send) \
+#define channel_send_action_new_disconnect( \
+  send,error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_DISCONNECT, NULL, NULL, \
-    0.f)
+    0.f, error)
 
 #define channel_send_action_new_connect_midi( \
-  send,midi) \
+  send,midi,error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CONNECT_MIDI, midi, \
-    NULL, 0.f)
+    NULL, 0.f, error)
 
 #define channel_send_action_new_connect_audio( \
-  send,stereo) \
+  send,stereo,error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CONNECT_STEREO, NULL, \
-    stereo, 0.f)
+    stereo, 0.f, error)
 
 #define channel_send_action_new_connect_sidechain( \
-  send,stereo) \
+  send,stereo,error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN, \
-    NULL, stereo, 0.f)
+    NULL, stereo, 0.f, error)
 
 #define channel_send_action_new_change_amount( \
-  send,amt) \
+  send,amt,error) \
   channel_send_action_new ( \
     send, CHANNEL_SEND_ACTION_CHANGE_AMOUNT, NULL, \
-    NULL, amt)
+    NULL, amt, error)
+
+/**
+ * Wrapper to create action and perform it.
+ */
+bool
+channel_send_action_perform (
+  ChannelSend *         send,
+  ChannelSendActionType type,
+  Port *                port,
+  StereoPorts *         stereo,
+  float                 amount,
+  GError **             error);
+
+#define channel_send_action_perform_disconnect( \
+  send,error) \
+  channel_send_action_perform ( \
+    send, CHANNEL_SEND_ACTION_DISCONNECT, NULL, NULL, \
+    0.f, error)
+
+#define channel_send_action_perform_connect_midi( \
+  send,midi,error) \
+  channel_send_action_perform ( \
+    send, CHANNEL_SEND_ACTION_CONNECT_MIDI, midi, \
+    NULL, 0.f, error)
+
+#define channel_send_action_perform_connect_audio( \
+  send,stereo,error) \
+  channel_send_action_perform ( \
+    send, CHANNEL_SEND_ACTION_CONNECT_STEREO, NULL, \
+    stereo, 0.f, error)
+
+#define channel_send_action_perform_connect_sidechain( \
+  send,stereo,error) \
+  channel_send_action_perform ( \
+    send, CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN, \
+    NULL, stereo, 0.f, error)
+
+#define channel_send_action_perform_change_amount( \
+  send,amt,error) \
+  channel_send_action_perform ( \
+    send, CHANNEL_SEND_ACTION_CHANGE_AMOUNT, NULL, \
+    NULL, amt, error)
 
 int
 channel_send_action_do (
-  ChannelSendAction * self);
+  ChannelSendAction * self,
+  GError **           error);
 
 int
 channel_send_action_undo (
-  ChannelSendAction * self);
+  ChannelSendAction * self,
+  GError **           error);
 
 char *
 channel_send_action_stringize (

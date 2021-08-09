@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +20,7 @@
 #include "actions/port_connection_action.h"
 #include "gui/widgets/port_connections_tree.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
@@ -84,10 +85,19 @@ on_enabled_toggled (
   gtk_tree_path_free (path);
 
   /* perform an undoable action */
-  UndoableAction * ua =
-    port_connection_action_new_enable (
-      &src_port->id, &dest_port->id, enabled);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    port_connection_action_perform_enable (
+      &src_port->id, &dest_port->id, enabled, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err,
+        _("Failed to enable connection from %s to "
+        "%s"),
+        src_port->id.label,
+        dest_port->id.label);
+    }
 }
 
 static GtkTreeModel *
@@ -166,10 +176,19 @@ on_delete_activate (
   GtkMenuItem *               menuitem,
   PortConnectionsTreeWidget * self)
 {
-  UndoableAction * ua =
-    port_connection_action_new_disconnect (
-      &self->src_port->id, &self->dest_port->id);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GError * err = NULL;
+  bool ret =
+    port_connection_action_perform_disconnect (
+      &self->src_port->id, &self->dest_port->id,
+      &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err,
+        _("Failed to disconnect %s from %s"),
+        self->src_port->id.label,
+        self->dest_port->id.label);
+    }
 }
 
 static void

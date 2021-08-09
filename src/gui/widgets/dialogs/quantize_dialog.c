@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/dialogs/quantize_dialog.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -73,20 +74,32 @@ on_quantize_clicked (
           CLIP_EDITOR);
       g_return_if_fail (sel);
 
-      UndoableAction * ua =
-        arranger_selections_action_new_quantize (
-          sel, self->opts);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_quantize (
+          sel, self->opts, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to quantize editor "
+            "selections"));
+        }
     }
   else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
     {
-      UndoableAction * ua =
-        arranger_selections_action_new_quantize (
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_quantize (
           (ArrangerSelections *) TL_SELECTIONS,
-          self->opts);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+          self->opts, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to quantize timeline "
+            "selections"));
+        }
     }
 }
 
