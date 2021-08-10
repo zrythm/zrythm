@@ -22,6 +22,9 @@
 #ifndef SNARF_MODE
 #include "actions/undo_manager.h"
 #include "project.h"
+#include "utils/error.h"
+
+#include <glib/gi18n.h>
 #endif
 
 #if 0

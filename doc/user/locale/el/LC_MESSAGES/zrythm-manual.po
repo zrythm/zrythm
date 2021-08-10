@@ -6033,37 +6033,9 @@ msgstr "GNU/Linux και FreeBSD"
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr "Το Zrythm θα σκανάρει πρόσθετα VST2 στα εξής μονοπάτια,"
 
-#: ../../plugins-files/plugins/scanning.rst:40
-msgid ":file:`{$HOME}/.vst`"
-msgstr ":file:`{$HOME}/.vst`"
-
-#: ../../plugins-files/plugins/scanning.rst:41
-msgid ":file:`{$HOME}/vst`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:42
-msgid ":file:`/usr/local/lib/vst`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:43
-msgid ":file:`/usr/lib/vst`"
-msgstr ""
-
 #: ../../plugins-files/plugins/scanning.rst:45
 msgid "and VST3 plugins in the following paths."
 msgstr "και πρόσθετα VST3 στα εξής μονοπάτια."
-
-#: ../../plugins-files/plugins/scanning.rst:47
-msgid ":file:`{$HOME}/.vst3`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:48
-msgid ":file:`/usr/local/lib/vst3`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:49
-msgid ":file:`/usr/lib/vst3`"
-msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:51
 msgid ""
@@ -6618,28 +6590,12 @@ msgid ""
 "automatically by Zrythm internally."
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:3
-msgid "(actions channel-send-action)"
-msgstr ""
-
 #: ../../scripting/api/actions channel_send_action.rst:6
 msgid "Creates an audio send connection as an undoable action."
 msgstr ""
 
-#: ../../scripting/api/actions port_connection_action.rst:3
-msgid "(actions port-connection-action)"
-msgstr ""
-
 #: ../../scripting/api/actions port_connection_action.rst:6
 msgid "Connects 2 ports as an undoable action."
-msgstr ""
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:3
-msgid "(actions tracklist-selections-action)"
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:3
-msgid "(actions undo-manager)"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:6
@@ -6650,10 +6606,6 @@ msgstr "Βάζει το κομμάτι σε σίγαση."
 #, fuzzy
 msgid "Redoes the last undone action."
 msgstr "Βάζει το κομμάτι σε σίγαση."
-
-#: ../../scripting/api/audio channel.rst:3
-msgid "(audio channel)"
-msgstr ""
 
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
@@ -6667,19 +6619,9 @@ msgstr "Επιστρέφει το όργανο στο δοθέν κανάλι"
 msgid "Returns the send instance at the given slot"
 msgstr "Επιστρέφει την περίπτωση αποστολής στη δοθείσα θέση"
 
-#: ../../scripting/api/audio midi_note.rst:3
-#, fuzzy
-msgid "(audio midi-note)"
-msgstr "Περιοχές ήχων"
-
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
 msgstr "Επιστρέφει μια καινούρια νότα MIDI."
-
-#: ../../scripting/api/audio midi_region.rst:3
-#, fuzzy
-msgid "(audio midi-region)"
-msgstr "Περιοχές ήχων"
 
 #: ../../scripting/api/audio midi_region.rst:6
 #, fuzzy
@@ -6690,11 +6632,6 @@ msgstr "Επιστρέφει μια καινούρια νότα MIDI."
 msgid "Adds a midi note to ``region``."
 msgstr ""
 
-#: ../../scripting/api/audio port.rst:3
-#, fuzzy
-msgid "(audio port)"
-msgstr "Θέση κεφαλής αναπαραγωγής"
-
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
 msgstr "Επιστρέφει την αριστερή ή δεξιά θύρα ενός ζευγαριού στέρεο."
@@ -6703,11 +6640,6 @@ msgstr "Επιστρέφει την αριστερή ή δεξιά θύρα εν
 #, fuzzy
 msgid "Returns the identifier of ``port``."
 msgstr "Επιστρέφει το αναγνωριστικό της θύρας."
-
-#: ../../scripting/api/audio position.rst:3
-#, fuzzy
-msgid "(audio position)"
-msgstr "Θέση κεφαλής αναπαραγωγής"
 
 #: ../../scripting/api/audio position.rst:6
 #, fuzzy
@@ -6722,19 +6654,9 @@ msgstr ""
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘."
 
-#: ../../scripting/api/audio supported_file.rst:3
-#, fuzzy
-msgid "(audio supported-file)"
-msgstr "Θέση κεφαλής αναπαραγωγής"
-
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
 msgstr ""
-
-#: ../../scripting/api/audio track.rst:3
-#, fuzzy
-msgid "(audio track)"
-msgstr "Κομμάτι ήχου"
 
 #: ../../scripting/api/audio track.rst:6
 #, fuzzy
@@ -6786,20 +6708,10 @@ msgid ""
 msgstr ""
 "Προσθέτει περιοχή στο κομμάτι. Προς χρήση σε περιοχές με λωρίδες (MIDI/ήχος)"
 
-#: ../../scripting/api/audio track_processor.rst:3
-#, fuzzy
-msgid "(audio track-processor)"
-msgstr "Κομμάτι ήχου"
-
 #: ../../scripting/api/audio track_processor.rst:6
 #, fuzzy
 msgid "Returns the stereo in ports instance of the track processor."
 msgstr "Επιστρέφει την περίπτωση αποστολής στη δοθείσα θέση"
-
-#: ../../scripting/api/audio tracklist.rst:3
-#, fuzzy
-msgid "(audio tracklist)"
-msgstr "Κομμάτι ήχου"
 
 #: ../../scripting/api/audio tracklist.rst:6
 #, fuzzy
@@ -6820,10 +6732,6 @@ msgstr "Επιστρέφει το όνομα του κομματιού."
 msgid "API"
 msgstr "Διεπαφή Προγραμματισμού Εφαρμογών (API)"
 
-#: ../../scripting/api/plugins plugin.rst:3
-msgid "(plugins plugin)"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
 msgstr "Επιστρέφει τη θύρα εισαγωγής του προσθέτου στον δοθέντα δείκτη."
@@ -6831,10 +6739,6 @@ msgstr "Επιστρέφει τη θύρα εισαγωγής του προσθ�
 #: ../../scripting/api/plugins plugin.rst:10
 msgid "Returns the output port of the plugin at the given index."
 msgstr "Επιστρέφει τη θύρα εξαγόμενου του προσθέτου στον δοθέντα δείκτη."
-
-#: ../../scripting/api/plugins plugin_manager.rst:3
-msgid "(plugins plugin-manager)"
-msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
 #, fuzzy
@@ -6844,11 +6748,6 @@ msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέσ�
 #: ../../scripting/api/plugins plugin_manager.rst:10
 msgid "Scans the system for plugins."
 msgstr ""
-
-#: ../../scripting/api/project.rst:3
-#, fuzzy
-msgid "(project)"
-msgstr "έργο.yml"
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
@@ -6863,11 +6762,6 @@ msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
 #, fuzzy
 msgid "Returns the undo manager for the project."
 msgstr "Επιστρέφει το όνομα του κομματιού."
-
-#: ../../scripting/api/zrythm.rst:3
-#, fuzzy
-msgid "(zrythm)"
-msgstr "zrythm"
 
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."

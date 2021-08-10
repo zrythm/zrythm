@@ -6220,37 +6220,9 @@ msgstr "GNU / Linux и FreeBSD"
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr "Zrythm просканирует плагины VST2 по следующим путям:"
 
-#: ../../plugins-files/plugins/scanning.rst:40
-msgid ":file:`{$HOME}/.vst`"
-msgstr ":file:`{$HOME}/.vst`"
-
-#: ../../plugins-files/plugins/scanning.rst:41
-msgid ":file:`{$HOME}/vst`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:42
-msgid ":file:`/usr/local/lib/vst`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:43
-msgid ":file:`/usr/lib/vst`"
-msgstr ""
-
 #: ../../plugins-files/plugins/scanning.rst:45
 msgid "and VST3 plugins in the following paths."
 msgstr "и плагины VST3 по следующим путям:"
-
-#: ../../plugins-files/plugins/scanning.rst:47
-msgid ":file:`{$HOME}/.vst3`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:48
-msgid ":file:`/usr/local/lib/vst3`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:49
-msgid ":file:`/usr/lib/vst3`"
-msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:51
 msgid ""
@@ -6799,28 +6771,12 @@ msgid ""
 "automatically by Zrythm internally."
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:3
-msgid "(actions channel-send-action)"
-msgstr ""
-
 #: ../../scripting/api/actions channel_send_action.rst:6
 msgid "Creates an audio send connection as an undoable action."
 msgstr ""
 
-#: ../../scripting/api/actions port_connection_action.rst:3
-msgid "(actions port-connection-action)"
-msgstr ""
-
 #: ../../scripting/api/actions port_connection_action.rst:6
 msgid "Connects 2 ports as an undoable action."
-msgstr ""
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:3
-msgid "(actions tracklist-selections-action)"
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:3
-msgid "(actions undo-manager)"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:6
@@ -6831,10 +6787,6 @@ msgstr "Заглушает трек."
 #, fuzzy
 msgid "Redoes the last undone action."
 msgstr "Заглушает трек."
-
-#: ../../scripting/api/audio channel.rst:3
-msgid "(audio channel)"
-msgstr ""
 
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
@@ -6848,19 +6800,9 @@ msgstr ""
 msgid "Returns the send instance at the given slot"
 msgstr ""
 
-#: ../../scripting/api/audio midi_note.rst:3
-#, fuzzy
-msgid "(audio midi-note)"
-msgstr "Регионы аудио"
-
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
 msgstr ""
-
-#: ../../scripting/api/audio midi_region.rst:3
-#, fuzzy
-msgid "(audio midi-region)"
-msgstr "Регионы аудио"
 
 #: ../../scripting/api/audio midi_region.rst:6
 #, fuzzy
@@ -6875,11 +6817,6 @@ msgstr ""
 msgid "Adds a midi note to ``region``."
 msgstr ""
 
-#: ../../scripting/api/audio port.rst:3
-#, fuzzy
-msgid "(audio port)"
-msgstr "Положение курсора (Playhead position)"
-
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
 msgstr ""
@@ -6887,11 +6824,6 @@ msgstr ""
 #: ../../scripting/api/audio port.rst:10
 msgid "Returns the identifier of ``port``."
 msgstr ""
-
-#: ../../scripting/api/audio position.rst:3
-#, fuzzy
-msgid "(audio position)"
-msgstr "Положение курсора (Playhead position)"
 
 #: ../../scripting/api/audio position.rst:6
 msgid ""
@@ -6906,19 +6838,9 @@ msgstr ""
 "Текущее положение курсора в тактах, ударах, шестнадцатых тактах (bars,beats,"
 "sixteenths,ticks)."
 
-#: ../../scripting/api/audio supported_file.rst:3
-#, fuzzy
-msgid "(audio supported-file)"
-msgstr "Положение курсора (Playhead position)"
-
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
 msgstr ""
-
-#: ../../scripting/api/audio track.rst:3
-#, fuzzy
-msgid "(audio track)"
-msgstr "Аудио трек (Audio Track)"
 
 #: ../../scripting/api/audio track.rst:6
 msgid ""
@@ -6956,19 +6878,9 @@ msgid ""
 "audio)"
 msgstr ""
 
-#: ../../scripting/api/audio track_processor.rst:3
-#, fuzzy
-msgid "(audio track-processor)"
-msgstr "Аудио трек (Audio Track)"
-
 #: ../../scripting/api/audio track_processor.rst:6
 msgid "Returns the stereo in ports instance of the track processor."
 msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:3
-#, fuzzy
-msgid "(audio tracklist)"
-msgstr "Аудио трек (Audio Track)"
 
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
@@ -6987,10 +6899,6 @@ msgstr ""
 msgid "API"
 msgstr ""
 
-#: ../../scripting/api/plugins plugin.rst:3
-msgid "(plugins plugin)"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
 msgstr ""
@@ -7000,10 +6908,6 @@ msgstr ""
 msgid "Returns the output port of the plugin at the given index."
 msgstr "Увеличивает выходную громкость плагина (если возможно)."
 
-#: ../../scripting/api/plugins plugin_manager.rst:3
-msgid "(plugins plugin-manager)"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin_manager.rst:6
 msgid "Returns the PluginDescriptor matching the given URI."
 msgstr ""
@@ -7011,11 +6915,6 @@ msgstr ""
 #: ../../scripting/api/plugins plugin_manager.rst:10
 msgid "Scans the system for plugins."
 msgstr ""
-
-#: ../../scripting/api/project.rst:3
-#, fuzzy
-msgid "(project)"
-msgstr "project.yml"
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
@@ -7029,11 +6928,6 @@ msgstr "Активирует трек для записи."
 #, fuzzy
 msgid "Returns the undo manager for the project."
 msgstr "Активирует трек для записи."
-
-#: ../../scripting/api/zrythm.rst:3
-#, fuzzy
-msgid "(zrythm)"
-msgstr "zrythm"
 
 #: ../../scripting/api/zrythm.rst:6
 #, fuzzy

@@ -15,14 +15,13 @@ msgstr ""
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
 "PO-Revision-Date: 2021-08-10 12:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -113,9 +112,10 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
-"特定のプログラムの起動方法やメニューでの表示方法などを記述した `Freedesktop の設定ファイル <https://specifications."
-"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ 。これは通常、 "
-":file:`/usr/share/applications/zrythm.desktop` にインストールされます。"
+"特定のプログラムの起動方法やメニューでの表示方法などを記述した `Freedesktop "
+"の設定ファイル <https://specifications.freedesktop.org/desktop-entry-spec/"
+"desktop-entry-spec-latest.html>`_ 。これは通常、 :file:`/usr/share/"
+"applications/zrythm.desktop` にインストールされます。"
 
 #: ../../appendix/files-and-directories.rst:28
 msgid "GLib Schema"
@@ -5758,37 +5758,9 @@ msgstr "GNU/LinuxとFreeBSD"
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
-#: ../../plugins-files/plugins/scanning.rst:40
-msgid ":file:`{$HOME}/.vst`"
-msgstr ":file:`{$HOME}/.vst`"
-
-#: ../../plugins-files/plugins/scanning.rst:41
-msgid ":file:`{$HOME}/vst`"
-msgstr ":file:`{$HOME}/vst`"
-
-#: ../../plugins-files/plugins/scanning.rst:42
-msgid ":file:`/usr/local/lib/vst`"
-msgstr ":file:`/usr/local/lib/vst`"
-
-#: ../../plugins-files/plugins/scanning.rst:43
-msgid ":file:`/usr/lib/vst`"
-msgstr ":file:`/usr/lib/vst`"
-
 #: ../../plugins-files/plugins/scanning.rst:45
 msgid "and VST3 plugins in the following paths."
 msgstr "と以下のパスのVST3プラグイン。"
-
-#: ../../plugins-files/plugins/scanning.rst:47
-msgid ":file:`{$HOME}/.vst3`"
-msgstr ":file:`{$HOME}/.vst3`"
-
-#: ../../plugins-files/plugins/scanning.rst:48
-msgid ":file:`/usr/local/lib/vst3`"
-msgstr ":file:`/usr/local/lib/vst3`"
-
-#: ../../plugins-files/plugins/scanning.rst:49
-msgid ":file:`/usr/lib/vst3`"
-msgstr ":file:`/usr/lib/vst3`"
 
 #: ../../plugins-files/plugins/scanning.rst:51
 msgid ""
@@ -6343,31 +6315,15 @@ msgid ""
 "automatically by Zrythm internally."
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:3
-msgid "(actions channel-send-action)"
-msgstr "(actions channel-send-action)"
-
 #: ../../scripting/api/actions channel_send_action.rst:6
 #, fuzzy
 msgid "Creates an audio send connection as an undoable action."
 msgstr "2ポートを接続するためのアクションを作成します。"
 
-#: ../../scripting/api/actions port_connection_action.rst:3
-msgid "(actions port-connection-action)"
-msgstr "(actions port-connection-action)"
-
 #: ../../scripting/api/actions port_connection_action.rst:6
 #, fuzzy
 msgid "Connects 2 ports as an undoable action."
 msgstr "最後に元に戻した動作をやり直します。"
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:3
-msgid "(actions tracklist-selections-action)"
-msgstr "(actions tracklist-selections-action)"
-
-#: ../../scripting/api/actions undo_manager.rst:3
-msgid "(actions undo-manager)"
-msgstr "(actions undo-manager)"
 
 #: ../../scripting/api/actions undo_manager.rst:6
 msgid "Undoes the last action."
@@ -6377,10 +6333,6 @@ msgstr "最後の操作を元に戻します。"
 #, fuzzy
 msgid "Redoes the last undone action."
 msgstr "最後の操作を元に戻します。"
-
-#: ../../scripting/api/audio channel.rst:3
-msgid "(audio channel)"
-msgstr "(audio channel)"
 
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
@@ -6394,17 +6346,9 @@ msgstr "指定されたチャンネルのインストゥルメントを返しま
 msgid "Returns the send instance at the given slot"
 msgstr "指定したスロットでのセンドインスタンスを返します"
 
-#: ../../scripting/api/audio midi_note.rst:3
-msgid "(audio midi-note)"
-msgstr "(audio midi-note)"
-
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
 msgstr "新しい MIDI ノートを返します。"
-
-#: ../../scripting/api/audio midi_region.rst:3
-msgid "(audio midi-region)"
-msgstr "(audio midi-region)"
 
 #: ../../scripting/api/audio midi_region.rst:6
 msgid "Returns a new midi region."
@@ -6414,10 +6358,6 @@ msgstr "新しい MIDI リージョンを返します。"
 msgid "Adds a midi note to ``region``."
 msgstr "``region`` に MIDI ノートを追加します。"
 
-#: ../../scripting/api/audio port.rst:3
-msgid "(audio port)"
-msgstr "(audio port)"
-
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
 msgstr "ステレオペアの左または右のポートを返します。"
@@ -6425,10 +6365,6 @@ msgstr "ステレオペアの左または右のポートを返します。"
 #: ../../scripting/api/audio port.rst:10
 msgid "Returns the identifier of ``port``."
 msgstr "``port`` の識別子を返します。"
-
-#: ../../scripting/api/audio position.rst:3
-msgid "(audio position)"
-msgstr "(audio position)"
 
 #: ../../scripting/api/audio position.rst:6
 #, fuzzy
@@ -6442,17 +6378,9 @@ msgstr ""
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
-#: ../../scripting/api/audio supported_file.rst:3
-msgid "(audio supported-file)"
-msgstr "(audio supported-file)"
-
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
 msgstr "SupportedFile のインスタンスを返します。"
-
-#: ../../scripting/api/audio track.rst:3
-msgid "(audio track)"
-msgstr "(audio track)"
 
 #: ../../scripting/api/audio track.rst:6
 #, fuzzy
@@ -6499,17 +6427,9 @@ msgstr ""
 "トラック ``track`` に ``region`` を追加します。レーンを持つリージョンに使用さ"
 "れます (MIDI/オーディオ)"
 
-#: ../../scripting/api/audio track_processor.rst:3
-msgid "(audio track-processor)"
-msgstr "(audio track-processor)"
-
 #: ../../scripting/api/audio track_processor.rst:6
 msgid "Returns the stereo in ports instance of the track processor."
 msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:3
-msgid "(audio tracklist)"
-msgstr "(audio tracklist)"
 
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
@@ -6528,10 +6448,6 @@ msgstr "トラックリスト内のトラックの数を返します。"
 msgid "API"
 msgstr "API"
 
-#: ../../scripting/api/plugins plugin.rst:3
-msgid "(plugins plugin)"
-msgstr "(plugins plugin)"
-
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
 msgstr "指定したインデックスのプラグインの入力ポートを返します。"
@@ -6540,10 +6456,6 @@ msgstr "指定したインデックスのプラグインの入力ポートを返
 msgid "Returns the output port of the plugin at the given index."
 msgstr "指定したインデックスのプラグインの出力ポートを返します。"
 
-#: ../../scripting/api/plugins plugin_manager.rst:3
-msgid "(plugins plugin-manager)"
-msgstr "(plugins plugin-manager)"
-
 #: ../../scripting/api/plugins plugin_manager.rst:6
 msgid "Returns the PluginDescriptor matching the given URI."
 msgstr "指定したURIにマッチするPluginDescriptorを返します。"
@@ -6551,10 +6463,6 @@ msgstr "指定したURIにマッチするPluginDescriptorを返します。"
 #: ../../scripting/api/plugins plugin_manager.rst:10
 msgid "Scans the system for plugins."
 msgstr "プラグインをスキャンします。"
-
-#: ../../scripting/api/project.rst:3
-msgid "(project)"
-msgstr "(project)"
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
@@ -6567,10 +6475,6 @@ msgstr "プロジェクトのトラックリストを返します。"
 #: ../../scripting/api/project.rst:14
 msgid "Returns the undo manager for the project."
 msgstr "プロジェクトの Undo マネージャー (Undo Manager) を返します。"
-
-#: ../../scripting/api/zrythm.rst:3
-msgid "(zrythm)"
-msgstr "(zrythm)"
 
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
@@ -8829,18 +8733,6 @@ msgstr ""
 
 #~ msgid "Chord regions & scales"
 #~ msgstr "コードリージョンとスケール"
-
-#~ msgid ""
-#~ "Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
-#~ "stereo_ports*"
-#~ msgstr ""
-#~ "Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
-#~ "stereo_ports*"
-
-#~ msgid ""
-#~ "Scheme Procedure: **port-connection-action-new-connect** | *src_port_id "
-#~ "dest_port_id*"
-#~ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
 #~ msgid ""
 #~ "Adds ``region`` to track ``track``. To be used for regions with lanes"

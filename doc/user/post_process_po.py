@@ -57,9 +57,34 @@ for subdir, dirs, files in os.walk(srcpath):
                         capture_output = True,
                         check = True)
                     filedata = completed_process.stdout
+                    completed_process = subprocess.run ([
+                        '@MSGGREP@',
+                        '--invert-match',
+                        '--msgid',
+                        '--regexp',
+                        '^(.*)$',
+                        '-',
+                        ],
+                        input = filedata,
+                        text = True,
+                        capture_output = True,
+                        check = True)
+                    filedata = completed_process.stdout
 
-                    with open('/tmp/fdata.po', 'w') as f:
-                        f.write(filedata)
+                    # remove :file:`<path>`
+                    completed_process = subprocess.run ([
+                        '@MSGGREP@',
+                        '--invert-match',
+                        '--msgid',
+                        '--regexp',
+                        '^:file:`[^`]*`$',
+                        '-',
+                        ],
+                        input = filedata,
+                        text = True,
+                        capture_output = True,
+                        check = True)
+                    filedata = completed_process.stdout
 
                 with open(fullpath, 'w') as f:
                     print ('writing to file %s' % fullpath)

@@ -5021,36 +5021,8 @@ msgstr ""
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:40
-msgid ":file:`{$HOME}/.vst`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:41
-msgid ":file:`{$HOME}/vst`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:42
-msgid ":file:`/usr/local/lib/vst`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:43
-msgid ":file:`/usr/lib/vst`"
-msgstr ""
-
 #: ../../plugins-files/plugins/scanning.rst:45
 msgid "and VST3 plugins in the following paths."
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:47
-msgid ":file:`{$HOME}/.vst3`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:48
-msgid ":file:`/usr/local/lib/vst3`"
-msgstr ""
-
-#: ../../plugins-files/plugins/scanning.rst:49
-msgid ":file:`/usr/lib/vst3`"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:51
@@ -5501,28 +5473,12 @@ msgid ""
 "automatically by Zrythm internally."
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:3
-msgid "(actions channel-send-action)"
-msgstr ""
-
 #: ../../scripting/api/actions channel_send_action.rst:6
 msgid "Creates an audio send connection as an undoable action."
 msgstr ""
 
-#: ../../scripting/api/actions port_connection_action.rst:3
-msgid "(actions port-connection-action)"
-msgstr ""
-
 #: ../../scripting/api/actions port_connection_action.rst:6
 msgid "Connects 2 ports as an undoable action."
-msgstr ""
-
-#: ../../scripting/api/actions tracklist_selections_action.rst:3
-msgid "(actions tracklist-selections-action)"
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:3
-msgid "(actions undo-manager)"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:6
@@ -5531,10 +5487,6 @@ msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:10
 msgid "Redoes the last undone action."
-msgstr ""
-
-#: ../../scripting/api/audio channel.rst:3
-msgid "(audio channel)"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:6
@@ -5549,17 +5501,8 @@ msgstr ""
 msgid "Returns the send instance at the given slot"
 msgstr ""
 
-#: ../../scripting/api/audio midi_note.rst:3
-#, fuzzy
-msgid "(audio midi-note)"
-msgstr "介面"
-
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
-msgstr ""
-
-#: ../../scripting/api/audio midi_region.rst:3
-msgid "(audio midi-region)"
 msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:6
@@ -5570,11 +5513,6 @@ msgstr ""
 msgid "Adds a midi note to ``region``."
 msgstr ""
 
-#: ../../scripting/api/audio port.rst:3
-#, fuzzy
-msgid "(audio port)"
-msgstr "介面"
-
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
 msgstr ""
@@ -5582,11 +5520,6 @@ msgstr ""
 #: ../../scripting/api/audio port.rst:10
 msgid "Returns the identifier of ``port``."
 msgstr ""
-
-#: ../../scripting/api/audio position.rst:3
-#, fuzzy
-msgid "(audio position)"
-msgstr "介面"
 
 #: ../../scripting/api/audio position.rst:6
 msgid ""
@@ -5598,19 +5531,9 @@ msgstr ""
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr ""
 
-#: ../../scripting/api/audio supported_file.rst:3
-#, fuzzy
-msgid "(audio supported-file)"
-msgstr "介面"
-
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
 msgstr ""
-
-#: ../../scripting/api/audio track.rst:3
-#, fuzzy
-msgid "(audio track)"
-msgstr "介面"
 
 #: ../../scripting/api/audio track.rst:6
 msgid ""
@@ -5648,19 +5571,9 @@ msgid ""
 "audio)"
 msgstr ""
 
-#: ../../scripting/api/audio track_processor.rst:3
-#, fuzzy
-msgid "(audio track-processor)"
-msgstr "介面"
-
 #: ../../scripting/api/audio track_processor.rst:6
 msgid "Returns the stereo in ports instance of the track processor."
 msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:3
-#, fuzzy
-msgid "(audio tracklist)"
-msgstr "音軌"
 
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
@@ -5678,20 +5591,12 @@ msgstr ""
 msgid "API"
 msgstr ""
 
-#: ../../scripting/api/plugins plugin.rst:3
-msgid "(plugins plugin)"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:10
 msgid "Returns the output port of the plugin at the given index."
-msgstr ""
-
-#: ../../scripting/api/plugins plugin_manager.rst:3
-msgid "(plugins plugin-manager)"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
@@ -5701,11 +5606,6 @@ msgstr ""
 #: ../../scripting/api/plugins plugin_manager.rst:10
 msgid "Scans the system for plugins."
 msgstr ""
-
-#: ../../scripting/api/project.rst:3
-#, fuzzy
-msgid "(project)"
-msgstr "建立新專案"
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
@@ -5718,11 +5618,6 @@ msgstr ""
 #: ../../scripting/api/project.rst:14
 msgid "Returns the undo manager for the project."
 msgstr ""
-
-#: ../../scripting/api/zrythm.rst:3
-#, fuzzy
-msgid "(zrythm)"
-msgstr "zrythm"
 
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
