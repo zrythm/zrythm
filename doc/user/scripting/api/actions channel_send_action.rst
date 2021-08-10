@@ -2,7 +2,7 @@
 (actions channel-send-action)
 ========================================
 
-``(channel-send-action-new-connect-audio send stereo_ports)``
-   Returns a new action for creating a send connection.
+``(channel-send-action-perform-connect-audio send stereo_ports)``
+   Creates an audio send connection as an undoable action.
 
 

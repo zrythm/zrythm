@@ -2,7 +2,7 @@
 (actions port-connection-action)
 ========================================
 
-``(port-connection-action-new-connect src_port_id dest_port_id)``
-   Creates an action for connecting 2 ports.
+``(port-connection-action-perform-connect src_port_id dest_port_id)``
+   Connects 2 ports as an undoable action.
 
 

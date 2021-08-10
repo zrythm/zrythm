@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-08-07 22:38+0100\n"
+"POT-Creation-Date: 2021-08-10 13:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7186,24 +7186,16 @@ msgstr ""
 msgid "(actions channel-send-action)"
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:7
-msgid "``(channel-send-action-new-connect-audio send stereo_ports)``"
-msgstr ""
-
 #: ../../scripting/api/actions channel_send_action.rst:6
-msgid "Returns a new action for creating a send connection."
+msgid "Creates an audio send connection as an undoable action."
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:3
 msgid "(actions port-connection-action)"
 msgstr ""
 
-#: ../../scripting/api/actions port_connection_action.rst:7
-msgid "``(port-connection-action-new-connect src_port_id dest_port_id)``"
-msgstr ""
-
 #: ../../scripting/api/actions port_connection_action.rst:6
-msgid "Creates an action for connecting 2 ports."
+msgid "Connects 2 ports as an undoable action."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:3
@@ -7214,53 +7206,25 @@ msgstr ""
 msgid "(actions undo-manager)"
 msgstr ""
 
-#: ../../scripting/api/actions undo_manager.rst:7
-msgid "``(undo-manager-perform undo_manager action)``"
-msgstr ""
-
 #: ../../scripting/api/actions undo_manager.rst:6
-msgid "Performs the given action and adds it to the undo stack."
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:11
-msgid "``(undo-manager-undo undo_manager)``"
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:10
-#, fuzzy
 msgid "Undoes the last action."
 msgstr "Silencia a pista."
 
-#: ../../scripting/api/actions undo_manager.rst:15
-msgid "``(undo-manager-redo undo_manager)``"
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:14
+#: ../../scripting/api/actions undo_manager.rst:10
+#, fuzzy
 msgid "Redoes the last undone action."
-msgstr ""
+msgstr "Silencia a pista."
 
 #: ../../scripting/api/audio channel.rst:3
 msgid "(audio channel)"
-msgstr ""
-
-#: ../../scripting/api/audio channel.rst:7
-msgid "``(channel-get-insert channel insert_slot)``"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
 msgstr ""
 
-#: ../../scripting/api/audio channel.rst:11
-msgid "``(channel-get-instrument channel)``"
-msgstr ""
-
 #: ../../scripting/api/audio channel.rst:10
 msgid "Returns the instrument at the given channel"
-msgstr ""
-
-#: ../../scripting/api/audio channel.rst:15
-msgid "``(channel-get-send channel send_slot)``"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:14
@@ -7276,10 +7240,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../scripting/api/audio midi_note.rst:7
-msgid "``(midi-note-new region start_pos end_pos pitch velocity)``"
-msgstr ""
-
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
 msgstr ""
@@ -7293,11 +7253,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
-#: ../../scripting/api/audio midi_region.rst:7
-msgid ""
-"``(midi-region-new start_pos end_pos track_idx lane_idx idx_inside_lane)``"
-msgstr ""
-
 #: ../../scripting/api/audio midi_region.rst:6
 #, fuzzy
 msgid "Returns a new midi region."
@@ -7306,10 +7261,6 @@ msgstr ""
 "Edición de Rexións\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-
-#: ../../scripting/api/audio midi_region.rst:11
-msgid "``(midi-region-add-midi-note region midi_note)``"
-msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:10
 msgid "Adds a midi note to ``region``."
@@ -7324,16 +7275,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
 "Posición da cabeza de reprodución"
 
-#: ../../scripting/api/audio port.rst:7
-msgid "``(stereo-ports-get-port stereo_ports left)``"
-msgstr ""
-
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
-msgstr ""
-
-#: ../../scripting/api/audio port.rst:11
-msgid "``(port-get-identifier port)``"
 msgstr ""
 
 #: ../../scripting/api/audio port.rst:10
@@ -7349,28 +7292,10 @@ msgstr ""
 "#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
 "Posición da cabeza de reprodución"
 
-#: ../../scripting/api/audio position.rst:8
-#, fuzzy
-msgid "``(position-new bars beats sixteenths ticks sub_tick)``"
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Posición actual da cabeza de reprodución, en compases.pulsos.décimo sextos."
-"ticks\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
-"Posición actual da cabeza de reprodución, en compases.pulsos.décimo sextos."
-"ticks\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-
 #: ../../scripting/api/audio position.rst:6
 msgid ""
 "Return a newly-created position as ``bars``.\\ ``beats``.\\ ``sixteenths``."
 "\\ ``ticks``.\\ ``sub_tick``."
-msgstr ""
-
-#: ../../scripting/api/audio position.rst:12
-msgid "``(position-print pos)``"
 msgstr ""
 
 #: ../../scripting/api/audio position.rst:11
@@ -7396,10 +7321,6 @@ msgstr ""
 "#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
 "Posición da cabeza de reprodución"
 
-#: ../../scripting/api/audio supported_file.rst:7
-msgid "``(supported-file-new-from-path path)``"
-msgstr ""
-
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
 msgstr ""
@@ -7409,42 +7330,22 @@ msgstr ""
 msgid "(audio track)"
 msgstr "Pista de Audio"
 
-#: ../../scripting/api/audio track.rst:8
-msgid "``(midi-track-new idx name)``"
-msgstr ""
-
 #: ../../scripting/api/audio track.rst:6
 msgid ""
 "Returns a new track with name ``name`` to be placed at position ``idx`` in "
 "the tracklist."
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:12
-msgid "``(track-get-name track)``"
-msgstr ""
-
 #: ../../scripting/api/audio track.rst:11
 msgid "Returns the name of ``track``."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:16
-msgid "``(track-get-processor track)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:15
 msgid "Returns the processor of ``track``."
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:20
-msgid "``(track-get-channel track)``"
-msgstr ""
-
 #: ../../scripting/api/audio track.rst:19
 msgid "Returns the channel of ``track``."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:25
-msgid "``(track-set-soloed track solo)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
@@ -7453,18 +7354,10 @@ msgid ""
 "performs it."
 msgstr ""
 
-#: ../../scripting/api/audio track.rst:30
-msgid "``(track-set-muted track muted)``"
-msgstr ""
-
 #: ../../scripting/api/audio track.rst:28
 msgid ""
 "Sets whether ``track`` is muted or not. This creates an undoable action and "
 "performs it."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:35
-msgid "``(track-add-lane-region track region lane_pos)``"
 msgstr ""
 
 #: ../../scripting/api/audio track.rst:33
@@ -7478,10 +7371,6 @@ msgstr ""
 msgid "(audio track-processor)"
 msgstr "Pista de Audio"
 
-#: ../../scripting/api/audio track_processor.rst:7
-msgid "``(track-processor-get-stereo-in track_processor)``"
-msgstr ""
-
 #: ../../scripting/api/audio track_processor.rst:6
 msgid "Returns the stereo in ports instance of the track processor."
 msgstr ""
@@ -7491,26 +7380,14 @@ msgstr ""
 msgid "(audio tracklist)"
 msgstr "Pista de Audio"
 
-#: ../../scripting/api/audio tracklist.rst:7
-msgid "``(tracklist-insert-track tracklist track idx)``"
-msgstr ""
-
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:11
-msgid "``(tracklist-get-track-at-pos tracklist pos)``"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
 #, fuzzy
 msgid "Returns the track at ``pos`` in the tracklist."
 msgstr "Monta a pista para gravar."
-
-#: ../../scripting/api/audio tracklist.rst:15
-msgid "``(tracklist-get-num-tracks tracklist)``"
-msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:14
 msgid "Returns the number of tracks in the tracklist."
@@ -7524,16 +7401,8 @@ msgstr ""
 msgid "(plugins plugin)"
 msgstr ""
 
-#: ../../scripting/api/plugins plugin.rst:7
-msgid "``(plugin-get-in-port plugin port_idx)``"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
-msgstr ""
-
-#: ../../scripting/api/plugins plugin.rst:11
-msgid "``(plugin-get-out-port plugin port_idx)``"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:10
@@ -7544,16 +7413,8 @@ msgstr ""
 msgid "(plugins plugin-manager)"
 msgstr ""
 
-#: ../../scripting/api/plugins plugin_manager.rst:7
-msgid "``(plugin-manager-find-plugin-from-uri plugin_manager uri)``"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin_manager.rst:6
 msgid "Returns the PluginDescriptor matching the given URI."
-msgstr ""
-
-#: ../../scripting/api/plugins plugin_manager.rst:11
-msgid "``(plugin-manager-scan-plugins plugin_manager)``"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:10
@@ -7565,25 +7426,13 @@ msgstr ""
 msgid "(project)"
 msgstr "project.yml"
 
-#: ../../scripting/api/project.rst:7
-msgid "``(project-get-title project)``"
-msgstr ""
-
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
 msgstr "O ficheiro do Proxecto"
 
-#: ../../scripting/api/project.rst:11
-msgid "``(project-get-tracklist project)``"
-msgstr ""
-
 #: ../../scripting/api/project.rst:10
 msgid "Returns the tracklist for the project."
 msgstr "Monta a pista para gravar."
-
-#: ../../scripting/api/project.rst:15
-msgid "``(project-get-undo-manager project)``"
-msgstr ""
 
 #: ../../scripting/api/project.rst:14
 #, fuzzy
@@ -7595,41 +7444,20 @@ msgstr "Monta a pista para gravar."
 msgid "(zrythm)"
 msgstr "zrythm"
 
-#: ../../scripting/api/zrythm.rst:7
-msgid "``(zrythm-get-ver)``"
-msgstr ""
-
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
-msgstr ""
-
-#: ../../scripting/api/zrythm.rst:11
-msgid "``(zrythm-get-plugin-manager)``"
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
 msgstr ""
 
-#: ../../scripting/api/zrythm.rst:15
-msgid "``(zrythm-get-project)``"
-msgstr ""
-
 #: ../../scripting/api/zrythm.rst:14
 msgid "Return the currently loaded Project instance."
 msgstr ""
 
-#: ../../scripting/api/zrythm.rst:19
-#, fuzzy
-msgid "``(zrythm-null)``"
-msgstr "zrythm"
-
 #: ../../scripting/api/zrythm.rst:18
 msgid "Returns a NULL pointer."
-msgstr ""
-
-#: ../../scripting/api/zrythm.rst:23
-msgid "``(zrythm-message message)``"
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:22
@@ -9994,9 +9822,6 @@ msgstr ""
 #~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 #~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 #~ "estados"
-
-#~ msgid "``(zrythm)``"
-#~ msgstr "zrythm"
 
 #~ msgid "Project Info"
 #~ msgstr "Información do Proxecto"

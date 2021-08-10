@@ -26,8 +26,10 @@ for subdir, dirs, files in os.walk(srcpath):
                     r'#: .*?/doc/user/',
                     '#: ../../', filedata, flags=re.DOTALL)
 
-                # run msggrep to remove prolog
+                # run msggrep
                 if file.endswith ('zrythm-manual.po'):
+
+                    # remove prolog
                     completed_process = subprocess.run ([
                         '@MSGGREP@',
                         '--invert-match',
@@ -40,6 +42,24 @@ for subdir, dirs, files in os.walk(srcpath):
                         capture_output = True,
                         check = True)
                     filedata = completed_process.stdout
+
+                    # remove scheme code
+                    completed_process = subprocess.run ([
+                        '@MSGGREP@',
+                        '--invert-match',
+                        '--msgid',
+                        '--regexp',
+                        '^``(.*)``$',
+                        '-',
+                        ],
+                        input = filedata,
+                        text = True,
+                        capture_output = True,
+                        check = True)
+                    filedata = completed_process.stdout
+
+                    with open('/tmp/fdata.po', 'w') as f:
+                        f.write(filedata)
 
                 with open(fullpath, 'w') as f:
                     print ('writing to file %s' % fullpath)

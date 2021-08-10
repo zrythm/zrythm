@@ -42,6 +42,7 @@ SCM_DEFINE (
   return SCM_BOOL_T;
 }
 #undef FUNC_NAME
+#endif
 
 SCM_DEFINE (
   s_undo_manager_undo,
@@ -53,7 +54,13 @@ SCM_DEFINE (
   UndoManager * undo_mgr =
     (UndoManager *) scm_to_pointer (undo_manager);
 
-  undo_manager_undo (undo_mgr);
+  GError * err = NULL;
+  int ret = undo_manager_undo (undo_mgr, &err);
+  if (ret != 0)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to undo"));
+    }
 
   return SCM_BOOL_T;
 }
@@ -69,12 +76,17 @@ SCM_DEFINE (
   UndoManager * undo_mgr =
     (UndoManager *) scm_to_pointer (undo_manager);
 
-  undo_manager_redo (undo_mgr);
+  GError * err = NULL;
+  int ret = undo_manager_redo (undo_mgr, &err);
+  if (ret != 0)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to redo"));
+    }
 
   return SCM_BOOL_T;
 }
 #undef FUNC_NAME
-#endif
 
 static void
 init_module (void * data)
@@ -86,9 +98,9 @@ init_module (void * data)
   scm_c_export (
 #if 0
     "undo-manager-perform",
+#endif
     "undo-manager-undo",
     "undo-manager-redo",
-#endif
     NULL);
 }
 

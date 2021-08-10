@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-08-07 22:38+0100\n"
+"POT-Creation-Date: 2021-08-10 13:46+0100\n"
 "PO-Revision-Date: 2021-05-19 18:32+0000\n"
 "Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
 "Language: el\n"
@@ -6622,24 +6622,16 @@ msgstr ""
 msgid "(actions channel-send-action)"
 msgstr ""
 
-#: ../../scripting/api/actions channel_send_action.rst:7
-msgid "``(channel-send-action-new-connect-audio send stereo_ports)``"
-msgstr ""
-
 #: ../../scripting/api/actions channel_send_action.rst:6
-msgid "Returns a new action for creating a send connection."
+msgid "Creates an audio send connection as an undoable action."
 msgstr ""
 
 #: ../../scripting/api/actions port_connection_action.rst:3
 msgid "(actions port-connection-action)"
 msgstr ""
 
-#: ../../scripting/api/actions port_connection_action.rst:7
-msgid "``(port-connection-action-new-connect src_port_id dest_port_id)``"
-msgstr ""
-
 #: ../../scripting/api/actions port_connection_action.rst:6
-msgid "Creates an action for connecting 2 ports."
+msgid "Connects 2 ports as an undoable action."
 msgstr ""
 
 #: ../../scripting/api/actions tracklist_selections_action.rst:3
@@ -6650,54 +6642,26 @@ msgstr ""
 msgid "(actions undo-manager)"
 msgstr ""
 
-#: ../../scripting/api/actions undo_manager.rst:7
-msgid "``(undo-manager-perform undo_manager action)``"
-msgstr ""
-
 #: ../../scripting/api/actions undo_manager.rst:6
-msgid "Performs the given action and adds it to the undo stack."
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:11
-msgid "``(undo-manager-undo undo_manager)``"
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:10
-#, fuzzy
 msgid "Undoes the last action."
 msgstr "Βάζει το κομμάτι σε σίγαση."
 
-#: ../../scripting/api/actions undo_manager.rst:15
-msgid "``(undo-manager-redo undo_manager)``"
-msgstr ""
-
-#: ../../scripting/api/actions undo_manager.rst:14
+#: ../../scripting/api/actions undo_manager.rst:10
+#, fuzzy
 msgid "Redoes the last undone action."
-msgstr ""
+msgstr "Βάζει το κομμάτι σε σίγαση."
 
 #: ../../scripting/api/audio channel.rst:3
 msgid "(audio channel)"
-msgstr ""
-
-#: ../../scripting/api/audio channel.rst:7
-msgid "``(channel-get-insert channel insert_slot)``"
 msgstr ""
 
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
 msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέση εισαγόμενου"
 
-#: ../../scripting/api/audio channel.rst:11
-msgid "``(channel-get-instrument channel)``"
-msgstr ""
-
 #: ../../scripting/api/audio channel.rst:10
 msgid "Returns the instrument at the given channel"
 msgstr "Επιστρέφει το όργανο στο δοθέν κανάλι"
-
-#: ../../scripting/api/audio channel.rst:15
-msgid "``(channel-get-send channel send_slot)``"
-msgstr ""
 
 #: ../../scripting/api/audio channel.rst:14
 msgid "Returns the send instance at the given slot"
@@ -6708,10 +6672,6 @@ msgstr "Επιστρέφει την περίπτωση αποστολής στη
 msgid "(audio midi-note)"
 msgstr "Περιοχές ήχων"
 
-#: ../../scripting/api/audio midi_note.rst:7
-msgid "``(midi-note-new region start_pos end_pos pitch velocity)``"
-msgstr ""
-
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
 msgstr "Επιστρέφει μια καινούρια νότα MIDI."
@@ -6721,19 +6681,10 @@ msgstr "Επιστρέφει μια καινούρια νότα MIDI."
 msgid "(audio midi-region)"
 msgstr "Περιοχές ήχων"
 
-#: ../../scripting/api/audio midi_region.rst:7
-msgid ""
-"``(midi-region-new start_pos end_pos track_idx lane_idx idx_inside_lane)``"
-msgstr ""
-
 #: ../../scripting/api/audio midi_region.rst:6
 #, fuzzy
 msgid "Returns a new midi region."
 msgstr "Επιστρέφει μια καινούρια νότα MIDI."
-
-#: ../../scripting/api/audio midi_region.rst:11
-msgid "``(midi-region-add-midi-note region midi_note)``"
-msgstr ""
 
 #: ../../scripting/api/audio midi_region.rst:10
 msgid "Adds a midi note to ``region``."
@@ -6744,17 +6695,9 @@ msgstr ""
 msgid "(audio port)"
 msgstr "Θέση κεφαλής αναπαραγωγής"
 
-#: ../../scripting/api/audio port.rst:7
-msgid "``(stereo-ports-get-port stereo_ports left)``"
-msgstr ""
-
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
 msgstr "Επιστρέφει την αριστερή ή δεξιά θύρα ενός ζευγαριού στέρεο."
-
-#: ../../scripting/api/audio port.rst:11
-msgid "``(port-get-identifier port)``"
-msgstr ""
 
 #: ../../scripting/api/audio port.rst:10
 #, fuzzy
@@ -6766,11 +6709,6 @@ msgstr "Επιστρέφει το αναγνωριστικό της θύρας."
 msgid "(audio position)"
 msgstr "Θέση κεφαλής αναπαραγωγής"
 
-#: ../../scripting/api/audio position.rst:8
-#, fuzzy
-msgid "``(position-new bars beats sixteenths ticks sub_tick)``"
-msgstr "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘."
-
 #: ../../scripting/api/audio position.rst:6
 #, fuzzy
 msgid ""
@@ -6779,10 +6717,6 @@ msgid ""
 msgstr ""
 "Επιστρέφει μια θέση που μόλις δημιουργήθηκε ως bars.beats.sixteenths.ticks."
 "sub_tick."
-
-#: ../../scripting/api/audio position.rst:12
-msgid "``(position-print pos)``"
-msgstr ""
 
 #: ../../scripting/api/audio position.rst:11
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
@@ -6793,10 +6727,6 @@ msgstr "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub
 msgid "(audio supported-file)"
 msgstr "Θέση κεφαλής αναπαραγωγής"
 
-#: ../../scripting/api/audio supported_file.rst:7
-msgid "``(supported-file-new-from-path path)``"
-msgstr ""
-
 #: ../../scripting/api/audio supported_file.rst:6
 msgid "Returns an instance of SupportedFile."
 msgstr ""
@@ -6805,10 +6735,6 @@ msgstr ""
 #, fuzzy
 msgid "(audio track)"
 msgstr "Κομμάτι ήχου"
-
-#: ../../scripting/api/audio track.rst:8
-msgid "``(midi-track-new idx name)``"
-msgstr ""
 
 #: ../../scripting/api/audio track.rst:6
 #, fuzzy
@@ -6819,36 +6745,20 @@ msgstr ""
 "Επιστρέφει ένα καινούριο κομμάτι με όνομα προς τοποθέτηση στη θέση idx στη "
 "λίστα κομματιών."
 
-#: ../../scripting/api/audio track.rst:12
-msgid "``(track-get-name track)``"
-msgstr ""
-
 #: ../../scripting/api/audio track.rst:11
 #, fuzzy
 msgid "Returns the name of ``track``."
 msgstr "Επιστρέφει το όνομα του κομματιού."
-
-#: ../../scripting/api/audio track.rst:16
-msgid "``(track-get-processor track)``"
-msgstr ""
 
 #: ../../scripting/api/audio track.rst:15
 #, fuzzy
 msgid "Returns the processor of ``track``."
 msgstr "Επιστρέφει τον επεξεργαστή του κομματιού."
 
-#: ../../scripting/api/audio track.rst:20
-msgid "``(track-get-channel track)``"
-msgstr ""
-
 #: ../../scripting/api/audio track.rst:19
 #, fuzzy
 msgid "Returns the channel of ``track``."
 msgstr "Επιστρέφει το κανάλι του κομματιού."
-
-#: ../../scripting/api/audio track.rst:25
-msgid "``(track-set-soloed track solo)``"
-msgstr ""
 
 #: ../../scripting/api/audio track.rst:23
 #, fuzzy
@@ -6859,10 +6769,6 @@ msgstr ""
 "Ορίζει αν το κομμάτι είναι σε σίγαση ή όχι. Αυτό δημιουργεί μια δράση που "
 "δεν μπορεί να αναιρεθεί και την εκτελεί."
 
-#: ../../scripting/api/audio track.rst:30
-msgid "``(track-set-muted track muted)``"
-msgstr ""
-
 #: ../../scripting/api/audio track.rst:28
 #, fuzzy
 msgid ""
@@ -6871,10 +6777,6 @@ msgid ""
 msgstr ""
 "Ορίζει αν το κομμάτι είναι σε σίγαση ή όχι. Αυτό δημιουργεί μια δράση που "
 "δεν μπορεί να αναιρεθεί και την εκτελεί."
-
-#: ../../scripting/api/audio track.rst:35
-msgid "``(track-add-lane-region track region lane_pos)``"
-msgstr ""
 
 #: ../../scripting/api/audio track.rst:33
 #, fuzzy
@@ -6889,10 +6791,6 @@ msgstr ""
 msgid "(audio track-processor)"
 msgstr "Κομμάτι ήχου"
 
-#: ../../scripting/api/audio track_processor.rst:7
-msgid "``(track-processor-get-stereo-in track_processor)``"
-msgstr ""
-
 #: ../../scripting/api/audio track_processor.rst:6
 #, fuzzy
 msgid "Returns the stereo in ports instance of the track processor."
@@ -6903,27 +6801,15 @@ msgstr "Επιστρέφει την περίπτωση αποστολής στη
 msgid "(audio tracklist)"
 msgstr "Κομμάτι ήχου"
 
-#: ../../scripting/api/audio tracklist.rst:7
-msgid "``(tracklist-insert-track tracklist track idx)``"
-msgstr ""
-
 #: ../../scripting/api/audio tracklist.rst:6
 #, fuzzy
 msgid "Inserts track ``track`` at index ``idx`` in the tracklist."
 msgstr "Εισάγει κομμάτι στον δείκτη idx στη λίστα κομματιών."
 
-#: ../../scripting/api/audio tracklist.rst:11
-msgid "``(tracklist-get-track-at-pos tracklist pos)``"
-msgstr ""
-
 #: ../../scripting/api/audio tracklist.rst:10
 #, fuzzy
 msgid "Returns the track at ``pos`` in the tracklist."
 msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
-
-#: ../../scripting/api/audio tracklist.rst:15
-msgid "``(tracklist-get-num-tracks tracklist)``"
-msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:14
 #, fuzzy
@@ -6938,17 +6824,9 @@ msgstr "Διεπαφή Προγραμματισμού Εφαρμογών (API)"
 msgid "(plugins plugin)"
 msgstr ""
 
-#: ../../scripting/api/plugins plugin.rst:7
-msgid "``(plugin-get-in-port plugin port_idx)``"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
 msgstr "Επιστρέφει τη θύρα εισαγωγής του προσθέτου στον δοθέντα δείκτη."
-
-#: ../../scripting/api/plugins plugin.rst:11
-msgid "``(plugin-get-out-port plugin port_idx)``"
-msgstr ""
 
 #: ../../scripting/api/plugins plugin.rst:10
 msgid "Returns the output port of the plugin at the given index."
@@ -6958,18 +6836,10 @@ msgstr "Επιστρέφει τη θύρα εξαγόμενου του προσ�
 msgid "(plugins plugin-manager)"
 msgstr ""
 
-#: ../../scripting/api/plugins plugin_manager.rst:7
-msgid "``(plugin-manager-find-plugin-from-uri plugin_manager uri)``"
-msgstr ""
-
 #: ../../scripting/api/plugins plugin_manager.rst:6
 #, fuzzy
 msgid "Returns the PluginDescriptor matching the given URI."
 msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέση εισαγόμενου"
-
-#: ../../scripting/api/plugins plugin_manager.rst:11
-msgid "``(plugin-manager-scan-plugins plugin_manager)``"
-msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:10
 msgid "Scans the system for plugins."
@@ -6980,26 +6850,14 @@ msgstr ""
 msgid "(project)"
 msgstr "έργο.yml"
 
-#: ../../scripting/api/project.rst:7
-msgid "``(project-get-title project)``"
-msgstr ""
-
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
-msgstr ""
-
-#: ../../scripting/api/project.rst:11
-msgid "``(project-get-tracklist project)``"
 msgstr ""
 
 #: ../../scripting/api/project.rst:10
 #, fuzzy
 msgid "Returns the tracklist for the project."
 msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
-
-#: ../../scripting/api/project.rst:15
-msgid "``(project-get-undo-manager project)``"
-msgstr ""
 
 #: ../../scripting/api/project.rst:14
 #, fuzzy
@@ -7011,43 +6869,22 @@ msgstr "Επιστρέφει το όνομα του κομματιού."
 msgid "(zrythm)"
 msgstr "zrythm"
 
-#: ../../scripting/api/zrythm.rst:7
-msgid "``(zrythm-get-ver)``"
-msgstr ""
-
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
 msgstr "Επιστροφή της έκδοσης του Zrythm ως κλωστή (string)."
 
-#: ../../scripting/api/zrythm.rst:11
-msgid "``(zrythm-get-plugin-manager)``"
-msgstr ""
-
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
 msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
-
-#: ../../scripting/api/zrythm.rst:15
-msgid "``(zrythm-get-project)``"
-msgstr ""
 
 #: ../../scripting/api/zrythm.rst:14
 #, fuzzy
 msgid "Return the currently loaded Project instance."
 msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
 
-#: ../../scripting/api/zrythm.rst:19
-#, fuzzy
-msgid "``(zrythm-null)``"
-msgstr "zrythm"
-
 #: ../../scripting/api/zrythm.rst:18
 msgid "Returns a NULL pointer."
 msgstr "Επιστρέφει έναν ΜΗΔΑΜΙΝΟ δείκτη."
-
-#: ../../scripting/api/zrythm.rst:23
-msgid "``(zrythm-message message)``"
-msgstr ""
 
 #: ../../scripting/api/zrythm.rst:22
 msgid "Writes the message to the log."
@@ -9321,9 +9158,6 @@ msgstr ""
 
 #~ msgid "Chord regions & scales"
 #~ msgstr "Περιοχές συγχορδιών & κλίμακες"
-
-#~ msgid "``(zrythm)``"
-#~ msgstr "zrythm"
 
 #~ msgid ""
 #~ "Adds ``region`` to track ``track``. To be used for regions with lanes"
