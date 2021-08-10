@@ -302,6 +302,8 @@ on_drag_data_received (
               MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
               -1, 0, &err);
         }
+      else
+        g_return_if_reached ();
 
       if (!ret)
         {
@@ -340,6 +342,8 @@ on_drag_data_received (
             tracklist_selections_action_perform_move (
               TRACKLIST_SELECTIONS, pos, &err);
         }
+      else
+        g_return_if_reached ();
 
       if (!ret)
         {

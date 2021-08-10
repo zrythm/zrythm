@@ -309,6 +309,8 @@ on_drag_data_received (
                       self->type, self->track->pos,
                       self->slot_index, &err);
                 }
+              else
+                g_return_if_reached ();
 
               if (!ret)
                 {

@@ -284,11 +284,6 @@ engine_process_events (
       g_message ("processing engine event %d", i);
 
       ev = events[i];
-      if (ev->type < 0)
-        {
-          g_warn_if_reached ();
-          continue;
-        }
 
       /*g_message ("event type %d", ev->type);*/
 

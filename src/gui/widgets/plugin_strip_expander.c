@@ -52,6 +52,7 @@ plugin_strip_expander_widget_redraw_slot (
     case PLUGIN_SLOT_MIDI_FX:
       gtk_widget_queue_draw (
         GTK_WIDGET (self->slots[slot]));
+      break;
     default:
       break;
     }

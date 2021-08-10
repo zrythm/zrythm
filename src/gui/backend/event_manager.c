@@ -1209,11 +1209,6 @@ process_events (void * data)
         }
 
       ev = events[i];
-      if (ev->type < 0)
-        {
-          g_warn_if_reached ();
-          continue;
-        }
 
       if (!ZRYTHM_HAVE_UI)
         {

@@ -97,6 +97,7 @@ typedef struct _InspectorTrackWidget
  * @param set_notebook_page Whether to set the
  *   current left panel tab to the track page.
  */
+NONNULL
 void
 inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,

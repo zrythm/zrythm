@@ -1530,12 +1530,6 @@ recording_manager_process_events (
   while (recording_event_queue_dequeue_event (
            self->event_queue, &ev))
     {
-      if (ev->type < 0)
-        {
-          g_warn_if_reached ();
-          goto return_to_pool;
-        }
-
       if (self->freeing)
         {
           goto return_to_pool;

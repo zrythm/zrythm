@@ -97,6 +97,7 @@ manpage_completions_run_sh = find_program (
 # --- Set common variables ---
 
 cc = meson.get_compiler ('c')
+is_gcc = cc.get_id() == 'gcc'
 
 meson_src_root = meson.current_source_dir ()
 meson_build_root = meson.current_build_dir ()
@@ -578,7 +579,6 @@ endforeach
 
 # Compiler flags
 test_cflags = [
-  '-frecord-gcc-switches',
   '-Wformat=2',
   '-Wno-missing-field-initializers',
   '-Wno-unused-parameter',
@@ -595,9 +595,15 @@ test_cflags = [
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   '-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))',
   '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
-  '-DACCESS(...)=__attribute__((access(__VA_ARGS__)))',
-  '-DACCESS_READ_ONLY(...)=ACCESS(read_only,__VA_ARGS__)',
+  '-DACCESS(...)=' + (is_gcc ? '__attribute__((access(__VA_ARGS__)))' : ''),
+  '-DACCESS_READ_ONLY(...)=' + (is_gcc ? 'ACCESS(read_only,__VA_ARGS__)' : ''),
   ]
+
+if is_gcc
+  test_cflags += [
+    '-frecord-gcc-switches',
+    ]
+endif
 
 # Stricter flags to be used where needed
 test_strict_cflags = []
@@ -729,7 +735,7 @@ test_strict_cflags += [
   '-Werror=float-equal',
   '-Werror=logical-op',
   '-Werror=pointer-arith',
-  '-Werror=sign-conversion',
+  '-Werror=enum-conversion',
   '-Werror=overlength-strings',
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
@@ -756,7 +762,6 @@ test_strict_cflags += [
   '-Werror=missing-prototypes',
   '-Werror=nested-externs',
   '-Werror=write-strings',
-  '-Werror=implicit-fallthrough',
   '-Werror=sign-compare',
   '-Werror=discarded-qualifiers',
   '-Werror=float-conversion',
@@ -803,12 +808,19 @@ test_strict_cflags += [
   '-Werror=bool-compare',
   '-Werror=tautological-compare',
   '-Werror=unused-result',
+  '-Wanalyzer-too-complex',
+  '-Werror=analyzer-too-complex',
   ]
 
-if cc.get_id() == 'gcc'
+if is_gcc
   test_strict_cflags += [
     '-Wextra',
     '-Weverything',
+
+    # only do the following on GCC because clang
+    # reports unnecessary errors
+    '-Werror=sign-conversion',
+    '-Werror=implicit-fallthrough',
     ]
 endif
 
@@ -822,7 +834,8 @@ endif
 if cc.get_id() == 'gcc'
   common_cflags += [
     '-Wformat',
-    '-Werror=format-security']
+    '-Werror=format-security',
+    ]
 endif
 
 test_ldflags = []

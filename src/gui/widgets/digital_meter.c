@@ -585,10 +585,12 @@ on_change_started (
     {
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
       self->start_note_length =
+        (NoteLength)
         *self->note_length;
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:
       self->start_note_type =
+        (NoteType)
         *self->note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
@@ -811,8 +813,9 @@ on_scroll (
             *self->note_length = 0;
           else
             *self->note_length =
-              num > NOTE_LENGTH_1_128 ?
-              NOTE_LENGTH_1_128 : num;
+              (NoteLength)
+              (num > NOTE_LENGTH_1_128
+               ? NOTE_LENGTH_1_128 : num);
         }
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:
@@ -823,8 +826,9 @@ on_scroll (
             *self->note_type = 0;
           else
             *self->note_type =
-              num > NOTE_TYPE_TRIPLET ?
-              NOTE_TYPE_TRIPLET : num;
+              (NoteType)
+              (num > NOTE_TYPE_TRIPLET
+               ? NOTE_TYPE_TRIPLET : num);
         }
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
@@ -866,8 +870,9 @@ on_scroll (
             {
               tempo_track_set_beat_unit_from_enum (
                 P_TEMPO_TRACK,
-                num > BEAT_UNIT_16 ?
-                  BEAT_UNIT_16 : num);
+                (BeatUnit)
+                (num > BEAT_UNIT_16
+                 ? BEAT_UNIT_16 : num));
             }
         }
       if (self->update_timesig_top ||
@@ -1044,8 +1049,9 @@ drag_update (
             *self->note_length = 0;
           else
             *self->note_length =
-              num > NOTE_LENGTH_1_128 ?
-              NOTE_LENGTH_1_128 : num;
+              (NoteLength)
+              (num > NOTE_LENGTH_1_128
+               ? NOTE_LENGTH_1_128 : num);
         }
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:
@@ -1056,8 +1062,8 @@ drag_update (
             *self->note_type = 0;
           else
             *self->note_type =
-              num > NOTE_TYPE_TRIPLET ?
-              NOTE_TYPE_TRIPLET : num;
+              num > NOTE_TYPE_TRIPLET
+              ? NOTE_TYPE_TRIPLET : (NoteType) num;
         }
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
@@ -1102,8 +1108,8 @@ drag_update (
             {
               tempo_track_set_beat_unit_from_enum (
                 P_TEMPO_TRACK,
-                num > BEAT_UNIT_16 ?
-                BEAT_UNIT_16 : num);
+                num > BEAT_UNIT_16
+                ? BEAT_UNIT_16 : (BeatUnit) num);
             }
         }
       if (self->update_timesig_top ||

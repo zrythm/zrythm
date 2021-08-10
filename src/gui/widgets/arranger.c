@@ -4230,6 +4230,7 @@ on_drag_end_audio (
             AUDIO_SELECTIONS->sel_end = tmp;
           }
       }
+      break;
     default:
       break;
     }
@@ -4526,6 +4527,8 @@ on_drag_end_timeline (
                 self->lane_diff, F_ALREADY_MOVED,
                 &err);
           }
+        else
+          g_return_if_reached ();
 
         if (!ret)
           {

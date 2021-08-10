@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -71,7 +71,7 @@ get_note_from_creator_root_notes (
   for (int i = 0; i < 12; i++)
     {
       if (self->creator_root_notes[i] == child)
-        return i;
+        return (MusicalNote) i;
     }
   g_return_val_if_reached (0);
 }
@@ -84,7 +84,7 @@ get_type_from_creator_types (
   for (int i = 0; i < NUM_CHORD_TYPES; i++)
     {
       if (self->creator_types[i] == child)
-        return i;
+        return (ChordType) i;
     }
   g_return_val_if_reached (0);
 }
@@ -93,11 +93,11 @@ get_type_from_creator_types (
  * Returns the currently selected root note, or
  * -1 if no selection.
  */
-static MusicalNote
+static int
 get_selected_root_note (
   ChordSelectorWindowWidget * self)
 {
-  MusicalNote note = -1;
+  int note = -1;
   GList * list =
     gtk_flow_box_get_selected_children (
       self->creator_root_note_flowbox);
@@ -109,6 +109,7 @@ get_selected_root_note (
           g_list_first (list)->data);
       if (selected_root_note)
         note =
+          (int)
           get_note_from_creator_root_notes (
             self, selected_root_note);
       g_list_free (list);
@@ -121,11 +122,11 @@ get_selected_root_note (
  * Returns the currently selected chord type, or
  * -1 if no selection.
  */
-static ChordType
+static int
 get_selected_chord_type (
   ChordSelectorWindowWidget * self)
 {
-  ChordType type = -1;
+  int type = -1;
 
   GList * list =
     gtk_flow_box_get_selected_children (
@@ -137,6 +138,7 @@ get_selected_chord_type (
           g_list_first (list)->data);
       if (selected_type)
         type =
+          (int)
           get_type_from_creator_types (
             self, selected_type);
       g_list_free (list);
@@ -167,7 +169,7 @@ creator_select_type (
       if (self->creator_types[i] != child)
         continue;
 
-      self->descr->type = i;
+      self->descr->type = (ChordType) i;
     }
 }
 

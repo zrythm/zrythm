@@ -822,7 +822,7 @@ plugin_manager_supports_protocol (
           {
 #define CHECK_FEATURE(str,format) \
   if (string_is_equal (feature, str) && \
-        PROT_##format) \
+        protocol == PROT_##format) \
     return true
 
             CHECK_FEATURE ("sf2", SF2);

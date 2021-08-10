@@ -154,6 +154,7 @@ bounce_step_selector_widget_new (void)
   CREATE (post_fader, 2, "fader");
 
   BounceStep step =
+    (BounceStep)
     g_settings_get_enum (S_UI, "bounce-step");
   switch (step)
     {

@@ -66,7 +66,8 @@ enum
 };
 
 static GtkTreeModel *
-create_model_for_locations ()
+create_model_for_locations (
+  PanelFileBrowserWidget * self)
 {
   GtkListStore *list_store;
   /*GtkTreePath *path;*/

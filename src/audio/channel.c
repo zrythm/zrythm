@@ -1634,6 +1634,7 @@ channel_remove_plugin (
       break;
     case PLUGIN_SLOT_INSTRUMENT:
       plugin = channel->instrument;
+      break;
     default:
       break;
     }
