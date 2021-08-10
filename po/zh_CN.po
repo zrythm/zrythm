@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-10 12:24+0100\n"
-"PO-Revision-Date: 2021-08-09 23:33+0000\n"
+"PO-Revision-Date: 2021-08-10 12:58+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -944,9 +944,8 @@ msgid "Failed to open LV2 UI for %s"
 msgstr "未能打开 %s 的 LV2 用户界面"
 
 #: src/gui/widgets/editor_ruler.c:234
-#, fuzzy
 msgid "Failed to edit position"
-msgstr "未能设置直接输出"
+msgstr "未能编辑位置"
 
 #: src/gui/widgets/bounce_step_selector.c:187
 msgid "Bounce step selector"
@@ -970,9 +969,9 @@ msgid "Add"
 msgstr "添加"
 
 #: src/gui/widgets/inspector_port.c:177 src/gui/widgets/modulator_inner.c:184
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset %s"
-msgstr "无法重置架构%s"
+msgstr "未能重设 %s"
 
 #: src/gui/widgets/inspector_port.c:197 src/gui/widgets/modulator_inner.c:204
 #: src/gui/widgets/plugin_browser.c:1159 src/gui/widgets/plugin_browser.c:1228
@@ -987,9 +986,9 @@ msgid "View info"
 msgstr "查看信息"
 
 #: src/gui/widgets/inspector_port.c:377
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set control %s to %f"
-msgstr "未能设置颜色"
+msgstr "未能将控件 %s 设为 %f"
 
 #: src/gui/widgets/inspector_port.c:431
 msgid "Incoming signals"
@@ -1233,18 +1232,17 @@ msgid "Inserts"
 msgstr "插入"
 
 #: src/gui/widgets/modulator_inner.c:99 src/actions/actions.c:1222
-#, fuzzy
 msgid "Failed to delete plugins"
-msgstr "未能创建插件"
+msgstr "未能删除插件"
 
 #: src/gui/widgets/port_selector_popover.c:58
 msgid "No port selected"
 msgstr "未选择端口"
 
 #: src/gui/widgets/port_selector_popover.c:89
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to connect %s to %s"
-msgstr "未能克隆音轨：%s"
+msgstr "未能将 %s 连接到 %s"
 
 #: src/gui/widgets/port_selector_popover.c:100
 msgid "These ports cannot be connected"
@@ -1255,16 +1253,14 @@ msgid "Track Ports"
 msgstr "音轨端口"
 
 #: src/gui/widgets/channel_send_selector.c:150
-#, fuzzy
 msgid "Failed to disconnect send"
-msgstr "未能克隆插件"
+msgstr "未能断开发送"
 
 #: src/gui/widgets/channel_send_selector.c:176
 #: src/gui/widgets/channel_send_selector.c:198
 #: src/gui/widgets/channel_send_selector.c:226
-#, fuzzy
 msgid "Failed to connect send"
-msgstr "未能克隆插件"
+msgstr "未能连接 send"
 
 #: src/gui/widgets/channel_send_selector.c:507
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:89
@@ -1283,9 +1279,8 @@ msgid "No object selected"
 msgstr "未选择对象"
 
 #: src/gui/widgets/channel_send.c:218
-#, fuzzy
 msgid "Failed to change send amount"
-msgstr "未能创建调整大小操作"
+msgstr "未能更改发送数目"
 
 #: src/gui/widgets/digital_meter.c:407
 msgid "normal"
@@ -1300,9 +1295,8 @@ msgid "triplet"
 msgstr "三元组"
 
 #: src/gui/widgets/digital_meter.c:693 src/gui/widgets/digital_meter.c:710
-#, fuzzy
 msgid "Failed to change time signature"
-msgstr "更改拍子记号"
+msgstr "未能更改拍号"
 
 #: src/gui/widgets/digital_meter.c:1202
 msgid "Tempo/BPM"
@@ -1321,23 +1315,20 @@ msgstr "时间特征码-每bar/拍单位拍数"
 #: src/gui/widgets/drag_dest_box.c:246 src/gui/widgets/plugin_browser.c:344
 #: src/gui/widgets/panel_file_browser.c:707 src/audio/tracklist.c:1435
 #: src/audio/track.c:3884
-#, fuzzy
 msgid "Failed to create track"
-msgstr "无法创建音轨：%s"
+msgstr "未能创建音轨"
 
 #: src/gui/widgets/drag_dest_box.c:265 src/audio/audio_function.c:145
 msgid "Failed to create plugin"
 msgstr "未能创建插件"
 
 #: src/gui/widgets/drag_dest_box.c:310
-#, fuzzy
 msgid "Failed to move or copy plugin"
-msgstr "未能应用插件"
+msgstr "未能移动或复制插件"
 
 #: src/gui/widgets/drag_dest_box.c:348
-#, fuzzy
 msgid "Failed to move or copy track"
-msgstr "未能克隆音轨"
+msgstr "未能移动或复制音轨"
 
 #: src/gui/widgets/drag_dest_box.c:426
 msgid "Add _MIDI Track"
@@ -1392,9 +1383,8 @@ msgid "Slot #%d"
 msgstr "插槽#%d"
 
 #: src/gui/widgets/channel_slot.c:317
-#, fuzzy
 msgid "Failed to move or copy plugins"
-msgstr "未能应用插件"
+msgstr "未能移动或复制插件"
 
 #: src/gui/widgets/channel_slot.c:350 src/audio/sample_processor.c:630
 #: src/actions/tracklist_selections.c:657
@@ -1422,14 +1412,12 @@ msgstr "空插槽"
 #: src/gui/widgets/arranger.c:1743 src/gui/widgets/arranger.c:1765
 #: src/gui/widgets/arranger.c:1813 src/gui/widgets/arranger.c:1882
 #: src/gui/widgets/arranger.c:1903
-#, fuzzy
 msgid "Failed to move selection"
-msgstr "未能执行操作"
+msgstr "未能移动所选"
 
 #: src/gui/widgets/arranger.c:1834 src/gui/widgets/arranger.c:4150
-#, fuzzy
 msgid "Failed to move chords"
-msgstr "未能设置颜色"
+msgstr "未能移动和弦"
 
 #: src/gui/widgets/arranger.c:2430 src/gui/widgets/track.c:1611
 #: resources/ui/string_entry_dialog.ui:94
@@ -1447,112 +1435,91 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/arranger.c:3643
-#, fuzzy
 msgid "Failed to delete selection"
-msgstr "未能创建调整大小操作"
+msgstr "未能删除所选"
 
 #: src/gui/widgets/arranger.c:3672
-#, fuzzy
 msgid "Failed to edit selection"
-msgstr "未能创建调整大小操作"
+msgstr "未能编辑所选"
 
 #: src/gui/widgets/arranger.c:3727
-#, fuzzy
 msgid "Failed to move automation"
-msgstr "未能执行操作"
+msgstr "未能移动包络线"
 
 #: src/gui/widgets/arranger.c:3756
-#, fuzzy
 msgid "Failed to duplicate automation"
-msgstr "未能执行操作"
+msgstr "未能重复包络线"
 
 #: src/gui/widgets/arranger.c:3780 src/gui/widgets/arranger.c:4195
 #: src/gui/widgets/arranger.c:4558
-#, fuzzy
 msgid "Failed to create objects"
-msgstr "无法创建音轨：%s"
+msgstr "未能创建对象"
 
 #: src/gui/widgets/arranger.c:3802
-#, fuzzy
 msgid "Failed to fill automation"
-msgstr "未能执行操作"
+msgstr "未能填充包络线"
 
 #: src/gui/widgets/arranger.c:3835 src/gui/widgets/arranger.c:3888
 #: src/gui/widgets/arranger.c:3911 src/gui/widgets/timeline_arranger.c:1157
-#, fuzzy
 msgid "Failed to edit selections"
-msgstr "未能创建调整大小操作"
+msgstr "未能编辑所选"
 
 #: src/gui/widgets/arranger.c:3946 src/gui/widgets/arranger.c:3972
-#, fuzzy
 msgid "Failed to resize objects"
-msgstr "未能创建调整大小操作"
+msgstr "未能调整对象大小"
 
 #: src/gui/widgets/arranger.c:3984 src/gui/widgets/arranger.c:4034
-#, fuzzy
 msgid "Failed to move MIDI notes"
-msgstr "未能打开 %s 的 LV2 用户界面"
+msgstr "未能移动 MIDI 音符"
 
 #: src/gui/widgets/arranger.c:4060
-#, fuzzy
 msgid "Failed to duplicate MIDI notes"
-msgstr "删除音轨失败"
+msgstr "未能重复 MIDI 音符"
 
 #: src/gui/widgets/arranger.c:4083
-#, fuzzy
 msgid "Failed to create MIDI notes"
-msgstr "未能创建插件"
+msgstr "未能创建 MIDI 音符"
 
 #: src/gui/widgets/arranger.c:4172
-#, fuzzy
 msgid "Failed to duplicate chords"
-msgstr "删除音轨失败"
+msgstr "未能重复和弦"
 
 #: src/gui/widgets/arranger.c:4265
-#, fuzzy
 msgid "Failed to edit timeline objects"
-msgstr "未能设置直接输出"
+msgstr "未能编辑时间线对象"
 
 #: src/gui/widgets/arranger.c:4288 src/gui/widgets/arranger.c:4311
-#, fuzzy
 msgid "Failed to resize timeline objects"
-msgstr "无法写入文件:%s"
+msgstr "未能调整时间线对象的大小"
 
 #: src/gui/widgets/arranger.c:4334
-#, fuzzy
 msgid "Failed to resize selection"
-msgstr "未能创建调整大小操作"
+msgstr "未能调整选择的大小"
 
 #: src/gui/widgets/arranger.c:4356
-#, fuzzy
 msgid "Failed setting fade in position"
-msgstr "未能获取 %s 的内容"
+msgstr "设置淡入位置失败"
 
 #: src/gui/widgets/arranger.c:4380 src/gui/widgets/arranger.c:4405
 #: src/gui/widgets/arranger.c:4427
-#, fuzzy
 msgid "Failed resizing selections"
-msgstr "量化编曲者选集"
+msgstr "未能调整对象大小"
 
 #: src/gui/widgets/arranger.c:4449
-#, fuzzy
 msgid "Failed resizing selection"
-msgstr "读取数值失败"
+msgstr "未能调整选择大小"
 
 #: src/gui/widgets/arranger.c:4494
-#, fuzzy
 msgid "Failed to move objects"
-msgstr "无法打开文件:%s"
+msgstr "未能移动对象"
 
 #: src/gui/widgets/arranger.c:4534
-#, fuzzy
 msgid "Failed to link or move selection"
-msgstr "未能执行操作"
+msgstr "未能链接或移动所选"
 
 #: src/gui/widgets/arranger.c:4594
-#, fuzzy
 msgid "Failed to split selection"
-msgstr "未能执行操作"
+msgstr "未能分割所选"
 
 #: src/gui/widgets/arranger.c:4606
 #, c-format
@@ -1825,9 +1792,8 @@ msgid "Custom Marker"
 msgstr "自定义标记"
 
 #: src/gui/widgets/timeline_arranger.c:1057
-#, fuzzy
 msgid "Failed to edit fades"
-msgstr "无法写入文件:%s"
+msgstr "编辑淡入淡出失败"
 
 #: src/gui/widgets/timeline_arranger.c:1078
 msgid "Fade preset"
@@ -1847,9 +1813,8 @@ msgstr "音乐模式"
 
 #: src/gui/widgets/timeline_arranger.c:1290
 #: src/actions/arranger_selections.c:616 src/actions/arranger_selections.c:632
-#, fuzzy
 msgid "Failed to apply audio function"
-msgstr "未能应用音频功能"
+msgstr "应用音频功能失败"
 
 #: src/gui/widgets/timeline_arranger.c:1360
 msgid "Apply Function"
@@ -1868,14 +1833,12 @@ msgid "Bounce..."
 msgstr "导出..."
 
 #: src/gui/widgets/timeline_arranger.c:1694
-#, fuzzy
 msgid "Failed to create selections"
-msgstr "未能创建调整大小操作"
+msgstr "未能创建所选"
 
 #: src/gui/widgets/automation_arranger.c:239
-#, fuzzy
 msgid "Failed to set curve algorithm"
-msgstr "未能设置颜色"
+msgstr "曲线算法设置失败"
 
 #: src/gui/widgets/automation_arranger.c:269
 #: build/data/org.zrythm.Zrythm.gschema.xml:1061
@@ -1942,14 +1905,14 @@ msgid "Report a Bug"
 msgstr "报告错误"
 
 #: src/gui/widgets/port_connections_tree.c:96
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to enable connection from %s to %s"
-msgstr "未能为 %s 创建插件克隆"
+msgstr "未能启用从 %s 到 %s 的连接"
 
 #: src/gui/widgets/port_connections_tree.c:188
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect %s from %s"
-msgstr "未能从 %s 加载状态"
+msgstr "未能将 %s 与 %s 断开"
 
 #: src/gui/widgets/port_connections_tree.c:296
 msgid "Source"
@@ -1965,14 +1928,12 @@ msgid "Multiplier"
 msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:79 src/actions/undo_manager.c:269
-#, fuzzy
 msgid "Failed to redo action"
-msgstr "未能执行操作"
+msgstr "未能重做操作"
 
 #: src/gui/widgets/home_toolbar.c:85 src/actions/undo_manager.c:209
-#, fuzzy
 msgid "Failed to undo action"
-msgstr "未能执行操作"
+msgstr "未能撤销操作"
 
 #: src/gui/widgets/home_toolbar.c:126 src/gui/widgets/home_toolbar.c:274
 msgid "Redo"
@@ -2220,19 +2181,16 @@ msgid "Currently listened tracks"
 msgstr ""
 
 #: src/gui/widgets/monitor_section.c:147
-#, fuzzy
 msgid "Failed to unsolo all tracks"
-msgstr "未能克隆音轨"
+msgstr "未能 unsolo 所有音轨"
 
 #: src/gui/widgets/monitor_section.c:185
-#, fuzzy
 msgid "Failed to unmute all tracks"
-msgstr "删除音轨失败"
+msgstr "未能取消所有音轨的静音"
 
 #: src/gui/widgets/monitor_section.c:223
-#, fuzzy
 msgid "Failed to unlisten all tracks"
-msgstr "删除音轨失败"
+msgstr "未能取消倾听所有音轨"
 
 #: src/gui/widgets/monitor_section.c:416
 msgid "Unsolo all tracks"
@@ -2276,9 +2234,8 @@ msgid "Click to enable outputs"
 msgstr "点击启用输出"
 
 #: src/gui/widgets/folder_channel.c:138
-#, fuzzy
 msgid "Failed to move or copy track(s)"
-msgstr "未能复制或移动音轨：%s"
+msgstr "未能复制或移动音轨"
 
 #: src/gui/widgets/file_auditioner_controls.c:275
 #: build/data/org.zrythm.Zrythm.gschema.xml:561
@@ -2296,14 +2253,12 @@ msgid "Show hidden files"
 msgstr "显示隐藏文件"
 
 #: src/gui/widgets/port_connection_row.c:54
-#, fuzzy
 msgid "Failed to enable connection"
-msgstr "启用/禁用连接"
+msgstr "未能启用连接"
 
 #: src/gui/widgets/port_connection_row.c:74
-#, fuzzy
 msgid "Failed to disconnect"
-msgstr "未能克隆音轨"
+msgstr "未能断开连接"
 
 #: src/gui/widgets/port_connection_row.c:120
 msgid "Enable/disable connection"
@@ -2314,9 +2269,8 @@ msgid "Delete connection"
 msgstr "删除连接"
 
 #: src/gui/widgets/balance_control.c:316
-#, fuzzy
 msgid "Failed to change balance"
-msgstr "未能更改平衡：%s"
+msgstr "未能更改平衡"
 
 #: src/gui/widgets/live_waveform.c:324
 msgid "Live waveform indicator"
@@ -2334,7 +2288,7 @@ msgstr "发送"
 #: src/gui/widgets/scale_selector_window.c:74
 #, fuzzy
 msgid "Failed to edit scale"
-msgstr "未能设置颜色"
+msgstr "未能编辑 scale"
 
 #: src/gui/widgets/event_viewer.c:113 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43
@@ -2390,14 +2344,12 @@ msgid "Curviness"
 msgstr "弯曲度"
 
 #: src/gui/widgets/cc_bindings_tree.c:98
-#, fuzzy
 msgid "Failed to enable binding"
-msgstr "未能创建插件"
+msgstr "未能启用绑定"
 
 #: src/gui/widgets/cc_bindings_tree.c:181
-#, fuzzy
 msgid "Failed to unbind"
-msgstr "未能克隆插件"
+msgstr "未能解绑"
 
 #: src/gui/widgets/cc_bindings_tree.c:288
 msgid "Device"
@@ -2471,14 +2423,12 @@ msgid "Routing to %s"
 msgstr "路由到%s"
 
 #: src/gui/widgets/route_target_selector_popover.c:358
-#, fuzzy
 msgid "Failed to change direct out"
-msgstr "未能设置直接输出"
+msgstr "更改 direct out 失败"
 
 #: src/gui/widgets/route_target_selector_popover.c:373
-#, fuzzy
 msgid "Failed to remove direct out"
-msgstr "未能设置直接输出"
+msgstr "删除 direct out 失败"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
@@ -2577,9 +2527,9 @@ msgid "Select function"
 msgstr "选择功能"
 
 #: src/gui/widgets/file_browser.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track for file '%s'"
-msgstr "无法创建音轨：%s"
+msgstr "无法创建 '%s' 的音轨"
 
 #: src/gui/widgets/inspector_track.c:158
 msgid "Comment"
@@ -2647,9 +2597,8 @@ msgid "Unfold"
 msgstr ""
 
 #: src/gui/widgets/track.c:1795
-#, fuzzy
 msgid "Failed to change direct output"
-msgstr "未能设置直接输出"
+msgstr "设置直接输出失败"
 
 #: src/gui/widgets/track.c:1882
 msgid "Add Region"
@@ -2687,9 +2636,9 @@ msgid "Lane %d MIDI Ch"
 msgstr "通道%d MIDI Ch"
 
 #: src/gui/widgets/modulator_macro.c:193
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset control '%s'"
-msgstr "无法重置架构%s"
+msgstr "未能重置控件 '%s'"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
 msgid "Arranger object info"
@@ -2704,14 +2653,12 @@ msgid "Untitled Project"
 msgstr "无标题项目"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:85
-#, fuzzy
 msgid "Failed to quantize editor selections"
-msgstr "未能创建调整大小操作"
+msgstr "未能量化编辑器选择"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:100
-#, fuzzy
 msgid "Failed to quantize timeline selections"
-msgstr "创建时间轴选区"
+msgstr "未能量化时间线选择"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:135
 msgid "note length"
@@ -2722,9 +2669,8 @@ msgid "note type"
 msgstr "note类型"
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:55
-#, fuzzy
 msgid "Failed to bind mapping"
-msgstr "未能克隆插件"
+msgstr "绑定映射失败"
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:121
 msgid "Not a control change event"
@@ -2770,15 +2716,13 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:132
 #: src/actions/actions.c:1620
-#, fuzzy
 msgid "Failed to create audio group track"
-msgstr "未能创建音轨：%s"
+msgstr "未能创建音频组轨道"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:147
 #: src/actions/actions.c:1634
-#, fuzzy
 msgid "Failed to create MIDI group track"
-msgstr "无法创建音轨：%s"
+msgstr "未能创建 MIDI 组轨道"
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
@@ -2880,9 +2824,8 @@ msgid "Enter more context, what distro you use, etc. Markdown is supported."
 msgstr ""
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:114
-#, fuzzy
 msgid "Failed to change color"
-msgstr "未能设置颜色"
+msgstr "未能更改颜色"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:133
 #, c-format
@@ -2971,9 +2914,8 @@ msgid "Desktop"
 msgstr "桌面"
 
 #: src/gui/backend/arranger_selections.c:2583
-#, fuzzy
 msgid "Failed to paste selections"
-msgstr "无法粘贴所选内容"
+msgstr "无法粘贴所选"
 
 #: src/gui/backend/arranger_object.c:2866
 #, c-format
@@ -2981,9 +2923,8 @@ msgid "Invalid object name %s"
 msgstr "无效的对象名称 %s"
 
 #: src/gui/backend/arranger_object.c:2905
-#, fuzzy
 msgid "Failed to rename object"
-msgstr "无法重命名 lane：%s"
+msgstr "未能重命名"
 
 #: src/gui/backend/event_manager.c:545
 #, c-format
@@ -3001,9 +2942,8 @@ msgid "Failed to clone track '%s'"
 msgstr "未能克隆音轨 '%s'"
 
 #: src/gui/backend/mixer_selections.c:609
-#, fuzzy
 msgid "Failed to paste plugins"
-msgstr "未能创建插件"
+msgstr "未能粘贴插件"
 
 #: src/utils/io.c:552
 #, c-format
@@ -3191,14 +3131,12 @@ msgid "Can only drop audio files on audio tracks"
 msgstr "只能将音频文件拖放到音频轨道上"
 
 #: src/audio/tracklist.c:1406
-#, fuzzy
 msgid "Failed to create arranger objects"
-msgstr "无法创建音轨：%s"
+msgstr "未能创建编曲对象"
 
 #: src/audio/tracklist.c:1500
-#, fuzzy
 msgid "Failed to move track inside"
-msgstr "未能复制内部音轨"
+msgstr "未能将音轨移动至内部"
 
 #: src/audio/tracklist.c:1536
 msgid "Failed to copy track inside"
