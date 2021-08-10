@@ -7,13 +7,14 @@
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Michal Čihař <michal@cihar.com>, 2020.
+# J. Lavoie <j.lavoie@net-c.ca>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-07 11:36+0100\n"
-"PO-Revision-Date: 2020-12-30 23:03+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2021-08-09 23:33+0000\n"
+"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -114,13 +115,13 @@ msgstr ""
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:563 src/audio/automation_track.c:191
 msgid "Off"
-msgstr "Off"
+msgstr "Diattivato"
 
 #: inc/schemas/audio/region.h:51 inc/audio/region.h:91
 #: src/gui/widgets/bot_bar.c:563 src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:262 src/audio/automation_track.c:185
 msgid "On"
-msgstr "On"
+msgstr "Attivato"
 
 #: inc/utils/ui.h:76
 msgid "High"
