@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-07 11:36+0100\n"
-"PO-Revision-Date: 2021-08-07 10:22+0000\n"
+"PO-Revision-Date: 2021-08-09 23:33+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -217,11 +217,11 @@ msgstr ""
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
-msgstr ""
+msgstr "Inverter"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Programa externo"
 
 #: inc/audio/audio_function.h:82
 #, fuzzy
@@ -235,19 +235,19 @@ msgstr "Personalizado"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
-msgstr ""
+msgstr "Inválido"
 
 #: inc/audio/transport.h:70
 msgid "1 bar"
-msgstr ""
+msgstr "1 barra"
 
 #: inc/audio/transport.h:71
 msgid "2 bars"
-msgstr ""
+msgstr "2 barras"
 
 #: inc/audio/transport.h:72
 msgid "4 bars"
-msgstr ""
+msgstr "4 barras"
 
 #: inc/audio/track.h:175 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:187
@@ -303,7 +303,7 @@ msgstr "Grupo de MIDI"
 
 #: inc/audio/track.h:187
 msgid "Folder"
-msgstr ""
+msgstr "Pasta"
 
 #: inc/audio/engine.h:201
 msgid "1,024"
@@ -391,7 +391,7 @@ msgstr "Dedilhar"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
-msgstr ""
+msgstr "Antes das inserções"
 
 #: inc/audio/exporter.h:91
 #, fuzzy
@@ -512,7 +512,7 @@ msgstr ""
 
 #: src/zrythm_app.c:197
 msgid "Check for Updates"
-msgstr ""
+msgstr "Procurar atualizações"
 
 #: src/zrythm_app.c:271
 #, c-format
@@ -521,6 +521,9 @@ msgid ""
 "\n"
 "Your current version is %s"
 msgstr ""
+"Uma nova versão do Zrythm foi lançada: <b>%s</b>\n"
+"\n"
+"A sua versão atual é %s"
 
 #: src/zrythm_app.c:361
 msgid "Setting up main window"
@@ -619,7 +622,7 @@ msgstr "Opção desconhecida\n"
 #: src/zrythm_app.c:1703
 #, c-format
 msgid "libguile is required for this option\n"
-msgstr ""
+msgstr "libguile é necessário para esta opção\n"
 
 #: src/zrythm_app.c:1868
 #, fuzzy
@@ -628,23 +631,23 @@ msgstr "Informações sobre a Licença"
 
 #: src/zrythm_app.c:1873
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "Converter ZPJ-FILE para YAML"
 
 #: src/zrythm_app.c:1878
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "Converter YAML-PROJECT-FILE para o formato .zpj"
 
 #: src/zrythm_app.c:1883
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Gerar um projeto a partir do SCRIPT-FILE"
 
 #: src/zrythm_app.c:1887
 msgid "Print output in user-friendly way"
-msgstr ""
+msgstr "Saída de impressão de forma fácil de usar"
 
 #: src/zrythm_app.c:1891
 msgid "Print current settings"
-msgstr ""
+msgstr "Imprimir definições atuais"
 
 #: src/zrythm_app.c:1895
 #, fuzzy
@@ -663,11 +666,11 @@ msgstr "O backend MIDI a usar."
 
 #: src/zrythm_app.c:1906
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
-msgstr ""
+msgstr "Abreviação para --midi-backend=none --audio-backend=none"
 
 #: src/zrythm_app.c:1938
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[PROJECT-FILE]"
 
 #: src/zrythm_app.c:1943
 #, c-format
@@ -684,12 +687,12 @@ msgstr ""
 #: src/zrythm_app.c:1955
 #, c-format
 msgid "Run %s, optionally passing a project file."
-msgstr ""
+msgstr "Execute %s, opcionalmente passando um ficheiro de projeto."
 
 #: src/plugins/carla_native_plugin.c:585
 #, c-format
 msgid "Error adding carla plugin: %s"
-msgstr ""
+msgstr "Erro ao adicionar suplemento de carla: %s"
 
 #: src/plugins/carla_native_plugin.c:620 src/plugins/lv2_plugin.c:3704
 msgid "Default bank"
@@ -717,11 +720,11 @@ msgstr "Saída de MIDI"
 
 #: src/plugins/carla_native_plugin.c:1173
 msgid "CV in"
-msgstr ""
+msgstr "Entrada CV"
 
 #: src/plugins/carla_native_plugin.c:1183
 msgid "CV out"
-msgstr ""
+msgstr "Saída CV"
 
 #: src/plugins/carla_native_plugin.c:1385
 msgid "Failed to instantiate Carla plugin"
@@ -1887,7 +1890,7 @@ msgstr "Predefinição de fade"
 
 #: src/gui/widgets/plugin_properties_expander.c:303
 msgid "Load"
-msgstr ""
+msgstr "Carregar"
 
 #: src/gui/widgets/plugin_properties_expander.c:307
 #, fuzzy
@@ -1920,7 +1923,7 @@ msgstr "Nenhum controle selecionado"
 
 #: src/gui/widgets/automatable_selector_popover.c:399
 msgid "Macros"
-msgstr ""
+msgstr "Macros"
 
 #: src/gui/widgets/automatable_selector_popover.c:410
 #, fuzzy, c-format
@@ -1954,21 +1957,23 @@ msgstr "[Modulador %d] %s"
 
 #: src/gui/widgets/main_window.c:203
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Alterações não gravadas"
 
 #: src/gui/widgets/main_window.c:207
 msgid "_Save & Quit"
-msgstr ""
+msgstr "Gravar & S_air"
 
 #: src/gui/widgets/main_window.c:209
 msgid "_Quit without saving"
-msgstr ""
+msgstr "Saír sem gravar"
 
 #: src/gui/widgets/main_window.c:217
 msgid ""
 "The project contains unsaved changes.\n"
 "If you quit without saving, unsaved changes will be lost."
 msgstr ""
+"O projeto contém alterações não gravadas.\n"
+"Se desistir sem gravar, as alterações não gravadas serão perdidas."
 
 #: src/gui/widgets/main_window.c:223
 #, c-format
@@ -1978,11 +1983,15 @@ msgid ""
 "Changes:\n"
 "%s"
 msgstr ""
+"%s\n"
+"\n"
+"Mudanças:\n"
+"%s"
 
 #: src/gui/widgets/snap_grid.c:60
 #, c-format
 msgid "%s - Last object"
-msgstr ""
+msgstr "%s - Último objeto"
 
 #: src/gui/widgets/snap_grid.c:120
 msgid "Snap/Grid options"
@@ -2015,7 +2024,7 @@ msgstr "dim"
 #: src/gui/widgets/monitor_section.c:85
 #, c-format
 msgid "<small>%d muted</small>"
-msgstr ""
+msgstr "<small>%d mudo</small>"
 
 #: src/gui/widgets/monitor_section.c:91
 #, fuzzy
@@ -2025,7 +2034,7 @@ msgstr "Desativar Silenciar Faixa"
 #: src/gui/widgets/monitor_section.c:94
 #, c-format
 msgid "<small>%d soloed</small>"
-msgstr ""
+msgstr "<small>%d sozinho</small>"
 
 #: src/gui/widgets/monitor_section.c:100
 #, fuzzy
@@ -2035,11 +2044,11 @@ msgstr "Desfazer a Faixa Solo"
 #: src/gui/widgets/monitor_section.c:103
 #, c-format
 msgid "<small>%d listened</small>"
-msgstr ""
+msgstr "<small>%d escutados</small>"
 
 #: src/gui/widgets/monitor_section.c:109
 msgid "Currently listened tracks"
-msgstr ""
+msgstr "Faixas atualmente escutadas"
 
 #: src/gui/widgets/monitor_section.c:391
 #, fuzzy
@@ -2092,7 +2101,7 @@ msgstr "Clique para ativar entradas"
 #: src/gui/widgets/file_auditioner_controls.c:275
 #: build/data/org.zrythm.Zrythm.gschema.xml:561
 msgid "Autoplay"
-msgstr ""
+msgstr "Reprodução automática"
 
 #: src/gui/widgets/file_auditioner_controls.c:277
 #: build/data/org.zrythm.Zrythm.gschema.xml:566
@@ -2227,7 +2236,7 @@ msgstr "Saídas CV"
 
 #: src/gui/widgets/ports_expander.c:363
 msgid "Ungrouped"
-msgstr ""
+msgstr "Não agrupado"
 
 #: src/gui/widgets/ports_expander.c:431
 msgid "Stereo In"
@@ -2356,7 +2365,7 @@ msgstr "Selecione uma função"
 #: src/gui/widgets/file_browser.c:132
 #, c-format
 msgid "Could not create track: %s"
-msgstr ""
+msgstr "Não consegui criar faixas: %s"
 
 #: src/gui/widgets/inspector_track.c:158
 msgid "Comment"
@@ -2416,11 +2425,11 @@ msgstr "Bloquear/desbloquear"
 
 #: src/gui/widgets/track.c:1252
 msgid "Fold"
-msgstr ""
+msgstr "Dobrar"
 
 #: src/gui/widgets/track.c:1256
 msgid "Unfold"
-msgstr ""
+msgstr "Desdobrar"
 
 #: src/gui/widgets/track.c:1874
 msgid "Add Region"
@@ -2522,7 +2531,7 @@ msgstr "Grupo"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:102
 msgid "Move tracks under group"
-msgstr ""
+msgstr "Mover faixas sob grupo"
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
@@ -2555,12 +2564,12 @@ msgstr "Abre o diretório acima"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:124
 msgid "Send via Sourcehut"
-msgstr ""
+msgstr "Enviar via Sourcehut"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:133
 #, c-format
 msgid "Please copy the template below in a %snew issue%s."
-msgstr ""
+msgstr "Por favor, copie o modelo abaixo numa %snova edição%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:285
 #, fuzzy, c-format
@@ -2570,7 +2579,7 @@ msgstr "Erro ALSA: %s"
 #: src/gui/widgets/dialogs/bug_report_dialog.c:290
 #: src/gui/widgets/dialogs/bug_report_dialog.c:441
 msgid "Done"
-msgstr ""
+msgstr "Pronto"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:306
 #, fuzzy
@@ -2583,6 +2592,8 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
+"Clique em OK para enviar. Você pode verificar o que será enviado abaixo. Ao "
+"clicar em OK, você concorda com a nossa %sPolítica de Privacidade%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:348
 msgid "<b>Data</b>"
