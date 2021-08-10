@@ -336,7 +336,8 @@ activate_plugin_setting (
 
   GError * err = NULL;
   bool ret =
-    track_create_empty_with_action (type, &err);
+    track_create_for_plugin_at_idx_w_action (
+      type, setting, TRACKLIST->num_tracks, &err);
   if (!ret)
     {
       HANDLE_ERROR (

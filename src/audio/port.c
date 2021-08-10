@@ -4360,7 +4360,8 @@ port_get_track (
 
   /* return the pointer if dsp thread */
   if (G_LIKELY (
-        self->track
+        self->track && PROJECT && PROJECT->loaded
+        && ROUTER
         && router_is_processing_thread (ROUTER)))
     {
       g_return_val_if_fail (
@@ -4396,7 +4397,8 @@ port_get_plugin (
 
   /* if DSP thread, return the pointer */
   if (G_LIKELY (
-        self->plugin
+        self->plugin && PROJECT && PROJECT->loaded
+        && ROUTER
         && router_is_processing_thread (ROUTER)))
     {
       g_return_val_if_fail (
