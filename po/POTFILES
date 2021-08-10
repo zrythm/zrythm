@@ -312,7 +312,6 @@ inc/utils/dir.h
 inc/utils/audio.h
 inc/utils/terminal.h
 inc/utils/smf.h
-inc/utils/hashtable.h
 inc/utils/strv_builder.h
 inc/utils/types.h
 inc/utils/error.h
