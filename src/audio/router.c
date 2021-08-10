@@ -233,14 +233,18 @@ router_is_processing_thread (
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
-      if (pthread_equal (
+      if (self->graph->main_thread
+          &&
+          pthread_equal (
             pthread_self (),
             self->graph->main_thread->jthread))
         return true;
     }
 #endif
 #ifndef HAVE_JACK
-  if (pthread_equal (
+  if (self->graph->main_thread
+      &&
+      pthread_equal (
         pthread_self (),
         self->graph->main_thread->pthread))
     return true;
