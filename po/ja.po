@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-07 11:36+0100\n"
-"PO-Revision-Date: 2021-08-02 00:45+0000\n"
+"PO-Revision-Date: 2021-08-09 23:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -2683,7 +2683,7 @@ msgstr "実行中の%sバージョンは<b>%s</b>%s%s"
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr "編集"
+msgstr "トップ"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
