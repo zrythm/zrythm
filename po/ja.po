@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-10 12:24+0100\n"
-"PO-Revision-Date: 2021-08-09 23:33+0000\n"
+"PO-Revision-Date: 2021-08-10 12:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -213,11 +213,11 @@ msgstr "モニターフェーダーアウト"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:249
 msgid "Nudge left"
-msgstr ""
+msgstr "左へナッジ (Nudge)"
 
 #: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:251
 msgid "Nudge right"
-msgstr ""
+msgstr "右へナッジ (Nudge)"
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
@@ -225,7 +225,7 @@ msgstr "反転"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "外部プログラム"
 
 #: inc/audio/audio_function.h:82
 #, fuzzy
@@ -247,11 +247,11 @@ msgstr "1バー"
 
 #: inc/audio/transport.h:71
 msgid "2 bars"
-msgstr ""
+msgstr "2小節"
 
 #: inc/audio/transport.h:72
 msgid "4 bars"
-msgstr ""
+msgstr "4小節"
 
 #: inc/audio/track.h:175 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188
@@ -512,11 +512,11 @@ msgstr "%s がクラッシュしました。 "
 #: src/zrythm_app.c:190
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
-msgstr ""
+msgstr "起動時に%sのアップデートを確認しますか？"
 
 #: src/zrythm_app.c:197
 msgid "Check for Updates"
-msgstr ""
+msgstr "アップデートを確認"
 
 #: src/zrythm_app.c:271
 #, c-format
@@ -696,7 +696,7 @@ msgstr "%sを実行し、オプションでプロジェクトファイルを渡�
 #: src/plugins/carla_native_plugin.c:585
 #, c-format
 msgid "Error adding carla plugin: %s"
-msgstr ""
+msgstr "carlaプラグインの追加に失敗しました : %s"
 
 #: src/plugins/carla_native_plugin.c:620 src/plugins/lv2_plugin.c:3707
 msgid "Default bank"
@@ -732,7 +732,7 @@ msgstr "CV出力"
 
 #: src/plugins/carla_native_plugin.c:1393
 msgid "Failed to instantiate Carla plugin"
-msgstr ""
+msgstr "Carla プラグインのインスタンス化に失敗しました"
 
 #: src/plugins/plugin_manager.c:394
 msgid "Error loading LV2 bundle dir: "
@@ -792,7 +792,7 @@ msgstr "プラグインゲイン"
 
 #: src/plugins/plugin.c:570
 msgid "Failed to get Carla plugin"
-msgstr ""
+msgstr "Carlaプラグインの取得に失敗しました"
 
 #: src/plugins/plugin.c:586
 #, fuzzy
@@ -847,7 +847,7 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
 #: src/plugins/plugin.c:2176 src/plugins/plugin.c:2231
 msgid "Failed to instantiate source plugin"
-msgstr ""
+msgstr "ソースプラグインのインスタンス化に失敗しました"
 
 #: src/plugins/plugin.c:2258
 #, fuzzy
@@ -856,7 +856,7 @@ msgstr "ファイルの書き込みに失敗しました: %s"
 
 #: src/plugins/plugin.c:2270
 msgid "Failed to instantiate cloned plugin"
-msgstr ""
+msgstr "複製されたプラグインのインスタンス化に失敗しました"
 
 #: src/plugins/plugin_gtk.c:95 src/plugins/lv2/lv2_gtk.c:76
 msgid "Save State"
@@ -916,7 +916,7 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 #: src/plugins/lv2_plugin.c:2280
 #, c-format
 msgid "Could not find UI by URI <%s>"
-msgstr ""
+msgstr "URI <%s> で UI が見つかりませんでした"
 
 #: src/plugins/lv2_plugin.c:2634
 #, fuzzy
@@ -948,7 +948,7 @@ msgstr ""
 
 #: src/plugins/lv2_plugin.c:2916
 msgid "Failed checking whether lv2 plugin UI is external"
-msgstr ""
+msgstr "lv2 プラグインの UI が外部であるかどうかを確認できませんでした"
 
 #: src/plugins/lv2_plugin.c:3751
 msgid "Unnamed bank"
@@ -1253,7 +1253,7 @@ msgstr "プラグインインスペクター"
 #: src/gui/widgets/left_dock_edge.c:242 src/utils/gtk.c:1289
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
-msgstr "ビジビリティ"
+msgstr "表示/未表示設定"
 
 #: src/gui/widgets/plugin_strip_expander.c:188
 msgid "Inserts"
@@ -1466,7 +1466,7 @@ msgstr "目印の名称"
 
 #: src/gui/widgets/arranger.c:2475
 msgid "Cannot resize because the selection contains objects without length"
-msgstr ""
+msgstr "選択に長さのないオブジェクトが含まれているため、サイズ変更ができない"
 
 #: src/gui/widgets/arranger.c:2503
 msgid ""
@@ -1769,7 +1769,7 @@ msgstr "音量"
 #. countin
 #: src/gui/widgets/bot_bar.c:654
 msgid "Count-in"
-msgstr ""
+msgstr "カウントイン"
 
 #: src/gui/widgets/bot_bar.c:727
 msgid "bpm"
@@ -1843,7 +1843,7 @@ msgstr "録音モード"
 
 #: src/gui/widgets/transport_controls.c:499
 msgid "Preroll"
-msgstr ""
+msgstr "プリロール"
 
 #: src/gui/widgets/transport_controls.c:539
 msgid "Record options"
@@ -2167,21 +2167,23 @@ msgstr "[モジュレータ%d]%s"
 
 #: src/gui/widgets/main_window.c:203
 msgid "Unsaved changes"
-msgstr ""
+msgstr "未保存の変更"
 
 #: src/gui/widgets/main_window.c:207
 msgid "_Save & Quit"
-msgstr ""
+msgstr "保存して終了 (_S)"
 
 #: src/gui/widgets/main_window.c:209
 msgid "_Quit without saving"
-msgstr ""
+msgstr "保存せずに終了 (_Q)"
 
 #: src/gui/widgets/main_window.c:217
 msgid ""
 "The project contains unsaved changes.\n"
 "If you quit without saving, unsaved changes will be lost."
 msgstr ""
+"プロジェクトには、保存されていない変更が含まれています。\n"
+"保存せずに終了すると、未保存の変更内容は失われます。"
 
 #: src/gui/widgets/main_window.c:223
 #, c-format
@@ -2191,6 +2193,10 @@ msgid ""
 "Changes:\n"
 "%s"
 msgstr ""
+"%s\n"
+"\n"
+"変更点\n"
+"%s"
 
 #: src/gui/widgets/snap_grid.c:60
 #, c-format
@@ -2842,12 +2848,12 @@ msgstr "含まれるディレクトリを開きます"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:124
 msgid "Send via Sourcehut"
-msgstr ""
+msgstr "Sourcehut経由で送信"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:133
 #, c-format
 msgid "Please copy the template below in a %snew issue%s."
-msgstr ""
+msgstr "以下のテンプレートを%s新規チケット%sにコピーしてください。"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:285
 #, fuzzy, c-format
@@ -2857,7 +2863,7 @@ msgstr "ALSAエラー：%s"
 #: src/gui/widgets/dialogs/bug_report_dialog.c:290
 #: src/gui/widgets/dialogs/bug_report_dialog.c:441
 msgid "Done"
-msgstr ""
+msgstr "完了"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:306
 #, fuzzy
@@ -2870,32 +2876,31 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
+"「OK」をクリックして送信します。送信される内容は以下で確認できます。「OK」をクリックすると、当方の%sプライバシーポリシー%sに同意するものとします。"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:348
 msgid "<b>Data</b>"
-msgstr ""
+msgstr "<b>データ</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:379
 msgid "<b>Screenshot</b>"
-msgstr ""
+msgstr "<b>スクリーンショット</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:431
-#, fuzzy
 msgid "Sending"
-msgstr "バインディング"
+msgstr "送信中"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:439
 msgid "Sending data..."
-msgstr ""
+msgstr "データを送信中..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:442
 msgid "Failed"
-msgstr ""
+msgstr "失敗しました"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:446
-#, fuzzy
 msgid "Sending..."
-msgstr "保存中..."
+msgstr "送信中..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:474
 #, fuzzy
@@ -2911,7 +2916,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:568
 msgid "Enter a list of steps to reproduce the error. Markdown is supported."
-msgstr ""
+msgstr "エラーを再現するための手順を入力してください。Markdownに対応しています。"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:573
 msgid "Enter more context, what distro you use, etc. Markdown is supported."
@@ -3160,6 +3165,9 @@ msgid ""
 "---Backtrace---\n"
 "%s"
 msgstr ""
+"%s\n"
+"---バックトレース---\n"
+"%s"
 
 #: src/settings/settings.c:163
 #, c-format
@@ -3270,7 +3278,7 @@ msgstr "トラックを内部にコピー"
 
 #: src/audio/tracklist.c:1587
 msgid "Cannot drag folder into itself"
-msgstr ""
+msgstr "フォルダをフォルダ自身の中にドラッグすることはできません"
 
 #: src/audio/tracklist.c:1603 src/audio/tracklist.c:1644
 #, fuzzy
@@ -3373,7 +3381,7 @@ msgid "Failed opening file"
 msgstr "ファイルを開くことができませんでした"
 
 #: src/audio/supported_file.c:316
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "<b>%s</b>\n"
 "Sample rate: %d\n"
@@ -3381,6 +3389,11 @@ msgid ""
 "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
 "Bit depth: %d bits"
 msgstr ""
+"<b>%s</b>\n"
+"サンプルレート%d\n"
+"長さ: %ld s %ld ms%ld s %ld ms | BPM:%.1f\n"
+"チャンネル: %d | ビットレート: %'d.%d kb/s\n"
+"ビット深度: %d ビット"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -3495,7 +3508,7 @@ msgstr "プラグインを有効/無効にする"
 
 #: src/audio/audio_function.c:391
 msgid "Invalid positions - skipping function"
-msgstr ""
+msgstr "無効な位置 - 関数をスキップします"
 
 #: src/audio/audio_function.c:545
 #, fuzzy
@@ -3573,16 +3586,16 @@ msgstr "未実装"
 
 #: src/audio/clip.c:644
 msgid "Edit in external app"
-msgstr ""
+msgstr "外部アプリでの編集"
 
 #: src/audio/clip.c:669
 #, c-format
 msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr ""
+msgstr "<u>%s</u> にあるファイルを編集し、「OK」を押してください"
 
 #: src/audio/clip.c:685
 msgid "Launch"
-msgstr ""
+msgstr "起動"
 
 #: src/audio/fader.c:143
 msgid "Prefader Volume"
@@ -3759,7 +3772,7 @@ msgstr "コントロール値の設定"
 
 #: src/actions/arranger_selections.c:418
 msgid "Arranger selections contain an undeletable object"
-msgstr ""
+msgstr "削除できないオブジェクトが選択されています"
 
 #: src/actions/arranger_selections.c:535 src/actions/actions.c:2342
 #, fuzzy
@@ -3774,12 +3787,12 @@ msgstr "最後に使用したオーディオ関数"
 
 #: src/actions/arranger_selections.c:764
 msgid "Attempted to resize unresizable objects"
-msgstr ""
+msgstr "サイズ変更できないオブジェクトのサイズを変更しようとしました"
 
 #: src/actions/arranger_selections.c:791
 #, c-format
 msgid "Cannot perform %s resize - selections contain looped objects"
-msgstr ""
+msgstr "%s サイズ変更できません - 選択にループされたオブジェクトが含まれています"
 
 #: src/actions/arranger_selections.c:813
 #, c-format
@@ -4158,7 +4171,7 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
 #: src/actions/mixer_selections_action.c:525
 msgid "Could not create plugin"
-msgstr ""
+msgstr "プラグインを初期化できませんでした"
 
 #: src/actions/mixer_selections_action.c:749
 #: src/actions/mixer_selections_action.c:1151
@@ -4235,7 +4248,7 @@ msgstr "ポートが選択されていません"
 
 #: src/actions/tracklist_selections.c:336
 msgid "Failed to clone tracklist selections"
-msgstr ""
+msgstr "トラックのクローン作成に失敗しました"
 
 #: src/actions/tracklist_selections.c:358
 #, fuzzy
@@ -4244,7 +4257,7 @@ msgstr "ファイルを開けませんでした：%s"
 
 #: src/actions/tracklist_selections.c:387
 msgid "Failed to clone tracklist selections: "
-msgstr ""
+msgstr "トラックのクローン作成に失敗しました : "
 
 #: src/actions/tracklist_selections.c:599
 #, c-format
@@ -4880,11 +4893,11 @@ msgstr "テンプレートを選択"
 
 #: resources/ui/bug_report_dialog.ui:29
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #: resources/ui/bug_report_dialog.ui:142
 msgid "What did you do?"
-msgstr ""
+msgstr "何をしましたか？"
 
 #: resources/ui/bug_report_dialog.ui:155
 #, fuzzy
@@ -4893,11 +4906,11 @@ msgstr "詳細を見る"
 
 #: resources/ui/bug_report_dialog.ui:219
 msgid "Enter more context, what distro you use, etc."
-msgstr ""
+msgstr "その他役に立ちそうな情報 (ディストロなど) を入力してください。"
 
 #: resources/ui/bug_report_dialog.ui:222
 msgid "Enter a list of steps to reproduce the error."
-msgstr ""
+msgstr "エラーを再現するための手順を入力してください。"
 
 #: resources/ui/chord_selector_window.ui:52
 msgid "Root Note"
@@ -5695,7 +5708,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:269
 msgid "First check for updates"
-msgstr ""
+msgstr "最初のアップデートの確認"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:270
 #, fuzzy
@@ -6298,7 +6311,7 @@ msgstr "トラックコメントが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:663
 msgid "Track visibility detached"
-msgstr ""
+msgstr "トラック表示/未表示設定パネルの分離"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:664
 #, fuzzy
@@ -6307,11 +6320,11 @@ msgstr "トラックインサートが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:668
 msgid "Track visibility size"
-msgstr ""
+msgstr "トラック表示/未表示設定パネルのサイズ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:669
 msgid "Track visibility panel size when detached."
-msgstr ""
+msgstr "取り外したときのトラック表示/未表示設定パネルのサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:673
 #, fuzzy
@@ -6410,7 +6423,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:723
 msgid "Modulator view detached"
-msgstr ""
+msgstr "モデュレータービューの切り離し"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:724
 #, fuzzy
@@ -6428,7 +6441,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:733
 msgid "Mixer detached"
-msgstr ""
+msgstr "ミキサーの切り離し"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:734
 #, fuzzy
@@ -6442,11 +6455,11 @@ msgstr "ミキサー画面"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:739
 msgid "Mixer panel size when detached."
-msgstr ""
+msgstr "着脱時のミキサーパネルサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:743
 msgid "Clip editor detached"
-msgstr ""
+msgstr "エディターの切り離し"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:744
 #, fuzzy
@@ -6455,7 +6468,7 @@ msgstr "メトロノームが有効になっているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:748
 msgid "Clip editor size"
-msgstr ""
+msgstr "エディターのサイズ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:749
 msgid "Clip editor panel size when detached."
@@ -6497,7 +6510,7 @@ msgstr "タイムライン"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:769
 msgid "Timeline panel size when detached."
-msgstr ""
+msgstr "切り離した時のタイムラインパネルのサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:773
 #, fuzzy
@@ -6539,7 +6552,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:793
 msgid "Scenes detached"
-msgstr ""
+msgstr "シーンの切り離し"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:794
 #, fuzzy
@@ -6553,7 +6566,7 @@ msgstr "シーン"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:799
 msgid "Scenes panel size when detached."
-msgstr ""
+msgstr "切り離した時のシーンパネルのサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:808
 msgid "Genre to use when exporting, if the file type supports it."
@@ -6646,7 +6659,7 @@ msgstr "メトロノームの音量"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:878
 msgid "Count-in bars for the metronome."
-msgstr ""
+msgstr "メトロノームのカウントイン小節。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:882
 msgid "Punch mode enabled"
@@ -6675,7 +6688,7 @@ msgstr "録音モード"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:898
 msgid "Number of bars to pre-roll when recording."
-msgstr ""
+msgstr "録音時にプリロールする小節の数。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:911
 msgid "Audio backend"
@@ -6748,11 +6761,11 @@ msgstr "ユーザーデータの保存に使用されるディレクトリ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:970
 msgid "Updates"
-msgstr ""
+msgstr "アプリの更新"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:974
 msgid "Check for updates"
-msgstr ""
+msgstr "アップデートを確認"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
 #, fuzzy
