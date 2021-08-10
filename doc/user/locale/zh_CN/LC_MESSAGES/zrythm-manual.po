@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-07 22:38+0100\n"
-"PO-Revision-Date: 2021-08-02 00:45+0000\n"
+"PO-Revision-Date: 2021-08-09 23:33+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
-"Language: zh_CN\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -524,7 +525,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:80
 msgid "MIDI CC bindings"
-msgstr ""
+msgstr "MIDI CC 绑定"
 
 #: ../../configuration/device-setup.rst:82
 msgid ""
@@ -2850,7 +2851,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
-msgstr ""
+msgstr "预设"
 
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
@@ -4378,7 +4379,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
 msgid "Volume"
-msgstr ""
+msgstr "音量"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
 msgid "Control the loudness of the output audio."
@@ -5414,7 +5415,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:54
 msgid "Port Connections"
-msgstr ""
+msgstr "端口连接"
 
 #: ../../routing/ports.rst:55
 msgid ""
@@ -6392,7 +6393,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:8 ../../tracks/overview.rst:68
 #: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
-msgstr ""
+msgstr "音轨检查器"
 
 #: ../../tracks/inspector-page.rst:10
 msgid ""
@@ -7100,9 +7101,8 @@ msgid "Mascot"
 msgstr ""
 
 #: ../../user-media/intro.rst:12
-#, fuzzy
 msgid "Concept"
-msgstr "概念"
+msgstr ""
 
 #: ../../user-media/intro.rst:17
 msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
@@ -7241,7 +7241,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
-msgstr ""
+msgstr "插件检查器"
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."

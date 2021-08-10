@@ -17,16 +17,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-07 11:36+0100\n"
-"PO-Revision-Date: 2021-07-26 22:33+0000\n"
-"Last-Translator: sub26nico10b0a294e11e4b4b <faurenicolas5595@neuf.fr>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2021-08-09 23:33+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.7.2-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -120,13 +120,13 @@ msgstr "Hériter"
 #: inc/schemas/audio/region.h:49 inc/audio/region.h:89
 #: src/gui/widgets/bot_bar.c:563 src/audio/automation_track.c:191
 msgid "Off"
-msgstr "A l'arrêt"
+msgstr "Activé"
 
 #: inc/schemas/audio/region.h:51 inc/audio/region.h:91
 #: src/gui/widgets/bot_bar.c:563 src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:262 src/audio/automation_track.c:185
 msgid "On"
-msgstr "En fonctionnement"
+msgstr "Désactivé"
 
 #: inc/utils/ui.h:76
 msgid "High"
@@ -142,7 +142,7 @@ msgstr "Bas"
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
-msgstr ""
+msgstr "Ultra bas"
 
 #: inc/utils/gtk.h:55
 msgid "MIDI learn"
@@ -233,7 +233,7 @@ msgstr "Inverser"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Programme externe"
 
 #: inc/audio/audio_function.h:82
 #, fuzzy
@@ -518,11 +518,11 @@ msgstr "%s a planté. "
 #: src/zrythm_app.c:190
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
-msgstr ""
+msgstr "Voulez-vous que %s vérifie les mises à jour au démarrage ?"
 
 #: src/zrythm_app.c:197
 msgid "Check for Updates"
-msgstr ""
+msgstr "Rechercher les mises à jour"
 
 #: src/zrythm_app.c:271
 #, c-format
@@ -703,7 +703,7 @@ msgstr "Exécuter %s, en passant éventuellement un fichier de projet."
 #: src/plugins/carla_native_plugin.c:585
 #, c-format
 msgid "Error adding carla plugin: %s"
-msgstr ""
+msgstr "Erreur lors de l'ajout du greffon Carla : %s"
 
 #: src/plugins/carla_native_plugin.c:620 src/plugins/lv2_plugin.c:3704
 msgid "Default bank"
@@ -739,7 +739,7 @@ msgstr "sortie CV"
 
 #: src/plugins/carla_native_plugin.c:1385
 msgid "Failed to instantiate Carla plugin"
-msgstr ""
+msgstr "Échec de l'instanciation du greffon Carla"
 
 #: src/plugins/plugin_manager.c:394
 msgid "Error loading LV2 bundle dir: "
@@ -799,7 +799,7 @@ msgstr "Gain du greffon"
 
 #: src/plugins/plugin.c:570
 msgid "Failed to get Carla plugin"
-msgstr ""
+msgstr "Impossible d'obtenir le greffon Carla"
 
 #: src/plugins/plugin.c:586
 #, fuzzy
@@ -857,7 +857,7 @@ msgstr "Impossible de trouver le greffon avec l'URI:%s"
 
 #: src/plugins/plugin.c:2176 src/plugins/plugin.c:2231
 msgid "Failed to instantiate source plugin"
-msgstr ""
+msgstr "Échec de l'instanciation du greffon source"
 
 #: src/plugins/plugin.c:2258
 #, fuzzy
@@ -866,7 +866,7 @@ msgstr "Échec de l'écriture du fichier : %s"
 
 #: src/plugins/plugin.c:2270
 msgid "Failed to instantiate cloned plugin"
-msgstr ""
+msgstr "Échec de l'instanciation du greffon cloné"
 
 #: src/plugins/plugin_gtk.c:95 src/plugins/lv2/lv2_gtk.c:76
 msgid "Save State"
@@ -926,7 +926,7 @@ msgstr "Impossible de trouver le greffon avec l'URI:%s"
 #: src/plugins/lv2_plugin.c:2279
 #, c-format
 msgid "Could not find UI by URI <%s>"
-msgstr ""
+msgstr "Impossible de trouver l'interface utilisateur par l'URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2633
 #, fuzzy
@@ -939,9 +939,9 @@ msgid "Failed to load state from %s"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/plugins/lv2_plugin.c:2726
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Impossible de trouver le greffon avec l'URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2767
 #, c-format

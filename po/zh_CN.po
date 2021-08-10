@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-07 11:36+0100\n"
-"PO-Revision-Date: 2021-08-02 00:45+0000\n"
+"PO-Revision-Date: 2021-08-09 23:33+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -784,9 +784,8 @@ msgid "Failed to get Carla plugin"
 msgstr ""
 
 #: src/plugins/plugin.c:586
-#, fuzzy
 msgid "Failed to get LV2 plugin"
-msgstr "已扫描LV2插件"
+msgstr "获取 LV2 插件失败"
 
 #: src/plugins/plugin.c:1108
 #, c-format
@@ -798,14 +797,12 @@ msgid "instrument"
 msgstr "乐器"
 
 #: src/plugins/plugin.c:1667
-#, fuzzy
 msgid "Carla plugin instantiation failed"
-msgstr "插件实例化失败。有关详细信息，请参阅日志"
+msgstr "Carla 插件实例化失败"
 
 #: src/plugins/plugin.c:1695
-#, fuzzy
 msgid "LV2 plugin instantiation failed"
-msgstr "插件实例化失败。有关详细信息，请参阅日志"
+msgstr "LV2 插件实例化失败"
 
 #: src/plugins/plugin.c:1921
 #, c-format
@@ -818,23 +815,22 @@ msgid ""
 msgstr ""
 
 #: src/plugins/plugin.c:2142
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin clone for %s"
-msgstr "无法写入文件:%s"
+msgstr "未能为 %s 创建插件克隆"
 
 #: src/plugins/plugin.c:2158
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to instantiate cloned plugin %s"
-msgstr "无法从指定的 URI 找到插件: %s"
+msgstr "未能实例化克隆插件 %s"
 
 #: src/plugins/plugin.c:2176 src/plugins/plugin.c:2231
 msgid "Failed to instantiate source plugin"
 msgstr ""
 
 #: src/plugins/plugin.c:2258
-#, fuzzy
 msgid "Failed to create plugin clone"
-msgstr "无法写入文件:%s"
+msgstr "未能创建插件克隆"
 
 #: src/plugins/plugin.c:2270
 msgid "Failed to instantiate cloned plugin"
@@ -891,9 +887,9 @@ msgid "Unknown widget type for value\n"
 msgstr "值的小部件类型未知\n"
 
 #: src/plugins/lv2_plugin.c:1975
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
-msgstr "无法从指定的 URI 找到插件: %s"
+msgstr "无法从 URI <%s> 获得 LV2 插件"
 
 #: src/plugins/lv2_plugin.c:2279
 #, c-format
@@ -901,19 +897,18 @@ msgid "Could not find UI by URI <%s>"
 msgstr ""
 
 #: src/plugins/lv2_plugin.c:2633
-#, fuzzy
 msgid "Failed to make temporary dir"
-msgstr "无法查看架构%s"
+msgstr "未能创建临时目录"
 
 #: src/plugins/lv2_plugin.c:2694
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load state from %s"
-msgstr "无法打开文件:%s"
+msgstr "未能从 %s 加载状态"
 
 #: src/plugins/lv2_plugin.c:2726
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr "无法从指定的 URI 找到插件: %s"
+msgstr "无法通过 URI <%s>找到插件"
 
 #: src/plugins/lv2_plugin.c:2767
 #, c-format
@@ -1277,14 +1272,14 @@ msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "时间特征码-每bar/拍单位拍数"
 
 #: src/gui/widgets/drag_dest_box.c:250 src/audio/track.c:3944
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track: %s"
-msgstr "无法写入文件:%s"
+msgstr "无法创建音轨：%s"
 
 #: src/gui/widgets/drag_dest_box.c:349
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to copy or move track: %s"
-msgstr "无法打开文件:%s"
+msgstr "未能复制或移动音轨：%s"
 
 #: src/gui/widgets/drag_dest_box.c:429
 msgid "Add _MIDI Track"
@@ -1371,9 +1366,8 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/arranger.c:4240
-#, fuzzy
 msgid "Failed to create resize action"
-msgstr "无法写入文件:%s"
+msgstr "未能创建调整大小操作"
 
 #: src/gui/widgets/arranger.c:4409
 #, c-format
@@ -2065,9 +2059,9 @@ msgid "Delete connection"
 msgstr "删除连接"
 
 #: src/gui/widgets/balance_control.c:319
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change balance: %s"
-msgstr "无法打开文件:%s"
+msgstr "未能更改平衡：%s"
 
 #: src/gui/widgets/live_waveform.c:324
 msgid "Live waveform indicator"
@@ -2507,9 +2501,9 @@ msgid "Please copy the template below in a %snew issue%s."
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:285
-#, fuzzy, c-format
+#, c-format
 msgid "error: %s"
-msgstr "ALSA错误:%s"
+msgstr "错误：%s"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:290
 #: src/gui/widgets/dialogs/bug_report_dialog.c:441
@@ -2517,9 +2511,8 @@ msgid "Done"
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:306
-#, fuzzy
 msgid "Send Automatically"
-msgstr "自动填充"
+msgstr "自动发送"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:331
 #, c-format
@@ -2537,9 +2530,8 @@ msgid "<b>Screenshot</b>"
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:431
-#, fuzzy
 msgid "Sending"
-msgstr "绑定"
+msgstr "发送中"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:439
 msgid "Sending data..."
@@ -2550,21 +2542,17 @@ msgid "Failed"
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:446
-#, fuzzy
 msgid "Sending..."
-msgstr "保存中..."
+msgstr "发送中..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:474
-#, fuzzy
 msgid "Sent successfully"
-msgstr "脚本执行成功"
+msgstr "发送成功"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:537
-#, fuzzy, c-format
+#, c-format
 msgid "%sPlease help us fix this by submitting a bug report."
-msgstr ""
-"%s请帮助修复这个问题%s，方法是使用下方的模板或%s发送一封电子邮件%s提交一份错"
-"误报告%s。"
+msgstr "%s请帮助我们修复这个问题，方法是提交一份故障报告。"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:568
 msgid "Enter a list of steps to reproduce the error. Markdown is supported."
@@ -2676,44 +2664,44 @@ msgid "Trial limit has been reached. %s will now go silent"
 msgstr "已达到试用限制。%s将变为静默状态"
 
 #: src/gui/backend/tracklist_selections.c:695
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clone track '%s'"
-msgstr "无法打开文件:%s"
+msgstr "未能克隆音轨 '%s'"
 
 #: src/gui/backend/tracklist_selections.c:774
 #, fuzzy, c-format
 msgid "Cannot solo tracks: %s"
-msgstr "当前独奏的音轨"
+msgstr "无法 solo 音轨：%s"
 
 #: src/gui/backend/tracklist_selections.c:775
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot unsolo tracks: %s"
-msgstr "当前独奏的音轨"
+msgstr "无法 unsolo 音轨：%s"
 
 #: src/gui/backend/tracklist_selections.c:803
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot mute tracks: %s"
-msgstr "当前静音的音轨"
+msgstr "无法将这些音轨静音：%s"
 
 #: src/gui/backend/tracklist_selections.c:804
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot unmute tracks: %s"
-msgstr "当前静音的音轨"
+msgstr "无法取消这些音轨的静音：%s"
 
 #: src/gui/backend/tracklist_selections.c:832
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot listen tracks: %s"
-msgstr "取消倾听所有音轨"
+msgstr "无法聆听音轨：%s"
 
 #: src/gui/backend/tracklist_selections.c:833
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot unlisten tracks: %s"
-msgstr "取消倾听所有音轨"
+msgstr "无法取消聆听音轨：%s"
 
 #: src/gui/backend/tracklist_selections.c:861
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot enable tracks: %s"
-msgstr "取消倾听所有音轨"
+msgstr "无法启用音轨：%s"
 
 #: src/gui/backend/tracklist_selections.c:862
 #, c-format
@@ -2729,29 +2717,25 @@ msgid "The track selection contains a track that cannot be deleted"
 msgstr ""
 
 #: src/gui/backend/tracklist_selections.c:930
-#, fuzzy
 msgid "Failed to delete tracks"
-msgstr "无法重置架构%s"
+msgstr "删除音轨失败"
 
 #: src/gui/backend/tracklist_selections.c:964
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to pin/unpin tracks: %s"
-msgstr "无法从指定的 URI 找到插件: %s"
+msgstr "未能固定/取消固定音轨：%s"
 
 #: src/gui/backend/tracklist_selections.c:1007
-#, fuzzy
 msgid "Failed to set direct out"
-msgstr "无法重置架构%s"
+msgstr "未能设置直接输出"
 
 #: src/gui/backend/tracklist_selections.c:1029
-#, fuzzy
 msgid "Failed to set color"
-msgstr "无法重置架构%s"
+msgstr "未能设置颜色"
 
 #: src/gui/backend/tracklist_selections.c:1065
-#, fuzzy
 msgid "Failed to copy track inside"
-msgstr "复制内部音轨"
+msgstr "未能复制内部音轨"
 
 #: src/utils/io.c:552
 #, c-format
@@ -2783,12 +2767,10 @@ msgid "Editor"
 msgstr "编辑器"
 
 #: src/utils/gtk.c:1292
-#, fuzzy
 msgid "Track Inspector"
 msgstr "音轨检查器"
 
 #: src/utils/gtk.c:1295
-#, fuzzy
 msgid "Plugin Inspector"
 msgstr "插件检查器"
 
@@ -2798,12 +2780,10 @@ msgid "Timeline"
 msgstr "时间线"
 
 #: src/utils/gtk.c:1311
-#, fuzzy
 msgid "MIDI CC Bindings"
 msgstr "MIDI CC 绑定"
 
 #: src/utils/gtk.c:1314
-#, fuzzy
 msgid "Port Connections"
 msgstr "端口连接"
 
@@ -2963,9 +2943,8 @@ msgid "Latch"
 msgstr "锁存器"
 
 #: src/audio/channel.c:2147
-#, fuzzy
 msgid "Failed to clone plugin"
-msgstr "无法从指定的 URI 找到插件: %s"
+msgstr "未能克隆插件"
 
 #: src/audio/channel_send.c:74
 #, c-format
@@ -3026,9 +3005,9 @@ msgid ""
 msgstr ""
 
 #: src/audio/exporter.c:797
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create audio track: %s"
-msgstr "无法写入文件:%s"
+msgstr "未能创建音轨：%s"
 
 #: src/audio/supported_file.c:311
 msgid "Failed opening file"
@@ -3130,28 +3109,25 @@ msgid "Lane %d"
 msgstr "通道%d"
 
 #: src/audio/track_lane.c:119
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to rename lane: %s"
-msgstr "无法打开文件:%s"
+msgstr "无法重命名 lane：%s"
 
 #: src/audio/audio_function.c:145
-#, fuzzy
 msgid "Failed to create plugin"
-msgstr "无法写入文件:%s"
+msgstr "未能创建插件"
 
 #: src/audio/audio_function.c:156 src/actions/mixer_selections_action.c:456
-#, fuzzy
 msgid "Failed to instantiate plugin"
-msgstr "启用/禁用插件"
+msgstr "未能实例化插件"
 
 #: src/audio/audio_function.c:391
 msgid "Invalid positions - skipping function"
 msgstr ""
 
 #: src/audio/audio_function.c:545
-#, fuzzy
 msgid "Failed to apply plugin"
-msgstr "无法从指定的 URI 找到插件: %s"
+msgstr "未能应用插件"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
@@ -3159,38 +3135,37 @@ msgid "ALSA Error: %s"
 msgstr "ALSA错误:%s"
 
 #: src/audio/sample_processor.c:630 src/actions/tracklist_selections.c:595
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin %s"
-msgstr "无法写入文件:%s"
+msgstr "未能创建插件 %s"
 
 #: src/audio/sample_processor.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to instantiate plugin %s"
-msgstr "无法从指定的 URI 找到插件: %s"
+msgstr "未能实例化插件 %s"
 
 #: src/audio/track.c:367
 msgid "Track record"
 msgstr "音轨录制"
 
 #: src/audio/track.c:493
-#, fuzzy
 msgid "Failed to clone channel"
-msgstr "无法查看架构%s"
+msgstr "未能克隆声道"
 
 #: src/audio/track.c:894
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set track muted: %s"
-msgstr "无法路由"
+msgstr "无法将此音轨设为静音：%s"
 
 #: src/audio/track.c:948
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set track folded: %s"
-msgstr "无法路由"
+msgstr "无法折叠此音轨：%s"
 
 #: src/audio/track.c:1485
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set track soloed: %s"
-msgstr "无法路由"
+msgstr "无法将此音轨状态设为 solo：%s"
 
 #: src/audio/track.c:1543
 #, c-format
@@ -3198,9 +3173,9 @@ msgid "Cannot set track listened: %s"
 msgstr ""
 
 #: src/audio/track.c:3116
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to rename track: %s"
-msgstr "无法重置架构%s"
+msgstr "未能重命名音轨：%s"
 
 #: src/audio/track.c:3412 src/audio/track.c:3466 src/audio/track.c:3512
 #, c-format
@@ -3397,7 +3372,7 @@ msgstr "设置控件值"
 #: src/actions/arranger_selections.c:599 src/actions/arranger_selections.c:615
 #, fuzzy
 msgid "Failed to apply audio function"
-msgstr "上次使用的音频功能"
+msgstr "未能应用音频功能"
 
 #: src/actions/arranger_selections.c:2807
 msgid "Create timeline selections"
@@ -3696,23 +3671,21 @@ msgid "Delete range"
 msgstr "删除区间"
 
 #: src/actions/tracklist_selections.c:278
-#, fuzzy, c-format
+#, c-format
 msgid "Failed getting contents for %s"
-msgstr "未能打开 %s 的 LV2 用户界面"
+msgstr "未能获取 %s 的内容"
 
 #: src/actions/tracklist_selections.c:316
-#, fuzzy
 msgid "No tracks selected"
-msgstr "未选择端口"
+msgstr "未选择音轨"
 
 #: src/actions/tracklist_selections.c:336
 msgid "Failed to clone tracklist selections"
 msgstr ""
 
 #: src/actions/tracklist_selections.c:358
-#, fuzzy
 msgid "Failed to clone track"
-msgstr "无法打开文件:%s"
+msgstr "未能克隆音轨"
 
 #: src/actions/tracklist_selections.c:387
 msgid "Failed to clone tracklist selections: "
@@ -3724,25 +3697,25 @@ msgid "%s Track"
 msgstr "%s音轨"
 
 #: src/actions/tracklist_selections.c:607
-#, fuzzy, c-format
+#, c-format
 msgid "Error instantiating plugin %s"
-msgstr "实例化插件%s时出错。有关详细信息，请参阅日志。"
+msgstr "实例化插件 %s 发生错误"
 
 #: src/actions/tracklist_selections.c:692
-#, fuzzy, c-format
+#, c-format
 msgid "Failed saving file %s"
-msgstr "未能打开文件"
+msgstr "未能保存文件 %s"
 
 #: src/actions/tracklist_selections.c:805
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track at %d"
-msgstr "无法重置架构%s"
+msgstr "未能于 %d 创建音轨"
 
 #: src/actions/tracklist_selections.c:854
 #: src/actions/tracklist_selections.c:1376
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clone track: %s"
-msgstr "无法打开文件:%s"
+msgstr "未能克隆音轨：%s"
 
 #: src/actions/tracklist_selections.c:1920
 #: src/actions/tracklist_selections.c:1936
@@ -3947,9 +3920,8 @@ msgid "Unpin %d Tracks"
 msgstr "取消固定 %d 道音轨"
 
 #: src/actions/undo_manager.c:124
-#, fuzzy
 msgid "Failed to perform action"
-msgstr "未能打开 %s 的 LV2 用户界面"
+msgstr "未能执行操作"
 
 #: src/guile/guile.c:40
 msgid "Script execution successful"
@@ -4351,9 +4323,8 @@ msgid "What did you do?"
 msgstr ""
 
 #: resources/ui/bug_report_dialog.ui:155
-#, fuzzy
 msgid "Other info"
-msgstr "查看信息"
+msgstr "其他信息"
 
 #: resources/ui/bug_report_dialog.ui:219
 msgid "Enter more context, what distro you use, etc."
@@ -5163,9 +5134,8 @@ msgid "First check for updates"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:270
-#, fuzzy
 msgid "Whether this is the first time attempting to check for updates."
-msgstr "不管这是不是第一次运行。"
+msgstr "这是否是第一次尝试检查更新。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:279
 msgid "Monitor volume"
@@ -6147,9 +6117,8 @@ msgid "Check for updates"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
-#, fuzzy
 msgid "Whether to check for updates."
-msgstr "音轨推子是否展开。"
+msgstr "是否检查更新。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:984
 msgid "UIs"
