@@ -138,7 +138,7 @@ lv2_ui_read_and_apply_events (
             ev.size) !=
           ev.size)
         {
-          g_warning (
+          g_critical (
             "Error reading from UI ring buffer");
           break;
         }
@@ -162,6 +162,7 @@ lv2_ui_read_and_apply_events (
             port, * (float *) body, 0, 0);
           port->received_ui_event = 1;
 
+#if 0
           /* note: should not be printing in the
            * realtime thread */
           g_debug (
@@ -171,6 +172,7 @@ lv2_ui_read_and_apply_events (
             port->id.label,
             (double) * (float *) body,
             have_custom_ui);
+#endif
         }
       else if (ev.protocol ==
                  PM_URIDS.atom_eventTransfer)
@@ -184,6 +186,7 @@ lv2_ui_read_and_apply_events (
             (const uint8_t*)
               LV2_ATOM_BODY_CONST(atom));
 
+#if 0
           /* note: should not be printing in the
            * realtime thread */
           g_debug (
@@ -192,10 +195,11 @@ lv2_ui_read_and_apply_events (
             __func__, plugin->plugin->setting->descr->name,
             port->id.label,
             have_custom_ui);
+#endif
         }
       else
         {
-          g_warning (
+          g_critical (
             "Unknown control change protocol %d",
             ev.protocol);
         }
@@ -218,11 +222,13 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
       lv2_plugin->plugin->instantiation_failed)
     return;
 
+#if 0
   g_debug ("%s: %s: %s (%d)",
     __func__,
     lv2_plugin->plugin->setting->descr->name,
     port->id.sym,
     port->lilv_port_index);
+#endif
 
   char buf[sizeof(Lv2ControlChange) +
     sizeof(float)];

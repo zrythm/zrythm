@@ -284,8 +284,7 @@ process_node (
         Track * track = node->track;
         if (!IS_TRACK (track))
           {
-            g_warn_if_reached ();
-            return;
+            g_return_if_reached ();
           }
         if (track->type != TRACK_TYPE_TEMPO &&
             track->type != TRACK_TYPE_MARKER)

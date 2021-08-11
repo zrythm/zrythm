@@ -476,8 +476,6 @@ void
 transport_request_roll (
   Transport * self)
 {
-  g_message ("requesting roll");
-
   if (!ZRYTHM_TESTING)
     {
       /* handle countin */
@@ -517,9 +515,11 @@ transport_request_roll (
           self->preroll_frames_remaining =
             self->playhead_pos.frames - pos.frames;
           transport_set_playhead_pos (self, &pos);
+#if 0
           g_debug (
             "preroll %ld frames",
             self->preroll_frames_remaining);
+#endif
         }
     }
 

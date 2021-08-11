@@ -958,7 +958,7 @@ midi_region_get_midi_ch (
       ret = track->midi_ch;
     }
 
-  g_warn_if_fail (ret > 0);
+  g_return_val_if_fail (ret > 0, 1);
 
   return ret;
 }

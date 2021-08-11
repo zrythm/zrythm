@@ -96,9 +96,10 @@ typedef struct EventManager
       _ev->lineno = __LINE__; \
       _ev->type = et; \
       _ev->arg = (void *) _arg; \
-      /* skip backtrace for now */ \
       if (zrythm_app->gtk_thread == \
-            g_thread_self () && false) \
+            g_thread_self ()  \
+          /* skip backtrace for now */ \
+          && false) \
         { \
           _ev->backtrace = \
             backtrace_get ("", 40, false); \

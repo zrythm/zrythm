@@ -299,6 +299,7 @@ position_add_seconds (
  *   track.
  * @param sg SnapGrid options.
  */
+NONNULL_ARGS (2)
 void
 position_snap (
   Position *       start_pos,

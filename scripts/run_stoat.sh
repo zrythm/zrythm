@@ -20,8 +20,11 @@
 
 set -e
 
+# add the following to get graph
+# -G stoat_results.png
+
 cd $MESON_BUILD_ROOT
 libstoat=$(whereis libstoat.so | awk -F": " '{ print $2 }')
 stoat --recursive . -l $libstoat \
-  -G stoat_results.png \
+  --suppression $MESON_SOURCE_ROOT/tools/stoat_suppressions.txt \
   --whitelist $MESON_SOURCE_ROOT/tools/stoat_whitelist.txt

@@ -220,8 +220,18 @@ Use the following to get a stoat report.
     CC=stoat-compile CXX=stoat-compile++ meson build
     ninja -C build run_stoat
 
+Realtime functions can be annoted as REALTIME or
+specified in the whitelist found in
+[tools/stoat_whitelist.txt](tools/stoat_whitelist.txt).
+Suppressions are found in
+[tools/stoat_suppressions.txt](tools/stoat_suppressions.txt).
+
 For more info see
 <https://github.com/fundamental/stoat>.
+
+# Cppcheck
+
+    ninja -C build cppcheck
 
 # Collecting Translations
 To collect all translatable filenames into

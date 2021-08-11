@@ -869,8 +869,8 @@ port_has_sound (
 NONNULL
 void
 port_get_full_designation (
-  Port * self,
-  char * buf);
+  Port * const self,
+  char *       buf);
 
 /**
  * Gathers all ports in the project and puts them
@@ -891,14 +891,14 @@ port_get_all (
 NONNULL
 Track *
 port_get_track (
-  const Port * self,
-  int          warn_if_fail);
+  const Port * const self,
+  int                warn_if_fail);
 
 NONNULL
 Plugin *
 port_get_plugin (
-  Port * self,
-  bool   warn_if_fail);
+  Port * const self,
+  const bool   warn_if_fail);
 
 /**
  * To be called when the port's identifier changes
@@ -923,8 +923,8 @@ port_update_identifier (
 NONNULL
 static inline int
 port_get_dest_index (
-  Port * self,
-  Port * dest)
+  const Port * const self,
+  const Port * const dest)
 {
   g_return_val_if_fail (
     IS_PORT (self) && IS_PORT (dest) &&
@@ -936,6 +936,7 @@ port_get_dest_index (
         return i;
     }
 
+#if 0
   char des_src[800];
   char des_dest[800];
   port_get_full_designation (dest, des_dest);
@@ -943,6 +944,7 @@ port_get_dest_index (
   g_critical (
     "failed to get dest index for port %s in %s",
     des_dest, des_src);
+#endif
   g_return_val_if_reached (-1);
 }
 
@@ -953,8 +955,8 @@ port_get_dest_index (
 NONNULL
 static inline int
 port_get_src_index (
-  Port * self,
-  Port * src)
+  const Port * const self,
+  const Port * const src)
 {
   g_return_val_if_fail (
     IS_PORT (self) && IS_PORT (src) &&

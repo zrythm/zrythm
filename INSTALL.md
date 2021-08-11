@@ -30,6 +30,15 @@ current configuration, use
 
     meson compile --clean -C build
 
+To change environment variables (such as `CC` and
+`CXX`) while keeping the current configuration, use
+
+    MY_ENV_VARIABLE=myvalue meson build --wipe
+
+To start from scratch, remove the `build` directory
+
+    rm -rf build
+
 *Hint: If your distro's meson package is too old,
 you can either install meson from
 [pip](https://pypi.org/project/pip/) or run

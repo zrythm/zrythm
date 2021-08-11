@@ -21,6 +21,7 @@
 #include "audio/engine.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
+#include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"

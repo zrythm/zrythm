@@ -444,7 +444,9 @@ automation_track_find_from_port (
 
                   Plugin * pl =
                     port_get_plugin (port, true);
-                  g_warn_if_fail (pl);
+                  g_return_val_if_fail (
+                    IS_PLUGIN_AND_NONNULL (pl),
+                    NULL);
 
                   if (pl->setting->descr->protocol ==
                         PROT_LV2)

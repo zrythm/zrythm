@@ -1133,12 +1133,30 @@ AutomationTracklist *
 track_get_automation_tracklist (Track * track);
 
 /**
- * Returns the channel of the track, if the track type has
- * a channel,
- * or NULL if it doesn't.
+ * Returns the channel of the track, if the track
+ * type has a channel, or NULL if it doesn't.
  */
-Channel *
-track_get_channel (Track * track);
+NONNULL
+static inline Channel *
+track_get_channel (
+  const Track * const track)
+{
+  switch (track->type)
+    {
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
+    case TRACK_TYPE_MIDI:
+    case TRACK_TYPE_CHORD:
+      return track->channel;
+    default:
+      return NULL;
+    }
+}
 
 /**
  * Updates the track's children.

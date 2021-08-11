@@ -180,8 +180,7 @@ curve_get_normalized_y (
       }
       break;
     default:
-      g_warn_if_reached ();
-      break;
+      g_return_val_if_reached (-1);
     }
   return val;
 }

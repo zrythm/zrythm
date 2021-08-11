@@ -30,6 +30,7 @@
 #include "audio/recording_manager.h"
 #include "audio/region.h"
 #include "audio/region_link_group_manager.h"
+#include "audio/router.h"
 #include "audio/stretcher.h"
 #include "audio/track.h"
 #include "gui/widgets/automation_region.h"
@@ -312,6 +313,8 @@ region_stretch (
       break;
     case REGION_TYPE_AUDIO:
       {
+        g_return_if_fail (
+          router_is_processing_thread (ROUTER));
         AudioClip * clip =
           audio_region_get_clip (self);
         int new_clip_id =

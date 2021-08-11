@@ -56,6 +56,10 @@ worker_thread (void * arg)
   Graph * graph = thread->graph;
   GraphNode* to_run = NULL;
 
+  /* initialize data for g_thread_self so no
+   * allocation is done later on */
+  g_thread_self ();
+
   g_message (
     "WORKER THREAD %d created (num threads %d)",
     thread->id, graph->num_threads);

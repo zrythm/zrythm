@@ -1083,6 +1083,7 @@ port_receive_midi_events_from_jack (
         }
     }
 
+#if 0
   if (self->midi_events->num_events > 0)
     {
       MidiEvent * ev =
@@ -1097,6 +1098,7 @@ port_receive_midi_events_from_jack (
         ev->time, ev->raw_buffer[0],
         ev->raw_buffer[1], ev->raw_buffer[2]);
     }
+#endif
 }
 
 void
@@ -2483,6 +2485,7 @@ port_sum_data_from_rtmidi (
         }
     }
 
+#if 0
   if (DEBUGGING &&
       self->midi_events->num_events > 0)
     {
@@ -2498,6 +2501,7 @@ port_sum_data_from_rtmidi (
         ev->time, ev->raw_buffer[0],
         ev->raw_buffer[1], ev->raw_buffer[2]);
     }
+#endif
 }
 
 /**
@@ -4227,8 +4231,8 @@ port_has_sound (
  */
 void
 port_get_full_designation (
-  Port * self,
-  char * buf)
+  Port * const self,
+  char *       buf)
 {
   const PortIdentifier * id = &self->id;
 
@@ -4353,8 +4357,8 @@ port_is_connection_locked (
 
 Track *
 port_get_track (
-  const Port * self,
-  int   warn_if_fail)
+  const Port * const self,
+  int                warn_if_fail)
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
 
@@ -4390,8 +4394,8 @@ port_get_track (
 
 Plugin *
 port_get_plugin (
-  Port * self,
-  bool   warn_if_fail)
+  Port * const self,
+  const bool   warn_if_fail)
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
 
@@ -4424,7 +4428,8 @@ port_get_plugin (
     }
 
   Plugin * pl = NULL;
-  PluginIdentifier * pl_id = &self->id.plugin_id;
+  const PluginIdentifier * const pl_id =
+    &self->id.plugin_id;
   switch (pl_id->slot_type)
     {
     case PLUGIN_SLOT_MIDI_FX:

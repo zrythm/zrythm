@@ -63,6 +63,9 @@ typedef enum MidiEventType
   MIDI_EVENT_TYPE_NOTE_OFF,
   MIDI_EVENT_TYPE_NOTE_ON,
   MIDI_EVENT_TYPE_ALL_NOTES_OFF,
+
+  /** Unknown type. */
+  MIDI_EVENT_TYPE_RAW,
 } MidiEventType;
 
 /**
@@ -102,6 +105,8 @@ typedef struct MidiEvent
 
   /** Raw MIDI data. */
   midi_byte_t    raw_buffer[3];
+
+  size_t         raw_buffer_sz;
 
 } MidiEvent;
 
@@ -343,6 +348,14 @@ midi_events_add_control_change (
   midi_byte_t  control,
   midi_time_t  time,
   int          queued);
+
+void
+midi_events_add_raw (
+  MidiEvents * self,
+  uint8_t *    buf,
+  size_t       buf_sz,
+  midi_time_t  time,
+  bool         queued);
 
 /**
  * Adds a control event to the given MidiEvents.

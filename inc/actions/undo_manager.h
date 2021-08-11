@@ -127,6 +127,9 @@ undo_manager_perform (
 #define UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR( \
   action,err,...) \
   { \
+  g_return_val_if_fail ( \
+    router_is_processing_thread (ROUTER) \
+    == false, false); \
   UndoableAction * ua = \
     action (__VA_ARGS__); \
   if (ua) \

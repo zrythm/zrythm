@@ -271,7 +271,8 @@ closest_snap_point (
  *
  * @return Whether a snap point was found or not.
  */
-static inline bool
+HOT
+static bool
 get_prev_snap_point (
   const Position * pos,
   Track *          track,
@@ -365,7 +366,8 @@ get_prev_snap_point (
  *
  * @return Whether a snap point was found or not.
  */
-static inline bool
+HOT
+static bool
 get_next_snap_point (
   const Position * pos,
   Track *          track,

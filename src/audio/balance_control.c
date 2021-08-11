@@ -47,7 +47,7 @@ balance_control_get_calc_lr (
         }
       break;
     default:
-      g_warning (
+      g_critical (
         "balance control algorithm not implemented "
         "yet");
       break;

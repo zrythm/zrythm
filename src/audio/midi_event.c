@@ -59,6 +59,41 @@ static const char * midi_event_type_strings[] =
 };
 
 /**
+ * Prints a message saying unknown event, with
+ * information about the given event.
+ */
+static void
+print_unknown_event_message (
+  uint8_t * buf,
+  const int buf_size)
+{
+  if (buf_size == 3)
+    {
+      g_message (
+        "Unknown MIDI event %#x %#x %#x"
+        " received", buf[0], buf[1], buf[2]);
+    }
+  else if (buf_size == 2)
+    {
+      g_message (
+        "Unknown MIDI event %#x %#x"
+        " received", buf[0], buf[1]);
+    }
+  else if (buf_size == 1)
+    {
+      g_message (
+        "Unknown MIDI event %#x"
+        " received", buf[0]);
+    }
+  else
+    {
+      g_message (
+        "Unknown MIDI event of size %d"
+        " received", buf_size);
+    }
+}
+
+/**
  * Appends the events from src to dest
  *
  * @param queued Append queued events instead of
@@ -489,14 +524,19 @@ midi_events_copy_to_jack (
     {
       ev = &self->events[i];
 
-      midi_data[0] = ev->raw_buffer[0];
-      midi_data[1] = ev->raw_buffer[1];
-      midi_data[2] = ev->raw_buffer[2];
+      for (size_t j = 0; j < ev->raw_buffer_sz;
+           j++)
+        {
+          midi_data[j] = ev->raw_buffer[j];
+        }
       jack_midi_event_write (
-        buff, ev->time, midi_data, 3);
+        buff, ev->time, midi_data,
+        ev->raw_buffer_sz);
+#if 0
       g_message (
         "wrote MIDI event to JACK MIDI out at %d",
         ev->time);
+#endif
     }
 }
 #endif
@@ -533,6 +573,45 @@ midi_events_add_note_off (
     (MIDI_CH1_NOTE_OFF | (channel - 1));
   ev->raw_buffer[1] = note_pitch;
   ev->raw_buffer[2] = 90;
+  ev->raw_buffer_sz = 3;
+
+  if (queued)
+    self->num_queued_events++;
+  else
+    self->num_events++;
+}
+
+void
+midi_events_add_raw (
+  MidiEvents * self,
+  uint8_t *    buf,
+  size_t       buf_sz,
+  midi_time_t  time,
+  bool         queued)
+{
+  if (buf_sz > 3)
+    {
+      print_unknown_event_message (buf, buf_sz);
+      g_return_if_reached ();
+    }
+
+  MidiEvent * ev;
+  if (queued)
+    ev =
+      &self->queued_events[self->num_queued_events];
+  else
+    ev =
+      &self->events[self->num_events];
+
+  ev->type = MIDI_EVENT_TYPE_RAW;
+  ev->channel = 0;
+  ev->controller = 0;
+  ev->control = 0;
+  ev->time = time;
+  for (size_t i = 0; i < buf_sz; i++)
+    {
+      ev->raw_buffer[i] = buf[i];
+    }
 
   if (queued)
     self->num_queued_events++;
@@ -573,6 +652,7 @@ midi_events_add_control_change (
     (MIDI_CH1_CTRL_CHANGE | (channel - 1));
   ev->raw_buffer[1] = controller;
   ev->raw_buffer[2] = control;
+  ev->raw_buffer_sz = 3;
 
   if (queued)
     self->num_queued_events++;
@@ -612,6 +692,7 @@ midi_events_add_pitchbend (
   midi_get_bytes_from_int (
     pitchbend + 8192, &ev->raw_buffer[1],
     &ev->raw_buffer[2]);
+  ev->raw_buffer_sz = 3;
 
   if (queued)
     self->num_queued_events++;
@@ -656,8 +737,9 @@ midi_events_sort (
       events = self->events;
       num_events = (size_t) self->num_events;
     }
-  qsort (events, num_events, sizeof (MidiEvent),
-         midi_event_cmpfunc);
+  qsort (
+    events, num_events, sizeof (MidiEvent),
+    midi_event_cmpfunc);
 }
 
 /**
@@ -700,6 +782,7 @@ midi_events_add_note_on (
     (MIDI_CH1_NOTE_ON | (channel - 1));
   ev->raw_buffer[1] = note_pitch;
   ev->raw_buffer[2] = velocity;
+  ev->raw_buffer_sz = 3;
 
   if (queued)
     self->num_queued_events++;
@@ -760,41 +843,6 @@ midi_events_add_note_offs_from_chord_descr (
 }
 
 /**
- * Prints a message saying unknown event, with
- * information about the given event.
- */
-static void
-print_unknown_event_message (
-  uint8_t * buf,
-  const int buf_size)
-{
-  if (buf_size == 3)
-    {
-      g_message (
-        "Unknown MIDI event %#x %#x %#x"
-        " received", buf[0], buf[1], buf[2]);
-    }
-  else if (buf_size == 2)
-    {
-      g_message (
-        "Unknown MIDI event %#x %#x"
-        " received", buf[0], buf[1]);
-    }
-  else if (buf_size == 1)
-    {
-      g_message (
-        "Unknown MIDI event %#x"
-        " received", buf[0]);
-    }
-  else
-    {
-      g_message (
-        "Unknown MIDI event of size %d"
-        " received", buf_size);
-    }
-}
-
-/**
  * Parses a MidiEvent from a raw MIDI buffer.
  *
  * This must be a full 3-byte message. If in
@@ -810,6 +858,7 @@ midi_events_add_event_from_buf (
   int           buf_size,
   int           queued)
 {
+#if 0
   if (buf_size != 3)
     {
       g_debug (
@@ -818,8 +867,8 @@ midi_events_add_event_from_buf (
         buf_size > 0 ? buf[0] : 0,
         buf_size > 1 ? buf[1] : 0,
         buf_size > 2 ? buf[2] : 0, buf_size);
-      return;
     }
+#endif
 
   midi_byte_t type = buf[0] & 0xf0;
   midi_byte_t channel =
@@ -850,8 +899,10 @@ note_off:
       /* ignore active sensing */
       if (buf[0] != 0xFE)
         {
+#if 0
           print_unknown_event_message (
             buf, buf_size);
+#endif
         }
       break;
     case MIDI_CH1_CTRL_CHANGE:
@@ -859,8 +910,8 @@ note_off:
         self, 1, buf[1], buf[2], time, queued);
       break;
     default:
-      print_unknown_event_message (
-        buf, buf_size);
+      midi_events_add_raw (
+        self, buf, (size_t) buf_size, time, queued);
       break;
     }
 }
@@ -911,18 +962,30 @@ void
 midi_event_print (
   const MidiEvent * ev)
 {
-  g_message (
+  char raw[300];
+  sprintf (raw, "Raw (%zu):", ev->raw_buffer_sz);
+  for (size_t i = 0; i < ev->raw_buffer_sz;
+       i++)
+    {
+      char part[20];
+      sprintf (
+        part, " %hhx", ev->raw_buffer[i]);
+      strcat (raw, part);
+    }
+
+  char msg[600];
+  sprintf (
+    msg,
     "~MIDI EVENT~\n"
     "Type: %s\n"
     "Channel: %u\n"
     "Pitch: %u\n"
     "Velocity: %u\n"
     "Time: %u\n"
-    "Raw: %hhx %hhx %hhx",
+    "%s",
     midi_event_type_strings[ev->type], ev->channel,
     ev->note_pitch,
-    ev->velocity, ev->time, ev->raw_buffer[0],
-    ev->raw_buffer[1], ev->raw_buffer[2]);
+    ev->velocity, ev->time, raw);
 }
 
 int
@@ -1000,8 +1063,10 @@ midi_events_clear_duplicates (
 
           if (midi_events_are_equal (ev1, ev2))
             {
+#if 0
               g_message (
                 "removing duplicate MIDI event");
+#endif
               for (k = j; k < NUM_EVENTS; k++)
                 {
                   midi_event_copy (

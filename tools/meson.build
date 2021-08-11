@@ -78,6 +78,7 @@ if jq.found ()
       cppcheck_targets += custom_target (
         name,
         output: name,
+        depends: [ config_h_vcs ],
         command: [
           cppcheck,
           '--project=' + meson_build_root / 'compile_commands.json',
@@ -96,6 +97,7 @@ if jq.found ()
       clang_tidy_targets += custom_target (
         name,
         output: name,
+        depends: [ config_h_vcs ],
         command: [
           run_clang_tidy, clang_tidy.full_path (),
           meson_build_root, '@PRIVATE_DIR@',
