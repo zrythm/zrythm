@@ -389,11 +389,13 @@ xrun_cb (
   if (cur_time - self->last_xrun_notification >
         6000000)
     {
-      /* FIXME make a notification message queue */
+      /* TODO make a notification message queue */
+#if 0
       g_message (
         "%s",
         _("XRUN occurred - check your JACK "
         "configuration"));
+#endif
       self->last_xrun_notification = cur_time;
     }
 
