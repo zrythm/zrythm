@@ -464,6 +464,14 @@ arranger_object_get_name (
   ArrangerObject * self);
 
 /**
+ * Generates the escaped name for the object,
+ * where applicable.
+ */
+void
+arranger_object_gen_escaped_name (
+  ArrangerObject * self);
+
+/**
  * Sets the dest object's values to the main
  * src object's values.
  */
@@ -842,8 +850,7 @@ arranger_object_add_ticks_to_children (
  */
 #define _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
   _obj,_val_name,_val_value) \
-  if (_obj->_val_name) \
-    g_free (_obj->_val_name); \
+  g_free_and_null (_obj->_val_name); \
   _obj->_val_name = g_strdup (_val_value)
 
 /**

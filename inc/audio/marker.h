@@ -85,6 +85,9 @@ typedef struct Marker
   /** Name of Marker to be displayed in the UI. */
   char *            name;
 
+  /** Escaped name for drawing. */
+  char *            escaped_name;
+
   /** Position of the marker track this marker is
    * in. */
   int               track_pos;

@@ -44,6 +44,9 @@ marker_new (
 
   arranger_object_init (obj);
 
+  arranger_object_gen_escaped_name (
+    (ArrangerObject *) self);
+
   return self;
 }
 

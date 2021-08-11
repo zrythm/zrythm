@@ -959,6 +959,14 @@ init_loaded_chord_object (
 }
 
 static void
+init_loaded_marker (
+  Marker * self)
+{
+  arranger_object_gen_escaped_name (
+    (ArrangerObject *) self);
+}
+
+static void
 init_loaded_region (
   ZRegion * self)
 {
@@ -1019,6 +1027,9 @@ init_loaded_region (
       break;
     }
 
+  arranger_object_gen_escaped_name (
+    (ArrangerObject *) self);
+
   region_validate (self, false);
 }
 
@@ -1054,6 +1065,9 @@ arranger_object_init_loaded (
     case TYPE (CHORD_OBJECT):
       init_loaded_chord_object (
         (ChordObject *) self);
+      break;
+    case TYPE (MARKER):
+      init_loaded_marker ((Marker *) self);
       break;
     default:
       /* nothing needed */
@@ -2234,6 +2248,8 @@ clone_region (
 
   /* clone name */
   new_region->name = g_strdup (region->name);
+  arranger_object_gen_escaped_name (
+    (ArrangerObject *) new_region);
 
   /* set track to NULL and remember track pos */
   region_identifier_copy (
@@ -2269,6 +2285,35 @@ arranger_object_get_name (
       break;
     }
   return NULL;
+}
+
+/**
+ * Generates the escaped name for the object,
+ * where applicable.
+ */
+void
+arranger_object_gen_escaped_name (
+  ArrangerObject * self)
+{
+  switch (self->type)
+    {
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        ZRegion * r = (ZRegion *) self;
+        r->escaped_name =
+          g_markup_escape_text (r->name, -1);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        Marker * m = (Marker *) self;
+        m->escaped_name =
+          g_markup_escape_text (m->name, -1);
+      }
+      break;
+    default:
+      break;
+    }
 }
 
 static ArrangerObject *
@@ -2829,12 +2874,24 @@ arranger_object_set_name (
       {
         arranger_object_set_string (
           Marker, self, name, name);
+        char * escaped_name =
+          g_markup_escape_text (name, -1);
+        arranger_object_set_string (
+          Marker, self, escaped_name,
+          escaped_name);
+        g_free (escaped_name);
       }
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
       {
         arranger_object_set_string (
           ZRegion, self, name, name);
+        char * escaped_name =
+          g_markup_escape_text (name, -1);
+        arranger_object_set_string (
+          ZRegion, self, escaped_name,
+          escaped_name);
+        g_free (escaped_name);
       }
       break;
     default:
@@ -3362,6 +3419,7 @@ free_region (
     }
 
   g_free_and_null (self->name);
+  g_free_and_null (self->escaped_name);
   if (G_IS_OBJECT (self->layout))
     {
       object_free_w_func_and_null (
@@ -3408,7 +3466,8 @@ arranger_object_free (
     case TYPE (MARKER):
       {
         Marker * marker = (Marker *) self;
-        g_free (marker->name);
+        g_free_and_null (marker->name);
+        g_free_and_null (marker->escaped_name);
         object_zero_and_free (marker);
       }
       return;

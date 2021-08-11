@@ -112,6 +112,9 @@ typedef struct ZRegion
   /** Name to be shown on the widget. */
   char *          name;
 
+  /** Escaped name for drawing. */
+  char *          escaped_name;
+
   /**
    * TODO region color independent of track.
    *

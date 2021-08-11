@@ -75,14 +75,14 @@ marker_track_default (
   /* add start and end markers */
   Marker * marker;
   Position pos;
-  marker = marker_new (_("↦ start"));
+  marker = marker_new (_("start"));
   ArrangerObject * m_obj =
     (ArrangerObject *) marker;
   position_set_to_bar (&pos, 1);
   arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_START;
   marker_track_add_marker (self, marker);
-  marker = marker_new (_("⇤ end"));
+  marker = marker_new (_("end"));
   m_obj =
     (ArrangerObject *) marker;
   position_set_to_bar (&pos, 129);

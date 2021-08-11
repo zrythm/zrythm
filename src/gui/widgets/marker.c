@@ -96,8 +96,7 @@ marker_draw (
     obj->full_rect.height, 1, 4);
   cairo_fill (cr);
 
-  char str[100];
-  sprintf (str, "%s", self->name);
+  g_return_if_fail (self->escaped_name);
 
   GdkRGBA c2;
   ui_get_contrast_color (&color, &c2);
@@ -109,5 +108,6 @@ marker_draw (
     (obj->full_rect.y + MARKER_NAME_PADDING) -
       rect->y);
   z_cairo_draw_text (
-    cr, GTK_WIDGET (arranger), self->layout, str);
+    cr, GTK_WIDGET (arranger), self->layout,
+    self->escaped_name);
 }

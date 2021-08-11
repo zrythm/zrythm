@@ -1407,20 +1407,7 @@ draw_name (
     return;
 
   g_return_if_fail (
-    self && self->name);
-
-  char str[200];
-  strcpy (str, self->name);
-
-  if (DEBUGGING)
-    {
-      ZRegion * clip_editor_region =
-        clip_editor_get_region (CLIP_EDITOR);
-      if (clip_editor_region == self)
-        {
-          strcat (str, " (CLIP EDITOR)");
-        }
-    }
+    self && self->escaped_name);
 
   int full_width = full_rect->width;
 
@@ -1429,8 +1416,24 @@ draw_name (
     self,
     MIN (full_width, 800));
   PangoLayout * layout = self->layout;
-  pango_layout_set_text (
-    layout, str, -1);
+  if (DEBUGGING)
+    {
+      char str[200];
+      strcpy (str, self->escaped_name);
+      ZRegion * clip_editor_region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (clip_editor_region == self)
+        {
+          strcat (str, " (CLIP EDITOR)");
+        }
+      pango_layout_set_text (
+        layout, str, -1);
+    }
+  else
+    {
+      pango_layout_set_text (
+        layout, self->escaped_name, -1);
+    }
   PangoRectangle pangorect;
   /* get extents */
   pango_layout_get_pixel_extents (
