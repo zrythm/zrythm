@@ -485,17 +485,6 @@ channel_reconnect_ext_input_ports (
   Channel * ch);
 
 /**
- * Connects or disconnects the MIDI editor key press port to the channel's
- * first plugin
- */
-NONNULL
-void
-channel_reattach_midi_editor_manual_press_port (
-  Channel * channel,
-  int       connect,
-  const int recalc_graph);
-
-/**
  * Convenience function to get the automation track
  * of the given type for the channel.
  */

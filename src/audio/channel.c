@@ -2066,33 +2066,6 @@ channel_update_track_pos (
 }
 
 /**
- * Connects or disconnects the MIDI editor key press
- * port to the channel's input.
- *
- * @param connect Connect or not.
- */
-void
-channel_reattach_midi_editor_manual_press_port (
-  Channel * channel,
-  int       connect,
-  const int recalc_graph)
-{
-  Track * track = channel_get_track (channel);
-  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-  if (connect)
-    port_connect (
-      AUDIO_ENGINE->midi_editor_manual_press,
-      track->processor->midi_in, 1);
-  else
-    port_disconnect (
-      AUDIO_ENGINE->midi_editor_manual_press,
-      track->processor->midi_in);
-
-  if (recalc_graph)
-    router_recalc_graph (ROUTER, F_NOT_SOFT);
-}
-
-/**
  * Convenience function to get the automation track
  * of the given type for the channel.
  */

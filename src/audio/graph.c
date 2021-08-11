@@ -446,7 +446,8 @@ add_port (
     owner != PORT_OWNER_TYPE_BACKEND &&
     owner != PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
     owner != PORT_OWNER_TYPE_HW &&
-    owner != PORT_OWNER_TYPE_TRANSPORT)
+    owner != PORT_OWNER_TYPE_TRANSPORT &&
+    !(port->id.flags & PORT_FLAG_MANUAL_PRESS))
     {
       return NULL;
     }
@@ -784,6 +785,13 @@ graph_setup (
         graph_find_node_from_port (self, port);
       graph_node_connect (hw_processor_node, node2);
     }
+
+  /* connect MIDI editor manual press */
+  node2 =
+    graph_find_node_from_port (
+      self, AUDIO_ENGINE->midi_editor_manual_press);
+  graph_node_connect (
+    node2, initial_processor_node);
 
   /* connect the transport ports */
   node2 =

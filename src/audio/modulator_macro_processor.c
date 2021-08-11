@@ -68,6 +68,7 @@ modulator_macro_processor_process (
   else
     {
       Port * cv_out = self->cv_out;
+      g_return_if_fail (IS_PORT (cv_out));
       dsp_fill (
         &cv_out->buf[start_frame],
         self->macro->control *

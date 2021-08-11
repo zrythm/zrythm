@@ -537,10 +537,17 @@ typedef struct AudioEngine
   int               trigger_midi_activity;
 
   /**
-   * Manual note press in the piano roll.
+   * Manual note press events from the piano roll.
    *
-   * This should route to the post MIDI in of the
-   * applicable channel.
+   * The events from here should be read by the
+   * corresponding track processor's MIDI in port
+   * (TrackProcessor.midi_in). To avoid having to
+   * recalculate the graph to reattach this port
+   * to the correct track processor, only connect
+   * this port to the initial processor in the
+   * routing graph and fetch the events manually
+   * when processing the corresponding track
+   * processor.
    */
   Port *            midi_editor_manual_press;
 

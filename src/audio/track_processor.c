@@ -1024,6 +1024,42 @@ track_processor_process (
 #endif
     } /* if has piano roll or is chord track */
 
+  /* if currently active track on the piano roll,
+   * fetch events */
+  if (tr->in_signal_type == TYPE_EVENT
+      && CLIP_EDITOR->has_region)
+    {
+      Track * clip_editor_track =
+        clip_editor_get_track (CLIP_EDITOR);
+      if (clip_editor_track == tr)
+        {
+          /* if not set to "all channels",
+           * filter-append */
+          if (!tr->channel->all_midi_channels)
+            {
+              midi_events_append_w_filter (
+                AUDIO_ENGINE->
+                  midi_editor_manual_press->
+                    midi_events,
+                self->midi_in->midi_events,
+                tr->channel->midi_channels,
+                local_offset,
+                nframes, F_NOT_QUEUED);
+            }
+          /* otherwise append normally */
+          else
+            {
+              midi_events_append (
+                AUDIO_ENGINE->
+                  midi_editor_manual_press->
+                    midi_events,
+                self->midi_in->midi_events,
+                local_offset, nframes,
+                F_NOT_QUEUED);
+            }
+        }
+    }
+
   /* add inputs to outputs */
   switch (tr->in_signal_type)
     {

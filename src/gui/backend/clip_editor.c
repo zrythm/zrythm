@@ -70,46 +70,6 @@ clip_editor_set_region (
   ZRegion *    region,
   bool         fire_events)
 {
-  int recalc_graph = 0;
-  if (self->has_region)
-    {
-      g_message (
-        "unsetting clip editor region at track %d",
-        self->region_id.track_pos);
-      if (self->region_id.type == REGION_TYPE_MIDI)
-        {
-          Track * track =
-            TRACKLIST->tracks[
-              self->region_id.track_pos];
-          channel_reattach_midi_editor_manual_press_port (
-            track_get_channel (track),
-            F_NO_CONNECT, F_NO_RECALC_GRAPH);
-          recalc_graph = 1;
-        }
-    }
-  if (region) /* new region exists */
-    {
-      g_message (
-        "setting new clip editor region to '%s'...",
-        region->name);
-      if (region->id.type == REGION_TYPE_MIDI)
-        {
-          Track * track =
-            arranger_object_get_track (
-              (ArrangerObject *) region);
-          channel_reattach_midi_editor_manual_press_port (
-            track_get_channel (track),
-            F_CONNECT, F_NO_RECALC_GRAPH);
-          recalc_graph = 1;
-        }
-    }
-  else /* new region is NULL */
-    {
-    }
-
-  if (recalc_graph)
-    router_recalc_graph (ROUTER, F_NOT_SOFT);
-
   /* if first time showing a region, show the
    * event viewer as necessary */
   if (fire_events && !self->has_region && region)
@@ -117,6 +77,19 @@ clip_editor_set_region (
       EVENTS_PUSH (
         ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED,
         NULL);
+    }
+
+  /*
+   * block until current DSP cycle finishes to
+   * avoid potentially sending the events to
+   * multiple tracks
+   */
+  if (ROUTER && engine_get_run (AUDIO_ENGINE))
+    {
+      g_debug (
+        "clip editor region changed, waiting for "
+        "graph access to make the change");
+      zix_sem_wait (&ROUTER->graph_access);
     }
 
   if (region)
@@ -132,14 +105,19 @@ clip_editor_set_region (
 
   self->region_changed = 1;
 
+  if (ROUTER && engine_get_run (AUDIO_ENGINE))
+    {
+      zix_sem_post (&ROUTER->graph_access);
+      g_debug (
+        "clip editor region successfully changed");
+    }
+
   if (fire_events && ZRYTHM_HAVE_UI &&
       MAIN_WINDOW && MW_CLIP_EDITOR)
     {
       clip_editor_widget_on_region_changed (
         MW_CLIP_EDITOR);
     }
-  /*EVENTS_PUSH (*/
-    /*ET_CLIP_EDITOR_REGION_CHANGED, NULL);*/
 }
 
 /**

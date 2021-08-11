@@ -599,7 +599,50 @@ channel_send_is_enabled (
   g_return_val_if_fail (
     IS_PORT_AND_NONNULL (self->enabled), false);
 
-  return control_port_is_toggled (self->enabled);
+  bool enabled =
+    control_port_is_toggled (self->enabled);
+
+  /* if plugin instantiation failed, assume that
+   * the send is disabled */
+  Track * owner = channel_send_get_track (self);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (owner), false);
+  if (enabled)
+    {
+      switch (owner->out_signal_type)
+        {
+        case TYPE_AUDIO:
+          if (self->dest_l_id.owner_type
+              == PORT_OWNER_TYPE_PLUGIN)
+            {
+              Plugin * pl =
+                plugin_find (
+                  &self->dest_l_id.plugin_id);
+              if (pl->instantiation_failed)
+                {
+                  enabled = false;
+                }
+            }
+          break;
+        case TYPE_EVENT:
+          if (self->dest_midi_id.owner_type
+              == PORT_OWNER_TYPE_PLUGIN)
+            {
+              Plugin * pl =
+                plugin_find (
+                  &self->dest_midi_id.plugin_id);
+              if (pl->instantiation_failed)
+                {
+                  enabled = false;
+                }
+            }
+          break;
+        default:
+          break;
+        }
+    }
+
+  return enabled;
 }
 
 ChannelSendWidget *
