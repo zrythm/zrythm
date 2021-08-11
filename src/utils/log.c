@@ -71,6 +71,19 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
+#include <zstd.h>
+
+typedef enum
+{
+  Z_UTILS_LOG_ERROR_FAILED,
+} ZUtilsLogError;
+
+#define Z_UTILS_LOG_ERROR \
+  z_utils_log_error_quark ()
+GQuark z_utils_log_error_quark (void);
+G_DEFINE_QUARK (
+  z-utils-log-error-quark, z_utils_log_error)
+
 /** This is declared extern in log.h. */
 Log * zlog = NULL;
 
@@ -1198,6 +1211,82 @@ g_parse_debug_envvar (const gchar     *envvar,
   return
     g_parse_debug_string (
       value, keys, (guint) n_keys);
+}
+
+/**
+ * Generates a compressed log file (for sending with
+ * bug reports).
+ *
+ * @return Whether successful.
+ */
+bool
+log_generate_compressed_file (
+  Log *     self,
+  char **   ret_dir,
+  char **   ret_path,
+  GError ** error)
+{
+  g_return_val_if_fail (
+    *ret_dir == NULL && *ret_path == NULL, false);
+
+  GError * err = NULL;
+  char * log_file_tmpdir =
+    g_dir_make_tmp (
+      "zrythm-log-file-XXXXXX", &err);
+  if (!log_file_tmpdir)
+    {
+      g_set_error_literal (
+        error, Z_UTILS_LOG_ERROR,
+        Z_UTILS_LOG_ERROR_FAILED,
+        "Failed to create temporary dir");
+      return false;
+    }
+
+  /* get zstd-compressed text */
+  char * log_txt =
+    log_get_last_n_lines (LOG, 40000);
+  size_t log_txt_sz = strlen (log_txt);
+  size_t compress_bound =
+    ZSTD_compressBound (log_txt_sz);
+  char * dest = malloc (compress_bound);
+  size_t dest_size =
+    ZSTD_compress (
+      dest, compress_bound,
+      log_txt, log_txt_sz, 1);
+  if (ZSTD_isError (dest_size))
+    {
+      free (dest);
+
+      g_set_error (
+        error, Z_UTILS_LOG_ERROR,
+        Z_UTILS_LOG_ERROR_FAILED,
+        "Failed to compress log text: %s",
+        ZSTD_getErrorName (dest_size));
+
+      g_free (log_file_tmpdir);
+      return false;
+    }
+
+  /* write to dest file */
+  char * dest_filepath =
+    g_build_filename (
+      log_file_tmpdir, "log.txt.zst", NULL);
+  bool ret =
+    g_file_set_contents (
+      dest_filepath, dest, (gssize) dest_size,
+      error);
+  g_free (dest);
+  if (!ret)
+    {
+      g_free (log_file_tmpdir);
+      g_free (dest_filepath);
+      return false;
+    }
+
+  *ret_dir = log_file_tmpdir;
+  *ret_path = dest_filepath;
+
+  return true;
 }
 
 /**

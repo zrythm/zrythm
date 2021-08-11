@@ -132,6 +132,20 @@ log_get_last_n_lines (
   int   n);
 
 /**
+ * Generates a compressed log file (for sending with
+ * bug reports).
+ *
+ * @return Whether successful.
+ */
+NONNULL_ARGS (1,2,3)
+bool
+log_generate_compressed_file (
+  Log *     self,
+  char **   ret_dir,
+  char **   ret_path,
+  GError ** error);
+
+/**
  * Initializes logging to a file.
  *
  * This can be called from any thread.

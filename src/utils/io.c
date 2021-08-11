@@ -526,35 +526,6 @@ io_get_next_available_filepath (
   return new_path;
 }
 
-/**
- * Writes \ref content to \ref file.
- *
- * If an error occurred, a string containing the
- * error info is returned.
- */
-char *
-io_write_file (
-  const char * file,
-  const char * content,
-  size_t       content_size)
-{
-  GError *err = NULL;
-  g_file_set_contents (
-    file, content,
-    (gssize) content_size, &err);
-  if (err)
-    {
-      char err_msg[800];
-      strcpy (err_msg, err->message);
-      g_error_free (err);
-      return
-        g_strdup_printf (
-          _("Failed to write file: %s"),
-          err_msg);
-    }
-  return NULL;
-}
-
 /* fallback for glib < 2.58 */
 #if !defined (GLIB_SUBPROJECT) && \
   !defined (HAVE_G_CANONICALIZE_FILENAME)

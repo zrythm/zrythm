@@ -64,8 +64,10 @@ z_curl_get_page_contents_default (
  * authentication.
  *
  * @param timeout Timeout, in seconds.
- * @param filepath Optional file to send as
- *   multi-part.
+ * @param ... Optional files to send as
+ *   multi-part mime objects. Each object must
+ *   contain 3 strings: name, filepath, mimetype.
+ *   The list must end in NULL.
  *
  * @return Non-zero if error.
  */
@@ -73,9 +75,9 @@ int
 z_curl_post_json_no_auth (
   const char * url,
   const char * data,
-  const char * filepath,
   int          timeout,
-  GError **    error);
+  GError **    error,
+  ...) G_GNUC_NULL_TERMINATED;
 
 /**
  * @}

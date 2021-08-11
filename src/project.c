@@ -76,9 +76,10 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
-#include "utils/general.h"
+#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/flags.h"
+#include "utils/general.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -89,6 +90,17 @@
 #include <glib/gi18n.h>
 
 #include <zstd.h>
+
+typedef enum
+{
+  Z_PROJECT_ERROR_FAILED,
+} ZProjectError;
+
+#define Z_PROJECT_ERROR \
+  z_project_error_quark ()
+GQuark z_project_error_quark (void);
+G_DEFINE_QUARK (
+  z-project-error-quark, z_project_error)
 
 static void
 init_common (
@@ -103,17 +115,17 @@ init_common (
  *
  * @param compress True to compress, false to
  *   decompress.
- * @param[out] dest Pointer to a location to allocate
+ * @param[out] _dest Pointer to a location to allocate
  *   memory.
- * @param[out] dest_size Pointer to a location to
+ * @param[out] _dest_size Pointer to a location to
  *   store the size of the allocated memory.
- * @param src Input buffer or filepath.
- * @param src_size Input buffer size, if not
+ * @param _src Input buffer or filepath.
+ * @param _src_size Input buffer size, if not
  *   filepath.
  *
- * @return Error message if error, otherwise NULL.
+ * @return Whether successful.
  */
-char *
+bool
 _project_compress (
   bool                   compress,
   char **                _dest,
@@ -121,7 +133,8 @@ _project_compress (
   ProjectCompressionFlag dest_type,
   const char *           _src,
   const size_t           _src_size,
-  ProjectCompressionFlag src_type)
+  ProjectCompressionFlag src_type,
+  GError **              error)
 {
   g_message (
     "using zstd v%d.%d.%d",
@@ -139,18 +152,12 @@ _project_compress (
       break;
     case PROJECT_COMPRESS_FILE:
       {
-        GError *err = NULL;
-        g_file_get_contents (
-          _src, &src, &src_size, &err);
-        if (err)
+        bool ret =
+          g_file_get_contents (
+            _src, &src, &src_size, error);
+        if (!ret)
           {
-            char err_msg[800];
-            strcpy (err_msg, err->message);
-            g_error_free (err);
-            return
-              g_strdup_printf (
-                _("Failed to open file: %s"),
-                err_msg);
+            return false;
           }
       }
       break;
@@ -171,10 +178,13 @@ _project_compress (
       if (ZSTD_isError (dest_size))
         {
           free (dest);
-          return
-            g_strdup_printf (
-              "Failed to compress project file: %s",
-              ZSTD_getErrorName (dest_size));
+
+          g_set_error (
+            error, Z_PROJECT_ERROR,
+            Z_PROJECT_ERROR_FAILED,
+            "Failed to compress project file: %s",
+            ZSTD_getErrorName (dest_size));
+          return false;
         }
     }
   else /* decompress */
@@ -191,9 +201,11 @@ _project_compress (
             ZSTD_CONTENTSIZE_ERROR)
 #endif
         {
-          return
-            g_strdup (
-              _("Project not compressed by zstd"));
+          g_set_error_literal (
+            error, Z_PROJECT_ERROR,
+            Z_PROJECT_ERROR_FAILED,
+            "Project not compressed by zstd");
+          return false;
         }
       dest =
         malloc ((size_t) frame_content_size);
@@ -204,21 +216,26 @@ _project_compress (
       if (ZSTD_isError (dest_size))
         {
           free (dest);
-          return
-            g_strdup_printf (
-              _("Failed to decompress project "
-              "file: %s"),
-              ZSTD_getErrorName (dest_size));
+
+          g_set_error (
+            error, Z_PROJECT_ERROR,
+            Z_PROJECT_ERROR_FAILED,
+            "Failed to decompress project file: %s",
+            ZSTD_getErrorName (dest_size));
+          return false;
         }
       if (dest_size != frame_content_size)
         {
           free (dest);
+
           /* impossible because zstd will check
            * this condition */
-          return
-            g_strdup (
-              "uncompressed_size != "
-              "frame_content_size");
+          g_set_error_literal (
+            error, Z_PROJECT_ERROR,
+            Z_PROJECT_ERROR_FAILED,
+            "uncompressed_size != "
+            "frame_content_size");
+          return false;
         }
     }
 
@@ -236,14 +253,17 @@ _project_compress (
       break;
     case PROJECT_COMPRESS_FILE:
       {
-        char * err_msg =
-          io_write_file (*_dest, dest, dest_size);
-        return err_msg;
+        bool ret =
+          g_file_set_contents (
+            *_dest, dest, (gssize) dest_size,
+            error);
+        if (!ret)
+          return false;
       }
       break;
     }
 
-  return NULL;
+  return true;
 }
 
 /**
@@ -906,21 +926,19 @@ project_get_existing_yaml (
     "%s: decompressing project...", __func__);
   char * yaml = NULL;
   size_t yaml_size;
-  char * error_msg =
+  err = NULL;
+  bool ret =
     project_decompress (
       &yaml, &yaml_size,
       PROJECT_DECOMPRESS_DATA,
       compressed_pj, compressed_pj_size,
-      PROJECT_DECOMPRESS_DATA);
+      PROJECT_DECOMPRESS_DATA, &err);
   g_free (compressed_pj);
-  if (error_msg)
+  if (!ret)
     {
-      g_warning (
-        "Failed to decompress project file: %s",
-        error_msg);
-      ui_show_error_message (
-        MAIN_WINDOW, error_msg);
-      g_free (error_msg);
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to decompress project file"));
       return NULL;
     }
 
@@ -1550,8 +1568,8 @@ serialize_project_thread (
   ProjectSaveData * data)
 {
   char * compressed_yaml;
-  char * error_msg;
   size_t compressed_size;
+  bool ret;
 
   /* generate yaml */
   g_message ("serializing project to yaml...");
@@ -1572,21 +1590,19 @@ serialize_project_thread (
     }
 
   /* compress */
-  error_msg =
+  err = NULL;
+  ret =
     project_compress (
       &compressed_yaml, &compressed_size,
       PROJECT_COMPRESS_DATA,
       yaml, strlen (yaml) * sizeof (char),
-      PROJECT_COMPRESS_DATA);
+      PROJECT_COMPRESS_DATA, &err);
   g_free (yaml);
-  if (error_msg)
+  if (!ret)
     {
-      g_critical (
-        "Failed to compress project file: %s",
-        error_msg);
-      ui_show_error_message (
-        MAIN_WINDOW, error_msg);
-      g_free (error_msg);
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to compress project file"));
       data->has_error = true;
       goto serialize_end;
     }

@@ -1626,47 +1626,48 @@ convert_project (
 
   char * output;
   size_t output_size;
-  char * err_msg = NULL;
+  GError * err = NULL;
+  bool ret;
   if (compress)
     {
       verify_output_exists (self);
 
-      err_msg =
+      ret =
         project_compress (
           &self->output_file, NULL,
           PROJECT_COMPRESS_FILE,
           file_to_convert, 0,
-          PROJECT_COMPRESS_FILE);
+          PROJECT_COMPRESS_FILE, &err);
     }
   else
     {
       if (self->output_file)
         {
-          err_msg =
+          ret =
             project_decompress (
               &self->output_file, NULL,
               PROJECT_DECOMPRESS_FILE,
               file_to_convert, 0,
-              PROJECT_DECOMPRESS_FILE);
+              PROJECT_DECOMPRESS_FILE, &err);
         }
       else
         {
-          err_msg =
+          ret =
             project_decompress (
               &output, &output_size,
               PROJECT_DECOMPRESS_DATA,
               file_to_convert, 0,
-              PROJECT_DECOMPRESS_FILE);
+              PROJECT_DECOMPRESS_FILE, &err);
         }
     }
 
-  if (err_msg)
+  if (!ret)
     {
       fprintf (
         stderr,
         _("Project failed to decompress: %s\n"),
-        err_msg);
-      g_free (err_msg);
+        err->message);
+      g_error_free (err);
       exit (EXIT_FAILURE);
     }
   else

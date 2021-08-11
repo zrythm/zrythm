@@ -185,8 +185,10 @@ static size_t read_callback(char *dest, size_t size, size_t nmemb, void *userp)
  * authentication.
  *
  * @param timeout Timeout, in seconds.
- * @param filepath Optional file to send as
- *   multi-part.
+ * @param ... Optional files to send as
+ *   multi-part mime objects. Each object must
+ *   contain 3 strings: name, filepath, mimetype.
+ *   The list must end in NULL.
  *
  * @return Non-zero if error.
  */
@@ -194,9 +196,9 @@ int
 z_curl_post_json_no_auth (
   const char * url,
   const char * data,
-  const char * filepath,
   int          timeout,
-  GError **    error)
+  GError **    error,
+  ...)
 {
   g_return_val_if_fail (
     url == NULL || data == NULL
@@ -277,17 +279,28 @@ z_curl_post_json_no_auth (
   curl_mime_data (
     json_part, data, CURL_ZERO_TERMINATED);
 
-  /* add file */
-  if (filepath)
+  /* add files */
+  va_list args;
+  va_start (args, error);
+  while (true)
     {
+      const char * mime_name =
+        va_arg (args, const char *);
+      if (!mime_name)
+        break;
+      const char * filepath =
+        va_arg (args, const char *);
+      const char * mimetype =
+        va_arg (args, const char *);
+
       /* Fill in the file upload field */
-      curl_mimepart * screenshot_part =
+      curl_mimepart * part =
         curl_mime_addpart (mime);
-      curl_mime_name (screenshot_part, "screenshot");
-      curl_mime_type (
-        screenshot_part, "image/jpeg");
-      curl_mime_filedata (screenshot_part, filepath);
+      curl_mime_name (part, mime_name);
+      curl_mime_type (part, mimetype);
+      curl_mime_filedata (part, filepath);
     }
+  va_end (args);
 
   curl_easy_setopt (
     curl, CURLOPT_MIMEPOST, mime);

@@ -515,31 +515,32 @@ project_init_selections (Project * self);
  *
  * @param compress True to compress, false to
  *   decompress.
- * @param[out] dest Pointer to a location to allocate
+ * @param[out] _dest Pointer to a location to allocate
  *   memory.
- * @param[out] dest_size Pointer to a location to
+ * @param[out] _dest_size Pointer to a location to
  *   store the size of the allocated memory.
- * @param src Input buffer or filepath.
- * @param src_size Input buffer size, if not
+ * @param _src Input buffer or filepath.
+ * @param _src_size Input buffer size, if not
  *   filepath.
  *
- * @return Error message if error, otherwise NULL.
+ * @return Whether successful.
  */
-char *
+bool
 _project_compress (
   bool                   compress,
-  char **                dest,
-  size_t *               dest_size,
+  char **                _dest,
+  size_t *               _dest_size,
   ProjectCompressionFlag dest_type,
-  const char *           src,
-  const size_t           src_size,
-  ProjectCompressionFlag src_type);
+  const char *           _src,
+  const size_t           _src_size,
+  ProjectCompressionFlag src_type,
+  GError **              error);
 
-#define project_compress(a,b,c,d,e,f) \
-  _project_compress (true, a, b, c, d, e, f)
+#define project_compress(a,b,c,d,e,f,error) \
+  _project_compress (true, a, b, c, d, e, f, error)
 
-#define project_decompress(a,b,c,d,e,f) \
-  _project_compress (false, a, b, c, d, e, f)
+#define project_decompress(a,b,c,d,e,f,error) \
+  _project_compress (false, a, b, c, d, e, f, error)
 
 /**
  * Returns the YAML representation of the saved

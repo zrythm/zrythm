@@ -229,10 +229,12 @@ get_json_string (
   json_builder_add_string_value (
     builder, self->backtrace);
 
+#if 0
   json_builder_set_member_name (
     builder, "log");
   json_builder_add_string_value (
     builder, self->log_long);
+#endif
 
   json_builder_set_member_name (
     builder, "fatal");
@@ -265,6 +267,7 @@ typedef struct AutomaticReportData
 {
   const char * json;
   const char * screenshot_path;
+  const char * log_file_path;
   GenericProgressInfo progress_nfo;
 } AutomaticReportData;
 
@@ -276,7 +279,14 @@ send_data (
   int ret =
     z_curl_post_json_no_auth (
       BUG_REPORT_API_ENDPOINT, data->json,
-      data->screenshot_path, 7, &err);
+      7, &err,
+      /* screenshot */
+      "screenshot", data->screenshot_path,
+      "image/jpeg",
+      /* log */
+      "log_file", data->log_file_path,
+      "application/zstd",
+      NULL);
   if (ret != 0)
     {
       data->progress_nfo.has_error = true;
@@ -349,13 +359,34 @@ on_button_send_automatically_clicked (
   gtk_grid_attach (
     grid, json_heading, 0, 1, 1, 1);
   char * json_str = get_json_string (self);
-  GtkWidget * json_label = gtk_label_new (json_str);
-  gtk_label_set_selectable (
-    GTK_LABEL (json_label), true);
-  gtk_label_set_line_wrap (
-    GTK_LABEL (json_label), true);
-  gtk_label_set_line_wrap_mode (
-    GTK_LABEL (json_label), PANGO_WRAP_WORD_CHAR);
+  GtkWidget * json_label = gtk_source_view_new ();
+  gtk_text_view_set_wrap_mode (
+    GTK_TEXT_VIEW (json_label), GTK_WRAP_WORD_CHAR);
+  gtk_text_view_set_editable (
+    GTK_TEXT_VIEW (json_label), false);
+  GtkTextBuffer * json_label_buf =
+    gtk_text_view_get_buffer (
+      GTK_TEXT_VIEW (json_label));
+  GtkSourceLanguageManager * manager =
+    z_gtk_source_language_manager_get ();
+  GtkSourceLanguage * lang =
+    gtk_source_language_manager_get_language (
+      manager, "json");
+  gtk_source_buffer_set_language (
+    GTK_SOURCE_BUFFER (json_label_buf), lang);
+  gtk_text_buffer_set_text (
+    json_label_buf, json_str, -1);
+  GtkSourceStyleSchemeManager * style_mgr =
+    gtk_source_style_scheme_manager_get_default ();
+  gtk_source_style_scheme_manager_prepend_search_path (
+    style_mgr, CONFIGURE_SOURCEVIEW_STYLES_DIR);
+  gtk_source_style_scheme_manager_force_rescan (
+    style_mgr);
+  GtkSourceStyleScheme * scheme =
+    gtk_source_style_scheme_manager_get_scheme (
+      style_mgr, "monokai-extended-zrythm");
+  gtk_source_buffer_set_style_scheme (
+    GTK_SOURCE_BUFFER (json_label_buf), scheme);
   GtkWidget * scrolled_window =
     gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (
@@ -372,15 +403,55 @@ on_button_send_automatically_clicked (
   gtk_grid_attach (
     grid, scrolled_window, 0, 2, 1, 1);
 
+  /* log file */
+  GtkWidget * log_file_heading =
+    gtk_label_new ("");
+  gtk_label_set_markup (
+    GTK_LABEL (log_file_heading),
+    _("<b>Log file</b>"));
+  gtk_grid_attach (
+    grid, log_file_heading, 0, 3, 1, 1);
+  char * log_file_tmpdir = NULL;
+  char * log_file_path = NULL;
+  if (LOG && LOG->log_filepath)
+    {
+      /* create a zstd-compressed log file */
+      GError * err = NULL;
+      bool ret =
+        log_generate_compressed_file (
+          LOG, &log_file_tmpdir, &log_file_path,
+          &err);
+      if (!ret)
+        {
+          g_warning (
+            "could not create tmp dir for log "
+            "file: %s", err->message);
+          g_error_free (err);
+        }
+    }
+  GtkWidget * log_file_path_lbl =
+    gtk_label_new (NULL);
+  if (log_file_path)
+    {
+      char * str =
+        g_strdup_printf (
+          "<a href=\"file://%s\">%s</a>",
+          log_file_path, log_file_path);
+      gtk_label_set_markup (
+        GTK_LABEL (log_file_path_lbl), str);
+      g_free (str);
+    }
+  gtk_grid_attach (
+    grid, log_file_path_lbl, 0, 4, 1, 1);
+
+  /* screenshot */
   GtkWidget * screenshot_heading =
     gtk_label_new ("");
   gtk_label_set_markup (
     GTK_LABEL (screenshot_heading),
     _("<b>Screenshot</b>"));
   gtk_grid_attach (
-    grid, screenshot_heading, 0, 3, 1, 1);
-
-  /* screenshot */
+    grid, screenshot_heading, 0, 5, 1, 1);
   char * screenshot_tmpdir = NULL;
   char * screenshot_path = NULL;
   if (MAIN_WINDOW)
@@ -416,7 +487,7 @@ on_button_send_automatically_clicked (
         }
     }
   gtk_grid_attach (
-    grid, img, 0, 4, 1, 1);
+    grid, img, 0, 6, 1, 1);
 
   /* run the dialog */
   gtk_widget_show_all (content_area);
@@ -434,6 +505,7 @@ on_button_send_automatically_clicked (
   memset (&data, 0, sizeof (AutomaticReportData));
   data.json = json_str;
   data.screenshot_path = screenshot_path;
+  data.log_file_path = log_file_path;
   data.progress_nfo.progress = 0;
   strcpy (
     data.progress_nfo.label_str, _("Sending data..."));
@@ -474,6 +546,16 @@ on_button_send_automatically_clicked (
         _("Sent successfully"));
     }
 
+  if (log_file_path)
+    {
+      io_remove (log_file_path);
+      g_free_and_null (log_file_path);
+    }
+  if (log_file_tmpdir)
+    {
+      io_rmdir (log_file_tmpdir, F_NO_FORCE);
+      g_free_and_null (log_file_tmpdir);
+    }
   if (screenshot_path)
     {
       io_remove (screenshot_path);
