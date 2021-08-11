@@ -23,6 +23,7 @@
 
 #include "actions/tracklist_selections.h"
 #include "audio/channel.h"
+#include "audio/ditherer.h"
 #include "audio/engine.h"
 #ifdef HAVE_JACK
 #include "audio/engine_jack.h"
@@ -358,6 +359,18 @@ export_audio (
     }
 #endif
 
+  Ditherer ditherer;
+  memset (&ditherer, 0, sizeof (Ditherer));
+  if (info->dither)
+    {
+      g_message (
+        "dither %d bits",
+        audio_bit_depth_enum_to_int (info->depth));
+      ditherer_reset (
+        &ditherer,
+        audio_bit_depth_enum_to_int (info->depth));
+    }
+
   nframes_t nframes;
   g_return_val_if_fail (
     stop_pos.frames >= 1 ||
@@ -409,6 +422,13 @@ export_audio (
           out_ptr[i * 2 + 1] =
             P_MASTER_TRACK->channel->
               stereo_out->r->buf[i];
+        }
+
+      /* apply dither */
+      if (info->dither)
+        {
+          ditherer_process (
+            &ditherer, out_ptr, nframes, 2);
         }
 
       /* seek to the write position in the file */

@@ -65,7 +65,7 @@ typedef struct _ExportDialogWidget
   GtkToggleButton *    time_range_custom;
   GtkComboBox *        format;
   GtkComboBox *        bit_depth;
-  GtkCheckButton *     dither;
+  GtkToggleButton *    dither;
   GtkLabel *           output_label;
 
   GtkTreeView *        tracks_treeview;

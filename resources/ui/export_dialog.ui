@@ -412,7 +412,7 @@ in the directory:
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="dither">
+                  <object class="GtkToggleButton" id="dither">
                     <property name="label" translatable="yes">Dither</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>

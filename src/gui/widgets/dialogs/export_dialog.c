@@ -849,8 +849,7 @@ init_export_info (
   g_settings_set_enum (
     S_EXPORT, "bit-depth", info->depth);
   info->dither =
-    gtk_toggle_button_get_active (
-      GTK_TOGGLE_BUTTON (self->dither));
+    gtk_toggle_button_get_active (self->dither);
   g_settings_set_boolean (
     S_EXPORT, "dither", info->dither);
   info->artist =

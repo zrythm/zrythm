@@ -39,6 +39,7 @@ audio_srcs = [
   'control_port.c',
   'control_room.c',
   'curve.c',
+  'ditherer.c',
   'encoder.c',
   'engine.c',
   'engine_alsa.c',

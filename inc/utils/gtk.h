@@ -644,6 +644,19 @@ z_gtk_generate_screenshot_image (
   char **      ret_path);
 
 /**
+ * Sets the action target of the given GtkActionable
+ * to be binded to the given setting.
+ *
+ * Mainly used for binding GSettings keys to toggle
+ * buttons.
+ */
+void
+z_gtk_actionable_set_action_from_setting (
+  GtkActionable * actionable,
+  GSettings *     settings,
+  const char *    key);
+
+/**
  * @}
  */
 #endif

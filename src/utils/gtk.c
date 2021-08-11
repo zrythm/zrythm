@@ -1677,3 +1677,35 @@ z_gtk_generate_screenshot_image (
   g_message (
     "saved widget screenshot to %s", *ret_path);
 }
+
+/**
+ * Sets the action target of the given GtkActionable
+ * to be binded to the given setting.
+ *
+ * Mainly used for binding GSettings keys to toggle
+ * buttons.
+ */
+void
+z_gtk_actionable_set_action_from_setting (
+  GtkActionable * actionable,
+  GSettings *     settings,
+  const char *    key)
+{
+  GSimpleActionGroup * action_group =
+    g_simple_action_group_new ();
+  GAction * action =
+    g_settings_create_action (settings, key);
+  g_action_map_add_action (
+    G_ACTION_MAP (action_group), action);
+  char * group_prefix =
+    g_strdup_printf ("%s-action-group", key);
+  gtk_widget_insert_action_group (
+    GTK_WIDGET (actionable), group_prefix,
+    G_ACTION_GROUP (action_group));
+  char * action_name =
+    g_strdup_printf ("%s.%s", group_prefix, key);
+  gtk_actionable_set_action_name (
+    actionable, action_name);
+  g_free (group_prefix);
+  g_free (action_name);
+}

@@ -58,6 +58,23 @@ static const cyaml_strval_t
   { "32",   BIT_DEPTH_32 },
 };
 
+static inline int
+audio_bit_depth_enum_to_int (
+  BitDepth depth)
+{
+  switch (depth)
+    {
+    case BIT_DEPTH_16:
+      return 16;
+    case BIT_DEPTH_24:
+      return 24;
+    case BIT_DEPTH_32:
+      return 32;
+    default:
+      g_return_val_if_reached (-1);
+    }
+}
+
 /**
  * Number of plugin slots per channel.
  */
