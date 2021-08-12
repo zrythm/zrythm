@@ -613,6 +613,7 @@ attributes = [
   'always_inline', 'cold', 'hot', 'pure', 'nonnull',
   'returns_nonnull', 'stack_protect',
   'no_stack_protector', 'warn_unused_result',
+  'const',
   ]
 foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'

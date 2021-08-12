@@ -26,57 +26,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Returns fader value 0.0 to 1.0 from amp value
- * 0.0 to 2.0 (+6 dbFS).
- */
-sample_t
-math_get_fader_val_from_amp (
-  sample_t amp)
-{
-  static const float fader_coefficient1 =
-    /*192.f * logf (2.f);*/
-    133.084258667509499408f;
-  static const float fader_coefficient2 =
-    /*powf (logf (2.f), 8.f) * powf (198.f, 8.f);*/
-    1.25870863180257576e17f;
-
-  /* to prevent weird values when amp is very
-   * small */
-  if (amp <= 0.00001f)
-    {
-      return 1e-20f;
-    }
-  else
-    {
-      if (math_floats_equal (amp, 1.f))
-        {
-          amp = 1.f + 1e-20f;
-        }
-      sample_t fader =
-        powf (
-          6.f * logf (amp) + fader_coefficient1, 8.f) /
-        fader_coefficient2;
-      return (sample_t) fader;
-    }
-}
-
-/**
- * Returns amp value 0.0 to 2.0 (+6 dbFS) from
- * fader value 0.0 to 1.0.
- */
-sample_t
-math_get_amp_val_from_fader (
-  sample_t fader)
-{
-  static float val1 = 1.f / 6.f;
-  return
-    powf (
-      2.f,
-      (val1) *
-      (-192.f + 198.f * powf (fader, 1.f / 8.f)));
-}
-
-/**
  * Gets the digital peak of the given signal as
  * amplitude (0-2).
  */

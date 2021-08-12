@@ -292,6 +292,13 @@ To report non-programming errors, such as failure
 to open a file, use the
 [GError](https://www.freedesktop.org/software/gstreamer-sdk/data/docs/latest/glib/glib-Error-Reporting.html) mechanism.
 
+## Function attributes
+Tips
+* `inline` small functions that are called very
+often
+* `CONST`/`PURE` can be combined with inline
+* `HOT` should not be combined with inline
+
 ## Licensing
 If you contributed significant (for copyright
 purposes) amounts of code in a file, you should
