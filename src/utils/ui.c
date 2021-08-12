@@ -1283,28 +1283,6 @@ ui_get_state_mask (
 }
 
 /**
- * Returns if the 2 rectangles overlay.
- */
-bool
-ui_rectangle_overlap (
-  GdkRectangle * rect1,
-  GdkRectangle * rect2)
-{
-  g_return_val_if_fail (rect1 && rect2, false);
-  /* if one rect is on the side of the other */
-  if (rect1->x > rect2->x + rect2->width ||
-      rect2->x > rect1->x + rect1->width)
-    return false;
-
-  /* if one rect is above the other */
-  if (rect1->y > rect2->y + rect2->height ||
-      rect2->y > rect1->y + rect1->height)
-    return false;
-
-  return true;
-}
-
-/**
  * Gets the color the widget should be.
  *
  * @param color The original color.

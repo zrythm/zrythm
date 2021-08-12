@@ -1093,7 +1093,7 @@ midi_region_fill_midi_events (
           ((local_start_frame + nframes) - 1));
     }
 
-  long r_local_pos =
+  const long r_local_pos =
     region_timeline_frames_to_local (
       self, g_start_frames, F_NORMALIZE);
 

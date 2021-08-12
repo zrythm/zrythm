@@ -1791,7 +1791,7 @@ process_events (void * data)
               PROGRAM_NAME);
             ui_show_message_full (
               GTK_WINDOW (MAIN_WINDOW),
-              GTK_MESSAGE_INFO, msg);
+              GTK_MESSAGE_INFO, "%s", msg);
           }
           break;
         case ET_CHANNEL_SEND_CHANGED:

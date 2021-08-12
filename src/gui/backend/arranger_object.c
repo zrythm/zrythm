@@ -355,9 +355,9 @@ arranger_object_is_selected (
  */
 ZRegion *
 arranger_object_get_region (
-  ArrangerObject * self)
+  const ArrangerObject * const self)
 {
-  RegionIdentifier * id = NULL;
+  const RegionIdentifier * id = NULL;
   switch (self->type)
     {
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
@@ -1682,7 +1682,7 @@ arranger_object_validate_name (
  */
 Track *
 arranger_object_get_track (
-  ArrangerObject * self)
+  const ArrangerObject * const self)
 {
   g_return_val_if_fail (
     IS_ARRANGER_OBJECT (self), NULL);
@@ -1696,7 +1696,8 @@ arranger_object_get_track (
     {
     case TYPE (REGION):
       {
-        ZRegion * r = (ZRegion *) self;
+        const ZRegion * const  r =
+          (const ZRegion * const) self;
         g_return_val_if_fail (
           r->id.track_pos < tracklist->num_tracks,
           NULL);
@@ -1711,7 +1712,8 @@ arranger_object_get_track (
       break;
     case TYPE (MARKER):
       {
-        Marker * marker = (Marker *) self;
+        const Marker * const marker =
+          (const Marker * const) self;
         g_return_val_if_fail (
           marker->track_pos <
             tracklist->num_tracks, NULL);
@@ -1721,8 +1723,8 @@ arranger_object_get_track (
       break;
     case TYPE (AUTOMATION_POINT):
       {
-        AutomationPoint * ap =
-          (AutomationPoint *) self;
+        const AutomationPoint * const ap =
+          (const AutomationPoint * const) self;
         AutomationTrack * at =
           automation_point_get_automation_track (
             ap);
@@ -1742,11 +1744,12 @@ arranger_object_get_track (
       break;
     case TYPE (VELOCITY):
       {
-        Velocity * vel = (Velocity *) self;
-        MidiNote * mn =
+        const Velocity * const vel =
+          (const Velocity * const) self;
+        const MidiNote * const mn =
           velocity_get_midi_note (vel);
-        ArrangerObject * mn_obj =
-          (ArrangerObject *) mn;
+        const ArrangerObject * const mn_obj =
+          (const ArrangerObject * const) mn;
         g_return_val_if_fail (
           mn_obj->region_id.track_pos <
             tracklist->num_tracks,

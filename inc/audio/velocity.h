@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -142,7 +142,7 @@ velocity_set_val (
  */
 MidiNote *
 velocity_get_midi_note (
-  Velocity * self);
+  const Velocity * const self);
 
 /**
  * @}

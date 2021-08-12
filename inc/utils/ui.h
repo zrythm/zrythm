@@ -215,24 +215,6 @@ typedef struct UiCaches
               (void *) text); \
   g_free (text)
 
-/**
- * Wrapper to show error message so that no casting
- * of the window is needed on the caller side.
- */
-#define ui_show_error_message(win, msg) \
-    ui_show_message_full ( \
-      win ? GTK_WINDOW (win) : NULL, \
-      GTK_MESSAGE_ERROR, \
-      "%s", msg);
-
-/**
- * Type can be GTK_MESSAGE_ERROR, etc.
- */
-#define ui_show_message_printf(win,type,fmt,...) \
-  ui_show_message_full ( \
-    win ? GTK_WINDOW (win) : NULL, \
-    type, fmt, __VA_ARGS__)
-
 #define ui_is_widget_revealed(widget) \
   (gtk_widget_get_allocated_height ( \
      GTK_WIDGET (widget)) > 1 || \
@@ -503,7 +485,25 @@ ui_show_message_full (
   GtkWindow *    parent_window,
   GtkMessageType type,
   const char *   format,
-  ...);
+  ...) G_GNUC_PRINTF (3, 4);
+
+/**
+ * Wrapper to show error message so that no casting
+ * of the window is needed on the caller side.
+ */
+#define ui_show_error_message(win, msg) \
+    ui_show_message_full ( \
+      win ? GTK_WINDOW (win) : NULL, \
+      GTK_MESSAGE_ERROR, \
+      "%s", msg);
+
+/**
+ * Type can be GTK_MESSAGE_ERROR, etc.
+ */
+#define ui_show_message_printf(win,type,fmt,...) \
+  ui_show_message_full ( \
+    win ? GTK_WINDOW (win) : NULL, \
+    type, fmt, __VA_ARGS__)
 
 /**
  * Returns if \ref rect is hit or not by the
@@ -805,10 +805,25 @@ ui_get_mid_color (
 /**
  * Returns if the 2 rectangles overlay.
  */
-bool
+NONNULL
+PURE
+static inline bool
 ui_rectangle_overlap (
-  GdkRectangle * rect1,
-  GdkRectangle * rect2);
+  const GdkRectangle * const rect1,
+  const GdkRectangle * const rect2)
+{
+  /* if one rect is on the side of the other */
+  if (rect1->x > rect2->x + rect2->width ||
+      rect2->x > rect1->x + rect1->width)
+    return false;
+
+  /* if one rect is above the other */
+  if (rect1->y > rect2->y + rect2->height ||
+      rect2->y > rect1->y + rect1->height)
+    return false;
+
+  return true;
+}
 
 /**
  * Gets the color the widget should be.

@@ -860,7 +860,7 @@ load_icon (
       g_critical ("%s", err_msg);
       fprintf (stderr, "%s\n", err_msg);
       ui_show_message_full (
-        NULL, GTK_MESSAGE_ERROR, err_msg);
+        NULL, GTK_MESSAGE_ERROR, "%s", err_msg);
       g_error ("Failed to load icon");
     }
   g_object_unref (icon);

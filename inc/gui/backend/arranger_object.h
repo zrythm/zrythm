@@ -453,7 +453,7 @@ arranger_object_set_magic (
 HOT
 ZRegion *
 arranger_object_get_region (
-  ArrangerObject * self);
+  const ArrangerObject * const self);
 
 /**
  * Returns a pointer to the name of the object,
@@ -773,7 +773,7 @@ arranger_object_get_length_in_frames (
 NONNULL
 static inline double
 arranger_object_get_loop_length_in_ticks (
-  ArrangerObject * self)
+  const ArrangerObject * const self)
 {
   g_return_val_if_fail (
     arranger_object_type_has_length (self->type),
@@ -791,7 +791,7 @@ NONNULL
 HOT
 static inline long
 arranger_object_get_loop_length_in_frames (
-  ArrangerObject * self)
+  const ArrangerObject * const self)
 {
   g_return_val_if_fail (
     arranger_object_type_has_length (self->type),
@@ -876,7 +876,7 @@ arranger_object_add_ticks_to_children (
 HOT
 Track *
 arranger_object_get_track (
-  ArrangerObject * self);
+  const ArrangerObject * const self);
 
 static inline const char *
 arranger_object_get_type_as_string (

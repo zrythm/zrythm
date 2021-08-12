@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -87,6 +87,7 @@ peak_dsp_init (
   PeakDsp * self,
   float samplerate);
 
+MALLOC
 PeakDsp *
 peak_dsp_new (void);
 

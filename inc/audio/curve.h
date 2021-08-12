@@ -21,6 +21,8 @@
  * \file
  *
  * Curves.
+ *
+ * Can find more at tracktion_AudioFadeCurve.h.
  */
 
 #ifndef __AUDIO_CURVE_H__

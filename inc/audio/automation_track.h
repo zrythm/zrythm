@@ -498,7 +498,7 @@ automation_track_get_y_px_from_normalized_val (
 NONNULL
 Port *
 automation_track_get_port (
-  AutomationTrack * self);
+  const AutomationTrack * const self);
 
 /**
  * Updates automation track & its GUI

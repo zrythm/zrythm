@@ -2174,7 +2174,7 @@ plugin_clone (
               PROPAGATE_PREFIXED_ERROR (
                 error, err,
                 _("Failed to instantiate source "
-                "plugin"),
+                "plugin %s"),
                 buf);
               return NULL;
             }
@@ -2229,7 +2229,7 @@ plugin_clone (
                   PROPAGATE_PREFIXED_ERROR (
                     error, err,
                     _("Failed to instantiate "
-                    "source plugin"),
+                    "source plugin %s"),
                     buf);
                   return NULL;
                 }

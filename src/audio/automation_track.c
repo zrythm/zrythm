@@ -691,7 +691,7 @@ automation_track_get_track (
 
 Port *
 automation_track_get_port (
-  AutomationTrack * self)
+  const AutomationTrack * const self)
 {
   Port * port =
     port_find_from_identifier (&self->port_id);

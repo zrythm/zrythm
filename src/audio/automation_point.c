@@ -156,8 +156,6 @@ bool
 automation_point_curves_up (
   AutomationPoint * self)
 {
-  g_return_val_if_fail (self, -1);
-
   ZRegion * region =
     arranger_object_get_region (
       (ArrangerObject *) self);
@@ -300,9 +298,9 @@ automation_point_set_curviness (
  */
 Port *
 automation_point_get_port (
-  AutomationPoint * self)
+  const AutomationPoint * const self)
 {
-  AutomationTrack * at =
+  const AutomationTrack * const at =
     automation_point_get_automation_track (self);
   g_return_val_if_fail (at, NULL);
   Port * port =
@@ -318,12 +316,12 @@ automation_point_get_port (
  */
 AutomationTrack *
 automation_point_get_automation_track (
-  AutomationPoint * self)
+  const AutomationPoint * const self)
 {
   g_return_val_if_fail (self, NULL);
-  ZRegion * region =
+  const ZRegion * const region =
     arranger_object_get_region (
-      (ArrangerObject *) self);
+      (const ArrangerObject * const) self);
   g_return_val_if_fail (region, NULL);
   return region_get_automation_track (region);
 }

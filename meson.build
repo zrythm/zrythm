@@ -613,7 +613,7 @@ attributes = [
   'always_inline', 'cold', 'hot', 'pure', 'nonnull',
   'returns_nonnull', 'stack_protect',
   'no_stack_protector', 'warn_unused_result',
-  'const',
+  'const', 'malloc',
   ]
 foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
@@ -817,6 +817,13 @@ if is_gcc
   test_strict_cflags += [
     '-Wextra',
     '-Weverything',
+
+    '-Wsuggest-attribute=pure',
+    '-Wsuggest-attribute=const',
+    '-Wsuggest-attribute=noreturn',
+    '-Wsuggest-attribute=format',
+    '-Wsuggest-attribute=malloc',
+    '-Wsuggest-attribute=cold',
 
     # only do the following on GCC because clang
     # reports unnecessary errors

@@ -35,7 +35,7 @@ void
 error_handle_prv (
   GError *     err,
   const char * format,
-  ...);
+  ...) G_GNUC_PRINTF (2, 3);
 
 /**
  * Shows a popup (or logs a warning if have no UI)
@@ -54,7 +54,7 @@ error_propagate_prefixed_prv (
   GError **    main_err,
   GError *     err,
   const char * format,
-  ...);
+  ...) G_GNUC_PRINTF (3, 4);
 
 #define PROPAGATE_PREFIXED_ERROR( \
   main_err,err,fmt,...) \

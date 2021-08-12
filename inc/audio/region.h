@@ -361,7 +361,7 @@ HOT
 NONNULL
 ZRegion *
 region_find (
-  RegionIdentifier * id);
+  const RegionIdentifier * const id);
 
 #define region_set_track_pos(_r,_pos) \
   _r->id.track_pos = _pos
@@ -431,9 +431,9 @@ NONNULL
 HOT
 long
 region_timeline_frames_to_local (
-  ZRegion *  self,
-  const long timeline_frames,
-  const bool normalize);
+  const ZRegion * const self,
+  const long            timeline_frames,
+  const bool            normalize);
 
 /**
  * Returns the number of frames until the next
@@ -446,20 +446,22 @@ region_timeline_frames_to_local (
  *   are for a loop (if false, the return frames
  *   are for the region's end).
  */
+NONNULL
 void
 region_get_frames_till_next_loop_or_end (
-  ZRegion * self,
-  long      timeline_frames,
-  long *    ret_frames,
-  bool *    is_loop);
+  const ZRegion * const self,
+  const long            timeline_frames,
+  long *                ret_frames,
+  bool *                is_loop);
 
 /**
  * Sets the track lane.
  */
+NONNULL
 void
 region_set_lane (
-  ZRegion * region,
-  TrackLane * lane);
+  ZRegion *               self,
+  const TrackLane * const lane);
 
 /**
  * Generates a name for the ZRegion, either using
@@ -481,6 +483,7 @@ region_gen_name (
  *
  * @param ratio The ratio to stretch by.
  */
+NONNULL
 void
 region_stretch (
   ZRegion * self,
@@ -490,6 +493,7 @@ region_stretch (
  * To be called every time the identifier changes
  * to update the region's children.
  */
+NONNULL
 void
 region_update_identifier (
   ZRegion * self);
@@ -498,6 +502,7 @@ region_update_identifier (
  * Updates all other regions in the region link
  * group, if any.
  */
+NONNULL
 void
 region_update_link_group (
   ZRegion * self);
@@ -545,9 +550,15 @@ region_move_to_track (
  * Returns if the given ZRegion type can exist
  * in TrackLane's.
  */
-int
+CONST
+static inline int
 region_type_has_lane (
-  const RegionType type);
+  const RegionType type)
+{
+  return
+    type == REGION_TYPE_MIDI ||
+    type == REGION_TYPE_AUDIO;
+}
 
 /**
  * Sets the automation track.
@@ -562,7 +573,7 @@ region_set_automation_track (
  */
 AutomationTrack *
 region_get_automation_track (
-  ZRegion * region);
+  const ZRegion * const region);
 
 /**
  * Copies the data from src to dest.

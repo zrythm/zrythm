@@ -292,7 +292,7 @@ port_init_loaded (
  */
 Port *
 port_find_from_identifier (
-  PortIdentifier * id)
+  const PortIdentifier * const id)
 {
   Track * tr = NULL;
   Channel * ch = NULL;

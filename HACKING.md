@@ -298,6 +298,7 @@ Tips
 often
 * `CONST`/`PURE` can be combined with inline
 * `HOT` should not be combined with inline
+* only use `CONST`/`PURE` on functions that do not log (or use `g_warn_*()`/`g_return_*()`)
 
 ## Licensing
 If you contributed significant (for copyright

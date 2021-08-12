@@ -1104,6 +1104,8 @@ create_fade_preset_menu (
   CREATE_ITEM (_("Linear"), SUPERELLIPSE, 0);
   CREATE_ITEM (_("Exponential"), EXPONENT, - 0.6);
   CREATE_ITEM (_("Elliptic"), SUPERELLIPSE, - 0.5);
+  CREATE_ITEM (
+    _("Logarithmic"), LOGARITHMIC, - 0.5);
   CREATE_ITEM (_("Vital"), VITAL, - 0.5);
 
 #undef CREATE_ITEM

@@ -151,10 +151,10 @@ region_gen_name (
  */
 void
 region_set_lane (
-  ZRegion *    self,
-  TrackLane * lane)
+  ZRegion *               self,
+  const TrackLane * const lane)
 {
-  g_return_if_fail (IS_REGION (self) && lane);
+  g_return_if_fail (IS_REGION (self));
   if (lane->is_auditioner)
     self->base.is_auditioner = true;
 
@@ -509,19 +509,6 @@ region_get_type_as_string (
 }
 
 /**
- * Returns if the given ZRegion type can exist
- * in TrackLane's.
- */
-int
-region_type_has_lane (
-  const RegionType type)
-{
-  return
-    type == REGION_TYPE_MIDI ||
-    type == REGION_TYPE_AUDIO;
-}
-
-/**
  * Sanity checking.
  *
  * @param is_project Whether this region ispart
@@ -719,7 +706,7 @@ region_unlink (
  */
 ZRegion *
 region_find (
-  RegionIdentifier * id)
+  const RegionIdentifier * const id)
 {
   Track * track = NULL;
   TrackLane * lane = NULL;
@@ -1046,11 +1033,11 @@ region_find_midi_note (
  */
 AutomationTrack *
 region_get_automation_track (
-  ZRegion * region)
+  const ZRegion * const region)
 {
   Track * track =
     arranger_object_get_track (
-      (ArrangerObject *) region);
+      (const ArrangerObject * const) region);
   g_return_val_if_fail (
     IS_TRACK (track) &&
     track->automation_tracklist.num_ats >
@@ -1379,13 +1366,14 @@ region_add_arranger_object (
  */
 long
 region_timeline_frames_to_local (
-  ZRegion *  self,
-  const long timeline_frames,
-  const bool normalize)
+  const ZRegion * const self,
+  const long            timeline_frames,
+  const bool            normalize)
 {
   g_return_val_if_fail (IS_REGION (self), 0);
 
-  ArrangerObject * r_obj = (ArrangerObject *) self;
+  const ArrangerObject * const r_obj =
+    (const ArrangerObject * const) self;
 
   if (normalize)
     {
@@ -1405,8 +1393,7 @@ region_timeline_frames_to_local (
       const long loop_size =
         arranger_object_get_loop_length_in_frames (
           r_obj);
-      g_return_val_if_fail (
-        loop_size > 0, 0);
+      g_return_val_if_fail (loop_size > 0, 0);
 
       diff_frames += clip_start_frames;
 
@@ -1438,10 +1425,10 @@ region_timeline_frames_to_local (
  */
 void
 region_get_frames_till_next_loop_or_end (
-  ZRegion * self,
-  long      timeline_frames,
-  long *    ret_frames,
-  bool *    is_loop)
+  const ZRegion * const self,
+  const long            timeline_frames,
+  long *                ret_frames,
+  bool *                is_loop)
 {
   g_return_if_fail (IS_REGION (self));
 

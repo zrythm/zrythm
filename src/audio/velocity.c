@@ -124,7 +124,7 @@ velocity_shift (
  */
 MidiNote *
 velocity_get_midi_note (
-  Velocity * self)
+  const Velocity * const self)
 {
   g_return_val_if_fail (
     IS_MIDI_NOTE (self->midi_note), NULL);

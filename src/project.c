@@ -1064,7 +1064,7 @@ load (
           PROGRAM_NAME, self->version);
       ui_show_message_full (
         GTK_WINDOW (MAIN_WINDOW),
-        GTK_MESSAGE_WARNING, str);
+        GTK_MESSAGE_WARNING, "%s", str);
       g_free (str);
     }
   g_free (version);

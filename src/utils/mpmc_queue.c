@@ -41,7 +41,7 @@
 #include "utils/objects.h"
 #include "utils/mpmc_queue.h"
 
-PURE
+CONST
 static size_t
 power_of_two_size (
   size_t sz)

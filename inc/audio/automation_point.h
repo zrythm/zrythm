@@ -164,7 +164,7 @@ automation_point_set_curviness (
  */
 Port *
 automation_point_get_port (
-  AutomationPoint * self);
+  const AutomationPoint * const self);
 
 /**
  * Convenience function to return the
@@ -172,7 +172,7 @@ automation_point_get_port (
  */
 AutomationTrack *
 automation_point_get_automation_track (
-  AutomationPoint * self);
+  const AutomationPoint * const self);
 
 int
 automation_point_is_equal (
@@ -180,18 +180,10 @@ automation_point_is_equal (
   AutomationPoint * b);
 
 /**
- * Returns Y in pixels from the value based on
- * the given height of the parent.
- */
-int
-automation_point_get_y (
-  AutomationPoint * self,
-  int               height);
-
-/**
  * Returns if the curve of the AutomationPoint
  * curves upwards as you move right on the x axis.
  */
+NONNULL
 bool
 automation_point_curves_up (
   AutomationPoint * self);

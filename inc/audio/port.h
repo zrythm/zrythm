@@ -723,7 +723,7 @@ port_init_loaded (
 NONNULL
 Port *
 port_find_from_identifier (
-  PortIdentifier * id);
+  const PortIdentifier * const id);
 
 NONNULL
 void
