@@ -76,6 +76,8 @@ typedef enum CurveAlgorithm
    *    up (when starting at lower point).
    *
    * See https://www.desmos.com/calculator/2dnuiptiqc.
+   *
+   * Taken from Vital synth.
    */
   CURVE_ALGORITHM_VITAL,
 
@@ -83,6 +85,21 @@ typedef enum CurveAlgorithm
    * Pulse (square).
    */
   CURVE_ALGORITHM_PULSE,
+
+  /**
+   * a = log (n)
+   * b = 1 / (log (1 + (1  / n)))
+   * # smaller numbers tilt up
+   * y1 = (log (x + n) - a) * b
+   * # smaller numbers tilt down
+   * y2 = (a - log (x + n)) * b
+   * where 0 < n <= 10
+   *
+   * See https://www.desmos.com/calculator/tdedahsdz8.
+   *
+   * Taken from Ardour.
+   */
+  CURVE_ALGORITHM_LOGARITHMIC,
 
   NUM_CURVE_ALGORITHMS,
 } CurveAlgorithm;
@@ -98,6 +115,8 @@ static const cyaml_strval_t
     CURVE_ALGORITHM_VITAL },
   { __("Pulse"),
     CURVE_ALGORITHM_PULSE },
+  { __("Logarithmic"),
+    CURVE_ALGORITHM_LOGARITHMIC },
 };
 
 /**

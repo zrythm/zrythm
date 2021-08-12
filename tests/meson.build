@@ -271,7 +271,8 @@ if get_option ('tests')
       'actions/tracklist_selections_edit': {
         'parallel': false },
       'benchmarks/dsp': {
-        'parallel': true },
+        'parallel': true,
+        'benchmark': true, },
       'integration/midi_file': {
         'parallel': false },
       # cannot be parallel because it needs multiple
@@ -330,6 +331,12 @@ if get_option ('tests')
     is_parallel = info['parallel']
     test_name = '_'.join(name.split('/'))
     suites = [ name.split('/')[0] ]
+
+    is_benchmark = false
+    if 'benchmark' in info and info['benchmark'] == true
+      is_benchmark = true
+    endif
+
     if 'extra_suites' in info
       suites += info['extra_suites']
     endif
@@ -365,16 +372,29 @@ if get_option ('tests')
         link_with: test_link_libs,
         include_directories : all_inc,
       )
-      test (
-        test_name, exe,
-        env: test_env, suite: suites,
-        is_parallel: is_parallel,
-        args: 'args' in info ? info['args'] : [],
-        depends: [
-          test_lv2apply_wavs,
-          test_lv2_plugin_libs,
-          ],
-        timeout: timeout)
+      if is_benchmark
+        benchmark (
+          test_name, exe,
+          env: test_env, suite: suites,
+          args: 'args' in info ? info['args'] : [],
+          depends: [
+            test_lv2apply_wavs,
+            test_lv2_plugin_libs,
+            ],
+          timeout: timeout)
+      # else if not benchmark
+      else
+        test (
+          test_name, exe,
+          env: test_env, suite: suites,
+          is_parallel: is_parallel,
+          args: 'args' in info ? info['args'] : [],
+          depends: [
+            test_lv2apply_wavs,
+            test_lv2_plugin_libs,
+            ],
+          timeout: timeout)
+      endif # endif is_benchmark
     else
       # create C executable for Guile runner
       source = _test[0] + '.scm'
@@ -395,12 +415,21 @@ if get_option ('tests')
         link_with: test_link_libs,
         include_directories : all_inc,
         )
-      test (
-        test_name, exe,
-        args: source,
-        env: test_env, suite: suites,
-        is_parallel: is_parallel,
-        timeout: timeout)
+
+      if is_benchmark
+        benchmark (
+          test_name, exe,
+          args: source,
+          env: test_env, suite: suites,
+          timeout: timeout)
+      else
+        test (
+          test_name, exe,
+          args: source,
+          env: test_env, suite: suites,
+          is_parallel: is_parallel,
+          timeout: timeout)
+      endif
     endif
   endforeach
 
