@@ -731,7 +731,7 @@ track_get_should_be_visible (
 NONNULL
 double
 track_get_full_visible_height (
-  Track * self);
+  Track * const self);
 
 bool
 track_multiply_heights (
@@ -818,7 +818,7 @@ HOT
 NONNULL
 bool
 track_get_recording (
-  Track * track);
+  const Track * const track);
 
 /**
  * Sets recording and connects/disconnects the
@@ -1130,7 +1130,8 @@ track_setup (Track * track);
  * or NULL if it doesn't (like chord tracks).
  */
 AutomationTracklist *
-track_get_automation_tracklist (Track * track);
+track_get_automation_tracklist (
+  Track * const track);
 
 /**
  * Returns the channel of the track, if the track

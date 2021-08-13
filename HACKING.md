@@ -206,7 +206,7 @@ Alternatively, you can use callgrind with kcachegrind.
 Build Zrythm normally and then run it through
 callgrind as follows:
 
-    valgrind --tool=callgrind build/src/zrythm
+    tools/run_callgrind.sh build/src/zrythm
 
 When you are finished, close Zrythm and run
 `kcachegrind` in the same directory to display the

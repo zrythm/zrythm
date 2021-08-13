@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,7 +24,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
+ * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -42,6 +42,8 @@
 
 #include "audio/kmeter_dsp.h"
 
+#include <glib.h>
+
 /**
  * Process.
  *
@@ -55,7 +57,7 @@ kmeter_dsp_process (
 {
   float  s, t, z1, z2;
 
-  if (self->fpp != n)
+  if (G_UNLIKELY (self->fpp != n))
     {
       /*const float fall = 15.f;*/
       const float fall = 5.f;
@@ -76,7 +78,7 @@ kmeter_dsp_process (
   // Perform filtering. The second filter is evaluated
   // only every 4th sample - this is just an optimisation.
   n /= 4;  // Loop is unrolled by 4.
-  while (n--)
+  while (G_LIKELY (n--))
     {
       s = *p++;
       s *= s;

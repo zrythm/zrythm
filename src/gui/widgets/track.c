@@ -1037,6 +1037,8 @@ track_draw_cb (
 
       draw_name (self, self->cached_cr);
 
+      /* FIXME this uses 50% of this function
+       * call */
       draw_buttons (
         self, self->cached_cr, 1, width);
 

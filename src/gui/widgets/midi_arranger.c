@@ -542,7 +542,8 @@ midi_arranger_show_context_menu (
   else
     {
       arranger_widget_select_all (
-        (ArrangerWidget *) self, F_NO_SELECT);
+        (ArrangerWidget *) self, F_NO_SELECT,
+        F_PUBLISH_EVENTS);
       arranger_selections_clear (
         (ArrangerSelections *) MA_SELECTIONS,
         F_NO_FREE, F_NO_PUBLISH_EVENTS);

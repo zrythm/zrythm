@@ -200,17 +200,17 @@ _array_double_size_if_full (
   size_t * max_sz,
   size_t   el_size)
 {
-  if (count > *max_sz && *max_sz != 0)
+  if (G_LIKELY (count < *max_sz))
+    {
+      /* nothing to do, array is not full */
+      return;
+    }
+
+  if (G_UNLIKELY (count > *max_sz && *max_sz != 0))
     {
       g_critical (
         "invalid count (%zu) and max sz (%zu)",
         count, *max_sz);
-      return;
-    }
-
-  if (count < *max_sz)
-    {
-      /* nothing to do, array is not full */
       return;
     }
 

@@ -26,6 +26,8 @@
 #ifndef __UTILS_HASH_H__
 #define __UTILS_HASH_H__
 
+#include <xxhash.h>
+
 /**
  * @addtogroup utils
  *
@@ -42,6 +44,12 @@ char *
 hash_get_from_file (
   const char *  filepath,
   HashAlgorithm algo);
+
+unsigned int
+hash_get_for_struct_full (
+  XXH32_state_t *    state,
+  const void * const obj,
+  size_t             size);
 
 unsigned int
 hash_get_for_struct (

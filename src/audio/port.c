@@ -3406,7 +3406,10 @@ port_process (
           port->id.plugin_id.slot_type ==
             PLUGIN_SLOT_INSTRUMENT))
     {
-      track = port_get_track (port, true);
+      if (ZRYTHM_TESTING)
+        track = port_get_track (port, true);
+      else
+        track = port->track;
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (track));
     }
@@ -3720,6 +3723,8 @@ port_process (
             &port->buf[local_offset],
             &src_port->buf[local_offset],
             1.f, multiplier, nframes);
+          /* note: this limiting wastes around
+           * 50% of this function for audio ports */
           dsp_limit1 (
             &port->buf[local_offset],
             minf, maxf, nframes);

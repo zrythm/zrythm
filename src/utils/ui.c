@@ -330,8 +330,9 @@ ui_px_to_pos_editor (
     Z_RULER_WIDGET (EDITOR_RULER));
 }
 
+PURE
 NONNULL
-static int
+static inline int
 pos_to_px (
   Position *       pos,
   int              use_padding,

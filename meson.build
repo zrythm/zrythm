@@ -910,6 +910,11 @@ audec_dep = dependency(
   fallback: ['libaudec', 'libaudec_dep'],
   required: true, static: all_static)
 
+cairo_dep = dependency (
+  'cairo', fallback: ['cairo', 'libcairo_dep'],
+  default_options: [
+    'zlib=enabled', 'tests=disabled'])
+
 gtk_dep = dependency (
   'gtk+-3.0', version: '>=3.22',
   fallback: ['gtk3', 'libgtk_dep'],
@@ -1207,6 +1212,7 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 zrythm_deps = [
   glib_dep,
+  cairo_dep,
   gtk_dep,
   sndfile_dep,
   samplerate_dep,

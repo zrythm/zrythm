@@ -241,12 +241,6 @@ recording_manager_handle_recording (
     g_start_frames + local_offset, nframes);
 #endif
 
-  Track * tr =
-    track_processor_get_track (track_processor);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (tr);
-  gint64 cur_time = g_get_monotonic_time ();
-
   /* whether to skip adding track recording
    * events */
   bool skip_adding_track_events = false;
@@ -280,8 +274,15 @@ recording_manager_handle_recording (
   /* ---- handle start/stop/pause recording events
    * ---- */
 
+  Track * tr =
+    track_processor_get_track (track_processor);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (tr);
+  gint64 cur_time = g_get_monotonic_time ();
+
   /* if track type can't record do nothing */
-  if (!track_type_can_record (tr->type))
+  if (G_UNLIKELY (
+        !track_type_can_record (tr->type)))
     {
     }
   /* else if not recording at all (recording
@@ -291,7 +292,7 @@ recording_manager_handle_recording (
            !TRANSPORT_IS_ROLLING)
     {
       /* if track had previously recorded */
-      if (tr->recording_region &&
+      if (G_UNLIKELY (tr->recording_region) &&
           !tr->recording_stop_sent)
         {
           tr->recording_stop_sent = true;
@@ -384,10 +385,11 @@ recording_manager_handle_recording (
       AutomationTrack * at = atl->ats[i];
 
       /* if should stop automation recording */
-      if ((!TRANSPORT_IS_ROLLING ||
+      if (G_UNLIKELY (at->recording_started)
+          &&
+          (!TRANSPORT_IS_ROLLING ||
            !automation_track_should_be_recording (
-             at, cur_time, false)) &&
-           at->recording_started)
+             at, cur_time, false)))
         {
           /* send stop automation recording event */
           RecordingEvent * re =
@@ -413,8 +415,9 @@ recording_manager_handle_recording (
           skip_adding_automation_events = true;
         }
       /* if pausing (only at loop end) */
-      else if (at->recording_start_sent
-               && time_nfo->nframes == 0
+      else if (G_UNLIKELY (
+                 at->recording_start_sent
+                 && time_nfo->nframes == 0)
                &&
                (long)
                ((time_nfo->g_start_frames
@@ -483,7 +486,7 @@ recording_manager_handle_recording (
   /* ---- end handling start/stop/pause recording
    * events ---- */
 
-  if (skip_adding_track_events)
+  if (G_LIKELY (skip_adding_track_events))
     {
       goto add_automation_events;
     }
@@ -584,8 +587,10 @@ add_automation_events:
       AutomationTrack * at = atl->ats[i];
 
       /* if automation should be recording */
-      if (TRANSPORT_IS_ROLLING &&
-          at->recording_start_sent &&
+      if (G_UNLIKELY (
+            TRANSPORT_IS_ROLLING
+            && at->recording_start_sent)
+          &&
           automation_track_should_be_recording (
             at, cur_time, false))
         {

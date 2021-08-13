@@ -142,11 +142,35 @@ hash_get_from_file (
 }
 
 unsigned int
+hash_get_for_struct_full (
+  XXH32_state_t *    state,
+  const void * const obj,
+  size_t             size)
+{
+  /* reset state with a seed (0 fastest) */
+  XXH32_reset (state, SEED_32);
+
+  /* hash the file in chunks */
+  XXH32_update (state, obj, size);
+
+  /* finalize the hash */
+  return (unsigned int) XXH32_digest (state);
+}
+
+unsigned int
 hash_get_for_struct (
   const void * const obj,
   size_t             size)
 {
-  XXH32_hash_t hash = XXH32 (obj, size, SEED_32);
+  /* create a state */
+  XXH32_state_t * state = XXH32_createState();
+  g_return_val_if_fail (state, 0);
+
+  XXH32_hash_t hash =
+    hash_get_for_struct_full (state, obj, size);
+
+  /* free the state */
+  XXH32_freeState (state);
 
   return (unsigned int) hash;
 }

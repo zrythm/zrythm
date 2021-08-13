@@ -389,7 +389,7 @@ fader_set_muted (
  */
 bool
 fader_get_muted (
-  Fader * self)
+  const Fader * const self)
 {
   return control_port_is_toggled (self->mute);
 }
@@ -399,7 +399,7 @@ fader_get_muted (
  */
 bool
 fader_get_soloed (
-  Fader * self)
+  const Fader * const self)
 {
   return control_port_is_toggled (self->solo);
 }

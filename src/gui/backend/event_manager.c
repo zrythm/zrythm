@@ -263,6 +263,8 @@ on_arranger_selections_in_transit (
 {
   g_return_if_fail (sel);
 
+  arranger_selections_redraw (sel);
+
   switch (sel->type)
   {
   case ARRANGER_SELECTIONS_TYPE_TIMELINE:
@@ -1184,6 +1186,747 @@ soft_recalc_graph_when_paused (
 }
 
 /**
+ * Processes the given event.
+ *
+ * The caller is responsible for putting the event
+ * back in the object pool if needed.
+ */
+void
+event_manager_process_event (
+  EventManager * self,
+  ZEvent *       ev)
+{
+  switch (ev->type)
+    {
+    case ET_PLUGIN_LATENCY_CHANGED:
+      if (!self->pending_soft_recalc)
+        {
+          self->pending_soft_recalc = true;
+          g_idle_add (
+            soft_recalc_graph_when_paused,
+            self);
+        }
+      break;
+    case ET_TRACKS_REMOVED:
+      if (MW_MIXER)
+        mixer_widget_hard_refresh (MW_MIXER);
+      if (MW_TRACKLIST)
+        tracklist_widget_hard_refresh (
+          MW_TRACKLIST);
+      visibility_widget_refresh (
+        MW_VISIBILITY);
+      tracklist_header_widget_refresh_track_count (
+        MW_TRACKLIST_HEADER);
+      left_dock_edge_widget_refresh (
+        MW_LEFT_DOCK_EDGE);
+      break;
+    case ET_CHANNEL_REMOVED:
+      mixer_widget_hard_refresh (
+        MW_MIXER);
+      break;
+    case ET_ARRANGER_OBJECT_CREATED:
+      on_arranger_object_created (
+        (ArrangerObject *) ev->arg);
+      break;
+    case ET_ARRANGER_OBJECT_CHANGED:
+      on_arranger_object_changed (
+        (ArrangerObject *) ev->arg);
+      break;
+    case ET_ARRANGER_OBJECT_REMOVED:
+      on_arranger_object_removed (
+        (ArrangerObjectType) ev->arg);
+      break;
+    case ET_ARRANGER_SELECTIONS_CHANGED:
+      on_arranger_selections_changed (
+        ARRANGER_SELECTIONS (ev->arg));
+      break;
+    case ET_ARRANGER_SELECTIONS_CREATED:
+      on_arranger_selections_created (
+        ARRANGER_SELECTIONS (ev->arg));
+      break;
+    case ET_ARRANGER_SELECTIONS_REMOVED:
+      on_arranger_selections_removed (
+        ARRANGER_SELECTIONS (ev->arg));
+      break;
+    case ET_ARRANGER_SELECTIONS_MOVED:
+      on_arranger_selections_moved (
+        ARRANGER_SELECTIONS (ev->arg));
+      break;
+    case ET_ARRANGER_SELECTIONS_QUANTIZED:
+      redraw_arranger_for_selections (
+        ARRANGER_SELECTIONS (ev->arg));
+      break;
+    case ET_ARRANGER_SELECTIONS_ACTION_FINISHED:
+      redraw_all_arranger_bgs ();
+      ruler_widget_redraw_whole (
+        (RulerWidget *) MW_RULER);
+      ruler_widget_redraw_whole (
+        (RulerWidget *) EDITOR_RULER);
+      break;
+    case ET_TRACKLIST_SELECTIONS_CHANGED:
+      /* only refresh the inspector if the
+       * tracklist selection changed by
+       * clicking on a track */
+      if (PROJECT->last_selection ==
+            SELECTION_TYPE_TRACKLIST ||
+          PROJECT->last_selection ==
+            SELECTION_TYPE_INSERT ||
+          PROJECT->last_selection ==
+            SELECTION_TYPE_MIDI_FX)
+        {
+          left_dock_edge_widget_refresh (
+            MW_LEFT_DOCK_EDGE);
+        }
+      mixer_widget_soft_refresh (MW_MIXER);
+      /* TODO implement soft refresh */
+      tracklist_widget_hard_refresh (
+        MW_TRACKLIST);
+      break;
+    case ET_RULER_SIZE_CHANGED:
+      {
+        RulerWidget * ruler =
+          Z_RULER_WIDGET (ev->arg);
+        gtk_widget_queue_allocate (
+          GTK_WIDGET (ruler));
+        ruler_widget_redraw_whole (ruler);
+        if (ev->arg == MW_RULER)
+          {
+            arranger_widget_redraw_whole (
+              Z_ARRANGER_WIDGET (
+                MW_TIMELINE));
+            arranger_widget_redraw_whole (
+              Z_ARRANGER_WIDGET (
+                MW_PINNED_TIMELINE));
+          }
+        else if (ev->arg == EDITOR_RULER)
+          {
+            if (gtk_widget_get_visible (
+                  GTK_WIDGET (MW_MIDI_ARRANGER)))
+              {
+                arranger_widget_redraw_whole (
+                  Z_ARRANGER_WIDGET (
+                    MW_MIDI_ARRANGER));
+                arranger_widget_redraw_whole (
+                  Z_ARRANGER_WIDGET (
+                    MW_MIDI_MODIFIER_ARRANGER));
+              }
+            if (gtk_widget_get_visible (
+                  GTK_WIDGET (MW_AUDIO_ARRANGER)))
+              {
+                arranger_widget_redraw_whole (
+                  Z_ARRANGER_WIDGET (
+                    MW_AUDIO_ARRANGER));
+              }
+          }
+      }
+      break;
+    case ET_CLIP_MARKER_POS_CHANGED:
+      ruler_widget_redraw_whole (
+        EDITOR_RULER);
+      clip_editor_redraw_region (CLIP_EDITOR);
+      break;
+    case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
+    case ET_TIMELINE_PUNCH_MARKER_POS_CHANGED:
+      ruler_widget_redraw_whole (
+        (RulerWidget *) MW_RULER);
+      ruler_widget_redraw_whole (
+        (RulerWidget *) EDITOR_RULER);
+      redraw_all_arranger_bgs ();
+      break;
+    case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
+      gtk_widget_queue_allocate (
+        GTK_WIDGET (MW_RULER));
+      ruler_widget_redraw_whole (
+        (RulerWidget *) MW_RULER);
+      break;
+    case ET_PLUGIN_VISIBILITY_CHANGED:
+      on_plugin_visibility_changed (
+        (Plugin *) ev->arg);
+      break;
+    case ET_PLUGIN_WINDOW_VISIBILITY_CHANGED:
+      on_plugin_window_visibility_changed (
+        (Plugin *) ev->arg);
+      break;
+    case ET_PLUGIN_STATE_CHANGED:
+      {
+        Plugin * pl = (Plugin *) ev->arg;
+        on_plugin_state_changed (pl);
+        g_atomic_int_set (
+          &pl->state_changed_event_sent, 0);
+      }
+      break;
+    case ET_TRANSPORT_TOTAL_BARS_CHANGED:
+      snap_grid_update_snap_points_default (
+        SNAP_GRID_TIMELINE);
+
+      ruler_widget_refresh (
+        (RulerWidget *) MW_RULER);
+      ruler_widget_refresh (
+        (RulerWidget *) EDITOR_RULER);
+      timeline_minimap_widget_refresh (
+        MW_TIMELINE_MINIMAP);
+      break;
+    case ET_AUTOMATION_VALUE_CHANGED:
+      on_automation_value_changed (
+        (Port *) ev->arg);
+      break;
+    case ET_RANGE_SELECTION_CHANGED:
+      on_range_selection_changed ();
+      timeline_toolbar_widget_refresh (
+        MW_TIMELINE_TOOLBAR);
+      break;
+    case ET_TOOL_CHANGED:
+      toolbox_widget_refresh (MW_TOOLBOX);
+      arranger_widget_refresh_cursor (
+        Z_ARRANGER_WIDGET (MW_TIMELINE));
+      if (MW_MIDI_ARRANGER &&
+          gtk_widget_get_realized (
+            GTK_WIDGET (MW_MIDI_ARRANGER)))
+        arranger_widget_refresh_cursor (
+          Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
+      if (MW_MIDI_MODIFIER_ARRANGER &&
+          gtk_widget_get_realized (
+            GTK_WIDGET (MW_MIDI_MODIFIER_ARRANGER)))
+        arranger_widget_refresh_cursor (
+          Z_ARRANGER_WIDGET (
+            MW_MIDI_MODIFIER_ARRANGER));
+      break;
+    case ET_TIME_SIGNATURE_CHANGED:
+      ruler_widget_refresh (
+        Z_RULER_WIDGET (MW_RULER));
+      ruler_widget_refresh (
+        Z_RULER_WIDGET (EDITOR_RULER));
+      gtk_widget_queue_draw (
+        GTK_WIDGET (MW_DIGITAL_TIME_SIG));
+      break;
+    case ET_PLAYHEAD_POS_CHANGED:
+      on_playhead_changed (false);
+      break;
+    case ET_PLAYHEAD_POS_CHANGED_MANUALLY:
+      on_playhead_changed (true);
+      break;
+    case ET_CLIP_EDITOR_REGION_CHANGED:
+      /*on_clip_editor_region_changed ();*/
+      clip_editor_widget_on_region_changed (
+        MW_CLIP_EDITOR);
+      break;
+    case ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
+      tracklist_widget_update_track_visibility (
+        MW_TRACKLIST);
+      break;
+    case ET_TRACK_LANES_VISIBILITY_CHANGED:
+      tracklist_widget_update_track_visibility (
+        MW_TRACKLIST);
+      /*arranger_widget_update_visibility (*/
+        /*(ArrangerWidget *) MW_TIMELINE);*/
+      /*arranger_widget_update_visibility (*/
+        /*(ArrangerWidget *) MW_PINNED_TIMELINE);*/
+      break;
+    case ET_TRACK_ADDED:
+      on_track_added ((Track *) ev->arg);
+      tracklist_header_widget_refresh_track_count (
+        MW_TRACKLIST_HEADER);
+      break;
+    case ET_TRACK_CHANGED:
+      on_track_changed ((Track *) ev->arg);
+      break;
+    case ET_TRACKS_ADDED:
+      if (MW_MIXER)
+        mixer_widget_hard_refresh (MW_MIXER);
+      if (MW_TRACKLIST)
+        tracklist_widget_hard_refresh (
+          MW_TRACKLIST);
+      visibility_widget_refresh (
+        MW_VISIBILITY);
+      tracklist_header_widget_refresh_track_count (
+        MW_TRACKLIST_HEADER);
+      break;
+    case ET_TRACK_COLOR_CHANGED:
+      on_track_color_changed ((Track *) ev->arg);
+      break;
+    case ET_TRACK_NAME_CHANGED:
+      on_track_name_changed ((Track *) ev->arg);
+      break;
+    case ET_REFRESH_ARRANGER:
+      /* remove the children of the pinned
+       * timeline first because one of them
+       * will be added to the unpinned
+       * tracklist when unpinning */
+      arranger_widget_redraw_whole (
+        MW_PINNED_TIMELINE);
+
+      if (MW_TIMELINE)
+        arranger_widget_redraw_whole (
+          MW_TIMELINE);
+      break;
+    case ET_TIMELINE_VIEWPORT_CHANGED:
+      timeline_minimap_widget_refresh (
+        MW_TIMELINE_MINIMAP);
+      ruler_widget_refresh (
+        Z_RULER_WIDGET (MW_RULER));
+      ruler_widget_refresh (
+        Z_RULER_WIDGET (EDITOR_RULER));
+      break;
+    case ET_TRACK_STATE_CHANGED:
+      /*on_track_state_changed (*/
+        /*(Track *) ev->arg);*/
+      for (int j = 0; j < TRACKLIST->num_tracks;
+           j++)
+        {
+          on_track_state_changed (
+            TRACKLIST->tracks[j]);
+        }
+      monitor_section_widget_refresh (
+        MW_MONITOR_SECTION);
+      break;
+    case ET_TRACK_VISIBILITY_CHANGED:
+      tracklist_widget_update_track_visibility (
+        MW_TRACKLIST);
+      arranger_widget_redraw_whole (
+        MW_TIMELINE);
+      arranger_widget_redraw_whole (
+        MW_PINNED_TIMELINE);
+      track_visibility_tree_widget_refresh (
+        MW_TRACK_VISIBILITY_TREE);
+      tracklist_header_widget_refresh_track_count (
+        MW_TRACKLIST_HEADER);
+      mixer_widget_hard_refresh (MW_MIXER);
+      break;
+    case ET_UNDO_REDO_ACTION_DONE:
+      home_toolbar_widget_refresh_undo_redo_buttons (
+        MW_HOME_TOOLBAR);
+      break;
+    case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
+      if (MW_MIDI_EDITOR_SPACE)
+        piano_roll_keys_widget_refresh (
+          MW_PIANO_ROLL_KEYS);
+      break;
+    case ET_RULER_STATE_CHANGED:
+      ruler_widget_refresh (
+        (RulerWidget *) MW_RULER);
+      break;
+    case ET_AUTOMATION_TRACK_ADDED:
+    case ET_AUTOMATION_TRACK_REMOVED:
+    case ET_AUTOMATION_TRACK_CHANGED:
+      on_automation_track_added (
+        (AutomationTrack *) ev->arg);
+      break;
+    case ET_PLUGINS_ADDED:
+      on_plugins_removed ((Track *)ev->arg);
+      break;
+    case ET_PLUGIN_ADDED:
+      on_plugin_added (
+        (Plugin *) ev->arg);
+      break;
+    case ET_PLUGIN_CRASHED:
+      on_plugin_crashed (
+        (Plugin *) ev->arg);
+      break;
+    case ET_PLUGINS_REMOVED:
+      on_plugins_removed ((Track *)ev->arg);
+      break;
+    case ET_MIXER_SELECTIONS_CHANGED:
+      on_mixer_selections_changed ();
+      break;
+    case ET_CHANNEL_OUTPUT_CHANGED:
+      on_channel_output_changed (
+        (Channel *)ev->arg);
+      break;
+    case ET_TRACKS_MOVED:
+      if (MW_MIXER)
+        mixer_widget_hard_refresh (MW_MIXER);
+
+      /* remove the children of the pinned
+       * tracklist first because one of them
+       * will be added to the unpinned
+       * tracklist when unpinning */
+      /*z_gtk_container_remove_all_children (*/
+        /*GTK_CONTAINER (MW_PINNED_TRACKLIST));*/
+
+      if (MW_TRACKLIST)
+        tracklist_widget_hard_refresh (
+          MW_TRACKLIST);
+      /*if (MW_PINNED_TRACKLIST)*/
+        /*pinned_tracklist_widget_hard_refresh (*/
+          /*MW_PINNED_TRACKLIST);*/
+
+      visibility_widget_refresh (
+        MW_VISIBILITY);
+
+      /* needs to be called later because tracks
+       * need time to get allocated */
+      EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
+      break;
+    case ET_CHANNEL_SLOTS_CHANGED:
+      {
+        Channel * ch = (Channel *) ev->arg;
+        ChannelWidget * cw =
+          ch ? ch->widget : NULL;
+        if (cw)
+          {
+            channel_widget_update_midi_fx_and_inserts (
+              cw);
+          }
+      }
+      break;
+    case ET_DRUM_MODE_CHANGED:
+      midi_editor_space_widget_refresh (
+        MW_MIDI_EDITOR_SPACE);
+      break;
+    case ET_MODULATOR_ADDED:
+      on_modulator_added ((Plugin *)ev->arg);
+      break;
+    case ET_PINNED_TRACKLIST_SIZE_CHANGED:
+      /*gtk_widget_set_size_request (*/
+        /*GTK_WIDGET (*/
+          /*MW_CENTER_DOCK->*/
+            /*pinned_timeline_scroll),*/
+        /*-1,*/
+        /*gtk_widget_get_allocated_height (*/
+          /*GTK_WIDGET (MW_PINNED_TRACKLIST)));*/
+      break;
+    case ET_TRACK_LANE_ADDED:
+    case ET_TRACK_LANE_REMOVED:
+      tracklist_widget_update_track_visibility (
+        MW_TRACKLIST);
+      /*arranger_widget_update_visibility (*/
+        /*(ArrangerWidget *) MW_TIMELINE);*/
+      break;
+    case ET_LOOP_TOGGLED:
+      redraw_all_arranger_bgs ();
+      ruler_widget_redraw_whole (
+        (RulerWidget *) EDITOR_RULER);
+      ruler_widget_redraw_whole (
+        (RulerWidget *) MW_RULER);
+      transport_controls_widget_refresh (
+        MW_TRANSPORT_CONTROLS);
+      break;
+    case ET_ARRANGER_SELECTIONS_IN_TRANSIT:
+      on_arranger_selections_in_transit (
+        (ArrangerSelections *) ev->arg);
+      break;
+    case ET_CHORD_KEY_CHANGED:
+      for (int j = 0;
+           j < CHORD_EDITOR->num_chords; j++)
+        {
+          if (CHORD_EDITOR->chords[j] ==
+               (ChordDescriptor *) ev->arg)
+            {
+              chord_key_widget_refresh (
+                MW_CHORD_EDITOR_SPACE->
+                  chord_keys[j]);
+            }
+        }
+      chord_pad_widget_refresh (MW_CHORD_PAD);
+      break;
+    case ET_JACK_TRANSPORT_TYPE_CHANGED:
+      g_message ("doing");
+      top_bar_widget_refresh (
+        TOP_BAR);
+      break;
+    case ET_SELECTING_IN_ARRANGER:
+      {
+        ArrangerWidget * arranger =
+          Z_ARRANGER_WIDGET (ev->arg);
+        ArrangerSelections * sel =
+          arranger_widget_get_selections (arranger);
+        arranger_selections_redraw (sel);
+        timeline_toolbar_widget_refresh (
+          MW_TIMELINE_TOOLBAR);
+      }
+      break;
+    case ET_TRACKS_RESIZED:
+      g_warn_if_fail (ev->arg);
+      arranger_widget_redraw_whole (
+        MW_TIMELINE);
+      arranger_widget_redraw_whole (
+        MW_PINNED_TIMELINE);
+      break;
+    case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
+      gtk_widget_set_visible (
+        GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
+        g_settings_get_boolean (
+          S_UI, "editor-event-viewer-visible"));
+      break;
+    case ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED:
+      arranger_widget_redraw_whole (
+        (ArrangerWidget *)
+        MW_MIDI_MODIFIER_ARRANGER);
+      break;
+    case ET_BPM_CHANGED:
+      ruler_widget_refresh (MW_RULER);
+      ruler_widget_refresh (EDITOR_RULER);
+      gtk_widget_queue_draw (
+        GTK_WIDGET (MW_DIGITAL_BPM));
+
+      /* these are only used in the UI so
+       * no need to update them during DSP */
+      snap_grid_update_snap_points_default (
+        &PROJECT->snap_grid_timeline);
+      snap_grid_update_snap_points_default (
+        &PROJECT->snap_grid_midi);
+      quantize_options_update_quantize_points (
+        &PROJECT->quantize_opts_timeline);
+      quantize_options_update_quantize_points (
+        &PROJECT->quantize_opts_editor);
+      redraw_all_arranger_bgs ();
+      break;
+    case ET_CHANNEL_FADER_VAL_CHANGED:
+      channel_widget_redraw_fader (
+        ((Channel *)ev->arg)->widget);
+#if 0
+      inspector_track_widget_show_tracks (
+        MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
+#endif
+      break;
+    case ET_PIANO_ROLL_KEY_HEIGHT_CHANGED:
+      midi_editor_space_widget_refresh (
+        MW_MIDI_EDITOR_SPACE);
+      break;
+    case ET_MAIN_WINDOW_LOADED:
+      /* show all visible plugins */
+      for (int j = 0; j < TRACKLIST->num_tracks;
+           j++)
+        {
+          Channel * ch =
+            TRACKLIST->tracks[j]->channel;
+          if (!ch)
+            continue;
+
+          for (int k = 0;
+               k < STRIP_SIZE * 2 + 1; k++)
+            {
+              Plugin * pl = NULL;
+              if (k < STRIP_SIZE)
+                pl = ch->midi_fx[k];
+              else if (k == STRIP_SIZE)
+                pl = ch->instrument;
+              else
+                pl =
+                  ch->inserts[
+                    k - (STRIP_SIZE + 1)];
+
+              if (!pl)
+                continue;
+              if (pl->visible)
+                plugin_open_ui (pl);
+            }
+        }
+      /* refresh modulator view */
+      if (MW_MODULATOR_VIEW)
+        {
+          modulator_view_widget_refresh (
+            MW_MODULATOR_VIEW,
+            P_MODULATOR_TRACK);
+        }
+
+      /* show clip editor if clip selected */
+      if (MW_CLIP_EDITOR &&
+          CLIP_EDITOR->has_region)
+        {
+          clip_editor_widget_on_region_changed (
+            MW_CLIP_EDITOR);
+        }
+
+      /* refresh inspector */
+      left_dock_edge_widget_refresh (
+        MW_LEFT_DOCK_EDGE);
+      on_project_selection_type_changed ();
+      main_notebook_widget_refresh (
+        MW_MAIN_NOTEBOOK);
+
+#ifdef CHECK_UPDATES
+      zrythm_app_check_for_updates (zrythm_app);
+#endif /* CHECK_UPDATES */
+      break;
+    case ET_SPLASH_CLOSED:
+      break;
+    case ET_PROJECT_SAVED:
+      header_widget_set_subtitle (
+        MW_HEADER,
+        ((Project *) ev->arg)->title);
+      break;
+    case ET_PROJECT_LOADED:
+      header_widget_set_subtitle (
+        MW_HEADER,
+        ((Project *) ev->arg)->title);
+      home_toolbar_widget_refresh_undo_redo_buttons (
+        MW_HOME_TOOLBAR);
+      ruler_widget_set_zoom_level (
+        MW_RULER,
+        ruler_widget_get_zoom_level (
+          MW_RULER));
+      ruler_widget_set_zoom_level (
+        EDITOR_RULER,
+        ruler_widget_get_zoom_level (
+          EDITOR_RULER));
+      break;
+    case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
+      /* TODO */
+      break;
+    case ET_TRIAL_LIMIT_REACHED:
+      {
+        char msg[500];
+        sprintf (
+          msg,
+          _("Trial limit has been reached. "
+          "%s will now go silent"),
+          PROGRAM_NAME);
+        ui_show_message_full (
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_MESSAGE_INFO, "%s", msg);
+      }
+      break;
+    case ET_CHANNEL_SEND_CHANGED:
+      {
+        ChannelSend * send =
+          (ChannelSend *) ev->arg;
+        ChannelSendWidget * widget =
+          channel_send_find_widget (send);
+        if (widget)
+          {
+            gtk_widget_queue_draw (
+              GTK_WIDGET (widget));
+          }
+        Track * tr =
+          channel_send_get_track (send);
+        ChannelWidget * ch_w =
+          tr->channel->widget;
+        if (ch_w)
+          {
+            gtk_widget_queue_draw (
+              GTK_WIDGET (
+                ch_w->sends->slots[
+                  send->slot]));
+          }
+      }
+      break;
+    case ET_RULER_DISPLAY_TYPE_CHANGED:
+      redraw_all_arranger_bgs ();
+      if (EDITOR_RULER)
+        {
+          ruler_widget_redraw_whole (
+            EDITOR_RULER);
+        }
+      if (MW_RULER)
+        {
+          ruler_widget_redraw_whole (MW_RULER);
+        }
+      break;
+    case ET_ARRANGER_HIGHLIGHT_CHANGED:
+      {
+        ArrangerWidget * arranger =
+          Z_ARRANGER_WIDGET (ev->arg);
+        arranger_widget_redraw_whole (
+          arranger);
+       }
+      break;
+    case ET_ENGINE_ACTIVATE_CHANGED:
+    case ET_ENGINE_BUFFER_SIZE_CHANGED:
+    case ET_ENGINE_SAMPLE_RATE_CHANGED:
+      bot_bar_widget_refresh (MW_BOT_BAR);
+      ruler_widget_redraw_whole (EDITOR_RULER);
+      ruler_widget_redraw_whole (MW_RULER);
+      inspector_track_widget_show_tracks (
+        MW_TRACK_INSPECTOR,
+        TRACKLIST_SELECTIONS, false);
+      break;
+    case ET_MIDI_BINDINGS_CHANGED:
+      main_notebook_widget_refresh (
+        MW_MAIN_NOTEBOOK);
+      break;
+    case ET_PORT_CONNECTION_CHANGED:
+      main_notebook_widget_refresh (
+        MW_MAIN_NOTEBOOK);
+      break;
+    case ET_EDITOR_FUNCTION_APPLIED:
+      editor_toolbar_widget_refresh (
+        MW_EDITOR_TOOLBAR);
+      break;
+    case ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING:
+      arranger_selections_change_redraw_everything (
+        ARRANGER_SELECTIONS (ev->arg));
+      break;
+    case ET_AUTOMATION_VALUE_VISIBILITY_CHANGED:
+      arranger_widget_redraw_whole (
+        MW_AUTOMATION_ARRANGER);
+      break;
+    case ET_PROJECT_SELECTION_TYPE_CHANGED:
+      on_project_selection_type_changed ();
+      break;
+    case ET_AUDIO_SELECTIONS_RANGE_CHANGED:
+      arranger_widget_redraw_whole (
+        MW_AUDIO_ARRANGER);
+      break;
+    case ET_PLUGIN_COLLETIONS_CHANGED:
+      plugin_browser_widget_refresh_collections (
+        MW_PLUGIN_BROWSER);
+      break;
+    case ET_SNAP_GRID_OPTIONS_CHANGED:
+      {
+        SnapGrid * sg = (SnapGrid *) ev->arg;
+        if (sg == SNAP_GRID_TIMELINE)
+          {
+            snap_box_widget_refresh (
+              MW_TIMELINE_TOOLBAR->snap_box);
+          }
+        else if (sg == SNAP_GRID_MIDI)
+          {
+            snap_box_widget_refresh (
+              MW_EDITOR_TOOLBAR->snap_box);
+          }
+      }
+      break;
+    case ET_TRANSPORT_RECORDING_ON_OFF_CHANGED:
+      gtk_toggle_button_set_active (
+        MW_TRANSPORT_CONTROLS->trans_record_btn,
+        TRANSPORT->recording);
+      break;
+    case ET_TRACK_FREEZE_CHANGED:
+      arranger_selections_change_redraw_everything (
+        (ArrangerSelections *) TL_SELECTIONS);
+      break;
+    case ET_LOG_WARNING_STATE_CHANGED:
+      header_widget_refresh (MW_HEADER);
+      break;
+    case ET_PLAYHEAD_SCROLL_MODE_CHANGED:
+      break;
+    case ET_TRACK_FADER_BUTTON_CHANGED:
+      on_track_state_changed (
+        (Track *) ev->arg);
+      break;
+    case ET_PLUGIN_PRESET_SAVED:
+    case ET_PLUGIN_PRESET_LOADED:
+      {
+        Plugin * pl = (Plugin *) ev->arg;
+        if (pl->window)
+          {
+            plugin_gtk_set_window_title (
+              pl, pl->window);
+          }
+      }
+      break;
+    case ET_TRACK_FOLD_CHANGED:
+      on_track_added ((Track *) ev->arg);
+      break;
+    case ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED:
+    case ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED:
+    case ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED:
+      mixer_widget_soft_refresh (MW_MIXER);
+      break;
+    case ET_REGION_ACTIVATED:
+      bot_dock_edge_widget_show_clip_editor (
+        MW_BOT_DOCK_EDGE, true);
+      break;
+    default:
+      g_warning (
+        "event %d not implemented yet",
+        ev->type);
+      break;
+    }
+}
+
+/**
  * GSourceFunc to be added using idle add.
  *
  * This will loop indefinintely.
@@ -1220,727 +1963,7 @@ process_events (void * data)
 
       /*g_message ("event type %d", ev->type);*/
 
-      switch (ev->type)
-        {
-        case ET_PLUGIN_LATENCY_CHANGED:
-          if (!self->pending_soft_recalc)
-            {
-              self->pending_soft_recalc = true;
-              g_idle_add (
-                soft_recalc_graph_when_paused,
-                self);
-            }
-          break;
-        case ET_TRACKS_REMOVED:
-          if (MW_MIXER)
-            mixer_widget_hard_refresh (MW_MIXER);
-          if (MW_TRACKLIST)
-            tracklist_widget_hard_refresh (
-              MW_TRACKLIST);
-          visibility_widget_refresh (
-            MW_VISIBILITY);
-          tracklist_header_widget_refresh_track_count (
-            MW_TRACKLIST_HEADER);
-          left_dock_edge_widget_refresh (
-            MW_LEFT_DOCK_EDGE);
-          break;
-        case ET_CHANNEL_REMOVED:
-          mixer_widget_hard_refresh (
-            MW_MIXER);
-          break;
-        case ET_ARRANGER_OBJECT_CREATED:
-          on_arranger_object_created (
-            (ArrangerObject *) ev->arg);
-          break;
-        case ET_ARRANGER_OBJECT_CHANGED:
-          on_arranger_object_changed (
-            (ArrangerObject *) ev->arg);
-          break;
-        case ET_ARRANGER_OBJECT_REMOVED:
-          on_arranger_object_removed (
-            (ArrangerObjectType) ev->arg);
-          break;
-        case ET_ARRANGER_SELECTIONS_CHANGED:
-          on_arranger_selections_changed (
-            ARRANGER_SELECTIONS (ev->arg));
-          break;
-        case ET_ARRANGER_SELECTIONS_CREATED:
-          on_arranger_selections_created (
-            ARRANGER_SELECTIONS (ev->arg));
-          break;
-        case ET_ARRANGER_SELECTIONS_REMOVED:
-          on_arranger_selections_removed (
-            ARRANGER_SELECTIONS (ev->arg));
-          break;
-        case ET_ARRANGER_SELECTIONS_MOVED:
-          on_arranger_selections_moved (
-            ARRANGER_SELECTIONS (ev->arg));
-          break;
-        case ET_ARRANGER_SELECTIONS_QUANTIZED:
-          redraw_arranger_for_selections (
-            ARRANGER_SELECTIONS (ev->arg));
-          break;
-        case ET_ARRANGER_SELECTIONS_ACTION_FINISHED:
-          redraw_all_arranger_bgs ();
-          ruler_widget_redraw_whole (
-            (RulerWidget *) MW_RULER);
-          ruler_widget_redraw_whole (
-            (RulerWidget *) EDITOR_RULER);
-          break;
-        case ET_TRACKLIST_SELECTIONS_CHANGED:
-          /* only refresh the inspector if the
-           * tracklist selection changed by
-           * clicking on a track */
-          if (PROJECT->last_selection ==
-                SELECTION_TYPE_TRACKLIST ||
-              PROJECT->last_selection ==
-                SELECTION_TYPE_INSERT ||
-              PROJECT->last_selection ==
-                SELECTION_TYPE_MIDI_FX)
-            {
-              left_dock_edge_widget_refresh (
-                MW_LEFT_DOCK_EDGE);
-            }
-          mixer_widget_soft_refresh (MW_MIXER);
-          /* TODO implement soft refresh */
-          tracklist_widget_hard_refresh (
-            MW_TRACKLIST);
-          break;
-        case ET_RULER_SIZE_CHANGED:
-          g_return_val_if_fail (
-            Z_IS_RULER_WIDGET (ev->arg),
-            G_SOURCE_CONTINUE);
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (ev->arg)); // ruler widget
-          if (ev->arg == MW_RULER)
-            {
-              arranger_widget_redraw_whole (
-                Z_ARRANGER_WIDGET (
-                  MW_TIMELINE));
-              arranger_widget_redraw_whole (
-                Z_ARRANGER_WIDGET (
-                  MW_PINNED_TIMELINE));
-            }
-          else if (ev->arg == EDITOR_RULER)
-            {
-              if (gtk_widget_get_visible (
-                    GTK_WIDGET (MW_MIDI_ARRANGER)))
-                {
-                  arranger_widget_redraw_whole (
-                    Z_ARRANGER_WIDGET (
-                      MW_MIDI_ARRANGER));
-                  arranger_widget_redraw_whole (
-                    Z_ARRANGER_WIDGET (
-                      MW_MIDI_MODIFIER_ARRANGER));
-                }
-              if (gtk_widget_get_visible (
-                    GTK_WIDGET (MW_AUDIO_ARRANGER)))
-                {
-                  arranger_widget_redraw_whole (
-                    Z_ARRANGER_WIDGET (
-                      MW_AUDIO_ARRANGER));
-                }
-            }
-          break;
-        case ET_CLIP_MARKER_POS_CHANGED:
-          ruler_widget_redraw_whole (
-            EDITOR_RULER);
-          clip_editor_redraw_region (CLIP_EDITOR);
-          break;
-        case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
-        case ET_TIMELINE_PUNCH_MARKER_POS_CHANGED:
-          ruler_widget_redraw_whole (
-            (RulerWidget *) MW_RULER);
-          ruler_widget_redraw_whole (
-            (RulerWidget *) EDITOR_RULER);
-          redraw_all_arranger_bgs ();
-          break;
-        case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (MW_RULER));
-          ruler_widget_redraw_whole (
-            (RulerWidget *) MW_RULER);
-          break;
-        case ET_PLUGIN_VISIBILITY_CHANGED:
-          on_plugin_visibility_changed (
-            (Plugin *) ev->arg);
-          break;
-        case ET_PLUGIN_WINDOW_VISIBILITY_CHANGED:
-          on_plugin_window_visibility_changed (
-            (Plugin *) ev->arg);
-          break;
-        case ET_PLUGIN_STATE_CHANGED:
-          {
-            Plugin * pl = (Plugin *) ev->arg;
-            on_plugin_state_changed (pl);
-            g_atomic_int_set (
-              &pl->state_changed_event_sent, 0);
-          }
-          break;
-        case ET_TRANSPORT_TOTAL_BARS_CHANGED:
-          snap_grid_update_snap_points_default (
-            SNAP_GRID_TIMELINE);
-
-          ruler_widget_refresh (
-            (RulerWidget *) MW_RULER);
-          ruler_widget_refresh (
-            (RulerWidget *) EDITOR_RULER);
-          timeline_minimap_widget_refresh (
-            MW_TIMELINE_MINIMAP);
-          break;
-        case ET_AUTOMATION_VALUE_CHANGED:
-          on_automation_value_changed (
-            (Port *) ev->arg);
-          break;
-        case ET_RANGE_SELECTION_CHANGED:
-          on_range_selection_changed ();
-          timeline_toolbar_widget_refresh (
-            MW_TIMELINE_TOOLBAR);
-          break;
-        case ET_TOOL_CHANGED:
-          toolbox_widget_refresh (MW_TOOLBOX);
-          arranger_widget_refresh_cursor (
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
-          if (MW_MIDI_ARRANGER &&
-              gtk_widget_get_realized (
-                GTK_WIDGET (MW_MIDI_ARRANGER)))
-            arranger_widget_refresh_cursor (
-              Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
-          if (MW_MIDI_MODIFIER_ARRANGER &&
-              gtk_widget_get_realized (
-                GTK_WIDGET (MW_MIDI_MODIFIER_ARRANGER)))
-            arranger_widget_refresh_cursor (
-              Z_ARRANGER_WIDGET (
-                MW_MIDI_MODIFIER_ARRANGER));
-          break;
-        case ET_TIME_SIGNATURE_CHANGED:
-          ruler_widget_refresh (
-            Z_RULER_WIDGET (MW_RULER));
-          ruler_widget_refresh (
-            Z_RULER_WIDGET (EDITOR_RULER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MW_DIGITAL_TIME_SIG));
-          break;
-        case ET_PLAYHEAD_POS_CHANGED:
-          on_playhead_changed (false);
-          break;
-        case ET_PLAYHEAD_POS_CHANGED_MANUALLY:
-          on_playhead_changed (true);
-          break;
-        case ET_CLIP_EDITOR_REGION_CHANGED:
-          /*on_clip_editor_region_changed ();*/
-          clip_editor_widget_on_region_changed (
-            MW_CLIP_EDITOR);
-          break;
-        case ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
-          tracklist_widget_update_track_visibility (
-            MW_TRACKLIST);
-          break;
-        case ET_TRACK_LANES_VISIBILITY_CHANGED:
-          tracklist_widget_update_track_visibility (
-            MW_TRACKLIST);
-          /*arranger_widget_update_visibility (*/
-            /*(ArrangerWidget *) MW_TIMELINE);*/
-          /*arranger_widget_update_visibility (*/
-            /*(ArrangerWidget *) MW_PINNED_TIMELINE);*/
-          break;
-        case ET_TRACK_ADDED:
-          on_track_added ((Track *) ev->arg);
-          tracklist_header_widget_refresh_track_count (
-            MW_TRACKLIST_HEADER);
-          break;
-        case ET_TRACK_CHANGED:
-          on_track_changed ((Track *) ev->arg);
-          break;
-        case ET_TRACKS_ADDED:
-          if (MW_MIXER)
-            mixer_widget_hard_refresh (MW_MIXER);
-          if (MW_TRACKLIST)
-            tracklist_widget_hard_refresh (
-              MW_TRACKLIST);
-          visibility_widget_refresh (
-            MW_VISIBILITY);
-          tracklist_header_widget_refresh_track_count (
-            MW_TRACKLIST_HEADER);
-          break;
-        case ET_TRACK_COLOR_CHANGED:
-          on_track_color_changed ((Track *) ev->arg);
-          break;
-        case ET_TRACK_NAME_CHANGED:
-          on_track_name_changed ((Track *) ev->arg);
-          break;
-        case ET_REFRESH_ARRANGER:
-          /* remove the children of the pinned
-           * timeline first because one of them
-           * will be added to the unpinned
-           * tracklist when unpinning */
-          arranger_widget_redraw_whole (
-            MW_PINNED_TIMELINE);
-
-          if (MW_TIMELINE)
-            arranger_widget_redraw_whole (
-              MW_TIMELINE);
-          break;
-        case ET_TIMELINE_VIEWPORT_CHANGED:
-          timeline_minimap_widget_refresh (
-            MW_TIMELINE_MINIMAP);
-          ruler_widget_refresh (
-            Z_RULER_WIDGET (MW_RULER));
-          ruler_widget_refresh (
-            Z_RULER_WIDGET (EDITOR_RULER));
-          break;
-        case ET_TRACK_STATE_CHANGED:
-          /*on_track_state_changed (*/
-            /*(Track *) ev->arg);*/
-          for (int j = 0; j < TRACKLIST->num_tracks;
-               j++)
-            {
-              on_track_state_changed (
-                TRACKLIST->tracks[j]);
-            }
-          monitor_section_widget_refresh (
-            MW_MONITOR_SECTION);
-          break;
-        case ET_TRACK_VISIBILITY_CHANGED:
-          tracklist_widget_update_track_visibility (
-            MW_TRACKLIST);
-          arranger_widget_redraw_whole (
-            MW_TIMELINE);
-          arranger_widget_redraw_whole (
-            MW_PINNED_TIMELINE);
-          track_visibility_tree_widget_refresh (
-            MW_TRACK_VISIBILITY_TREE);
-          tracklist_header_widget_refresh_track_count (
-            MW_TRACKLIST_HEADER);
-          mixer_widget_hard_refresh (MW_MIXER);
-          break;
-        case ET_UNDO_REDO_ACTION_DONE:
-          home_toolbar_widget_refresh_undo_redo_buttons (
-            MW_HOME_TOOLBAR);
-          break;
-        case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
-          if (MW_MIDI_EDITOR_SPACE)
-            piano_roll_keys_widget_refresh (
-              MW_PIANO_ROLL_KEYS);
-          break;
-        case ET_RULER_STATE_CHANGED:
-          ruler_widget_refresh (
-            (RulerWidget *) MW_RULER);
-          break;
-        case ET_AUTOMATION_TRACK_ADDED:
-        case ET_AUTOMATION_TRACK_REMOVED:
-        case ET_AUTOMATION_TRACK_CHANGED:
-          on_automation_track_added (
-            (AutomationTrack *) ev->arg);
-          break;
-        case ET_PLUGINS_ADDED:
-          on_plugins_removed ((Track *)ev->arg);
-          break;
-        case ET_PLUGIN_ADDED:
-          on_plugin_added (
-            (Plugin *) ev->arg);
-          break;
-        case ET_PLUGIN_CRASHED:
-          on_plugin_crashed (
-            (Plugin *) ev->arg);
-          break;
-        case ET_PLUGINS_REMOVED:
-          on_plugins_removed ((Track *)ev->arg);
-          break;
-        case ET_MIXER_SELECTIONS_CHANGED:
-          on_mixer_selections_changed ();
-          break;
-        case ET_CHANNEL_OUTPUT_CHANGED:
-          on_channel_output_changed (
-            (Channel *)ev->arg);
-          break;
-        case ET_TRACKS_MOVED:
-          if (MW_MIXER)
-            mixer_widget_hard_refresh (MW_MIXER);
-
-          /* remove the children of the pinned
-           * tracklist first because one of them
-           * will be added to the unpinned
-           * tracklist when unpinning */
-          /*z_gtk_container_remove_all_children (*/
-            /*GTK_CONTAINER (MW_PINNED_TRACKLIST));*/
-
-          if (MW_TRACKLIST)
-            tracklist_widget_hard_refresh (
-              MW_TRACKLIST);
-          /*if (MW_PINNED_TRACKLIST)*/
-            /*pinned_tracklist_widget_hard_refresh (*/
-              /*MW_PINNED_TRACKLIST);*/
-
-          visibility_widget_refresh (
-            MW_VISIBILITY);
-
-          /* needs to be called later because tracks
-           * need time to get allocated */
-          EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
-          break;
-        case ET_CHANNEL_SLOTS_CHANGED:
-          {
-            Channel * ch = (Channel *) ev->arg;
-            ChannelWidget * cw =
-              ch ? ch->widget : NULL;
-            if (cw)
-              {
-                channel_widget_update_midi_fx_and_inserts (
-                  cw);
-              }
-          }
-          break;
-        case ET_DRUM_MODE_CHANGED:
-          midi_editor_space_widget_refresh (
-            MW_MIDI_EDITOR_SPACE);
-          break;
-        case ET_MODULATOR_ADDED:
-          on_modulator_added ((Plugin *)ev->arg);
-          break;
-        case ET_PINNED_TRACKLIST_SIZE_CHANGED:
-          /*gtk_widget_set_size_request (*/
-            /*GTK_WIDGET (*/
-              /*MW_CENTER_DOCK->*/
-                /*pinned_timeline_scroll),*/
-            /*-1,*/
-            /*gtk_widget_get_allocated_height (*/
-              /*GTK_WIDGET (MW_PINNED_TRACKLIST)));*/
-          break;
-        case ET_TRACK_LANE_ADDED:
-        case ET_TRACK_LANE_REMOVED:
-          tracklist_widget_update_track_visibility (
-            MW_TRACKLIST);
-          /*arranger_widget_update_visibility (*/
-            /*(ArrangerWidget *) MW_TIMELINE);*/
-          break;
-        case ET_LOOP_TOGGLED:
-          redraw_all_arranger_bgs ();
-          ruler_widget_redraw_whole (
-            (RulerWidget *) EDITOR_RULER);
-          ruler_widget_redraw_whole (
-            (RulerWidget *) MW_RULER);
-          transport_controls_widget_refresh (
-            MW_TRANSPORT_CONTROLS);
-          break;
-        case ET_ARRANGER_SELECTIONS_IN_TRANSIT:
-          on_arranger_selections_in_transit (
-            (ArrangerSelections *) ev->arg);
-          break;
-        case ET_CHORD_KEY_CHANGED:
-          for (int j = 0;
-               j < CHORD_EDITOR->num_chords; j++)
-            {
-              if (CHORD_EDITOR->chords[j] ==
-                   (ChordDescriptor *) ev->arg)
-                {
-                  chord_key_widget_refresh (
-                    MW_CHORD_EDITOR_SPACE->
-                      chord_keys[j]);
-                }
-            }
-          chord_pad_widget_refresh (MW_CHORD_PAD);
-          break;
-        case ET_JACK_TRANSPORT_TYPE_CHANGED:
-          g_message ("doing");
-          top_bar_widget_refresh (
-            TOP_BAR);
-          break;
-        case ET_SELECTING_IN_ARRANGER:
-          arranger_widget_redraw_whole (
-            Z_ARRANGER_WIDGET (ev->arg));
-          timeline_toolbar_widget_refresh (
-            MW_TIMELINE_TOOLBAR);
-          break;
-        case ET_TRACKS_RESIZED:
-          g_warn_if_fail (ev->arg);
-          arranger_widget_redraw_whole (
-            MW_TIMELINE);
-          arranger_widget_redraw_whole (
-            MW_PINNED_TIMELINE);
-          break;
-        case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
-          gtk_widget_set_visible (
-            GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
-            g_settings_get_boolean (
-              S_UI, "editor-event-viewer-visible"));
-          break;
-        case ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED:
-          arranger_widget_redraw_whole (
-            (ArrangerWidget *)
-            MW_MIDI_MODIFIER_ARRANGER);
-          break;
-        case ET_BPM_CHANGED:
-          ruler_widget_refresh (MW_RULER);
-          ruler_widget_refresh (EDITOR_RULER);
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MW_DIGITAL_BPM));
-
-          /* these are only used in the UI so
-           * no need to update them during DSP */
-          snap_grid_update_snap_points_default (
-            &PROJECT->snap_grid_timeline);
-          snap_grid_update_snap_points_default (
-            &PROJECT->snap_grid_midi);
-          quantize_options_update_quantize_points (
-            &PROJECT->quantize_opts_timeline);
-          quantize_options_update_quantize_points (
-            &PROJECT->quantize_opts_editor);
-          redraw_all_arranger_bgs ();
-          break;
-        case ET_CHANNEL_FADER_VAL_CHANGED:
-          channel_widget_redraw_fader (
-            ((Channel *)ev->arg)->widget);
-#if 0
-          inspector_track_widget_show_tracks (
-            MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
-#endif
-          break;
-        case ET_PIANO_ROLL_KEY_HEIGHT_CHANGED:
-          midi_editor_space_widget_refresh (
-            MW_MIDI_EDITOR_SPACE);
-          break;
-        case ET_MAIN_WINDOW_LOADED:
-          /* show all visible plugins */
-          for (int j = 0; j < TRACKLIST->num_tracks;
-               j++)
-            {
-              Channel * ch =
-                TRACKLIST->tracks[j]->channel;
-              if (!ch)
-                continue;
-
-              for (int k = 0;
-                   k < STRIP_SIZE * 2 + 1; k++)
-                {
-                  Plugin * pl = NULL;
-                  if (k < STRIP_SIZE)
-                    pl = ch->midi_fx[k];
-                  else if (k == STRIP_SIZE)
-                    pl = ch->instrument;
-                  else
-                    pl =
-                      ch->inserts[
-                        k - (STRIP_SIZE + 1)];
-
-                  if (!pl)
-                    continue;
-                  if (pl->visible)
-                    plugin_open_ui (pl);
-                }
-            }
-          /* refresh modulator view */
-          if (MW_MODULATOR_VIEW)
-            {
-              modulator_view_widget_refresh (
-                MW_MODULATOR_VIEW,
-                P_MODULATOR_TRACK);
-            }
-
-          /* show clip editor if clip selected */
-          if (MW_CLIP_EDITOR &&
-              CLIP_EDITOR->has_region)
-            {
-              clip_editor_widget_on_region_changed (
-                MW_CLIP_EDITOR);
-            }
-
-          /* refresh inspector */
-          left_dock_edge_widget_refresh (
-            MW_LEFT_DOCK_EDGE);
-          on_project_selection_type_changed ();
-          main_notebook_widget_refresh (
-            MW_MAIN_NOTEBOOK);
-
-#ifdef CHECK_UPDATES
-          zrythm_app_check_for_updates (zrythm_app);
-#endif /* CHECK_UPDATES */
-          break;
-        case ET_SPLASH_CLOSED:
-          break;
-        case ET_PROJECT_SAVED:
-          header_widget_set_subtitle (
-            MW_HEADER,
-            ((Project *) ev->arg)->title);
-          break;
-        case ET_PROJECT_LOADED:
-          header_widget_set_subtitle (
-            MW_HEADER,
-            ((Project *) ev->arg)->title);
-          home_toolbar_widget_refresh_undo_redo_buttons (
-            MW_HOME_TOOLBAR);
-          ruler_widget_set_zoom_level (
-            MW_RULER,
-            ruler_widget_get_zoom_level (
-              MW_RULER));
-          ruler_widget_set_zoom_level (
-            EDITOR_RULER,
-            ruler_widget_get_zoom_level (
-              EDITOR_RULER));
-          break;
-        case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
-          /* TODO */
-          break;
-        case ET_TRIAL_LIMIT_REACHED:
-          {
-            char msg[500];
-            sprintf (
-              msg,
-              _("Trial limit has been reached. "
-              "%s will now go silent"),
-              PROGRAM_NAME);
-            ui_show_message_full (
-              GTK_WINDOW (MAIN_WINDOW),
-              GTK_MESSAGE_INFO, "%s", msg);
-          }
-          break;
-        case ET_CHANNEL_SEND_CHANGED:
-          {
-            ChannelSend * send =
-              (ChannelSend *) ev->arg;
-            ChannelSendWidget * widget =
-              channel_send_find_widget (send);
-            if (widget)
-              {
-                gtk_widget_queue_draw (
-                  GTK_WIDGET (widget));
-              }
-            Track * tr =
-              channel_send_get_track (send);
-            ChannelWidget * ch_w =
-              tr->channel->widget;
-            if (ch_w)
-              {
-                gtk_widget_queue_draw (
-                  GTK_WIDGET (
-                    ch_w->sends->slots[
-                      send->slot]));
-              }
-          }
-          break;
-        case ET_RULER_DISPLAY_TYPE_CHANGED:
-          redraw_all_arranger_bgs ();
-          if (EDITOR_RULER)
-            {
-              ruler_widget_redraw_whole (
-                EDITOR_RULER);
-            }
-          if (MW_RULER)
-            {
-              ruler_widget_redraw_whole (MW_RULER);
-            }
-          break;
-        case ET_ARRANGER_HIGHLIGHT_CHANGED:
-          {
-            ArrangerWidget * arranger =
-              Z_ARRANGER_WIDGET (ev->arg);
-            arranger_widget_redraw_whole (
-              arranger);
-           }
-          break;
-        case ET_ENGINE_ACTIVATE_CHANGED:
-        case ET_ENGINE_BUFFER_SIZE_CHANGED:
-        case ET_ENGINE_SAMPLE_RATE_CHANGED:
-          bot_bar_widget_refresh (MW_BOT_BAR);
-          ruler_widget_redraw_whole (EDITOR_RULER);
-          ruler_widget_redraw_whole (MW_RULER);
-          inspector_track_widget_show_tracks (
-            MW_TRACK_INSPECTOR,
-            TRACKLIST_SELECTIONS, false);
-          break;
-        case ET_MIDI_BINDINGS_CHANGED:
-          main_notebook_widget_refresh (
-            MW_MAIN_NOTEBOOK);
-          break;
-        case ET_PORT_CONNECTION_CHANGED:
-          main_notebook_widget_refresh (
-            MW_MAIN_NOTEBOOK);
-          break;
-        case ET_EDITOR_FUNCTION_APPLIED:
-          editor_toolbar_widget_refresh (
-            MW_EDITOR_TOOLBAR);
-          break;
-        case ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING:
-          arranger_selections_change_redraw_everything (
-            ARRANGER_SELECTIONS (ev->arg));
-          break;
-        case ET_AUTOMATION_VALUE_VISIBILITY_CHANGED:
-          arranger_widget_redraw_whole (
-            MW_AUTOMATION_ARRANGER);
-          break;
-        case ET_PROJECT_SELECTION_TYPE_CHANGED:
-          on_project_selection_type_changed ();
-          break;
-        case ET_AUDIO_SELECTIONS_RANGE_CHANGED:
-          arranger_widget_redraw_whole (
-            MW_AUDIO_ARRANGER);
-          break;
-        case ET_PLUGIN_COLLETIONS_CHANGED:
-          plugin_browser_widget_refresh_collections (
-            MW_PLUGIN_BROWSER);
-          break;
-        case ET_SNAP_GRID_OPTIONS_CHANGED:
-          {
-            SnapGrid * sg = (SnapGrid *) ev->arg;
-            if (sg == SNAP_GRID_TIMELINE)
-              {
-                snap_box_widget_refresh (
-                  MW_TIMELINE_TOOLBAR->snap_box);
-              }
-            else if (sg == SNAP_GRID_MIDI)
-              {
-                snap_box_widget_refresh (
-                  MW_EDITOR_TOOLBAR->snap_box);
-              }
-          }
-          break;
-        case ET_TRANSPORT_RECORDING_ON_OFF_CHANGED:
-          gtk_toggle_button_set_active (
-            MW_TRANSPORT_CONTROLS->trans_record_btn,
-            TRANSPORT->recording);
-          break;
-        case ET_TRACK_FREEZE_CHANGED:
-          arranger_selections_change_redraw_everything (
-            (ArrangerSelections *) TL_SELECTIONS);
-          break;
-        case ET_LOG_WARNING_STATE_CHANGED:
-          header_widget_refresh (MW_HEADER);
-          break;
-        case ET_PLAYHEAD_SCROLL_MODE_CHANGED:
-          break;
-        case ET_TRACK_FADER_BUTTON_CHANGED:
-          on_track_state_changed (
-            (Track *) ev->arg);
-          break;
-        case ET_PLUGIN_PRESET_SAVED:
-        case ET_PLUGIN_PRESET_LOADED:
-          {
-            Plugin * pl = (Plugin *) ev->arg;
-            if (pl->window)
-              {
-                plugin_gtk_set_window_title (
-                  pl, pl->window);
-              }
-          }
-          break;
-        case ET_TRACK_FOLD_CHANGED:
-          on_track_added ((Track *) ev->arg);
-          break;
-        case ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED:
-        case ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED:
-        case ET_MIXER_CHANNEL_SENDS_EXPANDED_CHANGED:
-          mixer_widget_soft_refresh (MW_MIXER);
-          break;
-        case ET_REGION_ACTIVATED:
-          bot_dock_edge_widget_show_clip_editor (
-            MW_BOT_DOCK_EDGE, true);
-          break;
-        default:
-          g_warning (
-            "event %d not implemented yet",
-            ev->type);
-          break;
-        }
+      event_manager_process_event (self, ev);
 
 return_to_pool:
       object_pool_return (

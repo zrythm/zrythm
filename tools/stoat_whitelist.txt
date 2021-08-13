@@ -2,3 +2,4 @@ jack_port_connected
 g_thread_self
 g_strcmp0
 qsort
+g_get_monotonic_time

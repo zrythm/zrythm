@@ -74,7 +74,7 @@ recreate_pango_layouts (
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
-  if (!PANGO_IS_LAYOUT (self->layout))
+  if (G_UNLIKELY (!PANGO_IS_LAYOUT (self->layout)))
     {
       PangoFontDescription *desc;
       self->layout =
@@ -217,6 +217,7 @@ draw_background (
 
   /* draw a thin border */
   cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.3);
+  /* FIXME this is performance intensive 8% of this function call */
   cairo_stroke (cr);
 
   /* ---- draw applicable icons ---- */
@@ -330,16 +331,17 @@ draw_loop_points (
 
   int num_loops =
     arranger_object_get_num_loops (obj, 1);
+  cairo_set_source_rgba (
+    cr, 0, 0, 0, 1.0);
   for (int i = 0; i < num_loops; i++)
     {
-      position_from_ticks (
-        &tmp, loop_end_ticks + loop_ticks * i);
-
-      /* adjust for clip_start */
-      position_add_ticks (
-        &tmp, - clip_start_ticks);
-
-      x_px = ui_pos_to_px_timeline (&tmp, 0);
+      x_px =
+        (int)
+        ((double)
+         ((loop_end_ticks + loop_ticks * i)
+          - clip_start_ticks)
+         /* adjust for clip_start */
+         * MW_RULER->px_per_tick);
 
       if (
           /* if px is vixible */
@@ -349,12 +351,12 @@ draw_loop_points (
           x_px >= 0 &&
           x_px < full_width)
         {
-          cairo_set_source_rgba (
-            cr, 0, 0, 0, 1.0);
           cairo_move_to (
             cr, x_px, 0);
           cairo_line_to (
             cr, x_px, full_height);
+          /* note most costly call in this
+           * function 49% of function time */
           cairo_stroke (cr);
         }
     }
@@ -543,6 +545,9 @@ draw_midi_region (
                     draw_y,
                     draw_width,
                     draw_height);
+                  /* FIXME this is performance
+                   * intensive 23% of this function
+                   * call */
                   cairo_fill (cr);
                 }
             }

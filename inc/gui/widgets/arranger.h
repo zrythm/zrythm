@@ -28,6 +28,7 @@
 
 #include "gui/widgets/main_window.h"
 #include "audio/position.h"
+#include "audio/transport.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -44,16 +45,16 @@ typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct _ArrangerPlayheadWidget
-  ArrangerPlayheadWidget;
 
-typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct _GtkEventControllerMotion
   GtkEventControllerMotion;
 typedef struct ArrangerObject ArrangerObject;
 typedef struct ArrangerSelections ArrangerSelections;
 typedef struct EditorSettings EditorSettings;
+typedef struct ObjectPool ObjectPool;
+typedef struct _RulerWidget RulerWidget;
 typedef enum ArrangerObjectType ArrangerObjectType;
+typedef enum TransportDisplay TransportDisplay;
 
 /**
  * @addtogroup widgets
@@ -320,7 +321,7 @@ typedef struct _ArrangerWidget
   int            last_playhead_px;
 
   /** Set to 1 to redraw. */
-  int            redraw;
+  bool           redraw;
 
   cairo_t *      cached_cr;
 
@@ -343,6 +344,11 @@ typedef struct _ArrangerWidget
   /** The rectangle to highlight. */
   GdkRectangle   highlight_rect;
   //GdkRectangle   prev_highlight_rect;
+  //
+
+  /** Last selection rectangle, used to redraw the
+   * union of the new selection and this. */
+  GdkRectangle   last_selection_rect;
 
   /**
    * Drag start button (primary, secondary, etc.).
@@ -361,6 +367,9 @@ typedef struct _ArrangerWidget
    */
   bool           first_draw;
 
+  /** Cached setting. */
+  TransportDisplay ruler_display;
+
   /**
    * Layout for drawing automation point text.
    *
@@ -368,6 +377,29 @@ typedef struct _ArrangerWidget
    * processing is needed - no need now.
    */
   PangoLayout *  ap_layout;
+
+#if 0
+  /**
+   * Dummy cairo surface to create new surfaces from.
+   */
+  cairo_surface_t * dummy_surface;
+
+  /**
+   * Thread pool for drawing in the background
+   * instead of in the UI thread.
+   *
+   * The result will be applied during draw in the
+   * UI thread.
+   */
+  GThreadPool *  draw_thread_pool;
+
+  /**
+   * Object pool for ArrangerDrawTaskData.
+   *
+   * Must only be accessed from the GTK thread.
+   */
+  ObjectPool *   draw_task_obj_pool;
+#endif
 
   /**
    * Cached playhead x to draw.
@@ -380,6 +412,10 @@ typedef struct _ArrangerWidget
   //int            queued_playhead_px;
 
 } ArrangerWidget;
+
+const char *
+arranger_widget_get_type_str (
+  ArrangerWidget * self);
 
 /**
  * Creates a timeline widget using the given
@@ -517,7 +553,8 @@ arranger_widget_get_hit_arranger_object (
 void
 arranger_widget_select_all (
   ArrangerWidget *  self,
-  bool              select);
+  bool              select,
+  bool              fire_events);
 
 /**
  * Returns if the arranger is in a moving-related
@@ -639,6 +676,11 @@ arranger_widget_get_editor_settings (
 
 bool
 arranger_widget_is_playhead_visible (
+  ArrangerWidget * self);
+
+NONNULL
+RulerWidget *
+arranger_widget_get_ruler (
   ArrangerWidget * self);
 
 /**

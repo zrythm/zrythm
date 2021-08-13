@@ -81,6 +81,9 @@ typedef struct _TracklistWidget
   GtkSizeGroup *       pinned_size_group;
   GtkSizeGroup *       unpinned_size_group;
 
+  /** Cache. */
+  GdkRectangle         last_allocation;
+
   bool                 setup;
 } TracklistWidget;
 

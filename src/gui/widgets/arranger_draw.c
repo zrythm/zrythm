@@ -42,7 +42,11 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/object_pool.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
+
+/*#include <valgrind/callgrind.h>*/
 
 #define TYPE(x) ARRANGER_WIDGET_TYPE_##x
 
@@ -221,13 +225,11 @@ draw_timeline_bg (
 {
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
-  gint track_start_offset;
-  Track * track;
-  TrackWidget * tw;
   int line_y, i, j;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      track = TRACKLIST->tracks[i];
+      Track * const track =
+        TRACKLIST->tracks[i];
 
       /* skip tracks in the other timeline (pinned/
        * non-pinned) */
@@ -239,7 +241,7 @@ draw_timeline_bg (
         continue;
 
       /* draw line below track */
-      tw = track->widget;
+      TrackWidget * tw = track->widget;
       if (!GTK_IS_WIDGET (tw))
         continue;
       tw_widget = (GtkWidget *) tw;
@@ -247,6 +249,7 @@ draw_timeline_bg (
       double full_track_height =
         track_get_full_visible_height (track);
 
+      gint track_start_offset;
       gtk_widget_translate_coordinates (
         tw_widget,
         GTK_WIDGET (
@@ -637,9 +640,7 @@ draw_vertical_lines (
   GdkRectangle *   rect)
 {
   /* if time display */
-  if (g_settings_get_enum (
-        S_UI, "ruler-display") ==
-          TRANSPORT_DISPLAY_TIME)
+  if (self->ruler_display == TRANSPORT_DISPLAY_TIME)
     {
       /* get sec interval */
       int sec_interval =
@@ -857,10 +858,21 @@ arranger_draw_cb (
   cairo_t *        cr,
   ArrangerWidget * self)
 {
-  /*g_message ("drawing arranger %p", self);*/
+  gint64 start_time = g_get_monotonic_time ();
+
+#if 0
+  if (!self->dummy_surface)
+    {
+      self->dummy_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+            CAIRO_CONTENT_COLOR_ALPHA,
+            1, 1);
+    }
+#endif
+
   RulerWidget * ruler =
-    self->type == TYPE (TIMELINE) ?
-    MW_RULER : EDITOR_RULER;
+    arranger_widget_get_ruler (self);
   if (ruler->px_per_bar < 2.0)
     return FALSE;
 
@@ -901,8 +913,7 @@ arranger_draw_cb (
     }
 
   GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (
-    cr, &rect);
+  gdk_cairo_get_clip_rectangle (cr, &rect);
 
   if (self->redraw ||
       !gdk_rectangle_equal (
@@ -930,6 +941,14 @@ arranger_draw_cb (
         &self->cached_cr,
         &self->cached_surface, rect.width,
         rect.height, cr);
+
+      cairo_antialias_t antialias =
+        cairo_get_antialias (self->cached_cr);
+      double tolerance =
+        cairo_get_tolerance (self->cached_cr);
+      cairo_set_antialias (
+        self->cached_cr, CAIRO_ANTIALIAS_FAST);
+      cairo_set_tolerance (self->cached_cr, 1.5);
 
       gtk_render_background (
         context, self->cached_cr, 0, 0,
@@ -1120,12 +1139,297 @@ arranger_draw_cb (
 
       draw_playhead (self, self->cached_cr, &rect);
 
-      self->redraw--;
+      cairo_set_antialias (
+        self->cached_cr, antialias);
+      cairo_set_tolerance (self->cached_cr, tolerance);
+
+      self->redraw = false;
     }
 
   cairo_set_source_surface (
     cr, self->cached_surface, rect.x, rect.y);
   cairo_paint (cr);
 
+  gint64 end_time = g_get_monotonic_time ();
+
+  (void) start_time;
+  (void) end_time;
+#if 0
+  g_debug ("finished drawing in %ld microseconds, "
+    "rect x:%d y:%d w:%d h:%d for %s "
+    "arranger",
+    end_time - start_time,
+    rect.x, rect.y, rect.width, rect.height,
+    arranger_widget_get_type_str (self));
+#endif
+
   return FALSE;
 }
+
+void *
+arranger_draw_task_data_new (void)
+{
+  ArrangerDrawTaskData * self =
+    object_new (ArrangerDrawTaskData);
+
+  return self;
+}
+
+void
+arranger_draw_task_data_free (
+  void * data)
+{
+  ArrangerDrawTaskData * task_data =
+    (ArrangerDrawTaskData *) data;
+
+  if (task_data->surface)
+    {
+      cairo_surface_destroy (
+        task_data->surface);
+    }
+  if (task_data->cr)
+    {
+      cairo_destroy (task_data->cr);
+    }
+
+  object_zero_and_free (task_data);
+}
+
+#if 0
+/**
+ * Function to be executed for new tasks in the draw
+ * thread pool.
+ */
+void
+arranger_draw_thread_func (
+  gpointer task_data,
+  gpointer pool_data)
+{
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (pool_data);
+  ArrangerDrawTaskData * task =
+    (ArrangerDrawTaskData *) task_data;
+
+  gint64 start_time = g_get_monotonic_time ();
+
+  if (!task->surface || !task->cr)
+    {
+      object_pool_return (
+        self->draw_task_obj_pool, task);
+      return;
+    }
+
+  RulerWidget * ruler =
+    arranger_widget_get_ruler (self);
+  if (ruler->px_per_bar < 2.0)
+    return;
+
+  GdkRectangle rect = task->rect;
+
+  GtkStyleContext *context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+
+  gtk_render_background (
+    context, task->cr, 0, 0,
+    rect.width, rect.height);
+
+  /* draw loop background */
+  if (TRANSPORT->loop)
+    {
+      double start_px = 0, end_px = 0;
+      if (self->type == TYPE (TIMELINE))
+        {
+          start_px =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->loop_start_pos, 1);
+          end_px =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->loop_end_pos, 1);
+        }
+      else
+        {
+          start_px =
+            ui_pos_to_px_editor (
+              &TRANSPORT->loop_start_pos, 1);
+          end_px =
+            ui_pos_to_px_editor (
+              &TRANSPORT->loop_end_pos, 1);
+        }
+      cairo_set_source_rgba (
+        task->cr, 0, 0.9, 0.7, 0.08);
+      cairo_set_line_width (
+        task->cr, 2);
+
+      /* if transport loop start is within the
+       * screen */
+      if (start_px > rect.x &&
+          start_px <= rect.x + rect.width)
+        {
+          /* draw the loop start line */
+          double x =
+            (start_px - rect.x) + 1.0;
+          cairo_rectangle (
+            task->cr,
+            (int) x, 0, 2, rect.height);
+          cairo_fill (task->cr);
+        }
+      /* if transport loop end is within the
+       * screen */
+      if (end_px > rect.x &&
+          end_px < rect.x + rect.width)
+        {
+          double x =
+            (end_px - rect.x) - 1.0;
+          cairo_rectangle (
+            task->cr,
+            (int) x, 0, 2, rect.height);
+          cairo_fill (task->cr);
+        }
+
+      /* draw transport loop area */
+      cairo_set_source_rgba (
+        task->cr, 0, 0.9, 0.7, 0.02);
+      double loop_start_local_x =
+        MAX (0, start_px - rect.x);
+      cairo_rectangle (
+        task->cr,
+        (int) loop_start_local_x, 0,
+        (int) (end_px - MAX (rect.x, start_px)),
+        rect.height);
+      cairo_fill (task->cr);
+    }
+
+  /* --- handle vertical drawing --- */
+
+  draw_vertical_lines (
+    self, ruler, task->cr, &rect);
+
+  /* draw range */
+  int range_first_px, range_second_px;
+  bool have_range = false;
+  if (self->type == TYPE (AUDIO) &&
+      AUDIO_SELECTIONS->has_selection)
+    {
+      Position * range_first_pos,
+               * range_second_pos;
+      if (position_is_before_or_equal (
+            &TRANSPORT->range_1,
+            &TRANSPORT->range_2))
+        {
+          range_first_pos =
+            &AUDIO_SELECTIONS->sel_start;
+          range_second_pos =
+            &AUDIO_SELECTIONS->sel_end;
+        }
+      else
+        {
+          range_first_pos =
+            &AUDIO_SELECTIONS->sel_end;
+          range_second_pos =
+            &AUDIO_SELECTIONS->sel_start;
+        }
+
+      range_first_px =
+        ui_pos_to_px_editor (
+          range_first_pos, 1);
+      range_second_px =
+        ui_pos_to_px_editor (
+          range_second_pos, 1);
+      have_range = true;
+    }
+  else if (self->type == TYPE (TIMELINE) &&
+      TRANSPORT->has_range)
+    {
+      /* in order they appear */
+      Position * range_first_pos,
+               * range_second_pos;
+      if (position_is_before_or_equal (
+            &TRANSPORT->range_1,
+            &TRANSPORT->range_2))
+        {
+          range_first_pos = &TRANSPORT->range_1;
+          range_second_pos =
+            &TRANSPORT->range_2;
+        }
+      else
+        {
+          range_first_pos = &TRANSPORT->range_2;
+          range_second_pos =
+            &TRANSPORT->range_1;
+        }
+
+      range_first_px =
+        ui_pos_to_px_timeline (
+          range_first_pos, 1);
+      range_second_px =
+        ui_pos_to_px_timeline (
+          range_second_pos, 1);
+      have_range = true;
+    }
+
+  if (have_range)
+    {
+      draw_range (
+        self, range_first_px, range_second_px,
+        &rect, task->cr);
+    }
+
+  if (self->type == TYPE (TIMELINE))
+    {
+      draw_timeline_bg (
+        self, task->cr, &rect);
+    }
+  else if (self->type == TYPE (MIDI))
+    {
+      draw_midi_bg (
+        self, task->cr, &rect);
+    }
+  else if (self->type == TYPE (AUDIO))
+    {
+      draw_audio_bg (
+        self, task->cr, &rect);
+    }
+
+  /* draw each arranger object */
+  ArrangerObject * objs[2000];
+  int num_objs;
+  arranger_widget_get_hit_objects_in_rect (
+    self, ARRANGER_OBJECT_TYPE_ALL, &rect,
+    objs, &num_objs);
+
+  /*g_message (*/
+    /*"objects found: %d (is pinned %d)",*/
+    /*num_objs, self->is_pinned);*/
+  /* note: these are only project objects */
+  for (int j = 0; j < num_objs; j++)
+    {
+      draw_arranger_object (
+        self, objs[j], task->cr,
+        &rect);
+    }
+
+  /* draw dnd highlight */
+  draw_highlight (
+    self, task->cr, &rect);
+
+  /* draw selections */
+  draw_selections (
+    self, task->cr, &rect);
+
+  draw_playhead (self, task->cr, &rect);
+
+  object_pool_return (
+    self->draw_task_obj_pool, task);
+
+  gint64 end_time = g_get_monotonic_time ();
+
+  g_message (
+    "drawn in thread in %ld microseconds, "
+    "rect x:%d y:%d w:%d h:%d for %s "
+    "arranger",
+    end_time - start_time,
+    rect.x, rect.y, rect.width, rect.height,
+    arranger_widget_get_type_str (self));
+}
+#endif

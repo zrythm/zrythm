@@ -629,7 +629,7 @@ bool
 track_get_soloed (
   Track * self)
 {
-  if (self->type == TRACK_TYPE_FOLDER)
+  if (G_UNLIKELY (self->type == TRACK_TYPE_FOLDER))
     {
       return
         foldable_track_is_status (
@@ -760,7 +760,7 @@ track_get_type_from_plugin_descriptor (
 
 bool
 track_get_recording (
-  Track * track)
+  const Track * const track)
 {
   g_return_val_if_fail (
     IS_TRACK (track) &&
@@ -1324,7 +1324,7 @@ track_get_should_be_visible (
  */
 double
 track_get_full_visible_height (
-  Track * self)
+  Track * const self)
 {
   double height = self->main_height;
 
@@ -2605,7 +2605,8 @@ track_remove_region (
  * or NULL if it doesn't (like chord tracks).
  */
 AutomationTracklist *
-track_get_automation_tracklist (Track * track)
+track_get_automation_tracklist (
+  Track * const track)
 {
   g_return_val_if_fail (IS_TRACK (track), NULL);
 

@@ -118,6 +118,43 @@ typedef struct EventManager
         EVENT_QUEUE, _ev); \
     }
 
+/* runs the event logic now */
+#define EVENTS_PUSH_NOW(et,_arg) \
+  if (ZRYTHM_HAVE_UI && EVENT_MANAGER \
+      && EVENT_QUEUE \
+      && zrythm_app->gtk_thread \
+        == g_thread_self () \
+      && (!PROJECT || !AUDIO_ENGINE || \
+          !AUDIO_ENGINE->exporting)) \
+    { \
+      ZEvent * _ev = \
+        (ZEvent *) \
+        object_pool_get (EVENT_MANAGER->obj_pool); \
+      _ev->file = __FILE__; \
+      _ev->func = __func__; \
+      _ev->lineno = __LINE__; \
+      _ev->type = et; \
+      _ev->arg = (void *) _arg; \
+      if (/* skip backtrace for now */ \
+          false) \
+        { \
+          _ev->backtrace = \
+            backtrace_get ("", 40, false); \
+        } \
+      /* don't print events that are called \
+       * continuously */ \
+      if (et != ET_PLAYHEAD_POS_CHANGED) \
+        { \
+          g_debug ( \
+            "processing UI event now " #et \
+            " (%s:%d)", __func__, __LINE__); \
+        } \
+      event_manager_process_event ( \
+        EVENT_MANAGER, _ev); \
+      object_pool_return ( \
+        EVENT_MANAGER->obj_pool, _ev); \
+    }
+
 /**
  * Creates the event queue and starts the event loop.
  *
@@ -139,6 +176,17 @@ event_manager_start_events (
 void
 event_manager_stop_events (
   EventManager * self);
+
+/**
+ * Processes the given event.
+ *
+ * The caller is responsible for putting the event
+ * back in the object pool if needed.
+ */
+void
+event_manager_process_event (
+  EventManager * self,
+  ZEvent *       ev);
 
 /**
  * Processes the events now.

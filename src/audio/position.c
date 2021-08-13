@@ -35,11 +35,13 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
 #include "project.h"
+#include "utils/algorithms.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
+PURE
 static int
 position_cmpfunc (
   const void * a,
@@ -236,11 +238,12 @@ position_set_min_size (
  * @param p1 Snap point 1.
  * @param p2 Snap point 2.
  */
+PURE
 static inline Position *
 closest_snap_point (
-  Position * pos,
-  Position * p1,
-  Position * p2)
+  const Position * const pos,
+  Position * const       p1,
+  Position * const       p2)
 {
   if (pos->ticks - p1->ticks <=
       p2->ticks - pos->ticks)
@@ -280,24 +283,19 @@ get_prev_snap_point (
   const SnapGrid * sg,
   Position *       prev_sp)
 {
-  const Position * snap_point;
-
   bool snapped = false;
+  Position * snap_point = NULL;
   if (sg->snap_to_grid)
     {
-      for (int i = sg->num_snap_points - 1; i >= 0;
-           i--)
-        {
-          snap_point = &sg->snap_points[i];
-          if (position_is_before_or_equal (
-                snap_point, pos))
-            {
-              position_set_to_pos (
-                prev_sp, snap_point);
-              snapped = true;
-              break;
-            }
-        }
+      algorithms_binary_search_nearby (
+        sg->snap_points, pos, 1, 1,
+        sg->num_snap_points, Position *,
+        position_compare, &, snap_point, NULL);
+    }
+  if (snap_point)
+    {
+      position_set_to_pos (prev_sp, snap_point);
+      snapped = true;
     }
 
   if (track)
@@ -375,22 +373,19 @@ get_next_snap_point (
   const SnapGrid * sg,
   Position *       next_sp)
 {
-  const Position * snap_point;
-
   bool snapped = false;
+  Position * snap_point = NULL;
   if (sg->snap_to_grid)
     {
-      for (int i = 0; i < sg->num_snap_points; i++)
-        {
-          snap_point = &sg->snap_points[i];
-          if (position_is_after (snap_point, pos))
-            {
-              position_set_to_pos (
-                next_sp, snap_point);
-              snapped = true;
-              break;
-            }
-        }
+      algorithms_binary_search_nearby (
+        sg->snap_points, pos, 0, 0,
+        sg->num_snap_points, Position *,
+        position_compare, &, snap_point, NULL);
+    }
+  if (snap_point)
+    {
+      position_set_to_pos (next_sp, snap_point);
+      snapped = true;
     }
 
   if (track)

@@ -213,8 +213,9 @@ snap_grid_init (
   self->snap_to_grid = true;
   self->length_type = NOTE_LENGTH_LINK;
 
-  self->snap_points = object_new_n (1, Position);
-  self->snap_points_size = 1;
+  self->snap_points_size = 128;
+  self->snap_points =
+    object_new_n (self->snap_points_size, Position);
 }
 
 static const char *

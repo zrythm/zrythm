@@ -248,8 +248,13 @@ tracklist_widget_on_size_allocate (
   if (!PROJECT || !TRACKLIST)
     return;
 
-  EVENTS_PUSH (
-    ET_TRACKS_RESIZED, self);
+  if (!gdk_rectangle_equal (
+         allocation, &self->last_allocation))
+    {
+      EVENTS_PUSH (ET_TRACKS_RESIZED, self);
+    }
+
+  self->last_allocation = *allocation;
 }
 
 /**

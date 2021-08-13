@@ -46,6 +46,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/math.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -1970,29 +1971,30 @@ ruler_widget_refresh (RulerWidget * self)
 
   position_set_to_bar (
     &pos, TRANSPORT->total_bars + 1);
+  double prev_total_px = self->total_px;
   self->total_px =
     self->px_per_tick *
     (double) position_to_ticks (&pos);
 
-  // set the size
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    (int) self->total_px,
-    -1);
-
-  if (self->type == TYPE (TIMELINE))
+  /* if size changed */
+  if (!math_doubles_equal_epsilon (
+         prev_total_px, self->total_px, 0.1))
     {
-      /*gtk_widget_set_visible (*/
-        /*GTK_WIDGET (timeline_ruler->range),*/
-        /*PROJECT->has_range);*/
+      /* set the size */
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        (int) self->total_px, -1);
+
+      if (self->type == TYPE (TIMELINE))
+        {
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (timeline_ruler->range),*/
+            /*PROJECT->has_range);*/
+        }
+
+      EVENTS_PUSH (
+        ET_RULER_SIZE_CHANGED, self);
     }
-
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (self));
-  EVENTS_PUSH (
-    ET_RULER_SIZE_CHANGED, self);
-
-  ruler_widget_redraw_whole (self);
 }
 
 /**

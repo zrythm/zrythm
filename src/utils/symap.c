@@ -99,7 +99,7 @@ static uint32_t
 symap_search(const Symap* map, const char* sym, bool* exact)
 {
   *exact = false;
-  if (map->size == 0) {
+  if (G_UNLIKELY (map->size == 0)) {
           return 0;  // Empty map, insert at 0
   } else if (strcmp(map->symbols[map->index[map->size - 1] - 1], sym) < 0) {
           return map->size;  // Greater than last element, append

@@ -73,6 +73,9 @@ typedef struct Position Position;
 #define SPACE_BEFORE_START_F 10.f
 #define SPACE_BEFORE_START_D 10.0
 
+/** Multiplier when zooming in/out. */
+#define RULER_ZOOM_LEVEL_MULTIPLIER 1.28
+
 #define MIN_ZOOM_LEVEL 0.05
 #define MAX_ZOOM_LEVEL 400.
 

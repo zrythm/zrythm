@@ -439,7 +439,8 @@ activate_zoom_in (GSimpleAction *action,
 {
   ruler_widget_set_zoom_level (
     MW_RULER,
-    ruler_widget_get_zoom_level (MW_RULER) * 1.3);
+    ruler_widget_get_zoom_level (MW_RULER)
+    * RULER_ZOOM_LEVEL_MULTIPLIER);
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                NULL);
@@ -451,7 +452,8 @@ activate_zoom_out (GSimpleAction *action,
                   gpointer       user_data)
 {
   double zoom_level =
-    ruler_widget_get_zoom_level (MW_RULER) / 1.3;
+    ruler_widget_get_zoom_level (MW_RULER)
+    / RULER_ZOOM_LEVEL_MULTIPLIER;
   ruler_widget_set_zoom_level (
     MW_RULER, zoom_level);
 

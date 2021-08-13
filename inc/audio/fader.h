@@ -321,18 +321,21 @@ fader_set_muted (
 /**
  * Returns if the fader is muted.
  */
+NONNULL
+PURE
 bool
 fader_get_muted (
-  Fader * self);
+  const Fader * const self);
 
 /**
  * Returns if the track is soloed.
  */
 HOT
 NONNULL
+PURE
 bool
 fader_get_soloed (
-  Fader * self);
+  const Fader * const self);
 
 /**
  * Returns whether the fader is not soloed on its

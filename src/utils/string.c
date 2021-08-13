@@ -21,6 +21,8 @@
 
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/symap.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 

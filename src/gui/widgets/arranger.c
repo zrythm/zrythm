@@ -108,6 +108,21 @@ G_DEFINE_TYPE (
 
 #define SCROLL_PADDING 8.0
 
+const char *
+arranger_widget_get_type_str (
+  ArrangerWidget * self)
+{
+  static const char * arranger_widget_type_str[] = {
+    "timeline",
+    "midi",
+    "midi modifier",
+    "audio",
+    "chord",
+    "automation",
+  };
+  return arranger_widget_type_str[self->type];
+}
+
 /**
  * Returns the playhead's x coordinate in absolute
  * coordinates.
@@ -1043,6 +1058,12 @@ move_items_x (
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
   g_return_if_fail (sel);
+
+  /* queue a redraw for the selections at their
+   * current position before the move */
+  EVENTS_PUSH_NOW (
+    ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
+
   arranger_selections_add_ticks (
     sel, ticks_diff);
 
@@ -1058,7 +1079,7 @@ move_items_x (
 
   transport_recalculate_total_bars (TRANSPORT, sel);
 
-  EVENTS_PUSH (
+  EVENTS_PUSH_NOW (
     ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 }
 
@@ -1104,6 +1125,14 @@ move_items_y (
   ArrangerWidget * self,
   double           offset_y)
 {
+  ArrangerSelections * sel =
+    arranger_widget_get_selections (self);
+  g_return_if_fail (sel);
+
+  /* queue a redraw for the selections at their
+   * current position before the move */
+  arranger_selections_redraw (sel);
+
   switch (self->type)
     {
     case TYPE (AUTOMATION):
@@ -1272,7 +1301,8 @@ move_items_y (
 void
 arranger_widget_select_all (
   ArrangerWidget *  self,
-  bool              select)
+  bool              select,
+  bool              fire_events)
 {
   ArrangerSelections * sel =
     arranger_widget_get_selections (
@@ -1295,8 +1325,11 @@ arranger_widget_select_all (
             F_NO_PUBLISH_EVENTS);
         }
 
-      EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_CREATED, sel);
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_ARRANGER_SELECTIONS_CREATED, sel);
+        }
     }
   else
     {
@@ -1306,8 +1339,12 @@ arranger_widget_select_all (
           arranger_selections_clear (
             sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-          EVENTS_PUSH (
-            ET_ARRANGER_SELECTIONS_REMOVED, sel);
+          if (fire_events)
+            {
+              EVENTS_PUSH_NOW (
+                ET_ARRANGER_SELECTIONS_REMOVED,
+                sel);
+            }
         }
     }
 }
@@ -2831,7 +2868,7 @@ drag_begin (
                 {
                   /* deselect all */
                   arranger_widget_select_all (
-                    self, false);
+                    self, false, true);
                 }
 
               /* set whether selecting
@@ -2976,7 +3013,8 @@ select_in_range (
       if (!self->ctrl_held)
         {
           /* deselect all */
-          arranger_widget_select_all (self, 0);
+          arranger_widget_select_all (
+            self, false, false);
         }
     }
 
@@ -3006,6 +3044,16 @@ select_in_range (
       };
       rect = _rect;
     }
+
+  /* redraw union of last rectangle and new
+   * rectangle */
+  GdkRectangle union_rect;
+  gdk_rectangle_union (
+    &rect, &self->last_selection_rect,
+    &union_rect);
+  arranger_widget_redraw_rectangle (
+    self, &union_rect);
+  self->last_selection_rect = rect;
 
   switch (self->type)
     {
@@ -3209,6 +3257,21 @@ select_in_range (
 
   if (prev_sel)
     {
+      /* redraw newly unselected objects */
+      int num_prev_objs;
+      ArrangerObject ** prev_objs =
+        arranger_selections_get_all_objects (
+          prev_sel, &num_prev_objs);
+      for (int i = 0; i < num_prev_objs; i++)
+        {
+          ArrangerObject * obj =
+            arranger_object_find (prev_objs[i]);
+          g_return_if_fail (obj);
+          if (!arranger_object_is_selected (obj))
+            arranger_object_queue_redraw (obj);
+        }
+      free (prev_objs);
+
       arranger_selections_free (prev_sel);
     }
 }
@@ -3232,6 +3295,9 @@ drag_update (
     }
 
   self->drag_update_started = true;
+
+  ArrangerSelections * sel =
+    arranger_widget_get_selections (self);
 
   /* state mask needs to be updated */
   GdkModifierType state_mask =
@@ -3327,9 +3393,6 @@ drag_update (
       self->action =
         UI_OVERLAY_ACTION_DELETE_SELECTING;
       {
-        ArrangerSelections * sel =
-          arranger_widget_get_selections (self);
-        g_return_if_fail (sel);
         arranger_selections_clear (
           sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
@@ -3340,9 +3403,6 @@ drag_update (
     case UI_OVERLAY_ACTION_STARTING_ERASING:
       self->action = UI_OVERLAY_ACTION_ERASING;
       {
-        ArrangerSelections * sel =
-          arranger_widget_get_selections (self);
-        g_return_if_fail (sel);
         arranger_selections_clear (
           sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
@@ -3412,12 +3472,20 @@ drag_update (
     {
     /* if drawing a selection */
     case UI_OVERLAY_ACTION_SELECTING:
-      /* find and select objects inside selection */
-      select_in_range (
-        self, offset_x, offset_y, F_IN_RANGE,
-        F_IGNORE_FROZEN, F_NO_DELETE);
-      EVENTS_PUSH (
-        ET_SELECTING_IN_ARRANGER, self);
+      {
+        /* redraw previous selections */
+        arranger_selections_redraw (sel);
+
+        /* find and select objects inside selection */
+        select_in_range (
+          self, offset_x, offset_y, F_IN_RANGE,
+          F_IGNORE_FROZEN, F_NO_DELETE);
+
+        /* redraw new selections and other needed
+         * things */
+        EVENTS_PUSH (
+          ET_SELECTING_IN_ARRANGER, self);
+      }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
       /* find and delete objects inside
@@ -3451,25 +3519,32 @@ drag_update (
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
     case UI_OVERLAY_ACTION_STRETCHING_L:
-      /* snap selections based on new pos */
-      if (self->type == TYPE (TIMELINE))
-        {
-          int ret =
-            timeline_arranger_widget_snap_regions_l (
-              self, &self->curr_pos, 1);
-          if (!ret)
-            timeline_arranger_widget_snap_regions_l (
-              self, &self->curr_pos, 0);
-        }
-      else if (self->type == TYPE (MIDI))
-        {
-          int ret =
-            midi_arranger_widget_snap_midi_notes_l (
-              self, &self->curr_pos, 1);
-          if (!ret)
-            midi_arranger_widget_snap_midi_notes_l (
-              self, &self->curr_pos, 0);
-        }
+      {
+          /* queue a redraw for the selections at
+           * their current position before the
+           * resize */
+          arranger_selections_redraw (sel);
+
+          /* snap selections based on new pos */
+          if (self->type == TYPE (TIMELINE))
+            {
+              int ret =
+                timeline_arranger_widget_snap_regions_l (
+                  self, &self->curr_pos, 1);
+              if (!ret)
+                timeline_arranger_widget_snap_regions_l (
+                  self, &self->curr_pos, 0);
+            }
+          else if (self->type == TYPE (MIDI))
+            {
+              int ret =
+                midi_arranger_widget_snap_midi_notes_l (
+                  self, &self->curr_pos, 1);
+              if (!ret)
+                midi_arranger_widget_snap_midi_notes_l (
+                  self, &self->curr_pos, 0);
+            }
+      }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_FADE:
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
@@ -3492,50 +3567,54 @@ drag_update (
     case UI_OVERLAY_ACTION_RESIZING_R:
     case UI_OVERLAY_ACTION_STRETCHING_R:
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
-      if (self->type == TYPE (TIMELINE))
-        {
-          if (self->resizing_range)
-            {
-              timeline_arranger_widget_snap_range_r (
-                self, &self->curr_pos);
-            }
-          else
-            {
-              int ret =
-                timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, F_DRY_RUN);
-              if (!ret)
-                {
-                  timeline_arranger_widget_snap_regions_r (
-                    self, &self->curr_pos,
-                    F_NOT_DRY_RUN);
-                }
-            }
-        }
-      else if (self->type == TYPE (MIDI))
-        {
-          int ret =
-            midi_arranger_widget_snap_midi_notes_r (
-              self, &self->curr_pos, F_DRY_RUN);
-          if (!ret)
-            {
-              midi_arranger_widget_snap_midi_notes_r (
-                self, &self->curr_pos,
-                F_NOT_DRY_RUN);
-            }
-          move_items_y (self, offset_y);
-        }
-      else if (self->type == TYPE (AUDIO))
-        {
-          if (self->resizing_range)
-            {
-              audio_arranger_widget_snap_range_r (
-                self, &self->curr_pos);
-            }
-        }
       {
-        ArrangerSelections * sel =
-          arranger_widget_get_selections (self);
+          /* queue a redraw for the selections at
+           * their current position before the
+           * resize */
+          arranger_selections_redraw (sel);
+
+        if (self->type == TYPE (TIMELINE))
+          {
+            if (self->resizing_range)
+              {
+                timeline_arranger_widget_snap_range_r (
+                  self, &self->curr_pos);
+              }
+            else
+              {
+                int ret =
+                  timeline_arranger_widget_snap_regions_r (
+                    self, &self->curr_pos, F_DRY_RUN);
+                if (!ret)
+                  {
+                    timeline_arranger_widget_snap_regions_r (
+                      self, &self->curr_pos,
+                      F_NOT_DRY_RUN);
+                  }
+              }
+          }
+        else if (self->type == TYPE (MIDI))
+          {
+            int ret =
+              midi_arranger_widget_snap_midi_notes_r (
+                self, &self->curr_pos, F_DRY_RUN);
+            if (!ret)
+              {
+                midi_arranger_widget_snap_midi_notes_r (
+                  self, &self->curr_pos,
+                  F_NOT_DRY_RUN);
+              }
+            move_items_y (self, offset_y);
+          }
+        else if (self->type == TYPE (AUDIO))
+          {
+            if (self->resizing_range)
+              {
+                audio_arranger_widget_snap_range_r (
+                  self, &self->curr_pos);
+              }
+          }
+
         transport_recalculate_total_bars (
           TRANSPORT, sel);
       }
@@ -3613,7 +3692,6 @@ drag_update (
   self->last_offset_y = offset_y;
   self->last_adj_ticks_diff = self->adj_ticks_diff;
 
-  arranger_widget_redraw_whole (self);
   arranger_widget_refresh_cursor (self);
 }
 
@@ -5086,50 +5164,14 @@ arranger_widget_get_all_objects (
     objs, size);
 }
 
-#if 0
-static gboolean
-arranger_tick_cb (
-  GtkWidget *      widget,
-  GdkFrameClock *  frame_clock,
+RulerWidget *
+arranger_widget_get_ruler (
   ArrangerWidget * self)
 {
-  gint64 frame_time =
-    gdk_frame_clock_get_frame_time (frame_clock);
-
-  if (gtk_widget_get_visible (widget) &&
-      (frame_time - self->last_frame_time) >
-        15000)
-    {
-      /* figure out the area to draw */
-      GtkScrolledWindow * scroll =
-        arranger_widget_get_scrolled_window (self);
-      GtkAdjustment * xadj =
-        gtk_scrolled_window_get_hadjustment (
-          scroll);
-      double x =
-        gtk_adjustment_get_value (xadj);
-      GtkAdjustment * yadj =
-        gtk_scrolled_window_get_vadjustment (
-          scroll);
-      double y =
-        gtk_adjustment_get_value (yadj);
-      int height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (scroll));
-      int width =
-        gtk_widget_get_allocated_width (
-          GTK_WIDGET (scroll));
-
-      /* redraw visible area */
-      gtk_widget_queue_draw_area (
-        widget, (int) x, (int) y, width, height);
-
-      self->last_frame_time = frame_time;
-    }
-
-  return G_SOURCE_CONTINUE;
+  return
+    self->type == TYPE (TIMELINE) ?
+    MW_RULER : EDITOR_RULER;
 }
-#endif
 
 /**
  * Returns the current visible rectangle.
@@ -5167,14 +5209,25 @@ void
 arranger_widget_redraw_whole (
   ArrangerWidget * self)
 {
+  g_message (
+    "redraw whole %s arranger",
+    arranger_widget_get_type_str (self));
+
+#if 0
+  if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
+    {
+      char * bt =
+        backtrace_get_with_lines ("", 4, false);
+      g_message ("bt: %s", bt);
+      g_free (bt);
+    }
+#endif
+
   GdkRectangle rect;
   arranger_widget_get_visible_rect (self, &rect);
 
   /* redraw visible area */
-  self->redraw = 1;
-  gtk_widget_queue_draw_area (
-    GTK_WIDGET (self), rect.x, rect.y,
-    rect.width, rect.height);
+  arranger_widget_redraw_rectangle (self, &rect);
 }
 
 bool
@@ -5223,9 +5276,12 @@ arranger_widget_redraw_playhead (
   max_x = MIN (max_x + buffer, rect.x + rect.width);
 
   /*g_message ("queueing redraw %d", playhead_x);*/
-  gtk_widget_queue_draw_area (
-    GTK_WIDGET (self), min_x, rect.y,
-    (max_x - min_x), rect.height);
+  GdkRectangle draw_rect = {
+    .x = min_x, .y = rect.y,
+    .width = (max_x - min_x),
+    .height = rect.height };
+  arranger_widget_redraw_rectangle (
+    self, &draw_rect);
 
   /* auto scroll */
   bool scroll_edges = false;
@@ -5288,9 +5344,71 @@ arranger_widget_redraw_rectangle (
   ArrangerWidget * self,
   GdkRectangle *   rect)
 {
+  self->redraw = true;
+
+  self->ruler_display =
+    (TransportDisplay)
+    g_settings_get_enum (S_UI, "ruler-display");
+
+  /* add 1px padding */
+  GdkRectangle draw_rect = *rect;
+  if (draw_rect.x > 0)
+    draw_rect.x--;
+  if (draw_rect.y > 0)
+    draw_rect.y--;
+  draw_rect.width += 2;
+  draw_rect.height += 2;
+
+  /* queue draw in next cycle */
   gtk_widget_queue_draw_area (
-    GTK_WIDGET (self), rect->x, rect->y,
-    rect->width, rect->height);
+    GTK_WIDGET (self), draw_rect.x, draw_rect.y,
+    draw_rect.width, draw_rect.height);
+
+#if 0
+  g_message (
+    "queue redraw rect x:%d y:%d w:%d h:%d for %s "
+    "arranger",
+    rect->x, rect->y, rect->width, rect->height,
+    arranger_widget_get_type_str (self));
+#endif
+
+#if 0
+  if (self->dummy_surface && false)
+    {
+      /* start drawing now in thread */
+      ArrangerDrawTaskData * task_data =
+        (ArrangerDrawTaskData *)
+        object_pool_get (self->draw_task_obj_pool);
+      task_data->rect = *rect;
+      if (task_data->surface)
+        {
+          cairo_surface_destroy (
+            task_data->surface);
+        }
+      if (task_data->cr)
+        {
+          cairo_destroy (task_data->cr);
+        }
+      task_data->surface =
+        cairo_surface_create_similar (
+          self->dummy_surface,
+          CAIRO_CONTENT_COLOR_ALPHA,
+          rect->width, rect->height);
+      task_data->cr =
+        cairo_create (task_data->surface);
+      GError * err = NULL;
+      bool ret =
+        g_thread_pool_push (
+          self->draw_thread_pool, task_data, &err);
+      if (!ret)
+        {
+          g_critical (
+            "failed to push task to arranger draw "
+            "thread: %s", err->message);
+          g_error_free (err);
+        }
+    }
+#endif
 }
 
 static gboolean
@@ -5333,8 +5451,7 @@ on_scroll (
       GtkAdjustment * adj;
       int new_x;
       RulerWidget * ruler =
-        self->type == TYPE (TIMELINE) ?
-        MW_RULER : EDITOR_RULER;
+        arranger_widget_get_ruler (self);
 
       /* get current adjustment so we can get the
        * difference from the cursor */
@@ -6565,9 +6682,32 @@ arranger_widget_setup (
 }
 
 static void
+finalize (
+  ArrangerWidget * self)
+{
+#if 0
+  if (self->draw_thread_pool)
+    {
+      g_thread_pool_free (
+        self->draw_thread_pool, true, false);
+    }
+  object_free_w_func_and_null (
+    object_pool_free, self->draw_task_obj_pool);
+#endif
+
+  G_OBJECT_CLASS (
+    arranger_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 arranger_widget_class_init (
   ArrangerWidgetClass * _klass)
 {
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (_klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -6613,4 +6753,23 @@ arranger_widget_init (
     GTK_GESTURE_SINGLE (
       self->right_mouse_mp),
       GDK_BUTTON_SECONDARY);
+
+#if 0
+  self->draw_task_obj_pool =
+    object_pool_new (
+      arranger_draw_task_data_new,
+      arranger_draw_task_data_free, 8);
+
+  GError * err = NULL;
+  self->draw_thread_pool =
+    g_thread_pool_new (
+      arranger_draw_thread_func, self,
+      8, F_NOT_EXCLUSIVE, &err);
+  if (!self->draw_thread_pool)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        "Failed to create arranger thread pool");
+    }
+#endif
 }

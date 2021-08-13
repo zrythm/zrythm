@@ -40,6 +40,8 @@ if can_make_guile_docs
       output: rst_tmp_file,
       input: texi_doc,
       command: [
+        # FIXME this should be a shell script, not
+        # guile script
         guile_gen_docs_scm,
         guile_dep.name(),
         meson.current_build_dir () / texi_file,
