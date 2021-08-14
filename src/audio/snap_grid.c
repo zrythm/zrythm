@@ -261,9 +261,9 @@ snap_grid_stringize (
  */
 Position *
 snap_grid_get_nearby_snap_point (
-  SnapGrid * self,
-  const Position * pos,
-  const int        return_prev)
+  const SnapGrid * const self,
+  const Position *       pos,
+  const int              return_prev)
 {
   Position * ret_pos = NULL;
   algorithms_binary_search_nearby (

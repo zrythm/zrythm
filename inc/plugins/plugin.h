@@ -579,6 +579,7 @@ plugin_get_port_by_param_uri (
  * Returns the escaped name of the plugin.
  */
 NONNULL
+MALLOC
 char *
 plugin_get_escaped_name (
   Plugin * pl);
@@ -587,6 +588,7 @@ plugin_get_escaped_name (
  * Returns the state dir as an absolute path.
  */
 NONNULL
+MALLOC
 char *
 plugin_get_abs_state_dir (
   Plugin * self,
@@ -705,6 +707,7 @@ plugin_process (
   const nframes_t   nframes);
 
 NONNULL
+MALLOC
 char *
 plugin_generate_window_title (
   Plugin * plugin);

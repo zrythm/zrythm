@@ -2302,31 +2302,15 @@ do_or_undo_edit (
                 {
                 case ARRANGER_SELECTIONS_ACTION_EDIT_NAME:
                   {
-                    switch (obj->type)
-                      {
-                      case ARRANGER_OBJECT_TYPE_REGION:
-                        {
-                          ZRegion * r =
-                            (ZRegion *) obj;
-                          region_set_name (
-                            r,
-                            ((ZRegion *) dest_objs[i])->
-                              name, 0);
-                        }
-                        break;
-                      case ARRANGER_OBJECT_TYPE_MARKER:
-                        {
-                          Marker * m =
-                            (Marker *) obj;
-                          marker_set_name (
-                            m,
-                            ((Marker *) dest_objs[i])->
-                              name);
-                        }
-                        break;
-                      default:
-                        break;
-                      }
+                    g_return_val_if_fail (
+                      arranger_object_type_has_name (
+                        obj->type), -1);
+                    const char * name =
+                      arranger_object_get_name (
+                        dest_objs[i]);
+                    arranger_object_set_name (
+                      obj, name,
+                      F_NO_PUBLISH_EVENTS);
                   }
                   break;
                 case ARRANGER_SELECTIONS_ACTION_EDIT_POS:
@@ -2603,9 +2587,10 @@ do_or_undo_split (
           if (obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
-              region_set_name (
-                (ZRegion *) obj,
-                ((ZRegion *) objs[i])->name, 0);
+              arranger_object_set_name (
+                obj,
+                ((ZRegion *) objs[i])->name,
+                F_NO_PUBLISH_EVENTS);
             }
 
           /* re-insert object at its original

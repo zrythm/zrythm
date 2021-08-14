@@ -317,9 +317,12 @@ test_project_rebootstrap_timeline (
   ZRegion * r =
     midi_region_new (
       p1, p2, track->pos, MIDI_REGION_LANE, 0);
+  ArrangerObject * r_obj = (ArrangerObject *) r;
   track_add_region (
     track, r, NULL, MIDI_REGION_LANE, 1, 0);
-  region_set_name (r, MIDI_REGION_NAME, 0);
+  arranger_object_set_name (
+    r_obj, MIDI_REGION_NAME,
+    F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (r->id.track_pos, ==, track->pos);
   g_assert_cmpint (
     r->id.lane_pos, ==, MIDI_REGION_LANE);
@@ -461,7 +464,10 @@ test_project_rebootstrap_timeline (
   g_assert_cmpint (clip->num_frames, <, 152000);
   track_add_region (
     track, r, NULL, AUDIO_REGION_LANE, 1, 0);
-  region_set_name (r, AUDIO_REGION_NAME, 0);
+  r_obj = (ArrangerObject *) r;
+  arranger_object_set_name (
+    r_obj, AUDIO_REGION_NAME,
+    F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (r->id.track_pos, ==, track->pos);
   g_assert_cmpint (
     r->id.lane_pos, ==, AUDIO_REGION_LANE);

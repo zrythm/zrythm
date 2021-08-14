@@ -258,6 +258,7 @@ ui_get_hit_child (
   return NULL;
 }
 
+NONNULL
 static void
 px_to_pos (
   double        px,

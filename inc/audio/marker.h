@@ -156,13 +156,6 @@ marker_find_by_name (
   const char * name);
 
 /**
- * Sets the name to all the Marker's counterparts.
- */
-#define marker_set_name(_self,_name) \
-  arranger_object_set_string ( \
-    Marker, _self, name, _name)
-
-/**
  * @}
  */
 

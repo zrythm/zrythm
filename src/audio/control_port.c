@@ -183,10 +183,10 @@ control_port_get_snapped_val_from_val (
  */
 float
 control_port_normalized_val_to_real (
-  Port * self,
-  float  normalized_val)
+  const Port * const self,
+  float              normalized_val)
 {
-  PortIdentifier * id = &self->id;
+  const PortIdentifier * const id = &self->id;
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       if (id->flags & PORT_FLAG_LOGARITHMIC)
@@ -242,13 +242,18 @@ control_port_normalized_val_to_real (
 /**
  * Converts real value (eg. -10.0 to 100.0) to
  * normalized value (0.0 to 1.0).
+ *
+ * @note This behaves differently from
+ *   \ref port_set_control_value() and
+ *   \ref port_get_control_value() and should be
+ *   used in widgets.
  */
 float
 control_port_real_val_to_normalized (
-  Port * self,
-  float  real_val)
+  const Port * const self,
+  float              real_val)
 {
-  PortIdentifier * id = &self->id;
+  const PortIdentifier * const id = &self->id;
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       if (self->id.flags & PORT_FLAG_LOGARITHMIC)

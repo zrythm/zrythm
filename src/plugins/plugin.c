@@ -1520,10 +1520,12 @@ char *
 plugin_get_escaped_name (
   Plugin * pl)
 {
-  g_return_val_if_fail (pl->setting->descr, NULL);
+  const PluginDescriptor * descr =
+    pl->setting->descr;
+  g_return_val_if_fail (descr, NULL);
 
-  char tmp[900];
-  io_escape_dir_name (tmp, pl->setting->descr->name);
+  char tmp[strlen (descr->name) + 200];
+  io_escape_dir_name (tmp, descr->name);
   return g_strdup (tmp);
 }
 

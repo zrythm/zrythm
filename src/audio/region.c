@@ -141,8 +141,9 @@ region_gen_name (
   else
     orig_name = g_strdup (track->name);
 
-  region_set_name (
-    self, orig_name, F_NO_PUBLISH_EVENTS);
+  arranger_object_set_name (
+    (ArrangerObject *) self, orig_name,
+    F_NO_PUBLISH_EVENTS);
   g_free (orig_name);
 }
 
@@ -1079,24 +1080,6 @@ region_print (
       self->id.link_group);
   g_message ("%s", str);
   g_free (str);
-}
-
-/**
- * Sets ZRegion name (without appending anything to
- * it) to all associated regions.
- */
-void
-region_set_name (
-  ZRegion *    self,
-  const char * name,
-  bool         fire_events)
-{
-  arranger_object_set_name (
-    (ArrangerObject *) self, name, fire_events);
-
-#if 0
-  region_update_identifier (self);
-#endif
 }
 
 /**

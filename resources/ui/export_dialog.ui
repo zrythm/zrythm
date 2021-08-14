@@ -101,13 +101,6 @@
                 <property name="margin-end">4</property>
                 <property name="margin-bottom">8</property>
                 <property name="vexpand">True</property>
-                <property name="label" translatable="yes">The following files will be created:
-
-Master.wav
-
-in the directory:
-
-/home/alex/Zrythm/Projects/project1/exports/20181023</property>
                 <property name="yalign">0</property>
               </object>
               <packing>
@@ -303,7 +296,6 @@ in the directory:
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
-                    <property name="text" translatable="yes">My Project</property>
                   </object>
                   <packing>
                     <property name="left-attach">3</property>
@@ -337,7 +329,6 @@ in the directory:
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
-                    <property name="text" translatable="yes">Zrythm</property>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>
@@ -359,7 +350,6 @@ in the directory:
                   <object class="GtkEntry" id="export_genre">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="text" translatable="yes">Electronic</property>
                   </object>
                   <packing>
                     <property name="left-attach">1</property>

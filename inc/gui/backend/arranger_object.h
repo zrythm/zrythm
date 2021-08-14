@@ -393,6 +393,10 @@ static const cyaml_schema_value_t
    type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT || \
    type == ARRANGER_OBJECT_TYPE_MARKER)
 
+#define arranger_object_type_has_name(type) \
+  (type == ARRANGER_OBJECT_TYPE_REGION \
+   || type == ARRANGER_OBJECT_TYPE_MARKER)
+
 /**
  * Returns if the object is allowed to have lanes.
  */

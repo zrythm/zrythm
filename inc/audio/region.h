@@ -638,16 +638,6 @@ region_at_position (
 char *
 region_generate_filename (ZRegion * region);
 
-/**
- * Sets ZRegion name (without appending anything to
- * it) to all associated regions.
- */
-void
-region_set_name (
-  ZRegion *    region,
-  const char * name,
-  bool         fire_events);
-
 void
 region_get_type_as_string (
   RegionType type,

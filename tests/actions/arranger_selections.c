@@ -1451,9 +1451,11 @@ test_edit_marker ()
   ArrangerSelections * clone_sel =
     arranger_selections_clone (
       (ArrangerSelections *) TL_SELECTIONS);
-  marker_set_name (
-    ((TimelineSelections *) clone_sel)->markers[0],
-    "bb");
+  Marker * m =
+    ((TimelineSelections *) clone_sel)->markers[0];
+  arranger_object_set_name (
+    (ArrangerObject *) m, "bb",
+    F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_edit (
     (ArrangerSelections *) TL_SELECTIONS,
     clone_sel,

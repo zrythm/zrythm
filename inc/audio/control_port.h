@@ -45,10 +45,12 @@ typedef struct Port Port;
  *   \ref port_get_control_value() and should be
  *   used in widgets.
  */
+NONNULL
+PURE
 float
 control_port_normalized_val_to_real (
-  Port * self,
-  float  normalized_val);
+  const Port * const self,
+  float              normalized_val);
 
 /**
  * Converts real value (eg. -10.0 to 100.0) to
@@ -59,10 +61,12 @@ control_port_normalized_val_to_real (
  *   \ref port_get_control_value() and should be
  *   used in widgets.
  */
+NONNULL
+PURE
 float
 control_port_real_val_to_normalized (
-  Port * self,
-  float  real_val);
+  const Port * const self,
+  float              real_val);
 
 /**
  * Checks if the given value is toggled.

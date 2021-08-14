@@ -309,11 +309,13 @@ snap_grid_stringize (
  * @param return_prev 1 to return the previous
  * element or 0 to return the next.
  */
+PURE
+NONNULL
 Position *
 snap_grid_get_nearby_snap_point (
-  SnapGrid *       self,
-  const Position * pos,
-  const int        return_prev);
+  const SnapGrid * const self,
+  const Position *       pos,
+  const int              return_prev);
 
 /**
  * @}

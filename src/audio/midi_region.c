@@ -621,8 +621,9 @@ handle_note_off:
                         Text.pData,
                       msg.iMsgSize - 3);
                     tmp[msg.iMsgSize - 3] = '\0';
-                    region_set_name (
-                      self, tmp, 0);
+                    arranger_object_set_name (
+                      (ArrangerObject *) self,
+                      tmp, F_NO_PUBLISH_EVENTS);
                     g_warn_if_fail (self->name);
                     g_message (
                       "[data sz %d] Track name = '%s'",
