@@ -854,7 +854,7 @@ automation_track_update_frames (
 CONST
 static int
 get_y_px_from_height_and_normalized_val (
-  const float height
+  const float height,
   const float normalized_val)
 {
   return

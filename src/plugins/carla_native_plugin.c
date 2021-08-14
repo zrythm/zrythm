@@ -1408,11 +1408,21 @@ carla_native_plugin_instantiate (
       self = pl->carla;
     }
 
-  g_return_val_if_fail (
-    self->native_plugin_handle &&
-    self->native_plugin_descriptor->activate &&
-    self->native_plugin_descriptor->ui_show,
-    -1);
+  if (!self->native_plugin_handle
+      || !self->native_plugin_descriptor->activate
+      || !self->native_plugin_descriptor->ui_show)
+    {
+      g_set_error (
+        error, Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+        "%s",
+        _("Failed to instantiate Carla plugin: "
+        "handle/descriptor not initialized "
+        "properly"));
+      self->plugin->instantiation_failed =
+        true;
+      return -1;
+    }
 
   /* create ports */
   if (!loading && !use_state_file &&
