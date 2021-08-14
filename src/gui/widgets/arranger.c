@@ -6545,6 +6545,32 @@ arranger_widget_scroll_until_obj (
 }
 
 /**
+ * Returns whether any arranger is in the middle
+ * of an action.
+ */
+bool
+arranger_widget_any_doing_action (void)
+{
+#define CHECK_ARRANGER(arranger) \
+  if (arranger \
+      && \
+      arranger->action != UI_OVERLAY_ACTION_NONE) \
+    return true;
+
+  CHECK_ARRANGER (MW_TIMELINE);
+  CHECK_ARRANGER (MW_PINNED_TIMELINE);
+  CHECK_ARRANGER (MW_MIDI_ARRANGER);
+  CHECK_ARRANGER (MW_MIDI_MODIFIER_ARRANGER);
+  CHECK_ARRANGER (MW_CHORD_ARRANGER);
+  CHECK_ARRANGER (MW_AUTOMATION_ARRANGER);
+  CHECK_ARRANGER (MW_AUDIO_ARRANGER);
+
+#undef CHECK_ARRANGER
+
+  return false;
+}
+
+/**
  * Returns the earliest possible position allowed
  * in this arranger (eg, 1.1.0.0 for timeline).
  */

@@ -1412,6 +1412,15 @@ project_autosave_cb (
           goto post_save_sem_and_continue;
         }
 
+      /* skip if currently performing action */
+      if (arranger_widget_any_doing_action ())
+        {
+          g_debug (
+            "in the middle of an action, skipping "
+            "autosave");
+          goto post_save_sem_and_continue;
+        }
+
       /* ok to save */
       project_save (
         PROJECT, PROJECT->dir, 1, 1,

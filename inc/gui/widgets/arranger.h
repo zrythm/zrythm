@@ -679,9 +679,17 @@ arranger_widget_is_playhead_visible (
   ArrangerWidget * self);
 
 NONNULL
+PURE
 RulerWidget *
 arranger_widget_get_ruler (
   ArrangerWidget * self);
+
+/**
+ * Returns whether any arranger is in the middle
+ * of an action.
+ */
+bool
+arranger_widget_any_doing_action (void);
 
 /**
  * Returns the playhead's x coordinate in absolute

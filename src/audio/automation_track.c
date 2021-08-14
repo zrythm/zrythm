@@ -851,6 +851,16 @@ automation_track_update_frames (
     }
 }
 
+CONST
+static int
+get_y_px_from_height_and_normalized_val (
+  const float height
+  const float normalized_val)
+{
+  return
+    (int) (height - normalized_val * height);
+}
+
 /**
  * Returns the y pixels from the value based on the
  * allocation of the automation track.
@@ -861,9 +871,8 @@ automation_track_get_y_px_from_normalized_val (
   float             normalized_val)
 {
   return
-    (int)
-    ((float) self->height -
-      (normalized_val * (float) self->height));
+    get_y_px_from_height_and_normalized_val (
+      (float) self->height, normalized_val);
 }
 
 /**
