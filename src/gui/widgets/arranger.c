@@ -110,7 +110,7 @@ G_DEFINE_TYPE (
 
 const char *
 arranger_widget_get_type_str (
-  ArrangerWidget * self)
+  ArrangerWidgetType type)
 {
   static const char * arranger_widget_type_str[] = {
     "timeline",
@@ -120,7 +120,7 @@ arranger_widget_get_type_str (
     "chord",
     "automation",
   };
-  return arranger_widget_type_str[self->type];
+  return arranger_widget_type_str[type];
 }
 
 /**
@@ -5211,7 +5211,7 @@ arranger_widget_redraw_whole (
 {
   g_message (
     "redraw whole %s arranger",
-    arranger_widget_get_type_str (self));
+    arranger_widget_get_type_str (self->type));
 
 #if 0
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
@@ -5282,6 +5282,18 @@ arranger_widget_redraw_playhead (
     .height = rect.height };
   arranger_widget_redraw_rectangle (
     self, &draw_rect);
+
+  if (!gtk_widget_get_mapped (GTK_WIDGET (self)))
+    {
+#if 0
+      g_debug (
+        "%s arranger is unmapped, skipping "
+        "autoscroll in %s",
+        arranger_widget_get_type_str (self->type),
+        __func__);
+#endif
+      return;
+    }
 
   /* auto scroll */
   bool scroll_edges = false;
@@ -5369,7 +5381,7 @@ arranger_widget_redraw_rectangle (
     "queue redraw rect x:%d y:%d w:%d h:%d for %s "
     "arranger",
     rect->x, rect->y, rect->width, rect->height,
-    arranger_widget_get_type_str (self));
+    arranger_widget_get_type_str (self->type));
 #endif
 
 #if 0

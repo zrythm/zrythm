@@ -811,6 +811,7 @@ test_strict_cflags += [
   '-Werror=unused-result',
   '-Wanalyzer-too-complex',
   '-Werror=analyzer-too-complex',
+  '-Werror=inline',
   ]
 
 if is_gcc

@@ -63,9 +63,10 @@ region_get_lane_full_rect (
  *   drawable coordinates.
  * @param rect Arranger rectangle.
  */
+HOT
 void
 region_draw (
-  ZRegion *       self,
+  ZRegion *      self,
   cairo_t *      cr,
   GdkRectangle * rect);
 

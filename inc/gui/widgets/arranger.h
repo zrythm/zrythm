@@ -415,7 +415,7 @@ typedef struct _ArrangerWidget
 
 const char *
 arranger_widget_get_type_str (
-  ArrangerWidget * self);
+  ArrangerWidgetType type);
 
 /**
  * Creates a timeline widget using the given
