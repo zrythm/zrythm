@@ -28,6 +28,8 @@
 
 #include "zrythm-config.h"
 
+#include <glib.h>
+
 #include <lilv/lilv.h>
 #include <lv2/state/state.h>
 

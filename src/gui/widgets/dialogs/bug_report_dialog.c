@@ -72,11 +72,13 @@ get_report_template (
       "# Other info\n"
       "%s\n\n"
       "# Backtrace\n```\n%s```\n\n"
+      "# Fatal\n%s\n\n"
       "# Action stack\n```\n%s```\n\n"
       "# Log\n```\n%s```",
       steps_to_reproduce,
       ver_with_caps, other_info,
       self->backtrace,
+      self->fatal ? "Yes" : "No",
       self->undo_stack, self->log);
 
   char * ret;

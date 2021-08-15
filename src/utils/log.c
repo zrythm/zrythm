@@ -642,7 +642,11 @@ need_backtrace (
     !string_contains_substr (
       ev->message,
       "gtk_window_set_titlebar() called on a "
-      "realized window");
+      "realized window")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "you are running a non-free operating system");
 }
 
 /**
