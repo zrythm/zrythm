@@ -238,7 +238,7 @@ on_node_finish (
 }
 
 HOT
-static inline void
+static void
 process_node (
   const GraphNode *                   node,
   const EngineProcessTimeInfo * const time_nfo)

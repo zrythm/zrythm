@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 util_srcs = [
+  'algorithms.c',
   'arrays.c',
   'audio.c',
   'backtrace.c',

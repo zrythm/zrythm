@@ -148,9 +148,10 @@ lv2_state_save_preset (
  */
 int
 lv2_state_apply_preset (
-  Lv2Plugin* plugin,
-  const LilvNode* preset,
-  const char *    path);
+  Lv2Plugin *      plugin,
+  const LilvNode * preset,
+  const char *     path,
+  GError **        error);
 
 /**
  * Deletes the current preset.

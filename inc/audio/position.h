@@ -95,6 +95,9 @@
 #define position_is_after_or_equal(_pos,_cmp) \
   (position_compare (_pos, _cmp) >= 0)
 
+#define position_is_positive(pos) \
+  ((pos)->frames >= 0 && (pos)->ticks >= 0)
+
 /**
  * Compares 2 positions based on their total ticks.
  *
@@ -176,6 +179,19 @@ static const Position POSITION_START =
   .ticks = 0.0,
   .frames = 0
 };
+
+static inline int
+position_cmp_func (
+  const void * _a,
+  const void * _b)
+{
+  const Position * a =
+    (Position const *) _a;
+  const Position * b =
+    (Position const *) _b;
+  return
+    position_compare (a, b);
+}
 
 /**
  * Sets position to given bar.

@@ -623,6 +623,10 @@ snap_region_l (
   else if ACTION_IS (STRETCHING_L)
     type = ARRANGER_OBJECT_RESIZE_STRETCH;
 
+  /* negative positions not allowed */
+  if (!position_is_positive (new_pos))
+    return -1;
+
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
         !self->shift_held &&
         type != ARRANGER_OBJECT_RESIZE_FADE)
@@ -798,6 +802,10 @@ snap_region_r (
     type = ARRANGER_OBJECT_RESIZE_FADE;
   else if ACTION_IS (STRETCHING_R)
     type = ARRANGER_OBJECT_RESIZE_STRETCH;
+
+  /* negative positions not allowed */
+  if (!position_is_positive (new_pos))
+    return -1;
 
   if (SNAP_GRID_ANY_SNAP (self->snap_grid)
       && !self->shift_held

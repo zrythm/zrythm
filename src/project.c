@@ -1041,9 +1041,15 @@ load (
   char * yaml =
     project_get_existing_yaml (PROJECT, use_backup);
 
+  g_message ("project from yaml...");
+  gint64 time_before = g_get_monotonic_time ();
   Project * self =
     (Project *)
     yaml_deserialize (yaml, &project_schema);
+  gint64 time_after = g_get_monotonic_time ();
+  g_message (
+    "time to deserialize: %ldms",
+    (long) (time_after - time_before) / 1000);
   free (yaml);
   if (!self)
     {

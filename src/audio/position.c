@@ -283,14 +283,20 @@ get_prev_snap_point (
   const SnapGrid * sg,
   Position *       prev_sp)
 {
+  g_return_val_if_fail (
+    pos->frames >= 0 && pos->ticks >= 0, NULL);
+
   bool snapped = false;
   Position * snap_point = NULL;
   if (sg->snap_to_grid)
     {
-      algorithms_binary_search_nearby (
-        sg->snap_points, pos, 1, 1,
-        sg->num_snap_points, Position *,
-        position_compare, &, snap_point, NULL);
+      snap_point =
+        (Position *)
+        algorithms_binary_search_nearby (
+          pos, sg->snap_points,
+          (size_t) sg->num_snap_points,
+          sizeof (Position), position_cmp_func,
+          true, true);
     }
   if (snap_point)
     {
@@ -373,14 +379,19 @@ get_next_snap_point (
   const SnapGrid * sg,
   Position *       next_sp)
 {
+  g_return_val_if_fail (
+    pos->frames >= 0 && pos->ticks >= 0, NULL);
+
   bool snapped = false;
   Position * snap_point = NULL;
   if (sg->snap_to_grid)
     {
-      algorithms_binary_search_nearby (
-        sg->snap_points, pos, 0, 0,
-        sg->num_snap_points, Position *,
-        position_compare, &, snap_point, NULL);
+      snap_point =
+        algorithms_binary_search_nearby (
+          pos, sg->snap_points,
+          (size_t) sg->num_snap_points,
+          sizeof (Position), position_cmp_func,
+          false, false);
     }
   if (snap_point)
     {
@@ -467,6 +478,11 @@ position_snap (
   /* this should only be called if snap is on.
    * the check should be done before calling */
   g_warn_if_fail (SNAP_GRID_ANY_SNAP (sg));
+
+  /* position must be positive - only global
+   * positions allowed */
+  g_return_if_fail (
+    pos->frames >= 0 && pos->ticks >= 0);
 
   if (!sg->snap_to_events)
     {

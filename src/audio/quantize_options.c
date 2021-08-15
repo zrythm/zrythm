@@ -22,6 +22,7 @@
 
 #include "audio/engine.h"
 #include "audio/quantize_options.h"
+#include "audio/position.h"
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "project.h"
@@ -181,11 +182,16 @@ get_prev_point (
   QuantizeOptions * self,
   Position *        pos)
 {
-  Position * prev_point = NULL;
-  algorithms_binary_search_nearby (
-    self->q_points, pos, 1, 1,
-    self->num_q_points, Position *,
-    position_compare, &, prev_point, NULL);
+  g_return_val_if_fail (
+    pos->frames >= 0 && pos->ticks >= 0, NULL);
+
+  Position * prev_point =
+    (Position *)
+    algorithms_binary_search_nearby (
+      pos, self->q_points,
+      (size_t) self->num_q_points,
+      sizeof (Position), position_cmp_func,
+      true, true);
 
   return prev_point;
 }
@@ -195,11 +201,16 @@ get_next_point (
   QuantizeOptions * self,
   Position *        pos)
 {
-  Position * next_point = NULL;
-  algorithms_binary_search_nearby (
-    self->q_points, pos, 0, 1,
-    self->num_q_points, Position *,
-    position_compare, &, next_point, NULL);
+  g_return_val_if_fail (
+    pos->frames >= 0 && pos->ticks >= 0, NULL);
+
+  Position * next_point =
+    (Position *)
+    algorithms_binary_search_nearby (
+      pos, self->q_points,
+      (size_t) self->num_q_points,
+      sizeof (Position), position_cmp_func,
+      false, true);
 
   return next_point;
 }

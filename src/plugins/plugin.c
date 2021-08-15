@@ -474,6 +474,8 @@ plugin_set_selected_preset_from_index (
   g_message (
     "applying preset at index %d", idx);
 
+  GError * err = NULL;
+  bool applied = false;
   if (self->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
@@ -485,6 +487,7 @@ plugin_set_selected_preset_from_index (
         {
           carla_reset_parameters (
             self->carla->host_handle, 0);
+          applied = true;
         }
       else
         {
@@ -494,6 +497,7 @@ plugin_set_selected_preset_from_index (
             self->banks[
               self->selected_bank.bank_idx]->
                 presets[idx]->carla_program);
+          applied = true;
         }
 #endif
     }
@@ -504,6 +508,7 @@ plugin_set_selected_preset_from_index (
           idx == 0)
         {
           /* TODO init all control ports */
+          applied = true;
         }
       else
         {
@@ -513,10 +518,17 @@ plugin_set_selected_preset_from_index (
               self->banks[
                 self->selected_bank.bank_idx]->
                   presets[idx]->uri);
-          lv2_state_apply_preset (
-            self->lv2, pset_uri, NULL);
+          applied =
+            lv2_state_apply_preset (
+              self->lv2, pset_uri, NULL, &err);
           lilv_node_free (pset_uri);
         }
+    }
+
+  if (!applied)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to apply preset"));
     }
 }
 
@@ -2193,8 +2205,16 @@ plugin_clone (
       char * state_file_abs_path =
         carla_native_plugin_get_abs_state_file_path  (
           pl->carla, F_NOT_BACKUP);
-      carla_native_plugin_load_state (
-        clone->carla, state_file_abs_path);
+      bool state_loaded =
+        carla_native_plugin_load_state (
+          clone->carla, state_file_abs_path, &err);
+      if (!state_loaded)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to load Carla plugin state"));
+          return NULL;
+        }
 
       /* create a new state dir and save the state
        * for the clone */

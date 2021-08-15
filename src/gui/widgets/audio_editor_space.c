@@ -54,6 +54,9 @@ link_scrolls (
   /* link ruler h scroll to arranger h scroll */
   if (MW_CLIP_EDITOR_INNER->ruler_scroll)
     {
+      g_return_if_fail (
+        GTK_IS_WIDGET (
+          MW_CLIP_EDITOR_INNER->ruler_scroll));
       gtk_scrolled_window_set_hadjustment (
         MW_CLIP_EDITOR_INNER->ruler_scroll,
         gtk_scrolled_window_get_hadjustment (

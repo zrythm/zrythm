@@ -99,6 +99,13 @@ typedef void (*GenericCallback) (
   void *       object);
 
 /**
+ * Generic comparator.
+ */
+typedef int (*GenericCmpFunc) (
+  const void * a,
+  const void * b);
+
+/**
  * Generic progress info.
  */
 typedef struct GenericProgressInfo

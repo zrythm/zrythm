@@ -61,6 +61,7 @@
 typedef enum
 {
   Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+  Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_FAILED,
 } ZPluginsCarlaNativePluginError;
 
 #define Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR \
@@ -1398,8 +1399,18 @@ carla_native_plugin_instantiate (
         }
 
       /* load the state */
-      carla_native_plugin_load_state (
-        self->plugin->carla, NULL);
+      bool state_loaded =
+        carla_native_plugin_load_state (
+          self->plugin->carla, NULL, &err);
+      if (!state_loaded)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _("Failed to load Carla state"));
+          self->plugin->instantiation_failed =
+            true;
+          return -1;
+        }
 
       /* free the previous instance */
       Plugin * pl = self->plugin;
@@ -1737,8 +1748,8 @@ carla_native_plugin_save_state (
 
 char *
 carla_native_plugin_get_abs_state_file_path (
-  CarlaNativePlugin * self,
-  bool                is_backup)
+  const CarlaNativePlugin * self,
+  const bool                is_backup)
 {
   char * abs_state_dir =
     plugin_get_abs_state_dir (
@@ -1755,14 +1766,18 @@ carla_native_plugin_get_abs_state_file_path (
 /**
  * Loads the state from the given file or from
  * its state file.
+ *
+ * @return True on success.
  */
-void
+bool
 carla_native_plugin_load_state (
   CarlaNativePlugin * self,
-  const char *        abs_path)
+  const char *        abs_path,
+  GError **           error)
 {
   Plugin * pl = self->plugin;
-  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+  g_return_val_if_fail (
+    IS_PLUGIN_AND_NONNULL (pl), false);
 
   g_debug (
     "%s: loading state from %s...",
@@ -1785,18 +1800,26 @@ carla_native_plugin_load_state (
       g_free (state_dir_abs_path);
     }
 
-  g_return_if_fail (file_exists (state_file));
+  if (!file_exists (state_file))
+    {
+      g_set_error (
+        error, Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_FAILED,
+        _("State file %s doesn't exist"),
+        state_file);
+      return false;
+    }
+
   char * state = NULL;
   GError * err = NULL;
   g_file_get_contents (
     state_file, &state, NULL, &err);
   if (err)
     {
-      g_critical (
-        "An error occurred reading the state: %s",
-        err->message);
-      g_error_free_and_null (err);
-      return;
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _("An error occurred reading the state"));
+      return false;
     }
   self->loading_state = true;
   self->native_plugin_descriptor->set_state (
@@ -1814,6 +1837,8 @@ carla_native_plugin_load_state (
 
   g_free (state);
   g_free (state_file);
+
+  return true;
 }
 
 void

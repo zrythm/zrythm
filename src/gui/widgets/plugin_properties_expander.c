@@ -31,6 +31,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 #include "zrythm_app.h"
 
@@ -124,23 +125,35 @@ on_load_preset_clicked (
     gtk_file_chooser_get_filename (
       GTK_FILE_CHOOSER (dialog));
 
+  GError * err = NULL;
+  bool applied = false;
   if (setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
-      carla_native_plugin_load_state (
-        self->plugin->carla, path);
+      applied =
+        carla_native_plugin_load_state (
+          self->plugin->carla, path, &err);
 #else
       g_return_if_reached ();
 #endif
     }
   else if (setting->descr->protocol == PROT_LV2)
     {
-      lv2_state_apply_preset (
-        self->plugin->lv2, NULL, path);
+      applied =
+        lv2_state_apply_preset (
+          self->plugin->lv2, NULL, path, &err);
     }
 
-  EVENTS_PUSH (
-    ET_PLUGIN_PRESET_LOADED, self->plugin);
+  if (applied)
+    {
+      EVENTS_PUSH (
+        ET_PLUGIN_PRESET_LOADED, self->plugin);
+    }
+  else
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to apply preset"));
+    }
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }

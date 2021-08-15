@@ -187,7 +187,7 @@ midi_mapping_get_index (
   g_return_val_if_reached (-1);
 }
 
-static inline void
+static void
 apply_mapping (
   MidiMapping * mapping,
   midi_byte_t * buf)

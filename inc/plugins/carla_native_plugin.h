@@ -141,11 +141,14 @@ carla_native_plugin_save_state (
 /**
  * Loads the state from the given file or from
  * its state file.
+ *
+ * @return True on success.
  */
-void
+bool
 carla_native_plugin_load_state (
   CarlaNativePlugin * self,
-  const char *        abs_path);
+  const char *        abs_path,
+  GError **           error);
 
 NONNULL
 void
@@ -171,10 +174,11 @@ carla_native_plugin_instantiate (
   GError **           error);
 
 NONNULL
+MALLOC
 char *
 carla_native_plugin_get_abs_state_file_path (
-  CarlaNativePlugin * self,
-  bool                is_backup);
+  const CarlaNativePlugin * self,
+  const bool                is_backup);
 
 /**
  * Processes the plugin for this cycle.

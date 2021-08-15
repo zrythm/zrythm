@@ -54,6 +54,7 @@
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -156,9 +157,19 @@ plugin_gtk_on_preset_activate (
                  PROT_LV2)
         {
           g_return_if_fail (plugin->lv2);
-          lv2_state_apply_preset (
-            plugin->lv2,
-            (LilvNode *) record->preset, NULL);
+          GError * err = NULL;
+          bool applied =
+            lv2_state_apply_preset (
+              plugin->lv2,
+              (LilvNode *) record->preset, NULL,
+              &err);
+          if (!applied)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to apply preset"));
+              return;
+            }
         }
       if (plugin->active_preset_item)
         {

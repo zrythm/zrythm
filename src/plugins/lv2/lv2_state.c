@@ -57,11 +57,24 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include <lv2/presets/presets.h>
 #define NS_XSD  "http://www.w3.org/2001/XMLSchema#"
 
 #define STATE_FILENAME "state.ttl"
+
+typedef enum
+{
+  Z_PLUGINS_LV2_LV2_STATE_ERROR_INSTANTIATION_FAILED,
+  Z_PLUGINS_LV2_LV2_STATE_ERROR_FAILED,
+} ZPluginsCarlaNativePluginError;
+
+#define Z_PLUGINS_LV2_LV2_STATE_ERROR \
+  z_plugins_lv2_lv2_state_error_quark ()
+GQuark z_plugins_lv2_lv2_state_error_quark (void);
+G_DEFINE_QUARK (
+  z-plugins-lv2-lv2-state-error-quark, z_plugins_lv2_lv2_state_error)
 
 /* not used - lilv handles these */
 #if 0
@@ -414,9 +427,10 @@ lv2_state_apply_state (
  */
 int
 lv2_state_apply_preset (
-  Lv2Plugin* plugin,
-  const LilvNode* preset,
-  const char *    path)
+  Lv2Plugin *      plugin,
+  const LilvNode * preset,
+  const char *     path,
+  GError **        error)
 {
   lilv_state_free (plugin->preset);
   if (preset)
@@ -431,7 +445,16 @@ lv2_state_apply_preset (
         lilv_state_new_from_file (
           LILV_WORLD, &plugin->map, NULL, path);
     }
-  g_return_val_if_fail (plugin->preset, -1);
+
+  if (!plugin->preset)
+    {
+      g_set_error (
+        error, Z_PLUGINS_LV2_LV2_STATE_ERROR,
+        Z_PLUGINS_LV2_LV2_STATE_ERROR_FAILED,
+        "%s", _("Failed to apply LV2 preset"));
+      return -1;
+    }
+
   lv2_state_apply_state (plugin, plugin->preset);
   return 0;
 }

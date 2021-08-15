@@ -64,6 +64,10 @@ if get_option ('tests')
   test_config_guile = configuration_data()
   test_config_guile.merge_from (test_config)
 
+  # FIXME use kuribu to generate the audio files
+  # instead of shipping them in the source code:
+  # ./bin/kuribu /path/to/midifile.mid out.wav http://moddevices.com/plugins/mod-devel/arpeggiator http://distrho.sf.net/plugins/Kars
+
   if rubberband.found()
     # timestretched test file x 2
     test_wav2 = configure_file (

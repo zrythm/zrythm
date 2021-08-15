@@ -205,8 +205,11 @@ midi_arranger_widget_snap_midi_notes_l (
       ZRegion * clip_editor_region =
         clip_editor_get_region (CLIP_EDITOR);
       if (SNAP_GRID_ANY_SNAP (
-            self->snap_grid) &&
-          !self->shift_held)
+            self->snap_grid)
+          && !self->shift_held
+          &&
+          position_is_positive (
+            &new_global_start_pos))
         {
           position_snap (
             &self->earliest_obj_start_pos,
@@ -223,9 +226,9 @@ midi_arranger_widget_snap_midi_notes_l (
         &new_start_pos,
         - r_obj->pos.ticks);
 
-      if (position_is_before (
-            &new_global_start_pos,
-            &POSITION_START) ||
+      if (!position_is_positive (
+             &new_global_start_pos)
+          ||
           position_is_after_or_equal (
             &new_start_pos,
             &mn_obj->end_pos))
@@ -352,8 +355,11 @@ midi_arranger_widget_snap_midi_notes_r (
 
       /* snap the global pos */
       if (SNAP_GRID_ANY_SNAP (
-            self->snap_grid) &&
-          !self->shift_held)
+            self->snap_grid)
+          && !self->shift_held
+          &&
+          position_is_positive (
+            &new_global_end_pos))
         {
           position_snap (
             &self->earliest_obj_start_pos,

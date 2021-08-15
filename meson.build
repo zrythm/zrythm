@@ -899,13 +899,9 @@ if (have_libsoundio)
   cdata.set('HAVE_LIBSOUNDIO', 1)
 endif
 cyaml_dep = dependency(
-  'libcyaml', required: false, version: '>=1.2.0',
-  static: all_static)
-if not cyaml_dep.found()
-  cyaml_proj = subproject('libcyaml')
-  cyaml_dep = cyaml_proj.get_variable(
-    'zrythm_cyaml_dep')
-endif
+  'libcyaml', version: '>=1.2.0',
+  static: all_static,
+  fallback: ['libcyaml', 'zrythm_cyaml_dep'])
 audec_dep = dependency(
   'audec', version: '>=0.3.2',
   fallback: ['libaudec', 'libaudec_dep'],
