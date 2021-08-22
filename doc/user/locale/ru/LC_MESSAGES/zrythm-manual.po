@@ -38,16 +38,17 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-08-09 23:33+0000\n"
+"PO-Revision-Date: 2021-08-22 14:57+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ru/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -213,7 +214,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:66
 msgid "Themes"
-msgstr ""
+msgstr "Темы"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid ""
@@ -621,16 +622,15 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:80
 msgid "MIDI CC bindings"
-msgstr ""
+msgstr "Привязки MIDI CC"
 
 #: ../../configuration/device-setup.rst:82
-#, fuzzy
 msgid ""
 "Bindings can be deleted by right-clicking on a row and selecting :guilabel:"
 "`Delete`."
 msgstr ""
-"Трек можно удалить, щелкнув по нему правой кнопкой мыши и нажав :zbutton:"
-"`Удалить (Delete)`."
+"Трек можно удалить, щёлкнув по нему правой кнопкой мыши и нажав :zbutton:`"
+"Удалить (Delete)`."
 
 #: ../../configuration/device-setup.rst:88
 msgid "Deleting a binding"
@@ -715,13 +715,8 @@ msgid "A list of controllers to auto-connect to."
 msgstr "Список контроллеров для автоматического подключения."
 
 #: ../../configuration/preferences.rst:46
-#, fuzzy
 msgid "Audio inputs"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Регионы аудио"
+msgstr "Аудио входы"
 
 #: ../../configuration/preferences.rst:46
 #, fuzzy
@@ -3148,7 +3143,7 @@ msgstr "Список событий отображает все события �
 
 #: ../../editing/timeline/intro.rst:8 ../../zrythm-interface/timeline.rst:8
 msgid "Timeline"
-msgstr "Таймлайн (Timeline)"
+msgstr "Инспектор таймлайна"
 
 #: ../../editing/timeline/overview.rst:7
 msgid ""
@@ -3377,7 +3372,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:30
 msgid "Format"
-msgstr "Формат (Format)"
+msgstr "Формат"
 
 #: ../../exporting/audio-and-midi.rst:31
 msgid ""
@@ -3450,7 +3445,7 @@ msgstr "Экспортированный файл"
 
 #: ../../exporting/audio-and-midi.rst:74
 msgid "Stems"
-msgstr "Стемы (Stems)"
+msgstr "Стемы"
 
 #: ../../exporting/audio-and-midi.rst:75
 msgid ""
@@ -3994,7 +3989,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
-msgstr "Монитор (Monitor)"
+msgstr "Монитор"
 
 #: ../../getting-started/system-requirements.rst:24
 msgid ""
@@ -4550,7 +4545,7 @@ msgstr ""
 
 #: ../../mixing/intro.rst:8
 msgid "Mixing"
-msgstr "Микширование"
+msgstr "Сведение"
 
 #: ../../mixing/overview.rst:10
 msgid "Mixing Overview"
@@ -4636,7 +4631,7 @@ msgstr ""
 
 #: ../../mixing/routing.rst:6 ../../routing/intro.rst:6
 msgid "Routing"
-msgstr "Направление (Routing)"
+msgstr "Маршрутизация"
 
 #: ../../mixing/routing.rst:9
 msgid "Groups"
@@ -5362,7 +5357,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:18
 msgid "Bookmarks"
-msgstr ""
+msgstr "Закладки"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 msgid ""
@@ -6739,7 +6734,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:54
 msgid "Port Connections"
-msgstr "Подключения портов"
+msgstr "Подключения к портам"
 
 #: ../../routing/ports.rst:55
 msgid ""
@@ -6980,7 +6975,7 @@ msgstr "Напечатать названия треков (Track Name)"
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr "Написание скриптов (Scripting)"
+msgstr "Скрипты"
 
 #: ../../scripting/overview.rst:8
 msgid ""
@@ -7603,7 +7598,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:8 ../../tracks/overview.rst:68
 #: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
-msgstr "Инспектор Треков (Track Inspector)"
+msgstr "Инспектор треков"
 
 #: ../../tracks/inspector-page.rst:10
 msgid ""
@@ -8657,7 +8652,7 @@ msgstr "Смотрите :ref:`track-inspector` для более подробн
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
-msgstr "Инспектор плагинов (Plugin Inspector)"
+msgstr "Инспектор плагинов"
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
@@ -8803,9 +8798,8 @@ msgid "Load a project."
 msgstr "Загрузите проект."
 
 #: ../../zrythm-interface/main-toolbar.rst:56
-#, fuzzy
 msgid "Export"
-msgstr "exports"
+msgstr "Экспорт"
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Export As"

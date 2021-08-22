@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-10 12:24+0100\n"
-"PO-Revision-Date: 2021-08-09 23:33+0000\n"
+"PO-Revision-Date: 2021-08-13 01:58+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -229,9 +229,8 @@ msgid "Guile script"
 msgstr "Banco predefinido"
 
 #: inc/audio/audio_function.h:83
-#, fuzzy
 msgid "Custom plugin"
-msgstr "Personalizado"
+msgstr "Suplemento personalizado"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
@@ -394,14 +393,12 @@ msgid "Before inserts"
 msgstr "Antes das inserções"
 
 #: inc/audio/exporter.h:91
-#, fuzzy
 msgid "Pre-fader"
-msgstr "Pré-fader enviar"
+msgstr "Pré-fader"
 
 #: inc/audio/exporter.h:92
-#, fuzzy
 msgid "Post fader"
-msgstr "Envio pós-fader"
+msgstr "Pós-fader"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -508,7 +505,7 @@ msgstr "%s caiu. "
 #: src/zrythm_app.c:190
 #, c-format
 msgid "Do you want %s to check for updates on startup?"
-msgstr ""
+msgstr "Deseja que %s verifica se há atualizações durante a inicialização?"
 
 #: src/zrythm_app.c:197
 msgid "Check for Updates"
@@ -572,7 +569,7 @@ msgid "Waiting for project"
 msgstr "Aguardando projeto"
 
 #: src/zrythm_app.c:1079
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s\n"
 "%s\n"
@@ -586,14 +583,15 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 Os colaboradores da Zrythm\n"
+"%s-%s\n"
+"%s\n"
 "\n"
-"%s não tem ABSOLUTAMENTE NENHUMA GARANTIA!\n"
+"%s vem com ABSOLUTAMENTE NENHUMA GARANTIA!\n"
 "\n"
-"Isto é software livre e é bem-vindo para redistribuí-lo\n"
-"sob certas condições. Consulte o ficheiro `COPYING' para obter detalhes.\n"
+"Isto é software livre e é bem-vindo redistribuí-lo\n"
+"sob certas condições. Consulte o ficheiro 'COPYING' para obter detalhes.\n"
 "\n"
-"Envie comentários e bugs para %s.\n"
+"Escreva comentários e bugs para %s.\n"
 "Apoie este projeto em https://liberapay.com/Zrythm\n"
 "\n"
 
@@ -603,7 +601,6 @@ msgid "File %s not found."
 msgstr "Ficheiro %s não encontrado."
 
 #: src/zrythm_app.c:1602
-#, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Nenhum ficheiro de saída foi especificado. Por favor, passe um com `--output "
@@ -615,9 +612,8 @@ msgid "Project failed to decompress: %s\n"
 msgstr "Não foi possível descomprimir o projeto: %s\n"
 
 #: src/zrythm_app.c:1686
-#, fuzzy
 msgid "Unknown operation"
-msgstr "Opção desconhecida\n"
+msgstr "Operação desconhecida"
 
 #: src/zrythm_app.c:1706
 #, c-format
@@ -625,9 +621,8 @@ msgid "libguile is required for this option\n"
 msgstr "libguile é necessário para esta opção\n"
 
 #: src/zrythm_app.c:1871
-#, fuzzy
 msgid "Print version information"
-msgstr "Informações sobre a Licença"
+msgstr "Imprimir informações da versão"
 
 #: src/zrythm_app.c:1876
 msgid "Convert ZPJ-FILE to YAML"
@@ -650,19 +645,16 @@ msgid "Print current settings"
 msgstr "Imprimir definições atuais"
 
 #: src/zrythm_app.c:1898
-#, fuzzy
 msgid "Reset to factory settings"
-msgstr "As configurações de fábrica foram redefinidas com sucesso\n"
+msgstr "Redefinir para configurações de fábrica"
 
 #: src/zrythm_app.c:1901
-#, fuzzy
 msgid "Override the audio backend to use"
-msgstr "O backend de áudio a usar."
+msgstr "Substitur o backend de áudio a usar"
 
 #: src/zrythm_app.c:1905
-#, fuzzy
 msgid "Override the MIDI backend to use"
-msgstr "O backend MIDI a usar."
+msgstr "Substituir o back-end MIDI a usar"
 
 #: src/zrythm_app.c:1909
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
@@ -728,7 +720,7 @@ msgstr "Saída CV"
 
 #: src/plugins/carla_native_plugin.c:1393
 msgid "Failed to instantiate Carla plugin"
-msgstr ""
+msgstr "Falha ao instanciar o suplemento Carla"
 
 #: src/plugins/plugin_manager.c:394
 msgid "Error loading LV2 bundle dir: "
@@ -771,40 +763,35 @@ msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "A instanciação falhou para o suplemento '%s'. A desativar..."
 
 #: src/plugins/plugin.c:293
-#, fuzzy
 msgid "Enabled"
-msgstr "Ativar"
+msgstr "Ativado"
 
 #: src/plugins/plugin.c:295
-#, fuzzy
 msgid "Enables or disables the plugin"
-msgstr "Ativar/desativar a coneção"
+msgstr "Ativa ou desativa o suplemento"
 
 #: src/plugins/plugin.c:318 src/gui/widgets/track_input_expander.c:727
 msgid "Gain"
 msgstr "Ganho"
 
 #: src/plugins/plugin.c:319
-#, fuzzy
 msgid "Plugin gain"
-msgstr "Plugin 1"
+msgstr "Ganho do suplemento"
 
 #: src/plugins/plugin.c:570
 msgid "Failed to get Carla plugin"
-msgstr ""
+msgstr "Falha a obter o suplemento Carla"
 
 #: src/plugins/plugin.c:586
-#, fuzzy
 msgid "Failed to get LV2 plugin"
-msgstr "Suplementos de LV2 verificados"
+msgstr "Falha a obter o suplemento LV2"
 
 #: src/plugins/plugin.c:1108
 #, c-format
 msgid " - bridge: %s"
-msgstr ""
+msgstr " - bridge: %s"
 
 #: src/plugins/plugin.c:1119
-#, fuzzy
 msgid "instrument"
 msgstr "Instrumento"
 

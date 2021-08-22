@@ -2,18 +2,23 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Tarık Yıldız <tariky113@gmail.com>, 2021.
+# Burak Hüseyin Ekseli <burakekseli@yandex.com>, 2021.
+# Oğuz Ersen <oguzersen@protonmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-07-21 18:06+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2021-08-20 04:36+0000\n"
+"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
+">\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -135,27 +140,27 @@ msgstr ""
 
 #: inc/utils/gtk.h:59
 msgid "Cu_t"
-msgstr ""
+msgstr "K_es"
 
 #: inc/utils/gtk.h:63
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopyala"
 
 #: inc/utils/gtk.h:67
 msgid "_Paste"
-msgstr ""
+msgstr "_Yapıştır"
 
 #: inc/utils/gtk.h:71
 msgid "_Delete"
-msgstr ""
+msgstr "_Sil"
 
 #: inc/utils/gtk.h:75
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "Seçimi _Temizle"
 
 #: inc/utils/gtk.h:80
 msgid "Select A_ll"
-msgstr ""
+msgstr "_Hepsini Seç"
 
 #: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:216
 msgid "Duplicate"
@@ -358,48 +363,48 @@ msgstr ""
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1094
 #: src/utils/ui.c:844
 msgid "Linear"
-msgstr ""
+msgstr "Doğrusal"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:845
 msgid "Square Root"
-msgstr ""
+msgstr "Karekök"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Sinüs"
 
 #: src/project.c:145
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "Dosya açılamadı: %s"
 
 #: src/project.c:189
 msgid "Project not compressed by zstd"
-msgstr ""
+msgstr "Proje zstd ile sıkıştırılmamış"
 
 #: src/project.c:202
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "Proje dosyasının sıkıştırması açılamadı: %s"
 
 #: src/project.c:929
 #, c-format
 msgid "Unable to read file: %s"
-msgstr ""
+msgstr "Dosya okunamıyor: %s"
 
 #: src/project.c:1014
 #, c-format
@@ -408,10 +413,13 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Daha yeni yedekleme bulundu:\n"
+"  %s.\n"
+"Daha yeni yedekleme kullanılsın mı?"
 
 #: src/project.c:1019
 msgid "Backup found"
-msgstr ""
+msgstr "Yedekleme bulundu"
 
 #: src/project.c:1075
 #, c-format
@@ -419,22 +427,24 @@ msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
+"Bu proje farklı bir %s (%s) sürümüyle oluşturulmuş. Doğru çalışmayabilir."
 
 #: src/project.c:1090
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Proje yüklenemedi. Daha fazla bilgi için lütfen günlük kayıtlarına bakın."
 
 #: src/project.c:1319
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
+msgstr "Proje yüklenemedi. Bunun yerine yeni bir tane oluşturulacak."
 
 #: src/project.c:1650
 msgid "Backup saved."
-msgstr ""
+msgstr "Yedekleme kaydedildi."
 
 #: src/project.c:1660
 msgid "Project saved."
-msgstr ""
+msgstr "Proje kaydedildi."
 
 #: src/zrythm_app.c:141
 msgid "Error - Backtrace:\n"
@@ -1488,21 +1498,21 @@ msgstr ""
 #: src/gui/widgets/header.c:119
 #, c-format
 msgid "About %s"
-msgstr ""
+msgstr "%s hakkında"
 
 #: src/gui/widgets/header.c:124
 msgid "About Zrythm"
-msgstr ""
+msgstr "Zrythm hakkında"
 
 #: src/gui/widgets/header.c:125 src/gui/widgets/preferences.c:931
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/file_auditioner_controls.ui:81 resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Tercihler"
 
 #: src/gui/widgets/header.c:126
 msgid "Log viewer"
-msgstr ""
+msgstr "Günlük kaydı görüntüleyici"
 
 #: src/gui/widgets/header.c:128
 msgid "Scripting interface"
@@ -1850,20 +1860,20 @@ msgstr ""
 #: src/gui/widgets/file_auditioner_controls.c:277
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "Show unsupported files"
-msgstr ""
+msgstr "Desteklenmeyen dosyaları göster"
 
 #: src/gui/widgets/file_auditioner_controls.c:280
 #: build/data/org.zrythm.Zrythm.gschema.xml:565
 msgid "Show hidden files"
-msgstr ""
+msgstr "Gizli dosyaları göster"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
-msgstr ""
+msgstr "Bağlantıyı etkinleştir/devre dışı bırak"
 
 #: src/gui/widgets/port_connection_row.c:148
 msgid "Delete connection"
-msgstr ""
+msgstr "Bağlantıyı sil"
 
 #: src/gui/widgets/live_waveform.c:324
 msgid "Live waveform indicator"
@@ -2242,15 +2252,15 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:83
 msgid "Enter group name"
-msgstr ""
+msgstr "Grup adını girin"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:93
 msgid "Group name"
-msgstr ""
+msgstr "Grup adı"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:96
 msgid "New Group"
-msgstr ""
+msgstr "Yeni Grup"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:102
 msgid "Move tracks under group"
@@ -2313,6 +2323,8 @@ msgid ""
 "\n"
 "1 more file..."
 msgstr ""
+"\n"
+"1 dosya daha..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:388
 #, c-format
@@ -2320,22 +2332,24 @@ msgid ""
 "\n"
 "%d more files..."
 msgstr ""
+"\n"
+"%d dosya daha..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:495
 msgid "The following files will be created:"
-msgstr ""
+msgstr "Aşağıdaki dosyalar oluşturulacak:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:498
 msgid "in the directory:"
-msgstr ""
+msgstr "dizinde:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:655
 msgid "<name>.<format>"
-msgstr ""
+msgstr "<ad>.<biçim>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:660
 msgid "<date>_<name>.<format>"
-msgstr ""
+msgstr "<tarih>_<ad>.<biçim>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:919
 msgid "No tracks to export"
@@ -2370,7 +2384,7 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr ""
+msgstr "Ev"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
@@ -2700,21 +2714,21 @@ msgstr ""
 
 #: src/audio/engine_pulse.c:242
 msgid "PulseAudio error: Failed to create main loop"
-msgstr ""
+msgstr "PulseAudio hatası: Ana döngü oluşturulamadı"
 
 #: src/audio/engine_pulse.c:263
 #, c-format
 msgid "PulseAudio Error: %s"
-msgstr ""
+msgstr "PulseAudio Hatası: %s"
 
 #: src/audio/engine_pulse.c:282
 msgid "PulseAudio Error: Failed to connect"
-msgstr ""
+msgstr "PulseAudio Hatası: Bağlanamadı"
 
 #: src/audio/engine_alsa.c:344
 #, c-format
 msgid "ALSA Error: %s"
-msgstr ""
+msgstr "ALSA Hatası: %s"
 
 #: src/audio/track.c:366
 msgid "Track record"
@@ -2844,39 +2858,39 @@ msgstr ""
 
 #: src/audio/engine_jack.c:680
 msgid "Unable to connect to the JACK server"
-msgstr ""
+msgstr "JACK sunucusuna bağlanılamıyor"
 
 #: src/audio/engine_jack.c:686
 msgid "Communication error with the JACK server"
-msgstr ""
+msgstr "JACK sunucusuyla iletişim hatası"
 
 #: src/audio/engine_jack.c:692
 msgid "Requested client does not exist"
-msgstr ""
+msgstr "İstenen istemci mevcut değil"
 
 #: src/audio/engine_jack.c:698
 msgid "Unable to load internal client"
-msgstr ""
+msgstr "Dahili istemci yüklenemiyor"
 
 #: src/audio/engine_jack.c:704
 msgid "Unable to initialize client"
-msgstr ""
+msgstr "İstemci başlatılamıyor"
 
 #: src/audio/engine_jack.c:710
 msgid "Unable to access shared memory"
-msgstr ""
+msgstr "Paylaşılan belleğe erişilemiyor"
 
 #: src/audio/engine_jack.c:716
 msgid "Client's protocol version does not match"
-msgstr ""
+msgstr "İstemcinin protokol sürümü eşleşmiyor"
 
 #: src/audio/engine_jack.c:720
 msgid "Backend error"
-msgstr ""
+msgstr "Arka uç hatası"
 
 #: src/audio/engine_jack.c:724
 msgid "Client zombie"
-msgstr ""
+msgstr "İstemci zombi"
 
 #: src/actions/port_action.c:139
 msgid "Set control value"
@@ -2978,15 +2992,15 @@ msgstr ""
 #: src/actions/actions.c:660 resources/gtk/help-overlay.ui:103
 #: resources/ui/project_assistant.ui:86
 msgid "Create new project"
-msgstr ""
+msgstr "Yeni proje oluştur"
 
 #: src/actions/actions.c:664
 msgid "Yes"
-msgstr ""
+msgstr "Evet"
 
 #: src/actions/actions.c:666
 msgid "No"
-msgstr ""
+msgstr "Hayır"
 
 #: src/actions/actions.c:671
 msgid "Any unsaved changes to the current project will be lost. Continue?"
@@ -3418,7 +3432,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:92
 msgid "Project"
-msgstr ""
+msgstr "Proje"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
@@ -3551,7 +3565,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr ""
+msgstr "Dil"
 
 #: resources/ui/first_run_assistant.ui:111
 msgid ""
@@ -4115,36 +4129,36 @@ msgstr ""
 
 #: resources/ui/port_selector_popover.ui:123
 msgid "Plugin"
-msgstr ""
+msgstr "Eklenti"
 
 #: resources/ui/port_selector_popover.ui:185
 msgid "Port"
-msgstr ""
+msgstr "Bağlantı noktası"
 
 #: resources/ui/file_auditioner_controls.ui:39
 msgid "Play/Pause"
-msgstr ""
+msgstr "Oynat/Duraklat"
 
 #: resources/ui/file_auditioner_controls.ui:52
 #: resources/ui/transport_controls.ui:70
 msgid "Stop"
-msgstr ""
+msgstr "Durdur"
 
 #: resources/ui/header.ui:74
 msgid "Edit"
-msgstr ""
+msgstr "Düzenle"
 
 #: resources/ui/header.ui:111
 msgid "View"
-msgstr ""
+msgstr "Görüntüle"
 
 #: resources/ui/header.ui:130
 msgid "Help"
-msgstr ""
+msgstr "Yardım"
 
 #: resources/ui/header.ui:157
 msgid "Project name"
-msgstr ""
+msgstr "Proje adı"
 
 #: resources/ui/header.ui:225
 msgid "MIDI in activity"
@@ -4152,7 +4166,7 @@ msgstr ""
 
 #: resources/ui/fader_buttons.ui:141
 msgid "Channel settings"
-msgstr ""
+msgstr "Kanal ayarları"
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
@@ -4160,19 +4174,19 @@ msgstr ""
 
 #: resources/ui/transport_controls.ui:55
 msgid "Play"
-msgstr ""
+msgstr "Oynat"
 
 #: resources/ui/transport_controls.ui:85
 msgid "Backward"
-msgstr ""
+msgstr "Geri"
 
 #: resources/ui/transport_controls.ui:100
 msgid "Forward"
-msgstr ""
+msgstr "İleri"
 
 #: resources/ui/transport_controls.ui:114 resources/ui/export_dialog.ui:238
 msgid "Loop"
-msgstr ""
+msgstr "Döngü"
 
 #: resources/ui/splash.ui:38
 msgid "Splash"
@@ -4294,7 +4308,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:80
 msgid "Details"
-msgstr ""
+msgstr "Ayrıntılar"
 
 #: resources/ui/export_dialog.ui:104
 msgid ""
@@ -4306,6 +4320,13 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
+"Aşağıdaki dosyalar oluşturulacak:\n"
+"\n"
+"Master.wav\n"
+"\n"
+"şu dizinde:\n"
+"\n"
+"/home/alex/Zrythm/Projects/project1/exports/20181023"
 
 #: resources/ui/export_dialog.ui:123
 msgid "Output Files"
@@ -4351,7 +4372,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:340 data/zrythm.desktop.in:10
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:351
 #: build/data/org.zrythm.Zrythm.gschema.xml:801
@@ -4447,11 +4468,11 @@ msgstr ""
 
 #: resources/ui/editor_toolbar.ui:158 resources/ui/editor_toolbar.ui:201
 msgid "Horizontal"
-msgstr ""
+msgstr "Yatay"
 
 #: resources/ui/editor_toolbar.ui:164 resources/ui/editor_toolbar.ui:207
 msgid "Vertical"
-msgstr ""
+msgstr "Dikey"
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:901
 msgid "Engine"
@@ -4459,15 +4480,15 @@ msgstr ""
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "Bağlanılacak ses arka ucu"
 
 #: resources/ui/preferences.ui:147
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDI Denetleyicileri"
 
 #: resources/ui/preferences.ui:180
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "Bağlanılacak MIDI arka ucu"
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
@@ -4495,7 +4516,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:266
 msgid "Device Name"
-msgstr ""
+msgstr "Aygıt Adı"
 
 #: resources/ui/preferences.ui:301
 msgid "Buffer Size"
@@ -4509,7 +4530,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:963
 #: build/data/org.zrythm.Zrythm.gschema.xml:994
 msgid "Plugins"
-msgstr ""
+msgstr "Eklentiler"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
@@ -4533,22 +4554,22 @@ msgstr ""
 
 #: resources/ui/preferences.ui:465
 msgid "Main Window"
-msgstr ""
+msgstr "Ana Pencere"
 
 #: resources/ui/preferences.ui:482
 #: build/data/org.zrythm.Zrythm.gschema.xml:1022
 #: build/data/org.zrythm.Zrythm.gschema.xml:1036
 #: build/data/org.zrythm.Zrythm.gschema.xml:1050
 msgid "Editing"
-msgstr ""
+msgstr "Düzenleme"
 
 #: resources/ui/preferences.ui:498
 msgid "Interface"
-msgstr ""
+msgstr "Arayüz"
 
 #: resources/ui/preferences.ui:523
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "Zrythm arayüzünün dili"
 
 #: resources/ui/preferences.ui:555
 msgid "GUI"
@@ -4596,28 +4617,30 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:248
 msgid "Installation directory"
-msgstr ""
+msgstr "Kurulum dizini"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid ""
 "This is the directory Zrythm is installed in. Currently only used on Windows."
 msgstr ""
+"Bu, Zrythm'in kurulu olduğu dizindir. Şu anda yalnızca Windows'ta "
+"kullanılmaktadır."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:253
 msgid "Last project directory"
-msgstr ""
+msgstr "Son proje dizini"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:254
 msgid "Last directory a project was created in."
-msgstr ""
+msgstr "Bir projenin oluşturulduğu son dizin."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:258
 msgid "List of all versions run at least once"
-msgstr ""
+msgstr "En az bir kez çalıştırılan tüm sürümlerin listesi"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:259
 msgid "A list of versions run at least once."
-msgstr ""
+msgstr "En az bir kez çalıştırılan sürümlerin bir listesi."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:263
 msgid "Last version that was notified of a new release"
@@ -5580,20 +5603,20 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:940
 msgid "MIDI controllers"
-msgstr ""
+msgstr "MIDI denetleyicileri"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:941
 msgid "A list of controllers to enable."
-msgstr ""
+msgstr "Etkinleştirilecek denetleyicilerin listesi."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:950
 #: build/data/org.zrythm.Zrythm.gschema.xml:995
 msgid "Paths"
-msgstr ""
+msgstr "Yollar"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:955
 msgid "The directory used to save user data in."
-msgstr ""
+msgstr "Kullanıcı verilerini kaydetmek için kullanılan dizin."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:964
 msgid "UIs"
@@ -5696,11 +5719,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1085
 msgid "Draw detail"
-msgstr ""
+msgstr "Çizim ayrıntısı"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1086
 msgid "Level of detail to use when drawing graphics."
-msgstr ""
+msgstr "Grafikleri çizerken kullanılacak ayrıntı düzeyi."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1091
 msgid "Font scale"
@@ -5712,27 +5735,27 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1096
 msgid "User interface language"
-msgstr ""
+msgstr "Kullanıcı arayüzü dili"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1097
 msgid "The language to use for the user interface."
-msgstr ""
+msgstr "Kullanıcı arayüzü için kullanılacak dil."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1101
 msgid "CSS theme"
-msgstr ""
+msgstr "CSS teması"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1102
 msgid "The CSS theme to use."
-msgstr ""
+msgstr "Kullanılacak CSS teması."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1106
 msgid "Icon theme"
-msgstr ""
+msgstr "Simge teması"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1107
 msgid "The icon theme to use. This is the directory name."
-msgstr ""
+msgstr "Kullanılacak simge teması. Bu, dizin adıdır."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1115
 msgid "DSP"
