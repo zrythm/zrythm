@@ -357,6 +357,7 @@ inc/audio/modulator_macro_processor.h
 inc/audio/recording_manager.h
 inc/audio/encoder.h
 inc/audio/midi_bus_track.h
+inc/audio/port_connections_manager.h
 inc/audio/tracklist.h
 inc/audio/position.h
 inc/audio/audio_group_track.h
@@ -438,7 +439,9 @@ inc/audio/scale_object.h
 inc/audio/quantize_options.h
 inc/audio/region.h
 inc/audio/control_room.h
+inc/audio/port_connection.h
 inc/audio/metronome.h
+inc/audio/ditherer.h
 inc/audio/channel.h
 inc/audio/engine_pulse.h
 inc/audio/router.h
@@ -727,6 +730,7 @@ src/utils/hash.c
 src/utils/stack.c
 src/utils/curl.c
 src/utils/log.c
+src/utils/algorithms.c
 src/utils/arrays.c
 src/utils/gtk.c
 src/utils/dialogs.c
@@ -753,10 +757,12 @@ src/audio/audio_group_track.c
 src/audio/midi_group_track.c
 src/audio/recording_event.c
 src/audio/tracklist.c
+src/audio/port_connections_manager.c
 src/audio/midi_note.c
 src/audio/chord_track.c
 src/audio/rtmidi_device.c
 src/audio/automation_track.c
+src/audio/ditherer.c
 src/audio/channel.c
 src/audio/region_identifier.c
 src/audio/graph.c
@@ -830,6 +836,7 @@ src/audio/hardware_processor.c
 src/audio/graph_export.c
 src/audio/sample_processor.c
 src/audio/recording_manager.c
+src/audio/port_connection.c
 src/audio/midi_mapping.c
 src/audio/pool.c
 src/audio/track.c
