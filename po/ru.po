@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-10 12:24+0100\n"
-"PO-Revision-Date: 2021-08-14 05:53+0000\n"
+"PO-Revision-Date: 2021-08-22 14:57+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -1338,7 +1338,7 @@ msgstr "Позиция (Position)"
 
 #: src/gui/widgets/digital_meter.c:1246
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr "Размер - Ударов в такте / Единица удара"
+msgstr "Размер - Долей в такте / Длительность доли"
 
 #: src/gui/widgets/drag_dest_box.c:246 src/gui/widgets/plugin_browser.c:344
 #: src/gui/widgets/panel_file_browser.c:707 src/audio/tracklist.c:1435
@@ -1514,19 +1514,16 @@ msgid "Failed to resize objects"
 msgstr "Не удалось создать действие изменения размера"
 
 #: src/gui/widgets/arranger.c:3984 src/gui/widgets/arranger.c:4034
-#, fuzzy
 msgid "Failed to move MIDI notes"
-msgstr "Не удалось открыть пользовательский интерфейс LV2 для %s"
+msgstr "Не удалось переместить MIDI ноты"
 
 #: src/gui/widgets/arranger.c:4060
-#, fuzzy
 msgid "Failed to duplicate MIDI notes"
-msgstr "Не удалось открыть файл: %s"
+msgstr "Не удалось дублировать MIDI ноты"
 
 #: src/gui/widgets/arranger.c:4083
-#, fuzzy
 msgid "Failed to create MIDI notes"
-msgstr "Не удалось создать трек: %s"
+msgstr "Не удалось создать MIDI ноты"
 
 #: src/gui/widgets/arranger.c:4172
 #, fuzzy
@@ -2030,7 +2027,6 @@ msgid "Select all"
 msgstr "Выбрать все (Select all)"
 
 #: src/gui/widgets/home_toolbar.c:247 resources/gtk/help-overlay.ui:306
-#, fuzzy
 msgid "Loop selection"
 msgstr "Зациклить выделенное (Loop selection)"
 
@@ -2154,7 +2150,7 @@ msgid "[MIDI FX %d] %s"
 msgstr "[MIDI FX %d] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:476
-#, fuzzy, c-format
+#, c-format
 msgid "[Insert %d] %s"
 msgstr "[Вставить %d] %s"
 
@@ -2228,9 +2224,9 @@ msgid "Dim"
 msgstr "Диммер (Dim)"
 
 #: src/gui/widgets/monitor_section.c:86
-#, fuzzy, c-format
+#, c-format
 msgid "<small>%d muted</small>"
-msgstr "<small>%d заглушил (muted) </small>"
+msgstr "<small>%d заглушено (muted) </small>"
 
 #: src/gui/widgets/monitor_section.c:92
 #, fuzzy
@@ -2238,9 +2234,9 @@ msgid "Currently muted tracks"
 msgstr "Треки"
 
 #: src/gui/widgets/monitor_section.c:95
-#, fuzzy, c-format
+#, c-format
 msgid "<small>%d soloed</small>"
-msgstr "<small>%d изолирован (soloed)</small>"
+msgstr "<small>%d изолированно</small>"
 
 #: src/gui/widgets/monitor_section.c:101
 #, fuzzy
@@ -3127,7 +3123,7 @@ msgstr "Инспектор таймлайна"
 
 #: src/utils/gtk.c:1311
 msgid "MIDI CC Bindings"
-msgstr ""
+msgstr "Привязки MIDI CC"
 
 #: src/utils/gtk.c:1314
 msgid "Port Connections"
@@ -3442,7 +3438,7 @@ msgstr "Долей в такте"
 
 #: src/audio/tempo_track.c:92
 msgid "Beat unit"
-msgstr "Единица измерения долей (Beat Unit)"
+msgstr "Длина долей (Beat Unit)"
 
 #: src/audio/tempo_track.c:210
 #, fuzzy
@@ -3789,11 +3785,11 @@ msgstr "Ошибка бэкенда"
 
 #: src/audio/engine_jack.c:724
 msgid "Client zombie"
-msgstr ""
+msgstr "Зомби клиент"
 
 #: src/actions/port_action.c:166
 msgid "Set control value"
-msgstr ""
+msgstr "Задать управляющее значение"
 
 #: src/actions/arranger_selections.c:418
 msgid "Arranger selections contain an undeletable object"
@@ -3865,11 +3861,11 @@ msgstr "Переместить выделенное в аранжировщик�
 
 #: src/actions/arranger_selections.c:3055
 msgid "Link arranger selections"
-msgstr ""
+msgstr "Привязать выделенное в аранжировщике"
 
 #: src/actions/arranger_selections.c:3058
 msgid "Record arranger selections"
-msgstr ""
+msgstr "Записать выделенное в аранжировщике"
 
 #: src/actions/arranger_selections.c:3061
 msgid "Edit arranger selections"
@@ -3899,19 +3895,21 @@ msgstr "Квантовать выделенное в аранжировщике"
 
 #: src/actions/midi_mapping_action.c:258
 msgid "MIDI mapping enable"
-msgstr ""
+msgstr "Включить привязку MIDI"
 
 #: src/actions/midi_mapping_action.c:261
 msgid "MIDI mapping disable"
-msgstr ""
+msgstr "Отключить привязку MIDI"
 
 #: src/actions/midi_mapping_action.c:264
+#, fuzzy
 msgid "MIDI mapping bind"
-msgstr ""
+msgstr "Связать привязку MIDI"
 
 #: src/actions/midi_mapping_action.c:267
+#, fuzzy
 msgid "MIDI mapping unbind"
-msgstr ""
+msgstr "Отвязать привязку MIDI"
 
 #: src/actions/actions.c:344
 #, c-format
@@ -3919,6 +3917,8 @@ msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
+"Возможность скриптинга <a href=\"%s\">GNU Guile</a> не активирована в вашей "
+"установке %s."
 
 #: src/actions/actions.c:614
 #, c-format
@@ -3960,7 +3960,7 @@ msgstr "Сохранить проект"
 
 #: src/actions/actions.c:842
 msgid "Export routing graph"
-msgstr ""
+msgstr "Экспортировать диаграмму маршрутизации"
 
 #: src/actions/actions.c:844
 msgid "Image (PNG)"
@@ -4142,23 +4142,23 @@ msgstr "Не удалось создать действие изменения �
 
 #: src/actions/port_connection_action.c:165
 msgid "Connect ports"
-msgstr ""
+msgstr "Подключить порты"
 
 #: src/actions/port_connection_action.c:168
 msgid "Disconnect ports"
-msgstr ""
+msgstr "Отключить порты"
 
 #: src/actions/port_connection_action.c:171
 msgid "Enable port connection"
-msgstr ""
+msgstr "Активировать портовое соединение"
 
 #: src/actions/port_connection_action.c:174
 msgid "Disable port connection"
-msgstr ""
+msgstr "Деактивировать портовое соединение"
 
 #: src/actions/port_connection_action.c:177
 msgid "Change port connection"
-msgstr ""
+msgstr "Изменить портовое соединение"
 
 #: src/actions/transport_action.c:239
 msgid "Change BPM"
@@ -4166,11 +4166,11 @@ msgstr "Изменить темп"
 
 #: src/actions/transport_action.c:241
 msgid "Beats per bar change"
-msgstr ""
+msgstr "Изменение долей в такте"
 
 #: src/actions/transport_action.c:243
 msgid "Beat unit change"
-msgstr ""
+msgstr "Изменение длины долей"
 
 #: src/actions/channel_send_action.c:222
 #, fuzzy
@@ -4189,15 +4189,15 @@ msgstr "Коллекция (Collection)"
 
 #: src/actions/channel_send_action.c:228
 msgid "Disconnect"
-msgstr ""
+msgstr "Отключить"
 
 #: src/actions/channel_send_action.c:230
 msgid "Change amount"
-msgstr ""
+msgstr "Изменить значение"
 
 #: src/actions/channel_send_action.c:232
 msgid "Change ports"
-msgstr ""
+msgstr "Изменить порты"
 
 #: src/actions/channel_send_action.c:235
 msgid "Channel send connection"
@@ -4269,11 +4269,11 @@ msgstr "Вставить %d плагинов(а)"
 
 #: src/actions/range_action.c:690 resources/ui/range_action_buttons.ui:36
 msgid "Insert silence"
-msgstr ""
+msgstr "Вставить тишину"
 
 #: src/actions/range_action.c:693
 msgid "Delete range"
-msgstr ""
+msgstr "Удалить диапазон"
 
 #: src/actions/tracklist_selections.c:278
 #, fuzzy, c-format
@@ -4282,11 +4282,11 @@ msgstr "Не удалось открыть файл: %s"
 
 #: src/actions/tracklist_selections.c:316
 msgid "No tracks selected"
-msgstr ""
+msgstr "Не выбрано треков"
 
 #: src/actions/tracklist_selections.c:336
 msgid "Failed to clone tracklist selections"
-msgstr ""
+msgstr "Не удалось клонировать выделенное в списке треков"
 
 #: src/actions/tracklist_selections.c:358
 msgid "Failed to clone track"
@@ -4294,7 +4294,7 @@ msgstr "Не удалось клонировать трек"
 
 #: src/actions/tracklist_selections.c:387
 msgid "Failed to clone tracklist selections: "
-msgstr ""
+msgstr "Не удалось клонировать выделенное в списке треков: "
 
 #: src/actions/tracklist_selections.c:599
 #, c-format
@@ -4708,6 +4708,11 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
+"<b><i>Примечание: Zrythm в настоящее время находится в альфа-версии</i></b>\n"
+"\n"
+"Добро пожаловать в Zrythm.\n"
+"Этот гайд проведёт вас по основным настройкам Zrythm. Для начала - выберите "
+"язык."
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
@@ -4718,6 +4723,8 @@ msgid ""
 "Next, choose the location to use for saving temporary files and projects (or "
 "accept the default)"
 msgstr ""
+"Далее выберите место для сохранения временных файлов и проектов (или примите "
+"значение по умолчанию)"
 
 #: resources/ui/first_run_assistant.ui:138
 msgid "Resets the path to the default"
@@ -4725,7 +4732,7 @@ msgstr "Сбросить путь до стандартного"
 
 #: resources/ui/first_run_assistant.ui:165
 msgid "Select the audio and MIDI engine backends to use"
-msgstr ""
+msgstr "Выбрать аудио и MIDI бэкенды"
 
 #: resources/ui/first_run_assistant.ui:183 resources/ui/preferences.ui:169
 msgid "MIDI Backend"
@@ -4765,11 +4772,11 @@ msgstr "Нажмите кнопку или покрутите ручку на в
 
 #: resources/ui/bind_cc_dialog.ui:94
 msgid "Waiting for input..."
-msgstr ""
+msgstr "Ожидание ввода..."
 
 #: resources/ui/log_viewer.ui:25
 msgid "Log Level"
-msgstr ""
+msgstr "Уровень логов"
 
 #: resources/ui/log_viewer.ui:75
 msgid "Save As..."
@@ -4875,16 +4882,16 @@ msgstr "Создатель"
 #: resources/ui/scale_selector_window.ui:358
 #: resources/ui/chord_selector_window.ui:877
 msgid "TODO keyboard"
-msgstr ""
+msgstr "Клавиатура в разработке"
 
 #: resources/ui/scale_selector_window.ui:368
 #: resources/ui/chord_selector_window.ui:887 resources/ui/export_dialog.ui:251
 msgid "Custom"
-msgstr ""
+msgstr "Пользовательский"
 
 #: resources/ui/bot_dock_edge.ui:70
 msgid "Editor view"
-msgstr ""
+msgstr "Вид редактора"
 
 #: resources/ui/bot_dock_edge.ui:113
 msgid "Mixer view"
@@ -4896,7 +4903,7 @@ msgstr "Панель Аккордов (Chord Pad)"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
-msgstr ""
+msgstr "Аквариум"
 
 #: resources/ui/timeline_toolbar.ui:69
 #: build/data/org.zrythm.Zrythm.gschema.xml:388
@@ -4905,11 +4912,11 @@ msgstr "Музыкальный режим"
 
 #: resources/ui/timeline_toolbar.ui:116
 msgid "Merge selections"
-msgstr ""
+msgstr "Объединить выделенное"
 
 #: resources/ui/timeline_toolbar.ui:139 resources/ui/editor_toolbar.ui:137
 msgid "Toggle event viewer"
-msgstr ""
+msgstr "Переключить список событий"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
@@ -5010,27 +5017,27 @@ msgstr "Кварто-квинтовый круг"
 
 #: resources/ui/create_project_dialog.ui:70
 msgid "Parent directory"
-msgstr ""
+msgstr "Родительская папка"
 
 #: resources/ui/create_project_dialog.ui:83
 msgid "Select parent directory to save the project in"
-msgstr ""
+msgstr "Выберите родительскую папку для сохранения проекта"
 
 #: resources/ui/active_hardware_popover.ui:37
 msgid "Ports found"
-msgstr ""
+msgstr "Найденные порты"
 
 #: resources/ui/active_hardware_popover.ui:98
 msgid "Rescan"
-msgstr ""
+msgstr "Пересканировать"
 
 #: resources/ui/active_hardware_popover.ui:102
 msgid "Scan again for MIDI controllers"
-msgstr ""
+msgstr "Пересканировать на наличие MIDI-контроллеров"
 
 #: resources/ui/main_notebook.ui:88
 msgid "Port connections"
-msgstr ""
+msgstr "Портовые соединения"
 
 #: resources/ui/main_notebook.ui:104
 #, fuzzy
@@ -5039,15 +5046,15 @@ msgstr "Коллекция (Collection)"
 
 #: resources/ui/main_notebook.ui:130
 msgid "MIDI CC bindings"
-msgstr ""
+msgstr "Привязки MIDI CC"
 
 #: resources/ui/main_notebook.ui:146
 msgid "Bindings"
-msgstr ""
+msgstr "Привязки"
 
 #: resources/ui/main_notebook.ui:172
 msgid "Scenes (Live view)"
-msgstr ""
+msgstr "Сцены (в реальном времени)"
 
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 msgid "Pitch Wheel"
@@ -5090,15 +5097,15 @@ msgstr "Показать/скрыть интерфейс"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
-msgstr ""
+msgstr "Насильно привязать к звукоряду"
 
 #: resources/ui/arranger_object_info_dialog.ui:100
 msgid "Owner"
-msgstr ""
+msgstr "Владелец"
 
 #: resources/ui/arranger_object_info_dialog.ui:178
 msgid "Arranger Object Info"
-msgstr ""
+msgstr "Информация об объекте аранжировщика"
 
 #: resources/ui/scripting_window.ui:50
 msgid "Execute"
@@ -5139,7 +5146,7 @@ msgstr "Заглушён"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Full designation"
-msgstr ""
+msgstr "Полное обозначение"
 
 #: resources/ui/port_info_dialog.ui:142
 msgid "Range"
@@ -5167,7 +5174,7 @@ msgstr "Выбрать MIDI-файл"
 
 #: resources/ui/export_midi_file_dialog.ui:69
 msgid "_Export"
-msgstr ""
+msgstr "_Экспорт"
 
 #: resources/ui/export_midi_file_dialog.ui:104
 msgid "Region content"
@@ -5255,7 +5262,7 @@ msgstr "Название проекта"
 
 #: resources/ui/header.ui:225
 msgid "MIDI in activity"
-msgstr ""
+msgstr "Активность MIDI входов"
 
 #: resources/ui/fader_buttons.ui:141
 msgid "Channel settings"
@@ -5283,7 +5290,7 @@ msgstr "Цикл (Loop)"
 
 #: resources/ui/splash.ui:38
 msgid "Splash"
-msgstr ""
+msgstr "Всплеск"
 
 #: resources/ui/splash.ui:67
 msgid "Initializing..."
@@ -5303,27 +5310,27 @@ msgstr "Отключить трек автоматизации"
 
 #: resources/ui/automation_track.ui:83
 msgid "RW"
-msgstr ""
+msgstr "RW"
 
 #: resources/ui/automation_track.ui:87
 msgid "Write automation"
-msgstr ""
+msgstr "Записать автоматизацию"
 
 #: resources/ui/automation_track.ui:104
 msgid "Read automation"
-msgstr ""
+msgstr "Считать автоматизацию"
 
 #: resources/ui/automation_track.ui:125
 msgid "0.0"
-msgstr ""
+msgstr "0.0"
 
 #: resources/ui/automation_track.ui:143
 msgid "Remove automation track"
-msgstr ""
+msgstr "Удалить трек автоматизации"
 
 #: resources/ui/automation_track.ui:164
 msgid "Add automation track"
-msgstr ""
+msgstr "Добавить трек автоматизации"
 
 #: resources/ui/bounce_dialog.ui:32
 msgid "Bounce Options"
@@ -5340,11 +5347,11 @@ msgstr "Рендер с предками (Bounce with parents)"
 
 #: resources/ui/bounce_dialog.ui:116
 msgid "Tail"
-msgstr ""
+msgstr "Хвост"
 
 #: resources/ui/bounce_dialog.ui:142
 msgid "ms"
-msgstr ""
+msgstr "мс"
 
 #: resources/ui/bounce_dialog.ui:167
 #: build/data/org.zrythm.Zrythm.gschema.xml:336
@@ -5356,12 +5363,13 @@ msgid "Snap to grid"
 msgstr "Привязать к сетке"
 
 #: resources/ui/snap_box.ui:60
+#, fuzzy
 msgid "Keep offset"
-msgstr ""
+msgstr "Сохранить смещение"
 
 #: resources/ui/snap_box.ui:82
 msgid "Snap to events"
-msgstr ""
+msgstr "Привязать к событиям"
 
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
@@ -5439,7 +5447,7 @@ msgstr "Микс (Mixdown)"
 
 #: resources/ui/export_dialog.ui:198
 msgid "Stems"
-msgstr "Стемы (Stems)"
+msgstr "Стемы"
 
 #: resources/ui/export_dialog.ui:225
 msgid "Song"
@@ -5474,12 +5482,12 @@ msgstr "Жанр"
 
 #: resources/ui/export_dialog.ui:362
 msgid "Electronic"
-msgstr ""
+msgstr "Электронная музыка"
 
 #: resources/ui/export_dialog.ui:384
 #: build/data/org.zrythm.Zrythm.gschema.xml:827
 msgid "Format"
-msgstr "Формат (Format)"
+msgstr "Формат"
 
 #: resources/ui/export_dialog.ui:397
 #: build/data/org.zrythm.Zrythm.gschema.xml:847
@@ -5493,19 +5501,19 @@ msgstr "Дизеринг (Dither)"
 
 #: resources/ui/export_dialog.ui:495
 msgid "~"
-msgstr ""
+msgstr "~"
 
 #: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
-msgstr ""
+msgstr "Это уведомление приложения. Нажмите кнопку, чтобы закрыть"
 
 #: resources/ui/clip_editor.ui:30
 msgid "No clip selected"
-msgstr ""
+msgstr "Клип не выбран"
 
 #: resources/ui/quantize_box.ui:61
 msgid "Full Quantize..."
-msgstr ""
+msgstr "Полное квантование..."
 
 #: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
 msgid "Note length"
@@ -5513,7 +5521,7 @@ msgstr "Длина ноты"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
 msgid "t"
-msgstr ""
+msgstr "t"
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
 msgid "Triplet"
@@ -5525,35 +5533,35 @@ msgstr "С точкой"
 
 #: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
 msgid "Adaptive"
-msgstr ""
+msgstr "Адаптивный"
 
 #: resources/ui/snap_grid_popover.ui:192 resources/ui/snap_grid_popover.ui:314
 msgid "Adaptive length"
-msgstr ""
+msgstr "Адаптивная длина"
 
 #: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
-msgstr ""
+msgstr "Привязка"
 
 #: resources/ui/snap_grid_popover.ui:325
 msgid "Link"
-msgstr ""
+msgstr "Связь"
 
 #: resources/ui/snap_grid_popover.ui:326
 msgid "Link length to snap setting"
-msgstr ""
+msgstr "Связать длину с настройками привязки"
 
 #: resources/ui/snap_grid_popover.ui:339
 msgid "Last object"
-msgstr ""
+msgstr "Последний объект"
 
 #: resources/ui/snap_grid_popover.ui:340
 msgid "Use last created object's length"
-msgstr ""
+msgstr "Использовать длину последнего созданного объекта"
 
 #: resources/ui/range_action_buttons.ui:58
 msgid "Remove range"
-msgstr ""
+msgstr "Удалить диапазон"
 
 #: resources/ui/editor_toolbar.ui:156 resources/ui/editor_toolbar.ui:199
 msgid "Flip"
@@ -5573,15 +5581,15 @@ msgstr "Движок (Engine)"
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "К какому аудио бэкенду подключиться"
 
 #: resources/ui/preferences.ui:147
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDI контроллеры"
 
 #: resources/ui/preferences.ui:180
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "К какому MIDI бэкенду подключиться"
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
@@ -5589,7 +5597,7 @@ msgstr "Алгоритм панорамирования"
 
 #: resources/ui/preferences.ui:201
 msgid "Pan Law"
-msgstr ""
+msgstr "Правило панорамирования (Pan law)"
 
 #: resources/ui/preferences.ui:211
 msgid "The pan algorithm to use"
@@ -5597,7 +5605,7 @@ msgstr "Какой алгоритм панорамирования исполь�
 
 #: resources/ui/preferences.ui:222
 msgid "The pan law to use"
-msgstr ""
+msgstr "Какой закон панорамирования использовать"
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:960
 msgid "Zrythm path"
@@ -5610,7 +5618,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:266
 msgid "Device Name"
-msgstr ""
+msgstr "Имя устройства"
 
 #: resources/ui/preferences.ui:301
 msgid "Buffer Size"
@@ -5684,6 +5692,8 @@ msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
 msgstr ""
+"Установить интервал автосохранения резервных копий проекта в минутах. "
+"Значение \"0\" отключит автосохранение"
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
@@ -5692,43 +5702,47 @@ msgstr "Цифровая звуковая рабочая станция"
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
 msgstr ""
+"высокоавтоматизированная и простая в использовании цифровая звуковая рабочая "
+"станция"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:239
 msgid "Recent project list"
-msgstr ""
+msgstr "Список недавних проектов"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:240
 msgid "A list of recent projects to be referenced on startup."
-msgstr ""
+msgstr "Список недавних проектов, который будет показываться при запуске."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:244
 msgid "First run"
-msgstr ""
+msgstr "Первый запуск"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:245
 msgid "Whether this is the first run or not."
-msgstr ""
+msgstr "Первый ли это запуск или нет."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid "Installation directory"
-msgstr ""
+msgstr "Каталог установки"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:250
 msgid ""
 "This is the directory Zrythm is installed in. Currently only used on Windows."
 msgstr ""
+"Это папка, где установлен Zrythm. В настоящее время используется только в "
+"Windows."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:254
 msgid "Last project directory"
-msgstr ""
+msgstr "Папка последнего проекта"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:255
 msgid "Last directory a project was created in."
-msgstr ""
+msgstr "Папка, в которой был создан последний проект."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:259
 msgid "List of all versions run at least once"
-msgstr ""
+msgstr "Список всех версий, запущенных хотя бы один раз"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:260
 #, fuzzy
@@ -5737,29 +5751,31 @@ msgstr "Список контроллеров для автоматическо�
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
 msgid "Last version that was notified of a new release"
-msgstr ""
+msgstr "Последняя версия, которая была уведомлена о новом выпуске"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:265
 msgid ""
 "The last version that received a 'new version has been released' "
 "notification."
 msgstr ""
+"Последняя версия, которая получила уведомление \"была выпущена новая версия\""
+"."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:269
 msgid "First check for updates"
-msgstr ""
+msgstr "Первичная проверка обновлений"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:270
 msgid "Whether this is the first time attempting to check for updates."
-msgstr ""
+msgstr "Первая ли это попытка проверки обновлений."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:279
 msgid "Monitor volume"
-msgstr ""
+msgstr "Громкость монитора"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:280
 msgid "The monitor volume in amplitude (0 to 2)."
-msgstr ""
+msgstr "Громкость монитора по амплитуде (от 0 до 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:285
 msgid "Mute volume"
@@ -6698,7 +6714,7 @@ msgstr "Аудио бэкeнд (Audio backend)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:912
 msgid "The audio backend to use."
-msgstr ""
+msgstr "Какой аудио бэкенд использовать."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:916
 msgid "RtAudio device"
@@ -6734,7 +6750,7 @@ msgstr "MIDI бэкeнд (MIDI backend)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:937
 msgid "The MIDI backend to use."
-msgstr ""
+msgstr "Какой MIDI бэкенд использовать."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:941
 msgid "Audio inputs"
@@ -6890,7 +6906,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1106
 msgid "Level of detail to use when drawing graphics."
-msgstr ""
+msgstr "Уровень детализации графики."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1111
 msgid "Font scale"
