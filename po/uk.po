@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-10 12:24+0100\n"
-"PO-Revision-Date: 2021-07-04 14:32+0000\n"
+"PO-Revision-Date: 2021-08-22 14:57+0000\n"
 "Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -608,7 +608,7 @@ msgstr ""
 #: src/zrythm_app.c:1667
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr "Не вдалося розпакувати проект: %s\n"
+msgstr "Не вдалося розпакувати проєкт: %s\n"
 
 #: src/zrythm_app.c:1686
 msgid "Unknown operation"
@@ -4834,7 +4834,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:113
 msgid "Mixer view"
-msgstr ""
+msgstr "Вид мікшера"
 
 #: resources/ui/bot_dock_edge.ui:199
 msgid "Chord pad"
