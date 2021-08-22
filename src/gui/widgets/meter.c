@@ -18,9 +18,11 @@
  */
 
 #include "audio/channel.h"
+#include "audio/engine.h"
 #include "audio/meter.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
+#include "project.h"
 #include "utils/math.h"
 
 G_DEFINE_TYPE (
@@ -194,7 +196,9 @@ static gboolean
 meter_timeout (
   MeterWidget * self)
 {
-  if (GTK_IS_WIDGET (self))
+  if (GTK_IS_WIDGET (self)
+      && AUDIO_ENGINE->activated
+      && engine_get_run (AUDIO_ENGINE))
     {
       if (self->meter &&
           gtk_widget_get_mapped (
