@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-08-09 23:33+0000\n"
-"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
+"PO-Revision-Date: 2021-08-10 22:25+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -37,6 +38,12 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
 "path zrythm_launch``"
 msgstr ""
+"Zrythm comprend les variables d'environnement suivantes. Elles peuvent être "
+"configurées dans :file:`.bashrc` ou dans un fichier de configuration shell "
+"similaire, les paramètres du système d'exploitation, ou peuvent être passées "
+"directement lors de l'exécution de :program:`zrythm` ou de "
+":program:`zrythm_launch`, comme : ``LV2_PATH=/mon/chemin/personnalisé "
+"zrythm_launch``"
 
 #: ../../appendix/environment.rst:22
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
@@ -8826,7 +8833,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
-msgstr ""
+msgstr "Inspecteur de greffon"
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
