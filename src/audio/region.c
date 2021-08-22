@@ -66,7 +66,7 @@ region_init (
   ZRegion *        self,
   const Position * start_pos,
   const Position * end_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos_or_at_idx,
   int              idx_inside_lane_or_at)
 {
@@ -79,7 +79,7 @@ region_init (
 
   self->id.schema_version =
     REGION_IDENTIFIER_SCHEMA_VERSION;
-  self->id.track_pos = track_pos;
+  self->id.track_name_hash = track_name_hash;
   self->id.lane_pos = lane_pos_or_at_idx;
   self->id.at_idx = lane_pos_or_at_idx;
   self->id.idx = idx_inside_lane_or_at;
@@ -156,11 +156,15 @@ region_set_lane (
   const TrackLane * const lane)
 {
   g_return_if_fail (IS_REGION (self));
+  g_return_if_fail (
+    IS_TRACK_AND_NONNULL (lane->track));
+
   if (lane->is_auditioner)
     self->base.is_auditioner = true;
 
   self->id.lane_pos = lane->pos;
-  self->id.track_pos = lane->track_pos;
+  self->id.track_name_hash =
+    track_get_name_hash (lane->track);
 }
 
 /**
@@ -185,8 +189,10 @@ region_move_to_track (
 
   g_message ("moving region %s to track %s",
     region->name, track->name);
-  g_debug ("before:");
-  region_print (region);
+  size_t sz = 2000;
+  char buf[sz];
+  region_print_to_str (region, buf, sz);
+  g_debug ("before: %s", buf);
 
   RegionLinkGroup * link_group = NULL;
   if (region_has_link_group (region))
@@ -255,8 +261,8 @@ region_move_to_track (
         link_group, region);
     }
 
-  g_debug ("after:");
-  region_print (region);
+  region_print_to_str (region, buf, sz);
+  g_debug ("after: %s", buf);
 
   if (ZRYTHM_TESTING)
     {
@@ -472,7 +478,8 @@ region_set_automation_track (
   self->id.at_idx = at->index;
   Track * track =
     automation_track_get_track (at);
-  self->id.track_pos = track->pos;
+  self->id.track_name_hash =
+    track_get_name_hash (track);
 
   region_update_identifier (self);
 
@@ -592,7 +599,7 @@ region_get_link_group (
   g_return_val_if_fail (
     self && self->id.link_group >= 0 &&
     REGION_LINK_GROUP_MANAGER->num_groups >
-    self->id.link_group, NULL);
+      self->id.link_group, NULL);
   RegionLinkGroup * group =
     region_link_group_manager_get_group (
       REGION_LINK_GROUP_MANAGER,
@@ -635,9 +642,13 @@ region_set_link_group (
       RegionLinkGroup * group =
         region_link_group_manager_get_group (
           REGION_LINK_GROUP_MANAGER, group_idx);
+      g_return_if_fail (group);
       region_link_group_add_region (
         group, region);
     }
+
+  g_return_if_fail (
+    group_idx == region->id.link_group);
 
   if (update_identifier)
     region_update_identifier (region);
@@ -654,11 +665,21 @@ region_create_link_group_if_none (
 
   if (region->id.link_group < 0)
     {
+      size_t sz = 2000;
+      char buf[sz];
+      region_print_to_str (region, buf, sz);
+      g_debug (
+        "creating link group for region: %s", buf);
       int new_group =
         region_link_group_manager_add_group (
           REGION_LINK_GROUP_MANAGER);
       region_set_link_group (
         region, new_group, true);
+
+      region_print_to_str (region, buf, sz);
+      g_debug (
+        "after link group (%d): %s",
+        new_group, buf);
     }
 }
 
@@ -715,11 +736,9 @@ region_find (
   if (id->type == REGION_TYPE_MIDI ||
       id->type == REGION_TYPE_AUDIO)
     {
-      g_return_val_if_fail (
-        id->track_pos < TRACKLIST->num_tracks,
-        NULL);
-
-      track =  TRACKLIST->tracks[id->track_pos];
+      track =
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, id->track_name_hash);
       g_return_val_if_fail (track, NULL);
 
       if (id->lane_pos >= track->num_lanes)
@@ -747,12 +766,9 @@ region_find (
     }
   else if (id->type == REGION_TYPE_AUTOMATION)
     {
-      if (!TRACKLIST->swapping_tracks &&
-          id->track_pos >= TRACKLIST->num_tracks)
-        {
-          g_return_val_if_reached (NULL);
-        }
-      track = TRACKLIST->tracks[id->track_pos];
+      track =
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, id->track_name_hash);
       g_return_val_if_fail (track, NULL);
 
       AutomationTracklist * atl =
@@ -858,8 +874,7 @@ region_update_link_group (
         region_link_group_manager_get_group (
           REGION_LINK_GROUP_MANAGER,
           self->id.link_group);
-      region_link_group_update (
-        group, self);
+      region_link_group_update (group, self);
     }
 }
 
@@ -1049,12 +1064,11 @@ region_get_automation_track (
       region->id.at_idx];
 }
 
-/**
- * Print region info for debugging.
- */
 void
-region_print (
-  const ZRegion * self)
+region_print_to_str (
+  const ZRegion * self,
+  char *          buf,
+  const size_t    buf_size)
 {
   char from_pos_str[100], to_pos_str[100],
        loop_end_pos_str[100];
@@ -1064,22 +1078,33 @@ region_print (
     &self->base.end_pos, to_pos_str);
   position_to_string (
     &self->base.loop_end_pos, loop_end_pos_str);
-  char * str =
-    g_strdup_printf (
-      "%s [%s] - track pos %d - lane pos %d - "
-      "idx %d - address %p - <%s> to <%s> - "
-      "loop end <%s> - link group %d",
-      self->name,
-      region_identifier_get_region_type_name (
-        self->id.type),
-      self->id.track_pos,
-      self->id.lane_pos,
-      self->id.idx, self,
-      from_pos_str, to_pos_str,
-      loop_end_pos_str,
-      self->id.link_group);
-  g_message ("%s", str);
-  g_free (str);
+  snprintf (
+    buf, buf_size,
+    "%s [%s] - track name hash %u - lane pos %d - "
+    "idx %d - address %p - <%s> to <%s> - "
+    "loop end <%s> - link group %d",
+    self->name,
+    region_identifier_get_region_type_name (
+      self->id.type),
+    self->id.track_name_hash,
+    self->id.lane_pos,
+    self->id.idx, self,
+    from_pos_str, to_pos_str,
+    loop_end_pos_str,
+    self->id.link_group);
+}
+
+/**
+ * Print region info for debugging.
+ */
+void
+region_print (
+  const ZRegion * self)
+{
+  size_t sz = 2000;
+  char buf[sz];
+  region_print_to_str (self, buf, sz);
+  g_message ("%s", buf);
 }
 
 /**

@@ -436,16 +436,18 @@ check_after_move_timeline (
       Track * tmp =
         arranger_object_get_track (obj);
       g_assert_true (tmp == midi_track_after);
-      g_assert_cmpint (
-        r->id.track_pos, ==, midi_track_after->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (midi_track_after));
     }
   else
     {
       Track * tmp =
         arranger_object_get_track (obj);
       g_assert_true (tmp == midi_track_before);
-      g_assert_cmpint (
-        r->id.track_pos, ==, midi_track_before->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (midi_track_before));
     }
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn =
@@ -476,18 +478,18 @@ check_after_move_timeline (
       Track * tmp =
         arranger_object_get_track (obj);
       g_assert_true (tmp == audio_track_after);
-      g_assert_cmpint (
-        r->id.track_pos, ==,
-        audio_track_after->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (audio_track_after));
     }
   else
     {
       Track * tmp =
         arranger_object_get_track (obj);
       g_assert_true (tmp == audio_track_before);
-      g_assert_cmpint (
-        r->id.track_pos, ==,
-        audio_track_before->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (audio_track_before));
     }
 
   if (!new_tracks)
@@ -673,8 +675,9 @@ check_after_duplicate_timeline (
   g_assert_cmppos (&obj->pos, &p1_before_move);
   g_assert_cmppos (&obj->end_pos, &p2_before_move);
   ZRegion * r = (ZRegion *) obj;
-  g_assert_cmpint (
-    r->id.track_pos, ==, midi_track->pos);
+  g_assert_cmpuint (
+    r->id.track_name_hash, ==,
+    track_get_name_hash (midi_track));
   g_assert_cmpint (
     r->id.lane_pos, ==, MIDI_REGION_LANE);
   g_assert_cmpint (r->id.idx, ==, 0);
@@ -694,6 +697,8 @@ check_after_duplicate_timeline (
       g_assert_cmpint (
         r->id.link_group, >, -1);
     }
+  g_message ("prev:");
+  region_print (r);
 
   /* check new midi region */
   if (new_tracks)
@@ -722,14 +727,16 @@ check_after_duplicate_timeline (
   r = (ZRegion *) obj;
   if (new_tracks)
     {
-      g_assert_cmpint (
-        r->id.track_pos, ==, new_midi_track->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (new_midi_track));
       g_assert_cmpint (r->id.idx, ==, 0);
     }
   else
     {
-      g_assert_cmpint (
-        r->id.track_pos, ==, midi_track->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (midi_track));
       g_assert_cmpint (r->id.idx, ==, 1);
     }
   g_assert_cmpint (
@@ -737,13 +744,15 @@ check_after_duplicate_timeline (
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   if (new_tracks)
     {
-      g_assert_cmpint (
-        r->id.track_pos, ==, new_midi_track->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (new_midi_track));
     }
   else
     {
-      g_assert_cmpint (
-        r->id.track_pos, ==, midi_track->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (midi_track));
     }
   g_assert_cmpint (
     r->id.lane_pos, ==, MIDI_REGION_LANE);
@@ -756,6 +765,8 @@ check_after_duplicate_timeline (
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
+  g_message ("new:");
+  region_print (r);
   if (link)
     {
       g_assert_cmpint (
@@ -784,8 +795,9 @@ check_after_duplicate_timeline (
     regions[0];
   g_assert_cmppos (&obj->pos, &p1_before_move);
   r = (ZRegion *) obj;
-  g_assert_cmpint (
-    r->id.track_pos, ==, audio_track->pos);
+  g_assert_cmpuint (
+    r->id.track_name_hash, ==,
+    track_get_name_hash (audio_track));
   g_assert_cmpint (r->id.idx, ==, 0);
   g_assert_cmpint (
     r->id.lane_pos, ==, AUDIO_REGION_LANE);
@@ -817,13 +829,15 @@ check_after_duplicate_timeline (
     r->id.lane_pos, ==, AUDIO_REGION_LANE);
   if (new_tracks)
     {
-      g_assert_cmpint (
-        r->id.track_pos, ==, new_audio_track->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (new_audio_track));
     }
   else
     {
-      g_assert_cmpint (
-        r->id.track_pos, ==, audio_track->pos);
+      g_assert_cmpuint (
+        r->id.track_name_hash, ==,
+        track_get_name_hash (audio_track));
     }
   if (link)
     {
@@ -1246,7 +1260,7 @@ test_link_then_duplicate ()
             REGION_LINK_GROUP_MANAGER->num_groups,
             ==, 4);
           g_assert_cmpint (
-            REGION_LINK_GROUP_MANAGER->groups[2].
+            REGION_LINK_GROUP_MANAGER->groups[2]->
               num_ids, ==, 2);
         }
 
@@ -1311,7 +1325,7 @@ test_link_then_duplicate ()
             REGION_LINK_GROUP_MANAGER->num_groups,
             ==, 4);
           g_assert_cmpint (
-            REGION_LINK_GROUP_MANAGER->groups[2].
+            REGION_LINK_GROUP_MANAGER->groups[2]->
               num_ids, ==, 2);
         }
 
@@ -1351,7 +1365,7 @@ test_link_then_duplicate ()
             REGION_LINK_GROUP_MANAGER->num_groups,
             ==, 4);
           g_assert_cmpint (
-            REGION_LINK_GROUP_MANAGER->groups[2].
+            REGION_LINK_GROUP_MANAGER->groups[2]->
               num_ids, ==, 2);
         }
 
@@ -1818,7 +1832,8 @@ test_duplicate_midi_regions_to_track_below ()
   position_set_to_bar (&end_pos, 4);
   ZRegion * r1 =
     midi_region_new (
-      &pos, &end_pos, midi_track->pos, 0,
+      &pos, &end_pos,
+      track_get_name_hash (midi_track), 0,
       lane->num_regions);
   track_add_region (
     midi_track, r1, NULL, lane->pos,
@@ -1834,7 +1849,8 @@ test_duplicate_midi_regions_to_track_below ()
   position_set_to_bar (&end_pos, 7);
   ZRegion * r2 =
     midi_region_new (
-      &pos, &end_pos, midi_track->pos, 0,
+      &pos, &end_pos,
+      track_get_name_hash (midi_track), 0,
       lane->num_regions);
   track_add_region (
     midi_track, r2, NULL, lane->pos,
@@ -1918,7 +1934,8 @@ test_midi_region_split ()
   position_set_to_bar (&end_pos, 5);
   ZRegion * r =
     midi_region_new (
-      &pos, &end_pos, midi_track->pos, 0,
+      &pos, &end_pos,
+      track_get_name_hash (midi_track), 0,
       lane->num_regions);
   track_add_region (
     midi_track, r, NULL, lane->pos,
@@ -2231,10 +2248,12 @@ test_pin_unpin ()
     P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_unpin (
-    TRACKLIST_SELECTIONS, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, NULL);
 
-  g_assert_cmpint (
-    r->id.track_pos, ==, P_CHORD_TRACK->pos);
+  g_assert_cmpuint (
+    r->id.track_name_hash, ==,
+    track_get_name_hash (P_CHORD_TRACK));
 
   /* TODO more tests */
 
@@ -2433,7 +2452,8 @@ test_delete_automation_points ()
   g_assert_nonnull (at);
   ZRegion * r =
     automation_region_new (
-      &pos1, &pos2, P_MASTER_TRACK->pos,
+      &pos1, &pos2,
+      track_get_name_hash (P_MASTER_TRACK),
       at->index, 0);
   track_add_region (
     P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
@@ -2549,7 +2569,8 @@ test_undo_moving_midi_region_to_other_lane ()
       int idx_inside_lane = (i == 3) ? 0 : i;
       r =
         midi_region_new (
-          &start, &end, midi_track->pos,
+          &start, &end,
+          track_get_name_hash (midi_track),
           lane_pos, idx_inside_lane);
       track_add_region (
         midi_track, r, NULL, lane_pos,
@@ -2584,14 +2605,14 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test link timeline",
+    (GTestFunc) test_link_timeline);
+  g_test_add_func (
     TEST_PREFIX "test undo moving midi_region to other lane",
     (GTestFunc) test_undo_moving_midi_region_to_other_lane);
   g_test_add_func (
     TEST_PREFIX "test duplicate audio regions",
     (GTestFunc) test_duplicate_audio_regions);
-  g_test_add_func (
-    TEST_PREFIX "test link timeline",
-    (GTestFunc) test_link_timeline);
   g_test_add_func (
     TEST_PREFIX "test link then duplicate",
     (GTestFunc) test_link_then_duplicate);

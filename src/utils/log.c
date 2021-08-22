@@ -184,51 +184,51 @@ escape_string (GString *string)
 
       wc = g_utf8_get_char_validated (p, -1);
       if (wc == (gunichar)-1 || wc == (gunichar)-2)
-	{
-	  gchar *tmp;
-	  guint pos;
+        {
+          gchar *tmp;
+          guint pos;
 
-	  pos = p - string->str;
+          pos = p - string->str;
 
-	  /* Emit invalid UTF-8 as hex escapes
-           */
-	  tmp = g_strdup_printf ("\\x%02x", (guint)(guchar)*p);
-	  g_string_erase (string, pos, 1);
-	  g_string_insert (string, pos, tmp);
+          /* Emit invalid UTF-8 as hex escapes
+                 */
+          tmp = g_strdup_printf ("\\x%02x", (guint)(guchar)*p);
+          g_string_erase (string, pos, 1);
+          g_string_insert (string, pos, tmp);
 
-	  p = string->str + (pos + 4); /* Skip over escape sequence */
+          p = string->str + (pos + 4); /* Skip over escape sequence */
 
-	  g_free (tmp);
-	  continue;
-	}
+          g_free (tmp);
+          continue;
+        }
       if (wc == '\r')
-	{
-	  safe = *(p + 1) == '\n';
-	}
+        {
+          safe = *(p + 1) == '\n';
+        }
       else
-	{
-	  safe = CHAR_IS_SAFE (wc);
-	}
+        {
+          safe = CHAR_IS_SAFE (wc);
+        }
 
       if (!safe)
-	{
-	  gchar *tmp;
-	  guint pos;
+        {
+          gchar *tmp;
+          guint pos;
 
-	  pos = p - string->str;
+          pos = p - string->str;
 
-	  /* Largest char we escape is 0x0a, so we don't have to worry
-	   * about 8-digit \Uxxxxyyyy
-	   */
-	  tmp = g_strdup_printf ("\\u%04x", wc);
-	  g_string_erase (string, pos, g_utf8_next_char (p) - p);
-	  g_string_insert (string, pos, tmp);
-	  g_free (tmp);
+          /* Largest char we escape is 0x0a, so we don't have to worry
+           * about 8-digit \Uxxxxyyyy
+           */
+          tmp = g_strdup_printf ("\\u%04x", wc);
+          g_string_erase (string, pos, g_utf8_next_char (p) - p);
+          g_string_insert (string, pos, tmp);
+          g_free (tmp);
 
-	  p = string->str + (pos + 6); /* Skip over escape sequence */
-	}
+          p = string->str + (pos + 6); /* Skip over escape sequence */
+        }
       else
-	p = g_utf8_next_char (p);
+        p = g_utf8_next_char (p);
     }
 }
 

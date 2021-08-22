@@ -38,7 +38,7 @@
 #define REGION_LINK_GROUP_MANAGER_SCHEMA_VERSION 1
 
 #define REGION_LINK_GROUP_MANAGER \
-  (&PROJECT->region_link_group_manager)
+  (PROJECT->region_link_group_manager)
 
 /**
  * Manager of region link groups.
@@ -48,7 +48,7 @@ typedef struct RegionLinkGroupManager
   int                schema_version;
 
   /** Region link groups. */
-  RegionLinkGroup *  groups;
+  RegionLinkGroup ** groups;
   int                num_groups;
   size_t             groups_size;
 } RegionLinkGroupManager;
@@ -58,9 +58,9 @@ static const cyaml_schema_field_t
 {
   YAML_FIELD_INT (
     RegionLinkGroupManager, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     RegionLinkGroupManager, groups,
-    region_link_group_schema_default),
+    region_link_group_schema),
 
   CYAML_FIELD_END
 };
@@ -77,9 +77,8 @@ void
 region_link_group_manager_init_loaded (
   RegionLinkGroupManager * self);
 
-void
-region_link_group_manager_init (
-  RegionLinkGroupManager * self);
+RegionLinkGroupManager *
+region_link_group_manager_new (void);
 
 /**
  * Adds a group and returns its index.
@@ -109,6 +108,16 @@ region_link_group_manager_validate (
 NONNULL
 void
 region_link_group_manager_print (
+  RegionLinkGroupManager * self);
+
+NONNULL
+RegionLinkGroupManager *
+region_link_group_manager_clone (
+  RegionLinkGroupManager * src);
+
+NONNULL
+void
+region_link_group_manager_free (
   RegionLinkGroupManager * self);
 
 /**

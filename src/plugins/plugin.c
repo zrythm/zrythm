@@ -260,16 +260,16 @@ plugin_init_loaded (
 static void
 plugin_init (
   Plugin *       plugin,
-  int            track_pos,
+  unsigned int    track_name_hash,
   PluginSlotType slot_type,
   int            slot)
 {
   g_message (
-    "%s: %s (%s) track pos %d slot %d",
+    "%s: %s (%s) track name hash %u slot %d",
     __func__, plugin->setting->descr->name,
     plugin_protocol_strings[
       plugin->setting->descr->protocol].str,
-    track_pos, slot);
+    track_name_hash, slot);
 
   g_return_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (
@@ -279,7 +279,7 @@ plugin_init (
   plugin->out_ports_size = 1;
   plugin->id.schema_version =
     PLUGIN_IDENTIFIER_SCHEMA_VERSION;
-  plugin->id.track_pos = track_pos;
+  plugin->id.track_name_hash = track_name_hash;
   plugin->id.slot_type = slot_type;
   plugin->id.slot = slot;
   plugin->magic = PLUGIN_MAGIC;
@@ -537,15 +537,15 @@ plugin_set_selected_preset_from_index (
  * plugin (LV2, etc.)
  * using the given setting.
  *
- * @param track_pos The expected position of the
- *   track the plugin will be in.
+ * @param track_name_hash The expected name hash
+ *   of track the plugin will be in.
  * @param slot The expected slot the plugin will
  *   be in.
  */
 Plugin *
 plugin_new_from_setting (
   PluginSetting * setting,
-  int             track_pos,
+  unsigned int    track_name_hash,
   PluginSlotType  slot_type,
   int             slot,
   GError **       error)
@@ -560,12 +560,13 @@ plugin_new_from_setting (
     self->setting->descr;
 
   g_message (
-    "%s: %s (%s) track pos %d slot %d",
+    "%s: %s (%s) slot %d",
     __func__, descr->name,
     plugin_protocol_strings[descr->protocol].str,
-    track_pos, slot);
+    slot);
 
-  plugin_init (self, track_pos, slot_type, slot);
+  plugin_init (
+    self, track_name_hash, slot_type, slot);
   g_return_val_if_fail (
     self->gain && self->enabled, NULL);
 
@@ -628,7 +629,7 @@ plugin_new_from_setting (
 Plugin *
 plugin_new_dummy (
   ZPluginCategory cat,
-  int            track_pos,
+  unsigned int    track_name_hash,
   int            slot)
 {
   Plugin * self = object_new (Plugin);
@@ -647,7 +648,7 @@ plugin_new_dummy (
   plugin_descriptor_free (descr);
 
   plugin_init (
-    self, track_pos, PLUGIN_SLOT_INSERT, slot);
+    self, track_name_hash, PLUGIN_SLOT_INSERT, slot);
 
   return self;
 }
@@ -854,7 +855,7 @@ plugin_move (
 void
 plugin_set_track_and_slot (
   Plugin *       pl,
-  int            track_pos,
+  unsigned int    track_name_hash,
   PluginSlotType slot_type,
   int            slot)
 {
@@ -862,35 +863,41 @@ plugin_set_track_and_slot (
     plugin_identifier_validate_slot_type_slot_combo (
       slot_type, slot));
 
-  pl->id.track_pos = track_pos;
+  pl->id.track_name_hash = track_name_hash;
   pl->id.slot = slot;
   pl->id.slot_type = slot_type;
 
-  int i;
-  Port * port;
-  for (i = 0; i < pl->num_in_ports; i++)
+  for (int i = 0; i < pl->num_in_ports; i++)
     {
-      port = pl->in_ports[i];
+      Port * port = pl->in_ports[i];
+      PortIdentifier * copy_id =
+        port_identifier_clone (&port->id);
       port_set_owner_plugin (port, pl);
       if (pl->is_project)
         {
           Track * track = plugin_get_track (pl);
           port_update_identifier (
-            port, track,
+            port, copy_id, track,
             F_NO_UPDATE_AUTOMATION_TRACK);
         }
+      object_free_w_func_and_null (
+        port_identifier_free, copy_id);
     }
-  for (i = 0; i < pl->num_out_ports; i++)
+  for (int i = 0; i < pl->num_out_ports; i++)
     {
-      port = pl->out_ports[i];
+      Port * port = pl->out_ports[i];
+      PortIdentifier * copy_id =
+        port_identifier_clone (&port->id);
       port_set_owner_plugin (port, pl);
       if (pl->is_project)
         {
           Track * track = plugin_get_track (pl);
           port_update_identifier (
-            port, track,
+            port, copy_id, track,
             F_NO_UPDATE_AUTOMATION_TRACK);
         }
+      object_free_w_func_and_null (
+        port_identifier_free, copy_id);
     }
 }
 
@@ -898,24 +905,8 @@ Track *
 plugin_get_track (
   Plugin * self)
 {
-  Tracklist * tracklist = NULL;
-  if (self->is_auditioner)
-    tracklist = SAMPLE_PROCESSOR->tracklist;
-  else if (!self->is_function)
-    tracklist = TRACKLIST;
-
-  if (!tracklist)
-    return NULL;
-
-  g_return_val_if_fail (
-    self->id.track_pos >= 0
-    && self->id.track_pos < tracklist->num_tracks,
-    NULL);
-  Track * track =
-    tracklist->tracks[self->id.track_pos];
-  g_return_val_if_fail (track, NULL);
-
-  return track;
+  g_return_val_if_fail (self->track, NULL);
+  return self->track;
 }
 
 Channel *
@@ -938,7 +929,21 @@ plugin_find (
   memset (&plugin, 0, sizeof (Plugin));
   plugin_identifier_copy (
     &plugin.id, id);
-  Track * track = plugin_get_track (&plugin);
+
+#if 0
+  Tracklist * tracklist = NULL;
+  if (plugin.is_auditioner)
+    tracklist = SAMPLE_PROCESSOR->tracklist;
+  else if (!plugin.is_function)
+    tracklist = TRACKLIST;
+
+  if (!tracklist)
+    return NULL;
+#endif
+
+  Track * track =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, plugin.id.track_name_hash);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (track), NULL);
 
@@ -948,7 +953,7 @@ plugin_find (
       id->slot_type == PLUGIN_SLOT_INSTRUMENT ||
       id->slot_type == PLUGIN_SLOT_INSERT)
     {
-      ch = plugin_get_channel (&plugin);
+      ch = track->channel;
       g_return_val_if_fail (ch, NULL);
     }
   Plugin * ret = NULL;
@@ -1383,6 +1388,8 @@ plugin_move_automation (
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
 
+  unsigned int name_hash =
+    track_get_name_hash (track);
   for (int i = prev_atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = prev_atl->ats[i];
@@ -1420,7 +1427,8 @@ plugin_move_automation (
       at->port_id.plugin_id.slot = new_slot;
       at->port_id.plugin_id.slot_type =
         new_slot_type;
-      at->port_id.plugin_id.track_pos = track->pos;
+      at->port_id.plugin_id.track_name_hash =
+        name_hash;
 
       g_warn_if_fail (
         at->port_id.port_index ==
@@ -1605,33 +1613,36 @@ void
 plugin_update_identifier (
   Plugin * self)
 {
+  g_return_if_fail (self->track);
+
   /* set port identifier track poses */
-  int i;
-  for (i = 0; i < self->num_in_ports; i++)
+  for (int i = 0; i < self->num_in_ports; i++)
     {
       Port * port = self->in_ports[i];
-      port_update_track_pos (
-        port, NULL, self->id.track_pos);
+      port_update_track_name_hash (
+        port, self->track,
+        self->id.track_name_hash);
       port->id.plugin_id = self->id;
     }
-  for (i = 0; i < self->num_out_ports; i++)
+  for (int i = 0; i < self->num_out_ports; i++)
     {
       Port * port = self->out_ports[i];
-      port_update_track_pos (
-        port, NULL, self->id.track_pos);
+      port_update_track_name_hash (
+        port, self->track,
+        self->id.track_name_hash);
       port->id.plugin_id = self->id;
     }
 }
 
 /**
- * Sets the track and track_pos on the plugin.
+ * Sets the track name hash on the plugin.
  */
 void
-plugin_set_track_pos (
-  Plugin * pl,
-  int      pos)
+plugin_set_track_name_hash (
+  Plugin *     pl,
+  unsigned int track_name_hash)
 {
-  pl->id.track_pos = pos;
+  pl->id.track_name_hash = track_name_hash;
 
   plugin_update_identifier (pl);
 }
@@ -1650,12 +1661,14 @@ plugin_instantiate (
   LilvState * state,
   GError **   error)
 {
-  g_return_val_if_fail (
-    pl->setting && pl->setting->descr, -1);
+  g_return_val_if_fail (pl->setting, -1);
+  const PluginDescriptor * descr =
+    pl->setting->descr;
+  g_return_val_if_fail (descr, -1);
 
   g_message (
-    "Instantiating %s...",
-    pl->setting->descr->name);
+    "Instantiating plugin '%s' | state %p...",
+    descr->name, state);
 
   plugin_set_ui_refresh_rate (pl);
 
@@ -1691,7 +1704,7 @@ plugin_instantiate (
     }
   else
     {
-      switch (pl->setting->descr->protocol)
+      switch (descr->protocol)
         {
         case PROT_LV2:
           {
@@ -1720,8 +1733,14 @@ plugin_instantiate (
             if (!pl->state_dir)
               {
                 /* save the state */
-                lv2_state_save_to_file (
-                  pl->lv2, F_NOT_BACKUP);
+                g_message (
+                  "state dir does not exist for "
+                  "LV2 plugin %s, creating "
+                  "state...", descr->name);
+                LilvState * tmp_state =
+                  lv2_state_save_to_file (
+                    pl->lv2, F_NOT_BACKUP);
+                lilv_state_free (tmp_state);
               }
           }
           break;
@@ -2128,28 +2147,28 @@ plugin_ensure_state_dir (
  */
 Plugin *
 plugin_clone (
-  Plugin *  pl,
+  Plugin *  src,
   bool      src_is_project,
   GError ** error)
 {
   g_return_val_if_fail (!error || !*error, NULL);
-  g_return_val_if_fail (IS_PLUGIN (pl), NULL);
+  g_return_val_if_fail (IS_PLUGIN (src), NULL);
 
   char buf[800];
-  plugin_print (pl, buf, 800);
-  g_debug ("cloning plugin %s", buf);
+  plugin_print (src, buf, 800);
+  g_debug ("cloning plugin '%s'", buf);
 
-  Plugin * clone = NULL;
+  Plugin * self = NULL;
 #ifdef HAVE_CARLA
-  if (pl->setting->open_with_carla)
+  if (src->setting->open_with_carla)
     {
       /* create a new plugin with same descriptor */
       GError * err = NULL;
-      clone =
+      self =
         plugin_new_from_setting (
-          pl->setting, pl->id.track_pos,
-          pl->id.slot_type, pl->id.slot, &err);
-      if (!clone || !clone->carla)
+          src->setting, src->id.track_name_hash,
+          src->id.slot_type, src->id.slot, &err);
+      if (!self || !self->carla)
         {
           PROPAGATE_PREFIXED_ERROR (
             error, err,
@@ -2162,11 +2181,11 @@ plugin_clone (
       /* instantiate */
       int ret =
         plugin_instantiate (
-          clone, false, NULL, &err);
+          self, false, NULL, &err);
       if (ret != 0)
         {
           object_free_w_func_and_null (
-            plugin_free, clone);
+            plugin_free, self);
           PROPAGATE_PREFIXED_ERROR (
             error, err,
             _("Failed to instantiate cloned "
@@ -2178,11 +2197,11 @@ plugin_clone (
       /* also instantiate the source, if not
        * already instantiated, so its state can
        * be ready */
-      if (!pl->instantiated)
+      if (!src->instantiated)
         {
           ret =
             plugin_instantiate (
-              pl, src_is_project, NULL, &err);
+              src, src_is_project, NULL, &err);
           if (ret != 0)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -2193,21 +2212,21 @@ plugin_clone (
               return NULL;
             }
           g_return_val_if_fail (
-            pl->num_in_ports ==
-              clone->num_in_ports, NULL);
+            src->num_in_ports ==
+              self->num_in_ports, NULL);
         }
 
       /* save the state of the original plugin */
       carla_native_plugin_save_state (
-        pl->carla, F_NOT_BACKUP, NULL);
+        src->carla, F_NOT_BACKUP, NULL);
 
       /* load the state to the new plugin. */
       char * state_file_abs_path =
         carla_native_plugin_get_abs_state_file_path  (
-          pl->carla, F_NOT_BACKUP);
+          src->carla, F_NOT_BACKUP);
       bool state_loaded =
         carla_native_plugin_load_state (
-          clone->carla, state_file_abs_path, &err);
+          self->carla, state_file_abs_path, &err);
       if (!state_loaded)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -2219,25 +2238,25 @@ plugin_clone (
       /* create a new state dir and save the state
        * for the clone */
       plugin_ensure_state_dir (
-        clone, F_NOT_BACKUP);
+        self, F_NOT_BACKUP);
       carla_native_plugin_save_state (
-        clone->carla, F_NOT_BACKUP, NULL);
+        self->carla, F_NOT_BACKUP, NULL);
 
       /* cleanup the source if it wasnt in the
        * project */
       if (!src_is_project)
         {
-          plugin_cleanup (pl);
+          plugin_cleanup (src);
         }
     }
   else
     {
 #endif
-      if (pl->setting->descr->protocol == PROT_LV2)
+      if (src->setting->descr->protocol == PROT_LV2)
         {
           /* if src plugin not instantiated,
            * instantiate it */
-          if (!pl->instantiated)
+          if (!src->instantiated)
             {
               g_message (
                 "source plugin not instantiated, "
@@ -2245,7 +2264,7 @@ plugin_clone (
               GError * err = NULL;
               int ret =
                 plugin_instantiate (
-                  pl, src_is_project, NULL, &err);
+                  src, src_is_project, NULL, &err);
               if (ret != 0)
                 {
                   PROPAGATE_PREFIXED_ERROR (
@@ -2257,23 +2276,44 @@ plugin_clone (
                 }
             }
           g_return_val_if_fail (
-            pl->instantiated &&
-            pl->lv2->instance, NULL);
+            src->instantiated &&
+            src->lv2->instance, NULL);
 
           /* Make a state */
           LilvState * state =
             lv2_state_save_to_file (
-              pl->lv2, F_NOT_BACKUP);
+              src->lv2, F_NOT_BACKUP);
+          g_message (
+            "saved source plugin state to %s",
+            src->state_dir);
+
+#if 0
+          /* reload from state file because using
+           * the instance state is buggy */
+          lilv_state_free (state);
+          char * state_file_path =
+            lv2_plugin_get_abs_state_file_path (
+              src->lv2,
+              PROJECT->loading_from_backup);
+          state =
+            lilv_state_new_from_file (
+              LILV_WORLD, &src->lv2->map, NULL,
+              state_file_path);
+          g_message (
+            "loaded state from %s",
+            state_file_path);
+          g_free (state_file_path);
+#endif
 
           /* create a new plugin with same
            * descriptor */
           GError * err = NULL;
-          clone =
+          self =
             plugin_new_from_setting (
-              pl->setting, pl->id.track_pos,
-              pl->id.slot_type, pl->id.slot,
+              src->setting, src->id.track_name_hash,
+              src->id.slot_type, src->id.slot,
               &err);
-          if (!IS_PLUGIN_AND_NONNULL (clone))
+          if (!IS_PLUGIN_AND_NONNULL (self))
             {
               PROPAGATE_PREFIXED_ERROR (
                 error, err, "%s",
@@ -2284,7 +2324,7 @@ plugin_clone (
           /* instantiate using the state */
           int ret =
             plugin_instantiate (
-              clone, false, state, &err);
+              self, false, state, &err);
           if (ret != 0)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -2293,62 +2333,76 @@ plugin_clone (
                 "plugin"));
               return NULL;
             }
+          lv2_state_apply_state (self->lv2, state);
+
+          /* activate and run once (some plugins
+           * need to run once for the state to
+           * take effect) */
+          plugin_activate (self, F_ACTIVATE);
+          lv2_plugin_get_latency (self->lv2);
 
           /* verify */
           g_return_val_if_fail (
-            clone && clone->lv2 &&
-            clone->num_lilv_ports ==
-              pl->num_lilv_ports,
+            self && self->lv2 &&
+            self->num_lilv_ports ==
+              src->num_lilv_ports,
             NULL);
 
           /* free the state */
           lilv_state_free (state);
 
           /* create a new state dir and save the
-           * state  for the clone */
+           * state for the clone */
+          g_message (
+            "saving state for cloned plugin");
           plugin_ensure_state_dir (
-            clone, F_NOT_BACKUP);
-          lv2_state_save_to_file (
-            clone->lv2, F_NOT_BACKUP);
+            self, F_NOT_BACKUP);
+          LilvState * tmp_state =
+            lv2_state_save_to_file (
+              self->lv2, F_NOT_BACKUP);
+          lilv_state_free (tmp_state);
+
+          /* deactivate */
+          plugin_activate (self, F_NO_ACTIVATE);
 
           /* cleanup the source if it wasnt in the
            * project */
           if (!src_is_project)
             {
-              plugin_cleanup (pl);
+              plugin_cleanup (src);
             }
         }
 #ifdef HAVE_CARLA
     }
 #endif
   g_return_val_if_fail (
-    pl->num_in_ports || pl->num_out_ports, NULL);
+    src->num_in_ports || src->num_out_ports, NULL);
 
-  g_return_val_if_fail (clone, NULL);
+  g_return_val_if_fail (self, NULL);
   plugin_identifier_copy (
-    &clone->id, &pl->id);
-  clone->magic = PLUGIN_MAGIC;
-  clone->visible = pl->visible;
+    &self->id, &src->id);
+  self->magic = PLUGIN_MAGIC;
+  self->visible = src->visible;
 
   /* set generic port values since they are not
    * saved in the state */
   port_set_control_value (
-    clone->enabled, pl->enabled->control,
+    self->enabled, src->enabled->control,
     F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
   port_set_control_value (
-    clone->gain, pl->gain->control,
+    self->gain, src->gain->control,
     F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   /* verify same number of inputs and outputs */
   g_return_val_if_fail (
-    pl->num_in_ports == clone->num_in_ports, NULL);
+    src->num_in_ports == self->num_in_ports, NULL);
   g_return_val_if_fail (
-    pl->num_out_ports == clone->num_out_ports,
+    src->num_out_ports == self->num_out_ports,
     NULL);
 
   /* copy plugin id to each port */
 
-  return clone;
+  return self;
 }
 
 /**
@@ -2735,8 +2789,7 @@ plugin_connect_to_prefader (
   Plugin *  pl,
   Channel * ch)
 {
-  Track * track =
-    channel_get_track (ch);
+  Track * track = channel_get_track (ch);
   PortType type = track->out_signal_type;
 
   if (type == TYPE_EVENT)

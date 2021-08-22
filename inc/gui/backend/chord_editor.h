@@ -41,8 +41,7 @@ typedef struct ChordDescriptor ChordDescriptor;
 
 #define CHORD_EDITOR_SCHEMA_VERSION 1
 
-#define CHORD_EDITOR \
-  (&CLIP_EDITOR->chord_editor)
+#define CHORD_EDITOR (CLIP_EDITOR->chord_editor)
 
 /**
  * Backend for the chord editor.
@@ -98,6 +97,17 @@ chord_editor_init_loaded (
  */
 void
 chord_editor_init (
+  ChordEditor * self);
+
+ChordEditor *
+chord_editor_clone (
+  ChordEditor * src);
+
+ChordEditor *
+chord_editor_new (void);
+
+void
+chord_editor_free (
   ChordEditor * self);
 
 /**

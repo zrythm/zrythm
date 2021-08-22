@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -94,7 +94,7 @@ snap_box_widget_setup (
         GTK_ACTIONABLE (self->snap_to_events),
         "s", "timeline");
     }
-  else if (sg == SNAP_GRID_MIDI)
+  else if (sg == SNAP_GRID_EDITOR)
     {
       gtk_actionable_set_action_target (
         GTK_ACTIONABLE (self->snap_to_grid),

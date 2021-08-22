@@ -83,7 +83,7 @@ typedef struct AutomationTracklist
    *
    * This should be set during initialization.
    */
-  int               track_pos;
+  Track *           track;
 } AutomationTracklist;
 
 static const cyaml_schema_field_t
@@ -94,8 +94,6 @@ static const cyaml_schema_field_t
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     AutomationTracklist, ats,
     automation_track_schema),
-  YAML_FIELD_INT (
-    AutomationTracklist, track_pos),
 
   CYAML_FIELD_END
 };
@@ -164,7 +162,7 @@ automation_tracklist_get_visible_tracks (
  * @param track The Track to update to.
  */
 void
-automation_tracklist_update_track_pos (
+automation_tracklist_update_track_name_hash (
   AutomationTracklist * self,
   Track *               track);
 

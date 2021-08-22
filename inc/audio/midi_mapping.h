@@ -36,6 +36,9 @@
  * @{
  */
 
+#define MIDI_MAPPING_SCHEMA_VERSION 1
+#define MIDI_MAPPINGS_SCHEMA_VERSION 1
+
 #define MIDI_MAPPINGS (PROJECT->midi_mappings)
 
 /**
@@ -55,22 +58,17 @@ typedef struct MidiMapping
   /** Destination. */
   PortIdentifier dest_id;
 
-  /** Destination pointer, for convenience. */
+  /**
+   * Destination pointer, for convenience.
+   *
+   * @note This pointer is not owned by this
+   *   instance.
+   */
   Port *         dest;
 
   /** Whether this binding is enabled. */
   volatile int   enabled;
 } MidiMapping;
-
-/**
- * All MIDI mappings in Zrythm.
- */
-typedef struct MidiMappings
-{
-  MidiMapping *   mappings;
-  size_t          mappings_size;
-  int             num_mappings;
-} MidiMappings;
 
 static const cyaml_schema_field_t
 midi_mapping_fields_schema[] =
@@ -95,15 +93,38 @@ midi_mapping_fields_schema[] =
 static const cyaml_schema_value_t
   midi_mapping_schema =
 {
+  YAML_VALUE_PTR (
+    MidiMapping, midi_mapping_fields_schema),
+};
+
+#if 0
+static const cyaml_schema_value_t
+  midi_mapping_schema_default =
+{
   YAML_VALUE_DEFAULT (
     MidiMapping, midi_mapping_fields_schema),
 };
+#endif
+
+/**
+ * All MIDI mappings in Zrythm.
+ */
+typedef struct MidiMappings
+{
+  int             schema_version;
+
+  MidiMapping **  mappings;
+  size_t          mappings_size;
+  int             num_mappings;
+} MidiMappings;
 
 static const cyaml_schema_field_t
 midi_mappings_fields_schema[] =
 {
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    MidiMappings, mappings, midi_mapping_schema),
+  YAML_FIELD_INT (MidiMappings, schema_version),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    MidiMappings, mappings,
+    midi_mapping_schema),
 
   CYAML_FIELD_END
 };
@@ -132,13 +153,13 @@ midi_mappings_new (void);
 #define midi_mappings_bind_device( \
   self,buf,dev_port,dest_port,fire_events) \
   midi_mappings_bind_at ( \
-    self, buf, dev_port, -1, dest_port, \
+    self, buf, dev_port, dest_port, \
     (self)->num_mappings, fire_events)
 
 #define midi_mappings_bind_track( \
-  self,buf,track_pos,dest_port,fire_events) \
+  self,buf,dest_port,fire_events) \
   midi_mappings_bind_at ( \
-    self, buf, NULL, track_pos, dest_port, \
+    self, buf, NULL, dest_port, \
     (self)->num_mappings, fire_events)
 
 /**
@@ -149,14 +170,12 @@ midi_mappings_new (void);
  * @param buf The buffer used for matching at [0] and
  *   [1].
  * @param device_port Device port, if custom mapping.
- * @param track_pos Track position, if track processor.
  */
 void
 midi_mappings_bind_at (
   MidiMappings * self,
   midi_byte_t *  buf,
   ExtPort *      device_port,
-  int            track_pos,
   Port *         dest_port,
   int            idx,
   bool           fire_events);
@@ -173,6 +192,9 @@ midi_mappings_unbind (
   int            idx,
   bool           fire_events);
 
+MidiMapping *
+midi_mapping_new (void);
+
 void
 midi_mapping_set_enabled (
   MidiMapping * self,
@@ -182,6 +204,15 @@ int
 midi_mapping_get_index (
   MidiMappings * self,
   MidiMapping *  mapping);
+
+NONNULL
+MidiMapping *
+midi_mapping_clone (
+  const MidiMapping * src);
+
+void
+midi_mapping_free (
+  MidiMapping * self);
 
 /**
  * Applies the events to the appropriate mapping.
@@ -218,6 +249,10 @@ midi_mappings_get_for_port (
   MidiMappings * self,
   Port *         dest_port,
   int *          size);
+
+MidiMappings *
+midi_mappings_clone (
+  const MidiMappings * src);
 
 void
 midi_mappings_free (

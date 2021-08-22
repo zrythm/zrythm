@@ -1662,13 +1662,13 @@ event_manager_process_event (
       /* these are only used in the UI so
        * no need to update them during DSP */
       snap_grid_update_snap_points_default (
-        &PROJECT->snap_grid_timeline);
+        SNAP_GRID_TIMELINE);
       snap_grid_update_snap_points_default (
-        &PROJECT->snap_grid_midi);
+        SNAP_GRID_EDITOR);
       quantize_options_update_quantize_points (
-        &PROJECT->quantize_opts_timeline);
+        QUANTIZE_OPTIONS_TIMELINE);
       quantize_options_update_quantize_points (
-        &PROJECT->quantize_opts_editor);
+        QUANTIZE_OPTIONS_EDITOR);
       redraw_all_arranger_bgs ();
       break;
     case ET_CHANNEL_FADER_VAL_CHANGED:
@@ -1870,7 +1870,7 @@ event_manager_process_event (
             snap_box_widget_refresh (
               MW_TIMELINE_TOOLBAR->snap_box);
           }
-        else if (sg == SNAP_GRID_MIDI)
+        else if (sg == SNAP_GRID_EDITOR)
           {
             snap_box_widget_refresh (
               MW_EDITOR_TOOLBAR->snap_box);

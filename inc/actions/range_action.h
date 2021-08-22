@@ -139,6 +139,11 @@ range_action_new (
   range_action_new ( \
     RANGE_ACTION_REMOVE, start, end, error)
 
+NONNULL
+RangeAction *
+range_action_clone (
+  const RangeAction * src);
+
 bool
 range_action_perform (
   RangeActionType type,

@@ -126,7 +126,8 @@ test_prepare_common (void)
     &end, end_bar); \
   midi_region = \
     midi_region_new ( \
-      &start, &end, midi_track_pos, 0, \
+      &start, &end, \
+      track_get_name_hash (midi_track), 0, \
       midi_track->lanes[0]->num_regions); \
   track_add_region ( \
     midi_track, midi_region, NULL, 0, F_GEN_NAME, \

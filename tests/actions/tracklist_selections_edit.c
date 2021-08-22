@@ -133,14 +133,15 @@ _test_edit_tracks (
         /* change the direct out to the
          * instrument */
         tracklist_selections_action_perform_set_direct_out (
-          TRACKLIST_SELECTIONS, ins_track, NULL);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, ins_track, NULL);
 
         /* verify direct out established */
         g_assert_true (
           midi_track->channel->has_output);
-        g_assert_cmpint (
-          midi_track->channel->output_pos, ==,
-          ins_track->pos);
+        g_assert_cmpuint (
+          midi_track->channel->output_name_hash, ==,
+          track_get_name_hash (ins_track));
 
         /* undo and re-verify */
         undo_manager_undo (UNDO_MANAGER, NULL);
@@ -157,7 +158,8 @@ _test_edit_tracks (
           ins_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
         tracklist_selections_action_perform_move (
-          TRACKLIST_SELECTIONS, 1, NULL);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, 1, NULL);
         undo_manager_undo (UNDO_MANAGER, NULL);
 
         /* create an audio group track and test
@@ -174,7 +176,9 @@ _test_edit_tracks (
           ins_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
         tracklist_selections_action_perform_set_direct_out (
-          TRACKLIST_SELECTIONS, audio_group, NULL);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR,
+          audio_group, NULL);
         undo_manager_undo (UNDO_MANAGER, NULL);
         undo_manager_redo (UNDO_MANAGER, NULL);
         undo_manager_undo (UNDO_MANAGER, NULL);
@@ -192,9 +196,9 @@ _test_edit_tracks (
           2, 1, NULL);
         Track * group_track = TRACKLIST->tracks[2];
 
-        g_assert_cmpint (
-          ins_track->channel->track_pos, !=,
-          ins_track->channel->output_pos);
+        g_assert_cmpuint (
+          track_get_name_hash (ins_track), !=,
+          ins_track->channel->output_name_hash);
 
         /* route the instrument to the group
          * track */
@@ -202,7 +206,8 @@ _test_edit_tracks (
           ins_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
         tracklist_selections_action_perform_set_direct_out (
-          TRACKLIST_SELECTIONS, group_track, NULL);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, group_track, NULL);
 
         /* solo the group track */
         track_select (
@@ -579,7 +584,8 @@ test_edit_midi_direct_out_to_ins (void)
 
   /* route the MIDI track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, ins_track, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, ins_track, NULL);
 
   Channel * ch = midi_track->channel;
   Track * direct_out =
@@ -595,7 +601,8 @@ test_edit_midi_direct_out_to_ins (void)
     F_NO_PUBLISH_EVENTS);
 
   tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, NULL);
 
   direct_out = channel_get_output_track (ch);
   g_assert_null (direct_out);
@@ -640,7 +647,8 @@ test_edit_multi_track_direct_out (void)
     ins_track2, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, audio_group, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, audio_group, NULL);
 
   Channel * ch = ins_track->channel;
   Channel * ch2 = ins_track2->channel;
@@ -660,7 +668,8 @@ test_edit_multi_track_direct_out (void)
     audio_group, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, NULL);
 
   direct_out = channel_get_output_track (ch);
   direct_out2 = channel_get_output_track (ch2);
@@ -676,7 +685,8 @@ test_edit_multi_track_direct_out (void)
     ins_track2, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, P_MASTER_TRACK, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, P_MASTER_TRACK, NULL);
   UndoableAction * ua =
     undo_manager_get_last_action (UNDO_MANAGER);
   undoable_action_set_num_actions (ua, 2);

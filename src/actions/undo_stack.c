@@ -121,6 +121,7 @@ undo_stack_new (void)
       G_IS_SETTINGS (S_P_EDITING_UNDO), NULL);
 
   UndoStack * self = object_new (UndoStack);
+  self->schema_version = UNDO_STACK_SCHEMA_VERSION;
 
   int undo_stack_length =
     ZRYTHM_TESTING ?
@@ -130,6 +131,70 @@ undo_stack_new (void)
   self->stack =
     stack_new (undo_stack_length);
   self->stack->top = -1;
+
+  return self;
+}
+
+UndoStack *
+undo_stack_clone (
+  const UndoStack * src)
+{
+  UndoStack * self = object_new (UndoStack);
+  self->schema_version = UNDO_STACK_SCHEMA_VERSION;
+
+  int top_before = src->stack->top;
+
+  self->stack =
+    stack_new (src->stack->max_length);
+  self->stack->top = -1;
+
+  /* clone all actions */
+#define CLONE_ACTIONS(arr,fn,type) \
+  self->arr = \
+    object_new_n (src->num_##arr, type *); \
+  for (size_t i = 0; i < src->num_##arr; i++) \
+    { \
+      self->arr[i] = fn##_clone (src->arr[i]); \
+      g_return_val_if_fail (self->arr[i], NULL); \
+    } \
+  self->num_##arr = src->num_##arr
+
+  CLONE_ACTIONS (
+    as_actions, arranger_selections_action,
+    ArrangerSelectionsAction);
+  CLONE_ACTIONS (
+    mixer_selections_actions,
+    mixer_selections_action,
+    MixerSelectionsAction);
+  CLONE_ACTIONS (
+    tracklist_selections_actions,
+    tracklist_selections_action,
+    TracklistSelectionsAction);
+  CLONE_ACTIONS (
+    channel_send_actions, channel_send_action,
+    ChannelSendAction);
+  CLONE_ACTIONS (
+    port_connection_actions, port_connection_action,
+    PortConnectionAction);
+  CLONE_ACTIONS (
+    port_actions, port_action,
+    PortAction);
+  CLONE_ACTIONS (
+    midi_mapping_actions, midi_mapping_action,
+    MidiMappingAction);
+  CLONE_ACTIONS (
+    range_actions, range_action, RangeAction);
+  CLONE_ACTIONS (
+    transport_actions, transport_action,
+    TransportAction);
+
+#undef CLONE_ACTIONS
+
+  /* init loaded to load the actions on the stack */
+  undo_stack_init_loaded (self);
+
+  g_return_val_if_fail (
+    top_before == self->stack->top, NULL);
 
   return self;
 }

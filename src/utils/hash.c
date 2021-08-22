@@ -157,6 +157,21 @@ hash_get_for_struct_full (
   return (unsigned int) XXH32_digest (state);
 }
 
+void *
+hash_create_state (void)
+{
+  XXH32_state_t * state = XXH32_createState();
+  return state;
+}
+
+void
+hash_free_state (
+  void * in_state)
+{
+  XXH32_state_t * state = (XXH32_state_t *) in_state;
+  XXH32_freeState (state);
+}
+
 unsigned int
 hash_get_for_struct (
   const void * const obj,

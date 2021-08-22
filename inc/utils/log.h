@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex@zrythm.org>
  *
  * This file is part of Zrythm
  *

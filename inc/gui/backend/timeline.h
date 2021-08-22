@@ -35,6 +35,8 @@
  * @{
  */
 
+#define TIMELINE_SCHEMA_VERSION 1
+
 #define PRJ_TIMELINE (PROJECT->timeline)
 
 /**
@@ -45,6 +47,8 @@
  */
 typedef struct Timeline
 {
+  int            schema_version;
+
   /** Settings for the timeline. */
   EditorSettings editor_settings;
 } Timeline;
@@ -52,6 +56,8 @@ typedef struct Timeline
 static const cyaml_schema_field_t
 timeline_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    Timeline, schema_version),
   YAML_FIELD_MAPPING_EMBEDDED (
     Timeline, editor_settings,
     editor_settings_fields_schema),
@@ -80,6 +86,10 @@ timeline_init_loaded (
 void
 timeline_init (
   Timeline * self);
+
+Timeline *
+timeline_clone (
+  Timeline * src);
 
 /**
  * Creates a new Timeline instance.

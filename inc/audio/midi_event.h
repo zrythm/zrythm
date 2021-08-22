@@ -215,6 +215,7 @@ midi_events_print (
  */
 void
 midi_events_append (
+  /* FIXME reverse dest/src */
   MidiEvents * src,
   MidiEvents * dest,
   const nframes_t    start_frame,

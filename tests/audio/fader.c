@@ -162,12 +162,14 @@ test_solo ()
     audio_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, group_track, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, group_track, NULL);
   track_select (
     audio_track2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, group_track, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, group_track, NULL);
 
   /* stop dummy audio engine processing so we can
    * process manually */

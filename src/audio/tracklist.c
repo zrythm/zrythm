@@ -299,9 +299,6 @@ tracklist_insert_track (
       track->channel->track_pos = -1;
     }
 
-  track_set_name (
-    track, track->name, F_NO_PUBLISH_EVENTS);
-
   /* append the track at the end */
   array_append (
     self->tracks, self->num_tracks, track);
@@ -325,10 +322,34 @@ tracklist_insert_track (
         publish_events);
     }
 
-  track_set_is_project (
-    track, !self->is_auditioner);
+  /* this needs to be called before setting
+   * 'is_project' */
+  track_set_name (
+    track, track->name, F_NO_PUBLISH_EVENTS);
+
+  bool is_project = !self->is_auditioner;
+  track_set_is_project (track, is_project);
 
   track_set_pos (track, pos);
+
+  if (is_project || self->is_auditioner)
+    {
+      /* set automation track on ports */
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (track);
+      if (atl)
+        {
+          for (int i = 0; i < atl->num_ats; i++)
+            {
+              AutomationTrack * at = atl->ats[i];
+              Port * port =
+                automation_track_get_port (at);
+              g_return_if_fail (
+                IS_PORT_AND_NONNULL (port));
+              port->at = at;
+            }
+        }
+    }
 
   if (track->channel)
     {
@@ -340,7 +361,8 @@ tracklist_insert_track (
       track->type != TRACK_TYPE_MASTER)
     {
       group_target_track_add_child (
-        self->master_track, pos, F_CONNECT,
+        self->master_track,
+        track_get_name_hash (track), F_CONNECT,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
     }
 
@@ -362,7 +384,9 @@ tracklist_insert_track (
               if (ch->has_output)
                 {
                   g_return_if_fail (
-                    ch->output_pos != ch->track_pos);
+                    ch->output_name_hash !=
+                      track_get_name_hash (
+                        cur_track));
                 }
             }
         }
@@ -384,7 +408,10 @@ tracklist_insert_track (
       EVENTS_PUSH (ET_TRACK_ADDED, track);
     }
 
-  g_message ("%s: done", __func__);
+  g_message (
+    "%s: done - inserted track '%s' (%u) at %d",
+    __func__, track->name,
+    track_get_name_hash (track), pos);
 }
 
 ChordTrack *
@@ -413,11 +440,31 @@ tracklist_find_track_by_name (
   Tracklist *  self,
   const char * name)
 {
-  Track * track;
   for (int i = 0; i < self->num_tracks; i++)
     {
-      track = self->tracks[i];
+      Track * track = self->tracks[i];
       if (string_is_equal (name, track->name))
+        return track;
+    }
+  return NULL;
+}
+
+/**
+ * Returns the Track matching the given name, if
+ * any.
+ */
+NONNULL
+Track *
+tracklist_find_track_by_name_hash (
+  Tracklist *  self,
+  unsigned int hash)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), NULL);
+      if (track_get_name_hash (track) == hash)
         return track;
     }
   return NULL;
@@ -529,6 +576,17 @@ tracklist_validate (
       g_return_val_if_fail (
         track->pos + track->size <=
           self->num_tracks, false);
+
+      /* validate connections */
+      if (track->channel)
+        {
+          Channel * ch = track->channel;
+          for (int j = 0; j < STRIP_SIZE; j++)
+            {
+              ChannelSend * send = ch->sends[j];
+              channel_send_validate (send);
+            }
+        }
     }
 
   return true;
@@ -797,11 +855,13 @@ tracklist_remove_track (
 {
   g_return_if_fail (IS_TRACK (track));
   g_message (
-    "%s: removing %s - remove plugins %d - "
+    "%s: removing [%d] %s - remove plugins %d - "
     "free track %d - pub events %d - "
-    "recalc graph %d", __func__, track->name,
+    "recalc graph %d - "
+    "num tracks before deletion: %d",
+    __func__, track->pos, track->name,
     rm_pl, free_track, publish_events,
-    recalc_graph);
+    recalc_graph, self->num_tracks);
 
   Track * prev_visible = NULL;
   Track * next_visible = NULL;
@@ -1372,13 +1432,16 @@ tracklist_handle_file_drop (
                     audio_region_new (
                       -1, file->abs_path, true, NULL,
                       -1, NULL,
-                      0, 0, pos, track->pos, lane_pos,
+                      0, 0, pos,
+                      track_get_name_hash (track),
+                      lane_pos,
                       idx_in_lane);
                   break;
                 case TRACK_TYPE_MIDI:
                   region =
                     midi_region_new_from_midi_file (
-                      pos, file->abs_path, track->pos,
+                      pos, file->abs_path,
+                      track_get_name_hash (track),
                       lane_pos, idx_in_lane, 0);
                   break;
                 default:
@@ -1492,6 +1555,7 @@ tracklist_handle_move_or_copy (
           bool ret =
             tracklist_selections_action_perform_move_inside (
               TRACKLIST_SELECTIONS,
+              PORT_CONNECTIONS_MGR,
               this_track->pos, &err);
           if (!ret)
             {
@@ -1527,6 +1591,7 @@ tracklist_handle_move_or_copy (
                   bool ret =
                     tracklist_selections_action_perform_copy_inside (
                       tls,
+                      PORT_CONNECTIONS_MGR,
                       track_below_parent->pos,
                       &err);
                   if (!ret)
@@ -1549,13 +1614,15 @@ tracklist_handle_move_or_copy (
             {
               ret =
                 tracklist_selections_action_perform_copy (
-                  tls, pos, &err);
+                  tls, PORT_CONNECTIONS_MGR,
+                  pos, &err);
             }
           else
             {
               ret =
                 tracklist_selections_action_perform_move (
-                  tls, pos, &err);
+                  tls, PORT_CONNECTIONS_MGR,
+                  pos, &err);
             }
 
           if (!ret)
@@ -1595,6 +1662,7 @@ tracklist_handle_move_or_copy (
               bool ret =
                 tracklist_selections_action_perform_move_inside (
                   TRACKLIST_SELECTIONS,
+                  PORT_CONNECTIONS_MGR,
                   this_track->pos, &err);
               if (!ret)
                 {
@@ -1635,6 +1703,7 @@ tracklist_handle_move_or_copy (
                   bool ret =
                     tracklist_selections_action_perform_move_inside (
                       tls,
+                      PORT_CONNECTIONS_MGR,
                       track_below_parent->pos,
                       &err);
                   if (!ret)
@@ -1656,13 +1725,15 @@ tracklist_handle_move_or_copy (
             {
               ret =
                 tracklist_selections_action_perform_move_inside (
-                  tls, pos, &err);
+                  tls, PORT_CONNECTIONS_MGR,
+                  pos, &err);
             }
           else
             {
               ret =
                 tracklist_selections_action_perform_move (
-                  tls, pos, &err);
+                  tls, PORT_CONNECTIONS_MGR,
+                  pos, &err);
             }
 
           if (!ret)
@@ -1710,10 +1781,40 @@ tracklist_get_total_bars (
     }
 }
 
+/**
+ * Only clones what is needed for project save.
+ *
+ * @param src Source tracklist. Must be the
+ *   tracklist of the project in use.
+ */
+Tracklist *
+tracklist_clone (
+  Tracklist * src)
+{
+  Tracklist * self = object_new (Tracklist);
+  self->schema_version = TRACKLIST_SCHEMA_VERSION;
+
+  self->pinned_tracks_cutoff =
+    src->pinned_tracks_cutoff;
+
+  self->num_tracks = src->num_tracks;
+  for (int i = 0; i < src->num_tracks; i++)
+    {
+      Track * track = src->tracks[i];
+      GError * err = NULL;
+      self->tracks[i] =
+        track_clone (track, F_PROJECT, &err);
+      g_return_val_if_fail (self->tracks[i], NULL);
+    }
+
+  return self;
+}
+
 Tracklist *
 tracklist_new (Project * project)
 {
   Tracklist * self = object_new (Tracklist);
+  self->schema_version = TRACKLIST_SCHEMA_VERSION;
 
   if (project)
     {
@@ -1730,6 +1831,7 @@ tracklist_free (
   g_message ("%s: freeing...", __func__);
 
   int num_tracks = self->num_tracks;
+
   for (int i = num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];

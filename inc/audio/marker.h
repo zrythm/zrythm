@@ -90,7 +90,7 @@ typedef struct Marker
 
   /** Position of the marker track this marker is
    * in. */
-  int               track_pos;
+  unsigned int      track_name_hash;
 
   /** Index in the track. */
   int               index;
@@ -107,8 +107,8 @@ static const cyaml_schema_field_t
     arranger_object_fields_schema),
   YAML_FIELD_STRING_PTR (
     Marker, name),
-  YAML_FIELD_INT (
-    Marker, track_pos),
+  YAML_FIELD_UINT (
+    Marker, track_name_hash),
   YAML_FIELD_INT (
     Marker, index),
   YAML_FIELD_ENUM (
@@ -147,9 +147,9 @@ marker_set_index (
  * Sets the Track of the Marker.
  */
 void
-marker_set_track_pos (
-  Marker * marker,
-  int      track_pos);
+marker_set_track_name_hash (
+  Marker *     marker,
+  unsigned int track_name_hash);
 
 Marker *
 marker_find_by_name (

@@ -88,6 +88,24 @@ transport_action_new_time_sig_change (
   return ua;
 }
 
+TransportAction *
+transport_action_clone (
+  const TransportAction * src)
+{
+  TransportAction * self =
+    object_new (TransportAction);
+  self->parent_instance = src->parent_instance;
+
+  self->type = src->type;
+  self->bpm_before = src->bpm_before;
+  self->bpm_after = src->bpm_after;
+  self->int_before = src->int_before;
+  self->int_after = src->int_after;
+  self->musical_mode = src->musical_mode;
+
+  return self;
+}
+
 bool
 transport_action_perform_bpm_change (
   bpm_t     bpm_before,
@@ -153,7 +171,7 @@ do_or_undo (
   snap_grid_update_snap_points_default (
     SNAP_GRID_TIMELINE);
   snap_grid_update_snap_points_default (
-    SNAP_GRID_MIDI);
+    SNAP_GRID_EDITOR);
 
   if (self->type == TRANSPORT_ACTION_BPM_CHANGE)
     {
@@ -204,7 +222,7 @@ transport_action_do (
       snap_grid_update_snap_points_default (
         SNAP_GRID_TIMELINE);
       snap_grid_update_snap_points_default (
-        SNAP_GRID_MIDI);
+        SNAP_GRID_EDITOR);
     }
   else
     {

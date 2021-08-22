@@ -465,12 +465,12 @@ typedef struct Track
   bool                bounce_to_master;
 
   /**
-   * Tracks that are routed to this track, if
-   * group track.
+   * Name hashes of tracks that are routed to this
+   * track, if group track.
    *
    * This is used when undoing track deletion.
    */
-  int *               children;
+  unsigned int *      children;
   int                 num_children;
   size_t              children_size;
 
@@ -551,7 +551,7 @@ track_fields_schema[] =
   YAML_FIELD_STRING_PTR (
     Track, comment),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (
-    Track, children, int_schema),
+    Track, children, unsigned_int_schema),
   YAML_FIELD_INT (Track, frozen),
   YAML_FIELD_INT (Track, pool_id),
   YAML_FIELD_INT (Track, size),
@@ -665,6 +665,11 @@ track_type_is_foldable (
 NONNULL
 void
 track_set_magic (
+  Track * self);
+
+NONNULL
+unsigned int
+track_get_name_hash (
   Track * self);
 
 /**
@@ -1255,8 +1260,8 @@ track_set_name_with_action (
  */
 void
 track_set_name (
-  Track *      track,
-  const char * _name,
+  Track *      self,
+  const char * name,
   bool         pub_events);
 
 /**

@@ -89,6 +89,7 @@ track_init_loaded (
   for (int j = 0; j < self->num_lanes; j++)
     {
       lane = self->lanes[j];
+      lane->track = self;
       track_lane_init_loaded (lane);
     }
   ScaleObject * scale;
@@ -109,7 +110,8 @@ track_init_loaded (
   for (int i = 0; i < self->num_chord_regions; i++)
     {
       region = self->chord_regions[i];
-      region->id.track_pos = self->pos;
+      region->id.track_name_hash =
+        track_get_name_hash (self);
       arranger_object_init_loaded (
         (ArrangerObject *) region);
     }
@@ -135,6 +137,7 @@ track_init_loaded (
     track_get_automation_tracklist (self);
   if (atl)
     {
+      atl->track = self;
       automation_tracklist_init_loaded (atl);
     }
 
@@ -150,18 +153,20 @@ track_init_loaded (
   size_t max_size = 0;
   Port ** ports = NULL;
   int num_ports = 0;
-  Port * port;
   track_append_all_ports (
     self, &ports, &num_ports, true, &max_size,
     true);
+  unsigned int name_hash =
+    track_get_name_hash (self);
   for (int i = 0; i < num_ports; i++)
     {
-      port = ports[i];
+      Port * port = ports[i];
       port->magic = PORT_MAGIC;
       if (project)
         {
           g_return_if_fail (
-            port->id.track_pos == self->pos);
+            port->id.track_name_hash ==
+              name_hash);
         }
       port_init_loaded (port, port->is_project);
     }
@@ -245,6 +250,8 @@ track_new (
   bool         auditioner)
 {
   Track * self = object_new (Track);
+
+  g_debug ("creating track '%s'", label);
 
   self->is_auditioner = auditioner;
   self->pos = pos;
@@ -443,6 +450,29 @@ track_clone (
 {
   g_return_val_if_fail (!error || !*error, NULL);
 
+  /* set the track on the given track's channel
+   * if not set */
+  if (!track->is_project && track->channel
+      && !track->channel->track)
+    track->channel->track = track;
+
+  /* verify port identifiers of source track */
+  {
+    size_t max_size = 20;
+    int num_ports = 0;
+    Port ** ports =
+      object_new_n (max_size, Port *);
+    track_append_all_ports (
+      track, &ports, &num_ports, true, &max_size,
+      true);
+    for (int i = 0; i < num_ports; i++)
+      {
+        Port * port = ports[i];
+        port_verify_src_and_dests (port);
+      }
+    free (ports);
+  }
+
   Track * new_track =
     track_new (
       track->type, track->pos, track->name,
@@ -481,12 +511,17 @@ track_clone (
 
   if (track->channel)
     {
+      object_free_w_func_and_null (
+        channel_free, new_track->channel);
+
+      /* set the given channel's track if not
+       * set */
       GError * err = NULL;
-      Channel * ch =
+      new_track->channel =
         channel_clone (
           track->channel, new_track,
           src_is_project, &err);
-      if (!ch)
+      if (new_track->channel == NULL)
         {
           PROPAGATE_PREFIXED_ERROR (
             error, err, "%s",
@@ -495,10 +530,11 @@ track_clone (
             track_free, new_track);
           return NULL;
         }
-      new_track->channel = ch;
+      new_track->channel->track = new_track;
     }
 
-  TrackLane * lane, * new_lane;
+  /* --- copy objects --- */
+
   new_track->num_lanes = track->num_lanes;
   new_track->lanes =
     g_realloc (
@@ -507,17 +543,65 @@ track_clone (
         (size_t) track->num_lanes);
   for (int j = 0; j < track->num_lanes; j++)
     {
-      /* clone lane */
-       lane = track->lanes[j];
-       new_lane =
-         track_lane_clone (lane);
-       new_lane->track_pos = new_track->pos;
+       TrackLane * lane = track->lanes[j];
+       TrackLane * new_lane =
+         track_lane_clone (lane, new_track);
        new_track->lanes[j] = new_lane;
     }
 
+  new_track->num_scales = track->num_scales;
+  new_track->scales =
+    g_realloc (
+      new_track->scales,
+      sizeof (ScaleObject *) *
+        (size_t) track->num_scales);
+  for (int j = 0; j < track->num_scales; j++)
+    {
+       ScaleObject * s = track->scales[j];
+       new_track->scales[j] =
+         (ScaleObject *)
+         arranger_object_clone (
+           (ArrangerObject *) s);
+    }
+
+  new_track->num_markers = track->num_markers;
+  new_track->markers =
+    g_realloc (
+      new_track->markers,
+      sizeof (Marker *) *
+        (size_t) track->num_markers);
+  for (int j = 0; j < track->num_markers; j++)
+    {
+       Marker * m = track->markers[j];
+       new_track->markers[j] =
+         (Marker *)
+         arranger_object_clone (
+           (ArrangerObject *) m);
+    }
+
+  new_track->num_chord_regions =
+    track->num_chord_regions;
+  new_track->chord_regions =
+    g_realloc (
+      new_track->chord_regions,
+      sizeof (ZRegion *) *
+        (size_t) track->num_chord_regions);
+  for (int j = 0; j < track->num_chord_regions; j++)
+    {
+       ZRegion * r = track->chord_regions[j];
+       new_track->chord_regions[j] =
+         (ZRegion *)
+         arranger_object_clone (
+           (ArrangerObject *) r);
+    }
+
+  new_track->automation_tracklist.track =
+    new_track;
   automation_tracklist_clone (
     &track->automation_tracklist,
     &new_track->automation_tracklist);
+
+  /* --- end copy objects --- */
 
   if (TRACK_CAN_BE_GROUP_TARGET (track))
     {
@@ -536,6 +620,21 @@ track_clone (
       track_processor_copy_values (
         new_track->processor, track->processor);
     }
+
+  /* verify port identifiers */
+  size_t max_size = 20;
+  int num_ports = 0;
+  Port ** ports =
+    object_new_n (max_size, Port *);
+  track_append_all_ports (
+    new_track, &ports, &num_ports, true, &max_size,
+    true);
+  for (int i = 0; i < num_ports; i++)
+    {
+      Port * port = ports[i];
+      port_verify_src_and_dests (port);
+    }
+  free (ports);
 
   /* check that source track is not affected
    * during unit tests */
@@ -1040,7 +1139,12 @@ track_validate (
   g_debug (
     "validating track '%s'...", self->name);
 
-  int track_pos = self->pos;
+  if (self->channel)
+    g_return_val_if_fail (
+      self->channel->sends[0]->track_name_hash ==
+      self->channel->sends[0]->amount->
+        id.track_name_hash,
+      false);
 
   /* verify port identifiers */
   size_t max_size = 20;
@@ -1052,18 +1156,22 @@ track_validate (
     true);
   AutomationTracklist * atl =
     track_get_automation_tracklist (self);
+  unsigned int name_hash =
+    track_get_name_hash (self);
   for (int i = 0; i < num_ports; i++)
     {
       Port * port = ports[i];
       g_return_val_if_fail (
-        port->id.track_pos == track_pos, false);
+        port->id.track_name_hash == name_hash,
+        false);
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
           PluginIdentifier * pid =
             &port->id.plugin_id;
           g_return_val_if_fail (
-            pid->track_pos == track_pos, false);
+            pid->track_name_hash == name_hash,
+            false);
           Plugin * pl = plugin_find (pid);
           g_return_val_if_fail (
             plugin_identifier_validate (pid),
@@ -1113,7 +1221,7 @@ track_validate (
 
       port_verify_src_and_dests (port);
     }
-  free (ports);
+  object_zero_and_free (ports);
 
   /* verify output and sends */
   if (self->channel)
@@ -1179,7 +1287,8 @@ track_validate (
       region_validate (r, self->is_project);
     }
 
-  g_debug ("done");
+  g_debug (
+    "done validating track '%s'", self->name);
 
   return true;
 }
@@ -2027,6 +2136,8 @@ void
 track_update_children (
   Track * self)
 {
+  unsigned int name_hash =
+    track_get_name_hash (self);
   for (int i = 0; i < self->num_children; i++)
     {
       Track * child =
@@ -2035,7 +2146,8 @@ track_update_children (
         IS_TRACK (child) &&
         child->out_signal_type ==
           self->in_signal_type);
-      child->channel->output_pos = self->pos;
+      child->channel->output_name_hash =
+        name_hash;
       g_debug (
         "%s: setting output of track %s [%d] to "
         "%s [%d]",
@@ -2053,82 +2165,12 @@ track_set_pos (
   Track * self,
   int     pos)
 {
-  g_debug (
-    "%s: %s (%d) to %d",
-    __func__, self->name, self->pos, pos);
-
   int prev_pos = self->pos;
   self->pos = pos;
 
-  for (int i = 0; i < self->num_lanes; i++)
-    {
-      track_lane_set_track_pos (
-        self->lanes[i], pos);
-    }
-  automation_tracklist_update_track_pos (
-    &self->automation_tracklist, self);
-
-  for (int i = 0; i < self->num_markers; i++)
-    {
-      marker_set_track_pos (
-        self->markers[i], pos);
-    }
-
-  for (int i = 0; i < self->num_chord_regions; i++)
-    {
-      ZRegion * r = self->chord_regions[i];
-      region_set_track_pos (r, pos);
-    }
-
-  track_processor_set_track_pos (
-    self->processor, pos);
-  self->processor->track = self;
-
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  track_append_all_ports (
-    self, &ports, &num_ports, true,
-    &max_size, true);
-  for (int i = 0; i < num_ports; i++)
-    {
-      g_warn_if_fail (ports[i]);
-      port_update_track_pos (ports[i], self, pos);
-    }
-  free (ports);
-
-  /* update port identifier track positions */
-  if (self->channel)
-    {
-      Channel * ch = self->channel;
-      channel_update_track_pos (ch, pos);
-    }
-
-  /* update children */
-  track_update_children (self);
-
-  if (self->is_project)
-    {
-      /* update mixer selections */
-      if (MIXER_SELECTIONS->has_any &&
-          MIXER_SELECTIONS->track_pos == prev_pos)
-        {
-          MIXER_SELECTIONS->track_pos = pos;
-        }
-
-      /* change the clip editor region */
-      if (CLIP_EDITOR->has_region &&
-          CLIP_EDITOR->region_id.track_pos ==
-            prev_pos)
-        {
-          g_message (
-            "updating clip editor region track pos "
-            "from %d to %d",
-            CLIP_EDITOR->region_id.track_pos, pos);
-          CLIP_EDITOR->region_id.track_pos = pos;
-        }
-    }
+  g_debug (
+    "%s: moved track '%s' from index %d to %d",
+    __func__, self->name, prev_pos, pos);
 }
 
 /**
@@ -2339,14 +2381,15 @@ track_disconnect (
   bool    remove_pl,
   bool    recalc_graph)
 {
-  g_message ("disconnecting %s (%d)...",
+  g_message ("disconnecting track '%s' (%d)...",
     self->name, self->pos);
 
   self->disconnecting = true;
 
   /* if this is a group track and has children,
    * remove them */
-  if (TRACK_CAN_BE_GROUP_TARGET (self))
+  if (self->is_project
+      && TRACK_CAN_BE_GROUP_TARGET (self))
     {
       group_target_track_remove_all_children (
         self, F_DISCONNECT,
@@ -2536,7 +2579,8 @@ track_remove_region (
     track_type_can_have_region_type (
       self->type, region->id.type));
 
-  region_disconnect (region);
+  if (!self->is_auditioner)
+    region_disconnect (region);
 
   g_warn_if_fail (region->id.lane_pos >= 0);
 
@@ -2545,7 +2589,7 @@ track_remove_region (
     {
       has_lane = true;
       TrackLane * lane =
-        region_get_lane (region);
+        self->lanes[region->id.lane_pos];
       track_lane_remove_region (lane, region);
     }
   else if (region->id.type == REGION_TYPE_CHORD)
@@ -3055,7 +3099,7 @@ track_set_name_with_action_full (
   GError * err = NULL;
   bool ret =
     tracklist_selections_action_perform_edit_rename (
-      track, name, &err);
+      track, PORT_CONNECTIONS_MGR, name, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -3227,41 +3271,71 @@ track_get_unique_name (
  */
 void
 track_set_name (
-  Track *      track,
-  const char * _name,
+  Track *      self,
+  const char * name,
   bool         pub_events)
 {
-  char * name =
-    track_get_unique_name (track, _name);
-  g_return_if_fail (name);
+  char * new_name =
+    track_get_unique_name (self, name);
+  g_return_if_fail (new_name);
 
-  if (track->name)
-    g_free (track->name);
-  track->name =
-    g_strdup (name);
+  unsigned int old_hash =
+    self->name ? track_get_name_hash (self) : 0;
 
-  if (track->channel)
+  if (self->name)
     {
-      /* update external ports */
-      size_t max_size = 0;
-      Port ** ports = NULL;
-        /*object_new_n (*/
-          /*max_size, Port *);*/
+      old_hash = track_get_name_hash (self);
+      g_free (self->name);
+    }
+  self->name = new_name;
+
+  unsigned int new_hash =
+    track_get_name_hash (self);
+
+  if (old_hash != 0)
+    {
+      for (int i = 0; i < self->num_lanes; i++)
+        {
+          track_lane_update_track_name_hash (
+            self->lanes[i]);
+        }
+      automation_tracklist_update_track_name_hash (
+        &self->automation_tracklist, self);
+
+      for (int i = 0; i < self->num_markers; i++)
+        {
+          marker_set_track_name_hash (
+            self->markers[i], new_hash);
+        }
+
+      for (int i = 0; i < self->num_chord_regions; i++)
+        {
+          ZRegion * r = self->chord_regions[i];
+          r->id.track_name_hash = new_hash;
+          region_update_identifier (r);
+        }
+
+      self->processor->track = self;
+
+      /* update sends */
+      if (self->channel)
+        channel_update_track_name_hash (
+          self->channel, old_hash, new_hash);
+
+      size_t max_size = 20;
+      Port ** ports =
+        object_new_n (max_size, Port *);
       int num_ports = 0;
       track_append_all_ports (
-        track, &ports, &num_ports,
-        true, &max_size, true);
-      Port * port;
+        self, &ports, &num_ports, true,
+        &max_size, true);
       for (int i = 0; i < num_ports; i++)
         {
-          port = ports[i];
-
-          if (!IS_PORT (port))
-            {
-              object_zero_and_free (ports);
-              g_critical ("invalid port");
-              return;
-            }
+          Port * port = ports[i];
+          g_return_if_fail (
+            IS_PORT_AND_NONNULL (port));
+          port_update_track_name_hash (
+            port, self, new_hash);
 
           if (port_is_exposed_to_backend (
                 port))
@@ -3272,13 +3346,39 @@ track_set_name (
       object_zero_and_free_if_nonnull (ports);
     }
 
+  if (self->is_project)
+    {
+      /* update children */
+      track_update_children (self);
+
+      /* update mixer selections */
+      if (MIXER_SELECTIONS->has_any &&
+          MIXER_SELECTIONS->track_name_hash ==
+            old_hash)
+        {
+          MIXER_SELECTIONS->track_name_hash =
+            new_hash;
+        }
+
+      /* change the clip editor region */
+      if (CLIP_EDITOR->has_region &&
+          CLIP_EDITOR->region_id.track_name_hash ==
+            old_hash)
+        {
+          g_message (
+            "updating clip editor region track to "
+            "%s",
+            self->name);
+          CLIP_EDITOR->region_id.track_name_hash =
+            new_hash;
+        }
+    }
+
   if (pub_events)
     {
       EVENTS_PUSH (
-        ET_TRACK_NAME_CHANGED, track);
+        ET_TRACK_NAME_CHANGED, self);
     }
-
-  g_free (name);
 }
 
 void
@@ -3462,9 +3562,11 @@ track_set_is_project (
   Track * self,
   bool    is_project)
 {
+#if 0
   g_debug (
     "Setting track %s is_project to %d...",
     self->name, is_project);
+#endif
 
   track_processor_set_is_project (
     self->processor, is_project);
@@ -3513,8 +3615,6 @@ track_set_is_project (
     }
 
   self->is_project = is_project;
-
-  g_debug ("done");
 }
 
 TrackType
@@ -3869,6 +3969,13 @@ track_create_with_action (
   return track;
 }
 
+unsigned int
+track_get_name_hash (
+  Track * self)
+{
+  return g_str_hash (self->name);
+}
+
 /**
  * Removes the AutomationTrack's associated with
  * this channel from the AutomationTracklist in the
@@ -3908,10 +4015,16 @@ track_free (Track * self)
   g_debug ("freeing track '%s' (pos %d)...",
     self->name, self->pos);
 
+  if (self->widget &&
+      GTK_IS_WIDGET (self->widget))
+    gtk_widget_destroy (
+      GTK_WIDGET (self->widget));
+
   /* remove regions */
   for (int i = 0; i < self->num_lanes; i++)
     {
-      track_lane_free (self->lanes[i]);
+      object_free_w_func_and_null (
+        track_lane_free, self->lanes[i]);
     }
 
   /* remove automation points, curves, tracks,
@@ -3959,11 +4072,6 @@ track_free (Track * self)
       object_free_w_func_and_null (
         channel_free, self->channel);
     }
-
-  if (self->widget &&
-      GTK_IS_WIDGET (self->widget))
-    gtk_widget_destroy (
-      GTK_WIDGET (self->widget));
 
   g_free_and_null (self->name);
   g_free_and_null (self->comment);

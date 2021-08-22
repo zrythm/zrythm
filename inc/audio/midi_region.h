@@ -55,7 +55,7 @@ ZRegion *
 midi_region_new (
   const Position * start_pos,
   const Position * end_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane);
 
@@ -72,7 +72,7 @@ ZRegion *
 midi_region_new_from_midi_file (
   const Position * start_pos,
   const char *     abs_path,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane,
   int              idx);
@@ -87,7 +87,7 @@ ZRegion *
 midi_region_new_from_chord_descr (
   const Position *  pos,
   ChordDescriptor * descr,
-  int               track_pos,
+  unsigned int      track_name_hash,
   int               lane_pos,
   int               idx_inside_lane);
 

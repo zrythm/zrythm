@@ -191,6 +191,8 @@ arranger_selections_set_from_selections (
  * regions, their track indices, then the lane
  * indices, then the index in the lane).
  *
+ * @note Only works for objects whose tracks exist.
+ *
  * @param desc Descending or not.
  */
 NONNULL

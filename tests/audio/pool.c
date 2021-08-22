@@ -56,7 +56,8 @@ test_remove_unused ()
     TRACKLIST->tracks[num_tracks_before], F_SELECT,
     F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, NULL);
 
   /* create more tracks */
   for (int i = 0; i < (ZRYTHM->undo_stack_len + 4);

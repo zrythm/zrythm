@@ -737,6 +737,24 @@ audio_clip_remove_and_free (
   audio_clip_free (self);
 }
 
+AudioClip *
+audio_clip_clone (
+  AudioClip * src)
+{
+  AudioClip * self = object_new (AudioClip);
+  self->schema_version = AUDIO_CLIP_SCHEMA_VERSION;
+
+  self->name = g_strdup (src->name);
+  self->file_hash = g_strdup (src->file_hash);
+  self->bpm = src->bpm;
+  self->bit_depth = src->bit_depth;
+  self->use_flac = src->use_flac;
+  self->samplerate = src->samplerate;
+  self->pool_id = src->pool_id;
+
+  return self;
+}
+
 /**
  * Frees the audio clip.
  */

@@ -39,13 +39,13 @@
 #define QUANTIZE_OPTIONS_SCHEMA_VERSION 1
 
 #define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
-  (&PROJECT->quantize_opts_editor == qo)
+  (PROJECT->quantize_opts_editor == qo)
 #define QUANTIZE_OPTIONS_IS_TIMELINE(qo) \
-  (&PROJECT->quantize_opts_timeline == qo)
+  (PROJECT->quantize_opts_timeline == qo)
 #define QUANTIZE_OPTIONS_TIMELINE \
-  (&PROJECT->quantize_opts_timeline)
+  (PROJECT->quantize_opts_timeline)
 #define QUANTIZE_OPTIONS_EDITOR \
-  (&PROJECT->quantize_opts_editor)
+  (PROJECT->quantize_opts_editor)
 
 #define MAX_SNAP_POINTS 120096
 
@@ -169,13 +169,6 @@ quantize_options_stringize (
   NoteType   note_type);
 
 /**
- * Clones the QuantizeOptions.
- */
-QuantizeOptions *
-quantize_options_clone (
-  const QuantizeOptions * src);
-
-/**
  * Quantizes the given Position using the given
  * QuantizeOptions.
  *
@@ -190,6 +183,16 @@ double
 quantize_options_quantize_position (
   QuantizeOptions * self,
   Position *              pos);
+
+/**
+ * Clones the QuantizeOptions.
+ */
+QuantizeOptions *
+quantize_options_clone (
+  const QuantizeOptions * src);
+
+QuantizeOptions *
+quantize_options_new (void);
 
 /**
  * Free's the QuantizeOptions.

@@ -184,7 +184,8 @@ modulator_track_insert_modulator (
             self->modulators[i]->setting->descr->name,
             i - 1, i);
           plugin_set_track_and_slot (
-            self->modulators[i], self->pos,
+            self->modulators[i],
+            track_get_name_hash (self),
             PLUGIN_SLOT_MODULATOR, i);
         }
     }
@@ -196,7 +197,9 @@ modulator_track_insert_modulator (
     modulator->setting->descr->name, slot);
 
   plugin_set_track_and_slot (
-    modulator, self->pos, PLUGIN_SLOT_MODULATOR,
+    modulator,
+    track_get_name_hash (self),
+    PLUGIN_SLOT_MODULATOR,
     slot);
 
   plugin_set_is_project (
@@ -247,8 +250,9 @@ modulator_track_remove_modulator (
 {
   Plugin * plugin = self->modulators[slot];
   g_return_if_fail (IS_PLUGIN (plugin));
-  g_warn_if_fail (
-    plugin->id.track_pos == self->pos);
+  g_return_if_fail (
+    plugin->id.track_name_hash ==
+      track_get_name_hash (self));
 
   plugin_remove_ats_from_automation_tracklist (
     plugin, deleting_modulator,
@@ -294,7 +298,8 @@ modulator_track_remove_modulator (
           self->modulators[i] =
             self->modulators[i + 1];
           plugin_set_track_and_slot (
-            self->modulators[i], self->pos,
+            self->modulators[i],
+            track_get_name_hash (self),
             PLUGIN_SLOT_MODULATOR, i);
         }
       self->num_modulators--;

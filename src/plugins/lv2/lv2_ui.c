@@ -334,6 +334,7 @@ lv2_ui_send_event_from_ui_to_plugin (
       return;
     }
 
+#if 0
   Port * port =
     plugin->plugin->lilv_ports[port_index];
   if (port->lilv_port_index > -1)
@@ -345,6 +346,7 @@ lv2_ui_send_event_from_ui_to_plugin (
       g_debug (
         "param %d (%s)", port_index, port->id.sym);
     }
+#endif
 
   if (protocol != 0 &&
       protocol != PM_URIDS.atom_eventTransfer)

@@ -154,7 +154,8 @@ bounce_region (
           P_TEMPO_TRACK->bpm_port, P_TEMPO_TRACK, false);
       ZRegion * r =
         automation_region_new (
-          &pos, &end_pos, P_TEMPO_TRACK->pos,
+          &pos, &end_pos,
+          track_get_name_hash (P_TEMPO_TRACK),
           at->index, 0);
       track_add_region (
         P_TEMPO_TRACK, r, at, 0, 1, 0);
@@ -190,7 +191,7 @@ bounce_region (
   int idx_in_lane = 0;
   ZRegion * region =
     midi_region_new_from_midi_file (
-      &pos, midi_file, track->pos,
+      &pos, midi_file, track_get_name_hash (track),
       lane_pos, idx_in_lane, 0);
   track_add_region (
     track, region, NULL, lane_pos,
@@ -290,7 +291,8 @@ test_mixdown_midi_routed_to_instrument_track ()
 
   /* route the MIDI track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, ins_track, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, ins_track, NULL);
 
   /* bounce it */
   ExportSettings settings;
@@ -353,7 +355,7 @@ test_bounce_region_with_first_note (void)
   int idx_in_lane = 0;
   ZRegion * region =
     midi_region_new_from_midi_file (
-      &pos, midi_file, track->pos,
+      &pos, midi_file, track_get_name_hash (track),
       lane_pos, idx_in_lane, 0);
   ArrangerObject * r_obj = (ArrangerObject *) region;
   track_add_region (
@@ -463,7 +465,8 @@ _test_bounce_midi_track_routed_to_instrument_track (
 
   /* route the MIDI track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, ins_track, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, ins_track, NULL);
 
   /* bounce it */
   ExportSettings settings;
@@ -547,7 +550,9 @@ _test_bounce_instrument_track (
       "M71.MID", NULL);
   ZRegion * r =
     midi_region_new_from_midi_file (
-      PLAYHEAD, midi_file, ins_track->pos, 0, 0, 0);
+      PLAYHEAD, midi_file,
+      track_get_name_hash (ins_track),
+      0, 0, 0);
   g_free (midi_file);
   track_add_region (
     ins_track, r, NULL, 0, F_GEN_NAME,
@@ -563,7 +568,8 @@ _test_bounce_instrument_track (
     test_plugin_manager_get_plugin_setting (
       MVERB_BUNDLE, MVERB_URI, false);
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, ins_track->pos, 0,
+    PLUGIN_SLOT_INSERT,
+    track_get_name_hash (ins_track), 0,
     setting, 1, NULL);
 
   /* adjust fader */

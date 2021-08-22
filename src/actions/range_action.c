@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,6 +47,8 @@ range_action_init_loaded (
         (ArrangerSelections *) self->sel_after,
         F_NOT_PROJECT);
     }
+
+  transport_init_loaded (self->transport);
 }
 
 /**
@@ -86,9 +88,36 @@ range_action_new (
     arranger_selections_new (
       ARRANGER_SELECTIONS_TYPE_TIMELINE);
 
-  self->transport = transport_clone (TRANSPORT);
+  self->transport =
+    transport_clone (TRANSPORT);
+  self->transport->is_project = false;
 
   return ua;
+}
+
+RangeAction *
+range_action_clone (
+  const RangeAction * src)
+{
+  RangeAction * self = object_new (RangeAction);
+  self->parent_instance = src->parent_instance;
+
+  self->start_pos = src->start_pos;
+  self->end_pos = src->end_pos;
+  self->type = src->type;
+  self->sel_before =
+    (TimelineSelections *)
+    arranger_selections_clone (
+      (ArrangerSelections *) src->sel_before);
+  self->sel_after =
+    (TimelineSelections *)
+    arranger_selections_clone (
+      (ArrangerSelections *) src->sel_after);
+  self->first_run = src->first_run;
+  self->transport =
+    transport_clone (src->transport);
+
+  return self;
 }
 
 bool
@@ -702,18 +731,15 @@ void
 range_action_free (
   RangeAction * self)
 {
-  if (self->sel_before)
-    {
-      arranger_selections_free_full (
-        (ArrangerSelections *) self->sel_before);
-      self->sel_before = NULL;
-    }
-  if (self->sel_after)
-    {
-      arranger_selections_free_full (
-        (ArrangerSelections *) self->sel_after);
-      self->sel_after = NULL;
-    }
+  object_free_w_func_and_null_cast (
+    arranger_selections_free_full,
+      ArrangerSelections *, self->sel_before);
+  object_free_w_func_and_null_cast (
+    arranger_selections_free_full,
+      ArrangerSelections *, self->sel_after);
+
+  object_free_w_func_and_null (
+    transport_free, self->transport);
 
   object_zero_and_free (self);
 }

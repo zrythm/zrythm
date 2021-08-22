@@ -331,8 +331,7 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
   region_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER_NULL_STR,
+  YAML_VALUE_PTR_NULLABLE (
     ZRegion, region_fields_schema),
 };
 
@@ -350,7 +349,7 @@ region_init (
   ZRegion *   region,
   const Position * start_pos,
   const Position * end_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane);
 
@@ -363,12 +362,27 @@ ZRegion *
 region_find (
   const RegionIdentifier * const id);
 
-#define region_set_track_pos(_r,_pos) \
-  _r->id.track_pos = _pos
+#if 0
+static inline void
+region_set_track_name_hash (
+  ZRegion *    self,
+  unsigned int name_hash)
+{
+  self->id.track_name_hash = name_hash;
+}
+#endif
+
+NONNULL
+void
+region_print_to_str (
+  const ZRegion * self,
+  char *          buf,
+  const size_t    buf_size);
 
 /**
  * Print region info for debugging.
  */
+NONNULL
 void
 region_print (
   const ZRegion * region);

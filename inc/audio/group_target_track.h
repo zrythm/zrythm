@@ -49,11 +49,11 @@ group_target_track_init (Track * track);
  */
 void
 group_target_track_remove_child (
-  Track * self,
-  int     child_pos,
-  bool    disconnect,
-  bool    recalc_graph,
-  bool    pub_events);
+  Track *      self,
+  unsigned int child_name_hash,
+  bool         disconnect,
+  bool         recalc_graph,
+  bool         pub_events);
 
 /**
  * Remove all known children.
@@ -74,11 +74,11 @@ group_target_track_remove_all_children (
  */
 void
 group_target_track_add_child (
-  Track * self,
-  int     child_pos,
-  bool    connect,
-  bool    recalc_graph,
-  bool    pub_events);
+  Track *      self,
+  unsigned int child_name_hash,
+  bool         connect,
+  bool         recalc_graph,
+  bool         pub_events);
 
 bool
 group_target_track_validate (
@@ -86,11 +86,20 @@ group_target_track_validate (
 
 void
 group_target_track_add_children (
-  Track * self,
-  int *   children,
-  int     num_children,
-  bool    connect,
-  bool    recalc_graph,
-  bool    pub_events);
+  Track *        self,
+  unsigned int * children,
+  int            num_children,
+  bool           connect,
+  bool           recalc_graph,
+  bool           pub_events);
+
+/**
+ * Returns the index of the child matching the
+ * given hash.
+ */
+int
+group_target_track_find_child (
+  Track *      self,
+  unsigned int track_name_hash);
 
 #endif /* __AUDIO_GROUP_TARGET_TRACK_H__ */

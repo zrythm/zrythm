@@ -67,7 +67,8 @@ test_modulator_connection (
 
   /* create a modulator */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MODULATOR, P_MODULATOR_TRACK->pos,
+    PLUGIN_SLOT_MODULATOR,
+    track_get_name_hash (P_MODULATOR_TRACK),
     0, setting, 1, NULL);
   plugin_setting_free (setting);
 
@@ -182,10 +183,14 @@ _test_port_connection (
        * plugin */
       track_create_empty_with_action (
         TRACK_TYPE_AUDIO_BUS, NULL);
+      Track * last_track =
+        tracklist_get_last_track (
+          TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
+          false);
       mixer_selections_action_perform_create (
         PLUGIN_SLOT_INSERT,
-        TRACKLIST->num_tracks - 1, 0, setting, 1,
-        NULL);
+        track_get_name_hash (last_track),
+        0, setting, 1, NULL);
     }
 
   plugin_setting_free (setting);
@@ -277,18 +282,14 @@ _test_port_connection (
   g_assert_cmpint (dest_port->num_srcs, ==, 2);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
   g_assert_cmpint (src_port2->num_dests, ==, 1);
-  g_assert_true (
-    port_identifier_is_equal (
-      &src_port1->dest_ids[0], &dest_port->id));
-  g_assert_true (
-    port_identifier_is_equal (
-      &dest_port->src_ids[0], &src_port1->id));
-  g_assert_true (
-    port_identifier_is_equal (
-      &src_port2->dest_ids[0], &dest_port->id));
-  g_assert_true (
-    port_identifier_is_equal (
-      &dest_port->src_ids[1], &src_port2->id));
+  g_assert_nonnull (
+    port_connections_manager_find_connection (
+      PORT_CONNECTIONS_MGR,
+      &src_port1->id, &dest_port->id));
+  g_assert_nonnull (
+    port_connections_manager_find_connection (
+      PORT_CONNECTIONS_MGR,
+      &src_port2->id, &dest_port->id));
   g_assert_true (
     dest_port->srcs[0] == src_port1);
   g_assert_true (

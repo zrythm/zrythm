@@ -432,7 +432,7 @@ draw_midi_bg (
             self, cr, 0, rect->width,
             y_offset - rect->y);
           if (piano_roll_is_key_black (
-                PIANO_ROLL->piano_descriptors[i].
+                PIANO_ROLL->piano_descriptors[i]->
                   value))
             {
               cairo_set_source_rgba (
@@ -446,12 +446,13 @@ draw_midi_bg (
               cairo_fill (cr);
             }
         }
-      if ((PIANO_ROLL->drum_mode &&
-          PIANO_ROLL->drum_descriptors[i].value ==
-            MW_MIDI_ARRANGER->hovered_note) ||
-          (!PIANO_ROLL->drum_mode &&
-           PIANO_ROLL->piano_descriptors[i].value ==
-             MW_MIDI_ARRANGER->hovered_note))
+      if ((PIANO_ROLL->drum_mode
+           && PIANO_ROLL->drum_descriptors[i]->value
+           == MW_MIDI_ARRANGER->hovered_note)
+          ||
+          (!PIANO_ROLL->drum_mode
+           && PIANO_ROLL->piano_descriptors[i]->value
+           == MW_MIDI_ARRANGER->hovered_note))
         {
           cairo_set_source_rgba (
             cr, 1, 1, 1, 0.06);

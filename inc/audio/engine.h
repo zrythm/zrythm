@@ -420,7 +420,7 @@ typedef struct AudioEngine
    *
    * Useful for debugging.
    */
-  volatile long     cycle;
+  unsigned long     cycle;
 
 #ifdef HAVE_JACK
   /** JACK client. */
@@ -926,6 +926,16 @@ engine_resume (
   EngineState * state);
 
 /**
+ * Waits for n processing cycles to finish.
+ *
+ * Used during tests.
+ */
+void
+engine_wait_n_cycles (
+  AudioEngine * self,
+  int           n);
+
+/**
  * Sets up the audio engine before the project is
  * initialized/loaded.
  */
@@ -1099,6 +1109,16 @@ engine_midi_backend_from_string (
 void
 engine_reset_bounce_mode (
   AudioEngine * self);
+
+/**
+ * Clones the audio engine.
+ *
+ * To be used for serialization.
+ */
+NONNULL
+AudioEngine *
+engine_clone (
+  const AudioEngine * src);
 
 /**
  * Closes any connections and free's data.

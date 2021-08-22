@@ -515,7 +515,7 @@ inspector_port_widget_new (
           BAR_SLIDER_TYPE_NORMAL,
           (GenericFloatGetter) get_port_value,
           (GenericFloatSetter) set_port_value,
-          (void *) self, NULL,
+          (void *) self,
           /* use normalized vals for controls */
           is_control ? 0.f : minf,
           is_control ? 1.f : maxf, -1, 20,

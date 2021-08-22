@@ -135,11 +135,9 @@ create_model_for_ports (
 * in the destinations */
 #define ADD_ROW \
   if ((flow == FLOW_INPUT && \
-       !ports_connected ( \
-          port, self->port)) || \
+       !ports_connected (port, self->port)) || \
        (flow == FLOW_OUTPUT && \
-        !ports_connected ( \
-           self->port, port))) \
+        !ports_connected (self->port, port))) \
     { \
       gtk_list_store_append ( \
         list_store, &iter); \

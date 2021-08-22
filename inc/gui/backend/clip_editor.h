@@ -61,29 +61,13 @@ typedef struct ClipEditor
    * editor. */
   RegionIdentifier  region_id;
 
-  /**
-   * This will be set to the same as above after
-   * the arrangers are switched.
-   *
-   * Related widgets should use this.
-   */
-  //RegionIdentifier  region_id_cache;
-
   /** Whether \ref region_id is a valid region. */
   bool             has_region;
 
-  /**
-   * Whether \ref region_id_cache is a valid
-   * region.
-   *
-   * FIXME explain when this should be set.
-   */
-  //int              had_region;
-
-  PianoRoll        piano_roll;
-  AudioClipEditor  audio_clip_editor;
-  AutomationEditor automation_editor;
-  ChordEditor      chord_editor;
+  PianoRoll *      piano_roll;
+  AudioClipEditor * audio_clip_editor;
+  AutomationEditor * automation_editor;
+  ChordEditor *    chord_editor;
 
   /** Flag used by rulers when region first
    * changes. */
@@ -99,16 +83,16 @@ clip_editor_fields_schema[] =
     region_identifier_fields_schema),
   YAML_FIELD_INT (
     ClipEditor, has_region),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     ClipEditor, piano_roll,
     piano_roll_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     ClipEditor, automation_editor,
     automation_editor_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     ClipEditor, chord_editor,
     chord_editor_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     ClipEditor, audio_clip_editor,
     audio_clip_editor_fields_schema),
 
@@ -183,6 +167,10 @@ clip_editor_get_track (
 void
 clip_editor_redraw_region (
   ClipEditor * self);
+
+ClipEditor *
+clip_editor_clone (
+  const ClipEditor * src);
 
 void
 clip_editor_free (

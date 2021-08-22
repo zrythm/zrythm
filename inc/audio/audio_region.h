@@ -76,7 +76,7 @@ audio_region_new (
   const channels_t channels,
   BitDepth         bit_depth,
   const Position * start_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane);
 

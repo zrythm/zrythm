@@ -105,6 +105,9 @@ typedef enum GraphNodeType
   ROUTE_NODE_TYPE_HW_PROCESSOR,
 
   ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR,
+
+  /** Channel send. */
+  ROUTE_NODE_TYPE_CHANNEL_SEND,
 } GraphNodeType;
 
 /**
@@ -155,6 +158,8 @@ typedef struct GraphNode
   HardwareProcessor * hw_processor;
 
   ModulatorMacroProcessor * modulator_macro_processor;
+
+  ChannelSend * send;
 
   /** For debugging. */
   bool          terminal;

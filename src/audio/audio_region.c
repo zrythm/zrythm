@@ -65,7 +65,7 @@ audio_region_new (
   const channels_t channels,
   BitDepth         bit_depth,
   const Position * start_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane)
 {
@@ -147,7 +147,7 @@ audio_region_new (
 
   /* init */
   region_init (
-    self, start_pos, &end_pos, track_pos,
+    self, start_pos, &end_pos, track_name_hash,
     lane_pos, idx_inside_lane);
 
   (void) recording;
@@ -178,11 +178,12 @@ audio_region_get_clip (
     {
       g_return_val_if_fail (
         self->pool_id >= 0, NULL);
-      clip = AUDIO_POOL->clips[self->pool_id];
+      clip =
+        audio_pool_get_clip (
+          AUDIO_POOL, self->pool_id);
     }
   else
     {
-      g_return_val_if_fail (self->clip, NULL);
       clip = self->clip;
     }
 

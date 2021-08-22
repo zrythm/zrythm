@@ -45,14 +45,12 @@ static void
 fixture_set_up (
   TrackFixture * self)
 {
-  self->midi_track =
-    track_new (
-      TRACK_TYPE_MIDI,
-      TRACKLIST->num_tracks,
-      "Test MIDI Track 1",
-      F_WITH_LANE, F_NOT_AUDITIONER);
-  tracklist_append_track (
-    TRACKLIST, self->midi_track, 0, 1);
+  int track_pos = TRACKLIST->num_tracks;
+  GError * err = NULL;
+  tracklist_selections_action_perform_create_midi (
+    track_pos, 1, &err);
+  g_assert_null (err);
+  self->midi_track = TRACKLIST->tracks[track_pos];
   self->events = midi_events_new ();
 }
 
@@ -77,7 +75,8 @@ prepare_region_with_note_at_start_to_end (
   position_update_frames_from_ticks (&end_pos);
   ZRegion * r =
     midi_region_new (
-      &start_pos, &end_pos, track->pos, 0, 0);
+      &start_pos, &end_pos,
+      track_get_name_hash (track), 0, 0);
   MidiNote * mn1 =
     midi_note_new (
       &r->id, &start_pos, &end_pos, pitch, velocity);

@@ -93,12 +93,30 @@ transport_init_loaded (
   Transport * self)
 {
   init_common (self);
-  int beats_per_bar =
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-  int beat_unit =
-    tempo_track_get_beat_unit (P_TEMPO_TRACK);
-  transport_update_caches (
-    self, beats_per_bar, beat_unit);
+
+  if (self->is_project)
+    {
+      int beats_per_bar =
+        tempo_track_get_beats_per_bar (
+          P_TEMPO_TRACK);
+      int beat_unit =
+        tempo_track_get_beat_unit (
+          P_TEMPO_TRACK);
+      transport_update_caches (
+        self, beats_per_bar, beat_unit);
+    }
+
+#define INIT_LOADED_PORT(x) \
+  port_init_loaded (self->x, self->is_project)
+
+  INIT_LOADED_PORT (roll);
+  INIT_LOADED_PORT (stop);
+  INIT_LOADED_PORT (backward);
+  INIT_LOADED_PORT (forward);
+  INIT_LOADED_PORT (loop_toggle);
+  INIT_LOADED_PORT (rec_toggle);
+
+#undef INIT_LOADED_PORT
 }
 
 /**
@@ -106,11 +124,16 @@ transport_init_loaded (
  */
 Transport *
 transport_new (
-  AudioEngine * engine)
+  AudioEngine * engine,
+  bool          is_project)
 {
   g_message ("%s: Creating transport...", __func__);
 
   Transport * self = object_new (Transport);
+  self->schema_version =
+    TRANSPORT_SCHEMA_VERSION;
+
+  self->is_project = is_project;
 
   if (engine)
     {
@@ -224,38 +247,50 @@ transport_new (
 
 /**
  * Clones the transport values.
- *
- * @note This is a partial clone and does not
- * include MIDI ports. Should only be used for
- * position info.
  */
 Transport *
 transport_clone (
-  Transport * self)
+  const Transport * src)
 {
-  Transport * new_transport =
+  Transport * self =
     object_new (Transport);
 
-  position_set_to_pos (
-    &new_transport->loop_start_pos,
-    &self->loop_start_pos);
-  position_set_to_pos (
-    &new_transport->playhead_pos,
-    &self->playhead_pos);
-  position_set_to_pos (
-    &new_transport->loop_end_pos,
-    &self->loop_end_pos);
-  position_set_to_pos (
-    &new_transport->cue_pos,
-    &self->cue_pos);
-  position_set_to_pos (
-    &new_transport->punch_in_pos,
-    &self->punch_in_pos);
-  position_set_to_pos (
-    &new_transport->punch_out_pos,
-    &self->punch_out_pos);
+  self->is_project = src->is_project;
 
-  return new_transport;
+  position_set_to_pos (
+    &self->loop_start_pos, &src->loop_start_pos);
+  position_set_to_pos (
+    &self->playhead_pos, &src->playhead_pos);
+  position_set_to_pos (
+    &self->loop_end_pos, &src->loop_end_pos);
+  position_set_to_pos (
+    &self->cue_pos, &src->cue_pos);
+  position_set_to_pos (
+    &self->punch_in_pos, &src->punch_in_pos);
+  position_set_to_pos (
+    &self->punch_out_pos, &src->punch_out_pos);
+  position_set_to_pos (
+    &self->range_1, &src->range_1);
+  position_set_to_pos (
+    &self->range_2, &src->range_2);
+  self->has_range = src->has_range;
+
+  self->position = src->position;
+
+#define CLONE_PORT_IF_EXISTS(x) \
+  if (src->x) \
+    self->x = port_clone (src->x)
+
+  CLONE_PORT_IF_EXISTS (roll);
+  CLONE_PORT_IF_EXISTS (stop);
+  CLONE_PORT_IF_EXISTS (backward);
+  CLONE_PORT_IF_EXISTS (forward);
+  CLONE_PORT_IF_EXISTS (loop_toggle);
+  CLONE_PORT_IF_EXISTS (rec_toggle);
+
+#undef CLONE_PORT_IF_EXISTS
+
+  return self;
 }
 
 /**
@@ -1143,7 +1178,7 @@ transport_move_backward (
 {
   Position * pos =
     snap_grid_get_nearby_snap_point (
-      &PROJECT->snap_grid_timeline,
+      SNAP_GRID_TIMELINE,
       &self->playhead_pos, true);
   transport_move_playhead (
     self, pos, F_PANIC, F_SET_CUE_POINT,
@@ -1159,7 +1194,7 @@ transport_move_forward (
 {
   Position * pos =
     snap_grid_get_nearby_snap_point (
-      &PROJECT->snap_grid_timeline,
+      SNAP_GRID_TIMELINE,
       &self->playhead_pos, false);
   transport_move_playhead (
     self, pos, F_PANIC, F_SET_CUE_POINT,

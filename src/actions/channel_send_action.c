@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -41,7 +42,10 @@ channel_send_action_init_loaded (
  *
  * @param port MIDI port, if connecting MIDI.
  * @param stereo Stereo ports, if connecting audio.
+ * @param port_connections_mgr Port connections
+ *   manager at the start of the action, if needed.
  */
+WARN_UNUSED_RESULT
 UndoableAction *
 channel_send_action_new (
   ChannelSend *         send,
@@ -49,6 +53,7 @@ channel_send_action_new (
   Port *                port,
   StereoPorts *         stereo,
   float                 amount,
+  const PortConnectionsManager * port_connections_mgr,
   GError **             error)
 {
   ChannelSendAction * self =
@@ -58,25 +63,60 @@ channel_send_action_new (
 
   self->type = type;
   self->send_before = channel_send_clone (send);
-  self->send_after = channel_send_clone (send);
-  self->send_after->amount->control = amount;
+  self->amount = amount;
 
-  if (port &&
-      type == CHANNEL_SEND_ACTION_CONNECT_MIDI)
-    {
-      self->send_after->dest_midi_id = port->id;
-    }
+  if (port)
+    self->midi_id =
+      port_identifier_clone (&port->id);
+
   if (stereo)
     {
-      self->send_after->dest_l_id = stereo->l->id;
-      self->send_after->dest_r_id = stereo->r->id;
+      self->l_id =
+        port_identifier_clone (&stereo->l->id);
+      self->r_id =
+        port_identifier_clone (&stereo->r->id);
+    }
+
+  if (port_connections_mgr)
+    {
+      self->connections_mgr_before =
+        port_connections_manager_clone (
+          port_connections_mgr);
     }
 
   return ua;
 }
 
+ChannelSendAction *
+channel_send_action_clone (
+  const ChannelSendAction * src)
+{
+  ChannelSendAction * self =
+    object_new (ChannelSendAction);
+  self->parent_instance = src->parent_instance;
+
+  self->send_before =
+    channel_send_clone (src->send_before);
+  self->type = src->type;
+  self->amount = src->amount;
+
+  if (src->connections_mgr_before)
+    self->connections_mgr_before =
+      port_connections_manager_clone (
+        src->connections_mgr_before);
+  if (src->connections_mgr_after)
+    self->connections_mgr_after =
+      port_connections_manager_clone (
+        src->connections_mgr_after);
+
+  return self;
+}
+
 /**
  * Wrapper to create action and perform it.
+ *
+ * @param port_connections_mgr Port connections
+ *   manager at the start of the action, if needed.
  */
 bool
 channel_send_action_perform (
@@ -85,61 +125,72 @@ channel_send_action_perform (
   Port *                port,
   StereoPorts *         stereo,
   float                 amount,
+  const PortConnectionsManager * port_connections_mgr,
   GError **             error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     channel_send_action_new,
-    error, send, type, port, stereo, amount, error);
+    error, send, type, port, stereo, amount,
+    port_connections_mgr, error);
 }
 
 static void
 connect_or_disconnect (
   ChannelSendAction * self,
   bool                connect,
-  bool                after)
+  bool                _do)
 {
   /* get the actual channel send from the project */
   ChannelSend * send =
     channel_send_find (self->send_before);
 
-  channel_send_disconnect (send);
+  channel_send_disconnect (send, F_NO_RECALC_GRAPH);
 
-  if (connect)
+  if (_do)
     {
-      Track * track = channel_send_get_track (send);
-      switch (track->out_signal_type)
+      if (connect)
         {
-        case TYPE_EVENT:
-          {
-            Port * port =
-              port_find_from_identifier (
-                after ?
-                  &self->send_after->dest_midi_id :
-                  &self->send_before->dest_midi_id);
-            channel_send_connect_midi (send, port);
-          }
-          break;
-        case TYPE_AUDIO:
-          {
-            Port * l =
-              port_find_from_identifier (
-                after ?
-                  &self->send_after->dest_l_id :
-                  &self->send_before->dest_l_id);
-            Port * r =
-              port_find_from_identifier (
-                after ?
-                  &self->send_after->dest_r_id :
-                  &self->send_before->dest_r_id);
-            channel_send_connect_stereo (
-              send, NULL, l, r,
-              self->type ==
-                CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN);
-          }
-          break;
-        default:
-          break;
+          Track * track =
+            channel_send_get_track (send);
+          switch (track->out_signal_type)
+            {
+            case TYPE_EVENT:
+              {
+                Port * port =
+                  port_find_from_identifier (
+                    self->midi_id);
+                channel_send_connect_midi (
+                  send, port, F_NO_RECALC_GRAPH);
+              }
+              break;
+            case TYPE_AUDIO:
+              {
+                Port * l =
+                  port_find_from_identifier (
+                    self->l_id);
+                Port * r =
+                  port_find_from_identifier (
+                    self->r_id);
+                channel_send_connect_stereo (
+                  send, NULL, l, r,
+                  self->type ==
+                    CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
+                  F_NO_RECALC_GRAPH);
+              }
+              break;
+            default:
+              break;
+            }
         }
+    }
+  /* else if not doing */
+  else
+    {
+      /* copy the values - connections will be
+       * reverted later when resetting the
+       * connections manager */
+      channel_send_copy_values (
+        send, self->send_before);
     }
 }
 
@@ -152,6 +203,8 @@ channel_send_action_do (
   ChannelSend * send =
     channel_send_find (self->send_before);
 
+  bool need_restore_and_recalc = false;
+
   switch (self->type)
     {
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
@@ -159,16 +212,28 @@ channel_send_action_do (
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
       connect_or_disconnect (self, true, true);
+      need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_DISCONNECT:
       connect_or_disconnect (self, false, true);
+      need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
       channel_send_set_amount (
-        send, self->send_after->amount->control);
+        send, self->amount);
       break;
     default:
       break;
+    }
+
+  if (need_restore_and_recalc)
+    {
+      undoable_action_save_or_load_port_connections (
+        (UndoableAction *) self, true,
+        &self->connections_mgr_before,
+        &self->connections_mgr_after);
+
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
   EVENTS_PUSH (ET_CHANNEL_SEND_CHANGED, send);
@@ -188,16 +253,20 @@ channel_send_action_undo (
   ChannelSend * send =
     channel_send_find (self->send_before);
 
+  bool need_restore_and_recalc = false;
+
   switch (self->type)
     {
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
       connect_or_disconnect (self, false, true);
+      need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_DISCONNECT:
       connect_or_disconnect (self, true, false);
+      need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
       channel_send_set_amount (
@@ -205,6 +274,18 @@ channel_send_action_undo (
       break;
     default:
       break;
+    }
+
+  if (need_restore_and_recalc)
+    {
+      undoable_action_save_or_load_port_connections (
+        (UndoableAction *) self, false,
+        &self->connections_mgr_before,
+        &self->connections_mgr_after);
+
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+      tracklist_validate (TRACKLIST);
     }
 
   EVENTS_PUSH (ET_CHANNEL_SEND_CHANGED, send);
@@ -242,7 +323,17 @@ channel_send_action_free (
   object_free_w_func_and_null (
     channel_send_free, self->send_before);
   object_free_w_func_and_null (
-    channel_send_free, self->send_after);
+    port_identifier_free, self->l_id);
+  object_free_w_func_and_null (
+    port_identifier_free, self->r_id);
+  object_free_w_func_and_null (
+    port_identifier_free, self->midi_id);
+  object_free_w_func_and_null (
+    port_connections_manager_free,
+    self->connections_mgr_before);
+  object_free_w_func_and_null (
+    port_connections_manager_free,
+    self->connections_mgr_after);
 
   object_zero_and_free (self);
 }

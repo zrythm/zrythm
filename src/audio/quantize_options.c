@@ -154,29 +154,6 @@ quantize_options_stringize (
       note_length, note_type);
 }
 
-/**
- * Clones the QuantizeOptions.
- */
-QuantizeOptions *
-quantize_options_clone (
-  const QuantizeOptions * src)
-{
-  QuantizeOptions * opts =
-    object_new (QuantizeOptions);
-
-  opts->note_length = src->note_length;
-  opts->note_type = src->note_type;
-  opts->amount = src->amount;
-  opts->adj_start = src->adj_start;
-  opts->adj_end = src->adj_end;
-  opts->swing = src->swing;
-  opts->rand_ticks = src->rand_ticks;
-
-  quantize_options_update_quantize_points (opts);
-
-  return opts;
-}
-
 static Position *
 get_prev_point (
   QuantizeOptions * self,
@@ -272,11 +249,47 @@ quantize_options_quantize_position (
 }
 
 /**
+ * Clones the QuantizeOptions.
+ */
+QuantizeOptions *
+quantize_options_clone (
+  const QuantizeOptions * src)
+{
+  QuantizeOptions * opts =
+    object_new (QuantizeOptions);
+  opts->schema_version =
+    QUANTIZE_OPTIONS_SCHEMA_VERSION;
+
+  opts->note_length = src->note_length;
+  opts->note_type = src->note_type;
+  opts->amount = src->amount;
+  opts->adj_start = src->adj_start;
+  opts->adj_end = src->adj_end;
+  opts->swing = src->swing;
+  opts->rand_ticks = src->rand_ticks;
+
+  quantize_options_update_quantize_points (opts);
+
+  return opts;
+}
+
+QuantizeOptions *
+quantize_options_new (void)
+{
+  QuantizeOptions * opts =
+    object_new (QuantizeOptions);
+  opts->schema_version =
+    QUANTIZE_OPTIONS_SCHEMA_VERSION;
+
+  return opts;
+}
+
+/**
  * Free's the QuantizeOptions.
  */
 void
 quantize_options_free (
   QuantizeOptions * self)
 {
-  free (self);
+  object_zero_and_free (self);
 }

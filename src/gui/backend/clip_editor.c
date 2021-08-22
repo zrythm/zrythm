@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -54,7 +54,7 @@ clip_editor_init_loaded (
 {
   g_message ("Intializing clip editor backend...");
 
-  piano_roll_init_loaded (&self->piano_roll);
+  piano_roll_init_loaded (self->piano_roll);
 
   g_message ("Done intializing clip editor backend");
 }
@@ -199,6 +199,29 @@ clip_editor_get_arranger_selections (
   return sel;
 }
 
+ClipEditor *
+clip_editor_clone (
+  const ClipEditor * src)
+{
+  ClipEditor * self = object_new (ClipEditor);
+
+  region_identifier_copy (
+    &self->region_id, &src->region_id);
+  self->has_region = src->has_region;
+  self->piano_roll =
+    piano_roll_clone (src->piano_roll);
+  self->automation_editor =
+    automation_editor_clone (
+      src->automation_editor);
+  self->chord_editor =
+    chord_editor_clone (src->chord_editor);
+  self->audio_clip_editor =
+    audio_clip_editor_clone (
+      src->audio_clip_editor);
+
+  return self;
+}
+
 /**
  * Creates a new clip editor.
  */
@@ -206,6 +229,13 @@ ClipEditor *
 clip_editor_new (void)
 {
   ClipEditor * self = object_new (ClipEditor);
+  self->schema_version = CLIP_EDITOR_SCHEMA_VERSION;
+
+  self->piano_roll = piano_roll_new ();
+  self->audio_clip_editor = audio_clip_editor_new ();
+  self->chord_editor = chord_editor_new ();
+  self->automation_editor =
+    automation_editor_new ();
 
   return self;
 }
@@ -220,15 +250,24 @@ clip_editor_init (
   self->schema_version =
     CLIP_EDITOR_SCHEMA_VERSION;
 
-  piano_roll_init (&self->piano_roll);
-  audio_clip_editor_init (&self->audio_clip_editor);
-  chord_editor_init (&self->chord_editor);
-  automation_editor_init (&self->automation_editor);
+  piano_roll_init (self->piano_roll);
+  audio_clip_editor_init (self->audio_clip_editor);
+  chord_editor_init (self->chord_editor);
+  automation_editor_init (self->automation_editor);
 }
 
 void
 clip_editor_free (
   ClipEditor * self)
 {
+  object_free_w_func_and_null (
+    piano_roll_free, self->piano_roll);
+  object_free_w_func_and_null (
+    audio_clip_editor_free, self->audio_clip_editor);
+  object_free_w_func_and_null (
+    chord_editor_free, self->chord_editor);
+  object_free_w_func_and_null (
+    automation_editor_free, self->automation_editor);
+
   object_zero_and_free (self);
 }

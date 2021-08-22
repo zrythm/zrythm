@@ -635,8 +635,8 @@ arranger_object_copy_identifier (
           (Marker *) dest;
         Marker * src_marker =
           (Marker *) src;
-        dest_marker->track_pos =
-          src_marker->track_pos;
+        dest_marker->track_name_hash =
+          src_marker->track_name_hash;
         dest_marker->index =
           src_marker->index;
         if (dest_marker->name)
@@ -779,9 +779,9 @@ arranger_object_print (
         ZRegion * region = (ZRegion *) self;
         extra_info =
           g_strdup_printf (
-            " track: %d - lane: %d - idx: %d - "
+            " track: %u - lane: %d - idx: %d - "
             "link group: %d",
-            region->id.track_pos,
+            region->id.track_name_hash,
             region->id.lane_pos,
             region->id.idx,
             region->id.link_group);
@@ -1698,11 +1698,11 @@ arranger_object_get_track (
       {
         const ZRegion * const  r =
           (const ZRegion * const) self;
-        g_return_val_if_fail (
-          r->id.track_pos < tracklist->num_tracks,
-          NULL);
         track =
-          tracklist->tracks[r->id.track_pos];
+          tracklist_find_track_by_name_hash (
+            tracklist, r->id.track_name_hash);
+        g_return_val_if_fail (
+          IS_TRACK_AND_NONNULL (track), NULL);
       }
       break;
     case TYPE (SCALE_OBJECT):
@@ -1714,11 +1714,11 @@ arranger_object_get_track (
       {
         const Marker * const marker =
           (const Marker * const) self;
-        g_return_val_if_fail (
-          marker->track_pos <
-            tracklist->num_tracks, NULL);
         track =
-          tracklist->tracks[marker->track_pos];
+          tracklist_find_track_by_name_hash (
+            tracklist, marker->track_name_hash);
+        g_return_val_if_fail (
+          IS_TRACK_AND_NONNULL (track), NULL);
       }
       break;
     case TYPE (AUTOMATION_POINT):
@@ -1734,13 +1734,12 @@ arranger_object_get_track (
       break;
     case TYPE (CHORD_OBJECT):
     case TYPE (MIDI_NOTE):
-      g_return_val_if_fail (
-        self->region_id.track_pos <
-          tracklist->num_tracks,
-        NULL);
       track =
-        tracklist->tracks[
-          self->region_id.track_pos];
+        tracklist_find_track_by_name_hash (
+          tracklist,
+          self->region_id.track_name_hash);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), NULL);
       break;
     case TYPE (VELOCITY):
       {
@@ -1750,13 +1749,12 @@ arranger_object_get_track (
           velocity_get_midi_note (vel);
         const ArrangerObject * const mn_obj =
           (const ArrangerObject * const) mn;
-        g_return_val_if_fail (
-          mn_obj->region_id.track_pos <
-            tracklist->num_tracks,
-        NULL);
         track =
-          tracklist->tracks[
-            mn_obj->region_id.track_pos];
+          tracklist_find_track_by_name_hash (
+            tracklist,
+            mn_obj->region_id.track_name_hash);
+        g_return_val_if_fail (
+          IS_TRACK_AND_NONNULL (track), NULL);
       }
       break;
     default:
@@ -2119,7 +2117,7 @@ clone_region (
         ZRegion * mr =
           midi_region_new (
             &r_obj->pos, &r_obj->end_pos,
-            region->id.track_pos,
+            region->id.track_name_hash,
             region->id.lane_pos,
             region->id.idx);
         ZRegion * mr_orig = region;
@@ -2154,7 +2152,7 @@ clone_region (
           audio_region_new (
             region->pool_id, NULL, true, NULL, -1,
             NULL, 0, 0, &r_obj->pos,
-            region->id.track_pos,
+            region->id.track_name_hash,
             region->id.lane_pos,
             region->id.idx);
 
@@ -2187,7 +2185,7 @@ clone_region (
         ZRegion * ar  =
           automation_region_new (
             &r_obj->pos, &r_obj->end_pos,
-            region->id.track_pos,
+            region->id.track_name_hash,
             region->id.at_idx,
             region->id.idx);
         ZRegion * ar_orig = region;
@@ -2372,7 +2370,7 @@ clone_marker (
   Marker * marker = marker_new (src->name);
   marker->index = src->index;
   marker->type = src->type;
-  marker->track_pos = src->track_pos;
+  marker->track_name_hash = src->track_name_hash;
 
   return (ArrangerObject *) marker;
 }
@@ -3104,7 +3102,10 @@ arranger_object_add_to_project (
 
         /* add it to track */
         Track * track =
-          TRACKLIST->tracks[r->id.track_pos];
+          tracklist_find_track_by_name_hash (
+            TRACKLIST, r->id.track_name_hash);
+        g_return_if_fail (
+          IS_TRACK_AND_NONNULL (track));
         switch (r->id.type)
           {
           case REGION_TYPE_AUTOMATION:
@@ -3235,7 +3236,8 @@ arranger_object_insert_to_project (
 
         /* add it to track */
         Track * track =
-          TRACKLIST->tracks[r->id.track_pos];
+          tracklist_find_track_by_name_hash (
+            TRACKLIST, r->id.track_name_hash);
         switch (r->id.type)
           {
           case REGION_TYPE_AUTOMATION:

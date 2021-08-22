@@ -34,6 +34,7 @@
 #include "audio/midi_mapping.h"
 #include "audio/midi_note.h"
 #include "audio/port.h"
+#include "audio/port_connections_manager.h"
 #include "audio/quantize_options.h"
 #include "audio/region.h"
 #include "audio/region_link_group_manager.h"
@@ -200,16 +201,16 @@ typedef struct Project
   Timeline *        timeline;
 
   /** Snap/Grid info for the timeline. */
-  SnapGrid          snap_grid_timeline;
+  SnapGrid *        snap_grid_timeline;
+
+  /** Snap/Grid info for the editor. */
+  SnapGrid *        snap_grid_editor;
 
   /** Quantize info for the timeline. */
-  QuantizeOptions   quantize_opts_timeline;
-
-  /** Snap/Grid info for the piano roll. */
-  SnapGrid          snap_grid_midi;
+  QuantizeOptions * quantize_opts_timeline;
 
   /** Quantize info for the piano roll. */
-  QuantizeOptions   quantize_opts_editor;
+  QuantizeOptions * quantize_opts_editor;
 
   /**
    * Selected objects in the
@@ -246,14 +247,16 @@ typedef struct Project
   /**
    * Plugin selections in the Mixer.
    */
-  MixerSelections   mixer_selections;
+  MixerSelections * mixer_selections;
 
   /** Zoom levels. TODO & move to clip_editor */
   double            timeline_zoom;
   double            piano_roll_zoom;
 
   /** Manager for region link groups. */
-  RegionLinkGroupManager region_link_group_manager;
+  RegionLinkGroupManager * region_link_group_manager;
+
+  PortConnectionsManager * port_connections_manager;
 
   /**
    * The audio backend
@@ -323,21 +326,21 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR (
     Project, timeline,
     timeline_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, snap_grid_timeline,
     snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
+    Project, snap_grid_editor,
+    snap_grid_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
     Project, quantize_opts_timeline,
     quantize_options_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, audio_engine, engine_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Project, snap_grid_midi,
-    snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
     Project, quantize_opts_editor,
     quantize_options_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
+    Project, audio_engine, engine_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
     Project, mixer_selections,
     mixer_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
@@ -358,9 +361,12 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR (
     Project, tracklist_selections,
     tracklist_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, region_link_group_manager,
     region_link_group_manager_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Project, port_connections_manager,
+    port_connections_manager_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project, midi_mappings,
     midi_mappings_fields_schema),
@@ -448,8 +454,8 @@ project_create_default (
 COLD
 int
 project_load (
-  char *     filename,
-  const bool is_template);
+  const char * filename,
+  const bool   is_template);
 
 /**
  * Saves the project to a project file in the
@@ -555,6 +561,16 @@ char *
 project_get_existing_yaml (
   Project * self,
   bool      backup);
+
+/**
+ * Deep-clones the given project.
+ *
+ * To be used during save on the main thread.
+ */
+NONNULL
+Project *
+project_clone (
+  const Project * src);
 
 /**
  * Creates an empty project object.

@@ -87,7 +87,8 @@ clone_ats (
   int                     start_slot)
 {
   Track * track =
-    TRACKLIST->tracks[ms->track_pos];
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, ms->track_name_hash);
   g_message (
     "cloning automation tracks for track %s",
     track->name);
@@ -136,7 +137,8 @@ clone_ats (
  * @param ms The mixer selections before the action
  *   is performed.
  * @param slot_type Target slot type.
- * @param to_track_pos Target track position.
+ * @param to_track_name_hash Target track name hash,
+ *   or 0 for new channel.
  * @param to_slot Target slot.
  * @param setting The plugin setting, if creating
  *   plugins.
@@ -146,9 +148,10 @@ clone_ats (
 UndoableAction *
 mixer_selections_action_new (
   MixerSelections *         ms,
+  const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType type,
   PluginSlotType            slot_type,
-  int                       to_track_pos,
+  unsigned int              to_track_name_hash,
   int                       to_slot,
   PluginSetting *           setting,
   int                       num_plugins,
@@ -163,8 +166,8 @@ mixer_selections_action_new (
   self->type = type;
   self->slot_type = slot_type;
   self->to_slot = to_slot;
-  self->to_track_pos = to_track_pos;
-  if (to_track_pos == -1)
+  self->to_track_name_hash = to_track_name_hash;
+  if (to_track_name_hash == 0)
     {
       self->new_channel = true;
     }
@@ -196,15 +199,74 @@ mixer_selections_action_new (
       clone_ats (self, self->ms_before, false, 0);
     }
 
+  if (connections_mgr)
+    self->connections_mgr_before =
+      port_connections_manager_clone (
+        connections_mgr);
+
   return ua;
+}
+
+MixerSelectionsAction *
+mixer_selections_action_clone (
+  const MixerSelectionsAction * src)
+{
+  MixerSelectionsAction * self =
+    object_new (MixerSelectionsAction);
+
+  self->parent_instance = src->parent_instance;
+  self->type = src->type;
+  self->slot_type = src->slot_type;
+  self->to_slot = src->to_slot;
+  self->to_track_name_hash = src->to_track_name_hash;
+  self->new_channel = src->new_channel;
+  self->num_plugins = src->num_plugins;
+  if (src->setting)
+    self->setting =
+      plugin_setting_clone (src->setting, false);
+  if (src->ms_before)
+    self->ms_before =
+      mixer_selections_clone (
+        src->ms_before, F_NOT_PROJECT);
+  if (src->deleted_ms)
+    self->deleted_ms =
+      mixer_selections_clone (
+        src->deleted_ms, F_NOT_PROJECT);
+
+  for (int i = 0; i < src->num_ats; i++)
+    {
+      self->ats[i] =
+        automation_track_clone (src->ats[i]);
+    }
+  self->num_ats = src->num_ats;
+
+  for (int i = 0; i < src->num_deleted_ats; i++)
+    {
+      self->deleted_ats[i] =
+        automation_track_clone (
+          src->deleted_ats[i]);
+    }
+  self->num_deleted_ats = src->num_deleted_ats;
+
+  if (src->connections_mgr_before)
+    self->connections_mgr_before =
+      port_connections_manager_clone (
+        src->connections_mgr_before);
+  if (src->connections_mgr_after)
+    self->connections_mgr_after =
+      port_connections_manager_clone (
+        src->connections_mgr_after);
+
+  return self;
 }
 
 bool
 mixer_selections_action_perform (
   MixerSelections *         ms,
+  const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType type,
   PluginSlotType            slot_type,
-  int                       to_track_pos,
+  unsigned int              to_track_name_hash,
   int                       to_slot,
   PluginSetting *           setting,
   int                       num_plugins,
@@ -212,7 +274,8 @@ mixer_selections_action_perform (
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     mixer_selections_action_new,
-    error, ms, type, slot_type, to_track_pos,
+    error, ms, connections_mgr, type,
+    slot_type, to_track_name_hash,
     to_slot, setting, num_plugins, error);
 }
 
@@ -308,6 +371,25 @@ revert_automation (
   g_message (
     "reverted %d automation tracks and %d regions",
     num_reverted_ats, num_reverted_regions);
+}
+
+static void
+reset_port_connections (
+  MixerSelectionsAction * self,
+  bool                    _do)
+{
+  if (_do && self->connections_mgr_after)
+    {
+      port_connections_manager_reset (
+        PORT_CONNECTIONS_MGR,
+        self->connections_mgr_after);
+    }
+  else if (!_do && self->connections_mgr_before)
+    {
+      port_connections_manager_reset (
+        PORT_CONNECTIONS_MGR,
+        self->connections_mgr_before);
+    }
 }
 
 /**
@@ -457,12 +539,18 @@ do_or_undo_create_or_delete (
   bool                    create,
   GError **               error)
 {
-  Track * track =
-    TRACKLIST->tracks[
-      create ?
-        self->to_track_pos :
-        self->ms_before->track_pos];
+  Track * track = NULL;
+  if (create)
+    track =
+      tracklist_find_track_by_name_hash (
+        TRACKLIST, self->to_track_name_hash);
+  else
+    track =
+      tracklist_find_track_by_name_hash (
+        TRACKLIST,
+        self->ms_before->track_name_hash);
   g_return_val_if_fail (track, -1);
+
   Channel * ch = track->channel;
   MixerSelections * own_ms = self->ms_before;
   PluginSlotType slot_type =
@@ -515,7 +603,7 @@ do_or_undo_create_or_delete (
                   pl =
                     plugin_new_from_setting (
                       self->setting,
-                      self->to_track_pos,
+                      self->to_track_name_hash,
                       slot_type, slot, &err);
                 }
               if (!IS_PLUGIN_AND_NONNULL (pl))
@@ -571,7 +659,10 @@ do_or_undo_create_or_delete (
             }
 
           /* set track */
-          plugin_set_track_pos (pl, track->pos);
+          pl->track = track;
+          plugin_set_track_name_hash (
+            pl,
+            track_get_name_hash (track));
 
           /* save any plugin about to be deleted */
           save_existing_plugin (
@@ -755,6 +846,9 @@ do_or_undo_create_or_delete (
       EVENTS_PUSH (ET_PLUGINS_REMOVED, NULL);
     }
 
+  /* restore connections */
+  reset_port_connections (self, _do);
+
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   if (ch)
@@ -873,13 +967,15 @@ do_or_undo_move_or_copy (
             F_NO_RECALC_GRAPH);
 
           /* remember to track pos */
-          self->to_track_pos = to_tr->pos;
+          self->to_track_name_hash =
+            track_get_name_hash (to_tr);
         }
       /* else if not new track/channel */
       else
         {
           to_tr =
-            TRACKLIST->tracks[self->to_track_pos];
+            tracklist_find_track_by_name_hash (
+              TRACKLIST, self->to_track_name_hash);
         }
 
       Channel * to_ch = to_tr->channel;
@@ -930,7 +1026,8 @@ do_or_undo_move_or_copy (
               g_return_val_if_fail (
                 IS_PLUGIN_AND_NONNULL (pl)
                 &&
-                pl->id.track_pos == from_tr->pos,
+                pl->id.track_name_hash ==
+                  track_get_name_hash (from_tr),
                 -1);
             }
           else
@@ -1062,7 +1159,8 @@ do_or_undo_move_or_copy (
   else
     {
       Track * to_tr =
-        TRACKLIST->tracks[self->to_track_pos];
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, self->to_track_name_hash);
       Channel * to_ch = to_tr->channel;
       g_return_val_if_fail (IS_TRACK (to_tr), -1);
 
@@ -1183,6 +1281,9 @@ do_or_undo_move_or_copy (
       EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, to_ch);
     }
 
+  /* restore connections */
+  reset_port_connections (self, _do);
+
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 0;
@@ -1222,6 +1323,16 @@ do_or_undo (
     default:
       g_warn_if_reached ();
     }
+
+  /* if first do and keeping track of connections,
+   * clone the new connections */
+  if (_do
+      && self->connections_mgr_before
+      && !self->connections_mgr_after)
+    self->connections_mgr_after =
+      port_connections_manager_clone (
+        PORT_CONNECTIONS_MGR);
+
   return -1;
 }
 

@@ -53,10 +53,12 @@
 #include "utils/arrays.h"
 #include "utils/audio.h"
 #include "utils/env.h"
+#include "utils/mem.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
+#include "utils/string.h"
 
 /* called from a terminal node (from the Graph
  * worked-thread) to indicate it has completed
@@ -173,11 +175,11 @@ is_valid (
       if (n->n_childnodes > 0 ||
           n->init_refcount > 0)
         {
-          return 0;
+          return false;
         }
     }
 
-  return 1;
+  return true;
 }
 
 static void
@@ -403,28 +405,98 @@ add_port (
         NULL);
     }
 
-  if (port->id.track_pos != -1)
+  if (port->id.track_name_hash != 0)
     {
       port->track = port_get_track (port, true);
       g_return_val_if_fail (
         IS_TRACK_AND_NONNULL (port->track), NULL);
     }
 
+  /* reset port sources/dests */
+  GPtrArray * srcs = g_ptr_array_new ();
+  int num_srcs =
+    port_connections_manager_get_sources_or_dests (
+      PORT_CONNECTIONS_MGR, srcs, &port->id,
+      true);
+  port->srcs_size = (size_t) num_srcs;
+  port->srcs =
+    object_realloc_n (
+      port->srcs, 0, port->srcs_size, Port *);
+  port->src_connections =
+    object_realloc_n (
+      port->src_connections, 0, port->srcs_size,
+      PortConnection *);
+#if 0
+  if (num_srcs > 0)
+    g_debug (
+      "%d sources for %s",
+      num_srcs, port->id.label);
+#endif
+  for (int i = 0; i < num_srcs; i++)
+    {
+      PortConnection * conn =
+        (PortConnection *)
+        g_ptr_array_index (srcs, i);
+
+      port->srcs[i] =
+        port_find_from_identifier (conn->src_id);
+      g_return_val_if_fail (port->srcs[i], NULL);
+      port->src_connections[i] = conn;
+    }
+  port->num_srcs = num_srcs;
+  g_ptr_array_unref (srcs);
+
+  GPtrArray * dests = g_ptr_array_new ();
+  int num_dests =
+    port_connections_manager_get_sources_or_dests (
+      PORT_CONNECTIONS_MGR, dests, &port->id,
+      false);
+  port->dests_size = (size_t) num_dests;
+  port->dests =
+    object_realloc_n (
+      port->dests, 0, port->dests_size, Port *);
+  port->dest_connections =
+    object_realloc_n (
+      port->dest_connections, 0, port->dests_size,
+      PortConnection *);
+#if 0
+  if (num_dests > 0)
+    g_debug (
+      "%d dests for %s",
+      num_dests, port->id.label);
+#endif
+  for (int i = 0; i < num_dests; i++)
+    {
+      PortConnection * conn =
+        (PortConnection *)
+        g_ptr_array_index (dests, i);
+
+      port->dests[i] =
+        port_find_from_identifier (conn->dest_id);
+      g_return_val_if_fail (port->dests[i], NULL);
+      port->dest_connections[i] = conn;
+    }
+  port->num_dests = num_dests;
+  g_ptr_array_unref (dests);
+
   if (drop_if_unnecessary)
     {
       /* skip unnecessary control ports */
-      if (port->id.type == TYPE_CONTROL &&
-          port->id.flags & PORT_FLAG_AUTOMATABLE)
+      if (port->id.type == TYPE_CONTROL
+          && port->id.flags & PORT_FLAG_AUTOMATABLE)
         {
           AutomationTrack * found_at = port->at;
           if (!found_at)
             {
-              /*automation_track_find_from_port (*/
-                /*port, NULL, true);*/
+#if 0
+              found_at =
+                automation_track_find_from_port (
+                  port, port->track, true);
+#endif
             }
           g_return_val_if_fail (found_at, NULL);
-          if (found_at->num_regions == 0 &&
-              port->num_srcs == 0)
+          if (found_at->num_regions == 0
+              && port->num_srcs == 0)
             {
               return NULL;
             }
@@ -433,26 +505,29 @@ add_port (
 
   /* drop ports without sources and dests */
   if (
-    drop_if_unnecessary &&
-    port->num_dests == 0 &&
-    port->num_srcs == 0 &&
-    owner != PORT_OWNER_TYPE_PLUGIN &&
-    owner != PORT_OWNER_TYPE_FADER &&
-    owner != PORT_OWNER_TYPE_MONITOR_FADER &&
-    owner != PORT_OWNER_TYPE_PREFADER &&
-    owner != PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-    owner != PORT_OWNER_TYPE_TRACK &&
-    owner != PORT_OWNER_TYPE_CHANNEL_SEND &&
-    owner != PORT_OWNER_TYPE_BACKEND &&
-    owner != PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
-    owner != PORT_OWNER_TYPE_HW &&
-    owner != PORT_OWNER_TYPE_TRANSPORT &&
-    !(port->id.flags & PORT_FLAG_MANUAL_PRESS))
+    drop_if_unnecessary
+    && port->num_dests == 0
+    && port->num_srcs == 0
+    && owner != PORT_OWNER_TYPE_PLUGIN
+    && owner != PORT_OWNER_TYPE_FADER
+    && owner != PORT_OWNER_TYPE_MONITOR_FADER
+    && owner != PORT_OWNER_TYPE_PREFADER
+    && owner != PORT_OWNER_TYPE_TRACK_PROCESSOR
+    && owner != PORT_OWNER_TYPE_TRACK
+    && owner != PORT_OWNER_TYPE_CHANNEL_SEND
+    && owner != PORT_OWNER_TYPE_BACKEND
+    && owner != PORT_OWNER_TYPE_SAMPLE_PROCESSOR
+    && owner != PORT_OWNER_TYPE_HW
+    && owner != PORT_OWNER_TYPE_TRANSPORT
+    && !(port->id.flags & PORT_FLAG_MANUAL_PRESS))
     {
       return NULL;
     }
   else
     {
+      /* allocate buffers to be used during
+       * DSP */
+      port_allocate_bufs (port);
       return
         graph_create_node (
           self, ROUTE_NODE_TYPE_PORT, port);
@@ -473,17 +548,27 @@ connect_port (
   for (int j = 0; j < port->num_srcs; j++)
     {
       Port * src = port->srcs[j];
-      node2 = graph_find_node_from_port (self, src);
+      node2 =
+        graph_find_node_from_port (self, src);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
+#if 0
+      g_debug ("graph: %s => %s",
+        src->id.label, port->id.label);
+#endif
       graph_node_connect (node2, node);
     }
   for (int j = 0; j < port->num_dests; j++)
     {
       Port * dest = port->dests[j];
-      node2 = graph_find_node_from_port (self, dest);
+      node2 =
+        graph_find_node_from_port (self, dest);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
+#if 0
+      g_debug ("graph: %s => %s",
+        port->id.label, dest->id.label);
+#endif
       graph_node_connect (node, node2);
     }
 }
@@ -674,6 +759,22 @@ graph_setup (
 
           add_plugin (self, pl);
           plugin_update_latency (pl);
+        }
+
+      /* add sends */
+      if (tr->out_signal_type == TYPE_AUDIO
+          || tr->out_signal_type == TYPE_EVENT)
+        {
+          for (int j = 0; j < STRIP_SIZE; j++)
+            {
+              if (channel_send_is_empty (
+                    tr->channel->sends[j]))
+                continue;
+
+              graph_create_node (
+                self, ROUTE_NODE_TYPE_CHANNEL_SEND,
+                tr->channel->sends[j]);
+            }
         }
     }
 
@@ -1176,25 +1277,56 @@ graph_setup (
             }
         }
 
-      node =
-        graph_find_node_from_prefader (
-          self, prefader);
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           ChannelSend * send = ch->sends[j];
-          node2 =
-            graph_find_node_from_port (
-              self, send->enabled);
-          if (node2 || !drop_unnecessary_ports)
-            {
-              graph_node_connect (node2, node);
-            }
+          if (channel_send_is_empty (send))
+            continue;
+
+          node =
+            graph_find_node_from_channel_send (
+              self, send);
+
           node2 =
             graph_find_node_from_port (
               self, send->amount);
-          if (node2 || !drop_unnecessary_ports)
+          if (node2)
+            graph_node_connect (node2, node);
+          node2 =
+            graph_find_node_from_port (
+              self, send->enabled);
+          if (node2)
+            graph_node_connect (node2, node);
+
+          if (tr->out_signal_type == TYPE_EVENT)
             {
+              node2 =
+                graph_find_node_from_port (
+                  self, send->midi_in);
               graph_node_connect (node2, node);
+              node2 =
+                graph_find_node_from_port (
+                  self, send->midi_out);
+              graph_node_connect (node, node2);
+            }
+          else if (tr->out_signal_type == TYPE_AUDIO)
+            {
+              node2 =
+                graph_find_node_from_port (
+                  self, send->stereo_in->l);
+              graph_node_connect (node2, node);
+              node2 =
+                graph_find_node_from_port (
+                  self, send->stereo_in->r);
+              graph_node_connect (node2, node);
+              node2 =
+                graph_find_node_from_port (
+                  self, send->stereo_out->l);
+              graph_node_connect (node, node2);
+              node2 =
+                graph_find_node_from_port (
+                  self, send->stereo_out->r);
+              graph_node_connect (node, node2);
             }
         }
     }
@@ -1632,6 +1764,23 @@ graph_find_node_from_monitor_fader (
   if (node
       &&
       node->type == ROUTE_NODE_TYPE_MONITOR_FADER)
+    return node;
+  else
+    return NULL;
+}
+
+GraphNode *
+graph_find_node_from_channel_send (
+  const Graph *       self,
+  const ChannelSend * send)
+{
+  GraphNode * node =
+    (GraphNode *)
+    g_hash_table_lookup (
+      self->setup_graph_nodes, send);
+  if (node
+      &&
+      node->type == ROUTE_NODE_TYPE_CHANNEL_SEND)
     return node;
   else
     return NULL;

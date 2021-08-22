@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,11 +19,13 @@
 
 #include "audio/automation_track.h"
 #include "audio/channel_track.h"
+#include "audio/port_connections_manager.h"
 #include "gui/widgets/port_connection_row.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "gui/widgets/port_selector_popover.h"
 #include "plugins/plugin.h"
+#include "project.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -59,63 +61,65 @@ port_connections_popover_widget_refresh (
     GTK_CONTAINER (self->ports_box));
 
   /* set title and add ports */
-  Port * port;
-  PortConnectionRowWidget * pcr;
-  /*if (owner->port->identifier.owner_type ==*/
-        /*PORT_OWNER_TYPE_PLUGIN)*/
-    /*{*/
-      if (self->port->id.flow == FLOW_INPUT)
+  if (self->port->id.flow == FLOW_INPUT)
+    {
+      if (GTK_IS_LABEL (self->title))
         {
-          if (GTK_IS_LABEL (self->title))
-            {
-              gtk_label_set_text (
-                self->title, _("INPUTS"));
-            }
+          gtk_label_set_text (
+            self->title, _("INPUTS"));
+        }
 
-          for (int i = 0;
-               i < self->port->num_srcs; i++)
+      GPtrArray * srcs = g_ptr_array_new ();
+      int num_srcs =
+        port_connections_manager_get_sources_or_dests (
+          PORT_CONNECTIONS_MGR, srcs,
+          &self->port->id, true);
+      for (int i = 0; num_srcs; i++)
+        {
+          PortConnection * conn =
+            g_ptr_array_index (srcs, i);
+          if (!conn->locked)
             {
-              port = self->port->srcs[i];
-
-              if (!port_is_connection_locked (
-                     port, self->port))
-                {
-                  pcr =
-                    port_connection_row_widget_new (
-                      self, port, self->port, 1);
-                  gtk_container_add (
-                    GTK_CONTAINER (self->ports_box),
-                    GTK_WIDGET (pcr));
-                }
+              PortConnectionRowWidget * pcr =
+                port_connection_row_widget_new (
+                  self, conn, true);
+              gtk_container_add (
+                GTK_CONTAINER (self->ports_box),
+                GTK_WIDGET (pcr));
             }
         }
-      else if (self->port->id.flow ==
-                 FLOW_OUTPUT)
+      g_ptr_array_unref (srcs);
+    }
+  else if (self->port->id.flow ==
+             FLOW_OUTPUT)
+    {
+      if (GTK_IS_LABEL (self->title))
         {
-          if (GTK_IS_LABEL (self->title))
-            {
-              gtk_label_set_text (
-                self->title, _("OUTPUTS"));
-            }
+          gtk_label_set_text (
+            self->title, _("OUTPUTS"));
+        }
 
-          for (int i = 0;
-               i < self->port->num_dests; i++)
+      GPtrArray * dests = g_ptr_array_new ();
+      int num_dests =
+        port_connections_manager_get_sources_or_dests (
+          PORT_CONNECTIONS_MGR, dests,
+          &self->port->id, false);
+      for (int i = 0; num_dests; i++)
+        {
+          PortConnection * conn =
+            g_ptr_array_index (dests, i);
+          if (!conn->locked)
             {
-              port = self->port->dests[i];
-
-              if (!port_is_connection_locked (
-                     self->port, port))
-                {
-                  pcr =
-                    port_connection_row_widget_new (
-                      self, self->port, port, 0);
-                  gtk_container_add (
-                    GTK_CONTAINER (self->ports_box),
-                    GTK_WIDGET (pcr));
-                }
+              PortConnectionRowWidget * pcr =
+                port_connection_row_widget_new (
+                  self, conn, false);
+              gtk_container_add (
+                GTK_CONTAINER (self->ports_box),
+                GTK_WIDGET (pcr));
             }
         }
-    /*}*/
+      g_ptr_array_unref (dests);
+    }
 }
 
 /**

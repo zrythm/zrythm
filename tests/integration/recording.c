@@ -59,6 +59,10 @@ prepare (void)
     stereo_ports_new_generic (
       true, "Dummy input", PORT_OWNER_TYPE_BACKEND,
       AUDIO_ENGINE);
+  port_allocate_bufs (
+    AUDIO_ENGINE->dummy_input->l);
+  port_allocate_bufs (
+    AUDIO_ENGINE->dummy_input->r);
 }
 
 static void

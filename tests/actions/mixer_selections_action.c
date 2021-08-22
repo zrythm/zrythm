@@ -53,12 +53,18 @@ _test_copy_plugins (
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==,
     num_master_children);
-  g_assert_cmpint (
+  Track * track =
+    tracklist_get_track (
+      TRACKLIST, TRACKLIST->num_tracks -1);
+  g_assert_cmpuint (
     P_MASTER_TRACK->children[
       num_master_children - 1], ==,
-    TRACKLIST->num_tracks - 1);
-  g_assert_cmpint (
-    P_MASTER_TRACK->children[0], ==, 5);
+    track_get_name_hash (track));
+  track =
+    tracklist_get_track (TRACKLIST, 5);
+  g_assert_cmpuint (
+    P_MASTER_TRACK->children[0], ==,
+    track_get_name_hash (track));
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -66,15 +72,21 @@ _test_copy_plugins (
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==,
     num_master_children);
-  g_assert_cmpint (
+  track =
+    tracklist_get_track (
+      TRACKLIST, TRACKLIST->num_tracks -1);
+  g_assert_cmpuint (
     P_MASTER_TRACK->children[
       num_master_children - 1], ==,
-    TRACKLIST->num_tracks - 1);
-  g_assert_cmpint (
-    P_MASTER_TRACK->children[0], ==, 5);
+    track_get_name_hash (track));
+  track =
+    tracklist_get_track (TRACKLIST, 5);
+  g_assert_cmpuint (
+    P_MASTER_TRACK->children[0], ==,
+    track_get_name_hash (track));
 
   /* select track */
-  Track * track =
+  Track * selected_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
     track, F_SELECT, F_EXCLUSIVE,
@@ -82,21 +94,32 @@ _test_copy_plugins (
 
   bool ret =
     tracklist_selections_action_perform_copy (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+      TRACKLIST_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      TRACKLIST->num_tracks,
       NULL);
   g_assert_true (ret);
   num_master_children++;
   g_assert_cmpint (
     P_MASTER_TRACK->num_children, ==,
     num_master_children);
-  g_assert_cmpint (
+  track =
+    tracklist_get_track (
+      TRACKLIST, TRACKLIST->num_tracks -1);
+  g_assert_cmpuint (
     P_MASTER_TRACK->children[
       num_master_children - 1], ==,
-    TRACKLIST->num_tracks - 1);
-  g_assert_cmpint (
-    P_MASTER_TRACK->children[0], ==, 5);
-  g_assert_cmpint (
-    P_MASTER_TRACK->children[1], ==, 6);
+      track_get_name_hash (track));
+  track =
+    tracklist_get_track (TRACKLIST, 5);
+  g_assert_cmpuint (
+    P_MASTER_TRACK->children[0], ==,
+    track_get_name_hash (track));
+  track =
+    tracklist_get_track (TRACKLIST, 6);
+  g_assert_cmpuint (
+    P_MASTER_TRACK->children[1], ==,
+    track_get_name_hash (track));
   Track * new_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
@@ -136,12 +159,14 @@ _test_copy_plugins (
       mixer_selections_clear (
         MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, track,
+        MIXER_SELECTIONS, selected_track,
         PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
       ret =
         mixer_selections_action_perform_copy (
-          MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-          new_track->pos, 1, NULL);
+          MIXER_SELECTIONS,
+          PORT_CONNECTIONS_MGR,
+          PLUGIN_SLOT_INSERT,
+          track_get_name_hash (new_track), 1, NULL);
       g_assert_true (ret);
     }
 
@@ -190,15 +215,15 @@ test_midi_fx_slot_deletion (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
+  int track_pos = TRACKLIST->num_tracks -1;
+  Track * track = TRACKLIST->tracks[track_pos];
   bool ret =
     mixer_selections_action_perform_create (
       PLUGIN_SLOT_MIDI_FX,
-      TRACKLIST->num_tracks - 1, slot, setting, 1,
-      NULL);
+      track_get_name_hash (track),
+      slot, setting, 1, NULL);
   g_assert_true (ret);
 
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->midi_fx[slot];
 
   /* set the value to check if it is brought
@@ -212,7 +237,9 @@ test_midi_fx_slot_deletion (void)
   plugin_select (pl, F_SELECT, F_EXCLUSIVE);
   ret =
     mixer_selections_action_perform_delete (
-      MIXER_SELECTIONS, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      NULL);
   g_assert_true (ret);
 
   /* undo and check port value is restored */
@@ -279,11 +306,13 @@ _test_create_plugins (
        * plugin */
       track_create_empty_with_action (
         TRACK_TYPE_AUDIO_BUS, NULL);
+      int track_pos = TRACKLIST->num_tracks - 1;
+      Track * track = TRACKLIST->tracks[track_pos];
       bool ret =
         mixer_selections_action_perform_create (
           PLUGIN_SLOT_INSERT,
-          TRACKLIST->num_tracks - 1, 0, setting, 1,
-          NULL);
+          track_get_name_hash (track),
+          0, setting, 1, NULL);
       g_assert_true (ret);
 
       if (string_is_equal (
@@ -325,7 +354,9 @@ _test_create_plugins (
   g_assert_true (
     track_validate (src_track));
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR,
+    TRACKLIST->num_tracks,
     NULL);
 
   int dest_track_pos = TRACKLIST->num_tracks - 1;
@@ -444,7 +475,8 @@ _test_port_and_plugin_track_pos_after_move (
   position_set_to_bar (&end_pos, 4);
   ZRegion * region =
     automation_region_new (
-      &start_pos, &end_pos, src_track->pos,
+      &start_pos, &end_pos,
+      track_get_name_hash (src_track),
       at->index, at->num_regions);
   track_add_region  (
     src_track, region, at, -1, F_GEN_NAME,
@@ -478,7 +510,9 @@ _test_port_and_plugin_track_pos_after_move (
   g_assert_true (
     track_validate (src_track));
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR,
+    TRACKLIST->num_tracks,
     NULL);
 
   Track * dest_track =
@@ -498,8 +532,10 @@ _test_port_and_plugin_track_pos_after_move (
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      dest_track->pos, 1, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (dest_track), 1, NULL);
   g_assert_true (ret);
 
   /* let the engine run */
@@ -535,8 +571,10 @@ _test_port_and_plugin_track_pos_after_move (
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      src_track->pos, 1, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (src_track), 1, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -553,8 +591,10 @@ _test_port_and_plugin_track_pos_after_move (
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
   ret =
     mixer_selections_action_new_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      -1, 0, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      0, 0, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -649,7 +689,8 @@ test_move_two_plugins_one_slot_up (void)
   position_set_to_bar (&end_pos, 4);
   ZRegion * region =
     automation_region_new (
-      &start_pos, &end_pos, track->pos,
+      &start_pos, &end_pos,
+      track_get_name_hash (track),
       at->index, at->num_regions);
   track_add_region  (
     track, region, at, -1, F_GEN_NAME,
@@ -707,8 +748,10 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_copy (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 1, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -724,7 +767,9 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_delete (
-      MIXER_SELECTIONS, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -747,8 +792,10 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 1, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   g_assert_true (
     track_validate (track));
@@ -776,8 +823,10 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 2, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 2, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 2, NULL);
   g_assert_true (ret);
   g_assert_true (
     track_validate (track));
@@ -805,8 +854,10 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 3, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 1, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 1, NULL);
   g_assert_true (ret);
   g_assert_true (
     track_validate (track));
@@ -834,8 +885,10 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 0, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -855,8 +908,10 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 0, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
 
   /* verify that first plugin was replaced by 2nd
@@ -894,7 +949,8 @@ test_move_two_plugins_one_slot_up (void)
       MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
   ret =
     mixer_selections_action_perform_create (
-      PLUGIN_SLOT_INSERT, track->pos, 0, setting,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 0, setting,
       1, NULL);
   g_assert_true (ret);
 
@@ -936,8 +992,10 @@ test_move_two_plugins_one_slot_up (void)
     PLUGIN_SLOT_INSERT, 1, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      track->pos, 0, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
 
   test_project_save_and_reload ();
@@ -1001,7 +1059,7 @@ test_create_modulator (void)
   bool ret =
     mixer_selections_action_perform_create (
       PLUGIN_SLOT_MODULATOR,
-      P_MODULATOR_TRACK->pos,
+      track_get_name_hash (P_MODULATOR_TRACK),
       P_MODULATOR_TRACK->num_modulators, setting,
       1, NULL);
   g_assert_true (ret);
@@ -1014,7 +1072,7 @@ test_create_modulator (void)
   ret =
     mixer_selections_action_perform_create (
       PLUGIN_SLOT_MODULATOR,
-      P_MODULATOR_TRACK->pos,
+      track_get_name_hash (P_MODULATOR_TRACK),
       P_MODULATOR_TRACK->num_modulators, setting,
       1, NULL);
   g_assert_true (ret);
@@ -1058,7 +1116,9 @@ test_create_modulator (void)
     F_NO_CLONE);
   ret =
     mixer_selections_action_perform_delete (
-      sel, NULL);
+      sel,
+      PORT_CONNECTIONS_MGR,
+      NULL);
   g_assert_true (ret);
   undo_manager_undo (UNDO_MANAGER, NULL);
 
@@ -1125,7 +1185,9 @@ test_move_pl_after_duplicating_track (void)
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR,
+    TRACKLIST->num_tracks,
     NULL);
 
   Track * dest_track =
@@ -1139,8 +1201,10 @@ test_move_pl_after_duplicating_track (void)
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-      dest_track->pos, 1, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (dest_track), 1, NULL);
   g_assert_true (ret);
 
 #endif
@@ -1158,6 +1222,8 @@ test_move_plugin_from_inserts_to_midi_fx (void)
   track_create_empty_with_action (
     TRACK_TYPE_MIDI, NULL);
   int track_pos = TRACKLIST->num_tracks - 1;
+  Track * track =
+    TRACKLIST->tracks[track_pos];
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       MIDI_CC_MAP_BUNDLE,
@@ -1165,14 +1231,13 @@ test_move_plugin_from_inserts_to_midi_fx (void)
   g_assert_nonnull (setting);
   bool ret =
     mixer_selections_action_perform_create (
-      PLUGIN_SLOT_INSERT, track_pos, 0, setting,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash  (track), 0, setting,
       1, NULL);
   g_assert_true (ret);
   plugin_setting_free (setting);
 
   /* select it */
-  Track * track =
-    TRACKLIST->tracks[track_pos];
   track_select (
     track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
@@ -1184,8 +1249,10 @@ test_move_plugin_from_inserts_to_midi_fx (void)
     PLUGIN_SLOT_INSERT, 0, F_NO_CLONE);
   ret =
     mixer_selections_action_perform_move (
-      MIXER_SELECTIONS, PLUGIN_SLOT_MIDI_FX,
-      track->pos, 0, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      PLUGIN_SLOT_MIDI_FX,
+      track_get_name_hash (track), 0, NULL);
   g_assert_true (ret);
   g_assert_nonnull (
     track->channel->midi_fx[0]);
@@ -1232,7 +1299,8 @@ test_undoing_deletion_of_multiple_inserts (void)
       LSP_SIDECHAIN_COMPRESSOR_URI, false);
   bool ret =
     mixer_selections_action_perform_create (
-      PLUGIN_SLOT_INSERT, ins_track->pos,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (ins_track),
       slot, setting, 1, NULL);
   g_assert_true (ret);
 
@@ -1243,7 +1311,8 @@ test_undoing_deletion_of_multiple_inserts (void)
       NO_DELAY_LINE_URI, false);
   ret =
     mixer_selections_action_perform_create (
-      PLUGIN_SLOT_INSERT, ins_track->pos,
+      PLUGIN_SLOT_INSERT,
+      track_get_name_hash (ins_track),
       slot, setting, 1, NULL);
   g_assert_true (ret);
 
@@ -1263,7 +1332,9 @@ test_undoing_deletion_of_multiple_inserts (void)
   /* delete inserts */
   ret =
     mixer_selections_action_perform_delete (
-      MIXER_SELECTIONS, NULL);
+      MIXER_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      NULL);
   g_assert_true (ret);
 
   /* undo deletion */
@@ -1382,7 +1453,10 @@ _test_replace_instrument (
   g_assert_true (
     string_is_equal (
       helm_l_out_port_id.sym,
-      UNDO_MANAGER->undo_stack->port_connection_actions[num_port_connection_actions]->src_port_id.sym));
+      UNDO_MANAGER->undo_stack->
+        port_connection_actions[
+          num_port_connection_actions]->
+            connection->src_id->sym));
 /*#endif*/
 
   /*test_project_save_and_reload ();*/
@@ -1405,7 +1479,8 @@ _test_replace_instrument (
   position_set_to_bar (&end_pos, 4);
   ZRegion * region =
     automation_region_new (
-      &start_pos, &end_pos, src_track->pos,
+      &start_pos, &end_pos,
+      track_get_name_hash (src_track),
       at->index, at->num_regions);
   track_add_region  (
     src_track, region, at, -1, F_GEN_NAME,
@@ -1443,7 +1518,8 @@ _test_replace_instrument (
 
   /* replace the instrument with a new instance */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSTRUMENT, src_track_pos, -1,
+    PLUGIN_SLOT_INSTRUMENT,
+    track_get_name_hash (src_track), -1,
     setting, 1, NULL);
   g_assert_true (track_validate (src_track));
 
@@ -1479,7 +1555,10 @@ _test_replace_instrument (
   g_assert_true (
     string_is_equal (
       helm_l_out_port_id.sym,
-      UNDO_MANAGER->undo_stack->port_connection_actions[num_port_connection_actions]->src_port_id.sym));
+      UNDO_MANAGER->undo_stack->
+        port_connection_actions[
+          num_port_connection_actions]->
+            connection->src_id->sym));
 
   /* test undo and redo */
   g_assert_true (
@@ -1539,7 +1618,9 @@ _test_replace_instrument (
     src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
   g_assert_true (track_validate (src_track));
   tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS, TRACKLIST->num_tracks,
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR,
+    TRACKLIST->num_tracks,
     NULL);
 
   int dest_track_pos = TRACKLIST->num_tracks - 1;
@@ -1618,6 +1699,22 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
   g_test_add_func (
+    TEST_PREFIX "test create plugins",
+    (GTestFunc) test_create_plugins);
+  g_test_add_func (
+    TEST_PREFIX "test copy plugins",
+    (GTestFunc) test_copy_plugins);
+  g_test_add_func (
+    TEST_PREFIX
+    "test move two plugins one slot up",
+    (GTestFunc)
+    test_move_two_plugins_one_slot_up);
+  g_test_add_func (
+    TEST_PREFIX
+    "test undoing deletion of multiple inserts",
+    (GTestFunc)
+    test_undoing_deletion_of_multiple_inserts);
+  g_test_add_func (
     TEST_PREFIX
     "test move pl after duplicating track",
     (GTestFunc)
@@ -1627,31 +1724,15 @@ main (int argc, char *argv[])
     (GTestFunc) test_replace_instrument);
   g_test_add_func (
     TEST_PREFIX
-    "test undoing deletion of multiple inserts",
-    (GTestFunc)
-    test_undoing_deletion_of_multiple_inserts);
-  g_test_add_func (
-    TEST_PREFIX
     "test move plugin from inserts to midi fx",
     (GTestFunc)
     test_move_plugin_from_inserts_to_midi_fx);
-  g_test_add_func (
-    TEST_PREFIX
-    "test move two plugins one slot up",
-    (GTestFunc)
-    test_move_two_plugins_one_slot_up);
   g_test_add_func (
     TEST_PREFIX "test create modulator",
     (GTestFunc) test_create_modulator);
   g_test_add_func (
     TEST_PREFIX "test MIDI fx slot deletion",
     (GTestFunc) test_midi_fx_slot_deletion);
-  g_test_add_func (
-    TEST_PREFIX "test copy plugins",
-    (GTestFunc) test_copy_plugins);
-  g_test_add_func (
-    TEST_PREFIX "test create plugins",
-    (GTestFunc) test_create_plugins);
   g_test_add_func (
     TEST_PREFIX
     "test port and plugin track pos after move",

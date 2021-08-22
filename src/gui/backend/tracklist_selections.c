@@ -679,12 +679,15 @@ tracklist_selections_clone (
 {
   g_return_val_if_fail (!error || !*error, NULL);
 
-  TracklistSelections * new_ts =
+  TracklistSelections * self =
     object_new (TracklistSelections);
+
+  self->is_project = src->is_project;
 
   for (int i = 0; i < src->num_tracks; i++)
     {
       Track * r = src->tracks[i];
+
       GError * err = NULL;
       Track * new_r =
         track_clone (r, src->is_project, &err);
@@ -695,15 +698,17 @@ tracklist_selections_clone (
             _("Failed to clone track '%s'"),
             r->name);
           object_free_w_func_and_null (
-            tracklist_selections_free, new_ts);
+            tracklist_selections_free, self);
           return NULL;
         }
       array_append (
-        new_ts->tracks, new_ts->num_tracks,
+        self->tracks, self->num_tracks,
         new_r);
     }
 
-  return new_ts;
+  self->is_project = false;
+
+  return self;
 }
 
 void
@@ -753,16 +758,22 @@ void
 tracklist_selections_free (
   TracklistSelections * self)
 {
-  if (!self->is_project)
+  if (!self->is_project || self->free_tracks)
     {
       for (int i = 0; i < self->num_tracks; i++)
         {
           g_return_if_fail (
             IS_TRACK_AND_NONNULL (self->tracks[i]));
 
+#if 0
           /* skip project tracks */
           if (self->tracks[i]->is_project)
             continue;
+#endif
+
+          track_disconnect (
+            self->tracks[i], F_NO_REMOVE_PL,
+            F_NO_RECALC_GRAPH);
 
           object_free_w_func_and_null (
             track_free, self->tracks[i]);

@@ -352,7 +352,8 @@ timeline_arranger_widget_create_region (
     case REGION_TYPE_MIDI:
       region =
         midi_region_new (
-          pos, &end_pos, track->pos,
+          pos, &end_pos,
+          track_get_name_hash (track),
           /* create on lane 0 if creating in main
            * track */
           lane ? lane->pos : 0,
@@ -370,7 +371,9 @@ timeline_arranger_widget_create_region (
     case REGION_TYPE_AUTOMATION:
       region =
         automation_region_new (
-          pos, &end_pos, track->pos, at->index,
+          pos, &end_pos,
+          track_get_name_hash (track),
+          at->index,
           at->num_regions);
       break;
     }
@@ -1683,8 +1686,9 @@ on_dnd_data_received (
         track->lanes[lane_pos]->num_regions;
       ZRegion * region =
         midi_region_new_from_chord_descr (
-          &pos, descr, track->pos, lane_pos,
-          idx_in_lane);
+          &pos, descr,
+          track_get_name_hash (track),
+          lane_pos, idx_in_lane);
       track_add_region (
         track, region, NULL, lane_pos,
         F_GEN_NAME, F_PUBLISH_EVENTS);

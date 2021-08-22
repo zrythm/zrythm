@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -106,26 +106,30 @@ update_child_output (
         case TYPE_AUDIO:
           port_connect (
             ch->stereo_out->l,
-            output->processor->stereo_in->l, 1);
+            output->processor->stereo_in->l,
+            F_LOCKED);
           port_connect (
             ch->stereo_out->r,
-            output->processor->stereo_in->r, 1);
+            output->processor->stereo_in->r,
+            F_LOCKED);
           break;
         case TYPE_EVENT:
           port_connect (
             ch->midi_out,
-            output->processor->midi_in, 1);
+            output->processor->midi_in,
+            F_LOCKED);
           break;
         default:
           break;
         }
       ch->has_output = true;
-      ch->output_pos = output->pos;
+      ch->output_name_hash =
+        track_get_name_hash (output);
     }
   else
     {
       ch->has_output = 0;
-      ch->output_pos = -1;
+      ch->output_name_hash = 0;
     }
 
   if (recalc_graph)
@@ -141,12 +145,12 @@ update_child_output (
 
 static bool
 contains_child (
-  Track * self,
-  int     child_pos)
+  Track *      self,
+  unsigned int child_name_hash)
 {
   for (int i = 0; i < self->num_children; i++)
     {
-      if (self->children[i] == child_pos)
+      if (self->children[i] == child_name_hash)
         {
           return true;
         }
@@ -160,27 +164,28 @@ contains_child (
  */
 void
 group_target_track_remove_child (
-  Track * self,
-  int     child_pos,
-  bool    disconnect,
-  bool    recalc_graph,
-  bool    pub_events)
+  Track *      self,
+  unsigned int child_name_hash,
+  bool         disconnect,
+  bool         recalc_graph,
+  bool         pub_events)
 {
-  g_return_if_fail (child_pos != self->pos);
   g_return_if_fail (
-    contains_child (self, child_pos));
-
-  Tracklist * tracklist = track_get_tracklist (self);
-
+    child_name_hash !=
+      track_get_name_hash (self));
   g_return_if_fail (
-    child_pos < tracklist->num_tracks);
+    contains_child (self, child_name_hash));
 
-  Track * child = tracklist->tracks[child_pos];
-  g_return_if_fail (IS_TRACK (child));
+  Tracklist * tracklist =
+    track_get_tracklist (self);
+
+  Track * child =
+    tracklist_find_track_by_name_hash (
+      tracklist, child_name_hash);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (child));
   g_message (
-    "removing %s (%d) from %s (%d) - disconnect %d",
-    child->name, child->pos, self->name, self->pos,
-    disconnect);
+    "removing '%s' from '%s' - disconnect? %d",
+    child->name, self->name, disconnect);
 
   if (disconnect)
     {
@@ -189,19 +194,13 @@ group_target_track_remove_child (
         pub_events);
     }
   array_delete_primitive (
-    self->children, self->num_children, child_pos);
+    self->children, self->num_children,
+    child_name_hash);
 
   g_message (
-    "removed %s (%d) from %s (%d). "
+    "removed '%s' from direct out '%s' - "
     "num children: %d",
-    child->name, child->pos, self->name, self->pos,
-    self->num_children);
-  for (int i = 0; i < self->num_children; i++)
-    {
-      g_debug ("child %d: %s",
-        i,
-        tracklist->tracks[self->children[i]]->name);
-    }
+    child->name, self->name, self->num_children);
 }
 
 /**
@@ -231,7 +230,8 @@ group_target_track_validate (
   for (int i = 0; i < self->num_children; i++)
     {
       Track * track =
-        TRACKLIST->tracks[self->children[i]];
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, self->children[i]);
       g_return_val_if_fail (
         IS_TRACK_AND_NONNULL (track), false);
       Track * out_track =
@@ -250,43 +250,51 @@ group_target_track_validate (
  */
 void
 group_target_track_add_child (
-  Track * self,
-  int     child_pos,
-  bool    connect,
-  bool    recalc_graph,
-  bool    pub_events)
+  Track *      self,
+  unsigned int child_name_hash,
+  bool         connect,
+  bool         recalc_graph,
+  bool         pub_events)
 {
   g_return_if_fail (
     IS_TRACK (self) && self->children);
 
   g_debug (
-    "adding child track %d to group %s [%d]",
-    child_pos, self->name, self->pos);
+    "adding child track with name hash %u to "
+    "group %s",
+    child_name_hash, self->name);
 
   if (connect)
     {
       Tracklist * tracklist =
         track_get_tracklist (self);
+      Track * out_track =
+        tracklist_find_track_by_name_hash (
+          tracklist, child_name_hash);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (out_track)
+        && out_track->channel);
       update_child_output (
-        tracklist->tracks[child_pos]->channel, self,
+        out_track->channel, self,
         recalc_graph, pub_events);
     }
 
   array_double_size_if_full (
     self->children, self->num_children,
-    self->children_size, int);
+    self->children_size, unsigned int);
   array_append (
-    self->children, self->num_children, child_pos);
+    self->children, self->num_children,
+    child_name_hash);
 }
 
 void
 group_target_track_add_children (
-  Track * self,
-  int *   children,
-  int     num_children,
-  bool    connect,
-  bool    recalc_graph,
-  bool    pub_events)
+  Track *        self,
+  unsigned int * children,
+  int            num_children,
+  bool           connect,
+  bool           recalc_graph,
+  bool           pub_events)
 {
   for (int i = 0; i < num_children; i++)
     {
@@ -294,4 +302,24 @@ group_target_track_add_children (
         self, children[i], connect, recalc_graph,
         pub_events);
     }
+}
+
+/**
+ * Returns the index of the child matching the
+ * given hash.
+ */
+int
+group_target_track_find_child (
+  Track *      self,
+  unsigned int track_name_hash)
+{
+  for (int i = 0; i < self->num_children; i++)
+    {
+      if (track_name_hash == self->children[i])
+        {
+          return i;
+        }
+    }
+
+  return -1;
 }

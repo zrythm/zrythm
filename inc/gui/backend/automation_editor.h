@@ -38,7 +38,7 @@
 #define AUTOMATION_EDITOR_SCHEMA_VERSION 1
 
 #define AUTOMATION_EDITOR \
-  (&CLIP_EDITOR->automation_editor)
+  (CLIP_EDITOR->automation_editor)
 
 typedef struct ZRegion ZRegion;
 
@@ -84,6 +84,17 @@ automation_editor_init_loaded (
  */
 void
 automation_editor_init (
+  AutomationEditor * self);
+
+AutomationEditor *
+automation_editor_clone (
+  AutomationEditor * src);
+
+AutomationEditor *
+automation_editor_new (void);
+
+void
+automation_editor_free (
   AutomationEditor * self);
 
 /**

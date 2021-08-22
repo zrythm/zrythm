@@ -43,6 +43,8 @@ typedef struct SupportedFile SupportedFile;
  * @{
  */
 
+#define TRACKLIST_SCHEMA_VERSION 1
+
 #define TRACKLIST (PROJECT->tracklist)
 #define MAX_TRACKS 3000
 
@@ -68,6 +70,8 @@ typedef enum TracklistPinOption
  */
 typedef struct Tracklist
 {
+  int                 schema_version;
+
   /**
    * All tracks that exist.
    *
@@ -133,6 +137,8 @@ typedef struct Tracklist
 static const cyaml_schema_field_t
   tracklist_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    Tracklist, schema_version),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     Tracklist, tracks, track_schema),
   YAML_FIELD_INT (
@@ -190,6 +196,16 @@ Track *
 tracklist_find_track_by_name (
   Tracklist *  self,
   const char * name);
+
+/**
+ * Returns the Track matching the given name, if
+ * any.
+ */
+NONNULL
+Track *
+tracklist_find_track_by_name_hash (
+  Tracklist *  self,
+  unsigned int hash);
 
 NONNULL
 int
@@ -534,6 +550,16 @@ void
 tracklist_get_total_bars (
   Tracklist * self,
   int *       total_bars);
+
+/**
+ * Only clones what is needed for project save.
+ *
+ * @param src Source tracklist. Must be the
+ *   tracklist of the project in use.
+ */
+Tracklist *
+tracklist_clone (
+  Tracklist * src);
 
 void
 tracklist_free (

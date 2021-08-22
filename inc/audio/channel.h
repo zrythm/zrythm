@@ -201,7 +201,7 @@ typedef struct Channel
   int              has_output;
 
   /** Output track. */
-  int              output_pos;
+  unsigned int     output_name_hash;
 
   /** Track associated with this channel. */
   int              track_pos;
@@ -263,10 +263,10 @@ channel_fields_schema[] =
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel, stereo_out,
     stereo_ports_fields_schema),
-  YAML_FIELD_INT (
+  YAML_FIELD_UINT (
     Channel, has_output),
   YAML_FIELD_INT (
-    Channel, output_pos),
+    Channel, output_name_hash),
   YAML_FIELD_INT (
     Channel, track_pos),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
@@ -359,9 +359,8 @@ channel_expose_ports_to_backend (
 /**
  * Connects the channel's ports.
  *
- * This should only be called on new tracks.
+ * This should only be called on project tracks.
  */
-NONNULL
 void
 channel_connect (
   Channel * ch);
@@ -523,14 +522,15 @@ channel_remove_plugin (
   bool           recalc_graph);
 
 /**
- * Updates the track position in the channel and
+ * Updates the track name hash in the channel and
  * all related ports and identifiers.
  */
 NONNULL
 void
-channel_update_track_pos (
-  Channel * self,
-  int       pos);
+channel_update_track_name_hash (
+  Channel *    self,
+  unsigned int old_name_hash,
+  unsigned int new_name_hash);
 
 NONNULL
 int

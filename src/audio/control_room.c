@@ -192,6 +192,23 @@ control_room_set_dim_output (
   self->dim_output = dim_output;
 }
 
+/**
+ * Used during serialization.
+ */
+ControlRoom *
+control_room_clone (
+  const ControlRoom * src)
+{
+  ControlRoom * self = object_new (ControlRoom);
+  self->schema_version =
+    CONTROL_ROOM_SCHEMA_VERSION;
+
+  self->monitor_fader =
+    fader_clone (src->monitor_fader);
+
+  return self;
+}
+
 void
 control_room_free (
   ControlRoom * self)

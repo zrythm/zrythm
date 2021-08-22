@@ -56,6 +56,14 @@ typedef enum PortFlow {
   FLOW_OUTPUT
 } PortFlow;
 
+static const cyaml_strval_t
+port_flow_strings[] =
+{
+  { "unknown",       FLOW_UNKNOWN    },
+  { "input",         FLOW_INPUT   },
+  { "output",        FLOW_OUTPUT   },
+};
+
 /**
  * Type of signals the Port handles.
  */
@@ -66,6 +74,16 @@ typedef enum PortType {
   TYPE_EVENT,
   TYPE_CV
 } PortType;
+
+static const cyaml_strval_t
+port_type_strings[] =
+{
+  { "unknown",       TYPE_UNKNOWN    },
+  { "control",       TYPE_CONTROL   },
+  { "audio",         TYPE_AUDIO   },
+  { "event",         TYPE_EVENT   },
+  { "cv",            TYPE_CV   },
+};
 
 /**
  * Port unit to be displayed in the UI.
@@ -105,6 +123,9 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_PLUGIN,
   PORT_OWNER_TYPE_TRACK,
 
+  /* track prefader */
+  PORT_OWNER_TYPE_PREFADER,
+
   /* track fader */
   PORT_OWNER_TYPE_FADER,
 
@@ -116,14 +137,11 @@ typedef enum PortOwnerType
    */
   PORT_OWNER_TYPE_CHANNEL_SEND,
 
-  /* track prefader */
-  PORT_OWNER_TYPE_PREFADER,
+  /* TrackProcessor. */
+  PORT_OWNER_TYPE_TRACK_PROCESSOR,
 
   /* monitor fader */
   PORT_OWNER_TYPE_MONITOR_FADER,
-
-  /* TrackProcessor. */
-  PORT_OWNER_TYPE_TRACK_PROCESSOR,
 
   PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
 
@@ -472,29 +490,12 @@ typedef struct PortIdentifier
   /** ExtPort ID (type + full name), if hw port. */
   char *              ext_port_id;
 
-  /** Index of Track in the Tracklist. */
-  int                 track_pos;
+  /** Track name hash (0 for non-track ports). */
+  unsigned int        track_name_hash;
+
   /** Index (e.g. in plugin's output ports). */
   int                 port_index;
 } PortIdentifier;
-
-static const cyaml_strval_t
-port_flow_strings[] =
-{
-  { "unknown",       FLOW_UNKNOWN    },
-  { "input",         FLOW_INPUT   },
-  { "output",        FLOW_OUTPUT   },
-};
-
-static const cyaml_strval_t
-port_type_strings[] =
-{
-  { "unknown",       TYPE_UNKNOWN    },
-  { "control",       TYPE_CONTROL   },
-  { "audio",         TYPE_AUDIO   },
-  { "event",         TYPE_EVENT   },
-  { "cv",            TYPE_CV   },
-};
 
 static const cyaml_schema_field_t
 port_identifier_fields_schema[] =
@@ -522,8 +523,8 @@ port_identifier_fields_schema[] =
     PortIdentifier, flags, port_flags_bitvals),
   YAML_FIELD_BITFIELD (
     PortIdentifier, flags2, port_flags2_bitvals),
-  YAML_FIELD_INT (
-    PortIdentifier, track_pos),
+  YAML_FIELD_UINT (
+    PortIdentifier, track_name_hash),
   YAML_FIELD_MAPPING_EMBEDDED (
     PortIdentifier, plugin_id,
     plugin_identifier_fields_schema),
@@ -577,8 +578,8 @@ port_identifier_port_group_cmp (
 NONNULL
 void
 port_identifier_copy (
-  PortIdentifier * dest,
-  PortIdentifier * src);
+  PortIdentifier *       dest,
+  const PortIdentifier * src);
 
 /**
  * Returns if the 2 PortIdentifier's are equal.
@@ -588,13 +589,28 @@ HOT
 NONNULL
 bool
 port_identifier_is_equal (
-  PortIdentifier * src,
-  PortIdentifier * dest);
+  const PortIdentifier * src,
+  const PortIdentifier * dest);
+
+/**
+ * To be used as GEqualFunc.
+ */
+int
+port_identifier_is_equal_func (
+  const void * a,
+  const void * b);
+
+NONNULL
+void
+port_identifier_print_to_str (
+  const PortIdentifier * self,
+  char *                 buf,
+  size_t                 buf_sz);
 
 NONNULL
 void
 port_identifier_print (
-  PortIdentifier * self);
+  const PortIdentifier * self);
 
 NONNULL
 bool
@@ -602,9 +618,31 @@ port_identifier_validate (
   PortIdentifier * self);
 
 NONNULL
+unsigned int
+port_identifier_get_hash (
+  const void * self);
+
+NONNULL
+PortIdentifier *
+port_identifier_clone (
+  const PortIdentifier * src);
+
+NONNULL
 void
 port_identifier_free_members (
   PortIdentifier * self);
+
+NONNULL
+void
+port_identifier_free (
+  PortIdentifier * self);
+
+/**
+ * Compatible with GDestroyNotify.
+ */
+void
+port_identifier_free_func (
+  void * self);
 
 /**
  * @}

@@ -274,7 +274,7 @@ editor_toolbar_widget_setup (
 {
   /* setup bot toolbar */
   snap_box_widget_setup (
-    self->snap_box, SNAP_GRID_MIDI);
+    self->snap_box, SNAP_GRID_EDITOR);
   quantize_box_widget_setup (
     self->quantize_box,
     QUANTIZE_OPTIONS_EDITOR);

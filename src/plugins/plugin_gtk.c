@@ -1114,8 +1114,8 @@ make_combo (
   int active = -1;
   for (int i = 0; i < port->num_scale_points; i++)
     {
-      PortScalePoint * point =
-        &port->scale_points[i];
+      const PortScalePoint * point =
+        port->scale_points[i];
 
       GtkTreeIter iter;
       gtk_list_store_append (list_store, &iter);
@@ -1253,7 +1253,7 @@ make_slider (
            i++)
         {
           const PortScalePoint * point =
-            &port->scale_points[i];
+            port->scale_points[i];
 
           char * str =
             g_markup_printf_escaped (

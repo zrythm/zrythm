@@ -61,7 +61,7 @@ test_midi_mappping ()
 
   g_assert_true (
     P_MASTER_TRACK->channel->fader->amp ==
-      MIDI_MAPPINGS->mappings[0].dest);
+      MIDI_MAPPINGS->mappings[0]->dest);
 }
 
 int

@@ -127,6 +127,10 @@ graph_node_get_name (
     case ROUTE_NODE_TYPE_HW_PROCESSOR:
       return
         g_strdup ("HW Processor");
+    case ROUTE_NODE_TYPE_CHANNEL_SEND:
+      return
+        g_strdup_printf (
+          "Channel Send %d", node->send->slot + 1);
     }
   g_return_val_if_reached (NULL);
 }
@@ -162,6 +166,8 @@ graph_node_get_pointer (
       return node->hw_processor;
     case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
       return node->modulator_macro_processor;
+    case ROUTE_NODE_TYPE_CHANNEL_SEND:
+      return node->send;
     }
   g_return_val_if_reached (NULL);
 }
@@ -278,6 +284,10 @@ process_node (
       sample_processor_process (
         node->sample_processor, local_offset,
         nframes);
+      break;
+    case ROUTE_NODE_TYPE_CHANNEL_SEND:
+      channel_send_process (
+        node->send, local_offset, nframes);
       break;
     case ROUTE_NODE_TYPE_TRACK:
       {
@@ -658,6 +668,9 @@ graph_node_new (
     case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
       node->modulator_macro_processor =
         (ModulatorMacroProcessor *) data;
+      break;
+    case ROUTE_NODE_TYPE_CHANNEL_SEND:
+      node->send = (ChannelSend *) data;
       break;
     default:
       g_return_val_if_reached (node);

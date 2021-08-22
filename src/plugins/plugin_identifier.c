@@ -23,6 +23,7 @@ void
 plugin_identifier_init (
   PluginIdentifier * self)
 {
+  memset (self, 0, sizeof (PluginIdentifier));
   self->schema_version =
     PLUGIN_IDENTIFIER_SCHEMA_VERSION;
   self->slot = -1;
@@ -70,6 +71,6 @@ plugin_identifier_copy (
 
   dest->schema_version = src->schema_version;
   dest->slot_type = src->slot_type;
-  dest->track_pos = src->track_pos;
+  dest->track_name_hash = src->track_name_hash;
   dest->slot = src->slot;
 }

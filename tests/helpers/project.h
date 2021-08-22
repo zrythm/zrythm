@@ -38,6 +38,7 @@
 #include "audio/midi_note.h"
 #include "audio/modulator_track.h"
 #include "audio/region.h"
+#include "audio/router.h"
 #include "audio/tempo_track.h"
 #include "audio/tracklist.h"
 #include "project.h"
@@ -95,6 +96,14 @@
 #define TARGET_MIDI_REGION_LANE 0
 #define TARGET_AUDIO_REGION_LANE 5
 
+char *
+test_project_save (void);
+
+COLD
+void
+test_project_reload (
+  const char * prj_file);
+
 void
 test_project_save_and_reload (void);
 
@@ -110,13 +119,14 @@ test_project_check_vs_original_state (
   Position * p1,
   Position * p2,
   int check_selections);
+
 void
 test_project_rebootstrap_timeline (
   Position * p1,
   Position * p2);
 
-void
-test_project_save_and_reload (void)
+char *
+test_project_save (void)
 {
   /* save the project */
   int ret =
@@ -130,9 +140,27 @@ test_project_save_and_reload (void)
   object_free_w_func_and_null (
     project_free, PROJECT);
 
-  /* reload it */
-  ret = project_load (prj_file, 0);
+  return prj_file;
+}
+
+void
+test_project_reload (
+  const char * prj_file)
+{
+  int ret = project_load (prj_file, 0);
   g_assert_cmpint (ret, ==, 0);
+}
+
+void
+test_project_save_and_reload (void)
+{
+  /* save the project */
+  char * prj_file = test_project_save ();
+  g_assert_nonnull (prj_file);
+
+  /* reload it */
+  test_project_reload (prj_file);
+  g_free (prj_file);
 }
 
 /**
@@ -288,6 +316,11 @@ test_project_rebootstrap_timeline (
 {
   test_helper_zrythm_init ();
 
+  /* pause engine */
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, false);
+
   /* remove any previous work */
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
@@ -314,16 +347,21 @@ test_project_rebootstrap_timeline (
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
+  unsigned int track_name_hash =
+    track_get_name_hash (track);
   ZRegion * r =
     midi_region_new (
-      p1, p2, track->pos, MIDI_REGION_LANE, 0);
+      p1, p2,
+      track_get_name_hash (track),
+      MIDI_REGION_LANE, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track_add_region (
     track, r, NULL, MIDI_REGION_LANE, 1, 0);
   arranger_object_set_name (
     r_obj, MIDI_REGION_NAME,
     F_NO_PUBLISH_EVENTS);
-  g_assert_cmpint (r->id.track_pos, ==, track->pos);
+  g_assert_cmpuint (
+    r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (
     r->id.lane_pos, ==, MIDI_REGION_LANE);
   g_assert_cmpint (
@@ -352,13 +390,15 @@ test_project_rebootstrap_timeline (
     channel_get_automation_track (
       P_MASTER_TRACK->channel,
       PORT_FLAG_STEREO_BALANCE);
+  track_name_hash =
+    track_get_name_hash (P_MASTER_TRACK);
   r =
     automation_region_new (
-      p1, p2, P_MASTER_TRACK->pos, at->index, 0);
+      p1, p2, track_name_hash, at->index, 0);
   track_add_region (
     P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
-  g_assert_cmpint (
-    r->id.track_pos, ==, P_MASTER_TRACK->pos);
+  g_assert_cmpuint (
+    r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (r->id.at_idx, ==, at->index);
   g_assert_cmpint (
     r->id.type, ==, REGION_TYPE_AUTOMATION);
@@ -454,10 +494,11 @@ test_project_rebootstrap_timeline (
     audio_file_path, "%s%s%s",
     TESTS_SRCDIR, G_DIR_SEPARATOR_S,
     "test.wav");
+  track_name_hash = track_get_name_hash (track);
   r =
     audio_region_new (
       -1, audio_file_path, true, NULL, 0, NULL, 0, 0,
-      p1, track->pos, AUDIO_REGION_LANE, 0);
+      p1, track_name_hash, AUDIO_REGION_LANE, 0);
   AudioClip * clip =
     audio_region_get_clip (r);
   g_assert_cmpint (clip->num_frames, >, 151000);
@@ -468,7 +509,8 @@ test_project_rebootstrap_timeline (
   arranger_object_set_name (
     r_obj, AUDIO_REGION_NAME,
     F_NO_PUBLISH_EVENTS);
-  g_assert_cmpint (r->id.track_pos, ==, track->pos);
+  g_assert_cmpuint (
+    r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (
     r->id.lane_pos, ==, AUDIO_REGION_LANE);
   g_assert_cmpint (
@@ -502,6 +544,11 @@ test_project_rebootstrap_timeline (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar, bpm,
     AUDIO_ENGINE->sample_rate, true);
+
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  engine_resume (
+    AUDIO_ENGINE, &state);
 
   test_project_save_and_reload ();
 }

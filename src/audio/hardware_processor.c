@@ -52,7 +52,8 @@ hardware_processor_new (
   HardwareProcessor * self =
     object_new (HardwareProcessor);
 
-  self->schema_version = HW_PROCESSOR_SCHEMA_VERSION;
+  self->schema_version =
+    HW_PROCESSOR_SCHEMA_VERSION;
 
   self->is_input = input;
 
@@ -562,4 +563,124 @@ hardware_processor_process (
           break;
         }
     }
+}
+
+/**
+ * To be used during serialization.
+ */
+HardwareProcessor *
+hardware_processor_clone (
+  const HardwareProcessor * src)
+{
+  HardwareProcessor * self =
+    object_new (HardwareProcessor);
+  self->schema_version =
+    HW_PROCESSOR_SCHEMA_VERSION;
+
+  self->is_input = src->is_input;
+
+  self->ext_audio_ports =
+    object_new_n (
+      (size_t) src->num_ext_audio_ports, ExtPort *);
+  for (int i = 0; i < src->num_ext_audio_ports; i++)
+    {
+      self->ext_audio_ports[i] =
+        ext_port_clone (src->ext_audio_ports[i]);
+    }
+  self->num_ext_audio_ports =
+    src->num_ext_audio_ports;
+
+  self->ext_midi_ports =
+    object_new_n (
+      (size_t) src->num_ext_midi_ports, ExtPort *);
+  for (int i = 0; i < src->num_ext_midi_ports; i++)
+    {
+      self->ext_midi_ports[i] =
+        ext_port_clone (src->ext_midi_ports[i]);
+    }
+  self->num_ext_midi_ports =
+    src->num_ext_midi_ports;
+
+  self->audio_ports =
+    object_new_n (
+      (size_t) src->num_audio_ports, Port *);
+  for (int i = 0; i < src->num_audio_ports; i++)
+    {
+      self->audio_ports[i] =
+        port_clone (src->audio_ports[i]);
+    }
+  self->num_audio_ports = src->num_audio_ports;
+
+  self->midi_ports =
+    object_new_n (
+      (size_t) src->num_midi_ports, Port *);
+  for (int i = 0; i < src->num_midi_ports; i++)
+    {
+      self->midi_ports[i] =
+        port_clone (src->midi_ports[i]);
+    }
+  self->num_midi_ports = src->num_midi_ports;
+
+  return self;
+}
+
+void
+hardware_processor_free (
+  HardwareProcessor * self)
+{
+  for (int i = 0;
+       i < self->num_selected_midi_ports; i++)
+    {
+      g_free_and_null (
+        self->selected_midi_ports[i]);
+    }
+  object_zero_and_free_if_nonnull (
+    self->selected_midi_ports);
+
+  for (int i = 0;
+       i < self->num_selected_audio_ports; i++)
+    {
+      g_free_and_null (
+        self->selected_audio_ports[i]);
+    }
+  object_zero_and_free_if_nonnull (
+    self->selected_audio_ports);
+
+  for (int i = 0; i < self->num_ext_audio_ports;
+       i++)
+    {
+      object_free_w_func_and_null (
+        ext_port_free, self->ext_audio_ports[i]);
+    }
+  object_zero_and_free_if_nonnull (
+    self->ext_audio_ports);
+
+  for (int i = 0; i < self->num_ext_midi_ports;
+       i++)
+    {
+      object_free_w_func_and_null (
+        ext_port_free, self->ext_midi_ports[i]);
+    }
+  object_zero_and_free_if_nonnull (
+    self->ext_midi_ports);
+
+  for (int i = 0; i < self->num_audio_ports;
+       i++)
+    {
+      object_free_w_func_and_null (
+        port_free, self->audio_ports[i]);
+    }
+  object_zero_and_free_if_nonnull (
+    self->audio_ports);
+
+  for (int i = 0; i < self->num_midi_ports;
+       i++)
+    {
+      object_free_w_func_and_null (
+        port_free, self->midi_ports[i]);
+    }
+  object_zero_and_free_if_nonnull (
+    self->midi_ports);
+
+  object_zero_and_free (self);
 }

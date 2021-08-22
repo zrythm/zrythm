@@ -199,6 +199,17 @@ hardware_processor_process (
   nframes_t           nframes);
 
 /**
+ * To be used during serialization.
+ */
+HardwareProcessor *
+hardware_processor_clone (
+  const HardwareProcessor * src);
+
+void
+hardware_processor_free (
+  HardwareProcessor * self);
+
+/**
  * @}
  */
 

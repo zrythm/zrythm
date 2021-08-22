@@ -78,7 +78,7 @@ track_lane_new (
   self->name =
     g_strdup_printf (_("Lane %d"), pos + 1);
   self->pos = pos;
-  self->track_pos = track->pos;
+  self->track = track;
 
   self->regions_size = 1;
   self->regions =
@@ -217,27 +217,21 @@ track_lane_insert_region (
 }
 
 /**
- * Sets the track position to the lane and all its
- * members recursively.
- *
- * @param set_pointers Sets the Track pointers as
- *   well.
+ * Sets the new track name hash to all the lane's
+ * objects recursively.
  */
 void
-track_lane_set_track_pos (
-  TrackLane * self,
-  const int   pos)
+track_lane_update_track_name_hash (
+  TrackLane *   self)
 {
-  g_message (
-    "lane: %d, track pos: %d, num regions: %d",
-    self->pos, pos, self->num_regions);
-
-  self->track_pos = pos;
+  Track * track = self->track;
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   for (int i = 0; i < self->num_regions; i++)
     {
       ZRegion * region = self->regions[i];
-      region_set_track_pos (region, pos);
+      region->id.track_name_hash =
+        track_get_name_hash (track);
       region->id.lane_pos = self->pos;
       region_update_identifier (region);
     }
@@ -247,50 +241,54 @@ track_lane_set_track_pos (
  * Clones the TrackLane.
  *
  * Mainly used when cloning Track's.
+ *
+ * @param track Pointer to owner track.
  */
 TrackLane *
 track_lane_clone (
-  TrackLane * lane)
+  const TrackLane * src,
+  Track *           track)
 {
-  TrackLane * new_lane = object_new (TrackLane);
+  TrackLane * self = object_new (TrackLane);
 
-  new_lane->name =
-    g_strdup (lane->name);
-  new_lane->regions_size =
-    (size_t) lane->num_regions;
-  new_lane->regions =
-    object_new_n (new_lane->regions_size, ZRegion *);
-  new_lane->height =
-    lane->height;
-  new_lane->pos = lane->pos;
-  new_lane->mute = lane->mute;
-  new_lane->solo = lane->solo;
-  new_lane->midi_ch = lane->midi_ch;
+  self->track = track;
+  self->name =
+    g_strdup (src->name);
+  self->regions_size =
+    (size_t) src->num_regions;
+  self->regions =
+    object_new_n (self->regions_size, ZRegion *);
+  self->height =
+    src->height;
+  self->pos = src->pos;
+  self->mute = src->mute;
+  self->solo = src->solo;
+  self->midi_ch = src->midi_ch;
 
   ZRegion * region, * new_region;
-  new_lane->num_regions = lane->num_regions;
-  new_lane->regions =
+  self->num_regions = src->num_regions;
+  self->regions =
     g_realloc (
-      new_lane->regions,
+      self->regions,
       sizeof (ZRegion *) *
-        (size_t) lane->num_regions);
-  for (int i = 0; i < lane->num_regions; i++)
+        (size_t) src->num_regions);
+  for (int i = 0; i < src->num_regions; i++)
     {
       /* clone region */
-      region = lane->regions[i];
+      region = src->regions[i];
       new_region =
         (ZRegion *)
         arranger_object_clone (
           (ArrangerObject *) region);
 
-      new_lane->regions[i] = new_region;
-      region_set_lane (new_region, new_lane);
+      self->regions[i] = new_region;
+      region_set_lane (new_region, self);
 
       region_gen_name (
         new_region, region->name, NULL, NULL);
     }
 
-  return new_lane;
+  return self;
 }
 
 /**
@@ -324,13 +322,20 @@ track_lane_clear (
   Track * track = track_lane_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
+  g_message (
+    "clearing track lane %d (%p) for track '%s' | "
+    "num regions %d",
+    self->pos, self, track->name, self->num_regions);
+
   for (int i = self->num_regions - 1; i >= 0; i--)
     {
       ZRegion * region = self->regions[i];
       g_return_if_fail (
-        IS_REGION (region) &&
-        region->id.track_pos == track->pos &&
-        region->id.lane_pos == self->pos);
+        IS_REGION (region)
+        &&
+        region->id.track_name_hash ==
+          track_get_name_hash (track)
+        && region->id.lane_pos == self->pos);
       track_remove_region (
         track, region, 0, 1);
     }
@@ -348,8 +353,11 @@ track_lane_remove_region (
 {
   g_return_if_fail (IS_REGION (region));
 
-  array_delete (
-    self->regions, self->num_regions, region);
+  bool deleted = false;
+  array_delete_confirm (
+    self->regions, self->num_regions, region,
+    deleted);
+  g_return_if_fail (deleted);
 
   for (int i = region->id.idx; i < self->num_regions;
        i++)
@@ -374,17 +382,8 @@ Track *
 track_lane_get_track (
   TrackLane * self)
 {
-  Tracklist * tracklist =
-    track_lane_get_tracklist (self);
-
-  g_return_val_if_fail (
-    self->track_pos < tracklist->num_tracks, NULL);
-
-  Track * track =
-    tracklist->tracks[self->track_pos];
-  g_return_val_if_fail (track, NULL);
-
-  return track;
+  g_return_val_if_fail (self->track, NULL);
+  return self->track;
 }
 
 /**
@@ -403,14 +402,14 @@ track_lane_write_to_midi_file (
   file, and affect all
   ** tracks messages until it is changed. */
   midiFileSetTracksDefaultChannel (
-    mf, self->track_pos, MIDI_CHANNEL_1);
+    mf, self->track->pos, MIDI_CHANNEL_1);
 
   Track * track = track_lane_get_track (self);
   g_return_if_fail (track);
 
   /* add track name */
   midiTrackAddText (
-    mf, self->track_pos, textTrackName,
+    mf, self->track->pos, textTrackName,
     track->name);
 
   ZRegion * region;

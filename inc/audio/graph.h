@@ -213,6 +213,11 @@ graph_find_node_from_modulator_macro_processor (
   const ModulatorMacroProcessor * processor);
 
 GraphNode *
+graph_find_node_from_channel_send (
+  const Graph *       self,
+  const ChannelSend * send);
+
+GraphNode *
 graph_find_initial_processor_node (
   const Graph * self);
 

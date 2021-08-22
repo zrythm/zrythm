@@ -73,6 +73,11 @@ tracklist_selections_action_init_loaded (
       tracklist_selections_init_loaded (
         self->tls_after);
     }
+  if (self->foldable_tls_before)
+    {
+      tracklist_selections_init_loaded (
+        self->foldable_tls_before);
+    }
 
   self->src_sends_size =
     (size_t) self->num_src_sends;
@@ -155,6 +160,8 @@ validate (
  *
  * @param tls_before Tracklist selections to act
  *   upon.
+ * @param port_connections_mgr Port connections
+ *   manager at the start of the action.
  * @param pos Position to make the tracks at.
  * @param pl_setting Plugin setting, if any.
  * @param track Track, if single-track action. Used
@@ -166,6 +173,7 @@ tracklist_selections_action_new (
   TracklistSelectionsActionType type,
   TracklistSelections *         tls_before,
   TracklistSelections *         tls_after,
+  const PortConnectionsManager * port_connections_mgr,
   Track *                       track,
   TrackType                     track_type,
   PluginSetting *               pl_setting,
@@ -372,6 +380,7 @@ tracklist_selections_action_new (
             &self->num_tracks);
         }
     }
+
   if (tls_after)
     {
       if (need_full_selections)
@@ -406,7 +415,8 @@ tracklist_selections_action_new (
       self->num_out_tracks = num_before_tracks;
       self->out_tracks =
         calloc (
-          (size_t) num_before_tracks, sizeof (int));
+          (size_t) num_before_tracks,
+          sizeof (unsigned int));
 
       /* save the ouputs & incoming sends */
       for (int k = 0; k < num_before_tracks; k++)
@@ -418,11 +428,12 @@ tracklist_selections_action_new (
               clone_track->channel->has_output)
             {
               self->out_tracks[k] =
-                clone_track->channel->output_pos;
+                clone_track->channel->
+                  output_name_hash;
             }
           else
             {
-              self->out_tracks[k] = -1;
+              self->out_tracks[k] = 0;
             }
 
           for (int i = 0; i < TRACKLIST->num_tracks;
@@ -466,10 +477,14 @@ tracklist_selections_action_new (
                           channel_send_clone (
                             send);
                     }
-                }
-            }
-        }
-    }
+
+                } /* end foreach send */
+
+            } /* end foreach track */
+
+        } /* end foreach before track */
+
+    } /* if need to clone tls_before */
 
   self->edit_type = edit_type;
   self->ival_after = ival_after;
@@ -504,6 +519,13 @@ tracklist_selections_action_new (
       MAX (1, (size_t) self->num_tracks),
       sizeof (GdkRGBA));
 
+  if (port_connections_mgr)
+    {
+      self->connections_mgr_before =
+        port_connections_manager_clone (
+          port_connections_mgr);
+    }
+
   if (!validate (self))
     {
       g_critical (
@@ -516,11 +538,144 @@ tracklist_selections_action_new (
   return ua;
 }
 
+TracklistSelectionsAction *
+tracklist_selections_action_clone (
+  const TracklistSelectionsAction * src)
+{
+  TracklistSelectionsAction * self =
+    object_new (TracklistSelectionsAction);
+
+  self->parent_instance = src->parent_instance;
+
+  self->type = src->type;
+  self->track_type = src->track_type;
+  if (src->pl_setting)
+    self->pl_setting =
+      plugin_setting_clone (
+        src->pl_setting, F_NO_VALIDATE);
+  self->is_empty = src->is_empty;
+  self->track_pos = src->track_pos;
+  self->have_pos = src->have_pos;
+  self->pos = src->pos;
+
+  if (src->num_tracks > 0)
+    {
+      self->ival_before =
+        object_new_n (
+          (size_t) src->num_tracks, int);
+      self->colors_before =
+        object_new_n (
+          (size_t) src->num_tracks, GdkRGBA);
+      for (int i = 0; i < src->num_tracks; i++)
+        {
+          self->tracks_before[i] =
+            src->tracks_before[i];
+          self->tracks_after[i] =
+            src->tracks_after[i];
+          self->ival_before[i] =
+            src->ival_before[i];
+          self->colors_before[i] =
+            src->colors_before[i];
+        }
+      self->num_tracks = src->num_tracks;
+    }
+  self->ival_after = src->ival_after;
+  self->new_color = src->new_color;
+
+  self->file_basename =
+    g_strdup (src->file_basename);
+  self->base64_midi = g_strdup (src->base64_midi);
+  self->pool_id = src->pool_id;
+  if (src->tls_before)
+    {
+      GError * err = NULL;
+      self->tls_before =
+        tracklist_selections_clone (
+          src->tls_before, &err);
+      if (!self->tls_before)
+        {
+          g_critical ("%s", err->message);
+          return NULL;
+        }
+    }
+  if (src->tls_after)
+    {
+      GError * err = NULL;
+      self->tls_after =
+        tracklist_selections_clone (
+          src->tls_after, &err);
+      if (!self->tls_after)
+        {
+          g_critical ("%s", err->message);
+          return NULL;
+        }
+    }
+  if (src->foldable_tls_before)
+    {
+      GError * err = NULL;
+      self->foldable_tls_before =
+        tracklist_selections_clone (
+          src->foldable_tls_before, &err);
+      if (!self->foldable_tls_before)
+        {
+          g_critical ("%s", err->message);
+          return NULL;
+        }
+    }
+
+  if (src->num_out_tracks > 0)
+    {
+      self->out_tracks =
+        object_new_n (
+          (size_t) src->num_out_tracks,
+          unsigned int);
+      for (int i = 0; i < src->num_out_tracks; i++)
+        {
+          self->out_tracks[i] = src->out_tracks[i];
+        }
+      self->num_out_tracks = src->num_out_tracks;
+    }
+
+  if (src->num_src_sends > 0)
+    {
+      self->src_sends =
+        object_new_n (
+          (size_t) src->num_src_sends,
+          ChannelSend *);
+      for (int i = 0; i < src->num_src_sends; i++)
+        {
+          self->src_sends[i] =
+            channel_send_clone (
+              src->src_sends[i]);
+        }
+      self->num_src_sends = src->num_src_sends;
+    }
+
+  self->edit_type = src->edit_type;
+  self->new_txt = g_strdup (src->new_txt);
+  self->val_before = src->val_before;
+  self->val_after = src->val_after;
+  self->num_fold_change_tracks =
+    src->num_fold_change_tracks;
+
+  if (src->connections_mgr_before)
+    self->connections_mgr_before =
+      port_connections_manager_clone (
+        src->connections_mgr_before);
+  if (src->connections_mgr_after)
+    self->connections_mgr_after =
+      port_connections_manager_clone (
+        src->connections_mgr_after);
+
+  return self;
+}
+
 bool
 tracklist_selections_action_perform (
   TracklistSelectionsActionType type,
   TracklistSelections *         tls_before,
   TracklistSelections *         tls_after,
+  const PortConnectionsManager * port_connections_mgr,
   Track *                       track,
   TrackType                     track_type,
   PluginSetting *               pl_setting,
@@ -539,7 +694,8 @@ tracklist_selections_action_perform (
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     tracklist_selections_action_new, error,
-    type, tls_before, tls_after, track, track_type,
+    type, tls_before, tls_after,
+    port_connections_mgr, track, track_type,
     pl_setting, file_descr, track_pos, pos,
     num_tracks, edit_type, ival_after, color_new,
     val_before, val_after, new_txt, already_edited,
@@ -556,21 +712,23 @@ tracklist_selections_action_perform (
  */
 bool
 tracklist_selections_action_perform_set_direct_out (
-  TracklistSelections * self,
-  Track *               direct_out,
-  GError **             error)
+  TracklistSelections *    self,
+  PortConnectionsManager * port_connections_mgr,
+  Track *                  direct_out,
+  GError **                error)
 {
   if (direct_out)
     {
       UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
         tracklist_selections_action_new_edit_direct_out,
-        error, self, direct_out, error);
+        error, self, port_connections_mgr,
+        direct_out, error);
     }
   else
     {
       UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
         tracklist_selections_action_new_edit_remove_direct_out,
-        error, self, error);
+        error, self, port_connections_mgr, error);
     }
 }
 
@@ -648,7 +806,8 @@ create_track (
           GError * err = NULL;
           pl =
             plugin_new_from_setting (
-              setting, track->pos,
+              setting,
+              track_get_name_hash (track),
               PLUGIN_SLOT_INSERT, 0, &err);
           if (!pl)
             {
@@ -696,8 +855,6 @@ create_track (
             F_CONFIRM, F_NOT_MOVING_PLUGIN,
             F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
-          g_warn_if_fail (
-            pl->id.track_pos == track->pos);
         }
 
       Position start_pos;
@@ -715,7 +872,8 @@ create_track (
             audio_region_new (
               self->pool_id, NULL, true,
               NULL, 0, NULL, 0, 0,
-              &start_pos, pos, 0, 0);
+              &start_pos,
+              track_get_name_hash (track), 0, 0);
           track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,
             F_NO_PUBLISH_EVENTS);
@@ -761,7 +919,8 @@ create_track (
           ZRegion * mr =
             midi_region_new_from_midi_file (
               &start_pos, full_path,
-              pos, 0, 0, idx);
+              track_get_name_hash (track),
+              0, 0, idx);
           if (mr)
             {
               track_add_region (
@@ -810,36 +969,15 @@ create_track (
   return 0;
 }
 
-/**
- * Reconnects the given send.
- *
- * @note The given send must be the send on the
- *   project track (not a clone).
- */
 static void
-reconnect_send (
-  ChannelSend * send)
+save_or_load_port_connections (
+  TracklistSelectionsAction * self,
+  bool                        _do)
 {
-  Track * src = TRACKLIST->tracks[send->track_pos];
-
-  if (src->out_signal_type == TYPE_AUDIO)
-    {
-      Port * l =
-        port_find_from_identifier (
-          &send->dest_l_id);
-      Port * r =
-        port_find_from_identifier (
-          &send->dest_r_id);
-      channel_send_connect_stereo (
-        send, NULL, l, r, send->is_sidechain);
-    }
-  else if (src->out_signal_type == TYPE_EVENT)
-    {
-      Port * midi =
-        port_find_from_identifier (
-          &send->dest_midi_id);
-      channel_send_connect_midi (send, midi);
-    }
+  undoable_action_save_or_load_port_connections (
+    (UndoableAction *) self, _do,
+    &self->connections_mgr_before,
+    &self->connections_mgr_after);
 }
 
 static int
@@ -849,7 +987,11 @@ do_or_undo_create_or_delete (
   bool                        create,
   GError **                   error)
 {
-  /* if creating tracks (do create or undo delete) */
+  port_connections_manager_print (
+    PORT_CONNECTIONS_MGR);
+
+  /* if creating tracks (do create or undo
+   * delete) */
   if ((create && _do) ||
       (!create && !_do))
     {
@@ -923,7 +1065,8 @@ do_or_undo_create_or_delete (
                 {
                   track->channel->has_output =
                     false;
-                  track->channel->output_pos = -1;
+                  track->channel->
+                    output_name_hash = 0;
                 }
 
               /* remove the sends (will be added
@@ -983,21 +1126,24 @@ do_or_undo_create_or_delete (
                 continue;
 
               /* reconnect output */
-              if (self->out_tracks[i] >= 0)
+              if (self->out_tracks[i] != 0)
                 {
                   Track * out_track =
                     channel_get_output_track (
                       track->channel);
                   group_target_track_remove_child (
-                    out_track, track->pos,
+                    out_track,
+                    track_get_name_hash (track),
                     F_DISCONNECT,
                     F_NO_RECALC_GRAPH,
                     F_NO_PUBLISH_EVENTS);
                   out_track =
-                    TRACKLIST->tracks[
-                      self->out_tracks[i]];
+                    tracklist_find_track_by_name_hash (
+                      TRACKLIST,
+                      self->out_tracks[i]);
                   group_target_track_add_child (
-                    out_track, track->pos,
+                    out_track,
+                    track_get_name_hash (track),
                     F_CONNECT, F_NO_RECALC_GRAPH,
                     F_NO_PUBLISH_EVENTS);
                 }
@@ -1012,11 +1158,6 @@ do_or_undo_create_or_delete (
                     track->channel->sends[j];
                   channel_send_copy_values (
                     send, clone_send);
-                  if (channel_send_is_empty (
-                        clone_send))
-                    continue;
-
-                  reconnect_send (send);
                 }
 
               /* reconnect any custom connections */
@@ -1038,8 +1179,6 @@ do_or_undo_create_or_delete (
                     prj_port, port);
                 }
               free (ports);
-
-              track_validate (track);
             }
 
           /* re-connect any source sends */
@@ -1048,17 +1187,15 @@ do_or_undo_create_or_delete (
               ChannelSend * clone_send =
                 self->src_sends[i];
 
-              /* get the original send and connect it */
-              Track * orig_track =
-                TRACKLIST->tracks[
-                  clone_send->track_pos];
-              ChannelSend * send =
-                orig_track->channel->sends[
-                  clone_send->slot];
+              /* get the original send and connect
+               * it */
+              ChannelSend * prj_send =
+                channel_send_find (clone_send);
+              /*Track * orig_track =*/
+                /*channel_send_get_track (prj_send);*/
 
-              reconnect_send (send);
-
-              track_validate (orig_track);
+              channel_send_copy_values (
+                prj_send, clone_send);
             }
 
           /* reset foldable track sizes */
@@ -1122,10 +1259,9 @@ do_or_undo_create_or_delete (
               /* get the original send and disconnect
                * it */
               ChannelSend * send =
-                TRACKLIST->tracks[
-                  clone_send->track_pos]->
-                    channel->sends[clone_send->slot];
-              channel_send_disconnect (send);
+                channel_send_find (clone_send);
+              channel_send_disconnect (
+                send, F_NO_RECALC_GRAPH);
             }
 
           for (int i =
@@ -1207,6 +1343,11 @@ do_or_undo_create_or_delete (
         ET_CLIP_EDITOR_REGION_CHANGED, NULL);
     }
 
+  /* restore connections */
+  save_or_load_port_connections (self, _do);
+
+  tracklist_validate (TRACKLIST);
+
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   tracklist_validate (TRACKLIST);
@@ -1232,6 +1373,9 @@ do_or_undo_move_or_copy (
     self->type == TRACKLIST_SELECTIONS_ACTION_PIN;
   bool unpin =
     self->type == TRACKLIST_SELECTIONS_ACTION_UNPIN;
+
+  port_connections_manager_print (
+    PORT_CONNECTIONS_MGR);
 
   if (_do)
     {
@@ -1390,6 +1534,7 @@ do_or_undo_move_or_copy (
           /* get outputs & sends */
           Track * outputs[num_tracks];
           ChannelSend * sends[num_tracks][STRIP_SIZE];
+          GPtrArray * send_conns[num_tracks][STRIP_SIZE];
           for (int i = 0; i < num_tracks; i++)
             {
               Track * own_track =
@@ -1407,9 +1552,14 @@ do_or_undo_move_or_copy (
                         own_track->channel->sends[j];
                       sends[i][j] =
                         channel_send_clone (send);
-                      sends[i][j]->dest_track =
-                        channel_send_get_target_track (
-                          send, own_track);
+                      send_conns[i][j] =
+                        g_ptr_array_new ();
+
+                      channel_send_append_connection (
+                        send,
+                        self->connections_mgr_before,
+                        send_conns[i][j]);
+
                     }
                 }
               else
@@ -1446,7 +1596,8 @@ do_or_undo_move_or_copy (
                   /* remove output */
                   track->channel->has_output =
                     false;
-                  track->channel->output_pos = -1;
+                  track->channel->
+                    output_name_hash = 0;
 
                   /* remove sends */
                   for (int j = 0; j < STRIP_SIZE;
@@ -1487,14 +1638,15 @@ do_or_undo_move_or_copy (
                   Track * out_track =
                     channel_get_output_track (
                       track->channel);
-                  /*g_warn_if_reached ();*/
                   group_target_track_remove_child (
-                    out_track, track->pos,
+                    out_track,
+                    track_get_name_hash (track),
                     F_DISCONNECT,
                     F_NO_RECALC_GRAPH,
                     F_NO_PUBLISH_EVENTS);
                   group_target_track_add_child (
-                    outputs[i], track->pos,
+                    outputs[i],
+                    track_get_name_hash (track),
                     F_CONNECT, F_NO_RECALC_GRAPH,
                     F_NO_PUBLISH_EVENTS);
                 }
@@ -1506,55 +1658,61 @@ do_or_undo_move_or_copy (
                     {
                       ChannelSend * own_send =
                         sends[i][j];
-                      Track * target_track =
-                        own_send->dest_track;
+                      GPtrArray * own_conns =
+                        send_conns[i][j];
                       ChannelSend * track_send =
                         track->channel->sends[j];
-                      if (target_track)
+                      channel_send_copy_values (
+                        track_send, own_send);
+                      if (own_conns->len > 0
+                          &&
+                          track->out_signal_type == TYPE_AUDIO)
                         {
-                          switch (track->out_signal_type)
-                            {
-                            case TYPE_AUDIO:
-                              track_send->dest_l_id.
-                                track_pos =
-                                  target_track->pos;
-                              track_send->dest_l_id.
-                                plugin_id.track_pos =
-                                  target_track->pos;
-                              track_send->dest_r_id.
-                                track_pos =
-                                  target_track->pos;
-                              track_send->dest_r_id.
-                                plugin_id.track_pos =
-                                  target_track->pos;
-                              break;
-                            case TYPE_EVENT:
-                              track_send->dest_midi_id.
-                                track_pos =
-                                  target_track->pos;
-                              track_send->dest_midi_id.
-                                plugin_id.track_pos =
-                                  target_track->pos;
-                              break;
-                            default:
-                              break;
-                            }
+                          PortConnection * conn =
+                            g_ptr_array_index (
+                              own_conns, 0);
+                          port_connections_manager_ensure_connect (
+                            PORT_CONNECTIONS_MGR,
+                            &track_send->stereo_out->l->id,
+                            conn->dest_id, 1.f,
+                            F_LOCKED, F_ENABLE);
+                          conn =
+                            g_ptr_array_index (
+                              own_conns, 1);
+                          port_connections_manager_ensure_connect (
+                            PORT_CONNECTIONS_MGR,
+                            &track_send->stereo_out->r->id,
+                            conn->dest_id, 1.f,
+                            F_LOCKED, F_ENABLE);
+                        }
+                      else if (
+                        own_conns->len > 0
+                        &&
+                        track->out_signal_type == TYPE_EVENT)
+                        {
+                          PortConnection * conn =
+                            g_ptr_array_index (
+                              own_conns, 0);
+                          port_connections_manager_ensure_connect (
+                            PORT_CONNECTIONS_MGR,
+                            &track_send->midi_out->id,
+                            conn->dest_id, 1.f,
+                            F_LOCKED, F_ENABLE);
                         }
 
-                      track_send->enabled->control =
-                          own_send->enabled->
-                            control;
-                      channel_send_update_connections (
-                        track_send);
                       channel_send_free (own_send);
+                      g_ptr_array_unref (own_conns);
                     }
-                }
-            }
+
+                } /* endif track has channel */
+
+            } /* endforeach track */
 
           EVENTS_PUSH (ET_TRACK_ADDED, NULL);
           EVENTS_PUSH (
             ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
-        }
+
+        } /* endif copy */
 
       if (inside)
         {
@@ -1668,6 +1826,12 @@ do_or_undo_move_or_copy (
          self->tls_before->num_tracks;
     }
 
+  /* restore connections */
+  save_or_load_port_connections (self, _do);
+
+  port_connections_manager_print (
+    PORT_CONNECTIONS_MGR);
+
   tracklist_validate (TRACKLIST);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -1689,6 +1853,8 @@ do_or_undo_edit (
 
   int * tracks = self->tracks_before;
   int num_tracks = self->num_tracks;
+
+  bool need_recalc_graph = false;
 
   for (int i = 0; i < num_tracks; i++)
     {
@@ -1814,16 +1980,27 @@ do_or_undo_edit (
           {
             g_return_val_if_fail (ch, -1);
 
-            int cur_direct_out =
-              ch->has_output ? ch->output_pos : -1;
+            int cur_direct_out_pos = -1;
+            if (ch->has_output)
+              {
+                Track * cur_direct_out_track =
+                  channel_get_output_track (ch);
+                cur_direct_out_pos =
+                  cur_direct_out_track->pos;
+              }
 
             /* disconnect from the current track */
             if (ch->has_output)
               {
+                Track * target_track =
+                  tracklist_find_track_by_name_hash (
+                    TRACKLIST,
+                    ch->output_name_hash);
                 group_target_track_remove_child (
-                  TRACKLIST->tracks[ch->output_pos],
-                  ch->track->pos, F_DISCONNECT,
-                  F_RECALC_GRAPH,
+                  target_track,
+                  track_get_name_hash (ch->track),
+                  F_DISCONNECT,
+                  F_NO_RECALC_GRAPH,
                   F_PUBLISH_EVENTS);
               }
 
@@ -1839,13 +2016,17 @@ do_or_undo_edit (
                   target_pos != ch->track->pos, -1);
                 group_target_track_add_child (
                   TRACKLIST->tracks[target_pos],
-                  ch->track->pos, F_CONNECT,
-                  F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+                  track_get_name_hash (ch->track),
+                  F_CONNECT,
+                  F_NO_RECALC_GRAPH,
+                  F_PUBLISH_EVENTS);
               }
 
             /* remember previous pos */
             self->ival_before[i] =
-              cur_direct_out;
+              cur_direct_out_pos;
+
+            need_recalc_graph = true;
           }
           break;
         case EDIT_TRACK_ACTION_TYPE_RENAME:
@@ -1915,14 +2096,15 @@ do_or_undo_edit (
           break;
         }
 
-      if (ZRYTHM_TESTING ||
-          self->edit_type ==
-            EDIT_TRACK_ACTION_TYPE_DIRECT_OUT)
-        {
-          track_validate (track);
-        }
-
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
+    }
+
+  /* restore connections */
+  save_or_load_port_connections (self, _do);
+
+  if (need_recalc_graph)
+    {
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
   return 0;
@@ -2270,6 +2452,13 @@ tracklist_selections_action_free (
 
   g_free_and_null (self->base64_midi);
   g_free_and_null (self->file_basename);
+
+  object_free_w_func_and_null (
+    port_connections_manager_free,
+    self->connections_mgr_before);
+  object_free_w_func_and_null (
+    port_connections_manager_free,
+    self->connections_mgr_after);
 
   object_zero_and_free (self);
 }

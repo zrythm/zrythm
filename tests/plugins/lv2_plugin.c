@@ -174,7 +174,8 @@ test_save_state_w_files (void)
   position_set_to_bar (&end_pos, 3);
   ZRegion * r =
     midi_region_new (
-      &pos, &end_pos, track->pos, 0, 0);
+      &pos, &end_pos,
+      track_get_name_hash (track), 0, 0);
   track_add_region (
     track, r, NULL, 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
@@ -202,7 +203,9 @@ test_save_state_w_files (void)
   /*g_assert_true (*/
     /*port_has_sound (track->channel->stereo_out->l));*/
 
-  lv2_state_save_to_file (pl->lv2, false);
+  LilvState * state =
+    lv2_state_save_to_file (pl->lv2, false);
+  lilv_state_free (state);
   check_state_contains_wav ();
 
   project_save (
@@ -347,20 +350,20 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/plugins/lv2_plugin/"
 
   g_test_add_func (
+    TEST_PREFIX "test save state with files",
+    (GTestFunc) test_save_state_w_files);
+  g_test_add_func (
+    TEST_PREFIX "test lots of params",
+    (GTestFunc) test_lots_of_params);
+  g_test_add_func (
     TEST_PREFIX "test lilv instance activation",
     (GTestFunc) test_lilv_instance_activation);
   g_test_add_func (
     TEST_PREFIX "test process",
     (GTestFunc) test_process);
   g_test_add_func (
-    TEST_PREFIX "test lots of params",
-    (GTestFunc) test_lots_of_params);
-  g_test_add_func (
     TEST_PREFIX "test reloading drops project",
     (GTestFunc) test_reloading_drops_project);
-  g_test_add_func (
-    TEST_PREFIX "test save state with files",
-    (GTestFunc) test_save_state_w_files);
 
   (void) check_state_contains_wav;
 

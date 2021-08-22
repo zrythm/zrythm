@@ -38,6 +38,8 @@ typedef struct AudioClip AudioClip;
  * @{
  */
 
+#define UNDO_MANAGER_SCHEMA_VERSION 1
+
 #define UNDO_MANAGER (PROJECT->undo_manager)
 
 /**
@@ -45,6 +47,8 @@ typedef struct AudioClip AudioClip;
  */
 typedef struct UndoManager
 {
+  int           schema_version;
+
   UndoStack *   undo_stack;
   UndoStack *   redo_stack;
 
@@ -55,6 +59,7 @@ typedef struct UndoManager
 static const cyaml_schema_field_t
   undo_manager_fields_schema[] =
 {
+  YAML_FIELD_INT (UndoManager, schema_version),
   YAML_FIELD_MAPPING_PTR (
     UndoManager, undo_stack,
     undo_stack_fields_schema),
@@ -170,6 +175,11 @@ void
 undo_manager_clear_stacks (
   UndoManager * self,
   bool          free);
+
+NONNULL
+UndoManager *
+undo_manager_clone (
+  const UndoManager * src);
 
 NONNULL
 void

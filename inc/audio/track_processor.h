@@ -162,9 +162,6 @@ typedef struct TrackProcessor
   float            l_port_db;
   float            r_port_db;
 
-  /** Position of parent Track. */
-  int              track_pos;
-
   /** Pointer to parent track. */
   Track *          track;
 
@@ -219,8 +216,6 @@ track_processor_fields_schema[] =
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
     TrackProcessor, channel_pressure,
     port_schema, 16),
-  YAML_FIELD_INT (
-    TrackProcessor, track_pos),
 
   CYAML_FIELD_END
 };
@@ -343,10 +338,11 @@ track_processor_connect_to_plugin (
   TrackProcessor * self,
   Plugin         * pl);
 
+#if 0
 void
-track_processor_set_track_pos (
-  TrackProcessor * self,
-  int              pos);
+track_processor_update_track_name_hash (
+  TrackProcessor * self);
+#endif
 
 void
 track_processor_append_ports (

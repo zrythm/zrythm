@@ -201,6 +201,7 @@ clean_duplicates_and_copy (
   int *               num_events)
 {
   MPMCQueue * q = self->ev_queue;
+  g_return_if_fail (q);
 
   /* only add events once to new array while
    * popping */
@@ -857,7 +858,7 @@ engine_init_loaded (
 /**
  * Create a new audio engine.
  *
- * This only initializes the engine and doe snot
+ * This only initializes the engine and does not
  * connect to the backend.
  */
 AudioEngine *
@@ -867,6 +868,8 @@ engine_new (
   g_message ("Creating audio engine...");
 
   AudioEngine * self = object_new (AudioEngine);
+  self->schema_version =
+    AUDIO_ENGINE_SCHEMA_VERSION;
 
   if (project)
     {
@@ -874,7 +877,7 @@ engine_new (
     }
 
   self->sample_rate = 44000;
-  self->transport = transport_new (self);
+  self->transport = transport_new (self, true);
   self->pool = audio_pool_new ();
   self->control_room = control_room_new ();
   self->sample_processor = sample_processor_new ();
@@ -1012,6 +1015,24 @@ engine_resume (
 
   g_atomic_int_set (
     &self->run, (guint) state->running);
+}
+
+/**
+ * Waits for n processing cycles to finish.
+ *
+ * Used during tests.
+ */
+void
+engine_wait_n_cycles (
+  AudioEngine * self,
+  int           n)
+{
+  unsigned long expected_cycle =
+    self->cycle + (unsigned long) n;
+  while (self->cycle < expected_cycle)
+    {
+      g_usleep (12);
+    }
 }
 
 /**
@@ -1659,7 +1680,7 @@ finalize_processing:
     self, total_frames_remaining,
     total_frames_to_process);
 
-  /*self->cycle++;*/
+  self->cycle++;
 
   g_atomic_int_set (&self->cycle_running, 0);
 
@@ -1936,16 +1957,58 @@ engine_stop_events (
   engine_process_events (self);
 }
 
+/**
+ * Clones the audio engine.
+ *
+ * To be used for serialization.
+ */
+AudioEngine *
+engine_clone (
+  const AudioEngine * src)
+{
+  AudioEngine * self = object_new (AudioEngine);
+  self->schema_version =
+    AUDIO_ENGINE_SCHEMA_VERSION;
+
+  self->transport_type = src->transport_type;
+  self->sample_rate = src->sample_rate;
+  self->frames_per_tick = src->frames_per_tick;
+  self->monitor_out =
+    stereo_ports_clone (src->monitor_out);
+  self->midi_editor_manual_press =
+    port_clone (src->midi_editor_manual_press);
+  self->midi_in = port_clone (src->midi_in);
+  self->transport =
+    transport_clone (src->transport);
+  self->pool = audio_pool_clone (src->pool);
+  self->control_room =
+    control_room_clone (src->control_room);
+  self->sample_processor =
+    sample_processor_clone (src->sample_processor);
+  self->hw_in_processor =
+    hardware_processor_clone (
+      src->hw_in_processor);
+  self->hw_out_processor =
+    hardware_processor_clone (
+      src->hw_out_processor);
+
+  return self;
+}
+
 void
 engine_free (
   AudioEngine * self)
 {
   g_debug ("freeing engine...");
 
-  engine_stop_events (self);
+  if (self->process_source_id)
+    engine_stop_events (self);
 
-  /* terminate graph threads */
-  graph_terminate (self->router->graph);
+  if (self->router)
+    {
+      /* terminate graph threads */
+      graph_terminate (self->router->graph);
+    }
 
   if (self->activated)
     {
@@ -1984,14 +2047,18 @@ engine_free (
       break;
     }
 
-  stereo_ports_disconnect (self->monitor_out);
-  stereo_ports_free (self->monitor_out);
+  if (self == AUDIO_ENGINE)
+    stereo_ports_disconnect (self->monitor_out);
+  object_free_w_func_and_null (
+    stereo_ports_free, self->monitor_out);
 
-  port_disconnect_all (self->midi_in);
+  if (self == AUDIO_ENGINE)
+    port_disconnect_all (self->midi_in);
   object_free_w_func_and_null (
     port_free, self->midi_in);
-  port_disconnect_all (
-    self->midi_editor_manual_press);
+  if (self == AUDIO_ENGINE)
+    port_disconnect_all (
+      self->midi_editor_manual_press);
   object_free_w_func_and_null (
     port_free, self->midi_editor_manual_press);
 
@@ -2010,6 +2077,13 @@ engine_free (
     object_pool_free, self->ev_pool);
   object_free_w_func_and_null (
     mpmc_queue_free, self->ev_queue);
+
+  object_free_w_func_and_null (
+    hardware_processor_free,
+    self->hw_in_processor);
+  object_free_w_func_and_null (
+    hardware_processor_free,
+    self->hw_out_processor);
 
   object_zero_and_free (self);
 

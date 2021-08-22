@@ -18,6 +18,7 @@
  */
 
 #include "actions/port_connection_action.h"
+#include "audio/port_connections_manager.h"
 #include "gui/widgets/port_connections_tree.h"
 #include "project.h"
 #include "utils/error.h"
@@ -118,55 +119,50 @@ create_model ()
       G_TYPE_POINTER);
 
   /* add data to the list store */
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  Port * port;
-  port_get_all (
-    &ports, &max_size, true, &num_ports);
-  for (int i = 0; i < num_ports; i++)
+  for (int i = 0;
+       i < PORT_CONNECTIONS_MGR->num_connections;
+       i++)
     {
-      port = ports[i];
+      PortConnection * conn =
+        PORT_CONNECTIONS_MGR->connections[i];
 
-      char path[600];
-      port_get_full_designation (port, path);
+      /* skip locked connections */
+      if (conn->locked)
+        continue;
 
-      for (int j = 0; j < port->num_dests; j++)
-        {
-          /* skip locked connections */
-          if (port->dest_locked[j])
-            continue;
+      Port * src_port =
+        port_find_from_identifier (conn->src_id);
+      Port * dest_port =
+        port_find_from_identifier (conn->dest_id);
+      g_return_val_if_fail (
+        IS_PORT_AND_NONNULL (src_port)
+        && IS_PORT_AND_NONNULL (dest_port),
+        NULL);
 
-          Port * dest = port->dests[j];
+      char src_path[600];
+      port_get_full_designation (
+        src_port, src_path);
+      char dest_path[600];
+      port_get_full_designation (
+        dest_port, dest_path);
 
-          /* get destination */
-          char dest_path[600];
-          port_get_full_designation (
-            dest, dest_path);
+      /* get multiplier */
+      char mult_str[40];
+      sprintf (
+        mult_str, "%.4f", (double) conn->multiplier);
 
-          /* get multiplier */
-          char mult_str[40];
-          sprintf (
-            mult_str, "%.4f",
-            (double)
-            port_get_multiplier (port, dest));
-
-          gtk_list_store_append (
-            store, &iter);
-          gtk_list_store_set (
-            store, &iter,
-            COL_ENABLED,
-            port_get_enabled (port, dest),
-            COL_SRC_PATH, path,
-            COL_DEST_PATH, dest_path,
-            COL_MULTIPLIER, mult_str,
-            COL_SRC_PORT, port,
-            COL_DEST_PORT, dest,
-            -1);
-        }
+      gtk_list_store_append (
+        store, &iter);
+      gtk_list_store_set (
+        store, &iter,
+        COL_ENABLED, conn->enabled,
+        COL_SRC_PATH, src_path,
+        COL_DEST_PATH, dest_path,
+        COL_MULTIPLIER, mult_str,
+        COL_SRC_PORT, src_port,
+        COL_DEST_PORT, dest_port,
+        -1);
     }
-  free (ports);
 
   return GTK_TREE_MODEL (store);
 }

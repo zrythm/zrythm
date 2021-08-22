@@ -88,6 +88,21 @@ port_action_new_reset_control (
       port->deff, F_NOT_NORMALIZED, error);
 }
 
+PortAction *
+port_action_clone (
+  const PortAction * src)
+{
+  PortAction * self = object_new (PortAction);
+  self->parent_instance = src->parent_instance;
+
+  self->type = src->type;
+  port_identifier_copy (
+    &self->port_id, &src->port_id);
+  self->val = src->val;
+
+  return self;
+}
+
 bool
 port_action_perform (
   PortActionType   type,

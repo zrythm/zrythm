@@ -52,14 +52,37 @@ port_connection_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_PORT_CONNECTION);
 
-  port_identifier_copy (
-    &self->src_port_id, src_id);
-  port_identifier_copy (
-    &self->dest_port_id, dest_id);
+  /* check for existing connection to get values */
+  const PortConnection * conn =
+    port_connections_manager_find_connection (
+      PORT_CONNECTIONS_MGR, src_id, dest_id);
+  if (conn)
+    self->connection = port_connection_clone (conn);
+  else
+    self->connection =
+      port_connection_new (
+        src_id, dest_id, 1.f, F_NOT_LOCKED,
+        F_ENABLE);
   self->type = type;
   self->val = new_val;
 
   return ua;
+}
+
+PortConnectionAction *
+port_connection_action_clone (
+  const PortConnectionAction * src)
+{
+  PortConnectionAction * self =
+    object_new (PortConnectionAction);
+  self->parent_instance = src->parent_instance;
+
+  self->type = src->type;
+  self->connection =
+    port_connection_clone (src->connection);
+  self->val = src->val;
+
+  return self;
 }
 
 bool
@@ -83,9 +106,17 @@ port_connection_action_do_or_undo (
   GError **              error)
 {
   Port * src =
-    port_find_from_identifier (&self->src_port_id);
+    port_find_from_identifier (
+      self->connection->src_id);
   Port * dest =
-    port_find_from_identifier (&self->dest_port_id);
+    port_find_from_identifier (
+      self->connection->dest_id);
+  g_return_val_if_fail (src && dest, -1);
+  PortConnection * prj_connection =
+    port_connections_manager_find_connection (
+      PORT_CONNECTIONS_MGR,
+      self->connection->src_id,
+      self->connection->dest_id);
 
   switch (self->type)
     {
@@ -102,27 +133,35 @@ port_connection_action_do_or_undo (
                 "ports cannot be connected");
               return -1;
             }
-          port_connect (src, dest, false);
+          port_connections_manager_ensure_connect (
+            PORT_CONNECTIONS_MGR,
+            &src->id, &dest->id, 1.f,
+            F_NOT_LOCKED, F_ENABLE);
+
+          /* set base value if cv -> control */
+          if (src->id.type == TYPE_CV &&
+              dest->id.type == TYPE_CONTROL)
+            dest->base_value = dest->control;
         }
       else
         {
-          port_disconnect (src, dest);
+          port_connections_manager_ensure_disconnect (
+            PORT_CONNECTIONS_MGR,
+            &src->id, &dest->id);
         }
       router_recalc_graph (ROUTER, F_NOT_SOFT);
       break;
     case PORT_CONNECTION_ENABLE:
-      port_set_enabled (
-        src, dest, _do ? true : false);
+      prj_connection->enabled = _do ? true : false;
       break;
     case PORT_CONNECTION_DISABLE:
-      port_set_enabled (
-        src, dest, _do ? false : true);
+      prj_connection->enabled = _do ? false : true;
       break;
     case PORT_CONNECTION_CHANGE_MULTIPLIER:
       {
         float val_before =
-          port_get_multiplier (src, dest);
-        port_set_multiplier (src, dest, self->val);
+          prj_connection->multiplier;
+        prj_connection->multiplier = self->val;
         self->val = val_before;
       }
       break;
@@ -186,5 +225,8 @@ void
 port_connection_action_free (
   PortConnectionAction * self)
 {
+  object_free_w_func_and_null (
+    port_connection_free, self->connection);
+
   object_zero_and_free (self);
 }

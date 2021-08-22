@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,20 +34,20 @@ typedef struct _KnobWidget KnobWidget;
 typedef struct _BarSliderWidget BarSliderWidget;
 typedef struct _PortConnectionsPopoverWidget
   PortConnectionsPopoverWidget;
+typedef struct PortConnection PortConnection;
 
 typedef struct _PortConnectionRowWidget
 {
   GtkEventBox      parent_instance;
 
-  Port *           src;
-  Port *           dest;
+  PortConnection * connection;
 
   /**
    * If this is 1, src is the input port and dest
    * is the current one, otherwise dest is the
    * output port and src is the current one.
    */
-  int              is_input;
+  bool             is_input;
 
   /** Overlay to hold the slider and other
    * widgets. */
@@ -67,8 +67,7 @@ typedef struct _PortConnectionRowWidget
 PortConnectionRowWidget *
 port_connection_row_widget_new (
   PortConnectionsPopoverWidget * parent,
-  Port * src,
-  Port * dest,
-  int    is_input);
+  const PortConnection *         connection,
+  bool                           is_input);
 
 #endif

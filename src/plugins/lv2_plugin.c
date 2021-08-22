@@ -742,10 +742,21 @@ create_port (
           lilv_plugin, lilv_port);
       if (sp)
         {
+          /* clear previous scale points */
+          for (int i = 0;
+               i < port->num_scale_points; i++)
+            {
+              object_free_w_func_and_null (
+                port_scale_point_free,
+                port->scale_points[i]);
+            }
+          port->num_scale_points = 0;
+
+          size_t num_scale_points =
+            lilv_scale_points_size (sp);
           port->scale_points =
             object_new_n (
-              lilv_scale_points_size (sp),
-              PortScalePoint);
+              num_scale_points, PortScalePoint *);
 
           LILV_FOREACH (scale_points, s, sp)
             {
@@ -759,17 +770,14 @@ create_port (
                       p)))
                 {
                   port->scale_points[
-                    port->num_scale_points].val =
-                      lilv_node_as_float(
-                        lilv_scale_point_get_value (
-                          p));
-                  port->scale_points[
-                    port->num_scale_points].label =
-                    g_strdup (
-                      lilv_node_as_string (
-                        lilv_scale_point_get_label(
-                          p)));
-                  port->num_scale_points++;
+                    port->num_scale_points++] =
+                      port_scale_point_new (
+                        lilv_node_as_float(
+                          lilv_scale_point_get_value (
+                            p)),
+                        lilv_node_as_string (
+                          lilv_scale_point_get_label(
+                            p)));
                 }
 
               /* TODO: Non-float scale points */
@@ -778,7 +786,7 @@ create_port (
           qsort (
             port->scale_points,
             (size_t) port->num_scale_points,
-            sizeof (PortScalePoint),
+            sizeof (PortScalePoint *),
             port_scale_point_cmp);
           lilv_scale_points_free (sp);
         }
@@ -971,6 +979,21 @@ lv2_plugin_init_loaded (
           &lv2_port->port->id));
     }
 #endif
+}
+
+/**
+ * Comparator.
+ */
+static int
+param_port_cmp (
+  const void * _a,
+  const void * _b)
+{
+  const Lv2Parameter * a =
+    (const Lv2Parameter *) _a;
+  const Lv2Parameter * b =
+    (const Lv2Parameter *) _b;
+  return (int) a->urid - (int) b->urid;
 }
 
 /**
@@ -1198,6 +1221,9 @@ lv2_plugin_get_parameters (
         } /* end foreach property */
       lilv_nodes_free (properties);
     } /* end loop 2 */
+
+  /* sort parameters */
+  g_array_sort (params_array, param_port_cmp);
 }
 
 /**

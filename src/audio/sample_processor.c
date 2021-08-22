@@ -24,6 +24,7 @@
 #include "audio/midi_event.h"
 #include "audio/midi_file.h"
 #include "audio/port.h"
+#include "audio/router.h"
 #include "audio/sample_processor.h"
 #include "audio/tempo_track.h"
 #include "audio/tracklist.h"
@@ -621,7 +622,7 @@ sample_processor_queue_file (
       Plugin * pl =
         plugin_new_from_setting (
           self->instrument_setting,
-          instrument_track->pos,
+          track_get_name_hash (instrument_track),
           PLUGIN_SLOT_INSTRUMENT, -1, &err);
       if (!pl)
         {
@@ -651,7 +652,7 @@ sample_processor_queue_file (
         instrument_track->channel,
         PLUGIN_SLOT_INSTRUMENT,
         pl->id.slot, pl, F_NO_CONFIRM,
-        F_NOT_MOVING_PLUGIN, F_NO_GEN_AUTOMATABLES,
+        F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       int num_tracks =
@@ -675,7 +676,8 @@ sample_processor_queue_file (
 
           /* route track to instrument */
           group_target_track_add_child (
-            instrument_track, track->pos,
+            instrument_track,
+            track_get_name_hash (track),
             F_CONNECT, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
 
@@ -684,7 +686,7 @@ sample_processor_queue_file (
           ZRegion * mr =
             midi_region_new_from_midi_file (
               &start_pos, file->abs_path,
-              track->pos, 0, 0, i);
+              track_get_name_hash (track), 0, 0, i);
           if (mr)
             {
               track_add_region (
@@ -724,6 +726,8 @@ sample_processor_queue_file (
   /* add some room to end pos */
   position_add_bars (&self->file_end_pos, 1);
 
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
+
   engine_resume (AUDIO_ENGINE, &state);
 }
 
@@ -751,11 +755,26 @@ sample_processor_disconnect (
   fader_disconnect_all (self->fader);
 }
 
+SampleProcessor *
+sample_processor_clone (
+  const SampleProcessor * src)
+{
+  SampleProcessor * self =
+    object_new (SampleProcessor);
+  self->schema_version =
+    SAMPLE_PROCESSOR_SCHEMA_VERSION;
+
+  self->fader = fader_clone (src->fader);
+
+  return self;
+}
+
 void
 sample_processor_free (
   SampleProcessor * self)
 {
-  sample_processor_disconnect (self);
+  if (self == SAMPLE_PROCESSOR)
+    sample_processor_disconnect (self);
 
   object_free_w_func_and_null (
     tracklist_free, self->tracklist);

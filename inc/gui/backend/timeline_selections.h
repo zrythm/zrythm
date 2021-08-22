@@ -69,6 +69,9 @@ typedef struct TimelineSelections
   size_t             markers_size;
 
   /** Visible track index, used during copying. */
+  int                region_track_vis_index;
+
+  /** Visible track index, used during copying. */
   int                chord_track_vis_index;
 
   /** Visible track index, used during copying. */
@@ -90,6 +93,8 @@ static const cyaml_schema_field_t
     scale_object_schema),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     TimelineSelections, markers, marker_schema),
+  YAML_FIELD_INT (
+    TimelineSelections, region_track_vis_index),
   YAML_FIELD_INT (
     TimelineSelections, chord_track_vis_index),
   YAML_FIELD_INT (

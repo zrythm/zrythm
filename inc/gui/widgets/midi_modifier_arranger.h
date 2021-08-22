@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,7 +26,7 @@
 #include <gtk/gtk.h>
 
 #define MW_MIDI_MODIFIER_ARRANGER \
-  MW_MIDI_EDITOR_SPACE->modifier_arranger
+  (MW_MIDI_EDITOR_SPACE->modifier_arranger)
 
 typedef struct Velocity Velocity;
 typedef struct _VelocityWidget VelocityWidget;

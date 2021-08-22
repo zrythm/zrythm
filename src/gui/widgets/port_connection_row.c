@@ -21,6 +21,8 @@
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/port.h"
+#include "audio/port_connection.h"
+#include "audio/port_connections_manager.h"
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/port_connection_row.h"
@@ -28,6 +30,7 @@
 #include "project.h"
 #include "utils/error.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -45,7 +48,8 @@ on_enable_toggled (
   GError * err = NULL;
   bool ret =
     port_connection_action_perform_enable (
-      &self->src->id, &self->dest->id,
+      self->connection->src_id,
+      self->connection->dest_id,
       gtk_toggle_button_get_active (btn), &err);
   if (!ret)
     {
@@ -66,7 +70,8 @@ on_del_clicked (
   GError * err = NULL;
   bool ret =
     port_connection_action_perform_disconnect (
-      &self->src->id, &self->dest->id, &err);
+      self->connection->src_id,
+      self->connection->dest_id, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -78,29 +83,36 @@ on_del_clicked (
     self->parent);
 }
 
+static void
+finalize (
+  PortConnectionRowWidget * self)
+{
+  object_free_w_func_and_null (
+    port_connection_free, self->connection);
+
+  G_OBJECT_CLASS (
+    port_connection_row_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
 /**
  * Creates the popover.
  */
 PortConnectionRowWidget *
 port_connection_row_widget_new (
   PortConnectionsPopoverWidget * parent,
-  Port * src,
-  Port * dest,
-  int    is_input)
+  const PortConnection *         connection,
+  bool                           is_input)
 {
   PortConnectionRowWidget * self =
     g_object_new (
       PORT_CONNECTION_ROW_WIDGET_TYPE, NULL);
 
-  self->src = src;
-  self->dest = dest;
+  self->connection =
+    port_connection_clone (connection);
+
   self->is_input = is_input;
   self->parent = parent;
-
-  /* get connection locked/enabled */
-  int dest_idx = port_get_dest_index (src, dest);
-  int enabled = src->dest_enabled[dest_idx];
-  int locked = src->dest_locked[dest_idx];
 
   /* create the widgets and pack */
   GtkWidget * box =
@@ -111,7 +123,8 @@ port_connection_row_widget_new (
   GtkToggleButton * btn =
     z_gtk_toggle_button_new_with_icon (
       "network-connect");
-  gtk_toggle_button_set_active (btn, enabled);
+  gtk_toggle_button_set_active (
+    btn, connection->enabled);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   gtk_box_pack_start (
     GTK_BOX (box), GTK_WIDGET (btn), 0, 0, 0);
@@ -134,14 +147,21 @@ port_connection_row_widget_new (
 
   /* bar slider */
   char designation[600];
+  Port * port = NULL;
   if (is_input)
-    port_get_full_designation (src, designation);
+    port_find_from_identifier (
+      connection->src_id);
   else
-    port_get_full_designation (dest, designation);
+    port =
+      port_find_from_identifier (
+        connection->src_id);
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (port), NULL);
+  port_get_full_designation (port, designation);
   strcat (designation, " ");
   self->slider =
-    bar_slider_widget_new_port (
-      src, dest, designation);
+    bar_slider_widget_new_port_connection (
+      connection, designation);
   gtk_container_add (
     GTK_CONTAINER (self->overlay),
     GTK_WIDGET (self->slider));
@@ -165,7 +185,8 @@ port_connection_row_widget_new (
 
   gtk_container_add (GTK_CONTAINER (self), box);
 
-  gtk_widget_set_sensitive (box, !locked);
+  gtk_widget_set_sensitive (
+    box, !connection->locked);
 
   return self;
 }
@@ -174,6 +195,9 @@ static void
 port_connection_row_widget_class_init (
   PortConnectionRowWidgetClass * _klass)
 {
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void

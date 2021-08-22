@@ -55,10 +55,21 @@ typedef struct AudioPool
 {
   int            schema_version;
 
-  /** The clips. */
+  /**
+   * Audio clips.
+   *
+   * May contain NULLs.
+   */
   AudioClip **   clips;
 
-  /** Clip counter. */
+  /**
+   * Clip counter.
+   *
+   * This is not the actual number of clips in the
+   * pool - it may contain NULL clips. This is to
+   * make identifying and managing clips easier
+   * by their IDs.
+   */
   int            num_clips;
 
   /** Array sizes. */
@@ -202,6 +213,13 @@ void
 audio_pool_write_to_disk (
   AudioPool * self,
   bool        is_backup);
+
+/**
+ * To be used during serialization.
+ */
+AudioPool *
+audio_pool_clone (
+  const AudioPool * src);
 
 void
 audio_pool_free (

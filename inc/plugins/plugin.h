@@ -278,6 +278,9 @@ typedef struct Plugin
 
   /** Whether the plugin is used for functions. */
   bool              is_function;
+
+  /** Owner track. */
+  Track *           track;
 } Plugin;
 
 static const cyaml_schema_field_t
@@ -357,8 +360,8 @@ plugin_add_out_port (
  * plugin (LV2, etc.)
  * using the given setting.
  *
- * @param track_pos The expected position of the
- *   track the plugin will be in.
+ * @param track_name_hash The expected name hash
+ *   of track the plugin will be in.
  * @param slot The expected slot the plugin will
  *   be in.
  */
@@ -366,7 +369,7 @@ NONNULL_ARGS (1)
 Plugin *
 plugin_new_from_setting (
   PluginSetting * setting,
-  int             track_pos,
+  unsigned int    track_name_hash,
   PluginSlotType  slot_type,
   int             slot,
   GError **       error);
@@ -377,7 +380,7 @@ plugin_new_from_setting (
 Plugin *
 plugin_new_dummy (
   ZPluginCategory cat,
-  int            track_pos,
+  unsigned int    track_name_hash,
   int            slot);
 
 /**
@@ -443,7 +446,7 @@ plugin_remove_ats_from_automation_tracklist (
 NONNULL_ARGS (1)
 Plugin *
 plugin_clone (
-  Plugin *  pl,
+  Plugin *  src,
   bool      src_is_project,
   GError ** error);
 
@@ -507,7 +510,7 @@ NONNULL
 void
 plugin_set_track_and_slot (
   Plugin *       pl,
-  int            track_pos,
+  unsigned int    track_name_hash,
   PluginSlotType slot_type,
   int            slot);
 
@@ -683,13 +686,13 @@ plugin_instantiate (
   GError **   error);
 
 /**
- * Sets the track and track_pos on the plugin.
+ * Sets the track name hash on the plugin.
  */
 NONNULL
 void
-plugin_set_track_pos (
-  Plugin * pl,
-  int      pos);
+plugin_set_track_name_hash (
+  Plugin *     pl,
+  unsigned int track_name_hash);
 
 /**
  * Process plugin.

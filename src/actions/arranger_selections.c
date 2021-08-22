@@ -850,6 +850,116 @@ arranger_selections_action_new_quantize (
   return ua;
 }
 
+ArrangerSelectionsAction *
+arranger_selections_action_clone (
+  const ArrangerSelectionsAction * src)
+{
+  ArrangerSelectionsAction * self =
+    object_new (ArrangerSelectionsAction);
+
+  self->parent_instance = src->parent_instance;
+  self->type = src->type;
+
+  if (src->sel)
+    self->sel =
+      arranger_selections_clone (src->sel);
+  if (src->sel_after)
+    self->sel_after =
+      arranger_selections_clone (src->sel_after);
+
+#define SET_SEL(cc,sc,after) \
+  if (after) \
+    self->sc##_sel_after = \
+      (cc##Selections *) self->sel_after; \
+  else \
+    self->sc##_sel = \
+      (cc##Selections *) self->sel; \
+  break
+
+  if (self->sel)
+    {
+      switch (self->sel->type)
+        {
+        case ARRANGER_SELECTIONS_TYPE_CHORD:
+          SET_SEL (Chord, chord, false);
+        case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+          SET_SEL (Timeline, tl, false);
+        case ARRANGER_SELECTIONS_TYPE_MIDI:
+          SET_SEL (MidiArranger, ma, false);
+        case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+          SET_SEL (Automation, automation, false);
+        case ARRANGER_SELECTIONS_TYPE_AUDIO:
+          SET_SEL (Audio, audio, false);
+        default:
+          g_return_val_if_reached (NULL);
+        }
+    }
+  if (self->sel_after)
+    {
+      switch (self->sel_after->type)
+        {
+        case ARRANGER_SELECTIONS_TYPE_CHORD:
+          SET_SEL (Chord, chord, true);
+        case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+          SET_SEL (Timeline, tl, true);
+        case ARRANGER_SELECTIONS_TYPE_MIDI:
+          SET_SEL (MidiArranger, ma, true);
+        case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+          SET_SEL (Automation, automation, true);
+        case ARRANGER_SELECTIONS_TYPE_AUDIO:
+          SET_SEL (Audio, audio, true);
+        default:
+          g_return_val_if_reached (NULL);
+        }
+    }
+
+#undef SET_SEL
+
+  self->edit_type = src->edit_type;
+  self->resize_type = src->resize_type;
+  self->ticks = src->ticks;
+  self->delta_tracks = src->delta_tracks;
+  self->delta_lanes = src->delta_lanes;
+  self->delta_chords = src->delta_chords;
+  self->delta_pitch = src->delta_pitch;
+  self->delta_vel = src->delta_vel;
+  self->delta_normalized_amount =
+    src->delta_normalized_amount;
+  self->str = g_strdup (src->str);
+  self->pos = src->pos;
+
+  for (int i = 0; i < src->num_split_objs; i++)
+    {
+      ArrangerObject * r1 =
+        arranger_object_clone (src->r1[i]);
+      ArrangerObject * r2 =
+        arranger_object_clone (src->r2[i]);
+      self->r1[i] = r1;
+      self->r2[i] = r2;
+      switch (r1->type)
+        {
+        case ARRANGER_OBJECT_TYPE_REGION:
+          self->region_r1[i] = (ZRegion *) r1;
+          self->region_r2[i] = (ZRegion *) r2;
+          break;
+        case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+          self->mn_r1[i] = (MidiNote *) r1;
+          self->mn_r2[i] = (MidiNote *) r2;
+          break;
+        default:
+          g_return_val_if_reached (NULL);
+        }
+    }
+  self->num_split_objs = src->num_split_objs;
+
+  self->first_run = src->first_run;
+  if (src->opts)
+    self->opts =
+      quantize_options_clone (src->opts);
+
+  return self;
+}
+
 bool
 arranger_selections_action_perform_create_or_delete (
   ArrangerSelections * sel,
@@ -1306,7 +1416,9 @@ move_obj_by_tracks_and_lanes (
       if (obj->flags &
             ARRANGER_OBJECT_FLAG_NON_PROJECT)
         {
-          r->id.track_pos = track_to_move_to->pos;
+          r->id.track_name_hash =
+            track_get_name_hash (
+              track_to_move_to);
         }
       else
         {
@@ -1482,8 +1594,8 @@ do_or_undo_duplicate_or_link (
                   ZRegion * own_r =
                     (ZRegion *) objs[j];
                   if (own_id_before_move.
-                        track_pos ==
-                        own_r->id.track_pos &&
+                        track_name_hash ==
+                        own_r->id.track_name_hash &&
                       own_id_before_move.
                         lane_pos ==
                         own_r->id.lane_pos &&
@@ -1694,39 +1806,38 @@ do_or_undo_duplicate_or_link (
               orig_objs[i]->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
-              g_debug ("setting link groups");
-
               /* add link group to original object
                * if necessary */
               ArrangerObject * orig_obj =
                 arranger_object_find (
                   orig_objs[i]);
-              ZRegion * region =
+              ZRegion * orig_r =
                 (ZRegion *) orig_obj;
               g_return_val_if_fail (
-                region->id.idx >= 0, -1);
+                orig_r->id.idx >= 0, -1);
               region_create_link_group_if_none (
-                region);
+                orig_r);
               int link_group =
-                region->id.link_group;
+                orig_r->id.link_group;
 
               /* add link group to clone */
-              region = (ZRegion *) obj;
+              ZRegion * r_obj = (ZRegion *) obj;
               g_return_val_if_fail (
-                region->id.idx >= 0, -1);
+                r_obj->id.type == orig_r->id.type,
+                -1);
+              g_return_val_if_fail (
+                r_obj->id.idx >= 0, -1);
               region_set_link_group (
-                region, link_group, true);
-
-              region_link_group_manager_validate (
-                REGION_LINK_GROUP_MANAGER);
+                r_obj, link_group, true);
 
               /* remember link groups */
-              region = (ZRegion *) orig_objs[i];
+              ZRegion * r =
+                (ZRegion *) orig_objs[i];
               region_set_link_group (
-                region, link_group, true);
-              region = (ZRegion *) objs[i];
+                r, link_group, true);
+              r = (ZRegion *) objs[i];
               region_set_link_group (
-                region, link_group, true);
+                r, link_group, true);
 
               region_link_group_manager_validate (
                 REGION_LINK_GROUP_MANAGER);

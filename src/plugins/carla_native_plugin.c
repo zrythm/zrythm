@@ -1304,15 +1304,15 @@ create_ports (
                   carla_get_parameter_scalepoint_info (
                     self->host_handle, 0, i, j);
 
-              port->scale_points[j].val =
-                scale_point_info->value;
-              port->scale_points[j].label =
-                g_strdup (scale_point_info->label);
+              port->scale_points[j] =
+                port_scale_point_new (
+                  scale_point_info->value,
+                  scale_point_info->label);
             }
           qsort (
             port->scale_points,
             (size_t) port->num_scale_points,
-            sizeof (PortScalePoint),
+            sizeof (PortScalePoint *),
             port_scale_point_cmp);
 
           plugin_add_in_port (

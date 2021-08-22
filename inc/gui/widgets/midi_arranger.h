@@ -41,7 +41,7 @@ typedef struct Channel Channel;
  */
 
 #define MW_MIDI_ARRANGER \
-  MW_MIDI_EDITOR_SPACE->arranger
+  (MW_MIDI_EDITOR_SPACE->arranger)
 
 /**
  * Returns the note value (0-127) at y.

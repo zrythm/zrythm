@@ -75,8 +75,7 @@ init_common (
               /* bind */
               midi_mappings_bind_track (
                 self->cc_mappings, buf,
-                self->track_pos, cc_port,
-                F_NO_PUBLISH_EVENTS);
+                cc_port, F_NO_PUBLISH_EVENTS);
             }
         }
     }
@@ -278,7 +277,6 @@ track_processor_new (
   self->schema_version =
     TRACK_PROCESSOR_SCHEMA_VERSION;
   self->magic = TRACK_PROCESSOR_MAGIC;
-  self->track_pos = tr->pos;
   self->track = tr;
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
@@ -562,17 +560,6 @@ track_processor_get_track (
       IS_TRACK (self->track), NULL);
 
   return self->track;
-
-#if 0
-  g_return_val_if_fail (
-    self &&
-    self->track_pos < TRACKLIST->num_tracks, NULL);
-  Track * track =
-    TRACKLIST->tracks[self->track_pos];
-  g_return_val_if_fail (track, NULL);
-
-  return track;
-#endif
 }
 
 /**
@@ -969,8 +956,7 @@ track_processor_process (
           track_fill_events (
             tr, time_nfo, pr->midi_events, NULL);
         }
-      midi_events_dequeue (
-        pr->midi_events);
+      midi_events_dequeue (pr->midi_events);
 #if 0
       if (pr->midi_events->num_events > 0)
         {
@@ -1240,6 +1226,7 @@ track_processor_connect_to_prefader (
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
 
   Fader * prefader = tr->channel->prefader;
+  g_return_if_fail (IS_FADER (prefader));
 
   /* connect only if signals match */
   if (tr->in_signal_type == TYPE_AUDIO &&
@@ -1256,8 +1243,7 @@ track_processor_connect_to_prefader (
       tr->out_signal_type == TYPE_EVENT)
     {
       port_connect (
-        self->midi_out,
-        prefader->midi_in, 1);
+        self->midi_out, prefader->midi_in, 1);
     }
 }
 
@@ -1388,54 +1374,6 @@ track_processor_connect_to_plugin (
     }
 }
 
-void
-track_processor_set_track_pos (
-  TrackProcessor * self,
-  int              pos)
-{
-  self->track_pos = pos;
-
-  if (self->mono)
-    {
-      port_update_track_pos (
-        self->mono, NULL, pos);
-    }
-  if (self->input_gain)
-    {
-      port_update_track_pos (
-        self->input_gain, NULL, pos);
-    }
-  if (self->stereo_in)
-    {
-      port_update_track_pos (
-        self->stereo_in->l, NULL, pos);
-      port_update_track_pos (
-        self->stereo_in->r, NULL, pos);
-    }
-  if (self->stereo_out)
-    {
-      port_update_track_pos (
-        self->stereo_out->l, NULL, pos);
-      port_update_track_pos (
-        self->stereo_out->r, NULL, pos);
-    }
-  if (self->midi_in)
-    {
-      port_update_track_pos (
-        self->midi_in, NULL, pos);
-    }
-  if (self->midi_out)
-    {
-      port_update_track_pos (
-        self->midi_out, NULL, pos);
-    }
-  if (self->piano_roll)
-    {
-      port_update_track_pos (
-        self->piano_roll, NULL, pos);
-    }
-}
-
 /**
  * Frees the members of the TrackProcessor.
  */
@@ -1488,44 +1426,35 @@ track_processor_free (
       object_free_w_func_and_null (
         port_free, self->piano_roll);
     }
+
+#define FREE_CC(cc) \
+  if (cc) \
+    { \
+      port_disconnect_all (cc); \
+      object_free_w_func_and_null ( \
+        port_free, cc); \
+    }
+
   for (int i = 0; i < 16; i++)
     {
       Port * cc = NULL;
       for (int j = 0; j < 128; j++)
         {
           cc = self->midi_cc[i * 128 + j];
-          if (IS_PORT_AND_NONNULL (cc))
-            {
-              port_disconnect_all (cc);
-              object_free_w_func_and_null (
-                port_free, cc);
-            }
+          FREE_CC (cc);
         }
 
       cc = self->pitch_bend[i];
-      if (IS_PORT_AND_NONNULL (cc))
-        {
-          port_disconnect_all (cc);
-          object_free_w_func_and_null (
-            port_free, cc);
-        }
+      FREE_CC (cc);
 
       cc = self->poly_key_pressure[i];
-      if (IS_PORT_AND_NONNULL (cc))
-        {
-          port_disconnect_all (cc);
-          object_free_w_func_and_null (
-            port_free, cc);
-        }
+      FREE_CC (cc);
 
       cc = self->channel_pressure[i];
-      if (IS_PORT_AND_NONNULL (cc))
-        {
-          port_disconnect_all (cc);
-          object_free_w_func_and_null (
-            port_free, cc);
-        }
+      FREE_CC (cc);
     }
+
+#undef FREE_CC
 
   if (self->stereo_out)
     {

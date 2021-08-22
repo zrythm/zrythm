@@ -49,7 +49,7 @@ ZRegion *
 automation_region_new (
   const Position * start_pos,
   const Position * end_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              at_idx,
   int              idx_inside_at);
 

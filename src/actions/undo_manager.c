@@ -70,6 +70,7 @@ undo_manager_new (void)
 {
   g_message ("%s: creating...", __func__);
   UndoManager * self = object_new (UndoManager);
+  self->schema_version = UNDO_MANAGER_SCHEMA_VERSION;
 
   self->undo_stack = undo_stack_new ();
   self->redo_stack = undo_stack_new ();
@@ -384,6 +385,23 @@ undo_manager_clear_stacks (
     self->undo_stack && self->redo_stack);
   undo_stack_clear (self->undo_stack, free);
   undo_stack_clear (self->redo_stack, free);
+}
+
+UndoManager *
+undo_manager_clone (
+  const UndoManager * src)
+{
+  UndoManager * self = object_new (UndoManager);
+  self->schema_version = UNDO_MANAGER_SCHEMA_VERSION;
+
+  self->undo_stack =
+    undo_stack_clone (src->undo_stack);
+  self->redo_stack =
+    undo_stack_clone (src->redo_stack);
+
+  zix_sem_init (&self->action_sem, 1);
+
+  return self;
 }
 
 void

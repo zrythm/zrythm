@@ -198,6 +198,13 @@ void
 sample_processor_disconnect (
   SampleProcessor * self);
 
+/**
+ * To be used for serialization.
+ */
+SampleProcessor *
+sample_processor_clone (
+  const SampleProcessor * src);
+
 void
 sample_processor_free (
   SampleProcessor * self);

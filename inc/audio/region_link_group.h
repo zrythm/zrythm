@@ -99,10 +99,8 @@ void
 region_link_group_init_loaded (
   RegionLinkGroup * self);
 
-NONNULL
-void
-region_link_group_init (
-  RegionLinkGroup * self,
+RegionLinkGroup *
+region_link_group_new (
   int               idx);
 
 NONNULL
@@ -149,18 +147,17 @@ region_link_group_update (
   RegionLinkGroup * self,
   ZRegion *         region);
 
-/**
- * Moves the regions from \ref src to \ref dest.
- */
-NONNULL
-void
-region_link_group_move (
-  RegionLinkGroup * dest,
-  RegionLinkGroup * src);
-
 NONNULL
 bool
 region_link_group_validate (
+  RegionLinkGroup * self);
+
+RegionLinkGroup *
+region_link_group_clone (
+  const RegionLinkGroup * src);
+
+void
+region_link_group_free (
   RegionLinkGroup * self);
 
 /**

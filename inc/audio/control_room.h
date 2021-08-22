@@ -120,10 +120,6 @@ control_room_init_loaded (
 ControlRoom *
 control_room_new (void);
 
-void
-control_room_free (
-  ControlRoom * self);
-
 /**
  * Sets dim_output to on/off and notifies interested
  * parties.
@@ -132,6 +128,18 @@ void
 control_room_set_dim_output (
   ControlRoom * self,
   int           dim_output);
+
+/**
+ * Used during serialization.
+ */
+NONNULL
+ControlRoom *
+control_room_clone (
+  const ControlRoom * src);
+
+void
+control_room_free (
+  ControlRoom * self);
 
 /**
  * @}

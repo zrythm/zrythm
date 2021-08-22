@@ -40,6 +40,7 @@
 #include "audio/master_track.h"
 #include "audio/midi_note.h"
 #include "audio/modulator_track.h"
+#include "audio/port_connections_manager.h"
 #include "audio/router.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
@@ -467,25 +468,27 @@ project_validate (Project * self)
 {
   g_message ("%s: validating...", __func__);
 
+#if 0
   size_t max_size = 20;
   Port ** ports =
     object_new_n (max_size, Port *);
   int num_ports = 0;
-  Port * port;
   port_get_all (
     &ports, &max_size, true, &num_ports);
   for (int i = 0; i < num_ports; i++)
     {
-      port = ports[i];
+      Port * port = ports[i];
       port_update_identifier (
-        port, NULL, F_UPDATE_AUTOMATION_TRACK);
+        port, &port->id, port->track,
+        F_UPDATE_AUTOMATION_TRACK);
     }
   free (ports);
+#endif
 
   tracklist_validate (self->tracklist);
 
   region_link_group_manager_validate (
-    &self->region_link_group_manager);
+    self->region_link_group_manager);
 
   /* TODO add arranger_object_get_all and check
    * positions (arranger_object_validate) */
@@ -657,6 +660,9 @@ project_init_selections (Project * self)
     (MidiArrangerSelections *)
     arranger_selections_new (
       ARRANGER_SELECTIONS_TYPE_MIDI);
+  self->mixer_selections =
+    mixer_selections_new ();
+  mixer_selections_init (self->mixer_selections);
 }
 
 /**
@@ -705,9 +711,6 @@ project_create_default (
 
   /* init undo manager */
   self->undo_manager = undo_manager_new ();
-
-  /* init midi mappings */
-  self->midi_mappings = midi_mappings_new ();
 
   self->title = g_path_get_basename (prj_dir);
 
@@ -833,37 +836,36 @@ project_create_default (
   self->loaded = true;
 
   snap_grid_init (
-    &self->snap_grid_timeline,
+    self->snap_grid_timeline,
     SNAP_GRID_TYPE_TIMELINE,
     NOTE_LENGTH_1_1);
   quantize_options_init (
-    &self->quantize_opts_timeline,
+    self->quantize_opts_timeline,
     NOTE_LENGTH_1_1);
   snap_grid_init (
-    &self->snap_grid_midi,
+    self->snap_grid_editor,
     SNAP_GRID_TYPE_EDITOR,
     NOTE_LENGTH_1_8);
   quantize_options_init (
-    &self->quantize_opts_editor,
+    self->quantize_opts_editor,
     NOTE_LENGTH_1_8);
   clip_editor_init (self->clip_editor);
   timeline_init (self->timeline);
   snap_grid_update_snap_points_default (
-    &self->snap_grid_timeline);
+    self->snap_grid_timeline);
   snap_grid_update_snap_points_default (
-    &self->snap_grid_midi);
+    self->snap_grid_editor);
   quantize_options_update_quantize_points (
-    &self->quantize_opts_timeline);
+    self->quantize_opts_timeline);
   quantize_options_update_quantize_points (
-    &self->quantize_opts_editor);
-
-  region_link_group_manager_init (
-    &self->region_link_group_manager);
+    self->quantize_opts_editor);
 
   if (have_ui)
     {
       g_message ("setting up main window...");
-  g_warn_if_fail (MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
+      g_warn_if_fail (
+        MAIN_WINDOW->center_dock->main_notebook->
+          timeline_panel->tracklist);
       setup_main_window (self);
     }
 
@@ -1228,16 +1230,18 @@ load (
     self->tracklist_selections);
 
   snap_grid_update_snap_points_default (
-    &self->snap_grid_timeline);
+    self->snap_grid_timeline);
   snap_grid_update_snap_points_default (
-    &self->snap_grid_midi);
+    self->snap_grid_editor);
   quantize_options_update_quantize_points (
-    &self->quantize_opts_timeline);
+    self->quantize_opts_timeline);
   quantize_options_update_quantize_points (
-    &self->quantize_opts_editor);
+    self->quantize_opts_editor);
 
   region_link_group_manager_init_loaded (
-    REGION_LINK_GROUP_MANAGER);
+    self->region_link_group_manager);
+  port_connections_manager_init_loaded (
+    self->port_connections_manager);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -1296,8 +1300,8 @@ load (
  */
 int
 project_load (
-  char *     filename,
-  const bool is_template)
+  const char * filename,
+  const bool   is_template)
 {
   g_message (
     "%s: filename: %s, is template: %d",
@@ -1552,9 +1556,19 @@ project_new (
   self->version = zrythm_get_version (0);
   self->clip_editor = clip_editor_new ();
   self->timeline = timeline_new ();
+  self->snap_grid_timeline = snap_grid_new ();
+  self->snap_grid_editor = snap_grid_new ();
+  self->quantize_opts_timeline =
+    quantize_options_new ();
+  self->quantize_opts_editor =
+    quantize_options_new ();
   self->tracklist_selections =
     tracklist_selections_new (true);
-  mixer_selections_init (&self->mixer_selections);
+  self->region_link_group_manager =
+    region_link_group_manager_new ();
+  self->port_connections_manager =
+    port_connections_manager_new ();
+  self->midi_mappings = midi_mappings_new ();
 
   init_common (self);
 
@@ -1567,10 +1581,9 @@ static void
 project_save_data_free (
   ProjectSaveData * self)
 {
-  if (self->project_file_path)
-    {
-      g_free_and_null (self->project_file_path);
-    }
+  g_free_and_null (self->project_file_path);
+  object_free_w_func_and_null (
+    project_free, self->project);
 
   object_zero_and_free (self);
 }
@@ -1752,7 +1765,8 @@ project_save (
   /* if backup, get next available backup dir */
   if (is_backup)
     {
-      set_and_create_next_available_backup_dir (self);
+      set_and_create_next_available_backup_dir (
+        self);
     }
 
 #define MK_PROJECT_DIR(_path) \
@@ -1819,8 +1833,12 @@ project_save (
               switch (pl->setting->descr->protocol)
                 {
                 case PROT_LV2:
-                  lv2_state_save_to_file (
-                    pl->lv2, is_backup);
+                  {
+                    LilvState * tmp_state =
+                      lv2_state_save_to_file (
+                        pl->lv2, is_backup);
+                    lilv_state_free (tmp_state);
+                  }
                   break;
                 default:
                   g_warn_if_reached ();
@@ -1931,6 +1949,8 @@ project_save (
         }
     }
 
+  tracklist_validate (self->tracklist);
+
   ProjectSaveData * data =
     object_new (ProjectSaveData);
   data->project_file_path =
@@ -1938,7 +1958,12 @@ project_save (
       self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
-  data->project = PROJECT;
+  data->project = project_clone (PROJECT);
+  data->project->tracklist_selections->free_tracks =
+    true;
+
+  tracklist_validate (self->tracklist);
+
   if (async)
     {
       g_thread_new (
@@ -1971,15 +1996,19 @@ project_save (
             }
         }
     }
-  else
+  else /* else if no async */
     {
       /* call synchronously */
       serialize_project_thread (data);
       project_idle_saved_cb (data);
     }
 
+  tracklist_validate (self->tracklist);
+
   object_free_w_func_and_null (
     project_save_data_free, data);
+
+  tracklist_validate (self->tracklist);
 
   if (engine_paused)
     {
@@ -1987,6 +2016,98 @@ project_save (
     }
 
   RETURN_OK;
+}
+
+/**
+ * Deep-clones the given project.
+ *
+ * To be used during save on the main thread.
+ */
+Project *
+project_clone (
+  const Project * src)
+{
+  g_message ("cloning project...");
+
+  Project * self = object_new (Project);
+  self->schema_version =
+    PROJECT_SCHEMA_VERSION;
+
+  self->title = g_strdup (src->title);
+  self->datetime_str = g_strdup (src->datetime_str);
+  self->version = g_strdup (src->version);
+  self->tracklist =
+    tracklist_clone (src->tracklist);
+  self->clip_editor =
+    clip_editor_clone (src->clip_editor);
+  self->timeline =
+    timeline_clone (src->timeline);
+  self->snap_grid_timeline =
+    snap_grid_clone (src->snap_grid_timeline);
+  self->snap_grid_editor =
+    snap_grid_clone (src->snap_grid_editor);
+  self->quantize_opts_timeline =
+    quantize_options_clone (
+      src->quantize_opts_timeline);
+  self->quantize_opts_editor =
+    quantize_options_clone (
+      src->quantize_opts_editor);
+  self->audio_engine =
+    engine_clone (src->audio_engine);
+  self->mixer_selections =
+    mixer_selections_clone (
+      src->mixer_selections, F_PROJECT);
+  self->timeline_selections =
+    (TimelineSelections *)
+    arranger_selections_clone (
+      (ArrangerSelections *)
+      src->timeline_selections);
+  self->midi_arranger_selections =
+    (MidiArrangerSelections *)
+    arranger_selections_clone (
+      (ArrangerSelections *)
+      src->midi_arranger_selections);
+  self->chord_selections =
+    (ChordSelections *)
+    arranger_selections_clone (
+      (ArrangerSelections *)
+      src->chord_selections);
+  self->automation_selections =
+    (AutomationSelections *)
+    arranger_selections_clone (
+      (ArrangerSelections *)
+      src->automation_selections);
+  self->audio_selections =
+    (AudioSelections *)
+    arranger_selections_clone (
+      (ArrangerSelections *)
+      src->audio_selections);
+  GError * err = NULL;
+  self->tracklist_selections =
+    tracklist_selections_clone (
+      src->tracklist_selections, &err);
+  if (!self->tracklist_selections)
+    {
+      g_critical (
+        "Failed to clone track selections: %s",
+        err->message);
+      return NULL;
+    }
+  self->tracklist_selections->is_project = true;
+  self->region_link_group_manager =
+    region_link_group_manager_clone (
+      src->region_link_group_manager);
+  self->port_connections_manager =
+    port_connections_manager_clone (
+      src->port_connections_manager);
+  self->midi_mappings =
+    midi_mappings_clone (src->midi_mappings);
+  self->undo_manager =
+    undo_manager_clone (src->undo_manager);
+
+  g_message ("finished cloning project");
+
+  return self;
 }
 
 /**
@@ -2026,7 +2147,7 @@ project_free (Project * self)
 {
   g_message ("%s: tearing down...", __func__);
 
-  PROJECT->loaded = false;
+  self->loaded = false;
 
   g_free_and_null (self->title);
 
@@ -2039,10 +2160,13 @@ project_free (Project * self)
    * lookups for it when removing regions from
    * track */
   self->clip_editor->has_region = false;
+
+  /* must be free'd before tracklist selections,
+   * mixer selections, engine, and port connection
+   * manager */
   object_free_w_func_and_null (
     tracklist_free, self->tracklist);
-  object_free_w_func_and_null (
-    engine_free, self->audio_engine);
+
   object_free_w_func_and_null (
     midi_mappings_free, self->midi_mappings);
   object_free_w_func_and_null (
@@ -2051,12 +2175,43 @@ project_free (Project * self)
     clip_editor_free, self->clip_editor);
   object_free_w_func_and_null (
     timeline_free, self->timeline);
+  object_free_w_func_and_null (
+    snap_grid_free, self->snap_grid_timeline);
+  object_free_w_func_and_null (
+    snap_grid_free, self->snap_grid_editor);
+  object_free_w_func_and_null (
+    quantize_options_free,
+    self->quantize_opts_timeline);
+  object_free_w_func_and_null (
+    quantize_options_free,
+    self->quantize_opts_editor);
+  object_free_w_func_and_null (
+    region_link_group_manager_free,
+    self->region_link_group_manager);
+
+  object_free_w_func_and_null (
+    tracklist_selections_free,
+    self->tracklist_selections);
 
   free_arranger_selections (self);
+
+  object_free_w_func_and_null (
+    engine_free, self->audio_engine);
+
+  /* must be free'd after engine */
+  object_free_w_func_and_null (
+    port_connections_manager_free,
+    self->port_connections_manager);
+
+  /* must be free'd after port connections
+   * manager */
+  object_free_w_func_and_null (
+    mixer_selections_free,
+    self->mixer_selections);
 
   zix_sem_destroy (&self->save_sem);
 
   object_zero_and_free (self);
 
-  g_message ("%s: done", __func__);
+  g_message ("%s: free'd project", __func__);
 }

@@ -97,6 +97,8 @@ lv2_state_apply_state (
  * Saves the plugin state to the filesystem and
  * returns the state.
  */
+WARN_UNUSED_RESULT
+NONNULL
 LilvState *
 lv2_state_save_to_file (
   Lv2Plugin *  pl,

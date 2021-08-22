@@ -56,7 +56,7 @@ test_set_at_index ()
   position_set_to_bar (&end, 4);
   ZRegion * region =
     automation_region_new (
-      &start, &end, master->pos,
+      &start, &end, track_get_name_hash (master),
       first_vis_at->index, 0);
   track_add_region  (
     master, region, first_vis_at, -1, F_GEN_NAME,

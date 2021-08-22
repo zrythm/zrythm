@@ -26,6 +26,7 @@
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
+#include "audio/port_connections_manager.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/region.h"
@@ -1789,7 +1790,8 @@ on_direct_out_activated (
   GError * err = NULL;
   bool ret =
     tracklist_selections_action_perform_set_direct_out (
-      TRACKLIST_SELECTIONS, direct_out, &err);
+      TRACKLIST_SELECTIONS,
+      PORT_CONNECTIONS_MGR, direct_out, &err);
   if (!ret)
     {
       HANDLE_ERROR (

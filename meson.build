@@ -162,6 +162,7 @@ language_mappings = {
   'ru': 'Русский',
   'sv': 'Svenska',
   'th': 'ภาษาไทย',
+  'tr': 'Türkiye',
   'uk': 'Українська',
   'vi': 'Tiếng Việt',
   'zh_CN': '简体中文',
@@ -466,6 +467,15 @@ if os_gnu
   if have_unlimited_mem
     cdata.set ('HAVE_UNLIMITED_MEM', 1)
   endif
+endif
+
+# --- Check for size of data types ---
+
+# Require at least 32 bits for compatibility
+# between XXH32 hash and GHashTable which requires
+# unsigned int hashes
+if cc.sizeof ('unsigned int') < 4
+  error ('minimum required unsigned int size is 4')
 endif
 
 # --- Check for headers ---
@@ -812,6 +822,7 @@ test_strict_cflags += [
   '-Wanalyzer-too-complex',
   '-Werror=analyzer-too-complex',
   '-Werror=inline',
+  '-Werror=duplicate-decl-specifier',
   ]
 
 if is_gcc

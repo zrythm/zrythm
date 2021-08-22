@@ -77,6 +77,8 @@ test_fill_when_region_starts_on_loop_end ()
   StereoPorts * ports =
     stereo_ports_new_generic (
       false, "ports", PORT_OWNER_TYPE_TRACK, track);
+  port_allocate_bufs (ports->l);
+  port_allocate_bufs (ports->r);
 
   /* run until loop end and make sure sample is
    * never played */
@@ -113,6 +115,9 @@ test_fill_when_region_starts_on_loop_end ()
       g_assert_true (
         fabsf (ports->r->buf[j]) > 0.0000001f);
     }
+
+  object_free_w_func_and_null (
+    stereo_ports_free, ports);
 
   test_helper_zrythm_cleanup ();
 }

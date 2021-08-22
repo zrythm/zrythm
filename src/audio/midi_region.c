@@ -76,7 +76,7 @@ ZRegion *
 midi_region_new (
   const Position * start_pos,
   const Position * end_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane)
 {
@@ -85,7 +85,7 @@ midi_region_new (
   self->id.type = REGION_TYPE_MIDI;
 
   region_init (
-    self, start_pos, end_pos, track_pos,
+    self, start_pos, end_pos, track_name_hash,
     lane_pos, idx_inside_lane);
 
    return self;
@@ -101,7 +101,7 @@ ZRegion *
 midi_region_new_from_chord_descr (
   const Position *  pos,
   ChordDescriptor * descr,
-  int               track_pos,
+  unsigned int      track_name_hash,
   int               lane_pos,
   int               idx_inside_lane)
 {
@@ -110,7 +110,7 @@ midi_region_new_from_chord_descr (
       SNAP_GRID_TIMELINE);
   int mn_length_ticks =
     snap_grid_get_default_ticks (
-      SNAP_GRID_MIDI);
+      SNAP_GRID_EDITOR);
 
   /* get region end pos */
   Position r_end_pos;
@@ -121,7 +121,7 @@ midi_region_new_from_chord_descr (
   /* create region */
   ZRegion * r =
     midi_region_new (
-      pos, &r_end_pos, track_pos, lane_pos,
+      pos, &r_end_pos, track_name_hash, lane_pos,
       idx_inside_lane);
 
   /* get midi note positions */
@@ -395,7 +395,7 @@ ZRegion *
 midi_region_new_from_midi_file (
   const Position * start_pos,
   const char *     abs_path,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane,
   int              idx)
@@ -426,7 +426,7 @@ midi_region_new_from_midi_file (
   position_from_ticks (
     &end_pos, start_pos->ticks + 1);
   region_init (
-    self, start_pos, &end_pos, track_pos,
+    self, start_pos, &end_pos, track_name_hash,
     lane_pos, idx_inside_lane);
 
   midiReadInitMessage (&msg);

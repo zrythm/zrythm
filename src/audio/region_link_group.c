@@ -33,18 +33,22 @@ region_link_group_init_loaded (
   self->ids_size = (size_t) self->num_ids;
 }
 
-void
-region_link_group_init (
-  RegionLinkGroup * self,
+RegionLinkGroup *
+region_link_group_new (
   int               idx)
 {
+  RegionLinkGroup * self =
+    object_new (RegionLinkGroup);
   self->schema_version =
     REGION_LINK_GROUP_SCHEMA_VERSION;
+
   self->num_ids = 0;
   self->ids_size = 0;
   self->ids = NULL;
   self->group_idx = idx;
   self->magic = REGION_LINK_GROUP_MAGIC;
+
+  return self;
 }
 
 bool
@@ -214,6 +218,7 @@ region_link_group_print (
   g_free (str);
 }
 
+#if 0
 /**
  * Moves the regions from \ref src to \ref dest.
  */
@@ -234,4 +239,38 @@ region_link_group_move (
         &dest->ids[i], &region->id);
       dest->num_ids++;
     }
+}
+#endif
+
+RegionLinkGroup *
+region_link_group_clone (
+  const RegionLinkGroup * src)
+{
+  RegionLinkGroup * self =
+    object_new (RegionLinkGroup);
+  self->schema_version =
+    REGION_LINK_GROUP_SCHEMA_VERSION;
+  self->magic = REGION_LINK_GROUP_MAGIC;
+
+  self->group_idx = src->group_idx;
+  self->ids =
+    object_new_n (
+      (size_t) src->num_ids, RegionIdentifier);
+  for (int i = 0; i < src->num_ids; i++)
+    {
+      region_identifier_copy (
+        &self->ids[i], &src->ids[i]);
+    }
+  self->num_ids = src->num_ids;
+
+  return self;
+}
+
+void
+region_link_group_free (
+  RegionLinkGroup * self)
+{
+  object_zero_and_free (self->ids);
+
+  object_zero_and_free (self);
 }

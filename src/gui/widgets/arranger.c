@@ -348,7 +348,7 @@ arranger_widget_get_snap_grid (
       self == MW_AUDIO_ARRANGER ||
       self == MW_CHORD_ARRANGER)
     {
-      return SNAP_GRID_MIDI;
+      return SNAP_GRID_EDITOR;
     }
   else if (self == MW_TIMELINE ||
            self == MW_PINNED_TIMELINE)

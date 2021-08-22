@@ -21,7 +21,7 @@
 #define __ACTION_PORT_CONNECTION_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/port_identifier.h"
+#include "audio/port_connection.h"
 
 /**
  * @addtogroup actions
@@ -51,19 +51,18 @@ port_connection_action_type_strings[] =
 
 typedef struct PortConnectionAction
 {
-  UndoableAction  parent_instance;
+  UndoableAction   parent_instance;
 
   PortConnectionActionType type;
 
-  PortIdentifier  src_port_id;
-  PortIdentifier  dest_port_id;
+  PortConnection * connection;
 
   /**
    * Value before/after the change.
    *
    * To be swapped on undo/redo.
    */
-  float           val;
+  float            val;
 } PortConnectionAction;
 
 static const cyaml_schema_field_t
@@ -75,12 +74,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_ENUM (
     PortConnectionAction, type,
     port_connection_action_type_strings),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortConnectionAction, src_port_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortConnectionAction, dest_port_id,
-    port_identifier_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    PortConnectionAction, connection,
+    port_connection_fields_schema),
   YAML_FIELD_FLOAT (
     PortConnectionAction, val),
 
@@ -136,6 +132,11 @@ port_connection_action_new (
   port_connection_action_new ( \
     PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
     dest_id, new_multiplier, error)
+
+NONNULL
+PortConnectionAction *
+port_connection_action_clone (
+  const PortConnectionAction * src);
 
 bool
 port_connection_action_perform (

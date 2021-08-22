@@ -43,7 +43,7 @@ typedef struct Plugin Plugin;
 #define MIXER_SELECTIONS_SCHEMA_VERSION 1
 
 #define MIXER_SELECTIONS \
-  (&PROJECT->mixer_selections)
+  (PROJECT->mixer_selections)
 
 #define MIXER_SELECTIONS_MAX_SLOTS 60
 
@@ -66,7 +66,7 @@ typedef struct MixerSelections
   int       num_slots;
 
   /** Channel selected. */
-  int       track_pos;
+  unsigned int track_name_hash;
 
   /** Whether any slot is selected. */
   int       has_any;
@@ -87,8 +87,8 @@ static const cyaml_schema_field_t
     MixerSelections, plugins,
     num_slots,
     &plugin_schema, 0, CYAML_UNLIMITED),
-  YAML_FIELD_INT (
-    MixerSelections, track_pos),
+  YAML_FIELD_UINT (
+    MixerSelections, track_name_hash),
   YAML_FIELD_INT (
     MixerSelections, has_any),
 
@@ -265,8 +265,10 @@ mixer_selections_clear (
   MixerSelections * ms,
   const int         pub_events);
 
+NONNULL
 void
-mixer_selections_free (MixerSelections * self);
+mixer_selections_free (
+  MixerSelections * self);
 
 /**
  * @}

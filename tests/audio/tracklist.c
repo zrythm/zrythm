@@ -44,7 +44,8 @@ create_automation_region (
   position_set_to_bar (&end, 3);
   ZRegion * region =
     automation_region_new (
-      &start, &end, track->pos, 0, 0);
+      &start, &end,
+      track_get_name_hash (track), 0, 0);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   track_add_region (
@@ -94,7 +95,8 @@ test_swap_with_automation_regions ()
     track2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS, track1->pos, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, track1->pos, NULL);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);

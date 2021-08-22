@@ -21,6 +21,7 @@
 #define __UNDO_MIXER_SELECTIONS_ACTION_H__
 
 #include "audio/automation_track.h"
+#include "audio/port_connections_manager.h"
 #include "actions/undoable_action.h"
 #include "gui/backend/mixer_selections.h"
 #include "utils/yaml.h"
@@ -72,7 +73,7 @@ typedef struct MixerSelectionsAction
   int              to_slot;
 
   /** To track position. */
-  int              to_track_pos;
+  unsigned int     to_track_name_hash;
 
   /** Whether the plugins will be copied/moved into
    * a new channel, if applicable. */
@@ -118,6 +119,14 @@ typedef struct MixerSelectionsAction
    */
   AutomationTrack * ats[16000];
   int               num_ats;
+
+  /** A clone of the port connections at the
+   * start of the action. */
+  PortConnectionsManager * connections_mgr_before;
+
+  /** A clone of the port connections after
+   * applying the action. */
+  PortConnectionsManager * connections_mgr_after;
 } MixerSelectionsAction;
 
 static const cyaml_schema_field_t
@@ -134,8 +143,8 @@ static const cyaml_schema_field_t
     plugin_slot_type_strings),
   YAML_FIELD_INT (
     MixerSelectionsAction, to_slot),
-  YAML_FIELD_INT (
-    MixerSelectionsAction, to_track_pos),
+  YAML_FIELD_UINT (
+    MixerSelectionsAction, to_track_name_hash),
   YAML_FIELD_INT (
     MixerSelectionsAction, new_channel),
   YAML_FIELD_INT (
@@ -155,6 +164,14 @@ static const cyaml_schema_field_t
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     MixerSelectionsAction, deleted_ats,
     automation_track_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    MixerSelectionsAction,
+    connections_mgr_before,
+    port_connections_manager_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    MixerSelectionsAction,
+    connections_mgr_after,
+    port_connections_manager_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -177,8 +194,8 @@ mixer_selections_action_init_loaded (
  * @param ms The mixer selections before the action
  *   is performed.
  * @param slot_type Target slot type.
- * @param to_track_pos Target track position, or -1
- *   for new channel.
+ * @param to_track_name_hash Target track name hash,
+ *   or 0 for new channel.
  * @param to_slot Target slot.
  * @param setting The plugin setting, if creating
  *   plugins.
@@ -189,9 +206,10 @@ WARN_UNUSED_RESULT
 UndoableAction *
 mixer_selections_action_new (
   MixerSelections *         ms,
+  const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType type,
   PluginSlotType            slot_type,
-  int                       to_track_pos,
+  unsigned int              to_track_name_hash,
   int                       to_slot,
   PluginSetting *           setting,
   int                       num_plugins,
@@ -201,40 +219,53 @@ mixer_selections_action_new (
   slot_type,to_tr,to_slot,setting,num_plugins, \
   error) \
   mixer_selections_action_new ( \
-    NULL, MIXER_SELECTIONS_ACTION_CREATE, \
+    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, \
     slot_type, to_tr, to_slot, setting, \
     num_plugins, error)
 
 #define mixer_selections_action_new_copy( \
-  ms,slot_type,to_tr,to_slot,error) \
+  ms,port_connections_mgr,slot_type, \
+  to_tr,to_slot,error) \
   mixer_selections_action_new ( \
-    ms, MIXER_SELECTIONS_ACTION_COPY, slot_type, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_COPY, slot_type, \
     to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_new_paste( \
-  ms,slot_type,to_tr,to_slot,error) \
+  ms,port_connections_mgr,slot_type, \
+  to_tr,to_slot,error) \
   mixer_selections_action_new ( \
-    ms, MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
     to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_new_move( \
-  ms,slot_type,to_tr,to_slot,error) \
+  ms,port_connections_mgr,slot_type, \
+  to_tr,to_slot,error) \
   mixer_selections_action_new ( \
-    ms, MIXER_SELECTIONS_ACTION_MOVE, slot_type, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_MOVE, slot_type, \
     to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_new_delete( \
-  ms,error) \
+  ms,port_connections_mgr,error) \
   mixer_selections_action_new ( \
-    ms, MIXER_SELECTIONS_ACTION_DELETE, 0, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_DELETE, 0, \
     0, 0, NULL, 0, error)
+
+NONNULL
+MixerSelectionsAction *
+mixer_selections_action_clone (
+  const MixerSelectionsAction * src);
 
 bool
 mixer_selections_action_perform (
   MixerSelections *         ms,
+  const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType type,
   PluginSlotType            slot_type,
-  int                       to_track_pos,
+  unsigned int              to_track_name_hash,
   int                       to_slot,
   PluginSetting *           setting,
   int                       num_plugins,
@@ -244,32 +275,39 @@ mixer_selections_action_perform (
   slot_type,to_tr,to_slot,setting,num_plugins, \
   error) \
   mixer_selections_action_perform ( \
-    NULL, MIXER_SELECTIONS_ACTION_CREATE, \
+    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, \
     slot_type, to_tr, to_slot, setting, \
     num_plugins, error)
 
 #define mixer_selections_action_perform_copy( \
-  ms,slot_type,to_tr,to_slot,error) \
+  ms,port_connections_mgr,slot_type, \
+  to_tr,to_slot,error) \
   mixer_selections_action_perform ( \
-    ms, MIXER_SELECTIONS_ACTION_COPY, slot_type, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_COPY, slot_type, \
     to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_perform_paste( \
-  ms,slot_type,to_tr,to_slot,error) \
+  ms,port_connections_mgr,slot_type, \
+  to_tr,to_slot,error) \
   mixer_selections_action_perform ( \
-    ms, MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_PASTE, slot_type, \
     to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_perform_move( \
-  ms,slot_type,to_tr,to_slot,error) \
+  ms,port_connections_mgr,slot_type, \
+  to_tr,to_slot,error) \
   mixer_selections_action_perform ( \
-    ms, MIXER_SELECTIONS_ACTION_MOVE, slot_type, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_MOVE, slot_type, \
     to_tr, to_slot, NULL, 0, error)
 
 #define mixer_selections_action_perform_delete( \
-  ms,error) \
+  ms,port_connections_mgr,error) \
   mixer_selections_action_perform ( \
-    ms, MIXER_SELECTIONS_ACTION_DELETE, 0, \
+    ms, port_connections_mgr, \
+    MIXER_SELECTIONS_ACTION_DELETE, 0, \
     0, 0, NULL, 0, error)
 
 int

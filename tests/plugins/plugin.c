@@ -41,6 +41,10 @@ _test_loading_non_existing_plugin (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, true, with_carla, 1);
 
+  /* save the project */
+  char * prj_file = test_project_save ();
+  g_assert_nonnull (prj_file);
+
   /* unload bundle so plugin can't be found */
   LilvNode * path =
     lilv_new_uri (LILV_WORLD, pl_bundle);
@@ -54,10 +58,12 @@ _test_loading_non_existing_plugin (
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*Instantiation failed for plugin *");
-  test_project_save_and_reload ();
+
+  test_project_reload (prj_file);
+  g_free (prj_file);
 
   /* let engine run */
-  g_usleep (600000);
+  engine_wait_n_cycles (AUDIO_ENGINE, 8);
 
   /* assert expected messages */
   g_test_assert_expected_messages ();

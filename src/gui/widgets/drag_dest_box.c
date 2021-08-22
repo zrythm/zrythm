@@ -27,6 +27,7 @@
 #include "actions/mixer_selections_action.h"
 #include "audio/channel.h"
 #include "audio/modulator_track.h"
+#include "audio/port_connections_manager.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -255,7 +256,8 @@ on_drag_data_received (
           bool ret =
             mixer_selections_action_perform_create (
               PLUGIN_SLOT_MODULATOR,
-              P_MODULATOR_TRACK->pos,
+              track_get_name_hash (
+                P_MODULATOR_TRACK),
               P_MODULATOR_TRACK->num_modulators,
               setting, 1, &err);
           if (!ret)
@@ -292,15 +294,19 @@ on_drag_data_received (
         {
           ret =
             mixer_selections_action_perform_copy (
-              MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-              -1, 0, &err);
+              MIXER_SELECTIONS,
+              PORT_CONNECTIONS_MGR,
+              PLUGIN_SLOT_INSERT,
+              0, 0, &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ret =
             mixer_selections_action_perform_move (
-              MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-              -1, 0, &err);
+              MIXER_SELECTIONS,
+              PORT_CONNECTIONS_MGR,
+              PLUGIN_SLOT_INSERT,
+              0, 0, &err);
         }
       else
         g_return_if_reached ();
@@ -334,13 +340,15 @@ on_drag_data_received (
         {
           ret =
             tracklist_selections_action_perform_copy (
-              TRACKLIST_SELECTIONS, pos, &err);
+              TRACKLIST_SELECTIONS,
+              PORT_CONNECTIONS_MGR, pos, &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ret =
             tracklist_selections_action_perform_move (
-              TRACKLIST_SELECTIONS, pos, &err);
+              TRACKLIST_SELECTIONS,
+              PORT_CONNECTIONS_MGR, pos, &err);
         }
       else
         g_return_if_reached ();

@@ -61,6 +61,7 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
 typedef struct Lv2Port Lv2Port;
 typedef struct Channel Channel;
 typedef struct Track Track;
+typedef struct PortConnection PortConnection;
 typedef struct SampleProcessor SampleProcessor;
 typedef struct TrackProcessor TrackProcessor;
 typedef struct RtMidiDevice RtMidiDevice;
@@ -139,6 +140,17 @@ port_scale_point_cmp (
   const void * _a,
   const void * _b);
 
+NONNULL
+PortScalePoint *
+port_scale_point_new (
+  const float  val,
+  const char * label);
+
+NONNULL
+void
+port_scale_point_free (
+  PortScalePoint * self);
+
 /**
  * Must ONLY be created via port_new()
  */
@@ -167,67 +179,29 @@ typedef struct Port
    */
   MidiEvents *        midi_events;
 
-  /**
-   * Inputs and Outputs.
-   *
-   * These should be serialized, and when loading
-   * they shall be used to find the original ports
-   * and replace the pointer (also freeing the
-   * current one).
-   */
+  /** Caches filled when recalculating the
+   * graph. */
   struct Port **      srcs;
-  struct Port **      dests;
-  PortIdentifier *    src_ids;
-  PortIdentifier *    dest_ids;
-
-  /** These are the multipliers for port connections.
-   *
-   * They range from 0.f to 1.f and the default is
-   * 1.f. They correspond to each destination.
-   */
-  float *             multipliers;
-
-  /** Same as above for sources. */
-  float *             src_multipliers;
-
-  /**
-   * These indicate whether the destination Port
-   * can be removed or the multiplier edited by the
-   * user.
-   *
-   * These are ignored when connecting things
-   * internally and are only used to deter the user
-   * from breaking necessary connections.
-   *
-   * 0 == unlocked, 1 == locked.
-   */
-  int *               dest_locked;
-
-  /** Same as above for sources. */
-  int *               src_locked;
-
-  /**
-   * These indicate whether the connection is
-   * enabled.
-   *
-   * The user can disable port connections only if
-   * they are not locked.
-   *
-   * 0 == disabled (disconnected),
-   * 1 == enabled (connected).
-   */
-  int *               dest_enabled;
-
-  /** Same as above for sources. */
-  int *               src_enabled;
-
-  /** Counters. */
   int                 num_srcs;
-  int                 num_dests;
-
-  /** Allocated sizes. */
   size_t              srcs_size;
+
+  /** Caches filled when recalculating the
+   * graph. */
+  struct Port **      dests;
+  int                 num_dests;
   size_t              dests_size;
+
+  /** Caches filled when recalculating the
+   * graph. */
+  const PortConnection ** src_connections;
+  int                 num_src_connections;
+  size_t              src_connections_size;
+
+  /** Caches filled when recalculating the
+   * graph. */
+  const PortConnection ** dest_connections;
+  int                 num_dest_connections;
+  size_t              dest_connections_size;
 
   /**
    * Indicates whether data or lv2_port should be
@@ -256,9 +230,6 @@ typedef struct Port
 
   /** Default value, only used for controls. */
   float               deff;
-
-  /** VST parameter index, if VST control port. */
-  int                vst_param_id;
 
   /** Index of the control parameter (for Carla
    * plugin ports). */
@@ -336,7 +307,7 @@ typedef struct Port
 #endif
 
   /** Scale points. */
-  PortScalePoint *   scale_points;
+  PortScalePoint **  scale_points;
   int                num_scale_points;
 
   /**
@@ -409,13 +380,6 @@ typedef struct Port
    * this value.
    */
   float               base_value;
-
-  /**
-   * When a modulator is attached to a control port
-   * this will be set to 1, and set back to 0 when
-   * all modulators are disconnected.
-   */
-  //int                 has_modulators;
 
   /**
    * Capture latency.
@@ -582,15 +546,6 @@ typedef struct Port
   int                 magic;
 } Port;
 
-#if 0
-static const cyaml_strval_t
-port_internal_type_strings[] =
-{
-  { "LV2 port",       INTERNAL_LV2_PORT    },
-  { "JACK port",      INTERNAL_JACK_PORT   },
-};
-#endif
-
 static const cyaml_schema_field_t
 port_fields_schema[] =
 {
@@ -601,68 +556,12 @@ port_fields_schema[] =
     port_identifier_fields_schema),
   YAML_FIELD_INT (
     Port, exposed_to_backend),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "dest_ids",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, dest_ids, num_dests,
-    &port_identifier_schema_default,
-    0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "src_ids",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, src_ids, num_srcs,
-    &port_identifier_schema_default,
-    0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "multipliers",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, multipliers, num_dests,
-    &float_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "src_multipliers",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, src_multipliers, num_srcs,
-    &float_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "dest_locked",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, dest_locked, num_dests,
-    &int_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "src_locked",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, src_locked, num_srcs,
-    &int_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "dest_enabled",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, dest_enabled, num_dests,
-    &int_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "src_enabled",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Port, src_enabled, num_srcs,
-    &int_schema, 0, CYAML_UNLIMITED),
-#if 0
-  CYAML_FIELD_ENUM (
-    "internal_type", CYAML_FLAG_DEFAULT,
-    Port, internal_type, port_internal_type_strings,
-    CYAML_ARRAY_LEN (port_internal_type_strings)),
-#endif
-  YAML_FIELD_FLOAT (
-    Port, control),
-  YAML_FIELD_FLOAT (
-    Port, minf),
-  YAML_FIELD_FLOAT (
-    Port, maxf),
-  YAML_FIELD_FLOAT (
-    Port, zerof),
-  YAML_FIELD_FLOAT (
-    Port, deff),
-  YAML_FIELD_INT (
-    Port, vst_param_id),
-  YAML_FIELD_INT (
-    Port, carla_param_id),
+  YAML_FIELD_FLOAT (Port, control),
+  YAML_FIELD_FLOAT (Port, minf),
+  YAML_FIELD_FLOAT (Port, maxf),
+  YAML_FIELD_FLOAT (Port, zerof),
+  YAML_FIELD_FLOAT (Port, deff),
+  YAML_FIELD_INT (Port, carla_param_id),
 
   CYAML_FIELD_END
 };
@@ -682,8 +581,8 @@ port_schema =
 typedef struct StereoPorts
 {
   int          schema_version;
-  Port       * l;
-  Port       * r;
+  Port *       l;
+  Port *       r;
 } StereoPorts;
 
 static const cyaml_schema_field_t
@@ -702,7 +601,8 @@ static const cyaml_schema_field_t
 };
 
 static const cyaml_schema_value_t
-  stereo_ports_schema = {
+  stereo_ports_schema =
+{
   YAML_VALUE_PTR (
     StereoPorts, stereo_ports_fields_schema),
 };
@@ -741,28 +641,24 @@ port_new_with_type (
   PortFlow     flow,
   const char * label);
 
-#if 0
 /**
- * Creates port and adds given data to it.
+ * Allocates buffers used during DSP.
  *
- * @param internal_type The internal data format.
- * @param data The data.
+ * To be called only where necessary to save
+ * RAM.
  */
-Port *
-port_new_with_data (
-  PortInternalType internal_type,
-  PortType     type,
-  PortFlow     flow,
-  const char * label,
-  void *       data);
-#endif
+NONNULL
+void
+port_allocate_bufs (
+  Port * self);
 
 /**
  * Creates blank stereo ports.
  */
 NONNULL
 StereoPorts *
-stereo_ports_new_from_existing (Port * l, Port * r);
+stereo_ports_new_from_existing (
+  Port * l, Port * r);
 
 /**
  * Creates stereo ports for generic use.
@@ -806,6 +702,10 @@ stereo_ports_fill_from_clip (
   long          g_start_frames,
   nframes_t     start_frame,
   nframes_t     nframes);
+
+StereoPorts *
+stereo_ports_clone (
+  const StereoPorts * src);
 
 NONNULL
 void
@@ -872,6 +772,11 @@ port_get_full_designation (
   Port * const self,
   char *       buf);
 
+NONNULL
+void
+port_print_full_designation (
+  Port * const self);
+
 /**
  * Gathers all ports in the project and puts them
  * in the given array and size.
@@ -904,6 +809,8 @@ port_get_plugin (
  * To be called when the port's identifier changes
  * to update corresponding identifiers.
  *
+ * @param prev_id Previous identifier to be used
+ *   for searching.
  * @param track The track that owns this port.
  * @param update_automation_track Whether to update
  *   the identifier in the corresponding automation
@@ -912,9 +819,10 @@ port_get_plugin (
  */
 void
 port_update_identifier (
-  Port *  self,
-  Track * track,
-  bool    update_automation_track);
+  Port *                 self,
+  const PortIdentifier * prev_id,
+  Track *                track,
+  bool                   update_automation_track);
 
 /**
  * Returns the index of the destination in the dest
@@ -927,8 +835,9 @@ port_get_dest_index (
   const Port * const dest)
 {
   g_return_val_if_fail (
-    IS_PORT (self) && IS_PORT (dest) &&
-    self->is_project && dest->is_project, -1);
+    IS_PORT (self) && IS_PORT (dest)
+    && self->dests != NULL
+    && self->is_project && dest->is_project, -1);
 
   for (int i = 0; i < self->num_dests; i++)
     {
@@ -936,15 +845,6 @@ port_get_dest_index (
         return i;
     }
 
-#if 0
-  char des_src[800];
-  char des_dest[800];
-  port_get_full_designation (dest, des_dest);
-  port_get_full_designation (self, des_src);
-  g_critical (
-    "failed to get dest index for port %s in %s",
-    des_dest, des_src);
-#endif
   g_return_val_if_reached (-1);
 }
 
@@ -959,8 +859,9 @@ port_get_src_index (
   const Port * const src)
 {
   g_return_val_if_fail (
-    IS_PORT (self) && IS_PORT (src) &&
-    self->is_project && src->is_project, -1);
+    IS_PORT (self) && IS_PORT (src)
+    && self->srcs != NULL
+    && self->is_project && src->is_project, -1);
 
   for (int i = 0; i < self->num_srcs; i++)
     {
@@ -969,73 +870,6 @@ port_get_src_index (
     }
   g_return_val_if_reached (-1);
 }
-
-/**
- * Set the multiplier for a destination by its
- * index in the dest array.
- */
-NONNULL
-static inline void
-port_set_multiplier_by_index (
-  Port * port,
-  int    idx,
-  float  val)
-{
-  port->multipliers[idx] = val;
-}
-
-/**
- * Set the multiplier for a destination by its
- * index in the dest array.
- */
-NONNULL
-static inline void
-port_set_src_multiplier_by_index (
-  Port * port,
-  int    idx,
-  float  val)
-{
-  port->src_multipliers[idx] = val;
-}
-
-/**
- * Get the multiplier for a destination by its
- * index in the dest array.
- */
-NONNULL
-static inline float
-port_get_multiplier_by_index (
-  Port * port,
-  int    idx)
-{
-  return port->multipliers[idx];
-}
-
-NONNULL
-void
-port_set_multiplier (
-  Port * src,
-  Port * dest,
-  float  val);
-
-NONNULL
-float
-port_get_multiplier (
-  Port * src,
-  Port * dest);
-
-NONNULL
-void
-port_set_enabled (
-  Port * src,
-  Port * dest,
-  bool   enabled);
-
-NONNULL
-bool
-port_get_enabled (
-  Port * src,
-  Port * dest);
 
 #ifdef HAVE_RTMIDI
 /**
@@ -1175,39 +1009,22 @@ port_set_is_project (
   bool   is_project);
 
 /**
- * Connets src to dest.
- *
- * @param locked Lock the connection or not.
+ * Connects @ref a and @ref b with default
+ * settings:
+ * - enabled
+ * - multiplier 1.0
  */
-NONNULL
-int
-port_connect (
-  Port * src,
-  Port * dest,
-  const int locked);
+#define port_connect(a,b,locked) \
+  port_connections_manager_ensure_connect ( \
+    PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id), \
+    1.f, locked, true)
 
 /**
- * Disconnects src from dest.
+ * Removes the connection between the given ports.
  */
-NONNULL
-int
-port_disconnect (Port * src, Port * dest);
-
-/**
- * Disconnects dests of port.
- */
-NONNULL
-static inline int
-port_disconnect_dests (Port * src)
-{
-  g_warn_if_fail (src);
-
-  for (int i = 0; i < src->num_dests; i++)
-    {
-      port_disconnect (src, src->dests[i]);
-    }
-  return 0;
-}
+#define port_disconnect(a,b) \
+  port_connections_manager_ensure_disconnect ( \
+    PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id))
 
 /**
  * Returns the number of unlocked (user-editable)
@@ -1215,7 +1032,8 @@ port_disconnect_dests (Port * src)
  */
 NONNULL
 int
-port_get_num_unlocked_srcs (Port * port);
+port_get_num_unlocked_srcs (
+  const Port * self);
 
 /**
  * Returns the number of unlocked (user-editable)
@@ -1223,19 +1041,21 @@ port_get_num_unlocked_srcs (Port * port);
  */
 NONNULL
 int
-port_get_num_unlocked_dests (Port * port);
+port_get_num_unlocked_dests (
+  const Port * self);
 
 /**
- * Updates the track pos on a track port and
+ * Updates the track name hash on a track port and
  * all its source/destination identifiers.
  *
- * @param track The track that owns this port.
+ * @param track Owner track.
+ * @param hash The new hash.
  */
 void
-port_update_track_pos (
-  Port *  port,
-  Track * track,
-  int     pos);
+port_update_track_name_hash (
+  Port *       self,
+  Track *      track,
+  unsigned int new_hash);
 
 /**
  * Apply given fader value to port.
@@ -1328,16 +1148,6 @@ port_set_owner_channel_send (
   Port *        port,
   ChannelSend * send);
 
-#if 0
-/**
- * Sets the owner fader & its ID.
- */
-void
-port_set_owner_prefader (
-  Port *                 port,
-  PassthroughProcessor * fader);
-#endif
-
 /**
  * Sets the owner plugin & its ID.
  */
@@ -1347,23 +1157,10 @@ port_set_owner_plugin (
   Port *   port,
   Plugin * pl);
 
-/**
- * Returns if the connection from \p src to \p
- * dest is locked or not.
- */
-NONNULL
-int
-port_is_connection_locked (
-  Port * src,
-  Port * dest);
-
-/**
- * Returns if the two ports are connected or not.
- */
-NONNULL
-bool
-ports_connected (
-  Port * src, Port * dest);
+#define ports_connected(a,b) \
+  (port_connections_manager_find_connection ( \
+     PORT_CONNECTIONS_MGR, &(a)->id, &(b)->id) \
+   != NULL)
 
 /**
  * Returns whether the Port's can be connected (if
@@ -1400,6 +1197,20 @@ port_copy_metadata_from_project (
   Port * project_port);
 
 /**
+ * Copies the port values, including metadata
+ * about sources and dests from @ref other to @ref
+ * self.
+ *
+ * @param self
+ * @param other
+ */
+NONNULL
+void
+port_copy_values (
+  Port *       self,
+  const Port * other);
+
+/**
  * Reverts the data on the corresponding project
  * port for the given non-project port.
  *
@@ -1414,12 +1225,6 @@ void
 port_restore_from_non_project (
   Port * self,
   Port * non_project);
-
-/**
- * Prints all connections.
- */
-void
-port_print_connections_all (void);
 
 /**
  * Clears the port buffer.
@@ -1480,6 +1285,13 @@ NONNULL
 unsigned int
 port_get_hash (
   const void * ptr);
+
+/**
+ * To be used during serialization.
+ */
+Port *
+port_clone (
+  const Port * src);
 
 /**
  * Deletes port, doing required cleanup and updating counters.

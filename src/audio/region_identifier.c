@@ -18,6 +18,7 @@
  */
 
 #include "audio/region_identifier.h"
+#include "utils/objects.h"
 
 void
 region_identifier_init (
@@ -33,4 +34,11 @@ region_identifier_validate (
 {
   /* TODO */
   return true;
+}
+
+void
+region_identifier_free (
+  RegionIdentifier * self)
+{
+  object_zero_and_free (self);
 }

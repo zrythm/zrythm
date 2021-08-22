@@ -644,9 +644,20 @@ sort_regions_func (
     *(ZRegion * const *) _a;
   ZRegion * b =
     *(ZRegion * const *)_b;
-  if (a->id.track_pos < b->id.track_pos)
+
+  Track * at =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, a->id.track_name_hash);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (at), -1);
+  Track * bt =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, b->id.track_name_hash);
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (bt), -1);
+  if (at->pos < bt->pos)
     return -1;
-  else if (a->id.track_pos > b->id.track_pos)
+  else if (at->pos > bt->pos)
     return 1;
 
   int have_lane =
@@ -735,6 +746,8 @@ sort_markers_desc (
  * Sorts the selections by their indices (eg, for
  * regions, their track indices, then the lane
  * indices, then the index in the lane).
+ *
+ * @note Only works for objects whose tracks exist.
  *
  * @param desc Descending or not.
  */
@@ -2200,8 +2213,9 @@ arranger_selections_all_on_same_lane (
         {
         case REGION_TYPE_MIDI:
         case REGION_TYPE_AUDIO:
-          if (r->id.track_pos != id.track_pos ||
-              r->id.lane_pos != id.lane_pos)
+          if (r->id.track_name_hash !=
+                id.track_name_hash
+              || r->id.lane_pos != id.lane_pos)
             {
               ret = false;
               goto free_objs_and_return;
@@ -2210,8 +2224,9 @@ arranger_selections_all_on_same_lane (
         case REGION_TYPE_CHORD:
           break;
         case REGION_TYPE_AUTOMATION:
-          if (r->id.track_pos != id.track_pos ||
-              r->id.at_idx != id.at_idx)
+          if (r->id.track_name_hash !=
+                id.track_name_hash
+              || r->id.at_idx != id.at_idx)
             {
               ret = false;
               goto free_objs_and_return;
@@ -2276,7 +2291,8 @@ arranger_selections_merge (
     case REGION_TYPE_MIDI:
       new_r =
         midi_region_new (
-          &pos, &end_pos, first_r->id.track_pos,
+          &pos, &end_pos,
+          first_r->id.track_name_hash,
           first_r->id.lane_pos, first_r->id.idx);
       for (int i = 0; i < size; i++)
         {
@@ -2355,7 +2371,7 @@ arranger_selections_merge (
           audio_region_new (
             -1, NULL, true, frames, num_frames,
             first_r_clip->name, 2, max_depth,
-            &pos, first_r->id.track_pos,
+            &pos, first_r->id.track_name_hash,
             first_r->id.lane_pos, first_r->id.idx);
       }
       break;
@@ -2395,7 +2411,8 @@ arranger_selections_merge (
     case REGION_TYPE_AUTOMATION:
       new_r =
         automation_region_new (
-          &pos, &end_pos, first_r->id.track_pos,
+          &pos, &end_pos,
+          first_r->id.track_name_hash,
           first_r->id.at_idx, first_r->id.idx);
       for (int i = 0; i < size; i++)
         {
@@ -2518,9 +2535,13 @@ arranger_selections_paste_to_pos (
       for (int i = 0; i < ts->num_regions; i++)
         {
           ZRegion * r = ts->regions[i];
+          g_critical ("FIXME get proper delta");
           Track * region_track =
             tracklist_get_visible_track_after_delta (
-              TRACKLIST, track, r->id.track_pos);
+              TRACKLIST, track,
+              /* used to be track pos stored in
+               * region identifier */
+              0);
           g_return_if_fail (region_track);
           AutomationTrack * at = NULL;
           if (r->id.type == REGION_TYPE_AUTOMATION)

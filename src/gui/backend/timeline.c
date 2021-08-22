@@ -39,6 +39,18 @@ timeline_init (
   editor_settings_init (&self->editor_settings);
 }
 
+Timeline *
+timeline_clone (
+  Timeline * src)
+{
+  Timeline * self = object_new (Timeline);
+  self->schema_version = TIMELINE_SCHEMA_VERSION;
+
+  self->editor_settings = src->editor_settings;
+
+  return self;
+}
+
 /**
  * Creates a new Timeline instance.
  */
@@ -46,6 +58,7 @@ Timeline *
 timeline_new (void)
 {
   Timeline * self = object_new (Timeline);
+  self->schema_version = TIMELINE_SCHEMA_VERSION;
 
   return self;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -161,7 +161,7 @@ midi_editor_space_widget_setup (
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
         ARRANGER_WIDGET_TYPE_MIDI,
-        &PROJECT->snap_grid_midi);
+        SNAP_GRID_EDITOR);
       gtk_widget_show_all (
         GTK_WIDGET (self->arranger));
     }
@@ -170,7 +170,7 @@ midi_editor_space_widget_setup (
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->modifier_arranger),
         ARRANGER_WIDGET_TYPE_MIDI_MODIFIER,
-        &PROJECT->snap_grid_midi);
+        SNAP_GRID_EDITOR);
       gtk_widget_show_all (
         GTK_WIDGET (self->modifier_arranger));
     }

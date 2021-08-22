@@ -31,6 +31,8 @@
 #include "utils/yaml.h"
 
 typedef struct AudioClip AudioClip;
+typedef struct PortConnectionsManager
+  PortConnectionsManager;
 
 /**
  * @addtogroup actions
@@ -198,6 +200,23 @@ void
 undoable_action_set_num_actions (
   UndoableAction * self,
   int              num_actions);
+
+/**
+ * To be used by actions that save/load port
+ * connections.
+ *
+ * @param _do True if doing/performing, false if
+ *   undoing.
+ * @param before Pointer to the connections before.
+ * @param after Pointer to the connections after.
+ */
+NONNULL_ARGS (1)
+void
+undoable_action_save_or_load_port_connections (
+  UndoableAction *          self,
+  bool                      _do,
+  PortConnectionsManager ** before,
+  PortConnectionsManager ** after);
 
 /**
  * Performs the action.

@@ -350,7 +350,8 @@ on_closed (
           GError * err = NULL;
           bool ret =
             tracklist_selections_action_perform_set_direct_out (
-            sel, self->new_track, &err);
+            sel, PORT_CONNECTIONS_MGR,
+            self->new_track, &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -365,7 +366,7 @@ on_closed (
       GError * err = NULL;
       bool ret =
         tracklist_selections_action_perform_set_direct_out (
-        sel, NULL, &err);
+        sel, PORT_CONNECTIONS_MGR, NULL, &err);
       if (!ret)
         {
           HANDLE_ERROR (

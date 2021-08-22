@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,9 +35,30 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 DRUM_LABELS;
+
+MidiNoteDescriptor *
+midi_note_descriptor_new (void)
+{
+  MidiNoteDescriptor * self =
+    object_new (MidiNoteDescriptor);
+
+  return self;
+}
+
+void
+midi_note_descriptor_free (
+  MidiNoteDescriptor * self)
+{
+  g_free_and_null (self->custom_name);
+  g_free_and_null (self->note_name);
+  g_free_and_null (self->note_name_pango);
+
+  object_zero_and_free (self);
+}
 
 /**
  * Inits the descriptors to the default values.
@@ -49,12 +70,13 @@ static void
 init_descriptors (
   PianoRoll * self)
 {
-  MidiNoteDescriptor * descr;
   int idx = 0;
   for (int i = 127; i >= 0; i--)
     {
       /* do piano */
-      descr = &self->piano_descriptors[idx];
+      MidiNoteDescriptor * descr =
+        midi_note_descriptor_new ();
+      self->piano_descriptors[idx] = descr;
 
       descr->index = idx;
       descr->value = i;
@@ -79,7 +101,9 @@ init_descriptors (
   idx = 0;
   for (int i = 35; i <= 81; i++)
     {
-      descr = &self->drum_descriptors[idx];
+      MidiNoteDescriptor * descr =
+        midi_note_descriptor_new ();
+      self->drum_descriptors[idx] = descr;
 
       descr->index = idx;
       descr->value = i;
@@ -105,7 +129,9 @@ init_descriptors (
       if (i >= 35 && i <= 81)
         continue;
 
-      descr = &self->drum_descriptors[idx];
+      MidiNoteDescriptor * descr =
+        midi_note_descriptor_new ();
+      self->drum_descriptors[idx] = descr;
 
       descr->index = idx;
       descr->value = i;
@@ -248,9 +274,9 @@ piano_roll_find_midi_note_descriptor_by_val (
   for (int i = 0; i < 128; i++)
     {
       if (self->drum_mode)
-        descr = &self->drum_descriptors[i];
+        descr = self->drum_descriptors[i];
       else
-        descr = &self->piano_descriptors[i];
+        descr = self->piano_descriptors[i];
 
       if (descr->value == (int) val)
         return descr;
@@ -354,4 +380,48 @@ piano_roll_init (PianoRoll * self)
     }
 
   init_descriptors (self);
+}
+
+/**
+ * Only clones what is needed for serialization.
+ */
+PianoRoll *
+piano_roll_clone (
+  const PianoRoll * src)
+{
+  PianoRoll * self = object_new (PianoRoll);
+  self->schema_version = PIANO_ROLL_SCHEMA_VERSION;
+
+  self->notes_zoom = src->notes_zoom;
+  self->midi_modifier = src->midi_modifier;
+  self->drum_mode = src->drum_mode;
+  self->editor_settings = src->editor_settings;
+
+  return self;
+}
+
+PianoRoll *
+piano_roll_new (void)
+{
+  PianoRoll * self = object_new (PianoRoll);
+  self->schema_version = PIANO_ROLL_SCHEMA_VERSION;
+
+  return self;
+}
+
+void
+piano_roll_free (
+  PianoRoll * self)
+{
+  for (int i = 0; i < 128; i++)
+    {
+      object_free_w_func_and_null (
+        midi_note_descriptor_free,
+        self->piano_descriptors[i]);
+      object_free_w_func_and_null (
+        midi_note_descriptor_free,
+        self->drum_descriptors[i]);
+    }
+
+  object_zero_and_free (self);
 }

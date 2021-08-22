@@ -43,7 +43,8 @@ test_region_length_in_ticks (
   position_set_to_bar (&p2, bar_end);
   ZRegion * r =
     midi_region_new (
-      &p1, &p2, track->pos, 0, 0);
+      &p1, &p2,
+      track_get_name_hash (track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track_add_region (
     track, r, NULL, 0, F_GEN_NAME,
@@ -91,7 +92,8 @@ test_get_last_object (void)
   position_set_to_bar (&p2, 4);
   ZRegion * r =
     midi_region_new (
-      &p1, &p2, track->pos, 0, 0);
+      &p1, &p2,
+      track_get_name_hash (track), 0, 0);
   track_add_region (
     track, r, NULL, 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
@@ -132,7 +134,8 @@ test_contains_object_with_property (void)
   position_set_to_bar (&p2, 4);
   ZRegion * r =
     midi_region_new (
-      &p1, &p2, track->pos, 0, 0);
+      &p1, &p2,
+      track_get_name_hash (track), 0, 0);
   track_add_region (
     track, r, NULL, 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);

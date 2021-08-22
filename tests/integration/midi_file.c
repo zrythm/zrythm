@@ -46,14 +46,12 @@ test_midi_file_playback ()
   test_helper_zrythm_init ();
 
   /* create a track for testing */
-  Track * midi_track =
-    track_new (
-      TRACK_TYPE_MIDI,
-      TRACKLIST->num_tracks,
-      "Test MIDI Track 1",
-      F_WITH_LANE, F_NOT_AUDITIONER);
-  tracklist_append_track (
-    TRACKLIST, midi_track, 0, 1);
+  int track_pos = TRACKLIST->num_tracks;
+  GError * err = NULL;
+  tracklist_selections_action_perform_create_midi (
+    track_pos, 1, &err);
+  g_assert_null (err);
+
   MidiEvents * events = midi_events_new ();
 
   char ** midi_files =

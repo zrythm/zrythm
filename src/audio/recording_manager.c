@@ -127,11 +127,11 @@ handle_stop_recording (
       /* do some sanity checks for lane regions */
       if (region_type_has_lane (id->type))
         {
-          g_return_if_fail (
-            id->track_pos < TRACKLIST->num_tracks);
           Track * track =
-            TRACKLIST->tracks[id->track_pos];
-          g_return_if_fail (track);
+            tracklist_find_track_by_name_hash (
+              TRACKLIST, id->track_name_hash);
+          g_return_if_fail (
+            IS_TRACK_AND_NONNULL (track));
 
           g_return_if_fail (
             id->lane_pos < track->num_lanes);
@@ -853,7 +853,8 @@ handle_resume_event (
             {
               new_region =
                 midi_region_new (
-                  &resume_pos, &end_pos, tr->pos,
+                  &resume_pos, &end_pos,
+                  track_get_name_hash (tr),
                   new_lane_pos, idx_inside_lane);
             }
           else if (tr->in_signal_type == TYPE_AUDIO)
@@ -866,7 +867,8 @@ handle_resume_event (
                   -1, NULL, true, NULL, 1, name, 2,
                   BIT_DEPTH_32,
                   &resume_pos,
-                  tr->pos, new_lane_pos,
+                  track_get_name_hash (tr),
+                  new_lane_pos,
                   idx_inside_lane);
             }
           g_return_val_if_fail (new_region, false);
@@ -934,7 +936,8 @@ handle_resume_event (
           /* create region */
           new_region =
             automation_region_new (
-              &resume_pos, &end_pos, tr->pos,
+              &resume_pos, &end_pos,
+              track_get_name_hash (tr),
               at->index, at->num_regions);
           g_return_val_if_fail (new_region, false);
           track_add_region (
@@ -1307,7 +1310,8 @@ handle_automation_event (
         }
       region =
         automation_region_new (
-          &start_pos, &pos_to_end_new_r, tr->pos,
+          &start_pos, &pos_to_end_new_r,
+          track_get_name_hash (tr),
           at->index, at->num_regions);
       new_region_created = true;
       g_return_if_fail (region);
@@ -1468,7 +1472,8 @@ handle_start_recording (
           int new_lane_pos = tr->num_lanes - 1;
           ZRegion * region =
             midi_region_new (
-              &start_pos, &end_pos, tr->pos,
+              &start_pos, &end_pos,
+              track_get_name_hash (tr),
               new_lane_pos,
               tr->lanes[new_lane_pos]->
                 num_regions);
@@ -1492,7 +1497,8 @@ handle_start_recording (
             audio_region_new (
               -1, NULL, true, NULL, ev->nframes,
               name, 2,
-              BIT_DEPTH_32, &start_pos, tr->pos,
+              BIT_DEPTH_32, &start_pos,
+              track_get_name_hash (tr),
               new_lane_pos,
               tr->lanes[new_lane_pos]->num_regions);
           g_return_if_fail (region);

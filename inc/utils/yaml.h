@@ -290,6 +290,12 @@ int_schema = {
 };
 
 static const cyaml_schema_value_t
+unsigned_int_schema = {
+  CYAML_VALUE_UINT (
+    CYAML_FLAG_DEFAULT, unsigned int),
+};
+
+static const cyaml_schema_value_t
 uint8_t_schema = {
   CYAML_VALUE_UINT (
     CYAML_FLAG_DEFAULT, typeof (uint8_t)),

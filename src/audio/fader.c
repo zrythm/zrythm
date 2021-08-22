@@ -68,22 +68,30 @@ fader_init_loaded (
       self->stereo_in->r->magic = PORT_MAGIC;
       /* fallthrough */
     case FADER_TYPE_AUDIO_CHANNEL:
+      stereo_ports_init_loaded (
+        self->stereo_in, is_project);
       port_set_owner_fader (
         self->stereo_in->l, self);
       port_set_owner_fader (
         self->stereo_in->r, self);
+      stereo_ports_init_loaded (
+        self->stereo_out, is_project);
       port_set_owner_fader (
         self->stereo_out->l, self);
       port_set_owner_fader (
         self->stereo_out->r, self);
       break;
     case FADER_TYPE_MIDI_CHANNEL:
-      self->midi_in->midi_events =
-        midi_events_new ();
+      port_init_loaded (
+        self->midi_in, is_project);
+      /*self->midi_in->midi_events =*/
+        /*midi_events_new ();*/
       port_set_owner_fader (
         self->midi_in, self);
-      self->midi_out->midi_events =
-        midi_events_new ();
+      port_init_loaded (
+        self->midi_out, is_project);
+      /*self->midi_out->midi_events =*/
+        /*midi_events_new ();*/
       port_set_owner_fader (
         self->midi_out, self);
       break;
@@ -130,7 +138,7 @@ fader_new (
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
       type == FADER_TYPE_MIDI_CHANNEL)
     {
-      self->track_pos = ch->track_pos;
+      self->track = ch->track;
     }
 
   /* set volume */
@@ -279,7 +287,7 @@ fader_new (
       /* stereo in */
       self->stereo_in =
         stereo_ports_new_generic (
-        1, name, PORT_OWNER_TYPE_FADER, self);
+        F_INPUT, name, PORT_OWNER_TYPE_FADER, self);
 
       /* set proper owner */
       port_set_owner_fader (
@@ -310,7 +318,8 @@ fader_new (
       /* stereo out */
       self->stereo_out =
         stereo_ports_new_generic (
-        0, name, PORT_OWNER_TYPE_FADER, self);
+        F_NOT_INPUT, name, PORT_OWNER_TYPE_FADER,
+        self);
 
       /* set proper owner */
       port_set_owner_fader (
@@ -453,7 +462,8 @@ fader_get_implied_soloed (
       for (int i = 0; i < track->num_children; i++)
         {
           Track * child_track =
-            TRACKLIST->tracks[track->children[i]];
+            tracklist_find_track_by_name_hash (
+              TRACKLIST, track->children[i]);
           if (child_track &&
               (track_get_soloed (child_track) ||
                track_get_implied_soloed (
@@ -769,13 +779,9 @@ fader_get_track (
   Fader * self)
 {
   g_return_val_if_fail (
-    self->track_pos < TRACKLIST->num_tracks,
-    NULL);
-  Track * track =
-    TRACKLIST->tracks[self->track_pos];
-  g_return_val_if_fail (IS_TRACK (track), NULL);
+    IS_TRACK (self->track), NULL);
 
-  return track;
+  return self->track;
 }
 
 void
@@ -865,6 +871,10 @@ fader_disconnect_all (
 
   port_disconnect_all (self->amp);
   port_disconnect_all (self->balance);
+  port_disconnect_all (self->mute);
+  port_disconnect_all (self->solo);
+  port_disconnect_all (self->listen);
+  port_disconnect_all (self->mono_compat_enabled);
 }
 
 /**
@@ -889,6 +899,7 @@ fader_copy_values (
     src->mono_compat_enabled->control;
 }
 
+#if 0
 /**
  * Updates the track pos of the fader.
  */
@@ -951,6 +962,7 @@ fader_update_track_pos (
         self->midi_out, NULL, pos);
     }
 }
+#endif
 
 /**
  * Process the Fader.
@@ -1001,20 +1013,24 @@ fader_process (
        * 3. bounce mode and the track is set
        *   to BOUNCE_OFF */
       effectively_muted =
-        fader_get_muted (self) ||
-        ((self->type == FADER_TYPE_AUDIO_CHANNEL ||
-          self->type == FADER_TYPE_MIDI_CHANNEL) &&
-         tracklist_has_soloed (TRACKLIST) &&
-         !fader_get_soloed (self) &&
-         !fader_get_implied_soloed (self) &&
-         track != P_MASTER_TRACK) ||
-        (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
-         (self->type == FADER_TYPE_AUDIO_CHANNEL ||
-          self->type == FADER_TYPE_MIDI_CHANNEL) &&
-         track &&
+        fader_get_muted (self)
+        ||
+        ((self->type == FADER_TYPE_AUDIO_CHANNEL
+          ||
+          self->type == FADER_TYPE_MIDI_CHANNEL)
+         && tracklist_has_soloed (TRACKLIST)
+         && !fader_get_soloed (self)
+         && !fader_get_implied_soloed (self)
+         && track != P_MASTER_TRACK)
+        ||
+        (AUDIO_ENGINE->bounce_mode == BOUNCE_ON
+         &&
+         (self->type == FADER_TYPE_AUDIO_CHANNEL
+          || self->type == FADER_TYPE_MIDI_CHANNEL)
+         && track
          /*track->out_signal_type == TYPE_AUDIO &&*/
-         track->type != TRACK_TYPE_MASTER &&
-         !track->bounce);
+         && track->type != TRACK_TYPE_MASTER
+         && !track->bounce);
 
 #if 0
       if (ZRYTHM_TESTING && track &&
@@ -1291,6 +1307,39 @@ fader_process (
     }
 }
 
+Fader *
+fader_clone (
+  const Fader * src)
+{
+  Fader * self = object_new (Fader);
+  self->schema_version = FADER_SCHEMA_VERSION;
+
+  self->type = src->type;
+  self->volume = src->volume;
+  self->amp = port_clone (src->amp);
+  self->phase = src->phase;
+  self->balance = port_clone (src->balance);
+  self->mute = port_clone (src->mute);
+  self->solo = port_clone (src->solo);
+  self->listen = port_clone (src->listen);
+  self->mono_compat_enabled =
+    port_clone (src->mono_compat_enabled);
+  if (src->midi_in)
+    self->midi_in = port_clone (src->midi_in);
+  if (src->midi_out)
+    self->midi_out = port_clone (src->midi_out);
+  if (src->stereo_in)
+    self->stereo_in =
+      stereo_ports_clone (src->stereo_in);
+  if (src->stereo_out)
+    self->stereo_out =
+      stereo_ports_clone (src->stereo_out);
+  self->midi_mode = src->midi_mode;
+  self->passthrough = src->passthrough;
+
+  return self;
+}
+
 /**
  * Frees the fader members.
  */
@@ -1299,8 +1348,6 @@ fader_free (
   Fader * self)
 {
 #define DISCONNECT_AND_FREE(x) \
-  if (x) \
-    port_disconnect_all (x); \
   object_free_w_func_and_null ( \
     port_free, x)
 
@@ -1312,8 +1359,6 @@ fader_free (
   DISCONNECT_AND_FREE (self->mono_compat_enabled);
 
 #define DISCONNECT_AND_FREE_STEREO(x) \
-  if (x) \
-    stereo_ports_disconnect (x); \
   object_free_w_func_and_null ( \
     stereo_ports_free, x)
 

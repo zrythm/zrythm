@@ -233,7 +233,7 @@ lv2_state_save_to_file (
   bool         is_backup)
 {
   g_return_val_if_fail (
-    pl && pl->plugin->instantiated &&
+    pl->plugin->instantiated &&
     pl->instance, NULL);
 
   char * abs_state_dir =
@@ -345,8 +345,8 @@ set_port_value (
       return;
     }
   g_debug (
-    "[%s] (lv2 state): setting %s=%f...",
-    pl_str, port_symbol, (double) fvalue);
+    "(lv2 state): setting %s=%f...",
+    port_symbol, (double) fvalue);
 
   if (TRANSPORT->play_state != PLAYSTATE_ROLLING)
     {
@@ -403,7 +403,7 @@ lv2_state_apply_state (
       engine_paused = true;
     }
 
-  g_message ("applying state...");
+  g_message ("applying state for %s...", pl_str);
   lilv_state_restore (
     state, plugin->instance,
     set_port_value, plugin, 0,

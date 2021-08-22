@@ -118,7 +118,7 @@ create_model ()
   /* add data to the list store */
   for (i = 0; i < MIDI_MAPPINGS->num_mappings; i++)
     {
-      MidiMapping * mm = &MIDI_MAPPINGS->mappings[i];
+      MidiMapping * mm = MIDI_MAPPINGS->mappings[i];
 
       /* get control */
       char ctrl_str[80];
@@ -191,7 +191,7 @@ show_context_menu (
   GtkWidget * menu = gtk_menu_new ();
 
   MidiMapping * mapping =
-    &MIDI_MAPPINGS->mappings[binding_idx];
+    MIDI_MAPPINGS->mappings[binding_idx];
 
   menuitem =
     gtk_menu_item_new_with_label (_("Delete"));

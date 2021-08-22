@@ -85,7 +85,7 @@ _test (
   /* 2. add no delay line */
   mixer_selections_action_perform_create (
     PLUGIN_SLOT_INSERT,
-    TRACKLIST->num_tracks - 1, 0, setting, 1, NULL);
+    track_get_name_hash (track), 0, setting, 1, NULL);
 
   /* 3. set delay to high value */
   Plugin * pl = track->channel->inserts[0];

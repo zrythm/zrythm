@@ -278,3 +278,44 @@ snap_grid_get_nearby_snap_point (
 
   return ret_pos;
 }
+
+SnapGrid *
+snap_grid_clone (
+  SnapGrid * src)
+{
+  SnapGrid * self = object_new (SnapGrid);
+  self->schema_version = SNAP_GRID_SCHEMA_VERSION;
+
+  self->type = src->type;
+  self->snap_note_length = src->snap_note_length;
+  self->snap_note_type = src->snap_note_type;
+  self->snap_adaptive = src->snap_adaptive;
+  self->default_note_length =
+    src->default_note_length;
+  self->default_note_type =
+    src->default_note_type;
+  self->default_adaptive = src->default_adaptive;
+  self->length_type = src->length_type;
+  self->snap_to_grid = src->snap_to_grid;
+  self->snap_to_grid_keep_offset =
+    src->snap_to_grid_keep_offset;
+  self->snap_to_events = src->snap_to_events;
+
+  return self;
+}
+
+SnapGrid *
+snap_grid_new (void)
+{
+  SnapGrid * self = object_new (SnapGrid);
+  self->schema_version = SNAP_GRID_SCHEMA_VERSION;
+
+  return self;
+}
+
+void
+snap_grid_free (
+  SnapGrid * self)
+{
+  object_zero_and_free (self);
+}

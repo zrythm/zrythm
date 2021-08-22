@@ -477,6 +477,30 @@ audio_pool_write_to_disk (
     }
 }
 
+/**
+ * To be used during serialization.
+ */
+AudioPool *
+audio_pool_clone (
+  const AudioPool * src)
+{
+  AudioPool * self = object_new (AudioPool);
+  self->schema_version = AUDIO_POOL_SCHEMA_VERSION;
+
+  self->clips =
+    object_new_n (
+      (size_t) src->num_clips, AudioClip *);
+  for (int i = 0; i < src->num_clips; i++)
+    {
+      if (src->clips[i])
+        self->clips[i] =
+          audio_clip_clone (src->clips[i]);
+    }
+  self->num_clips = src->num_clips;
+
+  return self;
+}
+
 void
 audio_pool_free (
   AudioPool * self)

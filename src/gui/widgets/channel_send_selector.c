@@ -129,11 +129,13 @@ on_selection_changed (
     g_value_get_pointer (&value);
 
   ChannelSend * send = self->send_widget->send;
+  bool is_empty = channel_send_is_empty (send);
 
   Track * src_track =
     channel_send_get_track (send);
   Track * dest_track = NULL;
   StereoPorts * dest_sidechain = NULL;
+  PortConnection * conn = NULL;;
   switch (target->type)
     {
     case TARGET_TYPE_NONE:
@@ -157,16 +159,26 @@ on_selection_changed (
       switch (src_track->out_signal_type)
         {
         case TYPE_EVENT:
-          if (channel_send_is_empty (send) ||
+          if (port_connections_manager_get_sources_or_dests (
+                PORT_CONNECTIONS_MGR, NULL,
+                &send->midi_out->id, false) == 1)
+            {
+              conn =
+                port_connections_manager_get_source_or_dest (
+                  PORT_CONNECTIONS_MGR,
+                  &send->midi_out->id, false);
+            }
+          if (is_empty
+              ||
               !port_identifier_is_equal (
-                &self->send_widget->send->
-                  dest_midi_id,
-                &dest_track->processor->midi_in->id))
+                 conn->dest_id,
+                 &dest_track->processor->midi_in->
+                   id))
             {
               GError * err = NULL;
               bool ret =
                 channel_send_action_perform_connect_midi (
-                  self->send_widget->send,
+                  send,
                   dest_track->processor->midi_in,
                   &err);
               if (!ret)
@@ -178,17 +190,27 @@ on_selection_changed (
             }
           break;
         case TYPE_AUDIO:
-          if (channel_send_is_empty (send) ||
+          if (port_connections_manager_get_sources_or_dests (
+                PORT_CONNECTIONS_MGR, NULL,
+                &send->stereo_out->l->id,
+                false) == 1)
+            {
+              conn =
+                port_connections_manager_get_source_or_dest (
+                  PORT_CONNECTIONS_MGR,
+                  &send->stereo_out->l->id, false);
+            }
+          if (is_empty
+              ||
               !port_identifier_is_equal (
-                &self->send_widget->send->
-                  dest_l_id,
-                &dest_track->processor->stereo_in->
-                  l->id))
+                 conn->dest_id,
+                 &dest_track->processor->stereo_in->
+                   l->id))
             {
               GError * err = NULL;
               bool ret =
                 channel_send_action_perform_connect_audio (
-                  self->send_widget->send,
+                  send,
                   dest_track->processor->stereo_in,
                   &err);
               if (!ret)
@@ -207,17 +229,28 @@ on_selection_changed (
       {
         dest_sidechain =
           get_sidechain_from_target (target);
+        if (port_connections_manager_get_sources_or_dests (
+              PORT_CONNECTIONS_MGR, NULL,
+              &send->stereo_out->l->id,
+              false) == 1)
+          {
+            conn =
+              port_connections_manager_get_source_or_dest (
+                PORT_CONNECTIONS_MGR,
+                &send->stereo_out->l->id, false);
+          }
         if (dest_sidechain &&
-            (channel_send_is_empty (send) ||
-             !send->is_sidechain ||
+            (is_empty
+             || !send->is_sidechain
+             ||
              !port_identifier_is_equal (
-               &self->send_widget->send->dest_l_id,
-               &dest_sidechain->l->id)))
+                conn->dest_id,
+                &dest_sidechain->l->id)))
           {
             GError * err = NULL;
             bool ret =
               channel_send_action_perform_connect_sidechain (
-                self->send_widget->send,
+                send,
                 dest_sidechain, &err);
             if (!ret)
               {

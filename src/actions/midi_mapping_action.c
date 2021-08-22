@@ -105,6 +105,28 @@ midi_mapping_action_new_unbind (
   return ua;
 }
 
+MidiMappingAction *
+midi_mapping_action_clone (
+  const MidiMappingAction * src)
+{
+  MidiMappingAction * self =
+    object_new (MidiMappingAction);
+  self->parent_instance = src->parent_instance;
+
+  self->idx = src->idx;
+  port_identifier_copy (
+    &self->dest_port_id, &src->dest_port_id);
+  if (src->dev_port)
+    {
+      self->dev_port =
+        ext_port_clone (src->dev_port);
+    }
+  memcpy (
+    self->buf, src->buf, 3 * sizeof (midi_byte_t));
+
+  return self;
+}
+
 /**
  * Wrapper of midi_mapping_action_new_enable().
  */
@@ -165,7 +187,7 @@ bind_or_unbind (
   else
     {
       MidiMapping * mapping =
-        &MIDI_MAPPINGS->mappings[self->idx];
+        MIDI_MAPPINGS->mappings[self->idx];
       memcpy (
         self->buf, mapping->key,
         3 * sizeof (midi_byte_t));
@@ -194,11 +216,11 @@ midi_mapping_action_do (
     {
     case MIDI_MAPPING_ACTION_ENABLE:
       midi_mapping_set_enabled (
-        &MIDI_MAPPINGS->mappings[self->idx], true);
+        MIDI_MAPPINGS->mappings[self->idx], true);
       break;
     case MIDI_MAPPING_ACTION_DISABLE:
       midi_mapping_set_enabled (
-        &MIDI_MAPPINGS->mappings[self->idx], false);
+        MIDI_MAPPINGS->mappings[self->idx], false);
       break;
     case MIDI_MAPPING_ACTION_BIND:
       bind_or_unbind (self, true);
@@ -227,11 +249,11 @@ midi_mapping_action_undo (
     {
     case MIDI_MAPPING_ACTION_ENABLE:
       midi_mapping_set_enabled (
-        &MIDI_MAPPINGS->mappings[self->idx], false);
+        MIDI_MAPPINGS->mappings[self->idx], false);
       break;
     case MIDI_MAPPING_ACTION_DISABLE:
       midi_mapping_set_enabled (
-        &MIDI_MAPPINGS->mappings[self->idx], true);
+        MIDI_MAPPINGS->mappings[self->idx], true);
       break;
     case MIDI_MAPPING_ACTION_BIND:
       bind_or_unbind (self, false);

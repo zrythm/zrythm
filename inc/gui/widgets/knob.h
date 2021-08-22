@@ -50,6 +50,8 @@ G_DECLARE_FINAL_TYPE (
 typedef enum KnobType
 {
   KNOB_TYPE_NORMAL,
+
+  /** Port connection multiplier. */
   KNOB_TYPE_PORT_MULTIPLIER,
 } KnobType;
 
@@ -119,16 +121,8 @@ typedef struct _KnobWidget
 
   PangoLayout *       layout;
 
-  /* ----- FOR PORTS ONLY ------- */
-  /** Destination index for the destination
-   * multipliers of the port. */
-  int                 dest_index;
-
-  /** Source index on the destination port. */
-  int                  src_index;
-
   /** Last drawn real val. */
-  float                last_real_val;
+  float               last_real_val;
 } KnobWidget;
 
 /**
@@ -150,7 +144,6 @@ _knob_widget_new (
   GenericFloatSetter set_val,
   void *             object,
   KnobType           type,
-  Port *             dest,
   float              min,
   float              max,
   int                size,
@@ -162,13 +155,16 @@ _knob_widget_new (
     (GenericFloatGetter) default_getter, \
     (GenericFloatSetter) setter, \
     (void *) obj, \
-    KNOB_TYPE_NORMAL, NULL, min, max, size, zero)
+    KNOB_TYPE_NORMAL, min, max, size, zero)
 
-#define knob_widget_new_port(_port,_dest,size) \
+/**
+ * @param conn PortConnection pointer.
+ */
+#define knob_widget_new_port(conn,size) \
   _knob_widget_new ( \
-    NULL, NULL, (void *) _port, \
+    NULL, NULL, (void *) conn, \
     KNOB_TYPE_PORT_MULTIPLIER, \
-    _dest, 0.f, 1.f, size, 0.f)
+    0.f, 1.f, size, 0.f)
 
 /**
  * @}

@@ -42,7 +42,7 @@ typedef struct Track Track;
 
 #define PIANO_ROLL_SCHEMA_VERSION 1
 
-#define PIANO_ROLL (&CLIP_EDITOR->piano_roll)
+#define PIANO_ROLL (CLIP_EDITOR->piano_roll)
 
 #define DRUM_LABELS \
 static const char * drum_labels[47] = { \
@@ -163,6 +163,13 @@ typedef struct MidiNoteDescriptor
   int      marked;
 } MidiNoteDescriptor;
 
+MidiNoteDescriptor *
+midi_note_descriptor_new (void);
+
+void
+midi_note_descriptor_free (
+  MidiNoteDescriptor * self);
+
 /**
  * Piano roll serializable backend.
  *
@@ -192,7 +199,7 @@ typedef struct PianoRoll
    * For performance purposes, invisible notes must
    * be sorted at the end of the array.
    */
-  MidiNoteDescriptor piano_descriptors[128];
+  MidiNoteDescriptor * piano_descriptors[128];
 
   /**
    * Highlighting notes depending on the current
@@ -208,7 +215,7 @@ typedef struct PianoRoll
    * For performance purposes, invisible notes must
    * be sorted at the end of the array.
    */
-  MidiNoteDescriptor drum_descriptors[128];
+  MidiNoteDescriptor * drum_descriptors[128];
 
   EditorSettings  editor_settings;
 } PianoRoll;
@@ -244,18 +251,6 @@ piano_roll_schema =
   YAML_VALUE_PTR (
     PianoRoll, piano_roll_fields_schema),
 };
-
-//static inline void
-//piano_roll_clone_midi_note_descriptor (
-  //MidiNoteDescriptor * src,
-  //MidiNoteDescriptor * dest)
-//{
-  //dest->index = src->index;
-  //dest->value = src->value;
-  //dest->marked = src->marked;
-  //dest->visible = src->visible;
-
-//}
 
 /**
  * Returns if the key is black.
@@ -359,7 +354,7 @@ piano_roll_set_midi_modifier (
  */
 static inline void
 piano_roll_get_visible_notes (
-  PianoRoll * self,
+  PianoRoll *          self,
   MidiNoteDescriptor * arr,
   int *                num)
 {
@@ -369,9 +364,9 @@ piano_roll_get_visible_notes (
   for (int i = 0; i < 128; i++)
     {
       if (self->drum_mode)
-        descr = &self->drum_descriptors[i];
+        descr = self->drum_descriptors[i];
       else
-        descr = &self->piano_descriptors[i];
+        descr = self->piano_descriptors[i];
 
       if (descr->visible)
         {
@@ -391,6 +386,20 @@ piano_roll_get_visible_notes (
  */
 void
 piano_roll_init (PianoRoll * self);
+
+/**
+ * Only clones what is needed for serialization.
+ */
+PianoRoll *
+piano_roll_clone (
+  const PianoRoll * src);
+
+PianoRoll *
+piano_roll_new (void);
+
+void
+piano_roll_free (
+  PianoRoll * self);
 
 /**
  * @}

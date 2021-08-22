@@ -69,7 +69,7 @@ ZRegion *
 automation_region_new (
   const Position * start_pos,
   const Position * end_pos,
-  int              track_pos,
+  unsigned int     track_name_hash,
   int              at_idx,
   int              idx_inside_at)
 {
@@ -82,8 +82,8 @@ automation_region_new (
     object_new_n (self->aps_size, AutomationPoint);
 
   region_init (
-    self, start_pos, end_pos, track_pos, at_idx,
-    idx_inside_at);
+    self, start_pos, end_pos, track_name_hash,
+    at_idx, idx_inside_at);
 
   return self;
 }

@@ -45,6 +45,13 @@ hash_get_from_file (
   const char *  filepath,
   HashAlgorithm algo);
 
+void *
+hash_create_state (void);
+
+void
+hash_free_state (
+  void * in_state);
+
 unsigned int
 hash_get_for_struct_full (
   XXH32_state_t *    state,

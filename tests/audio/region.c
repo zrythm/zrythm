@@ -60,7 +60,7 @@ test_region_is_hit_by_range ()
   position_set_to_bar (&other_start_pos, 3);
   ZRegion * region =
     midi_region_new (
-      &pos, &end_pos, -1, -1, -1);
+      &pos, &end_pos, 0, -1, -1);
   g_assert_true (
     region_is_hit_by_range (
     region, other_start_pos.frames, pos.frames,
@@ -222,7 +222,8 @@ test_timeline_frames_to_local (void)
   position_set_to_bar (&end_pos, 4);
   ZRegion * region =
     midi_region_new (
-      &pos, &end_pos, track->pos, 0, 0);
+      &pos, &end_pos,
+      track_get_name_hash (track), 0, 0);
   long localp =
     region_timeline_frames_to_local (
       region, 13000, true);

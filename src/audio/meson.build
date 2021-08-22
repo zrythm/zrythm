@@ -82,6 +82,8 @@ audio_srcs = [
   'modulator_track.c',
   'pool.c',
   'port.c',
+  'port_connection.c',
+  'port_connections_manager.c',
   'port_identifier.c',
   'position.c',
   'quantize_options.c',

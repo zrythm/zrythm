@@ -256,19 +256,6 @@ typedef struct ArrangerSelectionsAction
   /** QuantizeOptions clone, if quantizing. */
   QuantizeOptions *    opts;
 
-  /** The original velocities when ramping. */
-  uint8_t *            vel_before;
-
-  /** The velocities changed to when ramping. */
-  uint8_t *            vel_after;
-
-  /**
-   * The arranger object, if the action can only
-   * affect a single object rather than selections,
-   * like a region name change.
-   */
-  //ArrangerObject *     obj;
-
   /* --- below for serialization only --- */
   ChordSelections *    chord_sel;
   ChordSelections *    chord_sel_after;
@@ -676,6 +663,11 @@ arranger_selections_action_new_quantize (
   ArrangerSelections * sel,
   QuantizeOptions *    opts,
   GError **            error);
+
+NONNULL
+ArrangerSelectionsAction *
+arranger_selections_action_clone (
+  const ArrangerSelectionsAction * src);
 
 bool
 arranger_selections_action_perform_create_or_delete (

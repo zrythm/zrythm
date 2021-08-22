@@ -994,7 +994,9 @@ activate_cut (
           GError * err = NULL;
           bool ret =
             mixer_selections_action_perform_delete (
-              MIXER_SELECTIONS, &err);
+              MIXER_SELECTIONS,
+              PORT_CONNECTIONS_MGR,
+              &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -1216,7 +1218,9 @@ activate_delete (
         GError * err = NULL;
         bool ret =
           mixer_selections_action_perform_delete (
-            MIXER_SELECTIONS, &err);
+            MIXER_SELECTIONS,
+            PORT_CONNECTIONS_MGR,
+            &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -1473,11 +1477,11 @@ activate_snap_to_grid (
     }
   else if (string_is_equal (variant, "editor"))
     {
-      SNAP_GRID_MIDI->snap_to_grid =
-        !SNAP_GRID_MIDI->snap_to_grid;
+      SNAP_GRID_EDITOR->snap_to_grid =
+        !SNAP_GRID_EDITOR->snap_to_grid;
       EVENTS_PUSH (
         ET_SNAP_GRID_OPTIONS_CHANGED,
-        SNAP_GRID_MIDI);
+        SNAP_GRID_EDITOR);
     }
   else if (string_is_equal (variant, "global"))
     {
@@ -1520,11 +1524,11 @@ activate_snap_keep_offset (GSimpleAction *action,
   if (PROJECT->last_selection ==
         SELECTION_TYPE_EDITOR)
     {
-      SNAP_GRID_MIDI->snap_to_grid_keep_offset =
-        !SNAP_GRID_MIDI->snap_to_grid_keep_offset;
+      SNAP_GRID_EDITOR->snap_to_grid_keep_offset =
+        !SNAP_GRID_EDITOR->snap_to_grid_keep_offset;
       EVENTS_PUSH (
         ET_SNAP_GRID_OPTIONS_CHANGED,
-        SNAP_GRID_MIDI);
+        SNAP_GRID_EDITOR);
     }
 }
 
@@ -1545,11 +1549,11 @@ activate_snap_events (GSimpleAction *action,
   if (PROJECT->last_selection ==
         SELECTION_TYPE_EDITOR)
     {
-      SNAP_GRID_MIDI->snap_to_events =
-        !SNAP_GRID_MIDI->snap_to_events;
+      SNAP_GRID_EDITOR->snap_to_events =
+        !SNAP_GRID_EDITOR->snap_to_events;
       EVENTS_PUSH (
         ET_SNAP_GRID_OPTIONS_CHANGED,
-        SNAP_GRID_MIDI);
+        SNAP_GRID_EDITOR);
     }
 }
 
@@ -1656,7 +1660,7 @@ DEFINE_SIMPLE (activate_duplicate_selected_tracks)
   GError * err = NULL;
   bool ret =
     tracklist_selections_action_perform_copy (
-    TRACKLIST_SELECTIONS,
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
     TRACKLIST_SELECTIONS->tracks[0]->pos + 1,
     &err);
   if (!ret)
@@ -1710,7 +1714,9 @@ activate_delete_selected_tracks (
   GError * err = NULL;
   bool ret =
     tracklist_selections_action_perform_delete (
-      TRACKLIST_SELECTIONS, &err);
+      TRACKLIST_SELECTIONS,
+      PORT_CONNECTIONS_MGR,
+      &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -1738,13 +1744,15 @@ DEFINE_SIMPLE (activate_pin_selected_tracks)
     {
       ret =
         tracklist_selections_action_perform_pin (
-          TRACKLIST_SELECTIONS, &err);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, &err);
     }
   else
     {
       ret =
         tracklist_selections_action_perform_unpin (
-          TRACKLIST_SELECTIONS, &err);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, &err);
     }
 
   if (!ret)

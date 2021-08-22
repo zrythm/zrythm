@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 #include "gui/backend/audio_clip_editor.h"
 #include "audio/track.h"
 #include "project.h"
+#include "utils/objects.h"
 
 void
 audio_clip_editor_init (AudioClipEditor * self)
@@ -31,4 +32,36 @@ audio_clip_editor_init (AudioClipEditor * self)
     AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
 
   editor_settings_init (&self->editor_settings);
+}
+
+AudioClipEditor *
+audio_clip_editor_clone (
+  AudioClipEditor * src)
+{
+  AudioClipEditor * self =
+    object_new (AudioClipEditor);
+  self->schema_version =
+    AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
+
+  self->editor_settings = src->editor_settings;
+
+  return self;
+}
+
+AudioClipEditor *
+audio_clip_editor_new (void)
+{
+  AudioClipEditor * self =
+    object_new (AudioClipEditor);
+  self->schema_version =
+    AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
+
+  return self;
+}
+
+void
+audio_clip_editor_free (
+  AudioClipEditor * self)
+{
+  object_zero_and_free (self);
 }

@@ -76,8 +76,9 @@ typedef struct PluginIdentifier
   int              schema_version;
 
   PluginSlotType   slot_type;
-  /** The Channel this plugin belongs to. */
-  int              track_pos;
+
+  /** Track name hash. */
+  unsigned int     track_name_hash;
 
   /**
    * The slot this plugin is in in the channel, or
@@ -97,8 +98,8 @@ plugin_identifier_fields_schema[] =
   YAML_FIELD_ENUM (
     PluginIdentifier, slot_type,
     plugin_slot_type_strings),
-  YAML_FIELD_INT (
-    PluginIdentifier, track_pos),
+  YAML_FIELD_UINT (
+    PluginIdentifier, track_name_hash),
   YAML_FIELD_INT (
     PluginIdentifier, slot),
 
@@ -123,7 +124,7 @@ plugin_identifier_is_equal (
 {
   return
     a->slot_type == b->slot_type &&
-    a->track_pos == b->track_pos &&
+    a->track_name_hash == b->track_name_hash &&
     a->slot == b->slot;
 }
 
@@ -153,8 +154,9 @@ plugin_identifier_print (
 {
   sprintf (
     str,
-    "slot_type: %d, track_pos: %d, slot: %d",
-    self->slot_type, self->track_pos, self->slot);
+    "slot_type: %d, track_name hash: %u, slot: %d",
+    self->slot_type, self->track_name_hash,
+    self->slot);
 }
 
 /**

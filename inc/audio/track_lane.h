@@ -77,9 +77,6 @@ typedef struct TrackLane
   int                 num_regions;
   size_t              regions_size;
 
-  /** Position of owner Track in the Tracklist. */
-  int                 track_pos;
-
   /**
    * MIDI channel, if MIDI lane, starting at 1.
    *
@@ -94,6 +91,9 @@ typedef struct TrackLane
 
   /** Whether part of an auditioner track. */
   bool                is_auditioner;
+
+  /** Owner track. */
+  Track *             track;
 
 } TrackLane;
 
@@ -112,8 +112,6 @@ track_lane_fields_schema[] =
     TrackLane, solo),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     TrackLane, regions, region_schema),
-  YAML_FIELD_INT (
-    TrackLane, track_pos),
   YAML_FIELD_UINT (
     TrackLane, midi_ch),
 
@@ -219,22 +217,24 @@ track_lane_update_frames (
   TrackLane * self);
 
 /**
- * Sets the track position to the lane and all its
- * members recursively.
+ * Sets the new track name hash to all the lane's
+ * objects recursively.
  */
 void
-track_lane_set_track_pos (
-  TrackLane * self,
-  const int   pos);
+track_lane_update_track_name_hash (
+  TrackLane *   self);
 
 /**
  * Clones the TrackLane.
  *
  * Mainly used when cloning Track's.
+ *
+ * @param track Pointer to owner track.
  */
 TrackLane *
 track_lane_clone (
-  TrackLane * lane);
+  const TrackLane * src,
+  Track *           track);
 
 /**
  * Writes the lane to the given MIDI file.

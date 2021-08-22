@@ -197,11 +197,9 @@ mixer_selections_get_track (
   if (!self->has_any)
     return NULL;
 
-  g_return_val_if_fail (
-    self &&
-    self->track_pos < TRACKLIST->num_tracks, NULL);
   Track * track =
-    TRACKLIST->tracks[self->track_pos];
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, self->track_name_hash);
   g_return_val_if_fail (track, NULL);
   return track;
 }
@@ -225,14 +223,17 @@ mixer_selections_add_slot (
   int               slot,
   bool              clone_pl)
 {
-  if (!ms->has_any ||
-      track->pos != ms->track_pos ||
-      type != ms->type)
+  unsigned int name_hash =
+    track_get_name_hash (track);
+
+  if (!ms->has_any
+      || name_hash != ms->track_name_hash
+      || type != ms->type)
     {
       mixer_selections_clear (
         ms, F_NO_PUBLISH_EVENTS);
     }
-  ms->track_pos = track->pos;
+  ms->track_name_hash = name_hash;
   ms->type = type;
   ms->has_any = true;
 
@@ -312,7 +313,7 @@ mixer_selections_remove_slot (
       ms->type == PLUGIN_SLOT_INSTRUMENT)
     {
       ms->has_any = 0;
-      ms->track_pos = -1;
+      ms->track_name_hash = 0;
     }
 
   if (ZRYTHM_HAVE_UI && publish_events)
@@ -363,14 +364,15 @@ mixer_selections_contains_plugin (
 {
   g_return_val_if_fail (ms && IS_PLUGIN (pl), false);
 
-  if (ms->track_pos != pl->id.track_pos)
+  if (ms->track_name_hash != pl->id.track_name_hash)
     return false;
 
   if (ms->type == PLUGIN_SLOT_INSTRUMENT)
     {
       if (pl->id.slot_type ==
             PLUGIN_SLOT_INSTRUMENT &&
-          pl->id.track_pos == ms->track_pos)
+          pl->id.track_name_hash ==
+            ms->track_name_hash)
         {
           return true;
         }
@@ -487,7 +489,7 @@ mixer_selections_clear (
     }
 
   self->has_any = false;
-  self->track_pos = -1;
+  self->track_name_hash = 0;
 
   if (pub_events)
     {
@@ -519,9 +521,12 @@ mixer_selections_clone (
       Plugin * pl = NULL;
       if (src_is_project)
         {
+          Track * track =
+            tracklist_find_track_by_name_hash (
+              TRACKLIST, src->track_name_hash);
           pl =
             track_get_plugin_at_slot (
-              TRACKLIST->tracks[src->track_pos],
+              track,
               src->type, src->slots[i]);
           g_return_val_if_fail (
             IS_PLUGIN (pl), NULL);
@@ -548,7 +553,7 @@ mixer_selections_clone (
   ms->type = src->type;
   ms->num_slots = src->num_slots;
   ms->has_any = src->has_any;
-  ms->track_pos = src->track_pos;
+  ms->track_name_hash = src->track_name_hash;
 
   return ms;
 }
@@ -601,7 +606,10 @@ mixer_selections_paste_to_slot (
   GError * err = NULL;
   bool ret =
     mixer_selections_action_perform_paste (
-      ms, type, ch->track_pos, slot, &err);
+      ms, PORT_CONNECTIONS_MGR,
+      type,
+      track_get_name_hash (ch->track),
+      slot, &err);
   if (!ret)
     {
       HANDLE_ERROR (

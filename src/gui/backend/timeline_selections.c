@@ -215,31 +215,33 @@ get_lowest_track_pos (
   TimelineSelections * ts)
 {
   int track_pos = INT_MAX;
-  int tmp_pos, i;
 
-#define CHECK_POS(_pos) \
-  tmp_pos = _pos; \
-  if (tmp_pos < track_pos) \
-    { \
-      track_pos = tmp_pos; \
-    }
+#define CHECK_POS(id) \
+  { \
+  }
 
-  ZRegion * region;
-  for (i = 0; i < ts->num_regions; i++)
+  for (int i = 0; i < ts->num_regions; i++)
     {
-      region = ts->regions[i];
-      CHECK_POS (region->id.track_pos);
+      ZRegion * r = ts->regions[i];
+      Track * tr =
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, r->id.track_name_hash);
+      if (tr->pos < track_pos)
+        {
+          track_pos = tr->pos;
+        }
     }
+
   if (ts->num_scale_objects > 0)
     {
-      CHECK_POS (ts->chord_track_vis_index);
+      if (ts->chord_track_vis_index < track_pos)
+        track_pos = ts->chord_track_vis_index;
     }
   if (ts->num_markers > 0)
     {
-      CHECK_POS (ts->marker_track_vis_index);
+      if (ts->marker_track_vis_index < track_pos)
+        track_pos = ts->marker_track_vis_index;
     }
-
-#undef CHECK_POS
 
   return track_pos;
 }
@@ -258,14 +260,15 @@ timeline_selections_set_vis_track_indices (
   Track * highest_tr =
     timeline_selections_get_first_track (ts);
 
-  ZRegion * region;
   for (i = 0; i < ts->num_regions; i++)
     {
-      region = ts->regions[i];
-      region->id.track_pos =
+      ZRegion * r = ts->regions[i];
+      Track * region_track =
+        arranger_object_get_track (
+          (ArrangerObject *) r);
+      ts->region_track_vis_index =
         tracklist_get_visible_track_diff (
-          TRACKLIST, highest_tr,
-          TRACKLIST->tracks[region->id.track_pos]);
+          TRACKLIST, highest_tr, region_track);
     }
   if (ts->num_scale_objects > 0)
     ts->chord_track_vis_index =
@@ -288,16 +291,17 @@ get_track_poses (
   int *                num_poses)
 {
   int i;
-  ZRegion * region;
   for (i = 0; i < ts->num_regions; i++)
     {
-      region = ts->regions[i];
-      g_warn_if_fail (region->id.track_pos >= 0);
+      ZRegion * r = ts->regions[i];
+      Track * region_track =
+        arranger_object_get_track (
+          (ArrangerObject *) r);
       if (!array_contains_int (
-            poses, *num_poses, region->id.track_pos))
+            poses, *num_poses, region_track->pos))
         {
           array_append (
-            poses, *num_poses, region->id.track_pos);
+            poses, *num_poses, region_track->pos);
         }
     }
   if (ts->num_scale_objects > 0)
@@ -368,12 +372,15 @@ timeline_selections_can_be_pasted (
           return false;
         }
 
-      /*[> check if content matches <]*/
+      /* check if content matches */
       for (j = 0; j < ts->num_regions; j++)
         {
-          /*[> get region at this ts_pos <]*/
+          /* get region at this ts_pos */
           r = ts->regions[j];
-          if (r->id.track_pos != ts_pos)
+          Track * region_track =
+            arranger_object_get_track (
+              (ArrangerObject *) r);
+          if (region_track->pos != ts_pos)
             continue;
 
            /*check if this track can host this*/

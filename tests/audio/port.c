@@ -31,6 +31,7 @@
 #include "tests/helpers/project.h"
 #include "tests/helpers/zrythm.h"
 
+#if 0
 static void
 test_port_disconnect (void)
 {
@@ -164,6 +165,7 @@ test_serialization (void)
 
   test_helper_zrythm_cleanup ();
 }
+#endif
 
 static void
 test_get_hash (void)
@@ -211,12 +213,14 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test get hash",
     (GTestFunc) test_get_hash);
+#if 0
   g_test_add_func (
     TEST_PREFIX "test port disconnect",
     (GTestFunc) test_port_disconnect);
   g_test_add_func (
     TEST_PREFIX "test serialization",
     (GTestFunc) test_serialization);
+#endif
 
   return g_test_run ();
 }

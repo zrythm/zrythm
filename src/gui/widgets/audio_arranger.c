@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,7 +40,7 @@ audio_arranger_widget_snap_range_r (
         {
           position_snap_simple (
             &AUDIO_SELECTIONS->sel_start,
-            SNAP_GRID_MIDI);
+            SNAP_GRID_EDITOR);
         }
       position_set_to_pos (
         &AUDIO_SELECTIONS->sel_end,
@@ -53,8 +53,7 @@ audio_arranger_widget_snap_range_r (
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
       !self->shift_held)
     {
-      position_snap_simple (
-        pos, SNAP_GRID_MIDI);
+      position_snap_simple (pos, SNAP_GRID_EDITOR);
     }
   position_set_to_pos (
     &AUDIO_SELECTIONS->sel_end, pos);

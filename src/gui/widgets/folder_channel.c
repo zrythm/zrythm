@@ -25,6 +25,7 @@
 #include "actions/undo_manager.h"
 #include "audio/master_track.h"
 #include "audio/meter.h"
+#include "audio/port_connections_manager.h"
 #include "audio/track.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -122,13 +123,15 @@ on_drag_data_received (
     {
       ret =
         tracklist_selections_action_perform_copy (
-          TRACKLIST_SELECTIONS, pos, &err);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, pos, &err);
     }
   else
     {
       ret =
         tracklist_selections_action_perform_move (
-          TRACKLIST_SELECTIONS, pos, &err);
+          TRACKLIST_SELECTIONS,
+          PORT_CONNECTIONS_MGR, pos, &err);
     }
 
   if (!ret)

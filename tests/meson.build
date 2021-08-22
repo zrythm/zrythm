@@ -242,6 +242,7 @@ if get_option ('tests')
     'audio/tracklist': { 'parallel': true },
     'gui/backend/arranger_selections': {
       'parallel': true },
+    'integration/memory_allocation': { 'parallel': true },
     'integration/recording': { 'parallel': false },
     'plugins/carla_discovery': { 'parallel': true },
     'plugins/carla_native_plugin': { 'parallel': false },
@@ -353,7 +354,7 @@ if get_option ('tests')
     foreach suite : suites
       if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
         is_parallel = false
-        timeout = 420
+        timeout = 480
       endif
     endforeach
 

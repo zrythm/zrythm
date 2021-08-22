@@ -54,7 +54,8 @@ _test (
 
   /* 2. delete track */
   tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, NULL);
+    TRACKLIST_SELECTIONS,
+    PORT_CONNECTIONS_MGR, NULL);
 
   /* 3. undo track deletion */
   undo_manager_undo (UNDO_MANAGER, NULL);

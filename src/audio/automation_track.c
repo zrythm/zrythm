@@ -118,13 +118,14 @@ automation_track_validate (
     port_identifier_validate (&self->port_id),
     false);
 
-  int track_pos = self->port_id.track_pos;
+  unsigned int track_name_hash =
+    self->port_id.track_name_hash;
   if (self->port_id.owner_type ==
         PORT_OWNER_TYPE_PLUGIN)
     {
       g_return_val_if_fail (
-        self->port_id.plugin_id.track_pos ==
-          track_pos, false);
+        self->port_id.plugin_id.track_name_hash ==
+          track_name_hash, false);
     }
   AutomationTrack * found_at =
     automation_track_find_from_port_id (
@@ -147,7 +148,7 @@ automation_track_validate (
     {
       ZRegion * r = self->regions[j];
       g_return_val_if_fail (
-        r->id.track_pos == track_pos &&
+        r->id.track_name_hash == track_name_hash &&
         r->id.at_idx == self->index &&
         r->id.idx ==j, false);
       for (int k = 0; k < r->num_aps; k++)
@@ -156,8 +157,8 @@ automation_track_validate (
           ArrangerObject * obj =
             (ArrangerObject *) ap;
           g_return_val_if_fail (
-            obj->region_id.track_pos ==
-              track_pos, false);
+            obj->region_id.track_name_hash ==
+              track_name_hash, false);
         }
       for (int k = 0; k < r->num_midi_notes; k++)
         {
@@ -165,8 +166,8 @@ automation_track_validate (
           ArrangerObject * obj =
             (ArrangerObject *) mn;
           g_return_val_if_fail (
-            obj->region_id.track_pos ==
-              track_pos, false);
+            obj->region_id.track_name_hash ==
+              track_name_hash, false);
         }
       for (int k = 0; k < r->num_chord_objects;
            k++)
@@ -175,8 +176,8 @@ automation_track_validate (
           ArrangerObject * obj =
             (ArrangerObject *) co;
           g_return_val_if_fail (
-            obj->region_id.track_pos ==
-              track_pos, false);
+            obj->region_id.track_name_hash ==
+              track_name_hash, false);
         }
     }
 
@@ -398,6 +399,8 @@ automation_track_get_ap_before_pos (
  * Finds the AutomationTrack associated with
  * `port`.
  *
+ * FIXME use hashtable
+ *
  * @param track The track that owns the port, if
  *   known.
  */
@@ -430,7 +433,8 @@ automation_track_find_from_port (
             dest->type == src->type &&
             dest->flow == src->flow &&
             dest->flags == src->flags &&
-            dest->track_pos == src->track_pos)
+            dest->track_name_hash ==
+              src->track_name_hash)
             {
               if (dest->owner_type ==
                     PORT_OWNER_TYPE_PLUGIN)
@@ -674,16 +678,9 @@ Track *
 automation_track_get_track (
   AutomationTrack * self)
 {
-  if (!TRACKLIST->swapping_tracks)
-    {
-      g_return_val_if_fail (
-        self->port_id.track_pos <
-          TRACKLIST->num_tracks,
-        NULL);
-    }
-
   Track * track =
-    TRACKLIST->tracks[self->port_id.track_pos];
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, self->port_id.track_name_hash);
   g_return_val_if_fail (track, NULL);
 
   return track;

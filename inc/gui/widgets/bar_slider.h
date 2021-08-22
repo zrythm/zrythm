@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -53,7 +53,10 @@ typedef struct Port Port;
 typedef enum BarSliderType
 {
   BAR_SLIDER_TYPE_NORMAL,
+
+  /** Port connection multiplier. */
   BAR_SLIDER_TYPE_PORT_MULTIPLIER,
+
   BAR_SLIDER_TYPE_CONTROL_PORT,
 } BarSliderType;
 
@@ -142,14 +145,6 @@ typedef struct _BarSliderWidget
   /** Multiply the value by 100 when showing it. */
   int             convert_to_percentage;
 
-  /* ----- FOR PORTS ONLY ------- */
-  /** Destination index for the destination
-   * multipliers of the port. */
-  int             dest_index;
-
-  /** Source index on the destination port. */
-  int             src_index;
-
   /** Cache layout. */
   PangoLayout *   layout;
 } BarSliderWidget;
@@ -168,7 +163,6 @@ _bar_slider_widget_new (
   float (*get_val)(void *),
   void (*set_val)(void *, float),
   void * object,
-  Port * dest,
   float  min,
   float  max,
   int    w,
@@ -189,17 +183,21 @@ _bar_slider_widget_new (
     BAR_SLIDER_TYPE_NORMAL, \
     (float (*) (void *)) getter, \
     (void (*) (void *, float)) setter, \
-    (void *) obj, NULL, \
+    (void *) obj, \
     min, max, w, h, zero, 0, dec, mode, "", suffix)
 
-#define bar_slider_widget_new_port( \
-  _port, _dest, _prefix) \
+/**
+ * Wrapper.
+ *
+ * @param conn PortConnection pointer.
+ */
+#define bar_slider_widget_new_port_connection(conn,prefix) \
   _bar_slider_widget_new ( \
     BAR_SLIDER_TYPE_PORT_MULTIPLIER, \
-    NULL, NULL, (void *) _port, _dest, 0.f, 1.f, \
+    NULL, NULL, (void *) conn, 0.f, 1.f, \
     160, 20, \
     0.f, 1, 0, \
-    UI_DRAG_MODE_CURSOR, _prefix, " %")
+    UI_DRAG_MODE_CURSOR, prefix, " %")
 
 /**
  * @}

@@ -312,6 +312,11 @@ audio_clip_remove_and_free (
   AudioClip * self,
   bool        backup);
 
+NONNULL
+AudioClip *
+audio_clip_clone (
+  AudioClip * src);
+
 /**
  * Frees the audio clip.
  */

@@ -298,7 +298,10 @@ on_drag_data_received (
                   ret =
                     mixer_selections_action_perform_copy (
                       MIXER_SELECTIONS,
-                      self->type, self->track->pos,
+                      PORT_CONNECTIONS_MGR,
+                      self->type,
+                      track_get_name_hash (
+                        self->track),
                       self->slot_index, &err);
                 }
               else if (action == GDK_ACTION_MOVE)
@@ -306,7 +309,10 @@ on_drag_data_received (
                   ret =
                     mixer_selections_action_perform_move (
                       MIXER_SELECTIONS,
-                      self->type, self->track->pos,
+                      PORT_CONNECTIONS_MGR,
+                      self->type,
+                      track_get_name_hash (
+                        self->track),
                       self->slot_index, &err);
                 }
               else
@@ -344,7 +350,8 @@ on_drag_data_received (
           GError * err = NULL;
           bool ret =
             mixer_selections_action_perform_create (
-              self->type, self->track->pos,
+              self->type,
+              track_get_name_hash (self->track),
               self->slot_index, setting, 1, &err);
           if (!ret)
             {
@@ -539,8 +546,8 @@ select_plugin (
 
   /* if same channel as selections */
   if (self->track->channel &&
-      self->track->pos ==
-        MIXER_SELECTIONS->track_pos)
+      track_get_name_hash (self->track) ==
+        MIXER_SELECTIONS->track_name_hash)
     ch = true;
 
   if (!ctrl && !pl && !ch)

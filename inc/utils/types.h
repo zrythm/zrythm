@@ -106,6 +106,16 @@ typedef int (*GenericCmpFunc) (
   const void * b);
 
 /**
+ * Predicate function prototype.
+ *
+ * To be used to return whether the given pointer
+ * matches some condition.
+ */
+typedef bool (*GenericPredicateFunc) (
+  const void * object,
+  const void * user_data);
+
+/**
  * Generic progress info.
  */
 typedef struct GenericProgressInfo

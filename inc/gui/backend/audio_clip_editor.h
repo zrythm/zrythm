@@ -38,7 +38,7 @@
 #define AUDIO_CLIP_EDITOR_SCHEMA_VERSION 1
 
 #define AUDIO_CLIP_EDITOR \
-  (&CLIP_EDITOR->audio_clip_editor)
+  (CLIP_EDITOR->audio_clip_editor)
 
 /**
  * Audio clip editor serializable backend.
@@ -74,6 +74,17 @@ audio_clip_editor_schema =
 
 void
 audio_clip_editor_init (
+  AudioClipEditor * self);
+
+AudioClipEditor *
+audio_clip_editor_clone (
+  AudioClipEditor * src);
+
+AudioClipEditor *
+audio_clip_editor_new (void);
+
+void
+audio_clip_editor_free (
   AudioClipEditor * self);
 
 /**

@@ -137,7 +137,7 @@ apply_plugin (
   GError * err = NULL;
   Plugin * pl =
     plugin_new_from_setting (
-      setting, -1, PLUGIN_SLOT_INSERT, 0, &err);
+      setting, 0, PLUGIN_SLOT_INSERT, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
       PROPAGATE_PREFIXED_ERROR (

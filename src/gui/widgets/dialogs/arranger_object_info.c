@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -54,8 +54,8 @@ set_values (
   if (region)
     {
       sprintf (
-        tmp, "%s [tr %d, ln %d, at %d, idx %d]",
-        region->name, region->id.track_pos,
+        tmp, "%s [tr %u, ln %d, at %d, idx %d]",
+        region->name, region->id.track_name_hash,
         region->id.lane_pos, region->id.at_idx,
         region->id.idx);
       gtk_label_set_text (self->owner_lbl, tmp);

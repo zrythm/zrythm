@@ -40,6 +40,7 @@
 #include <math.h>
 
 #include "audio/port.h"
+#include "audio/port_connection.h"
 #include "gui/widgets/knob.h"
 #include "utils/cairo.h"
 #include "utils/math.h"
@@ -59,8 +60,9 @@ get_real_val (
   KnobWidget * self,
   bool         snapped)
 {
-  if (self->type == KNOB_TYPE_NORMAL)
+  switch (self->type)
     {
+    case KNOB_TYPE_NORMAL:
       if (snapped && self->snapped_getter)
         {
           return
@@ -70,13 +72,16 @@ get_real_val (
         {
           return self->getter (self->object);
         }
+    case KNOB_TYPE_PORT_MULTIPLIER:
+      {
+        PortConnection * conn =
+          (PortConnection *) self->object;
+        return conn->multiplier;
+      }
+      break;
     }
-  else
-    {
-      return
-        port_get_multiplier_by_index (
-          (Port *) self->object, self->dest_index);
-    }
+
+  g_return_val_if_reached (0.f);
 }
 
 /**
@@ -107,12 +112,9 @@ set_real_val (
     }
   else
     {
-      Port * port = (Port *) self->object;
-      Port * dest = port->dests[self->dest_index];
-      port_set_multiplier_by_index (
-        port, self->dest_index, real_val);
-      port_set_src_multiplier_by_index (
-        dest, self->src_index, real_val);
+      PortConnection * conn =
+        (PortConnection *) self->object;
+      conn->multiplier = real_val;
     }
 }
 
@@ -544,7 +546,6 @@ _knob_widget_new (
   GenericFloatSetter set_val,
   void *             object,
   KnobType           type,
-  Port *             dest,
   float              min,
   float              max,
   int                size,
@@ -562,18 +563,6 @@ _knob_widget_new (
   self->min = min;
   self->max = max;
   self->type = type;
-  if (type == KNOB_TYPE_PORT_MULTIPLIER)
-    {
-      self->dest_index =
-        port_get_dest_index ((Port *) object, dest);
-      self->src_index =
-        port_get_src_index (dest, (Port *) object);
-    }
-  else
-    {
-      self->dest_index = -1;
-      self->src_index = -1;
-    }
   /*self->cur = get_knob_val (self)*/
   self->size = size; /* default 30 */
   self->hover = 0;

@@ -63,6 +63,13 @@ typedef struct TracklistSelections
 
   /** Whether these are the project selections. */
   bool                 is_project;
+
+  /**
+   * Flag to free tracks even if these are the
+   * project selections (e.g. when temporarily
+   * cloning the project to save).
+   */
+  bool                 free_tracks;
 } TracklistSelections;
 
 static const cyaml_schema_field_t

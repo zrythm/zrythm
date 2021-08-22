@@ -508,6 +508,60 @@ undoable_action_set_num_actions (
 }
 
 /**
+ * To be used by actions that save/load port
+ * connections.
+ *
+ * @param _do True if doing/performing, false if
+ *   undoing.
+ * @param before Pointer to the connections before.
+ * @param after Pointer to the connections after.
+ */
+void
+undoable_action_save_or_load_port_connections (
+  UndoableAction *          self,
+  bool                      _do,
+  PortConnectionsManager ** before,
+  PortConnectionsManager ** after)
+{
+  /* if first do and keeping track of connections,
+   * clone the new connections */
+  if (_do && *before != NULL && *after == NULL)
+    {
+      g_debug (
+        "updating and caching port connections "
+        "after doing action");
+      *after =
+        port_connections_manager_clone (
+          PORT_CONNECTIONS_MGR);
+    }
+  else if (_do && *after != NULL)
+    {
+      g_debug (
+        "resetting port connections from "
+        "cached after");
+      port_connections_manager_reset (
+        PORT_CONNECTIONS_MGR, *after);
+      g_return_if_fail (
+        PORT_CONNECTIONS_MGR->num_connections ==
+          (*after)->num_connections);
+    }
+  /* else if undoing and have connections from
+   * before */
+  else if (!_do && *before != NULL)
+    {
+      /* reset the connections */
+      g_debug (
+        "resetting port connections from "
+        "cached before");
+      port_connections_manager_reset (
+        PORT_CONNECTIONS_MGR, *before);
+      g_return_if_fail (
+        PORT_CONNECTIONS_MGR->num_connections ==
+          (*before)->num_connections);
+    }
+}
+
+/**
  * Stringizes the action to be used in Undo/Redo
  * buttons.
  *

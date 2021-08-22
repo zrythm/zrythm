@@ -92,7 +92,9 @@ on_delete_clicked (
   GError * err = NULL;
   bool ret =
     mixer_selections_action_perform_delete (
-      sel, &err);
+      sel,
+      PORT_CONNECTIONS_MGR,
+      &err);
   if (!ret)
     {
       HANDLE_ERROR (

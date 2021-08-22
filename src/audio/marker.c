@@ -62,11 +62,11 @@ marker_set_index (
  * Sets the Track of the Marker.
  */
 void
-marker_set_track_pos (
-  Marker * marker,
-  int      track_pos)
+marker_set_track_name_hash (
+  Marker *     marker,
+  unsigned int track_name_hash)
 {
-  marker->track_pos = track_pos;
+  marker->track_name_hash = track_name_hash;
 }
 
 Marker *

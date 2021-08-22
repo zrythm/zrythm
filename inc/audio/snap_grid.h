@@ -38,18 +38,18 @@
 
 #define SNAP_GRID_SCHEMA_VERSION 1
 
-#define SNAP_GRID_IS_MIDI(sg) \
-  (&PROJECT->snap_grid_midi == sg)
+#define SNAP_GRID_TIMELINE \
+  (PROJECT->snap_grid_timeline)
+#define SNAP_GRID_EDITOR \
+  (PROJECT->snap_grid_editor)
+
+#define SNAP_GRID_IS_EDITOR(sg) \
+  (SNAP_GRID_EDITOR == sg)
 #define SNAP_GRID_IS_TIMELINE(sg) \
-  (&PROJECT->snap_grid_timeline == sg)
+  (SNAP_GRID_TIMELINE == sg)
 /* if any snapping is enabled */
 #define SNAP_GRID_ANY_SNAP(sg) \
   (sg->snap_to_grid || sg->snap_to_events)
-#define SNAP_GRID_TIMELINE \
-  (&PROJECT->snap_grid_timeline)
-/* FIXME rename to snap grid editor */
-#define SNAP_GRID_MIDI \
-  (&PROJECT->snap_grid_midi)
 #define SNAP_GRID_DEFAULT_MAX_BAR 10000
 
 typedef enum NoteLength
@@ -316,6 +316,17 @@ snap_grid_get_nearby_snap_point (
   const SnapGrid * const self,
   const Position *       pos,
   const int              return_prev);
+
+SnapGrid *
+snap_grid_clone (
+  SnapGrid * src);
+
+SnapGrid *
+snap_grid_new (void);
+
+void
+snap_grid_free (
+  SnapGrid * self);
 
 /**
  * @}

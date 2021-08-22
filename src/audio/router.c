@@ -220,12 +220,15 @@ router_is_processing_thread (
                 self->graph->threads[j]->jthread))
             return true;
         }
+      else
+        {
 #endif
-#ifndef HAVE_JACK
-      if (pthread_equal (
-            pthread_self (),
-            self->graph->threads[j]->pthread))
-        return true;
+          if (pthread_equal (
+                pthread_self (),
+                self->graph->threads[j]->pthread))
+            return true;
+#ifdef HAVE_JACK
+        }
 #endif
     }
 
@@ -240,14 +243,17 @@ router_is_processing_thread (
             self->graph->main_thread->jthread))
         return true;
     }
+  else
+    {
 #endif
-#ifndef HAVE_JACK
-  if (self->graph->main_thread
-      &&
-      pthread_equal (
-        pthread_self (),
-        self->graph->main_thread->pthread))
-    return true;
+      if (self->graph->main_thread
+          &&
+          pthread_equal (
+            pthread_self (),
+            self->graph->main_thread->pthread))
+        return true;
+#ifdef HAVE_JACK
+    }
 #endif
 
   return false;

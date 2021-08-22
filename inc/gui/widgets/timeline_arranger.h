@@ -50,9 +50,9 @@ typedef struct ScaleObject ScaleObject;
  * @{
  */
 
-#define MW_TIMELINE MW_TIMELINE_PANEL->timeline
+#define MW_TIMELINE (MW_TIMELINE_PANEL->timeline)
 #define MW_PINNED_TIMELINE \
-  MW_TIMELINE_PANEL->pinned_timeline
+  (MW_TIMELINE_PANEL->pinned_timeline)
 
 void
 timeline_arranger_widget_snap_range_r (

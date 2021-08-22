@@ -56,6 +56,9 @@ transport_action_type_strings[] =
     TRANSPORT_ACTION_BEAT_UNIT_CHANGE },
 };
 
+/**
+ * Transport action.
+ */
 typedef struct TransportAction
 {
   UndoableAction   parent_instance;
@@ -126,6 +129,11 @@ transport_action_new_time_sig_change (
   int                 after,
   bool                already_done,
   GError **           error);
+
+NONNULL
+TransportAction *
+transport_action_clone (
+  const TransportAction * src);
 
 bool
 transport_action_perform_bpm_change (

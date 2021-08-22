@@ -110,6 +110,11 @@ port_action_new_reset_control (
   PortIdentifier * port_id,
   GError **        error);
 
+NONNULL
+PortAction *
+port_action_clone (
+  const PortAction * src);
+
 bool
 port_action_perform (
   PortActionType   type,

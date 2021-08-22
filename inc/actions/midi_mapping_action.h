@@ -53,6 +53,9 @@ static const cyaml_strval_t
     MIDI_MAPPING_ACTION_DISABLE },
 };
 
+/**
+ * MIDI mapping action.
+ */
 typedef struct MidiMappingAction
 {
   UndoableAction  parent_instance;
@@ -77,8 +80,7 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     MidiMappingAction, parent_instance,
     undoable_action_fields_schema),
-  YAML_FIELD_INT (
-    MidiMappingAction, idx),
+  YAML_FIELD_INT (MidiMappingAction, idx),
   YAML_FIELD_MAPPING_EMBEDDED (
     MidiMappingAction, dest_port_id,
     port_identifier_fields_schema),
@@ -133,6 +135,11 @@ UndoableAction *
 midi_mapping_action_new_unbind (
   int       idx,
   GError ** error);
+
+NONNULL
+MidiMappingAction *
+midi_mapping_action_clone (
+  const MidiMappingAction * src);
 
 /**
  * Wrapper of midi_mapping_action_new_enable().

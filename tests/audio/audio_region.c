@@ -62,6 +62,8 @@ test_fill_stereo_ports (void)
     stereo_ports_new_generic (
       false, "ports", PORT_OWNER_TYPE_BACKEND,
       NULL);
+  port_allocate_bufs (ports->l);
+  port_allocate_bufs (ports->r);
 
   transport_move_playhead (
     TRANSPORT, &pos, F_NO_PANIC, false,
@@ -85,6 +87,9 @@ test_fill_stereo_ports (void)
     audio_frames_equal (
       &r_clip->ch_frames[1][0],
       &ports->r->buf[20], 80, 0.00001f));
+
+  object_free_w_func_and_null (
+    stereo_ports_free, ports);
 
   test_helper_zrythm_cleanup ();
 }

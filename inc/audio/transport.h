@@ -339,6 +339,8 @@ typedef struct Transport
   /** Play state. */
   Play_State    play_state;
 
+  bool          is_project;
+
   /** Last timestamp the playhead position was
    * changed manually. */
   gint64        last_manual_playhead_change;
@@ -375,9 +377,6 @@ transport_fields_schema[] =
     Transport, range_2, position_fields_schema),
   YAML_FIELD_INT (
     Transport, has_range),
-  //YAML_FIELD_MAPPING_EMBEDDED (
-    //Transport, time_sig,
-    //time_signature_fields_schema),
   YAML_FIELD_INT (
     Transport, position),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -392,6 +391,8 @@ transport_fields_schema[] =
     Transport, loop_toggle, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, rec_toggle, port_fields_schema),
+  YAML_FIELD_INT (
+    Transport, is_project),
 
   CYAML_FIELD_END
 };
@@ -408,7 +409,8 @@ transport_schema =
  */
 Transport *
 transport_new (
-  AudioEngine * engine);
+  AudioEngine * engine,
+  bool          is_project);
 
 void
 transport_init_loaded (
@@ -416,14 +418,10 @@ transport_init_loaded (
 
 /**
  * Clones the transport values.
- *
- * @note This is a partial clone and does not
- * include MIDI ports. Should only be used for
- * position info.
  */
 Transport *
 transport_clone (
-  Transport * self);
+  const Transport * src);
 
 /**
  * Prepares audio regions for stretching (sets the

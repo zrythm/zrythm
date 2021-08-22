@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "audio/port.h"
+#include "audio/port_connection.h"
 #include "gui/widgets/bar_slider.h"
 #include "utils/cairo.h"
 #include "utils/objects.h"
@@ -44,9 +45,9 @@ get_real_val (
 {
   if (self->type == BAR_SLIDER_TYPE_PORT_MULTIPLIER)
     {
-      return
-        port_get_multiplier_by_index (
-          (Port *) self->object, self->dest_index);
+      PortConnection * conn =
+        (PortConnection *) self->object;
+      return conn->multiplier;
     }
   else
     {
@@ -86,12 +87,9 @@ set_real_val (
 {
   if (self->type == BAR_SLIDER_TYPE_PORT_MULTIPLIER)
     {
-      Port * port = (Port *) self->object;
-      Port * dest = port->dests[self->dest_index];
-      port_set_multiplier_by_index (
-        port, self->dest_index, real_val);
-      port_set_src_multiplier_by_index (
-        dest, self->src_index, real_val);
+      PortConnection * connection =
+        (PortConnection *) self->object;
+      connection->multiplier = real_val;
     }
   else
     {
@@ -360,7 +358,6 @@ _bar_slider_widget_new (
   float (*get_val)(void *),
   void (*set_val)(void *, float),
   void * object,
-  Port * dest,
   float    min,
   float    max,
   int    w,
@@ -392,18 +389,6 @@ _bar_slider_widget_new (
   self->mode = mode;
   self->convert_to_percentage =
     convert_to_percentage;
-  if (type == BAR_SLIDER_TYPE_PORT_MULTIPLIER)
-    {
-      self->dest_index =
-        port_get_dest_index ((Port *) object, dest);
-      self->src_index =
-        port_get_src_index (dest, (Port *) object);
-    }
-  else
-    {
-      self->dest_index = -1;
-      self->src_index = -1;
-    }
 
   /* set size */
   gtk_widget_set_size_request (

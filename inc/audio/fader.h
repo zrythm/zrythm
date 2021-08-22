@@ -193,12 +193,17 @@ typedef struct Fader
    * a prefader). */
   bool             passthrough;
 
-  /** Track position, if channel fader. */
-  int              track_pos;
+  /** Owner track. */
+  Track *          track;
 
   int              magic;
 
   bool             is_project;
+
+  /* TODO Caches to be set when recalculating the
+   * graph. */
+  bool             implied_soloed;
+  bool             soloed;
 } Fader;
 
 static const cyaml_schema_field_t
@@ -233,8 +238,6 @@ fader_fields_schema[] =
     Fader, stereo_out, stereo_ports_fields_schema),
   YAML_FIELD_ENUM (
     Fader, midi_mode, midi_fader_mode_strings),
-  YAML_FIELD_INT (
-    Fader, track_pos),
   YAML_FIELD_INT (
     Fader, passthrough),
 
@@ -480,6 +483,7 @@ fader_process (
   nframes_t       start_frame,
   const nframes_t nframes);
 
+#if 0
 /**
  * Updates the track pos of the fader.
  */
@@ -487,6 +491,11 @@ void
 fader_update_track_pos (
   Fader * self,
   int     pos);
+#endif
+
+Fader *
+fader_clone (
+  const Fader * src);
 
 /**
  * Frees the fader members.

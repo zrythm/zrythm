@@ -46,6 +46,8 @@ typedef struct AudioClip AudioClip;
  * @{
  */
 
+#define UNDO_STACK_SCHEMA_VERSION 1
+
 /**
  * Serializable stack for undoable actions.
  *
@@ -53,6 +55,8 @@ typedef struct AudioClip AudioClip;
  */
 typedef struct UndoStack
 {
+  int           schema_version;
+
   /** Actual stack used at runtime. */
   Stack *       stack;
 
@@ -100,6 +104,7 @@ typedef struct UndoStack
 static const cyaml_schema_field_t
   undo_stack_fields_schema[] =
 {
+  YAML_FIELD_INT (UndoStack, schema_version),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, as_actions,
     arranger_selections_action_schema),
@@ -149,6 +154,11 @@ undo_stack_init_loaded (
  */
 UndoStack *
 undo_stack_new (void);
+
+NONNULL
+UndoStack *
+undo_stack_clone (
+  const UndoStack * src);
 
 /**
  * Gets the list of actions as a string.

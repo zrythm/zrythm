@@ -74,22 +74,22 @@ region_type_bitvals[] =
  */
 typedef struct RegionIdentifier
 {
-  int        schema_version;
+  int          schema_version;
 
-  RegionType type;
+  RegionType   type;
 
   /** Link group index, if any, or -1. */
-  int        link_group;
+  int          link_group;
 
-  int        track_pos;
-  int        lane_pos;
+  unsigned int track_name_hash;
+  int          lane_pos;
 
   /** Automation track index in the automation
    * tracklist, if automation region. */
-  int        at_idx;
+  int          at_idx;
 
   /** Index inside lane or automation track. */
-  int        idx;
+  int          idx;
 } RegionIdentifier;
 
 static const cyaml_schema_field_t
@@ -101,8 +101,8 @@ region_identifier_fields_schema[] =
     RegionIdentifier, type, region_type_bitvals),
   YAML_FIELD_INT (
     RegionIdentifier, link_group),
-  YAML_FIELD_INT (
-    RegionIdentifier, track_pos),
+  YAML_FIELD_UINT (
+    RegionIdentifier, track_name_hash),
   YAML_FIELD_INT (
     RegionIdentifier, lane_pos),
   YAML_FIELD_INT (
@@ -138,7 +138,7 @@ region_identifier_is_equal (
 {
   return
     a->idx == b->idx &&
-    a->track_pos == b->track_pos &&
+    a->track_name_hash == b->track_name_hash &&
     a->lane_pos == b->lane_pos &&
     a->at_idx == b->at_idx &&
     a->link_group == b->link_group &&
@@ -152,7 +152,7 @@ region_identifier_copy (
 {
   dest->schema_version = src->schema_version;
   dest->idx = src->idx;
-  dest->track_pos = src->track_pos;
+  dest->track_name_hash = src->track_name_hash;
   dest->lane_pos = src->lane_pos;
   dest->at_idx = src->at_idx;
   dest->type = src->type;
@@ -182,13 +182,18 @@ region_identifier_print (
 {
   g_message (
     "Region identifier: "
-    "type: %s, track pos %d, lane pos %d, "
+    "type: %s, track name hash %u, lane pos %d, "
     "at index %d, index %d, link_group: %d",
     region_identifier_get_region_type_name (
       self->type),
-    self->track_pos, self->lane_pos, self->at_idx,
+    self->track_name_hash, self->lane_pos,
+    self->at_idx,
     self->idx, self->link_group);
 }
+
+void
+region_identifier_free (
+  RegionIdentifier * self);
 
 /**
  * @}
