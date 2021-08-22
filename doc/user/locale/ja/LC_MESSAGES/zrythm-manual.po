@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-08-10 12:58+0000\n"
+"PO-Revision-Date: 2021-08-13 01:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -152,6 +153,8 @@ msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"ローカライズファイルは、 :file:`/usr/share/locale` の下にインストールされます。例えば、韓国語の場合は、 :file:`/"
+"usr/share/locale/ko/LC_MESSAGES/zrythm.mo` となります。"
 
 #: ../../appendix/files-and-directories.rst:47
 #: ../../getting-started/getting-plugins.rst:100
@@ -176,6 +179,8 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"お使いのディストリビューションが必要なフォントのパッケージを提供していなければ、Zrythm が必要とするフォントは、通常 :file:`/usr/"
+"share/fonts/zrythm` の下にインストールされます。"
 
 #: ../../appendix/files-and-directories.rst:60
 msgid "GtkSourceView Stylesheets"
@@ -231,6 +236,8 @@ msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"このファイルには、プラグインコレクションが含まれています。これは :term:`Zrythm user path` の下の "
+":file:`plugin_collections.yaml` にあります。"
 
 #: ../../appendix/files-and-directories.rst:93
 msgid "Log File"

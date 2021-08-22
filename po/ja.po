@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-10 12:24+0100\n"
-"PO-Revision-Date: 2021-08-10 12:58+0000\n"
+"PO-Revision-Date: 2021-08-13 01:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -187,29 +187,24 @@ msgid "Invert"
 msgstr "転化"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "ノーマライズ (Normalize)"
+msgstr "ノーマライズ (Normalize Peak)"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "ノーマライズ (Normalize)"
+msgstr "ノーマライズ (Normalize RMS)"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "ノーマライズ (Normalize)"
+msgstr "ノーマライズ (Normalize LUFS)"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "リニア (Linear)"
+msgstr "リニアフェードイン (Linear fade in)"
 
 #: inc/audio/audio_function.h:76
-#, fuzzy
 msgid "Linear fade out"
-msgstr "モニターフェーダーアウト"
+msgstr "リニアフェードアウト (Linear fade out)"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:249
 msgid "Nudge left"
