@@ -13,20 +13,21 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-05-10 16:32+0000\n"
+"PO-Revision-Date: 2021-08-13 01:58+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
 msgid "Environment Variables"
-msgstr ""
+msgstr "Variáveis de ambiente"
 
 #: ../../appendix/environment.rst:12
 msgid ""
@@ -36,22 +37,27 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
 "path zrythm_launch``"
 msgstr ""
+"A Zrythm entende as seguintes variáveis de ambiente. Elas podem ser "
+"configuradas em :file:`.bashrc` ou um ficheiro de configuração shell "
+"similar, as configurações do sistema operativo ou elas podem ser passadas "
+"diretamente quando executar :program:`zrythm` ou :program:`zrythm_launch`, "
+"como: ``LV2_PATH=/my/custom/path zrythm_launch``"
 
 #: ../../appendix/environment.rst:22
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
-msgstr ""
+msgstr "Define isto aos locais para procurar por :term:`LV2` suplementos."
 
 #: ../../appendix/environment.rst:25
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr ""
+msgstr "Exemplo: ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:30
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Define a 1 para desativar a varredura de suplementos."
 
 #: ../../appendix/environment.rst:32
 msgid "Example: ``NO_SCAN_PLUGINS=1``"
-msgstr ""
+msgstr "Exemplo: ``NO_SCAN_PLUGINS=1``"
 
 #: ../../appendix/environment.rst:37
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
