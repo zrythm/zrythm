@@ -39,7 +39,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
 "PO-Revision-Date: 2021-08-13 01:58+0000\n"
-"Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
+"Last-Translator: Irina <t8path@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ru/>\n"
 "Language: ru\n"
@@ -214,7 +214,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:66
 msgid "Themes"
-msgstr ""
+msgstr "Темы"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid ""
@@ -625,13 +625,12 @@ msgid "MIDI CC bindings"
 msgstr ""
 
 #: ../../configuration/device-setup.rst:82
-#, fuzzy
 msgid ""
 "Bindings can be deleted by right-clicking on a row and selecting :guilabel:"
 "`Delete`."
 msgstr ""
-"Трек можно удалить, щелкнув по нему правой кнопкой мыши и нажав :zbutton:"
-"`Удалить (Delete)`."
+"Трек можно удалить, щёлкнув по нему правой кнопкой мыши и нажав :zbutton:`"
+"Удалить (Delete)`."
 
 #: ../../configuration/device-setup.rst:88
 msgid "Deleting a binding"
