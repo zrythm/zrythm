@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-10 12:24+0100\n"
-"PO-Revision-Date: 2021-08-10 12:58+0000\n"
+"PO-Revision-Date: 2021-08-16 08:33+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -395,12 +395,10 @@ msgid "Before inserts"
 msgstr ""
 
 #: inc/audio/exporter.h:91
-#, fuzzy
 msgid "Pre-fader"
 msgstr "前推子"
 
 #: inc/audio/exporter.h:92
-#, fuzzy
 msgid "Post fader"
 msgstr "后推子"
 
@@ -2286,9 +2284,8 @@ msgid "Sends"
 msgstr "发送"
 
 #: src/gui/widgets/scale_selector_window.c:74
-#, fuzzy
 msgid "Failed to edit scale"
-msgstr "未能编辑 scale"
+msgstr "编辑 scale 失败"
 
 #: src/gui/widgets/event_viewer.c:113 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43
@@ -2556,7 +2553,6 @@ msgid "Disarm"
 msgstr ""
 
 #: src/gui/widgets/track.c:1210
-#, fuzzy
 msgid "Arm for recording"
 msgstr "用于录制的 Arm"
 
@@ -2906,7 +2902,7 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr "用户目录"
+msgstr "主目录"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
@@ -3143,23 +3139,20 @@ msgid "Failed to copy track inside"
 msgstr "未能复制内部音轨"
 
 #: src/audio/tracklist.c:1565
-#, fuzzy
 msgid "Failed to move or copy track inside folder"
-msgstr "未能复制内部音轨"
+msgstr "未能将音轨移入或复制进文件夹"
 
 #: src/audio/tracklist.c:1587
 msgid "Cannot drag folder into itself"
 msgstr ""
 
 #: src/audio/tracklist.c:1603 src/audio/tracklist.c:1644
-#, fuzzy
 msgid "Failed to move track inside folder"
-msgstr "未能复制内部音轨"
+msgstr "未能将音轨移入文件夹"
 
 #: src/audio/tracklist.c:1672
-#, fuzzy
 msgid "Failed to move track"
-msgstr "未能克隆音轨"
+msgstr "未能移动音轨"
 
 #: src/audio/chord_track.c:59 resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -3240,9 +3233,8 @@ msgid ""
 msgstr ""
 
 #: src/audio/exporter.c:797 src/audio/exporter.c:806 src/actions/actions.c:1564
-#, fuzzy
 msgid "Failed to create audio track"
-msgstr "未能创建音轨：%s"
+msgstr "未能创建音轨"
 
 #: src/audio/supported_file.c:311
 msgid "Failed opening file"
@@ -3281,9 +3273,8 @@ msgid "Beat unit"
 msgstr ""
 
 #: src/audio/tempo_track.c:210
-#, fuzzy
 msgid "Failed to change BPM"
-msgstr "未能更改平衡：%s"
+msgstr "未能更改 BPM"
 
 #: src/audio/engine.c:450
 #, c-format
@@ -3349,9 +3340,8 @@ msgid "Lane %d"
 msgstr "通道%d"
 
 #: src/audio/track_lane.c:113
-#, fuzzy
 msgid "Failed to rename lane"
-msgstr "无法重命名 lane：%s"
+msgstr "未能重命名 lane"
 
 #: src/audio/audio_function.c:156 src/actions/mixer_selections_action.c:538
 msgid "Failed to instantiate plugin"
@@ -3376,9 +3366,8 @@ msgid "Failed to instantiate plugin %s"
 msgstr "未能实例化插件 %s"
 
 #: src/audio/recording_manager.c:170
-#, fuzzy
 msgid "Failed to create recorded regions"
-msgstr "未能创建调整大小操作"
+msgstr "未能创建已录制区域"
 
 #: src/audio/track.c:367
 msgid "Track record"
@@ -3389,44 +3378,36 @@ msgid "Failed to clone channel"
 msgstr "未能克隆声道"
 
 #: src/audio/track.c:890
-#, fuzzy
 msgid "Cannot set track muted"
-msgstr "无法将此音轨设为静音：%s"
+msgstr "无法将音轨设为静音"
 
 #: src/audio/track.c:939
-#, fuzzy
 msgid "Cannot set track folded"
-msgstr "无法折叠此音轨：%s"
+msgstr "无法折叠音轨"
 
 #: src/audio/track.c:1471
-#, fuzzy
 msgid "Cannot set track soloed"
-msgstr "无法将此音轨状态设为 solo：%s"
+msgstr "无法将音轨状态设为 soloed"
 
 #: src/audio/track.c:1523
-#, fuzzy
 msgid "Cannot set track listened"
-msgstr "无法将此音轨设为静音：%s"
+msgstr "无法将音轨状态设为 listened"
 
 #: src/audio/track.c:3089
-#, fuzzy
 msgid "Failed to rename track"
-msgstr "未能重命名音轨：%s"
+msgstr "未能重命名音轨"
 
 #: src/audio/track.c:3379 src/audio/track.c:3427
-#, fuzzy
 msgid "Cannot set track comment"
-msgstr "无法将此音轨设为静音：%s"
+msgstr "无法设置音轨注释"
 
 #: src/audio/track.c:3467
-#, fuzzy
 msgid "Cannot set track icon"
-msgstr "无法折叠此音轨：%s"
+msgstr "无法设置音轨图标"
 
 #: src/audio/track.c:3787
-#, fuzzy
 msgid "Cannot set track enabled"
-msgstr "无法折叠此音轨：%s"
+msgstr "无法将音轨状态设为启用"
 
 #. TODO
 #: src/audio/scale.c:565 src/audio/scale.c:599
@@ -3455,7 +3436,6 @@ msgid "Fader Volume"
 msgstr "音量控制器音量"
 
 #: src/audio/fader.c:174
-#, fuzzy
 msgid "Prefader Balance"
 msgstr "前推子平衡"
 
@@ -3464,7 +3444,6 @@ msgid "Fader Balance"
 msgstr "音量控制器平衡"
 
 #: src/audio/fader.c:193
-#, fuzzy
 msgid "Prefader Mute"
 msgstr "前推子静音"
 
@@ -3545,14 +3524,12 @@ msgid "Ch MIDI Fader out"
 msgstr "Ch MIDI推子输出"
 
 #: src/audio/fader.c:571
-#, fuzzy
 msgid "Failed to change volume"
-msgstr "未能更改平衡：%s"
+msgstr "未能更改音量"
 
 #: src/audio/fader.c:626
-#, fuzzy
 msgid "Failed to set MIDI mode"
-msgstr "未能设置颜色"
+msgstr "未能设置 MIDI 模式"
 
 #: src/audio/engine_jack.c:395
 msgid "XRUN occurred - check your JACK configuration"
@@ -3620,15 +3597,13 @@ msgid "Arranger selections contain an undeletable object"
 msgstr ""
 
 #: src/actions/arranger_selections.c:535 src/actions/actions.c:2342
-#, fuzzy
 msgid "Failed to apply MIDI function"
-msgstr "未能应用音频功能"
+msgstr "未能应用 MIDI 功能"
 
 #: src/actions/arranger_selections.c:573 src/actions/actions.c:2370
 #: src/actions/actions.c:2415
-#, fuzzy
 msgid "Failed to apply automation function"
-msgstr "未能应用音频功能"
+msgstr "未能应用包络线功能"
 
 #: src/actions/arranger_selections.c:764
 msgid "Attempted to resize unresizable objects"
@@ -3796,109 +3771,90 @@ msgid "Graph exported"
 msgstr "图形导出"
 
 #: src/actions/actions.c:934
-#, fuzzy
 msgid "Failed to undo"
-msgstr "未能设置颜色"
+msgstr "撤销失败"
 
 #: src/actions/actions.c:949
-#, fuzzy
 msgid "Failed to redo"
-msgstr "未能设置颜色"
+msgstr "未能重做"
 
 #: src/actions/actions.c:983 src/actions/actions.c:1000
 #: src/actions/actions.c:1198
-#, fuzzy
 msgid "Failed to delete selections"
-msgstr "删除音轨失败"
+msgstr "删除所选失败"
 
 #: src/actions/actions.c:1154
 msgid "Can't paste incompatible data"
 msgstr "无法粘贴不兼容的数据"
 
 #: src/actions/actions.c:1257
-#, fuzzy
 msgid "Failed to duplicate selections"
-msgstr "未能创建调整大小操作"
+msgstr "未能复制所选"
 
 #: src/actions/actions.c:1494 src/actions/actions.c:1951
 #: src/actions/actions.c:1987
-#, fuzzy
 msgid "Failed to quantize"
-msgstr "未能实例化插件"
+msgstr "量化失败"
 
 #: src/actions/actions.c:1578
-#, fuzzy
 msgid "Failed to create MIDI track"
-msgstr "无法创建音轨：%s"
+msgstr "未能创建 MIDI 音轨"
 
 #: src/actions/actions.c:1592
-#, fuzzy
 msgid "Failed to create audio FX track"
-msgstr "未能创建音轨：%s"
+msgstr "未能创建音频 FX 轨道"
 
 #: src/actions/actions.c:1606
-#, fuzzy
 msgid "Failed to create MIDI FX track"
-msgstr "无法创建音轨：%s"
+msgstr "未能创建 MIDI FX 音轨"
 
 #: src/actions/actions.c:1648
-#, fuzzy
 msgid "Failed to create folder track"
-msgstr "无法创建音轨：%s"
+msgstr "未能创建文件夹轨道"
 
 #: src/actions/actions.c:1664
-#, fuzzy
 msgid "Failed to duplicate tracks"
-msgstr "删除音轨失败"
+msgstr "复制音轨失败"
 
 #: src/actions/actions.c:1715
 msgid "Failed to delete tracks"
 msgstr "删除音轨失败"
 
 #: src/actions/actions.c:1751
-#, fuzzy
 msgid "Failed to pin/unpin tracks"
-msgstr "未能固定/取消固定音轨：%s"
+msgstr "未能固定/取消固定音轨"
 
 #: src/actions/actions.c:1764
-#, fuzzy
 msgid "Failed to solo tracks"
-msgstr "未能克隆音轨"
+msgstr "未能 solo 音轨"
 
 #: src/actions/actions.c:1777
-#, fuzzy
 msgid "Failed to unsolo tracks"
-msgstr "未能克隆音轨"
+msgstr "未能取消 solo 音轨"
 
 #: src/actions/actions.c:1790
-#, fuzzy
 msgid "Failed to mute tracks"
-msgstr "删除音轨失败"
+msgstr "未能将音轨静音"
 
 #: src/actions/actions.c:1803
-#, fuzzy
 msgid "Failed to unmute tracks"
-msgstr "删除音轨失败"
+msgstr "未能取消音轨静音"
 
 #: src/actions/actions.c:1816
-#, fuzzy
 msgid "Failed to listen tracks"
-msgstr "删除音轨失败"
+msgstr "倾听音轨失败"
 
 #: src/actions/actions.c:1829
-#, fuzzy
 msgid "Failed to unlisten tracks"
-msgstr "删除音轨失败"
+msgstr "未能取消倾听音轨"
 
 #: src/actions/actions.c:1842
-#, fuzzy
 msgid "Failed to enable tracks"
-msgstr "删除音轨失败"
+msgstr "启用音轨失败"
 
 #: src/actions/actions.c:1855
-#, fuzzy
 msgid "Failed to disable tracks"
-msgstr "删除音轨失败"
+msgstr "禁用音轨失败"
 
 #: src/actions/actions.c:2006
 #, c-format
@@ -3908,9 +3864,8 @@ msgid ""
 msgstr ""
 
 #: src/actions/actions.c:2083
-#, fuzzy
 msgid "Failed to mute selections"
-msgstr "未能创建调整大小操作"
+msgstr "未能将选区静音"
 
 #: src/actions/actions.c:2097
 msgid "No regions selected"
@@ -3921,28 +3876,24 @@ msgid "Selections must be on the same lane"
 msgstr ""
 
 #: src/actions/actions.c:2122
-#, fuzzy
 msgid "Failed to merge selections"
-msgstr "未能执行操作"
+msgstr "未能合并选区"
 
 #: src/actions/actions.c:2239
-#, fuzzy
 msgid "Failed to insert silence"
-msgstr "未能设置直接输出"
+msgstr "未能插入静音"
 
 #: src/actions/actions.c:2262
-#, fuzzy
 msgid "Failed to remove range"
-msgstr "无法重命名 lane：%s"
+msgstr "无法移除区间"
 
 #: src/actions/actions.c:2618
 msgid "Region name"
 msgstr "区域名"
 
 #: src/actions/actions.c:2716
-#, fuzzy
 msgid "Failed to move selections"
-msgstr "未能执行操作"
+msgstr "未能移动选区"
 
 #: src/actions/port_connection_action.c:165
 msgid "Connect ports"
@@ -4006,9 +3957,8 @@ msgid "Channel send connection"
 msgstr "通道发送连接"
 
 #: src/actions/mixer_selections_action.c:189
-#, fuzzy
 msgid "Failed to clone mixer selections"
-msgstr "未能克隆插件"
+msgstr "未能克隆混音器选区"
 
 #: src/actions/mixer_selections_action.c:525
 msgid "Could not create plugin"
@@ -4016,9 +3966,8 @@ msgstr ""
 
 #: src/actions/mixer_selections_action.c:749
 #: src/actions/mixer_selections_action.c:1151
-#, fuzzy
 msgid "Failed to revert deleted plugin"
-msgstr "未能创建插件"
+msgstr "未能恢复已删除的插件"
 
 #: src/actions/mixer_selections_action.c:1254
 #, c-format
@@ -4334,14 +4283,12 @@ msgid "Script execution failed"
 msgstr "脚本执行失败"
 
 #: src/guile/actions/port_connection_action.c:50
-#, fuzzy
 msgid "Failed to connect ports"
-msgstr "未能克隆音轨"
+msgstr "未能连接端口"
 
 #: src/guile/actions/channel_send_action.c:46
-#, fuzzy
 msgid "Failed to create audio send"
-msgstr "未能创建音轨：%s"
+msgstr "未能创建音频 send"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
@@ -6031,9 +5978,8 @@ msgid "Whether MIDI FX are expanded."
 msgstr "是否展开 MIDI FX 。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:605
-#, fuzzy
 msgid "Sends expanded"
-msgstr "已展开 Sends"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:606
 msgid "Whether sends are expanded."
@@ -6614,7 +6560,6 @@ msgid "Default algorithm to use for automation curves."
 msgstr "用于自动化曲线的默认算法。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1076
-#, fuzzy
 msgid "Undo stack length"
 msgstr "撤销堆栈长度"
 
