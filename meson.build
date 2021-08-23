@@ -923,6 +923,9 @@ cairo_dep = dependency (
   default_options: [
     'zlib=enabled', 'tests=disabled'])
 
+gdk_pixbuf_dep = dependency (
+  'gdk-pixbuf-2.0',
+  fallback: ['gdk-pixbuf', 'gdkpixbuf_dep'])
 gtk_dep = dependency (
   'gtk+-3.0', version: '>=3.22',
   fallback: ['gtk3', 'libgtk_dep'],
@@ -1222,6 +1225,7 @@ zrythm_deps = [
   glib_dep,
   cairo_dep,
   gtk_dep,
+  gdk_pixbuf_dep,
   sndfile_dep,
   samplerate_dep,
   alsa_dep,

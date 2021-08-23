@@ -24,6 +24,7 @@
 #include "gui/widgets/fader.h"
 #include "project.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 
 G_DEFINE_TYPE (
   MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
@@ -271,10 +272,11 @@ static void
 finalize (
   MeterWidget * self)
 {
-  if (self->meter)
-    meter_free (self->meter);
+  object_free_w_func_and_null (
+    meter_free, self->meter);
 
-  g_source_unref (self->timeout_source);
+  if (self->timeout_source)
+    g_source_unref (self->timeout_source);
   self->source_id = 0;
 
   G_OBJECT_CLASS (
