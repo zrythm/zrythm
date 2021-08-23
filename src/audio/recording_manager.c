@@ -321,8 +321,8 @@ recording_manager_handle_recording (
   /* if pausing */
   else if (time_nfo->nframes == 0)
     {
-      if (tr->recording_region ||
-          tr->recording_start_sent)
+      if (tr->recording_region
+          || tr->recording_start_sent)
         {
           /* send pause event */
           RecordingEvent * re =

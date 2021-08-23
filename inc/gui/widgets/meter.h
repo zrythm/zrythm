@@ -61,6 +61,7 @@ typedef struct _MeterWidget
 
   /** ID of the source function. */
   guint                  source_id;
+  GSource *              timeout_source;
 } MeterWidget;
 
 /**

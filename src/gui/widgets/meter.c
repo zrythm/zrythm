@@ -192,10 +192,12 @@ tick_cb (
 /*
  * Timeout to "run" the meter.
  */
-static gboolean
+static int
 meter_timeout (
-  MeterWidget * self)
+  void * data)
 {
+  MeterWidget * self = (MeterWidget *) data;
+
   if (GTK_IS_WIDGET (self)
       && AUDIO_ENGINE->activated
       && engine_get_run (AUDIO_ENGINE))
@@ -251,7 +253,8 @@ finalize (
   if (self->meter)
     meter_free (self->meter);
 
-  g_source_remove (self->source_id);
+  g_source_unref (self->timeout_source);
+  self->source_id = 0;
 
   G_OBJECT_CLASS (
     meter_widget_parent_class)->
@@ -280,9 +283,12 @@ meter_widget_init (MeterWidget * self)
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb,
     self, NULL);
+  self->timeout_source = g_timeout_source_new (20);
+  g_source_set_callback (
+    self->timeout_source, meter_timeout,
+    self, NULL);
   self->source_id =
-    g_timeout_add (
-      20, (GSourceFunc) meter_timeout, self);
+    g_source_attach (self->timeout_source, NULL);
 }
 
 static void

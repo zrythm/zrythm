@@ -3308,7 +3308,8 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_CHORD:
-      add_record_button (self, 1);
+      if (track_type_can_record (track->type))
+        add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);

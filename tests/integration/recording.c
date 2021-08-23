@@ -1290,6 +1290,75 @@ test_2nd_audio_recording (void)
   test_helper_zrythm_cleanup ();
 }
 
+/**
+ * Test chord track recording.
+ */
+static void
+test_chord_track_recording (void)
+{
+  test_helper_zrythm_init ();
+
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  test_project_stop_dummy_engine ();
+
+  prepare ();
+  TRANSPORT->recording = true;
+  transport_request_roll (TRANSPORT);
+
+  /* set loop */
+  transport_set_loop (TRANSPORT, true);
+
+  /* move playhead to a few ticks before loop
+   * end */
+  Position pos, init_pos;
+  position_set_to_pos (
+    &pos, &TRANSPORT->loop_end_pos);
+  position_add_frames (&pos, - CYCLE_SIZE);
+  transport_set_playhead_pos (TRANSPORT, &pos);
+  position_set_to_pos (&init_pos, &pos);
+
+  /* enable recording for audio track */
+  if (track_type_can_record (P_CHORD_TRACK->type))
+    track_set_recording (
+      P_CHORD_TRACK, true, F_NO_PUBLISH_EVENTS);
+
+  /* run the engine for a few cycles */
+  for (int i = 0; i < 4; i++)
+    {
+      engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+      recording_manager_process_events (
+        RECORDING_MANAGER);
+    }
+
+  /* assert that no events are created for now */
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_chord_regions, ==, 0);
+
+  /* stop recording */
+  if (track_type_can_record (P_CHORD_TRACK->type))
+    track_set_recording (
+      P_CHORD_TRACK, false, F_NO_PUBLISH_EVENTS);
+
+  /* run engine 1 more cycle to finalize
+   * recording */
+  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  transport_request_pause (TRANSPORT);
+  recording_manager_process_events (
+    RECORDING_MANAGER);
+
+  /* save and undo/redo */
+  test_project_save_and_reload ();
+
+  if (track_type_can_record (P_CHORD_TRACK->type))
+    {
+      undo_manager_undo (UNDO_MANAGER, NULL);
+      undo_manager_redo (UNDO_MANAGER, NULL);
+    }
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1297,6 +1366,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/integration/recording/"
 
+  g_test_add_func (
+    TEST_PREFIX "test chord track recording",
+    (GTestFunc) test_chord_track_recording);
   g_test_add_func (
     TEST_PREFIX "test 2nd audio recording",
     (GTestFunc) test_2nd_audio_recording);
