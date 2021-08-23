@@ -29,6 +29,7 @@
 #include "gui/widgets/region.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -469,9 +470,17 @@ prev_offset, \
       /* else if no need for timestretch */
       else
         {
-          g_return_if_fail (
-            buff_index >= 0 &&
-            buff_index < clip->num_frames);
+          z_return_if_fail_cmp (buff_index, >=, 0);
+          if (G_UNLIKELY (
+                buff_index >= clip->num_frames))
+            {
+              g_critical (
+                "Buffer index %zd exceeds %ld "
+                "frames in clip '%s'",
+                buff_index, clip->num_frames,
+                clip->name);
+              return;
+            }
           lbuf_after_ts[j] =
             clip->ch_frames[0][buff_index];
           rbuf_after_ts[j] =

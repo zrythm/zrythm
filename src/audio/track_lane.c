@@ -158,7 +158,8 @@ track_lane_update_frames (
       if (!PROJECT || !AUDIO_ENGINE->pre_setup)
         continue;
 
-      g_return_if_fail (IS_REGION (r_obj));
+      g_return_if_fail (
+        IS_REGION_AND_NONNULL (r_obj));
       arranger_object_update_frames (r_obj);
     }
 }
