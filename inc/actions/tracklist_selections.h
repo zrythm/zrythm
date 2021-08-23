@@ -658,7 +658,7 @@ tracklist_selections_action_new (
   tls,port_connections_mgr,track_pos,err) \
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_MOVE, \
-    tls, NULL, port_connections_mgr, \
+    tls, NULL, NULL, \
     NULL, 0, NULL, NULL, track_pos, NULL, \
     -1, 0, false, NULL, \
     0.f, 0.f, NULL, false, err)
@@ -689,7 +689,7 @@ tracklist_selections_action_new (
   tls,port_connections_mgr,track_pos,err) \
   tracklist_selections_action_new ( \
     TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE, \
-    tls, NULL, port_connections_mgr, \
+    tls, NULL, NULL, \
     NULL, 0, NULL, NULL, track_pos, NULL, \
     -1, 0, false, NULL, \
     0.f, 0.f, NULL, false, err)
@@ -1022,7 +1022,7 @@ tracklist_selections_action_perform (
   tls,port_connections_mgr,track_pos,err) \
   tracklist_selections_action_perform ( \
     TRACKLIST_SELECTIONS_ACTION_MOVE, \
-    tls, NULL, port_connections_mgr, \
+    tls, NULL, NULL, \
     NULL, 0, NULL, NULL, track_pos, NULL, \
     -1, 0, false, NULL, \
     0.f, 0.f, NULL, false, err)
@@ -1053,7 +1053,7 @@ tracklist_selections_action_perform (
   tls,port_connections_mgr,track_pos,err) \
   tracklist_selections_action_perform ( \
     TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE, \
-    tls, NULL, port_connections_mgr, \
+    tls, NULL, NULL, \
     NULL, 0, NULL, NULL, track_pos, NULL, \
     -1, 0, false, NULL, \
     0.f, 0.f, NULL, false, err)

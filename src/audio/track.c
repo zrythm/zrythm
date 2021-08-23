@@ -1191,7 +1191,8 @@ track_validate (
             }
         }
 
-      /* check that the automation track is there */
+      /* check that the automation track is
+       * there */
       if (atl &&
           port->id.flags & PORT_FLAG_AUTOMATABLE)
         {
@@ -1336,7 +1337,7 @@ track_get_direct_folder_parent (
 {
   GPtrArray * parents = g_ptr_array_new ();
   track_add_folder_parents (
-    track, parents, false);
+    track, parents, true);
   Track * parent = NULL;
   if (parents->len > 0)
     {
@@ -3078,8 +3079,9 @@ track_get_name (Track * track)
     {
       return
         g_strdup_printf (
-          "%d %s",
-          track->pos, track->name);
+          "%s%s",
+          track_is_selected (track) ? "* " : "",
+          track->name);
     }
 #endif
   return track->name;

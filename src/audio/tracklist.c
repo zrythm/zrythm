@@ -1512,6 +1512,47 @@ free_file_array_and_return:
   return;
 }
 
+static void
+move_after_copying_or_moving_inside (
+  TracklistSelections * after_tls,
+  int  diff_between_track_below_and_parent)
+{
+  Track * lowest_cloned_track =
+    tracklist_selections_get_lowest_track (
+      after_tls);
+  int lowest_cloned_track_pos =
+    lowest_cloned_track->pos;
+
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_move (
+      after_tls, PORT_CONNECTIONS_MGR,
+      lowest_cloned_track_pos +
+        diff_between_track_below_and_parent,
+      &err);
+  object_free_w_func_and_null (
+    tracklist_selections_free, after_tls);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to move tracks after "
+        "copying or moving inside folder"));
+      return;
+    }
+  UndoableAction * ua =
+    undo_manager_get_last_action (UNDO_MANAGER);
+  ua->num_actions = 2;
+}
+
+/**
+ * Handles a move or copy paction based on a drag.
+ *
+ * @param this_track The track at the cursor (where
+ *   the selection was dropped to.
+ * @param location Location relative to @ref
+ *   this_track.
+ */
 void
 tracklist_handle_move_or_copy (
   Tracklist *          self,
@@ -1519,6 +1560,13 @@ tracklist_handle_move_or_copy (
   TrackWidgetHighlight location,
   GdkDragAction        action)
 {
+  g_debug (
+    "%s: this track '%s' - location %s - "
+    "action %s",
+    __func__, this_track->name,
+    track_widget_highlight_to_str (location),
+    action == GDK_ACTION_COPY ? "copy" : "move");
+
   int pos = -1;
   if (location == TRACK_WIDGET_HIGHLIGHT_TOP)
     {
@@ -1553,7 +1601,7 @@ tracklist_handle_move_or_copy (
         {
           GError * err = NULL;
           bool ret =
-            tracklist_selections_action_perform_move_inside (
+            tracklist_selections_action_perform_copy_inside (
               TRACKLIST_SELECTIONS,
               PORT_CONNECTIONS_MGR,
               this_track->pos, &err);
@@ -1561,16 +1609,20 @@ tracklist_handle_move_or_copy (
             {
               HANDLE_ERROR (
                 err, "%s",
-                _("Failed to move track inside"));
+                _("Failed to copy tracks inside"));
               return;
             }
         }
       /* else if not highlighted inside */
       else
         {
-          int num_actions = 1;
           TracklistSelections * tls =
             TRACKLIST_SELECTIONS;
+          int num_tls = tls->num_tracks;
+          TracklistSelections * after_tls = NULL;
+          int diff_between_track_below_and_parent =
+            0;
+          bool copied_inside = false;
           if (pos < TRACKLIST->num_tracks)
             {
               Track * track_below =
@@ -1582,6 +1634,13 @@ tracklist_handle_move_or_copy (
                 TRACKLIST_SELECTIONS, true);
               Track * cur_parent =
                 TRACKLIST_SELECTIONS->tracks[0];
+
+              if (track_below_parent)
+                {
+                  diff_between_track_below_and_parent =
+                    track_below->pos -
+                      track_below_parent->pos;
+                }
 
               /* first copy inside new parent */
               if (track_below_parent &&
@@ -1603,41 +1662,61 @@ tracklist_handle_move_or_copy (
                       return;
                     }
 
-                  num_actions++;
+                  after_tls =
+                    tracklist_selections_new (
+                      F_NOT_PROJECT);
+                  for (int j = 1; j <= num_tls; j++)
+                    {
+                      err = NULL;
+                      Track * clone_tr =
+                        track_clone (
+                          TRACKLIST->tracks[
+                            track_below_parent->pos +
+                              j],
+                          F_PROJECT, &err);
+                      if (!clone_tr)
+                        {
+                          HANDLE_ERROR (
+                            err, "%s",
+                            _("Failed to clone "
+                            "track"));
+                          return;
+                        }
+                      tracklist_selections_add_track (
+                        after_tls, clone_tr,
+                        F_NO_PUBLISH_EVENTS);
+                    }
+
+                  copied_inside = true;
                 }
             }
 
-          bool copy = num_actions == 1;
-          GError * err = NULL;
-          bool ret;
-          if (copy)
+          /* if not copied inside, copy normally */
+          if (!copied_inside)
             {
-              ret =
+              GError * err = NULL;
+              bool ret =
                 tracklist_selections_action_perform_copy (
                   tls, PORT_CONNECTIONS_MGR,
                   pos, &err);
+              if (!ret)
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to copy tracks"));
+                  return;
+                }
             }
-          else
+          /* else if copied inside and there is
+           * a track difference, also move */
+          else if (
+            diff_between_track_below_and_parent !=
+              0)
             {
-              ret =
-                tracklist_selections_action_perform_move (
-                  tls, PORT_CONNECTIONS_MGR,
-                  pos, &err);
+              move_after_copying_or_moving_inside (
+                after_tls,
+                diff_between_track_below_and_parent);
             }
-
-          if (!ret)
-            {
-              HANDLE_ERROR (
-                err, "%s",
-                _("Failed to move or copy track "
-                "inside folder"));
-              return;
-            }
-
-          UndoableAction * ua =
-            undo_manager_get_last_action (
-              UNDO_MANAGER);
-          ua->num_actions = num_actions;
         }
     }
   else if (action == GDK_ACTION_MOVE)
@@ -1656,6 +1735,8 @@ tracklist_handle_move_or_copy (
                 }
               return;
             }
+          /* else if selections do not contain the
+           * track dragged into */
           else
             {
               GError * err = NULL;
@@ -1677,10 +1758,13 @@ tracklist_handle_move_or_copy (
       /* else if not highlighted inside */
       else
         {
-          int num_actions = 1;
           TracklistSelections * tls =
             TRACKLIST_SELECTIONS;
-          bool move_inside = false;
+          int num_tls = tls->num_tracks;
+          TracklistSelections * after_tls = NULL;
+          int diff_between_track_below_and_parent =
+            0;
+          bool moved_inside = false;
           if (pos < TRACKLIST->num_tracks)
             {
               Track * track_below =
@@ -1693,12 +1777,17 @@ tracklist_handle_move_or_copy (
               Track * cur_parent =
                 TRACKLIST_SELECTIONS->tracks[0];
 
+              if (track_below_parent)
+                {
+                  diff_between_track_below_and_parent =
+                    track_below->pos -
+                      track_below_parent->pos;
+                }
+
               /* first move inside new parent */
               if (track_below_parent &&
                   track_below_parent != cur_parent)
                 {
-                  move_inside = true;
-
                   GError * err = NULL;
                   bool ret =
                     tracklist_selections_action_perform_move_inside (
@@ -1715,39 +1804,61 @@ tracklist_handle_move_or_copy (
                       return;
                     }
 
-                  num_actions++;
-                }
-            }
+                  after_tls =
+                    tracklist_selections_new (
+                      F_NOT_PROJECT);
+                  for (int j = 1; j <= num_tls; j++)
+                    {
+                      err = NULL;
+                      Track * clone_tr =
+                        track_clone (
+                          TRACKLIST->tracks[
+                            track_below_parent->pos +
+                              j],
+                          F_PROJECT, &err);
+                      if (!clone_tr)
+                        {
+                          HANDLE_ERROR (
+                            err, "%s",
+                            _("Failed to clone "
+                            "track"));
+                          return;
+                        }
+                      tracklist_selections_add_track (
+                        after_tls, clone_tr,
+                        F_NO_PUBLISH_EVENTS);
+                    }
 
-          GError * err = NULL;
-          bool ret;
-          if (move_inside)
+                  moved_inside = true;
+                }
+            } /* endif moved to an existing track */
+
+          /* if not moved inside, move normally */
+          if (!moved_inside)
             {
-              ret =
-                tracklist_selections_action_perform_move_inside (
-                  tls, PORT_CONNECTIONS_MGR,
-                  pos, &err);
-            }
-          else
-            {
-              ret =
+              GError * err = NULL;
+              bool ret =
                 tracklist_selections_action_perform_move (
                   tls, PORT_CONNECTIONS_MGR,
                   pos, &err);
+              if (!ret)
+                {
+                  HANDLE_ERROR (
+                    err, "%s",
+                    _("Failed to move tracks"));
+                  return;
+                }
             }
-
-          if (!ret)
+          /* else if moved inside and there is
+           * a track difference, also move */
+          else if (
+            diff_between_track_below_and_parent !=
+              0)
             {
-              HANDLE_ERROR (
-                err, "%s",
-                _("Failed to move track"));
-              return;
+              move_after_copying_or_moving_inside (
+                after_tls,
+                diff_between_track_below_and_parent);
             }
-
-          UndoableAction * ua =
-            undo_manager_get_last_action (
-              UNDO_MANAGER);
-          ua->num_actions = num_actions;
         }
     }
 }

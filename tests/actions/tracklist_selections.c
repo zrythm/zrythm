@@ -2026,19 +2026,10 @@ _test_move_inside (
   track_select (
     audio_fx, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
-
-    PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks - 1, NULL);
-  track_select (
-    audio_fx, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, folder->pos, NULL);
-  UndoableAction * ua =
-    undo_manager_get_last_action (UNDO_MANAGER);
-  ua->num_actions = 2;
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE,
+    GDK_ACTION_MOVE);
 
   /* validate */
   g_assert_cmpint (
@@ -2065,22 +2056,9 @@ _test_move_inside (
   track_select (
     audio_fx, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
-
-    PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks - 1, NULL);
-  track_select (
-    folder, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  track_select (
-    audio_fx, F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, audio_group->pos, NULL);
-  ua =
-    undo_manager_get_last_action (UNDO_MANAGER);
-  ua->num_actions = 2;
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_group,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
 
   /* validate */
   g_assert_cmpint (folder->size, ==, 2);
@@ -2126,16 +2104,9 @@ _test_move_inside (
   track_select (
     audio_fx3, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
-
-    PORT_CONNECTIONS_MGR, TRACKLIST->num_tracks - 1, NULL);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, folder2->pos, NULL);
-  ua =
-    undo_manager_get_last_action (UNDO_MANAGER);
-  ua->num_actions = 2;
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder2,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
 
   /* validate */
   g_assert_cmpint (folder2->size, ==, 3);
@@ -2239,9 +2210,9 @@ _test_move_inside (
   track_select (
     folder2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, folder->pos, NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
 
   /*
    * expect:
@@ -2309,10 +2280,9 @@ _test_move_inside (
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, P_MASTER_TRACK->pos,
-    NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, P_MASTER_TRACK,
+    TRACK_WIDGET_HIGHLIGHT_TOP, GDK_ACTION_MOVE);
   g_assert_cmpint (audio_fx2->pos, ==, 4);
   g_assert_cmpint (audio_group->pos, ==, 6);
   g_assert_cmpint (audio_group->size, ==, 3);
@@ -2365,9 +2335,9 @@ _test_move_inside (
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, audio_group->pos, NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_group,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 4);
   g_assert_cmpint (audio_fx2->pos, ==, 6);
@@ -2382,9 +2352,9 @@ _test_move_inside (
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, folder->pos, NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
   g_assert_cmpint (audio_group->pos, ==, 5);
   g_assert_cmpint (audio_group->size, ==, 4);
   g_assert_cmpint (folder->pos, ==, 6);
@@ -2481,6 +2451,53 @@ _test_move_inside (
   g_assert_cmpint (audio_fx->pos, ==, 9);
   g_assert_cmpint (audio_fx2->pos, ==, 10);
 
+  /*
+   * [00] Chords
+   * [01] Tempo
+   * [02] Modulators
+   * [03] Markers
+   * [04] Master
+   * [05] Audio Group Track
+   * [06] -- Folder Track
+   * [07] ---- LSP Compressor Stereo
+   * [08] Folder Track 1
+   * [09] -- Audio FX Track
+   * [10] -- Audio FX Track 1
+   */
+
+  /* create a new track and drag it under
+   * Folder Track 1 */
+  Track * midi =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
+  g_assert_nonnull (midi);
+
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_fx2,
+    TRACK_WIDGET_HIGHLIGHT_TOP, GDK_ACTION_MOVE);
+
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 7);
+  g_assert_cmpint (folder2->pos, ==, 8);
+  g_assert_cmpint (folder2->size, ==, 4);
+  g_assert_cmpint (audio_fx->pos, ==, 9);
+  g_assert_cmpint (midi->pos, ==, 10);
+  g_assert_cmpint (audio_fx2->pos, ==, 11);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (audio_group->pos, ==, 5);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 6);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (lsp_comp->pos, ==, 7);
+  g_assert_cmpint (folder2->pos, ==, 8);
+  g_assert_cmpint (folder2->size, ==, 3);
+  g_assert_cmpint (audio_fx->pos, ==, 9);
+  g_assert_cmpint (audio_fx2->pos, ==, 10);
+
   test_helper_zrythm_cleanup ();
 }
 
@@ -2517,9 +2534,9 @@ test_move_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, folder->pos, NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (
     folder->pos, ==, TRACKLIST->num_tracks - 3);
@@ -2558,9 +2575,9 @@ test_move_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, audio_group->pos, NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_group,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (
@@ -2611,6 +2628,59 @@ test_move_multiple_inside ()
    * [8] ---- Audio FX Track
    */
 
+  /* create 2 new MIDI tracks and drag them above
+   * Folder Track */
+  Track * midi =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
+  g_assert_nonnull (midi);
+  Track * midi2 =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
+  g_assert_nonnull (midi2);
+  track_select (
+    midi, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (audio_fx2->pos, ==, 5);
+  g_assert_cmpint (audio_group->pos, ==, 6);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 7);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (audio_fx1->pos, ==, 8);
+  g_assert_cmpint (midi->pos, ==, 9);
+  g_assert_cmpint (midi2->pos, ==, 10);
+
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_TOP, GDK_ACTION_MOVE);
+
+  tracklist_print_tracks (TRACKLIST);
+
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (audio_fx2->pos, ==, 5);
+  g_assert_cmpint (audio_group->pos, ==, 6);
+  g_assert_cmpint (audio_group->size, ==, 5);
+  g_assert_cmpint (midi->pos, ==, 7);
+  g_assert_cmpint (midi2->pos, ==, 8);
+  g_assert_cmpint (folder->pos, ==, 9);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (audio_fx1->pos, ==, 10);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (folder->size, ==, 2);
+  g_assert_cmpint (audio_fx2->pos, ==, 5);
+  g_assert_cmpint (audio_group->pos, ==, 6);
+  g_assert_cmpint (audio_group->size, ==, 3);
+  g_assert_cmpint (folder->pos, ==, 7);
+  g_assert_cmpint (audio_fx1->pos, ==, 8);
+  g_assert_cmpint (midi->pos, ==, 9);
+  g_assert_cmpint (midi2->pos, ==, 10);
+
   test_helper_zrythm_cleanup ();
 }
 
@@ -2636,9 +2706,9 @@ test_copy_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, folder->pos, NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
 
   /* create audio group */
   Track * audio_group =
@@ -2652,9 +2722,9 @@ test_copy_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_move_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, audio_group->pos, NULL);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_group,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
 
   /* create new folder */
   Track * folder2 =
@@ -2671,10 +2741,9 @@ test_copy_multiple_inside ()
   track_select (
     audio_fx1, F_SELECT, F_NOT_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
-  tracklist_selections_action_perform_copy_inside (
-    TRACKLIST_SELECTIONS,
-    PORT_CONNECTIONS_MGR, folder2->pos, NULL);
-  tracklist_print_tracks (TRACKLIST);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder2,
+    TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_COPY);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (
@@ -2700,7 +2769,6 @@ test_copy_multiple_inside ()
       type == TRACK_TYPE_AUDIO_BUS);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
-  tracklist_print_tracks (TRACKLIST);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (
@@ -2716,7 +2784,6 @@ test_copy_multiple_inside ()
     folder2->pos, ==, TRACKLIST->num_tracks - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
-  tracklist_print_tracks (TRACKLIST);
   g_assert_cmpint (folder->size, ==, 2);
   g_assert_cmpint (audio_group->size, ==, 3);
   g_assert_cmpint (
@@ -2740,6 +2807,351 @@ test_copy_multiple_inside ()
   g_assert_true (
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
       type == TRACK_TYPE_AUDIO_BUS);
+
+  /*
+   * [0] Chords
+   * [1] Tempo
+   * [2] Modulators
+   * [3] Markers
+   * [4] Master
+   * [5] Audio FX Track 1
+   * [6] Audio Group Track
+   * [7] -- Folder Track
+   * [8] ---- Audio FX Track
+   * [009] Folder Track 1
+   * [010] -- Audio Group Track 1
+   * [011] ---- Folder Track 2
+   * [012] ------ Audio FX Track 2
+   */
+
+  Track * audio_group2 = TRACKLIST->tracks[10];
+  Track * folder3 = TRACKLIST->tracks[11];
+  Track * audio_fx3 = TRACKLIST->tracks[12];
+
+  /* create 2 new MIDI tracks and copy-drag them
+   * above Audio Group Track 1 */
+  Track * midi =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
+  g_assert_nonnull (midi);
+  Track * midi2 =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
+  g_assert_nonnull (midi2);
+
+  track_select (
+    midi, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_group2,
+    TRACK_WIDGET_HIGHLIGHT_TOP, GDK_ACTION_COPY);
+
+  /*
+   * [0] Chords
+   * [1] Tempo
+   * [2] Modulators
+   * [3] Markers
+   * [4] Master
+   * [5] Audio FX Track 1
+   * [6] Audio Group Track
+   * [7] -- Folder Track
+   * [8] ---- Audio FX Track
+   * [009] Folder Track 1
+   * [010] -- MIDI Track 2
+   * [011] -- MIDI Track 3
+   * [012] -- Audio Group Track 1
+   * [013] ---- Folder Track 2
+   * [014] ------ Audio FX Track 2
+   * [015] -- MIDI Track
+   * [016] -- MIDI Track 1
+   */
+
+  tracklist_print_tracks (TRACKLIST);
+
+  Track * midi3 = TRACKLIST->tracks[10];
+  Track * midi4 = TRACKLIST->tracks[11];
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 6);
+  g_assert_cmpint (midi3->pos, ==, 10);
+  g_assert_cmpint (midi4->pos, ==, 11);
+  g_assert_cmpint (audio_group2->pos, ==, 12);
+  g_assert_cmpint (audio_group2->size, ==, 3);
+  g_assert_cmpint (folder3->pos, ==, 13);
+  g_assert_cmpint (folder3->size, ==, 2);
+  g_assert_cmpint (audio_fx3->pos, ==, 14);
+  g_assert_cmpint (midi->pos, ==, 15);
+  g_assert_cmpint (midi2->pos, ==, 16);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 4);
+  g_assert_cmpint (audio_group2->pos, ==, 10);
+  g_assert_cmpint (audio_group2->size, ==, 3);
+  g_assert_cmpint (folder3->pos, ==, 11);
+  g_assert_cmpint (folder3->size, ==, 2);
+  g_assert_cmpint (audio_fx3->pos, ==, 12);
+  g_assert_cmpint (midi->pos, ==, 13);
+  g_assert_cmpint (midi2->pos, ==, 14);
+
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  midi3 = TRACKLIST->tracks[10];
+  midi4 = TRACKLIST->tracks[11];
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 6);
+  g_assert_cmpint (midi3->pos, ==, 10);
+  g_assert_cmpint (midi4->pos, ==, 11);
+  g_assert_cmpint (audio_group2->pos, ==, 12);
+  g_assert_cmpint (audio_group2->size, ==, 3);
+  g_assert_cmpint (folder3->pos, ==, 13);
+  g_assert_cmpint (folder3->size, ==, 2);
+  g_assert_cmpint (audio_fx3->pos, ==, 14);
+  g_assert_cmpint (midi->pos, ==, 15);
+  g_assert_cmpint (midi2->pos, ==, 16);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 4);
+  g_assert_cmpint (audio_group2->pos, ==, 10);
+  g_assert_cmpint (audio_group2->size, ==, 3);
+  g_assert_cmpint (folder3->pos, ==, 11);
+  g_assert_cmpint (folder3->size, ==, 2);
+  g_assert_cmpint (audio_fx3->pos, ==, 12);
+  g_assert_cmpint (midi->pos, ==, 13);
+  g_assert_cmpint (midi2->pos, ==, 14);
+
+  /*
+   * [0] Chords
+   * [1] Tempo
+   * [2] Modulators
+   * [3] Markers
+   * [4] Master
+   * [5] Audio FX Track 1
+   * [6] Audio Group Track
+   * [7] -- Folder Track
+   * [8] ---- Audio FX Track
+   * [009] Folder Track 1
+   * [010] -- Audio Group Track 1
+   * [011] ---- Folder Track 2
+   * [012] ------ Audio FX Track 2
+   * [013] MIDI Track
+   * [014] MIDI Track 1
+   */
+
+  /* move MIDI tracks to Folder Track 2 */
+  track_select (
+    midi, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  g_assert_cmpint (
+    TRACKLIST_SELECTIONS->num_tracks, ==, 2);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, folder3,
+    TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_MOVE);
+
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 6);
+  g_assert_cmpint (audio_group2->pos, ==, 10);
+  g_assert_cmpint (audio_group2->size, ==, 5);
+  g_assert_cmpint (folder3->pos, ==, 11);
+  g_assert_cmpint (folder3->size, ==, 4);
+  g_assert_cmpint (midi->pos, ==, 12);
+  g_assert_cmpint (midi2->pos, ==, 13);
+  g_assert_cmpint (audio_fx3->pos, ==, 14);
+
+  /* clone the midi tracks at the end */
+  track_select (
+    midi, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi2, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_fx3,
+    TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_COPY);
+
+  midi3 = TRACKLIST->tracks[15];
+  midi4 = TRACKLIST->tracks[16];
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 6);
+  g_assert_cmpint (audio_group2->pos, ==, 10);
+  g_assert_cmpint (audio_group2->size, ==, 5);
+  g_assert_cmpint (folder3->pos, ==, 11);
+  g_assert_cmpint (folder3->size, ==, 4);
+  g_assert_cmpint (midi->pos, ==, 12);
+  g_assert_cmpint (midi2->pos, ==, 13);
+  g_assert_cmpint (audio_fx3->pos, ==, 14);
+  g_assert_cmpint (midi3->pos, ==, 15);
+  g_assert_cmpint (midi4->pos, ==, 16);
+
+  /*
+   * [000] Chords
+   * [001] Tempo
+   * [002] Modulators
+   * [003] Markers
+   * [004] Master
+   * [005] Audio FX Track 1
+   * [006] Audio Group Track
+   * [007] -- Folder Track
+   * [008] ---- Audio FX Track
+   * [009] Folder Track 1
+   * [010] -- Audio Group Track 1
+   * [011] ---- Folder Track 2
+   * [012] ------ MIDI Track
+   * [013] ------ MIDI Track 1
+   * [014] ------ Audio FX Track 2
+   * [015] MIDI Track 2
+   * [016] MIDI Track 3
+   */
+
+  /* move MIDI tracks below master */
+  track_select (
+    midi3, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi4, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, P_MASTER_TRACK,
+    TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_MOVE);
+
+  /* copy MIDI tracks below MIDI Track 1 */
+  track_select (
+    midi3, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi4, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, midi2,
+    TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_COPY);
+
+  Track * midi5 = TRACKLIST->tracks[16];
+  Track * midi6 = TRACKLIST->tracks[17];
+  g_assert_cmpint (folder2->pos, ==, 11);
+  g_assert_cmpint (folder2->size, ==, 8);
+  g_assert_cmpint (audio_group2->pos, ==, 12);
+  g_assert_cmpint (audio_group2->size, ==, 7);
+  g_assert_cmpint (folder3->pos, ==, 13);
+  g_assert_cmpint (folder3->size, ==, 6);
+  g_assert_cmpint (midi->pos, ==, 14);
+  g_assert_cmpint (midi2->pos, ==, 15);
+  g_assert_cmpint (midi5->pos, ==, 16);
+  g_assert_cmpint (midi6->pos, ==, 17);
+  g_assert_cmpint (audio_fx3->pos, ==, 18);
+
+  /* undo */
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (folder2->pos, ==, 11);
+  g_assert_cmpint (folder2->size, ==, 6);
+  g_assert_cmpint (audio_group2->pos, ==, 12);
+  g_assert_cmpint (audio_group2->size, ==, 5);
+  g_assert_cmpint (folder3->pos, ==, 13);
+  g_assert_cmpint (folder3->size, ==, 4);
+  g_assert_cmpint (midi->pos, ==, 14);
+  g_assert_cmpint (midi2->pos, ==, 15);
+  g_assert_cmpint (audio_fx3->pos, ==, 16);
+
+  /* move MIDI Track 3 at the end */
+  track_select (
+    midi4, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, audio_fx3,
+    TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_MOVE);
+
+  tracklist_print_tracks (TRACKLIST);
+
+  g_assert_cmpint (folder2->pos, ==, 10);
+  g_assert_cmpint (folder2->size, ==, 6);
+  g_assert_cmpint (audio_group2->pos, ==, 11);
+  g_assert_cmpint (audio_group2->size, ==, 5);
+  g_assert_cmpint (folder3->pos, ==, 12);
+  g_assert_cmpint (folder3->size, ==, 4);
+  g_assert_cmpint (midi->pos, ==, 13);
+  g_assert_cmpint (midi2->pos, ==, 14);
+  g_assert_cmpint (audio_fx3->pos, ==, 15);
+  g_assert_cmpint (midi4->pos, ==, 16);
+
+  /* copy MIDI Track 3 and MIDI Track 2 below
+   * MIDI Track 1 */
+  track_select (
+    midi3, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi4, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, midi2,
+    TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_COPY);
+
+  tracklist_print_tracks (TRACKLIST);
+
+  midi5 = TRACKLIST->tracks[15];
+  midi6 = TRACKLIST->tracks[16];
+  g_assert_cmpint (folder2->pos, ==, 10);
+  g_assert_cmpint (folder2->size, ==, 8);
+  g_assert_cmpint (audio_group2->pos, ==, 11);
+  g_assert_cmpint (audio_group2->size, ==, 7);
+  g_assert_cmpint (folder3->pos, ==, 12);
+  g_assert_cmpint (folder3->size, ==, 6);
+  g_assert_cmpint (midi->pos, ==, 13);
+  g_assert_cmpint (midi2->pos, ==, 14);
+  g_assert_cmpint (midi5->pos, ==, 15);
+  g_assert_cmpint (midi6->pos, ==, 16);
+  g_assert_cmpint (audio_fx3->pos, ==, 17);
+  g_assert_cmpint (midi4->pos, ==, 18);
+  g_assert_cmpint (
+    TRACKLIST->num_tracks, ==, 19);
+
+  /* undo */
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (folder2->pos, ==, 10);
+  g_assert_cmpint (folder2->size, ==, 6);
+  g_assert_cmpint (audio_group2->pos, ==, 11);
+  g_assert_cmpint (audio_group2->size, ==, 5);
+  g_assert_cmpint (folder3->pos, ==, 12);
+  g_assert_cmpint (folder3->size, ==, 4);
+  g_assert_cmpint (midi->pos, ==, 13);
+  g_assert_cmpint (midi2->pos, ==, 14);
+  g_assert_cmpint (audio_fx3->pos, ==, 15);
+  g_assert_cmpint (midi4->pos, ==, 16);
+  g_assert_cmpint (
+    TRACKLIST->num_tracks, ==, 17);
+
+  tracklist_print_tracks (TRACKLIST);
+
+  /* move MIDI Track 3 and MIDI Track 2 below
+   * MIDI Track 1 */
+  track_select (
+    midi3, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  track_select (
+    midi4, F_SELECT, F_NOT_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  tracklist_handle_move_or_copy (
+    TRACKLIST, midi2,
+    TRACK_WIDGET_HIGHLIGHT_BOTTOM, GDK_ACTION_MOVE);
+
+  tracklist_print_tracks (TRACKLIST);
+
+  g_assert_cmpint (folder2->pos, ==, 9);
+  g_assert_cmpint (folder2->size, ==, 8);
+  g_assert_cmpint (audio_group2->pos, ==, 10);
+  g_assert_cmpint (audio_group2->size, ==, 7);
+  g_assert_cmpint (folder3->pos, ==, 11);
+  g_assert_cmpint (folder3->size, ==, 6);
+  g_assert_cmpint (midi->pos, ==, 12);
+  g_assert_cmpint (midi2->pos, ==, 13);
+  g_assert_cmpint (midi3->pos, ==, 14);
+  g_assert_cmpint (midi4->pos, ==, 15);
+  g_assert_cmpint (audio_fx3->pos, ==, 16);
+  g_assert_cmpint (
+    TRACKLIST->num_tracks, ==, 17);
 
   test_helper_zrythm_cleanup ();
 }
@@ -2804,6 +3216,15 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test copy multiple inside",
+    (GTestFunc) test_copy_multiple_inside);
+  g_test_add_func (
+    TEST_PREFIX "test move multiple inside",
+    (GTestFunc) test_move_multiple_inside);
+  g_test_add_func (
+    TEST_PREFIX "test move inside",
+    (GTestFunc) test_move_inside);
+  g_test_add_func (
     TEST_PREFIX
     "test port and plugin track pos after duplication",
     (GTestFunc)
@@ -2828,9 +3249,6 @@ main (int argc, char *argv[])
     TEST_PREFIX "test_move_tracks",
     (GTestFunc) test_move_tracks);
   g_test_add_func (
-    TEST_PREFIX "test copy multiple inside",
-    (GTestFunc) test_copy_multiple_inside);
-  g_test_add_func (
     TEST_PREFIX "test ins track duplicate w send",
     (GTestFunc) test_ins_track_duplicate_w_send);
   g_test_add_func (
@@ -2842,14 +3260,8 @@ main (int argc, char *argv[])
     (GTestFunc)
     test_source_track_deletion_with_sends);
   g_test_add_func (
-    TEST_PREFIX "test move inside",
-    (GTestFunc) test_move_inside);
-  g_test_add_func (
     TEST_PREFIX "test copy after uninstalling plugin",
     (GTestFunc) test_copy_after_uninstalling_plugin);
-  g_test_add_func (
-    TEST_PREFIX "test move multiple inside",
-    (GTestFunc) test_move_multiple_inside);
   g_test_add_func (
     TEST_PREFIX "test move multiple tracks",
     (GTestFunc) test_move_multiple_tracks);

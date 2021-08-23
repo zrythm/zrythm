@@ -1374,9 +1374,6 @@ do_or_undo_move_or_copy (
   bool unpin =
     self->type == TRACKLIST_SELECTIONS_ACTION_UNPIN;
 
-  port_connections_manager_print (
-    PORT_CONNECTIONS_MGR);
-
   if (_do)
     {
       Track * foldable_tr = NULL;
@@ -1568,6 +1565,9 @@ do_or_undo_move_or_copy (
                 }
             }
 
+          tracklist_selections_clear (
+            TRACKLIST_SELECTIONS);
+
           /* create new tracks routed to master */
           Track * new_tracks[num_tracks];
           for (int i = 0; i < num_tracks; i++)
@@ -1624,7 +1624,7 @@ do_or_undo_move_or_copy (
 
               /* select it */
               track_select (
-                track, F_SELECT, 1,
+                track, F_SELECT, F_NOT_EXCLUSIVE,
                 F_NO_PUBLISH_EVENTS);
             }
 
@@ -1828,9 +1828,6 @@ do_or_undo_move_or_copy (
 
   /* restore connections */
   save_or_load_port_connections (self, _do);
-
-  port_connections_manager_print (
-    PORT_CONNECTIONS_MGR);
 
   tracklist_validate (TRACKLIST);
 

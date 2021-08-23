@@ -150,6 +150,19 @@ G_DEFINE_TYPE (
 #define CB_ICON_IS(name) \
   ICON_IS (cb->icon_name, name)
 
+const char *
+track_widget_highlight_to_str (
+  TrackWidgetHighlight highlight)
+{
+  const char * str[] = {
+    "Highlight top",
+    "Highlight bottom",
+    "Highlight inside",
+  };
+
+  return str[highlight];
+}
+
 static CustomButtonWidget *
 get_hovered_button (
   TrackWidget * self,
@@ -368,7 +381,8 @@ draw_name (
   if (DEBUGGING)
     {
       sprintf (
-        name, "[%d - %d] %s",
+        name, "%s[%d - %d] %s",
+        track_is_selected (track) ? "* " : "",
         track->pos, track->size, track->name);
     }
   else
@@ -2297,12 +2311,14 @@ on_right_click (
           state_mask & GDK_CONTROL_MASK)
         {
           track_select (
-            track, F_SELECT, 0, 1);
+            track, F_SELECT,
+            F_NOT_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
       else
         {
           track_select (
-            track, F_SELECT, 1, 1);
+            track, F_SELECT,
+            F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
     }
   if (n_press == 1)
@@ -2355,9 +2371,6 @@ multipress_pressed (
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
     /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
 
-  GdkModifierType state_mask =
-    ui_get_state_mask (GTK_GESTURE (gesture));
-
   CustomButtonWidget * cb =
     get_hovered_button (self, (int) x, (int) y);
   AutomationModeWidget * am =
@@ -2374,11 +2387,6 @@ multipress_pressed (
         SELECTION_TYPE_TRACKLIST;
       EVENTS_PUSH (
         ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
-
-      bool ctrl = state_mask & GDK_CONTROL_MASK;
-      bool shift = state_mask & GDK_SHIFT_MASK;
-      tracklist_selections_handle_click (
-        track, ctrl, shift, false);
     }
 
   if (self->icon_hovered)
@@ -2409,11 +2417,18 @@ multipress_released (
   gdouble               y,
   TrackWidget *         self)
 {
+  Track * track = self->track;
+  GdkModifierType state_mask =
+    ui_get_state_mask (GTK_GESTURE (gesture));
+  bool ctrl = state_mask & GDK_CONTROL_MASK;
+  bool shift = state_mask & GDK_SHIFT_MASK;
+  tracklist_selections_handle_click (
+    track, ctrl, shift, self->dragged);
+
   if (self->clicked_button)
     {
       CustomButtonWidget * cb =
         self->clicked_button;
-      Track * track = self->track;
 
       /* if track not selected, select it */
       if (!track_is_selected (track))
@@ -2690,10 +2705,17 @@ on_drag_update (
 
   self->dragged = 1;
 
+  Track * track = self->track;
+  GdkModifierType state_mask =
+    ui_get_state_mask (GTK_GESTURE (gesture));
+  bool ctrl = state_mask & GDK_CONTROL_MASK;
+  bool shift = state_mask & GDK_SHIFT_MASK;
+  tracklist_selections_handle_click (
+    track, ctrl, shift, self->dragged);
+
   if (self->resizing)
     {
       /* resize */
-      Track * track = self->track;
       int diff =
         (int) (offset_y - self->last_offset_y);
 

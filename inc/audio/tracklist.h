@@ -459,6 +459,14 @@ tracklist_handle_file_drop (
   Position *      pos,
   bool            perform_actions);
 
+/**
+ * Handles a move or copy paction based on a drag.
+ *
+ * @param this_track The track at the cursor (where
+ *   the selection was dropped to.
+ * @param location Location relative to @ref
+ *   this_track.
+ */
 void
 tracklist_handle_move_or_copy (
   Tracklist *          self,

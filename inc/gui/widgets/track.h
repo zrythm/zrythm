@@ -231,6 +231,10 @@ typedef struct _TrackWidget
   cairo_surface_t * cached_surface;
 } TrackWidget;
 
+const char *
+track_widget_highlight_to_str (
+  TrackWidgetHighlight highlight);
+
 /**
  * Sets up the track widget.
  *
