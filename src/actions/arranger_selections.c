@@ -33,6 +33,7 @@
 #include "gui/widgets/center_dock.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/debug.h"
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -1871,8 +1872,8 @@ do_or_undo_duplicate_or_link (
                     audio_pool_duplicate_clip (
                       AUDIO_POOL, clip->pool_id,
                       F_WRITE_FILE);
-                  g_return_val_if_fail (
-                    id > prev_id, -1);
+                  z_return_val_if_fail_cmp (
+                    id, >, prev_id, -1);
                   clip =
                     audio_pool_get_clip (
                       AUDIO_POOL, id);

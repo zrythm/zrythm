@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -130,8 +130,7 @@ inspector_track_widget_show_tracks (
       setup_color (self, track);
 
       track_properties_expander_widget_refresh (
-        self->track_info,
-        track);
+        self->track_info, track);
 
       gtk_widget_set_visible (
         GTK_WIDGET (self->sends), false);
@@ -245,8 +244,7 @@ inspector_track_widget_setup (
   g_return_if_fail (track);
 
   track_properties_expander_widget_setup (
-    self->track_info,
-    track);
+    self->track_info, track);
 }
 
 InspectorTrackWidget *

@@ -658,6 +658,9 @@ graph_node_new (
       break;
     case ROUTE_NODE_TYPE_TRACK:
       node->track = (Track *) data;
+      /* set cache */
+      node->track->name_hash =
+        track_get_name_hash (node->track);
       break;
     case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
       break;

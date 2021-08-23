@@ -30,6 +30,7 @@
 #include "gui/backend/arranger_object.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -253,9 +254,9 @@ recording_manager_handle_recording (
    * punch mode or true if otherwise */
   bool inside_punch_range = false;
 
-  g_return_if_fail (
-    time_nfo->local_offset + time_nfo->nframes <=
-      AUDIO_ENGINE->block_length);
+  z_return_if_fail_cmp (
+    time_nfo->local_offset + time_nfo->nframes, <=,
+    AUDIO_ENGINE->block_length);
 
   if (TRANSPORT->punch_mode)
     {
@@ -311,7 +312,7 @@ recording_manager_handle_recording (
             time_nfo->local_offset;
           re->nframes =
             time_nfo->nframes;
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -338,7 +339,7 @@ recording_manager_handle_recording (
             time_nfo->local_offset;
           re->nframes =
             time_nfo->nframes;
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -369,7 +370,7 @@ recording_manager_handle_recording (
             time_nfo->local_offset;
           re->nframes =
             time_nfo->nframes;
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -407,7 +408,7 @@ recording_manager_handle_recording (
             time_nfo->nframes;
           port_identifier_copy (
             &re->port_id, &at->port_id);
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -440,7 +441,7 @@ recording_manager_handle_recording (
             time_nfo->nframes;
           port_identifier_copy (
             &re->port_id, &at->port_id);
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -475,7 +476,7 @@ recording_manager_handle_recording (
                 time_nfo->nframes;
               port_identifier_copy (
                 &re->port_id, &at->port_id);
-              strcpy (re->track_name, tr->name);
+              re->track_name_hash = tr->name_hash;
               /*UP_RECEIVED (re);*/
               recording_event_queue_push_back_event (
                 self->event_queue, re);
@@ -518,7 +519,7 @@ recording_manager_handle_recording (
             time_nfo->nframes;
           re->has_midi_event = 1;
           midi_event_copy (&re->midi_event, me);
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -539,7 +540,7 @@ recording_manager_handle_recording (
           re->nframes =
             time_nfo->nframes;
           re->has_midi_event = 0;
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -570,7 +571,7 @@ recording_manager_handle_recording (
         &re->rbuf[time_nfo->local_offset],
         &r->buf[time_nfo->local_offset],
         time_nfo->nframes);
-      strcpy (re->track_name, tr->name);
+      re->track_name_hash = tr->name_hash;
       /*UP_RECEIVED (re);*/
       recording_event_queue_push_back_event (
         self->event_queue, re);
@@ -609,7 +610,7 @@ add_automation_events:
           re->nframes = time_nfo->nframes;
           port_identifier_copy (
             &re->port_id, &at->port_id);
-          strcpy (re->track_name, tr->name);
+          re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -729,7 +730,9 @@ handle_pause_event (
   RecordingManager * self,
   RecordingEvent * ev)
 {
-  Track * tr = track_get_from_name (ev->track_name);
+  Track * tr =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, ev->track_name_hash);
 
   /* pausition to pause at */
   Position pause_pos;
@@ -794,7 +797,9 @@ handle_resume_event (
   RecordingManager * self,
   RecordingEvent * ev)
 {
-  Track * tr = track_get_from_name (ev->track_name);
+  Track * tr =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, ev->track_name_hash);
   gint64 cur_time = g_get_monotonic_time ();
 
   /* position to resume from */
@@ -983,7 +988,9 @@ handle_audio_event (
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
   nframes_t local_offset = ev->local_offset;
-  Track * tr = track_get_from_name (ev->track_name);
+  Track * tr =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, ev->track_name_hash);
 
   /* get end position */
   long start_frames =
@@ -1105,7 +1112,9 @@ handle_midi_event (
 
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
-  Track * tr = track_get_from_name (ev->track_name);
+  Track * tr =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, ev->track_name_hash);
 
   g_return_if_fail (tr->recording_region);
 
@@ -1236,7 +1245,9 @@ handle_automation_event (
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
   /*nframes_t local_offset = ev->local_offset;*/
-  Track * tr = track_get_from_name (ev->track_name);
+  Track * tr =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, ev->track_name_hash);
   AutomationTrack * at =
     automation_track_find_from_port_id (
       &ev->port_id, false);
@@ -1374,7 +1385,9 @@ handle_start_recording (
   RecordingEvent *   ev,
   bool               is_automation)
 {
-  Track * tr = track_get_from_name (ev->track_name);
+  Track * tr =
+    tracklist_find_track_by_name_hash (
+      TRACKLIST, ev->track_name_hash);
   gint64 cur_time = g_get_monotonic_time ();
   AutomationTrack * at = NULL;
   if (is_automation)
@@ -1571,18 +1584,19 @@ recording_manager_process_events (
           handle_pause_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING:
-          g_message (
-            "-------- STOP TRACK RECORDING (%s)",
-            ev->track_name);
           {
-            Track * track =
-              track_get_from_name (ev->track_name);
+            Track * tr =
+              tracklist_find_track_by_name_hash (
+                TRACKLIST, ev->track_name_hash);
+            g_message (
+              "-------- STOP TRACK RECORDING (%s)",
+              tr->name);
             g_return_val_if_fail (
-              track, G_SOURCE_REMOVE);
+              tr, G_SOURCE_REMOVE);
             handle_stop_recording (self, false);
-            track->recording_region = NULL;
-            track->recording_start_sent = false;
-            track->recording_stop_sent = false;
+            tr->recording_region = NULL;
+            tr->recording_start_sent = false;
+            tr->recording_stop_sent = false;
           }
           g_message (
             "num active recordings: %d",
@@ -1609,13 +1623,19 @@ recording_manager_process_events (
             self->num_active_recordings);
           break;
         case RECORDING_EVENT_TYPE_START_TRACK_RECORDING:
-          g_message (
-            "-------- START TRACK RECORDING (%s)",
-            ev->track_name);
-          handle_start_recording (self, ev, false);
-          g_message (
-            "num active recordings: %d",
-            self->num_active_recordings);
+          {
+            Track * tr =
+              tracklist_find_track_by_name_hash (
+                TRACKLIST, ev->track_name_hash);
+            g_message (
+              "-------- START TRACK RECORDING (%s)",
+              tr->name);
+            handle_start_recording (
+              self, ev, false);
+            g_message (
+              "num active recordings: %d",
+              self->num_active_recordings);
+          }
           break;
         case RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING:
           g_message (

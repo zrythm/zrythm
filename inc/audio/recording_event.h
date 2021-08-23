@@ -94,17 +94,17 @@ typedef struct RecordingEvent
   RecordingEventType type;
 
   /** The name of the track this event is for. */
-  char       track_name[200];
+  unsigned int       track_name_hash;
 
   /** ZRegion name, if applicable. */
-  char       region_name[200];
+  char               region_name[200];
 
   /** Global start frames of the event. */
-  long       g_start_frames;
+  long               g_start_frames;
 
   /** Offset from \ref RecordingEvent.g_start_frames
    * that this event starts from. */
-  nframes_t  local_offset;
+  nframes_t          local_offset;
 
   /**
    * The actual data (if audio).
@@ -112,29 +112,29 @@ typedef struct RecordingEvent
    * This will be \ref RecordingEvent.nframes times
    * the number of channels in the track.
    */
-  float      lbuf[9000];
-  float      rbuf[9000];
+  float              lbuf[9000];
+  float              rbuf[9000];
 
-  int        has_midi_event;
+  int                has_midi_event;
 
   /**
    * MidiEvent, if midi.
    */
-  MidiEvent  midi_event;
+  MidiEvent          midi_event;
 
   /** Port if automation. */
-  PortIdentifier   port_id;
+  PortIdentifier     port_id;
 
   /** Automation value, if automation. */
   //float             control_val;
 
   /** Number of frames processed in this event. */
-  nframes_t  nframes;
+  nframes_t          nframes;
 
   /* debug info */
-  const char * file;
-  const char * func;
-  int          lineno;
+  const char *       file;
+  const char *       func;
+  int                lineno;
 } RecordingEvent;
 
 /**

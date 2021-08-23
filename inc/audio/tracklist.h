@@ -157,11 +157,13 @@ static const cyaml_schema_value_t
 /**
  * Initializes the tracklist when loading a project.
  */
+COLD
 NONNULL
 void
 tracklist_init_loaded (
   Tracklist * self);
 
+COLD
 Tracklist *
 tracklist_new (Project * project);
 

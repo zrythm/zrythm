@@ -44,9 +44,9 @@ recording_event_print (
   RecordingEvent * self)
 {
   g_message (
-    "%p: type %s track %s", self,
+    "%p: type %s track name hash %u", self,
     recording_event_type_strings[self->type],
-    self->track_name);
+    self->track_name_hash);
 }
 
 void

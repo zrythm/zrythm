@@ -885,6 +885,8 @@ engine_realloc_port_buffers (
   AudioEngine * self,
   nframes_t     buf_size);
 
+COLD
+NONNULL
 void
 engine_init_loaded (
   AudioEngine * self);
@@ -895,6 +897,7 @@ engine_init_loaded (
  * This only initializes the engine and doe snot
  * connect to the backend.
  */
+COLD
 AudioEngine *
 engine_new (
   Project * project);
@@ -957,6 +960,7 @@ engine_setup (
  *
  * @param activate Activate or deactivate.
  */
+COLD
 void
 engine_activate (
   AudioEngine * self,
@@ -1115,6 +1119,7 @@ engine_reset_bounce_mode (
  *
  * To be used for serialization.
  */
+COLD
 NONNULL
 AudioEngine *
 engine_clone (
@@ -1123,6 +1128,8 @@ engine_clone (
 /**
  * Closes any connections and free's data.
  */
+COLD
+NONNULL
 void
 engine_free (
   AudioEngine * self);

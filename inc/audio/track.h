@@ -221,6 +221,9 @@ typedef struct Track
   /** Track name, used in channel too. */
   char *              name;
 
+  /** Cache calculated when adding to graph. */
+  unsigned int        name_hash;
+
   /** Icon name of the track. */
   char *              icon_name;
 
@@ -566,6 +569,7 @@ track_schema = {
     Track, track_fields_schema),
 };
 
+COLD
 void
 track_init_loaded (
   Track * track,

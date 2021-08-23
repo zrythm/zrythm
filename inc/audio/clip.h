@@ -146,6 +146,7 @@ audio_clip_schema = {
 /**
  * Inits after loading a Project.
  */
+COLD
 NONNULL
 void
 audio_clip_init_loaded (
@@ -156,6 +157,7 @@ audio_clip_init_loaded (
  *
  * The name used is the basename of the file.
  */
+COLD
 NONNULL
 AudioClip *
 audio_clip_new_from_file (
