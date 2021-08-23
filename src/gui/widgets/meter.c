@@ -244,6 +244,27 @@ meter_widget_setup (
   /* set size */
   gtk_widget_set_size_request (
     GTK_WIDGET (self), width, -1);
+
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (meter_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_crossing),  self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
+    self, NULL);
+  self->timeout_source = g_timeout_source_new (20);
+  g_source_set_callback (
+    self->timeout_source, meter_timeout,
+    self, NULL);
+  self->source_id =
+    g_source_attach (self->timeout_source, NULL);
 }
 
 static void
@@ -268,27 +289,6 @@ meter_widget_init (MeterWidget * self)
   /*gdk_rgba_parse (&self->end_color, "#00FFCC");*/
   gdk_rgba_parse (&self->start_color, "#F9CA1B");
   gdk_rgba_parse (&self->end_color, "#1DDD6A");
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (meter_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_crossing),  self);
-
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
-    self, NULL);
-  self->timeout_source = g_timeout_source_new (20);
-  g_source_set_callback (
-    self->timeout_source, meter_timeout,
-    self, NULL);
-  self->source_id =
-    g_source_attach (self->timeout_source, NULL);
 }
 
 static void
