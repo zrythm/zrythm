@@ -166,6 +166,10 @@ live_waveform_draw_cb (
   g_return_val_if_fail (
     IS_PORT_AND_NONNULL (port), false);
 
+  /* if ring not ready yet skip draw */
+  if (!port->audio_ring)
+    return false;
+
   /* get the L buffer */
   size_t read_space_avail =
     zix_ring_read_space (port->audio_ring);
@@ -174,7 +178,7 @@ live_waveform_draw_cb (
       0 : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
   if (blocks_to_read <= 0)
-    return FALSE;
+    return false;
 
   while (read_space_avail > self->buf_sz[0])
     {
