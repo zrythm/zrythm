@@ -67,7 +67,7 @@ interface.
 an FM synthesizer that is closely modeled on the
 Yamaha DX7.
 
-`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_
+`ZynFusion <https://zynaddsubfx.sourceforge.io/zyn-fusion.html>`_
 is a powerful additive/subtractive synth that can
 synthesize a wide variety of sounds.
 

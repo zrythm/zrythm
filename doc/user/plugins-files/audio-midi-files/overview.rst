@@ -52,7 +52,7 @@ MP3
 
    Learn more at `EndSoftPatents`_.
 
-.. _EndSoftPatents: http://endsoftpatents.org/
+.. _EndSoftPatents: https://endsoftwarepatents.org/
 
 MIDI
 ~~~~

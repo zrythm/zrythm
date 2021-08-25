@@ -302,7 +302,9 @@ gettext_compact = 'zrythm-manual'
 # -- Options for linkcheck builder ---------------
 linkcheck_ignore = [
     # too many redirects
-    'https://paypal.me/zrythm'
+    'https://paypal.me/zrythm',
+    # doesn't allow bots to visit
+    'https://helpcenter.steinberg.de/hc/en-us/articles/115000171310',
     ]
 
 # -- Extension configuration -------------------------------------------------

@@ -37,6 +37,6 @@ rules for general GTK widgets online.
 
 Here are some links by official GNOME sources:
 
-* `GTK+ CSS Overview <https://developer.gnome.org/gtk3/stable/chap-css-overview.html>`_
-* `GTK+ CSS Properties <https://developer.gnome.org/gtk3/stable/chap-css-properties.html>`_
+* `GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_
+* `GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_
 * `Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/styling-gtk-with-css/>`_
