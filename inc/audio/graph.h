@@ -161,6 +161,15 @@ typedef struct Graph
   GraphThread *        main_thread;
   gint                 num_threads;
 
+  /**
+   * An array of pointers to ports that are exposed
+   * to the backend and are outputs.
+   *
+   * Used to clear their buffers when returning
+   * early from the processing cycle.
+   */
+  GPtrArray *          external_out_ports;
+
 } Graph;
 
 void

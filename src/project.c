@@ -17,13 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * A project contains everything that should be
- * serialized.
- */
-
 #include "zrythm-config.h"
 
 #include <time.h>
@@ -1713,8 +1706,6 @@ project_save (
 
   project_validate (self);
 
-  int i, j;
-
   char * dir = g_strdup (_dir);
 
   /* set the dir and create it if it doesn't
@@ -1759,6 +1750,7 @@ project_save (
   MK_PROJECT_DIR (PLUGIN_EXT_COPIES);
   MK_PROJECT_DIR (PLUGIN_EXT_LINKS);
 
+#if 0
   /* write plugin states, prepare channels for
    * serialization, */
   Track * track;
@@ -1824,6 +1816,7 @@ project_save (
 #endif
         }
     }
+#endif
 
   /* write the pool */
   audio_pool_remove_unused (AUDIO_POOL, is_backup);
@@ -1924,7 +1917,8 @@ project_save (
         }
     }
 
-  tracklist_validate (self->tracklist);
+  if (ZRYTHM_TESTING)
+    tracklist_validate (self->tracklist);
 
   ProjectSaveData * data =
     object_new (ProjectSaveData);
@@ -1937,7 +1931,8 @@ project_save (
   data->project->tracklist_selections->free_tracks =
     true;
 
-  tracklist_validate (self->tracklist);
+  if (ZRYTHM_TESTING)
+    tracklist_validate (self->tracklist);
 
   if (async)
     {
@@ -1978,12 +1973,14 @@ project_save (
       project_idle_saved_cb (data);
     }
 
-  tracklist_validate (self->tracklist);
+  if (ZRYTHM_TESTING)
+    tracklist_validate (self->tracklist);
 
   object_free_w_func_and_null (
     project_save_data_free, data);
 
-  tracklist_validate (self->tracklist);
+  if (ZRYTHM_TESTING)
+    tracklist_validate (self->tracklist);
 
   if (engine_paused)
     {

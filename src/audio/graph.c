@@ -779,6 +779,10 @@ graph_setup (
         }
     }
 
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->external_out_ports);
+  self->external_out_ports = g_ptr_array_new ();
+
   /* add ports */
   Port * port;
   GPtrArray * ports = g_ptr_array_new ();
@@ -797,6 +801,16 @@ graph_setup (
           if (port_pl->deleting)
             continue;
         }
+
+#ifdef HAVE_JACK
+      if (port->id.flow == FLOW_OUTPUT
+          &&
+          port->internal_type == INTERNAL_JACK_PORT)
+        {
+          g_ptr_array_add (
+            self->external_out_ports, port);
+        }
+#endif
 
       GraphNode * port_node =
         add_port (
@@ -1872,6 +1886,9 @@ graph_free (
     self->setup_init_trigger_list);
   object_zero_and_free (
     self->terminal_nodes);
+
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->external_out_ports);
 
   zix_sem_destroy (&self->callback_start);
   zix_sem_destroy (&self->callback_done);

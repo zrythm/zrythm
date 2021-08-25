@@ -578,9 +578,6 @@ typedef struct AudioEngine
   /** 1 if currently exporting. */
   gint              exporting;
 
-  /** Skip mid-cycle. */
-  gint              skip_cycle;
-
   /** Send note off MIDI everywhere. */
   volatile gint     panic;
 
@@ -1003,14 +1000,16 @@ engine_process_events (
   AudioEngine * self);
 
 /**
- * To be called by each implementation to prepare the
- * structures before processing.
+ * To be called by each implementation to prepare
+ * the structures before processing.
  *
  * Clears buffers, marks all as unprocessed, etc.
+ *
+ * @return Whether the cycle should be skipped.
  */
 NONNULL
 HOT
-void
+bool
 engine_process_prepare (
   AudioEngine * self,
   nframes_t     nframes);

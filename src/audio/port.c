@@ -983,10 +983,11 @@ send_midi_events_to_jack (
       return;
     }
 
-  midi_events_copy_to_jack (
-    port->midi_events,
+  void * buf =
     jack_port_get_buffer (
-      jport, AUDIO_ENGINE->nframes));
+      jport, AUDIO_ENGINE->nframes);
+  midi_events_copy_to_jack (
+    port->midi_events, buf);
 }
 
 static void
@@ -1007,8 +1008,7 @@ send_audio_data_to_jack (
       return;
     }
 
-  float * out;
-  out =
+  float * out =
     (float *)
     jack_port_get_buffer (
       jport, AUDIO_ENGINE->nframes);
@@ -2214,7 +2214,9 @@ port_prepare_rtaudio_data (
 
       /* clear the data */
       dsp_fill (
-        dev->buf, 0, AUDIO_ENGINE->nframes);
+        dev->buf,
+        DENORMAL_PREVENTION_VAL,
+        AUDIO_ENGINE->nframes);
 
       zix_sem_wait (&dev->audio_ring_sem);
 
@@ -3799,8 +3801,9 @@ port_clear_buffer (Port * port)
 
       return;
     }
-  else if (port->id.type == TYPE_EVENT &&
-      port->midi_events)
+  else if (
+    port->id.type == TYPE_EVENT
+    && port->midi_events)
     {
       port->midi_events->num_events = 0;
     }

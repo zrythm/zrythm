@@ -80,6 +80,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
@@ -1373,33 +1374,69 @@ engine_realloc_port_buffers (
 
 /**
  * Clears the underlying backend's output buffers.
+ *
+ * Used when returning early.
  */
 static void
 clear_output_buffers (
   AudioEngine * self,
   nframes_t     nframes)
 {
-  switch (self->audio_backend)
+  /* clear the monitor output (used by rtaudio) */
+  port_clear_buffer (self->monitor_out->l);
+  port_clear_buffer (self->monitor_out->r);
+
+  /* clear outputs exposed to jack */
+#ifdef HAVE_JACK
+  for (size_t i = 0;
+       i < ROUTER->graph->external_out_ports->len;
+       i++)
     {
-    case AUDIO_BACKEND_JACK:
-      /* nothing special needed, already handled
-       * by clearing the monitor outs */
-      break;
-    default:
-      break;
+      Port * port =
+        g_ptr_array_index (
+          ROUTER->graph->external_out_ports, i);
+
+      if (port->internal_type == INTERNAL_JACK_PORT
+          && port->id.type == TYPE_AUDIO
+          &&
+          self->audio_backend == AUDIO_BACKEND_JACK)
+        {
+          jack_port_t * jport =
+            JACK_PORT_T (port->data);
+          float * out =
+            (float *)
+            jack_port_get_buffer (jport, nframes);
+          dsp_fill (
+            &out[0], DENORMAL_PREVENTION_VAL,
+            nframes);
+        }
+      else if (
+        port->internal_type == INTERNAL_JACK_PORT
+        && port->id.type == TYPE_EVENT
+        && self->midi_backend == MIDI_BACKEND_JACK)
+        {
+          jack_port_t * jport =
+            JACK_PORT_T (port->data);
+          void * buf =
+            jack_port_get_buffer (jport, nframes);
+          jack_midi_clear_buffer (buf);
+        }
     }
+#endif
 }
 
 /**
- * To be called by each implementation to prepare the
- * structures before processing.
+ * To be called by each implementation to prepare
+ * the structures before processing.
  *
  * Clears buffers, marks all as unprocessed, etc.
+ *
+ * @return Whether the cycle should be skipped.
  */
-void
+bool
 engine_process_prepare (
   AudioEngine * self,
-  uint32_t nframes)
+  nframes_t     nframes)
 {
   g_atomic_int_set (
     &self->preparing_for_process, 1);
@@ -1483,8 +1520,7 @@ engine_process_prepare (
         g_message (
           "port operation lock is busy, skipping "
           "cycle...");
-      self->skip_cycle = 1;
-      return;
+      return true;
     }
 
   /* reset all buffers */
@@ -1512,6 +1548,8 @@ engine_process_prepare (
 
   g_atomic_int_set (
     &self->preparing_for_process, 0);
+
+  return false;
 }
 
 static void
@@ -1573,15 +1611,12 @@ engine_process (
     (total_frames_to_process * 1000000) /
       self->sample_rate;
 
-  /* Clear output buffers just in case we have to
-   * return early */
-  clear_output_buffers (
-    self, total_frames_to_process);
-
-  if (!engine_get_run (self))
+  if (G_UNLIKELY (!engine_get_run (self)))
     {
       /*g_message ("ENGINE NOT RUNNING");*/
       /*g_message ("skipping processing...");*/
+      clear_output_buffers (
+        self, total_frames_to_process);
       g_atomic_int_set (&self->cycle_running, 0);
       return 0;
     }
@@ -1590,12 +1625,14 @@ engine_process (
   /*self->cycle = count;*/
 
   /* run pre-process code */
-  engine_process_prepare (
-    self, total_frames_to_process);
+  bool skip_cycle =
+    engine_process_prepare (
+      self, total_frames_to_process);
 
-  if (AUDIO_ENGINE->skip_cycle)
+  if (G_UNLIKELY (skip_cycle))
     {
-      AUDIO_ENGINE->skip_cycle = 0;
+      clear_output_buffers (
+        self, total_frames_to_process);
       g_atomic_int_set (&self->cycle_running, 0);
       return 0;
     }
