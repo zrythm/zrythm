@@ -149,8 +149,10 @@ lv2_state_save_preset (
 /**
  * Applies the given preset, or the preset in the
  * path if @ref preset is NULL.
+ *
+ * @return Whether the preset was applied.
  */
-int
+bool
 lv2_state_apply_preset (
   Lv2Plugin *      plugin,
   const LilvNode * preset,

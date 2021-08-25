@@ -164,8 +164,10 @@ test_save_state_w_files (void)
   LilvNode * pset_uri_node =
     lilv_new_uri (LILV_WORLD, pset_uri);
   g_assert_nonnull (pset_uri_node);
-  lv2_state_apply_preset (
-    pl->lv2, pset_uri_node, NULL, NULL);
+  bool applied =
+    lv2_state_apply_preset (
+      pl->lv2, pset_uri_node, NULL, NULL);
+  g_assert_true (applied);
   lilv_node_free (pset_uri_node);
 
   /* create midi note */

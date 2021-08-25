@@ -424,8 +424,10 @@ lv2_state_apply_state (
 /**
  * Applies the given preset, or the preset in the
  * path if @ref preset is NULL.
+ *
+ * @return Whether the preset was applied.
  */
-int
+bool
 lv2_state_apply_preset (
   Lv2Plugin *      plugin,
   const LilvNode * preset,
@@ -452,11 +454,11 @@ lv2_state_apply_preset (
         error, Z_PLUGINS_LV2_LV2_STATE_ERROR,
         Z_PLUGINS_LV2_LV2_STATE_ERROR_FAILED,
         "%s", _("Failed to apply LV2 preset"));
-      return -1;
+      return false;
     }
 
   lv2_state_apply_state (plugin, plugin->preset);
-  return 0;
+  return true;
 }
 
 /**
