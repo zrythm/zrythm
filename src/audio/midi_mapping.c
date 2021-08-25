@@ -186,8 +186,9 @@ midi_mapping_clone (
   memcpy (
     &self->key[0], &src->key[0],
     3 * sizeof (midi_byte_t));
-  self->device_port =
-    ext_port_clone (src->device_port);
+  if (src->device_port)
+    self->device_port =
+      ext_port_clone (src->device_port);
   port_identifier_copy (
     &self->dest_id, &src->dest_id);
   g_atomic_int_set (
