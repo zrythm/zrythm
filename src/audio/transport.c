@@ -42,6 +42,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
 #include "settings/settings.h"
+#include "utils/debug.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -103,6 +104,8 @@ transport_init_loaded (
   Track *       tempo_track)
 {
   self->audio_engine = engine;
+
+  z_return_if_fail_cmp (self->total_bars, >, 0);
 
   init_common (self);
 
@@ -269,6 +272,12 @@ transport_clone (
 {
   Transport * self =
     object_new (Transport);
+  self->schema_version =
+    TRANSPORT_SCHEMA_VERSION;
+
+  self->total_bars = src->total_bars;
+  self->has_range = src->has_range;
+  self->position = src->position;
 
   position_set_to_pos (
     &self->loop_start_pos, &src->loop_start_pos);
@@ -286,9 +295,6 @@ transport_clone (
     &self->range_1, &src->range_1);
   position_set_to_pos (
     &self->range_2, &src->range_2);
-  self->has_range = src->has_range;
-
-  self->position = src->position;
 
 #define CLONE_PORT_IF_EXISTS(x) \
   if (src->x) \

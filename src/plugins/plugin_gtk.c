@@ -1458,6 +1458,9 @@ build_control_widget (
       port->widget = controller;
       if (controller)
         {
+          controller->port = port;
+          controller->plugin = pl;
+
           /* Add row to table for this controller */
           plugin_gtk_add_control_row (
             port_table, n_rows++,
