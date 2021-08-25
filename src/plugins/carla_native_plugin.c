@@ -1724,23 +1724,9 @@ carla_native_plugin_save_state (
   char * state_file_abs_path =
     g_build_filename (
       dir_to_use, CARLA_STATE_FILENAME, NULL);
-  /* FIXME use carla_save_plugin_state */
-  char * state =
-    self->native_plugin_descriptor->get_state (
-      self->native_plugin_handle);
-  GError * err = NULL;
-  g_file_set_contents (
-    state_file_abs_path, state, -1, &err);
-  g_free (dir_to_use);
+  carla_save_plugin_state (
+    self->host_handle, 0, state_file_abs_path);
   g_free (state_file_abs_path);
-  g_free (state);
-  if (err)
-    {
-      g_critical (
-        "An error occurred saving the state: %s",
-        err->message);
-      return -1;
-    }
 
   g_warn_if_fail (self->plugin->state_dir);
 
@@ -1811,20 +1797,9 @@ carla_native_plugin_load_state (
       return false;
     }
 
-  char * state = NULL;
-  GError * err = NULL;
-  g_file_get_contents (
-    state_file, &state, NULL, &err);
-  if (err)
-    {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s",
-        _("An error occurred reading the state"));
-      return false;
-    }
   self->loading_state = true;
-  self->native_plugin_descriptor->set_state (
-    self->native_plugin_handle, state);
+  carla_load_plugin_state (
+    self->host_handle, 0, state_file);
   self->loading_state = false;
   if (pl->visible
       && plugin_is_in_active_project (pl))
@@ -1837,7 +1812,6 @@ carla_native_plugin_load_state (
     "from %s",
     __func__, state_file);
 
-  g_free (state);
   g_free (state_file);
 
   return true;
