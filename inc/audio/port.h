@@ -109,39 +109,38 @@ typedef enum PanLaw PanLaw;
      self->owner))
 
 #define port_is_in_active_project(self) \
-  G_LIKELY ( \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_AUDIO_ENGINE, \
-      engine) \
-    || \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_PLUGIN, \
-      plugin) \
-    || \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_TRACK, track) \
-    || \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_CHANNEL, track) \
-    || \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_FADER, fader) \
-    || \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_CHANNEL_SEND, \
-      channel_send) \
-    || \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_TRACK_PROCESSOR, \
-      track) \
-    || \
-    port_is_owner_active ( \
-      self, \
-      PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
-      modulator_macro_processor) \
-    || \
-    port_is_owner_active ( \
-      self, PORT_OWNER_TYPE_HW, ext_port))
+  (port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_AUDIO_ENGINE, \
+     engine) \
+   || \
+   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_PLUGIN, \
+     plugin) \
+   || \
+   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_TRACK, track) \
+   || \
+   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_CHANNEL, track) \
+   || \
+   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_FADER, fader) \
+   || \
+   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_CHANNEL_SEND, \
+     channel_send) \
+   || \
+   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_TRACK_PROCESSOR, \
+     track) \
+   || \
+   port_is_owner_active ( \
+     self, \
+     PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
+     modulator_macro_processor) \
+   || \
+   port_is_owner_active ( \
+     self, PORT_OWNER_TYPE_HW, ext_port))
 
 /**
  * What the internal data is.

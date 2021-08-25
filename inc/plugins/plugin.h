@@ -72,9 +72,8 @@ typedef struct MixerSelections MixerSelections;
 #define PLUGIN_MAX_SCALE_FACTOR 4.f
 
 #define plugin_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->track \
-    && track_is_in_active_project (self->track))
+  (self->track \
+   && track_is_in_active_project (self->track))
 
 /** Whether the plugin is used for MIDI
  * auditioning in SampleProcessor. */

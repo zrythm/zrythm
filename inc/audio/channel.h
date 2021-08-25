@@ -68,9 +68,8 @@ typedef struct ExtPort ExtPort;
 #define MAX_FADER_AMP 1.42f
 
 #define channel_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->track \
-    && track_is_in_active_project (self->track))
+  (self->track \
+   && track_is_in_active_project (self->track))
 
 /**
  * A Channel is part of a Track (excluding Tracks that

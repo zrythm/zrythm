@@ -103,7 +103,7 @@ typedef struct MPMCQueue MPMCQueue;
   (AUDIO_ENGINE->denormal_prevention_val)
 
 #define engine_is_in_active_project(self) \
-  G_LIKELY (self->project == PROJECT)
+  (self->project == PROJECT)
 
 /** Set whether engine should process (true) or
  * skip (false). */

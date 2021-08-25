@@ -49,10 +49,9 @@ typedef struct MidiEvents MidiEvents;
   (AUDIO_ENGINE->sample_processor)
 
 #define sample_processor_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->audio_engine \
-    && \
-    engine_is_in_active_project (self->audio_engine))
+  (self->audio_engine \
+   && \
+   engine_is_in_active_project (self->audio_engine))
 
 /**
  * A processor to be used in the routing graph for

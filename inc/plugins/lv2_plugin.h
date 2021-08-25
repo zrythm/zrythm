@@ -111,8 +111,7 @@ typedef struct PluginDescriptor PluginDescriptor;
 #define LV2_PARAM_MAX_STR_LEN 1200
 
 #define lv2_plugin_is_in_active_project(self) \
-  G_LIKELY ( \
-    plugin_is_in_active_project ((self)->plugin))
+  (plugin_is_in_active_project ((self)->plugin))
 
 /**
  * Used temporarily to transfer data.

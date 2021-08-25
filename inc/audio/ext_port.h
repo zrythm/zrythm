@@ -63,11 +63,10 @@ typedef struct HardwareProcessor HardwareProcessor;
 #define EXT_PORTS_MAX 1024
 
 #define ext_port_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->hw_processor \
-    && \
-    hw_processor_is_in_active_project ( \
-      (self)->hw_processor))
+  (self->hw_processor \
+   && \
+   hw_processor_is_in_active_project ( \
+     (self)->hw_processor))
 
 /**
  * External port type.

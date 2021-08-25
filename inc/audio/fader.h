@@ -54,19 +54,18 @@ typedef struct PortIdentifier PortIdentifier;
   (f && f->magic == FADER_MAGIC)
 
 #define fader_is_in_active_project(self) \
-  G_LIKELY ( \
-    (self->track != NULL \
-     && track_is_in_active_project (self->track)) \
-    || \
-    (self->sample_processor != NULL \
-     && \
-     sample_processor_is_in_active_project ( \
-       self->sample_processor)) \
-    || \
-    (self->control_room != NULL \
-     && \
-     control_room_is_in_active_project ( \
-       self->control_room)))
+  ((self->track != NULL \
+    && track_is_in_active_project (self->track)) \
+   || \
+   (self->sample_processor != NULL \
+    && \
+    sample_processor_is_in_active_project ( \
+      self->sample_processor)) \
+   || \
+   (self->control_room != NULL \
+    && \
+    control_room_is_in_active_project ( \
+      self->control_room)))
 
 /**
  * Fader type.

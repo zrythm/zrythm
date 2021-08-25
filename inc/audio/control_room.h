@@ -40,11 +40,9 @@ typedef struct AudioEngine AudioEngine;
 #define CONTROL_ROOM (AUDIO_ENGINE->control_room)
 
 #define control_room_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->audio_engine \
-    && \
-    engine_is_in_active_project ( \
-      self->audio_engine))
+  (self->audio_engine \
+   && \
+   engine_is_in_active_project (self->audio_engine))
 
 /**
  * The control room allows to specify how Listen will

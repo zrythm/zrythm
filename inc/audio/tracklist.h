@@ -49,13 +49,12 @@ typedef struct SupportedFile SupportedFile;
 #define MAX_TRACKS 3000
 
 #define tracklist_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->project == PROJECT \
-    || \
-    (self->sample_processor \
-     && \
-     sample_processor_is_in_active_project ( \
-       self->sample_processor)))
+  (self->project == PROJECT \
+   || \
+   (self->sample_processor \
+    && \
+    sample_processor_is_in_active_project ( \
+      self->sample_processor)))
 
 #define tracklist_is_auditioner(self) \
   (self->sample_processor \

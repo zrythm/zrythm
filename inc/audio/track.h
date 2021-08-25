@@ -87,11 +87,10 @@ typedef void MIDI_FILE;
   (x && IS_TRACK (x))
 
 #define track_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->tracklist \
-    && \
-    tracklist_is_in_active_project ( \
-      self->tracklist))
+  (self->tracklist \
+   && \
+   tracklist_is_in_active_project ( \
+     self->tracklist))
 
 /** Whether this track is part of the
  * SampleProcessor auditioner tracklist. */

@@ -57,9 +57,8 @@ typedef struct PortConnectionsManager
   (x->slot < CHANNEL_SEND_POST_FADER_START_SLOT)
 
 #define channel_send_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->track \
-    && track_is_in_active_project (self->track))
+  (self->track \
+   && track_is_in_active_project (self->track))
 
 /**
  * Channel send.

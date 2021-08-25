@@ -51,9 +51,8 @@ typedef struct EngineProcessTimeInfo
   ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
 
 #define track_processor_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->track \
-    && track_is_in_active_project (self->track))
+  (self->track \
+   && track_is_in_active_project (self->track))
 
 /**
  * A TrackProcessor is a processor that is used as

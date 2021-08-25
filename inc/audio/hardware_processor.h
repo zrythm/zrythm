@@ -44,10 +44,9 @@
   (AUDIO_ENGINE->hw_out_processor)
 
 #define hw_processor_is_in_active_project(self) \
-  G_LIKELY ( \
-    self->engine \
-    && \
-    engine_is_in_active_project ((self)->engine))
+  (self->engine \
+   && \
+   engine_is_in_active_project ((self)->engine))
 
 /**
  * Hardware processor.
