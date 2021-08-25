@@ -312,8 +312,9 @@ process_node (
         /*PortIdentifier * id = &port->id;*/
 
         /* if midi editor manual press */
-        if (port == AUDIO_ENGINE->
-              midi_editor_manual_press)
+        if (port ==
+              AUDIO_ENGINE->
+                midi_editor_manual_press)
           {
             midi_events_dequeue (
               AUDIO_ENGINE->

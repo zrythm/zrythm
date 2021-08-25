@@ -48,7 +48,7 @@ tracklist_selections_init_loaded (
     {
       Track * track = self->tracks[i];
       int track_pos = track->pos;
-      track_init_loaded (track, false);
+      track_init_loaded (track, NULL, self);
       if (self->is_project)
         {
           self->tracks[i] =
@@ -208,7 +208,7 @@ tracklist_selections_clear (
       tracklist_selections_remove_track (
         self, track, 0);
 
-      if (track->is_project)
+      if (track_is_in_active_project (track))
         {
           /* process now because the track might
            * get deleted after this */
@@ -689,8 +689,7 @@ tracklist_selections_clone (
       Track * r = src->tracks[i];
 
       GError * err = NULL;
-      Track * new_r =
-        track_clone (r, src->is_project, &err);
+      Track * new_r = track_clone (r, &err);
       if (!new_r)
         {
           PROPAGATE_PREFIXED_ERROR (

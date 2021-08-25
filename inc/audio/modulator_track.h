@@ -39,11 +39,6 @@
 
 #define P_MODULATOR_TRACK (TRACKLIST->modulator_track)
 
-void
-modulator_track_init_loaded (
-  Track * self,
-  bool    is_project);
-
 /**
  * Inserts and connects a Modulator to the Track.
  *

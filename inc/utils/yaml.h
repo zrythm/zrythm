@@ -242,6 +242,9 @@
   CYAML_VALUE_MAPPING ( \
     CYAML_FLAG_DEFAULT, cc, fields_schema)
 
+#define YAML_BITVAL(_name,_offset) \
+  { .name = _name, .offset = _offset, .bits = 1 }
+
 /**
  * Serializes to YAML.
  *

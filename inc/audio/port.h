@@ -53,17 +53,15 @@
 typedef struct Plugin Plugin;
 typedef struct MidiEvents MidiEvents;
 typedef struct Fader Fader;
-typedef struct SampleProcessor SampleProcessor;
-typedef struct PassthroughProcessor
-  PassthroughProcessor;
 typedef struct ZixRingImpl ZixRing;
 typedef struct WindowsMmeDevice WindowsMmeDevice;
-typedef struct Lv2Port Lv2Port;
 typedef struct Channel Channel;
+typedef struct AudioEngine AudioEngine;
 typedef struct Track Track;
 typedef struct PortConnection PortConnection;
-typedef struct SampleProcessor SampleProcessor;
 typedef struct TrackProcessor TrackProcessor;
+typedef struct ModulatorMacroProcessor
+  ModulatorMacroProcessor;
 typedef struct RtMidiDevice RtMidiDevice;
 typedef struct RtAudioDevice RtAudioDevice;
 typedef struct AutomationTrack AutomationTrack;
@@ -71,6 +69,7 @@ typedef struct TruePeakDsp TruePeakDsp;
 typedef struct ExtPort ExtPort;
 typedef struct AudioClip AudioClip;
 typedef struct ChannelSend ChannelSend;
+typedef struct Transport Transport;
 typedef struct PluginGtkController
   PluginGtkController;
 typedef struct EngineProcessTimeInfo
@@ -93,11 +92,6 @@ typedef enum PanLaw PanLaw;
 #define IS_PORT_AND_NONNULL(x) \
   ((x) && IS_PORT (x))
 
-#define FOREACH_SRCS(port) \
-  for (int i = 0; i < port->num_srcs; i++)
-#define FOREACH_DESTS(port) \
-  for (int i = 0; i < port->num_dests; i++)
-
 #define TIME_TO_RESET_PEAK 4800000
 
 /**
@@ -105,6 +99,49 @@ typedef enum PanLaw PanLaw;
  * the port is not owned.
  */
 #define PORT_NOT_OWNED -1
+
+#define port_is_owner_active( \
+  self,_owner_type,owner) \
+  ((self->id.owner_type == _owner_type) \
+   && (self->owner != NULL) \
+   && \
+   owner##_is_in_active_project ( \
+     self->owner))
+
+#define port_is_in_active_project(self) \
+  G_LIKELY ( \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_AUDIO_ENGINE, \
+      engine) \
+    || \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_PLUGIN, \
+      plugin) \
+    || \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_TRACK, track) \
+    || \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_CHANNEL, track) \
+    || \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_FADER, fader) \
+    || \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_CHANNEL_SEND, \
+      channel_send) \
+    || \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_TRACK_PROCESSOR, \
+      track) \
+    || \
+    port_is_owner_active ( \
+      self, \
+      PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
+      modulator_macro_processor) \
+    || \
+    port_is_owner_active ( \
+      self, PORT_OWNER_TYPE_HW, ext_port))
 
 /**
  * What the internal data is.
@@ -338,35 +375,41 @@ typedef struct Port
    */
   gint64              last_change;
 
-  /**
-   * Pointer to plugin owner, if any.
-   *
-   * To be set when realculating the graph and to
-   * be used during DSP.
-   *
-   * In all other cases, use port_get_plugin().
-   */
+  /** Pointer to owner plugin, if any. */
   Plugin *            plugin;
 
+  /** Pointer to owner transport, if any. */
+  Transport *         transport;
+
+  /** Pointer to owner channel send, if any. */
+  ChannelSend *       channel_send;
+
+  /** Pointer to owner engine, if any. */
+  AudioEngine *       engine;
+
+  /** Pointer to owner fader, if any. */
+  Fader *             fader;
+
   /**
-   * Pointer to track owner, if any.
+   * Pointer to owner track, if any.
    *
-   * To be set when realculating the graph and to
-   * be used during DSP.
-   *
-   * In all other cases, use port_get_track().
+   * Also used for channel and track processor
+   * ports.
    */
   Track *             track;
+
+  /** Pointer to owner modulator macro processor,
+   * if any. */
+  ModulatorMacroProcessor * modulator_macro_processor;
 
   /* ====== flags to indicate port owner ====== */
 
   /**
    * Temporary plugin pointer (used when the
    * plugin doesn't exist yet in its supposed slot).
+   * FIXME delete
    */
   Plugin *            tmp_plugin;
-
-  SampleProcessor *   sample_processor;
 
   /** used when loading projects FIXME needed? */
   int                 initialized;
@@ -534,12 +577,8 @@ typedef struct Port
    */
   AutomationTrack *   at;
 
-  /** Pointer to ExtPort, if hw, for quick
-   * access (cache). */
+  /** Pointer to ExtPort, if hw. */
   ExtPort *           ext_port;
-
-  /** Whether this is a project port. */
-  bool                is_project;
 
   /** Magic number to identify that this is a
    * Port. */
@@ -617,8 +656,14 @@ static const cyaml_schema_value_t
 NONNULL
 void
 port_init_loaded (
-  Port * self,
-  bool   is_project);
+  Port *        self,
+  void *        owner);
+
+void
+port_set_owner (
+  Port *        self,
+  PortOwnerType owner_type,
+  void *        owner);
 
 NONNULL
 Port *
@@ -626,20 +671,46 @@ port_find_from_identifier (
   const PortIdentifier * const id);
 
 NONNULL
-void
+static inline void
 stereo_ports_init_loaded (
   StereoPorts * sp,
-  bool          is_project);
+  void *        owner)
+{
+  port_init_loaded (sp->l, owner);
+  port_init_loaded (sp->r, owner);
+}
+
+NONNULL_ARGS (1)
+static inline void
+stereo_ports_set_owner (
+  StereoPorts * sp,
+  PortOwnerType owner_type,
+  void *        owner)
+{
+  port_set_owner (sp->l, owner_type, owner);
+  port_set_owner (sp->r, owner_type, owner);
+}
 
 /**
  * Creates port.
  */
+WARN_UNUSED_RESULT
 NONNULL
 Port *
 port_new_with_type (
   PortType     type,
   PortFlow     flow,
   const char * label);
+
+WARN_UNUSED_RESULT
+NONNULL
+Port *
+port_new_with_type_and_owner (
+  PortType      type,
+  PortFlow      flow,
+  const char *  label,
+  PortOwnerType owner_type,
+  void *        owner);
 
 /**
  * Allocates buffers used during DSP.
@@ -650,6 +721,17 @@ port_new_with_type (
 NONNULL
 void
 port_allocate_bufs (
+  Port * self);
+
+/**
+ * Frees buffers.
+ *
+ * To be used when removing ports from the
+ * project/graph.
+ */
+NONNULL
+void
+port_free_bufs (
   Port * self);
 
 /**
@@ -778,20 +860,12 @@ port_print_full_designation (
   Port * const self);
 
 /**
- * Gathers all ports in the project and puts them
- * in the given array and size.
- *
- * @param size Current array count.
- * @param is_dynamic Whether the array can be
- *   dynamically resized.
- * @param max_size Current array size, if dynamic.
+ * Gathers all ports in the project and appends them
+ * in the given array.
  */
 void
 port_get_all (
-  Port *** ports,
-  size_t * max_size,
-  bool     is_dynamic,
-  int *    size);
+  GPtrArray * ports);
 
 NONNULL
 Track *
@@ -823,53 +897,6 @@ port_update_identifier (
   const PortIdentifier * prev_id,
   Track *                track,
   bool                   update_automation_track);
-
-/**
- * Returns the index of the destination in the dest
- * array.
- */
-NONNULL
-static inline int
-port_get_dest_index (
-  const Port * const self,
-  const Port * const dest)
-{
-  g_return_val_if_fail (
-    IS_PORT (self) && IS_PORT (dest)
-    && self->dests != NULL
-    && self->is_project && dest->is_project, -1);
-
-  for (int i = 0; i < self->num_dests; i++)
-    {
-      if (self->dests[i] == dest)
-        return i;
-    }
-
-  g_return_val_if_reached (-1);
-}
-
-/**
- * Returns the index of the source in the source
- * array.
- */
-NONNULL
-static inline int
-port_get_src_index (
-  const Port * const self,
-  const Port * const src)
-{
-  g_return_val_if_fail (
-    IS_PORT (self) && IS_PORT (src)
-    && self->srcs != NULL
-    && self->is_project && src->is_project, -1);
-
-  for (int i = 0; i < self->num_srcs; i++)
-    {
-      if (self->srcs[i] == src)
-        return i;
-    }
-  g_return_val_if_reached (-1);
-}
 
 #ifdef HAVE_RTMIDI
 /**
@@ -1002,12 +1029,6 @@ port_get_control_value (
   Port *      self,
   const bool  normalize);
 
-NONNULL
-void
-port_set_is_project (
-  Port * self,
-  bool   is_project);
-
 /**
  * Connects @ref a and @ref b with default
  * settings:
@@ -1094,69 +1115,6 @@ port_process (
   const EngineProcessTimeInfo * const time_nfo,
   const bool                          noroll);
 
-/**
- * Sets the owner track & its ID.
- */
-NONNULL
-void
-port_set_owner_track (
-  Port *    port,
-  Track *   track);
-
-/**
- * Sets the owner track & its ID.
- */
-NONNULL
-void
-port_set_owner_track_from_channel (
-  Port *    port,
-  Channel * ch);
-
-/**
- * Sets the owner track & its ID.
- */
-NONNULL
-void
-port_set_owner_track_processor (
-  Port *           port,
-  TrackProcessor * track_processor);
-
-/**
- * Sets the owner sample processor.
- */
-NONNULL
-void
-port_set_owner_sample_processor (
-  Port *   port,
-  SampleProcessor * sample_processor);
-
-/**
- * Sets the owner fader & its ID.
- */
-NONNULL
-void
-port_set_owner_fader (
-  Port *    port,
-  Fader *   fader);
-
-/**
- * Sets the channel send as the port's owner.
- */
-NONNULL
-void
-port_set_owner_channel_send (
-  Port *        port,
-  ChannelSend * send);
-
-/**
- * Sets the owner plugin & its ID.
- */
-NONNULL
-void
-port_set_owner_plugin (
-  Port *   port,
-  Plugin * pl);
-
 #define ports_connected(a,b) \
   (port_connections_manager_find_connection ( \
      PORT_CONNECTIONS_MGR, &(a)->id, &(b)->id) \
@@ -1240,15 +1198,6 @@ port_clear_buffer (Port * port);
 NONNULL
 int
 port_disconnect_all (Port * port);
-
-/**
- * Verifies that the srcs and dests are correct
- * for project ports.
- */
-NONNULL
-void
-port_verify_src_and_dests (
-  Port * self);
 
 /**
  * Applies the pan to the given L/R ports.

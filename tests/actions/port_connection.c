@@ -77,14 +77,11 @@ test_modulator_connection (
   Plugin * pl = P_MODULATOR_TRACK->modulators[0];
   Port * pl_cv_port = NULL;
   Port * pl_control_port = NULL;
-  size_t max_size = 0;
-  Port ** ports = NULL;
-  int num_ports = 0;
-  plugin_append_ports (
-    pl, &ports, &max_size, true, &num_ports);
-  for (int i = 0; i < num_ports; i++)
+  GPtrArray * ports = g_ptr_array_new ();
+  plugin_append_ports (pl, ports);
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       if (port->id.type == TYPE_CV &&
           port->id.flow == FLOW_OUTPUT)
         {
@@ -104,7 +101,8 @@ test_modulator_connection (
             }
         }
     }
-  object_zero_and_free_if_nonnull (ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
 
   /* connect the plugin's CV out to the macro
    * button */
@@ -202,15 +200,12 @@ _test_port_connection (
    * balance */
   Port * src_port1 = NULL;
   Port * src_port2 = NULL;
-  size_t max_size = 0;
-  Port ** ports = NULL;
-  int num_ports = 0;
-  track_append_all_ports (
-    src_track, &ports, &num_ports, true, &max_size,
-    true);
-  for (int i = 0; i < num_ports; i++)
+  GPtrArray * ports = g_ptr_array_new ();
+  track_append_ports (
+    src_track, ports, F_INCLUDE_PLUGINS);
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN &&
           port->id.type == TYPE_CV &&
@@ -230,19 +225,15 @@ _test_port_connection (
     }
   g_assert_nonnull (src_port1);
   g_assert_nonnull (src_port2);
-  object_zero_and_free_if_nonnull (ports);
+  g_ptr_array_remove_range (ports, 0, ports->len);
 
   Port * dest_port = NULL;
-  max_size = 0;
-  ports = NULL;
-  num_ports = 0;
-  track_append_all_ports (
-    target_track, &ports, &num_ports, true, &max_size,
-    true);
+  track_append_ports (
+    target_track, ports, F_INCLUDE_PLUGINS);
   g_assert_nonnull (ports);
-  for (int i = 0; i < num_ports; i++)
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_FADER &&
           port->id.flags & PORT_FLAG_STEREO_BALANCE)
@@ -251,12 +242,16 @@ _test_port_connection (
           break;
         }
     }
-  object_zero_and_free_if_nonnull (ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
 
   g_assert_nonnull (dest_port);
-  g_assert_true (src_port1->is_project);
-  g_assert_true (src_port2->is_project);
-  g_assert_true (dest_port->is_project);
+  g_assert_true (
+    port_is_in_active_project (src_port1));
+  g_assert_true (
+    port_is_in_active_project (src_port2));
+  g_assert_true (
+    port_is_in_active_project (dest_port));
   g_assert_cmpint (dest_port->num_srcs, ==, 0);
   g_assert_cmpint (src_port1->num_dests, ==, 0);
 

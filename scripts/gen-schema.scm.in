@@ -554,12 +554,12 @@ Args:
                  "editor-event-viewer-visible" "b"
                  "false"
                  "Editor event viewer visibility"
-                 "Whether the editor event viewer is visible or not.")
+                 "Whether the editor event viewer is visible.")
                (make-schema-key-with-enum
                  "transport-display"
                  "transport-display" "bbt"
-                 "Transport display type"
-                 "Selected transport display type (BBT/time).")
+                 "Playhead display type"
+                 "Selected playhead display type (BBT/time).")
                (make-schema-key-with-enum
                  "jack-transport-type"
                  "jack-transport-type" "none"

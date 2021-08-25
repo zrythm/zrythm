@@ -48,6 +48,12 @@ typedef struct MidiEvents MidiEvents;
 #define SAMPLE_PROCESSOR \
   (AUDIO_ENGINE->sample_processor)
 
+#define sample_processor_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->audio_engine \
+    && \
+    engine_is_in_active_project (self->audio_engine))
+
 /**
  * A processor to be used in the routing graph for
  * playing samples independent of the timeline.
@@ -87,6 +93,9 @@ typedef struct SampleProcessor
 
   /** Whether to roll or not. */
   bool              roll;
+
+  /** Pointer to owner audio engin, if any. */
+  AudioEngine *     audio_engine;
 } SampleProcessor;
 
 static const cyaml_schema_field_t
@@ -113,12 +122,17 @@ sample_processor_schema =
  * Initializes a SamplePlayback with a sample to
  * play back.
  */
+COLD
+WARN_UNUSED_RESULT
 SampleProcessor *
-sample_processor_new (void);
+sample_processor_new (
+  AudioEngine * engine);
 
+COLD
 void
 sample_processor_init_loaded (
-  SampleProcessor * self);
+  SampleProcessor * self,
+  AudioEngine *     engine);
 
 /**
  * Clears the buffers.

@@ -66,7 +66,7 @@ on_jack_toggled (
  *
  * @return if the string was filled in or not.
  */
-static int
+static bool
 get_port_str (
   InspectorPortWidget * self,
   Port * port,
@@ -77,9 +77,7 @@ get_port_str (
       port->id.owner_type ==
         PORT_OWNER_TYPE_FADER ||
       port->id.owner_type ==
-        PORT_OWNER_TYPE_TRACK ||
-      port->id.owner_type ==
-        PORT_OWNER_TYPE_PREFADER)
+        PORT_OWNER_TYPE_TRACK)
     {
       int num_midi_mappings = 0;
       MidiMapping ** mappings =
@@ -112,7 +110,7 @@ get_port_str (
             color_suffix);
           self->last_num_connections =
             num_unlocked_srcs;
-          return 1;
+          return true;
         }
       else if (port->id.flow == FLOW_OUTPUT)
         {
@@ -128,15 +126,15 @@ get_port_str (
             color_suffix);
           self->last_num_connections =
             num_unlocked_dests;
-          return 1;
+          return true;
         }
       g_free (port_label);
     }
   else
     {
-      g_warn_if_reached ();
+      g_return_val_if_reached (false);
     }
-  return 0;
+  return false;
 }
 
 static void

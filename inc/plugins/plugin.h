@@ -43,6 +43,7 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct _ModulatorWidget ModulatorWidget;
 typedef struct Lv2Plugin Lv2Plugin;
 typedef struct CarlaNativePlugin CarlaNativePlugin;
+typedef struct MixerSelections MixerSelections;
 
 /**
  * @addtogroup plugins
@@ -69,6 +70,16 @@ typedef struct CarlaNativePlugin CarlaNativePlugin;
  */
 #define PLUGIN_MIN_SCALE_FACTOR 0.5f
 #define PLUGIN_MAX_SCALE_FACTOR 4.f
+
+#define plugin_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->track \
+    && track_is_in_active_project (self->track))
+
+/** Whether the plugin is used for MIDI
+ * auditioning in SampleProcessor. */
+#define plugin_is_auditioner(self) \
+  (self->track && track_is_auditioner (self->track))
 
 /**
  * The base plugin
@@ -248,10 +259,6 @@ typedef struct Plugin
 
   int               magic;
 
-  /** Whether this plugin is currently used in the
-   * project. */
-  bool              is_project;
-
   /** Modulator widget, if modulator. */
   ModulatorWidget * modulator_widget;
 
@@ -272,15 +279,14 @@ typedef struct Plugin
    */
   int               state_changed_event_sent;
 
-  /** Whether the plugin is used for MIDI
-   * auditioning in SampleProcessor. */
-  bool              is_auditioner;
-
   /** Whether the plugin is used for functions. */
   bool              is_function;
 
-  /** Owner track. */
+  /** Pointer to owner track, if any. */
   Track *           track;
+
+  /** Pointer to owner selections, if any. */
+  MixerSelections * ms;
 } Plugin;
 
 static const cyaml_schema_field_t
@@ -322,11 +328,12 @@ static const cyaml_schema_value_t
     Plugin, plugin_fields_schema),
 };
 
-NONNULL
+NONNULL_ARGS (1)
 void
 plugin_init_loaded (
-  Plugin * self,
-  bool     project);
+  Plugin *          self,
+  Track *           track,
+  MixerSelections * ms);
 
 /**
  * Adds an AutomationTrack to the Plugin.
@@ -437,8 +444,6 @@ plugin_remove_ats_from_automation_tracklist (
  * Clones the given plugin.
  *
  * @param error To be filled if an error occurred.
- * @param src_is_project Whether @p pl is a project
- *   plugin.
  *
  * @return The cloned plugin, or NULL if an error
  *   occurred.
@@ -447,7 +452,6 @@ NONNULL_ARGS (1)
 Plugin *
 plugin_clone (
   Plugin *  src,
-  bool      src_is_project,
   GError ** error);
 
 void
@@ -510,7 +514,7 @@ NONNULL
 void
 plugin_set_track_and_slot (
   Plugin *       pl,
-  unsigned int    track_name_hash,
+  unsigned int   track_name_hash,
   PluginSlotType slot_type,
   int            slot);
 
@@ -529,17 +533,9 @@ plugin_move_automation (
 
 NONNULL
 void
-plugin_set_is_project (
-  Plugin * self,
-  bool     is_project);
-
-void
 plugin_append_ports (
-  Plugin *  pl,
-  Port ***  ports,
-  size_t *  max_size,
-  bool      is_dynamic,
-  int *     size);
+  Plugin *    self,
+  GPtrArray * ports);
 
 /**
  * Exposes or unexposes plugin ports to the backend.
@@ -665,23 +661,13 @@ plugin_prepare_process (
   Plugin * self);
 
 /**
- * Loads the plugin from its state file.
- */
-//void
-//plugin_load (Plugin * plugin);
-
-/**
  * Instantiates the plugin (e.g. when adding to a
  * channel)
- *
- * @param project Whether this is a project plugin
- *   (as opposed to a clone used in actions).
  */
 NONNULL_ARGS (1)
 int
 plugin_instantiate (
   Plugin *    self,
-  bool        project,
   LilvState * state,
   GError **   error);
 
@@ -741,7 +727,7 @@ plugin_is_selected (
 NONNULL
 void
 plugin_select (
-  Plugin * pl,
+  Plugin * self,
   bool     select,
   bool     exclusive);
 

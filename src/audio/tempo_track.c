@@ -52,23 +52,24 @@ tempo_track_init (
 
   /* create bpm port */
   self->bpm_port =
-    port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("BPM"));
+    port_new_with_type_and_owner (
+      TYPE_CONTROL, FLOW_INPUT, _("BPM"),
+      PORT_OWNER_TYPE_TRACK, self);
   self->bpm_port->minf = 60.f;
   self->bpm_port->maxf = 360.f;
   self->bpm_port->deff = 140.f;
   port_set_control_value (
     self->bpm_port, self->bpm_port->deff, false,
     false);
-  port_set_owner_track (self->bpm_port, self);
   self->bpm_port->id.flags |= PORT_FLAG_BPM;
   self->bpm_port->id.flags |=
     PORT_FLAG_AUTOMATABLE;
 
   /* create time sig ports */
   self->beats_per_bar_port =
-    port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Beats per bar"));
+    port_new_with_type_and_owner (
+      TYPE_CONTROL, FLOW_INPUT, _("Beats per bar"),
+      PORT_OWNER_TYPE_TRACK, self);
   self->beats_per_bar_port->minf =
     TEMPO_TRACK_MIN_BEATS_PER_BAR;
   self->beats_per_bar_port->maxf =
@@ -77,9 +78,8 @@ tempo_track_init (
     TEMPO_TRACK_MIN_BEATS_PER_BAR;
   port_set_control_value (
     self->beats_per_bar_port,
-    TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-  port_set_owner_track (
-    self->beats_per_bar_port, self);
+    TEMPO_TRACK_DEFAULT_BEATS_PER_BAR,
+    false, false);
   self->beats_per_bar_port->id.flags2 |=
     PORT_FLAG2_BEATS_PER_BAR;
   self->beats_per_bar_port->id.flags |=
@@ -88,8 +88,9 @@ tempo_track_init (
     PORT_FLAG_INTEGER;
 
   self->beat_unit_port =
-    port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Beat unit"));
+    port_new_with_type_and_owner (
+      TYPE_CONTROL, FLOW_INPUT, _("Beat unit"),
+      PORT_OWNER_TYPE_TRACK, self);
   self->beat_unit_port->minf =
     TEMPO_TRACK_MIN_BEAT_UNIT;
   self->beat_unit_port->maxf =
@@ -99,8 +100,6 @@ tempo_track_init (
   port_set_control_value (
     self->beat_unit_port,
     TEMPO_TRACK_DEFAULT_BEAT_UNIT, false, false);
-  port_set_owner_track (
-    self->beat_unit_port, self);
   self->beat_unit_port->id.flags2 |=
     PORT_FLAG2_BEAT_UNIT;
   self->beat_unit_port->id.flags |=
@@ -122,7 +121,7 @@ tempo_track_default (
   Track * self =
     track_new (
       TRACK_TYPE_TEMPO, track_pos, _("Tempo"),
-      F_WITHOUT_LANE, F_NOT_AUDITIONER);
+      F_WITHOUT_LANE);
 
   return self;
 }

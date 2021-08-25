@@ -45,8 +45,8 @@ static void
 init_common (
   SampleProcessor * self)
 {
-  self->tracklist = tracklist_new (NULL);
-  self->tracklist->is_auditioner = true;
+  self->tracklist =
+    tracklist_new (NULL, self);
   self->midi_events = midi_events_new ();
 
   if (!ZRYTHM_TESTING)
@@ -92,9 +92,12 @@ init_common (
 
 void
 sample_processor_init_loaded (
-  SampleProcessor * self)
+  SampleProcessor * self,
+  AudioEngine *     engine)
 {
-  fader_init_loaded (self->fader, F_PROJECT);
+  self->audio_engine = engine;
+  fader_init_loaded (
+    self->fader, NULL, NULL, self);
 
   init_common (self);
 }
@@ -104,18 +107,19 @@ sample_processor_init_loaded (
  * play back.
  */
 SampleProcessor *
-sample_processor_new (void)
+sample_processor_new (
+  AudioEngine * engine)
 {
   SampleProcessor * self =
     object_new (SampleProcessor);
-
+  self->audio_engine = engine;
   self->schema_version =
     SAMPLE_PROCESSOR_SCHEMA_VERSION;
 
   self->fader =
     fader_new (
-      FADER_TYPE_SAMPLE_PROCESSOR, NULL, false);
-  fader_set_is_project (self->fader, true);
+      FADER_TYPE_SAMPLE_PROCESSOR, false,
+      NULL, NULL, self);
 
   init_common (self);
 
@@ -566,8 +570,7 @@ sample_processor_queue_file (
   Track * track =
     track_new (
       TRACK_TYPE_MASTER, self->tracklist->num_tracks,
-      "Sample Processor Master", F_WITHOUT_LANE,
-      F_AUDITIONER);
+      "Sample Processor Master", F_WITHOUT_LANE);
   self->tracklist->master_track = track;
   tracklist_insert_track (
     self->tracklist, track, track->pos,
@@ -581,8 +584,7 @@ sample_processor_queue_file (
           TRACK_TYPE_AUDIO,
           self->tracklist->num_tracks,
           "Sample processor audio",
-          F_WITH_LANE, F_AUDITIONER);
-      track->is_auditioner = true;
+          F_WITH_LANE);
       tracklist_insert_track (
         self->tracklist, track, track->pos,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -613,7 +615,7 @@ sample_processor_queue_file (
           TRACK_TYPE_INSTRUMENT,
           self->tracklist->num_tracks,
           "Sample processor instrument",
-          F_WITH_LANE, F_AUDITIONER);
+          F_WITH_LANE);
       tracklist_insert_track (
         self->tracklist, instrument_track,
         instrument_track->pos,
@@ -632,9 +634,8 @@ sample_processor_queue_file (
             self->instrument_setting->descr->name);
           return;
         }
-      pl->is_auditioner = true;
       int ret =
-        plugin_instantiate (pl, true, NULL, &err);
+        plugin_instantiate (pl, NULL, &err);
       if (ret != 0)
         {
           HANDLE_ERROR (
@@ -669,7 +670,7 @@ sample_processor_queue_file (
             track_new (
               TRACK_TYPE_MIDI,
               self->tracklist->num_tracks, name,
-              F_WITH_LANE, F_AUDITIONER);
+              F_WITH_LANE);
           tracklist_insert_track (
             self->tracklist, track, track->pos,
             F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);

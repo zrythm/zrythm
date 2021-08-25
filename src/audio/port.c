@@ -118,6 +118,25 @@ port_allocate_bufs (
 }
 
 /**
+ * Frees buffers.
+ *
+ * To be used when removing ports from the
+ * project/graph.
+ */
+void
+port_free_bufs (
+  Port * self)
+{
+  object_free_w_func_and_null (
+    midi_events_free, self->midi_events);
+  object_free_w_func_and_null (
+    zix_ring_free, self->midi_ring);
+  object_free_w_func_and_null (
+    zix_ring_free, self->audio_ring);
+  object_zero_and_free (self->buf);
+}
+
+/**
  * This function finds the Ports corresponding to
  * the PortIdentifiers for srcs and dests.
  *
@@ -126,53 +145,18 @@ port_allocate_bufs (
  */
 void
 port_init_loaded (
-  Port * self,
-  bool   is_project)
+  Port *        self,
+  void *        owner)
 {
   self->magic = PORT_MAGIC;
 
-  self->is_project = is_project;
   self->unsnapped_control = self->control;
 
-  if (!is_project)
-    return;
+  port_set_owner (self, self->id.owner_type, owner);
 
-  switch (self->id.type)
-    {
-    case TYPE_EVENT:
-      if (!self->midi_events)
-        {
-          self->midi_events = midi_events_new ();
-        }
-      if (!self->midi_ring)
-        {
-          self->midi_ring =
-            zix_ring_new (
-              sizeof (MidiEvent) * (size_t) 11);
-        }
-#ifdef _WOE32
-      if (AUDIO_ENGINE->midi_backend ==
-            MIDI_BACKEND_WINDOWS_MME)
-        {
-          zix_sem_init (
-            &self->mme_connections_sem, 1);
-        }
-#endif
-      break;
-    case TYPE_AUDIO:
-      /* fall through */
-    case TYPE_CV:
-      if (!self->audio_ring)
-        {
-          self->audio_ring =
-            zix_ring_new (
-              sizeof (float) * AUDIO_RING_SIZE);
-        }
-    default:
-      break;
-    }
-
-  if (self->id.flags & PORT_FLAG_AUTOMATABLE)
+#if 0
+  if (self->track
+      && self->id.flags & PORT_FLAG_AUTOMATABLE)
     {
       if (!self->at)
         {
@@ -182,6 +166,7 @@ port_init_loaded (
         }
       g_return_if_fail (self->at);
     }
+#endif
 }
 
 /**
@@ -197,11 +182,12 @@ port_find_from_identifier (
   Track * tr = NULL;
   Channel * ch = NULL;
   Plugin * pl = NULL;
+  Fader * fader = NULL;
   PortFlags flags = id->flags;
   PortFlags2 flags2 = id->flags2;
   switch (id->owner_type)
     {
-    case PORT_OWNER_TYPE_BACKEND:
+    case PORT_OWNER_TYPE_AUDIO_ENGINE:
       switch (id->type)
         {
         case TYPE_EVENT:
@@ -419,72 +405,23 @@ port_find_from_identifier (
         {
           return tr->recording;
         }
-      else if (flags & PORT_FLAG_MODULATOR_MACRO)
-        {
-          ModulatorMacroProcessor * processor =
-            tr->modulator_macros[id->port_index];
-          if (id->flow == FLOW_INPUT)
-            {
-              if (id->type == TYPE_CV)
-                {
-                  return processor->cv_in;
-                }
-              else if (id->type == TYPE_CONTROL)
-                {
-                  return processor->macro;
-                }
-            }
-          else if (id->flow == FLOW_OUTPUT)
-            {
-              return processor->cv_out;
-            }
-        }
-      ch = tr->channel;
-      g_warn_if_fail (ch);
-      switch (id->type)
-        {
-        case TYPE_EVENT:
-          if (id->flow == FLOW_OUTPUT)
-            {
-              return ch->midi_out;
-            }
-          break;
-        case TYPE_AUDIO:
-          if (id->flow == FLOW_OUTPUT)
-            {
-              if (flags & PORT_FLAG_STEREO_L)
-                return ch->stereo_out->l;
-              else if (flags &
-                         PORT_FLAG_STEREO_R)
-                return ch->stereo_out->r;
-            }
-          break;
-        default:
-          break;
-        }
       break;
     case PORT_OWNER_TYPE_FADER:
-      tr =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, id->track_name_hash);
-      if (!tr)
-        tr =
-          tracklist_find_track_by_name_hash (
-            SAMPLE_PROCESSOR->tracklist,
-            id->track_name_hash);
-      g_return_val_if_fail (tr, NULL);
-      ch = tr->channel;
-      g_return_val_if_fail (ch, NULL);
+      fader =
+        fader_find_from_port_identifier (id);
+      g_return_val_if_fail (fader, NULL);
       switch (id->type)
         {
         case TYPE_EVENT:
           switch (id->flow)
             {
             case FLOW_INPUT:
-              return ch->fader->midi_in;
+              if (fader)
+                return fader->midi_in;
               break;
             case FLOW_OUTPUT:
-              return ch->fader->midi_out;
+              if (fader)
+                return fader->midi_out;
               break;
             default:
               break;
@@ -493,143 +430,58 @@ port_find_from_identifier (
         case TYPE_AUDIO:
           if (id->flow == FLOW_OUTPUT)
             {
-              if (flags & PORT_FLAG_STEREO_L)
-                return ch->fader->stereo_out->l;
-              else if (flags &
-                         PORT_FLAG_STEREO_R)
-                return ch->fader->stereo_out->r;
+              if (flags & PORT_FLAG_STEREO_L
+                  && fader)
+                return fader->stereo_out->l;
+              else if (
+                flags & PORT_FLAG_STEREO_R
+                && fader)
+                return fader->stereo_out->r;
             }
           else if (id->flow == FLOW_INPUT)
             {
-              if (flags & PORT_FLAG_STEREO_L)
-                return ch->fader->stereo_in->l;
-              else if (flags &
-                         PORT_FLAG_STEREO_R)
-                return ch->fader->stereo_in->r;
+              if (flags & PORT_FLAG_STEREO_L
+                  && fader)
+                return fader->stereo_in->l;
+              else if (
+                flags & PORT_FLAG_STEREO_R
+                && fader)
+                return fader->stereo_in->r;
             }
           break;
         case TYPE_CONTROL:
           if (id->flow == FLOW_INPUT)
             {
-              if (flags &
-                    PORT_FLAG_AMPLITUDE)
-                {
-                  return ch->fader->amp;
-                }
-              else if (flags &
-                         PORT_FLAG_STEREO_BALANCE)
-                {
-                  return ch->fader->balance;
-                }
-              else if (flags &
-                         PORT_FLAG_FADER_MUTE)
-                {
-                  return ch->fader->mute;
-                }
-              else if (flags2 &
-                         PORT_FLAG2_FADER_SOLO)
-                {
-                  return ch->fader->solo;
-                }
-              else if (flags2 &
-                         PORT_FLAG2_FADER_LISTEN)
-                {
-                  return ch->fader->listen;
-                }
-              else if (flags2 &
-                         PORT_FLAG2_FADER_MONO_COMPAT)
-                {
-                  return ch->fader->mono_compat_enabled;
-                }
+              if (flags & PORT_FLAG_AMPLITUDE
+                  && fader)
+                return fader->amp;
+              else if (
+                flags & PORT_FLAG_STEREO_BALANCE
+                && fader)
+                return fader->balance;
+              else if (
+                flags & PORT_FLAG_FADER_MUTE
+                && fader)
+                return fader->mute;
+              else if (
+                flags2 & PORT_FLAG2_FADER_SOLO
+                && fader)
+                return fader->solo;
+              else if (
+                flags2 & PORT_FLAG2_FADER_LISTEN
+                && fader)
+                return fader->listen;
+              else if (
+                flags2 &
+                  PORT_FLAG2_FADER_MONO_COMPAT
+                && fader)
+                return fader->mono_compat_enabled;
             }
           break;
         default:
           break;
         }
-      break;
-    case PORT_OWNER_TYPE_PREFADER:
-      tr =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, id->track_name_hash);
-      if (!tr)
-        tr =
-          tracklist_find_track_by_name_hash (
-            SAMPLE_PROCESSOR->tracklist,
-            id->track_name_hash);
-      g_return_val_if_fail (tr, NULL);
-      ch = tr->channel;
-      g_return_val_if_fail (ch, NULL);
-      switch (id->type)
-        {
-        case TYPE_EVENT:
-          switch (id->flow)
-            {
-            case FLOW_INPUT:
-              return ch->prefader->midi_in;
-              break;
-            case FLOW_OUTPUT:
-              return ch->prefader->midi_out;
-              break;
-            default:
-              break;
-            }
-          break;
-        case TYPE_AUDIO:
-          if (id->flow == FLOW_OUTPUT)
-            {
-              if (flags & PORT_FLAG_STEREO_L)
-                return ch->prefader->stereo_out->l;
-              else if (flags &
-                         PORT_FLAG_STEREO_R)
-                return ch->prefader->stereo_out->r;
-            }
-          else if (id->flow == FLOW_INPUT)
-            {
-              if (flags & PORT_FLAG_STEREO_L)
-                return ch->prefader->stereo_in->l;
-              else if (flags &
-                         PORT_FLAG_STEREO_R)
-                return ch->prefader->stereo_in->r;
-            }
-          break;
-        case TYPE_CONTROL:
-          if (id->flow == FLOW_INPUT)
-            {
-              if (flags &
-                    PORT_FLAG_AMPLITUDE)
-                {
-                  return ch->prefader->amp;
-                }
-              else if (flags &
-                         PORT_FLAG_STEREO_BALANCE)
-                {
-                  return ch->prefader->balance;
-                }
-              else if (flags &
-                         PORT_FLAG_FADER_MUTE)
-                {
-                  return ch->prefader->mute;
-                }
-              else if (flags2 &
-                         PORT_FLAG2_FADER_SOLO)
-                {
-                  return ch->prefader->solo;
-                }
-              else if (flags2 &
-                         PORT_FLAG2_FADER_LISTEN)
-                {
-                  return ch->prefader->listen;
-                }
-              else if (flags2 &
-                         PORT_FLAG2_FADER_MONO_COMPAT)
-                {
-                  return ch->prefader->mono_compat_enabled;
-                }
-            }
-          break;
-        default:
-          break;
-        }
+      g_return_val_if_reached (NULL);
       break;
     case PORT_OWNER_TYPE_CHANNEL_SEND:
       tr =
@@ -708,60 +560,6 @@ port_find_from_identifier (
           g_return_val_if_reached (NULL);
         }
       break;
-    case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
-      if (id->flow == FLOW_OUTPUT)
-        {
-          if (flags & PORT_FLAG_STEREO_L)
-            return
-              SAMPLE_PROCESSOR->fader->stereo_out->
-                l;
-          else if (flags &
-                     PORT_FLAG_STEREO_R)
-            return
-              SAMPLE_PROCESSOR->fader->stereo_out->
-                r;
-        }
-      else if (id->flow == FLOW_INPUT)
-        {
-          if (flags & PORT_FLAG_STEREO_L)
-            return
-              SAMPLE_PROCESSOR->fader->stereo_in->
-                l;
-          else if (flags &
-                     PORT_FLAG_STEREO_R)
-            return
-              SAMPLE_PROCESSOR->fader->stereo_in->
-                r;
-        }
-      g_return_val_if_reached (NULL);
-      break;
-    case PORT_OWNER_TYPE_MONITOR_FADER:
-      if (id->flow == FLOW_OUTPUT)
-        {
-          if (flags & PORT_FLAG_STEREO_L)
-            return
-              MONITOR_FADER->
-                stereo_out->l;
-          else if (flags &
-                     PORT_FLAG_STEREO_R)
-            return
-              MONITOR_FADER->
-                stereo_out->r;
-        }
-      else if (id->flow == FLOW_INPUT)
-        {
-          if (flags & PORT_FLAG_STEREO_L)
-            {
-              return
-                MONITOR_FADER->stereo_in->l;
-            }
-          else if (flags & PORT_FLAG_STEREO_R)
-            {
-              return
-                MONITOR_FADER->stereo_in->r;
-            }
-        }
-      break;
     case PORT_OWNER_TYPE_HW:
       {
         Port * port = NULL;
@@ -817,20 +615,72 @@ port_find_from_identifier (
           break;
         }
       break;
+    case PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR:
+      if (flags & PORT_FLAG_MODULATOR_MACRO)
+        {
+          tr =
+            tracklist_find_track_by_name_hash (
+              TRACKLIST, id->track_name_hash);
+          g_return_val_if_fail (
+            IS_TRACK_AND_NONNULL (tr), NULL);
+          ModulatorMacroProcessor * processor =
+            tr->modulator_macros[id->port_index];
+          if (id->flow == FLOW_INPUT)
+            {
+              if (id->type == TYPE_CV)
+                {
+                  return processor->cv_in;
+                }
+              else if (id->type == TYPE_CONTROL)
+                {
+                  return processor->macro;
+                }
+            }
+          else if (id->flow == FLOW_OUTPUT)
+            {
+              return processor->cv_out;
+            }
+        }
+      break;
+    case PORT_OWNER_TYPE_CHANNEL:
+      tr =
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, id->track_name_hash);
+      if (!tr)
+        tr =
+          tracklist_find_track_by_name_hash (
+            SAMPLE_PROCESSOR->tracklist,
+            id->track_name_hash);
+      g_return_val_if_fail (tr, NULL);
+      ch = tr->channel;
+      g_return_val_if_fail (ch, NULL);
+      switch (id->type)
+        {
+        case TYPE_EVENT:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              return ch->midi_out;
+            }
+          break;
+        case TYPE_AUDIO:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              if (flags & PORT_FLAG_STEREO_L)
+                return ch->stereo_out->l;
+              else if (flags &
+                         PORT_FLAG_STEREO_R)
+                return ch->stereo_out->r;
+            }
+          break;
+        default:
+          break;
+        }
+      break;
     default:
       g_return_val_if_reached (NULL);
     }
 
   g_return_val_if_reached (NULL);
-}
-
-void
-stereo_ports_init_loaded (
-  StereoPorts * sp,
-  bool          is_project)
-{
-  port_init_loaded (sp->l, is_project);
-  port_init_loaded (sp->r, is_project);
 }
 
 /**
@@ -905,6 +755,21 @@ port_new_with_type (
 
   g_return_val_if_fail (
     self->magic == PORT_MAGIC, NULL);
+
+  return self;
+}
+
+Port *
+port_new_with_type_and_owner (
+  PortType      type,
+  PortFlow      flow,
+  const char *  label,
+  PortOwnerType owner_type,
+  void *        owner)
+{
+  Port * self =
+    port_new_with_type (type, flow, label);
+  port_set_owner (self, owner_type, owner);
 
   return self;
 }
@@ -1175,7 +1040,7 @@ sum_data_from_jack (
   const nframes_t nframes)
 {
   if (self->id.owner_type ==
-        PORT_OWNER_TYPE_BACKEND ||
+        PORT_OWNER_TYPE_AUDIO_ENGINE ||
       self->internal_type != INTERNAL_JACK_PORT ||
       self->id.flow != FLOW_INPUT)
     return;
@@ -1323,7 +1188,7 @@ sum_data_from_dummy (
   const nframes_t nframes)
 {
   if (self->id.owner_type ==
-        PORT_OWNER_TYPE_BACKEND ||
+        PORT_OWNER_TYPE_AUDIO_ENGINE ||
       self->id.flow !=
         FLOW_INPUT ||
       self->id.type != TYPE_AUDIO ||
@@ -1378,7 +1243,8 @@ get_num_unlocked (
   bool         sources)
 {
   g_return_val_if_fail (
-    IS_PORT_AND_NONNULL (self) && self->is_project,
+    IS_PORT_AND_NONNULL (self)
+    && port_is_in_active_project (self),
     0);
 
   GPtrArray * conns = g_ptr_array_new ();
@@ -1423,106 +1289,24 @@ port_get_num_unlocked_srcs (
 }
 
 /**
- * Gathers all ports in the project and puts them
- * in the given array and size.
- *
- * @param size Current array count.
- * @param is_dynamic Whether the array can be
- *   dynamically resized.
- * @param max_size Current array size, if dynamic.
+ * Gathers all ports in the project and appends them
+ * in the given array.
  */
 void
 port_get_all (
-  Port *** ports,
-  size_t * max_size,
-  bool     is_dynamic,
-  int *    size)
+  GPtrArray * ports)
 {
-  *size = 0;
-
 #define _ADD(port) \
-  g_warn_if_fail (port); \
-  if (is_dynamic) \
-    { \
-      array_double_size_if_full ( \
-        *ports, (*size), (*max_size), Port *); \
-    } \
-  else if ((size_t) *size == *max_size) \
-    { \
-      g_return_if_reached (); \
-    } \
   g_return_if_fail (port); \
-  array_append ( \
-    *ports, (*size), port)
+  g_ptr_array_add (ports, port)
 
-  /* add fader ports */
-  _ADD (MONITOR_FADER->amp);
-  _ADD (MONITOR_FADER->balance);
-  _ADD (MONITOR_FADER->mute);
-  _ADD (MONITOR_FADER->solo);
-  _ADD (MONITOR_FADER->listen);
-  _ADD (MONITOR_FADER->mono_compat_enabled);
-  _ADD (MONITOR_FADER->stereo_in->l);
-  _ADD (MONITOR_FADER->stereo_in->r);
-  _ADD (MONITOR_FADER->stereo_out->l);
-  _ADD (MONITOR_FADER->stereo_out->r);
-
-  _ADD (AUDIO_ENGINE->monitor_out->l);
-  _ADD (AUDIO_ENGINE->monitor_out->r);
-  _ADD (AUDIO_ENGINE->midi_editor_manual_press);
-  _ADD (AUDIO_ENGINE->midi_in);
-  _ADD (SAMPLE_PROCESSOR->fader->stereo_in->l);
-  _ADD (SAMPLE_PROCESSOR->fader->stereo_in->r);
-  _ADD (SAMPLE_PROCESSOR->fader->stereo_out->l);
-  _ADD (SAMPLE_PROCESSOR->fader->stereo_out->r);
-
-  _ADD (TRANSPORT->roll);
-  _ADD (TRANSPORT->stop);
-  _ADD (TRANSPORT->backward);
-  _ADD (TRANSPORT->forward);
-  _ADD (TRANSPORT->loop_toggle);
-  _ADD (TRANSPORT->rec_toggle);
-
-  for (int i = 0;
-       i < HW_IN_PROCESSOR->num_audio_ports; i++)
-    {
-      _ADD (HW_IN_PROCESSOR->audio_ports[i]);
-    }
-  for (int i = 0;
-       i < HW_IN_PROCESSOR->num_midi_ports; i++)
-    {
-      _ADD (HW_IN_PROCESSOR->midi_ports[i]);
-    }
-
-  for (int i = 0;
-       i < HW_OUT_PROCESSOR->num_audio_ports; i++)
-    {
-      _ADD (HW_OUT_PROCESSOR->audio_ports[i]);
-    }
-  for (int i = 0;
-       i < HW_OUT_PROCESSOR->num_midi_ports; i++)
-    {
-      _ADD (HW_OUT_PROCESSOR->midi_ports[i]);
-    }
+  engine_append_ports (AUDIO_ENGINE, ports);
 
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * tr = TRACKLIST->tracks[i];
-      track_append_all_ports (
-        tr, ports, size, is_dynamic, max_size,
-        F_INCLUDE_PLUGINS);
-    }
-
-  for (int i = 0;
-       i < SAMPLE_PROCESSOR->tracklist->num_tracks;
-       i++)
-    {
-      Track * tr =
-        SAMPLE_PROCESSOR->tracklist->tracks[i];
-      g_warn_if_fail (tr->is_auditioner);
-      track_append_all_ports (
-        tr, ports, size, is_dynamic, max_size,
-        F_INCLUDE_PLUGINS);
+      track_append_ports (
+        tr, ports, F_INCLUDE_PLUGINS);
     }
 
 #undef _ADD
@@ -1531,8 +1315,9 @@ port_get_all (
 /**
  * Sets the owner plugin & its slot.
  */
-void
-port_set_owner_plugin (
+NONNULL
+static void
+set_owner_plugin (
   Port *   port,
   Plugin * pl)
 {
@@ -1550,53 +1335,11 @@ port_set_owner_plugin (
 }
 
 /**
- * Sets the owner sample processor.
- */
-void
-port_set_owner_sample_processor (
-  Port *   port,
-  SampleProcessor * sample_processor)
-{
-  port->sample_processor = sample_processor;
-  port->id.owner_type =
-    PORT_OWNER_TYPE_SAMPLE_PROCESSOR;
-}
-
-/**
  * Sets the owner track & its ID.
  */
-void
-port_set_owner_track (
-  Port *    port,
-  Track *   track)
-{
-  g_return_if_fail (track->name);
-  port->id.track_name_hash =
-    track_get_name_hash (track);
-  port->id.owner_type =
-    PORT_OWNER_TYPE_TRACK;
-}
-
-/**
- * Sets the owner track & its ID.
- */
-void
-port_set_owner_track_from_channel (
-  Port *    port,
-  Channel * ch)
-{
-  Track * track = ch->track;
-  g_return_if_fail (track && track->name);
-  port->id.track_name_hash =
-    track_get_name_hash (track);
-  port->id.owner_type = PORT_OWNER_TYPE_TRACK;
-}
-
-/**
- * Sets the owner track & its ID.
- */
-void
-port_set_owner_track_processor (
+NONNULL
+static void
+set_owner_track_processor (
   Port *           port,
   TrackProcessor * track_processor)
 {
@@ -1611,81 +1354,211 @@ port_set_owner_track_processor (
 /**
  * Sets the owner fader & its ID.
  */
-void
-port_set_owner_fader (
-  Port *    port,
+static void
+set_owner_fader (
+  Port *    self,
   Fader *   fader)
 {
-  PortIdentifier * id = &port->id;
+  PortIdentifier * id = &self->id;
+  id->owner_type = PORT_OWNER_TYPE_FADER;
+  self->fader = fader;
 
   if (fader->type == FADER_TYPE_AUDIO_CHANNEL ||
       fader->type == FADER_TYPE_MIDI_CHANNEL)
     {
       Track * track = fader->track;
       g_return_if_fail (track && track->name);
-      port->id.track_name_hash =
+      self->id.track_name_hash =
         track_get_name_hash (track);
       if (fader->passthrough)
         {
-          id->owner_type = PORT_OWNER_TYPE_PREFADER;
+          id->flags2 |= PORT_FLAG2_PREFADER;
         }
       else
         {
-          id->owner_type = PORT_OWNER_TYPE_FADER;
+          id->flags2 |= PORT_FLAG2_POSTFADER;
         }
     }
-  else if (fader->type == FADER_TYPE_SAMPLE_PROCESSOR)
+  else if (fader->type ==
+             FADER_TYPE_SAMPLE_PROCESSOR)
     {
-      id->owner_type =
-        PORT_OWNER_TYPE_SAMPLE_PROCESSOR;
+      id->flags2 |=
+        PORT_FLAG2_SAMPLE_PROCESSOR_FADER;
     }
   else
     {
-      id->owner_type =
-        PORT_OWNER_TYPE_MONITOR_FADER;
+      id->flags2 |= PORT_FLAG2_MONITOR_FADER;
     }
 
   if (id->flags & PORT_FLAG_AMPLITUDE)
     {
-      port->minf = 0.f;
-      port->maxf = 2.f;
-      port->zerof = 0.f;
+      self->minf = 0.f;
+      self->maxf = 2.f;
+      self->zerof = 0.f;
     }
   else if (id->flags & PORT_FLAG_STEREO_BALANCE)
     {
-      port->minf = 0.f;
-      port->maxf = 1.f;
-      port->zerof = 0.5f;
+      self->minf = 0.f;
+      self->maxf = 1.f;
+      self->zerof = 0.5f;
     }
+}
+
+/**
+ * Sets the owner track & its ID.
+ */
+NONNULL
+static void
+set_owner_track (
+  Port *    port,
+  Track *   track)
+{
+  g_return_if_fail (track->name);
+  port->id.track_name_hash =
+    track_get_name_hash (track);
+  port->id.owner_type =
+    PORT_OWNER_TYPE_TRACK;
 }
 
 /**
  * Sets the channel send as the port's owner.
  */
-void
-port_set_owner_channel_send (
-  Port *        port,
+NONNULL
+static void
+set_owner_channel_send (
+  Port *        self,
   ChannelSend * send)
 {
-  PortIdentifier * id = &port->id;
-
-  port->id.track_name_hash =
+  self->id.track_name_hash =
     send->track_name_hash;
-  id->port_index = send->slot;
-  id->owner_type = PORT_OWNER_TYPE_CHANNEL_SEND;
+  self->id.port_index = send->slot;
+  self->id.owner_type =
+    PORT_OWNER_TYPE_CHANNEL_SEND;
+  self->channel_send = send;
 
-  if (id->flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED)
+  if (self->id.flags2 &
+        PORT_FLAG2_CHANNEL_SEND_ENABLED)
     {
-      port->minf = 0.f;
-      port->maxf = 1.f;
-      port->zerof = 0.0f;
+      self->minf = 0.f;
+      self->maxf = 1.f;
+      self->zerof = 0.0f;
     }
-  else if (id->flags2 &
+  else if (self->id.flags2 &
              PORT_FLAG2_CHANNEL_SEND_AMOUNT)
     {
-      port->minf = 0.f;
-      port->maxf = 2.f;
-      port->zerof = 0.f;
+      self->minf = 0.f;
+      self->maxf = 2.f;
+      self->zerof = 0.f;
+    }
+}
+
+NONNULL
+static void
+set_owner_channel (
+  Port *    port,
+  Channel * ch)
+{
+  Track * track = ch->track;
+  g_return_if_fail (track && track->name);
+  port->id.track_name_hash =
+    track_get_name_hash (track);
+  port->id.owner_type = PORT_OWNER_TYPE_CHANNEL;
+}
+
+NONNULL
+static void
+set_owner_transport (
+  Port *      self,
+  Transport * transport)
+{
+  self->transport = transport;
+  self->id.owner_type = PORT_OWNER_TYPE_TRANSPORT;
+}
+
+NONNULL
+static void
+set_owner_modulator_macro_processor (
+  Port *                    self,
+  ModulatorMacroProcessor * mmp)
+{
+  self->modulator_macro_processor = mmp;
+  self->id.owner_type =
+    PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR;
+  g_return_if_fail (
+    IS_TRACK_AND_NONNULL (mmp->track));
+  self->id.track_name_hash =
+    track_get_name_hash (mmp->track);
+  self->track = mmp->track;
+}
+
+NONNULL
+static void
+set_owner_audio_engine (
+  Port *        self,
+  AudioEngine * engine)
+{
+  self->engine = engine;
+  self->id.owner_type =
+    PORT_OWNER_TYPE_AUDIO_ENGINE;
+}
+
+NONNULL
+static void
+set_owner_ext_port (
+  Port *    self,
+  ExtPort * ext_port)
+{
+  self->ext_port = ext_port;
+  self->id.owner_type = PORT_OWNER_TYPE_HW;
+}
+
+NONNULL
+void
+port_set_owner (
+  Port *        self,
+  PortOwnerType owner_type,
+  void *        owner)
+{
+  switch (owner_type)
+    {
+    case PORT_OWNER_TYPE_CHANNEL_SEND:
+      set_owner_channel_send (
+        self, (ChannelSend *) owner);
+      break;
+    case PORT_OWNER_TYPE_FADER:
+      set_owner_fader (self, (Fader *) owner);
+      break;
+    case PORT_OWNER_TYPE_TRACK:
+      set_owner_track (self, (Track *) owner);
+      break;
+    case PORT_OWNER_TYPE_TRACK_PROCESSOR:
+      set_owner_track_processor (
+        self, (TrackProcessor *) owner);
+      break;
+    case PORT_OWNER_TYPE_CHANNEL:
+      set_owner_channel (self, (Channel *) owner);
+      break;
+    case PORT_OWNER_TYPE_PLUGIN:
+      set_owner_plugin (self, (Plugin *) owner);
+      break;
+    case PORT_OWNER_TYPE_TRANSPORT:
+      set_owner_transport (
+        self, (Transport *) owner);
+      break;
+    case PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR:
+      set_owner_modulator_macro_processor (
+        self, (ModulatorMacroProcessor *) owner);
+      break;
+    case PORT_OWNER_TYPE_AUDIO_ENGINE:
+      set_owner_audio_engine (
+        self, (AudioEngine *) owner);
+      break;
+    case PORT_OWNER_TYPE_HW:
+      set_owner_ext_port (
+        self, (ExtPort *) owner);
+      break;
+    default:
+      g_return_if_reached ();
     }
 }
 
@@ -1737,16 +1610,6 @@ ports_disconnect (
     }
 }
 
-void
-port_set_is_project (
-  Port * self,
-  bool   is_project)
-{
-  g_return_if_fail (IS_PORT (self));
-
-  self->is_project = is_project;
-}
-
 /**
  * Disconnects all srcs and dests from port.
  */
@@ -1762,7 +1625,7 @@ port_disconnect_all (
   if (!PORT_CONNECTIONS_MGR)
     return 0;
 
-  if (!self->is_project)
+  if (!port_is_in_active_project (self))
     {
 #if 0
       g_debug (
@@ -1826,20 +1689,6 @@ port_disconnect_all (
 }
 
 /**
- * Verifies that the srcs and dests are correct
- * for project ports.
- */
-void
-port_verify_src_and_dests (
-  Port * self)
-{
-  g_return_if_fail (
-    self->num_srcs <= (int) self->srcs_size);
-  g_return_if_fail (
-    self->num_dests <= (int) self->dests_size);
-}
-
-/**
  * To be called when the port's identifier changes
  * to update corresponding identifiers.
  *
@@ -1862,7 +1711,7 @@ port_update_identifier (
     /*"updating identifier for %p %s (track pos %d)", */
     /*self, self->id.label, self->id.track_pos);*/
 
-  if (self->is_project)
+  if (port_is_in_active_project (self))
     {
       /* update in all sources */
       GPtrArray * srcs = g_ptr_array_new ();
@@ -2432,7 +2281,7 @@ sum_data_from_windows_mme (
       MIDI_BACKEND_WINDOWS_MME);
 
   if (self->id.owner_type ==
-        PORT_OWNER_TYPE_BACKEND)
+        PORT_OWNER_TYPE_AUDIO_ENGINE)
     return;
 
   /* append events from Windows MME if any */
@@ -2614,8 +2463,8 @@ port_forward_control_change_event (
       EVENTS_PUSH (
         ET_CHANNEL_SEND_CHANGED, send);
     }
-  else if (self->id.owner_type ==
-             PORT_OWNER_TYPE_TRACK)
+  else if (
+    self->id.owner_type == PORT_OWNER_TYPE_TRACK)
     {
       Track * track = port_get_track (self, 1);
       EVENTS_PUSH (
@@ -2715,7 +2564,8 @@ port_set_control_value (
       /* if plugin enabled port, also set
        * plugin's own enabled port value and
        * vice versa */
-      if (self->is_project &&
+      if (port_is_in_active_project (self)
+          &&
           self->id.flags & PORT_FLAG_PLUGIN_ENABLED)
         {
           Plugin * pl = port_get_plugin (self, 1);
@@ -2779,8 +2629,9 @@ port_get_control_value (
     self->id.type == TYPE_CONTROL, 0.f);
 
   /* verify that plugin exists if plugin control */
-  if (ZRYTHM_TESTING && self->is_project &&
-      self->id.flags & PORT_FLAG_PLUGIN_CONTROL)
+  if (ZRYTHM_TESTING
+      && port_is_in_active_project (self)
+      && self->id.flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       Plugin * pl = port_get_plugin (self, 1);
       g_return_val_if_fail (
@@ -2930,41 +2781,8 @@ stereo_ports_new_generic (
   ports->r->id.flags |=
     PORT_FLAG_STEREO_R;
 
-  switch (owner_type)
-    {
-    case PORT_OWNER_TYPE_FADER:
-    case PORT_OWNER_TYPE_PREFADER:
-      port_set_owner_fader (
-        ports->l, (Fader *) owner);
-      port_set_owner_fader (
-        ports->r, (Fader *) owner);
-      break;
-    case PORT_OWNER_TYPE_TRACK:
-      port_set_owner_track (
-        ports->l, (Track *) owner);
-      port_set_owner_track (
-        ports->r, (Track *) owner);
-      break;
-    case PORT_OWNER_TYPE_TRACK_PROCESSOR:
-      port_set_owner_track_processor (
-        ports->l, (TrackProcessor *) owner);
-      port_set_owner_track_processor (
-        ports->r, (TrackProcessor *) owner);
-      break;
-    case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
-      port_set_owner_sample_processor (
-        ports->l, (SampleProcessor *) owner);
-      port_set_owner_sample_processor (
-        ports->r, (SampleProcessor *) owner);
-      break;
-    case PORT_OWNER_TYPE_MONITOR_FADER:
-      ports->l->id.owner_type =
-        PORT_OWNER_TYPE_MONITOR_FADER;
-      ports->r->id.owner_type =
-        PORT_OWNER_TYPE_MONITOR_FADER;
-    default:
-      break;
-    }
+  port_set_owner (ports->l, owner_type, owner);
+  port_set_owner (ports->r, owner_type, owner);
 
   g_free (pll);
   g_free (plr);
@@ -2990,20 +2808,26 @@ port_process (
 
   g_return_if_fail (IS_PORT (port));
 
+  const PortIdentifier * id = &port->id;
+
   Track * track = NULL;
-  if (port->id.owner_type ==
+  if (id->owner_type ==
         PORT_OWNER_TYPE_TRACK_PROCESSOR
-      || port->id.owner_type ==
-        PORT_OWNER_TYPE_TRACK
-      || port->id.owner_type ==
-        PORT_OWNER_TYPE_FADER
-      || port->id.owner_type ==
-        PORT_OWNER_TYPE_PREFADER
-      || (port->id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN
-          &&
-          port->id.plugin_id.slot_type ==
-            PLUGIN_SLOT_INSTRUMENT))
+      ||
+      id->owner_type == PORT_OWNER_TYPE_TRACK
+      ||
+      id->owner_type == PORT_OWNER_TYPE_CHANNEL
+      ||
+      /* if track/channel fader */
+      (id->owner_type == PORT_OWNER_TYPE_FADER
+       &&
+       (id->flags2 & PORT_FLAG2_PREFADER
+        || id->flags2 & PORT_FLAG2_POSTFADER))
+      ||
+      (id->owner_type == PORT_OWNER_TYPE_PLUGIN
+       &&
+       id->plugin_id.slot_type ==
+         PLUGIN_SLOT_INSTRUMENT))
     {
       if (ZRYTHM_TESTING)
         track = port_get_track (port, true);
@@ -3014,17 +2838,17 @@ port_process (
     }
 
   bool is_stereo_port =
-    port->id.flags & PORT_FLAG_STEREO_L ||
-    port->id.flags & PORT_FLAG_STEREO_R;
+    id->flags & PORT_FLAG_STEREO_L ||
+    id->flags & PORT_FLAG_STEREO_R;
 
-  switch (port->id.type)
+  switch (id->type)
     {
     case TYPE_EVENT:
       if (noroll)
         break;
 
       if (G_UNLIKELY (
-            port->id.owner_type ==
+            id->owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
             !track))
         {
@@ -3035,14 +2859,14 @@ port_process (
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
-      if ((port->id.owner_type !=
+      if ((id->owner_type !=
              PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-           (port->id.owner_type ==
+           (id->owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
             track &&
             track_type_can_record (track->type) &&
             track_get_recording (track))) &&
-           port->id.flow == FLOW_INPUT)
+           id->flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
             {
@@ -3073,7 +2897,7 @@ port_process (
         }
 
       /* set midi capture if hardware */
-      if (port->id.owner_type ==
+      if (id->owner_type ==
             PORT_OWNER_TYPE_HW)
         {
           MidiEvents * events = port->midi_events;
@@ -3122,7 +2946,7 @@ port_process (
            * MIDI channel is valid */
           if (src_port->id.owner_type ==
                 PORT_OWNER_TYPE_HW &&
-              port->id.owner_type ==
+              id->owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
               g_return_if_fail (track);
@@ -3159,7 +2983,7 @@ port_process (
             nframes, F_NOT_QUEUED);
         } /* foreach source */
 
-      if (port->id.flow == FLOW_OUTPUT)
+      if (id->flow == FLOW_OUTPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
             {
@@ -3186,11 +3010,11 @@ port_process (
 #if 0
           g_message (
             "port %s has %d events",
-            port->id.label,
+            id->label,
             port->midi_events->num_events);
 #endif
 
-          if (port->id.owner_type ==
+          if (id->owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
               g_return_if_fail (
@@ -3250,7 +3074,7 @@ port_process (
         }
 
       g_return_if_fail (
-        port->id.owner_type !=
+        id->owner_type !=
           PORT_OWNER_TYPE_TRACK_PROCESSOR
         || IS_TRACK_AND_NONNULL (track));
 
@@ -3258,13 +3082,13 @@ port_process (
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
-      if ((port->id.owner_type !=
+      if ((id->owner_type !=
              PORT_OWNER_TYPE_TRACK_PROCESSOR
-           || (port->id.owner_type ==
+           || (id->owner_type ==
                  PORT_OWNER_TYPE_TRACK_PROCESSOR
                && track_type_can_record (track->type)
                && track_get_recording (track)))
-          && port->id.flow == FLOW_INPUT)
+          && id->flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
@@ -3294,14 +3118,14 @@ port_process (
           float minf = 0.f, maxf = 0.f,
                 depth_range, multiplier;
           if (G_LIKELY (
-                port->id.type == TYPE_AUDIO))
+                id->type == TYPE_AUDIO))
             {
               minf = -2.f;
               maxf = 2.f;
               depth_range = 1.f;
               multiplier = conn->multiplier;
             }
-          else if (port->id.type == TYPE_CV)
+          else if (id->type == TYPE_CV)
             {
               maxf = port->maxf;
               minf = port->minf;
@@ -3333,23 +3157,29 @@ port_process (
                 1.f, multiplier, nframes);
             }
 
-          if (G_UNLIKELY (
-                port->id.type == TYPE_CV
-                ||
-                port->id.owner_type ==
-                  PORT_OWNER_TYPE_MONITOR_FADER))
+          if (G_UNLIKELY (id->type == TYPE_CV)
+              ||
+              id->owner_type ==
+                PORT_OWNER_TYPE_FADER)
             {
-              /* this limiting wastes around
-               * 50% of this function so only do it
-               * on CV connections and monitor
-               * fader */
-              dsp_limit1 (
+              float abs_peak = 0.f;
+              dsp_abs_max (
                 &port->buf[local_offset],
-                minf, maxf, nframes);
+                &abs_peak, nframes);
+              if (abs_peak > maxf)
+                {
+                  /* this limiting wastes around
+                   * 50% of port processing so only
+                   * do it on CV connections and
+                   * faders if they exceed maxf */
+                  dsp_limit1 (
+                    &port->buf[local_offset],
+                    minf, maxf, nframes);
+                }
             }
         } /* foreach source */
 
-      if (port->id.flow == FLOW_OUTPUT)
+      if (id->flow == FLOW_OUTPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
@@ -3388,10 +3218,10 @@ port_process (
         }
 
       /* if track output (to be shown on mixer) */
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_TRACK &&
+      if (id->owner_type ==
+            PORT_OWNER_TYPE_CHANNEL &&
           is_stereo_port &&
-          port->id.flow == FLOW_OUTPUT)
+          id->flow == FLOW_OUTPUT)
         {
           g_return_if_fail (
             IS_TRACK_AND_NONNULL (track));
@@ -3452,18 +3282,22 @@ port_process (
         if (G_UNLIKELY (
               AUDIO_ENGINE->bounce_mode >
                 BOUNCE_OFF &&
-              (port->id.owner_type ==
-                 PORT_OWNER_TYPE_TRACK ||
-               port->id.owner_type ==
+              (id->owner_type ==
+                 PORT_OWNER_TYPE_CHANNEL ||
+               id->owner_type ==
                  PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-               port->id.owner_type ==
-                 PORT_OWNER_TYPE_PREFADER ||
-               (port->id.owner_type ==
+               (id->owner_type ==
+                 PORT_OWNER_TYPE_FADER
+                &&
+                id->flags2 &
+                  PORT_FLAG2_PREFADER)
+               ||
+               (id->owner_type ==
                  PORT_OWNER_TYPE_PLUGIN &&
-                port->id.plugin_id.slot_type ==
+                id->plugin_id.slot_type ==
                   PLUGIN_SLOT_INSTRUMENT)) &&
               is_stereo_port &&
-              port->id.flow == FLOW_OUTPUT &&
+              id->flow == FLOW_OUTPUT &&
               track && track->bounce_to_master))
           {
 
@@ -3545,29 +3379,32 @@ port_process (
       break;
     case TYPE_CONTROL:
       {
-        if (port->id.flow != FLOW_INPUT ||
-            port->id.owner_type ==
-              PORT_OWNER_TYPE_MONITOR_FADER ||
-            port->id.owner_type ==
-              PORT_OWNER_TYPE_PREFADER ||
-            port->id.flags & PORT_FLAG_TP_MONO ||
-            port->id.flags &
-              PORT_FLAG_TP_INPUT_GAIN ||
-            !(port->id.flags &
-                PORT_FLAG_AUTOMATABLE))
+        if (id->flow != FLOW_INPUT
+            ||
+            (id->owner_type ==
+               PORT_OWNER_TYPE_FADER
+             &&
+             (id->flags2 &
+                PORT_FLAG2_MONITOR_FADER
+              ||
+              id->flags2 & PORT_FLAG2_PREFADER))
+            || id->flags & PORT_FLAG_TP_MONO
+            || id->flags &
+              PORT_FLAG_TP_INPUT_GAIN
+            || !(id->flags & PORT_FLAG_AUTOMATABLE))
           {
             break;
           }
 
         /* calculate value from automation track */
         g_return_if_fail (
-          port->id.flags & PORT_FLAG_AUTOMATABLE);
+          id->flags & PORT_FLAG_AUTOMATABLE);
         AutomationTrack * at = port->at;
         if (G_UNLIKELY (!at))
           {
             g_critical (
               "No automation track found for port "
-              "%s", port->id.label);
+              "%s", id->label);
           }
         if (ZRYTHM_TESTING && at)
           {
@@ -3579,7 +3416,7 @@ port_process (
           }
 
         if (at &&
-            port->id.flags &
+            id->flags &
               PORT_FLAG_AUTOMATABLE &&
             automation_track_should_read_automation (
               at, AUDIO_ENGINE->timestamp_start))
@@ -3786,7 +3623,7 @@ port_is_exposed_to_backend (
     self->internal_type ==
       INTERNAL_ALSA_SEQ_PORT ||
     self->id.owner_type ==
-      PORT_OWNER_TYPE_BACKEND ||
+      PORT_OWNER_TYPE_AUDIO_ENGINE ||
     self->exposed_to_backend;
 }
 
@@ -3867,8 +3704,7 @@ port_get_full_designation (
 
   switch (id->owner_type)
     {
-    case PORT_OWNER_TYPE_BACKEND:
-    case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
+    case PORT_OWNER_TYPE_AUDIO_ENGINE:
       strcpy (buf, id->label);
       return;
     case PORT_OWNER_TYPE_PLUGIN:
@@ -3884,10 +3720,9 @@ port_get_full_designation (
           id->label);
       }
       return;
+    case PORT_OWNER_TYPE_CHANNEL:
     case PORT_OWNER_TYPE_TRACK:
     case PORT_OWNER_TYPE_TRACK_PROCESSOR:
-    case PORT_OWNER_TYPE_PREFADER:
-    case PORT_OWNER_TYPE_FADER:
     case PORT_OWNER_TYPE_CHANNEL_SEND:
       {
         Track * tr = port_get_track (self, 1);
@@ -3897,18 +3732,46 @@ port_get_full_designation (
           buf, "%s/%s", tr->name, id->label);
       }
       return;
-    case PORT_OWNER_TYPE_MONITOR_FADER:
-      sprintf (buf, "Engine/%s", id->label);
-      return;
+    case PORT_OWNER_TYPE_FADER:
+      if (id->flags2 & PORT_FLAG2_PREFADER
+          || id->flags2 & PORT_FLAG2_POSTFADER)
+        {
+          Track * tr = port_get_track (self, 1);
+          g_return_if_fail (
+            IS_TRACK_AND_NONNULL (tr));
+          sprintf (
+            buf, "%s/%s", tr->name, id->label);
+          return;
+        }
+      else if (id->flags2 & PORT_FLAG2_MONITOR_FADER)
+
+        {
+          sprintf (buf, "Engine/%s", id->label);
+          return;
+        }
+      else if (id->flags2 &
+                 PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+        {
+          strcpy (buf, id->label);
+          return;
+        }
+      break;
     case PORT_OWNER_TYPE_HW:
       sprintf (buf, "HW/%s", id->label);
       return;
     case PORT_OWNER_TYPE_TRANSPORT:
       sprintf (buf, "Transport/%s", id->label);
       return;
+    case PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR:
+      sprintf (
+        buf, "Modulator Macro Processor/%s",
+        id->label);
+      return;
     default:
-      g_return_if_reached ();
+      break;
     }
+
+  g_return_if_reached ();
 }
 
 void
@@ -4189,14 +4052,7 @@ port_clone (
 void
 port_free (Port * self)
 {
-  object_zero_and_free (self->buf);
-  object_free_w_func_and_null (
-    zix_ring_free, self->audio_ring);
-  object_free_w_func_and_null (
-    zix_ring_free, self->midi_ring);
-
-  object_free_w_func_and_null (
-    midi_events_free, self->midi_events);
+  port_free_bufs (self);
 
 #ifdef HAVE_RTMIDI
   for (int i = 0; i < self->num_rtmidi_ins; i++)

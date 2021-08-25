@@ -645,6 +645,9 @@ need_backtrace (
       "realized window")
     &&
     !string_contains_substr (
+      ev->message, "attempt to allocate widget")
+    &&
+    !string_contains_substr (
       ev->message,
       "you are running a non-free operating system");
 }

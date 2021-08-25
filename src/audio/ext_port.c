@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -49,9 +49,10 @@ _create (void)
  */
 void
 ext_port_init_loaded (
-  ExtPort * ext_port)
+  ExtPort *           self,
+  HardwareProcessor * hw_processor)
 {
-  /* TODO */
+  self->hw_processor = hw_processor;
 }
 
 /**
@@ -487,11 +488,10 @@ ext_port_from_jack_port (
 
 static void
 get_ext_ports_from_jack (
-  PortType   type,
-  PortFlow   flow,
-  int        hw,
-  ExtPort ** arr,
-  int *      size)
+  PortType    type,
+  PortFlow    flow,
+  int         hw,
+  GPtrArray * ports)
 {
   long unsigned int flags = 0;
   if (hw)
@@ -513,35 +513,29 @@ get_ext_ports_from_jack (
       return;
     }
 
-  const char ** ports =
+  const char ** jports =
     jack_get_ports (
       AUDIO_ENGINE->client,
       NULL, jtype, flags);
 
-  if (!ports)
+  if (!jports)
     return;
 
-  int i = 0;
-  jack_port_t * jport;
-  while (ports[i] != NULL)
+  size_t i = 0;
+  while (jports[i] != NULL)
     {
-      jport =
+      jack_port_t * jport =
         jack_port_by_name (
-          AUDIO_ENGINE->client,
-          ports[i]);
+          AUDIO_ENGINE->client, jports[i]);
 
-      if (arr)
-        {
-          arr[*size + i] =
-            ext_port_from_jack_port (jport);
-        }
+      ExtPort * ext_port =
+        ext_port_from_jack_port (jport);
+      g_ptr_array_add (ports, ext_port);
 
       i++;
     }
 
-  jack_free (ports);
-
-  *size += i;
+  jack_free (jports);
 }
 #endif
 
@@ -565,43 +559,34 @@ ext_port_from_windows_mme_device (
 
 static void
 get_ext_ports_from_windows_mme (
-  PortFlow   flow,
-  ExtPort ** arr,
-  int *      size)
+  PortFlow    flow,
+  GPtrArray * ports)
 {
-  WindowsMmeDevice * dev;
-	    int i = 0;
   if (flow == FLOW_OUTPUT)
     {
-      for (i = 0;
+      for (int i = 0;
            i < AUDIO_ENGINE->num_mme_in_devs; i++)
         {
-          if (arr)
-            {
-              dev = AUDIO_ENGINE->mme_in_devs[i];
-              g_return_if_fail (dev);
-              arr[*size + i] =
-                ext_port_from_windows_mme_device (
-                  dev);
-            }
+          WindowsMmeDevice * dev =
+            AUDIO_ENGINE->mme_in_devs[i];
+          g_return_if_fail (dev);
+          ExtPort * ext_port =
+            ext_port_from_windows_mme_device (dev);
+          g_ptr_array_add (ports, ext_port);
         }
-      (*size) += i;
     }
   else if (flow == FLOW_INPUT)
     {
-      for (i = 0;
+      for (int i = 0;
            i < AUDIO_ENGINE->num_mme_out_devs; i++)
         {
-          if (arr)
-            {
-              dev = AUDIO_ENGINE->mme_out_devs[i];
-              g_return_if_fail (dev);
-              arr[*size + i] =
-                ext_port_from_windows_mme_device (
-                  dev);
-            }
+          WindowsMmeDevice * dev =
+            AUDIO_ENGINE->mme_out_devs[i];
+          g_return_if_fail (dev);
+          ExtPort * ext_port =
+            ext_port_from_windows_mme_device (dev);
+          g_ptr_array_add (ports, ext_port);
         }
-      (*size) += i;
     }
 }
 #endif
@@ -630,11 +615,9 @@ ext_port_from_rtmidi (
 
 static void
 get_ext_ports_from_rtmidi (
-  PortFlow   flow,
-  ExtPort ** arr,
-  int *      size)
+  PortFlow    flow,
+  GPtrArray * ports)
 {
-  *size = 0;
   if (flow == FLOW_OUTPUT)
     {
       unsigned int num_ports =
@@ -643,13 +626,10 @@ get_ext_ports_from_rtmidi (
       unsigned int i;
       for (i = 0; i < num_ports; i++)
         {
-          if (arr)
-            {
-              arr[*size + (int) i] =
-                ext_port_from_rtmidi (i);
-            }
+          ExtPort * ext_port =
+            ext_port_from_rtmidi (i);
+          g_ptr_array_add (ports, ext_port);
         }
-      (*size) += (int) i;
     }
   else if (flow == FLOW_INPUT)
     {
@@ -690,11 +670,9 @@ ext_port_from_rtaudio (
 
 static void
 get_ext_ports_from_rtaudio (
-  PortFlow   flow,
-  ExtPort ** arr,
-  int *      size)
+  PortFlow    flow,
+  GPtrArray * ports)
 {
-  *size = 0;
   /* note: this is an output port from the graph
    * side that will be used as an input port on
    * the zrythm side */
@@ -719,13 +697,11 @@ get_ext_ports_from_rtaudio (
               for (unsigned int j = 0;
                    j < dev_nfo.input_channels; j++)
                 {
-                  if (arr)
-                    {
-                      arr[*size] =
-                        ext_port_from_rtaudio (
-                          i, j, true, false);
-                    }
-                  (*size)++;
+                  ExtPort * ext_port =
+                    ext_port_from_rtaudio (
+                      i, j, true, false);
+                  g_ptr_array_add (
+                    ports, ext_port);
                 }
 #if 0
               for (unsigned int j = 0;
@@ -767,13 +743,11 @@ get_ext_ports_from_rtaudio (
               for (unsigned int j = 0;
                    j < dev_nfo.output_channels; j++)
                 {
-                  if (arr)
-                    {
-                      arr[*size] =
-                        ext_port_from_rtaudio (
-                          i, j, false, false);
-                    }
-                  (*size)++;
+                  ExtPort * ext_port =
+                    ext_port_from_rtaudio (
+                      i, j, false, false);
+                  g_ptr_array_add (
+                    ports, ext_port);
                 }
 #if 0
               for (unsigned int j = 0;
@@ -804,19 +778,14 @@ get_ext_ports_from_rtaudio (
  *   MIDI inputs like MIDI keyboards, pass
  *   \ref FLOW_OUTPUT here.
  * @param hw Hardware or not.
- * @param ports An array of ExtPort pointers to fill
- *   in. The array should be preallocated.
- * @param size Size of the array to fill in.
  */
 void
 ext_ports_get (
-  PortType   type,
-  PortFlow   flow,
-  bool       hw,
-  ExtPort ** arr,
-  int *      size)
+  PortType    type,
+  PortFlow    flow,
+  bool        hw,
+  GPtrArray * ports)
 {
-  *size = 0;
   if (type == TYPE_AUDIO)
     {
       switch (AUDIO_ENGINE->audio_backend)
@@ -824,7 +793,7 @@ ext_ports_get (
 #ifdef HAVE_JACK
         case AUDIO_BACKEND_JACK:
           get_ext_ports_from_jack (
-            type, flow, hw, arr, size);
+            type, flow, hw, ports);
           break;
 #endif
 #ifdef HAVE_RTAUDIO
@@ -834,8 +803,7 @@ ext_ports_get (
         case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
         case AUDIO_BACKEND_WASAPI_RTAUDIO:
         case AUDIO_BACKEND_ASIO_RTAUDIO:
-          get_ext_ports_from_rtaudio (
-            flow, arr, size);
+          get_ext_ports_from_rtaudio (flow, ports);
           break;
 #endif
 #ifdef HAVE_ALSA
@@ -853,7 +821,7 @@ ext_ports_get (
 #ifdef HAVE_JACK
         case MIDI_BACKEND_JACK:
           get_ext_ports_from_jack (
-            type, flow, hw, arr, size);
+            type, flow, hw, ports);
           break;
 #endif
 #ifdef HAVE_ALSA
@@ -863,7 +831,7 @@ ext_ports_get (
 #ifdef _WOE32
         case MIDI_BACKEND_WINDOWS_MME:
           get_ext_ports_from_windows_mme (
-            flow, arr, size);
+            flow, ports);
           break;
 #endif
 #ifdef HAVE_RTMIDI
@@ -872,20 +840,21 @@ ext_ports_get (
         case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MIDI_BACKEND_COREMIDI_RTMIDI:
           get_ext_ports_from_rtmidi (
-            flow, arr, size);
+            flow, ports);
           break;
 #endif
         default:
           break;
-        }
-      if (arr)
+        } /* end switch MIDI backend */
+
+      for (size_t i = 0; i < ports->len; i++)
         {
-          for (int i = 0; i < *size; i++)
-            {
-              arr[i]->is_midi = true;
-            }
+          ExtPort * ext_port =
+            g_ptr_array_index (ports, i);
+          ext_port->is_midi = true;
         }
-    }
+
+    } /* endif MIDI */
 }
 
 /**

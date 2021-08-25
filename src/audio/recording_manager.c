@@ -924,7 +924,7 @@ handle_resume_event (
         return false;
 
       Port * port =
-        automation_track_get_port (at);
+        port_find_from_identifier (&at->port_id);
       float value =
         port_get_control_value (port, false);
       float normalized_value =
@@ -1252,7 +1252,7 @@ handle_automation_event (
     automation_track_find_from_port_id (
       &ev->port_id, false);
   Port * port =
-    automation_track_get_port (at);
+    port_find_from_identifier (&at->port_id);
   float value =
     port_get_control_value (port, false);
   float normalized_value =
@@ -1454,7 +1454,7 @@ handle_start_recording (
       /* nothing, wait for event to start
        * writing data */
       Port * port =
-        automation_track_get_port (at);
+        port_find_from_identifier (&at->port_id);
       float value =
         port_get_control_value (port, false);
 

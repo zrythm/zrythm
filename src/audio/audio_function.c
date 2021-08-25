@@ -147,8 +147,7 @@ apply_plugin (
     }
   pl->is_function = true;
   int ret =
-    plugin_instantiate (
-      pl, F_NOT_PROJECT, NULL, &err);
+    plugin_instantiate (pl, NULL, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (

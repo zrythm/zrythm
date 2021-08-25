@@ -721,10 +721,6 @@ region_get_arranger_selections (
 
 /**
  * Sanity checking.
- *
- * @param is_project Whether this region ispart
- *   of the project (as opposed to a clone in
- *   the undo stack, etc.).
  */
 bool
 region_validate (

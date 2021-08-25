@@ -85,7 +85,7 @@ tracklist_selections_action_init_loaded (
   for (int i = 0; i < self->num_src_sends; i++)
     {
       channel_send_init_loaded (
-        self->src_sends[i], false);
+        self->src_sends[i], NULL);
     }
 }
 
@@ -357,8 +357,7 @@ tracklist_selections_action_new (
               if (track_type_is_foldable (tr->type))
                 {
                   Track * clone_tr =
-                    track_clone (
-                      tr, F_PROJECT, &err);
+                    track_clone (tr, &err);
                   if (err)
                     {
                       PROPAGATE_PREFIXED_ERROR (
@@ -759,7 +758,7 @@ create_track (
       track =
         track_new (
           self->track_type, pos, label,
-          F_WITH_LANE, F_NOT_AUDITIONER);
+          F_WITH_LANE);
       tracklist_insert_track (
         TRACKLIST, track, pos,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -776,7 +775,7 @@ create_track (
             track_new (
               self->track_type, pos,
               self->file_basename,
-              F_WITH_LANE, F_NOT_AUDITIONER);
+              F_WITH_LANE);
         }
       /* else if creating MIDI track from file */
       else if (self->track_type == TRACK_TYPE_MIDI &&
@@ -786,7 +785,7 @@ create_track (
             track_new (
               self->track_type, pos,
               self->file_basename,
-              F_WITH_LANE, F_NOT_AUDITIONER);
+              F_WITH_LANE);
         }
       /* at this point we can assume it has a
        * plugin */
@@ -801,7 +800,7 @@ create_track (
             track_new (
               self->track_type, pos,
               descr->name,
-              F_WITH_LANE, F_NOT_AUDITIONER);
+              F_WITH_LANE);
 
           GError * err = NULL;
           pl =
@@ -819,8 +818,7 @@ create_track (
             }
 
           int ret =
-            plugin_instantiate (
-              pl, true, NULL, &err);
+            plugin_instantiate (pl, NULL, &err);
           if (ret != 0)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -1049,8 +1047,7 @@ do_or_undo_create_or_delete (
               /* clone our own track */
               GError * err = NULL;
               Track * track =
-                track_clone (
-                  own_track, false, &err);
+                track_clone (own_track, &err);
               if (!track)
                 {
                   HANDLE_ERROR (
@@ -1161,24 +1158,23 @@ do_or_undo_create_or_delete (
                 }
 
               /* reconnect any custom connections */
-              size_t max_size = 20;
-              int num_ports = 0;
-              Port ** ports =
-                object_new_n (max_size, Port *);
-              track_append_all_ports (
-                own_track,
-                &ports, &num_ports, true, &max_size,
-                true);
-              for (int j = 0; j < num_ports; j++)
+              GPtrArray * ports =
+                g_ptr_array_new ();
+              track_append_ports (
+                own_track, ports, true);
+              for (size_t j = 0; j < ports->len;
+                   j++)
                 {
-                  Port * port = ports[j];
+                  Port * port =
+                    g_ptr_array_index (ports, j);
                   Port * prj_port =
                     port_find_from_identifier (
                       &port->id);
                   port_restore_from_non_project (
                     prj_port, port);
                 }
-              free (ports);
+              object_free_w_func_and_null (
+                g_ptr_array_unref, ports);
             }
 
           /* re-connect any source sends */
@@ -1277,31 +1273,27 @@ do_or_undo_create_or_delete (
               g_return_val_if_fail (track, -1);
 
               /* remember any custom connections */
-              size_t max_size = 20;
-              int num_ports = 0;
-              Port ** ports =
-                object_new_n (max_size, Port *);
-              track_append_all_ports (
-                track, &ports, &num_ports, true,
-                &max_size, true);
-              max_size = 20;
-              int num_clone_ports = 0;
-              Port ** clone_ports =
-                object_new_n (max_size, Port *);
-              track_append_all_ports (
-                own_track, &clone_ports,
-                &num_clone_ports,
-                true, &max_size, true);
-              for (int j = 0; j < num_ports; j++)
+              GPtrArray * ports =
+                g_ptr_array_new ();
+              track_append_ports (
+                track, ports, true);
+              GPtrArray * clone_ports =
+                g_ptr_array_new ();
+              track_append_ports (
+                own_track, clone_ports, true);
+              for (size_t j = 0; j < ports->len;
+                   j++)
                 {
-                  Port * prj_port = ports[j];
+                  Port * prj_port =
+                    g_ptr_array_index (ports, j);
 
                   Port * clone_port = NULL;
-                  for (int k = 0;
-                       k < num_clone_ports; k++)
+                  for (size_t k = 0;
+                       k < clone_ports->len; k++)
                     {
                       Port * cur_clone_port =
-                        clone_ports[k];
+                        g_ptr_array_index (
+                          clone_ports, k);
                       if (port_identifier_is_equal (
                             &cur_clone_port->id,
                             &prj_port->id))
@@ -1317,8 +1309,10 @@ do_or_undo_create_or_delete (
                   port_copy_metadata_from_project (
                     clone_port, prj_port);
                 }
-              free (ports);
-              free (clone_ports);
+              object_free_w_func_and_null (
+                g_ptr_array_unref, ports);
+              object_free_w_func_and_null (
+                g_ptr_array_unref, clone_ports);
 
               /* if group track, remove all
                * children */
@@ -1579,8 +1573,7 @@ do_or_undo_move_or_copy (
                * project */
               GError * err = NULL;
               Track * track =
-                track_clone (
-                  own_track, false, &err);
+                track_clone (own_track, &err);
               if (!track)
                 {
                   HANDLE_ERROR (

@@ -24,6 +24,18 @@
 
 #include <glib/gi18n.h>
 
+void
+modulator_macro_processor_init_loaded (
+  ModulatorMacroProcessor * self,
+  Track *                   track)
+{
+  self->track = track;
+
+  port_init_loaded (self->macro, self);
+  port_init_loaded (self->cv_in, self);
+  port_init_loaded (self->cv_out, self);
+}
+
 Track *
 modulator_macro_processor_get_track (
   ModulatorMacroProcessor * self)
@@ -85,16 +97,18 @@ modulator_macro_processor_new (
 {
   ModulatorMacroProcessor * self =
     object_new (ModulatorMacroProcessor);
-
   self->schema_version =
     MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION;
+  self->track = track;
 
   char str[600];
   sprintf (str, _("Macro %d"), idx + 1);
   self->name = g_strdup (str);
   self->macro =
-    port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, str);
+    port_new_with_type_and_owner (
+      TYPE_CONTROL, FLOW_INPUT, str,
+      PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
+      self);
   Port * port = self->macro;
   port->minf = 0.f;
   port->maxf = 1.f;
@@ -106,27 +120,28 @@ modulator_macro_processor_new (
   port->id.flags |=
     PORT_FLAG_MODULATOR_MACRO;
   port->id.port_index = idx;
-  port_set_owner_track (port, track);
 
   sprintf (str, _("Macro CV In %d"), idx + 1);
   self->cv_in =
-    port_new_with_type (
-      TYPE_CV, FLOW_INPUT, str);
+    port_new_with_type_and_owner (
+      TYPE_CV, FLOW_INPUT, str,
+      PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
+      self);
   port = self->cv_in;
   port->id.flags |=
     PORT_FLAG_MODULATOR_MACRO;
   port->id.port_index = idx;
-  port_set_owner_track (port, track);
 
   sprintf (str, _("Macro CV Out %d"), idx + 1);
   self->cv_out =
-    port_new_with_type (
-      TYPE_CV, FLOW_OUTPUT, str);
+    port_new_with_type_and_owner (
+      TYPE_CV, FLOW_OUTPUT, str,
+      PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
+      self);
   port = self->cv_out;
   port->id.flags |=
     PORT_FLAG_MODULATOR_MACRO;
   port->id.port_index = idx;
-  port_set_owner_track (port, track);
 
   return self;
 }

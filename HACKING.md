@@ -214,6 +214,31 @@ profiling info in the kcachegrind GUI.
 For more information, see
 <https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html>.
 
+# Memory usage
+To debug memory usage, the
+[massif](https://valgrind.org/docs/manual/ms-manual.html)
+tool from valgrind can be used. To use on the
+`actions/mixer selections action` test for example,
+use
+
+    meson test --timeout-multiplier=0 -C build --wrap="valgrind --tool=massif --num-callers=160 --suppressions=$(pwd)/tools/vg.sup" actions_mixer_selections_action
+
+This will create a file called `massif.out.<pid>`
+that contains memory snapshots in the `build`
+directory. This file can be opened with
+[Massif-Visualizer](https://apps.kde.org/en-gb/massif-visualizer/)
+for inspection.
+
+If the test takes too long, it can be stopped with
+`SIGTERM` and results will be collected until
+termination.
+
+*Note: massif runs the program 20 times slower*
+
+Alternatively, valgrind's leak check can be used
+
+    meson test --timeout-multiplier=0 -C build --wrap="valgrind --num-callers=160 --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --suppressions=$(pwd)/tools/vg.sup" actions_mixer_selections_action
+
 # Real-time safety
 Use the following to get a stoat report.
 
@@ -221,9 +246,12 @@ Use the following to get a stoat report.
     ninja -C build run_stoat
 
 Realtime functions can be annoted as REALTIME or
-specified in the whitelist found in
+specified in
 [tools/stoat_whitelist.txt](tools/stoat_whitelist.txt).
-Suppressions are found in
+Non-realtime functions or functions that should not
+be run in realtime threads can be specified in
+[tools/stoat_blacklist.txt](tools/stoat_blacklist.txt).
+Suppressions (functions to ignore) are found in
 [tools/stoat_suppressions.txt](tools/stoat_suppressions.txt).
 
 For more info see

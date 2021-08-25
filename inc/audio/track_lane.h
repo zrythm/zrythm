@@ -40,7 +40,11 @@ typedef void MIDI_FILE;
  *
  * @{
  */
-#define MAX_REGIONS 300
+
+#define TRACK_LANE_SCHEMA_VERSION 1
+
+#define track_lane_is_auditioner(self) \
+  (self->track && track_is_auditioner (self->track))
 
 /**
  * A TrackLane belongs to a Track (can have many
@@ -51,6 +55,8 @@ typedef void MIDI_FILE;
  */
 typedef struct TrackLane
 {
+  int                 schema_version;
+
   /** Position in the Track. */
   int                 pos;
 
@@ -89,9 +95,6 @@ typedef struct TrackLane
   CustomButtonWidget * buttons[8];
   int                 num_buttons;
 
-  /** Whether part of an auditioner track. */
-  bool                is_auditioner;
-
   /** Owner track. */
   Track *             track;
 
@@ -100,6 +103,8 @@ typedef struct TrackLane
 static const cyaml_schema_field_t
 track_lane_fields_schema[] =
 {
+  YAML_FIELD_INT (
+    TrackLane, schema_version),
   YAML_FIELD_INT (
     TrackLane, pos),
   YAML_FIELD_STRING_PTR (
@@ -127,7 +132,8 @@ track_lane_schema = {
 
 void
 track_lane_init_loaded (
-  TrackLane * lane);
+  TrackLane * self,
+  Track *     track);
 
 /**
  * Creates a new TrackLane at the given pos in the
@@ -227,9 +233,7 @@ track_lane_update_track_name_hash (
 /**
  * Clones the TrackLane.
  *
- * Mainly used when cloning Track's.
- *
- * @param track Pointer to owner track.
+ * @param track New owner track, if any.
  */
 TrackLane *
 track_lane_clone (

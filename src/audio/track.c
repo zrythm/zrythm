@@ -71,10 +71,13 @@
 
 void
 track_init_loaded (
-  Track * self,
-  bool    project)
+  Track *               self,
+  Tracklist *           tracklist,
+  TracklistSelections * ts)
 {
   self->magic = TRACK_MAGIC;
+  self->tracklist = tracklist;
+  self->ts = ts;
 
   if (TRACK_CAN_BE_GROUP_TARGET (self))
     {
@@ -82,15 +85,18 @@ track_init_loaded (
     }
   else if (self->type == TRACK_TYPE_MODULATOR)
     {
-      modulator_track_init_loaded (self, project);
+      for (int i = 0; i < self->num_modulators; i++)
+        {
+          plugin_init_loaded (
+            self->modulators[i], self, NULL);
+        }
     }
 
   TrackLane * lane;
   for (int j = 0; j < self->num_lanes; j++)
     {
       lane = self->lanes[j];
-      lane->track = self;
-      track_lane_init_loaded (lane);
+      track_lane_init_loaded (lane, self);
     }
   ScaleObject * scale;
   for (int i = 0; i < self->num_scales; i++)
@@ -121,7 +127,7 @@ track_init_loaded (
     {
       self->processor->track = self;
       track_processor_init_loaded (
-        self->processor, project);
+        self->processor, self);
     }
 
   /* init loaded channel */
@@ -129,7 +135,7 @@ track_init_loaded (
     {
       self->channel->track = self;
       channel_init_loaded (
-        self->channel, project);
+        self->channel, self);
     }
 
   /* set track to automation tracklist */
@@ -137,8 +143,8 @@ track_init_loaded (
     track_get_automation_tracklist (self);
   if (atl)
     {
-      atl->track = self;
-      automation_tracklist_init_loaded (atl);
+      automation_tracklist_init_loaded (
+        atl, self);
     }
 
   if (self->type == TRACK_TYPE_AUDIO)
@@ -149,30 +155,44 @@ track_init_loaded (
           1.0, true);
     }
 
+  for (int i = 0; i < self->num_modulator_macros;
+       i++)
+    {
+      ModulatorMacroProcessor * mmp =
+        self->modulator_macros[i];
+      modulator_macro_processor_init_loaded (
+        mmp, self);
+    }
+
   /** set magic to all track ports */
-  size_t max_size = 0;
-  Port ** ports = NULL;
-  int num_ports = 0;
-  track_append_all_ports (
-    self, &ports, &num_ports, true, &max_size,
-    true);
+  GPtrArray * ports = g_ptr_array_new ();
+  track_append_ports (self, ports, true);
   unsigned int name_hash =
     track_get_name_hash (self);
-  for (int i = 0; i < num_ports; i++)
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       port->magic = PORT_MAGIC;
-      if (project)
+      port->track = self;
+      if (track_is_in_active_project (self))
         {
           g_return_if_fail (
-            port->id.track_name_hash ==
-              name_hash);
-        }
-      port_init_loaded (port, port->is_project);
-    }
-  object_zero_and_free_if_nonnull (ports);
+            port->id.track_name_hash == name_hash);
 
-  track_set_is_project (self, project);
+          /* set automation tracks on ports */
+          if (port->id.flags &
+                PORT_FLAG_AUTOMATABLE)
+            {
+              AutomationTrack * at =
+                automation_track_find_from_port (
+                  port, self, true);
+              g_return_if_fail (at);
+              port->at = at;
+            }
+        }
+    }
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
 }
 
 /**
@@ -192,10 +212,7 @@ track_add_lane (
   TrackLane * lane =
     track_lane_new (self, self->num_lanes);
   g_return_if_fail (lane);
-  lane->is_auditioner = self->is_auditioner;
-  self->lanes[self->num_lanes] = lane;
-
-  self->num_lanes++;
+  self->lanes[self->num_lanes++] = lane;
 
   if (fire_events)
     {
@@ -238,22 +255,18 @@ track_init (
  *
  * @param pos Position in the Tracklist.
  * @param with_lane Init the Track with a lane.
- * @param auditioner Whether this is an auditioner
- *   track (used by SampleProcessor).
  */
 Track *
 track_new (
   TrackType    type,
   int          pos,
   const char * label,
-  const int    with_lane,
-  bool         auditioner)
+  const int    with_lane)
 {
   Track * self = object_new (Track);
 
   g_debug ("creating track '%s'", label);
 
-  self->is_auditioner = auditioner;
   self->pos = pos;
   self->type = type;
   track_init (self, with_lane);
@@ -369,9 +382,10 @@ track_new (
   if (track_type_can_record (type))
     {
       self->recording =
-        port_new_with_type (
+        port_new_with_type_and_owner (
           TYPE_CONTROL, FLOW_INPUT,
-          _("Track record"));
+          _("Track record"),
+          PORT_OWNER_TYPE_TRACK, self);
       control_port_set_toggled (
         self->recording, F_NO_TOGGLE,
         F_NO_PUBLISH_EVENTS);
@@ -379,7 +393,6 @@ track_new (
         PORT_FLAG2_TRACK_RECORDING;
       self->recording->id.flags |=
         PORT_FLAG_TOGGLE;
-      port_set_owner_track (self->recording, self);
     }
 
   self->processor = track_processor_new (self);
@@ -439,44 +452,25 @@ track_type_is_deletable (
  * Clones the track and returns the clone.
  *
  * @param error To be filled if an error occurred.
- * @param src_is_project Whether @ref track is a
- *   project track.
  */
 Track *
 track_clone (
   Track *   track,
-  bool      src_is_project,
   GError ** error)
 {
   g_return_val_if_fail (!error || !*error, NULL);
 
   /* set the track on the given track's channel
    * if not set */
-  if (!track->is_project && track->channel
+  if (!track_is_in_active_project (track)
+      && track->channel
       && !track->channel->track)
     track->channel->track = track;
-
-  /* verify port identifiers of source track */
-  {
-    size_t max_size = 20;
-    int num_ports = 0;
-    Port ** ports =
-      object_new_n (max_size, Port *);
-    track_append_all_ports (
-      track, &ports, &num_ports, true, &max_size,
-      true);
-    for (int i = 0; i < num_ports; i++)
-      {
-        Port * port = ports[i];
-        port_verify_src_and_dests (port);
-      }
-    free (ports);
-  }
 
   Track * new_track =
     track_new (
       track->type, track->pos, track->name,
-      F_WITHOUT_LANE, F_NOT_AUDITIONER);
+      F_WITHOUT_LANE);
   g_return_val_if_fail (
     IS_TRACK_AND_NONNULL (new_track), NULL);
 
@@ -519,8 +513,7 @@ track_clone (
       GError * err = NULL;
       new_track->channel =
         channel_clone (
-          track->channel, new_track,
-          src_is_project, &err);
+          track->channel, new_track, &err);
       if (new_track->channel == NULL)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -621,24 +614,10 @@ track_clone (
         new_track->processor, track->processor);
     }
 
-  /* verify port identifiers */
-  size_t max_size = 20;
-  int num_ports = 0;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  track_append_all_ports (
-    new_track, &ports, &num_ports, true, &max_size,
-    true);
-  for (int i = 0; i < num_ports; i++)
-    {
-      Port * port = ports[i];
-      port_verify_src_and_dests (port);
-    }
-  free (ports);
-
   /* check that source track is not affected
    * during unit tests */
-  if (ZRYTHM_TESTING && src_is_project)
+  if (ZRYTHM_TESTING &&
+      track_is_in_active_project (track))
     {
       track_validate (track);
     }
@@ -668,7 +647,7 @@ Tracklist *
 track_get_tracklist (
   Track * self)
 {
-  if (self->is_auditioner)
+  if (track_is_auditioner (self))
     {
       return SAMPLE_PROCESSOR->tracklist;
     }
@@ -1147,20 +1126,16 @@ track_validate (
       false);
 
   /* verify port identifiers */
-  size_t max_size = 20;
-  int num_ports = 0;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  track_append_all_ports (
-    self, &ports, &num_ports, true, &max_size,
-    true);
+  GPtrArray * ports = g_ptr_array_new ();
+  track_append_ports (
+    self, ports, F_INCLUDE_PLUGINS);
   AutomationTracklist * atl =
     track_get_automation_tracklist (self);
   unsigned int name_hash =
     track_get_name_hash (self);
-  for (int i = 0; i < num_ports; i++)
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       g_return_val_if_fail (
         port->id.track_name_hash == name_hash,
         false);
@@ -1219,10 +1194,9 @@ track_validate (
 
           automation_track_verify (at);
         }
-
-      port_verify_src_and_dests (port);
     }
-  object_zero_and_free (ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
 
   /* verify output and sends */
   if (self->channel)
@@ -1247,9 +1221,7 @@ track_validate (
         {
           Plugin * pl = plugins[i];
           g_return_val_if_fail (
-            pl->is_project == self->is_project
-            && plugin_validate (pl),
-            false);
+            plugin_validate (pl), false);
         }
 
       /* verify sends */
@@ -1278,14 +1250,16 @@ track_validate (
         {
           ZRegion * region = lane->regions[j];
           region_validate (
-            region, self->is_project);
+            region,
+            track_is_in_active_project (self));
         }
     }
 
   for (int i = 0; i < self->num_chord_regions; i++)
     {
       ZRegion * r = self->chord_regions[i];
-      region_validate (r, self->is_project);
+      region_validate (
+        r, track_is_in_active_project (self));
     }
 
   g_debug (
@@ -2040,7 +2014,7 @@ track_insert_region (
 
   /* write clip if audio region */
   if (region->id.type == REGION_TYPE_AUDIO &&
-      !track->is_auditioner)
+      !track_is_auditioner (track))
     {
       AudioClip * clip =
         audio_region_get_clip (region);
@@ -2155,23 +2129,6 @@ track_update_children (
         __func__, child->name, child->pos, self->name,
         self->pos);
     }
-}
-
-/**
- * Updates position in the tracklist and also
- * updates the information in the lanes.
- */
-void
-track_set_pos (
-  Track * self,
-  int     pos)
-{
-  int prev_pos = self->pos;
-  self->pos = pos;
-
-  g_debug (
-    "%s: moved track '%s' from index %d to %d",
-    __func__, self->name, prev_pos, pos);
 }
 
 /**
@@ -2389,7 +2346,8 @@ track_disconnect (
 
   /* if this is a group track and has children,
    * remove them */
-  if (self->is_project
+  if (track_is_in_active_project (self)
+      && !track_is_auditioner (self)
       && TRACK_CAN_BE_GROUP_TARGET (self))
     {
       group_target_track_remove_all_children (
@@ -2398,34 +2356,31 @@ track_disconnect (
         F_NO_PUBLISH_EVENTS);
     }
 
-  /* disconnect all ports */
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  track_append_all_ports (
-    self, &ports, &num_ports,
-    true, &max_size, true);
-  for (int i = 0; i < num_ports; i++)
+  /* disconnect all ports and free buffers */
+  GPtrArray * ports = g_ptr_array_new ();
+  track_append_ports (
+    self, ports, F_INCLUDE_PLUGINS);
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       if (!IS_PORT (port) ||
-          port->is_project != self->is_project)
+          port_is_in_active_project (port) !=
+            track_is_in_active_project (self))
         {
           g_critical ("invalid port");
-          object_zero_and_free (ports);
+          object_free_w_func_and_null (
+            g_ptr_array_unref, ports);
           return;
         }
 
-      if (ZRYTHM_TESTING)
-        {
-          port_verify_src_and_dests (port);
-        }
       port_disconnect_all (port);
+      port_free_bufs (port);
     }
-  free (ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
 
-  if (self->is_project)
+  if (track_is_in_active_project (self)
+      && !track_is_auditioner (self))
     {
       /* disconnect from folders */
       track_remove_from_folder_parents (self);
@@ -2510,7 +2465,7 @@ void
 track_unselect_all (
   Track * self)
 {
-  if (self->is_auditioner)
+  if (track_is_auditioner (self))
     return;
 
   /* unselect lane regions */
@@ -2572,7 +2527,7 @@ track_remove_region (
   g_message (
     "removing region from track '%s':",
     self->name);
-  if (!self->is_auditioner)
+  if (!track_is_auditioner (self))
     region_print (region);
 
   /* check if region type matches track type */
@@ -2580,7 +2535,7 @@ track_remove_region (
     track_type_can_have_region_type (
       self->type, region->id.type));
 
-  if (!self->is_auditioner)
+  if (!track_is_auditioner (self))
     region_disconnect (region);
 
   g_warn_if_fail (region->id.lane_pos >= 0);
@@ -2614,7 +2569,7 @@ track_remove_region (
     }
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW &&
-      !self->is_auditioner)
+      !track_is_auditioner (self))
     {
       ArrangerObject * obj =
         (ArrangerObject *) region;
@@ -2883,17 +2838,17 @@ track_update_frames (
  */
 void
 track_fill_events (
-  const Track *         track,
+  const Track *                       self,
   const EngineProcessTimeInfo * const time_nfo,
-  MidiEvents *    midi_events,
-  StereoPorts *   stereo_ports)
+  MidiEvents *                        midi_events,
+  StereoPorts *                       stereo_ports)
 {
 #define g_start_frames (time_nfo->g_start_frames)
 #define local_offset (time_nfo->local_offset)
 #define nframes (time_nfo->nframes)
 
-  if (!track->is_auditioner &&
-      !TRANSPORT_IS_ROLLING)
+  if (!track_is_auditioner (self)
+      && !TRANSPORT_IS_ROLLING)
     return;
 
   const long g_end_frames =
@@ -2912,31 +2867,31 @@ track_fill_events (
     local_start_frame, nframes);
 #endif
 
-  TrackType tt = track->type;
+  TrackType tt = self->type;
 
   /* go through each lane */
   const int num_loops =
     (tt == TRACK_TYPE_CHORD ?
-     1 : track->num_lanes);
+     1 : self->num_lanes);
   for (int j = 0; j < num_loops; j++)
     {
       TrackLane * lane = NULL;
       if (tt != TRACK_TYPE_CHORD)
         {
-          lane = track->lanes[j];
+          lane = self->lanes[j];
           g_return_if_fail (lane);
         }
 
       /* go through each region */
       const int num_regions =
         (tt == TRACK_TYPE_CHORD ?
-         track->num_chord_regions :
+         self->num_chord_regions :
          lane->num_regions);
       for (int i = 0; i < num_regions; i++)
         {
           ZRegion * r =
             tt == TRACK_TYPE_CHORD ?
-            track->chord_regions[i] :
+            self->chord_regions[i] :
             lane->regions[i];
           ArrangerObject * r_obj =
             (ArrangerObject *) r;
@@ -2952,7 +2907,7 @@ track_fill_events (
            * region should not be bounced */
           if (AUDIO_ENGINE->bounce_mode !=
                 BOUNCE_OFF &&
-              (!r->bounce || !track->bounce))
+              (!r->bounce || !self->bounce))
             {
               continue;
             }
@@ -3049,7 +3004,7 @@ track_fill_events (
     }
 
 #if 0
-  g_message ("TRACK %s ENDING", track->name);
+  g_message ("TRACK %s ENDING", self->name);
 #endif
 
   if (midi_events)
@@ -3324,16 +3279,11 @@ track_set_name (
         channel_update_track_name_hash (
           self->channel, old_hash, new_hash);
 
-      size_t max_size = 20;
-      Port ** ports =
-        object_new_n (max_size, Port *);
-      int num_ports = 0;
-      track_append_all_ports (
-        self, &ports, &num_ports, true,
-        &max_size, true);
-      for (int i = 0; i < num_ports; i++)
+      GPtrArray * ports = g_ptr_array_new ();
+      track_append_ports (self, ports, true);
+      for (size_t i = 0; i < ports->len; i++)
         {
-          Port * port = ports[i];
+          Port * port = g_ptr_array_index (ports, i);
           g_return_if_fail (
             IS_PORT_AND_NONNULL (port));
           port_update_track_name_hash (
@@ -3345,10 +3295,11 @@ track_set_name (
               port_rename_backend (port);
             }
         }
-      object_zero_and_free_if_nonnull (ports);
+      object_free_w_func_and_null (
+        g_ptr_array_unref, ports);
     }
 
-  if (self->is_project)
+  if (track_is_in_active_project (self))
     {
       /* update children */
       track_update_children (self);
@@ -3555,70 +3506,6 @@ track_set_icon (
     }
 }
 
-/**
- * Recursively marks the track and children as
- * project objects or not.
- */
-void
-track_set_is_project (
-  Track * self,
-  bool    is_project)
-{
-#if 0
-  g_debug (
-    "Setting track %s is_project to %d...",
-    self->name, is_project);
-#endif
-
-  track_processor_set_is_project (
-    self->processor, is_project);
-  if (self->channel)
-    {
-      fader_set_is_project (
-        self->channel->fader, is_project);
-    }
-
-  /** set all track ports to non project */
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  Port * port;
-  track_append_all_ports (
-    self, &ports, &num_ports, true, &max_size,
-    true);
-  for (int i = 0; i < num_ports; i++)
-    {
-      port = ports[i];
-      g_return_if_fail (IS_PORT (port));
-      /*g_message (*/
-        /*"%s: setting %s (%p) to %d",*/
-        /*__func__, port->id.label, port, is_project);*/
-      port_set_is_project (port, is_project);
-    }
-  free (ports);
-
-  /* activates/deactivates all plugins */
-  if (self->channel)
-    {
-      Plugin * plugins[60];
-      int num_plugins =
-        channel_get_plugins (
-          self->channel, plugins);
-      for (int i = 0; i < num_plugins; i++)
-        {
-          Plugin * pl = plugins[i];
-          plugin_set_is_project (pl, is_project);
-          if (!pl->instantiation_failed)
-            {
-              plugin_activate (pl, is_project);
-            }
-        }
-    }
-
-  self->is_project = is_project;
-}
-
 TrackType
 track_type_get_from_string (
   const char * str)
@@ -3749,45 +3636,25 @@ track_mark_for_bounce (
 /**
  * Appends all channel ports and optionally
  * plugin ports to the array.
- *
- * @param size Current array count.
- * @param is_dynamic Whether the array can be
- *   dynamically resized.
- * @param max_size Current array size, if dynamic.
  */
 void
-track_append_all_ports (
-  Track *   self,
-  Port ***  ports,
-  int *     size,
-  bool      is_dynamic,
-  size_t *  max_size,
-  bool      include_plugins)
+track_append_ports (
+  Track *     self,
+  GPtrArray * ports,
+  bool        include_plugins)
 {
   if (track_type_has_channel (self->type))
     {
       g_return_if_fail (self->channel);
-      channel_append_all_ports (
-        self->channel, ports, size, is_dynamic,
-        max_size, include_plugins);
+      channel_append_ports (
+        self->channel, ports, include_plugins);
       track_processor_append_ports (
-        self->processor, ports, size, is_dynamic,
-        max_size);
+        self->processor, ports);
     }
 
 #define _ADD(port) \
-  if (is_dynamic) \
-    { \
-      array_double_size_if_full ( \
-        *ports, (*size), (*max_size), Port *); \
-    } \
-  else if ((size_t) *size == *max_size) \
-    { \
-      g_return_if_reached (); \
-    } \
   g_warn_if_fail (port); \
-  array_append ( \
-    *ports, (*size), port)
+  g_ptr_array_add (ports, port)
 
   if (track_type_can_record (self->type))
     {
@@ -3808,9 +3675,7 @@ track_append_all_ports (
         {
           Plugin * pl = self->modulators[j];
 
-          plugin_append_ports (
-            pl, ports, max_size, is_dynamic,
-            size);
+          plugin_append_ports (pl, ports);
         }
       for (int j = 0;
            j < self->num_modulator_macros; j++)

@@ -159,7 +159,7 @@ region_set_lane (
   g_return_if_fail (
     IS_TRACK_AND_NONNULL (lane->track));
 
-  if (lane->is_auditioner)
+  if (track_lane_is_auditioner (lane))
     self->base.is_auditioner = true;
 
   self->id.lane_pos = lane->pos;
@@ -518,10 +518,6 @@ region_get_type_as_string (
 
 /**
  * Sanity checking.
- *
- * @param is_project Whether this region ispart
- *   of the project (as opposed to a clone in
- *   the undo stack, etc.).
  */
 bool
 region_validate (

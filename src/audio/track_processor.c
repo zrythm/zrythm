@@ -46,8 +46,7 @@
 
 static void
 init_common (
-  TrackProcessor * self,
-  bool             is_project)
+  TrackProcessor * self)
 {
   if (self->midi_cc[0])
     {
@@ -87,28 +86,22 @@ init_common (
 void
 track_processor_init_loaded (
   TrackProcessor * self,
-  bool             is_project)
+  Track *          track)
 {
   self->magic = TRACK_PROCESSOR_MAGIC;
+  self->track = track;
 
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  track_processor_append_ports (
-    self, &ports, &num_ports, true, &max_size);
-  for (int i = 0; i < num_ports; i++)
+  GPtrArray * ports = g_ptr_array_new ();
+  track_processor_append_ports (self, ports);
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
-      port->magic = PORT_MAGIC;
-      port->is_project = is_project;
-      port_set_owner_track_processor (port, self);
+      Port * port = g_ptr_array_index (ports, i);
+      port_init_loaded (port, self);
     }
-  free (ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports)
 
-  track_processor_set_is_project (self, is_project);
-
-  init_common (self, is_project);
+  init_common (self);
 }
 
 /**
@@ -131,21 +124,20 @@ init_midi_port (
   if (in)
     {
       self->midi_in =
-        port_new_with_type (
-          TYPE_EVENT, FLOW_INPUT, "TP MIDI in");
+        port_new_with_type_and_owner (
+          TYPE_EVENT, FLOW_INPUT, "TP MIDI in",
+          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       g_warn_if_fail (IS_PORT (self->midi_in));
-      port_set_owner_track_processor (
-        self->midi_in, self);
-      self->midi_in->id.flags |= PORT_FLAG_SEND_RECEIVABLE;
+      self->midi_in->id.flags |=
+        PORT_FLAG_SEND_RECEIVABLE;
     }
   else
     {
       self->midi_out =
-        port_new_with_type (
-          TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out");
+        port_new_with_type_and_owner (
+          TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out",
+          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       g_warn_if_fail (IS_PORT (self->midi_out));
-      port_set_owner_track_processor (
-        self->midi_out, self);
     }
 }
 
@@ -158,7 +150,6 @@ init_midi_cc_ports (
   x->id.flags |= PORT_FLAG_MIDI_AUTOMATABLE; \
   x->id.flags |= PORT_FLAG_AUTOMATABLE; \
   x->id.port_index = idx; \
-  port_set_owner_track_processor (x, self)
 
   char name[400];
   for (int i = 0; i < 16; i++)
@@ -172,8 +163,10 @@ init_midi_cc_ports (
             name, "Ch%d %s", channel,
             midi_get_cc_name (j));
           Port * cc =
-            port_new_with_type (
-              TYPE_CONTROL, FLOW_INPUT, name);
+            port_new_with_type_and_owner (
+              TYPE_CONTROL, FLOW_INPUT, name,
+              PORT_OWNER_TYPE_TRACK_PROCESSOR,
+              self);
           INIT_MIDI_PORT (cc, i * 128 + j);
           self->midi_cc[i * 128 + j] = cc;
         }
@@ -181,8 +174,9 @@ init_midi_cc_ports (
       sprintf (
         name, "Ch%d Pitch bend", i + 1);
       Port * cc =
-        port_new_with_type (
-          TYPE_CONTROL, FLOW_INPUT, name);
+        port_new_with_type_and_owner (
+          TYPE_CONTROL, FLOW_INPUT, name,
+          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       INIT_MIDI_PORT (cc, i);
       cc->maxf = 8191.f;
       cc->minf = -8192.f;
@@ -194,8 +188,9 @@ init_midi_cc_ports (
       sprintf (
         name, "Ch%d Poly key pressure", i + 1);
       cc =
-        port_new_with_type (
-          TYPE_CONTROL, FLOW_INPUT, name);
+        port_new_with_type_and_owner (
+          TYPE_CONTROL, FLOW_INPUT, name,
+          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       INIT_MIDI_PORT (cc, i);
       cc->id.flags2 |=
         PORT_FLAG2_MIDI_POLY_KEY_PRESSURE;
@@ -204,8 +199,9 @@ init_midi_cc_ports (
       sprintf (
         name, "Ch%d Channel pressure", i + 1);
       cc =
-        port_new_with_type (
-          TYPE_CONTROL, FLOW_INPUT, name);
+        port_new_with_type_and_owner (
+          TYPE_CONTROL, FLOW_INPUT, name,
+          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       INIT_MIDI_PORT (cc, i);
       cc->id.flags2 |=
         PORT_FLAG2_MIDI_CHANNEL_PRESSURE;
@@ -238,21 +234,16 @@ init_stereo_out_ports (
   PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;
 
   l =
-    port_new_with_type (
+    port_new_with_type_and_owner (
       TYPE_AUDIO, flow,
-      in ?
-        "TP Stereo in L" :
-        "TP Stereo out L");
+      in ? "TP Stereo in L" : "TP Stereo out L",
+      PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
 
   r =
-    port_new_with_type (
+    port_new_with_type_and_owner (
       TYPE_AUDIO, flow,
-      in ?
-        "TP Stereo in R" :
-        "TP Stereo out R");
-
-  port_set_owner_track_processor (l, self);
-  port_set_owner_track_processor (r, self);
+      in ? "TP Stereo in R" : "TP Stereo out R",
+      PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
 
   *sp = stereo_ports_new_from_existing (l, r);
 
@@ -273,11 +264,11 @@ track_processor_new (
 {
   TrackProcessor * self =
     object_new (TrackProcessor);
-
   self->schema_version =
     TRACK_PROCESSOR_SCHEMA_VERSION;
   self->magic = TRACK_PROCESSOR_MAGIC;
   self->track = tr;
+
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
 
@@ -292,13 +283,13 @@ track_processor_new (
           tr->type == TRACK_TYPE_CHORD)
         {
           self->piano_roll =
-            port_new_with_type (
+            port_new_with_type_and_owner (
               TYPE_EVENT, FLOW_INPUT,
-              "TP Piano Roll");
+              "TP Piano Roll",
+              PORT_OWNER_TYPE_TRACK_PROCESSOR,
+              self);
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
-          port_set_owner_track_processor (
-            self->piano_roll, self);
           if (tr->type != TRACK_TYPE_CHORD)
             {
               init_midi_cc_ports (self, false);
@@ -311,17 +302,19 @@ track_processor_new (
       if (tr->type == TRACK_TYPE_AUDIO)
         {
           self->mono =
-            port_new_with_type (
+            port_new_with_type_and_owner (
               TYPE_CONTROL, FLOW_INPUT,
-              "TP Mono Toggle");
-          port_set_owner_track_processor (
-            self->mono, self);
+              "TP Mono Toggle",
+              PORT_OWNER_TYPE_TRACK_PROCESSOR,
+              self);
           self->mono->id.flags |= PORT_FLAG_TOGGLE;
           self->mono->id.flags |= PORT_FLAG_TP_MONO;
           self->input_gain =
-            port_new_with_type (
+            port_new_with_type_and_owner (
               TYPE_CONTROL, FLOW_INPUT,
-              "TP Input Gain");
+              "TP Input Gain",
+              PORT_OWNER_TYPE_TRACK_PROCESSOR,
+              self);
           self->input_gain->minf = 0.f;
           self->input_gain->maxf = 4.f;
           self->input_gain->zerof = 0.f;
@@ -331,8 +324,6 @@ track_processor_new (
           port_set_control_value (
             self->input_gain, 1.f, F_NOT_NORMALIZED,
             F_NO_PUBLISH_EVENTS);
-          port_set_owner_track_processor (
-            self->input_gain, self);
         }
       break;
     default:
@@ -342,9 +333,10 @@ track_processor_new (
   if (tr->type == TRACK_TYPE_AUDIO)
     {
       self->output_gain =
-        port_new_with_type (
+        port_new_with_type_and_owner (
           TYPE_CONTROL, FLOW_INPUT,
-          "TP Output Gain");
+          "TP Output Gain",
+          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->output_gain->minf = 0.f;
       self->output_gain->maxf = 4.f;
       self->output_gain->zerof = 0.f;
@@ -354,13 +346,12 @@ track_processor_new (
       port_set_control_value (
         self->output_gain, 1.f, F_NOT_NORMALIZED,
         F_NO_PUBLISH_EVENTS);
-      port_set_owner_track_processor (
-        self->output_gain, self);
 
       self->monitor_audio =
-        port_new_with_type (
+        port_new_with_type_and_owner (
           TYPE_CONTROL, FLOW_INPUT,
-          "Monitor audio");
+          "Monitor audio",
+          PORT_OWNER_TYPE_TRACK_PROCESSOR, self);
       self->monitor_audio->id.flags |=
         PORT_FLAG_TOGGLE;
       self->monitor_audio->id.flags2 |=
@@ -368,11 +359,9 @@ track_processor_new (
       port_set_control_value (
         self->monitor_audio, 0.f, F_NOT_NORMALIZED,
         F_NO_PUBLISH_EVENTS);
-      port_set_owner_track_processor (
-        self->monitor_audio, self);
     }
 
-  init_common (self, true);
+  init_common (self);
 
   return self;
 }
@@ -380,24 +369,11 @@ track_processor_new (
 void
 track_processor_append_ports (
   TrackProcessor * self,
-  Port ***         ports,
-  int *            size,
-  bool             is_dynamic,
-  size_t *         max_size)
+  GPtrArray *      ports)
 {
 #define _ADD(port) \
-  if (is_dynamic) \
-    { \
-      array_double_size_if_full ( \
-        *ports, (*size), (*max_size), Port *); \
-    } \
-  else if ((size_t) *size == *max_size) \
-    { \
-      g_return_if_reached (); \
-    } \
   g_warn_if_fail (port); \
-  array_append ( \
-    *ports, (*size), port)
+  g_ptr_array_add (ports, port)
 
   if (self->stereo_in)
     {
@@ -459,27 +435,6 @@ track_processor_append_ports (
           _ADD (self->channel_pressure[i]);
         }
     }
-}
-
-void
-track_processor_set_is_project (
-  TrackProcessor * self,
-  bool             is_project)
-{
-  self->is_project = is_project;
-
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  track_processor_append_ports (
-    self, &ports, &num_ports, true, &max_size);
-  for (int i = 0; i < num_ports; i++)
-    {
-      Port * port = ports[i];
-      port_set_is_project (port, is_project);
-    }
-  free (ports);
 }
 
 /**
@@ -944,7 +899,7 @@ track_processor_process (
       /* get events from track if playing */
       else if (TRANSPORT->play_state ==
                  PLAYSTATE_ROLLING ||
-               tr->is_auditioner)
+               track_is_auditioner (tr))
         {
           /* fill midi events from piano roll
            * data */
@@ -1114,7 +1069,7 @@ track_processor_process (
       break;
     }
 
-  if (!tr->is_auditioner
+  if (!track_is_auditioner (tr)
       && TRANSPORT->preroll_frames_remaining == 0
       &&
       (track_type_can_record (tr->type)

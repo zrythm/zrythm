@@ -59,8 +59,11 @@ _at_create (void)
 
 void
 automation_track_init_loaded (
-  AutomationTrack * self)
+  AutomationTrack *     self,
+  AutomationTracklist * atl)
 {
+  self->atl = atl;
+
   /* init regions */
   self->regions_size =
     (size_t) self->num_regions;
@@ -596,7 +599,7 @@ automation_track_should_be_recording (
             AUTOMATION_RECORD_MODE_TOUCH)
         {
           Port * port =
-            automation_track_get_port (at);
+            port_find_from_identifier (&at->port_id);
           g_return_val_if_fail (
             IS_PORT_AND_NONNULL (port), false);
           gint64 diff =
@@ -686,16 +689,6 @@ automation_track_get_track (
   return track;
 }
 
-Port *
-automation_track_get_port (
-  const AutomationTrack * const self)
-{
-  Port * port =
-    port_find_from_identifier (&self->port_id);
-
-  return port;
-}
-
 /**
  * Sets the index of the AutomationTrack in the
  * AutomationTracklist.
@@ -745,7 +738,7 @@ automation_track_get_val_at_pos (
     (ArrangerObject *) ap;
 
   Port * port =
-    automation_track_get_port (self);
+    port_find_from_identifier (&self->port_id);
   g_return_val_if_fail (port, 0.f);
 
   /* no automation points yet, return negative

@@ -45,6 +45,7 @@
 #endif
 
 typedef struct WindowsMmeDevice WindowsMmeDevice;
+typedef struct HardwareProcessor HardwareProcessor;
 
 /**
  * @addtogroup audio
@@ -60,6 +61,13 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
  * Used for fixed-size arrays.
  */
 #define EXT_PORTS_MAX 1024
+
+#define ext_port_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->hw_processor \
+    && \
+    hw_processor_is_in_active_project ( \
+      (self)->hw_processor))
 
 /**
  * External port type.
@@ -160,6 +168,9 @@ typedef struct ExtPort
    * use) */
   int              hw_processor_index;
 
+  /** Pointer to owner hardware processor, if any. */
+  HardwareProcessor * hw_processor;
+
   /** Whether the port is active and receiving
    * events (for use by hw processor). */
   bool             active;
@@ -207,9 +218,12 @@ ext_port_schema =
 /**
  * Inits the ExtPort after loading a project.
  */
+COLD
+NONNULL_ARGS (1)
 void
 ext_port_init_loaded (
-  ExtPort * ext_port);
+  ExtPort *           self,
+  HardwareProcessor * hw_processor);
 
 /**
  * Prints the port info.
@@ -308,17 +322,13 @@ ext_port_get_enabled (
  *   MIDI inputs like MIDI keyboards, pass
  *   \ref FLOW_OUTPUT here.
  * @param hw Hardware or not.
- * @param ports An array of ExtPort pointers to fill
- *   in. The array should be preallocated.
- * @param size Size of the array to fill in.
  */
 void
 ext_ports_get (
-  PortType   type,
-  PortFlow   flow,
-  bool       hw,
-  ExtPort ** ports,
-  int *      size);
+  PortType    type,
+  PortFlow    flow,
+  bool        hw,
+  GPtrArray * ports);
 
 /**
  * Creates a shallow clone of the port.

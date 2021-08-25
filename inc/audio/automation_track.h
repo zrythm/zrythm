@@ -179,8 +179,9 @@ typedef struct AutomationTrack
   CustomButtonWidget * bot_left_buttons[8];
   int                  num_bot_left_buttons;
 
-  /** The widget. */
-  //AutomationTrackWidget * widget;
+  /** Pointer to owner automation tracklist, if
+   * any. */
+  AutomationTracklist * atl;
 } AutomationTrack;
 
 static const cyaml_schema_field_t
@@ -216,10 +217,12 @@ static const cyaml_schema_value_t
     automation_track_fields_schema),
 };
 
-NONNULL
+COLD
+NONNULL_ARGS (1)
 void
 automation_track_init_loaded (
-  AutomationTrack * self);
+  AutomationTrack *     self,
+  AutomationTracklist * atl);
 
 /**
  * Creates an automation track for the given
@@ -495,16 +498,12 @@ automation_track_get_y_px_from_normalized_val (
   AutomationTrack * self,
   float             normalized_val);
 
+#if 0
 NONNULL
 Port *
 automation_track_get_port (
   const AutomationTrack * const self);
-
-/**
- * Updates automation track & its GUI
- */
-//void
-//automation_track_update (AutomationTrack * at);
+#endif
 
 /**
  * Gets the last ZRegion in the AutomationTrack.

@@ -48,6 +48,19 @@ typedef struct SupportedFile SupportedFile;
 #define TRACKLIST (PROJECT->tracklist)
 #define MAX_TRACKS 3000
 
+#define tracklist_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->project == PROJECT \
+    || \
+    (self->sample_processor \
+     && \
+     sample_processor_is_in_active_project ( \
+       self->sample_processor)))
+
+#define tracklist_is_auditioner(self) \
+  (self->sample_processor \
+   && tracklist_is_in_active_project (self))
+
 /**
  * Used in track search functions.
  */
@@ -129,9 +142,11 @@ typedef struct Tracklist
    * be moved beyond num_tracks. */
   bool                swapping_tracks;
 
-  /** Whether this is an auditioning tracklist (used
-   * by SampleProcessor. */
-  bool                is_auditioner;
+  /** Pointer to owner sample processor, if any. */
+  SampleProcessor *   sample_processor;
+
+  /** Pointer to owner project, if any. */
+  Project *           project;
 } Tracklist;
 
 static const cyaml_schema_field_t
@@ -158,14 +173,18 @@ static const cyaml_schema_value_t
  * Initializes the tracklist when loading a project.
  */
 COLD
-NONNULL
+NONNULL_ARGS (1)
 void
 tracklist_init_loaded (
-  Tracklist * self);
+  Tracklist *       self,
+  Project *         project,
+  SampleProcessor * sample_processor);
 
 COLD
 Tracklist *
-tracklist_new (Project * project);
+tracklist_new (
+  Project *         project,
+  SampleProcessor * sample_processor);
 
 /**
  * Selects or deselects all tracks.
@@ -335,6 +354,15 @@ int
 tracklist_get_track_pos (
   Tracklist * self,
   Track *     track);
+
+/**
+ * Returns the first track found with the given
+ * type.
+ */
+Track *
+tracklist_get_track_by_type (
+  Tracklist * self,
+  TrackType   type);
 
 ChordTrack *
 tracklist_get_chord_track (

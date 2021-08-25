@@ -56,6 +56,11 @@ typedef struct PortConnectionsManager
 #define channel_send_is_prefader(x) \
   (x->slot < CHANNEL_SEND_POST_FADER_START_SLOT)
 
+#define channel_send_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->track \
+    && track_is_in_active_project (self->track))
+
 /**
  * Channel send.
  *
@@ -158,11 +163,11 @@ channel_send_schema =
     ChannelSend, channel_send_fields_schema),
 };
 
-NONNULL
+NONNULL_ARGS (1)
 void
 channel_send_init_loaded (
   ChannelSend * self,
-  bool          is_project);
+  Track *       track);
 
 /**
  * Creates a channel send instance.
@@ -170,7 +175,8 @@ channel_send_init_loaded (
 ChannelSend *
 channel_send_new (
   unsigned int track_name_hash,
-  int          slot);
+  int          slot,
+  Track *      track);
 
 /**
  * Gets the owner track.
@@ -310,6 +316,11 @@ channel_send_find_widget (
 void
 channel_send_connect_to_owner (
   ChannelSend * self);
+
+void
+channel_send_append_ports (
+  ChannelSend * self,
+  GPtrArray *   ports);
 
 /**
  * Appends the connection(s), if non-empty, to the

@@ -62,6 +62,8 @@ typedef struct Marker Marker;
 typedef struct PluginDescriptor PluginDescriptor;
 typedef struct Tracklist Tracklist;
 typedef struct SupportedFile SupportedFile;
+typedef struct TracklistSelections
+  TracklistSelections;
 typedef enum PassthroughProcessorType
   PassthroughProcessorType;
 typedef enum FaderType FaderType;
@@ -83,6 +85,19 @@ typedef void MIDI_FILE;
   (((Track *) x)->magic == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) \
   (x && IS_TRACK (x))
+
+#define track_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->tracklist \
+    && \
+    tracklist_is_in_active_project ( \
+      self->tracklist))
+
+/** Whether this track is part of the
+ * SampleProcessor auditioner tracklist. */
+#define track_is_auditioner(self) \
+  (self->tracklist \
+   && tracklist_is_auditioner (self->tracklist))
 
 /**
  * The Track's type.
@@ -485,16 +500,15 @@ typedef struct Track
 
   int                 magic;
 
-  /** Whether this is a project track (as opposed
-   * to a clone used in actions). */
-  bool                is_project;
-
   /** Whether currently disconnecting. */
   bool                disconnecting;
 
-  /** Whether this track is part of the
-   * SampleProcessor auditioner tracklist. */
-  bool                is_auditioner;
+  /** Pointer to owner tracklist, if any. */
+  Tracklist *         tracklist;
+
+  /** Pointer to owner tracklist selections, if
+   * any. */
+  TracklistSelections * ts;
 } Track;
 
 static const cyaml_schema_field_t
@@ -570,10 +584,12 @@ track_schema = {
 };
 
 COLD
+NONNULL_ARGS (1)
 void
 track_init_loaded (
-  Track * track,
-  bool    project);
+  Track *               self,
+  Tracklist *           tracklist,
+  TracklistSelections * ts);
 
 /**
  * Inits the Track, optionally adding a single
@@ -597,29 +613,23 @@ track_init (
  *
  * @param pos Position in the Tracklist.
  * @param with_lane Init the Track with a lane.
- * @param auditioner Whether this is an auditioner
- *   track (used by SampleProcessor).
  */
 Track *
 track_new (
   TrackType    type,
   int          pos,
   const char * label,
-  const int    with_lane,
-  bool         auditioner);
+  const int    with_lane);
 
 /**
  * Clones the track and returns the clone.
  *
  * @param error To be filled if an error occurred.
- * @param src_is_project Whether @ref track is a
- *   project track.
  */
 NONNULL_ARGS (1)
 Track *
 track_clone (
   Track *   track,
-  bool      src_is_project,
   GError ** error);
 
 /**
@@ -992,10 +1002,10 @@ track_remove_region (
  */
 void
 track_fill_events (
-  const Track *         track,
+  const Track *                       self,
   const EngineProcessTimeInfo * const time_nfo,
-  MidiEvents *    midi_events,
-  StereoPorts *   stereo_ports);
+  MidiEvents *                        midi_events,
+  StereoPorts *                       stereo_ports);
 
 /**
  * Verifies the identifiers on a live Track
@@ -1176,15 +1186,6 @@ track_get_channel (
 void
 track_update_children (
   Track * self);
-
-/**
- * Updates position in the tracklist and also
- * updates the information in the lanes.
- */
-void
-track_set_pos (
-  Track * track,
-  int     pos);
 
 /**
  * Returns if the Track should have a piano roll.
@@ -1425,15 +1426,6 @@ track_set_icon (
   bool         fire_events);
 
 /**
- * Recursively marks the track and children as
- * project objects or not.
- */
-void
-track_set_is_project (
-  Track * self,
-  bool    is_project);
-
-/**
  * Returns the plugin at the given slot, if any.
  *
  * @param slot The slot (ignored if instrument is
@@ -1465,20 +1457,12 @@ track_mark_for_bounce (
 /**
  * Appends all channel ports and optionally
  * plugin ports to the array.
- *
- * @param size Current array count.
- * @param is_dynamic Whether the array can be
- *   dynamically resized.
- * @param max_size Current array size, if dynamic.
  */
 void
-track_append_all_ports (
-  Track *   self,
-  Port ***  ports,
-  int *     size,
-  bool      is_dynamic,
-  size_t *  max_size,
-  bool      include_plugins);
+track_append_ports (
+  Track *     self,
+  GPtrArray * ports,
+  bool        include_plugins);
 
 /**
  * Freezes or unfreezes the track.

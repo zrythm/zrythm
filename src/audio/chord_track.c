@@ -57,7 +57,7 @@ chord_track_new (
   ChordTrack * self =
     track_new (
       TRACK_TYPE_CHORD, track_pos, _("Chords"),
-      F_WITHOUT_LANE, F_NOT_AUDITIONER);
+      F_WITHOUT_LANE);
 
   return self;
 }

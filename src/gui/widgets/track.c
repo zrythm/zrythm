@@ -837,7 +837,7 @@ draw_automation (
       PangoLayout * layout = self->layout;
       char str[50];
       Port * port =
-        automation_track_get_port (at);
+        port_find_from_identifier (&at->port_id);
       sprintf (
         str, "%.2f",
         (double)

@@ -181,7 +181,8 @@ _test_port_and_plugin_track_pos_after_duplication (
     TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  Port * port = automation_track_get_port (at);
+  Port * port =
+    port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   g_debug ("deff %f", (double) port->deff);
   float normalized_val =
@@ -344,7 +345,8 @@ _test_undo_track_deletion (
     TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  Port * port = automation_track_get_port (at);
+  Port * port =
+    port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap =
     automation_point_new_float (
@@ -933,7 +935,8 @@ test_ins_track_deletion_w_automation (void)
     TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  Port * port = automation_track_get_port (at);
+  Port * port =
+    port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap =
     automation_point_new_float (
@@ -973,7 +976,8 @@ test_ins_track_deletion_w_automation (void)
     TL_SELECTIONS, NULL);
 
   /* create some automation points */
-  port = automation_track_get_port (at);
+  port =
+    port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   ap =
     automation_point_new_float (
@@ -1207,6 +1211,8 @@ _test_move_tracks (
       &P_MASTER_TRACK->processor->stereo_in->r->
         id));
 
+  /* TODO replace below */
+#if 0
   /* verify fx track out ports */
   port_verify_src_and_dests (
     fx_track->channel->stereo_out->l);
@@ -1218,6 +1224,7 @@ _test_move_tracks (
     P_MASTER_TRACK->processor->stereo_in->l);
   port_verify_src_and_dests (
     P_MASTER_TRACK->processor->stereo_in->r);
+#endif
 
   /* unswap tracks */
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -1264,6 +1271,7 @@ _test_move_tracks (
       &P_MASTER_TRACK->processor->stereo_in->r->
         id));
 
+#if 0
   /* verify fx track out ports */
   port_verify_src_and_dests (
     fx_track->channel->stereo_out->l);
@@ -1275,6 +1283,7 @@ _test_move_tracks (
     P_MASTER_TRACK->processor->stereo_in->l);
   port_verify_src_and_dests (
     P_MASTER_TRACK->processor->stereo_in->r);
+#endif
 }
 
 static void __test_move_tracks (bool with_carla)
@@ -3216,19 +3225,31 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
-    TEST_PREFIX "test copy multiple inside",
-    (GTestFunc) test_copy_multiple_inside);
+    TEST_PREFIX "test ins track duplicate w send",
+    (GTestFunc) test_ins_track_duplicate_w_send);
   g_test_add_func (
-    TEST_PREFIX "test move multiple inside",
-    (GTestFunc) test_move_multiple_inside);
+    TEST_PREFIX "test delete track w midi file",
+    (GTestFunc) test_delete_track_w_midi_file);
   g_test_add_func (
-    TEST_PREFIX "test move inside",
-    (GTestFunc) test_move_inside);
+    TEST_PREFIX "test ins track deletion with automation",
+    (GTestFunc) test_ins_track_deletion_w_automation);
+  g_test_add_func (
+    TEST_PREFIX "test group track deletion",
+    (GTestFunc) test_group_track_deletion);
   g_test_add_func (
     TEST_PREFIX
     "test port and plugin track pos after duplication",
     (GTestFunc)
     test_port_and_plugin_track_pos_after_duplication);
+  g_test_add_func (
+    TEST_PREFIX "test move inside",
+    (GTestFunc) test_move_inside);
+  g_test_add_func (
+    TEST_PREFIX "test copy multiple inside",
+    (GTestFunc) test_copy_multiple_inside);
+  g_test_add_func (
+    TEST_PREFIX "test move multiple inside",
+    (GTestFunc) test_move_multiple_inside);
 #ifdef HAVE_CARLA
   g_test_add_func (
     TEST_PREFIX
@@ -3237,20 +3258,8 @@ main (int argc, char *argv[])
     test_port_and_plugin_track_pos_after_duplication_with_carla);
 #endif
   g_test_add_func (
-    TEST_PREFIX "test group track deletion",
-    (GTestFunc) test_group_track_deletion);
-  g_test_add_func (
-    TEST_PREFIX "test ins track deletion with automation",
-    (GTestFunc) test_ins_track_deletion_w_automation);
-  g_test_add_func (
-    TEST_PREFIX "test delete track w midi file",
-    (GTestFunc) test_delete_track_w_midi_file);
-  g_test_add_func (
     TEST_PREFIX "test_move_tracks",
     (GTestFunc) test_move_tracks);
-  g_test_add_func (
-    TEST_PREFIX "test ins track duplicate w send",
-    (GTestFunc) test_ins_track_duplicate_w_send);
   g_test_add_func (
     TEST_PREFIX "test duplicate w output and send",
     (GTestFunc) test_duplicate_w_output_and_send);

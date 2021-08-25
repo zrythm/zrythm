@@ -489,7 +489,8 @@ _test_port_and_plugin_track_pos_after_move (
   g_assert_true (ret);
 
   /* create some automation points */
-  Port * port = automation_track_get_port (at);
+  Port * port =
+    port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap =
     automation_point_new_float (
@@ -712,7 +713,8 @@ test_move_two_plugins_one_slot_up (void)
   at = atl->ats[atl->num_ats - 1];
 
   /* create some automation points */
-  Port * port = automation_track_get_port (at);
+  Port * port =
+    port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   atl = track_get_automation_tracklist (track);
   at = atl->ats[atl->num_ats - 1];
@@ -1495,7 +1497,8 @@ _test_replace_instrument (
   g_assert_cmpint (num_regions, ==, 1);
 
   /* create some automation points */
-  Port * port = automation_track_get_port (at);
+  Port * port =
+    port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   AutomationPoint * ap =
     automation_point_new_float (

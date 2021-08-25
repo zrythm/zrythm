@@ -43,6 +43,12 @@
 #define HW_OUT_PROCESSOR \
   (AUDIO_ENGINE->hw_out_processor)
 
+#define hw_processor_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->engine \
+    && \
+    engine_is_in_active_project ((self)->engine))
+
 /**
  * Hardware processor.
  */
@@ -97,6 +103,9 @@ typedef struct HardwareProcessor
 
   guint           rescan_timeout_id;
 
+  /** Pointer to owner engine, if any. */
+  AudioEngine *   engine;
+
 } HardwareProcessor;
 
 static const cyaml_schema_field_t
@@ -130,16 +139,22 @@ hardware_processor_schema =
     hardware_processor_fields_schema),
 };
 
+COLD
+NONNULL_ARGS (1)
 void
 hardware_processor_init_loaded (
-  HardwareProcessor * self);
+  HardwareProcessor * self,
+  AudioEngine *       engine);
 
 /**
  * Returns a new empty instance.
  */
+COLD
+WARN_UNUSED_RESULT
 HardwareProcessor *
 hardware_processor_new (
-  bool      input);
+  bool          input,
+  AudioEngine * engine);
 
 /**
  * Rescans the hardware ports and appends any missing

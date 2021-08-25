@@ -258,25 +258,24 @@ param_has_range (
  *   parameter (set via atom messages).
  * @param port_exists If zrythm port exists (when
  *   loading)
- * @param is_project Whether the plugin is a
- *   project plugin.
  *
  * @return Non-zero if fail.
 */
 static Port *
 create_port (
-  Lv2Plugin *    lv2_plugin,
+  Lv2Plugin *    self,
   const uint32_t lv2_port_index,
   Lv2Parameter * param,
   const float    default_value,
-  const int      port_exists,
-  bool           is_project)
+  const int      port_exists)
 {
-  Plugin * pl = lv2_plugin->plugin;
+  Plugin * pl = self->plugin;
+  bool is_project =
+    lv2_plugin_is_in_active_project (self);
   const LilvPlugin * lilv_plugin =
-    lv2_plugin->lilv_plugin;
+    self->lilv_plugin;
   LV2_Atom_Forge * forge =
-    &lv2_plugin->main_forge;
+    &self->main_forge;
   Port * port = NULL;
   if (port_exists && is_project)
     {
@@ -286,7 +285,7 @@ create_port (
             plugin_get_port_by_param_uri (
               pl,
               lv2_urid_unmap_uri (
-                lv2_plugin, param->urid));
+                self, param->urid));
         }
       else
         {
@@ -436,11 +435,9 @@ create_port (
             }
 
           port =
-            port_new_with_type (
-              type, flow, name_str);
-
-          port_set_owner_plugin (
-            port, lv2_plugin->plugin);
+            port_new_with_type_and_owner (
+              type, flow, name_str,
+              PORT_OWNER_TYPE_PLUGIN, self->plugin);
         }
       lilv_node_free (name_node);
 
@@ -517,7 +514,7 @@ create_port (
             {
               pi->flags |= PORT_FLAG_FREEWHEEL;
             }
-          if (lv2_plugin->enabled_in ==
+          if (self->enabled_in ==
                 (int) lv2_port_index)
             {
               pi->flags |=
@@ -679,7 +676,7 @@ create_port (
                 {
                   pi->flags |=
                     PORT_FLAG_WANT_POSITION;
-                  lv2_plugin->want_position = true;
+                  self->want_position = true;
                 }
               if (lilv_nodes_contains (
                     atom_supports,
@@ -956,29 +953,9 @@ create_port (
 
 void
 lv2_plugin_init_loaded (
-  Lv2Plugin * self,
-  bool        project)
+  Lv2Plugin * self)
 {
   self->magic = LV2_PLUGIN_MAGIC;
-
-  if (!project)
-    return;
-
-#if 0
-  Lv2Port * lv2_port;
-  for (int i = 0; i < self->num_ports; i++)
-    {
-      lv2_port = &self->ports[i];
-      lv2_port->port =
-        port_find_from_identifier (
-          &lv2_port->port_id);
-      lv2_port->port->lv2_port = lv2_port;
-      g_warn_if_fail (
-        port_identifier_is_equal (
-          &lv2_port->port_id,
-          &lv2_port->port->id));
-    }
-#endif
 }
 
 /**
@@ -1229,14 +1206,11 @@ lv2_plugin_get_parameters (
 /**
  * Create port structures from data (via
  * create_port()) for all ports.
- *
- * @param project Whether this is a project plugin.
  */
 NONNULL
 static int
 lv2_create_or_init_ports_and_parameters (
-  Lv2Plugin* self,
-  bool       project)
+  Lv2Plugin* self)
 {
   g_return_val_if_fail (
     IS_PLUGIN_AND_NONNULL (self->plugin) &&
@@ -1330,8 +1304,7 @@ lv2_create_or_init_ports_and_parameters (
           (i < num_lilv_ports) ?
             NULL : param,
           i < num_lilv_ports ?
-            default_values[i] : 0, ports_exist,
-          project);
+            default_values[i] : 0, ports_exist);
       g_return_val_if_fail (
         IS_PORT_AND_NONNULL (port), -1);
 
@@ -2595,17 +2568,16 @@ lv2_plugin_get_abs_state_file_path (
 int
 lv2_plugin_instantiate (
   Lv2Plugin *  self,
-  bool         project,
   bool         use_state_file,
   char *       preset_uri,
   LilvState *  state,
   GError **    error)
 {
   g_message (
-    "Instantiating... uri: %s, project: %d, "
+    "Instantiating... uri: %s, "
     "preset_uri: %s, use_state_file: %d"
     "state: %p",
-    self->plugin->setting->descr->uri, project,
+    self->plugin->setting->descr->uri,
     preset_uri, use_state_file, state);
 
   Plugin * pl = self->plugin;
@@ -2820,7 +2792,7 @@ lv2_plugin_instantiate (
   /* Set default values for all ports */
   ret =
     lv2_create_or_init_ports_and_parameters (
-      self, project);
+      self);
   g_return_val_if_fail (ret == 0, -1);
 
   /* --- Check for required features --- */

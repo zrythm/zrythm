@@ -304,7 +304,7 @@ automation_point_get_port (
     automation_point_get_automation_track (self);
   g_return_val_if_fail (at, NULL);
   Port * port =
-    automation_track_get_port (at);
+    port_find_from_identifier (&at->port_id);
   g_return_val_if_fail (port, NULL);
 
   return port;

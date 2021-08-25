@@ -63,12 +63,13 @@ mixer_selections_action_init_loaded (
 
   for (int i = 0; i < self->num_ats; i++)
     {
-      automation_track_init_loaded (self->ats[i]);
+      automation_track_init_loaded (
+        self->ats[i], NULL);
     }
   for (int i = 0; i < self->num_deleted_ats; i++)
     {
       automation_track_init_loaded (
-        self->deleted_ats[i]);
+        self->deleted_ats[i], NULL);
     }
 }
 
@@ -490,8 +491,7 @@ revert_deleted_plugin (
        * plugin */
       GError * err = NULL;
       Plugin * new_pl =
-        plugin_clone (
-          deleted_pl, F_NOT_PROJECT, &err);
+        plugin_clone (deleted_pl, &err);
       if (!new_pl)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -595,8 +595,7 @@ do_or_undo_create_or_delete (
                 {
                   pl =
                     plugin_clone (
-                      own_ms->plugins[i],
-                      F_NOT_PROJECT, &err);
+                      own_ms->plugins[i], &err);
                 }
               else
                 {
@@ -618,7 +617,7 @@ do_or_undo_create_or_delete (
                * created */
               int ret =
                 plugin_instantiate (
-                  pl, F_NOT_PROJECT, NULL, &err);
+                  pl, NULL, &err);
               if (ret != 0)
                 {
                   HANDLE_ERROR (
@@ -635,7 +634,7 @@ do_or_undo_create_or_delete (
               GError * err = NULL;
               pl =
                 plugin_clone (
-                  own_ms->plugins[i], false, &err);
+                  own_ms->plugins[i], &err);
               if (!IS_PLUGIN_AND_NONNULL (pl))
                 {
                   if (err)
@@ -721,24 +720,22 @@ do_or_undo_create_or_delete (
                 "restoring custom connections "
                 "for plugin '%s'",
                 pl->setting->descr->name);
-              size_t max_size = 20;
-              int num_ports = 0;
-              Port ** ports =
-                object_new_n (
-                  max_size, Port *);
-              plugin_append_ports (
-                pl, &ports, &max_size, F_DYNAMIC,
-                &num_ports);
-              for (int j = 0; j < num_ports; j++)
+              GPtrArray * ports =
+                g_ptr_array_new ();
+              plugin_append_ports (pl, ports);
+              for (size_t j = 0; j < ports->len;
+                   j++)
                 {
-                  Port * port = ports[j];
+                  Port * port =
+                    g_ptr_array_index (ports, j);
                   Port * prj_port =
                     port_find_from_identifier (
                       &port->id);
                   port_restore_from_non_project (
                     prj_port, port);
                 }
-              free (ports);
+              object_free_w_func_and_null (
+                g_ptr_array_unref, ports);
 
               /* copy automation from before
                * deletion */
@@ -777,30 +774,26 @@ do_or_undo_create_or_delete (
                 "remembering custom connections "
                 "for plugin '%s'",
                 own_pl->setting->descr->name);
-              size_t max_size = 20;
-              int num_ports = 0;
-              Port ** ports =
-                object_new_n (max_size, Port *);
+              GPtrArray * ports =
+                g_ptr_array_new ();
+              plugin_append_ports (prj_pl, ports);
+              GPtrArray * own_ports =
+                g_ptr_array_new ();
               plugin_append_ports (
-                prj_pl, &ports, &max_size,
-                F_DYNAMIC, &num_ports);
-              max_size = 20;
-              int num_own_ports = 0;
-              Port ** own_ports =
-                object_new_n (max_size, Port *);
-              plugin_append_ports (
-                own_pl, &own_ports, &max_size,
-                F_DYNAMIC, &num_own_ports);
-              for (int j = 0; j < num_ports; j++)
+                own_pl, own_ports);
+              for (size_t j = 0; j < ports->len;
+                   j++)
                 {
-                  Port * prj_port = ports[j];
+                  Port * prj_port =
+                    g_ptr_array_index (ports, j);
 
                   Port * own_port = NULL;
-                  for (int k = 0;
-                       k < num_own_ports; k++)
+                  for (size_t k = 0;
+                       k < own_ports->len; k++)
                     {
                       Port * cur_own_port =
-                        own_ports[k];
+                        g_ptr_array_index (
+                          own_ports, k);
                       if (port_identifier_is_equal (
                             &cur_own_port->id,
                             &prj_port->id))
@@ -816,8 +809,10 @@ do_or_undo_create_or_delete (
                   port_copy_metadata_from_project (
                     own_port, prj_port);
                 }
-              free (ports);
-              free (own_ports);
+              object_free_w_func_and_null (
+                g_ptr_array_unref, ports);
+              object_free_w_func_and_null (
+                g_ptr_array_unref, own_ports);
             }
 
           /* remove the plugin at given slot */
@@ -957,7 +952,7 @@ do_or_undo_move_or_copy (
             track_new (
               TRACK_TYPE_AUDIO_BUS,
               TRACKLIST->num_tracks, str,
-              F_WITH_LANE, F_NOT_AUDITIONER);
+              F_WITH_LANE);
           g_free (str);
           g_return_val_if_fail (to_tr, -1);
 
@@ -1035,7 +1030,7 @@ do_or_undo_move_or_copy (
               GError * err = NULL;
               pl =
                 plugin_clone (
-                  own_ms->plugins[i], false, &err);
+                  own_ms->plugins[i], &err);
               if (!IS_PLUGIN_AND_NONNULL (pl))
                 {
                   if (err)

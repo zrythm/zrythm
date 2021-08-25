@@ -44,7 +44,7 @@ mixer_selections_init_loaded (
       for (int i = 0; i < self->num_slots; i++)
         {
           plugin_init_loaded (
-            self->plugins[i], false);
+            self->plugins[i], NULL, self);
         }
     }
 
@@ -269,7 +269,7 @@ mixer_selections_add_slot (
         {
           GError * err = NULL;
           pl_to_append =
-            plugin_clone (pl, F_PROJECT, &err);
+            plugin_clone (pl, &err);
           if (!pl_to_append)
             {
               /* FIXME handle properly */
@@ -285,7 +285,7 @@ mixer_selections_add_slot (
         slot, pl_to_append);
     }
 
-  if (pl && pl->is_project)
+  if (pl && plugin_is_in_active_project (pl))
     {
       EVENTS_PUSH (
         ET_MIXER_SELECTIONS_CHANGED, pl);
@@ -538,7 +538,7 @@ mixer_selections_clone (
 
       GError * err = NULL;
       ms->plugins[i] =
-        plugin_clone (pl, F_PROJECT, &err);
+        plugin_clone (pl, &err);
       if (!ms->plugins[i])
         {
           g_warning (
@@ -565,7 +565,7 @@ mixer_selections_post_deserialize (
   for (int i = 0; i < self->num_slots; i++)
     {
       plugin_init_loaded (
-        self->plugins[i], F_NOT_PROJECT);
+        self->plugins[i], NULL, self);
     }
 
   /* sort the selections */

@@ -155,7 +155,7 @@ typedef struct ArrangerObject
   ArrangerObjectType type;
 
   /** Flags. */
-  ArrangerObjectFlags  flags;
+  ArrangerObjectFlags flags;
 
   /**
    * Position (or start Position if the object

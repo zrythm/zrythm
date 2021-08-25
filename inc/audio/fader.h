@@ -33,6 +33,10 @@
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Channel Channel;
+typedef struct AudioEngine AudioEngine;
+typedef struct ControlRoom ControlRoom;
+typedef struct SampleProcessor SampleProcessor;
+typedef struct PortIdentifier PortIdentifier;
 
 /**
  * @addtogroup audio
@@ -45,7 +49,24 @@ typedef struct Channel Channel;
 #define MONITOR_FADER (CONTROL_ROOM->monitor_fader)
 
 #define FADER_MAGIC 32548791
-#define IS_FADER(f) (f && f->magic == FADER_MAGIC)
+#define IS_FADER(f) (f->magic == FADER_MAGIC)
+#define IS_FADER_AND_NONNULL(f) \
+  (f && f->magic == FADER_MAGIC)
+
+#define fader_is_in_active_project(self) \
+  G_LIKELY ( \
+    (self->track != NULL \
+     && track_is_in_active_project (self->track)) \
+    || \
+    (self->sample_processor != NULL \
+     && \
+     sample_processor_is_in_active_project ( \
+       self->sample_processor)) \
+    || \
+    (self->control_room != NULL \
+     && \
+     control_room_is_in_active_project ( \
+       self->control_room)))
 
 /**
  * Fader type.
@@ -193,8 +214,14 @@ typedef struct Fader
    * a prefader). */
   bool             passthrough;
 
-  /** Owner track. */
+  /** Pointer to owner track, if any. */
   Track *          track;
+
+  /** Pointer to owner control room, if any. */
+  ControlRoom *    control_room;
+
+  /** Pointer to owner sample procesor, if any. */
+  SampleProcessor * sample_processor;
 
   int              magic;
 
@@ -254,10 +281,14 @@ fader_schema =
 /**
  * Inits fader after a project is loaded.
  */
+COLD
+NONNULL_ARGS (1)
 void
 fader_init_loaded (
-  Fader * self,
-  bool    is_project);
+  Fader *           self,
+  Track *           track,
+  ControlRoom *     control_room,
+  SampleProcessor * sample_processor);
 
 /**
  * Creates a new fader.
@@ -267,11 +298,28 @@ fader_init_loaded (
  * @param type The FaderType.
  * @param ch Channel, if this is a channel Fader.
  */
+COLD
 Fader *
 fader_new (
-  FaderType type,
-  Channel * ch,
-  bool      passthrough);
+  FaderType         type,
+  bool              passthrough,
+  Track *           track,
+  ControlRoom *     control_room,
+  SampleProcessor * sample_processor);
+
+Fader *
+fader_find_from_port_identifier (
+  const PortIdentifier * id);
+
+/**
+ * Appends the ports owned by fader to the given
+ * array.
+ */
+NONNULL
+void
+fader_append_ports (
+  const Fader * self,
+  GPtrArray *   ports);
 
 /**
  * Sets the amplitude of the fader. (0.0 to 2.0)
@@ -421,11 +469,6 @@ NONNULL
 Track *
 fader_get_track (
   Fader * self);
-
-void
-fader_set_is_project (
-  Fader * self,
-  bool    is_project);
 
 void
 fader_update_volume_and_fader_val (

@@ -35,8 +35,7 @@ SCM_DEFINE (
   Track * track =
     track_new (
       TRACK_TYPE_MIDI, scm_to_int (idx),
-      scm_to_locale_string (name), F_WITH_LANE,
-      F_NOT_AUDITIONER);
+      scm_to_locale_string (name), F_WITH_LANE);
 
   return scm_from_pointer (track, NULL);
 }

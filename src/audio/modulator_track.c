@@ -40,18 +40,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-void
-modulator_track_init_loaded (
-  Track * self,
-  bool    is_project)
-{
-  for (int i = 0; i < self->num_modulators; i++)
-    {
-      plugin_init_loaded (
-        self->modulators[i], is_project);
-    }
-}
-
 /**
  * Inits the modulator track.
  */
@@ -88,8 +76,7 @@ modulator_track_default (
   Track * self =
     track_new (
       TRACK_TYPE_MODULATOR, track_pos,
-      _("Modulators"), F_WITHOUT_LANE,
-      F_NOT_AUDITIONER);
+      _("Modulators"), F_WITHOUT_LANE);
 
   return self;
 }
@@ -202,18 +189,10 @@ modulator_track_insert_modulator (
     PLUGIN_SLOT_MODULATOR,
     slot);
 
-  plugin_set_is_project (
-    modulator, self->is_project);
-
   if (gen_automatables)
     {
       plugin_generate_automation_tracks (
         modulator, self);
-    }
-
-  if (self->is_project)
-    {
-      track_validate (self);
     }
 
   if (pub_events)
@@ -288,8 +267,6 @@ modulator_track_remove_modulator (
         plugin_free, plugin);
     }
 
-  /*plugin_set_is_project (plugin, false);*/
-
   if (!replacing)
     {
       for (int i = slot;
@@ -303,19 +280,6 @@ modulator_track_remove_modulator (
             PLUGIN_SLOT_MODULATOR, i);
         }
       self->num_modulators--;
-    }
-
-  if (self->is_project &&
-      /* only verify if we are deleting the plugin.
-       * if the plugin is moved to another slot
-       * this check fails because the port
-       * identifiers in the automation tracks are
-       * already updated to point to the next
-       * slot and the plugin is not found there
-       * yet */
-      deleting_modulator)
-    {
-      track_validate (self);
     }
 
   if (recalc_graph)

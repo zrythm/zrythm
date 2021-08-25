@@ -45,7 +45,8 @@ on_closed (
 {
   /* if the selected automatable changed */
   Port * at_port =
-    automation_track_get_port (self->owner);
+    port_find_from_identifier (
+      &self->owner->port_id);
   if (self->selected_port &&
       at_port != self->selected_port)
     {
@@ -234,7 +235,8 @@ create_model_for_ports (
         case AS_TYPE_MIDI_CH15:
         case AS_TYPE_MIDI_CH16:
           /* skip non-channel automation tracks */
-          port = automation_track_get_port (at);
+          port =
+            port_find_from_identifier (&at->port_id);
           if (!(port->id.flags &
                   PORT_FLAG_MIDI_AUTOMATABLE))
             continue;
@@ -266,7 +268,8 @@ create_model_for_ports (
           break;
         case AS_TYPE_MACRO:
           /* skip non-channel automation tracks */
-          port = automation_track_get_port (at);
+          port =
+            port_find_from_identifier (&at->port_id);
           if (!(port->id.flags &
                   PORT_FLAG_MODULATOR_MACRO))
             continue;
@@ -275,7 +278,8 @@ create_model_for_ports (
           break;
         case AS_TYPE_CHANNEL:
           /* skip non-channel automation tracks */
-          port = automation_track_get_port (at);
+          port =
+            port_find_from_identifier (&at->port_id);
           if (!(port->id.flags &
                   PORT_FLAG_FADER_MUTE ||
                 port->id.flags &
@@ -308,7 +312,8 @@ create_model_for_ports (
             track->modulators[self->selected_slot];
           break;
         case AS_TYPE_TEMPO:
-          port = automation_track_get_port (at);
+          port =
+            port_find_from_identifier (&at->port_id);
 
           /* skip non-tempo automation tracks */
           if (!(port->id.flags & PORT_FLAG_BPM ||
@@ -323,7 +328,8 @@ create_model_for_ports (
       if (plugin)
         {
           /* skip non-plugin automation tracks */
-          port = automation_track_get_port (at);
+          port =
+            port_find_from_identifier (&at->port_id);
           if (port->id.owner_type !=
                 PORT_OWNER_TYPE_PLUGIN)
             continue;
@@ -651,7 +657,8 @@ automatable_selector_popover_widget_new (
   /* set selected type */
   self->selected_type = AS_TYPE_CHANNEL;
   Port * port =
-    automation_track_get_port (self->owner);
+    port_find_from_identifier (
+      &self->owner->port_id);
   PortIdentifier * id = &port->id;
   if (id->flags & PORT_FLAG_BPM ||
       id->flags2 & PORT_FLAG2_BEATS_PER_BAR ||

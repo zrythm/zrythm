@@ -359,6 +359,7 @@ export_audio (
     }
 #endif
 
+  /* init ditherer */
   Ditherer ditherer;
   memset (&ditherer, 0, sizeof (Ditherer));
   if (info->dither)
@@ -723,8 +724,10 @@ export_settings_set_bounce_defaults (
  */
 void *
 exporter_generic_export_thread (
-  ExportSettings * info)
+  void * data)
 {
+  ExportSettings * info = (ExportSettings *) data;
+
   /* export */
   exporter_export (info);
 

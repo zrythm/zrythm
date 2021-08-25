@@ -40,15 +40,17 @@
  */
 void
 automation_tracklist_init_loaded (
-  AutomationTracklist * self)
+  AutomationTracklist * self,
+  Track *               track)
 {
+  self->track = track;
   self->ats_size = (size_t) self->num_ats;
   int j;
   AutomationTrack * at;
   for (j = 0; j < self->num_ats; j++)
     {
       at = self->ats[j];
-      automation_track_init_loaded (at);
+      automation_track_init_loaded (at, self);
     }
 }
 
@@ -455,7 +457,7 @@ automation_tracklist_get_at_from_port (
     {
       at = self->ats[i];
       Port * at_port =
-        automation_track_get_port (at);
+        port_find_from_identifier (&at->port_id);
       if (at_port == port)
         {
           return at;

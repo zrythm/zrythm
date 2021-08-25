@@ -43,19 +43,21 @@
  */
 void
 track_lane_init_loaded (
-  TrackLane * lane)
+  TrackLane * self,
+  Track *     track)
 {
-  lane->regions_size =
-    (size_t) lane->num_regions;
+  self->track = track;
+  self->regions_size =
+    (size_t) self->num_regions;
   int i;
   ZRegion * region;
-  for (i = 0; i < lane->num_regions; i++)
+  for (i = 0; i < self->num_regions; i++)
     {
-      region = lane->regions[i];
+      region = self->regions[i];
       region->magic = REGION_MAGIC;
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
-      region_set_lane (region, lane);
+      region_set_lane (region, self);
       arranger_object_init_loaded (r_obj);
     }
 }
@@ -74,11 +76,12 @@ track_lane_new (
   int     pos)
 {
   TrackLane * self = object_new (TrackLane);
+  self->schema_version = TRACK_LANE_SCHEMA_VERSION;
+  self->pos = pos;
+  self->track = track;
 
   self->name =
     g_strdup_printf (_("Lane %d"), pos + 1);
-  self->pos = pos;
-  self->track = track;
 
   self->regions_size = 1;
   self->regions =
@@ -241,9 +244,7 @@ track_lane_update_track_name_hash (
 /**
  * Clones the TrackLane.
  *
- * Mainly used when cloning Track's.
- *
- * @param track Pointer to owner track.
+ * @param track New owner track, if any.
  */
 TrackLane *
 track_lane_clone (
@@ -251,8 +252,9 @@ track_lane_clone (
   Track *           track)
 {
   TrackLane * self = object_new (TrackLane);
-
+  self->schema_version = TRACK_LANE_SCHEMA_VERSION;
   self->track = track;
+
   self->name =
     g_strdup (src->name);
   self->regions_size =
@@ -373,7 +375,7 @@ Tracklist *
 track_lane_get_tracklist (
   TrackLane * self)
 {
-  if (self->is_auditioner)
+  if (track_lane_is_auditioner (self))
     return SAMPLE_PROCESSOR->tracklist;
   else
     return TRACKLIST;

@@ -118,15 +118,19 @@ port_unit_strings[] =
  */
 typedef enum PortOwnerType
 {
-  //PORT_OWNER_TYPE_NONE,
-  PORT_OWNER_TYPE_BACKEND,
+  /* PORT_OWNER_TYPE_NONE, */
+  PORT_OWNER_TYPE_AUDIO_ENGINE,
+
+  /** Plugin owner. */
   PORT_OWNER_TYPE_PLUGIN,
+
+  /** Track owner. */
   PORT_OWNER_TYPE_TRACK,
 
-  /* track prefader */
-  PORT_OWNER_TYPE_PREFADER,
+  /** Channel owner. */
+  PORT_OWNER_TYPE_CHANNEL,
 
-  /* track fader */
+  /** Fader. */
   PORT_OWNER_TYPE_FADER,
 
   /**
@@ -140,35 +144,29 @@ typedef enum PortOwnerType
   /* TrackProcessor. */
   PORT_OWNER_TYPE_TRACK_PROCESSOR,
 
-  /* monitor fader */
-  PORT_OWNER_TYPE_MONITOR_FADER,
-
-  PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
-
   /** Port is part of a HardwareProcessor. */
   PORT_OWNER_TYPE_HW,
 
   /** Port is owned by engine transport. */
   PORT_OWNER_TYPE_TRANSPORT,
+
+  /** Modulator macro processor owner. */
+  PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR,
 } PortOwnerType;
 
 static const cyaml_strval_t
 port_owner_type_strings[] =
 {
-  { "backend",   PORT_OWNER_TYPE_BACKEND    },
+  { "audio engine", PORT_OWNER_TYPE_AUDIO_ENGINE  },
   { "plugin",    PORT_OWNER_TYPE_PLUGIN   },
-  { "track",     PORT_OWNER_TYPE_TRACK   },
-  { "pre-fader", PORT_OWNER_TYPE_PREFADER   },
+  { "track",     PORT_OWNER_TYPE_CHANNEL   },
   { "fader",     PORT_OWNER_TYPE_FADER   },
   { "channel send", PORT_OWNER_TYPE_CHANNEL_SEND  },
   { "track processor",
     PORT_OWNER_TYPE_TRACK_PROCESSOR   },
-  { "monitor fader",
-    PORT_OWNER_TYPE_MONITOR_FADER },
-  { "sample processor",
-    PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
   { "hw",        PORT_OWNER_TYPE_HW },
   { "transport", PORT_OWNER_TYPE_TRANSPORT },
+  { "modulator macro processor", PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR },
 };
 
 /**
@@ -410,35 +408,57 @@ typedef enum PortFlags2
 
   /** Track processor monitor audio. */
   PORT_FLAG2_TP_MONITOR_AUDIO = 1 << 23,
+
+  /** Port is owned by prefader. */
+  PORT_FLAG2_PREFADER = 1 << 24,
+
+  /** Port is owned by postfader. */
+  PORT_FLAG2_POSTFADER = 1 << 25,
+
+  /** Port is owned by monitor fader. */
+  PORT_FLAG2_MONITOR_FADER = 1 << 26,
+
+  /** Port is owned by the sample processor fader. */
+  PORT_FLAG2_SAMPLE_PROCESSOR_FADER = 1 << 27,
+
+  /** Port is owned by sample processor
+   * track/channel (including faders owned by those
+   * tracks/channels). */
+  PORT_FLAG2_SAMPLE_PROCESSOR_TRACK = 1 << 28,
 } PortFlags2;
 
 static const cyaml_bitdef_t
 port_flags2_bitvals[] =
 {
-  { .name = "transport_roll", .offset = 0, .bits = 1 },
-  { .name = "transport_stop", .offset = 1, .bits = 1 },
-  { .name = "transport_backward", .offset = 2, .bits = 1 },
-  { .name = "transport_forward", .offset = 3, .bits = 1 },
-  { .name = "transport_loop_toggle", .offset = 4, .bits = 1 },
-  { .name = "transport_rec_toggle", .offset = 5, .bits = 1 },
-  { .name = "patch_message", .offset = 6, .bits = 1 },
-  { .name = "enumeration", .offset = 7, .bits = 1 },
-  { .name = "uri_param", .offset = 8, .bits = 1 },
-  { .name = "sequence", .offset = 9, .bits = 1 },
-  { .name = "supports_midi", .offset = 10, .bits = 1 },
-  { .name = "output_gain", .offset = 11, .bits = 1 },
-  { .name = "pitch_bend", .offset = 12, .bits = 1 },
-  { .name = "poly_key_pressure", .offset = 13, .bits = 1 },
-  { .name = "channel_pressure", .offset = 14, .bits = 1 },
-  { .name = "ch_send_enabled", .offset = 15, .bits = 1 },
-  { .name = "ch_send_amount", .offset = 16, .bits = 1 },
-  { .name = "beats_per_bar", .offset = 17, .bits = 1 },
-  { .name = "beat_unit", .offset = 18, .bits = 1 },
-  { .name = "fader_solo", .offset = 19, .bits = 1 },
-  { .name = "fader_listen", .offset = 20, .bits = 1 },
-  { .name = "fader_mono_compat", .offset = 21, .bits = 1 },
-  { .name = "track_recording", .offset = 22, .bits = 1 },
-  { .name = "tp_monitor_audio", .offset = 23, .bits = 1 },
+  YAML_BITVAL ("transport_roll", 0),
+  YAML_BITVAL ("transport_stop", 1),
+  YAML_BITVAL ("transport_backward", 2),
+  YAML_BITVAL ("transport_forward", 3),
+  YAML_BITVAL ("transport_loop_toggle", 4),
+  YAML_BITVAL ("transport_rec_toggle", 5),
+  YAML_BITVAL ("patch_message", 6),
+  YAML_BITVAL ("enumeration", 7),
+  YAML_BITVAL ("uri_param", 8),
+  YAML_BITVAL ("sequence", 9),
+  YAML_BITVAL ("supports_midi", 10),
+  YAML_BITVAL ("output_gain", 11),
+  YAML_BITVAL ("pitch_bend", 12),
+  YAML_BITVAL ("poly_key_pressure", 13),
+  YAML_BITVAL ("channel_pressure", 14),
+  YAML_BITVAL ("ch_send_enabled", 15),
+  YAML_BITVAL ("ch_send_amount", 16),
+  YAML_BITVAL ("beats_per_bar", 17),
+  YAML_BITVAL ("beat_unit", 18),
+  YAML_BITVAL ("fader_solo", 19),
+  YAML_BITVAL ("fader_listen", 20),
+  YAML_BITVAL ("fader_mono_compat", 21),
+  YAML_BITVAL ("track_recording", 22),
+  YAML_BITVAL ("tp_monitor_audio", 23),
+  YAML_BITVAL ("prefader", 24),
+  YAML_BITVAL ("postfader", 25),
+  YAML_BITVAL ("monitor_fader", 26),
+  YAML_BITVAL ("sample_processor_fader", 27),
+  YAML_BITVAL ("sample_processor_track", 28),
 };
 
 /**

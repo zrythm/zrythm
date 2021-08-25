@@ -48,7 +48,8 @@ range_action_init_loaded (
         F_NOT_PROJECT);
     }
 
-  transport_init_loaded (self->transport);
+  transport_init_loaded (
+    self->transport, NULL, NULL);
 }
 
 /**
@@ -88,9 +89,7 @@ range_action_new (
     arranger_selections_new (
       ARRANGER_SELECTIONS_TYPE_TIMELINE);
 
-  self->transport =
-    transport_clone (TRANSPORT);
-  self->transport->is_project = false;
+  self->transport = transport_clone (TRANSPORT);
 
   return ua;
 }

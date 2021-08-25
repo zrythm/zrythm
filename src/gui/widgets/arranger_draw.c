@@ -339,7 +339,8 @@ draw_timeline_bg (
                 automation_track_get_val_at_pos (
                   at, PLAYHEAD, true, true);
               Port * port =
-                automation_track_get_port (at);
+                port_find_from_identifier (
+                  &at->port_id);
               AutomationPoint * ap =
                 automation_track_get_ap_before_pos (
                   at, PLAYHEAD, true);

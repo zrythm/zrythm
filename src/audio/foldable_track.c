@@ -51,15 +51,15 @@ foldable_track_is_status (
   Track *                  self,
   FoldableTrackMixerStatus status)
 {
-  g_return_val_if_fail (
-    self->is_project, false);
+  g_return_val_if_fail (self->tracklist, false);
   bool all_soloed = self->size > 1;
   bool has_channel_tracks = false;
   for (int i = 1; i < self->size; i++)
     {
       int pos = self->pos + i;
       Track * child =
-        tracklist_get_track (TRACKLIST, pos);
+        tracklist_get_track (
+          self->tracklist, pos);
       g_return_val_if_fail (
         IS_TRACK_AND_NONNULL (child), false);
 

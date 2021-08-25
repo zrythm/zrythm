@@ -197,7 +197,7 @@ export_settings_free (
  */
 void *
 exporter_generic_export_thread (
-  ExportSettings * info);
+  void * data);
 
 /**
  * To be called to create and perform an undoable

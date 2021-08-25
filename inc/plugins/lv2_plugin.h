@@ -110,6 +110,10 @@ typedef struct PluginDescriptor PluginDescriptor;
 
 #define LV2_PARAM_MAX_STR_LEN 1200
 
+#define lv2_plugin_is_in_active_project(self) \
+  G_LIKELY ( \
+    plugin_is_in_active_project ((self)->plugin))
+
 /**
  * Used temporarily to transfer data.
  */
@@ -364,8 +368,7 @@ static const cyaml_schema_value_t
 NONNULL
 void
 lv2_plugin_init_loaded (
-  Lv2Plugin * self,
-  bool        project);
+  Lv2Plugin * self);
 
 /**
  * Returns a newly allocated plugin descriptor for
@@ -416,7 +419,6 @@ NONNULL_ARGS (1)
 int
 lv2_plugin_instantiate (
   Lv2Plugin *  self,
-  bool         project,
   bool         use_state_file,
   char *       preset_uri,
   LilvState *  state,

@@ -34,7 +34,8 @@
 
 #include "zix/sem.h"
 
-typedef struct TimelineSelections TimelineSelections;
+typedef struct TimelineSelections
+  TimelineSelections;
 typedef struct AudioEngine AudioEngine;
 
 /**
@@ -339,11 +340,12 @@ typedef struct Transport
   /** Play state. */
   Play_State    play_state;
 
-  bool          is_project;
-
   /** Last timestamp the playhead position was
    * changed manually. */
   gint64        last_manual_playhead_change;
+
+  /** Pointer to owner audio engine, if any. */
+  AudioEngine * audio_engine;
 } Transport;
 
 static const cyaml_schema_field_t
@@ -391,8 +393,6 @@ transport_fields_schema[] =
     Transport, loop_toggle, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Transport, rec_toggle, port_fields_schema),
-  YAML_FIELD_INT (
-    Transport, is_project),
 
   CYAML_FIELD_END
 };
@@ -409,12 +409,21 @@ transport_schema =
  */
 Transport *
 transport_new (
-  AudioEngine * engine,
-  bool          is_project);
+  AudioEngine * engine);
 
+/**
+ * Initialize loaded transport.
+ *
+ * @param engine Owner engine, if any.
+ * @param tempo_track Tempo track, used to
+ *   initialize the caches. Only needed on the
+ *   active project transport.
+ */
 void
 transport_init_loaded (
-  Transport * self);
+  Transport *   self,
+  AudioEngine * engine,
+  Track *       tempo_track);
 
 /**
  * Clones the transport values.

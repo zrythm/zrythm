@@ -510,13 +510,14 @@ add_port (
     && port->num_srcs == 0
     && owner != PORT_OWNER_TYPE_PLUGIN
     && owner != PORT_OWNER_TYPE_FADER
-    && owner != PORT_OWNER_TYPE_MONITOR_FADER
-    && owner != PORT_OWNER_TYPE_PREFADER
     && owner != PORT_OWNER_TYPE_TRACK_PROCESSOR
     && owner != PORT_OWNER_TYPE_TRACK
+    &&
+    owner !=
+      PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR
+    && owner != PORT_OWNER_TYPE_CHANNEL
     && owner != PORT_OWNER_TYPE_CHANNEL_SEND
-    && owner != PORT_OWNER_TYPE_BACKEND
-    && owner != PORT_OWNER_TYPE_SAMPLE_PROCESSOR
+    && owner != PORT_OWNER_TYPE_AUDIO_ENGINE
     && owner != PORT_OWNER_TYPE_HW
     && owner != PORT_OWNER_TYPE_TRANSPORT
     && !(port->id.flags & PORT_FLAG_MANUAL_PRESS))
@@ -779,17 +780,13 @@ graph_setup (
     }
 
   /* add ports */
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports;
   Port * port;
-  port_get_all (
-    &ports, &max_size, true, &num_ports);
-  for (int i = 0; i < num_ports; i++)
+  GPtrArray * ports = g_ptr_array_new ();
+  port_get_all (ports);
+  for (size_t i = 0; i < ports->len; i++)
     {
-      port = ports[i];
-      g_warn_if_fail (port);
+      port = g_ptr_array_index (ports, i);
+      g_return_if_fail (IS_PORT_AND_NONNULL (port));
       if (port->deleting)
         continue;
       if (port->id.owner_type ==
@@ -813,13 +810,13 @@ graph_setup (
         }
       else
         {
-#if 0
+/*#if 0*/
           char label[5000];
           port_get_full_designation (port, label);
           g_message (
             "%s: skipped port %s",
             __func__, label);
-#endif
+/*#endif*/
         }
 #endif
     }
@@ -832,7 +829,8 @@ graph_setup (
   node =
     graph_find_node_from_sample_processor (
       self, SAMPLE_PROCESSOR);
-  port = SAMPLE_PROCESSOR->fader->stereo_out->l;
+  port =
+    SAMPLE_PROCESSOR->fader->stereo_out->l;
   node2 =
     graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
@@ -1331,9 +1329,9 @@ graph_setup (
         }
     }
 
-  for (int i = 0; i < num_ports; i++)
+  for (size_t i = 0; i < ports->len; i++)
     {
-      port = ports[i];
+      port = g_ptr_array_index (ports, i);
       if (G_UNLIKELY (port->deleting))
         continue;
       if (port->id.owner_type ==
@@ -1409,8 +1407,7 @@ graph_setup (
 
   /*graph_print (self);*/
 
-  /* free ports */
-  free (ports);
+  g_ptr_array_unref (ports);
 
   if (rechain)
     graph_rechain (self);

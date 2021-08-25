@@ -600,7 +600,7 @@ _test_bounce_instrument_track (
   GThread * thread =
     g_thread_new (
       "bounce_thread",
-      (GThreadFunc) exporter_generic_export_thread,
+      exporter_generic_export_thread,
       &settings);
 
   print_progress_and_sleep (

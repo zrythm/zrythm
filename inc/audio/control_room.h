@@ -27,6 +27,8 @@
 
 #include "audio/fader.h"
 
+typedef struct AudioEngine AudioEngine;
+
 /**
  * @addtogroup audio
  *
@@ -36,6 +38,13 @@
 #define CONTROL_ROOM_SCHEMA_VERSION 1
 
 #define CONTROL_ROOM (AUDIO_ENGINE->control_room)
+
+#define control_room_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->audio_engine \
+    && \
+    engine_is_in_active_project ( \
+      self->audio_engine))
 
 /**
  * The control room allows to specify how Listen will
@@ -86,6 +95,8 @@ typedef struct ControlRoom
   ExtPort *  hw_out_l;
   ExtPort *  hw_out_r;
 
+  /** Pointer to owner audio engine, if any. */
+  AudioEngine * audio_engine;
 } ControlRoom;
 
 static const cyaml_schema_field_t
@@ -110,15 +121,21 @@ control_room_schema =
 /**
  * Inits the control room from a project.
  */
+COLD
+NONNULL_ARGS (1)
 void
 control_room_init_loaded (
-  ControlRoom * self);
+  ControlRoom * self,
+  AudioEngine * engine);
 
 /**
  * Creates a new control room.
  */
+COLD
+WARN_UNUSED_RESULT
 ControlRoom *
-control_room_new (void);
+control_room_new (
+  AudioEngine * engine);
 
 /**
  * Sets dim_output to on/off and notifies interested

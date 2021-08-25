@@ -1476,9 +1476,10 @@ carla_native_plugin_open_ui (
   bool                show)
 {
   Plugin * pl = self->plugin;
+  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
   g_return_if_fail (
-    IS_PLUGIN_AND_NONNULL (pl)
-    && pl->is_project && pl->setting->descr);
+    plugin_is_in_active_project (pl));
+  g_return_if_fail (pl->setting->descr);
 
   g_message (
     "%s: show/hide '%s (%p)' UI: %d",
@@ -1825,7 +1826,8 @@ carla_native_plugin_load_state (
   self->native_plugin_descriptor->set_state (
     self->native_plugin_handle, state);
   self->loading_state = false;
-  if (pl->visible && pl->is_project)
+  if (pl->visible
+      && plugin_is_in_active_project (pl))
     {
       EVENTS_PUSH (
         ET_PLUGIN_VISIBILITY_CHANGED, pl);

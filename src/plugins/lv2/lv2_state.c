@@ -382,8 +382,6 @@ lv2_state_apply_state (
   Lv2Plugin* plugin,
   LilvState* state)
 {
-  g_message ("%s() start", __func__);
-
   char pl_str[800];
   plugin_print (plugin->plugin, pl_str, 800);
 
@@ -403,12 +401,16 @@ lv2_state_apply_state (
       engine_paused = true;
     }
 
-  g_message ("applying state for %s...", pl_str);
+  g_message (
+    "applying state for LV2 plugin '%s'...",
+    pl_str);
   lilv_state_restore (
     state, plugin->instance,
     set_port_value, plugin, 0,
     plugin->state_features);
-  g_message ("state applied");
+  g_message (
+    "LV2 state applied for plugin '%s'",
+    pl_str);
 
   if (engine_paused)
     {
@@ -417,8 +419,6 @@ lv2_state_apply_state (
       engine_resume (AUDIO_ENGINE, &engine_state);
       g_return_if_fail (AUDIO_ENGINE->run);
     }
-
-  g_message ("%s() end", __func__);
 }
 
 /**

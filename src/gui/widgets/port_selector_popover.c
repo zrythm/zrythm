@@ -364,9 +364,6 @@ create_model_for_plugins (
              PORT_OWNER_TYPE_FADER &&
            port_track == track) ||
           (id->owner_type ==
-             PORT_OWNER_TYPE_PREFADER &&
-           port_track == track) ||
-          (id->owner_type ==
              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
            port_track == track)))
         {

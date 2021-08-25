@@ -348,6 +348,80 @@ engine_process_events (
   return G_SOURCE_CONTINUE;
 }
 
+void
+engine_append_ports (
+  AudioEngine * self,
+  GPtrArray *   ports)
+{
+#define _ADD(port) \
+  g_return_if_fail (port); \
+  g_ptr_array_add (ports, port)
+
+  _ADD (self->control_room->monitor_fader->amp);
+  _ADD (self->control_room->monitor_fader->balance);
+  _ADD (self->control_room->monitor_fader->mute);
+  _ADD (self->control_room->monitor_fader->solo);
+  _ADD (self->control_room->monitor_fader->listen);
+  _ADD (self->control_room->monitor_fader->mono_compat_enabled);
+  _ADD (self->control_room->monitor_fader->stereo_in->l);
+  _ADD (self->control_room->monitor_fader->stereo_in->r);
+  _ADD (self->control_room->monitor_fader->stereo_out->l);
+  _ADD (self->control_room->monitor_fader->stereo_out->r);
+
+  _ADD (self->monitor_out->l);
+  _ADD (self->monitor_out->r);
+  _ADD (self->midi_editor_manual_press);
+  _ADD (self->midi_in);
+
+  /* add fader ports */
+  _ADD (self->sample_processor->fader->stereo_in->l);
+  _ADD (self->sample_processor->fader->stereo_in->r);
+  _ADD (self->sample_processor->fader->stereo_out->l);
+  _ADD (self->sample_processor->fader->stereo_out->r);
+
+  for (int i = 0;
+       i < self->sample_processor->tracklist->num_tracks;
+       i++)
+    {
+      Track * tr =
+        self->sample_processor->tracklist->tracks[i];
+      g_warn_if_fail (track_is_auditioner (tr));
+      track_append_ports (
+        tr, ports, F_INCLUDE_PLUGINS);
+    }
+
+  _ADD (self->transport->roll);
+  _ADD (self->transport->stop);
+  _ADD (self->transport->backward);
+  _ADD (self->transport->forward);
+  _ADD (self->transport->loop_toggle);
+  _ADD (self->transport->rec_toggle);
+
+  for (int i = 0;
+       i < self->hw_in_processor->num_audio_ports; i++)
+    {
+      _ADD (self->hw_in_processor->audio_ports[i]);
+    }
+  for (int i = 0;
+       i < self->hw_in_processor->num_midi_ports; i++)
+    {
+      _ADD (self->hw_in_processor->midi_ports[i]);
+    }
+
+  for (int i = 0;
+       i < self->hw_out_processor->num_audio_ports; i++)
+    {
+      _ADD (self->hw_out_processor->audio_ports[i]);
+    }
+  for (int i = 0;
+       i < self->hw_out_processor->num_midi_ports; i++)
+    {
+      _ADD (self->hw_out_processor->midi_ports[i]);
+    }
+
+#undef _ADD
+}
+
 /**
  * Sets up the audio engine before the project is
  * initialized/loaded.
@@ -836,21 +910,75 @@ init_common (
 
 void
 engine_init_loaded (
-  AudioEngine * self)
+  AudioEngine * self,
+  Project *     project)
 {
   g_message ("Initializing...");
 
+  self->project = project;
+
   audio_pool_init_loaded (self->pool);
-  transport_init_loaded (self->transport);
-  control_room_init_loaded (self->control_room);
+
+  Track * tempo_track = NULL;
+  if (project)
+    {
+      g_return_if_fail (project->tracklist);
+      tempo_track =
+        project->tracklist->tempo_track;
+      if (!tempo_track)
+        tempo_track =
+          tracklist_get_track_by_type (
+            project->tracklist,
+            TRACK_TYPE_TEMPO);
+      g_return_if_fail (tempo_track);
+    }
+  transport_init_loaded (
+    self->transport, self, tempo_track);
+
+  control_room_init_loaded (
+    self->control_room, self);
   sample_processor_init_loaded (
-    self->sample_processor);
+    self->sample_processor, self);
   hardware_processor_init_loaded (
-    self->hw_in_processor);
+    self->hw_in_processor, self);
   hardware_processor_init_loaded (
-    self->hw_out_processor);
+    self->hw_out_processor, self);
 
   init_common (self);
+
+  GPtrArray * ports = g_ptr_array_new ();
+  engine_append_ports (self, ports);
+  for (size_t i = 0; i < ports->len; i++)
+    {
+      Port * port = g_ptr_array_index (ports, i);
+      PortIdentifier * id = &port->id;
+      if (id->owner_type ==
+            PORT_OWNER_TYPE_AUDIO_ENGINE)
+        port_init_loaded (port, self);
+      else if (
+        id->owner_type == PORT_OWNER_TYPE_HW)
+        {
+          if (id->flow == FLOW_OUTPUT)
+            port_init_loaded (
+              port, self->hw_in_processor);
+          else if (id->flow == FLOW_INPUT)
+            port_init_loaded (
+              port, self->hw_out_processor);
+        }
+      else if (
+        id->owner_type == PORT_OWNER_TYPE_FADER)
+        {
+          if (id->flags2 &
+                PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+            port_init_loaded (
+              port, self->sample_processor->fader);
+          else if (id->flags2 &
+                PORT_FLAG2_MONITOR_FADER)
+            port_init_loaded (
+              port,
+              self->control_room->monitor_fader);
+        }
+    }
 
   g_message ("done");
 }
@@ -868,6 +996,7 @@ engine_new (
   g_message ("Creating audio engine...");
 
   AudioEngine * self = object_new (AudioEngine);
+  self->project = project;
   self->schema_version =
     AUDIO_ENGINE_SCHEMA_VERSION;
 
@@ -877,10 +1006,11 @@ engine_new (
     }
 
   self->sample_rate = 44000;
-  self->transport = transport_new (self, true);
+  self->transport = transport_new (self);
   self->pool = audio_pool_new ();
-  self->control_room = control_room_new ();
-  self->sample_processor = sample_processor_new ();
+  self->control_room = control_room_new (self);
+  self->sample_processor =
+    sample_processor_new (self);
 
   /* init midi editor manual press */
   self->midi_editor_manual_press =
@@ -908,20 +1038,17 @@ engine_new (
   monitor_out_r =
     port_new_with_type (
       TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out R");
-  monitor_out_l->id.owner_type =
-    PORT_OWNER_TYPE_BACKEND;
-  monitor_out_r->id.owner_type =
-    PORT_OWNER_TYPE_BACKEND;
-  monitor_out_l->is_project = true;
-  monitor_out_r->is_project = true;
   self->monitor_out =
     stereo_ports_new_from_existing (
       monitor_out_l, monitor_out_r);
+  stereo_ports_set_owner (
+    self->monitor_out,
+    PORT_OWNER_TYPE_AUDIO_ENGINE, self);
 
   self->hw_in_processor =
-    hardware_processor_new (true);
+    hardware_processor_new (true, self);
   self->hw_out_processor =
-    hardware_processor_new (false);
+    hardware_processor_new (false, self);
 
   init_common (self);
 
@@ -1168,17 +1295,11 @@ engine_realloc_port_buffers (
     AUDIO_ENGINE->block_length);
 
   /** reallocate port buffers to new size */
-  Channel * ch;
-  Plugin * pl;
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  port_get_all (
-    &ports, &max_size, true, &num_ports);
-  for (int i = 0; i < num_ports; i++)
+  GPtrArray * ports = g_ptr_array_new ();
+  port_get_all (ports);
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       g_warn_if_fail (port);
 
       size_t new_sz =
@@ -1188,16 +1309,18 @@ engine_realloc_port_buffers (
       port->buf = g_realloc (port->buf, new_sz);
       memset (port->buf, 0, new_sz);
     }
-  free (ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      ch = TRACKLIST->tracks[i]->channel;
+      Channel * ch = TRACKLIST->tracks[i]->channel;
 
       if (!ch)
         continue;
 
       for (int j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
+          Plugin * pl;
           if (j < STRIP_SIZE)
             pl = ch->midi_fx[j];
           else if (j == STRIP_SIZE)
@@ -1298,7 +1421,8 @@ engine_process_prepare (
   if (self->transport->play_state ==
         PLAYSTATE_PAUSE_REQUESTED)
     {
-      g_message ("pause requested handled");
+      if (ZRYTHM_TESTING)
+        g_message ("pause requested handled");
       self->transport->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
 #ifdef HAVE_JACK
@@ -1355,9 +1479,10 @@ engine_process_prepare (
 
   if (!lock_acquired && !self->exporting)
     {
-      g_message (
-        "port operation lock is busy, skipping "
-        "cycle...");
+      if (ZRYTHM_TESTING)
+        g_message (
+          "port operation lock is busy, skipping "
+          "cycle...");
       self->skip_cycle = 1;
       return;
     }

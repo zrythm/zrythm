@@ -50,6 +50,11 @@ typedef struct EngineProcessTimeInfo
 #define IS_TRACK_PROCESSOR(tr) \
   ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
 
+#define track_processor_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->track \
+    && track_is_in_active_project (self->track))
+
 /**
  * A TrackProcessor is a processor that is used as
  * the first entry point when processing a track.
@@ -162,12 +167,8 @@ typedef struct TrackProcessor
   float            l_port_db;
   float            r_port_db;
 
-  /** Pointer to parent track. */
+  /** Pointer to owner track, if any. */
   Track *          track;
-
-  /** Whether this is part of the project (as
-   * opposed to a clone). */
-  bool             is_project;
 
   int              magic;
 } TrackProcessor;
@@ -230,20 +231,26 @@ track_processor_schema =
 /**
  * Inits a TrackProcessor after a project is loaded.
  */
+COLD
+NONNULL_ARGS (1)
 void
 track_processor_init_loaded (
   TrackProcessor * self,
-  bool             is_project);
+  Track *          track);
 
+#if 0
 void
 track_processor_set_is_project (
   TrackProcessor * self,
   bool             is_project);
+#endif
 
 /**
  * Creates a new track processor for the given
  * track.
  */
+COLD
+WARN_UNUSED_RESULT
 TrackProcessor *
 track_processor_new (
   Track *          track);
@@ -347,10 +354,7 @@ track_processor_update_track_name_hash (
 void
 track_processor_append_ports (
   TrackProcessor * self,
-  Port ***         ports,
-  int *            size,
-  bool             is_dynamic,
-  size_t *         max_size);
+  GPtrArray *      ports);
 
 /**
  * Frees the TrackProcessor.

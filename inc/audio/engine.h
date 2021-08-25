@@ -102,6 +102,9 @@ typedef struct MPMCQueue MPMCQueue;
 #define DENORMAL_PREVENTION_VAL \
   (AUDIO_ENGINE->denormal_prevention_val)
 
+#define engine_is_in_active_project(self) \
+  G_LIKELY (self->project == PROJECT)
+
 /** Set whether engine should process (true) or
  * skip (false). */
 #define engine_set_run(engine,_run) \
@@ -828,6 +831,8 @@ typedef struct AudioEngine
   /** Whether the engine is currently activated. */
   bool              activated;
 
+  /** Pointer to owner project, if any. */
+  Project *         project;
 } AudioEngine;
 
 static const cyaml_schema_field_t
@@ -886,10 +891,11 @@ engine_realloc_port_buffers (
   nframes_t     buf_size);
 
 COLD
-NONNULL
+NONNULL_ARGS (1)
 void
 engine_init_loaded (
-  AudioEngine * self);
+  AudioEngine * self,
+  Project *     project);
 
 /**
  * Create a new audio engine.
@@ -898,6 +904,7 @@ engine_init_loaded (
  * connect to the backend.
  */
 COLD
+WARN_UNUSED_RESULT
 AudioEngine *
 engine_new (
   Project * project);
@@ -937,6 +944,11 @@ void
 engine_wait_n_cycles (
   AudioEngine * self,
   int           n);
+
+void
+engine_append_ports (
+  AudioEngine * self,
+  GPtrArray *   ports);
 
 /**
  * Sets up the audio engine before the project is

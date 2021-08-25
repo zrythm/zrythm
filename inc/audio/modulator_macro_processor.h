@@ -40,6 +40,11 @@ typedef struct Track Track;
 
 #define MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION 1
 
+#define modulator_macro_processor_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->track \
+    && track_is_in_active_project (self->track))
+
 /**
  * Modulator macro button processor.
  *
@@ -73,6 +78,9 @@ typedef struct ModulatorMacroProcessor
 
   /** Control port controling the amount. */
   Port *            macro;
+
+  /** Pointer to owner track, if any. */
+  Track *           track;
 
 } ModulatorMacroProcessor;
 
@@ -109,6 +117,12 @@ modulator_macro_processor_get_name (
 {
   return self->name;
 }
+
+COLD
+void
+modulator_macro_processor_init_loaded (
+  ModulatorMacroProcessor * self,
+  Track *                   track);
 
 void
 modulator_macro_processor_set_name (

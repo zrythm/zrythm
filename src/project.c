@@ -702,7 +702,7 @@ project_create_default (
     }
   self = project_new (ZRYTHM);
 
-  self->tracklist = tracklist_new (self);
+  self->tracklist = tracklist_new (self, NULL);
 
   /* initialize selections */
   project_init_selections (self);
@@ -772,13 +772,11 @@ project_create_default (
   track =
     track_new (
       TRACK_TYPE_MASTER, TRACKLIST->num_tracks,
-      _("Master"), F_WITHOUT_LANE,
-      F_NOT_AUDITIONER);
+      _("Master"), F_WITHOUT_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   self->tracklist->master_track = track;
-  g_warn_if_fail (track->processor->stereo_in->l->is_project);
   tracklist_selections_add_track (
     self->tracklist_selections, track, 0);
   self->last_selection = SELECTION_TYPE_TRACKLIST;
@@ -797,29 +795,13 @@ project_create_default (
         self->tracklist);
     }
 
-  /* init ports */
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  Port * port;
-  port_get_all (
-    &ports, &max_size, true, &num_ports);
-  g_message ("Initializing loaded Ports...");
-  for (int i = 0; i < num_ports; i++)
-    {
-      port = ports[i];
-      port_set_is_project (port, true);
-    }
-
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true);
 
   /* create untitled project */
-  create_and_set_dir_and_title (
-    self, prj_dir);
+  create_and_set_dir_and_title (self, prj_dir);
 
   if (have_ui)
     {
@@ -1165,7 +1147,7 @@ load (
 
   init_common (self);
 
-  engine_init_loaded (self->audio_engine);
+  engine_init_loaded (self->audio_engine, self);
   engine_pre_setup (self->audio_engine);
 
   /* re-load clips because sample rate can change
@@ -1184,7 +1166,8 @@ load (
 
   clip_editor_init_loaded (self->clip_editor);
   timeline_init_loaded (self->timeline);
-  tracklist_init_loaded (self->tracklist);
+  tracklist_init_loaded (
+    self->tracklist, self, NULL);
 
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
@@ -1192,20 +1175,6 @@ load (
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true);
-
-  /* init ports */
-  size_t max_size = 20;
-  Port ** ports =
-    object_new_n (max_size, Port *);
-  int num_ports = 0;
-  port_get_all (
-    &ports, &max_size, true, &num_ports);
-  g_message ("Initializing loaded Ports...");
-  for (int i = 0; i < num_ports; i++)
-    {
-      Port * port = ports[i];
-      port_init_loaded (port, true);
-    }
 
   midi_mappings_init_loaded (
     self->midi_mappings);
@@ -1260,15 +1229,20 @@ load (
 
   engine_setup (self->audio_engine);
 
-  for (int i = 0; i < num_ports; i++)
+  /* init ports */
+  GPtrArray * ports = g_ptr_array_new ();
+  port_get_all (ports);
+  g_message ("Initializing loaded Ports...");
+  for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = ports[i];
+      Port * port = g_ptr_array_index (ports, i);
       if (port_is_exposed_to_backend (port))
         {
           port_set_expose_to_backend (port, true);
         }
     }
-  object_zero_and_free (ports);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
 
   self->loaded = true;
   self->loading_from_backup = false;
@@ -1333,8 +1307,9 @@ project_load (
           project_create_default (
             PROJECT, ZRYTHM->create_project_path,
             false, true);
-        }
+        } /* endif failed to load project */
     }
+  /* else if no filename given */
   else
     {
       project_create_default (

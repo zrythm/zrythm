@@ -119,7 +119,6 @@ get_parent_graph (
                 }
             }
             break;
-          case PORT_OWNER_TYPE_PREFADER:
           case PORT_OWNER_TYPE_CHANNEL_SEND:
             {
               Track * tr =
@@ -134,10 +133,17 @@ get_parent_graph (
             {
               Track * tr =
                 port_get_track (node->port, true);
-              parent_node =
-                graph_find_node_from_fader (
-                  node->graph,
-                  tr->channel->fader);
+              if (node->port->id.flags2 &
+                    PORT_FLAG2_PREFADER)
+                parent_node =
+                  graph_find_node_from_prefader (
+                    node->graph,
+                    tr->channel->prefader);
+              else
+                parent_node =
+                  graph_find_node_from_fader (
+                    node->graph,
+                    tr->channel->fader);
             }
             break;
           case PORT_OWNER_TYPE_TRACK_PROCESSOR:

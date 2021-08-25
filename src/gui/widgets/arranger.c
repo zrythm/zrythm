@@ -1112,7 +1112,8 @@ get_fvalue_at_y (
     CLAMP (
       widget_value / height,
       0.f, 1.f);
-  Port * port = automation_track_get_port (at);
+  Port * port =
+    port_find_from_identifier (&at->port_id);
   float automatable_value =
     control_port_normalized_val_to_real (
       port, widget_ratio);

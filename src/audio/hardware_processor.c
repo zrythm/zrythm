@@ -34,8 +34,10 @@
 
 void
 hardware_processor_init_loaded (
-  HardwareProcessor * self)
+  HardwareProcessor * self,
+  AudioEngine *       engine)
 {
+  self->engine = engine;
   self->ext_audio_ports_size =
     (size_t) self->num_ext_audio_ports;
   self->ext_midi_ports_size =
@@ -47,14 +49,14 @@ hardware_processor_init_loaded (
  */
 HardwareProcessor *
 hardware_processor_new (
-  bool      input)
+  bool          input,
+  AudioEngine * engine)
 {
   HardwareProcessor * self =
     object_new (HardwareProcessor);
-
   self->schema_version =
     HW_PROCESSOR_SCHEMA_VERSION;
-
+  self->engine = engine;
   self->is_input = input;
 
   return self;
@@ -161,12 +163,11 @@ create_port_for_ext_port (
   PortFlow  flow)
 {
   Port * port =
-    port_new_with_type (
-      type, flow, ext_port->full_name);
-  port->id.owner_type = PORT_OWNER_TYPE_HW;
+    port_new_with_type_and_owner (
+      type, flow, ext_port->full_name,
+      PORT_OWNER_TYPE_HW, ext_port);
   port->id.flags |= PORT_FLAG_HW;
   port->id.ext_port_id = ext_port_get_id (ext_port);
-  port->is_project = true;
 
   return port;
 }
@@ -188,19 +189,15 @@ hardware_processor_rescan_ext_ports (
     self->is_input ? FLOW_OUTPUT : FLOW_INPUT;
 
   /* collect audio ports */
-  int num_ext_audio_ports = 0;
+  GPtrArray * ports = g_ptr_array_new ();
   ext_ports_get (
-    TYPE_AUDIO, flow,
-    true, NULL, &num_ext_audio_ports);
-  ExtPort * ext_audio_ports[num_ext_audio_ports * 2];
-  ext_ports_get (
-    TYPE_AUDIO, flow,
-    true, ext_audio_ports, &num_ext_audio_ports);
+    TYPE_AUDIO, flow, true, ports);
 
   /* add missing ports to the list */
-  for (int i = 0; i < num_ext_audio_ports; i++)
+  for (size_t i = 0; i < ports->len; i++)
     {
-      ExtPort * ext_port = ext_audio_ports[i];
+      ExtPort * ext_port =
+        g_ptr_array_index (ports, i);
       ExtPort * existing_port =
         hardware_processor_find_ext_port (
           self, ext_port_get_id (ext_port));
@@ -212,6 +209,7 @@ hardware_processor_rescan_ext_ports (
             self->num_ext_audio_ports,
             self->ext_audio_ports_size,
             ExtPort *);
+          ext_port->hw_processor = self;
           array_append (
             self->ext_audio_ports,
             self->num_ext_audio_ports, ext_port);
@@ -220,22 +218,22 @@ hardware_processor_rescan_ext_ports (
             "[HW] Added audio port %s", id);
           g_free (id);
         }
+      else
+        {
+          ext_port_free (ext_port);
+        }
     }
+  g_ptr_array_unref (ports);
 
   /* collect midi ports */
-  int num_ext_midi_ports = 0;
-  ext_ports_get (
-    TYPE_EVENT, flow,
-    true, NULL, &num_ext_midi_ports);
-  ExtPort * ext_midi_ports[num_ext_midi_ports * 2];
-  ext_ports_get (
-    TYPE_EVENT, flow,
-    true, ext_midi_ports, &num_ext_midi_ports);
+  ports = g_ptr_array_new ();
+  ext_ports_get (TYPE_EVENT, flow, true, ports);
 
   /* add missing ports to the list */
-  for (int i = 0; i < num_ext_midi_ports; i++)
+  for (size_t i = 0; i < ports->len; i++)
     {
-      ExtPort * ext_port = ext_midi_ports[i];
+      ExtPort * ext_port =
+        g_ptr_array_index (ports, i);
       ExtPort * existing_port =
         hardware_processor_find_ext_port (
           self, ext_port_get_id (ext_port));
@@ -247,6 +245,7 @@ hardware_processor_rescan_ext_ports (
             self->num_ext_midi_ports,
             self->ext_midi_ports_size,
             ExtPort *);
+          ext_port->hw_processor = self;
           array_append (
             self->ext_midi_ports,
             self->num_ext_midi_ports, ext_port);
@@ -255,7 +254,12 @@ hardware_processor_rescan_ext_ports (
             "[HW] Added MIDI port %s", id);
           g_free (id);
         }
+      else
+        {
+          ext_port_free (ext_port);
+        }
     }
+  g_ptr_array_unref (ports);
 
   /* create ports for each ext port */
   self->audio_ports =

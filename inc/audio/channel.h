@@ -67,6 +67,11 @@ typedef struct ExtPort ExtPort;
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
 
+#define channel_is_in_active_project(self) \
+  G_LIKELY ( \
+    self->track \
+    && track_is_in_active_project (self->track))
+
 /**
  * A Channel is part of a Track (excluding Tracks that
  * don't have Channels) and contains information
@@ -226,13 +231,7 @@ typedef struct Channel
    */
   int              record_set_automatically;
 
-  /**
-   * Pointer back to Track.
-   *
-   * This is an exception to most other objects
-   * since each channel is always fixed to the same
-   * track.
-   */
+  /** Pointer to owner track. */
   Track *          track;
 } Channel;
 
@@ -306,7 +305,7 @@ NONNULL
 void
 channel_init_loaded (
   Channel * channel,
-  bool      project);
+  Track *   track);
 
 /**
  * Handles the recording logic inside the process
@@ -328,20 +327,12 @@ channel_handle_recording (
 /**
  * Appends all channel ports and optionally
  * plugin ports to the array.
- *
- * @param size Current array count.
- * @param is_dynamic Whether the array can be
- *   dynamically resized.
- * @param max_size Current array size, if dynamic.
  */
 void
-channel_append_all_ports (
-  Channel * ch,
-  Port ***  ports,
-  int *     size,
-  bool      is_dynamic,
-  size_t *  max_size,
-  bool      include_plugins);
+channel_append_ports (
+  Channel *   self,
+  GPtrArray * ports,
+  bool        include_plugins);
 
 NONNULL
 void
@@ -582,7 +573,6 @@ Channel *
 channel_clone (
   Channel * ch,
   Track *   track,
-  bool      src_is_project,
   GError ** error);
 
 /**

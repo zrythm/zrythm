@@ -343,7 +343,7 @@ test_project_rebootstrap_timeline (
     track_new (
       TRACK_TYPE_MIDI, TRACKLIST->num_tracks,
       MIDI_TRACK_NAME,
-      F_WITH_LANE , F_NOT_AUDITIONER);
+      F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -484,8 +484,7 @@ test_project_rebootstrap_timeline (
   track =
     track_new (
       TRACK_TYPE_AUDIO, TRACKLIST->num_tracks,
-      AUDIO_TRACK_NAME, F_WITH_LANE,
-      F_NOT_AUDITIONER);
+      AUDIO_TRACK_NAME, F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -524,7 +523,7 @@ test_project_rebootstrap_timeline (
     track_new (
       TRACK_TYPE_MIDI, TRACKLIST->num_tracks,
       TARGET_MIDI_TRACK_NAME,
-      F_WITH_LANE, F_NOT_AUDITIONER);
+      F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -532,7 +531,7 @@ test_project_rebootstrap_timeline (
     track_new (
       TRACK_TYPE_AUDIO, TRACKLIST->num_tracks,
       TARGET_AUDIO_TRACK_NAME,
-      F_WITH_LANE, F_NOT_AUDITIONER);
+      F_WITH_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);

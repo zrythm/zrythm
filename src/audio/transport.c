@@ -88,26 +88,38 @@ init_common (
   zix_sem_init (&self->paused, 0);
 }
 
+/**
+ * Initialize loaded transport.
+ *
+ * @param engine Owner engine, if any.
+ * @param tempo_track Tempo track, used to
+ *   initialize the caches. Only needed on the
+ *   active project transport.
+ */
 void
 transport_init_loaded (
-  Transport * self)
+  Transport *   self,
+  AudioEngine * engine,
+  Track *       tempo_track)
 {
+  self->audio_engine = engine;
+
   init_common (self);
 
-  if (self->is_project)
+  if (tempo_track)
     {
       int beats_per_bar =
         tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+          tempo_track);
       int beat_unit =
         tempo_track_get_beat_unit (
-          P_TEMPO_TRACK);
+          tempo_track);
       transport_update_caches (
         self, beats_per_bar, beat_unit);
     }
 
 #define INIT_LOADED_PORT(x) \
-  port_init_loaded (self->x, self->is_project)
+  port_init_loaded (self->x, self)
 
   INIT_LOADED_PORT (roll);
   INIT_LOADED_PORT (stop);
@@ -124,16 +136,15 @@ transport_init_loaded (
  */
 Transport *
 transport_new (
-  AudioEngine * engine,
-  bool          is_project)
+  AudioEngine * engine)
 {
-  g_message ("%s: Creating transport...", __func__);
+  g_message (
+    "%s: Creating transport...", __func__);
 
   Transport * self = object_new (Transport);
+  self->audio_engine = engine;
   self->schema_version =
     TRANSPORT_SCHEMA_VERSION;
-
-  self->is_project = is_project;
 
   if (engine)
     {
@@ -189,8 +200,8 @@ transport_new (
   self->roll =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Roll");
-  self->roll->id.owner_type =
-    PORT_OWNER_TYPE_TRANSPORT;
+  port_set_owner (
+    self->roll, PORT_OWNER_TYPE_TRANSPORT, self);
   self->roll->id.flags |= PORT_FLAG_TOGGLE;
   self->roll->id.flags2 |=
     PORT_FLAG2_TRANSPORT_ROLL;
@@ -198,8 +209,8 @@ transport_new (
   self->stop =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Stop");
-  self->stop->id.owner_type =
-    PORT_OWNER_TYPE_TRANSPORT;
+  port_set_owner (
+    self->stop, PORT_OWNER_TYPE_TRANSPORT, self);
   self->stop->id.flags |= PORT_FLAG_TOGGLE;
   self->stop->id.flags2 |=
     PORT_FLAG2_TRANSPORT_STOP;
@@ -207,8 +218,9 @@ transport_new (
   self->backward =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Backward");
-  self->backward->id.owner_type =
-    PORT_OWNER_TYPE_TRANSPORT;
+  port_set_owner (
+    self->backward, PORT_OWNER_TYPE_TRANSPORT,
+    self);
   self->backward->id.flags |= PORT_FLAG_TOGGLE;
   self->backward->id.flags2 |=
     PORT_FLAG2_TRANSPORT_BACKWARD;
@@ -216,8 +228,9 @@ transport_new (
   self->forward =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Forward");
-  self->forward->id.owner_type =
-    PORT_OWNER_TYPE_TRANSPORT;
+  port_set_owner (
+    self->forward, PORT_OWNER_TYPE_TRANSPORT,
+    self);
   self->forward->id.flags |= PORT_FLAG_TOGGLE;
   self->forward->id.flags2 |=
     PORT_FLAG2_TRANSPORT_FORWARD;
@@ -225,8 +238,9 @@ transport_new (
   self->loop_toggle =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Loop toggle");
-  self->loop_toggle->id.owner_type =
-    PORT_OWNER_TYPE_TRANSPORT;
+  port_set_owner (
+    self->loop_toggle, PORT_OWNER_TYPE_TRANSPORT,
+    self);
   self->loop_toggle->id.flags |= PORT_FLAG_TOGGLE;
   self->loop_toggle->id.flags2 |=
     PORT_FLAG2_TRANSPORT_LOOP_TOGGLE;
@@ -234,8 +248,9 @@ transport_new (
   self->rec_toggle =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Rec toggle");
-  self->rec_toggle->id.owner_type =
-    PORT_OWNER_TYPE_TRANSPORT;
+  port_set_owner (
+    self->rec_toggle, PORT_OWNER_TYPE_TRANSPORT,
+    self);
   self->rec_toggle->id.flags |= PORT_FLAG_TOGGLE;
   self->rec_toggle->id.flags2 |=
     PORT_FLAG2_TRANSPORT_REC_TOGGLE;
@@ -254,8 +269,6 @@ transport_clone (
 {
   Transport * self =
     object_new (Transport);
-
-  self->is_project = src->is_project;
 
   position_set_to_pos (
     &self->loop_start_pos, &src->loop_start_pos);

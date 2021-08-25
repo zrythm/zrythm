@@ -47,7 +47,7 @@ init_common (
   /* init listen/mute/dim faders */
   self->mute_fader =
     fader_new (
-      FADER_TYPE_GENERIC, NULL, false);
+      FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
     ZRYTHM_TESTING ?
       0.f :
@@ -69,14 +69,11 @@ init_common (
       self->mute_fader->amp->minf = (float) lower;
       self->mute_fader->amp->maxf = (float) upper;
     }
-  fader_set_amp (
-    self->mute_fader, amp);
-  fader_set_is_project (
-    self->mute_fader, true);
+  fader_set_amp (self->mute_fader, amp);
 
   self->listen_fader =
     fader_new (
-      FADER_TYPE_GENERIC, NULL, false);
+      FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
     ZRYTHM_TESTING ?
       1.f :
@@ -99,12 +96,10 @@ init_common (
       self->listen_fader->amp->minf = (float) lower;
       self->listen_fader->amp->maxf = (float) upper;
     }
-  fader_set_is_project (
-    self->listen_fader, true);
 
   self->dim_fader =
     fader_new (
-      FADER_TYPE_GENERIC, NULL, false);
+      FADER_TYPE_GENERIC, false, NULL, self, NULL);
   amp =
     ZRYTHM_TESTING ?
       0.1f :
@@ -127,8 +122,6 @@ init_common (
       self->dim_fader->amp->maxf = (float) upper;
     }
   fader_set_amp (self->dim_fader, amp);
-  fader_set_is_project (
-    self->dim_fader, true);
 
   fader_set_mono_compat_enabled (
     self->monitor_fader,
@@ -155,9 +148,12 @@ init_common (
  */
 void
 control_room_init_loaded (
-  ControlRoom * self)
+  ControlRoom * self,
+  AudioEngine * engine)
 {
-  fader_init_loaded (self->monitor_fader, true);
+  self->audio_engine = engine;
+  fader_init_loaded (
+    self->monitor_fader, NULL, self, NULL);
 
   init_common (self);
 }
@@ -166,14 +162,15 @@ control_room_init_loaded (
  * Creates a new control room.
  */
 ControlRoom *
-control_room_new (void)
+control_room_new (
+  AudioEngine * engine)
 {
   ControlRoom * self = object_new (ControlRoom);
+  self->audio_engine = engine;
 
   self->monitor_fader =
     fader_new (
-      FADER_TYPE_MONITOR, NULL, false);
-  fader_set_is_project (self->monitor_fader, true);
+      FADER_TYPE_MONITOR, false, NULL, self, NULL);
 
   init_common (self);
 

@@ -50,16 +50,23 @@ get_signal_type (
 void
 channel_send_init_loaded (
   ChannelSend * self,
-  bool          is_project)
+  Track *       track)
 {
-  port_init_loaded (self->enabled, is_project);
-  port_init_loaded (self->amount, is_project);
-  port_init_loaded (self->midi_in, is_project);
+  self->track = track;
+
+#define INIT_LOADED_PORT(x) \
+  port_init_loaded (self->x, self)
+
+  INIT_LOADED_PORT (enabled);
+  INIT_LOADED_PORT (amount);
+  INIT_LOADED_PORT (midi_in);
+  INIT_LOADED_PORT (midi_out);
   stereo_ports_init_loaded (
-    self->stereo_in, is_project);
-  port_init_loaded (self->midi_out, is_project);
+    self->stereo_in, self);
   stereo_ports_init_loaded (
-    self->stereo_out, is_project);
+    self->stereo_out, self);
+
+#undef INIT_LOADED_PORT
 }
 
 /**
@@ -68,14 +75,19 @@ channel_send_init_loaded (
 ChannelSend *
 channel_send_new (
   unsigned int track_name_hash,
-  int          slot)
+  int          slot,
+  Track *      track)
 {
   ChannelSend * self = object_new (ChannelSend);
-
   self->schema_version =
     CHANNEL_SEND_SCHEMA_VERSION;
+  self->track = track;
   self->track_name_hash = track_name_hash;
   self->slot = slot;
+
+#define SET_PORT_OWNER(x) \
+  port_set_owner ( \
+    self->x, PORT_OWNER_TYPE_CHANNEL_SEND, self)
 
   char name[600];
   sprintf (
@@ -86,7 +98,7 @@ channel_send_new (
   self->enabled->id.flags |= PORT_FLAG_TOGGLE;
   self->enabled->id.flags2 |=
     PORT_FLAG2_CHANNEL_SEND_ENABLED;
-  port_set_owner_channel_send (self->enabled, self);
+  SET_PORT_OWNER (enabled);
   port_set_control_value (
     self->enabled, 0.f, F_NOT_NORMALIZED,
     F_NO_PUBLISH_EVENTS);
@@ -100,7 +112,7 @@ channel_send_new (
   self->amount->id.flags |= PORT_FLAG_AUTOMATABLE;
   self->amount->id.flags2 |=
     PORT_FLAG2_CHANNEL_SEND_AMOUNT;
-  port_set_owner_channel_send (self->amount, self);
+  SET_PORT_OWNER (amount);
   port_set_control_value (
     self->amount, 1.f, F_NOT_NORMALIZED,
     F_NO_PUBLISH_EVENTS);
@@ -112,10 +124,8 @@ channel_send_new (
     stereo_ports_new_generic (
       F_INPUT, name, PORT_OWNER_TYPE_CHANNEL_SEND,
       self);
-  port_set_owner_channel_send (
-    self->stereo_in->l, self);
-  port_set_owner_channel_send (
-    self->stereo_in->r, self);
+  SET_PORT_OWNER (stereo_in->l);
+  SET_PORT_OWNER (stereo_in->r);
 
   sprintf (
     name,
@@ -123,8 +133,7 @@ channel_send_new (
   self->midi_in =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, name);
-  port_set_owner_channel_send (
-    self->midi_in, self);
+  SET_PORT_OWNER (midi_in);
 
   sprintf (
     name,
@@ -133,10 +142,8 @@ channel_send_new (
     stereo_ports_new_generic (
       F_NOT_INPUT, name,
       PORT_OWNER_TYPE_CHANNEL_SEND, self);
-  port_set_owner_channel_send (
-    self->stereo_out->l, self);
-  port_set_owner_channel_send (
-    self->stereo_out->r, self);
+  SET_PORT_OWNER (stereo_out->l);
+  SET_PORT_OWNER (stereo_out->r);
 
   sprintf (
     name,
@@ -144,8 +151,9 @@ channel_send_new (
   self->midi_out =
     port_new_with_type (
       TYPE_EVENT, FLOW_OUTPUT, name);
-  port_set_owner_channel_send (
-    self->midi_out, self);
+  SET_PORT_OWNER (midi_out);
+
+#undef SET_PORT_OWNER
 
   return self;
 }
@@ -655,7 +663,7 @@ channel_send_clone (
 {
   ChannelSend * self =
     channel_send_new (
-      src->track_name_hash, src->slot);
+      src->track_name_hash, src->slot, NULL);
 
   self->amount->control = src->amount->control;
   self->enabled->control = src->enabled->control;
@@ -806,6 +814,39 @@ channel_send_validate (
     } /* endif channel send is enabled */
 
   return true;
+}
+
+void
+channel_send_append_ports (
+  ChannelSend * self,
+  GPtrArray *   ports)
+{
+#define _ADD(port) \
+  g_warn_if_fail (port); \
+  g_ptr_array_add (ports, port)
+
+  _ADD (self->enabled);
+  _ADD (self->amount);
+  if (self->midi_in)
+    {
+      _ADD (self->midi_in);
+    }
+  if (self->midi_out)
+    {
+      _ADD (self->midi_out);
+    }
+  if (self->stereo_in)
+    {
+      _ADD (self->stereo_in->l);
+      _ADD (self->stereo_in->r);
+    }
+  if (self->stereo_out)
+    {
+      _ADD (self->stereo_out->l);
+      _ADD (self->stereo_out->r);
+    }
+
+#undef _ADD
 }
 
 /**

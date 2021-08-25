@@ -114,9 +114,12 @@ automation_tracklist_init (
 /**
  * Inits a loaded AutomationTracklist.
  */
+COLD
+NONNULL_ARGS (1)
 void
 automation_tracklist_init_loaded (
-  AutomationTracklist * self);
+  AutomationTracklist * self,
+  Track *               track);
 
 Track *
 automation_tracklist_get_track (
