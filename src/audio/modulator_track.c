@@ -256,12 +256,6 @@ modulator_track_remove_modulator (
             PLUGIN_SLOT_MODULATOR, F_PUBLISH_EVENTS);
         }
 
-      if (ZRYTHM_HAVE_UI)
-        {
-          /* close the UI */
-          plugin_close_ui (plugin);
-        }
-
       plugin_disconnect (plugin);
       object_free_w_func_and_null (
         plugin_free, plugin);

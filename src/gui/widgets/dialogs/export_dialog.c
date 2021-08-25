@@ -1064,8 +1064,10 @@ add_group_track_children (
   for (int i = 0; i < track->num_children; i++)
     {
       Track * child =
-        TRACKLIST->tracks[track->children[i]];
-      g_return_if_fail (IS_TRACK (child));
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, track->children[i]);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (child));
 
       g_debug ("child: '%s'", child->name);
 
