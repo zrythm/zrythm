@@ -142,6 +142,7 @@ static int sort_plugin_func (
     *(PluginDescriptor * const *) a;
   PluginDescriptor * pb =
     *(PluginDescriptor * const *) b;
+  g_return_val_if_fail (pa->name && pb->name, -1);
   int r = strcasecmp(pa->name, pb->name);
   if (r)
     return r;

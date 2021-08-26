@@ -159,6 +159,20 @@ Glossary
     However, we recommend using the :term:`LV2`
     standard instead.
 
+  XRUN
+    A buffer overrun or underrun. This means that
+    Zrythm was either not fast enough to deliver
+    data to the backend or not fast enough to process
+    incoming data from the backend. Usually XRUNs
+    are audible as crackles or pops.
+    XRUNs usually occur when when the audio engine's
+    buffer size is too low and the sound card
+    cannot process incoming buffers fast enough
+    (overrun). Some sound cards cannot cope with
+    small buffer sizes, so the buffer length should
+    be increased to ease the work done by the sound
+    card.
+
   Zrythm user path
     The path where Zrythm will save user data,
     such as projects, temporary files, presets and
