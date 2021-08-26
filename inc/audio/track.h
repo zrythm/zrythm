@@ -1482,6 +1482,9 @@ track_freeze (
 /**
  * Wrapper over channel_add_plugin() and
  * modulator_track_insert_modulator().
+ *
+ * @param instantiate_plugin Whether to attempt to
+ *   instantiate the plugin.
  */
 void
 track_insert_plugin (
@@ -1489,25 +1492,10 @@ track_insert_plugin (
   Plugin *       pl,
   PluginSlotType slot_type,
   int            slot,
+  bool           instantiate_plugin,
   bool           replacing_plugin,
   bool           moving_plugin,
   bool           confirm,
-  bool           gen_automatables,
-  bool           recalc_graph,
-  bool           fire_events);
-
-/**
- * Wrapper over channel_add_plugin() and
- * modulator_track_insert_modulator().
- */
-void
-track_add_plugin (
-  Track *        self,
-  PluginSlotType slot_type,
-  int            slot,
-  Plugin *       pl,
-  bool           replacing_plugin,
-  bool           moving_plugin,
   bool           gen_automatables,
   bool           recalc_graph,
   bool           fire_events);

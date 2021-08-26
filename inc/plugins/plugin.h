@@ -583,6 +583,26 @@ plugin_get_escaped_name (
   Plugin * pl);
 
 /**
+ * Copies the state directory from the given source
+ * plugin to the given destination plugin's state
+ * directory.
+ *
+ * @param is_backup Whether this is a backup
+ *   project. Used for calculating the absolute
+ *   path to the state dir.
+ * @param abs_state_dir If passed, the state will
+ *   be saved inside this directory instead of the
+ *   plugin's state directory. Used when saving
+ *   presets.
+ */
+int
+plugin_copy_state_dir (
+  Plugin *       self,
+  Plugin *       src,
+  bool           is_backup,
+  const char *   abs_state_dir);
+
+/**
  * Returns the state dir as an absolute path.
  */
 NONNULL

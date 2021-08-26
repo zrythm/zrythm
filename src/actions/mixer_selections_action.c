@@ -501,10 +501,12 @@ revert_deleted_plugin (
         }
 
       /* add to channel */
-      track_add_plugin (
-        to_tr, self->deleted_ms->type,
-        slot_to_revert, new_pl,
+      track_insert_plugin (
+        to_tr, new_pl, self->deleted_ms->type,
+        slot_to_revert,
+        Z_F_INSTANTIATE,
         F_REPLACING, F_NOT_MOVING_PLUGIN,
+        F_NO_CONFIRM,
         F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH,
         F_NO_PUBLISH_EVENTS);
@@ -674,6 +676,7 @@ do_or_undo_create_or_delete (
           /* add to destination */
           track_insert_plugin (
             track, pl, slot_type, slot,
+            Z_F_INSTANTIATE,
             F_NOT_REPLACING, F_NOT_MOVING_PLUGIN,
             F_NO_CONFIRM, F_GEN_AUTOMATABLES,
             F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
@@ -1092,6 +1095,7 @@ do_or_undo_move_or_copy (
 
               track_insert_plugin (
                 to_tr, pl, to_slot_type, to_slot,
+                Z_F_INSTANTIATE,
                 F_NOT_REPLACING, F_NOT_MOVING_PLUGIN,
                 F_NO_CONFIRM, F_GEN_AUTOMATABLES,
                 F_NO_RECALC_GRAPH,
@@ -1118,8 +1122,8 @@ do_or_undo_move_or_copy (
             MIXER_SELECTIONS, to_tr,
             to_slot_type, to_slot, F_NO_CLONE);
 
-          /* if new plugin (copy), activate it and
-           * set visibility */
+          /* if new plugin (copy), instantiate it,
+           * activate it and set visibility */
           if (copy)
             {
               g_return_val_if_fail (

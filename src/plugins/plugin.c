@@ -56,6 +56,7 @@
 #include "utils/dialogs.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
+#include "utils/file.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/flags.h"
@@ -158,27 +159,10 @@ set_stereo_outs_and_midi_in (
     }
 }
 
-void
-plugin_init_loaded (
-  Plugin *          self,
-  Track *           track,
-  MixerSelections * ms)
+static void
+set_enabled_and_gain (
+  Plugin * self)
 {
-  self->magic = PLUGIN_MAGIC;
-  self->track = track;
-  self->ms = ms;
-
-  GPtrArray * ports = g_ptr_array_new ();
-  plugin_append_ports (self, ports);
-  for (size_t i = 0; i < ports->len; i++)
-    {
-      Port * port = g_ptr_array_index (ports, i);
-      port->magic = PORT_MAGIC;
-      port->plugin = self;
-    }
-  object_free_w_func_and_null (
-    g_ptr_array_unref, ports);
-
   /* set enabled/gain ports */
   for (int i = 0; i < self->num_in_ports; i++)
     {
@@ -200,6 +184,30 @@ plugin_init_loaded (
         }
     }
   g_return_if_fail (self->enabled && self->gain);
+}
+
+void
+plugin_init_loaded (
+  Plugin *          self,
+  Track *           track,
+  MixerSelections * ms)
+{
+  self->magic = PLUGIN_MAGIC;
+  self->track = track;
+  self->ms = ms;
+
+  GPtrArray * ports = g_ptr_array_new ();
+  plugin_append_ports (self, ports);
+  for (size_t i = 0; i < ports->len; i++)
+    {
+      Port * port = g_ptr_array_index (ports, i);
+      port->magic = PORT_MAGIC;
+      port->plugin = self;
+    }
+  object_free_w_func_and_null (
+    g_ptr_array_unref, ports);
+
+  set_enabled_and_gain (self);
 
 #ifdef HAVE_CARLA
   if (self->setting->open_with_carla)
@@ -1640,6 +1648,8 @@ plugin_instantiate (
     "Instantiating plugin '%s' | state %p...",
     descr->name, state);
 
+  set_enabled_and_gain (pl);
+
   plugin_set_ui_refresh_rate (pl);
 
   if (!PROJECT->loaded)
@@ -1720,6 +1730,8 @@ plugin_instantiate (
           break;
         }
     }
+  g_return_val_if_fail (
+    IS_PORT_AND_NONNULL (pl->enabled), -1);
   control_port_set_val_from_normalized (
     pl->enabled, 1.f, 0);
 
@@ -2035,6 +2047,57 @@ plugin_select (
 }
 
 /**
+ * Copies the state directory from the given source
+ * plugin to the given destination plugin's state
+ * directory.
+ *
+ * @param is_backup Whether this is a backup
+ *   project. Used for calculating the absolute
+ *   path to the state dir.
+ * @param abs_state_dir If passed, the state will
+ *   be saved inside this directory instead of the
+ *   plugin's state directory. Used when saving
+ *   presets.
+ */
+int
+plugin_copy_state_dir (
+  Plugin *       self,
+  Plugin *       src,
+  bool           is_backup,
+  const char *   abs_state_dir)
+{
+  char * dir_to_use = NULL;
+  if (abs_state_dir)
+    {
+      dir_to_use = g_strdup (abs_state_dir);
+    }
+  else
+    {
+      dir_to_use =
+        plugin_get_abs_state_dir (
+          self, is_backup);
+    }
+  char ** files_in_dir =
+    io_get_files_in_dir (dir_to_use, false);
+  g_return_val_if_fail (!files_in_dir, -1);
+
+  char * src_dir_to_use =
+    plugin_get_abs_state_dir (
+      src, is_backup);
+
+  io_copy_dir (
+    dir_to_use, src_dir_to_use,
+    F_FOLLOW_SYMLINKS, F_RECURSIVE);
+
+  g_free (src_dir_to_use);
+  g_free (dir_to_use);
+
+  g_warn_if_fail (self->state_dir);
+
+  return 0;
+}
+
+/**
  * Returns the state dir as an absolute path.
  */
 char *
@@ -2128,269 +2191,137 @@ plugin_clone (
   plugin_print (src, buf, 800);
 
   Plugin * self = NULL;
-#ifdef HAVE_CARLA
-  if (src->setting->open_with_carla)
+  g_debug ("[0/7] cloning plugin '%s'", buf);
+
+  /* if src plugin not instantiated,
+   * instantiate it */
+  g_message (
+    "[1/7] instantiating source plugin (if "
+    "not instantiated");
+  if (!src->instantiated)
     {
-      g_debug (
-        "[0/8] cloning Carla plugin '%s'", buf);
-
-      /* create a new plugin with same descriptor */
       g_message (
-        "[1/8] creating new plugin with same "
-        "descriptor");
+        "source plugin not instantiated, "
+        "instantiating it...");
       GError * err = NULL;
-      self =
-        plugin_new_from_setting (
-          src->setting, src->id.track_name_hash,
-          src->id.slot_type, src->id.slot, &err);
-      if (!self || !self->carla)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err,
-            _("Failed to create plugin clone for "
-            "%s"),
-            buf);
-          return NULL;
-        }
-
-      /* instantiate */
-      g_message (
-        "[2/8] instantiating new plugin");
       int ret =
-        plugin_instantiate (self, NULL, &err);
+        plugin_instantiate (
+          src, NULL, &err);
       if (ret != 0)
         {
-          object_free_w_func_and_null (
-            plugin_free, self);
           PROPAGATE_PREFIXED_ERROR (
             error, err,
-            _("Failed to instantiate cloned "
+            _("Failed to instantiate source "
             "plugin %s"),
             buf);
           return NULL;
         }
+    }
 
-      /* also instantiate the source, if not
-       * already instantiated, so its state can
-       * be ready */
-      g_message (
-        "[3/8] instantiating source plugin (if not "
-        "instantiated");
-      if (!src->instantiated)
-        {
-          ret =
-            plugin_instantiate (
-              src, NULL, &err);
-          if (ret != 0)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err,
-                _("Failed to instantiate source "
-                "plugin %s"),
-                buf);
-              return NULL;
-            }
-          g_return_val_if_fail (
-            src->num_in_ports ==
-              self->num_in_ports, NULL);
-        }
-
-      /* save the state of the original plugin */
-      g_message (
-        "[4/8] saving state of source plugin");
+  /* save the state of the original plugin */
+  g_message (
+    "[2/7] saving state of source plugin");
+  if (src->setting->open_with_carla)
+    {
+#ifdef HAVE_CARLA
       carla_native_plugin_save_state (
         src->carla, F_NOT_BACKUP, NULL);
-
-      /* load the state to the new plugin. */
-      g_message (
-        "[5/8] loading saved state into new "
-        "plugin");
-      char * state_file_abs_path =
-        carla_native_plugin_get_abs_state_file_path  (
-          src->carla, F_NOT_BACKUP);
-      bool state_loaded =
-        carla_native_plugin_load_state (
-          self->carla, state_file_abs_path, &err);
-      if (!state_loaded)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            _("Failed to load Carla plugin state"));
-          return NULL;
-        }
-
-      /* create a new state dir and save the state
-       * for the clone */
-      g_message (
-        "[6/8] saving state for new plugin");
-      plugin_ensure_state_dir (
-        self, F_NOT_BACKUP);
-      carla_native_plugin_save_state (
-        self->carla, F_NOT_BACKUP, NULL);
-
-      /* cleanup the source if it wasnt in the
-       * project */
-      g_message (
-        "[7/8] cleaning up source plugin if wasn't "
-        "a project plugin");
-      if (!plugin_is_in_active_project (src))
-        {
-          plugin_cleanup (src);
-        }
-
-      g_message ("[8/8] done");
+#else
+      g_return_val_if_reached (NULL);
+#endif
     }
   else
     {
-#endif
-      if (src->setting->descr->protocol == PROT_LV2)
-        {
-          g_message (
-            "[0/9] cloning LV2 plugin '%s'", buf);
-
-          /* if src plugin not instantiated,
-           * instantiate it */
-          g_message (
-            "[1/9] instantiating source plugin (if "
-            "not instantiated");
-          if (!src->instantiated)
-            {
-              g_message (
-                "source plugin not instantiated, "
-                "instantiating it...");
-              GError * err = NULL;
-              int ret =
-                plugin_instantiate (
-                  src, NULL, &err);
-              if (ret != 0)
-                {
-                  PROPAGATE_PREFIXED_ERROR (
-                    error, err,
-                    _("Failed to instantiate "
-                    "source plugin %s"),
-                    buf);
-                  return NULL;
-                }
-            }
-          g_return_val_if_fail (
-            src->instantiated &&
-            src->lv2->instance, NULL);
-
-          /* Make a state */
-          g_message (
-            "[2/9] saving state of source plugin");
-          LilvState * state =
-            lv2_state_save_to_file (
-              src->lv2, F_NOT_BACKUP);
-          g_message (
-            "saved source plugin state to %s",
-            src->state_dir);
-
-#if 0
-          /* reload from state file because using
-           * the instance state is buggy */
-          lilv_state_free (state);
-          char * state_file_path =
-            lv2_plugin_get_abs_state_file_path (
-              src->lv2,
-              PROJECT->loading_from_backup);
-          state =
-            lilv_state_new_from_file (
-              LILV_WORLD, &src->lv2->map, NULL,
-              state_file_path);
-          g_message (
-            "loaded state from %s",
-            state_file_path);
-          g_free (state_file_path);
-#endif
-
-          /* create a new plugin with same
-           * descriptor */
-          g_message (
-            "[3/9] creating new plugin with same "
-            "setting");
-          GError * err = NULL;
-          self =
-            plugin_new_from_setting (
-              src->setting, src->id.track_name_hash,
-              src->id.slot_type, src->id.slot,
-              &err);
-          if (!IS_PLUGIN_AND_NONNULL (self))
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, "%s",
-                _("Failed to create plugin clone"));
-              return NULL;
-            }
-
-          /* instantiate using the state */
-          g_message (
-            "[4/9] instantiating new plugin with "
-            "saved state");
-          int ret =
-            plugin_instantiate (
-              self, state, &err);
-          if (ret != 0)
-            {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err, "%s",
-                _("Failed to instantiate cloned "
-                "plugin"));
-              return NULL;
-            }
-          lv2_state_apply_state (self->lv2, state);
-
-          /* activate and run once (some plugins
-           * need to run once for the state to
-           * take effect) */
-          g_message (
-            "[5/9] activating and running new "
-            "plugin to ensure state is applied "
-            "correctly");
-          plugin_activate (self, F_ACTIVATE);
-          lv2_plugin_get_latency (self->lv2);
-
-          /* verify */
-          g_return_val_if_fail (
-            self && self->lv2 &&
-            self->num_lilv_ports ==
-              src->num_lilv_ports,
-            NULL);
-
-          /* free the state */
-          lilv_state_free (state);
-
-          /* create a new state dir and save the
-           * state for the clone */
-          g_message (
-            "[6/9] saving state for new plugin");
-          plugin_ensure_state_dir (
-            self, F_NOT_BACKUP);
-          LilvState * tmp_state =
-            lv2_state_save_to_file (
-              self->lv2, F_NOT_BACKUP);
-          lilv_state_free (tmp_state);
-
-          /* deactivate */
-          g_message (
-            "[7/9] deactivating new plugin");
-          plugin_activate (self, F_NO_ACTIVATE);
-
-          /* cleanup the source if it wasnt in the
-           * project */
-          g_message (
-            "[8/9] cleaning up source plugin if "
-            "wasn't a project plugin");
-          if (!plugin_is_in_active_project (src))
-            {
-              plugin_cleanup (src);
-            }
-
-          g_message ("[9/9] done");
-        }
-#ifdef HAVE_CARLA
+      LilvState * state =
+        lv2_state_save_to_file (
+          src->lv2, F_NOT_BACKUP);
+      lilv_state_free (state);
     }
-#endif
+  g_message (
+    "saved source plugin state to %s",
+    src->state_dir);
+
+  /* create a new plugin with same descriptor */
+  g_message (
+    "[3/7] creating new plugin with same "
+    "setting");
+  GError * err = NULL;
+  self =
+    plugin_new_from_setting (
+      src->setting, src->id.track_name_hash,
+      src->id.slot_type, src->id.slot, &err);
+  if (!self || (!self->carla && !self->lv2))
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err,
+        _("Failed to create plugin clone for %s"),
+        buf);
+      return NULL;
+    }
+
+  /* copy ports */
+  g_message (
+    "[4/7] copying ports from source plugin");
+  self->enabled = NULL;
+  self->gain = NULL;
+  for (int i = 0; i < self->num_in_ports; i++)
+    {
+      object_free_w_func_and_null (
+        port_free, self->in_ports[i]);
+    }
+  for (int i = 0; i < self->num_out_ports; i++)
+    {
+      object_free_w_func_and_null (
+        port_free, self->out_ports[i]);
+    }
+  self->in_ports =
+    g_realloc_n (
+      self->in_ports,
+      (size_t) src->num_in_ports,
+      sizeof (Port *));
+  self->out_ports =
+    g_realloc_n (
+      self->out_ports,
+      (size_t) src->num_out_ports,
+      sizeof (Port *));
+  for (int i = 0; i < src->num_in_ports; i++)
+    {
+      self->in_ports[i] =
+        port_clone (src->in_ports[i]);
+      port_set_owner (
+        self->in_ports[i],
+        PORT_OWNER_TYPE_PLUGIN, self);
+    }
+  for (int i = 0; i < src->num_out_ports; i++)
+    {
+      self->out_ports[i] =
+        port_clone (src->out_ports[i]);
+      port_set_owner (
+        self->out_ports[i],
+        PORT_OWNER_TYPE_PLUGIN, self);
+    }
+  self->num_in_ports = src->num_in_ports;
+  self->num_out_ports = src->num_out_ports;
+
+  /* copy the state directory */
+  g_message (
+    "[5/7] copying state directory from source "
+    "plugin");
+  plugin_copy_state_dir (
+    self, src, F_NOT_BACKUP, NULL);
+
+  /* cleanup the source if it wasnt in the
+   * project */
+  g_message (
+    "[6/7] cleaning up source plugin if wasn't "
+    "a project plugin");
+  if (!plugin_is_in_active_project (src))
+    {
+      plugin_cleanup (src);
+    }
+
+  g_message ("[7/7] done");
+
   g_return_val_if_fail (
     src->num_in_ports || src->num_out_ports, NULL);
 
@@ -2400,23 +2331,12 @@ plugin_clone (
   self->magic = PLUGIN_MAGIC;
   self->visible = src->visible;
 
-  /* set generic port values since they are not
-   * saved in the state */
-  port_set_control_value (
-    self->enabled, src->enabled->control,
-    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
-  port_set_control_value (
-    self->gain, src->gain->control,
-    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
-
   /* verify same number of inputs and outputs */
   g_return_val_if_fail (
     src->num_in_ports == self->num_in_ports, NULL);
   g_return_val_if_fail (
     src->num_out_ports == self->num_out_ports,
     NULL);
-
-  /* copy plugin id to each port */
 
   return self;
 }

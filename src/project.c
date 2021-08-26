@@ -1917,9 +1917,6 @@ project_save (
         }
     }
 
-  if (ZRYTHM_TESTING)
-    tracklist_validate (self->tracklist);
-
   ProjectSaveData * data =
     object_new (ProjectSaveData);
   data->project_file_path =
@@ -1930,9 +1927,6 @@ project_save (
   data->project = project_clone (PROJECT);
   data->project->tracklist_selections->free_tracks =
     true;
-
-  if (ZRYTHM_TESTING)
-    tracklist_validate (self->tracklist);
 
   if (async)
     {
@@ -1972,9 +1966,6 @@ project_save (
       serialize_project_thread (data);
       project_idle_saved_cb (data);
     }
-
-  if (ZRYTHM_TESTING)
-    tracklist_validate (self->tracklist);
 
   object_free_w_func_and_null (
     project_save_data_free, data);

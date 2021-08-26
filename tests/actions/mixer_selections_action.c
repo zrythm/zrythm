@@ -1702,9 +1702,6 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/mixer_selections_action/"
 
   g_test_add_func (
-    TEST_PREFIX "test create plugins",
-    (GTestFunc) test_create_plugins);
-  g_test_add_func (
     TEST_PREFIX "test copy plugins",
     (GTestFunc) test_copy_plugins);
   g_test_add_func (
@@ -1748,6 +1745,9 @@ main (int argc, char *argv[])
     (GTestFunc)
     test_port_and_plugin_track_pos_after_move_with_carla);
 #endif
+  g_test_add_func (
+    TEST_PREFIX "test create plugins",
+    (GTestFunc) test_create_plugins);
 
   return g_test_run ();
 }

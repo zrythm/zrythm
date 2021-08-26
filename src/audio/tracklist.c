@@ -341,21 +341,17 @@ tracklist_insert_track (
         }
     }
 
-  if (tracklist_is_in_active_project (self)
-      && !tracklist_is_auditioner (self))
-    {
-      /* make the track the only selected track */
-      tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track,
-        publish_events);
-    }
-
   track->pos = pos;
 
   if (tracklist_is_in_active_project (self)
       /* auditioner doesn't need automation */
       && !tracklist_is_auditioner (self))
     {
+      /* make the track the only selected track */
+      tracklist_selections_select_single (
+        TRACKLIST_SELECTIONS, track,
+        publish_events);
+
       /* set automation track on ports */
       AutomationTracklist * atl =
         track_get_automation_tracklist (track);

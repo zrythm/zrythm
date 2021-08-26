@@ -338,4 +338,7 @@
 #define Z_F_PIN 1
 #define Z_F_NO_PIN 0
 
+#define Z_F_INSTANTIATE 1
+#define Z_F_NO_INSTANTIATE 0
+
 #endif

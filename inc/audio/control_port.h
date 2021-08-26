@@ -181,6 +181,7 @@ control_port_set_toggled (
  *   plugin to receive a UI event for this change.
  */
 HOT
+NONNULL
 void
 control_port_set_val_from_normalized (
   Port * self,

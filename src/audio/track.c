@@ -1125,78 +1125,81 @@ track_validate (
         id.track_name_hash,
       false);
 
-  /* verify port identifiers */
-  GPtrArray * ports = g_ptr_array_new ();
-  track_append_ports (
-    self, ports, F_INCLUDE_PLUGINS);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (self);
-  unsigned int name_hash =
-    track_get_name_hash (self);
-  for (size_t i = 0; i < ports->len; i++)
+  if (ZRYTHM_TESTING)
     {
-      Port * port = g_ptr_array_index (ports, i);
-      g_return_val_if_fail (
-        port->id.track_name_hash == name_hash,
-        false);
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN)
+      /* verify port identifiers */
+      GPtrArray * ports = g_ptr_array_new ();
+      track_append_ports (
+        self, ports, F_INCLUDE_PLUGINS);
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (self);
+      unsigned int name_hash =
+        track_get_name_hash (self);
+      for (size_t i = 0; i < ports->len; i++)
         {
-          PluginIdentifier * pid =
-            &port->id.plugin_id;
+          Port * port = g_ptr_array_index (ports, i);
           g_return_val_if_fail (
-            pid->track_name_hash == name_hash,
+            port->id.track_name_hash == name_hash,
             false);
-          Plugin * pl = plugin_find (pid);
-          g_return_val_if_fail (
-            plugin_identifier_validate (pid),
-            false);
-          g_return_val_if_fail (
-            plugin_identifier_validate (&pl->id),
-            false);
-          g_return_val_if_fail (
-            plugin_identifier_is_equal (
-              &pl->id, pid), false);
-          if (pid->slot_type ==
-                PLUGIN_SLOT_INSTRUMENT)
+          if (port->id.owner_type ==
+                PORT_OWNER_TYPE_PLUGIN)
             {
+              PluginIdentifier * pid =
+                &port->id.plugin_id;
               g_return_val_if_fail (
-                pl == self->channel->instrument,
+                pid->track_name_hash == name_hash,
                 false);
+              Plugin * pl = plugin_find (pid);
+              g_return_val_if_fail (
+                plugin_identifier_validate (pid),
+                false);
+              g_return_val_if_fail (
+                plugin_identifier_validate (&pl->id),
+                false);
+              g_return_val_if_fail (
+                plugin_identifier_is_equal (
+                  &pl->id, pid), false);
+              if (pid->slot_type ==
+                    PLUGIN_SLOT_INSTRUMENT)
+                {
+                  g_return_val_if_fail (
+                    pl == self->channel->instrument,
+                    false);
+                }
             }
-        }
 
-      /* check that the automation track is
-       * there */
-      if (atl &&
-          port->id.flags & PORT_FLAG_AUTOMATABLE)
-        {
-          /*g_message ("checking %s", port->id.label);*/
-          AutomationTrack * at =
-            automation_track_find_from_port (
-              port, self, true);
-          if (!at)
+          /* check that the automation track is
+           * there */
+          if (atl &&
+              port->id.flags & PORT_FLAG_AUTOMATABLE)
             {
-              char full_str[600];
-              port_get_full_designation (
-                port, full_str);
-              g_critical (
-                "Could not find automation track "
-                "for port '%s'",
-                full_str);
-              return false;
-            }
-          g_return_val_if_fail (
-            automation_track_find_from_port (
-              port, self, false), false);
-          g_return_val_if_fail (
-            port->at == at, false);
+              /*g_message ("checking %s", port->id.label);*/
+              AutomationTrack * at =
+                automation_track_find_from_port (
+                  port, self, true);
+              if (!at)
+                {
+                  char full_str[600];
+                  port_get_full_designation (
+                    port, full_str);
+                  g_critical (
+                    "Could not find automation track "
+                    "for port '%s'",
+                    full_str);
+                  return false;
+                }
+              g_return_val_if_fail (
+                automation_track_find_from_port (
+                  port, self, false), false);
+              g_return_val_if_fail (
+                port->at == at, false);
 
-          automation_track_verify (at);
+              automation_track_verify (at);
+            }
         }
+      object_free_w_func_and_null (
+        g_ptr_array_unref, ports);
     }
-  object_free_w_func_and_null (
-    g_ptr_array_unref, ports);
 
   /* verify output and sends */
   if (self->channel)
@@ -1233,11 +1236,12 @@ track_validate (
     }
 
   /* verify tracklist identifiers */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (self);
   if (atl)
     {
       g_return_val_if_fail (
-        automation_tracklist_validate (
-          atl),
+        automation_tracklist_validate (atl),
         false);
     }
 
@@ -2221,6 +2225,9 @@ track_freeze (
 /**
  * Wrapper over channel_add_plugin() and
  * modulator_track_insert_modulator().
+ *
+ * @param instantiate_plugin Whether to attempt to
+ *   instantiate the plugin.
  */
 void
 track_insert_plugin (
@@ -2228,6 +2235,7 @@ track_insert_plugin (
   Plugin *       pl,
   PluginSlotType slot_type,
   int            slot,
+  bool           instantiate_plugin,
   bool           replacing_plugin,
   bool           moving_plugin,
   bool           confirm,
@@ -2253,39 +2261,19 @@ track_insert_plugin (
         confirm, moving_plugin, gen_automatables,
         recalc_graph, fire_events);
     }
-}
 
-/**
- * Wrapper over channel_add_plugin() and
- * modulator_track_insert_modulator().
- */
-void
-track_add_plugin (
-  Track *        self,
-  PluginSlotType slot_type,
-  int            slot,
-  Plugin *       pl,
-  bool           replacing_plugin,
-  bool           moving_plugin,
-  bool           gen_automatables,
-  bool           recalc_graph,
-  bool           fire_events)
-{
-  if (slot_type == PLUGIN_SLOT_MODULATOR)
+  if (!pl->instantiated &&
+      !pl->instantiation_failed)
     {
-      modulator_track_insert_modulator (
-        self, slot, pl, replacing_plugin,
-        F_NO_CONFIRM,
-        gen_automatables, recalc_graph,
-        fire_events);
-    }
-  else
-    {
-      channel_add_plugin (
-        self->channel, slot_type, slot, pl,
-        F_NO_CONFIRM,
-        moving_plugin, gen_automatables,
-        recalc_graph, fire_events);
+      GError * err = NULL;
+      int ret =
+        plugin_instantiate (pl, NULL, &err);
+      if (ret != 0)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to instantiate plugin"));
+        }
     }
 }
 
@@ -3357,7 +3345,24 @@ track_activate_all_plugins (
           track->channel->inserts[
             i - (STRIP_SIZE + 1)];
 
-      if (pl && pl->instantiated)
+      if (!pl)
+        continue;
+
+      if (!pl->instantiated &&
+          !pl->instantiation_failed)
+        {
+          GError * err = NULL;
+          int ret =
+            plugin_instantiate (pl, NULL, &err);
+          if (ret != 0)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to instantiate plugin"));
+            }
+        }
+
+      if (pl->instantiated)
         {
           plugin_activate (pl, activate);
         }
