@@ -1,6 +1,47 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.23.0.1] - 2021-08-26
+### Added
+- Submit compressed log file along with anonymous error reports
+- Ability to dither on export
+- New logarithmic curve algorithm
+- User manual: add XRUN definition to glossary
+
+### Changed
+- Use hashtable to speed up dsp graph calculation
+- Refactor & optimization: store owners on each object
+- Change MIDI track and open UI button icons
+- Refactor: add GError-based error handling for all undoable actions
+- Update French, Japanese, Portuguese, Russian, Chinese (Simplified), Norwegian, Turkish, Ukrainian translations
+- Use escaped name when drawing regions and markers
+- Don't recalculate the graph every time the user clicks on a region
+- Various DSP optimizations
+- Skip autosave if in the middle of an arranger action
+- Add more error handling when instantiating plugins and applying states
+- Clone project before saving and save clone (ability to save yaml in a separate thread in the future)
+- Don't allocate buffers for ports not used in the DSP graph (memory usage optimization)
+- Refactor port connections into global port connections manager
+- Refactor: Use track name hash to identify tracks instead of positions
+- Don't recalculate graph when moving tracks
+- Disable ability to record on chord track until implemented
+- Don't attempt to show bug report dialog if main window doesn't exist
+- Use `carla_save/load_plugin_state()` to save/load carla states
+- Silence all output ports exposed to JACK when idle-processing
+- Copy state directories instead of instantiating plugins when cloning (speeds up project saving)
+
+### Fixed
+- Fix changing marker name not taking effect on the UI
+- Fix error when attempting to auto-scroll in a hidden arranger
+- Fix error when attempting to loop-resize objects in timeline from the right side when resulting end position would be negative
+- Fix tracks not being copied/moved inside foldable tracks correctly in some circumstances
+- Fix tracks getting deselected when CTRL+dragging in tracklist
+- Fix rare segfault in LV2 UI code (suil)
+- Fix error when selecting a file in a generic LV2 UI
+
+### Removed
+- Remove some non-realtime calls from realtime functions reported by stoat
+
 ## [1.0.0-alpha.22.1.11] - 2021-08-07
 ### Added
 - Add Thai language
