@@ -402,6 +402,8 @@ wrapper_wrap(SuilWrapper* wrapper, SuilInstance* instance)
   wrap->wrapper         = wrapper;
   wrap->instance        = instance;
 
+  /* this crashes X42 plugins */
+#if 0
   GdkWindow*  window   = gtk_widget_get_window(GTK_WIDGET(wrap->plug));
   GdkDisplay* display  = gdk_window_get_display(window);
   Display*    xdisplay = GDK_WINDOW_XDISPLAY(window);
@@ -413,6 +415,7 @@ wrapper_wrap(SuilWrapper* wrapper, SuilInstance* instance)
   XGetWindowAttributes(xdisplay, xwindow, &attrs);
   wrap->initial_width  = attrs.width;
   wrap->initial_height = attrs.height;
+#endif
 
   const LV2UI_Idle_Interface* idle_iface = NULL;
   if (instance->descriptor->extension_data) {
