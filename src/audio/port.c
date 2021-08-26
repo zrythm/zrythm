@@ -2703,8 +2703,7 @@ port_copy_metadata_from_project (
 }
 
 /**
- * Copies the port values, including metadata
- * about sources and dests from @ref other to @ref
+ * Copies the port values from @ref other to @ref
  * self.
  *
  * @param self

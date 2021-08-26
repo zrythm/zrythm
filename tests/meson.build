@@ -237,9 +237,11 @@ if get_option ('tests')
     'audio/region': { 'parallel': true },
     'audio/sample_processor': { 'parallel': true },
     'audio/snap_grid': { 'parallel': true },
+    'audio/tempo_track': { 'parallel': true },
     'audio/track': { 'parallel': true },
     'audio/track_processor': { 'parallel': true },
     'audio/tracklist': { 'parallel': true },
+    'audio/transport': { 'parallel': true },
     'gui/backend/arranger_selections': {
       'parallel': true },
     'integration/memory_allocation': { 'parallel': true },

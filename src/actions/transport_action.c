@@ -59,7 +59,9 @@ transport_action_new_bpm_change (
   self->bpm_after = bpm_after;
   self->already_done = already_done;
   self->musical_mode =
-    g_settings_get_boolean (S_UI, "musical-mode");
+    ZRYTHM_TESTING
+    ? false
+    : g_settings_get_boolean (S_UI, "musical-mode");
 
   return ua;
 }
@@ -83,7 +85,9 @@ transport_action_new_time_sig_change (
   self->int_after = after;
   self->already_done = already_done;
   self->musical_mode =
-    g_settings_get_boolean (S_UI, "musical-mode");
+    ZRYTHM_TESTING
+    ? false
+    : g_settings_get_boolean (S_UI, "musical-mode");
 
   return ua;
 }

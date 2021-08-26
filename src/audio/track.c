@@ -614,6 +614,18 @@ track_clone (
         new_track->processor, track->processor);
     }
 
+#define COPY_PORT_VALUES(x) \
+  if (track->x) \
+    port_copy_values (new_track->x, track->x)
+
+  /* copy own values */
+  COPY_PORT_VALUES (recording);
+  COPY_PORT_VALUES (bpm_port);
+  COPY_PORT_VALUES (beats_per_bar_port);
+  COPY_PORT_VALUES (beat_unit_port);
+
+#undef COPY_PORT_VALUES
+
   /* check that source track is not affected
    * during unit tests */
   if (ZRYTHM_TESTING &&
