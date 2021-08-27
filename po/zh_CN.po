@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-22 15:58+0100\n"
-"PO-Revision-Date: 2021-08-16 08:33+0000\n"
+"PO-Revision-Date: 2021-08-25 02:32+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -441,9 +441,8 @@ msgid "Unable to read file: %s"
 msgstr "无法读取文件:%s"
 
 #: src/project.c:943
-#, fuzzy
 msgid "Failed to decompress project file"
-msgstr "无法解压缩项目文件:%s"
+msgstr "未能解压缩工程文件"
 
 #: src/project.c:1002
 #, c-format
@@ -476,9 +475,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "无法加载项目。将创建一个新项目。"
 
 #: src/project.c:1633
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "无法解压缩项目文件:%s"
+msgstr "未能解压缩工程文件"
 
 #: src/project.c:1679
 msgid "Backup saved."
@@ -724,9 +722,8 @@ msgid "Failed to instantiate Carla plugin"
 msgstr ""
 
 #: src/plugins/carla_native_plugin.c:1409
-#, fuzzy
 msgid "Failed to load Carla state"
-msgstr "未能从 %s 加载状态"
+msgstr "未能加载 Carla 状态"
 
 #: src/plugins/carla_native_plugin.c:1430
 msgid ""
@@ -735,9 +732,9 @@ msgid ""
 msgstr ""
 
 #: src/plugins/carla_native_plugin.c:1808
-#, fuzzy, c-format
+#, c-format
 msgid "State file %s doesn't exist"
-msgstr "请求的客户端不存在"
+msgstr "状态文件 %s 不存在"
 
 #: src/plugins/carla_native_plugin.c:1821
 msgid "An error occurred reading the state"
@@ -801,9 +798,8 @@ msgstr "插件增益"
 
 #: src/plugins/plugin.c:531 src/plugins/plugin_gtk.c:170
 #: src/gui/widgets/plugin_properties_expander.c:155
-#, fuzzy
 msgid "Failed to apply preset"
-msgstr "未能应用插件"
+msgstr "未能应用预设"
 
 #: src/plugins/plugin.c:583
 msgid "Failed to get Carla plugin"
@@ -851,14 +847,13 @@ msgid "Failed to instantiate cloned plugin %s"
 msgstr "未能实例化克隆插件 %s"
 
 #: src/plugins/plugin.c:2209 src/plugins/plugin.c:2272
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to instantiate source plugin %s"
-msgstr "未能实例化插件 %s"
+msgstr "未能实例化源插件 %s"
 
 #: src/plugins/plugin.c:2234
-#, fuzzy
 msgid "Failed to load Carla plugin state"
-msgstr "未能创建插件 %s"
+msgstr "未能加载 Carla 插件状态"
 
 #: src/plugins/plugin.c:2320
 msgid "Failed to create plugin clone"
@@ -960,9 +955,8 @@ msgid "Unnamed bank"
 msgstr "未命名bank"
 
 #: src/plugins/lv2/lv2_state.c:454
-#, fuzzy
 msgid "Failed to apply LV2 preset"
-msgstr "未能应用插件"
+msgstr "未能应用 LV2 预设"
 
 #: src/plugins/lv2/lv2_gtk.c:259
 msgid "Delete Preset?"
@@ -3223,24 +3217,24 @@ msgid "Channel Send %d amount"
 msgstr "频道发送 %d 数目"
 
 #: src/audio/channel_send.c:110
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d audio in"
-msgstr "频道发送 %d 数目"
+msgstr ""
 
 #: src/audio/channel_send.c:122
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d MIDI in"
-msgstr "频道发送 %d 数目"
+msgstr ""
 
 #: src/audio/channel_send.c:131
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d audio out"
-msgstr "频道发送 %d 数目"
+msgstr "频道发出 %d 音频"
 
 #: src/audio/channel_send.c:143
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d MIDI out"
-msgstr "频道发送 %d 数目"
+msgstr "频道发出 %d MIDI"
 
 #: src/audio/channel_send.c:603
 msgid "Pre-fader send"

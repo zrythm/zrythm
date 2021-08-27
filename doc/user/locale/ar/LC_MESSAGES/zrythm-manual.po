@@ -28,18 +28,22 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-08-27 21:44+0000\n"
+"Last-Translator: Ali A <ali0088552211@gmail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ar/>\n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -648,7 +652,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "الإضافات"
 
 #: ../../configuration/preferences.rst:59
 msgid ":term:`Plugin` settings."
@@ -1067,7 +1071,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:77
 msgid "User Manual"
-msgstr ""
+msgstr "دليل المستخدم"
 
 #: ../../contributing/intro.rst:78
 msgid ""
@@ -2949,7 +2953,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:39
 msgid "Installer"
-msgstr ""
+msgstr "المثبت"
 
 #: ../../getting-started/installation.rst:40
 msgid "The installer supports the following distributions (and derivatives):"
@@ -3433,7 +3437,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:121
 msgid "Project"
-msgstr ""
+msgstr "المشروع"
 
 #: ../../glossary/intro.rst:123
 msgid ""
@@ -7243,7 +7247,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Chat"
-msgstr ""
+msgstr "رساله"
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Join the Zrythm chatroom on Matrix."

@@ -38,7 +38,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-08-22 14:57+0000\n"
+"PO-Revision-Date: 2021-08-27 21:44+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ru/>\n"
@@ -3690,7 +3690,7 @@ msgstr "Установка"
 
 #: ../../getting-started/installation.rst:11
 msgid "Installers"
-msgstr "Программы установки"
+msgstr "Установщики"
 
 #: ../../getting-started/installation.rst:12
 msgid ""
@@ -3708,32 +3708,33 @@ msgid ""
 "most users, and we provide support for it."
 msgstr ""
 "Это самый простой и рекомендуемый способ установки последней версии для "
-"большинства пользователей, и мы обеспечиваем ее поддержку."
+"большинства пользователей, и мы предоставляем поддержку для него."
 
 #: ../../getting-started/installation.rst:22
 msgid "The installers also include bundled plugins."
-msgstr "Программы установки также включают устанавливают встроенные плагины."
+msgstr "Установщики также включают встроенные плагины."
 
 #: ../../getting-started/installation.rst:25
 msgid "Manual Installation"
 msgstr "Ручная установка"
 
 #: ../../getting-started/installation.rst:26
-#, fuzzy
 msgid ""
 "If you are an advanced user, you can also build Zrythm from source, either "
 "using a `source distribution tarball <https://www.zrythm.org/releases/>`_ or "
 "`git <https://git.zrythm.org/zrythm/zrythm/>`_."
 msgstr ""
-"Если вы опытный пользователь, вы также можете собрать Zrythm из исходного "
-"кода, используя `архив с исходным кодом <https://www.zrythm.org/releases/>`_ "
-"или `git <https://git.zrythm.org/cgit/zrythm/>`_."
+"Если вы опытный пользователь, вы можете скомпилировать Zrythm из исходного "
+"кода, который вы можете найти в `архивах с исходниками <https://www.zrythm."
+"org/releases/>`_ или на нашем `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:31
 msgid ""
 "See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
 "for installation instructions."
 msgstr ""
+"Инструкции по установке смотрите в :download:`INSTALL.md <.../.../.../INSTALL"
+".md>` , который находится в папке с исходным кодом."
 
 #: ../../getting-started/installation.rst:36
 #: ../../getting-started/system-requirements.rst:53
@@ -3742,13 +3743,13 @@ msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:39
 msgid "Installer"
-msgstr "Программа установки (Installer)"
+msgstr "Установщик (Installer)"
 
 #: ../../getting-started/installation.rst:40
 msgid "The installer supports the following distributions (and derivatives):"
 msgstr ""
-"Программа установки поддерживает следующие дистрибутивы GNU/Linux (и их "
-"производные):"
+"Программа установки поддерживает следующие дистрибутивы GNU/Linux (и "
+"основанные на них):"
 
 #: ../../getting-started/installation.rst:43
 msgid "**Arch Linux** - x86_64"
@@ -3771,6 +3772,8 @@ msgid ""
 "We also offer an AppImage build, which is currently experimental. If you "
 "find any issues, please report them."
 msgstr ""
+"Мы также предлагаем пока экспериментальный образ AppImage. Если у вас "
+"возникнут с ним проблемы, пожалуйста, сообщите нам о них."
 
 #: ../../getting-started/installation.rst:53
 msgid "Distribution Package"
@@ -3781,12 +3784,12 @@ msgid ""
 "If your distribution provides a Zrythm package you can also install it from "
 "there."
 msgstr ""
-"Если в вашем дистрибутиве GNU/Linux есть пакет Zrythm, вы также можете "
-"установить его оттуда."
+"Если ваш дистрибутив GNU/Linux предоставляет пакет Zrythm в своих "
+"репозиториях, вы также можете установить его оттуда."
 
 #: ../../getting-started/installation.rst:58
 msgid "Windows & MacOS"
-msgstr "Windows & MacOS"
+msgstr "Windows и MacOS"
 
 #: ../../getting-started/installation.rst:59
 msgid "The installers above fully support Windows 64bit and MacOS."
@@ -3800,7 +3803,7 @@ msgstr "FreeBSD"
 
 #: ../../getting-started/installation.rst:63
 msgid "You can install the Zrythm port from the official repositories."
-msgstr "Вы можете установить портированный Zrythm из официальных репозиториев."
+msgstr "Вы можете установить порт Zrythm из официальных репозиториев."
 
 #: ../../getting-started/intro.rst:8
 msgid "Getting Started"
@@ -3817,7 +3820,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
-msgstr "Окно первого запуска (First Run Wizard)"
+msgstr "Мастер первого запуска (First Run Wizard)"
 
 #: ../../getting-started/running-zrythm.rst:13
 msgid ""
@@ -3825,10 +3828,13 @@ msgid ""
 "the basic settings that Zrythm will use. These include the :term:`Zrythm "
 "user path`, the language of the user interface and audio/MIDI backends."
 msgstr ""
+"При первом запуске Zrythm появится окно, которое позволить настроить "
+"основные параметры Zrythm, включая :term:`пользовательский путь Zrythm`, "
+"язык интерфейса и аудио/MIDI системы."
 
 #: ../../getting-started/running-zrythm.rst:20
 msgid "Language Selection"
-msgstr "Выбор языка (Language)"
+msgstr "Выбор языка"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -3837,12 +3843,14 @@ msgid ""
 "projects/zrythm/#languages>`_, so choose the language you are most "
 "comfortable in."
 msgstr ""
+"Zrythm позволяет вам выбрать язык интерфейса, который уже переведён на `"
+"несколько языков <https://hosted.weblate.org/projects/zrythm/#languages>`_, "
+". Выберете язык, с котором вам удобнее всего работать."
 
 #: ../../getting-started/running-zrythm.rst:30
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
-"У вас должена быть включена локализация (locale) для языка, который вы "
-"хотите использовать."
+"У вас должна быть включена локаль языка, который вы хотите использовать."
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
@@ -3954,14 +3962,15 @@ msgstr "Системные Требования"
 
 #: ../../getting-started/system-requirements.rst:9
 msgid "Hardware"
-msgstr "Оборудование"
+msgstr "Поддерживаемые архитектуры"
 
 #: ../../getting-started/system-requirements.rst:10
-#, fuzzy
 msgid ""
 "x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) or "
 "aarch64 (ARMv8)"
-msgstr "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) или aarch64 (ARMv8)"
+msgstr ""
+"x86_64 (64-bit), i686 (32-bit), powerpc64le (PowerPC), armhf (ARMv7) или "
+"aarch64 (ARMv8)"
 
 #: ../../getting-started/system-requirements.rst:13
 msgid "Operating System"
@@ -3984,8 +3993,8 @@ msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
 msgstr ""
-"Для бесперебойной работы рекомендуется использовать процессор с тактовой "
-"частотой не менее 2 ГГц и не менее 4 ядер в сумме."
+"Для плавной работы мы рекомендуем использовать процессор с тактовой частотой "
+"не менее 2 ГГц и не менее 4-мя ядрами."
 
 #: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
@@ -4008,7 +4017,7 @@ msgid ""
 "An audio interface offers low latency and better quality than integrated "
 "sound cards (especially if recording audio)."
 msgstr ""
-"Аудиоинтерфейс предлагает низкую задержку и качество, которое лучше чем у "
+"Аудиоинтерфейс даёт низкую задержку и качество, которое лучше, чем у "
 "встроенных звуковых карт (особенно при записи звука)."
 
 #: ../../getting-started/system-requirements.rst:32
@@ -4016,10 +4025,9 @@ msgid "MIDI keyboard"
 msgstr "MIDI клавиатура (MIDI keyboard)"
 
 #: ../../getting-started/system-requirements.rst:31
-#, fuzzy
 msgid ""
 "For quickly trying out melodies, recording and controlling knobs and buttons."
-msgstr "Для быстрого прослушивания или записи мелодий."
+msgstr "Для быстрой пробы мелодий, записи и управления ручками и кнопками."
 
 #: ../../getting-started/system-requirements.rst:36
 #, python-format
@@ -4031,10 +4039,16 @@ msgid ""
 "articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack."
 "html>`_, so we will skip this part."
 msgstr ""
+"Если вы используете :term:`JACK` , то он должен быть включён и настроен "
+"перед запуском Zrythm. В интернете много информации по настройке JACK, "
+"например `Demystifying JACK - A Beginners Guide to Getting Started with JACK "
+"<https://linuxaudio.github.io/libremusicproduction/html/articles/"
+"demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_, "
+"так что мы не будем описывать как это сделать здесь."
 
 #: ../../getting-started/system-requirements.rst:45
 msgid "Memory Locking"
-msgstr ""
+msgstr "Блокировка памяти (Memory Locking)"
 
 #: ../../getting-started/system-requirements.rst:46
 msgid ""
@@ -4042,6 +4056,10 @@ msgid ""
 "operation. In short, if data is not locked into memory, it can be swapped by "
 "the kernel, causing xruns when attempting to access the data."
 msgstr ""
+"Для стабильной работы в Zrythm без рассинхронизаций (XRUN) требуется "
+"привилегия на блокировку памяти. В ином случае, когда данные не "
+"заблокированы в памяти, они могут быть перемещены ядром, что будет вызывать "
+"рассинхронизацию (XRUN) при попытке доступа к ним."
 
 #: ../../getting-started/system-requirements.rst:54
 msgid ""
@@ -4049,22 +4067,30 @@ msgid ""
 "system to allow JACK to use realtime scheduling? <https://jackaudio.org/faq/"
 "linux_rt_config.html#systems-using-pam>`_."
 msgstr ""
+"Чтобы установить эти привилегии для пользователя, смотрите `How do I "
+"configure my linux system to allow JACK to use realtime scheduling? "
+"<https://jackaudio.org/faq/linux_rt_config.html#systems-using-pam>`_."
 
 #: ../../getting-started/system-requirements.rst:59
 msgid ""
 "To set up these privileges for your user, change the user class' "
 "``memorylocked`` value in :file:`/etc/login.conf`."
 msgstr ""
+"Чтобы установить эти привилегии для пользователя, измените значение класса "
+"пользователя ``memorylocked`` в :file:`/etc/login.conf`."
 
 #: ../../getting-started/system-requirements.rst:64
 msgid "Open File Limit"
-msgstr ""
+msgstr "Ограничение на количество открытых файлов"
 
 #: ../../getting-started/system-requirements.rst:65
 msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."
 msgstr ""
+"При запуске Zrythm попытается увеличить максимальное количество файлов, "
+"которое он может открыть. Вы должны предоставить пользователю достаточные "
+"права, чтобы разрешить это."
 
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
@@ -4108,11 +4134,11 @@ msgstr ""
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr "Рендер (Bounce)"
+msgstr "Рендер"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
-msgstr "Запекание означает экспорт в аудио."
+msgstr "Рендер означает экспорт в аудио."
 
 #: ../../glossary/intro.rst:26
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
@@ -5181,15 +5207,13 @@ msgstr ""
 #: ../../playback-and-recording/transport-controls.rst:8
 #: ../../zrythm-interface/transport-bar.rst:22
 msgid "Transport Controls"
-msgstr "Элементы управления транспортом (Transport Controls)"
+msgstr "Элементы управления навигацией"
 
 #: ../../playback-and-recording/transport-controls.rst:10
 msgid "Playback is controlled by the following transport controls."
-msgstr ""
-"Воспроизведение контролируется следующими элементами управления транспортом."
+msgstr "Воспроизведение контролируется элементами управления навигацией."
 
 #: ../../playback-and-recording/transport-controls.rst:17
-#, fuzzy
 msgid "Controls"
 msgstr "Управление (Controls)"
 
@@ -5330,9 +5354,8 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:72
-#, fuzzy
 msgid "JACK Transport"
-msgstr "Инспектор Треков (Track Inspector)"
+msgstr "Навигация JACK (JACK Transport)"
 
 #: ../../playback-and-recording/transport-controls.rst:73
 msgid ""
@@ -8206,7 +8229,7 @@ msgid ""
 msgstr ""
 "В Zrythm групповые треки (Group Track) используются для объединения аудио "
 "или MIDI сигналов, FX треки (FX Track) и треки шин (Bus Track) используются "
-"для эффектов (Effect) или посылов (Send), а треки папок (Folder Track) "
+"для эффектов (Effect) или посылов (Send), а треки-папки (Folder Track) "
 "используются для помещения нескольких треков разных типов в один трек и "
 "выполнения общих операций (в разработке)."
 
@@ -8815,7 +8838,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid "Export Graph"
-msgstr "Экспорт графика (Export Graph)"
+msgstr "Экспорт диаграммы (Export Graph)"
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid ""
@@ -9100,15 +9123,15 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
-msgstr "Панель транспорта (Transport Bar)"
+msgstr "Панель навигации (Transport Bar)"
 
 #: ../../zrythm-interface/transport-bar.rst:10
 msgid ""
 "The transport bar contains information about the audio engine and transport "
 "controls."
 msgstr ""
-"Панель транспорта содержит информацию об аудиосистеме и элементах управления "
-"транспортом."
+"Панель навигации содержит информацию об аудиосистеме и элементы управления "
+"навигацией."
 
 #: ../../zrythm-interface/transport-bar.rst:17
 #, fuzzy
@@ -9126,6 +9149,8 @@ msgid ""
 "Transport controls are covered in :ref:`playback-and-recording/transport-"
 "controls:Transport Controls`."
 msgstr ""
+"Элементы управления навигацией рассматриваются в :ref:`playback-"
+"and-recording/transport-controls:Transport Controls`."
 
 #: ../../zrythm-interface/transport-bar.rst:27
 msgid "Backend Information"
