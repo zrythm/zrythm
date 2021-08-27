@@ -170,6 +170,18 @@ segv_handler (int sig)
 
   exit (EXIT_FAILURE);
 }
+
+/** SIGTERM handler. */
+static void
+sigterm_handler (int sig)
+{
+  if (zrythm_app)
+    {
+      g_application_quit (
+        G_APPLICATION (zrythm_app));
+    }
+}
+
 #pragma GCC diagnostic pop
 
 /**
@@ -1101,9 +1113,10 @@ zrythm_app_startup (
   g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
 
   /* install segfault handler */
-  g_message ("Installing signal handler...");
+  g_message ("Installing signal handlers...");
   signal (SIGSEGV, segv_handler);
   signal (SIGABRT, segv_handler);
+  signal (SIGTERM, sigterm_handler);
 
 #ifdef HAVE_X11
   /* init xlib threads */
