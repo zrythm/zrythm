@@ -199,13 +199,13 @@ meter_timeout (
 {
   MeterWidget * self = (MeterWidget *) data;
 
-  if (GTK_IS_WIDGET (self)
-      && AUDIO_ENGINE->activated
-      && engine_get_run (AUDIO_ENGINE))
+  if (GTK_IS_WIDGET (self))
     {
-      if (self->meter &&
-          gtk_widget_get_mapped (
-            GTK_WIDGET (self)))
+      if (self->meter
+          &&
+          gtk_widget_get_mapped (GTK_WIDGET (self))
+          && AUDIO_ENGINE->activated
+          && engine_get_run (AUDIO_ENGINE))
         {
           meter_get_value (
             self->meter, AUDIO_VALUE_FADER,
