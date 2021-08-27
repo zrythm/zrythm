@@ -159,7 +159,8 @@ port_owner_type_strings[] =
 {
   { "audio engine", PORT_OWNER_TYPE_AUDIO_ENGINE  },
   { "plugin",    PORT_OWNER_TYPE_PLUGIN   },
-  { "track",     PORT_OWNER_TYPE_CHANNEL   },
+  { "track",     PORT_OWNER_TYPE_TRACK   },
+  { "channel",   PORT_OWNER_TYPE_CHANNEL   },
   { "fader",     PORT_OWNER_TYPE_FADER   },
   { "channel send", PORT_OWNER_TYPE_CHANNEL_SEND  },
   { "track processor",
