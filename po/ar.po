@@ -5,22 +5,23 @@
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # YoGo <officialyogomusic@gmail.com>, 2020.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Ali A <ali0088552211@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-22 15:58+0100\n"
-"PO-Revision-Date: 2020-09-24 02:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/"
-">\n"
+"PO-Revision-Date: 2021-08-27 21:44+0000\n"
+"Last-Translator: Ali A <ali0088552211@gmail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/>"
+"\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -4665,7 +4666,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr ""
+msgstr "لغة"
 
 #: resources/ui/first_run_assistant.ui:111
 msgid ""
