@@ -1330,6 +1330,13 @@ project_load (
       channel_reconnect_ext_input_ports (ch);
     }
 
+  /* pause engine and reconnect graph */
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, true);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
+  engine_resume (AUDIO_ENGINE, &state);
+
   return 0;
 }
 
