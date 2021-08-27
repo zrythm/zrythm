@@ -324,6 +324,7 @@ inc/utils/arrays.h
 inc/utils/sort.h
 inc/utils/io.h
 inc/utils/color.h
+inc/utils/debug.h
 inc/utils/cpu_windows.h
 inc/utils/stack.h
 inc/utils/dsp.h
