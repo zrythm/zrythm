@@ -265,11 +265,11 @@ on_arranger_selections_in_transit (
 
   arranger_selections_redraw (sel);
 
+  event_viewer_widget_refresh_for_selections (sel);
+
   switch (sel->type)
   {
   case ARRANGER_SELECTIONS_TYPE_TIMELINE:
-    event_viewer_widget_refresh (
-      MW_TIMELINE_EVENT_VIEWER);
     if (TL_SELECTIONS->num_regions > 0)
       {
         ZRegion * r = TL_SELECTIONS->regions[0];
@@ -884,6 +884,14 @@ on_arranger_object_changed (
   ArrangerObject * parent_r_obj =
     (ArrangerObject *)
     arranger_object_get_region (obj);
+
+  bool is_timeline = !parent_r_obj;
+  if (is_timeline)
+    event_viewer_widget_refresh (
+      MW_TIMELINE_EVENT_VIEWER);
+  else
+    event_viewer_widget_refresh (
+      MW_EDITOR_EVENT_VIEWER);
 
   switch (obj->type)
     {
@@ -1631,6 +1639,8 @@ event_manager_process_event (
         ArrangerSelections * sel =
           arranger_widget_get_selections (arranger);
         arranger_selections_redraw (sel);
+        event_viewer_widget_refresh_for_arranger (
+          arranger);
         timeline_toolbar_widget_refresh (
           MW_TIMELINE_TOOLBAR);
       }

@@ -55,16 +55,6 @@ typedef enum EventViewerType
   EVENT_VIEWER_TYPE_EDITOR,
 } EventViewerType;
 
-typedef enum EventViewerEventType
-{
-  EVENT_VIEWER_ET_REGION,
-  EVENT_VIEWER_ET_MARKER,
-  EVENT_VIEWER_ET_SCALE_OBJECT,
-  EVENT_VIEWER_ET_MIDI_NOTE,
-  EVENT_VIEWER_ET_CHORD_OBJECT,
-  EVENT_VIEWER_ET_AUTOMATION_POINT,
-} EventViewerEventType;
-
 typedef struct _EventViewerWidget
 {
   GtkBox                 parent_instance;
@@ -87,6 +77,13 @@ typedef struct _EventViewerWidget
 void
 event_viewer_widget_refresh (
   EventViewerWidget * self);
+
+/**
+ * Convenience function.
+ */
+void
+event_viewer_widget_refresh_for_selections (
+  ArrangerSelections * sel);
 
 /**
  * Convenience function.

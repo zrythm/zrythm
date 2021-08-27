@@ -42,6 +42,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -97,31 +98,15 @@ enum AutomationColumns
 
 static void
 get_event_type_as_string (
-  EventViewerEventType type,
-  char *               buf)
+  ArrangerObjectType type,
+  char *             buf)
 {
-  g_return_if_fail (buf || type >= 0);
-  switch (type)
-    {
-    case EVENT_VIEWER_ET_REGION:
-      strcpy (buf, _("Region"));
-      break;
-    case EVENT_VIEWER_ET_MARKER:
-      strcpy (buf, _("Marker"));
-      break;
-    case EVENT_VIEWER_ET_SCALE_OBJECT:
-      strcpy (buf, _("Scale"));
-      break;
-    case EVENT_VIEWER_ET_MIDI_NOTE:
-      strcpy (buf, _("MIDI note"));
-      break;
-    case EVENT_VIEWER_ET_CHORD_OBJECT:
-      strcpy (buf, _("Chord"));
-      break;
-    case EVENT_VIEWER_ET_AUTOMATION_POINT:
-      strcpy (buf, _("Automation point"));
-      break;
-    }
+  g_return_if_fail (
+    buf || type > ARRANGER_OBJECT_TYPE_ALL);
+
+  const char * untranslated_type =
+    arranger_object_stringize_type (type);
+  strcpy (buf, _(untranslated_type));
 }
 
 static void
@@ -173,8 +158,7 @@ add_from_object (
       {
         Marker * m = (Marker *) obj;
 
-        get_event_type_as_string (
-          EVENT_VIEWER_ET_MARKER, type);
+        get_event_type_as_string (obj->type, type);
         position_to_string (
           &obj->pos, start_pos);
         gtk_list_store_append (store, iter);
@@ -197,8 +181,7 @@ add_from_object (
 
         midi_note_get_val_as_string (
           mn, name, 0);
-        get_event_type_as_string (
-          EVENT_VIEWER_ET_MIDI_NOTE, type);
+        get_event_type_as_string (obj->type, type);
         position_to_string (
           &obj->pos, start_pos);
         position_to_string (
@@ -227,8 +210,7 @@ add_from_object (
           chord_object_get_chord_descriptor (c);
         chord_descriptor_to_string (
           descr, name);
-        get_event_type_as_string (
-          EVENT_VIEWER_ET_CHORD_OBJECT, type);
+        get_event_type_as_string (obj->type, type);
         position_to_string (
           &obj->pos, start_pos);
         gtk_list_store_append (store, iter);
@@ -245,9 +227,7 @@ add_from_object (
         AutomationPoint * ap =
           (AutomationPoint*) obj;
 
-        get_event_type_as_string (
-          EVENT_VIEWER_ET_AUTOMATION_POINT,
-          type);
+        get_event_type_as_string (obj->type, type);
         position_to_string (
           &obj->pos, start_pos);
         char index[50];
@@ -702,6 +682,88 @@ add_editor_columns (
 }
 
 static void
+mark_selected_objects_as_selected (
+  EventViewerWidget * self)
+{
+  ArrangerSelections * sel = NULL;
+  int obj_column = 0;
+
+  if (self->type == EVENT_VIEWER_TYPE_TIMELINE)
+    {
+      sel = (ArrangerSelections *) TL_SELECTIONS;
+      obj_column = TIMELINE_COLUMN_OBJ;
+    }
+  else
+    {
+      ZRegion * r =
+        clip_editor_get_region (CLIP_EDITOR);
+      g_return_if_fail (IS_REGION_AND_NONNULL (r));
+
+      switch (r->id.type)
+        {
+        case REGION_TYPE_MIDI:
+          sel = (ArrangerSelections *) MA_SELECTIONS;
+          obj_column = MIDI_COLUMN_OBJ;
+          break;
+        case REGION_TYPE_AUDIO:
+          sel =
+            (ArrangerSelections *) AUDIO_SELECTIONS;
+          /*obj_column = AUDIO_COLUMN_OBJ;*/
+          break;
+        case REGION_TYPE_AUTOMATION:
+          sel =
+            (ArrangerSelections *)
+            AUTOMATION_SELECTIONS;
+          obj_column = AUTOMATION_COLUMN_OBJ;
+          break;
+        case REGION_TYPE_CHORD:
+          sel =
+            (ArrangerSelections *) CHORD_SELECTIONS;
+          obj_column = CHORD_COLUMN_OBJ;
+          break;
+        }
+    }
+
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (self->treeview));
+  gtk_tree_selection_unselect_all (selection);
+  gtk_tree_selection_set_mode (
+    selection, GTK_SELECTION_MULTIPLE);
+  int num_objs = 0;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      sel, &num_objs);
+  GtkTreeIter iter;
+  bool has_iter =
+    gtk_tree_model_get_iter_first (
+      GTK_TREE_MODEL (self->model), &iter);
+  while (has_iter)
+    {
+      ArrangerObject * iter_obj = NULL;
+      gtk_tree_model_get (
+        GTK_TREE_MODEL (self->model), &iter,
+        obj_column, &iter_obj, -1);
+      g_return_if_fail (iter_obj);
+
+      for (int i = 0; i < num_objs; i++)
+        {
+          ArrangerObject * obj = objs[i];
+          if (obj != iter_obj)
+            continue;
+
+          gtk_tree_selection_select_iter (
+            selection, &iter);
+        }
+
+      has_iter =
+        gtk_tree_model_iter_next (
+          GTK_TREE_MODEL (self->model), &iter);
+    }
+  free (objs);
+}
+
+static void
 refresh_timeline_events (
   EventViewerWidget * self)
 {
@@ -734,6 +796,17 @@ void
 event_viewer_widget_refresh (
   EventViewerWidget * self)
 {
+  if (self->type == EVENT_VIEWER_TYPE_TIMELINE
+      &&
+      !g_settings_get_boolean (
+         S_UI, "timeline-event-viewer-visible"))
+    return;
+  if (self->type == EVENT_VIEWER_TYPE_EDITOR
+      &&
+      !g_settings_get_boolean (
+         S_UI, "editor-event-viewer-visible"))
+    return;
+
   switch (self->type)
     {
     case EVENT_VIEWER_TYPE_TIMELINE:
@@ -743,6 +816,23 @@ event_viewer_widget_refresh (
       refresh_editor_events (self);
       break;
     }
+
+  mark_selected_objects_as_selected (self);
+}
+
+/**
+ * Convenience function.
+ */
+void
+event_viewer_widget_refresh_for_selections (
+  ArrangerSelections * sel)
+{
+  if (sel->type == ARRANGER_SELECTIONS_TYPE_TIMELINE)
+    event_viewer_widget_refresh (
+      MW_TIMELINE_EVENT_VIEWER);
+  else
+    event_viewer_widget_refresh (
+      MW_EDITOR_EVENT_VIEWER);
 }
 
 void
@@ -756,17 +846,8 @@ event_viewer_widget_refresh_for_arranger (
         MW_TIMELINE_EVENT_VIEWER);
       break;
     case ARRANGER_WIDGET_TYPE_MIDI:
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
     case ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
     case ARRANGER_WIDGET_TYPE_CHORD:
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
     case ARRANGER_WIDGET_TYPE_AUTOMATION:
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
@@ -787,15 +868,7 @@ event_viewer_widget_setup (
 {
   self->type = type;
 
-  switch (type)
-    {
-    case EVENT_VIEWER_TYPE_TIMELINE:
-      refresh_timeline_events (self);
-      break;
-    case EVENT_VIEWER_TYPE_EDITOR:
-      refresh_editor_events (self);
-      break;
-    }
+  event_viewer_widget_refresh (self);
 }
 
 static void

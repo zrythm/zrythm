@@ -276,15 +276,15 @@ restore_tree_view_selection (
 {
   char ** selection_paths =
     g_settings_get_strv (S_UI_PLUGIN_BROWSER, key);
+  if (!selection_paths)
+    return;
 
   GtkTreeSelection * selection =
     gtk_tree_view_get_selection (
       GTK_TREE_VIEW (tree_view));
-  int i = 1;
-  for (char * selection_path = selection_paths[0];
-       selection_path != NULL;
-       selection_path = selection_paths[i++])
+  for (int i = 0; selection_paths[i] != NULL; i++)
     {
+      char * selection_path = selection_paths[i];
       GtkTreePath * tp =
         gtk_tree_path_new_from_string (
           selection_path);
