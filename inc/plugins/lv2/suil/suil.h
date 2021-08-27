@@ -315,7 +315,6 @@ typedef int (*SuilWrapperWrapFunc)(struct _SuilWrapper* wrapper,
 typedef struct _SuilWrapper {
 	SuilWrapperWrapFunc wrap;
 	SuilWrapperFreeFunc free;
-	//void*               lib;
 	void*               impl;
 	LV2UI_Resize        resize;
 } SuilWrapper;
