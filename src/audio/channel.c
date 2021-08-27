@@ -461,8 +461,6 @@ channel_init_loaded (
     case TYPE_EVENT:
       self->midi_out->midi_events =
         midi_events_new ();
-      self->midi_out->id.owner_type =
-        PORT_OWNER_TYPE_TRACK;
       break;
     case TYPE_AUDIO:
       /* make sure master is expoed to backend */
