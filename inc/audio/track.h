@@ -268,6 +268,16 @@ typedef struct Track
   Port *              recording;
 
   /**
+   * Whether record was set automatically when
+   * the channel was selected.
+   *
+   * This is so that it can be unset when selecting
+   * another track. If we don't do this all the
+   * tracks end up staying on record mode.
+   */
+  bool                record_set_automatically;
+
+  /**
    * Active (enabled) or not.
    *
    * Disabled tracks should be ignored in routing.
@@ -572,6 +582,8 @@ track_fields_schema[] =
   YAML_FIELD_INT (Track, pool_id),
   YAML_FIELD_INT (Track, size),
   YAML_FIELD_INT (Track, folded),
+  YAML_FIELD_INT (
+    Track, record_set_automatically),
 
   CYAML_FIELD_END
 };

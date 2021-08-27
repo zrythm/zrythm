@@ -492,6 +492,7 @@ track_clone (
   COPY_MEMBER (midi_ch);
   COPY_MEMBER (size);
   COPY_MEMBER (folded);
+  COPY_MEMBER (record_set_automatically);
 
 #undef COPY_MEMBER
 

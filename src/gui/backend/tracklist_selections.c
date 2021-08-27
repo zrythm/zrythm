@@ -165,8 +165,7 @@ tracklist_selections_add_track (
     {
       track_set_recording (
         track, true, fire_events);
-      track->channel->record_set_automatically =
-        true;
+      track->record_set_automatically = true;
     }
 }
 
@@ -387,10 +386,10 @@ tracklist_selections_remove_track (
      * when the track was selected, turn record
      * off */
   if (track->channel &&
-      track->channel->record_set_automatically)
+      track->record_set_automatically)
     {
       track_set_recording (track, 0, fire_events);
-      track->channel->record_set_automatically = 0;
+      track->record_set_automatically = false;
     }
 
   array_delete (

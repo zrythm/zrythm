@@ -220,16 +220,6 @@ typedef struct Channel
   /** The channel widget. */
   ChannelWidget *  widget;
 
-  /**
-   * Whether record was set automatically when
-   * the channel was selected.
-   *
-   * This is so that it can be unset when selecting
-   * another channel. If we don't do this all the
-   * channels end up staying on record mode.
-   */
-  int              record_set_automatically;
-
   /** Pointer to owner track. */
   Track *          track;
 } Channel;
@@ -286,8 +276,6 @@ channel_fields_schema[] =
     Channel, all_stereo_r_ins),
   YAML_FIELD_INT (
     Channel, all_midi_channels),
-  YAML_FIELD_INT (
-    Channel, record_set_automatically),
   YAML_FIELD_INT (Channel, width),
 
   CYAML_FIELD_END

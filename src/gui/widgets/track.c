@@ -3018,13 +3018,11 @@ track_widget_on_record_toggled (
 {
   Track * track = self->track;
   g_return_if_fail (track);
-  Channel * chan = track->channel;
-  g_return_if_fail (chan);
 
   /* toggle record flag */
   track_set_recording (
     track, !self->was_armed, F_PUBLISH_EVENTS);
-  chan->record_set_automatically = false;
+  track->record_set_automatically = false;
   g_debug (
     "%s recording: %d",
     track->name, track_get_recording (track));

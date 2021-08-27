@@ -356,7 +356,8 @@ track_lane_remove_region (
 {
   g_return_if_fail (IS_REGION (region));
 
-  if (track_lane_is_in_active_project (self))
+  if (track_lane_is_in_active_project (self)
+      && !track_lane_is_auditioner (self))
     {
       /* if clip editor region index is greater
        * than this index, decrement it */
