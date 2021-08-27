@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.24.0.1] - 2021-08-27
+### Added
+- Add SIGTERM handler that gracefully shuts down the application
+- Link arranger selections in event viewers
+- Highlight pressed notes in the piano roll from any source
+
+### Changed
+- Port suil improvements from upstream
+
+### Fixed
+- Fix error when loading some LV2 plugin UIs
+- Fix carla plugins being unnecessarily instantiated during clone
+- Fix occasional error when removing multiple regions
+- Fix position label in event viewer not displaying negative positions properly
+- Fix port identifiers not being serialized correctly
+- Fix UI not being refreshed when changing velocity values
+- Fix automatically armed tracks not being automatically disarmed after loading a project
+- Fix MIDI channel send ports not being cleared on each run
+- Fix channel MIDI output incorrectly being marked as a track port on project load
+- Fix meters stopping drawing after autosave
+- Fix hardware devices not being connected to existing tracks after loading a project
+
 ## [1.0.0-alpha.23.0.1] - 2021-08-26
 ### Added
 - Submit compressed log file along with anonymous error reports
