@@ -2856,6 +2856,54 @@ port_process (
           g_return_if_reached ();
         }
 
+      /* if piano roll keys, add the notes to the
+       * piano roll "current notes" (to show
+       * pressed keys in the UI) */
+      if (G_UNLIKELY (
+            id->owner_type ==
+              PORT_OWNER_TYPE_TRACK_PROCESSOR
+            && track
+            && port == track->processor->midi_out
+            && port->midi_events->num_events > 0
+            && CLIP_EDITOR->has_region
+            &&
+            CLIP_EDITOR->region_id.
+              track_name_hash ==
+                track_get_name_hash (track)))
+        {
+          MidiEvents * events = port->midi_events;
+          bool events_processed = false;
+          for (int i = 0;
+               i < events->num_events; i++)
+            {
+              MidiEvent * ev = &events->events[i];
+              switch (ev->type)
+                {
+                case MIDI_EVENT_TYPE_NOTE_ON:
+                  piano_roll_add_current_note (
+                    PIANO_ROLL, ev->note_pitch);
+                  events_processed = true;
+                  break;
+                case MIDI_EVENT_TYPE_NOTE_OFF:
+                  piano_roll_remove_current_note (
+                    PIANO_ROLL, ev->note_pitch);
+                  events_processed = true;
+                  break;
+                case MIDI_EVENT_TYPE_ALL_NOTES_OFF:
+                  PIANO_ROLL->num_current_notes = 0;
+                  events_processed = true;
+                  break;
+                default:
+                  break;
+                }
+            }
+          if (events_processed)
+            {
+              EVENTS_PUSH (
+                ET_PIANO_ROLL_KEY_ON_OFF, NULL);
+            }
+        }
+
       /* only consider incoming external data if
        * armed for recording (if the port is owner
        * by a track), otherwise always consider

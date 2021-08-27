@@ -1417,6 +1417,9 @@ event_manager_process_event (
       /*on_clip_editor_region_changed ();*/
       clip_editor_widget_on_region_changed (
         MW_CLIP_EDITOR);
+      PIANO_ROLL->num_current_notes = 0;
+      piano_roll_keys_widget_redraw_full (
+        MW_PIANO_ROLL_KEYS);
       break;
     case ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
       tracklist_widget_update_track_visibility (
@@ -1508,6 +1511,10 @@ event_manager_process_event (
       if (MW_MIDI_EDITOR_SPACE)
         piano_roll_keys_widget_refresh (
           MW_PIANO_ROLL_KEYS);
+      break;
+    case ET_PIANO_ROLL_KEY_ON_OFF:
+      piano_roll_keys_widget_redraw_full (
+        MW_PIANO_ROLL_KEYS);
       break;
     case ET_RULER_STATE_CHANGED:
       ruler_widget_refresh (

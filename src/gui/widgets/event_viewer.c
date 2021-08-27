@@ -694,8 +694,8 @@ get_arranger_selections (
     {
       ZRegion * r =
         clip_editor_get_region (CLIP_EDITOR);
-      g_return_val_if_fail (
-        IS_REGION_AND_NONNULL (r), NULL);
+      if (!r)
+        return NULL;
 
       switch (r->id.type)
         {
@@ -729,8 +729,8 @@ get_obj_column (
     {
       ZRegion * r =
         clip_editor_get_region (CLIP_EDITOR);
-      g_return_val_if_fail (
-        IS_REGION_AND_NONNULL (r), -1);
+      if (!r)
+        return -1;
 
       switch (r->id.type)
         {
@@ -755,7 +755,8 @@ mark_selected_objects_as_selected (
   ArrangerSelections * sel =
     get_arranger_selections (self);;
   int obj_column = get_obj_column (self);;
-  g_return_if_fail (sel && obj_column >= 0);
+  if (!sel || obj_column < 0)
+    return;
 
   self->marking_selected_objs = true;
 

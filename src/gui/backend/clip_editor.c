@@ -115,8 +115,8 @@ clip_editor_set_region (
   if (fire_events && ZRYTHM_HAVE_UI &&
       MAIN_WINDOW && MW_CLIP_EDITOR)
     {
-      clip_editor_widget_on_region_changed (
-        MW_CLIP_EDITOR);
+      EVENTS_PUSH (
+        ET_CLIP_EDITOR_REGION_CHANGED, NULL);
     }
 }
 

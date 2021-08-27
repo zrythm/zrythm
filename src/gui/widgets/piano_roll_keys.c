@@ -277,15 +277,18 @@ piano_roll_keys_draw (
       if (piano_roll_contains_current_note (
             PIANO_ROLL, i))
         {
-          if (black_note)
-            cairo_set_source_rgba (
-              cr, 1, 1, 1, 0.1);
-          else
-            cairo_set_source_rgba (
-              cr, 0, 0, 0, 0.3);
+          /* orange */
+          cairo_set_source_rgba (
+            cr, 1, 0.462745, 0.101961, 1);
+#if 0
+          /* sky blue */
+          cairo_set_source_rgba (
+            cr, 0.101961, 0.63922, 1, 1);
+#endif
           cairo_rectangle (
-            cr, label_width, (127 - i) * px_per_key,
-            key_width, px_per_key);
+            cr,
+            label_width + 4, (127 - i) * px_per_key,
+            key_width - 4, px_per_key);
           cairo_fill (cr);
         }
 

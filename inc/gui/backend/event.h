@@ -288,6 +288,13 @@ typedef enum EventType
    * Arg: None.
    */
   ET_REGION_ACTIVATED,
+
+  /**
+   * Piano roll key pressed or unpressed.
+   *
+   * Arg: None.
+   */
+  ET_PIANO_ROLL_KEY_ON_OFF,
 } EventType;
 
 /**
