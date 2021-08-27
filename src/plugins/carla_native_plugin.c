@@ -356,259 +356,6 @@ engine_callback (
     }
 }
 
-static CarlaNativePlugin *
-_create (
-  Plugin * plugin)
-{
-  CarlaNativePlugin * self =
-    object_new (CarlaNativePlugin);
-
-  self->plugin = plugin;
-
-  self->native_host_descriptor.handle = self;
-  self->native_host_descriptor.uiName =
-    g_strdup ("Zrythm");
-
-  self->native_host_descriptor.uiParentId = 0;
-
-  /* set resources dir */
-  const char * carla_filename =
-    carla_get_library_filename ();
-  char * tmp = io_get_dir (carla_filename);
-  char * dir = io_get_dir (tmp);
-  g_free (tmp);
-  tmp = io_get_dir (dir);
-  g_free (dir);
-  dir = tmp;
-  self->native_host_descriptor.resourceDir =
-    g_build_filename (
-      dir, "share", "carla", "resources", NULL);
-  g_free (dir);
-
-  self->native_host_descriptor.get_buffer_size =
-    host_get_buffer_size;
-  self->native_host_descriptor.get_sample_rate =
-    host_get_sample_rate;
-  self->native_host_descriptor.is_offline =
-    host_is_offline;
-  self->native_host_descriptor.get_time_info =
-    host_get_time_info;
-  self->native_host_descriptor.write_midi_event =
-    host_write_midi_event;
-  self->native_host_descriptor.
-    ui_parameter_changed =
-      host_ui_parameter_changed;
-  self->native_host_descriptor.
-    ui_custom_data_changed =
-      host_ui_custom_data_changed;
-  self->native_host_descriptor.ui_closed =
-    host_ui_closed;
-  self->native_host_descriptor.ui_open_file =
-    NULL;
-  self->native_host_descriptor.ui_save_file =
-    NULL;
-  self->native_host_descriptor.dispatcher = host_dispatcher;
-
-  self->time_info.bbt.valid = 1;
-
-  return self;
-}
-
-/**
- * Creates a plugin.
- */
-static CarlaNativePlugin *
-create_plugin (
-  Plugin *     plugin,
-  PluginType   type,
-  GError **    error)
-{
-  PluginSetting * setting = plugin->setting;
-  const PluginDescriptor * descr =
-    setting->descr;
-  CarlaNativePlugin * self = _create (plugin);
-  g_return_val_if_fail (self, NULL);
-
-  /* instantiate the plugin to get its info */
-  self->native_plugin_descriptor =
-    carla_get_native_rack_plugin ();
-  self->native_plugin_handle =
-    self->native_plugin_descriptor->instantiate (
-      &self->native_host_descriptor);
-  self->host_handle =
-    carla_create_native_plugin_host_handle (
-      self->native_plugin_descriptor,
-      self->native_plugin_handle);
-  self->carla_plugin_id = 0;
-
-  /* set binary paths */
-  char * zrythm_libdir =
-    zrythm_get_dir (
-      ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
-  char * carla_binaries_dir =
-    g_build_filename (
-      zrythm_libdir, "carla", NULL);
-  g_message (
-    "setting carla engine option "
-    "[ENGINE_OPTION_PATH_BINARIES] to '%s'",
-    carla_binaries_dir);
-  carla_set_engine_option (
-    self->host_handle,
-    ENGINE_OPTION_PATH_BINARIES, 0,
-    carla_binaries_dir);
-  g_free (zrythm_libdir);
-  g_free (carla_binaries_dir);
-
-  /* set lv2 path */
-  carla_set_engine_option (
-    self->host_handle,
-    ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
-    PLUGIN_MANAGER->lv2_path);
-
-  /* set UI scale factor */
-  carla_set_engine_option (
-    self->host_handle,
-    ENGINE_OPTION_FRONTEND_UI_SCALE,
-    (int)
-    ((float) self->plugin->ui_scale_factor *
-       1000.f),
-    NULL);
-
-  /* set whether UI should stay on top */
-  carla_set_engine_option (
-    self->host_handle,
-    ENGINE_OPTION_FRONTEND_UI_SCALE,
-    (int)
-    ((float) self->plugin->ui_scale_factor *
-       1000.f),
-    NULL);
-
-  if (!ZRYTHM_TESTING &&
-      g_settings_get_boolean (
-        S_P_PLUGINS_UIS, "stay-on-top"))
-    {
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_UIS_ALWAYS_ON_TOP, true,
-        NULL);
-    }
-
-  g_message (
-    "%s: using bridge mode %s", __func__,
-    carla_bridge_mode_strings[
-      setting->bridge_mode].str);
-
-  /* set bridging on if needed */
-  switch (setting->bridge_mode)
-    {
-    case CARLA_BRIDGE_FULL:
-      g_message (
-        "plugin must be bridged whole, "
-        "using plugin bridge");
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
-        true, NULL);
-      break;
-    case CARLA_BRIDGE_UI:
-      g_message ("using UI bridge only");
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_PREFER_UI_BRIDGES,
-        true, NULL);
-      break;
-    default:
-      break;
-    }
-
-  /* raise bridge timeout to 8 sec */
-  if (setting->bridge_mode == CARLA_BRIDGE_FULL ||
-      setting->bridge_mode == CARLA_BRIDGE_UI)
-    {
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_UI_BRIDGES_TIMEOUT,
-        8000, NULL);
-    }
-
-  int ret = 0;
-  switch (descr->protocol)
-    {
-    case PROT_LV2:
-    case PROT_AU:
-      g_message ("uri %s", descr->uri);
-      ret =
-        carla_add_plugin (
-          self->host_handle,
-          descr->arch == ARCH_64 ?
-            BINARY_NATIVE : BINARY_WIN32,
-          type, NULL, descr->name,
-          descr->uri, 0, NULL, 0);
-      break;
-    case PROT_VST:
-    case PROT_VST3:
-      ret =
-        carla_add_plugin (
-          self->host_handle,
-          descr->arch == ARCH_64 ?
-            BINARY_NATIVE : BINARY_WIN32,
-          type, descr->path, descr->name,
-          descr->name, descr->unique_id, NULL, 0);
-      break;
-    case PROT_DSSI:
-    case PROT_LADSPA:
-      ret =
-        carla_add_plugin (
-          self->host_handle, BINARY_NATIVE,
-          type, descr->path, descr->name,
-          descr->uri, 0, NULL, 0);
-      break;
-    case PROT_SFZ:
-    case PROT_SF2:
-      ret =
-        carla_add_plugin (
-          self->host_handle,
-          BINARY_NATIVE,
-          type, descr->path, descr->name,
-          descr->name, 0, NULL, 0);
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-
-  if (ret != 1)
-    {
-      g_set_error (
-        error,
-        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
-        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
-        _("Error adding carla plugin: %s"),
-        carla_get_last_error (self->host_handle));
-      return NULL;
-    }
-
-  /* enable various messages */
-#define ENABLE_OPTION(x) \
-  carla_set_option ( \
-    self->host_handle, 0, \
-    PLUGIN_OPTION_##x, true)
-
-  ENABLE_OPTION (FORCE_STEREO);
-  ENABLE_OPTION (SEND_CONTROL_CHANGES);
-  ENABLE_OPTION (SEND_CHANNEL_PRESSURE);
-  ENABLE_OPTION (SEND_NOTE_AFTERTOUCH);
-  ENABLE_OPTION (SEND_PITCHBEND);
-  ENABLE_OPTION (SEND_ALL_SOUND_OFF);
-  ENABLE_OPTION (SEND_PROGRAM_CHANGES);
-
-  /* add engine callback */
-  carla_set_engine_callback (
-    self->host_handle, engine_callback, self);
-
-  return self;
-}
-
 void
 carla_native_plugin_populate_banks (
   CarlaNativePlugin * self)
@@ -1064,32 +811,6 @@ carla_native_plugin_get_descriptor_from_cached (
   return descr;
 }
 
-static CarlaNativePlugin *
-create_from_setting (
-  Plugin *  plugin,
-  GError ** error)
-{
-#if 0
-  g_return_val_if_fail (
-    descr->open_with_carla ||
-    (descr->protocol == PROT_CARLA_INTERNAL &&
-       descr->carla_type > CARLA_PLUGIN_NONE),
-    NULL);
-#endif
-  const PluginSetting * setting = plugin->setting;
-  const PluginDescriptor * descr = setting->descr;
-  g_return_val_if_fail (
-    setting->open_with_carla, NULL);
-
-  PluginType type =
-    get_plugin_type_from_protocol (
-      descr->protocol);
-  CarlaNativePlugin * self =
-    create_plugin (plugin, type, error);
-
-  return self;
-}
-
 /**
  * Creates an instance of a CarlaNativePlugin inside
  * the given Plugin.
@@ -1104,12 +825,11 @@ carla_native_plugin_new_from_setting (
   Plugin *  plugin,
   GError ** error)
 {
+  g_return_val_if_fail (
+    plugin->setting->open_with_carla, -1);
+
   CarlaNativePlugin * self =
-    create_from_setting (plugin, error);
-  if (!self)
-    {
-      return -1;
-    }
+    object_new (CarlaNativePlugin);
 
   plugin->carla = self;
   self->plugin = plugin;
@@ -1379,26 +1099,242 @@ carla_native_plugin_instantiate (
     "ports_created: %d",
     loading, use_state_file, self->ports_created);
 
+  self->native_host_descriptor.handle = self;
+  self->native_host_descriptor.uiName =
+    g_strdup ("Zrythm");
+
+  self->native_host_descriptor.uiParentId = 0;
+
+  /* set resources dir */
+  const char * carla_filename =
+    carla_get_library_filename ();
+  char * tmp = io_get_dir (carla_filename);
+  char * dir = io_get_dir (tmp);
+  g_free (tmp);
+  tmp = io_get_dir (dir);
+  g_free (dir);
+  dir = tmp;
+  self->native_host_descriptor.resourceDir =
+    g_build_filename (
+      dir, "share", "carla", "resources", NULL);
+  g_free (dir);
+
+  self->native_host_descriptor.get_buffer_size =
+    host_get_buffer_size;
+  self->native_host_descriptor.get_sample_rate =
+    host_get_sample_rate;
+  self->native_host_descriptor.is_offline =
+    host_is_offline;
+  self->native_host_descriptor.get_time_info =
+    host_get_time_info;
+  self->native_host_descriptor.write_midi_event =
+    host_write_midi_event;
+  self->native_host_descriptor.
+    ui_parameter_changed =
+      host_ui_parameter_changed;
+  self->native_host_descriptor.
+    ui_custom_data_changed =
+      host_ui_custom_data_changed;
+  self->native_host_descriptor.ui_closed =
+    host_ui_closed;
+  self->native_host_descriptor.ui_open_file =
+    NULL;
+  self->native_host_descriptor.ui_save_file =
+    NULL;
+  self->native_host_descriptor.dispatcher = host_dispatcher;
+
+  self->time_info.bbt.valid = 1;
+
+  /* instantiate the plugin to get its info */
+  self->native_plugin_descriptor =
+    carla_get_native_rack_plugin ();
+  self->native_plugin_handle =
+    self->native_plugin_descriptor->instantiate (
+      &self->native_host_descriptor);
+  self->host_handle =
+    carla_create_native_plugin_host_handle (
+      self->native_plugin_descriptor,
+      self->native_plugin_handle);
+  self->carla_plugin_id = 0;
+
+  /* set binary paths */
+  char * zrythm_libdir =
+    zrythm_get_dir (
+      ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+  char * carla_binaries_dir =
+    g_build_filename (
+      zrythm_libdir, "carla", NULL);
+  g_message (
+    "setting carla engine option "
+    "[ENGINE_OPTION_PATH_BINARIES] to '%s'",
+    carla_binaries_dir);
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_PATH_BINARIES, 0,
+    carla_binaries_dir);
+  g_free (zrythm_libdir);
+  g_free (carla_binaries_dir);
+
+  /* set lv2 path */
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
+    PLUGIN_MANAGER->lv2_path);
+
+  /* set UI scale factor */
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_FRONTEND_UI_SCALE,
+    (int)
+    ((float) self->plugin->ui_scale_factor *
+       1000.f),
+    NULL);
+
+  /* set whether UI should stay on top */
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_FRONTEND_UI_SCALE,
+    (int)
+    ((float) self->plugin->ui_scale_factor *
+       1000.f),
+    NULL);
+
+  if (!ZRYTHM_TESTING &&
+      g_settings_get_boolean (
+        S_P_PLUGINS_UIS, "stay-on-top"))
+    {
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_UIS_ALWAYS_ON_TOP, true,
+        NULL);
+    }
+
+  const PluginSetting * setting =
+    self->plugin->setting;
+  g_return_val_if_fail (
+    setting->open_with_carla, -1);
+  const PluginDescriptor * descr = setting->descr;
+  g_message (
+    "%s: using bridge mode %s", __func__,
+    carla_bridge_mode_strings[
+      setting->bridge_mode].str);
+
+  /* set bridging on if needed */
+  switch (setting->bridge_mode)
+    {
+    case CARLA_BRIDGE_FULL:
+      g_message (
+        "plugin must be bridged whole, "
+        "using plugin bridge");
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
+        true, NULL);
+      break;
+    case CARLA_BRIDGE_UI:
+      g_message ("using UI bridge only");
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_UI_BRIDGES,
+        true, NULL);
+      break;
+    default:
+      break;
+    }
+
+  /* raise bridge timeout to 8 sec */
+  if (setting->bridge_mode == CARLA_BRIDGE_FULL ||
+      setting->bridge_mode == CARLA_BRIDGE_UI)
+    {
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_UI_BRIDGES_TIMEOUT,
+        8000, NULL);
+    }
+
+  const PluginType type =
+    get_plugin_type_from_protocol (descr->protocol);
+  int ret = 0;
+  switch (descr->protocol)
+    {
+    case PROT_LV2:
+    case PROT_AU:
+      g_message ("uri %s", descr->uri);
+      ret =
+        carla_add_plugin (
+          self->host_handle,
+          descr->arch == ARCH_64 ?
+            BINARY_NATIVE : BINARY_WIN32,
+          type, NULL, descr->name,
+          descr->uri, 0, NULL, 0);
+      break;
+    case PROT_VST:
+    case PROT_VST3:
+      ret =
+        carla_add_plugin (
+          self->host_handle,
+          descr->arch == ARCH_64 ?
+            BINARY_NATIVE : BINARY_WIN32,
+          type, descr->path, descr->name,
+          descr->name, descr->unique_id, NULL, 0);
+      break;
+    case PROT_DSSI:
+    case PROT_LADSPA:
+      ret =
+        carla_add_plugin (
+          self->host_handle, BINARY_NATIVE,
+          type, descr->path, descr->name,
+          descr->uri, 0, NULL, 0);
+      break;
+    case PROT_SFZ:
+    case PROT_SF2:
+      ret =
+        carla_add_plugin (
+          self->host_handle,
+          BINARY_NATIVE,
+          type, descr->path, descr->name,
+          descr->name, 0, NULL, 0);
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+
+  if (ret != 1)
+    {
+      g_set_error (
+        error,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+        _("Error adding carla plugin: %s"),
+        carla_get_last_error (self->host_handle));
+      return -1;
+    }
+
+  /* enable various messages */
+#define ENABLE_OPTION(x) \
+  carla_set_option ( \
+    self->host_handle, 0, \
+    PLUGIN_OPTION_##x, true)
+
+  ENABLE_OPTION (FORCE_STEREO);
+  ENABLE_OPTION (SEND_CONTROL_CHANGES);
+  ENABLE_OPTION (SEND_CHANNEL_PRESSURE);
+  ENABLE_OPTION (SEND_NOTE_AFTERTOUCH);
+  ENABLE_OPTION (SEND_PITCHBEND);
+  ENABLE_OPTION (SEND_ALL_SOUND_OFF);
+  ENABLE_OPTION (SEND_PROGRAM_CHANGES);
+
+#undef ENABLE_OPTION
+
+  /* add engine callback */
+  carla_set_engine_callback (
+    self->host_handle, engine_callback, self);
+
   if (use_state_file)
     {
-      /* recreate the plugin to create the native
-       * plugin descriptor */
-      GError * err = NULL;
-      int ret =
-        carla_native_plugin_new_from_setting (
-          self->plugin, &err);
-      if (ret != 0)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            _("Failed to instantiate Carla "
-            "plugin"));
-          self->plugin->instantiation_failed =
-            true;
-          return -1;
-        }
-
       /* load the state */
+      GError * err = NULL;
       bool state_loaded =
         carla_native_plugin_load_state (
           self->plugin->carla, NULL, &err);
@@ -1411,12 +1347,6 @@ carla_native_plugin_instantiate (
             true;
           return -1;
         }
-
-      /* free the previous instance */
-      Plugin * pl = self->plugin;
-      carla_native_plugin_free (self);
-
-      self = pl->carla;
     }
 
   if (!self->native_plugin_handle

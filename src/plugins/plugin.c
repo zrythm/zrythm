@@ -443,20 +443,6 @@ populate_banks (
 #ifdef HAVE_CARLA
     }
 #endif
-
-  /* select the init preset */
-  self->selected_bank.schema_version =
-    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
-  self->selected_bank.bank_idx = 0;
-  self->selected_bank.idx = -1;
-  plugin_identifier_copy (
-    &self->selected_bank.plugin_id, &self->id);
-  self->selected_preset.schema_version =
-    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
-  self->selected_preset.bank_idx = 0;
-  self->selected_preset.idx = 0;
-  plugin_identifier_copy (
-    &self->selected_preset.plugin_id, &self->id);
 }
 
 void
@@ -616,8 +602,19 @@ plugin_new_from_setting (
     }
 #endif
 
-  /* update banks */
-  populate_banks (self);
+  /* select the init preset */
+  self->selected_bank.schema_version =
+    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
+  self->selected_bank.bank_idx = 0;
+  self->selected_bank.idx = -1;
+  plugin_identifier_copy (
+    &self->selected_bank.plugin_id, &self->id);
+  self->selected_preset.schema_version =
+    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
+  self->selected_preset.bank_idx = 0;
+  self->selected_preset.idx = 0;
+  plugin_identifier_copy (
+    &self->selected_preset.plugin_id, &self->id);
 
   if (!ZRYTHM_TESTING)
     {
@@ -1635,37 +1632,37 @@ plugin_set_track_name_hash (
  */
 int
 plugin_instantiate (
-  Plugin *    pl,
+  Plugin *    self,
   LilvState * state,
   GError **   error)
 {
-  g_return_val_if_fail (pl->setting, -1);
+  g_return_val_if_fail (self->setting, -1);
   const PluginDescriptor * descr =
-    pl->setting->descr;
+    self->setting->descr;
   g_return_val_if_fail (descr, -1);
 
   g_message (
     "Instantiating plugin '%s' | state %p...",
     descr->name, state);
 
-  set_enabled_and_gain (pl);
+  set_enabled_and_gain (self);
 
-  plugin_set_ui_refresh_rate (pl);
+  plugin_set_ui_refresh_rate (self);
 
   if (!PROJECT->loaded)
     {
-      g_return_val_if_fail (pl->state_dir, -1);
+      g_return_val_if_fail (self->state_dir, -1);
     }
-  g_message ("state dir: %s", pl->state_dir);
+  g_message ("state dir: %s", self->state_dir);
 
-  if (pl->setting->open_with_carla)
+  if (self->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
       GError * err = NULL;
       int ret =
         carla_native_plugin_instantiate (
-          pl->carla, !PROJECT->loaded,
-          pl->state_dir ? true : false,
+          self->carla, !PROJECT->loaded,
+          self->state_dir ? true : false,
           &err);
       if (ret != 0)
         {
@@ -1677,7 +1674,7 @@ plugin_instantiate (
 
       /* save the state */
       carla_native_plugin_save_state (
-        pl->carla, false, NULL);
+        self->carla, false, NULL);
 #else
       g_return_val_if_reached (-1);
 #endif
@@ -1688,12 +1685,12 @@ plugin_instantiate (
         {
         case PROT_LV2:
           {
-            pl->lv2->plugin = pl;
+            self->lv2->plugin = self;
             GError * err = NULL;
             int ret =
               lv2_plugin_instantiate (
-                pl->lv2,
-                pl->state_dir ? true : false,
+                self->lv2,
+                self->state_dir ? true : false,
                 NULL, state, &err);
             if (ret != 0)
               {
@@ -1705,12 +1702,12 @@ plugin_instantiate (
               }
             else
               {
-                pl->instantiated = true;
+                self->instantiated = true;
               }
             g_return_val_if_fail (
-              pl->lv2->instance, -1);
+              self->lv2->instance, -1);
 
-            if (!pl->state_dir)
+            if (!self->state_dir)
               {
                 /* save the state */
                 g_message (
@@ -1719,7 +1716,7 @@ plugin_instantiate (
                   "state...", descr->name);
                 LilvState * tmp_state =
                   lv2_state_save_to_file (
-                    pl->lv2, F_NOT_BACKUP);
+                    self->lv2, F_NOT_BACKUP);
                 lilv_state_free (tmp_state);
               }
           }
@@ -1731,14 +1728,17 @@ plugin_instantiate (
         }
     }
   g_return_val_if_fail (
-    IS_PORT_AND_NONNULL (pl->enabled), -1);
+    IS_PORT_AND_NONNULL (self->enabled), -1);
   control_port_set_val_from_normalized (
-    pl->enabled, 1.f, 0);
+    self->enabled, 1.f, 0);
 
   /* set the L/R outputs */
-  set_stereo_outs_and_midi_in (pl);
+  set_stereo_outs_and_midi_in (self);
 
-  pl->instantiated = true;
+  /* update banks */
+  populate_banks (self);
+
+  self->instantiated = true;
 
   return 0;
 }
@@ -2191,59 +2191,38 @@ plugin_clone (
   plugin_print (src, buf, 800);
 
   Plugin * self = NULL;
-  g_debug ("[0/7] cloning plugin '%s'", buf);
-
-  /* if src plugin not instantiated,
-   * instantiate it */
-  g_message (
-    "[1/7] instantiating source plugin (if "
-    "not instantiated");
-  if (!src->instantiated)
-    {
-      g_message (
-        "source plugin not instantiated, "
-        "instantiating it...");
-      GError * err = NULL;
-      int ret =
-        plugin_instantiate (
-          src, NULL, &err);
-      if (ret != 0)
-        {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err,
-            _("Failed to instantiate source "
-            "plugin %s"),
-            buf);
-          return NULL;
-        }
-    }
+  g_debug ("[0/5] cloning plugin '%s'", buf);
 
   /* save the state of the original plugin */
   g_message (
-    "[2/7] saving state of source plugin");
-  if (src->setting->open_with_carla)
+    "[1/5] saving state of source plugin (if "
+    "instantiated)");
+  if (src->instantiated)
     {
+      if (src->setting->open_with_carla)
+        {
 #ifdef HAVE_CARLA
-      carla_native_plugin_save_state (
-        src->carla, F_NOT_BACKUP, NULL);
+          carla_native_plugin_save_state (
+            src->carla, F_NOT_BACKUP, NULL);
 #else
-      g_return_val_if_reached (NULL);
+          g_return_val_if_reached (NULL);
 #endif
+        }
+      else
+        {
+          LilvState * state =
+            lv2_state_save_to_file (
+              src->lv2, F_NOT_BACKUP);
+          lilv_state_free (state);
+        }
+      g_message (
+        "saved source plugin state to %s",
+        src->state_dir);
     }
-  else
-    {
-      LilvState * state =
-        lv2_state_save_to_file (
-          src->lv2, F_NOT_BACKUP);
-      lilv_state_free (state);
-    }
-  g_message (
-    "saved source plugin state to %s",
-    src->state_dir);
 
   /* create a new plugin with same descriptor */
   g_message (
-    "[3/7] creating new plugin with same "
+    "[2/5] creating new plugin with same "
     "setting");
   GError * err = NULL;
   self =
@@ -2261,7 +2240,7 @@ plugin_clone (
 
   /* copy ports */
   g_message (
-    "[4/7] copying ports from source plugin");
+    "[3/5] copying ports from source plugin");
   self->enabled = NULL;
   self->gain = NULL;
   for (int i = 0; i < self->num_in_ports; i++)
@@ -2305,22 +2284,12 @@ plugin_clone (
 
   /* copy the state directory */
   g_message (
-    "[5/7] copying state directory from source "
+    "[4/5] copying state directory from source "
     "plugin");
   plugin_copy_state_dir (
     self, src, F_NOT_BACKUP, NULL);
 
-  /* cleanup the source if it wasnt in the
-   * project */
-  g_message (
-    "[6/7] cleaning up source plugin if wasn't "
-    "a project plugin");
-  if (!plugin_is_in_active_project (src))
-    {
-      plugin_cleanup (src);
-    }
-
-  g_message ("[7/7] done");
+  g_message ("[5/5] done");
 
   g_return_val_if_fail (
     src->num_in_ports || src->num_out_ports, NULL);
