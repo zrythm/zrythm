@@ -6,13 +6,14 @@
 # Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
 # Acid Chicken (硫酸鶏) <root@acid-chicken.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020, 2021.
+# Nikita Saschenko <neketa777@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-22 15:58+0100\n"
-"PO-Revision-Date: 2021-08-13 01:58+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2021-08-25 02:32+0000\n"
+"Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -5840,9 +5841,7 @@ msgstr "バウンステール"
 msgid ""
 "Tail to allow when bouncing (for example to catch reverb tails), in "
 "milliseconds."
-msgstr ""
-"バウンドするときに許可するテール（例えば、リバーブのテールをキャッチしたいと"
-"きなど）をミリ秒単位で指定します。"
+msgstr "バウンスするときに許可するテール（例えば、リバーブのテールをキャッチしたいときなど）をミリ秒単位で指定します。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:351
 msgid "Timeline object length"
@@ -5866,7 +5865,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:362
 msgid "Last timeline object's length"
-msgstr "最後に使用したタイムライン オブジェクトの長さ"
+msgstr "最後に作成したタイムライン オブジェクトの長さ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:363
 msgid "The length of the last created timeline object (in ticks)."
