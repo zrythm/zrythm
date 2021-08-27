@@ -1946,9 +1946,21 @@ tracklist_free (
       Track * track = self->tracks[i];
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (track));
+      if (track != self->tempo_track)
+        tracklist_remove_track (
+          self, track, F_REMOVE_PL, F_FREE,
+          F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+    }
+
+  /* remove tempo track last (used when printing
+   * positions) */
+  if (self->tempo_track)
+    {
       tracklist_remove_track (
-        self, track, F_REMOVE_PL, F_FREE,
+        self, self->tempo_track, F_REMOVE_PL,
+        F_FREE,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+      self->tempo_track = NULL;
     }
 
   object_zero_and_free (self);

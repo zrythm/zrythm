@@ -69,6 +69,9 @@ typedef struct _EventViewerWidget
   /** Used by the editor EV to check if it should
    * readd the columns. */
   RegionType             region_type;
+
+  /** Temporary flag. */
+  bool                   marking_selected_objs;
 } EventViewerWidget;
 
 /**

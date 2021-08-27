@@ -47,6 +47,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/debug.h"
 #include "utils/flags.h"
 #include "utils/audio.h"
 #include "utils/objects.h"
@@ -750,9 +751,10 @@ region_find (
       lane = track->lanes[id->lane_pos];
       g_return_val_if_fail (lane, NULL);
 
-      g_return_val_if_fail (
-        id->idx >= 0 &&
-          id->idx < lane->num_regions, NULL);
+      z_return_val_if_fail_cmp (
+        id->idx, >=, 0, NULL);
+      z_return_val_if_fail_cmp (
+        id->idx, <, lane->num_regions, NULL);
 
       ZRegion * region = lane->regions[id->idx];
       g_return_val_if_fail (

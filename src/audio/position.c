@@ -726,7 +726,8 @@ position_to_string (
   g_return_if_fail (bars > -80000);
   sprintf (
     buf, "%d.%d.%d.%f",
-    bars, beats, sixteenths, ticks);
+    bars, abs (beats), abs (sixteenths),
+    fabs (ticks));
 }
 
 /**

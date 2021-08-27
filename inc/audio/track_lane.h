@@ -46,6 +46,11 @@ typedef void MIDI_FILE;
 #define track_lane_is_auditioner(self) \
   (self->track && track_is_auditioner (self->track))
 
+#define track_lane_is_in_active_project(self) \
+  (self->track \
+   && \
+   track_is_in_active_project (self->track))
+
 /**
  * A TrackLane belongs to a Track (can have many
  * TrackLanes in a Track) and contains Regions.

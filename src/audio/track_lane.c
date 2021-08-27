@@ -356,6 +356,26 @@ track_lane_remove_region (
 {
   g_return_if_fail (IS_REGION (region));
 
+  if (track_lane_is_in_active_project (self))
+    {
+      /* if clip editor region index is greater
+       * than this index, decrement it */
+      ZRegion * clip_editor_r =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (clip_editor_r
+          &&
+          clip_editor_r->id.track_name_hash ==
+            region->id.track_name_hash
+          &&
+          clip_editor_r->id.lane_pos ==
+            region->id.lane_pos
+          &&
+          clip_editor_r->id.idx > region->id.idx)
+        {
+          CLIP_EDITOR->region_id.idx--;
+        }
+    }
+
   bool deleted = false;
   array_delete_confirm (
     self->regions, self->num_regions, region,

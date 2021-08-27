@@ -153,6 +153,9 @@ arranger_object_select (
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (self));
 
+  g_debug ("selecting object:");
+  arranger_object_print (self);
+
   if (self->type == ARRANGER_OBJECT_TYPE_VELOCITY)
     {
       self =

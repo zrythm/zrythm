@@ -43,6 +43,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -681,55 +682,87 @@ add_editor_columns (
   return 1;
 }
 
-static void
-mark_selected_objects_as_selected (
+static ArrangerSelections *
+get_arranger_selections (
   EventViewerWidget * self)
 {
-  ArrangerSelections * sel = NULL;
-  int obj_column = 0;
-
   if (self->type == EVENT_VIEWER_TYPE_TIMELINE)
     {
-      sel = (ArrangerSelections *) TL_SELECTIONS;
-      obj_column = TIMELINE_COLUMN_OBJ;
+      return (ArrangerSelections *) TL_SELECTIONS;
     }
   else
     {
       ZRegion * r =
         clip_editor_get_region (CLIP_EDITOR);
-      g_return_if_fail (IS_REGION_AND_NONNULL (r));
+      g_return_val_if_fail (
+        IS_REGION_AND_NONNULL (r), NULL);
 
       switch (r->id.type)
         {
         case REGION_TYPE_MIDI:
-          sel = (ArrangerSelections *) MA_SELECTIONS;
-          obj_column = MIDI_COLUMN_OBJ;
-          break;
+          return (ArrangerSelections *) MA_SELECTIONS;
         case REGION_TYPE_AUDIO:
-          sel =
+          return
             (ArrangerSelections *) AUDIO_SELECTIONS;
-          /*obj_column = AUDIO_COLUMN_OBJ;*/
-          break;
         case REGION_TYPE_AUTOMATION:
-          sel =
+          return
             (ArrangerSelections *)
             AUTOMATION_SELECTIONS;
-          obj_column = AUTOMATION_COLUMN_OBJ;
-          break;
         case REGION_TYPE_CHORD:
-          sel =
+          return
             (ArrangerSelections *) CHORD_SELECTIONS;
-          obj_column = CHORD_COLUMN_OBJ;
-          break;
         }
     }
+
+  g_return_val_if_reached (NULL);
+}
+
+static int
+get_obj_column (
+  EventViewerWidget * self)
+{
+  if (self->type == EVENT_VIEWER_TYPE_TIMELINE)
+    {
+      return TIMELINE_COLUMN_OBJ;
+    }
+  else
+    {
+      ZRegion * r =
+        clip_editor_get_region (CLIP_EDITOR);
+      g_return_val_if_fail (
+        IS_REGION_AND_NONNULL (r), -1);
+
+      switch (r->id.type)
+        {
+        case REGION_TYPE_MIDI:
+          return MIDI_COLUMN_OBJ;
+        case REGION_TYPE_AUDIO:
+          /*return AUDIO_COLUMN_OBJ;*/
+        case REGION_TYPE_AUTOMATION:
+          return AUTOMATION_COLUMN_OBJ;
+        case REGION_TYPE_CHORD:
+          return CHORD_COLUMN_OBJ;
+        }
+    }
+
+  g_return_val_if_reached (-1);
+}
+
+static void
+mark_selected_objects_as_selected (
+  EventViewerWidget * self)
+{
+  ArrangerSelections * sel =
+    get_arranger_selections (self);;
+  int obj_column = get_obj_column (self);;
+  g_return_if_fail (sel && obj_column >= 0);
+
+  self->marking_selected_objs = true;
 
   GtkTreeSelection * selection =
     gtk_tree_view_get_selection (
       GTK_TREE_VIEW (self->treeview));
   gtk_tree_selection_unselect_all (selection);
-  gtk_tree_selection_set_mode (
-    selection, GTK_SELECTION_MULTIPLE);
   int num_objs = 0;
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
@@ -761,6 +794,8 @@ mark_selected_objects_as_selected (
           GTK_TREE_MODEL (self->model), &iter);
     }
   free (objs);
+
+  self->marking_selected_objs = false;
 }
 
 static void
@@ -817,6 +852,12 @@ event_viewer_widget_refresh (
       break;
     }
 
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (self->treeview));
+  gtk_tree_selection_set_mode (
+    selection, GTK_SELECTION_MULTIPLE);
+
   mark_selected_objects_as_selected (self);
 }
 
@@ -858,6 +899,39 @@ event_viewer_widget_refresh_for_arranger (
     }
 }
 
+static int
+selection_func (
+  GtkTreeSelection * selection,
+  GtkTreeModel *     model,
+  GtkTreePath *      path,
+  int                path_currently_selected,
+  void *             data)
+{
+  EventViewerWidget * self =
+    (EventViewerWidget *) data;
+
+  GtkTreeIter iter;
+  bool has_any =
+    gtk_tree_model_get_iter (model, &iter, path);
+  g_return_val_if_fail (has_any, false);
+
+  /* select object if selection is not made
+   * programmatically */
+  if (!self->marking_selected_objs)
+    {
+      int obj_column = get_obj_column (self);
+      ArrangerObject * obj = NULL;
+      gtk_tree_model_get (
+        model, &iter, obj_column, &obj, -1);
+      arranger_object_select (
+        obj, !path_currently_selected, F_APPEND,
+        F_PUBLISH_EVENTS);
+    }
+
+  /* allow toggle */
+  return true;
+}
+
 /**
  * Sets up the event viewer.
  */
@@ -867,6 +941,12 @@ event_viewer_widget_setup (
   EventViewerType     type)
 {
   self->type = type;
+
+  GtkTreeSelection * sel =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (self->treeview));
+  gtk_tree_selection_set_select_function (
+    sel, selection_func, self, NULL);
 
   event_viewer_widget_refresh (self);
 }

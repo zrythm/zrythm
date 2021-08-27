@@ -4,7 +4,7 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="EventViewerWidget" parent="GtkBox">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can_focus">True</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkLabel">
@@ -26,7 +26,7 @@
         <child>
           <object class="GtkTreeView" id="treeview">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">True</property>
           </object>
         </child>
       </object>

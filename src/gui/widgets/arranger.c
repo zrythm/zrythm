@@ -5618,7 +5618,7 @@ on_focus_out (GtkWidget *widget,
                GdkEvent  *event,
                ArrangerWidget * self)
 {
-  g_message ("arranger focus out");
+  g_debug ("arranger focus out");
 
   self->alt_held = 0;
   self->ctrl_held = 0;

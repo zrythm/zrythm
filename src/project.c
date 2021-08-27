@@ -2124,6 +2124,9 @@ project_free (Project * self)
    * track */
   self->clip_editor->has_region = false;
 
+  object_free_w_func_and_null (
+    undo_manager_free, self->undo_manager);
+
   /* must be free'd before tracklist selections,
    * mixer selections, engine, and port connection
    * manager */
@@ -2132,8 +2135,6 @@ project_free (Project * self)
 
   object_free_w_func_and_null (
     midi_mappings_free, self->midi_mappings);
-  object_free_w_func_and_null (
-    undo_manager_free, self->undo_manager);
   object_free_w_func_and_null (
     clip_editor_free, self->clip_editor);
   object_free_w_func_and_null (

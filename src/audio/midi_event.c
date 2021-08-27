@@ -166,10 +166,16 @@ midi_events_append_w_filter (
             }
         }
 
+      g_return_if_fail (
+        dest->num_events < MAX_MIDI_EVENTS);
+
       dest_ev =
         &dest->events[dest->num_events++];
       midi_event_copy (dest_ev, src_ev);
     }
+
+  /* clear duplicates */
+  midi_events_clear_duplicates (dest, queued);
 }
 
 /**
@@ -987,6 +993,8 @@ midi_event_print (
     midi_event_type_strings[ev->type], ev->channel,
     ev->note_pitch,
     ev->velocity, ev->time, raw);
+
+  g_message ("%s", msg);
 }
 
 int
