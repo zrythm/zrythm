@@ -181,6 +181,24 @@ channel_send_is_target_sidechain (
 }
 
 void
+channel_send_prepare_process (
+  ChannelSend *   self)
+{
+  if (self->midi_in)
+    {
+      port_clear_buffer (self->midi_in);
+      port_clear_buffer (self->midi_out);
+    }
+  if (self->stereo_in)
+    {
+      port_clear_buffer (self->stereo_in->l);
+      port_clear_buffer (self->stereo_in->r);
+      port_clear_buffer (self->stereo_out->l);
+      port_clear_buffer (self->stereo_out->r);
+    }
+}
+
+void
 channel_send_process (
   ChannelSend *   self,
   const long      local_offset,

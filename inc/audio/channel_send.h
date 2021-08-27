@@ -333,6 +333,10 @@ channel_send_append_connection (
   GPtrArray *                    arr);
 
 void
+channel_send_prepare_process (
+  ChannelSend *   self);
+
+void
 channel_send_process (
   ChannelSend *   self,
   const long      local_offset,

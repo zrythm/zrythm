@@ -409,6 +409,11 @@ channel_prepare_process (Channel * self)
   if (self->instrument)
     plugin_prepare_process (self->instrument);
 
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      channel_send_prepare_process (self->sends[i]);
+    }
+
   if (tr->in_signal_type == TYPE_EVENT)
     {
 #ifdef HAVE_RTMIDI
