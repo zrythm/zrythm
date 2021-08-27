@@ -304,21 +304,19 @@ forward_size_request(SuilX11Wrapper* socket, GtkAllocation* allocation)
   GdkWindow* window = gtk_widget_get_window(GTK_WIDGET(socket->plug));
   if (x_window_is_valid(socket)) {
     // Calculate allocation size constrained to X11 limits for widget
-    int width  = allocation->width;
-    int height = allocation->height;
-
-    if (socket->query_wm) {
-      query_wm_hints(socket);
+    int        width  = allocation->width;
+    int        height = allocation->height;
+    XSizeHints hints;
+    memset(&hints, 0, sizeof(hints));
+    XGetNormalHints(
+      GDK_WINDOW_XDISPLAY(window), (Window)socket->instance->ui_widget, &hints);
+    if (hints.flags & PMaxSize) {
+      width  = MIN(width, hints.max_width);
+      height = MIN(height, hints.max_height);
     }
-
-    if (socket->max_size.is_set) {
-      width  = MIN(width, socket->max_size.width);
-      height = MIN(height, socket->max_size.height);
-    }
-
-    if (socket->min_size.is_set) {
-      width  = MAX(width, socket->min_size.width);
-      height = MAX(height, socket->min_size.height);
+    if (hints.flags & PMinSize) {
+      width  = MAX(width, hints.min_width);
+      height = MAX(height, hints.min_height);
     }
 
     // Resize widget window
@@ -352,7 +350,7 @@ forward_size_request(SuilX11Wrapper* socket, GtkAllocation* allocation)
   } else {
     /* Child has not been realized, so unable to resize now.
        Queue an idle resize. */
-		socket->idle_size_request_id = g_idle_add(idle_size_request, socket);
+    socket->idle_size_request_id = g_idle_add(idle_size_request, socket);
   }
 }
 
