@@ -20,6 +20,8 @@
 #include "actions/arranger_selections.h"
 #include "audio/midi_note.h"
 #include "audio/velocity.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -306,6 +308,9 @@ midi_modifier_arranger_widget_resize_velocities (
         CLAMP (
           vel_at_start->vel + self->vel_diff,
           1, 127));
+
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CHANGED, vel);
 
 #if 0
       ArrangerObject * vel_obj =

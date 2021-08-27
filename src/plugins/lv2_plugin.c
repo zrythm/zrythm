@@ -3459,7 +3459,7 @@ lv2_plugin_process (
       else if (id->type == TYPE_EVENT
                && id->flow == FLOW_INPUT)
         {
-          if (G_UNLIKELY (!port->evbuf))
+          if (G_UNLIKELY (port->evbuf == NULL))
             {
               g_critical (
                 "evbuf is NULL for %s",
