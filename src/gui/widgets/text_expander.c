@@ -81,6 +81,7 @@ text_expander_widget_refresh (
 {
   if (self->getter && self->obj)
     {
+      g_return_if_fail (self->buffer);
       gtk_text_buffer_set_text (
         GTK_TEXT_BUFFER (self->buffer),
         self->getter (self->obj), -1);

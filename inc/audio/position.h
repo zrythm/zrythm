@@ -404,6 +404,13 @@ char *
 position_to_string_alloc (
   const Position * pos);
 
+NONNULL
+void
+position_to_string_full (
+  const Position * pos,
+  char *           buf,
+  int              decimal_places);
+
 /**
  * Creates a string in the form of "0.0.0.0" from
  * the given position.

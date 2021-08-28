@@ -71,7 +71,7 @@ about_dialog_widget_new (
     TRANSLATORS_STR;
 
   char * version =
-    zrythm_get_version (1);
+    zrythm_get_version (true);
 
   GtkAboutDialog * dialog =
     g_object_new (

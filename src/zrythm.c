@@ -159,7 +159,7 @@ zrythm_remove_recent_project (
  */
 char *
 zrythm_get_version (
-  int with_v)
+  bool with_v)
 {
   const char * ver = PACKAGE_VERSION;
 

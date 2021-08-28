@@ -708,6 +708,27 @@ position_to_string_alloc (
   return g_strdup (buf);
 }
 
+void
+position_to_string_full (
+  const Position * pos,
+  char *           buf,
+  int              decimal_places)
+{
+  int bars = position_get_bars (pos, true);
+  int beats = position_get_beats (pos, true);
+  int sixteenths =
+    position_get_sixteenths (pos, true);
+  double ticks = position_get_ticks (pos);
+  g_return_if_fail (bars > -80000);
+  char template[32];
+  sprintf (
+    template, "%%d.%%d.%%d.%%.%df", decimal_places);
+  sprintf (
+    buf, template,
+    bars, abs (beats), abs (sixteenths),
+    fabs (ticks));
+}
+
 /**
  * Creates a string in the form of "0.0.0.0" from
  * the given position.
@@ -718,16 +739,7 @@ position_to_string (
   const Position * pos,
   char *           buf)
 {
-  int bars = position_get_bars (pos, true);
-  int beats = position_get_beats (pos, true);
-  int sixteenths =
-    position_get_sixteenths (pos, true);
-  double ticks = position_get_ticks (pos);
-  g_return_if_fail (bars > -80000);
-  sprintf (
-    buf, "%d.%d.%d.%f",
-    bars, abs (beats), abs (sixteenths),
-    fabs (ticks));
+  position_to_string_full (pos, buf, 4);
 }
 
 /**

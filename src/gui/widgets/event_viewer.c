@@ -45,6 +45,7 @@
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -97,6 +98,26 @@ enum AutomationColumns
   NUM_AUTOMATION_COLUMNS,
 };
 
+#define SET_SORT_POSITION_FUNC(col) \
+  { \
+    FuncData * data = object_new (FuncData); \
+    data->column = col; \
+    gtk_tree_sortable_set_sort_func ( \
+      GTK_TREE_SORTABLE (store), \
+      data->column, sort_position_func, data, \
+      free); \
+  }
+
+#define SET_POSITION_PRINT_FUNC(col) \
+  { \
+    FuncData * data = object_new (FuncData); \
+    data->column = col; \
+    gtk_tree_view_column_set_cell_data_func ( \
+      column, renderer, \
+      print_position_cell_data_func, data, \
+      free); \
+  }
+
 static void
 get_event_type_as_string (
   ArrangerObjectType type,
@@ -110,6 +131,63 @@ get_event_type_as_string (
   strcpy (buf, _(untranslated_type));
 }
 
+typedef struct FuncData
+{
+  /** Column ID. */
+  int                 column;
+
+  /** Region type, if editor event viewer. */
+  /*RegionType          r_type;*/
+
+  /*EventViewerWidget * owner;*/
+} FuncData;
+
+static int
+sort_position_func (
+  GtkTreeModel * model,
+  GtkTreeIter *  a,
+  GtkTreeIter *  b,
+  gpointer       user_data)
+{
+  FuncData * sort_data = (FuncData *) user_data;
+  Position * pos1 = NULL;
+  gtk_tree_model_get (
+    model, a, sort_data->column, &pos1, -1);
+  Position * pos2 = NULL;
+  gtk_tree_model_get (
+    model, b, sort_data->column, &pos2, -1);
+  if (!pos1 && !pos2)
+    return 0;
+  else if (pos1 && !pos2)
+    return -1;
+  else if (!pos1 && pos2)
+    return 1;
+  else
+    return (pos1->ticks < pos2->ticks) ? -1 : 1;
+}
+
+static void
+print_position_cell_data_func (
+  GtkTreeViewColumn * tree_column,
+  GtkCellRenderer *   cell,
+  GtkTreeModel *      tree_model,
+  GtkTreeIter *       iter,
+  gpointer            data)
+{
+  FuncData * print_data = (FuncData *) data;
+  Position * pos = NULL;
+  gtk_tree_model_get (
+    tree_model, iter,
+    print_data->column, &pos, -1);
+  char pos_str[50];
+  if (pos)
+    position_to_string_full (pos, pos_str, 1);
+  else
+    strcpy (pos_str, "");
+  g_object_set (
+    cell, "text", pos_str, NULL);
+}
+
 static void
 add_from_object (
   GtkListStore *   store,
@@ -118,11 +196,6 @@ add_from_object (
 {
   char name[200];
   char type[200];
-  char start_pos[50];
-  char clip_start[50];
-  char loop_start[50];
-  char loop_end[50];
-  char end_pos[50];
   switch (obj->type)
     {
     case ARRANGER_OBJECT_TYPE_REGION:
@@ -131,26 +204,20 @@ add_from_object (
 
         region_get_type_as_string (
           r->id.type, type);
-        position_to_string (
-          &obj->pos, start_pos);
-        position_to_string (
-          &obj->end_pos, end_pos);
-        position_to_string (
-          &obj->clip_start_pos, clip_start);
-        position_to_string (
-          &obj->loop_start_pos, loop_start);
-        position_to_string (
-          &obj->loop_end_pos, loop_end);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
           store, iter,
           TIMELINE_COLUMN_NAME, r->name,
           TIMELINE_COLUMN_TYPE, type,
-          TIMELINE_COLUMN_START_POS, start_pos,
-          TIMELINE_COLUMN_CLIP_START_POS, clip_start,
-          TIMELINE_COLUMN_LOOP_START_POS, loop_start,
-          TIMELINE_COLUMN_LOOP_END_POS, loop_end,
-          TIMELINE_COLUMN_END_POS, end_pos,
+          TIMELINE_COLUMN_START_POS, &obj->pos,
+          TIMELINE_COLUMN_CLIP_START_POS,
+          &obj->clip_start_pos,
+          TIMELINE_COLUMN_LOOP_START_POS,
+          &obj->loop_start_pos,
+          TIMELINE_COLUMN_LOOP_END_POS,
+          &obj->loop_end_pos,
+          TIMELINE_COLUMN_END_POS,
+          &obj->end_pos,
           TIMELINE_COLUMN_OBJ, r,
           -1);
       }
@@ -160,18 +227,16 @@ add_from_object (
         Marker * m = (Marker *) obj;
 
         get_event_type_as_string (obj->type, type);
-        position_to_string (
-          &obj->pos, start_pos);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
           store, iter,
           TIMELINE_COLUMN_NAME, m->name,
           TIMELINE_COLUMN_TYPE, type,
-          TIMELINE_COLUMN_START_POS, start_pos,
-          TIMELINE_COLUMN_CLIP_START_POS, "",
-          TIMELINE_COLUMN_LOOP_START_POS, "",
-          TIMELINE_COLUMN_LOOP_END_POS, "",
-          TIMELINE_COLUMN_END_POS, "",
+          TIMELINE_COLUMN_START_POS, &obj->pos,
+          TIMELINE_COLUMN_CLIP_START_POS, NULL,
+          TIMELINE_COLUMN_LOOP_START_POS, NULL,
+          TIMELINE_COLUMN_LOOP_END_POS, NULL,
+          TIMELINE_COLUMN_END_POS, NULL,
           TIMELINE_COLUMN_OBJ, m,
           -1);
       }
@@ -183,22 +248,14 @@ add_from_object (
         midi_note_get_val_as_string (
           mn, name, 0);
         get_event_type_as_string (obj->type, type);
-        position_to_string (
-          &obj->pos, start_pos);
-        position_to_string (
-          &obj->end_pos, end_pos);
-        char pitch[10];
-        char vel[10];
-        sprintf (pitch, "%d", mn->val);
-        sprintf (vel, "%d", mn->vel->vel);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
           store, iter,
           MIDI_COLUMN_NAME, name,
-          MIDI_COLUMN_PITCH, pitch,
-          MIDI_COLUMN_VELOCITY, vel,
-          MIDI_COLUMN_START_POS, start_pos,
-          MIDI_COLUMN_END_POS, end_pos,
+          MIDI_COLUMN_PITCH, mn->val,
+          MIDI_COLUMN_VELOCITY, mn->vel->vel,
+          MIDI_COLUMN_START_POS, &obj->pos,
+          MIDI_COLUMN_END_POS, &obj->end_pos,
           MIDI_COLUMN_OBJ, mn,
           -1);
       }
@@ -212,13 +269,11 @@ add_from_object (
         chord_descriptor_to_string (
           descr, name);
         get_event_type_as_string (obj->type, type);
-        position_to_string (
-          &obj->pos, start_pos);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
           store, iter,
           CHORD_COLUMN_NAME, name,
-          CHORD_COLUMN_START_POS, start_pos,
+          CHORD_COLUMN_START_POS, &obj->pos,
           CHORD_COLUMN_OBJ, c,
           -1);
       }
@@ -229,8 +284,6 @@ add_from_object (
           (AutomationPoint*) obj;
 
         get_event_type_as_string (obj->type, type);
-        position_to_string (
-          &obj->pos, start_pos);
         char index[50];
         sprintf (index, "%d", ap->index);
         char value[50];
@@ -243,9 +296,10 @@ add_from_object (
         gtk_list_store_set (
           store, iter,
           AUTOMATION_COLUMN_INDEX, index,
-          AUTOMATION_COLUMN_POS, start_pos,
-          AUTOMATION_COLUMN_VALUE, value,
-          AUTOMATION_COLUMN_CURVINESS, curviness,
+          AUTOMATION_COLUMN_POS, &obj->pos,
+          AUTOMATION_COLUMN_VALUE, ap->fvalue,
+          AUTOMATION_COLUMN_CURVINESS,
+          ap->curve_opts.curviness,
           AUTOMATION_COLUMN_OBJ, ap,
           -1);
       }
@@ -276,13 +330,21 @@ create_timeline_model (
   store =
     gtk_list_store_new (
       NUM_TIMELINE_COLUMNS,
+      /* name */
       G_TYPE_STRING,
+      /* type */
       G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
+      /* start pos */
+      G_TYPE_POINTER,
+      /* clip start pos */
+      G_TYPE_POINTER,
+      /* loop start pos */
+      G_TYPE_POINTER,
+      /* loop end pos */
+      G_TYPE_POINTER,
+      /* end pos */
+      G_TYPE_POINTER,
+      /* object */
       G_TYPE_POINTER);
 
   /* add data to the list store (cheat by using
@@ -291,6 +353,17 @@ create_timeline_model (
   int              num_objs;
   ADD_FOREACH_IN_ARRANGER (MW_TIMELINE);
   ADD_FOREACH_IN_ARRANGER (MW_PINNED_TIMELINE);
+
+  SET_SORT_POSITION_FUNC (
+    TIMELINE_COLUMN_START_POS);
+  SET_SORT_POSITION_FUNC (
+    TIMELINE_COLUMN_CLIP_START_POS);
+  SET_SORT_POSITION_FUNC (
+    TIMELINE_COLUMN_LOOP_START_POS);
+  SET_SORT_POSITION_FUNC (
+    TIMELINE_COLUMN_LOOP_END_POS);
+  SET_SORT_POSITION_FUNC (
+    TIMELINE_COLUMN_END_POS);
 
   return GTK_TREE_MODEL (store);
 }
@@ -306,11 +379,17 @@ create_midi_model (
   store =
     gtk_list_store_new (
       NUM_MIDI_COLUMNS,
+      /* name */
       G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
+      /* pitch */
+      G_TYPE_INT,
+      /* velocity */
+      G_TYPE_INT,
+      /* start pos */
+      G_TYPE_POINTER,
+      /* end pos */
+      G_TYPE_POINTER,
+      /* object ptr */
       G_TYPE_POINTER);
 
   /* add data to the list */
@@ -318,6 +397,11 @@ create_midi_model (
   int              num_objs;
   ADD_FOREACH_IN_ARRANGER (
     MW_MIDI_ARRANGER);
+
+  SET_SORT_POSITION_FUNC (
+    MIDI_COLUMN_START_POS);
+  SET_SORT_POSITION_FUNC (
+    MIDI_COLUMN_END_POS);
 
   return GTK_TREE_MODEL (store);
 }
@@ -342,6 +426,9 @@ create_chord_model (
   int              num_objs;
   ADD_FOREACH_IN_ARRANGER (
     MW_CHORD_ARRANGER);
+
+  SET_SORT_POSITION_FUNC (
+    CHORD_COLUMN_START_POS);
 
   return GTK_TREE_MODEL (store);
 }
@@ -368,6 +455,9 @@ create_automation_model (
   int              num_objs;
   ADD_FOREACH_IN_ARRANGER (
     MW_AUTOMATION_ARRANGER);
+
+  SET_SORT_POSITION_FUNC (
+    AUTOMATION_COLUMN_POS);
 
   return GTK_TREE_MODEL (store);
 }
@@ -442,10 +532,11 @@ add_timeline_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Start"), renderer, "text",
-      TIMELINE_COLUMN_START_POS, NULL);
+      _("Start"), renderer, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_START_POS);
+  SET_POSITION_PRINT_FUNC (
+    TIMELINE_COLUMN_START_POS);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -453,8 +544,9 @@ add_timeline_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Clip start"), renderer, "text",
-      TIMELINE_COLUMN_CLIP_START_POS, NULL);
+      _("Clip start"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    TIMELINE_COLUMN_CLIP_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_CLIP_START_POS);
   gtk_tree_view_append_column (
@@ -464,8 +556,9 @@ add_timeline_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Loop start"), renderer, "text",
-      TIMELINE_COLUMN_LOOP_START_POS, NULL);
+      _("Loop start"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    TIMELINE_COLUMN_LOOP_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_LOOP_START_POS);
   gtk_tree_view_append_column (
@@ -475,8 +568,9 @@ add_timeline_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Loop end"), renderer, "text",
-      TIMELINE_COLUMN_LOOP_END_POS, NULL);
+      _("Loop end"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    TIMELINE_COLUMN_LOOP_END_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_LOOP_END_POS);
   gtk_tree_view_append_column (
@@ -486,8 +580,9 @@ add_timeline_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("End"), renderer, "text",
-      TIMELINE_COLUMN_END_POS, NULL);
+      _("End"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    TIMELINE_COLUMN_END_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_END_POS);
   gtk_tree_view_append_column (
@@ -538,8 +633,9 @@ append_midi_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Start"), renderer, "text",
-      MIDI_COLUMN_START_POS, NULL);
+      _("Start"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    MIDI_COLUMN_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_START_POS);
   gtk_tree_view_append_column (
@@ -549,8 +645,9 @@ append_midi_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("End"), renderer, "text",
-      MIDI_COLUMN_END_POS, NULL);
+      _("End"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    MIDI_COLUMN_END_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_END_POS);
   gtk_tree_view_append_column (
@@ -579,8 +676,9 @@ append_chord_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Position"), renderer, "text",
-      CHORD_COLUMN_START_POS, NULL);
+      _("Position"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    CHORD_COLUMN_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, CHORD_COLUMN_START_POS);
   gtk_tree_view_append_column (
@@ -609,8 +707,9 @@ append_automation_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Position"), renderer, "text",
-      AUTOMATION_COLUMN_POS, NULL);
+      _("Position"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    AUTOMATION_COLUMN_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, AUTOMATION_COLUMN_POS);
   gtk_tree_view_append_column (
