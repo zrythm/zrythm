@@ -259,6 +259,12 @@ draw_background (
       DRAW_ICON ("fork-awesome-snowflake-o");
     }
 
+  /* draw loop icon if region is looped */
+  if (region_is_looped (self))
+    {
+      DRAW_ICON ("media-playlist-repeat");
+    }
+
 #undef DRAW_ICON
 }
 

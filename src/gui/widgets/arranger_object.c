@@ -384,12 +384,7 @@ arranger_object_is_resize_loop (
           return 1;
         }
 
-      if ((position_to_ticks (&self->end_pos) -
-           position_to_ticks (&self->pos)) >
-          position_to_ticks (&self->loop_end_pos) +
-            /* add some buffer because these are not
-             * accurate */
-            0.1)
+      if (region_is_looped (r))
         {
           return 1;
         }
