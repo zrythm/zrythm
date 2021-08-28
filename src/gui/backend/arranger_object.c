@@ -2108,7 +2108,7 @@ static ArrangerObject *
 clone_region (
   ZRegion *               region)
 {
-  int i, j;
+  g_return_val_if_fail (region->name, NULL);
 
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
@@ -2124,7 +2124,7 @@ clone_region (
             region->id.lane_pos,
             region->id.idx);
         ZRegion * mr_orig = region;
-        for (i = 0;
+        for (int i = 0;
              i < mr_orig->num_midi_notes; i++)
           {
             MidiNote * orig_mn =
@@ -2195,7 +2195,7 @@ clone_region (
 
         /* add automation points */
         AutomationPoint * src_ap, * dest_ap;
-        for (j = 0; j < ar_orig->num_aps; j++)
+        for (int j = 0; j < ar_orig->num_aps; j++)
           {
             src_ap = ar_orig->aps[j];
             ArrangerObject * src_ap_obj =
@@ -2223,7 +2223,7 @@ clone_region (
             region->id.idx);
         ZRegion * cr_orig = region;
         ChordObject * src_co, * dest_co;
-        for (i = 0;
+        for (int i = 0;
              i < cr_orig->num_chord_objects;
              i++)
           {

@@ -2444,6 +2444,9 @@ arranger_selections_merge (
       break;
     }
 
+  region_gen_name (
+    new_r, first_r->name, NULL, NULL);
+
   /* clear/free previous selections and add the
    * new region */
   arranger_selections_clear (

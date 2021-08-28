@@ -2676,6 +2676,71 @@ test_delete_multiple_regions ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_merge ()
+{
+  test_helper_zrythm_init ();
+
+  track_create_empty_with_action (
+    TRACK_TYPE_MIDI, NULL);
+  Track * midi_track =
+    tracklist_get_last_track (
+      TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
+      false);
+  g_assert_true (
+    midi_track->type == TRACK_TYPE_MIDI);
+
+  TrackLane * lane = midi_track->lanes[0];
+  for (int i = 0; i < 6; i++)
+    {
+      Position pos, end_pos;
+      position_set_to_bar (&pos, 2 + i);
+      position_set_to_bar (&end_pos, 4 + i);
+      ZRegion * r1 =
+        midi_region_new (
+          &pos, &end_pos,
+          track_get_name_hash (midi_track), 0,
+          lane->num_regions);
+      track_add_region (
+        midi_track, r1, NULL, lane->pos,
+        F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) r1, F_SELECT,
+        F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      arranger_selections_action_perform_create (
+        TL_SELECTIONS, NULL);
+      g_assert_cmpint (
+        lane->num_regions, ==, i + 1);
+    }
+
+  /* select 2 and merge */
+  arranger_object_select (
+    (ArrangerObject *) lane->regions[1],
+    F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *)
+    (ArrangerObject *) lane->regions[2],
+    F_SELECT,
+    F_APPEND, F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_merge (
+      (ArrangerSelections *) TL_SELECTIONS, &err);
+  g_assert_true (ret);
+
+  clip_editor_get_region (CLIP_EDITOR);
+
+  int iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+
+  g_assert_nonnull (
+    clip_editor_get_region (CLIP_EDITOR));
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2683,6 +2748,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test merge",
+    (GTestFunc) test_merge);
   g_test_add_func (
     TEST_PREFIX "test delete multiple regions",
     (GTestFunc) test_delete_multiple_regions);
