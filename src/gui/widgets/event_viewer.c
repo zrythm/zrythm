@@ -98,6 +98,13 @@ enum AutomationColumns
   NUM_AUTOMATION_COLUMNS,
 };
 
+enum AudioColumns
+{
+  AUDIO_COLUMN_START_POS,
+  AUDIO_COLUMN_END_POS,
+  NUM_AUDIO_COLUMNS,
+};
+
 #define SET_SORT_POSITION_FUNC(col) \
   { \
     FuncData * data = object_new (FuncData); \
@@ -109,9 +116,13 @@ enum AutomationColumns
   }
 
 #define SET_POSITION_PRINT_FUNC(col) \
-  gtk_tree_view_column_set_cell_data_func ( \
-    column, renderer, \
-    print_position_cell_data_func, NULL, NULL)
+  { \
+    FuncData * data = object_new (FuncData); \
+    data->column = col; \
+    gtk_tree_view_column_set_cell_data_func ( \
+      column, renderer, \
+      print_position_cell_data_func, data, free); \
+  }
 
 static void
 get_event_type_as_string (
@@ -164,9 +175,8 @@ print_position_cell_data_func (
   GtkTreeIter *       iter,
   gpointer            data)
 {
-  int col_id =
-    z_gtk_tree_view_column_get_column_id (
-      tree_column);
+  FuncData * print_data = (FuncData *) data;
+  int col_id = print_data->column;
   Position * pos = NULL;
   gtk_tree_model_get (
     tree_model, iter, col_id, &pos, -1);
@@ -275,14 +285,6 @@ add_from_object (
           (AutomationPoint*) obj;
 
         get_event_type_as_string (obj->type, type);
-        char index[50];
-        sprintf (index, "%d", ap->index);
-        char value[50];
-        sprintf (value, "%f", (double) ap->fvalue);
-        char curviness[50];
-        sprintf (
-          curviness, "%f",
-          ap->curve_opts.curviness);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
           store, iter,
@@ -408,8 +410,10 @@ create_chord_model (
   store =
     gtk_list_store_new (
       NUM_CHORD_COLUMNS,
+      /* name */
       G_TYPE_STRING,
-      G_TYPE_STRING,
+      /* position */
+      G_TYPE_POINTER,
       G_TYPE_POINTER);
 
   /* add data to the list */
@@ -435,10 +439,15 @@ create_automation_model (
   store =
     gtk_list_store_new (
       NUM_AUTOMATION_COLUMNS,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
+      /* index */
+      G_TYPE_INT,
+      /* position */
+      G_TYPE_POINTER,
+      /* value */
+      G_TYPE_FLOAT,
+      /* curviness */
+      G_TYPE_DOUBLE,
+      /* object */
       G_TYPE_POINTER);
 
   /* add data to the list */
@@ -449,6 +458,39 @@ create_automation_model (
 
   SET_SORT_POSITION_FUNC (
     AUTOMATION_COLUMN_POS);
+
+  return GTK_TREE_MODEL (store);
+}
+
+static GtkTreeModel *
+create_audio_model (
+  EventViewerWidget * self)
+{
+  GtkListStore *store;
+  GtkTreeIter iter;
+
+  /* create list store */
+  store =
+    gtk_list_store_new (
+      NUM_AUDIO_COLUMNS,
+      /* start position */
+      G_TYPE_POINTER,
+      /* end position */
+      G_TYPE_POINTER);
+
+  gtk_list_store_append (store, &iter);
+  gtk_list_store_set (
+    store, &iter,
+    AUDIO_COLUMN_START_POS,
+    &AUDIO_SELECTIONS->sel_start,
+    AUDIO_COLUMN_END_POS,
+    &AUDIO_SELECTIONS->sel_end,
+    -1);
+
+  SET_SORT_POSITION_FUNC (
+    AUDIO_COLUMN_START_POS);
+  SET_SORT_POSITION_FUNC (
+    AUDIO_COLUMN_END_POS);
 
   return GTK_TREE_MODEL (store);
 }
@@ -470,8 +512,7 @@ create_editor_model (
       return create_midi_model (self);
       break;
     case REGION_TYPE_AUDIO:
-      return NULL;
-      /* TODO */
+      return create_audio_model (self);
       break;
     case REGION_TYPE_AUTOMATION:
       return create_automation_model (self);
@@ -505,6 +546,8 @@ add_timeline_columns (
       TIMELINE_COLUMN_NAME, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_NAME);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -516,6 +559,8 @@ add_timeline_columns (
       TIMELINE_COLUMN_TYPE, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_TYPE);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -528,6 +573,8 @@ add_timeline_columns (
     column, TIMELINE_COLUMN_START_POS);
   SET_POSITION_PRINT_FUNC (
     TIMELINE_COLUMN_START_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -540,6 +587,8 @@ add_timeline_columns (
     TIMELINE_COLUMN_CLIP_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_CLIP_START_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -552,6 +601,8 @@ add_timeline_columns (
     TIMELINE_COLUMN_LOOP_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_LOOP_START_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -564,6 +615,8 @@ add_timeline_columns (
     TIMELINE_COLUMN_LOOP_END_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_LOOP_END_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -576,6 +629,8 @@ add_timeline_columns (
     TIMELINE_COLUMN_END_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, TIMELINE_COLUMN_END_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 }
@@ -595,6 +650,8 @@ append_midi_columns (
       MIDI_COLUMN_NAME, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_NAME);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -606,6 +663,8 @@ append_midi_columns (
       MIDI_COLUMN_PITCH, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_PITCH);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -617,6 +676,8 @@ append_midi_columns (
       MIDI_COLUMN_VELOCITY, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_VELOCITY);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -629,6 +690,8 @@ append_midi_columns (
     MIDI_COLUMN_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_START_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -641,6 +704,8 @@ append_midi_columns (
     MIDI_COLUMN_END_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_END_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 }
@@ -660,6 +725,8 @@ append_chord_columns (
       CHORD_COLUMN_NAME, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, CHORD_COLUMN_NAME);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -672,6 +739,8 @@ append_chord_columns (
     CHORD_COLUMN_START_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, CHORD_COLUMN_START_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 }
@@ -691,6 +760,8 @@ append_automation_columns (
       AUTOMATION_COLUMN_INDEX, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, AUTOMATION_COLUMN_INDEX);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -703,6 +774,8 @@ append_automation_columns (
     AUTOMATION_COLUMN_POS);
   gtk_tree_view_column_set_sort_column_id (
     column, AUTOMATION_COLUMN_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -714,6 +787,8 @@ append_automation_columns (
       AUTOMATION_COLUMN_VALUE, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, AUTOMATION_COLUMN_VALUE);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 
@@ -725,6 +800,44 @@ append_automation_columns (
       AUTOMATION_COLUMN_CURVINESS, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, AUTOMATION_COLUMN_CURVINESS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
+  gtk_tree_view_append_column (
+    self->treeview, column);
+}
+
+static void
+append_audio_columns (
+  EventViewerWidget * self)
+{
+  GtkCellRenderer * renderer;
+  GtkTreeViewColumn * column;
+
+  /* column for start pos */
+  renderer = gtk_cell_renderer_text_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      _("Selection start"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    AUDIO_COLUMN_START_POS);
+  gtk_tree_view_column_set_sort_column_id (
+    column, AUDIO_COLUMN_START_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
+  gtk_tree_view_append_column (
+    self->treeview, column);
+
+  /* column for end pos */
+  renderer = gtk_cell_renderer_text_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      _("Selection end"), renderer, NULL);
+  SET_POSITION_PRINT_FUNC (
+    AUDIO_COLUMN_END_POS);
+  gtk_tree_view_column_set_sort_column_id (
+    column, AUDIO_COLUMN_END_POS);
+  gtk_tree_view_column_set_reorderable (
+    column, true);
   gtk_tree_view_append_column (
     self->treeview, column);
 }
@@ -758,6 +871,7 @@ add_editor_columns (
       append_midi_columns (self);
       break;
     case REGION_TYPE_AUDIO:
+      append_audio_columns (self);
       break;
     case REGION_TYPE_CHORD:
       append_chord_columns (self);
@@ -827,7 +941,7 @@ get_obj_column (
         case REGION_TYPE_MIDI:
           return MIDI_COLUMN_OBJ;
         case REGION_TYPE_AUDIO:
-          /*return AUDIO_COLUMN_OBJ;*/
+          return -1;
         case REGION_TYPE_AUTOMATION:
           return AUTOMATION_COLUMN_OBJ;
         case REGION_TYPE_CHORD:
@@ -981,6 +1095,7 @@ event_viewer_widget_refresh_for_arranger (
     case ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
     case ARRANGER_WIDGET_TYPE_CHORD:
     case ARRANGER_WIDGET_TYPE_AUTOMATION:
+    case ARRANGER_WIDGET_TYPE_AUDIO:
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
@@ -1011,12 +1126,15 @@ selection_func (
   if (!self->marking_selected_objs)
     {
       int obj_column = get_obj_column (self);
-      ArrangerObject * obj = NULL;
-      gtk_tree_model_get (
-        model, &iter, obj_column, &obj, -1);
-      arranger_object_select (
-        obj, !path_currently_selected, F_APPEND,
-        F_PUBLISH_EVENTS);
+      if (obj_column >= 0)
+        {
+          ArrangerObject * obj = NULL;
+          gtk_tree_model_get (
+            model, &iter, obj_column, &obj, -1);
+          arranger_object_select (
+            obj, !path_currently_selected, F_APPEND,
+            F_PUBLISH_EVENTS);
+        }
     }
 
   /* allow toggle */

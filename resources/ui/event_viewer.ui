@@ -27,6 +27,7 @@
           <object class="GtkTreeView" id="treeview">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="rubber-banding">True</property>
           </object>
         </child>
       </object>
