@@ -1709,3 +1709,26 @@ z_gtk_actionable_set_action_from_setting (
   g_free (group_prefix);
   g_free (action_name);
 }
+
+/**
+ * Returns column number or -1 if not found or on
+ * error.
+ */
+int
+z_gtk_tree_view_column_get_column_id (
+  GtkTreeViewColumn * col)
+{
+  GtkTreeView * tree_view =
+    GTK_TREE_VIEW (
+      gtk_tree_view_column_get_tree_view (col));
+  g_return_val_if_fail (tree_view != NULL, -1);
+
+  GList * cols =
+    gtk_tree_view_get_columns (tree_view);
+
+  int num = g_list_index (cols, (gpointer) col);
+
+  g_list_free (cols);
+
+  return num;
+}

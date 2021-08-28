@@ -657,6 +657,14 @@ z_gtk_actionable_set_action_from_setting (
   const char *    key);
 
 /**
+ * Returns column number or -1 if not found or on
+ * error.
+ */
+int
+z_gtk_tree_view_column_get_column_id (
+  GtkTreeViewColumn * col);
+
+/**
  * @}
  */
 #endif

@@ -109,14 +109,9 @@ enum AutomationColumns
   }
 
 #define SET_POSITION_PRINT_FUNC(col) \
-  { \
-    FuncData * data = object_new (FuncData); \
-    data->column = col; \
-    gtk_tree_view_column_set_cell_data_func ( \
-      column, renderer, \
-      print_position_cell_data_func, data, \
-      free); \
-  }
+  gtk_tree_view_column_set_cell_data_func ( \
+    column, renderer, \
+    print_position_cell_data_func, NULL, NULL)
 
 static void
 get_event_type_as_string (
@@ -135,11 +130,6 @@ typedef struct FuncData
 {
   /** Column ID. */
   int                 column;
-
-  /** Region type, if editor event viewer. */
-  /*RegionType          r_type;*/
-
-  /*EventViewerWidget * owner;*/
 } FuncData;
 
 static int
@@ -159,9 +149,9 @@ sort_position_func (
   if (!pos1 && !pos2)
     return 0;
   else if (pos1 && !pos2)
-    return -1;
-  else if (!pos1 && pos2)
     return 1;
+  else if (!pos1 && pos2)
+    return -1;
   else
     return (pos1->ticks < pos2->ticks) ? -1 : 1;
 }
@@ -174,11 +164,12 @@ print_position_cell_data_func (
   GtkTreeIter *       iter,
   gpointer            data)
 {
-  FuncData * print_data = (FuncData *) data;
+  int col_id =
+    z_gtk_tree_view_column_get_column_id (
+      tree_column);
   Position * pos = NULL;
   gtk_tree_model_get (
-    tree_model, iter,
-    print_data->column, &pos, -1);
+    tree_model, iter, col_id, &pos, -1);
   char pos_str[50];
   if (pos)
     position_to_string_full (pos, pos_str, 1);
