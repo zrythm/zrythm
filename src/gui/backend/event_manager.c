@@ -1935,6 +1935,10 @@ event_manager_process_event (
       bot_dock_edge_widget_show_clip_editor (
         MW_BOT_DOCK_EDGE, true);
       break;
+    case ET_VELOCITIES_RAMPED:
+      arranger_widget_redraw_whole (
+        MW_MIDI_MODIFIER_ARRANGER);
+      break;
     default:
       g_warning (
         "event %d not implemented yet",

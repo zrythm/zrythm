@@ -247,6 +247,8 @@ midi_modifier_arranger_widget_ramp (
       velocity_set_val (vel, vel->vel_at_start);
     }
   free (velocities);
+
+  EVENTS_PUSH (ET_VELOCITIES_RAMPED, NULL);
 }
 
 void

@@ -112,6 +112,12 @@ arranger_object_queue_redraw (
       self, &arranger_rect, &full_rect,
       &draw_rect);
 
+  /* add some padding to the resulting draw rect */
+  draw_rect.x = MAX (full_rect.x - padding, 0);
+  draw_rect.y = MAX (full_rect.y - padding, 0);
+  draw_rect.width += padding * 2;
+  draw_rect.height += padding * 2;
+
   /* if draw rect is not visible ignore */
   if (!draw_rect_visible)
     {

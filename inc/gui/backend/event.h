@@ -295,6 +295,13 @@ typedef enum EventType
    * Arg: None.
    */
   ET_PIANO_ROLL_KEY_ON_OFF,
+
+  /**
+   * Velocities have been ramped.
+   *
+   * Arg: None.
+   */
+  ET_VELOCITIES_RAMPED,
 } EventType;
 
 /**
