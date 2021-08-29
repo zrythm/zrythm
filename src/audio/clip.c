@@ -332,6 +332,11 @@ audio_clip_write_to_pool (
   g_return_if_fail (pool_clip);
   g_return_if_fail (pool_clip == self);
 
+  audio_pool_print (AUDIO_POOL);
+  g_message (
+    "attempting to write clip %s (%d) to pool...",
+    self->name, self->pool_id);
+
   /* generate a copy of the given filename in the
    * project dir */
   char * path_in_main_project =
@@ -365,6 +370,7 @@ audio_clip_write_to_pool (
             new_path);
           need_new_write = false;
         }
+#if 0
       else
         {
           g_critical (
@@ -373,6 +379,7 @@ audio_clip_write_to_pool (
             new_path);
           return;
         }
+#endif
     }
 
   /* if writing to backup and same file exists in
@@ -456,6 +463,8 @@ audio_clip_write_to_pool (
 
   g_free (path_in_main_project);
   g_free (new_path);
+
+  audio_pool_print (AUDIO_POOL);
 }
 
 /**

@@ -2822,6 +2822,28 @@ arranger_object_split (
         }
     }
 
+  /* make sure regions have names */
+  if (self->type == ARRANGER_OBJECT_TYPE_REGION)
+    {
+      Track * track =
+        arranger_object_get_track (self);
+      ZRegion * src_region = (ZRegion *) self;
+      ZRegion * region1 = (ZRegion *) *r1;
+      ZRegion * region2 = (ZRegion *) *r2;
+      AutomationTrack * at = NULL;
+      if (src_region->id.type ==
+            REGION_TYPE_AUTOMATION)
+        {
+          at =
+            region_get_automation_track (
+              src_region);
+        }
+      region_gen_name (
+        region1, src_region->name, at, track);
+      region_gen_name (
+        region2, src_region->name, at, track);
+    }
+
   /* skip rest if non-project object */
   if (!is_project)
     {
