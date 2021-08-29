@@ -301,13 +301,13 @@ track_widget_on_record_toggled (
   TrackWidget * self);
 
 /**
- * Returns if cursor is in top half of the track.
+ * Returns if cursor is in the range select "half".
  *
  * Used by timeline to determine if it will select
  * objects or range.
  */
-int
-track_widget_is_cursor_in_top_half (
+bool
+track_widget_is_cursor_in_range_select_half (
   TrackWidget * self,
   double        y);
 

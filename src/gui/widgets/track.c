@@ -1524,34 +1524,31 @@ track_widget_redraw_meters (
 }
 
 /**
- * Returns if cursor is in top half of the track.
+ * Returns if cursor is in the range select "half".
  *
  * Used by timeline to determine if it will select
  * objects or range.
  */
-int
-track_widget_is_cursor_in_top_half (
+bool
+track_widget_is_cursor_in_range_select_half (
   TrackWidget * self,
   double        y)
 {
   gint wx, wy;
   gtk_widget_translate_coordinates (
-    GTK_WIDGET (MW_TIMELINE),
-    GTK_WIDGET (self),
-    0,
-    (int) y,
-    &wx,
-    &wy);
+    GTK_WIDGET (MW_TIMELINE), GTK_WIDGET (self),
+    0, (int) y, &wx, &wy);
 
-  /* if bot half */
-  if (wy >= self->track->main_height / 2 &&
-      wy <= self->track->main_height)
+  /* if bot 1/3rd */
+  if (wy >= ((self->track->main_height * 2) / 3)
+      && wy <= self->track->main_height)
     {
-      return 0;
+      return true;
     }
-  else /* if top half */
+  /* else if top 2/3rds */
+  else
     {
-      return 1;
+      return false;
     }
 }
 

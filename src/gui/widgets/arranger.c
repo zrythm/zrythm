@@ -6150,17 +6150,18 @@ get_timeline_cursor (
 
               if (track)
                 {
-                  if (track_widget_is_cursor_in_top_half (
+                  if (track_widget_is_cursor_in_range_select_half (
                         track->widget,
                         self->hover_y))
                     {
-                      /* set cursor to normal */
-                      return ARRANGER_CURSOR_SELECT;
+                      /* set cursor to range
+                       * selection */
+                      return ARRANGER_CURSOR_RANGE;
                     }
                   else
                     {
-                      /* set cursor to range selection */
-                      return ARRANGER_CURSOR_RANGE;
+                      /* set cursor to normal */
+                      return ARRANGER_CURSOR_SELECT;
                     }
                 }
               else

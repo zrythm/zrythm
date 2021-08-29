@@ -570,21 +570,19 @@ timeline_arranger_widget_set_select_type (
 
   if (track)
     {
-      if (track_widget_is_cursor_in_top_half (
-            track->widget,
-            y))
+      if (track_widget_is_cursor_in_range_select_half (
+            track->widget, y))
         {
-          /* select objects */
-          self->resizing_range = false;
-        }
-      else
-        {
-
           /* set resizing range flags */
           self->resizing_range = true;
           self->resizing_range_start = true;
           self->action =
             UI_OVERLAY_ACTION_RESIZING_R;
+        }
+      else
+        {
+          /* select objects */
+          self->resizing_range = false;
         }
     }
   else
