@@ -108,7 +108,9 @@ audio_clip_init_from_file (
   dsp_copy (
     self->frames, enc->out_frames, arr_size);
   g_free_and_null (self->name);
-  self->name = g_path_get_basename (full_path);
+  char * basename = g_path_get_basename (full_path);
+  self->name = io_file_strip_ext (basename);
+  g_free (basename);
   self->channels = enc->nfo.channels;
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
@@ -362,6 +364,14 @@ audio_clip_write_to_pool (
             "in pool",
             new_path);
           need_new_write = false;
+        }
+      else
+        {
+          g_critical (
+            "attempted to overwrite %s with a "
+            "different clip",
+            new_path);
+          return;
         }
     }
 

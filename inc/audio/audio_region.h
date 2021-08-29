@@ -48,7 +48,7 @@ typedef struct StereoPorts StereoPorts;
 #define AUDIO_REGION_DEFAULT_FADE_MS 1
 
 /**
- * Creates a ZRegion for audio data.
+ * Creates a region for audio data.
  *
  * @param pool_id The pool ID. This is used when
  *   creating clone regions (non-main) and must be
@@ -56,8 +56,9 @@ typedef struct StereoPorts StereoPorts;
  * @param filename Filename, if loading from
  *   file, otherwise NULL.
  * @param read_from_pool Whether to save the given
- *   @a filename to pool and read the data from the
- *   pool. Only used if @a filename is given.
+ *   @a filename or @a frames to pool and read the
+ *   data from the pool. Only used if @a filename or
+ *   @a frames is given.
  * @param frames Float array, if loading from
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.

@@ -460,6 +460,16 @@ arranger_selections_can_be_pasted (
   ArrangerSelections * self);
 
 NONNULL
+bool
+arranger_selections_contains_looped (
+  ArrangerSelections * self);
+
+NONNULL
+bool
+arranger_selections_can_be_merged (
+  ArrangerSelections * self);
+
+NONNULL
 double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self);

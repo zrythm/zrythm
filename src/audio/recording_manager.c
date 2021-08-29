@@ -1588,6 +1588,9 @@ recording_manager_process_events (
             Track * tr =
               tracklist_find_track_by_name_hash (
                 TRACKLIST, ev->track_name_hash);
+            g_return_val_if_fail (
+              IS_TRACK_AND_NONNULL (tr),
+              G_SOURCE_CONTINUE);
             g_message (
               "-------- STOP TRACK RECORDING (%s)",
               tr->name);
@@ -1627,6 +1630,9 @@ recording_manager_process_events (
             Track * tr =
               tracklist_find_track_by_name_hash (
                 TRACKLIST, ev->track_name_hash);
+            g_return_val_if_fail (
+              IS_TRACK_AND_NONNULL (tr),
+              G_SOURCE_CONTINUE);
             g_message (
               "-------- START TRACK RECORDING (%s)",
               tr->name);

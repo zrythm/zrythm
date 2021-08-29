@@ -180,7 +180,8 @@ typedef struct ArrangerObject
   Position           end_pos;
 
   /**
-   * Start position of the clip loop.
+   * Start position of the clip loop, relative
+   * to the object's start.
    *
    * The first time the region plays it will start
    * playing from the clip_start_pos and then loop
@@ -188,21 +189,25 @@ typedef struct ArrangerObject
    */
   Position           clip_start_pos;
 
-  /** Loop start Position, if the object has one. */
+  /** Loop start Position, if the object has one,
+   * relative to the object's start. */
   Position           loop_start_pos;
 
   /**
-   * End position of the clip loop.
+   * End position of the clip loop, relative to the
+   * object's start.
    *
    * Once this is reached, the clip will go back to
    * the clip  loop start position.
    */
   Position           loop_end_pos;
 
-  /** Fade in position. */
+  /** Fade in position, relative to the object's
+   * start. */
   Position           fade_in_pos;
 
-  /** Fade in position. */
+  /** Fade out position, relative to the object's
+   * start. */
   Position           fade_out_pos;
 
   /** Fade in curve options. */
@@ -841,6 +846,11 @@ arranger_object_resize (
   const double             ticks,
   bool                     during_ui_action);
 
+void
+arranger_object_append_children (
+  ArrangerObject * self,
+  GPtrArray *      children);
+
 /**
  * Adds the given ticks to each included object.
  */
@@ -1065,6 +1075,14 @@ arranger_object_is_frozen (
 bool
 arranger_object_is_deletable (
   ArrangerObject * obj);
+
+/**
+ * Removes the child from the given object.
+ */
+void
+arranger_object_remove_child (
+  ArrangerObject * self,
+  ArrangerObject * child);
 
 /**
  * @}

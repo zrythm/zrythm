@@ -222,6 +222,10 @@ audio_pool_clone (
   const AudioPool * src);
 
 void
+audio_pool_print (
+  const AudioPool * const self);
+
+void
 audio_pool_free (
   AudioPool * self);
 

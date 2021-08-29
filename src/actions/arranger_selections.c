@@ -198,22 +198,19 @@ set_selections (
  * Optionally clones the given objects and saves
  * them to self->r1 and self->r2.
  */
+NONNULL
 static void
 set_split_objects (
   ArrangerSelectionsAction * self,
   int                        i,
-  ArrangerObject *           _r1,
-  ArrangerObject *           _r2,
+  ArrangerObject *           r1,
+  ArrangerObject *           r2,
   bool                       clone)
 {
-  ArrangerObject * r1 = _r1,
-                 * r2 = _r2;
   if (clone)
     {
-      r1 =
-        arranger_object_clone (_r1);
-      r2 =
-        arranger_object_clone (_r2);
+      r1 = arranger_object_clone (r1);
+      r2 = arranger_object_clone (r2);
     }
   self->r1[i] = r1;
   self->r2[i] = r2;
@@ -931,6 +928,9 @@ arranger_selections_action_clone (
 
   for (int i = 0; i < src->num_split_objs; i++)
     {
+      g_return_val_if_fail (src->r1[i], NULL);
+      g_return_val_if_fail (src->r2[i], NULL);
+
       ArrangerObject * r1 =
         arranger_object_clone (src->r1[i]);
       ArrangerObject * r2 =
@@ -2680,10 +2680,13 @@ do_or_undo_split (
 
           /* r1 and r2 are now inside the project,
            * clone them to keep copies */
+          g_return_val_if_fail (self->r1[i], -1);
+          g_return_val_if_fail (self->r2[i], -1);
           set_split_objects (
             self, i, self->r1[i], self->r2[i],
             true);
         }
+      /* else if undoing split */
       else
         {
           /* find the actual objects */
@@ -2719,6 +2722,11 @@ do_or_undo_split (
         }
     }
   free (objs);
+
+  if (_do)
+    self->num_split_objs = size;
+  else
+    self->num_split_objs = 0;
 
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
@@ -2781,7 +2789,7 @@ do_or_undo_merge (
     }
 
   /* add the after objects to the project */
-  for (int i = 0; i < after_size; i++)
+  for (int i = after_size - 1; i >= 0; i--)
     {
       after_objs[i]->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;

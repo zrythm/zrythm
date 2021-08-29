@@ -44,8 +44,7 @@ timeline_toolbar_widget_refresh (
 {
   /* enable/disable merge button */
   bool sensitive =
-    TL_SELECTIONS->num_regions > 1 &&
-    arranger_selections_all_on_same_lane (
+    arranger_selections_can_be_merged (
       (ArrangerSelections *) TL_SELECTIONS);
   g_debug (
     "settings merge button sensitivity %d",

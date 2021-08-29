@@ -224,7 +224,7 @@ midi_region_get_lowest_midi_note (
  */
 void
 midi_region_remove_midi_note (
-  ZRegion *   region,
+  ZRegion *  region,
   MidiNote * midi_note,
   int        free,
   int        pub_event);

@@ -197,6 +197,9 @@ audio_pool_add_clip (
 {
   g_return_val_if_fail (clip && clip->name, -1);
 
+  g_message (
+    "adding clip <%s> to pool...", clip->name);
+
   array_double_size_if_full (
     self->clips, self->num_clips, self->clips_size,
     AudioClip *);
@@ -211,6 +214,10 @@ audio_pool_add_clip (
   self->clips[next_id] = clip;
   if (next_id == self->num_clips)
     self->num_clips++;
+
+  g_message ("added clip <%s> to pool", clip->name);
+
+  audio_pool_print (self);
 
   return clip->pool_id;
 }
@@ -347,6 +354,7 @@ audio_pool_remove_unused (
 
   /* remove clips from the pool that are not in
    * use */
+  int removed_clips = 0;
   for (int i = 0; i < self->num_clips; i++)
     {
       AudioClip * clip = self->clips[i];
@@ -358,6 +366,7 @@ audio_pool_remove_unused (
             "unused clip [%d]: %s", i, clip->name);
           audio_pool_remove_clip (
             self, i, F_FREE, backup);
+          removed_clips++;
         }
     }
 
@@ -405,7 +414,9 @@ audio_pool_remove_unused (
     }
   g_free (prj_pool_dir);
 
-  g_message ("%s: done", __func__);
+  g_message (
+    "%s: done, removed %d clips", __func__,
+    removed_clips);
 }
 
 /**
@@ -475,6 +486,36 @@ audio_pool_write_to_disk (
             clip, false, is_backup);
         }
     }
+}
+
+void
+audio_pool_print (
+  const AudioPool * const self)
+{
+  GString * gstr = g_string_new ("[Audio Pool]\n");
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      AudioClip * clip = self->clips[i];
+      if (clip)
+        {
+          char * pool_path =
+            audio_clip_get_path_in_pool (
+              clip, F_NOT_BACKUP);
+          g_string_append_printf (
+            gstr, "[Clip #%d] %s (%s): %s\n",
+            i, clip->name, clip->file_hash,
+            pool_path);
+          g_free (pool_path);
+        }
+      else
+        {
+          g_string_append_printf (
+            gstr, "[Clip #%d] <empty>", i);
+        }
+    }
+  char * str = g_string_free (gstr, false);
+  g_message ("%s", str);
+  g_free (str);
 }
 
 /**

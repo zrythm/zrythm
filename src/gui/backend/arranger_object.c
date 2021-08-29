@@ -58,6 +58,7 @@
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -1219,6 +1220,43 @@ arranger_object_update_frames (
         }
       break;
     default:
+      break;
+    }
+}
+
+void
+arranger_object_append_children (
+  ArrangerObject * self,
+  GPtrArray *      children)
+{
+  if (self->type != ARRANGER_OBJECT_TYPE_REGION)
+    return;
+
+  ZRegion * r = (ZRegion *) self;
+  switch (r->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      for (int i = 0; i < r->num_midi_notes; i++)
+        {
+          g_ptr_array_add (
+            children, r->midi_notes[i]);
+        }
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_AUTOMATION:
+      for (int i = 0; i < r->num_aps; i++)
+        {
+          g_ptr_array_add (children, r->aps[i]);
+        }
+      break;
+    case REGION_TYPE_CHORD:
+      for (int i = 0; i < r->num_chord_objects;
+           i++)
+        {
+          g_ptr_array_add (
+            children, r->chord_objects[i]);
+        }
       break;
     }
 }
@@ -2501,6 +2539,40 @@ arranger_object_clone (
 }
 
 /**
+ * Removes the child from the given object.
+ */
+void
+arranger_object_remove_child (
+  ArrangerObject * self,
+  ArrangerObject * child)
+{
+  if (self->type != ARRANGER_OBJECT_TYPE_REGION)
+    return;
+
+  ZRegion * r = (ZRegion *) self;
+  switch (r->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      midi_region_remove_midi_note (
+        r, (MidiNote *) child, F_FREE,
+        F_NO_PUBLISH_EVENTS);
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_AUTOMATION:
+      automation_region_remove_ap (
+        r, (AutomationPoint *) child, F_FREE,
+        F_NO_PUBLISH_EVENTS);
+      break;
+    case REGION_TYPE_CHORD:
+      chord_region_remove_chord_object (
+        r, (ChordObject *) child, F_FREE,
+        F_NO_PUBLISH_EVENTS);
+      break;
+    }
+}
+
+/**
  * Splits the given object at the given Position.
  *
  * if \ref is_project is true, it
@@ -2538,6 +2610,10 @@ arranger_object_split (
   /* create the new objects */
   *r1 = arranger_object_clone (self);
   *r2 = arranger_object_clone (self);
+
+  bool orig_is_looped =
+    self->type == ARRANGER_OBJECT_TYPE_REGION
+    && region_is_looped ((ZRegion *) self);
 
   g_debug ("splitting objects...");
 
@@ -2589,8 +2665,11 @@ arranger_object_split (
         }
     }
 
-  /* for first region set the end pos and fade
-   * out pos */
+  /*
+   * for first object set:
+   * - end pos
+   * - fade out pos
+   */
   arranger_object_end_pos_setter (
     *r1, &globalp);
   arranger_object_set_position (
@@ -2598,21 +2677,150 @@ arranger_object_split (
     ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
     F_NO_VALIDATE);
 
-  /* for the second set the clip start and start
-   * pos. */
+  /* of original object was not looped, make the
+   * new object unlooped also */
+  if (!orig_is_looped)
+    {
+      arranger_object_loop_end_pos_setter (
+        *r1, &localp);
+
+      /* remove objects starting after the end */
+      GPtrArray * children = g_ptr_array_new ();
+      arranger_object_append_children (
+        *r1, children);
+      for (size_t i = 0; i < children->len; i++)
+        {
+          ArrangerObject * child =
+            g_ptr_array_index (children, i);
+          if (position_is_after (
+                &child->pos, &localp))
+            arranger_object_remove_child (
+              *r1, child);
+        }
+      g_ptr_array_unref (children);
+
+      /* if audio region, create a new region */
+      if ((*r1)->type == ARRANGER_OBJECT_TYPE_REGION
+          &&
+          ((ZRegion *) (*r1))->id.type ==
+            REGION_TYPE_AUDIO)
+        {
+          ZRegion * prev_r1 = (ZRegion *) *r1;
+          AudioClip * prev_r1_clip =
+            audio_region_get_clip (prev_r1);
+          g_return_if_fail (prev_r1_clip);
+          float frames[
+            localp.frames * prev_r1_clip->channels];
+          dsp_copy (
+            &frames[0], &prev_r1_clip->frames[0],
+            (size_t) localp.frames *
+              prev_r1_clip->channels);
+          g_return_if_fail (prev_r1->name);
+          ZRegion * new_r1 =
+            audio_region_new (
+              -1, NULL, true, frames, localp.frames,
+              prev_r1->name, prev_r1_clip->channels,
+              prev_r1_clip->bit_depth,
+              &prev_r1->base.pos,
+              prev_r1->id.track_name_hash,
+              prev_r1->id.lane_pos,
+              prev_r1->id.idx);
+          g_return_if_fail (
+            new_r1->pool_id != prev_r1->pool_id);
+          arranger_object_free (
+            (ArrangerObject *) prev_r1);
+          *r1 = (ArrangerObject *) new_r1;
+        }
+    }
+
+  /*
+   * for second object set:
+   * - start pos
+   * - clip start pos
+   */
   arranger_object_clip_start_pos_setter (
     *r2, &localp);
   arranger_object_pos_setter (
     *r2, &globalp);
-  Position r2_fade_out;
+  Position r2_local_end;
   position_set_to_pos (
-    &r2_fade_out, &((*r2)->end_pos));
+    &r2_local_end, &((*r2)->end_pos));
   position_add_ticks (
-    &r2_fade_out, - (*r2)->pos.ticks);
+    &r2_local_end, - (*r2)->pos.ticks);
   arranger_object_set_position (
-    *r2, &r2_fade_out,
+    *r2, &r2_local_end,
     ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
     F_NO_VALIDATE);
+
+  /* of original object was not looped, make the
+   * new object unlooped also */
+  if (!orig_is_looped)
+    {
+      Position init_pos;
+      position_init (&init_pos);
+      arranger_object_clip_start_pos_setter (
+        *r2, &init_pos);
+      arranger_object_loop_start_pos_setter (
+        *r2, &init_pos);
+      arranger_object_loop_end_pos_setter (
+        *r2, &r2_local_end);
+
+      /* move all objects backwards */
+      arranger_object_add_ticks_to_children (
+        *r2, - localp.ticks);
+
+      /* remove objects starting before the start */
+      GPtrArray * children = g_ptr_array_new ();
+      arranger_object_append_children (
+        *r2, children);
+      for (size_t i = 0; i < children->len; i++)
+        {
+          ArrangerObject * child =
+            g_ptr_array_index (children, i);
+          if (child->pos.frames < 0)
+            arranger_object_remove_child (
+              *r2, child);
+        }
+      g_ptr_array_unref (children);
+
+      /* if audio region, create a new region */
+      if ((*r2)->type == ARRANGER_OBJECT_TYPE_REGION
+          &&
+          ((ZRegion *) (*r2))->id.type ==
+            REGION_TYPE_AUDIO)
+        {
+          ZRegion * prev_r2 = (ZRegion *) *r2;
+          AudioClip * prev_r2_clip =
+            audio_region_get_clip (prev_r2);
+          g_return_if_fail (prev_r2_clip);
+          size_t num_frames =
+            (size_t) r2_local_end.frames *
+              prev_r2_clip->channels;
+          float frames[num_frames];
+          dsp_copy (
+            &frames[0],
+            &prev_r2_clip->frames[
+              (size_t) localp.frames *
+                prev_r2_clip->channels],
+            num_frames);
+          g_return_if_fail (prev_r2->name);
+          ZRegion * new_r2 =
+            audio_region_new (
+              -1, NULL, true, frames,
+              r2_local_end.frames,
+              prev_r2->name, prev_r2_clip->channels,
+              prev_r2_clip->bit_depth,
+              &globalp,
+              prev_r2->id.track_name_hash,
+              prev_r2->id.lane_pos,
+              prev_r2->id.idx);
+          g_return_if_fail (
+            new_r2->pool_id != prev_r2->pool_id);
+          arranger_object_free (
+            (ArrangerObject *) prev_r2);
+          *r2 = (ArrangerObject *) new_r2;
+        }
+    }
 
   /* skip rest if non-project object */
   if (!is_project)

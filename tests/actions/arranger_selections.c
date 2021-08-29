@@ -2677,9 +2677,11 @@ test_delete_multiple_regions ()
 }
 
 static void
-test_merge ()
+test_split_and_merge_midi_unlooped ()
 {
   test_helper_zrythm_init ();
+
+  Position pos, end_pos, tmp;
 
   track_create_empty_with_action (
     TRACK_TYPE_MIDI, NULL);
@@ -2691,43 +2693,141 @@ test_merge ()
     midi_track->type == TRACK_TYPE_MIDI);
 
   TrackLane * lane = midi_track->lanes[0];
-  for (int i = 0; i < 6; i++)
+  position_set_to_bar (&pos, 2);
+  position_set_to_bar (&end_pos, 10);
+  ZRegion * r1 =
+    midi_region_new (
+      &pos, &end_pos,
+      track_get_name_hash (midi_track), 0,
+      lane->num_regions);
+  track_add_region (
+    midi_track, r1, NULL, lane->pos,
+    F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r1, F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
+  g_assert_cmpint (lane->num_regions, ==, 1);
+
+  for (int i = 0; i < 2; i++)
     {
-      Position pos, end_pos;
-      position_set_to_bar (&pos, 2 + i);
-      position_set_to_bar (&end_pos, 4 + i);
-      ZRegion * r1 =
-        midi_region_new (
-          &pos, &end_pos,
-          track_get_name_hash (midi_track), 0,
-          lane->num_regions);
-      track_add_region (
-        midi_track, r1, NULL, lane->pos,
-        F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+      if (i == 0)
+        {
+          position_set_to_bar (&pos, 1);
+          position_set_to_bar (&end_pos, 2);
+        }
+      else
+        {
+          position_set_to_bar (&pos, 5);
+          position_set_to_bar (&end_pos, 6);
+        }
+      MidiNote * mn =
+        midi_note_new (
+          &r1->id, &pos, &end_pos, 45, 45);
+      midi_region_add_midi_note (
+        r1, mn, F_NO_PUBLISH_EVENTS);
       arranger_object_select (
-        (ArrangerObject *) r1, F_SELECT,
+        (ArrangerObject *) mn, F_SELECT,
         F_NO_APPEND, F_NO_PUBLISH_EVENTS);
       arranger_selections_action_perform_create (
-        TL_SELECTIONS, NULL);
-      g_assert_cmpint (
-        lane->num_regions, ==, i + 1);
+        (ArrangerSelections *) MA_SELECTIONS,
+        NULL);
     }
 
-  /* select 2 and merge */
+  /* split */
+  ZRegion * r = lane->regions[0];
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r_obj->pos, &tmp);
   arranger_object_select (
-    (ArrangerObject *) lane->regions[1],
+    r_obj,
+    F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  Position split_pos;
+  position_set_to_bar (&split_pos, 4);
+  bool ret =
+    arranger_selections_action_perform_split (
+      (ArrangerSelections *) TL_SELECTIONS,
+      &split_pos, &err);
+  g_assert_true (ret);
+
+  /* check r1 positions */
+  r1 = lane->regions[0];
+  ArrangerObject * r1_obj = (ArrangerObject *) r1;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r1_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 4);
+  g_assert_cmppos (&r1_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&r1_obj->loop_end_pos, &tmp);
+
+  /* check r1 midi note positions */
+  g_assert_cmpint (r1->num_midi_notes, ==, 1);
+  MidiNote * mn = r1->midi_notes[0];
+  ArrangerObject * mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&mn_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&mn_obj->end_pos, &tmp);
+
+  /* check r2 positions */
+  ZRegion * r2 = lane->regions[1];
+  ArrangerObject * r2_obj = (ArrangerObject *) r2;
+  position_set_to_bar (&tmp, 4);
+  g_assert_cmppos (&r2_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 10);
+  g_assert_cmppos (&r2_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 7);
+  g_assert_cmppos (&r2_obj->loop_end_pos, &tmp);
+
+  /* check r2 midi note positions */
+  g_assert_cmpint (r2->num_midi_notes, ==, 1);
+  mn = r2->midi_notes[0];
+  mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&mn_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 4);
+  g_assert_cmppos (&mn_obj->end_pos, &tmp);
+
+  /* merge */
+  arranger_object_select (
+    (ArrangerObject *) lane->regions[0],
     F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *)
-    (ArrangerObject *) lane->regions[2],
+    (ArrangerObject *) lane->regions[1],
     F_SELECT,
     F_APPEND, F_NO_PUBLISH_EVENTS);
-  GError * err = NULL;
-  bool ret =
+  err = NULL;
+  ret =
     arranger_selections_action_perform_merge (
       (ArrangerSelections *) TL_SELECTIONS, &err);
   g_assert_true (ret);
+
+  /* verify positions */
+  g_assert_cmpint (lane->num_regions, ==, 1);
+  r = lane->regions[0];
+  r_obj = (ArrangerObject *) r;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 10);
+  g_assert_cmppos (&r_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 9);
+  g_assert_cmppos (&r_obj->loop_end_pos, &tmp);
 
   clip_editor_get_region (CLIP_EDITOR);
 
@@ -2735,8 +2835,389 @@ test_merge ()
     undo_manager_undo (UNDO_MANAGER, &err);
   g_assert_true (iret == 0);
 
+  /* check r1 positions */
+  r1 = lane->regions[0];
+  r1_obj = (ArrangerObject *) r1;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r1_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 4);
+  g_assert_cmppos (&r1_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&r1_obj->loop_end_pos, &tmp);
+
+  /* check r1 midi note positions */
+  g_assert_cmpint (r1->num_midi_notes, ==, 1);
+  mn = r1->midi_notes[0];
+  mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&mn_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&mn_obj->end_pos, &tmp);
+
+  /* check r2 positions */
+  r2 = lane->regions[1];
+  r2_obj = (ArrangerObject *) r2;
+  position_set_to_bar (&tmp, 4);
+  g_assert_cmppos (&r2_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 10);
+  g_assert_cmppos (&r2_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 7);
+  g_assert_cmppos (&r2_obj->loop_end_pos, &tmp);
+
+  /* check r2 midi note positions */
+  g_assert_cmpint (r2->num_midi_notes, ==, 1);
+  mn = r2->midi_notes[0];
+  mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&mn_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 4);
+  g_assert_cmppos (&mn_obj->end_pos, &tmp);
+
+  /* undo split */
+  iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+
+  /* verify region */
+  r = lane->regions[0];
+  r_obj = (ArrangerObject *) r;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 10);
+  g_assert_cmppos (&r_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 9);
+  g_assert_cmppos (&r_obj->loop_end_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->loop_start_pos, &tmp);
+
+  /* verify midi notes are back to start */
+  g_assert_cmpint (r->num_midi_notes, ==, 2);
+  mn = r->midi_notes[0];
+  mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&mn_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&mn_obj->end_pos, &tmp);
+  mn = r->midi_notes[1];
+  mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&tmp, 5);
+  g_assert_cmppos (&mn_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 6);
+  g_assert_cmppos (&mn_obj->end_pos, &tmp);
+
   g_assert_nonnull (
     clip_editor_get_region (CLIP_EDITOR));
+
+  iret =
+    undo_manager_redo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  iret =
+    undo_manager_redo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_split_and_merge_audio_unlooped ()
+{
+  test_helper_zrythm_init ();
+
+  Position pos, tmp;
+
+  char audio_file_path[2000];
+  sprintf (
+    audio_file_path, "%s%s%s",
+    TESTS_SRCDIR, G_DIR_SEPARATOR_S,
+    "test.wav");
+  SupportedFile * file_descr =
+    supported_file_new_from_path (audio_file_path);
+  position_set_to_bar (&pos, 2);
+  Track * audio_track =
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
+      TRACKLIST->num_tracks, 1, NULL);
+  int audio_track_pos = audio_track->pos;
+  supported_file_free (file_descr);
+  g_assert_nonnull (audio_track);
+  g_assert_cmpint (audio_track->num_lanes, ==, 2);
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 1);
+  g_assert_cmpint (
+    audio_track->lanes[1]->num_regions, ==, 0);
+
+  /* <2.1.1.0> to around <4.1.1.0> (around 2 bars
+   * long) */
+  TrackLane * lane = audio_track->lanes[0];
+  ZRegion * r = lane->regions[0];
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  g_assert_cmppos (&r_obj->pos, &pos);
+
+  /* remember frames */
+  AudioClip * clip = audio_region_get_clip (r);
+  long num_frames = clip->num_frames;
+  float l_frames[num_frames];
+  dsp_copy (
+    l_frames, clip->ch_frames[0],
+    (size_t) num_frames);
+
+  /* split */
+  r = lane->regions[0];
+  r_obj = (ArrangerObject *) r;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r_obj->pos, &tmp);
+  arranger_object_select (
+    r_obj,
+    F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  Position split_pos;
+  position_set_to_bar (&split_pos, 3);
+  bool ret =
+    arranger_selections_action_perform_split (
+      (ArrangerSelections *) TL_SELECTIONS,
+      &split_pos, &err);
+  g_assert_true (ret);
+
+  /* check r1 positions */
+  ZRegion * r1 = lane->regions[0];
+  ArrangerObject * r1_obj = (ArrangerObject *) r1;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r1_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&r1_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r1_obj->loop_end_pos, &tmp);
+
+  long frames_per_bar =
+    (long)
+    (AUDIO_ENGINE->frames_per_tick *
+       (double) TRANSPORT->ticks_per_bar);
+
+  /* check r1 audio positions */
+  AudioClip * r1_clip = audio_region_get_clip (r1);
+  g_assert_cmpint (
+    r1_clip->num_frames, ==, frames_per_bar);
+  g_assert_true (
+    audio_frames_equal (
+      r1_clip->ch_frames[0], &l_frames[0],
+      (size_t) r1_clip->num_frames, 0.0001f));
+
+  /* check r2 positions */
+  ZRegion * r2 = lane->regions[1];
+  ArrangerObject * r2_obj = (ArrangerObject *) r2;
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&r2_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->loop_start_pos, &tmp);
+  g_assert_cmpint (
+    r2_obj->end_pos.frames, ==,
+    /* total previous frames + started at bar 2
+     * (1 bar) */
+    num_frames + frames_per_bar);
+  g_assert_cmpint (
+    r2_obj->loop_end_pos.frames, ==,
+    /* total previous frames - r1 frames */
+    num_frames - r1_clip->num_frames);
+
+  /* check r2 audio positions */
+  AudioClip * r2_clip = audio_region_get_clip (r2);
+  g_assert_cmpint (
+    r2_clip->num_frames, ==,
+    r2_obj->loop_end_pos.frames);
+  g_assert_true (
+    audio_frames_equal (
+      r2_clip->ch_frames[0],
+      &l_frames[frames_per_bar],
+      (size_t) r2_clip->num_frames, 0.0001f));
+
+  /* merge */
+  arranger_object_select (
+    (ArrangerObject *) lane->regions[0],
+    F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *)
+    (ArrangerObject *) lane->regions[1],
+    F_SELECT,
+    F_APPEND, F_NO_PUBLISH_EVENTS);
+  err = NULL;
+  ret =
+    arranger_selections_action_perform_merge (
+      (ArrangerSelections *) TL_SELECTIONS, &err);
+  g_assert_true (ret);
+
+  /* verify positions */
+  g_assert_cmpint (lane->num_regions, ==, 1);
+  r = lane->regions[0];
+  r_obj = (ArrangerObject *) r;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 2);
+  position_add_frames (&tmp, num_frames);
+  g_assert_cmppos (&r_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->clip_start_pos, &tmp);
+  position_from_frames (&tmp, num_frames);
+  g_assert_cmppos (&r_obj->loop_end_pos, &tmp);
+
+  clip_editor_get_region (CLIP_EDITOR);
+
+  test_project_save_and_reload ();
+  audio_track =
+    TRACKLIST->tracks[audio_track_pos];
+  lane = audio_track->lanes[0];
+
+  /* undo merge */
+  int iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  test_project_save_and_reload ();
+  audio_track =
+    TRACKLIST->tracks[audio_track_pos];
+  lane = audio_track->lanes[0];
+
+  /* check r1 positions */
+  r1 = lane->regions[0];
+  r1_obj = (ArrangerObject *) r1;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r1_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r1_obj->loop_start_pos, &tmp);
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&r1_obj->end_pos, &tmp);
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r1_obj->loop_end_pos, &tmp);
+
+  /* check r1 audio positions */
+  r1_clip = audio_region_get_clip (r1);
+  g_assert_cmpint (
+    r1_clip->num_frames, ==, frames_per_bar);
+  g_assert_true (
+    audio_frames_equal (
+      r1_clip->ch_frames[0], &l_frames[0],
+      (size_t) r1_clip->num_frames, 0.0001f));
+
+  /* check r2 positions */
+  r2 = lane->regions[1];
+  r2_obj = (ArrangerObject *) r2;
+  position_set_to_bar (&tmp, 3);
+  g_assert_cmppos (&r2_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r2_obj->loop_start_pos, &tmp);
+  g_assert_cmpint (
+    r2_obj->end_pos.frames, ==,
+    /* total previous frames + started at bar 2
+     * (1 bar) */
+    num_frames + frames_per_bar);
+  g_assert_cmpint (
+    r2_obj->loop_end_pos.frames, ==,
+    /* total previous frames - r1 frames */
+    num_frames - r1_clip->num_frames);
+
+  /* check r2 audio positions */
+  r2_clip = audio_region_get_clip (r2);
+  g_assert_cmpint (
+    r2_clip->num_frames, ==,
+    r2_obj->loop_end_pos.frames);
+  g_assert_true (
+    audio_frames_equal (
+      r2_clip->ch_frames[0],
+      &l_frames[frames_per_bar],
+      (size_t) r2_clip->num_frames, 0.0001f));
+
+  /* undo split */
+  iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  test_project_save_and_reload ();
+  audio_track =
+    TRACKLIST->tracks[audio_track_pos];
+  lane = audio_track->lanes[0];
+
+  /* verify region */
+  r = lane->regions[0];
+  r_obj = (ArrangerObject *) r;
+  position_set_to_bar (&tmp, 2);
+  g_assert_cmppos (&r_obj->pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->clip_start_pos, &tmp);
+  position_set_to_bar (&tmp, 1);
+  g_assert_cmppos (&r_obj->loop_start_pos, &tmp);
+  g_assert_cmpint (
+    r_obj->end_pos.frames, ==,
+    /* total previous frames + started at bar 2
+     * (1 bar) */
+    num_frames + frames_per_bar);
+  g_assert_cmpint (
+    r_obj->loop_end_pos.frames, ==,
+    /* total previous frames */
+    num_frames);
+
+  /* check frames */
+  clip = audio_region_get_clip (r);
+  g_assert_cmpint (
+    clip->num_frames, ==, num_frames);
+  g_assert_true (
+    audio_frames_equal (
+      clip->ch_frames[0], l_frames,
+      (size_t) num_frames, 0.0001f));
+
+  g_assert_nonnull (
+    clip_editor_get_region (CLIP_EDITOR));
+
+  test_project_save_and_reload ();
+
+  /* redo split */
+  iret =
+    undo_manager_redo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  test_project_save_and_reload ();
+
+  /* redo merge */
+  iret =
+    undo_manager_redo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  test_project_save_and_reload ();
+
+  /* undo merge */
+  iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  test_project_save_and_reload ();
+
+  /* undo split */
+  iret =
+    undo_manager_undo (UNDO_MANAGER, &err);
+  g_assert_true (iret == 0);
+  test_project_save_and_reload ();
 
   test_helper_zrythm_cleanup ();
 }
@@ -2749,8 +3230,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
-    TEST_PREFIX "test merge",
-    (GTestFunc) test_merge);
+    TEST_PREFIX "test split and merge audio unlooped",
+    (GTestFunc) test_split_and_merge_audio_unlooped);
+  g_test_add_func (
+    TEST_PREFIX "test split and merge midi unlooped",
+    (GTestFunc) test_split_and_merge_midi_unlooped);
   g_test_add_func (
     TEST_PREFIX "test delete multiple regions",
     (GTestFunc) test_delete_multiple_regions);

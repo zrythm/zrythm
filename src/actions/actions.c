@@ -2115,6 +2115,14 @@ DEFINE_SIMPLE (activate_merge_selection)
         _("Selections must be on the same lane"));
       return;
     }
+  if (arranger_selections_contains_looped (
+       (ArrangerSelections *) TL_SELECTIONS))
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("Cannot merge looped regions"));
+      return;
+    }
   if (TL_SELECTIONS->num_regions == 1)
     {
       /* nothing to do */

@@ -2457,6 +2457,43 @@ arranger_selections_merge (
   free (objs);
 }
 
+bool
+arranger_selections_contains_looped (
+  ArrangerSelections * self)
+{
+  if (self->type !=
+        ARRANGER_SELECTIONS_TYPE_TIMELINE)
+    return false;
+
+  TimelineSelections * tl =
+    (TimelineSelections *) self;
+  for (int i = 0; i < tl->num_regions; i++)
+    {
+      ZRegion * r = tl->regions[i];
+      if (region_is_looped (r))
+        return true;
+    }
+
+  return false;
+}
+
+bool
+arranger_selections_can_be_merged (
+  ArrangerSelections * self)
+{
+  if (self->type !=
+        ARRANGER_SELECTIONS_TYPE_TIMELINE)
+    return false;
+
+  TimelineSelections * tl =
+    (TimelineSelections *) self;
+
+  return
+    tl->num_regions > 1
+    && arranger_selections_all_on_same_lane (self)
+    && !arranger_selections_contains_looped (self);
+}
+
 /**
  * Returns if the selections can be pasted.
  */

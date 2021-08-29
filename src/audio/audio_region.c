@@ -38,7 +38,7 @@
 #include "zrythm_app.h"
 
 /**
- * Creates a ZRegion for audio data.
+ * Creates a region for audio data.
  *
  * @param pool_id The pool ID. This is used when
  *   creating clone regions (non-main) and must be
@@ -46,8 +46,9 @@
  * @param filename Filename, if loading from
  *   file, otherwise NULL.
  * @param read_from_pool Whether to save the given
- *   @a filename to pool and read the data from the
- *   pool. Only used if @a filename is given.
+ *   @a filename or @a frames to pool and read the
+ *   data from the pool. Only used if @a filename or
+ *   @a frames is given.
  * @param frames Float array, if loading from
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
@@ -550,8 +551,8 @@ audio_region_validate (
 
   /* verify that the loop does not contain more
    * frames than available in the clip */
-  g_return_val_if_fail (
-    loop_len <= clip->num_frames, false);
+  z_return_val_if_fail_cmp (
+    loop_len, <=, clip->num_frames, false);
 
   return true;
 }
