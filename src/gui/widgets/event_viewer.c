@@ -288,7 +288,7 @@ add_from_object (
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
           store, iter,
-          AUTOMATION_COLUMN_INDEX, index,
+          AUTOMATION_COLUMN_INDEX, ap->index,
           AUTOMATION_COLUMN_POS, &obj->pos,
           AUTOMATION_COLUMN_VALUE, ap->fvalue,
           AUTOMATION_COLUMN_CURVINESS,
