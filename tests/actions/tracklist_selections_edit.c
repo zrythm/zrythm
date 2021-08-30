@@ -650,6 +650,12 @@ test_edit_multi_track_direct_out (void)
     TRACKLIST_SELECTIONS,
     PORT_CONNECTIONS_MGR, audio_group, NULL);
 
+  /* change the name of the group track - tests
+   * track_update_children() */
+  tracklist_selections_action_perform_edit_rename (
+    audio_group, PORT_CONNECTIONS_MGR, "new name",
+    NULL);
+
   Channel * ch = ins_track->channel;
   Channel * ch2 = ins_track2->channel;
   Track * direct_out =
@@ -719,11 +725,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections_edit/"
 
   g_test_add_func (
-    TEST_PREFIX "test_edit_tracks",
-    (GTestFunc) test_edit_tracks);
-  g_test_add_func (
     TEST_PREFIX "test edit multi track direct out",
     (GTestFunc) test_edit_multi_track_direct_out);
+  g_test_add_func (
+    TEST_PREFIX "test_edit_tracks",
+    (GTestFunc) test_edit_tracks);
   g_test_add_func (
     TEST_PREFIX "test edit midi direct out to ins",
     (GTestFunc) test_edit_midi_direct_out_to_ins);

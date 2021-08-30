@@ -2133,18 +2133,18 @@ track_update_children (
   for (int i = 0; i < self->num_children; i++)
     {
       Track * child =
-        TRACKLIST->tracks[self->children[i]];
+        tracklist_find_track_by_name_hash (
+          TRACKLIST, self->children[i]);
       g_warn_if_fail (
         IS_TRACK (child) &&
         child->out_signal_type ==
           self->in_signal_type);
-      child->channel->output_name_hash =
-        name_hash;
+      child->channel->output_name_hash = name_hash;
       g_debug (
         "%s: setting output of track %s [%d] to "
         "%s [%d]",
-        __func__, child->name, child->pos, self->name,
-        self->pos);
+        __func__, child->name, child->pos,
+        self->name, self->pos);
     }
 }
 
@@ -3642,7 +3642,8 @@ track_mark_for_bounce (
       for (int i = 0; i < self->num_children; i++)
         {
           Track * child =
-            TRACKLIST->tracks[self->children[i]];
+            tracklist_find_track_by_name_hash (
+              TRACKLIST, self->children[i]);
 
           track_mark_for_bounce (
             child, bounce, mark_regions,
