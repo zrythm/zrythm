@@ -208,8 +208,11 @@ live_waveform_draw_cb (
         zix_ring_read_space (port->audio_ring);
       blocks_to_read =
         read_space_avail / block_size_in_bytes;
-      g_return_val_if_fail (
-        blocks_to_read > 0, FALSE);
+
+      /* if buffer is not filled do not draw */
+      if (blocks_to_read <= 0)
+        return false;
+
       while (read_space_avail > self->buf_sz[1])
         {
           array_double_size_if_full (
