@@ -1867,13 +1867,10 @@ do_or_undo_duplicate_or_link (
                 {
                   AudioClip * clip =
                     audio_region_get_clip (region);
-                  int prev_id = clip->pool_id;
                   int id =
                     audio_pool_duplicate_clip (
                       AUDIO_POOL, clip->pool_id,
                       F_WRITE_FILE);
-                  z_return_val_if_fail_cmp (
-                    id, >, prev_id, -1);
                   clip =
                     audio_pool_get_clip (
                       AUDIO_POOL, id);
