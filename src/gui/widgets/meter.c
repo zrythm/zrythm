@@ -179,6 +179,22 @@ tick_cb (
   GdkFrameClock * frame_clock,
   MeterWidget * self)
 {
+  if (self->meter
+      &&
+      gtk_widget_get_mapped (GTK_WIDGET (self))
+      && AUDIO_ENGINE->activated
+      && engine_get_run (AUDIO_ENGINE))
+    {
+      meter_get_value (
+        self->meter, AUDIO_VALUE_FADER,
+        &self->meter_val,
+        &self->meter_peak);
+    }
+  else
+    {
+      /* not mapped, skipping dsp */
+    }
+
   if (!math_floats_equal (
         self->meter_val, self->last_meter_val) ||
       !math_floats_equal (
@@ -190,6 +206,7 @@ tick_cb (
   return G_SOURCE_CONTINUE;
 }
 
+#if 0
 /*
  * Timeout to "run" the meter.
  */
@@ -222,6 +239,7 @@ meter_timeout (
   else
     return G_SOURCE_REMOVE;
 }
+#endif
 
 /**
  * Creates a new Meter widget and binds it to the
@@ -260,12 +278,14 @@ meter_widget_setup (
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb,
     self, NULL);
+#if 0
   self->timeout_source = g_timeout_source_new (20);
   g_source_set_callback (
     self->timeout_source, meter_timeout,
     self, NULL);
   self->source_id =
     g_source_attach (self->timeout_source, NULL);
+#endif
 }
 
 static void
@@ -275,9 +295,11 @@ finalize (
   object_free_w_func_and_null (
     meter_free, self->meter);
 
+#if 0
   if (self->timeout_source)
     g_source_unref (self->timeout_source);
   self->source_id = 0;
+#endif
 
   G_OBJECT_CLASS (
     meter_widget_parent_class)->
