@@ -22,7 +22,7 @@
 
 set -e
 
-export NO_SCAN_PLUGINS=1
+export ZRYTHM_SKIP_PLUGIN_SCAN=1
 export ZRYTHM_DSP_THREADS=1
 valgrind --num-callers=160 --leak-check=full \
     --show-leak-kinds=all --track-origins=yes \

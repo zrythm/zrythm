@@ -25,12 +25,12 @@ they can be passed directly when running
   Example:
   ``LV2_PATH=$HOME/custom-lv2-dir``
 
-.. envvar:: NO_SCAN_PLUGINS
+.. envvar:: ZRYTHM_SKIP_PLUGIN_SCAN
 
   Set to 1 to disable plugin scanning.
 
   Example:
-  ``NO_SCAN_PLUGINS=1``
+  ``ZRYTHM_SKIP_PLUGIN_SCAN=1``
 
 .. envvar:: VST_PATH
 

@@ -11,7 +11,7 @@ Specify custom path for scanning LV2 plugins
 .BR ZRYTHM_DSP_THREADS
 Number of threads to use for DSP, including the main one
 .TP
-.BR NO_SCAN_PLUGINS
+.BR ZRYTHM_SKIP_PLUGIN_SCAN
 Disable plugin scanning
 .TP
 .BR ZRYTHM_DEBUG

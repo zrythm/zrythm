@@ -1728,7 +1728,7 @@ All notable changes to this project will be documented in this file.
 ## [0.7.002] - 2019-10-14
 - Use a lock-free queue while processing instead of a mutex
 - Add caching where pango is used to draw text
-- Add `ZRYTHM_DSP_THREADS`, `NO_SCAN_PLUGINS` and `ZRYTHM_DEBUG` environment variables
+- Add `ZRYTHM_DSP_THREADS`, `ZRYTHM_SKIP_PLUGIN_SCAN` and `ZRYTHM_DEBUG` environment variables
 - Add .zpx and .zpj extensions for Zrythm projects and packages
 - Add option (on by default) to keep plugin windows on top
 - Move file browser to popup window instead of right panel

@@ -1156,7 +1156,7 @@ plugin_manager_scan_plugins (
     lilv_world_get_all_plugins (world);
   self->lilv_plugins = lilv_plugins;
 
-  if (getenv ("NO_SCAN_PLUGINS"))
+  if (getenv ("ZRYTHM_SKIP_PLUGIN_SCAN"))
     return;
 
   double size =
