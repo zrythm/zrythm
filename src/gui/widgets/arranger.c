@@ -4017,7 +4017,7 @@ on_drag_end_midi (
         arranger_selections_action_perform_resize (
           (ArrangerSelections *) MA_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_RESIZE_L,
-          ticks_diff, &err);
+          ticks_diff, F_ALREADY_EDITED, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -4043,7 +4043,7 @@ on_drag_end_midi (
         arranger_selections_action_perform_resize (
           (ArrangerSelections *) MA_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_RESIZE_R,
-          ticks_diff, &err);
+          ticks_diff, F_ALREADY_EDITED, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -4360,7 +4360,7 @@ on_drag_end_timeline (
             arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L,
-              ticks_diff, &err);
+              ticks_diff, F_ALREADY_EDITED, &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -4383,7 +4383,7 @@ on_drag_end_timeline (
           arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_STRETCH_L,
-            ticks_diff, &err);
+            ticks_diff, F_ALREADY_EDITED, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4406,7 +4406,7 @@ on_drag_end_timeline (
             arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
-              ticks_diff, &err);
+              ticks_diff, F_ALREADY_EDITED, &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -4428,7 +4428,7 @@ on_drag_end_timeline (
             arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE,
-              ticks_diff, &err);
+              ticks_diff, F_ALREADY_EDITED, &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -4452,7 +4452,7 @@ on_drag_end_timeline (
             arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_R,
-              ticks_diff, &err);
+              ticks_diff, F_ALREADY_EDITED, &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -4477,7 +4477,7 @@ on_drag_end_timeline (
           arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_STRETCH_R,
-            ticks_diff, &err);
+            ticks_diff, F_ALREADY_EDITED, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4499,7 +4499,7 @@ on_drag_end_timeline (
           arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-            ticks_diff, &err);
+            ticks_diff, F_ALREADY_EDITED, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4521,7 +4521,7 @@ on_drag_end_timeline (
             arranger_selections_action_perform_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
-              ticks_diff, &err);
+              ticks_diff, F_ALREADY_EDITED, &err);
           if (!ret)
             {
               HANDLE_ERROR (

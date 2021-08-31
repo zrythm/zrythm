@@ -193,7 +193,7 @@ test_prepare_common (void)
   arranger_selections_action_perform_resize (
     (ArrangerSelections *) TL_SELECTIONS,
     ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-    missing_ticks, NULL);
+    missing_ticks, F_ALREADY_EDITED, NULL);
   g_assert_cmppos (
     &end, &audio_region->base.end_pos);
 

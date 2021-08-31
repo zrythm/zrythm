@@ -441,12 +441,31 @@ draw_midi_region (
   int full_width = full_rect->width;
   int full_height = full_rect->height;
 
+  bool is_looped = region_is_looped (self);
+
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * mn = self->midi_notes[i];
       ArrangerObject * mn_obj =
         (ArrangerObject *) mn;
+
+      /* note muted */
       if (arranger_object_get_muted (mn_obj))
+        continue;
+
+      /* note not playable */
+      if (position_is_after_or_equal (
+            &mn_obj->pos, &obj->loop_end_pos))
+        continue;
+
+      /* note not playable if looped */
+      if (is_looped
+          &&
+          position_is_before (
+            &mn_obj->pos, &obj->loop_start_pos)
+          &&
+          position_is_before (
+            &mn_obj->pos, &obj->clip_start_pos))
         continue;
 
       /* get ratio (0.0 - 1.0) on x where midi note
@@ -457,108 +476,105 @@ draw_midi_region (
         position_to_ticks (&mn_obj->end_pos);
       double tmp_start_ticks, tmp_end_ticks;
 
-      /* if before loop end */
-      if (position_is_before (
-            &mn_obj->pos,
-            &obj->loop_end_pos))
+      for (int j = 0; j < num_loops; j++)
         {
-          for (int j = 0; j < num_loops; j++)
+          /* if note started before loop start
+           * only draw it once */
+          if (position_is_before (
+                &mn_obj->pos,
+                &obj->loop_start_pos) &&
+              j != 0)
+            break;
+
+          /* calculate draw endpoints */
+          tmp_start_ticks =
+            mn_start_ticks + loop_ticks * j;
+          /* if should be clipped */
+          if (position_is_after_or_equal (
+                &mn_obj->end_pos,
+                &obj->loop_end_pos))
+            tmp_end_ticks =
+              loop_end_ticks + loop_ticks * j;
+          else
+            tmp_end_ticks =
+              mn_end_ticks + loop_ticks * j;
+
+          /* adjust for clip start */
+          tmp_start_ticks -= clip_start_ticks;
+          tmp_end_ticks -= clip_start_ticks;
+
+          /* get ratios (0.0 - 1.0) of
+           * where midi note is */
+          x_start =
+            tmp_start_ticks /
+            ticks_in_region;
+          x_end =
+            tmp_end_ticks /
+            ticks_in_region;
+          y_start =
+            ((double) max_val -
+             (double) mn->val) /
+            y_interval;
+
+          /* get actual values using the
+           * ratios */
+          x_start *=
+            (double) full_width;
+          x_end *=
+            (double) full_width;
+          y_start *=
+            (double) full_height;
+
+          /* the above values are local to the
+           * region, convert to global */
+          /*x_start += full_rect->x;*/
+          /*x_end += full_rect->x;*/
+          /*y_start += full_rect->y;*/
+
+          /* skip if any part of the note is
+           * not visible in the region's rect */
+          if ((x_start >= vis_offset_x &&
+               x_start <
+                 vis_offset_x + vis_width) ||
+              (x_end >= vis_offset_x &&
+               x_end <
+                 vis_offset_x + vis_width) ||
+              (x_start < vis_offset_x &&
+               x_end > vis_offset_x))
             {
-              /* if note started before loop start
-               * only draw it once */
-              if (position_is_before (
-                    &mn_obj->pos,
-                    &obj->loop_start_pos) &&
-                  j != 0)
-                break;
+              double draw_x =
+                MAX (x_start, vis_offset_x);
+              double draw_width =
+                MIN (
+                  (x_end - x_start) -
+                    (draw_x - x_start),
+                  (vis_offset_x + vis_width) -
+                  draw_x);
+              double draw_y =
+                MAX (y_start, vis_offset_y);
+              double draw_height =
+                MIN (
+                  (y_note_size *
+                    (double) full_height) -
+                      (draw_y - y_start),
+                  (vis_offset_y + vis_height) -
+                    draw_y);
+              cairo_rectangle (
+                cr,
+                draw_x,
+                draw_y,
+                draw_width,
+                draw_height);
+              /* FIXME this is performance
+               * intensive 23% of this function
+               * call */
+              cairo_fill (cr);
 
-              /* calculate draw endpoints */
-              tmp_start_ticks =
-                mn_start_ticks + loop_ticks * j;
-              /* if should be clipped */
-              if (position_is_after_or_equal (
-                    &mn_obj->end_pos,
-                    &obj->loop_end_pos))
-                tmp_end_ticks =
-                  loop_end_ticks + loop_ticks * j;
-              else
-                tmp_end_ticks =
-                  mn_end_ticks + loop_ticks * j;
+            } /* endif part of note is visible */
 
-              /* adjust for clip start */
-              tmp_start_ticks -= clip_start_ticks;
-              tmp_end_ticks -= clip_start_ticks;
+        } /* end foreach region loop */
 
-              /* get ratios (0.0 - 1.0) of
-               * where midi note is */
-              x_start =
-                tmp_start_ticks /
-                ticks_in_region;
-              x_end =
-                tmp_end_ticks /
-                ticks_in_region;
-              y_start =
-                ((double) max_val -
-                 (double) mn->val) /
-                y_interval;
-
-              /* get actual values using the
-               * ratios */
-              x_start *=
-                (double) full_width;
-              x_end *=
-                (double) full_width;
-              y_start *=
-                (double) full_height;
-
-              /* the above values are local to the
-               * region, convert to global */
-              /*x_start += full_rect->x;*/
-              /*x_end += full_rect->x;*/
-              /*y_start += full_rect->y;*/
-
-              /* skip if any part of the note is
-               * not visible in the region's rect */
-              if ((x_start >= vis_offset_x &&
-                   x_start <
-                     vis_offset_x + vis_width) ||
-                  (x_end >= vis_offset_x &&
-                   x_end <
-                     vis_offset_x + vis_width) ||
-                  (x_start < vis_offset_x &&
-                   x_end > vis_offset_x))
-                {
-                  double draw_x =
-                    MAX (x_start, vis_offset_x);
-                  double draw_width =
-                    MIN (
-                      (x_end - x_start) -
-                        (draw_x - x_start),
-                      (vis_offset_x + vis_width) -
-                      draw_x);
-                  double draw_y =
-                    MAX (y_start, vis_offset_y);
-                  double draw_height =
-                    MIN (
-                      (y_note_size *
-                        (double) full_height) -
-                          (draw_y - y_start),
-                      (vis_offset_y + vis_height) -
-                        draw_y);
-                  cairo_rectangle (
-                    cr,
-                    draw_x,
-                    draw_y,
-                    draw_width,
-                    draw_height);
-                  /* FIXME this is performance
-                   * intensive 23% of this function
-                   * call */
-                  cairo_fill (cr);
-                }
-            }
-        }
-    }
+    } /* end foreach note */
 }
 
 /**

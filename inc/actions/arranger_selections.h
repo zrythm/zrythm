@@ -649,6 +649,7 @@ arranger_selections_action_new_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
+  const bool                         already_resized,
   GError **                          error);
 
 /**
@@ -837,6 +838,7 @@ arranger_selections_action_perform_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
+  const bool                         already_resized,
   GError **                          error);
 
 bool

@@ -745,6 +745,7 @@ arranger_selections_action_new_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
+  const bool                         already_resized,
   GError **                          error)
 {
   /* validate */
@@ -820,6 +821,11 @@ arranger_selections_action_new_resize (
 
   self->resize_type = type;
   self->ticks = ticks;
+
+  if (!already_resized)
+    {
+      self->first_run = 0;
+    }
 
   UndoableAction * ua = (UndoableAction *) self;
   return ua;
@@ -1111,11 +1117,13 @@ arranger_selections_action_perform_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
   const double                       ticks,
+  const bool                         already_resized,
   GError **                          error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     arranger_selections_action_new_resize,
-    error, sel, type, ticks, error);
+    error, sel, type, ticks, already_resized,
+    error);
 }
 
 bool

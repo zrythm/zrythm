@@ -3222,6 +3222,87 @@ test_split_and_merge_audio_unlooped ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_resize_loop_l (void)
+{
+  test_helper_zrythm_init ();
+
+  Position pos, tmp;
+
+  char audio_file_path[2000];
+  sprintf (
+    audio_file_path, "%s%s%s",
+    TESTS_SRCDIR, G_DIR_SEPARATOR_S,
+    "test.wav");
+  SupportedFile * file_descr =
+    supported_file_new_from_path (audio_file_path);
+  position_set_to_bar (&pos, 3);
+  Track * audio_track =
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
+      TRACKLIST->num_tracks, 1, NULL);
+  int audio_track_pos = audio_track->pos;
+  supported_file_free (file_descr);
+  g_assert_nonnull (audio_track);
+  g_assert_cmpint (audio_track->num_lanes, ==, 2);
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 1);
+  g_assert_cmpint (
+    audio_track->lanes[1]->num_regions, ==, 0);
+
+  /* <3.1.1.0> to around <5.1.1.0> (around 2 bars
+   * long) */
+  TrackLane * lane = audio_track->lanes[0];
+  ZRegion * r = lane->regions[0];
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  g_assert_cmppos (&r_obj->pos, &pos);
+
+  /* remember end pos */
+  Position end_pos;
+  position_set_to_pos (&end_pos, &r_obj->end_pos);
+
+  /* remember loop length */
+  double loop_len_ticks =
+    arranger_object_get_loop_length_in_ticks (
+      r_obj);
+
+  /* resize L */
+  arranger_object_select (
+    r_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  const double move_ticks = 100.0;
+  arranger_selections_action_perform_resize (
+    (ArrangerSelections *) TL_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
+    - move_ticks, F_NOT_ALREADY_EDITED, NULL);
+
+  Position new_pos;
+
+  /* test start pos */
+  position_set_to_pos (&new_pos, &pos);
+  position_add_ticks (&new_pos, - move_ticks);
+  g_assert_cmppos (&r_obj->pos, &new_pos);
+
+  /* test loop start pos */
+  position_init (&new_pos);
+  g_assert_cmppos (
+    &r_obj->loop_start_pos, &new_pos);
+
+  /* test end pos */
+  g_assert_cmppos (&r_obj->end_pos, &end_pos);
+
+  g_assert_cmpfloat_with_epsilon (
+    loop_len_ticks,
+    arranger_object_get_loop_length_in_ticks (
+      r_obj),
+    0.0001);
+
+  (void) audio_track_pos;
+  (void) tmp;
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -3229,6 +3310,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test resize loop l",
+    (GTestFunc) test_resize_loop_l);
   g_test_add_func (
     TEST_PREFIX "test split and merge audio unlooped",
     (GTestFunc) test_split_and_merge_audio_unlooped);

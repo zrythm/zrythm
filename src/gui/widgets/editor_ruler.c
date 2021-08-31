@@ -106,15 +106,9 @@ editor_ruler_on_drag_update (
 
       if (TARGET_IS (LOOP_START))
         {
-          /* make the position local to the region
-           * for less calculations */
-          /* if position is acceptable */
-          if (position_compare (
-                &region_local_pos,
-                &r_obj->loop_end_pos) < 0 &&
-              position_compare (
-                &region_local_pos,
-                &r_obj->clip_start_pos) >= 0)
+          if (arranger_object_is_position_valid (
+                r_obj, &region_local_pos,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_START))
             {
               /* set it */
               arranger_object_set_position (
@@ -129,13 +123,9 @@ editor_ruler_on_drag_update (
         }
       else if (TARGET_IS (LOOP_END))
         {
-          /* if position is acceptable */
-          if (position_compare (
-                &region_local_pos,
-                &r_obj->loop_start_pos) > 0 &&
-              position_compare (
-                &region_local_pos,
-                &r_obj->clip_start_pos) > 0)
+          if (arranger_object_is_position_valid (
+                r_obj, &region_local_pos,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_END))
             {
               /* set it */
               arranger_object_set_position (
@@ -151,9 +141,9 @@ editor_ruler_on_drag_update (
       else if (TARGET_IS (CLIP_START))
         {
           /* if position is acceptable */
-          if (position_is_before_or_equal (
-                &region_local_pos,
-                &r_obj->loop_start_pos))
+          if (arranger_object_is_position_valid (
+                r_obj, &region_local_pos,
+                ARRANGER_OBJECT_POSITION_TYPE_CLIP_START))
             {
               /* set it */
               arranger_object_set_position (

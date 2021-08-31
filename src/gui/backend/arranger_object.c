@@ -518,6 +518,10 @@ arranger_object_is_position_valid (
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_END:
       {
+        if (position_is_before (
+              pos, &self->clip_start_pos))
+          return false;
+
         is_valid = true;
         if (self->type ==
               ARRANGER_OBJECT_TYPE_REGION)
@@ -1357,16 +1361,6 @@ arranger_object_resize (
             ARRANGER_OBJECT_POSITION_TYPE_START,
             F_NO_VALIDATE);
 
-          if (arranger_object_type_can_loop (
-                self->type))
-            {
-              tmp = self->loop_end_pos;
-              position_add_ticks (&tmp, - ticks);
-              arranger_object_set_position (
-                self, &tmp,
-                ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-                F_NO_VALIDATE);
-            }
           if (arranger_object_can_fade (self))
             {
               tmp = self->fade_out_pos;
@@ -1377,20 +1371,59 @@ arranger_object_resize (
                 F_NO_VALIDATE);
             }
 
-          /* move containing items */
-          arranger_object_add_ticks_to_children (
-            self, - ticks);
-          if (type == ARRANGER_OBJECT_RESIZE_LOOP &&
-              arranger_object_type_can_loop (
-                self->type))
+          if (type == ARRANGER_OBJECT_RESIZE_LOOP)
             {
-              tmp = self->loop_start_pos;
-              position_add_ticks (
-                &tmp, - ticks);
+              double loop_len =
+                arranger_object_get_loop_length_in_ticks (
+                  self);
+
+              /* if clip start is not before loop
+               * start, adjust clip start pos */
+              if (position_is_after_or_equal (
+                    &self->clip_start_pos,
+                    &self->loop_start_pos))
+                {
+                  position_add_ticks (
+                    &self->clip_start_pos,
+                    ticks);
+
+                  while (
+                    position_is_before (
+                      &self->clip_start_pos,
+                      &self->loop_start_pos))
+                    {
+                      position_add_ticks (
+                        &self->clip_start_pos,
+                        loop_len);
+                    }
+                }
+
+              /* make sure clip start goes back to
+               * loop start if it exceeds loop
+               * end */
+              while (
+                position_is_after (
+                  &self->clip_start_pos,
+                  &self->loop_end_pos))
+                {
+                  position_add_ticks (
+                    &self->clip_start_pos,
+                    - loop_len);
+                }
+            }
+          else if (arranger_object_type_can_loop (
+                    self->type))
+            {
+              tmp = self->loop_end_pos;
+              position_add_ticks (&tmp, - ticks);
               arranger_object_set_position (
                 self, &tmp,
-                ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
                 F_NO_VALIDATE);
+
+              /* move containing items */
+              arranger_object_add_ticks_to_children (
+                self, - ticks);
             }
         }
     }
