@@ -53,7 +53,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"

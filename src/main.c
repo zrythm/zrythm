@@ -19,28 +19,18 @@
 
 #include "zrythm-config.h"
 
-#include <ctype.h>
-#ifdef _WOE32
-#include <windows.h>
-#endif
-#include <getopt.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-
 #include "utils/log.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
 /**
- * main
+ * Application entry point.
  */
 int
-main (int    argc,
-      char **argv)
+main (
+  int     argc,
+  char ** argv)
 {
   LOG = log_new ();
 

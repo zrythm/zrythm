@@ -36,7 +36,6 @@
 #include "gui/widgets/dialogs/arranger_object_info.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
