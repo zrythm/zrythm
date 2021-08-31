@@ -1295,6 +1295,9 @@ engine_realloc_port_buffers (
     "reallocating buffers...",
     AUDIO_ENGINE->block_length);
 
+  /* not needed anymore, buffers are allocated
+   * during graph recalc */
+#if 0
   /** reallocate port buffers to new size */
   GPtrArray * ports = g_ptr_array_new ();
   port_get_all (ports);
@@ -1312,6 +1315,8 @@ engine_realloc_port_buffers (
     }
   object_free_w_func_and_null (
     g_ptr_array_unref, ports);
+#endif
+
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Channel * ch = TRACKLIST->tracks[i]->channel;
@@ -1344,33 +1349,6 @@ engine_realloc_port_buffers (
 
   g_message ("done");
 }
-
-/*void*/
-/*audio_engine_close (*/
-  /*AudioEngine * self)*/
-/*{*/
-  /*g_message ("closing audio engine...");*/
-
-  /*switch (self->audio_backend)*/
-    /*{*/
-    /*case AUDIO_BACKEND_DUMMY:*/
-      /*break;*/
-/*#ifdef HAVE_JACK*/
-    /*case AUDIO_BACKEND_JACK:*/
-      /*jack_client_close (AUDIO_ENGINE->client);*/
-      /*break;*/
-/*#endif*/
-/*#ifdef HAVE_PORT_AUDIO*/
-    /*case AUDIO_BACKEND_PORT_AUDIO:*/
-      /*pa_terminate (AUDIO_ENGINE);*/
-      /*break;*/
-/*#endif*/
-    /*case NUM_AUDIO_BACKENDS:*/
-    /*default:*/
-      /*g_warn_if_reached ();*/
-      /*break;*/
-    /*}*/
-/*}*/
 
 /**
  * Clears the underlying backend's output buffers.
