@@ -6672,6 +6672,12 @@ arranger_widget_setup (
           GTK_WIDGET (self), "8",
           PANGO_ELLIPSIZE_NONE, 0);
       break;
+    case TYPE (MIDI_MODIFIER):
+      self->vel_layout =
+        z_cairo_create_pango_layout_from_string (
+          GTK_WIDGET (self), "8",
+          PANGO_ELLIPSIZE_NONE, 0);
+      break;
     default:
       break;
     }
@@ -6755,6 +6761,11 @@ finalize (
   object_free_w_func_and_null (
     object_pool_free, self->draw_task_obj_pool);
 #endif
+
+  object_free_w_func_and_null (
+    g_object_unref, self->vel_layout);
+  object_free_w_func_and_null (
+    g_object_unref, self->ap_layout);
 
   G_OBJECT_CLASS (
     arranger_widget_parent_class)->

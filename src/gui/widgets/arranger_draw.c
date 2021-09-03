@@ -303,7 +303,7 @@ draw_timeline_bg (
             }
         }
 
-      /* --- draw automation related stuff --- */
+      /* --- draw automation --- */
 
       /* skip tracks without visible automation */
       if (!track->automation_visible)
@@ -467,6 +467,27 @@ draw_midi_bg (
             rect->width, adj_px_per_key);
           cairo_fill (cr);
         }
+    }
+}
+
+static void
+draw_velocity_bg (
+  ArrangerWidget * self,
+  cairo_t *        cr,
+  GdkRectangle *   rect)
+{
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+  cairo_set_source_rgba (
+    cr, 1, 1, 1, 0.2);
+  for (int i = 1; i < 4; i++)
+    {
+      double y_offset = height * (i / 4.0);
+      cairo_rectangle (
+        cr, 0, y_offset - rect->y,
+        rect->width, 1);
+      cairo_fill (cr);
     }
 }
 
@@ -1108,6 +1129,11 @@ arranger_draw_cb (
       else if (self->type == TYPE (MIDI))
         {
           draw_midi_bg (
+            self, self->cached_cr, &rect);
+        }
+      else if (self->type == TYPE (MIDI_MODIFIER))
+        {
+          draw_velocity_bg (
             self, self->cached_cr, &rect);
         }
       else if (self->type == TYPE (AUDIO))

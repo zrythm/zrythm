@@ -371,6 +371,14 @@ typedef struct _ArrangerWidget
   TransportDisplay ruler_display;
 
   /**
+   * Layout for drawing velocity text.
+   *
+   * TODO move to Velocity if parallel
+   * processing is needed - no need now.
+   */
+  PangoLayout *  vel_layout;
+
+  /**
    * Layout for drawing automation point text.
    *
    * TODO move to AutomationPoint if parallel

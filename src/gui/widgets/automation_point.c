@@ -199,7 +199,7 @@ automation_point_draw (
                UI_OVERLAY_ACTION_NONE
              && !obj->transient))
     {
-      char text[500];
+      char text[50];
       sprintf (
         text, "%f", (double) ap->fvalue);
       cairo_set_source_rgba (cr, 1, 1, 1, 1);

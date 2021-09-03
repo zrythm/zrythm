@@ -55,6 +55,8 @@ velocity_draw (
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   MidiNote * mn = velocity_get_midi_note (self);
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
 
   /* get color */
   GdkRGBA color;
@@ -101,6 +103,23 @@ velocity_draw (
   gdk_cairo_set_source_rgba (cr, &color);
   cairo_set_line_width (cr, 2);
   cairo_stroke (cr);
+
+  /* draw text */
+  if (arranger->action != UI_OVERLAY_ACTION_NONE)
+    {
+      char text[8];
+      sprintf (
+        text, "%d", self->vel);
+      cairo_set_source_rgba (cr, 1, 1, 1, 1);
+      const int padding = 3;
+      int text_start_y = padding;
+      int text_start_x =
+        obj->full_rect.width + padding;
+      z_cairo_draw_text_full (
+        cr, GTK_WIDGET (arranger),
+        arranger->vel_layout, text,
+        text_start_x, text_start_y);
+    }
 
   cairo_restore (cr);
 }

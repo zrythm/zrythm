@@ -118,6 +118,12 @@ arranger_object_queue_redraw (
   draw_rect.width += padding * 2;
   draw_rect.height += padding * 2;
 
+  /* if velocity, add more padding for text */
+  if (self->type == ARRANGER_OBJECT_TYPE_VELOCITY)
+    {
+      draw_rect.width += 16;
+    }
+
   /* if draw rect is not visible ignore */
   if (!draw_rect_visible)
     {
