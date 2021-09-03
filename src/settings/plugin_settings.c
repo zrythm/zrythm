@@ -145,11 +145,13 @@ plugin_setting_validate (
     }
 #endif
 
-  if (descr->protocol == PROT_VST ||
-      descr->protocol == PROT_VST3 ||
-      descr->protocol == PROT_AU ||
-      descr->protocol == PROT_SFZ ||
-      descr->protocol == PROT_SF2)
+  if (descr->protocol == PROT_VST
+      || descr->protocol == PROT_VST3
+      || descr->protocol == PROT_AU
+      || descr->protocol == PROT_SFZ
+      || descr->protocol == PROT_SF2
+      || descr->protocol == PROT_DSSI
+      || descr->protocol == PROT_LADSPA)
     {
       self->open_with_carla = true;
 #ifndef HAVE_CARLA

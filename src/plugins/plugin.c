@@ -596,7 +596,10 @@ plugin_new_from_setting (
         }
       else
         {
-          g_return_val_if_reached (NULL);
+          g_critical (
+            "attempted to load non-LV2 plugin "
+            "without 'open with carla' setting");
+          return NULL;
         }
 #ifdef HAVE_CARLA
     }
