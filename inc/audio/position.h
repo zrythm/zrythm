@@ -318,7 +318,7 @@ position_add_seconds (
 NONNULL_ARGS (2)
 void
 position_snap (
-  Position *       start_pos,
+  const Position * start_pos,
   Position *       pos,
   Track    *       track,
   ZRegion   *      region,

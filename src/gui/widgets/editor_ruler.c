@@ -19,6 +19,7 @@
 
 #include <limits.h>
 
+#include "audio/audio_region.h"
 #include "audio/engine.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -57,13 +58,18 @@ editor_ruler_on_drag_begin_no_marker_hit (
   Position pos;
   ui_px_to_pos_editor (
     start_x, &pos, 1);
-  if (!self->shift_held)
+  if (!self->shift_held
+      &&
+      SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
     {
-      position_snap_simple (&pos, SNAP_GRID_EDITOR);
+      position_snap (
+        &pos, &pos, NULL, NULL,
+        SNAP_GRID_EDITOR);
     }
   transport_move_playhead (
     TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT,
     F_PUBLISH_EVENTS);
+  self->drag_start_pos = pos;
   self->last_set_pos = pos;
   self->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -89,14 +95,16 @@ editor_ruler_on_drag_update (
 
       /* convert px to position */
       ui_px_to_pos_editor (
-        self->start_x + offset_x,
-        &editor_pos, 1);
+        self->start_x + offset_x, &editor_pos, 1);
 
       /* snap if not shift held */
-      if (!self->shift_held)
+      if (!self->shift_held
+          &&
+          SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
         {
-          position_snap_simple (
-            &editor_pos, SNAP_GRID_EDITOR);
+          position_snap (
+            &self->drag_start_pos, &editor_pos,
+            NULL, NULL, SNAP_GRID_EDITOR);
         }
 
       position_from_ticks (
@@ -106,6 +114,23 @@ editor_ruler_on_drag_update (
 
       if (TARGET_IS (LOOP_START))
         {
+          /* move to nearest acceptable position */
+          if (region_local_pos.frames < 0)
+            {
+              position_init (&region_local_pos);
+            }
+          else if (
+            position_is_after_or_equal (
+              &region_local_pos,
+              &r_obj->loop_end_pos))
+            {
+              position_set_to_pos (
+                &region_local_pos,
+                &r_obj->loop_end_pos);
+              position_add_frames (
+                &region_local_pos, -1);
+            }
+
           if (arranger_object_is_position_valid (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_START))
@@ -123,6 +148,30 @@ editor_ruler_on_drag_update (
         }
       else if (TARGET_IS (LOOP_END))
         {
+          /* move to nearest acceptable position */
+          if (position_is_before (
+                &region_local_pos,
+                &r_obj->clip_start_pos))
+            {
+              position_set_to_pos (
+                &region_local_pos,
+                &r_obj->clip_start_pos);
+            }
+          else if (r->id.type == REGION_TYPE_AUDIO)
+            {
+              AudioClip * clip =
+                audio_region_get_clip (r);
+              Position clip_frames;
+              position_from_frames (
+                &clip_frames, clip->num_frames);
+              if (position_is_after (
+                    &region_local_pos, &clip_frames))
+                {
+                  position_set_to_pos (
+                    &region_local_pos, &clip_frames);
+                }
+            }
+
           if (arranger_object_is_position_valid (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END))
@@ -140,6 +189,23 @@ editor_ruler_on_drag_update (
         }
       else if (TARGET_IS (CLIP_START))
         {
+          /* move to nearest acceptable position */
+          if (region_local_pos.frames < 0)
+            {
+              position_init (&region_local_pos);
+            }
+          else if (
+            position_is_after_or_equal (
+              &region_local_pos,
+              &r_obj->loop_end_pos))
+            {
+              position_set_to_pos (
+                &region_local_pos,
+                &r_obj->loop_end_pos);
+              position_add_frames (
+                &region_local_pos, -1);
+            }
+
           /* if position is acceptable */
           if (arranger_object_is_position_valid (
                 r_obj, &region_local_pos,

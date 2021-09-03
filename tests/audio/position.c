@@ -279,6 +279,78 @@ test_position_benchmarks ()
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_snap ()
+{
+  test_helper_zrythm_init ();
+
+  g_assert_cmpint (
+    SNAP_GRID_TIMELINE->snap_note_length, ==,
+    NOTE_LENGTH_BAR);
+
+  /* test without keep offset */
+  Position start_pos;
+  position_set_to_bar (&start_pos, 4);
+  Position cur_pos;
+  position_set_to_bar (&cur_pos, 4);
+  position_add_ticks (
+    &cur_pos, 2 * TICKS_PER_QUARTER_NOTE + 10);
+  Position test_pos;
+  position_set_to_bar (&test_pos, 5);
+  position_snap (
+    &start_pos, &cur_pos, NULL, NULL,
+    SNAP_GRID_TIMELINE);
+  g_assert_cmppos (&cur_pos, &test_pos);
+
+  position_set_to_bar (&cur_pos, 4);
+  position_set_to_bar (&test_pos, 4);
+  position_add_ticks (
+    &cur_pos, 2 * TICKS_PER_QUARTER_NOTE - 10);
+  position_snap (
+    &start_pos, &cur_pos, NULL, NULL,
+    SNAP_GRID_TIMELINE);
+  g_assert_cmppos (&cur_pos, &test_pos);
+
+  g_message ("-----");
+
+  /* test keep offset */
+  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
+    true;
+  position_set_to_bar (&start_pos, 4);
+  position_add_ticks (
+    &start_pos, 2 * TICKS_PER_QUARTER_NOTE);
+  position_set_to_pos (&cur_pos, &start_pos);
+  position_add_ticks (&cur_pos, 10);
+  position_set_to_pos (&test_pos, &start_pos);
+  position_snap (
+    &start_pos, &cur_pos, NULL, NULL,
+    SNAP_GRID_TIMELINE);
+  char buf1[100];
+  char buf2[100];
+  position_to_string (&cur_pos, buf1);
+  position_to_string (&test_pos, buf2);
+  g_message (
+    "cur pos %s test pos %s", buf1, buf2);
+  g_assert_cmppos (&cur_pos, &test_pos);
+
+  position_set_to_bar (&start_pos, 4);
+  position_add_ticks (
+    &start_pos, 2 * TICKS_PER_QUARTER_NOTE);
+  position_set_to_pos (&cur_pos, &start_pos);
+  position_add_ticks (&cur_pos, - 10);
+  position_set_to_pos (&test_pos, &start_pos);
+  position_snap (
+    &start_pos, &cur_pos, NULL, NULL,
+    SNAP_GRID_TIMELINE);
+  position_to_string (&cur_pos, buf1);
+  position_to_string (&test_pos, buf2);
+  g_message (
+    "cur pos %s test pos %s", buf1, buf2);
+  g_assert_cmppos (&cur_pos, &test_pos);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -286,6 +358,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/position/"
 
+  g_test_add_func (
+    TEST_PREFIX "test snap",
+    (GTestFunc) test_snap);
   g_test_add_func (
     TEST_PREFIX "test print position",
     (GTestFunc) test_print_position);

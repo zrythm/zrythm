@@ -638,17 +638,19 @@ transport_set_has_range (
   Transport * self,
   bool        has_range);
 
+/**
+ * Set the range1 or range2 position.
+ *
+ * @param range1 True to set range1, false to set
+ *   range2.
+ */
 void
-transport_set_range1 (
-  Transport * self,
-  Position *  pos,
-  bool        snap);
-
-void
-transport_set_range2 (
-  Transport * self,
-  Position *  pos,
-  bool        snap);
+transport_set_range (
+  Transport *      self,
+  bool             range1,
+  const Position * start_pos,
+  const Position * pos,
+  bool             snap);
 
 /**
  * Returns the number of processable frames until

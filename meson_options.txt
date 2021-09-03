@@ -90,7 +90,7 @@ option (
 option (
   'static_lsp_dsp',
   type: 'boolean',
-  value: 'false',
+  value: false,
   description: 'Build with static LSP DSP lib')
 
 option (

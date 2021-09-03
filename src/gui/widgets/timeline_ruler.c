@@ -141,15 +141,17 @@ timeline_ruler_on_drag_begin_no_marker_hit (
       Position pos;
       ui_px_to_pos_timeline (
         start_x, &pos, 1);
-      if (!self->shift_held)
+      if (!self->shift_held
+          && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
         {
-          position_snap_simple (
-            &pos,
+          position_snap (
+            &pos, &pos, NULL, NULL,
             SNAP_GRID_TIMELINE);
         }
       transport_move_playhead (
         TRANSPORT, &pos, F_PANIC,
         F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
+      self->drag_start_pos = pos;
       self->last_set_pos = pos;
       self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -192,10 +194,14 @@ timeline_ruler_on_drag_begin_no_marker_hit (
             UI_OVERLAY_ACTION_RESIZING_R;
           ui_px_to_pos_timeline (
             start_x, &TRANSPORT->range_1, true);
-          if (!self->shift_held)
+          if (!self->shift_held
+              &&
+              SNAP_GRID_ANY_SNAP (
+                SNAP_GRID_TIMELINE))
             {
-              position_snap_simple (
+              position_snap (
                 &TRANSPORT->range_1,
+                &TRANSPORT->range_1, NULL, NULL,
                 SNAP_GRID_TIMELINE);
             }
           position_set_to_pos (
@@ -224,38 +230,26 @@ timeline_ruler_on_drag_update (
           ui_px_to_pos_timeline (
             self->start_x + offset_x,
             &tmp, true);
-          if (self->range1_first)
+          const Position * start_pos;
+          const bool snap = !self->shift_held;
+          bool range1 = true;
+          if ((self->range1_first
+               && ACTION_IS (RESIZING_L))
+              ||
+              (!self->range1_first
+               && !ACTION_IS (RESIZING_L)))
             {
-              g_message ("range1 first");
-              if (ACTION_IS (RESIZING_L))
-                {
-                  transport_set_range1 (
-                    TRANSPORT, &tmp,
-                    !self->shift_held);
-                }
-              else
-                {
-                  transport_set_range2 (
-                    TRANSPORT, &tmp,
-                    !self->shift_held);
-                }
+              start_pos = &self->range1_start_pos;
+              range1 = true;
             }
           else
             {
-              g_message ("not range1 first");
-              if (ACTION_IS (RESIZING_L))
-                {
-                  transport_set_range2 (
-                    TRANSPORT, &tmp,
-                    !self->shift_held);
-                }
-              else
-                {
-                  transport_set_range1 (
-                    TRANSPORT, &tmp,
-                    !self->shift_held);
-                }
+              start_pos = &self->range2_start_pos;
+              range1 = false;
             }
+          transport_set_range (
+            TRANSPORT, range1, start_pos, &tmp,
+            snap);
           EVENTS_PUSH (
             ET_RANGE_SELECTION_CHANGED, NULL);
         }
@@ -312,10 +306,16 @@ timeline_ruler_on_drag_update (
                 &self->range1_start_pos);
               position_add_ticks (
                 &TRANSPORT->range_1, ticks_diff);
-              if (!self->shift_held)
-                position_snap_simple (
-                  &TRANSPORT->range_1,
-                  SNAP_GRID_TIMELINE);
+              if (!self->shift_held
+                  &&
+                  SNAP_GRID_ANY_SNAP (
+                    SNAP_GRID_TIMELINE))
+                {
+                  position_snap (
+                    &self->range1_start_pos,
+                    &TRANSPORT->range_1, NULL, NULL,
+                    SNAP_GRID_TIMELINE);
+                }
               position_set_to_pos (
                 &TRANSPORT->range_2,
                 &TRANSPORT->range_1);
@@ -330,10 +330,16 @@ timeline_ruler_on_drag_update (
                 &self->range2_start_pos);
               position_add_ticks (
                 &TRANSPORT->range_2, ticks_diff);
-              if (!self->shift_held)
-                position_snap_simple (
-                  &TRANSPORT->range_2,
-                  SNAP_GRID_TIMELINE);
+              if (!self->shift_held
+                  &&
+                  SNAP_GRID_ANY_SNAP (
+                    SNAP_GRID_TIMELINE))
+                {
+                  position_snap (
+                    &self->range2_start_pos,
+                    &TRANSPORT->range_2, NULL, NULL,
+                    SNAP_GRID_TIMELINE);
+                }
               position_set_to_pos (
                 &TRANSPORT->range_1,
                 &TRANSPORT->range_2);
@@ -361,9 +367,16 @@ timeline_ruler_on_drag_update (
             &tmp, F_HAS_PADDING);
 
           /* snap if not shift held */
-          if (!self->shift_held)
-            position_snap_simple (
-              &tmp, SNAP_GRID_TIMELINE);
+          if (!self->shift_held
+              &&
+              SNAP_GRID_ANY_SNAP (
+                SNAP_GRID_TIMELINE))
+            {
+              position_snap (
+                &self->drag_start_pos, &tmp, NULL,
+                NULL,
+                SNAP_GRID_TIMELINE);
+            }
 
           if (self->target == RW_TARGET_PLAYHEAD)
             {

@@ -259,7 +259,8 @@ closest_snap_point (
 /**
  * Gets the previous snap point.
  *
- * @param pos The position to reference.
+ * @param pos The position to reference. Must be
+ *   positive.
  * @param track Track, used when moving things in
  *   the timeline. If keep offset is on and this is
  *   passed, the objects in the track will be taken
@@ -283,8 +284,13 @@ get_prev_snap_point (
   const SnapGrid * sg,
   Position *       prev_sp)
 {
-  g_return_val_if_fail (
-    pos->frames >= 0 && pos->ticks >= 0, NULL);
+  if (pos->frames < 0 || pos->ticks < 0)
+    {
+      /* negative not supported, set to same
+       * position */
+      position_set_to_pos (prev_sp, pos);
+      return false;
+    }
 
   bool snapped = false;
   Position * snap_point = NULL;
@@ -355,7 +361,8 @@ get_prev_snap_point (
 /**
  * Get next snap point.
  *
- * @param pos Position to reference.
+ * @param pos The position to reference. Must be
+ *   positive.
  * @param track Track, used when moving things in
  *   the timeline. If keep offset is on and this is
  *   passed, the objects in the track will be taken
@@ -379,8 +386,13 @@ get_next_snap_point (
   const SnapGrid * sg,
   Position *       next_sp)
 {
-  g_return_val_if_fail (
-    pos->frames >= 0 && pos->ticks >= 0, NULL);
+  if (pos->frames < 0 || pos->ticks < 0)
+    {
+      /* negative not supported, set to same
+       * position */
+      position_set_to_pos (next_sp, pos);
+      return false;
+    }
 
   bool snapped = false;
   Position * snap_point = NULL;
@@ -448,6 +460,65 @@ get_next_snap_point (
 }
 
 /**
+ * Get closest snap point.
+ *
+ * @param pos Position to reference.
+ * @param track Track, used when moving things in
+ *   the timeline. If keep offset is on and this is
+ *   passed, the objects in the track will be taken
+ *   into account. If keep offset is on and this is
+ *   NULL, all applicable objects will be taken into
+ *   account. Not used if keep offset is off.
+ * @param region Region, used when moving
+ *   things in the editor. Same behavior as @ref
+ *   track.
+ * @param sg SnapGrid options.
+ * @param closest_sp Position to set.
+ *
+ * @return Whether a snap point was found or not.
+ */
+static inline bool
+get_closest_snap_point (
+  const Position * pos,
+  Track *          track,
+  ZRegion *        region,
+  const SnapGrid * sg,
+  Position *       closest_sp)
+{
+  /* get closest snap point */
+  Position prev_sp, next_sp;
+  bool prev_snapped =
+    get_prev_snap_point (
+      pos, track, region, sg, &prev_sp);
+  bool next_snapped =
+    get_next_snap_point (
+      pos, track, region, sg, &next_sp);
+  if (prev_snapped && next_snapped)
+    {
+      Position * closest_sp_ptr =
+        closest_snap_point (
+          pos, &prev_sp, &next_sp);
+      *closest_sp = *closest_sp_ptr;
+      return true;
+    }
+  else if (prev_snapped)
+    {
+      *closest_sp = prev_sp;
+      return true;
+    }
+  else if (next_snapped)
+    {
+      *closest_sp = next_sp;
+      return true;
+    }
+  else
+    {
+      *closest_sp = *pos;
+      return false;
+    }
+}
+
+/**
  * Snaps position using given options.
  *
  * @param start_pos The previous position (ie, the
@@ -467,7 +538,7 @@ get_next_snap_point (
  */
 void
 position_snap (
-  Position *       start_pos,
+  const Position * start_pos,
   Position *       pos,
   Track *          track,
   ZRegion *        region,
@@ -490,73 +561,11 @@ position_snap (
       track = NULL;
     }
 
-  /* snap to grid without offset */
-  if (!sg->snap_to_grid_keep_offset)
-    {
-      /* get closest snap point */
-      Position prev_sp, next_sp;
-      bool prev_snapped =
-        get_prev_snap_point (
-          pos, track, region, sg, &prev_sp);
-      bool next_snapped =
-        get_next_snap_point (
-          pos, track, region, sg, &next_sp);
-      Position * closest_sp = NULL;
-      if (prev_snapped && next_snapped)
-        {
-          closest_sp =
-            closest_snap_point (
-              pos, &prev_sp, &next_sp);
-        }
-      else if (prev_snapped)
-        {
-          closest_sp = &prev_sp;
-        }
-      else if (next_snapped)
-        {
-          closest_sp = &next_sp;
-        }
-      else
-        {
-          closest_sp = pos;
-        }
-
-      /* move to it */
-      position_set_to_pos (
-        pos, closest_sp);
-    }
   /* snap to grid with offset */
-  else
+  if (sg->snap_to_grid_keep_offset)
     {
-      /* get closest snap point */
-      Position prev_sp, next_sp;
-      bool prev_snapped =
-        get_prev_snap_point (
-          pos, track, region, sg, &prev_sp);
-      bool next_snapped =
-        get_next_snap_point (
-          pos, track, region, sg, &next_sp);
-      Position * closest_sp = NULL;
-      if (prev_snapped && next_snapped)
-        {
-          closest_sp =
-            closest_snap_point (
-              pos, &prev_sp, &next_sp);
-        }
-      else if (prev_snapped)
-        {
-          closest_sp = &prev_sp;
-        }
-      else if (next_snapped)
-        {
-          closest_sp = &next_sp;
-        }
-      else
-        {
-          closest_sp = pos;
-        }
-
       /* get previous snap point from start pos */
+      g_return_if_fail (start_pos);
       Position prev_sp_from_start_pos;
       position_init (&prev_sp_from_start_pos);
       get_prev_snap_point (
@@ -568,15 +577,35 @@ position_snap (
         start_pos->ticks -
         prev_sp_from_start_pos.ticks;
 
-      /*g_debug ("ticks delta %f", ticks_delta);*/
+      /* add ticks to current pos and check the
+       * closest snap point to the resulting
+       * pos */
+      position_add_ticks (pos, - ticks_delta);
+
+      /* get closest snap point */
+      Position closest_sp;
+      bool have_closest_sp =
+        get_closest_snap_point (
+          pos, track, region, sg, &closest_sp);
+      if (have_closest_sp)
+        {
+          /* move to closest snap point */
+          position_set_to_pos (pos, &closest_sp);
+        }
+
+      /* readd ticks */
+      position_add_ticks (pos, ticks_delta);
+    }
+  /* else if snap to grid without offset */
+  else
+    {
+      /* get closest snap point */
+      Position closest_sp;
+      get_closest_snap_point (
+        pos, track, region, sg, &closest_sp);
 
       /* move to closest snap point */
-      position_set_to_pos (
-        pos, closest_sp);
-
-      /* add diff */
-      position_add_ticks (
-        pos, ticks_delta);
+      position_set_to_pos (pos, &closest_sp);
     }
 }
 

@@ -1037,56 +1037,40 @@ transport_get_range_pos (
     }
 }
 
+/**
+ * Set the range1 or range2 position.
+ *
+ * @param range1 True to set range1, false to set
+ *   range2.
+ */
 void
-transport_set_range1 (
-  Transport * self,
-  Position *  pos,
-  bool        snap)
+transport_set_range (
+  Transport *      self,
+  bool             range1,
+  const Position * start_pos,
+  const Position * pos,
+  bool             snap)
 {
+  Position * pos_to_set =
+    range1 ? &self->range_1 : &self->range_2;
+
   Position init_pos;
   position_init (&init_pos);
   if (position_is_before (pos, &init_pos))
     {
       position_set_to_pos (
-        &self->range_1, &init_pos);
+        pos_to_set, &init_pos);
     }
   else
     {
       position_set_to_pos (
-        &self->range_1, pos);
+        pos_to_set, pos);
     }
 
   if (snap)
     {
-      position_snap_simple (
-        &self->range_1,
-        SNAP_GRID_TIMELINE);
-    }
-}
-
-void
-transport_set_range2 (
-  Transport * self,
-  Position *  pos,
-  bool        snap)
-{
-  Position init_pos;
-  position_init (&init_pos);
-  if (position_is_before (pos, &init_pos))
-    {
-      position_set_to_pos (
-        &self->range_2, &init_pos);
-    }
-  else
-    {
-      position_set_to_pos (
-        &self->range_2, pos);
-    }
-
-  if (snap)
-    {
-      position_snap_simple (
-        &self->range_2,
+      position_snap (
+        start_pos, pos_to_set, NULL, NULL,
         SNAP_GRID_TIMELINE);
     }
 }

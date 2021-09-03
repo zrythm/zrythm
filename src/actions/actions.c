@@ -1508,37 +1508,51 @@ activate_snap_to_grid (
 }
 
 void
-activate_snap_keep_offset (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_snap_keep_offset (
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_TIMELINE)
+  g_return_if_fail (_variant);
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+
+  if (string_is_equal (variant, "timeline"))
     {
-      SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
-        !SNAP_GRID_TIMELINE->snap_to_grid_keep_offset;
+      SNAP_GRID_TIMELINE->
+        snap_to_grid_keep_offset =
+          !SNAP_GRID_TIMELINE->
+            snap_to_grid_keep_offset;
       EVENTS_PUSH (
         ET_SNAP_GRID_OPTIONS_CHANGED,
         SNAP_GRID_TIMELINE);
     }
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_EDITOR)
+  else if (string_is_equal (variant, "editor"))
     {
       SNAP_GRID_EDITOR->snap_to_grid_keep_offset =
-        !SNAP_GRID_EDITOR->snap_to_grid_keep_offset;
+        !SNAP_GRID_EDITOR->
+          snap_to_grid_keep_offset;
       EVENTS_PUSH (
         ET_SNAP_GRID_OPTIONS_CHANGED,
         SNAP_GRID_EDITOR);
     }
+  else
+    g_return_if_reached ();
 }
 
 void
-activate_snap_events (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_snap_events (
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
 {
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_TIMELINE)
+  g_return_if_fail (_variant);
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+
+  if (string_is_equal (variant, "timeline"))
     {
       SNAP_GRID_TIMELINE->snap_to_events =
         !SNAP_GRID_TIMELINE->snap_to_events;
@@ -1546,8 +1560,7 @@ activate_snap_events (GSimpleAction *action,
         ET_SNAP_GRID_OPTIONS_CHANGED,
         SNAP_GRID_TIMELINE);
     }
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_EDITOR)
+  else if (string_is_equal (variant, "editor"))
     {
       SNAP_GRID_EDITOR->snap_to_events =
         !SNAP_GRID_EDITOR->snap_to_events;
@@ -1555,6 +1568,8 @@ activate_snap_events (GSimpleAction *action,
         ET_SNAP_GRID_OPTIONS_CHANGED,
         SNAP_GRID_EDITOR);
     }
+  else
+    g_return_if_reached ();
 }
 
 DEFINE_SIMPLE (activate_create_audio_track)

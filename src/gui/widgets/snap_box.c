@@ -28,9 +28,9 @@
 #include "project.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (SnapBoxWidget,
-               snap_box_widget,
-               GTK_TYPE_BUTTON_BOX)
+G_DEFINE_TYPE (
+  SnapBoxWidget, snap_box_widget,
+  GTK_TYPE_BUTTON_BOX)
 
 /**
  * Sets the snap_box toggled states after

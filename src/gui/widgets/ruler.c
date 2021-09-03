@@ -1489,9 +1489,15 @@ multipress_pressed (
           Position pos;
           ui_px_to_pos_timeline (
             x, &pos, 1);
-          if (!self->shift_held)
-            position_snap_simple (
-              &pos, SNAP_GRID_TIMELINE);
+          if (!self->shift_held
+              &&
+              SNAP_GRID_ANY_SNAP (
+                SNAP_GRID_TIMELINE))
+            {
+              position_snap (
+                &pos, &pos, NULL, NULL,
+                SNAP_GRID_TIMELINE);
+            }
           position_set_to_pos (&TRANSPORT->cue_pos,
                                &pos);
         }
@@ -1646,12 +1652,17 @@ drag_begin (
         UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target =
         RW_TARGET_LOOP_START;
-    if (self->type == TYPE (EDITOR))
-      {
-        g_return_if_fail (region);
-        self->drag_start_pos =
-          r_obj->loop_start_pos;
-      }
+      if (self->type == TYPE (EDITOR))
+        {
+          g_return_if_fail (region);
+          self->drag_start_pos =
+            r_obj->loop_start_pos;
+        }
+      else
+        {
+          self->drag_start_pos =
+            TRANSPORT->loop_start_pos;
+        }
     }
   else if (loop_end_hit)
     {
@@ -1659,24 +1670,29 @@ drag_begin (
         UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target =
         RW_TARGET_LOOP_END;
-    if (self->type == TYPE (EDITOR))
-      {
-        g_return_if_fail (region);
-        self->drag_start_pos =
-          r_obj->loop_end_pos;
-      }
+      if (self->type == TYPE (EDITOR))
+        {
+          g_return_if_fail (region);
+          self->drag_start_pos =
+            r_obj->loop_end_pos;
+        }
+      else
+        {
+          self->drag_start_pos =
+            TRANSPORT->loop_end_pos;
+        }
     }
   else if (clip_start_hit)
     {
       self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_CLIP_START;
-    if (self->type == TYPE (EDITOR))
-      {
-        g_return_if_fail (region);
-        self->drag_start_pos =
-          r_obj->clip_start_pos;
-      }
+      if (self->type == TYPE (EDITOR))
+        {
+          g_return_if_fail (region);
+          self->drag_start_pos =
+            r_obj->clip_start_pos;
+        }
     }
   else
     {
@@ -1732,8 +1748,9 @@ on_motion (
   RulerWidget *    self)
 {
   /* drag-update didn't work so do the drag-update
-   * stuff here */
-  if (self->dragging)
+   * here */
+  if (self->dragging
+      && event->type != GDK_LEAVE_NOTIFY)
     {
       GdkModifierType state_mask =
         event->state;
