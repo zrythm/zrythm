@@ -130,10 +130,17 @@ typedef enum EventType
   ET_MIXER_SELECTIONS_CHANGED,
   ET_CHANNEL_OUTPUT_CHANGED,
   ET_CHANNEL_SLOTS_CHANGED,
-  ET_DRUM_MODE_CHANGED,
+
   ET_MODULATOR_ADDED,
   ET_RT_SELECTIONS_CHANGED,
   ET_PINNED_TRACKLIST_SIZE_CHANGED,
+
+  /**
+   * Drum mode changed.
+   *
+   * Arg: Track pointer.
+   */
+  ET_DRUM_MODE_CHANGED,
 
   /**
    * Track lanes visibility changed.

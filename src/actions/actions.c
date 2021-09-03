@@ -1437,9 +1437,12 @@ change_state_piano_roll_drum_mode (
 
   g_simple_action_set_state (action, value);
 
-  PIANO_ROLL->drum_mode = enabled;
+  Track * tr =
+    clip_editor_get_track (CLIP_EDITOR);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+  tr->drum_mode = enabled;
 
-  EVENTS_PUSH (ET_DRUM_MODE_CHANGED, NULL);
+  EVENTS_PUSH (ET_DRUM_MODE_CHANGED, tr);
 }
 
 DEFINE_SIMPLE (activate_fullscreen)

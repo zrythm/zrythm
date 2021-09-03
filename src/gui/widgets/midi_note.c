@@ -82,7 +82,13 @@ draw_midi_note_bg (
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
 {
-  if (PIANO_ROLL->drum_mode)
+  Track * tr =
+    arranger_object_get_track (
+      (ArrangerObject *) self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+  bool drum_mode = tr->drum_mode;
+
+  if (drum_mode)
     {
       cairo_save (cr);
       /* translate to the full rect */
@@ -183,8 +189,13 @@ midi_note_draw (
   double fontsize_ratio =
     (double) fontsize / 12.0;
 
-  if ((DEBUGGING || !PIANO_ROLL->drum_mode) &&
-      fontsize > 10)
+  Track * tr =
+    arranger_object_get_track (
+      (ArrangerObject *) self);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+  bool drum_mode = tr->drum_mode;
+
+  if ((DEBUGGING || !drum_mode) && fontsize > 10)
     {
       GdkRGBA c2;
       ui_get_contrast_color (&color, &c2);

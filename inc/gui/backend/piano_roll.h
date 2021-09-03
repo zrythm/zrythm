@@ -185,9 +185,6 @@ typedef struct PianoRoll
   /** Selected MidiModifier. */
   MidiModifier    midi_modifier;
 
-  /** Whether we are in drum mode or not. */
-  bool            drum_mode;
-
   /** Currently pressed notes (used only at
    * runtime). */
   int             current_notes[128];
@@ -237,7 +234,6 @@ piano_roll_fields_schema[] =
   YAML_FIELD_ENUM (
     PianoRoll, midi_modifier,
     midi_modifier_strings),
-  YAML_FIELD_INT (PianoRoll, drum_mode),
   YAML_FIELD_MAPPING_EMBEDDED (
     PianoRoll, editor_settings,
     editor_settings_fields_schema),
@@ -319,6 +315,7 @@ piano_roll_init_loaded (
 const MidiNoteDescriptor *
 piano_roll_find_midi_note_descriptor_by_val (
   PianoRoll *   self,
+  bool          drum_mode,
   const uint8_t val);
 
 static inline char *
@@ -355,6 +352,7 @@ piano_roll_set_midi_modifier (
 static inline void
 piano_roll_get_visible_notes (
   PianoRoll *          self,
+  bool                 drum_mode,
   MidiNoteDescriptor * arr,
   int *                num)
 {
@@ -363,7 +361,7 @@ piano_roll_get_visible_notes (
   MidiNoteDescriptor * descr;
   for (int i = 0; i < 128; i++)
     {
-      if (self->drum_mode)
+      if (drum_mode)
         descr = self->drum_descriptors[i];
       else
         descr = self->piano_descriptors[i];

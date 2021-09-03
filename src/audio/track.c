@@ -493,6 +493,7 @@ track_clone (
   COPY_MEMBER (size);
   COPY_MEMBER (folded);
   COPY_MEMBER (record_set_automatically);
+  COPY_MEMBER (drum_mode);
 
 #undef COPY_MEMBER
 

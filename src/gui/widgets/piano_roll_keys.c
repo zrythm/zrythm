@@ -40,7 +40,6 @@ G_DEFINE_TYPE (
   GTK_TYPE_DRAWING_AREA)
 
 #define DEFAULT_PX_PER_KEY 7
-#define DRUM_MODE (PIANO_ROLL->drum_mode)
 /* can also try Sans SemiBold */
 #define PIANO_ROLL_KEYS_FONT "Sans 8"
 
@@ -67,9 +66,14 @@ piano_roll_keys_draw (
     chord_track_get_scale_at_playhead (
       P_CHORD_TRACK);
 
+  Track * tr =
+    clip_editor_get_track (CLIP_EDITOR);
+  g_return_val_if_fail (tr, false);
+  bool drum_mode = tr->drum_mode;
+
   double label_width =
     (double) width * 0.55;
-  if (DRUM_MODE)
+  if (drum_mode)
     {
       label_width = width - 8;
     }
@@ -109,7 +113,7 @@ piano_roll_keys_draw (
 
       const MidiNoteDescriptor * descr =
         piano_roll_find_midi_note_descriptor_by_val (
-          PIANO_ROLL, i);
+          PIANO_ROLL, drum_mode, i);
 
       char fontize_str[120];
       int fontsize =
@@ -122,11 +126,11 @@ piano_roll_keys_draw (
       char note_name[120];
       sprintf (
         note_name, fontize_str,
-        DRUM_MODE ?
+        drum_mode ?
           descr->custom_name :
           descr->note_name_pango);
 
-      if (DRUM_MODE)
+      if (drum_mode)
         {
           strcpy (str, note_name);
         }

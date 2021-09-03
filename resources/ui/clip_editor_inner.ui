@@ -81,7 +81,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="action_name">app.toggle-drum-mode</property>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>

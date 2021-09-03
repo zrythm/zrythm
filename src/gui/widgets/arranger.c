@@ -124,6 +124,24 @@ arranger_widget_get_type_str (
 }
 
 /**
+ * Returns true if MIDI arranger and track mode
+ * is enabled.
+ */
+bool
+arranger_widget_get_drum_mode_enabled (
+  ArrangerWidget * self)
+{
+  if (self->type != ARRANGER_WIDGET_TYPE_MIDI)
+    return false;
+
+  Track * tr =
+    clip_editor_get_track (CLIP_EDITOR);
+  g_return_val_if_fail (tr, false);
+
+  return tr->drum_mode;
+}
+
+/**
  * Returns the playhead's x coordinate in absolute
  * coordinates.
  */
@@ -2583,6 +2601,9 @@ on_drag_begin_handle_hit_object (
   g_debug ("action before");
   arranger_widget_print_action (self);
 
+  bool drum_mode =
+    arranger_widget_get_drum_mode_enabled (self);
+
   /* update arranger action */
   switch (obj->type)
     {
@@ -2655,11 +2676,9 @@ on_drag_begin_handle_hit_object (
         case TOOL_SELECT_NORMAL:
         case TOOL_EDIT:
         case TOOL_SELECT_STRETCH:
-          if ((is_resize_l) &&
-              !PIANO_ROLL->drum_mode)
+          if ((is_resize_l) && !drum_mode)
             SET_ACTION (RESIZING_L);
-          else if (is_resize_r &&
-                   !PIANO_ROLL->drum_mode)
+          else if (is_resize_r && !drum_mode)
             SET_ACTION (RESIZING_R);
           else
             SET_ACTION (STARTING_MOVING);
@@ -6283,6 +6302,8 @@ get_midi_arranger_cursor (
       self->hover_x, self->hover_y);
   int is_hit = obj != NULL;
 
+  bool drum_mode =
+    arranger_widget_get_drum_mode_enabled (self);
 
   switch (action)
     {
@@ -6307,13 +6328,13 @@ get_midi_arranger_cursor (
                     obj->full_rect.x);
             }
 
-          if (is_hit && is_resize_l &&
-              !PIANO_ROLL->drum_mode)
+          if (is_hit && is_resize_l
+              && !drum_mode)
             {
               return ARRANGER_CURSOR_RESIZING_L;
             }
-          else if (is_hit && is_resize_r &&
-                   !PIANO_ROLL->drum_mode)
+          else if (is_hit && is_resize_r
+                   && !drum_mode)
             {
               return ARRANGER_CURSOR_RESIZING_R;
             }

@@ -303,6 +303,14 @@ typedef struct Track
   uint8_t             midi_ch;
 
   /**
+   * Whether drum mode in the piano roll is
+   * enabled for this track.
+   *
+   * Only used for tracks that have a piano roll.
+   */
+  bool                drum_mode;
+
+  /**
    * If set to 1, the input received will not be
    * changed to the selected MIDI channel.
    *
@@ -584,6 +592,7 @@ track_fields_schema[] =
   YAML_FIELD_INT (Track, folded),
   YAML_FIELD_INT (
     Track, record_set_automatically),
+  YAML_FIELD_INT (Track, drum_mode),
 
   CYAML_FIELD_END
 };

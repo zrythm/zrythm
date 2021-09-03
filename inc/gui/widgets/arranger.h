@@ -704,6 +704,14 @@ arranger_widget_get_playhead_px (
     "action: %s", ui_overlay_strings[self->action])
 
 /**
+ * Returns true if MIDI arranger and track mode
+ * is enabled.
+ */
+bool
+arranger_widget_get_drum_mode_enabled (
+  ArrangerWidget * self);
+
+/**
  * @}
  */
 

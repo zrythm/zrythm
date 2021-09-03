@@ -447,11 +447,14 @@ draw_midi_bg (
               cairo_fill (cr);
             }
         }
-      if ((PIANO_ROLL->drum_mode
+      bool drum_mode =
+        arranger_widget_get_drum_mode_enabled (
+          self);
+      if ((drum_mode
            && PIANO_ROLL->drum_descriptors[i]->value
            == MW_MIDI_ARRANGER->hovered_note)
           ||
-          (!PIANO_ROLL->drum_mode
+          (!drum_mode
            && PIANO_ROLL->piano_descriptors[i]->value
            == MW_MIDI_ARRANGER->hovered_note))
         {

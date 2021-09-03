@@ -1587,6 +1587,8 @@ event_manager_process_event (
     case ET_DRUM_MODE_CHANGED:
       midi_editor_space_widget_refresh (
         MW_MIDI_EDITOR_SPACE);
+      arranger_widget_redraw_whole (
+        MW_MIDI_ARRANGER);
       break;
     case ET_MODULATOR_ADDED:
       on_modulator_added ((Plugin *)ev->arg);

@@ -199,6 +199,14 @@ clip_editor_inner_widget_refresh (
           gtk_widget_set_visible (
             GTK_WIDGET (self->toggle_notation),
             true);
+          gtk_actionable_set_action_name (
+            GTK_ACTIONABLE (self->toggle_notation),
+            NULL);
+          gtk_toggle_button_set_active (
+            self->toggle_notation, track->drum_mode);
+          gtk_actionable_set_action_name (
+            GTK_ACTIONABLE (self->toggle_notation),
+            "app.toggle-drum-mode");
           gtk_widget_set_visible (
             GTK_WIDGET (self->toggle_listen_notes),
             true);

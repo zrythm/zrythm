@@ -89,7 +89,10 @@ midi_arranger_widget_create_note (
     self->action == UI_OVERLAY_ACTION_AUTOFILLING;
   if (!autofilling)
     {
-      if (PIANO_ROLL->drum_mode)
+      bool drum_mode =
+        arranger_widget_get_drum_mode_enabled (
+          self);
+      if (drum_mode)
         self->action =
           UI_OVERLAY_ACTION_MOVING;
       else

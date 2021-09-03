@@ -266,6 +266,7 @@ piano_roll_init_loaded (
 const MidiNoteDescriptor *
 piano_roll_find_midi_note_descriptor_by_val (
   PianoRoll *   self,
+  bool          drum_mode,
   const uint8_t val)
 {
   g_return_val_if_fail (val < 128, NULL);
@@ -273,7 +274,7 @@ piano_roll_find_midi_note_descriptor_by_val (
   MidiNoteDescriptor * descr;
   for (int i = 0; i < 128; i++)
     {
-      if (self->drum_mode)
+      if (drum_mode)
         descr = self->drum_descriptors[i];
       else
         descr = self->piano_descriptors[i];
@@ -394,7 +395,6 @@ piano_roll_clone (
 
   self->notes_zoom = src->notes_zoom;
   self->midi_modifier = src->midi_modifier;
-  self->drum_mode = src->drum_mode;
   self->editor_settings = src->editor_settings;
 
   return self;

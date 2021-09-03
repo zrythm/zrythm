@@ -788,6 +788,8 @@ arranger_object_set_full_rectangle (
         g_return_if_fail (region);
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
+        Track * track =
+          arranger_object_get_track (self);
 
         double region_start_ticks =
           region_obj->pos.ticks;
@@ -802,17 +804,16 @@ arranger_object_set_full_rectangle (
             self->pos.ticks);
         self->full_rect.x =
           ui_pos_to_px_editor (&tmp, 1);
+        const MidiNoteDescriptor * descr =
+          piano_roll_find_midi_note_descriptor_by_val (
+           PIANO_ROLL, track->drum_mode, mn->val);
         self->full_rect.y =
           (int)
-          (adj_px_per_key *
-           (127 -
-              piano_roll_find_midi_note_descriptor_by_val (
-               PIANO_ROLL, mn->val)->value));
-             /*PIANO_ROLL, mn->val)->index);*/
+          (adj_px_per_key * (127 - descr->value));
 
         self->full_rect.height =
           (int) adj_px_per_key;
-        if (PIANO_ROLL->drum_mode)
+        if (track->drum_mode)
           {
             self->full_rect.width =
               self->full_rect.height;
@@ -966,9 +967,20 @@ arranger_object_set_full_rectangle (
       break;
     }
 
+  bool drum_mode = false;
+  if (self->type == TYPE (MIDI_NOTE)
+      || self->type == TYPE (VELOCITY))
+    {
+      Track * track =
+        arranger_object_get_track (self);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (track));
+      drum_mode = track->drum_mode;
+    }
+
   if ((self->full_rect.x < 0 &&
          self->type != TYPE (MIDI_NOTE) &&
-         !PIANO_ROLL->drum_mode) ||
+         !drum_mode) ||
       (self->full_rect.y < 0 &&
          self->type != TYPE (VELOCITY)) ||
       (self->full_rect.y < - VELOCITY_WIDTH / 2 &&
