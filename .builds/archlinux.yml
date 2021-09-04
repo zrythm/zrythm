@@ -24,7 +24,7 @@ packages:
   - libsndfile
   - libyaml
   - libsamplerate
-  - lcov
+  #- lcov
   - lv2
   - meson
   - ninja
@@ -49,7 +49,9 @@ sources:
   - https://git.sr.ht/~alextee/zrythm
   - https://github.com/mesonbuild/meson
 secrets:
+  - 063cb70d-6da6-492a-b530-04edc07651ba
   - ffff20bf-6fd3-40d6-b26a-92f6c8dc1fcf
+  - 3130f7d4-8378-4a73-a096-d86ca760f937
 tasks:
   - setup: |
       sudo pip3 install sphinx-intl sphinx-copybutton furo sphinxcontrib-svg2pdfconverter
@@ -67,6 +69,11 @@ tasks:
       cd zrythm
       ninja -C build coverage-text
       cat build/meson-logs/coverage.txt
+      ninja -C build coverage-html
+      set +x
+      . ~/.ssh_home
+      scp -q -o StrictHostKeyChecking=no -r build/meson-logs/coveragereport "srht@www.zrythm.org:$SSH_HOME/coverage/${JOB_ID}-$(git rev-parse --short HEAD)-report" >/dev/null 2>&1
+      set -x
   - test-no-jack: |
       cd zrythm
       meson build --reconfigure -Dgraphviz=enabled -Djack=disabled

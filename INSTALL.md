@@ -23,7 +23,7 @@ Built-in meson options can be found
 
 To change an option after configuration, use
 
-    meson build --reconfigure -Doption_name=value
+    meson configure build -Doption_name=value
 
 To clean the build directory while keeping the
 current configuration, use
