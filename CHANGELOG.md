@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 - Split regions normally (destructively) if not looped
 - Only allow merging unlooped regions
 - Make vertical range selection space in timeline smaller
-- Do not throw error if waveform vidget does not have R channel data to draw
+- Do not throw error if waveform widget does not have R channel data to draw
 - Change env variable from `NO_SCAN_PLUGINS` to `ZRYTHM_SKIP_PLUGIN_SCAN`
 - Do not reallocate memory for all ports when changing block length
 - Make drum mode a per-track setting instead of per-project
