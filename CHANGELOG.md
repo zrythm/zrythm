@@ -1,6 +1,45 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.25.0.1] - 2021-09-04
+### Added
+- Show indicator if region is looped
+- Handle audio editor in editor event viewer
+- Make event viewer columns reorderable
+- Allow clamping to nearest acceptable position when moving region markers
+- Show velocity values during UI actions
+- Draw horizontal lines in velocity editor
+
+### Changed
+- Update Arabic, Thai, Chinese (Simplified), Japanese, Russian translations
+- Only show 1 decimal point for positions in event viewers
+- Split regions normally (destructively) if not looped
+- Only allow merging unlooped regions
+- Make vertical range selection space in timeline smaller
+- Do not throw error if waveform vidget does not have R channel data to draw
+- Change env variable from `NO_SCAN_PLUGINS` to `ZRYTHM_SKIP_PLUGIN_SCAN`
+- Do not reallocate memory for all ports when changing block length
+- Make drum mode a per-track setting instead of per-project
+
+### Fixed
+- Fix sort by position/pitch/velocity in event viewers using alphabetical sort instead of int/position sort
+- Fix UI not being refreshed when ramping velocities
+- Fix error when merging regions
+- Fix error when saving after undoing a region split
+- Fix error when loading project after redoing a region split
+- Fix audio files in pool sometimes being overwritten by other files
+- Fix crash when renaming a track that has children routed to it
+- Fix invalid memory usage in event viewer
+- Fix error when loop-resizing audio regions from the left side
+- Fix occasional meter-related segfault on startup
+- Fix crash when moving playhead with snap keep offset enabled
+- Fix snap keep offset not snapping to nearest snap point
+- Fix attempting to open DSSI and LADSPA plugins without carla
+
+### Removed
+- Remove invalid check when duplicating audio regions
+- Remove some unused files and dead code
+
 ## [1.0.0-alpha.24.0.1] - 2021-08-27
 ### Added
 - Add SIGTERM handler that gracefully shuts down the application
