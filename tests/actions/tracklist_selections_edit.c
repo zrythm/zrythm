@@ -717,6 +717,48 @@ test_edit_multi_track_direct_out (void)
 #endif
 }
 
+static void
+test_rename_track_with_send (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create an audio group */
+  Track * audio_group =
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO_GROUP, NULL);
+
+  /* create an audio fx */
+  Track * audio_fx =
+    track_create_empty_with_action (
+      TRACK_TYPE_AUDIO_BUS, NULL);
+
+  /* send from group to fx */
+  channel_send_action_perform_connect_audio (
+    audio_group->channel->sends[0],
+    audio_fx->processor->stereo_in, NULL);
+
+  /* change the name of the fx track */
+  tracklist_selections_action_perform_edit_rename (
+    audio_fx, PORT_CONNECTIONS_MGR, "new name",
+    NULL);
+
+  tracklist_validate (TRACKLIST);
+
+  /* change the name of the group track */
+  tracklist_selections_action_perform_edit_rename (
+    audio_group, PORT_CONNECTIONS_MGR, "new name2",
+    NULL);
+
+  tracklist_validate (TRACKLIST);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -724,6 +766,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections_edit/"
 
+  g_test_add_func (
+    TEST_PREFIX "test rename track with send",
+    (GTestFunc) test_rename_track_with_send);
   g_test_add_func (
     TEST_PREFIX "test edit multi track direct out",
     (GTestFunc) test_edit_multi_track_direct_out);

@@ -1724,11 +1724,18 @@ port_update_identifier (
           PortConnection * conn =
             (PortConnection *)
             g_ptr_array_index (srcs, i);
-          port_identifier_copy (
-            conn->dest_id, &self->id);
+          if (!port_identifier_is_equal (
+                 conn->dest_id, &self->id))
+            {
+              port_identifier_copy (
+                conn->dest_id, &self->id);
+              port_connections_manager_regenerate_hashtables (
+                PORT_CONNECTIONS_MGR);
+            }
         }
       g_ptr_array_unref (srcs);
 
+      /* update in all dests */
       GPtrArray * dests = g_ptr_array_new ();
       int num_dests =
         port_connections_manager_get_sources_or_dests (
@@ -1739,8 +1746,14 @@ port_update_identifier (
           PortConnection * conn =
             (PortConnection *)
             g_ptr_array_index (dests, i);
-          port_identifier_copy (
-            conn->src_id, &self->id);
+          if (!port_identifier_is_equal (
+                 conn->src_id, &self->id))
+            {
+              port_identifier_copy (
+                conn->src_id, &self->id);
+              port_connections_manager_regenerate_hashtables (
+                PORT_CONNECTIONS_MGR);
+            }
         }
       g_ptr_array_unref (dests);
 

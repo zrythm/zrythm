@@ -76,8 +76,14 @@ add_or_replace_connection (
     }
 }
 
-static void
-regenerate_hashtables (
+/**
+ * Regenerates the hash tables.
+ *
+ * Must be called when a change is made in the
+ * connections.
+ */
+void
+port_connections_manager_regenerate_hashtables (
   PortConnectionsManager * self)
 {
 #if 0
@@ -131,7 +137,7 @@ port_connections_manager_init_loaded (
 {
   self->connections_size =
     (size_t) self->num_connections;
-  regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (self);
 }
 
 PortConnectionsManager *
@@ -147,7 +153,7 @@ port_connections_manager_new (void)
     object_new_n (
       self->connections_size, PortConnection *);
 
-  regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (self);
 
   return self;
 }
@@ -332,7 +338,7 @@ port_connections_manager_ensure_connect (
         {
           port_connection_update (
             conn, multiplier, locked, enabled);
-          regenerate_hashtables (self);
+          port_connections_manager_regenerate_hashtables (self);
           return conn;
         }
     }
@@ -357,7 +363,7 @@ port_connections_manager_ensure_connect (
         buf, self->num_connections);
     }
 
-  regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (self);
 
   return conn;
 }
@@ -388,7 +394,7 @@ remove_connection (
         buf, self->num_connections);
     }
 
-  regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (self);
 
   object_free_w_func_and_null (
     port_connection_free, conn);
@@ -503,7 +509,7 @@ port_connections_manager_reset (
     }
   self->num_connections = src->num_connections;
 
-  regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (self);
 }
 
 void
@@ -582,7 +588,7 @@ port_connections_manager_clone (
     }
   self->num_connections = src->num_connections;
 
-  regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (self);
 
   return self;
 }

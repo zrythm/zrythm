@@ -113,6 +113,16 @@ PortConnectionsManager *
 port_connections_manager_new (void);
 
 /**
+ * Regenerates the hash tables.
+ *
+ * Must be called when a change is made in the
+ * connections.
+ */
+void
+port_connections_manager_regenerate_hashtables (
+  PortConnectionsManager * self);
+
+/**
  * Adds the sources/destinations of @ref id in the
  * given array.
  *
