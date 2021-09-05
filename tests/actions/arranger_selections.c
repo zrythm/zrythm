@@ -3303,6 +3303,101 @@ test_resize_loop_l (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_delete_midi_notes ()
+{
+  test_helper_zrythm_init ();
+
+  Track * midi_track =
+    track_create_empty_with_action (
+      TRACK_TYPE_MIDI, NULL);
+
+  /* create region */
+  Position start, end;
+  position_set_to_bar (&start, 1);
+  position_set_to_bar (&end, 6);
+  ZRegion * r =
+    midi_region_new (
+      &start, &end,
+      track_get_name_hash (midi_track),
+      0, 0);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
+  track_add_region (
+    midi_track, r, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    r_obj, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (
+  (ArrangerSelections *) TL_SELECTIONS, NULL);
+
+  /* create 4 MIDI notes */
+  for (int i = 0; i < 4; i++)
+    {
+      position_set_to_bar (&start, 1 + i);
+      position_set_to_bar (&end, 2 + i);
+      MidiNote * mn =
+      midi_note_new (
+        &r->id, &start, &end, 45, 45);
+      midi_region_add_midi_note (
+      r, mn, F_NO_PUBLISH_EVENTS);
+      arranger_object_select (
+      (ArrangerObject *) mn, F_SELECT,
+      F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      arranger_selections_action_perform_create (
+      (ArrangerSelections *) MA_SELECTIONS,
+      NULL);
+    }
+
+#define CHECK_INDICES \
+  for (int i = 0; i < r->num_midi_notes; i++) \
+    { \
+      MidiNote * mn = r->midi_notes[i]; \
+      g_assert_cmpint (mn->pos, ==, i); \
+    }
+
+  CHECK_INDICES;
+
+  for (int j = 0; j < 20; j++)
+    {
+      /* delete random MIDI notes */
+      {
+        int idx = rand () % r->num_midi_notes;
+        MidiNote * mn = r->midi_notes[idx];
+        arranger_object_select (
+          (ArrangerObject *) mn, F_SELECT,
+          F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+        idx = rand () % r->num_midi_notes;
+        mn = r->midi_notes[idx];
+        arranger_object_select (
+          (ArrangerObject *) mn, F_SELECT,
+          F_APPEND, F_NO_PUBLISH_EVENTS);
+        arranger_selections_action_perform_delete (
+        (ArrangerSelections *) MA_SELECTIONS,
+        NULL);
+      }
+
+      CHECK_INDICES;
+
+      /* undo */
+      undo_manager_undo (UNDO_MANAGER, NULL);
+
+      CHECK_INDICES;
+
+      /* redo delete midi note */
+      undo_manager_redo (UNDO_MANAGER, NULL);
+
+      CHECK_INDICES;
+
+      undo_manager_undo (UNDO_MANAGER, NULL);
+    }
+
+#undef CHECK_INDICES
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -3310,6 +3405,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test delete midi notes",
+    (GTestFunc) test_delete_midi_notes);
   g_test_add_func (
     TEST_PREFIX "test resize loop l",
     (GTestFunc) test_resize_loop_l);

@@ -182,17 +182,16 @@ midi_region_insert_midi_note (
   array_double_size_if_full (
     self->midi_notes, self->num_midi_notes,
     self->midi_notes_size, MidiNote *);
-  for (int i = self->num_midi_notes;
-       i > idx; i--)
+  array_insert (
+    self->midi_notes, self->num_midi_notes,
+    idx, midi_note);
+
+  for (int i = idx; i < self->num_midi_notes; i++)
     {
-      self->midi_notes[i] = self->midi_notes[i - 1];
+      MidiNote * mn = self->midi_notes[i];
       midi_note_set_region_and_index (
-        midi_note, self, i);
+        mn, self, i);
     }
-  self->num_midi_notes++;
-  self->midi_notes[idx] = midi_note;
-  midi_note_set_region_and_index (
-    midi_note, self, idx);
 
   if (pub_events)
     {
