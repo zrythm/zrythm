@@ -482,7 +482,11 @@ tracklist_find_track_by_name_hash (
   Tracklist *  self,
   unsigned int hash)
 {
-  if (router_is_processing_thread (ROUTER))
+  if (G_LIKELY (
+        !tracklist_is_auditioner (self)
+        && ROUTER
+        && router_is_processing_thread (ROUTER)
+        && tracklist_is_in_active_project (self)))
     {
       return
         (Track *)
@@ -1898,11 +1902,15 @@ void
 tracklist_set_caches (
   Tracklist * self)
 {
-  object_free_w_func_and_null (
-    g_hash_table_unref, self->ht);
-  self->ht =
-    g_hash_table_new (
-      g_direct_hash, g_direct_equal);
+  if (tracklist_is_in_active_project (self)
+      && !tracklist_is_auditioner (self))
+    {
+      object_free_w_func_and_null (
+        g_hash_table_unref, self->ht);
+      self->ht =
+        g_hash_table_new (
+          g_direct_hash, g_direct_equal);
+    }
 
   for (int i = 0; i < self->num_tracks; i++)
     {
