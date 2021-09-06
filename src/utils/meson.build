@@ -52,7 +52,7 @@ util_srcs = [
   'symap.c',
   'system.c',
   'ui.c',
-  'vamp.c',
+  'vamp.cpp',
   'windows_errors.c',
   'yaml.c',
   ]

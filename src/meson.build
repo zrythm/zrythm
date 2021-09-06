@@ -54,6 +54,7 @@ zrythm_link_libs = [
   zita_resampler_lib,
   optimized_audio_lib,
   optimized_utils_lib,
+  vamp_plugins_lib,
   ]
 
 if guile_dep.found ()

@@ -136,6 +136,17 @@ audio_frames_empty (
   float * src,
   size_t  num_frames);
 
+/**
+ * Detect BPM.
+ *
+ * @return The BPM, or 0 if not found.
+ */
+float
+audio_detect_bpm (
+  float *      src,
+  size_t       num_frames,
+  unsigned int samplerate);
+
 bool
 audio_file_is_silent (
   const char * filepath);

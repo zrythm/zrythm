@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-audio_srcs = [
+audio_srcs = files([
   'audio_function.c',
   'audio_region.c',
   'audio_track.c',
@@ -114,7 +114,9 @@ audio_srcs = [
   'velocity.c',
   'windows_mmcss.c',
   'windows_mme_device.c',
-  ]
+  ])
+
+subdir ('vamp-ports')
 
 # optimized audio
 optimized_audio_lib = static_library (
@@ -132,4 +134,4 @@ optimized_audio_lib = static_library (
     ],
   )
 
-zrythm_srcs += files (audio_srcs)
+zrythm_srcs += audio_srcs

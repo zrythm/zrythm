@@ -17,6 +17,7 @@
 
 subdir ('midilib')
 subdir ('nanovg')
+subdir ('qm-dsp')
 subdir ('weakjack')
 subdir ('whereami')
 subdir ('zix')

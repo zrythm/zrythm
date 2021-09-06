@@ -22,8 +22,9 @@
 
 #include "audio/engine.h"
 #include "project.h"
-#include "utils/math.h"
 #include "utils/audio.h"
+#include "utils/math.h"
+#include "utils/vamp.h"
 
 #include <audec/audec.h>
 #include <sndfile.h>
@@ -292,6 +293,78 @@ audio_file_is_silent (
   g_return_val_if_fail (ret == 0, true);
 
   return is_empty;
+}
+
+/**
+ * Detect BPM.
+ *
+ * @return The BPM, or 0 if not found.
+ */
+float
+audio_detect_bpm (
+  float *      src,
+  size_t       num_frames,
+  unsigned int samplerate)
+{
+  ZVampPlugin * plugin =
+    vamp_get_plugin (
+      Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR,
+      (float) samplerate);
+  size_t step_sz =
+    vamp_plugin_get_preferred_step_size (plugin);
+  size_t block_sz =
+    vamp_plugin_get_preferred_block_size (plugin);
+
+  /* only works with 1 channel */
+  vamp_plugin_initialize (
+    plugin, 1, step_sz, block_sz);
+
+  ZVampOutputList * outputs =
+    vamp_plugin_get_output_descriptors (plugin);
+  vamp_plugin_output_list_print (outputs);
+  vamp_plugin_output_list_free (outputs);
+
+  long cur_timestamp = 0;
+  while ((cur_timestamp + (long) block_sz) <
+           (long) num_frames)
+    {
+      float * frames[] = {
+        &src[cur_timestamp],
+      };
+      ZVampFeatureSet * feature_set =
+        vamp_plugin_process (
+          plugin,
+          (const float * const*) frames,
+          cur_timestamp, samplerate);
+      const ZVampFeatureList * fl =
+        vamp_feature_set_get_list_for_output (
+          feature_set, 0);
+      if (fl)
+        {
+          vamp_feature_list_print (fl);
+        }
+      cur_timestamp += (long) step_sz;
+      vamp_feature_set_free (feature_set);
+    }
+
+  g_message ("getting remaining features");
+  ZVampFeatureSet * feature_set =
+    vamp_plugin_get_remaining_features (
+      plugin, samplerate);
+  const ZVampFeatureList * fl =
+    vamp_feature_set_get_list_for_output (
+      feature_set, 0);
+  float bpm = 0.f;
+  if (fl)
+    {
+      vamp_feature_list_print (fl);
+      const ZVampFeature * feature =
+        g_ptr_array_index (fl->list, 0);
+      bpm = feature->values[0];
+    }
+  vamp_feature_set_free (feature_set);
+
+  return bpm;
 }
 
 /**

@@ -1512,6 +1512,47 @@ draw_name (
 }
 
 /**
+ * @param rect Arranger rectangle.
+ */
+static void
+draw_bottom_right_part (
+  ZRegion *         self,
+  cairo_t *         cr,
+  GdkRectangle *    rect,
+  GdkRectangle *    full_rect,
+  GdkRectangle *    draw_rect,
+  RegionCounterpart counterpart)
+{
+  /* if audio region, draw BPM */
+  if (self->id.type == REGION_TYPE_AUDIO)
+    {
+#if 0
+      cairo_save (cr);
+      AudioClip * clip =
+        audio_region_get_clip (self);
+      char txt[50];
+      sprintf (txt, "%.1f BPM", clip->bpm);
+      PangoLayout * layout = self->layout;
+      pango_layout_set_markup (
+        layout, txt, -1);
+      cairo_set_source_rgba (cr, 1, 1, 1, 1);
+      PangoRectangle pangorect;
+      pango_layout_get_pixel_extents (
+        layout, NULL, &pangorect);
+      int padding = 2;
+      cairo_move_to (
+        cr,
+        full_rect->width -
+          (pangorect.width + padding),
+        full_rect->height -
+          (pangorect.height + padding));
+      pango_cairo_show_layout (cr, layout);
+      cairo_restore (cr);
+#endif
+    }
+}
+
+/**
  * Returns if the region is cacheable.
  */
 static bool
@@ -1842,6 +1883,12 @@ region_draw (
         &draw_rect, i);
       /* TODO draw cut line */
       draw_name (
+        self, cr, rect, &full_rect,
+        &draw_rect, i);
+
+      /* draw anything on the bottom right part
+       * (eg, BPM) */
+      draw_bottom_right_part (
         self, cr, rect, &full_rect,
         &draw_rect, i);
 
