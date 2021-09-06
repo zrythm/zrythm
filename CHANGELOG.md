@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.25.1.1] - 2021-09-06
+### Added
+- Best fit zoom on timeline
+- Add more info to `--version`
+
+### Changed
+- Build vamp plugins ported from QM vamp plugins
+- DSP optimization: cache automation track ports and clip editor region/track
+- Optimization: use hashtable for looking up tracks by name hash
+- Process UI events before performing actions
+- Don't throw error if clip editor has no track when drawing piano roll keys
+- Don't throw error if no track is hit when DnDing into the tracklist
+
+### Fixed
+- Fix segfault when double clicking on port in plugin inspector
+- Fix error when renaming track that has sends
+- Fix MIDI note indices not being updated properly when undoing deletion
+- Fix zoom controls/shortcuts not working in editor
+- Fix error when moving MIDI region to another track
+- Fix GtkSourceView language spec path being hardcoded to version 4
+- Fix plugins not being instantiated before connecting when duplicating tracks
+
 ## [1.0.0-alpha.25.0.1] - 2021-09-04
 ### Added
 - Show indicator if region is looped
