@@ -116,29 +116,17 @@ z_carla_discovery_get_discovery_path (
 #endif
     );
   strcat (carla_discovery_filename, BIN_SUFFIX);
+  char * zrythm_libdir =
+    zrythm_get_dir (
+      ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
   char * carla_discovery =
-    g_find_program_in_path (
-      carla_discovery_filename);
-
-  /* fallback on zrythm libdir */
-  if (!carla_discovery)
-    {
-      char * zrythm_libdir =
-        zrythm_get_dir (
-          ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
-      carla_discovery =
-        g_build_filename (
-          zrythm_libdir, "carla",
-          carla_discovery_filename,
-          NULL);
-      g_free (zrythm_libdir);
-      g_message (
-        "carla discovery not found locally, falling "
-        "back to zrythm libdir (%s)",
-        carla_discovery);
-      g_return_val_if_fail (
-        file_exists (carla_discovery), NULL);
-    }
+    g_build_filename (
+      zrythm_libdir, "carla",
+      carla_discovery_filename,
+      NULL);
+  g_free (zrythm_libdir);
+  g_return_val_if_fail (
+    file_exists (carla_discovery), NULL);
 
   return carla_discovery;
 }
