@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+vamp_sdk_dep = dependency (
+  'vamp-sdk', static: vamp_static)
+
 vamp_plugins_lib = static_library (
   'vamp-plugins',
   'FixedTempoEstimator.cpp',
@@ -27,5 +30,5 @@ vamp_plugins_lib = static_library (
     include_directories ('.'),
     qm_dsp_inc,
     ],
-  dependencies: dependency ('vamp-sdk'),
+  dependencies: vamp_sdk_dep,
   )
