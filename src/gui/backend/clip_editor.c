@@ -152,6 +152,9 @@ Track *
 clip_editor_get_track (
   ClipEditor * self)
 {
+  if (!self->has_region)
+    return NULL;
+
   ZRegion * region = clip_editor_get_region (self);
   g_return_val_if_fail (region, NULL);
 

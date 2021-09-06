@@ -134,6 +134,9 @@ arranger_widget_get_drum_mode_enabled (
   if (self->type != ARRANGER_WIDGET_TYPE_MIDI)
     return false;
 
+  if (!CLIP_EDITOR->has_region)
+    return false;
+
   Track * tr =
     clip_editor_get_track (CLIP_EDITOR);
   g_return_val_if_fail (tr, false);
