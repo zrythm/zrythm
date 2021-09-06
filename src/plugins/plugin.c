@@ -2148,22 +2148,33 @@ plugin_ensure_state_dir (
 
   char * escaped_name =
     plugin_get_escaped_name (self);
+  g_return_if_fail (escaped_name);
   char * parent_dir =
     project_get_path (
       PROJECT, PROJECT_PATH_PLUGIN_STATES,
       is_backup);
+  g_return_if_fail (parent_dir);
   char * tmp =
     g_strdup_printf (
       "%s_XXXXXX", escaped_name);
   char * abs_state_dir_template =
     g_build_filename (parent_dir, tmp, NULL);
-  io_mkdir (parent_dir);
+  if (!abs_state_dir_template)
+    {
+      g_critical (
+        "Failed to build filename using '%s' / '%s'",
+        parent_dir, tmp);
+    }
+  int ret = io_mkdir (parent_dir);
+  g_return_if_fail (ret == 0);
   char * abs_state_dir =
     g_mkdtemp (abs_state_dir_template);
   if (!abs_state_dir)
     {
       g_critical (
-        "Failed to make state dir: %s",
+        "Failed to make state dir using template "
+        "%s: %s",
+        abs_state_dir_template,
         strerror (errno));
     }
   self->state_dir =

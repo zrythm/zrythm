@@ -82,16 +82,21 @@ io_get_dir (const char * filename)
 
 /**
  * Makes directory if doesn't exist.
+ *
+ * @return 0 if the directory exists or was
+ *   successfully created, -1 if error was occurred
+ *   and errno is set.
  */
-void
+int
 io_mkdir (const char * dir)
 {
   g_message ("Creating directory: %s", dir);
   struct stat st = {0};
   if (stat(dir, &st) == -1)
     {
-      g_mkdir_with_parents (dir, 0700);
+      return g_mkdir_with_parents (dir, 0700);
     }
+  return 0;
 }
 
 /**

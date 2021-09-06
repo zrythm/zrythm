@@ -46,9 +46,13 @@ io_get_dir (const char * filename);
 
 /**
  * Makes directory if doesn't exist.
+ *
+ * @return 0 if the directory exists or was
+ *   successfully created, -1 if error was occurred
+ *   and errno is set.
  */
 NONNULL
-void
+int
 io_mkdir (const char * dir);
 
 /**
