@@ -485,7 +485,12 @@ zrythm_get_dir (
         case ZRYTHM_DIR_SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR:
           res =
             g_build_filename (
-              prefix, "share", "gtksourceview-4",
+              prefix, "share",
+#ifdef HAVE_GTK_SOURCE_VIEW_4
+              "gtksourceview-4",
+#else
+              "gtksourceview-3.0",
+#endif
               "language-specs", NULL);
           break;
         case ZRYTHM_DIR_SYSTEM_ZRYTHM_DATADIR:
