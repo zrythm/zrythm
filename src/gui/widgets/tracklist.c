@@ -167,7 +167,8 @@ on_dnd_drag_data_received (
         }
     }
 
-  g_return_if_fail (hit_tw);
+  if (!hit_tw)
+    return;
 
   Track * this_track = hit_tw->track;
 
