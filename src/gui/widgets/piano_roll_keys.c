@@ -68,7 +68,9 @@ piano_roll_keys_draw (
 
   Track * tr =
     clip_editor_get_track (CLIP_EDITOR);
-  g_return_val_if_fail (tr, false);
+  if (!IS_TRACK_AND_NONNULL (tr))
+    return false;
+
   bool drum_mode = tr->drum_mode;
 
   double label_width =
