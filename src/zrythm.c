@@ -196,9 +196,13 @@ zrythm_get_version_with_capabilities (
 #ifdef HAVE_CARLA
     "    +carla\n"
 #endif
-#ifdef HAVE_JACK
-    "    +jack\n"
+
+#ifdef HAVE_JACK2
+    "    +jack2\n"
+#elif defined (HAVE_JACK)
+    "    +jack1\n"
 #endif
+
 #ifdef MANUAL_PATH
     "    +manual\n"
 #endif
@@ -214,20 +218,51 @@ zrythm_get_version_with_capabilities (
 #ifdef HAVE_SDL
     "    +sdl2\n"
 #endif
+
+#ifdef HAVE_GTK_SOURCE_VIEW_4
+    "    +gtksourceview4\n"
+#elif defined (HAVE_GTK_SOURCE_VIEW_3)
+    "    +gtksourceview3\n"
+#endif
+
+#ifdef HAVE_GUILE
+    "    +guile\n"
+#endif
+
+#ifdef HAVE_LSP_DSP
+    "    +lsp-dsp-lib\n"
+#endif
+
     "",
     PROGRAM_NAME,
+
 #ifdef TRIAL_VER
     "(trial) ",
 #else
     "",
 #endif
-    ver, BUILD_TYPE,
+
+    ver,
+
+#if 0
+    "optimization " OPTIMIZATION
+#ifdef IS_DEBUG_BUILD
+    " - debug"
+#endif
+#endif
+    BUILD_TYPE
+    ,
+
     COMPILER, COMPILER_VERSION, HOST_MACHINE_SYSTEM,
-#ifdef INSTALLER_VER
+
+#ifdef APPIMAGE_BUILD
+    " (appimage)"
+#elif defined (INSTALLER_VER)
     " (installer)"
 #else
     ""
 #endif
+
     );
 
   g_free (ver);

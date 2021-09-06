@@ -411,6 +411,11 @@ cdata.set_quoted ('GSCHEMAS_DIR', schemasdir)
 cdata.set_quoted (
   'BUILD_TYPE', get_option ('buildtype'))
 cdata.set_quoted (
+  'OPTIMIZATION', get_option ('optimization'))
+if get_option ('debug')
+  cdata.set ('IS_DEBUG_BUILD', 1)
+endif
+cdata.set_quoted (
   'INSTALLER_VERSION_STR',
   get_option ('buildtype'))
 if get_option ('trial_ver')
