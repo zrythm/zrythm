@@ -278,8 +278,11 @@ audio_clip_get_path_in_pool_from_name (
   char * prj_pool_dir =
     project_get_path (
       PROJECT, PROJECT_PATH_POOL, is_backup);
-  g_return_val_if_fail (
-    file_exists (prj_pool_dir), NULL);
+  if (!file_exists (prj_pool_dir))
+    {
+      g_critical ("%s does not exist", prj_pool_dir);
+      return  NULL;
+    }
   char * without_ext =
     io_file_strip_ext (name);
   char * basename =
