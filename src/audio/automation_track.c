@@ -598,8 +598,7 @@ automation_track_should_be_recording (
       if (at->record_mode ==
             AUTOMATION_RECORD_MODE_TOUCH)
         {
-          Port * port =
-            port_find_from_identifier (&at->port_id);
+          Port * port = at->port;
           g_return_val_if_fail (
             IS_PORT_AND_NONNULL (port), false);
           gint64 diff =
@@ -918,6 +917,14 @@ automation_track_verify (
         }
     }
   return true;
+}
+
+void
+automation_track_set_caches (
+  AutomationTrack * self)
+{
+  self->port =
+    port_find_from_identifier (&self->port_id);
 }
 
 /**

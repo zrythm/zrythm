@@ -146,6 +146,14 @@ typedef struct Tracklist
 
   /** Pointer to owner project, if any. */
   Project *           project;
+
+  /**
+   * Hashtable for quick track lookup
+   *
+   * key: track name hash
+   * value: Track pointer.
+   */
+  GHashTable *        ht;
 } Tracklist;
 
 static const cyaml_schema_field_t
@@ -587,6 +595,11 @@ void
 tracklist_get_total_bars (
   Tracklist * self,
   int *       total_bars);
+
+NONNULL
+void
+tracklist_set_caches (
+  Tracklist * self);
 
 /**
  * Only clones what is needed for project save.

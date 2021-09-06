@@ -3893,6 +3893,17 @@ remove_ats_from_automation_tracklist (
     }
 }
 
+void
+track_set_caches (
+  Track * self)
+{
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (self);
+
+  if (atl)
+    automation_tracklist_set_caches (atl);
+}
+
 /**
  * Wrapper for each track type.
  */

@@ -141,6 +141,11 @@ ZRegion *
 clip_editor_get_region (
   ClipEditor * self)
 {
+  if (router_is_processing_thread (ROUTER))
+    {
+      return self->region;
+    }
+
   if (!self->has_region)
     return NULL;
 
@@ -152,6 +157,11 @@ Track *
 clip_editor_get_track (
   ClipEditor * self)
 {
+  if (router_is_processing_thread (ROUTER))
+    {
+      return self->track;
+    }
+
   if (!self->has_region)
     return NULL;
 
@@ -223,6 +233,25 @@ clip_editor_clone (
       src->audio_clip_editor);
 
   return self;
+}
+
+/**
+ * To be called when recalculating the graph.
+ */
+void
+clip_editor_set_caches (
+  ClipEditor * self)
+{
+  if (self->has_region)
+    {
+      self->region = clip_editor_get_region (self);
+      self->track = clip_editor_get_track (self);
+    }
+  else
+    {
+      self->region = NULL;
+      self->track = NULL;
+    }
 }
 
 /**

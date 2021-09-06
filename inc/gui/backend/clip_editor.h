@@ -72,6 +72,11 @@ typedef struct ClipEditor
   /** Flag used by rulers when region first
    * changes. */
   int              region_changed;
+
+  /* --- caches --- */
+  ZRegion *        region;
+
+  Track *          track;
 } ClipEditor;
 
 static const cyaml_schema_field_t
@@ -166,6 +171,13 @@ clip_editor_get_track (
  */
 void
 clip_editor_redraw_region (
+  ClipEditor * self);
+
+/**
+ * To be called when recalculating the graph.
+ */
+void
+clip_editor_set_caches (
   ClipEditor * self);
 
 ClipEditor *

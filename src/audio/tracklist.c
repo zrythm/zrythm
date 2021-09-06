@@ -482,6 +482,14 @@ tracklist_find_track_by_name_hash (
   Tracklist *  self,
   unsigned int hash)
 {
+  if (router_is_processing_thread (ROUTER))
+    {
+      return
+        (Track *)
+        g_hash_table_lookup (
+          self->ht, GUINT_TO_POINTER (hash));
+    }
+
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
@@ -1886,6 +1894,29 @@ tracklist_get_total_bars (
     }
 }
 
+void
+tracklist_set_caches (
+  Tracklist * self)
+{
+  object_free_w_func_and_null (
+    g_hash_table_unref, self->ht);
+  self->ht =
+    g_hash_table_new (
+      g_direct_hash, g_direct_equal);
+
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      track_set_caches (track);
+
+      g_hash_table_insert (
+        self->ht,
+        GUINT_TO_POINTER (
+          track_get_name_hash (track)),
+        track);
+    }
+}
+
 /**
  * Only clones what is needed for project save.
  *
@@ -1962,6 +1993,9 @@ tracklist_free (
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
       self->tempo_track = NULL;
     }
+
+  object_free_w_func_and_null (
+    g_hash_table_unref, self->ht);
 
   object_zero_and_free (self);
 

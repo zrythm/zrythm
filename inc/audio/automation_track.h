@@ -182,6 +182,9 @@ typedef struct AutomationTrack
   /** Pointer to owner automation tracklist, if
    * any. */
   AutomationTracklist * atl;
+
+  /** Cache used during DSP. */
+  Port *               port;
 } AutomationTrack;
 
 static const cyaml_schema_field_t
@@ -511,6 +514,11 @@ automation_track_get_port (
 NONNULL
 ZRegion *
 automation_track_get_last_region (
+  AutomationTrack * self);
+
+NONNULL
+void
+automation_track_set_caches (
   AutomationTrack * self);
 
 NONNULL

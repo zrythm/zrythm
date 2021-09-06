@@ -1419,6 +1419,9 @@ graph_setup (
    * now
    * ======================== */
 
+  clip_editor_set_caches (CLIP_EDITOR);
+  tracklist_set_caches (TRACKLIST);
+
   /*graph_print (self);*/
 
   g_ptr_array_unref (ports);

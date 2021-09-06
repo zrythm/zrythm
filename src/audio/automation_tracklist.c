@@ -691,6 +691,17 @@ automation_tracklist_get_num_regions (
 }
 
 void
+automation_tracklist_set_caches (
+  AutomationTracklist * self)
+{
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      AutomationTrack * at = self->ats[i];
+      automation_track_set_caches (at);
+    }
+}
+
+void
 automation_tracklist_print_regions (
   AutomationTracklist * self)
 {

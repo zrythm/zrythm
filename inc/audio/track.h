@@ -1585,6 +1585,10 @@ track_get_total_bars (
   Track * self,
   int *   total_bars);
 
+void
+track_set_caches (
+  Track * self);
+
 Track *
 track_create_with_action (
   TrackType       type,
