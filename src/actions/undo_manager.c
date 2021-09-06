@@ -109,6 +109,12 @@ do_or_undo_action (
       need_pop = true;
     }
 
+  if (ZRYTHM_HAVE_UI)
+    {
+      /* process UI events now */
+      event_manager_process_now (EVENT_MANAGER);
+    }
+
   int ret = 0;
   if (main_stack == self->undo_stack)
     {
