@@ -270,10 +270,10 @@ port_connections_manager_get_source_or_dest (
       char buf[sz];
       port_identifier_print_to_str (id, buf, sz);
       g_critical (
-        "expected only 1 %s for %s, "
-        "found %d connections",
+        "expected 1 %s, found %d "
+        "connections for\n%s",
         sources ? "source" : "destination",
-        buf, num_conns);
+        num_conns, buf);
       return NULL;
     }
 

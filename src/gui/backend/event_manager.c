@@ -1358,9 +1358,12 @@ event_manager_process_event (
     case ET_PLUGIN_STATE_CHANGED:
       {
         Plugin * pl = (Plugin *) ev->arg;
-        on_plugin_state_changed (pl);
-        g_atomic_int_set (
-          &pl->state_changed_event_sent, 0);
+        if (IS_PLUGIN (pl))
+          {
+            on_plugin_state_changed (pl);
+            g_atomic_int_set (
+              &pl->state_changed_event_sent, 0);
+          }
       }
       break;
     case ET_TRANSPORT_TOTAL_BARS_CHANGED:

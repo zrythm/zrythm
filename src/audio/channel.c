@@ -78,6 +78,8 @@ connect_no_prev_no_next (
   Channel * ch,
   Plugin *  pl)
 {
+  g_debug ("connect no prev no next");
+
   Track * track = channel_get_track (ch);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
@@ -115,6 +117,8 @@ connect_no_prev_next (
   Plugin *  pl,
   Plugin *  next_pl)
 {
+  g_debug ("connect no prev next");
+
   Track * track = channel_get_track (ch);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
@@ -153,6 +157,8 @@ connect_prev_no_next (
   Plugin *  prev_pl,
   Plugin *  pl)
 {
+  g_debug ("connect prev no next");
+
   /* -----------------------------------------
    * disconnect ports
    * ----------------------------------------- */
@@ -190,6 +196,8 @@ connect_prev_next (
   Plugin *  pl,
   Plugin *  next_pl)
 {
+  g_debug ("connect prev next");
+
   /* -----------------------------------------
    * disconnect ports
    * ----------------------------------------- */
@@ -805,6 +813,14 @@ channel_connect_plugins (
           if (!plugin)
             continue;
 
+          if (!plugin->instantiated
+              && !plugin->instantiation_failed)
+            {
+              /* TODO handle error */
+              plugin_instantiate (
+                plugin, NULL, NULL);
+            }
+
           Plugin ** prev_plugins = NULL;
           switch (slot_type)
             {
@@ -885,6 +901,21 @@ channel_connect_plugins (
                         break;
                     }
                 }
+            }
+
+          if (prev_pl
+              && !prev_pl->instantiated
+              && !prev_pl->instantiation_failed)
+            {
+              plugin_instantiate (
+                prev_pl, NULL, NULL);
+            }
+          if (next_pl
+              && !next_pl->instantiated
+              && !next_pl->instantiation_failed)
+            {
+              plugin_instantiate (
+                next_pl, NULL, NULL);
             }
 
           if (!prev_pl && !next_pl)

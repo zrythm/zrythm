@@ -2710,6 +2710,9 @@ plugin_connect_to_prefader (
   Plugin *  pl,
   Channel * ch)
 {
+  g_return_if_fail (
+    pl->instantiated || pl->instantiation_failed);
+
   Track * track = channel_get_track (ch);
   PortType type = track->out_signal_type;
 

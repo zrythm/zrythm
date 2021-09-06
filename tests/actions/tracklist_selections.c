@@ -225,6 +225,16 @@ _test_port_and_plugin_track_pos_after_duplication (
           &dest_track->processor->midi_out->id,
           false);
       g_assert_nonnull (conn);
+
+      /* check that instrument is connected to
+       * channel prefader */
+      conn =
+        port_connections_manager_get_source_or_dest (
+          PORT_CONNECTIONS_MGR,
+          &dest_track->channel->prefader->
+            stereo_in->l->id,
+          true);
+      g_assert_nonnull (conn);
     }
 
   g_assert_true (
@@ -3225,6 +3235,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
+    TEST_PREFIX
+    "test port and plugin track pos after duplication",
+    (GTestFunc)
+    test_port_and_plugin_track_pos_after_duplication);
+  g_test_add_func (
     TEST_PREFIX "test ins track duplicate w send",
     (GTestFunc) test_ins_track_duplicate_w_send);
   g_test_add_func (
@@ -3236,11 +3251,6 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test group track deletion",
     (GTestFunc) test_group_track_deletion);
-  g_test_add_func (
-    TEST_PREFIX
-    "test port and plugin track pos after duplication",
-    (GTestFunc)
-    test_port_and_plugin_track_pos_after_duplication);
   g_test_add_func (
     TEST_PREFIX "test move inside",
     (GTestFunc) test_move_inside);

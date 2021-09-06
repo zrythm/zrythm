@@ -179,9 +179,7 @@ tick_cb (
   GdkFrameClock * frame_clock,
   MeterWidget * self)
 {
-  if (self->meter
-      &&
-      gtk_widget_get_mapped (GTK_WIDGET (self))
+  if (gtk_widget_get_mapped (GTK_WIDGET (self))
       && AUDIO_ENGINE->activated
       && engine_get_run (AUDIO_ENGINE))
     {
@@ -258,6 +256,7 @@ meter_widget_setup (
       meter_free (self->meter);
     }
   self->meter = meter_new_for_port (port);
+  g_return_if_fail (self->meter);
   self->padding = 2;
 
   /* set size */
@@ -286,6 +285,11 @@ meter_widget_setup (
   self->source_id =
     g_source_attach (self->timeout_source, NULL);
 #endif
+
+  char buf[1200];
+  port_get_full_designation (port, buf);
+  g_message (
+    "meter widget set up for %s", buf);
 }
 
 static void
