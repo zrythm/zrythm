@@ -55,7 +55,8 @@ on_hadj_value_changed (
   /*TimelinePanelWidget * self =*/
     /*Z_TIMELINE_PANEL_WIDGET (user_data);*/
 
-  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED, NULL);
+  EVENTS_PUSH (
+    ET_RULER_VIEWPORT_CHANGED, MW_RULER);
 }
 
 void

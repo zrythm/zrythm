@@ -100,8 +100,11 @@ typedef enum EventType
 
   /**
    * Zoom level or view area changed.
+   *
+   * Arg: RulerWidget pointer.
    */
-  ET_TIMELINE_VIEWPORT_CHANGED,
+  ET_RULER_VIEWPORT_CHANGED,
+
   ET_PLUGIN_ADDED,
   ET_PLUGINS_ADDED,
   ET_PLUGINS_REMOVED,

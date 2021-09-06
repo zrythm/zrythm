@@ -125,8 +125,8 @@ resize_selection_l (
             MW_TIMELINE_PANEL->ruler_viewport));
       gtk_adjustment_set_value (adj, ruler_px);
 
-      EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-                   NULL);
+      EVENTS_PUSH (
+        ET_RULER_VIEWPORT_CHANGED, MW_RULER);
     }
 }
 
@@ -172,8 +172,8 @@ resize_selection_r (
       gtk_adjustment_set_value (adj,
                                 ruler_px);
 
-      EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-                   NULL);
+      EVENTS_PUSH (
+        ET_RULER_VIEWPORT_CHANGED, MW_RULER);
     }
 
 }

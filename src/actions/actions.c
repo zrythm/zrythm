@@ -431,46 +431,96 @@ activate_ramp_mode (GSimpleAction *action,
   EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
 }
 
-/* FIXME rename to timeline zoom in */
-void
-activate_zoom_in (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_zoom_in)
 {
-  ruler_widget_set_zoom_level (
-    MW_RULER,
-    ruler_widget_get_zoom_level (MW_RULER)
-    * RULER_ZOOM_LEVEL_MULTIPLIER);
+  RulerWidget * ruler = NULL;
+  switch (PROJECT->last_selection)
+    {
+    case SELECTION_TYPE_TIMELINE:
+      ruler = MW_RULER;
+      break;
+    case SELECTION_TYPE_EDITOR:
+      ruler = EDITOR_RULER;
+      break;
+    default:
+      return;
+    }
 
-  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL);
+  ruler_widget_set_zoom_level (
+    ruler,
+    ruler_widget_get_zoom_level (ruler)
+      * RULER_ZOOM_LEVEL_MULTIPLIER);
+
+  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
-void
-activate_zoom_out (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_zoom_out)
 {
+  RulerWidget * ruler = NULL;
+  switch (PROJECT->last_selection)
+    {
+    case SELECTION_TYPE_TIMELINE:
+      ruler = MW_RULER;
+      break;
+    case SELECTION_TYPE_EDITOR:
+      ruler = EDITOR_RULER;
+      break;
+    default:
+      return;
+    }
+
   double zoom_level =
-    ruler_widget_get_zoom_level (MW_RULER)
+    ruler_widget_get_zoom_level (ruler)
     / RULER_ZOOM_LEVEL_MULTIPLIER;
   ruler_widget_set_zoom_level (
-    MW_RULER, zoom_level);
+    ruler, zoom_level);
 
-  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL);
+  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
-void
-activate_best_fit (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_best_fit)
 {
-  /* TODO */
-  g_message ("ZOOMING IN");
+  RulerWidget * ruler = NULL;
+  Position pos;
+  switch (PROJECT->last_selection)
+    {
+    case SELECTION_TYPE_TIMELINE:
+      {
+        ruler = MW_RULER;
+        int total_bars = 0;
+        tracklist_get_total_bars (
+          TRACKLIST, &total_bars);
+        position_set_to_bar (
+          &pos, total_bars);
+      }
+      break;
+#if 0
+    case SELECTION_TYPE_EDITOR:
+      ruler = EDITOR_RULER;
+      break;
+#endif
+    default:
+      return;
+    }
 
-  EVENTS_PUSH (
-    ET_TIMELINE_VIEWPORT_CHANGED, NULL);
+  double total_ticks =
+    position_to_ticks (&pos);
+  GtkScrolledWindow * scroll =
+    ruler_widget_get_parent_scroll (ruler);
+  double allocated_px =
+    (double)
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (scroll));
+  double buffer_px = allocated_px / 16.0;
+  double needed_px_per_tick =
+    (allocated_px - buffer_px) / total_ticks;
+  double new_zoom_level =
+    ruler_widget_get_zoom_level (ruler) *
+    (needed_px_per_tick / ruler->px_per_tick);
+  ruler_widget_set_zoom_level (
+    ruler, new_zoom_level);
+
+  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
 void
@@ -478,10 +528,21 @@ activate_original_size (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ruler_widget_set_zoom_level (MW_RULER, 1.0);
+  RulerWidget * ruler = NULL;
+  switch (PROJECT->last_selection)
+    {
+    case SELECTION_TYPE_TIMELINE:
+      ruler = MW_RULER;
+      break;
+    case SELECTION_TYPE_EDITOR:
+      ruler = EDITOR_RULER;
+      break;
+    default:
+      return;
+    }
 
-  EVENTS_PUSH (
-    ET_TIMELINE_VIEWPORT_CHANGED, NULL);
+  ruler_widget_set_zoom_level (ruler, 1.0);
+  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
 void

@@ -270,6 +270,10 @@ double
 ruler_widget_get_zoom_level (
   RulerWidget * self);
 
+GtkScrolledWindow *
+ruler_widget_get_parent_scroll (
+  RulerWidget * self);
+
 void
 ruler_widget_refresh (
   RulerWidget * self);

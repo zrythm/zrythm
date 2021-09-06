@@ -2014,6 +2014,22 @@ ruler_widget_refresh (RulerWidget * self)
     }
 }
 
+GtkScrolledWindow *
+ruler_widget_get_parent_scroll (
+  RulerWidget * self)
+{
+  if (self->type == TYPE (TIMELINE))
+    {
+      return MW_TIMELINE_PANEL->ruler_scroll;
+    }
+  else if (self->type == TYPE (EDITOR))
+    {
+      return MW_CLIP_EDITOR_INNER->ruler_scroll;
+    }
+
+  g_return_val_if_reached (NULL);
+}
+
 /**
  * Sets zoom level and disables/enables buttons
  * accordingly.

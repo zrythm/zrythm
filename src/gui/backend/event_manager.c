@@ -1470,13 +1470,11 @@ event_manager_process_event (
         arranger_widget_redraw_whole (
           MW_TIMELINE);
       break;
-    case ET_TIMELINE_VIEWPORT_CHANGED:
+    case ET_RULER_VIEWPORT_CHANGED:
       timeline_minimap_widget_refresh (
         MW_TIMELINE_MINIMAP);
       ruler_widget_refresh (
-        Z_RULER_WIDGET (MW_RULER));
-      ruler_widget_refresh (
-        Z_RULER_WIDGET (EDITOR_RULER));
+        Z_RULER_WIDGET (ev->arg));
       break;
     case ET_TRACK_STATE_CHANGED:
       /*on_track_state_changed (*/

@@ -56,7 +56,7 @@ typedef struct _TimelineBotBoxWidget
  */
 
 #define MW_TIMELINE_PANEL \
-  MW_MAIN_NOTEBOOK->timeline_panel
+  (MW_MAIN_NOTEBOOK->timeline_panel)
 
 #define MW_TRACKLIST_SCROLL \
   (MW_TIMELINE_PANEL->tracklist_scroll)
