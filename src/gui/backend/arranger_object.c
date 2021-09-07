@@ -24,6 +24,7 @@
 #include "audio/chord_track.h"
 #include "audio/marker_track.h"
 #include "audio/midi_region.h"
+#include "audio/router.h"
 #include "audio/stretcher.h"
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/automation_selections.h"
@@ -1141,6 +1142,16 @@ arranger_object_update_frames (
     {
       position_update_frames_from_ticks (
         &self->end_pos);
+
+      if (router_is_processing_kickoff_thread (
+            ROUTER))
+        {
+          /* do some validation */
+          g_return_if_fail (
+            arranger_object_is_position_valid (
+              self, &self->end_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_END));
+        }
     }
   if (arranger_object_type_can_loop (self->type))
     {
@@ -1150,6 +1161,24 @@ arranger_object_update_frames (
         &self->loop_start_pos);
       position_update_frames_from_ticks (
         &self->loop_end_pos);
+
+      if (router_is_processing_kickoff_thread (
+            ROUTER))
+        {
+          /* do some validation */
+          g_return_if_fail (
+            arranger_object_is_position_valid (
+              self, &self->clip_start_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_CLIP_START));
+          g_return_if_fail (
+            arranger_object_is_position_valid (
+              self, &self->loop_start_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_LOOP_START));
+          g_return_if_fail (
+            arranger_object_is_position_valid (
+              self, &self->loop_end_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_LOOP_END));
+        }
     }
   if (arranger_object_can_fade (self))
     {

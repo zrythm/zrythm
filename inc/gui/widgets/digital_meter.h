@@ -87,6 +87,9 @@ typedef struct _DigitalMeterWidget
   /** Used when changing the BPM. */
   bpm_t                    prev_bpm;
 
+  /** Used during update. */
+  bpm_t                    last_set_bpm;
+
   /** Flag to update BPM. */
   bool                     update_num;
   /** Flag to update BPM decimal. */

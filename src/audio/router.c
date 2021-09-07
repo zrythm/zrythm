@@ -38,6 +38,7 @@
 #include "zrythm-config.h"
 
 #include "audio/audio_track.h"
+#include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/engine_alsa.h"
 #ifdef HAVE_JACK
@@ -60,6 +61,7 @@
 #include "audio/track_processor.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/env.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_utils.h"
@@ -100,6 +102,8 @@ router_start_cycle (
     time_nfo.local_offset + time_nfo.nframes <=
       AUDIO_ENGINE->nframes);
 
+  self->process_kickoff_thread = g_thread_self ();
+
   if (!zix_sem_try_wait (&self->graph_access))
     {
       g_message (
@@ -113,6 +117,34 @@ router_start_cycle (
   memcpy (
     &self->time_nfo, &time_nfo,
     sizeof (EngineProcessTimeInfo));
+
+  /* read control port change events */
+  while (zix_ring_read_space (
+           self->ctrl_port_change_queue)
+             >= sizeof (ControlPortChange))
+    {
+      ControlPortChange change = { 0 };
+      zix_ring_read (
+        self->ctrl_port_change_queue, &change,
+        sizeof (change));
+      if (change.flag1 & PORT_FLAG_BPM)
+        {
+          tempo_track_set_bpm (
+            P_TEMPO_TRACK, change.real_val, 0.f,
+            true, F_PUBLISH_EVENTS);
+        }
+      else if (change.flag2 &
+                 PORT_FLAG2_BEATS_PER_BAR)
+        {
+          tempo_track_set_beats_per_bar (
+            P_TEMPO_TRACK, change.ival);
+        }
+      else if (change.flag2 & PORT_FLAG2_BEAT_UNIT)
+        {
+          tempo_track_set_beat_unit_from_enum (
+            P_TEMPO_TRACK, change.beat_unit);
+        }
+    }
 
   /* process tempo track ports first */
   if (self->graph->bpm_node)
@@ -179,6 +211,32 @@ router_recalc_graph (
 }
 
 /**
+ * Queues a control port change to be applied
+ * when processing starts.
+ *
+ * Currently only applies to BPM/time signature
+ * changes.
+ */
+void
+router_queue_control_port_change (
+  Router *                  self,
+  const ControlPortChange * change)
+{
+  if (zix_ring_write_space (
+        self->ctrl_port_change_queue) <
+          sizeof (ControlPortChange))
+    {
+      zix_ring_skip (
+        self->ctrl_port_change_queue,
+        sizeof (ControlPortChange));
+    }
+
+  zix_ring_write (
+    self->ctrl_port_change_queue, change,
+    sizeof (ControlPortChange));
+}
+
+/**
  * Creates a new Router.
  *
  * There is only 1 router needed in a project.
@@ -192,9 +250,27 @@ router_new (void)
 
   zix_sem_init (&self->graph_access, 1);
 
+  self->ctrl_port_change_queue =
+    zix_ring_new (
+      sizeof (ControlPortChange) * (size_t) 24);
+
   g_message ("done");
 
   return self;
+}
+
+/**
+ * Returns whether this is the thread that kicks
+ * off processing (thread that calls
+ * router_start_cycle()).
+ */
+bool
+router_is_processing_kickoff_thread (
+  const Router * const self)
+{
+  return
+    g_thread_self () ==
+      self->process_kickoff_thread;
 }
 
 /**
@@ -271,6 +347,9 @@ router_free (
 
   zix_sem_destroy (&self->graph_access);
   object_set_to_zero (&self->graph_access);
+
+  object_free_w_func_and_null (
+    zix_ring_free, self->ctrl_port_change_queue);
 
   object_zero_and_free (self);
 

@@ -21,13 +21,12 @@
  * \file
  *
  * Flags.
+ *
+ * Z_F = Zrythm Flag.
  */
 
 #ifndef __UTILS_FLAGS_H__
 #define __UTILS_FLAGS_H__
-
-/* FIXME prefix with something unique
- * (ZRYTHM_F_*). */
 
 /**
  * Used to select something instead of using 1s and
@@ -340,5 +339,8 @@
 
 #define Z_F_INSTANTIATE 1
 #define Z_F_NO_INSTANTIATE 0
+
+#define Z_F_AUTOMATING 1
+#define Z_F_NOT_AUTOMATING 0
 
 #endif

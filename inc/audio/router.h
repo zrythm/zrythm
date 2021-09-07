@@ -51,6 +51,7 @@
 #include "audio/engine.h"
 #include "utils/types.h"
 
+#include "zix/ring.h"
 #include "zix/sem.h"
 
 #include <gtk/gtk.h>
@@ -65,6 +66,7 @@ typedef struct Fader Fader;
 typedef struct Track Track;
 typedef struct Plugin Plugin;
 typedef struct Position Position;
+typedef struct ControlPortChange ControlPortChange;
 typedef struct EngineProcessTimeInfo
   EngineProcessTimeInfo;
 
@@ -82,23 +84,30 @@ typedef struct EngineProcessTimeInfo
 
 typedef struct Router
 {
-  Graph * graph;
+  Graph *               graph;
 
   /** Time info for this processing cycle. */
   EngineProcessTimeInfo time_nfo;
 
   /** Stored for the currently processing cycle */
-  nframes_t   max_route_playback_latency;
+  nframes_t             max_route_playback_latency;
 
   /** Current global latency offset (max latency
    * of all routes - remaining latency from
    * engine). */
-  nframes_t   global_offset;
+  nframes_t             global_offset;
 
   /** Used when recalculating the graph. */
-  ZixSem      graph_access;
+  ZixSem                graph_access;
 
-  bool        callback_in_progress;
+  bool                  callback_in_progress;
+
+  /** Thread that calls kicks off the cycle. */
+  GThread *             process_kickoff_thread;
+
+  /** Message queue for control port changes, used
+   * for BPM/time signature changes. */
+  ZixRing *             ctrl_port_change_queue;
 
 } Router;
 
@@ -142,6 +151,32 @@ ACCESS_READ_ONLY (1)
 bool
 router_is_processing_thread (
   const Router * const router);
+
+/**
+ * Returns whether this is the thread that kicks
+ * off processing (thread that calls
+ * router_start_cycle()).
+ */
+WARN_UNUSED_RESULT
+HOT
+NONNULL
+ACCESS_READ_ONLY (1)
+bool
+router_is_processing_kickoff_thread (
+  const Router * const self);
+
+/**
+ * Queues a control port change to be applied
+ * when processing starts.
+ *
+ * Currently only applies to BPM/time signature
+ * changes.
+ */
+NONNULL
+void
+router_queue_control_port_change (
+  Router *                  self,
+  const ControlPortChange * change);
 
 void
 router_free (

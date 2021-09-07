@@ -699,6 +699,9 @@ arranger_object_loop_end_pos_setter (
  * @param pos_type The type of Position to set in the
  *   ArrangerObject.
  */
+HOT
+NONNULL
+WARN_UNUSED_RESULT
 int
 arranger_object_is_position_valid (
   ArrangerObject *           self,

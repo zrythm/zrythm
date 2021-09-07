@@ -20,8 +20,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "audio/control_port.h"
 #include "audio/position.h"
 #include "audio/quantize_options.h"
+#include "audio/router.h"
 #include "audio/snap_grid.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
@@ -607,6 +609,7 @@ on_change_started (
     case DIGITAL_METER_TYPE_BPM:
       self->prev_bpm =
         tempo_track_get_current_bpm (P_TEMPO_TRACK);
+      self->last_set_bpm = self->prev_bpm;
       transport_prepare_audio_regions_for_stretch (
         TRANSPORT, NULL);
       break;
@@ -925,11 +928,13 @@ drag_update (
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              tempo_track_set_bpm (
-                P_TEMPO_TRACK,
-                tempo_track_get_current_bpm (
-                  P_TEMPO_TRACK) + (bpm_t) num,
-                0.f, true, F_PUBLISH_EVENTS);
+              ControlPortChange change = { 0 };
+              change.flag1 = PORT_FLAG_BPM;
+              change.real_val =
+                self->last_set_bpm + (bpm_t) num;
+              self->last_set_bpm = change.real_val;
+              router_queue_control_port_change (
+                ROUTER, &change);
               self->last_y = offset_y;
               self->last_x = offset_x;
             }
@@ -940,11 +945,13 @@ drag_update (
           g_message ("%f", (double) dec);
           if (fabs (dec) > 0)
             {
-              tempo_track_set_bpm (
-                P_TEMPO_TRACK,
-                tempo_track_get_current_bpm (
-                  P_TEMPO_TRACK) + (bpm_t) dec,
-                0.f, true, F_PUBLISH_EVENTS);
+              ControlPortChange change = { 0 };
+              change.flag1 = PORT_FLAG_BPM;
+              change.real_val =
+                self->last_set_bpm + (bpm_t) dec;
+              self->last_set_bpm = change.real_val;
+              router_queue_control_port_change (
+                ROUTER, &change);
               self->last_y = offset_y;
               self->last_x = offset_x;
             }
@@ -1077,20 +1084,23 @@ drag_update (
           num =
             self->prev_beats_per_bar +
             (int) diff / 24;
+          ControlPortChange change = { 0 };
+          change.flag2 =
+            PORT_FLAG2_BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
-              tempo_track_set_beats_per_bar (
-                P_TEMPO_TRACK,
-                TEMPO_TRACK_MIN_BEATS_PER_BAR);
+              change.ival =
+                TEMPO_TRACK_MIN_BEATS_PER_BAR;
             }
           else
             {
-              tempo_track_set_beats_per_bar (
-                P_TEMPO_TRACK,
-                num > TEMPO_TRACK_MAX_BEATS_PER_BAR ?
-                  TEMPO_TRACK_MAX_BEATS_PER_BAR :
-                  num);
+              change.ival =
+                num > TEMPO_TRACK_MAX_BEATS_PER_BAR
+                ? TEMPO_TRACK_MAX_BEATS_PER_BAR
+                : num;
             }
+          router_queue_control_port_change (
+            ROUTER, &change);
         }
       else if (self->update_timesig_bot)
         {
@@ -1099,18 +1109,20 @@ drag_update (
             tempo_track_beat_unit_to_enum (
               self->prev_beat_unit) +
             (int) diff / 24;
+          ControlPortChange change = { 0 };
+          change.flag2 = PORT_FLAG2_BEAT_UNIT;
           if (num < 0)
             {
-              tempo_track_set_beat_unit_from_enum (
-                P_TEMPO_TRACK, BEAT_UNIT_2);
+              change.beat_unit = BEAT_UNIT_2;
             }
           else
             {
-              tempo_track_set_beat_unit_from_enum (
-                P_TEMPO_TRACK,
+              change.beat_unit =
                 num > BEAT_UNIT_16
-                ? BEAT_UNIT_16 : (BeatUnit) num);
+                ? BEAT_UNIT_16 : (BeatUnit) num;
             }
+          router_queue_control_port_change (
+            ROUTER, &change);
         }
       if (self->update_timesig_top ||
           self->update_timesig_bot)

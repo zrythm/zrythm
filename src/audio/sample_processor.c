@@ -33,6 +33,7 @@
 #include "project.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -229,9 +230,10 @@ sample_processor_process (
             {
               nframes_t buf_offset =
                 j + cycle_offset;
-              g_return_if_fail (
-                buf_offset < nframes &&
-                sp->offset < sp->buf_size);
+              z_return_if_fail_cmp (
+                buf_offset, <, nframes)
+              z_return_if_fail_cmp (
+                sp->offset, <, sp->buf_size);
               if (sp->channels == 1)
                 {
                   l[buf_offset] +=

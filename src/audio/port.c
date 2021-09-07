@@ -2543,6 +2543,12 @@ port_set_control_value (
       /* if bpm, update engine */
       if (id->flags & PORT_FLAG_BPM)
         {
+          /* this must only be called during
+           * processing kickoff */
+          g_return_if_fail (
+            router_is_processing_kickoff_thread (
+              ROUTER));
+
           int beats_per_bar =
             tempo_track_get_beats_per_bar (
               P_TEMPO_TRACK);
@@ -2558,6 +2564,12 @@ port_set_control_value (
       if (id->flags2 & PORT_FLAG2_BEATS_PER_BAR ||
           id->flags2 & PORT_FLAG2_BEAT_UNIT)
         {
+          /* this must only be called during
+           * processing kickoff */
+          g_return_if_fail (
+            router_is_processing_kickoff_thread (
+              ROUTER));
+
           int beats_per_bar =
             tempo_track_get_beats_per_bar (
               P_TEMPO_TRACK);

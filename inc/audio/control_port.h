@@ -26,9 +26,46 @@
 #ifndef __AUDIO_CONTROL_PORT_H__
 #define __AUDIO_CONTROL_PORT_H__
 
+#include "audio/port_identifier.h"
+#include "audio/tempo_track.h"
+
 #include <stdbool.h>
 
 typedef struct Port Port;
+
+/**
+ * Used for queueing changes to be applied during
+ * processing.
+ *
+ * Used only for non-plugin ports such as BPM and
+ * time signature.
+ */
+typedef struct ControlPortChange
+{
+  /**
+   * Flag to identify the port the change is for.
+   *
+   * @seealso PORT_FLAG_BPM.
+   */
+  PortFlags     flag1;
+
+  /**
+   * Flag to identify the port the change is for.
+   *
+   * @seealso PORT_FLAG2_BEATS_PER_BAR and
+   *   PORT_FLAG2_BEAT_UNIT.
+   */
+  PortFlags2    flag2;
+
+  /** Real (not normalized) value to set. */
+  float         real_val;
+
+  /** Integer val. */
+  int           ival;
+
+  BeatUnit      beat_unit;
+
+} ControlPortChange;
 
 /**
  * @addtogroup audio

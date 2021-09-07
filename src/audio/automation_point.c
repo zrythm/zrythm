@@ -197,15 +197,16 @@ automation_point_set_fvalue (
       math_assert_nonnann (real_val);
     }
 
+  float normalized_val;
   if (is_normalized)
     {
       g_message ("received normalized val %f",
         (double) real_val);
-      self->normalized_val =
+      normalized_val =
         CLAMP (real_val, 0.f, 1.f);
       real_val =
         control_port_normalized_val_to_real (
-          port, self->normalized_val);
+          port, normalized_val);
     }
   else
     {
@@ -213,12 +214,13 @@ automation_point_set_fvalue (
         "reveived real val %f", (double) real_val);
       real_val =
         CLAMP (real_val, port->minf, port->maxf);
-      self->normalized_val =
+      normalized_val =
         control_port_real_val_to_normalized (
           port, real_val);
     }
   g_message ("setting to %f", (double) real_val);
   self->fvalue = real_val;
+  self->normalized_val = normalized_val;
 
   if (ZRYTHM_TESTING)
     {
@@ -230,8 +232,13 @@ automation_point_set_fvalue (
     arranger_object_get_region (
       (ArrangerObject *) self);
   g_return_if_fail (region);
+
+  /* don't set value - wait for engine to process
+   * it */
+#if 0
   control_port_set_val_from_normalized (
-    port, self->normalized_val, 1);
+    port, self->normalized_val, Z_F_AUTOMATING);
+#endif
 
   if (pub_events)
     {
