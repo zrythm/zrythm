@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
-"PO-Revision-Date: 2021-08-25 02:32+0000\n"
+"PO-Revision-Date: 2021-08-29 01:37+0000\n"
 "Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -3118,14 +3118,12 @@ msgid "Failed to create arranger objects"
 msgstr "未能创建编曲对象"
 
 #: src/audio/tracklist.c:1533
-#, fuzzy
 msgid "Failed to move tracks after copying or moving inside folder"
-msgstr "未能将音轨移入或复制进文件夹"
+msgstr "在将音轨复制或移入文件夹后，未能移动它们"
 
 #: src/audio/tracklist.c:1606
-#, fuzzy
 msgid "Failed to copy tracks inside"
-msgstr "未能复制内部音轨"
+msgstr "未能将音轨复制进去"
 
 #: src/audio/tracklist.c:1654
 msgid "Failed to copy track inside"
@@ -3137,9 +3135,8 @@ msgid "Failed to clone track"
 msgstr "未能克隆音轨"
 
 #: src/audio/tracklist.c:1700
-#, fuzzy
 msgid "Failed to copy tracks"
-msgstr "未能复制内部音轨"
+msgstr "未能复制音轨"
 
 #: src/audio/tracklist.c:1727
 msgid "Cannot drag folder into itself"
@@ -3150,7 +3147,6 @@ msgid "Failed to move track inside folder"
 msgstr "未能将音轨移入文件夹"
 
 #: src/audio/tracklist.c:1842
-#, fuzzy
 msgid "Failed to move tracks"
 msgstr "未能移动音轨"
 
@@ -5758,17 +5754,14 @@ msgid "Editor event viewer visibility"
 msgstr "编辑器事件查看器可见性"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:454
-#, fuzzy
 msgid "Whether the editor event viewer is visible."
 msgstr "编辑器事件查看器是否可见。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:458
-#, fuzzy
 msgid "Playhead display type"
 msgstr "标尺展示类型"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:459
-#, fuzzy
 msgid "Selected playhead display type (BBT/time)."
 msgstr "选定的标尺显示类型（BBT/时间）。"
 
