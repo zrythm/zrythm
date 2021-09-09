@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
-"PO-Revision-Date: 2021-08-27 21:44+0000\n"
+"PO-Revision-Date: 2021-09-05 05:33+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
@@ -471,12 +471,12 @@ msgstr ""
 #: src/project.c:1059
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
-"Не удалось загрузить проект. Пожалуйста, проверьте логи для получения "
+"Не удалось открыть проект. Пожалуйста, проверьте логи для получения "
 "дополнительной информации."
 
 #: src/project.c:1284
 msgid "Failed to load project. Will create a new one instead."
-msgstr "Не удалось загрузить проект. Вместо него будет создан новый."
+msgstr "Не удалось открыть проект. Вместо него будет создан новый."
 
 #: src/project.c:1608
 msgid "Failed to compress project file"
@@ -2062,7 +2062,7 @@ msgstr "Сохранить пресет"
 
 #: src/gui/widgets/plugin_properties_expander.c:316
 msgid "Load"
-msgstr "Загрузить"
+msgstr "Открыть"
 
 #: src/gui/widgets/plugin_properties_expander.c:320
 msgid "Load preset"
@@ -3849,7 +3849,7 @@ msgstr ""
 
 #: src/actions/actions.c:689
 msgid "Loading is disabled in the trial version"
-msgstr "Возможность загружать проекты в пробной версии отключена"
+msgstr "Возможность открывать проекты в пробной версии отключена"
 
 #: src/actions/actions.c:718 src/actions/actions.c:746
 msgid "Saving is disabled in the trial version"

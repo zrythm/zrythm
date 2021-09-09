@@ -38,7 +38,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-08-27 21:44+0000\n"
+"PO-Revision-Date: 2021-09-06 18:34+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ru/>\n"
@@ -3503,7 +3503,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:8
 msgid "Getting Plugins, Instruments and Samples"
-msgstr "Получение плагинов, инструментов и сэмплов"
+msgstr "Где взять плагины, инструменты и сэмплы"
 
 #: ../../getting-started/getting-plugins.rst:13
 msgid ""
@@ -3511,9 +3511,9 @@ msgid ""
 "are expected to download and install their own plugins that suit their "
 "preferences."
 msgstr ""
-"Zrythm изначально содержит в себе несколько плагинов, чтобы помочь "
-"пользователям начать работу, но ожидается, что пользователи загрузят и "
-"установят свои собственные плагины, соответствующие их предпочтениям."
+"Zrythm поставляется с несколькими плагинами в комплекте, если вы их "
+"приобрели, но предполагается, что пользователи должны загрузить и установить "
+"свои собственные плагины, соответствующие их предпочтениям."
 
 #: ../../getting-started/getting-plugins.rst:18
 msgid ""
@@ -3538,9 +3538,9 @@ msgid ""
 "are many plugins that can easily be installed via apt."
 msgstr ""
 "Для пользователей дистрибутивов на основе Debian, таких как Ubuntu и Linux "
-"Mint, мы рекомендуем использовать `репозитории KXstudio <https://kx.studio/"
-">`_, поскольку существует множество плагинов, которые можно легко установить "
-"через инструмент apt."
+"Mint, мы рекомендуем использовать `репозитории KXstudio <https://kx.studio/>`"
+"_, поскольку в них есть множество плагинов, которые можно легко установить "
+"через apt."
 
 #: ../../getting-started/getting-plugins.rst:31
 msgid ""
@@ -3549,7 +3549,7 @@ msgid ""
 "plugins/>`_ group."
 msgstr ""
 "Для пользователей дистрибутивов на основе Arch Linux, таких как Manjaro, мы "
-"рекомендуем установить `группу lv2-плагинов <https://www.archlinux.org/"
+"рекомендуем установить эту `группу lv2-плагинов <https://www.archlinux.org/"
 "groups/x86_64/lv2-plugins/>`_."
 
 #: ../../getting-started/getting-plugins.rst:37
@@ -3557,7 +3557,6 @@ msgid "Recommended Plugin Bundles"
 msgstr "Рекомендуемые комплекты плагинов"
 
 #: ../../getting-started/getting-plugins.rst:39
-#, fuzzy
 msgid "`DISTRHO Ports`_ provides a good variety of synths and effects."
 msgstr ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ предлагает "
@@ -3571,8 +3570,7 @@ msgid ""
 msgstr ""
 "`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ - это комплект эффектов, "
 "который содержит высококачественные плагины всех основных эффектов, таких "
-"как Эхо (Delay), Реверберация (Reverb), Компрессия (Compression), Эквалайзер "
-"(EQ) и Насыщение (Saturation)."
+"как Дилей, Реверберация, Компрессия, Эквалайзер и Сатурация."
 
 #: ../../getting-started/getting-plugins.rst:47
 msgid ""
@@ -3588,14 +3586,13 @@ msgid ""
 "effect and meter plugins."
 msgstr ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ - это коллекция разнообразных "
-"MIDI-эффектов и плагинов."
+"MIDI-эффектов и датчиков."
 
 #: ../../getting-started/getting-plugins.rst:54
 msgid "Synths"
 msgstr "Синтезаторы"
 
 #: ../../getting-started/getting-plugins.rst:56
-#, fuzzy
 msgid ""
 "`Helm <https://tytel.org/helm/>`_ is an easy to use subtractive synthesizer."
 msgstr ""
@@ -3604,13 +3601,15 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:59
 msgid ""
 "Vitalium from `DISTRHO Ports`_ is a very powerful wavetable synthesizer."
-msgstr ""
+msgstr "Vitalium из `DISTRHO Ports`_ - очень мощный волновой синтезатор."
 
 #: ../../getting-started/getting-plugins.rst:62
 msgid ""
 "`Surge <https://surge-synthesizer.github.io/>`_ is a subtractive hybrid "
 "synthesizer with a unique interface."
 msgstr ""
+"`Surge <https://surge-synthesizer.github.io/>`_ - это субтрактивный "
+"гибридный синтезатор с уникальным интерфейсом."
 
 #: ../../getting-started/getting-plugins.rst:66
 msgid ""
@@ -3618,7 +3617,7 @@ msgid ""
 "is closely modeled on the Yamaha DX7."
 msgstr ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ - это FM-синтезатор, который "
-"старается имитировать Yamaha DX7."
+"смоделирован на основе Yamaha DX7."
 
 #: ../../getting-started/getting-plugins.rst:70
 msgid ""
@@ -3632,21 +3631,21 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:75
 msgid "Percussion Generators"
-msgstr "Ударные генераторы"
+msgstr "Генераторы ударных"
 
 #: ../../getting-started/getting-plugins.rst:77
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum synthesizer "
 "that can also synthesize other types of percussion."
 msgstr ""
-"`GeonKick <https://gitlab.com/iurie/geonkick>` - это синтезатор барабанов, "
+"`GeonKick <https://gitlab.com/iurie/geonkick>` - это синтезатор бочек, "
 "который также может синтезировать другие типы ударных инструментов."
 
 #: ../../getting-started/getting-plugins.rst:81
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
-"Смотреть :ref:`scanning-plugins`, чтобы узнать о путях, в которых будет "
-"произведен поиск плагинов."
+"Смотрите :ref:`scanning-plugins`, чтобы узнать в каких папках производится "
+"поиск плагинов."
 
 #: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
@@ -3655,11 +3654,11 @@ msgstr "Пресеты"
 
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
-msgstr ""
+msgstr "На `Freesound`_ можно скачать пресеты для различных плагинов."
 
 #: ../../getting-started/getting-plugins.rst:89
 msgid "In the future, we will be offering preset packs for download."
-msgstr ""
+msgstr "В будущем мы также будем предлагать пакеты пресетов для загрузки."
 
 #: ../../getting-started/getting-plugins.rst:93
 msgid "SFZ/SF2 Instruments"
@@ -3670,19 +3669,18 @@ msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
-"Вы можете найти список свободно лицензированных инструментов SFZ на странице "
+"Вы можете найти список свободно лицензированных SFZ инструментов на странице "
 "`sfz инструменты <https://sfzinstruments.github.io/>`_."
 
 #: ../../getting-started/getting-plugins.rst:102
-#, fuzzy
 msgid "We recommend using `Freesound`_ for collecting CC-licensed samples."
 msgstr ""
 "Мы рекомендуем использовать `Freesound <https://freesound.org/>` _ для "
-"поиска сэмплов, лицензированных под свободной лицензией CC."
+"поиска семплов, лицензированных под свободной лицензией CC."
 
 #: ../../getting-started/getting-plugins.rst:105
 msgid "We will also be offering sample packs for download in the future."
-msgstr ""
+msgstr "В будущем мы также будем предлагать пакеты семплов для скачивания."
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
@@ -3733,8 +3731,8 @@ msgid ""
 "See :download:`INSTALL.md <../../../INSTALL.md>` in the source distribution "
 "for installation instructions."
 msgstr ""
-"Инструкции по установке смотрите в :download:`INSTALL.md <.../.../.../INSTALL"
-".md>` , который находится в папке с исходным кодом."
+"Инструкции по установке смотрите в :download:`INSTALL.md <../../../INSTALL."
+"md>` , который находится в папке с исходным кодом."
 
 #: ../../getting-started/installation.rst:36
 #: ../../getting-started/system-requirements.rst:53
@@ -3810,13 +3808,8 @@ msgid "Getting Started"
 msgstr "Начало работы"
 
 #: ../../getting-started/running-zrythm.rst:8
-#, fuzzy
 msgid "Running Zrythm"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"zrythm"
+msgstr "Запуск Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
@@ -3829,8 +3822,8 @@ msgid ""
 "user path`, the language of the user interface and audio/MIDI backends."
 msgstr ""
 "При первом запуске Zrythm появится окно, которое позволить настроить "
-"основные параметры Zrythm, включая :term:`пользовательский путь Zrythm`, "
-"язык интерфейса и аудио/MIDI системы."
+"основные параметры Zrythm, включая :term:`Zrythm user path`, язык интерфейса "
+"и аудио/MIDI системы."
 
 #: ../../getting-started/running-zrythm.rst:20
 msgid "Language Selection"
@@ -3865,29 +3858,25 @@ msgid "Audio/MIDI Backends"
 msgstr "Аудио/MIDI Бэкэнды (Backends)"
 
 #: ../../getting-started/running-zrythm.rst:47
-#, fuzzy
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is the "
 "recommended one for both."
 msgstr ""
-"Zrythm поддерживает несколько Аудио и MIDI бэкэндов. :term:`JACK` "
-"рекомендуется и в качестве Аудио бэкэнда, и в качестве MIDI бэкэнда, но для "
-"его настройки потребуется некоторое время, если вы используете его впервые. "
-"Если вы решили использовать JACK, то вам необходимо выбрать его в качестве "
-"Аудио и MIDI бэкэнда одновременно."
+"Zrythm поддерживает несколько Аудио и MIDI бэкeндов. :term:`JACK` "
+"рекомендуется и в качестве обоих."
 
 #: ../../getting-started/running-zrythm.rst:51
 msgid ""
 "If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr "Если JACK недоступен в вашей системе, мы рекомендуем RtAudio и RtMidi."
+msgstr "Если JACK недоступен на вашей системе, мы рекомендуем RtAudio и RtMidi."
 
 #: ../../getting-started/running-zrythm.rst:54
 msgid ""
 "Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
-"Нажмите на кнопку :zbutton:`Проверка (Test)` чтобы попытаться подключиться к "
-"бэкэнду и проверить ее работоспособность."
+"Нажмите на кнопку :guilabel:`Test` , чтобы попытаться подключиться к бэкенду "
+"и проверить, работает ли он."
 
 #: ../../getting-started/running-zrythm.rst:57
 msgid ""
@@ -3895,7 +3884,7 @@ msgid ""
 "chosen together."
 msgstr ""
 "Если вы решили использовать JACK, то вам необходимо выбрать его в качестве "
-"аудио и MIDI бэкэнда одновременно."
+"аудио и MIDI бэкенда одновременно."
 
 #: ../../getting-started/running-zrythm.rst:62
 msgid ""
@@ -3903,32 +3892,23 @@ msgid ""
 "`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
 "Все упомянутые здесь настройки также доступны в :ref:`preferences`, поэтому "
-"не беспокойтесь, если вы выбрали неправильные настройки."
+"не беспокойтесь, если настроили что-то неправильно."
 
 #: ../../getting-started/running-zrythm.rst:67
-#, fuzzy
 msgid "Plugin Scan"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Плагины (Plugins)\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Типы плагинов"
+msgstr "Сканирование плагинов"
 
 #: ../../getting-started/running-zrythm.rst:68
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning for "
 "plugins <../plugins-files/plugins/scanning>`."
 msgstr ""
+"Когда первичная настойка будет закончена, Zrythm начнёт :doc:`сканировать "
+"плагины <../plugins-files/plugins/scanning>`."
 
 #: ../../getting-started/running-zrythm.rst:76
-#, fuzzy
 msgid "Project Selection"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Меню Проект (Project Menu)"
+msgstr "Выбор проекта"
 
 #: ../../getting-started/running-zrythm.rst:77
 msgid ""
@@ -3936,25 +3916,17 @@ msgid ""
 "saving-loading>` and then the :doc:`main interface <../zrythm-interface/"
 "overview>` will show up."
 msgstr ""
+"После этого Zrythm попросит вас :doc:`открыть или создать проект <.../"
+"projects/saving-loading>`, после чего на экране появится :doc:`главное окно "
+"<.../zrythm-interface/overview>`."
 
 #: ../../getting-started/running-zrythm.rst:86
-#, fuzzy
 msgid "Project selection"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Меню Проект (Project Menu)"
+msgstr "Выбор проекта"
 
 #: ../../getting-started/running-zrythm.rst:91
-#, fuzzy
 msgid "Main interface"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Аудио интерфейс (Audio interface)\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Интерфейс"
+msgstr "Главное окно"
 
 #: ../../getting-started/system-requirements.rst:6
 msgid "System Requirements"
@@ -6464,7 +6436,7 @@ msgid ""
 "project."
 msgstr ""
 "Когда вы выбираете проект и щелкаете :guilabel:`Применить (Apply)`, Zrythm "
-"загрузит этот проект."
+"откроет этот проект."
 
 #: ../../projects/saving-loading.rst:24
 msgid "Creating Projects"
@@ -8651,7 +8623,7 @@ msgstr "Интерфейс"
 
 #: ../../zrythm-interface/intro.rst:19
 msgid "Add main panel section that contains the timeline."
-msgstr ""
+msgstr "Добавить секцию содержащую таймлайн на главную панель."
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
@@ -8753,7 +8725,7 @@ msgstr "Глобальные меню"
 
 #: ../../zrythm-interface/main-toolbar.rst:27
 msgid "Zrythm has the following global menus at the top of its interface."
-msgstr "У Zrythm есть следующие глобальные меню в верхней части интерфейса."
+msgstr "В Zrythm есть следующие глобальные меню в верхней части интерфейса."
 
 #: ../../zrythm-interface/main-toolbar.rst:31
 msgid "Edit Menu"
@@ -8764,8 +8736,8 @@ msgid ""
 "The Edit menu has various buttons and controls that are used often during "
 "editing and arranging."
 msgstr ""
-"В меню «Правка» различные кнопки и элементы управления, которые часто "
-"используются во время редактирования и аранжировки."
+"В меню «Правка» находятся различные кнопки и элементы управления, которые "
+"часто используются во время редактирования и аранжировки."
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
@@ -8784,9 +8756,8 @@ msgstr ""
 "сохранение, загрузка и экспорт MIDI или аудио."
 
 #: ../../zrythm-interface/main-toolbar.rst:45
-#, fuzzy
 msgid "Project Management"
-msgstr "Меню Проект (Project Menu)"
+msgstr "Управление проектом"
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "New Project"
@@ -8802,7 +8773,7 @@ msgstr "Сохранить (Save)"
 
 #: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save the current project at its current location."
-msgstr "Сохраните текущий проект в его текущем месте."
+msgstr "Сохранить текущий проект в его текущем расположении."
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
@@ -8810,15 +8781,15 @@ msgstr "Сохранить как (Save As)"
 
 #: ../../zrythm-interface/main-toolbar.rst:51
 msgid "Save the current project at a new location."
-msgstr "Сохраните текущий проект в новом месте."
+msgstr "Сохранить текущий проект в новом месте."
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
-msgstr "Загрузить"
+msgstr "Открыть"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
-msgstr "Загрузите проект."
+msgstr "Открыть проект."
 
 #: ../../zrythm-interface/main-toolbar.rst:56
 msgid "Export"
@@ -8833,7 +8804,7 @@ msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for "
 "more details."
 msgstr ""
-"Экспортируйте проект как аудио или MIDI. Смотрите :ref:`export-audio-and-"
+"Экспортировать проект как аудио или MIDI. Смотрите :ref:`export-audio-and-"
 "midi` для более подробной информации."
 
 #: ../../zrythm-interface/main-toolbar.rst:62
@@ -8845,14 +8816,14 @@ msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
 msgstr ""
-"Экспортируйте график маршрутизации как изображение или график в формате ."
+"Экспортировать диаграмму маршрутизации как изображение или график в формате ."
 "dot. Смотрите :ref:`export-routing-graph` для более подробной информации."
 
 #: ../../zrythm-interface/main-toolbar.rst:64
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
-"Для получения дополнительной информации о проектах читайте Главу :ref:"
-"`projects`."
+"Для получения дополнительной информации о проектах читайте главу "
+":ref:`projects`."
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 msgid "View Menu"
@@ -8864,11 +8835,11 @@ msgid ""
 "various areas, such as zooming."
 msgstr ""
 "Меню «Вид» содержит элементы управления для изменения внешнего вида Zrythm и "
-"его различных областей, например масштабирования."
+"его различных областей, например масштабирование."
 
 #: ../../zrythm-interface/main-toolbar.rst:73
 msgid "Zoom"
-msgstr ""
+msgstr "Масштабирование"
 
 #: ../../zrythm-interface/main-toolbar.rst:74
 msgid "Zoom In"
@@ -8902,30 +8873,28 @@ msgstr "Наиболее подходящий масштаб (Best Fit)"
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
-msgstr ""
-"Увеличивает или уменьшает масштаб настолько, насколько необходимо, чтобы "
-"показать все события на таймлайне."
+msgstr "Подстраивает масштаб так, чтобы было видно все события на таймлайне."
 
 #: ../../zrythm-interface/main-toolbar.rst:85
-#, fuzzy
 msgid "Visibility Toggles"
-msgstr "Включает/Выключает отображение шкал."
+msgstr "Переключатели видимости"
 
 #: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Toggle Left/Right/Bottom Panels"
-msgstr "Вкл/Выкл левую/правую/нижнюю панели (Toggle Left/Right/Bottom Panels)"
+msgstr ""
+"Показать/Скрыть левую/правую/нижнюю панель (Toggle Left/Right/Bottom Panels)"
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Toggles the panel's visibility."
-msgstr "Включает/Выключает видимость панели."
+msgstr "Переключает видимость панели."
 
 #: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Toggle Timeline Visibility"
-msgstr "Вкл/Выкл видимость таймлайна (Toggle Timeline Visibility)"
+msgstr "Показать/Скрыть таймлайн (Toggle Timeline Visibility)"
 
 #: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Toggles the timeline's visibility."
-msgstr "Включает/Выключает видимость таймлайна."
+msgstr "Переключает видимость таймлайна."
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Help Menu"
@@ -8936,8 +8905,8 @@ msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
-"Меню «Справка» содержит ссылки для сообщений об ошибках, пожертвований, "
-"общения в чате и другие полезные ссылки."
+"Меню «Справка» содержит ссылки на ресурсы для сообщения об ошибках, "
+"пожертвований, общения в чате и другие полезные ссылки."
 
 #: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Chat"
@@ -8985,7 +8954,7 @@ msgstr "Сообщить об ошибке (Report a Bug)"
 
 #: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Opens the page to report a new bug."
-msgstr "Открывает страницу, чтобы сообщить о новой ошибке."
+msgstr "Открывает страницу, через которую вы можете сообщить о новой ошибке."
 
 #: ../../zrythm-interface/main-toolbar.rst:111
 msgid "The main toolbar also contains the following widgets."
