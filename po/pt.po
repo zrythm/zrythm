@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
-"PO-Revision-Date: 2021-08-13 01:58+0000\n"
+"PO-Revision-Date: 2021-08-30 11:34+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:294
@@ -306,7 +306,7 @@ msgstr "Pasta"
 #: src/audio/curve.c:81
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logarítmico"
 
 #: inc/audio/engine.h:204
 msgid "1,024"
@@ -437,9 +437,8 @@ msgid "Unable to read file: %s"
 msgstr "Incapaz de ler o ficheiro: %s"
 
 #: src/project.c:918
-#, fuzzy
 msgid "Failed to decompress project file"
-msgstr "Falha ao descomprimir o ficheiro do projeto: %s"
+msgstr "Falha ao descomprimir o ficheiro do projeto"
 
 #: src/project.c:977
 #, c-format
@@ -476,9 +475,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "Falha ao carregar o projeto. Vou criar um em vez disso."
 
 #: src/project.c:1608
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "Falha ao descomprimir o ficheiro do projeto: %s"
+msgstr "Falha ao comprimir o ficheiro do projeto"
 
 #: src/project.c:1654
 msgid "Backup saved."
@@ -675,6 +673,13 @@ msgid ""
 "\n"
 "Please report issues to %s\n"
 msgstr ""
+"Exemplos:\n"
+"  --zpj-to-yaml a.zpj > b.yaml         Converter um a.zpj em YAML e gravar "
+"em b.yaml\n"
+"  --gen-project a.scm -o myproject   Gerar myproject de a.scm\n"
+"  -p --pretty                         Pretty-print definições de corrente\n"
+"\n"
+"Por favor, relate problemas a %s.\n"
 
 #: src/zrythm_app.c:1975
 #, c-format
@@ -719,9 +724,8 @@ msgid "Error adding carla plugin: %s"
 msgstr "Erro ao adicionar suplemento de carla: %s"
 
 #: src/plugins/carla_native_plugin.c:1345
-#, fuzzy
 msgid "Failed to load Carla state"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao carregar o estado de Carla"
 
 #: src/plugins/carla_native_plugin.c:1360
 #, fuzzy
@@ -731,9 +735,9 @@ msgid ""
 msgstr "Falha ao instanciar o suplemento Carla"
 
 #: src/plugins/carla_native_plugin.c:1725
-#, fuzzy, c-format
+#, c-format
 msgid "State file %s doesn't exist"
-msgstr "O cliente solicitado não existe"
+msgstr "O ficheiro de estado %s não existe"
 
 #: src/plugins/plugin_manager.c:395
 msgid "Error loading LV2 bundle dir: "
@@ -793,9 +797,8 @@ msgstr "Ganho do suplemento"
 
 #: src/plugins/plugin.c:525 src/plugins/plugin_gtk.c:170
 #: src/gui/widgets/plugin_properties_expander.c:155
-#, fuzzy
 msgid "Failed to apply preset"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao aplicar a predefinição"
 
 #: src/plugins/plugin.c:577
 msgid "Failed to get Carla plugin"
@@ -815,16 +818,12 @@ msgid "instrument"
 msgstr "Instrumento"
 
 #: src/plugins/plugin.c:1671
-#, fuzzy
 msgid "Carla plugin instantiation failed"
-msgstr ""
-"Erro ao instanciar o suplemento. Por favor, veja o registo para mais detalhes"
+msgstr "A instanciação do suplemento Carla falhou"
 
 #: src/plugins/plugin.c:1699
-#, fuzzy
 msgid "LV2 plugin instantiation failed"
-msgstr ""
-"Erro ao instanciar o suplemento. Por favor, veja o registo para mais detalhes"
+msgstr "A instanciação do suplemento LV2 falhou"
 
 #: src/plugins/plugin.c:1937
 #, c-format
@@ -835,11 +834,16 @@ msgid ""
 "mode, and report this to the author:\n"
 "  %s <%s>"
 msgstr ""
+"<%s <%s> tem um tipo de IU depreciado:\n"
+"  %s\n"
+"Se a IU não carregar, por favor tente instanciar o suplemento em modo "
+"totalmente híbrido e relate-o ao autor:\n"
+"  %s <%s>"
 
 #: src/plugins/plugin.c:2236
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin clone for %s"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar um clone de suplemento para %s"
 
 #: src/plugins/plugin_gtk.c:96 src/plugins/lv2/lv2_gtk.c:76
 msgid "Save State"
@@ -864,9 +868,8 @@ msgid "_Save"
 msgstr "_Guardar"
 
 #: src/plugins/plugin_gtk.c:310
-#, fuzzy
 msgid "Save Preset"
-msgstr "Gravar Projeto"
+msgstr "Gravar predefinição"
 
 #: src/plugins/plugin_gtk.c:349
 msgid "_Prefix plugin name"
@@ -877,9 +880,8 @@ msgid "URI (Optional):"
 msgstr "URI (Opcional):"
 
 #: src/plugins/plugin_gtk.c:1333
-#, fuzzy
 msgid "Open File"
-msgstr "Ficheiros de Saída"
+msgstr "Abrir ficheiro"
 
 #: src/plugins/plugin_gtk.c:1502
 msgid "Close"
@@ -894,29 +896,28 @@ msgid "Unknown widget type for value\n"
 msgstr "Tipo de widget desconhecido para valor\n"
 
 #: src/plugins/lv2_plugin.c:1975
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao obter o suplemento de LV2 do URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2279
 #, c-format
 msgid "Could not find UI by URI <%s>"
-msgstr ""
+msgstr "Não foi possível encontrar a IU pelo URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2632
-#, fuzzy
 msgid "Failed to make temporary dir"
-msgstr "Falha ao visualizar o esquema %s"
+msgstr "Falha ao criar um dir temporário"
 
 #: src/plugins/lv2_plugin.c:2693
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load state from %s"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao carregar o estado de %s"
 
 #: src/plugins/lv2_plugin.c:2727
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao encontrar o suplemento com o URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2768
 #, c-format
@@ -926,19 +927,22 @@ msgid ""
 "bridged mode, and report this to the plugin distributor and/or author:\n"
 "%s <%s>"
 msgstr ""
+"%s <%s> contém uma referência a %s, que pode causar problemas.\n"
+"Se o suplemento não carregar, tente instanciar o suplemento no modo full-"
+"bridged e relate-o ao distribuidor do suplemento e/ou autor:\n"
+"%s <%s>"
 
 #: src/plugins/lv2_plugin.c:2914
 msgid "Failed checking whether lv2 plugin UI is external"
-msgstr ""
+msgstr "Falha ao verificar se a interface do suplemento lv2 é externa"
 
 #: src/plugins/lv2_plugin.c:3749
 msgid "Unnamed bank"
 msgstr "Banco sem nome"
 
 #: src/plugins/lv2/lv2_state.c:456
-#, fuzzy
 msgid "Failed to apply LV2 preset"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao aplicar a predefinição de LV2"
 
 #: src/plugins/lv2/lv2_gtk.c:259
 msgid "Delete Preset?"
@@ -952,14 +956,13 @@ msgid "_OK"
 msgstr "_OK"
 
 #: src/plugins/lv2/lv2_gtk.c:573
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open LV2 UI for %s"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao abrir o IU de LV2 para %s"
 
 #: src/gui/widgets/editor_ruler.c:233
-#, fuzzy
 msgid "Failed to edit position"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao editar a posição"
 
 #: src/gui/widgets/bounce_step_selector.c:188
 #, fuzzy
@@ -984,9 +987,9 @@ msgid "Add"
 msgstr "Adicionar"
 
 #: src/gui/widgets/inspector_port.c:175 src/gui/widgets/modulator_inner.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset %s"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao reiniciar %s"
 
 #: src/gui/widgets/inspector_port.c:195 src/gui/widgets/modulator_inner.c:206
 #: src/gui/widgets/plugin_browser.c:1159 src/gui/widgets/plugin_browser.c:1228
@@ -1001,9 +1004,9 @@ msgid "View info"
 msgstr "Ver informações"
 
 #: src/gui/widgets/inspector_port.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set control %s to %f"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha na definição do controle %s a %f"
 
 #: src/gui/widgets/inspector_port.c:429
 msgid "Incoming signals"
@@ -1124,9 +1127,8 @@ msgstr "Ativar"
 
 #: src/gui/widgets/channel.c:808 src/gui/widgets/folder_channel.c:641
 #: src/gui/widgets/track.c:2126
-#, fuzzy
 msgid "Change color..."
-msgstr "Mudar cor"
+msgstr "Mudar cor..."
 
 #: src/gui/widgets/track_input_expander.c:294
 msgid "All MIDI Inputs"
@@ -1250,18 +1252,17 @@ msgid "Inserts"
 msgstr "Inserções"
 
 #: src/gui/widgets/modulator_inner.c:101 src/actions/actions.c:1228
-#, fuzzy
 msgid "Failed to delete plugins"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao apagar suplementos"
 
 #: src/gui/widgets/port_selector_popover.c:58
 msgid "No port selected"
 msgstr "Nenhuma porta selecionada"
 
 #: src/gui/widgets/port_selector_popover.c:89
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to connect %s to %s"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao conectar %s a %s"
 
 #: src/gui/widgets/port_selector_popover.c:100
 msgid "These ports cannot be connected"
@@ -1272,16 +1273,14 @@ msgid "Track Ports"
 msgstr "Portas de Faixa"
 
 #: src/gui/widgets/channel_send_selector.c:152
-#, fuzzy
 msgid "Failed to disconnect send"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao desconectar o envio"
 
 #: src/gui/widgets/channel_send_selector.c:188
 #: src/gui/widgets/channel_send_selector.c:220
 #: src/gui/widgets/channel_send_selector.c:259
-#, fuzzy
 msgid "Failed to connect send"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao conectar o envio"
 
 #: src/gui/widgets/channel_send_selector.c:540
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:89
@@ -1317,9 +1316,8 @@ msgid "triplet"
 msgstr "trio"
 
 #: src/gui/widgets/digital_meter.c:695 src/gui/widgets/digital_meter.c:712
-#, fuzzy
 msgid "Failed to change time signature"
-msgstr "Assinatura de tempo"
+msgstr "Falha ao alterar a assinatura de tempo"
 
 #: src/gui/widgets/digital_meter.c:1208
 msgid "Tempo/BPM"
@@ -1338,24 +1336,20 @@ msgstr "Assinatura de Tempo - Batidas por barra / Unidade de batida"
 #: src/gui/widgets/drag_dest_box.c:247 src/gui/widgets/plugin_browser.c:344
 #: src/gui/widgets/panel_file_browser.c:708 src/audio/tracklist.c:1492
 #: src/audio/track.c:3843
-#, fuzzy
 msgid "Failed to create track"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar a faixa"
 
 #: src/gui/widgets/drag_dest_box.c:267 src/audio/audio_function.c:145
-#, fuzzy
 msgid "Failed to create plugin"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha na criação do suplemento"
 
 #: src/gui/widgets/drag_dest_box.c:318
-#, fuzzy
 msgid "Failed to move or copy plugin"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao mover ou copiar o suplemento"
 
 #: src/gui/widgets/drag_dest_box.c:360
-#, fuzzy
 msgid "Failed to move or copy track"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao mover ou copiar a faixa"
 
 #: src/gui/widgets/drag_dest_box.c:438
 msgid "Add _MIDI Track"
@@ -1411,15 +1405,14 @@ msgid "Slot #%d"
 msgstr "Compartimento #%d"
 
 #: src/gui/widgets/channel_slot.c:325
-#, fuzzy
 msgid "Failed to move or copy plugins"
-msgstr "Falha ao encontrar o suplemento com o URI: %s"
+msgstr "Falha ao mover ou copiar os suplementos"
 
 #: src/gui/widgets/channel_slot.c:359 src/audio/sample_processor.c:633
 #: src/actions/tracklist_selections.c:815
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin %s"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha na criação do suplemento %s"
 
 #: src/gui/widgets/channel_slot.c:375
 #, c-format
@@ -1441,14 +1434,12 @@ msgstr "compartimento vazio"
 #: src/gui/widgets/arranger.c:1781 src/gui/widgets/arranger.c:1803
 #: src/gui/widgets/arranger.c:1851 src/gui/widgets/arranger.c:1920
 #: src/gui/widgets/arranger.c:1941
-#, fuzzy
 msgid "Failed to move selection"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao mover a seleção"
 
 #: src/gui/widgets/arranger.c:1872 src/gui/widgets/arranger.c:4229
-#, fuzzy
 msgid "Failed to move chords"
-msgstr "Falha ao redefinir o esquema %s"
+msgstr "Falha ao mover acordes"
 
 #: src/gui/widgets/arranger.c:2468 src/gui/widgets/track.c:1628
 #: resources/ui/string_entry_dialog.ui:94
@@ -1458,6 +1449,7 @@ msgstr "Nome do marcador"
 #: src/gui/widgets/arranger.c:2513
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
+"Não é possível redimensionar porque a seleção contém objetos sem comprimento"
 
 #: src/gui/widgets/arranger.c:2541
 msgid ""
@@ -1466,46 +1458,38 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/arranger.c:3722
-#, fuzzy
 msgid "Failed to delete selection"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao apagar seleção"
 
 #: src/gui/widgets/arranger.c:3751
-#, fuzzy
 msgid "Failed to edit selection"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao editar a seleção"
 
 #: src/gui/widgets/arranger.c:3806
-#, fuzzy
 msgid "Failed to move automation"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao mover a automação"
 
 #: src/gui/widgets/arranger.c:3835
-#, fuzzy
 msgid "Failed to duplicate automation"
-msgstr "Duplicar Automação"
+msgstr "Falha ao duplicar a automação"
 
 #: src/gui/widgets/arranger.c:3859 src/gui/widgets/arranger.c:4274
 #: src/gui/widgets/arranger.c:4640
-#, fuzzy
 msgid "Failed to create objects"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao criar objetos"
 
 #: src/gui/widgets/arranger.c:3881
-#, fuzzy
 msgid "Failed to fill automation"
-msgstr "Falha ao abrir o ficheiro: %s"
+msgstr "Falha ao preencher a automação"
 
 #: src/gui/widgets/arranger.c:3914 src/gui/widgets/arranger.c:3967
 #: src/gui/widgets/arranger.c:3990 src/gui/widgets/timeline_arranger.c:1170
-#, fuzzy
 msgid "Failed to edit selections"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao editar seleções"
 
 #: src/gui/widgets/arranger.c:4025 src/gui/widgets/arranger.c:4051
-#, fuzzy
 msgid "Failed to resize objects"
-msgstr "Falha ao escrever o ficheiro: %s"
+msgstr "Falha ao redimensionar objetos"
 
 #: src/gui/widgets/arranger.c:4063 src/gui/widgets/arranger.c:4113
 #, fuzzy
