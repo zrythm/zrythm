@@ -8,13 +8,14 @@
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Eric <spice2wolf@gmail.com>, 2021.
 # UnluckyNinja <unluckyninja1994@gmail.com>, 2021.
+# Liu Tao <lyuutau@outlook.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
-"PO-Revision-Date: 2021-08-29 01:37+0000\n"
-"Last-Translator: Eric <spice2wolf@gmail.com>\n"
+"PO-Revision-Date: 2021-09-05 05:33+0000\n"
+"Last-Translator: Liu Tao <lyuutau@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -2710,7 +2711,7 @@ msgstr "未能创建 MIDI 组轨道"
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr "一个高度自动化且直观的数字的音频工作站"
+msgstr "一个高度自动化且直观的数字音频工作站"
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
@@ -2894,7 +2895,7 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr "主目录"
+msgstr "主页"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
