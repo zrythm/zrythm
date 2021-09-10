@@ -144,8 +144,10 @@ midi_events_append_w_filter (
 
       /* only copy events inside the current time
        * range */
-      if (src_ev->time < local_offset ||
-          src_ev->time >= local_offset + nframes)
+      if (ZRYTHM_TESTING
+          &&
+          (src_ev->time < local_offset ||
+           src_ev->time >= local_offset + nframes))
         {
           g_debug (
             "skipping event: time %" PRIu8

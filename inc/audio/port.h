@@ -582,6 +582,10 @@ typedef struct Port
   /** Magic number to identify that this is a
    * Port. */
   int                 magic;
+
+  /** Last allocated buffer size (used for audio
+   * ports). */
+  size_t              last_buf_sz;
 } Port;
 
 static const cyaml_schema_field_t

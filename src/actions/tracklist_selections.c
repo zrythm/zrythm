@@ -1340,6 +1340,7 @@ do_or_undo_create_or_delete (
   /* restore connections */
   save_or_load_port_connections (self, _do);
 
+  tracklist_set_caches (TRACKLIST);
   tracklist_validate (TRACKLIST);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -1822,6 +1823,7 @@ do_or_undo_move_or_copy (
   /* restore connections */
   save_or_load_port_connections (self, _do);
 
+  tracklist_set_caches (TRACKLIST);
   tracklist_validate (TRACKLIST);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);

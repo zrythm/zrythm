@@ -20,6 +20,7 @@
 #include "audio/modulator_macro_processor.h"
 #include "audio/port.h"
 #include "utils/dsp.h"
+#include "utils/debug.h"
 #include "utils/objects.h"
 
 #include <glib/gi18n.h>
@@ -66,6 +67,10 @@ modulator_macro_processor_process (
   nframes_t                 start_frame,
   const nframes_t           nframes)
 {
+  z_return_if_fail_cmp (
+    start_frame + nframes, <=,
+    self->cv_out->last_buf_sz);
+
   /* if there are inputs, multiply by the knov
    * value */
   if (self->cv_in->num_srcs > 0)

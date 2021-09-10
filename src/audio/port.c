@@ -111,6 +111,7 @@ port_allocate_bufs (
             self->min_buf_size);
         max = MAX (max, 1);
         self->buf = object_new_n (max, float);
+        self->last_buf_sz = max;
       }
     default:
       break;

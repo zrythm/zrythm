@@ -1126,6 +1126,8 @@ engine_resume (
   AudioEngine * self,
   EngineState * state)
 {
+  g_message ("resuming engine...");
+
   TRANSPORT->loop = state->looping;
 
   if (state->playing)

@@ -753,6 +753,15 @@ test_rename_midi_track_with_events (void)
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
 
+  /* duplicate and let engine run */
+  tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+    TRACKLIST->num_tracks, NULL);
+
+  /* play and let engine run */
+  transport_request_roll (TRANSPORT);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+
   test_helper_zrythm_cleanup ();
 }
 
