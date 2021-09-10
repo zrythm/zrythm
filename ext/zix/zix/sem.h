@@ -1,5 +1,5 @@
 /*
-  Copyright 2012-2014 David Robillard <http://drobilla.net>
+  Copyright 2012-2020 David Robillard <d@drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -17,21 +17,23 @@
 #ifndef ZIX_SEM_H
 #define ZIX_SEM_H
 
-#ifdef __APPLE__
-#    include <mach/mach.h>
-#elif defined(_WIN32)
-#    include <limits.h>
-#    include <windows.h>
-#else
-#    include <semaphore.h>
-#    include <errno.h>
-#endif
-
 #include "zix/common.h"
+
+#ifdef __APPLE__
+#  include <mach/mach.h>
+#elif defined(_WIN32)
+#  include <limits.h>
+#  include <windows.h>
+#else
+#  include <errno.h>
+#  include <semaphore.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdbool.h>
 
 /**
    @addtogroup zix
@@ -39,6 +41,8 @@ extern "C" {
    @name Semaphore
    @{
 */
+
+struct ZixSemImpl;
 
 /**
    A counting semaphore.
@@ -100,126 +104,127 @@ zix_sem_try_wait(ZixSem* sem);
 #ifdef __APPLE__
 
 struct ZixSemImpl {
-	semaphore_t sem;
+  semaphore_t sem;
 };
 
 static inline ZixStatus
 zix_sem_init(ZixSem* sem, unsigned val)
 {
-	return semaphore_create(mach_task_self(), &sem->sem, SYNC_POLICY_FIFO, val)
-		? ZIX_STATUS_ERROR : ZIX_STATUS_SUCCESS;
+  return semaphore_create(mach_task_self(), &sem->sem, SYNC_POLICY_FIFO, val)
+           ? ZIX_STATUS_ERROR
+           : ZIX_STATUS_SUCCESS;
 }
 
 static inline void
 zix_sem_destroy(ZixSem* sem)
 {
-	semaphore_destroy(mach_task_self(), sem->sem);
+  semaphore_destroy(mach_task_self(), sem->sem);
 }
 
 static inline void
 zix_sem_post(ZixSem* sem)
 {
-	semaphore_signal(sem->sem);
+  semaphore_signal(sem->sem);
 }
 
 static inline ZixStatus
 zix_sem_wait(ZixSem* sem)
 {
-	if (semaphore_wait(sem->sem) != KERN_SUCCESS) {
-		return ZIX_STATUS_ERROR;
-	}
-	return ZIX_STATUS_SUCCESS;
+  if (semaphore_wait(sem->sem) != KERN_SUCCESS) {
+    return ZIX_STATUS_ERROR;
+  }
+  return ZIX_STATUS_SUCCESS;
 }
 
 static inline bool
 zix_sem_try_wait(ZixSem* sem)
 {
-	const mach_timespec_t zero = { 0, 0 };
-	return semaphore_timedwait(sem->sem, zero) == KERN_SUCCESS;
+  const mach_timespec_t zero = {0, 0};
+  return semaphore_timedwait(sem->sem, zero) == KERN_SUCCESS;
 }
 
 #elif defined(_WIN32)
 
 struct ZixSemImpl {
-	HANDLE sem;
+  HANDLE sem;
 };
 
 static inline ZixStatus
 zix_sem_init(ZixSem* sem, unsigned initial)
 {
-	sem->sem = CreateSemaphore(NULL, (LONG) initial, LONG_MAX, NULL);
-	return (sem->sem) ? ZIX_STATUS_ERROR : ZIX_STATUS_SUCCESS;
+  sem->sem = CreateSemaphore(NULL, initial, LONG_MAX, NULL);
+  return (sem->sem) ? ZIX_STATUS_SUCCESS : ZIX_STATUS_ERROR;
 }
 
 static inline void
 zix_sem_destroy(ZixSem* sem)
 {
-	CloseHandle(sem->sem);
+  CloseHandle(sem->sem);
 }
 
 static inline void
 zix_sem_post(ZixSem* sem)
 {
-	ReleaseSemaphore(sem->sem, 1, NULL);
+  ReleaseSemaphore(sem->sem, 1, NULL);
 }
 
 static inline ZixStatus
 zix_sem_wait(ZixSem* sem)
 {
-	if (WaitForSingleObject(sem->sem, INFINITE) != WAIT_OBJECT_0) {
-		return ZIX_STATUS_ERROR;
-	}
-	return ZIX_STATUS_SUCCESS;
+  if (WaitForSingleObject(sem->sem, INFINITE) != WAIT_OBJECT_0) {
+    return ZIX_STATUS_ERROR;
+  }
+  return ZIX_STATUS_SUCCESS;
 }
 
 static inline bool
 zix_sem_try_wait(ZixSem* sem)
 {
-	return WaitForSingleObject(sem->sem, 0) == WAIT_OBJECT_0;
+  return WaitForSingleObject(sem->sem, 0) == WAIT_OBJECT_0;
 }
 
-#else  /* !defined(__APPLE__) && !defined(_WIN32) */
+#else /* !defined(__APPLE__) && !defined(_WIN32) */
 
 struct ZixSemImpl {
-	sem_t sem;
+  sem_t sem;
 };
 
 static inline ZixStatus
 zix_sem_init(ZixSem* sem, unsigned initial)
 {
-	return sem_init(&sem->sem, 0, initial)
-		? ZIX_STATUS_ERROR : ZIX_STATUS_SUCCESS;
+  return sem_init(&sem->sem, 0, initial) ? ZIX_STATUS_ERROR
+                                         : ZIX_STATUS_SUCCESS;
 }
 
 static inline void
 zix_sem_destroy(ZixSem* sem)
 {
-	sem_destroy(&sem->sem);
+  sem_destroy(&sem->sem);
 }
 
 static inline void
 zix_sem_post(ZixSem* sem)
 {
-	sem_post(&sem->sem);
+  sem_post(&sem->sem);
 }
 
 static inline ZixStatus
 zix_sem_wait(ZixSem* sem)
 {
-	while (sem_wait(&sem->sem)) {
-		if (errno != EINTR) {
-			return ZIX_STATUS_ERROR;
-		}
-		/* Otherwise, interrupted, so try again. */
-	}
+  while (sem_wait(&sem->sem)) {
+    if (errno != EINTR) {
+      return ZIX_STATUS_ERROR;
+    }
+    /* Otherwise, interrupted, so try again. */
+  }
 
-	return ZIX_STATUS_SUCCESS;
+  return ZIX_STATUS_SUCCESS;
 }
 
 static inline bool
 zix_sem_try_wait(ZixSem* sem)
 {
-	return (sem_trywait(&sem->sem) == 0);
+  return (sem_trywait(&sem->sem) == 0);
 }
 
 #endif
@@ -231,7 +236,7 @@ zix_sem_try_wait(ZixSem* sem)
 */
 
 #ifdef __cplusplus
-}  /* extern "C" */
+} /* extern "C" */
 #endif
 
-#endif  /* ZIX_SEM_H */
+#endif /* ZIX_SEM_H */
