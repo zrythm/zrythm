@@ -85,7 +85,7 @@ typedef struct _DigitalMeterWidget
   int                      dec_part_end_pos;
 
   /** Used when changing the BPM. */
-  bpm_t                    prev_bpm;
+  bpm_t                    bpm_at_start;
 
   /** Used during update. */
   bpm_t                    last_set_bpm;
@@ -147,8 +147,8 @@ typedef struct _DigitalMeterWidget
   int                      update_timesig_bot;
 
   /** Used when changing the time signature. */
-  int                      prev_beats_per_bar;
-  int                      prev_beat_unit;
+  int                      beats_per_bar_at_start;
+  int                      beat_unit_at_start;
 
   /* ---------- FOR POSITION ---------------- */
   void *     obj;

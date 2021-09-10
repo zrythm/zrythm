@@ -343,4 +343,7 @@
 #define Z_F_AUTOMATING 1
 #define Z_F_NOT_AUTOMATING 0
 
+#define Z_F_TEMPORARY 1
+#define Z_F_NOT_TEMPORARY 0
+
 #endif

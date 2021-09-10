@@ -190,18 +190,17 @@ tempo_track_set_bpm (
       bpm = TEMPO_TRACK_MAX_BPM;
     }
 
-  port_set_control_value (
-    self->bpm_port, bpm, false, false);
-
-  if (!temporary)
+  if (temporary)
+    {
+      port_set_control_value (
+        self->bpm_port, bpm, false, false);
+    }
+  else
     {
       GError * err = NULL;
       bool ret =
         transport_action_perform_bpm_change (
-          start_bpm,
-          port_get_control_value (
-            self->bpm_port, false),
-          false, &err);
+          start_bpm, bpm, false, &err);
       if (!ret)
         {
           HANDLE_ERROR (

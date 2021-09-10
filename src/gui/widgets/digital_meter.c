@@ -596,10 +596,10 @@ on_change_started (
         *self->note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
-      self->prev_beats_per_bar =
+      self->beats_per_bar_at_start =
         tempo_track_get_beats_per_bar (
           P_TEMPO_TRACK);
-      self->prev_beat_unit =
+      self->beat_unit_at_start =
         tempo_track_get_beat_unit (P_TEMPO_TRACK);
       break;
     case DIGITAL_METER_TYPE_POSITION:
@@ -607,9 +607,9 @@ on_change_started (
         ((*self->on_drag_begin) (self->obj));
       break;
     case DIGITAL_METER_TYPE_BPM:
-      self->prev_bpm =
+      self->bpm_at_start =
         tempo_track_get_current_bpm (P_TEMPO_TRACK);
-      self->last_set_bpm = self->prev_bpm;
+      self->last_set_bpm = self->bpm_at_start;
       transport_prepare_audio_regions_for_stretch (
         TRANSPORT, NULL);
       break;
@@ -664,8 +664,8 @@ on_change_finished (
     case DIGITAL_METER_TYPE_BPM:
       tempo_track_set_bpm (
         P_TEMPO_TRACK,
-        tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        self->prev_bpm, false, F_PUBLISH_EVENTS);
+        self->last_set_bpm, self->bpm_at_start,
+        Z_F_NOT_TEMPORARY, F_PUBLISH_EVENTS);
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
       {
@@ -681,14 +681,14 @@ on_change_finished (
         int beat_unit =
           tempo_track_get_beat_unit (
             P_TEMPO_TRACK);
-        if (self->prev_beats_per_bar !=
+        if (self->beats_per_bar_at_start !=
               beats_per_bar)
           {
             GError * err = NULL;
             bool ret =
               transport_action_perform_time_sig_change (
                 TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE,
-                self->prev_beats_per_bar,
+                self->beats_per_bar_at_start,
                 beats_per_bar,
                 F_ALREADY_EDITED, &err);
             if (!ret)
@@ -699,14 +699,14 @@ on_change_finished (
                   "signature"));
               }
           }
-        else if (self->prev_beat_unit !=
+        else if (self->beat_unit_at_start !=
                    beat_unit)
           {
             GError * err = NULL;
             bool ret =
               transport_action_perform_time_sig_change (
                 TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
-                self->prev_beat_unit, beat_unit,
+                self->beat_unit_at_start, beat_unit,
                 F_ALREADY_EDITED, &err);
             if (!ret)
               {
@@ -745,25 +745,28 @@ on_scroll (
   update_flags (self, event->x, event->y);
   on_change_started (self);
 
+  ControlPortChange change = { 0 };
+
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
-      /*g_message ("update num ? %d", self->update_num);*/
+      change.flag1 = PORT_FLAG_BPM;
       if (self->update_num)
         {
-          tempo_track_set_bpm (
-            P_TEMPO_TRACK,
-            tempo_track_get_current_bpm (
-              P_TEMPO_TRACK) + (bpm_t) num,
-            0.f, true, F_PUBLISH_EVENTS);
+          change.real_val =
+            self->last_set_bpm + (bpm_t) num;
+          self->last_set_bpm = change.real_val;
+          router_queue_control_port_change (
+            ROUTER, &change);
         }
       else if (self->update_dec)
         {
-          tempo_track_set_bpm (
-            P_TEMPO_TRACK,
-            tempo_track_get_current_bpm (
-              P_TEMPO_TRACK) + (bpm_t) num / 100.f,
-            0.f, true, F_PUBLISH_EVENTS);
+          change.real_val =
+            self->last_set_bpm +
+            (bpm_t) num / 100.f;
+          self->last_set_bpm = change.real_val;
+          router_queue_control_port_change (
+            ROUTER, &change);
         }
 
       break;
@@ -842,41 +845,43 @@ on_scroll (
         }
       if (self->update_timesig_top)
         {
-          num += self->prev_beats_per_bar;
+          num += self->beats_per_bar_at_start;
+          change.flag2 =
+            PORT_FLAG2_BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
-              tempo_track_set_beats_per_bar (
-                P_TEMPO_TRACK,
-                TEMPO_TRACK_MIN_BEATS_PER_BAR);
+              change.ival =
+                TEMPO_TRACK_MIN_BEATS_PER_BAR;
             }
           else
             {
-              tempo_track_set_beats_per_bar (
-                P_TEMPO_TRACK,
-                num > TEMPO_TRACK_MAX_BEATS_PER_BAR ?
-                  TEMPO_TRACK_MAX_BEATS_PER_BAR :
-                  num);
+              change.ival =
+                num > TEMPO_TRACK_MAX_BEATS_PER_BAR
+                ? TEMPO_TRACK_MAX_BEATS_PER_BAR
+                : num;
             }
+          router_queue_control_port_change (
+            ROUTER, &change);
         }
       else if (self->update_timesig_bot)
         {
           num +=
             (int)
             tempo_track_beat_unit_to_enum (
-              self->prev_beat_unit);
+              self->beat_unit_at_start);
+          change.flag2 = PORT_FLAG2_BEAT_UNIT;
           if (num < 0)
             {
-              tempo_track_set_beat_unit_from_enum (
-                P_TEMPO_TRACK, BEAT_UNIT_2);
+              change.beat_unit = BEAT_UNIT_2;
             }
           else
             {
-              tempo_track_set_beat_unit_from_enum (
-                P_TEMPO_TRACK,
-                (BeatUnit)
-                (num > BEAT_UNIT_16
-                 ? BEAT_UNIT_16 : num));
+              change.beat_unit =
+                num > BEAT_UNIT_16
+                ? BEAT_UNIT_16 : (BeatUnit) num;
             }
+          router_queue_control_port_change (
+            ROUTER, &change);
         }
       if (self->update_timesig_top ||
           self->update_timesig_bot)
@@ -1082,7 +1087,7 @@ drag_update (
       if (self->update_timesig_top)
         {
           num =
-            self->prev_beats_per_bar +
+            self->beats_per_bar_at_start +
             (int) diff / 24;
           ControlPortChange change = { 0 };
           change.flag2 =
@@ -1107,7 +1112,7 @@ drag_update (
           num =
             (int)
             tempo_track_beat_unit_to_enum (
-              self->prev_beat_unit) +
+              self->beat_unit_at_start) +
             (int) diff / 24;
           ControlPortChange change = { 0 };
           change.flag2 = PORT_FLAG2_BEAT_UNIT;
