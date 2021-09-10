@@ -1845,6 +1845,7 @@ do_or_undo_edit (
   int num_tracks = self->num_tracks;
 
   bool need_recalc_graph = false;
+  bool need_tracklist_cache_update = false;
 
   for (int i = 0; i < num_tracks; i++)
     {
@@ -2030,6 +2031,8 @@ do_or_undo_edit (
             /* remember the new name */
             g_free (self->new_txt);
             self->new_txt = cur_name;
+
+            need_tracklist_cache_update = true;
           }
           break;
         case EDIT_TRACK_ACTION_TYPE_RENAME_LANE:
@@ -2091,6 +2094,11 @@ do_or_undo_edit (
 
   /* restore connections */
   save_or_load_port_connections (self, _do);
+
+  if (need_tracklist_cache_update)
+    {
+      tracklist_set_caches (TRACKLIST);
+    }
 
   if (need_recalc_graph)
     {

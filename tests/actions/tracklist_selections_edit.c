@@ -718,6 +718,45 @@ test_edit_multi_track_direct_out (void)
 }
 
 static void
+test_rename_midi_track_with_events (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create a MIDI track from a file */
+  char ** midi_files =
+    io_get_files_in_dir_ending_in (
+      MIDILIB_TEST_MIDI_FILES_PATH,
+      F_RECURSIVE, ".MID", false);
+  g_assert_nonnull (midi_files);
+  SupportedFile * file =
+    supported_file_new_from_path (midi_files[0]);
+  Track * midi_track =
+    track_create_with_action (
+      TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+      TRACKLIST->num_tracks, 1, NULL);
+  track_select (
+    midi_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  g_strfreev (midi_files);
+
+  /* change the name of the track */
+  tracklist_selections_action_perform_edit_rename (
+    midi_track, PORT_CONNECTIONS_MGR, "new name",
+    NULL);
+
+  tracklist_validate (TRACKLIST);
+
+  /* play and let engine run */
+  transport_request_roll (TRANSPORT);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
 test_rename_track_with_send (void)
 {
   test_helper_zrythm_init ();
@@ -744,12 +783,20 @@ test_rename_track_with_send (void)
 
   tracklist_validate (TRACKLIST);
 
+  /* play and let engine run */
+  transport_request_roll (TRANSPORT);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+
   /* change the name of the group track */
   tracklist_selections_action_perform_edit_rename (
     audio_group, PORT_CONNECTIONS_MGR, "new name2",
     NULL);
 
   tracklist_validate (TRACKLIST);
+
+  /* play and let engine run */
+  transport_request_roll (TRANSPORT);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -766,6 +813,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections_edit/"
 
+  g_test_add_func (
+    TEST_PREFIX "test rename midi track with events",
+    (GTestFunc) test_rename_midi_track_with_events);
   g_test_add_func (
     TEST_PREFIX "test rename track with send",
     (GTestFunc) test_rename_track_with_send);
