@@ -25,15 +25,7 @@
 */
 
 /** @cond */
-#if defined(_WIN32) && !defined(ZIX_STATIC) && defined(ZIX_INTERNAL)
-#  define ZIX_API __declspec(dllexport)
-#elif defined(_WIN32) && !defined(ZIX_STATIC)
-#  define ZIX_API __declspec(dllimport)
-#elif defined(__GNUC__)
-#  define ZIX_API __attribute__((visibility("default")))
-#else
-#  define ZIX_API
-#endif
+#define ZIX_API
 
 #ifdef __GNUC__
 #  define ZIX_PURE_FUNC __attribute__((pure))
