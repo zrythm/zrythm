@@ -118,7 +118,7 @@ engine_dummy_activate (
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
-        self->sample_rate, true);
+        self->sample_rate, true, true);
 
       self->dummy_audio_thread =
         g_thread_new (

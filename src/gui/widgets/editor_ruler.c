@@ -140,8 +140,8 @@ editor_ruler_on_drag_update (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
                 F_VALIDATE);
-              transport_update_position_frames (
-                TRANSPORT);
+              transport_update_positions (
+                TRANSPORT, true);
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
             }
@@ -181,8 +181,8 @@ editor_ruler_on_drag_update (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
                 F_VALIDATE);
-              transport_update_position_frames (
-                TRANSPORT);
+              transport_update_positions (
+                TRANSPORT, true);
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
             }
@@ -216,8 +216,8 @@ editor_ruler_on_drag_update (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_CLIP_START,
                 F_VALIDATE);
-              transport_update_position_frames (
-                TRANSPORT);
+              transport_update_positions (
+                TRANSPORT, true);
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
             }

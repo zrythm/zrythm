@@ -220,12 +220,16 @@ track_lane_get_name (
   TrackLane * self);
 
 /**
- * Updates the frames of each position in each child
- * of the track recursively.
+ * Updates the positions in each child recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-track_lane_update_frames (
-  TrackLane * self);
+track_lane_update_positions (
+  TrackLane * self,
+  bool        from_ticks);
 
 /**
  * Sets the new track name hash to all the lane's

@@ -145,12 +145,16 @@ track_lane_get_name (
 }
 
 /**
- * Updates the frames of each position in each child
- * of the track lane recursively.
+ * Updates the positions in each child recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-track_lane_update_frames (
-  TrackLane * self)
+track_lane_update_positions (
+  TrackLane * self,
+  bool        from_ticks)
 {
   for (int i = 0; i < self->num_regions; i++)
     {
@@ -163,7 +167,8 @@ track_lane_update_frames (
 
       g_return_if_fail (
         IS_REGION_AND_NONNULL (r_obj));
-      arranger_object_update_frames (r_obj);
+      arranger_object_update_positions (
+        r_obj, from_ticks);
     }
 }
 

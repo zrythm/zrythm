@@ -582,10 +582,15 @@ transport_goto_next_marker (
 
 /**
  * Updates the frames in all transport positions
+ *
+ * @param update_from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-transport_update_position_frames (
-  Transport * self);
+transport_update_positions (
+  Transport * self,
+  bool        update_from_ticks);
 
 #if 0
 /**

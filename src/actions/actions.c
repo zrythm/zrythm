@@ -545,10 +545,7 @@ activate_original_size (GSimpleAction *action,
   EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
-void
-activate_loop_selection (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_loop_selection)
 {
   if (PROJECT->last_selection ==
         SELECTION_TYPE_TIMELINE)
@@ -572,8 +569,10 @@ activate_loop_selection (GSimpleAction *action,
         &TRANSPORT->loop_end_pos,
         &end);
 
-      transport_update_position_frames (
-        TRANSPORT);
+      /* FIXME is this needed? */
+      transport_update_positions (
+        TRANSPORT, true);
+
       EVENTS_PUSH (
         ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
         NULL);

@@ -702,7 +702,7 @@ arranger_object_loop_end_pos_setter (
 HOT
 NONNULL
 WARN_UNUSED_RESULT
-int
+bool
 arranger_object_is_position_valid (
   ArrangerObject *           self,
   const Position *           pos,
@@ -815,12 +815,16 @@ arranger_object_get_loop_length_in_frames (
 }
 
 /**
- * Updates the frames of each position in each child
- * recursively.
+ * Updates the positions in each child recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-arranger_object_update_frames (
-  ArrangerObject * self);
+arranger_object_update_positions (
+  ArrangerObject * self,
+  bool             from_ticks);
 
 /**
  * Frees only this object.

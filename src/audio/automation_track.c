@@ -826,17 +826,23 @@ automation_track_get_val_at_pos (
 }
 
 /**
- * Updates the frames of each position in each child
- * of the automation track recursively.
+ * Updates each position in each child of the
+ * automation track recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-automation_track_update_frames (
-  AutomationTrack * self)
+automation_track_update_positions (
+  AutomationTrack * self,
+  bool              from_ticks)
 {
   for (int i = 0; i < self->num_regions; i++)
     {
-      arranger_object_update_frames (
-        (ArrangerObject *) self->regions[i]);
+      arranger_object_update_positions (
+        (ArrangerObject *) self->regions[i],
+        from_ticks);
     }
 }
 

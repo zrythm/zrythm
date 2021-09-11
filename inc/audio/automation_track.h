@@ -380,13 +380,18 @@ automation_track_insert_region (
   //AutomationTrack * self);
 
 /**
- * Updates the frames of each position in each child
- * of the automation track recursively.
+ * Updates each position in each child of the
+ * automation track recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 NONNULL
 void
-automation_track_update_frames (
-  AutomationTrack * self);
+automation_track_update_positions (
+  AutomationTrack * self,
+  bool              from_ticks);
 
 /**
  * Sets the index of the AutomationTrack in the

@@ -2791,39 +2791,45 @@ track_type_get_prefader_type (
 }
 
 /**
- * Updates the frames of each position in each child
- * of the track recursively.
+ * Updates the frames/ticks of each position in
+ * each child of the track recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-track_update_frames (
-  Track * self)
+track_update_positions (
+  Track * self,
+  bool    from_ticks)
 {
   int i;
   for (i = 0; i < self->num_lanes; i++)
     {
-      track_lane_update_frames (self->lanes[i]);
+      track_lane_update_positions (
+        self->lanes[i], from_ticks);
     }
   for (i = 0; i < self->num_chord_regions; i++)
     {
-      arranger_object_update_frames (
+      arranger_object_update_positions (
         (ArrangerObject *)
-        self->chord_regions[i]);
+        self->chord_regions[i], from_ticks);
     }
   for (i = 0; i < self->num_scales; i++)
     {
-      arranger_object_update_frames (
+      arranger_object_update_positions (
         (ArrangerObject *)
-        self->scales[i]);
+        self->scales[i], from_ticks);
     }
   for (i = 0; i < self->num_markers; i++)
     {
-      arranger_object_update_frames (
+      arranger_object_update_positions (
         (ArrangerObject *)
-        self->markers[i]);
+        self->markers[i], from_ticks);
     }
 
-  automation_tracklist_update_frames (
-    &self->automation_tracklist);
+  automation_tracklist_update_positions (
+    &self->automation_tracklist, from_ticks);
 }
 
 /**

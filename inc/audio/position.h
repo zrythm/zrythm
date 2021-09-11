@@ -366,6 +366,24 @@ position_update_frames_from_ticks (
   Position * position);
 
 /**
+ * Updates the position from ticks or frames.
+ *
+ * @param from_ticks Whether to update the
+ *   position based on ticks (true) or frames
+ *   (false).
+ */
+static inline void
+position_update (
+  Position * self,
+  bool       from_ticks)
+{
+  if (from_ticks)
+    position_update_frames_from_ticks (self);
+  else
+    position_update_ticks_from_frames (self);
+}
+
+/**
  * Calculates the midway point between the two
  * Positions and sets it on pos.
  *

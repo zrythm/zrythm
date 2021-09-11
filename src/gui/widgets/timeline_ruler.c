@@ -409,8 +409,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_set_to_pos (
                     &TRANSPORT->punch_in_pos, &tmp);
-                  transport_update_position_frames (
-                    TRANSPORT);
+                  transport_update_positions (
+                    TRANSPORT, true);
                   EVENTS_PUSH (
                     ET_TIMELINE_PUNCH_MARKER_POS_CHANGED,
                     NULL);
@@ -427,8 +427,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_set_to_pos (
                     &TRANSPORT->punch_out_pos, &tmp);
-                  transport_update_position_frames (
-                    TRANSPORT);
+                  transport_update_positions (
+                    TRANSPORT, true);
                   EVENTS_PUSH (
                     ET_TIMELINE_PUNCH_MARKER_POS_CHANGED,
                     NULL);
@@ -446,8 +446,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_set_to_pos (
                     &TRANSPORT->loop_start_pos, &tmp);
-                  transport_update_position_frames (
-                    TRANSPORT);
+                  transport_update_positions (
+                    TRANSPORT, true);
                   EVENTS_PUSH (
                     ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
                     NULL);
@@ -465,8 +465,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_set_to_pos (
                     &TRANSPORT->loop_end_pos, &tmp);
-                  transport_update_position_frames (
-                    TRANSPORT);
+                  transport_update_positions (
+                    TRANSPORT, true);
                   EVENTS_PUSH (
                     ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
                     NULL);

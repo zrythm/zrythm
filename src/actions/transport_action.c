@@ -137,6 +137,23 @@ transport_action_perform_time_sig_change (
     error);
 }
 
+static bool
+need_update_positions_from_ticks (
+  TransportAction * self)
+{
+  switch (self->type)
+    {
+    case TRANSPORT_ACTION_BPM_CHANGE:
+      return true;
+    case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
+      return true;
+    case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
+      return false;
+    }
+
+  g_return_val_if_reached (false);
+}
+
 static int
 do_or_undo (
   TransportAction * self,
@@ -167,10 +184,13 @@ do_or_undo (
 
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  bool update_from_ticks =
+    need_update_positions_from_ticks (self);
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate, true);
+    AUDIO_ENGINE->sample_rate, true,
+    update_from_ticks);
 
   snap_grid_update_snap_points_default (
     SNAP_GRID_TIMELINE);
@@ -219,9 +239,12 @@ transport_action_do (
       bpm_t bpm =
         tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
+      bool update_from_ticks =
+        need_update_positions_from_ticks (self);
       engine_update_frames_per_tick (
         AUDIO_ENGINE, beats_per_bar, bpm,
-        AUDIO_ENGINE->sample_rate, true);
+        AUDIO_ENGINE->sample_rate, true,
+        update_from_ticks);
 
       snap_grid_update_snap_points_default (
         SNAP_GRID_TIMELINE);

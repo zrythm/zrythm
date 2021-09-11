@@ -2556,7 +2556,7 @@ port_set_control_value (
           engine_update_frames_per_tick (
             AUDIO_ENGINE, beats_per_bar,
             self->control,
-            AUDIO_ENGINE->sample_rate, false);
+            AUDIO_ENGINE->sample_rate, false, true);
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);
         }
 
@@ -2582,9 +2582,12 @@ port_set_control_value (
               P_TEMPO_TRACK);
           transport_update_caches (
             TRANSPORT, beats_per_bar, beat_unit);
+          bool update_from_ticks =
+            id->flags2 & PORT_FLAG2_BEATS_PER_BAR;
           engine_update_frames_per_tick (
             AUDIO_ENGINE, beats_per_bar, bpm,
-            AUDIO_ENGINE->sample_rate, false);
+            AUDIO_ENGINE->sample_rate, false,
+            update_from_ticks);
           EVENTS_PUSH (
             ET_TIME_SIGNATURE_CHANGED, NULL);
         }

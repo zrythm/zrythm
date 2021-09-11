@@ -398,15 +398,20 @@ automation_tracklist_clone (
 /**
  * Updates the frames of each position in each child
  * of the automation tracklist recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-automation_tracklist_update_frames (
-  AutomationTracklist * self)
+automation_tracklist_update_positions (
+  AutomationTracklist * self,
+  bool                  from_ticks)
 {
   for (int i = 0; i < self->num_ats; i++)
     {
-      automation_track_update_frames (
-        self->ats[i]);
+      automation_track_update_positions (
+        self->ats[i], from_ticks);
     }
 }
 

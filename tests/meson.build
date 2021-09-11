@@ -213,6 +213,7 @@ if get_option ('tests')
     'actions/arranger_selections': {
       'parallel': false },
     'actions/range': { 'parallel': true },
+    'actions/transport_action': { 'parallel': true },
     # skip CI because it uses too much RAM
     'actions/undo_manager': {
       'parallel': false,

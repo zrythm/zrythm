@@ -757,23 +757,28 @@ transport_get_ppqn (
 
 /**
  * Updates the frames in all transport positions
+ *
+ * @param update_from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-transport_update_position_frames (
-  Transport * self)
+transport_update_positions (
+  Transport * self,
+  bool        update_from_ticks)
 {
-  position_update_frames_from_ticks (
-    &self->playhead_pos);
-  position_update_frames_from_ticks (
-    &self->cue_pos);
-  position_update_frames_from_ticks (
-    &self->loop_start_pos);
-  position_update_frames_from_ticks (
-    &self->loop_end_pos);
-  position_update_frames_from_ticks (
-    &self->punch_in_pos);
-  position_update_frames_from_ticks (
-    &self->punch_out_pos);
+  position_update (
+    &self->playhead_pos, update_from_ticks);
+  position_update (
+    &self->cue_pos, update_from_ticks);
+  position_update (
+    &self->loop_start_pos, update_from_ticks);
+  position_update (
+    &self->loop_end_pos, update_from_ticks);
+  position_update (
+    &self->punch_in_pos, update_from_ticks);
+  position_update (
+    &self->punch_out_pos, update_from_ticks);
 }
 
 #define GATHER_MARKERS \

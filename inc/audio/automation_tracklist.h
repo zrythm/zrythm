@@ -142,10 +142,15 @@ automation_tracklist_print_ats (
 /**
  * Updates the frames of each position in each child
  * of the automation tracklist recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-automation_tracklist_update_frames (
-  AutomationTracklist * self);
+automation_tracklist_update_positions (
+  AutomationTracklist * self,
+  bool                  from_ticks);
 
 /**
  * Gets the currently visible AutomationTrack's

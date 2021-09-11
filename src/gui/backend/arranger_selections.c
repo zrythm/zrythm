@@ -95,7 +95,8 @@ arranger_selections_init_loaded (
                     g_get_monotonic_time (); \
                 } \
             } \
-          arranger_object_update_frames (obj); \
+          arranger_object_update_positions ( \
+            obj, true); \
           sel->sc##s[i] = \
             (cc *) \
             arranger_object_find (obj); \
@@ -104,7 +105,8 @@ arranger_selections_init_loaded (
         { \
           arranger_object_init_loaded ( \
             (ArrangerObject *) sel->sc##s[i]); \
-          arranger_object_update_frames (obj); \
+          arranger_object_update_positions ( \
+            obj, true); \
         } \
     }
 
@@ -123,8 +125,8 @@ arranger_selections_init_loaded (
           MidiNote * mn = mas->midi_notes[i];
           ArrangerObject * mn_obj =
             (ArrangerObject *) mn;
-          arranger_object_update_frames (
-            mn_obj);
+          arranger_object_update_positions (
+            mn_obj, true);
           if (project)
             {
               mas->midi_notes[i] =

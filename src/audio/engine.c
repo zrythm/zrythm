@@ -143,6 +143,9 @@ engine_set_buffer_size (
  *
  * @param thread_check Whether to throw a warning
  *   if not called from GTK thread.
+ * @param update_from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
 engine_update_frames_per_tick (
@@ -150,7 +153,8 @@ engine_update_frames_per_tick (
   const int           beats_per_bar,
   const bpm_t         bpm,
   const sample_rate_t sample_rate,
-  bool                thread_check)
+  bool                thread_check,
+  bool                update_from_ticks)
 {
   if (g_thread_self () == zrythm_app->gtk_thread)
     {
@@ -173,6 +177,12 @@ engine_update_frames_per_tick (
     sample_rate > 0 &&
     self->transport->ticks_per_bar > 0);
 
+  g_message (
+    "frames per tick before: %f | "
+    "ticks per frame before: %f",
+    self->frames_per_tick,
+    self->ticks_per_frame);
+
   self->frames_per_tick =
     (((double) sample_rate * 60.0 *
        (double) beats_per_bar) /
@@ -181,13 +191,20 @@ engine_update_frames_per_tick (
   self->ticks_per_frame =
     1.0 / self->frames_per_tick;
 
+  g_message (
+    "frames per tick after: %f | "
+    "ticks per frame after: %f",
+    self->frames_per_tick,
+    self->ticks_per_frame);
+
   /* update positions */
-  transport_update_position_frames (
-    self->transport);
+  transport_update_positions (
+    self->transport, update_from_ticks);
 
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      track_update_frames (TRACKLIST->tracks[i]);
+      track_update_positions (
+        TRACKLIST->tracks[i], update_from_ticks);
     }
 }
 

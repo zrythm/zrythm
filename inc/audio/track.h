@@ -1330,12 +1330,17 @@ track_type_is_compatible_for_moving (
 }
 
 /**
- * Updates the frames of each position in each child
- * of the track recursively.
+ * Updates the frames/ticks of each position in
+ * each child of the track recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-track_update_frames (
-  Track * track);
+track_update_positions (
+  Track * self,
+  bool    from_ticks);
 
 /**
  * Returns the Fader (if applicable).

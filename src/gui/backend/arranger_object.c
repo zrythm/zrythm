@@ -468,22 +468,22 @@ get_position_ptr (
  * @param validate Validate the Position before
  *   setting it.
  */
-int
+bool
 arranger_object_is_position_valid (
   ArrangerObject *           self,
   const Position *           pos,
   ArrangerObjectPositionType pos_type)
 {
-  int is_valid = 0;
+  bool is_valid = false;
   switch (pos_type)
     {
     case ARRANGER_OBJECT_POSITION_TYPE_START:
       if (arranger_object_type_has_length (
             self->type))
         {
-          Position * end_pos = &self->end_pos;
           is_valid =
-            position_is_before (pos, end_pos);
+            position_is_before (
+              pos, &self->end_pos);
 
           if (!arranger_object_owned_by_region (
                 self))
@@ -503,16 +503,15 @@ arranger_object_is_position_valid (
         }
       else
         {
-          is_valid = 1;
+          is_valid = true;
         }
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_START:
       {
-        Position * loop_end_pos =
-           &self->loop_end_pos;
         is_valid =
           position_is_before (
-            pos, loop_end_pos) &&
+            pos, &self->loop_end_pos)
+          &&
           position_is_after_or_equal (
             pos, &POSITION_START);
       }
@@ -544,19 +543,18 @@ arranger_object_is_position_valid (
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_CLIP_START:
       {
-        Position * loop_end_pos =
-           &self->loop_end_pos;
         is_valid =
           position_is_before (
-            pos, loop_end_pos) &&
+            pos, &self->loop_end_pos)
+          &&
           position_is_after_or_equal (
             pos, &POSITION_START);
       }
       break;
     case ARRANGER_OBJECT_POSITION_TYPE_END:
       {
-        /* TODO */
-        is_valid = 1;
+        is_valid =
+          position_is_after (pos, &self->pos);
       }
       break;
     default:
@@ -794,6 +792,25 @@ arranger_object_print (
             region->id.lane_pos,
             region->id.idx,
             region->id.link_group);
+        if (region->id.type == REGION_TYPE_AUDIO)
+          {
+            char * tmp = extra_info;
+            AudioClip * clip =
+              audio_region_get_clip (region);
+            g_return_if_fail (clip);
+            Position pos;
+            position_from_frames (
+              &pos, clip->num_frames);
+            char pos_str[100];
+            position_to_string (&pos, pos_str);
+            extra_info =
+              g_strdup_printf (
+                " | audio clip total ticks %s "
+                "(%ld frames)",
+                pos_str,
+                clip->num_frames);
+            g_free (tmp);
+          }
       }
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
@@ -1123,12 +1140,16 @@ arranger_object_get_length_in_frames (
 }
 
 /**
- * Updates the frames of each position in each
- * child recursively.
+ * Updates the positions in each child recursively.
+ *
+ * @param from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
-arranger_object_update_frames (
-  ArrangerObject * self)
+arranger_object_update_positions (
+  ArrangerObject * self,
+  bool             from_ticks)
 {
   long frames_len_before = 0;
   if (arranger_object_type_has_length (self->type))
@@ -1137,11 +1158,10 @@ arranger_object_update_frames (
         arranger_object_get_length_in_frames (self);
     }
 
-  position_update_frames_from_ticks (&self->pos);
+  position_update (&self->pos, from_ticks);
   if (arranger_object_type_has_length (self->type))
     {
-      position_update_frames_from_ticks (
-        &self->end_pos);
+      position_update (&self->end_pos, from_ticks);
 
       if (router_is_processing_kickoff_thread (
             ROUTER))
@@ -1155,12 +1175,12 @@ arranger_object_update_frames (
     }
   if (arranger_object_type_can_loop (self->type))
     {
-      position_update_frames_from_ticks (
-        &self->clip_start_pos);
-      position_update_frames_from_ticks (
-        &self->loop_start_pos);
-      position_update_frames_from_ticks (
-        &self->loop_end_pos);
+      position_update (
+        &self->clip_start_pos, from_ticks);
+      position_update (
+        &self->loop_start_pos, from_ticks);
+      position_update (
+        &self->loop_end_pos, from_ticks);
 
       if (router_is_processing_kickoff_thread (
             ROUTER))
@@ -1182,10 +1202,10 @@ arranger_object_update_frames (
     }
   if (arranger_object_can_fade (self))
     {
-      position_update_frames_from_ticks (
-        &self->fade_in_pos);
-      position_update_frames_from_ticks (
-        &self->fade_out_pos);
+      position_update (
+        &self->fade_in_pos, from_ticks);
+      position_update (
+        &self->fade_out_pos, from_ticks);
     }
 
   ZRegion * r;
@@ -1231,25 +1251,29 @@ arranger_object_update_frames (
 
       for (int i = 0; i < r->num_midi_notes; i++)
         {
-          arranger_object_update_frames (
-            (ArrangerObject *) r->midi_notes[i]);
+          arranger_object_update_positions (
+            (ArrangerObject *) r->midi_notes[i],
+            from_ticks);
         }
       for (int i = 0; i < r->num_unended_notes; i++)
         {
-          arranger_object_update_frames (
-            (ArrangerObject *) r->unended_notes[i]);
+          arranger_object_update_positions (
+            (ArrangerObject *) r->unended_notes[i],
+            from_ticks);
         }
 
       for (int i = 0; i < r->num_aps; i++)
         {
-          arranger_object_update_frames (
-            (ArrangerObject *) r->aps[i]);
+          arranger_object_update_positions (
+            (ArrangerObject *) r->aps[i],
+            from_ticks);
         }
 
       for (int i = 0; i < r->num_chord_objects; i++)
         {
-          arranger_object_update_frames (
-            (ArrangerObject *) r->chord_objects[i]);
+          arranger_object_update_positions (
+            (ArrangerObject *) r->chord_objects[i],
+            from_ticks);
         }
       break;
     default:

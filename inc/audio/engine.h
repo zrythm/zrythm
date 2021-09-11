@@ -981,6 +981,9 @@ engine_activate (
  *
  * @param thread_check Whether to throw a warning
  *   if not called from GTK thread.
+ * @param update_from_ticks Whether to update the
+ *   positions based on ticks (true) or frames
+ *   (false).
  */
 void
 engine_update_frames_per_tick (
@@ -988,7 +991,8 @@ engine_update_frames_per_tick (
   const int           beats_per_bar,
   const bpm_t         bpm,
   const sample_rate_t sample_rate,
-  bool                thread_check);
+  bool                thread_check,
+  bool                update_from_ticks);
 
 /**
  * GSourceFunc to be added using idle add.
