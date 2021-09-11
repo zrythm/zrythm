@@ -172,10 +172,7 @@ activate_manual (
   g_free (path);
 }
 
-void
-activate_chat (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data)
+DEFINE_SIMPLE (activate_chat)
 {
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
@@ -183,20 +180,14 @@ activate_chat (GSimpleAction *action,
     0, NULL);
 }
 
-void
-activate_donate (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data)
+DEFINE_SIMPLE (activate_donate)
 {
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
     "https://liberapay.com/Zrythm", 0, NULL);
 }
 
-void
-activate_bugreport (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data)
+DEFINE_SIMPLE (activate_bugreport)
 {
 #ifdef _WOE32
   ShellExecute (
@@ -212,10 +203,7 @@ activate_bugreport (GSimpleAction *action,
 #endif
 }
 
-void
-activate_about (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data)
+DEFINE_SIMPLE (activate_about)
 {
   GtkDialog * dialog =
     GTK_DIALOG (
@@ -1788,6 +1776,17 @@ activate_delete_selected_tracks (
   gpointer       user_data)
 {
   g_message ("deleting selected tracks");
+
+  if (tracklist_selections_contains_undeletable_track (
+        TRACKLIST_SELECTIONS))
+    {
+      ui_show_message_printf (
+        MAIN_WINDOW, GTK_MESSAGE_INFO,
+        "%s",
+        _("Cannot delete tracks: selection "
+        "contains an undeletable track"));
+      return;
+    }
 
   GError * err = NULL;
   bool ret =
