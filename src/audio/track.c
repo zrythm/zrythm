@@ -3906,6 +3906,9 @@ track_set_caches (
   AutomationTracklist * atl =
     track_get_automation_tracklist (self);
 
+  /* update name hash */
+  self->name_hash = track_get_name_hash (self);
+
   if (atl)
     automation_tracklist_set_caches (atl);
 }

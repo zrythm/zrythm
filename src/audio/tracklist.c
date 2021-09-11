@@ -483,24 +483,28 @@ tracklist_find_track_by_name_hash (
   unsigned int hash)
 {
   if (G_LIKELY (
-        !tracklist_is_auditioner (self)
+        tracklist_is_in_active_project (self))
         && ROUTER
         && router_is_processing_thread (ROUTER)
-        && tracklist_is_in_active_project (self)))
+        && !tracklist_is_auditioner (self))
     {
-      return
-        (Track *)
-        g_hash_table_lookup (
-          self->ht, GUINT_TO_POINTER (hash));
+      for (int i = 0; i < self->num_tracks; i++)
+        {
+          Track * track = self->tracks[i];
+          if (track->name_hash == hash)
+            return track;
+        }
     }
-
-  for (int i = 0; i < self->num_tracks; i++)
+  else
     {
-      Track * track = self->tracks[i];
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (track), NULL);
-      if (track_get_name_hash (track) == hash)
-        return track;
+      for (int i = 0; i < self->num_tracks; i++)
+        {
+          Track * track = self->tracks[i];
+          g_return_val_if_fail (
+            IS_TRACK_AND_NONNULL (track), NULL);
+          if (track_get_name_hash (track) == hash)
+            return track;
+        }
     }
   return NULL;
 }
@@ -1902,26 +1906,10 @@ void
 tracklist_set_caches (
   Tracklist * self)
 {
-  if (tracklist_is_in_active_project (self)
-      && !tracklist_is_auditioner (self))
-    {
-      object_free_w_func_and_null (
-        g_hash_table_unref, self->ht);
-      self->ht =
-        g_hash_table_new (
-          g_direct_hash, g_direct_equal);
-    }
-
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
       track_set_caches (track);
-
-      g_hash_table_insert (
-        self->ht,
-        GUINT_TO_POINTER (
-          track_get_name_hash (track)),
-        track);
     }
 }
 
@@ -2001,9 +1989,6 @@ tracklist_free (
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
       self->tempo_track = NULL;
     }
-
-  object_free_w_func_and_null (
-    g_hash_table_unref, self->ht);
 
   object_zero_and_free (self);
 
