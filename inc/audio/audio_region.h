@@ -159,6 +159,11 @@ audio_region_fill_stereo_ports (
   nframes_t     nframes,
   StereoPorts * stereo_ports);
 
+float
+audio_region_detect_bpm (
+  ZRegion * self,
+  GArray *  candidates);
+
 bool
 audio_region_validate (
   ZRegion * self);

@@ -304,7 +304,8 @@ float
 audio_detect_bpm (
   float *      src,
   size_t       num_frames,
-  unsigned int samplerate)
+  unsigned int samplerate,
+  GArray *     candidates)
 {
   ZVampPlugin * plugin =
     vamp_get_plugin (
@@ -325,6 +326,7 @@ audio_detect_bpm (
   vamp_plugin_output_list_free (outputs);
 
   long cur_timestamp = 0;
+  float bpm = 0.f;
   while ((cur_timestamp + (long) block_sz) <
            (long) num_frames)
     {
@@ -342,6 +344,19 @@ audio_detect_bpm (
       if (fl)
         {
           vamp_feature_list_print (fl);
+          const ZVampFeature * feature =
+            g_ptr_array_index (fl->list, 0);
+          bpm = feature->values[0];
+
+          if (candidates)
+            {
+              for (size_t i = 0;
+                   i < feature->num_values; i++)
+                {
+                  g_array_append_val (
+                    candidates, feature->values[i]);
+                }
+            }
         }
       cur_timestamp += (long) step_sz;
       vamp_feature_set_free (feature_set);
@@ -354,13 +369,22 @@ audio_detect_bpm (
   const ZVampFeatureList * fl =
     vamp_feature_set_get_list_for_output (
       feature_set, 0);
-  float bpm = 0.f;
   if (fl)
     {
       vamp_feature_list_print (fl);
       const ZVampFeature * feature =
         g_ptr_array_index (fl->list, 0);
       bpm = feature->values[0];
+
+      if (candidates)
+        {
+          for (size_t i = 0; i < feature->num_values;
+               i++)
+            {
+              g_array_append_val (
+                candidates, feature->values[i]);
+            }
+        }
     }
   vamp_feature_set_free (feature_set);
 

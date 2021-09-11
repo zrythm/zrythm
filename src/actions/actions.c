@@ -2759,6 +2759,9 @@ DEFINE_SIMPLE (activate_input_bpm)
 
 DEFINE_SIMPLE (activate_tap_bpm)
 {
+  ui_show_message_printf (
+    MAIN_WINDOW, GTK_MESSAGE_WARNING,
+    "%s", "Not implemented yet");
 }
 
 void

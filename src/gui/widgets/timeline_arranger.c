@@ -18,6 +18,7 @@
  */
 
 #include "actions/undo_manager.h"
+#include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"
 #include "audio/chord_track.h"
@@ -1311,6 +1312,39 @@ on_audio_func_activate (
     }
 }
 
+static void
+on_detect_bpm_activate (
+  GtkMenuItem * item,
+  void *        user_data)
+{
+  ZRegion * r = (ZRegion *) user_data;
+  g_return_if_fail (IS_REGION_AND_NONNULL (r));
+
+  GArray * candidates =
+    g_array_new (false, true, sizeof (float));
+  bpm_t bpm =
+    audio_region_detect_bpm (r, candidates);
+
+  GString * gstr = g_string_new (NULL);
+  g_string_append_printf (
+    gstr, _("Detected BPM: %.2f"), bpm);
+  g_string_append (gstr, "\n\n");
+  g_string_append_printf (
+    gstr, _("Candidates:"));
+  for (size_t i = 0; i < candidates->len; i++)
+    {
+      float candidate =
+        g_array_index (candidates, float, i);
+      g_string_append_printf (
+        gstr, " %.2f", candidate);
+    }
+  char * str = g_string_free (gstr, false);
+  ui_show_message_printf (
+    MAIN_WINDOW, GTK_MESSAGE_INFO,
+    "%s", str);
+  g_free (str);
+}
+
 /**
  * Show context menu at x, y.
  */
@@ -1365,6 +1399,26 @@ timeline_arranger_widget_show_context_menu (
 
           if (timeline_selections_contains_only_region_types (TL_SELECTIONS, REGION_TYPE_AUDIO))
             {
+              if (TL_SELECTIONS->num_regions == 1)
+                {
+                  menuitem =
+                    GTK_WIDGET (
+                      z_gtk_create_menu_item (
+                        _("Detect BPM"), NULL,
+                        F_NO_TOGGLE, NULL));
+                  gtk_widget_set_visible (
+                    GTK_WIDGET (menuitem), true);
+                  g_signal_connect (
+                    G_OBJECT (menuitem),
+                    "activate",
+                    G_CALLBACK (
+                      on_detect_bpm_activate),
+                    TL_SELECTIONS->regions[0]);
+                  gtk_menu_shell_append (
+                    GTK_MENU_SHELL (menu),
+                    menuitem);
+                }
+
               menuitem =
                 GTK_WIDGET (
                   z_gtk_create_menu_item (

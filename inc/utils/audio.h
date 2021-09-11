@@ -145,7 +145,8 @@ float
 audio_detect_bpm (
   float *      src,
   size_t       num_frames,
-  unsigned int samplerate);
+  unsigned int samplerate,
+  GArray *     candidates);
 
 bool
 audio_file_is_silent (

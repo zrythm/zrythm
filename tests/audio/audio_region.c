@@ -186,6 +186,42 @@ test_load_project_with_selected_audio_region (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_detect_bpm (void)
+{
+  test_helper_zrythm_init ();
+
+  Position pos;
+  position_set_to_bar (&pos, 2);
+
+  /* create audio track with region */
+  char * filepath =
+    g_build_filename (
+      TESTS_SRCDIR,
+      "test_start_with_signal.mp3", NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (filepath);
+  int num_tracks_before = TRACKLIST->num_tracks;
+  Track * track =
+    track_create_with_action (
+      TRACK_TYPE_AUDIO, NULL, file, &pos,
+      num_tracks_before, 1, NULL);
+  supported_file_free (file);
+
+  /* select region */
+  ZRegion * r =
+    track->lanes[0]->regions[0];
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+
+  float bpm = audio_region_detect_bpm (r, NULL);
+  g_assert_cmpfloat_with_epsilon (
+    bpm, 186.233093f, 0.001f);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -202,6 +238,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test fill stereo ports",
     (GTestFunc) test_fill_stereo_ports);
+  g_test_add_func (
+    TEST_PREFIX "test detect bpm",
+    (GTestFunc) test_detect_bpm);
 
   return g_test_run ();
 }

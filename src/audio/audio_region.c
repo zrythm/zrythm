@@ -537,6 +537,21 @@ prev_offset, \
     }
 }
 
+float
+audio_region_detect_bpm (
+  ZRegion * self,
+  GArray *  candidates)
+{
+  AudioClip * clip = audio_region_get_clip (self);
+  g_return_val_if_fail (clip, 0.f);
+
+  return
+    audio_detect_bpm (
+      clip->ch_frames[0], (size_t) clip->num_frames,
+      (unsigned int) AUDIO_ENGINE->sample_rate,
+      candidates);
+}
+
 bool
 audio_region_validate (
   ZRegion * self)
