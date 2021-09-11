@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.25.1.11] - 2021-09-11
+### Added
+- Show message when attempting to delete undeletable tracks
+
+### Changed
+- Always use carla discovery binary installed with zrythm
+- Only change BPM/time signature when starting DSP processing (queue BPM/time signature changes)
+- Update zix utils
+- Use fallback image if failed to get screenshot for bug report
+
+### Fixed
+- Fix error when moving BPM automation point to position 0
+- Fix error when changing BPM/time signature with scroll wheel
+- Fix error during playback after changing a MIDI track name
+- Fix positions not being updated correctly when changing beat unit
+
 ## [1.0.0-alpha.25.1.1] - 2021-09-06
 ### Added
 - Best fit zoom on timeline
