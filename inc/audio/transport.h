@@ -665,11 +665,30 @@ transport_set_range (
  * otherwise returns 0;
  */
 HOT
-nframes_t
+NONNULL
+WARN_UNUSED_RESULT
+static inline nframes_t
 transport_is_loop_point_met (
   const Transport * self,
   const long        g_start_frames,
-  const nframes_t   nframes);
+  const nframes_t   nframes)
+{
+  if (
+    self->loop
+    &&
+    G_UNLIKELY (
+      self->loop_end_pos.frames > g_start_frames
+      &&
+      self->loop_end_pos.frames <=
+        g_start_frames + (long) nframes))
+    {
+      return
+        (nframes_t)
+        (self->loop_end_pos.frames -
+         g_start_frames);
+    }
+  return 0;
+}
 
 bool
 transport_position_is_inside_punch_range (
