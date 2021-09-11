@@ -16,13 +16,14 @@
 # Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>, 2020.
 # Chris <chris@wepache.com>, 2021.
 # Jesus Meneses <jesusm0812@gmail.com>, 2021.
+# Yokox1 <mryokox@outlook.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
-"PO-Revision-Date: 2021-06-04 04:32+0000\n"
-"Last-Translator: Jesus Meneses <jesusm0812@gmail.com>\n"
+"PO-Revision-Date: 2021-09-11 15:43+0000\n"
+"Last-Translator: Yokox1 <mryokox@outlook.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -30,7 +31,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:294
@@ -141,12 +142,11 @@ msgstr "Bajo"
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
-msgstr ""
+msgstr "Ultra bajo"
 
 #: inc/utils/gtk.h:55
-#, fuzzy
 msgid "MIDI learn"
-msgstr "Entradas de MIDI"
+msgstr "Aprender MIDI"
 
 #: inc/utils/gtk.h:59
 msgid "Cu_t"
@@ -196,19 +196,16 @@ msgid "Invert"
 msgstr "Invertir"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "Normalizar"
+msgstr "Normalizar pico"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Normalizar"
+msgstr "Normalizar RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normalizar"
+msgstr "Normalizar LUFS"
 
 #: inc/audio/audio_function.h:74
 #, fuzzy
@@ -252,15 +249,15 @@ msgstr "Invalido"
 
 #: inc/audio/transport.h:71
 msgid "1 bar"
-msgstr ""
+msgstr "1 compás"
 
 #: inc/audio/transport.h:72
 msgid "2 bars"
-msgstr ""
+msgstr "2 compases"
 
 #: inc/audio/transport.h:73
 msgid "4 bars"
-msgstr ""
+msgstr "4 compases"
 
 #: inc/audio/track.h:189 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188

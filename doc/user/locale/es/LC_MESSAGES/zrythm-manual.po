@@ -17,15 +17,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-06-11 00:46+0000\n"
-"Last-Translator: Jesus Meneses <jesusm0812@gmail.com>\n"
+"PO-Revision-Date: 2021-09-11 15:43+0000\n"
+"Last-Translator: Yokox1 <mryokox@outlook.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -74,14 +75,17 @@ msgstr ""
 #: ../../appendix/environment.rst:47
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
 msgstr ""
+"Número de hilos DSP a usar. Por defecto se establece al número de núcleos "
+"del CPU - 1."
 
 #: ../../appendix/environment.rst:52
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
+"Establece a 1 para mostrar información adicional útil para desarrolladores."
 
 #: ../../appendix/files-and-directories.rst:6
 msgid "Files and Directories"
-msgstr ""
+msgstr "Archivos y Directorios"
 
 #: ../../appendix/files-and-directories.rst:9
 msgid "User path"
@@ -101,6 +105,7 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:16
 msgid "When Zrythm is installed, it installs the following files by default."
 msgstr ""
+"Cuando Zrythm es instalado, se instalan los siguientes archivos por defecto."
 
 #: ../../appendix/files-and-directories.rst:20
 msgid "Desktop Entry"
@@ -125,26 +130,33 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"Este archivo contiene el esquema para configuraciones de usuario. "
+"Normalmente está instalado en :file:`/usr/share/glib-2.0/schemas/org.zrythm."
+"Zrythm.gschema.xml`."
 
 #: ../../appendix/files-and-directories.rst:34
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Icono de Escritorio"
 
 #: ../../appendix/files-and-directories.rst:35
 msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"Esto es usado por el ambiente de escritorio. Normalmente está instalado en "
+":file:`/usr/share/icons/hicolor/scalable/apps/zrythm.svg`."
 
 #: ../../appendix/files-and-directories.rst:40
 msgid "Localization Files"
-msgstr ""
+msgstr "Archivos de Localización"
 
 #: ../../appendix/files-and-directories.rst:41
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"Los archivos de localización se encuentran en :file:`/usr/share/locale`. Por "
+"ejemplo, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` para coreano."
 
 #: ../../appendix/files-and-directories.rst:47
 #: ../../getting-started/getting-plugins.rst:100
@@ -156,10 +168,12 @@ msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
+"Muestras de audio que utiliza Zrythm por defecto (como puede ser el "
+"metrónomo). Normalmente se encuentran en :file:`/usr/share/zrythm/samples`."
 
 #: ../../appendix/files-and-directories.rst:53
 msgid "Fonts"
-msgstr ""
+msgstr "Tipos de Letra"
 
 #: ../../appendix/files-and-directories.rst:54
 msgid ""
@@ -180,13 +194,15 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:66
 msgid "Themes"
-msgstr ""
+msgstr "Temas"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
+"Los temas predeterminados (incluyendo los temas de iconos) normalmente serán "
+"instalados en :file:`/usr/share/zrythm/themes`."
 
 #: ../../appendix/files-and-directories.rst:71
 msgid ""
@@ -197,7 +213,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:77
 msgid "User Files"
-msgstr ""
+msgstr "Archivos de Usuario"
 
 #: ../../appendix/files-and-directories.rst:79
 msgid "Cached Plugin Descriptors"
