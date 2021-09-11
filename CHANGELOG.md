@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-alpha.25.1.11] - 2021-09-11
+## [1.0.0-alpha.25.1.22] - 2021-09-11
 ### Added
 - Show message when attempting to delete undeletable tracks
 
@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Only change BPM/time signature when starting DSP processing (queue BPM/time signature changes)
 - Update zix utils
 - Use fallback image if failed to get screenshot for bug report
+- Update Chinese (Simplified), Ukrainian, Portuguese, Spanish, Japanese, Russian translations
 
 ### Fixed
 - Fix error when moving BPM automation point to position 0
