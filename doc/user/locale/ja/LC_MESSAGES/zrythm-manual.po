@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-08-13 01:58+0000\n"
+"PO-Revision-Date: 2021-09-11 15:43+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ja/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -410,9 +410,8 @@ msgid "Additional Settings"
 msgstr "その他の設定"
 
 #: ../../configuration/additional-settings.rst:9
-#, fuzzy
 msgid "GSettings"
-msgstr "録音設定"
+msgstr "GSettings"
 
 #: ../../configuration/additional-settings.rst:10
 #, fuzzy
@@ -460,9 +459,8 @@ msgid "This will be added to the UI soon."
 msgstr "これは、まもなく UI に追加されます。"
 
 #: ../../configuration/additional-settings.rst:38
-#, fuzzy
 msgid "Plugin Settings"
-msgstr ":term:`Plugin` の設定。"
+msgstr "プラグイン設定"
 
 #: ../../configuration/additional-settings.rst:39
 msgid ""
@@ -487,9 +485,8 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup.rst:6
-#, fuzzy
 msgid "Devices"
-msgstr "MIDIデバイス"
+msgstr "デバイス"
 
 #: ../../configuration/device-setup.rst:9
 msgid "Device Setup"
@@ -537,12 +534,11 @@ msgstr "Zrythmは、外部で行われた接続を記憶しません。"
 
 #: ../../configuration/device-setup.rst:41
 msgid "MIDI Bindings"
-msgstr ""
+msgstr "MIDI バインディング"
 
 #: ../../configuration/device-setup.rst:44
-#, fuzzy
 msgid "Creating Bindings"
-msgstr "リージョンの作成"
+msgstr "バインディングの作成"
 
 #: ../../configuration/device-setup.rst:46
 msgid ""
@@ -554,7 +550,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:57
 msgid "MIDI learn on channel sends"
-msgstr ""
+msgstr "チャンネル・センドでの MIDI 検知"
 
 #: ../../configuration/device-setup.rst:59
 msgid ""
@@ -564,7 +560,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:65
 msgid "MIDI learn window"
-msgstr ""
+msgstr "MIDI 検知 ウィンドウ"
 
 #: ../../configuration/device-setup.rst:67
 msgid ""
@@ -574,7 +570,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:71
 msgid "Managing Bindings"
-msgstr ""
+msgstr "バインディングの管理"
 
 #: ../../configuration/device-setup.rst:73
 msgid ""
@@ -584,7 +580,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:80
 msgid "MIDI CC bindings"
-msgstr ""
+msgstr "MIDI CC バインディング"
 
 #: ../../configuration/device-setup.rst:82
 #, fuzzy
@@ -597,7 +593,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:88
 msgid "Deleting a binding"
-msgstr ""
+msgstr "バインディングの削除"
 
 #: ../../configuration/intro.rst:8
 msgid "Configuration"
@@ -1001,9 +997,8 @@ msgstr ""
 "これらの設定の一部を有効にするには、Zrythm を再起動する必要があります。"
 
 #: ../../configuration/shortcuts.rst:6
-#, fuzzy
 msgid "Shortcuts"
-msgstr "ショートカット キー"
+msgstr "ショートカットキー"
 
 #: ../../configuration/shortcuts.rst:8
 #, fuzzy
@@ -1023,9 +1018,8 @@ msgid "Editor Shortcuts"
 msgstr "編集画面のショートカット"
 
 #: ../../configuration/shortcuts.rst:24
-#, fuzzy
 msgid "Custom Shortcuts"
-msgstr "編集画面のショートカット"
+msgstr "カスタムなショートカット・キー"
 
 #: ../../configuration/shortcuts.rst:26
 msgid ""
@@ -1035,7 +1029,7 @@ msgstr ""
 
 #: ../../configuration/shortcuts.rst:30
 msgid "An example is given below."
-msgstr ""
+msgstr "以下に例を挙げています。"
 
 #: ../../configuration/shortcuts.rst:46
 msgid "Make this more user friendly & document all actions."
@@ -3310,7 +3304,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:85
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Presets"
-msgstr ""
+msgstr "プリセット"
 
 #: ../../getting-started/getting-plugins.rst:86
 msgid "`Freesound`_ has presets available to download for specific plugins."
@@ -3770,7 +3764,7 @@ msgstr ":abbr:`BPM (Beats Per Minute)` は、曲のテンポを表します。"
 
 #: ../../glossary/intro.rst:30
 msgid "Carla"
-msgstr ""
+msgstr "Carla"
 
 #: ../../glossary/intro.rst:32
 msgid ""
@@ -4950,7 +4944,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:24
 msgid "Standard Bookmarks"
-msgstr ""
+msgstr "標準ブックマーク"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:25
 msgid ""
@@ -4959,9 +4953,8 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:31
-#, fuzzy
 msgid "Custom Bookmarks"
-msgstr "カスタム マーカー"
+msgstr "カスタムブックマーク"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:32
 #, fuzzy
@@ -4999,25 +4992,23 @@ msgstr "さらに、プラグインは種類に基づいてフィルタリング
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:58
 msgid "Filtering by audio files"
-msgstr ""
+msgstr "オーディオファイルによるフィルタリング"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:60
-#, fuzzy
 msgid "The following toggles are available."
-msgstr "次の種類のリージョンがあります。"
+msgstr "以下のトグルが用意されています。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:63
-#, fuzzy
 msgid "Only show audio files."
-msgstr "オーディオクリップを収録。"
+msgstr "オーディオファイルのみを表示。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:65
 msgid "Only show MIDI files."
-msgstr ""
+msgstr "MIDI ファイルのみを表示。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Only show preset files."
-msgstr ""
+msgstr "プリセットファイルのみ表示。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:69
 #, fuzzy
@@ -5025,9 +5016,8 @@ msgid "Preset filtering is not implemented yet."
 msgstr "この機能はまだ実装されていません。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:72
-#, fuzzy
 msgid "Showing Unsupported Files"
-msgstr "サポートされていない UI をブリッジする"
+msgstr "対応されていないファイルの表示"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:73
 msgid ""
@@ -5039,7 +5029,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:79
 msgid "Showing Hidden Files"
-msgstr ""
+msgstr "隠しファイルの表示"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:80
 msgid ""
@@ -5050,9 +5040,8 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:86
-#, fuzzy
 msgid "Auditioning"
-msgstr "編集"
+msgstr "オーディション"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
 msgid ""
@@ -5061,34 +5050,32 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:94
-#, fuzzy
 msgid "File auditioning controls"
-msgstr "その他のコントロール"
+msgstr "ファイルの試聴コントロール"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:96
 msgid "|icon_media-playback-start| Play"
-msgstr ""
+msgstr "|icon_media-playback-start| 再生"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:97
 msgid "Trigger playback of the selected file."
-msgstr ""
+msgstr "選択したファイルの再生を開始する。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "|icon_media-playback-stop| Stop"
-msgstr ""
+msgstr "|icon_media-playback-stop| 再生停止"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "Stop playback of the selected file."
-msgstr ""
+msgstr "選択したファイルの再生を停止する。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
-#, fuzzy
 msgid "Volume"
-msgstr "編集"
+msgstr "音量"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:101
 msgid "Control the loudness of the output audio."
-msgstr ""
+msgstr "出力される音声の大きさをコントロールします。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:104
 #: ../../tracks/inspector-page.rst:35 ../../tracks/track-types.rst:41
@@ -5117,13 +5104,12 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:124
-#, fuzzy
 msgid "File browser preferences"
-msgstr "設定ダイアログを表示します。"
+msgstr "ファイルブラウザの設定"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:127
 msgid "File Info"
-msgstr ""
+msgstr "ファイル情報"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:128
 msgid ""
@@ -5133,7 +5119,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:134
 msgid "Information about the selected audio file"
-msgstr ""
+msgstr "選択したオーディオファイルの情報"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:137
 msgid "Importing Files"
@@ -5150,12 +5136,11 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:145
 msgid "Drag-n-dropping an audio file into a new track"
-msgstr ""
+msgstr "オーディオファイルを新しいトラックにドラッグ＆ドロップ"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:148
-#, fuzzy
 msgid "Pop-up File Browser"
-msgstr "ファイル ブラウザ"
+msgstr "ポップアップファイルブラウザ"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:149
 msgid ""
@@ -5180,18 +5165,16 @@ msgstr ""
 "ンドドロップすることでインポートできます。"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:15
-#, fuzzy
 msgid "Supported Formats"
-msgstr "対応されているオーディオファイル形式"
+msgstr "対応フォーマット"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:19
-#, fuzzy
 msgid "The following file formats are supported."
-msgstr "エクスポートする形式。現在、以下の形式がサポートされています。"
+msgstr "以下の形式のファイルが対応されています。"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:22
 msgid "OGG (Vorbis and OPUS)"
-msgstr ""
+msgstr "OGG (VorbisおよびOPUS)"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:22
 msgid ""
@@ -5200,7 +5183,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:25
 msgid ":abbr:`FLAC (Free Lossless Audio Codec)`"
-msgstr ""
+msgstr ":abbr:`FLAC (Free Lossless Audio Codec)`"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:25
 msgid ""
@@ -5210,7 +5193,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:28
 msgid ":abbr:`WAV (Waveform Audio File Format)`"
-msgstr ""
+msgstr ":abbr:`WAV (Waveform Audio File Format)`"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:28
 msgid "An audio file format for storing audio bistreams (uncompressed audio)."
@@ -5218,7 +5201,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:33
 msgid "MP3"
-msgstr ""
+msgstr "MP3"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:31
 msgid ""
@@ -5252,7 +5235,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:53
 msgid "Learn more at `EndSoftPatents`_."
-msgstr ""
+msgstr "詳しくは `EndSoftPatents`_ を参照してください。"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:59
 msgid ""
@@ -5262,15 +5245,15 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:63
 msgid "Type 0"
-msgstr ""
+msgstr "タイプ 0"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:64
 msgid "An entire performance merged into a single track."
-msgstr ""
+msgstr "プロジェクト全体が単一のトラックにマージされた状態。"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:66
 msgid "Type 1"
-msgstr ""
+msgstr "タイプ 1"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:66
 msgid ""
@@ -5279,7 +5262,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:70
 msgid "Type 2"
-msgstr ""
+msgstr "タイプ 2"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:69
 msgid ""
@@ -5362,9 +5345,8 @@ msgstr ""
 "ンを簡単に閲覧してフィルタリングできます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:17
-#, fuzzy
 msgid "Filter Tabs"
-msgstr "[フィルター]タブ"
+msgstr "フィルタ・タブ"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:18
 msgid ""
@@ -5386,13 +5368,12 @@ msgstr ""
 "作成し、選択したコレクションでフィルター処理できます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
-#, fuzzy
 msgid "Author"
 msgstr "作者"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Filter by plugin manufacturer/author."
-msgstr ""
+msgstr "プラグインのメーカー/作者で絞り込む。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Category"
@@ -5400,7 +5381,7 @@ msgstr "カテゴリー"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Filter by category (`Delay`, `Distortion`, etc.)."
-msgstr ""
+msgstr "カテゴリ ( `Delay` 、 `Distortion` など) でフィルタリングする。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Protocol"
@@ -5408,7 +5389,7 @@ msgstr "プロトコル"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
-msgstr ""
+msgstr "プロトコル ( `LV2` 、 `SFZ` など) でフィルタリングする。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "You can mix filters from various tabs for a custom search."
@@ -5512,7 +5493,7 @@ msgstr "プラグインは、次のカテゴリに分類されます。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:25
 msgid "|icon_instrument| Instrument"
-msgstr ""
+msgstr "|icon_instrument| インストゥルメント"
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 #, fuzzy
@@ -5525,7 +5506,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:31
 msgid "|icon_audio-insert| Effect"
-msgstr ""
+msgstr "|icon_audio-insert| エフェクト"
 
 #: ../../plugins-files/plugins/plugin-info.rst:28
 #, fuzzy
@@ -5539,9 +5520,8 @@ msgstr ""
 "ができます。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:35
-#, fuzzy
 msgid "|icon_modulator| Modulator"
-msgstr "モジュレーターのルーティング"
+msgstr "|icon_modulator| モジュレータ"
 
 #: ../../plugins-files/plugins/plugin-info.rst:34
 msgid ""
@@ -5553,7 +5533,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:41
 msgid "|icon_signal-midi| MIDI Effect"
-msgstr ""
+msgstr "|icon_signal-midi| MIDI エフェクト"
 
 #: ../../plugins-files/plugins/plugin-info.rst:38
 msgid ""
@@ -5943,9 +5923,8 @@ msgid "Project Directory"
 msgstr "プロジェクトディレクトリ"
 
 #: ../../projects/project-structure.rst:107
-#, fuzzy
 msgid "Project File Format"
-msgstr "プロジェクト ファイル"
+msgstr "プロジェクト ファイル形式"
 
 #: ../../projects/project-structure.rst:108
 msgid ""
@@ -5957,9 +5936,8 @@ msgid ""
 msgstr ""
 
 #: ../../projects/project-structure.rst:120
-#, fuzzy
 msgid "Audio Pool"
-msgstr "(audio port)"
+msgstr "オーディオ・プール"
 
 #: ../../projects/project-structure.rst:121
 msgid ""
@@ -6242,7 +6220,6 @@ msgid "Input"
 msgstr "入力"
 
 #: ../../routing/ports.rst:33
-#, fuzzy
 msgid "The port receives signals"
 msgstr "ポートは信号を受信します。"
 
@@ -6251,7 +6228,6 @@ msgid "Output"
 msgstr "出力"
 
 #: ../../routing/ports.rst:35
-#, fuzzy
 msgid "The port sends signals"
 msgstr "ポートは信号を送信します。"
 
@@ -6328,18 +6304,16 @@ msgid "Creates an audio send connection as an undoable action."
 msgstr "2ポートを接続するためのアクションを作成します。"
 
 #: ../../scripting/api/actions port_connection_action.rst:6
-#, fuzzy
 msgid "Connects 2 ports as an undoable action."
-msgstr "最後に元に戻した動作をやり直します。"
+msgstr "2 つのポートを取り消し可能な操作として接続します。"
 
 #: ../../scripting/api/actions undo_manager.rst:6
 msgid "Undoes the last action."
 msgstr "最後の操作を元に戻します。"
 
 #: ../../scripting/api/actions undo_manager.rst:10
-#, fuzzy
 msgid "Redoes the last undone action."
-msgstr "最後の操作を元に戻します。"
+msgstr "最後に取り消した操作をやり直します。"
 
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
@@ -6526,9 +6500,8 @@ msgid "Hello world"
 msgstr "ハローワールド"
 
 #: ../../scripting/examples.rst:59
-#, fuzzy
 msgid "Print all tracks"
-msgstr "トラック名を出力"
+msgstr "すべてのトラックを出力する"
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
@@ -7869,7 +7842,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:11
 msgid "Track types and characteristics"
-msgstr ""
+msgstr "トラックの種類と特性"
 
 #: ../../tracks/track-types.rst:16
 msgid "Track type"
@@ -7922,9 +7895,8 @@ msgid "Chord"
 msgstr "コード（和音）"
 
 #: ../../tracks/track-types.rst:40
-#, fuzzy
 msgid "Chord regions, scales"
-msgstr "コードリージョンとスケール"
+msgstr "コード・リージョン、音階"
 
 #: ../../tracks/track-types.rst:45 ../../tracks/track-types.rst:65
 msgid "MIDI regions"
@@ -7986,28 +7958,27 @@ msgstr "ユーザーメディア"
 
 #: ../../user-media/intro.rst:9
 msgid "Mascot"
-msgstr ""
+msgstr "キャラクター"
 
 #: ../../user-media/intro.rst:12
-#, fuzzy
 msgid "Concept"
-msgstr "バウンス"
+msgstr "コンセプト"
 
 #: ../../user-media/intro.rst:17
 msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
-msgstr ""
+msgstr "`FanaticMoose`_ によるコンセプト [ ` CC-BY-SA`_ ]"
 
 #: ../../user-media/intro.rst:20
 msgid "Sketches"
-msgstr ""
+msgstr "スケッチ"
 
 #: ../../user-media/intro.rst:25
 msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA`_]"
-msgstr ""
+msgstr "`FanaticMoose`_ によるスケッチ [ ` CC-BY-SA`_ ]"
 
 #: ../../user-media/intro.rst:27
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
-msgstr ""
+msgstr "`[weoxmによるスケッチ] <https://koyu.space/@weoxm/106672723040062331>`_"
 
 #: ../../user-media/intro.rst:30
 msgid "Video"
@@ -8484,9 +8455,8 @@ msgid ""
 msgstr "現在のプロジェクト名の横には以下のボタンがあります。"
 
 #: ../../zrythm-interface/main-toolbar.rst:120
-#, fuzzy
 msgid "Shows the scripting interface."
-msgstr "スクリプティングインタフェース"
+msgstr "スクリプティングインターフェースを表示します。"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "See the :ref:`scripting` section for more information."
@@ -8609,9 +8579,8 @@ msgstr ""
 "ロールが含まれています。"
 
 #: ../../zrythm-interface/transport-bar.rst:17
-#, fuzzy
 msgid "BPM and Time Signature"
-msgstr "BPM と拍子"
+msgstr "BPMと拍子記号"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""

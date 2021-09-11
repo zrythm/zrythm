@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
 "PO-Revision-Date: 2021-09-11 15:43+0000\n"
-"Last-Translator: Yokox1 <mryokox@outlook.com>\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/es/>\n"
 "Language: es\n"
@@ -69,8 +69,9 @@ msgid "Set this to the locations to scan for :term:`VST2` plugins."
 msgstr "Establece las ubicaciones para buscar plugins :term:`VST2`."
 
 #: ../../appendix/environment.rst:42
+#, fuzzy
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
-msgstr ""
+msgstr "Establece las ubicaciones para buscar plugins :term:`VST3`."
 
 #: ../../appendix/environment.rst:47
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."

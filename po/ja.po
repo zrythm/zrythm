@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
-"PO-Revision-Date: 2021-08-25 02:32+0000\n"
-"Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
+"PO-Revision-Date: 2021-09-11 15:43+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:294
@@ -305,9 +305,9 @@ msgstr "フォルダ"
 
 #: inc/audio/curve.h:120 src/gui/widgets/timeline_arranger.c:1119
 #: src/audio/curve.c:81
-#, c-format
+#, c-format, fuzzy
 msgid "Logarithmic"
-msgstr ""
+msgstr "対数"
 
 #: inc/audio/engine.h:204
 msgid "1,024"
@@ -1468,13 +1468,13 @@ msgstr "目印の名称"
 
 #: src/gui/widgets/arranger.c:2513
 msgid "Cannot resize because the selection contains objects without length"
-msgstr "選択に長さのないオブジェクトが含まれているため、サイズ変更ができない"
+msgstr "選択されたオブジェクトに長さのないオブジェクトが含まれているため、サイズ変更ができない"
 
 #: src/gui/widgets/arranger.c:2541
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
-msgstr ""
+msgstr "選択されたオブジェクトにループされているオブジェクトとループされていないオブジェクトが混在しているため、サイズ変更ができない"
 
 #: src/gui/widgets/arranger.c:3722
 #, fuzzy
@@ -2874,7 +2874,7 @@ msgstr "<b>データ</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:413
 msgid "<b>Log file</b>"
-msgstr ""
+msgstr "<b>ログファイル</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:454
 msgid "<b>Screenshot</b>"
@@ -3402,7 +3402,7 @@ msgid "Failed opening file"
 msgstr "ファイルを開くことができませんでした"
 
 #: src/audio/supported_file.c:316
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<b>%s</b>\n"
 "Sample rate: %d\n"
@@ -3412,8 +3412,8 @@ msgid ""
 msgstr ""
 "<b>%s</b>\n"
 "サンプルレート%d\n"
-"長さ: %ld s %ld ms%ld s %ld ms | BPM:%.1f\n"
-"チャンネル: %d | ビットレート: %'d.%d kb/s\n"
+"長さ: %ld s %ld ms | BPM:%.1f\n"
+"チャンネル数: %d | ビットレート: %'d.%d kb/s\n"
 "ビット深度: %d ビット"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
@@ -5024,7 +5024,7 @@ msgstr "コネクション"
 
 #: resources/ui/main_notebook.ui:130
 msgid "MIDI CC bindings"
-msgstr "MIDI CC のバインディング"
+msgstr "MIDI CC バインディング"
 
 #: resources/ui/main_notebook.ui:146
 msgid "Bindings"
@@ -5709,7 +5709,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:269
 msgid "First check for updates"
-msgstr "最初のアップデートの確認"
+msgstr "最初のアップデート確認"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:270
 #, fuzzy
@@ -6347,7 +6347,7 @@ msgstr "トラックインスペクター"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:679
 msgid "Track inspector panel size when detached."
-msgstr ""
+msgstr "インスペクター・パネルを取り外した時のサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:683
 #, fuzzy
@@ -6366,7 +6366,7 @@ msgstr "プラグインインスペクター"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:689
 msgid "Plugin inspector panel size when detached."
-msgstr ""
+msgstr "プラグイン・インスペクタ・パネルを取り外したときのサイズ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:693
 #, fuzzy
@@ -6692,7 +6692,7 @@ msgstr "録音モード"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:898
 msgid "Number of bars to pre-roll when recording."
-msgstr "録音時にプリロールする小節の数。"
+msgstr "録音時にプリロールする小節数。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:911
 msgid "Audio backend"

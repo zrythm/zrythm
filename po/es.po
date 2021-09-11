@@ -8,7 +8,7 @@
 # Israel Barrera <izraelbarrera@gmail.com>, 2020.
 # Eliseo Do Brito <eliseodb@gmail.com>, 2020.
 # Marc <marc.izquierdo.hu@gmail.com>, 2020.
-# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020, 2021.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 # Theo Iturri <theoiturri@gmail.com>, 2020.
 # Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
@@ -23,7 +23,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
 "PO-Revision-Date: 2021-09-11 15:43+0000\n"
-"Last-Translator: Yokox1 <mryokox@outlook.com>\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -218,20 +218,23 @@ msgid "Linear fade out"
 msgstr "Monitorizar salida fader"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:249
+#, fuzzy
 msgid "Nudge left"
-msgstr ""
+msgstr "Empujar a la izquierda"
 
 #: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:251
+#, fuzzy
 msgid "Nudge right"
-msgstr ""
+msgstr "Empujar a la derecha"
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
 msgstr "Reversa"
 
 #: inc/audio/audio_function.h:81
+#, fuzzy
 msgid "External program"
-msgstr ""
+msgstr "Programa externo"
 
 #: inc/audio/audio_function.h:82
 #, fuzzy
@@ -3052,7 +3055,7 @@ msgstr "Corriendo %s versión <b>%s</b>%s%s"
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr ""
+msgstr "Inicio"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
@@ -4762,7 +4765,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr "Idioma"
+msgstr "Lenguaje"
 
 #: resources/ui/first_run_assistant.ui:111
 msgid ""
