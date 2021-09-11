@@ -2545,8 +2545,11 @@ port_set_control_value (
       if (id->flags & PORT_FLAG_BPM)
         {
           /* this must only be called during
-           * processing kickoff */
+           * processing kickoff or while the
+           * engine is stopped */
           g_return_if_fail (
+            !engine_get_run (AUDIO_ENGINE)
+            ||
             router_is_processing_kickoff_thread (
               ROUTER));
 
@@ -2566,8 +2569,11 @@ port_set_control_value (
           id->flags2 & PORT_FLAG2_BEAT_UNIT)
         {
           /* this must only be called during
-           * processing kickoff */
+           * processing kickoff or while the
+           * engine is stopped */
           g_return_if_fail (
+            !engine_get_run (AUDIO_ENGINE)
+            ||
             router_is_processing_kickoff_thread (
               ROUTER));
 

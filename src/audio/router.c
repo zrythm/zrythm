@@ -67,6 +67,7 @@
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
+#include "zrythm_app.h"
 
 #ifdef HAVE_JACK
 #include "weak_libjack.h"
@@ -102,7 +103,12 @@ router_start_cycle (
     time_nfo.local_offset + time_nfo.nframes <=
       AUDIO_ENGINE->nframes);
 
-  self->process_kickoff_thread = g_thread_self ();
+  /* only set the kickoff thread when not called
+   * from the gtk thread (sometimes this is called
+   * from the gtk thread to force some
+   * processing) */
+  if (g_thread_self () != zrythm_app->gtk_thread)
+    self->process_kickoff_thread = g_thread_self ();
 
   if (!zix_sem_try_wait (&self->graph_access))
     {

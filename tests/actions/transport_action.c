@@ -45,7 +45,7 @@ test_change_bpm_and_time_sig (void)
   SupportedFile * file_descr =
     supported_file_new_from_path (audio_file_path);
   Position pos;
-  position_init (&pos);
+  position_set_to_bar (&pos, 4);
   Track * audio_track =
     track_create_with_action (
       TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
@@ -60,13 +60,112 @@ test_change_bpm_and_time_sig (void)
   g_assert_true (IS_REGION_AND_NONNULL (r));
   arranger_object_print (r_obj);
 
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    4);
+
   /* change time sig to 4/16 */
-  ControlPortChange change = { 0 };
-  change.flag2 = PORT_FLAG2_BEAT_UNIT;
-  change.beat_unit = BEAT_UNIT_16;
-  router_queue_control_port_change (ROUTER, &change);
+  {
+    ControlPortChange change = { 0 };
+    change.flag2 = PORT_FLAG2_BEAT_UNIT;
+    change.beat_unit = BEAT_UNIT_16;
+    router_queue_control_port_change (
+      ROUTER, &change);
+  }
 
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
+
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    16);
+
+  /* perform the change */
+  transport_action_perform_time_sig_change (
+    TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
+    4, 16, true, NULL);
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    16);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    16);
+
+  test_project_save_and_reload ();
+
+  /* undo */
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    4);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    4);
+
+  /* redo */
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    16);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  g_assert_cmpint (
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
+    16);
+
+  /* print region */
+  g_message ("-- before BPM change");
+  audio_track = TRACKLIST->tracks[audio_track_pos];
+  r = audio_track->lanes[0]->regions[0];
+  r_obj = (ArrangerObject *) r;
+  g_assert_true (IS_REGION_AND_NONNULL (r));
+  arranger_object_print (r_obj);
+
+  /* change BPM to 145 */
+  bpm_t bpm_before =
+    tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  {
+    ControlPortChange change = { 0 };
+    change.flag1 = PORT_FLAG_BPM;
+    change.real_val = 145.f;
+    router_queue_control_port_change (
+      ROUTER, &change);
+  }
+
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  g_assert_cmpfloat_with_epsilon (
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    145.f, 0.001f);
+
+  /* print region */
+  g_message ("-- after first BPM change");
+  audio_track = TRACKLIST->tracks[audio_track_pos];
+  r = audio_track->lanes[0]->regions[0];
+  r_obj = (ArrangerObject *) r;
+  g_assert_true (IS_REGION_AND_NONNULL (r));
+  arranger_object_print (r_obj);
+
+  /* perform the change to 150 */
+  transport_action_perform_bpm_change (
+    bpm_before, 150.f, false, NULL);
+  g_assert_cmpfloat_with_epsilon (
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    150.f, 0.001f);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  g_assert_cmpfloat_with_epsilon (
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    150.f, 0.001f);
+
+  /* print region */
+  g_message ("-- after BPM change action");
+  audio_track = TRACKLIST->tracks[audio_track_pos];
+  r = audio_track->lanes[0]->regions[0];
+  r_obj = (ArrangerObject *) r;
+  g_assert_true (IS_REGION_AND_NONNULL (r));
+  arranger_object_print (r_obj);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }

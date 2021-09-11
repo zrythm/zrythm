@@ -18,6 +18,7 @@
  */
 
 #include "actions/transport_action.h"
+#include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
@@ -159,28 +160,40 @@ do_or_undo (
   TransportAction * self,
   bool              _do)
 {
+  ControlPortChange change = { 0 };
   switch (self->type)
     {
     case TRANSPORT_ACTION_BPM_CHANGE:
-      port_set_control_value (
-        P_TEMPO_TRACK->bpm_port,
-        _do ? self->bpm_after : self->bpm_before,
-        false, false);
-      g_message ("set BPM to %f",
-        (double)
-        tempo_track_get_current_bpm (P_TEMPO_TRACK));
+      change.flag1 = PORT_FLAG_BPM;
+      change.real_val =
+        _do ? self->bpm_after : self->bpm_before;
       break;
     case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
-      tempo_track_set_beats_per_bar (
-        P_TEMPO_TRACK,
-        _do ? self->int_after : self->int_before);
+      change.flag2 =
+        PORT_FLAG2_BEATS_PER_BAR;
+      change.ival =
+        _do ? self->int_after : self->int_before;
       break;
     case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
-      tempo_track_set_beat_unit (
-        P_TEMPO_TRACK,
-        _do ? self->int_after : self->int_before);
+      change.flag2 =
+          change.flag2 = PORT_FLAG2_BEAT_UNIT;
+      change.beat_unit =
+        tempo_track_beat_unit_to_enum (
+          _do ? self->int_after : self->int_before);
       break;
     }
+
+  /* queue change */
+  router_queue_control_port_change (ROUTER, &change);
+
+  /* run engine to apply the change */
+  engine_process_prepare (AUDIO_ENGINE, 1);
+  EngineProcessTimeInfo time_nfo = {
+    .g_start_frames = PLAYHEAD->frames,
+    .local_offset = 0,
+    .nframes = 1, };
+  router_start_cycle (ROUTER, time_nfo);
+  engine_post_process (AUDIO_ENGINE, 0, 1);
 
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);

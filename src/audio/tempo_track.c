@@ -21,6 +21,7 @@
 
 #include "audio/automation_track.h"
 #include "audio/port.h"
+#include "audio/router.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
@@ -282,6 +283,13 @@ tempo_track_set_beat_unit_from_enum (
   Track *  self,
   BeatUnit ebeat_unit)
 {
+  g_return_if_fail (
+    !engine_get_run (AUDIO_ENGINE)
+    ||
+    (ROUTER
+     &&
+     router_is_processing_kickoff_thread (ROUTER)));
+
   port_set_control_value (
     self->beat_unit_port, ebeat_unit,
     F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
@@ -337,6 +345,13 @@ tempo_track_set_beats_per_bar (
   Track *     self,
   int         beats_per_bar)
 {
+  g_return_if_fail (
+    !engine_get_run (AUDIO_ENGINE)
+    ||
+    (ROUTER
+     &&
+     router_is_processing_kickoff_thread (ROUTER)));
+
   port_set_control_value (
     self->beats_per_bar_port, beats_per_bar,
     F_NOT_NORMALIZED, F_PUBLISH_EVENTS);

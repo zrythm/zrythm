@@ -37,6 +37,10 @@ process_cb (gpointer data)
   gulong sleep_time =
     (gulong) (secs_per_block * 1000.0 * 1000);
 
+  g_return_val_if_fail (
+    g_thread_self () != zrythm_app->gtk_thread,
+    NULL);
+
   g_message (
     "Running dummy audio engine for first time");
 
