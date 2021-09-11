@@ -66,6 +66,7 @@
 #include "audio/midi_event.h"
 #include "audio/midi_mapping.h"
 #include "audio/pool.h"
+#include "audio/recording_manager.h"
 #include "audio/router.h"
 #include "audio/sample_playback.h"
 #include "audio/sample_processor.h"
@@ -171,6 +172,10 @@ engine_update_frames_per_tick (
         __func__);
       return;
     }
+
+  /* process all recording events */
+  recording_manager_process_events (
+    RECORDING_MANAGER);
 
   g_return_if_fail (
     beats_per_bar > 0 && bpm > 0 &&
@@ -1126,6 +1131,10 @@ engine_wait_for_pause (
 
   if (PROJECT->loaded)
     {
+      /* process all recording events */
+      recording_manager_process_events (
+        RECORDING_MANAGER);
+
       /* run one more time to flush panic
        * messages */
       engine_process_prepare (self, 1);
