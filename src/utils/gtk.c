@@ -1609,10 +1609,12 @@ z_gtk_text_buffer_get_full_text (
  *
  * See gdk_pixbuf_savev() for the parameters.
  *
+ * @param accept_fallback Whether to accept a
+ *   fallback "no image" pixbuf.
  * @param[out] ret_dir Placeholder for directory to
  *   be deleted after using the screenshot.
- * @param[out] ret_path Placeholder for absolute path
- *   to the screenshot.
+ * @param[out] ret_path Placeholder for absolute
+ *   path to the screenshot.
  */
 void
 z_gtk_generate_screenshot_image (
@@ -1621,7 +1623,8 @@ z_gtk_generate_screenshot_image (
   char **      option_keys,
   char **      option_values,
   char **      ret_dir,
-  char **      ret_path)
+  char **      ret_path,
+  bool         accept_fallback)
 {
   g_return_if_fail (
     *ret_dir == NULL && *ret_path == NULL);
@@ -1639,8 +1642,37 @@ z_gtk_generate_screenshot_image (
   if (!pixbuf)
     {
       g_warning ("failed to generate pixbuf");
-      return;
-    }
+
+      if (accept_fallback)
+        {
+          char * themes_dir =
+            zrythm_get_dir (
+              ZRYTHM_DIR_SYSTEM_THEMESDIR);
+          char * path =
+            g_build_filename (
+              themes_dir, "icons", "zrythm-dark",
+              "scalable", "apps", "zrythm.svg",
+              NULL);
+          GError * err = NULL;
+          pixbuf =
+            gdk_pixbuf_new_from_file (
+              path, &err);
+          g_free (path);
+          g_free (themes_dir);
+          if (!pixbuf)
+            {
+              g_warning (
+                "failed to get fallback pixbuf "
+                "from %s: %s",
+                path, err->message);
+            }
+        } /* end if accept fallback */
+
+      /* if we still don't have a pixbuf, return */
+      if (!pixbuf)
+        return;
+
+    } /* end if failed to create original pixbuf */
 
   GError * err = NULL;
   *ret_dir =

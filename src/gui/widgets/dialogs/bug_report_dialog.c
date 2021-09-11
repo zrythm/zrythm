@@ -156,7 +156,7 @@ on_button_send_srht_clicked (
 
   /* wrap bottom text in a scrolled window */
   z_gtk_message_dialog_wrap_message_area_in_scroll (
-    GTK_MESSAGE_DIALOG (dialog), 580, 360);
+    GTK_MESSAGE_DIALOG (dialog), 580, 320);
 
   /* run the dialog */
   gtk_dialog_run (GTK_DIALOG (dialog));
@@ -399,7 +399,7 @@ on_button_send_automatically_clicked (
     580);
   gtk_scrolled_window_set_min_content_height (
     GTK_SCROLLED_WINDOW (scrolled_window),
-    360);
+    340);
   gtk_container_add (
     GTK_CONTAINER (scrolled_window), json_label);
   gtk_grid_attach (
@@ -466,7 +466,7 @@ on_button_send_automatically_clicked (
         GTK_WIDGET (MAIN_WINDOW), "jpeg",
         (char **) option_keys, (char **) option_vals,
         &screenshot_tmpdir,
-        &screenshot_path);
+        &screenshot_path, true);
     }
   GtkWidget * img = gtk_image_new ();
   if (screenshot_path)
@@ -474,7 +474,7 @@ on_button_send_automatically_clicked (
       GError * err = NULL;
       GdkPixbuf * pixbuf =
         gdk_pixbuf_new_from_file_at_scale (
-          screenshot_path, 580, 580, true, &err);
+          screenshot_path, 580, 360, true, &err);
       if (pixbuf)
         {
           gtk_image_set_from_pixbuf (

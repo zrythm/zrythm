@@ -629,10 +629,12 @@ z_gtk_text_buffer_get_full_text (
  *
  * See gdk_pixbuf_savev() for the parameters.
  *
+ * @param accept_fallback Whether to accept a
+ *   fallback "no image" pixbuf.
  * @param[out] ret_dir Placeholder for directory to
  *   be deleted after using the screenshot.
- * @param[out] ret_path Placeholder for absolute path
- *   to the screenshot.
+ * @param[out] ret_path Placeholder for absolute
+ *   path to the screenshot.
  */
 void
 z_gtk_generate_screenshot_image (
@@ -641,7 +643,8 @@ z_gtk_generate_screenshot_image (
   char **      option_keys,
   char **      option_values,
   char **      ret_dir,
-  char **      ret_path);
+  char **      ret_path,
+  bool         accept_fallback);
 
 /**
  * Sets the action target of the given GtkActionable
