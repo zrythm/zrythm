@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-08-09 23:33+0000\n"
-"Last-Translator: Eric <spice2wolf@gmail.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2021-09-09 14:35+0000\n"
+"Last-Translator: Liu Tao <lyuutau@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -1166,7 +1167,7 @@ msgstr ""
 #: ../../editing/clip-editors/toolbar.rst:39
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
-msgstr ""
+msgstr "音频编辑器"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
 msgid "The audio editor is displayed when an audio region is selected."
@@ -1842,7 +1843,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:20
 msgid "Select/Stretch Tool"
-msgstr ""
+msgstr "选择/拉伸工具"
 
 #: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
@@ -1957,7 +1958,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:102
 msgid "Edit Tool"
-msgstr ""
+msgstr "编辑工具"
 
 #: ../../editing/edit-tools.rst:103
 msgid ""
@@ -1976,7 +1977,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
-msgstr ""
+msgstr "切割工具"
 
 #: ../../editing/edit-tools.rst:116
 msgid ""
