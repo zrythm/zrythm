@@ -107,6 +107,10 @@ bpm_t
 tempo_track_get_current_bpm (
   Track * self);
 
+const char *
+tempo_track_get_current_bpm_as_str (
+  void * self);
+
 /**
  * Sets the BPM.
  *
@@ -125,6 +129,11 @@ tempo_track_set_bpm (
   bpm_t   start_bpm,
   bool    temporary,
   bool    fire_events);
+
+void
+tempo_track_set_bpm_from_str (
+  void *       _self,
+  const char * str);
 
 int
 tempo_track_beat_unit_enum_to_int (

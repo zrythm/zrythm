@@ -154,6 +154,24 @@ tempo_track_get_current_bpm (
       self->bpm_port, false);
 }
 
+const char *
+tempo_track_get_current_bpm_as_str (
+  void * self)
+{
+  Track * t = (Track *) self;
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (t), NULL);
+
+  static char * bpm_str = NULL;
+  if (bpm_str)
+    g_free (bpm_str);
+
+  bpm_t bpm = tempo_track_get_current_bpm (t);
+  bpm_str = g_strdup_printf ("%.2f", bpm);
+
+  return bpm_str;
+}
+
 /**
  * Sets the BPM.
  *
@@ -213,6 +231,23 @@ tempo_track_set_bpm (
     {
       EVENTS_PUSH (ET_BPM_CHANGED, NULL);
     }
+}
+
+void
+tempo_track_set_bpm_from_str (
+  void *       _self,
+  const char * str)
+{
+  Track * self = (Track *) _self;
+  g_return_if_fail (IS_TRACK_AND_NONNULL (self));
+
+  bpm_t bpm = (float) atof (str);
+  if (math_floats_equal (bpm, 0))
+    g_warning ("invalid BPM %s", str);
+
+  tempo_track_set_bpm (
+    self, bpm, tempo_track_get_current_bpm (self),
+    Z_F_NOT_TEMPORARY, F_PUBLISH_EVENTS);
 }
 
 int

@@ -140,6 +140,42 @@ on_jack_transport_type_changed (
 #endif
 
 static void
+on_bpm_right_click (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x,
+  gdouble                y,
+  BotBarWidget *         self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkWidget *menu, *menuitem;
+
+  menu = gtk_menu_new();
+
+  menuitem =
+    GTK_WIDGET (
+      z_gtk_create_menu_item (
+        _("Input"), NULL, false, "app.input-bpm"));
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+  menuitem =
+    GTK_WIDGET (
+      z_gtk_create_menu_item (
+        /* TRANSLATORS: tap tempo */
+        _("Tap"), NULL, false, "app.tap-bpm"));
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
+}
+
+static void
 on_transport_playhead_right_click (
   GtkGestureMultiPress *gesture,
   gint                  n_press,
@@ -395,9 +431,8 @@ bot_bar_widget_refresh (BotBarWidget * self)
       gtk_gesture_multi_press_new (
         GTK_WIDGET (self->digital_transport)));
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (
-      right_mp),
-      GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (right_mp),
+    GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (right_mp), "pressed",
     G_CALLBACK (on_transport_playhead_right_click),
@@ -675,6 +710,17 @@ bot_bar_widget_setup (
   BotBarWidget * self)
 {
   bot_bar_widget_refresh (self);
+
+  GtkGestureMultiPress * right_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->digital_bpm)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (right_mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (right_mp), "pressed",
+    G_CALLBACK (on_bpm_right_click), self);
 }
 
 static void

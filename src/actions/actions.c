@@ -38,6 +38,7 @@
 #include "audio/midi.h"
 #include "audio/midi_function.h"
 #include "audio/router.h"
+#include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/backend/clipboard.h"
@@ -2743,6 +2744,21 @@ DEFINE_SIMPLE (activate_go_to_start)
   position_init (&pos);
   transport_set_playhead_pos (
     TRANSPORT, &pos);
+}
+
+DEFINE_SIMPLE (activate_input_bpm)
+{
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Please enter a BPM"), P_TEMPO_TRACK,
+      tempo_track_get_current_bpm_as_str,
+      tempo_track_set_bpm_from_str);
+  gtk_widget_show_all (GTK_WIDGET (dialog));
+  gtk_dialog_run (GTK_DIALOG (dialog));
+}
+
+DEFINE_SIMPLE (activate_tap_bpm)
+{
 }
 
 void
