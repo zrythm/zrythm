@@ -177,6 +177,10 @@ typedef struct ZRegion
    */
   bool              read_from_pool;
 
+  /** Gain to apply to the audio (amplitude
+   * 0.0-2.0). */
+  float             gain;
+
   /**
    * Clip to read frames from, if not from the pool.
    */
@@ -213,7 +217,7 @@ typedef struct ZRegion
   /**
    * The automation points this region contains.
    *
-   * Also used in audio regions for volume
+   * Could also be used in audio regions for volume
    * automation.
    *
    * Must always stay sorted by position.
@@ -307,6 +311,7 @@ static const cyaml_schema_field_t
     ZRegion, id, region_identifier_fields_schema),
   YAML_FIELD_STRING_PTR (ZRegion, name),
   YAML_FIELD_INT (ZRegion, pool_id),
+  YAML_FIELD_FLOAT (ZRegion, gain),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,

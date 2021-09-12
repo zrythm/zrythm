@@ -42,7 +42,7 @@
 
 /**
  * Returns if the current position is for moving the
- * fade in/out mark.
+ * fade in/out mark (timeline only).
  *
  * @param in True for fade in, false for fade out.
  * @param x X in local coordinates.

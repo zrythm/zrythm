@@ -589,7 +589,7 @@ void
 ui_px_to_pos_timeline (
   double     px,
   Position * pos,
-  int        has_padding);
+  bool       has_padding);
 
 /**
  * Converts from pixels to frames.
@@ -635,7 +635,7 @@ NONNULL
 int
 ui_pos_to_px_editor (
   Position * pos,
-  int        use_padding);
+  bool       use_padding);
 
 /**
  * Converts from pixels to position.
@@ -653,7 +653,7 @@ void
 ui_px_to_pos_editor (
   double     px,
   Position * pos,
-  int        has_padding);
+  bool       has_padding);
 
 /**
  * Converts RGB to hex string.

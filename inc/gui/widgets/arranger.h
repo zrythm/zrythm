@@ -79,9 +79,11 @@ typedef enum ArrangerCursor
   ARRANGER_CURSOR_GRAB,
   ARRANGER_CURSOR_GRABBING,
   ARRANGER_CURSOR_RESIZING_L,
+  ARRANGER_CURSOR_RESIZING_L_FADE,
   ARRANGER_CURSOR_STRETCHING_L,
   ARRANGER_CURSOR_RESIZING_L_LOOP,
   ARRANGER_CURSOR_RESIZING_R,
+  ARRANGER_CURSOR_RESIZING_R_FADE,
   ARRANGER_CURSOR_STRETCHING_R,
   ARRANGER_CURSOR_RESIZING_R_LOOP,
   ARRANGER_CURSOR_RESIZING_UP,
@@ -166,6 +168,13 @@ typedef struct _ArrangerWidget
   /** Start Position of the earliest object
    * at the start of the drag. */
   Position       earliest_obj_start_pos;
+
+  /**
+   * Fade in/out position at start.
+   *
+   * Used when moving fade in/out points.
+   */
+  Position       fade_pos_at_start;
 
   /**
    * The object that was clicked in this drag
@@ -315,6 +324,19 @@ typedef struct _ArrangerWidget
 
   /* ------- END CHORD ------- */
 
+  /* --- AUDIO --- */
+
+  /**
+   * Float value at start.
+   *
+   * Used when changing the audio region gain.
+   */
+  float          fval_at_start;
+
+  double         dval_at_start;
+
+  /* --- END AUDIO --- */
+
   /** Px the playhead was last drawn at, so we can
    * redraw this and the new px only when the
    * playhead changes position. */
@@ -386,6 +408,11 @@ typedef struct _ArrangerWidget
    */
   PangoLayout *  ap_layout;
 
+  /**
+   * Layout for drawing audio editor text.
+   */
+  PangoLayout *  audio_layout;
+
 #if 0
   /**
    * Dummy cairo surface to create new surfaces from.
@@ -455,6 +482,14 @@ arranger_widget_pos_to_px (
   int        use_padding);
 
 /**
+ * Gets the cursor based on the current hover
+ * position.
+ */
+ArrangerCursor
+arranger_widget_get_cursor (
+  ArrangerWidget * self);
+
+/**
  * Figures out which cursor should be used based
  * on the current state and then sets it.
  */
@@ -482,15 +517,15 @@ arranger_widget_get_all_objects (
   int *             size);
 
 /**
- * Wrapper for ui_px_to_pos depending on the arranger
- * type.
+ * Wrapper for ui_px_to_pos depending on the
+ * arranger type.
  */
 void
 arranger_widget_px_to_pos (
   ArrangerWidget * self,
   double           px,
   Position *       pos,
-  int              has_padding);
+  bool             has_padding);
 
 /**
  * Returns the current visible rectangle.

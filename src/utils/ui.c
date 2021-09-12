@@ -263,7 +263,7 @@ static void
 px_to_pos (
   double        px,
   Position *    pos,
-  int           use_padding,
+  bool          use_padding,
   RulerWidget * ruler)
 {
   if (use_padding)
@@ -295,7 +295,7 @@ void
 ui_px_to_pos_timeline (
   double     px,
   Position * pos,
-  int        has_padding)
+  bool       has_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return;
@@ -321,7 +321,7 @@ void
 ui_px_to_pos_editor (
   double     px,
   Position * pos,
-  int        has_padding)
+  bool       has_padding)
 {
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return;
@@ -372,7 +372,7 @@ ui_pos_to_px_timeline (
 int
 ui_pos_to_px_editor (
   Position *       pos,
-  int              use_padding)
+  bool             use_padding)
 {
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;

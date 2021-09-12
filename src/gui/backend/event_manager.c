@@ -1942,6 +1942,18 @@ event_manager_process_event (
       arranger_widget_redraw_whole (
         MW_MIDI_MODIFIER_ARRANGER);
       break;
+    case ET_AUDIO_REGION_FADE_IN_CHANGED:
+      audio_arranger_widget_redraw_fade (
+        MW_AUDIO_ARRANGER, true);
+      break;
+    case ET_AUDIO_REGION_FADE_OUT_CHANGED:
+      audio_arranger_widget_redraw_fade (
+        MW_AUDIO_ARRANGER, false);
+      break;
+    case ET_AUDIO_REGION_GAIN_CHANGED:
+      audio_arranger_widget_redraw_gain (
+        MW_AUDIO_ARRANGER);
+      break;
     default:
       g_warning (
         "event %d not implemented yet",

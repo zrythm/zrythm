@@ -45,6 +45,8 @@
 #include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/debug.h"
+#include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -733,6 +735,40 @@ draw_audio_bg (
     }
 #undef DRAW_VLINE
   cairo_fill (cr);
+
+  /* draw gain line */
+  gdk_cairo_set_source_rgba (
+    cr, &UI_COLORS->bright_orange);
+  float gain_fader_val =
+    math_get_fader_val_from_amp (ar->gain);
+  int gain_line_start_x =
+    ui_pos_to_px_editor (&obj->pos, F_PADDING);
+  int gain_line_end_x =
+    ui_pos_to_px_editor (&obj->end_pos, F_PADDING);
+  cairo_rectangle (
+    cr,
+    /* need 1 pixel extra for some reason */
+    1 + (gain_line_start_x - rect->x),
+    /* invert because cairo draws the opposite
+     * way */
+    height * (1.0 - gain_fader_val) - rect->y,
+    gain_line_end_x - gain_line_start_x,
+    2);
+  cairo_fill (cr);
+
+  /* draw gain text */
+  double gain_db = math_amp_to_dbfs (ar->gain);
+  char gain_txt[50];
+  sprintf (gain_txt, "%.1fdB", gain_db);
+  int gain_txt_padding = 3;
+  z_cairo_draw_text_full (
+    cr, GTK_WIDGET (self), self->audio_layout,
+    gain_txt,
+    (gain_txt_padding + gain_line_start_x) -
+      rect->x,
+    gain_txt_padding +
+      (int)
+      (height * (1.0 - gain_fader_val) - rect->y));
 }
 
 static void

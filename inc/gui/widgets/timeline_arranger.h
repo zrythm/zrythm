@@ -170,9 +170,9 @@ timeline_arranger_widget_create_marker (
  * and the actual regions.
  *
  * @param pos Absolute position in the timeline.
- * @parram dry_run Don't resize notes; just check
+ * @param dry_run Don't resize notes; just check
  *   if the resize is allowed (check if invalid
- *   resizes will happen)
+ *   resizes will happen).
  *
  * @return 0 if the operation was successful,
  *   nonzero otherwise.

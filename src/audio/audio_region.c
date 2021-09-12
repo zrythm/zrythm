@@ -147,6 +147,8 @@ audio_region_new (
     object_new_n (
       self->aps_size, AutomationPoint *);
 
+  self->gain = 1.f;
+
   /* init */
   region_init (
     self, start_pos, &end_pos, track_name_hash,
@@ -307,7 +309,7 @@ timestretch_buf (
  *   so region loop related logic is not needed.
  *
  * @param g_start_frames Global start frame.
- * @param local_start_frame The start frame offset
+ * @param cycle_start_offset The start frame offset
  *   from 0 in this cycle.
  * @param nframes Number of frames at start
  *   Position.
@@ -317,7 +319,7 @@ void
 audio_region_fill_stereo_ports (
   ZRegion *     r,
   long          g_start_frames,
-  nframes_t     local_start_frame,
+  nframes_t     cycle_start_offset,
   nframes_t     nframes,
   StereoPorts * stereo_ports)
 {
@@ -392,14 +394,14 @@ audio_region_fill_stereo_ports (
   size_t buff_index_start =
     (size_t) clip->num_frames + 16;
   size_t buff_size = 0;
-  unsigned int prev_offset = local_start_frame;
+  unsigned int prev_offset = cycle_start_offset;
   for (nframes_t j =
          (r_local_frames_at_start < 0) ?
            - r_local_frames_at_start : 0;
        j < nframes; j++)
     {
       long current_local_frame =
-        local_start_frame + j;
+        cycle_start_offset + j;
       long r_local_pos =
         region_timeline_frames_to_local (
           r, g_start_frames + j, F_NORMALIZE);
@@ -491,14 +493,52 @@ prev_offset, \
         }
     }
 
+  /* apply gain */
+  if (!math_floats_equal (r->gain, 1.f))
+    {
+      dsp_mul_k2 (
+        &lbuf_after_ts[0], r->gain, nframes);
+      dsp_mul_k2 (
+        &rbuf_after_ts[0], r->gain, nframes);
+    }
+
+  /* copy frames */
+  dsp_copy (
+    &stereo_ports->l->buf[cycle_start_offset],
+    &lbuf_after_ts[0], nframes);
+  dsp_copy (
+    &stereo_ports->r->buf[cycle_start_offset],
+    &rbuf_after_ts[0], nframes);
+
   /* apply fades */
+  long num_frames_in_fade_in_area =
+    r_obj->fade_in_pos.frames;
+  long num_frames_in_fade_out_area =
+    r_obj->end_pos.frames -
+      (r_obj->fade_out_pos.frames +
+       r_obj->pos.frames);
   for (nframes_t j = 0; j < nframes; j++)
     {
+      long current_cycle_frame =
+        cycle_start_offset + j;
       long current_local_frame =
-        local_start_frame + j;
+        (g_start_frames + current_cycle_frame) -
+        r_obj->pos.frames;
 
-      float fade_in = 1.f;
-      float fade_out = 1.f;
+      /* skip to fade out if not in any fade area */
+      if (G_LIKELY (
+            current_local_frame >=
+              r_obj->fade_in_pos.frames
+            &&
+            current_local_frame <
+              r_obj->fade_out_pos.frames))
+        {
+          j +=
+            r_obj->fade_out_pos.frames -
+            current_local_frame;
+          j--;
+          continue;
+        }
 
       /* if inside fade in */
       if (current_local_frame >= 0 &&
@@ -506,40 +546,49 @@ prev_offset, \
             r_obj->fade_in_pos.frames)
         {
           z_return_if_fail_cmp (
-            r_obj->fade_in_pos.frames, >, 0);
-          fade_in =
+            num_frames_in_fade_in_area, >, 0);
+          z_return_if_fail_cmp (
+            current_local_frame, <=,
+            num_frames_in_fade_in_area);
+          float fade_in =
             (float)
             fade_get_y_normalized (
               (double) current_local_frame /
               (double)
-              r_obj->fade_in_pos.frames,
+              num_frames_in_fade_in_area,
               &r_obj->fade_in_opts, 1);
+
+          stereo_ports->l->buf[current_cycle_frame] *=
+            fade_in;
+          stereo_ports->r->buf[current_cycle_frame] *=
+            fade_in;
         }
-      /* else if inside fade out */
-      else if (current_local_frame >=
-                 r_obj->fade_out_pos.frames)
+      /* if inside fade out */
+      if (current_local_frame >=
+            r_obj->fade_out_pos.frames)
         {
           z_return_if_fail_cmp (
-            r_obj->end_pos.frames -
-              (r_obj->fade_out_pos.frames +
-               r_obj->pos.frames), >, 0);
-          fade_out =
+            num_frames_in_fade_out_area, >, 0);
+          long num_frames_from_fade_out_start =
+            current_local_frame -
+              r_obj->fade_out_pos.frames;
+          z_return_if_fail_cmp (
+            num_frames_from_fade_out_start, <=,
+            num_frames_in_fade_out_area);
+          float fade_out =
             (float)
             fade_get_y_normalized (
               (double)
-              (current_local_frame -
-                  r_obj->fade_out_pos.frames) /
+              num_frames_from_fade_out_start /
               (double)
-              (r_obj->end_pos.frames -
-                (r_obj->fade_out_pos.frames +
-                 r_obj->pos.frames)),
+              num_frames_in_fade_out_area,
               &r_obj->fade_out_opts, 0);
-        }
 
-      stereo_ports->l->buf[current_local_frame] =
-        lbuf_after_ts[j] * fade_in * fade_out;
-      stereo_ports->r->buf[current_local_frame] =
-        rbuf_after_ts[j] * fade_in * fade_out;
+          stereo_ports->l->buf[current_cycle_frame] *=
+            fade_out;
+          stereo_ports->r->buf[current_cycle_frame] *=
+            fade_out;
+        }
     }
 }
 

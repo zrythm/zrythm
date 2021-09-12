@@ -866,7 +866,7 @@ arranger_object_free (
 void
 arranger_object_resize (
   ArrangerObject *         self,
-  const int                left,
+  const bool               left,
   ArrangerObjectResizeType type,
   const double             ticks,
   bool                     during_ui_action);

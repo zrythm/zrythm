@@ -312,6 +312,21 @@ typedef enum EventType
    * Arg: None.
    */
   ET_VELOCITIES_RAMPED,
+
+  /**
+   * Audio region fade in/out changed.
+   *
+   * Arg: ZRegion pointer.
+   */
+  ET_AUDIO_REGION_FADE_IN_CHANGED,
+  ET_AUDIO_REGION_FADE_OUT_CHANGED,
+
+  /**
+   * Audio region gain changed.
+   *
+   * Arg: ZRegion pointer.
+   */
+  ET_AUDIO_REGION_GAIN_CHANGED,
 } EventType;
 
 /**

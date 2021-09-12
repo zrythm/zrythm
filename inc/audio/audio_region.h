@@ -142,7 +142,7 @@ audio_region_replace_frames (
  *   so region loop related logic is not needed.
  *
  * @param g_start_frames Global start frame.
- * @param local_start_frame The start frame offset
+ * @param cycle_start_offset The start frame offset
  *   from 0 in this cycle.
  * @param nframes Number of frames at start
  *   Position.
@@ -155,7 +155,7 @@ void
 audio_region_fill_stereo_ports (
   ZRegion *     self,
   long          g_start_frames,
-  nframes_t     local_start_frame,
+  nframes_t     cycle_start_offset,
   nframes_t     nframes,
   StereoPorts * stereo_ports);
 

@@ -94,8 +94,8 @@ typedef struct EventManager
       _ev->file = __FILE__; \
       _ev->func = __func__; \
       _ev->lineno = __LINE__; \
-      _ev->type = et; \
-      _ev->arg = (void *) _arg; \
+      _ev->type = (et); \
+      _ev->arg = (void *) (_arg); \
       if (zrythm_app->gtk_thread == \
             g_thread_self ()  \
           /* skip backtrace for now */ \
@@ -106,7 +106,7 @@ typedef struct EventManager
         } \
       /* don't print events that are called \
        * continuously */ \
-      if (et != ET_PLAYHEAD_POS_CHANGED && \
+      if ((et) != ET_PLAYHEAD_POS_CHANGED && \
             g_thread_self () == \
               zrythm_app->gtk_thread) \
         { \

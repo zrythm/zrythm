@@ -270,6 +270,7 @@ arranger_widget_set_cursor (
       SET_CURSOR_FROM_NAME ("link");
       break;
     case ARRANGER_CURSOR_RESIZING_L:
+    case ARRANGER_CURSOR_RESIZING_L_FADE:
       SET_X_CURSOR (left_resize);
       break;
     case ARRANGER_CURSOR_STRETCHING_L:
@@ -279,6 +280,7 @@ arranger_widget_set_cursor (
       SET_X_CURSOR (left_resize_loop);
       break;
     case ARRANGER_CURSOR_RESIZING_R:
+    case ARRANGER_CURSOR_RESIZING_R_FADE:
       SET_X_CURSOR (right_resize);
       break;
     case ARRANGER_CURSOR_STRETCHING_R:
@@ -638,7 +640,7 @@ get_hit_objects (
     {
       arranger_widget_px_to_pos (
         self, rect->x + rect->width,
-        &nfo.end_pos, true);
+        &nfo.end_pos, F_PADDING);
     }
   else
     {
@@ -2081,7 +2083,7 @@ create_item (
 
   /* get the position */
   arranger_widget_px_to_pos (
-    self, start_x, &pos, true);
+    self, start_x, &pos, F_PADDING);
 
   /* make sure the position is positive */
   Position init_pos;
@@ -2810,9 +2812,11 @@ drag_begin (
   g_debug ("arranger drag begin starting...");
 
   self->start_x = start_x;
+  self->hover_x = start_x;
   arranger_widget_px_to_pos (
-    self, start_x, &self->start_pos, 1);
+    self, start_x, &self->start_pos, F_PADDING);
   self->start_y = start_y;
+  self->hover_y = start_y;;
   self->drag_update_started = false;
 
   /* set last project selection type */
@@ -2850,7 +2854,7 @@ drag_begin (
   /* get current pos */
   arranger_widget_px_to_pos (
     self, self->start_x,
-    &self->curr_pos, 1);
+    &self->curr_pos, F_PADDING);
 
   /* get difference with drag start pos */
   self->curr_ticks_diff_from_start =
@@ -2903,11 +2907,15 @@ drag_begin (
                 TRANSPORT, false);
 
               /* hide range selection if audio
-               * arranger */
+               * arranger and set appropriate
+               * action */
               if (self->type == TYPE (AUDIO))
                 {
                   AUDIO_SELECTIONS->
                     has_selection = false;
+                  self->action =
+                    audio_arranger_widget_get_action_on_drag_begin (
+                      self);
                 }
               break;
             case TOOL_EDIT:
@@ -3340,7 +3348,7 @@ drag_update (
   /* get current pos */
   arranger_widget_px_to_pos (
     self, self->start_x + offset_x,
-    &self->curr_pos, 1);
+    &self->curr_pos, F_PADDING);
 
   /* get difference with drag start pos */
   self->curr_ticks_diff_from_start =
@@ -3533,11 +3541,22 @@ drag_update (
           int ret =
             timeline_arranger_widget_snap_regions_l (
               self,
-              &self->curr_pos, 1);
+              &self->curr_pos, F_DRY_RUN);
           if (!ret)
             timeline_arranger_widget_snap_regions_l (
               self,
-              &self->curr_pos, 0);
+              &self->curr_pos, F_NOT_DRY_RUN);
+        }
+      else if (self->type == TYPE (AUDIO))
+        {
+          int ret =
+            audio_arranger_widget_snap_fade (
+              self, &self->curr_pos, true,
+              F_DRY_RUN);
+          if (!ret)
+            audio_arranger_widget_snap_fade (
+              self, &self->curr_pos, true,
+              F_NOT_DRY_RUN);
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
@@ -3585,6 +3604,17 @@ drag_update (
                 timeline_arranger_widget_snap_regions_r (
                   self, &self->curr_pos, F_NOT_DRY_RUN);
             }
+        }
+      else if (self->type == TYPE (AUDIO))
+        {
+          int ret =
+            audio_arranger_widget_snap_fade (
+              self, &self->curr_pos, false,
+              F_DRY_RUN);
+          if (!ret)
+            audio_arranger_widget_snap_fade (
+              self, &self->curr_pos, false,
+              F_NOT_DRY_RUN);
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
@@ -3653,14 +3683,35 @@ drag_update (
           automation_arranger_widget_resize_curves (
             self, offset_y);
         }
+      else if (self->type == TYPE (AUDIO))
+        {
+          audio_arranger_widget_update_gain (
+            self, offset_y);
+        }
       break;
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
-      timeline_arranger_widget_fade_up (
-        self, offset_y, 1);
+      if (self->type == TYPE (TIMELINE))
+        {
+          timeline_arranger_widget_fade_up (
+            self, offset_y, true);
+        }
+      else if (self->type == TYPE (AUDIO))
+        {
+          audio_arranger_widget_fade_up (
+            self, offset_y, true);
+        }
       break;
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
-      timeline_arranger_widget_fade_up (
-        self, offset_y, 0);
+      if (self->type == TYPE (TIMELINE))
+        {
+          timeline_arranger_widget_fade_up (
+            self, offset_y, false);
+        }
+      else if (self->type == TYPE (AUDIO))
+        {
+          audio_arranger_widget_fade_up (
+            self, offset_y, false);
+        }
       break;
     case UI_OVERLAY_ACTION_MOVING:
     case UI_OVERLAY_ACTION_CREATING_MOVING:
@@ -4329,6 +4380,117 @@ on_drag_end_audio (
             AUDIO_SELECTIONS->sel_start =
               AUDIO_SELECTIONS->sel_end;
             AUDIO_SELECTIONS->sel_end = tmp;
+          }
+      }
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L_FADE:
+    case UI_OVERLAY_ACTION_RESIZING_R_FADE:
+      {
+        ArrangerObject * obj =
+          (ArrangerObject *)
+          clip_editor_get_region (CLIP_EDITOR);
+        g_return_if_fail (
+          IS_REGION_AND_NONNULL (obj));
+        bool is_fade_in =
+          self->action ==
+            UI_OVERLAY_ACTION_RESIZING_L_FADE;
+        double ticks_diff =
+          (is_fade_in
+           ? obj->fade_in_pos.ticks
+           : obj->fade_out_pos.ticks) -
+          self->fade_pos_at_start.ticks;
+
+        ArrangerSelections * sel =
+          arranger_selections_new (
+            ARRANGER_SELECTIONS_TYPE_TIMELINE);
+        arranger_selections_add_object (
+          sel, obj);
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_resize (
+            sel,
+            is_fade_in
+            ? ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE
+            : ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
+            ticks_diff, F_ALREADY_EDITED, &err);
+        arranger_selections_free (sel);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed resizing selection"));
+          }
+      }
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
+    case UI_OVERLAY_ACTION_RESIZING_UP:
+      {
+        ZRegion * r =
+          clip_editor_get_region (CLIP_EDITOR);
+        ArrangerObject * obj =
+          (ArrangerObject *) r;
+        g_return_if_fail (
+          IS_REGION_AND_NONNULL (obj));
+
+        /* prepare current selections */
+        ArrangerSelections * sel =
+          arranger_selections_new (
+            ARRANGER_SELECTIONS_TYPE_TIMELINE);
+        arranger_selections_add_object (
+          sel, obj);
+
+        ArrangerSelectionsActionEditType edit_type;
+
+        /* prepare selections before */
+        ArrangerSelections * sel_before =
+          arranger_selections_new (
+            ARRANGER_SELECTIONS_TYPE_TIMELINE);
+        ArrangerObject * clone_obj =
+          arranger_object_clone (obj);
+        if (self->action ==
+              UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN)
+          {
+            clone_obj->fade_in_opts.curviness =
+              self->dval_at_start;
+            edit_type =
+              ARRANGER_SELECTIONS_ACTION_EDIT_FADES;
+          }
+        else if (
+          self->action ==
+            UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT)
+          {
+            clone_obj->fade_out_opts.curviness =
+              self->dval_at_start;
+            edit_type =
+              ARRANGER_SELECTIONS_ACTION_EDIT_FADES;
+          }
+        else if (
+          self->action ==
+            UI_OVERLAY_ACTION_RESIZING_UP)
+          {
+            ZRegion * clone_r =
+              (ZRegion *) clone_obj;
+            clone_r->gain = self->fval_at_start;
+            edit_type =
+              ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE;
+          }
+        arranger_selections_add_object (
+          sel_before, clone_obj);
+
+        GError * err = NULL;
+        bool ret =
+          arranger_selections_action_perform_edit (
+            sel_before, sel, edit_type,
+            F_ALREADY_EDITED, &err);
+        arranger_selections_free_full (sel_before);
+        arranger_selections_free (sel);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _("Failed to edit selection"));
           }
       }
       break;
@@ -5496,7 +5658,7 @@ on_scroll (
 
       /* get positions of cursor */
       arranger_widget_px_to_pos (
-        self, x, &cursor_pos, 1);
+        self, x, &cursor_pos, F_PADDING);
 
       /* get px diff so we can calculate the new
        * adjustment later */
@@ -5661,15 +5823,15 @@ on_grab_broken (GtkWidget *widget,
 }
 
 /**
- * Wrapper for ui_px_to_pos depending on the arranger
- * type.
+ * Wrapper for ui_px_to_pos depending on the
+ * arranger type.
  */
 void
 arranger_widget_px_to_pos (
   ArrangerWidget * self,
   double           px,
   Position *       pos,
-  int              has_padding)
+  bool             has_padding)
 {
   if (self->type == TYPE (TIMELINE))
     {
@@ -5689,8 +5851,7 @@ get_audio_arranger_cursor (
   Tool            tool)
 {
   ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
-  UiOverlayAction action =
-    self->action;
+  UiOverlayAction action = self->action;
 
   switch (action)
     {
@@ -5698,17 +5859,50 @@ get_audio_arranger_cursor (
       if (P_TOOL == TOOL_SELECT_NORMAL ||
           P_TOOL == TOOL_SELECT_STRETCH)
         {
-          if (is_cursor_in_top_half (
-                self, self->hover_y))
-            {
-              /* set cursor to normal */
-              return ARRANGER_CURSOR_SELECT;
-            }
-          else
+          /* gain line */
+          if (audio_arranger_widget_is_cursor_gain (
+                self, self->hover_x, self->hover_y))
+            return ARRANGER_CURSOR_RESIZING_UP;
+
+          if (!is_cursor_in_top_half (
+                 self, self->hover_y))
             {
               /* set cursor to range selection */
               return ARRANGER_CURSOR_RANGE;
             }
+
+          /* resize fade in */
+          /* note cursor is opposite */
+          if (audio_arranger_widget_is_cursor_in_fade (
+                self, self->hover_x, self->hover_y,
+                true, true))
+            {
+              return ARRANGER_CURSOR_RESIZING_R_FADE;
+            }
+          /* resize fade out */
+          if (audio_arranger_widget_is_cursor_in_fade (
+                self, self->hover_x, self->hover_y,
+                false, true))
+            {
+              return ARRANGER_CURSOR_RESIZING_L_FADE;
+            }
+          /* fade in curviness */
+          if (audio_arranger_widget_is_cursor_in_fade (
+                self, self->hover_x, self->hover_y,
+                true, false))
+            {
+              return ARRANGER_CURSOR_RESIZING_UP_FADE_IN;
+            }
+          /* fade out curviness */
+          if (audio_arranger_widget_is_cursor_in_fade (
+                self, self->hover_x, self->hover_y,
+                false, false))
+            {
+              return ARRANGER_CURSOR_RESIZING_UP_FADE_OUT;
+            }
+
+          /* set cursor to normal */
+          return ARRANGER_CURSOR_SELECT;
         }
       else if (P_TOOL == TOOL_EDIT)
         ac = ARRANGER_CURSOR_EDIT;
@@ -5737,11 +5931,26 @@ get_audio_arranger_cursor (
     case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
       break;
+    case UI_OVERLAY_ACTION_RESIZING_UP:
+      ac = ARRANGER_CURSOR_RESIZING_UP;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
+      ac = ARRANGER_CURSOR_RESIZING_UP_FADE_IN;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
+      ac = ARRANGER_CURSOR_RESIZING_UP_FADE_OUT;
+      break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       ac = ARRANGER_CURSOR_RESIZING_L;
       break;
+    case UI_OVERLAY_ACTION_RESIZING_L_FADE:
+      ac = ARRANGER_CURSOR_RESIZING_L_FADE;
+      break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R_FADE:
+      ac = ARRANGER_CURSOR_RESIZING_R_FADE;
       break;
     default:
       ac = ARRANGER_CURSOR_SELECT;
@@ -6406,17 +6615,13 @@ get_midi_arranger_cursor (
 }
 
 /**
- * Figures out which cursor should be used based
- * on the current state and then sets it.
+ * Gets the cursor based on the current hover
+ * position.
  */
-void
-arranger_widget_refresh_cursor (
+ArrangerCursor
+arranger_widget_get_cursor (
   ArrangerWidget * self)
 {
-  if (!gtk_widget_get_realized (
-        GTK_WIDGET (self)))
-    return;
-
   ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
 
   switch (self->type)
@@ -6447,6 +6652,24 @@ arranger_widget_refresh_cursor (
     default:
       break;
     }
+
+  return ac;
+}
+
+/**
+ * Figures out which cursor should be used based
+ * on the current state and then sets it.
+ */
+void
+arranger_widget_refresh_cursor (
+  ArrangerWidget * self)
+{
+  if (!gtk_widget_get_realized (
+        GTK_WIDGET (self)))
+    return;
+
+  ArrangerCursor ac =
+    arranger_widget_get_cursor (self);
 
   arranger_widget_set_cursor (self, ac);
 }
@@ -6681,6 +6904,11 @@ arranger_widget_setup (
           GTK_WIDGET (self), "8",
           PANGO_ELLIPSIZE_NONE, 0);
       break;
+    case TYPE (AUDIO):
+      self->audio_layout =
+        z_cairo_create_pango_layout_from_string (
+          GTK_WIDGET (self), "8",
+          PANGO_ELLIPSIZE_NONE, 0);
     default:
       break;
     }
@@ -6769,6 +6997,8 @@ finalize (
     g_object_unref, self->vel_layout);
   object_free_w_func_and_null (
     g_object_unref, self->ap_layout);
+  object_free_w_func_and_null (
+    g_object_unref, self->audio_layout);
 
   G_OBJECT_CLASS (
     arranger_widget_parent_class)->

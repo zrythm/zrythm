@@ -557,6 +557,32 @@ arranger_object_is_position_valid (
           position_is_after (pos, &self->pos);
       }
       break;
+    case ARRANGER_OBJECT_POSITION_TYPE_FADE_IN:
+      {
+        Position local_end_pos;
+        position_from_frames (
+          &local_end_pos,
+          self->end_pos.frames - self->pos.frames);
+        is_valid =
+          position_is_after_or_equal (
+            pos, &POSITION_START)
+          &&
+          position_is_before (pos, &local_end_pos);
+      }
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT:
+      {
+        Position local_end_pos;
+        position_from_frames (
+          &local_end_pos,
+          self->end_pos.frames - self->pos.frames);
+        is_valid =
+          position_is_after_or_equal (
+            pos, &POSITION_START)
+          &&
+          position_is_before (pos, &local_end_pos);
+      }
+      break;
     default:
       break;
     }
@@ -1356,7 +1382,7 @@ arranger_object_add_ticks_to_children (
 void
 arranger_object_resize (
   ArrangerObject *         self,
-  const int                left,
+  const bool               left,
   ArrangerObjectResizeType type,
   const double             ticks,
   bool                     during_ui_action)
@@ -2274,6 +2300,7 @@ clone_region (
 
         new_region = ar;
         new_region->pool_id = region->pool_id;
+        new_region->gain = region->gain;
         ar->musical_mode = region->musical_mode;
       }
     break;

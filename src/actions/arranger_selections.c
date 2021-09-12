@@ -2404,6 +2404,10 @@ do_or_undo_edit (
         {
           for (int i = 0; i < size; i++)
             {
+              g_return_val_if_fail (
+                src_objs[i], -1);
+              g_return_val_if_fail (
+                dest_objs[i], -1);
               src_objs[i]->flags |=
                 ARRANGER_OBJECT_FLAG_NON_PROJECT;
               dest_objs[i]->flags |=
@@ -2465,6 +2469,8 @@ do_or_undo_edit (
                         SET_PRIMITIVE (ZRegion, color);
                         SET_PRIMITIVE (
                           ZRegion, musical_mode);
+                        SET_PRIMITIVE (
+                          ZRegion, gain);
                       }
                       break;
                     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
