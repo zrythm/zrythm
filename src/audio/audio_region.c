@@ -505,6 +505,8 @@ prev_offset, \
           current_local_frame <
             r_obj->fade_in_pos.frames)
         {
+          z_return_if_fail_cmp (
+            r_obj->fade_in_pos.frames, >, 0);
           fade_in =
             (float)
             fade_get_y_normalized (
@@ -517,6 +519,10 @@ prev_offset, \
       else if (current_local_frame >=
                  r_obj->fade_out_pos.frames)
         {
+          z_return_if_fail_cmp (
+            r_obj->end_pos.frames -
+              (r_obj->fade_out_pos.frames +
+               r_obj->pos.frames), >, 0);
           fade_out =
             (float)
             fade_get_y_normalized (

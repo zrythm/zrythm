@@ -1009,6 +1009,15 @@ init_loaded_region (
         g_return_if_fail (clip);
         self->last_clip_change =
           g_get_monotonic_time ();
+
+        for (i = 0; i < self->num_aps; i++)
+          {
+            AutomationPoint * ap = self->aps[i];
+            arranger_object_init_loaded (
+              (ArrangerObject *) ap);
+          }
+        self->aps_size =
+          (size_t) self->num_aps;
       }
       break;
     case REGION_TYPE_MIDI:
@@ -1040,10 +1049,9 @@ init_loaded_region (
       break;
     case REGION_TYPE_AUTOMATION:
       {
-        AutomationPoint * ap;
         for (i = 0; i < self->num_aps; i++)
           {
-            ap = self->aps[i];
+            AutomationPoint * ap = self->aps[i];
             arranger_object_init_loaded (
               (ArrangerObject *) ap);
           }
@@ -1099,44 +1107,6 @@ arranger_object_init_loaded (
       /* nothing needed */
       break;
     }
-}
-
-/**
- * Returns the length of the ArrangerObject (if
- * it has length) in ticks.
- *
- * (End Position - start Position).
- */
-double
-arranger_object_get_length_in_ticks (
-  ArrangerObject * self)
-{
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
-
-  return
-    self->end_pos.ticks -
-    self->pos.ticks;
-}
-
-/**
- * Returns the length of the ArrangerObject (if
- * it has length) in frames.
- *
- * (End Position - start Position).
- */
-long
-arranger_object_get_length_in_frames (
-  ArrangerObject * self)
-{
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
-
-  return
-    self->end_pos.frames -
-    self->pos.frames;
 }
 
 /**

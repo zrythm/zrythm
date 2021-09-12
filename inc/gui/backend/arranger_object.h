@@ -765,9 +765,18 @@ arranger_object_move (
  *
  * (End Position - start Position).
  */
-double
+NONNULL
+WARN_UNUSED_RESULT
+static inline double
 arranger_object_get_length_in_ticks (
-  ArrangerObject * self);
+  const ArrangerObject * const self)
+{
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
+  return self->end_pos.ticks - self->pos.ticks;
+}
 
 /**
  * Returns the length of the ArrangerObject (if
@@ -775,9 +784,18 @@ arranger_object_get_length_in_ticks (
  *
  * (End Position - start Position).
  */
-long
+NONNULL
+WARN_UNUSED_RESULT
+static inline long
 arranger_object_get_length_in_frames (
-  ArrangerObject * self);
+  const ArrangerObject * const self)
+{
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
+  return self->end_pos.frames - self->pos.frames;
+}
 
 /**
  * Returns the length of the loop in ticks.

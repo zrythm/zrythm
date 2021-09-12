@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/fade.h"
 #include "audio/control_port.h"
 #include "audio/track_lane.h"
 #include "audio/tracklist.h"
@@ -42,6 +43,8 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/color.h"
+#include "utils/debug.h"
 #include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -515,11 +518,6 @@ draw_audio_bg (
   Track * track =
     track_lane_get_track (lane);
   g_return_if_fail (lane);
-  GdkRGBA * color = &track->color;
-  cairo_set_source_rgba (
-    cr, color->red + 0.3, color->green + 0.3,
-    color->blue + 0.3, 0.9);
-  cairo_set_line_width (cr, 1);
 
   int height =
     gtk_widget_get_allocated_height (
@@ -576,6 +574,85 @@ draw_audio_bg (
       break;
     }
 
+  /* draw fades */
+  long obj_length_frames =
+    arranger_object_get_length_in_frames (obj);
+  GdkRGBA base_color = {
+      .red = 0.3, .green = 0.3, .blue = 0.3,
+      .alpha = 0.0 };
+  GdkRGBA fade_color;
+  color_morph (
+    &base_color, &track->color, 0.5, &fade_color);
+  fade_color.alpha = 0.5;
+  gdk_cairo_set_source_rgba (cr, &fade_color);
+  for (double i = local_start_x;
+       i < local_end_x; i += increment)
+    {
+      long curr_frames =
+        ui_px_to_frames_editor (i, 1) -
+          obj->pos.frames;
+      if (curr_frames < 0
+          || curr_frames >= obj_length_frames)
+        continue;
+
+      double max;
+      if (curr_frames < obj->fade_in_pos.frames)
+        {
+          z_return_if_fail_cmp (
+            obj->fade_in_pos.frames, >, 0);
+          max =
+            fade_get_y_normalized (
+              (double) curr_frames /
+              (double)
+              obj->fade_in_pos.frames,
+              &obj->fade_in_opts, 1);
+        }
+      else if (
+        curr_frames >= obj->fade_out_pos.frames)
+        {
+          z_return_if_fail_cmp (
+            obj->end_pos.frames -
+              (obj->fade_out_pos.frames +
+               obj->pos.frames), >, 0);
+          max =
+            fade_get_y_normalized (
+              (double)
+              (curr_frames -
+               obj->fade_out_pos.frames) /
+              (double)
+              (obj->end_pos.frames -
+                (obj->fade_out_pos.frames +
+                 obj->pos.frames)),
+              &obj->fade_out_opts, 0);
+        }
+      else
+        continue;
+
+      /* invert because cairo draws the other
+       * way around */
+      max = 1.0 - max;
+
+      double from_y = - rect->y;
+      double draw_height =
+        (MIN (
+          (double) max * (double) height,
+          (double) height) - rect->y) - from_y;
+
+      cairo_rectangle (
+        cr, i - rect->x, from_y, width,
+        draw_height);
+      cairo_fill (cr);
+
+      if (curr_frames >= clip->num_frames)
+        break;
+    }
+
+  /* draw audio part */
+  GdkRGBA * color = &track->color;
+  cairo_set_source_rgba (
+    cr, color->red + 0.3, color->green + 0.3,
+    color->blue + 0.3, 0.9);
+  cairo_set_line_width (cr, 1);
   for (double i = local_start_x;
        i < local_end_x; i += increment)
     {
