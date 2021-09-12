@@ -12,17 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-08-10 13:46+0100\n"
+"POT-Creation-Date: 2021-09-12 00:59+0100\n"
 "PO-Revision-Date: 2021-09-11 15:43+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -55,8 +54,8 @@ msgid "Set to 1 to disable plugin scanning."
 msgstr "プラグインのスキャンを無効にするには、1 に設定します。"
 
 #: ../../appendix/environment.rst:32
-msgid "Example: ``NO_SCAN_PLUGINS=1``"
-msgstr "例: ``NO_SCAN_PLUGINS=1``"
+msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
+msgstr ""
 
 #: ../../appendix/environment.rst:37
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
@@ -153,8 +152,9 @@ msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
-"ローカライズファイルは、 :file:`/usr/share/locale` の下にインストールされます。例えば、韓国語の場合は、 :file:`/"
-"usr/share/locale/ko/LC_MESSAGES/zrythm.mo` となります。"
+"ローカライズファイルは、 :file:`/usr/share/locale` の下にインストールされま"
+"す。例えば、韓国語の場合は、 :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm."
+"mo` となります。"
 
 #: ../../appendix/files-and-directories.rst:47
 #: ../../getting-started/getting-plugins.rst:100
@@ -179,8 +179,9 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
-"お使いのディストリビューションが必要なフォントのパッケージを提供していなければ、Zrythm が必要とするフォントは、通常 :file:`/usr/"
-"share/fonts/zrythm` の下にインストールされます。"
+"お使いのディストリビューションが必要なフォントのパッケージを提供していなけれ"
+"ば、Zrythm が必要とするフォントは、通常 :file:`/usr/share/fonts/zrythm` の下"
+"にインストールされます。"
 
 #: ../../appendix/files-and-directories.rst:60
 msgid "GtkSourceView Stylesheets"
@@ -236,8 +237,8 @@ msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
-"このファイルには、プラグインコレクションが含まれています。これは :term:`Zrythm user path` の下の "
-":file:`plugin_collections.yaml` にあります。"
+"このファイルには、プラグインコレクションが含まれています。これは :term:"
+"`Zrythm user path` の下の :file:`plugin_collections.yaml` にあります。"
 
 #: ../../appendix/files-and-directories.rst:93
 msgid "Log File"
@@ -3275,8 +3276,9 @@ msgstr ""
 "シンセです。"
 
 #: ../../getting-started/getting-plugins.rst:70
+#, fuzzy
 msgid ""
-"`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ is a "
+"`ZynFusion <https://zynaddsubfx.sourceforge.io/zyn-fusion.html>`_ is a "
 "powerful additive/subtractive synth that can synthesize a wide variety of "
 "sounds."
 msgstr ""
@@ -4037,10 +4039,25 @@ msgid ""
 msgstr ""
 
 #: ../../glossary/intro.rst:161
+msgid "XRUN"
+msgstr ""
+
+#: ../../glossary/intro.rst:163
+msgid ""
+"A buffer overrun or underrun. This means that Zrythm was either not fast "
+"enough to deliver data to the backend or not fast enough to process incoming "
+"data from the backend. Usually XRUNs are audible as crackles or pops. XRUNs "
+"usually occur when when the audio engine's buffer size is too low and the "
+"sound card cannot process incoming buffers fast enough (overrun). Some sound "
+"cards cannot cope with small buffer sizes, so the buffer length should be "
+"increased to ease the work done by the sound card."
+msgstr ""
+
+#: ../../glossary/intro.rst:175
 msgid "Zrythm user path"
 msgstr "Zrythm ユーザー パス"
 
-#: ../../glossary/intro.rst:163
+#: ../../glossary/intro.rst:177
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -4049,14 +4066,14 @@ msgstr ""
 "Zrythmがユーザーデータを保存するパス。デフォルトは下記の下の :file:`zrythm` "
 "です。"
 
-#: ../../glossary/intro.rst:168
+#: ../../glossary/intro.rst:182
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification <https://"
 "specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) on "
 "freedesktop-compliant systems (or if :envvar:`XDG_DATA_HOME` is defined), or"
 msgstr ""
 
-#: ../../glossary/intro.rst:173
+#: ../../glossary/intro.rst:187
 msgid "the directory for local application data on Windows"
 msgstr "Windowsでは、ローカル アプリケーション データのディレクトリ"
 
@@ -6616,17 +6633,15 @@ msgid "Here are some links by official GNOME sources:"
 msgstr "以下は公式GNOMEソースによるリンクです。"
 
 #: ../../theming/css.rst:40
-msgid ""
-"`GTK+ CSS Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
-"overview.html>`_"
+#, fuzzy
+msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_"
 msgstr ""
 "`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-overview."
 "html>`_"
 
 #: ../../theming/css.rst:41
-msgid ""
-"`GTK+ CSS Properties <https://developer.gnome.org/gtk3/stable/chap-css-"
-"properties.html>`_"
+#, fuzzy
+msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_"
 msgstr ""
 "`GTK+のCSSプロパティ <https://developer.gnome.org/gtk3/stable/chap-css-"
 "properties.html>`_"
@@ -7978,7 +7993,8 @@ msgstr "`FanaticMoose`_ によるスケッチ [ ` CC-BY-SA`_ ]"
 
 #: ../../user-media/intro.rst:27
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"
-msgstr "`[weoxmによるスケッチ] <https://koyu.space/@weoxm/106672723040062331>`_"
+msgstr ""
+"`[weoxmによるスケッチ] <https://koyu.space/@weoxm/106672723040062331>`_"
 
 #: ../../user-media/intro.rst:30
 msgid "Video"
@@ -8609,6 +8625,9 @@ msgid ""
 msgstr ""
 "現在選択されているバックエンドとオプションに関する情報は、左下に表示されま"
 "す。"
+
+#~ msgid "Example: ``NO_SCAN_PLUGINS=1``"
+#~ msgstr "例: ``NO_SCAN_PLUGINS=1``"
 
 #~ msgid "Returns a new action for creating a send connection."
 #~ msgstr "送信接続を作成するための新しいアクションを返します。"

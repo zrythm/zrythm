@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-08-10 13:46+0100\n"
+"POT-Creation-Date: 2021-09-12 00:59+0100\n"
 "PO-Revision-Date: 2021-05-19 18:32+0000\n"
 "Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
 "Language: el\n"
@@ -45,8 +45,8 @@ msgid "Set to 1 to disable plugin scanning."
 msgstr "Ορίστε στο 1 για να απενεργοποιήσετε τη σάρωση προσθηκών."
 
 #: ../../appendix/environment.rst:32
-msgid "Example: ``NO_SCAN_PLUGINS=1``"
-msgstr "Παράδειγμα: ``NO_SCAN_PLUGINS=1``"
+msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
+msgstr ""
 
 #: ../../appendix/environment.rst:37
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
@@ -3457,8 +3457,9 @@ msgstr ""
 "διαμόρφωσης συχνότητας (FM) βασισμένο στο Yamaha DX7."
 
 #: ../../getting-started/getting-plugins.rst:70
+#, fuzzy
 msgid ""
-"`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ is a "
+"`ZynFusion <https://zynaddsubfx.sourceforge.io/zyn-fusion.html>`_ is a "
 "powerful additive/subtractive synth that can synthesize a wide variety of "
 "sounds."
 msgstr ""
@@ -4247,10 +4248,25 @@ msgstr ""
 "`LV2`."
 
 #: ../../glossary/intro.rst:161
+msgid "XRUN"
+msgstr ""
+
+#: ../../glossary/intro.rst:163
+msgid ""
+"A buffer overrun or underrun. This means that Zrythm was either not fast "
+"enough to deliver data to the backend or not fast enough to process incoming "
+"data from the backend. Usually XRUNs are audible as crackles or pops. XRUNs "
+"usually occur when when the audio engine's buffer size is too low and the "
+"sound card cannot process incoming buffers fast enough (overrun). Some sound "
+"cards cannot cope with small buffer sizes, so the buffer length should be "
+"increased to ease the work done by the sound card."
+msgstr ""
+
+#: ../../glossary/intro.rst:175
 msgid "Zrythm user path"
 msgstr "Μονοπάτι χρήστη Zrythm"
 
-#: ../../glossary/intro.rst:163
+#: ../../glossary/intro.rst:177
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -4259,7 +4275,7 @@ msgstr ""
 "προσωρινά αρχεία, προρυθμίσεις και εξαγόμενους ήχους. Η προεπιλογή είναι :"
 "file:`zrythm` στο"
 
-#: ../../glossary/intro.rst:168
+#: ../../glossary/intro.rst:182
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification <https://"
 "specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_) on "
@@ -4270,7 +4286,7 @@ msgstr ""
 "συστήματα συμβατά με το freedesktop (ή αν έχει οριστεί το :envvar:"
 "`XDG_DATA_HOME`), ή"
 
-#: ../../glossary/intro.rst:173
+#: ../../glossary/intro.rst:187
 msgid "the directory for local application data on Windows"
 msgstr "ο κατάλογος για τα τοπικά δεδομένα της εφαρμογής στα Windows"
 
@@ -6931,17 +6947,15 @@ msgid "Here are some links by official GNOME sources:"
 msgstr "Ορίστε κάποιοι σύνδεσμοι από τις επίσημες πηγές GNOME:"
 
 #: ../../theming/css.rst:40
-msgid ""
-"`GTK+ CSS Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
-"overview.html>`_"
+#, fuzzy
+msgid "`GTK+ CSS Overview <https://docs.gtk.org/gtk3/css-overview.html>`_"
 msgstr ""
 "`Επισκόπηση GTK + CSS <https://developer.gnome.org/gtk3/stable/chap-css-"
 "overview.html>`_"
 
 #: ../../theming/css.rst:41
-msgid ""
-"`GTK+ CSS Properties <https://developer.gnome.org/gtk3/stable/chap-css-"
-"properties.html>`_"
+#, fuzzy
+msgid "`GTK+ CSS Properties <https://docs.gtk.org/gtk3/css-properties.html>`_"
 msgstr ""
 "`Ιδιότητες GTK + CSS <https://developer.gnome.org/gtk3/stable/chap-css-"
 "properties.html>`_"
@@ -8972,6 +8986,9 @@ msgid ""
 msgstr ""
 "Οι πληροφορίες σχετικά με το τρέχον επιλεγόμενο παρασκήνιο και τις ρυθμίσεις "
 "είναι ορατές στην κατώ αριστερή γωνία."
+
+#~ msgid "Example: ``NO_SCAN_PLUGINS=1``"
+#~ msgstr "Παράδειγμα: ``NO_SCAN_PLUGINS=1``"
 
 #~ msgid "Shortcut Keys"
 #~ msgstr "Συντομεύσεις πληκτρολογίου"

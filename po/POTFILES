@@ -104,12 +104,10 @@ inc/gui/widgets/tracklist.h
 inc/gui/widgets/piano_roll_keys.h
 inc/gui/widgets/preferences.h
 inc/gui/widgets/audio_group_track.h
-inc/gui/widgets/midi_arranger_bg.h
 inc/gui/widgets/panel_file_browser.h
 inc/gui/widgets/chord_button.h
 inc/gui/widgets/channel_send_selector.h
 inc/gui/widgets/piano_keyboard.h
-inc/gui/widgets/automation_arranger_bg.h
 inc/gui/widgets/timeline_bg.h
 inc/gui/widgets/cc_bindings_tree.h
 inc/gui/widgets/port_connections.h
@@ -204,7 +202,6 @@ inc/gui/widgets/timeline_minimap_selection.h
 inc/gui/widgets/file_browser.h
 inc/gui/widgets/file_browser_filters.h
 inc/gui/widgets/port_connections_popover.h
-inc/gui/widgets/arranger_bg.h
 inc/gui/widgets/timeline_bot_box.h
 inc/gui/widgets/inspector_track.h
 inc/gui/widgets/inspector_editor.h
@@ -551,7 +548,6 @@ src/gui/widgets/meter.c
 src/gui/widgets/automation_region.c
 src/gui/widgets/channel_send_selector.c
 src/gui/widgets/pinned_tracklist.c
-src/gui/widgets/midi_arranger_bg.c
 src/gui/widgets/editor_selection_info.c
 src/gui/widgets/fader_buttons.c
 src/gui/widgets/channel_send.c
@@ -559,7 +555,6 @@ src/gui/widgets/bot_dock_edge.c
 src/gui/widgets/digital_meter.c
 src/gui/widgets/drag_dest_box.c
 src/gui/widgets/instrument_track.c
-src/gui/widgets/automation_arranger_bg.c
 src/gui/widgets/modulator.c
 src/gui/widgets/marker_track.c
 src/gui/widgets/channel_slot.c
@@ -665,7 +660,6 @@ src/gui/widgets/chord_editor_space.c
 src/gui/widgets/fader.c
 src/gui/widgets/chord_selector_window.c
 src/gui/widgets/chord_key.c
-src/gui/widgets/arranger_bg.c
 src/gui/widgets/dialogs/arranger_object_info.c
 src/gui/widgets/dialogs/create_project_dialog.c
 src/gui/widgets/dialogs/quantize_dialog.c
@@ -704,7 +698,6 @@ src/gui/backend/editor_settings.c
 src/gui/backend/timeline.c
 src/gui/backend/automation_editor.c
 src/gui/backend/event.c
-src/utils/vamp.c
 src/utils/lilv.c
 src/utils/windows_errors.c
 src/utils/io.c
@@ -848,6 +841,8 @@ src/audio/region_link_group.c
 src/audio/fader.c
 src/audio/foldable_track.c
 src/audio/engine_jack.c
+src/audio/vamp-ports/FixedTempoEstimator.h
+src/audio/vamp-ports/BeatTrack.h
 src/actions/port_action.c
 src/actions/arranger_selections.c
 src/actions/midi_mapping_action.c
