@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # Tércio Martins <tecnotercio@yahoo.com.br>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2021.
+# Yuri Musachio Montezuma da Cruz <yuri.musachio@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-08-27 22:45+0100\n"
-"PO-Revision-Date: 2021-01-11 14:32+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2021-09-18 21:53+0000\n"
+"Last-Translator: Yuri Musachio Montezuma da Cruz <yuri.musachio@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4.1-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:294
@@ -4670,7 +4671,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr "Idioma"
+msgstr "Linguagem"
 
 #: resources/ui/first_run_assistant.ui:111
 msgid ""

@@ -39,15 +39,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-08-10 13:46+0100\n"
-"PO-Revision-Date: 2021-02-10 05:50+0000\n"
-"Last-Translator: Arthur O. Reis <aor@cesar.school>\n"
-"Language: pt_BR\n"
+"PO-Revision-Date: 2021-09-18 21:53+0000\n"
+"Last-Translator: Yuri Musachio Montezuma da Cruz <yuri.musachio@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/pt_BR/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -5184,7 +5185,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:59
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:60
 msgid ""
@@ -5193,7 +5194,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../plugins-files/plugins/scanning.rst:65
 msgid ""
