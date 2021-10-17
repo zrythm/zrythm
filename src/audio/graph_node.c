@@ -128,12 +128,14 @@ graph_node_get_name (
       return
         g_strdup ("HW Processor");
     case ROUTE_NODE_TYPE_CHANNEL_SEND:
-      Track * track =
-        channel_send_get_track (node->send);
-      return
-        g_strdup_printf (
-          "%s/Channel Send %d",
-          track->name, node->send->slot + 1);
+      {
+        Track * track =
+          channel_send_get_track (node->send);
+        return
+          g_strdup_printf (
+            "%s/Channel Send %d",
+            track->name, node->send->slot + 1);
+      }
     }
   g_return_val_if_reached (NULL);
 }
