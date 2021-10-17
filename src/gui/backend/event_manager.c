@@ -1844,12 +1844,16 @@ event_manager_process_event (
     case ET_ENGINE_ACTIVATE_CHANGED:
     case ET_ENGINE_BUFFER_SIZE_CHANGED:
     case ET_ENGINE_SAMPLE_RATE_CHANGED:
-      bot_bar_widget_refresh (MW_BOT_BAR);
-      ruler_widget_redraw_whole (EDITOR_RULER);
-      ruler_widget_redraw_whole (MW_RULER);
-      inspector_track_widget_show_tracks (
-        MW_TRACK_INSPECTOR,
-        TRACKLIST_SELECTIONS, false);
+      if (!gtk_widget_in_destruction (
+             GTK_WIDGET (MAIN_WINDOW)))
+        {
+          bot_bar_widget_refresh (MW_BOT_BAR);
+          ruler_widget_redraw_whole (EDITOR_RULER);
+          ruler_widget_redraw_whole (MW_RULER);
+          inspector_track_widget_show_tracks (
+            MW_TRACK_INSPECTOR,
+            TRACKLIST_SELECTIONS, false);
+        }
       break;
     case ET_MIDI_BINDINGS_CHANGED:
       main_notebook_widget_refresh (
