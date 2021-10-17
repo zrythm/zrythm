@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.19\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-12 00:59+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-10-16 04:35+0000\n"
+"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/id/>\n"
+"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -1231,7 +1234,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Eksponen"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -1239,7 +1242,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superelips"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -1248,7 +1251,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:49
 #: ../../editing/timeline/arranger.rst:240
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
@@ -1256,7 +1259,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
-msgstr ""
+msgstr "Pulse"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -3421,7 +3424,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:134
 msgid "Region"
-msgstr ""
+msgstr "Wilayah"
 
 #: ../../glossary/intro.rst:136
 msgid ""
@@ -6774,7 +6777,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:77 ../../tracks/track-types.rst:78
 #: ../../tracks/track-types.rst:80
 msgid "None"
-msgstr ""
+msgstr "Tidak ada"
 
 #: ../../tracks/track-types.rst:31
 msgid "Audio FX"
@@ -6794,7 +6797,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:46
 msgid "Marker"
-msgstr ""
+msgstr "Penanda"
 
 #: ../../tracks/track-types.rst:51
 msgid "Master"

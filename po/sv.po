@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # Felix Paulsson <fpaulsson@protonmail.com>, 2020.
 # Mattias Münster <mattiasmun@gmail.com>, 2020.
+# Henrik Mattsson-Mårn <h@archkive.org>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-09-12 10:36+0100\n"
-"PO-Revision-Date: 2020-10-02 10:41+0000\n"
-"Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"PO-Revision-Date: 2021-10-16 04:35+0000\n"
+"Last-Translator: Henrik Mattsson-Mårn <h@archkive.org>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.9-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:294
@@ -128,7 +129,7 @@ msgstr "Låg"
 
 #: inc/utils/ui.h:79
 msgid "Ultra Low"
-msgstr ""
+msgstr "Ultralåg"
 
 #: inc/utils/gtk.h:55
 #, fuzzy
@@ -180,7 +181,7 @@ msgstr "Avtysta"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Invertera"
 
 #: inc/audio/audio_function.h:71
 #, fuzzy
@@ -221,7 +222,7 @@ msgstr ""
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Externt program"
 
 #: inc/audio/audio_function.h:82
 #, fuzzy
@@ -234,7 +235,7 @@ msgstr ""
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
-msgstr ""
+msgstr "Ogiltig"
 
 #: inc/audio/transport.h:71
 msgid "1 bar"
@@ -258,7 +259,7 @@ msgstr "Instrument"
 #: resources/ui/file_browser_filters.ui:34
 #: build/data/org.zrythm.Zrythm.gschema.xml:1043
 msgid "Audio"
-msgstr "Ljud"
+msgstr "Audio"
 
 #: inc/audio/track.h:191 src/project.c:768
 #: src/gui/widgets/route_target_selector_popover.c:165
@@ -302,13 +303,13 @@ msgstr "MIDI-grupp"
 
 #: inc/audio/track.h:201
 msgid "Folder"
-msgstr ""
+msgstr "Mapp"
 
 #: inc/audio/curve.h:120 src/gui/widgets/timeline_arranger.c:1118
 #: src/audio/curve.c:81
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritmisk"
 
 #: inc/audio/engine.h:204
 msgid "1,024"
@@ -511,7 +512,7 @@ msgstr ""
 
 #: src/zrythm_app.c:212
 msgid "Check for Updates"
-msgstr ""
+msgstr "Sök efter uppdateringar"
 
 #: src/zrythm_app.c:286
 #, c-format
@@ -626,15 +627,15 @@ msgstr "Licensinformation"
 
 #: src/zrythm_app.c:1893
 msgid "Convert ZPJ-FILE to YAML"
-msgstr ""
+msgstr "Konvertera ZPJ-FILE till YAML"
 
 #: src/zrythm_app.c:1898
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
-msgstr ""
+msgstr "Konvertera YAML-PROJECT-FILE till .zpj-formatet"
 
 #: src/zrythm_app.c:1903
 msgid "Generate a project from SCRIPT-FILE"
-msgstr ""
+msgstr "Generera ett projekt från SCRIPT-FILE"
 
 #: src/zrythm_app.c:1907
 msgid "Print output in user-friendly way"
@@ -642,7 +643,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1911
 msgid "Print current settings"
-msgstr ""
+msgstr "Skriv ut nuvarande inställningar"
 
 #: src/zrythm_app.c:1915
 #, fuzzy
@@ -665,7 +666,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1958
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[PROJECT-FILE]"
 
 #: src/zrythm_app.c:1963
 #, c-format
@@ -710,11 +711,11 @@ msgstr "MIDI-utgång"
 
 #: src/plugins/carla_native_plugin.c:900
 msgid "CV in"
-msgstr ""
+msgstr "CV in"
 
 #: src/plugins/carla_native_plugin.c:910
 msgid "CV out"
-msgstr ""
+msgstr "CV ut"
 
 #: src/plugins/carla_native_plugin.c:1309
 #, c-format
@@ -1589,7 +1590,7 @@ msgstr "%s namn"
 
 #: src/gui/widgets/piano_roll_keys.c:165
 msgid "bass"
-msgstr ""
+msgstr "bas"
 
 #: src/gui/widgets/piano_roll_keys.c:187
 msgid "both"
@@ -1974,7 +1975,7 @@ msgstr ""
 
 #: src/gui/widgets/panel_file_browser.c:288
 msgid "Add Bookmark"
-msgstr ""
+msgstr "Lägg till bokmärke"
 
 #: src/gui/widgets/panel_file_browser.c:427 src/gui/widgets/file_browser.c:72
 #, fuzzy
@@ -2137,7 +2138,7 @@ msgstr "Förinställning för fade"
 
 #: src/gui/widgets/plugin_properties_expander.c:316
 msgid "Load"
-msgstr ""
+msgstr "Ladda"
 
 #: src/gui/widgets/plugin_properties_expander.c:320
 #, fuzzy
@@ -2170,7 +2171,7 @@ msgstr "Ingen kontroll är vald"
 
 #: src/gui/widgets/automatable_selector_popover.c:405
 msgid "Macros"
-msgstr ""
+msgstr "Makron"
 
 #: src/gui/widgets/automatable_selector_popover.c:416
 #, fuzzy, c-format
@@ -2204,7 +2205,7 @@ msgstr "[Modulator %d] %s"
 
 #: src/gui/widgets/main_window.c:203
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Oparade ändringar"
 
 #: src/gui/widgets/main_window.c:207
 msgid "_Save & Quit"
@@ -2519,7 +2520,7 @@ msgstr "CV-utgångar"
 
 #: src/gui/widgets/ports_expander.c:363
 msgid "Ungrouped"
-msgstr ""
+msgstr "Ogrupperade"
 
 #: src/gui/widgets/ports_expander.c:431
 msgid "Stereo In"
@@ -2893,7 +2894,7 @@ msgstr "Öppnar katalogen inuti"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:126
 msgid "Send via Sourcehut"
-msgstr ""
+msgstr "Skicka via Sourcehut"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:135
 #, c-format
@@ -2928,7 +2929,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:413
 msgid "<b>Log file</b>"
-msgstr ""
+msgstr "<b>Loggfil</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:454
 msgid "<b>Screenshot</b>"
@@ -2941,7 +2942,7 @@ msgstr "CC-kopplingar"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:513
 msgid "Sending data..."
-msgstr ""
+msgstr "Skickar data..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:516
 msgid "Failed"
@@ -2949,7 +2950,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:520
 msgid "Sending..."
-msgstr ""
+msgstr "Skickar..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:548
 #, fuzzy
@@ -3031,7 +3032,7 @@ msgstr "Inga spår att exportera"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:65
 msgid "Saving..."
-msgstr ""
+msgstr "Sparar..."
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:68
 #, fuzzy
@@ -3060,12 +3061,12 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:57
 msgid "Home"
-msgstr "Start"
+msgstr "Hem"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:68
 msgid "Desktop"
-msgstr ""
+msgstr "Skrivbord"
 
 #: src/gui/backend/arranger_selections.c:2646
 #, fuzzy
@@ -3140,9 +3141,8 @@ msgstr "Plugin-inspektör"
 
 #: src/utils/gtk.c:1308 resources/ui/main_notebook.ui:47
 #: resources/ui/main_notebook.ui:63
-#, fuzzy
 msgid "Timeline"
-msgstr "Tidsintervall"
+msgstr "Tidslinje"
 
 #: src/utils/gtk.c:1311
 #, fuzzy
@@ -3150,13 +3150,12 @@ msgid "MIDI CC Bindings"
 msgstr "CC-kopplingar"
 
 #: src/utils/gtk.c:1314
-#, fuzzy
 msgid "Port Connections"
-msgstr "Portkopplingar"
+msgstr "Portanslutningar"
 
 #: src/utils/gtk.c:1317 resources/ui/main_notebook.ui:188
 msgid "Scenes"
-msgstr ""
+msgstr "Scener"
 
 #: src/utils/dialogs.c:44
 msgid "_Open"
@@ -3414,7 +3413,7 @@ msgstr "Markörer"
 #: src/audio/modulator_macro_processor.c:110
 #, c-format
 msgid "Macro %d"
-msgstr ""
+msgstr "Makro %d"
 
 #: src/audio/modulator_macro_processor.c:129
 #, c-format
@@ -3646,11 +3645,11 @@ msgstr "Kan inte kopplas"
 #. TODO
 #: src/audio/scale.c:565 src/audio/scale.c:599
 msgid "Unimplemented"
-msgstr ""
+msgstr "Ej implementerat"
 
 #: src/audio/clip.c:666
 msgid "Edit in external app"
-msgstr ""
+msgstr "Redigera i extern app"
 
 #: src/audio/clip.c:691
 #, c-format
@@ -4056,7 +4055,7 @@ msgstr "Kunde inte återställa schemat %s"
 
 #: src/actions/actions.c:1207
 msgid "Can't paste incompatible data"
-msgstr ""
+msgstr "Kan inte klistra in inkompatibel data"
 
 #: src/actions/actions.c:1312
 #, fuzzy
@@ -4275,7 +4274,7 @@ msgstr "Kunde inte hitta något plugin med URI: %s"
 
 #: src/actions/mixer_selections_action.c:614
 msgid "Could not create plugin"
-msgstr ""
+msgstr "Kunde inte skapa plugin"
 
 #: src/actions/mixer_selections_action.c:838
 #: src/actions/mixer_selections_action.c:1248
@@ -4632,7 +4631,7 @@ msgstr "Globala genvägar"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1101
 #: build/data/org.zrythm.Zrythm.gschema.xml:1155
 msgid "General"
-msgstr "Generellt"
+msgstr "Allmänt"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
@@ -5012,11 +5011,11 @@ msgstr "Välj en mall"
 
 #: resources/ui/bug_report_dialog.ui:29
 msgid "Error"
-msgstr ""
+msgstr "Fel"
 
 #: resources/ui/bug_report_dialog.ui:142
 msgid "What did you do?"
-msgstr ""
+msgstr "Vad gjorde du?"
 
 #: resources/ui/bug_report_dialog.ui:155
 #, fuzzy
@@ -5037,7 +5036,7 @@ msgstr "Grundton"
 
 #: resources/ui/chord_selector_window.ui:265
 msgid "maj"
-msgstr ""
+msgstr "maj"
 
 #: resources/ui/chord_selector_window.ui:278
 msgid "min"
@@ -5045,19 +5044,19 @@ msgstr "min"
 
 #: resources/ui/chord_selector_window.ui:291
 msgid "dim"
-msgstr ""
+msgstr "dim"
 
 #: resources/ui/chord_selector_window.ui:304
 msgid "sus4"
-msgstr ""
+msgstr "sus4"
 
 #: resources/ui/chord_selector_window.ui:317
 msgid "sus2"
-msgstr ""
+msgstr "sus2"
 
 #: resources/ui/chord_selector_window.ui:330
 msgid "aug"
-msgstr ""
+msgstr "aug"
 
 #: resources/ui/chord_selector_window.ui:347
 msgid "Accent"
@@ -5065,11 +5064,11 @@ msgstr "Accent"
 
 #: resources/ui/chord_selector_window.ui:375
 msgid "7"
-msgstr ""
+msgstr "7"
 
 #: resources/ui/chord_selector_window.ui:388
 msgid "j7"
-msgstr ""
+msgstr "j7"
 
 #: resources/ui/chord_selector_window.ui:496
 msgid "Bass Note"
@@ -5132,7 +5131,7 @@ msgstr "CC-kopplingar"
 
 #: resources/ui/main_notebook.ui:172
 msgid "Scenes (Live view)"
-msgstr ""
+msgstr "Scener (Livevy)"
 
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 msgid "Pitch Wheel"
@@ -5296,7 +5295,7 @@ msgstr "Spårets namn"
 
 #: resources/ui/panel_file_browser.ui:58
 msgid "Bookmarks"
-msgstr ""
+msgstr "Bokmärken"
 
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
@@ -5401,7 +5400,7 @@ msgstr "Läs automation"
 
 #: resources/ui/automation_track.ui:125
 msgid "0.0"
-msgstr ""
+msgstr "0.0"
 
 #: resources/ui/automation_track.ui:143
 msgid "Remove automation track"
@@ -5522,7 +5521,7 @@ msgstr "Filnamnsmönster"
 #: resources/ui/export_dialog.ui:309
 #: build/data/org.zrythm.Zrythm.gschema.xml:817
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: resources/ui/export_dialog.ui:320
 #: build/data/org.zrythm.Zrythm.gschema.xml:812
@@ -5704,7 +5703,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:423
 msgid "VST2 Paths"
-msgstr ""
+msgstr "VST2-sökvägar"
 
 #: resources/ui/preferences.ui:465
 msgid "Main Window"
@@ -5746,12 +5745,13 @@ msgid ""
 msgstr ""
 
 #: data/zrythm.desktop.in:10
+#, fuzzy
 msgid "Zrythm"
 msgstr "Zrythm"
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Digital Audio Workstation"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
@@ -5987,7 +5987,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:393
 msgid "Listen to notes while they are moved"
-msgstr ""
+msgstr "Lyssna på noter när de flyttas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:394
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
@@ -6665,7 +6665,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:828
 msgid "Format to export to."
-msgstr ""
+msgstr "Format att exportera till."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:832
 msgid "Filename pattern"
@@ -6717,7 +6717,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:872
 msgid "Metronome volume"
-msgstr ""
+msgstr "Metronomvolym"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:873
 msgid "The metronome volume in amplitude (0 to 2)."
@@ -6750,7 +6750,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:893
 msgid "Recording mode."
-msgstr ""
+msgstr "Inspelningsläge."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:897
 #, fuzzy
@@ -6771,7 +6771,7 @@ msgstr "Välj vilken ljud-backend som ska användas."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:916
 msgid "RtAudio device"
-msgstr ""
+msgstr "RtAudio-enhet"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:917
 msgid "The name of the RtAudio device to use."
@@ -6832,11 +6832,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:970
 msgid "Updates"
-msgstr ""
+msgstr "Uppdateringar"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:974
 msgid "Check for updates"
-msgstr ""
+msgstr "Sök efter uppdateringar"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:975
 msgid "Whether to check for updates."
@@ -6970,7 +6970,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1121
 msgid "CSS theme"
-msgstr ""
+msgstr "CSS-tema"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1122
 #, fuzzy
@@ -6979,7 +6979,7 @@ msgstr "Panoreringsalgoritmen som ska användas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1126
 msgid "Icon theme"
-msgstr ""
+msgstr "Ikontema"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1127
 msgid "The icon theme to use. This is the directory name."
