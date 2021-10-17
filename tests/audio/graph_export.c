@@ -32,6 +32,7 @@
 static void
 test_svg_export ()
 {
+#ifdef HAVE_CGRAPH
   test_helper_zrythm_init ();
 
   char * tmp_dir =
@@ -50,6 +51,7 @@ test_svg_export ()
   g_free (tmp_dir);
 
   test_helper_zrythm_cleanup ();
+#endif
 }
 
 int

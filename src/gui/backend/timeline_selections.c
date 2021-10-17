@@ -347,9 +347,9 @@ timeline_selections_can_be_pasted (
   int poses[800];
   int num_poses = 0;
   get_track_poses (ts, poses, &num_poses);
-  g_return_val_if_fail (
-    cur_track && num_poses > 0 &&
-    lowest_track_pos < INT_MAX, 0);
+  if (!cur_track || num_poses <= 0
+      || lowest_track_pos == INT_MAX)
+    return false;
 
   /*check if enough visible tracks exist and the*/
   /*content can be pasted in each*/
