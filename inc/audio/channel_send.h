@@ -246,24 +246,28 @@ channel_send_set_amount_from_widget (
  * This function takes either \ref stereo or both
  * \ref l and \ref r.
  */
-void
+bool
 channel_send_connect_stereo (
   ChannelSend * self,
   StereoPorts * stereo,
   Port *        l,
   Port *        r,
   bool          sidechain,
-  bool          recalc_graph);
+  bool          recalc_graph,
+  bool          validate,
+  GError **     error);
 
 /**
  * Connects a send to a midi port.
  */
 NONNULL
-void
+bool
 channel_send_connect_midi (
   ChannelSend * self,
   Port *        port,
-  bool          recalc_graph);
+  bool          recalc_graph,
+  bool          validate,
+  GError **     error);
 
 /**
  * Removes the connection at the given send.

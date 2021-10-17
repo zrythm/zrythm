@@ -189,6 +189,12 @@ graph_node_get_pointer (
   GraphNode * self);
 
 void
+graph_node_print_to_str (
+  GraphNode * node,
+  char *      buf,
+  size_t      buf_sz);
+
+void
 graph_node_print (
   GraphNode * node);
 

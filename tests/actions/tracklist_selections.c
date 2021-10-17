@@ -1133,9 +1133,13 @@ _test_move_tracks (
   ChannelSend * send = ins_track->channel->sends[0];
   StereoPorts * stereo_in =
     fx_track->processor->stereo_in;
-  channel_send_connect_stereo (
-    send, fx_track->processor->stereo_in, NULL,
-    NULL, false, F_NO_RECALC_GRAPH);
+  GError * err = NULL;
+  bool ret =
+    channel_send_connect_stereo (
+      send, fx_track->processor->stereo_in, NULL,
+      NULL, false, F_VALIDATE, F_NO_RECALC_GRAPH,
+      &err);
+  g_assert_true (ret);
 
   /* check that the sends are correct */
   g_assert_true (channel_send_is_enabled (send));

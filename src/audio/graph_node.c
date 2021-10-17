@@ -128,9 +128,12 @@ graph_node_get_name (
       return
         g_strdup ("HW Processor");
     case ROUTE_NODE_TYPE_CHANNEL_SEND:
+      Track * track =
+        channel_send_get_track (node->send);
       return
         g_strdup_printf (
-          "Channel Send %d", node->send->slot + 1);
+          "%s/Channel Send %d",
+          track->name, node->send->slot + 1);
     }
   g_return_val_if_reached (NULL);
 }
@@ -173,8 +176,10 @@ graph_node_get_pointer (
 }
 
 void
-graph_node_print (
-  GraphNode * node)
+graph_node_print_to_str (
+  GraphNode * node,
+  char *      buf,
+  size_t      buf_sz)
 {
   GraphNode * dest;
   if (!node)
@@ -206,8 +211,18 @@ graph_node_print (
       g_free (name);
       str1 = str2;
     }
-  g_message ("%s", str1);
+  strncpy (buf, str1, buf_sz);
   g_free (str1);
+}
+
+void
+graph_node_print (
+  GraphNode * node)
+{
+  size_t sz = 2000;
+  char str[sz];
+  graph_node_print_to_str (node, str, sz);
+  g_message ("%s", str);
 }
 
 static void

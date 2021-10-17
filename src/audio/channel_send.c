@@ -20,6 +20,7 @@
 #include "audio/channel_send.h"
 #include "audio/control_port.h"
 #include "audio/midi_event.h"
+#include "audio/graph.h"
 #include "audio/router.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -37,6 +38,17 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+typedef enum
+{
+  Z_AUDIO_CHANNEL_SEND_ERROR_FAILED,
+} ZAudioChannelSendError;
+
+#define Z_AUDIO_CHANNEL_SEND_ERROR \
+  z_audio_channel_send_error_quark ()
+GQuark z_audio_channel_send_error_quark (void);
+G_DEFINE_QUARK (
+  z-audio-channel-send-error-quark, z_audio_channel_send_error)
 
 static PortType
 get_signal_type (
@@ -459,15 +471,34 @@ channel_send_set_amount_from_widget (
  * This function takes either \ref stereo or both
  * \ref l and \ref r.
  */
-void
+bool
 channel_send_connect_stereo (
   ChannelSend * self,
   StereoPorts * stereo,
   Port *        l,
   Port *        r,
   bool          sidechain,
-  bool          recalc_graph)
+  bool          recalc_graph,
+  bool          validate,
+  GError **     error)
 {
+  /* verify can be connected */
+  if (validate && port_is_in_active_project (l))
+    {
+      Port * src =
+        port_find_from_identifier (
+          &self->stereo_out->l->id);
+      if (!ports_can_be_connected (src, l))
+        {
+          g_set_error_literal (
+            error,
+            Z_AUDIO_CHANNEL_SEND_ERROR,
+            Z_AUDIO_CHANNEL_SEND_ERROR_FAILED,
+            _("Ports cannot be connected"));
+          return false;
+        }
+    }
+
   channel_send_disconnect (self, false);
 
   /* connect */
@@ -498,17 +529,38 @@ channel_send_connect_stereo (
 
   if (recalc_graph)
     router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  return true;
 }
 
 /**
  * Connects a send to a midi port.
  */
-void
+bool
 channel_send_connect_midi (
   ChannelSend * self,
   Port *        port,
-  bool          recalc_graph)
+  bool          recalc_graph,
+  bool          validate,
+  GError **     error)
 {
+  /* verify can be connected */
+  if (validate && port_is_in_active_project (port))
+    {
+      Port * src =
+        port_find_from_identifier (
+          &self->midi_out->id);
+      if (!ports_can_be_connected (src, port))
+        {
+          g_set_error_literal (
+            error,
+            Z_AUDIO_CHANNEL_SEND_ERROR,
+            Z_AUDIO_CHANNEL_SEND_ERROR_FAILED,
+            _("Ports cannot be connected"));
+          return false;
+        }
+    }
+
   channel_send_disconnect (self, false);
 
   port_connections_manager_ensure_connect (
@@ -522,6 +574,8 @@ channel_send_connect_midi (
 
   if (recalc_graph)
     router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  return true;
 }
 
 static void

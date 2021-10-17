@@ -212,6 +212,7 @@ if get_option ('tests')
   tests = {
     'actions/arranger_selections': {
       'parallel': false },
+    'actions/channel_send': { 'parallel': true },
     'actions/range': { 'parallel': true },
     'actions/transport_action': { 'parallel': true },
     # skip CI because it uses too much RAM
@@ -224,6 +225,7 @@ if get_option ('tests')
     'audio/chord_track': { 'parallel': true },
     'audio/curve': { 'parallel': true },
     'audio/fader': { 'parallel': true },
+    'audio/graph_export': { 'parallel': true },
     'audio/marker_track': { 'parallel': true },
     'audio/metronome': { 'parallel': true },
     'audio/midi': { 'parallel': true },

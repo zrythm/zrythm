@@ -25,6 +25,8 @@
 #include "audio/router.h"
 #include "audio/track.h"
 #include "plugins/plugin.h"
+#include "project.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 #ifdef HAVE_CGRAPH
@@ -83,6 +85,7 @@ get_parent_graph (
     case ROUTE_NODE_TYPE_FADER:
     case ROUTE_NODE_TYPE_PREFADER:
     case ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR:
+    case ROUTE_NODE_TYPE_CHANNEL_SEND:
       parent_node = node;
       break;
     case ROUTE_NODE_TYPE_PORT:
@@ -122,28 +125,57 @@ get_parent_graph (
           case PORT_OWNER_TYPE_CHANNEL_SEND:
             {
               Track * tr =
-                port_get_track (node->port, true);
+                port_get_track (
+                  node->port, true);
+              g_return_val_if_fail (
+                IS_TRACK_AND_NONNULL (tr), NULL);
+              g_return_val_if_fail (
+                tr->channel, NULL);
+              ChannelSend * send =
+                tr->channel->sends[
+                  node->port->id.port_index];
+              g_return_val_if_fail (send, NULL);
               parent_node =
-                graph_find_node_from_prefader (
-                  node->graph,
-                  tr->channel->prefader);
+                graph_find_node_from_channel_send (
+                  node->graph, send);
             }
             break;
           case PORT_OWNER_TYPE_FADER:
             {
-              Track * tr =
-                port_get_track (node->port, true);
               if (node->port->id.flags2 &
-                    PORT_FLAG2_PREFADER)
-                parent_node =
-                  graph_find_node_from_prefader (
-                    node->graph,
-                    tr->channel->prefader);
+                    PORT_FLAG2_MONITOR_FADER)
+                {
+                  parent_node =
+                    graph_find_node_from_fader (
+                      node->graph,
+                      MONITOR_FADER);
+                }
+              else if (
+                node->port->id.flags2 &
+                  PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+                {
+                  parent_node =
+                    graph_find_node_from_fader (
+                      node->graph,
+                      SAMPLE_PROCESSOR->fader);
+                }
               else
-                parent_node =
-                  graph_find_node_from_fader (
-                    node->graph,
-                    tr->channel->fader);
+                {
+                  Track * tr =
+                    port_get_track (
+                      node->port, true);
+                  if (node->port->id.flags2 &
+                        PORT_FLAG2_PREFADER)
+                    parent_node =
+                      graph_find_node_from_prefader (
+                        node->graph,
+                        tr->channel->prefader);
+                  else
+                    parent_node =
+                      graph_find_node_from_fader (
+                        node->graph,
+                        tr->channel->fader);
+                }
             }
             break;
           case PORT_OWNER_TYPE_TRACK_PROCESSOR:
@@ -302,6 +334,7 @@ fill_anodes (
       if (node->type != ROUTE_NODE_TYPE_PLUGIN &&
           node->type != ROUTE_NODE_TYPE_FADER &&
           node->type != ROUTE_NODE_TYPE_PREFADER &&
+          node->type != ROUTE_NODE_TYPE_CHANNEL_SEND &&
           node->type !=
             ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR)
         continue;
@@ -332,6 +365,19 @@ fill_anodes (
             Fader * prefader = node->prefader;
             Track * tr =
               fader_get_track (prefader);
+            parent_node =
+              graph_find_node_from_track (
+                node->graph, tr, true);
+          }
+          break;
+        case ROUTE_NODE_TYPE_CHANNEL_SEND:
+          {
+            ChannelSend * send = node->send;
+            g_return_if_fail (send);
+            Track * tr =
+              channel_send_get_track (send);
+            g_return_if_fail (
+              IS_TRACK_AND_NONNULL (tr));
             parent_node =
               graph_find_node_from_track (
                 node->graph, tr, true);
@@ -444,8 +490,31 @@ export_as_graphviz_type (
 }
 #endif
 
+void
+graph_export_as_simple (
+  GraphExportType type,
+  const char *    export_path)
+{
+  /* pause engine */
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, F_FORCE);
+
+  Graph * graph = graph_new (ROUTER);
+  graph_setup (graph, false, false);
+
+  graph_export_as (graph, type, export_path);
+
+  graph_free (graph);
+
+  /* continue engine */
+  engine_resume (AUDIO_ENGINE, &state);
+}
+
 /**
  * Exports the graph at the given path.
+ *
+ * Engine must be paused before calling this.
  */
 void
 graph_export_as (

@@ -53,6 +53,7 @@
 #include "utils/arrays.h"
 #include "utils/audio.h"
 #include "utils/env.h"
+#include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_utils.h"
@@ -768,13 +769,19 @@ graph_setup (
         {
           for (int j = 0; j < STRIP_SIZE; j++)
             {
-              if (channel_send_is_empty (
-                    tr->channel->sends[j]))
+              ChannelSend * send =
+                tr->channel->sends[j];
+
+              /* add send even if empty so that
+               * graph renders properly */
+#if 0
+              if (channel_send_is_empty (send))
                 continue;
+#endif
 
               graph_create_node (
                 self, ROUTE_NODE_TYPE_CHANNEL_SEND,
-                tr->channel->sends[j]);
+                send);
             }
         }
     }
@@ -1292,8 +1299,12 @@ graph_setup (
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           ChannelSend * send = ch->sends[j];
-          if (channel_send_is_empty (send))
-            continue;
+
+          /* do not skip empty because then port
+           * connection validation does not
+           * detect invalid connections properly */
+          /*if (channel_send_is_empty (send))*/
+            /*continue;*/
 
           node =
             graph_find_node_from_channel_send (
@@ -1434,9 +1445,12 @@ graph_setup (
  * Adds a new connection for the given
  * src and dest ports and validates the graph.
  *
- * @note The graph should be created before this call
- *   with graph_new() and free'd after this call with
- *   graph_free().
+ * This is a low level function. Better used via
+ * ports_can_be_connected().
+ *
+ * @note The graph should be created before this
+ *   call with graph_new() and free'd after this
+ *   call with graph_free().
  *
  * @return True if ok, false if invalid.
  */
@@ -1452,7 +1466,8 @@ graph_validate_with_connection (
     "validating for %s to %s",
     src->id.label, dest->id.label);
 
-  graph_setup (self, 0, 0);
+  graph_setup (
+    self, Z_F_NO_DROP_UNNECESSARY, Z_F_NO_RECHAIN);
 
   /* connect the src/dest if not NULL */
   /* this code is only for creating graphs to test
@@ -1463,6 +1478,8 @@ graph_validate_with_connection (
   node2 =
     graph_find_node_from_port (self, dest);
   graph_node_connect (node, node2);
+  g_return_val_if_fail (!node->terminal, false);
+  g_return_val_if_fail (!node2->initial, false);
 
   bool valid = is_valid (self);
 

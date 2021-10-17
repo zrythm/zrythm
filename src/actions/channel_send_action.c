@@ -25,6 +25,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -134,11 +135,12 @@ channel_send_action_perform (
     port_connections_mgr, error);
 }
 
-static void
+static bool
 connect_or_disconnect (
   ChannelSendAction * self,
   bool                connect,
-  bool                _do)
+  bool                _do,
+  GError **           error)
 {
   /* get the actual channel send from the project */
   ChannelSend * send =
@@ -159,8 +161,19 @@ connect_or_disconnect (
                 Port * port =
                   port_find_from_identifier (
                     self->midi_id);
-                channel_send_connect_midi (
-                  send, port, F_NO_RECALC_GRAPH);
+                GError * err = NULL;
+                bool connected =
+                  channel_send_connect_midi (
+                    send, port, F_NO_RECALC_GRAPH,
+                    F_VALIDATE, &err);
+                if (!connected)
+                  {
+                    PROPAGATE_PREFIXED_ERROR (
+                      error, err, "%s",
+                      _("Failed to connect MIDI "
+                      "send"));
+                    return false;
+                  }
               }
               break;
             case TYPE_AUDIO:
@@ -171,11 +184,22 @@ connect_or_disconnect (
                 Port * r =
                   port_find_from_identifier (
                     self->r_id);
-                channel_send_connect_stereo (
-                  send, NULL, l, r,
-                  self->type ==
-                    CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
-                  F_NO_RECALC_GRAPH);
+                GError * err = NULL;
+                bool connected =
+                  channel_send_connect_stereo (
+                    send, NULL, l, r,
+                    self->type ==
+                      CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
+                    F_NO_RECALC_GRAPH,
+                    F_VALIDATE, &err);
+                if (!connected)
+                  {
+                    PROPAGATE_PREFIXED_ERROR (
+                      error, err, "%s",
+                      _("Failed to connect audio "
+                      "send"));
+                    return false;
+                  }
               }
               break;
             default:
@@ -192,6 +216,8 @@ connect_or_disconnect (
       channel_send_copy_values (
         send, self->send_before);
     }
+
+  return true;
 }
 
 int
@@ -205,25 +231,41 @@ channel_send_action_do (
 
   bool need_restore_and_recalc = false;
 
+  bool successful = false;
+  GError * err = NULL;
   switch (self->type)
     {
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      connect_or_disconnect (self, true, true);
+      successful =
+        connect_or_disconnect (
+          self, true, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      connect_or_disconnect (self, false, true);
+      successful =
+        connect_or_disconnect (
+          self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
+      successful = true;
       channel_send_set_amount (
         send, self->amount);
       break;
     default:
       break;
+    }
+
+  if (!successful)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err,
+        _("Failed to perform channel send action: %s"),
+        err->message);
+      return -1;
     }
 
   if (need_restore_and_recalc)
@@ -255,25 +297,41 @@ channel_send_action_undo (
 
   bool need_restore_and_recalc = false;
 
+  bool successful = false;
+  GError * err = NULL;
   switch (self->type)
     {
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      connect_or_disconnect (self, false, true);
+      successful =
+        connect_or_disconnect (
+          self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      connect_or_disconnect (self, true, false);
+      successful =
+        connect_or_disconnect (
+          self, true, false, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
       channel_send_set_amount (
         send, self->send_before->amount->control);
+      successful = true;
       break;
     default:
       break;
+    }
+
+  if (!successful)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err,
+        _("Failed to perform channel send action: %s"),
+        err->message);
+      return -1;
     }
 
   if (need_restore_and_recalc)

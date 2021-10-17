@@ -363,7 +363,8 @@ port_connections_manager_ensure_connect (
         buf, self->num_connections);
     }
 
-  port_connections_manager_regenerate_hashtables (self);
+  port_connections_manager_regenerate_hashtables (
+    self);
 
   return conn;
 }

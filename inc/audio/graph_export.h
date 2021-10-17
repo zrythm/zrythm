@@ -50,8 +50,15 @@ typedef enum GraphExportType
   NUM_GRAPH_EXPORT_TYPES,
 } GraphExportType;
 
+void
+graph_export_as_simple (
+  GraphExportType type,
+  const char *    export_path);
+
 /**
  * Exports the graph at the given path.
+ *
+ * Engine must be paused before calling this.
  */
 void
 graph_export_as (

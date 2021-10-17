@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -292,9 +292,12 @@ graph_setup (
  * Adds a new connection for the given
  * src and dest ports and validates the graph.
  *
- * @note The graph should be created before this call
- *   with graph_new() and free'd after this call with
- *   graph_free().
+ * This is a low level function. Better used via
+ * ports_can_be_connected().
+ *
+ * @note The graph should be created before this
+ *   call with graph_new() and free'd after this
+ *   call with graph_free().
  *
  * @return True if ok, false if invalid.
  */

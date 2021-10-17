@@ -876,9 +876,6 @@ activate_export_graph (
   gpointer       user_data)
 {
 #ifdef HAVE_CGRAPH
-  Graph * graph = graph_new (ROUTER);
-  graph_setup (graph, false, false);
-
   char * exports_dir =
     project_get_path (
       PROJECT, PROJECT_PATH_EXPORTS, false);
@@ -952,14 +949,11 @@ activate_export_graph (
   char * path =
     g_build_filename (
       exports_dir, filename, NULL);
-  graph_export_as (
-    graph, export_type, path);
+  graph_export_as_simple (export_type, path);
   g_free (exports_dir);
   g_free (path);
 
   ui_show_notification (_("Graph exported"));
-
-  graph_free (graph);
 #endif
 }
 

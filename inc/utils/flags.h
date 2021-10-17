@@ -346,4 +346,10 @@
 #define Z_F_TEMPORARY 1
 #define Z_F_NOT_TEMPORARY 0
 
+#define Z_F_DROP_UNNECESSARY 1
+#define Z_F_NO_DROP_UNNECESSARY 0
+
+#define Z_F_RECHAIN 1
+#define Z_F_NO_RECHAIN 0
+
 #endif
