@@ -935,9 +935,18 @@ arranger_object_post_deserialize (
  */
 int
 arranger_object_validate_pos (
-  ArrangerObject *           self,
-  const Position *           pos,
-  ArrangerObjectPositionType type);
+  const ArrangerObject * const self,
+  const Position *             pos,
+  ArrangerObjectPositionType   type);
+
+/**
+ * Validates the arranger object.
+ *
+ * @return True if valid.
+ */
+bool
+arranger_object_validate (
+  const ArrangerObject * const self);
 
 /**
  * Validates the given name.

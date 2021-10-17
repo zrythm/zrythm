@@ -1177,24 +1177,6 @@ arranger_object_update_positions (
         &self->loop_start_pos, from_ticks);
       position_update (
         &self->loop_end_pos, from_ticks);
-
-      if (router_is_processing_kickoff_thread (
-            ROUTER))
-        {
-          /* do some validation */
-          g_return_if_fail (
-            arranger_object_is_position_valid (
-              self, &self->clip_start_pos,
-              ARRANGER_OBJECT_POSITION_TYPE_CLIP_START));
-          g_return_if_fail (
-            arranger_object_is_position_valid (
-              self, &self->loop_start_pos,
-              ARRANGER_OBJECT_POSITION_TYPE_LOOP_START));
-          g_return_if_fail (
-            arranger_object_is_position_valid (
-              self, &self->loop_end_pos,
-              ARRANGER_OBJECT_POSITION_TYPE_LOOP_END));
-        }
     }
   if (arranger_object_can_fade (self))
     {
@@ -1476,6 +1458,7 @@ arranger_object_resize (
             }
         }
     }
+  /* else if resizing right side */
   else
     {
       if (type == ARRANGER_OBJECT_RESIZE_FADE)
@@ -1743,9 +1726,9 @@ arranger_object_loop_end_pos_setter (
  */
 int
 arranger_object_validate_pos (
-  ArrangerObject *           self,
-  const Position *           pos,
-  ArrangerObjectPositionType type)
+  const ArrangerObject * const self,
+  const Position *             pos,
+  ArrangerObjectPositionType   type)
 {
   switch (self->type)
     {
@@ -1768,6 +1751,57 @@ arranger_object_validate_pos (
     }
 
   return 1;
+}
+
+/**
+ * Validates the arranger object.
+ *
+ * @return True if valid.
+ */
+bool
+arranger_object_validate (
+  const ArrangerObject * const self)
+{
+  if (!arranger_object_validate_pos (
+         self, &self->pos,
+         ARRANGER_OBJECT_POSITION_TYPE_START))
+    return false;
+
+  if (arranger_object_type_has_length (self->type))
+    {
+      if (!arranger_object_validate_pos (
+             self, &self->end_pos,
+             ARRANGER_OBJECT_POSITION_TYPE_END))
+        return false;
+    }
+  if (arranger_object_type_can_loop (self->type))
+    {
+      if (!arranger_object_validate_pos (
+             self, &self->loop_start_pos,
+             ARRANGER_OBJECT_POSITION_TYPE_LOOP_START))
+        return false;
+      if (!arranger_object_validate_pos (
+             self, &self->loop_end_pos,
+             ARRANGER_OBJECT_POSITION_TYPE_LOOP_END))
+        return false;
+      if (!arranger_object_validate_pos (
+             self, &self->clip_start_pos,
+             ARRANGER_OBJECT_POSITION_TYPE_CLIP_START))
+        return false;
+    }
+  if (arranger_object_can_fade (self))
+    {
+      if (!arranger_object_validate_pos (
+             self, &self->fade_in_pos,
+             ARRANGER_OBJECT_POSITION_TYPE_FADE_IN))
+        return false;
+      if (!arranger_object_validate_pos (
+             self, &self->fade_out_pos,
+             ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT))
+        return false;
+    }
+
+  return true;
 }
 
 /**

@@ -54,9 +54,14 @@ test_change_bpm_and_time_sig (void)
   (void) audio_track_pos;
   supported_file_free (file_descr);
 
-  /* print region before the change */
+  /* loop the region */
   ZRegion * r = audio_track->lanes[0]->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
+  arranger_object_resize (
+    r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP,
+    40000, false);
+
+  /* print region before the change */
   g_assert_true (IS_REGION_AND_NONNULL (r));
   arranger_object_print (r_obj);
 
@@ -166,6 +171,49 @@ test_change_bpm_and_time_sig (void)
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
+
+  /* change bpm to 130 */
+  bpm_before =
+    tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  {
+    ControlPortChange change = { 0 };
+    change.flag1 = PORT_FLAG_BPM;
+    change.real_val = 130.f;
+    router_queue_control_port_change (
+      ROUTER, &change);
+  }
+
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  g_assert_cmpfloat_with_epsilon (
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    130.f, 0.001f);
+
+  /* validate */
+  g_assert_true (
+    arranger_object_validate (r_obj));
+
+  /* perform the change to 130 */
+  transport_action_perform_bpm_change (
+    bpm_before, 130.f, false, NULL);
+  g_assert_cmpfloat_with_epsilon (
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    130.f, 0.001f);
+  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  g_assert_cmpfloat_with_epsilon (
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    130.f, 0.001f);
+
+  /* print region */
+  g_message ("-- after BPM change action (13)");
+  audio_track = TRACKLIST->tracks[audio_track_pos];
+  r = audio_track->lanes[0]->regions[0];
+  r_obj = (ArrangerObject *) r;
+  g_assert_true (IS_REGION_AND_NONNULL (r));
+  arranger_object_print (r_obj);
+
+  /* validate */
+  g_assert_true (
+    arranger_object_validate (r_obj));
 
   test_helper_zrythm_cleanup ();
 }
