@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2021-09-12 10:36+0100\n"
+"POT-Creation-Date: 2021-10-17 16:47+0100\n"
 "PO-Revision-Date: 2021-09-05 05:33+0000\n"
 "Last-Translator: Liu Tao <lyuutau@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1231,7 +1231,7 @@ msgstr "可见性"
 msgid "Inserts"
 msgstr "插入"
 
-#: src/gui/widgets/modulator_inner.c:101 src/actions/actions.c:1277
+#: src/gui/widgets/modulator_inner.c:101 src/actions/actions.c:1271
 msgid "Failed to delete plugins"
 msgstr "未能删除插件"
 
@@ -1409,119 +1409,119 @@ msgstr "检查"
 msgid "empty slot"
 msgstr "空插槽"
 
-#: src/gui/widgets/arranger.c:1802 src/gui/widgets/arranger.c:1824
-#: src/gui/widgets/arranger.c:1872 src/gui/widgets/arranger.c:1941
-#: src/gui/widgets/arranger.c:1962
+#: src/gui/widgets/arranger.c:1804 src/gui/widgets/arranger.c:1826
+#: src/gui/widgets/arranger.c:1874 src/gui/widgets/arranger.c:1943
+#: src/gui/widgets/arranger.c:1964
 msgid "Failed to move selection"
 msgstr "未能移动所选"
 
-#: src/gui/widgets/arranger.c:1893 src/gui/widgets/arranger.c:4251
+#: src/gui/widgets/arranger.c:1895 src/gui/widgets/arranger.c:4302
 msgid "Failed to move chords"
 msgstr "未能移动和弦"
 
-#: src/gui/widgets/arranger.c:2489 src/gui/widgets/track.c:1625
+#: src/gui/widgets/arranger.c:2491 src/gui/widgets/track.c:1625
 #: resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
 msgstr "标记名称"
 
-#: src/gui/widgets/arranger.c:2534
+#: src/gui/widgets/arranger.c:2536
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2562
+#: src/gui/widgets/arranger.c:2564
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3744
+#: src/gui/widgets/arranger.c:3795
 msgid "Failed to delete selection"
 msgstr "未能删除所选"
 
-#: src/gui/widgets/arranger.c:3773
+#: src/gui/widgets/arranger.c:3824 src/gui/widgets/arranger.c:4493
 msgid "Failed to edit selection"
 msgstr "未能编辑所选"
 
-#: src/gui/widgets/arranger.c:3828
+#: src/gui/widgets/arranger.c:3879
 msgid "Failed to move automation"
 msgstr "未能移动包络线"
 
-#: src/gui/widgets/arranger.c:3857
+#: src/gui/widgets/arranger.c:3908
 msgid "Failed to duplicate automation"
 msgstr "未能重复包络线"
 
-#: src/gui/widgets/arranger.c:3881 src/gui/widgets/arranger.c:4296
-#: src/gui/widgets/arranger.c:4662
+#: src/gui/widgets/arranger.c:3932 src/gui/widgets/arranger.c:4347
+#: src/gui/widgets/arranger.c:4824
 msgid "Failed to create objects"
 msgstr "未能创建对象"
 
-#: src/gui/widgets/arranger.c:3903
+#: src/gui/widgets/arranger.c:3954
 msgid "Failed to fill automation"
 msgstr "未能填充包络线"
 
-#: src/gui/widgets/arranger.c:3936 src/gui/widgets/arranger.c:3989
-#: src/gui/widgets/arranger.c:4012 src/gui/widgets/timeline_arranger.c:1169
+#: src/gui/widgets/arranger.c:3987 src/gui/widgets/arranger.c:4040
+#: src/gui/widgets/arranger.c:4063 src/gui/widgets/timeline_arranger.c:1169
 msgid "Failed to edit selections"
 msgstr "未能编辑所选"
 
-#: src/gui/widgets/arranger.c:4047 src/gui/widgets/arranger.c:4073
+#: src/gui/widgets/arranger.c:4098 src/gui/widgets/arranger.c:4124
 msgid "Failed to resize objects"
 msgstr "未能调整对象大小"
 
-#: src/gui/widgets/arranger.c:4085 src/gui/widgets/arranger.c:4135
+#: src/gui/widgets/arranger.c:4136 src/gui/widgets/arranger.c:4186
 msgid "Failed to move MIDI notes"
 msgstr "未能移动 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4161
+#: src/gui/widgets/arranger.c:4212
 msgid "Failed to duplicate MIDI notes"
 msgstr "未能重复 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4184
+#: src/gui/widgets/arranger.c:4235
 msgid "Failed to create MIDI notes"
 msgstr "未能创建 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4273
+#: src/gui/widgets/arranger.c:4324
 msgid "Failed to duplicate chords"
 msgstr "未能重复和弦"
 
-#: src/gui/widgets/arranger.c:4367
-msgid "Failed to edit timeline objects"
-msgstr "未能编辑时间线对象"
-
-#: src/gui/widgets/arranger.c:4390 src/gui/widgets/arranger.c:4413
-msgid "Failed to resize timeline objects"
-msgstr "未能调整时间线对象的大小"
-
-#: src/gui/widgets/arranger.c:4436
-msgid "Failed to resize selection"
-msgstr "未能调整选择的大小"
-
-#: src/gui/widgets/arranger.c:4458
-msgid "Failed setting fade in position"
-msgstr "设置淡入位置失败"
-
-#: src/gui/widgets/arranger.c:4482 src/gui/widgets/arranger.c:4507
-#: src/gui/widgets/arranger.c:4529
-msgid "Failed resizing selections"
-msgstr "未能调整对象大小"
-
-#: src/gui/widgets/arranger.c:4551
+#: src/gui/widgets/arranger.c:4422 src/gui/widgets/arranger.c:4713
 msgid "Failed resizing selection"
 msgstr "未能调整选择大小"
 
-#: src/gui/widgets/arranger.c:4596
+#: src/gui/widgets/arranger.c:4529
+msgid "Failed to edit timeline objects"
+msgstr "未能编辑时间线对象"
+
+#: src/gui/widgets/arranger.c:4552 src/gui/widgets/arranger.c:4575
+msgid "Failed to resize timeline objects"
+msgstr "未能调整时间线对象的大小"
+
+#: src/gui/widgets/arranger.c:4598
+msgid "Failed to resize selection"
+msgstr "未能调整选择的大小"
+
+#: src/gui/widgets/arranger.c:4620
+msgid "Failed setting fade in position"
+msgstr "设置淡入位置失败"
+
+#: src/gui/widgets/arranger.c:4644 src/gui/widgets/arranger.c:4669
+#: src/gui/widgets/arranger.c:4691
+msgid "Failed resizing selections"
+msgstr "未能调整对象大小"
+
+#: src/gui/widgets/arranger.c:4758
 msgid "Failed to move objects"
 msgstr "未能移动对象"
 
-#: src/gui/widgets/arranger.c:4638
+#: src/gui/widgets/arranger.c:4800
 msgid "Failed to link or move selection"
 msgstr "未能链接或移动所选"
 
-#: src/gui/widgets/arranger.c:4698
+#: src/gui/widgets/arranger.c:4860
 msgid "Failed to split selection"
 msgstr "未能分割所选"
 
-#: src/gui/widgets/arranger.c:4710
+#: src/gui/widgets/arranger.c:4872
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -2733,12 +2733,12 @@ msgid "Move tracks under group"
 msgstr ""
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:132
-#: src/actions/actions.c:1693
+#: src/actions/actions.c:1687
 msgid "Failed to create audio group track"
 msgstr "未能创建音频组轨道"
 
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:147
-#: src/actions/actions.c:1707
+#: src/actions/actions.c:1701
 msgid "Failed to create MIDI group track"
 msgstr "未能创建 MIDI 组轨道"
 
@@ -2939,12 +2939,12 @@ msgstr "桌面"
 msgid "Failed to paste selections"
 msgstr "无法粘贴所选"
 
-#: src/gui/backend/arranger_object.c:3243
+#: src/gui/backend/arranger_object.c:3240
 #, c-format
 msgid "Invalid object name %s"
 msgstr "无效的对象名称 %s"
 
-#: src/gui/backend/arranger_object.c:3282
+#: src/gui/backend/arranger_object.c:3279
 msgid "Failed to rename object"
 msgstr "未能重命名"
 
@@ -3204,45 +3204,50 @@ msgstr "锁存器"
 msgid "Failed to clone plugin"
 msgstr "未能克隆插件"
 
-#: src/audio/channel_send.c:94
+#: src/audio/channel_send.c:106
 #, c-format
 msgid "Channel Send %d enabled"
 msgstr "频道发送 %d 已启用"
 
-#: src/audio/channel_send.c:107
+#: src/audio/channel_send.c:119
 #, fuzzy, c-format
 msgid "Channel Send %d amount"
 msgstr "频道发送 %d 数目"
 
-#: src/audio/channel_send.c:122
+#: src/audio/channel_send.c:134
 #, c-format
 msgid "Channel Send %d audio in"
 msgstr ""
 
-#: src/audio/channel_send.c:132
+#: src/audio/channel_send.c:144
 #, c-format
 msgid "Channel Send %d MIDI in"
 msgstr ""
 
-#: src/audio/channel_send.c:140
+#: src/audio/channel_send.c:152
 #, c-format
 msgid "Channel Send %d audio out"
 msgstr "频道发出 %d 音频"
 
-#: src/audio/channel_send.c:150
+#: src/audio/channel_send.c:162
 #, c-format
 msgid "Channel Send %d MIDI out"
 msgstr "频道发出 %d MIDI"
 
-#: src/audio/channel_send.c:629
+#: src/audio/channel_send.c:497 src/audio/channel_send.c:559
+#, fuzzy
+msgid "Ports cannot be connected"
+msgstr "这些端口无法连接"
+
+#: src/audio/channel_send.c:683
 msgid "Pre-fader send"
 msgstr "前推子发送"
 
-#: src/audio/channel_send.c:631
+#: src/audio/channel_send.c:685
 msgid "Post-fader send"
 msgstr "后推子发送"
 
-#: src/audio/channel_send.c:667
+#: src/audio/channel_send.c:721
 #, c-format
 msgid "%s input"
 msgstr "%s输入"
@@ -3282,7 +3287,7 @@ msgid ""
 "%d: %s"
 msgstr ""
 
-#: src/audio/exporter.c:820 src/audio/exporter.c:829 src/actions/actions.c:1637
+#: src/audio/exporter.c:820 src/audio/exporter.c:829 src/actions/actions.c:1631
 msgid "Failed to create audio track"
 msgstr "未能创建音轨"
 
@@ -3647,12 +3652,12 @@ msgstr "设置控件值"
 msgid "Arranger selections contain an undeletable object"
 msgstr ""
 
-#: src/actions/arranger_selections.c:533 src/actions/actions.c:2438
+#: src/actions/arranger_selections.c:533 src/actions/actions.c:2432
 msgid "Failed to apply MIDI function"
 msgstr "未能应用 MIDI 功能"
 
-#: src/actions/arranger_selections.c:571 src/actions/actions.c:2466
-#: src/actions/actions.c:2511
+#: src/actions/arranger_selections.c:571 src/actions/actions.c:2460
+#: src/actions/actions.c:2505
 msgid "Failed to apply automation function"
 msgstr "未能应用包络线功能"
 
@@ -3670,67 +3675,67 @@ msgstr ""
 msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3133
+#: src/actions/arranger_selections.c:3139
 msgid "Create timeline selections"
 msgstr "创建时间轴选区"
 
-#: src/actions/arranger_selections.c:3137
+#: src/actions/arranger_selections.c:3143
 msgid "Create audio selections"
 msgstr "创建音频选区"
 
-#: src/actions/arranger_selections.c:3141
+#: src/actions/arranger_selections.c:3147
 msgid "Create automation selections"
 msgstr "创建自动选区"
 
-#: src/actions/arranger_selections.c:3145
+#: src/actions/arranger_selections.c:3151
 msgid "Create chord selections"
 msgstr "创建和弦选区"
 
-#: src/actions/arranger_selections.c:3149
+#: src/actions/arranger_selections.c:3155
 msgid "Create MIDI selections"
 msgstr "创建 MIDI 选区"
 
-#: src/actions/arranger_selections.c:3155
+#: src/actions/arranger_selections.c:3161
 msgid "Delete arranger selections"
 msgstr "删除编曲者选集"
 
-#: src/actions/arranger_selections.c:3159
+#: src/actions/arranger_selections.c:3165
 msgid "Duplicate arranger selections"
 msgstr "复制编曲者选集"
 
-#: src/actions/arranger_selections.c:3162
+#: src/actions/arranger_selections.c:3168
 msgid "Move arranger selections"
 msgstr "移动编曲者选集"
 
-#: src/actions/arranger_selections.c:3165
+#: src/actions/arranger_selections.c:3171
 msgid "Link arranger selections"
 msgstr "连接编曲者选集"
 
-#: src/actions/arranger_selections.c:3168
+#: src/actions/arranger_selections.c:3174
 msgid "Record arranger selections"
 msgstr "记录编曲者选集"
 
-#: src/actions/arranger_selections.c:3171
+#: src/actions/arranger_selections.c:3177
 msgid "Edit arranger selections"
 msgstr "编辑编曲者选集"
 
-#: src/actions/arranger_selections.c:3174
+#: src/actions/arranger_selections.c:3180
 msgid "Automation fill"
 msgstr "自动填充"
 
-#: src/actions/arranger_selections.c:3177
+#: src/actions/arranger_selections.c:3183
 msgid "Split arranger selections"
 msgstr "分割编曲者选集"
 
-#: src/actions/arranger_selections.c:3180
+#: src/actions/arranger_selections.c:3186
 msgid "Merge arranger selections"
 msgstr "合并编曲者选集"
 
-#: src/actions/arranger_selections.c:3183
+#: src/actions/arranger_selections.c:3189
 msgid "Resize arranger selections"
 msgstr "调整编曲者选集尺寸"
 
-#: src/actions/arranger_selections.c:3187
+#: src/actions/arranger_selections.c:3193
 msgid "Quantize arranger selections"
 msgstr "量化编曲者选集"
 
@@ -3792,23 +3797,23 @@ msgstr "在试用版中禁用保存"
 msgid "Save Project"
 msgstr "保存项目"
 
-#: src/actions/actions.c:893
+#: src/actions/actions.c:890
 msgid "Export routing graph"
 msgstr "导出路由图"
 
-#: src/actions/actions.c:895
+#: src/actions/actions.c:892
 msgid "Image (PNG)"
 msgstr "图像(PNG)"
 
-#: src/actions/actions.c:896
+#: src/actions/actions.c:893
 msgid "Image (SVG)"
 msgstr "图像(SVG)"
 
-#: src/actions/actions.c:897
+#: src/actions/actions.c:894
 msgid "Dot graph"
 msgstr "dot图"
 
-#: src/actions/actions.c:905
+#: src/actions/actions.c:902
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -3817,145 +3822,145 @@ msgstr ""
 "图形将导出到<a href=\"%s\">%s</a>\n"
 "请选择导出格式"
 
-#: src/actions/actions.c:960
+#: src/actions/actions.c:956
 msgid "Graph exported"
 msgstr "图形导出"
 
-#: src/actions/actions.c:985 src/guile/actions/undo_manager.c:65
+#: src/actions/actions.c:979 src/guile/actions/undo_manager.c:65
 msgid "Failed to undo"
 msgstr "撤销失败"
 
-#: src/actions/actions.c:1000 src/guile/actions/undo_manager.c:87
+#: src/actions/actions.c:994 src/guile/actions/undo_manager.c:87
 msgid "Failed to redo"
 msgstr "未能重做"
 
-#: src/actions/actions.c:1034 src/actions/actions.c:1053
-#: src/actions/actions.c:1251
+#: src/actions/actions.c:1028 src/actions/actions.c:1047
+#: src/actions/actions.c:1245
 msgid "Failed to delete selections"
 msgstr "删除所选失败"
 
-#: src/actions/actions.c:1207
+#: src/actions/actions.c:1201
 msgid "Can't paste incompatible data"
 msgstr "无法粘贴不兼容的数据"
 
-#: src/actions/actions.c:1312
+#: src/actions/actions.c:1306
 msgid "Failed to duplicate selections"
 msgstr "未能复制所选"
 
-#: src/actions/actions.c:1552 src/actions/actions.c:2039
-#: src/actions/actions.c:2075
+#: src/actions/actions.c:1546 src/actions/actions.c:2033
+#: src/actions/actions.c:2069
 msgid "Failed to quantize"
 msgstr "量化失败"
 
-#: src/actions/actions.c:1651
+#: src/actions/actions.c:1645
 msgid "Failed to create MIDI track"
 msgstr "未能创建 MIDI 音轨"
 
-#: src/actions/actions.c:1665
+#: src/actions/actions.c:1659
 msgid "Failed to create audio FX track"
 msgstr "未能创建音频 FX 轨道"
 
-#: src/actions/actions.c:1679
+#: src/actions/actions.c:1673
 msgid "Failed to create MIDI FX track"
 msgstr "未能创建 MIDI FX 音轨"
 
-#: src/actions/actions.c:1721
+#: src/actions/actions.c:1715
 msgid "Failed to create folder track"
 msgstr "未能创建文件夹轨道"
 
-#: src/actions/actions.c:1737
+#: src/actions/actions.c:1731
 msgid "Failed to duplicate tracks"
 msgstr "复制音轨失败"
 
-#: src/actions/actions.c:1787
+#: src/actions/actions.c:1781
 msgid "Cannot delete tracks: selection contains an undeletable track"
 msgstr ""
 
-#: src/actions/actions.c:1801
+#: src/actions/actions.c:1795
 msgid "Failed to delete tracks"
 msgstr "删除音轨失败"
 
-#: src/actions/actions.c:1839
+#: src/actions/actions.c:1833
 msgid "Failed to pin/unpin tracks"
 msgstr "未能固定/取消固定音轨"
 
-#: src/actions/actions.c:1852
+#: src/actions/actions.c:1846
 msgid "Failed to solo tracks"
 msgstr "未能 solo 音轨"
 
-#: src/actions/actions.c:1865
+#: src/actions/actions.c:1859
 msgid "Failed to unsolo tracks"
 msgstr "未能取消 solo 音轨"
 
-#: src/actions/actions.c:1878
+#: src/actions/actions.c:1872
 msgid "Failed to mute tracks"
 msgstr "未能将音轨静音"
 
-#: src/actions/actions.c:1891
+#: src/actions/actions.c:1885
 msgid "Failed to unmute tracks"
 msgstr "未能取消音轨静音"
 
-#: src/actions/actions.c:1904
+#: src/actions/actions.c:1898
 msgid "Failed to listen tracks"
 msgstr "倾听音轨失败"
 
-#: src/actions/actions.c:1917
+#: src/actions/actions.c:1911
 msgid "Failed to unlisten tracks"
 msgstr "未能取消倾听音轨"
 
-#: src/actions/actions.c:1930
+#: src/actions/actions.c:1924
 msgid "Failed to enable tracks"
 msgstr "启用音轨失败"
 
-#: src/actions/actions.c:1943
+#: src/actions/actions.c:1937
 msgid "Failed to disable tracks"
 msgstr "禁用音轨失败"
 
-#: src/actions/actions.c:2094
+#: src/actions/actions.c:2088
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
 
-#: src/actions/actions.c:2171
+#: src/actions/actions.c:2165
 msgid "Failed to mute selections"
 msgstr "未能将选区静音"
 
-#: src/actions/actions.c:2185
+#: src/actions/actions.c:2179
 msgid "No regions selected"
 msgstr "未选择区域"
 
-#: src/actions/actions.c:2193
+#: src/actions/actions.c:2187
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2201
+#: src/actions/actions.c:2195
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2218
+#: src/actions/actions.c:2212
 msgid "Failed to merge selections"
 msgstr "未能合并选区"
 
-#: src/actions/actions.c:2335
+#: src/actions/actions.c:2329
 msgid "Failed to insert silence"
 msgstr "未能插入静音"
 
-#: src/actions/actions.c:2358
+#: src/actions/actions.c:2352
 msgid "Failed to remove range"
 msgstr "无法移除区间"
 
-#: src/actions/actions.c:2714
+#: src/actions/actions.c:2708
 msgid "Region name"
 msgstr "区域名"
 
-#: src/actions/actions.c:2753
+#: src/actions/actions.c:2747
 #, fuzzy
 msgid "Please enter a BPM"
 msgstr "请输入值"
 
-#: src/actions/actions.c:2830
+#: src/actions/actions.c:2824
 msgid "Failed to move selections"
 msgstr "未能移动选区"
 
@@ -3991,32 +3996,47 @@ msgstr ""
 msgid "Beat unit change"
 msgstr ""
 
-#: src/actions/channel_send_action.c:303
+#: src/actions/channel_send_action.c:173
+#, fuzzy
+msgid "Failed to connect MIDI send"
+msgstr "未能连接 send"
+
+#: src/actions/channel_send_action.c:199
+#, fuzzy
+msgid "Failed to connect audio send"
+msgstr "未能连接 send"
+
+#: src/actions/channel_send_action.c:266 src/actions/channel_send_action.c:332
+#, fuzzy, c-format
+msgid "Failed to perform channel send action: %s"
+msgstr "未能执行操作"
+
+#: src/actions/channel_send_action.c:361
 #, fuzzy
 msgid "Connect sidechain"
 msgstr "连接侧链"
 
-#: src/actions/channel_send_action.c:305
+#: src/actions/channel_send_action.c:363
 msgid "Connect stereo"
 msgstr "连接立体声"
 
-#: src/actions/channel_send_action.c:307
+#: src/actions/channel_send_action.c:365
 msgid "Connect MIDI"
 msgstr "连接 MIDI"
 
-#: src/actions/channel_send_action.c:309
+#: src/actions/channel_send_action.c:367
 msgid "Disconnect"
 msgstr "断开连接"
 
-#: src/actions/channel_send_action.c:311
+#: src/actions/channel_send_action.c:369
 msgid "Change amount"
 msgstr "更改数量"
 
-#: src/actions/channel_send_action.c:313
+#: src/actions/channel_send_action.c:371
 msgid "Change ports"
 msgstr "更改端口"
 
-#: src/actions/channel_send_action.c:316
+#: src/actions/channel_send_action.c:374
 msgid "Channel send connection"
 msgstr "通道发送连接"
 
