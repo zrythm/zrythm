@@ -128,6 +128,7 @@
 
 typedef enum
 {
+  Z_PLUGINS_LV2_PLUGIN_ERROR_FAILED,
   Z_PLUGINS_LV2_PLUGIN_ERROR_CREATION_FAILED,
   Z_PLUGINS_LV2_PLUGIN_ERROR_INSTANTIATION_FAILED,
   Z_PLUGINS_LV2_PLUGIN_ERROR_NO_UI,
@@ -2742,10 +2743,28 @@ lv2_plugin_instantiate (
   char * library_path =
     lv2_plugin_get_library_path (self);
   void * handle = dlopen (library_path, RTLD_LAZY);
-  g_return_val_if_fail (handle, -1);
+  if (!handle)
+    {
+      g_set_error (
+        error,
+        Z_PLUGINS_LV2_PLUGIN_ERROR,
+        Z_PLUGINS_LV2_PLUGIN_ERROR_FAILED,
+        _("Failed to dlopen %s: %s"),
+        library_path, dlerror ());
+      return -1;
+    }
   struct link_map * lm;
   ret = dlinfo (handle, RTLD_DI_LINKMAP, &lm);
-  g_return_val_if_fail (lm && ret == 0, -1);
+  if (!lm || ret != 0)
+    {
+      g_set_error (
+        error,
+        Z_PLUGINS_LV2_PLUGIN_ERROR,
+        Z_PLUGINS_LV2_PLUGIN_ERROR_FAILED,
+        _("Failed to get dlinfo for %s"),
+        library_path);
+      return -1;
+    }
   if (ZRYTHM_HAVE_UI)
     {
       while (lm)
