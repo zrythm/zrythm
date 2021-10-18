@@ -2672,8 +2672,12 @@ lv2_plugin_instantiate (
           lilv_node_free(preset);
           if (!state)
             {
-              g_warning (
-                "Failed to find preset <%s>\n",
+              g_set_error (
+                error,
+                Z_PLUGINS_LV2_PLUGIN_ERROR,
+                Z_PLUGINS_LV2_PLUGIN_ERROR_CANNOT_FIND_URI,
+                _("Failed to find preset with URI "
+                "<%s>"),
                 preset_uri);
               return -1;
             }
@@ -2689,8 +2693,10 @@ lv2_plugin_instantiate (
               state_file_path);
           if (!state)
             {
-              PROPAGATE_PREFIXED_ERROR (
-                error, err,
+              g_set_error (
+                error,
+                Z_PLUGINS_LV2_PLUGIN_ERROR,
+                Z_PLUGINS_LV2_PLUGIN_ERROR_FAILED,
                 _("Failed to load state from %s"),
                 state_file_path);
               return -1;
@@ -2812,7 +2818,17 @@ lv2_plugin_instantiate (
   ret =
     lv2_create_or_init_ports_and_parameters (
       self);
-  g_return_val_if_fail (ret == 0, -1);
+  if (ret != 0)
+    {
+      g_set_error (
+        error,
+        Z_PLUGINS_LV2_PLUGIN_ERROR,
+        Z_PLUGINS_LV2_PLUGIN_ERROR_FAILED,
+        "%s",
+        _("Failed to create or init ports and "
+        "parameters"));
+      return -1;
+    }
 
   /* --- Check for required features --- */
 
@@ -2835,8 +2851,11 @@ lv2_plugin_instantiate (
         }
       else
         {
-          g_warning (
-            "Required feature %s is not supported",
+          g_set_error (
+            error,
+            Z_PLUGINS_LV2_PLUGIN_ERROR,
+            Z_PLUGINS_LV2_PLUGIN_ERROR_FAILED,
+            _("Required feature %s is not supported"),
             uri);
           lilv_nodes_free (req_feats);
           return -1;
@@ -3096,8 +3115,11 @@ lv2_plugin_instantiate (
             }
           else
             {
-              g_warning (
-                "Required option %s is not supported",
+              g_set_error (
+                error,
+                Z_PLUGINS_LV2_PLUGIN_ERROR,
+                Z_PLUGINS_LV2_PLUGIN_ERROR_FAILED,
+                _("Required option %s is not supported"),
                 uri);
               lilv_nodes_free (required_options);
               return -1;
@@ -3155,7 +3177,11 @@ lv2_plugin_instantiate (
       self->features);
   if (!self->instance)
     {
-      g_warning ("Failed to instantiate plugin");
+      g_set_error_literal (
+        error,
+        Z_PLUGINS_LV2_PLUGIN_ERROR,
+        Z_PLUGINS_LV2_PLUGIN_ERROR_INSTANTIATION_FAILED,
+        _("lilv_plugin_instantiate() failed"));
       return -1;
     }
   g_message ("Lilv plugin instantiated");

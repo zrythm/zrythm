@@ -68,8 +68,8 @@ error_propagate_prefixed_prv (
   if (main_err == NULL && err == NULL)
     return;
 
-  g_return_if_fail (
-    main_err != NULL && err != NULL);
+  g_return_if_fail (main_err);
+  g_return_if_fail (err);
 
   va_list args;
   va_start (args, format);
