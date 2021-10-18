@@ -721,16 +721,23 @@ z_gtk_get_single_selection_pointer (
   GtkTreeView * tv,
   int           column)
 {
+  g_return_val_if_fail (
+    GTK_IS_TREE_VIEW (tv), NULL);
   GtkTreeSelection * ts =
     gtk_tree_view_get_selection (tv);
+  g_return_val_if_fail (
+    GTK_IS_TREE_SELECTION (ts), NULL);
   GtkTreeModel * model =
     gtk_tree_view_get_model (tv);
+  g_return_val_if_fail (
+    GTK_IS_TREE_MODEL (model), NULL);
   GList * selected_rows =
     gtk_tree_selection_get_selected_rows (
       ts, NULL);
   GtkTreePath * tp =
     (GtkTreePath *)
     g_list_first (selected_rows)->data;
+  g_return_val_if_fail (tp, NULL);
   GtkTreeIter iter;
   gtk_tree_model_get_iter (
     model, &iter, tp);
