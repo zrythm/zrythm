@@ -49,7 +49,11 @@ jobs:
 
     - script: |
         cd /Users/runner/work/1/s
+        mv VERSION VERSION.txt
+        gsed -i "s|'VERSION'|'VERSION.txt'|" meson.build
         meson build -Dtests=true
+        mv subprojects/libaudec/VERSION subprojects/libaudec/VERSION.txt
+        gsed -i "s|'VERSION'|'VERSION.txt'|" subprojects/libaudec/meson.build
         ninja -C build
       displayName: 'Configure and build'
 
