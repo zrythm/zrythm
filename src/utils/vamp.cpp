@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stddef.h>
+
 #include "audio/vamp-ports/BeatTrack.h"
 #include "audio/vamp-ports/FixedTempoEstimator.h"
 #include "utils/objects.h"
