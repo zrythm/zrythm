@@ -141,6 +141,19 @@ on_delete_event (
   /* get yaml for live project */
   char * live_yaml =
     yaml_serialize (PROJECT, &project_schema);
+  if (!live_yaml)
+    {
+      ui_show_error_message (
+        self,
+        _("Failed to serialize current project"));
+
+      /* restart engine */
+      engine_resume (AUDIO_ENGINE, &state);
+
+      /* return true to stop other handlers from
+       * running */
+      return true;
+    }
 
   /* get yaml for existing project file */
   char * file_yaml =
