@@ -880,6 +880,17 @@ track_set_recording (
     "%s: setting recording %d (fire events: %d)",
     track->name, recording, fire_events);
 
+  /* return if currently recording
+   * TODO in the future make it possible to toggle
+   * track recording while transport is recording */
+  if (TRANSPORT_IS_RECORDING
+      && TRANSPORT_IS_ROLLING)
+    {
+      g_message (
+        "already recording, skipping %s", __func__);
+      return;
+    }
+
   Channel * channel =
     track_get_channel (track);
 
@@ -890,33 +901,6 @@ track_set_recording (
         "track.");
       return;
     }
-
-  /*if (recording)*/
-    /*{*/
-      /* FIXME just enable the connections */
-      /*port_connect (*/
-        /*AUDIO_ENGINE->stereo_in->l,*/
-        /*channel->stereo_in->l, 1);*/
-      /*port_connect (*/
-        /*AUDIO_ENGINE->stereo_in->r,*/
-        /*channel->stereo_in->r, 1);*/
-      /*port_connect (*/
-        /*AUDIO_ENGINE->midi_in,*/
-        /*channel->midi_in, 1);*/
-    /*}*/
-  /*else*/
-    /*{*/
-      /* FIXME just disable the connections */
-      /*port_disconnect (*/
-        /*AUDIO_ENGINE->stereo_in->l,*/
-        /*channel->stereo_in->l);*/
-      /*port_disconnect (*/
-        /*AUDIO_ENGINE->stereo_in->r,*/
-        /*channel->stereo_in->r);*/
-      /*port_disconnect (*/
-        /*AUDIO_ENGINE->midi_in,*/
-        /*channel->midi_in);*/
-    /*}*/
 
   control_port_set_toggled (
     track->recording, recording,

@@ -57,6 +57,8 @@ typedef struct AudioEngine AudioEngine;
   (TRANSPORT->play_state == PLAYSTATE_PAUSED)
 #define TRANSPORT_IS_LOOPING \
   (TRANSPORT->loop)
+#define TRANSPORT_IS_RECORDING \
+  (TRANSPORT->recording)
 
 typedef enum PrerollCountBars
 {
@@ -262,9 +264,6 @@ typedef struct Transport
   /** Transport position in frames.
    * FIXME is this used? */
   nframes_t     position;
-
-  /** Transport speed (0=stop, 1=play). */
-  int           rolling;
 
   /** Looping or not. */
   bool          loop;
