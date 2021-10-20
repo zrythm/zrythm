@@ -32,6 +32,7 @@
 #include "utils/log.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -45,6 +46,39 @@ G_DEFINE_TYPE (
   bug_report_dialog_widget,
   GTK_TYPE_DIALOG)
 
+static bool
+validate_input (
+  BugReportDialogWidget * self)
+{
+  char * steps_to_reproduce =
+    z_gtk_text_buffer_get_full_text (
+      GTK_TEXT_BUFFER (
+        self->steps_to_reproduce_buffer));
+  if (string_is_empty (steps_to_reproduce))
+    {
+      g_free_and_null (steps_to_reproduce);
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("Please enter steps to reproduce"));
+      return false;
+    }
+
+  char * other_info =
+    z_gtk_text_buffer_get_full_text (
+      GTK_TEXT_BUFFER (
+        self->other_info_buffer));
+  if (string_is_empty (other_info))
+    {
+      g_free_and_null (other_info);
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("Please fill in all fields"));
+      return false;
+    }
+
+  return true;
+}
+
 static char *
 get_report_template (
   BugReportDialogWidget * self,
@@ -54,7 +88,6 @@ get_report_template (
     z_gtk_text_buffer_get_full_text (
       GTK_TEXT_BUFFER (
         self->steps_to_reproduce_buffer));
-
   char * other_info =
     z_gtk_text_buffer_get_full_text (
       GTK_TEXT_BUFFER (
@@ -111,6 +144,9 @@ on_button_send_srht_clicked (
   GtkButton *             btn,
   BugReportDialogWidget * self)
 {
+  if (!validate_input (self))
+    return;
+
   /* create new dialog */
   GtkDialogFlags flags =
     GTK_DIALOG_MODAL
@@ -169,6 +205,9 @@ on_button_send_email_clicked (
   GtkButton *             btn,
   BugReportDialogWidget * self)
 {
+  if (!validate_input (self))
+    return;
+
   char * report_template =
     get_report_template (self, true);
   char * email_url =
@@ -309,6 +348,9 @@ on_button_send_automatically_clicked (
   GtkButton *             btn,
   BugReportDialogWidget * self)
 {
+  if (!validate_input (self))
+    return;
+
   /* create new dialog */
   GtkDialogFlags flags =
     GTK_DIALOG_MODAL

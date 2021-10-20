@@ -216,9 +216,9 @@
     -->
   </template>
   <object class="GtkSourceBuffer" id="other_info_buffer">
-    <property name="text" translatable="yes">Enter more context, what distro you use, etc.</property>
+    <property name="text" translatable="yes"></property>
   </object>
   <object class="GtkSourceBuffer" id="steps_to_reproduce_buffer">
-    <property name="text" translatable="yes">Enter a list of steps to reproduce the error.</property>
+    <property name="text" translatable="yes"></property>
   </object>
 </interface>

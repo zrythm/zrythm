@@ -596,3 +596,16 @@ string_symbolify (
   }
   return out;
 }
+
+/**
+ * Returns whether the string is NULL or empty.
+ */
+bool
+string_is_empty (
+  const char * str)
+{
+  if (!str || strlen (str) == 0)
+    return true;
+
+  return false;
+}

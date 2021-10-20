@@ -228,6 +228,13 @@ string_symbolify (
   const char * in);
 
 /**
+ * Returns whether the string is NULL or empty.
+ */
+bool
+string_is_empty (
+  const char * str);
+
+/**
  * @}
  */
 
