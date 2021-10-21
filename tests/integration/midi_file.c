@@ -38,7 +38,7 @@
 #define BUFFER_SIZE 20
 #define LARGE_BUFFER_SIZE 2000
 /* around 100 causes OOM in various CIs */
-#define MAX_FILES 20
+#define MAX_FILES 12
 
 static void
 test_midi_file_playback ()

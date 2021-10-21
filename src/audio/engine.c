@@ -1164,6 +1164,8 @@ engine_resume (
 
   if (state->playing)
     {
+      position_update_frames_from_ticks (
+        &TRANSPORT->playhead_before_pause);
       transport_move_playhead (
         TRANSPORT, &TRANSPORT->playhead_before_pause,
         F_NO_PANIC, F_NO_SET_CUE_POINT,

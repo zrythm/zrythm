@@ -1399,7 +1399,8 @@ region_timeline_frames_to_local (
       const long loop_size =
         arranger_object_get_loop_length_in_frames (
           r_obj);
-      g_return_val_if_fail (loop_size > 0, 0);
+      z_return_val_if_fail_cmp (
+        loop_size, >, 0, 0);
 
       diff_frames += clip_start_frames;
 

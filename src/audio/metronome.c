@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,6 +27,7 @@
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -205,24 +206,26 @@ find_and_queue_metronome (
         bar_pos.frames - start_pos->frames;
       if (bar_offset_long < 0)
         {
-          g_critical (
-            "bar offset long (%ld) is < 0",
-            bar_offset_long);
           g_message ("bar pos:");
           position_print (&bar_pos);
           g_message ("start pos:");
           position_print (start_pos);
+          g_critical (
+            "bar offset long (%ld) is < 0",
+            bar_offset_long);
+          return;
         }
 
       /* add local offset */
       long metronome_offset_long =
         bar_offset_long + loffset;
-      g_return_if_fail (metronome_offset_long >= 0);
+      z_return_if_fail_cmp (
+        metronome_offset_long, >=, 0);
       nframes_t metronome_offset =
         (nframes_t) metronome_offset_long;
-      g_return_if_fail (
-        metronome_offset <
-          AUDIO_ENGINE->block_length);
+      z_return_if_fail_cmp (
+        metronome_offset, <,
+        AUDIO_ENGINE->block_length);
       sample_processor_queue_metronome (
         SAMPLE_PROCESSOR,
         METRONOME_TYPE_EMPHASIS,

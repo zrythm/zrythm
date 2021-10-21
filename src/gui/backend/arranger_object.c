@@ -1212,6 +1212,8 @@ arranger_object_update_positions (
                 ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
                 ticks, false);
             }
+          z_return_if_fail_cmp (
+            self->loop_end_pos.frames, >=, 0);
           long tl_frames =
             self->end_pos.frames - 1;
           long local_frames;
@@ -1474,42 +1476,116 @@ arranger_object_resize (
       else
         {
           tmp = self->end_pos;
+          Position prev_end_pos = self->end_pos;
           position_add_ticks (&tmp, ticks);
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_END,
             F_NO_VALIDATE);
 
-          if (type != ARRANGER_OBJECT_RESIZE_LOOP &&
+          double change_ratio =
+            (self->end_pos.ticks - self->pos.ticks) /
+            (prev_end_pos.ticks - self->pos.ticks);
+
+          if (type != ARRANGER_OBJECT_RESIZE_LOOP
+              &&
               arranger_object_type_can_loop (
                 self->type))
             {
               tmp = self->loop_end_pos;
-              position_add_ticks (&tmp, ticks);
+              if (type == ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE
+                  ||
+                  type == ARRANGER_OBJECT_RESIZE_STRETCH)
+                {
+                  position_from_ticks (
+                    &tmp,
+                    self->loop_end_pos.ticks * change_ratio);
+                }
+              else
+                {
+                  position_add_ticks (&tmp, ticks);
+                }
+              z_return_if_fail_cmp (
+                tmp.frames, >=, 0);
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
                 F_NO_VALIDATE);
+              g_return_if_fail (
+                self->loop_end_pos.frames >= 0);
+
+              /* if stretching, also stretch loop
+               * start */
+              if (type == ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE
+                  ||
+                  type == ARRANGER_OBJECT_RESIZE_STRETCH)
+                {
+                  tmp = self->loop_start_pos;
+                  position_from_ticks (
+                    &tmp,
+                    self->loop_start_pos.ticks * change_ratio);
+                  z_return_if_fail_cmp (
+                    tmp.frames, >=, 0);
+                  arranger_object_set_position (
+                    self, &tmp,
+                    ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
+                    F_NO_VALIDATE);
+                  g_return_if_fail (
+                    self->loop_start_pos.frames >= 0);
+                }
             }
           if (arranger_object_can_fade (self))
             {
               tmp = self->fade_out_pos;
-              position_add_ticks (&tmp, ticks);
+              if (type == ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE
+                  ||
+                  type == ARRANGER_OBJECT_RESIZE_STRETCH)
+                {
+                  position_from_ticks (
+                    &tmp,
+                    self->fade_out_pos.ticks * change_ratio);
+                }
+              else
+                {
+                  position_add_ticks (&tmp, ticks);
+                }
+              z_return_if_fail_cmp (
+                tmp.frames, >=, 0);
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
                 F_NO_VALIDATE);
+              g_return_if_fail (
+                self->fade_out_pos.frames >= 0);
+
+              /* if stretching, also stretch fade
+               * in */
+              if (type == ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE
+                  ||
+                  type == ARRANGER_OBJECT_RESIZE_STRETCH)
+                {
+                  tmp = self->fade_in_pos;
+                  position_from_ticks (
+                    &tmp,
+                    self->fade_in_pos.ticks * change_ratio);
+                  z_return_if_fail_cmp (
+                    tmp.frames, >=, 0);
+                  arranger_object_set_position (
+                    self, &tmp,
+                    ARRANGER_OBJECT_POSITION_TYPE_FADE_IN,
+                    F_NO_VALIDATE);
+                  g_return_if_fail (
+                    self->fade_in_pos.frames >= 0);
+                }
             }
 
-          if ((type ==
+          if (type ==
                 ARRANGER_OBJECT_RESIZE_STRETCH
-               ||
-               type ==
-                 ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE)
               &&
               self->type ==
                 ARRANGER_OBJECT_TYPE_REGION)
             {
+#if 0
               /* move fade out */
               tmp = self->fade_out_pos;
               position_add_ticks (&tmp, ticks);
@@ -1517,6 +1593,7 @@ arranger_object_resize (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
                 F_NO_VALIDATE);
+#endif
 
               ZRegion * region = (ZRegion *) self;
               double new_length =
