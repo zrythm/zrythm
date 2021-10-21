@@ -1549,7 +1549,12 @@ recording_manager_process_events (
   RecordingManager * self)
 {
   /*gint64 curr_time = g_get_monotonic_time ();*/
-  /*g_message ("starting processing");*/
+  /*g_message ("~~~~~~~~~~~~~~~~starting processing");*/
+  zix_sem_wait (&self->processing_sem);
+  int i = 0;
+  g_return_val_if_fail (
+    !self->currently_processing, G_SOURCE_REMOVE);
+  self->currently_processing = true;
   RecordingEvent * ev;
   while (recording_event_queue_dequeue_event (
            self->event_queue, &ev))
@@ -1558,6 +1563,7 @@ recording_manager_process_events (
         {
           goto return_to_pool;
         }
+      i++;
 
       /*g_message ("event type %d", ev->type);*/
 
@@ -1675,7 +1681,10 @@ return_to_pool:
       object_pool_return (
         self->event_obj_pool, ev);
     }
-  /*g_message ("processed %d events", i);*/
+  /*g_message ("~~~~~~~~~~~processed %d events", i);*/
+
+  self->currently_processing = false;
+  zix_sem_post (&self->processing_sem);
 
   return G_SOURCE_CONTINUE;
 }
@@ -1701,6 +1710,7 @@ recording_manager_new (void)
   mpmc_queue_reserve (
     self->event_queue, max_events);
 
+  zix_sem_init (&self->processing_sem, 1);
   self->source_id =
     g_timeout_add (
       12,

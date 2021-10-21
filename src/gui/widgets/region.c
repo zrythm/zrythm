@@ -45,6 +45,7 @@
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
+#include "utils/debug.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/ui.h"
@@ -293,8 +294,8 @@ draw_loop_points (
     obj->loop_start_pos.ticks;
   double loop_end_ticks =
     obj->loop_end_pos.ticks;
-  g_warn_if_fail (
-    loop_end_ticks > loop_start_ticks);
+  z_warn_if_fail_cmp (
+    loop_end_ticks, >, loop_start_ticks);
   double loop_ticks =
     arranger_object_get_loop_length_in_ticks (
       obj);

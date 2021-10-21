@@ -384,9 +384,12 @@ tracklist_selections_remove_track (
 
     /* if record mode was set automatically
      * when the track was selected, turn record
-     * off */
-  if (track->channel &&
-      track->record_set_automatically)
+     * off - unless currently recording */
+  if (track->channel
+      && track->record_set_automatically
+      &&
+      !(TRANSPORT_IS_RECORDING &&
+        TRANSPORT_IS_ROLLING))
     {
       track_set_recording (track, 0, fire_events);
       track->record_set_automatically = false;

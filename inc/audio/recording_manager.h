@@ -27,6 +27,7 @@
 #define __AUDIO_RECORDING_MANAGER_H__
 
 #include "utils/types.h"
+#include "zix/sem.h"
 
 typedef struct ObjectPool ObjectPool;
 typedef struct TrackProcessor TrackProcessor;
@@ -68,6 +69,9 @@ typedef struct RecordingManager
    */
   RegionIdentifier   recorded_ids[8000];
   int                num_recorded_ids;
+
+  bool               currently_processing;
+  ZixSem             processing_sem;
 
   bool               freeing;
 } RecordingManager;

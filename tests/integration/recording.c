@@ -1368,11 +1368,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/integration/recording/"
 
   g_test_add_func (
-    TEST_PREFIX "test chord track recording",
-    (GTestFunc) test_chord_track_recording);
-  g_test_add_func (
     TEST_PREFIX "test 2nd audio recording",
     (GTestFunc) test_2nd_audio_recording);
+  g_test_add_func (
+    TEST_PREFIX "test chord track recording",
+    (GTestFunc) test_chord_track_recording);
   g_test_add_func (
     TEST_PREFIX "test long audio recording",
     (GTestFunc) test_long_audio_recording);

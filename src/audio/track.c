@@ -880,17 +880,6 @@ track_set_recording (
     "%s: setting recording %d (fire events: %d)",
     track->name, recording, fire_events);
 
-  /* return if currently recording
-   * TODO in the future make it possible to toggle
-   * track recording while transport is recording */
-  if (TRANSPORT_IS_RECORDING
-      && TRANSPORT_IS_ROLLING)
-    {
-      g_message (
-        "already recording, skipping %s", __func__);
-      return;
-    }
-
   Channel * channel =
     track_get_channel (track);
 

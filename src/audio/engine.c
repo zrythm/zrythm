@@ -1131,9 +1131,15 @@ engine_wait_for_pause (
 
   if (PROJECT->loaded)
     {
+#if 0
       /* process all recording events */
+      zix_sem_wait (
+        &RECORDING_MANAGER->processing_sem);
       recording_manager_process_events (
         RECORDING_MANAGER);
+      zix_sem_post (
+        &RECORDING_MANAGER->processing_sem);
+#endif
 
       /* run one more time to flush panic
        * messages */

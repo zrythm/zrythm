@@ -1146,25 +1146,29 @@ on_plugin_visibility_changed (Plugin * pl)
 static inline void
 clean_duplicates_and_copy (
   EventManager * self,
-  ZEvent **      events,
+  GPtrArray *    events_arr,
   int *          num_events)
 {
   MPMCQueue * q = self->mqueue;
   ZEvent * event;
   *num_events = 0;
-  int i, already_exists = 0;;
 
   /* only add events once to new array while
    * popping */
   while (event_queue_dequeue_event (
            q, &event))
     {
-      already_exists = 0;
+      bool already_exists = false;
 
-      for (i = 0; i < *num_events; i++)
-        if (event->type == events[i]->type &&
-            event->arg == events[i]->arg)
-          already_exists = 1;
+      for (int i = 0; i < *num_events; i++)
+        {
+          ZEvent * cur_event =
+            (ZEvent *)
+            g_ptr_array_index (events_arr, i);
+          if (event->type == cur_event->type &&
+              event->arg == cur_event->arg)
+            already_exists = true;
+        }
 
       if (already_exists)
         {
@@ -1173,8 +1177,8 @@ clean_duplicates_and_copy (
         }
       else
         {
-          array_append (
-            events, (*num_events), event);
+          g_ptr_array_add (events_arr, event);
+          (*num_events) = *num_events + 1;
         }
     }
 }
@@ -1976,11 +1980,10 @@ process_events (void * data)
 {
   EventManager * self = (EventManager *) data;
 
-  ZEvent * events[100];
   ZEvent * ev;
   int num_events = 0, i;
   clean_duplicates_and_copy (
-    self, events, &num_events);
+    self, self->events_arr, &num_events);
 
   /*g_message ("starting processing");*/
   for (i = 0; i < num_events; i++)
@@ -1988,10 +1991,13 @@ process_events (void * data)
       if (i > 30)
         {
           g_message (
-            "more than 30 UI events processed!");
+            "more than 30 UI events processed "
+            "(%d)!", i);
         }
 
-      ev = events[i];
+      ev =
+        (ZEvent *)
+        g_ptr_array_index (self->events_arr, i);
 
       if (!ZRYTHM_HAVE_UI)
         {
@@ -2066,6 +2072,9 @@ event_manager_new (void)
     self->mqueue,
     (size_t)
     EVENT_MANAGER_MAX_EVENTS * sizeof (ZEvent *));
+
+  self->events_arr =
+    g_ptr_array_sized_new (200);
 
   return self;
 }
@@ -2147,6 +2156,8 @@ event_manager_free (
     object_pool_free, self->obj_pool);
   object_free_w_func_and_null (
     mpmc_queue_free, self->mqueue);
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->events_arr);
 
   object_zero_and_free (self);
 

@@ -38,6 +38,14 @@
 #define z_return_if_fail_cmp(a,comparator,b) \
   z_return_val_if_fail_cmp (a, comparator, b, )
 
+#define z_warn_if_fail_cmp(a,comparator,b) \
+  if (!(G_LIKELY (a comparator b))) \
+    { \
+      g_warning ( \
+        "Assertion failed: %s (%ld) %s %s (%ld)", \
+        #a, (long) a, #comparator, #b, (long) b); \
+    }
+
 /**
  * @}
  */

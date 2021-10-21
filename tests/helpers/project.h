@@ -37,6 +37,7 @@
 #include "audio/master_track.h"
 #include "audio/midi_note.h"
 #include "audio/modulator_track.h"
+#include "audio/recording_manager.h"
 #include "audio/region.h"
 #include "audio/router.h"
 #include "audio/tempo_track.h"
@@ -157,6 +158,14 @@ test_project_save_and_reload (void)
   /* save the project */
   char * prj_file = test_project_save ();
   g_assert_nonnull (prj_file);
+
+  /* recreate the recording manager to drop any
+   * events */
+  object_free_w_func_and_null (
+    recording_manager_free,
+    ZRYTHM->recording_manager);
+  ZRYTHM->recording_manager =
+    recording_manager_new ();
 
   /* reload it */
   test_project_reload (prj_file);

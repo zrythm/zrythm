@@ -59,6 +59,7 @@
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -218,7 +219,7 @@ arranger_object_get_num_loops (
   long loop_size =
     arranger_object_get_loop_length_in_frames (
       self);
-  g_return_val_if_fail (loop_size > 0, 0);
+  z_return_val_if_fail_cmp (loop_size, >, 0, 0);
   long full_size =
     arranger_object_get_length_in_frames (self);
   long loop_start =

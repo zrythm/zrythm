@@ -64,6 +64,9 @@ typedef struct EventManager
   /** A soft recalculation of the routing graph
    * is pending. */
   bool               pending_soft_recalc;
+
+  /** Events array to use during processing. */
+  GPtrArray *        events_arr;
 } EventManager;
 
 #define EVENT_MANAGER (ZRYTHM->event_manager)
