@@ -1,6 +1,34 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.26.0.1] - 2021-10-22
+### Added
+- Add gain to audio regions
+- Allow changing BPM via text input
+- Add BPM detection option for audio regions
+- Allow changing fade in/out in audio editor
+- Add more error handling in various places
+
+### Changed
+- Update Portuguese (Brazil), Japanese, Swedish, Indonesian translations
+- Throw proper error when `dlopen()` failed on lv2 plugin
+- Don't throw non-fatal error when timeline selections cannot be pasted
+- Show error message when failed to serialize project when closing main window
+- Don't allow auto-disarming tracks while recording
+- Make steps to reproduce and other fields mandatory in bug report dialog
+
+### Fixed
+- Fix audio fades not being applied properly during processing
+- Fix incorrectly allowing connecting sends from Master
+- Fix graph export not working
+- Fix sends not being added properly in graph export
+- Fix error when lowering BPM when an audio region exists
+- Fix error when destroying main window
+- Fix error not being set when LV2 plugin fails to instantiate
+- Fix crash when too many UI events are received
+- Fix fade in/out and loop start/end not being stretched properly when BPM changes
+- Add missing curve algorithms to GSettings schema
+
 ## [1.0.0-alpha.25.1.22] - 2021-09-11
 ### Added
 - Show message when attempting to delete undeletable tracks
