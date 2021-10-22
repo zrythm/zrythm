@@ -265,12 +265,12 @@ hardware_processor_rescan_ext_ports (
   self->audio_ports =
     realloc (
       self->audio_ports,
-      self->ext_audio_ports_size *
+      MAX (1, self->ext_audio_ports_size) *
         sizeof (Port *));
   self->midi_ports =
     realloc (
       self->midi_ports,
-      self->ext_midi_ports_size *
+      MAX (1, self->ext_midi_ports_size) *
         sizeof (Port *));
   for (int i = 0; i < self->num_ext_audio_ports; i++)
     {

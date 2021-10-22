@@ -313,9 +313,10 @@ too.
 
 ## Error Handling
 To report invalid program states (such as programming
-errors), use the `g_return_*` functions or
+errors), use the `g_return_*`/`z_return_*` functions or
 `g_critical`. This will show a bug report popup
 if hit.
+
 To report non-programming errors, such as failure
 to open a file, use the
 [GError](https://www.freedesktop.org/software/gstreamer-sdk/data/docs/latest/glib/glib-Error-Reporting.html) mechanism.

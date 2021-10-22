@@ -1146,12 +1146,13 @@ on_plugin_visibility_changed (Plugin * pl)
 static inline void
 clean_duplicates_and_copy (
   EventManager * self,
-  GPtrArray *    events_arr,
-  int *          num_events)
+  GPtrArray *    events_arr)
 {
   MPMCQueue * q = self->mqueue;
   ZEvent * event;
-  *num_events = 0;
+
+  g_ptr_array_remove_range (
+    events_arr, 0, events_arr->len);
 
   /* only add events once to new array while
    * popping */
@@ -1160,7 +1161,7 @@ clean_duplicates_and_copy (
     {
       bool already_exists = false;
 
-      for (int i = 0; i < *num_events; i++)
+      for (guint i = 0; i < events_arr->len; i++)
         {
           ZEvent * cur_event =
             (ZEvent *)
@@ -1178,7 +1179,6 @@ clean_duplicates_and_copy (
       else
         {
           g_ptr_array_add (events_arr, event);
-          (*num_events) = *num_events + 1;
         }
     }
 }
@@ -1981,12 +1981,11 @@ process_events (void * data)
   EventManager * self = (EventManager *) data;
 
   ZEvent * ev;
-  int num_events = 0, i;
   clean_duplicates_and_copy (
-    self, self->events_arr, &num_events);
+    self, self->events_arr);
 
   /*g_message ("starting processing");*/
-  for (i = 0; i < num_events; i++)
+  for (guint i = 0; i < self->events_arr->len; i++)
     {
       if (i > 30)
         {
@@ -2017,7 +2016,7 @@ return_to_pool:
     }
   /*g_message ("processed %d events", i);*/
 
-  if (num_events > 6)
+  if (self->events_arr->len > 6)
     g_message ("More than 6 events processed. "
                "Optimization needed.");
 

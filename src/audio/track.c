@@ -58,6 +58,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/debug.h"
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -3828,10 +3829,11 @@ track_create_with_action (
   Track * track =
     tracklist_get_track (TRACKLIST, index);
   g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (track)
-    && track->type == type
-    && track->pos == index,
-    NULL);
+    IS_TRACK_AND_NONNULL (track), NULL);
+  z_return_val_if_fail_cmp (
+    track->type, ==, type, NULL);
+  z_return_val_if_fail_cmp (
+    track->pos, ==, index, NULL);
   return track;
 }
 
