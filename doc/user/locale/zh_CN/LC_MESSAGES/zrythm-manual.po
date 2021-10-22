@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-09-12 00:59+0100\n"
-"PO-Revision-Date: 2021-09-09 14:35+0000\n"
-"Last-Translator: Liu Tao <lyuutau@outlook.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2021-10-19 03:39+0000\n"
+"Last-Translator: Eric <spice2wolf@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../appendix/environment.rst:10
@@ -4058,7 +4059,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:89
 msgid "Create takes"
-msgstr ""
+msgstr "创建场景"
 
 #: ../../playback-and-recording/recording.rst:90
 msgid "Create a new lane (`take`) for each new recording"
@@ -5261,7 +5262,7 @@ msgstr ""
 
 #: ../../routing/control-room.rst:28
 msgid "Dim"
-msgstr ""
+msgstr "暗显"
 
 #: ../../routing/control-room.rst:29
 msgid "This is not operational at the moment."
@@ -6854,8 +6855,9 @@ msgid "Mascot"
 msgstr ""
 
 #: ../../user-media/intro.rst:12
+#, fuzzy
 msgid "Concept"
-msgstr ""
+msgstr "概念"
 
 #: ../../user-media/intro.rst:17
 msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
