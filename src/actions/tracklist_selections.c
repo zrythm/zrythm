@@ -203,6 +203,15 @@ tracklist_selections_action_new (
       num_tracks = 0;
     }
 
+  if (type == TRACKLIST_SELECTIONS_ACTION_CREATE
+      && num_tracks <= 0)
+    {
+      g_critical (
+        "attempted to create %d tracks",
+        num_tracks);
+      return NULL;
+    }
+
   if (type ==
         TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE ||
       type ==
