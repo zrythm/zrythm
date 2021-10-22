@@ -1081,6 +1081,7 @@ midi_region_fill_midi_events (
   ArrangerObject * r_obj =
     (ArrangerObject *) self;
   Track * track = arranger_object_get_track (r_obj);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
   /* send all MIDI notes off if needed */
   if (note_off_at_end)
