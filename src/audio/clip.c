@@ -26,6 +26,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/file.h"
 #include "utils/flags.h"
@@ -62,8 +63,10 @@ audio_clip_update_channel_caches (
   AudioClip * self,
   size_t      start_from)
 {
-  g_return_if_fail (
-    self->channels > 0 && self->num_frames > 0);
+  z_return_if_fail_cmp (
+    self->channels, >, 0);
+  z_return_if_fail_cmp (
+    self->num_frames, >, 0);
 
   /* copy the frames to the channel caches */
   for (unsigned int i = 0; i < self->channels; i++)
