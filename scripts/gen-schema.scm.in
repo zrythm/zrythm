@@ -314,7 +314,7 @@ Args:
            '("linear" "sqrt" "sine"))
          (print-enum
            "curve-algorithm"
-           '("exponent" "superellipse" "vital"))
+           '("exponent" "superellipse" "vital" "pulse" "logarithmic"))
          (print-enum
            "buffer-size"
            '("16" "32" "64" "128" "256" "512" "1024"
