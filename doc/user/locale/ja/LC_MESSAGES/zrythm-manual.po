@@ -1567,7 +1567,7 @@ msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
 msgstr ""
-"コードエディターでの操作は :ref:`edit-modes` と :ref:`common-operations` と共"
+"コードエディターでの操作は :ref:`edit-tools` と :ref:`common-operations` と共"
 "通です。"
 
 #: ../../editing/clip-editors/chord-editor.rst:70
@@ -1700,7 +1700,7 @@ msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref:"
 "`common-operations`."
 msgstr ""
-"MIDIエディター内での操作については :ref:`edit-modes` と :ref:`common-"
+"MIDIエディター内での操作については :ref:`edit-tools` と :ref:`common-"
 "operations` を参照してください。"
 
 #: ../../editing/clip-editors/piano-roll.rst:80
@@ -2564,7 +2564,7 @@ msgid ""
 "editing/clip-editors/audio-editor>`."
 msgstr ""
 "オーディオリージョンをダブルクリックすると、 :doc:`オーディオエディター "
-"<.../.../editing/clip-editors/audio-editor>` が表示されます。"
+"<../../editing/clip-editors/audio-editor>` が表示されます。"
 
 #: ../../editing/timeline/arranger.rst:61
 msgid "MIDI Regions"
@@ -2609,7 +2609,7 @@ msgid ""
 "Editor <../../editing/clip-editors/automation-editor>`."
 msgstr ""
 "オートメーションリージョンをダブルクリックすると、 :doc:`オートメーションエ"
-"ディター <.../.../editing/clip-editors/automation-editor>` が表示されます。"
+"ディター <../../editing/clip-editors/automation-editor>` が表示されます。"
 
 #: ../../editing/timeline/arranger.rst:93
 msgid "Chord regions"
@@ -2628,7 +2628,7 @@ msgid ""
 "Double-clicking a chord region will bring up the :doc:`Chord Editor <../../"
 "editing/clip-editors/chord-editor>`."
 msgstr ""
-"コード・リージョンをダブルクリックすると、 :doc:`コードエディター <.../.../"
+"コード・リージョンをダブルクリックすると、 :doc:`コードエディター <../../"
 "editing/clip-editors/chord-editor>` が表示されます。"
 
 #: ../../editing/timeline/arranger.rst:107
@@ -3744,7 +3744,7 @@ msgid ""
 "Balance (or :term:`Stereo` balance) is the left-right balance of a stereo "
 "audio signal."
 msgstr ""
-"バランス（または :term:`tereo` バランス）とは、ステレオオーディオ信号の左右の"
+"バランス（または :term:`Stereo` バランス）とは、ステレオオーディオ信号の左右の"
 "バランスのことです。"
 
 #: ../../glossary/intro.rst:23
