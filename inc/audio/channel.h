@@ -374,7 +374,9 @@ channel_get_balance_control (void * _channel);
  */
 NONNULL
 void
-channel_reset_fader (Channel * channel);
+channel_reset_fader (
+  Channel * self,
+  bool      fire_events);
 
 /**
  * Prepares the channel for processing.

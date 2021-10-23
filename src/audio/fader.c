@@ -572,7 +572,9 @@ fader_set_amp (void * _fader, float amp)
   Fader * self = (Fader *) _fader;
   g_return_if_fail (IS_FADER (self));
 
-  port_set_control_value (self->amp, amp, 0, 0);
+  port_set_control_value (
+    self->amp, amp, F_NOT_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
 
   fader_update_volume_and_fader_val (self);
 }

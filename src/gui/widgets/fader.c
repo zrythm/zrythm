@@ -318,7 +318,7 @@ on_reset_fader (GtkMenuItem *menuitem,
   if (self->fader->type == FADER_TYPE_AUDIO_CHANNEL)
     {
       Channel * ch = fader_get_channel (self->fader);
-      channel_reset_fader (ch);
+      channel_reset_fader (ch, F_PUBLISH_EVENTS);
     }
   else
     {

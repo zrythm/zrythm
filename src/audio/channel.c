@@ -752,9 +752,17 @@ channel_add_balance_control (
  * Sets fader to 0.0.
  */
 void
-channel_reset_fader (Channel * self)
+channel_reset_fader (
+  Channel * self,
+  bool      fire_events)
 {
   fader_set_amp (self->fader, 1.0f);
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_CHANNEL_FADER_VAL_CHANGED, self);
+    }
 }
 
 /**
