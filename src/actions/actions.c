@@ -2790,7 +2790,7 @@ DEFINE_SIMPLE (activate_nudge_selection)
   ArrangerSelections * sel =
     project_get_arranger_selections_for_last_selection (
       PROJECT);
-  if (!sel)
+  if (!sel || !arranger_selections_has_any (sel))
     return;
 
   if (sel->type == ARRANGER_SELECTIONS_TYPE_AUDIO)
