@@ -3367,7 +3367,7 @@ drag_update (
         &earliest_obj_new_pos,
         self->curr_ticks_diff_from_start);
 
-      if (position_is_before (
+      if (position_is_before_or_equal (
             &earliest_obj_new_pos, &POSITION_START))
         {
           /* stop at 0.0.0.0 */
