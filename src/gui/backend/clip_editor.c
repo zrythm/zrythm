@@ -97,10 +97,14 @@ clip_editor_set_region (
       self->has_region = 1;
       region_identifier_copy (
         &self->region_id, &region->id);
+      self->track =
+        arranger_object_get_track (
+          (ArrangerObject *) region);
     }
   else
     {
       self->has_region = 0;
+      self->track = NULL;
     }
 
   self->region_changed = 1;
