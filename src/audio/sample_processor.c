@@ -191,11 +191,13 @@ sample_processor_process (
   g_return_if_fail (
     self && self->fader &&
     self->fader->stereo_out &&
-    self->num_current_samples < 256 &&
     self->fader->stereo_out->l &&
     self->fader->stereo_out->l->buf &&
     self->fader->stereo_out->r &&
     self->fader->stereo_out->r->buf);
+
+  z_return_if_fail_cmp (
+    self->num_current_samples, <, 256);
 
   float * l = self->fader->stereo_out->l->buf,
         * r = self->fader->stereo_out->r->buf;
@@ -205,7 +207,7 @@ sample_processor_process (
        i >= 0; i--)
     {
       sp = &self->current_samples[i];
-      g_return_if_fail (sp->channels > 0);
+      z_return_if_fail_cmp (sp->channels, >, 0);
 
       /* if sample starts after this cycle (eg,
        * when counting in for metronome),
@@ -258,10 +260,10 @@ sample_processor_process (
        * cycle */
       else if (sp->start_offset >= cycle_offset)
         {
-          g_return_if_fail (
-            sp->offset == 0 &&
-            (cycle_offset + nframes) >=
-               sp->start_offset);
+          z_return_if_fail_cmp (sp->offset, ==, 0);
+          z_return_if_fail_cmp (
+            (cycle_offset + nframes), >=,
+            sp->start_offset);
 
           /* fill in the buffer for as many frames
            * as possible */
@@ -274,9 +276,11 @@ sample_processor_process (
             {
               nframes_t buf_offset =
                 j + sp->start_offset;
-              g_return_if_fail (
-                buf_offset < nframes &&
-                sp->offset < sp->buf_size);
+              z_return_if_fail_cmp (
+                buf_offset, <,
+                cycle_offset + nframes);
+              z_return_if_fail_cmp (
+                sp->offset, <, sp->buf_size);
               if (sp->channels == 1)
                 {
                   l[buf_offset] +=
