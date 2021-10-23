@@ -1353,68 +1353,72 @@ int
 project_autosave_cb (
   void * data)
 {
-  if (PROJECT && PROJECT->loaded &&
-      PROJECT->dir &&
-      PROJECT->datetime_str)
+  if (!PROJECT || !PROJECT->loaded
+      || !PROJECT->dir || !PROJECT->datetime_str)
+    return G_SOURCE_CONTINUE;
+
+  unsigned int autosave_interval_mins =
+    g_settings_get_uint (
+      S_P_PROJECTS_GENERAL, "autosave-interval");
+
+  /* return if autosave disabled */
+  if (autosave_interval_mins <= 0)
+    return G_SOURCE_CONTINUE;
+
+  StereoPorts * out_ports;
+  gint64 cur_time = g_get_monotonic_time ();
+  gint64 microsec_to_autosave =
+    (gint64)
+    autosave_interval_mins * 60 * 1000000 -
+      /* subtract 4 seconds because the time
+       * this gets called is not exact */
+      4 * 1000000;
+
+  /* skip if semaphore busy */
+  if (!zix_sem_try_wait (&PROJECT->save_sem))
     {
-      StereoPorts * out_ports;
-      gint64 cur_time = g_get_monotonic_time ();
-      gint64 microsec_to_autosave =
-        (gint64)
-        g_settings_get_uint (
-          S_P_PROJECTS_GENERAL,
-          "autosave-interval") * 60 *
-          1000000 -
-          /* subtract 4 seconds because the time
-           * this gets called is not exact */
-          4 * 1000000;
+      g_message (
+        "can't acquire project lock - skipping "
+        "autosave");
+      return G_SOURCE_CONTINUE;
+    }
 
-      /* skip if semaphore busy */
-      if (!zix_sem_try_wait (&PROJECT->save_sem))
-        {
-          g_message (
-            "can't acquire project lock - skipping "
-            "autosave");
-          return G_SOURCE_CONTINUE;
-        }
+  /* skip if bad time to save or rolling */
+  if (cur_time - PROJECT->last_autosave_time <
+        microsec_to_autosave ||
+      TRANSPORT_IS_ROLLING)
+    {
+      goto post_save_sem_and_continue;
+    }
 
-      /* skip if bad time to save or rolling */
-      if (cur_time - PROJECT->last_autosave_time <
-            microsec_to_autosave ||
-          TRANSPORT_IS_ROLLING)
-        {
-          goto post_save_sem_and_continue;
-        }
+  /* skip if sound is playing */
+  out_ports =
+    P_MASTER_TRACK->channel->stereo_out;
+  if (out_ports->l->peak >= 0.0001f ||
+      out_ports->r->peak >= 0.0001f)
+    {
+      g_debug (
+        "sound is playing, skipping autosave");
+      goto post_save_sem_and_continue;
+    }
 
-      /* skip if sound is playing */
-      out_ports =
-        P_MASTER_TRACK->channel->stereo_out;
-      if (out_ports->l->peak >= 0.0001f ||
-          out_ports->r->peak >= 0.0001f)
-        {
-          g_debug (
-            "sound is playing, skipping autosave");
-          goto post_save_sem_and_continue;
-        }
+  /* skip if currently performing action */
+  if (arranger_widget_any_doing_action ())
+    {
+      g_debug (
+        "in the middle of an action, skipping "
+        "autosave");
+      goto post_save_sem_and_continue;
+    }
 
-      /* skip if currently performing action */
-      if (arranger_widget_any_doing_action ())
-        {
-          g_debug (
-            "in the middle of an action, skipping "
-            "autosave");
-          goto post_save_sem_and_continue;
-        }
-
-      /* ok to save */
-      project_save (
-        PROJECT, PROJECT->dir, 1, 1,
-        F_ASYNC);
-      PROJECT->last_autosave_time = cur_time;
+  /* ok to save */
+  project_save (
+    PROJECT, PROJECT->dir, 1, 1,
+    F_ASYNC);
+  PROJECT->last_autosave_time = cur_time;
 
 post_save_sem_and_continue:
-      zix_sem_post (&PROJECT->save_sem);
-    }
+  zix_sem_post (&PROJECT->save_sem);
 
   return G_SOURCE_CONTINUE;
 }
