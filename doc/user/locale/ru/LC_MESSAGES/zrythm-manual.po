@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-09-12 00:59+0100\n"
+"POT-Creation-Date: 2021-10-24 05:08+0100\n"
 "PO-Revision-Date: 2021-09-06 18:34+0000\n"
 "Last-Translator: Nikita Saschenko <neketa777@gmail.com>\n"
 "Language: ru\n"
@@ -1383,14 +1383,10 @@ msgid "Other Contributors"
 msgstr "Другие участники"
 
 #: ../../credits/intro.rst:25
-#, fuzzy
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
 msgstr ""
-"#-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#\n"
-"Смотрите :download:`THANKS <../../../THANKS>` в исходном коде.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Смотрите :download:`THANKS <../../../THANKS>` в исходном коде."
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39

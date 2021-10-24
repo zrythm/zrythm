@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-09-12 00:59+0100\n"
+"POT-Creation-Date: 2021-10-24 05:08+0100\n"
 "PO-Revision-Date: 2021-09-11 15:43+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -1302,8 +1302,8 @@ msgstr "その他の貢献者"
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
 msgstr ""
-"ソース配布物の中の :download:`THANKS <../../THANKS>` ファイルを参照してくださ"
-"い。"
+"ソース配布物中の :download:`THANKS <../../../THANKS>` ファイルを参照してく"
+"ださい。"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39
@@ -2046,7 +2046,8 @@ msgstr "削除"
 
 #: ../../editing/common-operations.rst:77
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
-msgstr "選択したオブジェクトを削除します。kbd:`Delete`を押すこともできます。"
+msgstr ""
+"選択したオブジェクトを削除します。 :kbd:`Delete` を押すこともできます。"
 
 #: ../../editing/common-operations.rst:82
 msgid "Selections"
@@ -3744,8 +3745,8 @@ msgid ""
 "Balance (or :term:`Stereo` balance) is the left-right balance of a stereo "
 "audio signal."
 msgstr ""
-"バランス（または :term:`Stereo` バランス）とは、ステレオオーディオ信号の左右の"
-"バランスのことです。"
+"バランス（または :term:`Stereo` バランス）とは、ステレオオーディオ信号の左右"
+"のバランスのことです。"
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
@@ -3841,8 +3842,8 @@ msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
 msgstr ""
-"DAWの文脈では、 :abbr:`DSP (Digital Signal Processing)` はオーディオ信号処理"
-"を意味します。"
+":term:`DAW` の文脈では、 :abbr:`DSP (Digital Signal Processing)` はオーディオ"
+"信号処理を意味します。"
 
 #: ../../glossary/intro.rst:68
 msgid "Free software"
@@ -7981,7 +7982,7 @@ msgstr "コンセプト"
 
 #: ../../user-media/intro.rst:17
 msgid "Concept by `FanaticMoose`_ [`CC-BY-SA`_]"
-msgstr "`FanaticMoose`_ によるコンセプト [ ` CC-BY-SA`_ ]"
+msgstr "`FanaticMoose`_ によるコンセプト [ `CC-BY-SA`_ ]"
 
 #: ../../user-media/intro.rst:20
 msgid "Sketches"
@@ -7989,7 +7990,7 @@ msgstr "スケッチ"
 
 #: ../../user-media/intro.rst:25
 msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA`_]"
-msgstr "`FanaticMoose`_ によるスケッチ [ ` CC-BY-SA`_ ]"
+msgstr "`FanaticMoose`_ によるスケッチ [ `CC-BY-SA`_ ]"
 
 #: ../../user-media/intro.rst:27
 msgid "`[sketch by weoxm] <https://koyu.space/@weoxm/106672723040062331>`_"

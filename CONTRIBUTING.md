@@ -39,7 +39,9 @@ Scheme for writing scripts and Python for the
 website.
 
 You will find it useful to read introductory
-material about C. Also, make sure to read
+material about C. A C primer is available at
+<https://www.enlightenment.org/docs/c/start>.
+Also, make sure to read
 [HACKING.md](HACKING.md) for more details on the
 development setup, as well as the coding and
 cooperation conventions used in the project.
