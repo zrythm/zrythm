@@ -1374,10 +1374,7 @@ msgstr "Weitere Beitragende"
 msgid ""
 "See the :download:`THANKS <../../../THANKS>` file in the source distribution."
 msgstr ""
-"#-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#\n"
-"Siehe :download:`THANKS <../../../THANKS>` im Quellcode.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Siehe :download:`THANKS <../../../THANKS>` im Quellcode."
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39

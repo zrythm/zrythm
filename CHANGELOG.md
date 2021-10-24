@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.26.0.13] - 2021-10-24
+### Fixed
+- Fix occasional error when dragging objects to negative positions
+- User manual: fix build issues with some translations
+- Fix error when activating nudge action on no selections
+- Fix autosave interval of 0 not being respected
+- Fix piano roll keys not making sound on the correct track
+- Fix UI not refreshing after resetting fader value
+- Fix error incorrectly being thrown during sample processing
+
 ## [1.0.0-alpha.26.0.1] - 2021-10-22
 ### Added
 - Add gain to audio regions
