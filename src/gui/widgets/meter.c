@@ -29,19 +29,19 @@
 G_DEFINE_TYPE (
   MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
 
-static int
+static void
 meter_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  MeterWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  MeterWidget * self = Z_METER_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GtkStyleContext *context =
   gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -59,8 +59,8 @@ meter_draw_cb (
     (float) (width - self->padding * 2);
 
   GdkRGBA bar_color = { 0, 0, 0, 1 };
-  double intensity = (double) meter_val;
-  const double intensity_inv = 1.0 - intensity;
+  float intensity = meter_val;
+  const float intensity_inv = 1.f - intensity;
   bar_color.red =
     intensity_inv * self->end_color.red +
     intensity * self->start_color.red;
@@ -151,8 +151,6 @@ meter_draw_cb (
 
   self->last_meter_val = self->meter_val;
   self->last_meter_peak = self->meter_peak;
-
-  return FALSE;
 }
 
 
@@ -264,15 +262,18 @@ meter_widget_setup (
     GTK_WIDGET (self), width, -1);
 
   /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (meter_draw_cb), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), meter_draw_cb,
+    self, NULL);
+#if 0
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_crossing),  self);
   g_signal_connect (
     G_OBJECT(self), "leave-notify-event",
     G_CALLBACK (on_crossing),  self);
+#endif
+  (void) on_crossing;
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb,

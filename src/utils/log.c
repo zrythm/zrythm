@@ -57,6 +57,7 @@
 #include "utils/backtrace.h"
 #include "utils/datetime.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/log.h"
 #include "utils/mpmc_queue.h"
@@ -71,6 +72,11 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
+#ifdef HAVE_VALGRIND
+#include <valgrind/valgrind.h>
+#else
+#define RUNNING_ON_VALGRIND 0
+#endif
 #include <zstd.h>
 
 typedef enum
@@ -649,6 +655,22 @@ need_backtrace (
     &&
     !string_contains_substr (
       ev->message,
+      "Theme file for default has no directories")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "gsk_render_node_unref: assertion 'GSK_IS_RENDER_NODE (node)' failed")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "A floating object GtkAdjustment")
+    &&
+    !string_contains_substr (
+      ev->message,
+      "gtk_css_node_insert_after: assertion 'previous_sibling == NULL || previous_sibling->parent == parent' failed")
+    &&
+    !string_contains_substr (
+      ev->message,
       "you are running a non-free operating system");
 }
 
@@ -766,9 +788,8 @@ log_idle_cb (
                     GTK_WINDOW (MAIN_WINDOW) : NULL,
                   msg, ev->backtrace,
                   false);
-              gtk_dialog_run (GTK_DIALOG (dialog));
-              gtk_widget_destroy (
-                GTK_WIDGET (dialog));
+              z_gtk_dialog_run (
+                GTK_DIALOG (dialog), true);
             }
 
           /* write the backtrace to the log after
@@ -932,11 +953,12 @@ log_writer (
       ev->log_level = log_level;
       ev->message = str;
 
-      if (need_backtrace (ev))
+      if (need_backtrace (ev)
+          && !RUNNING_ON_VALGRIND)
         {
-          ev->backtrace =
-            backtrace_get_with_lines (
-              "", 100, true);
+          /*ev->backtrace =*/
+            /*backtrace_get_with_lines (*/
+              /*"", 100, true);*/
         }
 
       int num_avail_objs =

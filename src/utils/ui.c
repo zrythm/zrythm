@@ -61,11 +61,6 @@ ui_set_cursor_from_icon_name (
   int          offset_x,
   int          offset_y)
 {
-  GdkWindow * win =
-    gtk_widget_get_parent_window (widget);
-  if (!GDK_IS_WINDOW (win))
-    return;
-
   g_return_if_fail (offset_x >= 0 && offset_y >= 0);
 
   /* check the cache first */
@@ -75,47 +70,48 @@ ui_set_cursor_from_icon_name (
 
       UiCursor * cursor =
         &UI_CACHES->cursors[i];
-      if (string_is_equal (name, cursor->name) &&
-          cursor->offset_x == offset_x &&
-          cursor->offset_y == offset_y)
+      if (string_is_equal (name, cursor->name)
+          && cursor->offset_x == offset_x
+          && cursor->offset_y == offset_y)
         {
-          gdk_window_set_cursor (
-            win, cursor->cursor);
+          gtk_widget_set_cursor (
+            widget, cursor->cursor);
           return;
         }
     }
 
-  GdkPixbuf * pixbuf =
-    gtk_icon_theme_load_icon (
-      gtk_icon_theme_get_default (), name,
-      18, 0, NULL);
-  if (!GDK_IS_PIXBUF (pixbuf))
+  GdkTexture * texture =
+    z_gdk_texture_new_from_icon_name (name, 18, 1);
+  if (!texture || !GDK_IS_TEXTURE (texture))
     {
       g_warning (
-        "no pixbuf for %s", name);
+        "no texture for %s", name);
       return;
     }
   int adjusted_offset_x =
     MIN (
-      offset_x, gdk_pixbuf_get_width (pixbuf) - 1);
+      offset_x,
+      gdk_texture_get_width (texture) - 1);
   int adjusted_offset_y =
     MIN (
-      offset_y, gdk_pixbuf_get_height (pixbuf) - 1);
+      offset_y,
+      gdk_texture_get_height (texture) - 1);
   GdkCursor * gdk_cursor =
-    gdk_cursor_new_from_pixbuf (
-      gdk_display_get_default (), pixbuf,
-      adjusted_offset_x, adjusted_offset_y);
+    gdk_cursor_new_from_texture (
+      texture,
+      adjusted_offset_x, adjusted_offset_y,
+      NULL);
+  g_object_unref (texture);
 
   /* add the cursor to the caches */
   UiCursor * cursor =
     &UI_CACHES->cursors[UI_CACHES->num_cursors++];
   strcpy (cursor->name, name);
   cursor->cursor = gdk_cursor;
-  cursor->pixbuf = pixbuf;
   cursor->offset_x = offset_x;
   cursor->offset_y = offset_y;
 
-  gdk_window_set_cursor (win, cursor->cursor);
+  gtk_widget_set_cursor (widget, cursor->cursor);
 }
 
 /**
@@ -126,15 +122,9 @@ ui_set_cursor_from_name (
   GtkWidget * widget,
   const char * name)
 {
-  GdkWindow * win =
-    gtk_widget_get_parent_window (widget);
-  if (!GDK_IS_WINDOW (win))
-    return;
   GdkCursor * cursor =
-    gdk_cursor_new_from_name (
-      gdk_display_get_default (),
-      name);
-  gdk_window_set_cursor (win, cursor);
+    gdk_cursor_new_from_name (name, NULL);
+  gtk_widget_set_cursor (widget, cursor);
 }
 
 void
@@ -180,8 +170,7 @@ ui_show_message_full (
           gtk_window_set_transient_for (
             GTK_WINDOW (dialog), parent_window);
         }
-      gtk_dialog_run (GTK_DIALOG (dialog));
-      gtk_widget_destroy (dialog);
+      z_gtk_dialog_run (GTK_DIALOG (dialog), true);
     }
   else
     {
@@ -204,37 +193,36 @@ ui_show_message_full (
 
 /**
  * Returns the matching hit child, or NULL.
+ *
+ * @param x X in parent space.
+ * @param y Y in parent space.
+ * @param type Type to look for.
  */
 GtkWidget *
 ui_get_hit_child (
-  GtkContainer * parent,
-  double         x, ///< x in parent space
-  double         y, ///< y in parent space
-  GType          type) ///< type to look for
+  GtkWidget * parent,
+  double      x,
+  double      y,
+  GType       type)
 {
-  GList *children, *iter;
-
-  /* go through each overlay child */
-  children =
-    gtk_container_get_children (parent);
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
+  for (
+    GtkWidget * child =
+      gtk_widget_get_first_child (parent);
+    child != NULL;
+    child = gtk_widget_get_next_sibling (child))
     {
-      GtkWidget * widget = GTK_WIDGET (iter->data);
-
-      if (!gtk_widget_get_visible (widget))
+      if (!gtk_widget_get_visible (child))
         continue;
 
       GtkAllocation allocation;
       gtk_widget_get_allocation (
-        widget,
+        child,
         &allocation);
 
-      gint wx, wy;
+      double wx, wy;
       gtk_widget_translate_coordinates (
         GTK_WIDGET (parent),
-        GTK_WIDGET (widget),
+        GTK_WIDGET (child),
         (int) x, (int) y, &wx, &wy);
 
       /* if hit */
@@ -245,16 +233,13 @@ ui_get_hit_child (
         {
           /* if type matches */
           if (G_TYPE_CHECK_INSTANCE_TYPE (
-                widget,
-                type))
+                child, type))
             {
-              g_list_free (children);
-              return widget;
+              return child;
             }
         }
     }
 
-  g_list_free (children);
   return NULL;
 }
 
@@ -529,7 +514,7 @@ ui_is_child_hit (
     child,
     &allocation);
 
-  gint wx, wy;
+  double wx, wy;
   gtk_widget_translate_coordinates (
     GTK_WIDGET (parent),
     child,
@@ -620,24 +605,6 @@ ui_gdk_rgba_to_hex (
 {
   ui_rgb_to_hex (
     color->red, color->green, color->blue, buf);
-}
-
-/**
- * Returns the modifier type (state mask) from the
- * given gesture.
- */
-void
-ui_get_modifier_type_from_gesture (
-  GtkGestureSingle * gesture,
-  GdkModifierType *  state_mask) ///< return value
-{
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      gesture);
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), sequence);
-  gdk_event_get_state (event, state_mask);
 }
 
 #define CREATE_SIMPLE_MODEL_BOILERPLATE \
@@ -1195,8 +1162,8 @@ ui_setup_vst_paths_entry (
   delimited_paths[strlen (delimited_paths) - 1] =
     '\0';
 
-  gtk_entry_set_text (
-    entry, delimited_paths);
+  gtk_editable_set_text (
+    GTK_EDITABLE (entry), delimited_paths);
 }
 
 /**
@@ -1208,7 +1175,7 @@ ui_update_vst_paths_from_entry (
   GtkEntry * entry)
 {
   const char * txt =
-    gtk_entry_get_text (entry);
+    gtk_editable_get_text (GTK_EDITABLE (entry));
   g_return_if_fail (txt);
   char ** paths =
     g_strsplit (txt, ";", 0);
@@ -1250,38 +1217,20 @@ ui_get_mid_color (
   GdkRGBA * dest,
   const GdkRGBA * c1,
   const GdkRGBA * c2,
-  const double    transition)
+  const float     transition)
 {
   dest->red =
     c1->red * transition +
-    c2->red * (1.0 - transition);
+    c2->red * (1.f - transition);
   dest->green =
     c1->green * transition +
-    c2->green * (1.0 - transition);
+    c2->green * (1.f - transition);
   dest->blue =
     c1->blue * transition +
-    c2->blue * (1.0 - transition);
+    c2->blue * (1.f - transition);
   dest->alpha =
     c1->alpha * transition +
-    c2->alpha * (1.0 - transition);
-}
-
-/**
- * Used in handlers to get the state mask.
- */
-GdkModifierType
-ui_get_state_mask (
-  GtkGesture * gesture)
-{
-  GdkEventSequence * _sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * _event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), _sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (_event, &state_mask);
-  return state_mask;
+    c2->alpha * (1.f - transition);
 }
 
 /**
@@ -1381,25 +1330,6 @@ ui_get_detail_level (void)
       S_P_UI_GENERAL, "graphic-detail");
 }
 
-/**
- * All purpose menuitem callback for binding MIDI
- * CC to a port.
- *
- * An action will be performed if bound.
- */
-void
-ui_bind_midi_cc_item_activate_cb (
-  GtkMenuItem * menuitem,
-  Port *        port)
-{
-  BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new (
-      port, true);
-
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
 UiCaches *
 ui_caches_new ()
 {
@@ -1407,6 +1337,7 @@ ui_caches_new ()
 
   GtkWidget * widget =
     gtk_drawing_area_new ();
+  widget = g_object_ref_sink (widget);
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
@@ -1442,7 +1373,7 @@ ui_caches_new ()
 
 #undef GET_COLOR_FROM_THEME
 
-  gtk_widget_destroy (widget);
+  g_object_unref (widget);
 
   gdk_rgba_parse (
     &colors->dark_text, UI_COLOR_DARK_TEXT);
@@ -1466,7 +1397,6 @@ ui_caches_free (
       UiCursor * cursor = &self->cursors[i];
 
       g_object_unref (cursor->cursor);
-      g_object_unref (cursor->pixbuf);
     }
 
   object_zero_and_free (self);

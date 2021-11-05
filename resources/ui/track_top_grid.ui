@@ -1,53 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="TrackTopGridWidget" parent="GtkGrid">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <property name="valign">start</property>
     <child>
       <object class="EditableLabelWidget" id="name">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="hexpand">True</property>
-        <!--<property name="ellipsize">end</property>-->
-        <!--<property name="width_chars">14</property>-->
-        <!--<property name="max_width_chars">14</property>-->
-        <!--<property name="xalign">0</property>-->
         <property name="margin-start">4</property>
         <property name="valign">start</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">0</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">0</property>
-        <property name="width">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="upper_controls">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="halign">end</property>
         <property name="valign">start</property>
         <child>
@@ -59,16 +30,14 @@
         <child>
           <placeholder/>
         </child>
+        <layout>
+          <property name="column">2</property>
+          <property name="row">0</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">2</property>
-        <property name="top_attach">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="right_activity_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="MidiActivityBarWidget" id="midi_activity">
@@ -76,17 +45,15 @@
             <property name="vexpand">1</property>
           </object>
         </child>
+        <layout>
+          <property name="column">3</property>
+          <property name="row">0</property>
+          <property name="row-span">3</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">3</property>
-        <property name="top_attach">0</property>
-        <property name="height">3</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="mid_controls">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="halign">end</property>
         <child>
           <placeholder/>
@@ -97,17 +64,15 @@
         <child>
           <placeholder/>
         </child>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">1</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">1</property>
-        <property name="width">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="bot_controls">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="halign">end</property>
         <property name="valign">end</property>
         <child>
@@ -119,12 +84,12 @@
         <child>
           <placeholder/>
         </child>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">2</property>
+          <property name="column-span">3</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">2</property>
-        <property name="width">3</property>
-      </packing>
     </child>
   </template>
 </interface>

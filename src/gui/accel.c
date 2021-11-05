@@ -90,6 +90,7 @@ accel_get_primary_accel_for_action (
   return ret;
 }
 
+#if 0
 void
 accel_set_accel_label_from_action (
   GtkAccelLabel * accel_label,
@@ -115,3 +116,4 @@ accel_set_accel_label_from_action (
     }
   g_strfreev (accels);
 }
+#endif

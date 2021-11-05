@@ -2195,10 +2195,9 @@ channel_free (Channel * self)
 
   if (GTK_IS_WIDGET (self->widget))
     {
-      gtk_widget_destroy (
-        GTK_WIDGET (self->widget));
+      object_free_w_func_and_null (
+        g_object_unref, self->widget);
     }
 
   object_zero_and_free (self);
 }
-

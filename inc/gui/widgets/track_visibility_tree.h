@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   TrackVisibilityTreeWidget,
   track_visibility_tree_widget,
   Z, TRACK_VISIBILITY_TREE_WIDGET,
-  GtkScrolledWindow)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -47,7 +47,9 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _TrackVisibilityTreeWidget
 {
-  GtkScrolledWindow    parent_instance;
+  GtkBox               parent_instance;
+
+  GtkScrolledWindow *  scroll;
 
   /* The tree views */
   GtkTreeView *        tree;

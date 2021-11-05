@@ -100,7 +100,7 @@ resources_add_icon_to_button (
 {
   GtkWidget * icon =
     resources_get_icon (icon_type, path);
-  gtk_container_add (GTK_CONTAINER (btn), icon);
+  gtk_button_set_child (GTK_BUTTON (btn), icon);
 }
 
 /**

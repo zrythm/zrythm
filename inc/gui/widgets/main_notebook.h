@@ -34,7 +34,7 @@
   (main_notebook_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MainNotebookWidget, main_notebook_widget,
-  Z, MAIN_NOTEBOOK_WIDGET, FoldableNotebookWidget)
+  Z, MAIN_NOTEBOOK_WIDGET, GtkBox)
 
 typedef struct _TimelinePanelWidget
   TimelinePanelWidget;
@@ -55,7 +55,9 @@ typedef struct _PortConnectionsWidget
 
 typedef struct _MainNotebookWidget
 {
-  FoldableNotebookWidget parent_instance;
+  GtkBox              parent_instance;
+
+  FoldableNotebookWidget * foldable_notebook;
 
   /** Event viewr + timeline panel. */
   GtkPaned *

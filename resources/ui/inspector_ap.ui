@@ -1,163 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="InspectorApWidget" parent="GtkGrid">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <child>
       <object class="GtkLabel" id="header">
-        <property name="visible">1</property>
         <property name="label" translatable="yes">Region</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">0</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">0</property>
-        <property name="width">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkEntry">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="text" translatable="yes">region_name</property>
         <property name="placeholder-text" translatable="yes">Enter region name...</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">1</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">1</property>
-        <property name="width">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkColorButton" id="color">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkLabel">
-        <property name="visible">1</property>
-        <property name="margin-right">4</property>
+        <property name="margin-end">4</property>
         <property name="label" translatable="yes">Color</property>
         <property name="xalign">1</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkLabel">
-        <property name="visible">1</property>
-        <property name="margin-right">4</property>
+        <property name="margin-end">4</property>
         <property name="label" translatable="yes">Position</property>
         <property name="xalign">1</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">4</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">4</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="position_box">
-        <property name="visible">1</property>
         <property name="orientation">vertical</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">4</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">4</property>
-      </packing>
     </child>
     <child>
       <object class="GtkLabel">
-        <property name="visible">1</property>
-        <property name="margin-right">5</property>
+        <property name="margin-end">5</property>
         <property name="label" translatable="yes">Length</property>
         <property name="xalign">1</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">5</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">5</property>
-      </packing>
     </child>
     <child>
       <object class="GtkLabel">
-        <property name="visible">1</property>
-        <property name="margin-right">5</property>
+        <property name="margin-end">5</property>
         <property name="label" translatable="yes">Muted</property>
         <property name="xalign">1</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">7</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">7</property>
-      </packing>
     </child>
     <child>
       <object class="GtkSeparator">
-        <property name="visible">1</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">3</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">3</property>
-        <property name="width">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkSeparator">
-        <property name="visible">1</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">6</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">6</property>
-        <property name="width">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkToggleButton" id="mute_toggle">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">7</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">7</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="length_box">
-        <property name="visible">1</property>
         <property name="orientation">vertical</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">5</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">5</property>
-      </packing>
     </child>
   </template>
 </interface>

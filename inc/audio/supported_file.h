@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,11 +30,17 @@
 
 #include "utils/yaml.h"
 
+typedef struct _WrappedObjectWithChangeSignal
+  WrappedObjectWithChangeSignal;
+
 /**
  * @addtogroup utils
  *
  * @{
  */
+
+#define SUPPORTED_FILE_DND_PREFIX \
+  Z_DND_STRING_PREFIX "SupportedFile::"
 
 /**
  * File type.
@@ -96,6 +102,9 @@ typedef struct SupportedFile
 
   /** Audio file, if audio. */
   //AudioFile *    midi_file;
+
+  /** Used in Gtk. */
+  WrappedObjectWithChangeSignal * gobj;
 } SupportedFile;
 
 static const cyaml_schema_field_t

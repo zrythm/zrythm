@@ -296,8 +296,8 @@ monitor_section_widget_setup (
     knob_with_name_widget_new (
       NULL, monitor_out_name_getter, NULL,
       knob, GTK_ORIENTATION_VERTICAL, false, 2);
-  gtk_container_add (
-    GTK_CONTAINER (self->monitor_level_box),
+  gtk_box_append (
+    GTK_BOX (self->monitor_level_box),
     GTK_WIDGET (self->monitor_level));
 
   /* mute */
@@ -313,8 +313,8 @@ monitor_section_widget_setup (
     knob_with_name_widget_new (
       NULL, mute_name_getter, NULL,
       knob, GTK_ORIENTATION_VERTICAL, false, 2);
-  gtk_container_add (
-    GTK_CONTAINER (self->mute_level_box),
+  gtk_box_append (
+    GTK_BOX (self->mute_level_box),
     GTK_WIDGET (self->mute_level));
 
   /* listen */
@@ -330,8 +330,8 @@ monitor_section_widget_setup (
     knob_with_name_widget_new (
       NULL, listen_name_getter, NULL,
       knob, GTK_ORIENTATION_VERTICAL, false, 2);
-  gtk_container_add (
-    GTK_CONTAINER (self->listen_level_box),
+  gtk_box_append (
+    GTK_BOX (self->listen_level_box),
     GTK_WIDGET (self->listen_level));
 
   /* dim */
@@ -347,8 +347,8 @@ monitor_section_widget_setup (
     knob_with_name_widget_new (
       NULL, dim_name_getter, NULL,
       knob, GTK_ORIENTATION_VERTICAL, false, 2);
-  gtk_container_add (
-    GTK_CONTAINER (self->dim_level_box),
+  gtk_box_append (
+    GTK_BOX (self->dim_level_box),
     GTK_WIDGET (self->dim_level));
 
   z_gtk_button_set_icon_name_and_text (
@@ -386,8 +386,8 @@ monitor_section_widget_setup (
       self->left_outputs->callback =
         (GenericCallback) on_devices_updated;
       self->left_outputs->object = self;
-      gtk_container_add (
-        GTK_CONTAINER (self->left_output_box),
+      gtk_box_append (
+        GTK_BOX (self->left_output_box),
         GTK_WIDGET (self->left_outputs));
 
       self->right_outputs =
@@ -398,8 +398,8 @@ monitor_section_widget_setup (
       self->right_outputs->callback =
         (GenericCallback) on_devices_updated;
       self->right_outputs->object = self;
-      gtk_container_add (
-        GTK_CONTAINER (self->right_output_box),
+      gtk_box_append (
+        GTK_BOX (self->right_output_box),
         GTK_WIDGET (self->right_outputs));
     }
   else

@@ -38,9 +38,9 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (ClipEditorWidget,
-               clip_editor_widget,
-               GTK_TYPE_STACK)
+G_DEFINE_TYPE (
+  ClipEditorWidget, clip_editor_widget,
+  GTK_TYPE_BOX)
 
 void
 clip_editor_widget_setup (
@@ -50,7 +50,7 @@ clip_editor_widget_setup (
     self->clip_editor_inner);
 
   gtk_stack_set_visible_child (
-    GTK_STACK (self),
+    GTK_STACK (self->stack),
     GTK_WIDGET (self->no_selection_label));
 }
 
@@ -104,7 +104,7 @@ clip_editor_widget_on_region_changed (
   if (r)
     {
       gtk_stack_set_visible_child (
-        GTK_STACK (self),
+        GTK_STACK (self->stack),
         GTK_WIDGET (self->main_box));
 
       clip_editor_inner_widget_refresh (
@@ -121,9 +121,19 @@ clip_editor_widget_on_region_changed (
   else
     {
       gtk_stack_set_visible_child (
-        GTK_STACK (self),
+        GTK_STACK (self->stack),
         GTK_WIDGET (self->no_selection_label));
     }
+}
+
+ClipEditorWidget *
+clip_editor_widget_new (void)
+{
+  ClipEditorWidget * self =
+    g_object_new (
+      CLIP_EDITOR_WIDGET_TYPE, NULL);
+
+  return self;
 }
 
 static void
@@ -146,20 +156,15 @@ clip_editor_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "clip-editor");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorWidget,
-    main_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorWidget,
-    editor_toolbar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorWidget,
-    clip_editor_inner);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorWidget,
-    no_selection_label);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, ClipEditorWidget, x)
+
+  BIND_CHILD (stack);
+  BIND_CHILD (main_box);
+  BIND_CHILD (editor_toolbar);
+  BIND_CHILD (clip_editor_inner);
+  BIND_CHILD (no_selection_label);
+
+#undef BIND_CHILD
 }

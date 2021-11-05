@@ -584,6 +584,14 @@ channel_disconnect (
   bool      remove_pl);
 
 /**
+ * Generates a context menu for either ChannelWidget
+ * or FolderChannelWidget.
+ */
+GMenu *
+channel_widget_generate_context_menu_for_track (
+  Track * track);
+
+/**
  * Frees the channel.
  *
  * @note Channels should never be free'd by

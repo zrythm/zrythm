@@ -1160,6 +1160,16 @@ event_viewer_widget_setup (
   event_viewer_widget_refresh (self);
 }
 
+EventViewerWidget *
+event_viewer_widget_new (void)
+{
+  EventViewerWidget * self =
+    g_object_new (
+      EVENT_VIEWER_WIDGET_TYPE, NULL);
+
+  return self;
+}
+
 static void
 event_viewer_widget_init (
   EventViewerWidget * self)

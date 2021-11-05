@@ -1,72 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="AudioEditorSpaceWidget" parent="GtkBox">
-    <property name="visible">True</property>
     <child>
       <object class="GtkBox" id="work_area_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">horizontal</property>
         <property name="vexpand">1</property>
         <child>
-          <object class="GtkBox" id="left_box">
-            <property name="visible">1</property>
-          </object>
-          <packing>
-            <property name="position">0</property>
-          </packing>
+          <object class="GtkBox" id="left_box"/>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="arranger_scroll">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="focusable">1</property>
             <property name="hscrollbar_policy">always</property>
             <property name="vscrollbar_policy">never</property>
-            <property name="shadow_type">in</property>
             <property name="hexpand">1</property>
-            <child>
+            <property name="child">
               <object class="GtkViewport" id="arranger_viewport">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
-                  <object class="ArrangerWidget"
-                    id="arranger">
+                  <object class="ArrangerWidget" id="arranger">
                     <property name="visible">1</property>
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
     </child>
   </template>
 </interface>
-

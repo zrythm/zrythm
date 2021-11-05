@@ -28,7 +28,7 @@ G_DECLARE_FINAL_TYPE (
   PortConnectionRowWidget,
   port_connection_row_widget,
   Z, PORT_CONNECTION_ROW_WIDGET,
-  GtkEventBox)
+  GtkBox)
 
 typedef struct _KnobWidget KnobWidget;
 typedef struct _BarSliderWidget BarSliderWidget;
@@ -38,7 +38,7 @@ typedef struct PortConnection PortConnection;
 
 typedef struct _PortConnectionRowWidget
 {
-  GtkEventBox      parent_instance;
+  GtkBox      parent_instance;
 
   PortConnection * connection;
 

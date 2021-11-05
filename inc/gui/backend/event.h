@@ -327,6 +327,20 @@ typedef enum EventType
    * Arg: ZRegion pointer.
    */
   ET_AUDIO_REGION_GAIN_CHANGED,
+
+  /**
+   * File browser bookmark added.
+   *
+   * Arg: None.
+   */
+  ET_FILE_BROWSER_BOOKMARK_ADDED,
+
+  /**
+   * File browser bookmark deleted.
+   *
+   * Arg: None.
+   */
+  ET_FILE_BROWSER_BOOKMARK_DELETED,
 } EventType;
 
 /**

@@ -22,6 +22,7 @@
 #include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "project.h"
 #include "utils/error.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -82,7 +83,6 @@ add_tracks_to_group_dialog_widget_get_track (
       ADD_TRACKS_TO_GROUP_DIALOG_WIDGET_TYPE,
       "modal", true,
       "title", _("Enter group name"),
-      "window-position", GTK_WIN_POS_CENTER,
       NULL);
 
   gtk_dialog_add_button (
@@ -95,8 +95,8 @@ add_tracks_to_group_dialog_widget_get_track (
   GtkWidget * group_entry = gtk_entry_new ();
   char * track_name =
     track_get_unique_name (NULL, _("New Group"));
-  gtk_entry_set_text (
-    GTK_ENTRY (group_entry), track_name);
+  gtk_editable_set_text (
+    GTK_EDITABLE (group_entry), track_name);
   g_free (track_name);
   GtkWidget * checkbox =
     gtk_check_button_new_with_label (_
@@ -107,14 +107,15 @@ add_tracks_to_group_dialog_widget_get_track (
     GTK_GRID (grid), group_entry, 1, 0, 1, 1);
   gtk_grid_attach (
     GTK_GRID (grid), checkbox, 0, 1, 2, 1);
-  gtk_widget_show_all (grid);
-  gtk_container_add (GTK_CONTAINER (contents), grid);
+  gtk_box_append (GTK_BOX (contents), grid);
 
-  int result = gtk_dialog_run (GTK_DIALOG (self));
+  int result =
+    z_gtk_dialog_run (GTK_DIALOG (self), false);
   track_name =
     g_strdup (
-      gtk_entry_get_text (GTK_ENTRY (group_entry)));
-  gtk_widget_destroy (GTK_WIDGET (self));
+      gtk_editable_get_text (
+        GTK_EDITABLE (group_entry)));
+  gtk_window_destroy (GTK_WINDOW (self));
   switch (result)
     {
     case GTK_RESPONSE_OK:

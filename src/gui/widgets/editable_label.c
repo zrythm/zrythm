@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,9 +26,9 @@
 #include "utils/ui.h"
 #include "zrythm.h"
 
-G_DEFINE_TYPE (EditableLabelWidget,
-               editable_label_widget,
-               GTK_TYPE_EVENT_BOX)
+G_DEFINE_TYPE (
+  EditableLabelWidget, editable_label_widget,
+  GTK_TYPE_BOX)
 
 static void
 on_entry_activated (
@@ -37,7 +37,8 @@ on_entry_activated (
 {
   (*self->setter) (
     self->object,
-    gtk_entry_get_text (entry));
+    gtk_editable_get_text (
+      GTK_EDITABLE (entry)));
   gtk_widget_set_visible (
     GTK_WIDGET (self->popover), 0);
 
@@ -50,7 +51,7 @@ on_popover_closed (
   GtkPopover * popover,
   EditableLabelWidget * self)
 {
-  gtk_widget_destroy (GTK_WIDGET (popover));
+  g_object_unref (GTK_WIDGET (popover));
 
   if (self->is_temp)
     {
@@ -66,19 +67,16 @@ editable_label_widget_show_popover (
   EditableLabelWidget * self)
 {
   self->popover =
-    GTK_POPOVER (
-      gtk_popover_new (GTK_WIDGET (self)));
+    GTK_POPOVER (gtk_popover_new ());
   GtkEntry * entry =
     GTK_ENTRY (gtk_entry_new ());
   self->entry = entry;
-  gtk_widget_set_visible (
-    GTK_WIDGET (entry), 1);
-  gtk_entry_set_text (
-    self->entry,
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->entry),
     (*self->getter) (self->object));
 
-  gtk_container_add (
-    GTK_CONTAINER (self->popover),
+  gtk_popover_set_child (
+    self->popover,
     GTK_WIDGET (entry));
 
   g_signal_connect (
@@ -88,9 +86,9 @@ editable_label_widget_show_popover (
     G_OBJECT (self->popover), "closed",
     G_CALLBACK (on_popover_closed), self);
 
-  gtk_popover_popup (self->popover);
-  gtk_entry_set_text (
-    self->entry,
+  gtk_popover_present (self->popover);
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->entry),
     (*self->getter) (self->object));
 }
 
@@ -117,18 +115,17 @@ editable_label_widget_show_popover_for_widget (
   g_object_ref (self);
 
   self->popover =
-    GTK_POPOVER (
-      gtk_popover_new (GTK_WIDGET (parent)));
+    GTK_POPOVER (gtk_popover_new ());
   GtkEntry * entry =
     GTK_ENTRY (gtk_entry_new ());
   self->entry = entry;
   gtk_widget_set_visible (
     GTK_WIDGET (entry), 1);
-  gtk_entry_set_text (
-    self->entry, (*getter) (object));
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->entry), (*getter) (object));
 
-  gtk_container_add (
-    GTK_CONTAINER (self->popover),
+  gtk_popover_set_child (
+    self->popover,
     GTK_WIDGET (entry));
 
   g_signal_connect (
@@ -138,9 +135,9 @@ editable_label_widget_show_popover_for_widget (
     G_OBJECT (self->popover), "closed",
     G_CALLBACK (on_popover_closed), self);
 
-  gtk_popover_popup (self->popover);
-  gtk_entry_set_text (
-    self->entry, (*getter) (object));
+  gtk_popover_present (self->popover);
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->entry), (*getter) (object));
 }
 
 /**
@@ -148,7 +145,7 @@ editable_label_widget_show_popover_for_widget (
  */
 static void
 editable_label_widget_on_mp_press (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *     gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -213,9 +210,6 @@ editable_label_widget_new (
   gtk_label_set_max_width_chars (
     self->label, 11);
 
-  gtk_widget_set_visible (
-    GTK_WIDGET (self), 1);
-
   return self;
 }
 
@@ -235,19 +229,18 @@ editable_label_widget_init (
   GtkWidget * label =
     gtk_label_new ("");
   gtk_widget_set_visible (label, 1);
-  gtk_container_add (
-    GTK_CONTAINER (self), label);
+  gtk_box_append (GTK_BOX (self), label);
   self->label = GTK_LABEL (label);
   gtk_label_set_ellipsize (
     self->label, PANGO_ELLIPSIZE_END);
 
   self->mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
-
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (
       editable_label_widget_on_mp_press), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->mp));
 }

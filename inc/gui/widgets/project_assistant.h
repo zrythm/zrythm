@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,66 +34,30 @@
 
 #include <gtk/gtk.h>
 
-#define PROJECT_ASSISTANT_WIDGET_TYPE \
-  (project_assistant_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ProjectAssistantWidget,
-                      project_assistant_widget,
-                      Z,
-                      PROJECT_ASSISTANT_WIDGET,
-                      GtkAssistant)
-
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-/**
- * Project file information.
- */
-typedef struct ProjectInfo
-{
-  char *   name;
-  /** Full path. */
-  char *   filename;
-  char *   modified;
-} ProjectInfo;
-
-static inline void
-project_info_free_elements (
-  ProjectInfo * info)
-{
-  if (info->name)
-    g_free (info->name);
-  if (info->filename)
-    g_free (info->filename);
-  if (info->modified)
-    g_free (info->modified);
-}
-
-enum
-{
-  COLUMN_NAME,
-  COLUMN_FILENAME,
-  COLUMN_MODIFIED,
-  COLUMN_PROJECT_INFO,
-  NUM_COLUMNS
-};
-
+#if 0
 /**
  * A widget that allows selecting a project to
  * load or create.
  */
 typedef struct _ProjectAssistantWidget
 {
-  GtkAssistant        parent_instance;
-  GtkTreeView         * projects;
-  GtkTreeSelection    * projects_selection;
-  GtkTreeView         * templates;
-  GtkTreeSelection    * templates_selection;
-  GtkTreeModel        * project_model;
-  GtkTreeModel        * template_model;
-  GtkCheckButton      * create_new_project;
+  GtkWidget           parent_instance;
+
+  GtkAssistant *      assistant;
+
+  GtkTreeView *       projects;
+  GtkTreeSelection *  projects_selection;
+  GtkTreeView *       templates;
+  GtkTreeSelection *  templates_selection;
+  GtkTreeModel *      project_model;
+  GtkTreeModel *      template_model;
+  GtkCheckButton *    create_new_project;
   GtkBox *            templates_box;
 
   /** The project info label. */
@@ -112,14 +76,21 @@ typedef struct _ProjectAssistantWidget
   ProjectInfo         * project_selection;
   ProjectInfo         * template_selection;
 } ProjectAssistantWidget;
+#endif
 
 /**
- * Creates a ProjectAssistantWidget.
+ * Runs the project assistant.
+ *
+ * @param zrythm_already_running If true, the logic
+ *   applied is different (eg, close does not quit
+ *   the program). Used when doing Ctrl+N. This
+ *   should be set to false if during startup.
  */
-ProjectAssistantWidget *
-project_assistant_widget_new (
+void
+project_assistant_widget_present (
   GtkWindow * parent,
-  int show_create_new_project);
+  bool        show_create_new_project,
+  bool        zrythm_already_running);
 
 /**
  * @}

@@ -1,139 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="TimelineToolbarWidget" parent="GtkToolbar">
+  <requires lib="gtk" version="4.0"/>
+  <template class="TimelineToolbarWidget" parent="GtkBox">
     <style>
-      <class name="arranger-toolbar" />
-      <class name="timeline-toolbar" />
+      <class name="toolbar"/>
+      <class name="arranger-toolbar"/>
+      <class name="timeline-toolbar"/>
     </style>
-    <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkToolItem">
+      <object class="SnapBoxWidget" id="snap_box">
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="QuantizeBoxWidget" id="quantize_box">
         <property name="visible">1</property>
-        <child>
-          <object class="SnapBoxWidget" id="snap_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-        </child>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolItem">
-        <property name="visible">True</property>
-        <child>
-          <object class="QuantizeBoxWidget"
-            id="quantize_box">
-            <property name="visible">1</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkToggleToolButton" id="musical_mode_toggle">
-        <property name="visible">True</property>
+      <object class="GtkToggleButton" id="musical_mode_toggle">
         <property name="action-name">app.toggle-musical-mode</property>
         <property name="icon-name">musical-mode</property>
         <property name="tooltip-text" translatable="yes">Musical mode</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolItem">
-        <property name="visible">1</property>
-        <child>
-          <object class="RangeActionButtonsWidget"
-            id="range_action_buttons">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-        </child>
+      <object class="RangeActionButtonsWidget" id="range_action_buttons">
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolItem">
-        <property name="visible">1</property>
-        <child>
-          <object class="PlayheadScrollButtonsWidget"
-            id="playhead_scroll_buttons">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-        </child>
+      <object class="PlayheadScrollButtonsWidget" id="playhead_scroll_buttons">
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolButton" id="merge_btn">
-        <property name="visible">True</property>
+      <object class="GtkButton" id="merge_btn">
         <property name="action-name">app.merge-selection</property>
         <property name="icon-name">merge</property>
         <property name="tooltip-text" translatable="yes">Merge selections</property>
       </object>
     </child>
-    <!-- extra space so we can add widgets at the
-         end -->
     <child>
-      <object class="GtkToolItem">
-        <property name="visible">True</property>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">1</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-      </packing>
+      <object class="GtkBox"/>
     </child>
     <child>
-      <object class="GtkToolButton" id="event_viewer_toggle">
-        <property name="visible">True</property>
+      <object class="GtkButton" id="event_viewer_toggle">
         <property name="action-name">app.toggle-timeline-event-viewer</property>
         <property name="icon-name">event-viewer</property>
         <property name="tooltip-text" translatable="yes">Toggle event viewer</property>

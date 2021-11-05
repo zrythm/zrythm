@@ -1,384 +1,266 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="ScaleSelectorWindowWidget" parent="GtkWindow">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="type">popup</property>
+    <property name="visible">1</property>
     <property name="title">Scale Selector</property>
-    <property name="modal">True</property>
-    <property name="window_position">center</property>
-    <property name="type_hint">dialog</property>
-    <property name="gravity">center</property>
+    <property name="modal">1</property>
     <child>
       <placeholder/>
     </child>
-    <child>
+    <property name="child">
       <object class="GtkNotebook">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
+        <property name="focusable">1</property>
         <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
+          <object class="GtkNotebookPage">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="margin-start">8</property>
+                    <property name="label" translatable="yes">Root Key</property>
+                    <property name="xalign">0</property>
+                    <style>
+                      <class name="section_heading"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkFlowBox" id="creator_root_note_flowbox">
+                    <property name="homogeneous">1</property>
+                    <property name="min_children_per_line">12</property>
+                    <property name="max_children_per_line">12</property>
+                    <property name="selection_mode">browse</property>
+                    <property name="activate_on_single_click">0</property>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_c">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">C</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_cs">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">D♭</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_d">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">D</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_ds">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">E♭</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_e">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">E</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_f">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">F</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_fs">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">F♯</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_g">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">G</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_gs">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">A♭</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_a">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">A</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_as">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">B♭</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_root_note_b">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">B</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="margin-start">8</property>
+                    <property name="label" translatable="yes">Scale</property>
+                    <property name="xalign">0</property>
+                    <style>
+                      <class name="section_heading"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkFlowBox" id="creator_type_flowbox">
+                    <property name="homogeneous">1</property>
+                    <property name="selection_mode">browse</property>
+                    <property name="activate_on_single_click">0</property>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_type_chromatic">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Chromatic</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_type_ionian">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Ionian (Major)</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_type_aeolian">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Aeolian (Natural Minor)</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBoxChild" id="creator_type_harmonic_minor">
+                        <property name="focusable">1</property>
+                        <property name="child">
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Harmonic Minor</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </property>
+            <property name="tab">
               <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">8</property>
-                <property name="label" translatable="yes">Root Key</property>
-                <property name="xalign">0</property>
-                <style>
-                  <class name="section_heading"/>
-                </style>
+                <property name="label" translatable="yes">Creator</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkFlowBox" id="creator_root_note_flowbox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="homogeneous">True</property>
-                <property name="min_children_per_line">12</property>
-                <property name="max_children_per_line">12</property>
-                <property name="selection_mode">browse</property>
-                <property name="activate_on_single_click">False</property>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_c">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">C</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_cs">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">D♭</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_d">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">D</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_ds">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">E♭</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_e">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">E</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_f">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">F</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_fs">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">F♯</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_g">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">G</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_gs">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">A♭</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_a">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">A</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_as">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">B♭</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_root_note_b">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">B</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
+            </property>
+          </object>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkNotebookPage">
+            <property name="position">2</property>
+            <property name="child">
               <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">8</property>
-                <property name="label" translatable="yes">Scale</property>
-                <property name="xalign">0</property>
-                <style>
-                  <class name="section_heading"/>
-                </style>
+                <property name="label" translatable="yes">TODO keyboard</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkFlowBox" id="creator_type_flowbox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="homogeneous">True</property>
-                <property name="selection_mode">browse</property>
-                <property name="activate_on_single_click">False</property>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_type_chromatic">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Chromatic</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_type_ionian">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Ionian (Major)</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_type_aeolian">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Aeolian (Natural Minor)</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkFlowBoxChild" id="creator_type_harmonic_minor">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Harmonic Minor</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
+            </property>
+            <property name="tab">
+              <object class="GtkLabel">
+                <property name="label" translatable="yes">Custom</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
+            </property>
           </object>
-        </child>
-        <child type="tab">
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Creator</property>
-          </object>
-          <packing>
-            <property name="tab_fill">False</property>
-          </packing>
         </child>
         <child>
-          <placeholder/>
-        </child>
-        <child type="tab">
-          <placeholder/>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">TODO keyboard</property>
-          </object>
-          <packing>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child type="tab">
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Custom</property>
-          </object>
-          <packing>
-            <property name="position">2</property>
-            <property name="tab_fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child type="tab">
           <placeholder/>
         </child>
       </object>
-    </child>
+    </property>
   </template>
 </interface>

@@ -34,7 +34,6 @@
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
-#include "gui/widgets/timeline_selection_info.h"
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
@@ -119,11 +118,6 @@ timeline_panel_widget_setup (
     gtk_scrolled_window_get_vadjustment (
       self->tracklist->unpinned_scroll));
 
-  gtk_widget_show_all (
-    GTK_WIDGET (self->timeline));
-  gtk_widget_show_all (
-    GTK_WIDGET (self->pinned_timeline));
-
   GtkAdjustment * adj =
     gtk_scrollable_get_hadjustment (
       GTK_SCROLLABLE (self->ruler_viewport));
@@ -148,6 +142,16 @@ timeline_panel_widget_tear_down (
   tracklist_widget_tear_down (self->tracklist);
 
   g_message ("done");
+}
+
+TimelinePanelWidget *
+timeline_panel_widget_new (void)
+{
+  TimelinePanelWidget * self =
+    g_object_new (
+      TIMELINE_PANEL_WIDGET_TYPE, NULL);
+
+  return self;
 }
 
 static void

@@ -1,97 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-  Copyright (C) 2018-2020 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="BotBarWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <child>
       <object class="GtkStatusbar" id="status_bar">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin">1</property>
+        <property name="margin-start">1</property>
+        <property name="margin-end">1</property>
+        <property name="margin-top">1</property>
+        <property name="margin-bottom">1</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child type="center">
       <object class="GtkBox" id="mid_box_parent">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
-          <object class="GtkBox" id="digital_meters">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-          </packing>
+          <object class="GtkBox" id="digital_meters"/>
         </child>
         <child>
           <object class="ButtonWithMenuWidget" id="metronome">
+            <property name="halign">center</property>
             <property name="visible">1</property>
             <property name="can-focus">1</property>
             <property name="receives-default">1</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-          </packing>
         </child>
         <child>
           <object class="TransportControlsWidget" id="transport_controls">
             <property name="visible">1</property>
             <property name="hexpand">1</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkBox" id="playhead_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-          </packing>
+          <object class="GtkBox" id="playhead_box"/>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="mid_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
           <object class="CpuWidget" id="cpu_load">
             <property name="visible">1</property>
@@ -99,19 +43,8 @@
             <property name="margin-start">4</property>
             <property name="margin-end">4</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">5</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-        <property name="pack-type">end</property>
-      </packing>
     </child>
     <child>
       <placeholder/>

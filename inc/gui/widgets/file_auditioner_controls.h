@@ -58,8 +58,8 @@ typedef struct _FileAuditionerControlsWidget
 {
   GtkBox               parent_instance;
 
-  GtkToolButton *      play_btn;
-  GtkToolButton *      stop_btn;
+  GtkButton *      play_btn;
+  GtkButton *      stop_btn;
   GtkMenuButton *      file_settings_btn;
   VolumeWidget *       volume;
 

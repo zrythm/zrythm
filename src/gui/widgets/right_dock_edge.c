@@ -62,15 +62,16 @@ right_dock_edge_widget_setup (
   monitor_section_widget_setup (
     self->monitor_section, CONTROL_ROOM);
 
+  GtkNotebook * notebook =
+    foldable_notebook_widget_get_notebook (
+      self->right_notebook);
   int page_num =
     g_settings_get_int (S_UI, "right-panel-tab");
   gtk_notebook_set_current_page (
-    GTK_NOTEBOOK (self->right_notebook),
-    page_num);
+    notebook, page_num);
 
   g_signal_connect (
-    G_OBJECT (self->right_notebook),
-    "switch-page",
+    G_OBJECT (notebook), "switch-page",
     G_CALLBACK (on_notebook_switch_page), self);
 }
 
@@ -85,25 +86,23 @@ right_dock_edge_widget_init (
   GtkWidget * img;
   GtkBox * box;
   GtkNotebook * notebook =
-    GTK_NOTEBOOK (self->right_notebook);
+    foldable_notebook_widget_get_notebook (
+      self->right_notebook);
 
   /* add plugin browser */
   self->plugin_browser =
     plugin_browser_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "plugin-solid",
-      GTK_ICON_SIZE_LARGE_TOOLBAR);
+      "plugin-solid");
   gtk_widget_set_tooltip_text (
     img, _("Plugin Browser"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (self->plugin_browser));
-  gtk_widget_set_visible (
-    GTK_WIDGET (box), 1);
   gtk_notebook_prepend_page (
     notebook, GTK_WIDGET (box), img);
   gtk_notebook_set_tab_detachable (
@@ -115,6 +114,7 @@ right_dock_edge_widget_init (
   /* add file browser */
   self->file_browser =
     panel_file_browser_widget_new ();
+#if 0
   GdkPixbuf * pixbuf =
     gtk_icon_theme_load_icon_for_scale (
       gtk_icon_theme_get_default (),
@@ -125,15 +125,17 @@ right_dock_edge_widget_init (
       "folder-music-line",
       12, 2,
       GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
+#endif
   img =
-    gtk_image_new_from_pixbuf (pixbuf);
+    gtk_image_new_from_icon_name (
+      "folder-music-line");
   gtk_widget_set_tooltip_text (
     img, _("File Browser"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (self->file_browser));
   gtk_widget_set_visible (
     GTK_WIDGET (box), 1);
@@ -148,6 +150,7 @@ right_dock_edge_widget_init (
   /* add control room */
   self->monitor_section =
     monitor_section_widget_new ();
+#if 0
   pixbuf =
     gtk_icon_theme_load_icon_for_scale (
       gtk_icon_theme_get_default (),
@@ -158,15 +161,16 @@ right_dock_edge_widget_init (
       "speaker",
       12, 2,
       GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
+#endif
   img =
-    gtk_image_new_from_pixbuf (pixbuf);
+    gtk_image_new_from_icon_name ("speaker");
   gtk_widget_set_tooltip_text (
     img, _("Monitor Section"));
   box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (self->monitor_section));
   gtk_widget_set_visible (
     GTK_WIDGET (box), 1);
@@ -179,18 +183,9 @@ right_dock_edge_widget_init (
   self->monitor_section_box = box;
 
   /* add file browser button */
-  img =
-    gtk_image_new_from_icon_name (
-      "hdd",
-      GTK_ICON_SIZE_SMALL_TOOLBAR);
-  gtk_image_set_pixel_size (
-    (GtkImage *) img, 32);
-  GtkToolButton * tb =
-    GTK_TOOL_BUTTON (
-      gtk_tool_button_new (
-        img, NULL));
-  gtk_widget_show_all (
-    GTK_WIDGET (tb));
+  GtkButton * tb =
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name ("hdd"));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (tb),
     _("Show file browser"));
@@ -203,6 +198,8 @@ right_dock_edge_widget_init (
 
   gtk_notebook_set_current_page (
     notebook, 0);
+  gtk_notebook_set_tab_pos (
+    notebook, GTK_POS_RIGHT);
 }
 
 static void

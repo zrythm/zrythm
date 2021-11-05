@@ -20,6 +20,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/dialogs.h"
+#include "utils/gtk.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -45,9 +46,8 @@ GtkDialog * dialogs_get_open_project_dialog (
       GTK_RESPONSE_ACCEPT,
       NULL);
 
-  gtk_file_chooser_set_filename (
-    GTK_FILE_CHOOSER (dialog),
-    PROJECT->dir);
+  z_gtk_file_chooser_set_file_from_path (
+    GTK_FILE_CHOOSER (dialog), PROJECT->dir);
 
   return GTK_DIALOG (dialog);
 }
@@ -86,12 +86,13 @@ GtkDialog * dialogs_get_overwrite_plugin_dialog (
       "margin-bottom", 8,
       NULL);
   gtk_widget_set_visible (label, 1);
-  gtk_container_add (
-    GTK_CONTAINER (box), label);
+  gtk_box_append (
+    GTK_BOX (box), label);
   return dialog;
 }
 
-GtkDialog * dialogs_get_error_instantiating_plugin_dialog (
+GtkDialog *
+dialogs_get_error_instantiating_plugin_dialog (
   GtkWindow * parent)
 {
   GtkDialogFlags flags =

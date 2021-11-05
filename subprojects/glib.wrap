@@ -1,11 +1,9 @@
-[wrap-file]
-directory = glib-2.68.1
-source_url = https://download.gnome.org/sources/glib/2.68/glib-2.68.1.tar.xz
-source_filename = glib-2.68.1.tar.xz
-source_hash = 241654b96bd36b88aaa12814efc4843b578e55d47440103727959ac346944333
-patch_url = https://wrapdb.mesonbuild.com/v1/projects/glib/2.68.1/1/get_zip
-patch_filename = glib-2.68.1-1-wrap.zip
-patch_hash = d619dbddc9563d045aca781690a2b4d3d1d79a93cb1669e3ccb3adcf792cc290
+[wrap-git]
+directory=glib
+url=https://gitlab.gnome.org/GNOME/glib.git
+push-url=ssh://git@gitlab.gnome.org:GNOME/glib.git
+revision=main
+depth=1
 
 [provide]
 dependency_names = gthread-2.0, gobject-2.0, gmodule-no-export-2.0, gmodule-export-2.0, gmodule-2.0, glib-2.0, gio-2.0, gio-win32-2.0, gio-unix-2.0

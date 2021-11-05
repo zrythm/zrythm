@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   BounceStepSelectorWidget,
   bounce_step_selector_widget,
   Z, BOUNCE_STEP_SELECTOR_WIDGET,
-  GtkButtonBox)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -44,7 +44,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _BounceStepSelectorWidget
 {
-  GtkButtonBox parent_instance;
+  GtkBox parent_instance;
 
   GtkToggleButton * before_inserts_toggle;
   gulong            before_inserts_toggle_id;

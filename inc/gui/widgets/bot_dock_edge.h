@@ -61,27 +61,31 @@ typedef struct _ChordPadWidget ChordPadWidget;
  */
 typedef struct _BotDockEdgeWidget
 {
-  GtkBox                   parent_instance;
+  GtkBox              parent_instance;
   FoldableNotebookWidget * bot_notebook;
 
   /** Wrapper. */
-  GtkBox *                 modulator_view_box;
-  ModulatorViewWidget *    modulator_view;
+  GtkBox *            modulator_view_box;
+  ModulatorViewWidget * modulator_view;
+
+  GtkPaned *          clip_editor_plus_event_viewer_paned;
 
   /** Event viewer. */
-  EventViewerWidget *      event_viewer;
+  EventViewerWidget * event_viewer;
 
   /** Wrapper. */
-  GtkBox *                 clip_editor_box;
-  ClipEditorWidget *       clip_editor;
+  GtkBox *            clip_editor_box;
+  ClipEditorWidget *  clip_editor;
 
   /** Wrapper. */
-  GtkBox *                 mixer_box;
-  MixerWidget *            mixer;
+  GtkBox *            mixer_box;
+  MixerWidget *       mixer;
 
   /** Chord pads. */
-  GtkBox *                 chord_pad_box;
-  ChordPadWidget *         chord_pad;
+  GtkBox *            chord_pad_box;
+  ChordPadWidget *    chord_pad;
+
+  GtkButton *         toggle_top_panel;
 } BotDockEdgeWidget;
 
 void

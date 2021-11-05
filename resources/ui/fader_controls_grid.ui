@@ -1,58 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2020 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="FaderControlsGridWidget" parent="GtkGrid">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="meters_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
           <object class="MeterWidget" id="meter_l">
             <property name="visible">1</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="MeterWidget" id="meter_r">
             <property name="visible">1</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="meter_readings">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="hexpand">1</property>
             <property name="justify">center</property>
             <property name="label">Peak:
 0.0db
@@ -60,55 +24,47 @@
 RMS:
 0.0db</property>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
         </child>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">1</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="balance_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
           <placeholder/>
         </child>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">0</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">0</property>
-        <property name="width">2</property>
-      </packing>
     </child>
     <child>
       <object class="FaderWidget" id="fader">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">1</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">1</property>
-      </packing>
     </child>
     <child>
       <object class="FaderButtonsWidget" id="fader_buttons">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="margin_top">4</property>
-        <property name="layout_style">expand</property>
         <property name="orientation">horizontal</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">2</property>
+          <property name="column-span">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">2</property>
-        <property name="width">2</property>
-      </packing>
     </child>
   </template>
 </interface>

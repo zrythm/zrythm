@@ -226,9 +226,9 @@ test_helper_zrythm_gui_init (
   int argc, char *argv[])
 {
   ZRYTHM->have_ui = 1;
-  if (gtk_init_check (&argc, &argv))
+  if (gtk_init_check ())
     {
-      gtk_init (&argc, &argv);
+      gtk_init ();
     }
   else
     {
@@ -243,23 +243,27 @@ test_helper_zrythm_gui_init (
                 NULL);
   g_message ("set theme");
 
+  GdkDisplay * display =
+    gdk_display_get_default ();
+  GtkIconTheme * icon_theme =
+    gtk_icon_theme_get_for_display (display);
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/breeze-icons");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/fork-awesome");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/font-awesome");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/zrythm");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/ext");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/gnome-builder");
 
   g_message ("set resource paths");
@@ -270,10 +274,10 @@ test_helper_zrythm_gui_init (
   gtk_css_provider_load_from_resource (
     css_provider,
     "/org/zrythm/Zrythm/app/theme.css");
-  gtk_style_context_add_provider_for_screen (
-          gdk_screen_get_default (),
-          GTK_STYLE_PROVIDER (css_provider),
-          800);
+  gtk_style_context_add_provider_for_display (
+    display,
+    GTK_STYLE_PROVIDER (css_provider),
+    800);
   g_object_unref (css_provider);
   g_message ("set default css provider");
 

@@ -100,15 +100,20 @@ link_scrolls (
 
 static int
 on_scroll (
-  GtkWidget * widget,
-  GdkEventScroll * event,
-  MidiEditorSpaceWidget * self)
+  GtkEventControllerScroll * scroll_controller,
+  gdouble                    dx,
+  gdouble                    dy,
+  gpointer                   user_data)
 {
-  if (event->state & GDK_CONTROL_MASK &&
-      event->state & GDK_SHIFT_MASK)
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+
+  if (state & GDK_CONTROL_MASK &&
+      state & GDK_SHIFT_MASK)
     {
       midi_arranger_handle_vertical_zoom_scroll (
-        MW_MIDI_ARRANGER, event);
+        MW_MIDI_ARRANGER, scroll_controller);
     }
 
   return TRUE;
@@ -162,8 +167,6 @@ midi_editor_space_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
         ARRANGER_WIDGET_TYPE_MIDI,
         SNAP_GRID_EDITOR);
-      gtk_widget_show_all (
-        GTK_WIDGET (self->arranger));
     }
   if (self->modifier_arranger)
     {
@@ -171,8 +174,6 @@ midi_editor_space_widget_setup (
         Z_ARRANGER_WIDGET (self->modifier_arranger),
         ARRANGER_WIDGET_TYPE_MIDI_MODIFIER,
         SNAP_GRID_EDITOR);
-      gtk_widget_show_all (
-        GTK_WIDGET (self->modifier_arranger));
     }
 
   piano_roll_keys_widget_setup (
@@ -224,9 +225,17 @@ midi_editor_space_widget_init (
     /*G_OBJECT (self->piano_roll_keys_box),*/
     /*"size-allocate",*/
     /*G_CALLBACK (on_keys_box_size_allocate), self);*/
+
+  GtkEventControllerScroll * scroll_controller =
+    GTK_EVENT_CONTROLLER_SCROLL (
+      gtk_event_controller_scroll_new (
+        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
   g_signal_connect (
-    G_OBJECT(self), "scroll-event",
-    G_CALLBACK (on_scroll),  self);
+    G_OBJECT (scroll_controller), "scroll",
+    G_CALLBACK (on_scroll), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (scroll_controller));
 }
 
 static void

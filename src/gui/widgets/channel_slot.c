@@ -88,19 +88,20 @@ get_plugin (
   return plugin;
 }
 
-static int
+static void
 channel_slot_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  ChannelSlotWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  ChannelSlotWidget * self =
+    Z_CHANNEL_SLOT_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GtkStyleContext *context =
   gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -231,50 +232,48 @@ channel_slot_draw_cb (
       /*cairo_close_path (cr);*/
       /*cairo_fill (cr);*/
     /*}*/
-  return FALSE;
 }
 
 static void
-on_drag_data_received (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  gint              x,
-  gint              y,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
-  ChannelSlotWidget * self)
+on_dnd_drop (
+  GtkDropTarget * drop_target,
+  const GValue  * value,
+  double          x,
+  double          y,
+  gpointer        data)
 {
-  g_message ("drag data received");
+  ChannelSlotWidget * self =
+    Z_CHANNEL_SLOT_WIDGET (data);
 
-  GdkAtom atom =
-    gtk_selection_data_get_target (data);
-  GdkAtom plugin_atom =
-    gdk_atom_intern_static_string (
-      TARGET_ENTRY_PLUGIN);
-  GdkAtom plugin_descr_atom =
-    gdk_atom_intern_static_string (
-      TARGET_ENTRY_PLUGIN_DESCR);
+  g_debug ("channel slot: dnd drop");
 
-  const guchar * selection_data =
-    gtk_selection_data_get_data (data);
-  if (!selection_data)
+  GdkDragAction action =
+    z_gtk_drop_target_get_selected_action (
+      drop_target);
+
+  Plugin * pl = NULL;
+  PluginDescriptor * descr = NULL;
+  if (G_VALUE_HOLDS_STRING (value))
     {
-      return;
+      const char * str = g_value_get_string (value);
+      if (g_str_has_prefix (
+            str, PLUGIN_DESCRIPTOR_DND_PREFIX))
+        {
+          sscanf (
+            str, PLUGIN_DESCRIPTOR_DND_PREFIX "%p",
+            &descr);
+        }
+      else if (g_str_has_prefix (
+                 str, PLUGIN_DND_PREFIX))
+        {
+          sscanf (
+            str, PLUGIN_DND_PREFIX "%p", &pl);
+        }
     }
 
   bool plugin_invalid = false;
-  Plugin * pl = NULL;
-  PluginDescriptor * descr = NULL;
-  if (atom == plugin_atom)
+  if (pl)
     {
-      Plugin * received_pl = NULL;
-      memcpy (
-        &received_pl, selection_data,
-        sizeof (received_pl));
-      pl = plugin_find (&received_pl->id);
-      g_warn_if_fail (pl);
-
       /* if plugin not at original position */
       Track * orig_track =
         plugin_get_track (pl);
@@ -286,11 +285,6 @@ on_drag_data_received (
                 pl->setting->descr, self->type,
                 self->track->type))
             {
-              /* determine if moving or copying */
-              GdkDragAction action =
-                gdk_drag_context_get_selected_action (
-                  context);
-
               bool ret;
               GError * err = NULL;
               if (action == GDK_ACTION_COPY)
@@ -333,13 +327,8 @@ on_drag_data_received (
             }
         }
     }
-  else if (atom == plugin_descr_atom)
+  else if (descr)
     {
-      gdk_drag_status (
-        context, GDK_ACTION_COPY, time);
-      memcpy (
-        &descr, selection_data, sizeof (descr));
-
       /* validate */
       if (plugin_descriptor_is_valid_for_slot_type (
             descr, self->type,
@@ -378,7 +367,7 @@ on_drag_data_received (
         MAIN_WINDOW, msg);
     }
 
-  gtk_widget_queue_draw (widget);
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 
@@ -583,9 +572,9 @@ drag_end (
   gdouble             offset_y,
   ChannelSlotWidget * self)
 {
-  GdkModifierType state_mask =
-    ui_get_state_mask (
-      GTK_GESTURE (gesture));
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
 
   Plugin * pl = get_plugin (self);
   if (pl && self->n_press == 2)
@@ -604,7 +593,7 @@ drag_end (
     {
       int ctrl = 0;
       /* if control click */
-      if (state_mask & GDK_CONTROL_MASK)
+      if (state & GDK_CONTROL_MASK)
         ctrl = 1;
 
       select_plugin (self, ctrl);
@@ -624,15 +613,15 @@ drag_end (
 }
 
 static void
-multipress_pressed (
-  GtkGestureMultiPress *gesture,
+on_press (
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
   ChannelSlotWidget *   self)
 {
   self->n_press = n_press;
-  g_message ("multipress %d", n_press);
+  g_message ("pressed %d", n_press);
 
   if (self->open_plugin_inspector_on_click &&
       self->type != PLUGIN_SLOT_INSTRUMENT)
@@ -650,24 +639,6 @@ multipress_pressed (
       EVENTS_PUSH (
         ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
     }
-}
-
-static void
-on_plugin_bypass_activate (
-  GtkMenuItem * menuitem,
-  Plugin *      pl)
-{
-  plugin_set_enabled (
-    pl, !plugin_is_enabled (pl, false), true);
-}
-
-static void
-on_plugin_inspect_activate (
-  GtkMenuItem * menuitem,
-  Plugin *      pl)
-{
-  left_dock_edge_widget_refresh_with_page (
-    MW_LEFT_DOCK_EDGE, LEFT_DOCK_EDGE_TAB_PLUGIN);
 }
 
 static bool
@@ -723,69 +694,51 @@ show_context_menu (
   EVENTS_PUSH (
     ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 
-  GtkWidget *menu;
-  GtkMenuItem * menuitem;
-
-  menu = gtk_menu_new();
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   Plugin * pl = get_plugin (self);
 
-#define CREATE_SEPARATOR \
-  menuitem = \
-    GTK_MENU_ITEM (gtk_separator_menu_item_new ()); \
-  gtk_widget_show_all (GTK_WIDGET (menuitem))
-
-#define ADD_TO_SHELL \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
-
-  bool needs_sep = false;
-
   if (pl)
     {
+      GMenu * plugin_submenu = g_menu_new ();
+
       /* add bypass option */
+      char tmp[500];
+      sprintf (
+        tmp, "app.plugin-toggle-enabled::%p", pl);
       menuitem =
-        GTK_MENU_ITEM (
-          gtk_check_menu_item_new_with_label (
-            _("Bypass")));
-      gtk_check_menu_item_set_active (
-        GTK_CHECK_MENU_ITEM (menuitem),
-        !plugin_is_enabled (pl, false));
-      g_signal_connect (
-        G_OBJECT (menuitem), "activate",
-        G_CALLBACK (on_plugin_bypass_activate), pl);
-      ADD_TO_SHELL;
+        z_gtk_create_menu_item (
+          _("Bypass"), NULL, tmp);
+      g_menu_append_item (
+        plugin_submenu, menuitem);
 
       /* add inspect option */
       menuitem =
-        GTK_MENU_ITEM (
-          gtk_menu_item_new_with_label (
-            _("Inspect")));
-      g_signal_connect (
-        G_OBJECT (menuitem), "activate",
-        G_CALLBACK (on_plugin_inspect_activate),
-        pl);
-      ADD_TO_SHELL;
+        z_gtk_create_menu_item (
+          _("Inspect"), NULL, "app.plugin-inspect");
+      g_menu_append_item (
+        plugin_submenu, menuitem);
 
-      needs_sep = true;
+      g_menu_append_section (
+        menu, _("Plugin"),
+        G_MENU_MODEL (plugin_submenu));
     }
 
+  GMenu * edit_submenu = g_menu_new ();
   if (self->type != PLUGIN_SLOT_INSTRUMENT)
     {
-      if (needs_sep)
-        {
-          CREATE_SEPARATOR;
-          ADD_TO_SHELL;
-        }
-
       menuitem =
         CREATE_CUT_MENU_ITEM ("app.cut");
-      ADD_TO_SHELL;
+      g_menu_append_item (
+        edit_submenu, menuitem);
       menuitem = CREATE_COPY_MENU_ITEM ("app.copy");
-      ADD_TO_SHELL;
+      g_menu_append_item (
+        edit_submenu, menuitem);
       menuitem =
         CREATE_PASTE_MENU_ITEM ("app.paste");
-      ADD_TO_SHELL;
+      g_menu_append_item (
+        edit_submenu, menuitem);
     }
 
   /* if plugin exists */
@@ -794,44 +747,41 @@ show_context_menu (
       /* add delete item */
       menuitem =
         CREATE_DELETE_MENU_ITEM ("app.delete");
-      ADD_TO_SHELL;
-
-      needs_sep = true;
+      g_menu_append_item (
+        edit_submenu, menuitem);
     }
+
+  g_menu_append_section (
+    menu, _("Edit"),
+    G_MENU_MODEL (edit_submenu));
 
   if (self->type != PLUGIN_SLOT_INSTRUMENT)
     {
-      if (needs_sep)
-        {
-          CREATE_SEPARATOR;
-          ADD_TO_SHELL;
-        }
+      GMenu * select_submenu = g_menu_new ();
 
       menuitem =
         CREATE_CLEAR_SELECTION_MENU_ITEM (
           "app.clear-selection");
-      ADD_TO_SHELL;
+      g_menu_append_item (
+        select_submenu, menuitem);
       menuitem =
         CREATE_SELECT_ALL_MENU_ITEM (
           "app.select-all");
-      ADD_TO_SHELL;
+      g_menu_append_item (
+        select_submenu, menuitem);
 
-      needs_sep = true;
+      g_menu_append_section (
+        menu, _("Select"),
+        G_MENU_MODEL (select_submenu));
     }
 
-#undef ADD_TO_SHELL
-
-  gtk_widget_show_all(menu);
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_right_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -840,78 +790,58 @@ on_right_click (
   if (n_press != 1)
     return;
 
-  GdkModifierType mod =
-    ui_get_state_mask (GTK_GESTURE (gesture));
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
 
-  select_plugin (self, mod & GDK_CONTROL_MASK);
+  select_plugin (self, state & GDK_CONTROL_MASK);
 
   show_context_menu (self);
 }
 
-static void
-on_drag_data_get (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
-  ChannelSlotWidget * self)
+static GdkDragAction
+on_dnd_motion (
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
 {
-  Plugin* pl = get_plugin (self);
+  /*ChannelSlotWidget * self =*/
+    /*Z_CHANNEL_SLOT_WIDGET (user_data);*/
 
-  if (!pl)
-    return;
-
-  gtk_selection_data_set (
-    data,
-    gdk_atom_intern_static_string (
-      TARGET_ENTRY_PLUGIN),
-    32,
-    (const guchar *) &pl,
-    sizeof (pl));
-}
-
-static void
-on_drag_motion (
-  GtkWidget *widget,
-  GdkDragContext *context,
-  gint x,
-  gint y,
-  guint time,
-  ChannelSlotWidget * self)
-{
-  GdkModifierType mask;
-  z_gtk_widget_get_mask (widget, &mask);
-  if (mask & GDK_CONTROL_MASK)
-    gdk_drag_status (
-      context, GDK_ACTION_COPY, time);
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (drop_target));
+  if (state & GDK_CONTROL_MASK)
+    return GDK_ACTION_COPY;
   else
-    gdk_drag_status (
-      context, GDK_ACTION_MOVE, time);
+    return GDK_ACTION_MOVE;
 }
 
-static gboolean
-on_motion (
-  GtkWidget * widget,
-  GdkEvent *event,
-  ChannelSlotWidget * self)
+static void
+on_enter (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  if (gdk_event_get_event_type (event) ==
-        GDK_ENTER_NOTIFY)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT, 0);
-    }
-  else if (gdk_event_get_event_type (event) ==
-             GDK_LEAVE_NOTIFY)
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-    }
+  ChannelSlotWidget * self =
+    Z_CHANNEL_SLOT_WIDGET (user_data);
+  gtk_widget_set_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT, 0);
+}
 
-  return FALSE;
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  gpointer                   user_data)
+{
+  ChannelSlotWidget * self =
+    Z_CHANNEL_SLOT_WIDGET (user_data);
+  gtk_widget_unset_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT);
 }
 
 static void
@@ -935,14 +865,18 @@ recreate_pango_layouts (
 }
 
 static void
-channel_slot_widget_on_size_allocate (
-  GtkWidget *          widget,
-  GdkRectangle *       allocation,
-  ChannelSlotWidget * self)
+channel_slot_widget_on_resize (
+  GtkDrawingArea * drawing_area,
+  gint             width,
+  gint             height,
+  gpointer         user_data)
 {
+  ChannelSlotWidget * self =
+    Z_CHANNEL_SLOT_WIDGET (user_data);
   recreate_pango_layouts (self);
 }
 
+#if 0
 static void
 on_screen_changed (
   GtkWidget *          widget,
@@ -951,6 +885,7 @@ on_screen_changed (
 {
   recreate_pango_layouts (self);
 }
+#endif
 
 static void
 finalize (
@@ -1008,6 +943,67 @@ channel_slot_widget_set_instrument (
       track->channel->instrument));
 }
 
+static GdkContentProvider *
+on_dnd_drag_prepare (
+  GtkDragSource *     source,
+  double              x,
+  double              y,
+  ChannelSlotWidget * self)
+{
+  Plugin * pl = get_plugin (self);
+  char pl_str[600];
+  sprintf (
+    pl_str, PLUGIN_DND_PREFIX "%p", pl);
+
+  GdkContentProvider * content_providers[] = {
+    gdk_content_provider_new_typed (
+      G_TYPE_STRING, pl_str),
+  };
+
+  return
+    gdk_content_provider_new_union (
+      content_providers,
+      G_N_ELEMENTS (content_providers));
+}
+
+static void
+setup_dnd (
+  ChannelSlotWidget * self)
+{
+  if (self->type != PLUGIN_SLOT_INSTRUMENT)
+    {
+      /* set as drag source for plugin */
+      GtkDragSource * drag_source =
+        gtk_drag_source_new ();
+      g_signal_connect (
+        drag_source, "prepare",
+        G_CALLBACK (on_dnd_drag_prepare), self);
+      gtk_widget_add_controller (
+        GTK_WIDGET (self),
+        GTK_EVENT_CONTROLLER (drag_source));
+    }
+
+  /* set as drag dest for both plugins and
+   * plugin descriptors */
+  GtkDropTarget * drop_target =
+    gtk_drop_target_new (
+      G_TYPE_INVALID,
+      GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  GType types[] = {
+    G_TYPE_STRING };
+  gtk_drop_target_set_gtypes (
+    drop_target, types, G_N_ELEMENTS (types));
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (drop_target));
+  g_signal_connect (
+    drop_target, "drop",
+    G_CALLBACK (on_dnd_drop), self);
+  g_signal_connect (
+    drop_target, "motion",
+    G_CALLBACK (on_dnd_motion), self);
+}
+
 /**
  * Creates a new ChannelSlot widget and binds it to
  * the given value.
@@ -1028,40 +1024,7 @@ channel_slot_widget_new (
   self->open_plugin_inspector_on_click =
     open_plugin_inspector_on_click;
 
-  char * entry_plugin =
-    g_strdup (TARGET_ENTRY_PLUGIN);
-  char * entry_plugin_descr =
-    g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
-  GtkTargetEntry entries[] = {
-    {
-      entry_plugin, GTK_TARGET_SAME_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN),
-    },
-    {
-      entry_plugin_descr, GTK_TARGET_SAME_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR),
-    },
-  };
-
-  if (type != PLUGIN_SLOT_INSTRUMENT)
-    {
-      /* set as drag source for plugin */
-      gtk_drag_source_set (
-        GTK_WIDGET (self),
-        GDK_BUTTON1_MASK,
-        entries, 1,
-        GDK_ACTION_MOVE | GDK_ACTION_COPY);
-    }
-
-  /* set as drag dest for both plugins and
-   * plugin descriptors */
-  gtk_drag_dest_set (
-    GTK_WIDGET (self),
-    GTK_DEST_DEFAULT_ALL,
-    entries, G_N_ELEMENTS (entries),
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  g_free (entry_plugin);
-  g_free (entry_plugin_descr);
+  setup_dnd (self);
 
   return self;
 }
@@ -1084,13 +1047,6 @@ static void
 channel_slot_widget_init (
   ChannelSlotWidget * self)
 {
-  /* make it able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self),
-    GDK_BUTTON_PRESS_MASK |
-    GDK_ENTER_NOTIFY_MASK |
-    GDK_LEAVE_NOTIFY_MASK);
-
   gtk_widget_set_size_request (
     GTK_WIDGET (self), -1, 20);
 
@@ -1098,65 +1054,67 @@ channel_slot_widget_init (
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), _("empty slot"));
 
-  self->multipress =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+  self->click =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_event_controller_set_propagation_phase (
-    GTK_EVENT_CONTROLLER (self->multipress),
+    GTK_EVENT_CONTROLLER (self->click),
     GTK_PHASE_CAPTURE);
+  g_signal_connect (
+    G_OBJECT (self->click), "pressed",
+    G_CALLBACK (on_press), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->click));
+
   self->right_mouse_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (self->right_mouse_mp),
-                        GDK_BUTTON_SECONDARY);
-  self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
-  gtk_event_controller_set_propagation_phase (
-    GTK_EVENT_CONTROLLER (self->drag),
-    GTK_PHASE_CAPTURE);
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (channel_slot_draw_cb), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "drag-data-received",
-    G_CALLBACK(on_drag_data_received), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "drag-data-get",
-    G_CALLBACK (on_drag_data_get), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "drag-motion",
-    G_CALLBACK (on_drag_motion), self);
-  /*g_signal_connect (*/
-    /*G_OBJECT (self->drag), "drag-update",*/
-    /*G_CALLBACK (drag_update),  self);*/
-  g_signal_connect (
-    G_OBJECT (self->drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
-    G_CALLBACK (multipress_pressed), self);
+    GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (self->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->right_mouse_mp));
+
+  self->drag =
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  gtk_event_controller_set_propagation_phase (
+    GTK_EVENT_CONTROLLER (self->drag),
+    GTK_PHASE_CAPTURE);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
+
+  GtkEventController * motion_controller =
+    gtk_event_controller_motion_new ();
+  g_signal_connect (
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_enter), self);
+  g_signal_connect (
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), motion_controller);
+
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    channel_slot_draw_cb,
+    self, NULL);
+#if 0
   g_signal_connect (
     G_OBJECT (self), "screen-changed",
     G_CALLBACK (on_screen_changed),  self);
+#endif
   g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (
-      channel_slot_widget_on_size_allocate),
+    G_OBJECT (self), "resize",
+    G_CALLBACK (channel_slot_widget_on_resize),
     self);
 
   gtk_widget_add_tick_callback (

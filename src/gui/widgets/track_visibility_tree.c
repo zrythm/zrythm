@@ -41,7 +41,7 @@
 G_DEFINE_TYPE (
   TrackVisibilityTreeWidget,
   track_visibility_tree_widget,
-  GTK_TYPE_SCROLLED_WINDOW)
+  GTK_TYPE_BOX)
 
 enum
 {
@@ -206,11 +206,13 @@ static void
 track_visibility_tree_widget_init (
   TrackVisibilityTreeWidget * self)
 {
+  self->scroll =
+    GTK_SCROLLED_WINDOW (
+      gtk_scrolled_window_new ());
+  gtk_box_append (
+    GTK_BOX (self), GTK_WIDGET (self->scroll));
   self->tree =
     GTK_TREE_VIEW (gtk_tree_view_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->tree), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (self->tree));
+  gtk_scrolled_window_set_child (
+    self->scroll, GTK_WIDGET (self->tree));
 }

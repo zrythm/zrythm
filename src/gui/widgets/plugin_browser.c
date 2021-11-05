@@ -51,7 +51,7 @@
 G_DEFINE_TYPE (
   PluginBrowserWidget,
   plugin_browser_widget,
-  GTK_TYPE_PANED)
+  GTK_TYPE_BOX)
 
 enum
 {
@@ -80,6 +80,8 @@ static void
 update_stack_switcher_emblems (
   PluginBrowserWidget * self)
 {
+  /* TODO */
+#if 0
   bool has_collections =
     gtk_tree_selection_count_selected_rows (
       gtk_tree_view_get_selection (
@@ -205,6 +207,7 @@ update_stack_switcher_emblems (
         needs_emblem ? "media-record" : NULL);
     }
   g_list_free (children);
+#endif
 }
 
 static void
@@ -314,43 +317,6 @@ restore_tree_view_selections (
 }
 
 /**
- * Activate \ref setting if given, otherwise create
- * a defeault setting from the descriptor.
- */
-static void
-activate_plugin_setting (
-  PluginSetting *    setting,
-  PluginDescriptor * descr)
-{
-  bool setting_created = false;
-  if (!setting)
-    {
-      g_return_if_fail (descr);
-      setting = plugin_setting_new_default (descr);
-      setting_created = true;
-    }
-
-  TrackType type =
-    track_get_type_from_plugin_descriptor (
-      setting->descr);
-
-  GError * err = NULL;
-  bool ret =
-    track_create_for_plugin_at_idx_w_action (
-      type, setting, TRACKLIST->num_tracks, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to create track"));
-    }
-
-  if (setting_created)
-    {
-      plugin_setting_free (setting);
-    }
-}
-
-/**
  * Called when row is double clicked.
  */
 static void
@@ -360,6 +326,8 @@ on_row_activated (
   GtkTreeViewColumn *column,
   gpointer           user_data)
 {
+  PluginBrowserWidget * self =
+    Z_PLUGIN_BROWSER_WIDGET (user_data);
   GtkTreeModel * model = GTK_TREE_MODEL (user_data);
   GtkTreeIter iter;
   gtk_tree_model_get_iter (model, &iter, tp);
@@ -368,8 +336,12 @@ on_row_activated (
     model, &iter, PL_COLUMN_DESCR, &value);
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
+  self->current_descriptors[0] = descr;
+  self->num_current_descriptors = 1;
 
-  activate_plugin_setting (NULL, descr);
+  g_action_group_activate_action (
+    G_ACTION_GROUP (zrythm_app),
+    "plugin-browser-add-to-project", NULL);
 }
 
 /**
@@ -393,16 +365,16 @@ visible_func (
   int instruments_active, effects_active,
       modulators_active, midi_modifiers_active;
   instruments_active =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->toggle_instruments);
   effects_active =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->toggle_effects);
   modulators_active =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->toggle_modulators);
   midi_modifiers_active =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->toggle_midi_modifiers);
 
   /* no filter, all visible */
@@ -533,51 +505,7 @@ visible_func (
   return true;
 }
 
-static void
-on_plugin_setting_activate (
-  GtkMenuItem *   menuitem,
-  PluginSetting * setting)
-{
-  g_message ("%s: activated", __func__);
-  activate_plugin_setting (setting, NULL);
-}
-
-static void
-on_plugin_descr_add_to_collection (
-  GtkMenuItem *      menuitem,
-  PluginCollection * collection)
-{
-  g_return_if_fail (
-    MW_PLUGIN_BROWSER->num_current_descriptors > 0);
-
-  plugin_collection_add_descriptor (
-    collection,
-    MW_PLUGIN_BROWSER->current_descriptors[0]);
-
-  plugin_collections_serialize_to_file (
-    PLUGIN_MANAGER->collections);
-
-  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
-}
-
-static void
-on_plugin_descr_remove_from_collection (
-  GtkMenuItem *      menuitem,
-  PluginCollection * collection)
-{
-  g_return_if_fail (
-    MW_PLUGIN_BROWSER->num_current_descriptors > 0);
-
-  plugin_collection_remove_descriptor (
-    collection,
-    MW_PLUGIN_BROWSER->current_descriptors[0]);
-
-  plugin_collections_serialize_to_file (
-    PLUGIN_MANAGER->collections);
-
-  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
-}
-
+#if 0
 static void
 delete_plugin_setting (
   PluginSetting * setting,
@@ -601,6 +529,7 @@ on_use_generic_ui_toggled (
     S_PLUGIN_SETTINGS, setting, F_SERIALIZE);
   plugin_setting_free (setting);
 }
+#endif
 
 static void
 show_plugin_context_menu (
@@ -611,38 +540,16 @@ show_plugin_context_menu (
   self->current_descriptors[0] = descr;
   self->num_current_descriptors = 1;
 
-  GtkMenuItem * menuitem;
-  GtkWidget * menu = gtk_menu_new();
-  PluginSetting * new_setting;
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
-  /* FIXME this is allocating memory every time */
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project"), NULL,
+      "app.plugin-browser-add-to-project");
+  g_menu_append_item (menu, menuitem);
 
-#define CREATE_WITH_LBL(lbl) \
-  menuitem = \
-    GTK_MENU_ITEM ( \
-      gtk_menu_item_new_with_label (lbl)); \
-  APPEND; \
-  new_setting = plugin_setting_new_default (descr)
-
-#define CONNECT_SIGNAL(x) \
-  g_signal_connect_data ( \
-    G_OBJECT (x), "activate", \
-    G_CALLBACK (on_plugin_setting_activate), \
-    new_setting, \
-    (GClosureNotify) delete_plugin_setting, 0)
-
-#define APPEND \
-  gtk_widget_set_visible ( \
-    GTK_WIDGET (menuitem), true); \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), \
-    GTK_WIDGET (menuitem));
-
-  CREATE_WITH_LBL (_("Add to project"));
-  new_setting->open_with_carla = false;
-  new_setting->bridge_mode = CARLA_BRIDGE_NONE;
-  CONNECT_SIGNAL (menuitem);
-
+#if 0
   if (descr->protocol == PROT_LV2 &&
       lv2_plugin_pick_most_preferable_ui (
         descr->uri, NULL, NULL,
@@ -703,33 +610,38 @@ show_plugin_context_menu (
             menuitem, GTK_WIDGET (submenu));
         }
     }
+#endif
 
 #ifdef HAVE_CARLA
-  CREATE_WITH_LBL (
-    _("Add to project (carla)"));
-  new_setting->open_with_carla = true;
-  new_setting->bridge_mode = CARLA_BRIDGE_NONE;
-  CONNECT_SIGNAL (menuitem);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project (carla)"), NULL,
+      "app.plugin-browser-add-to-project-carla");
+  g_menu_append_item (menu, menuitem);
 
+  PluginSetting * new_setting =
+    plugin_setting_new_default (descr);
   if (descr->has_custom_ui &&
       descr->min_bridge_mode ==
         CARLA_BRIDGE_NONE &&
       !new_setting->force_generic_ui)
     {
-      CREATE_WITH_LBL (
-        _("Add to project (bridged UI)"));
-      new_setting->open_with_carla = true;
-      new_setting->bridge_mode = CARLA_BRIDGE_UI;
-      CONNECT_SIGNAL (menuitem);
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Add to project (carla)"), NULL,
+          "app.plugin-browser-add-to-project-bridged-ui");
+      g_menu_append_item (menu, menuitem);
     }
+  plugin_setting_free (new_setting);
 
-  CREATE_WITH_LBL (
-    _("Add to project (bridged full)"));
-  new_setting->open_with_carla = true;
-  new_setting->bridge_mode = CARLA_BRIDGE_FULL;
-  CONNECT_SIGNAL (menuitem);
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project (carla)"), NULL,
+      "app.plugin-browser-add-to-project-bridged-full");
+  g_menu_append_item (menu, menuitem);
 #endif
 
+#if 0
   menuitem =
     GTK_MENU_ITEM (
       gtk_check_menu_item_new_with_mnemonic (
@@ -741,24 +653,10 @@ show_plugin_context_menu (
   g_signal_connect (
     G_OBJECT (menuitem), "toggled",
     G_CALLBACK (on_use_generic_ui_toggled), descr);
-
-  if (PLUGIN_MANAGER->collections->
-        num_collections > 0)
-    {
-      menuitem =
-        GTK_MENU_ITEM (
-          gtk_separator_menu_item_new ());
-      APPEND;
-    }
+#endif
 
   /* add to collection */
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Add to collection"), COLLECTIONS_ICON,
-      false, NULL);
-  gtk_widget_set_visible (
-    GTK_WIDGET (menuitem), true);
-  GtkWidget * submenu = gtk_menu_new ();
+  GMenu * add_collections_submenu = g_menu_new ();
   int num_added = 0;
   for (int i = 0;
        i < PLUGIN_MANAGER->collections->
@@ -773,41 +671,31 @@ show_plugin_context_menu (
           continue;
         }
 
-      GtkWidget * submenu_item =
-        gtk_menu_item_new_with_label (coll->name);
-      gtk_widget_set_visible (
-        GTK_WIDGET (submenu_item), true);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (submenu),
-        GTK_WIDGET (submenu_item));
-      g_signal_connect (
-        G_OBJECT (submenu_item), "activate",
-        G_CALLBACK (
-          on_plugin_descr_add_to_collection),
+      char tmp[600];
+      sprintf (
+        tmp,
+        "app.plugin-browser-add-to-collection::%p",
         coll);
+      menuitem =
+        z_gtk_create_menu_item (
+          coll->name, NULL, tmp);
+      g_menu_append_item (
+        add_collections_submenu, menuitem);
       num_added++;
     }
-  gtk_menu_item_set_submenu (
-    GTK_MENU_ITEM (menuitem),
-    GTK_WIDGET (submenu));
   if (num_added > 0)
     {
-      APPEND;
+      g_menu_append_section (
+        menu, _("Add to collection"),
+        G_MENU_MODEL (add_collections_submenu));
     }
   else
     {
-      g_object_ref_sink (menuitem);
-      g_object_unref (menuitem);
+      g_object_unref (add_collections_submenu);
     }
 
   /* remove from collection */
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Remove from collection"), "unfavorite",
-      false, NULL);
-  gtk_widget_set_visible (
-    GTK_WIDGET (menuitem), true);
-  submenu = gtk_menu_new ();
+  GMenu * remove_collections_submenu = g_menu_new ();
   num_added = 0;
   for (int i = 0;
        i < PLUGIN_MANAGER->collections->
@@ -822,44 +710,36 @@ show_plugin_context_menu (
           continue;
         }
 
-      GtkWidget * submenu_item =
-        gtk_menu_item_new_with_label (coll->name);
-      gtk_widget_set_visible (
-        GTK_WIDGET (submenu_item), true);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (submenu),
-        GTK_WIDGET (submenu_item));
-      g_signal_connect (
-        G_OBJECT (submenu_item), "activate",
-        G_CALLBACK (
-          on_plugin_descr_remove_from_collection),
+      char tmp[600];
+      sprintf (
+        tmp,
+        "app.plugin-browser-remove-from-collection::%p",
         coll);
+      menuitem =
+        z_gtk_create_menu_item (
+          coll->name, NULL, tmp);
+      g_menu_append_item (
+        remove_collections_submenu, menuitem);
       num_added++;
     }
-  gtk_menu_item_set_submenu (
-    GTK_MENU_ITEM (menuitem),
-    GTK_WIDGET (submenu));
   if (num_added > 0)
     {
-      APPEND;
+      g_menu_append_section (
+        menu, _("Remove from collection"),
+        G_MENU_MODEL (remove_collections_submenu));
     }
   else
     {
-      g_object_ref_sink (menuitem);
-      g_object_unref (menuitem);
+      g_object_unref (remove_collections_submenu);
     }
 
-#undef APPEND
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_plugin_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -911,119 +791,12 @@ on_plugin_right_click (
 }
 
 static void
-on_collection_add_activate (
-  GtkMenuItem *         menuitem,
-  PluginBrowserWidget * self)
-{
-  PluginCollection * collection =
-    plugin_collection_new ();
-
-  StringEntryDialogWidget * dialog =
-    string_entry_dialog_widget_new (
-      _("Collection name"), collection,
-      (GenericStringGetter)
-        plugin_collection_get_name,
-      (GenericStringSetter)
-        plugin_collection_set_name);
-  gtk_widget_show_all (GTK_WIDGET (dialog));
-  gtk_dialog_run (GTK_DIALOG (dialog));
-
-  if (strlen (collection->name) > 0)
-    {
-      g_debug ("accept collection");
-      plugin_collections_add (
-        PLUGIN_MANAGER->collections, collection,
-        F_SERIALIZE);
-      plugin_browser_widget_refresh_collections (
-        self);
-    }
-  else
-    {
-      g_message ("invalid collection name (empty)");
-    }
-
-  plugin_collection_free (collection);
-}
-
-static void
-on_collection_rename_activate (
-  GtkMenuItem *         menuitem,
-  PluginBrowserWidget * self)
-{
-  g_return_if_fail (
-    self->num_current_collections > 0);
-  PluginCollection * collection =
-    self->current_collections[0];
-
-  StringEntryDialogWidget * dialog =
-    string_entry_dialog_widget_new (
-      _("Collection name"), collection,
-      (GenericStringGetter)
-        plugin_collection_get_name,
-      (GenericStringSetter)
-        plugin_collection_set_name);
-  gtk_widget_show_all (GTK_WIDGET (dialog));
-  gtk_dialog_run (GTK_DIALOG (dialog));
-
-  plugin_collections_serialize_to_file (
-    PLUGIN_MANAGER->collections);
-
-  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
-}
-
-static void
-on_collection_remove_activate (
-  GtkMenuItem *      menuitem,
-  PluginBrowserWidget * self)
-{
-  g_return_if_fail (
-    self->num_current_collections > 0);
-  int result = GTK_RESPONSE_YES;
-  PluginCollection * collection =
-    self->current_collections[0];
-
-  if (collection->num_descriptors > 0)
-    {
-      GtkWidget * dialog =
-        gtk_message_dialog_new (
-          GTK_WINDOW (MAIN_WINDOW),
-          GTK_DIALOG_MODAL |
-            GTK_DIALOG_DESTROY_WITH_PARENT,
-          GTK_MESSAGE_QUESTION,
-          GTK_BUTTONS_YES_NO,
-          _("This collection contains %d plugins. "
-          "Are you sure you want to remove it?"),
-          collection->num_descriptors);
-      gtk_widget_show_all (GTK_WIDGET (dialog));
-      result =
-        gtk_dialog_run (GTK_DIALOG (dialog));
-      gtk_widget_destroy (dialog);
-    }
-
-  if (result == GTK_RESPONSE_YES)
-    {
-      plugin_collections_remove (
-        PLUGIN_MANAGER->collections,
-        self->current_collections[0],
-        F_SERIALIZE);
-
-      EVENTS_PUSH (
-        ET_PLUGIN_COLLETIONS_CHANGED, NULL);
-    }
-}
-
-static void
 show_collection_context_menu (
   PluginBrowserWidget * self,
   PluginCollection *    collection)
 {
-  GtkMenuItem * menuitem;
-  GtkWidget * menu = gtk_menu_new();
-
-#define APPEND \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), \
-    GTK_WIDGET (menuitem));
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   if (collection)
     {
@@ -1032,25 +805,15 @@ show_collection_context_menu (
 
       menuitem =
         z_gtk_create_menu_item (
-          _("Rename"), "edit-rename", false, NULL);
-      gtk_widget_set_visible (
-        GTK_WIDGET (menuitem), true);
-      APPEND;
-      g_signal_connect (
-        G_OBJECT (menuitem), "activate",
-        G_CALLBACK (on_collection_rename_activate),
-        self);
+          _("Rename"), "edit-rename",
+          "app.plugin-collection-rename");
+      g_menu_append_item (menu, menuitem);
 
       menuitem =
         z_gtk_create_menu_item (
-          _("Delete"), "edit-delete", false, NULL);
-      gtk_widget_set_visible (
-        GTK_WIDGET (menuitem), true);
-      APPEND;
-      g_signal_connect (
-        G_OBJECT (menuitem), "activate",
-        G_CALLBACK (on_collection_remove_activate),
-        self);
+          _("Delete"), "edit-delete",
+          "app.plugin-collection-remove");
+      g_menu_append_item (menu, menuitem);
     }
   else
     {
@@ -1058,27 +821,18 @@ show_collection_context_menu (
 
       menuitem =
         z_gtk_create_menu_item (
-          _("Add"), "add", false, NULL);
-      gtk_widget_set_visible (
-        GTK_WIDGET (menuitem), true);
-      APPEND;
-      g_signal_connect (
-        G_OBJECT (menuitem), "activate",
-        G_CALLBACK (on_collection_add_activate),
-        self);
+          _("Add"), "add",
+          "app.plugin-collection-add");
+      g_menu_append_item (menu, menuitem);
     }
 
-#undef APPEND
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_collection_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -1136,46 +890,25 @@ on_collection_right_click (
 }
 
 static void
-on_category_reset_activate (
-  GtkMenuItem *         menuitem,
-  PluginBrowserWidget * self)
-{
-  GtkTreeSelection * selection =
-    gtk_tree_view_get_selection (
-      (self->category_tree_view));
-  gtk_tree_selection_unselect_all (selection);
-}
-
-static void
 show_category_context_menu (
   PluginBrowserWidget * self)
 {
-  GtkWidget *menuitem;
-  GtkWidget * menu = gtk_menu_new();
-
-  /* FIXME this is allocating memory every time */
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   menuitem =
-    gtk_menu_item_new_with_label (_("Reset"));
-  gtk_widget_set_visible (menuitem, true);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu),
-    GTK_WIDGET (menuitem));
+    z_gtk_create_menu_item (
+      _("Reset"), NULL,
+      "app.plugin-browser-reset::category");
+  g_menu_append_item (menu, menuitem);
 
-  g_signal_connect (
-    G_OBJECT (menuitem), "activate",
-    G_CALLBACK (on_category_reset_activate),
-    self);
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_category_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -1205,46 +938,25 @@ on_category_right_click (
 }
 
 static void
-on_author_reset_activate (
-  GtkMenuItem *         menuitem,
-  PluginBrowserWidget * self)
-{
-  GtkTreeSelection * selection =
-    gtk_tree_view_get_selection (
-      (self->author_tree_view));
-  gtk_tree_selection_unselect_all (selection);
-}
-
-static void
 show_author_context_menu (
   PluginBrowserWidget * self)
 {
-  GtkWidget *menuitem;
-  GtkWidget * menu = gtk_menu_new();
-
-  /* FIXME this is allocating memory every time */
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   menuitem =
-    gtk_menu_item_new_with_label (_("Reset"));
-  gtk_widget_set_visible (menuitem, true);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu),
-    GTK_WIDGET (menuitem));
+    z_gtk_create_menu_item (
+      _("Reset"), NULL,
+      "app.plugin-browser-reset::author");
+  g_menu_append_item (menu, menuitem);
 
-  g_signal_connect (
-    G_OBJECT (menuitem), "activate",
-    G_CALLBACK (on_author_reset_activate),
-    self);
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_author_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -1472,26 +1184,31 @@ on_selection_changed (
   update_stack_switcher_emblems (self);
 }
 
-static void
-on_drag_data_get (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
-  gpointer          user_data)
+static GdkContentProvider *
+on_dnd_drag_prepare (
+  GtkDragSource * source,
+  double          x,
+  double          y,
+  gpointer        user_data)
 {
   GtkTreeView * tv = GTK_TREE_VIEW (user_data);
   PluginDescriptor * descr =
     z_gtk_get_single_selection_pointer (
       tv, PL_COLUMN_DESCR);
+  char descr_str[600];
+  sprintf (
+    descr_str, PLUGIN_DESCRIPTOR_DND_PREFIX "%p",
+    descr);
 
-  gtk_selection_data_set (data,
-    gdk_atom_intern_static_string (
-      TARGET_ENTRY_PLUGIN_DESCR),
-    32,
-    (const guchar *)&descr,
-    sizeof (descr));
+  GdkContentProvider * content_providers[] = {
+    gdk_content_provider_new_typed (
+      G_TYPE_STRING, descr_str),
+  };
+
+  return
+    gdk_content_provider_new_union (
+      content_providers,
+      G_N_ELEMENTS (content_providers));
 }
 
 static GtkTreeModel *
@@ -1880,24 +1597,15 @@ tree_view_setup (
 
   if (dnd)
     {
-      char * entry_plugin_descr =
-        g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
-      GtkTargetEntry entries[] = {
-        {
-          entry_plugin_descr, GTK_TARGET_SAME_APP,
-          symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR),
-        },
-      };
-      gtk_tree_view_enable_model_drag_source (
-        GTK_TREE_VIEW (tree_view),
-        GDK_BUTTON1_MASK,
-        entries, G_N_ELEMENTS (entries),
-        GDK_ACTION_COPY);
-      g_free (entry_plugin_descr);
-
+      GtkDragSource * drag_source =
+        gtk_drag_source_new ();
       g_signal_connect (
-        GTK_WIDGET (tree_view), "drag-data-get",
-        G_CALLBACK (on_drag_data_get), tree_view);
+        drag_source, "prepare",
+        G_CALLBACK (on_dnd_drag_prepare),
+        tree_view);
+      gtk_widget_add_controller (
+        GTK_WIDGET (tree_view),
+        GTK_EVENT_CONTROLLER (drag_source));
     }
 
   GtkTreeSelection * sel =
@@ -1964,10 +1672,10 @@ on_visible_child_changed (
 
 static void
 toggles_changed (
-  GtkToggleToolButton * btn,
+  GtkToggleButton * btn,
   PluginBrowserWidget * self)
 {
-  if (gtk_toggle_tool_button_get_active (btn))
+  if (gtk_toggle_button_get_active (btn))
     {
       /* block signals, unset all, unblock */
       g_signal_handlers_block_by_func (
@@ -1989,11 +1697,11 @@ toggles_changed (
             S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_INSTRUMENT);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_effects, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_modulators, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_midi_modifiers, 0);
         }
       else if (btn == self->toggle_effects)
@@ -2002,11 +1710,11 @@ toggles_changed (
             S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_EFFECT);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_instruments, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_modulators, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_midi_modifiers, 0);
         }
       else if (btn == self->toggle_modulators)
@@ -2015,11 +1723,11 @@ toggles_changed (
             S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_MODULATOR);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_instruments, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_effects, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_midi_modifiers, 0);
         }
       else if (btn == self->toggle_midi_modifiers)
@@ -2028,11 +1736,11 @@ toggles_changed (
             S_UI_PLUGIN_BROWSER,
             "plugin-browser-filter",
             PLUGIN_BROWSER_FILTER_MIDI_EFFECT);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_instruments, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_effects, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_modulators, 0);
         }
 
@@ -2080,7 +1788,7 @@ on_map_event (
           S_UI,
           "browser-divider-position");
       gtk_paned_set_position (
-        GTK_PANED (self), divider_pos);
+        self->paned, divider_pos);
       self->first_time_position_set = 1;
     }
 
@@ -2109,8 +1817,7 @@ on_position_change (
           S_UI,
           "browser-divider-position");
       gtk_paned_set_position (
-        GTK_PANED (self),
-        divider_pos);
+        self->paned, divider_pos);
 
       self->first_time_position_set = 0;
       /*g_message ("***************************got plugin position %d",*/
@@ -2120,8 +1827,7 @@ on_position_change (
     {
       /* save the divide position */
       divider_pos =
-        gtk_paned_get_position (
-          GTK_PANED (self));
+        gtk_paned_get_position (self->paned);
       g_settings_set_int (
         S_UI,
         "browser-divider-position",
@@ -2173,16 +1879,18 @@ plugin_browser_widget_new ()
   plugin_browser_widget_refresh_collections (self);
 
   /* connect right click handler */
-  GtkGestureMultiPress * mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->collection_tree_view)));
+  GtkGestureClick * mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_collection_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->collection_tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 
   /* setup protocols */
   self->protocol_tree_model =
@@ -2203,15 +1911,17 @@ plugin_browser_widget_new ()
 
   /* connect right click handler */
   mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->author_tree_view)));
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_author_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->author_tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 
   /* setup categories */
   self->category_tree_model =
@@ -2223,15 +1933,16 @@ plugin_browser_widget_new ()
 
   /* connect right click handler */
   mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->category_tree_view)));
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_category_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->category_tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 
   /* populate plugins */
   self->plugin_tree_model =
@@ -2250,15 +1961,16 @@ plugin_browser_widget_new ()
 
   /* connect right click handler */
   mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->plugin_tree_view)));
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_plugin_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->plugin_tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 
   /* set the selected values */
   PluginBrowserTab tab =
@@ -2301,19 +2013,19 @@ plugin_browser_widget_new ()
     case PLUGIN_BROWSER_FILTER_NONE:
       break;
     case PLUGIN_BROWSER_FILTER_INSTRUMENT:
-      gtk_toggle_tool_button_set_active (
+      gtk_toggle_button_set_active (
         self->toggle_instruments, 1);
       break;
     case PLUGIN_BROWSER_FILTER_EFFECT:
-      gtk_toggle_tool_button_set_active (
+      gtk_toggle_button_set_active (
         self->toggle_effects, 1);
       break;
     case PLUGIN_BROWSER_FILTER_MODULATOR:
-      gtk_toggle_tool_button_set_active (
+      gtk_toggle_button_set_active (
         self->toggle_modulators, 1);
       break;
     case PLUGIN_BROWSER_FILTER_MIDI_EFFECT:
-      gtk_toggle_tool_button_set_active (
+      gtk_toggle_button_set_active (
         self->toggle_midi_modifiers, 1);
       break;
     }
@@ -2323,16 +2035,11 @@ plugin_browser_widget_new ()
     g_settings_get_int (
       S_UI,
       "browser-divider-position");
-  gtk_paned_set_position (
-    GTK_PANED (self),
-    divider_pos);
+  gtk_paned_set_position (self->paned, divider_pos);
   self->first_time_position_set = 1;
   g_message (
     "setting plugin browser divider pos to %d",
     divider_pos);
-
-  gtk_widget_add_events (
-    GTK_WIDGET (self), GDK_STRUCTURE_MASK);
 
   /* notify when tab changes */
   g_signal_connect (
@@ -2366,6 +2073,7 @@ plugin_browser_widget_class_init (
     PluginBrowserWidget, \
     name)
 
+  BIND_CHILD (paned);
   BIND_CHILD (collection_scroll);
   BIND_CHILD (protocol_scroll);
   BIND_CHILD (category_scroll);
@@ -2412,14 +2120,12 @@ plugin_browser_widget_init (
   gtk_stack_switcher_set_stack (
     self->stack_switcher,
     self->stack);
-  gtk_widget_show_all (
-    GTK_WIDGET (self->stack_switcher));
-  gtk_box_pack_start (
+  gtk_box_append (
     self->stack_switcher_box,
-    GTK_WIDGET (self->stack_switcher),
-    true, true, 0);
+    GTK_WIDGET (self->stack_switcher));
 
   /* set stackswitcher icons */
+#if 0
   GValue iconval1 = G_VALUE_INIT;
   GValue iconval2 = G_VALUE_INIT;
   GValue iconval3 = G_VALUE_INIT;
@@ -2481,7 +2187,9 @@ plugin_browser_widget_init (
   g_value_unset (&iconval2);
   g_value_unset (&iconval3);
   g_value_unset (&iconval4);
+#endif
 
+#if 0
   GList *children, *iter;
   children =
     gtk_container_get_children (
@@ -2498,12 +2206,13 @@ plugin_browser_widget_init (
         radio, "hexpand", true, NULL);
     }
   g_list_free (children);
+#endif
 
   self->current_collections =
     calloc (40000, sizeof (PluginCollection *));
   self->current_descriptors =
     calloc (40000, sizeof (PluginDescriptor *));
 
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "plugin-browser");
 }

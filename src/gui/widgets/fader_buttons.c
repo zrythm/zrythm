@@ -40,7 +40,7 @@
 G_DEFINE_TYPE (
   FaderButtonsWidget,
   fader_buttons_widget,
-  GTK_TYPE_BUTTON_BOX)
+  GTK_TYPE_BOX)
 
 static void
 on_record_toggled (
@@ -237,7 +237,7 @@ fader_buttons_widget_refresh (
 
 static void
 on_btn_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -249,10 +249,6 @@ on_btn_right_click (
 
   Fader * fader =
     track_get_fader (self->track, true);
-
-  GtkWidget * menu = gtk_menu_new();
-  GtkWidget * menuitem =
-    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
 
   Port * port = NULL;
   if (widget == GTK_WIDGET (self->mute))
@@ -276,15 +272,18 @@ on_btn_right_click (
       port = self->track->recording;
     }
 
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (ui_bind_midi_cc_item_activate_cb),
-    port);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
-  gtk_widget_show_all (menu);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  char tmp[600];
+  sprintf (
+    tmp, "app.bind-midi-cc::%p", port);
+  menuitem =
+    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  g_menu_append_item (menu, menuitem);
+
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
@@ -340,19 +339,21 @@ fader_buttons_widget_init (
       G_CALLBACK (on_record_toggled), self);
 
   /* add right click menus */
-  GtkGestureMultiPress * mp;
+  GtkGestureClick * mp;
 
 #define ADD_RIGHT_CLICK_CB(widget) \
   mp = \
-    GTK_GESTURE_MULTI_PRESS ( \
-      gtk_gesture_multi_press_new ( \
-        GTK_WIDGET (widget))); \
+    GTK_GESTURE_CLICK ( \
+      gtk_gesture_click_new ()); \
   gtk_gesture_single_set_button ( \
     GTK_GESTURE_SINGLE (mp), \
     GDK_BUTTON_SECONDARY); \
   g_signal_connect ( \
     G_OBJECT (mp), "pressed", \
-    G_CALLBACK (on_btn_right_click), self)
+    G_CALLBACK (on_btn_right_click), self); \
+  gtk_widget_add_controller ( \
+    GTK_WIDGET (widget), \
+    GTK_EVENT_CONTROLLER (mp))
 
   ADD_RIGHT_CLICK_CB (self->mute);
   ADD_RIGHT_CLICK_CB (self->solo);

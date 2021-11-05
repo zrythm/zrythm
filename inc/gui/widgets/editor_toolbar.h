@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ */
+
 #ifndef __GUI_WIDGETS_PIANO_ROLL_TOOLBAR_H__
 #define __GUI_WIDGETS_PIANO_ROLL_TOOLBAR_H__
 
@@ -28,11 +32,7 @@ G_DECLARE_FINAL_TYPE (
   EditorToolbarWidget,
   editor_toolbar_widget,
   Z, EDITOR_TOOLBAR_WIDGET,
-  GtkToolbar)
-
-/**
- * \file
- */
+  GtkBox)
 
 #define MW_EDITOR_TOOLBAR \
   MW_CLIP_EDITOR->editor_toolbar
@@ -51,16 +51,16 @@ typedef struct _PlayheadScrollButtonsWidget
  */
 typedef struct _EditorToolbarWidget
 {
-  GtkToolbar          parent_instance;
+  GtkBox              parent_instance;
   GtkComboBoxText *   chord_highlighting;
   SnapBoxWidget *     snap_box;
   QuantizeBoxWidget * quantize_box;
-  GtkToolButton *     event_viewer_toggle;
+  GtkButton *     event_viewer_toggle;
   ButtonWithMenuWidget * functions_btn;
   GtkButton *         apply_function_btn;
 
   GtkSeparator *      sep_after_chord_highlight;
-  GtkToolItem *       chord_highlight_tool_item;
+  GtkBox *       chord_highlight_box;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
 

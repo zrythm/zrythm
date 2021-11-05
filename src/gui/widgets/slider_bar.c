@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,23 +19,24 @@
 
 #include "gui/widgets/slider_bar.h"
 
-G_DEFINE_TYPE (SliderBarWidget,
-               slider_bar_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  SliderBarWidget, slider_bar_widget,
+  GTK_TYPE_DRAWING_AREA)
 
-static int
+static void
 slider_bar_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  SliderBarWidget * self)
+  GtkDrawingArea* drawing_area,
+  cairo_t* cr,
+  int width,
+  int height,
+  gpointer user_data)
 {
+  SliderBarWidget * self =
+    Z_SLIDER_BAR_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (self);
+
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -43,8 +44,6 @@ slider_bar_draw_cb (
   cairo_set_source_rgba (cr, 1.0, 0.3, 0.3, 1.0);
   cairo_rectangle (cr, 0, 0, width, height);
   cairo_fill (cr);
-
-  return FALSE;
 }
 
 /**
@@ -85,9 +84,9 @@ _slider_bar_widget_new (
   gtk_widget_set_size_request (
     GTK_WIDGET (self), width, height);
 
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (slider_bar_draw_cb), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    slider_bar_draw_cb, self, NULL);
 
   return self;
 }
@@ -96,21 +95,11 @@ static void
 slider_bar_widget_init (
   SliderBarWidget * self)
 {
-  /* make it able to notify */
-  gtk_widget_set_has_window (
-    GTK_WIDGET (self), TRUE);
-  int crossing_mask =
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (
-    GTK_WIDGET (self), crossing_mask);
-
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (
-        GTK_WIDGET (self)));
-
-  gtk_widget_set_visible (
-    GTK_WIDGET (self), 1);
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
 }
 
 static void

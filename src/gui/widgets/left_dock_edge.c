@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -83,9 +83,11 @@ left_dock_edge_widget_refresh (
 
   int page_num =
     g_settings_get_int (S_UI, "left-panel-tab");
+  GtkNotebook * notebook =
+    foldable_notebook_widget_get_notebook (
+      self->inspector_notebook);
   gtk_notebook_set_current_page (
-    GTK_NOTEBOOK (self->inspector_notebook),
-    page_num);
+    notebook, page_num);
 }
 
 void
@@ -103,9 +105,11 @@ left_dock_edge_widget_setup (
   visibility_widget_refresh (
     self->visibility);
 
+  GtkNotebook * notebook =
+    foldable_notebook_widget_get_notebook (
+      self->inspector_notebook);
   g_signal_connect (
-    G_OBJECT (self->inspector_notebook),
-    "switch-page",
+    G_OBJECT (notebook), "switch-page",
     G_CALLBACK (on_notebook_switch_page), self);
 }
 
@@ -117,10 +121,7 @@ wrap_inspector_in_scrolled_window (
   GtkScrolledWindow * scroll;
   GtkViewport * viewport;
   scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new (NULL, NULL));
-  gtk_widget_set_visible (
-    GTK_WIDGET (scroll), true);
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   /*gtk_scrolled_window_set_overlay_scrolling (*/
     /*scroll, false);*/
   gtk_scrolled_window_set_policy (
@@ -128,12 +129,10 @@ wrap_inspector_in_scrolled_window (
   viewport =
     GTK_VIEWPORT (
       gtk_viewport_new (NULL, NULL));
-  gtk_widget_set_visible (
-    GTK_WIDGET (viewport), true);
-  gtk_container_add (
-    GTK_CONTAINER (viewport), widget);
-  gtk_container_add (
-    GTK_CONTAINER (scroll),
+  gtk_viewport_set_child (
+    GTK_VIEWPORT (viewport), widget);
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (scroll),
     GTK_WIDGET (viewport));
 
   return scroll;
@@ -169,25 +168,23 @@ left_dock_edge_widget_init (
   GtkScrolledWindow * scroll;
 
   GtkNotebook * notebook =
-    GTK_NOTEBOOK (self->inspector_notebook);
+    foldable_notebook_widget_get_notebook (
+      self->inspector_notebook);
 
   /* setup track inspector */
   self->track_inspector =
     inspector_track_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "track-inspector",
-      GTK_ICON_SIZE_LARGE_TOOLBAR);
+      "track-inspector");
   gtk_widget_set_tooltip_text (
     img, _("Track inspector"));
   inspector_wrap =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (inspector_wrap),
+  gtk_box_append (
+    GTK_BOX (inspector_wrap),
     GTK_WIDGET (self->track_inspector));
-  gtk_widget_set_visible (
-    GTK_WIDGET (inspector_wrap), 1);
   scroll =
     wrap_inspector_in_scrolled_window (
       self, GTK_WIDGET (inspector_wrap));
@@ -207,15 +204,14 @@ left_dock_edge_widget_init (
     inspector_plugin_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "plug",
-      GTK_ICON_SIZE_LARGE_TOOLBAR);
+      "plug");
   gtk_widget_set_tooltip_text (
     img, _("Plugin inspector"));
   inspector_wrap =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (inspector_wrap),
+  gtk_box_append (
+    inspector_wrap,
     GTK_WIDGET (self->plugin_inspector));
   gtk_widget_set_visible (
     GTK_WIDGET (inspector_wrap), 1);
@@ -236,8 +232,7 @@ left_dock_edge_widget_init (
   /* setup visibility */
   img =
     gtk_image_new_from_icon_name (
-      "view-visible",
-      GTK_ICON_SIZE_LARGE_TOOLBAR);
+      "view-visible");
   gtk_widget_set_tooltip_text (
     img, _("Visibility"));
   self->visibility = visibility_widget_new ();
@@ -246,8 +241,8 @@ left_dock_edge_widget_init (
   self->visibility_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (self->visibility_box),
+  gtk_box_append (
+    self->visibility_box,
     GTK_WIDGET (self->visibility));
   gtk_widget_set_visible (
     GTK_WIDGET (self->visibility_box), 1);
@@ -263,6 +258,9 @@ left_dock_edge_widget_init (
   gtk_widget_set_size_request (
     GTK_WIDGET (self->visibility),
     min_width, -1);
+
+  gtk_notebook_set_tab_pos (
+    notebook, GTK_POS_LEFT);
 }
 
 static void
@@ -278,6 +276,5 @@ left_dock_edge_widget_class_init (
 
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    LeftDockEdgeWidget,
-    inspector_notebook);
+    LeftDockEdgeWidget, inspector_notebook);
 }

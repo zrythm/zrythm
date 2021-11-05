@@ -56,7 +56,7 @@ typedef struct _ChannelSendSelectorWidget
   GtkBox *            vbox;
 
   /** Button group below the list box. */
-  GtkButtonBox *      btn_box;
+  GtkBox *      btn_box;
 
   GtkTreeModel *      model;
   GtkTreeView *       treeview;

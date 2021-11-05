@@ -158,6 +158,9 @@ G_DEFINE_QUARK (
 */
 #define N_BUFFER_CYCLES 4
 
+/* pulled by X11 */
+#undef Bool
+
 /**
  * Returns whether Zrythm supports the given
  * option.
@@ -2105,7 +2108,7 @@ lv2_plugin_is_ui_supported (
     }
 
   if (suil_ui_supported (
-        LV2_UI__Gtk3UI, ui_class) ||
+        LV2_UI__Gtk4UI, ui_class) ||
       string_is_equal (
         ui_class, LV2_KX__externalUi))
     {
@@ -2428,7 +2431,7 @@ lv2_plugin_pick_ui (
               acceptable =
                 (bool)
                 suil_ui_supported (
-                  LV2_UI__Gtk3UI, ui_type_uri);
+                  LV2_UI__Gtk4UI, ui_type_uri);
               if (acceptable)
                 {
                   if (out_ui_type)

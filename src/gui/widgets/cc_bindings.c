@@ -51,12 +51,9 @@ cc_bindings_widget_new ()
 
   self->bindings_tree =
     cc_bindings_tree_widget_new ();
-  gtk_box_pack_start (
+  gtk_box_append (
     GTK_BOX (self),
-    GTK_WIDGET (self->bindings_tree),
-    1, 1, 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->bindings_tree), 1);
+    GTK_WIDGET (self->bindings_tree));
   gtk_widget_set_vexpand (
     GTK_WIDGET (self->bindings_tree), 1);
 

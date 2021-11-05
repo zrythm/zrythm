@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,7 +29,7 @@
 G_DEFINE_TYPE (
   ButtonWithMenuWidget,
   button_with_menu_widget,
-  GTK_TYPE_BUTTON_BOX)
+  GTK_TYPE_BOX)
 
 void
 button_with_menu_widget_set_menu_model (
@@ -54,47 +54,35 @@ void
 button_with_menu_widget_setup (
   ButtonWithMenuWidget * self,
   GtkButton *            btn,
-  GtkMenu *              menu,
   GMenuModel *           gmenu_model,
   bool                   downward_arrow,
   int                    height,
   const char *           btn_tooltip_text,
   const char *           menu_tooltip_text)
 {
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (btn));
-  gtk_button_box_set_child_non_homogeneous (
-    GTK_BUTTON_BOX (self),
-    GTK_WIDGET (btn), true);
+  gtk_box_set_homogeneous (
+    GTK_BOX (self), false);
+
+  gtk_box_append (
+    GTK_BOX (self), GTK_WIDGET (btn));
 
   /* add arrow */
   self->menu_btn =
     GTK_MENU_BUTTON (gtk_menu_button_new ());
-  GdkPixbuf * pixbuf =
-    gtk_icon_theme_load_icon (
-      gtk_icon_theme_get_default (),
-      downward_arrow ?
-        "arrow-down-small" : "arrow-up-small",
-      6, 0, NULL);
-  GtkWidget * img =
-    gtk_image_new_from_pixbuf (pixbuf);
-  gtk_button_set_image (
-    GTK_BUTTON (self->menu_btn), img);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->menu_btn), true);
-  gtk_container_add (
-    GTK_CONTAINER (self),
+  gtk_menu_button_set_icon_name (
+    GTK_MENU_BUTTON (self->menu_btn),
+    downward_arrow ?
+      "arrow-down-small" : "arrow-up-small");
+  gtk_box_append (
+    GTK_BOX (self),
     GTK_WIDGET (self->menu_btn));
-  gtk_button_box_set_child_non_homogeneous (
-    GTK_BUTTON_BOX (self),
-    GTK_WIDGET (self->menu_btn), true);
-  z_gtk_widget_add_style_class (
+  /* TODO write CSS rule to set image size to 6 */
+  gtk_widget_add_css_class (
     GTK_WIDGET (self->menu_btn), "arrow-button");
 
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "linked");
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "button-with-menu");
 
   int width;

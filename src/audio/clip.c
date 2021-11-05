@@ -30,6 +30,7 @@
 #include "utils/dsp.h"
 #include "utils/file.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/hash.h"
 #include "utils/io.h"
 #include "utils/math.h"
@@ -684,8 +685,8 @@ audio_clip_edit_in_ext_program (
   gtk_widget_set_margin_end (main_box, 4);
   gtk_widget_set_margin_top (main_box, 4);
   gtk_widget_set_margin_bottom (main_box, 4);
-  gtk_container_add (
-    GTK_CONTAINER (content_area), main_box);
+  gtk_box_append (
+    GTK_BOX (content_area), main_box);
 
   GtkWidget * lbl = gtk_label_new ("");
   gtk_label_set_selectable (GTK_LABEL (lbl), true);
@@ -696,7 +697,7 @@ audio_clip_edit_in_ext_program (
       abs_path);
   gtk_label_set_markup (
     GTK_LABEL (lbl), markup);
-  gtk_container_add (GTK_CONTAINER (main_box), lbl);
+  gtk_box_append (GTK_BOX (main_box), lbl);
 
   GtkWidget * launch_box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
@@ -704,8 +705,8 @@ audio_clip_edit_in_ext_program (
     launch_box, GTK_ALIGN_CENTER);
   GtkWidget * app_chooser_button =
     gtk_app_chooser_button_new (content_type);
-  gtk_container_add (
-    GTK_CONTAINER (launch_box), app_chooser_button);
+  gtk_box_append (
+    GTK_BOX (launch_box), app_chooser_button);
   GtkWidget * btn =
     gtk_button_new_with_label (_("Launch"));
   AppLaunchData * data = object_new (AppLaunchData);
@@ -716,15 +717,13 @@ audio_clip_edit_in_ext_program (
     G_OBJECT (btn), "clicked",
     G_CALLBACK (on_launch_clicked), data,
     (GClosureNotify) app_launch_data_free, 0);
-  gtk_container_add (
-    GTK_CONTAINER (launch_box), btn);
-  gtk_container_add (
-    GTK_CONTAINER (main_box), launch_box);
+  gtk_box_append (
+    GTK_BOX (launch_box), btn);
+  gtk_box_append (
+    GTK_BOX (main_box), launch_box);
 
-  gtk_widget_show_all (content_area);
   int ret =
-    gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+    z_gtk_dialog_run (GTK_DIALOG (dialog), true);
   if (ret != GTK_RESPONSE_ACCEPT)
     {
       g_debug ("cancelled");

@@ -24,6 +24,7 @@
 #include "audio/engine.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/active_hardware_mb.h"
+#include "gui/widgets/file_chooser_button.h"
 #include "gui/widgets/preferences.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
@@ -121,12 +122,14 @@ on_backends_combo_box_active_changed (
 
 static void
 on_file_set (
-  GtkFileChooserButton * widget,
-  CallbackData *         data)
+  GtkNativeDialog* dialog,
+  gint response_id,
+  gpointer user_data)
 {
-  GFile * file =
-    gtk_file_chooser_get_file (
-      GTK_FILE_CHOOSER (widget));
+  CallbackData * data = (CallbackData *) user_data;
+  GtkFileChooser * fc = GTK_FILE_CHOOSER (dialog);
+
+  GFile * file = gtk_file_chooser_get_file (fc);
   char * str =
     g_file_get_path (file);
   g_settings_set_string (
@@ -437,8 +440,8 @@ make_control (
       gtk_widget_set_hexpand (scale, true);
       gtk_scale_add_mark (
         GTK_SCALE (scale), 1.0, GTK_POS_TOP, NULL);
-      gtk_container_add (
-        GTK_CONTAINER (widget), scale);
+      gtk_box_append (
+        GTK_BOX (widget), scale);
       GtkAdjustment * adj =
         gtk_range_get_adjustment (
           GTK_RANGE (scale));
@@ -484,18 +487,20 @@ make_control (
           path_type == PATH_TYPE_FILE)
         {
           widget =
-            gtk_file_chooser_button_new (
-              path_type == PATH_TYPE_DIRECTORY ?
-              _("Select a folder") :
-              _("Select a file"),
-              path_type == PATH_TYPE_DIRECTORY ?
-              GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER :
-              GTK_FILE_CHOOSER_ACTION_OPEN);
+            GTK_WIDGET (
+              file_chooser_button_widget_new (
+                GTK_WINDOW (MAIN_WINDOW),
+                path_type == PATH_TYPE_DIRECTORY ?
+                _("Select a folder") :
+                _("Select a file"),
+                path_type == PATH_TYPE_DIRECTORY ?
+                GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER :
+                GTK_FILE_CHOOSER_ACTION_OPEN));
           char * path =
             g_settings_get_string (
               info->settings, key);
-          gtk_file_chooser_set_current_folder (
-            GTK_FILE_CHOOSER (widget),
+          file_chooser_button_widget_set_current_dir (
+            Z_FILE_CHOOSER_BUTTON_WIDGET (widget),
             path);
           g_free (path);
           CallbackData * data =
@@ -503,13 +508,11 @@ make_control (
           data->info = info;
           data->preferences_widget = self;
           data->key = g_strdup (key);
-          g_signal_connect_data (
-            G_OBJECT (widget), "file-set",
-            G_CALLBACK (on_file_set),
-            data,
+          file_chooser_button_widget_set_response_callback (
+            Z_FILE_CHOOSER_BUTTON_WIDGET (widget),
+            G_CALLBACK (on_file_set), data,
             (GClosureNotify)
-              on_closure_notify_delete_data,
-            G_CONNECT_AFTER);
+              on_closure_notify_delete_data);
         }
       else if (path_type == PATH_TYPE_NONE)
         {
@@ -622,8 +625,8 @@ make_control (
               char * current_val =
                 g_settings_get_string (
                   info->settings, key);
-              gtk_entry_set_text (
-                GTK_ENTRY (widget), current_val);
+              gtk_editable_set_text (
+                GTK_EDITABLE (widget), current_val);
               g_free (current_val);
               CallbackData * data =
                 object_new (CallbackData);
@@ -653,8 +656,8 @@ make_control (
               info->settings, key);
           char * joined_str =
             g_strjoinv (G_SEARCHPATH_SEPARATOR_S, paths);
-          gtk_entry_set_text (
-            GTK_ENTRY (widget), joined_str);
+          gtk_editable_set_text (
+            GTK_EDITABLE (widget), joined_str);
           g_free (joined_str);
           g_strfreev (paths);
           CallbackData * data =
@@ -711,8 +714,7 @@ add_subgroup (
       localized_subgroup_name, true, false,
       0.f, 0.5f);
   gtk_widget_set_visible (label, true);
-  gtk_container_add (
-    GTK_CONTAINER (page_box), label);
+  gtk_widget_set_parent (label, page_box);
 
   char ** keys =
     g_settings_schema_list_keys (info->schema);
@@ -744,16 +746,14 @@ add_subgroup (
       GtkWidget * box =
         gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
       gtk_widget_set_visible (box, true);
-      gtk_container_add (
-        GTK_CONTAINER (page_box), box);
+      gtk_widget_set_parent (box, page_box);
 
       /* add label */
       GtkWidget * lbl =
         plugin_gtk_new_label (
           summary, false, false, 1.f, 0.5f);
       gtk_widget_set_visible (lbl, true);
-      gtk_container_add (
-        GTK_CONTAINER (box), lbl);
+      gtk_box_append (GTK_BOX (box), lbl);
       gtk_size_group_add_widget (
         size_group, lbl);
 
@@ -775,8 +775,7 @@ add_subgroup (
             }
           gtk_widget_set_tooltip_text (
             widget, description);
-          gtk_container_add (
-            GTK_CONTAINER (box), widget);
+          gtk_box_append (GTK_BOX (box), widget);
           num_controls++;
         }
       else
@@ -788,8 +787,7 @@ add_subgroup (
   /* Remove label if no controls added */
   if (num_controls == 0)
     {
-      gtk_container_remove (
-        GTK_CONTAINER (page_box), label);
+      g_object_unref (label);
     }
 }
 
@@ -913,8 +911,8 @@ on_window_closed (
   gtk_window_set_transient_for (
     GTK_WINDOW (dialog),
     GTK_WINDOW (self));
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  gtk_window_set_modal (GTK_WINDOW (dialog), true);
+  gtk_widget_show (dialog);
 
   MAIN_WINDOW->preferences_opened = false;
 }
@@ -957,8 +955,8 @@ preferences_widget_init (
     GTK_NOTEBOOK (gtk_notebook_new ());
   gtk_widget_set_visible (
     GTK_WIDGET (self->group_notebook), true);
-  gtk_container_add (
-    GTK_CONTAINER (
+  gtk_box_append (
+    GTK_BOX (
       gtk_dialog_get_content_area (
         GTK_DIALOG (self))),
     GTK_WIDGET (self->group_notebook));

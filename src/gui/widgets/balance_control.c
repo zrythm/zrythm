@@ -319,62 +319,35 @@ drag_end (
 }
 
 static void
-on_reset (
-  GtkMenuItem *menuitem,
-  BalanceControlWidget * self)
-{
-  SET_VAL (0.5);
-}
-
-static void
-on_bind_midi_cc (
-  GtkMenuItem * menuitem,
-  BalanceControlWidget * self)
-{
-  BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new (
-      self->port, true);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
 show_context_menu (
   BalanceControlWidget * self)
 {
-  GtkWidget *menu, *menuitem;
+  g_return_if_fail (self->port);
 
-  menu = gtk_menu_new();
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
+  char tmp[600];
+  sprintf (
+    tmp, "app.reset-stereo-balance::%p", self->port);
   menuitem =
-    gtk_menu_item_new_with_label (
-      _("Reset"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_reset), self);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("Reset"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
 
-  if (self->port)
-    {
-      menuitem =
-        GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
-      g_signal_connect (
-        menuitem, "activate",
-        G_CALLBACK (on_bind_midi_cc), self);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
-    }
+  sprintf (
+    tmp, "app.bind-midi-cc::%p", self->port);
+  menuitem =
+    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  g_menu_append_item (menu, menuitem);
 
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_right_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -413,10 +386,12 @@ balance_control_widget_new (
   self->port = port;
 
   /* add right mouse multipress */
-  GtkGestureMultiPress * right_mouse_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+  GtkGestureClick * right_mouse_mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (right_mouse_mp));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mouse_mp),
     GDK_BUTTON_SECONDARY);
@@ -469,19 +444,13 @@ balance_control_widget_init (
   gdk_rgba_parse (
     &self->end_color, "rgba(0%,50%,50%,1.0)");
 
-  /* make it able to notify */
-  gtk_widget_set_has_window (
-    GTK_WIDGET (self), TRUE);
-  int crossing_mask =
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (
-    GTK_WIDGET (self), crossing_mask);
-
   gtk_widget_set_margin_start (
     GTK_WIDGET (self), 2);
   gtk_widget_set_margin_end (
     GTK_WIDGET (self), 2);
 
+  /* TODO port to gtk_tooltip_set_custom() */
+#if 0
   self->tooltip_win =
     GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
   gtk_window_set_type_hint (
@@ -496,10 +465,14 @@ balance_control_widget_init (
     GTK_WIDGET (self->tooltip_label));
   gtk_window_set_position (
     self->tooltip_win, GTK_WIN_POS_MOUSE);
+#endif
 
   self->drag =
     GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
+      gtk_gesture_drag_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
 
   PangoFontDescription * desc;
   self->layout =

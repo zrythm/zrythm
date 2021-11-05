@@ -45,7 +45,7 @@ G_DEFINE_TYPE (
 
 static void
 on_play_clicked (
-  GtkToolButton *          toolbutton,
+  GtkButton *          toolbutton,
   FileAuditionerControlsWidget * self)
 {
   SupportedFile * descr =
@@ -59,7 +59,7 @@ on_play_clicked (
 
 static void
 on_stop_clicked (
-  GtkToolButton *          toolbutton,
+  GtkButton *          toolbutton,
   FileAuditionerControlsWidget * self)
 {
   sample_processor_stop_file_playback (
@@ -244,7 +244,7 @@ file_auditioner_controls_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "file-auditioner-controls");
 
   /* set menu */

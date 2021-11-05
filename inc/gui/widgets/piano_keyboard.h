@@ -33,7 +33,7 @@
   (piano_keyboard_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PianoKeyboardWidget,
-  piano_keyboard_widget, Z, PIANO_KEYBOARD,
+  piano_keyboard_widget, Z, PIANO_KEYBOARD_WIDGET,
   GtkDrawingArea)
 
 typedef struct ChordDescriptor ChordDescriptor;

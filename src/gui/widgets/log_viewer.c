@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -90,8 +90,8 @@ log_viewer_widget_new (void)
   gtk_widget_set_visible (
     GTK_WIDGET (self->src_view), true);
 
-  gtk_container_add (
-    GTK_CONTAINER (self->source_view_box),
+  gtk_box_append (
+    GTK_BOX (self->source_view_box),
     GTK_WIDGET (self->src_view));
 
   g_signal_connect (

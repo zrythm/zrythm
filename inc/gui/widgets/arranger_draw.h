@@ -49,11 +49,10 @@ typedef struct ArrangerDrawTaskData
   cairo_t *         cr;
 } ArrangerDrawTaskData;
 
-gboolean
-arranger_draw_cb (
-  GtkWidget *      widget,
-  cairo_t *        cr,
-  ArrangerWidget * self);
+void
+arranger_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot);
 
 void *
 arranger_draw_task_data_new (void);

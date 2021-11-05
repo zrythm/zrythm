@@ -1,0 +1,4 @@
+[wrap-git]
+directory=gtksourceview5
+url=https://gitlab.gnome.org/GNOME/gtksourceview
+revision=5.2.0

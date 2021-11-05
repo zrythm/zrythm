@@ -42,21 +42,19 @@
 G_DEFINE_TYPE (
   FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
 
-static int
+static void
 fader_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  void* data)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
-  FaderWidget * self = (FaderWidget *) widget;
+  FaderWidget * self = Z_FADER_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
 
   GtkStyleContext *context =
   gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -170,38 +168,36 @@ fader_draw_cb (
   cairo_line_to (
     cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
-
-  return FALSE;
 }
 
-
-static gboolean
-on_motion (GtkWidget * widget, GdkEvent *event)
+static void
+on_enter (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  FaderWidget * self = Z_FADER_WIDGET (widget);
-
-  if (gdk_event_get_event_type (event) ==
-        GDK_ENTER_NOTIFY)
-    {
+  FaderWidget * self = Z_FADER_WIDGET (user_data);
 #if 0
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT, 0);
+  gtk_widget_set_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT, 0);
 #endif
-      self->hover = true;
-    }
-  else if (gdk_event_get_event_type (event) ==
-             GDK_LEAVE_NOTIFY)
-    {
-#if 0
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-#endif
-      self->hover = false;
-    }
+  self->hover = true;
+}
 
-  return FALSE;
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  gpointer                   user_data)
+{
+  FaderWidget * self = Z_FADER_WIDGET (user_data);
+#if 0
+  gtk_widget_unset_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT);
+#endif
+  self->hover = false;
 }
 
 static void
@@ -213,15 +209,10 @@ drag_begin (
 {
   g_return_if_fail (IS_FADER (self->fader));
 
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
-  if (state_mask & GDK_CONTROL_MASK)
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
+  if (state & GDK_CONTROL_MASK)
     fader_set_amp ((void *) self->fader, 1.0);
 
   char * string =
@@ -312,58 +303,37 @@ drag_end (
 }
 
 static void
-on_reset_fader (GtkMenuItem *menuitem,
-               FaderWidget * self)
-{
-  if (self->fader->type == FADER_TYPE_AUDIO_CHANNEL)
-    {
-      Channel * ch = fader_get_channel (self->fader);
-      channel_reset_fader (ch, F_PUBLISH_EVENTS);
-    }
-  else
-    {
-      fader_set_amp (self->fader, 1.0);
-    }
-}
-
-static void
 show_context_menu (
   FaderWidget * self)
 {
-  GtkWidget *menu, *menuitem;
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
-  menu = gtk_menu_new();
-
+  char tmp[600];
+  sprintf (
+    tmp, "app.reset-fader::%p", self->fader);
   menuitem =
-    gtk_menu_item_new_with_label (
-      _("Reset"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_reset_fader), self);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("Reset"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
 
+  sprintf (
+    tmp, "app.bind-midi-cc::%p", self->fader->amp);
   menuitem =
-    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (ui_bind_midi_cc_item_activate_cb),
-    self->fader->amp);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  g_menu_append_item (menu, menuitem);
 
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
-on_right_click (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               FaderWidget *         self)
+on_right_click (
+  GtkGestureClick * gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  FaderWidget *     self)
 {
   if (n_press == 1)
     {
@@ -371,24 +341,38 @@ on_right_click (GtkGestureMultiPress *gesture,
     }
 }
 
-static int
+static gboolean
 on_scroll (
-  GtkWidget *      widget,
-  GdkEventScroll * event,
-  FaderWidget *    self)
+  GtkEventControllerScroll * scroll_controller,
+  gdouble                    dx,
+  gdouble                    dy,
+  gpointer                   user_data)
 {
+  FaderWidget * self = Z_FADER_WIDGET (user_data);
+
+  GdkEvent * event =
+    gtk_event_controller_get_current_event (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkScrollDirection direction =
+    gdk_scroll_event_get_direction (event);
+  double abs_x, abs_y;
+  gdk_event_get_position (
+    event, &abs_x, &abs_y);
+
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+
   /* add/substract *inc* amount */
   float inc = 0.04f;
   /* lower sensitivity if shift held */
-  GdkModifierType mask;
-  z_gtk_widget_get_mask (
-   GTK_WIDGET (self), &mask);
-  if (mask & GDK_SHIFT_MASK)
+  if (state & GDK_SHIFT_MASK)
     {
       inc = 0.01f;
     }
   int up_down =
-    event->direction == GDK_SCROLL_UP ? 1 : -1;
+    (direction == GDK_SCROLL_UP
+     || direction == GDK_SCROLL_RIGHT) ? 1 : -1;
   float add_val = (float) up_down * inc;
   float current_val =
     fader_get_fader_val (self->fader);
@@ -401,7 +385,7 @@ on_scroll (
   EVENTS_PUSH (
     ET_CHANNEL_FADER_VAL_CHANGED, channel);
 
-  return FALSE;
+  return true;
 }
 
 /**
@@ -433,17 +417,22 @@ fader_widget_init (FaderWidget * self)
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), _("Fader"));
 
-  /* make it able to notify */
-  gtk_widget_set_has_window (
-    GTK_WIDGET (self), TRUE);
-  int crossing_mask =
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK;
-  gtk_widget_add_events (
-    GTK_WIDGET (self), crossing_mask);
-
   self->drag = GTK_GESTURE_DRAG (
-    gtk_gesture_drag_new (GTK_WIDGET (self)));
+    gtk_gesture_drag_new ());
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
 
+#if 0
   self->tooltip_win =
     GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
   gtk_window_set_type_hint (
@@ -457,40 +446,48 @@ fader_widget_init (FaderWidget * self)
     GTK_WIDGET (self->tooltip_label));
   gtk_window_set_position (
     self->tooltip_win, GTK_WIN_POS_MOUSE);
-     /* add right mouse multipress */
-  GtkGestureMultiPress * right_mouse_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (right_mouse_mp),
-    GDK_BUTTON_SECONDARY);
+#endif
 
-  /* connect signals */
+  GtkGestureClick * right_click =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (right_click),
+    GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (fader_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-begin",
-    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
-  g_signal_connect (
-    G_OBJECT (right_mouse_mp), "pressed",
+    G_OBJECT (right_click), "pressed",
     G_CALLBACK (on_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (right_click));
+
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (self), "scroll-event",
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_enter), self);
+  g_signal_connect (
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
+
+  GtkEventControllerScroll * scroll_controller =
+    GTK_EVENT_CONTROLLER_SCROLL (
+      gtk_event_controller_scroll_new (
+        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
+  g_signal_connect (
+    G_OBJECT (scroll_controller), "scroll",
     G_CALLBACK (on_scroll),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (scroll_controller));
+
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), fader_draw_cb,
+    self, NULL);
 }
 
 static void

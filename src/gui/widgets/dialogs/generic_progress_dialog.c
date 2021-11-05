@@ -149,20 +149,20 @@ generic_progress_dialog_add_button (
   GenericProgressDialogButton * extra_btn =
     &prv->extra_buttons[prv->num_extra_buttons++];
 
-  bool expand = false;
-  bool fill = true;
-  guint padding = 0;
+  /*bool expand = false;*/
+  /*bool fill = true;*/
+  /*guint padding = 0;*/
   if (start)
     {
-      gtk_box_pack_start (
+      gtk_box_append (
         GTK_BOX (prv->action_btn_box),
-        GTK_WIDGET (btn), expand, fill, padding);
+        GTK_WIDGET (btn));
     }
   else
     {
-      gtk_box_pack_end (
+      gtk_box_append (
         GTK_BOX (prv->action_btn_box),
-        GTK_WIDGET (btn), expand, fill, padding);
+        GTK_WIDGET (btn));
     }
 
   gtk_widget_set_visible (

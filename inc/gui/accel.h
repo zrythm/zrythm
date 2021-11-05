@@ -52,9 +52,11 @@ char *
 accel_get_primary_accel_for_action (
   const char * action_name);
 
+#if 0
 void
 accel_set_accel_label_from_action (
   GtkAccelLabel * accel_label,
   const char *    action_name);
+#endif
 
 #endif

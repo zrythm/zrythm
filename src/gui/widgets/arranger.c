@@ -35,7 +35,6 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_draw.h"
-#include "gui/widgets/arranger_playhead.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
@@ -58,6 +57,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/piano_roll_keys.h"
+#include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/scale_selector_window.h"
@@ -88,7 +88,7 @@
 G_DEFINE_TYPE (
   ArrangerWidget,
   arranger_widget,
-  GTK_TYPE_DRAWING_AREA)
+  GTK_TYPE_WIDGET)
 
 #define FOREACH_TYPE(func) \
   func (TIMELINE, timeline); \
@@ -1411,6 +1411,7 @@ show_context_menu_audio (
   gdouble              x,
   gdouble              y)
 {
+#if 0
   GtkWidget *menu, *menuitem;
 
   menu = gtk_menu_new();
@@ -1424,6 +1425,7 @@ show_context_menu_audio (
   gtk_widget_show_all(menu);
 
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+#endif
 }
 
 static void
@@ -1475,7 +1477,7 @@ show_context_menu (
 
 static void
 on_right_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -1609,15 +1611,15 @@ auto_scroll (
  * Called from MainWindowWidget because the
  * events don't reach here.
  */
-gboolean
+void
 arranger_widget_on_key_release (
-  GtkWidget *widget,
-  GdkEventKey *event,
-  ArrangerWidget * self)
+  GtkEventControllerKey * key_controller,
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  ArrangerWidget *        self)
 {
   self->key_is_pressed = 0;
-
-  const guint keyval = event->keyval;
 
   if (z_gtk_keyval_is_ctrl (keyval))
     {
@@ -1684,8 +1686,6 @@ arranger_widget_on_key_release (
 
   arranger_widget_refresh_cursor (
     self);
-
-  return TRUE;
 }
 
 /**
@@ -1693,13 +1693,13 @@ arranger_widget_on_key_release (
  * events don't reach here.
  */
 gboolean
-arranger_widget_on_key_action (
-  GtkWidget *widget,
-  GdkEventKey *event,
-  ArrangerWidget * self)
+arranger_widget_on_key_press (
+  GtkEventControllerKey * key_controller,
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  ArrangerWidget *        self)
 {
-  const guint keyval = event->keyval;
-
   g_debug ("arranger widget key action");
 
   if (z_gtk_keyval_is_ctrl (keyval))
@@ -2028,27 +2028,27 @@ arranger_widget_set_highlight_rect (
  * before drag_begin, so the logic is done in drag_begin.
  */
 static void
-multipress_pressed (
-  GtkGestureMultiPress * gesture,
+click_pressed (
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x,
   gdouble                y,
   ArrangerWidget *       self)
 {
   g_debug (
-    "arranger multipress pressed - npress %d",
+    "arranger click pressed - npress %d",
     n_press);
 
   /* set number of presses */
   self->n_press = n_press;
 
   /* set modifier button states */
-  GdkModifierType state_mask =
-    ui_get_state_mask (
-      GTK_GESTURE (gesture));
-  if (state_mask & GDK_SHIFT_MASK)
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
+  if (state & GDK_SHIFT_MASK)
     self->shift_held = 1;
-  if (state_mask & GDK_CONTROL_MASK)
+  if (state & GDK_CONTROL_MASK)
     self->ctrl_held = 1;
 
   PROJECT->last_selection =
@@ -2493,7 +2493,8 @@ on_drag_begin_handle_hit_object (
               arranger_object_get_name,
               (GenericStringSetter)
               arranger_object_set_name_with_action);
-          gtk_widget_show_all (GTK_WIDGET (dialog));
+          gtk_window_present (
+            GTK_WINDOW (dialog));
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
         }
@@ -2509,8 +2510,8 @@ on_drag_begin_handle_hit_object (
             scale_selector =
               scale_selector_window_widget_new (
                 (ScaleObject *) obj);
-          gtk_widget_show_all (
-            GTK_WIDGET (scale_selector));
+          gtk_window_present (
+            GTK_WINDOW (scale_selector));
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
         }
@@ -2834,12 +2835,14 @@ drag_begin (
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (
       GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * ev =
+  GdkEvent * ev =
     gtk_gesture_get_last_event (
       GTK_GESTURE (gesture), sequence);
   g_warn_if_fail (
-    gdk_event_get_button (
-      ev, &self->drag_start_btn));
+    z_gtk_is_event_button (GDK_EVENT (ev)));
+  self->drag_start_btn =
+    gdk_button_event_get_button (ev);
+  g_warn_if_fail (self->drag_start_btn);
 
   /* check if selections can create links */
   self->can_link =
@@ -3331,14 +3334,14 @@ drag_update (
     arranger_widget_get_selections (self);
 
   /* state mask needs to be updated */
-  GdkModifierType state_mask =
-    ui_get_state_mask (
-      GTK_GESTURE (gesture));
-  if (state_mask & GDK_SHIFT_MASK)
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
+  if (state & GDK_SHIFT_MASK)
     self->shift_held = 1;
   else
     self->shift_held = 0;
-  if (state_mask & GDK_CONTROL_MASK)
+  if (state & GDK_CONTROL_MASK)
     self->ctrl_held = 1;
   else
     self->ctrl_held = 0;
@@ -4877,7 +4880,7 @@ on_drag_end_timeline (
             arranger_object_get_name,
             (GenericStringSetter)
             arranger_object_set_name_with_action);
-        gtk_widget_show_all (GTK_WIDGET (dialog));
+        gtk_window_present (GTK_WINDOW (dialog));
         self->action = UI_OVERLAY_ACTION_NONE;
         g_free (str);
       }
@@ -4988,14 +4991,15 @@ drag_end (
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (
       GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * ev =
+  GdkEvent * ev =
     gtk_gesture_get_last_event (
       GTK_GESTURE (gesture), sequence);
   guint btn;
   if (ev)
     {
-      g_warn_if_fail (
-        gdk_event_get_button (ev, &btn));
+      btn =
+        gdk_button_event_get_button (ev);
+      g_warn_if_fail (btn);
       if (btn == GDK_BUTTON_SECONDARY &&
           self->action !=
             UI_OVERLAY_ACTION_ERASING)
@@ -5557,9 +5561,10 @@ arranger_widget_redraw_rectangle (
   draw_rect.height += 2;
 
   /* queue draw in next cycle */
-  gtk_widget_queue_draw_area (
-    GTK_WIDGET (self), draw_rect.x, draw_rect.y,
-    draw_rect.width, draw_rect.height);
+  /*gtk_widget_queue_draw_area (*/
+    /*GTK_WIDGET (self), draw_rect.x, draw_rect.y,*/
+    /*draw_rect.width, draw_rect.height);*/
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 
 #if 0
   g_message (
@@ -5610,32 +5615,44 @@ arranger_widget_redraw_rectangle (
 
 static gboolean
 on_scroll (
-  GtkWidget *widget,
-  GdkEventScroll  *event,
-  ArrangerWidget * self)
+  GtkEventControllerScroll * scroll_controller,
+  gdouble                    dx,
+  gdouble                    dy,
+  gpointer                   user_data)
 {
-  double x = event->x,
-         y = event->y,
-         adj_val,
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (user_data);
+
+  double adj_val,
          diff;
+  double x, y;
+  GdkEvent * event =
+    gtk_event_controller_get_current_event (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  gdk_event_get_position (
+    GDK_EVENT (event), &x, &y);
 
   g_debug ("scrolled to %f, %f", x, y);
 
-  if (!(event->state & GDK_CONTROL_MASK))
-    return FALSE;
+  GdkModifierType modifier_type =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+
+  if (!(modifier_type & GDK_CONTROL_MASK))
+    return false;
 
   /* if shift also pressed, handle vertical zoom */
-  if (event->state & GDK_SHIFT_MASK)
+  if (modifier_type & GDK_SHIFT_MASK)
     {
       if (self->type == TYPE (MIDI))
         {
           midi_arranger_handle_vertical_zoom_scroll (
-            self, event);
+            self, scroll_controller);
         }
       else if (self->type == TYPE (TIMELINE))
         {
           tracklist_widget_handle_vertical_zoom_scroll (
-            MW_TRACKLIST, event);
+            MW_TRACKLIST, scroll_controller);
         }
     }
   /* else if just control pressed handle horizontal
@@ -5665,7 +5682,7 @@ on_scroll (
       diff = x - adj_val;
 
       /* scroll down, zoom out */
-      if (event->delta_y > 0)
+      if (dy > 0)
         {
           ruler_widget_set_zoom_level (
             ruler,
@@ -5693,28 +5710,52 @@ on_scroll (
       gtk_adjustment_set_value (adj, new_x - diff);
     }
 
-  return TRUE;
+  return true;
+}
+
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  ArrangerWidget *           self)
+{
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      timeline_arranger_widget_set_cut_lines_visible (
+        self);
+      break;
+    case TYPE (CHORD):
+      self->hovered_chord_index = -1;
+      break;
+    case TYPE (MIDI):
+      midi_arranger_widget_set_hovered_note (
+        self, -1);
+      break;
+    default:
+      break;
+    }
 }
 
 /**
  * Motion callback.
  */
-static gboolean
+static void
 on_motion (
-  GtkWidget *      widget,
-  GdkEventMotion * event,
-  ArrangerWidget * self)
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  ArrangerWidget *           self)
 {
-  self->hover_x = MAX (event->x, 0.0);
-  self->hover_y = MAX (event->y, 0.0);
+  self->hover_x = MAX (x, 0.0);
+  self->hover_y = MAX (y, 0.0);
 
-  GdkModifierType state;
-  int has_state =
-    gtk_get_current_event_state (&state);
-  if (has_state)
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (motion_controller));
+  if (state)
     {
       self->alt_held =
-        state & GDK_MOD1_MASK;
+        state & GDK_ALT_MASK;
       self->ctrl_held =
         state & GDK_CONTROL_MASK;
       self->shift_held =
@@ -5732,10 +5773,9 @@ on_motion (
     }
   if (self->hovered_object != obj)
     {
-      g_return_val_if_fail (
+      g_return_if_fail (
         !self->hovered_object ||
-        IS_ARRANGER_OBJECT (self->hovered_object),
-        false);
+        IS_ARRANGER_OBJECT (self->hovered_object));
       ArrangerObject * prev_obj =
         self->hovered_object;
       self->hovered_object = obj;
@@ -5759,32 +5799,18 @@ on_motion (
         self);
       break;
     case TYPE (CHORD):
-      if (event->type == GDK_LEAVE_NOTIFY)
-        self->hovered_chord_index = -1;
-      else
-        self->hovered_chord_index =
-          chord_arranger_widget_get_chord_at_y (
-            event->y);
+      self->hovered_chord_index =
+        chord_arranger_widget_get_chord_at_y (y);
       break;
     case TYPE (MIDI):
-      if (event->type == GDK_LEAVE_NOTIFY)
-        {
-          midi_arranger_widget_set_hovered_note (
-            self, -1);
-        }
-      else
-        {
-          midi_arranger_widget_set_hovered_note (
-            self,
-            piano_roll_keys_widget_get_key_from_y (
-              MW_PIANO_ROLL_KEYS, event->y));
-        }
+      midi_arranger_widget_set_hovered_note (
+        self,
+        piano_roll_keys_widget_get_key_from_y (
+          MW_PIANO_ROLL_KEYS, y));
       break;
     default:
       break;
     }
-
-  return FALSE;
 }
 
 static gboolean
@@ -6913,6 +6939,17 @@ arranger_widget_setup (
       break;
     }
 
+  GtkEventControllerScroll * scroll_controller =
+    GTK_EVENT_CONTROLLER_SCROLL (
+      gtk_event_controller_scroll_new (
+        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
+  g_signal_connect (
+    G_OBJECT (scroll_controller), "scroll",
+    G_CALLBACK (on_scroll), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (scroll_controller));
+
   /* connect signals */
   g_signal_connect (
     G_OBJECT(self->drag), "drag-begin",
@@ -6927,31 +6964,40 @@ arranger_widget_setup (
     G_OBJECT (self->drag), "cancel",
     G_CALLBACK (drag_cancel), self);
   g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
-    G_CALLBACK (multipress_pressed), self);
+    G_OBJECT (self->click), "pressed",
+    G_CALLBACK (click_pressed), self);
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "released",
+    G_OBJECT (self->right_click), "released",
     G_CALLBACK (on_right_click), self);
+
+  GtkEventControllerKey * key_controller =
+    GTK_EVENT_CONTROLLER_KEY (
+      gtk_event_controller_key_new ());
   g_signal_connect (
-    G_OBJECT (self), "scroll-event",
-    G_CALLBACK (on_scroll), self);
-  g_signal_connect (
-    G_OBJECT (self), "key-press-event",
-    G_CALLBACK (arranger_widget_on_key_action),
+    G_OBJECT (self), "key-pressed",
+    G_CALLBACK (arranger_widget_on_key_press),
     self);
   g_signal_connect (
-    G_OBJECT (self), "key-release-event",
+    G_OBJECT (self), "key-released",
     G_CALLBACK (arranger_widget_on_key_release),
     self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (key_controller));
+
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
+    G_OBJECT (self), "motion",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT (self), "leave-notify-event",
-    G_CALLBACK (on_motion), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion), self);
+    G_OBJECT (self), "leave",
+    G_CALLBACK (on_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
+
   g_signal_connect (
     G_OBJECT (self), "focus-out-event",
     G_CALLBACK (on_focus_out), self);
@@ -6961,9 +7007,6 @@ arranger_widget_setup (
   g_signal_connect (
     G_OBJECT (self), "grab-broken-event",
     G_CALLBACK (on_grab_broken), self);
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (arranger_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "map-event",
     G_CALLBACK (on_arranger_map_event), self);
@@ -7013,6 +7056,10 @@ arranger_widget_class_init (
     G_OBJECT_CLASS (_klass);
   oklass->finalize =
     (GObjectFinalizeFunc) finalize;
+
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (_klass);
+  wklass->snapshot = arranger_snapshot;
 }
 
 static void
@@ -7022,9 +7069,9 @@ arranger_widget_init (
   self->first_draw = true;
 
   /* make widget able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self),
-    GDK_ALL_EVENTS_MASK);
+  /*gtk_widget_add_events (*/
+    /*GTK_WIDGET (self),*/
+    /*GDK_ALL_EVENTS_MASK);*/
 
   /* make widget able to focus */
   gtk_widget_set_can_focus (
@@ -7033,8 +7080,10 @@ arranger_widget_init (
     GTK_WIDGET (self), 1);
 
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (self->drag),
     GTK_PHASE_CAPTURE);
@@ -7043,21 +7092,25 @@ arranger_widget_init (
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (self->drag), 0);
 
-  self->multipress =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+  self->click =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->click));
   gtk_event_controller_set_propagation_phase (
-    GTK_EVENT_CONTROLLER (self->multipress),
+    GTK_EVENT_CONTROLLER (self->click),
     GTK_PHASE_CAPTURE);
-  self->right_mouse_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+
+  self->right_click =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->right_click));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (
-      self->right_mouse_mp),
-      GDK_BUTTON_SECONDARY);
+      self->right_click), GDK_BUTTON_SECONDARY);
 
 #if 0
   self->draw_task_obj_pool =

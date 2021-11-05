@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -272,8 +272,8 @@ snap_grid_popover_widget_new (
       &owner->snap_grid->snap_note_length,
       &owner->snap_grid->snap_note_type,
       "note length");
-  gtk_container_add (
-    GTK_CONTAINER (self->snap_length_box),
+  gtk_box_append (
+    GTK_BOX (self->snap_length_box),
     GTK_WIDGET (self->snap_length_dm));
 #if 0
   self->snap_type_dm =
@@ -294,8 +294,8 @@ snap_grid_popover_widget_new (
       &owner->snap_grid->default_note_length,
       &owner->snap_grid->default_note_type,
       "note length");
-  gtk_container_add (
-    GTK_CONTAINER (self->default_length_box),
+  gtk_box_append (
+    GTK_BOX (self->default_length_box),
     GTK_WIDGET (self->default_length_dm));
 #if 0
   self->default_type_dm =

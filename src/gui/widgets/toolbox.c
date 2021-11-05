@@ -36,23 +36,7 @@
 
 G_DEFINE_TYPE (
   ToolboxWidget, toolbox_widget,
-  GTK_TYPE_BUTTON_BOX)
-
-static int
-on_motion (
-  GtkWidget *       widget,
-  GdkEventMotion *  event,
-  GtkToggleButton * self)
-{
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-    }
-
-  return FALSE;
-}
+  GTK_TYPE_BOX)
 
 static void
 on_toggled (GtkToggleButton * tb,
@@ -118,16 +102,10 @@ toolbox_widget_refresh (
     self->audition_mode, 0);
 
   /* set select mode img */
-  if (P_TOOL == TOOL_SELECT_STRETCH)
-    gtk_image_set_from_icon_name (
-      self->select_img,
-      "selection-end-symbolic",
-      GTK_ICON_SIZE_BUTTON);
-  else
-    gtk_image_set_from_icon_name (
-      self->select_img,
-      "edit-select",
-      GTK_ICON_SIZE_BUTTON);
+  gtk_image_set_from_icon_name (
+    self->select_img,
+    P_TOOL == TOOL_SELECT_STRETCH ?
+      "selection-end-symbolic" : "edit-select");
 
   /* set toggled states */
   switch (P_TOOL)
@@ -202,6 +180,27 @@ toolbox_widget_class_init (
 }
 
 static void
+connect_notify_signals (
+  ToolboxWidget * self,
+  GtkWidget *     child)
+{
+#if 0
+  GtkEventControllerMotion * motion_controller;
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
+  g_signal_connect (
+    G_OBJECT (motion_controller),  "enter",
+    G_CALLBACK (on_enter), child);
+  g_signal_connect (
+    G_OBJECT (motion_controller),  "leave",
+    G_CALLBACK (on_leave), child);
+  gtk_widget_add_controller (
+    child,
+    GTK_EVENT_CONTROLLER (motion_controller));
+#endif
+}
+
+static void
 toolbox_widget_init (ToolboxWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -224,14 +223,8 @@ toolbox_widget_init (ToolboxWidget * self)
 #undef CONNECT_CLICK_HANDLER
 
 #define CONNECT_NOTIFY_SIGNALS(lowercase) \
-  g_signal_connect ( \
-    G_OBJECT (self->lowercase##_mode), \
-    "enter-notify-event", \
-    G_CALLBACK (on_motion), self->lowercase##_mode); \
-  g_signal_connect ( \
-    G_OBJECT(self->lowercase##_mode), \
-    "leave-notify-event", \
-    G_CALLBACK (on_motion), self->lowercase##_mode);
+  connect_notify_signals ( \
+    self, GTK_WIDGET (self->lowercase##_mode))
 
   /* connect notify signals */
   CONNECT_NOTIFY_SIGNALS (select);
@@ -243,7 +236,7 @@ toolbox_widget_init (ToolboxWidget * self)
 
 #undef CONNECT_NOTIFY_SIGNALS
 
-  char * tooltip_text;
+  const char * tooltip_text;
 #define SET_TOOLTIP(x,action) \
   tooltip_text = \
     gtk_widget_get_tooltip_text ( \
@@ -251,7 +244,6 @@ toolbox_widget_init (ToolboxWidget * self)
   z_gtk_widget_set_tooltip_for_action ( \
     GTK_WIDGET (self->x##_mode), action, \
     tooltip_text); \
-  g_free (tooltip_text)
 
   SET_TOOLTIP (select, "app.select-mode");
   SET_TOOLTIP (edit, "app.edit-mode");

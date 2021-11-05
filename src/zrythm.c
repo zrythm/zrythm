@@ -219,12 +219,6 @@ zrythm_get_version_with_capabilities (
     "    +sdl2\n"
 #endif
 
-#ifdef HAVE_GTK_SOURCE_VIEW_4
-    "    +gtksourceview4\n"
-#elif defined (HAVE_GTK_SOURCE_VIEW_3)
-    "    +gtksourceview3\n"
-#endif
-
 #ifdef HAVE_GUILE
     "    +guile\n"
 #endif
@@ -521,11 +515,7 @@ zrythm_get_dir (
           res =
             g_build_filename (
               prefix, "share",
-#ifdef HAVE_GTK_SOURCE_VIEW_4
-              "gtksourceview-4",
-#else
-              "gtksourceview-3.0",
-#endif
+              "gtksourceview-5",
               "language-specs", NULL);
           break;
         case ZRYTHM_DIR_SYSTEM_ZRYTHM_DATADIR:

@@ -1,70 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
-<!--
-
-  Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="FileBrowserFiltersWidget" parent="GtkToolbar">
+  <requires lib="gtk" version="4.0"/>
+  <template class="FileBrowserFiltersWidget" parent="GtkBox">
+    <style>
+      <class name="toolbar"/>
+    </style>
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="show-arrow">False</property>
-    <property name="icon_size">2</property>
     <child>
-      <object class="GtkToggleToolButton" id="toggle_audio">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
+      <object class="GtkToggleButton" id="toggle_audio">
+        <property name="can-focus">0</property>
         <property name="tooltip-text" translatable="yes">Audio</property>
         <property name="icon-name">signal-audio</property>
         <signal name="toggled" handler="toggles_changed" object="FileBrowserFiltersWidget" swapped="no"/>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToggleToolButton" id="toggle_midi">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
+      <object class="GtkToggleButton" id="toggle_midi">
+        <property name="can-focus">0</property>
         <property name="tooltip-text" translatable="yes">MIDI</property>
         <property name="icon-name">signal-midi</property>
         <signal name="toggled" handler="toggles_changed" object="FileBrowserFiltersWidget" swapped="no"/>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToggleToolButton" id="toggle_presets">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
+      <object class="GtkToggleButton" id="toggle_presets">
+        <property name="can-focus">0</property>
         <property name="tooltip-text" translatable="yes">Presets</property>
         <property name="icon-name">modulator</property>
         <signal name="toggled" handler="toggles_changed" object="FileBrowserFiltersWidget" swapped="no"/>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
   </template>
 </interface>

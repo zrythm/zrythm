@@ -44,6 +44,8 @@ typedef struct _ModulatorWidget ModulatorWidget;
 typedef struct Lv2Plugin Lv2Plugin;
 typedef struct CarlaNativePlugin CarlaNativePlugin;
 typedef struct MixerSelections MixerSelections;
+typedef struct _WrappedObjectWithChangeSignal
+  WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup plugins
@@ -58,6 +60,9 @@ typedef struct MixerSelections MixerSelections;
   (((Plugin *) x)->magic == PLUGIN_MAGIC)
 #define IS_PLUGIN_AND_NONNULL(x) \
   (x && IS_PLUGIN (x))
+
+#define PLUGIN_DND_PREFIX \
+  Z_DND_STRING_PREFIX "Plugin::"
 
 /**
  * Plugin UI refresh rate limits.
@@ -219,7 +224,7 @@ typedef struct Plugin
 
   /** Active preset item, if wrapped or generic
    * UI. */
-  GtkCheckMenuItem* active_preset_item;
+  GtkWidget *       active_preset_item;
 
   /**
    * The Plugin's window.
@@ -240,7 +245,7 @@ typedef struct Plugin
   /** The GdkWindow of this widget should be
    * somewhere inside \ref Plugin.window and will
    * be used for wrapping plugin UIs in. */
-  GtkEventBox *     ev_box;
+  GtkBox *          ev_box;
 
   /** Vbox containing the above ev_box for wrapping,
    * or used for packing generic UI controls. */
@@ -286,6 +291,9 @@ typedef struct Plugin
 
   /** Pointer to owner selections, if any. */
   MixerSelections * ms;
+
+  /** Used in Gtk. */
+  WrappedObjectWithChangeSignal * gobj;
 } Plugin;
 
 static const cyaml_schema_field_t

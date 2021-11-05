@@ -1,172 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="ProjectAssistantWidget" parent="GtkAssistant">
-    <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Select Project</property>
-    <property name="resizable">False</property>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkAssistant" id="assistant">
+    <property name="title" translatable="yes">Project Assistant</property>
+    <property name="resizable">0</property>
     <property name="icon_name">zrythm</property>
-    <property name="urgency_hint">True</property>
+    <property name="modal">True</property>
     <property name="use_header_bar">0</property>
     <child>
-      <object class="GtkBox" id="select_project_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">4</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_top">2</property>
-            <property name="label" translatable="yes">Select a project</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow" id="projects_scroll">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">never</property>
-            <property name="shadow_type">in</property>
-            <property name="min_content_height">128</property>
-            <child>
-              <object class="GtkTreeView" id="projects">
-                <property name="height_request">85</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection" id="projects_selection">
-                    <signal name="changed" handler="on_projects_selection_changed" object="ProjectAssistantWidget" swapped="no"/>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_left">4</property>
-            <property name="margin_right">4</property>
-            <property name="margin_bottom">4</property>
-            <child>
-              <object class="GtkCheckButton" id="create_new_project">
-                <property name="label" translatable="yes">Create new project</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="hexpand">True</property>
-                <property name="draw_indicator">True</property>
-                <signal name="toggled" handler="on_create_new_project_toggled" object="ProjectAssistantWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="remove_btn">
-                <property name="label" translatable="yes">Remove</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Removes selected project from the list</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="templates_box">
-            <property name="can_focus">False</property>
+      <object class="GtkAssistantPage">
+        <property name="page_type">confirm</property>
+        <property name="child">
+          <object class="GtkBox" id="select_project_box">
             <property name="orientation">vertical</property>
-            <property name="spacing">2</property>
+            <property name="spacing">4</property>
             <child>
               <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Select a template</property>
+                <property name="margin_top">2</property>
+                <property name="label" translatable="yes">Select a project</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
-              <object class="GtkTreeView" id="templates">
-                <property name="height_request">85</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection" id="templates_selection">
-                    <signal name="changed" handler="on_templates_selection_changed" object="ProjectAssistantWidget" swapped="no"/>
+              <object class="GtkScrolledWindow" id="projects_scroll">
+                <property name="focusable">1</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="min_content_height">128</property>
+                <property name="child">
+                  <object class="GtkTreeView" id="projects">
+                    <property name="height_request">85</property>
+                    <property name="focusable">1</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="projects_selection">
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="margin-start">4</property>
+                <property name="margin-end">4</property>
+                <property name="margin_bottom">4</property>
+                <child>
+                  <object class="GtkCheckButton" id="create_new_project">
+                    <property name="label" translatable="yes">Create new project</property>
+                    <property name="focusable">1</property>
+                    <property name="hexpand">1</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="remove_btn">
+                    <property name="label" translatable="yes">Remove</property>
+                    <property name="focusable">1</property>
+                    <property name="receives_default">1</property>
+                    <property name="tooltip_text" translatable="yes">Removes selected project from the list</property>
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkBox" id="templates_box">
+                <property name="visible">0</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">Select a template</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeView" id="templates">
+                    <property name="vexpand">1</property>
+                    <property name="height_request">85</property>
+                    <property name="focusable">1</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="templates_selection">
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">3</property>
-          </packing>
-        </child>
+        </property>
       </object>
-      <packing>
-        <property name="page_type">confirm</property>
-        <property name="has_padding">False</property>
-      </packing>
     </child>
     <child type="titlebar">
       <placeholder/>
@@ -174,20 +95,5 @@
     <child>
       <placeholder/>
     </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-  </template>
+  </object>
 </interface>

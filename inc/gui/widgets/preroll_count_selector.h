@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   PrerollCountSelectorWidget,
   preroll_count_selector_widget,
   Z, PREROLL_COUNT_SELECTOR_WIDGET,
-  GtkButtonBox)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -54,7 +54,7 @@ typedef enum PrerollCountSelectorType
 
 typedef struct _PrerollCountSelectorWidget
 {
-  GtkButtonBox parent_instance;
+  GtkBox parent_instance;
 
   PrerollCountSelectorType type;
 

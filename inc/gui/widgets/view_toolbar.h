@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,7 +28,7 @@ G_DECLARE_FINAL_TYPE (
   ViewToolbarWidget,
   view_toolbar_widget,
   Z, VIEW_TOOLBAR_WIDGET,
-  GtkToolbar)
+  GtkBox)
 
 /**
  * \file
@@ -39,17 +39,17 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _ViewToolbarWidget
 {
-  GtkToolbar         parent_instance;
-  GtkToolButton * status_bar;
-  GtkToolButton *    zoom_in;
-  GtkToolButton *    zoom_out;
-  GtkToolButton *    original_size;
-  GtkToolButton *    best_fit;
-  GtkToolButton *    fullscreen;
-  GtkToolButton * left_panel;
-  GtkToolButton * bot_panel;
-  GtkToolButton * top_panel;
-  GtkToolButton * right_panel;
+  GtkBox         parent_instance;
+  GtkButton * status_bar;
+  GtkButton *    zoom_in;
+  GtkButton *    zoom_out;
+  GtkButton *    original_size;
+  GtkButton *    best_fit;
+  GtkButton *    fullscreen;
+  GtkButton * left_panel;
+  GtkButton * bot_panel;
+  GtkButton * top_panel;
+  GtkButton * right_panel;
 } ViewToolbarWidget;
 
 #endif

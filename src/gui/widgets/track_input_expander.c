@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -551,8 +551,8 @@ track_input_expander_widget_refresh (
     GTK_WIDGET (self->mono), 0);
   if (self->gain)
     {
-      gtk_container_remove (
-        GTK_CONTAINER (self->gain_box),
+      gtk_box_remove (
+        GTK_BOX (self->gain_box),
         GTK_WIDGET (self->gain));
       self->gain = NULL;
     }
@@ -596,8 +596,8 @@ track_input_expander_widget_refresh (
           port->zerof);
       gtk_widget_set_visible (
         GTK_WIDGET (self->gain), true);
-      gtk_container_add (
-        GTK_CONTAINER (self->gain_box),
+      gtk_box_append (
+        GTK_BOX (self->gain_box),
         GTK_WIDGET (self->gain));
 
       gtk_toggle_button_set_active (
@@ -687,10 +687,11 @@ track_input_expander_widget_init (
   GtkWidget * parent_box =
     gtk_widget_get_parent (
       GTK_WIDGET (self->mono));
-  gtk_box_set_child_packing (
-    GTK_BOX (parent_box),
-    GTK_WIDGET (self->mono), F_NO_EXPAND,
-    F_FILL, 1, GTK_PACK_START);
+  (void) parent_box;
+  /*gtk_box_set_child_packing (*/
+    /*GTK_BOX (parent_box),*/
+    /*GTK_WIDGET (self->mono), F_NO_EXPAND,*/
+    /*F_FILL, 1, GTK_PACK_START);*/
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->mono), _("Mono"));
   gtk_combo_box_set_row_separator_func (
@@ -719,10 +720,10 @@ track_input_expander_widget_init (
   parent_box =
     gtk_widget_get_parent (
       GTK_WIDGET (self->gain_box));
-  gtk_box_set_child_packing (
-    GTK_BOX (parent_box),
-    GTK_WIDGET (self->gain_box), F_NO_EXPAND,
-    F_FILL, 2, GTK_PACK_START);
+  /*gtk_box_set_child_packing (*/
+    /*GTK_BOX (parent_box),*/
+    /*GTK_WIDGET (self->gain_box), F_NO_EXPAND,*/
+    /*F_FILL, 2, GTK_PACK_START);*/
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->gain_box), _("Gain"));
   gtk_combo_box_set_row_separator_func (

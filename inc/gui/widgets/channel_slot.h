@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,17 +47,17 @@ typedef struct Channel Channel;
 
 typedef struct _ChannelSlotWidget
 {
-  GtkDrawingArea       parent_instance;
+  GtkDrawingArea    parent_instance;
 
-  PluginSlotType      type;
+  PluginSlotType    type;
 
   /** The Track this belongs to. */
-  Track *             track;
+  Track *           track;
 
   /** The Channel slot index. */
-  int                  slot_index;
-  GtkGestureMultiPress * multipress;
-  GtkGestureDrag *     drag;
+  int               slot_index;
+  GtkGestureClick * click;
+  GtkGestureDrag *  drag;
 
   /**
    * Previous plugin name at
@@ -65,25 +65,25 @@ typedef struct _ChannelSlotWidget
    *
    * If this changes, the tooltip is changed.
    */
-  char *               pl_name;
+  char *            pl_name;
 
   /** For multipress. */
-  int                  n_press;
+  int               n_press;
 
-  GtkGestureMultiPress * right_mouse_mp;
+  GtkGestureClick * right_mouse_mp;
 
   /** Layout cache for empty slot. */
-  PangoLayout *        empty_slot_layout;
+  PangoLayout *     empty_slot_layout;
   /** Layout cache for plugin name. */
-  PangoLayout *        pl_name_layout;
+  PangoLayout *     pl_name_layout;
 
   /** Cache to check if the selection state was
    * changed. */
-  bool                 was_selected;
+  bool              was_selected;
 
   /** Whether to open the plugin inspector on click
    * or not. */
-  bool                 open_plugin_inspector_on_click;
+  bool              open_plugin_inspector_on_click;
 } ChannelSlotWidget;
 
 /**

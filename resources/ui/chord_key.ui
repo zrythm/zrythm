@@ -1,108 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="ChordKeyWidget" parent="GtkGrid">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <child>
       <object class="GtkLabel" id="chord_lbl">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="label" translatable="yes">Amin 7</property>
         <property name="ellipsize">end</property>
         <property name="xalign">0</property>
         <property name="margin-start">3</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="column-span">2</property>
+          <property name="row">0</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="width">2</property>
-        <property name="top_attach">0</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkButtonBox" id="btn_box">
+      <object class="GtkBox" id="btn_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="layout_style">start</property>
         <child>
           <object class="GtkButton" id="choose_chord_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="focusable">1</property>
+            <property name="receives_default">1</property>
             <child>
               <object class="GtkImage">
-                <property name="visible">True</property>
                 <property name="icon-name">minuet-scales</property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-            <property name="non-homogeneous">True</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="invert_prev_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="focusable">1</property>
+            <property name="receives_default">1</property>
             <child>
               <object class="GtkImage">
-                <property name="visible">True</property>
                 <property name="icon-name">go-previous</property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-            <property name="non-homogeneous">True</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="invert_next_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="focusable">1</property>
+            <property name="receives_default">1</property>
             <child>
               <object class="GtkImage">
-                <property name="visible">True</property>
                 <property name="icon-name">go-next</property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-            <property name="non-homogeneous">True</property>
-          </packing>
         </child>
+        <layout>
+          <property name="column">2</property>
+          <property name="column-span">2</property>
+          <property name="row">0</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">2</property>
-        <property name="width">2</property>
-        <property name="top_attach">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="piano_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">2</property>
+          <property name="column-span">3</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">2</property>
-        <property name="width">3</property>
-      </packing>
     </child>
   </template>
 </interface>

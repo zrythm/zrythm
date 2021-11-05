@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,7 +38,7 @@ G_DECLARE_FINAL_TYPE (
   SnapBoxWidget,
   snap_box_widget,
   Z, SNAP_BOX_WIDGET,
-  GtkButtonBox)
+  GtkBox)
 
 #define MW_SNAP_BOX MW_HOME_TOOLBAR->snap_box
 
@@ -47,7 +47,7 @@ typedef struct SnapGrid SnapGrid;
 
 typedef struct _SnapBoxWidget
 {
-  GtkButtonBox          parent_instance;
+  GtkBox          parent_instance;
   GtkToggleButton *     snap_to_grid;
   GtkToggleButton *     snap_to_grid_keep_offset;
   GtkToggleButton *     snap_to_events;

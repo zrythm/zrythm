@@ -1,276 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="PortSelectorPopoverWidget" parent="GtkPopover">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
+    <property name="visible">1</property>
+    <property name="child">
       <object class="GtkBox">
-        <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="label" translatable="yes">Select a port...</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="vexpand">1</property>
+            <property name="spacing">1</property>
+            <child>
+              <object class="GtkBox" id="track_box">
+                <property name="hexpand">1</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="margin-start">4</property>
+                    <property name="margin-end">4</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">Track</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="track_scroll">
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="propagate-natural-height">1</property>
+                    <property name="vexpand">1</property>
+                    <property name="child">
+                      <object class="GtkTreeView" id="track_treeview">
+                        <property name="focusable">1</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator" id="track_separator">
+                <property name="orientation">vertical</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="plugin_box">
+                <property name="hexpand">1</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="margin-start">4</property>
+                    <property name="margin-end">4</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">Plugin</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="plugin_scroll">
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="propagate-natural-height">1</property>
+                    <property name="vexpand">1</property>
+                    <property name="child">
+                      <object class="GtkTreeView" id="plugin_treeview">
+                        <property name="focusable">1</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator" id="plugin_separator">
+                <property name="orientation">vertical</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="port_box">
+                <property name="hexpand">1</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="margin-start">4</property>
+                    <property name="margin-end">4</property>
+                    <property name="hexpand">1</property>
+                    <property name="label" translatable="yes">Port</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="port_scroll">
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="propagate-natural-height">1</property>
+                    <property name="vexpand">1</property>
+                    <property name="child">
+                      <object class="GtkTreeView" id="port_treeview">
+                        <property name="focusable">1</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
         </child>
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="spacing">1</property>
-            <child>
-              <object class="GtkBox" id="track_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_left">4</property>
-                    <property name="margin_right">4</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes">Track</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow"
-                          id="track_scroll">
-                    <property name="visible">True</property>
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="propagate-natural-height">True</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkTreeView" id="track_treeview">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparator" id="track_separator">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="plugin_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_left">4</property>
-                    <property name="margin_right">4</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes">Plugin</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow"
-                          id="plugin_scroll">
-                    <property name="visible">True</property>
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="propagate-natural-height">True</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkTreeView" id="plugin_treeview">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparator" id="plugin_separator">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="port_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_left">4</property>
-                    <property name="margin_right">4</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes">Port</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow"
-                          id="port_scroll">
-                    <property name="visible">True</property>
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="propagate-natural-height">True</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="GtkTreeView" id="port_treeview">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">4</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButtonBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
             <child>
               <placeholder/>
             </child>
             <child>
               <object class="GtkButton" id="cancel">
                 <property name="label" translatable="yes">_Cancel</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
+                <property name="focusable">1</property>
+                <property name="receives_default">1</property>
+                <property name="use_underline">1</property>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkButton" id="ok">
                 <property name="label" translatable="yes">_OK</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
+                <property name="focusable">1</property>
+                <property name="receives_default">1</property>
+                <property name="use_underline">1</property>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
-    </child>
+    </property>
   </template>
 </interface>

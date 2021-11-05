@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,13 +30,16 @@
 
 typedef struct Port Port;
 
+#define MW_PORT_CONNECTIONS_TREE \
+  (MW_PORT_CONNECTIONS->bindings_tree)
+
 #define PORT_CONNECTIONS_TREE_WIDGET_TYPE \
   (port_connections_tree_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PortConnectionsTreeWidget,
   port_connections_tree_widget,
   Z, PORT_CONNECTIONS_TREE_WIDGET,
-  GtkScrolledWindow)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -46,7 +49,9 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _PortConnectionsTreeWidget
 {
-  GtkScrolledWindow    parent_instance;
+  GtkBox               parent_instance;
+
+  GtkScrolledWindow *  scroll;
 
   /* The tree views */
   GtkTreeView *        tree;

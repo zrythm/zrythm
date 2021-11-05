@@ -51,6 +51,7 @@ typedef struct PluginGtkController
   Plugin *       plugin;
 } PluginGtkController;
 
+#if 0
 typedef struct PluginGtkPresetMenu
 {
   GtkMenuItem* item;
@@ -58,6 +59,7 @@ typedef struct PluginGtkPresetMenu
   GtkMenu*     menu;
   GSequence*   banks;
 } PluginGtkPresetMenu;
+#endif
 
 typedef struct PluginGtkPresetRecord
 {
@@ -118,6 +120,7 @@ plugin_gtk_add_control_row (
   const char* name,
   PluginGtkController* controller);
 
+#if 0
 void
 plugin_gtk_on_preset_activate (
   GtkWidget* widget,
@@ -127,6 +130,7 @@ void
 plugin_gtk_on_preset_destroy (
   PluginGtkPresetRecord * record,
   GClosure* closure);
+#endif
 
 void
 plugin_gtk_on_save_preset_activate (
@@ -137,14 +141,16 @@ gint
 plugin_gtk_menu_cmp (
   gconstpointer a, gconstpointer b, gpointer data);
 
+#if  0
 PluginGtkPresetMenu*
 plugin_gtk_preset_menu_new (
   const char* label);
 
 void
 plugin_gtk_rebuild_preset_menu (
-  Plugin* plugin,
-  GtkContainer* pset_menu);
+  Plugin *    plugin,
+  GtkWidget * pset_menu);
+#endif
 
 /**
  * Sets up the combo box with all the banks the
@@ -199,11 +205,13 @@ plugin_gtk_generic_set_widget_value (
   LV2_URID              type,
   const void *          body);
 
+#if 0
 void
 plugin_gtk_build_menu (
   Plugin *    plugin,
   GtkWidget * window,
   GtkWidget * vbox);
+#endif
 
 /**
  * @}

@@ -27,7 +27,7 @@
 G_DECLARE_FINAL_TYPE (
   FolderChannelWidget, folder_channel_widget,
   Z, FOLDER_CHANNEL_WIDGET,
-  GtkEventBox)
+  GtkBox)
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track Track;
@@ -39,11 +39,11 @@ typedef struct _FaderButtonsWidget
 
 typedef struct _FolderChannelWidget
 {
-  GtkEventBox         parent_instance;
+  GtkBox         parent_instance;
   GtkGrid *           grid;
   ColorAreaWidget *   color_top;
   ColorAreaWidget *   color_left;
-  GtkEventBox *       icon_and_name_event_box;
+  GtkBox *       icon_and_name_event_box;
   EditableLabelWidget * name;
 
   GtkImage *          icon;
@@ -76,9 +76,9 @@ typedef struct _FolderChannelWidget
   Track *             track;
 
   /** Whole folder_channel press. */
-  GtkGestureMultiPress * mp;
+  GtkGestureClick * mp;
 
-  GtkGestureMultiPress * right_mouse_mp;
+  GtkGestureClick * right_mouse_mp;
 
   /** Drag on the icon and name event box. */
   GtkGestureDrag       * drag;

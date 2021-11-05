@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
  *
  * This file is part of Zrythm
@@ -30,6 +30,8 @@
 #include "audio/engine_pulse.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/active_hardware_mb.h"
+#include "gui/widgets/file_chooser_button.h"
+#include "plugins/plugin_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -43,20 +45,84 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (FirstRunAssistantWidget,
-               first_run_assistant_widget,
-               GTK_TYPE_ASSISTANT)
+/**
+ * Thread that scans for plugins after the first
+ * run.
+ */
+static void *
+scan_plugins_after_first_run_thread (
+  gpointer data)
+{
+  g_message ("scanning...");
+
+  plugin_manager_scan_plugins (
+    ZRYTHM->plugin_manager,
+    0.7, &ZRYTHM->progress);
+
+  zrythm_app->init_finished = true;
+
+  g_message ("done");
+
+  return NULL;
+}
+
+static void
+on_first_run_assistant_apply (
+  GtkAssistant * assistant,
+  gpointer       user_data)
+{
+  g_message ("on apply...");
+
+  g_settings_set_boolean (
+    S_GENERAL, "first-run", 0);
+
+  /* start plugin scanning in another thread */
+  zrythm_app->init_thread =
+    g_thread_new (
+      "scan_plugins_after_first_run_thread",
+      (GThreadFunc)
+      scan_plugins_after_first_run_thread,
+      zrythm_app);
+
+  /* set a source func in the main GTK thread to
+   * check when scanning finished */
+  zrythm_app->init_finished = false;
+  g_idle_add (
+    (GSourceFunc)
+    zrythm_app_prompt_for_project_func, zrythm_app);
+
+  gtk_window_destroy (GTK_WINDOW (assistant));
+
+#if 0
+  /* close the first run assistant if it ran
+   * before */
+  if (self->assistant)
+    {
+      DESTROY_LATER (_assistant);
+      self->first_run_assistant = NULL;
+    }
+#endif
+
+  g_message ("done");
+}
+
+static void
+on_first_run_assistant_cancel ()
+{
+  g_message ("%s: cancel", __func__);
+
+  exit (0);
+}
 
 static void
 on_reset_clicked (
-  GtkButton *widget,
-  FirstRunAssistantWidget * self)
+  GtkButton *      widget,
+  FileChooserButtonWidget * fc)
 {
   char * dir =
     zrythm_get_default_user_dir ();
   g_message ("reset to %s", dir);
-  gtk_file_chooser_select_filename (
-    GTK_FILE_CHOOSER (self->fc_btn), dir);
+  file_chooser_button_widget_set_path (fc, dir);
   g_settings_set_string (
     S_P_GENERAL_PATHS, "zrythm-dir", dir);
   g_free (dir);
@@ -68,18 +134,31 @@ on_reset_clicked (
  */
 static void
 audio_midi_backend_selection_validate (
-  FirstRunAssistantWidget * self)
+  GtkBuilder * builder)
 {
+  GtkAssistant * assistant =
+    GTK_ASSISTANT (
+      gtk_builder_get_object (
+        builder, "assistant"));
+  GtkComboBox * audio_backend =
+    GTK_COMBO_BOX (
+      gtk_builder_get_object (
+        builder, "audio_backend"));
+  GtkComboBox * midi_backend =
+    GTK_COMBO_BOX (
+      gtk_builder_get_object (
+        builder, "midi_backend"));
+
   AudioBackend ab =
     (AudioBackend)
     atoi (
       gtk_combo_box_get_active_id (
-        self->audio_backend));
+        audio_backend));
   MidiBackend mb =
     (MidiBackend)
     atoi (
       gtk_combo_box_get_active_id (
-        self->midi_backend));
+        midi_backend));
   g_message (
     "selected audio backend: %s, "
     "selected MIDI backend: %s",
@@ -91,7 +170,7 @@ audio_midi_backend_selection_validate (
     {
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
-      if (engine_jack_test (GTK_WINDOW (self)))
+      if (engine_jack_test (GTK_WINDOW (assistant)))
         return;
       break;
 #endif
@@ -105,13 +184,13 @@ audio_midi_backend_selection_validate (
 #endif
 #ifdef HAVE_PULSEAUDIO
     case AUDIO_BACKEND_PULSEAUDIO:
-      if (engine_pulse_test (GTK_WINDOW (self)))
+      if (engine_pulse_test (GTK_WINDOW (assistant)))
         return;
       break;
 #endif
 #ifdef HAVE_PORT_AUDIO
     case AUDIO_BACKEND_PORT_AUDIO:
-      if (engine_pa_test (GTK_WINDOW (self)))
+      if (engine_pa_test (GTK_WINDOW (assistant)))
         return;
       break;
 #endif
@@ -124,7 +203,7 @@ audio_midi_backend_selection_validate (
     {
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
-      if (engine_jack_test (GTK_WINDOW (self)))
+      if (engine_jack_test (GTK_WINDOW (assistant)))
         return;
       break;
 #endif
@@ -144,13 +223,13 @@ audio_midi_backend_selection_validate (
       mb == MIDI_BACKEND_JACK)
     {
       ui_show_error_message (
-        self,
+        GTK_WINDOW (assistant),
         _("Backend combination not supported"));
       return;
     }
 
   ui_show_message_full (
-    GTK_WINDOW (self), GTK_MESSAGE_INFO,
+    GTK_WINDOW (assistant), GTK_MESSAGE_INFO,
     _("The selected backends are operational"));
   return;
 }
@@ -158,15 +237,15 @@ audio_midi_backend_selection_validate (
 static void
 on_test_backends_clicked (
   GtkButton * widget,
-  FirstRunAssistantWidget * self)
+  GtkBuilder * builder)
 {
-  audio_midi_backend_selection_validate (self);
+  audio_midi_backend_selection_validate (builder);
 }
 
 static void
 on_audio_backend_changed (
-  GtkComboBox *widget,
-  FirstRunAssistantWidget * self)
+  GtkComboBox *  widget,
+  GtkAssistant * assistant)
 {
   /* update settings */
   g_settings_set_enum (
@@ -177,8 +256,8 @@ on_audio_backend_changed (
 
 static void
 on_midi_backend_changed (
-  GtkComboBox *widget,
-  FirstRunAssistantWidget * self)
+  GtkComboBox *  widget,
+  GtkAssistant * assistant)
 {
   AudioBackend ab =
     g_settings_get_enum (
@@ -190,10 +269,10 @@ on_midi_backend_changed (
       mb == MIDI_BACKEND_JACK)
     {
       ui_show_error_message (
-        self,
+        GTK_WINDOW (assistant),
         _("JACK MIDI can only be used with JACK "
         "audio"));
-      gtk_combo_box_set_active (widget, 0);
+      gtk_combo_box_set_active (widget, false);
       return;
     }
 
@@ -204,8 +283,8 @@ on_midi_backend_changed (
 
 static void
 on_language_changed (
-  GtkComboBox *widget,
-  FirstRunAssistantWidget * self)
+  GtkComboBox *  widget,
+  GtkBuilder *   builder)
 {
   g_message ("language changed");
   LocalizationLanguage lang =
@@ -216,50 +295,56 @@ on_language_changed (
   g_settings_set_enum (
     S_P_UI_GENERAL, "language", (int) lang);
 
+  GtkAssistant * assistant =
+    GTK_ASSISTANT (
+      gtk_builder_get_object (
+        builder, "assistant"));
+  GtkLabel * locale_not_available =
+    GTK_LABEL (
+      gtk_builder_get_object (
+        builder, "locale_not_available"));
+
   /* if locale exists */
   if (localization_init (false, true))
     {
       /* enable "Next" */
       gtk_assistant_set_page_complete (
-        GTK_ASSISTANT (self),
-        gtk_assistant_get_nth_page (
-          GTK_ASSISTANT (self), 0),
+        assistant,
+        gtk_assistant_get_nth_page (assistant, 0),
         1);
       gtk_widget_set_visible (
-        GTK_WIDGET (self->locale_not_available),
-        F_NOT_VISIBLE);
+        GTK_WIDGET (locale_not_available), false);
     }
   /* locale doesn't exist */
   else
     {
       /* disable "Next" */
       gtk_assistant_set_page_complete (
-        GTK_ASSISTANT (self),
-        gtk_assistant_get_nth_page (
-          GTK_ASSISTANT (self), 0),
+        assistant,
+        gtk_assistant_get_nth_page (assistant, 0),
         0);
 
       /* show warning */
       char * str =
         ui_get_locale_not_available_string (lang);
       gtk_label_set_markup (
-        self->locale_not_available, str);
+        locale_not_available, str);
       g_free (str);
 
       gtk_widget_set_visible (
-        GTK_WIDGET (self->locale_not_available),
-        F_VISIBLE);
+        GTK_WIDGET (locale_not_available), true);
     }
 }
 
 static void
 on_file_set (
-  GtkFileChooserButton *widget,
-  FirstRunAssistantWidget * self)
+  GtkFileChooserNative * file_chooser_native,
+  gint                   response_id,
+  gpointer               user_data)
 {
   GFile * file =
     gtk_file_chooser_get_file (
-      GTK_FILE_CHOOSER (widget));
+      GTK_FILE_CHOOSER (file_chooser_native));
   char * str =
     g_file_get_path (file);
   g_settings_set_string (
@@ -273,32 +358,58 @@ on_file_set (
   g_free (str2);
 }
 
-FirstRunAssistantWidget *
-first_run_assistant_widget_new (
+/**
+ * Runs the first run assistant.
+ */
+void
+first_run_assistant_widget_present (
   GtkWindow * parent)
 {
-  FirstRunAssistantWidget * self =
-    g_object_new (
-      FIRST_RUN_ASSISTANT_WIDGET_TYPE,
-      "modal", 1,
-      "urgency-hint", 1,
-      NULL);
+  GtkBuilder * builder =
+    gtk_builder_new_from_resource (
+      RESOURCES_TEMPLATE_PATH
+      "/first_run_assistant.ui");
+  GtkAssistant * assistant =
+    GTK_ASSISTANT (
+      gtk_builder_get_object (
+        builder, "assistant"));
 
   /* setup languages */
-  ui_setup_language_combo_box (
-    self->language_cb);
+  GtkComboBox * language_cb =
+    GTK_COMBO_BOX (
+      gtk_builder_get_object (
+        builder, "language_cb"));
+  ui_setup_language_combo_box (language_cb);
 
   /* setup backends */
+  GtkComboBox * audio_backend =
+    GTK_COMBO_BOX (
+      gtk_builder_get_object (
+        builder, "audio_backend"));
+  GtkComboBox * midi_backend =
+    GTK_COMBO_BOX (
+      gtk_builder_get_object (
+        builder, "midi_backend"));
   ui_setup_audio_backends_combo_box (
-    self->audio_backend);
+    audio_backend);
   ui_setup_midi_backends_combo_box (
-    self->midi_backend);
+    midi_backend);
 
   /* set zrythm dir */
+  GtkBox * fc_btn_box =
+    GTK_BOX (
+      gtk_builder_get_object (
+        builder, "fc_btn_box"));
+  FileChooserButtonWidget * fc_btn =
+    file_chooser_button_widget_new (
+      NULL,
+      _("Select a directory"),
+      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+  gtk_box_append (fc_btn_box, GTK_WIDGET (fc_btn));
   char * dir =
     zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
-  gtk_file_chooser_set_current_folder (
-    GTK_FILE_CHOOSER (self->fc_btn), dir);
+  file_chooser_button_widget_set_current_dir (
+    fc_btn, dir);
   g_settings_set_string (
     S_P_GENERAL_PATHS, "zrythm-dir", dir);
 
@@ -316,77 +427,51 @@ first_run_assistant_widget_new (
     /*gtk_assistant_get_n_pages (*/
       /*GTK_ASSISTANT (self)));*/
 
-  gtk_window_set_position (
-    GTK_WINDOW (self), GTK_WIN_POS_CENTER_ALWAYS);
-  gtk_window_set_transient_for (
-    GTK_WINDOW (self), parent);
-  gtk_window_set_attached_to (
-    GTK_WINDOW (self), GTK_WIDGET (parent));
-  gtk_window_set_keep_above (
-    GTK_WINDOW (self), 1);
-
-  g_signal_connect (
-    G_OBJECT (self->audio_backend), "changed",
-    G_CALLBACK (on_audio_backend_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->midi_backend), "changed",
-    G_CALLBACK (on_midi_backend_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->language_cb), "changed",
-    G_CALLBACK (on_language_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->fc_btn), "file-set",
-    G_CALLBACK (on_file_set), self);
-  g_signal_connect (
-    G_OBJECT (self->reset), "clicked",
-    G_CALLBACK (on_reset_clicked), self);
-  g_signal_connect (
-    G_OBJECT (self->test_backends), "clicked",
-    G_CALLBACK (on_test_backends_clicked), self);
-
-  return self;
-}
-
-static void
-first_run_assistant_widget_class_init (
-  FirstRunAssistantWidgetClass * _klass)
-{
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "first_run_assistant.ui");
-
-#define BIND(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, \
-    FirstRunAssistantWidget, \
-    x)
-
-  BIND (language_cb);
-  BIND (audio_backend);
-  BIND (midi_backend);
-  BIND (locale_not_available);
-  BIND (fc_btn);
-  BIND (reset);
-  BIND (test_backends);
-
-#undef BIND
-}
-
-static void
-first_run_assistant_widget_init (
-  FirstRunAssistantWidget * self)
-{
-  g_type_ensure (ACTIVE_HARDWARE_MB_WIDGET_TYPE);
-
-  gtk_widget_init_template (GTK_WIDGET (self));
-
+  GtkButton * reset =
+    GTK_BUTTON (
+      gtk_builder_get_object (
+        builder, "reset"));
+  GtkButton * test_backends =
+    GTK_BUTTON (
+      gtk_builder_get_object (
+        builder, "test_backends"));
 #ifdef _WOE32
   gtk_widget_set_visible (
-    GTK_WIDGET (self->test_backends), 0);
+    GTK_WIDGET (test_backends), 0);
 #endif
 
+  gtk_window_set_transient_for (
+    GTK_WINDOW (assistant), parent);
+
   g_signal_connect (
-    G_OBJECT (self->language_cb), "changed",
-    G_CALLBACK (on_language_changed), self);
+    G_OBJECT (audio_backend), "changed",
+    G_CALLBACK (on_audio_backend_changed),
+    assistant);
+  g_signal_connect (
+    G_OBJECT (midi_backend), "changed",
+    G_CALLBACK (on_midi_backend_changed),
+    assistant);
+  g_signal_connect (
+    G_OBJECT (language_cb), "changed",
+    G_CALLBACK (on_language_changed), builder);
+  file_chooser_button_widget_set_response_callback (
+    fc_btn, G_CALLBACK (on_file_set), builder,
+    NULL);
+  g_signal_connect (
+    G_OBJECT (reset), "clicked",
+    G_CALLBACK (on_reset_clicked), fc_btn);
+  g_signal_connect (
+    G_OBJECT (test_backends), "clicked",
+    G_CALLBACK (on_test_backends_clicked), builder);
+
+  g_signal_connect (
+    G_OBJECT (assistant), "apply",
+    G_CALLBACK (on_first_run_assistant_apply),
+    zrythm_app);
+  g_signal_connect (
+    G_OBJECT (assistant), "cancel",
+    G_CALLBACK (on_first_run_assistant_cancel),
+    zrythm_app);
+
+  gtk_window_present (GTK_WINDOW (assistant));
 }

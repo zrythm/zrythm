@@ -327,7 +327,7 @@ inspector_track_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "inspector");
 
   expander_box_widget_set_vexpand (

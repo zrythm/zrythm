@@ -15,9 +15,13 @@ pads, and can be used in multiple languages
 including English, French, Portuguese, Japanese and
 German.
 
-Zrythm is [free software](https://www.gnu.org/philosophy/free-sw.html)
-written in C using the GTK+3 toolkit and can be
-extended using [GNU Guile](https://www.gnu.org/software/guile/).
+Zrythm is
+[free software](https://www.gnu.org/philosophy/free-sw.html)
+written in C using the
+[GTK4](https://docs.gtk.org/gtk4/overview.html)
+toolkit and can be
+extended using
+[GNU Guile](https://www.gnu.org/software/guile/).
 
 [Home page](https://www.zrythm.org)
 

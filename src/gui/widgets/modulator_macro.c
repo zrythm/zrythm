@@ -45,19 +45,21 @@ G_DEFINE_TYPE (
   ModulatorMacroWidget, modulator_macro_widget,
   GTK_TYPE_GRID)
 
-static bool
+static void
 on_inputs_draw (
-  GtkWidget *            widget,
-  cairo_t *              cr,
-  ModulatorMacroWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  ModulatorMacroWidget * self =
+    Z_MODULATOR_MACRO_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
@@ -117,23 +119,23 @@ on_inputs_draw (
             }
         }
     }
-
-  return false;
 }
 
-static bool
+static void
 on_output_draw (
-  GtkWidget *            widget,
-  cairo_t *              cr,
-  ModulatorMacroWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  ModulatorMacroWidget * self =
+    Z_MODULATOR_MACRO_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
@@ -150,54 +152,11 @@ on_output_draw (
   cairo_rectangle (
     cr, 0, (double) height - val_h, width, 1);
   cairo_fill (cr);
-
-  return false;
-}
-
-static void
-on_view_info_activate (
-  GtkMenuItem * menuitem,
-  Port *        port)
-{
-  PortInfoDialogWidget * dialog =
-    port_info_dialog_widget_new (port);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
-on_bind_midi_cc (
-  GtkMenuItem * menuitem,
-  Port *        port)
-{
-  BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new (port, true);
-
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
-on_reset_control (
-  GtkMenuItem * menuitem,
-  Port *        port)
-{
-  GError * err = NULL;
-  bool ret =
-    port_action_perform_reset_control (
-      &port->id, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err,
-        _("Failed to reset control '%s'"),
-        port->id.label);
-    }
 }
 
 static void
 on_knob_right_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -206,36 +165,32 @@ on_knob_right_click (
   if (n_press != 1)
     return;
 
-  GtkWidget *menu, *menuitem;
-  menu = gtk_menu_new();
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
+  char tmp[600];
+  sprintf (
+    tmp, "app.reset-control::%p", port);
   menuitem =
-    gtk_menu_item_new_with_label (_("Reset"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_reset_control), port);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("Reset"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
 
+  sprintf (
+    tmp, "app.bind-midi-cc::%p", port);
   menuitem =
-    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_bind_midi_cc), port);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  g_menu_append_item (menu, menuitem);
 
+  sprintf (
+    tmp, "app.port-view-info::%p", port);
   menuitem =
-    gtk_menu_item_new_with_label (_("View info"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_view_info_activate), port);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("View info"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
 
-  gtk_widget_show_all (menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    NULL, menu);
 }
 
 void
@@ -254,7 +209,7 @@ on_automate_clicked (
   PortConnectionsPopoverWidget * popover =
     port_connections_popover_widget_new (
       GTK_WIDGET (btn), port);
-  gtk_widget_show_all (GTK_WIDGET (popover));
+  gtk_popover_present (GTK_POPOVER (popover));
 
 #if 0
   g_signal_connect (
@@ -308,16 +263,18 @@ modulator_macro_widget_new (
     GTK_WIDGET (self->knob_with_name), 1, 0, 1, 2);
 
   /* add context menu */
-  GtkGestureMultiPress * mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (knob)));
+  GtkGestureClick * mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_knob_right_click), port);
+  gtk_widget_add_controller (
+    GTK_WIDGET (knob),
+    GTK_EVENT_CONTROLLER (mp));
 
   g_signal_connect (
     G_OBJECT (self->outputs), "clicked",
@@ -330,12 +287,12 @@ modulator_macro_widget_new (
     P_MODULATOR_TRACK->modulator_macros[
       modulator_macro_idx]->cv_in);
 
-  g_signal_connect (
-    G_OBJECT (self->inputs), "draw",
-    G_CALLBACK (on_inputs_draw), self);
-  g_signal_connect (
-    G_OBJECT (self->output), "draw",
-    G_CALLBACK (on_output_draw), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self->inputs), on_inputs_draw,
+    self, NULL);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self->output), on_output_draw,
+    self, NULL);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self->inputs),

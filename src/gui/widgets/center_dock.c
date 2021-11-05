@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,10 +38,10 @@ G_DEFINE_TYPE (
 static gboolean
 key_release_cb (
   GtkWidget *   widget,
-  GdkEventKey * event,
+  GdkKeyEvent * event,
   gpointer      data)
 {
-  return FALSE;
+  return false;
 }
 
 static void

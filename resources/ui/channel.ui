@@ -1,183 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="ChannelWidget" parent="GtkEventBox">
+  <requires lib="gtk" version="4.0"/>
+  <template class="ChannelWidget" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_top">2</property>
     <property name="margin_bottom">4</property>
     <child>
       <object class="GtkGrid" id="grid">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
           <object class="GtkBox" id="fader_area">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="vexpand">True</property>
+            <property name="vexpand">1</property>
             <child>
               <object class="FaderButtonsWidget" id="fader_buttons">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="FaderWidget" id="fader">
                 <property name="visible">1</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox" id="meter_area">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="vexpand">1</property>
                     <child>
                       <object class="MeterWidget" id="meter_l">
                         <property name="visible">1</property>
                       </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
                     </child>
                     <child>
                       <object class="MeterWidget" id="meter_r">
                         <property name="visible">1</property>
                       </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="meter_reading">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="valign">center</property>
                     <property name="label">2</property>
                     <attributes>
-                      <attribute name="font-desc" value="KacstTitle Bold 6"/>
+                      <attribute name="font-desc" value="KacstTitle Bold 6"></attribute>
                     </attributes>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack_type">end</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="pack_type">end</property>
-                <property name="position">2</property>
-              </packing>
             </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">6</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">6</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkEventBox" id="icon_and_name_event_box">
+          <object class="GtkBox" id="icon_and_name_event_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkImage" id="icon">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="EditableLabelWidget" id="name">
+                    <property name="hexpand">1</property>
                     <property name="visible">True</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
               </object>
             </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">1</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">1</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="balance_control_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="margin_top">1</property>
             <property name="margin_bottom">1</property>
             <property name="orientation">vertical</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">5</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">5</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
           <object class="RouteTargetSelectorWidget" id="output">
@@ -185,39 +104,36 @@
             <property name="margin-start">4</property>
             <property name="margin-end">4</property>
             <property name="margin-top">2</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">7</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">7</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
           <object class="ColorAreaWidget" id="color">
             <property name="visible">1</property>
             <property name="height-request">8</property>
             <property name="margin-bottom">3</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="instrument_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">3</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">3</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="mid_box">
-            <property name="visible">1</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="PluginStripExpanderWidget" id="midi_fx">
@@ -234,29 +150,25 @@
                 <property name="visible">1</property>
               </object>
             </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">4</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">4</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="highlight_left_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+              <property name="row-span">7</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-            <property name="height">7</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="highlight_right_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
@@ -267,26 +179,24 @@
             <child>
               <placeholder/>
             </child>
+            <layout>
+              <property name="column">3</property>
+              <property name="row">0</property>
+              <property name="row-span">7</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">3</property>
-            <property name="top_attach">0</property>
-            <property name="height">7</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="aux_buttons_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
               <placeholder/>
             </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">2</property>
+              <property name="column-span">2</property>
+            </layout>
           </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">2</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
           <placeholder/>

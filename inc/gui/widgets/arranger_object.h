@@ -205,6 +205,7 @@ void
 arranger_object_draw (
   ArrangerObject * self,
   ArrangerWidget * arranger,
+  GtkSnapshot *  snapshot,
   cairo_t *        cr,
   GdkRectangle *   rect);
 

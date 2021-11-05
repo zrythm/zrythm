@@ -36,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   FoldableNotebookWidget,
   foldable_notebook_widget,
   Z, FOLDABLE_NOTEBOOK_WIDGET,
-  GtkNotebook);
+  GtkBox);
 
 /**
  * @addtogroup widgets
@@ -58,22 +58,25 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _FoldableNotebookWidget
 {
-  GtkNotebook            parent_instance;
-  GtkGestureMultiPress * mp;
+  GtkBox              parent_instance;
+
+  GtkNotebook *       notebook;
+
+  GtkGestureClick *   mp;
 
   /** Paned associated with this notebook to set it
    * to max/min when hiding. */
-  GtkPaned *             paned;
+  GtkPaned *          paned;
 
   /** Notebook position in the paned. */
-  GtkPositionType        pos_in_paned;
+  GtkPositionType     pos_in_paned;
 
   /** Previous paned position before setting it to
    * max/min. */
-  //int                    prev_paned_pos;
+  //int               prev_paned_pos;
 
   /** Revealer position before hiding. */
-  int                    prev_pos;
+  int                 prev_pos;
 
   /**
    * Current tab during a press action.
@@ -81,7 +84,7 @@ typedef struct _FoldableNotebookWidget
    * Used to check if the same tab is active on
    * release in order to hide the tab.
    */
-  GtkWidget *            tab_during_press;
+  GtkWidget *         tab_during_press;
 } FoldableNotebookWidget;
 
 /**
@@ -124,6 +127,21 @@ foldable_notebook_widget_set_visibility (
 int
 foldable_notebook_widget_is_content_visible (
   FoldableNotebookWidget * self);
+
+/**
+ * Gets the internal notebook.
+ */
+GtkNotebook *
+foldable_notebook_widget_get_notebook (
+  FoldableNotebookWidget * self);
+
+void
+foldable_notebook_widget_add_page (
+  FoldableNotebookWidget * self,
+  GtkWidget *              child,
+  const char *             tab_icon_name,
+  const char *             tab_label,
+  const char *             tooltip);
 
 /**
  * Combines the above.

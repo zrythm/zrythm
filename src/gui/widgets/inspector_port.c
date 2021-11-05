@@ -46,7 +46,7 @@
 G_DEFINE_TYPE (
   InspectorPortWidget,
   inspector_port_widget,
-  GTK_TYPE_OVERLAY)
+  GTK_TYPE_WIDGET)
 
 #ifdef HAVE_JACK
 static void
@@ -138,93 +138,47 @@ get_port_str (
 }
 
 static void
-on_view_info_activate (
-  GtkMenuItem *         menuitem,
-  InspectorPortWidget * self)
-{
-  PortInfoDialogWidget * dialog =
-    port_info_dialog_widget_new (self->port);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
-on_bind_midi_cc (
-  GtkMenuItem *         menuitem,
-  InspectorPortWidget * self)
-{
-  BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new (self->port, true);
-
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
-on_reset_control (
-  GtkMenuItem *         menuitem,
-  InspectorPortWidget * self)
-{
-  GError * err = NULL;
-  bool ret =
-    port_action_perform_reset_control (
-      &self->port->id, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, _("Failed to reset %s"),
-        self->port->id.label);
-    }
-}
-
-static void
 show_context_menu (
   InspectorPortWidget * self,
   gdouble               x,
   gdouble               y)
 {
-  GtkWidget *menu, *menuitem;
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
-  menu = gtk_menu_new();
+  char tmp[600];
 
   if (self->port->id.type ==
         TYPE_CONTROL)
     {
+      sprintf (
+        tmp, "app.reset-control::%p", self->port);
       menuitem =
-        gtk_menu_item_new_with_label (
-          _("Reset"));
-      g_signal_connect (
-        menuitem, "activate",
-        G_CALLBACK (on_reset_control), self);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
+        z_gtk_create_menu_item (
+          _("Reset"), NULL, tmp);
+      g_menu_append_item (menu, menuitem);
 
+      sprintf (
+        tmp, "app.bind-midi-cc::%p", self->port);
       menuitem =
-        GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
-      g_signal_connect (
-        menuitem, "activate",
-        G_CALLBACK (on_bind_midi_cc), self);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
+        CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+      g_menu_append_item (menu, menuitem);
     }
 
+  sprintf (
+    tmp, "app.port-view-info::%p", self->port);
   menuitem =
-    gtk_menu_item_new_with_label (
-      _("View info"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_view_info_activate), self);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("View info"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
 
-  gtk_widget_show_all (menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_right_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -249,7 +203,7 @@ on_popover_closed (
 
 static void
 on_double_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -264,7 +218,6 @@ on_double_click (
     port_connections_popover_widget_new (
       GTK_WIDGET (self), self->port);
   /*gtk_popover_popdown (GTK_POPOVER (popover));*/
-  gtk_widget_show_all (GTK_WIDGET (popover));
 
   g_signal_connect (
     G_OBJECT (popover), "closed",
@@ -449,17 +402,13 @@ bar_slider_tick_cb (
       g_free_and_null (comment_escaped);
 
       /* if the tooltip changed, update it */
-      char * cur_tooltip =
+      const char * cur_tooltip =
         gtk_widget_get_tooltip_markup (widget);
       if (!string_is_equal (cur_tooltip, str))
         {
           gtk_widget_set_tooltip_markup (
             widget, str);
         }
-
-      /* cleanup */
-      if (cur_tooltip)
-        g_free (cur_tooltip);
 
       /* remember time */
       self->last_tooltip_change = now;
@@ -529,8 +478,8 @@ inspector_port_widget_new (
         (GenericFloatSetter) set_init_port_value;
       self->bar_slider->end_setter =
         (GenericFloatSetter) val_change_finished;
-      gtk_container_add (
-        GTK_CONTAINER (self),
+      gtk_overlay_set_child (
+        self->overlay,
         GTK_WIDGET (self->bar_slider));
       self->minf = minf;
       self->maxf = maxf;
@@ -574,7 +523,7 @@ inspector_port_widget_new (
             GTK_WIDGET (self->jack),
             _("Expose port to JACK"));
           gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
+            self->overlay,
             GTK_WIDGET (self->jack));
           if (port->data &&
               port->internal_type ==
@@ -599,26 +548,30 @@ inspector_port_widget_new (
 #endif
 
   self->double_click_gesture =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->bar_slider)));
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
+  g_signal_connect (
+    G_OBJECT (self->double_click_gesture), "pressed",
+    G_CALLBACK (on_double_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->bar_slider),
+    GTK_EVENT_CONTROLLER (
+      self->double_click_gesture));
 
   self->right_click_gesture =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->bar_slider)));
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (
       self->right_click_gesture),
       GDK_BUTTON_SECONDARY);
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self->double_click_gesture), "pressed",
-    G_CALLBACK (on_double_click), self);
   g_signal_connect (
     G_OBJECT (self->right_click_gesture), "pressed",
     G_CALLBACK (on_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->bar_slider),
+    GTK_EVENT_CONTROLLER (
+      self->right_click_gesture));
 
 inspector_port_new_end:
 
@@ -654,8 +607,11 @@ static void
 inspector_port_widget_init (
   InspectorPortWidget * self)
 {
-  gtk_widget_set_visible (
-    GTK_WIDGET (self), 1);
+  self->overlay =
+    GTK_OVERLAY (gtk_overlay_new ());
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->overlay),
+    GTK_WIDGET (self));
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);

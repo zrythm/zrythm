@@ -1,30 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="TimelinePanelWidget"
-    parent="GtkBox">
-    <property name="visible">1</property>
+  <requires lib="gtk" version="4.0"/>
+  <template class="TimelinePanelWidget" parent="GtkBox">
     <property name="vexpand">1</property>
     <property name="orientation">vertical</property>
     <child>
@@ -34,11 +11,11 @@
     </child>
     <child>
       <object class="GtkPaned" id="tracklist_timeline">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="shrink-end-child">0</property>
+        <property name="shrink-start-child">0</property>
+        <property name="focusable">1</property>
         <child>
           <object class="GtkBox" id="tracklist_top">
-            <property name="visible">1</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="TracklistHeaderWidget" id="tracklist_header">
@@ -49,32 +26,22 @@
               <object class="TracklistWidget" id="tracklist">
                 <property name="name">tracklist</property>
                 <property name="visible">1</property>
-                <!--<property name="height-request">6000</property>-->
               </object>
             </child>
           </object>
-          <packing>
-            <property name="shrink">0</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkBox"
-            id="timelines_plus_ruler">
-            <property name="visible">1</property>
+          <object class="GtkBox" id="timelines_plus_ruler">
             <property name="orientation">vertical</property>
-            <!--<property name="width-request">40</property>-->
             <child>
               <object class="GtkScrolledWindow" id="ruler_scroll">
                 <property name="height-request">42</property>
-                <property name="visible">1</property>
-                <property name="can-focus">1</property>
+                <property name="focusable">1</property>
                 <property name="hexpand">1</property>
                 <property name="hscrollbar-policy">external</property>
                 <property name="vscrollbar-policy">never</property>
-                <property name="shadow-type">in</property>
-                <child>
+                <property name="child">
                   <object class="GtkViewport" id="ruler_viewport">
-                    <property name="visible">1</property>
                     <property name="hexpand">1</property>
                     <child>
                       <object class="RulerWidget" id="ruler">
@@ -82,24 +49,20 @@
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
             <child>
               <object class="GtkBox" id="timeline_divider_box">
-                <property name="visible">1</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="pinned_timeline_scroll">
-                    <property name="visible">1</property>
-                    <property name="can-focus">1</property>
+                    <property name="focusable">1</property>
                     <property name="hscrollbar-policy">external</property>
                     <property name="vscrollbar-policy">never</property>
-                    <property name="shadow-type">in</property>
                     <property name="min-content-width">400</property>
-                    <child>
+                    <property name="child">
                       <object class="GtkViewport" id="pinned_timeline_viewport">
-                        <property name="visible">1</property>
                         <property name="hexpand">1</property>
                         <property name="hscroll-policy">natural</property>
                         <property name="vscroll-policy">natural</property>
@@ -109,22 +72,17 @@
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                  <packing>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkScrolledWindow" id="timeline_scroll">
-                    <property name="visible">1</property>
-                    <property name="can-focus">1</property>
+                    <property name="focusable">1</property>
                     <property name="hscrollbar-policy">always</property>
-                    <property name="shadow-type">in</property>
                     <property name="min-content-width">400</property>
                     <property name="vexpand">1</property>
-                    <child>
+                    <property name="child">
                       <object class="GtkViewport" id="timeline_viewport">
-                        <property name="visible">1</property>
                         <property name="hexpand">1</property>
                         <property name="hscroll-policy">natural</property>
                         <property name="vscroll-policy">natural</property>
@@ -134,17 +92,12 @@
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                  <packing>
-                  </packing>
                 </child>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="shrink">0</property>
-          </packing>
         </child>
       </object>
     </child>
@@ -162,4 +115,3 @@
     </widgets>
   </object>
 </interface>
-

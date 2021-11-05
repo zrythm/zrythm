@@ -100,19 +100,21 @@ set_real_val (
 /**
  * Draws the bar_slider.
  */
-static int
+static void
 bar_slider_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  BarSliderWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
+  BarSliderWidget * self =
+    Z_BAR_SLIDER_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (drawing_area));
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -206,27 +208,30 @@ bar_slider_draw_cb (
       cairo_rectangle (cr, 0, 0, width, height);
       cairo_fill (cr);
     }
-
-  return FALSE;
 }
 
 static void
-on_crossing (
-  GtkWidget *       widget,
-  GdkEvent *        event,
-  BarSliderWidget * self)
+on_motion_enter (
+  GtkEventControllerMotion * controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      self->hover = 1;
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      if (!gtk_gesture_drag_get_offset (
-             self->drag, NULL, NULL))
-        self->hover = 0;
-    }
-  gtk_widget_queue_draw (widget);
+  BarSliderWidget * self =
+    Z_BAR_SLIDER_WIDGET (user_data);
+  self->hover = true;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+static void
+on_motion_leave (
+  GtkEventControllerMotion * controller,
+  gpointer                   user_data)
+{
+  BarSliderWidget * self =
+    Z_BAR_SLIDER_WIDGET (user_data);
+  self->hover = false;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -340,6 +345,7 @@ bar_slider_widget_on_size_allocate (
   recreate_pango_layouts (self);
 }
 
+#if 0
 static void
 on_screen_changed (
   GtkWidget *          widget,
@@ -348,6 +354,7 @@ on_screen_changed (
 {
   recreate_pango_layouts (self);
 }
+#endif
 
 /**
  * Creates a bar slider widget for floats.
@@ -398,25 +405,29 @@ _bar_slider_widget_new (
   gtk_widget_set_vexpand (
     GTK_WIDGET (self), 1);
 
-  /* connect signals */
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), bar_slider_draw_cb,
+    self, NULL);
+
+  GtkEventController * motion_controller =
+    gtk_event_controller_motion_new ();
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), motion_controller);
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (bar_slider_draw_cb), self);
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_crossing),  self);
+    G_OBJECT(self), "leave",
+    G_CALLBACK (on_motion_leave), self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-begin",
-    G_CALLBACK (drag_begin),  self);
+    G_CALLBACK (drag_begin), self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
+    G_CALLBACK (drag_update), self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
+    G_CALLBACK (drag_end), self);
   return self;
 }
 
@@ -442,22 +453,20 @@ bar_slider_widget_init (
   self->editable = 1;
 
   /* make it able to notify */
-  gtk_widget_set_has_window (
-    GTK_WIDGET (self), TRUE);
-  int crossing_mask =
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (
-    GTK_WIDGET (self), crossing_mask);
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
 
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);
 
+#if 0
   g_signal_connect (
     G_OBJECT (self), "screen-changed",
     G_CALLBACK (on_screen_changed),  self);
+#endif
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (

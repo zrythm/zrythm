@@ -38,14 +38,14 @@ G_DECLARE_FINAL_TYPE (
   PlayheadScrollButtonsWidget,
   playhead_scroll_buttons_widget,
   Z, PLAYHEAD_SCROLL_BUTTONS_WIDGET,
-  GtkButtonBox)
+  GtkBox)
 
 #define MW_PLAYHEAD_SCROLL_BUTTONS \
   MW_HOME_TOOLBAR->snap_box
 
 typedef struct _PlayheadScrollButtonsWidget
 {
-  GtkButtonBox      parent_instance;
+  GtkBox      parent_instance;
   GtkToggleButton * scroll_edges;
   GtkToggleButton * follow;
 } PlayheadScrollButtonsWidget;

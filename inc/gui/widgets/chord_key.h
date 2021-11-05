@@ -57,12 +57,12 @@ typedef struct _ChordKeyWidget
   GtkLabel *        chord_lbl;
   GtkBox *          piano_box;
   PianoKeyboardWidget * piano;
-  GtkButtonBox *    btn_box;
+  GtkBox *    btn_box;
   GtkButton *       choose_chord_btn;
   GtkButton *       invert_prev_btn;
   GtkButton *       invert_next_btn;
 
-  GtkGestureMultiPress * multipress;
+  GtkGestureClick * multipress;
 } ChordKeyWidget;
 
 void

@@ -195,9 +195,7 @@ on_button_send_srht_clicked (
     GTK_MESSAGE_DIALOG (dialog), 580, 320);
 
   /* run the dialog */
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (
-    GTK_WIDGET (dialog));
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 }
 
 static void
@@ -216,18 +214,10 @@ on_button_send_email_clicked (
       NEW_ISSUE_EMAIL, report_template);
   g_free (report_template);
 
-  GError * err = NULL;
-  bool success =
-    gtk_show_uri_on_window (
-      GTK_WINDOW (self), email_url,
-      GDK_CURRENT_TIME, &err);
+  gtk_show_uri (
+    GTK_WINDOW (self), email_url,
+    GDK_CURRENT_TIME);
   g_free (email_url);
-  if (!success)
-    {
-      g_warning (
-        "failed to show URI on window: %s",
-        err->message);
-    }
 }
 
 static char *
@@ -371,8 +361,8 @@ on_button_send_automatically_clicked (
   GtkGrid * grid = GTK_GRID (gtk_grid_new ());
   z_gtk_widget_set_margin (GTK_WIDGET (grid), 4);
   gtk_grid_set_row_spacing (grid, 2);
-  gtk_container_add (
-    GTK_CONTAINER (content_area),
+  gtk_box_append (
+    GTK_BOX (content_area),
     GTK_WIDGET (grid));
 
   /* set top text */
@@ -432,7 +422,7 @@ on_button_send_automatically_clicked (
   gtk_source_buffer_set_style_scheme (
     GTK_SOURCE_BUFFER (json_label_buf), scheme);
   GtkWidget * scrolled_window =
-    gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_new ();
   gtk_scrolled_window_set_policy (
     GTK_SCROLLED_WINDOW (scrolled_window),
     GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -442,8 +432,9 @@ on_button_send_automatically_clicked (
   gtk_scrolled_window_set_min_content_height (
     GTK_SCROLLED_WINDOW (scrolled_window),
     340);
-  gtk_container_add (
-    GTK_CONTAINER (scrolled_window), json_label);
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (scrolled_window),
+    json_label);
   gtk_grid_attach (
     grid, scrolled_window, 0, 2, 1, 1);
 
@@ -505,7 +496,9 @@ on_button_send_automatically_clicked (
       const char * option_vals[] = {
         "30", NULL, };
       z_gtk_generate_screenshot_image (
-        GTK_WIDGET (MAIN_WINDOW), "jpeg",
+        GTK_WIDGET (MAIN_WINDOW->overlay),
+        GTK_WIDGET (MAIN_WINDOW->main_box),
+        "jpeg",
         (char **) option_keys, (char **) option_vals,
         &screenshot_tmpdir,
         &screenshot_path, true);
@@ -534,10 +527,8 @@ on_button_send_automatically_clicked (
     grid, img, 0, 6, 1, 1);
 
   /* run the dialog */
-  gtk_widget_show_all (content_area);
-  int ret = gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (
-    GTK_WIDGET (dialog));
+  int ret =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 
   if (ret != GTK_RESPONSE_OK)
     return;
@@ -574,8 +565,8 @@ on_button_send_automatically_clicked (
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog),
     GTK_WINDOW (self));
-  gtk_dialog_run (GTK_DIALOG (progress_dialog));
-  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+  z_gtk_dialog_run (
+    GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
 
@@ -706,7 +697,8 @@ static void
 bug_report_dialog_widget_class_init (
   BugReportDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "bug_report_dialog.ui");
 
@@ -720,19 +712,12 @@ bug_report_dialog_widget_class_init (
   BIND_CHILD (other_info_text_view);
   BIND_CHILD (steps_to_reproduce_buffer);
   BIND_CHILD (other_info_buffer);
+  BIND_CHILD (button_close);
+  BIND_CHILD (button_send_srht);
+  BIND_CHILD (button_send_email);
+  BIND_CHILD (button_send_automatically);
 
 #undef BIND_CHILD
-
-#define BIND_CALLBACK(x) \
-  gtk_widget_class_bind_template_callback ( \
-    klass, x);
-
-  BIND_CALLBACK (on_button_close_clicked);
-  BIND_CALLBACK (on_button_send_srht_clicked);
-  BIND_CALLBACK (on_button_send_email_clicked);
-  BIND_CALLBACK (on_button_send_automatically_clicked);
-
-#undef BIND_CALLBACK
 }
 
 static void
@@ -740,4 +725,20 @@ bug_report_dialog_widget_init (
   BugReportDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  g_signal_connect (
+    G_OBJECT (self->button_close), "clicked",
+    G_CALLBACK (on_button_close_clicked), self);
+  g_signal_connect (
+    G_OBJECT (self->button_send_srht), "clicked",
+    G_CALLBACK (on_button_send_srht_clicked), self);
+  g_signal_connect (
+    G_OBJECT (self->button_send_email), "clicked",
+    G_CALLBACK (on_button_send_email_clicked),
+    self);
+  g_signal_connect (
+    G_OBJECT (self->button_send_automatically),
+    "clicked",
+    G_CALLBACK (
+      on_button_send_automatically_clicked), self);
 }

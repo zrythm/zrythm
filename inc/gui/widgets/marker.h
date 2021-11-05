@@ -70,7 +70,7 @@ typedef struct _MarkerWidget
   Marker *             marker;
 
   /** For double click. */
-  GtkGestureMultiPress * mp;
+  GtkGestureClick * mp;
 
   PangoLayout *        layout;
 

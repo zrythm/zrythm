@@ -35,7 +35,7 @@
 G_DEFINE_TYPE (
   PortConnectionsTreeWidget,
   port_connections_tree_widget,
-  GTK_TYPE_SCROLLED_WINDOW)
+  GTK_TYPE_BOX)
 
 enum
 {
@@ -168,51 +168,25 @@ create_model ()
 }
 
 static void
-on_delete_activate (
-  GtkMenuItem *               menuitem,
-  PortConnectionsTreeWidget * self)
-{
-  GError * err = NULL;
-  bool ret =
-    port_connection_action_perform_disconnect (
-      &self->src_port->id, &self->dest_port->id,
-      &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err,
-        _("Failed to disconnect %s from %s"),
-        self->src_port->id.label,
-        self->dest_port->id.label);
-    }
-}
-
-static void
 show_context_menu (
   PortConnectionsTreeWidget * self)
 {
-  GtkWidget * menuitem;
-  GtkWidget * menu = gtk_menu_new ();
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   menuitem =
-    gtk_menu_item_new_with_label (_("Delete"));
-  gtk_widget_set_visible (
-    GTK_WIDGET (menuitem), true);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), GTK_WIDGET (menuitem));
-  g_signal_connect_data (
-    G_OBJECT (menuitem), "activate",
-    G_CALLBACK (on_delete_activate), self, NULL, 0);
+    z_gtk_create_menu_item (
+      _("Delete"), NULL,
+      "app.port-connection-remove");
+  g_menu_append_item (menu, menuitem);
 
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -332,16 +306,18 @@ tree_view_setup (
     GTK_TREE_VIEW (tree_view), column);
 
   /* connect right click handler */
-  GtkGestureMultiPress * mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (tree_view)));
+  GtkGestureClick * mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 }
 
 /**
@@ -385,11 +361,14 @@ static void
 port_connections_tree_widget_init (
   PortConnectionsTreeWidget * self)
 {
+  self->scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->scroll));
+
   self->tree =
     GTK_TREE_VIEW (gtk_tree_view_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->tree), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (self->tree));
+  gtk_scrolled_window_set_child (
+    self->scroll, GTK_WIDGET (self->tree));
 }

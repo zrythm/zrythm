@@ -1,149 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="ViewToolbarWidget" parent="GtkToolbar">
+  <requires lib="gtk" version="4.0"/>
+  <template class="ViewToolbarWidget" parent="GtkBox">
+    <style>
+      <class name="toolbar"/>
+    </style>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkToolButton" id="status_bar">
-        <property name="visible">1</property>
+      <object class="GtkButton" id="status_bar">
         <property name="icon-name">show-menu</property>
         <property name="action-name">app.toggle-status-bar</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="can_focus">0</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">False</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="zoom_in">
-        <property name="visible">1</property>
+      <object class="GtkButton" id="zoom_in">
         <property name="icon-name">zoom-in</property>
         <property name="action-name">app.zoom-in</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolButton" id="zoom_out">
-        <property name="visible">1</property>
+      <object class="GtkButton" id="zoom_out">
         <property name="icon-name">zoom-out</property>
         <property name="action-name">app.zoom-out</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolButton" id="original_size">
-        <property name="visible">1</property>
+      <object class="GtkButton" id="original_size">
         <property name="icon-name">zoom-original</property>
         <property name="action-name">app.original-size</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolButton" id="best_fit">
-        <property name="visible">1</property>
+      <object class="GtkButton" id="best_fit">
         <property name="icon-name">zoom-fit-best</property>
         <property name="action-name">app.best-fit</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="can_focus">0</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">False</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="fullscreen">
-        <property name="visible">1</property>
+      <object class="GtkButton" id="fullscreen">
         <property name="icon-name">view-fullscreen</property>
         <property name="action-name">app.fullscreen</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="can_focus">0</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">False</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="left_panel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="left_panel">
+        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-left-pane-symbolic-light</property>
         <property name="action_name">app.toggle-left-panel</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="bot_panel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="bot_panel">
+        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-bottom-pane-symbolic-light</property>
         <property name="action_name">app.toggle-bot-panel</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="top_panel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="top_panel">
+        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
         <property name="action_name">app.toggle-top-panel</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="right_panel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="right_panel">
+        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-right-pane-symbolic-light</property>
         <property name="action_name">app.toggle-right-panel</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
   </template>
 </interface>

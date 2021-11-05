@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,9 +32,9 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (VisibilityWidget,
-               visibility_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  VisibilityWidget, visibility_widget,
+  GTK_TYPE_BOX)
 
 /**
  * Refreshes the visibility widget.
@@ -55,14 +55,11 @@ visibility_widget_new ()
 
   self->track_visibility =
     track_visibility_tree_widget_new ();
-  gtk_box_pack_start (
+  gtk_box_append (
     GTK_BOX (self),
-    GTK_WIDGET (self->track_visibility),
-    1, 1, 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->track_visibility), 1);
+    GTK_WIDGET (self->track_visibility));
   gtk_widget_set_vexpand (
-    GTK_WIDGET (self->track_visibility), 1);
+    GTK_WIDGET (self->track_visibility), true);
 
   return self;
 }

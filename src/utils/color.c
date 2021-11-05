@@ -25,7 +25,7 @@
  */
 void
 color_brighten (
-  GdkRGBA * src, double val)
+  GdkRGBA * src, float val)
 {
   src->red = MIN (src->red + val, 1.0);
   src->green = MIN (src->green + val, 1.0);
@@ -47,7 +47,7 @@ color_brighten_default (
  */
 void
 color_darken (
-  GdkRGBA * src, double val)
+  GdkRGBA * src, float val)
 {
   src->red = MAX (src->red - val, 0.0);
   src->green = MAX (src->green - val, 0.0);
@@ -73,10 +73,10 @@ color_is_same (
   GdkRGBA * dest)
 {
   return
-    math_doubles_equal (src->red, dest->red) &&
-    math_doubles_equal (src->green, dest->green) &&
-    math_doubles_equal (src->blue, dest->blue) &&
-    math_doubles_equal (src->alpha, dest->alpha);
+    math_floats_equal (src->red, dest->red) &&
+    math_floats_equal (src->green, dest->green) &&
+    math_floats_equal (src->blue, dest->blue) &&
+    math_floats_equal (src->alpha, dest->alpha);
 }
 
 /**
@@ -116,7 +116,7 @@ bool
 color_is_very_dark (
   GdkRGBA * src)
 {
-  return src->red + src->green + src->blue < 1.0;
+  return src->red + src->green + src->blue < 1.f;
 }
 
 /**
@@ -126,21 +126,21 @@ bool
 color_is_very_very_dark (
   GdkRGBA * src)
 {
-  return src->red + src->green + src->blue < 0.5;
+  return src->red + src->green + src->blue < 0.5f;
 }
 
-double
+float
 color_get_brightness (
   GdkRGBA * src)
 {
-  return (src->red + src->green + src->blue) / 3.0;
+  return (src->red + src->green + src->blue) / 3.f;
 }
 
-double
+float
 color_get_darkness (
   GdkRGBA * color)
 {
-  return 1.0 - color_get_brightness (color);
+  return 1.f - color_get_brightness (color);
 }
 
 void
@@ -164,14 +164,14 @@ void
 color_morph (
   GdkRGBA * a,
   GdkRGBA * b,
-  double    amt,
+  float     amt,
   GdkRGBA * result)
 {
   g_return_if_fail (amt >= 0.0);
   g_return_if_fail (amt <= 1.0);
   g_return_if_fail (a && b && result);
 
-  double amt_inv = 1.0 - amt;
+  float amt_inv = 1.0 - amt;
   result->red = amt_inv * a->red + amt * b->red;
   result->green = amt_inv * a->green + amt * b->green;
   result->blue = amt_inv * a->blue + amt * b->blue;

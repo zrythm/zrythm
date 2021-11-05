@@ -1,115 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
-<!--
-
-  Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="FileAuditionerControlsWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can-focus">True</property>
+    <property name="focusable">1</property>
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkToolbar" id="btn_toolbar">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="icon_size">2</property>
-        <property name="show-arrow">False</property>
+      <object class="GtkBox" id="btn_toolbar">
+        <style>
+          <class name="toolbar"/>
+        </style>
+        <property name="can-focus">0</property>
         <child>
-          <object class="GtkToolButton" id="play_btn">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+          <object class="GtkButton" id="play_btn">
+            <property name="can-focus">0</property>
             <property name="tooltip-text" translatable="yes">Play/Pause</property>
             <property name="icon-name">media-playback-start</property>
             <signal name="clicked" handler="on_play_clicked" object="FileAuditionerControlsWidget" swapped="no"/>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="homogeneous">True</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkToolButton" id="stop_btn">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+          <object class="GtkButton" id="stop_btn">
+            <property name="can-focus">0</property>
             <property name="tooltip-text" translatable="yes">Stop</property>
             <property name="icon-name">media-playback-stop</property>
             <signal name="clicked" handler="on_stop_clicked" object="FileAuditionerControlsWidget" swapped="no"/>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="homogeneous">True</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkToolItem">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+          <object class="VolumeWidget" id="volume">
             <property name="tooltip-text" translatable="yes">Volume</property>
-            <child>
-              <object class="VolumeWidget" id="volume">
-              <property name="visible">True</property>
-              </object>
-            </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="homogeneous">True</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkToolItem">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+          <object class="GtkMenuButton" id="file_settings_btn">
             <property name="tooltip-text" translatable="yes">Preferences</property>
             <child>
-              <object class="GtkMenuButton" id="file_settings_btn">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="icon-name">fork-awesome-fa-cog</property>
-                  </object>
-                </child>
+              <object class="GtkImage">
+                <property name="icon-name">fork-awesome-fa-cog</property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="homogeneous">True</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkComboBoxText" id="instrument_cb">
-        <property name="visible">True</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-      </packing>
+      <object class="GtkComboBoxText" id="instrument_cb"/>
     </child>
   </template>
 </interface>

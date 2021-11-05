@@ -36,6 +36,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
@@ -53,7 +54,6 @@
 #include "gui/widgets/chord_pad.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editor_ruler.h"
-#include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
@@ -70,6 +70,7 @@
 #include "gui/widgets/monitor_section.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/panel_file_browser.h"
 #include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/plugin_strip_expander.h"
@@ -83,7 +84,6 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_toolbar.h"
-#include "gui/widgets/timeline_selection_info.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/track.h"
@@ -123,30 +123,30 @@ on_project_selection_type_changed (void)
     GTK_WIDGET (
       MW_TIMELINE_PANEL->timelines_plus_ruler),
     class);
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (
       MW_TIMELINE_PANEL->timelines_plus_ruler),
     selectable_class);
   z_gtk_widget_remove_style_class (
     GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top),
     class);
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top),
     selectable_class);
   z_gtk_widget_remove_style_class (
     GTK_WIDGET (MW_CLIP_EDITOR_INNER), class);
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (MW_CLIP_EDITOR_INNER),
     selectable_class);
   z_gtk_widget_remove_style_class (
     GTK_WIDGET (MW_MIXER), class);
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (MW_MIXER), selectable_class);
 
   switch (PROJECT->last_selection)
     {
     case SELECTION_TYPE_TRACKLIST:
-      z_gtk_widget_add_style_class (
+      gtk_widget_add_css_class (
         GTK_WIDGET (
           MW_TIMELINE_PANEL->tracklist_top),
         class);
@@ -154,14 +154,14 @@ on_project_selection_type_changed (void)
         GTK_WIDGET (
           MW_TIMELINE_PANEL->tracklist_top),
         selectable_class);
-      z_gtk_widget_add_style_class (
+      gtk_widget_add_css_class (
         GTK_WIDGET (MW_MIXER), class);
       z_gtk_widget_remove_style_class (
         GTK_WIDGET (MW_MIXER),
         selectable_class);
       break;
     case SELECTION_TYPE_TIMELINE:
-      z_gtk_widget_add_style_class (
+      gtk_widget_add_css_class (
         GTK_WIDGET (
           MW_TIMELINE_PANEL->timelines_plus_ruler),
         class);
@@ -176,7 +176,7 @@ on_project_selection_type_changed (void)
     case SELECTION_TYPE_MODULATOR:
       break;
     case SELECTION_TYPE_EDITOR:
-      z_gtk_widget_add_style_class (
+      gtk_widget_add_css_class (
         GTK_WIDGET (MW_CLIP_EDITOR_INNER), class);
       z_gtk_widget_remove_style_class (
         GTK_WIDGET (MW_CLIP_EDITOR_INNER),
@@ -1961,6 +1961,11 @@ event_manager_process_event (
     case ET_AUDIO_REGION_GAIN_CHANGED:
       audio_arranger_widget_redraw_gain (
         MW_AUDIO_ARRANGER);
+      break;
+    case ET_FILE_BROWSER_BOOKMARK_ADDED:
+    case ET_FILE_BROWSER_BOOKMARK_DELETED:
+      panel_file_browser_refresh_bookmarks (
+        MW_PANEL_FILE_BROWSER);
       break;
     default:
       g_warning (

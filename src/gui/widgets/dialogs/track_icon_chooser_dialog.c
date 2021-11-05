@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,7 +48,8 @@ track_icon_chooser_dialog_widget_run (
   TrackIconChooserDialogWidget * self)
 {
   int res =
-    gtk_dialog_run (GTK_DIALOG (self->dialog));
+    z_gtk_dialog_run (
+      GTK_DIALOG (self->dialog), false);
   bool icon_set = false;
   switch (res)
     {
@@ -71,7 +72,7 @@ track_icon_chooser_dialog_widget_run (
             F_UNDOABLE, F_PUBLISH_EVENTS);
         }
     }
-  gtk_widget_destroy (GTK_WIDGET (self->dialog));
+  gtk_window_destroy (GTK_WINDOW (self->dialog));
 
   g_free_and_null (self->selected_icon);
 
@@ -106,6 +107,8 @@ create_list_store (void)
     gtk_list_store_new (
       2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 
+  /* TODO */
+#if 0
   GtkIconTheme * icon_theme =
     gtk_icon_theme_get_default ();
 
@@ -137,6 +140,7 @@ create_list_store (void)
       g_free (l->data);
     }
   g_list_free (list);
+#endif
 
   return store;
 }
@@ -166,7 +170,7 @@ track_icon_chooser_dialog_widget_new (
         GTK_RESPONSE_ACCEPT,
         NULL));
   g_free (str);
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self->dialog),
     "track-icon-chooser-dialog");
 
@@ -194,19 +198,18 @@ track_icon_chooser_dialog_widget_new (
         GTK_DIALOG (self->dialog)));
   GtkScrolledWindow * scroll =
     GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new (NULL, NULL));
+      gtk_scrolled_window_new ());
   gtk_scrolled_window_set_min_content_width (
     scroll, 480);
   gtk_scrolled_window_set_min_content_height (
     scroll, 360);
   gtk_widget_set_visible (
     GTK_WIDGET (scroll), true);
-  gtk_container_add (
-    GTK_CONTAINER (scroll),
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (scroll),
     GTK_WIDGET (self->icon_view));
-  gtk_box_pack_start (
-    content_area, GTK_WIDGET (scroll), F_EXPAND,
-    F_FILL, 0);
+  gtk_box_append (
+    content_area, GTK_WIDGET (scroll));
 
   self->track = track;
 

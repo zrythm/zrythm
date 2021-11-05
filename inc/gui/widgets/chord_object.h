@@ -69,7 +69,7 @@ typedef struct _ChordObjectWidget
   ChordObject *    chord_object;
 
   /** For double click. */
-  GtkGestureMultiPress * mp;
+  GtkGestureClick * mp;
 } ChordObjectWidget;
 
 /**

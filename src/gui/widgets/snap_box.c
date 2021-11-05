@@ -30,7 +30,7 @@
 
 G_DEFINE_TYPE (
   SnapBoxWidget, snap_box_widget,
-  GTK_TYPE_BUTTON_BOX)
+  GTK_TYPE_BOX)
 
 /**
  * Sets the snap_box toggled states after

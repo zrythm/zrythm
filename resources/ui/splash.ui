@@ -1,92 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="SplashWindowWidget" parent="GtkWindow">
-    <property name="visible">True</property>
-    <property name="sensitive">False</property>
-    <property name="can_focus">False</property>
-    <property name="can_default">True</property>
-    <property name="has_default">True</property>
-    <property name="resizable">False</property>
-    <property name="window_position">center-always</property>
+    <!--<property name="sensitive">0</property>-->
+    <property name="resizable">0</property>
     <property name="default_width">580</property>
     <property name="default_height">300</property>
-    <property name="decorated">False</property>
-    <property name="deletable">False</property>
+    <property name="decorated">0</property>
+    <property name="deletable">0</property>
     <property name="icon_name">zrythm</property>
     <property name="title" translatable="yes">Splash</property>
     <child>
       <placeholder/>
     </child>
-    <child>
+    <property name="child">
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkOverlay">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
+            <property name="vexpand">1</property>
+            <property name="child">
               <object class="GtkImage" id="img">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="icon_name">zrythm-splash-png</property>
-                <property name="icon_size">6</property>
+                <property name="pixel_size">560</property>
               </object>
-              <packing>
-                <property name="index">1</property>
-              </packing>
-            </child>
+            </property>
             <child type="overlay">
               <object class="GtkLabel" id="label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="valign">end</property>
                 <property name="label" translatable="yes">Initializing...</property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkProgressBar" id="progress_bar">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="fraction">0.02</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
-    </child>
+    </property>
   </template>
 </interface>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,14 +40,17 @@
   (chord_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ChordWidget, chord_widget, Z, CHORD_WIDGET,
-  GtkOverlay)
+  GtkWidget)
 
 /**
  * Single chord pad.
  */
 typedef struct _ChordWidget
 {
-  GtkOverlay    parent_instance;
+  GtkWidget     parent_instance;
+
+  /** Main child. */
+  GtkOverlay *  overlay;
 
   /** Button. */
   GtkButton *   btn;

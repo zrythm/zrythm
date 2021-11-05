@@ -121,19 +121,19 @@ set_real_val (
 /**
  * Draws the knob.
  */
-static int
+static void
 knob_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  KnobWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  KnobWidget * self = Z_KNOB_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -428,27 +428,30 @@ knob_draw_cb (
     }
 
   cairo_identity_matrix(cr);
-
-  return FALSE;
 }
 
 static void
-on_crossing (
-  GtkWidget *  widget,
-  GdkEvent *   event,
-  KnobWidget * self)
+on_enter (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      self->hover = 1;
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      if (!gtk_gesture_drag_get_offset (
-             self->drag, NULL, NULL))
-        self->hover = 0;
-    }
-  gtk_widget_queue_draw (widget);
+  KnobWidget * self = Z_KNOB_WIDGET (user_data);
+  self->hover = true;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  gpointer                   user_data)
+{
+  KnobWidget * self = Z_KNOB_WIDGET (user_data);
+  if (!gtk_gesture_drag_get_offset (
+         self->drag, NULL, NULL))
+    self->hover = false;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -493,13 +496,14 @@ drag_end (
   gdouble          offset_y,
   KnobWidget *     self)
 {
-  GdkModifierType state_mask =
-    ui_get_state_mask (GTK_GESTURE (gesture));
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
 
   /* reset if ctrl-clicked */
   if (self->default_getter && self->setter &&
       !self->drag_updated &&
-      state_mask & GDK_CONTROL_MASK)
+      state & GDK_CONTROL_MASK)
     {
       float def_fader_val =
         self->default_getter (self->object);
@@ -581,16 +585,23 @@ _knob_widget_new (
   gtk_widget_set_size_request (
     GTK_WIDGET (self), size, size);
 
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
+  g_signal_connect (
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_enter), self);
+  g_signal_connect (
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
+
   /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (knob_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_crossing),  self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), knob_draw_cb,
+    self, NULL);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-update",
     G_CALLBACK (drag_update),  self);
@@ -621,16 +632,12 @@ static void
 knob_widget_init (
   KnobWidget * self)
 {
-  /* make it able to notify */
-  gtk_widget_set_has_window (
-    GTK_WIDGET (self), TRUE);
-  int crossing_mask =
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (
-    GTK_WIDGET (self), crossing_mask);
   self->drag =
     GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
+      gtk_gesture_drag_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
 
   self->layout =
     z_cairo_create_pango_layout_from_string (

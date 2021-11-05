@@ -75,21 +75,6 @@ timeline_arranger_widget_get_track_at_y (
   ArrangerWidget * self,
   double y);
 
-void
-timeline_arranger_on_export_as_midi_file_clicked (
-  GtkMenuItem * menuitem,
-  ZRegion *      r);
-
-void
-timeline_arranger_on_quick_bounce_clicked (
-  GtkMenuItem * menuitem,
-  ZRegion *      r);
-
-void
-timeline_arranger_on_bounce_clicked (
-  GtkMenuItem * menuitem,
-  ZRegion *      r);
-
 /**
  * Returns the hit AutomationTrack at y.
  */

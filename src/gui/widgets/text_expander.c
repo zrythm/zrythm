@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,23 +34,26 @@ G_DEFINE_TYPE (
   text_expander_widget,
   EXPANDER_BOX_WIDGET_TYPE)
 
-static gboolean
-on_focus (
-  GtkWidget * widget,
-  TextExpanderWidget * self)
+static void
+on_focus_enter (
+  GtkEventControllerFocus * focus_controller,
+  gpointer                  user_data)
 {
+  TextExpanderWidget * self =
+    Z_TEXT_EXPANDER_WIDGET (user_data);
+
   g_message ("text focused");
   self->has_focus = true;
-
-  return FALSE;
 }
 
-static gboolean
-on_focus_out (
-  GtkWidget *widget,
-  GdkEvent  *event,
-  TextExpanderWidget * self)
+static void
+on_focus_leave (
+  GtkEventControllerFocus * focus_controller,
+  gpointer                  user_data)
 {
+  TextExpanderWidget * self =
+    Z_TEXT_EXPANDER_WIDGET (user_data);
+
   g_message ("text focus out");
   self->has_focus = false;
 
@@ -68,8 +71,6 @@ on_focus_out (
       self->setter (self->obj, content);
       text_expander_widget_refresh (self);
     }
-
-  return FALSE;
 }
 
 /**
@@ -105,9 +106,9 @@ text_expander_widget_setup (
   self->setter = setter;
   self->obj = obj;
 
-  gtk_label_set_line_wrap (self->label, wrap_text);
+  gtk_label_set_wrap (self->label, wrap_text);
   if (wrap_text)
-    gtk_label_set_line_wrap_mode (
+    gtk_label_set_wrap_mode (
       self->label, PANGO_WRAP_WORD_CHAR);
 
   text_expander_widget_refresh (self);
@@ -125,56 +126,43 @@ text_expander_widget_init (
 {
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_widget_set_visible (box, true);
 
   self->scroll =
     GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new (
-        NULL, NULL));
+      gtk_scrolled_window_new ());
   gtk_widget_set_vexpand (
     GTK_WIDGET (self->scroll), 1);
   gtk_widget_set_visible (
     GTK_WIDGET (self->scroll), 1);
-  gtk_scrolled_window_set_shadow_type (
-    self->scroll, GTK_SHADOW_ETCHED_IN);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->scroll), -1, 124);
-  gtk_container_add (
-    GTK_CONTAINER (box), GTK_WIDGET (self->scroll));
+  gtk_box_append (
+    GTK_BOX (box), GTK_WIDGET (self->scroll));
 
   self->viewport =
     GTK_VIEWPORT (
       gtk_viewport_new (NULL, NULL));
   gtk_widget_set_visible (
     GTK_WIDGET (self->viewport), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self->scroll),
-    GTK_WIDGET (self->viewport));
+  gtk_scrolled_window_set_child (
+    self->scroll, GTK_WIDGET (self->viewport));
 
   self->label =
     GTK_LABEL (gtk_label_new (""));
-  gtk_container_add (
-    GTK_CONTAINER (self->viewport),
-    GTK_WIDGET (self->label));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->label), true);
+  gtk_viewport_set_child (
+    self->viewport, GTK_WIDGET (self->label));
   gtk_widget_set_vexpand (
     GTK_WIDGET (self->label), true);
 
   self->edit_btn =
     GTK_MENU_BUTTON (gtk_menu_button_new ());
-  gtk_container_add (
-    GTK_CONTAINER (box),
-    GTK_WIDGET (self->edit_btn));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->edit_btn), true);
-  z_gtk_button_set_icon_name (
-    GTK_BUTTON (self->edit_btn), "edit");
+  gtk_box_append (
+    GTK_BOX (box), GTK_WIDGET (self->edit_btn));
+  gtk_menu_button_set_icon_name (
+    self->edit_btn, "edit");
 
   self->popover =
-    GTK_POPOVER (
-      gtk_popover_new (
-        GTK_WIDGET (self->edit_btn)));
+    GTK_POPOVER (gtk_popover_new ());
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self->edit_btn),
     GTK_WIDGET (self->popover));
@@ -191,10 +179,9 @@ text_expander_widget_init (
   self->editor =
     GTK_SOURCE_VIEW (
       gtk_source_view_new_with_buffer (
-      self->buffer));
-  gtk_container_add (
-    GTK_CONTAINER (self->popover),
-    GTK_WIDGET (self->editor));
+        self->buffer));
+  gtk_popover_set_child (
+    self->popover, GTK_WIDGET (self->editor));
   gtk_widget_set_visible (
     GTK_WIDGET (self->editor), true);
   gtk_source_view_set_tab_width (
@@ -226,11 +213,17 @@ text_expander_widget_init (
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self), "text-bubble");
 
+  GtkEventControllerFocus * focus_controller =
+    GTK_EVENT_CONTROLLER_FOCUS (
+      gtk_event_controller_focus_new ());
   g_signal_connect (
-    G_OBJECT (self->editor), "focus-out-event",
-    G_CALLBACK (on_focus_out), self);
+    G_OBJECT (focus_controller), "leave",
+    G_CALLBACK (on_focus_leave), self);
   g_signal_connect (
-    G_OBJECT (self->editor), "grab-focus",
-    G_CALLBACK (on_focus), self);
+    G_OBJECT (focus_controller), "enter",
+    G_CALLBACK (on_focus_enter), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->editor),
+    GTK_EVENT_CONTROLLER (focus_controller));
 }
 

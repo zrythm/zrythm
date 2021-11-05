@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,17 +38,14 @@ G_DECLARE_FINAL_TYPE (
   RangeActionButtonsWidget,
   range_action_buttons_widget,
   Z, RANGE_ACTION_BUTTONS_WIDGET,
-  GtkButtonBox)
-
-#define MW_RANGE_ACTION_BUTTONS \
-  MW_HOME_TOOLBAR->snap_box
+  GtkBox)
 
 typedef struct _SnapGridWidget SnapGridWidget;
 typedef struct SnapGrid SnapGrid;
 
 typedef struct _RangeActionButtonsWidget
 {
-  GtkButtonBox    parent_instance;
+  GtkBox    parent_instance;
   GtkButton *     insert_silence;
   GtkButton *     remove;
 } RangeActionButtonsWidget;

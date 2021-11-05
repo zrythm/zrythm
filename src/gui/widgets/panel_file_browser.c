@@ -55,7 +55,7 @@
 G_DEFINE_TYPE (
   PanelFileBrowserWidget,
   panel_file_browser_widget,
-  GTK_TYPE_PANED)
+  GTK_TYPE_BOX)
 
 enum
 {
@@ -114,91 +114,28 @@ create_model_for_locations (
 }
 
 static void
-on_bookmark_remove_activate (
-  GtkMenuItem *            menuitem,
-  PanelFileBrowserWidget * self)
-{
-  g_return_if_fail (self->cur_loc);
-
-  if (self->cur_loc->special_location >
-        FILE_MANAGER_NONE)
-    {
-      ui_show_error_message (
-        MAIN_WINDOW,
-        _("Cannot delete standard bookmark"));
-      return;
-    }
-
-  GtkWidget * dialog =
-    gtk_message_dialog_new (
-      GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL |
-        GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_QUESTION,
-      GTK_BUTTONS_YES_NO,
-      "%s",
-      _("Are you sure you want to remove this "
-      "bookmark?"));
-  gtk_widget_show_all (GTK_WIDGET (dialog));
-  int result =
-    gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
-
-  if (result == GTK_RESPONSE_YES)
-    {
-      file_manager_remove_location_and_save (
-        FILE_MANAGER, self->cur_loc->path,
-        true);
-
-      /* refresh treeview */
-      self->bookmarks_tree_model =
-        GTK_TREE_MODEL (
-          create_model_for_locations (self));
-      gtk_tree_view_set_model (
-        self->bookmarks_tree_view,
-        GTK_TREE_MODEL (
-          self->bookmarks_tree_model));
-    }
-}
-
-static void
 show_bookmarks_context_menu (
   PanelFileBrowserWidget *    self,
   const FileBrowserLocation * loc)
 {
-  GtkMenuItem * menuitem;
-  GtkWidget * menu = gtk_menu_new();
-
-#define APPEND \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), \
-    GTK_WIDGET (menuitem));
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   self->cur_loc = loc;
 
   menuitem =
     z_gtk_create_menu_item (
-      _("Delete"), "edit-delete", false, NULL);
-  gtk_widget_set_visible (
-    GTK_WIDGET (menuitem), true);
-  APPEND;
-  g_signal_connect (
-    G_OBJECT (menuitem), "activate",
-    G_CALLBACK (on_bookmark_remove_activate),
-    self);
+      _("Delete"), "edit-delete",
+      "app.panel-file-browser-delete-bookmark");
+  g_menu_append_item (menu, menuitem);
 
-#undef APPEND
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (
-    GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_bookmark_right_click (
-  GtkGestureMultiPress *   gesture,
+  GtkGestureClick *   gesture,
   gint                     n_press,
   gdouble                  x_dbl,
   gdouble                  y_dbl,
@@ -247,17 +184,10 @@ on_bookmark_right_click (
   show_bookmarks_context_menu (self, loc);
 }
 
-static void
-on_dir_add_bookmark (
-  GtkMenuItem *            menuitem,
+void
+panel_file_browser_refresh_bookmarks (
   PanelFileBrowserWidget * self)
 {
-  g_return_if_fail (self->cur_file);
-
-  file_manager_add_location_and_save (
-    FILE_MANAGER, self->cur_file->abs_path);
-
-  /* refresh treeview */
   self->bookmarks_tree_model =
     GTK_TREE_MODEL (
       create_model_for_locations (self));
@@ -271,13 +201,8 @@ show_files_context_menu (
   PanelFileBrowserWidget * self,
   const SupportedFile *    file)
 {
-  GtkMenuItem * menuitem;
-  GtkWidget * menu = gtk_menu_new();
-
-#define APPEND \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), \
-    GTK_WIDGET (menuitem));
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   self->cur_file = file;
 
@@ -285,28 +210,18 @@ show_files_context_menu (
     {
       menuitem =
         z_gtk_create_menu_item (
-          _("Add Bookmark"), "favorite", false,
-          NULL);
-      gtk_widget_set_visible (
-        GTK_WIDGET (menuitem), true);
-      APPEND;
-      g_signal_connect (
-        G_OBJECT (menuitem), "activate",
-        G_CALLBACK (on_dir_add_bookmark), self);
+          _("Add Bookmark"), "favorite",
+          "app.panel-file-browser-add-bookmark");
+      g_menu_append_item (menu, menuitem);
     }
 
-#undef APPEND
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (
-    GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_file_right_click (
-  GtkGestureMultiPress *   gesture,
+  GtkGestureClick *   gesture,
   gint                     n_press,
   gdouble                  x_dbl,
   gdouble                  y_dbl,
@@ -369,13 +284,13 @@ visible_func (
     model, iter, COLUMN_DESCR, &descr, -1);
 
   bool show_audio =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->filters_toolbar->toggle_audio);
   bool show_midi =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->filters_toolbar->toggle_midi);
   bool show_presets =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->filters_toolbar->toggle_presets);
   bool all_toggles_off =
     !show_audio && !show_midi && !show_presets;
@@ -528,29 +443,28 @@ get_selected_file (
   return descr;
 }
 
-static void
-on_drag_data_get (
-  GtkWidget *              widget,
-  GdkDragContext *         context,
-  GtkSelectionData *       data,
-  guint                    info,
-  guint                    time,
+static GdkContentProvider *
+on_dnd_drag_prepare (
+  GtkDragSource * source,
+  double          x,
+  double          y,
   PanelFileBrowserWidget * self)
 {
-  if (GTK_WIDGET (self->files_tree_view) ==
-        widget)
-    {
-      SupportedFile * descr =
-        get_selected_file (self);
+  SupportedFile * descr = get_selected_file (self);
+  char descr_str[600];
+  sprintf (
+    descr_str, SUPPORTED_FILE_DND_PREFIX "%p",
+    descr);
 
-      gtk_selection_data_set (
-        data,
-        gdk_atom_intern_static_string (
-          TARGET_ENTRY_SUPPORTED_FILE),
-        32,
-        (const guchar *)&descr,
-        sizeof (SupportedFile));
-    }
+  GdkContentProvider * content_providers[] = {
+    gdk_content_provider_new_typed (
+      G_TYPE_STRING, descr_str),
+  };
+
+  return
+    gdk_content_provider_new_union (
+      content_providers,
+      G_N_ELEMENTS (content_providers));
 }
 
 static GtkTreeModel *
@@ -787,24 +701,14 @@ tree_view_setup (
 
   if (dnd)
     {
-      char * entry_uri_list =
-        g_strdup (TARGET_ENTRY_SUPPORTED_FILE);
-      GtkTargetEntry entries[] = {
-        {
-          entry_uri_list, GTK_TARGET_SAME_APP,
-          symap_map (ZSYMAP, TARGET_ENTRY_SUPPORTED_FILE),
-        },
-      };
-      gtk_tree_view_enable_model_drag_source (
-        GTK_TREE_VIEW (tree_view),
-        GDK_BUTTON1_MASK, entries,
-        G_N_ELEMENTS (entries),
-        GDK_ACTION_COPY);
-      g_free (entry_uri_list);
-
+      GtkDragSource * drag_source =
+        gtk_drag_source_new ();
       g_signal_connect (
-        GTK_WIDGET (tree_view), "drag-data-get",
-        G_CALLBACK (on_drag_data_get), self);
+        drag_source, "prepare",
+        G_CALLBACK (on_dnd_drag_prepare), self);
+      gtk_widget_add_controller (
+        GTK_WIDGET (tree_view),
+        GTK_EVENT_CONTROLLER (drag_source));
     }
 
   GtkTreeSelection * sel =
@@ -827,7 +731,7 @@ on_position_change (
     }
 
   int divider_pos =
-    gtk_paned_get_position (GTK_PANED (self));
+    gtk_paned_get_position (self->paned);
   g_settings_set_int (
     S_UI, "browser-divider-position", divider_pos);
   g_message (
@@ -853,7 +757,7 @@ on_draw (
           "browser-divider-position");
       /*g_warning ("pos %d", divider_pos);*/
       gtk_paned_set_position (
-        GTK_PANED (self), divider_pos);
+        self->paned, divider_pos);
     }
 
   return FALSE;
@@ -923,27 +827,31 @@ panel_file_browser_widget_new ()
     G_CALLBACK (on_position_change), self);
 
   /* connect right click handlers */
-  GtkGestureMultiPress * mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->bookmarks_tree_view)));
+  GtkGestureClick * mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_bookmark_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->bookmarks_tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 
   mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->files_tree_view)));
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_file_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->files_tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 
   return self;
 }
@@ -960,6 +868,7 @@ panel_file_browser_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, PanelFileBrowserWidget, x)
 
+  BIND_CHILD (paned);
   BIND_CHILD (browser_top);
   BIND_CHILD (browser_bot);
   BIND_CHILD (file_info);
@@ -984,6 +893,6 @@ panel_file_browser_widget_init (
 
   self->selected_files = g_ptr_array_new ();
 
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "file-browser");
 }

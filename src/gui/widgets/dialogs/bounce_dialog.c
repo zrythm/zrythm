@@ -28,6 +28,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -122,8 +123,8 @@ on_bounce_clicked (
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog),
     GTK_WINDOW (self));
-  gtk_dialog_run (GTK_DIALOG (progress_dialog));
-  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+  z_gtk_dialog_run (
+    GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
 
@@ -190,8 +191,8 @@ bounce_dialog_widget_new (
 
   self->bounce_step_selector =
     bounce_step_selector_widget_new ();
-  gtk_container_add (
-    GTK_CONTAINER (self->bounce_step_box),
+  gtk_box_append (
+    GTK_BOX (self->bounce_step_box),
     GTK_WIDGET (self->bounce_step_selector));
 
   g_signal_connect (

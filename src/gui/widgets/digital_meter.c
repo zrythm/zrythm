@@ -79,28 +79,29 @@ G_DEFINE_TYPE (
   ((*self->getter) (self->obj, &pos))
 
 
-static gboolean
+static void
 digital_meter_draw_cb (
-  GtkWidget * widget,
-  cairo_t *cr,
-  DigitalMeterWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
-  if (!PROJECT->loaded)
-    return FALSE;
+  DigitalMeterWidget * self =
+    Z_DIGITAL_METER_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
 
-  g_return_val_if_fail (
+  if (!PROJECT->loaded)
+    return;
+
+  g_return_if_fail (
     Z_IS_DIGITAL_METER_WIDGET (self) &&
     PANGO_IS_LAYOUT (self->caption_layout) &&
     PANGO_IS_LAYOUT (self->seg7_layout) &&
-    PANGO_IS_LAYOUT (self->normal_layout),
-    FALSE);
+    PANGO_IS_LAYOUT (self->normal_layout));
 
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -472,8 +473,6 @@ digital_meter_draw_cb (
 
       break;
     }
-
- return FALSE;
 }
 
 /**
@@ -732,21 +731,34 @@ digital_meter_set_draw_line (
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
-static int
+static gboolean
 on_scroll (
-  GtkWidget *          widget,
-  GdkEventScroll *     event,
-  DigitalMeterWidget * self)
+  GtkEventControllerScroll * scroll_controller,
+  gdouble                    dx,
+  gdouble                    dy,
+  gpointer                   user_data)
 {
-  int num =
-    event->direction == GDK_SCROLL_UP ? 1 : -1;
-  Position pos;
+  DigitalMeterWidget * self =
+    Z_DIGITAL_METER_WIDGET (user_data);
 
-  update_flags (self, event->x, event->y);
+  GdkEvent * event =
+    gtk_event_controller_get_current_event (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkScrollDirection direction =
+    gdk_scroll_event_get_direction (event);
+  double abs_x, abs_y;
+  gdk_event_get_position (
+    event, &abs_x, &abs_y);
+
+  int num =
+    (direction == GDK_SCROLL_UP
+     || direction == GDK_SCROLL_RIGHT) ? 1 : -1;
+
+  update_flags (self, abs_x, abs_y);
   on_change_started (self);
 
   ControlPortChange change = { 0 };
-
+  Position pos;
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
@@ -894,7 +906,7 @@ on_scroll (
   on_change_finished (self);
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
-  return FALSE;
+  return true;
 }
 
 static void
@@ -1150,15 +1162,16 @@ drag_end (
   on_change_finished (self);
 }
 
-static gboolean
+static void
 button_press_cb (
-  GtkWidget      * event_box,
-  GdkEventButton * event,
+  GtkGestureClick *    gesture,
+  gint                 n_press,
+  gdouble              x,
+  gdouble              y,
   DigitalMeterWidget * self)
 {
   /*g_message ("%d, %d", self->height_start_pos, self->height_end_pos);*/
-  update_flags (self, event->x, event->y);
-  return 0;
+  update_flags (self, x, y);
 }
 
 static void
@@ -1187,14 +1200,18 @@ recreate_pango_layouts (
 }
 
 static void
-digital_meter_widget_on_size_allocate (
-  GtkWidget *          widget,
-  GdkRectangle *       allocation,
-  DigitalMeterWidget * self)
+digital_meter_widget_on_resize (
+  GtkDrawingArea * drawing_area,
+  gint             width,
+  gint             height,
+  gpointer         user_data)
 {
+  DigitalMeterWidget * self =
+    Z_DIGITAL_METER_WIDGET (user_data);
   recreate_pango_layouts (self);
 }
 
+#if 0
 static void
 on_screen_changed (
   GtkWidget *          widget,
@@ -1203,6 +1220,7 @@ on_screen_changed (
 {
   recreate_pango_layouts (self);
 }
+#endif
 
 static void
 init_dm (
@@ -1281,9 +1299,10 @@ init_dm (
       break;
     }
 
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (digital_meter_draw_cb), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    digital_meter_draw_cb,
+    self, NULL);
 }
 
 /**
@@ -1380,20 +1399,8 @@ digital_meter_widget_init (
   g_return_if_fail (
     Z_IS_DIGITAL_METER_WIDGET (self));
 
-  /* make it able to notify */
-  gtk_widget_set_has_window (
-    (GtkWidget *) self, TRUE);
-  gtk_widget_add_events (
-    (GtkWidget *) self,
-    GDK_SCROLL_MASK);
-
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
-
-  g_signal_connect (
-    G_OBJECT (self), "scroll-event",
-    G_CALLBACK (on_scroll),  self);
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);
@@ -1403,18 +1410,37 @@ digital_meter_widget_init (
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end",
     G_CALLBACK (drag_end),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
+
+  GtkEventControllerScroll * scroll_controller =
+    GTK_EVENT_CONTROLLER_SCROLL (
+      gtk_event_controller_scroll_new (
+        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
   g_signal_connect (
-    G_OBJECT (self), "button_press_event",
-    G_CALLBACK (button_press_cb),  self);
+    G_OBJECT (scroll_controller), "scroll",
+    G_CALLBACK (on_scroll),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (scroll_controller));
+
+  GtkGestureClick * click_gesture =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  g_signal_connect (
+    G_OBJECT (click_gesture), "pressed",
+    G_CALLBACK (button_press_cb), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (click_gesture));
+
+#if 0
   g_signal_connect (
     G_OBJECT (self), "screen-changed",
     G_CALLBACK (on_screen_changed),  self);
+#endif
   g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (
-      digital_meter_widget_on_size_allocate),
+    G_OBJECT (self), "resize",
+    G_CALLBACK (digital_meter_widget_on_resize),
     self);
-
-  gtk_widget_set_visible (
-    GTK_WIDGET (self), 1);
 }

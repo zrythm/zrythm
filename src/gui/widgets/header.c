@@ -47,10 +47,7 @@ header_widget_refresh (
     "refreshing header widget: "
     "has pending warnings: %d",
     self->log_has_pending_warnings);
-  GtkButton * btn =
-    GTK_BUTTON (
-      gtk_bin_get_child (
-        GTK_BIN (self->log_viewer)));
+  GtkButton * btn = self->log_viewer;
   z_gtk_button_set_emblem (
     btn,
     self->log_has_pending_warnings ?

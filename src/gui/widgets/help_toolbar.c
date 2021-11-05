@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,9 +23,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (HelpToolbarWidget,
-               help_toolbar_widget,
-               GTK_TYPE_TOOLBAR)
+G_DEFINE_TYPE (
+  HelpToolbarWidget, help_toolbar_widget,
+  GTK_TYPE_BOX)
 
 static void
 help_toolbar_widget_init (HelpToolbarWidget * self)
@@ -43,11 +43,14 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
   SET_TOOLTIP (report_a_bug_btn, _("Report a Bug"));
 #undef SET_TOOLTIP
 
+  /* TODO port */
+#if 0
   /* these icons get extremely large on windows */
   z_gtk_tool_button_set_icon_size (
     self->manual, GTK_ICON_SIZE_SMALL_TOOLBAR);
   z_gtk_tool_button_set_icon_size (
     self->shortcuts, GTK_ICON_SIZE_SMALL_TOOLBAR);
+#endif
 }
 
 static void

@@ -77,6 +77,7 @@
 #include "utils/cairo.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -203,44 +204,6 @@ typedef struct CurveAlgorithmInfo
   CurveAlgorithm    algo;
 } CurveAlgorithmInfo;
 
-static void
-on_curve_algorithm_selected (
-  GtkMenuItem *        menu_item,
-  CurveAlgorithmInfo * info)
-{
-  g_return_if_fail (
-    AUTOMATION_SELECTIONS->num_automation_points ==
-      1 &&
-    AUTOMATION_SELECTIONS->automation_points[0] ==
-      info->ap);
-
-  /* clone the selections before the change */
-  ArrangerSelections * sel_before =
-    arranger_selections_clone (
-      (ArrangerSelections *) AUTOMATION_SELECTIONS);
-
-  /* change */
-  info->ap->curve_opts.algo = info->algo;
-
-  /* perform action */
-  GError * err = NULL;
-  bool ret =
-    arranger_selections_action_perform_edit (
-      sel_before,
-      (ArrangerSelections *) AUTOMATION_SELECTIONS,
-      ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-      true, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s",
-        _("Failed to set curve algorithm"));
-    }
-
-  free (info);
-  arranger_selections_free_full (sel_before);
-}
-
 /**
  * Show context menu at x, y.
  */
@@ -250,8 +213,8 @@ automation_arranger_widget_show_context_menu (
   double           x,
   double           y)
 {
-  GtkWidget *menu, *menuitem;
-  menu = gtk_menu_new();
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   ArrangerObject * obj =
     arranger_widget_get_hit_arranger_object (
@@ -262,61 +225,39 @@ automation_arranger_widget_show_context_menu (
   if (ap)
     {
       /* add curve algorithm selection */
-      menuitem =
-        gtk_menu_item_new_with_label (
-          _("Curve algorithm"));
-      GtkMenu * submenu =
-        GTK_MENU (gtk_menu_new ());
-      gtk_widget_set_visible (
-        GTK_WIDGET (submenu), 1);
-      GtkMenuItem * submenu_item;
+      GMenu * curve_algorithm_submenu =
+        g_menu_new ();
       for (int i = 0; i < NUM_CURVE_ALGORITHMS; i++)
         {
           char name[100];
           curve_algorithm_get_localized_name (
             (CurveAlgorithm) i, name);
-          submenu_item =
-            GTK_MENU_ITEM (
-              gtk_check_menu_item_new_with_label (
-                name));
-          gtk_check_menu_item_set_draw_as_radio (
-            GTK_CHECK_MENU_ITEM (submenu_item), 1);
-          if ((CurveAlgorithm) i ==
-                ap->curve_opts.algo)
-            {
-              gtk_check_menu_item_set_active (
-                GTK_CHECK_MENU_ITEM (submenu_item), 1);
-            }
-
-          CurveAlgorithmInfo * info =
-            object_new (CurveAlgorithmInfo);
-          info->algo = (CurveAlgorithm) i;
-          info->ap = ap;
-          g_signal_connect (
-            G_OBJECT (submenu_item), "activate",
-            G_CALLBACK (on_curve_algorithm_selected),
-            info);
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL (submenu),
-            GTK_WIDGET (submenu_item));
-          gtk_widget_set_visible (
-            GTK_WIDGET (submenu_item), 1);
+          char tmp[200];
+          /* TODO change action state so that
+           * selected algorithm shows as selected */
+          sprintf (
+            tmp, "app.set-curve-algorithm::%d",
+            i);
+          menuitem =
+            z_gtk_create_menu_item (
+              name, NULL, tmp);
+          g_menu_append_item (
+            curve_algorithm_submenu, menuitem);
         }
 
-      gtk_menu_item_set_submenu (
-        GTK_MENU_ITEM (menuitem),
-        GTK_WIDGET (submenu));
-      gtk_widget_set_visible (
-        GTK_WIDGET (menuitem), 1);
-
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu),
-        GTK_WIDGET (menuitem));
+      g_menu_append_section (
+        menu, _("Curve algorithm"),
+        G_MENU_MODEL (curve_algorithm_submenu));
     }
 
-  gtk_widget_show_all (GTK_WIDGET (menu));
-  gtk_menu_popup_at_pointer (
-    GTK_MENU (menu), NULL);
+  GtkPopoverMenu * popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (
+        G_MENU_MODEL (menu)));
+  gtk_widget_set_parent (
+    GTK_WIDGET (popover_menu), GTK_WIDGET (self));
+  gtk_popover_present (
+    GTK_POPOVER (popover_menu));
 }
 
 /**

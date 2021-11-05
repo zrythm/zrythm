@@ -170,11 +170,9 @@ scripting_window_widget_init (
     GTK_SOURCE_VIEW (
       gtk_source_view_new_with_buffer (
       self->buffer));
-  gtk_container_add (
-    GTK_CONTAINER (self->source_viewport),
+  gtk_viewport_set_child (
+    GTK_VIEWPORT (self->source_viewport),
     GTK_WIDGET (self->editor));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->editor), true);
   gtk_text_buffer_set_text (
     GTK_TEXT_BUFFER (self->buffer),
     script_contents, -1);

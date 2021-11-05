@@ -496,15 +496,13 @@ channel_send_selector_widget_init (
   self->vbox =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->vbox), TRUE);
-  gtk_container_add (
-    GTK_CONTAINER (self),
+  gtk_popover_set_child (
+    GTK_POPOVER (self),
     GTK_WIDGET (self->vbox));
 
   /* add scroll */
   GtkWidget * scroll =
-    gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_new ();
   gtk_scrolled_window_set_policy (
     GTK_SCROLLED_WINDOW (scroll),
     GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -512,17 +510,16 @@ channel_send_selector_widget_init (
     GTK_SCROLLED_WINDOW (scroll), true);
   gtk_scrolled_window_set_max_content_height (
     GTK_SCROLLED_WINDOW (scroll), 240);
-  gtk_container_add (
-    GTK_CONTAINER (self->vbox), scroll);
-  gtk_widget_set_visible (scroll, true);
+  gtk_box_append (
+    GTK_BOX (self->vbox), scroll);
 
   /* add treeview */
   self->treeview =
     GTK_TREE_VIEW (gtk_tree_view_new ());
   gtk_widget_set_visible (
     GTK_WIDGET (self->treeview), TRUE);
-  gtk_container_add (
-    GTK_CONTAINER (scroll),
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (scroll),
     GTK_WIDGET (self->treeview));
 
 #if 0

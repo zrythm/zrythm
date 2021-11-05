@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -122,17 +122,10 @@ expander_box_widget_set_icon_resource (
     path);
 }
 
-static inline void
+void
 expander_box_widget_add_content (
   ExpanderBoxWidget * self,
-  GtkWidget *         content)
-{
-  ExpanderBoxWidgetPrivate * prv =
-    expander_box_widget_get_private (self);
-  gtk_container_add (
-    GTK_CONTAINER (prv->content),
-    content);
-}
+  GtkWidget *         content);
 
 /**
  * Reveals or hides the expander box's contents.

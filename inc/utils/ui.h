@@ -125,7 +125,6 @@ typedef struct UiCursor
 {
   char        name[400];
   GdkCursor * cursor;
-  GdkPixbuf * pixbuf;
   int         offset_x;
   int         offset_y;
 } UiCursor;
@@ -220,13 +219,6 @@ typedef struct UiCaches
      GTK_WIDGET (widget)) > 1 || \
    gtk_widget_get_allocated_width ( \
      GTK_WIDGET (widget)) > 1)
-
-/**
- * Used in handlers to get the state mask.
- */
-GdkModifierType
-ui_get_state_mask (
-  GtkGesture * gesture);
 
 /**
  * Various cursor states to be shared.
@@ -562,13 +554,17 @@ ui_is_child_hit (
 
 /**
  * Returns the matching hit child, or NULL.
+ *
+ * @param x X in parent space.
+ * @param y Y in parent space.
+ * @param type Type to look for.
  */
 GtkWidget *
 ui_get_hit_child (
-  GtkContainer * parent,
-  double         x, ///< x in parent space
-  double         y, ///< y in parent space
-  GType          type); ///< type to look for
+  GtkWidget * parent,
+  double      x,
+  double      y,
+  GType       type);
 
 UiDetail
 ui_get_detail_level (void);
@@ -686,15 +682,6 @@ int
 ui_show_notification_idle_func (char * msg);
 
 /**
- * Returns the modifier type (state mask) from the
- * given gesture.
- */
-void
-ui_get_modifier_type_from_gesture (
-  GtkGestureSingle * gesture,
-  GdkModifierType *  state_mask); ///< return value
-
-/**
  * Sets up a combo box to have a selection of
  * languages.
  */
@@ -800,7 +787,7 @@ ui_get_mid_color (
   GdkRGBA * dest,
   const GdkRGBA * c1,
   const GdkRGBA * c2,
-  const double    transition);
+  const float     transition);
 
 /**
  * Returns if the 2 rectangles overlay.
@@ -858,17 +845,6 @@ ui_get_normalized_draggable_value (
   double       last_px,
   double       multiplier,
   UiDragMode   mode);
-
-/**
- * All purpose menuitem callback for binding MIDI
- * CC to a port.
- *
- * An action will be performed if bound.
- */
-void
-ui_bind_midi_cc_item_activate_cb (
-  GtkMenuItem * menuitem,
-  Port *        port);
 
 UiCaches *
 ui_caches_new (void);

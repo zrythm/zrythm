@@ -233,11 +233,10 @@ on_selection_changed (
             tree_view_create (
               self,
               self->route_model);
-          z_gtk_container_destroy_all_children (
-            GTK_CONTAINER (
-              self->route_treeview_box));
-          gtk_container_add (
-            GTK_CONTAINER (
+          z_gtk_widget_destroy_all_children (
+            GTK_WIDGET (self->route_treeview_box));
+          gtk_box_append (
+            GTK_BOX (
               self->route_treeview_box),
             GTK_WIDGET (self->route_treeview));
           update_info_label (self,
@@ -323,7 +322,7 @@ on_closed (
   RouteTargetSelectorPopoverWidget *self,
   gpointer    user_data)
 {
-  gtk_widget_destroy (GTK_WIDGET (self));
+  /*gtk_widget_destroy (GTK_WIDGET (self));*/
 
   Channel * ch = self->owner->channel;
   g_return_if_fail (ch);
@@ -430,8 +429,8 @@ route_target_selector_popover_widget_new (
     tree_view_create (
       self,
       self->type_model);
-  gtk_container_add (
-    GTK_CONTAINER (self->type_treeview_box),
+  gtk_box_append (
+    GTK_BOX (self->type_treeview_box),
     GTK_WIDGET (self->type_treeview));
 
   Track * track =
@@ -451,8 +450,8 @@ route_target_selector_popover_widget_new (
   self->route_treeview =
     tree_view_create (
       self, self->route_model);
-  gtk_container_add (
-    GTK_CONTAINER (self->route_treeview_box),
+  gtk_box_append (
+    GTK_BOX (self->route_treeview_box),
     GTK_WIDGET (self->route_treeview));
 
   update_info_label (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -89,10 +89,10 @@ typedef struct _TrackWidget
   GtkBox *          group_colors_box;
 
   GtkGestureDrag *  drag;
-  GtkGestureMultiPress * multipress;
+  GtkGestureClick * multipress;
 
   /** Right-click gesture. */
-  GtkGestureMultiPress * right_mouse_mp;
+  GtkGestureClick * right_mouse_mp;
 
   /** If drag update was called at least once. */
   int               dragged;

@@ -31,6 +31,10 @@ suil_ui_supported(const char* host_type_uri,
 		SUIL_WRAPPING_NATIVE      = 1,
 		SUIL_WRAPPING_EMBEDDED    = 2
 	};
+
+  /* not supported */
+  return SUIL_WRAPPING_UNSUPPORTED;
+
 	if (!strcmp(GTK3_UI_URI, ui_type_uri))
 		return SUIL_WRAPPING_NATIVE;
 #ifdef _WOE32
@@ -54,6 +58,7 @@ open_wrapper(SuilHost*      host,
 {
 	SuilWrapper* wrapper = NULL;
 
+#if 0
 #ifdef HAVE_X11
 	if (!strcmp(ui_type_uri, X11_UI_URI))
     {
@@ -83,6 +88,7 @@ open_wrapper(SuilHost*      host,
           host, container_type_uri,
           ui_type_uri, features, n_features);
     }
+#endif
 #endif
 #endif
 

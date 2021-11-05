@@ -32,7 +32,7 @@
   (home_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   HomeToolbarWidget, home_toolbar_widget,
-  Z, HOME_TOOLBAR_WIDGET, GtkToolbar)
+  Z, HOME_TOOLBAR_WIDGET, GtkBox)
 
 typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _ButtonWithMenuWidget
@@ -52,21 +52,21 @@ typedef struct _ButtonWithMenuWidget
  */
 typedef struct _HomeToolbarWidget
 {
-  GtkToolbar         parent_instance;
+  GtkBox             parent_instance;
   GtkButton *        undo_btn;
   ButtonWithMenuWidget * undo;
   GtkButton *        redo_btn;
   ButtonWithMenuWidget * redo;
-  GtkToolButton *    cut;
-  GtkToolButton *    copy;
-  GtkToolButton *    paste;
-  GtkToolButton *    duplicate;
-  GtkToolButton *    delete;
-  GtkToolButton *    nudge_left;
-  GtkToolButton *    nudge_right;
-  GtkToolButton *    clear_selection;
-  GtkToolButton *    select_all;
-  GtkToolButton *    loop_selection;
+  GtkButton *    cut;
+  GtkButton *    copy;
+  GtkButton *    paste;
+  GtkButton *    duplicate;
+  GtkButton *    delete;
+  GtkButton *    nudge_left;
+  GtkButton *    nudge_right;
+  GtkButton *    clear_selection;
+  GtkButton *    select_all;
+  GtkButton *    loop_selection;
   ToolboxWidget *    toolbox;
 } HomeToolbarWidget;
 

@@ -116,12 +116,15 @@ expander_box_widget_set_orientation (
     GTK_ORIENTATION_HORIZONTAL);
 
   /* set the label angle */
+  /* TODO */
+#if 0
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     gtk_label_set_angle (
       prv->btn_label, 90.0);
   else
     gtk_label_set_angle (
       prv->btn_label, 0.0);
+#endif
 
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     {
@@ -150,9 +153,7 @@ expander_box_widget_set_icon_name (
   GET_PRIVATE (self);
 
   gtk_image_set_from_icon_name (
-    prv->btn_img,
-    icon_name,
-    GTK_ICON_SIZE_BUTTON);
+    prv->btn_img, icon_name);
 }
 
 void
@@ -176,6 +177,16 @@ expander_box_widget_set_reveal_callback (
 
   prv->reveal_cb = cb;
   prv->user_data = user_data;
+}
+
+void
+expander_box_widget_add_content (
+  ExpanderBoxWidget * self,
+  GtkWidget *         content)
+{
+  ExpanderBoxWidgetPrivate * prv =
+    expander_box_widget_get_private (self);
+  gtk_box_append (prv->content, content);
 }
 
 ExpanderBoxWidget *
@@ -234,28 +245,22 @@ expander_box_widget_init (ExpanderBoxWidget * self)
     GTK_ALIGN_START);
   prv->btn_img =
     GTK_IMAGE (
-      gtk_image_new_from_icon_name (
-        "plugins",
-        GTK_ICON_SIZE_BUTTON));
+      gtk_image_new_from_icon_name ("plugins"));
   GtkWidget * box =
-    gtk_box_new (GTK_ORIENTATION_HORIZONTAL,
-                 2);
-  gtk_container_add (
-    GTK_CONTAINER (box),
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (prv->btn_label));
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (
       gtk_separator_new (GTK_ORIENTATION_VERTICAL)));
-  gtk_box_pack_end (
+  gtk_box_append (
     GTK_BOX (box),
-    GTK_WIDGET (prv->btn_img), 0, 1, 0);
-  gtk_container_add (
-    GTK_CONTAINER (prv->button),
-    GTK_WIDGET (box));
+    GTK_WIDGET (prv->btn_img));
+  gtk_button_set_child (
+    prv->button, GTK_WIDGET (box));
   prv->btn_box = GTK_BOX (box);
-
-  gtk_widget_show_all (GTK_WIDGET (self));
 
   g_signal_connect (
     G_OBJECT (prv->button), "clicked",

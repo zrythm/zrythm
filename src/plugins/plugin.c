@@ -40,7 +40,6 @@
 #include "audio/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla_native_plugin.h"
@@ -1963,8 +1962,6 @@ plugin_open_ui (
         pl_str, self->window);
       gtk_window_present (
         GTK_WINDOW (self->window));
-      gtk_widget_show_all (
-        GTK_WIDGET (self->window));
     }
   else
     {
@@ -1989,8 +1986,10 @@ plugin_open_ui (
         }
       else if (descr->protocol == PROT_LV2)
         {
-          plugin_gtk_create_window (self);
-          lv2_gtk_open_ui (self->lv2);
+          g_warning ("unsupported");
+          g_return_if_reached ();
+          /*plugin_gtk_create_window (self);*/
+          /*lv2_gtk_open_ui (self->lv2);*/
         }
     }
 }

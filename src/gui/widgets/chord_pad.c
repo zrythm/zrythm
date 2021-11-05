@@ -46,6 +46,16 @@ chord_pad_widget_refresh (
   chord_pad_widget_setup (self);
 }
 
+ChordPadWidget *
+chord_pad_widget_new (void)
+{
+  ChordPadWidget * self =
+    g_object_new (
+      CHORD_PAD_WIDGET_TYPE, NULL);
+
+  return self;
+}
+
 static void
 chord_pad_widget_init (
   ChordPadWidget * self)

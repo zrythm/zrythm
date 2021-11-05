@@ -39,7 +39,6 @@
 #include "audio/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
@@ -96,6 +95,7 @@ lv2_gtk_on_save_activate (
 #endif
 }
 
+#if 0
 PluginGtkPresetMenu*
 lv2_gtk_get_bank_menu (
   Lv2Plugin* plugin,
@@ -181,6 +181,7 @@ lv2_gtk_add_preset_to_menu (
 
   return 0;
 }
+#endif
 
 /**
  * Called by plugin_gtk_on_save_preset_activate()
@@ -227,6 +228,7 @@ lv2_gtk_on_save_preset_activate (
   lilv_world_load_bundle(LILV_WORLD, ldir);
   lilv_node_free(ldir);
 
+#if 0
   // Rebuild preset menu and update window title
   if (GTK_IS_MENU_ITEM (widget))
     {
@@ -235,6 +237,7 @@ lv2_gtk_on_save_preset_activate (
         GTK_CONTAINER (
           gtk_widget_get_parent (widget)));
     }
+#endif
 
   g_free(dir);
   g_free(file);
@@ -246,6 +249,7 @@ lv2_gtk_on_save_preset_activate (
   lilv_node_free(plug_name);
 }
 
+#if 0
 void
 lv2_gtk_on_delete_preset_activate (
   GtkWidget* widget,
@@ -296,6 +300,7 @@ lv2_gtk_on_delete_preset_activate (
   gtk_widget_destroy (text);
   gtk_widget_destroy (dialog);
 }
+#endif
 
 static int
 patch_set_get (
@@ -553,15 +558,12 @@ lv2_gtk_open_ui (
        * container in win_in_gtk3 but it doesn't
        * in x11_in_gtk3 */
 #ifndef _WOE32
-      gtk_container_add (
-        GTK_CONTAINER (plugin->plugin->ev_box),
-        widget);
+      gtk_box_append (
+        GTK_BOX (plugin->plugin->ev_box), widget);
 #endif
       gtk_window_set_resizable (
         GTK_WINDOW (plugin->plugin->window),
         lv2_ui_is_resizable (plugin));
-      gtk_widget_show_all (
-        GTK_WIDGET (plugin->plugin->ev_box));
       gtk_widget_grab_focus (widget);
       gtk_window_present (
         GTK_WINDOW (plugin->plugin->window));

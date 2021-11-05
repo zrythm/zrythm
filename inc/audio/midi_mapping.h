@@ -30,6 +30,9 @@
 #include "audio/midi.h"
 #include "audio/port.h"
 
+typedef struct _WrappedObjectWithChangeSignal
+  WrappedObjectWithChangeSignal;
+
 /**
  * @addtogroup audio
  *
@@ -68,6 +71,9 @@ typedef struct MidiMapping
 
   /** Whether this binding is enabled. */
   volatile int   enabled;
+
+  /** Used in Gtk. */
+  WrappedObjectWithChangeSignal * gobj;
 } MidiMapping;
 
 static const cyaml_schema_field_t

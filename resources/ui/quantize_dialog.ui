@@ -1,289 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="QuantizeDialogWidget" parent="GtkDialog">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Quantize Options</property>
-    <property name="type_hint">normal</property>
     <child>
       <placeholder/>
     </child>
-    <child internal-child="vbox">
+    <child internal-child="content_area">
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="visible">0</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="quantize_btn">
-                <property name="label" translatable="yes">_Quantize</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
-                <signal name="clicked" handler="on_quantize_clicked" object="QuantizeDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="cancel_btn">
-                <property name="label" translatable="yes">_Cancel</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_underline">True</property>
-                <signal name="clicked" handler="on_cancel_clicked" object="QuantizeDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkBox" id="main_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_left">4</property>
-            <property name="margin_right">4</property>
+            <property name="margin-start">4</property>
+            <property name="margin-end">4</property>
             <property name="margin_top">4</property>
             <property name="margin_bottom">4</property>
             <property name="orientation">vertical</property>
             <property name="spacing">3</property>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">3</property>
                 <child>
                   <object class="GtkLabel" id="quantize_to_lbl">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Quantize to</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="note_length_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="hexpand">1</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="note_type_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="hexpand">1</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">3</property>
                 <child>
                   <object class="GtkLabel" id="adjust_lbl">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Adjust</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="adjust_start">
+                    <property name="hexpand">1</property>
                     <property name="label" translatable="yes">start</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="focusable">1</property>
+                    <property name="receives_default">1</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="adjust_end">
+                    <property name="hexpand">1</property>
                     <property name="label" translatable="yes">end</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="focusable">1</property>
+                    <property name="receives_default">1</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">3</property>
                 <child>
                   <object class="GtkLabel" id="amount_lbl">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Amount</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="amount_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="hexpand">1</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">3</property>
                 <child>
                   <object class="GtkLabel" id="swing_lbl">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Swing</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="swing_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="hexpand">1</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Randomization</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="randomization_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="hexpand">1</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
+        </child>
+      </object>
+    </child>
+    <child internal-child="action_area">
+      <object class="GtkBox">
+        <property name="valign">center</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkButton" id="quantize_btn">
+            <property name="label" translatable="yes">_Quantize</property>
+            <property name="focusable">1</property>
+            <property name="receives_default">1</property>
+            <property name="use_underline">1</property>
+            <signal name="clicked" handler="on_quantize_clicked" object="QuantizeDialogWidget" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="cancel_btn">
+            <property name="label" translatable="yes">_Cancel</property>
+            <property name="focusable">1</property>
+            <property name="receives_default">1</property>
+            <property name="use_underline">1</property>
+            <signal name="clicked" handler="on_cancel_clicked" object="QuantizeDialogWidget" swapped="no"/>
+          </object>
         </child>
       </object>
     </child>

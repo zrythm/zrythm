@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,81 +26,87 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TimelineMinimapSelectionWidget,
-               timeline_minimap_selection_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  TimelineMinimapSelectionWidget,
+  timeline_minimap_selection_widget,
+  GTK_TYPE_BOX)
 
 #define PADDING 2
 
-static gboolean
+static void
 tl_minimap_sel_draw_cb (
-  GtkWidget *widget,
-  cairo_t *cr,
-  gpointer data)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              w,
+  int              h,
+  gpointer         data)
 {
   z_cairo_draw_selection (
-    cr,
-    0,
-    PADDING,
-    gtk_widget_get_allocated_width (widget),
-    gtk_widget_get_allocated_height (widget) - PADDING * 2);
-
-  return FALSE;
+    cr, 0, PADDING, w, h - PADDING * 2);
 }
 
-static gboolean
-on_motion (GtkWidget * widget,
-           GdkEventMotion *event,
-           gpointer user_data)
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  gpointer                   user_data)
 {
   TimelineMinimapSelectionWidget * self =
     Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
+
+  gtk_widget_unset_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT);
+}
+
+static void
+on_motion (
+  GtkEventControllerMotion * motion_controller,
+  double                     x,
+  double                     y,
+  gpointer                   user_data)
+{
+  TimelineMinimapSelectionWidget * self =
+    Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
+  GtkWidget * widget =
+    GTK_WIDGET (self->drawing_area);
   int width =
     gtk_widget_get_allocated_width (widget);
 
-  if (event->type == GDK_MOTION_NOTIFY)
+  gtk_widget_set_state_flags (
+    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
+  if (x < UI_RESIZE_CURSOR_SPACE)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_PRELIGHT,
-                                  0);
-      if (event->x < UI_RESIZE_CURSOR_SPACE)
+      self->cursor = UI_CURSOR_STATE_RESIZE_L;
+      if (self->parent->action !=
+            TIMELINE_MINIMAP_ACTION_MOVING)
+        ui_set_cursor_from_name (widget, "w-resize");
+    }
+  else if (x > width - UI_RESIZE_CURSOR_SPACE)
+    {
+      self->cursor = UI_CURSOR_STATE_RESIZE_R;
+      if (self->parent->action !=
+            TIMELINE_MINIMAP_ACTION_MOVING)
+        ui_set_cursor_from_name (widget, "e-resize");
+    }
+  else
+    {
+      self->cursor = UI_CURSOR_STATE_DEFAULT;
+      if (self->parent->action !=
+            TIMELINE_MINIMAP_ACTION_MOVING
+          &&
+          self->parent->action !=
+            TIMELINE_MINIMAP_ACTION_STARTING_MOVING
+          &&
+          self->parent->action !=
+            TIMELINE_MINIMAP_ACTION_RESIZING_L
+          &&
+          self->parent->action !=
+            TIMELINE_MINIMAP_ACTION_RESIZING_R)
         {
-          self->cursor = UI_CURSOR_STATE_RESIZE_L;
-          if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "w-resize");
-        }
-      else if (event->x > width -
-                 UI_RESIZE_CURSOR_SPACE)
-        {
-          self->cursor = UI_CURSOR_STATE_RESIZE_R;
-          if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "e-resize");
-        }
-      else
-        {
-          self->cursor = UI_CURSOR_STATE_DEFAULT;
-          if (self->parent->action !=
-                TIMELINE_MINIMAP_ACTION_MOVING &&
-              self->parent->action !=
-                TIMELINE_MINIMAP_ACTION_STARTING_MOVING &&
-              self->parent->action !=
-                TIMELINE_MINIMAP_ACTION_RESIZING_L &&
-              self->parent->action !=
-                TIMELINE_MINIMAP_ACTION_RESIZING_R)
-            {
-              ui_set_cursor_from_name (widget, "default");
-            }
+          ui_set_cursor_from_name (
+            widget, "default");
         }
     }
-  /* if leaving */
-  if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-    }
-
-  return FALSE;
 }
 
 TimelineMinimapSelectionWidget *
@@ -108,8 +114,8 @@ timeline_minimap_selection_widget_new (
   TimelineMinimapWidget * parent)
 {
   TimelineMinimapSelectionWidget * self =
-    g_object_new (TIMELINE_MINIMAP_SELECTION_WIDGET_TYPE,
-                  NULL);
+    g_object_new (
+      TIMELINE_MINIMAP_SELECTION_WIDGET_TYPE, NULL);
 
   self->parent = parent;
 
@@ -121,8 +127,8 @@ timeline_minimap_selection_widget_class_init (
   TimelineMinimapSelectionWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "timeline-minimap-selection");
+  gtk_widget_class_set_css_name (
+    klass, "timeline-minimap-selection");
 }
 
 static void
@@ -131,41 +137,24 @@ timeline_minimap_selection_widget_init (
 {
   self->drawing_area =
     GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_widget_set_hexpand (GTK_WIDGET (self->drawing_area),
-                         1);
-  gtk_widget_set_visible (GTK_WIDGET (self->drawing_area),
-                          1);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->drawing_area), true);
 
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->drawing_area));
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
+  gtk_box_append (
+    GTK_BOX (self), GTK_WIDGET (self->drawing_area));
 
-  gtk_widget_add_events (
+  gtk_drawing_area_set_draw_func (
+    self->drawing_area, tl_minimap_sel_draw_cb,
+    self, NULL);
+  GtkEventController * motion_controller =
+    gtk_event_controller_motion_new ();
+  gtk_widget_add_controller (
     GTK_WIDGET (self->drawing_area),
-    GDK_ALL_EVENTS_MASK);
-
+    motion_controller);
   g_signal_connect (
-    G_OBJECT (self->drawing_area), "draw",
-    G_CALLBACK (tl_minimap_sel_draw_cb), self);
-  /*g_signal_connect (G_OBJECT (self->drawing_area),*/
-                    /*"enter-notify-event",*/
-                    /*G_CALLBACK (on_motion),*/
-                    /*self);*/
-  /*g_signal_connect (G_OBJECT(self->drawing_area),*/
-                    /*"leave-notify-event",*/
-                    /*G_CALLBACK (on_motion),*/
-                    /*self);*/
-  g_signal_connect (
-    G_OBJECT(self->drawing_area),
-    "motion-notify-event",
+    G_OBJECT (motion_controller), "motion",
     G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT(self->drawing_area),
-    "enter-notify-event",
-    G_CALLBACK (on_motion), self);
-  g_signal_connect (
-    G_OBJECT(self->drawing_area),
-    "leave-notify-event",
-    G_CALLBACK (on_motion), self);
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_leave), self);
 }

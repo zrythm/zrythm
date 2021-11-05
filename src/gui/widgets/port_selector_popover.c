@@ -76,7 +76,7 @@ on_ok_clicked (
 
   if (ports_can_be_connected (src, dest))
     {
-      gtk_widget_destroy (GTK_WIDGET (self->owner));
+      g_object_unref (self->owner);
 
       GError * err = NULL;
       bool ret =

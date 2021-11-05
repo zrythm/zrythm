@@ -24,12 +24,17 @@
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/piano_roll_keys.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
+#include "utils/gtk.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -37,27 +42,46 @@
 
 G_DEFINE_TYPE (
   PianoRollKeysWidget, piano_roll_keys_widget,
-  GTK_TYPE_DRAWING_AREA)
+  GTK_TYPE_WIDGET)
 
 #define DEFAULT_PX_PER_KEY 7
 /* can also try Sans SemiBold */
 #define PIANO_ROLL_KEYS_FONT "Sans 8"
 
-static gboolean
-piano_roll_keys_draw (
-  GtkWidget * widget,
-  cairo_t *   cr,
-  PianoRollKeysWidget * self)
+static void
+piano_roll_keys_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr, &rect);
+  PianoRollKeysWidget * self =
+    Z_PIANO_ROLL_KEYS_WIDGET (widget);
+  GtkScrolledWindow * scroll =
+    MW_MIDI_EDITOR_SPACE->piano_roll_keys_scroll;
+  graphene_rect_t visible_rect;
+  z_gtk_scrolled_window_get_visible_rect (
+    scroll, &visible_rect);
+  GdkRectangle visible_rect_gdk;
+  z_gtk_graphene_rect_t_to_gdk_rectangle (
+    &visible_rect_gdk, &visible_rect);
+
+  Track * tr =
+    clip_editor_get_track (CLIP_EDITOR);
+  if (!IS_TRACK_AND_NONNULL (tr))
+    {
+      return;
+    }
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot, &visible_rect);
 
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
   int width =
     gtk_widget_get_allocated_width (widget);
   gtk_render_background (
-    context, cr, 0, 0, width, rect.height);
+    context, cr, 0, 0, width,
+    visible_rect_gdk.height);
 
   ChordObject * co =
     chord_track_get_chord_at_playhead (
@@ -65,11 +89,6 @@ piano_roll_keys_draw (
   ScaleObject * so =
     chord_track_get_scale_at_playhead (
       P_CHORD_TRACK);
-
-  Track * tr =
-    clip_editor_get_track (CLIP_EDITOR);
-  if (!IS_TRACK_AND_NONNULL (tr))
-    return false;
 
   bool drum_mode = tr->drum_mode;
 
@@ -88,9 +107,9 @@ piano_roll_keys_draw (
   for (int i = 0; i < 128; i++)
     {
       /* skip keys outside visible rectangle */
-      if ((double) rect.y >
+      if ((double) visible_rect_gdk.y >
             (double) ((127 - i) + 1) * px_per_key ||
-          (double) (rect.y + rect.height) <
+          (double) (visible_rect_gdk.y + visible_rect_gdk.height) <
             (double) (127 - i) * px_per_key)
         continue;
 
@@ -243,8 +262,7 @@ piano_roll_keys_draw (
       /* only show text if large enough */
       if (px_per_key > 16.0)
         {
-          g_return_val_if_fail (
-            self->layout, FALSE);
+          g_return_if_fail (self->layout);
           cairo_set_source_rgba (
             cr, 1, 1, 1, 1);
           pango_layout_set_markup (
@@ -308,7 +326,7 @@ piano_roll_keys_draw (
       cairo_stroke (cr);
     }
 
-  return FALSE;
+  cairo_destroy (cr);
 }
 
 int
@@ -378,15 +396,15 @@ send_note_event (
     self, note);
 }
 
-static gboolean
+static void
 on_motion (
-  GtkWidget *widget,
-  GdkEventMotion  *event,
-  PianoRollKeysWidget * self)
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  PianoRollKeysWidget *      self)
 {
   int key =
-    piano_roll_keys_widget_get_key_from_y (
-      self, event->y);
+    piano_roll_keys_widget_get_key_from_y (self, y);
 
   if (self->note_pressed &&
       !self->note_released)
@@ -405,13 +423,11 @@ on_motion (
       /*PIANO_ROLL, key);*/
   /*g_message ("hovered %s",*/
     /*descr->note_name);*/
-
-  return FALSE;
 }
 
 static void
 on_pressed (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -430,7 +446,7 @@ on_pressed (
 
 static void
 on_released (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -479,20 +495,12 @@ void
 piano_roll_keys_widget_setup (
   PianoRollKeysWidget * self)
 {
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (piano_roll_keys_draw), self);
 }
 
 static void
 piano_roll_keys_widget_init (
   PianoRollKeysWidget * self)
 {
-  self->multipress =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
-
   self->last_mid_note = 63;
 
   PangoFontDescription * desc;
@@ -506,24 +514,34 @@ piano_roll_keys_widget_init (
     self->layout, desc);
   pango_font_description_free (desc);
 
-  /* make it able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
-
-  /* setup signals */
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (self), "motion-notify-event",
+    G_OBJECT (motion_controller), "motion",
     G_CALLBACK (on_motion), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
+
+  self->multipress =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
-    G_OBJECT(self->multipress), "pressed",
+    G_OBJECT (self->multipress), "pressed",
     G_CALLBACK (on_pressed),  self);
   g_signal_connect (
-    G_OBJECT(self->multipress), "released",
+    G_OBJECT (self->multipress), "released",
     G_CALLBACK (on_released),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->multipress));
 }
 
 static void
 piano_roll_keys_widget_class_init (
   PianoRollKeysWidgetClass * _klass)
 {
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (_klass);
+  wklass->snapshot = piano_roll_keys_snapshot;
 }

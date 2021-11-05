@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -117,10 +117,8 @@ chord_key_widget_new (
     piano_keyboard_widget_new_for_chord_key (descr);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->piano), 216, 24);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->piano), true);
-  gtk_container_add (
-    GTK_CONTAINER (self->piano_box),
+  gtk_box_append (
+    self->piano_box,
     GTK_WIDGET (self->piano));
 
   chord_key_widget_refresh (self);

@@ -35,6 +35,8 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (
   BotDockEdgeWidget, bot_dock_edge_widget,
   GTK_TYPE_BOX)
@@ -81,15 +83,16 @@ bot_dock_edge_widget_setup (
   gtk_widget_set_visible (
     GTK_WIDGET (self->event_viewer), visibility);
 
+  GtkNotebook * notebook =
+    foldable_notebook_widget_get_notebook (
+      self->bot_notebook);
   int page_num =
     g_settings_get_int (S_UI, "bot-panel-tab");
   gtk_notebook_set_current_page (
-    GTK_NOTEBOOK (self->bot_notebook),
-    page_num);
+    notebook, page_num);
 
   g_signal_connect (
-    G_OBJECT (self->bot_notebook),
-    "switch-page",
+    notebook, "switch-page",
     G_CALLBACK (on_notebook_switch_page), self);
 }
 
@@ -104,14 +107,16 @@ bot_dock_edge_widget_show_clip_editor (
   BotDockEdgeWidget * self,
   bool                navigate_to_region_start)
 {
+  GtkNotebook * notebook =
+    foldable_notebook_widget_get_notebook (
+      self->bot_notebook);
+
   int num_pages =
-    gtk_notebook_get_n_pages (
-      GTK_NOTEBOOK (self->bot_notebook));
+    gtk_notebook_get_n_pages (notebook);
   for (int i = 0; i < num_pages; i++)
     {
       GtkWidget * widget =
-        gtk_notebook_get_nth_page (
-          GTK_NOTEBOOK (self->bot_notebook), i);
+        gtk_notebook_get_nth_page (notebook, i);
       if (widget ==
             GTK_WIDGET (self->clip_editor_box))
         {
@@ -120,8 +125,7 @@ bot_dock_edge_widget_show_clip_editor (
           foldable_notebook_widget_set_visibility (
             self->bot_notebook, true);
           gtk_notebook_set_current_page (
-            GTK_NOTEBOOK (
-              MW_BOT_DOCK_EDGE->bot_notebook), i);
+            notebook, i);
           break;
         }
     }
@@ -146,21 +150,108 @@ bot_dock_edge_widget_show_clip_editor (
 }
 
 static void
-bot_dock_edge_widget_init (BotDockEdgeWidget * self)
+generate_bot_notebook (
+  BotDockEdgeWidget * self)
 {
-  g_type_ensure (MIXER_WIDGET_TYPE);
-  g_type_ensure (CLIP_EDITOR_WIDGET_TYPE);
-  g_type_ensure (MODULATOR_VIEW_WIDGET_TYPE);
-  g_type_ensure (CHORD_PAD_WIDGET_TYPE);
-  g_type_ensure (FOLDABLE_NOTEBOOK_WIDGET_TYPE);
+  self->bot_notebook =
+    foldable_notebook_widget_new ();
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->bot_notebook));
 
-  gtk_widget_init_template (GTK_WIDGET (self));
+  self->clip_editor_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->clip_editor_plus_event_viewer_paned =
+    GTK_PANED (
+      gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
+  gtk_box_append (
+    self->clip_editor_box,
+    GTK_WIDGET (
+      self->clip_editor_plus_event_viewer_paned));
+  gtk_paned_set_shrink_start_child (
+    self->clip_editor_plus_event_viewer_paned, false);
+  gtk_paned_set_shrink_end_child (
+    self->clip_editor_plus_event_viewer_paned, false);
+  gtk_paned_set_resize_end_child (
+    self->clip_editor_plus_event_viewer_paned, false);
+  self->clip_editor = clip_editor_widget_new ();
+  gtk_paned_set_start_child (
+    self->clip_editor_plus_event_viewer_paned,
+    GTK_WIDGET (self->clip_editor));
+  self->event_viewer = event_viewer_widget_new ();
+  gtk_paned_set_end_child (
+    self->clip_editor_plus_event_viewer_paned,
+    GTK_WIDGET (self->event_viewer));
+
+  self->mixer_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->mixer = mixer_widget_new ();
+
+  self->modulator_view_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->modulator_view =
+    modulator_view_widget_new ();
+
+  self->chord_pad_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->chord_pad = chord_pad_widget_new ();
+
+  /* add tabs */
+  foldable_notebook_widget_add_page (
+    self->bot_notebook,
+    GTK_WIDGET (self->clip_editor_box),
+    "piano-roll", _("Editor"), _("Editor view"));
+  foldable_notebook_widget_add_page (
+    self->bot_notebook,
+    GTK_WIDGET (self->mixer_box),
+    "mixer", _("Mixer"), _("Mixer view"));
+  foldable_notebook_widget_add_page (
+    self->bot_notebook,
+    GTK_WIDGET (self->modulator_view_box),
+    "modulator", _("Modulators"), _("Modulators"));
+  foldable_notebook_widget_add_page (
+    self->bot_notebook,
+    GTK_WIDGET (self->chord_pad_box),
+    "chord-pad", _("Chord Pad"), _("Chord pad"));
+
+  GtkNotebook * notebook =
+    foldable_notebook_widget_get_notebook (
+      self->bot_notebook);
+  self->toggle_top_panel =
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name (
+        "gnome-builder-builder-"
+        "view-top-pane-symbolic-light"));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->toggle_top_panel),
+    _("Show/hide top panel"));
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->toggle_top_panel),
+    "app.toggle-top-panel");
+  gtk_notebook_set_action_widget (
+    notebook, GTK_WIDGET (self->toggle_top_panel),
+    GTK_PACK_END);
+
+  gtk_notebook_set_tab_pos (
+    notebook, GTK_POS_BOTTOM);
+}
+
+static void
+bot_dock_edge_widget_init (
+  BotDockEdgeWidget * self)
+{
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
+
+  generate_bot_notebook (self);
 
   /* set icons */
-  gtk_button_set_image (
-    GTK_BUTTON (self->mixer->channels_add),
-    resources_get_icon (ICON_TYPE_ZRYTHM,
-                        "plus.svg"));
+  gtk_button_set_icon_name (
+    GTK_BUTTON (self->mixer->channels_add), "plus");
 }
 
 static void
@@ -168,24 +259,6 @@ bot_dock_edge_widget_class_init (
   BotDockEdgeWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "bot_dock_edge.ui");
-
   gtk_widget_class_set_css_name (
     klass, "bot-dock-edge");
-
-#define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, BotDockEdgeWidget, x)
-
-  BIND_CHILD (bot_notebook);
-  BIND_CHILD (clip_editor);
-  BIND_CHILD (clip_editor_box);
-  BIND_CHILD (mixer);
-  BIND_CHILD (mixer_box);
-  BIND_CHILD (event_viewer);
-  BIND_CHILD (modulator_view);
-  BIND_CHILD (modulator_view_box);
-  BIND_CHILD (chord_pad);
-  BIND_CHILD (chord_pad_box);
 }

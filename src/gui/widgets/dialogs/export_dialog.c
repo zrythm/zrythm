@@ -162,74 +162,6 @@ get_enabled_tracks (
     }
 }
 
-/**
- * Returns the currently selected tracks.
- *
- * Must be free'd with free().
- *
- * @param[out] num_tracks Number of tracks returned.
- *
- * @return Newly allocated track array, or NULL if
- *   no tracks selected.
- */
-static Track **
-get_selected_tracks (
-  ExportDialogWidget * self,
-  int *                num_tracks)
-{
-  GtkTreeSelection * selection =
-    gtk_tree_view_get_selection (
-      (self->tracks_treeview));
-
-  size_t size = 1;
-  int count = 0;
-  Track ** tracks =
-    calloc (size, sizeof (Track *));
-
-  GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (
-      selection, NULL);
-  GList * list_iter =
-    g_list_first (selected_rows);
-  while (list_iter)
-    {
-      GtkTreePath * tp = list_iter->data;
-      gtk_tree_selection_select_path (
-        selection, tp);
-      GtkTreeIter iter;
-      gtk_tree_model_get_iter (
-        GTK_TREE_MODEL (self->tracks_store),
-        &iter, tp);
-      Track * track;
-      gtk_tree_model_get (
-        GTK_TREE_MODEL (self->tracks_store),
-        &iter, TRACK_COLUMN_TRACK, &track, -1);
-
-      array_double_size_if_full (
-        tracks, count, size, Track *);
-      array_append (tracks, size, track);
-      g_debug ("track %s selected", track->name);
-
-      list_iter = g_list_next (list_iter);
-    }
-
-  g_list_free_full (
-    selected_rows,
-    (GDestroyNotify) gtk_tree_path_free);
-
-  if (count == 0)
-    {
-      *num_tracks = 0;
-      free (tracks);
-      return NULL;
-    }
-  else
-    {
-      *num_tracks = count;
-      return tracks;
-    }
-}
-
 static char *
 get_mixdown_export_filename (
   ExportDialogWidget * self)
@@ -854,13 +786,16 @@ init_export_info (
     S_EXPORT, "dither", info->dither);
   info->artist =
     g_strdup (
-      gtk_entry_get_text (self->export_artist));
+      gtk_editable_get_text (
+        GTK_EDITABLE (self->export_artist)));
   info->title =
     g_strdup (
-      gtk_entry_get_text (self->export_title));
+      gtk_editable_get_text (
+        GTK_EDITABLE (self->export_title)));
   info->genre =
     g_strdup (
-      gtk_entry_get_text (self->export_genre));
+      gtk_editable_get_text (
+        GTK_EDITABLE (self->export_genre)));
   g_settings_set_string (
     S_EXPORT, "artist", info->artist);
   g_settings_set_string (
@@ -962,10 +897,8 @@ on_export_clicked (
             G_OBJECT (progress_dialog), "response",
             G_CALLBACK (on_progress_dialog_closed),
             self);
-          gtk_dialog_run (
-            GTK_DIALOG (progress_dialog));
-          gtk_widget_destroy (
-            GTK_WIDGET (progress_dialog));
+          z_gtk_dialog_run (
+            GTK_DIALOG (progress_dialog), true);
 
           g_thread_join (thread);
 
@@ -1011,8 +944,8 @@ on_export_clicked (
       g_signal_connect (
         G_OBJECT (progress_dialog), "response",
         G_CALLBACK (on_progress_dialog_closed), self);
-      gtk_dialog_run (GTK_DIALOG (progress_dialog));
-      gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+      z_gtk_dialog_run (
+        GTK_DIALOG (progress_dialog), true);
 
       g_thread_join (thread);
 
@@ -1258,6 +1191,76 @@ on_track_toggled (
   gtk_tree_path_free (path);
 }
 
+/* TODO */
+#if 0
+/**
+ * Returns the currently selected tracks.
+ *
+ * Must be free'd with free().
+ *
+ * @param[out] num_tracks Number of tracks returned.
+ *
+ * @return Newly allocated track array, or NULL if
+ *   no tracks selected.
+ */
+static Track **
+get_selected_tracks (
+  ExportDialogWidget * self,
+  int *                num_tracks)
+{
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      (self->tracks_treeview));
+
+  size_t size = 1;
+  int count = 0;
+  Track ** tracks =
+    calloc (size, sizeof (Track *));
+
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (
+      selection, NULL);
+  GList * list_iter =
+    g_list_first (selected_rows);
+  while (list_iter)
+    {
+      GtkTreePath * tp = list_iter->data;
+      gtk_tree_selection_select_path (
+        selection, tp);
+      GtkTreeIter iter;
+      gtk_tree_model_get_iter (
+        GTK_TREE_MODEL (self->tracks_store),
+        &iter, tp);
+      Track * track;
+      gtk_tree_model_get (
+        GTK_TREE_MODEL (self->tracks_store),
+        &iter, TRACK_COLUMN_TRACK, &track, -1);
+
+      array_double_size_if_full (
+        tracks, count, size, Track *);
+      array_append (tracks, size, track);
+      g_debug ("track %s selected", track->name);
+
+      list_iter = g_list_next (list_iter);
+    }
+
+  g_list_free_full (
+    selected_rows,
+    (GDestroyNotify) gtk_tree_path_free);
+
+  if (count == 0)
+    {
+      *num_tracks = 0;
+      free (tracks);
+      return NULL;
+    }
+  else
+    {
+      *num_tracks = count;
+      return tracks;
+    }
+}
+
 static void
 enable_or_disable_tracks (
   ExportDialogWidget * self,
@@ -1290,11 +1293,13 @@ on_tracks_enable (
   g_message ("tracks enable");
   enable_or_disable_tracks (self, true);
 }
+#endif
 
 static void
 show_tracks_context_menu (
   ExportDialogWidget * self)
 {
+#if 0
   GtkWidget *menuitem;
   GtkWidget * menu = gtk_menu_new();
 
@@ -1324,11 +1329,12 @@ show_tracks_context_menu (
     GTK_MENU (menu),
     GTK_WIDGET (self), NULL);
   gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+#endif
 }
 
 static void
 on_track_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -1408,16 +1414,18 @@ setup_treeview (
     GTK_SELECTION_MULTIPLE);
 
   /* connect right click handler */
-  GtkGestureMultiPress * mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (tree_view)));
+  GtkGestureClick * mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_track_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (tree_view),
+    GTK_EVENT_CONTROLLER (mp));
 
 #if 0
   /* set search func */
@@ -1513,14 +1521,14 @@ export_dialog_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_entry_set_text (
-    GTK_ENTRY (self->export_artist),
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->export_artist),
     g_settings_get_string (S_EXPORT, "artist"));
-  gtk_entry_set_text (
-    GTK_ENTRY (self->export_title),
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->export_title),
     g_settings_get_string (S_EXPORT, "title"));
-  gtk_entry_set_text (
-    GTK_ENTRY (self->export_genre),
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->export_genre),
     g_settings_get_string (S_EXPORT, "genre"));
 
   gtk_toggle_button_set_active (

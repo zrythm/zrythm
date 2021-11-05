@@ -22,11 +22,26 @@
 #include "audio/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
+
+static MidiMapping *
+create_midi_mapping (void)
+{
+  MidiMapping * self = object_new (MidiMapping);
+
+  self->schema_version =
+    MIDI_MAPPING_SCHEMA_VERSION;
+  self->gobj =
+    wrapped_object_with_change_signal_new (
+      self, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
+
+  return self;
+}
 
 /**
  * Initializes the MidiMappings after a Project
@@ -170,8 +185,7 @@ midi_mapping_get_index (
 MidiMapping *
 midi_mapping_new (void)
 {
-  MidiMapping * self = object_new (MidiMapping);
-  self->schema_version = MIDI_MAPPING_SCHEMA_VERSION;
+  MidiMapping * self = create_midi_mapping ();
 
   return self;
 }
@@ -180,8 +194,7 @@ MidiMapping *
 midi_mapping_clone (
   const MidiMapping * src)
 {
-  MidiMapping * self = object_new (MidiMapping);
-  self->schema_version = MIDI_MAPPING_SCHEMA_VERSION;
+  MidiMapping * self = create_midi_mapping ();
 
   memcpy (
     &self->key[0], &src->key[0],
@@ -204,6 +217,8 @@ midi_mapping_free (
 {
   object_free_w_func_and_null (
     ext_port_free, self->device_port);
+
+  g_clear_object (&self->gobj);
 
   object_zero_and_free (self);
 }

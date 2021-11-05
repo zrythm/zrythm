@@ -74,6 +74,7 @@
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/general.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -594,7 +595,7 @@ destroy_prev_main_window (
       g_message (
         "destroying previous main window...");
       main_window_widget_tear_down (mww);
-      gtk_widget_destroy (GTK_WIDGET (mww));
+      g_object_unref (mww);
     }
 }
 
@@ -980,9 +981,6 @@ load (
           gtk_window_set_title (
             GTK_WINDOW (dialog),
             _("Backup found"));
-          gtk_window_set_position (
-            GTK_WINDOW (dialog),
-            GTK_WIN_POS_CENTER_ALWAYS);
           gtk_window_set_icon_name (
             GTK_WINDOW (dialog), "zrythm");
           if (MAIN_WINDOW)
@@ -991,7 +989,8 @@ load (
                 GTK_WIDGET (MAIN_WINDOW), 0);
             }
           int res =
-            gtk_dialog_run (GTK_DIALOG (dialog));
+            z_gtk_dialog_run (
+              GTK_DIALOG (dialog), true);
           switch (res)
             {
             case GTK_RESPONSE_YES:
@@ -1003,7 +1002,6 @@ load (
             default:
               break;
             }
-          gtk_widget_destroy (dialog);
           if (MAIN_WINDOW)
             {
               gtk_widget_set_visible (
@@ -1288,8 +1286,8 @@ project_load (
             create_project_dialog_widget_new ();
 
           ret =
-            gtk_dialog_run (GTK_DIALOG (dialog));
-          gtk_widget_destroy (GTK_WIDGET (dialog));
+            z_gtk_dialog_run (
+              GTK_DIALOG (dialog), true);
 
           if (ret != GTK_RESPONSE_OK)
             return -1;
@@ -1960,8 +1958,8 @@ project_save (
             GTK_WINDOW (MAIN_WINDOW));
           gtk_window_set_modal (
             GTK_WINDOW (dialog), true);
-          gtk_dialog_run (GTK_DIALOG (dialog));
-          gtk_widget_destroy (GTK_WIDGET (dialog));
+          z_gtk_dialog_run (
+            GTK_DIALOG (dialog), true);
         }
       else
         {

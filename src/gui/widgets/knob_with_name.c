@@ -55,24 +55,22 @@ knob_with_name_widget_new (
 
   if (label_before)
     {
-      gtk_container_add (
-        GTK_CONTAINER (self),
+      gtk_box_append (
+        GTK_BOX (self),
         GTK_WIDGET (label));
-      gtk_container_add (
-        GTK_CONTAINER (self),
+      gtk_box_append (
+        GTK_BOX (self),
         GTK_WIDGET (knob));
     }
   else
     {
-      gtk_container_add (
-        GTK_CONTAINER (self),
+      gtk_box_append (
+        GTK_BOX (self),
         GTK_WIDGET (knob));
-      gtk_container_add (
-        GTK_CONTAINER (self),
+      gtk_box_append (
+        GTK_BOX (self),
         GTK_WIDGET (label));
     }
-
-  gtk_widget_show_all (GTK_WIDGET (self));
 
   return self;
 }

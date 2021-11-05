@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,14 +28,6 @@
 
 #include <gtk/gtk.h>
 
-#define OBJECT_COLOR_CHOOSER_DIALOG_WIDGET_TYPE \
-  (object_color_chooser_dialog_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ObjectColorChooserDialogWidget,
-  object_color_chooser_dialog_widget,
-  Z, OBJECT_COLOR_CHOOSER_DIALOG_WIDGET,
-  GtkColorChooserDialog)
-
 typedef struct Track Track;
 typedef struct ZRegion ZRegion;
 typedef struct TracklistSelections
@@ -48,55 +40,22 @@ typedef struct TracklistSelections
  */
 
 /**
- * Dialog for choosing colors of objects like tracks
- * and regions.
- */
-typedef struct _ObjectColorChooserDialogWidget
-{
-  GtkColorChooserDialog parent_instance;
-
-  /** Track, if for track. */
-  Track *               track;
-
-  /* Region, if for region. */
-  ZRegion *             region;
-
-  /** Tracklist selections, if for tracklist
-   * selections. */
-  TracklistSelections * tracklist_selections;
-} ObjectColorChooserDialogWidget;
-
-/**
- * Creates a new dialog.
- */
-ObjectColorChooserDialogWidget *
-object_color_chooser_dialog_widget_new_for_track (
-  Track * track);
-
-/**
- * Creates a new dialog.
- */
-NONNULL
-ObjectColorChooserDialogWidget *
-object_color_chooser_dialog_widget_new_for_tracklist_selections (
-  TracklistSelections * sel);
-
-/**
- * Creates a new dialog.
- */
-ObjectColorChooserDialogWidget *
-object_color_chooser_dialog_widget_new_for_region (
-  ZRegion * region);
-
-/**
  * Runs the widget and processes the result, then
  * closes the dialog.
+ *
+ * @param track Track, if track.
+ * @param sel TracklistSelections, if multiple
+ *   tracks.
+ * @param region ZRegion, if region.
  *
  * @return Whether the color was set or not.
  */
 bool
 object_color_chooser_dialog_widget_run (
-  ObjectColorChooserDialogWidget * self);
+  GtkWindow *           parent,
+  Track *               track,
+  TracklistSelections * sel,
+  ZRegion *             region);
 
 /**
  * @}

@@ -90,6 +90,7 @@
 #include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "utils/vamp.h"
@@ -104,12 +105,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#ifdef HAVE_GTK_SOURCE_VIEW_4
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
-#pragma GCC diagnostic pop
-#endif
 
 #include <audec/audec.h>
 #include <fftw3.h>
@@ -164,8 +160,8 @@ segv_handler (int sig)
           GTK_WINDOW (MAIN_WINDOW), str, bt, true);
 
       /* run the dialog */
-      gtk_dialog_run (GTK_DIALOG (dialog));
-      gtk_widget_destroy (GTK_WIDGET (dialog));
+      z_gtk_dialog_run (
+        GTK_DIALOG (dialog), true);
     }
 
   exit (EXIT_FAILURE);
@@ -211,9 +207,8 @@ zrythm_app_check_for_updates (
         GTK_WINDOW (dialog),
         _("Check for Updates"));
       int ret =
-        gtk_dialog_run (
-          GTK_DIALOG (dialog));
-      gtk_widget_destroy (dialog);
+        z_gtk_dialog_run (
+          GTK_DIALOG (dialog), true);
       g_settings_set_boolean (
         S_P_GENERAL_UPDATES,
         "check-for-updates",
@@ -290,9 +285,8 @@ zrythm_app_check_for_updates (
                   "%s"),
                   latest_release,
                   PACKAGE_VERSION);
-              gtk_dialog_run (
-                GTK_DIALOG (dialog));
-              gtk_widget_destroy (dialog);
+              z_gtk_dialog_run (
+                GTK_DIALOG (dialog), true);
 
               g_settings_set_string (
                 S_GENERAL,
@@ -421,6 +415,11 @@ static void on_load_project (
     _("Loading project"),
     0.8);
 
+  g_debug (
+    "on_load_project called | open filename '%s' "
+    "| opening template %d",
+    ZRYTHM->open_filename,
+    ZRYTHM->opening_template);
   int ret =
     project_load (
       ZRYTHM->open_filename,
@@ -512,8 +511,8 @@ init_thread (
  * This should be ran after the expensive
  * initialization has finished.
  */
-static int
-idle_func (
+int
+zrythm_app_prompt_for_project_func (
   ZrythmApp * self)
 {
   if (self->init_finished)
@@ -530,72 +529,15 @@ idle_func (
   return G_SOURCE_CONTINUE;
 }
 
-/**
- * Thread that scans for plugins after the first
- * run.
- */
-static void *
-scan_plugins_after_first_run_thread (
-  gpointer data)
-{
-  g_message ("scanning...");
-
-  ZrythmApp * self = ZRYTHM_APP (data);
-
-  plugin_manager_scan_plugins (
-    ZRYTHM->plugin_manager,
-    0.7, &ZRYTHM->progress);
-
-  self->init_finished = true;
-
-  g_message ("done");
-
-  return NULL;
-}
-
 static void
-on_first_run_assistant_apply (
-  GtkAssistant * _assistant,
-  ZrythmApp *    self)
+license_info_dialog_response_cb (
+  GtkDialog * dialog,
+  gint        response_id,
+  ZrythmApp * self)
 {
-  g_message ("on apply...");
-
-  g_settings_set_boolean (
-    S_GENERAL, "first-run", 0);
-
-  /* start plugin scanning in another thread */
-  self->init_thread =
-    g_thread_new (
-      "scan_plugins_after_first_run_thread",
-      (GThreadFunc)
-      scan_plugins_after_first_run_thread,
-      self);
-
-  /* set a source func in the main GTK thread to
-   * check when scanning finished */
-  self->init_finished = 0;
-  g_idle_add ((GSourceFunc) idle_func, self);
-
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->first_run_assistant), 0);
-
-  /* close the first run assistant if it ran
-   * before */
-  if (self->assistant)
-    {
-      DESTROY_LATER (_assistant);
-      self->first_run_assistant = NULL;
-    }
-
-  g_message ("done");
-}
-
-static void
-on_first_run_assistant_cancel ()
-{
-  g_message ("%s: cancel", __func__);
-
-  exit (0);
+  gtk_window_destroy (GTK_WINDOW (dialog));
+  first_run_assistant_widget_present (
+    GTK_WINDOW (self->splash));
 }
 
 /**
@@ -656,26 +598,11 @@ PROGRAM_NAME " is distributed in the hope that it will be useful,\n"
             _("License Information"));
           gtk_window_set_icon_name (
             GTK_WINDOW (dialog), "zrythm");
-          gtk_dialog_run (GTK_DIALOG (dialog));
-          gtk_widget_destroy (dialog);
-
-          self->first_run_assistant =
-            first_run_assistant_widget_new (
-              GTK_WINDOW (self->splash));
+          gtk_widget_show (GTK_WIDGET (dialog));
           g_signal_connect (
-            G_OBJECT (self->first_run_assistant),
-            "apply",
-            G_CALLBACK (
-              on_first_run_assistant_apply), self);
-          g_signal_connect (
-            G_OBJECT (self->first_run_assistant),
-            "cancel",
-            G_CALLBACK (
-              on_first_run_assistant_cancel),
-            NULL);
-          gtk_window_present (
-            GTK_WINDOW (
-              self->first_run_assistant));
+            G_OBJECT (dialog), "response",
+            G_CALLBACK (license_info_dialog_response_cb),
+            self);
 
           return;
         }
@@ -684,14 +611,11 @@ PROGRAM_NAME " is distributed in the hope that it will be useful,\n"
         self, _("Waiting for project"), 0.8);
 
       /* show the assistant */
-      self->assistant =
-        project_assistant_widget_new (
-          GTK_WINDOW (self->splash), 1);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->assistant), 1);
+      project_assistant_widget_present (
+        GTK_WINDOW (self->splash), true, false);
 
 #ifdef __APPLE__
-  /* possibly not necessary / working, forces app *
+  /* possibly not necessary / working, forces app
    * window on top */
   show_on_top();
 #endif
@@ -843,12 +767,11 @@ load_icon (
   g_message (
     "Attempting to load an icon from the icon "
     "theme...");
-  GError * err = NULL;
-  GdkPixbuf * icon =
-    gtk_icon_theme_load_icon (
-      icon_theme, icon_name, 48, 0, &err);
-  g_message ("icon: %p", icon);
-  if (err)
+  bool found =
+    gtk_icon_theme_has_icon (icon_theme, icon_name);
+  g_message ("found: %d", found);
+  if (!gtk_icon_theme_has_icon (
+         icon_theme, icon_name))
     {
       /* fallback to zrythm-dark and try again */
       g_warning (
@@ -857,29 +780,26 @@ load_icon (
       g_object_set (
         default_settings,
         "gtk-icon-theme-name", "zrythm-dark", NULL);
-      err = NULL;
-      icon =
-        gtk_icon_theme_load_icon (
-          icon_theme, icon_name, 48, 0, &err);
-      g_message ("icon: %p", icon);
+      found =
+        gtk_icon_theme_has_icon (
+          icon_theme, icon_name);
+      g_message ("found: %d", found);
     }
 
-  if (err)
+  if (!found)
     {
       char err_msg[600];
-      sprintf (
+      strcpy (
         err_msg,
-        "Failed to load icon from icon theme: %s. "
-        "Please install zrythm and breeze-icons.",
-        err->message);
+        "Failed to load icon from icon theme. "
+        "Please install zrythm and breeze-icons.");
       g_critical ("%s", err_msg);
       fprintf (stderr, "%s\n", err_msg);
       ui_show_message_full (
         NULL, GTK_MESSAGE_ERROR, "%s", err_msg);
       g_error ("Failed to load icon");
     }
-  g_object_unref (icon);
-  g_message ("Icon loaded.");
+  g_message ("Icon found.");
 }
 
 static void
@@ -1164,9 +1084,7 @@ zrythm_app_startup (
   curl_global_init (CURL_GLOBAL_ALL);
 
   /* init gtksourceview */
-#ifdef HAVE_GTK_SOURCE_VIEW_4
   gtk_source_init ();
-#endif
   z_gtk_source_language_manager_get ();
 
   G_APPLICATION_CLASS (zrythm_app_parent_class)->
@@ -1181,17 +1099,9 @@ zrythm_app_startup (
   bool remote =
     g_application_get_is_remote (
       G_APPLICATION (self));
-  GMenuModel * app_menu_model =
-    gtk_application_get_app_menu (
-      GTK_APPLICATION (app));
-  bool prefers_app_menu =
-    gtk_application_prefers_app_menu (
-      GTK_APPLICATION (app));
   g_message (
-    "application registered: %d, is remote %d, "
-    "app menu exists: %d, prefers app menu: %d",
-    ret, remote, app_menu_model ? true : false,
-    prefers_app_menu);
+    "application registered: %d, is remote %d",
+    ret, remote);
 
   g_message (
     "application resources base path: %s",
@@ -1238,14 +1148,18 @@ zrythm_app_startup (
   g_message ("Theme set");
 
   GtkIconTheme * icon_theme =
-    gtk_icon_theme_get_default ();
+    z_gtk_icon_theme_get_default ();
   char * icon_theme_name =
     g_settings_get_string (
       S_P_UI_GENERAL, "icon-theme");
+  g_message  (
+    "setting icon theme to '%s'", icon_theme_name);
   g_object_set (
     self->default_settings, "gtk-icon-theme-name",
     icon_theme_name, NULL);
   g_free_and_null (icon_theme_name);
+
+  /* --- add icon search paths --- */
 
   /* prepend freedesktop system icons to search
    * path, just in case */
@@ -1254,10 +1168,10 @@ zrythm_app_startup (
   char * freedesktop_icon_theme_dir =
     g_build_filename (
       parent_datadir, "icons", NULL);
-  gtk_icon_theme_prepend_search_path (
+  gtk_icon_theme_add_search_path (
     icon_theme, freedesktop_icon_theme_dir);
   g_message (
-    "prepended icon theme search path: %s",
+    "added icon theme search path: %s",
     freedesktop_icon_theme_dir);
   g_free (parent_datadir);
   g_free (freedesktop_icon_theme_dir);
@@ -1268,11 +1182,10 @@ zrythm_app_startup (
   char * system_icon_theme_dir =
     g_build_filename (
       system_themes_dir, "icons", NULL);
-  gtk_icon_theme_prepend_search_path (
-    icon_theme,
-    system_icon_theme_dir);
+  gtk_icon_theme_add_search_path (
+    icon_theme, system_icon_theme_dir);
   g_message (
-    "prepended icon theme search path: %s",
+    "added icon theme search path: %s",
     system_icon_theme_dir);
   g_free (system_themes_dir);
   g_free (system_icon_theme_dir);
@@ -1283,14 +1196,15 @@ zrythm_app_startup (
   char * user_icon_theme_dir =
     g_build_filename (
       user_themes_dir, "icons", NULL);
-  gtk_icon_theme_prepend_search_path (
-    icon_theme,
-    user_icon_theme_dir);
+  gtk_icon_theme_add_search_path (
+    icon_theme, user_icon_theme_dir);
   g_message (
-    "prepended icon theme search path: %s",
+    "added icon theme search path: %s",
     user_icon_theme_dir);
   g_free (user_themes_dir);
   g_free (user_icon_theme_dir);
+
+  /* --- end icon paths --- */
 
   /* look for found loaders */
   g_message ("looking for GDK Pixbuf formats...");
@@ -1307,13 +1221,6 @@ zrythm_app_startup (
       exit (-1);
     }
 
-  char * modules = NULL;
-  g_object_get (
-    self->default_settings,
-    "gtk-modules", &modules,
-    NULL);
-  g_message ("GTK modules: %s", modules);
-
   /* try to load some icons */
   /* zrythm */
   load_icon (
@@ -1323,44 +1230,41 @@ zrythm_app_startup (
     self->default_settings, icon_theme,
     "node-type-cusp");
 
-  g_message ("Setting gtk icon theme resource paths...");
+  g_message (
+    "Setting gtk icon theme resource paths...");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/zrythm");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/arena");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/fork-awesome");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/font-awesome");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/ext");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/gnome-builder");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/fluentui");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/jam-icons");
   gtk_icon_theme_add_resource_path (
-    gtk_icon_theme_get_default (),
+    icon_theme,
     "/org/zrythm/Zrythm/app/icons/breeze-icons");
 
-  /*gtk_icon_theme_set_search_path (*/
-    /*gtk_icon_theme_get_default (),*/
-    /*path,*/
-    /*1);*/
   g_message ("Resource paths set");
 
   /* get css theme file path */
   GtkCssProvider * css_provider =
-    gtk_css_provider_new();
+    gtk_css_provider_new ();
   user_themes_dir =
     zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_CSS);
   char * css_theme_file =
@@ -1402,17 +1306,10 @@ zrythm_app_startup (
   g_message ("CSS theme path: %s", css_theme_path);
 
   /* set default css provider */
-  GError * err = NULL;
   gtk_css_provider_load_from_path (
-    css_provider, css_theme_path, &err);
-  if (err)
-    {
-      g_warning (
-        "Failed to load CSS from path %s: %s",
-        css_theme_path, err->message);
-    }
-  gtk_style_context_add_provider_for_screen (
-    gdk_screen_get_default (),
+    css_provider, css_theme_path);
+  gtk_style_context_add_provider_for_display (
+    gdk_display_get_default (),
     GTK_STYLE_PROVIDER (css_provider), 800);
   g_object_unref (css_provider);
   g_message (
@@ -1448,7 +1345,9 @@ zrythm_app_startup (
 
   /* set a source func in the main GTK thread to
    * check when initialization finished */
-  g_idle_add ((GSourceFunc) idle_func, self);
+  g_idle_add (
+    (GSourceFunc)
+    zrythm_app_prompt_for_project_func, self);
 
   /* install accelerators for each action */
   const char * primary = NULL;
@@ -1528,7 +1427,7 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "6", "app.audition-mode");
   INSTALL_ACCEL_WITH_SECONDARY (
-    "KP_4", "Backspace", "app.goto-prev-marker");
+    "KP_4", "BackSpace", "app.goto-prev-marker");
   INSTALL_ACCEL (
     "KP_6", "app.goto-next-marker");
   INSTALL_ACCEL (
@@ -1574,9 +1473,7 @@ zrythm_app_on_shutdown (
       zrythm_free (ZRYTHM);
     }
 
-#ifdef HAVE_GTK_SOURCE_VIEW_4
   gtk_source_finalize ();
-#endif
 
   g_message ("done");
 }
@@ -1949,7 +1846,6 @@ add_option_entries (
         "AppImage runtime path",
         "PATH" },
 #endif
-      { NULL },
     };
 
   g_application_add_main_option_entries (
@@ -2077,7 +1973,7 @@ zrythm_app_init (
     { "news", activate_news },
     { "bugreport", activate_bugreport },
     { "donate", activate_donate },
-    { "iconify", activate_iconify },
+    { "minimize", activate_minimize },
     { "log", activate_log },
     { "preferences", activate_preferences },
     { "scripting-interface",

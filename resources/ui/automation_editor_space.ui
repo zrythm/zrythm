@@ -1,113 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="AutomationEditorSpaceWidget" parent="GtkBox">
-    <property name="visible">True</property>
     <child>
-      <object class="GtkPaned"
-        id="main_top_bot_paned">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
+      <object class="GtkPaned" id="main_top_bot_paned">
+        <property name="hexpand">1</property>
+        <property name="shrink-start-child">0</property>
+        <property name="focusable">1</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox"
-            id="left_slash_arranger_box">
+          <object class="GtkBox" id="left_slash_arranger_box">
             <property name="height_request">120</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="vexpand">True</property>
+            <property name="vexpand">1</property>
             <child>
-              <object class="GtkBox"
-                id="left_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="AutomationEditorLegendWidget" id="legend">
-                    <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                  </packing>
-                </child>
+              <object class="GtkBox" id="left_box">
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
-              <object class="GtkBox"
-                id="arranger_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+              <object class="GtkBox" id="arranger_box">
+                <property name="hexpand">1</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkScrolledWindow"
-                    id="arranger_scroll">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                  <object class="GtkScrolledWindow" id="arranger_scroll">
+                    <property name="vexpand">1</property>
+                    <property name="focusable">1</property>
                     <property name="hscrollbar_policy">always</property>
-                    <property name="shadow_type">in</property>
-                    <property name="overlay-scrolling">false</property>
-                    <child>
-                      <object class="GtkViewport"
-                        id="arranger_viewport">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                    <property name="overlay-scrolling">0</property>
+                    <property name="child">
+                      <object class="GtkViewport" id="arranger_viewport">
                         <child>
                           <object class="ArrangerWidget" id="arranger">
                             <property name="visible">1</property>
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="resize">True</property>
-            <property name="shrink">False</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-      </packing>
     </child>
   </template>
 </interface>

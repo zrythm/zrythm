@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   ButtonWithMenuWidget,
   button_with_menu_widget,
   Z, BUTTON_WITH_MENU_WIDGET,
-  GtkButtonBox)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -49,7 +49,7 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _ButtonWithMenuWidget
 {
-  GtkButtonBox     parent_instance;
+  GtkBox           parent_instance;
 
   GtkBox *         button_box;
 
@@ -82,7 +82,6 @@ void
 button_with_menu_widget_setup (
   ButtonWithMenuWidget * self,
   GtkButton *            btn,
-  GtkMenu *              menu,
   GMenuModel *           gmenu_model,
   bool                   downward_arrow,
   int                    height,

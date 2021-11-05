@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,7 +38,7 @@ G_DECLARE_FINAL_TYPE (
   ActiveHardwareMbWidget,
   active_hardware_mb_widget,
   Z, ACTIVE_HARDWARE_MB_WIDGET,
-  GtkMenuButton)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -55,15 +55,18 @@ typedef struct _ActiveHardwarePopoverWidget
  */
 typedef struct _ActiveHardwareMbWidget
 {
-  GtkMenuButton     parent_instance;
+  GtkBox            parent_instance;
 
-  GtkBox *          box;
+  /** The actual menu button. */
+  GtkMenuButton *   mbutton;
+
+  //GtkBox *          box;
 
   /** Image to show next to the label. */
-  GtkImage *        img;
+  //GtkImage *        img;
 
   /** Label to show. */
-  GtkLabel *        label;
+  //GtkLabel *        label;
 
   /** The popover. */
   ActiveHardwarePopoverWidget * popover;

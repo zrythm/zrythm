@@ -87,7 +87,7 @@ typedef struct _LeftDockEdgeWidget
   InspectorPluginWidget * plugin_inspector;
 
   /** Mouse button press handler. */
-  GtkGestureMultiPress *  mp;
+  GtkGestureClick *  mp;
 } LeftDockEdgeWidget;
 
 void

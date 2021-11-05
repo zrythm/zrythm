@@ -91,7 +91,7 @@ timeline_minimap_bg_draw_cb (
       if (!(track->widget && track->visible))
         continue;
 
-      gint wx, wy;
+      double wx, wy;
       gtk_widget_translate_coordinates(
         GTK_WIDGET (track->widget),
         GTK_WIDGET (MW_TIMELINE),

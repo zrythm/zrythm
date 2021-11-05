@@ -1,7 +1,5 @@
 /*
- * gui/widgets/top_bar.h - Toptom bar
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,11 +24,11 @@
 
 #define TOP_BAR_WIDGET_TYPE \
   (top_bar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TopBarWidget,
-                      top_bar_widget,
-                      Z,
-                      TOP_BAR_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  TopBarWidget,
+  top_bar_widget,
+  Z, TOP_BAR_WIDGET,
+  GtkBox)
 
 #define TOP_BAR MW->top_bar
 
@@ -46,8 +44,8 @@ typedef struct _LiveWaveformWidget
 
 typedef struct _TopBarWidget
 {
-  GtkBox                    parent_instance;
-  GtkToolbar *              top_bar_left;
+  GtkBox   parent_instance;
+  GtkBox * top_bar_left;
 } TopBarWidget;
 
 void

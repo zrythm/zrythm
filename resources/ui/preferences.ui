@@ -1,650 +1,474 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="PreferencesWidget" parent="GtkDialog">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Preferences</property>
-    <property name="modal">True</property>
-    <property name="type_hint">dialog</property>
+    <property name="modal">1</property>
     <child>
       <placeholder/>
     </child>
-    <child internal-child="vbox">
+    <child internal-child="content_area">
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="visible">0</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="ok">
-                <property name="label" translatable="yes">OK</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_ok_clicked" object="PreferencesWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="cancel">
-                <property name="label" translatable="yes">Cancel</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_cancel_clicked" object="PreferencesWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
+            <property name="hexpand">1</property>
+            <property name="vexpand">1</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
+                <property name="hexpand">1</property>
+                <property name="vexpand">1</property>
                 <child>
                   <object class="GtkNotebook" id="categories">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
+                    <property name="focusable">1</property>
+                    <property name="hexpand">1</property>
+                    <property name="vexpand">1</property>
                     <property name="tab_pos">left</property>
                     <child>
-                      <object class="GtkGrid" id="audio_grid">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">2</property>
-                        <property name="column_spacing">2</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Engine</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_left">8</property>
-                            <property name="margin_right">8</property>
-                            <property name="label" translatable="yes">Audio Backend</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBox" id="audio_backend">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The audio backend to connect to</property>
-                            <property name="margin_right">2</property>
-                            <property name="hexpand">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">MIDI Controllers</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">4</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="MidiControllerMbWidget" id="midi_controllers">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">4</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">MIDI Backend</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBox" id="midi_backend">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The MIDI backend to connect to</property>
-                            <property name="hexpand">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Pan Algorithm</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">5</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Pan Law</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">6</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBox" id="pan_algo">
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The pan algorithm to use</property>
-                            <property name="hexpand">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">5</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBox" id="pan_law">
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The pan law to use</property>
-                            <property name="hexpand">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">6</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Zrythm path</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">7</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkFileChooserButton" id="zpath_fc">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The global Zrythm working path for non-project related files</property>
-                            <property name="action">select-folder</property>
-                            <property name="title" translatable="yes"/>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">7</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="audio_backend_opts_box">
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
+                      <object class="GtkNotebookPage">
+                        <property name="child">
+                          <object class="GtkGrid" id="audio_grid">
+                            <property name="margin-start">2</property>
+                            <property name="column_spacing">2</property>
                             <child>
-                              <object class="GtkBox">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Device Name</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="device_name_cb">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="hexpand">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Engine</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                  <property name="column-span">2</property>
+                                </layout>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkLabel">
+                                <property name="margin-start">8</property>
+                                <property name="margin-end">8</property>
+                                <property name="label" translatable="yes">Audio Backend</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkComboBox" id="audio_backend">
+                                <property name="tooltip_text" translatable="yes">The audio backend to connect to</property>
+                                <property name="margin-end">2</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">MIDI Controllers</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">4</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="MidiControllerMbWidget" id="midi_controllers">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">4</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">MIDI Backend</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">3</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkComboBox" id="midi_backend">
+                                <property name="tooltip_text" translatable="yes">The MIDI backend to connect to</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">3</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">0</property>
+                                <property name="label" translatable="yes">Pan Algorithm</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">5</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">0</property>
+                                <property name="label" translatable="yes">Pan Law</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">6</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkComboBox" id="pan_algo">
+                                <property name="visible">0</property>
+                                <property name="tooltip_text" translatable="yes">The pan algorithm to use</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">5</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkComboBox" id="pan_law">
+                                <property name="visible">0</property>
+                                <property name="tooltip_text" translatable="yes">The pan law to use</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">6</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Zrythm path</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">7</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFileChooserButton" id="zpath_fc">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Buffer Size</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBox" id="buffer_size_cb">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="hexpand">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Samplerate</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBox" id="samplerate_cb">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="hexpand">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">3</property>
-                                  </packing>
-                                </child>
+                                <property name="tooltip_text" translatable="yes">The global Zrythm working path for non-project related files</property>
+                                <property name="action">select-folder</property>
+                                <property name="title" translatable="yes"></property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">7</property>
+                                </layout>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="audio_backend_opts_box">
+                                <property name="visible">0</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label" translatable="yes">Device Name</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBoxText" id="device_name_cb">
+                                        <property name="hexpand">1</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label" translatable="yes">Buffer Size</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBox" id="buffer_size_cb">
+                                        <property name="hexpand">1</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="label" translatable="yes">Samplerate</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBox" id="samplerate_cb">
+                                        <property name="hexpand">1</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">2</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
+                        </property>
+                        <property name="tab">
+                          <object class="GtkLabel" id="audio_label">
+                            <property name="label" translatable="yes">General</property>
+                          </object>
+                        </property>
                       </object>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel" id="audio_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">General</property>
-                      </object>
-                      <packing>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                     <child>
-                      <object class="GtkGrid" id="plugins_grid">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">2</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                      <object class="GtkNotebookPage">
+                        <property name="position">1</property>
+                        <property name="child">
+                          <object class="GtkGrid" id="plugins_grid">
+                            <property name="margin-start">2</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Plugins</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="open_plugin_uis">
+                                <property name="label" translatable="yes">Always open plugin UIs</property>
+                                <property name="focusable">1</property>
+                                <property name="tooltip_text" translatable="yes">Always show the plugin UI when instantiating a plugin</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="keep_plugin_uis_on_top">
+                                <property name="label" translatable="yes">Keep plugin UIs on top</property>
+                                <property name="focusable">1</property>
+                                <property name="tooltip_text" translatable="yes">Keep plugin UI windows on top of the main window</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">2</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="vst_paths_label">
+                                <property name="visible">0</property>
+                                <property name="label" translatable="yes">VST2 Paths</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">3</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="vst_paths_entry">
+                                <property name="visible">0</property>
+                                <property name="focusable">1</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">3</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="tab">
+                          <object class="GtkLabel" id="plugins_label">
                             <property name="label" translatable="yes">Plugins</property>
                           </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="open_plugin_uis">
-                            <property name="label" translatable="yes">Always open plugin UIs</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">Always show the plugin UI when instantiating a plugin</property>
-                            <property name="hexpand">True</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="keep_plugin_uis_on_top">
-                            <property name="label" translatable="yes">Keep plugin UIs on top</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">Keep plugin UI windows on top of the main window</property>
-                            <property name="hexpand">True</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="vst_paths_label">
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">VST2 Paths</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="vst_paths_entry">
-                            <property name="can_focus">True</property>
-                            <property name="hexpand">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">3</property>
-                          </packing>
-                        </child>
+                        </property>
                       </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel" id="plugins_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Plugins</property>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                     <child>
-                      <object class="GtkGrid" id="editing_grid">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">2</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Main Window</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
+                      <object class="GtkNotebookPage">
                         <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel" id="editing_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Editing</property>
+                        <property name="child">
+                          <object class="GtkGrid" id="editing_grid">
+                            <property name="margin-start">2</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Main Window</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="tab">
+                          <object class="GtkLabel" id="editing_label">
+                            <property name="label" translatable="yes">Editing</property>
+                          </object>
+                        </property>
                       </object>
-                      <packing>
-                        <property name="position">2</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                     <child>
-                      <object class="GtkGrid" id="gui_grid">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">2</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Interface</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_left">4</property>
-                            <property name="margin_right">4</property>
-                            <property name="label" translatable="yes">Language</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBox" id="language">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The language of the Zrythm interface</property>
-                            <property name="hexpand">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="locale_not_available">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="wrap">True</property>
-                            <attributes>
-                              <attribute name="foreground" value="#efef29292929"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
+                      <object class="GtkNotebookPage">
                         <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel" id="gui_label">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">GUI</property>
+                        <property name="child">
+                          <object class="GtkGrid" id="gui_grid">
+                            <property name="margin-start">2</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Interface</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="margin-start">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="label" translatable="yes">Language</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkComboBox" id="language">
+                                <property name="tooltip_text" translatable="yes">The language of the Zrythm interface</property>
+                                <property name="hexpand">1</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="locale_not_available">
+                                <property name="wrap">1</property>
+                                <attributes>
+                                  <attribute name="foreground" value="#efef29292929"></attribute>
+                                </attributes>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">2</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="tab">
+                          <object class="GtkLabel" id="gui_label">
+                            <property name="label" translatable="yes">GUI</property>
+                          </object>
+                        </property>
                       </object>
-                      <packing>
-                        <property name="position">3</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                     <child>
-                      <object class="GtkGrid" id="grid3">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">2</property>
-                        <property name="column_spacing">2</property>
-                        <child>
+                      <object class="GtkNotebookPage">
+                        <property name="position">4</property>
+                        <property name="child">
+                          <object class="GtkGrid" id="grid3">
+                            <property name="margin-start">2</property>
+                            <property name="column_spacing">2</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Projects</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                  <property name="column-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Autosave interval</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="autosave_spin">
+                                <property name="focusable">1</property>
+                                <property name="tooltip_text" translatable="yes">Set the interval to auto-save project backups, in minutes. Setting this to 0 will disable auto-save</property>
+                                <property name="hexpand">1</property>
+                                <property name="caps_lock_warning">False</property>
+                                <property name="progress_pulse_step">0</property>
+                                <property name="input_purpose">number</property>
+                                <property name="climb_rate">1</property>
+                                <property name="numeric">1</property>
+                                <property name="value">60</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="tab">
                           <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Projects</property>
                           </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                            <property name="width">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Autosave interval</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="autosave_spin">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Set the interval to auto-save project backups, in minutes. Setting this to 0 will disable auto-save</property>
-                            <property name="hexpand">True</property>
-                            <property name="caps_lock_warning">False</property>
-                            <property name="progress_pulse_step">0</property>
-                            <property name="input_purpose">number</property>
-                            <property name="climb_rate">1</property>
-                            <property name="numeric">True</property>
-                            <property name="value">60</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
+                        </property>
                       </object>
-                      <packing>
-                        <property name="position">4</property>
-                      </packing>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Projects</property>
-                      </object>
-                      <packing>
-                        <property name="position">4</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child>
               <placeholder/>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
+        </child>
+      </object>
+    </child>
+    <child internal-child="action_area">
+      <object class="GtkBox">
+        <property name="valign">center</property>
+        <property name="can_focus">False</property>
+        <property name="layout_style">end</property>
+        <child>
+          <object class="GtkButton" id="ok">
+            <property name="label" translatable="yes">OK</property>
+            <property name="focusable">1</property>
+            <property name="receives_default">1</property>
+            <signal name="clicked" handler="on_ok_clicked" object="PreferencesWidget" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="cancel">
+            <property name="visible">0</property>
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="focusable">1</property>
+            <property name="receives_default">1</property>
+            <signal name="clicked" handler="on_cancel_clicked" object="PreferencesWidget" swapped="no"/>
+          </object>
         </child>
       </object>
     </child>

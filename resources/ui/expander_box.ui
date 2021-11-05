@@ -1,62 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="ExpanderBoxWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
     <child>
       <placeholder/>
     </child>
     <child>
       <object class="GtkButton" id="button">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
+        <property name="focusable">1</property>
+        <property name="receives_default">1</property>
         <child>
           <placeholder/>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <placeholder/>
     </child>
     <child>
       <object class="GtkRevealer" id="revealer">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="transition_type">none</property>
-        <property name="reveal_child">True</property>
-        <child>
+        <property name="reveal_child">1</property>
+        <property name="child">
           <object class="GtkBox" id="content">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
@@ -68,13 +35,8 @@
               <placeholder/>
             </child>
           </object>
-        </child>
+        </property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
     </child>
   </template>
 </interface>

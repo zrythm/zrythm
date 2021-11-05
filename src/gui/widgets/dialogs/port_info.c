@@ -82,8 +82,8 @@ set_values (
         gtk_label_new (port_flags_bitvals[i].name);
       gtk_widget_set_visible (lbl, 1);
       gtk_widget_set_hexpand (lbl, 1);
-      gtk_container_add (
-        GTK_CONTAINER (self->flags_box), lbl);
+      gtk_box_append (
+        GTK_BOX (self->flags_box), lbl);
     }
   for (int i = 0;
        i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals);
@@ -96,8 +96,8 @@ set_values (
         gtk_label_new (port_flags2_bitvals[i].name);
       gtk_widget_set_visible (lbl, 1);
       gtk_widget_set_hexpand (lbl, 1);
-      gtk_container_add (
-        GTK_CONTAINER (self->flags_box), lbl);
+      gtk_box_append (
+        GTK_BOX (self->flags_box), lbl);
     }
 
   /* TODO scale points */

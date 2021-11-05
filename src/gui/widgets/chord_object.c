@@ -125,7 +125,7 @@ chord_object_draw (
 #if 0
 static void
 on_press (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -188,8 +188,8 @@ chord_object_widget_init (
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   self->mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new (
         GTK_WIDGET (ao_prv->drawing_area)));
 
   g_signal_connect (

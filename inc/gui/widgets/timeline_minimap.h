@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   TimelineMinimapWidget,
   timeline_minimap_widget,
   Z, TIMELINE_MINIMAP_WIDGET,
-  GtkOverlay)
+  GtkWidget)
 
 typedef struct _TimelineMinimapBgWidget TimelineMinimapBgWidget;
 typedef struct _TimelineMinimapSelectionWidget TimelineMinimapSelectionWidget;
@@ -63,21 +63,32 @@ typedef enum TimelineMinimapAction
 
 typedef struct _TimelineMinimapWidget
 {
-  GtkOverlay                        parent_instance;
-  TimelineMinimapBgWidget *         bg;
-  TimelineMinimapSelectionWidget  * selection;
-  TimelineMinimapAction             action;
-  GtkGestureDrag *         drag;
-  GtkGestureMultiPress *   multipress;
-  GtkGestureMultiPress *   right_mouse_mp;
-  double                   last_offset_x;  ///< for dragging regions, selections
-  double                   last_offset_y;  ///< for selections
-  double                   selection_start_pos; ///< to be set in drag_begin
-  double                   selection_end_pos; ///< to be set in drag_begin
-  double                   start_x; ///< for dragging
-  double                   start_y; ///< for dragging
-  double                   start_zoom_level; //< to be set in drag_begin
-  int                      n_press; ///< for multipress
+  GtkWidget           parent_instance;
+
+  GtkOverlay *        overlay;
+
+  TimelineMinimapBgWidget * bg;
+  TimelineMinimapSelectionWidget * selection;
+  TimelineMinimapAction action;
+  //GtkGestureDrag *    drag;
+  //GtkGestureClick *   multipress;
+  //GtkGestureClick *   right_mouse_mp;
+
+  /** Last drag offsets during a drag. */
+  double              last_offset_x;
+  double              last_offset_y;
+
+  /** Coordinates at the start of a drag action. */
+  double              start_x;
+  double              start_y;
+
+  /** To be set in drag_begin(). */
+  double              start_zoom_level;
+  double              selection_start_pos;
+  double              selection_end_pos;
+
+  /** Number of presses, for click controller. */
+  int                 n_press;
 } TimelineMinimapWidget;
 
 /**

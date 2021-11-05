@@ -59,29 +59,44 @@
 
 G_DEFINE_TYPE (
   FolderChannelWidget, folder_channel_widget,
-  GTK_TYPE_EVENT_BOX)
+  GTK_TYPE_BOX)
 
-static void
-on_drag_data_received (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  gint              x,
-  gint              y,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
+static gboolean
+on_dnd_drop (
+  GtkDropTarget *       drop_target,
+  const GValue *        value,
+  gdouble               x,
+  gdouble               y,
   FolderChannelWidget * self)
 {
-  g_message ("drag data received");
+  if (!G_VALUE_HOLDS_STRING (value))
+    {
+      g_message ("invalid DND type");
+      return false;
+    }
+
+  const char * str = g_value_get_string (value);
+  Track * track = NULL;
+  if (g_str_has_prefix (str, TRACK_DND_PREFIX))
+    {
+      sscanf (str, TRACK_DND_PREFIX "%p", &track);
+    }
+  if (!track)
+    {
+      g_message ("not a track: %s", str);
+      return false;
+    }
+
   Track * this = self->track;
 
   /* determine if moving or copying */
   GdkDragAction action =
-    gdk_drag_context_get_selected_action (
-      context);
+    z_gtk_drop_target_get_selected_action (
+      drop_target);
 
   int w =
-    gtk_widget_get_allocated_width (widget);
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
 
   /* determine position to move to */
   int pos;
@@ -140,39 +155,42 @@ on_drag_data_received (
         err, "%s",
         _("Failed to move or copy track(s)"));
     }
+
+  return true;
 }
 
-static void
-on_drag_data_get (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
+static GdkContentProvider *
+on_dnd_drag_prepare (
+  GtkDragSource * source,
+  double          x,
+  double          y,
   FolderChannelWidget * self)
 {
-  g_debug ("drag data get");
+  Track * track = self->track;
+  char track_str[600];
+  sprintf (
+    track_str, TRACK_DND_PREFIX "%p", track);
 
-  /* Not really needed since the selections are
-   * used. just send master */
-  gtk_selection_data_set (
-    data,
-    gdk_atom_intern_static_string (
-      TARGET_ENTRY_TRACK),
-    32,
-    (const guchar *) &P_MASTER_TRACK,
-    sizeof (P_MASTER_TRACK));
+  GdkContentProvider * content_providers[] = {
+    gdk_content_provider_new_typed (
+      G_TYPE_STRING, track_str),
+  };
+
+  return
+    gdk_content_provider_new_union (
+      content_providers,
+      G_N_ELEMENTS (content_providers));
 }
 
-/**
- * For drag n drop.
- */
 static void
 on_dnd_drag_begin (
-  GtkWidget      *widget,
-  GdkDragContext *context,
-  FolderChannelWidget * self)
+  GtkDragSource * source,
+  GdkDrag *       drag,
+  gpointer        user_data)
 {
+  FolderChannelWidget * self =
+    Z_FOLDER_CHANNEL_WIDGET (user_data);
+
   Track * track = self->track;
   self->selected_in_dnd = 1;
   MW_MIXER->start_drag_track = track;
@@ -221,18 +239,18 @@ do_highlight (
   if (x < w / 2)
     {
       /* highlight left */
-      gtk_drag_highlight (
-        GTK_WIDGET (
-          self->highlight_left_box));
+      /*gtk_drag_highlight (*/
+        /*GTK_WIDGET (*/
+          /*self->highlight_left_box));*/
       gtk_widget_set_size_request (
         GTK_WIDGET (
           self->highlight_left_box),
         2, -1);
 
       /* unhilight right */
-      gtk_drag_unhighlight (
-        GTK_WIDGET (
-          self->highlight_right_box));
+      /*gtk_drag_unhighlight (*/
+        /*GTK_WIDGET (*/
+          /*self->highlight_right_box));*/
       gtk_widget_set_size_request (
         GTK_WIDGET (
           self->highlight_right_box),
@@ -241,18 +259,18 @@ do_highlight (
   else
     {
       /* highlight right */
-      gtk_drag_highlight (
-        GTK_WIDGET (
-          self->highlight_right_box));
+      /*gtk_drag_highlight (*/
+        /*GTK_WIDGET (*/
+          /*self->highlight_right_box));*/
       gtk_widget_set_size_request (
         GTK_WIDGET (
           self->highlight_right_box),
         2, -1);
 
       /* unhilight left */
-      gtk_drag_unhighlight (
-        GTK_WIDGET (
-          self->highlight_left_box));
+      /*gtk_drag_unhighlight (*/
+        /*GTK_WIDGET (*/
+          /*self->highlight_left_box));*/
       gtk_widget_set_size_request (
         GTK_WIDGET (
           self->highlight_left_box),
@@ -260,43 +278,43 @@ do_highlight (
     }
 }
 
-static void
-on_drag_motion (
-  GtkWidget *widget,
-  GdkDragContext *context,
-  gint x,
-  gint y,
-  guint time,
-  FolderChannelWidget * self)
+static GdkDragAction
+on_dnd_motion (
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
 {
-  GdkModifierType mask;
-  z_gtk_widget_get_mask (
-    widget, &mask);
-  if (mask & GDK_CONTROL_MASK)
-    gdk_drag_status (context, GDK_ACTION_COPY, time);
-  else
-    gdk_drag_status (context, GDK_ACTION_MOVE, time);
+  FolderChannelWidget * self =
+    Z_FOLDER_CHANNEL_WIDGET (user_data);
 
-  do_highlight (self, x, y);
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (drop_target));
+
+  do_highlight (self, (int) x, (int) y);
+
+  if (state & GDK_CONTROL_MASK)
+    return GDK_ACTION_COPY;
+  else
+    return GDK_ACTION_MOVE;
 }
 
 static void
-on_drag_leave (
-  GtkWidget *      widget,
-  GdkDragContext * context,
-  guint            time,
-  FolderChannelWidget *  self)
+on_dnd_leave (
+  GtkDropTarget *       drop_target,
+  FolderChannelWidget * self)
 {
-  g_message ("on_drag_leave");
+  g_debug ("folder channel dnd leave");
 
   /*do_highlight (self);*/
-  gtk_drag_unhighlight (
-    GTK_WIDGET (self->highlight_left_box));
+  /*gtk_drag_unhighlight (*/
+    /*GTK_WIDGET (self->highlight_left_box));*/
   gtk_widget_set_size_request (
     GTK_WIDGET (self->highlight_left_box),
     -1, -1);
-  gtk_drag_unhighlight (
-    GTK_WIDGET (self->highlight_right_box));
+  /*gtk_drag_unhighlight (*/
+    /*GTK_WIDGET (self->highlight_right_box));*/
   gtk_widget_set_size_request (
     GTK_WIDGET (self->highlight_right_box),
     -1, -1);
@@ -311,7 +329,7 @@ on_drag_leave (
  */
 static void
 on_whole_folder_channel_press (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -319,11 +337,11 @@ on_whole_folder_channel_press (
 {
   self->n_press = n_press;
 
-  GdkModifierType state_mask =
-    ui_get_state_mask (
-      GTK_GESTURE (gesture));
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
   self->ctrl_held_at_start =
-    state_mask & GDK_CONTROL_MASK;
+    state & GDK_CONTROL_MASK;
 }
 
 static void
@@ -347,14 +365,23 @@ on_drag_update (
   self->dragged = true;
 }
 
-static bool
+static void
 on_btn_release (
-  GtkWidget *      widget,
-  GdkEventButton * event,
-  FolderChannelWidget *  self)
+  GtkGestureClick * click_gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  gpointer          user_data)
 {
+  FolderChannelWidget * self =
+    Z_FOLDER_CHANNEL_WIDGET (user_data);
+
   if (self->dragged || self->selected_in_dnd)
-    return false;
+    return;
+
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (click_gesture));
 
   Track * track = self->track;
   if (self->n_press == 1)
@@ -362,13 +389,11 @@ on_btn_release (
       PROJECT->last_selection =
         SELECTION_TYPE_TRACKLIST;
 
-      bool ctrl = event->state & GDK_CONTROL_MASK;
-      bool shift = event->state & GDK_SHIFT_MASK;
+      bool ctrl = state & GDK_CONTROL_MASK;
+      bool shift = state & GDK_SHIFT_MASK;
       tracklist_selections_handle_click (
         track, ctrl, shift, self->dragged);
     }
-
-  return FALSE;
 }
 
 static void
@@ -390,8 +415,7 @@ setup_folder_channel_icon (
 {
   Track * track = self->track;
   gtk_image_set_from_icon_name (
-    self->icon, track->icon_name,
-    GTK_ICON_SIZE_BUTTON);
+    self->icon, track->icon_name);
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->icon),
     track_is_enabled (track));
@@ -416,7 +440,7 @@ refresh_name (FolderChannelWidget * self)
         GTK_LABEL (self->name->label), markup);
     }
 
-  gtk_label_set_angle (self->name->label, 90);
+  /*gtk_label_set_angle (self->name->label, 90);*/
 }
 
 /**
@@ -438,7 +462,7 @@ folder_channel_widget_refresh (
 #define ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
 
   Track * track = self->track;
-  z_gtk_button_set_icon_name (
+  gtk_button_set_icon_name (
     GTK_BUTTON (self->fold_toggle),
     track->folded ?
       ICON_NAME_FOLD : ICON_NAME_FOLD_OPEN);
@@ -474,199 +498,31 @@ static void
 show_context_menu (
   FolderChannelWidget * self)
 {
-  GtkWidget *menu;
-  GtkMenuItem *menuitem;
-  menu = gtk_menu_new();
-  Track * track = self->track;
+  GMenu * menu =
+    channel_widget_generate_context_menu_for_track (
+      self->track);
 
-#define APPEND(mi) \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), \
-    GTK_WIDGET (menuitem));
-
-#define ADD_SEPARATOR \
-  menuitem = \
-    GTK_MENU_ITEM ( \
-      gtk_separator_menu_item_new ()); \
-  gtk_widget_set_visible ( \
-    GTK_WIDGET (menuitem), true); \
-  APPEND (menuitem)
-
-  int num_selected =
-    TRACKLIST_SELECTIONS->num_tracks;
-
-  if (num_selected > 0)
-    {
-      char * str;
-
-      if (track->type != TRACK_TYPE_MASTER &&
-          track->type != TRACK_TYPE_CHORD &&
-          track->type != TRACK_TYPE_MARKER &&
-          track->type != TRACK_TYPE_TEMPO)
-        {
-          /* delete track */
-          if (num_selected == 1)
-            str =
-              g_strdup (_("_Delete Track"));
-          else
-            str =
-              g_strdup (_("_Delete Tracks"));
-          menuitem =
-            z_gtk_create_menu_item (
-              str, "edit-delete", F_NO_TOGGLE,
-              "app.delete-selected-tracks");
-          g_free (str);
-          APPEND (menuitem);
-
-          /* duplicate track */
-          if (num_selected == 1)
-            str =
-              g_strdup (_("_Duplicate Track"));
-          else
-            str =
-              g_strdup (_("_Duplicate Tracks"));
-          menuitem =
-            z_gtk_create_menu_item (
-              str, "edit-copy", F_NO_TOGGLE,
-              "app.duplicate-selected-tracks");
-          g_free (str);
-          APPEND (menuitem);
-        }
-
-      menuitem =
-        z_gtk_create_menu_item (
-          num_selected == 1 ?
-            _("Hide Track") :
-            _("Hide Tracks"),
-          "view-hidden", F_NO_TOGGLE,
-          "app.hide-selected-tracks");
-      APPEND (menuitem);
-
-      menuitem =
-        z_gtk_create_menu_item (
-          num_selected == 1 ?
-            _("Pin/Unpin Track") :
-            _("Pin/Unpin Tracks"),
-          "window-pin", F_NO_TOGGLE,
-          "app.pin-selected-tracks");
-      APPEND (menuitem);
-    }
-
-  /* add solo/mute/listen */
-  ADD_SEPARATOR;
-
-  if (tracklist_selections_contains_soloed_track (
-        TRACKLIST_SELECTIONS, F_NO_SOLO))
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Solo"), "solo", F_NO_TOGGLE,
-          "app.solo-selected-tracks");
-      APPEND (menuitem);
-    }
-  if (tracklist_selections_contains_soloed_track (
-        TRACKLIST_SELECTIONS, F_SOLO))
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Unsolo"), "unsolo", F_NO_TOGGLE,
-          "app.unsolo-selected-tracks");
-      APPEND (menuitem);
-    }
-
-  if (tracklist_selections_contains_muted_track (
-        TRACKLIST_SELECTIONS, F_NO_MUTE))
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Mute"), "mute", F_NO_TOGGLE,
-          "app.mute-selected-tracks");
-      APPEND (menuitem);
-    }
-  if (tracklist_selections_contains_muted_track (
-        TRACKLIST_SELECTIONS, F_MUTE))
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Unmute"), "unmute", F_NO_TOGGLE,
-          "app.unmute-selected-tracks");
-      APPEND (menuitem);
-    }
-
-  if (tracklist_selections_contains_listened_track (
-        TRACKLIST_SELECTIONS, F_NO_LISTEN))
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Listen"), "listen",
-          F_NO_TOGGLE,
-          "app.listen-selected-tracks");
-      APPEND (menuitem);
-    }
-  if (tracklist_selections_contains_listened_track (
-        TRACKLIST_SELECTIONS, F_LISTEN))
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Unlisten"), "unlisten",
-          F_NO_TOGGLE,
-          "app.unlisten-selected-tracks");
-      APPEND (menuitem);
-    }
-
-  /* add enable/disable */
-  if (tracklist_selections_contains_enabled_track (
-        TRACKLIST_SELECTIONS, F_ENABLED))
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Disable"), "offline",
-          F_NO_TOGGLE,
-          "app.disable-selected-tracks");
-      APPEND (menuitem);
-    }
-  else
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Enable"), "online",
-          F_NO_TOGGLE,
-          "app.enable-selected-tracks");
-      APPEND (menuitem);
-    }
-
-  ADD_SEPARATOR;
-  menuitem =
-    z_gtk_create_menu_item (
-      _("Change color..."), "color-fill",
-      F_NO_TOGGLE, "app.change-track-color");
-  APPEND (menuitem);
-
-#undef APPEND
-#undef ADD_SEPARATOR
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                    n_press,
   gdouble                x,
   gdouble                y,
   FolderChannelWidget *        self)
 {
-  GdkModifierType state_mask =
-    ui_get_state_mask (GTK_GESTURE (gesture));
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
 
   Track * track = self->track;
   if (!track_is_selected (track))
     {
-      if (state_mask & GDK_SHIFT_MASK ||
-          state_mask & GDK_CONTROL_MASK)
+      if (state & GDK_SHIFT_MASK ||
+          state & GDK_CONTROL_MASK)
         {
           track_select (
             track, F_SELECT, 0, 1);
@@ -704,6 +560,44 @@ on_destroy (
   folder_channel_widget_tear_down (self);
 }
 
+static void
+setup_dnd (
+  FolderChannelWidget * self)
+{
+  GtkDragSource * drag_source =
+    gtk_drag_source_new ();
+  g_signal_connect (
+    drag_source, "prepare",
+    G_CALLBACK (on_dnd_drag_prepare), self);
+  g_signal_connect (
+    drag_source, "drag-begin",
+    G_CALLBACK (on_dnd_drag_begin), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->icon_and_name_event_box),
+    GTK_EVENT_CONTROLLER (drag_source));
+
+  /* set as drag dest for folder_channel (the
+   * folder_channel will
+   * be moved based on which half it was dropped in,
+   * left or right) */
+  GtkDropTarget * drop_target =
+    gtk_drop_target_new (
+      G_TYPE_STRING,
+      GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  g_signal_connect (
+    GTK_WIDGET (self), "drop",
+    G_CALLBACK (on_dnd_drop), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "motion",
+    G_CALLBACK (on_dnd_motion), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "leave",
+    G_CALLBACK (on_dnd_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (drop_target));
+}
+
 FolderChannelWidget *
 folder_channel_widget_new (
   Track * track)
@@ -726,6 +620,8 @@ folder_channel_widget_new (
   g_signal_connect (
     self, "destroy",
     G_CALLBACK (on_destroy), NULL);
+
+  setup_dnd (self);
 
   folder_channel_widget_refresh (self);
 
@@ -789,6 +685,9 @@ folder_channel_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self), 0);
+
   /* set font sizes */
   GtkStyleContext * context =
     gtk_widget_get_style_context (
@@ -798,83 +697,40 @@ folder_channel_widget_init (
   gtk_label_set_max_width_chars (
     self->name->label, 10);
 
-  char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
-  GtkTargetEntry entries[] = {
-    {
-      entry_track, GTK_TARGET_SAME_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
-    },
-  };
-
-  /* set as drag source for track */
-  gtk_drag_source_set (
-    GTK_WIDGET (self->icon_and_name_event_box),
-    GDK_BUTTON1_MASK,
-    entries, G_N_ELEMENTS (entries),
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
-
-  /* set as drag dest for folder_channel (the folder_channel will
-   * be moved based on which half it was dropped in,
-   * left or right) */
-  gtk_drag_dest_set (
-    GTK_WIDGET (self),
-    GTK_DEST_DEFAULT_MOTION |
-      GTK_DEST_DEFAULT_DROP,
-    entries, G_N_ELEMENTS (entries),
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  g_free (entry_track);
-
-  self->mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (
-        GTK_WIDGET (
-          self)));
-
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self), 0);
-
-  self->right_mouse_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->icon_and_name_event_box)));
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_mouse_mp),
-    GDK_BUTTON_SECONDARY);
-
-  g_signal_connect (
-    G_OBJECT (self->mp), "pressed",
-    G_CALLBACK (on_whole_folder_channel_press), self);
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (on_drag_begin), self);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-update",
     G_CALLBACK (on_drag_update), self);
-  g_signal_connect_after (
-    GTK_WIDGET (self->icon_and_name_event_box),
-    "drag-begin",
-    G_CALLBACK(on_dnd_drag_begin), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
+
+  self->mp =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
-    GTK_WIDGET (self), "drag-data-received",
-    G_CALLBACK(on_drag_data_received), self);
+    G_OBJECT (self->mp), "pressed",
+    G_CALLBACK (on_whole_folder_channel_press),
+    self);
   g_signal_connect (
-    GTK_WIDGET (self->icon_and_name_event_box),
-    "drag-data-get",
-    G_CALLBACK (on_drag_data_get), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "drag-motion",
-    G_CALLBACK (on_drag_motion), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "drag-leave",
-    G_CALLBACK (on_drag_leave), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "button-release-event",
+    G_OBJECT (self->mp), "released",
     G_CALLBACK (on_btn_release), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->mp));
+
+  self->right_mouse_mp =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->right_mouse_mp),
+    GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (self->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->icon_and_name_event_box),
+    GTK_EVENT_CONTROLLER (self->right_mouse_mp));
 }

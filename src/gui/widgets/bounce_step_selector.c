@@ -35,7 +35,7 @@
 G_DEFINE_TYPE (
   BounceStepSelectorWidget,
   bounce_step_selector_widget,
-  GTK_TYPE_BUTTON_BOX)
+  GTK_TYPE_BOX)
 
 static void
 block_all_handlers (
@@ -141,8 +141,8 @@ bounce_step_selector_widget_new (void)
     z_gtk_toggle_button_new_with_icon_and_text ( \
       icon, _(bounce_step_str[n]), false, \
       GTK_ORIENTATION_HORIZONTAL, 4); \
-  gtk_container_add ( \
-    GTK_CONTAINER (self), \
+  gtk_box_append ( \
+    GTK_BOX (self), \
     GTK_WIDGET (self->x##_toggle)); \
   self->x##_toggle_id = \
     g_signal_connect ( \
@@ -179,9 +179,9 @@ static void
 bounce_step_selector_widget_init (
   BounceStepSelectorWidget * self)
 {
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "linked");
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "bounce-step-selector");
 #if 0
   gtk_widget_set_tooltip_text (

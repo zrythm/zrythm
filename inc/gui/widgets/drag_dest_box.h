@@ -1,8 +1,5 @@
 /*
- * gui/widgets/drag_dest_box.h - A dnd destination box used
- * by mixer and tracklist widgets
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,24 +17,36 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Drag dest box.
+ */
+
 #ifndef __GUI_WIDGETS_DRAG_DEST_BOX_H__
 #define __GUI_WIDGETS_DRAG_DEST_BOX_H__
 
 #include <gtk/gtk.h>
 
+typedef struct Channel Channel;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define DRAG_DEST_BOX_WIDGET_TYPE \
   (drag_dest_box_widget_get_type ())
-G_DECLARE_FINAL_TYPE (DragDestBoxWidget,
-                      drag_dest_box_widget,
-                      Z,
-                      DRAG_DEST_BOX_WIDGET,
-                      GtkEventBox)
+G_DECLARE_FINAL_TYPE (
+  DragDestBoxWidget,
+  drag_dest_box_widget,
+  Z, DRAG_DEST_BOX_WIDGET,
+  GtkBox)
 #define TRACKLIST_DRAG_DEST_BOX \
   MW_TRACKLIST->ddbox
 #define MIXER_DRAG_DEST_BOX \
   MW_MIXER->ddbox
-
-typedef struct Channel Channel;
 
 typedef enum DragDestBoxType
 {
@@ -46,15 +55,17 @@ typedef enum DragDestBoxType
   DRAG_DEST_BOX_TYPE_MODULATORS,
 } DragDestBoxType;
 
+/**
+ * DnD destination box used by mixer and tracklist
+ * widgets.
+ */
 typedef struct _DragDestBoxWidget
 {
-  GtkEventBox             parent_instance;
-  GtkGestureDrag *        drag;
-  GtkGestureMultiPress *  multipress;
-
-  /** Right mouse multipress. */
-  GtkGestureMultiPress *  right_mouse_mp;
-  DragDestBoxType         type;
+  GtkBox             parent_instance;
+  GtkGestureDrag *   drag;
+  GtkGestureClick *  click;
+  GtkGestureClick *  right_click;
+  DragDestBoxType    type;
 } DragDestBoxWidget;
 
 /**
@@ -65,5 +76,9 @@ drag_dest_box_widget_new (
   GtkOrientation  orientation,
   int             spacing,
   DragDestBoxType type);
+
+/**
+ * @}
+ */
 
 #endif

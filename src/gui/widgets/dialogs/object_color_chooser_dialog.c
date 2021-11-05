@@ -30,42 +30,75 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  ObjectColorChooserDialogWidget,
-  object_color_chooser_dialog_widget,
-  GTK_TYPE_COLOR_CHOOSER_DIALOG)
-
-static void
-get_current_obj_color (
-  ObjectColorChooserDialogWidget * self,
-  GdkRGBA *                        color)
-{
-  if (self->track)
-    {
-      g_return_if_fail (IS_TRACK (self->track));
-      *color = self->track->color;
-    }
-  else if (self->region)
-    {
-      /**color = self->region->color;*/
-    }
-  else
-    {
-      g_return_if_reached ();
-    }
-}
-
 /**
  * Runs the widget and processes the result, then
  * closes the dialog.
+ *
+ * @param track Track, if track.
+ * @param sel TracklistSelections, if multiple
+ *   tracks.
+ * @param region ZRegion, if region.
  *
  * @return Whether the color was set or not.
  */
 bool
 object_color_chooser_dialog_widget_run (
-  ObjectColorChooserDialogWidget * self)
+  GtkWindow *           parent,
+  Track *               track,
+  TracklistSelections * sel,
+  ZRegion *             region)
 {
-  int res = gtk_dialog_run (GTK_DIALOG (self));
+  GtkColorChooserDialog * dialog = NULL;
+  if (track)
+    {
+      char * str =
+        g_strdup_printf (_("%s color"), track->name);
+      dialog =
+        GTK_COLOR_CHOOSER_DIALOG (
+          gtk_color_chooser_dialog_new (
+            str, parent));
+      gtk_color_chooser_set_rgba (
+        GTK_COLOR_CHOOSER (dialog),
+        &track->color);
+      gtk_color_chooser_set_use_alpha (
+        GTK_COLOR_CHOOSER (dialog), false);
+      g_free (str);
+    }
+  else if (region)
+    {
+      char * str =
+        g_strdup_printf (
+          _("%s color"), region->name);
+      dialog =
+        GTK_COLOR_CHOOSER_DIALOG (
+          gtk_color_chooser_dialog_new (
+            str, parent));
+    }
+  else if (sel)
+    {
+      Track * tr = sel->tracks[0];
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (tr), false);
+
+      dialog =
+        GTK_COLOR_CHOOSER_DIALOG (
+          gtk_color_chooser_dialog_new (
+            _("Track color"), parent));
+      gtk_color_chooser_set_rgba (
+        GTK_COLOR_CHOOSER (dialog),
+        &tr->color);
+      gtk_color_chooser_set_use_alpha (
+        GTK_COLOR_CHOOSER (dialog), false);
+    }
+
+  g_return_val_if_fail (dialog != NULL, false);
+
+  gtk_widget_add_css_class (
+    GTK_WIDGET (dialog),
+    "object-color-chooser-dialog");
+
+  int res =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   bool color_set = false;
   switch (res)
     {
@@ -79,30 +112,26 @@ object_color_chooser_dialog_widget_run (
   /* get selected color */
   GdkRGBA sel_color;
   gtk_color_chooser_get_rgba (
-    GTK_COLOR_CHOOSER (self), &sel_color);
+    GTK_COLOR_CHOOSER (dialog), &sel_color);
 
   if (color_set)
     {
-      if (self->track)
+      if (track)
         {
           /* get current object color */
-          GdkRGBA cur_color;
-          get_current_obj_color (self, &cur_color);
+          GdkRGBA cur_color = track->color;
 
           /* if changed, apply the change */
           if (!color_is_same (
                 &sel_color, &cur_color))
             {
               track_set_color (
-                self->track, &sel_color, F_UNDOABLE,
+                track, &sel_color, F_UNDOABLE,
                 F_PUBLISH_EVENTS);
             }
         }
-      else if (self->tracklist_selections)
+      else if (sel)
         {
-          TracklistSelections * sel =
-            self->tracklist_selections;
-
           GError * err = NULL;
           bool ret =
             tracklist_selections_action_perform_edit_color (
@@ -115,89 +144,8 @@ object_color_chooser_dialog_widget_run (
             }
         }
     }
-  gtk_widget_destroy (GTK_WIDGET (self));
+
+  gtk_window_destroy (GTK_WINDOW (dialog));
 
   return color_set;
-}
-
-/**
- * Creates a new dialog.
- */
-ObjectColorChooserDialogWidget *
-object_color_chooser_dialog_widget_new_for_track (
-  Track * track)
-{
-  g_return_val_if_fail (IS_TRACK (track), NULL);
-
-  char * str =
-    g_strdup_printf (_("%s color"), track->name);
-  ObjectColorChooserDialogWidget * self =
-    g_object_new (
-      OBJECT_COLOR_CHOOSER_DIALOG_WIDGET_TYPE,
-      "title", str,
-      "rgba", &track->color,
-      "use-alpha", false,
-      NULL);
-  g_free (str);
-
-  self->track = track;
-  g_warn_if_fail (IS_TRACK (self->track));
-
-  return self;
-}
-
-/**
- * Creates a new dialog.
- */
-ObjectColorChooserDialogWidget *
-object_color_chooser_dialog_widget_new_for_tracklist_selections (
-  TracklistSelections * sel)
-{
-  Track * track = sel->tracks[0];
-  g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (track), NULL);
-  ObjectColorChooserDialogWidget * self =
-    g_object_new (
-      OBJECT_COLOR_CHOOSER_DIALOG_WIDGET_TYPE,
-      "title", _("Track color"),
-      "rgba", &track->color,
-      "use-alpha", false,
-      NULL);
-
-  self->tracklist_selections = sel;
-
-  return self;
-}
-
-/**
- * Creates a new dialog.
- */
-ObjectColorChooserDialogWidget *
-object_color_chooser_dialog_widget_new_for_region (
-  ZRegion * region)
-{
-  ObjectColorChooserDialogWidget * self =
-    g_object_new (
-      OBJECT_COLOR_CHOOSER_DIALOG_WIDGET_TYPE,
-      "title", _("Region color"),
-      NULL);
-
-  self->region = region;
-
-  return self;
-}
-
-static void
-object_color_chooser_dialog_widget_class_init (
-  ObjectColorChooserDialogWidgetClass * _klass)
-{
-  /*GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);*/
-}
-
-static void
-object_color_chooser_dialog_widget_init (
-  ObjectColorChooserDialogWidget * self)
-{
-  z_gtk_widget_add_style_class (
-    GTK_WIDGET (self), "object-color-chooser-dialog");
 }

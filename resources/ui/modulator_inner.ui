@@ -1,82 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
 <interface>
-  <requires lib="gtk+" version="3.22"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="ModulatorInnerWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkToolbar" id="toolbar">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="icon_size">2</property>
+      <object class="GtkBox" id="toolbar">
+        <style>
+          <class name="toolbar"/>
+        </style>
+        <property name="can_focus">0</property>
         <child>
-          <object class="GtkToggleToolButton"
-            id="show_hide_ui_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+          <object class="GtkToggleButton" id="show_hide_ui_btn">
+            <property name="can_focus">0</property>
             <property name="icon_name">window</property>
             <property name="tooltip_text" translatable="yes">Show/hide UI</property>
             <signal name="toggled" handler="on_show_hide_ui_toggled" object="ModulatorInnerWidget" swapped="no"/>
           </object>
         </child>
         <child>
-          <object class="GtkToolItem">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="homogeneous">False</property>
-          </packing>
+          <object class="GtkBox"/>
         </child>
         <child>
-          <object class="GtkToolButton" id="delete_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+          <object class="GtkButton" id="delete_btn">
+            <property name="can_focus">0</property>
             <property name="icon_name">edit-delete</property>
             <property name="tooltip_text" translatable="yes">Delete</property>
             <signal name="clicked" handler="on_delete_clicked" object="ModulatorInnerWidget" swapped="no"/>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkScrolledWindow" id="content_scroll">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="vexpand">True</property>
+        <property name="focusable">1</property>
+        <property name="vexpand">1</property>
         <property name="hscrollbar_policy">never</property>
-        <property name="shadow_type">in</property>
-        <child>
+        <property name="child">
           <object class="GtkViewport">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
+            <property name="child">
               <object class="GtkBox" id="content_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">4</property>
                 <child>
                   <object class="GtkBox" id="controls_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="margin_start">1</property>
                     <property name="margin_end">1</property>
                     <property name="margin_top">3</property>
@@ -92,16 +57,9 @@
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="waveforms_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="margin_start">1</property>
                     <property name="margin_top">2</property>
                     <property name="orientation">vertical</property>
@@ -116,22 +74,12 @@
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
-        </child>
+        </property>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
   </template>
 </interface>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,26 +41,27 @@ static int other_color_set = 0;
 /**
  * Draws the color picker.
  */
-static bool
+static void
 midi_activity_bar_draw_cb (
-  GtkWidget *       widget,
-  cairo_t *         cr,
-  MidiActivityBarWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  MidiActivityBarWidget * self =
+    Z_MIDI_ACTIVITY_BAR_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GdkRGBA color;
 
   if (!PROJECT || !AUDIO_ENGINE)
     {
-      return false;
+      return;
     }
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -133,8 +134,8 @@ midi_activity_bar_draw_cb (
                      MAB_ANIMATION_FLASH)
             {
               other_color.alpha =
-                1.0 -
-                (double) time_diff / MAX_TIME;
+                1.f -
+                (float) time_diff / (float) MAX_TIME;
               gdk_cairo_set_source_rgba (
                 cr, &other_color);
               cairo_rectangle (
@@ -143,8 +144,6 @@ midi_activity_bar_draw_cb (
           cairo_fill (cr);
         }
     }
-
-  return FALSE;
 }
 
 static int
@@ -182,9 +181,10 @@ midi_activity_bar_widget_setup_track (
   self->type = MAB_TYPE_TRACK;
   self->draw_border = 0;
 
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (midi_activity_bar_draw_cb), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    midi_activity_bar_draw_cb,
+    self, NULL);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
@@ -203,9 +203,10 @@ midi_activity_bar_widget_setup_engine (
   self->type = MAB_TYPE_ENGINE;
   self->draw_border = 1;
 
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (midi_activity_bar_draw_cb), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    midi_activity_bar_draw_cb,
+    self, NULL);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),

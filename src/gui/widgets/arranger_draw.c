@@ -46,6 +46,7 @@
 #include "utils/color.h"
 #include "utils/debug.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/object_pool.h"
 #include "utils/objects.h"
@@ -128,6 +129,7 @@ static void
 draw_arranger_object (
   ArrangerWidget * self,
   ArrangerObject * obj,
+  GtkSnapshot *  snapshot,
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
@@ -170,7 +172,7 @@ draw_arranger_object (
       if (rect_hit_or_region && should_be_visible)
         {
           arranger_object_draw (
-            obj, self, cr, rect);
+            obj, self, snapshot, cr, rect);
         }
     }
 }
@@ -254,7 +256,7 @@ draw_timeline_bg (
       double full_track_height =
         track_get_full_visible_height (track);
 
-      gint track_start_offset;
+      double track_start_offset;
       gtk_widget_translate_coordinates (
         tw_widget,
         GTK_WIDGET (
@@ -264,7 +266,7 @@ draw_timeline_bg (
         0, 0, NULL, &track_start_offset);
 
       line_y =
-        track_start_offset +
+        (int) track_start_offset +
         (int) full_track_height;
 
       if (line_y >= rect->y &&
@@ -991,36 +993,37 @@ draw_range (
     }
 }
 
-gboolean
-arranger_draw_cb (
-  GtkWidget *      widget,
-  cairo_t *        cr,
-  ArrangerWidget * self)
+void
+arranger_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
 {
-  gint64 start_time = g_get_monotonic_time ();
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (widget);
+  GtkScrolledWindow * scroll =
+    arranger_widget_get_scrolled_window (self);
+  graphene_rect_t visible_rect;
+  z_gtk_scrolled_window_get_visible_rect (
+    scroll, &visible_rect);
+  GdkRectangle visible_rect_gdk;
+  z_gtk_graphene_rect_t_to_gdk_rectangle (
+    &visible_rect_gdk, &visible_rect);
 
-#if 0
-  if (!self->dummy_surface)
-    {
-      self->dummy_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-            CAIRO_CONTENT_COLOR_ALPHA,
-            1, 1);
-    }
-#endif
+  gint64 start_time = g_get_monotonic_time ();
 
   RulerWidget * ruler =
     arranger_widget_get_ruler (self);
   if (ruler->px_per_bar < 2.0)
-    return FALSE;
+    return;
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot, &visible_rect);
 
   if (self->first_draw)
     {
       self->first_draw = false;
 
-      GtkScrolledWindow * scroll =
-        arranger_widget_get_scrolled_window (self);
       GtkAdjustment * hadj =
         gtk_scrolled_window_get_hadjustment (
           scroll);
@@ -1051,35 +1054,34 @@ arranger_draw_cb (
       gtk_adjustment_set_value (vadj, new_y);
     }
 
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr, &rect);
-
   if (self->redraw ||
-      !gdk_rectangle_equal (
-         &rect, &self->last_rect))
+      !graphene_rect_equal (
+         &visible_rect, &self->last_rect))
     {
       /* skip drawing if rectangle too large */
-      if (rect.width > 10000 ||
-          rect.height > 10000)
+      if (visible_rect.size.width > 10000 ||
+          visible_rect.size.height > 10000)
         {
           g_warning (
             "skipping draw - rectangle too large");
-          return false;
+          cairo_destroy (cr);
+          return;
         }
 
       /*g_message (*/
         /*"redrawing arranger in rect: "*/
         /*"(%d, %d) width: %d height %d)",*/
         /*rect.x, rect.y, rect.width, rect.height);*/
-      self->last_rect = rect;
+      self->last_rect = visible_rect;
 
       GtkStyleContext *context =
         gtk_widget_get_style_context (widget);
 
       z_cairo_reset_caches (
         &self->cached_cr,
-        &self->cached_surface, rect.width,
-        rect.height, cr);
+        &self->cached_surface,
+        visible_rect_gdk.width,
+        visible_rect_gdk.height, cr);
 
       cairo_antialias_t antialias =
         cairo_get_antialias (self->cached_cr);
@@ -1091,7 +1093,8 @@ arranger_draw_cb (
 
       gtk_render_background (
         context, self->cached_cr, 0, 0,
-        rect.width, rect.height);
+        visible_rect.size.width,
+        visible_rect.size.height);
 
       /* draw loop background */
       if (TRANSPORT->loop)
@@ -1122,27 +1125,27 @@ arranger_draw_cb (
 
           /* if transport loop start is within the
            * screen */
-          if (start_px > rect.x &&
-              start_px <= rect.x + rect.width)
+          if (start_px > visible_rect.origin.x &&
+              start_px <= visible_rect.origin.x + visible_rect.size.width)
             {
               /* draw the loop start line */
               double x =
-                (start_px - rect.x) + 1.0;
+                (start_px - visible_rect.origin.x) + 1.0;
               cairo_rectangle (
                 self->cached_cr,
-                (int) x, 0, 2, rect.height);
+                (int) x, 0, 2, visible_rect.size.height);
               cairo_fill (self->cached_cr);
             }
           /* if transport loop end is within the
            * screen */
-          if (end_px > rect.x &&
-              end_px < rect.x + rect.width)
+          if (end_px > visible_rect.origin.x &&
+              end_px < visible_rect.origin.x + visible_rect.size.width)
             {
               double x =
-                (end_px - rect.x) - 1.0;
+                (end_px - visible_rect.origin.x) - 1.0;
               cairo_rectangle (
                 self->cached_cr,
-                (int) x, 0, 2, rect.height);
+                (int) x, 0, 2, visible_rect.size.height);
               cairo_fill (self->cached_cr);
             }
 
@@ -1150,19 +1153,20 @@ arranger_draw_cb (
           cairo_set_source_rgba (
             self->cached_cr, 0, 0.9, 0.7, 0.02);
           double loop_start_local_x =
-            MAX (0, start_px - rect.x);
+            MAX (0, start_px - visible_rect.origin.x);
           cairo_rectangle (
             self->cached_cr,
             (int) loop_start_local_x, 0,
-            (int) (end_px - MAX (rect.x, start_px)),
-            rect.height);
+            (int) (end_px - MAX (visible_rect.origin.x, start_px)),
+            visible_rect.size.height);
           cairo_fill (self->cached_cr);
         }
 
       /* --- handle vertical drawing --- */
 
       draw_vertical_lines (
-        self, ruler, self->cached_cr, &rect);
+        self, ruler, self->cached_cr,
+        &visible_rect_gdk);
 
       /* draw range */
       int range_first_px, range_second_px;
@@ -1231,35 +1235,35 @@ arranger_draw_cb (
         {
           draw_range (
             self, range_first_px, range_second_px,
-            &rect, self->cached_cr);
+            &visible_rect_gdk, self->cached_cr);
         }
 
       if (self->type == TYPE (TIMELINE))
         {
           draw_timeline_bg (
-            self, self->cached_cr, &rect);
+            self, self->cached_cr, &visible_rect_gdk);
         }
       else if (self->type == TYPE (MIDI))
         {
           draw_midi_bg (
-            self, self->cached_cr, &rect);
+            self, self->cached_cr, &visible_rect_gdk);
         }
       else if (self->type == TYPE (MIDI_MODIFIER))
         {
           draw_velocity_bg (
-            self, self->cached_cr, &rect);
+            self, self->cached_cr, &visible_rect_gdk);
         }
       else if (self->type == TYPE (AUDIO))
         {
           draw_audio_bg (
-            self, self->cached_cr, &rect);
+            self, self->cached_cr, &visible_rect_gdk);
         }
 
       /* draw each arranger object */
       ArrangerObject * objs[2000];
       int num_objs;
       arranger_widget_get_hit_objects_in_rect (
-        self, ARRANGER_OBJECT_TYPE_ALL, &rect,
+        self, ARRANGER_OBJECT_TYPE_ALL, &visible_rect_gdk,
         objs, &num_objs);
 
       /*g_message (*/
@@ -1269,29 +1273,31 @@ arranger_draw_cb (
       for (int j = 0; j < num_objs; j++)
         {
           draw_arranger_object (
-            self, objs[j], self->cached_cr,
-            &rect);
+            self, objs[j], snapshot, self->cached_cr,
+            &visible_rect_gdk);
         }
 
       /* draw dnd highlight */
       draw_highlight (
-        self, self->cached_cr, &rect);
+        self, self->cached_cr, &visible_rect_gdk);
 
       /* draw selections */
       draw_selections (
-        self, self->cached_cr, &rect);
+        self, self->cached_cr, &visible_rect_gdk);
 
-      draw_playhead (self, self->cached_cr, &rect);
+      draw_playhead (self, self->cached_cr, &visible_rect_gdk);
 
       cairo_set_antialias (
         self->cached_cr, antialias);
       cairo_set_tolerance (self->cached_cr, tolerance);
 
-      self->redraw = false;
+      /*self->redraw = false;*/
+      self->redraw = true;
     }
 
   cairo_set_source_surface (
-    cr, self->cached_surface, rect.x, rect.y);
+    cr, self->cached_surface,
+    visible_rect_gdk.x, visible_rect_gdk.y);
   cairo_paint (cr);
 
   gint64 end_time = g_get_monotonic_time ();
@@ -1307,7 +1313,7 @@ arranger_draw_cb (
     arranger_widget_get_type_str (self));
 #endif
 
-  return FALSE;
+  cairo_destroy (cr);
 }
 
 void *
@@ -1549,7 +1555,7 @@ arranger_draw_thread_func (
   for (int j = 0; j < num_objs; j++)
     {
       draw_arranger_object (
-        self, objs[j], task->cr,
+        self, objs[j], snapshot, task->cr,
         &rect);
     }
 

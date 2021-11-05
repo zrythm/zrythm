@@ -1,376 +1,193 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.24"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="MonitorSectionWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
     <property name="spacing">8</property>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="halign">center</property>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <property name="halign">center</property>
             <child>
               <object class="GtkLabel" id="soloed_tracks_lbl">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="label">label</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkButton" id="soloing_btn">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
                     <property name="icon-name">unsolo</property>
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <child>
               <object class="GtkLabel" id="muted_tracks_lbl">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="label">label</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkButton" id="muting_btn">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
                     <property name="icon-name">unmute</property>
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <child>
               <object class="GtkLabel" id="listened_tracks_lbl">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="label">label</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkButton" id="listening_btn">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
                     <property name="icon-name">unlisten</property>
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
         </child>
         <style>
           <class name="linked"/>
         </style>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="homogeneous">True</property>
+        <property name="homogeneous">1</property>
         <child>
           <object class="GtkBox" id="mute_level_box">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="listen_level_box">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="dim_level_box">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="monitor_buttons_box">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="margin-start">2</property>
         <property name="margin-end">2</property>
         <property name="spacing">2</property>
-        <property name="homogeneous">True</property>
+        <property name="homogeneous">1</property>
         <child>
           <object class="GtkToggleButton" id="mono_toggle">
             <property name="label">togglebutton</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
             <property name="tooltip-text">Sum to mono</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkToggleButton" id="dim_toggle">
             <property name="label">togglebutton</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
             <property name="tooltip-text">Dim output</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkToggleButton" id="mute_toggle">
             <property name="label">togglebutton</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
             <property name="tooltip-text">Mute output</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="monitor_level_box">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <property name="spacing">2</property>
             <child>
               <object class="GtkLabel" id="l_label">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">L</property>
                 <property name="width-chars">3</property>
                 <property name="tooltip-text">Left output</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox" id="left_output_box">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <property name="hexpand">1</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <placeholder/>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <property name="spacing">2</property>
             <child>
               <object class="GtkLabel" id="r_label">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">R</property>
                 <property name="width-chars">3</property>
                 <property name="tooltip-text">Right output</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox" id="right_output_box">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <property name="hexpand">1</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <placeholder/>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">4</property>
-      </packing>
     </child>
   </template>
 </interface>

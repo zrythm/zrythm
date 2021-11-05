@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   PianoRollKeysWidget,
   piano_roll_keys_widget,
   Z, PIANO_ROLL_KEYS_WIDGET,
-  GtkDrawingArea)
+  GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -51,7 +51,7 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _PianoRollKeysWidget
 {
-  GtkDrawingArea       parent_instance;
+  GtkWidget            parent_instance;
 
   /** Start key pressed. */
   int                  start_key;
@@ -92,7 +92,7 @@ typedef struct _PianoRollKeysWidget
   /** Pixel height of all keys combined. */
   double               total_key_px;
 
-  GtkGestureMultiPress * multipress;
+  GtkGestureClick * multipress;
 
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;

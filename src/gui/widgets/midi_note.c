@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,6 +40,7 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/piano_roll_keys.h"
+#include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -312,22 +313,22 @@ midi_note_get_adjusted_color (
   GdkRGBA max_vel_color = *color;
   color_brighten (
     &max_vel_color,
-    color_get_darkness (color) * 0.1);
+    color_get_darkness (color) * 0.1f);
   GdkRGBA grey = *color;
   color_darken (
     &grey,
-    color_get_brightness (color) * 0.6);
-  double vel_multiplier =
-    (double) self->vel->vel / 127.0;
+    color_get_brightness (color) * 0.6f);
+  float vel_multiplier =
+    self->vel->vel / 127.f;
   color_morph (
     &grey, &max_vel_color, vel_multiplier, color);
 
   /* also morph into grey */
-  grey.red = 0.5;
-  grey.green = 0.5;
-  grey.blue = 0.5;
+  grey.red = 0.5f;
+  grey.green = 0.5f;
+  grey.blue = 0.5f;
   color_morph (
-    &grey, color, MIN (vel_multiplier + 0.4, 1.0),
+    &grey, color, MIN (vel_multiplier + 0.4f, 1.f),
     color);
 
   /* draw notes of main region */

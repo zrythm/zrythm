@@ -1,166 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
-<!--
-
-  Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="PanelFileBrowserWidget" parent="GtkPaned">
-    <property name="visible">True</property>
-    <property name="can-focus">True</property>
-    <property name="orientation">vertical</property>
-    <property name="position">220</property>
-    <property name="position-set">True</property>
-    <property name="wide-handle">True</property>
+  <requires lib="gtk" version="4.0"/>
+  <template class="PanelFileBrowserWidget" parent="GtkBox">
     <child>
-      <object class="GtkBox" id="browser_top">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
+      <object class="GtkPaned" id="paned">
+        <property name="shrink-end-child">0</property>
+        <property name="resize-end-child">0</property>
+        <property name="shrink-start-child">0</property>
+        <property name="resize-start-child">0</property>
+        <property name="focusable">1</property>
         <property name="orientation">vertical</property>
+        <property name="position">220</property>
+        <property name="position-set">1</property>
+        <property name="wide-handle">1</property>
         <child>
-          <object class="GtkBox" id="bookmarks_label_box">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+          <object class="GtkBox" id="browser_top">
+            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="icon-name">favorite</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="padding">2</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Bookmarks</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow" id="bookmarks_scroll">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="vexpand">True</property>
-            <property name="shadow-type">in</property>
-            <child>
-              <object class="GtkTreeView" id="bookmarks_tree_view">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection"/>
+              <object class="GtkBox" id="bookmarks_label_box">
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">favorite</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">Bookmarks</property>
+                  </object>
                 </child>
               </object>
             </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="resize">False</property>
-        <property name="shrink">False</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox" id="browser_bot">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="FileBrowserFiltersWidget" id="filters_toolbar">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="file_info">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <attributes>
-              <attribute name="variant" value="small-caps"/>
-              <attribute name="stretch" value="condensed"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack-type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow" id="files_scroll">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="shadow-type">in</property>
             <child>
-              <object class="GtkTreeView" id="files_tree_view">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="vexpand">True</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection"/>
-                </child>
+              <object class="GtkScrolledWindow" id="bookmarks_scroll">
+                <property name="focusable">1</property>
+                <property name="vexpand">1</property>
+                <property name="child">
+                  <object class="GtkTreeView" id="bookmarks_tree_view">
+                    <property name="focusable">1</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection"/>
+                    </child>
+                  </object>
+                </property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
-          <object class="FileAuditionerControlsWidget" id="auditioner_controls">
-            <property name="visible">True</property>
+          <object class="GtkBox" id="browser_bot">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="FileBrowserFiltersWidget" id="filters_toolbar">
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="file_info">
+                <attributes>
+                  <attribute name="variant" value="small-caps"></attribute>
+                  <attribute name="stretch" value="condensed"></attribute>
+                </attributes>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="files_scroll">
+                <property name="focusable">1</property>
+                <property name="child">
+                  <object class="GtkTreeView" id="files_tree_view">
+                    <property name="focusable">1</property>
+                    <property name="vexpand">1</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection"/>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="FileAuditionerControlsWidget" id="auditioner_controls">
+              </object>
+            </child>
           </object>
         </child>
       </object>
-      <packing>
-        <property name="resize">False</property>
-        <property name="shrink">False</property>
-      </packing>
     </child>
   </template>
 </interface>

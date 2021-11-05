@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (
   PluginBrowserWidget,
   plugin_browser_widget,
   Z, PLUGIN_BROWSER_WIDGET,
-  GtkPaned)
+  GtkBox)
 
 typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
 typedef struct PluginCollection PluginCollection;
@@ -78,7 +78,9 @@ typedef enum
  */
 typedef struct _PluginBrowserWidget
 {
-  GtkPaned             parent_instance;
+  GtkBox               parent_instance;
+
+  GtkPaned *           paned;
 
   /** The stack switcher. */
   GtkStackSwitcher *   stack_switcher;
@@ -107,12 +109,12 @@ typedef struct _PluginBrowserWidget
 
   /* The toolbar to toggle visibility of
    * modulators/effects/instruments/midi modifiers */
-  GtkToolbar *         plugin_toolbar;
+  GtkBox *             plugin_toolbar;
 
-  GtkToggleToolButton * toggle_instruments;
-  GtkToggleToolButton * toggle_effects;
-  GtkToggleToolButton * toggle_modulators;
-  GtkToggleToolButton * toggle_midi_modifiers;
+  GtkToggleButton * toggle_instruments;
+  GtkToggleButton * toggle_effects;
+  GtkToggleButton * toggle_modulators;
+  GtkToggleButton * toggle_midi_modifiers;
 
   /** A label to show info about the currently
    * selected Plugin. */

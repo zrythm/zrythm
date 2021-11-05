@@ -44,7 +44,7 @@
  */
 void
 color_brighten (
-  GdkRGBA * src, double val);
+  GdkRGBA * src, float val);
 
 /**
  * Brightens the color by the default amount.
@@ -58,7 +58,7 @@ color_brighten_default (
  */
 void
 color_darken (
-  GdkRGBA * src, double val);
+  GdkRGBA * src, float val);
 
 /**
  * Darkens the color by the default amount.
@@ -115,11 +115,11 @@ color_get_opposite (
   GdkRGBA * src,
   GdkRGBA * dest);
 
-double
+float
 color_get_brightness (
   GdkRGBA * color);
 
-double
+float
 color_get_darkness (
   GdkRGBA * color);
 
@@ -134,7 +134,7 @@ void
 color_morph (
   GdkRGBA * a,
   GdkRGBA * b,
-  double    amt,
+  float     amt,
   GdkRGBA * result);
 
 /**

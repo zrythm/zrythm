@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,11 +24,11 @@
 
 #define PROJECT_TOOLBAR_WIDGET_TYPE \
   (project_toolbar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ProjectToolbarWidget,
-                      project_toolbar_widget,
-                      Z,
-                      PROJECT_TOOLBAR_WIDGET,
-                      GtkToolbar)
+G_DECLARE_FINAL_TYPE (
+  ProjectToolbarWidget,
+  project_toolbar_widget,
+  Z, PROJECT_TOOLBAR_WIDGET,
+  GtkBox)
 
 /**
  * \file
@@ -39,13 +39,13 @@ G_DECLARE_FINAL_TYPE (ProjectToolbarWidget,
 
 typedef struct _ProjectToolbarWidget
 {
-  GtkToolbar         parent_instance;
-  GtkToolButton *    new;
-  GtkToolButton *     save_btn;
-  GtkToolButton *     save_as_btn;
-  GtkToolButton *    open;
-  GtkToolButton *    export_as;
-  GtkToolButton *    export_graph;
+  GtkBox         parent_instance;
+  GtkButton *    new;
+  GtkButton *     save_btn;
+  GtkButton *     save_as_btn;
+  GtkButton *    open;
+  GtkButton *    export_as;
+  GtkButton *    export_graph;
 } ProjectToolbarWidget;
 
 #endif

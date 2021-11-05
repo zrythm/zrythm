@@ -32,14 +32,14 @@
   (editable_label_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   EditableLabelWidget, editable_label_widget,
-  Z, EDITABLE_LABEL_WIDGET, GtkEventBox)
+  Z, EDITABLE_LABEL_WIDGET, GtkBox)
 
 /**
  * A label that shows a popover when clicked.
  */
 typedef struct _EditableLabelWidget
 {
-  GtkEventBox     parent_instance;
+  GtkBox     parent_instance;
 
   /** The label. */
   GtkLabel *      label;
@@ -61,7 +61,7 @@ typedef struct _EditableLabelWidget
   int               is_temp;
 
   /** Multipress for the label. */
-  GtkGestureMultiPress * mp;
+  GtkGestureClick * mp;
 } EditableLabelWidget;
 
 /**

@@ -67,7 +67,7 @@ get_snapped_control_value (
 
 static void
 on_show_hide_ui_toggled (
-  GtkToggleToolButton *  btn,
+  GtkToggleButton *  btn,
   ModulatorInnerWidget * self)
 {
   Plugin * modulator = get_modulator (self);
@@ -80,7 +80,7 @@ on_show_hide_ui_toggled (
 
 static void
 on_delete_clicked (
-  GtkToolButton *        btn,
+  GtkButton *        btn,
   ModulatorInnerWidget * self)
 {
   MixerSelections * sel = mixer_selections_new ();
@@ -124,7 +124,7 @@ on_automate_clicked (
   PortConnectionsPopoverWidget * popover =
     port_connections_popover_widget_new (
       GTK_WIDGET (btn), self->ports[index]);
-  gtk_widget_show_all (GTK_WIDGET (popover));
+  gtk_popover_present (GTK_POPOVER (popover));
 
   /* TODO update label on closed */
 #if 0
@@ -142,7 +142,7 @@ modulator_inner_widget_refresh (
   g_signal_handlers_block_by_func (
     self->show_hide_ui_btn, on_show_hide_ui_toggled,
     self);
-  gtk_toggle_tool_button_set_active (
+  gtk_toggle_button_set_active (
     self->show_hide_ui_btn, modulator->visible);
   g_signal_handlers_unblock_by_func (
     self->show_hide_ui_btn, on_show_hide_ui_toggled,
@@ -150,85 +150,42 @@ modulator_inner_widget_refresh (
 }
 
 static void
-on_view_info_activate (
-  GtkMenuItem * menuitem,
-  Port *        port)
-{
-  PortInfoDialogWidget * dialog =
-    port_info_dialog_widget_new (port);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
-on_bind_midi_cc (
-  GtkMenuItem * menuitem,
-  Port *        port)
-{
-  BindCcDialogWidget * dialog =
-    bind_cc_dialog_widget_new (port, true);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static void
-on_reset_control (
-  GtkMenuItem * menuitem,
-  Port *        port)
-{
-  GError * err = NULL;
-  bool ret =
-    port_action_perform_reset_control (
-      &port->id, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, _("Failed to reset %s"),
-        port->id.label);
-    }
-}
-
-static void
 on_knob_right_click (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  Port *                port)
+  GtkGestureClick * gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  Port *            port)
 {
   if (n_press != 1)
     return;
 
-  GtkWidget *menu, *menuitem;
-  menu = gtk_menu_new();
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
+  char tmp[600];
+  sprintf (
+    tmp, "app.reset-control::%p", port);
   menuitem =
-    gtk_menu_item_new_with_label (_("Reset"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_reset_control), port);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("Reset"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
 
+  sprintf (
+    tmp, "app.bind-midi-cc::%p", port);
   menuitem =
-    GTK_WIDGET (CREATE_MIDI_LEARN_MENU_ITEM);
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_bind_midi_cc), port);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  g_menu_append_item (menu, menuitem);
 
+  sprintf (
+    tmp, "app.port-view-info::%p", port);
   menuitem =
-    gtk_menu_item_new_with_label (_("View info"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_view_info_activate), port);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("View info"), NULL, tmp);
+  g_menu_append_item (menu, menuitem);
 
-  gtk_widget_show_all (menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    NULL, menu);
 }
 
 /**
@@ -279,21 +236,23 @@ modulator_inner_widget_new (
         self->knobs, self->num_knobs,
         knob_with_name);
 
-      gtk_container_add (
-        GTK_CONTAINER (self->controls_box),
+      gtk_box_append (
+        GTK_BOX (self->controls_box),
         GTK_WIDGET (knob_with_name));
 
       /* add context menu */
-      GtkGestureMultiPress * mp =
-        GTK_GESTURE_MULTI_PRESS (
-          gtk_gesture_multi_press_new (
-            GTK_WIDGET (knob_with_name)));
+      GtkGestureClick * mp =
+        GTK_GESTURE_CLICK (
+          gtk_gesture_click_new ());
       gtk_gesture_single_set_button (
         GTK_GESTURE_SINGLE (mp),
         GDK_BUTTON_SECONDARY);
       g_signal_connect (
         G_OBJECT (mp), "pressed",
         G_CALLBACK (on_knob_right_click), port);
+      gtk_widget_add_controller (
+        GTK_WIDGET (knob_with_name),
+        GTK_EVENT_CONTROLLER (mp));
     }
 
   for (int i = 0; i < modulator->num_out_ports; i++)
@@ -320,15 +279,16 @@ modulator_inner_widget_new (
       gtk_widget_set_visible (
         GTK_WIDGET (self->waveform_overlays[index]),
         true);
-      gtk_container_add (
-        GTK_CONTAINER (
+      gtk_overlay_set_child (
+        GTK_OVERLAY (
           self->waveform_overlays[index]),
         GTK_WIDGET (self->waveforms[index]));
 
       /* add button for selecting automatable */
       self->waveform_automate_buttons[index] =
         GTK_BUTTON (
-          z_gtk_button_new_with_icon ("automate"));
+          gtk_button_new_from_icon_name (
+            "automate"));
       gtk_widget_set_visible (
         GTK_WIDGET (
           self->waveform_automate_buttons[index]),
@@ -351,8 +311,8 @@ modulator_inner_widget_new (
         "clicked",
         G_CALLBACK (on_automate_clicked), self);
 
-      gtk_container_add (
-        GTK_CONTAINER (self->waveforms_box),
+      gtk_box_append (
+        GTK_BOX (self->waveforms_box),
         GTK_WIDGET (self->waveform_overlays[index]));
 
       if (self->num_waveforms == 16)

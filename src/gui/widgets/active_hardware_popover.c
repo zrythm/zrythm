@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,7 @@
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -103,29 +104,25 @@ find_checkbutton (
   ActiveHardwarePopoverWidget * self,
   const char * label)
 {
-  GList *children, *iter;
-  GtkButton * chkbtn;
-
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self->controllers_box));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
+  for (GtkWidget * child =
+         gtk_widget_get_first_child (
+           GTK_WIDGET (self->controllers_box));
+       child != NULL;
+       child =
+         gtk_widget_get_next_sibling (child))
     {
-      if (!GTK_IS_CHECK_BUTTON (iter->data))
+      if (!GTK_IS_CHECK_BUTTON (child))
         continue;
 
-      chkbtn = GTK_BUTTON (iter->data);
-      if (!strcmp (gtk_button_get_label (chkbtn),
-                   label))
+      GtkButton * chkbtn = GTK_BUTTON (child);
+      if (string_is_equal (
+            gtk_button_get_label (chkbtn),
+            label))
         {
-          g_list_free (children);
           return GTK_WIDGET (chkbtn);
         }
     }
 
-  g_list_free (children);
   return NULL;
 }
 
@@ -141,8 +138,8 @@ setup (
   GtkWidget * chkbtn;
 
   /* remove pre-existing controllers */
-  z_gtk_container_destroy_all_children (
-    GTK_CONTAINER (self->controllers_box));
+  z_gtk_widget_destroy_all_children (
+    GTK_WIDGET (self->controllers_box));
 
   /* scan controllers and add them */
   get_controllers (
@@ -154,9 +151,8 @@ setup (
         gtk_check_button_new_with_label (
           controllers[i]);
       gtk_widget_set_visible (chkbtn, 1);
-      gtk_container_add (
-        GTK_CONTAINER (self->controllers_box),
-        chkbtn);
+      gtk_box_append (
+        self->controllers_box, chkbtn);
     }
 
   /* fetch saved controllers and tick them if they

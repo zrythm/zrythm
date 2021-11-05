@@ -530,8 +530,11 @@ if have_jack
     ]
 endif
 
+#gobject_dep = dependency (
+  #'gobject-2.0',
+  #fallback: ['glib', 'libgobject_dep'])
 glib_dep = dependency (
-  'glib-2.0', version: '>=2.64', required: false,
+  'glib-2.0', version: '>=2.66', required: false,
   static: all_static)
 if os_freebsd
   # force system glib on freebsd
@@ -602,6 +605,10 @@ test_cflags = [
   '-Wno-cast-function-type',
   '-Walloca',
   '-fno-common',
+  '-DLV2_UI__Gtk4UI="https://lv2plug.in/ns/extensions/ui#Gtk4UI"',
+  '-DZ_DND_STRING_PREFIX="ZrythmInternal::"',
+  '-DGDK_DISABLE_DEPRECATED',
+  '-DGTK_DISABLE_DEPRECATED',
   # dummy macro for extracting translatable strings
   # when we can't use gettext()
   '-D__(x)=x',
@@ -928,12 +935,21 @@ cairo_dep = dependency (
   default_options: [
     'zlib=enabled', 'tests=disabled'])
 
+pango_dep = dependency (
+  'pango', version: '>= 1.49.1',
+  fallback: ['pango', 'libpango_dep'],
+  default_options: ['introspection=disabled'])
+
 gdk_pixbuf_dep = dependency (
   'gdk-pixbuf-2.0',
   fallback: ['gdk-pixbuf', 'gdkpixbuf_dep'])
 gtk_dep = dependency (
-  'gtk+-3.0', version: '>=3.22',
-  fallback: ['gtk3', 'libgtk_dep'],
+  'gtk4', version: '>=4.5',
+  fallback: ['gtk4', 'libgtk_dep'],
+  default_options: [
+    'introspection=disabled',
+    'demos=false', 'build-examples=false',
+    'build-tests=false' ],
   static: all_static)
 min_version = '>=1.0.25'
 if get_option ('opus')
@@ -1043,14 +1059,12 @@ if (chromaprint_dep.found ())
 endif
 
 gtksource_dep = dependency (
-  'gtksourceview-4', required: false)
-if gtksource_dep.found()
-  cdata.set('HAVE_GTK_SOURCE_VIEW_4', 1)
-else
-  gtksource_dep = dependency (
-    'gtksourceview-3.0')
-  cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
-endif
+  'gtksourceview-5',
+  fallback: ['gtksourceview5', 'gtksource_dep'],
+  default_options: [
+    'vapi=false',
+    'introspection=disabled',
+    ])
 
 libcgraph_dep = dependency (
   'libcgraph',
@@ -1230,7 +1244,9 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 zrythm_deps = [
   glib_dep,
+  #gobject_dep,
   cairo_dep,
+  pango_dep,
   gtk_dep,
   gdk_pixbuf_dep,
   sndfile_dep,

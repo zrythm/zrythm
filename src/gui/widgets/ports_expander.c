@@ -365,7 +365,7 @@ ports_expander_widget_setup_plugin (
             gtk_label_new (group_name);
           gtk_label_set_xalign (
             GTK_LABEL (group_label), 0.f);
-          z_gtk_widget_add_style_class (
+          gtk_widget_add_css_class (
             group_label, "port-group-lbl");
           gtk_widget_set_visible (group_label, true);
           gtk_widget_set_margin_top (

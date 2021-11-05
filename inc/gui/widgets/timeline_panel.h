@@ -26,8 +26,6 @@
 #ifndef __GUI_WIDGETS_TIMELINE_PANEL_H__
 #define __GUI_WIDGETS_TIMELINE_PANEL_H__
 
-#include "gui/widgets/timeline_selection_info.h"
-
 #include <gtk/gtk.h>
 
 #define TIMELINE_PANEL_WIDGET_TYPE \
@@ -110,6 +108,9 @@ typedef struct _TimelinePanelWidget
 void
 timeline_panel_widget_setup (
   TimelinePanelWidget * self);
+
+TimelinePanelWidget *
+timeline_panel_widget_new (void);
 
 /**
  * Prepare for finalization.

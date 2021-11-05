@@ -17,12 +17,29 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Mixer widget.
+ */
+
 #ifndef __GUI_WIDGETS_MIXER_H__
 #define __GUI_WIDGETS_MIXER_H__
 
 #include "gui/widgets/main_window.h"
 
 #include <gtk/gtk.h>
+
+typedef struct _DragDestBoxWidget DragDestBoxWidget;
+typedef struct Channel Channel;
+typedef struct _ChannelSlotWidget ChannelSlotWidget;
+typedef struct Track Track;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define MIXER_WIDGET_TYPE \
   (mixer_widget_get_type ())
@@ -31,10 +48,6 @@ G_DECLARE_FINAL_TYPE (
   Z, MIXER_WIDGET, GtkBox)
 
 #define MW_MIXER MW_BOT_DOCK_EDGE->mixer
-
-typedef struct _DragDestBoxWidget DragDestBoxWidget;
-typedef struct Channel Channel;
-typedef struct _ChannelSlotWidget ChannelSlotWidget;
 
 typedef struct _MixerWidget
 {
@@ -89,5 +102,12 @@ mixer_widget_hard_refresh (MixerWidget * self);
  */
 void
 mixer_widget_soft_refresh (MixerWidget * self);
+
+MixerWidget *
+mixer_widget_new (void);
+
+/**
+ * @}
+ */
 
 #endif

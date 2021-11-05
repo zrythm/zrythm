@@ -41,14 +41,17 @@ typedef struct _FileBrowserFiltersWidget
   (panel_file_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PanelFileBrowserWidget, panel_file_browser_widget,
-  Z, PANEL_FILE_BROWSER_WIDGET, GtkPaned)
+  Z, PANEL_FILE_BROWSER_WIDGET, GtkBox)
 
 #define MW_PANEL_FILE_BROWSER \
   MW_RIGHT_DOCK_EDGE->file_browser
 
 typedef struct _PanelFileBrowserWidget
 {
-  GtkPaned             parent_instance;
+  GtkBox               parent_instance;
+
+  GtkPaned *           paned;
+
   GtkBox *             browser_top;
   GtkBox *             browser_bot;
 
@@ -74,6 +77,10 @@ typedef struct _PanelFileBrowserWidget
 
   bool                 first_draw;
 } PanelFileBrowserWidget;
+
+void
+panel_file_browser_refresh_bookmarks (
+  PanelFileBrowserWidget * self);
 
 PanelFileBrowserWidget *
 panel_file_browser_widget_new (void);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,9 +23,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ProjectToolbarWidget,
-               project_toolbar_widget,
-               GTK_TYPE_TOOLBAR)
+G_DEFINE_TYPE (
+  ProjectToolbarWidget, project_toolbar_widget,
+  GTK_TYPE_BOX)
 
 static void
 project_toolbar_widget_init (ProjectToolbarWidget * self)

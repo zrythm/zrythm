@@ -33,6 +33,7 @@
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
@@ -166,11 +167,11 @@ apply_plugin (
     pl->window, descr->name);
   gtk_window_set_icon_name (
     pl->window, "zrythm");
-  gtk_window_set_role (
-    pl->window, "plugin_ui");
+  /*gtk_window_set_role (*/
+    /*pl->window, "plugin_ui");*/
   gtk_window_set_modal (pl->window, true);
-  gtk_window_set_attached_to (
-    pl->window, GTK_WIDGET (MAIN_WINDOW));
+  /*gtk_window_set_attached_to (*/
+    /*pl->window, GTK_WIDGET (MAIN_WINDOW));*/
 
   /* add vbox for stacking elements */
   pl->vbox =
@@ -179,32 +180,34 @@ apply_plugin (
   GtkWidget * container =
     gtk_dialog_get_content_area (
       GTK_DIALOG (pl->window));
-  gtk_container_add (
-    GTK_CONTAINER (container),
+  gtk_box_append (
+    GTK_BOX (container),
     GTK_WIDGET (pl->vbox));
 
+#if 0
   /* add menu bar */
   plugin_gtk_build_menu (
     pl, GTK_WIDGET (pl->window),
     GTK_WIDGET (pl->vbox));
+#endif
 
   /* Create/show alignment to contain UI (whether
    * custom or generic) */
   pl->ev_box =
-    GTK_EVENT_BOX (gtk_event_box_new ());
-  gtk_box_pack_start (
-    pl->vbox, GTK_WIDGET (pl->ev_box),
-    TRUE, TRUE, 0);
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  gtk_box_append (
+    pl->vbox, GTK_WIDGET (pl->ev_box));
   gtk_widget_set_vexpand (
     GTK_WIDGET (pl->ev_box), true);
-  gtk_widget_show_all (GTK_WIDGET (pl->vbox));
 
   /* open */
   plugin_gtk_open_generic_ui (
     pl, F_NO_PUBLISH_EVENTS);
 
   ret =
-    gtk_dialog_run (GTK_DIALOG (pl->window));
+    z_gtk_dialog_run (
+      GTK_DIALOG (pl->window), false);
 
   Port * l_in = NULL;
   Port * r_in = NULL;

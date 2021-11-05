@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,11 +24,11 @@
 
 #define HELP_TOOLBAR_WIDGET_TYPE \
   (help_toolbar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (HelpToolbarWidget,
-                      help_toolbar_widget,
-                      Z,
-                      HELP_TOOLBAR_WIDGET,
-                      GtkToolbar)
+G_DECLARE_FINAL_TYPE (
+  HelpToolbarWidget,
+  help_toolbar_widget,
+  Z, HELP_TOOLBAR_WIDGET,
+  GtkBox)
 
 /**
  * \file
@@ -39,12 +39,12 @@ G_DECLARE_FINAL_TYPE (HelpToolbarWidget,
 
 typedef struct _HelpToolbarWidget
 {
-  GtkToolbar         parent_instance;
-  GtkToolButton *    chat;
-  GtkToolButton *    manual;
-  GtkToolButton *    shortcuts;
-  GtkToolButton *     donate_btn;
-  GtkToolButton *     report_a_bug_btn;
+  GtkBox         parent_instance;
+  GtkButton *    chat;
+  GtkButton *    manual;
+  GtkButton *    shortcuts;
+  GtkButton *     donate_btn;
+  GtkButton *     report_a_bug_btn;
 } HelpToolbarWidget;
 
 #endif

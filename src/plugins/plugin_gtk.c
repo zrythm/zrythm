@@ -42,6 +42,7 @@
 #include "audio/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/file_chooser_button.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2_plugin.h"
@@ -67,12 +68,16 @@
 
 #define MIN_SCALE_WIDTH 120
 
+#undef Bool
+
+#if 0
 static void
 on_quit_activate (
-  GtkWidget* widget, gpointer data)
+  GtkWidget * widget,
+  gpointer    data)
 {
-  GtkWidget* window = (GtkWidget*)data;
-  gtk_widget_destroy (window);
+  GtkWindow * window = GTK_WINDOW (data);
+  gtk_window_destroy (window);
 }
 
 static void
@@ -125,6 +130,7 @@ on_save_activate (
   gtk_widget_destroy(dialog);
 #endif
 }
+#endif
 
 void
 plugin_gtk_set_window_title (
@@ -142,6 +148,7 @@ plugin_gtk_set_window_title (
   g_free (title);
 }
 
+#if 0
 void
 plugin_gtk_on_preset_activate (
   GtkWidget* widget,
@@ -194,7 +201,9 @@ plugin_gtk_on_preset_destroy (
 {
   free (record);
 }
+#endif
 
+#if 0
 PluginGtkPresetMenu*
 plugin_gtk_preset_menu_new (
   const char* label)
@@ -262,8 +271,8 @@ finish_menu (PluginGtkPresetMenu* menu)
 
 void
 plugin_gtk_rebuild_preset_menu (
-  Plugin* plugin,
-  GtkContainer* pset_menu)
+  Plugin *    plugin,
+  GtkWidget * pset_menu)
 {
   // Clear current menu
   plugin->active_preset_item = NULL;
@@ -294,6 +303,7 @@ plugin_gtk_rebuild_preset_menu (
   finish_menu (&menu);
   gtk_widget_show_all (GTK_WIDGET(pset_menu));
 }
+#endif
 
 void
 plugin_gtk_on_save_preset_activate (
@@ -321,8 +331,12 @@ plugin_gtk_on_save_preset_activate (
       char * homedir =
         g_build_filename (
           g_get_home_dir(), NULL);
+      GFile * homedir_file =
+        g_file_new_for_path (homedir);
       gtk_file_chooser_set_current_folder (
-        GTK_FILE_CHOOSER (dialog), homedir);
+        GTK_FILE_CHOOSER (dialog), homedir_file,
+        NULL);
+      g_object_unref (homedir_file);
       g_free (homedir);
 #else
       g_return_if_reached ();
@@ -333,8 +347,12 @@ plugin_gtk_on_save_preset_activate (
       char * dot_lv2 =
         g_build_filename (
           g_get_home_dir(), ".lv2", NULL);
+      GFile * dot_lv2_file =
+        g_file_new_for_path (dot_lv2);
       gtk_file_chooser_set_current_folder (
-        GTK_FILE_CHOOSER (dialog), dot_lv2);
+        GTK_FILE_CHOOSER (dialog), dot_lv2_file,
+        NULL);
+      g_object_unref (dot_lv2_file);
       g_free (dot_lv2);
     }
 
@@ -361,28 +379,28 @@ plugin_gtk_on_save_preset_activate (
         gtk_label_new (_("URI (Optional):"));
       uri_entry = gtk_entry_new();
 
-      gtk_box_pack_start (
-        box, uri_label, FALSE, TRUE, 2);
-      gtk_box_pack_start (
-        box, uri_entry, TRUE, TRUE, 2);
-      gtk_box_pack_start (
-        GTK_BOX(content), GTK_WIDGET(box),
-        FALSE, FALSE, 6);
+      gtk_box_append (
+        box, uri_label);
+      gtk_box_append (
+        box, uri_entry);
+      gtk_box_append (
+        GTK_BOX (content), GTK_WIDGET (box));
       gtk_entry_set_activates_default (
-        GTK_ENTRY(uri_entry), TRUE);
+        GTK_ENTRY (uri_entry), true);
     }
-  gtk_box_pack_start (
-    GTK_BOX (content), add_prefix,
-    FALSE, FALSE, 6);
+  gtk_box_append (
+    GTK_BOX (content), add_prefix);
 
-  gtk_widget_show_all (GTK_WIDGET (dialog));
+  /*gtk_window_present (GTK_WINDOW (dialog));*/
   gtk_dialog_set_default_response (
     GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
-  if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
-        GTK_RESPONSE_ACCEPT)
+  int ret =
+    z_gtk_dialog_run (
+      GTK_DIALOG (dialog), false);
+  if (ret == GTK_RESPONSE_ACCEPT)
     {
-      const char* path =
-        gtk_file_chooser_get_filename (
+      char * path =
+        z_gtk_file_chooser_get_filename (
           GTK_FILE_CHOOSER (dialog));
       bool add_prefix_active =
         gtk_toggle_button_get_active (
@@ -425,19 +443,21 @@ plugin_gtk_on_save_preset_activate (
       else if (is_lv2)
         {
           const char * uri =
-            gtk_entry_get_text (
-              GTK_ENTRY (uri_entry));
+            gtk_editable_get_text (
+              GTK_EDITABLE (uri_entry));
           lv2_gtk_on_save_preset_activate (
             widget, plugin->lv2, path, uri,
             add_prefix_active);
         }
+      g_free (path);
     }
 
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  gtk_window_destroy (GTK_WINDOW (dialog));
 
   EVENTS_PUSH (ET_PLUGIN_PRESET_SAVED, plugin);
 }
 
+#if 0
 static void
 on_delete_preset_activate (
   GtkWidget * widget,
@@ -453,6 +473,7 @@ on_delete_preset_activate (
       break;
     }
 }
+#endif
 
 /**
  * Creates a label for a control.
@@ -551,6 +572,7 @@ plugin_gtk_add_control_row (
     control_left_attach, row, 3 - control_left_attach, 1);
 }
 
+#if 0
 void
 plugin_gtk_build_menu (
   Plugin* plugin,
@@ -617,6 +639,7 @@ plugin_gtk_build_menu (
   gtk_box_pack_start (
     GTK_BOX (vbox), menu_bar, FALSE, FALSE, 0);
 }
+#endif
 
 /**
  * Called when the plugin window is destroyed.
@@ -691,14 +714,13 @@ plugin_gtk_create_window (
 
   /* create window */
   plugin->window =
-    GTK_WINDOW (
-      gtk_window_new (GTK_WINDOW_TOPLEVEL));
+    GTK_WINDOW (gtk_window_new ());
   plugin_gtk_set_window_title (
     plugin, plugin->window);
   gtk_window_set_icon_name (
     plugin->window, "zrythm");
-  gtk_window_set_role (
-    plugin->window, "plugin_ui");
+  /*gtk_window_set_role (*/
+    /*plugin->window, "plugin_ui");*/
 
   if (g_settings_get_boolean (
         S_P_PLUGINS_UIS, "stay-on-top"))
@@ -712,24 +734,24 @@ plugin_gtk_create_window (
   plugin->vbox =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (plugin->window),
+  gtk_window_set_child (
+    GTK_WINDOW (plugin->window),
     GTK_WIDGET (plugin->vbox));
 
+#if 0
   /* add menu bar */
   plugin_gtk_build_menu (
     plugin, GTK_WIDGET (plugin->window),
     GTK_WIDGET (plugin->vbox));
+#endif
 
   /* Create/show alignment to contain UI (whether
    * custom or generic) */
   plugin->ev_box =
-    GTK_EVENT_BOX (
-      gtk_event_box_new ());
-  gtk_box_pack_start (
-    plugin->vbox, GTK_WIDGET (plugin->ev_box),
-    TRUE, TRUE, 0);
-  gtk_widget_show_all (GTK_WIDGET (plugin->vbox));
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_box_append (
+    plugin->vbox, GTK_WIDGET (plugin->ev_box));
 
   /* connect signals */
   plugin->destroy_window_id =
@@ -1043,7 +1065,7 @@ string_changed (
   Port *     port)
 {
   const char* string =
-    gtk_entry_get_text (widget);
+    gtk_editable_get_text (GTK_EDITABLE (widget));
 
   g_return_if_fail (
     IS_PORT_AND_NONNULL (port));
@@ -1068,11 +1090,16 @@ string_changed (
 
 static void
 file_changed (
-  GtkFileChooserButton * widget,
+  GtkNativeDialog *      dialog,
+  gint                   response_id,
   Port *                 port)
 {
-  const char* filename = gtk_file_chooser_get_filename(
-    GTK_FILE_CHOOSER (widget));
+  GtkFileChooserNative * file_chooser_native =
+    GTK_FILE_CHOOSER_NATIVE (dialog);
+  GtkFileChooser * file_chooser =
+    GTK_FILE_CHOOSER (file_chooser_native);
+  char * filename =
+    z_gtk_file_chooser_get_filename (file_chooser);
 
   g_return_if_fail (
     IS_PORT_AND_NONNULL (port));
@@ -1087,6 +1114,7 @@ file_changed (
         pl->lv2, port, strlen (filename),
         pl->lv2->main_forge.Path, filename);
     }
+  g_free (filename);
 }
 
 static PluginGtkController *
@@ -1329,17 +1357,20 @@ make_file_chooser (
   Port * port)
 {
   GtkWidget * button =
-    gtk_file_chooser_button_new (
-    _("Open File"), GTK_FILE_CHOOSER_ACTION_OPEN);
+    GTK_WIDGET (
+      file_chooser_button_widget_new (
+        GTK_WINDOW (MAIN_WINDOW),
+        _("Open File"),
+        GTK_FILE_CHOOSER_ACTION_OPEN));
 
   bool is_input = port->id.flow == FLOW_INPUT;
   gtk_widget_set_sensitive (button, is_input);
 
   if (is_input)
     {
-      g_signal_connect (
-        G_OBJECT (button), "file-set",
-        G_CALLBACK (file_changed), port);
+      file_chooser_button_widget_set_response_callback (
+        Z_FILE_CHOOSER_BUTTON_WIDGET (button),
+        G_CALLBACK (file_changed), port, NULL);
     }
 
   return new_controller (NULL, button);
@@ -1491,18 +1522,18 @@ build_control_widget (
         GTK_WIDGET (port_table), 8);
       gtk_widget_set_margin_end (
         GTK_WIDGET (port_table), 8);
-      gtk_container_add (
-        GTK_CONTAINER (box), port_table);
+      gtk_box_append (
+        GTK_BOX (box), port_table);
       return box;
     }
   else
     {
-      gtk_widget_destroy (port_table);
+      g_object_unref (port_table);
       GtkWidget* button =
         gtk_button_new_with_label (_("Close"));
       g_signal_connect_swapped (
         button, "clicked",
-        G_CALLBACK (gtk_widget_destroy), window);
+        G_CALLBACK (gtk_window_destroy), window);
       gtk_window_set_resizable (
         GTK_WINDOW (window), FALSE);
       return button;
@@ -1618,17 +1649,17 @@ plugin_gtk_generic_set_widget_value (
             fvalue);
         }
     }
-  else if (GTK_IS_ENTRY(widget) &&
+  else if (GTK_IS_ENTRY (widget) &&
            type == PM_URIDS.atom_String)
     {
-      gtk_entry_set_text (
-        GTK_ENTRY(widget), (const char*)body);
+      gtk_editable_set_text (
+        GTK_EDITABLE (widget), (const char*)body);
     }
   else if (GTK_IS_FILE_CHOOSER (widget) &&
            type == PM_URIDS.atom_Path)
     {
-      gtk_file_chooser_set_filename (
-        GTK_FILE_CHOOSER(widget),
+      z_gtk_file_chooser_set_file_from_path (
+        GTK_FILE_CHOOSER (widget),
         (const char*)body);
     }
   else
@@ -1767,17 +1798,14 @@ plugin_gtk_open_generic_ui (
     build_control_widget (
       plugin, plugin->window);
   GtkWidget* scroll_win =
-    gtk_scrolled_window_new (NULL, NULL);
-  gtk_container_add (
-    GTK_CONTAINER (scroll_win), controls);
+    gtk_scrolled_window_new ();
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (scroll_win), controls);
   gtk_scrolled_window_set_policy (
     GTK_SCROLLED_WINDOW (scroll_win),
     GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  gtk_container_add (
-    GTK_CONTAINER (plugin->ev_box),
-    scroll_win);
-  gtk_widget_show_all (
-    GTK_WIDGET (plugin->vbox));
+  gtk_box_append (
+    GTK_BOX (plugin->ev_box), scroll_win);
 
   GtkRequisition controls_size, box_size;
   gtk_widget_get_preferred_size (
@@ -1862,8 +1890,7 @@ plugin_gtk_close_ui (
         GTK_WIDGET (pl->window), 0);
       /*gtk_window_close (*/
         /*GTK_WINDOW (pl->window));*/
-      gtk_widget_destroy (
-        GTK_WIDGET (pl->window));
+      gtk_window_destroy (GTK_WINDOW (pl->window));
       pl->window = NULL;
     }
 
@@ -1935,8 +1962,8 @@ plugin_gtk_setup_plugin_presets_list_box (
 {
   g_debug ("%s: setting up...", __func__);
 
-  z_gtk_container_destroy_all_children (
-    GTK_CONTAINER (box));
+  z_gtk_widget_destroy_all_children (
+    GTK_WIDGET (box));
 
   if (!plugin ||
       plugin->selected_bank.bank_idx == -1)

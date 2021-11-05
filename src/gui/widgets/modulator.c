@@ -73,12 +73,15 @@ modulator_widget_new (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_POLICY_NEVER, GTK_POLICY_NEVER);
 
+  /* TODO */
+#if 0
   GtkBox * box =
     two_col_expander_box_widget_get_content_box (
       Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
   gtk_box_set_child_packing (
     box, GTK_WIDGET (self->inner),
     F_NO_EXPAND, F_FILL, 0, GTK_PACK_START);
+#endif
 
   g_object_ref (self);
 

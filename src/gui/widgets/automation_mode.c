@@ -215,9 +215,9 @@ draw_bg (
           GdkRGBA mid_c;
           ui_get_mid_color (
             &mid_c, &c, &self->last_colors[i],
-            1.0 -
-            (double) self->transition_frames /
-              (double) CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
+            1.f -
+            self->transition_frames /
+              CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
           c = mid_c;
           if (i == NUM_AUTOMATION_MODES - 1)
             self->transition_frames--;

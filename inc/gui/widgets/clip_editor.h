@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (
   ClipEditorWidget,
   clip_editor_widget,
   Z, CLIP_EDITOR_WIDGET,
-  GtkStack)
+  GtkBox)
 
 #define MW_CLIP_EDITOR MW_BOT_DOCK_EDGE->clip_editor
 
@@ -53,13 +53,15 @@ typedef struct ClipEditor ClipEditor;
  */
 typedef struct _ClipEditorWidget
 {
-  GtkBox                  parent_instance;
+  GtkBox             parent_instance;
 
-  GtkBox *                main_box;
+  GtkStack *         stack;
+
+  GtkBox *           main_box;
   //EditorSelectionInfoWidget * editor_selections;
-  EditorToolbarWidget *   editor_toolbar;
+  EditorToolbarWidget * editor_toolbar;
   ClipEditorInnerWidget * clip_editor_inner;
-  GtkLabel *              no_selection_label;
+  GtkLabel *         no_selection_label;
 } ClipEditorWidget;
 
 void
@@ -72,5 +74,8 @@ clip_editor_widget_setup (
 void
 clip_editor_widget_on_region_changed (
   ClipEditorWidget * self);
+
+ClipEditorWidget *
+clip_editor_widget_new (void);
 
 #endif

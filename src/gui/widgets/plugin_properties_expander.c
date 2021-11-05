@@ -109,21 +109,25 @@ on_load_preset_clicked (
     _("_Cancel"), GTK_RESPONSE_REJECT,
     _("_Load"), GTK_RESPONSE_ACCEPT,
     NULL);
+  GFile * gfile =
+    g_file_new_for_path (g_get_home_dir ());
   gtk_file_chooser_set_current_folder (
-    GTK_FILE_CHOOSER (dialog), g_get_home_dir ());
-  gtk_widget_show_all (GTK_WIDGET (dialog));
+    GTK_FILE_CHOOSER (dialog), gfile, NULL);
+  g_object_unref (gfile);
   gtk_dialog_set_default_response (
-    GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
-  if (gtk_dialog_run (GTK_DIALOG(dialog)) !=
+    GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
+  if (z_gtk_dialog_run (GTK_DIALOG(dialog), false) !=
         GTK_RESPONSE_ACCEPT)
     {
-      gtk_widget_destroy (GTK_WIDGET (dialog));
+      gtk_window_destroy (GTK_WINDOW (dialog));
       return;
     }
 
-  const char* path =
-    gtk_file_chooser_get_filename (
+  gfile =
+    gtk_file_chooser_get_file (
       GTK_FILE_CHOOSER (dialog));
+  char * path = g_file_get_path (gfile);
+  g_object_unref (gfile);
 
   GError * err = NULL;
   bool applied = false;
@@ -143,6 +147,7 @@ on_load_preset_clicked (
         lv2_state_apply_preset (
           self->plugin->lv2, NULL, path, &err);
     }
+  g_free (path);
 
   if (applied)
     {
@@ -155,7 +160,7 @@ on_load_preset_clicked (
         err, "%s", _("Failed to apply preset"));
     }
 
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 /**
@@ -222,7 +227,7 @@ plugin_properties_expander_widget_setup (
   lbl = \
     plugin_gtk_new_label ( \
       x, true, false, 0.f, 0.5f); \
-  z_gtk_widget_add_style_class ( \
+  gtk_widget_add_css_class ( \
     lbl, "inspector_label"); \
   gtk_widget_set_margin_start (lbl, 2); \
   gtk_widget_set_visible (lbl, 1)
@@ -285,16 +290,15 @@ plugin_properties_expander_widget_setup (
     GTK_WIDGET (self->presets), true);
   GtkScrolledWindow * scroll =
     GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new (NULL, NULL));
+      gtk_scrolled_window_new ());
   gtk_scrolled_window_set_min_content_height (
     scroll, 86);
   gtk_scrolled_window_set_policy (
     scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   gtk_widget_set_visible (
     GTK_WIDGET (scroll), true);
-  gtk_container_add (
-    GTK_CONTAINER (scroll),
-    GTK_WIDGET (self->presets));
+  gtk_scrolled_window_set_child (
+    scroll, GTK_WIDGET (self->presets));
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (scroll));
@@ -319,16 +323,16 @@ plugin_properties_expander_widget_setup (
     GTK_WIDGET (self->load_preset_btn),
     _("Load preset"));
   GtkWidget * box =
-    gtk_button_box_new (
-      GTK_ORIENTATION_HORIZONTAL);
+    gtk_box_new (
+      GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_visible (box, true);
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (self->save_preset_btn));
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (self->load_preset_btn));
-  z_gtk_widget_add_style_class (box, "linked");
+  gtk_widget_add_css_class (box, "linked");
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), box);
   g_signal_connect (

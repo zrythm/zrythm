@@ -131,8 +131,6 @@ chord_editor_space_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
         ARRANGER_WIDGET_TYPE_CHORD,
         SNAP_GRID_EDITOR);
-      gtk_widget_show_all (
-        GTK_WIDGET (self->arranger));
     }
 
   for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
@@ -145,13 +143,12 @@ chord_editor_space_widget_setup (
                        0));
       gtk_widget_set_visible (
         GTK_WIDGET (box), 1);
-      gtk_box_pack_start (
-        box, GTK_WIDGET (self->chord_keys[i]),
-        1, 1, 0);
-      z_gtk_widget_add_style_class (
+      gtk_box_append (
+        box, GTK_WIDGET (self->chord_keys[i]));
+      gtk_widget_add_css_class (
         GTK_WIDGET (box), "chord_key");
-      gtk_container_add (
-        GTK_CONTAINER (self->chord_keys_box),
+      gtk_box_append (
+        self->chord_keys_box,
         GTK_WIDGET (box));
       self->chord_key_boxes[i] = box;
     }

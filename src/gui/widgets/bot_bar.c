@@ -59,6 +59,7 @@ G_DEFINE_TYPE (
 #define PLAYHEAD_JACK_CLIENT_CAPTION \
   _("Playhead [Jack Client]")
 
+#if 0
 static void
 on_playhead_display_type_changed (
   GtkCheckMenuItem * menuitem,
@@ -83,15 +84,25 @@ on_playhead_display_type_changed (
   gtk_widget_queue_draw (
     GTK_WIDGET (self->digital_transport));
 }
+#endif
 
 #ifdef HAVE_JACK
 static void
-on_jack_transport_type_changed (
-  GtkCheckMenuItem * menuitem,
-  BotBarWidget *     self)
+activate_jack_mode (
+  GSimpleAction *action,
+  GVariant      *_variant,
+  gpointer       user_data)
 {
-  if (menuitem == self->timebase_master_check &&
-        gtk_check_menu_item_get_active (menuitem))
+  BotBarWidget * self =
+    Z_BOT_BAR_WIDGET (user_data);
+
+  g_return_if_fail (_variant);
+
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  g_simple_action_set_state (action, _variant);
+  if (string_is_equal (variant, "become-master"))
     {
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
@@ -104,10 +115,7 @@ on_jack_transport_type_changed (
         GTK_WIDGET (self->digital_transport),
         PLAYHEAD_JACK_MASTER_CAPTION);
     }
-  else if (menuitem ==
-             self->transport_client_check &&
-           gtk_check_menu_item_get_active (
-             menuitem))
+  else if (string_is_equal (variant, "sync"))
     {
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
@@ -120,10 +128,7 @@ on_jack_transport_type_changed (
         GTK_WIDGET (self->digital_transport),
         PLAYHEAD_JACK_CLIENT_CAPTION);
     }
-  else if (menuitem ==
-             self->no_jack_transport_check &&
-           gtk_check_menu_item_get_active (
-              menuitem))
+  else if (string_is_equal (variant, "unlink"))
     {
       engine_jack_set_transport_type (
         AUDIO_ENGINE,
@@ -136,12 +141,14 @@ on_jack_transport_type_changed (
         GTK_WIDGET (self->digital_transport),
         PLAYHEAD_CAPTION);
     }
+
+  g_message ("jack mode changed");
 }
 #endif
 
 static void
 on_bpm_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x,
   gdouble                y,
@@ -150,34 +157,26 @@ on_bpm_right_click (
   if (n_press != 1)
     return;
 
-  GtkWidget *menu, *menuitem;
-
-  menu = gtk_menu_new();
+  GMenu * menu = g_menu_new();
+  GMenuItem * menuitem;
 
   menuitem =
-    GTK_WIDGET (
-      z_gtk_create_menu_item (
-        _("Input"), NULL, false, "app.input-bpm"));
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      _("Input"), NULL, "app.input-bpm");
+  g_menu_append_item (menu, menuitem);
   menuitem =
-    GTK_WIDGET (
-      z_gtk_create_menu_item (
-        /* TRANSLATORS: tap tempo */
-        _("Tap"), NULL, false, "app.tap-bpm"));
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+    z_gtk_create_menu_item (
+      /* TRANSLATORS: tap tempo */
+      _("Tap"), NULL, "app.tap-bpm");
+  g_menu_append_item (menu, menuitem);
 
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (
-    GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_transport_playhead_right_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -186,157 +185,75 @@ on_transport_playhead_right_click (
   if (n_press != 1)
     return;
 
-  GtkWidget *menu, *menuitem;
+  GSimpleActionGroup * action_group =
+    g_simple_action_group_new ();
+  GAction * display_action =
+    g_settings_create_action (
+      S_UI, "transport-display");
 
-  menu = gtk_menu_new();
+  g_action_map_add_action (
+    G_ACTION_MAP (action_group),
+    display_action);
 
-  /* switch display */
-  GSList *group = NULL;
-  menuitem =
-    gtk_radio_menu_item_new_with_label (
-      group, _("BBT display"));
-  group =
-    gtk_radio_menu_item_get_group (
-      GTK_RADIO_MENU_ITEM (menuitem));
-  gtk_check_menu_item_set_active (
-    GTK_CHECK_MENU_ITEM (menuitem),
-    g_settings_get_enum (
-      S_UI, "transport-display") ==
-      TRANSPORT_DISPLAY_BBT);
-  g_signal_connect (
-    G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_playhead_display_type_changed),
-    self);
-  self->bbt_display_check =
-    GTK_CHECK_MENU_ITEM (menuitem);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+  GMenu * menu = g_menu_new ();
+  g_menu_append (
+    menu, _("Transport display"),
+    "bot-bar.transport-display");
 
-  menuitem =
-    gtk_radio_menu_item_new_with_label (
-      group, _("Time display"));
-  gtk_check_menu_item_set_active (
-    GTK_CHECK_MENU_ITEM (menuitem),
-    g_settings_get_enum (
-      S_UI, "transport-display") ==
-      TRANSPORT_DISPLAY_TIME);
-  g_signal_connect (
-    G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_playhead_display_type_changed),
-    self);
-  self->time_display_check =
-    GTK_CHECK_MENU_ITEM (menuitem);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
-
-  menuitem =
-    gtk_separator_menu_item_new ();
-  gtk_widget_set_visible (menuitem, true);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+  /* TODO fire event on change */
 
   /* jack transport related */
 #ifdef HAVE_JACK
-  GtkWidget * menuitem2;
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
-      menuitem =
-        gtk_radio_menu_item_new_with_mnemonic (
-          NULL,
-          _("Become JACK Transport master"));
-      gtk_check_menu_item_set_active (
-        GTK_CHECK_MENU_ITEM (menuitem),
-        AUDIO_ENGINE->transport_type ==
-          AUDIO_ENGINE_JACK_TIMEBASE_MASTER);
-      g_signal_connect (
-        G_OBJECT (menuitem), "toggled",
-        G_CALLBACK (on_jack_transport_type_changed),
-        self);
-      /*gtk_actionable_set_action_name (*/
-        /*GTK_ACTIONABLE (menuitem),*/
-        /*"set-timebase-master");*/
-      self->timebase_master_check =
-        GTK_CHECK_MENU_ITEM (menuitem);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
-      menuitem2 =
-        gtk_radio_menu_item_new_with_mnemonic (
-          NULL, _("Sync to JACK Transport"));
-      gtk_radio_menu_item_join_group (
-        GTK_RADIO_MENU_ITEM (menuitem2),
-        GTK_RADIO_MENU_ITEM (menuitem));
-      menuitem = menuitem2;
-      gtk_check_menu_item_set_active (
-        GTK_CHECK_MENU_ITEM (menuitem),
-        AUDIO_ENGINE->transport_type ==
-          AUDIO_ENGINE_JACK_TRANSPORT_CLIENT);
-      self->transport_client_check =
-        GTK_CHECK_MENU_ITEM (menuitem);
-      g_signal_connect (
-        G_OBJECT (menuitem), "toggled",
-        G_CALLBACK (on_jack_transport_type_changed),
-        self);
-      /*gtk_actionable_set_action_name (*/
-        /*GTK_ACTIONABLE (menuitem),*/
-        /*"set-transport-client");*/
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
-      menuitem2 =
-        gtk_radio_menu_item_new_with_mnemonic (
-          NULL, _("Unlink JACK Transport"));
-      gtk_radio_menu_item_join_group (
-        GTK_RADIO_MENU_ITEM (menuitem2),
-        GTK_RADIO_MENU_ITEM (menuitem));
-      menuitem = menuitem2;
-      gtk_check_menu_item_set_active (
-        GTK_CHECK_MENU_ITEM (menuitem),
-        AUDIO_ENGINE->transport_type ==
-          AUDIO_ENGINE_NO_JACK_TRANSPORT);
-      self->no_jack_transport_check =
-        GTK_CHECK_MENU_ITEM (menuitem);
-      g_signal_connect (
-        G_OBJECT (menuitem), "toggled",
-        G_CALLBACK (on_jack_transport_type_changed),
-        self);
-      /*gtk_actionable_set_action_name (*/
-        /*GTK_ACTIONABLE (menuitem),*/
-        /*"unlink-jack-transport");*/
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
+      GMenu * jack_section = g_menu_new ();
+
+      g_menu_append (
+        jack_section,
+        _("Become JACK Transport master"),
+        "bot-bar.jack-mode::become-master");
+      g_menu_append (
+        jack_section, _("Sync to JACK Transport"),
+        "bot-bar.jack-mode::sync");
+      g_menu_append (
+        jack_section, _("Unlink JACK Transport"),
+        "bot-bar.jack-mode::unlink");
+
+      const char * jack_modes[] = {
+        "'become-master'", "'sync'", "'unlink'", };
+      GActionEntry actions[] = {
+        { "jack-mode",
+          activate_jack_mode, "s",
+          jack_modes[AUDIO_ENGINE->transport_type] },
+      };
+      g_action_map_add_action_entries (
+        G_ACTION_MAP (action_group), actions,
+        G_N_ELEMENTS (actions), self);
+
+      g_menu_append_section (
+        menu, "JACK", G_MENU_MODEL (jack_section));
     }
 #endif
 
-  menuitem =
-    gtk_separator_menu_item_new ();
-  (void) menuitem;
+  gtk_widget_insert_action_group (
+    GTK_WIDGET (self), "bot-bar",
+    G_ACTION_GROUP (action_group));
 
-  /* display format related */
-  /*gtk_menu_shell_append (*/
-    /*GTK_MENU_SHELL (menu), menuitem);*/
-  /*menuitem =*/
-    /*gtk_radio_menu_item_new_with_mnemonic (*/
-      /*NULL,*/
-      /*_("Show seconds"));*/
-
-  /*g_signal_connect(menuitem, "activate",*/
-                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
-
-  /*gtk_menu_shell_append (*/
-    /*GTK_MENU_SHELL (menu), menuitem);*/
-
-  gtk_widget_show_all (menu);
-
-  gtk_menu_popup_at_pointer (
-    GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 void
 bot_bar_widget_refresh (BotBarWidget * self)
 {
   if (self->digital_transport)
-    gtk_widget_destroy (
-      GTK_WIDGET (self->digital_transport));
+    {
+      /* FIXME */
+      return;
+      /*gtk_overlay_set_child (*/
+        /*self->playhead_overlay, NULL);*/
+    }
   self->digital_transport =
     digital_meter_widget_new_for_position (
       TRANSPORT, NULL,
@@ -349,10 +266,8 @@ bot_bar_widget_refresh (BotBarWidget * self)
     PLAYHEAD_CAPTION);
   self->playhead_overlay =
     GTK_OVERLAY (gtk_overlay_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->playhead_overlay), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self->playhead_overlay),
+  gtk_overlay_set_child (
+    self->playhead_overlay,
     GTK_WIDGET (self->digital_transport));
 
 #ifdef HAVE_JACK
@@ -360,16 +275,18 @@ bot_bar_widget_refresh (BotBarWidget * self)
         AUDIO_BACKEND_JACK)
     {
       int size = 8;
-      GdkPixbuf * pixbuf;
-      GtkWidget * img;
-
-      pixbuf =
-        gtk_icon_theme_load_icon (
-          gtk_icon_theme_get_default (),
-          "jack_transport_client",
-          size, 0, NULL);
-      img =
-        gtk_image_new_from_pixbuf (pixbuf);
+      GdkDisplay * display =
+        gdk_display_get_default ();
+      GtkIconTheme * icon_theme =
+        gtk_icon_theme_get_for_display (display);
+      GtkIconPaintable * icon_paintable =
+        gtk_icon_theme_lookup_icon (
+          icon_theme, "jack_transport_client",
+          NULL, size, 1, GTK_TEXT_DIR_NONE,
+          GTK_ICON_LOOKUP_PRELOAD);
+      GtkWidget * img =
+        gtk_image_new_from_paintable (
+          GDK_PAINTABLE (icon_paintable));
       gtk_widget_set_halign (
         img, GTK_ALIGN_END);
       gtk_widget_set_valign (
@@ -381,13 +298,14 @@ bot_bar_widget_refresh (BotBarWidget * self)
       gtk_overlay_add_overlay (
         self->playhead_overlay, img);
       self->client_img = img;
-      pixbuf =
-        gtk_icon_theme_load_icon (
-          gtk_icon_theme_get_default (),
-          "jack_timebase_master",
-          size, 0, NULL);
+      icon_paintable =
+        gtk_icon_theme_lookup_icon (
+          icon_theme, "jack_timebase_master",
+          NULL, size, 1, GTK_TEXT_DIR_NONE,
+          GTK_ICON_LOOKUP_PRELOAD);
       img =
-        gtk_image_new_from_pixbuf (pixbuf);
+        gtk_image_new_from_paintable (
+          GDK_PAINTABLE (icon_paintable));
       gtk_widget_set_halign (
         img, GTK_ALIGN_END);
       gtk_widget_set_valign (
@@ -426,10 +344,12 @@ bot_bar_widget_refresh (BotBarWidget * self)
     }
 #endif
 
-  GtkGestureMultiPress * right_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->digital_transport)));
+  GtkGestureClick * right_mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->digital_transport),
+    GTK_EVENT_CONTROLLER (right_mp));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mp),
     GDK_BUTTON_SECONDARY);
@@ -438,8 +358,8 @@ bot_bar_widget_refresh (BotBarWidget * self)
     G_CALLBACK (on_transport_playhead_right_click),
     self);
 
-  gtk_container_add (
-    GTK_CONTAINER (self->playhead_box),
+  gtk_box_append (
+    self->playhead_box,
     GTK_WIDGET (self->playhead_overlay));
 
   bot_bar_widget_update_status (self);
@@ -646,25 +566,20 @@ setup_metronome (
   button_with_menu_widget_setup (
     self->metronome,
     GTK_BUTTON (self->metronome_btn),
-    NULL, NULL,
+    NULL,
     false, 38, _("Metronome"),
     _("Metronome options"));
 
   /* create popover for changing metronome options */
   GtkPopover * popover =
-    GTK_POPOVER (
-      gtk_popover_new (
-        GTK_WIDGET (self->metronome->menu_btn)));
+    GTK_POPOVER (gtk_popover_new ());
   GtkWidget * grid = gtk_grid_new ();
   gtk_grid_set_row_spacing (GTK_GRID (grid), 2);
   gtk_grid_set_column_spacing (GTK_GRID (grid), 4);
-  gtk_widget_set_visible (grid, true);
-  gtk_container_add (
-    GTK_CONTAINER (popover), grid);
+  gtk_popover_set_child (popover, grid);
 
   /* volume */
   GtkWidget * label = gtk_label_new (_("Volume"));
-  gtk_widget_set_visible (label, true);
   gtk_grid_attach (
     GTK_GRID (grid), GTK_WIDGET (label),
     0, 0, 1, 1);
@@ -711,13 +626,15 @@ bot_bar_widget_setup (
 {
   bot_bar_widget_refresh (self);
 
-  GtkGestureMultiPress * right_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->digital_bpm)));
+  GtkGestureClick * right_mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mp),
     GDK_BUTTON_SECONDARY);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->digital_bpm),
+    GTK_EVENT_CONTROLLER (right_mp));
   g_signal_connect (
     G_OBJECT (right_mp), "pressed",
     G_CALLBACK (on_bpm_right_click), self);
@@ -775,15 +692,12 @@ bot_bar_widget_init (BotBarWidget * self)
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_TIMESIG, NULL,
       NULL, _("time sig."));
-  gtk_container_add (
-    GTK_CONTAINER (self->digital_meters),
+  gtk_box_append (
+    self->digital_meters,
     GTK_WIDGET (self->digital_bpm));
-  gtk_container_add (
-    GTK_CONTAINER (self->digital_meters),
+  gtk_box_append (
+    self->digital_meters,
     GTK_WIDGET (self->digital_timesig));
-  gtk_widget_show_all (
-    GTK_WIDGET (self->digital_meters));
-  gtk_widget_show_all (GTK_WIDGET (self));
 
   cpu_widget_setup (
     self->cpu_load);
@@ -796,21 +710,20 @@ bot_bar_widget_init (BotBarWidget * self)
   self->label =
     GTK_LABEL (gtk_label_new (""));
   gtk_label_set_markup (self->label, "");
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->label), 1);
+#if 0
   GtkWidget * box =
     gtk_statusbar_get_message_area (
       self->status_bar);
-  z_gtk_container_remove_all_children (
-    GTK_CONTAINER (box));
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  z_gtk_widget_remove_all_children (
+    GTK_WIDGET (box));
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (self->label));
+#endif
 
   g_signal_connect (
     self->status_bar, "text-pushed",
-    G_CALLBACK (on_text_pushed),
-    self);
+    G_CALLBACK (on_text_pushed), self);
   g_signal_connect (
     self->label, "activate-link",
     G_CALLBACK (activate_link), self);

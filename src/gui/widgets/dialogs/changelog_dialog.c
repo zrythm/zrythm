@@ -23,6 +23,7 @@
 #include "src/translators.h"
 
 #include "gui/widgets/dialogs/changelog_dialog.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 
@@ -49,8 +50,7 @@ changelog_dialog_widget_run (
       "\n\n",
       CHANGELOG_TXT);
 
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 }
 
 #endif /* HAVE_CHANGELOG */

@@ -152,8 +152,8 @@ midi_arranger_show_context_menu (
  */
 void
 midi_arranger_handle_vertical_zoom_scroll (
-  ArrangerWidget * self,
-  GdkEventScroll * event);
+  ArrangerWidget *           self,
+  GtkEventControllerScroll * scroll_controller);
 
 /**
  * @}

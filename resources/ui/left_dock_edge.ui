@@ -1,49 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="LeftDockEdgeWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="FoldableNotebookWidget" id="inspector_notebook">
-        <property name="visible">1</property>
         <property name="can-focus">1</property>
-        <property name="tab-pos">left</property>
         <property name="vexpand">1</property>
-        <child type="tab">
-        </child>
-        <child type="tab">
-        </child>
-        <child type="tab">
-        </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
   </template>
 </interface>

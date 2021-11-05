@@ -68,6 +68,8 @@ typedef enum PassthroughProcessorType
   PassthroughProcessorType;
 typedef enum FaderType FaderType;
 typedef void MIDI_FILE;
+typedef struct _WrappedObjectWithChangeSignal
+  WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup audio
@@ -85,6 +87,9 @@ typedef void MIDI_FILE;
   (((Track *) x)->magic == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) \
   (x && IS_TRACK (x))
+
+#define TRACK_DND_PREFIX \
+  Z_DND_STRING_PREFIX "Track::"
 
 #define track_is_in_active_project(self) \
   (self->tracklist \
@@ -526,6 +531,9 @@ typedef struct Track
   /** Pointer to owner tracklist selections, if
    * any. */
   TracklistSelections * ts;
+
+  /** Used in Gtk. */
+  WrappedObjectWithChangeSignal * gobj;
 } Track;
 
 static const cyaml_schema_field_t

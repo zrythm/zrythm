@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,9 +23,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ViewToolbarWidget,
-               view_toolbar_widget,
-               GTK_TYPE_TOOLBAR)
+G_DEFINE_TYPE (
+  ViewToolbarWidget, view_toolbar_widget,
+  GTK_TYPE_BOX)
 
 static void
 view_toolbar_widget_init (ViewToolbarWidget * self)
@@ -49,6 +49,7 @@ view_toolbar_widget_init (ViewToolbarWidget * self)
     right_panel, _("Toggle Right Panel"));
 #undef SET_TOOLTIP
 
+#if 0
   GtkWidget * img;
 #define SET_TOGGLE_PX_SIZE(x) \
   img = \
@@ -69,6 +70,7 @@ view_toolbar_widget_init (ViewToolbarWidget * self)
   SET_TOGGLE_PX_SIZE (top_panel);
 
 #undef SET_TOGGLE_PX_SIZE
+#endif
 }
 
 static void

@@ -536,7 +536,7 @@ lv2_ui_instantiate (
         suil_instance_new (
           plugin->suil_host,
           plugin,
-          LV2_UI__Gtk3UI,
+          LV2_UI__Gtk4UI,
           plugin->plugin->setting->descr->uri,
           plugin->plugin->setting->ui_uri,
           ui_class,

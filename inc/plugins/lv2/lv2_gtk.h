@@ -90,6 +90,7 @@ int
 lv2_gtk_open_ui (
   Lv2Plugin* plugin);
 
+#if 0
 PluginGtkPresetMenu*
 lv2_gtk_get_bank_menu (
   Lv2Plugin* plugin,
@@ -106,6 +107,7 @@ lv2_gtk_add_preset_to_menu (
   const LilvNode* node,
   const LilvNode* title,
   void*           data);
+#endif
 
 /**
  * Called by plugin_gtk_on_save_preset_activate()

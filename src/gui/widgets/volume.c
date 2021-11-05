@@ -33,19 +33,19 @@ G_DEFINE_TYPE (
 /**
  * Draws the volume.
  */
-static int
+static void
 volume_draw_cb (
-  GtkWidget *    widget,
-  cairo_t *      cr,
-  VolumeWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  VolumeWidget * self = Z_VOLUME_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (self);
+
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -78,27 +78,28 @@ volume_draw_cb (
   cairo_line_to (cr, filled_w, height - filled_h);
   cairo_close_path (cr);
   cairo_fill (cr);
-
-  return FALSE;
 }
 
 static void
-on_crossing (
-  GtkWidget *    widget,
-  GdkEvent *     event,
+on_leave (
+  GtkEventControllerMotion * motion_controller,
   VolumeWidget * self)
 {
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      self->hover = 1;
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      if (!gtk_gesture_drag_get_offset (
-             self->drag, NULL, NULL))
-        self->hover = 0;
-    }
-  gtk_widget_queue_draw (widget);
+  if (!gtk_gesture_drag_get_offset (
+         self->drag, NULL, NULL))
+    self->hover = 0;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+static void
+on_enter (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  VolumeWidget * self)
+{
+  self->hover = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -139,11 +140,12 @@ drag_end (
   gdouble          offset_y,
   VolumeWidget *   self)
 {
-  GdkModifierType state_mask =
-    ui_get_state_mask (GTK_GESTURE (gesture));
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
 
   /* reset if ctrl-clicked */
-  if (state_mask & GDK_CONTROL_MASK)
+  if (state & GDK_CONTROL_MASK)
     {
       float def_val = self->port->deff;
       control_port_set_real_val (
@@ -162,24 +164,33 @@ volume_widget_setup (
   self->port = port;
 
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
-
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT(self->drag), "drag-update",
     G_CALLBACK (drag_update),  self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-end",
     G_CALLBACK (drag_end),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
+
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_crossing),  self);
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_enter), self);
   g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (volume_draw_cb), self);
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
+
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), volume_draw_cb,
+    self, NULL);
 }
 
 VolumeWidget *
@@ -208,14 +219,6 @@ static void
 volume_widget_init (
   VolumeWidget * self)
 {
-  /* make it able to notify */
-  gtk_widget_set_has_window (
-    GTK_WIDGET (self), TRUE);
-  int crossing_mask =
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (
-    GTK_WIDGET (self), crossing_mask);
-
   gtk_widget_set_margin_start (
     GTK_WIDGET (self), PADDING);
   gtk_widget_set_margin_end (

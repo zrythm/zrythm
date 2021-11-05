@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,8 +51,8 @@ typedef struct _TimelineMinimapWidget
 typedef struct _TimelineBotBoxWidget
 {
   GtkBox                   parent_instance;
-  GtkToolbar               * left_tb;
-  GtkToolButton            * instrument_add;
+  GtkBox *                 left_tb;
+  GtkButton *              instrument_add;
   TimelineMinimapWidget *  timeline_minimap;
 } TimelineBotBoxWidget;
 

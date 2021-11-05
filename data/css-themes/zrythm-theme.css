@@ -44,10 +44,10 @@
 @define-color bright_orange #F79616;
 @define-color z_purple #9D3955;
 @define-color matcha #2eb398;
-@define-color hover_color alpha (white, 0.1);
-@define-color selection_color alpha (white, 0.07);
+@define-color hover_color alpha(white, 0.1);
+@define-color selection_color alpha(white, 0.07);
 @define-color light_blueish #1aa3ff;
-@define-color light_blueish alpha (#1aa3ff, 0.8);
+@define-color light_blueish alpha(#1aa3ff, 0.8);
 @define-color prefader_send #D21E6D;
 @define-color postfader_send #901ed2;
 @define-color solo_checked @darkish_green;
@@ -65,17 +65,18 @@
 /* see https://coolors.co/ to generate more or use
  * GPick */
 
-window
-{
-  -GtkWidget-window-dragging: true;
-}
+/* does not work in gtk4 */
+/*window*/
+/*{*/
+  /*-GtkWidget-window-dragging: true;*/
+/*}*/
 
 /*paned separator {*/
   /*background-color: alpha(white, 0.80);*/
 /*}*/
 
 paned > separator {
-  min-height: 4px;
+  min-height: 1px; /* FIXME put back to 4 */
 }
 
 /*paned separator:hover {*/
@@ -234,7 +235,7 @@ help-toolbar separator
 
 .arranger-toolbar separator
 {
-  background-color: alpha (grey, 0.6);
+  background-color: alpha(grey, 0.6);
   margin: 4px;
 }
 
@@ -449,7 +450,7 @@ channel button.flat
 {
   border-style: solid;
   border-bottom-width: 1px;
-  border-color: alpha (grey, 0.3);
+  border-color: alpha(grey, 0.3);
 }
 
 /* blend with header box on the right */
@@ -465,7 +466,7 @@ channel button.flat
   border-right: 1px;
   border-style: solid;
   /* from matcha theme */
-  border-color: rgba (0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 .header > box > box {
   border-top: 1px;
@@ -480,10 +481,10 @@ statusbar {
 }
 
 center-dock > paned > paned > paned > separator {
-  background-color: alpha (white, 0.08);
+  background-color: alpha(white, 0.08);
 }
 center-dock > paned > paned > paned > separator:hover {
-  background-color: alpha (white, 0.12);
+  background-color: alpha(white, 0.12);
 }
 
 .thick-separator
@@ -497,7 +498,7 @@ automation-lane
 {
   border-style: solid;
   border-top-width: 2px;
-  border-color: alpha (grey, 0.3);
+  border-color: alpha(grey, 0.3);
 }
 
 .section_heading,
@@ -591,7 +592,7 @@ popover.snap-grid-popover button.note-type {
 /* to be used on currently selected part of the UI
  * (e.g., timeline, tracklist, etc.) */
 .selected-element {
-  border: 2px solid alpha (#ccc, 0.4);
+  border: 2px solid alpha(#ccc, 0.4);
   padding: 1px;
   border-radius: 3px;
 }

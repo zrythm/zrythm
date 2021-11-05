@@ -67,8 +67,11 @@ mixer_widget_hard_refresh (MixerWidget * self)
   g_object_ref (self->channels_add);
 
   /* remove all things in the container */
-  z_gtk_container_remove_all_children (
-    GTK_CONTAINER (self->channels_box));
+  z_gtk_widget_remove_all_children (
+    GTK_WIDGET (self->channels_box));
+  g_return_if_fail (
+    gtk_widget_get_parent (
+      GTK_WIDGET (self->ddbox)) == NULL);
 
   /* add all channels */
   Track * track;
@@ -90,10 +93,9 @@ mixer_widget_hard_refresh (MixerWidget * self)
           folder_channel_widget_refresh (
             track->folder_ch_widget);
 
-          gtk_box_pack_start (
+          gtk_box_append (
             self->channels_box,
-            GTK_WIDGET (track->folder_ch_widget),
-            F_NO_EXPAND, F_NO_FILL, 0);
+            GTK_WIDGET (track->folder_ch_widget));
         }
 
       if (!track_type_has_channel (track->type))
@@ -112,30 +114,21 @@ mixer_widget_hard_refresh (MixerWidget * self)
           !gtk_widget_get_parent (
             GTK_WIDGET (ch->widget))) /* not master */
         {
-          gtk_box_pack_start (
+          gtk_box_append (
             self->channels_box,
-            GTK_WIDGET (ch->widget),
-            F_NO_EXPAND, F_NO_FILL, 0);
+            GTK_WIDGET (ch->widget));
         }
     }
 
   /* add the add button */
-  gtk_box_pack_start (
+  gtk_box_append (
     self->channels_box,
-    GTK_WIDGET (self->channels_add),
-    F_NO_EXPAND, F_NO_FILL, 0);
+    GTK_WIDGET (self->channels_add));
 
   /* re-add dummy box for dnd */
-  if (!GTK_IS_WIDGET (self->ddbox))
-    self->ddbox =
-      drag_dest_box_widget_new (
-        GTK_ORIENTATION_HORIZONTAL,
-        0,
-        DRAG_DEST_BOX_TYPE_MIXER);
-  gtk_box_pack_start (
+  gtk_box_append (
     self->channels_box,
-    GTK_WIDGET (self->ddbox),
-    1, 1, 0);
+    GTK_WIDGET (self->ddbox));
   g_object_unref (self->ddbox);
   g_object_unref (self->channels_add);
 }
@@ -154,8 +147,8 @@ mixer_widget_setup (
 
   if (!self->setup)
     {
-      gtk_container_add (
-        GTK_CONTAINER (self->master_box),
+      gtk_box_append (
+        GTK_BOX (self->master_box),
         GTK_WIDGET (master->widget));
     }
   gtk_widget_set_hexpand (
@@ -168,8 +161,18 @@ mixer_widget_setup (
   g_message ("done");
 }
 
+MixerWidget *
+mixer_widget_new (void)
+{
+  MixerWidget * self =
+    g_object_new (MIXER_WIDGET_TYPE, NULL);
+
+  return self;
+}
+
 static void
-mixer_widget_class_init (MixerWidgetClass * _klass)
+mixer_widget_class_init (
+  MixerWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "mixer.ui");
@@ -191,9 +194,7 @@ mixer_widget_class_init (MixerWidgetClass * _klass)
 static void
 mixer_widget_init (MixerWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      DRAG_DEST_BOX_WIDGET_TYPE, NULL)));
+  g_type_ensure (DRAG_DEST_BOX_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -202,7 +203,7 @@ mixer_widget_init (MixerWidget * self)
     GTK_ORIENTATION_HORIZONTAL,
     0,
     DRAG_DEST_BOX_TYPE_MIXER);
-  gtk_box_pack_start (self->channels_box,
-                      GTK_WIDGET (self->ddbox),
-                      1, 1, 0);
+  gtk_box_append (
+    self->channels_box,
+    GTK_WIDGET (self->ddbox));
 }

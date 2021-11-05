@@ -1,150 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="upper">40000</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
   <template class="BounceDialogWidget" parent="GtkDialog">
-    <property name="can-focus">False</property>
     <property name="title" translatable="yes">Bounce Options</property>
-    <property name="modal">True</property>
+    <property name="modal">1</property>
     <property name="icon-name">zrythm</property>
-    <property name="type-hint">dialog</property>
-    <property name="urgency-hint">True</property>
-    <child internal-child="vbox">
+    <child internal-child="content_area">
       <object class="GtkBox">
-        <property name="can-focus">False</property>
+        <property name="visible">0</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can-focus">False</property>
-            <property name="layout-style">end</property>
-            <child>
-              <object class="GtkButton" id="cancel_btn">
-                <property name="label" translatable="yes">Cancel</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <signal name="clicked" handler="on_cancel_clicked" object="BounceDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="bounce_btn">
-                <property name="label" translatable="yes">Bounce</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="has-focus">True</property>
-                <property name="receives-default">True</property>
-                <signal name="clicked" handler="on_bounce_clicked" object="BounceDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
         <child>
-          <!-- n-columns=3 n-rows=4 -->
           <object class="GtkGrid">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <child>
               <object class="GtkCheckButton" id="bounce_with_parents">
                 <property name="label" translatable="yes">Bounce with parents</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="receives-default">False</property>
-                <property name="draw-indicator">True</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                  <property name="column-span">3</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">0</property>
-                <property name="width">3</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox" id="bounce_step_box">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                  <property name="column-span">3</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">1</property>
-                <property name="width">3</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Tail</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">2</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">2</property>
-              </packing>
             </child>
             <child>
               <object class="GtkSpinButton" id="tail_spin">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="input-purpose">number</property>
+                <property name="focusable">1</property>
                 <property name="adjustment">adjustment1</property>
                 <property name="climb-rate">1</property>
-                <property name="snap-to-ticks">True</property>
-                <property name="numeric">True</property>
+                <property name="snap-to-ticks">1</property>
+                <property name="numeric">1</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">2</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">ms</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="row">2</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">2</property>
-              </packing>
             </child>
             <child>
               <placeholder/>
@@ -156,25 +77,35 @@
               <placeholder/>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkCheckButton" id="disable_after_bounce">
             <property name="label" translatable="yes">Disable after bounce</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">False</property>
-            <property name="draw-indicator">True</property>
+            <property name="focusable">1</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">3</property>
-          </packing>
+        </child>
+      </object>
+    </child>
+    <child internal-child="action_area">
+      <object class="GtkBox">
+        <property name="valign">center</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkButton" id="cancel_btn">
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_cancel_clicked" object="BounceDialogWidget" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="bounce_btn">
+            <property name="label" translatable="yes">Bounce</property>
+            <property name="focusable">1</property>
+            <property name="has-focus">1</property>
+            <property name="receives-default">1</property>
+            <signal name="clicked" handler="on_bounce_clicked" object="BounceDialogWidget" swapped="no"/>
+          </object>
         </child>
       </object>
     </child>

@@ -96,8 +96,6 @@ audio_editor_space_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
         ARRANGER_WIDGET_TYPE_AUDIO,
         SNAP_GRID_EDITOR);
-      gtk_widget_show_all (
-        GTK_WIDGET (self->arranger));
     }
 
   audio_editor_space_widget_refresh (self);

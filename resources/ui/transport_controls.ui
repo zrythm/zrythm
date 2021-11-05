@@ -1,39 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="TransportControlsWidget" parent="GtkBox">
-    <property name="visible">1</property>
     <child>
       <object class="GtkToggleButton" id="return_to_cue_toggle">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
-        <property name="relief">none</property>
         <property name="tooltip_text" translatable="yes">Return to cue point on stop</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">1</property>
             <property name="icon-name">anchor</property>
           </object>
         </child>
@@ -48,14 +23,11 @@
     </child>
     <child>
       <object class="GtkButton" id="play">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
-        <property name="relief">none</property>
         <property name="tooltip_text" translatable="yes">Play</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">1</property>
             <property name="icon-name">media-playback-start</property>
           </object>
         </child>
@@ -63,14 +35,11 @@
     </child>
     <child>
       <object class="GtkButton" id="stop">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
-        <property name="relief">none</property>
         <property name="tooltip_text" translatable="yes">Stop</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">1</property>
             <property name="icon-name">media-playback-stop</property>
           </object>
         </child>
@@ -78,14 +47,11 @@
     </child>
     <child>
       <object class="GtkButton" id="backward">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
-        <property name="relief">none</property>
         <property name="tooltip_text" translatable="yes">Backward</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">1</property>
             <property name="icon-name">media-seek-backward</property>
           </object>
         </child>
@@ -93,14 +59,11 @@
     </child>
     <child>
       <object class="GtkButton" id="forward">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
-        <property name="relief">none</property>
         <property name="tooltip_text" translatable="yes">Forward</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">1</property>
             <property name="icon-name">media-seek-forward</property>
           </object>
         </child>
@@ -108,14 +71,12 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="loop">
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
+        <property name="focusable">1</property>
         <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Loop</property>
         <property name="action_name">app.toggle-loop</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">1</property>
             <property name="icon-name">media-playlist-repeat</property>
           </object>
         </child>

@@ -41,7 +41,7 @@
 
 G_DEFINE_TYPE (
   EditorToolbarWidget, editor_toolbar_widget,
-  GTK_TYPE_TOOLBAR)
+  GTK_TYPE_BOX)
 
 static void
 on_highlighting_changed (
@@ -159,7 +159,7 @@ editor_toolbar_widget_refresh (
 
   /* set visibility of each tool item */
   gtk_widget_set_visible (
-    GTK_WIDGET (self->chord_highlight_tool_item),
+    GTK_WIDGET (self->chord_highlight_box),
     false);
   gtk_widget_set_visible (
     GTK_WIDGET (self->sep_after_chord_highlight),
@@ -194,7 +194,7 @@ editor_toolbar_widget_refresh (
         /* set visibility of each tool item */
         gtk_widget_set_visible (
           GTK_WIDGET (
-            self->chord_highlight_tool_item),
+            self->chord_highlight_box),
           true);
         gtk_widget_set_visible (
           GTK_WIDGET (
@@ -373,31 +373,33 @@ editor_toolbar_widget_init (
     GTK_BUTTON (
       gtk_button_new_from_icon_name (
         /*"mathmode",*/
-        "code-context",
-        GTK_ICON_SIZE_SMALL_TOOLBAR));
+        "code-context"));
   gtk_actionable_set_detailed_action_name (
     GTK_ACTIONABLE (self->apply_function_btn),
     "app.editor-function::current");
   gtk_button_set_label (
     self->apply_function_btn, str);
-  gtk_button_set_always_show_image (
-    self->apply_function_btn, true);
+  /*gtk_button_set_always_show_image (*/
+    /*self->apply_function_btn, true);*/
   gtk_widget_set_visible (
     GTK_WIDGET (self->apply_function_btn), true);
   button_with_menu_widget_setup (
     self->functions_btn,
     self->apply_function_btn,
-    NULL, NULL, true, -1, str,
-    _("Select function"));
+    NULL, true, -1, str, _("Select function"));
 
+  /* TODO */
+#if 0
   GtkMenuButton * menu_btn =
     button_with_menu_widget_get_menu_button (
       self->functions_btn);
   gtk_menu_button_set_use_popover (menu_btn, false);
+#endif
 }
 
 static void
-editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
+editor_toolbar_widget_class_init (
+  EditorToolbarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
@@ -411,7 +413,7 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
     klass, EditorToolbarWidget, x)
 
   BIND_CHILD (chord_highlighting);
-  BIND_CHILD (chord_highlight_tool_item);
+  BIND_CHILD (chord_highlight_box);
   BIND_CHILD (sep_after_chord_highlight);
   BIND_CHILD (snap_box);
   BIND_CHILD (quantize_box);

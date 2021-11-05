@@ -43,6 +43,7 @@
 
 #include "audio/curve.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 
 #include <glib/gi18n.h>
 
@@ -306,6 +307,73 @@ curve_get_normalized_y (
       g_return_val_if_reached (-1);
     }
   return CLAMP (val, 0.0, 1.0);
+}
+
+static CurveFadePreset *
+curve_fade_preset_create (
+  const char *   id,
+  const char *   label,
+  CurveAlgorithm algo,
+  double         curviness)
+{
+  CurveFadePreset * preset =
+    object_new (CurveFadePreset);
+
+  preset->id = g_strdup (id);
+  preset->label = g_strdup (label);
+  preset->opts.algo = algo;
+  preset->opts.curviness = curviness;
+
+  return preset;
+}
+
+static void
+curve_fade_preset_free (
+  gpointer data)
+{
+  CurveFadePreset * preset =
+    (CurveFadePreset *) data;
+  g_free_and_null (preset->id);
+  g_free_and_null (preset->label);
+  object_zero_and_free (preset);
+}
+
+/**
+ * Returns an array of CurveFadePreset.
+ */
+GPtrArray *
+curve_get_fade_presets (void)
+{
+  GPtrArray * arr =
+    g_ptr_array_new_with_free_func (
+      curve_fade_preset_free);
+  g_ptr_array_add (
+    arr,
+    curve_fade_preset_create (
+      "linear", _("Linear"),
+      CURVE_ALGORITHM_SUPERELLIPSE, 0));
+  g_ptr_array_add (
+    arr,
+    curve_fade_preset_create (
+      "exponential", _("Exponential"),
+      CURVE_ALGORITHM_EXPONENT, - 0.6));
+  g_ptr_array_add (
+    arr,
+    curve_fade_preset_create (
+      "elliptic", _("Elliptic"),
+      CURVE_ALGORITHM_SUPERELLIPSE, - 0.5));
+  g_ptr_array_add (
+    arr,
+    curve_fade_preset_create (
+      "logarithmic", _("Logarithmic"),
+      CURVE_ALGORITHM_LOGARITHMIC, - 0.5));
+  g_ptr_array_add (
+    arr,
+    curve_fade_preset_create (
+      "vital", _("Vital"),
+      CURVE_ALGORITHM_VITAL, - 0.5));
+
+  return arr;
 }
 
 bool

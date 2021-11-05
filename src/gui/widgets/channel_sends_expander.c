@@ -105,8 +105,8 @@ channel_sends_expander_widget_setup (
       position != self->position)
     {
       /* remove children */
-      z_gtk_container_destroy_all_children (
-        GTK_CONTAINER (self->box));
+      z_gtk_widget_destroy_all_children (
+        GTK_WIDGET (self->box));
 
       Channel * ch =
         track_get_channel (track);
@@ -121,14 +121,11 @@ channel_sends_expander_widget_setup (
           ChannelSendWidget * csw =
             channel_send_widget_new (ch->sends[i]);
           self->slots[i] = csw;
-          gtk_box_pack_start (
-            strip_box, GTK_WIDGET (csw), 1, 1, 0);
+          gtk_box_append (
+            strip_box, GTK_WIDGET (csw));
 
-          gtk_box_pack_start (
-            self->box,
-            GTK_WIDGET (strip_box), 0, 1, 0);
-          gtk_widget_show_all (
-            GTK_WIDGET (strip_box));
+          gtk_box_append (
+            strip_box, GTK_WIDGET (strip_box));
         }
     }
 
@@ -166,31 +163,22 @@ channel_sends_expander_widget_init (
 {
   self->scroll =
     GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new (
-        NULL, NULL));
+      gtk_scrolled_window_new ());
   gtk_widget_set_vexpand (
-    GTK_WIDGET (self->scroll), 1);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->scroll), 1);
-  gtk_scrolled_window_set_shadow_type (
-    self->scroll, GTK_SHADOW_ETCHED_IN);
+    GTK_WIDGET (self->scroll), true);
 
   self->viewport =
     GTK_VIEWPORT (
       gtk_viewport_new (NULL, NULL));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->viewport), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self->scroll),
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (self->scroll),
     GTK_WIDGET (self->viewport));
 
   self->box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->box), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self->viewport),
+  gtk_viewport_set_child (
+    GTK_VIEWPORT (self->viewport),
     GTK_WIDGET (self->box));
 
   expander_box_widget_add_content (

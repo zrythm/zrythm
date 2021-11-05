@@ -1,93 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="ControlRoomWidget" parent="GtkGrid">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="main_knob_placeholder">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
+        <layout>
+          <property name="column">1</property>
+          <property name="row">1</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">1</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolbar" id="left_of_main_knob_toolbar">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkBox" id="left_of_main_knob_toolbar">
+        <style>
+          <class name="toolbar"/>
+        </style>
+        <property name="can_focus">0</property>
         <property name="orientation">vertical</property>
-        <property name="toolbar_style">icons</property>
         <child>
-          <object class="GtkToggleToolButton" id="dim_output">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+          <object class="GtkToggleButton" id="dim_output">
+            <property name="can_focus">0</property>
             <property name="tooltip_text">Temporarily dim the main output level</property>
             <property name="action_name">app.toggle-dim-output</property>
             <property name="icon_name">dim</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
         </child>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">1</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="main_meter_placeholder">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
+        <layout>
+          <property name="column">2</property>
+          <property name="row">1</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">2</property>
-        <property name="top_attach">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="listen_dim_slider_placeholder">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">2</property>
+        </layout>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">2</property>
-      </packing>
     </child>
     <child>
       <placeholder/>

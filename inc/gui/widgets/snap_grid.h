@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,7 +27,7 @@
 G_DECLARE_FINAL_TYPE (
   SnapGridWidget, snap_grid_widget,
   Z, SNAP_GRID_WIDGET,
-  GtkMenuButton)
+  GtkBox)
 
 typedef struct _SnapGridPopoverWidget
   SnapGridPopoverWidget;
@@ -35,7 +35,9 @@ typedef struct SnapGrid SnapGrid;
 
 typedef struct _SnapGridWidget
 {
-  GtkMenuButton      parent_instance;
+  GtkBox             parent_instance;
+
+  GtkMenuButton *    menu_btn;
 
   /** The box. */
   GtkBox *           box;

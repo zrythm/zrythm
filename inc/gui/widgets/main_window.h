@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -64,6 +64,7 @@ typedef struct ArrangerSelections
 typedef struct _MainWindowWidget
 {
   GtkApplicationWindow     parent_instance;
+  GtkOverlay *             overlay;
   GtkBox *                 main_box;
   HeaderWidget *           header;
   TopBarWidget *           top_bar;
@@ -74,7 +75,7 @@ typedef struct _MainWindowWidget
   int                      is_fullscreen;
   int                      height;
   int                      width;
-  GtkAccelGroup *          accel_group;
+  //GtkShortcutController *  shortcut_controller;
   GtkRevealer *            revealer;
   GtkButton *              close_notification_button;
   GtkLabel *               notification_label;

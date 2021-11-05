@@ -1,137 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="EditorToolbarWidget" parent="GtkToolbar">
+  <requires lib="gtk" version="4.0"/>
+  <template class="EditorToolbarWidget" parent="GtkBox">
     <style>
-      <class name="arranger-toolbar" />
-      <class name="editor-toolbar" />
+      <class name="toolbar"/>
+      <class name="arranger-toolbar"/>
+      <class name="editor-toolbar"/>
     </style>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkToolItem">
+      <object class="SnapBoxWidget" id="snap_box">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="chord_highlight_box">
         <child>
-          <object class="SnapBoxWidget" id="snap_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
+          <object class="GtkComboBox" id="chord_highlighting"/>
         </child>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
+      <object class="GtkSeparator" id="sep_after_chord_highlight">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="QuantizeBoxWidget" id="quantize_box">
+        <property name="visible">1</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="ButtonWithMenuWidget" id="functions_btn">
         <property name="visible">True</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolItem"
-              id="chord_highlight_tool_item">
-        <property name="visible">True</property>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">1</property>
-            <child>
-              <object class="GtkComboBox"
-                id="chord_highlighting">
-                <property name="visible">1</property>
-              </object>
-            </child>
-          </object>
-        </child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem" id="sep_after_chord_highlight">
+      <object class="PlayheadScrollButtonsWidget" id="playhead_scroll">
         <property name="visible">True</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolItem">
-        <property name="visible">True</property>
-        <child>
-          <object class="QuantizeBoxWidget"
-            id="quantize_box">
-            <property name="visible">1</property>
-          </object>
-        </child>
-      </object>
+      <object class="GtkBox"/>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkToolItem">
-        <property name="visible">True</property>
-        <child>
-          <object class="ButtonWithMenuWidget"
-            id="functions_btn">
-            <property name="visible">True</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkToolItem">
-        <property name="visible">True</property>
-        <child>
-          <object class="PlayheadScrollButtonsWidget"
-            id="playhead_scroll">
-            <property name="visible">True</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <!-- extra space so we can add widgets at the
-         end -->
-    <child>
-      <object class="GtkToolItem">
-        <property name="visible">True</property>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">1</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToolButton" id="event_viewer_toggle">
-        <property name="visible">True</property>
+      <object class="GtkButton" id="event_viewer_toggle">
         <property name="action-name">app.toggle-editor-event-viewer</property>
         <property name="icon-name">event-viewer</property>
         <property name="tooltip-text" translatable="yes">Toggle event viewer</property>

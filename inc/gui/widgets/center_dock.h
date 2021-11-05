@@ -26,8 +26,6 @@
 #ifndef __GUI_WIDGETS_CENTER_DOCK_H__
 #define __GUI_WIDGETS_CENTER_DOCK_H__
 
-#include "gui/widgets/timeline_selection_info.h"
-
 #include <gtk/gtk.h>
 
 #define CENTER_DOCK_WIDGET_TYPE \

@@ -719,13 +719,11 @@ arranger_object_set_full_rectangle (
             self->full_rect.width = 1;
           }
 
-        gint wx, wy;
-
+        double wx, wy;
         gtk_widget_translate_coordinates(
           (GtkWidget *) (track->widget),
           (GtkWidget *) (arranger),
-          0, 0,
-          &wx, &wy);
+          0, 0, &wx, &wy);
         /* for some reason it returns a few
          * negatives at first */
         if (wy < 0)
@@ -736,7 +734,7 @@ arranger_object_set_full_rectangle (
             chord_region_recreate_pango_layouts (
               region);
 
-            self->full_rect.y = wy;
+            self->full_rect.y = (int) wy;
             /* full height minus the space the
              * scales would require, plus some
              * padding */
@@ -767,7 +765,7 @@ arranger_object_set_full_rectangle (
               wy = 0;
 
             self->full_rect.y =
-              wy + at->y;
+              (int) wy + at->y;
             self->full_rect.height =
               (int) at->height;
 
@@ -775,7 +773,7 @@ arranger_object_set_full_rectangle (
           }
         else
           {
-            self->full_rect.y = wy;
+            self->full_rect.y = (int) wy;
             self->full_rect.height =
               (int) track->main_height;
 
@@ -847,7 +845,7 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_CHORD_TRACK;
 
-        gint wx, wy;
+        double wx, wy;
         gtk_widget_translate_coordinates(
           (GtkWidget *) (track->widget),
           (GtkWidget *) (arranger),
@@ -871,7 +869,7 @@ arranger_object_set_full_rectangle (
         int obj_height =
           self->texth + Z_CAIRO_TEXT_PADDING * 2;
         self->full_rect.y =
-          (wy + (int) track->main_height) -
+          ((int) wy + (int) track->main_height) -
             obj_height;
         self->full_rect.height = obj_height;
 
@@ -882,7 +880,7 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_MARKER_TRACK;
 
-        gint wx, wy;
+        double wx, wy;
         gtk_widget_translate_coordinates(
           (GtkWidget *) (track->widget),
           (GtkWidget *) (arranger),
@@ -903,7 +901,7 @@ arranger_object_set_full_rectangle (
           Z_CAIRO_TEXT_PADDING * 2;
 
         int global_y_start =
-          wy + (int) track->main_height;
+          (int) wy + (int) track->main_height;
         int obj_height =
           MIN (
             (int) track->main_height,
@@ -1088,6 +1086,7 @@ void
 arranger_object_draw (
   ArrangerObject * self,
   ArrangerWidget * arranger,
+  GtkSnapshot *  snapshot,
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
@@ -1110,7 +1109,7 @@ arranger_object_draw (
       break;
     case TYPE (REGION):
       region_draw (
-        (ZRegion *) self, cr, rect);
+        (ZRegion *) self, snapshot, cr, rect);
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw (

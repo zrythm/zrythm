@@ -45,6 +45,9 @@ G_DECLARE_FINAL_TYPE (
   Z, PORT_CONNECTIONS_WIDGET,
   GtkBox)
 
+#define MW_PORT_CONNECTIONS \
+  (MW_MAIN_NOTEBOOK->port_connections)
+
 /**
  * Left dock widget.
  */

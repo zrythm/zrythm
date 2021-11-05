@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,7 +37,7 @@ timeline_bot_box_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   // set icons
-  gtk_tool_button_set_icon_name (
+  gtk_button_set_icon_name (
     self->instrument_add, "add");
 }
 

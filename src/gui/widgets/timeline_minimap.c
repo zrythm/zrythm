@@ -45,7 +45,7 @@
 
 G_DEFINE_TYPE (
   TimelineMinimapWidget, timeline_minimap_widget,
-  GTK_TYPE_OVERLAY)
+  GTK_TYPE_WIDGET)
 
 /**
  * Taken from arranger.c
@@ -187,16 +187,18 @@ move_y (
 }
 
 /**
- * Gets called to set the position/size of each overlayed widget.
+ * Gets called to set the position/size of each
+ * overlayed widget.
  */
 static gboolean
-get_child_position (GtkOverlay   *overlay,
-                    GtkWidget    *widget,
-                    GdkRectangle *allocation,
-                    gpointer      user_data)
+get_child_position (
+  GtkOverlay   *overlay,
+  GtkWidget    *widget,
+  GdkRectangle *allocation,
+  gpointer      user_data)
 {
   TimelineMinimapWidget * self =
-    Z_TIMELINE_MINIMAP_WIDGET (overlay);
+    Z_TIMELINE_MINIMAP_WIDGET (user_data);
 
   if (Z_IS_TIMELINE_MINIMAP_SELECTION_WIDGET (widget))
     {
@@ -248,11 +250,12 @@ show_context_menu (TimelineMinimapWidget * self)
 }
 
 static void
-on_right_click (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
+on_right_click (
+  GtkGestureClick *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  gpointer              user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
@@ -270,11 +273,12 @@ on_right_click (GtkGestureMultiPress *gesture,
  * before drag_begin, so the logic is done in drag_begin.
  */
 static void
-multipress_pressed (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
+on_click (
+  GtkGestureClick *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  gpointer              user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
@@ -283,10 +287,11 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 }
 
 static void
-drag_begin (GtkGestureDrag * gesture,
-               gdouble         start_x,
-               gdouble         start_y,
-               gpointer        user_data)
+drag_begin (
+  GtkGestureDrag * gesture,
+  gdouble         start_x,
+  gdouble         start_y,
+  gpointer        user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
@@ -297,47 +302,40 @@ drag_begin (GtkGestureDrag * gesture,
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
 
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture),
-      sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
+  /*GdkModifierType state =*/
+    /*gtk_event_controller_get_current_event_state (*/
+      /*GTK_EVENT_CONTROLLER (gesture));*/
 
   int is_hit =
-    ui_is_child_hit (GTK_WIDGET (self),
-                     GTK_WIDGET (self->selection),
-                     1, 1,
-                     start_x,
-                     start_y, 0, 0);
+    ui_is_child_hit (
+      GTK_WIDGET (self),
+      GTK_WIDGET (self->selection),
+      1, 1, start_x, start_y, 0, 0);
   if (is_hit)
     {
       /* update arranger action */
       if (self->selection->cursor ==
             UI_CURSOR_STATE_RESIZE_L)
-        self->action = TIMELINE_MINIMAP_ACTION_RESIZING_L;
+        self->action =
+          TIMELINE_MINIMAP_ACTION_RESIZING_L;
       else if (self->selection->cursor ==
                  UI_CURSOR_STATE_RESIZE_R)
-        self->action = TIMELINE_MINIMAP_ACTION_RESIZING_R;
+        self->action =
+          TIMELINE_MINIMAP_ACTION_RESIZING_R;
       else
         {
           self->action =
             TIMELINE_MINIMAP_ACTION_STARTING_MOVING;
-          ui_set_cursor_from_name (GTK_WIDGET (self->selection),
-                         "grabbing");
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self->selection),
+            "grabbing");
         }
 
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-                GTK_WIDGET (self->selection),
-                GTK_WIDGET (self),
-                0,
-                0,
-                &wx,
-                &wy);
+      double wx, wy;
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (self->selection),
+        GTK_WIDGET (self),
+        0, 0, &wx, &wy);
       self->selection_start_pos = wx;
       self->selection_end_pos =
         wx +
@@ -373,46 +371,44 @@ drag_begin (GtkGestureDrag * gesture,
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag * gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  gpointer        user_data)
 {
   TimelineMinimapWidget * self =
     Z_TIMELINE_MINIMAP_WIDGET (user_data);
 
   if (self->action ==
-           TIMELINE_MINIMAP_ACTION_STARTING_MOVING)
+        TIMELINE_MINIMAP_ACTION_STARTING_MOVING)
     {
       self->action = TIMELINE_MINIMAP_ACTION_MOVING;
     }
 
   /* handle x */
-  if (self->action == TIMELINE_MINIMAP_ACTION_RESIZING_L)
+  if (self->action ==
+        TIMELINE_MINIMAP_ACTION_RESIZING_L)
     {
-      resize_selection_l (self,
-                          offset_x);
+      resize_selection_l (self, offset_x);
     }
-  else if (self->action == TIMELINE_MINIMAP_ACTION_RESIZING_R)
+  else if (self->action ==
+             TIMELINE_MINIMAP_ACTION_RESIZING_R)
     {
-      resize_selection_r (self,
-                          offset_x);
+      resize_selection_r (self, offset_x);
     }
 
   /* if moving the selection */
-  else if (self->action == TIMELINE_MINIMAP_ACTION_MOVING)
+  else if (self->action ==
+             TIMELINE_MINIMAP_ACTION_MOVING)
     {
-      move_selection_x (
-        self,
-        offset_x);
+      move_selection_x (self, offset_x);
 
       /* handle y */
-      move_y (
-        self,
-        (int) offset_y);
-    } /* endif MOVING */
+      move_y (self, (int) offset_y);
+    }
 
-  gtk_widget_queue_allocate(GTK_WIDGET (self));
+  gtk_widget_queue_allocate (GTK_WIDGET (self));
   self->last_offset_x = offset_x;
   self->last_offset_y = offset_y;
 
@@ -453,51 +449,65 @@ timeline_minimap_widget_class_init (
   TimelineMinimapWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "timeline-minimap");
+  gtk_widget_class_set_css_name (
+    klass, "timeline-minimap");
 }
 
 static void
 timeline_minimap_widget_init (
   TimelineMinimapWidget * self)
 {
+  self->overlay =
+    GTK_OVERLAY (gtk_overlay_new ());
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->overlay), GTK_WIDGET (self));
+
   self->bg = timeline_minimap_bg_widget_new ();
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->bg));
+  gtk_overlay_set_child (
+    self->overlay, GTK_WIDGET (self->bg));
   self->selection =
     timeline_minimap_selection_widget_new (self);
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (self->selection));
+  gtk_overlay_add_overlay (
+    self->overlay,
+    GTK_WIDGET (self->selection));
 
-  self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
-  self->multipress =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
-  self->right_mouse_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_mouse_mp),
-                        GDK_BUTTON_SECONDARY);
-
+  GtkGestureDrag * drag =
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
-    G_OBJECT (self), "get-child-position",
-    G_CALLBACK (get_child_position), NULL);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-begin",
+    G_OBJECT(drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);
   g_signal_connect (
-    G_OBJECT(self->drag), "drag-update",
+    G_OBJECT(drag), "drag-update",
     G_CALLBACK (drag_update),  self);
   g_signal_connect (
-    G_OBJECT(self->drag), "drag-end",
+    G_OBJECT(drag), "drag-end",
     G_CALLBACK (drag_end),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->overlay),
+    GTK_EVENT_CONTROLLER (drag));
+
+  GtkGestureClick * click =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
-    G_CALLBACK (multipress_pressed), self);
+    G_OBJECT (click), "pressed",
+    G_CALLBACK (on_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->overlay),
+    GTK_EVENT_CONTROLLER (click));
+
+  GtkGestureClick * right_click =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (right_click),
+    GDK_BUTTON_SECONDARY);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->overlay),
+    GTK_EVENT_CONTROLLER (right_click));
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_OBJECT (right_click), "pressed",
     G_CALLBACK (on_right_click), self);
+
+  g_signal_connect (
+    G_OBJECT (self->overlay), "get-child-position",
+    G_CALLBACK (get_child_position), NULL);
 }

@@ -36,6 +36,7 @@ backend_srcs = [
   'timeline.c',
   'timeline_selections.c',
   'tracklist_selections.c',
+  'wrapped_object_with_change_signal.c',
   ]
 
 zrythm_srcs += files (backend_srcs)

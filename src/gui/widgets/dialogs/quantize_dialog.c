@@ -133,8 +133,8 @@ quantize_dialog_widget_new (
       &opts->note_length,
       &opts->note_type,
       _("note length"));
-  gtk_container_add (
-    GTK_CONTAINER (self->note_length_box),
+  gtk_box_append (
+    GTK_BOX (self->note_length_box),
     GTK_WIDGET (self->note_length));
   self->note_type =
     digital_meter_widget_new (
@@ -142,8 +142,8 @@ quantize_dialog_widget_new (
       &opts->note_length,
       &opts->note_type,
       _("note type"));
-  gtk_container_add (
-    GTK_CONTAINER (self->note_type_box),
+  gtk_box_append (
+    GTK_BOX (self->note_type_box),
     GTK_WIDGET (self->note_type));
 
   int w = 100, h = -1;
@@ -153,8 +153,8 @@ quantize_dialog_widget_new (
       quantize_options_set_amount,
       opts, 0, 100, w, h, 0, 0,
       UI_DRAG_MODE_CURSOR, "%");
-  gtk_container_add (
-    GTK_CONTAINER (self->amount_box),
+  gtk_box_append (
+    GTK_BOX (self->amount_box),
     GTK_WIDGET (self->amount));
   self->swing =
     bar_slider_widget_new (
@@ -162,8 +162,8 @@ quantize_dialog_widget_new (
       quantize_options_set_swing,
       opts, 0, 100, w, h, 0, 0,
       UI_DRAG_MODE_CURSOR, "%");
-  gtk_container_add (
-    GTK_CONTAINER (self->swing_box),
+  gtk_box_append (
+    GTK_BOX (self->swing_box),
     GTK_WIDGET (self->swing));
   self->randomization =
     bar_slider_widget_new (
@@ -171,8 +171,8 @@ quantize_dialog_widget_new (
       quantize_options_set_randomization,
       opts, 0.f, 100.f, w, h, 0, 0,
       UI_DRAG_MODE_CURSOR, " ticks");
-  gtk_container_add (
-    GTK_CONTAINER (self->randomization_box),
+  gtk_box_append (
+    GTK_BOX (self->randomization_box),
     GTK_WIDGET (self->randomization));
 
   return self;

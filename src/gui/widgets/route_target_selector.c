@@ -30,9 +30,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (RouteTargetSelectorWidget,
-               route_target_selector_widget,
-               GTK_TYPE_MENU_BUTTON)
+G_DEFINE_TYPE (
+  RouteTargetSelectorWidget,
+  route_target_selector_widget,
+  GTK_TYPE_BOX)
 
 #define MAX_CHARS 8
 
@@ -70,7 +71,7 @@ route_target_selector_widget_refresh (
   /*if (self->popover && GTK_IS_WIDGET (self->popover))*/
     /*g_object_unref (self->popover);*/
   gtk_menu_button_set_popover (
-    GTK_MENU_BUTTON (self), NULL);
+    GTK_MENU_BUTTON (self->menu_button), NULL);
   self->popover = NULL;
 
   Track * track = NULL;
@@ -103,7 +104,7 @@ route_target_selector_widget_refresh (
         route_target_selector_popover_widget_new (
           self);
       gtk_menu_button_set_popover (
-        GTK_MENU_BUTTON (self),
+        GTK_MENU_BUTTON (self->menu_button),
         GTK_WIDGET (self->popover));
     }
 }
@@ -158,12 +159,15 @@ static void
 route_target_selector_widget_init (
   RouteTargetSelectorWidget * self)
 {
+  self->menu_button =
+    GTK_MENU_BUTTON (gtk_menu_button_new ());
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->menu_button));
+
   /* add class */
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
-  gtk_style_context_add_class (
-    context, "route_target_selector");
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self), "route_target_selector");
 
   self->box =
     GTK_BOX (
@@ -171,28 +175,21 @@ route_target_selector_widget_init (
   self->img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (
-        "gnome-builder-debug-step-out-symbolic-light",
-        GTK_ICON_SIZE_BUTTON));
+        "gnome-builder-debug-step-out-symbolic-light"));
 
   self->label =
     GTK_LABEL (
       gtk_label_new (_("Stereo Out")));
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self->label));
-  gtk_style_context_add_class (
-    context, "channel_label_smaller");
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self->label),
+    "channel_label_smaller");
   gtk_label_set_ellipsize (
     self->label, PANGO_ELLIPSIZE_END);
 
-  gtk_box_pack_start (
-    self->box, GTK_WIDGET (self->img),
-    F_NO_EXPAND, F_NO_FILL, 1);
-  gtk_box_pack_start (
-    self->box, GTK_WIDGET (self->label),
-    F_NO_EXPAND, F_NO_FILL, 1);
-  gtk_container_add (
-    GTK_CONTAINER (self), GTK_WIDGET (self->box));
-
-  gtk_widget_show_all (GTK_WIDGET (self));
+  gtk_box_append (
+    self->box, GTK_WIDGET (self->img));
+  gtk_box_append (
+    self->box, GTK_WIDGET (self->label));
+  gtk_menu_button_set_child (
+    self->menu_button, GTK_WIDGET (self->box));
 }

@@ -1,74 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-  Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="RangeActionButtonsWidget" parent="GtkButtonBox">
+  <requires lib="gtk" version="4.0"/>
+  <template class="RangeActionButtonsWidget" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="spacing">1</property>
-    <property name="layout_style">expand</property>
     <child>
       <object class="GtkButton" id="insert_silence">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
+        <property name="focusable">1</property>
+        <property name="receives_default">1</property>
         <property name="action_name">app.insert-silence</property>
-        <property name="tooltip-text"
-          translatable="yes">Insert silence</property>
+        <property name="tooltip-text" translatable="yes">Insert silence</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="icon-name">timeline-insert</property>
           </object>
         </child>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkButton" id="remove">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
+        <property name="focusable">1</property>
+        <property name="receives_default">1</property>
         <property name="action_name">app.remove-range</property>
-        <property name="tooltip-text"
-          translatable="yes">Remove range</property>
+        <property name="tooltip-text" translatable="yes">Remove range</property>
         <child>
           <object class="GtkImage">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="icon-name">timeline-extract</property>
           </object>
         </child>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
   </template>
 </interface>

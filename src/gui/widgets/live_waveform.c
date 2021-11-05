@@ -95,27 +95,25 @@ draw_lines (
   cairo_stroke (cr);
 }
 
-/**
- * Draws the color picker.
- */
-static int
+static void
 live_waveform_draw_cb (
-  GtkWidget *       widget,
-  cairo_t *         cr,
-  LiveWaveformWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  LiveWaveformWidget * self =
+    Z_LIVE_WAVEFORM_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   if (!PROJECT || !AUDIO_ENGINE)
     {
-      return false;
+      return;
     }
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
-
-  gint width =
-    gtk_widget_get_allocated_width (widget);
-  gint height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -139,9 +137,8 @@ live_waveform_draw_cb (
   switch (self->type)
     {
     case LIVE_WAVEFORM_ENGINE:
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (P_MASTER_TRACK),
-        false);
+      g_return_if_fail (
+        IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
       if (!P_MASTER_TRACK->channel->stereo_out->l->
             write_ring_buffers)
         {
@@ -149,7 +146,7 @@ live_waveform_draw_cb (
             write_ring_buffers = true;
           P_MASTER_TRACK->channel->stereo_out->r->
             write_ring_buffers = true;
-          return FALSE;
+          return;
         }
       port = P_MASTER_TRACK->channel->stereo_out->l;
       break;
@@ -157,18 +154,17 @@ live_waveform_draw_cb (
       if (!self->port->write_ring_buffers)
         {
           self->port->write_ring_buffers = true;
-          return FALSE;
+          return;
         }
       port = self->port;
       break;
     }
 
-  g_return_val_if_fail (
-    IS_PORT_AND_NONNULL (port), false);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   /* if ring not ready yet skip draw */
   if (!port->audio_ring)
-    return false;
+    return;
 
   /* get the L buffer */
   size_t read_space_avail =
@@ -178,7 +174,7 @@ live_waveform_draw_cb (
       0 : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
   if (blocks_to_read <= 0)
-    return false;
+    return;
 
   while (read_space_avail > self->buf_sz[0])
     {
@@ -195,7 +191,7 @@ live_waveform_draw_cb (
     (lblocks_read - 1) * AUDIO_ENGINE->block_length;
   if (lblocks_read == 0)
     {
-      return FALSE;
+      return;
       /*g_return_val_if_reached (FALSE);*/
     }
 
@@ -211,7 +207,7 @@ live_waveform_draw_cb (
 
       /* if buffer is not filled do not draw */
       if (blocks_to_read <= 0)
-        return false;
+        return;
 
       while (read_space_avail > self->buf_sz[1])
         {
@@ -229,7 +225,7 @@ live_waveform_draw_cb (
           AUDIO_ENGINE->block_length;
       if (rblocks_read == 0)
         {
-          return FALSE;
+          return;
           /*g_return_val_if_reached (FALSE);*/
         }
 
@@ -243,8 +239,6 @@ live_waveform_draw_cb (
         self, cr, self->bufs[0], NULL, lstart_index,
         0);
     }
-
-  return FALSE;
 }
 
 static int
@@ -271,9 +265,9 @@ init_common (
   self->buf_sz[0] = BUF_SIZE;
   self->buf_sz[1] = BUF_SIZE;
 
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (live_waveform_draw_cb), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), live_waveform_draw_cb,
+    self, NULL);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),

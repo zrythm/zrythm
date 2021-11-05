@@ -73,4 +73,7 @@ modulator_view_widget_refresh (
   ModulatorViewWidget * self,
   Track *               track);
 
+ModulatorViewWidget *
+modulator_view_widget_new (void);
+
 #endif

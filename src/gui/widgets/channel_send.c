@@ -38,19 +38,20 @@ G_DEFINE_TYPE (
 
 #define ELLIPSIZE_PADDING 2
 
-static int
+static void
 channel_send_draw_cb (
-  GtkWidget *         widget,
-  cairo_t *           cr,
-  ChannelSendWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  ChannelSendWidget * self =
+    Z_CHANNEL_SEND_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GtkStyleContext *context =
   gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -144,8 +145,6 @@ channel_send_draw_cb (
             widget, self->cache_tooltip);
         }
     }
-
-  return FALSE;
 }
 
 static void
@@ -221,23 +220,23 @@ on_drag_end (
 }
 
 static void
-multipress_pressed (
-  GtkGestureMultiPress *gesture,
+on_pressed (
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
   ChannelSendWidget *   self)
 {
   self->n_press = n_press;
-  g_message ("multipress %d", n_press);
+  g_message ("clicked %d", n_press);
 
   if (n_press == 2)
     {
       ChannelSendSelectorWidget * send_selector =
         channel_send_selector_widget_new (
           self);
-      gtk_widget_show_all (
-        GTK_WIDGET (send_selector));
+      gtk_popover_present (
+        GTK_POPOVER (send_selector));
     }
 }
 
@@ -245,40 +244,24 @@ static void
 show_context_menu (
   ChannelSendWidget * self)
 {
-  GtkWidget *menu;
-  GtkMenuItem * menuitem;
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
-  menu = gtk_menu_new();
-
-#define CREATE_SEPARATOR \
-  menuitem = \
-    GTK_MENU_ITEM (gtk_separator_menu_item_new ()); \
-  gtk_widget_show_all (GTK_WIDGET (menuitem))
-
-#define ADD_TO_SHELL \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
-
-  menuitem = CREATE_MIDI_LEARN_MENU_ITEM;
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (ui_bind_midi_cc_item_activate_cb),
+  char tmp[500];
+  sprintf (
+    tmp, "app.bind-midi-cc::%p",
     self->send->amount);
-  ADD_TO_SHELL;
+  menuitem =
+    CREATE_MIDI_LEARN_MENU_ITEM (tmp);
+  g_menu_append_item (menu, menuitem);
 
-#undef ADD_TO_SHELL
-
-  gtk_widget_show_all(menu);
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 static void
 on_right_click (
-  GtkGestureMultiPress *gesture,
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -290,28 +273,30 @@ on_right_click (
   show_context_menu (self);
 }
 
-static gboolean
-on_motion (
-  GtkWidget * widget,
-  GdkEvent *event,
-  ChannelSendWidget * self)
+static void
+on_enter (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  if (gdk_event_get_event_type (event) ==
-        GDK_ENTER_NOTIFY)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT, 0);
-    }
-  else if (gdk_event_get_event_type (event) ==
-             GDK_LEAVE_NOTIFY)
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-    }
+  ChannelSendWidget * self =
+    Z_CHANNEL_SEND_WIDGET (user_data);
+  gtk_widget_set_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT, 0);
+}
 
-  return FALSE;
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  gpointer                   user_data)
+{
+  ChannelSendWidget * self =
+    Z_CHANNEL_SEND_WIDGET (user_data);
+  gtk_widget_unset_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT);
 }
 
 static void
@@ -334,14 +319,18 @@ recreate_pango_layouts (
 }
 
 static void
-channel_send_widget_on_size_allocate (
-  GtkWidget *          widget,
-  GdkRectangle *       allocation,
-  ChannelSendWidget * self)
+channel_send_widget_on_resize (
+  GtkDrawingArea * drawing_area,
+  gint             width,
+  gint             height,
+  gpointer         user_data)
 {
+  ChannelSendWidget * self =
+    Z_CHANNEL_SEND_WIDGET (user_data);
   recreate_pango_layouts (self);
 }
 
+#if 0
 static void
 on_screen_changed (
   GtkWidget *          widget,
@@ -350,6 +339,7 @@ on_screen_changed (
 {
   recreate_pango_layouts (self);
 }
+#endif
 
 static void
 finalize (
@@ -389,53 +379,61 @@ static void
 channel_send_widget_init (
   ChannelSendWidget * self)
 {
-  /* make it able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self),
-    GDK_BUTTON_PRESS_MASK |
-    GDK_ENTER_NOTIFY_MASK |
-    GDK_LEAVE_NOTIFY_MASK);
-
   gtk_widget_set_size_request (
     GTK_WIDGET (self), -1, 20);
 
   self->cache_tooltip = NULL;
 
-  self->multipress =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+  self->click =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_event_controller_set_propagation_phase (
-    GTK_EVENT_CONTROLLER (self->multipress),
+    GTK_EVENT_CONTROLLER (self->click),
     GTK_PHASE_CAPTURE);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->click));
+
   self->right_mouse_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (
       self->right_mouse_mp),
       GDK_BUTTON_SECONDARY);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->right_mouse_mp));
+
   self->drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new (GTK_WIDGET (self)));
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (self->drag),
     GTK_PHASE_CAPTURE);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
+
+  GtkEventController * motion_controller =
+    gtk_event_controller_motion_new ();
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
 
   /* connect signals */
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    channel_send_draw_cb,
+    self, NULL);
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (channel_send_draw_cb), self);
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_enter), self);
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_leave), self);
   g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
-    G_CALLBACK (multipress_pressed), self);
+    G_OBJECT (self->click), "pressed",
+    G_CALLBACK (on_pressed), self);
   g_signal_connect (
     G_OBJECT (self->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
@@ -448,13 +446,14 @@ channel_send_widget_init (
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end",
     G_CALLBACK (on_drag_end),  self);
+#if 0
   g_signal_connect (
     G_OBJECT (self), "screen-changed",
     G_CALLBACK (on_screen_changed),  self);
+#endif
   g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (
-      channel_send_widget_on_size_allocate),
+    G_OBJECT (self), "resize",
+    G_CALLBACK (channel_send_widget_on_resize),
     self);
 }
 

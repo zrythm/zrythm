@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -129,8 +129,8 @@ typedef struct _ChordSelectorWindowWidget
   /** All of the above in an array. */
   GtkFlowBoxChild * creator_bass_notes[12];
 
-  GtkRadioButton *  creator_visibility_all;
-  GtkRadioButton *  creator_visibility_in_scale;
+  GtkCheckButton *  creator_visibility_all;
+  GtkCheckButton *  creator_visibility_in_scale;
 
   /** ScaleObject at the chord's position. */
   ScaleObject *      scale;

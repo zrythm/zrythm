@@ -30,7 +30,7 @@
 G_DEFINE_TYPE (
   PlayheadScrollButtonsWidget,
   playhead_scroll_buttons_widget,
-  GTK_TYPE_BUTTON_BOX)
+  GTK_TYPE_BOX)
 
 static void
 playhead_scroll_buttons_widget_class_init (

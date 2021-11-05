@@ -39,7 +39,7 @@ G_DECLARE_FINAL_TYPE (
   ArrangerWidget,
   arranger_widget,
   Z, ARRANGER_WIDGET,
-  GtkDrawingArea)
+  GtkWidget)
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -126,14 +126,14 @@ typedef enum ArrangerWidgetHoverType
  */
 typedef struct _ArrangerWidget
 {
-  GtkDrawingArea parent_instance;
+  GtkWidget  parent_instance;
 
   /** Type of arranger this is. */
   ArrangerWidgetType type;
 
   GtkGestureDrag * drag;
-  GtkGestureMultiPress * multipress;
-  GtkGestureMultiPress * right_mouse_mp;
+  GtkGestureClick * click;
+  GtkGestureClick * right_click;
   GtkEventControllerMotion * motion_controller;
 
   /** Used when dragging. */
@@ -350,7 +350,7 @@ typedef struct _ArrangerWidget
   cairo_surface_t * cached_surface;
 
   /** Rectangle in the last call. */
-  GdkRectangle   last_rect;
+  graphene_rect_t last_rect;
 
   /**
    * Whether the current selections can link
@@ -649,16 +649,20 @@ arranger_widget_get_snap_grid (
  * events don't reach here.
  */
 gboolean
-arranger_widget_on_key_action (
-  GtkWidget *widget,
-  GdkEventKey *event,
-  ArrangerWidget * self);
+arranger_widget_on_key_press (
+  GtkEventControllerKey * key_controller,
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  ArrangerWidget *        self);
 
-gboolean
+void
 arranger_widget_on_key_release (
-  GtkWidget *widget,
-  GdkEventKey *event,
-  ArrangerWidget * self);
+  GtkEventControllerKey * key_controller,
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  ArrangerWidget *        self);
 
 /**
  * Scroll until the given object is visible.

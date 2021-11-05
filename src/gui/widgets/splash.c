@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -114,14 +114,14 @@ splash_window_widget_class_init (
   resources_set_class_template (
     klass, "splash.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    SplashWindowWidget,
-    label);
-  gtk_widget_class_bind_template_child (
-    klass,
-    SplashWindowWidget,
-    progress_bar);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, SplashWindowWidget, x)
+
+  BIND_CHILD (label);
+  BIND_CHILD (progress_bar);
+
+#undef BIND_CHILD
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);
@@ -134,8 +134,7 @@ splash_window_widget_init (SplashWindowWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GtkStyleContext *context;
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self));
   gtk_style_context_add_class (

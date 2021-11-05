@@ -1,87 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="CenterDockWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <child>
-      <!-- This is the paned between the left panel
-      and the (center + right panel) -->
       <object class="GtkPaned" id="left_rest_paned">
-        <property name="visible">1</property>
-        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+        <property name="shrink-start-child">0</property>
         <child>
           <object class="LeftDockEdgeWidget" id="left_dock_edge">
             <property name="visible">True</property>
           </object>
-          <packing>
-            <property name="shrink">0</property>
-          </packing>
         </child>
         <child>
-          <!-- This is the paned with the center
-            on the left and the right panel on the
-            right-->
           <object class="GtkPaned" id="center_right_paned">
-            <property name="visible">1</property>
-            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="shrink-end-child">0</property>
+            <property name="resize-end-child">0</property>
+            <property name="shrink-start-child">0</property>
             <child>
-              <!-- This is the paned with the timeline on
-              top and the bot arranger on the bot -->
               <object class="GtkPaned" id="center_paned">
-                <property name="visible">1</property>
+                <property name="shrink-end-child">0</property>
+                <property name="shrink-start-child">0</property>
                 <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
                 <child>
-                  <object class="MainNotebookWidget"
-                    id="main_notebook">
+                  <object class="MainNotebookWidget" id="main_notebook">
                     <property name="visible">1</property>
                     <property name="hexpand">1</property>
                   </object>
-                  <packing>
-                    <property name="shrink">0</property>
-                    <property name="resize">1</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="BotDockEdgeWidget" id="bot_dock_edge"/>
-                  <packing>
-                    <property name="shrink">0</property>
-                    <property name="resize">1</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="shrink">0</property>
-                <property name="resize">1</property>
-              </packing>
             </child>
             <child>
               <object class="RightDockEdgeWidget" id="right_dock_edge"/>
-              <packing>
-                <property name="shrink">0</property>
-                <property name="resize">0</property>
-              </packing>
             </child>
           </object>
         </child>

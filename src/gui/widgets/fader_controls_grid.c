@@ -130,8 +130,8 @@ static void
 setup_balance_control (
   FaderControlsGridWidget * self)
 {
-  z_gtk_container_destroy_all_children (
-    GTK_CONTAINER (self->balance_box));
+  z_gtk_widget_destroy_all_children (
+    GTK_WIDGET (self->balance_box));
 
   if (!self->track)
     return;
@@ -144,10 +144,9 @@ setup_balance_control (
           channel_get_balance_control,
           channel_set_balance_control,
           ch, ch->fader->balance, 12);
-      gtk_box_pack_start (
+      gtk_box_append (
         self->balance_box,
-        GTK_WIDGET (self->balance_control),
-        F_NO_EXPAND, F_FILL, 0);
+        GTK_WIDGET (self->balance_control));
       gtk_widget_set_hexpand (
         GTK_WIDGET (self->balance_control), true);
       z_gtk_widget_set_margin (

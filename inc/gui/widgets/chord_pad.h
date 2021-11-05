@@ -75,6 +75,9 @@ void
 chord_pad_widget_refresh (
   ChordPadWidget * self);
 
+ChordPadWidget *
+chord_pad_widget_new (void);
+
 /**
  * @}
  */

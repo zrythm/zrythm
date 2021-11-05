@@ -157,9 +157,22 @@ static const cyaml_schema_value_t
     CurveOptions, curve_options_fields_schema),
 };
 
+typedef struct CurveFadePreset
+{
+  char * id;
+  char * label;
+  CurveOptions opts;
+} CurveFadePreset;
+
 void
 curve_opts_init (
   CurveOptions * opts);
+
+/**
+ * Returns an array of CurveFadePreset.
+ */
+GPtrArray *
+curve_get_fade_presets (void);
 
 /**
  * Stores the localized name of the algorithm in

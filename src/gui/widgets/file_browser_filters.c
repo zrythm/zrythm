@@ -41,14 +41,14 @@
 G_DEFINE_TYPE (
   FileBrowserFiltersWidget,
   file_browser_filters_widget,
-  GTK_TYPE_TOOLBAR)
+  GTK_TYPE_BOX)
 
 static void
 toggles_changed (
-  GtkToggleToolButton *      btn,
+  GtkToggleButton *      btn,
   FileBrowserFiltersWidget * self)
 {
-  if (gtk_toggle_tool_button_get_active (btn))
+  if (gtk_toggle_button_get_active (btn))
     {
       /* block signals, unset all, unblock */
       g_signal_handlers_block_by_func (
@@ -66,9 +66,9 @@ toggles_changed (
           S_SET_ENUM (
             S_UI_FILE_BROWSER, "filter",
             FILE_BROWSER_FILTER_AUDIO);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_midi, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_presets, 0);
         }
       else if (btn == self->toggle_midi)
@@ -76,9 +76,9 @@ toggles_changed (
           S_SET_ENUM (
             S_UI_FILE_BROWSER, "filter",
             FILE_BROWSER_FILTER_MIDI);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_audio, 0);
-          gtk_toggle_tool_button_set_active (
+          gtk_toggle_button_set_active (
             self->toggle_presets, 0);
         }
       else if (btn == self->toggle_presets)
@@ -86,10 +86,10 @@ toggles_changed (
           S_SET_ENUM (
             S_UI_FILE_BROWSER, "filter",
             FILE_BROWSER_FILTER_PRESET);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_midi, 0);
-          gtk_toggle_tool_button_set_active (
-            self->toggle_audio, 0);
+          gtk_toggle_button_set_active (
+            self->toggle_midi, false);
+          gtk_toggle_button_set_active (
+            self->toggle_audio, false);
         }
 
       g_signal_handlers_unblock_by_func (
@@ -158,6 +158,6 @@ file_browser_filters_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "file-browser-filters");
 }

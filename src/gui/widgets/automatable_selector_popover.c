@@ -565,12 +565,11 @@ on_selection_changed (
           self->port_treeview =
             tree_view_create (
               self, self->port_model);
-          z_gtk_container_destroy_all_children (
-            GTK_CONTAINER (
+          z_gtk_widget_destroy_all_children (
+            GTK_WIDGET (
               self->port_treeview_box));
-          gtk_container_add (
-            GTK_CONTAINER (
-              self->port_treeview_box),
+          gtk_box_append (
+            self->port_treeview_box,
             GTK_WIDGET (
               self->port_treeview));
 
@@ -730,16 +729,16 @@ automatable_selector_popover_widget_new (
   self->type_model = create_model_for_types (self);
   self->type_treeview =
     tree_view_create (self, self->type_model);
-  gtk_container_add (
-    GTK_CONTAINER (self->type_treeview_box),
+  gtk_box_append (
+    self->type_treeview_box,
     GTK_WIDGET (self->type_treeview));
 
   /* create model/treeview for ports */
   self->port_model = create_model_for_ports (self);
   self->port_treeview =
     tree_view_create (self, self->port_model);
-  gtk_container_add (
-    GTK_CONTAINER (self->port_treeview_box),
+  gtk_box_append (
+    self->port_treeview_box,
     GTK_WIDGET (self->port_treeview));
 
   /* select the automatable */
@@ -757,21 +756,17 @@ automatable_selector_popover_widget_class_init (
   resources_set_class_template (
     klass, "automatable_selector.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    AutomatableSelectorPopoverWidget,
-    type_treeview_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AutomatableSelectorPopoverWidget,
-    port_treeview_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AutomatableSelectorPopoverWidget,
-    info);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, AutomatableSelectorPopoverWidget, x)
+
+  BIND_CHILD (type_treeview_box);
+  BIND_CHILD (port_treeview_box);
+  BIND_CHILD (info);
   gtk_widget_class_bind_template_callback (
-    klass,
-    on_closed);
+    klass, on_closed);
+
+#undef BIND_CHILD
 }
 
 static void

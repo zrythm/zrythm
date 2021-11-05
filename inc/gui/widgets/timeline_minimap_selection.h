@@ -1,8 +1,5 @@
 /*
- * gui/widgets/timeline_minimap_selection.h - Minimap
- *   selection
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019, 2021 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -20,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Timeline minimap selection.
+ */
 
 #ifndef __GUI_WIDGETS_TIMELINE_MINIMAP_SELECTION_H__
 #define __GUI_WIDGETS_TIMELINE_MINIMAP_SELECTION_H__
@@ -29,30 +30,44 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define TIMELINE_MINIMAP_SELECTION_WIDGET_TYPE \
   (timeline_minimap_selection_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TimelineMinimapSelectionWidget,
-                      timeline_minimap_selection_widget,
-                      Z,
-                      TIMELINE_MINIMAP_SELECTION_WIDGET,
-                      GtkBox)
-
+G_DECLARE_FINAL_TYPE (
+  TimelineMinimapSelectionWidget,
+  timeline_minimap_selection_widget,
+  Z, TIMELINE_MINIMAP_SELECTION_WIDGET,
+  GtkBox)
 
 typedef struct _TimelineMinimapSelectionWidget
 {
   GtkBox                 parent_instance;
   GtkDrawingArea *       drawing_area;
   UiCursorState          cursor;
-  TimelineMinimapWidget * parent; ///< pointer back to parent
+
+  /** Pointer back to parent. */
+  TimelineMinimapWidget * parent;
 } TimelineMinimapSelectionWidget;
 
 TimelineMinimapSelectionWidget *
 timeline_minimap_selection_widget_new (
   TimelineMinimapWidget * parent);
 
+#if 0
 void
-timeline_minimap_selection_widget_on_motion (GtkWidget * widget,
-           GdkEventMotion *event,
-           gpointer user_data);
+timeline_minimap_selection_widget_on_motion (
+  GtkWidget *      widget,
+  GdkMotionEvent * event,
+  gpointer         user_data);
+#endif
+
+/**
+ * @}
+ */
 
 #endif

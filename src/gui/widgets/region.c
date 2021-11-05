@@ -47,6 +47,7 @@
 #include "utils/color.h"
 #include "utils/debug.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -1105,7 +1106,9 @@ draw_fade_part (
 static void
 draw_audio_part (
   ZRegion * self,
+  GtkSnapshot * snapshot,
   cairo_t * cr,
+  GdkRectangle * full_rect,
   int       vis_offset_x,
   int       vis_width,
   int       full_height)
@@ -1237,7 +1240,18 @@ draw_audio_part (
                 }
             }
         }
-#define DRAW_VLINE(cr,x,from_y,_height) \
+#define DRAW_VLINE(cr,_x,from_y,_height) \
+  graphene_rect_t grect = \
+    GRAPHENE_RECT_INIT ( \
+       (float) full_rect->x + (float) _x, \
+      (float) full_rect->y + (float) from_y, \
+      (float) width, (float) _height); \
+  z_gtk_print_graphene_rect (&grect); \
+  gtk_snapshot_append_color ( \
+    snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1), \
+    &grect);
+
+#define DRAW_VLINE_CAIRO(cr,x,from_y,_height) \
   switch (detail) \
     { \
     case UI_DETAIL_HIGH: \
@@ -1281,7 +1295,7 @@ draw_audio_part (
             /* from y */
             local_min_y,
             /* to y */
-            local_max_y - local_min_y);
+            (local_max_y - local_min_y));
         }
 
       prev_frames = curr_frames;
@@ -1312,6 +1326,7 @@ draw_audio_part (
 static void
 draw_audio_region (
   ZRegion *         self,
+  GtkSnapshot * snapshot,
   cairo_t *         cr,
   GdkRectangle *    rect,
   GdkRectangle *    full_rect,
@@ -1344,7 +1359,7 @@ draw_audio_region (
   /*int vis_offset_y =*/
     /*draw_rect->y - full_rect->y;*/
   int vis_width = draw_rect->width;
-  if (cache_applied)
+  if (cache_applied && false)
     {
       int cache_vis_offset =
         MAX (cache_applied_offset_x, 0);
@@ -1371,7 +1386,8 @@ draw_audio_region (
             vis_offset_x, new_vis_width);
 
           draw_audio_part (
-            self, cr, vis_offset_x, new_vis_width,
+            self, snapshot, cr,
+            full_rect, vis_offset_x, new_vis_width,
             full_height);
           draw_fade_part (
             self, cr, vis_offset_x, new_vis_width,
@@ -1395,7 +1411,8 @@ draw_audio_region (
 #endif
 
           draw_audio_part (
-            self, cr, new_vis_offset_x,
+            self, snapshot, cr,
+            full_rect, new_vis_offset_x,
             new_vis_width, full_height);
           draw_fade_part (
             self, cr, new_vis_offset_x,
@@ -1407,7 +1424,8 @@ draw_audio_region (
   else
     {
       draw_audio_part (
-        self, cr, vis_offset_x,
+        self, snapshot, cr,
+        full_rect, vis_offset_x,
         vis_width, full_height);
       draw_fade_part (
         self, cr, vis_offset_x,
@@ -1415,6 +1433,9 @@ draw_audio_region (
     }
 
   cairo_restore (cr);
+
+  arranger_object_queue_redraw (
+    (ArrangerObject *) self);
 }
 
 /**
@@ -1650,6 +1671,7 @@ is_cache_usable (
 void
 region_draw (
   ZRegion *      self,
+  GtkSnapshot *  snapshot,
   cairo_t *      cr,
   GdkRectangle * rect)
 {
@@ -1820,7 +1842,7 @@ region_draw (
           break;
         case REGION_TYPE_AUDIO:
           draw_audio_region (
-            self, cr_to_use, rect, &full_rect,
+            self, snapshot, cr_to_use, rect, &full_rect,
             &draw_rect, prev_cache_used,
             (int)
             last_draw_rect.x - last_full_rect.x,

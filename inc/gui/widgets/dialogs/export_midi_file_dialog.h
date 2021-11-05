@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,21 +25,12 @@
 
 #include <gtk/gtk.h>
 
-#define EXPORT_MIDI_FILE_DIALOG_WIDGET_TYPE \
-  (export_midi_file_dialog_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ExportMidiFileDialogWidget,
-  export_midi_file_dialog_widget,
-  Z,
-  EXPORT_MIDI_FILE_DIALOG_WIDGET,
-  GtkFileChooserDialog)
-
 typedef struct _MidiControllerMbWidget
   MidiControllerMbWidget;
 
 typedef struct _ExportMidiFileDialogWidget
 {
-  GtkFileChooserDialog parent_instance;
+  GtkFileChooserDialog * dialog;
 
   /** Description to show for the region. */
   GtkLabel *           description;
@@ -49,12 +40,12 @@ typedef struct _ExportMidiFileDialogWidget
 } ExportMidiFileDialogWidget;
 
 /**
- * Creates a ExportMidiFileDialog.
+ * Runs a new dialog and returns the filepath if
+ * selected or NULL if canceled.
  */
-ExportMidiFileDialogWidget *
-export_midi_file_dialog_widget_new_for_region (
+char *
+export_midi_file_dialog_widget_run_for_region (
   GtkWindow * parent,
-  ZRegion *    region);
+  ZRegion *   region);
 
 #endif
-

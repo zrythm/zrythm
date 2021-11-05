@@ -125,8 +125,8 @@ tracklist_widget_get_hit_track (
  */
 void
 tracklist_widget_handle_vertical_zoom_scroll (
-  TracklistWidget * self,
-  GdkEventScroll *  event);
+  TracklistWidget *          self,
+  GtkEventControllerScroll * scroll_controller);
 
 /**
  * Deletes all tracks and re-adds them.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,21 +38,22 @@ G_DEFINE_TYPE (
 /**
  * Draws the color picker.
  */
-static int
+static void
 color_area_draw_cb (
-  GtkWidget *       widget,
-  cairo_t *         cr,
-  ColorAreaWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  ColorAreaWidget * self =
+    Z_COLOR_AREA_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   if (self->redraw)
     {
       GtkStyleContext * context =
         gtk_widget_get_style_context (widget);
-
-      int width =
-        gtk_widget_get_allocated_width (widget);
-      int height =
-        gtk_widget_get_allocated_height (widget);
 
       self->cached_cr =
         cairo_create (self->cached_surface);
@@ -170,13 +171,11 @@ color_area_draw_cb (
   cairo_set_source_surface (
     cr, self->cached_surface, 0, 0);
   cairo_paint (cr);
-
-  return FALSE;
 }
 
 static void
 multipress_pressed (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x,
   gdouble                y,
@@ -184,43 +183,48 @@ multipress_pressed (
 {
   if (n_press == 1 && self->track)
     {
-      ObjectColorChooserDialogWidget * color_chooser =
-        object_color_chooser_dialog_widget_new_for_track (
-          self->track);
       object_color_chooser_dialog_widget_run (
-        color_chooser);
+        GTK_WINDOW (MAIN_WINDOW),
+        self->track, NULL, NULL);
     }
 }
 
 static void
-color_area_widget_on_size_allocate (
-  GtkWidget    *widget,
-  GdkRectangle *allocation,
-  ColorAreaWidget * self)
+color_area_widget_on_resize (
+  GtkDrawingArea * drawing_area,
+  gint             width,
+  gint             height,
+  gpointer         user_data)
 {
+  ColorAreaWidget * self =
+    Z_COLOR_AREA_WIDGET (user_data);
   self->redraw = true;
 }
 
-static gboolean
-on_motion (
-  GtkWidget *       widget,
-  GdkEventMotion *  event,
-  ColorAreaWidget * self)
+static void
+on_enter (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      self->hovered = true;
-      gtk_widget_queue_draw (GTK_WIDGET (self));
-      self->redraw = true;
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      self->hovered = false;
-      gtk_widget_queue_draw (GTK_WIDGET (self));
-      self->redraw = true;
-    }
+  ColorAreaWidget * self =
+    Z_COLOR_AREA_WIDGET (user_data);
+  self->hovered = true;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+  self->redraw = true;
+}
 
-  return FALSE;
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  gpointer                   user_data)
+{
+  ColorAreaWidget * self =
+    Z_COLOR_AREA_WIDGET (user_data);
+  self->hovered = false;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+  self->redraw = true;
 }
 
 /**
@@ -272,32 +276,38 @@ color_area_widget_set_color (
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
-  /* make able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self),
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK |
-    GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), color_area_draw_cb,
+    self, NULL);
 
-  GtkGestureMultiPress * mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+  GtkGestureClick * mp =
+    GTK_GESTURE_CLICK (
+      gtk_gesture_click_new ());
   g_signal_connect (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (multipress_pressed), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (mp));
+
   g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (color_area_widget_on_size_allocate),
+    G_OBJECT (self), "resize",
+    G_CALLBACK (color_area_widget_on_resize),
     self);
+
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (color_area_draw_cb), self);
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_enter),  self);
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT (self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_leave),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
+
   self->redraw = true;
 }
 

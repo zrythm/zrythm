@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   CcBindingsTreeWidget,
   cc_bindings_tree_widget,
   Z, CC_BINDINGS_TREE_WIDGET,
-  GtkScrolledWindow)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -44,11 +44,17 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _CcBindingsTreeWidget
 {
-  GtkScrolledWindow    parent_instance;
+  GtkBox               parent_instance;
 
-  /* The tree views */
-  GtkTreeView *        tree;
-  GtkTreeModel *       tree_model;
+  GtkScrolledWindow *  scroll;
+
+  /* The column view */
+  GtkColumnView *      column_view;
+
+  /** Array of ItemFactory pointers for each
+   * column. */
+  /* TODO destroy in finalize() */
+  GPtrArray *          item_factories;
 } CcBindingsTreeWidget;
 
 /**

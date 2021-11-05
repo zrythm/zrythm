@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   FaderButtonsWidget,
   fader_buttons_widget,
   Z, FADER_BUTTONS_WIDGET,
-  GtkButtonBox)
+  GtkBox)
 
 typedef struct Track Track;
 
@@ -46,7 +46,7 @@ typedef struct Track Track;
 
 typedef struct _FaderButtonsWidget
 {
-  GtkButtonBox   parent_instance;
+  GtkBox   parent_instance;
 
   GtkToggleButton * mono_compat;
   GtkToggleButton * solo;

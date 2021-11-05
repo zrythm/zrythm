@@ -61,6 +61,7 @@
 #include "utils/debug.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/mem.h"
 #include "utils/object_utils.h"
@@ -2168,9 +2169,8 @@ track_freeze (
       gtk_window_set_transient_for (
         GTK_WINDOW (progress_dialog),
         GTK_WINDOW (MAIN_WINDOW));
-      gtk_dialog_run (GTK_DIALOG (progress_dialog));
-      gtk_widget_destroy (
-        GTK_WIDGET (progress_dialog));
+      z_gtk_dialog_run (
+        GTK_DIALOG (progress_dialog), true);
 
       g_thread_join (thread);
 
@@ -3899,8 +3899,7 @@ track_free (Track * self)
 
   if (self->widget &&
       GTK_IS_WIDGET (self->widget))
-    gtk_widget_destroy (
-      GTK_WIDGET (self->widget));
+    g_object_unref (self->widget);
 
   /* remove regions */
   for (int i = 0; i < self->num_lanes; i++)

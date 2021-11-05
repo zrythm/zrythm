@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_EVENT_VIEWER_H__
 #define __GUI_WIDGETS_EVENT_VIEWER_H__
 
+#include "audio/region_identifier.h"
+
 #include <gtk/gtk.h>
 
 #define EVENT_VIEWER_WIDGET_TYPE \
@@ -37,6 +39,7 @@ G_DECLARE_FINAL_TYPE (
   GtkBox)
 
 typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct ArrangerSelections ArrangerSelections;
 
 /**
  * @addtogroup widgets
@@ -94,6 +97,9 @@ event_viewer_widget_refresh_for_selections (
 void
 event_viewer_widget_refresh_for_arranger (
   ArrangerWidget *    arranger);
+
+EventViewerWidget *
+event_viewer_widget_new (void);
 
 /**
  * Sets up the event viewer.

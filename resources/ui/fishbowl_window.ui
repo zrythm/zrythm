@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="FishbowlWindowWidget" parent="GtkWindow">
-    <property name="visible">True</property>
+    <property name="visible">1</property>
     <property name="title" translatable="yes">Fishbowl</property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="">
-        <property name="visible">True</property>
-        <property name="show-close-button">True</property>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
             <style>
               <class name="linked"/>
             </style>
             <child>
               <object class="GtkButton">
-                <property name="visible">True</property>
                 <child>
                   <object class="GtkImage">
                     <property name="icon-name">pan-start-symbolic</property>
-                    <property name="visible">True</property>
                   </object>
                 </child>
                 <signal name="clicked" handler="prev_button_clicked_cb" object="bowl" swapped="no"/>
@@ -28,11 +23,9 @@
             </child>
             <child>
               <object class="GtkButton">
-                <property name="visible">True</property>
                 <child>
                   <object class="GtkImage">
                     <property name="icon-name">pan-end-symbolic</property>
-                    <property name="visible">True</property>
                   </object>
                 </child>
                 <signal name="clicked" handler="next_button_clicked_cb" object="bowl" swapped="no"/>
@@ -40,72 +33,46 @@
             </child>
           </object>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkLabel">
-            <property name="visible">True</property>
             <property name="label">fps</property>
           </object>
-          <packing>
-            <property name="pack-type">end</property>
-          </packing>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkLabel">
-            <property name="visible">True</property>
             <property name="label" bind-source="bowl" bind-property="framerate"/>
           </object>
-          <packing>
-            <property name="pack-type">end</property>
-          </packing>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkLabel">
-            <property name="visible">True</property>
             <property name="label">Icons, </property>
           </object>
-          <packing>
-            <property name="pack-type">end</property>
-          </packing>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkLabel">
-            <property name="visible">True</property>
             <property name="label" bind-source="bowl" bind-property="count"/>
           </object>
-          <packing>
-            <property name="pack-type">end</property>
-          </packing>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkToggleButton" id="changes_allow">
             <property name="visible" bind-source="changes_allow" bind-property="active" bind-flags="invert-boolean"/>
-            <property name="relief">none</property>
             <child>
               <object class="GtkImage">
                 <property name="icon-name">changes-allow</property>
-                <property name="visible">True</property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="pack-type">end</property>
-          </packing>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkToggleButton" id="changes_prevent">
-            <property name="active" bind-source="changes_allow" bind-property="active" bind-flags="bidirectional|invert-boolean">True</property>
-            <property name="visible" bind-source="changes_prevent" bind-property="active" bind-flags="invert-boolean">False</property>
-            <property name="relief">none</property>
+            <property name="active" bind-source="changes_allow" bind-property="active" bind-flags="bidirectional|invert-boolean"/>
+            <property name="visible" bind-source="changes_prevent" bind-property="active" bind-flags="invert-boolean"/>
             <child>
               <object class="GtkImage">
                 <property name="icon-name">changes-prevent</property>
-                <property name="visible">True</property>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="pack-type">end</property>
-          </packing>
         </child>
       </object>
     </child>
@@ -113,7 +80,7 @@
       <object class="GtkFishbowl" id="bowl">
         <property name="visible">True</property>
         <property name="animating">True</property>
-        <property name="benchmark" bind-source="changes_allow" bind-property="active" bind-flags="invert-boolean">True</property>
+        <property name="benchmark" bind-source="changes_allow" bind-property="active" bind-flags="invert-boolean"/>
       </object>
     </child>
   </template>

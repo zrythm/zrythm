@@ -32,7 +32,7 @@
 
 G_DEFINE_TYPE (
   QuantizeBoxWidget, quantize_box_widget,
-  GTK_TYPE_BUTTON_BOX)
+  GTK_TYPE_BOX)
 
 /**
  * Sets up the QuantizeBoxWidget.

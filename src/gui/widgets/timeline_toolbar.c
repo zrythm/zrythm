@@ -36,7 +36,7 @@
 
 G_DEFINE_TYPE (
   TimelineToolbarWidget,
-  timeline_toolbar_widget, GTK_TYPE_TOOLBAR)
+  timeline_toolbar_widget, GTK_TYPE_BOX)
 
 void
 timeline_toolbar_widget_refresh (
@@ -97,9 +97,6 @@ timeline_toolbar_widget_class_init (
     GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_toolbar.ui");
-
-  gtk_widget_class_set_css_name (
-    klass, "timeline-toolbar");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

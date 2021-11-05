@@ -1,140 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="MainWindowWidget" parent="GtkApplicationWindow">
-    <property name="visible">True</property>
-    <property name="can_focus">True</property>
-    <property name="window_position">center</property>
-    <property name="gravity">center</property>
+    <property name="focusable">1</property>
     <property name="icon_name">zrythm</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
-    <signal name="window-state-event" handler="on_state_changed" swapped="no"/>
     <child>
       <object class="GtkOverlay" id="overlay">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <child>
+        <property name="child">
           <object class="GtkBox" id="main_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="HeaderWidget" id="header">
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
             </child>
             <child>
               <object class="TopBarWidget" id="top_bar">
-                <property name="visible">1</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox" id="center_box">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="vexpand">1</property>
                 <child>
                   <object class="CenterDockWidget" id="center_dock">
-                    <property name="visible">True</property>
+                    <property name="hexpand">1</property>
                     <property name="can-focus">True</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
             </child>
             <child>
               <object class="BotBarWidget" id="bot_bar">
-                <property name="visible">1</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">5</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="index">1</property>
-          </packing>
-        </child>
+        </property>
         <child type="overlay">
           <object class="GtkOverlay" id="overlay2">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="valign">start</property>
-            <child>
+            <property name="child">
               <object class="GtkRevealer" id="revealer">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-target">0</property>
                 <property name="halign">center</property>
-                <child>
+                <property name="child">
                   <object class="GtkFrame" id="frame2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
+                    <property name="child">
                       <object class="GtkBox" id="box2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="spacing">20</property>
                         <child>
                           <object class="GtkLabel" id="notification_label">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">This is an app-notification. Click the button to dismiss</property>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="close_notification_button">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="relief">none</property>
+                            <property name="focusable">1</property>
+                            <property name="receives_default">1</property>
                             <child>
                               <object class="GtkImage" id="image2">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="icon_name">window-close</property>
                               </object>
                             </child>
@@ -142,14 +66,9 @@
                               <class name="image-button"/>
                             </style>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
                       </object>
-                    </child>
+                    </property>
                     <child type="label_item">
                       <placeholder/>
                     </child>
@@ -157,13 +76,9 @@
                       <class name="app-notification"/>
                     </style>
                   </object>
-                </child>
+                </property>
               </object>
-              <packing>
-                <property name="pass_through">True</property>
-                <property name="index">1</property>
-              </packing>
-            </child>
+            </property>
           </object>
         </child>
       </object>

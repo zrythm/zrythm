@@ -95,16 +95,6 @@ typedef struct _BotBarWidget
   /** Jack client master image. */
   GtkWidget *           client_img;
 
-  /**
-   * Menuitems in context menu of digital transport.
-   */
-  GtkCheckMenuItem *    bbt_display_check;
-  GtkCheckMenuItem *    time_display_check;
-
-  GtkCheckMenuItem *    timebase_master_check;
-  GtkCheckMenuItem *    transport_client_check;
-  GtkCheckMenuItem *    no_jack_transport_check;
-
   GtkBox *              playhead_box;
 
   DigitalMeterWidget *  digital_timesig;

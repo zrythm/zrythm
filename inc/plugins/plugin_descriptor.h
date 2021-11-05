@@ -32,6 +32,9 @@
 
 #include "utils/yaml.h"
 
+typedef struct _WrappedObjectWithChangeSignal
+  WrappedObjectWithChangeSignal;
+
 /**
  * @addtogroup plugins
  *
@@ -39,6 +42,9 @@
  */
 
 #define PLUGIN_DESCRIPTOR_SCHEMA_VERSION 1
+
+#define PLUGIN_DESCRIPTOR_DND_PREFIX \
+  Z_DND_STRING_PREFIX "PluginDescriptor::"
 
 /**
  * Plugin category.
@@ -250,6 +256,9 @@ typedef struct PluginDescriptor
    * used when caching PluginDescriptor's, obtained
    * using g_file_hash(). */
   unsigned int     ghash;
+
+  /** Used in Gtk. */
+  WrappedObjectWithChangeSignal * gobj;
 } PluginDescriptor;
 
 static const cyaml_schema_field_t

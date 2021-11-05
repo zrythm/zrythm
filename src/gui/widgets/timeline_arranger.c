@@ -45,6 +45,7 @@
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/strv_builder.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -85,7 +86,7 @@ timeline_arranger_widget_set_cut_lines_visible (
         GTK_WIDGET (obj_w),
         &mask);
       int alt_pressed =
-        mask & GDK_MOD1_MASK;
+        mask & GDK_ALT_MASK;
 
       /* if not cutting hide the cut line
        * from the region immediately */
@@ -203,111 +204,6 @@ timeline_arranger_widget_get_at_at_y (
     }
 
   return NULL;
-}
-
-void
-timeline_arranger_on_export_as_midi_file_clicked (
-  GtkMenuItem * menuitem,
-  ZRegion *      r)
-{
-  GtkDialog * dialog =
-    GTK_DIALOG (
-      export_midi_file_dialog_widget_new_for_region (
-        GTK_WINDOW (MAIN_WINDOW),
-        r));
-  int res = gtk_dialog_run (dialog);
-  char * filename;
-  switch (res)
-    {
-    case GTK_RESPONSE_ACCEPT:
-      // do_application_specific_something ();
-      filename =
-        gtk_file_chooser_get_filename (
-          GTK_FILE_CHOOSER (dialog));
-      g_message ("exporting to %s", filename);
-      midi_region_export_to_midi_file (
-        r, filename, 0, 0);
-      g_free (filename);
-      break;
-    default:
-      // do_nothing_since_dialog_was_cancelled ();
-      break;
-    }
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-void
-timeline_arranger_on_quick_bounce_clicked (
-  GtkMenuItem * menuitem,
-  ZRegion *     r)
-{
-  ArrangerSelections * sel =
-    (ArrangerSelections *) TL_SELECTIONS;
-  if (!arranger_selections_has_any (sel))
-    {
-      g_warning ("no selections to bounce");
-      return;
-    }
-
-  ExportSettings settings;
-  settings.mode = EXPORT_MODE_REGIONS;
-  export_settings_set_bounce_defaults (
-    &settings, NULL, r->name);
-  timeline_selections_mark_for_bounce (
-    TL_SELECTIONS, settings.bounce_with_parents);
-
-  /* start exporting in a new thread */
-  GThread * thread =
-    g_thread_new (
-      "bounce_thread",
-      (GThreadFunc) exporter_generic_export_thread,
-      &settings);
-
-  /* create a progress dialog and block */
-  ExportProgressDialogWidget * progress_dialog =
-    export_progress_dialog_widget_new (
-      &settings, true, false, F_CANCELABLE);
-  gtk_window_set_transient_for (
-    GTK_WINDOW (progress_dialog),
-    GTK_WINDOW (MAIN_WINDOW));
-  gtk_dialog_run (GTK_DIALOG (progress_dialog));
-  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
-
-  g_thread_join (thread);
-
-  if (!settings.progress_info.has_error &&
-      !settings.progress_info.cancelled)
-    {
-      /* create audio track with bounced material */
-      Position first_pos;
-      arranger_selections_get_start_pos (
-        (ArrangerSelections *) TL_SELECTIONS,
-        &first_pos, F_GLOBAL);
-      exporter_create_audio_track_after_bounce (
-        &settings, &first_pos);
-    }
-
-  export_settings_free_members (&settings);
-}
-
-void
-timeline_arranger_on_bounce_clicked (
-  GtkMenuItem * menuitem,
-  ZRegion *      r)
-{
-  ArrangerSelections * sel =
-    (ArrangerSelections *) TL_SELECTIONS;
-  if (!arranger_selections_has_any (sel))
-    {
-      g_warning ("no selections to bounce");
-      return;
-    }
-
-  BounceDialogWidget * dialog =
-    bounce_dialog_widget_new (
-      BOUNCE_DIALOG_REGIONS, r->name);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 /**
@@ -455,7 +351,7 @@ timeline_arranger_widget_create_chord_or_scale (
   int track_height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (track->widget));
-  gint wy;
+  double wy;
   gtk_widget_translate_coordinates (
     GTK_WIDGET (self),
     GTK_WIDGET (track->widget),
@@ -1018,115 +914,42 @@ timeline_arranger_widget_snap_range_r (
   transport_set_has_range (TRANSPORT, true);
 }
 
-/** Used when activating fade presets. */
-typedef struct CurveOptionInfo
-{
-  CurveOptions     opts;
-  ArrangerObject * obj;
-
-  /** 1 for in, 0 for out. */
-  int              fade_in;
-} CurveOptionInfo;
-
-static void
-on_fade_preset_selected (
-  GtkMenuItem *     menu_item,
-  CurveOptionInfo * info)
-{
-  ArrangerSelections * sel_before =
-    arranger_selections_clone (
-      (ArrangerSelections *) TL_SELECTIONS);
-  if (info->fade_in)
-    {
-      info->obj->fade_in_opts.algo =
-        info->opts.algo;
-      info->obj->fade_in_opts.curviness =
-        info->opts.curviness;
-    }
-  else
-    {
-      info->obj->fade_out_opts.algo =
-        info->opts.algo;
-      info->obj->fade_out_opts.curviness =
-        info->opts.curviness;
-    }
-
-  g_warn_if_fail (
-    arranger_object_is_selected (info->obj));
-
-  GError * err = NULL;
-  bool ret =
-    arranger_selections_action_perform_edit (
-      sel_before,
-      (ArrangerSelections *) TL_SELECTIONS,
-      ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
-      true, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to edit fades"));
-    }
-
-  g_warn_if_fail (IS_ARRANGER_OBJECT (info->obj));
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_CHANGED, info->obj);
-
-  object_zero_and_free (info);
-}
-
 /**
  * @param fade_in 1 for in, 0 for out.
  */
 static void
 create_fade_preset_menu (
   ArrangerWidget * self,
-  GtkWidget *      menu,
+  GMenu *          menu,
   ArrangerObject * obj,
-  int              fade_in)
+  bool             fade_in)
 {
-  GtkWidget * menuitem =
-    gtk_menu_item_new_with_label (_("Fade preset"));
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
-  GtkMenu * submenu = GTK_MENU (gtk_menu_new ());
-  gtk_widget_set_visible (GTK_WIDGET (submenu), 1);
-  GtkMenuItem * submenu_item;
-  CurveOptionInfo * opts;
+  GMenu * section = g_menu_new ();
 
-#define CREATE_ITEM(name,xalgo,curve) \
-  submenu_item = \
-    GTK_MENU_ITEM ( \
-      gtk_menu_item_new_with_label (name)); \
-  opts = object_new (CurveOptionInfo); \
-  opts->opts.algo = CURVE_ALGORITHM_##xalgo; \
-  opts->opts.curviness = curve; \
-  opts->fade_in = fade_in; \
-  opts->obj = obj; \
-  g_signal_connect ( \
-    G_OBJECT (submenu_item), "activate", \
-    G_CALLBACK (on_fade_preset_selected), opts); \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (submenu), \
-    GTK_WIDGET (submenu_item)); \
-  gtk_widget_set_visible ( \
-    GTK_WIDGET (submenu_item), 1)
+  GPtrArray * psets = curve_get_fade_presets ();
+  for (size_t i = 0; i < psets->len; i++)
+    {
+      CurveFadePreset * pset =
+        g_ptr_array_index (psets, i);
 
-  CREATE_ITEM (_("Linear"), SUPERELLIPSE, 0);
-  CREATE_ITEM (_("Exponential"), EXPONENT, - 0.6);
-  CREATE_ITEM (_("Elliptic"), SUPERELLIPSE, - 0.5);
-  CREATE_ITEM (
-    _("Logarithmic"), LOGARITHMIC, - 0.5);
-  CREATE_ITEM (_("Vital"), VITAL, - 0.5);
+      char tmp[200];
+      sprintf (
+        tmp,
+        "app.set-region-fade-%s-algorithm-preset::%s",
+        fade_in ? "in" : "out", pset->id);
+      GMenuItem * menuitem =
+        z_gtk_create_menu_item (
+          pset->label, NULL, tmp);
+      g_menu_append_item (section, menuitem);
+    }
+  g_ptr_array_unref (psets);
 
-#undef CREATE_ITEM
-
-  gtk_menu_item_set_submenu (
-    GTK_MENU_ITEM (menuitem),
-    GTK_WIDGET (submenu));
-  gtk_widget_set_visible (
-    GTK_WIDGET (menuitem), 1);
+  g_menu_append_section (
+    menu, _("Fade Preset"),
+    G_MENU_MODEL (section));
 }
 
+#if 0
 /** Used when selecting a musical mode. */
 typedef struct MusicalModeInfo
 {
@@ -1239,111 +1062,7 @@ create_musical_mode_pset_menu (
         G_CALLBACK (on_musical_mode_toggled), nfo);
     }
 }
-
-typedef struct ContextMenuData
-{
-  AudioFunctionType audio_func;
-} ContextMenuData;
-
-static void
-free_context_menu_data (
-  ContextMenuData * data,
-  GClosure *        closure)
-{
-  free (data);
-}
-
-static void
-on_audio_func_activate (
-  GtkCheckMenuItem * item,
-  ContextMenuData *  data)
-{
-  for (int i = 0; i < TL_SELECTIONS->num_regions;
-       i++)
-    {
-      ZRegion * r = TL_SELECTIONS->regions[i];
-      AudioSelections * sel =
-        (AudioSelections *)
-        arranger_selections_new (
-          ARRANGER_SELECTIONS_TYPE_AUDIO);
-      region_identifier_copy (
-        &sel->region_id, &r->id);
-      sel->has_selection = true;
-      ArrangerObject * r_obj =
-        (ArrangerObject *) r;
-
-      /* timeline start pos */
-      position_set_to_pos (
-        &sel->sel_start, &r_obj->clip_start_pos);
-      position_add_ticks (
-        &sel->sel_start, r_obj->pos.ticks);
-
-      /* timeline end pos */
-      position_set_to_pos (
-        &sel->sel_end, &r_obj->loop_end_pos);
-      position_add_ticks (
-        &sel->sel_end, r_obj->pos.ticks);
-      if (position_is_after (
-            &sel->sel_end, &r_obj->end_pos))
-        {
-          position_set_to_pos (
-            &sel->sel_end, &r_obj->end_pos);
-        }
-
-      GError * err = NULL;
-      bool ret =
-        arranger_selections_action_perform_edit_audio_function (
-          (ArrangerSelections *) sel,
-          data->audio_func, NULL, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR (
-            err, "%s",
-            _("Failed to apply audio function"));
-          break;
-        }
-      else
-        {
-          UndoableAction * ua =
-            undo_manager_get_last_action (
-              UNDO_MANAGER);
-          ua->num_actions = i + 1;
-        }
-    }
-}
-
-static void
-on_detect_bpm_activate (
-  GtkMenuItem * item,
-  void *        user_data)
-{
-  ZRegion * r = (ZRegion *) user_data;
-  g_return_if_fail (IS_REGION_AND_NONNULL (r));
-
-  GArray * candidates =
-    g_array_new (false, true, sizeof (float));
-  bpm_t bpm =
-    audio_region_detect_bpm (r, candidates);
-
-  GString * gstr = g_string_new (NULL);
-  g_string_append_printf (
-    gstr, _("Detected BPM: %.2f"), bpm);
-  g_string_append (gstr, "\n\n");
-  g_string_append_printf (
-    gstr, _("Candidates:"));
-  for (size_t i = 0; i < candidates->len; i++)
-    {
-      float candidate =
-        g_array_index (candidates, float, i);
-      g_string_append_printf (
-        gstr, " %.2f", candidate);
-    }
-  char * str = g_string_free (gstr, false);
-  ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_INFO,
-    "%s", str);
-  g_free (str);
-}
+#endif
 
 /**
  * Show context menu at x, y.
@@ -1354,12 +1073,8 @@ timeline_arranger_widget_show_context_menu (
   double           x,
   double           y)
 {
-  GtkWidget *menu, *menuitem;
-  menu = gtk_menu_new();
-
-#define APPEND_TO_MENU \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), menuitem)
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   ArrangerObject * obj =
     arranger_widget_get_hit_arranger_object (
@@ -1371,27 +1086,26 @@ timeline_arranger_widget_show_context_menu (
       int local_x = (int) (x - obj->full_rect.x);
       int local_y = (int) (y - obj->full_rect.y);
 
+      GMenu * edit_submenu = g_menu_new ();
+
       /* create cut, copy, duplicate, delete */
       menuitem =
-        GTK_WIDGET (
-          CREATE_CUT_MENU_ITEM ("app.cut"));
-      APPEND_TO_MENU;
+        CREATE_CUT_MENU_ITEM ("app.cut");
+      g_menu_append_item (edit_submenu, menuitem);
       menuitem =
-        GTK_WIDGET (
-          CREATE_COPY_MENU_ITEM ("app.copy"));
-      APPEND_TO_MENU;
+        CREATE_COPY_MENU_ITEM ("app.copy");
+      g_menu_append_item (edit_submenu, menuitem);
       menuitem =
-        GTK_WIDGET (
-          CREATE_DUPLICATE_MENU_ITEM (
-            "app.duplicate"));
-      APPEND_TO_MENU;
+        CREATE_DUPLICATE_MENU_ITEM (
+          "app.duplicate");
+      g_menu_append_item (edit_submenu, menuitem);
       menuitem =
-        GTK_WIDGET (
-          CREATE_DELETE_MENU_ITEM ("app.delete"));
-      APPEND_TO_MENU;
-      menuitem =
-        gtk_separator_menu_item_new ();
-      APPEND_TO_MENU;
+        CREATE_DELETE_MENU_ITEM ("app.delete");
+      g_menu_append_item (edit_submenu, menuitem);
+
+      g_menu_append_section (
+        menu, _("Edit"),
+        G_MENU_MODEL (edit_submenu));
 
       if (timeline_selections_contains_only_regions (TL_SELECTIONS))
         {
@@ -1399,39 +1113,48 @@ timeline_arranger_widget_show_context_menu (
 
           if (timeline_selections_contains_only_region_types (TL_SELECTIONS, REGION_TYPE_AUDIO))
             {
+              GMenu * audio_regions_submenu =
+                g_menu_new ();
+
               if (TL_SELECTIONS->num_regions == 1)
                 {
-                  menuitem =
-                    GTK_WIDGET (
-                      z_gtk_create_menu_item (
-                        _("Detect BPM"), NULL,
-                        F_NO_TOGGLE, NULL));
-                  gtk_widget_set_visible (
-                    GTK_WIDGET (menuitem), true);
-                  g_signal_connect (
-                    G_OBJECT (menuitem),
-                    "activate",
-                    G_CALLBACK (
-                      on_detect_bpm_activate),
+                  char tmp[200];
+                  sprintf (
+                    tmp, "app.detect-bpm::%p",
                     TL_SELECTIONS->regions[0]);
-                  gtk_menu_shell_append (
-                    GTK_MENU_SHELL (menu),
-                    menuitem);
+                  menuitem =
+                    z_gtk_create_menu_item (
+                      _("Detect BPM"), NULL, tmp);
+                  g_menu_append_item (
+                    audio_regions_submenu, menuitem);
+                  /* create fade menus */
+                  if (arranger_object_is_fade_in (
+                        obj, local_x, local_y, 0, 0))
+                    {
+                      create_fade_preset_menu (
+                        self,
+                        audio_regions_submenu,
+                        obj, true);
+                    }
+                  if (arranger_object_is_fade_out (
+                        obj, local_x, local_y, 0, 0))
+                    {
+                      create_fade_preset_menu (
+                        self,
+                        audio_regions_submenu,
+                        obj, false);
+                    }
+
+#if 0
+                  /* create musical mode menu */
+                  create_musical_mode_pset_menu (
+                    self, menu, obj);
+#endif
                 }
 
-              menuitem =
-                GTK_WIDGET (
-                  z_gtk_create_menu_item (
-                    _("Apply Function"),
-                    "modulator", F_NO_TOGGLE,
-                    NULL));
-              gtk_widget_set_visible (
-                GTK_WIDGET (menuitem), true);
+              GMenu * region_functions_subsubmenu =
+                g_menu_new ();
 
-              GtkMenu * submenu =
-                GTK_MENU (gtk_menu_new ());
-              gtk_widget_set_visible (
-                GTK_WIDGET (submenu), true);
               for (int i = AUDIO_FUNCTION_INVERT;
                    i < AUDIO_FUNCTION_CUSTOM_PLUGIN;
                    i++)
@@ -1440,133 +1163,87 @@ timeline_arranger_widget_show_context_menu (
                       || i == AUDIO_FUNCTION_NORMALIZE_LUFS)
                     continue;
 
-                  GtkWidget * submenu_item =
-                    GTK_WIDGET (
-                      z_gtk_create_menu_item (
-                        _(audio_function_type_to_string (i)),
-                        NULL, F_NO_TOGGLE, NULL));
-                  ContextMenuData * data =
-                    object_new (ContextMenuData);
-                  data->audio_func = i;
-                  g_signal_connect_data (
-                    G_OBJECT (submenu_item),
-                    "activate",
-                    G_CALLBACK (
-                      on_audio_func_activate),
-                    data,
-                    (GClosureNotify)
-                    free_context_menu_data,
-                    0);
-                  gtk_widget_set_visible (
-                    GTK_WIDGET (submenu_item),
-                    true);
-                  gtk_menu_shell_append (
-                    GTK_MENU_SHELL (submenu),
+                  char tmp[200];
+                  sprintf (
+                    tmp, "app.timeline-function::%d",
+                    i);
+                  GMenuItem * submenu_item =
+                    z_gtk_create_menu_item (
+                      _(audio_function_type_to_string (i)),
+                      NULL, tmp);
+                  g_menu_append_item (
+                    region_functions_subsubmenu,
                     submenu_item);
                 }
-              gtk_menu_item_set_submenu (
-                GTK_MENU_ITEM (menuitem),
-                GTK_WIDGET (submenu));
-              gtk_menu_shell_append (
-                GTK_MENU_SHELL (menu), menuitem);
+              g_menu_append_section (
+                audio_regions_submenu,
+                _("Region Functions"),
+                G_MENU_MODEL (
+                  region_functions_subsubmenu));
+              g_menu_append_section (
+                menu, _("Audio Regions"),
+                G_MENU_MODEL (
+                  audio_regions_submenu));
             }
 
           if (arranger_object_get_muted (obj))
             {
               menuitem =
-                GTK_WIDGET (
-                  CREATE_UNMUTE_MENU_ITEM (
-                    "app.mute-selection"));
-              gtk_actionable_set_action_target (
-                GTK_ACTIONABLE (menuitem),
-                "s", "timeline");
+                CREATE_UNMUTE_MENU_ITEM (
+                  "app.mute-selection::timeline");
             }
           else
             {
               menuitem =
-                GTK_WIDGET (
-                  CREATE_MUTE_MENU_ITEM (
-                    "app.mute-selection"));
-              gtk_actionable_set_action_target (
-                GTK_ACTIONABLE (menuitem),
-                "s", "timeline");
+                CREATE_MUTE_MENU_ITEM (
+                  "app.mute-selection::timeline");
             }
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL(menu), menuitem);
+          g_menu_append_item (menu, menuitem);
 
           if (timeline_selections_contains_only_region_types (TL_SELECTIONS, REGION_TYPE_MIDI))
             {
-              menuitem =
-                gtk_menu_item_new_with_label (
-                  _("Export as MIDI file"));
-              gtk_menu_shell_append (
-                GTK_MENU_SHELL(menu), menuitem);
-              g_signal_connect (
-                menuitem, "activate",
-                G_CALLBACK (
-                  timeline_arranger_on_export_as_midi_file_clicked),
+              GMenu * midi_regions_submenu =
+                g_menu_new ();
+
+              char tmp[500];
+              sprintf (
+                tmp, "app.export-midi-region::%p",
                 r);
-            }
+              menuitem =
+                z_gtk_create_menu_item (
+                  _("Export as MIDI file"), NULL,
+                  tmp);
+              g_menu_append_item (
+                midi_regions_submenu, menuitem);
 
-          if (r->id.type == REGION_TYPE_AUDIO)
-            {
-              /* create fade menus */
-              if (arranger_object_is_fade_in (
-                    obj, local_x, local_y, 0, 0))
-                {
-                  create_fade_preset_menu (
-                    self, menu, obj, 1);
-                }
-              if (arranger_object_is_fade_out (
-                    obj, local_x, local_y, 0, 0))
-                {
-                  create_fade_preset_menu (
-                    self, menu, obj, 0);
-                }
-
-              /* create musical mode menu */
-              create_musical_mode_pset_menu (
-                self, menu, obj);
+              g_menu_append_section (
+                menu, _("MIDI Regions"),
+                G_MENU_MODEL (
+                  midi_regions_submenu));
             }
 
           menuitem =
-            gtk_menu_item_new_with_label (
-              _("Quick bounce"));
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL(menu), menuitem);
-          g_signal_connect (
-            menuitem, "activate",
-            G_CALLBACK (
-              timeline_arranger_on_quick_bounce_clicked),
-            r);
+            z_gtk_create_menu_item (
+              _("Quick bounce"), NULL,
+              "app.quick-bounce-selections");
+          g_menu_append_item (menu, menuitem);
 
           menuitem =
-            gtk_menu_item_new_with_label (
-              _("Bounce..."));
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL(menu), menuitem);
-          g_signal_connect (
-            menuitem, "activate",
-            G_CALLBACK (
-              timeline_arranger_on_bounce_clicked),
-            r);
+            z_gtk_create_menu_item (
+              _("Bounce..."), NULL,
+              "app.bounce-selections");
+          g_menu_append_item (menu, menuitem);
         }
     }
   else
     {
       menuitem =
-        GTK_WIDGET (
-          CREATE_PASTE_MENU_ITEM ("app.paste"));
-      APPEND_TO_MENU;
+        CREATE_PASTE_MENU_ITEM ("app.paste");
+      g_menu_append_item (menu, menuitem);
     }
 
-#undef APPEND_TO_MENU
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu), GTK_WIDGET (self), NULL);
-  gtk_widget_show_all (menu);
-  gtk_menu_popup_at_pointer (
-    GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 /**
@@ -1671,20 +1348,16 @@ highlight_timeline (
     self, &highlight_rect);
 }
 
-static void
-on_dnd_data_received (
-  GtkWidget        * widget,
-  GdkDragContext   * context,
-  gint               x,
-  gint               y,
-  GtkSelectionData * data,
-  guint              info,
-  guint              time,
-  ArrangerWidget *   self)
+static gboolean
+on_dnd_drop (
+  GtkDropTarget * drop_target,
+  const GValue  * value,
+  double          x,
+  double          y,
+  gpointer        data)
 {
-  GdkAtom target =
-    gtk_selection_data_get_target (data);
-  char * target_name = gdk_atom_name (target);
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (data);
 
   Track * track =
     timeline_arranger_widget_get_track_at_y (
@@ -1696,31 +1369,44 @@ on_dnd_data_received (
     timeline_arranger_widget_get_at_at_y (
       self, y);
 
-  GdkModifierType mask;
-  z_gtk_widget_get_mask (widget, &mask);
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (drop_target));
 
   highlight_timeline (
-    self, mask, x, y, track, lane);
+    self, state, (int) x, (int) y, track, lane);
 
   g_message (
-    "(%u) dnd data received (timeline - is "
-    "highlighted %d): %s",
-    time, self->is_highlighted, target_name);
+    "dnd data dropped (timeline - is "
+    "highlighted %d)",
+    self->is_highlighted);
 
-  /* determine if moving or copying */
-  GdkDragAction action =
-    gdk_drag_context_get_selected_action (
-      context);
-
-  if (target ==
-        GET_ATOM (TARGET_ENTRY_CHORD_DESCR) &&
-      self->is_highlighted && track &&
-      track_type_has_piano_roll (track->type))
+  SupportedFile * file = NULL;
+  ChordDescriptor * chord_descr = NULL;
+  if (G_VALUE_HOLDS_STRING (value))
     {
-      ChordDescriptor * descr = NULL;
-      const guchar * my_data =
-        gtk_selection_data_get_data (data);
-      memcpy (&descr, my_data, sizeof (descr));
+      const char * str = g_value_get_string (value);
+      if (g_str_has_prefix (
+            str, SUPPORTED_FILE_DND_PREFIX))
+        {
+          sscanf (
+            str, SUPPORTED_FILE_DND_PREFIX "%p",
+            &file);
+        }
+      else if (g_str_has_prefix (
+                 str, CHORD_DESCRIPTOR_DND_PREFIX))
+        {
+          sscanf (
+            str, CHORD_DESCRIPTOR_DND_PREFIX "%p",
+            &chord_descr);
+        }
+    }
+
+  if (chord_descr
+      && self->is_highlighted && track
+      && track_type_has_piano_roll (track->type))
+    {
+      ChordDescriptor * descr = chord_descr;
 
       /* create chord region */
       Position pos, end_pos;
@@ -1760,10 +1446,10 @@ on_dnd_data_received (
             _("Failed to create selections"));
         }
     }
-  else if (target ==
-             GET_ATOM (TARGET_ENTRY_URI_LIST) ||
-           target ==
-             GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+  else if (
+    G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST)
+    || G_VALUE_HOLDS (value, G_TYPE_FILE)
+    || file)
     {
       if (at)
         {
@@ -1771,18 +1457,33 @@ on_dnd_data_received (
           goto finish_data_received;
         }
 
-      SupportedFile * file = NULL;
       char ** uris = NULL;
-      if (target ==
-            GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+      if (G_VALUE_HOLDS (value, G_TYPE_FILE))
         {
-          const guchar *my_data =
-            gtk_selection_data_get_data (data);
-          memcpy (&file, my_data, sizeof (file));
+          GFile * gfile =
+            g_value_get_object (value);
+          StrvBuilder * uris_builder =
+            strv_builder_new ();
+          char * uri = g_file_get_uri (gfile);
+          strv_builder_add (uris_builder, uri);
+          uris =
+            strv_builder_end (uris_builder);
         }
-      else
+      else if (G_VALUE_HOLDS (
+                 value, GDK_TYPE_FILE_LIST))
         {
-          uris = gtk_selection_data_get_uris (data);
+          StrvBuilder * uris_builder =
+            strv_builder_new ();
+          GSList * l;
+          for (l = g_value_get_boxed (value); l;
+               l = l->next)
+            {
+              char * uri = g_file_get_uri (l->data);
+              strv_builder_add (uris_builder, uri);
+              g_free (uri);
+            }
+          uris =
+            strv_builder_end (uris_builder);
         }
 
       Position pos;
@@ -1791,28 +1492,27 @@ on_dnd_data_received (
       tracklist_handle_file_drop (
         TRACKLIST, uris, file, track, lane, &pos,
         true);
-    }
 
-  if (action == GDK_ACTION_COPY)
-    {
-    }
-  else if (action == GDK_ACTION_MOVE)
-    {
+      if (uris)
+        g_strfreev (uris);
     }
 
 finish_data_received:
   arranger_widget_set_highlight_rect (self, NULL);
+
+  return true;
 }
 
 static gboolean
 on_dnd_motion (
-  GtkWidget      * widget,
-  GdkDragContext * context,
-  gint             x,
-  gint             y,
-  guint            time,
-  ArrangerWidget * self)
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
 {
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (user_data);
+
   AutomationTrack * at =
     timeline_arranger_widget_get_at_at_y (self, y);
   TrackLane * lane =
@@ -1823,21 +1523,55 @@ on_dnd_motion (
     timeline_arranger_widget_get_track_at_y (
       self, y);
 
-  GdkModifierType mask;
-  z_gtk_widget_get_mask (widget, &mask);
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (drop_target));
 
   arranger_widget_set_highlight_rect (self, NULL);
 
-  GdkAtom target =
-    gtk_drag_dest_find_target (
-      widget, context, NULL);
-  if (target == GDK_NONE)
+  GdkDrop * drop =
+    gtk_drop_target_get_current_drop (
+      drop_target);
+
+  gdk_drop_read_value_async (
+    drop, G_TYPE_STRING,
+    0, NULL, NULL, NULL);
+  const GValue * str_val =
+    gdk_drop_read_value_finish (drop, NULL, NULL);
+  ChordDescriptor * chord_descr = NULL;
+  SupportedFile * supported_file = NULL;
+  if (str_val)
     {
-      g_message ("target is none");
-      gdk_drag_status (context, 0, time);
+      const char * str =
+        g_value_get_string (str_val);
+      if (g_str_has_prefix (
+            str, SUPPORTED_FILE_DND_PREFIX))
+        {
+          sscanf (
+            str, SUPPORTED_FILE_DND_PREFIX "%p",
+            &supported_file);
+        }
+      else if (g_str_has_prefix (
+                 str, CHORD_DESCRIPTOR_DND_PREFIX))
+        {
+          sscanf (
+            str, CHORD_DESCRIPTOR_DND_PREFIX "%p",
+            &chord_descr);
+        }
     }
-  else if (target ==
-             GET_ATOM (TARGET_ENTRY_CHORD_DESCR))
+
+  gdk_drop_read_value_async (
+    drop, GDK_TYPE_FILE_LIST,
+    0, NULL, NULL, NULL);
+  const GValue * file_list_val =
+    gdk_drop_read_value_finish (drop, NULL, NULL);
+  gdk_drop_read_value_async (
+    drop, G_TYPE_FILE,
+    0, NULL, NULL, NULL);
+  const GValue * file_val =
+    gdk_drop_read_value_finish (drop, NULL, NULL);
+
+  if (chord_descr)
     {
       if (at || !track ||
           !track_type_has_piano_roll (track->type))
@@ -1848,14 +1582,12 @@ on_dnd_motion (
 
       /* highlight track */
       highlight_timeline (
-        self, mask, x, y, track, lane);
+        self, state, (int) x, (int) y, track, lane);
 
       return true;
     }
-  else if (target ==
-             GET_ATOM (TARGET_ENTRY_URI_LIST) ||
-           target ==
-             GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+  else if (file_list_val || supported_file
+           || file_val)
     {
       /* if current track exists and current track
        * supports dnd highlight */
@@ -1871,7 +1603,7 @@ on_dnd_motion (
 
           /* track is compatible, highlight */
           highlight_timeline (
-            self, mask, x, y, track, lane);
+            self, state, (int) x, (int) y, track, lane);
           g_message ("highlighting track");
 
           return true;
@@ -1881,7 +1613,7 @@ on_dnd_motion (
       else
         {
           highlight_timeline (
-            self, mask, x, y, NULL, NULL);
+            self, state, (int) x, (int) y, NULL, NULL);
         }
     }
   else
@@ -1893,15 +1625,11 @@ on_dnd_motion (
 
 static void
 on_dnd_leave (
-  GtkWidget      * widget,
-  GdkDragContext * context,
-  guint            time,
+  GtkDropTarget *  drop_target,
   ArrangerWidget * self)
 {
   g_message (
-    "(%u) dnd leaving timeline, unhighlighting "
-    "rect",
-    time);
+    "dnd leaving timeline, unhighlighting rect");
 
   arranger_widget_set_highlight_rect (self, NULL);
 }
@@ -1913,6 +1641,20 @@ void
 timeline_arranger_setup_drag_dest (
   ArrangerWidget * self)
 {
+  GtkDropTarget * drop_target =
+    gtk_drop_target_new (
+      G_TYPE_INVALID,
+      GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  GType types[] = {
+    GDK_TYPE_FILE_LIST, G_TYPE_FILE,
+    G_TYPE_STRING };
+  gtk_drop_target_set_gtypes (
+    drop_target, types, G_N_ELEMENTS (types));
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (drop_target));
+
+#if 0
   /* set as drag dest */
   GtkTargetEntry entries[] = {
     {
@@ -1943,14 +1685,15 @@ timeline_arranger_setup_drag_dest (
       GTK_DEST_DEFAULT_DROP,
     entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
+#endif
 
   g_signal_connect (
-    GTK_WIDGET (self), "drag-data-received",
-    G_CALLBACK (on_dnd_data_received), self);
+    drop_target, "drop",
+    G_CALLBACK (on_dnd_drop), self);
   g_signal_connect (
-    GTK_WIDGET (self), "drag-motion",
+    drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
-    GTK_WIDGET (self), "drag-leave",
+    drop_target, "leave",
     G_CALLBACK (on_dnd_leave), self);
 }

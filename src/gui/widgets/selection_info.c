@@ -94,8 +94,8 @@ void
 selection_info_widget_clear (
   SelectionInfoWidget * self)
 {
-  z_gtk_container_destroy_all_children (
-    GTK_CONTAINER (self));
+  z_gtk_widget_destroy_all_children (
+    GTK_WIDGET (self));
 }
 
 static void

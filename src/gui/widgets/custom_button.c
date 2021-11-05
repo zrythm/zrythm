@@ -67,7 +67,7 @@ custom_button_widget_new (
 
   self->icon_surface =
     z_cairo_get_surface_from_icon_name (
-      self->icon_name, self->size - 2, 0);
+      self->icon_name, self->size - 2, 1);
   if (!self->icon_surface)
     {
       g_critical (
@@ -145,9 +145,9 @@ draw_bg (
       GdkRGBA mid_c;
       ui_get_mid_color (
         &mid_c, &c, &self->last_color,
-        1.0 -
-        (double) self->transition_frames /
-          (double) CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
+        1.f -
+        self->transition_frames /
+          CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
       c = mid_c;
       self->transition_frames--;
     }

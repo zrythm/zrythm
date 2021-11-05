@@ -41,6 +41,9 @@
 
 #define CHORD_DESCRIPTOR_MAX_NOTES 48
 
+#define CHORD_DESCRIPTOR_DND_PREFIX \
+  Z_DND_STRING_PREFIX "ChordDescriptor::"
+
 typedef enum MusicalNote
 {
   NOTE_C,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   InspectorPortWidget,
   inspector_port_widget,
   Z, INSPECTOR_PORT_WIDGET,
-  GtkOverlay)
+  GtkWidget)
 
 typedef struct _BarSliderWidget BarSliderWidget;
 typedef struct Meter Meter;
@@ -52,7 +52,9 @@ typedef struct Meter Meter;
  */
 typedef struct _InspectorPortWidget
 {
-  GtkOverlay        parent_instance;
+  GtkWidget         parent_instance;
+
+  GtkOverlay *      overlay;
 
   /** The bar slider. */
   BarSliderWidget * bar_slider;
@@ -92,10 +94,10 @@ typedef struct _InspectorPortWidget
   GtkToggleButton * midi;
 
   /** Multipress guesture for double click. */
-  GtkGestureMultiPress * double_click_gesture;
+  GtkGestureClick * double_click_gesture;
 
   /** Multipress guesture for right click. */
-  GtkGestureMultiPress * right_click_gesture;
+  GtkGestureClick * right_click_gesture;
 
   char                   hex_color[40];
 

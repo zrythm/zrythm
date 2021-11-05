@@ -235,17 +235,13 @@ z_cairo_get_surface_from_icon_name (
       icon_name, cairo_surface_t);
   if (!surface)
     {
-      GdkPixbuf * pixbuf =
-        gtk_icon_theme_load_icon_for_scale (
-          gtk_icon_theme_get_default (),
-          icon_name, size,
-          z_gtk_get_primary_monitor_scale_factor (),
-          0,
-          NULL);
-      if (!pixbuf)
+      GdkTexture * texture =
+        z_gdk_texture_new_from_icon_name (
+          icon_name, size, scale);
+      if (!texture)
         {
           g_message (
-            "failed to load pixbuf from icon %s",
+            "failed to load texture from icon %s",
             icon_name);
 
           /* return a warning icon if not found */
@@ -263,10 +259,18 @@ z_cairo_get_surface_from_icon_name (
         }
 
       surface =
-        gdk_cairo_surface_create_from_pixbuf (
-          pixbuf, 0,
-          NULL);
-      g_object_unref (pixbuf);
+        cairo_image_surface_create (
+          CAIRO_FORMAT_ARGB32,
+          gdk_texture_get_width (texture),
+          gdk_texture_get_height (texture));
+      gdk_texture_download (
+        texture,
+        cairo_image_surface_get_data (surface),
+        (gsize)
+        cairo_image_surface_get_stride (surface));
+      cairo_surface_mark_dirty (surface);
+
+      g_object_unref (texture);
 
       dictionary_add (
         CAIRO_CACHES->icon_surface_dict,

@@ -46,6 +46,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -56,9 +57,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  RulerWidget,
-  ruler_widget,
-  GTK_TYPE_DRAWING_AREA)
+  RulerWidget, ruler_widget,
+  GTK_TYPE_WIDGET)
 
 #define Y_SPACING 5
 
@@ -781,6 +781,7 @@ draw_playhead (
 static void
 draw_lines_and_labels (
   RulerWidget *  self,
+  GtkSnapshot *  snapshot,
   cairo_t *      cr,
   GdkRectangle * rect)
 {
@@ -976,9 +977,16 @@ draw_lines_and_labels (
           cairo_set_source_rgb (cr, 1, 1, 1);
           cairo_set_line_width (cr, 1);
           double x = curr_px - rect->x;
+          gtk_snapshot_append_color (
+            snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1),
+            &GRAPHENE_RECT_INIT (
+              (float) curr_px, 0,
+              1, height / 3.f));
+#if 0
           cairo_move_to (cr, x, 0);
           cairo_line_to (cr, x, height / 3);
           cairo_stroke (cr);
+#endif
           cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
           sprintf (text, "%d", i + 1);
           pango_layout_set_markup (
@@ -1095,12 +1103,36 @@ draw_lines_and_labels (
     }
 }
 
-static gboolean
-ruler_draw_cb (
-  GtkWidget *   widget,
-  cairo_t *     cr,
+static GtkScrolledWindow *
+get_scrolled_window (
   RulerWidget * self)
 {
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      return MW_TIMELINE_PANEL->ruler_scroll;
+    case TYPE (EDITOR):
+      return MW_CLIP_EDITOR_INNER->ruler_scroll;
+    }
+
+  return NULL;
+}
+
+static void
+ruler_snapshot (
+  GtkWidget *   widget,
+  GtkSnapshot * snapshot)
+{
+  RulerWidget * self = Z_RULER_WIDGET (widget);
+  GtkScrolledWindow * scroll =
+    get_scrolled_window (self);
+  graphene_rect_t visible_rect;
+  z_gtk_scrolled_window_get_visible_rect (
+    scroll, &visible_rect);
+  GdkRectangle visible_rect_gdk;
+  z_gtk_graphene_rect_t_to_gdk_rectangle (
+    &visible_rect_gdk, &visible_rect);
+
   /* engine is run only set after everything is set
    * up so this is a good way to decide if we
    * should  draw or not */
@@ -1108,26 +1140,33 @@ ruler_draw_cb (
       !g_atomic_int_get (&AUDIO_ENGINE->run) ||
       self->px_per_bar < 2.0)
     {
-      return FALSE;
+      return;
     }
 
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr, &rect);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+  gtk_snapshot_render_background (
+    snapshot, context,
+    visible_rect.origin.x,
+    visible_rect.origin.y,
+    visible_rect.size.width,
+    visible_rect.size.height);
+
+  cairo_t * cr =
+    gtk_snapshot_append_cairo (
+      snapshot, &visible_rect);
 
   if (self->redraw ||
-      !gdk_rectangle_equal (
-         &rect, &self->last_rect))
+      !graphene_rect_equal (
+         &visible_rect, &self->last_rect))
     {
-      self->last_rect = rect;
-
-      GtkStyleContext *context =
-        gtk_widget_get_style_context (
-          GTK_WIDGET (self));
+      self->last_rect = visible_rect;
 
       z_cairo_reset_caches (
         &self->cached_cr,
-        &self->cached_surface, rect.width,
-        rect.height, cr);
+        &self->cached_surface, visible_rect_gdk.width,
+        visible_rect_gdk.height, cr);
 
       cairo_t * cr_to_use = self->cached_cr;
 
@@ -1136,10 +1175,6 @@ ruler_draw_cb (
       int height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (self));
-
-      gtk_render_background (
-        context, cr_to_use,
-        0, 0, rect.width, rect.height);
 
       /* if timeline, draw loop background */
       /* FIXME use rect */
@@ -1163,41 +1198,67 @@ ruler_draw_cb (
               &TRANSPORT->loop_end_pos, 1);
         }
 
+      GdkRGBA color;
       if (TRANSPORT->loop)
-        cairo_set_source_rgba (
-          cr_to_use, 0, 0.9, 0.7, 0.25);
+        {
+          color.red = 0;
+          color.green = 0.9;
+          color.blue = 0.7;
+          color.alpha = 0.25;
+        }
       else
-        cairo_set_source_rgba (
-          cr_to_use, 0.5, 0.5, 0.5, 0.25);
+        {
+          color.red = 0.5;
+          color.green = 0.5;
+          color.blue = 0.5;
+          color.alpha = 0.25;
+        }
+      gdk_cairo_set_source_rgba (
+        cr_to_use, &color);
       cairo_set_line_width (cr_to_use, 2);
 
       /* if transport loop start is within the
        * screen */
-      if (start_px + 2.0 > rect.x &&
-          start_px <= rect.x + rect.width)
+      if (start_px + 2.0 > visible_rect_gdk.x &&
+          start_px <= visible_rect_gdk.x + visible_rect_gdk.width)
         {
           /* draw the loop start line */
+          gtk_snapshot_append_color (
+            snapshot, &color,
+            &GRAPHENE_RECT_INIT (
+              (float) start_px - visible_rect.origin.x,
+              0, 2, visible_rect.size.height));
+#if 0
           double x =
-            (start_px - rect.x);
+            (start_px - visible_rect_gdk.x);
           cairo_move_to (
             cr_to_use, x, 0);
           cairo_line_to (
-            cr_to_use, x, rect.height);
+            cr_to_use, x, visible_rect_gdk.height);
           cairo_stroke (cr_to_use);
+#endif
         }
       /* if transport loop end is within the
        * screen */
-      if (end_px + 2.0 > rect.x &&
-          end_px <= rect.x + rect.width)
+      if (end_px + 2.0 > visible_rect_gdk.x &&
+          end_px <= visible_rect_gdk.x + visible_rect_gdk.width)
         {
           /* draw the loop end line */
+#if 0
           double x =
-            (end_px - rect.x);
+            (end_px - visible_rect_gdk.x);
           cairo_move_to (
             cr_to_use, x, 0);
           cairo_line_to (
-            cr_to_use, x, rect.height);
+            cr_to_use, x, visible_rect_gdk.height);
           cairo_stroke (cr_to_use);
+#endif
+
+          gtk_snapshot_append_color (
+            snapshot, &color,
+            &GRAPHENE_RECT_INIT (
+              (float) end_px - visible_rect.origin.x,
+              0, 2, visible_rect.size.height));
         }
 
       /* create gradient for loop area */
@@ -1220,18 +1281,19 @@ ruler_draw_cb (
         }
 
       double loop_start_local_x =
-        MAX (0, start_px - rect.x);
+        MAX (0, start_px - visible_rect_gdk.x);
       cairo_rectangle (
         cr_to_use,
         loop_start_local_x, 0,
-        end_px - MAX (rect.x, start_px),
-        rect.height);
+        end_px - MAX (visible_rect_gdk.x, start_px),
+        visible_rect_gdk.height);
       cairo_set_source (cr_to_use, pat);
       cairo_fill (cr_to_use);
       cairo_pattern_destroy (pat);
 
       draw_lines_and_labels (
-        self, cr_to_use, &rect);
+        self, snapshot, cr_to_use,
+        &visible_rect_gdk);
 
       /* ----- draw range --------- */
 
@@ -1267,7 +1329,7 @@ ruler_draw_cb (
               GTK_WIDGET (self)) /
             RW_RANGE_HEIGHT_DIVISOR;
 
-          dr.x -= rect.x;
+          dr.x -= visible_rect_gdk.x;
 
           /* fill */
           cairo_set_source_rgba (
@@ -1293,39 +1355,40 @@ ruler_draw_cb (
 
       if (self->type == TYPE (EDITOR))
         {
-          draw_regions (self, &rect);
+          draw_regions (self, &visible_rect_gdk);
         }
 
       /* ------ draw markers ------- */
 
       draw_cue_point (
-        self, cr_to_use, &rect);
+        self, cr_to_use, &visible_rect_gdk);
       draw_loop_start (
-        self, cr_to_use, &rect);
+        self, cr_to_use, &visible_rect_gdk);
       draw_loop_end (
-        self, cr_to_use, &rect);
+        self, cr_to_use, &visible_rect_gdk);
 
       if (self->type == TYPE (TIMELINE) &&
           TRANSPORT->punch_mode)
         {
           draw_punch_in (
-            self, cr_to_use, &rect);
+            self, cr_to_use, &visible_rect_gdk);
           draw_punch_out (
-            self, cr_to_use, &rect);
+            self, cr_to_use, &visible_rect_gdk);
         }
 
       /* --------- draw playhead ---------- */
 
-      draw_playhead (self, cr_to_use, &rect);
+      draw_playhead (self, cr_to_use, &visible_rect_gdk);
 
       self->redraw = 0;
     }
 
   cairo_set_source_surface (
-    cr, self->cached_surface, rect.x, rect.y);
+    cr, self->cached_surface,
+    visible_rect_gdk.x, visible_rect_gdk.y);
   cairo_paint (cr);
 
- return FALSE;
+  cairo_destroy (cr);
 }
 
 #undef beats_per_bar
@@ -1468,18 +1531,17 @@ ruler_widget_is_range_hit (
 }
 
 static gboolean
-multipress_pressed (
-  GtkGestureMultiPress *gesture,
+on_click_pressed (
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
   RulerWidget *         self)
 {
-  GdkModifierType state_mask;
-  ui_get_modifier_type_from_gesture (
-    GTK_GESTURE_SINGLE (gesture),
-    &state_mask);
-  if (state_mask & GDK_SHIFT_MASK)
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (gesture));
+  if (state & GDK_SHIFT_MASK)
     self->shift_held = 1;
 
   if (n_press == 2)
@@ -1509,6 +1571,7 @@ multipress_pressed (
   return FALSE;
 }
 
+#if 0
 static void
 on_display_type_changed (
   GtkCheckMenuItem * menuitem,
@@ -1532,10 +1595,11 @@ on_display_type_changed (
 
   EVENTS_PUSH (ET_RULER_DISPLAY_TYPE_CHANGED, NULL);
 }
+#endif
 
 static gboolean
-multipress_right_pressed (
-  GtkGestureMultiPress *gesture,
+on_right_click_pressed (
+  GtkGestureClick *gesture,
   gint                  n_press,
   gdouble               x,
   gdouble               y,
@@ -1544,50 +1608,29 @@ multipress_right_pressed (
   /* right click */
   if (n_press == 1)
     {
-      GtkWidget *menu, *menuitem;
-      menu = gtk_menu_new();
+      GMenu * menu = g_menu_new ();
 
-      /* switch display */
-      GSList *group = NULL;
-      menuitem =
-        gtk_radio_menu_item_new_with_label (
-          group, _("BBT display"));
-      group =
-        gtk_radio_menu_item_get_group (
-          GTK_RADIO_MENU_ITEM (menuitem));
-      gtk_check_menu_item_set_active (
-        GTK_CHECK_MENU_ITEM (menuitem),
-        g_settings_get_enum (
-          S_UI, "ruler-display") ==
-          TRANSPORT_DISPLAY_BBT);
-      g_signal_connect (
-        G_OBJECT (menuitem), "toggled",
-        G_CALLBACK (on_display_type_changed), self);
-      self->bbt_display_check =
-        GTK_CHECK_MENU_ITEM (menuitem);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
+      GSimpleActionGroup * action_group =
+        g_simple_action_group_new ();
+      GAction * display_action =
+        g_settings_create_action (
+          S_UI, "ruler-display");
 
-      menuitem =
-        gtk_radio_menu_item_new_with_label (
-          group, _("Time display"));
-      gtk_check_menu_item_set_active (
-        GTK_CHECK_MENU_ITEM (menuitem),
-        g_settings_get_enum (
-          S_UI, "ruler-display") ==
-          TRANSPORT_DISPLAY_TIME);
-      g_signal_connect (
-        G_OBJECT (menuitem), "toggled",
-        G_CALLBACK (on_display_type_changed), self);
-      self->time_display_check =
-        GTK_CHECK_MENU_ITEM (menuitem);
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL (menu), menuitem);
+      g_action_map_add_action (
+        G_ACTION_MAP (action_group),
+        display_action);
+      gtk_widget_insert_action_group (
+        GTK_WIDGET (self), "ruler",
+        G_ACTION_GROUP (action_group));
 
-      gtk_widget_show_all (menu);
+      g_menu_append (
+        menu, _("Display"),
+        "ruler.ruler-display");
 
-      gtk_menu_popup_at_pointer (
-        GTK_MENU (menu), NULL);
+      /* TODO fire event on change */
+
+      z_gtk_show_context_menu_from_g_menu (
+        GTK_WIDGET (self), menu);
     }
 
   return FALSE;
@@ -1743,19 +1786,26 @@ on_grab_broken (
 
 static void
 on_motion (
-  GtkDrawingArea * da,
-  GdkEventMotion *event,
-  RulerWidget *    self)
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  RulerWidget *              self)
 {
+  GdkEvent * event =
+    gtk_event_controller_get_current_event (
+      GTK_EVENT_CONTROLLER (motion_controller));
+  GdkEventType event_type =
+    gdk_event_get_event_type (event);
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (motion_controller));
+
   /* drag-update didn't work so do the drag-update
    * here */
   if (self->dragging
-      && event->type != GDK_LEAVE_NOTIFY)
+      && event_type != GDK_LEAVE_NOTIFY)
     {
-      GdkModifierType state_mask =
-        event->state;
-
-      if (state_mask & GDK_SHIFT_MASK)
+      if (state & GDK_SHIFT_MASK)
         self->shift_held = 1;
       else
         self->shift_held = 0;
@@ -1768,18 +1818,18 @@ on_motion (
       if (self->type == TYPE (TIMELINE))
         {
           timeline_ruler_on_drag_update (
-            self, event->x - self->start_x,
-            event->y - self->start_y);
+            self, x - self->start_x,
+            y - self->start_y);
         }
       else if (self->type == TYPE (EDITOR))
         {
           editor_ruler_on_drag_update (
-            self, event->x - self->start_x,
-            event->y - self->start_y);
+            self, x - self->start_x,
+            y - self->start_y);
         }
 
       self->last_offset_x =
-        event->x - self->start_x;
+        x - self->start_x;
 
       return;
     }
@@ -1787,30 +1837,30 @@ on_motion (
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
-  if (event->type == GDK_MOTION_NOTIFY)
+  if (event_type == GDK_MOTION_NOTIFY)
     {
       bool punch_in_hit =
         is_punch_in_hit (
-          self, event->x, event->y);
+          self, x, y);
       bool punch_out_hit =
         is_punch_out_hit (
-          self, event->x, event->y);
+          self, x, y);
       bool loop_start_hit =
         is_loop_start_hit (
-          self, event->x, event->y);
+          self, x, y);
       bool loop_end_hit =
         is_loop_end_hit (
-          self, event->x, event->y);
+          self, x, y);
       bool clip_start_hit =
         is_clip_start_hit (
-          self, event->x, event->y);
+          self, x, y);
       bool range_start_hit =
         ruler_widget_is_range_hit (
           self, RW_RANGE_START,
-          event->x, event->y);
+          x, y);
       bool range_end_hit =
         ruler_widget_is_range_hit (
-          self, RW_RANGE_END, event->x, event->y);
+          self, RW_RANGE_END, x, y);
 
       if (punch_in_hit ||
           loop_start_hit || clip_start_hit ||
@@ -1826,7 +1876,7 @@ on_motion (
             GTK_WIDGET (self), "e-resize");
         }
       /* if lower 3/4ths */
-      else if (event->y > (height * 1) / 4)
+      else if (y > (height * 1) / 4)
         {
           /* set cursor to normal */
           ui_set_cursor_from_name (
@@ -1835,8 +1885,8 @@ on_motion (
       else /* upper 1/4th */
         {
           if (ruler_widget_is_range_hit (
-                self, RW_RANGE_FULL, event->x,
-                event->y))
+                self, RW_RANGE_FULL, x,
+                y))
             {
               /* set cursor to movable */
               ui_set_hand_cursor (self);
@@ -1849,26 +1899,15 @@ on_motion (
             }
         }
     }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "default");
-    }
 }
 
-static GtkScrolledWindow *
-get_scrolled_window (
-  RulerWidget * self)
+static void
+on_leave (
+  GtkEventControllerMotion * motion_controller,
+  RulerWidget *              self)
 {
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      return MW_TIMELINE_PANEL->ruler_scroll;
-    case TYPE (EDITOR):
-      return MW_CLIP_EDITOR_INNER->ruler_scroll;
-    }
-
-  return NULL;
+  ui_set_cursor_from_name (
+    GTK_WIDGET (self), "default");
 }
 
 /**
@@ -1907,14 +1946,8 @@ void
 ruler_widget_redraw_whole (
   RulerWidget * self)
 {
-  GdkRectangle rect;
-  get_current_rect (self, &rect);
-
-  /* redraw visible area */
   self->redraw = 1;
-  gtk_widget_queue_draw_area (
-    GTK_WIDGET (self), rect.x, rect.y,
-    rect.width, rect.height);
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 /**
@@ -1954,9 +1987,7 @@ ruler_widget_redraw_playhead (
       return;
     }
 
-  gtk_widget_queue_draw_area (
-    GTK_WIDGET (self), min_x, rect.y,
-    width, rect.height);
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 void
@@ -2097,22 +2128,51 @@ ruler_widget_set_zoom_level (
 static void
 ruler_widget_init (RulerWidget * self)
 {
-  /* make the widget able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+  self->drag =
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
 
-  self->drag = GTK_GESTURE_DRAG (
-    gtk_gesture_drag_new (GTK_WIDGET (self)));
-  self->multipress = GTK_GESTURE_MULTI_PRESS (
-    gtk_gesture_multi_press_new (
-      GTK_WIDGET (self)));
-  GtkGestureMultiPress * right_mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+  self->click =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  g_signal_connect (
+    G_OBJECT (self->click), "pressed",
+    G_CALLBACK (on_click_pressed), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->click));
+
+  GtkGestureClick * right_mp =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mp),
     GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (right_mp), "pressed",
+    G_CALLBACK (on_right_click_pressed), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (right_mp));
+
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
+  g_signal_connect (
+    G_OBJECT (self), "motion",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT (self), "leave",
+    G_CALLBACK (on_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
 
   self->layout_normal =
     gtk_widget_create_pango_layout (
@@ -2134,32 +2194,8 @@ ruler_widget_init (RulerWidget * self)
   pango_font_description_free (desc);
 
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (ruler_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT (self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-begin",
-    G_CALLBACK (drag_begin),  self);
-  /*g_signal_connect (*/
-    /*G_OBJECT(self->drag), "drag-update",*/
-    /*G_CALLBACK (drag_update),  self);*/
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
-  g_signal_connect (
     G_OBJECT (self), "grab-broken-event",
     G_CALLBACK (on_grab_broken), self);
-  g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
-    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (
-    G_OBJECT (right_mp), "pressed",
-    G_CALLBACK (multipress_right_pressed), self);
 }
 
 static void
@@ -2167,6 +2203,7 @@ ruler_widget_class_init (RulerWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
+  klass->snapshot = ruler_snapshot;
   gtk_widget_class_set_css_name (
     klass, "ruler");
 }

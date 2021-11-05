@@ -103,10 +103,10 @@ struct _ZrythmApp
   SplashWindowWidget * splash;
 
   /** First run wizard. */
-  FirstRunAssistantWidget * first_run_assistant;
+  //FirstRunAssistantWidget * first_run_assistant;
 
   /** Project selector. */
-  ProjectAssistantWidget * assistant;
+  //ProjectAssistantWidget * assistant;
 
   bool               have_svg_loader;
 
@@ -183,6 +183,17 @@ zrythm_app_set_font_scale (
  */
 void
 zrythm_app_check_for_updates (
+  ZrythmApp * self);
+
+/**
+ * Unlike the init thread, this will run in the
+ * main GTK thread. Do not put expensive logic here.
+ *
+ * This should be ran after the expensive
+ * initialization has finished.
+ */
+int
+zrythm_app_prompt_for_project_func (
   ZrythmApp * self);
 
 /**

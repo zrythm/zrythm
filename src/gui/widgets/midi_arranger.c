@@ -472,38 +472,19 @@ midi_arranger_listen_notes (
     }
 }
 
-static void
-on_view_info (
-  GtkMenuItem * menuitem,
-  ArrangerObject * mn_obj)
-{
-  ArrangerObjectInfoDialogWidget * dialog =
-    arranger_object_info_dialog_widget_new (
-      mn_obj);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
 void
 midi_arranger_show_context_menu (
   ArrangerWidget * self,
   gdouble          x,
   gdouble          y)
 {
-  GtkWidget *menu;
-  GtkMenuItem * menu_item;
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
 
   ArrangerObject * mn_obj =
     arranger_widget_get_hit_arranger_object (
       self, ARRANGER_OBJECT_TYPE_MIDI_NOTE, x, y);
   MidiNote * mn = (MidiNote *) mn_obj;
-
-#define APPEND_TO_MENU \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), \
-    GTK_WIDGET (menu_item))
-
-  menu = gtk_menu_new();
 
   if (mn)
     {
@@ -518,34 +499,27 @@ midi_arranger_show_context_menu (
             F_NO_PUBLISH_EVENTS);
         }
 
-      menu_item =
+      menuitem =
         CREATE_CUT_MENU_ITEM ("app.cut");
-      APPEND_TO_MENU;
-      menu_item =
+      g_menu_append_item (menu, menuitem);
+      menuitem =
         CREATE_COPY_MENU_ITEM ("app.copy");
-      APPEND_TO_MENU;
-      menu_item =
+      g_menu_append_item (menu, menuitem);
+      menuitem =
         CREATE_PASTE_MENU_ITEM ("app.paste");
-      APPEND_TO_MENU;
-      menu_item =
+      g_menu_append_item (menu, menuitem);
+      menuitem =
         CREATE_DELETE_MENU_ITEM ("app.delete");
-      APPEND_TO_MENU;
-      menu_item =
+      g_menu_append_item (menu, menuitem);
+      menuitem =
         CREATE_DUPLICATE_MENU_ITEM (
           "app.duplicate");
-      APPEND_TO_MENU;
-      menu_item =
-        GTK_MENU_ITEM (
-          gtk_separator_menu_item_new ());
-      APPEND_TO_MENU;
-      menu_item =
-        GTK_MENU_ITEM (
-          gtk_menu_item_new_with_label(
-            _("View info")));
-      g_signal_connect (
-        menu_item, "activate",
-        G_CALLBACK (on_view_info), mn_obj);
-      APPEND_TO_MENU;
+      g_menu_append_item (menu, menuitem);
+
+      menuitem =
+        z_gtk_create_menu_item (
+          _("View info"), NULL, "app.duplicate");
+      g_menu_append_item (menu, menuitem);
     }
   else
     {
@@ -556,28 +530,27 @@ midi_arranger_show_context_menu (
         (ArrangerSelections *) MA_SELECTIONS,
         F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-      menu_item =
+      menuitem =
         CREATE_PASTE_MENU_ITEM ("app.paste");
-      APPEND_TO_MENU;
+      g_menu_append_item (menu, menuitem);
     }
-  menu_item =
-    GTK_MENU_ITEM (gtk_separator_menu_item_new ());
-  APPEND_TO_MENU;
-  menu_item =
+
+  GMenu * selection_submenu = g_menu_new ();
+  menuitem =
     CREATE_CLEAR_SELECTION_MENU_ITEM (
       "app.clear-selection");
-  APPEND_TO_MENU;
-  menu_item =
+  g_menu_append_item (selection_submenu, menuitem);
+  menuitem =
     CREATE_SELECT_ALL_MENU_ITEM (
       "app.select-all");
-  APPEND_TO_MENU;
+  g_menu_append_item (selection_submenu, menuitem);
 
-#undef APPEND_TO_MENU
+  g_menu_append_section (
+    menu, _("Selection"),
+    G_MENU_MODEL (selection_submenu));
 
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu), GTK_WIDGET (self), NULL);
-  gtk_widget_show_all (menu);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), menu);
 }
 
 /**
@@ -585,15 +558,29 @@ midi_arranger_show_context_menu (
  */
 void
 midi_arranger_handle_vertical_zoom_scroll (
-  ArrangerWidget * self,
-  GdkEventScroll * event)
+  ArrangerWidget *           self,
+  GtkEventControllerScroll * scroll_controller)
 {
-  if (!(event->state & GDK_CONTROL_MASK &&
-        event->state & GDK_SHIFT_MASK))
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+
+  if (!(state & GDK_CONTROL_MASK &&
+        state & GDK_SHIFT_MASK))
     return;
 
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
+
+  double x, y;
+  GdkEvent * event =
+    gtk_event_controller_get_current_event (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  gdk_event_get_position (
+    GDK_EVENT (event), &x, &y);
+  double delta_x, delta_y;
+  gdk_scroll_event_get_deltas (
+    GDK_EVENT (event), &delta_x, &delta_y);
 
   /* get current adjustment so we can get the
    * difference from the cursor */
@@ -602,18 +589,18 @@ midi_arranger_handle_vertical_zoom_scroll (
   double adj_val = gtk_adjustment_get_value (adj);
   double size_before =
     gtk_adjustment_get_upper (adj);
-  double adj_perc = event->y / size_before;
+  double adj_perc = y / size_before;
 
   /* get px diff so we can calculate the new
    * adjustment later */
-  double diff = event->y - adj_val;
+  double diff = y - adj_val;
 
   /* scroll down, zoom out */
   double size_after;
   float notes_zoom_before = PIANO_ROLL->notes_zoom;
   double _multiplier = 1.16;
   double multiplier =
-    event->delta_y > 0 ?
+    delta_y > 0 ?
     1 / _multiplier : _multiplier;
   piano_roll_set_notes_zoom (
     PIANO_ROLL,

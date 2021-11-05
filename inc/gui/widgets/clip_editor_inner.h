@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,6 +46,7 @@ typedef struct _ChordEditorSpaceWidget
   ChordEditorSpaceWidget;
 typedef struct _AutomationEditorSpaceWidget
   AutomationEditorSpaceWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 
 /**
  * @addtogroup widgets
@@ -75,7 +76,7 @@ typedef struct _ClipEditorInnerWidget
   GtkBox               parent_instance;
 
   ColorAreaWidget *    color_bar;
-  GtkToolbar *         bot_of_arranger_toolbar;
+  GtkBox *             bot_of_arranger_toolbar;
   GtkLabel *           track_name_label;
   GtkBox *             left_of_ruler_box;
   GtkScrolledWindow *  ruler_scroll;

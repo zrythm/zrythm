@@ -125,9 +125,8 @@ on_main_window_destroy (
  * and can be intercepted.
  */
 static bool
-on_delete_event (
-  GtkWidget *        widget,
-  GdkEvent *         event,
+on_close_request (
+  GtkWindow *        window,
   MainWindowWidget * self)
 {
   g_debug (
@@ -243,11 +242,11 @@ on_delete_event (
       GtkWidget * content =
         gtk_dialog_get_content_area (
           GTK_DIALOG (dialog));
-      gtk_container_add (
-        GTK_CONTAINER (content), label);
+      gtk_box_append (
+        GTK_BOX (content), label);
       int dialog_res =
-        gtk_dialog_run (GTK_DIALOG (dialog));
-      gtk_widget_destroy (GTK_WIDGET (dialog));
+        z_gtk_dialog_run (
+          GTK_DIALOG (dialog), true);
       switch (dialog_res)
         {
         case GTK_RESPONSE_ACCEPT:
@@ -290,17 +289,27 @@ on_delete_event (
 }
 
 static void
-on_state_changed (
-  MainWindowWidget *    self,
-  GdkEventWindowState * event,
-  gpointer              user_data)
+on_maximized_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
 {
+  MainWindowWidget * self =
+    Z_MAIN_WINDOW_WIDGET (user_data);
   self->is_maximized =
-    event->new_window_state &
-      GDK_WINDOW_STATE_MAXIMIZED;
-  self->is_fullscreen =
-    event->new_window_state &
-      GDK_WINDOW_STATE_FULLSCREEN;
+    gtk_window_is_maximized (GTK_WINDOW (self));
+}
+
+static void
+on_fullscreened_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  MainWindowWidget * self =
+    Z_MAIN_WINDOW_WIDGET (user_data);
+  self->is_maximized =
+    gtk_window_is_fullscreen (GTK_WINDOW (self));
 }
 
 MainWindowWidget *
@@ -370,28 +379,21 @@ main_window_get_last_focused_arranger_selections (
 #endif
 
 static gboolean
-on_key_release (
-  GtkWidget *widget,
-  GdkEventKey *event,
-  MainWindowWidget * self)
-{
-  return FALSE;
-}
-
-static gboolean
-on_key_action (
-  GtkWidget *widget,
-  GdkEventKey *event,
-  ArrangerWidget * self)
+on_key_pressed (
+  GtkEventControllerKey* self,
+  guint keyval,
+  guint keycode,
+  GdkModifierType state,
+  gpointer user_data)
 {
   g_debug ("main window key press");
 
-  if (!z_gtk_keyval_is_arrow (event->keyval))
-    return FALSE;
+  if (!z_gtk_keyval_is_arrow (keyval))
+    return false;
 
   if (MW_TRACK_INSPECTOR->comment->has_focus)
     {
-      return FALSE;
+      return false;
     }
 
 #if 0
@@ -408,7 +410,7 @@ on_key_action (
     }
 #endif
 
-  return FALSE;
+  return false;
 }
 
 static bool
@@ -461,12 +463,8 @@ main_window_widget_setup (
     }
 
   // set icons
-  GtkWidget * image =
-    resources_get_icon (
-      ICON_TYPE_ZRYTHM, "zrythm.svg");
-  gtk_window_set_icon (
-    GTK_WINDOW (self),
-    gtk_image_get_pixbuf (GTK_IMAGE (image)));
+  /*gtk_window_set_icon_name (*/
+    /*GTK_WINDOW (self), "zrythm");*/
 
   /* setup top and bot bars */
   top_bar_widget_refresh (self->top_bar);
@@ -494,6 +492,8 @@ main_window_widget_setup (
 
   g_idle_add (
     (GSourceFunc) show_startup_errors, self);
+
+  gtk_window_present (GTK_WINDOW (self));
 
   self->setup = true;
 
@@ -554,6 +554,7 @@ main_window_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, MainWindowWidget, x)
 
+  BIND_CHILD (overlay);
   BIND_CHILD (main_box);
   BIND_CHILD (header);
   BIND_CHILD (top_bar);
@@ -566,9 +567,6 @@ main_window_widget_class_init (
   gtk_widget_class_bind_template_callback (
     klass,
     on_main_window_destroy);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_state_changed);
 
 #undef BIND_CHILD
 
@@ -597,6 +595,8 @@ main_window_widget_init (MainWindowWidget * self)
     /* edit menu */
     { "undo", activate_undo },
     { "redo", activate_redo },
+    { "undo_n", activate_undo_n, "i" },
+    { "redo_n", activate_redo_n, "i" },
     { "cut", activate_cut },
     { "copy", activate_copy },
     { "paste", activate_paste },
@@ -750,6 +750,18 @@ main_window_widget_init (MainWindowWidget * self)
       activate_disable_selected_tracks },
     { "change-track-color",
       activate_change_track_color },
+    { "track-set-midi-channel",
+      activate_track_set_midi_channel },
+    { "quick-bounce-selected-tracks",
+      activate_quick_bounce_selected_tracks },
+    { "bounce-selected-tracks",
+      activate_bounce_selected_tracks },
+    { "selected-tracks-direct-out-to",
+      activate_selected_tracks_direct_out_to, "i" },
+    { "selected-tracks-direct-out-new",
+      activate_selected_tracks_direct_out_new, },
+    { "toggle-track-passthrough-input",
+      activate_toggle_track_passthrough_input, },
 
     /* piano roll */
     { "toggle-drum-mode", NULL, NULL, "false",
@@ -796,6 +808,81 @@ main_window_widget_init (MainWindowWidget * self)
     /* arranger selections */
     { "nudge-selection",
       activate_nudge_selection, "s" },
+    { "detect-bpm",
+      activate_detect_bpm, "s" },
+    { "timeline-function",
+      activate_timeline_function, "i" },
+    { "quick-bounce-selections",
+      activate_quick_bounce_selections },
+    { "bounce-selections",
+      activate_bounce_selections },
+    { "set-curve-algorithm",
+      activate_set_curve_algorithm, "i", },
+    { "set-region-fade-in-algorithm-preset",
+      activate_set_region_fade_in_algorithm_preset,
+      "s", },
+    { "set-region-fade-out-algorithm-preset",
+      activate_set_region_fade_out_algorithm_preset,
+      "s", },
+    { "arranger-object-view-info",
+      activate_arranger_object_view_info, "s" },
+
+    /* cc bindings */
+    { "bind-midi-cc",
+      activate_bind_midi_cc, "s" },
+    { "delete-cc-binding",
+      activate_delete_cc_binding, "i" },
+
+    /* port actions */
+    { "reset-stereo-balance",
+      activate_reset_stereo_balance, "s" },
+    { "reset-fader",
+      activate_reset_fader, "s" },
+    { "reset-control",
+      activate_reset_control, "s" },
+    { "port-view-info",
+      activate_port_view_info, "s" },
+    { "port-connection-remove",
+      activate_port_connection_remove },
+
+    /* plugin actions */
+    { "plugin-toggle-enabled",
+      activate_plugin_toggle_enabled, "s" },
+    { "plugin-inspect",
+      activate_plugin_inspect },
+
+    /* panel file browser actions */
+    { "panel-file-browser-add-bookmark",
+      activate_panel_file_browser_add_bookmark },
+    { "panel-file-browser-delete-bookmark",
+      activate_panel_file_browser_delete_bookmark },
+
+    /* pluginbrowser actions */
+    { "plugin-browser-add-to-project",
+      activate_plugin_browser_add_to_project },
+    { "plugin-browser-add-to-project-carla",
+      activate_plugin_browser_add_to_project_carla },
+    { "plugin-browser-add-to-project-bridged-ui",
+      activate_plugin_browser_add_to_project_bridged_ui },
+    { "plugin-browser-add-to-project-bridged-full",
+      activate_plugin_browser_add_to_project_bridged_full },
+    { "plugin-browser-toggle-generic-ui",
+      NULL, NULL, "false",
+      change_state_plugin_browser_toggle_generic_ui },
+    { "plugin-browser-add-to-collection",
+      activate_plugin_browser_add_to_collection,
+      "s"},
+    { "plugin-browser-remove-from-collection",
+      activate_plugin_browser_remove_from_collection,
+      "s"},
+    { "plugin-browser-reset",
+      activate_plugin_browser_reset, "s" },
+    { "plugin-collection-add",
+      activate_plugin_collection_add, },
+    { "plugin-collection-rename",
+      activate_plugin_collection_rename, },
+    { "plugin-collection-remove",
+      activate_plugin_collection_remove, },
   };
 
 #if 0
@@ -820,15 +907,25 @@ main_window_widget_init (MainWindowWidget * self)
     G_CALLBACK (on_close_notification_clicked),
     NULL);
 
+  GtkEventControllerKey * key_controller =
+    GTK_EVENT_CONTROLLER_KEY (
+      gtk_event_controller_key_new ());
   g_signal_connect (
-    G_OBJECT (self), "key-press-event",
-    G_CALLBACK (on_key_action), self);
+    G_OBJECT (key_controller), "key-pressed",
+    G_CALLBACK (on_key_pressed), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (key_controller));
+
   g_signal_connect (
-    G_OBJECT (self), "key-release-event",
-    G_CALLBACK (on_key_release), self);
+    G_OBJECT (self), "close-request",
+    G_CALLBACK (on_close_request), self);
   g_signal_connect (
-    G_OBJECT (self), "delete-event",
-    G_CALLBACK (on_delete_event), self);
+    G_OBJECT (self), "notify::maximized",
+    G_CALLBACK (on_maximized_changed), self);
+  g_signal_connect (
+    G_OBJECT (self), "notify::fullscreened",
+    G_CALLBACK (on_fullscreened_changed), self);
 
   g_message ("done");
 }

@@ -93,7 +93,7 @@ track_properties_expander_widget_setup (
   lbl = \
     plugin_gtk_new_label ( \
       x, true, false, 0.f, 0.5f); \
-  z_gtk_widget_add_style_class ( \
+  gtk_widget_add_css_class ( \
     lbl, "inspector_label"); \
   gtk_widget_set_margin_start (lbl, 2); \
   gtk_widget_set_visible (lbl, 1)

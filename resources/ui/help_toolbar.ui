@@ -1,97 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <template class="HelpToolbarWidget" parent="GtkToolbar">
+  <requires lib="gtk" version="4.0"/>
+  <template class="HelpToolbarWidget" parent="GtkBox">
+    <style>
+      <class name="toolbar"/>
+    </style>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkToolButton" id="chat">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="chat">
+        <property name="can_focus">0</property>
         <property name="action_name">app.chat</property>
         <property name="icon_name">dialog-messages</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="manual">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="manual">
+        <property name="can_focus">0</property>
         <property name="action_name">app.manual</property>
         <property name="icon_name">system-help</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="news">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="news">
+        <property name="can_focus">0</property>
         <property name="action_name">app.news</property>
         <property name="icon_name">news-subscribe</property>
         <property name="tooltip-text" translatable="yes">News</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="shortcuts">
-        <property name="visible">1</property>
+      <object class="GtkButton" id="shortcuts">
         <property name="icon-name">input-keyboard</property>
         <property name="action-name">win.show-help-overlay</property>
       </object>
     </child>
     <child>
-      <object class="GtkToolButton" id="donate_btn">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="donate_btn">
+        <property name="can_focus">0</property>
         <property name="action_name">app.donate</property>
         <property name="icon_name">taxes-finances</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="report_a_bug_btn">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="GtkButton" id="report_a_bug_btn">
+        <property name="can_focus">0</property>
         <property name="action_name">app.bugreport</property>
         <property name="icon_name">tools-report-bug</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
     </child>
   </template>
 </interface>

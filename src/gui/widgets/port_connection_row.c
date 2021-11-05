@@ -38,7 +38,7 @@
 G_DEFINE_TYPE (
   PortConnectionRowWidget,
   port_connection_row_widget,
-  GTK_TYPE_EVENT_BOX)
+  GTK_TYPE_BOX)
 
 static void
 on_enable_toggled (
@@ -126,8 +126,8 @@ port_connection_row_widget_new (
   gtk_toggle_button_set_active (
     btn, connection->enabled);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
-  gtk_box_pack_start (
-    GTK_BOX (box), GTK_WIDGET (btn), 0, 0, 0);
+  gtk_box_append (
+    GTK_BOX (box), GTK_WIDGET (btn));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (btn),
     _("Enable/disable connection"));
@@ -140,10 +140,8 @@ port_connection_row_widget_new (
     GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_visible (
     GTK_WIDGET (self->overlay), 1);
-  gtk_box_pack_end (
-    GTK_BOX (box),
-    GTK_WIDGET (self->overlay),
-    1,1,0);
+  gtk_box_append (
+    GTK_BOX (box), GTK_WIDGET (self->overlay));
 
   /* bar slider */
   char designation[600];
@@ -162,19 +160,18 @@ port_connection_row_widget_new (
   self->slider =
     bar_slider_widget_new_port_connection (
       connection, designation);
-  gtk_container_add (
-    GTK_CONTAINER (self->overlay),
+  gtk_overlay_set_child (
+    GTK_OVERLAY (self->overlay),
     GTK_WIDGET (self->slider));
 
   /* delete connection button */
   self->delete_btn =
     GTK_BUTTON (
-      gtk_button_new_from_icon_name (
-        "edit-delete", GTK_ICON_SIZE_BUTTON));
+      gtk_button_new_from_icon_name ("edit-delete"));
   gtk_widget_set_visible (
     GTK_WIDGET (self->delete_btn), 1);
-  gtk_container_add (
-    GTK_CONTAINER (box),
+  gtk_box_append (
+    GTK_BOX (box),
     GTK_WIDGET (self->delete_btn));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->delete_btn),
@@ -183,7 +180,7 @@ port_connection_row_widget_new (
     G_OBJECT (self->delete_btn), "clicked",
     G_CALLBACK (on_del_clicked), self);
 
-  gtk_container_add (GTK_CONTAINER (self), box);
+  gtk_box_append (GTK_BOX (self), box);
 
   gtk_widget_set_sensitive (
     box, !connection->locked);

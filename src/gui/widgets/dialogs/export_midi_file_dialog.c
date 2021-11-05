@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,57 +35,90 @@
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ExportMidiFileDialogWidget,
-               export_midi_file_dialog_widget,
-               GTK_TYPE_FILE_CHOOSER_DIALOG)
-
-static void
-on_export_clicked (
-  GtkButton * widget,
-  ExportMidiFileDialogWidget * self)
-{
-  gtk_dialog_response (
-    GTK_DIALOG (self),
-    GTK_RESPONSE_ACCEPT);
-}
-
-static void
-on_cancel_clicked (
-  GtkButton * widget,
-  ExportMidiFileDialogWidget * self)
-{
-  gtk_dialog_response (
-    GTK_DIALOG (self),
-    GTK_RESPONSE_NONE);
-}
-
 /**
- * Creates a ExportMidiFileDialog.
+ * Runs a new dialog and returns the filepath if
+ * selected or NULL if canceled.
  */
-ExportMidiFileDialogWidget *
-export_midi_file_dialog_widget_new_for_region (
+char *
+export_midi_file_dialog_widget_run_for_region (
   GtkWindow * parent,
-  ZRegion *    region)
+  ZRegion *   region)
 {
-  ExportMidiFileDialogWidget * self =
-    g_object_new (
-      EXPORT_MIDI_FILE_DIALOG_WIDGET_TYPE,
-      NULL);
+  GtkFileChooserDialog * dialog =
+    GTK_FILE_CHOOSER_DIALOG (
+      gtk_file_chooser_dialog_new (
+        _("Select MIDI file"), parent,
+        GTK_FILE_CHOOSER_ACTION_SAVE,
+        _("_Cancel"), GTK_RESPONSE_CANCEL,
+        _("_Export"), GTK_RESPONSE_ACCEPT,
+        NULL));
 
-  self->region = region;
-  char * descr =
-    g_strdup_printf (
-      _("Exporting MIDI region \"%s\""),
-      region->name);
-  gtk_label_set_text (
-    self->description,
-    descr);
-  g_free (descr);
+  /* add region content choice */
+  StrvBuilder * region_content_ids_builder =
+    strv_builder_new ();
+  StrvBuilder * region_content_labels_builder =
+    strv_builder_new ();
+  strv_builder_add (
+    region_content_ids_builder, "base");
+  strv_builder_add (
+    region_content_labels_builder, _("Base region"));
+  strv_builder_add (
+    region_content_ids_builder, "full");
+  strv_builder_add (
+    region_content_labels_builder, _("Full region"));
+  char ** region_content_ids =
+    strv_builder_end (region_content_ids_builder);
+  char ** region_content_labels =
+    strv_builder_end (region_content_labels_builder);
+  gtk_file_chooser_add_choice (
+    GTK_FILE_CHOOSER (dialog), "region-content",
+    _("Region Content"),
+    (const char **) region_content_ids,
+    (const char **) region_content_labels);
+  g_strfreev (region_content_ids);
+  g_strfreev (region_content_labels);
+
+  /* add MIDI format choice */
+  StrvBuilder * midi_format_ids_builder =
+    strv_builder_new ();
+  StrvBuilder * midi_format_labels_builder =
+    strv_builder_new ();
+  strv_builder_add (
+    midi_format_ids_builder, "zero");
+  strv_builder_add (
+    midi_format_labels_builder, _("Format 0"));
+  strv_builder_add (
+    midi_format_ids_builder, "one");
+  strv_builder_add (
+    midi_format_labels_builder, _("Format 1"));
+  char ** midi_format_ids =
+    strv_builder_end (midi_format_ids_builder);
+  char ** midi_format_labels =
+    strv_builder_end (midi_format_labels_builder);
+  gtk_file_chooser_add_choice (
+    GTK_FILE_CHOOSER (dialog), "midi-format",
+    _("MIDI Format"),
+    (const char **) midi_format_ids,
+    (const char **) midi_format_labels);
+  g_strfreev (midi_format_ids);
+  g_strfreev (midi_format_labels);
+
+  /* add MIDI file filter */
+  GtkFileFilter * filter = gtk_file_filter_new ();
+  gtk_file_filter_add_mime_type (
+    filter, "audio/midi");
+  gtk_file_filter_add_suffix (
+    filter, "mid");
+  gtk_file_filter_add_suffix (
+    filter, "midi");
+  gtk_file_chooser_add_filter (
+    GTK_FILE_CHOOSER (dialog), filter);
 
   char * tmp =
     g_strdup_printf (
@@ -94,47 +127,31 @@ export_midi_file_dialog_widget_new_for_region (
     string_convert_to_filename (tmp);
   g_free (tmp);
   gtk_file_chooser_set_current_name (
-    GTK_FILE_CHOOSER (self), file);
+    GTK_FILE_CHOOSER (dialog), file);
   g_free (file);
 
   gtk_window_set_transient_for (
-    GTK_WINDOW (self),
-    parent);
+    GTK_WINDOW (dialog), parent);
 
-  return self;
+  int res =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), false);
+  char * filename  = NULL;
+  switch (res)
+    {
+    case GTK_RESPONSE_ACCEPT:
+      {
+        GFile * gfile = NULL;
+        gfile =
+          gtk_file_chooser_get_file (
+            GTK_FILE_CHOOSER (dialog));
+        filename = g_file_get_path (gfile);
+        g_object_unref (gfile);
+      }
+      break;
+    default:
+      break;
+    }
+  gtk_window_destroy (GTK_WINDOW (dialog));
+
+  return filename;
 }
-
-static void
-export_midi_file_dialog_widget_class_init (
-  ExportMidiFileDialogWidgetClass * _klass)
-{
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "export_midi_file_dialog.ui");
-
-#define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, \
-    ExportMidiFileDialogWidget, \
-    x)
-#define BIND_CALLBACK(x) \
-  gtk_widget_class_bind_template_callback ( \
-    klass, \
-    x)
-
-  BIND_CHILD (description);
-
-  BIND_CALLBACK (on_export_clicked);
-  BIND_CALLBACK (on_cancel_clicked);
-
-#undef BIND_CHILD
-}
-
-static void
-export_midi_file_dialog_widget_init (
-  ExportMidiFileDialogWidget * self)
-{
-  gtk_widget_init_template (GTK_WIDGET (self));
-}
-

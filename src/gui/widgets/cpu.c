@@ -57,19 +57,19 @@ G_DEFINE_TYPE (
  * Taken from
  * http://zetcode.com/gui/gtk2/customwidget/
  */
-static int
+static void
 cpu_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  CpuWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  CpuWidget * self = Z_CPU_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
+
   GtkStyleContext *context =
   gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -84,7 +84,7 @@ cpu_draw_cb (
   surface =
     z_cairo_get_surface_from_icon_name (
       "ext-iconfinder_cpu_2561419",
-      ICON_SIZE, 0);
+      ICON_SIZE, 1);
   cairo_mask_surface(
     cr, surface, PADDING, PADDING);
   cairo_fill(cr);
@@ -92,7 +92,7 @@ cpu_draw_cb (
   surface =
     z_cairo_get_surface_from_icon_name (
       "font-awesome-wave-square-solid",
-      ICON_SIZE, 0);
+      ICON_SIZE, 1);
   cairo_mask_surface(
     cr, surface, PADDING, 2 * PADDING + ICON_SIZE);
   cairo_fill(cr);
@@ -138,8 +138,6 @@ cpu_draw_cb (
         BAR_HEIGHT);
       cairo_fill(cr);
     }
-
-	return 0;
 }
 
 /**
@@ -324,9 +322,9 @@ cpu_widget_init (CpuWidget * self)
     GTK_WIDGET (self), TOTAL_W, TOTAL_H);
 
   /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (cpu_draw_cb), self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self), cpu_draw_cb,
+    self, NULL);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);

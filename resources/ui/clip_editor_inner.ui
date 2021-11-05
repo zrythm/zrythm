@@ -1,250 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<!--
-
-  Copyright (C) 2018-2019 Alexandros Theodotou
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="ClipEditorInnerWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="hexpand">True</property>
+    <property name="hexpand">1</property>
     <child>
       <object class="ColorAreaWidget" id="color_bar">
-        <property name="visible">1</property>
         <property name="width-request">5</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox" id="inner_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="hexpand">1</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="top_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="vexpand">1</property>
             <child>
               <object class="GtkLabel" id="track_name_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Track name</property>
-                <property name="angle">90</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox" id="fourbox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="hexpand">1</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox" id="ruler_and_left_of_ruler_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkBox" id="left_of_ruler_box">
                         <style>
                           <class name="left-of-ruler-box"/>
                         </style>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="orientation">horizontal</property>
                         <child>
                           <object class="GtkToggleButton" id="toggle_notation">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
+                            <property name="focusable">1</property>
+                            <property name="receives_default">1</property>
                             <child>
                               <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="icon_name">font-awesome-drum-solid</property>
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="pack-type">end</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkToggleButton" id="toggle_listen_notes">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
+                            <property name="focusable">1</property>
+                            <property name="receives_default">1</property>
                             <property name="action_name">app.toggle-listen-notes</property>
                             <child>
                               <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="icon_name">audio-headphones</property>
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="pack-type">end</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkToggleButton" id="show_automation_values">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
+                            <property name="focusable">1</property>
+                            <property name="receives_default">1</property>
                             <property name="action_name">app.show-automation-values</property>
                             <child>
                               <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="icon_name">text-bubble</property>
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="pack-type">end</property>
-                          </packing>
                         </child>
                       </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
                     </child>
                     <child>
                       <object class="GtkScrolledWindow" id="ruler_scroll">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
+                        <property name="focusable">1</property>
+                        <property name="hexpand">1</property>
                         <property name="hscrollbar_policy">external</property>
                         <property name="vscrollbar_policy">never</property>
-                        <property name="shadow_type">in</property>
-                        <child>
+                        <property name="child">
                           <object class="GtkViewport" id="ruler_viewport">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="RulerWidget" id="ruler">
-                                <property name="visible">1</property>
                               </object>
                             </child>
                           </object>
-                        </child>
+                        </property>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkStack" id="editor_stack">
-                    <property name="visible">1</property>
                     <child>
                       <object class="MidiEditorSpaceWidget" id="midi_editor_space">
-                        <property name="visible">1</property>
                       </object>
                     </child>
                     <child>
                       <object class="ChordEditorSpaceWidget" id="chord_editor_space">
-                        <property name="visible">1</property>
                       </object>
                     </child>
                     <child>
                       <object class="AudioEditorSpaceWidget" id="audio_editor_space">
-                        <property name="visible">1</property>
                       </object>
                     </child>
                     <child>
                       <object class="AutomationEditorSpaceWidget" id="automation_editor_space">
-                        <property name="visible">1</property>
                       </object>
                     </child>
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child>
-              <object class="GtkToolbar" id="right_of_arranger_toolbar">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+              <object class="GtkBox" id="right_of_arranger_toolbar">
+                <property name="halign">center</property>
+                <style>
+                  <class name="toolbar"/>
+                </style>
+                <property name="can_focus">0</property>
                 <property name="orientation">vertical</property>
-                <property name="icon_size">2</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">2</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkToolbar" id="bot_of_arranger_toolbar">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="icon_size">2</property>
+          <object class="GtkBox" id="bot_of_arranger_toolbar">
+            <property name="valign">center</property>
+            <style>
+              <class name="toolbar"/>
+            </style>
+            <property name="can_focus">0</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
   </template>
 </interface>

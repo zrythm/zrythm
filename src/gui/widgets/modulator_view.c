@@ -44,8 +44,8 @@ modulator_view_widget_refresh (
   color_area_widget_set_color (
     self->color, &track->color);
 
-  z_gtk_container_remove_all_children (
-    GTK_CONTAINER (self->modulators_box));
+  z_gtk_widget_remove_all_children (
+    GTK_WIDGET (self->modulators_box));
 
   for (int i = 0;
        i < self->track->num_modulators;
@@ -57,8 +57,8 @@ modulator_view_widget_refresh (
           modulator->modulator_widget =
             modulator_widget_new (modulator);
         }
-      gtk_container_add (
-        GTK_CONTAINER (self->modulators_box),
+      gtk_box_append (
+        GTK_BOX (self->modulators_box),
         GTK_WIDGET (modulator->modulator_widget));
     }
 
@@ -67,10 +67,19 @@ modulator_view_widget_refresh (
       GTK_ORIENTATION_HORIZONTAL,
       0,
       DRAG_DEST_BOX_TYPE_MODULATORS);
-  gtk_box_pack_end (
+  gtk_box_append (
     GTK_BOX (self->modulators_box),
-    GTK_WIDGET (drag_dest),
-    1, 1, 0);
+    GTK_WIDGET (drag_dest));
+}
+
+ModulatorViewWidget *
+modulator_view_widget_new (void)
+{
+  ModulatorViewWidget * self =
+    g_object_new (
+      MODULATOR_VIEW_WIDGET_TYPE, NULL);
+
+  return self;
 }
 
 static void
@@ -89,10 +98,9 @@ modulator_view_widget_init (
       GTK_ORIENTATION_HORIZONTAL,
       0,
       DRAG_DEST_BOX_TYPE_MODULATORS);
-  gtk_box_pack_end (
+  gtk_box_append (
     GTK_BOX (self->modulators_box),
-    GTK_WIDGET (drag_dest),
-    1, 1, 0);
+    GTK_WIDGET (drag_dest));
 
   for (int i = 0; i < 8; i++)
     {
@@ -100,8 +108,8 @@ modulator_view_widget_init (
         modulator_macro_widget_new (i);
       gtk_widget_set_visible (
         GTK_WIDGET (self->macros[i]), true);
-      gtk_container_add (
-        GTK_CONTAINER (self->macros_box),
+      gtk_box_append (
+        GTK_BOX (self->macros_box),
         GTK_WIDGET (self->macros[i]));
     }
 }

@@ -38,65 +38,7 @@
 
 G_DEFINE_TYPE (
   HomeToolbarWidget, home_toolbar_widget,
-  GTK_TYPE_TOOLBAR)
-
-typedef struct UndoHistoryData
-{
-  /** Undo or redo. */
-  bool  redo;
-
-  /** Index in stack (# of actions from top). */
-  int   idx;
-} UndoHistoryData;
-
-static void
-on_undo_history_activated (
-  GtkMenuItem *     menuitem,
-  UndoHistoryData * data)
-{
-  g_debug ("redo %d, idx %d", data->redo, data->idx);
-  for (int i = 0; i <= data->idx; i++)
-    {
-      GError * err = NULL;
-      int ret = 0;
-      if (data->redo)
-        {
-          ret =
-            undo_manager_redo (UNDO_MANAGER, &err);
-        }
-      else
-        {
-          ret =
-            undo_manager_undo (UNDO_MANAGER, &err);
-        }
-
-      if (ret != 0)
-        {
-          if (data->redo)
-            {
-              HANDLE_ERROR (
-                err, "%s",
-                _("Failed to redo action"));
-            }
-          else
-            {
-              HANDLE_ERROR (
-                err, "%s",
-                _("Failed to undo action"));
-            }
-
-        } /* endif ret != 0 */
-
-    } /* endforeach */
-}
-
-static void
-destroy_undo_history_data (
-  UndoHistoryData * data,
-  GClosure *        closure)
-{
-  free (data);
-}
+  GTK_TYPE_BOX)
 
 static void
 refresh_undo_or_redo_button (
@@ -124,14 +66,15 @@ refresh_undo_or_redo_button (
 
   const char * undo_or_redo_str =
     redo ? _("Redo") : _("Undo");
-  GtkMenu * menu = NULL;
+  GMenu * menu = NULL;
   if (undo_stack_is_empty (stack))
     {
       SET_TOOLTIP (undo_or_redo_str);
     }
   else
     {
-      menu = GTK_MENU (gtk_menu_new ());
+      menu = g_menu_new ();
+      GMenuItem * menuitem;
 
       /* fill 8 actions */
       int max_actions =
@@ -146,23 +89,14 @@ refresh_undo_or_redo_button (
           char * action_str =
             undoable_action_to_string (ua);
 
-          GtkWidget * menuitem =
-            gtk_menu_item_new_with_label (
-              action_str);
-          gtk_widget_set_visible (menuitem, true);
-          UndoHistoryData * data =
-            object_new (UndoHistoryData);
-          data->redo = redo;
-          data->idx = i;
-          g_signal_connect_data (
-            menuitem, "activate",
-            G_CALLBACK (on_undo_history_activated),
-            data,
-            (GClosureNotify)
-              destroy_undo_history_data,
-            0);
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL (menu), menuitem);
+          char tmp[600];
+          sprintf (
+            tmp, "app.%s_n::%d",
+            redo ? "redo" : "undo", i);
+          menuitem =
+            z_gtk_create_menu_item (
+              action_str, NULL, tmp);
+          g_menu_append_item (menu, menuitem);
 
           if (i == 0)
             {
@@ -190,8 +124,8 @@ refresh_undo_or_redo_button (
 
   if (menu)
     {
-      gtk_menu_button_set_popup (
-        btn_w_menu->menu_btn, GTK_WIDGET (menu));
+      gtk_menu_button_set_menu_model (
+        btn_w_menu->menu_btn, G_MENU_MODEL (menu));
     }
 }
 
@@ -252,13 +186,15 @@ home_toolbar_widget_init (
 #undef SET_TOOLTIP
 
   self->undo_btn =
-    z_gtk_button_new_with_icon ("edit-undo");
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name ("edit-undo"));
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->undo_btn), "app.undo");
   gtk_widget_set_visible (
     GTK_WIDGET (self->undo_btn), true);
   self->redo_btn =
-    z_gtk_button_new_with_icon ("edit-redo");
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name ("edit-redo"));
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->redo_btn), "app.redo");
   gtk_widget_set_visible (
@@ -267,12 +203,10 @@ home_toolbar_widget_init (
   /* setup button with menu widget */
   button_with_menu_widget_setup (
     self->undo, GTK_BUTTON (self->undo_btn),
-    NULL, NULL, true, 34, _("Undo"),
-    _("Undo..."));
+    NULL, true, 34, _("Undo"), _("Undo..."));
   button_with_menu_widget_setup (
     self->redo, GTK_BUTTON (self->redo_btn),
-    NULL, NULL, true, 34, _("Redo"),
-    _("Redo..."));
+    NULL, true, 34, _("Redo"), _("Redo..."));
 }
 
 static void

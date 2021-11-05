@@ -1,165 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
-<!--
-
-  Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
-
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
--->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <requires lib="gtksourceview" version="4.0"/>
   <template class="BugReportDialogWidget" parent="GtkDialog">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <property name="title" translatable="yes">Error</property>
-    <property name="role">bug-report-dialog</property>
-    <property name="window-position">center-on-parent</property>
     <property name="icon-name">zrythm</property>
-    <property name="type-hint">dialog</property>
-    <child internal-child="vbox">
+    <child internal-child="content_area">
       <object class="GtkBox" id="vbox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox" id="action_area">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="layout-style">end</property>
-            <child>
-              <object class="GtkButton" id="button_close">
-                <property name="label">_Close</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="can-default">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <signal name="clicked" handler="on_button_close_clicked" object="BugReportDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_send_srht">
-                <property name="label">Send via _Sourcehut</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="can-default">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <signal name="clicked" handler="on_button_send_srht_clicked" object="BugReportDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_send_email">
-                <property name="label">Send via _Email</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="can-default">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <signal name="clicked" handler="on_button_send_email_clicked" object="BugReportDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_send_automatically">
-                <property name="label">Send _Automatically</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="can-default">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <signal name="clicked" handler="on_button_send_automatically_clicked" object="BugReportDialogWidget" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkBox" id="main_box">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+            <property name="vexpand">1</property>
             <child>
-              <!-- n-columns=2 n-rows=3 -->
               <object class="GtkGrid">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <property name="hexpand">1</property>
                 <property name="row-spacing">8</property>
                 <property name="column-spacing">6</property>
                 <child>
                   <object class="GtkLabel" id="top_lbl">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                      <property name="column-span">2</property>
+                    </layout>
                   </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                    <property name="width">2</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">What did you do?</property>
-                    <property name="use-markup">True</property>
+                    <property name="use-markup">1</property>
                     <property name="justify">center</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                    </layout>
                   </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">1</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Other info</property>
-                    <property name="use-markup">True</property>
+                    <property name="use-markup">1</property>
                     <property name="justify">center</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                    </layout>
                   </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">2</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkSourceView" id="other_info_text_view">
@@ -169,11 +56,11 @@
                     <property name="buffer">other_info_buffer</property>
                     <property name="wrap-mode">word-char</property>
                     <property name="accepts-tab">False</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">2</property>
+                    </layout>
                   </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">2</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkSourceView" id="steps_to_reproduce_text_view">
@@ -183,37 +70,49 @@
                     <property name="buffer">steps_to_reproduce_buffer</property>
                     <property name="wrap-mode">word-char</property>
                     <property name="accepts-tab">False</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                    </layout>
                   </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="padding">6</property>
-                <property name="position">0</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
       </object>
     </child>
-    <!--
-    <action-widgets>
-      <action-widget response="-7">button_close</action-widget>
-      <action-widget response="1">button_send_srht</action-widget>
-      <action-widget response="2">button_send_email</action-widget>
-      <action-widget response="3">button_send_automatically</action-widget>
-    </action-widgets>
-    -->
+    <child internal-child="action_area">
+      <object class="GtkBox" id="action_area">
+        <property name="valign">center</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkButton" id="button_close">
+            <property name="label">_Close</property>
+            <property name="use-underline">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_send_srht">
+            <property name="label">Send via _Sourcehut</property>
+            <property name="use-underline">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_send_email">
+            <property name="label">Send via _Email</property>
+            <property name="use-underline">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_send_automatically">
+            <property name="label">Send _Automatically</property>
+            <property name="use-underline">1</property>
+          </object>
+        </child>
+      </object>
+    </child>
   </template>
   <object class="GtkSourceBuffer" id="other_info_buffer">
     <property name="text" translatable="yes"></property>

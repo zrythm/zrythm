@@ -28,6 +28,15 @@
 
 #include <gtk/gtk.h>
 
+typedef struct _FileChooserButtonWidget
+  FileChooserButtonWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define CREATE_PROJECT_DIALOG_WIDGET_TYPE \
   (create_project_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -45,10 +54,14 @@ typedef struct _CreateProjectDialogWidget
 
   GtkButton *            ok;
   GtkEntry *             name;
-  GtkFileChooserButton * fc;
+  FileChooserButtonWidget * fc;
 } CreateProjectDialogWidget;
 
 CreateProjectDialogWidget *
 create_project_dialog_widget_new (void);
+
+/**
+ * @}
+ */
 
 #endif

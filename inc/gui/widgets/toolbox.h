@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,13 +36,13 @@
   (toolbox_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ToolboxWidget, toolbox_widget,
-  Z, TOOLBOX_WIDGET, GtkButtonBox)
+  Z, TOOLBOX_WIDGET, GtkBox)
 
 #define MW_TOOLBOX MW_HOME_TOOLBAR->toolbox
 
 typedef struct _ToolboxWidget
 {
-  GtkButtonBox      parent_instance;
+  GtkBox      parent_instance;
   GtkToggleButton * select_mode;
   GtkToggleButton * edit_mode;
   GtkToggleButton * cut_mode;

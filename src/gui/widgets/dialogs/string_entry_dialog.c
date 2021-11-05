@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "gui/widgets/marker.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -49,12 +50,11 @@ on_response (
   if (response == GTK_RESPONSE_ACCEPT)
     {
       const char * text =
-        gtk_entry_get_text (self->entry);
+        gtk_editable_get_text (
+          GTK_EDITABLE (self->entry));
 
       self->setter (self->obj, text);
     }
-
-  gtk_widget_destroy (GTK_WIDGET (self));
 }
 
 static void
@@ -94,7 +94,8 @@ string_entry_dialog_widget_new (
   gtk_label_set_text (self->label, label);
 
   /* setup text */
-  gtk_entry_set_text (self->entry, getter (obj));
+  gtk_editable_set_text (
+    GTK_EDITABLE (self->entry), getter (obj));
 
   return self;
 }
@@ -143,7 +144,7 @@ string_entry_dialog_widget_new_return_string (
       label, &str,
       (GenericStringGetter) str_get,
       (GenericStringSetter) str_set);
-  gtk_dialog_run (GTK_DIALOG (self));
+  z_gtk_dialog_run (GTK_DIALOG (self), true);
 
   return str;
 }

@@ -45,10 +45,9 @@
 #define RULER_WIDGET_TYPE \
   (ruler_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  RulerWidget,
-  ruler_widget,
+  RulerWidget, ruler_widget,
   Z, RULER_WIDGET,
-  GtkDrawingArea)
+  GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -114,7 +113,7 @@ typedef enum RulerWidgetRangeType
 
 typedef struct _RulerWidget
 {
-  GtkDrawingArea    parent_instance;
+  GtkWidget       parent_instance;
 
   RulerWidgetType   type;
 
@@ -139,7 +138,7 @@ typedef struct _RulerWidget
   double            last_offset_x;
 
   GtkGestureDrag *  drag;
-  GtkGestureMultiPress * multipress;
+  GtkGestureClick * click;
 
   /** Target acting upon. */
   RWTarget          target;
@@ -188,12 +187,7 @@ typedef struct _RulerWidget
   cairo_surface_t * cached_surface;
 
   /** Rectangle in the last call. */
-  GdkRectangle      last_rect;
-  /**
-   * Menuitems in context menu.
-   */
-  GtkCheckMenuItem * bbt_display_check;
-  GtkCheckMenuItem * time_display_check;
+  graphene_rect_t   last_rect;
 
   /* layout for drawing text */
   PangoLayout *     layout_normal;

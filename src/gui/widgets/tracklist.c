@@ -50,10 +50,8 @@ G_DEFINE_TYPE (
   TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
 
 static void
-on_drag_leave (
-  GtkWidget      *widget,
-  GdkDragContext *context,
-  guint           time,
+on_dnd_leave (
+  GtkDropTarget * drop_target,
   TracklistWidget * self)
 {
   Track * track;
@@ -70,27 +68,16 @@ on_drag_leave (
     }
 }
 
-static void
+static GdkDragAction
 on_dnd_motion (
-  GtkWidget *widget,
-  GdkDragContext *context,
-  gint x,
-  gint y,
-  guint time,
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
   TracklistWidget * self)
 {
-  GdkModifierType mask;
-  z_gtk_widget_get_mask (widget, &mask);
-  if (mask & GDK_CONTROL_MASK)
-    {
-      gdk_drag_status (
-        context, GDK_ACTION_COPY, time);
-    }
-  else
-    {
-      gdk_drag_status (
-        context, GDK_ACTION_MOVE, time);
-    }
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (drop_target));
 
   TrackWidget * hit_tw = NULL;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -110,7 +97,7 @@ on_dnd_motion (
       else
         {
           track_widget_do_highlight (
-            track->widget, x, y, 0);
+            track->widget, (int) x, (int) y, 0);
         }
     }
 
@@ -121,27 +108,50 @@ on_dnd_motion (
         GTK_WIDGET (hit_tw),
         &allocation);
 
-      gint wx, wy;
+      double wx, wy;
       gtk_widget_translate_coordinates (
         GTK_WIDGET (self),
         GTK_WIDGET (hit_tw),
         (int) x, (int) y, &wx, &wy);
       track_widget_do_highlight (
-        hit_tw, wx, wy, 1);
+        hit_tw, (int) wx, (int) wy, 1);
     }
+
+  if (state & GDK_CONTROL_MASK)
+    return GDK_ACTION_COPY;
+  else
+    return GDK_ACTION_MOVE;
 }
 
-static void
-on_dnd_drag_data_received (
-  GtkWidget        * widget,
-  GdkDragContext   * context,
-  gint               x,
-  gint               y,
-  GtkSelectionData * data,
-  guint              info,
-  guint              time,
-  TracklistWidget *  self)
+static gboolean
+on_dnd_drop (
+  GtkDropTarget * drop_target,
+  const GValue *  value,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
 {
+  if (!G_VALUE_HOLDS_STRING (value))
+    {
+      g_message ("invalid DND type");
+      return false;
+    }
+
+  const char * str = g_value_get_string (value);
+  Track * dropped_track = NULL;
+  if (g_str_has_prefix (str, TRACK_DND_PREFIX))
+    {
+      sscanf (
+        str, TRACK_DND_PREFIX "%p", &dropped_track);
+    }
+  if (!dropped_track)
+    {
+      g_message ("not a track: %s", str);
+      return false;
+    }
+
+  TracklistWidget * self =
+    Z_TRACKLIST_WIDGET (user_data);
   g_message ("dnd data received on tracklist");
 
   /* get track widget at the x,y point */
@@ -163,26 +173,26 @@ on_dnd_drag_data_received (
       else
         {
           track_widget_do_highlight (
-            track->widget, x, y, 0);
+            track->widget, (int) x, (int) y, 0);
         }
     }
 
   if (!hit_tw)
-    return;
+    return false;
 
   Track * this_track = hit_tw->track;
 
   /* determine if moving or copying */
   GdkDragAction action =
-    gdk_drag_context_get_selected_action (
-      context);
+    z_gtk_drop_target_get_selected_action (
+      drop_target);
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (
     GTK_WIDGET (hit_tw),
     &allocation);
 
-  gint wx, wy;
+  double wx, wy;
   gtk_widget_translate_coordinates (
     GTK_WIDGET (self),
     GTK_WIDGET (hit_tw),
@@ -190,10 +200,13 @@ on_dnd_drag_data_received (
 
   /* determine position to move to */
   TrackWidgetHighlight location =
-    track_widget_get_highlight_location (hit_tw, wy);
+    track_widget_get_highlight_location (
+      hit_tw, (int) wy);
 
   tracklist_handle_move_or_copy (
     TRACKLIST, this_track, location, action);
+
+  return true;
 }
 
 TrackWidget *
@@ -224,20 +237,23 @@ tracklist_widget_get_hit_track (
 }
 
 static gboolean
-on_key_action (
-  GtkWidget *       widget,
-  GdkEventKey  *    event,
+on_key_pressed (
+  GtkEventControllerKey * key_controller,
+  guint keyval,
+  guint keycode,
+  GdkModifierType state,
   TracklistWidget * self)
 {
-  if (event->state & GDK_CONTROL_MASK &&
-      event->type == GDK_KEY_PRESS &&
-      event->keyval == GDK_KEY_a)
+  if (state & GDK_CONTROL_MASK &&
+      keyval == GDK_KEY_a)
     {
       tracklist_selections_select_all (
         TRACKLIST_SELECTIONS, 1);
+
+      return true;
     }
 
-  return FALSE;
+  return false;
 }
 
 static void
@@ -263,15 +279,28 @@ tracklist_widget_on_size_allocate (
  */
 void
 tracklist_widget_handle_vertical_zoom_scroll (
-  TracklistWidget * self,
-  GdkEventScroll *  event)
+  TracklistWidget *          self,
+  GtkEventControllerScroll * scroll_controller)
 {
-  if (!(event->state & GDK_CONTROL_MASK &&
-        event->state & GDK_SHIFT_MASK))
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  if (!(state & GDK_CONTROL_MASK &&
+        state & GDK_SHIFT_MASK))
     return;
 
   GtkScrolledWindow * scroll =
     self->unpinned_scroll;
+
+  double x, y;
+  GdkEvent * event =
+    gtk_event_controller_get_current_event (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  gdk_event_get_position (
+    GDK_EVENT (event), &x, &y);
+  double delta_x, delta_y;
+  gdk_scroll_event_get_deltas (
+    GDK_EVENT (event), &delta_x, &delta_y);
 
   /* get current adjustment so we can get the
    * difference from the cursor */
@@ -280,16 +309,16 @@ tracklist_widget_handle_vertical_zoom_scroll (
   double adj_val = gtk_adjustment_get_value (adj);
   double size_before =
     gtk_adjustment_get_upper (adj);
-  double adj_perc = event->y / size_before;
+  double adj_perc = y / size_before;
 
   /* get px diff so we can calculate the new
    * adjustment later */
-  double diff = event->y - adj_val;
+  double diff = y - adj_val;
 
   /* scroll down, zoom out */
   double size_after;
   double multiplier = 1.08;
-  if (event->delta_y > 0)
+  if (delta_y > 0)
     {
       size_after = size_before / multiplier;
     }
@@ -301,7 +330,7 @@ tracklist_widget_handle_vertical_zoom_scroll (
   bool can_resize =
     tracklist_multiply_track_heights (
       self->tracklist,
-      event->delta_y > 0 ?
+      delta_y > 0 ?
         1 / multiplier : multiplier,
       false, true, false);
   g_debug ("can resize: %d", can_resize);
@@ -309,7 +338,7 @@ tracklist_widget_handle_vertical_zoom_scroll (
     {
       tracklist_multiply_track_heights (
         self->tracklist,
-        event->delta_y > 0 ?
+        delta_y > 0 ?
           1 / multiplier : multiplier,
         false, false, true);
 
@@ -327,23 +356,34 @@ tracklist_widget_handle_vertical_zoom_scroll (
 
 static gboolean
 on_scroll (
-  GtkWidget *widget,
-  GdkEventScroll  *event,
-  TracklistWidget * self)
+  GtkEventControllerScroll * scroll_controller,
+  gdouble                    dx,
+  gdouble                    dy,
+  gpointer                   user_data)
 {
-  double x = event->x,
-         y = event->y;
+  TracklistWidget * self =
+    Z_TRACKLIST_WIDGET (user_data);
+
+  double x, y;
+  GdkEvent * event =
+    gtk_event_controller_get_current_event (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  gdk_event_get_position (
+    GDK_EVENT (event), &x, &y);
 
   g_debug ("scrolled to %f, %f", x, y);
 
-  if (!(event->state & GDK_CONTROL_MASK &&
-        event->state & GDK_SHIFT_MASK))
-    return FALSE;
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+  if (!(state & GDK_CONTROL_MASK &&
+        state & GDK_SHIFT_MASK))
+    return false;
 
   tracklist_widget_handle_vertical_zoom_scroll (
-    self, event);
+    self, scroll_controller);
 
-  return TRUE;
+  return true;
 }
 
 static void
@@ -369,10 +409,10 @@ tracklist_widget_hard_refresh (
   TracklistWidget * self)
 {
   /* remove all children */
-  z_gtk_container_remove_all_children (
-    (GtkContainer *) self->unpinned_box);
-  z_gtk_container_remove_all_children (
-    (GtkContainer *) self->pinned_box);
+  z_gtk_widget_remove_all_children (
+    GTK_WIDGET (self->unpinned_box));
+  z_gtk_widget_remove_all_children (
+    GTK_WIDGET (self->pinned_box));
 
   /** add pinned tracks */
   for (int i = 0; i < self->tracklist->num_tracks;
@@ -385,9 +425,9 @@ tracklist_widget_hard_refresh (
 
       refresh_track_widget (track);
 
-      gtk_container_add (
-        (GtkContainer *) self->pinned_box,
-        (GtkWidget *) track->widget);
+      gtk_box_append (
+        GTK_BOX (self->pinned_box),
+        GTK_WIDGET (track->widget));
     }
 
   /* readd all visible unpinned tracks to
@@ -402,14 +442,14 @@ tracklist_widget_hard_refresh (
 
       refresh_track_widget (track);
 
-      gtk_container_add (
-        (GtkContainer *) self->unpinned_box,
-        (GtkWidget *) track->widget);
+      gtk_box_append (
+        GTK_BOX (self->unpinned_box),
+        GTK_WIDGET (track->widget));
     }
 
   /* re-add ddbox */
-  gtk_container_add (
-    GTK_CONTAINER (self->unpinned_box),
+  gtk_box_append (
+    GTK_BOX (self->unpinned_box),
     GTK_WIDGET (self->ddbox));
 
   /*g_object_unref (self->ddbox);*/
@@ -539,13 +579,13 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_WIDGET (self->pinned_box), 1);
 
   /** add pinned box */
-  gtk_container_add (
-    (GtkContainer *) self,
-    (GtkWidget *) self->pinned_box);
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->pinned_box));
 
   self->unpinned_scroll =
     GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new (NULL, NULL));
+      gtk_scrolled_window_new ());
   gtk_scrolled_window_set_policy (
     self->unpinned_scroll,
     GTK_POLICY_NEVER,
@@ -562,12 +602,12 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_WIDGET (self->unpinned_box), 1);
 
   /* add scrolled window */
-  gtk_container_add (
-    (GtkContainer *) self,
-    (GtkWidget *) self->unpinned_scroll);
-  gtk_container_add (
-    (GtkContainer *) self->unpinned_scroll,
-    (GtkWidget *) self->unpinned_box);
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->unpinned_scroll));
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (self->unpinned_scroll),
+    GTK_WIDGET (self->unpinned_box));
 
   /* create the drag dest box and bump its reference
    * so it doesn't get deleted. */
@@ -584,51 +624,51 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_ORIENTABLE (self),
     GTK_ORIENTATION_VERTICAL);
 
-  /* make widget able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self),
-    GDK_ALL_EVENTS_MASK);
-
-  GtkTargetEntry entries[] = {
-    {
-      (char *) TARGET_ENTRY_TRACK,
-      GTK_TARGET_SAME_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
-    },
-  };
-
   /* set as drag dest for track (the track will
    * be moved based on which half it was dropped in,
    * top or bot) */
-  gtk_drag_dest_set (
-    GTK_WIDGET (self),
-    GTK_DEST_DEFAULT_MOTION |
-      GTK_DEST_DEFAULT_DROP,
-    entries, G_N_ELEMENTS (entries),
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
-
+  GtkDropTarget * drop_target =
+    gtk_drop_target_new (
+      G_TYPE_STRING,
+      GDK_ACTION_MOVE | GDK_ACTION_COPY);
   g_signal_connect (
-    GTK_WIDGET (self), "drag-data-received",
-    G_CALLBACK (on_dnd_drag_data_received), self);
+    drop_target, "drop",
+    G_CALLBACK (on_dnd_drop), self);
   g_signal_connect (
-    GTK_WIDGET (self), "drag-motion",
+    drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
-    GTK_WIDGET (self), "drag-leave",
-    G_CALLBACK (on_drag_leave), self);
+    drop_target, "leave",
+    G_CALLBACK (on_dnd_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (drop_target));
+
+  GtkEventControllerKey * key_controller =
+    GTK_EVENT_CONTROLLER_KEY (
+      gtk_event_controller_key_new ());
   g_signal_connect (
-    G_OBJECT (self), "key-press-event",
-    G_CALLBACK (on_key_action), self);
-  g_signal_connect (
-    G_OBJECT (self), "key-release-event",
-    G_CALLBACK (on_key_action), self);
+    G_OBJECT (key_controller), "key-pressed",
+    G_CALLBACK (on_key_pressed), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (key_controller));
+
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (
       tracklist_widget_on_size_allocate), self);
+
+  GtkEventControllerScroll * scroll_controller =
+    GTK_EVENT_CONTROLLER_SCROLL (
+      gtk_event_controller_scroll_new (
+        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
   g_signal_connect (
-    G_OBJECT (self), "scroll-event",
+    G_OBJECT (scroll_controller), "scroll",
     G_CALLBACK (on_scroll), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (scroll_controller));
 }
 
 static void

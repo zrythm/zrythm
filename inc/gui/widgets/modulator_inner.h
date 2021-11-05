@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,9 +39,9 @@ typedef struct _ModulatorInnerWidget
 {
   GtkBox            parent_instance;
 
-  GtkToolbar *      toolbar;
+  GtkBox *          toolbar;
 
-  GtkToggleToolButton * show_hide_ui_btn;
+  GtkToggleButton * show_hide_ui_btn;
 
   GtkBox *          controls_box;
   GtkBox *          waveforms_box;

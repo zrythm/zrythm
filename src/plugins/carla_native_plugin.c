@@ -51,9 +51,6 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
-#ifdef HAVE_X11
-#include <gtk/gtkx.h>
-#endif
 #include <glib/gi18n.h>
 
 #include <CarlaHost.h>
@@ -1447,16 +1444,15 @@ carla_native_plugin_open_ui (
                 S_P_PLUGINS_UIS, "stay-on-top"))
             {
 #ifdef HAVE_X11
-              char xid[400];
-              sprintf (
-                xid, "%lx",
-                gdk_x11_window_get_xid (
-                  gtk_widget_get_window (
-                    GTK_WIDGET (MAIN_WINDOW))));
+              Window xid =
+                z_gtk_window_get_x11_xid (
+                  GTK_WINDOW (MAIN_WINDOW));
+              char xid_str[400];
+              sprintf (xid_str, "%lx", xid);
               carla_set_engine_option (
                 self->host_handle,
                 ENGINE_OPTION_FRONTEND_WIN_ID, 0,
-                xid);
+                xid_str);
 #endif
             }
         }

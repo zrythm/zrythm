@@ -53,6 +53,9 @@ typedef struct _BugReportDialogWidget
 
   GtkLabel *      top_lbl;
 
+  GtkButton *     button_close;
+  GtkButton *     button_send_srht;
+  GtkButton *     button_send_email;
   GtkButton *     button_send_automatically;
 
   GtkSourceView * steps_to_reproduce_text_view;

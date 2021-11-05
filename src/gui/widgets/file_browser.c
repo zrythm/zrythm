@@ -83,15 +83,17 @@ on_file_chooser_file_activated (
   GtkFileChooser *chooser,
   FileBrowserWidget * self)
 {
-  char * abs_path =
-    gtk_file_chooser_get_filename (chooser);
+  GFile * gfile =
+    gtk_file_chooser_get_file (chooser);
+  char * abs_path = g_file_get_path (gfile);
+  g_object_unref (gfile);
 
   SupportedFile * file =
     supported_file_new_from_path (abs_path);
 
-  g_message ("activated file type %d, abs path %s",
-             file->type,
-             abs_path);
+  g_message (
+    "activated file type %d, abs path %s",
+    file->type, abs_path);
 
   GError * err = NULL;
   bool ret = true;
@@ -147,8 +149,10 @@ on_file_chooser_selection_changed (
   sample_processor_stop_file_playback (
     SAMPLE_PROCESSOR);
 
-  char * abs_path =
-    gtk_file_chooser_get_filename (chooser);
+  GFile * gfile =
+    gtk_file_chooser_get_file (chooser);
+  char * abs_path = g_file_get_path (gfile);
+  g_object_unref (gfile);
 
   if (!abs_path)
     {
@@ -183,6 +187,7 @@ get_selected_file (
   return self->selected_file;
 }
 
+#if 0
 static bool
 file_filter_func (
   const GtkFileFilterInfo * filter_info,
@@ -194,13 +199,13 @@ file_filter_func (
     return false;
 
   bool show_audio =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->filters_toolbar->toggle_audio);
   bool show_midi =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->filters_toolbar->toggle_midi);
   bool show_presets =
-    gtk_toggle_tool_button_get_active (
+    gtk_toggle_button_get_active (
       self->filters_toolbar->toggle_presets);
   bool all_toggles_off =
     !show_audio && !show_midi && !show_presets;
@@ -249,11 +254,14 @@ file_filter_func (
   supported_file_free (descr);
   return visible;
 }
+#endif
 
 static void
 refilter_files (
   FileBrowserWidget * self)
 {
+  /* TODO use MIME-based filtering */
+#if 0
   GtkFileFilter * filter =
     gtk_file_filter_new ();
   gtk_file_filter_add_custom (
@@ -262,6 +270,7 @@ refilter_files (
     self, NULL);
   gtk_file_chooser_set_filter (
     GTK_FILE_CHOOSER (self->file_chooser), filter);
+#endif
 }
 
 static int
@@ -311,8 +320,6 @@ file_browser_widget_new ()
         GTK_FILE_CHOOSER_ACTION_OPEN));
   gtk_widget_set_visible (
     GTK_WIDGET (self->file_chooser), true);
-  gtk_file_chooser_set_local_only (
-    GTK_FILE_CHOOSER (self->file_chooser), 0);
   refilter_files (self);
 
   /* add bookmarks */
@@ -327,11 +334,14 @@ file_browser_widget_new ()
       if (loc->special_location ==
             FILE_MANAGER_NONE)
         {
+          GFile * gfile =
+            g_file_new_for_path (loc->path);
           GError * err = NULL;
           bool ret =
             gtk_file_chooser_add_shortcut_folder (
               GTK_FILE_CHOOSER (self->file_chooser),
-              loc->path, &err);
+              gfile, &err);
+          g_object_unref (gfile);
           if (!ret)
             {
               g_warning (
@@ -343,14 +353,17 @@ file_browser_widget_new ()
     }
 
   /* choose current location from settings */
-  gtk_file_chooser_set_filename (
-    GTK_FILE_CHOOSER (self->file_chooser),
-    FILE_MANAGER->selection->path);
+  GFile * gfile =
+    g_file_new_for_path (
+      FILE_MANAGER->selection->path);
+  gtk_file_chooser_set_file (
+    GTK_FILE_CHOOSER (self->file_chooser), gfile,
+    NULL);
+  g_object_unref (gfile);
 
-  gtk_box_pack_start (
+  gtk_box_append (
     GTK_BOX (self->file_chooser_box),
-    GTK_WIDGET (self->file_chooser),
-    1, 1, 0);
+    GTK_WIDGET (self->file_chooser));
   g_signal_connect (
     G_OBJECT (self->file_chooser),
     "file-activated",
@@ -371,9 +384,6 @@ file_browser_widget_new ()
     self->filters_toolbar,
     GTK_WIDGET (self),
     (GenericCallback) refilter_files);
-
-  gtk_widget_add_events (
-    GTK_WIDGET (self), GDK_STRUCTURE_MASK);
 
   g_signal_connect (
     G_OBJECT (self), "map-event",
@@ -416,6 +426,6 @@ file_browser_widget_init (FileBrowserWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "file-browser");
 }

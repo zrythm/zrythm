@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,7 +28,7 @@ G_DECLARE_FINAL_TYPE (
   RouteTargetSelectorWidget,
   route_target_selector_widget,
   Z, ROUTE_TARGET_SELECTOR_WIDGET,
-  GtkMenuButton)
+  GtkBox)
 
 typedef struct _RouteTargetSelectorPopoverWidget
   RouteTargetSelectorPopoverWidget;
@@ -42,7 +42,10 @@ typedef struct _ChannelWidget ChannelWidget;
 
 typedef struct _RouteTargetSelectorWidget
 {
-  GtkMenuButton      parent_instance;
+  GtkBox             parent_instance;
+
+  GtkMenuButton *    menu_button;
+
   /** The box. */
   GtkBox *           box;
   /** Image to show next to the label. */

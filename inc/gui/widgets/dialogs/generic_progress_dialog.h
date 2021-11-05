@@ -67,7 +67,7 @@ typedef struct
   GtkButton *          ok;
   GtkButton *          cancel;
 
-  GtkButtonBox *       action_btn_box;
+  GtkBox *       action_btn_box;
 
   /**
    * Whether to automatically close the progress

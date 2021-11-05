@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,16 +42,11 @@ file_browser_window_widget_new ()
     file_browser_widget_new ();
   GtkBox * box =
     GTK_BOX (
-      gtk_box_new (
-        GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (
-    GTK_CONTAINER (box),
-    GTK_WIDGET (self->file_browser));
-  gtk_widget_set_visible (
-    GTK_WIDGET (box), 1);
-  gtk_container_add (
-    (GtkContainer *) self,
-    (GtkWidget *) box);
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_box_append (
+    box, GTK_WIDGET (self->file_browser));
+  gtk_window_set_child (
+    GTK_WINDOW (self), GTK_WIDGET (box));
 
   return self;
 }

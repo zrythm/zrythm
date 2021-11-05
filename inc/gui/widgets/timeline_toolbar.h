@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   TimelineToolbarWidget,
   timeline_toolbar_widget,
   Z, TIMELINE_TOOLBAR_WIDGET,
-  GtkToolbar)
+  GtkBox)
 
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
@@ -56,13 +56,13 @@ typedef struct _RangeActionButtonsWidget
  */
 typedef struct _TimelineToolbarWidget
 {
-  GtkToolbar       parent_instance;
+  GtkBox       parent_instance;
   SnapBoxWidget *  snap_box;
   QuantizeBoxWidget * quantize_box;
-  GtkToolButton *  event_viewer_toggle;
-  GtkToggleToolButton *  musical_mode_toggle;
+  GtkButton *  event_viewer_toggle;
+  GtkToggleButton *  musical_mode_toggle;
   RangeActionButtonsWidget * range_action_buttons;
-  GtkToolButton *  merge_btn;
+  GtkButton *  merge_btn;
 } TimelineToolbarWidget;
 
 void

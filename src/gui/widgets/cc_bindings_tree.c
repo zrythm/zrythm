@@ -18,7 +18,9 @@
  */
 
 #include "actions/midi_mapping_action.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/cc_bindings_tree.h"
+#include "gui/widgets/item_factory.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/gtk.h"
@@ -33,7 +35,7 @@
 G_DEFINE_TYPE (
   CcBindingsTreeWidget,
   cc_bindings_tree_widget,
-  GTK_TYPE_SCROLLED_WINDOW)
+  GTK_TYPE_BOX)
 
 enum
 {
@@ -54,164 +56,34 @@ enum
   NUM_COLS
 };
 
-static void
-on_enabled_toggled (
-  GtkCellRendererToggle * cell,
-  gchar                 * path_str,
-  CcBindingsTreeWidget *  self)
-{
-  GtkTreeModel * model = self->tree_model;
-  GtkTreeIter  iter;
-  GtkTreePath *path =
-    gtk_tree_path_new_from_string (path_str);
-  gboolean enabled;
-
-  /* get toggled iter */
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_model_get (
-    model, &iter, COL_ENABLED, &enabled, -1);
-
-  /* get binding */
-  int mapping_idx;
-  gtk_tree_model_get (
-    model, &iter, COL_MIDI_MAPPING, &mapping_idx, -1);
-
-  /* get new value */
-  enabled ^= 1;
-
-  /* set new value on widget */
-  gtk_list_store_set (
-    GTK_LIST_STORE (model), &iter,
-    COL_ENABLED, enabled, -1);
-
-  /* clean up */
-  gtk_tree_path_free (path);
-
-  /* perform an undoable action */
-  GError * err = NULL;
-  bool ret =
-    midi_mapping_action_perform_enable (
-      mapping_idx, enabled, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to enable binding"));
-    }
-}
-
-static GtkTreeModel *
-create_model ()
-{
-  gint i = 0;
-  GtkListStore *store;
-  GtkTreeIter iter;
-
-  /* create list store */
-  store =
-    gtk_list_store_new (
-      NUM_COLS,
-      G_TYPE_BOOLEAN,
-      G_TYPE_STRING,
-      G_TYPE_STRING,
-      G_TYPE_INT);
-
-  /* add data to the list store */
-  for (i = 0; i < MIDI_MAPPINGS->num_mappings; i++)
-    {
-      MidiMapping * mm = MIDI_MAPPINGS->mappings[i];
-
-      /* get control */
-      char ctrl_str[80];
-      char ctrl[60];
-      int ctrl_change_ch =
-        midi_ctrl_change_get_ch_and_description (
-          mm->key, ctrl);
-      if (ctrl_change_ch > 0)
-        {
-          sprintf (
-            ctrl_str, "%02X-%02X (%s)",
-            mm->key[0], mm->key[1], ctrl);
-        }
-      else
-        {
-          sprintf (
-            ctrl_str, "%02X-%02X",
-            mm->key[0], mm->key[1]);
-        }
-
-      /* get destination */
-      char path[600];
-      Port * port =
-        port_find_from_identifier (&mm->dest_id);
-      port_get_full_designation (port, path);
-
-      char min_str[40], max_str[40];
-      sprintf (min_str, "%.4f", (double) port->minf);
-      sprintf (max_str, "%.4f", (double) port->maxf);
-
-      gtk_list_store_append (
-        store, &iter);
-      gtk_list_store_set (
-        store, &iter,
-        COL_ENABLED, mm->enabled,
-        COL_CONTROL, ctrl_str,
-        COL_PATH, path,
-        COL_MIDI_MAPPING, i,
-        -1);
-    }
-
-  return GTK_TREE_MODEL (store);
-}
-
-static void
-on_delete_activate (
-  GtkMenuItem * menuitem,
-  MidiMapping * mapping)
-{
-  /* get index */
-  int idx =
-    midi_mapping_get_index (MIDI_MAPPINGS, mapping);
-
-  GError * err = NULL;
-  bool ret =
-    midi_mapping_action_perform_unbind (idx, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _("Failed to unbind"));
-    }
-}
-
+#if 0
 static void
 show_context_menu (
   CcBindingsTreeWidget * self,
   int                    binding_idx)
 {
-  GtkWidget * menuitem;
-  GtkWidget * menu = gtk_menu_new ();
+  GMenu * menu = g_menu_new ();
+  char tmp[700];
+  sprintf (
+    tmp, "app.delete-cc-binding::%d", binding_idx);
+  g_menu_append (menu, _("Delete"), tmp);
 
-  MidiMapping * mapping =
-    MIDI_MAPPINGS->mappings[binding_idx];
-
-  menuitem =
-    gtk_menu_item_new_with_label (_("Delete"));
-  gtk_widget_set_visible (
-    GTK_WIDGET (menuitem), true);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), GTK_WIDGET (menuitem));
-  g_signal_connect_data (
-    G_OBJECT (menuitem), "activate",
-    G_CALLBACK (on_delete_activate), mapping, NULL, 0);
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+  GtkPopoverMenu * popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (
+        G_MENU_MODEL (menu)));
+  gtk_popover_set_has_arrow (
+    GTK_POPOVER (popover_menu), false);
+  gtk_widget_set_parent (
+    GTK_WIDGET (popover_menu), GTK_WIDGET (self));
+  gtk_popover_present (
+    GTK_POPOVER (popover_menu));
 }
+#endif
 
 static void
 on_right_click (
-  GtkGestureMultiPress * gesture,
+  GtkGestureClick * gesture,
   gint                   n_press,
   gdouble                x_dbl,
   gdouble                y_dbl,
@@ -222,6 +94,7 @@ on_right_click (
 
   g_message ("right click");
 
+#if 0
   GtkTreePath *path;
   GtkTreeViewColumn *column;
 
@@ -256,29 +129,67 @@ on_right_click (
   int int_val = g_value_get_int (&value);
 
   show_context_menu (self, int_val);
+#endif
+}
+
+static GListStore *
+get_list_store (
+  CcBindingsTreeWidget * self)
+{
+  GtkSelectionModel * sel_model =
+    gtk_column_view_get_model (self->column_view);
+  GListModel * model =
+    gtk_multi_selection_get_model (
+      GTK_MULTI_SELECTION (sel_model));
+  return G_LIST_STORE (model);
+}
+
+/**
+ * Refreshes the tree model.
+ */
+void
+cc_bindings_tree_widget_refresh (
+  CcBindingsTreeWidget * self)
+{
+  GListStore * store = get_list_store (self);
+
+  g_list_store_remove_all (store);
+
+  for (int i = 0; i < MIDI_MAPPINGS->num_mappings;
+       i++)
+    {
+      MidiMapping * mm = MIDI_MAPPINGS->mappings[i];
+      g_list_store_append (
+        store, mm->gobj);
+    }
 }
 
 static void
-tree_view_setup (
-  CcBindingsTreeWidget * self,
-  GtkTreeView *         tree_view)
+generate_column_view (
+  CcBindingsTreeWidget * self)
 {
-  /* init tree view */
-  GtkCellRenderer * renderer;
-  GtkTreeViewColumn * column;
+  self->item_factories =
+    g_ptr_array_new_with_free_func (
+      item_factory_free_func);
+
+  GListStore * store =
+    g_list_store_new (
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GtkMultiSelection * sel =
+    GTK_MULTI_SELECTION (
+      gtk_multi_selection_new (
+        G_LIST_MODEL (store)));
+  self->column_view =
+    GTK_COLUMN_VIEW (
+      gtk_column_view_new (
+        GTK_SELECTION_MODEL (sel)));
+  gtk_scrolled_window_set_child (
+    self->scroll, GTK_WIDGET (self->column_view));
 
   /* column for checkbox */
-  renderer = gtk_cell_renderer_toggle_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      _("On"), renderer,
-      "active", COL_ENABLED,
-      NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
-  g_signal_connect (
-    renderer, "toggled",
-    G_CALLBACK (on_enabled_toggled), self);
+  item_factory_generate_and_append_column (
+    self->column_view, self->item_factories,
+    ITEM_FACTORY_TOGGLE, true, _("On"));
 
 #if 0
   /* column for device */
@@ -293,32 +204,14 @@ tree_view_setup (
 #endif
 
   /* column for control */
-  renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      _("Note/Control"), renderer,
-      "text", COL_CONTROL,
-      NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
-  g_object_set (
-    renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
-  gtk_tree_view_column_set_resizable (
-    GTK_TREE_VIEW_COLUMN (column), true);
-  gtk_tree_view_column_set_min_width (
-    GTK_TREE_VIEW_COLUMN (column), 120);
+  item_factory_generate_and_append_column (
+    self->column_view, self->item_factories,
+    ITEM_FACTORY_TEXT, false, _("Note/Control"));
 
   /* column for path */
-  renderer = gtk_cell_renderer_text_new ();
-  column =
-    gtk_tree_view_column_new_with_attributes (
-      _("Destination"), renderer,
-      "text", COL_PATH,
-      NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
-  gtk_tree_view_column_set_expand (
-    GTK_TREE_VIEW_COLUMN (column), true);
+  item_factory_generate_and_append_column (
+    self->column_view, self->item_factories,
+    ITEM_FACTORY_TEXT, false, _("Destination"));
 
 #if 0
   /* column for min */
@@ -343,10 +236,11 @@ tree_view_setup (
 #endif
 
   /* connect right click handler */
-  GtkGestureMultiPress * mp =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (tree_view)));
+  GtkGestureClick * mp =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_widget_add_controller (
+    GTK_WIDGET (self->column_view),
+    GTK_EVENT_CONTROLLER (mp));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp),
     GDK_BUTTON_SECONDARY);
@@ -355,33 +249,12 @@ tree_view_setup (
     G_CALLBACK (on_right_click), self);
 }
 
-/**
- * Refreshes the tree model.
- */
-void
-cc_bindings_tree_widget_refresh (
-  CcBindingsTreeWidget * self)
-{
-  GtkTreeModel * model = self->tree_model;
-  self->tree_model = create_model ();
-  gtk_tree_view_set_model (
-    self->tree, self->tree_model);
-
-  if (model)
-    {
-      g_object_unref (model);
-    }
-}
-
 CcBindingsTreeWidget *
 cc_bindings_tree_widget_new ()
 {
   CcBindingsTreeWidget * self =
     g_object_new (
       CC_BINDINGS_TREE_WIDGET_TYPE, NULL);
-
-  /* setup tree */
-  tree_view_setup (self, self->tree);
 
   return self;
 }
@@ -396,11 +269,11 @@ static void
 cc_bindings_tree_widget_init (
   CcBindingsTreeWidget * self)
 {
-  self->tree =
-    GTK_TREE_VIEW (gtk_tree_view_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->tree), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (self->tree));
+  self->scroll =
+    GTK_SCROLLED_WINDOW (
+      gtk_scrolled_window_new ());
+  gtk_box_append (
+    GTK_BOX (self), GTK_WIDGET (self->scroll));
+
+  generate_column_view (self);
 }

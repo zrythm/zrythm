@@ -51,7 +51,7 @@ typedef struct _ChannelSendWidget
   /** Owner. */
   ChannelSend *       send;
 
-  GtkGestureMultiPress * multipress;
+  GtkGestureClick *   click;
   GtkGestureDrag *    drag;
 
   double              start_x;
@@ -62,7 +62,7 @@ typedef struct _ChannelSendWidget
   /** For multipress. */
   int                 n_press;
 
-  GtkGestureMultiPress * right_mouse_mp;
+  GtkGestureClick * right_mouse_mp;
 
   /** Cache tooltip string. */
   char *              cache_tooltip;

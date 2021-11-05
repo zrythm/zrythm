@@ -1,41 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="EventViewerWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can_focus">True</property>
+    <property name="focusable">1</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="label" translatable="yes">Event Viewer</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkScrolledWindow">
-        <property name="visible">1</property>
         <property name="hscrollbar-policy">never</property>
         <property name="vexpand">1</property>
-        <child>
+        <property name="child">
           <object class="GtkTreeView" id="treeview">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="rubber-banding">True</property>
+            <property name="focusable">1</property>
+            <property name="rubber-banding">1</property>
           </object>
-        </child>
+        </property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <placeholder/>

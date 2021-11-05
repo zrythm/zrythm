@@ -32,6 +32,7 @@
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/object_utils.h"
@@ -119,8 +120,7 @@ modulator_track_insert_modulator (
                 dialogs_get_overwrite_plugin_dialog (
                   GTK_WINDOW (MAIN_WINDOW));
               int result =
-                gtk_dialog_run (dialog);
-              gtk_widget_destroy (GTK_WIDGET (dialog));
+                z_gtk_dialog_run (dialog, true);
 
               /* do nothing if not accepted */
               if (result != GTK_RESPONSE_ACCEPT)

@@ -35,7 +35,7 @@
 G_DEFINE_TYPE (
   PrerollCountSelectorWidget,
   preroll_count_selector_widget,
-  GTK_TYPE_BUTTON_BOX)
+  GTK_TYPE_BOX)
 
 static void
 block_all_handlers (
@@ -152,8 +152,8 @@ preroll_count_selector_widget_new (
       gtk_toggle_button_new_with_label (lbl)); \
   gtk_widget_set_visible ( \
     GTK_WIDGET (self->x##_toggle), true); \
-  gtk_container_add ( \
-    GTK_CONTAINER (self), \
+  gtk_box_append ( \
+    GTK_BOX (self), \
     GTK_WIDGET (self->x##_toggle)); \
   self->x##_toggle_id = \
     g_signal_connect ( \
@@ -210,9 +210,9 @@ static void
 preroll_count_selector_widget_init (
   PrerollCountSelectorWidget * self)
 {
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "linked");
-  z_gtk_widget_add_style_class (
+  gtk_widget_add_css_class (
     GTK_WIDGET (self), "bounce-step-selector");
 }
 

@@ -33,7 +33,7 @@ typedef struct _PluginStripExpanderWidget
 G_DECLARE_FINAL_TYPE (
   ChannelWidget, channel_widget,
   Z, CHANNEL_WIDGET,
-  GtkEventBox)
+  GtkBox)
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _KnobWidget KnobWidget;
@@ -52,11 +52,11 @@ typedef struct _ChannelSendsExpanderWidget
 
 typedef struct _ChannelWidget
 {
-  GtkEventBox         parent_instance;
+  GtkBox         parent_instance;
   GtkGrid *          grid;
   RouteTargetSelectorWidget * output;
   ColorAreaWidget *   color;
-  GtkEventBox *       icon_and_name_event_box;
+  GtkBox *       icon_and_name_event_box;
   EditableLabelWidget * name;
   GtkBox *            phase_controls;
   GtkButton *         phase_invert;
@@ -135,9 +135,9 @@ typedef struct _ChannelWidget
   gint64              last_midi_trigger_time;
 
   /** Whole channel press. */
-  GtkGestureMultiPress * mp;
+  GtkGestureClick * mp;
 
-  GtkGestureMultiPress * right_mouse_mp;
+  GtkGestureClick * right_mouse_mp;
 
   /** Drag on the icon and name event box. */
   GtkGestureDrag       * drag;

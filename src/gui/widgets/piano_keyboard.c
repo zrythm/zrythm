@@ -69,19 +69,20 @@ draw_orange_circle (
     }
 }
 
-static gboolean
+static void
 piano_keyboard_draw_cb (
-  GtkWidget *           widget,
-  cairo_t *             cr,
-  PianoKeyboardWidget * self)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
+  PianoKeyboardWidget * self =
+    Z_PIANO_KEYBOARD_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (drawing_area);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -153,8 +154,6 @@ piano_keyboard_draw_cb (
 
       cur_offset += key_width / 2.0;
     }
-
- return FALSE;
 }
 
 void
@@ -195,9 +194,10 @@ piano_keyboard_widget_new (
   PianoKeyboardWidget * self =
     g_object_new (PIANO_KEYBOARD_WIDGET_TYPE, NULL);
 
-  g_signal_connect (
-    G_OBJECT(self), "draw",
-    G_CALLBACK (piano_keyboard_draw_cb),  self);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    piano_keyboard_draw_cb,
+    self, NULL);
 
   return self;
 }

@@ -31,10 +31,13 @@
 #include "actions/tracklist_selections.h"
 #include "actions/range_action.h"
 #include "audio/audio_function.h"
+#include "audio/audio_region.h"
 #include "audio/automation_function.h"
 #include "audio/graph.h"
 #include "audio/graph_export.h"
 #include "audio/instrument_track.h"
+#include "audio/marker.h"
+#include "audio/marker_track.h"
 #include "audio/midi.h"
 #include "audio/midi_function.h"
 #include "audio/router.h"
@@ -44,6 +47,7 @@
 #include "gui/backend/clipboard.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/file_manager.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
@@ -58,9 +62,17 @@
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/dialogs/about_dialog.h"
+#include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
+#include "gui/widgets/dialogs/arranger_object_info.h"
+#include "gui/widgets/dialogs/bounce_dialog.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/create_project_dialog.h"
+#include "gui/widgets/dialogs/export_midi_file_dialog.h"
+#include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
+#include "gui/widgets/dialogs/port_info.h"
+#include "gui/widgets/dialogs/quantize_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/dialogs/export_dialog.h"
@@ -76,9 +88,12 @@
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/panel_file_browser.h"
+#include "gui/widgets/plugin_browser.h"
+#include "gui/widgets/port_connections.h"
+#include "gui/widgets/port_connections_tree.h"
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/project_assistant.h"
-#include "gui/widgets/dialogs/quantize_dialog.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #ifdef HAVE_GUILE
@@ -93,8 +108,11 @@
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/tracklist.h"
 #include "plugins/plugin_manager.h"
+#include "plugins/collection.h"
+#include "plugins/collections.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/debug.h"
 #include "utils/dialogs.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -139,10 +157,10 @@ activate_news (
   GVariant      *variant,
   gpointer       user_data)
 {
-  gtk_show_uri_on_window (
+  gtk_show_uri (
     GTK_WINDOW (MAIN_WINDOW),
     "https://mastodon.social/@zrythm",
-    GDK_CURRENT_TIME, NULL);
+    GDK_CURRENT_TIME);
 }
 
 void
@@ -168,50 +186,45 @@ activate_manual (
       "https://manual.zrythm.org/%s/index.html",
       lang_code);
 #endif
-  gtk_show_uri_on_window (
-    GTK_WINDOW (MAIN_WINDOW), path, 0, NULL);
+  gtk_show_uri (
+    GTK_WINDOW (MAIN_WINDOW), path, 0);
   g_free (path);
 }
 
 DEFINE_SIMPLE (activate_chat)
 {
-  gtk_show_uri_on_window (
+  gtk_show_uri (
     GTK_WINDOW (MAIN_WINDOW),
     "https://matrix.to/#/#zrythmdaw:matrix.org",
-    0, NULL);
+    0);
 }
 
 DEFINE_SIMPLE (activate_donate)
 {
-  gtk_show_uri_on_window (
+  gtk_show_uri (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://liberapay.com/Zrythm", 0, NULL);
+    "https://liberapay.com/Zrythm", 0);
 }
 
 DEFINE_SIMPLE (activate_bugreport)
 {
 #ifdef _WOE32
   ShellExecute (
-    0, (LPCSTR)"open",
-    (LPCSTR) NEW_ISSUE_URL,
+    0, (LPCSTR)"open", (LPCSTR) NEW_ISSUE_URL,
     0, 0, SW_SHOWNORMAL);
 #else
-  gtk_show_uri_on_window (
-    GTK_WINDOW (MAIN_WINDOW),
-    NEW_ISSUE_URL,
-    0,
-    NULL);
+  gtk_show_uri (
+    GTK_WINDOW (MAIN_WINDOW), NEW_ISSUE_URL, 0);
 #endif
 }
 
 DEFINE_SIMPLE (activate_about)
 {
-  GtkDialog * dialog =
-    GTK_DIALOG (
+  GtkWindow * window =
+    GTK_WINDOW (
       about_dialog_widget_new (
         GTK_WINDOW (MAIN_WINDOW)));
-  gtk_dialog_run (dialog);
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  gtk_window_present (window);
 }
 
 /**
@@ -242,14 +255,12 @@ activate_preferences (
     }
 
   GtkWindow * preferences_window =
-    GTK_WINDOW (
-      preferences_widget_new ());
+    GTK_WINDOW (preferences_widget_new ());
   g_return_if_fail (preferences_window);
   gtk_window_set_transient_for (
-    preferences_window,
-    (GtkWindow *) MAIN_WINDOW);
-  gtk_widget_show_all (
-    (GtkWidget *) preferences_window);
+    preferences_window, GTK_WINDOW (MAIN_WINDOW));
+  gtk_window_present (
+    GTK_WINDOW (preferences_window));
   MAIN_WINDOW->preferences_opened = true;
 }
 
@@ -339,8 +350,7 @@ activate_scripting_interface (
   gtk_window_set_transient_for (
     GTK_WINDOW (dialog),
     GTK_WINDOW (MAIN_WINDOW));
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 #endif
 }
 
@@ -568,91 +578,6 @@ DEFINE_SIMPLE (activate_loop_selection)
     }
 }
 
-static void
-on_project_new_finish (
-  GtkAssistant * _assistant,
-  gpointer       user_data)
-{
-  g_message (
-    "%s (%s) called", __func__, __FILE__);
-
-  ProjectAssistantWidget * pa =
-    Z_PROJECT_ASSISTANT_WIDGET (_assistant);
-  ZRYTHM->creating_project = 1;
-  if (user_data) /* if cancel */
-    {
-      gtk_widget_destroy (GTK_WIDGET (_assistant));
-      ZRYTHM->open_filename = NULL;
-    }
-  /* if we are loading a template and template
-   * exists */
-  else if (pa->load_template &&
-           pa->template_selection &&
-           pa->template_selection->
-             filename[0] != '-')
-    {
-      ZRYTHM->open_filename =
-        pa->template_selection->filename;
-      g_message (
-        "Creating project from template: %s",
-        ZRYTHM->open_filename);
-      ZRYTHM->opening_template = 1;
-    }
-  /* if we are loading a project */
-  else if (!pa->load_template &&
-           pa->project_selection)
-    {
-      ZRYTHM->open_filename =
-        pa->project_selection->filename;
-      g_message (
-        "Loading project: %s",
-        ZRYTHM->open_filename);
-      ZRYTHM->creating_project = 0;
-    }
-  /* no selection, load blank project */
-  else
-    {
-      ZRYTHM->open_filename = NULL;
-      g_message (
-        "Creating blank project");
-    }
-
-  /* if not loading a project, show dialog to
-   * select directory and name */
-  int quit = 0;
-  if (ZRYTHM->creating_project)
-    {
-      CreateProjectDialogWidget * dialog =
-        create_project_dialog_widget_new ();
-
-      int ret =
-        gtk_dialog_run (GTK_DIALOG (dialog));
-      if (ret != GTK_RESPONSE_OK)
-        quit = 1;
-      gtk_widget_destroy (GTK_WIDGET (dialog));
-
-      g_message (
-        "%s (%s): creating project %s",
-        __func__, __FILE__,
-        ZRYTHM->create_project_path);
-    }
-
-  /* FIXME error if the assistant is deleted
-   * here, setting invisible for now, but
-   * eventually must be destroyed */
-  gtk_widget_set_visible (GTK_WIDGET (pa), 0);
-
-  if (quit)
-    {
-    }
-  else
-    {
-      project_load (
-        ZRYTHM->open_filename,
-        ZRYTHM->opening_template);
-    }
-}
-
 void
 activate_new (GSimpleAction *action,
                   GVariant      *variant,
@@ -689,36 +614,28 @@ activate_new (GSimpleAction *action,
   GtkWidget * content =
     gtk_dialog_get_content_area (
       GTK_DIALOG (dialog));
-  gtk_container_add (
-    GTK_CONTAINER (content), label);
-  int res = gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  gtk_box_append (
+    GTK_BOX (content), label);
+  int res =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), true);
   if (res == GTK_RESPONSE_ACCEPT)
     {
-      ProjectAssistantWidget * pa =
-        project_assistant_widget_new (
-          GTK_WINDOW (MAIN_WINDOW), 1);
-      g_signal_connect (
-        G_OBJECT (pa), "apply",
-        G_CALLBACK (on_project_new_finish), NULL);
-      g_signal_connect (
-        G_OBJECT (pa), "cancel",
-        G_CALLBACK (on_project_new_finish),
-        (void *) 1);
-      gtk_window_present (GTK_WINDOW (pa));
+      project_assistant_widget_present (
+        GTK_WINDOW (MAIN_WINDOW), true, true);
     }
 }
 
 static int
 run_open_dialog (GtkDialog * dialog)
 {
-  int res = gtk_dialog_run (GTK_DIALOG (dialog));
+  int res =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   if (res == GTK_RESPONSE_ACCEPT)
     {
       GtkFileChooser *chooser =
         GTK_FILE_CHOOSER (dialog);
       char * filename =
-        gtk_file_chooser_get_filename (chooser);
+        z_gtk_file_chooser_get_filename (chooser);
       g_message ("filename %s", filename);
       res = project_load (filename, 0);
       g_free (filename);
@@ -747,12 +664,12 @@ activate_open (GSimpleAction *action,
   if (res == GTK_RESPONSE_ACCEPT)
     {
       char *filename =
-        gtk_file_chooser_get_filename (
+        z_gtk_file_chooser_get_filename (
           GTK_FILE_CHOOSER (dialog));
       project_load (filename, 0);
     }
 
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 void
@@ -814,9 +731,6 @@ activate_save_as (
       NULL);
   chooser = GTK_FILE_CHOOSER (dialog);
 
-  gtk_file_chooser_set_do_overwrite_confirmation (
-    chooser, TRUE);
-
   char * project_file_path =
     project_get_path (
       PROJECT, PROJECT_PATH_PROJECT_FILE, false);
@@ -824,35 +738,32 @@ activate_save_as (
     io_path_get_parent_dir (
       project_file_path);
   g_free (project_file_path);
-  gtk_file_chooser_select_filename (
-    chooser,
-    str);
+  z_gtk_file_chooser_set_file_from_path (
+    chooser, str);
   g_free (str);
   gtk_file_chooser_set_current_name (
     chooser, PROJECT->title);
 
-  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  res =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   if (res == GTK_RESPONSE_ACCEPT)
     {
       char *filename;
 
       filename =
-        gtk_file_chooser_get_filename (chooser);
+        z_gtk_file_chooser_get_filename (chooser);
       project_save (
         PROJECT, filename, F_NOT_BACKUP,
         ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC);
       g_free (filename);
     }
 
-  gtk_widget_destroy (dialog);
+  gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
-void
-activate_iconify (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_minimize)
 {
-  gtk_window_iconify (GTK_WINDOW (MAIN_WINDOW));
+  gtk_window_minimize (GTK_WINDOW (MAIN_WINDOW));
 }
 
 void
@@ -865,8 +776,7 @@ activate_export_as (GSimpleAction *action,
   gtk_window_set_transient_for (
     GTK_WINDOW (export),
     GTK_WINDOW (MAIN_WINDOW));
-  gtk_dialog_run (GTK_DIALOG (export));
-  gtk_widget_destroy (GTK_WIDGET (export));
+  z_gtk_dialog_run (GTK_DIALOG (export), true);
 }
 
 void
@@ -916,11 +826,11 @@ activate_export_graph (
     G_CALLBACK (z_gtk_activate_dir_link_func),
     NULL);
 
- // Add the label, and show everything we’ve added
-  gtk_container_add (
-    GTK_CONTAINER (content_area), label);
+  gtk_box_append (
+    GTK_BOX (content_area), label);
 
-  int result = gtk_dialog_run (GTK_DIALOG (dialog));
+  int result =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   const char * filename = NULL;
   GraphExportType export_type;
   switch (result)
@@ -941,10 +851,10 @@ activate_export_graph (
         export_type = GRAPH_EXPORT_DOT;
         break;
       default:
-        gtk_widget_destroy (dialog);
+        gtk_window_destroy (GTK_WINDOW (dialog));
         return;
     }
-  gtk_widget_destroy (dialog);
+  gtk_window_destroy (GTK_WINDOW (dialog));
 
   char * path =
     g_build_filename (
@@ -980,6 +890,53 @@ DEFINE_SIMPLE (activate_undo)
     }
 }
 
+static void
+handle_undo_or_redo_n (
+  int  idx,
+  bool redo)
+{
+  for (int i = 0; i <= idx; i++)
+    {
+      GError * err = NULL;
+      int ret = 0;
+      if (redo)
+        {
+          ret =
+            undo_manager_redo (UNDO_MANAGER, &err);
+        }
+      else
+        {
+          ret =
+            undo_manager_undo (UNDO_MANAGER, &err);
+        }
+
+      if (ret != 0)
+        {
+          if (redo)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to redo action"));
+            }
+          else
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                _("Failed to undo action"));
+            }
+
+        } /* endif ret != 0 */
+
+    } /* endforeach */
+}
+
+DEFINE_SIMPLE (activate_undo_n)
+{
+  int idx =
+    (int) g_variant_get_int32 (variant);
+  handle_undo_or_redo_n (idx, false);
+}
+
 DEFINE_SIMPLE (activate_redo)
 {
   if (undo_stack_is_empty (
@@ -996,6 +953,13 @@ DEFINE_SIMPLE (activate_redo)
 
   EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE,
                NULL);
+}
+
+DEFINE_SIMPLE (activate_redo_n)
+{
+  int idx =
+    (int) g_variant_get_int32 (variant);
+  handle_undo_or_redo_n (idx, true);
 }
 
 void
@@ -1083,9 +1047,8 @@ activate_copy (
             yaml_serialize (
               clipboard, &clipboard_schema);
           g_return_if_fail (serialized);
-          gtk_clipboard_set_text (
-            DEFAULT_CLIPBOARD,
-            serialized, -1);
+          gdk_clipboard_set_text (
+            DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
           g_free (serialized);
         }
@@ -1106,9 +1069,8 @@ activate_copy (
             yaml_serialize (
               clipboard, &clipboard_schema);
           g_return_if_fail (serialized);
-          gtk_clipboard_set_text (
-            DEFAULT_CLIPBOARD,
-            serialized, -1);
+          gdk_clipboard_set_text (
+            DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
           g_free (serialized);
         }
@@ -1119,12 +1081,16 @@ activate_copy (
     }
 }
 
-static void
-on_clipboard_received (
-  GtkClipboard *     gtk_clipboard,
-  const char *       text,
-  gpointer           data)
+void
+activate_paste (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
+  g_message ("paste");
+
+  char * text =
+    z_gdk_clipboard_get_text (DEFAULT_CLIPBOARD);
   if (!text)
     return;
 
@@ -1202,19 +1168,6 @@ on_clipboard_received (
     }
 
   clipboard_free (clipboard);
-}
-
-void
-activate_paste (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
-{
-  g_message ("paste");
-  gtk_clipboard_request_text (
-    DEFAULT_CLIPBOARD,
-    on_clipboard_received,
-    NULL);
 }
 
 void
@@ -1502,6 +1455,55 @@ DEFINE_SIMPLE (activate_fullscreen)
     }
 }
 
+/**
+ * All purpose menuitem callback for binding MIDI
+ * CC to a port.
+ *
+ * An action will be performed if bound.
+ */
+void
+activate_bind_midi_cc (
+  GSimpleAction * action,
+  GVariant      * _variant,
+  gpointer        user_data)
+{
+  g_return_if_fail (_variant);
+
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  Port * port = NULL;
+  sscanf (variant, "%p", &port);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
+  BindCcDialogWidget * dialog =
+    bind_cc_dialog_widget_new (
+      port, true);
+
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+}
+
+void
+activate_delete_cc_binding (
+  GSimpleAction * simple_action,
+  GVariant      * _variant,
+  gpointer        user_data)
+{
+  /* get index */
+  int idx =
+    (int)
+    g_variant_get_int32 (_variant);
+
+  GError * err = NULL;
+  bool ret =
+    midi_mapping_action_perform_unbind (idx, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to unbind"));
+    }
+}
+
 void
 activate_snap_to_grid (
   GSimpleAction * action,
@@ -1734,11 +1736,9 @@ DEFINE_SIMPLE (activate_duplicate_selected_tracks)
 
 DEFINE_SIMPLE (activate_change_track_color)
 {
-  ObjectColorChooserDialogWidget * color_chooser =
-    object_color_chooser_dialog_widget_new_for_tracklist_selections (
-      TRACKLIST_SELECTIONS);
   object_color_chooser_dialog_widget_run (
-    color_chooser);
+    GTK_WINDOW (MAIN_WINDOW), NULL,
+    TRACKLIST_SELECTIONS, NULL);
 }
 
 DEFINE_SIMPLE (activate_goto_prev_marker)
@@ -2041,8 +2041,8 @@ do_quantize (
           gtk_window_set_transient_for (
             GTK_WINDOW (quant),
             GTK_WINDOW (MAIN_WINDOW));
-          gtk_dialog_run (GTK_DIALOG (quant));
-          gtk_widget_destroy (GTK_WIDGET (quant));
+          z_gtk_dialog_run (
+            GTK_DIALOG (quant), true);
         }
     }
   else if (string_is_equal (variant, "editor")
@@ -2077,8 +2077,8 @@ do_quantize (
           gtk_window_set_transient_for (
             GTK_WINDOW (quant),
             GTK_WINDOW (MAIN_WINDOW));
-          gtk_dialog_run (GTK_DIALOG (quant));
-          gtk_widget_destroy (GTK_WIDGET (quant));
+          z_gtk_dialog_run (
+            GTK_DIALOG (quant), true);
         }
     }
   else
@@ -2261,8 +2261,8 @@ activate_show_file_browser (
       gtk_window_set_transient_for (
         file_browser_window,
         (GtkWindow *) MAIN_WINDOW);
-      gtk_widget_show_all (
-        (GtkWidget *) file_browser_window);
+      gtk_window_present (
+        GTK_WINDOW (file_browser_window));
     }
 }
 
@@ -2710,8 +2710,8 @@ DEFINE_SIMPLE (
                   arranger_object_get_name,
                   (GenericStringSetter)
                   arranger_object_set_name_with_action);
-              gtk_widget_show_all (
-                GTK_WIDGET (dialog));
+              gtk_window_present (
+                GTK_WINDOW (dialog));
             }
         }
     }
@@ -2747,8 +2747,7 @@ DEFINE_SIMPLE (activate_input_bpm)
       _("Please enter a BPM"), P_TEMPO_TRACK,
       tempo_track_get_current_bpm_as_str,
       tempo_track_set_bpm_from_str);
-  gtk_widget_show_all (GTK_WIDGET (dialog));
-  gtk_dialog_run (GTK_DIALOG (dialog));
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 }
 
 DEFINE_SIMPLE (activate_tap_bpm)
@@ -2823,4 +2822,942 @@ DEFINE_SIMPLE (activate_nudge_selection)
         err, "%s",
         _("Failed to move selections"));
     }
+}
+
+DEFINE_SIMPLE (activate_detect_bpm)
+{
+  size_t size;
+  const char * _str =
+    g_variant_get_string (variant, &size);
+  ZRegion * r = NULL;
+  sscanf (_str, "%p", &r);
+  g_return_if_fail (IS_REGION_AND_NONNULL (r));
+
+  GArray * candidates =
+    g_array_new (false, true, sizeof (float));
+  bpm_t bpm =
+    audio_region_detect_bpm (r, candidates);
+
+  GString * gstr = g_string_new (NULL);
+  g_string_append_printf (
+    gstr, _("Detected BPM: %.2f"), bpm);
+  g_string_append (gstr, "\n\n");
+  g_string_append_printf (
+    gstr, _("Candidates:"));
+  for (size_t i = 0; i < candidates->len; i++)
+    {
+      float candidate =
+        g_array_index (candidates, float, i);
+      g_string_append_printf (
+        gstr, " %.2f", candidate);
+    }
+  char * str = g_string_free (gstr, false);
+  ui_show_message_printf (
+    MAIN_WINDOW, GTK_MESSAGE_INFO,
+    "%s", str);
+  g_free (str);
+}
+
+DEFINE_SIMPLE (activate_timeline_function)
+{
+  AudioFunctionType type =
+    (AudioFunctionType)
+    g_variant_get_int32 (variant);
+
+  for (int i = 0; i < TL_SELECTIONS->num_regions;
+       i++)
+    {
+      ZRegion * r = TL_SELECTIONS->regions[i];
+      AudioSelections * sel =
+        (AudioSelections *)
+        arranger_selections_new (
+          ARRANGER_SELECTIONS_TYPE_AUDIO);
+      region_identifier_copy (
+        &sel->region_id, &r->id);
+      sel->has_selection = true;
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
+
+      /* timeline start pos */
+      position_set_to_pos (
+        &sel->sel_start, &r_obj->clip_start_pos);
+      position_add_ticks (
+        &sel->sel_start, r_obj->pos.ticks);
+
+      /* timeline end pos */
+      position_set_to_pos (
+        &sel->sel_end, &r_obj->loop_end_pos);
+      position_add_ticks (
+        &sel->sel_end, r_obj->pos.ticks);
+      if (position_is_after (
+            &sel->sel_end, &r_obj->end_pos))
+        {
+          position_set_to_pos (
+            &sel->sel_end, &r_obj->end_pos);
+        }
+
+      GError * err = NULL;
+      bool ret =
+        arranger_selections_action_perform_edit_audio_function (
+          (ArrangerSelections *) sel,
+          type, NULL, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _("Failed to apply audio function"));
+          break;
+        }
+      else
+        {
+          UndoableAction * ua =
+            undo_manager_get_last_action (
+              UNDO_MANAGER);
+          ua->num_actions = i + 1;
+        }
+    }
+}
+
+DEFINE_SIMPLE (activate_export_midi_region)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  ZRegion * r = NULL;
+  sscanf (str, "%p", &r);
+  g_return_if_fail (IS_REGION_AND_NONNULL (r));
+
+  char * filename =
+    export_midi_file_dialog_widget_run_for_region (
+      GTK_WINDOW (MAIN_WINDOW), r);
+  if (filename)
+    {
+      g_message ("exporting to %s", filename);
+      midi_region_export_to_midi_file (
+        r, filename, 0, 0);
+      g_free (filename);
+    }
+}
+
+DEFINE_SIMPLE (activate_quick_bounce_selections)
+{
+  ArrangerSelections * sel =
+    (ArrangerSelections *) TL_SELECTIONS;
+  if (!arranger_selections_has_any (sel)
+      || TL_SELECTIONS->num_regions == 0)
+    {
+      g_warning ("no selections to bounce");
+      return;
+    }
+
+  ZRegion * r = TL_SELECTIONS->regions[0];
+
+  ExportSettings settings;
+  settings.mode = EXPORT_MODE_REGIONS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, r->name);
+  timeline_selections_mark_for_bounce (
+    TL_SELECTIONS, settings.bounce_with_parents);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  /* create a progress dialog and block */
+  ExportProgressDialogWidget * progress_dialog =
+    export_progress_dialog_widget_new (
+      &settings, true, false, F_CANCELABLE);
+  gtk_window_set_transient_for (
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (MAIN_WINDOW));
+  z_gtk_dialog_run (
+    GTK_DIALOG (progress_dialog), true);
+
+  g_thread_join (thread);
+
+  if (!settings.progress_info.has_error &&
+      !settings.progress_info.cancelled)
+    {
+      /* create audio track with bounced material */
+      Position first_pos;
+      arranger_selections_get_start_pos (
+        (ArrangerSelections *) TL_SELECTIONS,
+        &first_pos, F_GLOBAL);
+      exporter_create_audio_track_after_bounce (
+        &settings, &first_pos);
+    }
+
+  export_settings_free_members (&settings);
+}
+
+DEFINE_SIMPLE (activate_bounce_selections)
+{
+  ArrangerSelections * sel =
+    (ArrangerSelections *) TL_SELECTIONS;
+  if (!arranger_selections_has_any (sel)
+      || TL_SELECTIONS->num_regions == 0)
+    {
+      g_warning ("no selections to bounce");
+      return;
+    }
+
+  ZRegion * r = TL_SELECTIONS->regions[0];
+
+  BounceDialogWidget * dialog =
+    bounce_dialog_widget_new (
+      BOUNCE_DIALOG_REGIONS, r->name);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+}
+
+DEFINE_SIMPLE (activate_set_curve_algorithm)
+{
+  CurveAlgorithm curve_algo =
+    (CurveAlgorithm)
+    g_variant_get_int32 (variant);
+
+  g_return_if_fail (
+    AUTOMATION_SELECTIONS->num_automation_points ==
+      1);
+
+  AutomationPoint * ap =
+    AUTOMATION_SELECTIONS->automation_points[0];
+
+  /* clone the selections before the change */
+  ArrangerSelections * sel_before =
+    arranger_selections_clone (
+      (ArrangerSelections *) AUTOMATION_SELECTIONS);
+
+  /* change */
+  ap->curve_opts.algo = curve_algo;
+
+  /* perform action */
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit (
+      sel_before,
+      (ArrangerSelections *) AUTOMATION_SELECTIONS,
+      ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+      true, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to set curve algorithm"));
+    }
+
+  arranger_selections_free_full (sel_before);
+}
+
+static void
+handle_region_fade_algo_preset (
+  const char * pset_id,
+  bool         fade_in)
+{
+  GPtrArray * arr = curve_get_fade_presets ();
+  CurveFadePreset * pset = NULL;
+  for (size_t i = 0; i < arr->len; i++)
+    {
+      CurveFadePreset * cur_pset =
+        g_ptr_array_index (arr, i);
+
+      if (string_is_equal (cur_pset->id, pset_id))
+        {
+          pset = cur_pset;
+          break;
+        }
+    }
+  CurveOptions curve_opts = pset->opts;
+  g_ptr_array_unref (arr);
+  g_return_if_fail (pset);
+
+  z_return_if_fail_cmp (
+    TL_SELECTIONS->num_regions, ==, 1);
+
+  ArrangerSelections * sel_before =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+  ZRegion * r = TL_SELECTIONS->regions[0];
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  if (fade_in)
+    {
+      r_obj->fade_in_opts.algo =
+        curve_opts.algo;
+      r_obj->fade_in_opts.curviness =
+        curve_opts.curviness;
+    }
+  else
+    {
+      r_obj->fade_out_opts.algo =
+        curve_opts.algo;
+      r_obj->fade_out_opts.curviness =
+        curve_opts.curviness;
+    }
+
+  GError * err = NULL;
+  bool ret =
+    arranger_selections_action_perform_edit (
+      sel_before,
+      (ArrangerSelections *) TL_SELECTIONS,
+      ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
+      true, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to edit fades"));
+    }
+}
+
+DEFINE_SIMPLE (
+  activate_set_region_fade_in_algorithm_preset)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
+  handle_region_fade_algo_preset (str, true);
+}
+
+DEFINE_SIMPLE (
+  activate_set_region_fade_out_algorithm_preset)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
+  handle_region_fade_algo_preset (str, false);
+}
+
+DEFINE_SIMPLE (activate_arranger_object_view_info)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  ArrangerObject * obj = NULL;
+  sscanf (str, "%p", &obj);
+  g_return_if_fail (obj != NULL);
+  g_return_if_fail (IS_ARRANGER_OBJECT (obj));
+
+  ArrangerObjectInfoDialogWidget * dialog =
+    arranger_object_info_dialog_widget_new (obj);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+}
+
+DEFINE_SIMPLE (activate_reset_stereo_balance)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  Port * port = NULL;
+  sscanf (str, "%p", &port);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
+  Track * track = port_get_track (port, true);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+  channel_set_balance_control (
+    track->channel, 0.5);
+}
+
+DEFINE_SIMPLE (activate_plugin_toggle_enabled)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  Plugin * pl = NULL;
+  sscanf (str, "%p", &pl);
+  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+
+  plugin_set_enabled (
+    pl, !plugin_is_enabled (pl, false), true);
+}
+
+DEFINE_SIMPLE (activate_plugin_inspect)
+{
+  left_dock_edge_widget_refresh_with_page (
+    MW_LEFT_DOCK_EDGE, LEFT_DOCK_EDGE_TAB_PLUGIN);
+}
+
+DEFINE_SIMPLE (activate_reset_fader)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  Fader * fader = NULL;
+  sscanf (str, "%p", &fader);
+  g_return_if_fail (fader);
+
+  if (fader->type == FADER_TYPE_AUDIO_CHANNEL)
+    {
+      Channel * ch = fader_get_channel (fader);
+      channel_reset_fader (ch, F_PUBLISH_EVENTS);
+    }
+  else
+    {
+      fader_set_amp (fader, 1.0);
+    }
+}
+
+DEFINE_SIMPLE (activate_reset_control)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  Port * port = NULL;
+  sscanf (str, "%p", &port);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
+  GError * err = NULL;
+  bool ret =
+    port_action_perform_reset_control (
+      &port->id, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, _("Failed to reset %s"),
+        port->id.label);
+    }
+}
+
+DEFINE_SIMPLE (activate_port_view_info)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  Port * port = NULL;
+  sscanf (str, "%p", &port);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
+  PortInfoDialogWidget * dialog =
+    port_info_dialog_widget_new (port);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+}
+
+DEFINE_SIMPLE (activate_port_connection_remove)
+{
+  GError * err = NULL;
+  bool ret =
+    port_connection_action_perform_disconnect (
+      &MW_PORT_CONNECTIONS_TREE->src_port->id,
+      &MW_PORT_CONNECTIONS_TREE->dest_port->id,
+      &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err,
+        _("Failed to disconnect %s from %s"),
+        MW_PORT_CONNECTIONS_TREE->src_port->id.label,
+        MW_PORT_CONNECTIONS_TREE->dest_port->id.label);
+    }
+}
+
+DEFINE_SIMPLE (
+  activate_panel_file_browser_add_bookmark)
+{
+  g_return_if_fail (
+    MW_PANEL_FILE_BROWSER->cur_file);
+
+  file_manager_add_location_and_save (
+    FILE_MANAGER,
+    MW_PANEL_FILE_BROWSER->cur_file->abs_path);
+
+  EVENTS_PUSH (
+    ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
+}
+
+DEFINE_SIMPLE (
+  activate_panel_file_browser_delete_bookmark)
+{
+  g_return_if_fail (
+    MW_PANEL_FILE_BROWSER->cur_loc);
+
+  if (MW_PANEL_FILE_BROWSER->cur_loc->
+        special_location >
+          FILE_MANAGER_NONE)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("Cannot delete standard bookmark"));
+      return;
+    }
+
+  GtkWidget * dialog =
+    gtk_message_dialog_new (
+      GTK_WINDOW (MAIN_WINDOW),
+      GTK_DIALOG_MODAL |
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+      GTK_MESSAGE_QUESTION,
+      GTK_BUTTONS_YES_NO,
+      "%s",
+      _("Are you sure you want to remove this "
+      "bookmark?"));
+  int result =
+    z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+
+  if (result == GTK_RESPONSE_YES)
+    {
+      file_manager_remove_location_and_save (
+        FILE_MANAGER,
+        MW_PANEL_FILE_BROWSER->cur_loc->path,
+        true);
+
+      EVENTS_PUSH (
+        ET_FILE_BROWSER_BOOKMARK_DELETED, NULL);
+    }
+}
+
+/**
+ * Activate \ref setting if given, otherwise create
+ * a defeault setting from the descriptor.
+ */
+static void
+activate_plugin_setting (
+  PluginSetting *    setting,
+  PluginDescriptor * descr)
+{
+  bool setting_created = false;
+  if (!setting)
+    {
+      g_return_if_fail (descr);
+      setting = plugin_setting_new_default (descr);
+      setting_created = true;
+    }
+
+  TrackType type =
+    track_get_type_from_plugin_descriptor (
+      setting->descr);
+
+  GError * err = NULL;
+  bool ret =
+    track_create_for_plugin_at_idx_w_action (
+      type, setting, TRACKLIST->num_tracks, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _("Failed to create track"));
+    }
+
+  if (setting_created)
+    {
+      plugin_setting_free (setting);
+    }
+}
+
+DEFINE_SIMPLE (
+  activate_plugin_browser_add_to_project)
+{
+  const PluginDescriptor * descr =
+    MW_PLUGIN_BROWSER->current_descriptors[0];
+
+  PluginSetting * setting =
+    plugin_setting_new_default (descr);
+  setting->open_with_carla = false;
+  setting->bridge_mode = CARLA_BRIDGE_NONE;
+  activate_plugin_setting (setting, NULL);
+  plugin_setting_free (setting);
+}
+
+DEFINE_SIMPLE (
+  activate_plugin_browser_add_to_project_carla)
+{
+  const PluginDescriptor * descr =
+    MW_PLUGIN_BROWSER->current_descriptors[0];
+
+  PluginSetting * setting =
+    plugin_setting_new_default (descr);
+  setting->open_with_carla = true;
+  setting->bridge_mode = CARLA_BRIDGE_NONE;
+  activate_plugin_setting (setting, NULL);
+  plugin_setting_free (setting);
+}
+
+DEFINE_SIMPLE (
+  activate_plugin_browser_add_to_project_bridged_ui)
+{
+  const PluginDescriptor * descr =
+    MW_PLUGIN_BROWSER->current_descriptors[0];
+
+  PluginSetting * setting =
+    plugin_setting_new_default (descr);
+  setting->open_with_carla = true;
+  setting->bridge_mode = CARLA_BRIDGE_UI;
+  activate_plugin_setting (setting, NULL);
+  plugin_setting_free (setting);
+}
+
+DEFINE_SIMPLE (
+  activate_plugin_browser_add_to_project_bridged_full)
+{
+  const PluginDescriptor * descr =
+    MW_PLUGIN_BROWSER->current_descriptors[0];
+
+  PluginSetting * setting =
+    plugin_setting_new_default (descr);
+  setting->open_with_carla = true;
+  setting->bridge_mode = CARLA_BRIDGE_FULL;
+  activate_plugin_setting (setting, NULL);
+  plugin_setting_free (setting);
+}
+
+DEFINE_SIMPLE (
+  change_state_plugin_browser_toggle_generic_ui)
+{
+  /*const PluginDescriptor * descr =*/
+    /*MW_PLUGIN_BROWSER->current_descriptors[0];*/
+}
+
+DEFINE_SIMPLE (
+  activate_plugin_browser_add_to_collection)
+{
+  const PluginDescriptor * descr =
+    MW_PLUGIN_BROWSER->current_descriptors[0];
+
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  PluginCollection * collection = NULL;
+  sscanf (str, "%p", &collection);
+  g_return_if_fail (collection != NULL);
+
+  plugin_collection_add_descriptor (
+    collection, descr);
+  plugin_collections_serialize_to_file (
+    PLUGIN_MANAGER->collections);
+
+  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+}
+
+DEFINE_SIMPLE (
+  activate_plugin_browser_remove_from_collection)
+{
+  const PluginDescriptor * descr =
+    MW_PLUGIN_BROWSER->current_descriptors[0];
+
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  PluginCollection * collection = NULL;
+  sscanf (str, "%p", &collection);
+  g_return_if_fail (collection != NULL);
+
+  plugin_collection_remove_descriptor (
+    collection, descr);
+  plugin_collections_serialize_to_file (
+    PLUGIN_MANAGER->collections);
+
+  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+}
+
+DEFINE_SIMPLE (activate_plugin_browser_reset)
+{
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
+  if (string_is_equal (str, "category"))
+    {
+      GtkTreeSelection * selection =
+        gtk_tree_view_get_selection (
+          (MW_PLUGIN_BROWSER->category_tree_view));
+      gtk_tree_selection_unselect_all (selection);
+    }
+  else if (string_is_equal (str, "author"))
+    {
+      GtkTreeSelection * selection =
+        gtk_tree_view_get_selection (
+          (MW_PLUGIN_BROWSER->author_tree_view));
+      gtk_tree_selection_unselect_all (selection);
+    }
+}
+
+DEFINE_SIMPLE (activate_plugin_collection_add)
+{
+  PluginCollection * collection =
+    plugin_collection_new ();
+
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Collection name"), collection,
+      (GenericStringGetter)
+        plugin_collection_get_name,
+      (GenericStringSetter)
+        plugin_collection_set_name);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+
+  if (strlen (collection->name) > 0)
+    {
+      g_debug ("accept collection");
+      plugin_collections_add (
+        PLUGIN_MANAGER->collections, collection,
+        F_SERIALIZE);
+      plugin_browser_widget_refresh_collections (
+        MW_PLUGIN_BROWSER);
+    }
+  else
+    {
+      g_message ("invalid collection name (empty)");
+    }
+
+  plugin_collection_free (collection);
+}
+
+DEFINE_SIMPLE (activate_plugin_collection_rename)
+{
+  PluginCollection * collection =
+    MW_PLUGIN_BROWSER->current_collections[0];
+
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Collection name"), collection,
+      (GenericStringGetter)
+        plugin_collection_get_name,
+      (GenericStringSetter)
+        plugin_collection_set_name);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+
+  plugin_collections_serialize_to_file (
+    PLUGIN_MANAGER->collections);
+
+  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+}
+
+DEFINE_SIMPLE (activate_plugin_collection_remove)
+{
+  PluginCollection * collection =
+    MW_PLUGIN_BROWSER->current_collections[0];
+
+  int result = GTK_RESPONSE_YES;
+  if (collection->num_descriptors > 0)
+    {
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_DIALOG_MODAL |
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+          GTK_MESSAGE_QUESTION,
+          GTK_BUTTONS_YES_NO,
+          _("This collection contains %d plugins. "
+          "Are you sure you want to remove it?"),
+          collection->num_descriptors);
+      result =
+        z_gtk_dialog_run (
+          GTK_DIALOG (dialog), true);
+    }
+
+  if (result == GTK_RESPONSE_YES)
+    {
+      plugin_collections_remove (
+        PLUGIN_MANAGER->collections, collection,
+        F_SERIALIZE);
+
+      EVENTS_PUSH (
+        ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+    }
+}
+
+DEFINE_SIMPLE (activate_track_set_midi_channel)
+{
+  /* "{track index},{lane index or -1},"
+   * "{midi channel 1-16 or 0 for lane to inherit}"
+   */
+  gsize size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  int track_idx, lane_idx, midi_ch;
+  sscanf (
+    str, "%d,%d,%d", &track_idx, &lane_idx,
+    &midi_ch);
+
+  Track * track = TRACKLIST->tracks[track_idx];
+  if (lane_idx >= 0)
+    {
+      TrackLane * lane = track->lanes[lane_idx];
+      lane->midi_ch = (midi_byte_t) midi_ch;
+    }
+  else
+    {
+      track->midi_ch = (midi_byte_t) midi_ch;
+    }
+}
+
+DEFINE_SIMPLE (
+  activate_quick_bounce_selected_tracks)
+{
+  Track * track =
+    TRACKLIST_SELECTIONS->tracks[0];
+
+  ExportSettings settings;
+  settings.mode = EXPORT_MODE_TRACKS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, track->name);
+  tracklist_selections_mark_for_bounce (
+    TRACKLIST_SELECTIONS,
+    settings.bounce_with_parents,
+    F_NO_MARK_MASTER);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  /* create a progress dialog and block */
+  ExportProgressDialogWidget * progress_dialog =
+    export_progress_dialog_widget_new (
+      &settings, true, false, F_CANCELABLE);
+  gtk_window_set_transient_for (
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (MAIN_WINDOW));
+  z_gtk_dialog_run (
+    GTK_DIALOG (progress_dialog), true);
+
+  g_thread_join (thread);
+
+  if (!settings.progress_info.has_error &&
+      !settings.progress_info.cancelled)
+    {
+      /* create audio track with bounced material */
+      Marker * m =
+        marker_track_get_start_marker (
+          P_MARKER_TRACK);
+      ArrangerObject * m_obj = (ArrangerObject *) m;
+      exporter_create_audio_track_after_bounce (
+        &settings, &m_obj->pos);
+    }
+
+  export_settings_free_members (&settings);
+}
+
+DEFINE_SIMPLE (
+  activate_bounce_selected_tracks)
+{
+  Track * track =
+    TRACKLIST_SELECTIONS->tracks[0];
+  BounceDialogWidget * dialog =
+    bounce_dialog_widget_new (
+      BOUNCE_DIALOG_TRACKS, track->name);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+}
+
+static void
+handle_direct_out_change (
+  int  direct_out_idx,
+  bool new_group)
+{
+  TracklistSelections * sel_before =
+    tracklist_selections_clone (
+      TRACKLIST_SELECTIONS, NULL);
+
+  Track * direct_out = NULL;
+  if (new_group)
+    {
+      direct_out =
+        add_tracks_to_group_dialog_widget_get_track (sel_before);
+      if (!direct_out)
+        return;
+    }
+  else
+    {
+      direct_out =
+        tracklist_get_track (
+          TRACKLIST, direct_out_idx);
+    }
+  g_return_if_fail (direct_out);
+
+  /* skip if all selected tracks already connected
+   * to direct out */
+  bool need_change = false;
+  for (int i = 0; i < sel_before->num_tracks; i++)
+    {
+      Track * cur_track =
+        TRACKLIST->tracks[
+          sel_before->tracks[i]->pos];
+      if (!track_type_has_channel (cur_track->type))
+        return;
+
+      if (cur_track->out_signal_type !=
+            direct_out->in_signal_type)
+        {
+          g_message ("mismatching signal type");
+          return;
+        }
+
+      Channel * ch = track_get_channel (cur_track);
+      if (channel_get_output_track (ch) !=
+            direct_out)
+        {
+          need_change = true;
+          break;
+        }
+    }
+
+  if (!need_change)
+    {
+      g_message ("no direct out change needed");
+      return;
+    }
+
+  if (new_group)
+    {
+      /* reset the selections */
+      tracklist_selections_clear (
+        TRACKLIST_SELECTIONS);
+      for (int i = 0; i < sel_before->num_tracks;
+           i++)
+        {
+          Track * cur_track =
+            TRACKLIST->tracks[
+              sel_before->tracks[i]->pos];
+          track_select (
+            cur_track, F_SELECT, F_NOT_EXCLUSIVE,
+            F_NO_PUBLISH_EVENTS);
+        }
+    }
+
+  GError * err = NULL;
+  bool ret =
+    tracklist_selections_action_perform_set_direct_out (
+      TRACKLIST_SELECTIONS,
+      PORT_CONNECTIONS_MGR, direct_out, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _("Failed to change direct output"));
+    }
+  else
+    {
+      UndoableAction * ua =
+        undo_manager_get_last_action (UNDO_MANAGER);
+      if (new_group)
+        ua->num_actions = 3;
+    }
+
+  /* free previous selections */
+  tracklist_selections_free (sel_before);
+}
+
+DEFINE_SIMPLE (
+  activate_selected_tracks_direct_out_to)
+{
+  int direct_out_pos =
+    g_variant_get_int32 (variant);
+  handle_direct_out_change (direct_out_pos, false);
+}
+
+DEFINE_SIMPLE (
+  activate_selected_tracks_direct_out_new)
+{
+  handle_direct_out_change (-1, true);
+}
+
+DEFINE_SIMPLE (
+  activate_toggle_track_passthrough_input)
+{
+  Track * track =
+    TRACKLIST_SELECTIONS->tracks[0];
+  track->passthrough_midi_input =
+    !track->passthrough_midi_input;
 }

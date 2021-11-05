@@ -35,19 +35,6 @@ GtkAboutDialog *
 about_dialog_widget_new (
   GtkWindow * parent)
 {
-  GtkIconTheme * icon_theme =
-    gtk_icon_theme_get_default ();
-  GError * err = NULL;
-  GdkPixbuf * pixbuf =
-      gtk_icon_theme_load_icon (
-        icon_theme, "zrythm-splash-png", 48, 0,
-        &err);
-  if (!pixbuf)
-    {
-      g_critical (
-        "%s: %s", __func__, err->message);
-    }
-
   const char * artists[] =
     {
       "Alexandros Theodotou <alex@zrythm.org>",
@@ -85,8 +72,8 @@ about_dialog_widget_new (
 #endif
       ,
       "documenters", documenters,
-      /*"logo-icon-name", "z",*/
-      "logo", pixbuf,
+      "logo-icon-name", "zrythm-splash-png",
+      /*"logo", pixbuf,*/
       "program-name", PROGRAM_NAME,
       "comments", _("a highly automated and intuitive digital audio workstation"),
       "license-type", GTK_LICENSE_AGPL_3_0,
@@ -98,7 +85,6 @@ about_dialog_widget_new (
   gtk_window_set_transient_for (
     GTK_WINDOW (dialog),
     parent);
-  g_object_unref (pixbuf);
 
   g_free (version);
 

@@ -67,6 +67,7 @@ HOT
 void
 region_draw (
   ZRegion *      self,
+  GtkSnapshot *  snapshot,
   cairo_t *      cr,
   GdkRectangle * rect);
 
