@@ -136,15 +136,6 @@ typedef struct LogEvent
   GLogLevelFlags log_level;
 } LogEvent;
 
-#if !defined (GLIB_SUBPROJECT) && \
-  !defined (HAVE_G_GET_CONSOLE_CHARSET)
-static gboolean
-g_get_console_charset (const char ** charset)
-{
-  return g_get_charset (charset);
-}
-#endif
-
 static void
 _log_abort (gboolean breakpoint)
 {

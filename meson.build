@@ -354,6 +354,10 @@ illegal_char_test_args = [
   grep.full_path (),
   ]
 
+# GTK/GLIB versions
+gtk_req = '4.5.0'
+glib_req = '2.66.0'
+
 # --- Add extra languages ---
 
 if os_darwin
@@ -530,54 +534,39 @@ if have_jack
     ]
 endif
 
-#gobject_dep = dependency (
-  #'gobject-2.0',
-  #fallback: ['glib', 'libgobject_dep'])
-glib_dep = dependency (
-  'glib-2.0', version: '>=2.66', required: false,
-  static: all_static)
+glib_version_arr = glib_req.split('.')
+glib_major_version = glib_version_arr[0]
+glib_minor_version = glib_version_arr[1]
+gtk_version_arr = gtk_req.split('.')
+gtk_major_version = gtk_version_arr[0]
+gtk_minor_version = gtk_version_arr[1]
+add_project_arguments([
+  '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_@0@_@1@'.format(glib_major_version, glib_minor_version),
+  '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_@0@_@1@'.format(glib_major_version, glib_minor_version),
+  '-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, 6), # FIXME use gtk_minor_version when 4.6.0 comes out
+  '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, 6), ], language: 'c')
+
+glib_default_opts = [
+  'debug=true',
+  'optimization=3',
+  'tests=false',
+  'installed_tests=false',
+  'default_library=static',]
 if os_freebsd
-  # force system glib on freebsd
-  glib_dep = dependency (
-    'glib-2.0', required: true)
+  glib_default_opts = [
+    'debug=true',
+    'optimization=3',
+    'xattr=false',
+    'iconv=external',
+    'selinux=disabled',
+    'libmount=disabled',
+    'installed_tests=false',
+    'b_lundef=false',]
 endif
-if glib_dep.found()
-  check_functions += [
-    # use a fallback if this does not exist (glib < 2.58)
-    ['g_canonicalize_filename',[glib_dep]],
-    ['g_get_console_charset',[glib_dep]],
-    ]
-else
-  cdata.set ('GLIB_SUBPROJECT', 1)
-  if os_freebsd
-    # note: fails finding environ during linking
-    glib_proj = subproject (
-      'glib',
-      default_options: [
-        'debug=true',
-        'optimization=3',
-        'xattr=false',
-        'iconv=external',
-        'selinux=disabled',
-        'libmount=disabled',
-        'installed_tests=false',
-        'b_lundef=false',
-        ]
-      )
-  else
-    glib_proj = subproject (
-      'glib',
-      default_options: [
-        'debug=true',
-        'optimization=3',
-        'tests=false',
-        'installed_tests=false',
-        'default_library=static',
-        ]
-      )
-  endif
-  glib_dep = glib_proj.get_variable ('libglib_dep')
-endif
+glib_dep = dependency (
+  'glib-2.0', version: '>=' + glib_req,
+  fallback: ['glib', 'libglib_dep'],
+  default_options: glib_default_opts,)
 
 foreach func : check_functions
   if cc.has_function(func[0], dependencies: func[1])
@@ -832,7 +821,7 @@ test_strict_cflags += [
   '-Werror=tautological-compare',
   '-Werror=unused-result',
   '-Wanalyzer-too-complex',
-  '-Werror=analyzer-too-complex',
+  #'-Werror=analyzer-too-complex',
   '-Werror=inline',
   '-Werror=duplicate-decl-specifier',
   ]
@@ -931,7 +920,8 @@ audec_dep = dependency(
   required: true, static: all_static)
 
 cairo_dep = dependency (
-  'cairo', fallback: ['cairo', 'libcairo_dep'],
+  'cairo', version: '>= 1.14.0',
+  fallback: ['cairo', 'libcairo_dep'],
   default_options: [
     'zlib=enabled', 'tests=disabled'])
 
@@ -944,7 +934,7 @@ gdk_pixbuf_dep = dependency (
   'gdk-pixbuf-2.0',
   fallback: ['gdk-pixbuf', 'gdkpixbuf_dep'])
 gtk_dep = dependency (
-  'gtk4', version: '>=4.5',
+  'gtk4', version: '>=' + gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
   default_options: [
     'introspection=disabled',
