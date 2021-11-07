@@ -76,7 +76,7 @@
 /*}*/
 
 paned > separator {
-  min-height: 1px; /* FIXME put back to 4 */
+  min-height: 4px;
 }
 
 /*paned separator:hover {*/

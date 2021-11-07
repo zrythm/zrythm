@@ -652,6 +652,7 @@ need_backtrace (
       ev->message,
       "gsk_render_node_unref: assertion 'GSK_IS_RENDER_NODE (node)' failed")
     &&
+    /* FIXME already fixed upstream, remove on gtk 4.6 */
     !string_contains_substr (
       ev->message,
       "A floating object GtkAdjustment")

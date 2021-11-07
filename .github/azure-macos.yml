@@ -51,7 +51,7 @@ jobs:
         cd /Users/runner/work/1/s
         mv VERSION VERSION.txt
         gsed -i "s|'VERSION'|'VERSION.txt'|" meson.build
-        meson build -Dtests=true
+        meson build -Dtests=true -Dgtk4:x11-backend=false
         mv subprojects/libaudec/VERSION subprojects/libaudec/VERSION.txt
         gsed -i "s|'VERSION'|'VERSION.txt'|" subprojects/libaudec/meson.build
         ninja -C build
