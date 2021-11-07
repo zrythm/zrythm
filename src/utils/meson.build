@@ -88,7 +88,6 @@ lv2apply = executable (
   dependencies : [
     sndfile_dep,
     lilv_dep,
-    glib_dep,
     gtk_dep,
     libm,
     ],

@@ -546,28 +546,6 @@ add_project_arguments([
   '-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, 6), # FIXME use gtk_minor_version when 4.6.0 comes out
   '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, 6), ], language: 'c')
 
-glib_default_opts = [
-  'debug=true',
-  'optimization=3',
-  'tests=false',
-  'installed_tests=false',
-  'default_library=static',]
-if os_freebsd
-  glib_default_opts = [
-    'debug=true',
-    'optimization=3',
-    'xattr=false',
-    'iconv=external',
-    'selinux=disabled',
-    'libmount=disabled',
-    'installed_tests=false',
-    'b_lundef=false',]
-endif
-glib_dep = dependency (
-  'glib-2.0', version: '>=' + glib_req,
-  fallback: ['glib', 'libglib_dep'],
-  default_options: glib_default_opts,)
-
 foreach func : check_functions
   if cc.has_function(func[0], dependencies: func[1])
     cdata.set('HAVE_' + func[0].underscorify().to_upper(), 1)
@@ -919,20 +897,6 @@ audec_dep = dependency(
   fallback: ['libaudec', 'libaudec_dep'],
   required: true, static: all_static)
 
-cairo_dep = dependency (
-  'cairo', version: '>= 1.14.0',
-  fallback: ['cairo', 'libcairo_dep'],
-  default_options: [
-    'zlib=enabled', 'tests=disabled'])
-
-pango_dep = dependency (
-  'pango', version: '>= 1.49.1',
-  fallback: ['pango', 'libpango_dep'],
-  default_options: ['introspection=disabled'])
-
-gdk_pixbuf_dep = dependency (
-  'gdk-pixbuf-2.0',
-  fallback: ['gdk-pixbuf', 'gdkpixbuf_dep'])
 gtk_dep = dependency (
   'gtk4', version: '>=' + gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
@@ -1233,12 +1197,7 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
-  glib_dep,
-  #gobject_dep,
-  cairo_dep,
-  pango_dep,
   gtk_dep,
-  gdk_pixbuf_dep,
   sndfile_dep,
   samplerate_dep,
   alsa_dep,
