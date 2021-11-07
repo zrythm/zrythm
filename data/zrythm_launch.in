@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+export LD_LIBRARY_PATH="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:@LIBDIR@:$LD_LIBRARY_PATH"
+
 export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
 
 # if not first run, set language so that pre-startup

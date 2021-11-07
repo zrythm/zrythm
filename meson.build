@@ -903,7 +903,8 @@ gtk_dep = dependency (
   default_options: [
     'introspection=disabled',
     'demos=false', 'build-examples=false',
-    'build-tests=false' ],
+    'build-tests=false',
+    'media-gstreamer=disabled',],
   static: all_static)
 min_version = '>=1.0.25'
 if get_option ('opus')

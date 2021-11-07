@@ -43,10 +43,14 @@ install_data (
 zrythm_launcher_config = configuration_data ()
 zrythm_launcher_config.set (
   'SCHEMAS_DIR', schemasdir)
-zrythm_launcher_config.set (
-  'BIN_DIR', bindir)
+zrythm_launcher_config.set ('BIN_DIR', bindir)
 zrythm_launcher_config.set (
   'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
+zrythm_launcher_config.set (
+  'ZRYTHM_LIBDIR', zrythm_libdir)
+zrythm_launcher_config.set (
+  'ZRYTHM_CARLA_LIBDIR', zrythm_libdir / 'carla')
+zrythm_launcher_config.set ('LIBDIR', libdir)
 
 # install desktop file and launcher scripts
 if os_gnu or os_freebsd or os_darwin
