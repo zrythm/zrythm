@@ -56,7 +56,7 @@ tasks:
   - setup: |
       #sudo pkg install -y py37-pip
       cd zrythm
-      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ../meson/meson.py build -Dtests=true -Dmanpage=true
+      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ../meson/meson.py build -Dtests=true -Dmanpage=true -Db_lto=false
   - build: |
       cd zrythm
       ninja -C build
