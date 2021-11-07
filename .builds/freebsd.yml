@@ -62,7 +62,7 @@ tasks:
       ninja -C build
   - test: |
       cd zrythm
-      ../meson/meson.py test -C build --no-suite=skip-ci
+      ../meson/meson.py test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
   - install: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install

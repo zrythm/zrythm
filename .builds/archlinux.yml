@@ -64,7 +64,7 @@ tasks:
       ninja -C build
   - test: |
       cd zrythm
-      meson test -C build --no-suite=skip-ci
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
   - gen-coverage-report: |
       cd zrythm
       ninja -C build coverage-text
@@ -77,7 +77,7 @@ tasks:
   - test-no-jack: |
       cd zrythm
       meson build --reconfigure -Dgraphviz=enabled -Djack=disabled
-      meson test -C build --no-suite=skip-ci
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
   - run_cppcheck: |
       cd zrythm
       # pass for now
@@ -87,12 +87,12 @@ tasks:
       rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled -Doptimization=3
-      meson test -C build --no-suite=skip-ci
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
   - test-strict-flags-trial: |
       rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
-      meson test -C build --no-suite=skip-ci
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
   - test-user-manual-phone-home-valgrind: |
       rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
@@ -100,7 +100,7 @@ tasks:
       meson build --reconfigure -Duser_manual=true -Doptimization=2 -Dphone_home=enabled
       # VM runs out of RAM otherwise
       ninja -C build -j 2
-      meson test -C build --no-suite=skip-ci --wrap="valgrind --suppressions=`pwd`/tools/vg.sup  --gen-suppressions=all --error-exitcode=1 --exit-on-first-error=yes" -t 3 || cat build/meson-logs/testlog-valgrind.txt
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5 --wrap="valgrind --suppressions=`pwd`/tools/vg.sup  --gen-suppressions=all --error-exitcode=1 --exit-on-first-error=yes" -t 3 || cat build/meson-logs/testlog-valgrind.txt
   - test-optimization-s: |
       rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
@@ -108,7 +108,7 @@ tasks:
       meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled -Doptimization=s -Dguile=disabled
       # VM runs out of RAM otherwise
       ninja -C build -j 2
-      meson test -C build --no-suite=skip-ci || cat build/meson-logs/testlog.txt
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5 || cat build/meson-logs/testlog.txt
   - install-destdir: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install
