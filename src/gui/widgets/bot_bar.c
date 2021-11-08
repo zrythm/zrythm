@@ -171,7 +171,7 @@ on_bpm_right_click (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -241,7 +241,7 @@ on_transport_playhead_right_click (
     G_ACTION_GROUP (action_group));
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 void

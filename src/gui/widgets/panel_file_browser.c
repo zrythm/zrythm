@@ -116,7 +116,9 @@ create_model_for_locations (
 static void
 show_bookmarks_context_menu (
   PanelFileBrowserWidget *    self,
-  const FileBrowserLocation * loc)
+  const FileBrowserLocation * loc,
+  double                      x,
+  double                      y)
 {
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -130,7 +132,7 @@ show_bookmarks_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -181,7 +183,7 @@ on_bookmark_right_click (
   FileBrowserLocation * loc =
     g_value_get_pointer (&value);
 
-  show_bookmarks_context_menu (self, loc);
+  show_bookmarks_context_menu (self, loc, x, y);
 }
 
 void
@@ -199,7 +201,9 @@ panel_file_browser_refresh_bookmarks (
 static void
 show_files_context_menu (
   PanelFileBrowserWidget * self,
-  const SupportedFile *    file)
+  const SupportedFile *    file,
+  double                   x,
+  double                   y)
 {
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -216,7 +220,7 @@ show_files_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -267,7 +271,7 @@ on_file_right_click (
   SupportedFile * descr =
     g_value_get_pointer (&value);
 
-  show_files_context_menu (self, descr);
+  show_files_context_menu (self, descr, x, y);
 }
 
 /**

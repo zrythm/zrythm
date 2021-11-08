@@ -250,14 +250,8 @@ automation_arranger_widget_show_context_menu (
         G_MENU_MODEL (curve_algorithm_submenu));
     }
 
-  GtkPopoverMenu * popover_menu =
-    GTK_POPOVER_MENU (
-      gtk_popover_menu_new_from_model (
-        G_MENU_MODEL (menu)));
-  gtk_widget_set_parent (
-    GTK_WIDGET (popover_menu), GTK_WIDGET (self));
-  gtk_popover_present (
-    GTK_POPOVER (popover_menu));
+  z_gtk_show_context_menu_from_g_menu (
+    GTK_WIDGET (self), x, y, menu);
 }
 
 /**

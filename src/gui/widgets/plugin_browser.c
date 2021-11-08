@@ -534,7 +534,9 @@ on_use_generic_ui_toggled (
 static void
 show_plugin_context_menu (
   PluginBrowserWidget * self,
-  PluginDescriptor *    descr)
+  PluginDescriptor *    descr,
+  double                x,
+  double                y)
 {
   g_return_if_fail (self && descr);
   self->current_descriptors[0] = descr;
@@ -734,7 +736,7 @@ show_plugin_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -787,13 +789,15 @@ on_plugin_right_click (
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
 
-  show_plugin_context_menu (self, descr);
+  show_plugin_context_menu (self, descr, x, y);
 }
 
 static void
 show_collection_context_menu (
   PluginBrowserWidget * self,
-  PluginCollection *    collection)
+  PluginCollection *    collection,
+  double                x,
+  double                y)
 {
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -827,7 +831,7 @@ show_collection_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -886,12 +890,15 @@ on_collection_right_click (
           collection_idx];
     }
 
-  show_collection_context_menu (self, collection);
+  show_collection_context_menu (
+    self, collection, x, y);
 }
 
 static void
 show_category_context_menu (
-  PluginBrowserWidget * self)
+  PluginBrowserWidget * self,
+  double                x,
+  double                y)
 {
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -903,7 +910,7 @@ show_category_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -934,12 +941,14 @@ on_category_right_click (
       return;
     }
 
-  show_category_context_menu (self);
+  show_category_context_menu (self, x, y);
 }
 
 static void
 show_author_context_menu (
-  PluginBrowserWidget * self)
+  PluginBrowserWidget * self,
+  double                x,
+  double                y)
 {
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -951,7 +960,7 @@ show_author_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -982,7 +991,7 @@ on_author_right_click (
       return;
     }
 
-  show_author_context_menu (self);
+  show_author_context_menu (self, x, y);
 }
 
 /**

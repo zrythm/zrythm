@@ -88,8 +88,8 @@ bot_dock_edge_widget_setup (
       self->bot_notebook);
   int page_num =
     g_settings_get_int (S_UI, "bot-panel-tab");
-  gtk_notebook_set_current_page (
-    notebook, page_num);
+  foldable_notebook_widget_set_current_page (
+    self->bot_notebook, page_num, true);
 
   g_signal_connect (
     notebook, "switch-page",

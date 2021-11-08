@@ -79,7 +79,7 @@ play_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -104,7 +104,7 @@ stop_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -130,7 +130,7 @@ backward_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -156,7 +156,7 @@ forward_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -182,7 +182,7 @@ loop_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -208,7 +208,7 @@ rec_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void

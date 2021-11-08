@@ -85,6 +85,8 @@ typedef struct _FoldableNotebookWidget
    * release in order to hide the tab.
    */
   GtkWidget *         tab_during_press;
+
+  guint               switch_page_handler_id;
 } FoldableNotebookWidget;
 
 /**
@@ -134,6 +136,12 @@ foldable_notebook_widget_is_content_visible (
 GtkNotebook *
 foldable_notebook_widget_get_notebook (
   FoldableNotebookWidget * self);
+
+void
+foldable_notebook_widget_set_current_page (
+  FoldableNotebookWidget * self,
+  int                      page_num,
+  bool                     block_signals);
 
 void
 foldable_notebook_widget_add_page (

@@ -295,7 +295,18 @@ z_gtk_widget_remove_children_of_type (
         g_ptr_array_index (arr, i);
       if (G_TYPE_CHECK_INSTANCE_TYPE (child, type))
         {
-          gtk_widget_unparent (child);
+          if (GTK_IS_BOX (widget))
+            {
+              g_debug (
+                "removing %s (%p) from box %s (%p)",
+                gtk_widget_get_name (child),
+                child,
+                gtk_widget_get_name (widget),
+                widget);
+              gtk_box_remove (
+                GTK_BOX (widget), child);
+            }
+          /*gtk_widget_unparent (child);*/
         }
     }
   g_ptr_array_unref (arr);
@@ -1841,17 +1852,28 @@ z_gtk_dialog_run (
 void
 z_gtk_show_context_menu_from_g_menu (
   GtkWidget * widget,
+  double      x,
+  double      y,
   GMenu *     menu)
 {
   GtkPopoverMenu * popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (
         G_MENU_MODEL (menu)));
+  /*gtk_popover_present (*/
+    /*GTK_POPOVER (popover_menu));*/
   if (widget)
     gtk_widget_set_parent (
       GTK_WIDGET (popover_menu), widget);
-  gtk_popover_present (
+  gtk_popover_set_pointing_to (
+    GTK_POPOVER (popover_menu),
+    &Z_GDK_RECTANGLE_INIT_UNIT ((int) x, (int) y));
+  /*gtk_popover_set_has_arrow (*/
+    /*GTK_POPOVER (popover_menu), false);*/
+  gtk_popover_popup (
     GTK_POPOVER (popover_menu));
+
+  g_message ("------------------------------------------------- popping up");
 }
 
 /**

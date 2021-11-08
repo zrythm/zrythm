@@ -169,7 +169,9 @@ create_model ()
 
 static void
 show_context_menu (
-  PortConnectionsTreeWidget * self)
+  PortConnectionsTreeWidget * self,
+  double                      x,
+  double                      y)
 {
   GMenu * menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -181,7 +183,7 @@ show_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -234,7 +236,7 @@ on_right_click (
 
   gtk_tree_path_free (path);
 
-  show_context_menu (self);
+  show_context_menu (self, x, y);
 }
 
 static void

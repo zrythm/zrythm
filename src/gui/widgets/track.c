@@ -1644,6 +1644,7 @@ on_lane_rename (
 static void
 show_context_menu (
   TrackWidget * self,
+  double        x,
   double        y)
 {
   GMenu * menu = g_menu_new ();
@@ -1963,7 +1964,7 @@ show_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -1997,7 +1998,7 @@ on_right_click (
     }
   if (n_press == 1)
     {
-      show_context_menu (self, y);
+      show_context_menu (self, x, y);
     }
 }
 

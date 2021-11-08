@@ -107,6 +107,13 @@
   (GdkRGBA) \
   { .red = r, .green = g, .blue = b, .alpha = a  }
 
+#define Z_GDK_RECTANGLE_INIT(_x,_y,_w,_h) \
+  (GdkRectangle) \
+  { .x = _x, .y = _y, .width = _w, .height = _h  }
+
+#define Z_GDK_RECTANGLE_INIT_UNIT(_x,_y) \
+  (GdkRectangle) \
+  { .x = _x, .y = _y, .width = 1, .height = 1  }
 
 typedef enum IconType IconType;
 
@@ -659,6 +666,8 @@ z_gtk_dialog_run (
 void
 z_gtk_show_context_menu_from_g_menu (
   GtkWidget * widget,
+  double      x,
+  double      y,
   GMenu *     menu);
 
 /**

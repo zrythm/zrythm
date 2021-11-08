@@ -190,7 +190,7 @@ on_knob_right_click (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    NULL, menu);
+    NULL, x, y, menu);
 }
 
 void

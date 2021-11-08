@@ -1,6 +1,6 @@
 [wrap-file]
-directory = gtk-4.5.0
+directory = gtk-master
 
-source_url = https://download.gnome.org/sources/gtk/4.5/gtk-4.5.0.tar.xz
-source_filename = gtk-4.5.0.tar.xz
-source_hash = 78a3158094f1e35c0ae6fde895321c0eca60cf9af8578b918bb7c7e1a16c10ea
+source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/master/gtk-master.tar.gz
+source_filename = gtk-master.tar.gz
+source_hash = fd8edd6ee6c6713be9a1ecc9691525ffddb86af6d93dfc735bc11248974d63e5

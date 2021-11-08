@@ -283,7 +283,7 @@ on_btn_right_click (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x_dbl, y_dbl, menu);
 }
 
 static void

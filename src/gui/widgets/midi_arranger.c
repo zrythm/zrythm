@@ -550,7 +550,7 @@ midi_arranger_show_context_menu (
     G_MENU_MODEL (selection_submenu));
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 /**

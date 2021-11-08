@@ -496,14 +496,16 @@ folder_channel_widget_refresh (
 
 static void
 show_context_menu (
-  FolderChannelWidget * self)
+  FolderChannelWidget * self,
+  double                x,
+  double                y)
 {
   GMenu * menu =
     channel_widget_generate_context_menu_for_track (
       self->track);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -535,7 +537,7 @@ on_right_click (
     }
   if (n_press == 1)
     {
-      show_context_menu (self);
+      show_context_menu (self, x, y);
     }
 }
 

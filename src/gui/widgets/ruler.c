@@ -1630,7 +1630,7 @@ on_right_click_pressed (
       /* TODO fire event on change */
 
       z_gtk_show_context_menu_from_g_menu (
-        GTK_WIDGET (self), menu);
+        GTK_WIDGET (self), x, y, menu);
     }
 
   return FALSE;

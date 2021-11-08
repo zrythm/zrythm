@@ -287,7 +287,8 @@ entry selection
 menu,
 popover
 {
-  background-color: @bg_lighter_variant2;
+  /*background-color: @bg_lighter_variant2;*/
+  background-color: transparent;
 }
 
 button:not(.record-button):not(.solo-button).toggle:checked,

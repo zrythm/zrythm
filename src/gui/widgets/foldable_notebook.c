@@ -44,6 +44,7 @@ on_switch_page (
       widget =
         foldable_notebook_widget_get_widget_at_page (
           self, i);
+      g_return_if_fail (widget);
       gtk_widget_set_visible (
         widget, (guint) i == page_num ? 1 : 0);
     }
@@ -69,6 +70,7 @@ foldable_notebook_widget_set_visibility (
       GtkWidget * widget =
         foldable_notebook_widget_get_widget_at_page (
           self, i);
+      g_return_if_fail (GTK_IS_WIDGET (widget));
       gtk_widget_set_visible (
         widget, new_visibility);
     }
@@ -165,13 +167,19 @@ foldable_notebook_widget_get_widget_at_page (
   FoldableNotebookWidget * self,
   int                      page)
 {
+  GtkNotebook * notebook = self->notebook;
+  int num_pages =
+    gtk_notebook_get_n_pages (notebook);
+  g_return_val_if_fail (page < num_pages, NULL);
   GtkWidget * container =
     GTK_WIDGET (
       gtk_notebook_get_nth_page (
-        GTK_NOTEBOOK (self->notebook), page));
+        GTK_NOTEBOOK (notebook), page));
+  g_return_val_if_fail (container, NULL);
   GtkWidget * widget =
     gtk_widget_get_first_child (
       GTK_WIDGET (container));
+  g_return_val_if_fail (widget, NULL);
   return widget;
 }
 
@@ -309,9 +317,30 @@ foldable_notebook_widget_setup (
     GTK_WIDGET (self->notebook),
     GTK_EVENT_CONTROLLER (self->mp));
 
-  g_signal_connect (
-    G_OBJECT (self->notebook), "switch-page",
-    G_CALLBACK (on_switch_page), self);
+  g_return_if_fail (
+    self->switch_page_handler_id == 0);
+  self->switch_page_handler_id =
+    g_signal_connect (
+      G_OBJECT (self->notebook), "switch-page",
+      G_CALLBACK (on_switch_page), self);
+}
+
+void
+foldable_notebook_widget_set_current_page (
+  FoldableNotebookWidget * self,
+  int                      page_num,
+  bool                     block_signals)
+{
+  if (block_signals && self->switch_page_handler_id)
+    g_signal_handler_block (
+      self->notebook, self->switch_page_handler_id);
+
+  gtk_notebook_set_current_page (
+    self->notebook, page_num);
+
+  if (block_signals && self->switch_page_handler_id)
+    g_signal_handler_unblock (
+      self->notebook, self->switch_page_handler_id);
 }
 
 static void

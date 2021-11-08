@@ -665,7 +665,9 @@ tick_cb (
 
 static void
 show_context_menu (
-  ChannelSlotWidget * self)
+  ChannelSlotWidget * self,
+  double              x,
+  double              y)
 {
   MW_MIXER->paste_slot = self;
 
@@ -776,7 +778,7 @@ show_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), menu);
+    GTK_WIDGET (self), x, y, menu);
 }
 
 static void
@@ -796,7 +798,7 @@ on_right_click (
 
   select_plugin (self, state & GDK_CONTROL_MASK);
 
-  show_context_menu (self);
+  show_context_menu (self, x, y);
 }
 
 static GdkDragAction
@@ -893,8 +895,6 @@ finalize (
 {
   if (self->pl_name)
     g_free (self->pl_name);
-  if (self->drag)
-    g_object_unref (self->drag);
   if (self->empty_slot_layout)
     g_object_unref (self->empty_slot_layout);
   if (self->pl_name_layout)
