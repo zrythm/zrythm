@@ -186,6 +186,11 @@ timeline_panel_widget_init (
   gtk_size_group_add_widget (
     self->timeline_ruler_h_size_group,
     GTK_WIDGET (self->pinned_timeline));
+
+  gtk_paned_set_shrink_start_child (
+    self->tracklist_timeline, false);
+  gtk_paned_set_shrink_end_child (
+    self->tracklist_timeline, false);
 }
 
 

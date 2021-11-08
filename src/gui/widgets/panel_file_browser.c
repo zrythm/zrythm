@@ -902,6 +902,9 @@ panel_file_browser_widget_init (
     GTK_BOX (self),
     GTK_WIDGET (self->popover_menu));
 
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->paned), true);
+
   self->selected_files = g_ptr_array_new ();
 
   gtk_widget_add_css_class (

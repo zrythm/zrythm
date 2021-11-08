@@ -148,6 +148,29 @@ center_dock_widget_init (
   /*g_object_set_property (*/
     /*G_OBJECT (self), "top-visible", &a);*/
 
+  gtk_paned_set_shrink_start_child (
+    self->left_rest_paned, false);
+  gtk_paned_set_shrink_end_child (
+    self->left_rest_paned, false);
+
+  gtk_paned_set_shrink_start_child (
+    self->center_right_paned, false);
+  gtk_paned_set_shrink_end_child (
+    self->center_right_paned, false);
+  gtk_paned_set_resize_start_child (
+    self->center_right_paned, true);
+  gtk_paned_set_resize_end_child (
+    self->center_right_paned, false);
+
+  gtk_paned_set_shrink_start_child (
+    self->center_paned, true);
+  gtk_paned_set_shrink_end_child (
+    self->center_paned, false);
+  gtk_paned_set_resize_start_child (
+    self->center_paned, true);
+  gtk_paned_set_resize_end_child (
+    self->center_paned, true);
+
   /* set events */
   g_signal_connect (
     G_OBJECT (self), "key_release_event",

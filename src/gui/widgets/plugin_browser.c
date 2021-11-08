@@ -2224,6 +2224,9 @@ plugin_browser_widget_init (
   g_list_free (children);
 #endif
 
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->paned), true);
+
   self->current_collections =
     calloc (40000, sizeof (PluginCollection *));
   self->current_descriptors =

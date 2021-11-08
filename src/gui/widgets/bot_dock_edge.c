@@ -188,17 +188,25 @@ generate_bot_notebook (
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   self->mixer = mixer_widget_new ();
+  gtk_box_append (
+    self->mixer_box, GTK_WIDGET (self->mixer));
 
   self->modulator_view_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   self->modulator_view =
     modulator_view_widget_new ();
+  gtk_box_append (
+    self->modulator_view_box,
+    GTK_WIDGET (self->modulator_view));
 
   self->chord_pad_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   self->chord_pad = chord_pad_widget_new ();
+  gtk_box_append (
+    self->chord_pad_box,
+    GTK_WIDGET (self->chord_pad));
 
   /* add tabs */
   foldable_notebook_widget_add_page (

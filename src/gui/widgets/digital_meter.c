@@ -1368,8 +1368,6 @@ finalize (
 {
   if (self->caption)
     g_free (self->caption);
-  if (self->drag)
-    g_object_unref (self->drag);
   if (self->caption_layout)
     g_object_unref (self->caption_layout);
   if (self->seg7_layout)

@@ -1,6 +1,6 @@
 [wrap-file]
-directory = gtk-master
+directory = gtk-ebassi-issue-4421
 
-source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/master/gtk-master.tar.gz
-source_filename = gtk-master.tar.gz
-source_hash = fd8edd6ee6c6713be9a1ecc9691525ffddb86af6d93dfc735bc11248974d63e5
+source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/ebassi/issue-4421/gtk-ebassi-issue-4421.tar.gz
+source_filename = gtk-ebassi-issue-4421.tar.gz
+source_hash = 8fbbdc95af13fa234ed2b266c24eacc96de79b9d8530b9b114b902eda8e438c3

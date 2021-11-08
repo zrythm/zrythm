@@ -44,7 +44,8 @@ on_switch_page (
       widget =
         foldable_notebook_widget_get_widget_at_page (
           self, i);
-      g_return_if_fail (widget);
+      if (!widget)
+        continue;
       gtk_widget_set_visible (
         widget, (guint) i == page_num ? 1 : 0);
     }

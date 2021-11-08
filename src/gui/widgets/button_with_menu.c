@@ -36,8 +36,13 @@ button_with_menu_widget_set_menu_model (
   ButtonWithMenuWidget * self,
   GMenuModel *           gmenu_model)
 {
-  gtk_menu_button_set_menu_model (
-    self->menu_btn, gmenu_model);
+  GMenuModel * existing_model =
+    gtk_menu_button_get_menu_model (self->menu_btn);
+  if (existing_model != gmenu_model)
+    {
+      gtk_menu_button_set_menu_model (
+        self->menu_btn, gmenu_model);
+    }
 }
 
 /**

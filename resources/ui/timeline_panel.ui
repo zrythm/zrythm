@@ -11,8 +11,6 @@
     </child>
     <child>
       <object class="GtkPaned" id="tracklist_timeline">
-        <property name="shrink-end-child">0</property>
-        <property name="shrink-start-child">0</property>
         <property name="focusable">1</property>
         <child>
           <object class="GtkBox" id="tracklist_top">
