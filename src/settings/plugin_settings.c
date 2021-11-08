@@ -134,6 +134,9 @@ plugin_setting_validate (
 
   const PluginDescriptor * descr = self->descr;
 
+  /* force carla */
+  self->open_with_carla = true;
+
 #ifndef HAVE_CARLA
   if (self->open_with_carla)
     {

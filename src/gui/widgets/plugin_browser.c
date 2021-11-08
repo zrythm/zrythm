@@ -328,7 +328,8 @@ on_row_activated (
 {
   PluginBrowserWidget * self =
     Z_PLUGIN_BROWSER_WIDGET (user_data);
-  GtkTreeModel * model = GTK_TREE_MODEL (user_data);
+  GtkTreeModel * model =
+    gtk_tree_view_get_model (tree_view);
   GtkTreeIter iter;
   gtk_tree_model_get_iter (model, &iter, tp);
   GValue value = G_VALUE_INIT;
@@ -1966,7 +1967,7 @@ plugin_browser_widget_new ()
     G_OBJECT (self->plugin_tree_view),
     "row-activated",
     G_CALLBACK (on_row_activated),
-    self->plugin_tree_model);
+    self);
 
   /* connect right click handler */
   mp =
