@@ -691,10 +691,11 @@ make_control (
 
 static void
 add_subgroup (
-  PreferencesWidget * self,
-  int                 group_idx,
-  int                 subgroup_idx,
-  GtkSizeGroup *      size_group)
+  PreferencesWidget *  self,
+  AdwPreferencesPage * page,
+  int                  group_idx,
+  int                  subgroup_idx,
+  GtkSizeGroup *       size_group)
 {
   SubgroupInfo * info =
     &self->subgroup_infos[group_idx][subgroup_idx];
@@ -706,15 +707,12 @@ add_subgroup (
     info->name, localized_subgroup_name);
 
   /* create a section for the subgroup */
-  GtkWidget * page_box =
-    gtk_notebook_get_nth_page (
-      self->group_notebook, info->group_idx);
-  GtkWidget * label =
-    plugin_gtk_new_label (
-      localized_subgroup_name, true, false,
-      0.f, 0.5f);
-  gtk_widget_set_visible (label, true);
-  gtk_widget_set_parent (label, page_box);
+  AdwPreferencesGroup * subgroup =
+    ADW_PREFERENCES_GROUP (
+      adw_preferences_group_new ());
+  adw_preferences_group_set_title (
+    subgroup, localized_subgroup_name);
+  adw_preferences_page_add (page, subgroup);
 
   char ** keys =
     g_settings_schema_list_keys (info->schema);
@@ -742,20 +740,13 @@ add_subgroup (
 
       g_message ("adding control for %s", key);
 
-      /* create a box to add controls */
-      GtkWidget * box =
-        gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-      gtk_widget_set_visible (box, true);
-      gtk_widget_set_parent (box, page_box);
-
-      /* add label */
-      GtkWidget * lbl =
-        plugin_gtk_new_label (
-          summary, false, false, 1.f, 0.5f);
-      gtk_widget_set_visible (lbl, true);
-      gtk_box_append (GTK_BOX (box), lbl);
-      gtk_size_group_add_widget (
-        size_group, lbl);
+      /* create a row to add controls */
+      AdwPreferencesRow * row =
+        ADW_PREFERENCES_ROW (
+          adw_action_row_new ());
+      adw_preferences_row_set_title (row, summary);
+      adw_preferences_group_add (
+        subgroup, GTK_WIDGET (row));
 
       /* add control */
       GtkWidget * widget =
@@ -763,7 +754,6 @@ add_subgroup (
           self, group_idx, subgroup_idx, key);
       if (widget)
         {
-          gtk_widget_set_visible (widget, true);
           if (GTK_IS_SWITCH (widget))
             {
               gtk_widget_set_halign (
@@ -775,7 +765,8 @@ add_subgroup (
             }
           gtk_widget_set_tooltip_text (
             widget, description);
-          gtk_box_append (GTK_BOX (box), widget);
+          adw_action_row_add_suffix (
+            ADW_ACTION_ROW (row), widget);
           num_controls++;
         }
       else
@@ -787,7 +778,7 @@ add_subgroup (
   /* Remove label if no controls added */
   if (num_controls == 0)
     {
-      g_object_unref (label);
+      adw_preferences_page_remove (page, subgroup);
     }
 }
 
@@ -888,7 +879,8 @@ add_group (
   /* add each subgroup */
   for (int j = 0; j <= max_subgroup_idx; j++)
     {
-      add_subgroup (self, group_idx, j, size_group);
+      add_subgroup (
+        self, page, group_idx, j, size_group);
     }
 }
 

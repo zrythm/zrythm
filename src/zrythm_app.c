@@ -118,6 +118,8 @@
 #endif
 #include <curl/curl.h>
 
+#include <libadwaita-1/adwaita.h>
+
 /** This is declared extern in zrythm_app.h. */
 ZrythmApp * zrythm_app = NULL;
 
@@ -1315,6 +1317,10 @@ zrythm_app_startup (
   g_message (
     "set default css provider from path: %s",
     css_theme_path);
+
+  /* init libadwaita */
+  /* note: breaks css*/
+  /*adw_init( );*/
 
   /* set default window icon */
   gtk_window_set_default_icon_name ("zrythm");
