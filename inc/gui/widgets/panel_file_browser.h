@@ -76,6 +76,9 @@ typedef struct _PanelFileBrowserWidget
   const SupportedFile * cur_file;
 
   bool                 first_draw;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } PanelFileBrowserWidget;
 
 void

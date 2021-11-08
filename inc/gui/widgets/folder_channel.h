@@ -86,6 +86,9 @@ typedef struct _FolderChannelWidget
   gulong              fold_toggled_handler_id;
 
   bool                   setup;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } FolderChannelWidget;
 
 /**

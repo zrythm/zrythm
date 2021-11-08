@@ -67,6 +67,9 @@ typedef struct _FaderButtonsWidget
   /** Owner track. */
   Track *        track;
 
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
+
 } FaderButtonsWidget;
 
 void

@@ -1,8 +1,5 @@
 /*
- * gui/widgets/transport_controls.h - transport controls
- *   (play/pause/stop...)
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -67,6 +64,9 @@ typedef struct _TransportControlsWidget
   GtkToggleButton *  return_to_cue_toggle;
 
   gulong             rec_toggled_handler_id;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } TransportControlsWidget;
 
 void

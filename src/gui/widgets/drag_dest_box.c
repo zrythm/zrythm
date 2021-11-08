@@ -511,7 +511,7 @@ show_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -623,8 +623,16 @@ drag_dest_box_widget_new (
  * GTK boilerplate.
  */
 static void
-drag_dest_box_widget_init (DragDestBoxWidget * self)
+drag_dest_box_widget_init (
+  DragDestBoxWidget * self)
 {
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
+
   self->click =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (

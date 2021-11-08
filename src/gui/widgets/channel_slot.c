@@ -778,7 +778,7 @@ show_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -1053,6 +1053,10 @@ channel_slot_widget_init (
   self->pl_name = NULL;
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), _("empty slot"));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
 
   self->click =
     GTK_GESTURE_CLICK (

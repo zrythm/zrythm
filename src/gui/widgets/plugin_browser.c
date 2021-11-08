@@ -736,7 +736,7 @@ show_plugin_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -831,7 +831,7 @@ show_collection_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -910,7 +910,7 @@ show_category_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -960,7 +960,7 @@ show_author_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -2123,6 +2123,13 @@ plugin_browser_widget_init (
   PluginBrowserWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   self->stack_switcher =
     GTK_STACK_SWITCHER (gtk_stack_switcher_new ());

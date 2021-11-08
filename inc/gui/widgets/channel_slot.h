@@ -84,6 +84,9 @@ typedef struct _ChannelSlotWidget
   /** Whether to open the plugin inspector on click
    * or not. */
   bool              open_plugin_inspector_on_click;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } ChannelSlotWidget;
 
 /**

@@ -26,13 +26,13 @@
 #ifndef __GUI_WIDGETS_PREFERENCES_H__
 #define __GUI_WIDGETS_PREFERENCES_H__
 
-#include <gtk/gtk.h>
+#include <libadwaita-1/adwaita.h>
 
 #define PREFERENCES_WIDGET_TYPE \
   (preferences_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PreferencesWidget, preferences_widget,
-  Z, PREFERENCES_WIDGET, GtkDialog)
+  Z, PREFERENCES_WIDGET, AdwPreferencesWindow)
 
 typedef struct Preferences Preferences;
 typedef struct _MidiControllerMbWidget
@@ -64,7 +64,7 @@ typedef struct SubgroupInfo
  */
 typedef struct _PreferencesWidget
 {
-  GtkDialog      parent_instance;
+  AdwPreferencesWindow parent_instance;
   GtkNotebook *  group_notebook;
 
   SubgroupInfo   subgroup_infos[12][40];

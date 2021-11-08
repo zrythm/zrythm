@@ -229,6 +229,9 @@ typedef struct _TrackWidget
   /** Cairo caches. */
   cairo_t *         cached_cr;
   cairo_surface_t * cached_surface;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } TrackWidget;
 
 const char *

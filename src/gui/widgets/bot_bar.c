@@ -171,7 +171,7 @@ on_bpm_right_click (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -241,7 +241,7 @@ on_transport_playhead_right_click (
     G_ACTION_GROUP (action_group));
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 void
@@ -674,6 +674,13 @@ bot_bar_widget_init (BotBarWidget * self)
   g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);

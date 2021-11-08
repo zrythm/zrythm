@@ -60,6 +60,9 @@ typedef struct _PortConnectionsTreeWidget
   /** Temporary storage. */
   Port *               src_port;
   Port *               dest_port;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } PortConnectionsTreeWidget;
 
 /**

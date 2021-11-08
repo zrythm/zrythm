@@ -182,6 +182,9 @@ typedef struct _PluginBrowserWidget
 
   /** Symbol map for string interning. */
   Symap *              symap;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } PluginBrowserWidget;
 
 /**

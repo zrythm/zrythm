@@ -173,7 +173,7 @@ show_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -612,6 +612,10 @@ inspector_port_widget_init (
   gtk_widget_set_parent (
     GTK_WIDGET (self->overlay),
     GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);

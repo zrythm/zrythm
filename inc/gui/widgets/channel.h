@@ -143,6 +143,9 @@ typedef struct _ChannelWidget
   GtkGestureDrag       * drag;
 
   bool                   setup;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } ChannelWidget;
 
 /**

@@ -446,6 +446,8 @@ typedef struct _ArrangerWidget
    */
   //int            queued_playhead_px;
 
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } ArrangerWidget;
 
 const char *

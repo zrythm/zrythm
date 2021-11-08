@@ -104,6 +104,9 @@ typedef struct _InspectorPortWidget
   /** Cache of port's last drawn number of
    * connetions (srcs or dests). */
   int               last_num_connections;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } InspectorPortWidget;
 
 void

@@ -67,6 +67,9 @@ typedef struct _BalanceControlWidget
   float              balance_at_start;
 
   Port *             port;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } BalanceControlWidget;
 
 /**

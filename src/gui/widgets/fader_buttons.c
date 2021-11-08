@@ -283,7 +283,7 @@ on_btn_right_click (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x_dbl, y_dbl, menu);
+    self->popover_menu, x_dbl, y_dbl, menu);
 }
 
 static void
@@ -304,6 +304,13 @@ fader_buttons_widget_init (
   FaderButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   /* add css classes */
   GtkStyleContext * context =

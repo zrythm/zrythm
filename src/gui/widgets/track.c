@@ -1964,7 +1964,7 @@ show_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -3112,6 +3112,13 @@ track_widget_init (TrackWidget * self)
   g_type_ensure (METER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   gtk_widget_set_vexpand_set (
     (GtkWidget *) self, 1);

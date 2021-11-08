@@ -905,6 +905,14 @@ gtk_dep = dependency (
     'build-tests=false',
     'media-gstreamer=disabled',],
   static: all_static)
+
+libadwaita_dep = dependency (
+  'libadwaita-1',
+  fallback: ['libadwaita', 'libadwaita_dep'],
+  default_options: [
+    'vapi=false', 'tests=false',
+    'examples=false',])
+
 min_version = '>=1.0.25'
 if get_option ('opus')
   cdata.set('HAVE_OPUS', 1)
@@ -1197,6 +1205,7 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
+  libadwaita_dep,
   gtk_dep,
   sndfile_dep,
   samplerate_dep,

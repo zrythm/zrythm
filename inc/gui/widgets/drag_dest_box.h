@@ -66,6 +66,9 @@ typedef struct _DragDestBoxWidget
   GtkGestureClick *  click;
   GtkGestureClick *  right_click;
   DragDestBoxType    type;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } DragDestBoxWidget;
 
 /**

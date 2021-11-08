@@ -663,12 +663,18 @@ z_gtk_dialog_run (
   GtkDialog * dialog,
   bool        destroy_on_close);
 
+/**
+ * The popover must already exist as a children
+ * of its intended widget (or a common parent).
+ *
+ * This function will set the new menu and show it.
+ */
 void
 z_gtk_show_context_menu_from_g_menu (
-  GtkWidget * widget,
-  double      x,
-  double      y,
-  GMenu *     menu);
+  GtkPopoverMenu * popover_menu,
+  double           x,
+  double           y,
+  GMenu *          menu);
 
 /**
  * Returns the bitmask of the selected action

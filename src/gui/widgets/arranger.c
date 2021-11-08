@@ -6897,6 +6897,27 @@ on_arranger_map_event (
   return FALSE;
 }
 
+static void
+on_size_allocate (
+  GtkWidget * widget,
+  int         width,
+  int         height,
+  int         baseline)
+{
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (widget);
+
+  /* no layout manager, so call this to allocate
+   * a size for the menu */
+  gtk_popover_present (
+    GTK_POPOVER (self->popover_menu));
+
+  GTK_WIDGET_CLASS (
+    arranger_widget_parent_class)->
+      size_allocate (
+        widget, width, height, baseline);
+}
+
 void
 arranger_widget_setup (
   ArrangerWidget *   self,
@@ -7060,6 +7081,7 @@ arranger_widget_class_init (
   GtkWidgetClass * wklass =
     GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = arranger_snapshot;
+  wklass->size_allocate = on_size_allocate;
 }
 
 static void
@@ -7067,6 +7089,13 @@ arranger_widget_init (
   ArrangerWidget *self)
 {
   self->first_draw = true;
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   /* make widget able to notify */
   /*gtk_widget_add_events (*/

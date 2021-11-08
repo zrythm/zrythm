@@ -63,7 +63,7 @@ play_rb_released (
   int                       n_press,
   double                    x,
   double                    y,
-  GtkButton *               self)
+  TransportControlsWidget * self)
 {
   if (n_press != 1)
     return;
@@ -79,7 +79,7 @@ play_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -88,7 +88,7 @@ stop_rb_released (
   int                       n_press,
   double                    x,
   double                    y,
-  GtkButton *               self)
+  TransportControlsWidget * self)
 {
   if (n_press != 1)
     return;
@@ -104,7 +104,7 @@ stop_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -113,7 +113,7 @@ backward_rb_released (
   int                       n_press,
   double                    x,
   double                    y,
-  GtkButton *               self)
+  TransportControlsWidget * self)
 {
   if (n_press != 1)
     return;
@@ -130,7 +130,7 @@ backward_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -139,7 +139,7 @@ forward_rb_released (
   int                       n_press,
   double                    x,
   double                    y,
-  GtkButton *               self)
+  TransportControlsWidget * self)
 {
   if (n_press != 1)
     return;
@@ -156,7 +156,7 @@ forward_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -165,7 +165,7 @@ loop_rb_released (
   int                       n_press,
   double                    x,
   double                    y,
-  GtkButton *               self)
+  TransportControlsWidget * self)
 {
   if (n_press != 1)
     return;
@@ -182,7 +182,7 @@ loop_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -191,7 +191,7 @@ rec_rb_released (
   int                       n_press,
   double                    x,
   double                    y,
-  GtkButton *               self)
+  TransportControlsWidget * self)
 {
   if (n_press != 1)
     return;
@@ -208,7 +208,7 @@ rec_rb_released (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -523,6 +523,13 @@ transport_controls_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
+
   /* setup record button */
   setup_record_btn (self);
 
@@ -564,7 +571,7 @@ transport_controls_widget_init (
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     mp, "released",
-    G_CALLBACK (play_rb_released), self->play);
+    G_CALLBACK (play_rb_released), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->play),
     GTK_EVENT_CONTROLLER (mp));
@@ -576,7 +583,7 @@ transport_controls_widget_init (
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     mp, "released",
-    G_CALLBACK (stop_rb_released), self->stop);
+    G_CALLBACK (stop_rb_released), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->stop),
     GTK_EVENT_CONTROLLER (mp));
@@ -588,7 +595,7 @@ transport_controls_widget_init (
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     mp, "released",
-    G_CALLBACK (backward_rb_released), self->backward);
+    G_CALLBACK (backward_rb_released), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->backward),
     GTK_EVENT_CONTROLLER (mp));
@@ -600,7 +607,7 @@ transport_controls_widget_init (
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     mp, "released",
-    G_CALLBACK (forward_rb_released), self->forward);
+    G_CALLBACK (forward_rb_released), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->forward),
     GTK_EVENT_CONTROLLER (mp));
@@ -612,7 +619,7 @@ transport_controls_widget_init (
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     mp, "released",
-    G_CALLBACK (loop_rb_released), self->loop);
+    G_CALLBACK (loop_rb_released), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->loop),
     GTK_EVENT_CONTROLLER (mp));
@@ -625,7 +632,7 @@ transport_controls_widget_init (
   g_signal_connect (
     mp, "released",
     G_CALLBACK (rec_rb_released),
-    self->trans_record_btn);
+    self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->trans_record_btn),
     GTK_EVENT_CONTROLLER (mp));

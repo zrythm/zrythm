@@ -1630,7 +1630,7 @@ on_right_click_pressed (
       /* TODO fire event on change */
 
       z_gtk_show_context_menu_from_g_menu (
-        GTK_WIDGET (self), x, y, menu);
+        self->popover_menu, x, y, menu);
     }
 
   return FALSE;
@@ -2126,8 +2126,36 @@ ruler_widget_set_zoom_level (
 }
 
 static void
+on_size_allocate (
+  GtkWidget * widget,
+  int         width,
+  int         height,
+  int         baseline)
+{
+  RulerWidget * self =
+    Z_RULER_WIDGET (widget);
+
+  /* no layout manager, so call this to allocate
+   * a size for the menu */
+  gtk_popover_present (
+    GTK_POPOVER (self->popover_menu));
+
+  GTK_WIDGET_CLASS (
+    ruler_widget_parent_class)->
+      size_allocate (
+        widget, width, height, baseline);
+}
+
+static void
 ruler_widget_init (RulerWidget * self)
 {
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
+
   self->drag =
     GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
@@ -2206,4 +2234,5 @@ ruler_widget_class_init (RulerWidgetClass * _klass)
   klass->snapshot = ruler_snapshot;
   gtk_widget_class_set_css_name (
     klass, "ruler");
+  klass->size_allocate = on_size_allocate;
 }

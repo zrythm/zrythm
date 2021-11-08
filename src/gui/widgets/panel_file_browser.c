@@ -132,7 +132,7 @@ show_bookmarks_context_menu (
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -220,7 +220,7 @@ show_files_context_menu (
     }
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -894,6 +894,13 @@ panel_file_browser_widget_init (
     FILE_BROWSER_FILTERS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   self->selected_files = g_ptr_array_new ();
 

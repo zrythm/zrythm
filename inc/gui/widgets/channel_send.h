@@ -71,6 +71,9 @@ typedef struct _ChannelSendWidget
   PangoLayout *       empty_slot_layout;
   /** Layout cache for name. */
   PangoLayout *       name_layout;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } ChannelSendWidget;
 
 /**

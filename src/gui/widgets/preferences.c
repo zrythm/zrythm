@@ -46,7 +46,7 @@
 G_DEFINE_TYPE (
   PreferencesWidget,
   preferences_widget,
-  GTK_TYPE_DIALOG)
+  ADW_TYPE_PREFERENCES_WINDOW)
 
 typedef struct CallbackData
 {
@@ -872,14 +872,13 @@ add_group (
     group_name, localized_group_name);
 
   /* create a page for the group */
-  GtkWidget * box =
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_widget_set_visible (box, true);
-  z_gtk_widget_set_margin (box, 4);
-  gtk_notebook_append_page (
-    self->group_notebook, box,
-    plugin_gtk_new_label (
-      localized_group_name, true, false, 0.f, 0.5f));
+  AdwPreferencesPage * page =
+    ADW_PREFERENCES_PAGE (
+      adw_preferences_page_new ());
+  adw_preferences_page_set_title (
+    page, localized_group_name);
+  adw_preferences_window_add (
+    ADW_PREFERENCES_WINDOW (self), page);
 
   /* create a sizegroup for the labels */
   GtkSizeGroup * size_group =
@@ -951,6 +950,7 @@ static void
 preferences_widget_init (
   PreferencesWidget * self)
 {
+#if 0
   self->group_notebook =
     GTK_NOTEBOOK (gtk_notebook_new ());
   gtk_widget_set_visible (
@@ -960,4 +960,5 @@ preferences_widget_init (
       gtk_dialog_get_content_area (
         GTK_DIALOG (self))),
     GTK_WIDGET (self->group_notebook));
+#endif
 }

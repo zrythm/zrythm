@@ -796,7 +796,7 @@ show_context_menu (
       self->channel->track);
 
   z_gtk_show_context_menu_from_g_menu (
-    GTK_WIDGET (self), x, y, menu);
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -1099,6 +1099,10 @@ channel_widget_init (ChannelWidget * self)
     CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (
+      gtk_popover_menu_new_from_model (NULL));
 
   self->last_midi_trigger_time = 0;
 
