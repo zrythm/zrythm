@@ -176,8 +176,14 @@ on_dnd_drop (
     z_gtk_drop_target_get_selected_action (
       drop_target);
 
+  const char * action_str = "???";
+  if (action == GDK_ACTION_COPY)
+    action_str = "COPY";
+  else if (action == GDK_ACTION_MOVE)
+    action_str = "MOVE";
   g_debug (
-    "channel widget: dnd drop (action %d)", action);
+    "channel widget: dnd drop (action %s)",
+    action_str);
 
   int w =
     gtk_widget_get_allocated_width (widget);
@@ -275,36 +281,12 @@ on_dnd_drag_motion (
   gdouble         y,
   gpointer        user_data)
 {
-  g_message ("channel dnd drop motion");
-
   ChannelWidget * self =
     Z_CHANNEL_WIDGET (user_data);
 
   do_highlight (self, (int) x, (int) y);
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (drop_target));
-
-  GdkDrop * drop =
-    gtk_drop_target_get_current_drop (
-      drop_target);
-  GdkDrag * drag =
-    gdk_drop_get_drag (drop);
-  if (state & GDK_CONTROL_MASK)
-    {
-      gdk_drop_status (
-        drop, GDK_ACTION_MOVE | GDK_ACTION_COPY,
-        GDK_ACTION_COPY);
-      return GDK_ACTION_COPY;
-    }
-  else
-    {
-      gdk_drop_status (
-        drop, GDK_ACTION_MOVE | GDK_ACTION_COPY,
-        GDK_ACTION_MOVE);
-      return GDK_ACTION_MOVE;
-    }
+  return GDK_ACTION_MOVE;
 }
 
 static void
@@ -936,6 +918,8 @@ setup_dnd (
   /* set as drag source for track */
   GtkDragSource * drag_source =
     gtk_drag_source_new ();
+  gtk_drag_source_set_actions (
+    drag_source, GDK_ACTION_COPY | GDK_ACTION_MOVE);
   g_signal_connect (
     drag_source, "prepare",
     G_CALLBACK (on_dnd_drag_prepare), self);
