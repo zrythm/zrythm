@@ -27,6 +27,7 @@
 #include "audio/meter.h"
 #include "audio/port_connections_manager.h"
 #include "audio/track.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -69,21 +70,25 @@ on_dnd_drop (
   gdouble               y,
   FolderChannelWidget * self)
 {
-  if (!G_VALUE_HOLDS_STRING (value))
+  if (!G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       g_message ("invalid DND type");
       return false;
     }
 
-  const char * str = g_value_get_string (value);
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    g_value_get_object (value);
   Track * track = NULL;
-  if (g_str_has_prefix (str, TRACK_DND_PREFIX))
+  if (wrapped_obj->type ==
+        WRAPPED_OBJECT_TYPE_TRACK)
     {
-      sscanf (str, TRACK_DND_PREFIX "%p", &track);
+      track = (Track *) wrapped_obj->obj;
     }
   if (!track)
     {
-      g_message ("not a track: %s", str);
+      g_message ("dropped object not a track");
       return false;
     }
 
@@ -167,13 +172,13 @@ on_dnd_drag_prepare (
   FolderChannelWidget * self)
 {
   Track * track = self->track;
-  char track_str[600];
-  sprintf (
-    track_str, TRACK_DND_PREFIX "%p", track);
-
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    wrapped_object_with_change_signal_new (
+      track, WRAPPED_OBJECT_TYPE_TRACK);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
-      G_TYPE_STRING, track_str),
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+      wrapped_obj),
   };
 
   return
@@ -584,8 +589,10 @@ setup_dnd (
    * left or right) */
   GtkDropTarget * drop_target =
     gtk_drop_target_new (
-      G_TYPE_STRING,
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
       GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_drop_target_set_preload (
+    drop_target, true);
   g_signal_connect (
     GTK_WIDGET (self), "drop",
     G_CALLBACK (on_dnd_drop), self);

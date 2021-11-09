@@ -366,8 +366,9 @@ port_connections_tree_widget_init (
   self->scroll =
     GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->scroll));
+    GTK_BOX (self), GTK_WIDGET (self->scroll));
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->scroll), true);
 
   self->tree =
     GTK_TREE_VIEW (gtk_tree_view_new ());

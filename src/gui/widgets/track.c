@@ -33,6 +33,7 @@
 #include "gui/backend/tracklist_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automatable_selector_popover.h"
 #include "gui/widgets/automation_mode.h"
@@ -2435,13 +2436,13 @@ on_drag_update (
   else
     {
       /* start dnd */
-      char track_str[600];
-      sprintf (
-        track_str, TRACK_DND_PREFIX "%p",
-        self->track);
+      WrappedObjectWithChangeSignal * wrapped_track =
+        wrapped_object_with_change_signal_new (
+          self->track, WRAPPED_OBJECT_TYPE_TRACK);
       GdkContentProvider * content_providers[] = {
         gdk_content_provider_new_typed (
-          G_TYPE_STRING, track_str),
+          WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+          wrapped_track),
       };
       GdkContentProvider * provider =
         gdk_content_provider_new_union (

@@ -64,7 +64,6 @@ refresh_editor_ruler_and_arranger ()
 {
   if (!ui_is_widget_revealed (EDITOR_RULER))
     {
-      g_usleep (1000);
       return TRUE;
     }
 

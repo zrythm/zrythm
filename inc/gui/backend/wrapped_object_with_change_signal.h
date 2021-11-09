@@ -54,7 +54,7 @@ typedef enum WrappedObjectType
 
 typedef struct _WrappedObjectWithChangeSignal
 {
-  GObject *         parent_instance;
+  GObject           parent_instance;
 
   WrappedObjectType type;
   void *            obj;

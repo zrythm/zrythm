@@ -63,6 +63,9 @@ wrapped_object_with_change_signal_new (
   self->type = type;
   self->obj = obj;
 
+  if (G_IS_INITIALLY_UNOWNED (self))
+    g_object_ref_sink (G_OBJECT (self));
+
   return self;
 }
 
@@ -73,18 +76,18 @@ wrapped_object_with_change_signal_class_init (
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
 
   obj_signals[SIGNAL_CHANGED] =
-  g_signal_newv (
-    "changed",
-    G_TYPE_FROM_CLASS (oklass),
-    G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE
-      | G_SIGNAL_NO_HOOKS,
-    NULL /* closure */,
-    NULL /* accumulator */,
-    NULL /* accumulator data */,
-    NULL /* C marshaller */,
-    G_TYPE_NONE /* return_type */,
-    0     /* n_params */,
-    NULL  /* param_types */);
+    g_signal_newv (
+      "changed",
+      G_TYPE_FROM_CLASS (oklass),
+      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE
+        | G_SIGNAL_NO_HOOKS,
+      NULL /* closure */,
+      NULL /* accumulator */,
+      NULL /* accumulator data */,
+      NULL /* C marshaller */,
+      G_TYPE_NONE /* return_type */,
+      0     /* n_params */,
+      NULL  /* param_types */);
 }
 
 static void

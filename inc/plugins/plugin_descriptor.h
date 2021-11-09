@@ -43,9 +43,6 @@ typedef struct _WrappedObjectWithChangeSignal
 
 #define PLUGIN_DESCRIPTOR_SCHEMA_VERSION 1
 
-#define PLUGIN_DESCRIPTOR_DND_PREFIX \
-  Z_DND_STRING_PREFIX "PluginDescriptor::"
-
 /**
  * Plugin category.
  */

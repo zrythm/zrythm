@@ -1963,8 +1963,6 @@ zrythm_app_init (
   ZrythmApp * self)
 {
   gdk_set_allowed_backends (
-    /* prefer X11 - plugin UIs won't work
-     * otherwise */
     "quartz,win32,wayland,x11,*");
 
   const GActionEntry entries[] = {

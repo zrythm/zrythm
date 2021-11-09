@@ -26,6 +26,7 @@
 #include "audio/master_track.h"
 #include "audio/meter.h"
 #include "audio/track.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -146,29 +147,26 @@ on_dnd_drop (
   gdouble         y,
   gpointer        user_data)
 {
-  if (!G_VALUE_HOLDS_STRING (value))
+  if (!G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       g_message ("invalid DND type");
       return false;
     }
 
-  const char * str = g_value_get_string (value);
-  Track * track = NULL;
-  if (g_str_has_prefix (str, TRACK_DND_PREFIX))
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    g_value_get_object (value);
+  if (wrapped_obj->type !=
+        WRAPPED_OBJECT_TYPE_TRACK)
     {
-      sscanf (str, TRACK_DND_PREFIX "%p", &track);
-    }
-  if (!track)
-    {
-      g_message ("not a track: %s", str);
+      g_message ("dropped object not a track");
       return false;
     }
 
   ChannelWidget * self =
     Z_CHANNEL_WIDGET (user_data);
   GtkWidget * widget = GTK_WIDGET (self);
-
-  g_debug ("channel widget: dnd drop");
 
   Track * this =
     channel_get_track (self->channel);
@@ -177,6 +175,9 @@ on_dnd_drop (
   GdkDragAction action =
     z_gtk_drop_target_get_selected_action (
       drop_target);
+
+  g_debug (
+    "channel widget: dnd drop (action %d)", action);
 
   int w =
     gtk_widget_get_allocated_width (widget);
@@ -211,6 +212,7 @@ do_highlight (
   gint x,
   gint y)
 {
+  return;
   /* if we are closer to the start of selection than
    * the end */
   int w =
@@ -273,6 +275,8 @@ on_dnd_drag_motion (
   gdouble         y,
   gpointer        user_data)
 {
+  g_message ("channel dnd drop motion");
+
   ChannelWidget * self =
     Z_CHANNEL_WIDGET (user_data);
 
@@ -282,10 +286,25 @@ on_dnd_drag_motion (
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (drop_target));
 
+  GdkDrop * drop =
+    gtk_drop_target_get_current_drop (
+      drop_target);
+  GdkDrag * drag =
+    gdk_drop_get_drag (drop);
   if (state & GDK_CONTROL_MASK)
-    return GDK_ACTION_COPY;
+    {
+      gdk_drop_status (
+        drop, GDK_ACTION_MOVE | GDK_ACTION_COPY,
+        GDK_ACTION_COPY);
+      return GDK_ACTION_COPY;
+    }
   else
-    return GDK_ACTION_MOVE;
+    {
+      gdk_drop_status (
+        drop, GDK_ACTION_MOVE | GDK_ACTION_COPY,
+        GDK_ACTION_MOVE);
+      return GDK_ACTION_MOVE;
+    }
 }
 
 static void
@@ -848,13 +867,13 @@ on_dnd_drag_prepare (
 {
   Track * track =
     channel_get_track (self->channel);
-  char track_str[600];
-  sprintf (
-    track_str, TRACK_DND_PREFIX "%p", track);
-
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    wrapped_object_with_change_signal_new (
+      track, WRAPPED_OBJECT_TYPE_TRACK);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
-      G_TYPE_STRING, track_str),
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+      wrapped_obj),
   };
 
   return
@@ -932,8 +951,10 @@ setup_dnd (
    * left or right) */
   GtkDropTarget * drop_target =
     gtk_drop_target_new (
-      G_TYPE_STRING,
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
       GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_drop_target_set_preload (
+    drop_target, true);
   g_signal_connect (
     drop_target, "drop",
     G_CALLBACK (on_dnd_drop), self);

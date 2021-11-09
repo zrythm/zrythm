@@ -25,6 +25,7 @@
 
 #include "actions/tracklist_selections.h"
 #include "gui/backend/file_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -455,14 +456,13 @@ on_dnd_drag_prepare (
   PanelFileBrowserWidget * self)
 {
   SupportedFile * descr = get_selected_file (self);
-  char descr_str[600];
-  sprintf (
-    descr_str, SUPPORTED_FILE_DND_PREFIX "%p",
-    descr);
-
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    wrapped_object_with_change_signal_new (
+      descr, WRAPPED_OBJECT_TYPE_SUPPORTED_FILE);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
-      G_TYPE_STRING, descr_str),
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+      wrapped_obj),
   };
 
   return

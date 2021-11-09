@@ -33,6 +33,7 @@
 #include "gui/accel.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -65,33 +66,30 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-on_dnd_leave (
-  GtkDropTarget *     drop_target,
-  DragDestBoxWidget * self)
+on_dnd_leave_value_ready (
+  GObject* source_object,
+  GAsyncResult* res,
+  gpointer user_data)
 {
-  GdkDrop * drop =
-    gtk_drop_target_get_current_drop (
-      drop_target);
-
-  gdk_drop_read_value_async (
-    drop, G_TYPE_STRING,
-    0, NULL, NULL, NULL);
-  const GValue * str_val =
-    gdk_drop_read_value_finish (drop, NULL, NULL);
-  Track * dropped_track = NULL;
-  if (str_val)
+  GdkDrop * drop = GDK_DROP (source_object);
+  GError * err = NULL;
+  const GValue * value =
+    gdk_drop_read_value_finish (drop, res, &err);
+  if (err)
     {
-      const char * str =
-        g_value_get_string (str_val);
-      if (g_str_has_prefix (str, TRACK_DND_PREFIX))
-        {
-          sscanf (
-            str, TRACK_DND_PREFIX "%p",
-            &dropped_track);
-        }
+      g_message ("error: %s", err->message);
+      return;
     }
 
-  if (dropped_track)
+  if (!G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+    return;
+
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    g_value_get_object (value);
+  if (wrapped_obj->type ==
+        WRAPPED_OBJECT_TYPE_TRACK)
     {
       /* unhighlight bottom part of last track */
       Track * track =
@@ -103,78 +101,83 @@ on_dnd_leave (
     }
 }
 
-static GdkDragAction
-on_dnd_motion (
-  GtkDropTarget * drop_target,
-  gdouble         x,
-  gdouble         y,
-  gpointer        user_data)
+static void
+on_dnd_leave (
+  GtkDropTarget *     drop_target,
+  DragDestBoxWidget * self)
 {
-  /*DragDestBoxWidget * self =*/
-    /*Z_DRAG_DEST_BOX_WIDGET (user_data);*/
-
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (drop_target));
-
   GdkDrop * drop =
     gtk_drop_target_get_current_drop (
       drop_target);
+  if (!drop)
+    return;
 
   gdk_drop_read_value_async (
-    drop, G_TYPE_STRING,
-    0, NULL, NULL, NULL);
-  const GValue * str_val =
-    gdk_drop_read_value_finish (drop, NULL, NULL);
+    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+    0, NULL, on_dnd_leave_value_ready, self);
+}
+
+static void
+on_dnd_motion_value_ready (
+  GObject* source_object,
+  GAsyncResult* res,
+  gpointer user_data)
+{
+  GdkDrop * drop = GDK_DROP (source_object);
+  GError * err = NULL;
+  const GValue * value =
+    gdk_drop_read_value_finish (drop, res, &err);
+  if (err)
+    {
+      g_message ("error: %s", err->message);
+      return;
+    }
+
   SupportedFile * supported_file = NULL;
   Track * dropped_track = NULL;
   Plugin * pl = NULL;
   PluginDescriptor * pl_descr = NULL;
-  if (str_val)
+  if (G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      const char * str =
-        g_value_get_string (str_val);
-      if (g_str_has_prefix (
-            str, SUPPORTED_FILE_DND_PREFIX))
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        g_value_get_object (value);
+      if (wrapped_obj->type ==
+            WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          sscanf (
-            str, SUPPORTED_FILE_DND_PREFIX "%p",
-            &supported_file);
+          supported_file =
+            (SupportedFile *) wrapped_obj->obj;
         }
-      else if (g_str_has_prefix (
-                 str, PLUGIN_DESCRIPTOR_DND_PREFIX))
+      else if (wrapped_obj->type ==
+                 WRAPPED_OBJECT_TYPE_PLUGIN)
         {
-          sscanf (
-            str, PLUGIN_DESCRIPTOR_DND_PREFIX "%p",
-            &pl_descr);
+          pl = (Plugin *) wrapped_obj->obj;
         }
-      else if (g_str_has_prefix (
-                 str, PLUGIN_DND_PREFIX))
+      else if (wrapped_obj->type ==
+                 WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
-          sscanf (
-            str, PLUGIN_DND_PREFIX "%p", &pl);
+          pl_descr =
+            (PluginDescriptor *) wrapped_obj->obj;
         }
-      else if (g_str_has_prefix (
-                 str, TRACK_DND_PREFIX))
+      else if (wrapped_obj->type ==
+                 WRAPPED_OBJECT_TYPE_TRACK)
         {
-          sscanf (
-            str, TRACK_DND_PREFIX "%p",
-            &dropped_track);
+          dropped_track = (Track *) wrapped_obj->obj;
         }
     }
 
-  gdk_drop_read_value_async (
-    drop, GDK_TYPE_FILE_LIST,
-    0, NULL, NULL, NULL);
-  const GValue * file_list_val =
-    gdk_drop_read_value_finish (drop, NULL, NULL);
-  gdk_drop_read_value_async (
-    drop, G_TYPE_FILE,
-    0, NULL, NULL, NULL);
-  const GValue * file_val =
-    gdk_drop_read_value_finish (drop, NULL, NULL);
+  bool has_files = false;
+  if (G_VALUE_HOLDS (
+        value, GDK_TYPE_FILE_LIST)
+      ||
+      G_VALUE_HOLDS (value, G_TYPE_FILE))
+    {
+      gdk_drop_read_value_finish (drop, NULL, NULL);
+      has_files = true;
+    }
 
-  if (file_list_val || file_val)
+  if (has_files)
     {
       /* defer to drag_data_received */
       /*self->defer_drag_motion_status = 1;*/
@@ -182,23 +185,31 @@ on_dnd_motion (
       /*gtk_drag_get_data (*/
         /*widget, context, target, time);*/
 
-      return GDK_ACTION_COPY;
+      gdk_drop_status (
+        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
+        GDK_ACTION_COPY);
+
+      return;
     }
   else if (supported_file)
     {
-      return GDK_ACTION_COPY;
+      gdk_drop_status (
+        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
+        GDK_ACTION_COPY);
+
+      return;
     }
   else if (pl_descr)
     {
       /*gtk_drag_highlight (widget);*/
-      return GDK_ACTION_COPY;
+      gdk_drop_status (
+        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
+        GDK_ACTION_COPY);
+
+      return;
     }
   else if (pl)
     {
-      if (state & GDK_CONTROL_MASK)
-        return GDK_ACTION_COPY;
-      else
-        return GDK_ACTION_MOVE;
     }
   else if (dropped_track)
     {
@@ -215,19 +226,49 @@ on_dnd_motion (
       track_widget_do_highlight (
         track->widget, 0,
         track_height - 1, 1);
-
-      if (state & GDK_CONTROL_MASK)
-        return GDK_ACTION_COPY;
-      else
-        return GDK_ACTION_MOVE;
     }
   else
     {
       /*gtk_drag_unhighlight (widget);*/
-      return 0;
     }
+}
 
-  return 0;
+static GdkDragAction
+on_dnd_motion (
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
+{
+  DragDestBoxWidget * self =
+    Z_DRAG_DEST_BOX_WIDGET (user_data);
+
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (drop_target));
+
+  /* request value */
+  GdkDrop * drop =
+    gtk_drop_target_get_current_drop (
+      drop_target);
+  gdk_drop_read_value_async (
+    drop, G_TYPE_OBJECT,
+    0, NULL, on_dnd_motion_value_ready, self);
+
+  if (state & GDK_CONTROL_MASK)
+    {
+      gdk_drop_status (
+        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
+        GDK_ACTION_COPY);
+      return GDK_ACTION_COPY;
+    }
+  else
+    {
+      gdk_drop_status (
+        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
+        GDK_ACTION_MOVE);
+      return GDK_ACTION_MOVE;
+    }
 }
 
 static gboolean
@@ -249,34 +290,33 @@ on_dnd_drop (
   PluginDescriptor * pd = NULL;
   Plugin * pl = NULL;
   Track * track = NULL;
-  if (G_VALUE_HOLDS_STRING (value))
+  if (G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      const char * str = g_value_get_string (value);
-      if (g_str_has_prefix (
-            str, SUPPORTED_FILE_DND_PREFIX))
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        g_value_get_object (value);
+      if (wrapped_obj->type ==
+            WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          sscanf (
-            str, SUPPORTED_FILE_DND_PREFIX "%p",
-            &file);
+          file =
+            (SupportedFile *) wrapped_obj->obj;
         }
-      else if (g_str_has_prefix (
-                 str, PLUGIN_DESCRIPTOR_DND_PREFIX))
+      else if (wrapped_obj->type ==
+                 WRAPPED_OBJECT_TYPE_PLUGIN)
         {
-          sscanf (
-            str, PLUGIN_DESCRIPTOR_DND_PREFIX "%p",
-            &pd);
+          pl = (Plugin *) wrapped_obj->obj;
         }
-      else if (g_str_has_prefix (
-                 str, PLUGIN_DND_PREFIX))
+      else if (wrapped_obj->type ==
+                 WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
-          sscanf (
-            str, PLUGIN_DND_PREFIX "%p", &pl);
+          pd =
+            (PluginDescriptor *) wrapped_obj->obj;
         }
-      else if (g_str_has_prefix (
-                 str, TRACK_DND_PREFIX))
+      else if (wrapped_obj->type ==
+                 WRAPPED_OBJECT_TYPE_TRACK)
         {
-          sscanf (
-            str, TRACK_DND_PREFIX "%p", &track);
+          track = (Track *) wrapped_obj->obj;
         }
     }
 
@@ -558,9 +598,10 @@ setup_dnd (
   GtkDropTarget * drop_target =
     gtk_drop_target_new (
       G_TYPE_INVALID,
-      GDK_ACTION_COPY);
+      GDK_ACTION_COPY | GDK_ACTION_MOVE);
   GType types[] = {
-    GDK_TYPE_FILE_LIST, G_TYPE_FILE, G_TYPE_STRING };
+    GDK_TYPE_FILE_LIST, G_TYPE_FILE,
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE };
   gtk_drop_target_set_gtypes (
     drop_target, types, G_N_ELEMENTS (types));
   gtk_widget_add_controller (

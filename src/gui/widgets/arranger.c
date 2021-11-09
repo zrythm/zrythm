@@ -2493,8 +2493,8 @@ on_drag_begin_handle_hit_object (
               arranger_object_get_name,
               (GenericStringSetter)
               arranger_object_set_name_with_action);
-          gtk_window_present (
-            GTK_WINDOW (dialog));
+          z_gtk_dialog_run (
+            GTK_DIALOG (dialog), true);
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
         }
@@ -4880,7 +4880,8 @@ on_drag_end_timeline (
             arranger_object_get_name,
             (GenericStringSetter)
             arranger_object_set_name_with_action);
-        gtk_window_present (GTK_WINDOW (dialog));
+        z_gtk_dialog_run (
+          GTK_DIALOG (dialog), true);
         self->action = UI_OVERLAY_ACTION_NONE;
         g_free (str);
       }
@@ -5402,16 +5403,6 @@ arranger_widget_redraw_whole (
     "redraw whole %s arranger",
     arranger_widget_get_type_str (self->type));
 
-#if 0
-  if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
-    {
-      char * bt =
-        backtrace_get_with_lines ("", 4, false);
-      g_message ("bt: %s", bt);
-      g_free (bt);
-    }
-#endif
-
   GdkRectangle rect;
   arranger_widget_get_visible_rect (self, &rect);
 
@@ -5633,6 +5624,8 @@ on_scroll (
     GDK_EVENT (event), &x, &y);
 
   g_debug ("scrolled to %f, %f", x, y);
+  EVENTS_PUSH (
+    ET_ARRANGER_SCROLLED, self);
 
   GdkModifierType modifier_type =
     gtk_event_controller_get_current_event_state (

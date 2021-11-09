@@ -713,8 +713,8 @@ arranger_selections_change_redraw_everything (
         MW_CHORD_ARRANGER);
       arranger_widget_redraw_whole (
         MW_AUTOMATION_ARRANGER);
-      ruler_widget_redraw_whole (
-        EDITOR_RULER);
+      ruler_widget_redraw_whole (MW_RULER);
+      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       clip_editor_redraw_region (CLIP_EDITOR);
@@ -730,6 +730,7 @@ arranger_selections_change_redraw_everything (
       }
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
+      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
       clip_editor_redraw_region (CLIP_EDITOR);
@@ -737,6 +738,7 @@ arranger_selections_change_redraw_everything (
         MW_CHORD_ARRANGER);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
+      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       clip_editor_redraw_region (CLIP_EDITOR);
@@ -744,6 +746,7 @@ arranger_selections_change_redraw_everything (
         MW_AUTOMATION_ARRANGER);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
+      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUDIO:
       clip_editor_redraw_region (CLIP_EDITOR);
@@ -751,6 +754,7 @@ arranger_selections_change_redraw_everything (
         MW_AUDIO_ARRANGER);
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
+      ruler_widget_redraw_whole (EDITOR_RULER);
       break;
     default:
       g_return_if_reached ();
@@ -1966,6 +1970,16 @@ event_manager_process_event (
     case ET_FILE_BROWSER_BOOKMARK_DELETED:
       panel_file_browser_refresh_bookmarks (
         MW_PANEL_FILE_BROWSER);
+      break;
+    case ET_ARRANGER_SCROLLED:
+      {
+        ArrangerWidget * arranger =
+          Z_ARRANGER_WIDGET (ev->arg);
+        ArrangerSelections * sel =
+          arranger_widget_get_selections (arranger);
+        arranger_selections_change_redraw_everything (
+          sel);
+      }
       break;
     default:
       g_warning (

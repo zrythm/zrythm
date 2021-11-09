@@ -27,6 +27,7 @@
 #include "audio/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -131,22 +132,20 @@ on_dnd_drop (
   gdouble         y,
   gpointer        user_data)
 {
-  if (!G_VALUE_HOLDS_STRING (value))
+  if (!G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       g_message ("invalid DND type");
       return false;
     }
 
-  const char * str = g_value_get_string (value);
-  Track * dropped_track = NULL;
-  if (g_str_has_prefix (str, TRACK_DND_PREFIX))
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    g_value_get_object (value);
+  if (wrapped_obj->type !=
+        WRAPPED_OBJECT_TYPE_TRACK)
     {
-      sscanf (
-        str, TRACK_DND_PREFIX "%p", &dropped_track);
-    }
-  if (!dropped_track)
-    {
-      g_message ("not a track: %s", str);
+      g_message ("dropped object not a track");
       return false;
     }
 
@@ -630,8 +629,10 @@ tracklist_widget_init (TracklistWidget * self)
    * top or bot) */
   GtkDropTarget * drop_target =
     gtk_drop_target_new (
-      G_TYPE_STRING,
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
       GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_drop_target_set_preload (
+    drop_target, true);
   g_signal_connect (
     drop_target, "drop",
     G_CALLBACK (on_dnd_drop), self);

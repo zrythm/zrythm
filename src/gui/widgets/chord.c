@@ -22,6 +22,7 @@
 #include "audio/midi_event.h"
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/chord.h"
 #include "gui/widgets/chord_selector_window.h"
 #include "project.h"
@@ -144,15 +145,13 @@ on_drag_update (
 
       ChordDescriptor * descr =
         get_chord_descriptor (self);
-
-      char chord_descr_str[600];
-      sprintf (
-        chord_descr_str,
-        CHORD_DESCRIPTOR_DND_PREFIX "%p", descr);
-
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        wrapped_object_with_change_signal_new (
+          descr, WRAPPED_OBJECT_TYPE_CHORD_DESCR);
       GdkContentProvider * content_providers[] = {
         gdk_content_provider_new_typed (
-          G_TYPE_STRING, chord_descr_str),
+          WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+          wrapped_obj),
       };
       GdkContentProvider * provider =
         gdk_content_provider_new_union (

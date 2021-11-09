@@ -274,6 +274,8 @@ cc_bindings_tree_widget_init (
       gtk_scrolled_window_new ());
   gtk_box_append (
     GTK_BOX (self), GTK_WIDGET (self->scroll));
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->scroll), true);
 
   generate_column_view (self);
 }

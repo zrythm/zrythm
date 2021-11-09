@@ -25,6 +25,7 @@
 #include "plugins/lv2_plugin.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -234,7 +235,7 @@ channel_slot_draw_cb (
     /*}*/
 }
 
-static void
+static gboolean
 on_dnd_drop (
   GtkDropTarget * drop_target,
   const GValue  * value,
@@ -242,6 +243,14 @@ on_dnd_drop (
   double          y,
   gpointer        data)
 {
+  if (!G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+    {
+      g_message ("invalid DND type");
+      return false;
+    }
+
   ChannelSlotWidget * self =
     Z_CHANNEL_SLOT_WIDGET (data);
 
@@ -251,24 +260,20 @@ on_dnd_drop (
     z_gtk_drop_target_get_selected_action (
       drop_target);
 
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    g_value_get_object (value);
   Plugin * pl = NULL;
   PluginDescriptor * descr = NULL;
-  if (G_VALUE_HOLDS_STRING (value))
+  if (wrapped_obj->type ==
+        WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
     {
-      const char * str = g_value_get_string (value);
-      if (g_str_has_prefix (
-            str, PLUGIN_DESCRIPTOR_DND_PREFIX))
-        {
-          sscanf (
-            str, PLUGIN_DESCRIPTOR_DND_PREFIX "%p",
-            &descr);
-        }
-      else if (g_str_has_prefix (
-                 str, PLUGIN_DND_PREFIX))
-        {
-          sscanf (
-            str, PLUGIN_DND_PREFIX "%p", &pl);
-        }
+      descr =
+        (PluginDescriptor *) wrapped_obj->obj;
+    }
+  else if (wrapped_obj->type ==
+             WRAPPED_OBJECT_TYPE_PLUGIN)
+    {
+      pl = (Plugin *) wrapped_obj->obj;
     }
 
   bool plugin_invalid = false;
@@ -310,7 +315,7 @@ on_dnd_drop (
                       self->slot_index, &err);
                 }
               else
-                g_return_if_reached ();
+                g_return_val_if_reached (false);
 
               if (!ret)
                 {
@@ -368,6 +373,8 @@ on_dnd_drop (
     }
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
+
+  return true;
 }
 
 
@@ -951,13 +958,13 @@ on_dnd_drag_prepare (
   ChannelSlotWidget * self)
 {
   Plugin * pl = get_plugin (self);
-  char pl_str[600];
-  sprintf (
-    pl_str, PLUGIN_DND_PREFIX "%p", pl);
-
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    wrapped_object_with_change_signal_new (
+      pl, WRAPPED_OBJECT_TYPE_PLUGIN);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
-      G_TYPE_STRING, pl_str),
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+      wrapped_obj),
   };
 
   return
@@ -989,8 +996,10 @@ setup_dnd (
     gtk_drop_target_new (
       G_TYPE_INVALID,
       GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_drop_target_set_preload (
+    drop_target, true);
   GType types[] = {
-    G_TYPE_STRING };
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE };
   gtk_drop_target_set_gtypes (
     drop_target, types, G_N_ELEMENTS (types));
   gtk_widget_add_controller (

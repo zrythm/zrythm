@@ -61,9 +61,6 @@ typedef struct _WrappedObjectWithChangeSignal
 #define IS_PLUGIN_AND_NONNULL(x) \
   (x && IS_PLUGIN (x))
 
-#define PLUGIN_DND_PREFIX \
-  Z_DND_STRING_PREFIX "Plugin::"
-
 /**
  * Plugin UI refresh rate limits.
  */

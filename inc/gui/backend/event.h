@@ -341,6 +341,13 @@ typedef enum EventType
    * Arg: None.
    */
   ET_FILE_BROWSER_BOOKMARK_DELETED,
+
+  /**
+   * An arranger was scrolled.
+   *
+   * Arg: ArrangerWidget pointer
+   */
+  ET_ARRANGER_SCROLLED,
 } EventType;
 
 /**

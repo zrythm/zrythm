@@ -27,6 +27,7 @@
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/center_dock.h"
@@ -1383,22 +1384,22 @@ on_dnd_drop (
 
   SupportedFile * file = NULL;
   ChordDescriptor * chord_descr = NULL;
-  if (G_VALUE_HOLDS_STRING (value))
+  if (G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      const char * str = g_value_get_string (value);
-      if (g_str_has_prefix (
-            str, SUPPORTED_FILE_DND_PREFIX))
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        g_value_get_object (value);
+      if (wrapped_obj->type ==
+            WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          sscanf (
-            str, SUPPORTED_FILE_DND_PREFIX "%p",
-            &file);
+          file = (SupportedFile *) wrapped_obj->obj;
         }
-      else if (g_str_has_prefix (
-                 str, CHORD_DESCRIPTOR_DND_PREFIX))
+      if (wrapped_obj->type ==
+            WRAPPED_OBJECT_TYPE_CHORD_DESCR)
         {
-          sscanf (
-            str, CHORD_DESCRIPTOR_DND_PREFIX "%p",
-            &chord_descr);
+          chord_descr =
+            (ChordDescriptor *) wrapped_obj->obj;
         }
     }
 
@@ -1534,30 +1535,25 @@ on_dnd_motion (
       drop_target);
 
   gdk_drop_read_value_async (
-    drop, G_TYPE_STRING,
+    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
     0, NULL, NULL, NULL);
-  const GValue * str_val =
+  const GValue * value =
     gdk_drop_read_value_finish (drop, NULL, NULL);
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    g_value_get_object (value);
   ChordDescriptor * chord_descr = NULL;
   SupportedFile * supported_file = NULL;
-  if (str_val)
+  if (wrapped_obj->type ==
+        WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
     {
-      const char * str =
-        g_value_get_string (str_val);
-      if (g_str_has_prefix (
-            str, SUPPORTED_FILE_DND_PREFIX))
-        {
-          sscanf (
-            str, SUPPORTED_FILE_DND_PREFIX "%p",
-            &supported_file);
-        }
-      else if (g_str_has_prefix (
-                 str, CHORD_DESCRIPTOR_DND_PREFIX))
-        {
-          sscanf (
-            str, CHORD_DESCRIPTOR_DND_PREFIX "%p",
-            &chord_descr);
-        }
+      supported_file =
+        (SupportedFile *) wrapped_obj->obj;
+    }
+  else if (wrapped_obj->type ==
+             WRAPPED_OBJECT_TYPE_CHORD_DESCR)
+    {
+      chord_descr =
+          (ChordDescriptor *) wrapped_obj->obj;
     }
 
   gdk_drop_read_value_async (
@@ -1647,7 +1643,7 @@ timeline_arranger_setup_drag_dest (
       GDK_ACTION_MOVE | GDK_ACTION_COPY);
   GType types[] = {
     GDK_TYPE_FILE_LIST, G_TYPE_FILE,
-    G_TYPE_STRING };
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE };
   gtk_drop_target_set_gtypes (
     drop_target, types, G_N_ELEMENTS (types));
   gtk_widget_add_controller (

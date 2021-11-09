@@ -23,6 +23,7 @@
 #include "audio/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/plugin_browser.h"
@@ -1201,18 +1202,18 @@ on_dnd_drag_prepare (
   double          y,
   gpointer        user_data)
 {
+  g_debug ("PREPARE");
   GtkTreeView * tv = GTK_TREE_VIEW (user_data);
   PluginDescriptor * descr =
     z_gtk_get_single_selection_pointer (
       tv, PL_COLUMN_DESCR);
-  char descr_str[600];
-  sprintf (
-    descr_str, PLUGIN_DESCRIPTOR_DND_PREFIX "%p",
-    descr);
-
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    wrapped_object_with_change_signal_new (
+      descr, WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
-      G_TYPE_STRING, descr_str),
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+      wrapped_obj),
   };
 
   return

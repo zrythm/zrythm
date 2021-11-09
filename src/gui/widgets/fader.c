@@ -390,6 +390,26 @@ on_scroll (
   return true;
 }
 
+static void
+on_size_allocate (
+  GtkWidget * widget,
+  int         width,
+  int         height,
+  int         baseline)
+{
+  FaderWidget * self = Z_FADER_WIDGET (widget);
+
+  /* no layout manager, so call this to allocate
+   * a size for the menu */
+  gtk_popover_present (
+    GTK_POPOVER (self->popover_menu));
+
+  GTK_WIDGET_CLASS (
+    fader_widget_parent_class)->
+      size_allocate (
+        widget, width, height, baseline);
+}
+
 /**
  * Creates a new Fader widget and binds it to the
  * given Fader.
@@ -419,6 +439,9 @@ fader_widget_init (FaderWidget * self)
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), _("Fader"));
@@ -502,4 +525,5 @@ fader_widget_class_init (FaderWidgetClass * _klass)
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "fader");
+  klass->size_allocate = on_size_allocate;
 }
