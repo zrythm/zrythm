@@ -215,6 +215,7 @@ drag_begin (
   if (state & GDK_CONTROL_MASK)
     fader_set_amp ((void *) self->fader, 1.0);
 
+#if 0
   char * string =
     g_strdup_printf (
       "%.1f", (double) self->fader->volume);
@@ -222,6 +223,7 @@ drag_begin (
     self->tooltip_label, string);
   g_free (string);
   gtk_window_present (self->tooltip_win);
+#endif
 
   self->amp_at_start = fader_get_amp (self->fader);
   self->dragging = true;
@@ -272,6 +274,7 @@ drag_update (
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
+#if 0
   char * string =
     g_strdup_printf (
       "%.1f", (double) self->fader->volume);
@@ -279,6 +282,7 @@ drag_update (
     self->tooltip_label, string);
   g_free (string);
   gtk_window_present (self->tooltip_win);
+#endif
 }
 
 static void
@@ -291,7 +295,7 @@ drag_end (
   FaderWidget * self = (FaderWidget *) user_data;
   self->last_x = 0;
   self->last_y = 0;
-  gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
+  /*gtk_widget_hide (GTK_WIDGET (self->tooltip_win));*/
 
   g_return_if_fail (IS_FADER (self->fader));
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,6 +39,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/rotated_label.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -139,8 +140,8 @@ clip_editor_inner_widget_refresh (
       color_area_widget_set_color (
         self->color_bar,
         &track->color);
-      gtk_label_set_text (
-        self->track_name_label, r->name);
+      rotated_label_widget_set_markup (
+        self->track_name_rotated_label, r->name);
 
       /* remove all from the size group */
       GtkWidget * visible_w =
@@ -276,6 +277,7 @@ clip_editor_inner_widget_init (
   g_type_ensure (CHORD_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (
     AUTOMATION_EDITOR_SPACE_WIDGET_TYPE);
+  g_type_ensure (ROTATED_LABEL_WIDGET_TYPE);
 
   self->ruler_arranger_hsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -307,9 +309,16 @@ clip_editor_inner_widget_init (
     GTK_WIDGET (
       self->automation_editor_space->arranger));
 
-  gtk_label_set_text (
-    self->track_name_label,
-    _("Select a region..."));
+  /* setup the rotated label */
+  rotated_label_widget_setup (
+    self->track_name_rotated_label, -90);
+  GtkLabel * lbl =
+    rotated_label_widget_get_label (
+    self->track_name_rotated_label);
+  gtk_widget_add_css_class (
+    GTK_WIDGET (lbl), "editor-track-name-lbl");
+  rotated_label_widget_set_markup (
+    self->track_name_rotated_label, _("Select a region..."));
 
   self->left_of_ruler_size_group =
     gtk_size_group_new (
@@ -354,7 +363,7 @@ clip_editor_inner_widget_class_init (
 
   BIND_CHILD (color_bar);
   BIND_CHILD (bot_of_arranger_toolbar);
-  BIND_CHILD (track_name_label);
+  BIND_CHILD (track_name_rotated_label);
   BIND_CHILD (left_of_ruler_box);
   BIND_CHILD (ruler_scroll);
   BIND_CHILD (ruler_viewport);

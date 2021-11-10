@@ -119,13 +119,8 @@ header_widget_init (
     self->midi_in_rotated_lbl);
   gtk_widget_add_css_class (
     GTK_WIDGET (lbl), "small-vertical-lbl");
-  /*char txt[600];*/
-  /*sprintf (*/
-    /*txt, "<span font=\"sans-serif 6\">%s</span>",*/
-    /*_("MIDI in"));*/
   rotated_label_widget_set_markup (
     self->midi_in_rotated_lbl, _("MIDI in"));
-  /*gtk_label_set_markup (lbl, _("MIDI in"));*/
 
   /* set tooltips */
   char about_tooltip[500];

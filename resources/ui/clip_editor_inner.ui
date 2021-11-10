@@ -16,8 +16,7 @@
           <object class="GtkBox" id="top_box">
             <property name="vexpand">1</property>
             <child>
-              <object class="GtkLabel" id="track_name_label">
-                <property name="label" translatable="yes">Track name</property>
+              <object class="RotatedLabelWidget" id="track_name_rotated_label">
               </object>
             </child>
             <child>

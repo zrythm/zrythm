@@ -53,8 +53,8 @@ typedef struct _FaderWidget
   double             last_y;
   bool               hover;
   bool               dragging;
-  GtkWindow *        tooltip_win;
-  GtkLabel *         tooltip_label;
+  //GtkWindow *        tooltip_win;
+  //GtkLabel *         tooltip_label;
   GdkRGBA            start_color;
   GdkRGBA            end_color;
 

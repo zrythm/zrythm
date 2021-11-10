@@ -202,6 +202,11 @@ midi_editor_space_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_paned_set_shrink_start_child (
+    self->midi_arranger_velocity_paned, false);
+  gtk_paned_set_shrink_end_child (
+    self->midi_arranger_velocity_paned, false);
+
   self->arranger->type =
     ARRANGER_WIDGET_TYPE_MIDI;
   self->modifier_arranger->type =

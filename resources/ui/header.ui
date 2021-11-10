@@ -146,13 +146,6 @@
                   <object class="RotatedLabelWidget" id="midi_in_rotated_lbl">
                   </object>
                 </child>
-                  <!--<object class="GtkLabel">-->
-                    <!--<property name="label">MIDI in</property>-->
-                    <!--<attributes>-->
-                      <!--<attribute name="font-desc" value="sans-serif 6"></attribute>-->
-                    <!--</attributes>-->
-                  <!--</object>-->
-                <!--</child>-->
                 <child>
                   <object class="MidiActivityBarWidget" id="midi_activity">
                     <property name="visible">1</property>

@@ -7015,10 +7015,10 @@ arranger_widget_setup (
     GTK_EVENT_CONTROLLER_MOTION (
       gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (self), "motion",
+    G_OBJECT (motion_controller), "motion",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT (self), "leave",
+    G_OBJECT (motion_controller), "leave",
     G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),

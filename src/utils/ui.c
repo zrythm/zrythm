@@ -80,6 +80,35 @@ ui_set_cursor_from_icon_name (
         }
     }
 
+#if 0
+  GtkImage * image =
+    GTK_IMAGE (
+      gtk_image_new_from_icon_name (name));
+  gtk_image_set_pixel_size (image, 18);
+  gtk_widget_add_css_class (
+    GTK_WIDGET (image), "lowres-icon-shadow");
+  GtkSnapshot * snapshot =
+    gtk_snapshot_new ();
+  GdkPaintable * paintable =
+    gtk_image_get_paintable (image);
+  gdk_paintable_snapshot (
+    paintable, snapshot,
+    gdk_paintable_get_intrinsic_width (paintable),
+    gdk_paintable_get_intrinsic_height (paintable));
+  GskRenderNode * node =
+    gtk_snapshot_to_node (snapshot);
+  graphene_rect_t bounds;
+  gsk_render_node_get_bounds (node, &bounds);
+  cairo_surface_t * surface =
+    cairo_image_surface_create (
+      CAIRO_FORMAT_ARGB32,
+      (int) bounds.size.width,
+      (int) bounds.size.height);
+  cairo_t * cr = cairo_create (surface);
+  gsk_render_node_draw (node, cr);
+  cairo_surface_write_to_png (
+    surface, "/tmp/test.png");
+#endif
   GdkTexture * texture =
     z_gdk_texture_new_from_icon_name (name, 18, 1);
   if (!texture || !GDK_IS_TEXTURE (texture))

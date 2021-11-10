@@ -47,6 +47,8 @@ typedef struct _ChordEditorSpaceWidget
 typedef struct _AutomationEditorSpaceWidget
   AutomationEditorSpaceWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
 
 /**
  * @addtogroup widgets
@@ -77,7 +79,7 @@ typedef struct _ClipEditorInnerWidget
 
   ColorAreaWidget *    color_bar;
   GtkBox *             bot_of_arranger_toolbar;
-  GtkLabel *           track_name_label;
+  RotatedLabelWidget * track_name_rotated_label;
   GtkBox *             left_of_ruler_box;
   GtkScrolledWindow *  ruler_scroll;
   GtkViewport *        ruler_viewport;
