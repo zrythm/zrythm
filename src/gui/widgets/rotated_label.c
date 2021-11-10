@@ -122,28 +122,15 @@ on_size_allocate (
   RotatedLabelWidget * self =
     Z_ROTATED_LABEL_WIDGET (widget);
 
-  int lbl_width, lbl_height;
-  int dummy;
-  gtk_widget_measure (
-    GTK_WIDGET (self->lbl),
-    GTK_ORIENTATION_HORIZONTAL, -1,
-    &lbl_width, &dummy, &dummy, &dummy);
-  gtk_widget_measure (
-    GTK_WIDGET (self->lbl),
-    GTK_ORIENTATION_VERTICAL, -1,
-    &lbl_height, &dummy, &dummy, &dummy);
-  g_message ("label measured dimensions: %dx%d",
-    lbl_width, lbl_height);
-
   GskTransform * transform =
     gsk_transform_rotate (NULL, self->angle);
   transform =
     gsk_transform_translate (
       transform,
-      &GRAPHENE_POINT_INIT (- lbl_width, 0));
+      &GRAPHENE_POINT_INIT (- height, 0));
   gtk_widget_allocate (
     GTK_WIDGET (self->lbl),
-    lbl_width, lbl_height, -1, transform);
+    height, width, -1, transform);
 }
 
 static GtkSizeRequestMode
