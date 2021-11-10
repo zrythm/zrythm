@@ -344,6 +344,14 @@ foldable_notebook_widget_set_current_page (
       self->notebook, self->switch_page_handler_id);
 }
 
+int
+foldable_notebook_widget_get_current_page (
+  FoldableNotebookWidget * self)
+{
+  return
+    gtk_notebook_get_current_page (self->notebook);
+}
+
 static void
 foldable_notebook_widget_class_init (
   FoldableNotebookWidgetClass * klass)

@@ -26,6 +26,7 @@
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/project_toolbar.h"
+#include "gui/widgets/rotated_label.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/toolbox.h"
@@ -35,9 +36,8 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (HeaderWidget,
-               header_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  HeaderWidget, header_widget, GTK_TYPE_BOX)
 
 void
 header_widget_refresh (
@@ -92,6 +92,7 @@ header_widget_init (
   g_type_ensure (PROJECT_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (LIVE_WAVEFORM_WIDGET_TYPE);
   g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
+  g_type_ensure (ROTATED_LABEL_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -109,6 +110,22 @@ header_widget_init (
   midi_activity_bar_widget_set_animation (
     self->midi_activity,
     MAB_ANIMATION_FLASH);
+
+  /* setup the rotated label */
+  rotated_label_widget_setup (
+    self->midi_in_rotated_lbl, -90);
+  GtkLabel * lbl =
+    rotated_label_widget_get_label (
+    self->midi_in_rotated_lbl);
+  gtk_widget_add_css_class (
+    GTK_WIDGET (lbl), "small-vertical-lbl");
+  /*char txt[600];*/
+  /*sprintf (*/
+    /*txt, "<span font=\"sans-serif 6\">%s</span>",*/
+    /*_("MIDI in"));*/
+  rotated_label_widget_set_markup (
+    self->midi_in_rotated_lbl, _("MIDI in"));
+  /*gtk_label_set_markup (lbl, _("MIDI in"));*/
 
   /* set tooltips */
   char about_tooltip[500];
@@ -154,6 +171,7 @@ header_widget_class_init (
   BIND_CHILD (scripting_interface);
   BIND_CHILD (live_waveform);
   BIND_CHILD (midi_activity);
+  BIND_CHILD (midi_in_rotated_lbl);
 
 #undef BIND_CHILD
 }

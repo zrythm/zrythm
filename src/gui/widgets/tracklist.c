@@ -76,10 +76,6 @@ on_dnd_motion (
   gdouble         y,
   TracklistWidget * self)
 {
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (drop_target));
-
   TrackWidget * hit_tw = NULL;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -118,10 +114,7 @@ on_dnd_motion (
         hit_tw, (int) wx, (int) wy, 1);
     }
 
-  if (state & GDK_CONTROL_MASK)
-    return GDK_ACTION_COPY;
-  else
-    return GDK_ACTION_MOVE;
+  return GDK_ACTION_MOVE;
 }
 
 static gboolean

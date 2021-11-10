@@ -23,6 +23,7 @@
 #include "gui/widgets/channel_sends_expander.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/fader_controls_expander.h"
+#include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
@@ -109,15 +110,14 @@ inspector_track_widget_show_tracks (
 {
   g_debug ("showing %d tracks", tls->num_tracks);
 
-  if (set_notebook_page &&
-      gtk_notebook_get_current_page (
-        GTK_NOTEBOOK (
-          MW_LEFT_DOCK_EDGE->inspector_notebook)) !=
-      0)
+  if (set_notebook_page
+      &&
+      foldable_notebook_widget_get_current_page (
+        MW_LEFT_DOCK_EDGE->inspector_notebook) != 0)
     {
-      gtk_notebook_set_current_page (
-        GTK_NOTEBOOK (
-          MW_LEFT_DOCK_EDGE->inspector_notebook), 0);
+      foldable_notebook_widget_set_current_page (
+        MW_LEFT_DOCK_EDGE->inspector_notebook, 0,
+        false);
     }
 
   /* show info for first track */

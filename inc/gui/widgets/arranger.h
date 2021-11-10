@@ -289,7 +289,11 @@ typedef struct _ArrangerWidget
 
   /** Cache for chord object height, used during
    * child size allocation. */
-  //int                  chord_obj_height;
+  /*int                  chord_obj_height; */
+
+  AutomationTrack * hovered_at;
+  TrackLane *    hovered_lane;
+  Track *        hovered_track;
 
   /* ----- END TIMELINE ----- */
 

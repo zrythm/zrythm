@@ -47,6 +47,8 @@ typedef struct _MidiActivityBarWidget
   MidiActivityBarWidget;
 typedef struct _LiveWaveformWidget
   LiveWaveformWidget;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
 
 /**
  * Header notebook to be used at the very top of the
@@ -71,6 +73,7 @@ typedef struct _HeaderWidget
   GtkNotebook *       notebook;
   LiveWaveformWidget *      live_waveform;
   MidiActivityBarWidget *   midi_activity;
+  RotatedLabelWidget * midi_in_rotated_lbl;
 
   /** Whether log has pending warnings (if true,
    * the log viewer button will have an emblem until

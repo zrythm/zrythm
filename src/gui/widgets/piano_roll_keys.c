@@ -491,6 +491,18 @@ piano_roll_keys_widget_redraw_full (
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
+static guint
+piano_roll_keys_tick_cb (
+  GtkWidget* widget,
+  GtkTickCallback callback,
+  gpointer user_data,
+  GDestroyNotify notify)
+{
+  gtk_widget_queue_draw (widget);
+
+  return 5;
+}
+
 void
 piano_roll_keys_widget_setup (
   PianoRollKeysWidget * self)
@@ -535,6 +547,11 @@ piano_roll_keys_widget_init (
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (self->multipress));
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    (GtkTickCallback) piano_roll_keys_tick_cb,
+    self, NULL);
 }
 
 static void

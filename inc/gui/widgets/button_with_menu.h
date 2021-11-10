@@ -88,6 +88,9 @@ button_with_menu_widget_setup (
   const char *           btn_tooltip_text,
   const char *           menu_tooltip_text);
 
+ButtonWithMenuWidget *
+button_with_menu_widget_new (void);
+
 static inline GtkMenuButton *
 button_with_menu_widget_get_menu_button (
   ButtonWithMenuWidget * self)

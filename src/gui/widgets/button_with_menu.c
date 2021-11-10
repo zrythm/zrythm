@@ -110,6 +110,14 @@ button_with_menu_widget_setup (
     }
 }
 
+ButtonWithMenuWidget *
+button_with_menu_widget_new (void)
+{
+  return
+    g_object_new (
+      BUTTON_WITH_MENU_WIDGET_TYPE, NULL);
+}
+
 static void
 finalize (
   ButtonWithMenuWidget * self)

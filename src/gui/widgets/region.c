@@ -1246,7 +1246,7 @@ draw_audio_part (
        (float) full_rect->x + (float) _x, \
       (float) full_rect->y + (float) from_y, \
       (float) width, (float) _height); \
-  z_gtk_print_graphene_rect (&grect); \
+  /*z_gtk_print_graphene_rect (&grect); \*/ \
   gtk_snapshot_append_color ( \
     snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 1), \
     &grect);

@@ -16,6 +16,7 @@
             <property name="vexpand">1</property>
             <child>
               <object class="GtkBox" id="midi_notes_box">
+                <property name="hexpand">False</property>
                 <child>
                   <object class="GtkScrolledWindow" id="piano_roll_keys_scroll">
                     <property name="hexpand">1</property>

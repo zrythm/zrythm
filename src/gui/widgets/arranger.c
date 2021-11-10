@@ -6881,6 +6881,18 @@ arranger_widget_get_min_possible_position (
     }
 }
 
+static guint
+arranger_tick_cb (
+  GtkWidget* widget,
+  GtkTickCallback callback,
+  gpointer user_data,
+  GDestroyNotify notify)
+{
+  gtk_widget_queue_draw (widget);
+
+  return 5;
+}
+
 static bool
 on_arranger_map_event (
   GtkWidget *      widget,
@@ -7025,10 +7037,10 @@ arranger_widget_setup (
     G_OBJECT (self), "map-event",
     G_CALLBACK (on_arranger_map_event), self);
 
-  /*gtk_widget_add_tick_callback (*/
-    /*GTK_WIDGET (self),*/
-    /*(GtkTickCallback) arranger_tick_cb,*/
-    /*self, NULL);*/
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    (GtkTickCallback) arranger_tick_cb,
+    self, NULL);
 
   gtk_widget_set_focus_on_click (
     GTK_WIDGET (self), 1);

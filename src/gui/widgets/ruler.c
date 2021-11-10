@@ -2125,6 +2125,18 @@ ruler_widget_set_zoom_level (
     }
 }
 
+static guint
+ruler_tick_cb (
+  GtkWidget* widget,
+  GtkTickCallback callback,
+  gpointer user_data,
+  GDestroyNotify notify)
+{
+  gtk_widget_queue_draw (widget);
+
+  return 5;
+}
+
 static void
 on_size_allocate (
   GtkWidget * widget,
@@ -2224,6 +2236,11 @@ ruler_widget_init (RulerWidget * self)
   g_signal_connect (
     G_OBJECT (self), "grab-broken-event",
     G_CALLBACK (on_grab_broken), self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    (GtkTickCallback) ruler_tick_cb,
+    self, NULL);
 }
 
 static void

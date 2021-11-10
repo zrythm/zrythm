@@ -173,7 +173,6 @@ on_dnd_motion_value_ready (
       ||
       G_VALUE_HOLDS (value, G_TYPE_FILE))
     {
-      gdk_drop_read_value_finish (drop, NULL, NULL);
       has_files = true;
     }
 
@@ -185,26 +184,16 @@ on_dnd_motion_value_ready (
       /*gtk_drag_get_data (*/
         /*widget, context, target, time);*/
 
-      gdk_drop_status (
-        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
-        GDK_ACTION_COPY);
-
       return;
     }
   else if (supported_file)
     {
-      gdk_drop_status (
-        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
-        GDK_ACTION_COPY);
 
       return;
     }
   else if (pl_descr)
     {
       /*gtk_drag_highlight (widget);*/
-      gdk_drop_status (
-        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
-        GDK_ACTION_COPY);
 
       return;
     }
@@ -243,10 +232,6 @@ on_dnd_motion (
   DragDestBoxWidget * self =
     Z_DRAG_DEST_BOX_WIDGET (user_data);
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (drop_target));
-
   /* request value */
   GdkDrop * drop =
     gtk_drop_target_get_current_drop (
@@ -255,20 +240,7 @@ on_dnd_motion (
     drop, G_TYPE_OBJECT,
     0, NULL, on_dnd_motion_value_ready, self);
 
-  if (state & GDK_CONTROL_MASK)
-    {
-      gdk_drop_status (
-        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
-        GDK_ACTION_COPY);
-      return GDK_ACTION_COPY;
-    }
-  else
-    {
-      gdk_drop_status (
-        drop, GDK_ACTION_COPY | GDK_ACTION_MOVE,
-        GDK_ACTION_MOVE);
-      return GDK_ACTION_MOVE;
-    }
+  return GDK_ACTION_MOVE;
 }
 
 static gboolean

@@ -143,6 +143,10 @@ foldable_notebook_widget_set_current_page (
   int                      page_num,
   bool                     block_signals);
 
+int
+foldable_notebook_widget_get_current_page (
+  FoldableNotebookWidget * self);
+
 void
 foldable_notebook_widget_add_page (
   FoldableNotebookWidget * self,

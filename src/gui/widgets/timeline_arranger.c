@@ -1504,86 +1504,75 @@ finish_data_received:
   return true;
 }
 
-static gboolean
-on_dnd_motion (
-  GtkDropTarget * drop_target,
-  gdouble         x,
-  gdouble         y,
-  gpointer        user_data)
+static void
+on_dnd_motion_value_ready (
+  GObject* source_object,
+  GAsyncResult* res,
+  gpointer user_data)
 {
   ArrangerWidget * self =
     Z_ARRANGER_WIDGET (user_data);
-
-  AutomationTrack * at =
-    timeline_arranger_widget_get_at_at_y (self, y);
-  TrackLane * lane =
-    timeline_arranger_widget_get_track_lane_at_y (
-      self, y);
-  (void) lane;
-  Track * track =
-    timeline_arranger_widget_get_track_at_y (
-      self, y);
-
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (drop_target));
-
-  arranger_widget_set_highlight_rect (self, NULL);
-
-  GdkDrop * drop =
-    gtk_drop_target_get_current_drop (
-      drop_target);
-
-  gdk_drop_read_value_async (
-    drop, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
-    0, NULL, NULL, NULL);
+  GdkDrop * drop = GDK_DROP (source_object);
+  GError * err = NULL;
   const GValue * value =
-    gdk_drop_read_value_finish (drop, NULL, NULL);
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    g_value_get_object (value);
+    gdk_drop_read_value_finish (drop, res, &err);
+  if (err)
+    {
+      g_message ("error: %s", err->message);
+      return;
+    }
+
   ChordDescriptor * chord_descr = NULL;
   SupportedFile * supported_file = NULL;
-  if (wrapped_obj->type ==
-        WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
+  if (G_VALUE_HOLDS (
+        value,
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      supported_file =
-        (SupportedFile *) wrapped_obj->obj;
-    }
-  else if (wrapped_obj->type ==
-             WRAPPED_OBJECT_TYPE_CHORD_DESCR)
-    {
-      chord_descr =
-          (ChordDescriptor *) wrapped_obj->obj;
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        g_value_get_object (value);
+      if (wrapped_obj->type ==
+            WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
+        {
+          supported_file =
+            (SupportedFile *) wrapped_obj->obj;
+        }
+      else if (wrapped_obj->type ==
+                 WRAPPED_OBJECT_TYPE_CHORD_DESCR)
+        {
+          chord_descr =
+            (ChordDescriptor *) wrapped_obj->obj;
+        }
     }
 
-  gdk_drop_read_value_async (
-    drop, GDK_TYPE_FILE_LIST,
-    0, NULL, NULL, NULL);
-  const GValue * file_list_val =
-    gdk_drop_read_value_finish (drop, NULL, NULL);
-  gdk_drop_read_value_async (
-    drop, G_TYPE_FILE,
-    0, NULL, NULL, NULL);
-  const GValue * file_val =
-    gdk_drop_read_value_finish (drop, NULL, NULL);
+  bool has_files = false;
+  if (G_VALUE_HOLDS (
+        value, GDK_TYPE_FILE_LIST)
+      ||
+      G_VALUE_HOLDS (value, G_TYPE_FILE))
+    {
+      has_files = true;
+    }
 
+  Track * track = self->hovered_track;
+  TrackLane * lane = self->hovered_lane;
+  AutomationTrack * at = self->hovered_at;
   if (chord_descr)
     {
       if (at || !track ||
           !track_type_has_piano_roll (track->type))
         {
           /* nothing to do */
-          return false;
+          return;
         }
 
       /* highlight track */
       highlight_timeline (
-        self, state, (int) x, (int) y, track, lane);
+        self, 0, (int) self->hover_x,
+        (int) self->hover_y, track, lane);
 
-      return true;
+      return;
     }
-  else if (file_list_val || supported_file
-           || file_val)
+  else if (has_files || supported_file)
     {
       /* if current track exists and current track
        * supports dnd highlight */
@@ -1594,29 +1583,57 @@ on_dnd_motion (
                  TRACK_TYPE_INSTRUMENT &&
               track->type != TRACK_TYPE_AUDIO)
             {
-              return false;
+              return;
             }
 
           /* track is compatible, highlight */
           highlight_timeline (
-            self, state, (int) x, (int) y, track, lane);
+            self, 0, (int) self->hover_x,
+            (int) self->hover_y, track, lane);
           g_message ("highlighting track");
 
-          return true;
+          return;
         }
       /* else if no track, highlight below the
        * last track  TODO */
       else
         {
           highlight_timeline (
-            self, state, (int) x, (int) y, NULL, NULL);
+            self, 0, (int) self->hover_x,
+            (int) self->hover_y, NULL, NULL);
         }
     }
-  else
-    {
-    }
+}
 
-  return true;
+static GdkDragAction
+on_dnd_motion (
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
+{
+  ArrangerWidget * self =
+    Z_ARRANGER_WIDGET (user_data);
+
+  self->hovered_at =
+    timeline_arranger_widget_get_at_at_y (self, y);
+  self->hovered_lane =
+    timeline_arranger_widget_get_track_lane_at_y (
+      self, y);
+  self->hovered_track =
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
+
+  arranger_widget_set_highlight_rect (self, NULL);
+
+  GdkDrop * drop =
+    gtk_drop_target_get_current_drop (
+      drop_target);
+  gdk_drop_read_value_async (
+    drop, G_TYPE_OBJECT,
+    0, NULL, on_dnd_motion_value_ready, self);
+
+  return GDK_ACTION_MOVE;
 }
 
 static void

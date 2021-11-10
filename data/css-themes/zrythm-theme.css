@@ -601,3 +601,14 @@ popover.snap-grid-popover button.note-type {
 .selectable-element {
   padding: 3px;
 }
+
+label.small-vertical-lbl {
+  font-family: sans-serif;
+  font-size: 6pt;
+  /*border: 2px solid alpha(#ccc, 0.4);*/
+  /*border-radius: 3px;*/
+}
+
+.rotated-label-parent {
+  /*background-color: yellow;*/
+}

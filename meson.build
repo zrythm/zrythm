@@ -1024,7 +1024,6 @@ gtksource_dep = dependency (
   fallback: ['gtksourceview5', 'gtksource_dep'],
   default_options: [
     'vapi=false',
-    'introspection=disabled',
     ])
 
 libcgraph_dep = dependency (

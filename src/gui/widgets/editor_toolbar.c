@@ -187,9 +187,12 @@ editor_toolbar_widget_refresh (
         g_free (str);
         g_free (tooltip_str);
 
+        /* FIXME uncomment when GTK fixes this */
+#if 0
         button_with_menu_widget_set_menu_model (
           self->functions_btn,
           self->midi_functions_menu);
+#endif
 
         /* set visibility of each tool item */
         gtk_widget_set_visible (
@@ -223,9 +226,12 @@ editor_toolbar_widget_refresh (
         g_free (str);
         g_free (tooltip_str);
 
+        /* FIXME uncomment when GTK fixes this */
+#if 0
         button_with_menu_widget_set_menu_model (
           self->functions_btn,
           self->automation_functions_menu);
+#endif
       }
       break;
     case REGION_TYPE_AUDIO:
@@ -251,9 +257,12 @@ editor_toolbar_widget_refresh (
 
         update_audio_funcs_menu (self);
 
+        /* FIXME uncomment when GTK fixes this */
+#if 0
         button_with_menu_widget_set_menu_model (
           self->functions_btn,
           self->audio_functions_menu);
+#endif
       }
       break;
     default:
