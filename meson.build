@@ -958,6 +958,13 @@ lilv_dep = dependency (
   fallback: ['lilv', 'lilv_dep'],
   static: all_static)
 
+json_glib_dep = dependency (
+  'json-glib-1.0',
+  fallback: ['json-glib', 'json_glib_dep'],
+  default_options: [
+    'introspection=disabled', 'gtk_doc=disabled',
+    'tests=false',])
+
 # fftw
 fftw3_deps = [
   dependency (
@@ -1243,7 +1250,7 @@ zrythm_deps = [
   xxhash_dep,
   vamp_deps,
   dependency ('libcurl'),
-  dependency ('json-glib-1.0'),
+  json_glib_dep,
 
   libm,
 ]

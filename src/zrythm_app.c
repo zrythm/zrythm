@@ -1852,6 +1852,7 @@ add_option_entries (
         "AppImage runtime path",
         "PATH" },
 #endif
+      NULL,
     };
 
   g_application_add_main_option_entries (

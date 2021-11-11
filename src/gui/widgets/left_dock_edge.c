@@ -160,6 +160,8 @@ static void
 left_dock_edge_widget_init (
   LeftDockEdgeWidget * self)
 {
+  g_type_ensure (FOLDABLE_NOTEBOOK_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   const int min_width = 160;

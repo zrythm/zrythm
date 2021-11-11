@@ -1,6 +1,2 @@
-[wrap-file]
-directory = gdk-pixbuf-2.42.6
-
-source_url = https://ftp.gnome.org/pub/GNOME/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.6.tar.xz
-source_filename = gdk-pixbuf-2.42.6.tar.xz
-source_hash = c4a6b75b7ed8f58ca48da830b9fa00ed96d668d3ab4b1f723dcf902f78bde77f
+[wrap-redirect]
+filename = gtk-acf6d47b6fc8e7240ee19108809c7e148da8214c/subprojects/gdk-pixbuf.wrap
