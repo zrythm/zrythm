@@ -125,7 +125,7 @@ channel_sends_expander_widget_setup (
             strip_box, GTK_WIDGET (csw));
 
           gtk_box_append (
-            strip_box, GTK_WIDGET (strip_box));
+            self->box, GTK_WIDGET (strip_box));
         }
     }
 

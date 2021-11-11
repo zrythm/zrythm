@@ -1044,7 +1044,9 @@ load (
             "It may not work correctly."),
           PROGRAM_NAME, self->version);
       ui_show_message_full (
-        GTK_WINDOW (MAIN_WINDOW),
+        MAIN_WINDOW
+        ? GTK_WINDOW (MAIN_WINDOW)
+        : GTK_WINDOW (zrythm_app->splash),
         GTK_MESSAGE_WARNING, "%s", str);
       g_free (str);
     }

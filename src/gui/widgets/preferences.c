@@ -903,7 +903,7 @@ on_window_closed (
     GTK_WINDOW (dialog),
     GTK_WINDOW (self));
   gtk_window_set_modal (GTK_WINDOW (dialog), true);
-  gtk_widget_show (dialog);
+  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 
   MAIN_WINDOW->preferences_opened = false;
 }

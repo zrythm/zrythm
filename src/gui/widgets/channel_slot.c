@@ -1013,6 +1013,27 @@ setup_dnd (
     G_CALLBACK (on_dnd_motion), self);
 }
 
+static void
+on_size_allocate (
+  GtkWidget * widget,
+  int         width,
+  int         height,
+  int         baseline)
+{
+  ChannelSlotWidget * self =
+    Z_CHANNEL_SLOT_WIDGET (widget);
+
+  /* no layout manager, so call this to allocate
+   * a size for the menu */
+  gtk_popover_present (
+    GTK_POPOVER (self->popover_menu));
+
+  GTK_WIDGET_CLASS (
+    channel_slot_widget_parent_class)->
+      size_allocate (
+        widget, width, height, baseline);
+}
+
 /**
  * Creates a new ChannelSlot widget and binds it to
  * the given value.
@@ -1059,6 +1080,9 @@ channel_slot_widget_init (
   gtk_widget_set_size_request (
     GTK_WIDGET (self), -1, 20);
 
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self), true);
+
   self->pl_name = NULL;
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), _("empty slot"));
@@ -1066,6 +1090,9 @@ channel_slot_widget_init (
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   self->click =
     GTK_GESTURE_CLICK (
@@ -1143,6 +1170,7 @@ channel_slot_widget_class_init (
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "channel-slot");
+  klass->size_allocate = on_size_allocate;
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);

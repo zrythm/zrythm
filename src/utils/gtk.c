@@ -653,12 +653,18 @@ z_gtk_create_menu_item_full (
   GMenuItem * menuitem =
     g_menu_item_new (label_name, detailed_action);
 
+  /* note: setting an icon causes the accelerators
+   * to not be right-aligned - maybe it's because
+   * this is an icon name and not a GIcon. FIXME
+   * pass a GIcon */
+#if 0
   if (icon_name)
     {
       g_menu_item_set_attribute (
         menuitem, G_MENU_ATTRIBUTE_ICON,
         "s", icon_name, NULL);
     }
+#endif
 
   return menuitem;
 }

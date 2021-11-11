@@ -50,6 +50,8 @@ channel_send_draw_cb (
     Z_CHANNEL_SEND_WIDGET (user_data);
   GtkWidget * widget = GTK_WIDGET (drawing_area);
 
+  g_message ("draw %d %d", width, height);
+
   GtkStyleContext *context =
   gtk_widget_get_style_context (widget);
 
@@ -276,6 +278,27 @@ on_right_click (
 }
 
 static void
+on_size_allocate (
+  GtkWidget * widget,
+  int         width,
+  int         height,
+  int         baseline)
+{
+  ChannelSendWidget * self =
+    Z_CHANNEL_SEND_WIDGET (widget);
+
+  /* no layout manager, so call this to allocate
+   * a size for the menu */
+  gtk_popover_present (
+    GTK_POPOVER (self->popover_menu));
+
+  GTK_WIDGET_CLASS (
+    channel_send_widget_parent_class)->
+      size_allocate (
+        widget, width, height, baseline);
+}
+
+static void
 on_enter (
   GtkEventControllerMotion * motion_controller,
   gdouble                    x,
@@ -349,8 +372,6 @@ finalize (
 {
   if (self->cache_tooltip)
     g_free (self->cache_tooltip);
-  if (self->drag)
-    g_object_unref (self->drag);
   if (self->empty_slot_layout)
     g_object_unref (self->empty_slot_layout);
   if (self->name_layout)
@@ -386,9 +407,15 @@ channel_send_widget_init (
 
   self->cache_tooltip = NULL;
 
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self), true);
+
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   self->click =
     GTK_GESTURE_CLICK (
@@ -471,6 +498,7 @@ channel_send_widget_class_init (
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "channel-send");
+  klass->size_allocate = on_size_allocate;
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);
