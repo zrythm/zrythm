@@ -2032,12 +2032,39 @@ z_gdk_texture_new_from_icon_name (
       GTK_ICON_LOOKUP_PRELOAD);
   GFile * file =
     gtk_icon_paintable_get_file (paintable);
-  GdkTexture * texture =
-    gdk_texture_new_from_file (file, NULL);
+  char * path = g_file_get_path (file);
+  GdkPixbuf * pixbuf = NULL;
+  GError * err = NULL;
+  if (path)
+    {
+      pixbuf =
+        gdk_pixbuf_new_from_file_at_size (
+          path, size, size, &err);
+      g_free (path);
+    }
+  else
+    {
+      char * uri = g_file_get_uri (file);
+      const char * resource_prefix = "resource://";
+      const char * resource_path =
+        uri + strlen (resource_prefix);
+      pixbuf =
+        gdk_pixbuf_new_from_resource_at_scale (
+          resource_path, size, size, true, &err);
+      g_free (uri);
+    }
   g_object_unref (file);
   g_object_unref (paintable);
 
-  return texture;
+  if (!pixbuf)
+    {
+      g_critical (
+        "failed to load pixbuf for icon %s",
+        icon_name);
+      return NULL;
+    }
+
+  return gdk_texture_new_for_pixbuf (pixbuf);
 }
 
 void
