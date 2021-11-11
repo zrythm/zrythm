@@ -17,8 +17,6 @@
             <property name="shrink-start-child">0</property>
             <child>
               <object class="GtkPaned" id="center_paned">
-                <property name="shrink-end-child">0</property>
-                <property name="shrink-start-child">0</property>
                 <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
                 <child>
                   <object class="MainNotebookWidget" id="main_notebook">

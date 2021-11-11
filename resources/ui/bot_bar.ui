@@ -8,10 +8,13 @@
         <property name="margin-end">1</property>
         <property name="margin-top">1</property>
         <property name="margin-bottom">1</property>
+        <property name="hexpand">True</property>
       </object>
     </child>
     <child type="center">
       <object class="GtkBox" id="mid_box_parent">
+        <property name="hexpand">False</property>
+        <property name="hexpand-set">True</property>
         <child>
           <object class="GtkBox" id="digital_meters"/>
         </child>
@@ -35,7 +38,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="mid_box">
+      <object class="GtkBox" id="cpu_box">
+        <property name="hexpand">True</property>
+        <property name="halign">end</property>
         <child>
           <object class="CpuWidget" id="cpu_load">
             <property name="visible">1</property>

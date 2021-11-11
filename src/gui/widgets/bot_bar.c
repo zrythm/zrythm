@@ -717,16 +717,14 @@ bot_bar_widget_init (BotBarWidget * self)
   self->label =
     GTK_LABEL (gtk_label_new (""));
   gtk_label_set_markup (self->label, "");
-#if 0
-  GtkWidget * box =
-    gtk_statusbar_get_message_area (
-      self->status_bar);
+  GtkBox * box =
+    GTK_BOX (
+      gtk_widget_get_first_child (
+        GTK_WIDGET (self->status_bar)));
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (box));
   gtk_box_append (
-    GTK_BOX (box),
-    GTK_WIDGET (self->label));
-#endif
+    GTK_BOX (box), GTK_WIDGET (self->label));
 
   g_signal_connect (
     self->status_bar, "text-pushed",

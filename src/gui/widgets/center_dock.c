@@ -163,7 +163,7 @@ center_dock_widget_init (
     self->center_right_paned, false);
 
   gtk_paned_set_shrink_start_child (
-    self->center_paned, true);
+    self->center_paned, false);
   gtk_paned_set_shrink_end_child (
     self->center_paned, false);
   gtk_paned_set_resize_start_child (
