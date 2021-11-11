@@ -1,6 +1,6 @@
 [wrap-file]
-directory = gtk-ebassi-issue-4421
+directory = gtk-acf6d47b6fc8e7240ee19108809c7e148da8214c
 
-source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/ebassi/issue-4421/gtk-ebassi-issue-4421.tar.gz
-source_filename = gtk-ebassi-issue-4421.tar.gz
-source_hash = 8fbbdc95af13fa234ed2b266c24eacc96de79b9d8530b9b114b902eda8e438c3
+source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/acf6d47b6fc8e7240ee19108809c7e148da8214c/gtk-acf6d47b6fc8e7240ee19108809c7e148da8214c.tar.gz
+source_filename = gtk-acf6d47b6fc8e7240ee19108809c7e148da8214c.tar.gz
+source_hash = 7f46dee6b4c0c2fada72d0b21a9b7fb95555ae39b225bf13c6258bd48d265a40

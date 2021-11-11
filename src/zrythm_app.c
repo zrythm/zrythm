@@ -118,7 +118,7 @@
 #endif
 #include <curl/curl.h>
 
-#include <libadwaita-1/adwaita.h>
+#include <adwaita.h>
 
 /** This is declared extern in zrythm_app.h. */
 ZrythmApp * zrythm_app = NULL;

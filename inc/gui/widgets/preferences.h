@@ -26,7 +26,7 @@
 #ifndef __GUI_WIDGETS_PREFERENCES_H__
 #define __GUI_WIDGETS_PREFERENCES_H__
 
-#include <libadwaita-1/adwaita.h>
+#include <adwaita.h>
 
 #define PREFERENCES_WIDGET_TYPE \
   (preferences_widget_get_type ())
