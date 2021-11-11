@@ -902,7 +902,8 @@ gtk_dep = dependency (
   default_options: [
     'demos=false', 'build-examples=false',
     'build-tests=false',
-    'media-gstreamer=disabled',],
+    'media-gstreamer=disabled',
+    'introspection=disabled'],
   static: all_static)
 
 libadwaita_dep = dependency (
@@ -910,7 +911,7 @@ libadwaita_dep = dependency (
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',
-    'examples=false',])
+    'examples=false', 'introspection=disabled'])
 
 min_version = '>=1.0.25'
 if get_option ('opus')
@@ -1023,7 +1024,7 @@ gtksource_dep = dependency (
   'gtksourceview-5',
   fallback: ['gtksourceview5', 'gtksource_dep'],
   default_options: [
-    'vapi=false',
+    'vapi=false', 'introspection=disabled',
     ])
 
 libcgraph_dep = dependency (
