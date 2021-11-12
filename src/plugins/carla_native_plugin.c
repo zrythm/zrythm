@@ -1435,7 +1435,8 @@ carla_native_plugin_open_ui (
             plugin_generate_window_title (pl);
           g_debug ("plugin window title '%s'", title);
           carla_set_custom_ui_title (
-            self->host_handle, 0, title);
+            /* FIXME revert */
+            self->host_handle, 0, "title");
           g_free (title);
 
           /* set whether to keep window on top */
@@ -1443,7 +1444,8 @@ carla_native_plugin_open_ui (
               g_settings_get_boolean (
                 S_P_PLUGINS_UIS, "stay-on-top"))
             {
-#ifdef HAVE_X11
+#if defined (HAVE_X11) && \
+  !defined (GDK_WINDOWING_WAYLAND)
               Window xid =
                 z_gtk_window_get_x11_xid (
                   GTK_WINDOW (MAIN_WINDOW));
@@ -1453,6 +1455,10 @@ carla_native_plugin_open_ui (
                 self->host_handle,
                 ENGINE_OPTION_FRONTEND_WIN_ID, 0,
                 xid_str);
+#else
+              g_warning (
+                "stay-on-top unavailable on this "
+                "window manager");
 #endif
             }
         }

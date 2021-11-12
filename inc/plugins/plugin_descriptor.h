@@ -351,7 +351,7 @@ plugin_descriptor_clone (
 NONNULL
 bool
 plugin_descriptor_is_instrument (
-  const PluginDescriptor * descr);
+  const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is an effect or not.
@@ -359,7 +359,7 @@ plugin_descriptor_is_instrument (
 NONNULL
 bool
 plugin_descriptor_is_effect (
-  PluginDescriptor * descr);
+  const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is a modulator or not.
@@ -367,7 +367,7 @@ plugin_descriptor_is_effect (
 NONNULL
 int
 plugin_descriptor_is_modulator (
-  PluginDescriptor * descr);
+  const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is a midi modifier or not.
@@ -375,7 +375,7 @@ plugin_descriptor_is_modulator (
 NONNULL
 int
 plugin_descriptor_is_midi_modifier (
-  PluginDescriptor * descr);
+  const PluginDescriptor * const descr);
 
 /**
  * Returns the ZPluginCategory matching the given
@@ -389,6 +389,14 @@ plugin_descriptor_string_to_category (
 char *
 plugin_descriptor_category_to_string (
   ZPluginCategory category);
+
+/**
+ * Gets an appropriate icon name for the given
+ * descriptor.
+ */
+const char *
+plugin_descriptor_get_icon_name (
+  const PluginDescriptor * const self);
 
 /**
  * Returns if the given plugin identifier can be

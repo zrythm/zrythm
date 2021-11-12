@@ -2,6 +2,7 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="BotBarWidget" parent="GtkBox">
+    <property name="homogeneous">True</property>
     <child>
       <object class="GtkStatusbar" id="status_bar">
         <property name="margin-start">1</property>
@@ -15,6 +16,7 @@
       <object class="GtkBox" id="mid_box_parent">
         <property name="hexpand">False</property>
         <property name="hexpand-set">True</property>
+        <property name="halign">center</property>
         <child>
           <object class="GtkBox" id="digital_meters"/>
         </child>
@@ -28,8 +30,6 @@
         </child>
         <child>
           <object class="TransportControlsWidget" id="transport_controls">
-            <property name="visible">1</property>
-            <property name="hexpand">1</property>
           </object>
         </child>
         <child>

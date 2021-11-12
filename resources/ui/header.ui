@@ -127,16 +127,7 @@
         </child>
         <child>
           <object class="GtkBox" id="end_box_bot">
-            <child>
-              <object class="LiveWaveformWidget" id="live_waveform">
-                <property name="visible">True</property>
-                <property name="width-request">48</property>
-                <property name="margin_top">4</property>
-                <property name="margin_bottom">4</property>
-                <property name="margin_start">4</property>
-                <property name="margin_end">4</property>
-              </object>
-            </child>
+            <property name="halign">end</property>
             <child>
               <object class="GtkBox">
                 <property name="tooltip_text" translatable="yes">MIDI in activity</property>
@@ -151,6 +142,16 @@
                     <property name="visible">1</property>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="LiveWaveformWidget" id="live_waveform">
+                <property name="visible">True</property>
+                <property name="width-request">48</property>
+                <property name="margin_top">4</property>
+                <property name="margin_bottom">4</property>
+                <property name="margin_start">4</property>
+                <property name="margin_end">4</property>
               </object>
             </child>
           </object>

@@ -20,8 +20,13 @@
 #include "audio/midi_mapping.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/item_factory.h"
+#include "gui/widgets/popover_menu_bin.h"
+#include "plugins/collection.h"
+#include "plugins/collections.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/error.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 
@@ -114,13 +119,43 @@ item_factory_setup_cb (
       {
         GtkWidget * check_btn =
           gtk_check_button_new ();
-        gtk_list_item_set_child (listitem, check_btn);
+        PopoverMenuBinWidget * bin =
+          popover_menu_bin_widget_new ();
+        popover_menu_bin_widget_set_child (
+          bin, check_btn);
+        gtk_list_item_set_child (
+          listitem, GTK_WIDGET (bin));
       }
       break;
     case ITEM_FACTORY_TEXT:
       {
         GtkWidget * label = gtk_label_new ("");
-        gtk_list_item_set_child (listitem, label);
+        PopoverMenuBinWidget * bin =
+          popover_menu_bin_widget_new ();
+        popover_menu_bin_widget_set_child (
+          bin, label);
+        gtk_list_item_set_child (
+          listitem, GTK_WIDGET (bin));
+      }
+      break;
+    case ITEM_FACTORY_ICON_AND_TEXT:
+      {
+        GtkBox * box =
+          GTK_BOX (
+            gtk_box_new (
+              GTK_ORIENTATION_HORIZONTAL, 4));
+        GtkImage * img =
+          GTK_IMAGE (gtk_image_new ());
+        GtkWidget * label = gtk_label_new ("");
+        gtk_box_append (
+          GTK_BOX (box), GTK_WIDGET (img));
+        gtk_box_append (GTK_BOX (box), label);
+        PopoverMenuBinWidget * bin =
+          popover_menu_bin_widget_new ();
+        popover_menu_bin_widget_set_child (
+          bin, GTK_WIDGET (box));
+        gtk_list_item_set_child (
+          listitem, GTK_WIDGET (bin));
       }
       break;
     default:
@@ -140,13 +175,15 @@ item_factory_bind_cb (
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
       gtk_list_item_get_item (listitem));
 
-
   switch (self->type)
     {
     case ITEM_FACTORY_TOGGLE:
       {
+        PopoverMenuBinWidget * bin =
+          Z_POPOVER_MENU_BIN_WIDGET (
+            gtk_list_item_get_child (listitem));
         GtkWidget * check_btn =
-          gtk_list_item_get_child (listitem);
+          popover_menu_bin_widget_get_child (bin);
 
         switch (obj->type)
           {
@@ -181,9 +218,13 @@ item_factory_bind_cb (
       break;
     case ITEM_FACTORY_TEXT:
       {
+        PopoverMenuBinWidget * bin =
+          Z_POPOVER_MENU_BIN_WIDGET (
+            gtk_list_item_get_child (listitem));
         GtkLabel * label =
           GTK_LABEL (
-            gtk_list_item_get_child (listitem));
+            popover_menu_bin_widget_get_child (
+              bin));
 
         switch (obj->type)
           {
@@ -245,6 +286,187 @@ item_factory_bind_cb (
           }
       }
       break;
+    case ITEM_FACTORY_ICON_AND_TEXT:
+      {
+        PopoverMenuBinWidget * bin =
+          Z_POPOVER_MENU_BIN_WIDGET (
+            gtk_list_item_get_child (listitem));
+        GtkBox * box =
+          GTK_BOX (
+            popover_menu_bin_widget_get_child (bin));
+        GtkImage * img =
+          GTK_IMAGE (
+            gtk_widget_get_first_child (
+              GTK_WIDGET (box)));
+        GtkLabel * lbl =
+          GTK_LABEL (
+            gtk_widget_get_last_child (
+              GTK_WIDGET (box)));
+
+        switch (obj->type)
+          {
+          case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
+            {
+              PluginDescriptor * descr =
+                (PluginDescriptor *) obj->obj;
+              gtk_image_set_from_icon_name (
+                img,
+                plugin_descriptor_get_icon_name (
+                  descr));
+              gtk_label_set_text (lbl, descr->name);
+
+              /* FIXME wait for gtk bug fix */
+              break;
+              GMenu * menu =
+                G_MENU (
+                  popover_menu_bin_widget_get_menu_model (
+                    bin));
+              if (menu)
+                g_menu_remove_all (menu);
+              else
+                menu = g_menu_new ();
+
+              /* set right click model */
+              GMenuItem * menuitem;
+
+              menuitem =
+                z_gtk_create_menu_item (
+                  _("Add to project"), NULL,
+                  "app.plugin-browser-add-to-project");
+              g_menu_append_item (menu, menuitem);
+
+#ifdef HAVE_CARLA
+              menuitem =
+                z_gtk_create_menu_item (
+                  _("Add to project (carla)"), NULL,
+                  "app.plugin-browser-add-to-project-carla");
+              g_menu_append_item (menu, menuitem);
+
+              PluginSetting * new_setting =
+                plugin_setting_new_default (descr);
+              if (descr->has_custom_ui &&
+                  descr->min_bridge_mode ==
+                    CARLA_BRIDGE_NONE &&
+                  !new_setting->force_generic_ui)
+                {
+                  menuitem =
+                    z_gtk_create_menu_item (
+                      _("Add to project (carla)"), NULL,
+                      "app.plugin-browser-add-to-project-bridged-ui");
+                  g_menu_append_item (menu, menuitem);
+                }
+              plugin_setting_free (new_setting);
+
+              menuitem =
+                z_gtk_create_menu_item (
+                  _("Add to project (carla)"), NULL,
+                  "app.plugin-browser-add-to-project-bridged-full");
+              g_menu_append_item (menu, menuitem);
+#endif
+
+#if 0
+              menuitem =
+                GTK_MENU_ITEM (
+                  gtk_check_menu_item_new_with_mnemonic (
+                    _("Use _Generic UI")));
+              APPEND;
+              gtk_check_menu_item_set_active (
+                GTK_CHECK_MENU_ITEM (menuitem),
+                new_setting->force_generic_ui);
+              g_signal_connect (
+                G_OBJECT (menuitem), "toggled",
+                G_CALLBACK (on_use_generic_ui_toggled), descr);
+#endif
+
+              /* add to collection */
+              GMenu * add_collections_submenu = g_menu_new ();
+              int num_added = 0;
+              for (int i = 0;
+                   i < PLUGIN_MANAGER->collections->
+                     num_collections;
+                   i++)
+                {
+                  PluginCollection * coll =
+                    PLUGIN_MANAGER->collections->collections[i];
+                  if (plugin_collection_contains_descriptor (
+                        coll, descr, false))
+                    {
+                      continue;
+                    }
+
+                  char tmp[600];
+                  sprintf (
+                    tmp,
+                    "app.plugin-browser-add-to-collection::%p",
+                    coll);
+                  menuitem =
+                    z_gtk_create_menu_item (
+                      coll->name, NULL, tmp);
+                  g_menu_append_item (
+                    add_collections_submenu, menuitem);
+                  num_added++;
+                }
+              if (num_added > 0)
+                {
+                  g_menu_append_section (
+                    menu, _("Add to collection"),
+                    G_MENU_MODEL (
+                      add_collections_submenu));
+                }
+              else
+                {
+                  g_object_unref (
+                    add_collections_submenu);
+                }
+
+              /* remove from collection */
+              GMenu * remove_collections_submenu =
+                g_menu_new ();
+              num_added = 0;
+              for (int i = 0;
+                   i < PLUGIN_MANAGER->collections->
+                     num_collections;
+                   i++)
+                {
+                  PluginCollection * coll =
+                    PLUGIN_MANAGER->collections->collections[i];
+                  if (!plugin_collection_contains_descriptor (
+                        coll, descr, false))
+                    {
+                      continue;
+                    }
+
+                  char tmp[600];
+                  sprintf (
+                    tmp,
+                    "app.plugin-browser-remove-from-collection::%p",
+                    coll);
+                  menuitem =
+                    z_gtk_create_menu_item (
+                      coll->name, NULL, tmp);
+                  g_menu_append_item (
+                    remove_collections_submenu, menuitem);
+                  num_added++;
+                }
+              if (num_added > 0)
+                {
+                  g_menu_append_section (
+                    menu, _("Remove from collection"),
+                    G_MENU_MODEL (remove_collections_submenu));
+                }
+              else
+                {
+                  g_object_unref (remove_collections_submenu);
+                }
+              popover_menu_bin_widget_set_menu_model (
+                bin, G_MENU_MODEL (menu));
+            }
+            break;
+          default:
+            break;
+          }
+      }
+      break;
     default:
       break;
     }
@@ -268,11 +490,22 @@ item_factory_unbind_cb (
       {
         GtkWidget * child =
           gtk_list_item_get_child (listitem);
-              gpointer data =
+        gpointer data =
           g_object_get_data (
             G_OBJECT (child), "item-factory-data");
         g_signal_handlers_disconnect_by_func (
           child, on_toggled, data);
+      }
+      break;
+    case ITEM_FACTORY_ICON_AND_TEXT:
+      {
+        GtkWidget * child =
+          gtk_list_item_get_child (listitem);
+        PopoverMenuBinWidget * bin =
+          Z_POPOVER_MENU_BIN_WIDGET (
+            gtk_list_item_get_child (listitem));
+        (void) child;
+        (void) bin;
       }
       break;
     default:
@@ -293,6 +526,14 @@ item_factory_teardown_cb (
   gtk_list_item_set_child (listitem, NULL);
 }
 
+/**
+ * Creates a new item factory.
+ *
+ * @param editable Whether the item should be
+ *   editable.
+ * @param column_name Column name, if column view,
+ *   otherwise NULL.
+ */
 ItemFactory *
 item_factory_new (
   ItemFactoryType type,
@@ -301,8 +542,11 @@ item_factory_new (
 {
   ItemFactory * self = object_new (ItemFactory);
 
+  self->type = type;
+
   self->editable = editable;
-  self->column_name = g_strdup (column_name);
+  if (column_name)
+    self->column_name = g_strdup (column_name);
 
   GtkListItemFactory * list_item_factory =
     gtk_signal_list_item_factory_new ();
@@ -326,6 +570,10 @@ item_factory_new (
   return self;
 }
 
+/**
+ * Shorthand to generate and append a column to
+ * a column view.
+ */
 void
 item_factory_generate_and_append_column (
   GtkColumnView * column_view,

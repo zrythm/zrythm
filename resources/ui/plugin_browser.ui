@@ -95,7 +95,7 @@
               <object class="GtkScrolledWindow" id="plugin_scroll">
                 <property name="vexpand">1</property>
                 <property name="child">
-                  <object class="GtkTreeView" id="plugin_tree_view"/>
+                  <object class="GtkListView" id="plugin_list_view"/>
                 </property>
               </object>
             </child>

@@ -117,7 +117,7 @@ plugin_descriptor_clone (
  */
 bool
 plugin_descriptor_is_instrument (
-  const PluginDescriptor * descr)
+  const PluginDescriptor * const descr)
 {
   if (descr->num_midi_ins == 0 ||
       descr->num_audio_outs == 0)
@@ -147,7 +147,7 @@ plugin_descriptor_is_instrument (
  */
 bool
 plugin_descriptor_is_effect (
-  PluginDescriptor * descr)
+  const PluginDescriptor * const descr)
 {
 
   return
@@ -199,7 +199,7 @@ plugin_descriptor_is_effect (
  */
 int
 plugin_descriptor_is_modulator (
-  PluginDescriptor * descr)
+  const PluginDescriptor * const descr)
 {
   return
     (descr->category == ZPLUGIN_CATEGORY_NONE ||
@@ -220,7 +220,7 @@ plugin_descriptor_is_modulator (
  */
 int
 plugin_descriptor_is_midi_modifier (
-  PluginDescriptor * descr)
+  const PluginDescriptor * const descr)
 {
   return
     (descr->category > ZPLUGIN_CATEGORY_NONE &&
@@ -519,6 +519,39 @@ plugin_descriptor_get_min_bridge_mode (
     }
 
   g_return_val_if_reached (CARLA_BRIDGE_NONE);
+}
+
+/**
+ * Gets an appropriate icon name for the given
+ * descriptor.
+ */
+const char *
+plugin_descriptor_get_icon_name (
+  const PluginDescriptor * const self)
+{
+  if (plugin_descriptor_is_instrument (self))
+    {
+      return "instrument";
+    }
+  else if (plugin_descriptor_is_modulator (
+             self))
+    {
+      return "modulator";
+    }
+  else if (plugin_descriptor_is_midi_modifier (
+             self))
+    {
+      return "signal-midi";
+    }
+  else if (plugin_descriptor_is_effect (
+             self))
+    {
+      return "bars";
+    }
+  else
+    {
+      return "plug";
+    }
 }
 
 void

@@ -113,6 +113,7 @@ widget_srcs = files([
   'plugin_browser.c',
   'plugin_properties_expander.c',
   'plugin_strip_expander.c',
+  'popover_menu_bin.c',
   'port_connection_row.c',
   'port_connections.c',
   'port_connections_popover.c',

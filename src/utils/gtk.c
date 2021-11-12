@@ -2014,6 +2014,14 @@ Window
 z_gtk_window_get_x11_xid (
   GtkWindow * window)
 {
+#ifdef GDK_WINDOWING_WAYLAND
+  GdkDisplay * display =
+    gdk_display_get_default ();
+  g_return_val_if_fail (display, false);
+  if (GDK_IS_WAYLAND_DISPLAY (display))
+    return 0;
+#endif
+
   GtkNative * native = GTK_NATIVE (window);
   GdkSurface * surface =
     gtk_native_get_surface (native);

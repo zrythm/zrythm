@@ -41,6 +41,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
 typedef struct PluginCollection PluginCollection;
+typedef struct ItemFactory ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -102,7 +103,8 @@ typedef struct _PluginBrowserWidget
   GtkTreeView *        author_tree_view;
   GtkTreeView *        category_tree_view;
   GtkTreeView *        protocol_tree_view;
-  GtkTreeView *        plugin_tree_view;
+
+  GtkListView *        plugin_list_view;
 
   /** Browser bot. */
   GtkBox *             browser_bot;
@@ -139,7 +141,12 @@ typedef struct _PluginBrowserWidget
   GtkTreeModel *       author_tree_model;
   GtkTreeModelSort *   protocol_tree_model;
   GtkTreeModel *       category_tree_model;
-  GtkTreeModelFilter * plugin_tree_model;
+
+  /** List view -> selection model -> filter model */
+  GtkCustomFilter *    plugin_filter;
+  GtkFilterListModel * plugin_filter_model;
+  GtkSingleSelection * plugin_selection_model;
+  ItemFactory *        plugin_item_factory;
 
   /**
    * The currently selected collections.

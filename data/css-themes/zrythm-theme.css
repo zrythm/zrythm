@@ -184,36 +184,36 @@ right-dock-edge notebook header,
 bot-dock-edge notebook header,
 notebook header,
 center-dock-bot-box,
-center-dock-bot-box toolbar,
+center-dock-bot-box .toolbar,
 tracklist-header,
 top-dock-edge,
-top-dock-edge toolbar,
+top-dock-edge .toolbar,
 top-bar,
-top-bar toolbar,
+top-bar .toolbar,
 bot-bar,
-bot-bar toolbar,
+bot-bar .toolbar,
 assistant,
 buttonbox,
 timeline-selection-info,
 .timeline-toolbar,
 piano-roll-selection-info,
 piano-roll-toolbar,
-.plugin-browser toolbar,
-.file-browser toolbar,
+.plugin-browser .toolbar,
+.file-browser .toolbar,
 dialog
 {
 background-color: @bg_dark_variant2;
 }
 
-.plugin-browser toolbar,
-.file-browser toolbar
+.plugin-browser .toolbar,
+.file-browser .toolbar
 {
   padding: 0px;
 }
 
 .header tabs,
 .header header,
-.header toolbar,
+.header .toolbar,
 .header > box,
 home-toolbar,
 project-toolbar,
@@ -336,7 +336,7 @@ button.text-button:active
   background-color: @bright_orange;
 }
 
-bot-dock-edge toolbar
+bot-dock-edge .toolbar
 {
   background-color: @bg_dark_variant2;
 }
