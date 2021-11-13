@@ -119,6 +119,7 @@ entry selection
 }
 
 treeview.view:hover,
+listview row:hover,
 list row:hover,
 scrollbar,
 box.sidebar,
@@ -158,6 +159,7 @@ filechooser list
 }
 
 treeview.view:selected,
+listview row:selected,
 list row:selected
 {
   background-color: @z_purple;
@@ -343,6 +345,7 @@ bot-dock-edge .toolbar
 
 arranger-bg,
 treeview.view,
+listview.view,
 list row,
 timeline-minimap-bg
 {

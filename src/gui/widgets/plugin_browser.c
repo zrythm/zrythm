@@ -950,33 +950,6 @@ on_plugin_selection_changed (
   g_free (label);
 }
 
-static GdkContentProvider *
-on_dnd_drag_prepare (
-  GtkDragSource * source,
-  double          x,
-  double          y,
-  gpointer        user_data)
-{
-  g_debug ("PREPARE");
-  GtkTreeView * tv = GTK_TREE_VIEW (user_data);
-  PluginDescriptor * descr =
-    z_gtk_get_single_selection_pointer (
-      tv, PL_COLUMN_DESCR);
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    wrapped_object_with_change_signal_new (
-      descr, WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
-  GdkContentProvider * content_providers[] = {
-    gdk_content_provider_new_typed (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
-      wrapped_obj),
-  };
-
-  return
-    gdk_content_provider_new_union (
-      content_providers,
-      G_N_ELEMENTS (content_providers));
-}
-
 static GtkTreeModel *
 create_model_for_favorites ()
 {
@@ -1233,18 +1206,6 @@ plugin_list_view_setup (
     G_OBJECT (selection_model), "selection-changed",
     G_CALLBACK (on_plugin_selection_changed),
     self);
-
-  GtkDragSource * drag_source =
-    gtk_drag_source_new ();
-  g_signal_connect (
-    drag_source, "prepare",
-    G_CALLBACK (on_dnd_drag_prepare), list_view);
-#if 0
-  gtk_widget_add_controller (
-    GTK_WIDGET (tree_view),
-    GTK_EVENT_CONTROLLER (drag_source));
-#endif
-  /* TODO move dnd to item factory */
 }
 
 /**

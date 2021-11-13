@@ -1435,8 +1435,7 @@ carla_native_plugin_open_ui (
             plugin_generate_window_title (pl);
           g_debug ("plugin window title '%s'", title);
           carla_set_custom_ui_title (
-            /* FIXME revert */
-            self->host_handle, 0, "title");
+            self->host_handle, 0, title);
           g_free (title);
 
           /* set whether to keep window on top */
@@ -1446,6 +1445,10 @@ carla_native_plugin_open_ui (
             {
 #if defined (HAVE_X11) && \
   !defined (GDK_WINDOWING_WAYLAND)
+              g_debug (
+                "setting Carla plugin window "
+                "title to %s",
+                title);
               Window xid =
                 z_gtk_window_get_x11_xid (
                   GTK_WINDOW (MAIN_WINDOW));

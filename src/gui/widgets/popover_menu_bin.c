@@ -35,6 +35,7 @@ on_right_click (
 {
   PopoverMenuBinWidget * self =
     Z_POPOVER_MENU_BIN_WIDGET (user_data);
+  g_message ("right click");
   if (!self->menu_model)
     return;
 

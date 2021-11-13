@@ -101,6 +101,47 @@ on_toggled (
     }
 }
 
+#if 0
+static void
+on_list_item_selected (
+  GObject    * gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  GtkListItem * list_item = GTK_LIST_ITEM (gobject);
+  GtkWidget * child =
+    gtk_list_item_get_child (list_item);
+
+  if (gtk_list_item_get_selected (list_item))
+    gtk_widget_add_css_class (child, "selected");
+  else
+    gtk_widget_remove_css_class (child, "selected");
+}
+#endif
+
+static GdkContentProvider *
+on_dnd_drag_prepare (
+  GtkDragSource * source,
+  double          x,
+  double          y,
+  gpointer        user_data)
+{
+  ItemFactoryData * data =
+    (ItemFactoryData *) user_data;
+
+  g_debug ("PREPARE");
+  GdkContentProvider * content_providers[] = {
+    gdk_content_provider_new_typed (
+      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+      data->obj),
+  };
+
+  return
+    gdk_content_provider_new_union (
+      content_providers,
+      G_N_ELEMENTS (content_providers));
+}
+
 static void
 item_factory_setup_cb (
   GtkSignalListItemFactory * factory,
@@ -109,9 +150,10 @@ item_factory_setup_cb (
 {
   ItemFactory * self = (ItemFactory *) user_data;
 
-  /*WrappedObjectWithChangeSignal * obj =*/
-    /*Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (*/
-      /*gtk_list_item_get_item (listitem));*/
+  PopoverMenuBinWidget * bin =
+    popover_menu_bin_widget_new ();
+  gtk_widget_add_css_class (
+    GTK_WIDGET (bin), "list-item-child");
 
   switch (self->type)
     {
@@ -119,8 +161,6 @@ item_factory_setup_cb (
       {
         GtkWidget * check_btn =
           gtk_check_button_new ();
-        PopoverMenuBinWidget * bin =
-          popover_menu_bin_widget_new ();
         popover_menu_bin_widget_set_child (
           bin, check_btn);
         gtk_list_item_set_child (
@@ -130,8 +170,6 @@ item_factory_setup_cb (
     case ITEM_FACTORY_TEXT:
       {
         GtkWidget * label = gtk_label_new ("");
-        PopoverMenuBinWidget * bin =
-          popover_menu_bin_widget_new ();
         popover_menu_bin_widget_set_child (
           bin, label);
         gtk_list_item_set_child (
@@ -150,8 +188,6 @@ item_factory_setup_cb (
         gtk_box_append (
           GTK_BOX (box), GTK_WIDGET (img));
         gtk_box_append (GTK_BOX (box), label);
-        PopoverMenuBinWidget * bin =
-          popover_menu_bin_widget_new ();
         popover_menu_bin_widget_set_child (
           bin, GTK_WIDGET (box));
         gtk_list_item_set_child (
@@ -161,6 +197,12 @@ item_factory_setup_cb (
     default:
       break;
     }
+
+#if 0
+  g_signal_connect (
+    G_OBJECT (listitem), "notify::selected",
+    G_CALLBACK (on_list_item_selected), self);
+#endif
 }
 
 static void
@@ -314,6 +356,29 @@ item_factory_bind_cb (
                 plugin_descriptor_get_icon_name (
                   descr));
               gtk_label_set_text (lbl, descr->name);
+
+              /* set as drag source */
+              GtkDragSource * drag_source =
+                gtk_drag_source_new ();
+              ItemFactoryData * data =
+                item_factory_data_new (self, obj);
+              g_object_set_data (
+                G_OBJECT (bin), "item-factory-data",
+                data);
+              g_signal_connect_data (
+                G_OBJECT (drag_source),
+                "prepare",
+                G_CALLBACK (on_dnd_drag_prepare),
+                data,
+                item_factory_data_destroy_closure,
+                0);
+              g_object_set_data (
+                G_OBJECT (bin), "drag-source",
+                drag_source);
+              gtk_widget_add_controller (
+                GTK_WIDGET (bin),
+                GTK_EVENT_CONTROLLER (
+                  drag_source));
 
               /* FIXME wait for gtk bug fix */
               break;
@@ -480,9 +545,9 @@ item_factory_unbind_cb (
 {
   ItemFactory * self = (ItemFactory *) user_data;
 
-  /*WrappedObjectWithChangeSignal * obj =*/
-    /*Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (*/
-      /*gtk_list_item_get_item (listitem));*/
+  WrappedObjectWithChangeSignal * obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      gtk_list_item_get_item (listitem));
 
   switch (self->type)
     {
@@ -499,13 +564,30 @@ item_factory_unbind_cb (
       break;
     case ITEM_FACTORY_ICON_AND_TEXT:
       {
-        GtkWidget * child =
-          gtk_list_item_get_child (listitem);
         PopoverMenuBinWidget * bin =
           Z_POPOVER_MENU_BIN_WIDGET (
             gtk_list_item_get_child (listitem));
-        (void) child;
-        (void) bin;
+        GtkBox * box =
+          GTK_BOX (
+            popover_menu_bin_widget_get_child (bin));
+        (void) box;
+
+        switch (obj->type)
+          {
+          case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
+            {
+              /* set as drag source */
+              GtkDragSource * drag_source =
+                g_object_get_data (
+                  G_OBJECT (bin), "drag-source");
+              gtk_widget_remove_controller (
+                GTK_WIDGET (bin),
+                GTK_EVENT_CONTROLLER (drag_source));
+            }
+            break;
+          default:
+            break;
+          }
       }
       break;
     default:
