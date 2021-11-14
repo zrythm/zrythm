@@ -82,134 +82,45 @@ static void
 update_stack_switcher_emblems (
   PluginBrowserWidget * self)
 {
-  /* TODO */
-#if 0
-  bool has_collections =
+  int num_collections =
     gtk_tree_selection_count_selected_rows (
       gtk_tree_view_get_selection (
         GTK_TREE_VIEW (
           self->collection_tree_view)));
-  bool has_authors =
+  int num_authors =
     gtk_tree_selection_count_selected_rows (
       gtk_tree_view_get_selection (
         GTK_TREE_VIEW (
           self->author_tree_view)));
-  bool has_categories =
+  int num_categories =
     gtk_tree_selection_count_selected_rows (
       gtk_tree_view_get_selection (
         GTK_TREE_VIEW (
           self->category_tree_view)));
-  bool has_protocols =
+  int num_protocols =
     gtk_tree_selection_count_selected_rows (
       gtk_tree_view_get_selection (
         GTK_TREE_VIEW (
           self->protocol_tree_view)));
 
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self->stack_switcher));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      if (!GTK_IS_RADIO_BUTTON (iter->data))
-        continue;
+  AdwViewStackPage * page;
 
-      GtkButton * button = GTK_BUTTON (iter->data);
+#define SET_EMBLEM(scroll_name,num) \
+  page = \
+    adw_view_stack_get_page ( \
+      self->stack, \
+      GTK_WIDGET (self->scroll_name##_scroll)); \
+  adw_view_stack_page_set_badge_number ( \
+    page, num); \
+  adw_view_stack_page_set_needs_attention ( \
+    page, num > 0)
 
-      GtkWidget * btn_child =
-        gtk_bin_get_child (GTK_BIN (button));
-      GtkImage * prev_img = NULL;
-      if (GTK_IS_BIN (btn_child))
-        {
-          GtkWidget * inner_child =
-            gtk_bin_get_child (
-              GTK_BIN (btn_child));
-          if (GTK_IS_CONTAINER (inner_child))
-            {
-              prev_img =
-                GTK_IMAGE (
-                  z_gtk_container_get_single_child (
-                    GTK_CONTAINER (inner_child)));
-            }
-          else if (GTK_IS_IMAGE (inner_child))
-            {
-              prev_img = GTK_IMAGE (inner_child);
-            }
-          else
-            {
-              g_critical (
-                "unknown type %s",
-                G_OBJECT_TYPE_NAME (inner_child));
-            }
-        }
-      else
-        {
-          prev_img =
-            GTK_IMAGE (
-              gtk_bin_get_child (GTK_BIN (button)));
-        }
+  SET_EMBLEM (collection, num_collections);
+  SET_EMBLEM (author, num_authors);
+  SET_EMBLEM (category, num_categories);
+  SET_EMBLEM (protocol, num_protocols);
 
-      GtkIconSize icon_size;
-      const char * icon_name = NULL;
-      GtkImageType image_type =
-        gtk_image_get_storage_type (prev_img);
-      if (image_type == GTK_IMAGE_ICON_NAME)
-        {
-          gtk_image_get_icon_name (
-            prev_img, &icon_name, &icon_size);
-        }
-      else if (image_type == GTK_IMAGE_GICON)
-        {
-          GIcon * emblemed_icon = NULL;
-          gtk_image_get_gicon (
-            prev_img, &emblemed_icon, &icon_size);
-          g_return_if_fail (emblemed_icon);
-          GIcon * prev_icon = NULL;
-          if (G_IS_EMBLEMED_ICON (emblemed_icon))
-            {
-              prev_icon =
-                g_emblemed_icon_get_icon (
-                  G_EMBLEMED_ICON (emblemed_icon));
-            }
-          else if (G_IS_THEMED_ICON (emblemed_icon))
-            {
-              prev_icon = emblemed_icon;
-            }
-          else
-            {
-              g_return_if_reached ();
-            }
-
-          const char * const * icon_names =
-            g_themed_icon_get_names (
-              G_THEMED_ICON (prev_icon));
-          icon_name =  icon_names[0];
-        }
-      g_return_if_fail (icon_name);
-
-      /* add emblem if needed */
-      bool needs_emblem =
-        (has_collections &&
-         string_is_equal (
-           icon_name, COLLECTIONS_ICON)) ||
-        (has_protocols &&
-         string_is_equal (
-           icon_name, PROTOCOLS_ICON)) ||
-        (has_authors &&
-         string_is_equal (
-           icon_name, AUTHORS_ICON)) ||
-        (has_categories &&
-         string_is_equal (
-           icon_name, CATEGORIES_ICON));
-
-      z_gtk_button_set_emblem (
-        button,
-        needs_emblem ? "media-record" : NULL);
-    }
-  g_list_free (children);
-#endif
+#undef SET_EMBLEM
 }
 
 static void
@@ -1308,12 +1219,12 @@ plugin_browser_widget_refresh_collections (
 
 static void
 on_visible_child_changed (
-  GtkStack * stack,
+  AdwViewStack * stack,
   GParamSpec * pspec,
   PluginBrowserWidget * self)
 {
   GtkWidget * child =
-    gtk_stack_get_visible_child (stack);
+    adw_view_stack_get_visible_child (stack);
 
   if (child == GTK_WIDGET (self->collection_scroll))
     {
@@ -1644,22 +1555,22 @@ plugin_browser_widget_new ()
   switch (tab)
     {
     case PLUGIN_BROWSER_TAB_COLLECTION:
-      gtk_stack_set_visible_child (
+      adw_view_stack_set_visible_child (
         self->stack,
         GTK_WIDGET (self->collection_scroll));
       break;
     case PLUGIN_BROWSER_TAB_AUTHOR:
-      gtk_stack_set_visible_child (
+      adw_view_stack_set_visible_child (
         self->stack,
         GTK_WIDGET (self->author_scroll));
       break;
     case PLUGIN_BROWSER_TAB_CATEGORY:
-      gtk_stack_set_visible_child (
+      adw_view_stack_set_visible_child (
         self->stack,
         GTK_WIDGET (self->category_scroll));
       break;
     case PLUGIN_BROWSER_TAB_PROTOCOL:
-      gtk_stack_set_visible_child (
+      adw_view_stack_set_visible_child (
         self->stack,
         GTK_WIDGET (self->protocol_scroll));
       break;
@@ -1788,8 +1699,8 @@ plugin_browser_widget_init (
     GTK_WIDGET (self->popover_menu));
 
   self->stack_switcher =
-    GTK_STACK_SWITCHER (gtk_stack_switcher_new ());
-  gtk_stack_switcher_set_stack (
+    ADW_VIEW_SWITCHER (adw_view_switcher_new ());
+  adw_view_switcher_set_stack (
     self->stack_switcher, self->stack);
   gtk_box_append (
     self->stack_switcher_box,

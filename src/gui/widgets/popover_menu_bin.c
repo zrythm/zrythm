@@ -94,9 +94,25 @@ popover_menu_bin_widget_new (void)
 }
 
 static void
+dispose (
+  PopoverMenuBinWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    popover_menu_bin_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 popover_menu_bin_widget_class_init (
   PopoverMenuBinWidgetClass * _klass)
 {
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (_klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }
 
 static void

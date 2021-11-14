@@ -84,12 +84,12 @@ typedef struct _PluginBrowserWidget
   GtkPaned *           paned;
 
   /** The stack switcher. */
-  GtkStackSwitcher *   stack_switcher;
+  AdwViewSwitcher *    stack_switcher;
   GtkBox *             stack_switcher_box;
 
   /** The stack containing collection/category/
    * protocol. */
-  GtkStack *           stack;
+  AdwViewStack *       stack;
 
   /* The scrolls for each tree view */
   GtkScrolledWindow *  collection_scroll;

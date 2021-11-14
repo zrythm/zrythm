@@ -15,6 +15,33 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Adrien Plazas <adrien.plazas@puri.sm>
+ * Bob Ham <bob.ham@puri.sm>
+ * Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+ * Guido Günther <agx@sigxcpu.org>
+ * Heather Ellsworth <heather.ellsworth@puri.sm>
+ * Julian Richen <julian@richen.io>
+ * Julian Sparber <julian@sparber.net>
+ * Sebastien Lafargue <slafargue@gnome.org>
+ * Zander Brown <zbrown@gnome.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 /*
@@ -646,3 +673,43 @@ label.small-vertical-lbl {
       0 1px rgba(0,0,0,0.3),
       -1px 0 rgba(0,0,0,0.1);
 }
+
+/* adwaita stack view */
+viewswitcher, viewswitcher button.toggle { margin: 0; padding: 0; }
+
+viewswitcher button.toggle { border-radius: 0; border-top: none; border-bottom: none; font-size: 1rem; font-weight: inherit; }
+
+viewswitcher button.toggle > stack > box.narrow { font-size: 0.75rem; padding-top: 7px; padding-bottom: 5px; border-spacing: 4px; }
+
+viewswitcher button.toggle > stack > box.narrow > stack > label { padding-left: 8px; padding-right: 8px; }
+
+viewswitcher button.toggle > stack > box.wide { padding: 8px 12px; border-spacing: 6px; }
+
+viewswitcher button.toggle > stack > box label.active { font-weight: bold; }
+
+/********************** AdwViewSwitcherBar * */
+viewswitcherbar actionbar > revealer > box { padding: 0; }
+
+/************************ AdwViewSwitcherTitle * */
+viewswitchertitle viewswitcher { margin-left: 12px; margin-right: 12px; }
+
+/* stack view indicator */
+indicatorbin > indicator, indicatorbin > mask { min-width: 6px; min-height: 6px; border-radius: 100px; }
+
+indicatorbin > indicator { margin: 1px; background: alpha(currentColor,0.4); }
+
+indicatorbin > indicator > label { font-size: 0.6rem; font-weight: bold; padding: 1px 4px; color: white; }
+
+indicatorbin > mask { padding: 1px; background: black; }
+
+indicatorbin.needs-attention > indicator { background: @z_purple; }
+
+indicatorbin.needs-attention > indicator > label { color: white; }
+
+/* preferences */
+window.preferences > contents > leaflet > box > stack > stack > scrolledwindow > viewport > clamp > list, preferencespage > scrolledwindow > viewport > clamp > box { margin: 24px 12px; border-spacing: 24px; }
+
+preferencesgroup > box > label:not(:first-child) { margin-top: 6px; }
+
+preferencesgroup > box > box:not(:first-child) { margin-top: 12px; }
+

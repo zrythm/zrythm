@@ -19,10 +19,10 @@
               <object class="GtkBox" id="stack_switcher_box"/>
             </child>
             <child>
-              <object class="GtkStack" id="stack">
+              <object class="AdwViewStack" id="stack">
                 <property name="vexpand">1</property>
                 <child>
-                  <object class="GtkStackPage">
+                  <object class="AdwViewStackPage">
                     <property name="name">collections</property>
                     <property name="title" translatable="yes">Collection</property>
                     <property name="icon-name">favorite</property>
@@ -36,7 +36,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkStackPage">
+                  <object class="AdwViewStackPage">
                     <property name="name">authors</property>
                     <property name="title" translatable="yes">Author</property>
                     <property name="icon-name">user</property>
@@ -50,7 +50,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkStackPage">
+                  <object class="AdwViewStackPage">
                     <property name="name">categories</property>
                     <property name="title" translatable="yes">Category</property>
                     <property name="icon-name">category</property>
@@ -64,7 +64,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkStackPage">
+                  <object class="AdwViewStackPage">
                     <property name="name">protocols</property>
                     <property name="title" translatable="yes">Protocol</property>
                     <property name="icon-name">protocol</property>
