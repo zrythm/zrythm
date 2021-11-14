@@ -5816,8 +5816,6 @@ on_focus_leave (
   self->alt_held = 0;
   self->ctrl_held = 0;
   self->shift_held = 0;
-
-  return FALSE;
 }
 
 /**

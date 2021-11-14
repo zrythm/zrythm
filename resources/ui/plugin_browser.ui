@@ -22,30 +22,58 @@
               <object class="GtkStack" id="stack">
                 <property name="vexpand">1</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="collection_scroll">
+                  <object class="GtkStackPage">
+                    <property name="name">collections</property>
+                    <property name="title" translatable="yes">Collection</property>
+                    <property name="icon-name">favorite</property>
                     <property name="child">
-                      <object class="GtkTreeView" id="collection_tree_view"/>
+                      <object class="GtkScrolledWindow" id="collection_scroll">
+                        <property name="child">
+                          <object class="GtkTreeView" id="collection_tree_view"/>
+                        </property>
+                      </object>
                     </property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="author_scroll">
+                  <object class="GtkStackPage">
+                    <property name="name">authors</property>
+                    <property name="title" translatable="yes">Author</property>
+                    <property name="icon-name">user</property>
                     <property name="child">
-                      <object class="GtkTreeView" id="author_tree_view"/>
+                      <object class="GtkScrolledWindow" id="author_scroll">
+                        <property name="child">
+                          <object class="GtkTreeView" id="author_tree_view"/>
+                        </property>
+                      </object>
                     </property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="category_scroll">
+                  <object class="GtkStackPage">
+                    <property name="name">categories</property>
+                    <property name="title" translatable="yes">Category</property>
+                    <property name="icon-name">category</property>
                     <property name="child">
-                      <object class="GtkTreeView" id="category_tree_view"/>
+                      <object class="GtkScrolledWindow" id="category_scroll">
+                        <property name="child">
+                          <object class="GtkTreeView" id="category_tree_view"/>
+                        </property>
+                      </object>
                     </property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="protocol_scroll">
+                  <object class="GtkStackPage">
+                    <property name="name">protocols</property>
+                    <property name="title" translatable="yes">Protocol</property>
+                    <property name="icon-name">protocol</property>
                     <property name="child">
-                      <object class="GtkTreeView" id="protocol_tree_view"/>
+                      <object class="GtkScrolledWindow" id="protocol_scroll">
+                        <property name="child">
+                          <object class="GtkTreeView" id="protocol_tree_view"/>
+                        </property>
+                      </object>
                     </property>
                   </object>
                 </child>

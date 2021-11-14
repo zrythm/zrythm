@@ -1790,77 +1790,12 @@ plugin_browser_widget_init (
   self->stack_switcher =
     GTK_STACK_SWITCHER (gtk_stack_switcher_new ());
   gtk_stack_switcher_set_stack (
-    self->stack_switcher,
-    self->stack);
+    self->stack_switcher, self->stack);
   gtk_box_append (
     self->stack_switcher_box,
     GTK_WIDGET (self->stack_switcher));
 
   /* set stackswitcher icons */
-#if 0
-  GValue iconval1 = G_VALUE_INIT;
-  GValue iconval2 = G_VALUE_INIT;
-  GValue iconval3 = G_VALUE_INIT;
-  GValue iconval4 = G_VALUE_INIT;
-  g_value_init (&iconval1, G_TYPE_STRING);
-  g_value_init (&iconval2, G_TYPE_STRING);
-  g_value_init (&iconval3, G_TYPE_STRING);
-  g_value_init (&iconval4, G_TYPE_STRING);
-  g_value_set_string (
-    &iconval1, COLLECTIONS_ICON);
-  g_value_set_string(
-    &iconval2, AUTHORS_ICON);
-  g_value_set_string(
-    &iconval3, CATEGORIES_ICON);
-  g_value_set_string(
-    &iconval4, PROTOCOLS_ICON);
-
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->collection_scroll),
-    "icon-name", &iconval1);
-  g_value_set_string (
-    &iconval1, _("Collection"));
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->collection_scroll),
-    "title", &iconval1);
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->author_scroll),
-    "icon-name", &iconval2);
-  g_value_set_string (
-    &iconval2, _("Author"));
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->author_scroll),
-    "title", &iconval2);
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->category_scroll),
-    "icon-name", &iconval3);
-  g_value_set_string (
-    &iconval3, _("Category"));
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->category_scroll),
-    "title", &iconval3);
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->protocol_scroll),
-    "icon-name", &iconval4);
-  g_value_set_string (
-    &iconval4, _("Protocol"));
-  gtk_container_child_set_property (
-    GTK_CONTAINER (self->stack),
-    GTK_WIDGET (self->protocol_scroll),
-    "title", &iconval4);
-  g_value_unset (&iconval1);
-  g_value_unset (&iconval2);
-  g_value_unset (&iconval3);
-  g_value_unset (&iconval4);
-#endif
-
 #if 0
   GList *children, *iter;
   children =
