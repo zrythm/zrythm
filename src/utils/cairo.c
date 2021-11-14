@@ -237,7 +237,7 @@ z_cairo_get_surface_from_icon_name (
     {
       GdkTexture * texture =
         z_gdk_texture_new_from_icon_name (
-          icon_name, size, scale);
+          icon_name, size, size, scale);
       if (!texture)
         {
           g_message (

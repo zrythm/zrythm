@@ -710,10 +710,32 @@ z_gtk_window_get_x11_xid (
   GtkWindow * window);
 #endif
 
+/**
+ * Creates a new pixbuf for the given icon scaled
+ * at the given width/height.
+ *
+ * Pass -1 for either width/height to maintain
+ * aspect ratio.
+ */
+GdkPixbuf *
+z_gdk_pixbuf_new_from_icon_name (
+  const char * icon_name,
+  int          width,
+  int          height,
+  int          scale);
+
+/**
+ * Creates a new texture for the given icon scaled
+ * at the given width/height.
+ *
+ * Pass -1 for either width/height to maintain
+ * aspect ratio.
+ */
 GdkTexture *
 z_gdk_texture_new_from_icon_name (
   const char * icon_name,
-  int          size,
+  int          width,
+  int          height,
   int          scale);
 
 void

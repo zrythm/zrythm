@@ -226,6 +226,11 @@ menubar
   background-color: @bg_darker_variant2;
 }
 
+.header-toolbar-corner
+{
+  /*border-bottom: 0px;*/
+}
+
 home-toolbar separator,
 project-toolbar separator,
 view-toolbar separator,
@@ -293,6 +298,16 @@ popover
   background-color: transparent;
 }
 
+popover.background > contents,
+popover.background > arrow
+{
+  padding: 3px;
+  background-color: @bg_lighter_variant1;
+  background-clip: unset;
+  border: unset;
+  box-shadow: unset;
+}
+
 button:not(.record-button):not(.solo-button).toggle:checked,
 stackswitcher button:checked,
 menuitem:hover
@@ -347,7 +362,8 @@ arranger-bg,
 treeview.view,
 listview.view,
 list row,
-timeline-minimap-bg
+timeline-minimap-bg,
+list
 {
   background-color: @bg_darker_variant1;
 }

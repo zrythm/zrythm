@@ -31,6 +31,7 @@ G_DECLARE_FINAL_TYPE (
   GtkWindow)
 
 typedef struct _ZrythmApp ZrythmApp;
+typedef struct _CustomImageWidget CustomImageWidget;
 
 /**
  * @addtogroup widgets
@@ -40,11 +41,12 @@ typedef struct _ZrythmApp ZrythmApp;
 
 typedef struct _SplashWindowWidget
 {
-  GtkWindow         parent_instance;
-  GtkLabel        * label;
-  GtkProgressBar  * progress_bar;
+  GtkWindow           parent_instance;
+  GtkLabel        *   label;
+  GtkProgressBar  *   progress_bar;
+  CustomImageWidget * img;
 
-  guint             tick_cb_id;
+  guint               tick_cb_id;
 } SplashWindowWidget;
 
 /**

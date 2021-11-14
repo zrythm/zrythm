@@ -22,8 +22,10 @@
 #include "audio/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/custom_image.h"
 #include "gui/widgets/splash.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -118,6 +120,7 @@ splash_window_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, SplashWindowWidget, x)
 
+  BIND_CHILD (img);
   BIND_CHILD (label);
   BIND_CHILD (progress_bar);
 
@@ -132,6 +135,8 @@ splash_window_widget_class_init (
 static void
 splash_window_widget_init (SplashWindowWidget * self)
 {
+  g_type_ensure (CUSTOM_IMAGE_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GtkStyleContext *context =
@@ -139,4 +144,10 @@ splash_window_widget_init (SplashWindowWidget * self)
       GTK_WIDGET (self));
   gtk_style_context_add_class (
     context, "splash");
+
+  GdkTexture * texture =
+    z_gdk_texture_new_from_icon_name (
+      "zrythm-splash-png", 580, -1, 1);
+  custom_image_widget_set_texture (
+    self->img, texture);
 }

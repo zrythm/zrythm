@@ -55,6 +55,7 @@ widget_srcs = files([
   'color_area.c',
   'cpu.c',
   'custom_button.c',
+  'custom_image.c',
   'digital_meter.c',
   'drag_dest_box.c',
   'editable_label.c',

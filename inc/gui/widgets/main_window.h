@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include <adwaita.h>
+
 #define MAIN_WINDOW_WIDGET_TYPE \
   (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -75,10 +77,11 @@ typedef struct _MainWindowWidget
   int                      is_fullscreen;
   int                      height;
   int                      width;
+  AdwToastOverlay *        toast_overlay;
   //GtkShortcutController *  shortcut_controller;
-  GtkRevealer *            revealer;
-  GtkButton *              close_notification_button;
-  GtkLabel *               notification_label;
+  //GtkRevealer *            revealer;
+  //GtkButton *              close_notification_button;
+  //GtkLabel *               notification_label;
 
   /** Whether preferences window is opened. */
   bool                     preferences_opened;

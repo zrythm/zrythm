@@ -2031,17 +2031,25 @@ z_gtk_window_get_x11_xid (
 }
 #endif
 
-GdkTexture *
-z_gdk_texture_new_from_icon_name (
+/**
+ * Creates a new pixbuf for the given icon scaled
+ * at the given width/height.
+ *
+ * Pass -1 for either width/height to maintain
+ * aspect ratio.
+ */
+GdkPixbuf *
+z_gdk_pixbuf_new_from_icon_name (
   const char * icon_name,
-  int          size,
+  int          width,
+  int          height,
   int          scale)
 {
   GtkIconTheme * icon_theme =
     z_gtk_icon_theme_get_default ();
   GtkIconPaintable * paintable =
     gtk_icon_theme_lookup_icon (
-      icon_theme, icon_name, NULL, size, scale,
+      icon_theme, icon_name, NULL, width, scale,
       GTK_TEXT_DIR_NONE,
       GTK_ICON_LOOKUP_PRELOAD);
   GFile * file =
@@ -2052,8 +2060,8 @@ z_gdk_texture_new_from_icon_name (
   if (path)
     {
       pixbuf =
-        gdk_pixbuf_new_from_file_at_size (
-          path, size, size, &err);
+        gdk_pixbuf_new_from_file_at_scale (
+          path, width, height, true, &err);
       g_free (path);
     }
   else
@@ -2064,7 +2072,7 @@ z_gdk_texture_new_from_icon_name (
         uri + strlen (resource_prefix);
       pixbuf =
         gdk_pixbuf_new_from_resource_at_scale (
-          resource_path, size, size, true, &err);
+          resource_path, width, height, true, &err);
       g_free (uri);
     }
   g_object_unref (file);
@@ -2077,6 +2085,28 @@ z_gdk_texture_new_from_icon_name (
         icon_name);
       return NULL;
     }
+
+  return pixbuf;
+}
+
+/**
+ * Creates a new texture for the given icon scaled
+ * at the given width/height.
+ *
+ * Pass -1 for either width/height to maintain
+ * aspect ratio.
+ */
+GdkTexture *
+z_gdk_texture_new_from_icon_name (
+  const char * icon_name,
+  int          width,
+  int          height,
+  int          scale)
+{
+  GdkPixbuf * pixbuf =
+    z_gdk_pixbuf_new_from_icon_name (
+      icon_name, width, height, scale);
+  g_return_val_if_fail (pixbuf, NULL);
 
   return gdk_texture_new_for_pixbuf (pixbuf);
 }

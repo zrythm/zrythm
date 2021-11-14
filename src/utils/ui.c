@@ -110,7 +110,8 @@ ui_set_cursor_from_icon_name (
     surface, "/tmp/test.png");
 #endif
   GdkTexture * texture =
-    z_gdk_texture_new_from_icon_name (name, 18, 1);
+    z_gdk_texture_new_from_icon_name (
+      name, 18, 18, 1);
   if (!texture || !GDK_IS_TEXTURE (texture))
     {
       g_warning (
@@ -565,6 +566,7 @@ ui_is_child_hit (
   return 0;
 }
 
+#if 0
 /**
  * Hides the notification.
  *
@@ -580,6 +582,7 @@ hide_notification_async ()
 
   return FALSE;
 }
+#endif
 
 /**
  * Shows a notification in the revealer.
@@ -587,6 +590,10 @@ hide_notification_async ()
 void
 ui_show_notification (const char * msg)
 {
+  AdwToast * toast = adw_toast_new (msg);
+  adw_toast_overlay_add_toast (
+    MAIN_WINDOW->toast_overlay, toast);
+#if 0
   gtk_label_set_text (MAIN_WINDOW->notification_label,
                       msg);
   gtk_revealer_set_reveal_child (
@@ -594,6 +601,7 @@ ui_show_notification (const char * msg)
     1);
   g_timeout_add_seconds (
     3, (GSourceFunc) hide_notification_async, NULL);
+#endif
 }
 
 /**

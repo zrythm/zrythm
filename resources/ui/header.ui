@@ -89,10 +89,14 @@
     <child>
       <object class="GtkBox" id="end_box">
         <property name="orientation">vertical</property>
+            <style>
+              <class name="header-end-box"/>
+            </style>
         <child>
           <object class="GtkBox" id="end_toolbar">
             <style>
               <class name="toolbar"/>
+              <class name="header-toolbar-corner"/>
             </style>
             <property name="can_focus">0</property>
             <property name="hexpand">0</property>

@@ -324,6 +324,7 @@ main_window_widget_new (ZrythmApp * _app)
   return self;
 }
 
+#if 0
 static void
 on_close_notification_clicked (
   GtkButton * btn,
@@ -333,6 +334,7 @@ on_close_notification_clicked (
     GTK_REVEALER (MAIN_WINDOW->revealer),
     0);
 }
+#endif
 
 #if 0
 /**
@@ -555,15 +557,16 @@ main_window_widget_class_init (
     klass, MainWindowWidget, x)
 
   BIND_CHILD (overlay);
+  BIND_CHILD (toast_overlay);
   BIND_CHILD (main_box);
   BIND_CHILD (header);
   BIND_CHILD (top_bar);
   BIND_CHILD (center_box);
   BIND_CHILD (center_dock);
   BIND_CHILD (bot_bar);
-  BIND_CHILD (revealer);
-  BIND_CHILD (close_notification_button);
-  BIND_CHILD (notification_label);
+  /*BIND_CHILD (revealer);*/
+  /*BIND_CHILD (close_notification_button);*/
+  /*BIND_CHILD (notification_label);*/
   gtk_widget_class_bind_template_callback (
     klass,
     on_main_window_destroy);
@@ -901,11 +904,13 @@ main_window_widget_init (MainWindowWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+#if 0
   g_signal_connect (
     G_OBJECT (self->close_notification_button),
     "clicked",
     G_CALLBACK (on_close_notification_clicked),
     NULL);
+#endif
 
   GtkEventControllerKey * key_controller =
     GTK_EVENT_CONTROLLER_KEY (

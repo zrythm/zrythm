@@ -37,48 +37,8 @@
           </object>
         </property>
         <child type="overlay">
-          <object class="GtkOverlay" id="overlay2">
+          <object class="AdwToastOverlay" id="toast_overlay">
             <property name="valign">start</property>
-            <property name="child">
-              <object class="GtkRevealer" id="revealer">
-                <property name="can-target">0</property>
-                <property name="halign">center</property>
-                <property name="child">
-                  <object class="GtkFrame" id="frame2">
-                    <property name="child">
-                      <object class="GtkBox" id="box2">
-                        <property name="spacing">20</property>
-                        <child>
-                          <object class="GtkLabel" id="notification_label">
-                            <property name="label" translatable="yes">This is an app-notification. Click the button to dismiss</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="close_notification_button">
-                            <property name="focusable">1</property>
-                            <property name="receives_default">1</property>
-                            <child>
-                              <object class="GtkImage" id="image2">
-                                <property name="icon_name">window-close</property>
-                              </object>
-                            </child>
-                            <style>
-                              <class name="image-button"/>
-                            </style>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
-                    <child type="label_item">
-                      <placeholder/>
-                    </child>
-                    <style>
-                      <class name="app-notification"/>
-                    </style>
-                  </object>
-                </property>
-              </object>
-            </property>
           </object>
         </child>
       </object>

@@ -1806,6 +1806,8 @@ plugin_gtk_open_generic_ui (
     GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   gtk_box_append (
     GTK_BOX (plugin->ev_box), scroll_win);
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (scroll_win), true);
 
   GtkRequisition controls_size, box_size;
   gtk_widget_get_preferred_size (

@@ -254,11 +254,14 @@ on_dnd_drop (
   ChannelSlotWidget * self =
     Z_CHANNEL_SLOT_WIDGET (data);
 
-  g_debug ("channel slot: dnd drop");
-
   GdkDragAction action =
     z_gtk_drop_target_get_selected_action (
       drop_target);
+
+  g_debug ("channel slot: dnd drop %s",
+    action == GDK_ACTION_COPY
+    ? "COPY"
+    : action == GDK_ACTION_MOVE ? "MOVE" : "LINK");
 
   WrappedObjectWithChangeSignal * wrapped_obj =
     g_value_get_object (value);
@@ -818,13 +821,7 @@ on_dnd_motion (
   /*ChannelSlotWidget * self =*/
     /*Z_CHANNEL_SLOT_WIDGET (user_data);*/
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (drop_target));
-  if (state & GDK_CONTROL_MASK)
-    return GDK_ACTION_COPY;
-  else
-    return GDK_ACTION_MOVE;
+  return GDK_ACTION_MOVE;
 }
 
 static void
@@ -982,6 +979,9 @@ setup_dnd (
       /* set as drag source for plugin */
       GtkDragSource * drag_source =
         gtk_drag_source_new ();
+      gtk_drag_source_set_actions (
+        drag_source,
+        GDK_ACTION_COPY | GDK_ACTION_MOVE);
       g_signal_connect (
         drag_source, "prepare",
         G_CALLBACK (on_dnd_drag_prepare), self);
@@ -1002,15 +1002,15 @@ setup_dnd (
     WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE };
   gtk_drop_target_set_gtypes (
     drop_target, types, G_N_ELEMENTS (types));
-  gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (drop_target));
   g_signal_connect (
     drop_target, "drop",
     G_CALLBACK (on_dnd_drop), self);
   g_signal_connect (
     drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (drop_target));
 }
 
 static void
