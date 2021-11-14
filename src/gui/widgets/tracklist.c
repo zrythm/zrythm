@@ -248,24 +248,6 @@ on_key_pressed (
   return false;
 }
 
-static void
-tracklist_widget_on_size_allocate (
-  GtkWidget *       widget,
-  GdkRectangle *    allocation,
-  TracklistWidget * self)
-{
-  if (!PROJECT || !TRACKLIST)
-    return;
-
-  if (!gdk_rectangle_equal (
-         allocation, &self->last_allocation))
-    {
-      EVENTS_PUSH (ET_TRACKS_RESIZED, self);
-    }
-
-  self->last_allocation = *allocation;
-}
-
 /**
  * Handle ctrl+shift+scroll.
  */
@@ -648,11 +630,6 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (key_controller));
-
-  g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (
-      tracklist_widget_on_size_allocate), self);
 
   GtkEventControllerScroll * scroll_controller =
     GTK_EVENT_CONTROLLER_SCROLL (

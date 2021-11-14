@@ -744,10 +744,9 @@ on_position_change (
   /*g_warning ("pos %d", divider_pos);*/
 }
 
-static gboolean
-on_draw (
-  GtkWidget    *widget,
-  cairo_t *cr,
+static void
+on_map (
+  GtkWidget                *widget,
   PanelFileBrowserWidget * self)
 {
   if (self->first_draw)
@@ -763,8 +762,6 @@ on_draw (
       gtk_paned_set_position (
         self->paned, divider_pos);
     }
-
-  return FALSE;
 }
 
 static void
@@ -824,8 +821,8 @@ panel_file_browser_widget_new ()
     G_CALLBACK (on_file_row_activated), self);
 
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (on_draw), self);
+    G_OBJECT (self), "map",
+    G_CALLBACK (on_map), self);
   g_signal_connect (
     G_OBJECT (self), "notify::position",
     G_CALLBACK (on_position_change), self);

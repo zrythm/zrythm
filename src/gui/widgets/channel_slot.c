@@ -821,11 +821,13 @@ on_dnd_motion (
   /*ChannelSlotWidget * self =*/
     /*Z_CHANNEL_SLOT_WIDGET (user_data);*/
 
+  g_message ("motion");
+
   return GDK_ACTION_MOVE;
 }
 
 static void
-on_enter (
+on_motion_enter (
   GtkEventControllerMotion * motion_controller,
   gdouble                    x,
   gdouble                    y,
@@ -839,7 +841,7 @@ on_enter (
 }
 
 static void
-on_leave (
+on_motion_leave (
   GtkEventControllerMotion * motion_controller,
   gpointer                   user_data)
 {
@@ -1136,10 +1138,10 @@ channel_slot_widget_init (
     gtk_event_controller_motion_new ();
   g_signal_connect (
     G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_enter), self);
+    G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
     G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_CALLBACK (on_motion_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), motion_controller);
 
@@ -1163,6 +1165,18 @@ channel_slot_widget_init (
 }
 
 static void
+dispose (
+  ChannelSlotWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    channel_slot_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 channel_slot_widget_class_init (
   ChannelSlotWidgetClass * _klass)
 {
@@ -1176,4 +1190,6 @@ channel_slot_widget_class_init (
     G_OBJECT_CLASS (klass);
   oklass->finalize =
     (GObjectFinalizeFunc) finalize;
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

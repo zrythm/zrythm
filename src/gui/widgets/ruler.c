@@ -1774,16 +1774,6 @@ drag_end (GtkGestureDrag *gesture,
   self->action = UI_OVERLAY_ACTION_NONE;
 }
 
-static gboolean
-on_grab_broken (
-  GtkWidget *widget,
-  GdkEvent  *event,
-  gpointer   user_data)
-{
-  g_message ("ruler grab broken");
-  return FALSE;
-}
-
 static void
 on_motion (
   GtkEventControllerMotion * motion_controller,
@@ -2205,10 +2195,10 @@ ruler_widget_init (RulerWidget * self)
     GTK_EVENT_CONTROLLER_MOTION (
       gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (self), "motion",
+    G_OBJECT (motion_controller), "motion",
     G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT (self), "leave",
+    G_OBJECT (motion_controller), "leave",
     G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
@@ -2232,10 +2222,6 @@ ruler_widget_init (RulerWidget * self)
   pango_layout_set_font_description (
     self->layout_small, desc);
   pango_font_description_free (desc);
-
-  g_signal_connect (
-    G_OBJECT (self), "grab-broken-event",
-    G_CALLBACK (on_grab_broken), self);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),

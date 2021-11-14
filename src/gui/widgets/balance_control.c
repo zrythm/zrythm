@@ -51,22 +51,23 @@ G_DEFINE_TYPE (BalanceControlWidget,
 #define TEXT_PADDING 3.0
 #define LINE_WIDTH 3.0
 
-static int
-pan_draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  BalanceControlWidget * self)
+static void
+balance_control_draw_cb (
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  BalanceControlWidget * self =
+    Z_BALANCE_CONTROL_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (self);
+
   if (!MAIN_WINDOW)
-    return false;
+    return;
 
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -174,8 +175,6 @@ pan_draw_cb (
     cr, width - (TEXT_PADDING + pangorect.width),
     height / 2.0 - pangorect.height / 2.0);
   pango_cairo_show_layout (cr, layout);
-
-  return FALSE;
 }
 
 /**
@@ -200,34 +199,30 @@ get_pan_string (
       (double) pan_val);
 }
 
-static gboolean
-on_motion (
-  GtkWidget * widget,
-  GdkEvent *  event,
-  BalanceControlWidget * self)
+static void
+on_motion_enter (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  if (gdk_event_get_event_type (event) ==
-      GDK_ENTER_NOTIFY)
-    {
-      /*gtk_widget_set_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_PRELIGHT, 0);*/
-      self->hovered = 1;
-    }
-  else if (gdk_event_get_event_type (event) ==
-           GDK_LEAVE_NOTIFY)
-    {
-      /*gtk_widget_unset_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_PRELIGHT);*/
-      self->hovered = 0;
-    }
-
-  return FALSE;
+  BalanceControlWidget * self =
+    Z_BALANCE_CONTROL_WIDGET (user_data);
+  self->hovered = true;
 }
 
 static void
-drag_begin (
+on_motion_leave (
+  GtkEventControllerMotion * motion_controller,
+  gpointer                   user_data)
+{
+  BalanceControlWidget * self =
+    Z_BALANCE_CONTROL_WIDGET (user_data);
+  self->hovered = false;
+}
+
+static void
+on_drag_begin (
   GtkGestureDrag * gesture,
   double           start_x,
   double           start_y,
@@ -237,7 +232,7 @@ drag_begin (
 }
 
 static void
-drag_update (
+on_drag_update (
   GtkGestureDrag * gesture,
   gdouble         offset_x,
   gdouble         offset_y,
@@ -286,7 +281,7 @@ drag_update (
 }
 
 static void
-drag_end (
+on_drag_end (
   GtkGestureDrag *       gesture,
   gdouble                offset_x,
   gdouble                offset_y,
@@ -398,25 +393,36 @@ balance_control_widget_new (
     GTK_GESTURE_SINGLE (right_mouse_mp),
     GDK_BUTTON_SECONDARY);
 
-  /* connect signals */
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    balance_control_draw_cb, self, NULL);
+
+  GtkEventController * motion_controller =
+    gtk_event_controller_motion_new ();
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (pan_draw_cb), self);
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_motion_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), motion_controller);
+
+  self->drag =
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (self->drag), "drag-begin",
+    G_CALLBACK (on_drag_begin), self);
   g_signal_connect (
-    G_OBJECT(self->drag), "drag-begin",
-    G_CALLBACK (drag_begin),  self);
+    G_OBJECT (self->drag), "drag-update",
+    G_CALLBACK (on_drag_update), self);
   g_signal_connect (
-    G_OBJECT(self->drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
+    G_OBJECT (self->drag), "drag-end",
+    G_CALLBACK (on_drag_end), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (self->drag));
+
   g_signal_connect (
     G_OBJECT (right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);

@@ -5806,20 +5806,10 @@ on_motion (
     }
 }
 
-static gboolean
-on_focus (
-  GtkWidget * widget,
-  gpointer    user_data)
-{
-  g_debug ("arranger focused");
-
-  return FALSE;
-}
-
-static gboolean
-on_focus_out (GtkWidget *widget,
-               GdkEvent  *event,
-               ArrangerWidget * self)
+static void
+on_focus_leave (
+  GtkEventControllerFocus * focus,
+  ArrangerWidget *          self)
 {
   g_debug ("arranger focus out");
 
@@ -5827,17 +5817,6 @@ on_focus_out (GtkWidget *widget,
   self->ctrl_held = 0;
   self->shift_held = 0;
 
-  return FALSE;
-}
-
-static gboolean
-on_grab_broken (GtkWidget *widget,
-               GdkEvent  *event,
-               gpointer   user_data)
-{
-  /*GdkEventGrabBroken * ev =*/
-    /*(GdkEventGrabBroken *) event;*/
-  g_message ("arranger grab broken");
   return FALSE;
 }
 
@@ -6893,15 +6872,6 @@ arranger_tick_cb (
   return 5;
 }
 
-static bool
-on_arranger_map_event (
-  GtkWidget *      widget,
-  GdkEvent *       event,
-  ArrangerWidget * self)
-{
-  return FALSE;
-}
-
 static void
 on_size_allocate (
   GtkWidget * widget,
@@ -7000,11 +6970,11 @@ arranger_widget_setup (
     GTK_EVENT_CONTROLLER_KEY (
       gtk_event_controller_key_new ());
   g_signal_connect (
-    G_OBJECT (self), "key-pressed",
+    G_OBJECT (key_controller), "key-pressed",
     G_CALLBACK (arranger_widget_on_key_press),
     self);
   g_signal_connect (
-    G_OBJECT (self), "key-released",
+    G_OBJECT (key_controller), "key-released",
     G_CALLBACK (arranger_widget_on_key_release),
     self);
   gtk_widget_add_controller (
@@ -7024,18 +6994,14 @@ arranger_widget_setup (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (motion_controller));
 
+  GtkEventController * focus =
+    gtk_event_controller_focus_new ();
   g_signal_connect (
-    G_OBJECT (self), "focus-out-event",
-    G_CALLBACK (on_focus_out), self);
-  g_signal_connect (
-    G_OBJECT (self), "grab-focus",
-    G_CALLBACK (on_focus), self);
-  g_signal_connect (
-    G_OBJECT (self), "grab-broken-event",
-    G_CALLBACK (on_grab_broken), self);
-  g_signal_connect (
-    G_OBJECT (self), "map-event",
-    G_CALLBACK (on_arranger_map_event), self);
+    G_OBJECT (focus), "leave",
+    G_CALLBACK (on_focus_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (focus));
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
@@ -7043,9 +7009,9 @@ arranger_widget_setup (
     self, NULL);
 
   gtk_widget_set_focus_on_click (
-    GTK_WIDGET (self), 1);
+    GTK_WIDGET (self), true);
 
-  g_debug ("done");
+  g_debug ("done setting up arranger");
 }
 
 static void

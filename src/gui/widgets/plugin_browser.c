@@ -1447,15 +1447,13 @@ toggles_changed (
     GTK_FILTER_CHANGE_DIFFERENT);
 }
 
-static int
-on_map_event (
-  GtkStack * stack,
-  GdkEvent * event,
+static void
+on_map (
+  GtkWidget *           widget,
   PluginBrowserWidget * self)
 {
   /*g_message ("PLUGIN MAP EVENT");*/
-  if (gtk_widget_get_mapped (
-        GTK_WIDGET (self)))
+  if (gtk_widget_get_mapped (GTK_WIDGET (self)))
     {
       self->start_saving_pos = 1;
       self->first_time_position_set_time =
@@ -1470,8 +1468,6 @@ on_map_event (
         self->paned, divider_pos);
       self->first_time_position_set = 1;
     }
-
-  return false;
 }
 
 static void
@@ -1516,11 +1512,13 @@ on_position_change (
     }
 }
 
-static bool
+static void
 on_key_release (
-  GtkWidget *           widget,
-  GdkEvent *            event,
-  PluginBrowserWidget * self)
+  GtkEventControllerKey * key_controller,
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  PluginBrowserWidget *   self)
 {
   g_free_and_null (self->current_search);
 
@@ -1529,8 +1527,6 @@ on_key_release (
     GTK_FILTER_CHANGE_DIFFERENT);
 
   g_message ("key release");
-
-  return false;
 }
 
 static void
@@ -1713,11 +1709,16 @@ plugin_browser_widget_new ()
     G_OBJECT (self), "notify::position",
     G_CALLBACK (on_position_change), self);
   g_signal_connect (
-    G_OBJECT (self), "map-event",
-    G_CALLBACK (on_map_event), self);
+    G_OBJECT (self), "map",
+    G_CALLBACK (on_map), self);
+
+  GtkEventController * key_controller =
+    gtk_event_controller_key_new ();
   g_signal_connect (
-    G_OBJECT (self), "key-release-event",
+    G_OBJECT (key_controller), "key-released",
     G_CALLBACK (on_key_release), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), key_controller);
 
   return self;
 }

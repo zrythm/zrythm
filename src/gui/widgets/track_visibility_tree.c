@@ -211,6 +211,8 @@ track_visibility_tree_widget_init (
       gtk_scrolled_window_new ());
   gtk_box_append (
     GTK_BOX (self), GTK_WIDGET (self->scroll));
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->scroll), true);
   self->tree =
     GTK_TREE_VIEW (gtk_tree_view_new ());
   gtk_scrolled_window_set_child (

@@ -35,22 +35,23 @@ G_DEFINE_TYPE (TimelineMinimapBgWidget,
                timeline_minimap_bg_widget,
                GTK_TYPE_DRAWING_AREA)
 
-static gboolean
+static void
 timeline_minimap_bg_draw_cb (
-  GtkWidget *widget,
-  cairo_t *cr,
-  gpointer data)
+  GtkDrawingArea * drawing_area,
+  cairo_t *        cr,
+  int              width,
+  int              height,
+  gpointer         user_data)
 {
+  TimelineMinimapBgWidget * self =
+    Z_TIMELINE_MINIMAP_BG_WIDGET (user_data);
+  GtkWidget * widget = GTK_WIDGET (self);
+
   if (!PROJECT->loaded)
-    return FALSE;
+    return;
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -142,9 +143,6 @@ timeline_minimap_bg_draw_cb (
             }
         }
     }
-
-
-  return FALSE;
 }
 
 TimelineMinimapBgWidget *
@@ -170,10 +168,7 @@ static void
 timeline_minimap_bg_widget_init (
   TimelineMinimapBgWidget * self)
 {
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
-
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (timeline_minimap_bg_draw_cb), NULL);
+  gtk_drawing_area_set_draw_func (
+    GTK_DRAWING_AREA (self),
+    timeline_minimap_bg_draw_cb, self, NULL);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -258,27 +258,27 @@ refresh_cpu_load (
   return G_SOURCE_CONTINUE;
 }
 
-static gboolean
-on_motion (GtkWidget * widget, GdkEvent *event)
+static void
+on_motion_enter (
+  GtkEventControllerMotion * controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
 {
-  CpuWidget * self = Z_CPU_WIDGET (widget);
+  CpuWidget * self = Z_CPU_WIDGET (user_data);
+  gtk_widget_set_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_PRELIGHT, 0);
+}
 
-  if (gdk_event_get_event_type (event) ==
-        GDK_ENTER_NOTIFY)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT, 0);
-    }
-  else if (gdk_event_get_event_type (event) ==
-             GDK_LEAVE_NOTIFY)
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-    }
-
-  return FALSE;
+static void
+on_motion_leave (
+  GtkEventControllerMotion * controller,
+  gpointer                   user_data)
+{
+  CpuWidget * self = Z_CPU_WIDGET (user_data);
+  gtk_widget_unset_state_flags (
+    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
 /**
@@ -325,12 +325,17 @@ cpu_widget_init (CpuWidget * self)
   gtk_drawing_area_set_draw_func (
     GTK_DRAWING_AREA (self), cpu_draw_cb,
     self, NULL);
+
+  GtkEventController * motion_controller =
+    gtk_event_controller_motion_new ();
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (motion_controller), "enter",
+    G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
+    G_OBJECT (motion_controller), "leave",
+    G_CALLBACK (on_motion_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), motion_controller);
 }
 
 static void

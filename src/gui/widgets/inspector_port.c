@@ -582,10 +582,6 @@ static void
 finalize (
   InspectorPortWidget * self)
 {
-  if (self->double_click_gesture)
-    g_object_unref (self->double_click_gesture);
-  if (self->right_click_gesture)
-    g_object_unref (self->right_click_gesture);
   if (self->meter)
     meter_free (self->meter);
 
@@ -595,12 +591,25 @@ finalize (
 }
 
 static void
+dispose (
+  InspectorPortWidget * self)
+{
+  gtk_widget_unparent (GTK_WIDGET (self->overlay));
+
+  G_OBJECT_CLASS (
+    inspector_port_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 inspector_port_widget_class_init (
   InspectorPortWidgetClass * klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize =
     (GObjectFinalizeFunc) finalize;
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }
 
 static void

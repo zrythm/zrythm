@@ -35,15 +35,6 @@ G_DEFINE_TYPE (
   center_dock_widget,
   GTK_TYPE_BOX)
 
-static gboolean
-key_release_cb (
-  GtkWidget *   widget,
-  GdkKeyEvent * event,
-  gpointer      data)
-{
-  return false;
-}
-
 static void
 on_divider_pos_changed (
   GObject    *gobject,
@@ -170,11 +161,6 @@ center_dock_widget_init (
     self->center_paned, true);
   gtk_paned_set_resize_end_child (
     self->center_paned, true);
-
-  /* set events */
-  g_signal_connect (
-    G_OBJECT (self), "key_release_event",
-    G_CALLBACK (key_release_cb), self);
 }
 
 

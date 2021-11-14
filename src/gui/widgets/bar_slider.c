@@ -337,11 +337,14 @@ recreate_pango_layouts (
       PANGO_ELLIPSIZE_NONE, -1); }
 
 static void
-bar_slider_widget_on_size_allocate (
-  GtkWidget *          widget,
-  GdkRectangle *       allocation,
-  BarSliderWidget * self)
+bar_slider_widget_on_resize (
+  GtkDrawingArea * drawing_area,
+  gint             width,
+  gint             height,
+  gpointer         user_data)
 {
+  BarSliderWidget * self =
+    Z_BAR_SLIDER_WIDGET (user_data);
   recreate_pango_layouts (self);
 }
 
@@ -411,14 +414,15 @@ _bar_slider_widget_new (
 
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), motion_controller);
   g_signal_connect (
     G_OBJECT (motion_controller), "enter",
     G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
-    G_OBJECT(self), "leave",
+    G_OBJECT (motion_controller), "leave",
     G_CALLBACK (on_motion_leave), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), motion_controller);
+
   g_signal_connect (
     G_OBJECT(self->drag), "drag-begin",
     G_CALLBACK (drag_begin), self);
@@ -468,10 +472,8 @@ bar_slider_widget_init (
     G_CALLBACK (on_screen_changed),  self);
 #endif
   g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (
-      bar_slider_widget_on_size_allocate),
-    self);
+    G_OBJECT (self), "resize",
+    G_CALLBACK (bar_slider_widget_on_resize), self);
 }
 
 static void
