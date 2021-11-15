@@ -7,8 +7,10 @@
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <child>
       <object class="GtkOverlay" id="overlay">
+        <property name="name">main-window-overlay</property>
         <property name="child">
           <object class="GtkBox" id="main_box">
+            <property name="name">main-window-main-box</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="HeaderWidget" id="header">
@@ -21,6 +23,7 @@
             </child>
             <child>
               <object class="GtkBox" id="center_box">
+                <property name="name">main-window-center-box</property>
                 <property name="vexpand">1</property>
                 <child>
                   <object class="CenterDockWidget" id="center_dock">

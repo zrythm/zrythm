@@ -227,4 +227,7 @@ volume_widget_init (
     GTK_WIDGET (self), PADDING);
   gtk_widget_set_margin_top (
     GTK_WIDGET (self), PADDING);
+
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), 20, -1);
 }

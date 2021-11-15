@@ -491,8 +491,8 @@ timeline_arranger_widget_set_select_type (
     }
 
   /*arranger_widget_refresh_all_backgrounds ();*/
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (MW_RULER));
+  /*gtk_widget_queue_allocate (*/
+    /*GTK_WIDGET (MW_RULER));*/
 }
 
 /**

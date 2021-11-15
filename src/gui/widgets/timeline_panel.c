@@ -191,6 +191,22 @@ timeline_panel_widget_init (
     self->tracklist_timeline, false);
   gtk_paned_set_shrink_end_child (
     self->tracklist_timeline, false);
+
+  gtk_widget_set_name (
+    GTK_WIDGET (self->tracklist_timeline),
+    "tracklist-timeline-paned");
+  gtk_widget_set_name (
+    GTK_WIDGET (self->tracklist_top),
+    "tracklist-top-box");
+  gtk_widget_set_name (
+    GTK_WIDGET (self->timelines_plus_ruler),
+    "timelines-plus-ruler-box");
+  gtk_widget_set_name (
+    GTK_WIDGET (self->ruler_scroll),
+    "ruler-scrolled-window");
+  gtk_widget_set_name (
+    GTK_WIDGET (self->timeline_divider_box),
+    "timeline-divider-box");
 }
 
 

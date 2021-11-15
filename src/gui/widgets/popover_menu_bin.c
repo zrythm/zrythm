@@ -75,14 +75,16 @@ popover_menu_bin_widget_set_child (
   PopoverMenuBinWidget * self,
   GtkWidget *            child)
 {
-  gtk_widget_set_parent (child, GTK_WIDGET (self));
+  self->child = child;
+  if (child)
+    gtk_widget_set_parent (child, GTK_WIDGET (self));
 }
 
 GtkWidget *
 popover_menu_bin_widget_get_child (
   PopoverMenuBinWidget * self)
 {
-  return gtk_widget_get_last_child (GTK_WIDGET (self));
+  return self->child;
 }
 
 PopoverMenuBinWidget *
@@ -99,6 +101,9 @@ dispose (
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
+  if (self->child)
+    gtk_widget_unparent (
+      GTK_WIDGET (self->child));
 
   G_OBJECT_CLASS (
     popover_menu_bin_widget_parent_class)->

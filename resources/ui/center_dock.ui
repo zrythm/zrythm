@@ -4,6 +4,7 @@
   <template class="CenterDockWidget" parent="GtkBox">
     <child>
       <object class="GtkPaned" id="left_rest_paned">
+        <property name="name">left-rest-paned</property>
         <property name="shrink-start-child">0</property>
         <child>
           <object class="LeftDockEdgeWidget" id="left_dock_edge">
@@ -12,11 +13,13 @@
         </child>
         <child>
           <object class="GtkPaned" id="center_right_paned">
+            <property name="name">center-right-paned</property>
             <property name="shrink-end-child">0</property>
             <property name="resize-end-child">0</property>
             <property name="shrink-start-child">0</property>
             <child>
               <object class="GtkPaned" id="center_paned">
+                <property name="name">center-paned</property>
                 <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
                 <child>
                   <object class="MainNotebookWidget" id="main_notebook">

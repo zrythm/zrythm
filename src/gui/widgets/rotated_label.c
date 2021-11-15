@@ -35,8 +35,8 @@ static void
 queue_changes (
   RotatedLabelWidget * self)
 {
-  gtk_widget_queue_allocate (GTK_WIDGET (self));
-  gtk_widget_queue_resize (GTK_WIDGET (self));
+  /*gtk_widget_queue_allocate (GTK_WIDGET (self));*/
+  /*gtk_widget_queue_resize (GTK_WIDGET (self));*/
 }
 
 void

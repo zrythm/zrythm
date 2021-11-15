@@ -316,6 +316,18 @@ chord_widget_new (void)
 }
 
 static void
+dispose (
+  ChordWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->overlay));
+
+  G_OBJECT_CLASS (
+    chord_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 chord_widget_init (
   ChordWidget * self)
 {
@@ -323,6 +335,8 @@ chord_widget_init (
     GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_parent (
     GTK_WIDGET (self->overlay), GTK_WIDGET (self));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->overlay), "chord-overlay");
 }
 
 static void
@@ -332,4 +346,11 @@ chord_widget_class_init (
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass, "chord");
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

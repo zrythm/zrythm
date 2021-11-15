@@ -198,10 +198,6 @@ z_gtk_is_wayland (void)
   return false;
 }
 
-/**
- * @note Bumps reference, must be decremented after
- * calling.
- */
 void
 z_gtk_widget_remove_all_children (
   GtkWidget * widget)
@@ -2119,4 +2115,41 @@ z_gtk_print_graphene_rect (
     "x: %f | y: %f | width: %f | height: %f",
     rect->origin.x, rect->origin.y,
     rect->size.width, rect->size.height);
+}
+
+/**
+ * Prints the widget's hierarchy (parents).
+ */
+void
+z_gtk_widget_print_hierarchy (
+  GtkWidget * widget)
+{
+  GQueue * queue = g_queue_new ();
+  GtkWidget * parent = widget;
+  while ((parent = gtk_widget_get_parent (parent)))
+    {
+      g_queue_push_tail (queue, parent);
+    }
+
+  const int spaces_per_child = 2;
+  int cur_spaces = 0;
+  GString * gstr = g_string_new (NULL);
+  while ((parent =
+            (GtkWidget *) g_queue_pop_tail (queue)))
+    {
+      /* TODO print parent class in () */
+      g_string_append_printf (
+        gstr, "%s\n", gtk_widget_get_name (parent));
+      cur_spaces += spaces_per_child;
+      for (int j = 0; j < cur_spaces; j++)
+        {
+          g_string_append_c (gstr, ' ');
+        }
+    }
+
+  g_string_append (
+    gstr, gtk_widget_get_name (widget));
+  char * str = g_string_free (gstr, false);
+  g_message ("%s", str);
+  g_queue_free (queue);
 }

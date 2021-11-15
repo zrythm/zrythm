@@ -743,6 +743,13 @@ z_gtk_print_graphene_rect (
   graphene_rect_t * rect);
 
 /**
+ * Prints the widget's hierarchy (parents).
+ */
+void
+z_gtk_widget_print_hierarchy (
+  GtkWidget * widget);
+
+/**
  * @}
  */
 #endif

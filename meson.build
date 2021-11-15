@@ -201,6 +201,13 @@ else
   error ('unknown host system ' + host_machine.system ())
 endif
 
+# add global arguments
+if os_windows
+  add_global_link_arguments (
+    '-lssp',
+    language: [ 'c', 'cpp' ])
+endif
+
 have_custom_name = prog_name != 'Zrythm'
 have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 
@@ -355,6 +362,7 @@ illegal_char_test_args = [
   ]
 
 # GTK/GLIB versions
+pango_req = '1.49.1' # keep in sync with gtk4
 gtk_req = '4.5.0'
 glib_req = '2.66.0'
 
@@ -896,6 +904,13 @@ audec_dep = dependency(
   fallback: ['libaudec', 'libaudec_dep'],
   required: true, static: all_static)
 
+pango_dep = dependency (
+  'pango', version: '>=' + pango_req,
+  fallback: ['pango', 'libpango_dep'],
+  default_options: [
+    'default_library=static',
+    'introspection=disabled',])
+
 gtk_dep = dependency (
   'gtk4', version: '>=' + gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
@@ -911,7 +926,9 @@ libadwaita_dep = dependency (
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',
-    'examples=false', 'introspection=disabled'])
+    'examples=false', 'introspection=disabled',
+    # resources are not found with static
+    'default_library=shared'])
 
 min_version = '>=1.0.25'
 if get_option ('opus')
@@ -1032,6 +1049,7 @@ gtksource_dep = dependency (
   fallback: ['gtksourceview5', 'gtksource_dep'],
   default_options: [
     'vapi=false', 'introspection=disabled',
+    'default_library=static',
     ])
 
 libcgraph_dep = dependency (
@@ -1212,6 +1230,7 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 zrythm_deps = [
   libadwaita_dep,
+  pango_dep,
   gtk_dep,
   sndfile_dep,
   samplerate_dep,

@@ -3102,8 +3102,6 @@ on_destroy (
         }
     }
 
-  g_object_unref (self);
-
   track->widget = NULL;
 }
 
@@ -3202,8 +3200,6 @@ track_widget_init (TrackWidget * self)
   g_signal_connect (
     G_OBJECT (self), "query-tooltip",
     G_CALLBACK (on_query_tooltip),  self);
-
-  g_object_ref (self);
 
   self->redraw = 1;
 }

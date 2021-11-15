@@ -54,14 +54,6 @@
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="file_info">
-                <attributes>
-                  <attribute name="variant" value="small-caps"></attribute>
-                  <attribute name="stretch" value="condensed"></attribute>
-                </attributes>
-              </object>
-            </child>
-            <child>
               <object class="GtkScrolledWindow" id="files_scroll">
                 <property name="focusable">1</property>
                 <property name="child">
@@ -77,6 +69,14 @@
             </child>
             <child>
               <object class="FileAuditionerControlsWidget" id="auditioner_controls">
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="file_info">
+                <attributes>
+                  <attribute name="variant" value="small-caps"></attribute>
+                  <attribute name="stretch" value="condensed"></attribute>
+                </attributes>
               </object>
             </child>
           </object>

@@ -367,6 +367,18 @@ on_screen_changed (
 #endif
 
 static void
+dispose (
+  ChannelSendWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    channel_send_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 finalize (
   ChannelSendWidget * self)
 {
@@ -504,4 +516,6 @@ channel_send_widget_class_init (
     G_OBJECT_CLASS (klass);
   oklass->finalize =
     (GObjectFinalizeFunc) finalize;
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

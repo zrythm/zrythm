@@ -2193,11 +2193,5 @@ channel_free (Channel * self)
         channel_send_free, send);
     }
 
-  if (GTK_IS_WIDGET (self->widget))
-    {
-      object_free_w_func_and_null (
-        g_object_unref, self->widget);
-    }
-
   object_zero_and_free (self);
 }

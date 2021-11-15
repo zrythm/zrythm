@@ -232,6 +232,9 @@ plugin_strip_expander_widget_setup (
             GTK_BOX (
               gtk_box_new (
                 GTK_ORIENTATION_HORIZONTAL, 0));
+          gtk_widget_set_name (
+            GTK_WIDGET (strip_box),
+            "plugin-strip-expander-strip-box");
           self->strip_boxes[i] = strip_box;
 
           switch (slot_type)
@@ -299,9 +302,10 @@ plugin_strip_expander_widget_init (
   self->scroll =
     GTK_SCROLLED_WINDOW (
       gtk_scrolled_window_new ());
+  gtk_widget_set_name (
+    GTK_WIDGET (self->scroll),
+    "plugin-strip-expander-scroll");
   gtk_widget_set_vexpand (
-    GTK_WIDGET (self->scroll), 1);
-  gtk_widget_set_visible (
     GTK_WIDGET (self->scroll), 1);
   /*gtk_scrolled_window_set_shadow_type (*/
     /*self->scroll, GTK_SHADOW_ETCHED_IN);*/
@@ -309,6 +313,9 @@ plugin_strip_expander_widget_init (
   self->viewport =
     GTK_VIEWPORT (
       gtk_viewport_new (NULL, NULL));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->viewport),
+    "plugin-strip-expander-viewport");
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (self->scroll),
     GTK_WIDGET (self->viewport));
@@ -316,6 +323,9 @@ plugin_strip_expander_widget_init (
   self->box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->box),
+    "plugin-strip-expander-box");
   gtk_viewport_set_child (
     GTK_VIEWPORT (self->viewport),
     GTK_WIDGET (self->box));

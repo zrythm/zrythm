@@ -240,14 +240,22 @@ expander_box_widget_init (ExpanderBoxWidget * self)
 
   prv->btn_label =
     GTK_LABEL (gtk_label_new ("Label"));
+  gtk_widget_set_name (
+    GTK_WIDGET (prv->btn_label),
+    "expander-box-btn-label");
   gtk_widget_set_halign (
     GTK_WIDGET (prv->btn_label),
     GTK_ALIGN_START);
   prv->btn_img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name ("plugins"));
+  gtk_widget_set_name (
+    GTK_WIDGET (prv->btn_img),
+    "expander-box-btn-image");
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_name (
+    GTK_WIDGET (box), "expander-box-btn-box");
   gtk_box_append (
     GTK_BOX (box),
     GTK_WIDGET (prv->btn_label));

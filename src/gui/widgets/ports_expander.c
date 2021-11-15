@@ -363,6 +363,9 @@ ports_expander_widget_setup_plugin (
             group ? group : _("Ungrouped");
           GtkWidget * group_label =
             gtk_label_new (group_name);
+          gtk_widget_set_name (
+            GTK_WIDGET (group_label),
+            "ports-expander-inspector-port-group-label");
           gtk_label_set_xalign (
             GTK_LABEL (group_label), 0.f);
           gtk_widget_add_css_class (

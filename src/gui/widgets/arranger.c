@@ -7013,6 +7013,18 @@ arranger_widget_setup (
 }
 
 static void
+dispose (
+  ArrangerWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    arranger_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 finalize (
   ArrangerWidget * self)
 {
@@ -7046,6 +7058,8 @@ arranger_widget_class_init (
     G_OBJECT_CLASS (_klass);
   oklass->finalize =
     (GObjectFinalizeFunc) finalize;
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 
   GtkWidgetClass * wklass =
     GTK_WIDGET_CLASS (_klass);

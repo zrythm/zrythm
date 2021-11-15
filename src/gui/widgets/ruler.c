@@ -2149,6 +2149,18 @@ on_size_allocate (
 }
 
 static void
+dispose (
+  RulerWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    ruler_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 ruler_widget_init (RulerWidget * self)
 {
   self->popover_menu =
@@ -2238,4 +2250,9 @@ ruler_widget_class_init (RulerWidgetClass * _klass)
   gtk_widget_class_set_css_name (
     klass, "ruler");
   klass->size_allocate = on_size_allocate;
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

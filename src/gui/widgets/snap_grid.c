@@ -128,9 +128,9 @@ snap_grid_widget_init (SnapGridWidget * self)
     self->box, GTK_WIDGET (self->img));
   gtk_box_append (
     self->box, GTK_WIDGET (self->label));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->box),
-    GTK_WIDGET (self->menu_btn));
+  gtk_menu_button_set_child (
+    GTK_MENU_BUTTON (self->menu_btn),
+    GTK_WIDGET (self->box));
 #if 0
   g_signal_connect (
     G_OBJECT (self), "clicked",

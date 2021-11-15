@@ -50,6 +50,8 @@ typedef struct _PopoverMenuBinWidget
 {
   GtkWidget        parent_instance;
 
+  GtkWidget *      child;
+
   GMenuModel *     menu_model;
 
   GtkPopoverMenu * popover_menu;

@@ -80,6 +80,11 @@ mixer_widget_hard_refresh (MixerWidget * self)
     {
       track = TRACKLIST->tracks[i];
 
+      /* widgets are already destroyed by now */
+      track->folder_ch_widget = NULL;
+      if (track_type_has_channel (track->type))
+        track->channel->widget = NULL;
+
       if (!track_get_should_be_visible (track))
         continue;
 
@@ -177,18 +182,15 @@ mixer_widget_class_init (
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "mixer.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    MixerWidget,
-    channels_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MixerWidget,
-    channels_add);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MixerWidget,
-    master_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, MixerWidget, x)
+
+  BIND_CHILD (channels_box);
+  BIND_CHILD (channels_add);
+  BIND_CHILD (master_box);
+
+#undef BIND_CHILD
 }
 
 static void

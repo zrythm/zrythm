@@ -1025,8 +1025,6 @@ channel_widget_new (Channel * channel)
     self, "destroy",
     G_CALLBACK (on_destroy), NULL);
 
-  g_object_ref (self);
-
   self->setup = true;
 
   return self;
@@ -1043,7 +1041,6 @@ channel_widget_tear_down (
 
   if (self->setup)
     {
-      g_object_unref (self);
       self->channel->widget = NULL;
       self->setup = false;
     }
@@ -1108,6 +1105,9 @@ channel_widget_init (ChannelWidget * self)
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (
+    GTK_BOX (self),
+    GTK_WIDGET (self->popover_menu));
 
   self->last_midi_trigger_time = 0;
 

@@ -435,6 +435,18 @@ fader_widget_setup (
 }
 
 static void
+dispose (
+  FaderWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    fader_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 fader_widget_init (FaderWidget * self)
 {
   self->start_color =  UI_COLORS->fader_fill_start;
@@ -530,4 +542,9 @@ fader_widget_class_init (FaderWidgetClass * _klass)
   gtk_widget_class_set_css_name (
     klass, "fader");
   klass->size_allocate = on_size_allocate;
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

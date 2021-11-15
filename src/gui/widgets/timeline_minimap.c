@@ -408,7 +408,7 @@ drag_update (
       move_y (self, (int) offset_y);
     }
 
-  gtk_widget_queue_allocate (GTK_WIDGET (self));
+  /*gtk_widget_queue_allocate (GTK_WIDGET (self));*/
   self->last_offset_x = offset_x;
   self->last_offset_y = offset_y;
 
@@ -441,7 +441,19 @@ void
 timeline_minimap_widget_refresh (
   TimelineMinimapWidget * self)
 {
-  gtk_widget_queue_allocate (GTK_WIDGET (self));
+  /*gtk_widget_queue_allocate (GTK_WIDGET (self));*/
+}
+
+static void
+dispose (
+  TimelineMinimapWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->overlay));
+
+  G_OBJECT_CLASS (
+    timeline_minimap_widget_parent_class)->
+      dispose (G_OBJECT (self));
 }
 
 static void
@@ -451,6 +463,13 @@ timeline_minimap_widget_class_init (
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "timeline-minimap");
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }
 
 static void
@@ -461,6 +480,9 @@ timeline_minimap_widget_init (
     GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_parent (
     GTK_WIDGET (self->overlay), GTK_WIDGET (self));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->overlay),
+    "timeline-minimap-overlay");
 
   self->bg = timeline_minimap_bg_widget_new ();
   gtk_overlay_set_child (
@@ -509,5 +531,5 @@ timeline_minimap_widget_init (
 
   g_signal_connect (
     G_OBJECT (self->overlay), "get-child-position",
-    G_CALLBACK (get_child_position), NULL);
+    G_CALLBACK (get_child_position), self);
 }

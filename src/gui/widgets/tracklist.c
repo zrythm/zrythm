@@ -382,43 +382,31 @@ void
 tracklist_widget_hard_refresh (
   TracklistWidget * self)
 {
+  g_object_ref (self->ddbox);
+
   /* remove all children */
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (self->unpinned_box));
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (self->pinned_box));
 
-  /** add pinned tracks */
+  /** add pinned/unpinned tracks */
   for (int i = 0; i < self->tracklist->num_tracks;
        i++)
     {
       Track * track = self->tracklist->tracks[i];
 
-      if (!track_is_pinned (track))
-        continue;
-
+      track->widget = NULL;
       refresh_track_widget (track);
-
-      gtk_box_append (
-        GTK_BOX (self->pinned_box),
-        GTK_WIDGET (track->widget));
-    }
-
-  /* readd all visible unpinned tracks to
-   * scrolled window */
-  for (int i = 0; i < self->tracklist->num_tracks;
-       i++)
-    {
-      Track * track = self->tracklist->tracks[i];
 
       if (track_is_pinned (track))
-        continue;
-
-      refresh_track_widget (track);
-
-      gtk_box_append (
-        GTK_BOX (self->unpinned_box),
-        GTK_WIDGET (track->widget));
+        gtk_box_append (
+          GTK_BOX (self->pinned_box),
+          GTK_WIDGET (track->widget));
+      else
+        gtk_box_append (
+          GTK_BOX (self->unpinned_box),
+          GTK_WIDGET (track->widget));
     }
 
   /* re-add ddbox */
@@ -429,34 +417,7 @@ tracklist_widget_hard_refresh (
     GTK_BOX (self->unpinned_box),
     GTK_WIDGET (self->ddbox));
 
-  /*g_object_unref (self->ddbox);*/
-
-  /* set handle position.
-   * this is done because the position resets to -1
-   * every time a child is added or deleted */
-  /*GList *children, *iter;*/
-  /*children =*/
-    /*gtk_container_get_children (GTK_CONTAINER (self));*/
-  /*for (iter = children;*/
-       /*iter != NULL;*/
-       /*iter = g_list_next (iter))*/
-    /*{*/
-      /*if (Z_IS_TRACK_WIDGET (iter->data))*/
-        /*{*/
-          /*TrackWidget * tw = Z_TRACK_WIDGET (iter->data);*/
-          /*TRACK_WIDGET_GET_PRIVATE (tw);*/
-          /*Track * track = tw_prv->track;*/
-          /*GValue a = G_VALUE_INIT;*/
-          /*g_value_init (&a, G_TYPE_INT);*/
-          /*g_value_set_int (&a, track->handle_pos);*/
-          /*gtk_container_child_set_property (*/
-            /*GTK_CONTAINER (self),*/
-            /*GTK_WIDGET (tw),*/
-            /*"position",*/
-            /*&a);*/
-        /*}*/
-    /*}*/
-  /*g_list_free(children);*/
+  g_object_unref (self->ddbox);
 }
 
 /**
@@ -531,10 +492,6 @@ tracklist_widget_tear_down (
 
   if (self->setup)
     {
-      g_object_unref (self->pinned_box);
-      g_object_unref (self->unpinned_scroll);
-      g_object_unref (self->unpinned_box);
-      g_object_unref (self->ddbox);
 
       self->setup = false;
     }
@@ -548,35 +505,34 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_box_set_spacing (
     GTK_BOX (self), 1);
 
+  /** add pinned box */
   self->pinned_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
-  g_object_ref_sink (self->pinned_box);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->pinned_box), 1);
-
-  /** add pinned box */
   gtk_box_append (
     GTK_BOX (self),
     GTK_WIDGET (self->pinned_box));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->pinned_box),
+    "tracklist-pinned-box");
 
   self->unpinned_scroll =
     GTK_SCROLLED_WINDOW (
       gtk_scrolled_window_new ());
+  gtk_widget_set_name (
+    GTK_WIDGET (self->unpinned_scroll),
+    "tracklist-unpinned-scroll");
   gtk_scrolled_window_set_policy (
     self->unpinned_scroll,
     GTK_POLICY_NEVER,
     GTK_POLICY_EXTERNAL);
-  g_object_ref_sink (self->unpinned_scroll);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->unpinned_scroll), 1);
   self->unpinned_box =
     GTK_BOX (
       gtk_box_new (
         GTK_ORIENTATION_VERTICAL, 1));
-  g_object_ref_sink (self->unpinned_box);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->unpinned_box), 1);
+  gtk_widget_set_name (
+    GTK_WIDGET (self->unpinned_box),
+    "tracklist-unpinned-box");
 
   /* add scrolled window */
   gtk_box_append (
@@ -593,7 +549,8 @@ tracklist_widget_init (TracklistWidget * self)
       GTK_ORIENTATION_VERTICAL,
       0,
       DRAG_DEST_BOX_TYPE_TRACKLIST);
-  g_object_ref_sink (self->ddbox);
+  gtk_widget_set_name (
+    GTK_WIDGET (self->ddbox), "tracklist-ddbox");
 
   gtk_orientable_set_orientation (
     GTK_ORIENTABLE (self),

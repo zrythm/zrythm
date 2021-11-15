@@ -457,8 +457,8 @@ on_range_selection_changed ()
   /*gtk_widget_set_visible (*/
     /*GTK_WIDGET (MW_RULER->range),*/
     /*PROJECT->has_range);*/
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (MW_RULER));
+  /*gtk_widget_queue_allocate (*/
+    /*GTK_WIDGET (MW_RULER));*/
   ruler_widget_redraw_whole (
     (RulerWidget *) MW_RULER);
   ruler_widget_redraw_whole (
@@ -1302,8 +1302,8 @@ event_manager_process_event (
       {
         RulerWidget * ruler =
           Z_RULER_WIDGET (ev->arg);
-        gtk_widget_queue_allocate (
-          GTK_WIDGET (ruler));
+        /*gtk_widget_queue_allocate (*/
+          /*GTK_WIDGET (ruler));*/
         ruler_widget_redraw_whole (ruler);
         if (ev->arg == MW_RULER)
           {
@@ -1350,8 +1350,8 @@ event_manager_process_event (
       redraw_all_arranger_bgs ();
       break;
     case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
-      gtk_widget_queue_allocate (
-        GTK_WIDGET (MW_RULER));
+      /*gtk_widget_queue_allocate (*/
+        /*GTK_WIDGET (MW_RULER));*/
       ruler_widget_redraw_whole (
         (RulerWidget *) MW_RULER);
       break;

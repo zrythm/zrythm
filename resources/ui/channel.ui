@@ -8,8 +8,10 @@
     <property name="margin_bottom">4</property>
     <child>
       <object class="GtkGrid" id="grid">
+        <property name="name">channel-grid</property>
         <child>
           <object class="GtkBox" id="fader_area">
+            <property name="name">channel-fader-area-box</property>
             <property name="vexpand">1</property>
             <child>
               <object class="FaderButtonsWidget" id="fader_buttons">
@@ -25,9 +27,11 @@
             </child>
             <child>
               <object class="GtkBox" id="meter_area">
+                <property name="name">channel-meter-area-box</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox">
+                    <property name="name">channel-meter-area-inner-box</property>
                     <property name="vexpand">1</property>
                     <child>
                       <object class="MeterWidget" id="meter_l">
@@ -43,6 +47,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="meter_reading">
+                    <property name="name">channel-meter-reading-label</property>
                     <property name="valign">center</property>
                     <property name="label">2</property>
                     <attributes>
@@ -61,12 +66,14 @@
         </child>
         <child>
           <object class="GtkBox" id="icon_and_name_event_box">
-            <property name="visible">True</property>
+            <property name="name">channel-icon-and-name-box</property>
             <property name="can_focus">False</property>
             <child>
               <object class="GtkBox">
+                <property name="name">channel-icon-box</property>
                 <child>
                   <object class="GtkImage" id="icon">
+                    <property name="name">channel-icon-image</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                   </object>
@@ -88,6 +95,7 @@
         </child>
         <child>
           <object class="GtkBox" id="balance_control_box">
+            <property name="name">channel-balance-control-box</property>
             <property name="margin_top">1</property>
             <property name="margin_bottom">1</property>
             <property name="orientation">vertical</property>
@@ -125,6 +133,7 @@
         </child>
         <child>
           <object class="GtkBox" id="instrument_box">
+            <property name="name">channel-instrument-box</property>
             <layout>
               <property name="column">1</property>
               <property name="row">3</property>
@@ -134,10 +143,10 @@
         </child>
         <child>
           <object class="GtkBox" id="mid_box">
+            <property name="name">channel-mid-box</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="PluginStripExpanderWidget" id="midi_fx">
-                <property name="visible">1</property>
               </object>
             </child>
             <child>
@@ -159,6 +168,7 @@
         </child>
         <child>
           <object class="GtkBox" id="highlight_left_box">
+            <property name="name">channel-highlight-left-box</property>
             <property name="orientation">vertical</property>
             <layout>
               <property name="column">0</property>
@@ -169,6 +179,7 @@
         </child>
         <child>
           <object class="GtkBox" id="highlight_right_box">
+            <property name="name">channel-highlight-right-box</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
@@ -188,6 +199,7 @@
         </child>
         <child>
           <object class="GtkBox" id="aux_buttons_box">
+            <property name="name">channel-aux-buttons-box</property>
             <child>
               <placeholder/>
             </child>

@@ -3897,10 +3897,6 @@ track_free (Track * self)
   g_debug ("freeing track '%s' (pos %d)...",
     self->name, self->pos);
 
-  if (self->widget &&
-      GTK_IS_WIDGET (self->widget))
-    g_object_unref (self->widget);
-
   /* remove regions */
   for (int i = 0; i < self->num_lanes; i++)
     {

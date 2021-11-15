@@ -49,9 +49,8 @@ on_divider_pos_changed (
 }
 
 static bool
-on_center_dock_draw (
+on_center_dock_mapped (
   GtkWidget *        widget,
-  cairo_t *          cr,
   CenterDockWidget * self)
 {
   if (self->first_draw)
@@ -91,8 +90,8 @@ center_dock_widget_setup (
     self->main_notebook);
 
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (on_center_dock_draw), self);
+    G_OBJECT (self), "map",
+    G_CALLBACK (on_center_dock_mapped), self);
 }
 
 /**
