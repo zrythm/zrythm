@@ -44,53 +44,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/*
- * Define theme colors.
- *
- * These can be fetched with
- * gtk_style_context_lookup_color().
- */
-@define-color bg_color #2D2D2D;
-@define-color bg_dark_variant1 #262626;
-@define-color bg_dark_variant2 #1F1F1F;
-@define-color bg_darker_variant1 #202020;
-@define-color bg_darker_variant2 #121212;
-@define-color bg_light_variant1 #3A3A3A;
-@define-color bg_light_variant2 #343434;
-@define-color bg_lighter_variant1 #444444;
-@define-color bg_lighter_variant2 #393939;
-@define-color dark_variant1 #000000;
-@define-color dark_variant2 #030202;
-@define-color light_variant1 #656464;
-@define-color light_variant2 #989797;
-@define-color bright_green #1DD169;
-@define-color darkish_green #19664c;
-@define-color dark_orange #D68A0C;
-@define-color darker_orange #D8690B;
-@define-color z_yellow #F9CA1B;
-@define-color bright_orange #F79616;
-@define-color z_purple #9D3955;
-@define-color matcha #2eb398;
-@define-color hover_color alpha(white, 0.1);
-@define-color selection_color alpha(white, 0.07);
-@define-color light_blueish #1aa3ff;
-@define-color light_blueish alpha(#1aa3ff, 0.8);
-@define-color prefader_send #D21E6D;
-@define-color postfader_send #901ed2;
-@define-color solo_checked @darkish_green;
-@define-color solo_active @matcha;
-@define-color fader_fill_start @dark_orange;
-@define-color fader_fill_end @z_yellow;
-@define-color highlight_scale_bg #662266;
-@define-color highlight_chord_bg #BB22BB;
-@define-color highlight_bass_bg @light_blueish;
-@define-color highlight_both_bg #FF22FF;
-@define-color highlight_scale_fg #F79616;
-@define-color highlight_chord_fg @highlight_scale_fg;
-@define-color highlight_bass_fg white;
-@define-color highlight_both_fg white;
-/* see https://coolors.co/ to generate more or use
- * GPick */
+@import '_functions';
+@import '_palette';
 
 /* does not work in gtk4 */
 /*window*/
@@ -98,30 +53,16 @@
   /*-GtkWidget-window-dragging: true;*/
 /*}*/
 
-/*paned separator {*/
-  /*background-color: alpha(white, 0.80);*/
-/*}*/
-
-paned > separator {
-  min-height: 4px;
+paned {
+  > separator {
+    min-height: 4px;
+  }
 }
-
-/*paned separator:hover {*/
-  /*background-color: alpha (white, 0.40);*/
-/*}*/
-
-/*paned#gpaned-instruments separator {*/
-  /*background-color: alpha(white, 0.22);*/
-/*}*/
-
-/*#gpaned-instruments separator:hover {*/
-  /*background-color: alpha (white, 0.40);*/
-/*}*/
 
 .plugin-browser separator:hover,
 .file-browser separator:hover
 {
-  background-color: @hover_color;
+  background-color: $hover_color;
 }
 
 .plugin-browser separator,
@@ -132,17 +73,17 @@ paned > separator {
 
 entry:focus
 {
-  border-color: @bright_orange;
+  border-color: $bright_orange;
 }
 
 spinbutton button:focus
 {
-  border-left-color: @bright_orange;
+  border-left-color: $bright_orange;
 }
 
 entry selection
 {
-  background-color: @z_yellow;
+  background-color: $z_yellow;
 }
 
 treeview.view:hover,
@@ -152,12 +93,12 @@ scrollbar,
 box.sidebar,
 filechooser list
 {
-  background-color: @bg_light_variant1;
+  background-color: $bg_light_variant1;
 }
 
 /* for editing notebook tab line */
 /*notebook > header.top > tabs > tab:hover {*/
-  /*box-shadow: inset 0 -2px alpha(#2eb398,0.6), 0 1px alpha(#2eb398,0.6);*/
+  /*box-shadow: inset 0 -2px gtkalpha(#2eb398,0.6), 0 1px gtkalpha(#2eb398,0.6);*/
 /*}*/
 
 /*notebook > header.top > tabs > tab:checked {*/
@@ -165,7 +106,7 @@ filechooser list
 /*}*/
 
 /*notebook > header.right > tabs > tab:hover {*/
-  /*box-shadow: inset 2px 0 alpha(#2eb398,0.6), -1px 0 alpha(#2eb398,0.6);*/
+  /*box-shadow: inset 2px 0 gtkalpha(#2eb398,0.6), -1px 0 gtkalpha(#2eb398,0.6);*/
 /*}*/
 
 /*notebook > header.right > tabs > tab:checked {*/
@@ -173,7 +114,7 @@ filechooser list
 /*}*/
 
 /*notebook > header.left > tabs > tab:hover {*/
-  /*box-shadow: inset -2px 0 alpha(#2eb398,0.6), 1px 0 alpha(#2eb398,0.6);*/
+  /*box-shadow: inset -2px 0 gtkalpha(#2eb398,0.6), 1px 0 gtkalpha(#2eb398,0.6);*/
 /*}*/
 
 /*notebook > header.left > tabs > tab:checked {*/
@@ -182,20 +123,20 @@ filechooser list
 
 .header button.toggle:not(:checked)
 {
-  background-color: @bg_darker_variant1;
+  background-color: $bg_darker_variant1;
 }
 
 treeview.view:selected,
 listview row:selected,
 list row:selected
 {
-  background-color: @z_purple;
+  background-color: $z_purple;
 }
 
 /* notebook page background */
 notebook stack
 {
-  background-color: @bg_color;
+  background-color: $bg_color;
 }
 
 tracklist,
@@ -205,7 +146,7 @@ window,
 filechooser #pathbarbox,
 paned
 {
-background-color: @bg_dark_variant1;
+background-color: $bg_dark_variant1;
 }
 
 left-dock-edge notebook header,
@@ -231,7 +172,7 @@ piano-roll-toolbar,
 .file-browser .toolbar,
 dialog
 {
-background-color: @bg_dark_variant2;
+background-color: $bg_dark_variant2;
 }
 
 .plugin-browser .toolbar,
@@ -250,7 +191,7 @@ view-toolbar,
 help-toolbar,
 menubar
 {
-  background-color: @bg_darker_variant2;
+  background-color: $bg_darker_variant2;
 }
 
 .header-toolbar-corner
@@ -269,7 +210,7 @@ help-toolbar separator
 
 .arranger-toolbar separator
 {
-  background-color: alpha(grey, 0.6);
+  background-color: gtkalpha(grey, 0.6);
   margin: 4px;
 }
 
@@ -300,7 +241,7 @@ button.popup,
 button:not(.flat),
 entry
 {
-  background-color: @bg_light_variant2;
+  background-color: $bg_light_variant2;
 }
 
 button.toggle:hover,
@@ -310,18 +251,18 @@ button.flat:hover,
 button.text-button:hover,
 tooltip.background
 {
-  background-color: @bg_lighter_variant1;
+  background-color: $bg_lighter_variant1;
 }
 
 entry selection
 {
-  color: @bg_lighter_variant1;
+  color: $bg_lighter_variant1;
 }
 
 menu,
 popover
 {
-  /*background-color: @bg_lighter_variant2;*/
+  /*background-color: $bg_lighter_variant2;*/
   background-color: transparent;
 }
 
@@ -329,7 +270,7 @@ popover.background > contents,
 popover.background > arrow
 {
   padding: 3px;
-  background-color: @bg_lighter_variant1;
+  background-color: $bg_lighter_variant1;
   background-clip: unset;
   border: unset;
   box-shadow: unset;
@@ -339,13 +280,13 @@ button:not(.record-button):not(.solo-button).toggle:checked,
 stackswitcher button:checked,
 menuitem:hover
 {
-  background-color: @dark_orange;
+  background-color: $dark_orange;
 }
 
 button:not(.record-button).toggle:active,
 .header button.toggle:active
 {
-  background-color: @bright_orange;
+  background-color: $bright_orange;
 }
 
 button.toggle.record-button:checked
@@ -355,7 +296,7 @@ button.toggle.record-button:checked
 
 button.toggle.solo-button:checked
 {
-  background-color: @darkish_green;
+  background-color: $darkish_green;
 }
 
 button.toggle.record-button:active
@@ -370,19 +311,19 @@ button.donate-button
 
 button.toggle.solo-button:active
 {
-  background-color: @matcha;
+  background-color: $matcha;
 }
 
 button:not(.toggle):active,
 button.flat:not(.toggle):active,
 button.text-button:active
 {
-  background-color: @bright_orange;
+  background-color: $bright_orange;
 }
 
 bot-dock-edge .toolbar
 {
-  background-color: @bg_dark_variant2;
+  background-color: $bg_dark_variant2;
 }
 
 arranger-bg,
@@ -392,7 +333,7 @@ list row,
 timeline-minimap-bg,
 list
 {
-  background-color: @bg_darker_variant1;
+  background-color: $bg_darker_variant1;
 }
 
 track-grid:selected,
@@ -405,19 +346,19 @@ midi-note:selected
 velocity:selected,
 automation-point:selected
 {
-  background-color: @selection_color;
+  background-color: $selection_color;
 }
 
 channel-slot:selected,
 channel-send:selected
 {
-  background-color: @light_blueish;
+  background-color: $light_blueish;
 }
 
 filechooser button:checked,
 filechooser button:active
 {
-  border-color: @selection_color;
+  border-color: $selection_color;
 }
 
 track-grid:hover,
@@ -433,7 +374,7 @@ ruler-playhead:hover,
 arranger-playhed:hover,
 automation-point:hover
 {
-  background-color: @hover_color;
+  background-color: $hover_color;
 }
 
 .inspector expander-box,
@@ -497,7 +438,7 @@ channel button.flat
 {
   border-style: solid;
   border-bottom-width: 1px;
-  border-color: alpha(grey, 0.3);
+  border-color: gtkalpha(grey, 0.3);
 }
 
 /* blend with header box on the right */
@@ -528,10 +469,11 @@ statusbar {
 }
 
 center-dock > paned > paned > paned > separator {
-  background-color: alpha(white, 0.08);
-}
-center-dock > paned > paned > paned > separator:hover {
-  background-color: alpha(white, 0.12);
+  background-color: gtkalpha(white, 0.08);
+
+  &:hover {
+    background-color: gtkalpha(white, 0.12);
+  }
 }
 
 .thick-separator
@@ -545,7 +487,7 @@ automation-lane
 {
   border-style: solid;
   border-top-width: 2px;
-  border-color: alpha(grey, 0.3);
+  border-color: gtkalpha(grey, 0.3);
 }
 
 .section_heading,
@@ -623,7 +565,7 @@ right-dock-edge notebook tab
 
 /*.button-with-menu separator*/
 /*{*/
-  /*background-color: alpha (grey, 0.6);*/
+  /*background-color: gtkalpha (grey, 0.6);*/
   /*margin-top: 2px;*/
   /*margin-bottom: 2px;*/
   /*margin-left: 0px;*/
@@ -639,7 +581,7 @@ popover.snap-grid-popover button.note-type {
 /* to be used on currently selected part of the UI
  * (e.g., timeline, tracklist, etc.) */
 .selected-element {
-  border: 2px solid alpha(#ccc, 0.4);
+  border: 2px solid gtkalpha(#ccc, 0.4);
   padding: 1px;
   border-radius: 3px;
 }
@@ -675,41 +617,114 @@ label.small-vertical-lbl {
 }
 
 /* adwaita stack view */
-viewswitcher, viewswitcher button.toggle { margin: 0; padding: 0; }
+viewswitcher {
+  &, & button.toggle {
+    margin: 0;
+    padding: 0;
+  }
 
-viewswitcher button.toggle { border-radius: 0; border-top: none; border-bottom: none; font-size: 1rem; font-weight: inherit; }
+  button.toggle {
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+    font-size: 1rem;
+    font-weight: inherit;
 
-viewswitcher button.toggle > stack > box.narrow { font-size: 0.75rem; padding-top: 7px; padding-bottom: 5px; border-spacing: 4px; }
+    > stack > box {
+      &.narrow {
+        font-size: 0.75rem;
+        padding-top: 7px;
+        padding-bottom: 5px;
+        border-spacing: 4px;
 
-viewswitcher button.toggle > stack > box.narrow > stack > label { padding-left: 8px; padding-right: 8px; }
+        > stack > label {
+          padding-left: 8px;
+          padding-right: 8px;
+        }
+      }
 
-viewswitcher button.toggle > stack > box.wide { padding: 8px 12px; border-spacing: 6px; }
+      &.wide {
+        padding: 8px 12px;
+        border-spacing: 6px;
+      }
 
-viewswitcher button.toggle > stack > box label.active { font-weight: bold; }
+      label.active {
+        font-weight: bold;
+      }
+    }
+  }
+}
 
-/********************** AdwViewSwitcherBar * */
-viewswitcherbar actionbar > revealer > box { padding: 0; }
+/**********************
+ * AdwViewSwitcherBar *
+ **********************/
 
-/************************ AdwViewSwitcherTitle * */
-viewswitchertitle viewswitcher { margin-left: 12px; margin-right: 12px; }
+viewswitcherbar actionbar > revealer > box {
+  padding: 0;
+}
 
-/* stack view indicator */
-indicatorbin > indicator, indicatorbin > mask { min-width: 6px; min-height: 6px; border-radius: 100px; }
+/************************
+ * AdwViewSwitcherTitle *
+ ************************/
 
-indicatorbin > indicator { margin: 1px; background: alpha(currentColor,0.4); }
+viewswitchertitle viewswitcher {
+  margin-left: 12px;
+  margin-right: 12px;
+}
 
-indicatorbin > indicator > label { font-size: 0.6rem; font-weight: bold; padding: 1px 4px; color: white; }
+/*******************
+ * AdwIndicatorBin *
+ *******************/
 
-indicatorbin > mask { padding: 1px; background: black; }
+indicatorbin {
+  > indicator, > mask {
+    min-width: 6px;
+    min-height: 6px;
+    border-radius: 100px;
+  }
 
-indicatorbin.needs-attention > indicator { background: @z_purple; }
+  > indicator {
+    margin: 1px;
+    background: gtkalpha(currentColor, .4);
 
-indicatorbin.needs-attention > indicator > label { color: white; }
+    > label {
+      font-size: 0.6rem;
+      font-weight: bold;
+      padding: 1px 4px;
+      color: white;
+    }
+  }
 
-/* preferences */
-window.preferences > contents > leaflet > box > stack > stack > scrolledwindow > viewport > clamp > list, preferencespage > scrolledwindow > viewport > clamp > box { margin: 24px 12px; border-spacing: 24px; }
+  > mask {
+    padding: 1px;
+    background: black;
+  }
 
-preferencesgroup > box > label:not(:first-child) { margin-top: 6px; }
+  &.needs-attention > indicator {
+    background: $z_purple;
 
-preferencesgroup > box > box:not(:first-child) { margin-top: 12px; }
+    > label { color: white; }
+  }
+}
 
+/* === Adwaita preferences === */
+
+window.preferences > contents > leaflet > box > stack > stack > scrolledwindow > viewport > clamp > list,
+preferencespage > scrolledwindow > viewport > clamp > box {
+  margin: 24px 12px;
+  border-spacing: 24px;
+}
+
+preferencesgroup > box {
+  // Add space between the description and the title.
+  > label:not(:first-child) {
+    margin-top: 6px;
+  }
+
+  // Add space between the box and the labels.
+  > box:not(:first-child) {
+    margin-top: 12px;
+  }
+}
+
+/* === end Adwaita preferences === */

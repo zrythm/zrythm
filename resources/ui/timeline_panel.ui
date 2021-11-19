@@ -11,13 +11,13 @@
     </child>
     <child>
       <object class="GtkPaned" id="tracklist_timeline">
+        <property name="name">tracklist-timeline-paned</property>
         <property name="focusable">1</property>
         <child>
           <object class="GtkBox" id="tracklist_top">
             <property name="orientation">vertical</property>
             <child>
               <object class="TracklistHeaderWidget" id="tracklist_header">
-                <property name="visible">1</property>
               </object>
             </child>
             <child>
@@ -30,6 +30,7 @@
         </child>
         <child>
           <object class="GtkBox" id="timelines_plus_ruler">
+            <property name="name">timelines-plus-ruler-box</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkScrolledWindow" id="ruler_scroll">
