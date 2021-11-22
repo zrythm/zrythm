@@ -33,7 +33,7 @@
 G_DEFINE_TYPE (
   CenterDockWidget,
   center_dock_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 static void
 on_divider_pos_changed (
@@ -186,4 +186,9 @@ center_dock_widget_class_init (
   BIND_CHILD (left_dock_edge);
   BIND_CHILD (bot_dock_edge);
   BIND_CHILD (right_dock_edge);
+
+#undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
 }

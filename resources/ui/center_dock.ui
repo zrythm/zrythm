@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="CenterDockWidget" parent="GtkBox">
+  <template class="CenterDockWidget" parent="GtkWidget">
     <child>
       <object class="GtkPaned" id="left_rest_paned">
         <property name="name">left-rest-paned</property>
         <property name="shrink-start-child">0</property>
         <child>
           <object class="LeftDockEdgeWidget" id="left_dock_edge">
-            <property name="visible">True</property>
           </object>
         </child>
         <child>
@@ -23,7 +22,6 @@
                 <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
                 <child>
                   <object class="MainNotebookWidget" id="main_notebook">
-                    <property name="visible">1</property>
                     <property name="hexpand">1</property>
                   </object>
                 </child>

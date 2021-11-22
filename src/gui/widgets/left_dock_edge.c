@@ -39,7 +39,7 @@
 
 G_DEFINE_TYPE (
   LeftDockEdgeWidget, left_dock_edge_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 static void
 on_notebook_switch_page (
@@ -164,6 +164,14 @@ left_dock_edge_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  GtkBoxLayout * box_layout =
+    GTK_BOX_LAYOUT (
+      gtk_widget_get_layout_manager (
+        GTK_WIDGET (self)));
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (box_layout),
+    GTK_ORIENTATION_VERTICAL);
+
   const int min_width = 160;
   GtkWidget * img;
   GtkBox * inspector_wrap;
@@ -276,7 +284,14 @@ left_dock_edge_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "left-dock-edge");
 
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    LeftDockEdgeWidget, inspector_notebook);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, LeftDockEdgeWidget, x)
+
+  BIND_CHILD (inspector_notebook);
+
+#undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
 }

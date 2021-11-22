@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -49,7 +49,7 @@ G_DECLARE_FINAL_TYPE (
   LeftDockEdgeWidget,
   left_dock_edge_widget,
   Z, LEFT_DOCK_EDGE_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 #define MW_LEFT_DOCK_EDGE \
   MW_CENTER_DOCK->left_dock_edge
@@ -71,7 +71,7 @@ typedef enum LeftDockEdgeTab
  */
 typedef struct _LeftDockEdgeWidget
 {
-  GtkBox                  parent_instance;
+  GtkWidget               parent_instance;
   FoldableNotebookWidget * inspector_notebook;
 
   /** Track visibility. */

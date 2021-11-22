@@ -251,8 +251,9 @@ refresh_cpu_load (
     ttip,
     "CPU: %d%%\nDSP: %d%%",
     self->cpu, self->dsp);
-  gtk_widget_set_tooltip_text (
-    (GtkWidget *) self, ttip);
+  /* FIXME reenable after GTK #4451 is fixed */
+  /*gtk_widget_set_tooltip_text (*/
+    /*(GtkWidget *) self, ttip);*/
   gtk_widget_queue_draw ((GtkWidget *) self);
 
   return G_SOURCE_CONTINUE;

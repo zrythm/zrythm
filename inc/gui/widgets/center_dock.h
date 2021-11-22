@@ -32,7 +32,7 @@
   (center_dock_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   CenterDockWidget, center_dock_widget,
-  Z, CENTER_DOCK_WIDGET, GtkBox)
+  Z, CENTER_DOCK_WIDGET, GtkWidget)
 
 typedef struct _LeftDockEdgeWidget
   LeftDockEdgeWidget;
@@ -55,7 +55,7 @@ typedef struct _MainNotebookWidget
  */
 typedef struct _CenterDockWidget
 {
-  GtkBox               parent_instance;
+  GtkWidget             parent_instance;
 
   MainNotebookWidget *  main_notebook;
 

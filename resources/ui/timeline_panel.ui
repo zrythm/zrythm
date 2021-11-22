@@ -44,7 +44,6 @@
                     <property name="hexpand">1</property>
                     <child>
                       <object class="RulerWidget" id="ruler">
-                        <property name="visible">1</property>
                       </object>
                     </child>
                   </object>
@@ -67,7 +66,6 @@
                         <property name="vscroll-policy">natural</property>
                         <child>
                           <object class="ArrangerWidget" id="pinned_timeline">
-                            <property name="visible">1</property>
                           </object>
                         </child>
                       </object>
