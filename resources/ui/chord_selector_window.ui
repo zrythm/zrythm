@@ -6,9 +6,6 @@
     <property name="title">Chord Selector</property>
     <property name="modal">1</property>
     <property name="icon_name">zrythm</property>
-    <child>
-      <placeholder/>
-    </child>
     <property name="child">
       <object class="GtkNotebook" id="notebook">
         <property name="focusable">1</property>

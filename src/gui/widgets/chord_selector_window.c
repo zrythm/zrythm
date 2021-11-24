@@ -40,14 +40,12 @@ G_DEFINE_TYPE (
   GTK_TYPE_WINDOW)
 
 #define IN_SCALE_TOGGLED \
-  (gtk_toggle_button_get_active ( \
-     GTK_TOGGLE_BUTTON ( \
-       self->creator_visibility_in_scale)))
+  (gtk_check_button_get_active ( \
+     self->creator_visibility_in_scale))
 
 static gboolean
-on_delete_event (
-  GtkWidget *widget,
-  GdkEvent  *event,
+on_close_request (
+  GtkWindow *                 window,
   ChordSelectorWindowWidget * self)
 {
   /* update the keys */
@@ -55,7 +53,7 @@ on_delete_event (
 
   EVENTS_PUSH (ET_CHORD_KEY_CHANGED, self->descr);
 
-  return FALSE;
+  return false;
 }
 
 
@@ -446,7 +444,7 @@ creator_filter (
   GtkFlowBoxChild * child,
   ChordSelectorWindowWidget * self)
 {
-  if (IN_SCALE_TOGGLED)
+  if (self->scale && IN_SCALE_TOGGLED)
     {
       int i;
 
@@ -502,7 +500,7 @@ creator_filter (
           MusicalNote note =
             get_selected_root_note (self);
           if ((int) note == -1)
-            return 0;
+            return true;
 
           ChordDescriptor * chord =
             chord_descriptor_new (
@@ -516,12 +514,11 @@ creator_filter (
           return ret;
         }
 
-
-      return 0;
+      return false;
     }
   else
     {
-      return 1;
+      return true;
     }
 }
 
@@ -771,6 +768,6 @@ chord_selector_window_widget_init (
     "toggled",
     G_CALLBACK (on_group_changed), self);
   g_signal_connect (
-    G_OBJECT (self), "delete-event",
-    G_CALLBACK (on_delete_event), self);
+    G_OBJECT (self), "close-request",
+    G_CALLBACK (on_close_request), self);
 }

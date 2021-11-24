@@ -72,6 +72,8 @@ on_chord_click_pressed (
   gdouble           y,
   gpointer          user_data)
 {
+  g_debug ("pressed");
+
   ChordWidget * self = Z_CHORD_WIDGET (user_data);
 
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
@@ -97,6 +99,8 @@ on_chord_click_released (
   gdouble           y,
   gpointer          user_data)
 {
+  g_debug ("released");
+
   ChordWidget * self = Z_CHORD_WIDGET (user_data);
 
   send_note_offs (self);
@@ -104,11 +108,8 @@ on_chord_click_released (
 
 static void
 on_edit_chord_pressed (
-  GtkGestureClick * click_gesture,
-  gint              n_press,
-  gdouble           x,
-  gdouble           y,
-  gpointer          user_data)
+  GtkButton * btn,
+  gpointer    user_data)
 {
   ChordWidget * self = Z_CHORD_WIDGET (user_data);
 
@@ -117,8 +118,8 @@ on_edit_chord_pressed (
   ChordSelectorWindowWidget * chord_selector =
     chord_selector_window_widget_new (descr);
 
-  gtk_window_present (
-    GTK_WINDOW (chord_selector));
+  g_debug ("presenting chord selector window");
+  gtk_window_present (GTK_WINDOW (chord_selector));
 }
 
 static void
@@ -185,6 +186,7 @@ on_drag_begin (
   gdouble          start_y,
   ChordWidget *    self)
 {
+  g_debug ("drag begin");
   self->drag_start_x = start_x;
   self->drag_start_y = start_y;
 }
@@ -196,7 +198,7 @@ on_drag_end (
   gdouble          offset_y,
   ChordWidget *    self)
 {
-  g_message ("drag end");
+  g_debug ("drag end");
 
   self->drag_started = false;
   self->drag_start_x = 0;
@@ -238,9 +240,8 @@ chord_widget_setup (
     chord_descriptor_to_new_string (descr);
   self->btn =
     GTK_BUTTON (gtk_button_new_with_label (lbl));
-
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->btn), true);
+  gtk_widget_set_name (
+    GTK_WIDGET (self->btn), "chord-btn");
   g_free (lbl);
   gtk_overlay_set_child (
     self->overlay, GTK_WIDGET (self->btn));
@@ -259,8 +260,7 @@ chord_widget_setup (
     GTK_EVENT_CONTROLLER (click_gesture));
 
   self->btn_drag =
-    GTK_GESTURE_DRAG (
-      gtk_gesture_drag_new ());
+    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     self->btn_drag, "drag-begin",
     G_CALLBACK (on_drag_begin), self);
@@ -279,6 +279,8 @@ chord_widget_setup (
     GTK_BUTTON (
       gtk_button_new_from_icon_name (
         "minuet-scales"));
+  gtk_widget_set_name (
+    GTK_WIDGET (self->edit_chord_btn), "chord-btn");
   gtk_overlay_add_overlay (
     self->overlay,
     GTK_WIDGET (self->edit_chord_btn));
@@ -288,15 +290,9 @@ chord_widget_setup (
   gtk_widget_set_valign (
     GTK_WIDGET (self->edit_chord_btn),
     GTK_ALIGN_START);
-  GtkGestureClick * edit_click_gesture =
-    GTK_GESTURE_CLICK (
-      gtk_gesture_click_new ());
   g_signal_connect (
-    edit_click_gesture, "pressed",
+    self->edit_chord_btn, "clicked",
     G_CALLBACK (on_edit_chord_pressed), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self->edit_chord_btn),
-    GTK_EVENT_CONTROLLER (edit_click_gesture));
 }
 
 /**
