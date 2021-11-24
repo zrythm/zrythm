@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019, 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -80,7 +80,7 @@ typedef struct _MidiEditorSpaceWidget
 
   /** Vertical size goup for the keys and the
    * arranger. */
-  GtkSizeGroup *    arranger_and_keys_vsize_group;
+  GtkSizeGroup *       arranger_and_keys_vsize_group;
 } MidiEditorSpaceWidget;
 
 void

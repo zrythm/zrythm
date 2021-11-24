@@ -6870,27 +6870,6 @@ arranger_tick_cb (
   return 5;
 }
 
-static void
-on_size_allocate (
-  GtkWidget * widget,
-  int         width,
-  int         height,
-  int         baseline)
-{
-  ArrangerWidget * self =
-    Z_ARRANGER_WIDGET (widget);
-
-  /* no layout manager, so call this to allocate
-   * a size for the menu */
-  gtk_popover_present (
-    GTK_POPOVER (self->popover_menu));
-
-  GTK_WIDGET_CLASS (
-    arranger_widget_parent_class)->
-      size_allocate (
-        widget, width, height, baseline);
-}
-
 void
 arranger_widget_setup (
   ArrangerWidget *   self,
@@ -7064,7 +7043,9 @@ arranger_widget_class_init (
   GtkWidgetClass * wklass =
     GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = arranger_snapshot;
-  wklass->size_allocate = on_size_allocate;
+
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void

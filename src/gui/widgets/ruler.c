@@ -2018,18 +2018,6 @@ ruler_widget_refresh (RulerWidget * self)
   if (!math_doubles_equal_epsilon (
          prev_total_px, self->total_px, 0.1))
     {
-      /* set the size */
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) self->total_px, -1);
-
-      if (self->type == TYPE (TIMELINE))
-        {
-          /*gtk_widget_set_visible (*/
-            /*GTK_WIDGET (timeline_ruler->range),*/
-            /*PROJECT->has_range);*/
-        }
-
       EVENTS_PUSH (
         ET_RULER_SIZE_CHANGED, self);
     }
@@ -2128,27 +2116,6 @@ ruler_tick_cb (
 }
 
 static void
-on_size_allocate (
-  GtkWidget * widget,
-  int         width,
-  int         height,
-  int         baseline)
-{
-  RulerWidget * self =
-    Z_RULER_WIDGET (widget);
-
-  /* no layout manager, so call this to allocate
-   * a size for the menu */
-  gtk_popover_present (
-    GTK_POPOVER (self->popover_menu));
-
-  GTK_WIDGET_CLASS (
-    ruler_widget_parent_class)->
-      size_allocate (
-        widget, width, height, baseline);
-}
-
-static void
 dispose (
   RulerWidget * self)
 {
@@ -2242,14 +2209,17 @@ ruler_widget_init (RulerWidget * self)
 }
 
 static void
-ruler_widget_class_init (RulerWidgetClass * _klass)
+ruler_widget_class_init (
+  RulerWidgetClass * klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  klass->snapshot = ruler_snapshot;
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = ruler_snapshot;
   gtk_widget_class_set_css_name (
-    klass, "ruler");
-  klass->size_allocate = on_size_allocate;
+    wklass, "ruler");
+
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);

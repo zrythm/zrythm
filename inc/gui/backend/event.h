@@ -178,6 +178,22 @@ typedef enum EventType
   ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED,
   ET_BPM_CHANGED,
   ET_CHANNEL_FADER_VAL_CHANGED,
+
+  /**
+   * Piano roll key zoom level changed.
+   *
+   * Arg: None.
+   */
+  ET_PIANO_ROLL_KEY_ZOOM_CHANGED,
+
+  /**
+   * Piano roll key height level changed.
+   *
+   * This is sent after the new height is
+   * calculated to set the widget's size request.
+   *
+   * Arg: None.
+   */
   ET_PIANO_ROLL_KEY_HEIGHT_CHANGED,
 
   /**

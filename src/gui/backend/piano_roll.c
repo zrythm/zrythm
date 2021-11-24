@@ -323,7 +323,7 @@ piano_roll_get_current_track (
 void
 piano_roll_set_notes_zoom (
   PianoRoll * self,
-  float         notes_zoom,
+  float       notes_zoom,
   int         fire_events)
 {
   if (notes_zoom < 1.f || notes_zoom > 4.5f)
@@ -334,7 +334,7 @@ piano_roll_set_notes_zoom (
   if (fire_events)
     {
       EVENTS_PUSH (
-        ET_PIANO_ROLL_KEY_HEIGHT_CHANGED, NULL);
+        ET_PIANO_ROLL_KEY_ZOOM_CHANGED, NULL);
     }
 }
 

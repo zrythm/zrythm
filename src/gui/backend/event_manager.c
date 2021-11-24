@@ -1302,8 +1302,9 @@ event_manager_process_event (
       {
         RulerWidget * ruler =
           Z_RULER_WIDGET (ev->arg);
-        /*gtk_widget_queue_allocate (*/
-          /*GTK_WIDGET (ruler));*/
+        gtk_widget_set_size_request (
+          GTK_WIDGET (ruler),
+          (int) ruler->total_px, -1);
         ruler_widget_redraw_whole (ruler);
         if (ev->arg == MW_RULER)
           {
@@ -1707,9 +1708,16 @@ event_manager_process_event (
         MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
 #endif
       break;
-    case ET_PIANO_ROLL_KEY_HEIGHT_CHANGED:
+    case ET_PIANO_ROLL_KEY_ZOOM_CHANGED:
       midi_editor_space_widget_refresh (
         MW_MIDI_EDITOR_SPACE);
+      break;
+    case ET_PIANO_ROLL_KEY_HEIGHT_CHANGED:
+      {
+        gtk_widget_set_size_request (
+          GTK_WIDGET (MW_PIANO_ROLL_KEYS), 10,
+          (int) MW_PIANO_ROLL_KEYS->total_key_px);
+      }
       break;
     case ET_MAIN_WINDOW_LOADED:
       /* show all visible plugins */

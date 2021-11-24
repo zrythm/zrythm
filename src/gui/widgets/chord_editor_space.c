@@ -185,8 +185,7 @@ chord_editor_space_widget_class_init (
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass,
-    "chord_editor_space.ui");
+    klass, "chord_editor_space.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -151,25 +151,25 @@ clip_editor_inner_widget_refresh (
           GTK_WIDGET (self->midi_editor_space))
         {
           midi_editor_space_widget_update_size_group (
-            self->midi_editor_space, 0);
+            self->midi_editor_space, false);
         }
       else if (visible_w ==
           GTK_WIDGET (self->audio_editor_space))
         {
           audio_editor_space_widget_update_size_group (
-            self->audio_editor_space, 0);
+            self->audio_editor_space, false);
         }
       else if (visible_w ==
           GTK_WIDGET (self->chord_editor_space))
         {
           chord_editor_space_widget_update_size_group (
-            self->chord_editor_space, 0);
+            self->chord_editor_space, false);
         }
       else if (visible_w ==
           GTK_WIDGET (self->automation_editor_space))
         {
           automation_editor_space_widget_update_size_group (
-            self->automation_editor_space, 0);
+            self->automation_editor_space, false);
         }
       else
         {
@@ -194,7 +194,7 @@ clip_editor_inner_widget_refresh (
             self->editor_stack,
             GTK_WIDGET (self->midi_editor_space));
           midi_editor_space_widget_update_size_group (
-            self->midi_editor_space, 1);
+            self->midi_editor_space, true);
           midi_editor_space_widget_refresh (
             self->midi_editor_space);
           gtk_widget_set_visible (
@@ -226,7 +226,7 @@ clip_editor_inner_widget_refresh (
             self->editor_stack,
             GTK_WIDGET (MW_CHORD_EDITOR_SPACE));
           chord_editor_space_widget_update_size_group (
-            self->chord_editor_space, 1);
+            self->chord_editor_space, true);
           chord_editor_space_widget_refresh (
             self->chord_editor_space);
           break;
@@ -236,7 +236,7 @@ clip_editor_inner_widget_refresh (
             GTK_WIDGET (
               MW_AUTOMATION_EDITOR_SPACE));
           automation_editor_space_widget_update_size_group (
-            self->automation_editor_space, 1);
+            self->automation_editor_space, true);
           automation_editor_space_widget_refresh (
             self->automation_editor_space);
           gtk_widget_set_visible (
@@ -264,6 +264,18 @@ clip_editor_inner_widget_setup (
     self->automation_editor_space);
 
   clip_editor_inner_widget_refresh (self);
+}
+
+static void
+finalize (
+  ClipEditorInnerWidget * self)
+{
+  if (self->left_of_ruler_size_group)
+    g_object_unref (self->left_of_ruler_size_group);
+
+  G_OBJECT_CLASS (
+    clip_editor_inner_widget_parent_class)->
+      finalize (G_OBJECT (self));
 }
 
 static void
@@ -337,25 +349,12 @@ clip_editor_inner_widget_init (
 }
 
 static void
-finalize (
-  ClipEditorInnerWidget * self)
-{
-  if (self->left_of_ruler_size_group)
-    g_object_unref (self->left_of_ruler_size_group);
-
-  G_OBJECT_CLASS (
-    clip_editor_inner_widget_parent_class)->
-      finalize (G_OBJECT (self));
-}
-
-static void
 clip_editor_inner_widget_class_init (
   ClipEditorInnerWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass,
-    "clip_editor_inner.ui");
+    klass, "clip_editor_inner.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -376,6 +375,8 @@ clip_editor_inner_widget_class_init (
   BIND_CHILD (audio_editor_space);
   BIND_CHILD (chord_editor_space);
   BIND_CHILD (automation_editor_space);
+
+#undef BIND_CHILD
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

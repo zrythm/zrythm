@@ -507,6 +507,15 @@ track_clone (
         F_NO_PUBLISH_EVENTS);
     }
 
+  /* TODO */
+  if (track->type == TRACK_TYPE_MODULATOR)
+    {
+      for (int i = 0; i < track->num_modulators;
+           i++)
+        {
+        }
+    }
+
   if (track->channel)
     {
       object_free_w_func_and_null (

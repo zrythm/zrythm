@@ -23,18 +23,22 @@
 #include "audio/scale_object.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/piano_roll_keys.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -466,13 +470,16 @@ piano_roll_keys_widget_refresh (
   self->px_per_key =
     (double) DEFAULT_PX_PER_KEY *
     (double) PIANO_ROLL->notes_zoom;
+  double key_px_before = self->total_key_px;
   self->total_key_px =
     (self->px_per_key + 1.0) * 128.0;
 
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self), -1, (int) self->total_key_px);
-
-  piano_roll_keys_widget_redraw_full (self);
+  if (!math_doubles_equal (
+        key_px_before, self->total_key_px))
+    {
+      EVENTS_PUSH (
+        ET_PIANO_ROLL_KEY_HEIGHT_CHANGED, NULL);
+    }
 }
 
 void
@@ -480,7 +487,6 @@ piano_roll_keys_widget_redraw_note (
   PianoRollKeysWidget * self,
   int                   note)
 {
-  /* TODO */
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
@@ -514,6 +520,9 @@ piano_roll_keys_widget_init (
   PianoRollKeysWidget * self)
 {
   self->last_mid_note = 63;
+
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), -1, 600);
 
   PangoFontDescription * desc;
   self->layout =
@@ -561,4 +570,7 @@ piano_roll_keys_widget_class_init (
   GtkWidgetClass * wklass =
     GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = piano_roll_keys_snapshot;
+
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 }

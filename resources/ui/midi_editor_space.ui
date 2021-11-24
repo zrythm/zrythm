@@ -22,11 +22,7 @@
                     <property name="hscrollbar_policy">never</property>
                     <property name="vscrollbar_policy">external</property>
                     <property name="child">
-                      <object class="GtkViewport" id="piano_roll_keys_viewport">
-                        <child>
-                          <object class="PianoRollKeysWidget" id="piano_roll_keys">
-                          </object>
-                        </child>
+                      <object class="PianoRollKeysWidget" id="piano_roll_keys">
                       </object>
                     </property>
                   </object>
@@ -47,11 +43,7 @@
                     <property name="hscrollbar_policy">always</property>
                     <property name="overlay-scrolling">0</property>
                     <property name="child">
-                      <object class="GtkViewport" id="arranger_viewport">
-                        <child>
-                          <object class="ArrangerWidget" id="arranger">
-                          </object>
-                        </child>
+                      <object class="ArrangerWidget" id="arranger">
                       </object>
                     </property>
                   </object>
@@ -63,6 +55,7 @@
         <child>
           <object class="GtkBox" id="midi_vel_label_editor_box">
             <property name="height_request">60</property>
+            <property name="orientation">horizontal</property>
             <child>
               <object class="GtkBox" id="midi_vel_chooser_box">
                 <property name="orientation">vertical</property>
@@ -85,12 +78,8 @@
                 <property name="hscrollbar_policy">external</property>
                 <property name="vscrollbar_policy">never</property>
                 <property name="child">
-                  <object class="GtkViewport" id="modifier_arranger_viewport">
-                    <child>
-                      <object class="ArrangerWidget" id="modifier_arranger">
-                        <property name="can_focus">1</property>
-                      </object>
-                    </child>
+                  <object class="ArrangerWidget" id="modifier_arranger">
+                    <property name="can_focus">1</property>
                   </object>
                 </property>
               </object>

@@ -236,21 +236,25 @@ port_find_from_identifier (
       switch (id->plugin_id.slot_type)
         {
         case PLUGIN_SLOT_MIDI_FX:
+          g_return_val_if_fail (tr->channel, NULL);
           pl =
             tr->channel->midi_fx[
               id->plugin_id.slot];
           break;
         case PLUGIN_SLOT_INSTRUMENT:
+          g_return_val_if_fail (tr->channel, NULL);
           pl = tr->channel->instrument;
           break;
         case PLUGIN_SLOT_INSERT:
+          g_return_val_if_fail (tr->channel, NULL);
           pl =
             tr->channel->inserts[
               id->plugin_id.slot];
           break;
         case PLUGIN_SLOT_MODULATOR:
-          pl =
-            tr->modulators[id->plugin_id.slot];
+          g_return_val_if_fail (
+            tr->modulators, NULL);
+          pl = tr->modulators[id->plugin_id.slot];
           break;
         default:
           g_return_val_if_reached (NULL);

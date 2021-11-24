@@ -80,22 +80,20 @@ link_scrolls (
   if (MW_CLIP_EDITOR_INNER->ruler_scroll)
     {
       gtk_scrolled_window_set_hadjustment (
-        MW_CLIP_EDITOR_INNER->ruler_scroll,
+        self->arranger_scroll,
         gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
+          MW_CLIP_EDITOR_INNER->ruler_scroll));
     }
 
-  /* link modifier arranger h scroll to arranger h scroll */
+  /* link modifier arranger h scroll to arranger h
+   * scroll */
   if (self->modifier_arranger_scroll)
     {
       gtk_scrolled_window_set_hadjustment (
         self->modifier_arranger_scroll,
         gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
+          MW_CLIP_EDITOR_INNER->ruler_scroll));
     }
-
 }
 
 static int
@@ -254,21 +252,18 @@ midi_editor_space_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    MidiEditorSpaceWidget, \
-    x)
+    klass, MidiEditorSpaceWidget, x)
 
   BIND_CHILD (midi_modifier_chooser);
   BIND_CHILD (piano_roll_keys_scroll);
-  BIND_CHILD (piano_roll_keys_viewport);
   BIND_CHILD (piano_roll_keys);
   BIND_CHILD (midi_arranger_velocity_paned);
   BIND_CHILD (arranger_scroll);
-  BIND_CHILD (arranger_viewport);
   BIND_CHILD (arranger);
   BIND_CHILD (modifier_arranger_scroll);
-  BIND_CHILD (modifier_arranger_viewport);
   BIND_CHILD (modifier_arranger);
   BIND_CHILD (midi_notes_box);
   BIND_CHILD (midi_vel_chooser_box);
+
+#undef BIND_CHILD
 }
