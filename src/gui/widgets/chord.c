@@ -189,6 +189,12 @@ on_drag_begin (
   g_debug ("drag begin");
   self->drag_start_x = start_x;
   self->drag_start_y = start_y;
+
+  gtk_gesture_set_sequence_state (
+    GTK_GESTURE (gesture),
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture)),
+    GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
 static void
