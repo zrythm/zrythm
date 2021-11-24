@@ -5614,18 +5614,14 @@ on_scroll (
   ArrangerWidget * self =
     Z_ARRANGER_WIDGET (user_data);
 
-  double adj_val,
-         diff;
-  double x, y;
-  GdkEvent * event =
-    gtk_event_controller_get_current_event (
-      GTK_EVENT_CONTROLLER (scroll_controller));
-  gdk_event_get_position (
-    GDK_EVENT (event), &x, &y);
+  double x = self->hover_x;
+  double y = self->hover_y;
 
-  g_debug ("scrolled to %f, %f", x, y);
-  EVENTS_PUSH (
-    ET_ARRANGER_SCROLLED, self);
+  g_debug (
+    "scrolled to %f (d %f), %f (d %f)",
+    x, dx, y, dy);
+
+  EVENTS_PUSH (ET_ARRANGER_SCROLLED, self);
 
   GdkModifierType modifier_type =
     gtk_event_controller_get_current_event_state (
@@ -5634,9 +5630,12 @@ on_scroll (
   if (!(modifier_type & GDK_CONTROL_MASK))
     return false;
 
+  g_debug ("ctrl held");
+
   /* if shift also pressed, handle vertical zoom */
   if (modifier_type & GDK_SHIFT_MASK)
     {
+      g_debug ("shift held");
       if (self->type == TYPE (MIDI))
         {
           midi_arranger_handle_vertical_zoom_scroll (
@@ -5655,41 +5654,44 @@ on_scroll (
       Position cursor_pos;
       GtkScrolledWindow * scroll =
         arranger_widget_get_scrolled_window (self);
-      GtkAdjustment * adj;
-      int new_x;
       RulerWidget * ruler =
         arranger_widget_get_ruler (self);
 
       /* get current adjustment so we can get the
        * difference from the cursor */
-      adj = gtk_scrolled_window_get_hadjustment (
-        scroll);
-      adj_val = gtk_adjustment_get_value (adj);
+      GtkAdjustment * adj =
+        gtk_scrolled_window_get_hadjustment (
+          scroll);
+      double adj_val =
+        gtk_adjustment_get_value (adj);
 
-      /* get positions of cursor */
+      /* get position of cursor */
       arranger_widget_px_to_pos (
         self, x, &cursor_pos, F_PADDING);
 
       /* get px diff so we can calculate the new
        * adjustment later */
-      diff = x - adj_val;
+      double diff = x - adj_val;
 
       /* scroll down, zoom out */
       if (dy > 0)
         {
           ruler_widget_set_zoom_level (
             ruler,
-            ruler_widget_get_zoom_level (ruler) / 1.3);
+            ruler_widget_get_zoom_level (
+              ruler) / 1.3);
         }
       else /* scroll up, zoom in */
         {
           ruler_widget_set_zoom_level (
             ruler,
-            ruler_widget_get_zoom_level (ruler) * 1.3);
+            ruler_widget_get_zoom_level (
+              ruler) * 1.3);
         }
 
-      new_x = arranger_widget_pos_to_px (
-        self, &cursor_pos, 1);
+      int new_x =
+        arranger_widget_pos_to_px (
+          self, &cursor_pos, 1);
 
       /* refresh relevant widgets */
       if (self->type == TYPE (TIMELINE))
@@ -5699,7 +5701,8 @@ on_scroll (
       /* get updated adjustment and set its value
        at the same offset as before */
       adj =
-        gtk_scrolled_window_get_hadjustment (scroll);
+        gtk_scrolled_window_get_hadjustment (
+          scroll);
       gtk_adjustment_set_value (adj, new_x - diff);
     }
 
