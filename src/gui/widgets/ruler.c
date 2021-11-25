@@ -1157,7 +1157,7 @@ ruler_snapshot (
     gtk_snapshot_append_cairo (
       snapshot, &visible_rect);
 
-  if (self->redraw ||
+  if (true || self->redraw ||
       !graphene_rect_equal (
          &visible_rect, &self->last_rect))
     {
