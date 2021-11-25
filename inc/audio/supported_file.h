@@ -205,6 +205,14 @@ supported_file_should_autoplay (
   const SupportedFile * self);
 
 /**
+ * Gets the corresponding icon name for the given
+ * SupportedFile's type.
+ */
+const char *
+supported_file_get_icon_name (
+  const SupportedFile * const self);
+
+/**
  * Returns a pango markup to be used in GTK labels.
  */
 NONNULL

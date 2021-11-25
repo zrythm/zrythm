@@ -342,6 +342,37 @@ supported_file_get_info_text_for_label (
 }
 
 /**
+ * Gets the corresponding icon name for the given
+ * SupportedFile's type.
+ */
+const char *
+supported_file_get_icon_name (
+  const SupportedFile * const self)
+{
+  switch (self->type)
+    {
+    case FILE_TYPE_MIDI:
+      return "audio-midi";
+    case FILE_TYPE_MP3:
+      return "audio-x-mpeg";
+    case FILE_TYPE_FLAC:
+      return "audio-x-flac";
+    case FILE_TYPE_OGG:
+      return "application-ogg";
+    case FILE_TYPE_WAV:
+      return "audio-x-wav";
+    case FILE_TYPE_DIR:
+      return "folder";
+    case FILE_TYPE_PARENT_DIR:
+      return "folder";
+    case FILE_TYPE_OTHER:
+      return "application-x-zerosize";
+    default:
+      return "";
+    }
+}
+
+/**
  * Frees the instance and all its members.
  */
 void

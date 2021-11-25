@@ -30,6 +30,7 @@ typedef struct FileBrowserLocation
   FileBrowserLocation;
 typedef struct _FileBrowserFiltersWidget
   FileBrowserFiltersWidget;
+typedef struct ItemFactory ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -60,8 +61,12 @@ typedef struct _PanelFileBrowserWidget
 
   GtkLabel *           file_info;
   ZFileType            selected_type;
-  GtkTreeModelFilter * files_tree_model;
-  GtkTreeView *        files_tree_view;
+
+  GtkCustomFilter *    files_filter;
+  GtkFilterListModel * files_filter_model;
+  GtkSingleSelection * files_selection_model;
+  ItemFactory *        files_item_factory;
+  GtkListView *        files_list_view;
 
   /** Array of SupportedFile. */
   GPtrArray *          selected_locations;

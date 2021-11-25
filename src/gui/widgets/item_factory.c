@@ -206,6 +206,176 @@ item_factory_setup_cb (
 }
 
 static void
+add_plugin_descr_context_menu (
+  PopoverMenuBinWidget * bin,
+  PluginDescriptor *     descr)
+{
+  GMenu * menu =
+    G_MENU (
+      popover_menu_bin_widget_get_menu_model (bin));
+  if (menu)
+    g_menu_remove_all (menu);
+  else
+    menu = g_menu_new ();
+
+  /* set right click model */
+  GMenuItem * menuitem;
+
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project"), NULL,
+      "app.plugin-browser-add-to-project");
+  g_menu_append_item (menu, menuitem);
+
+#ifdef HAVE_CARLA
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project (carla)"), NULL,
+      "app.plugin-browser-add-to-project-carla");
+  g_menu_append_item (menu, menuitem);
+
+  PluginSetting * new_setting =
+    plugin_setting_new_default (descr);
+  if (descr->has_custom_ui &&
+      descr->min_bridge_mode ==
+        CARLA_BRIDGE_NONE &&
+      !new_setting->force_generic_ui)
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Add to project (carla)"), NULL,
+          "app.plugin-browser-add-to-project-bridged-ui");
+      g_menu_append_item (menu, menuitem);
+    }
+  plugin_setting_free (new_setting);
+
+  menuitem =
+    z_gtk_create_menu_item (
+      _("Add to project (carla)"), NULL,
+      "app.plugin-browser-add-to-project-bridged-full");
+  g_menu_append_item (menu, menuitem);
+#endif
+
+#if 0
+  menuitem =
+    GTK_MENU_ITEM (
+      gtk_check_menu_item_new_with_mnemonic (
+        _("Use _Generic UI")));
+  APPEND;
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menuitem),
+    new_setting->force_generic_ui);
+  g_signal_connect (
+    G_OBJECT (menuitem), "toggled",
+    G_CALLBACK (on_use_generic_ui_toggled), descr);
+#endif
+
+  /* add to collection */
+  GMenu * add_collections_submenu = g_menu_new ();
+  int num_added = 0;
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->
+         num_collections;
+       i++)
+    {
+      PluginCollection * coll =
+        PLUGIN_MANAGER->collections->collections[i];
+      if (plugin_collection_contains_descriptor (
+            coll, descr, false))
+        {
+          continue;
+        }
+
+      char tmp[600];
+      sprintf (
+        tmp,
+        "app.plugin-browser-add-to-collection::%p",
+        coll);
+      menuitem =
+        z_gtk_create_menu_item (
+          coll->name, NULL, tmp);
+      g_menu_append_item (
+        add_collections_submenu, menuitem);
+      num_added++;
+    }
+  if (num_added > 0)
+    {
+      g_menu_append_section (
+        menu, _("Add to collection"),
+        G_MENU_MODEL (
+          add_collections_submenu));
+    }
+  else
+    {
+      g_object_unref (
+        add_collections_submenu);
+    }
+
+  /* remove from collection */
+  GMenu * remove_collections_submenu =
+    g_menu_new ();
+  num_added = 0;
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->
+         num_collections;
+       i++)
+    {
+      PluginCollection * coll =
+        PLUGIN_MANAGER->collections->collections[i];
+      if (!plugin_collection_contains_descriptor (
+            coll, descr, false))
+        {
+          continue;
+        }
+
+      char tmp[600];
+      sprintf (
+        tmp,
+        "app.plugin-browser-remove-from-collection::%p",
+        coll);
+      menuitem =
+        z_gtk_create_menu_item (
+          coll->name, NULL, tmp);
+      g_menu_append_item (
+        remove_collections_submenu, menuitem);
+      num_added++;
+    }
+  if (num_added > 0)
+    {
+      g_menu_append_section (
+        menu, _("Remove from collection"),
+        G_MENU_MODEL (remove_collections_submenu));
+    }
+  else
+    {
+      g_object_unref (remove_collections_submenu);
+    }
+  popover_menu_bin_widget_set_menu_model (
+    bin, G_MENU_MODEL (menu));
+}
+
+static void
+add_supported_file_context_menu (
+  PopoverMenuBinWidget * bin,
+  SupportedFile *        descr)
+{
+  GMenu * menu = g_menu_new ();
+  GMenuItem * menuitem;
+
+  if (descr->type == FILE_TYPE_DIR)
+    {
+      menuitem =
+        z_gtk_create_menu_item (
+          _("Add Bookmark"), "favorite",
+          "app.panel-file-browser-add-bookmark");
+      g_menu_append_item (menu, menuitem);
+    }
+
+  popover_menu_bin_widget_set_menu_model (
+    bin, G_MENU_MODEL (menu));
+}
+
+static void
 item_factory_bind_cb (
   GtkSignalListItemFactory * factory,
   GtkListItem *              listitem,
@@ -382,149 +552,49 @@ item_factory_bind_cb (
 
               /* FIXME wait for gtk bug fix */
               break;
-              GMenu * menu =
-                G_MENU (
-                  popover_menu_bin_widget_get_menu_model (
-                    bin));
-              if (menu)
-                g_menu_remove_all (menu);
-              else
-                menu = g_menu_new ();
+              add_plugin_descr_context_menu (
+                bin, descr);
+            }
+            break;
+          case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
+            {
+              SupportedFile * descr =
+                (SupportedFile *) obj->obj;
 
-              /* set right click model */
-              GMenuItem * menuitem;
 
-              menuitem =
-                z_gtk_create_menu_item (
-                  _("Add to project"), NULL,
-                  "app.plugin-browser-add-to-project");
-              g_menu_append_item (menu, menuitem);
+              gtk_image_set_from_icon_name (
+                img,
+                supported_file_get_icon_name (
+                  descr));
+              gtk_label_set_text (lbl, descr->label);
 
-#ifdef HAVE_CARLA
-              menuitem =
-                z_gtk_create_menu_item (
-                  _("Add to project (carla)"), NULL,
-                  "app.plugin-browser-add-to-project-carla");
-              g_menu_append_item (menu, menuitem);
+              /* set as drag source */
+              GtkDragSource * drag_source =
+                gtk_drag_source_new ();
+              ItemFactoryData * data =
+                item_factory_data_new (self, obj);
+              g_object_set_data (
+                G_OBJECT (bin), "item-factory-data",
+                data);
+              g_signal_connect_data (
+                G_OBJECT (drag_source),
+                "prepare",
+                G_CALLBACK (on_dnd_drag_prepare),
+                data,
+                item_factory_data_destroy_closure,
+                0);
+              g_object_set_data (
+                G_OBJECT (bin), "drag-source",
+                drag_source);
+              gtk_widget_add_controller (
+                GTK_WIDGET (bin),
+                GTK_EVENT_CONTROLLER (
+                  drag_source));
 
-              PluginSetting * new_setting =
-                plugin_setting_new_default (descr);
-              if (descr->has_custom_ui &&
-                  descr->min_bridge_mode ==
-                    CARLA_BRIDGE_NONE &&
-                  !new_setting->force_generic_ui)
-                {
-                  menuitem =
-                    z_gtk_create_menu_item (
-                      _("Add to project (carla)"), NULL,
-                      "app.plugin-browser-add-to-project-bridged-ui");
-                  g_menu_append_item (menu, menuitem);
-                }
-              plugin_setting_free (new_setting);
-
-              menuitem =
-                z_gtk_create_menu_item (
-                  _("Add to project (carla)"), NULL,
-                  "app.plugin-browser-add-to-project-bridged-full");
-              g_menu_append_item (menu, menuitem);
-#endif
-
-#if 0
-              menuitem =
-                GTK_MENU_ITEM (
-                  gtk_check_menu_item_new_with_mnemonic (
-                    _("Use _Generic UI")));
-              APPEND;
-              gtk_check_menu_item_set_active (
-                GTK_CHECK_MENU_ITEM (menuitem),
-                new_setting->force_generic_ui);
-              g_signal_connect (
-                G_OBJECT (menuitem), "toggled",
-                G_CALLBACK (on_use_generic_ui_toggled), descr);
-#endif
-
-              /* add to collection */
-              GMenu * add_collections_submenu = g_menu_new ();
-              int num_added = 0;
-              for (int i = 0;
-                   i < PLUGIN_MANAGER->collections->
-                     num_collections;
-                   i++)
-                {
-                  PluginCollection * coll =
-                    PLUGIN_MANAGER->collections->collections[i];
-                  if (plugin_collection_contains_descriptor (
-                        coll, descr, false))
-                    {
-                      continue;
-                    }
-
-                  char tmp[600];
-                  sprintf (
-                    tmp,
-                    "app.plugin-browser-add-to-collection::%p",
-                    coll);
-                  menuitem =
-                    z_gtk_create_menu_item (
-                      coll->name, NULL, tmp);
-                  g_menu_append_item (
-                    add_collections_submenu, menuitem);
-                  num_added++;
-                }
-              if (num_added > 0)
-                {
-                  g_menu_append_section (
-                    menu, _("Add to collection"),
-                    G_MENU_MODEL (
-                      add_collections_submenu));
-                }
-              else
-                {
-                  g_object_unref (
-                    add_collections_submenu);
-                }
-
-              /* remove from collection */
-              GMenu * remove_collections_submenu =
-                g_menu_new ();
-              num_added = 0;
-              for (int i = 0;
-                   i < PLUGIN_MANAGER->collections->
-                     num_collections;
-                   i++)
-                {
-                  PluginCollection * coll =
-                    PLUGIN_MANAGER->collections->collections[i];
-                  if (!plugin_collection_contains_descriptor (
-                        coll, descr, false))
-                    {
-                      continue;
-                    }
-
-                  char tmp[600];
-                  sprintf (
-                    tmp,
-                    "app.plugin-browser-remove-from-collection::%p",
-                    coll);
-                  menuitem =
-                    z_gtk_create_menu_item (
-                      coll->name, NULL, tmp);
-                  g_menu_append_item (
-                    remove_collections_submenu, menuitem);
-                  num_added++;
-                }
-              if (num_added > 0)
-                {
-                  g_menu_append_section (
-                    menu, _("Remove from collection"),
-                    G_MENU_MODEL (remove_collections_submenu));
-                }
-              else
-                {
-                  g_object_unref (remove_collections_submenu);
-                }
-              popover_menu_bin_widget_set_menu_model (
-                bin, G_MENU_MODEL (menu));
+              /* FIXME wait for gtk bug fix */
+              break;
+              add_supported_file_context_menu (
+                bin, descr);
             }
             break;
           default:
@@ -575,6 +645,7 @@ item_factory_unbind_cb (
         switch (obj->type)
           {
           case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
+          case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
             {
               /* set as drag source */
               GtkDragSource * drag_source =

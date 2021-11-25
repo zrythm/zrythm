@@ -111,7 +111,7 @@ update_stack_switcher_emblems (
       self->stack, \
       GTK_WIDGET (self->scroll_name##_scroll)); \
   adw_view_stack_page_set_badge_number ( \
-    page, num); \
+    page, (unsigned int) num); \
   adw_view_stack_page_set_needs_attention ( \
     page, num > 0)
 
@@ -825,11 +825,17 @@ on_plugin_selection_changed (
   GtkSelectionModel *   selection_model,
   guint                 position,
   guint                 n_items,
-  PluginBrowserWidget * self)
+  gpointer              user_data)
 {
+  PluginBrowserWidget * self =
+    Z_PLUGIN_BROWSER_WIDGET (user_data);
+
+  g_debug ("SELECTION CHANGED");
+
   GObject * gobj =
-    g_list_model_get_object (
-      G_LIST_MODEL (selection_model), position);
+    gtk_single_selection_get_selected_item (
+      GTK_SINGLE_SELECTION (
+        self->plugin_selection_model));
   if (!gobj)
     return;
 
@@ -1705,26 +1711,6 @@ plugin_browser_widget_init (
   gtk_box_append (
     self->stack_switcher_box,
     GTK_WIDGET (self->stack_switcher));
-
-  /* set stackswitcher icons */
-#if 0
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self->stack_switcher));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      if (!GTK_IS_RADIO_BUTTON (iter->data))
-        continue;
-
-      GtkWidget * radio = GTK_WIDGET (iter->data);
-      g_object_set (
-        radio, "hexpand", true, NULL);
-    }
-  g_list_free (children);
-#endif
 
   gtk_widget_set_hexpand (
     GTK_WIDGET (self->paned), true);
