@@ -70,8 +70,11 @@ on_toggled (
   GtkCheckButton * self,
   gpointer         user_data)
 {
+  ItemFactoryData * data =
+    (ItemFactoryData *) user_data;
+
   WrappedObjectWithChangeSignal * obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (user_data);
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data->obj);
 
   bool active = gtk_check_button_get_active (self);
 

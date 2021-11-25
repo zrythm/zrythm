@@ -56,6 +56,10 @@ midi_mappings_init_loaded (
   for (int i = 0; i < self->num_mappings; i++)
     {
       MidiMapping * mapping = self->mappings[i];
+      mapping->gobj =
+        wrapped_object_with_change_signal_new (
+          mapping,
+          WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
       mapping->dest =
         port_find_from_identifier (
           &mapping->dest_id);

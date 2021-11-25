@@ -159,8 +159,8 @@ cc_bindings_tree_widget_refresh (
        i++)
     {
       MidiMapping * mm = MIDI_MAPPINGS->mappings[i];
-      g_list_store_append (
-        store, mm->gobj);
+      g_return_if_fail (G_IS_OBJECT (mm->gobj));
+      g_list_store_append (store, mm->gobj);
     }
 }
 
