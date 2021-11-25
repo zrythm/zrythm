@@ -210,11 +210,13 @@ plugin_setting_validate (
         }
     }
 
+#if 0
   /* force bridge mode */
   if (self->bridge_mode == CARLA_BRIDGE_NONE)
     {
       self->bridge_mode = CARLA_BRIDGE_FULL;
     }
+#endif
 
   /*g_debug ("done recalculating bridge mode");*/
 #endif
