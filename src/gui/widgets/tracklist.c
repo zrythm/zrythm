@@ -598,6 +598,10 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
+
+  /* set minimum width */
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), 164, -1);
 }
 
 static void

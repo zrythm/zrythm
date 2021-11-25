@@ -782,6 +782,53 @@ add_subgroup (
     }
 }
 
+static const char *
+get_group_icon (
+  const char *         schema_str)
+{
+  const char * icon_name = NULL;
+  if (string_contains_substr (
+        schema_str, "preferences.general"))
+    {
+      icon_name = "info";
+    }
+  else if (string_contains_substr (
+             schema_str, "preferences.scripting"))
+    {
+      icon_name = "amarok_scripts";
+    }
+  else if (string_contains_substr (
+             schema_str, "preferences.dsp"))
+    {
+      icon_name = "signal-audio";
+    }
+  else if (string_contains_substr (
+             schema_str, "preferences.plugins"))
+    {
+      icon_name = "plugins";
+    }
+  else if (string_contains_substr (
+             schema_str, "preferences.editing"))
+    {
+      icon_name = "pencil";
+    }
+  else if (string_contains_substr (
+             schema_str, "preferences.projects"))
+    {
+      icon_name = "project-open";
+    }
+  else if (string_contains_substr (
+             schema_str, "preferences.ui"))
+    {
+      icon_name = "interface";
+    }
+
+  g_debug (
+    "icon name for %s: %s", schema_str, icon_name);
+
+  return icon_name;
+}
+
 static void
 add_group (
   PreferencesWidget * self,
@@ -853,6 +900,8 @@ add_group (
       nfo->name = subgroup_name;
       nfo->group_idx = group_idx;
       nfo->subgroup_idx = subgroup_idx;
+      nfo->group_icon =
+        get_group_icon (schema_str);
       if (subgroup_idx > max_subgroup_idx)
         max_subgroup_idx = subgroup_idx;
     }
@@ -870,6 +919,15 @@ add_group (
     page, localized_group_name);
   adw_preferences_window_add (
     ADW_PREFERENCES_WINDOW (self), page);
+
+  /* set icon */
+  if (self->subgroup_infos[group_idx][0].group_icon)
+    {
+      adw_preferences_page_set_icon_name (
+        page,
+        self->subgroup_infos[
+          group_idx][0].group_icon);
+    }
 
   /* create a sizegroup for the labels */
   GtkSizeGroup * size_group =

@@ -53,6 +53,8 @@ typedef struct SubgroupInfo
 
   const char *      group_name;
 
+  const char *      group_icon;
+
   int               group_idx;
   int               subgroup_idx;
   GSettingsSchema * schema;
