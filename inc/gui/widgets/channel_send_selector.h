@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -68,6 +68,10 @@ typedef struct _ChannelSendSelectorWidget
 ChannelSendSelectorWidget *
 channel_send_selector_widget_new (
   ChannelSendWidget * send);
+
+void
+channel_send_selector_widget_setup (
+  ChannelSendSelectorWidget * self);
 
 /**
  * @}

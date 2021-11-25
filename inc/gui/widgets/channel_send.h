@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,6 +37,8 @@ G_DECLARE_FINAL_TYPE (
   GtkDrawingArea)
 
 typedef struct ChannelSend ChannelSend;
+typedef struct _ChannelSendSelectorWidget
+  ChannelSendSelectorWidget;
 
 /**
  * @addtogroup widgets
@@ -74,6 +76,8 @@ typedef struct _ChannelSendWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
+
+  ChannelSendSelectorWidget * selector_popover;
 } ChannelSendWidget;
 
 /**

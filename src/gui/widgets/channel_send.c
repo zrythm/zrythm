@@ -234,11 +234,10 @@ on_pressed (
 
   if (n_press == 2)
     {
-      ChannelSendSelectorWidget * send_selector =
-        channel_send_selector_widget_new (
-          self);
-      gtk_popover_present (
-        GTK_POPOVER (send_selector));
+      channel_send_selector_widget_setup (
+        self->selector_popover);
+      gtk_popover_popup (
+        GTK_POPOVER (self->selector_popover));
     }
 }
 
@@ -291,6 +290,8 @@ on_size_allocate (
    * a size for the menu */
   gtk_popover_present (
     GTK_POPOVER (self->popover_menu));
+  gtk_popover_present (
+    GTK_POPOVER (self->selector_popover));
 
   GTK_WIDGET_CLASS (
     channel_send_widget_parent_class)->
@@ -372,6 +373,8 @@ dispose (
 {
   gtk_widget_unparent (
     GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->selector_popover));
 
   G_OBJECT_CLASS (
     channel_send_widget_parent_class)->
@@ -421,6 +424,12 @@ channel_send_widget_init (
 
   gtk_widget_set_hexpand (
     GTK_WIDGET (self), true);
+
+  self->selector_popover =
+    channel_send_selector_widget_new (self);
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->selector_popover),
+    GTK_WIDGET (self));
 
   self->popover_menu =
     GTK_POPOVER_MENU (

@@ -466,6 +466,13 @@ setup_treeview (
      G_CALLBACK (on_selection_changed), self);
 }
 
+void
+channel_send_selector_widget_setup (
+  ChannelSendSelectorWidget * self)
+{
+  setup_treeview (self);
+}
+
 ChannelSendSelectorWidget *
 channel_send_selector_widget_new (
   ChannelSendWidget * send)
@@ -473,11 +480,8 @@ channel_send_selector_widget_new (
   ChannelSendSelectorWidget * self =
     g_object_new (
       CHANNEL_SEND_SELECTOR_WIDGET_TYPE,
-      "relative-to", GTK_WIDGET (send),
       NULL);
   self->send_widget = send;
-
-  setup_treeview (self);
 
   return self;
 }

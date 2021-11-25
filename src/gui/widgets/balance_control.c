@@ -268,14 +268,13 @@ on_drag_update (
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
-  char * str =
-    get_pan_string (self);
-  gtk_label_set_text (
-    self->tooltip_label, str);
+  char * str = get_pan_string (self);
+  /*gtk_label_set_text (*/
+    /*self->tooltip_label, str);*/
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), str);
   g_free (str);
-  gtk_window_present (self->tooltip_win);
+  /*gtk_window_present (self->tooltip_win);*/
 
   self->dragged = 1;
 }
@@ -290,7 +289,7 @@ on_drag_end (
   self->last_x = 0;
   self->last_y = 0;
   self->dragged = 0;
-  gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
+  /*gtk_widget_hide (GTK_WIDGET (self->tooltip_win));*/
 
   if (IS_CHANNEL ((Channel *) self->object) &&
       !math_floats_equal_epsilon (
@@ -444,6 +443,39 @@ balance_control_finalize (
 }
 
 static void
+dispose (
+  BalanceControlWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (
+    balance_control_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
+on_size_allocate (
+  GtkWidget * widget,
+  int         width,
+  int         height,
+  int         baseline)
+{
+  BalanceControlWidget * self =
+    Z_BALANCE_CONTROL_WIDGET (widget);
+
+  /* no layout manager, so call this to allocate
+   * a size for the menu */
+  gtk_popover_present (
+    GTK_POPOVER (self->popover_menu));
+
+  GTK_WIDGET_CLASS (
+    balance_control_widget_parent_class)->
+      size_allocate (
+        widget, width, height, baseline);
+}
+
+static void
 balance_control_widget_init (
   BalanceControlWidget * self)
 {
@@ -455,6 +487,9 @@ balance_control_widget_init (
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
 
   gtk_widget_set_margin_start (
     GTK_WIDGET (self), 2);
@@ -504,9 +539,12 @@ balance_control_widget_class_init (BalanceControlWidgetClass * _klass)
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "balance-control");
+  klass->size_allocate = on_size_allocate;
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
   oklass->finalize =
     (GObjectFinalizeFunc) balance_control_finalize;
 }
