@@ -1,0 +1,208 @@
+/*
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Adrien Plazas <adrien.plazas@puri.sm>
+ * Bob Ham <bob.ham@puri.sm>
+ * Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+ * Guido Günther <agx@sigxcpu.org>
+ * Heather Ellsworth <heather.ellsworth@puri.sm>
+ * Julian Richen <julian@richen.io>
+ * Julian Sparber <julian@sparber.net>
+ * Sebastien Lafargue <slafargue@gnome.org>
+ * Zander Brown <zbrown@gnome.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+@import '_palette';
+
+$osd_fg_color: transparentize(white, .1);
+$osd_text_color: white;
+$osd_bg_color: transparentize(black, 0.3);
+$disabled_opacity: 0.5;
+$dim_label_opacity: 0.55;
+$view_bg_color: #1e1e1e;
+$view_fg_color: #ffffff;
+$border_opacity: .15;
+$border_color: gtkalpha(currentColor, $border_opacity);
+$view_hover_color: gtkalpha(currentColor, .07);
+$view_active_color: gtkalpha(currentColor, .16);
+$view_selected_color: gtkalpha(currentColor, .1);
+$view_selected_hover_color: gtkalpha(currentColor, .13);
+$view_selected_active_color: gtkalpha(currentColor, .19);
+//$focus_border_color:  gtkalpha($accent_bg_color, $focus_border_opacity);
+
+/* adwaita stack view */
+viewswitcher {
+  &, & button.toggle {
+    margin: 0;
+    padding: 0;
+  }
+
+  button.toggle {
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+    font-size: 1rem;
+    font-weight: inherit;
+
+    > stack > box {
+      &.narrow {
+        font-size: 0.75rem;
+        padding-top: 7px;
+        padding-bottom: 5px;
+        border-spacing: 4px;
+
+        > stack > label {
+          padding-left: 8px;
+          padding-right: 8px;
+        }
+      }
+
+      &.wide {
+        padding: 8px 12px;
+        border-spacing: 6px;
+      }
+
+      label.active {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+/* Adwaita common element */
+%osd,
+.osd {
+  color: $osd_fg_color;
+  border: none;
+  background-color: $osd_bg_color;
+  background-clip: padding-box;
+}
+
+/* Adwaita toast */
+toast {
+  @extend %osd;
+
+  margin: 12px;
+  margin-bottom: 24px;
+
+  border-radius: 150px;
+  border-spacing: 6px;
+  padding: 6px;
+
+  &:dir(ltr) { padding-left: 12px; }
+  &:dir(rtl) { padding-right: 12px; }
+
+  > label {
+    margin: 0 6px;
+  }
+
+  //@if $contrast == 'high' {
+    //box-shadow: 0 0 0 1px $border_color;
+  //}
+}
+
+/**********************
+ * AdwViewSwitcherBar *
+ **********************/
+
+viewswitcherbar actionbar > revealer > box {
+  padding: 0;
+}
+
+/************************
+ * AdwViewSwitcherTitle *
+ ************************/
+
+viewswitchertitle viewswitcher {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+/*******************
+ * AdwIndicatorBin *
+ *******************/
+
+indicatorbin {
+  > indicator, > mask {
+    min-width: 6px;
+    min-height: 6px;
+    border-radius: 100px;
+  }
+
+  > indicator {
+    margin: 1px;
+    background: gtkalpha(currentColor, .4);
+
+    > label {
+      font-size: 0.6rem;
+      font-weight: bold;
+      padding: 1px 4px;
+      color: white;
+    }
+  }
+
+  > mask {
+    padding: 1px;
+    background: black;
+  }
+
+  &.needs-attention > indicator {
+    background: $z_purple;
+
+    > label { color: white; }
+  }
+}
+
+/* === Adwaita preferences === */
+
+window.preferences > contents > leaflet > box > stack > stack > scrolledwindow > viewport > clamp > list,
+preferencespage > scrolledwindow > viewport > clamp > box {
+  margin: 24px 12px;
+  border-spacing: 24px;
+}
+
+preferencesgroup > box {
+  // Add space between the description and the title.
+  > label:not(:first-child) {
+    margin-top: 6px;
+  }
+
+  // Add space between the box and the labels.
+  > box:not(:first-child) {
+    margin-top: 12px;
+  }
+}
+
+/* === end Adwaita preferences === */

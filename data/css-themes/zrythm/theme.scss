@@ -44,8 +44,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+@import '_adwaita';
 @import '_functions';
-@import '_palette';
 
 /* does not work in gtk4 */
 /*window*/
@@ -616,147 +616,18 @@ label.small-vertical-lbl {
       -1px 0 rgba(0,0,0,0.1);
 }
 
-/* adwaita stack view */
-viewswitcher {
-  &, & button.toggle {
-    margin: 0;
-    padding: 0;
-  }
-
-  button.toggle {
-    border-radius: 0;
-    border-top: none;
-    border-bottom: none;
-    font-size: 1rem;
-    font-weight: inherit;
-
-    > stack > box {
-      &.narrow {
-        font-size: 0.75rem;
-        padding-top: 7px;
-        padding-bottom: 5px;
-        border-spacing: 4px;
-
-        > stack > label {
-          padding-left: 8px;
-          padding-right: 8px;
-        }
-      }
-
-      &.wide {
-        padding: 8px 12px;
-        border-spacing: 6px;
-      }
-
-      label.active {
-        font-weight: bold;
-      }
-    }
-  }
+spinbutton text {
+  background-color: $bg_dark_variant1;
 }
 
-/* Adwaita common element */
-%osd,
-.osd {
-  color: $osd_fg_color;
-  border: none;
-  background-color: $osd_bg_color;
-  background-clip: padding-box;
+headerbar {
+  background-color: $bg_darker_variant2;
 }
 
-/* Adwaita toast */
-toast {
-  @extend %osd;
-
-  margin: 12px;
-  margin-bottom: 24px;
-
-  border-radius: 150px;
-  border-spacing: 6px;
-  padding: 6px;
-
-  &:dir(ltr) { padding-left: 12px; }
-  &:dir(rtl) { padding-right: 12px; }
-
-  > label {
-    margin: 0 6px;
-  }
-
-  //@if $contrast == 'high' {
-    //box-shadow: 0 0 0 1px $border_color;
-  //}
+/* this is used in adwaita preferences window */
+preferencesgroup .header .title,
+preferencesgroup .header > box,
+.boxed-list box {
+  background-color: transparent;
+  border-color: transparent;
 }
-
-/**********************
- * AdwViewSwitcherBar *
- **********************/
-
-viewswitcherbar actionbar > revealer > box {
-  padding: 0;
-}
-
-/************************
- * AdwViewSwitcherTitle *
- ************************/
-
-viewswitchertitle viewswitcher {
-  margin-left: 12px;
-  margin-right: 12px;
-}
-
-/*******************
- * AdwIndicatorBin *
- *******************/
-
-indicatorbin {
-  > indicator, > mask {
-    min-width: 6px;
-    min-height: 6px;
-    border-radius: 100px;
-  }
-
-  > indicator {
-    margin: 1px;
-    background: gtkalpha(currentColor, .4);
-
-    > label {
-      font-size: 0.6rem;
-      font-weight: bold;
-      padding: 1px 4px;
-      color: white;
-    }
-  }
-
-  > mask {
-    padding: 1px;
-    background: black;
-  }
-
-  &.needs-attention > indicator {
-    background: $z_purple;
-
-    > label { color: white; }
-  }
-}
-
-/* === Adwaita preferences === */
-
-window.preferences > contents > leaflet > box > stack > stack > scrolledwindow > viewport > clamp > list,
-preferencespage > scrolledwindow > viewport > clamp > box {
-  margin: 24px 12px;
-  border-spacing: 24px;
-}
-
-preferencesgroup > box {
-  // Add space between the description and the title.
-  > label:not(:first-child) {
-    margin-top: 6px;
-  }
-
-  // Add space between the box and the labels.
-  > box:not(:first-child) {
-    margin-top: 12px;
-  }
-}
-
-/* === end Adwaita preferences === */

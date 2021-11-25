@@ -38,11 +38,6 @@ $highlight_scale_fg: #F79616;
 $highlight_bass_fg: white;
 $highlight_both_fg: white;
 
-/* Adwaita */
-$osd_fg_color: transparentize(white, .1);
-$osd_text_color: white;
-$osd_bg_color: transparentize(black, 0.3);
-
 /* These are fetched with
  * gtk_style_context_lookup_color(). They must always
  * be present under these names. */
