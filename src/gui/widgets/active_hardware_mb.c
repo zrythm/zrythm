@@ -76,7 +76,6 @@ void
 active_hardware_mb_widget_save_settings (
   ActiveHardwareMbWidget * self)
 {
-  GtkToggleButton * chkbtn;
   char * controllers[40];
   int num_controllers = 0;
 
@@ -91,13 +90,13 @@ active_hardware_mb_widget_save_settings (
       if (!GTK_IS_CHECK_BUTTON (child))
         continue;
 
-      chkbtn = GTK_TOGGLE_BUTTON (child);
-      if (gtk_toggle_button_get_active (chkbtn))
+      GtkCheckButton * chkbtn =
+        GTK_CHECK_BUTTON (child);
+      if (gtk_check_button_get_active (chkbtn))
         {
           controllers[num_controllers++] =
             g_strdup (
-              gtk_button_get_label (
-                GTK_BUTTON (chkbtn)));
+              gtk_check_button_get_label (chkbtn));
         }
     }
   controllers[num_controllers] = NULL;

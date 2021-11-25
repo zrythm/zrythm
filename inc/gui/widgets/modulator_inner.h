@@ -34,6 +34,8 @@ typedef struct _KnobWithNameWidget
 typedef struct _LiveWaveformWidget
   LiveWaveformWidget;
 typedef struct _ModulatorWidget ModulatorWidget;
+typedef struct _PortConnectionsPopoverWidget
+  PortConnectionsPopoverWidget;
 
 typedef struct _ModulatorInnerWidget
 {
@@ -61,6 +63,7 @@ typedef struct _ModulatorInnerWidget
   /** Pointer back to the Modulator. */
   ModulatorWidget * parent;
 
+  PortConnectionsPopoverWidget * connections_popover;
 } ModulatorInnerWidget;
 
 void

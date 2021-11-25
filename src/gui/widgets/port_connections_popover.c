@@ -38,25 +38,27 @@ G_DEFINE_TYPE (
   port_connections_popover_widget,
   GTK_TYPE_POPOVER)
 
+#if 0
 static void
 on_add_clicked (
   GtkButton *                    btn,
   PortConnectionsPopoverWidget * self)
 {
-  PortSelectorPopoverWidget * psp =
-    port_selector_popover_widget_new (
-      self, self->port);
-  /*gtk_popover_set_relative_to (*/
-    /*GTK_POPOVER (psp), GTK_WIDGET (btn));*/
-  gtk_popover_set_position (
-    GTK_POPOVER (psp), GTK_POS_RIGHT);
-  gtk_popover_present (GTK_POPOVER (psp));
+  port_selector_popover_widget_refresh (
+    self->port_selector_popover, self->port);
+  gtk_popover_popup (GTK_POPOVER (psp));
 }
+#endif
 
 void
 port_connections_popover_widget_refresh (
-  PortConnectionsPopoverWidget * self)
+  PortConnectionsPopoverWidget * self,
+  Port *                         port)
 {
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
+  self->port = port;
+
   z_gtk_widget_destroy_all_children (
     GTK_WIDGET (self->ports_box));
 
@@ -120,6 +122,9 @@ port_connections_popover_widget_refresh (
         }
       g_ptr_array_unref (dests);
     }
+
+  port_selector_popover_widget_refresh (
+    self->port_selector_popover, port);
 }
 
 /**
@@ -130,22 +135,14 @@ port_connections_popover_widget_refresh (
  */
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
-  GtkWidget * owner,
-  Port *      port)
+  GtkWidget * owner)
 {
   g_return_val_if_fail (
-    GTK_IS_WIDGET (owner) && IS_PORT (port), NULL);
+    GTK_IS_WIDGET (owner), NULL);
 
   PortConnectionsPopoverWidget * self =
     g_object_new (
       PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
-
-  self->port = port;
-  /*gtk_popover_set_relative_to (*/
-    /*GTK_POPOVER (self),*/
-    /*GTK_WIDGET (owner));*/
-
-  port_connections_popover_widget_refresh (self);
 
   return self;
 }
@@ -189,7 +186,7 @@ port_connections_popover_widget_init (
     GTK_WIDGET (self->ports_box), 1);
 
   self->add =
-    GTK_BUTTON (gtk_button_new ());
+    GTK_MENU_BUTTON (gtk_menu_button_new ());
   GtkWidget * btn_box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   GtkWidget * img =
@@ -199,11 +196,11 @@ port_connections_popover_widget_init (
     gtk_label_new (_("Add"));
   gtk_widget_set_visible (lbl, 1);
   gtk_box_append (GTK_BOX (btn_box), lbl);
-  gtk_button_set_child (
-    GTK_BUTTON (self->add), btn_box);
-  g_signal_connect (
-    G_OBJECT (self->add), "clicked",
-    G_CALLBACK (on_add_clicked), self);
+  gtk_menu_button_set_child (
+    GTK_MENU_BUTTON (self->add), btn_box);
+  /*g_signal_connect (*/
+    /*G_OBJECT (self->add), "clicked",*/
+    /*G_CALLBACK (on_add_clicked), self);*/
 
   GtkWidget * separator =
     gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
@@ -224,4 +221,13 @@ port_connections_popover_widget_init (
     GTK_POPOVER (self),
     GTK_WIDGET (self->main_box));
   /*g_object_ref (self);*/
+
+  self->port_selector_popover =
+    port_selector_popover_widget_new (self);
+  gtk_popover_set_position (
+    GTK_POPOVER (self->port_selector_popover),
+    GTK_POS_RIGHT);
+  gtk_menu_button_set_popover (
+    self->add,
+    GTK_WIDGET (self->port_selector_popover));
 }

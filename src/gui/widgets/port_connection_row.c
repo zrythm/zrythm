@@ -58,8 +58,10 @@ on_enable_toggled (
         _("Failed to enable connection"));
     }
 
+  g_return_if_fail (
+    IS_PORT_AND_NONNULL (self->parent->port));
   port_connections_popover_widget_refresh (
-    self->parent);
+    self->parent, self->parent->port);
 }
 
 static void
@@ -79,8 +81,10 @@ on_del_clicked (
         _("Failed to disconnect"));
     }
 
+  g_return_if_fail (
+    IS_PORT_AND_NONNULL (self->parent->port));
   port_connections_popover_widget_refresh (
-    self->parent);
+    self->parent, self->parent->port);
 }
 
 static void

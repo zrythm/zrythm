@@ -17,9 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Port connections popover.
+ */
+
 #ifndef __GUI_WIDGETS_PORT_CONNECTIONS_POPOVER_H__
 #define __GUI_WIDGETS_PORT_CONNECTIONS_POPOVER_H__
-
 
 #include <gtk/gtk.h>
 
@@ -32,6 +37,14 @@ G_DECLARE_FINAL_TYPE (
   GtkPopover)
 
 typedef struct Port Port;
+typedef struct _PortSelectorPopoverWidget
+  PortSelectorPopoverWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef struct _PortConnectionsPopoverWidget
 {
@@ -50,7 +63,9 @@ typedef struct _PortConnectionsPopoverWidget
   GtkBox *         ports_box;
 
   /** Button to add connection. */
-  GtkButton *      add;
+  GtkMenuButton *  add;
+
+  PortSelectorPopoverWidget * port_selector_popover;
 } PortConnectionsPopoverWidget;
 
 /**
@@ -61,8 +76,7 @@ typedef struct _PortConnectionsPopoverWidget
  */
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
-  GtkWidget * owner,
-  Port *      port);
+  GtkWidget * owner);
 
 /**
  * Refreshes the popover.
@@ -72,6 +86,11 @@ port_connections_popover_widget_new (
  */
 void
 port_connections_popover_widget_refresh (
-  PortConnectionsPopoverWidget * self);
+  PortConnectionsPopoverWidget * self,
+  Port *                         port);
+
+/**
+ * @}
+ */
 
 #endif

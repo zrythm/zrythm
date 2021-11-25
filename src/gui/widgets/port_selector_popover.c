@@ -99,6 +99,8 @@ on_ok_clicked (
         MAIN_WINDOW,
         _("These ports cannot be connected"));
     }
+
+  gtk_widget_set_visible (GTK_WIDGET (self), 0);
 }
 
 static void
@@ -412,7 +414,7 @@ static void
 tree_view_setup (
   PortSelectorPopoverWidget * self,
   GtkTreeModel * model,
-  int            init);
+  bool            init);
 
 static void
 on_selection_changed (
@@ -447,13 +449,13 @@ on_selection_changed (
               self, self->selected_track);
           tree_view_setup (
             self,
-            self->plugin_model, 0);
+            self->plugin_model, false);
           self->port_model =
             create_model_for_ports (
               self, NULL, NULL);
           tree_view_setup (
             self,
-            self->port_model, 0);
+            self->port_model, false);
         }
       else if (model == self->plugin_model)
         {
@@ -486,14 +488,12 @@ on_selection_changed (
                 self->selected_plugin);
           tree_view_setup (
             self,
-            self->port_model, 0);
+            self->port_model, false);
         }
       else if (model == self->port_model)
         {
-          gtk_tree_model_get_value (model,
-                                    &iter,
-                                    2,
-                                    &value);
+          gtk_tree_model_get_value (
+            model, &iter, 2, &value);
           self->selected_port =
             g_value_get_pointer (&value);
         }
@@ -506,8 +506,8 @@ on_selection_changed (
 static void
 tree_view_setup (
   PortSelectorPopoverWidget * self,
-  GtkTreeModel * model,
-  int            init)
+  GtkTreeModel *              model,
+  bool                        init)
 {
   GtkTreeView * tree_view = NULL;
 
@@ -573,37 +573,43 @@ tree_view_setup (
     }
 }
 
-PortSelectorPopoverWidget *
-port_selector_popover_widget_new (
-  PortConnectionsPopoverWidget * owner,
-  Port * port)
+void
+port_selector_popover_widget_refresh (
+  PortSelectorPopoverWidget * self,
+  Port *                      port)
 {
-  PortSelectorPopoverWidget * self =
-    g_object_new (
-      PORT_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
-
-  g_warn_if_fail (port);
   self->port = port;
-  self->owner = owner;
-
   self->track_model =
     create_model_for_tracks (self);
-  tree_view_setup (self, self->track_model, 1);
+  tree_view_setup (
+    self, self->track_model, !self->setup);
 
   self->plugin_model =
     create_model_for_plugins (self, NULL);
   tree_view_setup (
-    self,
-    self->plugin_model,
-    1);
+    self, self->plugin_model, !self->setup);
 
   self->port_model =
     create_model_for_ports (
       self, NULL, NULL);
   tree_view_setup (
-    self,
-    self->port_model,
-    1);
+    self, self->port_model, !self->setup);
+
+  self->setup = true;
+}
+
+/**
+ * Creates the popover.
+ */
+PortSelectorPopoverWidget *
+port_selector_popover_widget_new (
+  PortConnectionsPopoverWidget * owner)
+{
+  PortSelectorPopoverWidget * self =
+    g_object_new (
+      PORT_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
+
+  self->owner = owner;
 
   return self;
 }

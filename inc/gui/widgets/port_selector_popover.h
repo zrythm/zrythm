@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -89,16 +89,24 @@ typedef struct _PortSelectorPopoverWidget
   GtkButton *       ok;
   GtkButton *       cancel;
 
+  /** Whether already set up (to avoid re-adding
+   * existing widgets). */
+  bool              setup;
+
   PortConnectionsPopoverWidget * owner;
 } PortSelectorPopoverWidget;
+
+void
+port_selector_popover_widget_refresh (
+  PortSelectorPopoverWidget * self,
+  Port *                      port);
 
 /**
  * Creates the popover.
  */
 PortSelectorPopoverWidget *
 port_selector_popover_widget_new (
-  PortConnectionsPopoverWidget * owner,
-  Port * port);
+  PortConnectionsPopoverWidget * owner);
 
 /**
  * @}

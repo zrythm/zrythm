@@ -121,10 +121,10 @@ on_automate_clicked (
     }
   g_return_if_fail (index >= 0);
 
-  PortConnectionsPopoverWidget * popover =
-    port_connections_popover_widget_new (
-      GTK_WIDGET (btn), self->ports[index]);
-  gtk_popover_present (GTK_POPOVER (popover));
+  port_connections_popover_widget_refresh (
+    self->connections_popover, self->ports[index]);
+  gtk_popover_popup (
+    GTK_POPOVER (self->connections_popover));
 
   /* TODO update label on closed */
 #if 0
@@ -305,6 +305,7 @@ modulator_inner_widget_new (
         GTK_WIDGET (
           self->waveform_automate_buttons[index]),
         GTK_ALIGN_START);
+
       g_signal_connect (
         G_OBJECT (
           self->waveform_automate_buttons[index]),
@@ -341,6 +342,18 @@ finalize (
 }
 
 static void
+dispose (
+  ModulatorInnerWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->connections_popover));
+
+  G_OBJECT_CLASS (
+    modulator_inner_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 modulator_inner_widget_init (
   ModulatorInnerWidget * self)
 {
@@ -349,6 +362,13 @@ modulator_inner_widget_init (
   self->knobs =
     calloc (1, sizeof (KnobWithNameWidget *));
   self->knobs_size = 1;
+
+  self->connections_popover =
+    port_connections_popover_widget_new (
+      GTK_WIDGET (self));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->connections_popover),
+    GTK_WIDGET (self));
 }
 
 static void
@@ -364,6 +384,7 @@ modulator_inner_widget_class_init (
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

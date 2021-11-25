@@ -31,7 +31,10 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _KnobWithNameWidget KnobWithNameWidget;
+typedef struct _KnobWithNameWidget
+  KnobWithNameWidget;
+typedef struct _PortConnectionsPopoverWidget
+  PortConnectionsPopoverWidget;
 
 /**
  * @addtogroup widgets
@@ -66,6 +69,8 @@ typedef struct _ModulatorMacroWidget
   int                  modulator_macro_idx;
 
   PangoLayout *        layout;
+
+  PortConnectionsPopoverWidget * connections_popover;
 } ModulatorMacroWidget;
 
 void

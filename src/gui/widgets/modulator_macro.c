@@ -206,10 +206,13 @@ on_automate_clicked (
 {
   g_return_if_fail (port);
 
-  PortConnectionsPopoverWidget * popover =
-    port_connections_popover_widget_new (
-      GTK_WIDGET (btn), port);
-  gtk_popover_present (GTK_POPOVER (popover));
+  ModulatorMacroWidget * self =
+    Z_MODULATOR_MACRO_WIDGET (
+      g_object_get_data (G_OBJECT (btn), "owner"));
+  port_connections_popover_widget_refresh (
+    self->connections_popover, port);
+  gtk_popover_popup (
+    GTK_POPOVER (self->connections_popover));
 
 #if 0
   g_signal_connect (
@@ -276,6 +279,11 @@ modulator_macro_widget_new (
     GTK_WIDGET (knob),
     GTK_EVENT_CONTROLLER (mp));
 
+  g_object_set_data (
+    G_OBJECT (self->outputs), "owner", self);
+  g_object_set_data (
+    G_OBJECT (self->add_input), "owner", self);
+
   g_signal_connect (
     G_OBJECT (self->outputs), "clicked",
     G_CALLBACK (on_automate_clicked),
@@ -316,6 +324,18 @@ finalize (
 }
 
 static void
+dispose (
+  ModulatorMacroWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->connections_popover));
+
+  G_OBJECT_CLASS (
+    modulator_macro_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 modulator_macro_widget_class_init (
   ModulatorMacroWidgetClass * _klass)
 {
@@ -337,7 +357,10 @@ modulator_macro_widget_class_init (
   BIND_CHILD (add_input);
   BIND_CHILD (outputs);
 
+#undef BIND_CHILD
+
   GObjectClass * goklass = G_OBJECT_CLASS (_klass);
+  goklass->dispose = (GObjectFinalizeFunc) dispose;
   goklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
@@ -356,4 +379,11 @@ modulator_macro_widget_init (
     z_cairo_create_pango_layout_from_string (
       GTK_WIDGET (self->inputs), "Sans 7",
       PANGO_ELLIPSIZE_NONE, -1);
+
+  self->connections_popover =
+    port_connections_popover_widget_new (
+      GTK_WIDGET (self));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->connections_popover),
+    GTK_WIDGET (self));
 }

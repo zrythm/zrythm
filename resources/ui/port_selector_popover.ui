@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="PortSelectorPopoverWidget" parent="GtkPopover">
-    <property name="visible">1</property>
     <property name="child">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -116,7 +115,6 @@
         </child>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
               <placeholder/>

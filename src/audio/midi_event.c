@@ -134,6 +134,9 @@ midi_events_append_w_filter (
   const nframes_t nframes,
   bool            queued)
 {
+  g_return_if_fail (src);
+  g_return_if_fail (dest);
+
   /* queued not implemented yet */
   g_return_if_fail (!queued);
 
@@ -1054,6 +1057,8 @@ midi_events_clear_duplicates (
   MidiEvents * self,
   const int    queued)
 {
+  g_return_if_fail (self);
+
   MidiEvent * arr =
     queued ?
       self->queued_events :

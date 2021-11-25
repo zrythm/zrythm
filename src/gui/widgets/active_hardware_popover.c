@@ -114,9 +114,10 @@ find_checkbutton (
       if (!GTK_IS_CHECK_BUTTON (child))
         continue;
 
-      GtkButton * chkbtn = GTK_BUTTON (child);
+      GtkCheckButton * chkbtn =
+        GTK_CHECK_BUTTON (child);
       if (string_is_equal (
-            gtk_button_get_label (chkbtn),
+            gtk_check_button_get_label (chkbtn),
             label))
         {
           return GTK_WIDGET (chkbtn);
@@ -170,8 +171,8 @@ setup (
       if (chkbtn)
         {
           /* tick it */
-          gtk_toggle_button_set_active (
-            GTK_TOGGLE_BUTTON (chkbtn), 1);
+          gtk_check_button_set_active (
+            GTK_CHECK_BUTTON (chkbtn), 1);
         }
 
       i++;

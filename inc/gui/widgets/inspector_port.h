@@ -39,6 +39,8 @@ G_DECLARE_FINAL_TYPE (
   GtkWidget)
 
 typedef struct _BarSliderWidget BarSliderWidget;
+typedef struct _PortConnectionsPopoverWidget
+  PortConnectionsPopoverWidget;
 typedef struct Meter Meter;
 
 /**
@@ -107,6 +109,8 @@ typedef struct _InspectorPortWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
+
+  PortConnectionsPopoverWidget * connections_popover;
 } InspectorPortWidget;
 
 void

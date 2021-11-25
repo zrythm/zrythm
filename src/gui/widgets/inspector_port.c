@@ -214,13 +214,13 @@ on_double_click (
 
   g_message ("double click");
 
-  PortConnectionsPopoverWidget * popover =
-    port_connections_popover_widget_new (
-      GTK_WIDGET (self), self->port);
-  /*gtk_popover_popdown (GTK_POPOVER (popover));*/
+  port_connections_popover_widget_refresh (
+    self->connections_popover, self->port);
+  gtk_popover_popup (
+    GTK_POPOVER (self->connections_popover));
 
   g_signal_connect (
-    G_OBJECT (popover), "closed",
+    G_OBJECT (self->connections_popover), "closed",
     G_CALLBACK (on_popover_closed), self);
 }
 
@@ -406,8 +406,9 @@ bar_slider_tick_cb (
         gtk_widget_get_tooltip_markup (widget);
       if (!string_is_equal (cur_tooltip, str))
         {
-          gtk_widget_set_tooltip_markup (
-            widget, str);
+          /* FIXME reenable when GTK bug is fixed */
+          /*gtk_widget_set_tooltip_markup (*/
+            /*widget, str);*/
         }
 
       /* remember time */
@@ -595,6 +596,11 @@ dispose (
   InspectorPortWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->overlay));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->connections_popover));
+  g_object_unref (self->connections_popover);
 
   G_OBJECT_CLASS (
     inspector_port_widget_parent_class)->
@@ -610,6 +616,10 @@ inspector_port_widget_class_init (
     (GObjectFinalizeFunc) finalize;
   oklass->dispose =
     (GObjectFinalizeFunc) dispose;
+
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
@@ -625,6 +635,17 @@ inspector_port_widget_init (
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
+
+  self->connections_popover =
+    port_connections_popover_widget_new (
+      GTK_WIDGET (self));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->connections_popover),
+    GTK_WIDGET (self));
+  g_object_ref (self->connections_popover);
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);

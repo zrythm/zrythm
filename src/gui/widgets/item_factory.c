@@ -737,7 +737,7 @@ item_factory_generate_and_append_column (
 {
   ItemFactory * item_factory =
     item_factory_new (
-      ITEM_FACTORY_TOGGLE, editable, column_name);
+      type, editable, column_name);
   GtkListItemFactory * list_item_factory =
     item_factory->list_item_factory;
   GtkColumnViewColumn * column =
