@@ -436,8 +436,6 @@ on_files_selection_changed (
   sample_processor_stop_file_playback (
     SAMPLE_PROCESSOR);
 
-  g_debug ("SELECTION CHANGED");
-
   GObject * gobj =
     gtk_single_selection_get_selected_item (
       GTK_SINGLE_SELECTION (

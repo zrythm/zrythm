@@ -830,8 +830,6 @@ on_plugin_selection_changed (
   PluginBrowserWidget * self =
     Z_PLUGIN_BROWSER_WIDGET (user_data);
 
-  g_debug ("SELECTION CHANGED");
-
   GObject * gobj =
     gtk_single_selection_get_selected_item (
       GTK_SINGLE_SELECTION (

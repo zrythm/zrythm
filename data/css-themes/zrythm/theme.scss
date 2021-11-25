@@ -655,6 +655,38 @@ viewswitcher {
   }
 }
 
+/* Adwaita common element */
+%osd,
+.osd {
+  color: $osd_fg_color;
+  border: none;
+  background-color: $osd_bg_color;
+  background-clip: padding-box;
+}
+
+/* Adwaita toast */
+toast {
+  @extend %osd;
+
+  margin: 12px;
+  margin-bottom: 24px;
+
+  border-radius: 150px;
+  border-spacing: 6px;
+  padding: 6px;
+
+  &:dir(ltr) { padding-left: 12px; }
+  &:dir(rtl) { padding-right: 12px; }
+
+  > label {
+    margin: 0 6px;
+  }
+
+  //@if $contrast == 'high' {
+    //box-shadow: 0 0 0 1px $border_color;
+  //}
+}
+
 /**********************
  * AdwViewSwitcherBar *
  **********************/
