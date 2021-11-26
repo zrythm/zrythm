@@ -52,16 +52,16 @@ test_fader_process_with_instrument (
 
   /* run engine twice (running one is not enough to
    * make the note make sound) */
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  for (int i = 0; i < 2; i++)
+    {
+      engine_process (
+        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+    }
 
   /* test fader */
   zix_sem_wait (&ROUTER->graph_access);
   bool has_signal = false;
   Port * l = track->channel->fader->stereo_out->l;
-  /*g_warn_if_reached ();*/
   for (nframes_t i = 0;
        i < AUDIO_ENGINE->block_length; i++)
     {
@@ -80,9 +80,9 @@ test_fader_process ()
 {
   test_helper_zrythm_init ();
 
-#ifdef HAVE_HELM
+#if defined (HAVE_CARLA) && defined (HAVE_GEONKICK)
   test_fader_process_with_instrument (
-    HELM_BUNDLE, HELM_URI, false);
+    GEONKICK_BUNDLE, GEONKICK_URI, true);
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -247,11 +247,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/audio/fader/"
 
   g_test_add_func (
-    TEST_PREFIX "test solo",
-    (GTestFunc) test_solo);
-  g_test_add_func (
     TEST_PREFIX "test fader process",
     (GTestFunc) test_fader_process);
+  g_test_add_func (
+    TEST_PREFIX "test solo",
+    (GTestFunc) test_solo);
 
   return g_test_run ();
 }

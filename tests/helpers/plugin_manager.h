@@ -138,8 +138,12 @@ test_plugin_manager_get_plugin_setting (
   PluginSetting * setting =
     plugin_setting_new_default (descr);
 
+  /* always open with carla */
+  setting->open_with_carla = true;
+#if 0
   /* open with carla if requested */
   setting->open_with_carla = with_carla;
+#endif
 
   plugin_setting_validate (setting);
 

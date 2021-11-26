@@ -2363,6 +2363,7 @@ sum_data_from_windows_mme (
         }
       self->last_midi_dequeue = cur_time;
 
+#if 0
       if (self->midi_events->num_events > 0)
         {
           MidiEvent * ev =
@@ -2378,6 +2379,7 @@ sum_data_from_windows_mme (
             ev->time, ev->raw_buffer[0],
             ev->raw_buffer[1], ev->raw_buffer[2]);
         }
+#endif
     }
 }
 
