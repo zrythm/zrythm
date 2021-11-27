@@ -135,8 +135,12 @@ rtmidi_device_get_id_from_name (
         rtmidi_get_port_count (dev->in_handle);
       for (unsigned int i = 0; i < num_ports; i++)
         {
-          const char * dev_name =
-            rtmidi_get_port_name (dev->in_handle, i);
+          int buf_len;
+          rtmidi_get_port_name (
+            dev->in_handle, i, NULL, &buf_len);
+          char dev_name[buf_len];
+          rtmidi_get_port_name (
+            dev->in_handle, i, dev_name, &buf_len);
           if (string_is_equal (dev_name, name))
             {
               rtmidi_device_free (dev);

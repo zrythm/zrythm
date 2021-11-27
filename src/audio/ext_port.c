@@ -604,9 +604,13 @@ ext_port_from_rtmidi (
   RtMidiDevice * dev =
     rtmidi_device_new (1, NULL, id, NULL);
   self->rtmidi_id = id;
-  self->full_name =
-    g_strdup (
-      rtmidi_get_port_name (dev->in_handle, id));
+  int buf_len;
+  rtmidi_get_port_name (
+    dev->in_handle, id, NULL, &buf_len);
+  char buf[buf_len];
+  rtmidi_get_port_name (
+    dev->in_handle, id, buf, &buf_len);
+  self->full_name = g_strdup (buf);
   self->type = EXT_PORT_TYPE_RTMIDI;
   rtmidi_device_free (dev);
 

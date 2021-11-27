@@ -922,7 +922,7 @@ gtk_dep = dependency (
   static: all_static)
 
 libadwaita_dep = dependency (
-  'libadwaita-1',
+  'libadwaita-1', version: '>=1.0.0.alpha.4',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',
@@ -1140,14 +1140,10 @@ if portaudio_dep.found ()
 endif
 
 rtmidi_dep = dependency (
-  'rtmidi', version: '>= 4.0.0',
+  'rtmidi', version: '>= 5.0.0',
   required: get_option ('rtmidi'),
+  fallback: ['rtmidi', 'zrythm_rtmidi_dep'],
   static: all_static)
-if not rtmidi_dep.found () and not get_option ('rtmidi').disabled ()
-  rtmidi_proj = subproject('rtmidi')
-  rtmidi_dep = rtmidi_proj.get_variable(
-    'zrythm_rtmidi_dep')
-endif
 if rtmidi_dep.found ()
   cdata.set('HAVE_RTMIDI', 1)
 endif
