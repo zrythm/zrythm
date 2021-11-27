@@ -3309,19 +3309,17 @@ lv2_plugin_activate (
  * Returns whether the plugin can be cleaned up
  * (some plugins crash on cleanup).
  */
-static bool
-can_cleanup (
-  Lv2Plugin * self)
+bool
+lv2_plugin_can_cleanup (
+  const char * uri)
 {
   /* helm hangs/deadlocks on free sometimes */
   if (string_is_equal (
-        self->plugin->setting->descr->uri,
-        "http://tytel.org/helm") ||
+        uri, "http://tytel.org/helm") ||
       /* swh-plugins crashes on free
        * https://github.com/swh/lv2/issues/13 */
       g_str_has_prefix (
-        self->plugin->setting->descr->uri,
-        "http://plugin.org.uk/swh-plugins"))
+        uri, "http://plugin.org.uk/swh-plugins"))
     return false;
 
   return true;
@@ -3342,7 +3340,8 @@ lv2_plugin_cleanup (
 
   if (self->plugin->instantiated)
     {
-      if (can_cleanup (self))
+      if (lv2_plugin_can_cleanup (
+            self->plugin->setting->descr->uri))
         {
           object_free_w_func_and_null (
             lilv_instance_free, self->instance);
@@ -3875,7 +3874,8 @@ lv2_plugin_free (
       self->plugin->activated = false;
     }
 
-  if (can_cleanup (self))
+  if (lv2_plugin_can_cleanup (
+        self->plugin->setting->descr->uri))
     {
       g_debug (
         "attempting to free lilv instance for %s",

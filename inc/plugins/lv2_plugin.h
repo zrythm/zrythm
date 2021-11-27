@@ -638,6 +638,15 @@ lv2_plugin_activate (
   bool        activate);
 
 /**
+ * Returns whether the plugin can be cleaned up
+ * (some plugins crash on cleanup).
+ */
+NONNULL
+bool
+lv2_plugin_can_cleanup (
+  const char * uri);
+
+/**
  * Populates the banks in the plugin instance.
  */
 

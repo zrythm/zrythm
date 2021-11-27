@@ -843,6 +843,12 @@ plugin_set_selected_preset_from_index (
   Plugin * self,
   int      idx);
 
+NONNULL
+void
+plugin_set_selected_preset_by_name (
+  Plugin *     self,
+  const char * name);
+
 /**
  * Connect the output Ports of the given source
  * Plugin to the input Ports of the given

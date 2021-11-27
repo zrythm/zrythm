@@ -481,16 +481,20 @@ plugin_set_selected_preset_from_index (
           carla_reset_parameters (
             self->carla->host_handle, 0);
           applied = true;
+          g_message ("applied default preset");
         }
       else
         {
-          carla_set_program (
-            self->carla->host_handle, 0,
-            (uint32_t)
+          PluginPreset * pset =
             self->banks[
               self->selected_bank.bank_idx]->
-                presets[idx]->carla_program);
+                presets[idx];
+          carla_set_program (
+            self->carla->host_handle, 0,
+            (uint32_t) pset->carla_program);
           applied = true;
+          g_message (
+            "applied preset '%s'", pset->name);
         }
 #endif
     }
@@ -523,6 +527,29 @@ plugin_set_selected_preset_from_index (
       HANDLE_ERROR (
         err, "%s", _("Failed to apply preset"));
     }
+}
+
+void
+plugin_set_selected_preset_by_name (
+  Plugin *     self,
+  const char * name)
+{
+  g_return_if_fail (self->instantiated);
+
+  PluginBank * bank =
+    self->banks[self->selected_bank.bank_idx];
+  for (int i = 0; i < bank->num_presets; i++)
+    {
+      PluginPreset * pset = bank->presets[i];
+      if (string_is_equal (pset->name, name))
+        {
+          plugin_set_selected_preset_from_index (
+            self, i);
+          return;
+        }
+    }
+
+  g_return_if_reached ();
 }
 
 /**

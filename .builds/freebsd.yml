@@ -4,6 +4,7 @@ packages:
   - carla
   - cmake
   - gettext-tools
+  - gdb
   - meson
   - ninja
   - chromaprint
@@ -22,6 +23,7 @@ packages:
   - serd
   - help2man
   - libsndfile
+  - graphene
   - sord
   - guile2
   - json-glib
@@ -46,6 +48,7 @@ packages:
   - fftw3-float
   - rubberband
   - sherlock-lv2
+  - sassc
   - vamp-plugin-sdk
   - x42-plugins-lv2
   - xxhash

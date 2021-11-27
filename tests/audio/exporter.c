@@ -139,7 +139,7 @@ static void
 bounce_region (
   bool with_bpm_automation)
 {
-#ifdef HAVE_HELM
+#ifdef HAVE_GEONKICK
   test_helper_zrythm_init ();
 
   Position pos, end_pos;
@@ -175,7 +175,7 @@ bounce_region (
 
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
-    HELM_BUNDLE, HELM_URI, true, false, 1);
+    GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
@@ -261,12 +261,12 @@ test_bounce_with_bpm_automation ()
 static void
 test_mixdown_midi_routed_to_instrument_track ()
 {
-#ifdef HAVE_HELM
+#ifdef HAVE_GEONKICK
   test_helper_zrythm_init ();
 
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
-    HELM_BUNDLE, HELM_URI, true, false, 1);
+    GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
@@ -435,12 +435,12 @@ _test_bounce_midi_track_routed_to_instrument_track (
   BounceStep bounce_step,
   bool       with_parents)
 {
-#ifdef HAVE_HELM
+#ifdef HAVE_GEONKICK
   test_helper_zrythm_init ();
 
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
-    HELM_BUNDLE, HELM_URI, true, false, 1);
+    GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
@@ -531,17 +531,22 @@ _test_bounce_instrument_track (
   BounceStep bounce_step,
   bool       with_parents)
 {
-#if defined (HAVE_HELM) && defined (HAVE_MVERB)
+#if defined (HAVE_GEONKICK) && defined (HAVE_MVERB)
   test_helper_zrythm_init ();
 
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
-    HELM_BUNDLE, HELM_URI, true, false, 1);
+    GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
+
+  /* CM Kleer Arp */
+  /*plugin_set_selected_preset_by_name (*/
+    /*ins_track->channel->instrument, "CM Supersaw");*/
+  /*g_warn_if_reached ();*/
 
   /* create a MIDI region on the instrument track */
   char * midi_file =
@@ -634,7 +639,7 @@ _test_bounce_instrument_track (
     {
       CHECK_SAME_AS_FILE (
         TESTS_BUILDDIR,
-        "test_mixdown_midi_routed_to_instrument_track_w_reverb.ogg", 88);
+        "test_mixdown_midi_routed_to_instrument_track_w_reverb.ogg", 85);
     }
 
 #undef CHECK_SAME_AS_FILE
