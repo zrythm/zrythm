@@ -5639,12 +5639,12 @@ on_scroll (
       if (self->type == TYPE (MIDI))
         {
           midi_arranger_handle_vertical_zoom_scroll (
-            self, scroll_controller);
+            self, scroll_controller, dy);
         }
       else if (self->type == TYPE (TIMELINE))
         {
           tracklist_widget_handle_vertical_zoom_scroll (
-            MW_TRACKLIST, scroll_controller);
+            MW_TRACKLIST, scroll_controller, dy);
         }
     }
   /* else if just control pressed handle horizontal

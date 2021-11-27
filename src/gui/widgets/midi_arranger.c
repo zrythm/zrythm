@@ -559,7 +559,8 @@ midi_arranger_show_context_menu (
 void
 midi_arranger_handle_vertical_zoom_scroll (
   ArrangerWidget *           self,
-  GtkEventControllerScroll * scroll_controller)
+  GtkEventControllerScroll * scroll_controller,
+  double                     dy)
 {
   GdkModifierType state =
     gtk_event_controller_get_current_event_state (
@@ -572,15 +573,8 @@ midi_arranger_handle_vertical_zoom_scroll (
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
 
-  double x, y;
-  GdkEvent * event =
-    gtk_event_controller_get_current_event (
-      GTK_EVENT_CONTROLLER (scroll_controller));
-  gdk_event_get_position (
-    GDK_EVENT (event), &x, &y);
-  double delta_x, delta_y;
-  gdk_scroll_event_get_deltas (
-    GDK_EVENT (event), &delta_x, &delta_y);
+  double y = self->hover_y;
+  double delta_y = dy;
 
   /* get current adjustment so we can get the
    * difference from the cursor */

@@ -111,7 +111,7 @@ on_scroll (
       state & GDK_SHIFT_MASK)
     {
       midi_arranger_handle_vertical_zoom_scroll (
-        MW_MIDI_ARRANGER, scroll_controller);
+        MW_MIDI_ARRANGER, scroll_controller, dy);
     }
 
   return TRUE;

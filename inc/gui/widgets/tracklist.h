@@ -85,6 +85,8 @@ typedef struct _TracklistWidget
   GdkRectangle         last_allocation;
 
   bool                 setup;
+
+  double               hover_y;
 } TracklistWidget;
 
 /**
@@ -126,7 +128,8 @@ tracklist_widget_get_hit_track (
 void
 tracklist_widget_handle_vertical_zoom_scroll (
   TracklistWidget *          self,
-  GtkEventControllerScroll * scroll_controller);
+  GtkEventControllerScroll * scroll_controller,
+  double                     dy);
 
 /**
  * Deletes all tracks and re-adds them.

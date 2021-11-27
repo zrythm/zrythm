@@ -254,7 +254,8 @@ on_key_pressed (
 void
 tracklist_widget_handle_vertical_zoom_scroll (
   TracklistWidget *          self,
-  GtkEventControllerScroll * scroll_controller)
+  GtkEventControllerScroll * scroll_controller,
+  double                     dy)
 {
   GdkModifierType state =
     gtk_event_controller_get_current_event_state (
@@ -266,15 +267,8 @@ tracklist_widget_handle_vertical_zoom_scroll (
   GtkScrolledWindow * scroll =
     self->unpinned_scroll;
 
-  double x, y;
-  GdkEvent * event =
-    gtk_event_controller_get_current_event (
-      GTK_EVENT_CONTROLLER (scroll_controller));
-  gdk_event_get_position (
-    GDK_EVENT (event), &x, &y);
-  double delta_x, delta_y;
-  gdk_scroll_event_get_deltas (
-    GDK_EVENT (event), &delta_x, &delta_y);
+  double y = self->hover_y;
+  double delta_y = dy;
 
   /* get current adjustment so we can get the
    * difference from the cursor */
@@ -338,15 +332,6 @@ on_scroll (
   TracklistWidget * self =
     Z_TRACKLIST_WIDGET (user_data);
 
-  double x, y;
-  GdkEvent * event =
-    gtk_event_controller_get_current_event (
-      GTK_EVENT_CONTROLLER (scroll_controller));
-  gdk_event_get_position (
-    GDK_EVENT (event), &x, &y);
-
-  g_debug ("scrolled to %f, %f", x, y);
-
   GdkModifierType state =
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (scroll_controller));
@@ -355,9 +340,22 @@ on_scroll (
     return false;
 
   tracklist_widget_handle_vertical_zoom_scroll (
-    self, scroll_controller);
+    self, scroll_controller, dy);
 
   return true;
+}
+
+/**
+ * Motion callback.
+ */
+static void
+on_motion (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  TracklistWidget *          self)
+{
+  self->hover_y = MAX (y, 0.0);
 }
 
 static void
@@ -598,6 +596,16 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
+
+  GtkEventControllerMotion * motion_controller =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
+  g_signal_connect (
+    G_OBJECT (motion_controller), "motion",
+    G_CALLBACK (on_motion),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion_controller));
 
   /* set minimum width */
   gtk_widget_set_size_request (
