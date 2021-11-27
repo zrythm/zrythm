@@ -1272,6 +1272,15 @@ void
 plugin_update_latency (
   Plugin * pl)
 {
+#ifdef HAVE_CARLA
+    if (pl->setting->open_with_carla)
+      {
+        pl->latency =
+          carla_native_plugin_get_latency (
+            pl->carla);
+      }
+    else
+#endif
   if (
 #ifdef HAVE_CARLA
     !pl->setting->open_with_carla &&
@@ -1280,10 +1289,11 @@ plugin_update_latency (
     {
       pl->latency =
         lv2_plugin_get_latency (pl->lv2);
-      g_message ("%s latency: %d samples",
-                 pl->setting->descr->name,
-                 pl->latency);
     }
+
+  g_message ("%s latency: %d samples",
+             pl->setting->descr->name,
+             pl->latency);
 }
 
 /**

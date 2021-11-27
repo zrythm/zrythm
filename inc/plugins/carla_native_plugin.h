@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -252,6 +252,14 @@ carla_native_plugin_close (
 bool
 carla_native_plugin_has_custom_ui (
   const PluginDescriptor * descr);
+
+/**
+ * Returns the latency in samples.
+ */
+NONNULL
+nframes_t
+carla_native_plugin_get_latency (
+  CarlaNativePlugin * self);
 
 /**
  * Deactivates, cleanups and frees the instance.

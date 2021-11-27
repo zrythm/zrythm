@@ -660,6 +660,10 @@ carla_native_plugin_process (
     default:
       break;
     }
+
+  /* update latency */
+  self->plugin->latency =
+    carla_native_plugin_get_latency (self);
 }
 
 static ZPluginCategory
@@ -1619,6 +1623,18 @@ carla_native_plugin_get_port_from_param_id (
     }
 
   g_return_val_if_reached (NULL);
+}
+
+/**
+ * Returns the latency in samples.
+ */
+nframes_t
+carla_native_plugin_get_latency (
+  CarlaNativePlugin * self)
+{
+  return
+    carla_get_plugin_latency (
+      self->host_handle, 0);
 }
 
 /**
