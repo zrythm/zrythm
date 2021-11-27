@@ -63,12 +63,15 @@ test_load_precise_float (void)
   g_free (ret);
 
   my_struct.fval = 1.55331e-40f;
+  g_message (
+    "my_struct.fval %e %g",
+    my_struct.fval, my_struct.fval);
   ret =
     yaml_serialize (
       &my_struct, &float_struct_schema);
+  g_message ("\n%s", ret);
   g_assert_cmpstr (
     ret, ==, "---\nfval: 1.55331e-40\n...\n");
-  g_message ("\n%s", ret);
 
   const char * str1 = "---\nfval: 1.55331e-40\n...\n";
   float_struct * ret2 =

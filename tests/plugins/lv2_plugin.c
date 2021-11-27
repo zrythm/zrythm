@@ -246,7 +246,7 @@ test_reloading_project_with_instrument (
   test_helper_zrythm_init ();
 
   test_plugin_manager_create_tracks_from_plugin (
-    pl_bundle, pl_uri, true, false, 1);
+    pl_bundle, pl_uri, true, true, 1);
 
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
@@ -351,12 +351,11 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/plugins/lv2_plugin/"
 
+#if 0
+  /* direct LV2 no longer supported */
   g_test_add_func (
     TEST_PREFIX "test save state with files",
     (GTestFunc) test_save_state_w_files);
-  g_test_add_func (
-    TEST_PREFIX "test lots of params",
-    (GTestFunc) test_lots_of_params);
   g_test_add_func (
     TEST_PREFIX "test lilv instance activation",
     (GTestFunc) test_lilv_instance_activation);
@@ -366,7 +365,15 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test reloading drops project",
     (GTestFunc) test_reloading_drops_project);
+#endif
+  g_test_add_func (
+    TEST_PREFIX "test lots of params",
+    (GTestFunc) test_lots_of_params);
 
+  (void) test_save_state_w_files;
+  (void) test_lilv_instance_activation;
+  (void) test_process;
+  (void) test_reloading_drops_project;
   (void) check_state_contains_wav;
 
   return g_test_run ();
