@@ -1,6 +1,7 @@
 image: freebsd/latest
 packages:
   - amsynth
+  - carla
   - cmake
   - gettext-tools
   - meson

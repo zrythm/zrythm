@@ -2,6 +2,7 @@ image: archlinux
 packages:
   - alsa-lib
   - binutils
+  - carla
   - cmake
   - chromaprint
   - cppcheck

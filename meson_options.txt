@@ -60,7 +60,7 @@ option (
 option (
   'carla',
   type: 'feature',
-  value: 'disabled',
+  value: 'enabled',
   description: 'Use Carla to wrap some plugins')
 
 option (
