@@ -7,10 +7,8 @@
       <class name="arranger-toolbar"/>
       <class name="timeline-toolbar"/>
     </style>
-    <property name="can_focus">False</property>
     <child>
       <object class="SnapBoxWidget" id="snap_box">
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
@@ -42,7 +40,6 @@
     </child>
     <child>
       <object class="RangeActionButtonsWidget" id="range_action_buttons">
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
@@ -52,7 +49,6 @@
     </child>
     <child>
       <object class="PlayheadScrollButtonsWidget" id="playhead_scroll_buttons">
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>

@@ -13,56 +13,39 @@
     </child>
     <child>
       <object class="TrackPropertiesExpanderWidget" id="track_info">
-        <property name="visible">True</property>
       </object>
     </child>
     <child>
       <object class="TrackInputExpanderWidget" id="inputs">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="controls">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="outputs">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PluginStripExpanderWidget" id="midi_fx">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PluginStripExpanderWidget" id="inserts">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="ChannelSendsExpanderWidget" id="sends">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="vexpand">False</property>
       </object>
     </child>
     <child>
       <object class="FaderControlsExpanderWidget" id="fader">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="TextExpanderWidget" id="comment">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
   </template>

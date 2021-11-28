@@ -5,24 +5,17 @@
     <style>
       <class name="toolbar"/>
     </style>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <child>
       <object class="ButtonWithMenuWidget" id="undo">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="ButtonWithMenuWidget" id="redo">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>
@@ -58,7 +51,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>
@@ -78,7 +70,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>
@@ -102,7 +93,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>

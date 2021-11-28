@@ -9,10 +9,8 @@
         <style>
           <class name="toolbar"/>
         </style>
-        <property name="can-focus">0</property>
         <child>
           <object class="GtkButton" id="play_btn">
-            <property name="can-focus">0</property>
             <property name="tooltip-text" translatable="yes">Play/Pause</property>
             <property name="icon-name">media-playback-start</property>
             <signal name="clicked" handler="on_play_clicked" object="FileAuditionerControlsWidget" swapped="no"/>
@@ -20,7 +18,6 @@
         </child>
         <child>
           <object class="GtkButton" id="stop_btn">
-            <property name="can-focus">0</property>
             <property name="tooltip-text" translatable="yes">Stop</property>
             <property name="icon-name">media-playback-stop</property>
             <signal name="clicked" handler="on_stop_clicked" object="FileAuditionerControlsWidget" swapped="no"/>

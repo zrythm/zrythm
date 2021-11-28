@@ -363,6 +363,11 @@ Delete the build dir and reconfigure. This is likely
 an optimization problem with meson/ninja that
 appears rarely.
 
+## Widget not receiving keyboard input/focus
+For a widget to receive keyboard input/focus, every
+single parent in the hierarchy must have
+can-focus=true (default).
+
 ----
 
 Copyright (C) 2018-2021 Alexandros Theodotou

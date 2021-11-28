@@ -8,10 +8,8 @@
         <style>
           <class name="toolbar"/>
         </style>
-        <property name="can_focus">0</property>
         <child>
           <object class="GtkToggleButton" id="show_hide_ui_btn">
-            <property name="can_focus">0</property>
             <property name="icon_name">window</property>
             <property name="tooltip_text" translatable="yes">Show/hide UI</property>
             <signal name="toggled" handler="on_show_hide_ui_toggled" object="ModulatorInnerWidget" swapped="no"/>
@@ -22,7 +20,6 @@
         </child>
         <child>
           <object class="GtkButton" id="delete_btn">
-            <property name="can_focus">0</property>
             <property name="icon_name">edit-delete</property>
             <property name="tooltip_text" translatable="yes">Delete</property>
             <signal name="clicked" handler="on_delete_clicked" object="ModulatorInnerWidget" swapped="no"/>

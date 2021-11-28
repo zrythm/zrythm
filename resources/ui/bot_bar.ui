@@ -23,8 +23,6 @@
         <child>
           <object class="ButtonWithMenuWidget" id="metronome">
             <property name="halign">center</property>
-            <property name="visible">1</property>
-            <property name="can-focus">1</property>
             <property name="receives-default">1</property>
           </object>
         </child>

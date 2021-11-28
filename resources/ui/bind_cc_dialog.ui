@@ -31,7 +31,6 @@
     <child internal-child="action_area">
       <object class="GtkBox">
         <property name="valign">center</property>
-        <property name="can_focus">False</property>
         <child>
           <object class="GtkButton" id="cancel_btn">
             <property name="label" translatable="yes">Cancel</property>

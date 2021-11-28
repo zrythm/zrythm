@@ -5,7 +5,6 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="FoldableNotebookWidget" id="right_notebook">
-        <property name="can-focus">1</property>
         <property name="vexpand">1</property>
       </object>
     </child>

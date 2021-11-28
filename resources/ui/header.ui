@@ -13,10 +13,8 @@
                 <style>
                   <class name="toolbar"/>
                 </style>
-                <property name="can_focus">0</property>
                 <child>
                   <object class="GtkButton" id="z_icon">
-                    <property name="can_focus">0</property>
                     <property name="action_name">app.about</property>
                     <property name="icon_name">zrythm</property>
                   </object>
@@ -98,7 +96,6 @@
               <class name="toolbar"/>
               <class name="header-toolbar-corner"/>
             </style>
-            <property name="can_focus">0</property>
             <property name="hexpand">0</property>
             <child>
               <object class="GtkLabel" id="prj_name_label">
@@ -108,21 +105,18 @@
             </child>
             <child>
               <object class="GtkButton" id="scripting_interface">
-                <property name="can_focus">0</property>
                 <property name="action_name">app.scripting-interface</property>
                 <property name="icon_name">amarok_scripts</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="log_viewer">
-                <property name="can_focus">0</property>
                 <property name="action_name">app.log</property>
                 <property name="icon_name">view-list-text</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="preferences">
-                <property name="can_focus">0</property>
                 <property name="action_name">app.preferences</property>
                 <property name="icon_name">fork-awesome-fa-cog</property>
               </object>

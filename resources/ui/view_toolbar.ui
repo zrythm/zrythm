@@ -5,8 +5,6 @@
     <style>
       <class name="toolbar"/>
     </style>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <child>
       <object class="GtkButton" id="status_bar">
         <property name="icon-name">show-menu</property>
@@ -16,7 +14,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>
@@ -46,7 +43,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>
@@ -58,33 +54,28 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="left_panel">
-        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-left-pane-symbolic-light</property>
         <property name="action_name">app.toggle-left-panel</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="bot_panel">
-        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-bottom-pane-symbolic-light</property>
         <property name="action_name">app.toggle-bot-panel</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="top_panel">
-        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
         <property name="action_name">app.toggle-top-panel</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="right_panel">
-        <property name="can_focus">0</property>
         <property name="icon-name">gnome-builder-builder-view-right-pane-symbolic-light</property>
         <property name="action_name">app.toggle-right-panel</property>
       </object>

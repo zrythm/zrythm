@@ -79,7 +79,6 @@
                 <property name="vscrollbar_policy">never</property>
                 <property name="child">
                   <object class="ArrangerWidget" id="modifier_arranger">
-                    <property name="can_focus">1</property>
                   </object>
                 </property>
               </object>

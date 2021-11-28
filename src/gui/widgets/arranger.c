@@ -7070,10 +7070,8 @@ arranger_widget_init (
     /*GDK_ALL_EVENTS_MASK);*/
 
   /* make widget able to focus */
-  gtk_widget_set_can_focus (
-    GTK_WIDGET (self), 1);
   gtk_widget_set_focus_on_click (
-    GTK_WIDGET (self), 1);
+    GTK_WIDGET (self), true);
 
   self->drag =
     GTK_GESTURE_DRAG (gtk_gesture_drag_new ());

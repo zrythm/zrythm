@@ -45,8 +45,6 @@ RMS:
     </child>
     <child>
       <object class="FaderWidget" id="fader">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <layout>
           <property name="column">0</property>
           <property name="row">1</property>
@@ -55,8 +53,6 @@ RMS:
     </child>
     <child>
       <object class="FaderButtonsWidget" id="fader_buttons">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="margin_top">4</property>
         <property name="orientation">horizontal</property>
         <layout>

@@ -13,56 +13,38 @@
     </child>
     <child>
       <object class="PluginPropertiesExpanderWidget" id="properties">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="ctrl_ins">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="ctrl_outs">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="cv_ins">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="cv_outs">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="audio_ins">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="audio_outs">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="midi_ins">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="PortsExpanderWidget" id="midi_outs">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
       </object>
     </child>
   </template>

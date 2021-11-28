@@ -5,32 +5,26 @@
     <style>
       <class name="toolbar"/>
     </style>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <child>
       <object class="GtkButton" id="new">
-        <property name="can_focus">0</property>
         <property name="action_name">app.new</property>
         <property name="icon_name">document-new</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="save_btn">
-        <property name="can_focus">0</property>
         <property name="action_name">app.save</property>
         <property name="icon_name">document-save</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="save_as_btn">
-        <property name="can_focus">0</property>
         <property name="action_name">app.save-as</property>
         <property name="icon_name">document-save-as</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="open">
-        <property name="can_focus">0</property>
         <property name="action_name">app.open</property>
         <property name="icon_name">document-open</property>
       </object>
@@ -38,7 +32,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="can_focus">0</property>
       </object>
     </child>
     <child>

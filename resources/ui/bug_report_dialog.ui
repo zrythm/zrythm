@@ -50,8 +50,6 @@
                 </child>
                 <child>
                   <object class="GtkSourceView" id="other_info_text_view">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="buffer">other_info_buffer</property>
                     <property name="wrap-mode">word-char</property>
@@ -64,8 +62,6 @@
                 </child>
                 <child>
                   <object class="GtkSourceView" id="steps_to_reproduce_text_view">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="buffer">steps_to_reproduce_buffer</property>
                     <property name="wrap-mode">word-char</property>
@@ -85,8 +81,6 @@
     <child internal-child="action_area">
       <object class="GtkBox" id="action_area">
         <property name="valign">center</property>
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <child>
           <object class="GtkButton" id="button_close">
             <property name="label">_Close</property>

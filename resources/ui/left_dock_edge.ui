@@ -4,7 +4,6 @@
   <template class="LeftDockEdgeWidget" parent="GtkWidget">
     <child>
       <object class="FoldableNotebookWidget" id="inspector_notebook">
-        <property name="can-focus">1</property>
         <property name="vexpand">1</property>
       </object>
     </child>

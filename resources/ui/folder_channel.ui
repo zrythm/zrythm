@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="FolderChannelWidget" parent="GtkBox">
-    <property name="can-focus">False</property>
     <property name="margin-top">2</property>
     <property name="margin-bottom">4</property>
     <child>
@@ -10,7 +9,6 @@
         <property name="row-spacing">4</property>
         <child>
           <object class="GtkBox" id="icon_and_name_event_box">
-            <property name="can-focus">False</property>
             <property name="vexpand">True</property>
             <child>
               <object class="GtkBox">
@@ -90,7 +88,6 @@
         </child>
         <child>
           <object class="FaderButtonsWidget" id="fader_buttons">
-            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <layout>
               <property name="column">2</property>

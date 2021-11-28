@@ -83,7 +83,6 @@
                 <style>
                   <class name="toolbar"/>
                 </style>
-                <property name="can_focus">0</property>
                 <property name="orientation">vertical</property>
               </object>
             </child>
@@ -98,7 +97,6 @@
             <style>
               <class name="toolbar"/>
             </style>
-            <property name="can_focus">0</property>
           </object>
         </child>
       </object>

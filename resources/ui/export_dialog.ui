@@ -88,8 +88,6 @@
             </child>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <child>
                   <object class="GtkToggleButton" id="mixdown_toggle">
                     <property name="label" translatable="yes">Mixdown</property>
@@ -115,8 +113,6 @@
             </child>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <child>
                   <object class="GtkToggleButton" id="time_range_song">
                     <property name="label" translatable="yes">Song</property>
@@ -391,7 +387,6 @@
     <child internal-child="action_area">
       <object class="GtkBox">
         <property name="valign">center</property>
-        <property name="can-focus">False</property>
         <child>
           <object class="GtkButton" id="cancel_button">
             <property name="label" translatable="yes">Cancel</property>

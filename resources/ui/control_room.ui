@@ -19,11 +19,9 @@
         <style>
           <class name="toolbar"/>
         </style>
-        <property name="can_focus">0</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkToggleButton" id="dim_output">
-            <property name="can_focus">0</property>
             <property name="tooltip_text">Temporarily dim the main output level</property>
             <property name="action_name">app.toggle-dim-output</property>
             <property name="icon_name">dim</property>

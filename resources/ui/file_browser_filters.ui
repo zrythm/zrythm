@@ -5,11 +5,8 @@
     <style>
       <class name="toolbar"/>
     </style>
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <child>
       <object class="GtkToggleButton" id="toggle_audio">
-        <property name="can-focus">0</property>
         <property name="tooltip-text" translatable="yes">Audio</property>
         <property name="icon-name">signal-audio</property>
         <signal name="toggled" handler="toggles_changed" object="FileBrowserFiltersWidget" swapped="no"/>
@@ -17,7 +14,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="toggle_midi">
-        <property name="can-focus">0</property>
         <property name="tooltip-text" translatable="yes">MIDI</property>
         <property name="icon-name">signal-midi</property>
         <signal name="toggled" handler="toggles_changed" object="FileBrowserFiltersWidget" swapped="no"/>
@@ -25,7 +21,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="toggle_presets">
-        <property name="can-focus">0</property>
         <property name="tooltip-text" translatable="yes">Presets</property>
         <property name="icon-name">modulator</property>
         <signal name="toggled" handler="toggles_changed" object="FileBrowserFiltersWidget" swapped="no"/>

@@ -17,8 +17,6 @@
     </child>
     <child>
       <object class="GtkBox" id="btn_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
           <object class="GtkButton" id="choose_chord_btn">
             <property name="focusable">1</property>

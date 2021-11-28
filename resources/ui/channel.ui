@@ -3,7 +3,6 @@
   <requires lib="gtk" version="4.0"/>
   <template class="ChannelWidget" parent="GtkBox">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <property name="margin_top">2</property>
     <property name="margin_bottom">4</property>
     <child>
@@ -15,8 +14,6 @@
             <property name="vexpand">1</property>
             <child>
               <object class="FaderButtonsWidget" id="fader_buttons">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
               </object>
             </child>
@@ -67,7 +64,6 @@
         <child>
           <object class="GtkBox" id="icon_and_name_event_box">
             <property name="name">channel-icon-and-name-box</property>
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkBox">
                 <property name="name">channel-icon-box</property>
