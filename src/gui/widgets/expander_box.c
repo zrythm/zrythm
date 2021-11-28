@@ -243,6 +243,8 @@ expander_box_widget_init (ExpanderBoxWidget * self)
   gtk_widget_set_name (
     GTK_WIDGET (prv->btn_label),
     "expander-box-btn-label");
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (prv->btn_label), true);
   gtk_widget_set_halign (
     GTK_WIDGET (prv->btn_label),
     GTK_ALIGN_START);
