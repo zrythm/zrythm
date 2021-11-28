@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="FolderChannelWidget" parent="GtkBox">
-    <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="margin-top">2</property>
     <property name="margin-bottom">4</property>
@@ -11,7 +10,6 @@
         <property name="row-spacing">4</property>
         <child>
           <object class="GtkBox" id="icon_and_name_event_box">
-            <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="vexpand">True</property>
             <child>
@@ -27,9 +25,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="EditableLabelWidget" id="name">
+                  <object class="RotatedLabelWidget" id="name">
                     <property name="vexpand">1</property>
-                    <property name="visible">True</property>
                   </object>
                 </child>
               </object>
@@ -42,7 +39,6 @@
         </child>
         <child>
           <object class="ColorAreaWidget" id="color_top">
-            <property name="visible">1</property>
             <property name="height-request">8</property>
             <property name="margin-bottom">3</property>
             <layout>
@@ -54,7 +50,6 @@
         </child>
         <child>
           <object class="ColorAreaWidget" id="color_left">
-            <property name="visible">1</property>
             <property name="width-request">6</property>
             <property name="margin-bottom">3</property>
             <layout>
@@ -95,7 +90,6 @@
         </child>
         <child>
           <object class="FaderButtonsWidget" id="fader_buttons">
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <layout>

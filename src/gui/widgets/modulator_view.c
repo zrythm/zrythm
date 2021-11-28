@@ -24,6 +24,7 @@
 #include "gui/widgets/modulator.h"
 #include "gui/widgets/modulator_macro.h"
 #include "gui/widgets/modulator_view.h"
+#include "gui/widgets/rotated_label.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -40,7 +41,8 @@ modulator_view_widget_refresh (
   Track *               track)
 {
   self->track = track;
-  gtk_label_set_text (self->track_name, track->name);
+  rotated_label_widget_set_markup (
+    self->track_name, track->name);
   color_area_widget_set_color (
     self->color, &track->color);
 
@@ -86,7 +88,12 @@ static void
 modulator_view_widget_init (
   ModulatorViewWidget * self)
 {
+  g_type_ensure (ROTATED_LABEL_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  rotated_label_widget_setup (
+    self->track_name, -90);
 
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");

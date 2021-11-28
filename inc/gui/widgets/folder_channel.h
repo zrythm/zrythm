@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Folder channel widget.
+ */
+
 #ifndef __GUI_WIDGETS_FOLDER_CHANNEL_H__
 #define __GUI_WIDGETS_FOLDER_CHANNEL_H__
 
@@ -34,8 +40,16 @@ typedef struct Track Track;
 typedef struct _FolderChannelSlotWidget FolderChannelSlotWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
 typedef struct _FaderButtonsWidget
   FaderButtonsWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef struct _FolderChannelWidget
 {
@@ -44,7 +58,7 @@ typedef struct _FolderChannelWidget
   ColorAreaWidget *   color_top;
   ColorAreaWidget *   color_left;
   GtkBox *       icon_and_name_event_box;
-  EditableLabelWidget * name;
+  RotatedLabelWidget * name;
 
   GtkImage *          icon;
 
@@ -118,5 +132,9 @@ folder_channel_widget_refresh (
 void
 folder_channel_widget_show (
   FolderChannelWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

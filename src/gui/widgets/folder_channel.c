@@ -41,6 +41,7 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/plugin_strip_expander.h"
+#include "gui/widgets/rotated_label.h"
 #include "gui/widgets/route_target_selector.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
@@ -432,8 +433,8 @@ refresh_name (FolderChannelWidget * self)
   Track * track = self->track;
   if (track_is_enabled (track))
     {
-      gtk_label_set_text (
-        GTK_LABEL (self->name->label), track->name);
+      rotated_label_widget_set_markup (
+        self->name, track->name);
     }
   else
     {
@@ -441,11 +442,9 @@ refresh_name (FolderChannelWidget * self)
         g_strdup_printf (
           "<span foreground=\"grey\">%s</span>",
           track->name);
-      gtk_label_set_markup (
-        GTK_LABEL (self->name->label), markup);
+      rotated_label_widget_set_markup (
+        self->name, markup);
     }
-
-  /*gtk_label_set_angle (self->name->label, 90);*/
 }
 
 /**
@@ -616,11 +615,6 @@ folder_channel_widget_new (
   self->track = track;
 
   setup_folder_channel_icon (self);
-  editable_label_widget_setup (
-    self->name, track,
-    (GenericStringGetter) track_get_name,
-    (GenericStringSetter)
-    track_set_name_with_action);
 
   self->fold_toggled_handler_id =
     g_signal_connect (
@@ -691,6 +685,7 @@ folder_channel_widget_init (
 {
   g_type_ensure (FADER_BUTTONS_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
+  g_type_ensure (ROTATED_LABEL_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -705,13 +700,15 @@ folder_channel_widget_init (
     GTK_WIDGET (self), 0);
 
   /* set font sizes */
+  rotated_label_widget_setup (self->name, -90);
+  GtkLabel * lbl =
+    rotated_label_widget_get_label (self->name);
   GtkStyleContext * context =
     gtk_widget_get_style_context (
-      GTK_WIDGET (self->name->label));
+      GTK_WIDGET (lbl));
   gtk_style_context_add_class (
     context, "folder_channel_label");
-  gtk_label_set_max_width_chars (
-    self->name->label, 10);
+  gtk_label_set_max_width_chars (lbl, 10);
 
   self->drag =
     GTK_GESTURE_DRAG (gtk_gesture_drag_new ());

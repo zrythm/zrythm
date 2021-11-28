@@ -330,7 +330,8 @@ clip_editor_inner_widget_init (
   gtk_widget_add_css_class (
     GTK_WIDGET (lbl), "editor-track-name-lbl");
   rotated_label_widget_set_markup (
-    self->track_name_rotated_label, _("Select a region..."));
+    self->track_name_rotated_label,
+    _("Select a region..."));
 
   self->left_of_ruler_size_group =
     gtk_size_group_new (

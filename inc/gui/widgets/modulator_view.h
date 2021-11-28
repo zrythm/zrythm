@@ -36,6 +36,20 @@ G_DECLARE_FINAL_TYPE (
   Z, MODULATOR_VIEW_WIDGET,
   GtkBox)
 
+typedef struct _ModulatorWidget ModulatorWidget;
+typedef struct _ModulatorMacroWidget
+  ModulatorMacroWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
+typedef struct Track Track;
+typedef struct _RotatedLabelWidget
+  RotatedLabelWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define MW_MODULATOR_VIEW \
   MW_BOT_DOCK_EDGE->modulator_view
 
@@ -45,12 +59,6 @@ G_DECLARE_FINAL_TYPE (
 #define SHOW_MODULATOR_VIEW \
   gtk_notebook_set_current_page ( \
     MW_MODULATOR_VIEW->bot_notebook, 2)
-
-typedef struct _ModulatorWidget ModulatorWidget;
-typedef struct _ModulatorMacroWidget
-  ModulatorMacroWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct Track Track;
 
 /**
  * The ModulatorViewWidget contains the
@@ -62,7 +70,7 @@ typedef struct _ModulatorViewWidget
   GtkBox *          modulators_box;
   GtkBox *          macros_box;
   ColorAreaWidget * color;
-  GtkLabel *        track_name;
+  RotatedLabelWidget * track_name;
   Track *           track;
   ModulatorWidget * modulators[14];
   ModulatorMacroWidget * macros[8];
@@ -75,5 +83,9 @@ modulator_view_widget_refresh (
 
 ModulatorViewWidget *
 modulator_view_widget_new (void);
+
+/**
+ * @}
+ */
 
 #endif
