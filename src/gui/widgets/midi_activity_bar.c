@@ -22,7 +22,6 @@
 #include "audio/track.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/track.h"
-#include "gui/widgets/track_top_grid.h"
 #include "project.h"
 #include "zrythm_app.h"
 

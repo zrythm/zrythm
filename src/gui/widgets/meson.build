@@ -160,7 +160,6 @@ widget_srcs = files([
   'track_visibility_tree.c',
   'tracklist.c',
   'tracklist_header.c',
-  'track_top_grid.c',
   'transport_controls.c',
   'two_col_expander_box.c',
   'velocity.c',

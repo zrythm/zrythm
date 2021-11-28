@@ -22,7 +22,6 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
-#include "gui/widgets/track_top_grid.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/ui.h"
