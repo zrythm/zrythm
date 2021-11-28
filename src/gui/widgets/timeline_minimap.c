@@ -414,6 +414,9 @@ drag_update (
 
   /* update inspector */
   /*update_inspector (self);*/
+
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (self->overlay));
 }
 
 static void

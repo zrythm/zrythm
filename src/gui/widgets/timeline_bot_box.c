@@ -66,4 +66,3 @@ timeline_bot_box_widget_class_init (
 
 #undef BIND_CHILD
 }
-
