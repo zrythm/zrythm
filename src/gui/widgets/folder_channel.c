@@ -703,6 +703,8 @@ folder_channel_widget_init (
   rotated_label_widget_setup (self->name, -90);
   GtkLabel * lbl =
     rotated_label_widget_get_label (self->name);
+  gtk_label_set_ellipsize (
+    lbl, PANGO_ELLIPSIZE_END);
   GtkStyleContext * context =
     gtk_widget_get_style_context (
       GTK_WIDGET (lbl));
