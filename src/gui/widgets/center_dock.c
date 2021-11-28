@@ -114,6 +114,18 @@ center_dock_widget_tear_down (
 }
 
 static void
+dispose (
+  CenterDockWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->left_rest_paned));
+
+  G_OBJECT_CLASS (
+    center_dock_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 center_dock_widget_init (
   CenterDockWidget * self)
 {
@@ -162,13 +174,14 @@ center_dock_widget_init (
     self->center_paned, true);
 }
 
-
 static void
 center_dock_widget_class_init (
   CenterDockWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
   resources_set_class_template (
     klass, "center_dock.ui");
 
@@ -189,6 +202,8 @@ center_dock_widget_class_init (
 
 #undef BIND_CHILD
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BOX_LAYOUT);
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }
