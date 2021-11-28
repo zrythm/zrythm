@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="TrackWidget" parent="GtkBox">
-    <property name="orientation">vertical</property>
+  <template class="TrackWidget" parent="GtkWidget">
     <child>
-      <object class="GtkBox" id="highlight_top_box"/>
+      <object class="GtkBox" id="highlight_top_box">
+        <property name="name">track-highlight-top-box</property>
+      </object>
     </child>
     <child>
       <object class="GtkBox" id="main_box">
+        <property name="name">track-main-box</property>
         <child>
           <object class="GtkBox" id="group_colors_box">
             <child>
@@ -34,7 +36,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="highlight_bot_box"/>
+      <object class="GtkBox" id="highlight_bot_box">
+        <property name="name">track-highlight-bot-box</property>
+      </object>
     </child>
   </template>
 </interface>

@@ -79,7 +79,7 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  TrackWidget, track_widget, GTK_TYPE_BOX)
+  TrackWidget, track_widget, GTK_TYPE_WIDGET)
 
 #define ICON_NAME_MONO_COMPAT "mono"
 #define ICON_NAME_RECORD "media-record"
@@ -2018,7 +2018,8 @@ show_edit_name_popover (
   if (lane)
     {
       editable_label_widget_show_popover_for_widget (
-        GTK_WIDGET (self), lane,
+        GTK_WIDGET (self),
+        self->track_name_popover, lane,
         (GenericStringGetter) track_lane_get_name,
         (GenericStringSetter)
         track_lane_rename_with_action);
@@ -2026,7 +2027,8 @@ show_edit_name_popover (
   else
     {
       editable_label_widget_show_popover_for_widget (
-        GTK_WIDGET (self), self->track,
+        GTK_WIDGET (self),
+        self->track_name_popover, self->track,
         (GenericStringGetter) track_get_name,
         (GenericStringSetter)
         track_set_name_with_action);
@@ -3110,21 +3112,53 @@ on_destroy (
 }
 
 static void
+dispose (
+  TrackWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->track_name_popover));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->highlight_top_box));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->main_box));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->highlight_bot_box));
+
+  G_OBJECT_CLASS (
+    track_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 track_widget_init (TrackWidget * self)
 {
   g_type_ensure (METER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (
+      gtk_widget_get_layout_manager (
+        GTK_WIDGET (self))),
+    GTK_ORIENTATION_VERTICAL);
+
   self->popover_menu =
     GTK_POPOVER_MENU (
       gtk_popover_menu_new_from_model (NULL));
-  gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu),
+    GTK_WIDGET (self));
+
+  self->track_name_popover =
+    GTK_POPOVER (gtk_popover_new ());
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->track_name_popover),
+    GTK_WIDGET (self));
 
   gtk_widget_set_vexpand_set (
-    (GtkWidget *) self, 1);
+    GTK_WIDGET (self), true);
 
   /* set font sizes */
   /*gtk_label_set_max_width_chars (*/
@@ -3229,4 +3263,12 @@ track_widget_class_init (TrackWidgetClass * _klass)
   BIND_CHILD (highlight_bot_box);
 
 #undef BIND_CHILD
+
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BOX_LAYOUT);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (_klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }

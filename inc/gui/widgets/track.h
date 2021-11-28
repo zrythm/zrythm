@@ -34,7 +34,7 @@
   (track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TrackWidget, track_widget, Z, TRACK_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 typedef struct Track Track;
 typedef struct CustomButtonWidget CustomButtonWidget;
@@ -79,7 +79,7 @@ typedef enum TrackWidgetResizeTarget
  */
 typedef struct _TrackWidget
 {
-  GtkBox            parent_instance;
+  GtkWidget         parent_instance;
 
   /** Main box containing the drawing area and the
    * meters on the right. */
@@ -232,6 +232,9 @@ typedef struct _TrackWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
+
+  /** Popover for changing the track name. */
+  GtkPopover *     track_name_popover;
 } TrackWidget;
 
 const char *

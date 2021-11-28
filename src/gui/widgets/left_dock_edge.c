@@ -157,6 +157,18 @@ left_dock_edge_widget_tear_down (
 }
 
 static void
+dispose (
+  LeftDockEdgeWidget * self)
+{
+  gtk_widget_unparent (
+    GTK_WIDGET (self->inspector_notebook));
+
+  G_OBJECT_CLASS (
+    left_dock_edge_widget_parent_class)->
+      dispose (G_OBJECT (self));
+}
+
+static void
 left_dock_edge_widget_init (
   LeftDockEdgeWidget * self)
 {
@@ -294,4 +306,9 @@ left_dock_edge_widget_class_init (
 
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BOX_LAYOUT);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (_klass);
+  oklass->dispose =
+    (GObjectFinalizeFunc) dispose;
 }
