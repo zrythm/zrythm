@@ -1324,6 +1324,8 @@ on_leave (
       self->button_pressed = 0;
     }
   self->icon_hovered = false;
+
+  track_widget_force_redraw (self);
 }
 
 static void
@@ -1336,6 +1338,8 @@ on_enter (
   self->bg_hovered = true;
   self->color_area_hovered = false;
   self->resize = 0;
+
+  track_widget_force_redraw (self);
 }
 
 static void
