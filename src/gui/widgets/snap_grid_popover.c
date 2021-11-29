@@ -173,14 +173,23 @@ on_last_object_toggled (
 
 static void
 on_type_toggled (
-  GtkToggleButton *       btn,
+  GtkWidget *             btn,
   SnapGridPopoverWidget * self)
 {
   block_or_unblock_all_handlers (self, true);
 
   SnapGrid * sg = self->owner->snap_grid;
-  bool active = gtk_toggle_button_get_active (btn);
-  if (btn == self->snap_triplet_toggle)
+  bool active = false;
+  if (GTK_IS_TOGGLE_BUTTON (btn))
+    active =
+      gtk_toggle_button_get_active (
+        GTK_TOGGLE_BUTTON (btn));
+  else if (GTK_IS_CHECK_BUTTON (btn))
+    active =
+      gtk_check_button_get_active (
+        GTK_CHECK_BUTTON (btn));
+
+  if (btn == GTK_WIDGET (self->snap_triplet_toggle))
     {
       if (active)
         {
@@ -193,7 +202,8 @@ on_type_toggled (
           sg->snap_note_type = NOTE_TYPE_NORMAL;
         }
     }
-  else if (btn == self->snap_dotted_toggle)
+  else if (btn ==
+             GTK_WIDGET (self->snap_dotted_toggle))
     {
       if (active)
         {
@@ -206,7 +216,9 @@ on_type_toggled (
           sg->snap_note_type = NOTE_TYPE_NORMAL;
         }
     }
-  else if (btn == self->default_triplet_toggle)
+  else if (btn ==
+             GTK_WIDGET (
+               self->default_triplet_toggle))
     {
       if (active)
         {
@@ -219,7 +231,9 @@ on_type_toggled (
           sg->default_note_type = NOTE_TYPE_NORMAL;
         }
     }
-  else if (btn == self->default_dotted_toggle)
+  else if (btn ==
+             GTK_WIDGET (
+               self->default_dotted_toggle))
     {
       if (active)
         {
@@ -233,14 +247,14 @@ on_type_toggled (
         }
     }
   else if (btn ==
-             GTK_TOGGLE_BUTTON (self->snap_adaptive))
+             GTK_WIDGET (self->snap_adaptive))
     {
       sg->snap_adaptive = active;
       gtk_widget_set_sensitive (
         GTK_WIDGET (self->snap_length_dm), !active);
     }
-  else if (GTK_TOGGLE_BUTTON (btn) ==
-             GTK_TOGGLE_BUTTON (
+  else if (btn ==
+             GTK_WIDGET (
                self->default_adaptive))
     {
       sg->default_adaptive = active;
