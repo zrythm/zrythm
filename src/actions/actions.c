@@ -1443,13 +1443,16 @@ change_state_piano_roll_drum_mode (
 
 DEFINE_SIMPLE (activate_fullscreen)
 {
-  if (MAIN_WINDOW->is_fullscreen)
+  if (gtk_window_is_fullscreen (
+        GTK_WINDOW (MAIN_WINDOW)))
     {
+      g_debug ("unfullscreening");
       gtk_window_unfullscreen (
         GTK_WINDOW (MAIN_WINDOW));
     }
   else
     {
+      g_debug ("fullscreening");
       gtk_window_fullscreen (
         GTK_WINDOW (MAIN_WINDOW));
     }

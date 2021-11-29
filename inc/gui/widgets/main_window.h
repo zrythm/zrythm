@@ -51,11 +51,6 @@ typedef struct ArrangerSelections
 #define MAIN_WINDOW zrythm_app->main_window
 #define MW MAIN_WINDOW
 
-#if 0
-#define MAIN_WINDOW_LAST_FOCUSED_IS(x) \
-  (MAIN_WINDOW->last_focused == GTK_WIDGET(x))
-#endif
-
 /**
  * The main window of Zrythm.
  *
@@ -73,26 +68,13 @@ typedef struct _MainWindowWidget
   GtkBox *                 center_box;
   CenterDockWidget *       center_dock;
   BotBarWidget *           bot_bar;
-  int                      is_maximized;
   int                      is_fullscreen;
   int                      height;
   int                      width;
   AdwToastOverlay *        toast_overlay;
-  //GtkShortcutController *  shortcut_controller;
-  //GtkRevealer *            revealer;
-  //GtkButton *              close_notification_button;
-  //GtkLabel *               notification_label;
 
   /** Whether preferences window is opened. */
   bool                     preferences_opened;
-
-  /**
-   * Last focused widget.
-   *
-   * Used to check what area is focused when doing copy
-   * paste, etc. Can either be Arranger or piano roll.
-   */
-  //GtkWidget *              last_focused;
 
   /** Whether set up already or not. */
   bool                     setup;
@@ -127,16 +109,6 @@ void
 main_window_widget_open (
   MainWindowWidget  * win,
   GFile             * file);
-
-#if 0
-/**
- * Returns the selections for the last focused
- * arranger.
- */
-ArrangerSelections *
-main_window_get_last_focused_arranger_selections (
-  MainWindowWidget * self);
-#endif
 
 void
 main_window_widget_quit (

@@ -288,30 +288,6 @@ on_close_request (
   return ret;
 }
 
-static void
-on_maximized_changed (
-  GObject *    gobject,
-  GParamSpec * pspec,
-  gpointer     user_data)
-{
-  MainWindowWidget * self =
-    Z_MAIN_WINDOW_WIDGET (user_data);
-  self->is_maximized =
-    gtk_window_is_maximized (GTK_WINDOW (self));
-}
-
-static void
-on_fullscreened_changed (
-  GObject *    gobject,
-  GParamSpec * pspec,
-  gpointer     user_data)
-{
-  MainWindowWidget * self =
-    Z_MAIN_WINDOW_WIDGET (user_data);
-  self->is_maximized =
-    gtk_window_is_fullscreen (GTK_WINDOW (self));
-}
-
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
 {
@@ -323,62 +299,6 @@ main_window_widget_new (ZrythmApp * _app)
 
   return self;
 }
-
-#if 0
-static void
-on_close_notification_clicked (
-  GtkButton * btn,
-  gpointer    user_data)
-{
-  gtk_revealer_set_reveal_child (
-    GTK_REVEALER (MAIN_WINDOW->revealer),
-    0);
-}
-#endif
-
-#if 0
-/**
- * Returns the selections for the last focused
- * arranger.
- */
-ArrangerSelections *
-main_window_get_last_focused_arranger_selections (
-  MainWindowWidget * self)
-{
-  ArrangerSelections * sel = NULL;
-  if (MAIN_WINDOW_LAST_FOCUSED_IS (
-        MW_TIMELINE) ||
-      MAIN_WINDOW_LAST_FOCUSED_IS (
-        MW_PINNED_TIMELINE))
-    {
-      sel =
-        (ArrangerSelections *) TL_SELECTIONS;
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_MIDI_ARRANGER) ||
-           MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_MIDI_MODIFIER_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *) MA_SELECTIONS;
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_CHORD_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *) CHORD_SELECTIONS;
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_AUTOMATION_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *)
-        AUTOMATION_SELECTIONS;
-    }
-
-  return sel;
-}
-#endif
 
 static gboolean
 on_key_pressed (
@@ -925,12 +845,6 @@ main_window_widget_init (MainWindowWidget * self)
   g_signal_connect (
     G_OBJECT (self), "close-request",
     G_CALLBACK (on_close_request), self);
-  g_signal_connect (
-    G_OBJECT (self), "notify::maximized",
-    G_CALLBACK (on_maximized_changed), self);
-  g_signal_connect (
-    G_OBJECT (self), "notify::fullscreened",
-    G_CALLBACK (on_fullscreened_changed), self);
 
   g_message ("done");
 }
