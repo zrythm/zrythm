@@ -84,7 +84,7 @@ chord_editor_space_widget_update_size_group (
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
     MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->chord_keys_box),
+    GTK_WIDGET (self->left_box),
     visible);
 }
 
@@ -194,6 +194,7 @@ chord_editor_space_widget_class_init (
   BIND_CHILD (arranger_scroll);
   BIND_CHILD (arranger_viewport);
   BIND_CHILD (arranger);
+  BIND_CHILD (left_box);
   BIND_CHILD (chord_keys_box);
   BIND_CHILD (chord_keys_scroll);
 

@@ -18,7 +18,6 @@
               <object class="GtkBox" id="left_box">
                 <child>
                   <object class="GtkScrolledWindow" id="chord_keys_scroll">
-                    <property name="hexpand">1</property>
                     <property name="focusable">1</property>
                     <property name="hscrollbar_policy">never</property>
                     <property name="vscrollbar_policy">external</property>

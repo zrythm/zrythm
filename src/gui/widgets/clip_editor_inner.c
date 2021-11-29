@@ -217,7 +217,7 @@ clip_editor_inner_widget_refresh (
             self->editor_stack,
             GTK_WIDGET (MW_AUDIO_EDITOR_SPACE));
           audio_editor_space_widget_update_size_group (
-            self->audio_editor_space, 1);
+            self->audio_editor_space, true);
           audio_editor_space_widget_refresh (
             self->audio_editor_space);
           break;
