@@ -731,6 +731,23 @@ digital_meter_set_draw_line (
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
+/**
+ * Motion callback.
+ */
+static void
+on_motion (
+  GtkEventControllerMotion * motion_controller,
+  gdouble                    x,
+  gdouble                    y,
+  gpointer                   user_data)
+{
+  DigitalMeterWidget * self =
+    Z_DIGITAL_METER_WIDGET (user_data);
+
+  self->hover_x = MAX (x, 0.0);
+  self->hover_y = MAX (y, 0.0);
+}
+
 static gboolean
 on_scroll (
   GtkEventControllerScroll * scroll_controller,
@@ -746,15 +763,12 @@ on_scroll (
       GTK_EVENT_CONTROLLER (scroll_controller));
   GdkScrollDirection direction =
     gdk_scroll_event_get_direction (event);
-  double abs_x, abs_y;
-  gdk_event_get_position (
-    event, &abs_x, &abs_y);
 
   int num =
     (direction == GDK_SCROLL_UP
      || direction == GDK_SCROLL_RIGHT) ? 1 : -1;
 
-  update_flags (self, abs_x, abs_y);
+  update_flags (self, self->hover_x, self->hover_y);
   on_change_started (self);
 
   ControlPortChange change = { 0 };
@@ -1411,6 +1425,16 @@ digital_meter_widget_init (
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (self->drag));
+
+  GtkEventControllerMotion * motion =
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new ());
+  g_signal_connect (
+    G_OBJECT (motion), "motion",
+    G_CALLBACK (on_motion),  self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (motion));
 
   GtkEventControllerScroll * scroll_controller =
     GTK_EVENT_CONTROLLER_SCROLL (

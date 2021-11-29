@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -65,115 +65,118 @@ typedef struct SnapGrid SnapGrid;
 
 typedef struct _DigitalMeterWidget
 {
-  GtkDrawingArea           parent_instance;
+  GtkDrawingArea   parent_instance;
 
-  DigitalMeterType         type;
+  DigitalMeterType type;
 
-  bool                     is_transport;
+  bool             is_transport;
 
-  GtkGestureDrag *         drag;
-  double                   last_y;
-  double                   last_x;
-  int                      height_start_pos;
-  int                      height_end_pos;
+  GtkGestureDrag * drag;
+  double           last_y;
+  double           last_x;
+  int              height_start_pos;
+  int              height_end_pos;
 
   /* ========= BPM ========= */
   /* for BPM */
-  int                      num_part_start_pos;
-  int                      num_part_end_pos;
-  int                      dec_part_start_pos;
-  int                      dec_part_end_pos;
+  int              num_part_start_pos;
+  int              num_part_end_pos;
+  int              dec_part_start_pos;
+  int              dec_part_end_pos;
 
   /** Used when changing the BPM. */
-  bpm_t                    bpm_at_start;
+  bpm_t            bpm_at_start;
 
   /** Used during update. */
-  bpm_t                    last_set_bpm;
+  bpm_t            last_set_bpm;
 
   /** Flag to update BPM. */
-  bool                     update_num;
+  bool             update_num;
   /** Flag to update BPM decimal. */
-  bool                     update_dec;
+  bool             update_dec;
 
   /* ========= BPM end ========= */
 
   /* ========= position ========= */
 
-  int                      bars_start_pos;
-  int                      bars_end_pos;
-  int                      beats_start_pos;
-  int                      beats_end_pos;
-  int                      sixteenths_start_pos;
-  int                      sixteenths_end_pos;
-  int                      ticks_start_pos;
-  int                      ticks_end_pos;
+  int              bars_start_pos;
+  int              bars_end_pos;
+  int              beats_start_pos;
+  int              beats_end_pos;
+  int              sixteenths_start_pos;
+  int              sixteenths_end_pos;
+  int              ticks_start_pos;
+  int              ticks_end_pos;
 
   /** Update flags. */
-  int                      update_bars;
-  int                      update_beats;
-  int                      update_sixteenths;
-  int                      update_ticks;
+  int               update_bars;
+  int               update_beats;
+  int               update_sixteenths;
+  int               update_ticks;
 
   /* ========= position end ========= */
 
   /* ========= time ========= */
 
   /** For time. */
-  int                      minutes_start_pos;
-  int                      minutes_end_pos;
-  int                      seconds_start_pos;
-  int                      seconds_end_pos;
-  int                      ms_start_pos;
-  int                      ms_end_pos;
+  int               minutes_start_pos;
+  int               minutes_end_pos;
+  int               seconds_start_pos;
+  int               seconds_end_pos;
+  int               ms_start_pos;
+  int               ms_end_pos;
 
   /** Update flags. */
-  int                      update_minutes;
-  int                      update_seconds;
-  int                      update_ms;
+  int               update_minutes;
+  int               update_seconds;
+  int               update_ms;
 
   /* ========= time end ========= */
 
   /* for note length/type */
-  NoteLength *             note_length;
-  NoteType *               note_type;
-  int                      update_note_length; ///< flag to update note length
-  int                      start_note_length; ///< start note length
-  int                      update_note_type; ///< flag to update note type
-  int                      start_note_type; ///< start note type
+  NoteLength *      note_length;
+  NoteType *        note_type;
+  int               update_note_length; ///< flag to update note length
+  int               start_note_length; ///< start note length
+  int               update_note_type; ///< flag to update note type
+  int               start_note_type; ///< start note type
 
   /* for time sig */
-  int                      update_timesig_top;
+  int               update_timesig_top;
   /* ebeat unit */
-  int                      update_timesig_bot;
+  int               update_timesig_bot;
 
   /** Used when changing the time signature. */
-  int                      beats_per_bar_at_start;
-  int                      beat_unit_at_start;
+  int               beats_per_bar_at_start;
+  int               beat_unit_at_start;
 
   /* ---------- FOR POSITION ---------------- */
-  void *     obj;
+  void *            obj;
 
   /** Getter for Position. */
-  void       (*getter)(void*, Position*);
+  void              (*getter)(void*, Position*);
   /** Setter for Position. */
-  void       (*setter)(void*, Position*);
+  void              (*setter)(void*, Position*);
   /** Function to call on drag begin. */
-  void       (*on_drag_begin)(void*);
+  void              (*on_drag_begin)(void*);
   /** Function to call on drag end. */
-  void       (*on_drag_end)(void*);
+  void              (*on_drag_end)(void*);
 
   /* ----------- position end --------------- */
 
+  double            hover_x;
+  double            hover_y;
+
   /** Draw line above the meter or not. */
-  int        draw_line;
+  int               draw_line;
 
   /** Caption to show above, NULL to not show. */
-  char *     caption;
+  char *            caption;
 
   /** Cached layouts for drawing text. */
-  PangoLayout * caption_layout;
-  PangoLayout * seg7_layout;
-  PangoLayout * normal_layout;
+  PangoLayout *     caption_layout;
+  PangoLayout *     seg7_layout;
+  PangoLayout *     normal_layout;
 } DigitalMeterWidget;
 
 /**
