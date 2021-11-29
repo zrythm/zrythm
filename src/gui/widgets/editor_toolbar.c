@@ -39,6 +39,8 @@
 
 #include <glib/gi18n.h>
 
+#include <adwaita.h>
+
 G_DEFINE_TYPE (
   EditorToolbarWidget, editor_toolbar_widget,
   GTK_TYPE_BOX)
@@ -179,20 +181,15 @@ editor_toolbar_widget_refresh (
           g_strdup_printf (
             _("Apply %s with previous settings"),
           _(midi_function_type_to_string (type)));
-        gtk_button_set_label (
-          self->apply_function_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->apply_function_btn),
+          GTK_WIDGET (self->functions_btn),
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
 
-        /* FIXME uncomment when GTK fixes this */
-#if 0
-        button_with_menu_widget_set_menu_model (
+        adw_split_button_set_menu_model (
           self->functions_btn,
           self->midi_functions_menu);
-#endif
 
         /* set visibility of each tool item */
         gtk_widget_set_visible (
@@ -359,6 +356,7 @@ editor_toolbar_widget_init (
   g_type_ensure (
     PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
+  g_type_ensure (ADW_TYPE_SPLIT_BUTTON);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -378,24 +376,16 @@ editor_toolbar_widget_init (
 #undef SET_TOOLTIP
 
   const char * str = "Legato";
-  self->apply_function_btn =
-    GTK_BUTTON (
-      gtk_button_new_from_icon_name (
-        /*"mathmode",*/
-        "code-context"));
   gtk_actionable_set_detailed_action_name (
-    GTK_ACTIONABLE (self->apply_function_btn),
+    GTK_ACTIONABLE (self->functions_btn),
     "app.editor-function::current");
-  gtk_button_set_label (
-    self->apply_function_btn, str);
-  /*gtk_button_set_always_show_image (*/
-    /*self->apply_function_btn, true);*/
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->apply_function_btn), true);
-  button_with_menu_widget_setup (
-    self->functions_btn,
-    self->apply_function_btn,
-    NULL, true, -1, str, _("Select function"));
+  adw_split_button_set_label (
+    self->functions_btn, str);
+  adw_split_button_set_icon_name (
+    self->functions_btn, "code-context");
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->functions_btn),
+    _("Apply function"));
 
   /* TODO */
 #if 0

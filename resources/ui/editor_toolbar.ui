@@ -7,10 +7,8 @@
       <class name="arranger-toolbar"/>
       <class name="editor-toolbar"/>
     </style>
-    <property name="visible">True</property>
     <child>
       <object class="SnapBoxWidget" id="snap_box">
-        <property name="visible">True</property>
       </object>
     </child>
     <child>
@@ -32,7 +30,6 @@
     </child>
     <child>
       <object class="QuantizeBoxWidget" id="quantize_box">
-        <property name="visible">1</property>
       </object>
     </child>
     <child>
@@ -41,8 +38,7 @@
       </object>
     </child>
     <child>
-      <object class="ButtonWithMenuWidget" id="functions_btn">
-        <property name="visible">True</property>
+      <object class="AdwSplitButton" id="functions_btn">
       </object>
     </child>
     <child>
@@ -52,7 +48,6 @@
     </child>
     <child>
       <object class="PlayheadScrollButtonsWidget" id="playhead_scroll">
-        <property name="visible">True</property>
       </object>
     </child>
     <child>

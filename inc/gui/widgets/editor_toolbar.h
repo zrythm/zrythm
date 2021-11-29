@@ -45,6 +45,7 @@ typedef struct _ButtonWithMenuWidget
   ButtonWithMenuWidget;
 typedef struct _PlayheadScrollButtonsWidget
   PlayheadScrollButtonsWidget;
+typedef struct _AdwSplitButton AdwSplitButton;
 
 /**
  * The PianoRoll toolbar in the top.
@@ -56,7 +57,7 @@ typedef struct _EditorToolbarWidget
   SnapBoxWidget *     snap_box;
   QuantizeBoxWidget * quantize_box;
   GtkButton *     event_viewer_toggle;
-  ButtonWithMenuWidget * functions_btn;
+  AdwSplitButton * functions_btn;
   GtkButton *         apply_function_btn;
 
   GtkSeparator *      sep_after_chord_highlight;
