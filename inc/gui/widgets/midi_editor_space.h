@@ -75,6 +75,9 @@ typedef struct _MidiEditorSpaceWidget
   GtkViewport *        modifier_arranger_viewport;
   ArrangerWidget *     modifier_arranger;
 
+  GtkScrollbar *       arranger_hscrollbar;
+  GtkScrollbar *       arranger_vscrollbar;
+
   GtkBox *             midi_vel_chooser_box;
   GtkComboBoxText *    midi_modifier_chooser;
 

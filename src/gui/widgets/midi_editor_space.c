@@ -94,6 +94,16 @@ link_scrolls (
         gtk_scrolled_window_get_hadjustment (
           MW_CLIP_EDITOR_INNER->ruler_scroll));
     }
+
+  /* set scrollbar adjustments */
+  gtk_scrollbar_set_adjustment (
+    self->arranger_hscrollbar,
+    gtk_scrolled_window_get_hadjustment (
+      MW_CLIP_EDITOR_INNER->ruler_scroll));
+  gtk_scrollbar_set_adjustment (
+    self->arranger_vscrollbar,
+    gtk_scrolled_window_get_vadjustment (
+      GTK_SCROLLED_WINDOW (self->arranger_scroll)));
 }
 
 static int
@@ -200,6 +210,11 @@ midi_editor_space_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  /* make hscrollbar invisible until GTK bug
+   * 4478 is fixed */
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->arranger_hscrollbar), false);
+
   gtk_paned_set_shrink_start_child (
     self->midi_arranger_velocity_paned, false);
   gtk_paned_set_shrink_end_child (
@@ -262,6 +277,8 @@ midi_editor_space_widget_class_init (
   BIND_CHILD (arranger);
   BIND_CHILD (modifier_arranger_scroll);
   BIND_CHILD (modifier_arranger);
+  BIND_CHILD (arranger_hscrollbar);
+  BIND_CHILD (arranger_vscrollbar);
   BIND_CHILD (midi_notes_box);
   BIND_CHILD (midi_vel_chooser_box);
 
