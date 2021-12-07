@@ -482,6 +482,11 @@ DECLARE_SIMPLE (activate_plugin_collection_rename);
 DECLARE_SIMPLE (activate_plugin_collection_remove);
 
 /**
+ * Used as a workaround for GTK bug 4422.
+ */
+DECLARE_SIMPLE (activate_app_action_wrapper);
+
+/**
  * @}
  */
 

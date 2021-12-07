@@ -65,12 +65,17 @@ audio_function_get_action_target_for_type (
   return substituted;
 }
 
+/**
+ * Returns a detailed action name to be used for
+ * actionable widgets or menus.
+ *
+ * @param base_action Base action to use.
+ */
 char *
 audio_function_get_detailed_action_for_type (
-  AudioFunctionType type)
+  AudioFunctionType type,
+  const char *      base_action)
 {
-  const char * base_action = "app.editor-function";
-
   char * target =
     audio_function_get_action_target_for_type (
       type);

@@ -3764,3 +3764,16 @@ DEFINE_SIMPLE (
   track->passthrough_midi_input =
     !track->passthrough_midi_input;
 }
+
+/**
+ * Used as a workaround for GTK bug 4422.
+ */
+DEFINE_SIMPLE (
+  activate_app_action_wrapper)
+{
+  const char * action_name =
+    g_action_get_name (G_ACTION (action));
+  g_action_group_activate_action (
+    G_ACTION_GROUP (zrythm_app), action_name,
+    variant);
+}

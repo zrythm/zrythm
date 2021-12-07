@@ -69,6 +69,10 @@ See [PACKAGING.md](PACKAGING.md).
 ## Mailing lists
 See [mailing lists on sr.ht](https://sr.ht/~alextee/zrythm/lists).
 
+## Chat
+* [#zrythmdaw:matrix.org on Matrix](https://matrix.to/#/#zrythmdaw:matrix.org).
+* [#zrythm on Libera.Chat IRC](https://web.libera.chat/#zrythm).
+
 ## Issue trackers
 See the [Feature tracker](https://todo.sr.ht/~alextee/zrythm-feature) and [Bug tracker](https://todo.sr.ht/~alextee/zrythm-bug).
 

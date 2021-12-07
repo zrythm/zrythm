@@ -55,12 +55,17 @@ typedef struct _EditorToolbarWidget
   GtkComboBoxText *   chord_highlighting;
   SnapBoxWidget *     snap_box;
   QuantizeBoxWidget * quantize_box;
-  GtkButton *     event_viewer_toggle;
-  ButtonWithMenuWidget * functions_btn;
-  GtkButton *         apply_function_btn;
+  GtkButton *         event_viewer_toggle;
+  GtkStack *          functions_btn_stack;
+  ButtonWithMenuWidget * midi_functions_btn;
+  ButtonWithMenuWidget * audio_functions_btn;
+  ButtonWithMenuWidget * automation_functions_btn;
+  GtkButton *         audio_apply_function_btn;
+  GtkButton *         midi_apply_function_btn;
+  GtkButton *         automation_apply_function_btn;
 
   GtkSeparator *      sep_after_chord_highlight;
-  GtkBox *       chord_highlight_box;
+  GtkBox *            chord_highlight_box;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
 

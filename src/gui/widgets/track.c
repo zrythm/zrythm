@@ -3082,7 +3082,6 @@ static void
 on_destroy (
   TrackWidget * self)
 {
-
   Track * track = self->track;
 
   CustomButtonWidget * cb = NULL;

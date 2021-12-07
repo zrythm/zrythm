@@ -46,6 +46,18 @@ button_with_menu_widget_set_menu_model (
 }
 
 /**
+ * Set a custom popover instead of a menu model.
+ */
+void
+button_with_menu_widget_set_popover (
+  ButtonWithMenuWidget * self,
+  GtkPopover *           popover)
+{
+  gtk_menu_button_set_popover (
+    self->menu_btn, GTK_WIDGET (popover));
+}
+
+/**
  * This must only be called once to set up the
  * widget.
  *
