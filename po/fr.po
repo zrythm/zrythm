@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-10-17 16:47+0100\n"
-"PO-Revision-Date: 2021-12-04 12:50+0000\n"
-"Last-Translator: Maxime Leroy <lisacintosh@gmail.com>\n"
+"PO-Revision-Date: 2021-12-05 13:50+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -6225,7 +6225,7 @@ msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
 msgstr ""
-"Suivi ou non de la tête de lecture. Lorsque cette option est activée, la "
+"S'il faut suivre la tête de lecture. Lorsque cette option est activée, la "
 "zone visible reste centrée sur la tête de lecture (ligne temporelle)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:503
@@ -6247,7 +6247,7 @@ msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (editor)."
 msgstr ""
-"Permet de suivre la tête de lecture. Lorsque cette option est activée, la "
+"S'il faut suivre la tête de lecture. Lorsque cette option est activée, la "
 "zone visible reste centrée sur la tête de lecture (éditeur)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:517
@@ -6311,7 +6311,7 @@ msgstr "Navigateur de fichier"
 #: build/data/org.zrythm.Zrythm.gschema.xml:552
 msgid "Location bookmarks for file browser (absolute paths)."
 msgstr ""
-"Signets des emplacements dans le navigateur de fichiers (chemins absolus)."
+"Signets des emplacements pour le navigateur de fichiers (chemins absolus)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "File browser selected bookmark"
@@ -6468,7 +6468,7 @@ msgstr "Si les pistes de commentaire sont étendues."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:663
 msgid "Track visibility detached"
-msgstr "Visibilité détachée pour la piste"
+msgstr "Visibilité de piste détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:664
 #, fuzzy
@@ -6481,12 +6481,11 @@ msgstr "Taille de la visibilité de la piste"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:669
 msgid "Track visibility panel size when detached."
-msgstr "Taille du panneau de visibilité de suivi lorsqu'il est détaché."
+msgstr "Taille du panneau de visibilité de pistes lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:673
-#, fuzzy
 msgid "Track inspector detached"
-msgstr "Inspecteur de piste"
+msgstr "Inspecteur de piste détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:674
 #, fuzzy
@@ -6500,12 +6499,11 @@ msgstr "Inspecteur de piste"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:679
 msgid "Track inspector panel size when detached."
-msgstr "La taille du panneau de l'inspecteur de piste lorsqu'il est détaché."
+msgstr "Taille du panneau de l'inspecteur de piste lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:683
-#, fuzzy
 msgid "Plugin inspector detached"
-msgstr "Visualiseur de greffon"
+msgstr "Inspecteur de greffons détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:684
 #, fuzzy
@@ -6538,12 +6536,11 @@ msgstr "Filtre du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:699
 msgid "Plugin browser panel size when detached."
-msgstr "Taille du panneau du navigateur du greffon lorsqu'il est détaché."
+msgstr "Taille du panneau du navigateur de greffons lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:703
-#, fuzzy
 msgid "File browser detached"
-msgstr "Filtre du navigateur de greffon"
+msgstr "Navigateur de fichiers détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:704
 #, fuzzy
@@ -6576,7 +6573,7 @@ msgstr "Entrée Moniteur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:719
 msgid "Monitor section panel size when detached."
-msgstr "La taille du panneau de section du moniteur lorsqu'il est détaché."
+msgstr "Taille du panneau de section du moniteur lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:723
 msgid "Modulator view detached"
@@ -6722,7 +6719,7 @@ msgstr "Scènes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:799
 msgid "Scenes panel size when detached."
-msgstr "La taille du panneau des scènes lorsqu'il est détaché."
+msgstr "Taille du panneau des scènes lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:808
 msgid "Genre to use when exporting, if the file type supports it."
@@ -6814,7 +6811,7 @@ msgstr "Volume du métronome"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:878
 msgid "Count-in bars for the metronome."
-msgstr "Nombre de mesure de comptage du métronome."
+msgstr "Mesures de décompte pour le métronome."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:882
 msgid "Punch mode enabled"
@@ -7070,7 +7067,7 @@ msgstr "La langue de l'interface de Zrythm."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1121
 msgid "CSS theme"
-msgstr "Thème du CSS"
+msgstr "Thème CSS"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1122
 msgid "The CSS theme to use."
