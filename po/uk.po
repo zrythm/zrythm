@@ -1986,7 +1986,7 @@ msgstr "Гарячі клавіші/Keyboard Shortcuts"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
-msgstr "Пожертвувати"
+msgstr "Пожертвування"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
