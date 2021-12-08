@@ -1908,6 +1908,7 @@ z_gtk_show_context_menu_from_g_menu (
     /*GTK_POPOVER (popover_menu), false);*/
   gtk_popover_popup (
     GTK_POPOVER (popover_menu));
+  g_debug ("popup %p", popover_menu);
 }
 
 /**

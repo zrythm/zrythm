@@ -375,6 +375,25 @@ refresh_track_widget (
   track_widget_update_size (track->widget);
 }
 
+/**
+ * Refreshes each track without recreating it.
+ */
+void
+tracklist_widget_soft_refresh (
+  TracklistWidget * self)
+{
+  /** add pinned/unpinned tracks */
+  for (int i = 0; i < self->tracklist->num_tracks;
+       i++)
+    {
+      Track * track = self->tracklist->tracks[i];
+      refresh_track_widget (track);
+    }
+}
+
+/**
+ * Deletes all tracks and re-adds them.
+ */
 void
 tracklist_widget_hard_refresh (
   TracklistWidget * self)

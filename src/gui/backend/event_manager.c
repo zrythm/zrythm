@@ -1052,9 +1052,14 @@ on_track_changed (
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   if (GTK_IS_WIDGET (track->widget))
     {
-      gtk_widget_set_visible (
-        GTK_WIDGET (track->widget),
-        track->visible);
+      if (gtk_widget_get_visible (
+            GTK_WIDGET (track->widget)) !=
+              track->visible)
+        {
+          gtk_widget_set_visible (
+            GTK_WIDGET (track->widget),
+            track->visible);
+        }
       track_widget_force_redraw (track->widget);
     }
 }
@@ -1294,9 +1299,7 @@ event_manager_process_event (
             MW_LEFT_DOCK_EDGE);
         }
       mixer_widget_soft_refresh (MW_MIXER);
-      /* TODO implement soft refresh */
-      tracklist_widget_hard_refresh (
-        MW_TRACKLIST);
+      tracklist_widget_soft_refresh (MW_TRACKLIST);
       break;
     case ET_RULER_SIZE_CHANGED:
       {

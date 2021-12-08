@@ -2889,6 +2889,9 @@ TrackWidget *
 track_widget_new (Track * track)
 {
   g_return_val_if_fail (track, NULL);
+  g_debug (
+    "creating new track widget for %s",
+    track->name);
 
   TrackWidget * self =
     g_object_new (

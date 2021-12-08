@@ -1,6 +1,6 @@
 [wrap-file]
-directory = gtk-031aab3ef6633dbea1ead675b0dbdbf562efe5ee
+directory = gtk-12bb700c620c8a9a29947314ab35d0f2a22d795c
 
-source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/031aab3ef6633dbea1ead675b0dbdbf562efe5ee/gtk-031aab3ef6633dbea1ead675b0dbdbf562efe5ee.tar.gz
-source_filename = gtk-031aab3ef6633dbea1ead675b0dbdbf562efe5ee.tar.gz
-source_hash = 559aa95848484663c26b5f55271cbf24f47f0aaf8c7e2c3af68c35337e52f873
+source_url = https://gitlab.gnome.org/GNOME/gtk/-/archive/12bb700c620c8a9a29947314ab35d0f2a22d795c/gtk-12bb700c620c8a9a29947314ab35d0f2a22d795c.tar.gz
+source_filename = gtk-12bb700c620c8a9a29947314ab35d0f2a22d795c.tar.gz
+source_hash = cb2dfb5eb8b59094a44ec238b24af418d8df59d428c3cc6e0b7c1f581cb2dc17

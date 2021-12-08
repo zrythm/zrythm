@@ -132,6 +132,13 @@ tracklist_widget_handle_vertical_zoom_scroll (
   double                     dy);
 
 /**
+ * Refreshes each track without recreating it.
+ */
+void
+tracklist_widget_soft_refresh (
+  TracklistWidget * self);
+
+/**
  * Deletes all tracks and re-adds them.
  */
 void

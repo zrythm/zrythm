@@ -720,8 +720,7 @@ track_select (
 
   if (fire_events)
     {
-      EVENTS_PUSH (
-        ET_TRACK_CHANGED, self);
+      EVENTS_PUSH (ET_TRACK_CHANGED, self);
     }
 }
 
