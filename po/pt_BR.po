@@ -5,13 +5,14 @@
 # Alexandros Theodotou <alex@zrythm.org>, 2021.
 # Yuri Musachio Montezuma da Cruz <yuri.musachio@gmail.com>, 2021.
 # Vinicius Monego <monego@posteo.net>, 2021.
+# Rodrigo Zimmermann <rodrigo.zimmermann23@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-10-17 16:47+0100\n"
-"PO-Revision-Date: 2021-10-16 04:35+0000\n"
-"Last-Translator: Vinicius Monego <monego@posteo.net>\n"
+"PO-Revision-Date: 2021-12-02 11:51+0000\n"
+"Last-Translator: Rodrigo Zimmermann <rodrigo.zimmermann23@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:294
@@ -182,7 +183,7 @@ msgstr "Ativar som"
 
 #: inc/audio/audio_function.h:70
 msgid "Invert"
-msgstr ""
+msgstr "Inverso"
 
 #: inc/audio/audio_function.h:71
 #, fuzzy
@@ -218,11 +219,11 @@ msgstr ""
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
-msgstr ""
+msgstr "Reverso"
 
 #: inc/audio/audio_function.h:81
 msgid "External program"
-msgstr ""
+msgstr "Programa externo"
 
 #: inc/audio/audio_function.h:82
 #, fuzzy
@@ -231,11 +232,11 @@ msgstr "Script Guile"
 
 #: inc/audio/audio_function.h:83
 msgid "Custom plugin"
-msgstr ""
+msgstr "Adicional personalizado"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
-msgstr ""
+msgstr "Inválido"
 
 #: inc/audio/transport.h:71
 msgid "1 bar"
