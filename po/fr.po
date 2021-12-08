@@ -12,13 +12,14 @@
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
 # Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2021.
 # sub26nico10b0a294e11e4b4b <faurenicolas5595@neuf.fr>, 2021.
+# Maxime Leroy <lisacintosh@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-10-17 16:47+0100\n"
-"PO-Revision-Date: 2021-10-19 03:39+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2021-11-30 15:40+0000\n"
+"Last-Translator: Maxime Leroy <lisacintosh@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -208,22 +209,20 @@ msgid "Normalize LUFS"
 msgstr "Normaliser"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linéaire"
+msgstr "Fondu linéaire en entrée"
 
 #: inc/audio/audio_function.h:76
-#, fuzzy
 msgid "Linear fade out"
-msgstr "Sortie Moniteur"
+msgstr "Fondu linéaire de sortie"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:249
 msgid "Nudge left"
-msgstr ""
+msgstr "Pousser vers la gauche"
 
 #: inc/audio/audio_function.h:79 src/gui/widgets/home_toolbar.c:251
 msgid "Nudge right"
-msgstr ""
+msgstr "Pousser vers la droite"
 
 #: inc/audio/audio_function.h:80
 msgid "Reverse"
@@ -234,14 +233,12 @@ msgid "External program"
 msgstr "Programme externe"
 
 #: inc/audio/audio_function.h:82
-#, fuzzy
 msgid "Guile script"
-msgstr "Script par défaut"
+msgstr "Script Guile"
 
 #: inc/audio/audio_function.h:83
-#, fuzzy
 msgid "Custom plugin"
-msgstr "Personnalisé"
+msgstr "Greffon personnalisé"
 
 #: inc/audio/audio_function.h:84
 msgid "Invalid"
@@ -319,7 +316,7 @@ msgstr "Dossier"
 #: src/audio/curve.c:81
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logarithmique"
 
 #: inc/audio/engine.h:204
 msgid "1,024"
@@ -450,9 +447,8 @@ msgid "Unable to read file: %s"
 msgstr "Échec de l'écriture du fichier : %s"
 
 #: src/project.c:918
-#, fuzzy
 msgid "Failed to decompress project file"
-msgstr "Échec de la décompression du fichier-projet : %s"
+msgstr "La décompression du fichier du projet à échoué"
 
 #: src/project.c:977
 #, c-format
@@ -489,9 +485,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "Impossible de charger le projet. Création d'un nouveau à la place."
 
 #: src/project.c:1608
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "Échec de la décompression du fichier-projet : %s"
+msgstr "La compression du fichier du projet à échoué"
 
 #: src/project.c:1654
 msgid "Backup saved."
@@ -582,7 +577,7 @@ msgid "Waiting for project"
 msgstr "En attente du projet"
 
 #: src/zrythm_app.c:1094
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s\n"
 "%s\n"
@@ -596,7 +591,8 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2021 Les contributeurs à Zrythm\n"
+"%s-%s\n"
+"%s\n"
 "\n"
 "%s est fourni SANS AUCUNE GARANTIE !\n"
 "\n"
@@ -604,7 +600,7 @@ msgstr ""
 "certaines conditions. Consultez le fichier `COPYING' pour les détails.\n"
 "\n"
 "Écrivez des commentaires et reportez des bogues à %s\n"
-"Supporter ce projet à https://liberapay.com/Zrythm\n"
+"Pour supporter ce projet : https://liberapay.com/Zrythm\n"
 "\n"
 
 #: src/zrythm_app.c:1597
@@ -738,21 +734,21 @@ msgid "Error adding carla plugin: %s"
 msgstr "Erreur lors de l'ajout du greffon Carla : %s"
 
 #: src/plugins/carla_native_plugin.c:1345
-#, fuzzy
 msgid "Failed to load Carla state"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec au chargement de l'état de Carla"
 
 #: src/plugins/carla_native_plugin.c:1360
-#, fuzzy
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
-msgstr "Échec de l'instanciation du greffon Carla"
+msgstr ""
+"Échec de l'instanciation du greffon Carla : handle/descriptor n'a été "
+"initialisé correctement"
 
 #: src/plugins/carla_native_plugin.c:1725
-#, fuzzy, c-format
+#, c-format
 msgid "State file %s doesn't exist"
-msgstr "Le client demandé n'existe pas"
+msgstr "Le fichier d'état %s n'existe pas"
 
 #: src/plugins/plugin_manager.c:395
 msgid "Error loading LV2 bundle dir: "
@@ -812,18 +808,16 @@ msgstr "Gain du greffon"
 
 #: src/plugins/plugin.c:525 src/plugins/plugin_gtk.c:170
 #: src/gui/widgets/plugin_properties_expander.c:155
-#, fuzzy
 msgid "Failed to apply preset"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "L'application des préréglages a échoué"
 
 #: src/plugins/plugin.c:577
 msgid "Failed to get Carla plugin"
 msgstr "Impossible d'obtenir le greffon Carla"
 
 #: src/plugins/plugin.c:593
-#, fuzzy
 msgid "Failed to get LV2 plugin"
-msgstr "Greffon LV2 scanné"
+msgstr "La récupération du greffon LV2 a échoué"
 
 #: src/plugins/plugin.c:1105
 #, c-format
@@ -835,11 +829,8 @@ msgid "instrument"
 msgstr "Instrument"
 
 #: src/plugins/plugin.c:1674
-#, fuzzy
 msgid "Carla plugin instantiation failed"
-msgstr ""
-"Erreur lors de l'instanciation du greffon. Veuillez consulter le journal "
-"pour plus de détails"
+msgstr "Erreur lors de l'instanciation du greffon Carla"
 
 #: src/plugins/plugin.c:1702
 #, fuzzy
@@ -961,15 +952,16 @@ msgstr ""
 #: src/plugins/lv2_plugin.c:2914
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
+"Échec de la vérification si l'interface utilisateur du plugin lv2 est "
+"externe."
 
 #: src/plugins/lv2_plugin.c:3749
 msgid "Unnamed bank"
 msgstr "Banque sans nom"
 
 #: src/plugins/lv2/lv2_state.c:456
-#, fuzzy
 msgid "Failed to apply LV2 preset"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Impossible d'appliquer les préréglages de LV2"
 
 #: src/plugins/lv2/lv2_gtk.c:259
 msgid "Delete Preset?"
@@ -1485,12 +1477,16 @@ msgstr "Nom du marqueur"
 #: src/gui/widgets/arranger.c:2536
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
+"Impossible de redimensionner car la sélection contient des objets sans "
+"longueur"
 
 #: src/gui/widgets/arranger.c:2564
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
+"Impossible de redimensionner car la sélection contient un mélange d'objets "
+"bouclés et non bouclés."
 
 #: src/gui/widgets/arranger.c:3795
 #, fuzzy
@@ -1978,7 +1974,7 @@ msgstr "Interface de scriptage"
 
 #: src/gui/widgets/panel_file_browser.c:128
 msgid "Cannot delete standard bookmark"
-msgstr ""
+msgstr "Impossible de supprimer un signet standard"
 
 #: src/gui/widgets/panel_file_browser.c:140
 msgid "Are you sure you want to remove this bookmark?"
@@ -2722,11 +2718,11 @@ msgstr "Verrouiller/déverrouiller"
 
 #: src/gui/widgets/track.c:1270
 msgid "Fold"
-msgstr ""
+msgstr "Enrouler"
 
 #: src/gui/widgets/track.c:1274
 msgid "Unfold"
-msgstr ""
+msgstr "Dérouler"
 
 #: src/gui/widgets/track.c:1810
 #, fuzzy
@@ -2895,12 +2891,12 @@ msgstr "Ouvre le répertoire contenant"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:126
 msgid "Send via Sourcehut"
-msgstr ""
+msgstr "Envoyer via Sourcehut"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:135
 #, c-format
 msgid "Please copy the template below in a %snew issue%s."
-msgstr ""
+msgstr "Veuillez copier le modèle ci-dessous dans un %snouveau problème%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:297
 #, fuzzy, c-format
@@ -2910,7 +2906,7 @@ msgstr "Erreur ALSA : %s"
 #: src/gui/widgets/dialogs/bug_report_dialog.c:302
 #: src/gui/widgets/dialogs/bug_report_dialog.c:515
 msgid "Done"
-msgstr ""
+msgstr "Terminé"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:318
 #, fuzzy
@@ -2923,18 +2919,21 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
+"Cliquez sur OK pour soumettre. Vous pouvez vérifier ce qui sera envoyé ci-"
+"dessous. En cliquant sur OK, vous acceptez notre %sPolitique de "
+"confidentialité%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:360
 msgid "<b>Data</b>"
-msgstr ""
+msgstr "<b>Données</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:413
 msgid "<b>Log file</b>"
-msgstr ""
+msgstr "<b>Fichier journal</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:454
 msgid "<b>Screenshot</b>"
-msgstr ""
+msgstr "<b>Capture d'écran</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:504
 #, fuzzy
@@ -2943,11 +2942,11 @@ msgstr "Liaisons"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:513
 msgid "Sending data..."
-msgstr ""
+msgstr "Envoi de données..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:516
 msgid "Failed"
-msgstr ""
+msgstr "Échec"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:520
 #, fuzzy
@@ -2969,10 +2968,14 @@ msgstr ""
 #: src/gui/widgets/dialogs/bug_report_dialog.c:652
 msgid "Enter a list of steps to reproduce the error. Markdown is supported."
 msgstr ""
+"Saisissez une liste d'étapes permettant de reproduire l'erreur. Le Markdown "
+"est supporté."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:657
 msgid "Enter more context, what distro you use, etc. Markdown is supported."
 msgstr ""
+"Entrez plus de contexte : quelle distribution vous utilisez, etc. Le "
+"Markdown est supporté."
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:114
 #, fuzzy
@@ -3335,7 +3338,7 @@ msgstr "Copier la piste à l'intérieur"
 
 #: src/audio/tracklist.c:1743
 msgid "Cannot drag folder into itself"
-msgstr ""
+msgstr "Impossible de déplacer un dossier dans lui-même"
 
 #: src/audio/tracklist.c:1762 src/audio/tracklist.c:1812
 #, fuzzy
@@ -3384,9 +3387,9 @@ msgid "Channel Send %d audio in"
 msgstr "Quantité de l'envoi du canal %d"
 
 #: src/audio/channel_send.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d MIDI in"
-msgstr "Quantité de l'envoi du canal %d"
+msgstr "Le canal a envoyé %d MIDI en entrée"
 
 #: src/audio/channel_send.c:152
 #, fuzzy, c-format
@@ -3394,9 +3397,9 @@ msgid "Channel Send %d audio out"
 msgstr "Quantité de l'envoi du canal %d"
 
 #: src/audio/channel_send.c:162
-#, fuzzy, c-format
+#, c-format
 msgid "Channel Send %d MIDI out"
-msgstr "Quantité de l'envoi du canal %d"
+msgstr "Le canal à envoyé %d MIDI en sortie"
 
 #: src/audio/channel_send.c:497 src/audio/channel_send.c:559
 #, fuzzy
@@ -3471,6 +3474,11 @@ msgid ""
 "Channel(s): %d | Bitrate: %'d.%d kb/s\n"
 "Bit depth: %d bits"
 msgstr ""
+"<b>%s</b>\n"
+"Fréquence d'échantillonnage : %d\n"
+"Longueur : %ld s %ld ms | BPM : %.1f\n"
+"Canal(s) : %d | Débit : %'d.%d kb/s\n"
+"Définition : %d bits"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -3589,7 +3597,7 @@ msgstr "Active ou désactive le greffon"
 
 #: src/audio/audio_function.c:390
 msgid "Invalid positions - skipping function"
-msgstr ""
+msgstr "Positions non valides - fonction ignorée"
 
 #: src/audio/audio_function.c:544
 #, fuzzy
@@ -3668,16 +3676,16 @@ msgstr "Non-implémenté"
 
 #: src/audio/clip.c:666
 msgid "Edit in external app"
-msgstr ""
+msgstr "Modifier dans une application externe"
 
 #: src/audio/clip.c:691
 #, c-format
 msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr ""
+msgstr "Modifiez le fichier à <u>%s</u>, puis pressez OK."
 
 #: src/audio/clip.c:707
 msgid "Launch"
-msgstr ""
+msgstr "Lancer"
 
 #: src/audio/fader.c:141
 msgid "Prefader Volume"
@@ -3853,7 +3861,7 @@ msgstr "Fixe la valeur du contrôle"
 
 #: src/actions/arranger_selections.c:416
 msgid "Arranger selections contain an undeletable object"
-msgstr ""
+msgstr "Les sélections d'arrangeurs contiennent un objet non supprimable."
 
 #: src/actions/arranger_selections.c:533 src/actions/actions.c:2432
 #, fuzzy
@@ -4115,9 +4123,8 @@ msgid "Failed to pin/unpin tracks"
 msgstr "Impossible de trouver le greffon avec l'URI:%s"
 
 #: src/actions/actions.c:1846
-#, fuzzy
 msgid "Failed to solo tracks"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de l'isolation des pistes"
 
 #: src/actions/actions.c:1859
 #, fuzzy
@@ -4125,9 +4132,8 @@ msgid "Failed to unsolo tracks"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/actions.c:1872
-#, fuzzy
 msgid "Failed to mute tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la mise en sourdines des pistes"
 
 #: src/actions/actions.c:1885
 #, fuzzy
@@ -4145,14 +4151,12 @@ msgid "Failed to unlisten tracks"
 msgstr "Impossible de réinitialiser le schéma %s"
 
 #: src/actions/actions.c:1924
-#, fuzzy
 msgid "Failed to enable tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'activation des pistes"
 
 #: src/actions/actions.c:1937
-#, fuzzy
 msgid "Failed to disable tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la désactivation des pistes"
 
 #: src/actions/actions.c:2088
 #, c-format
@@ -4160,11 +4164,12 @@ msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
+"Vous devez d'abord sélectionner la ligne temporelle ou l'éditeur. La "
+"sélection actuelle est %s"
 
 #: src/actions/actions.c:2165
-#, fuzzy
 msgid "Failed to mute selections"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la mise en sourdine des sélections"
 
 #: src/actions/actions.c:2179
 msgid "No regions selected"
@@ -4184,14 +4189,12 @@ msgid "Failed to merge selections"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/actions.c:2329
-#, fuzzy
 msgid "Failed to insert silence"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec lors de l'insertion d'un silence"
 
 #: src/actions/actions.c:2352
-#, fuzzy
 msgid "Failed to remove range"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec lors de la suppression de l'intervalle"
 
 #: src/actions/actions.c:2708
 msgid "Region name"
@@ -4203,9 +4206,8 @@ msgid "Please enter a BPM"
 msgstr "Entrer une valeur"
 
 #: src/actions/actions.c:2824
-#, fuzzy
 msgid "Failed to move selections"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec lors du déplacement des sélections"
 
 #: src/actions/port_connection_action.c:204
 msgid "Connect ports"
@@ -4294,9 +4296,8 @@ msgstr "Greffons"
 
 #: src/actions/mixer_selections_action.c:838
 #: src/actions/mixer_selections_action.c:1248
-#, fuzzy
 msgid "Failed to revert deleted plugin"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec au rétablissement du greffon supprimé"
 
 #: src/actions/mixer_selections_action.c:1364
 #, c-format
@@ -4367,11 +4368,11 @@ msgstr "Aucun port sélectionné"
 
 #: src/actions/tracklist_selections.c:344
 msgid "Failed to clone tracklist selections"
-msgstr ""
+msgstr "Échec du clonage des sélections de la liste des pistes"
 
 #: src/actions/tracklist_selections.c:395
 msgid "Failed to clone tracklist selections: "
-msgstr ""
+msgstr "Échec du clonage des sélections de la liste des pistes : "
 
 #: src/actions/tracklist_selections.c:756
 #, c-format
@@ -4619,9 +4620,8 @@ msgid "Script execution failed"
 msgstr "Exécution du script en échec"
 
 #: src/guile/actions/port_connection_action.c:50
-#, fuzzy
 msgid "Failed to connect ports"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la connexion des ports"
 
 #: src/guile/actions/channel_send_action.c:46
 #, fuzzy
@@ -5021,11 +5021,11 @@ msgstr "Sélectionner un modèle"
 
 #: resources/ui/bug_report_dialog.ui:29
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: resources/ui/bug_report_dialog.ui:142
 msgid "What did you do?"
-msgstr ""
+msgstr "Qu’avez-vous fait ?"
 
 #: resources/ui/bug_report_dialog.ui:155
 #, fuzzy
@@ -5034,11 +5034,11 @@ msgstr "Voir les infos"
 
 #: resources/ui/bug_report_dialog.ui:219
 msgid "Enter more context, what distro you use, etc."
-msgstr ""
+msgstr "Entrez plus de contexte : quelle distribution vous utilisez, etc."
 
 #: resources/ui/bug_report_dialog.ui:222
 msgid "Enter a list of steps to reproduce the error."
-msgstr ""
+msgstr "Entrez une liste d'étapes pour reproduire l'erreur."
 
 #: resources/ui/chord_selector_window.ui:52
 msgid "Root Note"
@@ -5154,7 +5154,7 @@ msgstr "Aftertouch"
 
 #: resources/ui/playhead_scroll_buttons.ui:36
 msgid "Scroll when playhead reaches the edge"
-msgstr ""
+msgstr "Défilement lorsque la tête de lecture atteint le bord"
 
 #: resources/ui/playhead_scroll_buttons.ui:58
 #, fuzzy
@@ -5302,7 +5302,7 @@ msgstr "Nom de piste"
 
 #: resources/ui/panel_file_browser.ui:58
 msgid "Bookmarks"
-msgstr ""
+msgstr "Signets"
 
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
@@ -5322,7 +5322,7 @@ msgstr "Port"
 
 #: resources/ui/file_auditioner_controls.ui:39
 msgid "Play/Pause"
-msgstr ""
+msgstr "Lecture/Pause"
 
 #: resources/ui/file_auditioner_controls.ui:52
 #: resources/ui/transport_controls.ui:70
@@ -5826,7 +5826,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:269
 msgid "First check for updates"
-msgstr ""
+msgstr "Vérifiez d'abord les mises à jour"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:270
 #, fuzzy
@@ -6210,16 +6210,18 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid "Playhead scroll edges (timeline)"
-msgstr ""
+msgstr "Bords de défilement de la tête de lecture (ligne temporelle)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:494
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
+"Si le défilement doit avoir lieu lorsque la tête de lecture atteint le bord "
+"visible (ligne temporelle)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid "Follow playhead (timeline)"
-msgstr ""
+msgstr "Suivre la tête de lecture (ligne temporelle)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:499
 msgid ""
@@ -6655,9 +6657,8 @@ msgid "Whether the timeline panel is detached."
 msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:768
-#, fuzzy
 msgid "Timeline size"
-msgstr "Ligne temporelle"
+msgstr "Taille de la ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:769
 msgid "Timeline panel size when detached."
