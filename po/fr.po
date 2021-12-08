@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-10-17 16:47+0100\n"
-"PO-Revision-Date: 2021-11-30 15:40+0000\n"
-"Last-Translator: Maxime Leroy <lisacintosh@gmail.com>\n"
+"PO-Revision-Date: 2021-11-30 23:52+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -210,11 +210,11 @@ msgstr "Normaliser"
 
 #: inc/audio/audio_function.h:74
 msgid "Linear fade in"
-msgstr "Fondu linéaire en entrée"
+msgstr "Fondu à la fermeture linéaire"
 
 #: inc/audio/audio_function.h:76
 msgid "Linear fade out"
-msgstr "Fondu linéaire de sortie"
+msgstr "Fondu à l'ouverture linéaire"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:249
 msgid "Nudge left"
@@ -448,7 +448,7 @@ msgstr "Échec de l'écriture du fichier : %s"
 
 #: src/project.c:918
 msgid "Failed to decompress project file"
-msgstr "La décompression du fichier du projet à échoué"
+msgstr "Échec de la décompression du fichier du projet"
 
 #: src/project.c:977
 #, c-format
@@ -486,7 +486,7 @@ msgstr "Impossible de charger le projet. Création d'un nouveau à la place."
 
 #: src/project.c:1608
 msgid "Failed to compress project file"
-msgstr "La compression du fichier du projet à échoué"
+msgstr "Échec de la compression du fichier-projet"
 
 #: src/project.c:1654
 msgid "Backup saved."
@@ -735,14 +735,14 @@ msgstr "Erreur lors de l'ajout du greffon Carla : %s"
 
 #: src/plugins/carla_native_plugin.c:1345
 msgid "Failed to load Carla state"
-msgstr "Échec au chargement de l'état de Carla"
+msgstr "Échec du chargement de l'état de Carla"
 
 #: src/plugins/carla_native_plugin.c:1360
 msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
 msgstr ""
-"Échec de l'instanciation du greffon Carla : handle/descriptor n'a été "
+"Échec de l'instanciation du greffon Carla : handle/descriptor n'a pas été "
 "initialisé correctement"
 
 #: src/plugins/carla_native_plugin.c:1725
@@ -809,7 +809,7 @@ msgstr "Gain du greffon"
 #: src/plugins/plugin.c:525 src/plugins/plugin_gtk.c:170
 #: src/gui/widgets/plugin_properties_expander.c:155
 msgid "Failed to apply preset"
-msgstr "L'application des préréglages a échoué"
+msgstr "Échec de l'application du préréglage"
 
 #: src/plugins/plugin.c:577
 msgid "Failed to get Carla plugin"
@@ -817,7 +817,7 @@ msgstr "Impossible d'obtenir le greffon Carla"
 
 #: src/plugins/plugin.c:593
 msgid "Failed to get LV2 plugin"
-msgstr "La récupération du greffon LV2 a échoué"
+msgstr "Échec de la récupération du greffon LV2"
 
 #: src/plugins/plugin.c:1105
 #, c-format
@@ -830,7 +830,7 @@ msgstr "Instrument"
 
 #: src/plugins/plugin.c:1674
 msgid "Carla plugin instantiation failed"
-msgstr "Erreur lors de l'instanciation du greffon Carla"
+msgstr "Échec de l'instanciation du greffon Carla"
 
 #: src/plugins/plugin.c:1702
 #, fuzzy
@@ -952,8 +952,8 @@ msgstr ""
 #: src/plugins/lv2_plugin.c:2914
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
-"Échec de la vérification si l'interface utilisateur du plugin lv2 est "
-"externe."
+"Échec de la vérification si l'interface utilisateur du greffon lv2 est "
+"externe"
 
 #: src/plugins/lv2_plugin.c:3749
 msgid "Unnamed bank"
@@ -961,7 +961,7 @@ msgstr "Banque sans nom"
 
 #: src/plugins/lv2/lv2_state.c:456
 msgid "Failed to apply LV2 preset"
-msgstr "Impossible d'appliquer les préréglages de LV2"
+msgstr "Impossible d'appliquer le préréglage LV2"
 
 #: src/plugins/lv2/lv2_gtk.c:259
 msgid "Delete Preset?"
@@ -3477,7 +3477,7 @@ msgstr ""
 "<b>%s</b>\n"
 "Fréquence d'échantillonnage : %d\n"
 "Longueur : %ld s %ld ms | BPM : %.1f\n"
-"Canal(s) : %d | Débit : %'d.%d kb/s\n"
+"Canal(aux) : %d | Débit : %'d.%d kb/s\n"
 "Définition : %d bits"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
@@ -4124,7 +4124,7 @@ msgstr "Impossible de trouver le greffon avec l'URI:%s"
 
 #: src/actions/actions.c:1846
 msgid "Failed to solo tracks"
-msgstr "Échec de l'isolation des pistes"
+msgstr "Échec de la mise en solo des pistes"
 
 #: src/actions/actions.c:1859
 #, fuzzy
@@ -4133,7 +4133,7 @@ msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/actions.c:1872
 msgid "Failed to mute tracks"
-msgstr "Échec de la mise en sourdines des pistes"
+msgstr "Échec de la mise en sourdine des pistes"
 
 #: src/actions/actions.c:1885
 #, fuzzy
@@ -4164,7 +4164,7 @@ msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
-"Vous devez d'abord sélectionner la ligne temporelle ou l'éditeur. La "
+"Vous devez d'abord sélectionner soit la ligne temporelle, soit l'éditeur. La "
 "sélection actuelle est %s"
 
 #: src/actions/actions.c:2165
@@ -4190,11 +4190,11 @@ msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/actions.c:2329
 msgid "Failed to insert silence"
-msgstr "Échec lors de l'insertion d'un silence"
+msgstr "Échec de l'insertion d'un silence"
 
 #: src/actions/actions.c:2352
 msgid "Failed to remove range"
-msgstr "Échec lors de la suppression de l'intervalle"
+msgstr "Échec de la suppression de l'intervalle"
 
 #: src/actions/actions.c:2708
 msgid "Region name"
@@ -4368,11 +4368,11 @@ msgstr "Aucun port sélectionné"
 
 #: src/actions/tracklist_selections.c:344
 msgid "Failed to clone tracklist selections"
-msgstr "Échec du clonage des sélections de la liste des pistes"
+msgstr "Échec du clonage des sélections de la liste de piste"
 
 #: src/actions/tracklist_selections.c:395
 msgid "Failed to clone tracklist selections: "
-msgstr "Échec du clonage des sélections de la liste des pistes : "
+msgstr "Échec du clonage des sélections de la liste de piste : "
 
 #: src/actions/tracklist_selections.c:756
 #, c-format
@@ -5322,7 +5322,7 @@ msgstr "Port"
 
 #: resources/ui/file_auditioner_controls.ui:39
 msgid "Play/Pause"
-msgstr "Lecture/Pause"
+msgstr "Lecture/pause"
 
 #: resources/ui/file_auditioner_controls.ui:52
 #: resources/ui/transport_controls.ui:70
