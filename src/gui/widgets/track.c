@@ -3101,16 +3101,6 @@ on_destroy (
       custom_button_widget_free (cb);
     }
 
-  for (int i = 0; i < track->num_lanes; i++)
-    {
-      TrackLane * lane = track->lanes[i];
-      for (int j = 0; j < lane->num_buttons; j++)
-        {
-          cb = lane->buttons[j];
-          custom_button_widget_free (cb);
-        }
-    }
-
   track->widget = NULL;
 }
 

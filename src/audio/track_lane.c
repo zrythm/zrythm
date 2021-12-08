@@ -26,6 +26,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/custom_button.h"
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
 #include "project.h"
@@ -466,6 +467,14 @@ track_lane_free (
     }
 
   object_zero_and_free_if_nonnull (self->regions);
+
+  /* FIXME this is bad design - this object should
+   * not care about widgets */
+  for (int j = 0; j < self->num_buttons; j++)
+    {
+      if (self->buttons[j])
+        custom_button_widget_free (self->buttons[j]);
+    }
 
   object_zero_and_free (self);
 }
