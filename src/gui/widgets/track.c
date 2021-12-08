@@ -1852,11 +1852,13 @@ show_context_menu (
           char tmp[600];
           sprintf (
             tmp,
-            "app.selected-tracks-direct-out-to::%d",
-            cur_tr->pos);
+            "app.selected-tracks-direct-out-to");
           menuitem =
             z_gtk_create_menu_item (
               cur_tr->name, NULL,tmp);
+          g_menu_item_set_action_and_target_value (
+            menuitem, tmp,
+            g_variant_new_int32 (cur_tr->pos));
           g_menu_append_item (
             direct_out_submenu, menuitem);
           have_groups = true;

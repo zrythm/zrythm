@@ -1166,12 +1166,14 @@ timeline_arranger_widget_show_context_menu (
 
                   char tmp[200];
                   sprintf (
-                    tmp, "app.timeline-function::%d",
-                    i);
+                    tmp, "app.timeline-function");
                   GMenuItem * submenu_item =
                     z_gtk_create_menu_item (
                       _(audio_function_type_to_string (i)),
                       NULL, tmp);
+                  g_menu_item_set_action_and_target_value (
+                    menuitem, tmp,
+                    g_variant_new_int32 (i));
                   g_menu_append_item (
                     region_functions_subsubmenu,
                     submenu_item);

@@ -91,11 +91,14 @@ refresh_undo_or_redo_button (
 
           char tmp[600];
           sprintf (
-            tmp, "app.%s_n::%d",
-            redo ? "redo" : "undo", i);
+            tmp, "app.%s_n",
+            redo ? "redo" : "undo");
           menuitem =
             z_gtk_create_menu_item (
               action_str, NULL, tmp);
+          g_menu_item_set_action_and_target_value (
+            menuitem, tmp,
+            g_variant_new_int32 (i));
           g_menu_append_item (menu, menuitem);
 
           if (i == 0)

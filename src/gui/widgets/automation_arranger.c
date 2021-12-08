@@ -236,11 +236,13 @@ automation_arranger_widget_show_context_menu (
           /* TODO change action state so that
            * selected algorithm shows as selected */
           sprintf (
-            tmp, "app.set-curve-algorithm::%d",
-            i);
+            tmp, "app.set-curve-algorithm");
           menuitem =
             z_gtk_create_menu_item (
               name, NULL, tmp);
+          g_menu_item_set_action_and_target_value (
+            menuitem, tmp,
+            g_variant_new_int32 (i));
           g_menu_append_item (
             curve_algorithm_submenu, menuitem);
         }
