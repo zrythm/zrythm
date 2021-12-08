@@ -6,13 +6,14 @@
 # Yuri Musachio Montezuma da Cruz <yuri.musachio@gmail.com>, 2021.
 # Vinicius Monego <monego@posteo.net>, 2021.
 # Rodrigo Zimmermann <rodrigo.zimmermann23@gmail.com>, 2021.
+# Pedro Portela <pportela@disroot.org>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2021-10-17 16:47+0100\n"
-"PO-Revision-Date: 2021-12-02 11:51+0000\n"
-"Last-Translator: Rodrigo Zimmermann <rodrigo.zimmermann23@gmail.com>\n"
+"PO-Revision-Date: 2021-12-08 23:53+0000\n"
+"Last-Translator: Pedro Portela <pportela@disroot.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -186,28 +187,24 @@ msgid "Invert"
 msgstr "Inverso"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize peak"
-msgstr "Normal"
+msgstr "Normalizar pico"
 
 #: inc/audio/audio_function.h:72
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Normal"
+msgstr "Normalizar RMS"
 
 #: inc/audio/audio_function.h:73
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normal"
+msgstr "Normalizar LUFS"
 
 #: inc/audio/audio_function.h:74
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linear"
+msgstr "Fade in linear"
 
 #: inc/audio/audio_function.h:76
 msgid "Linear fade out"
-msgstr ""
+msgstr "Fade out linear"
 
 #: inc/audio/audio_function.h:78 src/gui/widgets/home_toolbar.c:249
 msgid "Nudge left"
@@ -240,15 +237,15 @@ msgstr "Inválido"
 
 #: inc/audio/transport.h:71
 msgid "1 bar"
-msgstr ""
+msgstr "1 compasso"
 
 #: inc/audio/transport.h:72
 msgid "2 bars"
-msgstr ""
+msgstr "2 compassos"
 
 #: inc/audio/transport.h:73
 msgid "4 bars"
-msgstr ""
+msgstr "4 compassos"
 
 #: inc/audio/track.h:189 src/gui/widgets/track_properties_expander.c:132
 #: src/gui/widgets/route_target_selector_popover.c:188
@@ -304,7 +301,7 @@ msgstr "Grupo MIDI"
 
 #: inc/audio/track.h:201
 msgid "Folder"
-msgstr ""
+msgstr "Pasta"
 
 #: inc/audio/curve.h:120 src/gui/widgets/timeline_arranger.c:1118
 #: src/audio/curve.c:81
@@ -398,7 +395,7 @@ msgstr "Dedilhado"
 
 #: inc/audio/exporter.h:90
 msgid "Before inserts"
-msgstr ""
+msgstr "Antes das inserções"
 
 #: inc/audio/exporter.h:91
 msgid "Pre-fader"
@@ -406,7 +403,7 @@ msgstr ""
 
 #: inc/audio/exporter.h:92
 msgid "Post fader"
-msgstr ""
+msgstr "Pós-fader"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
@@ -593,7 +590,7 @@ msgstr ""
 "%s não possui ABSOLUTAMENTE NENHUMA GARANTIA!\n"
 "\n"
 "Este é um software livre e você pode distribuí-lo sob certas condições.\n"
-"Veja o arquivo `COPYING' para obter detalhes.\n"
+"Veja o arquivo 'COPYING' para obter detalhes.\n"
 "\n"
 "Envie comentários e bugs para %s\n"
 "Apoie este projeto em https://liberapay.com/Zrythm\n"
@@ -627,9 +624,8 @@ msgid "libguile is required for this option\n"
 msgstr "libguile é necessária para esta opção\n"
 
 #: src/zrythm_app.c:1888
-#, fuzzy
 msgid "Print version information"
-msgstr "Informações sobre a licença"
+msgstr "Informações sobre a versão"
 
 #: src/zrythm_app.c:1893
 #, fuzzy
@@ -650,7 +646,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1911
 msgid "Print current settings"
-msgstr ""
+msgstr "Imprimir definições atuais"
 
 #: src/zrythm_app.c:1915
 msgid "Reset to factory settings"
@@ -658,11 +654,11 @@ msgstr "Restaurar as configurações de fábrica"
 
 #: src/zrythm_app.c:1918
 msgid "Override the audio backend to use"
-msgstr ""
+msgstr "Substitua o backend de áudio para usar"
 
 #: src/zrythm_app.c:1922
 msgid "Override the MIDI backend to use"
-msgstr ""
+msgstr "Substitua o backend MIDI para usar"
 
 #: src/zrythm_app.c:1926
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
@@ -670,7 +666,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1958
 msgid "[PROJECT-FILE]"
-msgstr ""
+msgstr "[PROJETO-ARQUIVO]"
 
 #: src/zrythm_app.c:1963
 #, c-format
