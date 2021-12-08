@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2021-07-21 18:06+0100\n"
-"PO-Revision-Date: 2021-08-20 04:36+0000\n"
+"PO-Revision-Date: 2021-11-25 15:50+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8-dev\n"
+"X-Generator: Weblate 4.10-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:156 inc/audio/engine.h:291
@@ -1548,7 +1548,7 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
-msgstr ""
+msgstr "Bağış Yap"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
@@ -4593,7 +4593,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Dijital Ses İş İstasyonu"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
